@@ -347,9 +347,7 @@ void ChildAccountService::PropagateChildStatusToUser(bool is_child) {
       if (is_child != (user->GetType() == user_manager::USER_TYPE_CHILD))
         LOG(FATAL) << "User child flag has changed: " << is_child;
     }
-  } else if (!chromeos::ProfileHelper::Get()->IsSigninProfile(profile_) &&
-             !chromeos::ProfileHelper::Get()->IsLockScreenAppProfile(
-                 profile_)) {
+  } else if (chromeos::ProfileHelper::IsRegularProfile(profile_)) {
     LOG(DFATAL) << "User instance not found while setting child account flag.";
   }
 #endif

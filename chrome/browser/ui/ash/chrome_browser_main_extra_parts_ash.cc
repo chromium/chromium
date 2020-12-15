@@ -287,8 +287,7 @@ class ChromeBrowserMainExtraPartsAsh::NotificationObserver
     switch (type) {
       case chrome::NOTIFICATION_LOGIN_USER_PROFILE_PREPARED: {
         Profile* profile = content::Details<Profile>(details).ptr();
-        if (!chromeos::ProfileHelper::IsSigninProfile(profile) &&
-            !chromeos::ProfileHelper::IsLockScreenAppProfile(profile) &&
+        if (chromeos::ProfileHelper::IsRegularProfile(profile) &&
             !profile->IsGuestSession()) {
           // Start the error notifier services to show auth/sync notifications.
           SigninErrorNotifierFactory::GetForProfile(profile);

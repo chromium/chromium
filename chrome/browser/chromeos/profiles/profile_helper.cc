@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/browser_process.h"
@@ -106,6 +107,31 @@ bool IsSigninProfilePath(const base::FilePath& profile_path) {
 
 bool IsLockScreenAppProfilePath(const base::FilePath& profile_path) {
   return profile_path.value() == chrome::kLockScreenAppProfile;
+}
+
+bool IsLockScreenProfilePath(const base::FilePath& profile_path) {
+  return profile_path.value() == chrome::kLockScreenProfile;
+}
+
+// Returns the path that corresponds to the passed profile.
+base::FilePath GetProfileDir(base::StringPiece profile) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  // profile_manager can be null in unit tests.
+  if (!profile_manager)
+    return base::FilePath();
+  base::FilePath user_data_dir = profile_manager->user_data_dir();
+  return user_data_dir.AppendASCII(profile);
+}
+
+// Returns an incognito profile that corresponds to the passed path.
+Profile* GetIncognitoProfile(base::FilePath profile_dir) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  // |profile_manager| could be null in tests.
+  if (!profile_manager) {
+    return nullptr;
+  }
+
+  return profile_manager->GetProfile(profile_dir)->GetPrimaryOTRProfile();
 }
 
 }  // anonymous namespace
@@ -232,24 +258,12 @@ base::FilePath ProfileHelper::GetProfilePathByUserIdHash(
 
 // static
 base::FilePath ProfileHelper::GetSigninProfileDir() {
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  // profile_manager can be null in unit tests.
-  if (!profile_manager)
-    return base::FilePath();
-  base::FilePath user_data_dir = profile_manager->user_data_dir();
-  return user_data_dir.AppendASCII(chrome::kInitialProfile);
+  return GetProfileDir(chrome::kInitialProfile);
 }
 
 // static
 Profile* ProfileHelper::GetSigninProfile() {
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  // |profile_manager| could be null in tests.
-  if (!profile_manager) {
-    return nullptr;
-  }
-
-  return profile_manager->GetProfile(GetSigninProfileDir())
-      ->GetPrimaryOTRProfile();
+  return GetIncognitoProfile(GetSigninProfileDir());
 }
 
 // static
@@ -301,14 +315,27 @@ bool ProfileHelper::IsLockScreenAppProfile(const Profile* profile) {
 
 // static
 base::FilePath ProfileHelper::GetLockScreenAppProfilePath() {
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  return profile_manager->user_data_dir().AppendASCII(
-      chrome::kLockScreenAppProfile);
+  return GetProfileDir(chrome::kLockScreenAppProfile);
 }
 
 // static
 std::string ProfileHelper::GetLockScreenAppProfileName() {
   return chrome::kLockScreenAppProfile;
+}
+
+// static
+base::FilePath ProfileHelper::GetLockScreenProfileDir() {
+  return GetProfileDir(chrome::kLockScreenProfile);
+}
+
+// static
+Profile* ProfileHelper::GetLockScreenIncognitoProfile() {
+  return GetIncognitoProfile(GetLockScreenProfileDir());
+}
+
+// static
+bool ProfileHelper::IsLockScreenProfile(const Profile* profile) {
+  return profile && IsLockScreenProfilePath(profile->GetPath().BaseName());
 }
 
 // static
@@ -362,13 +389,15 @@ bool ProfileHelper::IsEphemeralUserProfile(const Profile* profile) {
 // static
 bool ProfileHelper::IsRegularProfile(const Profile* profile) {
   return !chromeos::ProfileHelper::IsSigninProfile(profile) &&
-         !chromeos::ProfileHelper::IsLockScreenAppProfile(profile);
+         !chromeos::ProfileHelper::IsLockScreenAppProfile(profile) &&
+         !chromeos::ProfileHelper::IsLockScreenProfile(profile);
 }
 
 // static
 bool ProfileHelper::IsRegularProfilePath(const base::FilePath& profile_path) {
   return !IsSigninProfilePath(profile_path) &&
-         !IsLockScreenAppProfilePath(profile_path);
+         !IsLockScreenAppProfilePath(profile_path) &&
+         !IsLockScreenProfilePath(profile_path);
 }
 
 // static

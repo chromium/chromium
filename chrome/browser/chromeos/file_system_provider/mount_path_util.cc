@@ -102,8 +102,7 @@ bool FileSystemURLParser::Parse() {
     Profile* original_profile = profiles[i]->GetOriginalProfile();
 
     if (original_profile != profiles[i] ||
-        chromeos::ProfileHelper::IsSigninProfile(original_profile) ||
-        chromeos::ProfileHelper::IsLockScreenAppProfile(original_profile)) {
+        !chromeos::ProfileHelper::IsRegularProfile(original_profile)) {
       continue;
     }
 

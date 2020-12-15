@@ -319,8 +319,7 @@ BrowserContextKeyedAPIFactory<PrintingAPIHandler>::BuildServiceInstanceFor(
   Profile* profile = Profile::FromBrowserContext(context);
   // We do not want an instance of PrintingAPIHandler on the lock screen.
   // This will lead to multiple printing notifications.
-  if (chromeos::ProfileHelper::IsLockScreenAppProfile(profile) ||
-      chromeos::ProfileHelper::IsSigninProfile(profile)) {
+  if (!chromeos::ProfileHelper::IsRegularProfile(profile)) {
     return nullptr;
   }
   return new PrintingAPIHandler(context);

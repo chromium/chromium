@@ -40,8 +40,7 @@ AppListSyncableServiceFactory* AppListSyncableServiceFactory::GetInstance() {
 std::unique_ptr<KeyedService> AppListSyncableServiceFactory::BuildInstanceFor(
     content::BrowserContext* browser_context) {
   Profile* profile = static_cast<Profile*>(browser_context);
-  if (chromeos::ProfileHelper::IsSigninProfile(profile) ||
-      chromeos::ProfileHelper::IsLockScreenAppProfile(profile)) {
+  if (!chromeos::ProfileHelper::IsRegularProfile(profile)) {
     return nullptr;
   }
   VLOG(1) << "BuildInstanceFor: " << profile->GetDebugName()

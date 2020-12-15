@@ -952,10 +952,9 @@ bool ChromeMetricsServiceClient::RegisterForNotifications() {
 
 bool ChromeMetricsServiceClient::RegisterForProfileEvents(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Ignore the signin and lock screen app profile for sync disables / history
-  // deletion.
-  if (chromeos::ProfileHelper::IsSigninProfile(profile) ||
-      chromeos::ProfileHelper::IsLockScreenAppProfile(profile)) {
+  // Ignore the signin, lock screen app and lock screen profile for sync
+  // disables / history deletion.
+  if (!chromeos::ProfileHelper::IsRegularProfile(profile)) {
     // No listeners, but still a success case.
     return true;
   }

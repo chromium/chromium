@@ -219,8 +219,7 @@ void ShowContactAdminDialog() {
 
 bool IsRealUserProfile(const Profile* profile) {
   // Return false for signin, lock screen and incognito profiles.
-  return profile && !chromeos::ProfileHelper::IsSigninProfile(profile) &&
-         !chromeos::ProfileHelper::IsLockScreenAppProfile(profile) &&
+  return profile && chromeos::ProfileHelper::IsRegularProfile(profile) &&
          !profile->IsOffTheRecord();
 }
 

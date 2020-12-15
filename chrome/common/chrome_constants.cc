@@ -208,6 +208,7 @@ const char kProfileDirPrefix[] = "u-";
 const char kLegacyProfileDir[] = "user";
 const char kTestUserProfileDir[] = "test-user";
 const char kLockScreenAppProfile[] = "LockScreenAppsProfile";
+const char kLockScreenProfile[] = "LockScreenProfile";
 #endif
 
 // This GUID is associated with any 'don't ask me again' settings that the

@@ -513,10 +513,9 @@ VolumeManager* VolumeManager::Get(content::BrowserContext* context) {
 }
 
 void VolumeManager::Initialize() {
-  // If in the Sign in profile pr the lock screen app profile, skip mounting
-  // and listening for mount events.
-  if (chromeos::ProfileHelper::IsSigninProfile(profile_) ||
-      chromeos::ProfileHelper::IsLockScreenAppProfile(profile_)) {
+  // If in the Sign in profile or the lock screen app profile or lock screen
+  // profile, skip mounting and listening for mount events.
+  if (!chromeos::ProfileHelper::IsRegularProfile(profile_)) {
     return;
   }
 

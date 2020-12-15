@@ -21,12 +21,10 @@
 namespace chromeos {
 
 bool IsAccountManagerAvailable(const Profile* const profile) {
-  // Signin Profile does not have any accounts associated with it.
-  if (chromeos::ProfileHelper::IsSigninProfile(profile))
-    return false;
-
-  // LockScreenAppProfile does not link to the user's cryptohome.
-  if (chromeos::ProfileHelper::IsLockScreenAppProfile(profile))
+  // Signin Profile does not have any accounts associated with it,
+  // LockScreenAppProfile and LockScreenProfile do not link to the user's
+  // cryptohome.
+  if (!chromeos::ProfileHelper::IsRegularProfile(profile))
     return false;
 
   // Account Manager is unavailable on Guest (Incognito) Sessions.

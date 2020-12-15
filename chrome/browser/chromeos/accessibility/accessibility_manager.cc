@@ -475,8 +475,7 @@ void AccessibilityManager::OnSpokenFeedbackChanged() {
   const bool enabled = profile_->GetPrefs()->GetBoolean(
       ash::prefs::kAccessibilitySpokenFeedbackEnabled);
 
-  if (!chromeos::ProfileHelper::IsSigninProfile(profile_) &&
-      !chromeos::ProfileHelper::IsLockScreenAppProfile(profile_)) {
+  if (chromeos::ProfileHelper::IsRegularProfile(profile_)) {
     user_manager::known_user::SetBooleanPref(
         multi_user_util::GetAccountIdFromProfile(profile_),
         kUserSpokenFeedbackEnabled, enabled);

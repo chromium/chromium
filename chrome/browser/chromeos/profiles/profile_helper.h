@@ -97,6 +97,15 @@ class ProfileHelper
   // screen.
   static bool IsLockScreenAppProfile(const Profile* profile);
 
+  // Returns the path that corresponds to the lockscreen profile.
+  static base::FilePath GetLockScreenProfileDir();
+
+  // Returns lockscreen profile.
+  static Profile* GetLockScreenIncognitoProfile();
+
+  // Returns true if |profile| is the lockscreen profile.
+  static bool IsLockScreenProfile(const Profile* profile);
+
   // Returns true when |profile| corresponds to owner's profile.
   static bool IsOwnerProfile(const Profile* profile);
 

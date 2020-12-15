@@ -122,8 +122,7 @@ KeyedService* IdentityManagerFactory::BuildServiceInstanceFor(
   params.account_manager =
       factory->GetAccountManager(profile->GetPath().value());
   params.is_regular_profile =
-      !chromeos::ProfileHelper::IsSigninProfile(profile) &&
-      !chromeos::ProfileHelper::IsLockScreenAppProfile(profile);
+      chromeos::ProfileHelper::IsRegularProfile(profile);
 #endif
 
 #if defined(OS_WIN)

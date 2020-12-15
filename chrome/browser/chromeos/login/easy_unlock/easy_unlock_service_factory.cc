@@ -74,11 +74,6 @@ KeyedService* EasyUnlockServiceFactory::BuildServiceInstanceFor(
   if (!IsFeatureAllowed(context))
     return nullptr;
 
-  if (ProfileHelper::IsLockScreenAppProfile(
-          Profile::FromBrowserContext(context))) {
-    return nullptr;
-  }
-
   if (ProfileHelper::IsSigninProfile(Profile::FromBrowserContext(context))) {
     if (!context->IsOffTheRecord())
       return nullptr;
@@ -87,6 +82,9 @@ KeyedService* EasyUnlockServiceFactory::BuildServiceInstanceFor(
         Profile::FromBrowserContext(context),
         secure_channel::SecureChannelClientProvider::GetInstance()
             ->GetClient());
+  } else if (!ProfileHelper::IsRegularProfile(
+                 Profile::FromBrowserContext(context))) {
+    return nullptr;
   }
 
   if (!service) {

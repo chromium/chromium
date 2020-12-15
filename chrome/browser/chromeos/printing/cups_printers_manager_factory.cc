@@ -45,8 +45,7 @@ KeyedService* CupsPrintersManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   // We do not need an instance of CupsPrintersManager on the lockscreen.
   auto* profile = Profile::FromBrowserContext(context);
-  if (ProfileHelper::IsLockScreenAppProfile(profile) ||
-      ProfileHelper::IsSigninProfile(profile)) {
+  if (!ProfileHelper::IsRegularProfile(profile)) {
     return nullptr;
   }
 

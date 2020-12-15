@@ -832,8 +832,7 @@ bool UserSessionManager::RestartToApplyPerSessionFlagsIfNeed(
   if (!SessionManagerClient::Get()->SupportsBrowserRestart())
     return false;
 
-  if (ProfileHelper::IsSigninProfile(profile) ||
-      ProfileHelper::IsLockScreenAppProfile(profile)) {
+  if (!ProfileHelper::IsRegularProfile(profile)) {
     return false;
   }
 

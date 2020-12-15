@@ -92,10 +92,8 @@ void CreateConfigurationPolicyProvider(
   *user_cloud_policy_manager_chromeos_out = nullptr;
   *active_directory_policy_manager_out = nullptr;
 
-  // Don't initialize cloud policy for the signin and the lock screen app
-  // profile.
-  if (chromeos::ProfileHelper::IsSigninProfile(profile) ||
-      chromeos::ProfileHelper::IsLockScreenAppProfile(profile)) {
+  // Don't initialize cloud policy for the signin and the lock screen profile.
+  if (!chromeos::ProfileHelper::IsRegularProfile(profile)) {
     return;
   }
 

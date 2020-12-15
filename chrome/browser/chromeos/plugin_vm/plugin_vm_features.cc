@@ -53,7 +53,7 @@ bool PluginVmFeatures::IsAllowed(const Profile* profile) {
   if (!profile || profile->IsChild() || profile->IsLegacySupervised() ||
       profile->IsOffTheRecord() ||
       chromeos::ProfileHelper::IsEphemeralUserProfile(profile) ||
-      chromeos::ProfileHelper::IsLockScreenAppProfile(profile) ||
+      !chromeos::ProfileHelper::IsRegularProfile(profile) ||
       !chromeos::ProfileHelper::IsPrimaryProfile(profile)) {
     return false;
   }

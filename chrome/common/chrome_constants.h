@@ -108,7 +108,11 @@ extern const char kLegacyProfileDir[];
 // This must be kept in sync with TestingProfile::kTestUserProfileDir.
 extern const char kTestUserProfileDir[];
 
+// An anonymous profile that is used for lock screen apps.
 extern const char kLockScreenAppProfile[];
+
+// An incognito profile that is used for user authentication on lock screen.
+extern const char kLockScreenProfile[];
 #endif
 
 // Used to identify the application to the system AV function in Windows.

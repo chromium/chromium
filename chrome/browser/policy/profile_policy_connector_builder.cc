@@ -48,8 +48,7 @@ CreateProfilePolicyConnectorForBrowserContext(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   Profile* const profile = Profile::FromBrowserContext(context);
-  if (!chromeos::ProfileHelper::IsSigninProfile(profile) &&
-      !chromeos::ProfileHelper::IsLockScreenAppProfile(profile)) {
+  if (chromeos::ProfileHelper::IsRegularProfile(profile)) {
     user = chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
     CHECK(user);
   }

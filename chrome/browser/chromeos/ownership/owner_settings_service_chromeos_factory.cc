@@ -90,8 +90,7 @@ content::BrowserContext*
 OwnerSettingsServiceChromeOSFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  if (profile->IsOffTheRecord() || ProfileHelper::IsSigninProfile(profile) ||
-      ProfileHelper::IsLockScreenAppProfile(profile)) {
+  if (profile->IsOffTheRecord() || !ProfileHelper::IsRegularProfile(profile)) {
     return nullptr;
   }
 
