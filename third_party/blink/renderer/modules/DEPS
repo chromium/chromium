@@ -8,6 +8,7 @@ include_rules = [
     "+services/device/public/mojom",
     "+services/network/public/cpp/shared_url_loader_factory.h",
     "+services/viz/public/mojom/hit_test/hit_test_region_list.mojom-blink.h",
+    "+skia/ext/skia_utils_base.h",
     "+third_party/blink/public/common",
     "+third_party/blink/public/web",
     "+third_party/blink/renderer/bindings",

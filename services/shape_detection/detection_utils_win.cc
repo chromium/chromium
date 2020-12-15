@@ -20,17 +20,11 @@ ComPtr<ISoftwareBitmap> CreateWinBitmapFromSkBitmap(
     const SkBitmap& bitmap,
     ISoftwareBitmapStatics* bitmap_factory) {
   DCHECK(bitmap_factory);
+  DCHECK_EQ(bitmap.colorType(), kN32_SkColorType);
   if (!base::CheckedNumeric<uint32_t>(bitmap.computeByteSize()).IsValid()) {
     DLOG(ERROR) << "Data overflow.";
     return nullptr;
   }
-  // CreateCopyFromBuffer() assumes the pixels we pass in are 32bits each and
-  // are tightly packed. Receiving a bitmap of a different bits-per-pixel would
-  // create a buffer overflow. The `pixel_format` we use below assumes the
-  // format of the bitmap is N32.
-  CHECK_EQ(bitmap.colorType(), kN32_SkColorType);
-  CHECK_EQ(4, bitmap.info().bytesPerPixel());
-  CHECK_EQ(bitmap.rowBytes(), bitmap.width() * static_cast<size_t>(4));
 
   // Create IBuffer from bitmap data.
   ComPtr<ABI::Windows::Storage::Streams::IBuffer> buffer;

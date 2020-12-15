@@ -16,9 +16,8 @@ import org.robolectric.shadows.ShadowLog;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.mojo_base.BigBufferUtil;
-import org.chromium.skia.mojom.BitmapWithArbitraryBpp;
-import org.chromium.skia.mojom.ColorType;
-import org.chromium.skia.mojom.ImageInfo;
+import org.chromium.skia.mojom.BitmapN32;
+import org.chromium.skia.mojom.BitmapN32ImageInfo;
 
 /**
  * Test suite for conversion-to-Frame utils.
@@ -46,9 +45,9 @@ public class BitmapUtilsTest {
     @Test
     @Feature({"ShapeDetection"})
     public void testConversionFailsWithInvalidBitmap() {
-        BitmapWithArbitraryBpp bitmap = new BitmapWithArbitraryBpp();
+        BitmapN32 bitmap = new BitmapN32();
         bitmap.pixelData = null;
-        bitmap.imageInfo = new ImageInfo();
+        bitmap.imageInfo = new BitmapN32ImageInfo();
 
         assertNull(BitmapUtils.convertToFrame(bitmap));
     }
@@ -59,8 +58,8 @@ public class BitmapUtilsTest {
     @Test
     @Feature({"ShapeDetection"})
     public void testConversionFailsWithInvalidDimensions() {
-        BitmapWithArbitraryBpp bitmap = new BitmapWithArbitraryBpp();
-        bitmap.imageInfo = new ImageInfo();
+        BitmapN32 bitmap = new BitmapN32();
+        bitmap.imageInfo = new BitmapN32ImageInfo();
         bitmap.pixelData = BigBufferUtil.createBigBufferFromBytes(EMPTY_DATA);
         bitmap.imageInfo.width = INVALID_WIDTH;
         bitmap.imageInfo.height = VALID_HEIGHT;
@@ -74,12 +73,11 @@ public class BitmapUtilsTest {
     @Test
     @Feature({"ShapeDetection"})
     public void testConversionFailsWithWronglyWrappedData() {
-        BitmapWithArbitraryBpp bitmap = new BitmapWithArbitraryBpp();
-        bitmap.imageInfo = new ImageInfo();
+        BitmapN32 bitmap = new BitmapN32();
+        bitmap.imageInfo = new BitmapN32ImageInfo();
         bitmap.pixelData = BigBufferUtil.createBigBufferFromBytes(EMPTY_DATA);
         bitmap.imageInfo.width = VALID_WIDTH;
         bitmap.imageInfo.height = VALID_HEIGHT;
-        bitmap.imageInfo.colorType = ColorType.RGBA_8888;
 
         assertNull(BitmapUtils.convertToFrame(bitmap));
     }
