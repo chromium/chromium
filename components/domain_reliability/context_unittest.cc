@@ -15,6 +15,7 @@
 #include "base/json/json_reader.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "components/domain_reliability/beacon.h"
 #include "components/domain_reliability/dispatcher.h"
 #include "components/domain_reliability/scheduler.h"
@@ -32,6 +33,8 @@ using base::ListValue;
 using base::Value;
 
 typedef std::vector<const DomainReliabilityBeacon*> BeaconVector;
+
+const char kBeaconOutcomeHistogram[] = "Net.DomainReliability.BeaconOutcome";
 
 std::unique_ptr<DomainReliabilityBeacon> MakeCustomizedBeacon(
     MockableTime* time,
@@ -140,6 +143,8 @@ class DomainReliabilityContextTest : public testing::Test {
         upload_allowed_callback_, &dispatcher_, &uploader_, std::move(config)));
   }
 
+  void ShutDownContext() { context_.reset(); }
+
   base::TimeDelta min_delay() const { return params_.minimum_upload_delay; }
   base::TimeDelta max_delay() const { return params_.maximum_upload_delay; }
   base::TimeDelta retry_interval() const {
@@ -247,13 +252,20 @@ TEST_F(DomainReliabilityContextTest, Create) {
   EXPECT_TRUE(CheckNoBeacons());
 }
 
-TEST_F(DomainReliabilityContextTest, Report) {
+TEST_F(DomainReliabilityContextTest, QueueBeacon) {
+  base::HistogramTester histograms;
   InitContext(MakeTestConfig());
   context_->OnBeacon(MakeBeacon(&time_));
 
   BeaconVector beacons;
   context_->GetQueuedBeaconsForTesting(&beacons);
   EXPECT_EQ(1u, beacons.size());
+
+  ShutDownContext();
+  histograms.ExpectBucketCount(
+      kBeaconOutcomeHistogram,
+      DomainReliabilityBeacon::Outcome::kContextShutDown, 1);
+  histograms.ExpectTotalCount(kBeaconOutcomeHistogram, 1);
 }
 
 TEST_F(DomainReliabilityContextTest, MaxNestedBeaconSchedules) {
@@ -289,6 +301,7 @@ TEST_F(DomainReliabilityContextTest, OverlyNestedBeaconDoesNotSchedule) {
 
 TEST_F(DomainReliabilityContextTest,
     MaxNestedBeaconAfterOverlyNestedBeaconSchedules) {
+  base::HistogramTester histograms;
   InitContext(MakeTestConfig());
   // Add a beacon for a report that's too nested to schedule a beacon.
   std::unique_ptr<DomainReliabilityBeacon> beacon = MakeBeacon(&time_);
@@ -322,10 +335,17 @@ TEST_F(DomainReliabilityContextTest,
   result.status = DomainReliabilityUploader::UploadResult::SUCCESS;
   CallUploadCallback(result);
 
+  histograms.ExpectBucketCount(kBeaconOutcomeHistogram,
+                               DomainReliabilityBeacon::Outcome::kUploaded, 2);
+  histograms.ExpectTotalCount(kBeaconOutcomeHistogram, 2);
+
   EXPECT_TRUE(CheckNoBeacons());
+  ShutDownContext();
+  histograms.ExpectTotalCount(kBeaconOutcomeHistogram, 2);
 }
 
 TEST_F(DomainReliabilityContextTest, ReportUpload) {
+  base::HistogramTester histograms;
   InitContext(MakeTestConfig());
   context_->OnBeacon(
       MakeCustomizedBeacon(&time_, "tcp.connection_reset", "", true));
@@ -364,7 +384,13 @@ TEST_F(DomainReliabilityContextTest, ReportUpload) {
   result.status = DomainReliabilityUploader::UploadResult::SUCCESS;
   CallUploadCallback(result);
 
+  histograms.ExpectBucketCount(kBeaconOutcomeHistogram,
+                               DomainReliabilityBeacon::Outcome::kUploaded, 1);
+  histograms.ExpectTotalCount(kBeaconOutcomeHistogram, 1);
+
   EXPECT_TRUE(CheckNoBeacons());
+  ShutDownContext();
+  histograms.ExpectTotalCount(kBeaconOutcomeHistogram, 1);
 }
 
 TEST_F(DomainReliabilityContextTest, ReportUploadFails) {
@@ -900,6 +926,7 @@ TEST_F(DomainReliabilityContextTest, SampleNoBeacons) {
 }
 
 TEST_F(DomainReliabilityContextTest, ExpiredBeaconDoesNotUpload) {
+  base::HistogramTester histograms;
   InitContext(MakeTestConfig());
   std::unique_ptr<DomainReliabilityBeacon> beacon = MakeBeacon(&time_);
   time_.Advance(base::TimeDelta::FromHours(2));
@@ -910,6 +937,49 @@ TEST_F(DomainReliabilityContextTest, ExpiredBeaconDoesNotUpload) {
   BeaconVector beacons;
   context_->GetQueuedBeaconsForTesting(&beacons);
   EXPECT_TRUE(beacons.empty());
+
+  histograms.ExpectBucketCount(kBeaconOutcomeHistogram,
+                               DomainReliabilityBeacon::Outcome::kExpired, 1);
+  histograms.ExpectTotalCount(kBeaconOutcomeHistogram, 1);
+
+  ShutDownContext();
+  histograms.ExpectTotalCount(kBeaconOutcomeHistogram, 1);
+}
+
+TEST_F(DomainReliabilityContextTest, EvictOldestBeacon) {
+  base::HistogramTester histograms;
+  InitContext(MakeTestConfig());
+
+  std::unique_ptr<DomainReliabilityBeacon> oldest_beacon = MakeBeacon(&time_);
+  const DomainReliabilityBeacon* oldest_beacon_ptr = oldest_beacon.get();
+  time_.Advance(base::TimeDelta::FromSeconds(1));
+  context_->OnBeacon(std::move(oldest_beacon));
+
+  for (size_t i = 0; i < DomainReliabilityContext::kMaxQueuedBeacons; ++i) {
+    std::unique_ptr<DomainReliabilityBeacon> beacon = MakeBeacon(&time_);
+    time_.Advance(base::TimeDelta::FromSeconds(1));
+    context_->OnBeacon(std::move(beacon));
+  }
+
+  BeaconVector beacons;
+  context_->GetQueuedBeaconsForTesting(&beacons);
+  EXPECT_EQ(DomainReliabilityContext::kMaxQueuedBeacons, beacons.size());
+
+  for (const DomainReliabilityBeacon* beacon : beacons) {
+    EXPECT_NE(oldest_beacon_ptr, beacon);
+  }
+
+  histograms.ExpectBucketCount(kBeaconOutcomeHistogram,
+                               DomainReliabilityBeacon::Outcome::kEvicted, 1);
+  histograms.ExpectTotalCount(kBeaconOutcomeHistogram, 1);
+
+  ShutDownContext();
+  histograms.ExpectBucketCount(
+      kBeaconOutcomeHistogram,
+      DomainReliabilityBeacon::Outcome::kContextShutDown,
+      DomainReliabilityContext::kMaxQueuedBeacons);
+  histograms.ExpectTotalCount(kBeaconOutcomeHistogram,
+                              1 + DomainReliabilityContext::kMaxQueuedBeacons);
 }
 
 // Test eviction when there's no active upload.

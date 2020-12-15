@@ -18210,6 +18210,15 @@ Called by update_document_policy_enum.py.-->
   <int value="1" label="Failed over to another collector"/>
 </enum>
 
+<enum name="DomainReliabilityBeaconOutcome">
+  <int value="0" label="Unknown (should not be recorded)"/>
+  <int value="1" label="Uploaded successfully"/>
+  <int value="2" label="Expired"/>
+  <int value="3" label="Evicted"/>
+  <int value="4" label="Browsing data cleared"/>
+  <int value="5" label="Deleted at shutdown"/>
+</enum>
+
 <enum name="DoodleConfigDownloadOutcome">
   <obsolete>
     Removed from code 2017-08.

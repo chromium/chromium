@@ -15,6 +15,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/strings/string_piece.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -44,6 +45,8 @@ namespace domain_reliability {
 namespace {
 
 typedef std::vector<const DomainReliabilityBeacon*> BeaconVector;
+
+const char kBeaconOutcomeHistogram[] = "Net.DomainReliability.BeaconOutcome";
 
 scoped_refptr<net::HttpResponseHeaders> MakeHttpResponseHeaders(
     base::StringPiece headers) {
@@ -390,6 +393,7 @@ TEST_F(DomainReliabilityMonitorTest, GoogleConfigOnDemand) {
 }
 
 TEST_F(DomainReliabilityMonitorTest, ClearBeacons) {
+  base::HistogramTester histograms;
   const DomainReliabilityContext* context = CreateAndAddContext();
 
   // Initially the monitor should have just the test context, with no beacons.
@@ -410,9 +414,14 @@ TEST_F(DomainReliabilityMonitorTest, ClearBeacons) {
   // Make sure the beacon was cleared, but not the contexts.
   EXPECT_EQ(1u, monitor_.contexts_size_for_testing());
   EXPECT_EQ(0u, CountQueuedBeacons(context));
+
+  histograms.ExpectBucketCount(kBeaconOutcomeHistogram,
+                               DomainReliabilityBeacon::Outcome::kCleared, 1);
+  histograms.ExpectTotalCount(kBeaconOutcomeHistogram, 1);
 }
 
 TEST_F(DomainReliabilityMonitorTest, ClearBeaconsWithFilter) {
+  base::HistogramTester histograms;
   // Create two contexts, each with one beacon.
   GURL origin1("http://example.com/");
   GURL origin2("http://example.org/");
@@ -443,18 +452,35 @@ TEST_F(DomainReliabilityMonitorTest, ClearBeaconsWithFilter) {
   EXPECT_EQ(2u, monitor_.contexts_size_for_testing());
   EXPECT_EQ(0u, CountQueuedBeacons(context1));
   EXPECT_EQ(1u, CountQueuedBeacons(context2));
+
+  histograms.ExpectBucketCount(kBeaconOutcomeHistogram,
+                               DomainReliabilityBeacon::Outcome::kCleared, 1);
+  histograms.ExpectTotalCount(kBeaconOutcomeHistogram, 1);
 }
 
 TEST_F(DomainReliabilityMonitorTest, ClearContexts) {
-  CreateAndAddContext();
+  base::HistogramTester histograms;
+  const DomainReliabilityContext* context = CreateAndAddContext();
 
   // Initially the monitor should have just the test context.
   EXPECT_EQ(1u, monitor_.contexts_size_for_testing());
+
+  // Add a beacon so we can test histogram behavior.
+  RequestInfo request = MakeRequestInfo();
+  request.url = GURL("http://example/");
+  request.net_error = net::ERR_CONNECTION_RESET;
+  OnRequestLegComplete(request);
+  EXPECT_EQ(1u, CountQueuedBeacons(context));
 
   monitor_.ClearBrowsingData(CLEAR_CONTEXTS, base::NullCallback());
 
   // Clearing contexts should leave the monitor with none.
   EXPECT_EQ(0u, monitor_.contexts_size_for_testing());
+
+  histograms.ExpectBucketCount(
+      kBeaconOutcomeHistogram,
+      DomainReliabilityBeacon::Outcome::kContextShutDown, 1);
+  histograms.ExpectTotalCount(kBeaconOutcomeHistogram, 1);
 }
 
 TEST_F(DomainReliabilityMonitorTest, ClearContextsWithFilter) {

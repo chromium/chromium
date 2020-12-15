@@ -55,7 +55,11 @@ DomainReliabilityContext::DomainReliabilityContext(
       last_network_change_time_(last_network_change_time),
       upload_allowed_callback_(upload_allowed_callback) {}
 
-DomainReliabilityContext::~DomainReliabilityContext() = default;
+DomainReliabilityContext::~DomainReliabilityContext() {
+  for (auto& beacon_ptr : beacons_) {
+    beacon_ptr->outcome = DomainReliabilityBeacon::Outcome::kContextShutDown;
+  }
+}
 
 void DomainReliabilityContext::OnBeacon(
     std::unique_ptr<DomainReliabilityBeacon> beacon) {
@@ -78,6 +82,9 @@ void DomainReliabilityContext::OnBeacon(
 }
 
 void DomainReliabilityContext::ClearBeacons() {
+  for (auto& beacon_ptr : beacons_) {
+    beacon_ptr->outcome = DomainReliabilityBeacon::Outcome::kCleared;
+  }
   beacons_.clear();
   uploading_beacons_size_ = 0;
 }
@@ -231,6 +238,7 @@ void DomainReliabilityContext::CommitUpload() {
     ++current;
     if ((*last)->network_isolation_key ==
         uploading_beacons_network_isolation_key_) {
+      (*last)->outcome = DomainReliabilityBeacon::Outcome::kUploaded;
       beacons_.erase(last);
       --uploading_beacons_size_;
     }
@@ -255,14 +263,17 @@ void DomainReliabilityContext::RemoveOldestBeacon() {
     --uploading_beacons_size_;
   }
 
+  beacons_.front()->outcome = DomainReliabilityBeacon::Outcome::kEvicted;
   beacons_.pop_front();
 }
 
 void DomainReliabilityContext::RemoveExpiredBeacons() {
   base::TimeTicks now = time_->NowTicks();
   const base::TimeDelta kMaxAge = base::TimeDelta::FromHours(1);
-  while (!beacons_.empty() && now - beacons_.front()->start_time >= kMaxAge)
+  while (!beacons_.empty() && now - beacons_.front()->start_time >= kMaxAge) {
+    beacons_.front()->outcome = DomainReliabilityBeacon::Outcome::kExpired;
     beacons_.pop_front();
+  }
 }
 
 // Gets the minimum depth of all entries in |beacons_|.

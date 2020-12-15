@@ -27,6 +27,26 @@ struct DOMAIN_RELIABILITY_EXPORT DomainReliabilityBeacon {
   DomainReliabilityBeacon(const DomainReliabilityBeacon& other);
   ~DomainReliabilityBeacon();
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class Outcome {
+    // Default value. This should not be recorded to the histogram.
+    kUnknown = 0,
+    // Successfully uploaded.
+    kUploaded = 1,
+    // Removed for being expired.
+    kExpired = 2,
+    // Evicted to make room for newer beacons.
+    kEvicted = 3,
+    // Deleted for user clearing browsing data.
+    kCleared = 5,
+    // Beacon was deleted upon context shutdown.
+    kContextShutDown = 5,
+
+    // Keep last.
+    kMaxValue = kContextShutDown,
+  };
+
   // Converts the Beacon to JSON format for uploading. Calculates the age
   // relative to an upload time of |upload_time|.
   //
@@ -77,6 +97,9 @@ struct DOMAIN_RELIABILITY_EXPORT DomainReliabilityBeacon {
   int upload_depth;
   // The probability that this request had of being reported ("sample rate").
   double sample_rate;
+
+  // Records the ultimate outcome of this beacon, for metrics.
+  Outcome outcome = Outcome::kUnknown;
 
   // Okay to copy and assign.
 };

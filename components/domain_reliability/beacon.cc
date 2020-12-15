@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 #include "components/domain_reliability/util.h"
 #include "net/base/net_errors.h"
@@ -16,10 +17,17 @@ namespace domain_reliability {
 using base::Value;
 using base::DictionaryValue;
 
-DomainReliabilityBeacon::DomainReliabilityBeacon() {}
+DomainReliabilityBeacon::DomainReliabilityBeacon() = default;
+
 DomainReliabilityBeacon::DomainReliabilityBeacon(
     const DomainReliabilityBeacon& other) = default;
-DomainReliabilityBeacon::~DomainReliabilityBeacon() {}
+
+DomainReliabilityBeacon::~DomainReliabilityBeacon() {
+  if (outcome != Outcome::kUnknown) {
+    base::UmaHistogramEnumeration("Net.DomainReliability.BeaconOutcome",
+                                  outcome);
+  }
+}
 
 std::unique_ptr<Value> DomainReliabilityBeacon::ToValue(
     base::TimeTicks upload_time,
