@@ -1598,18 +1598,12 @@ TEST_F(PrerenderTest, LinkManagerExpireRevealingLaunch) {
 }
 
 TEST_F(PrerenderTest, PrerenderContentsIsValidHttpMethod) {
-  EXPECT_TRUE(
-      IsValidHttpMethod(prerender::mojom::PrerenderMode::kPrefetchOnly, "GET"));
-  EXPECT_TRUE(IsValidHttpMethod(prerender::mojom::PrerenderMode::kPrefetchOnly,
-                                "HEAD"));
-  EXPECT_FALSE(IsValidHttpMethod(prerender::mojom::PrerenderMode::kPrefetchOnly,
-                                 "OPTIONS"));
-  EXPECT_FALSE(IsValidHttpMethod(prerender::mojom::PrerenderMode::kPrefetchOnly,
-                                 "POST"));
-  EXPECT_FALSE(IsValidHttpMethod(prerender::mojom::PrerenderMode::kPrefetchOnly,
-                                 "TRACE"));
-  EXPECT_FALSE(IsValidHttpMethod(prerender::mojom::PrerenderMode::kPrefetchOnly,
-                                 "WHATEVER"));
+  EXPECT_TRUE(IsValidHttpMethod("GET"));
+  EXPECT_TRUE(IsValidHttpMethod("HEAD"));
+  EXPECT_FALSE(IsValidHttpMethod("OPTIONS"));
+  EXPECT_FALSE(IsValidHttpMethod("POST"));
+  EXPECT_FALSE(IsValidHttpMethod("TRACE"));
+  EXPECT_FALSE(IsValidHttpMethod("WHATEVER"));
 }
 
 TEST_F(PrerenderTest, PrerenderContentsIncrementsByteCount) {

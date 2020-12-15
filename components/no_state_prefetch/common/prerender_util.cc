@@ -17,17 +17,10 @@ namespace prerender {
 
 namespace {
 
-// Valid HTTP methods for both prefetch and prerendering.
+// Valid HTTP methods for NoStatePrefetch.
 const char* const kValidHttpMethods[] = {
     "GET",
     "HEAD",
-};
-
-// Additional valid HTTP methods for prerendering.
-const char* const kValidHttpMethodsForPrerendering[] = {
-    "OPTIONS",
-    "POST",
-    "TRACE",
 };
 
 // This enum is used to define the buckets for the
@@ -60,9 +53,7 @@ bool DoesSubresourceURLHaveValidScheme(const GURL& url) {
   return DoesURLHaveValidScheme(url) || url == url::kAboutBlankURL;
 }
 
-bool IsValidHttpMethod(prerender::mojom::PrerenderMode prerender_mode,
-                       const std::string& method) {
-  DCHECK_NE(prerender_mode, prerender::mojom::PrerenderMode::kNoPrerender);
+bool IsValidHttpMethod(const std::string& method) {
   // |method| has been canonicalized to upper case at this point so we can just
   // compare them.
   DCHECK_EQ(method, base::ToUpperASCII(method));
@@ -70,15 +61,6 @@ bool IsValidHttpMethod(prerender::mojom::PrerenderMode prerender_mode,
     if (method == valid_method)
       return true;
   }
-
-  if (prerender_mode == prerender::mojom::PrerenderMode::kPrefetchOnly)
-    return false;
-
-  for (auto* valid_method : kValidHttpMethodsForPrerendering) {
-    if (method == valid_method)
-      return true;
-  }
-
   return false;
 }
 

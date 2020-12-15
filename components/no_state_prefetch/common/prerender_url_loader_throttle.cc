@@ -78,7 +78,7 @@ void PrerenderURLLoaderThrottle::WillStartRequest(
       static_cast<blink::mojom::ResourceType>(request->resource_type);
   // Abort any prerenders that spawn requests that use unsupported HTTP
   // methods or schemes.
-  if (!IsValidHttpMethod(mode_, request->method)) {
+  if (!IsValidHttpMethod(request->method)) {
     // If this is a full prerender, cancel the prerender in response to
     // invalid requests.  For prefetches, cancel invalid requests but keep the
     // prefetch going.
