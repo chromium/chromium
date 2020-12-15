@@ -80,11 +80,11 @@ class MediaGalleriesPermissionControllerTest : public ::testing::Test {
   void StartDialog() {
     ASSERT_FALSE(controller_);
     controller_ = new MediaGalleriesPermissionController(
-        *extension_.get(),
-        gallery_prefs_.get(),
-        base::Bind(&MediaGalleriesPermissionControllerTest::CreateMockDialog,
-                   base::Unretained(this)),
-        base::Bind(
+        *extension_.get(), gallery_prefs_.get(),
+        base::BindOnce(
+            &MediaGalleriesPermissionControllerTest::CreateMockDialog,
+            base::Unretained(this)),
+        base::BindOnce(
             &MediaGalleriesPermissionControllerTest::OnControllerDone,
             base::Unretained(this)));
   }
@@ -123,7 +123,7 @@ class MediaGalleriesPermissionControllerTest : public ::testing::Test {
       MediaGalleriesDialogController* controller) {
     EXPECT_FALSE(dialog_);
     dialog_update_count_at_destruction_ = 0;
-    dialog_ = new MockMediaGalleriesDialog(base::Bind(
+    dialog_ = new MockMediaGalleriesDialog(base::BindOnce(
         &MediaGalleriesPermissionControllerTest::OnDialogDestroyed,
         weak_factory_.GetWeakPtr()));
     return dialog_;

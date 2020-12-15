@@ -11,9 +11,9 @@
 
 class MockMediaGalleriesDialog : public MediaGalleriesDialog {
  public:
-  typedef base::Callback<void(int update_count)> DialogDestroyedCallback;
+  typedef base::OnceCallback<void(int update_count)> DialogDestroyedCallback;
 
-  explicit MockMediaGalleriesDialog(const DialogDestroyedCallback& callback);
+  explicit MockMediaGalleriesDialog(DialogDestroyedCallback callback);
   ~MockMediaGalleriesDialog() override;
 
   // MediaGalleriesDialog implementation.

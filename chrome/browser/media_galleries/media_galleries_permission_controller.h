@@ -76,14 +76,15 @@ class MediaGalleriesPermissionController
  protected:
   friend class MediaGalleriesPermissionControllerTest;
 
-  typedef base::Callback<MediaGalleriesDialog* (
-      MediaGalleriesDialogController*)> CreateDialogCallback;
+  typedef base::OnceCallback<MediaGalleriesDialog*(
+      MediaGalleriesDialogController*)>
+      CreateDialogCallback;
 
   // For use with tests.
   MediaGalleriesPermissionController(
       const extensions::Extension& extension,
       MediaGalleriesPreferences* preferences,
-      const CreateDialogCallback& create_dialog_callback,
+      CreateDialogCallback create_dialog_callback,
       base::OnceClosure on_finish);
 
   ~MediaGalleriesPermissionController() override;
