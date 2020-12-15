@@ -4,6 +4,7 @@
 
 #include "chrome/services/sharing/nearby/platform/bluetooth_classic_medium.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "chrome/services/sharing/nearby/platform/bluetooth_server_socket.h"
 #include "chrome/services/sharing/nearby/platform/bluetooth_socket.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
@@ -11,6 +12,34 @@
 namespace location {
 namespace nearby {
 namespace chrome {
+
+namespace {
+
+void LogStartDiscoveryResult(bool success) {
+  base::UmaHistogramBoolean(
+      "Nearby.Connections.Bluetooth.ClassicMedium.StartDiscovery.Result",
+      success);
+}
+
+void LogStopDiscoveryResult(bool success) {
+  base::UmaHistogramBoolean(
+      "Nearby.Connections.Bluetooth.ClassicMedium.StopDiscovery.Result",
+      success);
+}
+
+void LogConnectToServiceResult(bool success) {
+  base::UmaHistogramBoolean(
+      "Nearby.Connections.Bluetooth.ClassicMedium.ConnectToService.Result",
+      success);
+}
+
+void LogListenForServiceResult(bool success) {
+  base::UmaHistogramBoolean(
+      "Nearby.Connections.Bluetooth.ClassicMedium.ListenForService.Result",
+      success);
+}
+
+}  // namespace
 
 BluetoothClassicMedium::BluetoothClassicMedium(
     const mojo::SharedRemote<bluetooth::mojom::Adapter>& adapter)
@@ -24,6 +53,7 @@ bool BluetoothClassicMedium::StartDiscovery(
     DiscoveryCallback discovery_callback) {
   if (adapter_observer_.is_bound() && discovery_callback_ &&
       discovery_session_.is_bound()) {
+    LogStartDiscoveryResult(true);
     return true;
   }
 
@@ -34,6 +64,7 @@ bool BluetoothClassicMedium::StartDiscovery(
       adapter_->AddObserver(adapter_observer_.BindNewPipeAndPassRemote());
   if (!success) {
     adapter_observer_.reset();
+    LogStartDiscoveryResult(false);
     return false;
   }
 
@@ -42,6 +73,7 @@ bool BluetoothClassicMedium::StartDiscovery(
 
   if (!success || !discovery_session.is_valid()) {
     adapter_observer_.reset();
+    LogStartDiscoveryResult(false);
     return false;
   }
 
@@ -51,6 +83,7 @@ bool BluetoothClassicMedium::StartDiscovery(
                      base::Unretained(this), /*discovering=*/false));
 
   discovery_callback_ = std::move(discovery_callback);
+  LogStartDiscoveryResult(true);
   return true;
 }
 
@@ -69,6 +102,7 @@ bool BluetoothClassicMedium::StopDiscovery() {
   discovery_callback_.reset();
   discovery_session_.reset();
 
+  LogStopDiscoveryResult(stop_discovery_success);
   return stop_discovery_success;
 }
 
@@ -82,11 +116,13 @@ std::unique_ptr<api::BluetoothSocket> BluetoothClassicMedium::ConnectToService(
       address, device::BluetoothUUID(service_uuid), &result);
 
   if (success && result) {
+    LogConnectToServiceResult(true);
     return std::make_unique<chrome::BluetoothSocket>(
         remote_device, std::move(result->socket),
         std::move(result->receive_stream), std::move(result->send_stream));
   }
 
+  LogConnectToServiceResult(false);
   return nullptr;
 }
 
@@ -98,10 +134,12 @@ BluetoothClassicMedium::ListenForService(const std::string& service_name,
       service_name, device::BluetoothUUID(service_uuid), &server_socket);
 
   if (success && server_socket) {
+    LogListenForServiceResult(true);
     return std::make_unique<chrome::BluetoothServerSocket>(
         std::move(server_socket));
   }
 
+  LogListenForServiceResult(false);
   return nullptr;
 }
 
