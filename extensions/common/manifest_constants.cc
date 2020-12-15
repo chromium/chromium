@@ -667,7 +667,7 @@ const char kInvalidVersionName[] = "Invalid value for 'version_name'.";
 const char kInvalidWebAccessibleResourcesList[] =
     "Invalid value for 'web_accessible_resources'.";
 const char kInvalidWebAccessibleResource[] =
-    "Invalid value for 'web_accessible_resources[*]'.";
+    "Invalid value for 'web_accessible_resources[*]'. *";
 const char kInvalidWebAppFileHandlers[] =
     "Invalid value for 'web_app_file_handlers'.";
 const char kInvalidWebAppFileHandlersNotBookmarkApp[] =

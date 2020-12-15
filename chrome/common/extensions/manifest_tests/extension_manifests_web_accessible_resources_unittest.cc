@@ -153,14 +153,16 @@ TEST_F(WebAccessibleResourcesManifestTest, WebAccessibleResourcesV3Invalid) {
       {"Error if web_accessible_resources key is of incorrect type.", "{}",
        "Invalid value for 'web_accessible_resources'."},
       {"Error if objects has no keys.", "[{}]",
-       "Invalid value for 'web_accessible_resources[0]'."},
+       "Invalid value for 'web_accessible_resources[0]'. Invalid "
+       "value for 'resources'."},
       {"Error if entry only contains |resources|.",
        R"([
             {
               "resources": ["error"]
             }
         ])",
-       "Invalid value for 'web_accessible_resources[0]'."},
+       "Invalid value for 'web_accessible_resources[0]'. Entry "
+       "must at least have resources, and one other valid key."},
       {"Error if incorrect keyed object type is present.",
        R"([
             {
@@ -169,7 +171,8 @@ TEST_F(WebAccessibleResourcesManifestTest, WebAccessibleResourcesV3Invalid) {
               "extension_ids": ["abcdefghijlkmnopabcdefghijklmnop"]
             }
         ])",
-       "Invalid value for 'web_accessible_resources[0]'."},
+       "Invalid value for 'web_accessible_resources[0]'. Invalid "
+       "value for 'matches'."},
       {"Error if incorrect keyed object type is present.",
        R"([
             {
@@ -178,7 +181,18 @@ TEST_F(WebAccessibleResourcesManifestTest, WebAccessibleResourcesV3Invalid) {
               "extension_ids": [1, 2, 3]
             }
         ])",
-       "Invalid value for 'web_accessible_resources[0]'."},
+       "Invalid value for 'web_accessible_resources[0]'. Invalid "
+       "match pattern."},
+      {"Error if extension id is invalid.",
+       R"([
+            {
+              "resources": ["test"],
+              "matches": ["https://example.com/*"],
+              "extension_ids": [-1]
+            }
+        ])",
+       "Invalid value for 'web_accessible_resources[0]'. Extension ID must be "
+       "a string."},
       {"Error if extension id is invalid.",
        R"([
             {
@@ -187,7 +201,8 @@ TEST_F(WebAccessibleResourcesManifestTest, WebAccessibleResourcesV3Invalid) {
               "extension_ids": ["error"]
             }
         ])",
-       "Invalid value for 'web_accessible_resources[0]'."},
+       "Invalid value for 'web_accessible_resources[0]'. Invalid extension "
+       "id."},
       {"Error if any match in matches is more than just an origin.",
        R"([
             {
@@ -198,7 +213,8 @@ TEST_F(WebAccessibleResourcesManifestTest, WebAccessibleResourcesV3Invalid) {
               ]
             }
         ])",
-       "Invalid value for 'web_accessible_resources[0]'."}};
+       "Invalid value for 'web_accessible_resources[0]'. Invalid "
+       "match pattern."}};
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(base::StringPrintf("Error: '%s'", test_case.title));
     LoadAndExpectError(GetManifestData(test_case.web_accessible_resources),
@@ -234,9 +250,19 @@ TEST_F(WebAccessibleResourcesManifestTest,
       R"([
           {
             "resources": ["test"],
-            "matches": ["https://error.example/*"]
+            "matches": ["https://error.example/*"],
           }
     ])";
   LoadAndExpectError(GetManifestData(kWebAccessibleResources, 2),
-                     "Invalid value for 'web_accessible_resources[0]'.");
+                     "Invalid value for 'web_accessible_resources[0]'. Value "
+                     "is not a string.");
+}
+
+// Error if V2's web_accessible_resources key is composed of invalid type.
+TEST_F(WebAccessibleResourcesManifestTest, WebAccessibleResourcesV2Type) {
+  LoadAndExpectSuccess(GetManifestData(R"([])", 2));
+  LoadAndExpectSuccess(GetManifestData(R"([""])", 2));
+  LoadAndExpectError(GetManifestData(R"([{}])", 2),
+                     "Invalid value for 'web_accessible_resources[0]'. Value "
+                     "is not a string.");
 }

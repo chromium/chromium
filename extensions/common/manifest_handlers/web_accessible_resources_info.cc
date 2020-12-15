@@ -34,7 +34,8 @@ base::Optional<URLPattern> GetPatternOrError(const base::Value& path,
   URLPattern pattern(URLPattern::SCHEME_EXTENSION);
   if (!path.is_string()) {
     *error = ErrorUtils::FormatErrorMessageUTF16(
-        errors::kInvalidWebAccessibleResource, base::NumberToString(i));
+        errors::kInvalidWebAccessibleResource, base::NumberToString(i),
+        "Value is not a string.");
     return base::nullopt;
   }
   std::string relative_path = path.GetString();
@@ -83,16 +84,17 @@ std::unique_ptr<WebAccessibleResourcesInfo> ParseEntryList(
     const Extension& extension,
     base::string16* error) {
   auto info = std::make_unique<WebAccessibleResourcesInfo>();
-  auto get_error = [](size_t i) {
+  auto get_error = [](size_t i, base::StringPiece message) {
     return ErrorUtils::FormatErrorMessageUTF16(
-        errors::kInvalidWebAccessibleResource, base::NumberToString(i));
+        errors::kInvalidWebAccessibleResource, base::NumberToString(i),
+        message);
   };
 
   int i = 0;
   for (const base::Value& value : entries.GetList()) {
     // Get and validate index element dictionary.
     if (!value.is_dict()) {
-      *error = get_error(i);
+      *error = get_error(i, "Entry must be a dictionary value.");
       return nullptr;
     }
 
@@ -100,31 +102,31 @@ std::unique_ptr<WebAccessibleResourcesInfo> ParseEntryList(
     const base::Value* resources =
         value.FindKey(keys::kWebAccessibleResourcesResources);
     if (!resources || !resources->is_list()) {
-      *error = get_error(i);
+      *error = get_error(i, "Invalid value for 'resources'.");
       return nullptr;
     }
     const base::Value* matches =
         value.FindKey(keys::kWebAccessibleResourcesMatches);
     if (matches && !matches->is_list()) {
-      *error = get_error(i);
+      *error = get_error(i, "Invalid value for 'matches'.");
       return nullptr;
     }
     const base::Value* extension_ids =
         value.FindKey(keys::kWebAccessibleResourcesExtensionIds);
     if (extension_ids && !extension_ids->is_list()) {
-      *error = get_error(i);
+      *error = get_error(i, "Invalid value for 'extension_ids'.");
       return nullptr;
     }
     const base::Value* use_dynamic_url =
         value.FindKey(keys::kWebAccessibleResourcesUseDynamicUrl);
     if (use_dynamic_url && !use_dynamic_url->is_bool()) {
-      *error = get_error(i);
+      *error = get_error(i, "Invalid value for 'use_dynamic_url'.");
       return nullptr;
     }
 
-    // Entry must at least have resources, and one other valid key.
     if (!(matches || extension_ids || use_dynamic_url)) {
-      *error = get_error(i);
+      *error = get_error(
+          i, "Entry must at least have resources, and one other valid key.");
       return nullptr;
     }
 
@@ -145,8 +147,7 @@ std::unique_ptr<WebAccessibleResourcesInfo> ParseEntryList(
             pattern.Parse(match.GetString()) !=
                 URLPattern::ParseResult::kSuccess ||
             pattern.path() != "/*") {
-          // TODO(solomonkinard): Don't use generic error message.
-          *error = get_error(i);
+          *error = get_error(i, "Invalid match pattern.");
           return nullptr;
         }
         match_set.AddPattern(pattern);
@@ -156,12 +157,12 @@ std::unique_ptr<WebAccessibleResourcesInfo> ParseEntryList(
     if (extension_ids) {
       for (const auto& extension_id : extension_ids->GetList()) {
         if (!extension_id.is_string()) {
-          *error = get_error(i);
+          *error = get_error(i, "Extension ID must be a string.");
           return nullptr;
         }
         const std::string& extension_id_str = extension_id.GetString();
         if (!crx_file::id_util::IdIsValid(extension_id_str)) {
-          *error = get_error(i);
+          *error = get_error(i, "Invalid extension id.");
           return nullptr;
         }
         extension_id_list.emplace_back(extension_id_str);
