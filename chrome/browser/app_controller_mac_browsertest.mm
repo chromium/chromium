@@ -219,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerPlatformAppBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AppControllerPlatformAppBrowserTest,
-                       ActivationFocusesBrowserWindow) {
+                       DISABLED_ActivationFocusesBrowserWindow) {
   AppController* app_controller = base::mac::ObjCCast<AppController>(
       [[NSApplication sharedApplication] delegate]);
   ASSERT_TRUE(app_controller);
