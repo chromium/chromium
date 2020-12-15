@@ -27,7 +27,7 @@ class UninstallView : public views::DialogDelegateView,
                       public ui::ComboboxModel {
  public:
   explicit UninstallView(int* user_selection,
-                         const base::Closure& quit_closure);
+                         const base::RepeatingClosure& quit_closure);
   ~UninstallView() override;
 
   // Overridden from ui::ComboboxModel:
@@ -49,7 +49,7 @@ class UninstallView : public views::DialogDelegateView,
   views::Combobox* browsers_combo_;
   std::unique_ptr<BrowsersMap> browsers_;
   int& user_selection_;
-  base::Closure quit_closure_;
+  base::RepeatingClosure quit_closure_;
 
   DISALLOW_COPY_AND_ASSIGN(UninstallView);
 };

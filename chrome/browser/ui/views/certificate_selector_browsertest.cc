@@ -34,7 +34,7 @@ class TestCertificateSelector : public chrome::CertificateSelector {
 
   ~TestCertificateSelector() override {
     if (!on_destroy_.is_null())
-      on_destroy_.Run();
+      std::move(on_destroy_).Run();
   }
 
   void Init() {
@@ -61,12 +61,14 @@ class TestCertificateSelector : public chrome::CertificateSelector {
 
   using chrome::CertificateSelector::table_model_for_testing;
 
-  void set_on_destroy(base::Closure on_destroy) { on_destroy_ = on_destroy; }
+  void set_on_destroy(base::OnceClosure on_destroy) {
+    on_destroy_ = std::move(on_destroy);
+  }
 
  private:
   bool* accepted_ = nullptr;
   bool* canceled_ = nullptr;
-  base::Closure on_destroy_;
+  base::OnceClosure on_destroy_;
 
   DISALLOW_COPY_AND_ASSIGN(TestCertificateSelector);
 };

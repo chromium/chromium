@@ -21,7 +21,7 @@
 #include "ui/views/widget/widget.h"
 
 UninstallView::UninstallView(int* user_selection,
-                             const base::Closure& quit_closure)
+                             const base::RepeatingClosure& quit_closure)
     : confirm_label_(nullptr),
       delete_profile_(nullptr),
       change_default_browser_(nullptr),

@@ -34,7 +34,7 @@ void ShowCreateChromeAppShortcutsDialog(
     gfx::NativeWindow parent_window,
     Profile* profile,
     const extensions::Extension* app,
-    const base::Callback<void(bool)>& close_callback) {
+    const base::RepeatingCallback<void(bool)>& close_callback) {
   constrained_window::CreateBrowserModalDialogViews(
       new CreateChromeApplicationShortcutView(profile, app, close_callback),
       parent_window)->Show();
@@ -44,7 +44,7 @@ void ShowCreateChromeAppShortcutsDialog(
     gfx::NativeWindow parent_window,
     Profile* profile,
     const std::string& web_app_id,
-    const base::Callback<void(bool)>& close_callback) {
+    const base::RepeatingCallback<void(bool)>& close_callback) {
   constrained_window::CreateBrowserModalDialogViews(
       new CreateChromeApplicationShortcutView(profile, web_app_id,
                                               close_callback),
@@ -57,30 +57,30 @@ void ShowCreateChromeAppShortcutsDialog(
 CreateChromeApplicationShortcutView::CreateChromeApplicationShortcutView(
     Profile* profile,
     const extensions::Extension* app,
-    const base::Callback<void(bool)>& close_callback)
+    const base::RepeatingCallback<void(bool)>& close_callback)
     : CreateChromeApplicationShortcutView(profile, close_callback) {
   // Get shortcut and icon information; needed for creating the shortcut.
   web_app::GetShortcutInfoForApp(
       app, profile,
-      base::Bind(&CreateChromeApplicationShortcutView::OnAppInfoLoaded,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindRepeating(&CreateChromeApplicationShortcutView::OnAppInfoLoaded,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 CreateChromeApplicationShortcutView::CreateChromeApplicationShortcutView(
     Profile* profile,
     const std::string& web_app_id,
-    const base::Callback<void(bool)>& close_callback)
+    const base::RepeatingCallback<void(bool)>& close_callback)
     : CreateChromeApplicationShortcutView(profile, close_callback) {
   web_app::WebAppProvider* provider = web_app::WebAppProvider::Get(profile);
   provider->os_integration_manager().GetShortcutInfoForApp(
       web_app_id,
-      base::Bind(&CreateChromeApplicationShortcutView::OnAppInfoLoaded,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindRepeating(&CreateChromeApplicationShortcutView::OnAppInfoLoaded,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 CreateChromeApplicationShortcutView::CreateChromeApplicationShortcutView(
     Profile* profile,
-    const base::Callback<void(bool)>& close_callback)
+    const base::RepeatingCallback<void(bool)>& close_callback)
     : profile_(profile), close_callback_(close_callback) {
   SetButtonLabel(ui::DIALOG_BUTTON_OK,
                  l10n_util::GetStringUTF16(IDS_CREATE_SHORTCUTS_COMMIT));

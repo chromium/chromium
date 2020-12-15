@@ -87,7 +87,7 @@ class TouchEventHandler : public ui::EventHandler {
   int max_call_depth_;
   int num_touch_presses_;
   int num_pointers_down_;
-  base::Closure quit_closure_;
+  base::RepeatingClosure quit_closure_;
   bool recursion_enabled_;
   gfx::Point touch_point_;
   DISALLOW_COPY_AND_ASSIGN(TouchEventHandler);
