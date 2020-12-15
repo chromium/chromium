@@ -222,25 +222,28 @@ void RegisterSodaLanguageComponent(ComponentUpdateService* cus,
                                    PrefService* global_prefs) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption)) {
-    speech::LanguageCode language = speech::GetLanguageCode(
-        profile_prefs->GetString(prefs::kLiveCaptionLanguageCode));
-    switch (language) {
-      case speech::LanguageCode::kNone:
-        // Do nothing.
-        break;
-      case speech::LanguageCode::kEnUs:
-        RegisterSodaEnUsComponent(
-            cus, global_prefs,
-            base::BindOnce(&SodaEnUsComponentInstallerPolicy::
-                               UpdateSodaEnUsComponentOnDemand));
-        break;
-      case speech::LanguageCode::kJaJp:
-        RegisterSodaJaJpComponent(
-            cus, global_prefs,
-            base::BindOnce(&SodaJaJpComponentInstallerPolicy::
-                               UpdateSodaJaJpComponentOnDemand));
-        break;
+  if (base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption) &&
+      base::FeatureList::IsEnabled(media::kLiveCaption)) {
+    if (profile_prefs->GetBoolean(prefs::kLiveCaptionEnabled)) {
+      speech::LanguageCode language = speech::GetLanguageCode(
+          profile_prefs->GetString(prefs::kLiveCaptionLanguageCode));
+      switch (language) {
+        case speech::LanguageCode::kNone:
+          // Do nothing.
+          break;
+        case speech::LanguageCode::kEnUs:
+          RegisterSodaEnUsComponent(
+              cus, global_prefs,
+              base::BindOnce(&SodaEnUsComponentInstallerPolicy::
+                                 UpdateSodaEnUsComponentOnDemand));
+          break;
+        case speech::LanguageCode::kJaJp:
+          RegisterSodaJaJpComponent(
+              cus, global_prefs,
+              base::BindOnce(&SodaJaJpComponentInstallerPolicy::
+                                 UpdateSodaJaJpComponentOnDemand));
+          break;
+      }
     }
   }
 }
