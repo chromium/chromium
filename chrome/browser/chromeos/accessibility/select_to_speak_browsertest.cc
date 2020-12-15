@@ -160,7 +160,7 @@ class SelectToSpeakTestWithLanguageDetection : public SelectToSpeakTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, SpeakStatusTray) {
+IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, DISABLED_SpeakStatusTray) {
   gfx::Rect tray_bounds = ash::Shell::Get()
                               ->GetPrimaryRootWindowController()
                               ->GetStatusAreaWidget()
