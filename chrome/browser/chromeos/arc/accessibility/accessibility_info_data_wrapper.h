@@ -48,6 +48,7 @@ class AccessibilityInfoDataWrapper {
   virtual std::string ComputeAXName(bool do_recursive) const = 0;
   virtual void GetChildren(
       std::vector<AccessibilityInfoDataWrapper*>* children) const = 0;
+  virtual int32_t GetWindowId() const = 0;
 
  protected:
   AXTreeSourceArc* tree_source_;

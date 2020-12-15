@@ -81,7 +81,13 @@ void AccessibilityWindowInfoDataWrapper::PopulateAXRole(
       out_data->role = ax::mojom::Role::kWindow;
       return;
     case mojom::AccessibilityWindowType::TYPE_APPLICATION:
-      out_data->role = ax::mojom::Role::kApplication;
+      if (tree_source_->GetRoot()->GetId() == GetId()) {
+        // Root of this task.
+        out_data->role = ax::mojom::Role::kApplication;
+      } else {
+        // A part of the main window.
+        out_data->role = ax::mojom::Role::kGenericContainer;
+      }
       return;
     case mojom::AccessibilityWindowType::TYPE_INPUT_METHOD:
       out_data->role = ax::mojom::Role::kKeyboard;
@@ -164,6 +170,10 @@ void AccessibilityWindowInfoDataWrapper::GetChildren(
 
   if (window_ptr_->root_node_id)
     children->push_back(tree_source_->GetFromId(window_ptr_->root_node_id));
+}
+
+int32_t AccessibilityWindowInfoDataWrapper::GetWindowId() const {
+  return window_ptr_->window_id;
 }
 
 bool AccessibilityWindowInfoDataWrapper::GetProperty(

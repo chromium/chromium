@@ -36,7 +36,7 @@ std::string ToLiveStatusString(mojom::AccessibilityLiveRegionType type);
 
 template <class DataType, class PropType>
 bool GetBooleanProperty(DataType* node, PropType prop) {
-  if (!node->boolean_properties)
+  if (!node || !node->boolean_properties)
     return false;
 
   auto it = node->boolean_properties->find(prop);

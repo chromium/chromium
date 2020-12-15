@@ -337,22 +337,22 @@ TEST_F(ArcAccessibilityHelperBridgeTest, WindowIdTaskIdMapping) {
   event->event_type = arc::mojom::AccessibilityEventType::VIEW_FOCUSED;
   event->node_data.push_back(arc::mojom::AccessibilityNodeInfoData::New());
   event->node_data[0]->id = 10;
-  arc::SetProperty(event->node_data[0]->int_list_properties,
-                   mojom::AccessibilityIntListProperty::CHILD_NODE_IDS,
-                   {1, 2, 3});
+  event->node_data[0]->window_id = 100;
+  SetProperty(event->node_data[0]->int_list_properties,
+              mojom::AccessibilityIntListProperty::CHILD_NODE_IDS, {1, 2, 3});
   for (int i = 1; i <= 3; i++) {
     // This creates focusable nodes.
     // TODO(hirokisato): consider mock AXTreeSourceArc.
     event->node_data.push_back(arc::mojom::AccessibilityNodeInfoData::New());
     event->node_data[i]->id = i;
-    arc::SetProperty(event->node_data[i]->boolean_properties,
-                     mojom::AccessibilityBooleanProperty::IMPORTANCE, true);
-    arc::SetProperty(event->node_data[i]->boolean_properties,
-                     mojom::AccessibilityBooleanProperty::VISIBLE_TO_USER,
-                     true);
-    arc::SetProperty(event->node_data[i]->string_properties,
-                     mojom::AccessibilityStringProperty::CONTENT_DESCRIPTION,
-                     "node" + base::NumberToString(i) + " description");
+    event->node_data[i]->window_id = 100;
+    SetProperty(event->node_data[i]->boolean_properties,
+                mojom::AccessibilityBooleanProperty::IMPORTANCE, true);
+    SetProperty(event->node_data[i]->boolean_properties,
+                mojom::AccessibilityBooleanProperty::VISIBLE_TO_USER, true);
+    SetProperty(event->node_data[i]->string_properties,
+                mojom::AccessibilityStringProperty::CONTENT_DESCRIPTION,
+                "node" + base::NumberToString(i) + " description");
   }
   event->window_data =
       std::vector<arc::mojom::AccessibilityWindowInfoDataPtr>();
@@ -361,6 +361,8 @@ TEST_F(ArcAccessibilityHelperBridgeTest, WindowIdTaskIdMapping) {
       event->window_data->back().get();
   root_window->window_id = 100;
   root_window->root_node_id = 10;
+  SetProperty(root_window->boolean_properties,
+              mojom::AccessibilityWindowBooleanProperty::FOCUSED, true);
 
   // There's no active window.
   helper_bridge->OnAccessibilityEvent(event.Clone());

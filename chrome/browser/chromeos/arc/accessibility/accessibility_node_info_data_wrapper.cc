@@ -556,6 +556,10 @@ void AccessibilityNodeInfoDataWrapper::GetChildren(
     children->push_back(tree_source_->GetFromId(id));
 }
 
+int32_t AccessibilityNodeInfoDataWrapper::GetWindowId() const {
+  return node_ptr_->window_id;
+}
+
 bool AccessibilityNodeInfoDataWrapper::GetProperty(
     AXBooleanProperty prop) const {
   return arc::GetBooleanProperty(node_ptr_, prop);

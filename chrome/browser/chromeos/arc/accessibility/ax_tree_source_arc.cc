@@ -31,6 +31,7 @@ using AXEventType = mojom::AccessibilityEventType;
 using AXIntProperty = mojom::AccessibilityIntProperty;
 using AXIntListProperty = mojom::AccessibilityIntListProperty;
 using AXNodeInfoData = mojom::AccessibilityNodeInfoData;
+using AXWindowBooleanProperty = mojom::AccessibilityWindowBooleanProperty;
 using AXWindowInfoData = mojom::AccessibilityWindowInfoData;
 using AXWindowIntListProperty = mojom::AccessibilityWindowIntListProperty;
 
@@ -396,9 +397,20 @@ AXTreeSourceArc::GetSelectedNodeInfoFromAdapterView(
 }
 
 bool AXTreeSourceArc::UpdateAndroidFocusedId(const AXEventData& event_data) {
+  AccessibilityInfoDataWrapper* source_node = GetFromId(event_data.source_id);
+  if (source_node) {
+    AccessibilityInfoDataWrapper* source_window =
+        GetFromId(source_node->GetWindowId());
+    if (!source_window ||
+        !GetBooleanProperty(source_window->GetWindow(),
+                            AXWindowBooleanProperty::FOCUSED)) {
+      // Don't update focus in this task for events from non-focused window.
+      return true;
+    }
+  }
+
   // TODO(hirokisato): Handle CLEAR_ACCESSIBILITY_FOCUS event.
   if (event_data.event_type == AXEventType::VIEW_FOCUSED) {
-    AccessibilityInfoDataWrapper* source_node = GetFromId(event_data.source_id);
     if (source_node && source_node->IsVisibleToUser()) {
       // Sometimes Android sets focus on unfocusable node, e.g. ListView.
       AccessibilityInfoDataWrapper* adjusted_node =
@@ -410,14 +422,12 @@ bool AXTreeSourceArc::UpdateAndroidFocusedId(const AXEventData& event_data) {
     }
   } else if (event_data.event_type == AXEventType::VIEW_ACCESSIBILITY_FOCUSED &&
              UseFullFocusMode()) {
-    AccessibilityInfoDataWrapper* source_node = GetFromId(event_data.source_id);
     if (source_node && source_node->IsVisibleToUser())
       android_focused_id_ = source_node->GetId();
   } else if (event_data.event_type == AXEventType::VIEW_SELECTED) {
     // In Android, VIEW_SELECTED event is dispatched in the two cases below:
     // 1. Changing a value in ProgressBar or TimePicker in ARC P.
     // 2. Selecting an item in the context of an AdapterView.
-    AccessibilityInfoDataWrapper* source_node = GetFromId(event_data.source_id);
     if (!source_node || !source_node->IsNode())
       return false;
 
@@ -438,7 +448,6 @@ bool AXTreeSourceArc::UpdateAndroidFocusedId(const AXEventData& event_data) {
     // is fired from Android multiple times.
     // The event of WINDOW_STATE_CHANGED is fired only once for each window
     // change and use it as a trigger to move the a11y focus to the first node.
-    AccessibilityInfoDataWrapper* source_node = GetFromId(event_data.source_id);
     AccessibilityInfoDataWrapper* new_focus = nullptr;
 
     // If the current window has ever been visited in the current task, try
