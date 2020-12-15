@@ -1522,17 +1522,19 @@ TEST_F(V8DetailedMemoryDecoratorDeathTest, MultipleStartMeasurement) {
 }
 
 TEST_F(V8DetailedMemoryDecoratorDeathTest, EnforceObserversRemoved) {
+  // Declare the observers before the requests to ensure they're deleted
+  // afterwards.
   EXPECT_DCHECK_DEATH({
-    V8DetailedMemoryRequest memory_request(kMinTimeBetweenRequests);
     MockV8DetailedMemoryObserver observer;
+    V8DetailedMemoryRequest memory_request(kMinTimeBetweenRequests);
     memory_request.AddObserver(&observer);
     // Request should explode if it still has observers registered when it goes
     // out of scope.
   });
 
   EXPECT_DCHECK_DEATH({
-    V8DetailedMemoryRequestAnySeq memory_request(kMinTimeBetweenRequests);
     MockV8DetailedMemoryObserverAnySeq observer;
+    V8DetailedMemoryRequestAnySeq memory_request(kMinTimeBetweenRequests);
     memory_request.AddObserver(&observer);
     // Request should explode if it still has observers registered when it goes
     // out of scope.
