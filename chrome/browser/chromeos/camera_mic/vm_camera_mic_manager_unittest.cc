@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/containers/flat_map.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/chromeos/camera_mic/vm_camera_mic_manager_factory.h"
 #include "chrome/browser/chromeos/login/users/mock_user_manager.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
@@ -124,8 +123,8 @@ class VmCameraMicManagerTest : public testing::Test {
                   return std::make_unique<FakeNotificationDisplayService>();
                 })));
 
-    vm_camera_mic_manager_ =
-        VmCameraMicManagerFactory::GetForProfile(&testing_profile_);
+    vm_camera_mic_manager_ = std::make_unique<VmCameraMicManager>();
+    vm_camera_mic_manager_->OnPrimaryUserSessionStarted(&testing_profile_);
   }
 
   void SetActive(const ActiveMap& active_map) {
@@ -145,7 +144,7 @@ class VmCameraMicManagerTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
 
   FakeNotificationDisplayService* fake_display_service_;
-  VmCameraMicManager* vm_camera_mic_manager_;
+  std::unique_ptr<VmCameraMicManager> vm_camera_mic_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(VmCameraMicManagerTest);
 };

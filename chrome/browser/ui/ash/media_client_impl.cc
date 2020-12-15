@@ -141,6 +141,8 @@ MediaClientImpl::MediaClientImpl() {
   MediaCaptureDevicesDispatcher::GetInstance()->AddObserver(this);
   BrowserList::AddObserver(this);
 
+  chromeos::VmCameraMicManager::Get()->AddObserver(this);
+
   DCHECK(!g_media_client);
   g_media_client = this;
 }
@@ -154,10 +156,7 @@ MediaClientImpl::~MediaClientImpl() {
   MediaCaptureDevicesDispatcher::GetInstance()->RemoveObserver(this);
   BrowserList::RemoveObserver(this);
 
-  auto* vm_camera_mic_manager = chromeos::VmCameraMicManager::GetForProfile(
-      ProfileManager::GetPrimaryUserProfile());
-  if (vm_camera_mic_manager)
-    vm_camera_mic_manager->RemoveObserver(this);
+  chromeos::VmCameraMicManager::Get()->RemoveObserver(this);
 }
 
 // static
@@ -177,18 +176,6 @@ void MediaClientImpl::InitForTesting(ash::MediaController* controller) {
 
   media_controller_ = controller;
   media_controller_->SetClient(this);
-}
-
-void MediaClientImpl::OnPrimaryUserSessionStarted(Profile* primary_profile) {
-  // Skip when not on real device (i.e. tests and emulator on dev box). The
-  // reason is that some tests cause this function to be run more than once,
-  // which results in a crash.
-  if (base::SysInfo::IsRunningOnChromeOS()) {
-    auto* vm_camera_mic_manager =
-        chromeos::VmCameraMicManager::GetForProfile(primary_profile);
-    if (vm_camera_mic_manager)
-      vm_camera_mic_manager->AddObserver(this);
-  }
 }
 
 void MediaClientImpl::HandleMediaNextTrack() {

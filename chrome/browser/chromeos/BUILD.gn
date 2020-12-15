@@ -916,8 +916,6 @@ source_set("chromeos") {
     "camera_detector.h",
     "camera_mic/vm_camera_mic_manager.cc",
     "camera_mic/vm_camera_mic_manager.h",
-    "camera_mic/vm_camera_mic_manager_factory.cc",
-    "camera_mic/vm_camera_mic_manager_factory.h",
     "camera_presence_notifier.cc",
     "camera_presence_notifier.h",
     "cert_provisioning/cert_provisioning_common.cc",

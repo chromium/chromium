@@ -10,12 +10,12 @@
 #include "ash/public/cpp/vm_camera_mic_constants.h"
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/string16.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/chromeos/camera_mic/vm_camera_mic_manager_factory.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/notifications/notification_display_service.h"
@@ -64,26 +64,26 @@ constexpr VmCameraMicManager::NotificationType
 constexpr VmCameraMicManager::NotificationType
     VmCameraMicManager::kCameraWithMicNotification;
 
-VmCameraMicManager* VmCameraMicManager::GetForProfile(Profile* profile) {
-  return VmCameraMicManagerFactory::GetForProfile(profile);
+VmCameraMicManager* VmCameraMicManager::Get() {
+  static base::NoDestructor<VmCameraMicManager> manager;
+  return manager.get();
 }
 
-VmCameraMicManager::VmCameraMicManager(Profile* profile)
-    : profile_(profile),
-      crostini_vm_notification_observer_(
-          profile,
-          base::BindRepeating(OpenCrostiniSettings)),
-      plugin_vm_notification_observer_(
-          profile,
-          base::BindRepeating(OpenPluginVmSettings)),
-      observer_timer_(
+VmCameraMicManager::VmCameraMicManager()
+    : observer_timer_(
           FROM_HERE,
           kObserverTimerDelay,
           base::BindRepeating(&VmCameraMicManager::NotifyActiveChanged,
                               // Unretained because the timer cannot
                               // live longer than the manager.
-                              base::Unretained(this))) {
-  DCHECK(ProfileHelper::IsPrimaryProfile(profile));
+                              base::Unretained(this))) {}
+
+void VmCameraMicManager::OnPrimaryUserSessionStarted(Profile* primary_profile) {
+  primary_profile_ = primary_profile;
+  crostini_vm_notification_observer_.Initialize(
+      primary_profile_, base::BindRepeating(OpenCrostiniSettings));
+  plugin_vm_notification_observer_.Initialize(
+      primary_profile_, base::BindRepeating(OpenPluginVmSettings));
 
   for (VmType vm : {VmType::kCrostiniVm, VmType::kPluginVm}) {
     notification_map_[vm] = {};
@@ -95,10 +95,13 @@ VmCameraMicManager::VmCameraMicManager(Profile* profile)
       media::ShouldUseCrosCameraService()) {
     // OnActiveClientChange() will be called automatically after the
     // subscription, so there is no need to get the current status here.
-    camera_observation_.Observe(media::CameraHalDispatcherImpl::GetInstance());
+    media::CameraHalDispatcherImpl::GetInstance()->AddActiveClientObserver(
+        this);
   }
 }
 
+// The class is supposed to be used as a singleton with `base::NoDestructor`, so
+// we do not do clean up (e.g. deregister as observers) here.
 VmCameraMicManager::~VmCameraMicManager() = default;
 
 void VmCameraMicManager::SetActive(VmType vm, DeviceType device, bool active) {
@@ -164,9 +167,8 @@ void VmCameraMicManager::OnActiveClientChange(
       type == cros::mojom::CameraClientType::PLUGINVM) {
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
-        base::BindOnce(&VmCameraMicManager::SetActive,
-                       weak_ptr_factory_.GetWeakPtr(), VmType::kPluginVm,
-                       DeviceType::kCamera, is_active));
+        base::BindOnce(&VmCameraMicManager::SetActive, base::Unretained(this),
+                       VmType::kPluginVm, DeviceType::kCamera, is_active));
   }
 }
 
@@ -264,9 +266,9 @@ void VmCameraMicManager::OpenNotification(VmType vm, NotificationType type) {
       base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
           std::move(notification_observer_)));
 
-  NotificationDisplayService::GetForProfile(profile_)->Display(
-      NotificationHandler::Type::TRANSIENT, notification,
-      /*metadata=*/nullptr);
+  NotificationDisplayService::GetForProfile(primary_profile_)
+      ->Display(NotificationHandler::Type::TRANSIENT, notification,
+                /*metadata=*/nullptr);
 }
 
 void VmCameraMicManager::CloseNotification(VmType vm, NotificationType type) {
@@ -275,16 +277,20 @@ void VmCameraMicManager::CloseNotification(VmType vm, NotificationType type) {
           features::kVmCameraMicIndicatorsAndNotifications)) {
     return;
   }
-  NotificationDisplayService::GetForProfile(profile_)->Close(
-      NotificationHandler::Type::TRANSIENT, GetNotificationId(vm, type));
+  NotificationDisplayService::GetForProfile(primary_profile_)
+      ->Close(NotificationHandler::Type::TRANSIENT,
+              GetNotificationId(vm, type));
 }
 
-VmCameraMicManager::VmNotificationObserver::VmNotificationObserver(
-    Profile* profile,
-    OpenSettingsFunction open_settings)
-    : profile_{profile}, open_settings_{open_settings} {}
-
+VmCameraMicManager::VmNotificationObserver::VmNotificationObserver() = default;
 VmCameraMicManager::VmNotificationObserver::~VmNotificationObserver() = default;
+
+void VmCameraMicManager::VmNotificationObserver::Initialize(
+    Profile* profile,
+    OpenSettingsFunction open_settings) {
+  profile_ = profile;
+  open_settings_ = std::move(open_settings);
+}
 
 base::WeakPtr<message_center::NotificationObserver>
 VmCameraMicManager::VmNotificationObserver::GetWeakPtr() {

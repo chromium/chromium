@@ -25,12 +25,12 @@ class Profile;
 namespace chromeos {
 
 // This class manages camera/mic access (and the access notifications) for VMs
-// (crostini and parallels for now). Like all the VMs, it is only available for
-// the primary and non-incognito profile. We might need to change this if we
-// extend this class to support the browser, in which case we will also need to
-// make the notification ids different for different profiles.
-class VmCameraMicManager : public KeyedService,
-                           public media::CameraActiveClientObserver {
+// (crostini and parallels for now). All of the notifications are sent to the
+// primary profile since all VMs support only the primary profile. We might need
+// to change this if we extend this class to support the browser, in which case
+// we will also need to make the notification ids different for different
+// profiles.
+class VmCameraMicManager : public media::CameraActiveClientObserver {
  public:
   enum class VmType { kCrostiniVm, kPluginVm };
 
@@ -45,11 +45,12 @@ class VmCameraMicManager : public KeyedService,
     virtual void OnVmCameraMicActiveChanged(VmCameraMicManager*) {}
   };
 
-  // Return nullptr if the profile is non-primary or incognito.
-  static VmCameraMicManager* GetForProfile(Profile* profile);
+  static VmCameraMicManager* Get();
 
-  explicit VmCameraMicManager(Profile* profile);
+  VmCameraMicManager();
   ~VmCameraMicManager() override;
+
+  void OnPrimaryUserSessionStarted(Profile* primary_profile);
 
   VmCameraMicManager(const VmCameraMicManager&) = delete;
   VmCameraMicManager& operator=(const VmCameraMicManager&) = delete;
@@ -88,9 +89,10 @@ class VmCameraMicManager : public KeyedService,
    public:
     using OpenSettingsFunction = base::RepeatingCallback<void(Profile*)>;
 
-    VmNotificationObserver(Profile* profile,
-                           OpenSettingsFunction open_settings);
+    VmNotificationObserver();
     ~VmNotificationObserver();
+
+    void Initialize(Profile* profile, OpenSettingsFunction open_settings);
 
     base::WeakPtr<NotificationObserver> GetWeakPtr();
 
@@ -99,7 +101,7 @@ class VmCameraMicManager : public KeyedService,
                const base::Optional<base::string16>& reply) override;
 
    private:
-    Profile* const profile_;
+    Profile* profile_ = nullptr;
     OpenSettingsFunction open_settings_;
     base::WeakPtrFactory<VmNotificationObserver> weak_ptr_factory_{this};
   };
@@ -116,22 +118,13 @@ class VmCameraMicManager : public KeyedService,
   void OpenNotification(VmType vm, NotificationType type);
   void CloseNotification(VmType vm, NotificationType type);
 
-  Profile* const profile_;
+  Profile* primary_profile_ = nullptr;
   VmNotificationObserver crostini_vm_notification_observer_;
   VmNotificationObserver plugin_vm_notification_observer_;
   NotificationMap notification_map_;
 
   base::RetainingOneShotTimer observer_timer_;
   base::ObserverList<Observer> observers_;
-
-  base::ScopedObservation<
-      media::CameraHalDispatcherImpl,
-      media::CameraActiveClientObserver,
-      &media::CameraHalDispatcherImpl::AddActiveClientObserver,
-      &media::CameraHalDispatcherImpl::RemoveActiveClientObserver>
-      camera_observation_{this};
-
-  base::WeakPtrFactory<VmCameraMicManager> weak_ptr_factory_{this};
 };
 
 }  // namespace chromeos
