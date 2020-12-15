@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
+#include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "chromeos/dbus/audio/audio_node.h"
@@ -62,6 +63,11 @@ class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
     virtual void BluetoothBatteryChanged(const std::string& address,
                                          uint32_t level);
 
+    // Called when the number of input streams with permission per client type
+    // changed.
+    virtual void NumberOfInputStreamsWithPermissionChanged(
+        const base::flat_map<std::string, uint32_t>& num_input_streams);
+
    protected:
     virtual ~Observer();
   };
@@ -102,6 +108,10 @@ class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
   // Gets the number of active output streams.
   virtual void GetNumberOfActiveOutputStreams(
       DBusMethodCallback<int> callback) = 0;
+
+  // Gets the number of input streams with permission per client type.
+  virtual void GetNumberOfInputStreamsWithPermission(
+      DBusMethodCallback<base::flat_map<std::string, uint32_t>>) = 0;
 
   // Gets the DeprioritzeBtWbsMic flag. On a few platforms CRAS may
   // report to deprioritize Bluetooth WBS mic's node priority because

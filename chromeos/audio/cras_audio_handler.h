@@ -96,6 +96,10 @@ class COMPONENT_EXPORT(CHROMEOS_AUDIO) CrasAudioHandler
     virtual void OnBluetoothBatteryChanged(const std::string& address,
                                            uint32_t level);
 
+    // Called when the number of input streams with permission per client type
+    // changed.
+    virtual void OnNumberOfInputStreamsWithPermissionChanged();
+
     // Called when an initial output stream is opened.
     virtual void OnOutputStarted();
 
@@ -113,6 +117,14 @@ class COMPONENT_EXPORT(CHROMEOS_AUDIO) CrasAudioHandler
     ACTIVATE_BY_USER,
     ACTIVATE_BY_RESTORE_PREVIOUS_STATE,
     ACTIVATE_BY_CAMERA
+  };
+
+  enum class ClientType {
+    CHROME = 0,
+    ARC,
+    VM_TERMINA,
+    VM_PLUGIN,
+    UNKNOWN,
   };
 
   // Sets the global instance. Must be called before any calls to Get().
@@ -206,6 +218,11 @@ class COMPONENT_EXPORT(CHROMEOS_AUDIO) CrasAudioHandler
   // matched the |type|, if there is more than one matched devices, it will
   // return the first one found.
   const AudioDevice* GetDeviceByType(AudioDeviceType type);
+
+  // Returns a map contains number of input streams with permission per
+  // ClientType. If a ClientType is not in the map, we assume the number is 0.
+  base::flat_map<ClientType, uint32_t> GetNumberOfInputStreamsWithPermission()
+      const;
 
   // Gets the default output buffer size in frames.
   void GetDefaultOutputBufferSize(int32_t* buffer_size) const;
@@ -346,6 +363,8 @@ class COMPONENT_EXPORT(CHROMEOS_AUDIO) CrasAudioHandler
   void HotwordTriggered(uint64_t tv_sec, uint64_t tv_nsec) override;
   void BluetoothBatteryChanged(const std::string& address,
                                uint32_t level) override;
+  void NumberOfInputStreamsWithPermissionChanged(
+      const base::flat_map<std::string, uint32_t>& num_input_streams) override;
   void NumberOfActiveStreamsChanged() override;
 
   // AudioPrefObserver overrides.
@@ -542,6 +561,18 @@ class COMPONENT_EXPORT(CHROMEOS_AUDIO) CrasAudioHandler
   // Handle dbus callback for GetDefaultOutputBufferSize.
   void HandleGetDefaultOutputBufferSize(base::Optional<int> buffer_size);
 
+  // Calling dbus to get current number of input streams with permission and
+  // storing the result in number_of_input_streams_with_permission_.
+  void GetNumberOfInputStreamsWithPermissionInternal();
+
+  // Static function converts |client_type_str| to ClientType which used by
+  // HandleGetNumberOfInputStreamsWithPermission.
+  static ClientType ConvertClientTypeStringToEnum(std::string client_type_str);
+
+  // Handle dbus callback for GetNumberOfInputStreamsWithPermission.
+  void HandleGetNumberOfInputStreamsWithPermission(
+      base::Optional<base::flat_map<std::string, uint32_t>> num_input_streams);
+
   // Calling dbus to get system AEC supported flag.
   void GetSystemAecSupported();
 
@@ -618,6 +649,8 @@ class COMPONENT_EXPORT(CHROMEOS_AUDIO) CrasAudioHandler
 
   // Default output buffer size in frames.
   int32_t default_output_buffer_size_ = 512;
+
+  base::flat_map<ClientType, uint32_t> number_of_input_streams_with_permission_;
 
   bool system_aec_supported_ = false;
   int32_t system_aec_group_id_ = kSystemAecGroupIdNotAvailable;

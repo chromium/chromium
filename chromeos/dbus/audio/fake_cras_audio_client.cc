@@ -149,6 +149,12 @@ void FakeCrasAudioClient::GetNumberOfActiveOutputStreams(
   std::move(callback).Run(0);
 }
 
+void FakeCrasAudioClient::GetNumberOfInputStreamsWithPermission(
+    DBusMethodCallback<base::flat_map<std::string, uint32_t>> callback) {
+  base::flat_map<std::string, uint32_t> res;
+  std::move(callback).Run(std::move(res));
+}
+
 void FakeCrasAudioClient::GetDeprioritizeBtWbsMic(
     DBusMethodCallback<bool> callback) {
   std::move(callback).Run(base::nullopt);

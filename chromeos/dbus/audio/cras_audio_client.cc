@@ -107,6 +107,19 @@ class CrasAudioClientImpl : public CrasAudioClient {
         base::BindOnce(&CrasAudioClientImpl::SignalConnected,
                        weak_ptr_factory_.GetWeakPtr()));
 
+    // Monitor the D-Bus signal for changes in number of input streams with
+    // permission per client type.
+    cras_proxy_->ConnectToSignal(
+        cras::kCrasControlInterface,
+        cras::kNumberOfInputStreamsWithPermissionChanged,
+        base::BindRepeating(
+            &CrasAudioClientImpl::NumberOfInputStreamsWithPermissionReceived,
+            weak_ptr_factory_.GetWeakPtr()),
+        base::BindOnce(&CrasAudioClientImpl::SignalConnected,
+                       weak_ptr_factory_.GetWeakPtr())
+
+    );
+
     // Monitor the D-Bus signal for changes in Bluetooth headset battery level.
     cras_proxy_->ConnectToSignal(
         cras::kCrasControlInterface, cras::kBluetoothBatteryChanged,
@@ -185,6 +198,18 @@ class CrasAudioClientImpl : public CrasAudioClient {
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
         base::BindOnce(&CrasAudioClientImpl::OnGetNumberOfActiveOutputStreams,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
+  void GetNumberOfInputStreamsWithPermission(
+      DBusMethodCallback<base::flat_map<std::string, uint32_t>> callback)
+      override {
+    dbus::MethodCall method_call(cras::kCrasControlInterface,
+                                 cras::kGetNumberOfInputStreamsWithPermission);
+    cras_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(
+            &CrasAudioClientImpl::OnGetNumberOfInputStreamsWithPermission,
+            weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
   void GetDeprioritizeBtWbsMic(DBusMethodCallback<bool> callback) override {
@@ -534,6 +559,30 @@ class CrasAudioClientImpl : public CrasAudioClient {
       observer.NumberOfActiveStreamsChanged();
   }
 
+  void NumberOfInputStreamsWithPermissionReceived(dbus::Signal* signal) {
+    dbus::MessageReader signal_reader(signal);
+    dbus::MessageReader array_reader(nullptr);
+    base::flat_map<std::string, uint32_t> res;
+    while (signal_reader.HasMoreData()) {
+      if (!signal_reader.PopArray(&array_reader)) {
+        LOG(ERROR) << "Error reading signal from cras: " << signal->ToString();
+        return;
+      }
+      std::string client_type;
+      uint32_t num_input_streams;
+      if (!GetNumerInputStreams(&array_reader, &client_type,
+                                &num_input_streams)) {
+        LOG(ERROR) << "Error reading number of input streams from cras: "
+                   << signal->ToString();
+        return;
+      }
+      res[client_type] = num_input_streams;
+    }
+
+    for (auto& observer : observers_)
+      observer.NumberOfInputStreamsWithPermissionChanged(res);
+  }
+
   void BluetoothBatteryChangedReceived(dbus::Signal* signal) {
     dbus::MessageReader reader(signal);
     std::string address;
@@ -686,6 +735,64 @@ class CrasAudioClientImpl : public CrasAudioClient {
     std::move(callback).Run(num_active_streams);
   }
 
+  bool GetNumerInputStreams(dbus::MessageReader* array_reader,
+                            std::string* client_type,
+                            uint32_t* num_input_streams) {
+    while (array_reader->HasMoreData()) {
+      dbus::MessageReader dict_entry_reader(nullptr);
+      dbus::MessageReader value_reader(nullptr);
+      std::string key;
+      if (!array_reader->PopDictEntry(&dict_entry_reader) ||
+          !dict_entry_reader.PopString(&key) ||
+          !dict_entry_reader.PopVariant(&value_reader)) {
+        return false;
+      }
+
+      if (key == cras::kClientType) {
+        if (!value_reader.PopString(client_type))
+          return false;
+      } else if (key == cras::kNumStreamsWithPermission) {
+        if (!value_reader.PopUint32(num_input_streams))
+          return false;
+      }
+    }
+    return true;
+  }
+
+  void OnGetNumberOfInputStreamsWithPermission(
+      DBusMethodCallback<base::flat_map<std::string, uint32_t>> callback,
+      dbus::Response* response) {
+    if (!response) {
+      LOG(ERROR) << "Error calling "
+                 << cras::kGetNumberOfInputStreamsWithPermission;
+      std::move(callback).Run(base::nullopt);
+      return;
+    }
+    dbus::MessageReader response_reader(response);
+    dbus::MessageReader array_reader(nullptr);
+    base::flat_map<std::string, uint32_t> res;
+    while (response_reader.HasMoreData()) {
+      if (!response_reader.PopArray(&array_reader)) {
+        LOG(ERROR) << "Error reading response from cras: "
+                   << response->ToString();
+        std::move(callback).Run(base::nullopt);
+        return;
+      }
+      std::string client_type;
+      uint32_t num_input_streams;
+      if (!GetNumerInputStreams(&array_reader, &client_type,
+                                &num_input_streams)) {
+        LOG(ERROR) << "Error reading number of input streams from cras: "
+                   << response->ToString();
+        std::move(callback).Run(base::nullopt);
+        return;
+      }
+      res[client_type] = num_input_streams;
+    }
+
+    std::move(callback).Run(std::move(res));
+  }
+
   void OnGetDeprioritizeBtWbsMic(DBusMethodCallback<bool> callback,
                                  dbus::Response* response) {
     if (!response) {
@@ -817,6 +924,9 @@ void CrasAudioClient::Observer::NumberOfActiveStreamsChanged() {}
 void CrasAudioClient::Observer::BluetoothBatteryChanged(
     const std::string& address,
     uint32_t level) {}
+
+void CrasAudioClient::Observer::NumberOfInputStreamsWithPermissionChanged(
+    const base::flat_map<std::string, uint32_t>& num_input_streams) {}
 
 CrasAudioClient::CrasAudioClient() {
   DCHECK(!g_instance);

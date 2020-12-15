@@ -96,6 +96,9 @@ void CrasAudioHandler::AudioObserver::OnBluetoothBatteryChanged(
     const std::string& /* address */,
     uint32_t /* level */) {}
 
+void CrasAudioHandler::AudioObserver::
+    OnNumberOfInputStreamsWithPermissionChanged() {}
+
 void CrasAudioHandler::AudioObserver::OnOutputStarted() {}
 
 void CrasAudioHandler::AudioObserver::OnOutputStopped() {}
@@ -413,6 +416,11 @@ const AudioDevice* CrasAudioHandler::GetDeviceByType(AudioDeviceType type) {
       return &device;
   }
   return nullptr;
+}
+
+base::flat_map<CrasAudioHandler::ClientType, uint32_t>
+CrasAudioHandler::GetNumberOfInputStreamsWithPermission() const {
+  return number_of_input_streams_with_permission_;
 }
 
 void CrasAudioHandler::GetDefaultOutputBufferSize(int32_t* buffer_size) const {
@@ -858,6 +866,13 @@ void CrasAudioHandler::BluetoothBatteryChanged(const std::string& address,
     observer.OnBluetoothBatteryChanged(address, level);
 }
 
+void CrasAudioHandler::NumberOfInputStreamsWithPermissionChanged(
+    const base::flat_map<std::string, uint32_t>& num_input_streams) {
+  HandleGetNumberOfInputStreamsWithPermission(num_input_streams);
+  for (auto& observer : observers_)
+    observer.OnNumberOfInputStreamsWithPermissionChanged();
+}
+
 void CrasAudioHandler::ResendBluetoothBattery() {
   CrasAudioClient::Get()->ResendBluetoothBattery();
 }
@@ -1005,6 +1020,7 @@ void CrasAudioHandler::InitializeAudioAfterCrasServiceAvailable(
   GetSystemAecGroupId();
   GetNodes();
   GetNumberOfOutputStreams();
+  GetNumberOfInputStreamsWithPermissionInternal();
   CrasAudioClient::Get()->SetFixA2dpPacketSize(base::FeatureList::IsEnabled(
       chromeos::features::kBluetoothFixA2dpPacketSize));
 
@@ -1775,6 +1791,41 @@ bool CrasAudioHandler::HasExternalDevice(bool is_input) const {
       return true;
   }
   return false;
+}
+
+void CrasAudioHandler::GetNumberOfInputStreamsWithPermissionInternal() {
+  CrasAudioClient::Get()->GetNumberOfInputStreamsWithPermission(base::BindOnce(
+      &CrasAudioHandler::HandleGetNumberOfInputStreamsWithPermission,
+      weak_ptr_factory_.GetWeakPtr()));
+}
+
+// static
+CrasAudioHandler::ClientType CrasAudioHandler::ConvertClientTypeStringToEnum(
+    std::string client_type_str) {
+  if (client_type_str == "CRAS_CLIENT_TYPE_PLUGIN") {
+    return ClientType::VM_PLUGIN;
+  } else if (client_type_str == "CRAS_CLIENT_TYPE_CROSVM") {
+    return ClientType::VM_TERMINA;
+  } else if (client_type_str == "CRAS_CLIENT_TYPE_CHROME") {
+    return ClientType::CHROME;
+  } else if (client_type_str == "CRAS_CLIENT_TYPE_ARC") {
+    return ClientType::ARC;
+  } else {
+    return ClientType::UNKNOWN;
+  }
+}
+
+void CrasAudioHandler::HandleGetNumberOfInputStreamsWithPermission(
+    base::Optional<base::flat_map<std::string, uint32_t>> num_input_streams) {
+  if (!num_input_streams.has_value()) {
+    LOG(ERROR) << "Failed to retrieve number of input streams with permission";
+    return;
+  }
+  number_of_input_streams_with_permission_.clear();
+  for (const auto& it : *num_input_streams) {
+    number_of_input_streams_with_permission_[ConvertClientTypeStringToEnum(
+        it.first)] = it.second;
+  }
 }
 
 void CrasAudioHandler::GetDefaultOutputBufferSizeInternal() {
