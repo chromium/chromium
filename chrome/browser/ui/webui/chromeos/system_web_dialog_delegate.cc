@@ -70,16 +70,20 @@ gfx::Size SystemWebDialogDelegate::ComputeDialogSizeForInternalScreen(
   if (!display::Display::HasInternalDisplay())
     return preferred_size;
 
+  display::Display internal_display;
+  if (!display::Screen::GetScreen()->GetDisplayWithDisplayId(
+          display::Display::InternalDisplayId(), &internal_display)) {
+    // GetDisplayWithDisplayId() returns false if the laptop's lid is closed.
+    // Return the preferred size instead.
+    // TODO(crbug/1158631): Test this edge case with displays
+    // (lid closed with external monitors).
+    return preferred_size;
+  }
+
   // According to the Chrome OS dialog spec, dialogs should have a 48px margin
   // from the edge of an internal display.
   static const gfx::Insets margins =
       gfx::Insets(kDialogMarginForInternalScreenPx);
-
-  display::Display internal_display;
-  if (!display::Screen::GetScreen()->GetDisplayWithDisplayId(
-          display::Display::InternalDisplayId(), &internal_display)) {
-    NOTREACHED() << "Could not fetch metadata for internal display.";
-  }
 
   // Work area size does not include the status bar.
   gfx::Size work_area_size = internal_display.work_area_size();
