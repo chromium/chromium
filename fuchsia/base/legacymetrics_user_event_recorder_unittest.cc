@@ -72,5 +72,19 @@ TEST_F(LegacyMetricsUserActionRecorderTest, EmptyBuffer) {
   EXPECT_FALSE(buffer.HasEvents());
 }
 
+TEST_F(LegacyMetricsUserActionRecorderTest, EnforcesMaximumEventCount) {
+  LegacyMetricsUserActionRecorder buffer;
+
+  // Try recording twice the maximum number of locally stored events.
+  for (int i = 0, count = LegacyMetricsUserActionRecorder::kMaxEventCount * 2;
+       i < count; i++) {
+    base::RecordComputedAction("Test");
+  }
+
+  EXPECT_TRUE(buffer.HasEvents());
+  auto events = buffer.TakeEvents();
+  EXPECT_EQ(LegacyMetricsUserActionRecorder::kMaxEventCount, events.size());
+}
+
 }  // namespace
 }  // namespace cr_fuchsia

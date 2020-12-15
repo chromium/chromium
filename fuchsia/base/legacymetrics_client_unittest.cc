@@ -4,6 +4,7 @@
 
 #include <fuchsia/legacymetrics/cpp/fidl.h>
 #include <fuchsia/legacymetrics/cpp/fidl_test_base.h>
+#include <cmath>
 #include <string>
 #include <utility>
 
@@ -13,15 +14,21 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "fuchsia/base/legacymetrics_client.h"
 #include "fuchsia/base/legacymetrics_histogram_flattener.h"
 #include "fuchsia/base/result_receiver.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace cr_fuchsia {
 namespace {
 
+using ::testing::Property;
+using ::testing::UnorderedElementsAreArray;
+
 constexpr base::TimeDelta kReportInterval = base::TimeDelta::FromMinutes(1);
+constexpr base::TimeDelta kShortDuration = base::TimeDelta::FromSeconds(1);
 
 class TestMetricsRecorder
     : public fuchsia::legacymetrics::testing::MetricsRecorder_TestBase {
@@ -85,14 +92,44 @@ class LegacyMetricsClientTest : public testing::Test {
   ~LegacyMetricsClientTest() override = default;
 
   void SetUp() override {
-    service_binding_ =
-        std::make_unique<base::fuchsia::ScopedSingleClientServiceBinding<
-            fuchsia::legacymetrics::MetricsRecorder>>(
-            test_context_.additional_services(), &test_recorder_);
+    service_binding_ = MakeServiceBinding();
     base::SetRecordActionTaskRunner(base::ThreadTaskRunnerHandle::Get());
 
     // Flush any dirty histograms from previous test runs in this process.
     GetLegacyMetricsDeltas();
+  }
+
+  std::unique_ptr<base::fuchsia::ScopedSingleClientServiceBinding<
+      fuchsia::legacymetrics::MetricsRecorder>>
+  MakeServiceBinding() {
+    return std::make_unique<base::fuchsia::ScopedSingleClientServiceBinding<
+        fuchsia::legacymetrics::MetricsRecorder>>(
+        test_context_.additional_services(), &test_recorder_);
+  }
+
+  void StartClientAndExpectConnection() {
+    client_.Start(kReportInterval);
+    base::RunLoop().RunUntilIdle();
+    EXPECT_TRUE(service_binding_->has_clients());
+  }
+
+  // Disconnects the service side of the metrics FIDL channel and replaces the
+  // binding with a new instance.
+  void DisconnectAndRestartMetricsService() {
+    service_binding_.reset();
+    service_binding_ = MakeServiceBinding();
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void ExpectReconnectAfterDelay(const base::TimeDelta& delay) {
+    // Just before the expected delay, the client shouldn't reconnect yet.
+    task_environment_.FastForwardBy(delay - kShortDuration);
+    EXPECT_FALSE(service_binding_->has_clients())
+        << "Expected delay: " << delay;
+
+    // Complete the full expected reconnect delay. Client should reconnect.
+    task_environment_.FastForwardBy(kShortDuration);
+    EXPECT_TRUE(service_binding_->has_clients()) << "Expected delay: " << delay;
   }
 
  protected:
@@ -221,10 +258,101 @@ TEST_F(LegacyMetricsClientTest, NoReportIfNeverAcked) {
   EXPECT_FALSE(test_recorder_.IsRecordInFlight());
 }
 
-TEST_F(LegacyMetricsClientTest, MetricsChannelDisconnected) {
-  client_.Start(kReportInterval);
-  service_binding_.reset();
+TEST_F(LegacyMetricsClientTest, ReconnectAfterServiceDisconnect) {
+  StartClientAndExpectConnection();
+  DisconnectAndRestartMetricsService();
+  EXPECT_FALSE(service_binding_->has_clients());
+  task_environment_.FastForwardBy(LegacyMetricsClient::kInitialReconnectDelay);
+  EXPECT_TRUE(service_binding_->has_clients());
+}
+
+TEST_F(LegacyMetricsClientTest,
+       ReconnectConsecutivelyWithoutRecordBacksOffExponentially) {
+  StartClientAndExpectConnection();
+
+  for (base::TimeDelta expected_delay =
+           LegacyMetricsClient::kInitialReconnectDelay;
+       expected_delay <= LegacyMetricsClient::kMaxReconnectDelay;
+       expected_delay *= LegacyMetricsClient::kReconnectBackoffFactor) {
+    DisconnectAndRestartMetricsService();
+    ExpectReconnectAfterDelay(expected_delay);
+  }
+}
+
+TEST_F(LegacyMetricsClientTest, ReconnectDelayNeverExceedsMax) {
+  StartClientAndExpectConnection();
+
+  // Find the theoretical maximum number of consecutive failed connections. Also
+  // add a few extra iterations to ensure that we never exceed the max delay.
+  const size_t num_iterations =
+      3 + log(LegacyMetricsClient::kMaxReconnectDelay /
+              LegacyMetricsClient::kInitialReconnectDelay) /
+              log(LegacyMetricsClient::kReconnectBackoffFactor);
+
+  // As a heuristic, starting with 1 second and a factor of 2 reaches 24 hours
+  // in about 17 iterations. So the expected number of iterations needed to
+  // reach the maximum delay should be less than about 20.
+  EXPECT_LE(num_iterations, 20u);
+
+  for (size_t i = 0; i < num_iterations; i++) {
+    DisconnectAndRestartMetricsService();
+    EXPECT_FALSE(service_binding_->has_clients()) << "Iteration " << i;
+    task_environment_.FastForwardBy(LegacyMetricsClient::kMaxReconnectDelay);
+    EXPECT_TRUE(service_binding_->has_clients()) << "Iteration " << i;
+  }
+}
+
+TEST_F(LegacyMetricsClientTest, RecordCompletionResetsReconnectDelay) {
+  StartClientAndExpectConnection();
+
+  // First reconnect has initial delay.
+  DisconnectAndRestartMetricsService();
+  ExpectReconnectAfterDelay(LegacyMetricsClient::kInitialReconnectDelay);
+
+  // Another reconnect without a successful Record() call increases the delay.
+  DisconnectAndRestartMetricsService();
+  ExpectReconnectAfterDelay(LegacyMetricsClient::kInitialReconnectDelay *
+                            LegacyMetricsClient::kReconnectBackoffFactor);
+
+  // Record and report an event, invoking a FIDL Record().
+  base::RecordComputedAction("ArbitraryEvent");
   task_environment_.FastForwardBy(kReportInterval);
+  EXPECT_TRUE(test_recorder_.IsRecordInFlight());
+  test_recorder_.SendAck();
+  base::RunLoop().RunUntilIdle();
+
+  // Reconnect after a successful Record() uses the initial delay again.
+  DisconnectAndRestartMetricsService();
+  ExpectReconnectAfterDelay(LegacyMetricsClient::kInitialReconnectDelay);
+}
+
+TEST_F(LegacyMetricsClientTest, ContinueRecordingUserActionsAfterDisconnect) {
+  StartClientAndExpectConnection();
+
+  base::RecordComputedAction("BeforeDisconnect");
+  DisconnectAndRestartMetricsService();
+  base::RecordComputedAction("DuringDisconnect");
+  ExpectReconnectAfterDelay(LegacyMetricsClient::kInitialReconnectDelay);
+  base::RecordComputedAction("AfterReconnect");
+
+  // Fast forward to report metrics.
+  task_environment_.FastForwardBy(kReportInterval);
+  EXPECT_TRUE(test_recorder_.IsRecordInFlight());
+
+  auto events = test_recorder_.WaitForEvents();
+  EXPECT_THAT(
+      events,
+      UnorderedElementsAreArray({
+          Property(&fuchsia::legacymetrics::Event::user_action_event,
+                   Property(&fuchsia::legacymetrics::UserActionEvent::name,
+                            "BeforeDisconnect")),
+          Property(&fuchsia::legacymetrics::Event::user_action_event,
+                   Property(&fuchsia::legacymetrics::UserActionEvent::name,
+                            "DuringDisconnect")),
+          Property(&fuchsia::legacymetrics::Event::user_action_event,
+                   Property(&fuchsia::legacymetrics::UserActionEvent::name,
+                            "AfterReconnect")),
+      }));
 }
 
 TEST_F(LegacyMetricsClientTest, Batching) {
