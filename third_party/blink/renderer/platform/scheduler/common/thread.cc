@@ -102,7 +102,7 @@ void Thread::CreateAndSetCompositorThread() {
     // This is not possible inside the sandbox, so ask the browser to do it.
     // TODO(spang): Check if we can remove this on non-Chrome OS builds.
     Platform::Current()->SetDisplayThreadPriority(
-        GetCompositorThread()->ThreadHandle());
+        GetCompositorThread()->ThreadId());
   }
 }
 

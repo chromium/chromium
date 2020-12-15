@@ -112,10 +112,6 @@ class BASE_EXPORT SimpleThread : public PlatformThread::Delegate {
   // be called before HasBeenStarted() returns True.
   PlatformThreadId tid();
 
-  // Returns the thread handle. Valid only if the thread is joinable, started
-  // and not yet joined.
-  PlatformThreadHandle handle() const;
-
   // Returns True if the thread has been started and initialized (i.e. if
   // ThreadMain() has run). If the thread was started with StartAsync(), but it
   // hasn't been initialized yet (i.e. ThreadMain() has not run), then this will

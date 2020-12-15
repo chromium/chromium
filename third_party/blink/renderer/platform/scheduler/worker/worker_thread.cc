@@ -76,10 +76,6 @@ blink::PlatformThreadId WorkerThread::ThreadId() const {
   return thread_->tid();
 }
 
-base::PlatformThreadHandle WorkerThread::ThreadHandle() const {
-  return thread_->handle();
-}
-
 blink::ThreadScheduler* WorkerThread::Scheduler() {
   return thread_->GetNonMainThreadScheduler();
 }

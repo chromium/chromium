@@ -183,8 +183,7 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
       const blink::WebURL& top_document_web_url) override;
   gpu::GpuMemoryBufferManager* GetGpuMemoryBufferManager() override;
   blink::WebString ConvertIDNToUnicode(const blink::WebString& host) override;
-  void SetDisplayThreadPriority(
-      base::PlatformThreadHandle thread_handle) override;
+  void SetDisplayThreadPriority(base::PlatformThreadId thread_id) override;
   blink::BlameContext* GetTopLevelBlameContext() override;
   std::unique_ptr<blink::WebDedicatedWorkerHostFactoryClient>
   CreateDedicatedWorkerHostFactoryClient(
