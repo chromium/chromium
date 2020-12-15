@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/history/domain_diversity_reporter.h"
+#include "components/history/metrics/domain_diversity_reporter.h"
 
 #include "base/feature_list.h"
 #include "base/files/scoped_temp_dir.h"
@@ -17,11 +17,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/history_service_test_util.h"
 #include "components/history/core/test/test_history_database.h"
-#include "components/offline_pages/core/offline_clock.h"
-#include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/testing_pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -112,8 +108,8 @@ class DomainDiversityReporterTest : public testing::Test {
   // to fire. DomainDiversityReporter internally uses a |test_clock_| instead of
   // |task_environment_|'s clock because it needs to test very specific times
   // rather than just advance in deltas from Now().
-  content::BrowserTaskEnvironment task_environment_{
-      content::BrowserTaskEnvironment::TimeSource::MOCK_TIME};
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   std::unique_ptr<DomainDiversityReporter> reporter_;
 

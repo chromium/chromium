@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_HISTORY_DOMAIN_DIVERSITY_REPORTER_H_
-#define CHROME_BROWSER_HISTORY_DOMAIN_DIVERSITY_REPORTER_H_
+#ifndef COMPONENTS_HISTORY_METRICS_DOMAIN_DIVERSITY_REPORTER_H_
+#define COMPONENTS_HISTORY_METRICS_DOMAIN_DIVERSITY_REPORTER_H_
 
 #include <vector>
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
+#include "base/sequence_checker.h"
 #include "base/time/clock.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
@@ -58,13 +59,16 @@ class DomainDiversityReporter : public KeyedService,
   PrefService* prefs_;
   base::Clock* clock_;
 
-  ScopedObserver<history::HistoryService, history::HistoryServiceObserver>
+  base::ScopedObservation<history::HistoryService,
+                          history::HistoryServiceObserver>
       history_service_observer_;
   base::CancelableTaskTracker cancelable_task_tracker_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<DomainDiversityReporter> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DomainDiversityReporter);
 };
 
-#endif  // CHROME_BROWSER_HISTORY_DOMAIN_DIVERSITY_REPORTER_H_
+#endif  // COMPONENTS_HISTORY_MERICS_DOMAIN_DIVERSITY_REPORTER_H_

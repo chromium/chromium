@@ -32,6 +32,7 @@ include_rules = [
   "+components/history/core/browser",
   "+components/history/core/common",
   "+components/history/ios/browser",
+  "+components/history/metrics",
   "+components/image_fetcher/core",
   "+components/image_fetcher/ios",
   "+components/infobars/core",

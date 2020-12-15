@@ -4,6 +4,8 @@
 
 source_set("history") {
   sources = [
+    "domain_diversity_reporter_factory.h",
+    "domain_diversity_reporter_factory.mm",
     "history_backend_client_impl.cc",
     "history_backend_client_impl.h",
     "history_client_impl.cc",
@@ -24,6 +26,7 @@ source_set("history") {
     "//components/dom_distiller/core",
     "//components/history/core/browser",
     "//components/history/ios/browser",
+    "//components/history/metrics",
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
     "//components/pref_registry",
@@ -37,6 +40,7 @@ source_set("history") {
     "//net",
     "//url",
   ]
+  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("tab_helper") {

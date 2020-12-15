@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/history/domain_diversity_reporter.h"
+#include "components/history/metrics/domain_diversity_reporter.h"
 
 #include "base/metrics/histogram_macros.h"
+#include "base/task/post_task.h"
+#include "base/task/task_traits.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
 
 namespace {
 // The interval between two successive domain metrics reports.
@@ -31,13 +31,12 @@ DomainDiversityReporter::DomainDiversityReporter(
       clock_(clock),
       history_service_observer_(this) {
   DCHECK_NE(prefs_, nullptr);
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
-      ->PostTask(
-          FROM_HERE,
-          base::BindOnce(&DomainDiversityReporter::MaybeComputeDomainMetrics,
-                         weak_ptr_factory_.GetWeakPtr()));
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&DomainDiversityReporter::MaybeComputeDomainMetrics,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 DomainDiversityReporter::~DomainDiversityReporter() = default;
@@ -49,6 +48,8 @@ void DomainDiversityReporter::RegisterProfilePrefs(
 }
 
 void DomainDiversityReporter::MaybeComputeDomainMetrics() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (history_service_->BackendLoaded()) {
     // HistoryService is ready; proceed to start the domain metrics
     // computation task.
@@ -56,11 +57,13 @@ void DomainDiversityReporter::MaybeComputeDomainMetrics() {
   }
   // Observe history service and start reporting as soon as
   // the former is ready.
-  DCHECK(!history_service_observer_.IsObserving(history_service_));
-  history_service_observer_.Add(history_service_);
+  DCHECK(!history_service_observer_.IsObservingSource(history_service_));
+  history_service_observer_.Observe(history_service_);
 }
 
 void DomainDiversityReporter::ComputeDomainMetrics() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   base::Time time_last_report_triggered =
       prefs_->GetTime(kDomainDiversityReportingTimestamp);
   base::Time time_current_report_triggered = clock_->Now();
@@ -117,7 +120,7 @@ void DomainDiversityReporter::ComputeDomainMetrics() {
   }
 
   // The next reporting task is scheduled to run 24 hours later.
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&DomainDiversityReporter::ComputeDomainMetrics,
                      weak_ptr_factory_.GetWeakPtr()),
@@ -127,6 +130,8 @@ void DomainDiversityReporter::ComputeDomainMetrics() {
 void DomainDiversityReporter::ReportDomainMetrics(
     base::Time time_current_report_triggered,
     history::DomainDiversityResults result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   // An empty DomainDiversityResults indicates that |db_| is null in
   // HistoryBackend.
   if (result.empty())
@@ -149,11 +154,15 @@ void DomainDiversityReporter::ReportDomainMetrics(
 void DomainDiversityReporter::OnHistoryServiceLoaded(
     history::HistoryService* history_service) {
   DCHECK_EQ(history_service, history_service_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   ComputeDomainMetrics();
 }
 
 void DomainDiversityReporter::HistoryServiceBeingDeleted(
     history::HistoryService* history_service) {
-  history_service_observer_.RemoveAll();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  history_service_observer_.Reset();
   cancelable_task_tracker_.TryCancelAll();
 }

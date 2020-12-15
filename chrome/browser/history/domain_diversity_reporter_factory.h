@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 class DomainDiversityReporter;
@@ -28,7 +28,7 @@ class DomainDiversityReporterFactory
       content::BrowserContext* profile);
 
  private:
-  friend struct base::DefaultSingletonTraits<DomainDiversityReporterFactory>;
+  friend class base::NoDestructor<DomainDiversityReporterFactory>;
 
   DomainDiversityReporterFactory();
   ~DomainDiversityReporterFactory() override;

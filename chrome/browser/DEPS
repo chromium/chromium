@@ -147,6 +147,7 @@ include_rules = [
   "+components/history/core/browser",
   "+components/history/core/common",
   "+components/history/core/test",
+  "+components/history/metrics",
   "+components/image_fetcher/core",
   "+components/infobars/content",
   "+components/infobars/core",
