@@ -198,6 +198,7 @@ class TabImpl : public Tab,
       const base::android::JavaParamRef<jstring>& translate_target_lang);
   void SetDesktopUserAgentEnabled(JNIEnv* env, jboolean enable);
   jboolean IsDesktopUserAgentEnabled(JNIEnv* env);
+  void Download(JNIEnv* env, jlong native_context_menu_params);
 #endif
 
   ErrorPageDelegate* error_page_delegate() { return error_page_delegate_; }

@@ -4,6 +4,7 @@
 
 package org.chromium.weblayer_private.interfaces;
 
+import org.chromium.weblayer_private.interfaces.IContextMenuParams;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
 
 /**
@@ -21,6 +22,7 @@ interface ITabClient {
   // void onCloseTab() = 3;
 
   // Added in M82.
+  // Deprecated in M88.
   void showContextMenu(in IObjectWrapper pageUrl, in IObjectWrapper linkUrl,
       in IObjectWrapper linkText, in IObjectWrapper titleOrAltText,
       in IObjectWrapper srcUrl) = 4;
@@ -50,4 +52,8 @@ interface ITabClient {
   // Added in M88
   void onActionItemClicked(
           in int actionModeItemType, in IObjectWrapper selectedString) = 12;
+  void showContextMenu2(in IObjectWrapper pageUrl, in IObjectWrapper linkUrl,
+      in IObjectWrapper linkText, in IObjectWrapper titleOrAltText,
+      in IObjectWrapper srcUrl, in boolean isImage, in boolean isVideo, in boolean canDownload,
+      in IContextMenuParams contextMenuParams) = 13;
 }

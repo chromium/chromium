@@ -379,6 +379,8 @@ source_set("weblayer_lib_base") {
     "//components/crash/content/browser",
     "//components/crash/core/app",
     "//components/crash/core/common",
+    "//components/download/content/factory",
+    "//components/download/content/public",
     "//components/embedder_support",
     "//components/embedder_support/origin_trials",
     "//components/error_page/common",

@@ -73,8 +73,7 @@ class DownloadController : public DownloadControllerBase {
   void OnDownloadStarted(download::DownloadItem* download_item) override;
   void StartContextMenuDownload(const content::ContextMenuParams& params,
                                 content::WebContents* web_contents,
-                                bool is_link,
-                                const std::string& extra_headers) override;
+                                bool is_link) override;
 
   // DownloadItem::Observer interface.
   void OnDownloadUpdated(download::DownloadItem* item) override;

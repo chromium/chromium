@@ -68,8 +68,7 @@ class DownloadControllerBase : public download::DownloadItem::Observer,
   virtual void StartContextMenuDownload(
       const content::ContextMenuParams& params,
       content::WebContents* web_contents,
-      bool is_link,
-      const std::string& extra_headers) = 0;
+      bool is_link) = 0;
 
   // Callback when user permission prompt finishes. Args: whether file access
   // permission is acquired.

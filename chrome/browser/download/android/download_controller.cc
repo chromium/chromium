@@ -34,20 +34,17 @@
 #include "chrome/browser/permissions/permission_update_infobar_delegate_android.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/grit/chromium_strings.h"
+#include "components/download/content/public/context_menu_download.h"
 #include "components/download/public/common/auto_resumption_handler.h"
 #include "components/download/public/common/download_features.h"
-#include "components/download/public/common/download_url_parameters.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/download_manager.h"
-#include "content/public/browser/download_request_utils.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
-#include "content/public/common/referrer.h"
 #include "net/base/filename_util.h"
-#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 #include "ui/base/page_transition_types.h"
@@ -66,11 +63,11 @@ namespace {
 // Guards download_controller_
 base::LazyInstance<base::Lock>::DestructorAtExit g_download_controller_lock_;
 
-void CreateContextMenuDownload(const content::WebContents::Getter& wc_getter,
-                               const content::ContextMenuParams& params,
-                               bool is_link,
-                               const std::string& extra_headers,
-                               bool granted) {
+void CreateContextMenuDownloadInternal(
+    const content::WebContents::Getter& wc_getter,
+    const content::ContextMenuParams& params,
+    bool is_link,
+    bool granted) {
   content::WebContents* web_contents = wc_getter.Run();
   if (!granted)
     return;
@@ -82,38 +79,10 @@ void CreateContextMenuDownload(const content::WebContents::Getter& wc_getter,
     return;
   }
 
-  const GURL& url = is_link ? params.link_url : params.src_url;
-  const GURL& referring_url =
-      params.frame_url.is_empty() ? params.page_url : params.frame_url;
-  content::DownloadManager* dlm = content::BrowserContext::GetDownloadManager(
-      web_contents->GetBrowserContext());
-  std::unique_ptr<download::DownloadUrlParameters> dl_params(
-      content::DownloadRequestUtils::CreateDownloadForWebContentsMainFrame(
-          web_contents, url,
-          TRAFFIC_ANNOTATION_WITHOUT_PROTO("Download via context menu")));
-  content::Referrer referrer = content::Referrer::SanitizeForRequest(
-      url,
-      content::Referrer(referring_url.GetAsReferrer(), params.referrer_policy));
-  dl_params->set_referrer(referrer.url);
-  dl_params->set_referrer_policy(
-      content::Referrer::ReferrerPolicyForUrlRequest(referrer.policy));
-
-  if (is_link)
-    dl_params->set_referrer_encoding(params.frame_charset);
-  net::HttpRequestHeaders headers;
-  headers.AddHeadersFromString(extra_headers);
-  for (net::HttpRequestHeaders::Iterator it(headers); it.GetNext();)
-    dl_params->add_request_header(it.name(), it.value());
-  if (!is_link && extra_headers.empty())
-    dl_params->set_prefer_cache(true);
-  dl_params->set_prompt(false);
-  dl_params->set_request_origin(
-      offline_pages::android::OfflinePageBridge::GetEncodedOriginApp(
-          web_contents));
-  dl_params->set_suggested_name(params.suggested_filename);
   RecordDownloadSource(DOWNLOAD_INITIATED_BY_CONTEXT_MENU);
-  dl_params->set_download_source(download::DownloadSource::CONTEXT_MENU);
-  dlm->DownloadUrl(std::move(dl_params));
+  auto origin = offline_pages::android::OfflinePageBridge::GetEncodedOriginApp(
+      web_contents);
+  download::CreateContextMenuDownload(web_contents, params, origin, is_link);
 }
 
 // Helper class for retrieving a DownloadManager.
@@ -454,8 +423,7 @@ void DownloadController::OnDangerousDownload(DownloadItem* item) {
 void DownloadController::StartContextMenuDownload(
     const ContextMenuParams& params,
     WebContents* web_contents,
-    bool is_link,
-    const std::string& extra_headers) {
+    bool is_link) {
   int process_id = web_contents->GetRenderViewHost()->GetProcess()->GetID();
   int routing_id = web_contents->GetRenderViewHost()->GetRoutingID();
 
@@ -463,8 +431,8 @@ void DownloadController::StartContextMenuDownload(
       base::Bind(&GetWebContents, process_id, routing_id));
 
   AcquireFileAccessPermission(
-      wc_getter, base::BindOnce(&CreateContextMenuDownload, wc_getter, params,
-                                is_link, extra_headers));
+      wc_getter, base::BindOnce(&CreateContextMenuDownloadInternal, wc_getter,
+                                params, is_link));
 }
 
 bool DownloadController::IsInterruptedDownloadAutoResumable(

@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_DOWNLOAD_ANDROID_MOCK_DOWNLOAD_CONTROLLER_H_
 #define CHROME_BROWSER_DOWNLOAD_ANDROID_MOCK_DOWNLOAD_CONTROLLER_H_
 
-#include <string>
-
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/singleton.h"
@@ -25,8 +23,7 @@ class MockDownloadController : public DownloadControllerBase {
   void OnDownloadStarted(download::DownloadItem* download_item) override;
   void StartContextMenuDownload(const content::ContextMenuParams& params,
                                 content::WebContents* web_contents,
-                                bool is_link,
-                                const std::string& extra_headers) override;
+                                bool is_link) override;
   void AcquireFileAccessPermission(
       const content::WebContents::Getter& wc_getter,
       AcquireFileAccessPermissionCallback callback) override;
