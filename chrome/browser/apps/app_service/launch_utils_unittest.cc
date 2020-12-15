@@ -4,6 +4,7 @@
 
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "components/services/app_service/public/cpp/intent_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/types/display_constants.h"
 
@@ -74,4 +75,20 @@ TEST_F(LaunchUtilsTest, PreferContainerWithWindow) {
 
   EXPECT_EQ(preferred_container, params.container);
   EXPECT_EQ(WindowOpenDisposition::NEW_FOREGROUND_TAB, params.disposition);
+}
+
+TEST_F(LaunchUtilsTest, UseIntentFullUrlInLaunchParams) {
+  auto container = apps::mojom::LaunchContainer::kLaunchContainerNone;
+  auto disposition = WindowOpenDisposition::NEW_WINDOW;
+
+  const GURL url = GURL("https://example.com/?query=1#frag");
+  auto intent = apps_util::CreateIntentFromUrl(url);
+
+  auto params = apps::CreateAppLaunchParamsForIntent(
+      app_id, apps::GetEventFlags(container, disposition, true),
+      apps::mojom::AppLaunchSource::kSourceIntentUrl,
+      display::kInvalidDisplayId,
+      apps::mojom::LaunchContainer::kLaunchContainerWindow, std::move(intent));
+
+  EXPECT_EQ(url, params.override_url);
 }
