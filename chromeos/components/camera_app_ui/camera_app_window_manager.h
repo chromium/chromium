@@ -6,8 +6,8 @@
 #define CHROMEOS_COMPONENTS_CAMERA_APP_UI_CAMERA_APP_WINDOW_MANAGER_H_
 
 #include "base/containers/flat_map.h"
+#include "base/memory/singleton.h"
 #include "chromeos/components/camera_app_ui/camera_app_helper.mojom.h"
-#include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -22,15 +22,15 @@ class Widget;
 namespace chromeos {
 
 // A manager to manage the camera usage ownership between multiple camera app
-// windows. The windows share the same window manager if they are under same
-// browser context.
-class CameraAppWindowManager : public KeyedService,
-                               public views::WidgetObserver {
+// windows. The clients should only use this object as a singleton instance and
+// should only access it on the UI thread.
+class CameraAppWindowManager : public views::WidgetObserver {
  public:
-  CameraAppWindowManager();
   CameraAppWindowManager(const CameraAppWindowManager&) = delete;
   CameraAppWindowManager& operator=(const CameraAppWindowManager&) = delete;
   ~CameraAppWindowManager() override;
+
+  static CameraAppWindowManager* GetInstance();
 
   void SetCameraUsageMonitor(
       aura::Window* window,
@@ -44,6 +44,9 @@ class CameraAppWindowManager : public KeyedService,
   void OnWidgetDestroying(views::Widget* widget) override;
 
  private:
+  CameraAppWindowManager();
+
+  friend struct base::DefaultSingletonTraits<CameraAppWindowManager>;
   enum class TransferState {
     kIdle,
     kSuspending,
@@ -55,9 +58,6 @@ class CameraAppWindowManager : public KeyedService,
   void ResumeCameraUsage();
   void OnResumedCameraUsage(views::Widget* prev_owner);
   void ResumeNextOrIdle();
-
-  // KeyedService:
-  void Shutdown() override;
 
   base::flat_map<
       views::Widget*,

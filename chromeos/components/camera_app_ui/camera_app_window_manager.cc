@@ -6,20 +6,26 @@
 
 #include "chromeos/components/camera_app_ui/camera_app_helper_impl.h"
 #include "chromeos/components/camera_app_ui/url_constants.h"
+#include "content/public/browser/browser_thread.h"
 #include "ui/aura/window.h"
 #include "ui/views/widget/widget.h"
 
 namespace chromeos {
 
-CameraAppWindowManager::CameraAppWindowManager() = default;
-
 CameraAppWindowManager::~CameraAppWindowManager() = default;
+
+// static
+CameraAppWindowManager* CameraAppWindowManager::GetInstance() {
+  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  return base::Singleton<CameraAppWindowManager>::get();
+}
 
 void CameraAppWindowManager::SetCameraUsageMonitor(
     aura::Window* window,
     mojo::PendingRemote<chromeos_camera::mojom::CameraUsageOwnershipMonitor>
         usage_monitor,
     base::OnceCallback<void()> callback) {
+  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   auto* widget = views::Widget::GetWidgetForNativeWindow(window);
 
   mojo::Remote<chromeos_camera::mojom::CameraUsageOwnershipMonitor> remote(
@@ -39,6 +45,7 @@ void CameraAppWindowManager::SetCameraUsageMonitor(
 
 void CameraAppWindowManager::OnWidgetVisibilityChanged(views::Widget* widget,
                                                        bool visible) {
+  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   // This event will be triggered and the |visible| will be set to:
   // * True:
   //     1. When the window is restored from minimized.
@@ -75,6 +82,7 @@ void CameraAppWindowManager::OnWidgetVisibilityChanged(views::Widget* widget,
 
 void CameraAppWindowManager::OnWidgetActivationChanged(views::Widget* widget,
                                                        bool active) {
+  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   // This event will be triggered and the |active| will be set to:
   // * True:
   //     1. When the window is restored from minimized.
@@ -113,8 +121,11 @@ void CameraAppWindowManager::OnWidgetActivationChanged(views::Widget* widget,
 }
 
 void CameraAppWindowManager::OnWidgetDestroying(views::Widget* widget) {
+  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   widget->RemoveObserver(this);
 }
+
+CameraAppWindowManager::CameraAppWindowManager() = default;
 
 void CameraAppWindowManager::OnMonitorMojoConnectionError(
     views::Widget* widget) {
@@ -191,7 +202,5 @@ void CameraAppWindowManager::ResumeNextOrIdle() {
     transfer_state_ = TransferState::kIdle;
   }
 }
-
-void CameraAppWindowManager::Shutdown() {}
 
 }  // namespace chromeos
