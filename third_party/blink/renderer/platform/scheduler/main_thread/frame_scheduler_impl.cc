@@ -668,7 +668,7 @@ void FrameSchedulerImpl::OnStartedUsingFeature(
         "renderer.scheduler", "ActiveSchedulerTrackedFeature",
         TRACE_ID_LOCAL(reinterpret_cast<intptr_t>(this) ^
                        static_cast<int>(feature)),
-        "feature", FeatureToString(feature));
+        "feature", FeatureToHumanReadableString(feature));
   }
 }
 

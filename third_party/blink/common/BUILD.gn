@@ -274,6 +274,7 @@ source_set("common_unittests_sources") {
     "origin_trials/trial_token_validator_unittest.cc",
     "page/content_to_visible_time_reporter_unittest.cc",
     "page_state/page_state_serialization_unittest.cc",
+    "scheduler/web_scheduler_tracked_feature_unittest.cc",
     "service_worker/service_worker_scope_match_unittest.cc",
     "test/run_all_unittests.cc",
     "tokens/multi_token_unittest.cc",

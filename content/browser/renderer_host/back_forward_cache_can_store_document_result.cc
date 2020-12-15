@@ -18,7 +18,7 @@ std::string DescribeFeatures(uint64_t blocklisted_features) {
   for (size_t i = 0;
        i <= static_cast<size_t>(WebSchedulerTrackedFeature::kMaxValue); ++i) {
     if (blocklisted_features & (1 << i)) {
-      features.push_back(blink::scheduler::FeatureToString(
+      features.push_back(blink::scheduler::FeatureToHumanReadableString(
           static_cast<WebSchedulerTrackedFeature>(i)));
     }
   }
