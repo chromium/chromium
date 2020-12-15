@@ -4124,39 +4124,56 @@ TEST_F(NetworkContextTest, PreconnectOne) {
 }
 
 TEST_F(NetworkContextTest, PreconnectHSTS) {
-  std::unique_ptr<NetworkContext> network_context =
-      CreateContextWithParams(CreateContextParams());
+  net::NetworkIsolationKey network_isolation_key =
+      net::NetworkIsolationKey::CreateTransient();
 
-  ConnectionListener connection_listener;
-  net::EmbeddedTestServer test_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  test_server.SetConnectionListener(&connection_listener);
-  ASSERT_TRUE(test_server.Start());
+  for (bool partition_connections : {false, true}) {
+    base::test::ScopedFeatureList feature_list;
+    if (partition_connections) {
+      feature_list.InitAndEnableFeature(
+          net::features::kPartitionConnectionsByNetworkIsolationKey);
+    } else {
+      feature_list.InitAndDisableFeature(
+          net::features::kPartitionConnectionsByNetworkIsolationKey);
+    }
+    std::unique_ptr<NetworkContext> network_context =
+        CreateContextWithParams(CreateContextParams());
 
-  const GURL server_http_url = GetHttpUrlFromHttps(test_server.base_url());
-  network_context->PreconnectSockets(1, server_http_url,
-                                     /*allow_credentials=*/false,
-                                     net::NetworkIsolationKey());
-  connection_listener.WaitForAcceptedConnections(1u);
+    ConnectionListener connection_listener;
+    net::EmbeddedTestServer test_server(net::EmbeddedTestServer::TYPE_HTTPS);
+    test_server.SetConnectionListener(&connection_listener);
+    ASSERT_TRUE(test_server.Start());
 
-  int num_sockets = GetSocketCountForGroup(
-      network_context.get(),
-      "pm/" + net::HostPortPair::FromURL(server_http_url).ToString());
-  EXPECT_EQ(num_sockets, 1);
+    const GURL server_http_url = GetHttpUrlFromHttps(test_server.base_url());
 
-  const base::Time expiry =
-      base::Time::Now() + base::TimeDelta::FromSeconds(1000);
-  network_context->url_request_context()->transport_security_state()->AddHSTS(
-      server_http_url.host(), expiry, false);
-  network_context->PreconnectSockets(1, server_http_url,
-                                     /*allow_credentials=*/false,
-                                     net::NetworkIsolationKey());
-  connection_listener.WaitForAcceptedConnections(1u);
+    std::string group_suffix =
+        net::HostPortPair::FromURL(server_http_url).ToString();
+    if (partition_connections)
+      group_suffix += " <" + network_isolation_key.ToDebugString() + ">";
+    std::string group_name = "pm/" + group_suffix;
+    std::string ssl_group_name = "pm/ssl/" + group_suffix;
 
-  // If HSTS weren't respected, the initial connection would have been reused.
-  num_sockets = GetSocketCountForGroup(
-      network_context.get(),
-      "pm/ssl/" + net::HostPortPair::FromURL(server_http_url).ToString());
-  EXPECT_EQ(num_sockets, 1);
+    network_context->PreconnectSockets(1, server_http_url,
+                                       /*allow_credentials=*/false,
+                                       network_isolation_key);
+    connection_listener.WaitForAcceptedConnections(1u);
+
+    int num_sockets = GetSocketCountForGroup(network_context.get(), group_name);
+    EXPECT_EQ(num_sockets, 1);
+
+    const base::Time expiry =
+        base::Time::Now() + base::TimeDelta::FromSeconds(1000);
+    network_context->url_request_context()->transport_security_state()->AddHSTS(
+        server_http_url.host(), expiry, false);
+    network_context->PreconnectSockets(1, server_http_url,
+                                       /*allow_credentials=*/false,
+                                       network_isolation_key);
+    connection_listener.WaitForAcceptedConnections(1u);
+
+    // If HSTS weren't respected, the initial connection would have been reused.
+    num_sockets = GetSocketCountForGroup(network_context.get(), ssl_group_name);
+    EXPECT_EQ(num_sockets, 1);
+  }
 }
 
 TEST_F(NetworkContextTest, PreconnectZero) {
