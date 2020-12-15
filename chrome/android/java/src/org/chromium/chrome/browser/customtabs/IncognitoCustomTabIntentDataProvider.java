@@ -31,7 +31,6 @@ import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProv
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 
 import java.util.ArrayList;
@@ -48,17 +47,29 @@ import java.util.List;
 public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentDataProvider {
     private static final int MAX_CUSTOM_MENU_ITEMS = 5;
 
+    // If set, the incognito icon is not shown. Only honored for first party requests.
+    public static final String EXTRA_HIDE_INCOGNITO_ICON =
+            "org.chromium.chrome.browser.customtabs.HIDE_INCOGNITO_ICON";
+
+    // If set, the colors match that of normal profiles. Only honored for first party requests.
+    public static final String EXTRA_USE_NORMAL_PROFILE_STYLE =
+            "org.chromium.chrome.browser.customtabs.USE_NORMAL_PROFILE_STYLE";
+
+    // If set, incognito is allowed regardless of the status of the feature. Only honored for first
+    // party requests.
+    public static final String EXTRA_FORCE_ENABLE_FOR_EXPERIMENT =
+            "org.chromium.chrome.browser.customtabs.FORCE_ENABLE_FOR_EXPERIMENT";
+
     private final Intent mIntent;
     private final CustomTabsSessionToken mSession;
     private final boolean mIsTrustedIntent;
     private final Bundle mAnimationBundle;
-    private final int mToolbarColor;
-    private final int mBottomBarColor;
-    private final int mNavigationBarColor;
+    private final CustomTabColorProvider mColorProvider;
     private final int mTitleVisibilityState;
     private final Drawable mCloseButtonIcon;
     private final boolean mShowShareItem;
     private final List<Pair<String, PendingIntent>> mMenuEntries = new ArrayList<>();
+    private final boolean mHideIncognitoIconOnToolbar;
 
     @Nullable
     private final String mUrlToLoad;
@@ -70,7 +81,6 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
 
     /**
      * Constructs a {@link IncognitoCustomTabIntentDataProvider}.
-     * Incognito CCT would have a fix color scheme.
      */
     public IncognitoCustomTabIntentDataProvider(Intent intent, Context context, int colorScheme) {
         assert intent != null;
@@ -82,12 +92,14 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
                 intent, CustomTabsIntent.EXTRA_EXIT_ANIMATION_BUNDLE);
         mIsOpenedByChrome =
                 IntentUtils.safeGetBooleanExtra(intent, EXTRA_IS_OPENED_BY_CHROME, false);
-        mToolbarColor = ChromeColors.getDefaultThemeColor(
-                context.getResources(), /*forceDarkBgColor*/ true);
-        mBottomBarColor = ChromeColors.getDefaultThemeColor(
-                context.getResources(), /*forceDarkBgColor*/ true);
-        mNavigationBarColor = ChromeColors.getDefaultThemeColor(
-                context.getResources(), /*forceDarkBgColor*/ true);
+        // Only allow first-parties to change the styling.
+        final boolean useNormalProfileColors = isIntentFromFirstParty(intent)
+                && IntentUtils.safeGetBooleanExtra(intent, EXTRA_USE_NORMAL_PROFILE_STYLE, false);
+        mColorProvider = useNormalProfileColors
+                ? new CustomTabColorProviderImpl(intent, context, colorScheme)
+                : new IncognitoCustomTabColorProvider(context);
+        mHideIncognitoIconOnToolbar = isIntentFromFirstParty(intent)
+                && IntentUtils.safeGetBooleanExtra(intent, EXTRA_HIDE_INCOGNITO_ICON, false);
         mCloseButtonIcon = TintedDrawable.constructTintedDrawable(context, R.drawable.btn_close);
         mShowShareItem = IntentUtils.safeGetBooleanExtra(
                 intent, CustomTabsIntent.EXTRA_DEFAULT_SHARE_MENU_ITEM, false);
@@ -165,6 +177,12 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
     // incognito CCT request for all apps.
     public static boolean isValidIncognitoIntent(Intent intent) {
         if (!isIncognitoRequested(intent)) return false;
+        // Allow first parties to use for experimentation regardless of state of feature.
+        if (isIntentFromFirstParty(intent)
+                && IntentUtils.safeGetBooleanExtra(
+                        intent, EXTRA_FORCE_ENABLE_FOR_EXPERIMENT, false)) {
+            return true;
+        }
         if (!isTrustedIntent(intent)) return false;
         assert ChromeFeatureList.isInitialized();
         return ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_INCOGNITO);
@@ -233,7 +251,12 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
 
     @Override
     public int getToolbarColor() {
-        return mToolbarColor;
+        return mColorProvider.getToolbarColor();
+    }
+
+    @Override
+    public boolean hasCustomToolbarColor() {
+        return mColorProvider.hasCustomToolbarColor();
     }
 
     @Override
@@ -249,12 +272,23 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
 
     @Override
     public int getBottomBarColor() {
-        return mBottomBarColor;
+        return mColorProvider.getBottomBarColor();
+    }
+
+    @Override
+    public int getInitialBackgroundColor() {
+        return mColorProvider.getInitialBackgroundColor();
     }
 
     @Override
     public Integer getNavigationBarColor() {
-        return mNavigationBarColor;
+        return mColorProvider.getNavigationBarColor();
+    }
+
+    @Override
+    @Nullable
+    public Integer getNavigationBarDividerColor() {
+        return mColorProvider.getNavigationBarDividerColor();
     }
 
     @Override
@@ -295,5 +329,10 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
             list.add(pair.first);
         }
         return list;
+    }
+
+    @Override
+    public boolean shouldHideIncognitoIconOnToolbarInCct() {
+        return mHideIncognitoIconOnToolbar;
     }
 }
