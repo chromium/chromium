@@ -172,30 +172,6 @@ TEST_F(UpdateNotificationControllerTest, VisibilityAfterUpdateWithSlowReboot) {
   EXPECT_TRUE(HasNotification());
 }
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-TEST_F(UpdateNotificationControllerTest, VisibilityAfterFlashUpdate) {
-  // The system starts with no update pending, so the notification isn't
-  // visible.
-  EXPECT_FALSE(HasNotification());
-
-  // Simulate an update.
-  Shell::Get()->system_tray_model()->ShowUpdateIcon(UpdateSeverity::kLow, false,
-                                                    false, UpdateType::kFlash);
-
-  // Showing Update Notification posts a task to check for slow boot request
-  // and use the result of that check to generate appropriate notification. Wait
-  // until everything is complete and then check if the notification is visible.
-  task_environment()->RunUntilIdle();
-
-  // The notification is now visible.
-  ASSERT_TRUE(HasNotification());
-  EXPECT_EQ("Adobe Flash Player update available", GetNotificationTitle());
-  EXPECT_EQ("Learn more about the latest " SYSTEM_APP_NAME " update",
-            GetNotificationMessage());
-  EXPECT_EQ("Restart to update", GetNotificationButton(0));
-}
-#endif
-
 // Tests that the update icon's visibility after an update becomes
 // available for downloading over cellular connection.
 TEST_F(UpdateNotificationControllerTest,

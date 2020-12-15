@@ -27,7 +27,7 @@ enum class UpdateSeverity {
 
 // The type of update being applied. Sets the string in the system tray.
 enum class UpdateType {
-  kFlash,
+  // TODO(https://crbug.com/1154427): Add Lacros update type.
   kSystem,
 };
 

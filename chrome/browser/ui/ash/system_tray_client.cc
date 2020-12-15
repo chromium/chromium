@@ -164,11 +164,6 @@ SystemTrayClient* SystemTrayClient::Get() {
   return g_system_tray_client_instance;
 }
 
-void SystemTrayClient::SetFlashUpdateAvailable() {
-  flash_update_available_ = true;
-  HandleUpdateAvailable();
-}
-
 void SystemTrayClient::SetUpdateNotificationState(
     ash::NotificationStyle style,
     const base::string16& notification_title,
@@ -456,12 +451,7 @@ void SystemTrayClient::ShowMultiDeviceSetup() {
 }
 
 void SystemTrayClient::RequestRestartForUpdate() {
-  // Flash updates on Chrome OS require device reboot.
-  const browser_shutdown::RebootPolicy reboot_policy =
-      flash_update_available_ ? browser_shutdown::RebootPolicy::kForceReboot
-                              : browser_shutdown::RebootPolicy::kOptionalReboot;
-
-  browser_shutdown::NotifyAndTerminate(true /* fast_path */, reboot_policy);
+  browser_shutdown::NotifyAndTerminate(/*fast_path=*/true);
 }
 
 void SystemTrayClient::SetLocaleAndExit(const std::string& locale_iso_code) {
@@ -471,9 +461,9 @@ void SystemTrayClient::SetLocaleAndExit(const std::string& locale_iso_code) {
 }
 
 void SystemTrayClient::HandleUpdateAvailable() {
-  // Show an update icon for Chrome updates and Flash component updates.
+  // Show an update icon for Chrome OS updates.
   UpgradeDetector* detector = UpgradeDetector::GetInstance();
-  bool update_available = detector->notify_upgrade() || flash_update_available_;
+  bool update_available = detector->notify_upgrade();
   DCHECK(update_available);
   if (!update_available)
     return;
@@ -481,20 +471,13 @@ void SystemTrayClient::HandleUpdateAvailable() {
   // Get the Chrome update severity.
   ash::UpdateSeverity severity = GetUpdateSeverity(detector);
 
-  // Flash updates are low severity unless the Chrome severity is higher.
-  if (flash_update_available_)
-    severity = std::max(severity, ash::UpdateSeverity::kLow);
-
-  // Show a string specific to updating flash player if there is no system
-  // update.
-  ash::UpdateType update_type = detector->notify_upgrade()
-                                    ? ash::UpdateType::kSystem
-                                    : ash::UpdateType::kFlash;
+  // TODO(https://crbug.com/1154427): Add Lacros update type.
+  ash::UpdateType update_type = ash::UpdateType::kSystem;
 
   system_tray_->ShowUpdateIcon(severity, detector->is_factory_reset_required(),
                                detector->is_rollback(), update_type);
 
-  // Only overwrite title and body for system updates, not for flash updates.
+  // Only overwrite title and body for system updates.
   if (update_type == ash::UpdateType::kSystem) {
     system_tray_->SetUpdateNotificationState(update_notification_style_,
                                              update_notification_title_,

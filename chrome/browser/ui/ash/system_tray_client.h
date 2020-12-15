@@ -31,10 +31,6 @@ class SystemTrayClient : public ash::SystemTrayClient,
 
   static SystemTrayClient* Get();
 
-  // Shows an update icon for an Adobe Flash update and forces a device reboot
-  // when the update is applied.
-  void SetFlashUpdateAvailable();
-
   // Specifies if notification is recommended or required by administrator and
   // triggers the notification to be shown with the given body and title.
   void SetUpdateNotificationState(ash::NotificationStyle style,
@@ -105,9 +101,6 @@ class SystemTrayClient : public ash::SystemTrayClient,
 
   // The system tray model in ash.
   ash::SystemTray* const system_tray_;
-
-  // Whether an Adobe Flash component update is available.
-  bool flash_update_available_ = false;
 
   // Tells update notification style, for example required by administrator.
   ash::NotificationStyle update_notification_style_;
