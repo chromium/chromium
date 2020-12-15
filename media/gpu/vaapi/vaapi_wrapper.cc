@@ -252,25 +252,6 @@ namespace {
 // VAEntrypoint is an enumeration starting from 1, but has no "invalid" value.
 constexpr VAEntrypoint kVAEntrypointInvalid = static_cast<VAEntrypoint>(0);
 
-// Returns true if the SoC has a Gen8 GPU. CPU model ID's are referenced from
-// the following file in the kernel source: arch/x86/include/asm/intel-family.h.
-bool IsGen8Gpu() {
-  constexpr int kPentiumAndLaterFamily = 0x06;
-  constexpr int kBroadwellCoreModelId = 0x3D;
-  constexpr int kBroadwellGT3EModelId = 0x47;
-  constexpr int kBroadwellXModelId = 0x4F;
-  constexpr int kBroadwellXeonDModelId = 0x56;
-  constexpr int kBraswellModelId = 0x4C;
-  static const base::NoDestructor<base::CPU> cpuid;
-  static const bool is_gen8_gpu = cpuid->family() == kPentiumAndLaterFamily &&
-                                  (cpuid->model() == kBroadwellCoreModelId ||
-                                   cpuid->model() == kBroadwellGT3EModelId ||
-                                   cpuid->model() == kBroadwellXModelId ||
-                                   cpuid->model() == kBroadwellXeonDModelId ||
-                                   cpuid->model() == kBraswellModelId);
-  return is_gen8_gpu;
-}
-
 // Returns true if the SoC has a Gen9 GPU. CPU model ID's are referenced from
 // the following file in the kernel source: arch/x86/include/asm/intel-family.h.
 bool IsGen9Gpu() {
@@ -304,17 +285,6 @@ bool IsGen95Gpu() {
                                     cpuid->model() == kCometLakeModelId ||
                                     cpuid->model() == kCometLake_LModelId);
   return is_gen95_gpu;
-}
-
-// Returns true if the intel hybrid driver is used for decoding |va_profile|.
-// https://github.com/intel/intel-hybrid-driver
-// Note that since the hybrid driver runs as a part of the i965 driver,
-// vaQueryVendorString() returns "Intel i965 driver".
-bool IsUsingHybridDriverForDecoding(VAProfile va_profile) {
-  // Note that Skylake (not gen8) also needs the hybrid decoder for VP9
-  // decoding. However, it is disabled today on ChromeOS
-  // (see crrev.com/c/390511).
-  return va_profile == VAProfileVP9Profile0 && IsGen8Gpu();
 }
 
 // Returns true if the SoC is considered a low power one, i.e. it's an Intel
@@ -1152,22 +1122,6 @@ bool VASupportedProfiles::FillProfileInfo_Locked(
                .Contains(gfx::Rect(kMinEncodeResolution))) {
         profile_info->min_resolution.SetToMax(kMinEncodeResolution);
         DVLOG(2) << "Setting the minimum supported encoding resolution to "
-                 << profile_info->min_resolution.ToString() << " for "
-                 << vaProfileStr(va_profile);
-      }
-    } else if (entrypoint == VAEntrypointVLD &&
-               IsUsingHybridDriverForDecoding(va_profile)) {
-      // Using the hybrid driver for accelerated decoding of frames smaller than
-      // a certain size is less efficient than using a software decoder. This
-      // minimum resolution is selected from the fact that the resolutions of
-      // videos in tile layout in Google Meet are QVGA.
-      constexpr gfx::Size kMinDecodeResolutionForHybridDecoder(320 + 1,
-                                                               240 + 1);
-      if (!gfx::Rect(profile_info->min_resolution)
-               .Contains(gfx::Rect(kMinDecodeResolutionForHybridDecoder))) {
-        profile_info->min_resolution.SetToMax(
-            kMinDecodeResolutionForHybridDecoder);
-        DVLOG(2) << "Setting the minimum supported decoding resolution to "
                  << profile_info->min_resolution.ToString() << " for "
                  << vaProfileStr(va_profile);
       }
