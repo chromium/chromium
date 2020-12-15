@@ -21,6 +21,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<variants name="FileOperations">
+  <variant name=".DeleteFile.NonRecursive" summary=""/>
+  <variant name=".DeleteFile.Recursive" summary=""/>
+</variants>
+
 <histogram name="Windows.ApplockerRunning" enum="Boolean" expires_after="M83">
   <owner>forshaw@chromium.org</owner>
   <owner>wfh@chromium.org</owner>
@@ -64,13 +69,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram base="true" name="Windows.FilesystemError" enum="WinGetLastError"
-    expires_after="M81">
+<histogram name="Windows.FilesystemError{FileOperations}"
+    enum="WinGetLastError" expires_after="M81">
   <owner>grt@chromium.org</owner>
   <summary>
     The Windows error code relating to a failed attempt to operate on a file or
-    a directory.
+    a directory. {FileOperations}
   </summary>
+  <token key="FileOperations" variants="FileOperations">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
 <histogram name="Windows.GetVersionExVersion" enum="WindowsVersion"
@@ -281,12 +293,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram base="true" name="Windows.PostOperationState"
+<histogram name="Windows.PostOperationState{FileOperations}"
     enum="PostOperationState" expires_after="M81">
   <owner>grt@chromium.org</owner>
   <summary>
     The state of an item in the filesystem following an operation on it.
+    {FileOperations}
   </summary>
+  <token key="FileOperations" variants="FileOperations">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
 <histogram name="Windows.ProcessorFamily" enum="ProcessorFamily"

@@ -6587,24 +6587,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="FileBrowser.CrostiniSharedPaths.Depth"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="FileOperations" separator=".">
-  <suffix name="DeleteFile.NonRecursive" label=""/>
-  <suffix name="DeleteFile.Recursive" label=""/>
-  <affected-histogram name="Windows.FilesystemError"/>
-  <affected-histogram name="Windows.PostOperationState"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="FindInPageRequestEndState" separator=".">
-  <suffix name="Aborted"
-      label="The request got aborted before it went through every text in the
-             document."/>
-  <suffix name="Finished"
-      label="The request finished going through every text in the document."/>
-  <affected-histogram name="WebCore.FindInPage.NumberOfTasksPerRequest"/>
-  <affected-histogram name="WebCore.FindInPage.RequestDuration"/>
-  <affected-histogram name="WebCore.FindInPage.TotalTaskDuration"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="FirstDownload" separator=".">
   <obsolete>
     Removed 2020-10.
@@ -7927,15 +7909,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="InProductHelp.Promos.SnoozeCountAtFollow"/>
   <affected-histogram name="InProductHelp.Promos.SnoozeCountAtTrigger"/>
   <affected-histogram name="InProductHelp.ShouldTriggerHelpUI"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="IPProtocolType" separator="_">
-  <suffix name="TCP" label=""/>
-  <suffix name="UDP" label=""/>
-  <affected-histogram name="WebRTC.PeerConnection.CandidatePairType"/>
-  <affected-histogram name="WebRTC.SystemMaxConsecutiveBytesDelayed"/>
-  <affected-histogram name="WebRTC.SystemPercentPacketsDelayed"/>
-  <affected-histogram name="WebRTC.SystemSendPacketDuration"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="IPv6_Probe" separator="_">
@@ -9433,16 +9406,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="File" label=""/>
   <affected-histogram name="NativeFileSystemAPI.ReadPermissionRequestOutcome"/>
   <affected-histogram name="NativeFileSystemAPI.WritePermissionRequestOutcome"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="NatType" separator=".">
-  <suffix name="NoNAT" label=""/>
-  <suffix name="NonSymNAT" label=""/>
-  <suffix name="SymNAT" label=""/>
-  <suffix name="UnknownNAT" label=""/>
-  <affected-histogram name="WebRTC.Stun.BatchSuccessPercent"/>
-  <affected-histogram name="WebRTC.Stun.ResponseLatency"/>
-  <affected-histogram name="WebRTC.Stun.SuccessPercent"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="NavigationCharacteristic" separator="_">
@@ -16363,24 +16326,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       name="Scheduler.Experimental.Renderer.TotalTime.Wall.MainThread"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ScreenshareLayerStats" separator=".">
-  <suffix name="FrameRate"
-      label="Frames per second sent, in fps. The value is reported when a
-             stream is removed and is calculated as the total number of
-             frames in this layer, divided by the duration of the call."/>
-  <suffix name="Qp"
-      label="Average quantizer (qp) of frames sent. The value is reported
-             when a stream is removed and is calculated, for this layer, as
-             the sum of all qp values divided the number of frames."/>
-  <suffix name="TargetBitrate"
-      label="Average target bitrate in kbps. The value is reported when a
-             stream is removed and is calculated as the sum of all target
-             bitrates for this layer (sampled after frame has been encoded)
-             divided by the total number of frames for this layer."/>
-  <affected-histogram name="WebRTC.Video.Screenshare.Layer0"/>
-  <affected-histogram name="WebRTC.Video.Screenshare.Layer1"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="ScrollSourceDevice" separator=".">
   <suffix name="Touch" label="Touch"/>
   <suffix name="Wheel" label="Wheel"/>
@@ -19494,15 +19439,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="VRSessionVideoTime"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="WebApkDistributorType" separator=".">
-  <suffix name="Browser" label="Installed by Chrome"/>
-  <suffix name="DevicePolicy" label="Installed by device policy"/>
-  <suffix name="Other" label="Installed by other sources"/>
-  <affected-histogram name="WebApk.Session.TotalDuration2"/>
-  <affected-histogram name="WebApk.ShellApkVersion2"/>
-  <affected-histogram name="WebApk.Uninstall"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="WebApkType" separator=".">
   <suffix name="BrowserApk" label="Installed by Chrome"/>
   <suffix name="UnboundApk" label="Not installed by Chrome"/>
@@ -19692,14 +19628,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Media.UnderflowDuration2"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="WebRTCEchoCancellerEstimate" separator=".">
-  <suffix name="Max" label="The maximum over the time interval"/>
-  <suffix name="Min" label="The minimum over the time interval"/>
-  <suffix name="Value" label="The last estimated value of the time interval"/>
-  <affected-histogram name="WebRTC.Audio.EchoCanceller.Erl"/>
-  <affected-histogram name="WebRTC.Audio.EchoCanceller.Erle"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="WebRTCEchoCancellerStatisticType" separator=".">
   <suffix name="Average" label="The average over the time interval"/>
   <suffix name="Max" label="The maximum over the time interval"/>
@@ -19712,50 +19640,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="WebRTC.Audio.EchoCanceller.ErleBand1"/>
   <affected-histogram name="WebRTC.Audio.EchoCanceller.SuppressorGainBand0"/>
   <affected-histogram name="WebRTC.Audio.EchoCanceller.SuppressorGainBand1"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="WebRTCMediaType" separator=".">
-  <suffix name="Audio" label="Audio"/>
-  <suffix name="Data" label="Data"/>
-  <suffix name="Video" label="Video"/>
-  <affected-histogram name="WebRTC.PeerConnection.SrtpCryptoSuite"/>
-  <affected-histogram name="WebRTC.PeerConnection.SslCipherSuite"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="WebRTCVideoExperimentGroupId" separator=".">
-  <owner>ilnik@chromium.org</owner>
-  <owner>webrtc-video@google.com</owner>
-  <suffix name="ExperimentGroup0" label=""/>
-  <suffix name="ExperimentGroup1" label=""/>
-  <suffix name="ExperimentGroup2" label=""/>
-  <suffix name="ExperimentGroup3" label=""/>
-  <suffix name="ExperimentGroup4" label=""/>
-  <suffix name="S0" label=""/>
-  <suffix name="S1" label=""/>
-  <suffix name="S2" label=""/>
-  <affected-histogram name="WebRTC.Video.Decoded.Vp8.Qp"/>
-  <affected-histogram name="WebRTC.Video.EndToEndDelayInMs"/>
-  <affected-histogram name="WebRTC.Video.EndToEndDelayMaxInMs"/>
-  <affected-histogram name="WebRTC.Video.InterframeDelay95PercentileInMs"/>
-  <affected-histogram name="WebRTC.Video.InterframeDelayInMs"/>
-  <affected-histogram name="WebRTC.Video.InterframeDelayMaxInMs"/>
-  <affected-histogram name="WebRTC.Video.KeyFramesReceivedInPermille"/>
-  <affected-histogram name="WebRTC.Video.MediaBitrateReceivedInKbps"/>
-  <affected-histogram name="WebRTC.Video.ReceivedHeightInPixels"/>
-  <affected-histogram name="WebRTC.Video.ReceivedWidthInPixels"/>
-  <affected-histogram name="WebRTC.Video.Screenshare.Decoded.Vp8.Qp"/>
-  <affected-histogram name="WebRTC.Video.Screenshare.EndToEndDelayInMs"/>
-  <affected-histogram name="WebRTC.Video.Screenshare.EndToEndDelayMaxInMs"/>
-  <affected-histogram
-      name="WebRTC.Video.Screenshare.InterframeDelay95PercentileInMs"/>
-  <affected-histogram name="WebRTC.Video.Screenshare.InterframeDelayInMs"/>
-  <affected-histogram name="WebRTC.Video.Screenshare.InterframeDelayMaxInMs"/>
-  <affected-histogram
-      name="WebRTC.Video.Screenshare.KeyFramesReceivedInPermille"/>
-  <affected-histogram
-      name="WebRTC.Video.Screenshare.MediaBitrateReceivedInKbps"/>
-  <affected-histogram name="WebRTC.Video.Screenshare.ReceivedHeightInPixels"/>
-  <affected-histogram name="WebRTC.Video.Screenshare.ReceivedWidthInPixels"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="WebSocketErrorCodesVariants" separator="_">
