@@ -21,7 +21,7 @@ void CallbackTracker::AbortAll() {
   std::swap(helpers, helpers_);
   for (auto itr = helpers.begin(); itr != helpers.end(); ++itr) {
     delete itr->first;
-    itr->second.Run();
+    std::move(itr->second).Run();
   }
 }
 

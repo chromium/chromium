@@ -29,8 +29,8 @@ class MetadataDatabase;
 
 class FolderCreator {
  public:
-  typedef base::Callback<void(const std::string& file_id,
-                              SyncStatusCode status)> FileIDCallback;
+  using FileIDCallback = base::OnceCallback<void(const std::string& file_id,
+                                                 SyncStatusCode status)>;
 
   FolderCreator(drive::DriveServiceInterface* drive_service,
                 MetadataDatabase* metadata_database,
@@ -38,14 +38,14 @@ class FolderCreator {
                 const std::string& title);
   ~FolderCreator();
 
-  void Run(const FileIDCallback& callback);
+  void Run(FileIDCallback callback);
 
  private:
-  void DidCreateFolder(const FileIDCallback& callback,
+  void DidCreateFolder(FileIDCallback callback,
                        google_apis::DriveApiErrorCode error,
                        std::unique_ptr<google_apis::FileResource> entry);
   void DidListFolders(
-      const FileIDCallback& callback,
+      FileIDCallback callback,
       std::vector<std::unique_ptr<google_apis::FileResource>> candidates,
       google_apis::DriveApiErrorCode error,
       std::unique_ptr<google_apis::FileList> file_list);
