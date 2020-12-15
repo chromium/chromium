@@ -1972,7 +1972,8 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
     std::unique_ptr<NetworkServiceProxyDelegate> proxy_delegate =
         std::make_unique<NetworkServiceProxyDelegate>(
             std::move(params_->initial_custom_proxy_config),
-            std::move(params_->custom_proxy_config_client_receiver));
+            std::move(params_->custom_proxy_config_client_receiver),
+            std::move(params_->custom_proxy_connection_observer_remote));
     proxy_delegate_ = proxy_delegate.get();
     builder.set_proxy_delegate(std::move(proxy_delegate));
   }

@@ -73,9 +73,7 @@ const uint32 kWebSocketOptionBlockThirdPartyCookies = 2;
 // The browser can provide a CustomProxyConfig to a CustomProxyConfigClient
 // running in the network service. The network service will use the given proxy
 // configuration if a request matches the proxy rules and all the other
-// criteria contained within it. This configuration allows the browser to
-// direct the network service to set headers on requests to the given proxies
-// before and/or after the caching layer.
+// criteria contained within it.
 struct CustomProxyConfig {
   // The custom proxy rules to use. Note that ftp:// requests are not
   // supported.
@@ -95,6 +93,21 @@ struct CustomProxyConfig {
   // to the CONNECT request. Headers here will overwrite matching headers on
   // the CONNECT request if a custom proxy is used.
   HttpRequestHeaders connect_tunnel_headers;
+};
+
+// Observer of custom proxy connections, especially for when errors occur.
+interface CustomProxyConnectionObserver {
+  // Called when use of |bad_proxy| fails due to |net_error|. |net_error| is the
+  // network error encountered, if any, and OK if the fallback was for a reason
+  // other than a network error (e.g. the proxy service was explicitly directed
+  // to skip a proxy).
+  OnFallback(proxy_resolver.mojom.ProxyServer bad_proxy, int32 net_error);
+
+  // Called when the response headers for the proxy tunnel request have been
+  // received.
+  OnTunnelHeadersReceived(
+      proxy_resolver.mojom.ProxyServer proxy_server,
+      HttpResponseHeaders response_headers);
 };
 
 // Parameters to specify how the net::CertVerifier and net::CertVerifyProc
@@ -334,6 +347,12 @@ struct NetworkContextParams {
   CustomProxyConfig? initial_custom_proxy_config;
   pending_receiver<CustomProxyConfigClient>?
       custom_proxy_config_client_receiver;
+
+  // If |initial_custom_proxy_config| or |custom_proxy_config_client_receiver|
+  // is set, information about custom proxy connections will be reported to this
+  // observer.
+  pending_remote<CustomProxyConnectionObserver>?
+      custom_proxy_connection_observer_remote;
 
   // If |proxy_config_client_request| is non-null, this is called during
   // periods of network activity, and can be used as a signal for polling-based

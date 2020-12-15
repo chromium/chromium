@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "services/network/network_service_proxy_delegate.h"
+#include "base/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_util.h"
@@ -96,13 +98,24 @@ void MergeRequestHeaders(net::HttpRequestHeaders* out,
 NetworkServiceProxyDelegate::NetworkServiceProxyDelegate(
     mojom::CustomProxyConfigPtr initial_config,
     mojo::PendingReceiver<mojom::CustomProxyConfigClient>
-        config_client_receiver)
+        config_client_receiver,
+    mojo::PendingRemote<mojom::CustomProxyConnectionObserver> observer_remote)
     : proxy_config_(std::move(initial_config)),
       receiver_(this, std::move(config_client_receiver)) {
   // Make sure there is always a valid proxy config so we don't need to null
   // check it.
-  if (!proxy_config_)
+  if (!proxy_config_) {
     proxy_config_ = mojom::CustomProxyConfig::New();
+  }
+
+  // |observer_remote| is an optional param for the NetworkContext.
+  if (observer_remote) {
+    observer_.Bind(std::move(observer_remote));
+    // Unretained is safe since |observer_| is owned by |this|.
+    observer_.set_disconnect_handler(
+        base::BindOnce(&NetworkServiceProxyDelegate::OnObserverDisconnect,
+                       base::Unretained(this)));
+  }
 }
 
 NetworkServiceProxyDelegate::~NetworkServiceProxyDelegate() {}
@@ -124,7 +137,11 @@ void NetworkServiceProxyDelegate::OnResolveProxy(
 }
 
 void NetworkServiceProxyDelegate::OnFallback(const net::ProxyServer& bad_proxy,
-                                             int net_error) {}
+                                             int net_error) {
+  if (observer_) {
+    observer_->OnFallback(bad_proxy, net_error);
+  }
+}
 
 void NetworkServiceProxyDelegate::OnBeforeTunnelRequest(
     const net::ProxyServer& proxy_server,
@@ -136,6 +153,12 @@ void NetworkServiceProxyDelegate::OnBeforeTunnelRequest(
 net::Error NetworkServiceProxyDelegate::OnTunnelHeadersReceived(
     const net::ProxyServer& proxy_server,
     const net::HttpResponseHeaders& response_headers) {
+  if (observer_) {
+    // Copy the response headers since mojo expects a ref counted object.
+    observer_->OnTunnelHeadersReceived(
+        proxy_server, base::MakeRefCounted<net::HttpResponseHeaders>(
+                          response_headers.raw_headers()));
+  }
   return net::OK;
 }
 
@@ -202,6 +225,10 @@ bool NetworkServiceProxyDelegate::EligibleForProxy(
   }
 
   return true;
+}
+
+void NetworkServiceProxyDelegate::OnObserverDisconnect() {
+  observer_.reset();
 }
 
 }  // namespace network

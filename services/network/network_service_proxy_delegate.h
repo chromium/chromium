@@ -10,6 +10,7 @@
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/proxy_delegate.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
@@ -27,10 +28,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyDelegate
     : public net::ProxyDelegate,
       public mojom::CustomProxyConfigClient {
  public:
-  explicit NetworkServiceProxyDelegate(
+  NetworkServiceProxyDelegate(
       mojom::CustomProxyConfigPtr initial_config,
       mojo::PendingReceiver<mojom::CustomProxyConfigClient>
-          config_client_receiver);
+          config_client_receiver,
+      mojo::PendingRemote<mojom::CustomProxyConnectionObserver>
+          observer_remote);
   ~NetworkServiceProxyDelegate() override;
 
   void SetProxyResolutionService(
@@ -62,6 +65,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyDelegate
   bool EligibleForProxy(const net::ProxyInfo& proxy_info,
                         const std::string& method) const;
 
+  void OnObserverDisconnect();
+
   // mojom::CustomProxyConfigClient implementation:
   void OnCustomProxyConfigUpdated(
       mojom::CustomProxyConfigPtr proxy_config) override;
@@ -72,6 +77,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyDelegate
 
   mojom::CustomProxyConfigPtr proxy_config_;
   mojo::Receiver<mojom::CustomProxyConfigClient> receiver_;
+  mojo::Remote<mojom::CustomProxyConnectionObserver> observer_;
 
   net::ProxyResolutionService* proxy_resolution_service_ = nullptr;
 
