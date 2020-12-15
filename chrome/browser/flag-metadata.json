@@ -719,12 +719,12 @@
   },
   {
     "name": "crostini-disk-resizing",
-    "owners": [ "davidmunro", "nverne" ],
+    "owners": [ "davidmunro@google.com", "nverne" ],
     "expiry_milestone": 86
   },
   {
     "name": "crostini-enable-dlc",
-    "owners": [ "sidereal", "davidmunro", "nverne" ],
+    "owners": [ "sidereal", "davidmunro@google.com", "nverne" ],
     "expiry_milestone": 92
   },
   {
@@ -734,7 +734,7 @@
   },
   {
     "name": "crostini-reset-lxd-db",
-    "owners": [ "davidmunro", "nverne", "sidereal" ],
+    "owners": [ "davidmunro@google.com", "nverne", "sidereal" ],
     "expiry_milestone": 89
   },
   {
@@ -744,7 +744,7 @@
   },
   {
     "name": "crostini-use-dlc",
-    "owners": [ "sidereal", "davidmunro", "nverne" ],
+    "owners": [ "sidereal", "davidmunro@google.com", "nverne" ],
     "expiry_milestone": 92
   },
   {
