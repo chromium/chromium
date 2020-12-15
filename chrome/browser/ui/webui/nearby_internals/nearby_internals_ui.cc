@@ -37,7 +37,7 @@ NearbyInternalsUI::NearbyInternalsUI(content::WebUI* web_ui)
   webui::SetupWebUIDataSource(
       html_source,
       base::make_span(kNearbyInternalsResources, kNearbyInternalsResourcesSize),
-      /*generated_path=*/std::string(), IDR_NEARBY_INTERNALS_INDEX_HTML);
+      IDR_NEARBY_INTERNALS_INDEX_HTML);
 
   content::WebUIDataSource::Add(profile, html_source);
   content::BrowserContext* context =

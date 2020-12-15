@@ -36,7 +36,7 @@ WebUIJsErrorUI::WebUIJsErrorUI(content::WebUI* web_ui)
   webui::SetupWebUIDataSource(
       source,
       base::make_span(kWebuiJsErrorResources, kWebuiJsErrorResourcesSize),
-      std::string(), IDR_WEBUI_JS_ERROR_WEBUI_JS_ERROR_HTML);
+      IDR_WEBUI_JS_ERROR_WEBUI_JS_ERROR_HTML);
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource::Add(profile, source);
 }

@@ -113,7 +113,7 @@ content::WebUIDataSource* CreateHistoryUIHTMLSource(Profile* profile) {
   source->AddBoolean(kIsUserSignedInKey, IsUserSignedIn(profile));
 
   webui::SetupWebUIDataSource(
-      source, base::make_span(kHistoryResources, kHistoryResourcesSize), "",
+      source, base::make_span(kHistoryResources, kHistoryResourcesSize),
       IDR_HISTORY_HISTORY_HTML);
 
   return source;

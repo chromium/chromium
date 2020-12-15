@@ -235,7 +235,7 @@ DiscardsUI::DiscardsUI(content::WebUI* web_ui)
       {"chrome/browser/ui/webui/discards/site_data.mojom-webui.js",
        IDR_DISCARDS_SITE_DATA_MOJOM_WEBUI_JS},
   };
-  webui::SetupWebUIDataSource(source.get(), kResources, "", IDR_DISCARDS_HTML);
+  webui::SetupWebUIDataSource(source.get(), kResources, IDR_DISCARDS_HTML);
 
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource::Add(profile, source.release());

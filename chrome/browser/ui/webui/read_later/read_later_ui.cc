@@ -48,7 +48,7 @@ ReadLaterUI::ReadLaterUI(content::WebUI* web_ui)
 
   webui::SetupWebUIDataSource(
       source, base::make_span(kReadLaterResources, kReadLaterResourcesSize),
-      /*generated_path=*/std::string(), IDR_READ_LATER_READ_LATER_HTML);
+      IDR_READ_LATER_READ_LATER_HTML);
   content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                                 source);
 }

@@ -113,7 +113,7 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
         content::WebUIDataSource::Create(chrome::kChromeUIChromeSigninHost);
   webui::SetupWebUIDataSource(
       source,
-      base::make_span(kGaiaAuthHostResources, kGaiaAuthHostResourcesSize), "",
+      base::make_span(kGaiaAuthHostResources, kGaiaAuthHostResourcesSize),
       IDR_INLINE_LOGIN_HTML);
 
   // Only add a filter when runing as test.

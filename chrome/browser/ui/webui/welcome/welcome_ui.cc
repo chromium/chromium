@@ -130,7 +130,7 @@ WelcomeUI::WelcomeUI(content::WebUI* web_ui, const GURL& url)
       content::WebUIDataSource::Create(url.host());
   webui::SetupWebUIDataSource(
       html_source, base::make_span(kWelcomeResources, kWelcomeResourcesSize),
-      "", IDR_WELCOME_WELCOME_HTML);
+      IDR_WELCOME_WELCOME_HTML);
 
   // Add welcome strings.
   AddStrings(html_source);

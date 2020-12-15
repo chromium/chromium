@@ -255,7 +255,7 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
 
   webui::SetupWebUIDataSource(
       source, base::make_span(kNewTabPageResources, kNewTabPageResourcesSize),
-      "", IDR_NEW_TAB_PAGE_NEW_TAB_PAGE_HTML);
+      IDR_NEW_TAB_PAGE_NEW_TAB_PAGE_HTML);
 
   // Allows creating <script> and inlining as well as network requests to
   // support inlining the OneGoogleBar.

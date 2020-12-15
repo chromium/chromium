@@ -450,7 +450,7 @@ content::WebUIDataSource* CreatePrintPreviewUISource(Profile* profile) {
       content::WebUIDataSource::Create(chrome::kChromeUIPrintHost);
   webui::SetupWebUIDataSource(
       source,
-      base::make_span(kPrintPreviewResources, kPrintPreviewResourcesSize), "",
+      base::make_span(kPrintPreviewResources, kPrintPreviewResourcesSize),
       IDR_PRINT_PREVIEW_PRINT_PREVIEW_HTML);
   AddPrintPreviewStrings(source);
   SetupPrintPreviewPlugin(source);

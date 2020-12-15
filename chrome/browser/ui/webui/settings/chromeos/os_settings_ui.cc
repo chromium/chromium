@@ -76,7 +76,7 @@ OSSettingsUI::OSSettingsUI(content::WebUI* web_ui)
   webui::SetupWebUIDataSource(
       html_source,
       base::make_span(kOsSettingsResources, kOsSettingsResourcesSize),
-      /*generated_path=*/std::string(), default_resource);
+      default_resource);
 
   // For Polymer 2 optimized builds that rely on loading individual subpages,
   // set the default resource for tests.

@@ -29,7 +29,7 @@ MultideviceInternalsUI::MultideviceInternalsUI(content::WebUI* web_ui)
       html_source,
       base::make_span(kMultideviceInternalsResources,
                       kMultideviceInternalsResourcesSize),
-      "", IDR_MULTIDEVICE_INTERNALS_INDEX_HTML);
+      IDR_MULTIDEVICE_INTERNALS_INDEX_HTML);
 
   content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), html_source);
   web_ui->AddMessageHandler(

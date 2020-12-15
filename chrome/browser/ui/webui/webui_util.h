@@ -31,7 +31,6 @@ struct ResourcePath {
 // test loader files.
 void SetupWebUIDataSource(content::WebUIDataSource* source,
                           base::span<const GritResourceMap> resources,
-                          const std::string& generated_path,
                           int default_resource);
 
 // Calls content::WebUIDataSource::AddLocalizedString() in a for-loop for

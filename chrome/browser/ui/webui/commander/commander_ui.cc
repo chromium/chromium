@@ -24,7 +24,7 @@ CommanderUI::CommanderUI(content::WebUI* web_ui)
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUICommanderHost);
   webui::SetupWebUIDataSource(
-      source, base::make_span(kCommanderResources, kCommanderResourcesSize), "",
+      source, base::make_span(kCommanderResources, kCommanderResourcesSize),
       IDR_COMMANDER_COMMANDER_HTML);
 
   Profile* profile = Profile::FromWebUI(web_ui);

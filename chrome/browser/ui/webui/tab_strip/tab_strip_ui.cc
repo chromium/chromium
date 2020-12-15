@@ -47,7 +47,7 @@ TabStripUI::TabStripUI(content::WebUI* web_ui)
       content::WebUIDataSource::Create(chrome::kChromeUITabStripHost);
   webui::SetupWebUIDataSource(
       html_source, base::make_span(kTabStripResources, kTabStripResourcesSize),
-      "", IDR_TAB_STRIP_TAB_STRIP_HTML);
+      IDR_TAB_STRIP_TAB_STRIP_HTML);
 
   html_source->AddString("tabIdDataType", kWebUITabIdDataType);
   html_source->AddString("tabGroupIdDataType", kWebUITabGroupIdDataType);

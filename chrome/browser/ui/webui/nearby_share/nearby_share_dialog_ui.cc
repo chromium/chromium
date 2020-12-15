@@ -49,7 +49,6 @@ NearbyShareDialogUI::NearbyShareDialogUI(content::WebUI* web_ui)
   webui::SetupWebUIDataSource(html_source,
                               base::make_span(kNearbyShareDialogResources,
                                               kNearbyShareDialogResourcesSize),
-                              /*generated_path=*/std::string(),
                               IDR_NEARBY_SHARE_DIALOG_NEARBY_SHARE_DIALOG_HTML);
 
   // To use lottie, the worker-src CSP needs to be updated for the web ui that
