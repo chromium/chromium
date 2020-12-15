@@ -13344,6 +13344,66 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   }
 }
 
+// Test that the compositing scale factor for an out-of-process iframe is set
+// to a non-zero value even if intermediate CSS transform has zero scale.
+IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
+                       CompositingScaleFactorWithZeroScaleTransform) {
+  GURL main_url(embedded_test_server()->GetURL(
+      "a.com", "/frame_tree/page_with_scaled_frame.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetFrameTree()
+                            ->root();
+
+  ASSERT_EQ(1U, root->child_count());
+  FrameTreeNode* child_b = root->child_at(0);
+
+  EXPECT_TRUE(NavigateToURLFromRenderer(
+      child_b,
+      embedded_test_server()->GetURL("b.com", "/frame_tree/simple_page.html")));
+
+  EXPECT_EQ(
+      " Site A ------------ proxies for B\n"
+      "   +--Site B ------- proxies for A\n"
+      "Where A = http://a.com/\n"
+      "      B = http://b.com/",
+      DepictFrameTree(root));
+
+  // Wait for b.com's frame to have its compositing scale factor set to 0.5,
+  // which is the scale factor for b.com's iframe element in the main frame.
+  while (true) {
+    auto* rwh_b = child_b->current_frame_host()->GetRenderWidgetHost();
+    base::Optional<blink::VisualProperties> properties =
+        rwh_b->GetLastVisualPropertiesSentToRendererForTesting();
+    if (properties && cc::MathUtil::IsFloatNearlyTheSame(
+                          properties->compositing_scale_factor, 0.5f)) {
+      break;
+    }
+    base::RunLoop().RunUntilIdle();
+  }
+
+  // Set iframe transform scale to 0.
+  EXPECT_TRUE(
+      EvalJs(root->current_frame_host(),
+             "document.querySelector('iframe').style.transform = 'scale(0)'")
+          .error.empty());
+
+  // Wait for b.com frame's compositing scale factor to change, and check that
+  // the final value is non-zero.
+  while (true) {
+    auto* rwh_b = child_b->current_frame_host()->GetRenderWidgetHost();
+    base::Optional<blink::VisualProperties> properties =
+        rwh_b->GetLastVisualPropertiesSentToRendererForTesting();
+    if (properties && !cc::MathUtil::IsFloatNearlyTheSame(
+                          properties->compositing_scale_factor, 0.5f)) {
+      EXPECT_GT(properties->compositing_scale_factor, 0.0f);
+      break;
+    }
+    base::RunLoop().RunUntilIdle();
+  }
+}
+
 // Verify that OOPIF select element popup menu coordinates account for scroll
 // offset in containers embedding frame.
 // TODO(crbug.com/859552): Reenable this.
