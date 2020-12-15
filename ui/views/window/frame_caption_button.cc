@@ -111,11 +111,9 @@ SkColor FrameCaptionButton::GetButtonColor(SkColor background_color) {
                                          : gfx::kGoogleGrey700;
   const SkColor high_contrast_foreground =
       color_utils::GetColorWithMaxContrast(background_color);
-  // Guarantee the caption buttons reach at least contrast ratio 3; this ratio
-  // matches that used for focus indicators, large text, and other "have to see
-  // it but perhaps don't have to read fine detail" cases.
-  return color_utils::BlendForMinContrast(default_foreground, background_color,
-                                          high_contrast_foreground, 3.0f)
+  return color_utils::BlendForMinContrast(
+             default_foreground, background_color, high_contrast_foreground,
+             color_utils::kMinimumVisibleContrastRatio)
       .color;
 }
 

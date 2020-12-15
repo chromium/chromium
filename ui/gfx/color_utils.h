@@ -34,6 +34,11 @@ struct BlendResult {
 // This value is taken from w3c accessibility guidelines.
 constexpr float kMinimumReadableContrastRatio = 4.5f;
 
+// The minimum contrast between button glyphs, focus indicators, large text, or
+// other "have to see it but perhaps don't have to read fine detail" cases and
+// background.
+constexpr float kMinimumVisibleContrastRatio = 3.0f;
+
 // Determines the contrast ratio of two colors or two relative luminance values
 // (as computed by RelativeLuminance()), calculated according to
 // http://www.w3.org/TR/WCAG20/#contrast-ratiodef .

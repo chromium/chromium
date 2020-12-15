@@ -457,7 +457,7 @@ gfx::ImageSkia TabIcon::ThemeImage(const gfx::ImageSkia& source) {
 
   // Recolor the image if the original has low minimum contrast and recoloring
   // will improve it.
-  return ((original_contrast < color_utils::kMinimumReadableContrastRatio) &&
+  return ((original_contrast < color_utils::kMinimumVisibleContrastRatio) &&
           (alternate_contrast > original_contrast))
              ? gfx::ImageSkiaOperations::CreateColorMask(source,
                                                          alternate_color)
