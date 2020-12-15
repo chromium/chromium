@@ -48,10 +48,7 @@ using remote_cocoa::mojom::SelectionDirection;
 STATIC_ASSERT_ENUM(NSDragOperationNone, blink::kDragOperationNone);
 STATIC_ASSERT_ENUM(NSDragOperationCopy, blink::kDragOperationCopy);
 STATIC_ASSERT_ENUM(NSDragOperationLink, blink::kDragOperationLink);
-STATIC_ASSERT_ENUM(NSDragOperationGeneric, blink::kDragOperationGeneric);
-STATIC_ASSERT_ENUM(NSDragOperationPrivate, blink::kDragOperationPrivate);
 STATIC_ASSERT_ENUM(NSDragOperationMove, blink::kDragOperationMove);
-STATIC_ASSERT_ENUM(NSDragOperationDelete, blink::kDragOperationDelete);
 STATIC_ASSERT_ENUM(NSDragOperationEvery, blink::kDragOperationEvery);
 
 namespace content {
@@ -153,8 +150,7 @@ void WebContentsViewMac::StartDragging(
   // The drag invokes a nested event loop, arrange to continue
   // processing events.
   base::CurrentThread::ScopedNestableTaskAllower allow;
-  NSDragOperation mask = static_cast<NSDragOperation>(allowed_operations) &
-                         ~NSDragOperationGeneric;
+  NSDragOperation mask = static_cast<NSDragOperation>(allowed_operations);
   [drag_dest_ setDragStartTrackersForProcess:source_rwh->GetProcess()->GetID()];
   drag_source_start_rwh_ = source_rwh->GetWeakPtr();
 

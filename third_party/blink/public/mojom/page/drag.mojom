@@ -19,10 +19,7 @@ enum DragOperation {
   kNone,
   kCopy,
   kLink,
-  kGeneric,
-  kPrivate,
   kMove,
-  kDelete,
 };
 
 // This struct encodes what drag-and-drop operations are allowed. It's
@@ -32,10 +29,7 @@ enum DragOperation {
 struct AllowedDragOperations {
   bool allow_copy;
   bool allow_link;
-  bool allow_generic;
-  bool allow_private;
   bool allow_move;
-  bool allow_delete;
 };
 
 // Used when dragging images, links, plain text, HTML content or other

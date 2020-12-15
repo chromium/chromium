@@ -573,7 +573,6 @@ DragOperation DataTransfer::DestinationOperation() const {
 }
 
 void DataTransfer::SetSourceOperation(DragOperation op) {
-  DCHECK_NE(op, kDragOperationPrivate);
   effect_allowed_ = ConvertDragOperationToEffectAllowed(op);
 }
 

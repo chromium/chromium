@@ -14,11 +14,15 @@ namespace ui {
 
 class COMPONENT_EXPORT(UI_BASE) DragDropTypes {
  public:
+  // These constants match their equivalents in NSDragOperation and
+  // should not be renumbered.
+  // TODO(https://crbug.com/1093536): replace this enum with
+  // blink::mojom::DragOperation.
   enum DragOperation {
     DRAG_NONE = 0,
-    DRAG_MOVE = 1 << 0,
-    DRAG_COPY = 1 << 1,
-    DRAG_LINK = 1 << 2
+    DRAG_COPY = 1,
+    DRAG_LINK = 2,
+    DRAG_MOVE = 16,
   };
 
 #if defined(OS_WIN)

@@ -31,17 +31,8 @@ struct BLINK_COMMON_EXPORT
   static bool allow_link(const blink::DragOperationsMask& op_mask) {
     return op_mask & blink::kDragOperationLink;
   }
-  static bool allow_generic(const blink::DragOperationsMask& op_mask) {
-    return op_mask & blink::kDragOperationGeneric;
-  }
-  static bool allow_private(const blink::DragOperationsMask& op_mask) {
-    return op_mask & blink::kDragOperationPrivate;
-  }
   static bool allow_move(const blink::DragOperationsMask& op_mask) {
     return op_mask & blink::kDragOperationMove;
-  }
-  static bool allow_delete(const blink::DragOperationsMask& op_mask) {
-    return op_mask & blink::kDragOperationDelete;
   }
   static bool Read(blink::mojom::AllowedDragOperationsDataView data,
                    blink::DragOperationsMask* out);

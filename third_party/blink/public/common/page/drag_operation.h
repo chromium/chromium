@@ -37,18 +37,15 @@ namespace blink {
 
 // "Verb" of a drag-and-drop operation as negotiated between the source and
 // destination.
-// (These constants match their equivalents in WebCore's DragActions.h and
-// should not be renumbered.)
-// TODO(hferreiro): replace this enum and the corresponding one in
-// drag_actions.h with blink::mojom::DragOperation.
+// These constants match their equivalents in NSDragOperation and
+// should not be renumbered.
+// TODO(https://crbug.com/1093536): replace this enum with
+// blink::mojom::DragOperation.
 enum DragOperation {
   kDragOperationNone = 0,
   kDragOperationCopy = 1,
   kDragOperationLink = 2,
-  kDragOperationGeneric = 4,
-  kDragOperationPrivate = 8,
   kDragOperationMove = 16,
-  kDragOperationDelete = 32,
   kDragOperationEvery = UINT_MAX
 };
 
