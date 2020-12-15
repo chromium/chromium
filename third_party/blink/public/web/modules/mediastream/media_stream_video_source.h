@@ -309,6 +309,7 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
   void DidStopSource(RestartResult result);
   void NotifyCapturingLinkSecured(size_t num_encoded_sinks);
   size_t CountEncodedSinks() const;
+  scoped_refptr<VideoTrackAdapter> GetTrackAdapter();
 
   State state_;
 
