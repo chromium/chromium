@@ -28,7 +28,7 @@ lsb_release=$(lsb_release --codename --short)
 sudo apt-get -f install
 
 # common
-sudo apt-get -y install lib32z1 lighttpd python-pexpect xvfb x11-utils
+sudo apt-get -y install lib32z1 lighttpd xvfb x11-utils
 
 # Some binaries in the Android SDK require 32-bit libraries on the host.
 # See https://developer.android.com/sdk/installing/index.html?pkg=tools
