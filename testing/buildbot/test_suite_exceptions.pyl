@@ -2591,11 +2591,6 @@
   },
   'telemetry_unittests': {
     'modifications': {
-      'Mac10.14 Tests': {
-        'resultdb': {
-          'enable': False,  # crbug.com/1147992
-        },
-      },
       'Win10 Tests x64 (dbg)': {
         'experiment_percentage': 100,  # crbug.com/870673
       },
