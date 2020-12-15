@@ -4111,9 +4111,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, ParserAnnotations) {
   EXPECT_EQ("confirmation_password_element", cofirmation_password_annotation);
 }
 
-// Flaky in multiple platforms: crbug.com/1157926.
 IN_PROC_BROWSER_TEST_F(PasswordManagerBackForwardCacheBrowserTest,
-                       DISABLED_SavePasswordOnRestoredPage) {
+                       SavePasswordOnRestoredPage) {
   // Navigate to a page with a password form.
   NavigateToFile("/password/password_form.html");
   content::RenderFrameHost* rfh = WebContents()->GetMainFrame();
@@ -4170,9 +4169,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBackForwardCacheBrowserTest,
   rfh_deleted_observer.WaitUntilDeleted();
 }
 
-// Flaky in multiple platforms: crbug.com/1157926.
 IN_PROC_BROWSER_TEST_F(PasswordManagerBackForwardCacheBrowserTest,
-                       DISABLED_CredentialsAPIOnlyCalledOnRestoredPage) {
+                       CredentialsAPIOnlyCalledOnRestoredPage) {
   // Navigate to a page with a password form.
   NavigateToFile("/password/password_form.html");
   content::RenderFrameHost* rfh = WebContents()->GetMainFrame();
