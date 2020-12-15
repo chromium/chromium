@@ -306,7 +306,7 @@ void WebAppMetrics::UpdateUkmData(WebContents* web_contents,
     features.install_source =
         GetLatestWebAppInstallSource(app_id, profile_->GetPrefs());
     DisplayMode display_mode =
-        provider->registrar().GetAppUserDisplayMode(app_id);
+        provider->registrar().GetAppEffectiveDisplayMode(app_id);
     features.effective_display_mode = static_cast<int>(display_mode);
     // AppBannerManager treats already-installed web-apps as non-promotable, so
     // include already-installed findings as promotable.
