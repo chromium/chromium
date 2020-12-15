@@ -49963,6 +49963,15 @@ Called by update_use_counter_css.py.-->
   <int value="1" label="Completed Setup"/>
 </enum>
 
+<enum name="MultiDeviceNearbyConnectionsInitiatorResult">
+  <int value="0" label="Connection Success"/>
+  <int value="1" label="Timeout Discovering Device"/>
+  <int value="2" label="Nearby Api Error"/>
+  <int value="3" label="Connection Rejected"/>
+  <int value="4" label="Connectivity Error"/>
+  <int value="5" label="Authentication Error"/>
+</enum>
+
 <enum name="MultiDeviceNearbyMessageAction">
   <int value="0" label="Message Sent"/>
   <int value="1" label="Message Received"/>

@@ -17,7 +17,7 @@
 #include "chromeos/services/secure_channel/ble_listener_failure_type.h"
 #include "chromeos/services/secure_channel/ble_scanner_impl.h"
 #include "chromeos/services/secure_channel/ble_weave_client_connection.h"
-#include "chromeos/services/secure_channel/latency_metrics_logger.h"
+#include "chromeos/services/secure_channel/connection_metrics_logger.h"
 #include "chromeos/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "chromeos/services/secure_channel/secure_channel_disconnector.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"

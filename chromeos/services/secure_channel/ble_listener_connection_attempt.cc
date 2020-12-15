@@ -6,7 +6,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "chromeos/services/secure_channel/ble_listener_operation.h"
-#include "chromeos/services/secure_channel/latency_metrics_logger.h"
+#include "chromeos/services/secure_channel/connection_metrics_logger.h"
 
 namespace chromeos {
 

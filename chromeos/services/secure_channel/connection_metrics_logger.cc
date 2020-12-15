@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/secure_channel/latency_metrics_logger.h"
+#include "chromeos/services/secure_channel/connection_metrics_logger.h"
 
 #include "base/metrics/histogram_functions.h"
 
@@ -22,6 +22,12 @@ constexpr const base::TimeDelta kMaxLatencyDuration =
 const int kNumMetricsBuckets = 100;
 
 }  // namespace
+
+void LogNearbyInitiatorConnectionResult(
+    NearbyInitiatorConnectionResult connection_result) {
+  base::UmaHistogramEnumeration(
+      "MultiDevice.SecureChannel.Nearby.ConnectionResult", connection_result);
+}
 
 void LogLatencyMetric(const std::string& metric_name,
                       const base::TimeDelta& duration) {
