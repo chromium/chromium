@@ -77,8 +77,6 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 @property(nonatomic, strong) GridLayout* gridLayout;
 // The layout for the thumb strip.
 @property(nonatomic, strong) HorizontalLayout* horizontalLayout;
-// YES if, the cells have been reordered.
-@property(nonatomic, assign) BOOL hasChangedOrder;
 // By how much the user scrolled past the view's content size. A negative value
 // means the user hasn't scrolled past the end of the scroll view.
 @property(nonatomic, assign, readonly) CGFloat offsetPastEndOfScrollView;
@@ -349,32 +347,6 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   }
 #endif  // defined(__IPHONE_13_4)
   return cell;
-}
-
-- (BOOL)collectionView:(UICollectionView*)collectionView
-    canMoveItemAtIndexPath:(NSIndexPath*)indexPath {
-  if ([self isIndexPathForPlusSignCell:indexPath]) {
-    // The PlusSignCell is at the end of the collection and should not be moved.
-    return NO;
-  }
-  return indexPath && self.items.count > 1;
-}
-
-- (void)collectionView:(UICollectionView*)collectionView
-    moveItemAtIndexPath:(NSIndexPath*)sourceIndexPath
-            toIndexPath:(NSIndexPath*)destinationIndexPath {
-  NSUInteger source = base::checked_cast<NSUInteger>(sourceIndexPath.item);
-  NSUInteger destination =
-      base::checked_cast<NSUInteger>(destinationIndexPath.item);
-  // Update |items| before informing the delegate, so the state of the UI
-  // is correctly represented before any updates occur.
-  TabSwitcherItem* item = self.items[source];
-  [self.items removeObjectAtIndex:source];
-  [self.items insertObject:item atIndex:destination];
-  self.hasChangedOrder = YES;
-  [self.delegate gridViewController:self
-                  didMoveItemWithID:item.identifier
-                            toIndex:destination];
 }
 
 #pragma mark - UICollectionViewDelegate
