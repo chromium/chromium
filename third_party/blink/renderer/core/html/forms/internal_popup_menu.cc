@@ -492,11 +492,11 @@ void InternalPopupMenu::AppendOwnerElementPseudoStyles(
   PagePopupClient::AddString(target + "{ \n", data);
 
   const CSSPropertyID serialize_targets[] = {
-      CSSPropertyID::kDisplay,    CSSPropertyID::kBackgroundColor,
-      CSSPropertyID::kWidth,      CSSPropertyID::kBorderBottom,
-      CSSPropertyID::kBorderLeft, CSSPropertyID::kBorderRight,
-      CSSPropertyID::kBorderTop,  CSSPropertyID::kBorderRadius,
-      CSSPropertyID::kBoxShadow};
+      CSSPropertyID::kDisplay,        CSSPropertyID::kBackgroundColor,
+      CSSPropertyID::kWidth,          CSSPropertyID::kBorderBottom,
+      CSSPropertyID::kBorderLeft,     CSSPropertyID::kBorderRight,
+      CSSPropertyID::kBorderTop,      CSSPropertyID::kBorderRadius,
+      CSSPropertyID::kBackgroundClip, CSSPropertyID::kBoxShadow};
 
   for (CSSPropertyID id : serialize_targets) {
     PagePopupClient::AddString(SerializeComputedStyleForProperty(style, id),

@@ -48,10 +48,12 @@
 
   select::-webkit-scrollbar-thumb {
     border-width: 3px;
-    border-color: black;
     border-style: solid;
-    border-radius: 10px;
-    background: gray;
+    border-color: transparent;
+    border-right-color: black;
+    border-top-color: black;
+    background-clip: padding-box;
+    background-color: gray;
     border-radius: 0 20px 0 10px;
     box-shadow: -1px 0 4px 1px inset white;
   }
