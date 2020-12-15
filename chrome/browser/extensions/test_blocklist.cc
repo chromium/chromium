@@ -114,7 +114,7 @@ BlocklistState TestBlocklist::GetBlocklistState(
     const std::string& extension_id) {
   BlocklistState blocklist_state;
   blocklist_->IsBlocklisted(extension_id,
-                            base::Bind(&Assign, &blocklist_state));
+                            base::BindOnce(&Assign, &blocklist_state));
   base::RunLoop().RunUntilIdle();
   return blocklist_state;
 }

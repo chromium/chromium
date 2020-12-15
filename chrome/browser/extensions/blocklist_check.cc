@@ -21,8 +21,8 @@ void BlocklistCheck::Start(ResultCallback callback) {
 
   blocklist_->IsBlocklisted(
       extension()->id(),
-      base::Bind(&BlocklistCheck::OnBlocklistedStateRetrieved,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&BlocklistCheck::OnBlocklistedStateRetrieved,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void BlocklistCheck::OnBlocklistedStateRetrieved(

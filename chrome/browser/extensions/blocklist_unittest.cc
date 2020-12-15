@@ -60,7 +60,7 @@ TEST_F(BlocklistTest, OnlyIncludesRequestedIDs) {
 
   std::set<std::string> blocklisted_ids;
   blocklist.GetMalwareIDs(
-      {a, c}, base::Bind(&Assign<std::set<std::string>>, &blocklisted_ids));
+      {a, c}, base::BindOnce(&Assign<std::set<std::string>>, &blocklisted_ids));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ((std::set<std::string>{a}), blocklisted_ids);
@@ -110,10 +110,10 @@ TEST_F(BlocklistTest, GetBlocklistStates) {
   Blocklist::BlocklistStateMap states_bcd;
   blocklist.GetBlocklistedIDs(
       {a, b, c, e},
-      base::Bind(&Assign<Blocklist::BlocklistStateMap>, &states_abc));
+      base::BindOnce(&Assign<Blocklist::BlocklistStateMap>, &states_abc));
   blocklist.GetBlocklistedIDs(
       {b, c, d, e},
-      base::Bind(&Assign<Blocklist::BlocklistStateMap>, &states_bcd));
+      base::BindOnce(&Assign<Blocklist::BlocklistStateMap>, &states_bcd));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(BLOCKLISTED_MALWARE, states_abc[a]);
@@ -128,7 +128,8 @@ TEST_F(BlocklistTest, GetBlocklistStates) {
   int old_request_count = tester.fetcher()->request_count();
   Blocklist::BlocklistStateMap states_ad;
   blocklist.GetBlocklistedIDs(
-      {a, d, e}, base::Bind(&Assign<Blocklist::BlocklistStateMap>, &states_ad));
+      {a, d, e},
+      base::BindOnce(&Assign<Blocklist::BlocklistStateMap>, &states_ad));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(BLOCKLISTED_MALWARE, states_ad[a]);
   EXPECT_EQ(BLOCKLISTED_POTENTIALLY_UNWANTED, states_ad[d]);
@@ -163,7 +164,8 @@ TEST_F(BlocklistTest, FetchBlocklistStates) {
 
   Blocklist::BlocklistStateMap states;
   blocklist.GetBlocklistedIDs(
-      {a, b, c}, base::Bind(&Assign<Blocklist::BlocklistStateMap>, &states));
+      {a, b, c},
+      base::BindOnce(&Assign<Blocklist::BlocklistStateMap>, &states));
   base::RunLoop().RunUntilIdle();
 
   // Two fetchers should be created.
@@ -178,7 +180,7 @@ TEST_F(BlocklistTest, FetchBlocklistStates) {
 
   blocklist.GetBlocklistedIDs(
       {a, b, c},
-      base::Bind(&Assign<Blocklist::BlocklistStateMap>, &cached_states));
+      base::BindOnce(&Assign<Blocklist::BlocklistStateMap>, &cached_states));
   base::RunLoop().RunUntilIdle();
 
   // No new fetchers.

@@ -30,7 +30,8 @@ InstallTracker::InstallTracker(content::BrowserContext* browser_context,
     pref_change_registrar_.Init(prefs->pref_service());
     pref_change_registrar_.Add(
         pref_names::kExtensions,
-        base::Bind(&InstallTracker::OnAppsReordered, base::Unretained(this)));
+        base::BindRepeating(&InstallTracker::OnAppsReordered,
+                            base::Unretained(this)));
   }
 }
 

@@ -81,11 +81,11 @@ struct MockExtensionRegistryObserver : public ExtensionRegistryObserver {
                             const Extension* extension,
                             bool is_update) override {
     last_extension_installed = extension->id();
-    quit_closure.Run();
+    std::move(quit_closure).Run();
   }
 
   std::string last_extension_installed;
-  base::Closure quit_closure;
+  base::OnceClosure quit_closure;
 };
 
 struct UnzipFileFilterTestCase {

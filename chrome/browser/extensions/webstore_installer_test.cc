@@ -54,7 +54,7 @@ WebstoreInstallerTest::~WebstoreInstallerTest() {}
 void WebstoreInstallerTest::SetUpCommandLine(base::CommandLine* command_line) {
   extensions::ExtensionBrowserTest::SetUpCommandLine(command_line);
 
-  embedded_test_server()->RegisterRequestMonitor(base::Bind(
+  embedded_test_server()->RegisterRequestMonitor(base::BindRepeating(
       &WebstoreInstallerTest::ProcessServerRequest, base::Unretained(this)));
   // We start the test server now instead of in
   // SetUpInProcessBrowserTestFixture so that we can get its port number.
