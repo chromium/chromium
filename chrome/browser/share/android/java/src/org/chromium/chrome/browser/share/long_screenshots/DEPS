@@ -1,0 +1,4 @@
+include_rules = [
+  "+components/paint_preview/player/android/java/src/org/chromium/components/paintpreview/player",
+  "+content/public/android/java/src/org/chromium/content_public/browser",
+]

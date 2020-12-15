@@ -40,7 +40,8 @@ LongScreenshotsTabService::LongScreenshotsTabService(
   // TODO(tgupta): If using PlayerCompositorDelegate for compositing to bitmaps
   // reinterpret the service pointer as PaintPreviewBaseService.
   java_ref_.Reset(Java_LongScreenshotsTabService_Constructor(
-      env, reinterpret_cast<intptr_t>(this)));
+      env,
+      reinterpret_cast<intptr_t>(static_cast<PaintPreviewBaseService*>(this))));
 }
 
 LongScreenshotsTabService::~LongScreenshotsTabService() {

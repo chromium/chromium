@@ -29,14 +29,14 @@ import java.util.List;
  * Preview compositor.
  */
 @JNINamespace("paint_preview")
-class PlayerCompositorDelegateImpl implements PlayerCompositorDelegate {
+public class PlayerCompositorDelegateImpl implements PlayerCompositorDelegate {
     private static final int LOW_MEMORY_THRESHOLD_KB = 2048;
 
     private CompositorListener mCompositorListener;
     private long mNativePlayerCompositorDelegate;
     private List<Runnable> mMemoryPressureListeners = new ArrayList<>();
 
-    PlayerCompositorDelegateImpl(NativePaintPreviewServiceProvider service,
+    public PlayerCompositorDelegateImpl(NativePaintPreviewServiceProvider service,
             @Nullable PaintPreviewProto proto, GURL url, String directoryKey, boolean mainFrameMode,
             @NonNull CompositorListener compositorListener,
             Callback<Integer> compositorErrorCallback) {

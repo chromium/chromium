@@ -12,11 +12,17 @@ import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.modules.image_editor.ImageEditorModuleProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.paint_preview.common.proto.PaintPreview.PaintPreviewProto;
 
 /**
  * Handles the long screenshot action in the Sharing Hub and launches the screenshot editor.
  */
-public class LongScreenshotsCoordinator extends ScreenshotCoordinator {
+public class LongScreenshotsCoordinator
+        extends ScreenshotCoordinator implements LongScreenshotsTabService.CaptureProcessor {
+    private LongScreenshotsTabService mLongScreenshotsTabService;
+
+    private static final String DIR_NAME = "long_screenshots_dir";
+
     /**
      * Constructs a new ScreenshotCoordinator which may launch the editor, or a fallback.
      *
@@ -31,18 +37,41 @@ public class LongScreenshotsCoordinator extends ScreenshotCoordinator {
             BottomSheetController sheetController,
             ImageEditorModuleProvider imageEditorModuleProvider) {
         super(activity, tab, chromeOptionShareCallback, sheetController, imageEditorModuleProvider);
+
+        mLongScreenshotsTabService = LongScreenshotsTabServiceFactory.getServiceInstance();
+        mLongScreenshotsTabService.setCaptureProcessor(this);
     }
 
     /**
-     * Called after ShareSheetBottomSheetContent is closed. Calls the FDT service to
-     * generate a long screenshot, takes the user through the cropping flow, then
-     * launches the bottom bar.
+     * Called after ShareSheetBottomSheetContent is closed. Calls the FDT service to generate a long
+     * screenshot, takes the user through the cropping flow, then launches the bottom bar.
      */
     @Override
     public void captureScreenshot() {
-        // TODO(crbug/1142520): Use service to capture from FDT, crop the image, assign to
-        // mScreenshot
-        mScreenshot = Bitmap.createBitmap(512, 1024, Bitmap.Config.ARGB_8888);
+        mLongScreenshotsTabService.captureTab(mTab);
+    }
+
+    /**
+     * Called after the bitmap has been composited and can be shown to the user.
+     * @param result Bitmap to display in the dialog.
+     */
+    public void onBitmapResult(Bitmap result) {
+        mScreenshot = result;
         launchSharesheet();
+    }
+
+    /**
+     * Pass the proto response from the LongScreenshotsTabService to the compositor. Called from
+     * the tabService.
+     *
+     * @response PaintPreview response with the address of the stored screenshot
+     * @status Status of the capturing
+     */
+    @Override
+    public void processCapturedTab(PaintPreviewProto response, int status) {
+        // TODO(tgupta): Process a non success status
+        new LongScreenshotsCompositor(mTab, mActivity,
+                LongScreenshotsTabServiceFactory.getServiceInstance(), DIR_NAME, response,
+                this::onBitmapResult);
     }
 }

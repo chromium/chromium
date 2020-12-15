@@ -61,4 +61,9 @@ public interface RenderCoordinates {
      * @return The Physical on-screen Y offset amount below the browser controls.
      */
     int getContentOffsetYPixInt();
+
+    /**
+     * @return Current page scale factor (approx, integer).
+     */
+    public int getPageScaleFactorInt();
 }

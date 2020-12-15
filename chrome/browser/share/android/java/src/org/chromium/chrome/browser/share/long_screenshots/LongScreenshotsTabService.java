@@ -9,6 +9,7 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.paint_preview.common.proto.PaintPreview.PaintPreviewProto;
+import org.chromium.components.paintpreview.browser.NativePaintPreviewServiceProvider;
 import org.chromium.content_public.browser.WebContents;
 
 /**
@@ -17,7 +18,7 @@ import org.chromium.content_public.browser.WebContents;
  * capturing the Paint Preview representation of a tab.
  */
 @JNINamespace("long_screenshots")
-public class LongScreenshotsTabService {
+public class LongScreenshotsTabService implements NativePaintPreviewServiceProvider {
     /** Interface used for notifying in the event of navigation to a URL. */
     public interface CaptureProcessor {
         void processCapturedTab(PaintPreviewProto response, @Status int status);
@@ -52,6 +53,7 @@ public class LongScreenshotsTabService {
     @CalledByNative
     private void processPaintPreviewResponse(byte[] paintPreviewProtoResponse) {
         if (mCaptureProcessor == null) {
+            // TODO(tgupta): return an error here.
             return;
         }
 
@@ -84,6 +86,11 @@ public class LongScreenshotsTabService {
         }
         LongScreenshotsTabServiceJni.get().longScreenshotsClosedAndroid(
                 mNativeLongScreenshotsTabService);
+    }
+
+    @Override
+    public long getNativeBaseService() {
+        return mNativeLongScreenshotsTabService;
     }
 
     @NativeMethods

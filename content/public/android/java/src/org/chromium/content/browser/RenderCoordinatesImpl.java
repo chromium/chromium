@@ -178,6 +178,14 @@ public class RenderCoordinatesImpl implements RenderCoordinates {
     }
 
     /**
+     * @return Current page scale factor (approx, integer).
+     */
+    @Override
+    public int getPageScaleFactorInt() {
+        return (int) Math.floor(mPageScaleFactor);
+    }
+
+    /**
      * @return Minimum page scale factor to be used with the content.
      */
     public float getMinPageScaleFactor() {

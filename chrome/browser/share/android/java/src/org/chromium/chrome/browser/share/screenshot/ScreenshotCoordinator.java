@@ -26,8 +26,8 @@ public class ScreenshotCoordinator {
     static final int MAX_INSTALL_ATTEMPTS = 5;
     private static int sInstallAttempts;
 
-    private final Activity mActivity;
-    private final Tab mTab;
+    protected final Activity mActivity;
+    protected final Tab mTab;
     private final ScreenshotShareSheetDialog mDialog;
     private final ChromeOptionShareCallback mChromeOptionShareCallback;
     private final BottomSheetController mBottomSheetController;
