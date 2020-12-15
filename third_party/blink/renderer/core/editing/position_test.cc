@@ -253,4 +253,26 @@ TEST_F(PositionTest, IsConnectedInFlatTree) {
   EXPECT_FALSE(ToPositionInFlatTree(position).IsConnected());
 }
 
+TEST_F(PositionTest, FirstPositionInShadowHost) {
+  SetBodyContent("<p id=host>foo</p>");
+  SetShadowContent("bar", "host");
+  Element* host = GetDocument().getElementById("host");
+
+  Position dom = Position::FirstPositionInNode(*host);
+  PositionInFlatTree flat = PositionInFlatTree::FirstPositionInNode(*host);
+  EXPECT_EQ(dom, ToPositionInDOMTree(flat));
+  EXPECT_EQ(flat, ToPositionInFlatTree(dom));
+}
+
+TEST_F(PositionTest, LastPositionInShadowHost) {
+  SetBodyContent("<p id=host>foo</p>");
+  SetShadowContent("bar", "host");
+  Element* host = GetDocument().getElementById("host");
+
+  Position dom = Position::LastPositionInNode(*host);
+  PositionInFlatTree flat = PositionInFlatTree::LastPositionInNode(*host);
+  EXPECT_EQ(dom, ToPositionInDOMTree(flat));
+  EXPECT_EQ(flat, ToPositionInFlatTree(dom));
+}
+
 }  // namespace blink

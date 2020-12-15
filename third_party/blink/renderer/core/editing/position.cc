@@ -654,11 +654,11 @@ Position ToPositionInDOMTree(const PositionInFlatTree& position) {
       int offset = position.OffsetInContainerNode();
       if (anchor_node->IsCharacterDataNode())
         return Position(anchor_node, offset);
+      if (!offset)
+        return Position::FirstPositionInNode(*anchor_node);
       Node* child = FlatTreeTraversal::ChildAt(*anchor_node, offset);
       if (child)
         return Position(child->parentNode(), child->NodeIndex());
-      if (!position.OffsetInContainerNode())
-        return Position::FirstPositionInNode(*anchor_node);
 
       // |child| is null when the position is at the end of the children.
       // <div>foo|</div>

@@ -517,4 +517,23 @@ TEST_F(SelectionAdjusterTest, ShadowHostAndShadowTreeAreEditable) {
     </div>)HTML",
             GetSelectionTextInFlatTreeFromBody(result2));
 }
+
+TEST_F(SelectionAdjusterTest, AdjustSelectionTypeWithShadow) {
+  SetBodyContent("<p id='host'>foo</p>");
+  SetShadowContent("bar<slot></slot>", "host");
+
+  Element* host = GetDocument().getElementById("host");
+  const SelectionInDOMTree& selection =
+      SelectionInDOMTree::Builder()
+          .Collapse(Position(host->firstChild(), 0))
+          .Extend(Position(host, 0))
+          .Build();
+  // Should not crash
+  const SelectionInDOMTree& adjusted =
+      SelectionAdjuster::AdjustSelectionType(selection);
+
+  EXPECT_EQ(Position::BeforeNode(*host), adjusted.Base());
+  EXPECT_EQ(Position::BeforeNode(*host), adjusted.Extent());
+}
+
 }  // namespace blink

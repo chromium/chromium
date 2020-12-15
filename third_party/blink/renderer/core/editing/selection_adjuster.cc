@@ -740,7 +740,7 @@ class SelectionTypeAdjuster final {
     const EphemeralRangeTemplate<Strategy> minimal_range(
         MostForwardCaretPosition(range.StartPosition()),
         MostBackwardCaretPosition(range.EndPosition()));
-    if (selection.IsBaseFirst()) {
+    if (minimal_range.IsCollapsed() || selection.IsBaseFirst()) {
       return typename SelectionTemplate<Strategy>::Builder()
           .SetAsForwardSelection(minimal_range)
           .Build();
