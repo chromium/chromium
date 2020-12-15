@@ -372,11 +372,13 @@ source_set("wayland_unittests") {
     "host/wayland_window_unittest.cc",
     "test/wayland_test.cc",
     "test/wayland_test.h",
+    "host/wayland_zaura_shell_unittest.cc",
   ]
 
   deps = [
     ":test_support",
     ":wayland",
+    "//components/exo/wayland/protocol:aura_shell_protocol",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/wayland:wayland_server",

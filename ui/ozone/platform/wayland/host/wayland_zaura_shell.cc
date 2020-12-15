@@ -21,11 +21,16 @@ WaylandZAuraShell::WaylandZAuraShell(zaura_shell* aura_shell,
 
   static const zaura_shell_listener zaura_shell_listener = {
       &WaylandZAuraShell::OnLayoutMode,
+      &WaylandZAuraShell::OnBugFix,
   };
   zaura_shell_add_listener(obj_.get(), &zaura_shell_listener, this);
 }
 
 WaylandZAuraShell::~WaylandZAuraShell() = default;
+
+bool WaylandZAuraShell::HasBugFix(uint32_t id) {
+  return bug_fix_ids_.find(id) != bug_fix_ids_.end();
+}
 
 // static
 void WaylandZAuraShell::OnLayoutMode(void* data,
@@ -45,6 +50,14 @@ void WaylandZAuraShell::OnLayoutMode(void* data,
       screen->OnTabletStateChanged(display::TabletState::kInTabletMode);
       return;
   }
+}
+
+// static
+void WaylandZAuraShell::OnBugFix(void* data,
+                                 struct zaura_shell* zaura_shell,
+                                 uint32_t id) {
+  auto* self = static_cast<WaylandZAuraShell*>(data);
+  self->bug_fix_ids_.insert(id);
 }
 
 }  // namespace ui

@@ -141,7 +141,7 @@ void RegistryHandler(void* data,
         wl_registry_bind(registry, id, &wp_presentation_interface, 1)));
   } else if (strcmp(interface, "zaura_shell") == 0) {
     globals->aura_shell.reset(static_cast<zaura_shell*>(
-        wl_registry_bind(registry, id, &zaura_shell_interface, 7)));
+        wl_registry_bind(registry, id, &zaura_shell_interface, 14)));
   } else if (strcmp(interface, "zwp_linux_dmabuf_v1") == 0) {
     globals->linux_dmabuf.reset(static_cast<zwp_linux_dmabuf_v1*>(
         wl_registry_bind(registry, id, &zwp_linux_dmabuf_v1_interface, 2)));
@@ -626,6 +626,15 @@ bool ClientBase::Init(const InitParams& params) {
       LOG(ERROR) << "Can't find aura shell interface";
       return false;
     }
+    static zaura_shell_listener kAuraShellListener = {
+        [](void* data, struct zaura_shell* zaura_shell, uint32_t layout_mode) {
+        },
+        [](void* data, struct zaura_shell* zaura_shell, uint32_t id) {
+          CastToClientBase(data)->bug_fix_ids_.insert(id);
+        }};
+    zaura_shell_add_listener(globals_.aura_shell.get(), &kAuraShellListener,
+                             this);
+
     std::unique_ptr<wl_shell_surface> shell_surface(
         static_cast<wl_shell_surface*>(
             wl_shell_get_shell_surface(globals_.shell.get(), surface_.get())));

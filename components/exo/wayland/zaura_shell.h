@@ -17,7 +17,7 @@ struct wl_resource;
 namespace exo {
 namespace wayland {
 
-constexpr uint32_t kZAuraShellVersion = 12;
+constexpr uint32_t kZAuraShellVersion = 14;
 
 // Adds bindings to the Aura Shell. Normally this implies Ash on ChromeOS
 // builds. On non-ChromeOS builds the protocol provides access to Aura windowing

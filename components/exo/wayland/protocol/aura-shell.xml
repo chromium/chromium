@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zaura_shell" version="12">
+  <interface name="zaura_shell" version="14">
     <description summary="aura_shell">
       The global interface exposing aura shell capabilities is used to
       instantiate an interface extension for a wl_surface object.
@@ -82,6 +82,16 @@
         Sends the layout_mode used by the server.
       </description>
       <arg name="layout_mode" type="uint" summary="layout_mode enum"/>
+    </event>
+
+    <!-- Version 14 additions -->
+
+    <event name="bug_fix" since="14">
+      <description summary="sends a bug fix ID">
+        Sends a monorail ID of a bug fixed on the exo server that clients can
+        use to gate functionality.
+      </description>
+      <arg name="id" type="uint" summary="ID of a single bug fix"/>
     </event>
   </interface>
 

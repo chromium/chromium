@@ -53,7 +53,7 @@
 namespace ui {
 
 namespace {
-constexpr uint32_t kMaxAuraShellVersion = 11;
+constexpr uint32_t kMaxAuraShellVersion = 14;
 constexpr uint32_t kMaxCompositorVersion = 4;
 constexpr uint32_t kMaxCursorShapesVersion = 1;
 constexpr uint32_t kMaxGtkPrimarySelectionDeviceManagerVersion = 1;

@@ -97,6 +97,10 @@ Simple::Simple() = default;
 void Simple::Run(int frames,
                  const bool log_vsync_timing_updates,
                  PresentationFeedback* feedback) {
+  wl_display_roundtrip(display_.get());
+  // We always send this bug fix ID as a sanity check.
+  DCHECK(bug_fix_ids_.find(1151508) != bug_fix_ids_.end());
+
   wl_callback_listener frame_listener = {FrameCallback};
   wp_presentation_feedback_listener feedback_listener = {
       FeedbackSyncOutput, FeedbackPresented, FeedbackDiscarded};

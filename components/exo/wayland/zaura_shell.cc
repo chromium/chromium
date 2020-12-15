@@ -471,6 +471,14 @@ class AuraOutput : public WaylandDisplayObserver {
 // aura_shell_interface:
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+
+// IDs of bugs that have been fixed in the exo implementation. These are
+// propagated to clients on aura_shell bind and can be used to gate client
+// logic on the presence of certain fixes.
+const uint32_t kFixedBugIds[] = {
+  1151508, // Do not remove, used for sanity checks by |wayland_simple_client|
+};
+
 // Implements aura shell interface and monitors workspace state needed
 // for the aura shell interface.
 class WaylandAuraShell : public ash::TabletModeObserver {
@@ -485,6 +493,12 @@ class WaylandAuraShell : public ash::TabletModeObserver {
                              ? ZAURA_SHELL_LAYOUT_MODE_TABLET
                              : ZAURA_SHELL_LAYOUT_MODE_WINDOWED;
       zaura_shell_send_layout_mode(aura_shell_resource_, layout_mode);
+    }
+    if (wl_resource_get_version(aura_shell_resource_) >=
+        ZAURA_SHELL_BUG_FIX_SINCE_VERSION) {
+      for (uint32_t bug_id : kFixedBugIds) {
+        zaura_shell_send_bug_fix(aura_shell_resource_, bug_id);
+      }
     }
   }
   WaylandAuraShell(const WaylandAuraShell&) = delete;
