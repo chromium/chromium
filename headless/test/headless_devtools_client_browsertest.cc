@@ -494,7 +494,6 @@ class HeadlessCrashObserverTest : public HeadlessAsyncDevTooledBrowserTest,
     devtools_client_->GetInspector()->GetExperimental()->AddObserver(this);
     devtools_client_->GetInspector()->GetExperimental()->Enable(
         inspector::EnableParams::Builder().Build());
-    devtools_client_->GetPage()->Enable();
     devtools_client_->GetPage()->Navigate(content::kChromeUICrashURL);
   }
 
