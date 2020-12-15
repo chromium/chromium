@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/loader/private/frame_client_hints_preferences_context.h"
+#include "third_party/blink/renderer/core/loader/frame_client_hints_preferences_context.h"
 
 #include "base/stl_util.h"
 #include "third_party/blink/renderer/core/dom/document.h"

@@ -39,7 +39,7 @@
 #include "third_party/blink/renderer/core/loader/link_load_parameters.h"
 #include "third_party/blink/renderer/core/loader/link_loader_client.h"
 #include "third_party/blink/renderer/core/loader/preload_helper.h"
-#include "third_party/blink/renderer/core/loader/private/prerender_handle.h"
+#include "third_party/blink/renderer/core/loader/prerender_handle.h"
 #include "third_party/blink/renderer/core/loader/resource/css_style_sheet_resource.h"
 #include "third_party/blink/renderer/core/loader/subresource_integrity_helper.h"
 #include "third_party/blink/renderer/core/page/viewport_description.h"

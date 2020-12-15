@@ -28,7 +28,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "third_party/blink/renderer/core/loader/private/prerender_handle.h"
+#include "third_party/blink/renderer/core/loader/prerender_handle.h"
 
 #include "services/network/public/mojom/referrer_policy.mojom-blink.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
