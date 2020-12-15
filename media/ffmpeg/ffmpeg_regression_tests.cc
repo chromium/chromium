@@ -84,7 +84,10 @@ class FlakyFFmpegRegressionTest
 FFMPEG_TEST_CASE(Cr47325, "security/47325.mp4", PIPELINE_OK, PIPELINE_OK);
 FFMPEG_TEST_CASE(Cr47761, "crbug47761.ogg", PIPELINE_OK, PIPELINE_OK);
 FFMPEG_TEST_CASE(Cr50045, "crbug50045.mp4", PIPELINE_OK, PIPELINE_OK);
-FFMPEG_TEST_CASE(Cr62127, "crbug62127.webm", PIPELINE_OK, PIPELINE_OK);
+FFMPEG_TEST_CASE(Cr62127,
+                 "crbug62127.webm",
+                 PIPELINE_ERROR_DECODE,
+                 PIPELINE_ERROR_DECODE);
 FFMPEG_TEST_CASE(Cr93620, "security/93620.ogg", PIPELINE_OK, PIPELINE_OK);
 FFMPEG_TEST_CASE(Cr100492,
                  "security/100492.webm",
@@ -195,10 +198,7 @@ FFMPEG_TEST_CASE(Cr635422,
                  "security/635422.ogg",
                  DEMUXER_ERROR_COULD_NOT_OPEN,
                  DEMUXER_ERROR_COULD_NOT_OPEN);
-FFMPEG_TEST_CASE(Cr637428,
-                 "security/637428.ogg",
-                 PIPELINE_ERROR_DECODE,
-                 PIPELINE_ERROR_DECODE);
+FFMPEG_TEST_CASE(Cr637428, "security/637428.ogg", PIPELINE_OK, PIPELINE_OK);
 FFMPEG_TEST_CASE(Cr639961,
                  "security/639961.flac",
                  PIPELINE_ERROR_INITIALIZATION_FAILED,
@@ -335,8 +335,8 @@ FFMPEG_TEST_CASE(OGV_16,
                  DECODER_ERROR_NOT_SUPPORTED);
 FFMPEG_TEST_CASE(OGV_17,
                  "security/vorbis.482086.ogv",
-                 PIPELINE_OK,
-                 PIPELINE_OK);
+                 DEMUXER_ERROR_COULD_NOT_OPEN,
+                 DEMUXER_ERROR_COULD_NOT_OPEN);
 FFMPEG_TEST_CASE(OGV_18,
                  "security/wav.711.ogv",
                  DECODER_ERROR_NOT_SUPPORTED,
