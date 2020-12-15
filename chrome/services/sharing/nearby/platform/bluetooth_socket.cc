@@ -8,6 +8,7 @@
 #include <limits>
 #include <vector>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -18,6 +19,16 @@ namespace nearby {
 namespace chrome {
 
 namespace {
+
+void LogSocketReadResult(bool success) {
+  base::UmaHistogramBoolean("Nearby.Connections.Bluetooth.Socket.Read.Result",
+                            success);
+}
+
+void LogSocketWriteResult(bool success) {
+  base::UmaHistogramBoolean("Nearby.Connections.Bluetooth.Socket.Write.Result",
+                            success);
+}
 
 // Concrete InputStream implementation, tightly coupled to BluetoothSocket.
 class InputStreamImpl : public InputStream {
@@ -45,8 +56,15 @@ class InputStreamImpl : public InputStream {
 
   // InputStream:
   ExceptionOr<ByteArray> Read(std::int64_t size) override {
-    if (!receive_stream_ || size <= 0 ||
-        size > std::numeric_limits<uint32_t>::max()) {
+    bool invalid_size =
+        size <= 0 || size > std::numeric_limits<uint32_t>::max();
+    if (!receive_stream_ || invalid_size) {
+      if (invalid_size) {
+        // Only log it as a read failure when |size| is out of range as in
+        // reality a null |receive_stream_| is an expected state after Close()
+        // was called normally.
+        LogSocketReadResult(false);
+      }
       return {Exception::kIo};
     }
 
@@ -68,6 +86,7 @@ class InputStreamImpl : public InputStream {
     if (!receive_stream_)
       return {Exception::kIo};
 
+    LogSocketReadResult(exception_or_received_byte_array_.ok());
     return exception_or_received_byte_array_;
   }
   Exception Close() override {
@@ -204,6 +223,9 @@ class OutputStreamImpl : public OutputStream {
     if (!send_stream_)
       return {Exception::kIo};
 
+    // Ignore a null |send_stream_| when logging since it might be an expected
+    // state as mentioned above.
+    LogSocketWriteResult(result.Ok());
     return result;
   }
   Exception Flush() override {

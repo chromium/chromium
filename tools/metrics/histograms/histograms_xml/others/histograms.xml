@@ -9570,6 +9570,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Records whether BLE scanning has been stopped successfully.</summary>
 </histogram>
 
+<histogram name="Nearby.Connections.Bluetooth.Socket.{Operation}.Result"
+    enum="BooleanSuccess" expires_after="2021-12-14">
+  <owner>hansberry@chromium.org</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>Records whether {Operation} has succeeded.</summary>
+  <token key="Operation">
+    <variant name="Read" summary="reading from the input stream"/>
+    <variant name="Write" summary="writing to the output stream"/>
+  </token>
+</histogram>
+
 <histogram name="Nearby.Connections.InstantMessaging.{Direction}Express.Result"
     enum="BooleanSuccess" expires_after="2021-08-19">
   <owner>nohle@chromium.org</owner>
