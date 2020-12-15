@@ -143,24 +143,25 @@ ScriptPromise ShapeDetector::DetectShapesOnImageElement(
     const HTMLImageElement* img) {
   ScriptPromise promise = resolver->Promise();
 
-  if (img->BitmapSourceSize().IsZero()) {
-    resolver->Resolve(HeapVector<Member<DOMRect>>());
-    return promise;
-  }
-
   ImageResourceContent* const image_content = img->CachedImage();
-  if (!image_content || image_content->ErrorOccurred()) {
+  if (!image_content || !image_content->IsLoaded() ||
+      image_content->ErrorOccurred()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError,
         "Failed to load or decode HTMLImageElement."));
     return promise;
   }
 
-  Image* const blink_image = image_content->GetImage();
-  if (!blink_image) {
+  if (!image_content->HasImage()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError,
         "Failed to get image from resource."));
+    return promise;
+  }
+
+  Image* const blink_image = image_content->GetImage();
+  if (blink_image->Size().IsZero()) {
+    resolver->Resolve(HeapVector<Member<DOMRect>>());
     return promise;
   }
 
