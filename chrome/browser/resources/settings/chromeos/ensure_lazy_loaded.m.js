@@ -11,15 +11,19 @@ export function ensureLazyLoaded() {
     script.type = 'module';
     script.src = './lazy_load.js';
     document.body.appendChild(script);
-
-    lazyLoadPromise = Promise.all([
+    const lazyLoadPages = [
       'os-settings-powerwash-dialog',
-      'os-settings-privacy-page',
       'os-settings-reset-page',
       'os-settings-files-page',
       'settings-smb-shares-page',
       'os-printing-page',
-    ].map(name => customElements.whenDefined(name)));
+    ];
+    if (!loadTimeData.getBoolean('isAccountManagementFlowsV2Enabled')) {
+      lazyLoadPages.push('os-settings-privacy-page');
+    }
+
+    lazyLoadPromise = Promise.all(
+        lazyLoadPages.map(name => customElements.whenDefined(name)));
   }
   return lazyLoadPromise;
 }

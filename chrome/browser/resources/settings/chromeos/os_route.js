@@ -242,10 +242,11 @@ cr.define('settings', function() {
         r.DATETIME, mojom.TIME_ZONE_SUBPAGE_PATH, Subpage.kTimeZone);
 
     // Privacy and Security section.
-    r.OS_PRIVACY = createSection(
-        r.ADVANCED, mojom.PRIVACY_AND_SECURITY_SECTION_PATH,
-        Section.kPrivacyAndSecurity);
+
     if (loadTimeData.getBoolean('isAccountManagementFlowsV2Enabled')) {
+      r.OS_PRIVACY = createSection(
+          r.BASIC, mojom.PRIVACY_AND_SECURITY_SECTION_PATH,
+          Section.kPrivacyAndSecurity);
       r.LOCK_SCREEN = createSubpage(
           r.OS_PRIVACY, mojom.SECURITY_AND_SIGN_IN_SUBPAGE_PATH_V2,
           Subpage.kSecurityAndSignInV2);
@@ -255,6 +256,10 @@ cr.define('settings', function() {
       r.ACCOUNTS = createSubpage(
           r.OS_PRIVACY, mojom.MANAGE_OTHER_PEOPLE_SUBPAGE_PATH_V2,
           Subpage.kManageOtherPeopleV2);
+    } else {
+      r.OS_PRIVACY = createSection(
+          r.ADVANCED, mojom.PRIVACY_AND_SECURITY_SECTION_PATH,
+          Section.kPrivacyAndSecurity);
     }
 
     // Languages and Input section.

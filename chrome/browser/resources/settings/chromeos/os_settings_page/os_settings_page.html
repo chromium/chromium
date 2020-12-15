@@ -186,6 +186,13 @@
           <os-settings-search-page prefs="{{prefs}}">
           </os-settings-search-page>
         </settings-section>
+        <template is="dom-if" if="[[isAccountManagementFlowsV2Enabled_]]">
+          <settings-section page-title="$i18n{privacyPageTitle}"
+              section="osPrivacy">
+            <os-settings-privacy-page prefs="{{prefs}}">
+            </os-settings-privacy-page>
+          </settings-section>
+        </template>
         <settings-section page-title="$i18n{appsPageTitle}" section="apps">
           <os-settings-apps-page
               prefs="{{prefs}}"
@@ -237,11 +244,13 @@
             <settings-date-time-page prefs="{{prefs}}">
             </settings-date-time-page>
           </settings-section>
-          <settings-section page-title="$i18n{privacyPageTitle}"
-              section="osPrivacy">
-            <os-settings-privacy-page prefs="{{prefs}}">
-            </os-settings-privacy-page>
-          </settings-section>
+          <template is="dom-if" if="[[!isAccountManagementFlowsV2Enabled_]]">
+            <settings-section page-title="$i18n{privacyPageTitle}"
+                section="osPrivacy">
+              <os-settings-privacy-page prefs="{{prefs}}">
+              </os-settings-privacy-page>
+            </settings-section>
+          </template>
           <settings-section page-title="$i18n{osLanguagesPageTitle}"
               section="osLanguages">
             <os-settings-languages-section prefs="{{prefs}}">

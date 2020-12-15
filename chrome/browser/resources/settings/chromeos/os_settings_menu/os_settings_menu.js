@@ -35,6 +35,18 @@ Polymer({
     showReset: Boolean,
 
     showKerberosSection: Boolean,
+
+    /**
+     * True if redesign of account management flows is enabled.
+     * @private
+     */
+    isAccountManagementFlowsV2Enabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('isAccountManagementFlowsV2Enabled');
+      },
+      readOnly: true,
+    },
   },
 
   /** @param {!settings.Route} newRoute */

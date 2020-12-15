@@ -103,6 +103,18 @@ Polymer({
 
     /** @private {!settings.Route|undefined} */
     currentRoute_: Object,
+
+    /**
+     * True if redesign of account management flows is enabled.
+     * @private
+     */
+    isAccountManagementFlowsV2Enabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('isAccountManagementFlowsV2Enabled');
+      },
+      readOnly: true,
+    },
   },
 
   hostAttributes: {
