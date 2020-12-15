@@ -238,12 +238,12 @@ wheel: <
 
 wheel <
   name: "infra/python/wheels/pytest-py2_py3"
-  version: "version:3.6.2"
+  version: "version:4.1.1"
 >
 
 wheel <
   name: "infra/python/wheels/attrs-py2_py3"
-  version: "version:17.4.0"
+  version: "version:18.2.0"
 >
 
 wheel <
@@ -258,12 +258,12 @@ wheel <
 
 wheel <
   name: "infra/python/wheels/scandir/${vpython_platform}"
-  version: "version:1.7"
+  version: "version:1.9.0"
 >
 
 wheel <
   name: "infra/python/wheels/pluggy-py2_py3"
-  version: "version:0.7.1"
+  version: "version:0.8.1"
 >
 
 wheel <
@@ -274,10 +274,6 @@ wheel <
 wheel <
   name: "infra/python/wheels/funcsigs-py2_py3"
   version: "version:1.0.2"
->
-wheel: <
-  name: "infra/python/wheels/psutil/${vpython_platform}"
-  version: "version:5.2.2"
 >
 
 # Used by:
@@ -329,7 +325,7 @@ wheel: <
 >
 wheel: <
   name: "infra/python/wheels/urllib3-py2_py3"
-  version: "version:1.22"
+  version: "version:1.24.3"
 >
 wheel: <
   name: "infra/python/wheels/blessings-py2_py3"
@@ -349,7 +345,7 @@ wheel: <
 >
 wheel: <
   name: "infra/python/wheels/certifi-py2_py3"
-  version: "version:2018.11.29"
+  version: "version:2020.11.8"
 >
 wheel: <
   name: "infra/python/wheels/chardet-py2_py3"
