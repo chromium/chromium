@@ -1353,6 +1353,7 @@ test("content_browsertests") {
     "//ui/resources",
     "//ui/shell_dialogs",
     "//ui/snapshot",
+    "//ui/webui:test_support",
   ]
 
   data = []

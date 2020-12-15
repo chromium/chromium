@@ -872,6 +872,7 @@ if (!is_android) {
       "//ui/resources",
       "//ui/shell_dialogs:test_support",
       "//ui/web_dialogs:test_support",
+      "//ui/webui:test_support",
       "//v8",
     ]
 

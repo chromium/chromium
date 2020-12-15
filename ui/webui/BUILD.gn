@@ -8,10 +8,16 @@ static_library("webui") {
     "mojo_bubble_web_ui_controller.h",
     "mojo_web_ui_controller.cc",
     "mojo_web_ui_controller.h",
+    "untrusted_web_ui_controller.cc",
+    "untrusted_web_ui_controller.h",
+    "untrusted_web_ui_controller_factory.cc",
+    "untrusted_web_ui_controller_factory.h",
     "webui_allowlist.cc",
     "webui_allowlist.h",
     "webui_allowlist_provider.cc",
     "webui_allowlist_provider.h",
+    "webui_config.cc",
+    "webui_config.h",
   ]
 
   deps = [
@@ -19,5 +25,21 @@ static_library("webui") {
     "//components/content_settings/core/browser",
     "//content/public/browser",
     "//services/service_manager/public/cpp",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "untrusted_web_ui_browsertest_util.cc",
+    "untrusted_web_ui_browsertest_util.h",
+  ]
+
+  deps = [
+    ":webui",
+    "//base",
+    "//content/public/browser",
+    "//content/test:test_support",
   ]
 }

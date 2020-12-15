@@ -1,0 +1,60 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/webui/chrome_untrusted_web_ui_controller_factory.h"
+
+#include "base/no_destructor.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_ui.h"
+#include "content/public/browser/web_ui_controller.h"
+#include "content/public/common/url_constants.h"
+#include "ui/webui/webui_config.h"
+#include "url/gurl.h"
+
+using WebUIConfigList =
+    std::vector<std::pair<std::string, std::unique_ptr<ui::WebUIConfig>>>;
+
+namespace {
+
+// Returns a std::vector<> containing all WebUIConfigs. We use a vector instead
+// of adding WebUIConfigs directly into the flat_map because individual inserts
+// are O(n), giving O(n^2) construction time for the entire map. By contrast,
+// constructing from a vector is O(n log n).
+WebUIConfigList CreateConfigs() {
+  WebUIConfigList config_list;
+#if defined(OS_CHROMEOS) && !defined(OFFICIAL_BUILD)
+  auto register_config =
+      [&config_list](std::unique_ptr<ui::WebUIConfig> config) {
+        DCHECK_EQ(config->scheme(), content::kChromeUIUntrustedScheme);
+        const std::string& host = config->host();
+        config_list.emplace_back(host, std::move(config));
+      };
+
+  // Register WebUIConfigs below.
+
+  // TODO(ortuno): Remove when `register_config` is used to register configs.
+  DCHECK(&register_config);
+#endif
+
+  return config_list;
+}
+
+}  // namespace
+
+// static
+void ChromeUntrustedWebUIControllerFactory::RegisterInstance() {
+  static base::NoDestructor<ChromeUntrustedWebUIControllerFactory> instance;
+  content::WebUIControllerFactory::RegisterFactory(instance.get());
+}
+
+ChromeUntrustedWebUIControllerFactory::ChromeUntrustedWebUIControllerFactory()
+    : configs_(CreateConfigs()) {}
+
+ChromeUntrustedWebUIControllerFactory::
+    ~ChromeUntrustedWebUIControllerFactory() = default;
+
+const ui::UntrustedWebUIControllerFactory::WebUIConfigMap&
+ChromeUntrustedWebUIControllerFactory::GetWebUIConfigMap() {
+  return configs_;
+}

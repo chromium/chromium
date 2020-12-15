@@ -39,12 +39,30 @@
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/webui/untrusted_web_ui_browsertest_util.h"
 
 namespace content {
 
 namespace {
 
-using WebUIImplBrowserTest = ContentBrowserTest;
+class WebUIImplBrowserTest : public ContentBrowserTest {
+ public:
+  WebUIImplBrowserTest() {
+    WebUIControllerFactory::RegisterFactory(&untrusted_factory_);
+  }
+
+  ~WebUIImplBrowserTest() override {
+    WebUIControllerFactory::UnregisterFactoryForTesting(&untrusted_factory_);
+  }
+
+ protected:
+  ui::TestUntrustedWebUIControllerFactory& untrusted_factory() {
+    return untrusted_factory_;
+  }
+
+ private:
+  ui::TestUntrustedWebUIControllerFactory untrusted_factory_;
+};
 
 // TODO(crbug.com/154571): Shared workers are not available on Android.
 #if !defined(OS_ANDROID)
@@ -224,7 +242,8 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest,
 // SiteInstance swap.
 IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, ForceSwapOnFromChromeToUntrusted) {
   WebContents* web_contents = shell()->web_contents();
-  AddUntrustedDataSource(web_contents->GetBrowserContext(), "test-host");
+  untrusted_factory().add_web_ui_config(
+      std::make_unique<ui::TestUntrustedWebUIConfig>("test-host"));
 
   const GURL web_ui_url(GetWebUIURL(kChromeUIHistogramHost));
   EXPECT_TRUE(ContentWebUIControllerFactory::GetInstance()->UseWebUIForURL(
@@ -256,7 +275,8 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, ForceSwapOnFromChromeToUntrusted) {
 // SiteInstance swap.
 IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, ForceSwapOnFromUntrustedToChrome) {
   WebContents* web_contents = shell()->web_contents();
-  AddUntrustedDataSource(web_contents->GetBrowserContext(), "test-host");
+  untrusted_factory().add_web_ui_config(
+      std::make_unique<ui::TestUntrustedWebUIConfig>("test-host"));
 
   ASSERT_TRUE(NavigateToURL(web_contents,
                             GetChromeUntrustedUIURL("test-host/title1.html")));
@@ -374,10 +394,11 @@ IN_PROC_BROWSER_TEST_F(WebUIRequiringGestureBrowserTest,
 
 // Verify that we can successfully navigate to a chrome-untrusted:// URL.
 IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, UntrustedSchemeLoads) {
-  auto* web_contents = shell()->web_contents();
-  AddUntrustedDataSource(web_contents->GetBrowserContext(), "test-host");
+  untrusted_factory().add_web_ui_config(
+      std::make_unique<ui::TestUntrustedWebUIConfig>("test-host"));
 
   const GURL untrusted_url(GetChromeUntrustedUIURL("test-host/title2.html"));
+  auto* web_contents = shell()->web_contents();
   EXPECT_TRUE(NavigateToURL(web_contents, untrusted_url));
   EXPECT_EQ(base::ASCIIToUTF16("Title Of Awesomeness"),
             web_contents->GetTitle());

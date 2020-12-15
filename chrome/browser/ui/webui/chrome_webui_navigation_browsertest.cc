@@ -16,6 +16,7 @@
 #include "ipc/ipc_security_test_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "ui/webui/untrusted_web_ui_browsertest_util.h"
 #include "url/url_constants.h"
 
 // Tests embedder specific behavior of WebUIs.
@@ -23,9 +24,12 @@ class ChromeWebUINavigationBrowserTest : public InProcessBrowserTest {
  public:
   ChromeWebUINavigationBrowserTest() {
     content::WebUIControllerFactory::RegisterFactory(&factory_);
+    content::WebUIControllerFactory::RegisterFactory(&untrusted_factory_);
   }
 
   ~ChromeWebUINavigationBrowserTest() override {
+    content::WebUIControllerFactory::UnregisterFactoryForTesting(
+        &untrusted_factory_);
     content::WebUIControllerFactory::UnregisterFactoryForTesting(&factory_);
   }
 
@@ -35,8 +39,13 @@ class ChromeWebUINavigationBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
+  ui::TestUntrustedWebUIControllerFactory& untrusted_factory() {
+    return untrusted_factory_;
+  }
+
  private:
   content::TestWebUIControllerFactory factory_;
+  ui::TestUntrustedWebUIControllerFactory untrusted_factory_;
 };
 
 // Verify that a browser check stops websites from embeding chrome:// iframes.
@@ -96,8 +105,8 @@ IN_PROC_BROWSER_TEST_F(
   content::TestNavigationObserver observer(web_contents);
   content::TestUntrustedDataSourceCSP csp;
   csp.no_xfo = true;
-  content::AddUntrustedDataSource(browser()->profile(), "test-iframe-host",
-                                  csp);
+  untrusted_factory().add_web_ui_config(
+      std::make_unique<ui::TestUntrustedWebUIConfig>("test-iframe-host", csp));
 
   content::PwnMessageHelper::OpenURL(
       child, content::GetChromeUntrustedUIURL("test-iframe-host/title1.html"));
