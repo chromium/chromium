@@ -147,6 +147,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManager
                base::RepeatingClosure quota_change_callback,
                scoped_refptr<SpecialStoragePolicy> special_storage_policy,
                const GetQuotaSettingsFunc& get_settings_function);
+  QuotaManager(const QuotaManager&) = delete;
+  QuotaManager& operator=(const QuotaManager&) = delete;
 
   const QuotaSettings& settings() const { return settings_; }
   void SetQuotaSettings(const QuotaSettings& settings);
@@ -581,8 +583,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManager
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<QuotaManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(QuotaManager);
 };
 
 }  // namespace storage
