@@ -33,9 +33,6 @@
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_sheet_list.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/html/custom/v0_custom_element.h"
-#include "third_party/blink/renderer/core/html/custom/v0_custom_element_microtask_import_step.h"
-#include "third_party/blink/renderer/core/html/custom/v0_custom_element_sync_microtask_queue.h"
 #include "third_party/blink/renderer/core/html/imports/html_import_child_client.h"
 #include "third_party/blink/renderer/core/html/imports/html_import_loader.h"
 #include "third_party/blink/renderer/core/html/imports/html_import_tree_root.h"
@@ -64,12 +61,10 @@ void HTMLImportChild::OwnerInserted() {
 }
 
 void HTMLImportChild::DidShareLoader() {
-  CreateCustomElementMicrotaskStepIfNeeded();
   StateWillChange();
 }
 
 void HTMLImportChild::DidStartLoading() {
-  CreateCustomElementMicrotaskStepIfNeeded();
 }
 
 void HTMLImportChild::DidFinish() {
@@ -79,16 +74,13 @@ void HTMLImportChild::DidFinish() {
 
 void HTMLImportChild::DidFinishLoading() {
   StateWillChange();
-  V0CustomElement::DidFinishLoadingImport(*(Root()->GetDocument()));
 }
 
 void HTMLImportChild::DidFinishUpgradingCustomElements() {
   StateWillChange();
-  custom_element_microtask_step_.Clear();
 }
 
 void HTMLImportChild::Dispose() {
-  InvalidateCustomElementMicrotaskStep();
   if (Parent())
     Parent()->RemoveChild(this);
 
@@ -118,26 +110,10 @@ void HTMLImportChild::StateDidChange() {
     DidFinish();
 }
 
-void HTMLImportChild::InvalidateCustomElementMicrotaskStep() {
-  if (!custom_element_microtask_step_)
-    return;
-  custom_element_microtask_step_->Invalidate();
-  custom_element_microtask_step_.Clear();
-}
-
-void HTMLImportChild::CreateCustomElementMicrotaskStepIfNeeded() {
-  DCHECK(!custom_element_microtask_step_);
-
-  if (!HasFinishedLoading() && !FormsCycle()) {
-    custom_element_microtask_step_ = V0CustomElement::DidCreateImport(this);
-  }
-}
-
 bool HTMLImportChild::HasFinishedLoading() const {
   DCHECK(loader_);
 
-  return loader_->IsDone() && loader_->MicrotaskQueue()->IsEmpty() &&
-         !custom_element_microtask_step_;
+  return loader_->IsDone();
 }
 
 HTMLImportLoader* HTMLImportChild::Loader() const {
@@ -168,14 +144,11 @@ void HTMLImportChild::Normalize() {
 
   for (HTMLImportChild* child = ToHTMLImportChild(FirstChild()); child;
        child = ToHTMLImportChild(child->Next())) {
-    if (child->FormsCycle())
-      child->InvalidateCustomElementMicrotaskStep();
     child->Normalize();
   }
 }
 
 void HTMLImportChild::Trace(Visitor* visitor) const {
-  visitor->Trace(custom_element_microtask_step_);
   visitor->Trace(loader_);
   visitor->Trace(client_);
   HTMLImport::Trace(visitor);

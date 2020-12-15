@@ -315,9 +315,7 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoCue:
     case kPseudoFutureCue:
     case kPseudoPastCue:
-    case kPseudoUnresolved:
     case kPseudoDefined:
-    case kPseudoContent:
     case kPseudoHost:
     case kPseudoHostContext:
     case kPseudoPart:
@@ -393,7 +391,6 @@ const static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"backdrop", CSSSelector::kPseudoBackdrop},
     {"before", CSSSelector::kPseudoBefore},
     {"checked", CSSSelector::kPseudoChecked},
-    {"content", CSSSelector::kPseudoContent},
     {"corner-present", CSSSelector::kPseudoCornerPresent},
     {"cue", CSSSelector::kPseudoWebKitCustomElement},
     {"decrement", CSSSelector::kPseudoDecrement},
@@ -448,7 +445,6 @@ const static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"start", CSSSelector::kPseudoStart},
     {"target", CSSSelector::kPseudoTarget},
     {"target-text", CSSSelector::kPseudoTargetText},
-    {"unresolved", CSSSelector::kPseudoUnresolved},
     {"valid", CSSSelector::kPseudoValid},
     {"vertical", CSSSelector::kPseudoVertical},
     {"visited", CSSSelector::kPseudoVisited},
@@ -634,7 +630,6 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoScrollbarTrackPiece:
     case kPseudoSelection:
     case kPseudoWebKitCustomElement:
-    case kPseudoContent:
     case kPseudoSlotted:
     case kPseudoTargetText:
       if (match_ != kPseudoElement)
@@ -742,10 +737,6 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoLeftPage:
     case kPseudoRightPage:
       pseudo_type_ = kPseudoUnknown;
-      break;
-    case kPseudoUnresolved:
-      if (match_ != kPseudoClass || !context.CustomElementsV0Enabled())
-        pseudo_type_ = kPseudoUnknown;
       break;
   }
 }
@@ -960,10 +951,6 @@ String CSSSelector::SelectorText() const {
       case kChild:
         result = " > " + builder.ToString() + result;
         break;
-      case kShadowDeep:
-      case kShadowDeepAsDescendant:
-        result = " /deep/ " + builder.ToString() + result;
-        break;
       case kDirectAdjacent:
         result = " + " + builder.ToString() + result;
         break;
@@ -1165,14 +1152,6 @@ static bool ForAnyInTagHistory(const Functor& functor,
   return false;
 }
 
-bool CSSSelector::HasContentPseudo() const {
-  return ForAnyInTagHistory(
-      [](const CSSSelector& selector) -> bool {
-        return selector.RelationIsAffectedByPseudoContent();
-      },
-      *this);
-}
-
 bool CSSSelector::HasSlottedPseudo() const {
   return ForAnyInTagHistory(
       [](const CSSSelector& selector) -> bool {
@@ -1181,11 +1160,10 @@ bool CSSSelector::HasSlottedPseudo() const {
       *this);
 }
 
-bool CSSSelector::HasDeepCombinatorOrShadowPseudo() const {
+bool CSSSelector::HasShadowPseudo() const {
   return ForAnyInTagHistory(
       [](const CSSSelector& selector) -> bool {
-        return selector.Relation() == CSSSelector::kShadowDeep ||
-               selector.GetPseudoType() == CSSSelector::kPseudoShadow;
+        return selector.GetPseudoType() == CSSSelector::kPseudoShadow;
       },
       *this);
 }
@@ -1200,8 +1178,7 @@ bool CSSSelector::FollowsPart() const {
 bool CSSSelector::NeedsUpdatedDistribution() const {
   return ForAnyInTagHistory(
       [](const CSSSelector& selector) -> bool {
-        return selector.RelationIsAffectedByPseudoContent() ||
-               selector.GetPseudoType() == CSSSelector::kPseudoHostContext;
+        return selector.GetPseudoType() == CSSSelector::kPseudoHostContext;
       },
       *this);
 }

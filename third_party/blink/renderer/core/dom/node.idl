@@ -56,12 +56,12 @@
     [Affects=Nothing, PerWorldBindings] readonly attribute Node? nextSibling;
     [MeasureAs=NodeGetRootNode] Node getRootNode(optional GetRootNodeOptions options = {});
 
-    [Affects=Nothing, CEReactions, CustomElementCallbacks] attribute DOMString? nodeValue;
+    [Affects=Nothing, CEReactions] attribute DOMString? nodeValue;
 
-    [Affects=Nothing, CEReactions, CustomElementCallbacks, RaisesException=Setter] attribute (DOMString or TrustedScript)? textContent;
-    [CEReactions, CustomElementCallbacks] void normalize();
+    [Affects=Nothing, CEReactions, RaisesException=Setter] attribute (DOMString or TrustedScript)? textContent;
+    [CEReactions] void normalize();
 
-    [NewObject, DoNotTestNewObject, CEReactions, CustomElementCallbacks, RaisesException] Node cloneNode(optional boolean deep = false);
+    [NewObject, DoNotTestNewObject, CEReactions, RaisesException] Node cloneNode(optional boolean deep = false);
     boolean isEqualNode(Node? otherNode);
     boolean isSameNode(Node? otherNode); // historical alias of ===
 
@@ -78,8 +78,8 @@
     DOMString? lookupNamespaceURI(DOMString? prefix);
     boolean isDefaultNamespace(DOMString? namespaceURI);
 
-    [CEReactions, CustomElementCallbacks, PerWorldBindings, RaisesException] Node insertBefore(Node node, Node? child);
-    [CEReactions, CustomElementCallbacks, PerWorldBindings, RaisesException, RuntimeCallStatsCounter=NodeAppendChild] Node appendChild(Node node);
-    [CEReactions, CustomElementCallbacks, PerWorldBindings, RaisesException] Node replaceChild(Node node, Node child);
-    [CEReactions, CustomElementCallbacks, RaisesException, RuntimeCallStatsCounter=NodeRemoveChild] Node removeChild(Node child);
+    [CEReactions, PerWorldBindings, RaisesException] Node insertBefore(Node node, Node? child);
+    [CEReactions, PerWorldBindings, RaisesException, RuntimeCallStatsCounter=NodeAppendChild] Node appendChild(Node node);
+    [CEReactions, PerWorldBindings, RaisesException] Node replaceChild(Node node, Node child);
+    [CEReactions, RaisesException, RuntimeCallStatsCounter=NodeRemoveChild] Node removeChild(Node child);
 };

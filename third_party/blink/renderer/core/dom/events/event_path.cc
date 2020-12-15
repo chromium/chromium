@@ -29,7 +29,6 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/window_event_context.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
-#include "third_party/blink/renderer/core/dom/v0_insertion_point.h"
 #include "third_party/blink/renderer/core/events/touch_event.h"
 #include "third_party/blink/renderer/core/events/touch_event_context.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
@@ -50,14 +49,8 @@ EventTarget& EventPath::EventTargetRespectingTargetRules(Node& reference_node) {
 static inline bool ShouldStopAtShadowRoot(Event& event,
                                           ShadowRoot& shadow_root,
                                           EventTarget& target) {
-  if (shadow_root.IsV1()) {
-    // In v1, an event is scoped by default unless event.composed flag is set.
-    return !event.composed() && target.ToNode() &&
-           target.ToNode()->OwnerShadowHost() == shadow_root.host();
-  }
-  // Ignores event.composed() for v0.
-  // Instead, use event.isScopedInV0() for backward compatibility.
-  return event.IsScopedInV0() && target.ToNode() &&
+  // An event is scoped by default unless event.composed flag is set.
+  return !event.composed() && target.ToNode() &&
          target.ToNode()->OwnerShadowHost() == shadow_root.host();
 }
 
@@ -90,7 +83,6 @@ void EventPath::Initialize() {
 void EventPath::CalculatePath() {
   DCHECK(node_);
   DCHECK(node_event_contexts_.IsEmpty());
-  node_->UpdateDistributionForLegacyDistributedNodes();
 
   // For performance and memory usage reasons we want to store the
   // path using as few bytes as possible and with as few allocations
@@ -103,15 +95,7 @@ void EventPath::CalculatePath() {
   while (current) {
     if (event_ && current->KeepEventInNode(*event_))
       break;
-    HeapVector<Member<V0InsertionPoint>, 8> insertion_points;
-    CollectDestinationInsertionPoints(*current, insertion_points);
-    if (!insertion_points.IsEmpty()) {
-      for (const auto& insertion_point : insertion_points)
-        nodes_in_path.push_back(insertion_point);
-      current = insertion_points.back();
-      continue;
-    }
-    if (current->IsChildOfV1ShadowHost()) {
+    if (current->IsChildOfShadowHost()) {
       if (HTMLSlotElement* slot = current->AssignedSlot()) {
         current = slot;
         nodes_in_path.push_back(current);

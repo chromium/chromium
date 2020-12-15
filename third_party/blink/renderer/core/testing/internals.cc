@@ -59,7 +59,6 @@
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
-#include "third_party/blink/renderer/core/dom/shadow_root_v0.h"
 #include "third_party/blink/renderer/core/dom/static_node_list.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/core/editing/drag_caret.h"
@@ -103,7 +102,6 @@
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_inner_elements.h"
-#include "third_party/blink/renderer/core/html/html_content_element.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
@@ -687,19 +685,6 @@ String Internals::getResourceHeader(const String& url,
   return resource->GetResourceRequest().HttpHeaderField(AtomicString(header));
 }
 
-bool Internals::isValidContentSelect(Element* insertion_point,
-                                     ExceptionState& exception_state) {
-  DCHECK(insertion_point);
-  if (!insertion_point->IsV0InsertionPoint()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
-                                      "The element is not an insertion point.");
-    return false;
-  }
-
-  auto* html_content_element = DynamicTo<HTMLContentElement>(insertion_point);
-  return html_content_element && html_content_element->IsSelectValid();
-}
-
 Node* Internals::treeScopeRootNode(Node* node) {
   DCHECK(node);
   return &node->GetTreeScope().RootNode();
@@ -788,30 +773,6 @@ void Internals::advanceImageAnimation(Element* image,
 
   Image* image_data = content->GetImage();
   image_data->AdvanceAnimationForTesting();
-}
-
-bool Internals::hasShadowInsertionPoint(const Node* root,
-                                        ExceptionState& exception_state) const {
-  DCHECK(root);
-  if (!IsA<ShadowRoot>(root)) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidAccessError,
-        "The node argument is not a shadow root.");
-    return false;
-  }
-  return To<ShadowRoot>(root)->V0().ContainsShadowElements();
-}
-
-bool Internals::hasContentElement(const Node* root,
-                                  ExceptionState& exception_state) const {
-  DCHECK(root);
-  if (!IsA<ShadowRoot>(root)) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidAccessError,
-        "The node argument is not a shadow root.");
-    return false;
-  }
-  return To<ShadowRoot>(root)->V0().ContainsContentElements();
 }
 
 uint32_t Internals::countElementShadow(const Node* root,
@@ -953,8 +914,6 @@ String Internals::shadowRootType(const Node* root,
   switch (shadow_root->GetType()) {
     case ShadowRootType::kUserAgent:
       return String("UserAgentShadowRoot");
-    case ShadowRootType::V0:
-      return String("V0ShadowRoot");
     case ShadowRootType::kOpen:
       return String("OpenShadowRoot");
     case ShadowRootType::kClosed:

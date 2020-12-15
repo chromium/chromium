@@ -20,7 +20,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_long_callback_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_void_callback_function.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/html/custom/v0_custom_element_processing_stack.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
@@ -70,12 +70,12 @@ static_assert(
 
 namespace test_callback_functions_v8_internal {
 
-static void CustomElementsCallbacksReadonlyAttributeAttributeGetter(const v8::FunctionCallbackInfo<v8::Value>& info) {
+static void FooCallbacksReadonlyAttributeAttributeGetter(const v8::FunctionCallbackInfo<v8::Value>& info) {
   v8::Local<v8::Object> holder = info.Holder();
 
   TestCallbackFunctions* impl = V8TestCallbackFunctions::ToImpl(holder);
 
-  V8SetReturnValueInt(info, impl->customElementsCallbacksReadonlyAttribute());
+  V8SetReturnValueInt(info, impl->GetIntegralAttribute(html_names::kFoocallbacksreadonlyattributeAttr));
 }
 
 static void ReturnCallbackFunctionMethodMethod(const v8::FunctionCallbackInfo<v8::Value>& info) {
@@ -194,20 +194,18 @@ static void VoidMethodNullableCallbackFunctionInArgMethod(const v8::FunctionCall
   impl->voidMethodNullableCallbackFunctionInArg(void_callback_function_arg);
 }
 
-static void CustomElementCallbacksMethodMethod(const v8::FunctionCallbackInfo<v8::Value>& info) {
+static void FooCallbacksMethodMethod(const v8::FunctionCallbackInfo<v8::Value>& info) {
   TestCallbackFunctions* impl = V8TestCallbackFunctions::ToImpl(info.Holder());
 
-  V0CustomElementProcessingStack::CallbackDeliveryScope delivery_scope;
-
-  impl->customElementCallbacksMethod();
+  impl->fooCallbacksMethod();
 }
 
 }  // namespace test_callback_functions_v8_internal
 
-void V8TestCallbackFunctions::CustomElementsCallbacksReadonlyAttributeAttributeGetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestCallbackFunctions_customElementsCallbacksReadonlyAttribute_Getter");
+void V8TestCallbackFunctions::FooCallbacksReadonlyAttributeAttributeGetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
+  RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestCallbackFunctions_fooCallbacksReadonlyAttribute_Getter");
 
-  test_callback_functions_v8_internal::CustomElementsCallbacksReadonlyAttributeAttributeGetter(info);
+  test_callback_functions_v8_internal::FooCallbacksReadonlyAttributeAttributeGetter(info);
 }
 
 void V8TestCallbackFunctions::ReturnCallbackFunctionMethodMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
@@ -259,11 +257,11 @@ void V8TestCallbackFunctions::VoidMethodNullableCallbackFunctionInArgMethodCallb
   test_callback_functions_v8_internal::VoidMethodNullableCallbackFunctionInArgMethod(info);
 }
 
-void V8TestCallbackFunctions::CustomElementCallbacksMethodMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  BLINK_BINDINGS_TRACE_EVENT("TestCallbackFunctions.customElementCallbacksMethod");
-  RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestCallbackFunctions_customElementCallbacksMethod");
+void V8TestCallbackFunctions::FooCallbacksMethodMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
+  BLINK_BINDINGS_TRACE_EVENT("TestCallbackFunctions.fooCallbacksMethod");
+  RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestCallbackFunctions_fooCallbacksMethod");
 
-  test_callback_functions_v8_internal::CustomElementCallbacksMethodMethod(info);
+  test_callback_functions_v8_internal::FooCallbacksMethodMethod(info);
 }
 
 static constexpr V8DOMConfiguration::MethodConfiguration kV8TestCallbackFunctionsMethods[] = {
@@ -274,7 +272,7 @@ static constexpr V8DOMConfiguration::MethodConfiguration kV8TestCallbackFunction
     {"voidMethodCallbackFunctionWithReturnValueInArg", V8TestCallbackFunctions::VoidMethodCallbackFunctionWithReturnValueInArgMethodCallback, 1, v8::None, V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kDoNotCheckAccess, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAllWorlds},
     {"voidMethodOptionalCallbackFunctionInArg", V8TestCallbackFunctions::VoidMethodOptionalCallbackFunctionInArgMethodCallback, 0, v8::None, V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kDoNotCheckAccess, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAllWorlds},
     {"voidMethodNullableCallbackFunctionInArg", V8TestCallbackFunctions::VoidMethodNullableCallbackFunctionInArgMethodCallback, 1, v8::None, V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kDoNotCheckAccess, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAllWorlds},
-    {"customElementCallbacksMethod", V8TestCallbackFunctions::CustomElementCallbacksMethodMethodCallback, 0, v8::None, V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kDoNotCheckAccess, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAllWorlds},
+    {"fooCallbacksMethod", V8TestCallbackFunctions::FooCallbacksMethodMethodCallback, 0, v8::None, V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kDoNotCheckAccess, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAllWorlds},
 };
 
 static void InstallV8TestCallbackFunctionsTemplate(
@@ -294,7 +292,7 @@ static void InstallV8TestCallbackFunctionsTemplate(
   // Register IDL constants, attributes and operations.
   static constexpr V8DOMConfiguration::AccessorConfiguration
   kAccessorConfigurations[] = {
-      { "customElementsCallbacksReadonlyAttribute", V8TestCallbackFunctions::CustomElementsCallbacksReadonlyAttributeAttributeGetterCallback, nullptr, static_cast<unsigned>(V8PrivateProperty::CachedAccessor::kNone), static_cast<v8::PropertyAttribute>(v8::ReadOnly), V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kCheckAccess, V8DOMConfiguration::kCheckAccess, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAllWorlds },
+      { "fooCallbacksReadonlyAttribute", V8TestCallbackFunctions::FooCallbacksReadonlyAttributeAttributeGetterCallback, nullptr, static_cast<unsigned>(V8PrivateProperty::CachedAccessor::kNone), static_cast<v8::PropertyAttribute>(v8::ReadOnly), V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kCheckAccess, V8DOMConfiguration::kCheckAccess, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAllWorlds },
   };
   V8DOMConfiguration::InstallAccessors(
       isolate, world, instance_template, prototype_template, interface_template,

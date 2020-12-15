@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/editing/editing_boundary.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/events/input_event.h"
+#include "third_party/blink/renderer/core/html/html_br_element.h"
 #include "third_party/blink/renderer/platform/geometry/float_quad.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -53,6 +54,7 @@ enum class PositionMoveType {
 class Document;
 class Element;
 class HTMLElement;
+class HTMLImageElement;
 class HTMLSpanElement;
 struct LocalCaretRect;
 class Node;

@@ -54,16 +54,16 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     [Affects=Nothing] HTMLCollection getElementsByTagNameNS(DOMString? namespaceURI, DOMString localName);
     [Affects=Nothing] HTMLCollection getElementsByClassName(DOMString classNames);
 
-    [NewObject, DoNotTestNewObject, CustomElementCallbacks, PerWorldBindings, RaisesException, ImplementedAs=CreateElementForBinding] Element createElement(DOMString localName);
-    [NewObject, DoNotTestNewObject, CustomElementCallbacks, RaisesException] Element createElementNS(DOMString? namespaceURI, DOMString qualifiedName);
+    [NewObject, DoNotTestNewObject, PerWorldBindings, RaisesException, ImplementedAs=CreateElementForBinding] Element createElement(DOMString localName);
+    [NewObject, DoNotTestNewObject, RaisesException] Element createElementNS(DOMString? namespaceURI, DOMString qualifiedName);
     [NewObject] DocumentFragment createDocumentFragment();
     [NewObject] Text createTextNode(DOMString data);
     [NewObject, RaisesException] CDATASection createCDATASection(DOMString data);
     [NewObject] Comment createComment(DOMString data);
     [NewObject, RaisesException] ProcessingInstruction createProcessingInstruction(DOMString target, DOMString data);
 
-    [NewObject, DoNotTestNewObject, CEReactions, CustomElementCallbacks, RaisesException] Node importNode(Node node, optional boolean deep = false);
-    [RaisesException, CEReactions, CustomElementCallbacks] Node adoptNode(Node node);
+    [NewObject, DoNotTestNewObject, CEReactions, RaisesException] Node importNode(Node node, optional boolean deep = false);
+    [RaisesException, CEReactions] Node adoptNode(Node node);
 
     [NewObject, RaisesException, MeasureAs=DocumentCreateAttribute] Attr createAttribute(DOMString localName);
     [NewObject, RaisesException, MeasureAs=DocumentCreateAttributeNS] Attr createAttributeNS(DOMString? namespaceURI, DOMString qualifiedName);
@@ -97,9 +97,9 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     // Named getter is implemented without IDL code generation for better
     // performance. See local_window_proxy.cc.
     // getter object (DOMString name);
-    [Affects=Nothing, CEReactions, CustomElementCallbacks] attribute DOMString title;
-    [CEReactions, CustomElementCallbacks] attribute DOMString dir;
-    [Affects=Nothing, CEReactions, RaisesException=Setter, CustomElementCallbacks, PerWorldBindings] attribute HTMLElement? body;
+    [Affects=Nothing, CEReactions] attribute DOMString title;
+    [CEReactions] attribute DOMString dir;
+    [Affects=Nothing, CEReactions, RaisesException=Setter, PerWorldBindings] attribute HTMLElement? body;
     [Affects=Nothing] readonly attribute HTMLHeadElement? head;
     [SameObject, Measure] readonly attribute HTMLCollection images;
     [SameObject, Measure] readonly attribute HTMLCollection embeds;
@@ -111,24 +111,24 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     [ImplementedAs=currentScriptForBinding] readonly attribute HTMLOrSVGScriptElement? currentScript;
 
     // dynamic markup insertion
-    [CallWith=Isolate, CEReactions, CustomElementCallbacks, RaisesException, MeasureAs=DocumentOpenTwoArgs] Document open(optional DOMString type = "text/html", optional DOMString replace = "");
+    [CallWith=Isolate, CEReactions, RaisesException, MeasureAs=DocumentOpenTwoArgs] Document open(optional DOMString type = "text/html", optional DOMString replace = "");
     [CallWith=Isolate, RaisesException, MeasureAs=DocumentOpenThreeArgs] Window open(USVString url, DOMString name, DOMString features);
     [CEReactions, RaisesException] void close();
-    [CallWith=Isolate, CEReactions, CustomElementCallbacks, RaisesException] void write(DOMString... text);
-    [CallWith=Isolate, CEReactions, CustomElementCallbacks, RaisesException] void writeln(DOMString... text);
+    [CallWith=Isolate, CEReactions, RaisesException] void write(DOMString... text);
+    [CallWith=Isolate, CEReactions, RaisesException] void writeln(DOMString... text);
 
     // TrustedTypes variants of the above.
     // Note: This should be gated on [RuntimeEnabled=TrustedDOMTypes], but
     // since RuntimeEnabled isn't compatible with overloaded methods, we're
     // handling these unconditionally.
-    [CallWith=Isolate, CEReactions, CustomElementCallbacks, RaisesException] void write(TrustedHTML text);
-    [CallWith=Isolate, CEReactions, CustomElementCallbacks, RaisesException] void writeln(TrustedHTML text);
+    [CallWith=Isolate, CEReactions, RaisesException] void write(TrustedHTML text);
+    [CallWith=Isolate, CEReactions, RaisesException] void writeln(TrustedHTML text);
 
     // user interaction
     [Affects=Nothing] readonly attribute Window? defaultView;
     [Affects=Nothing] boolean hasFocus();
-    [CEReactions, CustomElementCallbacks, MeasureAs=DocumentDesignMode] attribute DOMString designMode;
-    [CEReactions, CustomElementCallbacks, RaisesException] boolean execCommand(DOMString commandId, optional boolean showUI = false, optional DOMString value = "");
+    [CEReactions, MeasureAs=DocumentDesignMode] attribute DOMString designMode;
+    [CEReactions, RaisesException] boolean execCommand(DOMString commandId, optional boolean showUI = false, optional DOMString value = "");
     [RaisesException] boolean queryCommandEnabled(DOMString commandId);
     [RaisesException] boolean queryCommandIndeterm(DOMString commandId);
     [RaisesException] boolean queryCommandState(DOMString commandId);
@@ -143,11 +143,11 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     [Measure] readonly attribute HTMLCollection anchors;
     [Measure] readonly attribute HTMLCollection applets;
 
-    [CEReactions, CustomElementCallbacks] attribute [TreatNullAs=EmptyString] DOMString fgColor;
-    [CEReactions, CustomElementCallbacks] attribute [TreatNullAs=EmptyString] DOMString linkColor;
-    [CEReactions, CustomElementCallbacks] attribute [TreatNullAs=EmptyString] DOMString vlinkColor;
-    [CEReactions, CustomElementCallbacks] attribute [TreatNullAs=EmptyString] DOMString alinkColor;
-    [CEReactions, CustomElementCallbacks] attribute [TreatNullAs=EmptyString] DOMString bgColor;
+    [CEReactions] attribute [TreatNullAs=EmptyString] DOMString fgColor;
+    [CEReactions] attribute [TreatNullAs=EmptyString] DOMString linkColor;
+    [CEReactions] attribute [TreatNullAs=EmptyString] DOMString vlinkColor;
+    [CEReactions] attribute [TreatNullAs=EmptyString] DOMString alinkColor;
+    [CEReactions] attribute [TreatNullAs=EmptyString] DOMString bgColor;
 
     [MeasureAs=DocumentClear] void clear();
     [MeasureAs=DocumentCaptureEvents] void captureEvents();
@@ -166,8 +166,8 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     // Custom Elements
     // https://w3c.github.io/webcomponents/spec/custom/#extensions-to-document-interface-to-register
     // https://w3c.github.io/webcomponents/spec/custom/#extensions-to-document-interface-to-instantiate
-    [CustomElementCallbacks, PerWorldBindings, RaisesException, ImplementedAs=CreateElementForBinding] Element createElement(DOMString localName, (DOMString or ElementCreationOptions) options);
-    [CustomElementCallbacks, RaisesException] Element createElementNS(DOMString? namespaceURI, DOMString qualifiedName, (DOMString or ElementCreationOptions) options);
+    [PerWorldBindings, RaisesException, ImplementedAs=CreateElementForBinding] Element createElement(DOMString localName, (DOMString or ElementCreationOptions) options);
+    [RaisesException] Element createElementNS(DOMString? namespaceURI, DOMString qualifiedName, (DOMString or ElementCreationOptions) options);
 
     // Page Visibility
     // https://w3c.github.io/page-visibility/#extensions-to-the-document-interface

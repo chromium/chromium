@@ -281,10 +281,6 @@ void CSSParserContext::ReportLayoutAnimationsViolationIfNeeded(
   }
 }
 
-bool CSSParserContext::CustomElementsV0Enabled() const {
-  return RuntimeEnabledFeatures::CustomElementsV0Enabled();
-}
-
 bool CSSParserContext::IsForMarkupSanitization() const {
   return document_ && document_->IsForMarkupSanitization();
 }

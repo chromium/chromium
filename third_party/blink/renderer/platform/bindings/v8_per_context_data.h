@@ -49,7 +49,6 @@
 
 namespace blink {
 
-class V0CustomElementBinding;
 class V8DOMActivityLogger;
 class V8PerContextData;
 struct WrapperTypeInfo;
@@ -96,8 +95,6 @@ class PLATFORM_EXPORT V8PerContextData final {
       v8::Local<v8::Object>* prototype_object,
       v8::Local<v8::Function>* interface_object);
 
-  void AddCustomElementBinding(std::unique_ptr<V0CustomElementBinding>);
-
   // Gets a Private to store custom element definition IDs on a
   // constructor that has been registered as a custom element in this
   // context. This private has to be per-context because the same
@@ -143,10 +140,6 @@ class PLATFORM_EXPORT V8PerContextData final {
   ScopedPersistent<v8::Context> context_;
 
   ScopedPersistent<v8::Private> private_custom_element_definition_id_;
-
-  typedef Vector<std::unique_ptr<V0CustomElementBinding>>
-      V0CustomElementBindingList;
-  V0CustomElementBindingList custom_element_bindings_;
 
   // This is owned by a static hash map in V8DOMActivityLogger.
   V8DOMActivityLogger* activity_logger_;

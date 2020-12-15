@@ -184,15 +184,6 @@ ScriptValue LocalDOMWindow::event(ScriptState* script_state) {
                        ToV8(ToV8UndefinedGenerator(), script_state));
   }
 
-  // Track usage of window.event when the event's target is inside V0 shadow
-  // tree.
-  if (current_event_->target()) {
-    Node* target_node = current_event_->target()->ToNode();
-    if (target_node && target_node->IsInV0ShadowTree()) {
-      UseCounter::Count(this, WebFeature::kWindowEventInV0ShadowTree);
-    }
-  }
-
   return ScriptValue(script_state->GetIsolate(),
                      ToV8(CurrentEvent(), script_state));
 }

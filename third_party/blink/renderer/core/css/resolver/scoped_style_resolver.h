@@ -67,17 +67,10 @@ class CORE_EXPORT ScopedStyleResolver final
   static void CounterStyleRulesChanged(TreeScope& scope);
 
   void AppendActiveStyleSheets(unsigned index, const ActiveStyleSheetVector&);
-  void CollectMatchingElementScopeRules(
-      ElementRuleCollector&,
-      ShadowV0CascadeOrder = kIgnoreCascadeOrder);
-  void CollectMatchingShadowHostRules(
-      ElementRuleCollector&,
-      ShadowV0CascadeOrder = kIgnoreCascadeOrder);
-  void CollectMatchingSlottedRules(ElementRuleCollector&,
-                                   ShadowV0CascadeOrder = kIgnoreCascadeOrder);
-  void CollectMatchingTreeBoundaryCrossingRules(
-      ElementRuleCollector&,
-      ShadowV0CascadeOrder = kIgnoreCascadeOrder);
+  void CollectMatchingElementScopeRules(ElementRuleCollector&);
+  void CollectMatchingShadowHostRules(ElementRuleCollector&);
+  void CollectMatchingSlottedRules(ElementRuleCollector&);
+  void CollectMatchingTreeBoundaryCrossingRules(ElementRuleCollector&);
   void CollectMatchingPartPseudoRules(ElementRuleCollector&,
                                       PartNames& part_names,
                                       bool for_shadow_pseudo);
@@ -94,7 +87,6 @@ class CORE_EXPORT ScopedStyleResolver final
   void SetNeedsAppendAllSheets() { needs_append_all_sheets_ = true; }
   static void KeyframesRulesAdded(const TreeScope&);
   static Element& InvalidationRootForTreeScope(const TreeScope&);
-  void V0ShadowAddedOnV1Document();
 
   void Trace(Visitor*) const;
 

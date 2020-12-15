@@ -39,8 +39,8 @@
     void importStylesheet(Node style);
     // TODO(foolip): In Gecko, the transformTo*() methods throw an exception in
     // case of error instead of returning null.
-    [CustomElementCallbacks] DocumentFragment? transformToFragment(Node source, Document output);
-    [CustomElementCallbacks] Document? transformToDocument(Node source);
+    DocumentFragment? transformToFragment(Node source, Document output);
+    Document? transformToDocument(Node source);
 
     // TODO(foolip): In Gecko, it's possible to set and get back any parameter
     // value, not just DOMString.

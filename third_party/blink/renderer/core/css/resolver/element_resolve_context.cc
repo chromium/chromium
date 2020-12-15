@@ -25,7 +25,6 @@
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
-#include "third_party/blink/renderer/core/dom/v0_insertion_point.h"
 #include "third_party/blink/renderer/core/dom/visited_link_state.h"
 
 namespace blink {
@@ -36,15 +35,10 @@ ElementResolveContext::ElementResolveContext(Element& element)
       layout_parent_(nullptr),
       element_link_state_(
           element.GetDocument().GetVisitedLinkState().DetermineLinkState(
-              element)),
-      distributed_to_insertion_point_(false) {
-  if (!element.NeedsDistributionRecalc() &&
-      element.CanParticipateInFlatTree()) {
-    LayoutTreeBuilderTraversal::ParentDetails parent_details;
+              element)) {
+  if (element.CanParticipateInFlatTree()) {
     parent_node_ = LayoutTreeBuilderTraversal::Parent(element);
-    layout_parent_ =
-        LayoutTreeBuilderTraversal::LayoutParent(element, &parent_details);
-    distributed_to_insertion_point_ = parent_details.GetInsertionPoint();
+    layout_parent_ = LayoutTreeBuilderTraversal::LayoutParent(element);
   } else {
     parent_node_ = nullptr;
     layout_parent_ = nullptr;

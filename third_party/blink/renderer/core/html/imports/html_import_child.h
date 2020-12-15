@@ -37,7 +37,6 @@
 
 namespace blink {
 
-class V0CustomElementMicrotaskImportStep;
 class HTMLImportLoader;
 class HTMLImportChildClient;
 class HTMLLinkElement;
@@ -83,7 +82,6 @@ class HTMLImportChild final : public HTMLImport {
   void InvalidateCustomElementMicrotaskStep();
 
   KURL url_;
-  WeakMember<V0CustomElementMicrotaskImportStep> custom_element_microtask_step_;
   Member<HTMLImportLoader> loader_;
   Member<HTMLImportChildClient> client_;
 };

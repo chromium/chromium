@@ -382,7 +382,7 @@ void HTMLSlotElement::AttributeChanged(
     const AttributeModificationParams& params) {
   if (params.name == html_names::kNameAttr) {
     if (ShadowRoot* root = ContainingShadowRoot()) {
-      if (root->IsV1() && params.old_value != params.new_value) {
+      if (params.old_value != params.new_value) {
         root->GetSlotAssignment().DidRenameSlot(
             NormalizeSlotName(params.old_value), *this);
       }
@@ -397,7 +397,6 @@ Node::InsertionNotificationRequest HTMLSlotElement::InsertedInto(
   if (SupportsAssignment()) {
     ShadowRoot* root = ContainingShadowRoot();
     DCHECK(root);
-    DCHECK(root->IsV1());
     if (root == insertion_point.ContainingShadowRoot()) {
       // This slot is inserted into the same tree of |insertion_point|
       root->DidAddSlot(*this);
@@ -455,7 +454,7 @@ void HTMLSlotElement::RemovedFrom(ContainerNode& insertion_point) {
       // We don't need to clear |assigned_nodes_| here. That's an important
       // optimization.
     }
-  } else if (insertion_point.IsInV1ShadowTree()) {
+  } else if (insertion_point.IsInShadowTree()) {
     // This slot was in a shadow tree and got disconnected from the shadow tree.
     // In the above example, (this slot == s1), (insertion point == d)
     // and (insertion_point->ContainingShadowRoot == sr1).
@@ -568,7 +567,7 @@ void HTMLSlotElement::DidSlotChangeAfterRemovedFromShadowTree() {
 void HTMLSlotElement::DidSlotChangeAfterRenaming() {
   DCHECK(SupportsAssignment());
   EnqueueSlotChangeEvent();
-  SetNeedsDistributionRecalcWillBeSetNeedsAssignmentRecalc();
+  SetNeedsAssignmentRecalc();
   CheckSlotChange(SlotChangeType::kSuppressSlotChangeEvent);
 }
 
@@ -682,8 +681,7 @@ void HTMLSlotElement::NotifySlottedNodesOfFlatTreeChangeNaive(
   }
 }
 
-void HTMLSlotElement::
-    SetNeedsDistributionRecalcWillBeSetNeedsAssignmentRecalc() {
+void HTMLSlotElement::SetNeedsAssignmentRecalc() {
   ContainingShadowRoot()->GetSlotAssignment().SetNeedsAssignmentRecalc();
 }
 
@@ -691,7 +689,7 @@ void HTMLSlotElement::DidSlotChange(SlotChangeType slot_change_type) {
   DCHECK(SupportsAssignment());
   if (slot_change_type == SlotChangeType::kSignalSlotChangeEvent)
     EnqueueSlotChangeEvent();
-  SetNeedsDistributionRecalcWillBeSetNeedsAssignmentRecalc();
+  SetNeedsAssignmentRecalc();
   // Check slotchange recursively since this slotchange may cause another
   // slotchange.
   CheckSlotChange(SlotChangeType::kSuppressSlotChangeEvent);
@@ -741,7 +739,6 @@ void HTMLSlotElement::EnqueueSlotChangeEvent() {
 bool HTMLSlotElement::HasAssignedNodesSlow() const {
   ShadowRoot* root = ContainingShadowRoot();
   DCHECK(root);
-  DCHECK(root->IsV1());
   SlotAssignment& assignment = root->GetSlotAssignment();
   if (assignment.FindSlotByName(GetName()) != this)
     return false;

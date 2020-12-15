@@ -506,136 +506,14 @@ void StyleResolver::MatchPseudoPartRules(const Element& element,
   }
 }
 
-static bool ShouldCheckScope(const Element& element,
-                             const Node& scoping_node,
-                             bool is_inner_tree_scope) {
-  if (is_inner_tree_scope &&
-      element.GetTreeScope() != scoping_node.GetTreeScope()) {
-    // Check if |element| may be affected by a ::content rule in |scopingNode|'s
-    // style.  If |element| is a descendant of a shadow host which is ancestral
-    // to |scopingNode|, the |element| should be included for rule collection.
-    // Skip otherwise.
-    const TreeScope* scope = &scoping_node.GetTreeScope();
-    while (scope && scope->ParentTreeScope() != &element.GetTreeScope())
-      scope = scope->ParentTreeScope();
-    Element* shadow_host =
-        scope ? scope->RootNode().OwnerShadowHost() : nullptr;
-    return shadow_host && element.IsDescendantOf(shadow_host);
-  }
-
-  // When |element| can be distributed to |scopingNode| via <shadow>, ::content
-  // rule can match, thus the case should be included.
-  if (!is_inner_tree_scope &&
-      scoping_node.ParentOrShadowHostNode() ==
-          element.GetTreeScope().RootNode().ParentOrShadowHostNode())
-    return true;
-
-  // Obviously cases when ancestor scope has /deep/ or ::shadow rule should be
-  // included.  Skip otherwise.
-  return scoping_node.GetTreeScope()
-      .GetScopedStyleResolver()
-      ->HasDeepOrShadowSelector();
-}
-
-void StyleResolver::MatchScopedRulesV0(
-    const Element& element,
-    ElementRuleCollector& collector,
-    ScopedStyleResolver* element_scope_resolver) {
-  // Match rules from treeScopes in the reverse tree-of-trees order, since the
-  // cascading order for normal rules is such that when comparing rules from
-  // different shadow trees, the rule from the tree which comes first in the
-  // tree-of-trees order wins. From other treeScopes than the element's own
-  // scope, only tree-boundary-crossing rules may match.
-
-  bool match_element_scope_done =
-      !element_scope_resolver && !element.InlineStyle();
-
-  const auto& tree_boundary_crossing_scopes =
-      GetDocument().GetStyleEngine().TreeBoundaryCrossingScopes();
-  for (auto it = tree_boundary_crossing_scopes.rbegin();
-       it != tree_boundary_crossing_scopes.rend(); ++it) {
-    const TreeScope& scope = (*it)->ContainingTreeScope();
-    ScopedStyleResolver* resolver = scope.GetScopedStyleResolver();
-    DCHECK(resolver);
-
-    bool is_inner_tree_scope =
-        element.ContainingTreeScope().IsInclusiveAncestorOf(scope);
-    if (!ShouldCheckScope(element, **it, is_inner_tree_scope))
-      continue;
-
-    if (!match_element_scope_done &&
-        scope.IsInclusiveAncestorOf(element.ContainingTreeScope())) {
-      match_element_scope_done = true;
-
-      // At this point, the iterator has either encountered the scope for the
-      // element itself (if that scope has boundary-crossing rules), or the
-      // iterator has moved to a scope which appears before the element's scope
-      // in the tree-of-trees order.  Try to match all rules from the element's
-      // scope.
-
-      MatchElementScopeRules(element, element_scope_resolver, collector);
-      if (resolver == element_scope_resolver) {
-        // Boundary-crossing rules already collected in matchElementScopeRules.
-        continue;
-      }
-    }
-
-    collector.ClearMatchedRules();
-    resolver->CollectMatchingTreeBoundaryCrossingRules(collector);
-    collector.SortAndTransferMatchedRules();
-    collector.FinishAddingAuthorRulesForTreeScope(resolver->GetTreeScope());
-  }
-
-  if (!match_element_scope_done)
-    MatchElementScopeRules(element, element_scope_resolver, collector);
-}
-
 void StyleResolver::MatchAuthorRules(
     const Element& element,
     ScopedStyleResolver* element_scope_resolver,
     ElementRuleCollector& collector) {
-  if (GetDocument().GetShadowCascadeOrder() ==
-      ShadowCascadeOrder::kShadowCascadeV0) {
-    MatchAuthorRulesV0(element, element_scope_resolver, collector);
-    return;
-  }
   MatchHostAndCustomElementRules(element, collector);
-
-  if (GetDocument().MayContainV0Shadow()) {
-    MatchScopedRulesV0(element, collector, element_scope_resolver);
-    return;
-  }
-
   MatchSlottedRules(element, collector);
   MatchElementScopeRules(element, element_scope_resolver, collector);
   MatchPseudoPartRules(element, collector);
-}
-
-void StyleResolver::MatchAuthorRulesV0(
-    const Element& element,
-    ScopedStyleResolver* element_scope_resolver,
-    ElementRuleCollector& collector) {
-  collector.ClearMatchedRules();
-
-  ShadowV0CascadeOrder cascade_order = 0;
-  HeapVector<Member<ScopedStyleResolver>, 8> resolvers_in_shadow_tree;
-  CollectScopedResolversForHostedShadowTrees(element, resolvers_in_shadow_tree);
-
-  // Apply :host and :host-context rules from inner scopes.
-  for (int j = resolvers_in_shadow_tree.size() - 1; j >= 0; --j)
-    resolvers_in_shadow_tree.at(j)->CollectMatchingShadowHostRules(
-        collector, ++cascade_order);
-
-  // Apply normal rules from element scope.
-  if (element_scope_resolver) {
-    element_scope_resolver->CollectMatchingElementScopeRules(collector,
-                                                             ++cascade_order);
-  }
-
-  // Apply /deep/ and ::shadow rules from outer scopes, and ::content from
-  // inner.
-  CollectTreeBoundaryCrossingRulesV0CascadeOrder(element, collector);
-  collector.SortAndTransferMatchedRules();
 }
 
 void StyleResolver::MatchUserRules(ElementRuleCollector& collector) {
@@ -730,17 +608,6 @@ void StyleResolver::MatchAllRules(StyleResolverState& state,
   MatchAuthorRules(element, element_scope_resolver, collector);
 
   if (element.IsStyledElement() && !state.IsForPseudoElement()) {
-    // For Shadow DOM V1, inline style is already collected in
-    // matchScopedRules().
-    if (GetDocument().GetShadowCascadeOrder() ==
-            ShadowCascadeOrder::kShadowCascadeV0 &&
-        element.InlineStyle()) {
-      // Inline style is immutable as long as there is no CSSOM wrapper.
-      bool is_inline_style_cacheable = !element.InlineStyle()->IsMutable();
-      collector.AddElementStyleProperties(element.InlineStyle(),
-                                          is_inline_style_cacheable);
-    }
-
     // Now check SMIL animation override style.
     auto* svg_element = DynamicTo<SVGElement>(element);
     if (include_smil_properties && svg_element) {
@@ -752,41 +619,6 @@ void StyleResolver::MatchAllRules(StyleResolverState& state,
   collector.FinishAddingAuthorRulesForTreeScope(
       element_scope_resolver ? element_scope_resolver->GetTreeScope()
                              : element.GetTreeScope());
-}
-
-void StyleResolver::CollectTreeBoundaryCrossingRulesV0CascadeOrder(
-    const Element& element,
-    ElementRuleCollector& collector) {
-  const auto& tree_boundary_crossing_scopes =
-      GetDocument().GetStyleEngine().TreeBoundaryCrossingScopes();
-  if (tree_boundary_crossing_scopes.IsEmpty())
-    return;
-
-  // When comparing rules declared in outer treescopes, outer's rules win.
-  ShadowV0CascadeOrder outer_cascade_order =
-      tree_boundary_crossing_scopes.size() * 2;
-  // When comparing rules declared in inner treescopes, inner's rules win.
-  ShadowV0CascadeOrder inner_cascade_order =
-      tree_boundary_crossing_scopes.size();
-
-  for (const auto& scoping_node : tree_boundary_crossing_scopes) {
-    // Skip rule collection for element when tree boundary crossing rules of
-    // scopingNode's scope can never apply to it.
-    bool is_inner_tree_scope =
-        element.ContainingTreeScope().IsInclusiveAncestorOf(
-            scoping_node->ContainingTreeScope());
-    if (!ShouldCheckScope(element, *scoping_node, is_inner_tree_scope))
-      continue;
-
-    ShadowV0CascadeOrder cascade_order =
-        is_inner_tree_scope ? inner_cascade_order : outer_cascade_order;
-    scoping_node->GetTreeScope()
-        .GetScopedStyleResolver()
-        ->CollectMatchingTreeBoundaryCrossingRules(collector, cascade_order);
-
-    ++inner_cascade_order;
-    --outer_cascade_order;
-  }
 }
 
 scoped_refptr<ComputedStyle> StyleResolver::StyleForViewport() {
@@ -925,7 +757,7 @@ void StyleResolver::InitStyleAndApplyInheritance(Element& element,
 
     // contenteditable attribute (implemented by -webkit-user-modify) should
     // be propagated from shadow host to distributed node.
-    if (state.DistributedToV0InsertionPoint() || element.AssignedSlot()) {
+    if (element.AssignedSlot()) {
       if (Element* parent = element.parentElement()) {
         if (const ComputedStyle* shadow_host_style = parent->GetComputedStyle())
           state.Style()->SetUserModify(shadow_host_style->UserModify());
@@ -939,11 +771,10 @@ void StyleResolver::InitStyleAndApplyInheritance(Element& element,
       // Strictly, we should only allow the root element to inherit from
       // initial styles, but we allow getComputedStyle() for connected
       // elements outside the flat tree rooted at an unassigned shadow host
-      // child, a slot fallback element, or Shadow DOM V0 insertion points.
-      DCHECK(element.IsV0InsertionPoint() ||
-             ((IsShadowHost(element.parentNode()) ||
-               IsA<HTMLSlotElement>(element.parentNode())) &&
-              !LayoutTreeBuilderTraversal::ParentElement(element)));
+      // child or a slot fallback element.
+      DCHECK((IsShadowHost(element.parentNode()) ||
+              IsA<HTMLSlotElement>(element.parentNode())) &&
+             !LayoutTreeBuilderTraversal::ParentElement(element));
       state.Style()->SetIsEnsuredOutsideFlatTree();
     }
   }
@@ -1548,9 +1379,7 @@ StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(
     // reusing the style data structures.
     if (state.ParentStyle()->InheritedDataShared(
             *cached_matched_properties->parent_computed_style) &&
-        !IsAtShadowBoundary(&element) &&
-        (!state.DistributedToV0InsertionPoint() || element.AssignedSlot() ||
-         state.Style()->UserModify() == EUserModify::kReadOnly)) {
+        !IsAtShadowBoundary(&element)) {
       INCREMENT_STYLE_STATS_COUNTER(GetDocument().GetStyleEngine(),
                                     matched_property_cache_inherited_hit, 1);
 

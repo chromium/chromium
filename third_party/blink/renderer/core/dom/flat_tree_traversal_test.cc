@@ -63,7 +63,6 @@ void FlatTreeTraversalTest::AttachOpenShadowRoot(
   ShadowRoot& shadow_root =
       shadow_host.AttachShadowRootInternal(ShadowRootType::kOpen);
   shadow_root.setInnerHTML(String::FromUTF8(shadow_inner_html));
-  GetDocument().body()->UpdateDistributionForFlatTreeTraversal();
 }
 
 namespace {

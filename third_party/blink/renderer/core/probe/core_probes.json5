@@ -68,7 +68,6 @@
         "DidInsertDOMNode",
         "DidInvalidateStyleAttr",
         "DidModifyDOMAttr",
-        "DidPerformElementShadowDistribution",
         "DidPerformSlotDistribution",
         "DidPushShadowRoot",
         "DidRemoveDOMAttr",

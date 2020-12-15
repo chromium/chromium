@@ -275,8 +275,6 @@ static inline bool CanHaveWhitespaceChildren(
 
 bool Text::TextLayoutObjectIsNeeded(const AttachContext& context,
                                     const ComputedStyle& style) const {
-  DCHECK(!GetDocument().ChildNeedsDistributionRecalc());
-
   const LayoutObject& parent = *context.parent;
   if (!parent.CanHaveChildren())
     return false;
@@ -429,13 +427,9 @@ static bool ShouldUpdateLayoutByReattaching(const Text& text_node,
   DCHECK_EQ(text_node.GetLayoutObject(), text_layout_object);
   if (!text_layout_object)
     return true;
-  // In general we do not want to branch on lifecycle states such as
-  // |ChildNeedsDistributionRecalc|, but this code tries to figure out if we can
-  // use an optimized code path that avoids reattach.
   Node::AttachContext context;
   context.parent = text_layout_object->Parent();
-  if (!text_node.GetDocument().ChildNeedsDistributionRecalc() &&
-      !text_node.TextLayoutObjectIsNeeded(context,
+  if (!text_node.TextLayoutObjectIsNeeded(context,
                                           *text_layout_object->Style())) {
     return true;
   }

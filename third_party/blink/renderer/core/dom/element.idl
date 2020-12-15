@@ -44,19 +44,19 @@ callback ScrollStateCallback = void (ScrollState scrollState);
     [Affects=Nothing] sequence<DOMString> getAttributeNames();
     [Affects=Nothing] DOMString? getAttribute(DOMString name);
     [Affects=Nothing] DOMString? getAttributeNS(DOMString? namespaceURI, DOMString localName);
-    [RaisesException, CEReactions, CustomElementCallbacks] void setAttribute(DOMString name, TrustedString value);
-    [RaisesException, CEReactions, CustomElementCallbacks] void setAttributeNS(DOMString? namespaceURI, DOMString name, TrustedString value);
-    [CEReactions, CustomElementCallbacks] void removeAttribute(DOMString name);
-    [CEReactions, CustomElementCallbacks] void removeAttributeNS(DOMString? namespaceURI, DOMString localName);
-    [RaisesException, CEReactions, CustomElementCallbacks] boolean toggleAttribute(DOMString qualifiedName, optional boolean force);
+    [RaisesException, CEReactions] void setAttribute(DOMString name, TrustedString value);
+    [RaisesException, CEReactions] void setAttributeNS(DOMString? namespaceURI, DOMString name, TrustedString value);
+    [CEReactions] void removeAttribute(DOMString name);
+    [CEReactions] void removeAttributeNS(DOMString? namespaceURI, DOMString localName);
+    [RaisesException, CEReactions] boolean toggleAttribute(DOMString qualifiedName, optional boolean force);
     [Affects=Nothing] boolean hasAttribute(DOMString name);
     [Affects=Nothing] boolean hasAttributeNS(DOMString? namespaceURI, DOMString localName);
 
     Attr? getAttributeNode(DOMString name);
     Attr? getAttributeNodeNS(DOMString? namespaceURI, DOMString localName);
-    [RaisesException, CEReactions, CustomElementCallbacks] Attr? setAttributeNode(Attr attr);
-    [RaisesException, CEReactions, CustomElementCallbacks] Attr? setAttributeNodeNS(Attr attr);
-    [RaisesException, CEReactions, CustomElementCallbacks] Attr removeAttributeNode(Attr attr);
+    [RaisesException, CEReactions] Attr? setAttributeNode(Attr attr);
+    [RaisesException, CEReactions] Attr? setAttributeNodeNS(Attr attr);
+    [RaisesException, CEReactions] Attr removeAttributeNode(Attr attr);
 
     [RaisesException, MeasureAs=ElementAttachShadow] ShadowRoot attachShadow(ShadowRootInit shadowRootInitDict);
     [Affects=Nothing, PerWorldBindings, ImplementedAs=OpenShadowRoot] readonly attribute ShadowRoot? shadowRoot;
@@ -69,7 +69,7 @@ callback ScrollStateCallback = void (ScrollState scrollState);
     [Affects=Nothing] HTMLCollection getElementsByTagNameNS(DOMString? namespaceURI, DOMString localName);
     [Affects=Nothing] HTMLCollection getElementsByClassName(DOMString classNames);
 
-    [RaisesException, CEReactions, CustomElementCallbacks] Element? insertAdjacentElement(DOMString where, Element element);
+    [RaisesException, CEReactions] Element? insertAdjacentElement(DOMString where, Element element);
     [RaisesException] void insertAdjacentText(DOMString where, DOMString data);
 
     // CSS Shadow Parts
@@ -92,9 +92,9 @@ callback ScrollStateCallback = void (ScrollState scrollState);
     // TODO(mkwst): Write a spec for the `TrustedHTML` variants.
     // TODO(lyf): Change the type to `[TreatNullAs=xxx] HTMLString` after
     // https://crbug.com/1058762 has been fixed.
-    [Affects=Nothing, CEReactions, CustomElementCallbacks, RuntimeCallStatsCounter=ElementInnerHTML, RaisesException=Setter] attribute [TreatNullAs=EmptyString, StringContext=TrustedHTML] DOMString innerHTML;
-    [Affects=Nothing, CEReactions, CustomElementCallbacks, RaisesException=Setter] attribute [TreatNullAs=EmptyString, StringContext=TrustedHTML] DOMString outerHTML;
-    [CEReactions, CustomElementCallbacks, RaisesException] void insertAdjacentHTML(DOMString position, HTMLString text);
+    [Affects=Nothing, CEReactions, RuntimeCallStatsCounter=ElementInnerHTML, RaisesException=Setter] attribute [TreatNullAs=EmptyString, StringContext=TrustedHTML] DOMString innerHTML;
+    [Affects=Nothing, CEReactions, RaisesException=Setter] attribute [TreatNullAs=EmptyString, StringContext=TrustedHTML] DOMString outerHTML;
+    [CEReactions, RaisesException] void insertAdjacentHTML(DOMString position, HTMLString text);
 
     // Declarative Shadow DOM getInnerHTML() function.
     [Affects=Nothing, RuntimeEnabled=DeclarativeShadowDOM, RuntimeCallStatsCounter=ElementGetInnerHTML] HTMLString getInnerHTML(optional GetInnerHTMLOptions options = {});

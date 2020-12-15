@@ -172,7 +172,7 @@ void SVGScriptElement::DispatchErrorEvent() {
 
 void SVGScriptElement::SetScriptElementForBinding(
     HTMLScriptElementOrSVGScriptElement& element) {
-  if (!IsInV1ShadowTree())
+  if (!IsInShadowTree())
     element.SetSVGScriptElement(this);
 }
 

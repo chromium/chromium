@@ -34,15 +34,11 @@
 #include "third_party/blink/renderer/core/css/style_sheet_list.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
-#include "third_party/blink/renderer/core/dom/shadow_root_v0.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment_engine.h"
 #include "third_party/blink/renderer/core/dom/text.h"
-#include "third_party/blink/renderer/core/dom/v0_insertion_point.h"
 #include "third_party/blink/renderer/core/dom/whitespace_attacher.h"
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
-#include "third_party/blink/renderer/core/html/html_content_element.h"
-#include "third_party/blink/renderer/core/html/html_shadow_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
@@ -51,13 +47,8 @@
 
 namespace blink {
 
-void ShadowRoot::Distribute() {
-  if (!IsV1())
-    V0().Distribute();
-}
-
 struct SameSizeAsShadowRoot : public DocumentFragment, public TreeScope {
-  Member<void*> member[3];
+  Member<void*> member[2];
   unsigned flags[1];
 };
 
@@ -72,11 +63,7 @@ ShadowRoot::ShadowRoot(Document& document, ShadowRootType type)
       registered_with_parent_shadow_root_(false),
       delegates_focus_(false),
       slot_assignment_mode_(static_cast<unsigned>(SlotAssignmentMode::kAuto)),
-      needs_distribution_recalc_(false),
-      unused_(0) {
-  if (IsV0())
-    shadow_root_v0_ = MakeGarbageCollected<ShadowRootV0>(*this);
-}
+      unused_(0) {}
 
 ShadowRoot::~ShadowRoot() = default;
 
@@ -93,7 +80,6 @@ HTMLSlotElement* ShadowRoot::AssignedSlotFor(const Node& node) {
 }
 
 void ShadowRoot::DidAddSlot(HTMLSlotElement& slot) {
-  DCHECK(IsV1());
   EnsureSlotAssignment().DidAddSlot(slot);
 }
 
@@ -193,7 +179,6 @@ void ShadowRoot::RemovedFrom(ContainerNode& insertion_point) {
 }
 
 void ShadowRoot::SetNeedsAssignmentRecalc() {
-  DCHECK(IsV1());
   if (!slot_assignment_)
     return;
   return slot_assignment_->SetNeedsAssignmentRecalc();
@@ -222,25 +207,9 @@ StyleSheetList& ShadowRoot::StyleSheets() {
   return *style_sheet_list_;
 }
 
-void ShadowRoot::SetNeedsDistributionRecalcWillBeSetNeedsAssignmentRecalc() {
-  if (IsV1())
-    SetNeedsAssignmentRecalc();
-  else
-    SetNeedsDistributionRecalc();
-}
-
-void ShadowRoot::SetNeedsDistributionRecalc() {
-  DCHECK(!IsV1());
-  if (needs_distribution_recalc_)
-    return;
-  needs_distribution_recalc_ = true;
-  host().MarkAncestorsWithChildNeedsDistributionRecalc();
-}
-
 void ShadowRoot::Trace(Visitor* visitor) const {
   visitor->Trace(style_sheet_list_);
   visitor->Trace(slot_assignment_);
-  visitor->Trace(shadow_root_v0_);
   TreeScope::Trace(visitor);
   DocumentFragment::Trace(visitor);
 }
@@ -249,9 +218,6 @@ std::ostream& operator<<(std::ostream& ostream, const ShadowRootType& type) {
   switch (type) {
     case ShadowRootType::kUserAgent:
       ostream << "UserAgent";
-      break;
-    case ShadowRootType::V0:
-      ostream << "V0";
       break;
     case ShadowRootType::kOpen:
       ostream << "Open";

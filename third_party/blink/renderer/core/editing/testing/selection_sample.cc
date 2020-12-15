@@ -119,7 +119,7 @@ class Parser final {
   }
 
   void HandleElementNode(Element* element) {
-    if (ShadowRoot* shadow_root = element->ShadowRootIfV1())
+    if (ShadowRoot* shadow_root = element->GetShadowRoot())
       HandleChildren(shadow_root);
     HandleChildren(element);
   }

@@ -78,7 +78,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/string_or_element_creation_options.h"
-#include "third_party/blink/renderer/bindings/core/v8/v0_custom_element_constructor_builder.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_element_creation_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_element_registration_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
@@ -195,8 +194,6 @@
 #include "third_party/blink/renderer/core/html/custom/custom_element_definition.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_descriptor.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
-#include "third_party/blink/renderer/core/html/custom/v0_custom_element_microtask_run_queue.h"
-#include "third_party/blink/renderer/core/html/custom/v0_custom_element_registration_context.h"
 #include "third_party/blink/renderer/core/html/document_all_name_collection.h"
 #include "third_party/blink/renderer/core/html/document_name_collection.h"
 #include "third_party/blink/renderer/core/html/forms/email_input_type.h"
@@ -783,7 +780,6 @@ Document::Document(const DocumentInit& initializer,
       write_recursion_depth_(0),
       scripted_animation_controller_(
           MakeGarbageCollected<ScriptedAnimationController>(domWindow())),
-      registration_context_(initializer.RegistrationContext(this)),
       element_data_cache_clear_timer_(
           GetTaskRunner(TaskType::kInternalUserInteraction),
           this,
@@ -827,9 +823,6 @@ Document::Document(const DocumentInit& initializer,
     ProvideContextFeaturesToDocumentFrom(*this, *GetFrame()->GetPage());
     fetcher_ = FrameFetchContext::CreateFetcherForCommittedDocument(
         *GetFrame()->Loader().GetDocumentLoader(), *this);
-    CustomElementRegistry* registry = dom_window_->MaybeCustomElements();
-    if (registry && registration_context_)
-      registry->Entangle(registration_context_);
     cookie_jar_ = MakeGarbageCollected<CookieJar>(this);
   } else {
     // We disable fetches for frame-less Documents, including HTML-imported
@@ -1110,8 +1103,6 @@ Element* Document::CreateElementForBinding(const AtomicString& name,
       return element;
     QualifiedName q_name(g_null_atom, local_name,
                          html_names::xhtmlNamespaceURI);
-    if (RegistrationContext() && V0CustomElement::IsValidName(local_name))
-      return RegistrationContext()->CreateCustomTagElement(*this, q_name);
     return MakeGarbageCollected<HTMLUnknownElement>(q_name, *this);
   }
   return MakeGarbageCollected<Element>(
@@ -1164,27 +1155,16 @@ Element* Document::CreateElementForBinding(
                            ? html_names::xhtmlNamespaceURI
                            : g_null_atom);
 
-  bool is_v1 =
-      string_or_options.IsElementCreationOptions() || !RegistrationContext();
-  // V0 is only allowed with the flag.
-  DCHECK(is_v1 || RuntimeEnabledFeatures::CustomElementsV0Enabled());
-  bool create_v1_builtin = string_or_options.IsElementCreationOptions();
-  bool should_create_builtin =
-      create_v1_builtin || string_or_options.IsString();
+  bool create_builtin = string_or_options.IsElementCreationOptions() ||
+                        string_or_options.IsString();
 
   // 3.
   const AtomicString& is = GetTypeExtension(this, string_or_options);
 
   // 5. Let element be the result of creating an element given ...
   Element* element =
-      CreateElement(q_name,
-                    is_v1 ? CreateElementFlags::ByCreateElementV1()
-                          : CreateElementFlags::ByCreateElementV0(),
-                    should_create_builtin ? is : g_null_atom);
-
-  // 8. If 'is' is non-null, set 'is' attribute
-  if (!is_v1 && !is.IsEmpty())
-    element->setAttribute(html_names::kIsAttr, is);
+      CreateElement(q_name, CreateElementFlags::ByCreateElement(),
+                    create_builtin ? is : g_null_atom);
 
   return element;
 }
@@ -1222,8 +1202,6 @@ Element* Document::createElementNS(const AtomicString& namespace_uri,
   CreateElementFlags flags = CreateElementFlags::ByCreateElement();
   if (CustomElement::ShouldCreateCustomElement(q_name))
     return CustomElement::CreateCustomElement(*this, q_name, flags);
-  if (RegistrationContext() && V0CustomElement::IsValidName(q_name.LocalName()))
-    return RegistrationContext()->CreateCustomTagElement(*this, q_name);
   return CreateRawElement(q_name, flags);
 }
 
@@ -1242,13 +1220,8 @@ Element* Document::createElementNS(
   if (q_name == QualifiedName::Null())
     return nullptr;
 
-  bool is_v1 =
-      string_or_options.IsElementCreationOptions() || !RegistrationContext();
-  // V0 is only allowed with the flag.
-  DCHECK(is_v1 || RuntimeEnabledFeatures::CustomElementsV0Enabled());
-  bool create_v1_builtin = string_or_options.IsElementCreationOptions();
-  bool should_create_builtin =
-      create_v1_builtin || string_or_options.IsString();
+  bool create_builtin = string_or_options.IsElementCreationOptions() ||
+                        string_or_options.IsString();
 
   // 2.
   const AtomicString& is = GetTypeExtension(this, string_or_options);
@@ -1263,14 +1236,8 @@ Element* Document::createElementNS(
 
   // 3. Let element be the result of creating an element
   Element* element =
-      CreateElement(q_name,
-                    is_v1 ? CreateElementFlags::ByCreateElementV1()
-                          : CreateElementFlags::ByCreateElementV0(),
-                    should_create_builtin ? is : g_null_atom);
-
-  // 4. If 'is' is non-null, set 'is' attribute
-  if (!is_v1 && !is.IsEmpty())
-    element->setAttribute(html_names::kIsAttr, is);
+      CreateElement(q_name, CreateElementFlags::ByCreateElement(),
+                    create_builtin ? is : g_null_atom);
 
   return element;
 }
@@ -1281,7 +1248,7 @@ Element* Document::CreateElement(const QualifiedName& q_name,
                                  const CreateElementFlags flags,
                                  const AtomicString& is) {
   CustomElementDefinition* definition = nullptr;
-  if (flags.IsCustomElementsV1() &&
+  if (flags.IsCustomElements() &&
       q_name.NamespaceURI() == html_names::xhtmlNamespaceURI) {
     const CustomElementDescriptor desc(is.IsNull() ? q_name.LocalName() : is,
                                        q_name.LocalName());
@@ -1294,53 +1261,6 @@ Element* Document::CreateElement(const QualifiedName& q_name,
 
   return CustomElement::CreateUncustomizedOrUndefinedElement(*this, q_name,
                                                              flags, is);
-}
-
-ScriptValue Document::registerElement(ScriptState* script_state,
-                                      const AtomicString& name,
-                                      const ElementRegistrationOptions* options,
-                                      ExceptionState& exception_state) {
-  // TODO(crbug.com/937746): Anything caught by this CHECK is using the
-  // now-removed Custom Elements v0 API. Please don't delete any of this code
-  // just yet, it will be removed very soon once there's been time to make
-  // sure nothing is broken by this removal. If this shows up in crash
-  // reports, please assign bugs to masonfreed at chromium dot org.
-  CHECK(false) << "Custom Elements v0 has been removed.";
-
-  if (!RegistrationContext()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotSupportedError,
-        "No element registration context is available.");
-    return ScriptValue();
-  }
-
-  // Polymer V1 uses Custom Elements V0. <dom-module> is defined in its base
-  // library and is a strong signal that this is a Polymer V1.
-  // This counter is used to research how much users are affected once Custom
-  // Element V0 is deprecated.
-  if (name == "dom-module")
-    UseCounter::Count(*this, WebFeature::kPolymerV1Detected);
-
-  V0CustomElementConstructorBuilder constructor_builder(script_state, options);
-  RegistrationContext()->RegisterElement(this, &constructor_builder, name,
-                                         exception_state);
-  if (exception_state.HadException())
-    return ScriptValue();
-  return constructor_builder.BindingsReturnValue();
-}
-
-V0CustomElementRegistrationContext* Document::RegistrationContext() const {
-  if (RuntimeEnabledFeatures::CustomElementsV0Enabled())
-    return registration_context_.Get();
-  return nullptr;
-}
-
-V0CustomElementMicrotaskRunQueue* Document::CustomElementMicrotaskRunQueue() {
-  if (!custom_element_microtask_run_queue_) {
-    custom_element_microtask_run_queue_ =
-        MakeGarbageCollected<V0CustomElementMicrotaskRunQueue>();
-  }
-  return custom_element_microtask_run_queue_.Get();
 }
 
 void Document::ClearImportsController() {
@@ -2372,7 +2292,6 @@ static void AssertNodeClean(const Node& node) {
   DCHECK(!node.ChildNeedsStyleRecalc());
   DCHECK(!node.NeedsReattachLayoutTree());
   DCHECK(!node.ChildNeedsReattachLayoutTree());
-  DCHECK(!node.ChildNeedsDistributionRecalc());
   DCHECK(!node.NeedsStyleInvalidation());
   DCHECK(!node.ChildNeedsStyleInvalidation());
   DCHECK(!node.GetForceReattachLayoutTree());
@@ -2484,8 +2403,6 @@ void Document::UpdateStyleAndLayoutTree() {
   document_animations_->UpdateAnimationTimingIfNeeded();
   EvaluateMediaQueryListIfNeeded();
   UpdateUseShadowTreesIfNeeded();
-
-  UpdateDistributionForLegacyDistributedNodes();
 
   GetStyleEngine().UpdateActiveStyle();
   InvalidateStyleAndLayoutForFontUpdates();
@@ -3166,9 +3083,6 @@ void Document::Shutdown() {
     GetPage()->GetChromeClient().AttachRootLayer(nullptr, GetFrame());
   if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
     layout_view_->CleanUpCompositor();
-
-  if (RegistrationContext())
-    RegistrationContext()->DocumentWasDetached();
 
   MutationObserver::CleanSlotChangeList(*this);
 
@@ -4959,8 +4873,7 @@ Document* Document::CloneDocumentWithoutChildren() const {
                           .WithURL(Url());
   if (IsA<XMLDocument>(this)) {
     if (IsXHTMLDocument())
-      return XMLDocument::CreateXHTML(
-          init.WithRegistrationContext(RegistrationContext()));
+      return XMLDocument::CreateXHTML(init);
     return MakeGarbageCollected<XMLDocument>(init);
   }
   return MakeGarbageCollected<Document>(init);
@@ -5114,7 +5027,6 @@ bool Document::SetFocusedElement(Element* new_focused_element,
   Element* old_focused_element = focused_element_;
   focused_element_ = nullptr;
 
-  UpdateDistributionForFlatTreeTraversal();
   Node* ancestor = (old_focused_element && old_focused_element->isConnected() &&
                     new_focused_element)
                        ? FlatTreeTraversal::CommonAncestor(*old_focused_element,
@@ -5480,7 +5392,7 @@ void Document::NodeChildrenWillBeRemoved(ContainerNode& container) {
         observer->NodeChildrenWillBeRemoved(container);
       });
 
-  if (ContainsV1ShadowTree()) {
+  if (ContainsShadowTree()) {
     for (Node& n : NodeTraversal::ChildrenOf(container))
       n.CheckSlotChangeBeforeRemoved();
   }
@@ -5501,7 +5413,7 @@ void Document::NodeWillBeRemoved(Node& n) {
         observer->NodeWillBeRemoved(n);
       });
 
-  if (ContainsV1ShadowTree())
+  if (ContainsShadowTree())
     n.CheckSlotChangeBeforeRemoved();
 
   if (n.InActiveDocument())
@@ -7629,8 +7541,6 @@ void Document::UpdateHoverActiveState(bool is_active,
         inner_element_in_document->GetDocument().LocalOwner();
   }
 
-  UpdateDistributionForFlatTreeTraversal();
-
   UpdateActiveState(is_active, update_active_chain, inner_element_in_document);
   UpdateHoverState(inner_element_in_document);
 }
@@ -7784,8 +7694,7 @@ Document& Document::EnsureTemplateDocument() {
     template_document_ = MakeGarbageCollected<HTMLDocument>(
         DocumentInit::Create()
             .WithExecutionContext(execution_context_.Get())
-            .WithURL(BlankURL())
-            .WithNewRegistrationContext());
+            .WithURL(BlankURL()));
   } else {
     template_document_ = MakeGarbageCollected<Document>(
         DocumentInit::Create()
@@ -8121,23 +8030,6 @@ void Document::SetShadowCascadeOrder(ShadowCascadeOrder order) {
   if (order == shadow_cascade_order_)
     return;
 
-  if (order == ShadowCascadeOrder::kShadowCascadeV0) {
-    may_contain_v0_shadow_ = true;
-    if (shadow_cascade_order_ == ShadowCascadeOrder::kShadowCascadeV1) {
-      // ::slotted() rules has to be moved to tree boundary rule sets.
-      style_engine_->V0ShadowAddedOnV1Document();
-      UseCounter::Count(*this, WebFeature::kMixedShadowRootV0AndV1);
-    }
-  }
-
-  // For V0 -> V1 upgrade, we need style recalculation for all elements.
-  if (shadow_cascade_order_ == ShadowCascadeOrder::kShadowCascadeV0 &&
-      order == ShadowCascadeOrder::kShadowCascadeV1) {
-    GetStyleEngine().MarkAllElementsForStyleRecalc(
-        StyleChangeReasonForTracing::Create(style_change_reason::kShadow));
-    UseCounter::Count(*this, WebFeature::kMixedShadowRootV0AndV1);
-  }
-
   if (order > shadow_cascade_order_)
     shadow_cascade_order_ = order;
 }
@@ -8251,8 +8143,6 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(scripted_animation_controller_);
   visitor->Trace(scripted_idle_task_controller_);
   visitor->Trace(text_autosizer_);
-  visitor->Trace(registration_context_);
-  visitor->Trace(custom_element_microtask_run_queue_);
   visitor->Trace(element_data_cache_);
   visitor->Trace(use_elements_needing_update_);
   visitor->Trace(template_document_);
@@ -8315,8 +8205,6 @@ SlotAssignmentEngine& Document::GetSlotAssignmentEngine() {
 }
 
 bool Document::IsSlotAssignmentOrLegacyDistributionDirty() const {
-  if (ChildNeedsDistributionRecalc())
-    return true;
   if (slot_assignment_engine_ &&
       slot_assignment_engine_->HasPendingSlotAssignmentRecalc()) {
     return true;

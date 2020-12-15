@@ -183,9 +183,6 @@ def method_context(interface, method, component_info, is_visible=True):
     is_ce_reactions = 'CEReactions' in extended_attributes
     if is_ce_reactions:
         includes.add('core/html/custom/ce_reactions_scope.h')
-    is_custom_element_callbacks = 'CustomElementCallbacks' in extended_attributes
-    if is_custom_element_callbacks:
-        includes.add('core/html/custom/v0_custom_element_processing_stack.h')
 
     is_raises_exception = 'RaisesException' in extended_attributes
 
@@ -257,8 +254,6 @@ def method_context(interface, method, component_info, is_visible=True):
         'CrossOrigin' in extended_attributes,
         'is_custom':
         'Custom' in extended_attributes,
-        'is_custom_element_callbacks':
-        is_custom_element_callbacks,
         'is_explicit_nullable':
         idl_type.is_explicit_nullable,
         'is_new_object':

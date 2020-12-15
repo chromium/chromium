@@ -550,7 +550,6 @@ std::pair<Node*, Element*> MarkupAccumulator::GetAuxiliaryDOMTree(
       element.GetExecutionContext()));
   AtomicString shadowroot_type;
   switch (shadow_root->GetType()) {
-    case ShadowRootType::V0:
     case ShadowRootType::kUserAgent:
       // Don't serialize user agent shadow roots, only explicit shadow roots.
       return std::pair<Node*, Element*>();

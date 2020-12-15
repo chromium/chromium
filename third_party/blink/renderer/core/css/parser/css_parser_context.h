@@ -137,9 +137,6 @@ class CORE_EXPORT CSSParserContext final
   // report (https://crbug.com/906150, ).
   void ReportLayoutAnimationsViolationIfNeeded(const StyleRuleKeyframe&) const;
 
-  // TODO(yoichio): Remove when CustomElementsV0 is removed. crrev.com/660759.
-  bool CustomElementsV0Enabled() const;
-
   bool IsForMarkupSanitization() const;
 
   // Overrides |mode_| of a CSSParserContext within the scope, allowing us to

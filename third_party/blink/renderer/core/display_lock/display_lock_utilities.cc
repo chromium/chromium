@@ -139,7 +139,6 @@ DisplayLockUtilities::ActivatableLockedInclusiveAncestors(
     const Node& node,
     DisplayLockActivationReason reason) {
   HeapVector<Member<Element>> elements_to_activate;
-  const_cast<Node*>(&node)->UpdateDistributionForFlatTreeTraversal();
   if (!RuntimeEnabledFeatures::CSSContentVisibilityEnabled() ||
       node.GetDocument()
               .GetDisplayLockDocumentState()
@@ -185,7 +184,6 @@ DisplayLockUtilities::ScopedForcedUpdate::Impl::Impl(const Node* node,
           .GetDisplayLockDocumentState()
           .LockedDisplayLockCount() == 0)
     return;
-  const_cast<Node*>(node)->UpdateDistributionForFlatTreeTraversal();
 
   // Get the right ancestor view. Only use inclusive ancestors if the node
   // itself is locked and it prevents self layout, or if |include_self| is true.
@@ -235,7 +233,6 @@ void DisplayLockUtilities::ScopedForcedUpdate::Impl::
 
 const Element* DisplayLockUtilities::NearestLockedInclusiveAncestor(
     const Node& node) {
-  const_cast<Node*>(&node)->UpdateDistributionForFlatTreeTraversal();
   auto* element = DynamicTo<Element>(node);
   if (!element)
     return NearestLockedExclusiveAncestor(node);
@@ -276,7 +273,6 @@ Element* DisplayLockUtilities::NearestHiddenMatchableInclusiveAncestor(
     }
   }
 
-  element.UpdateDistributionForFlatTreeTraversal();
   // TODO(crbug.com/924550): Once we figure out a more efficient way to
   // determine whether we're inside a locked subtree or not, change this.
   for (Node& ancestor : FlatTreeTraversal::AncestorsOf(element)) {
@@ -302,7 +298,6 @@ Element* DisplayLockUtilities::NearestLockedExclusiveAncestor(
       !node.CanParticipateInFlatTree()) {
     return nullptr;
   }
-  const_cast<Node*>(&node)->UpdateDistributionForFlatTreeTraversal();
   // TODO(crbug.com/924550): Once we figure out a more efficient way to
   // determine whether we're inside a locked subtree or not, change this.
   for (Node& ancestor : FlatTreeTraversal::AncestorsOf(node)) {
@@ -324,7 +319,6 @@ Element* DisplayLockUtilities::HighestLockedInclusiveAncestor(
     return nullptr;
   }
   auto* node_ptr = const_cast<Node*>(&node);
-  node_ptr->UpdateDistributionForFlatTreeTraversal();
   // If the exclusive result exists, then that's higher than this node, so
   // return it.
   if (auto* result = HighestLockedExclusiveAncestor(node))
@@ -346,7 +340,6 @@ Element* DisplayLockUtilities::HighestLockedExclusiveAncestor(
       !node.CanParticipateInFlatTree()) {
     return nullptr;
   }
-  const_cast<Node*>(&node)->UpdateDistributionForFlatTreeTraversal();
 
   Node* parent = FlatTreeTraversal::Parent(node);
   Element* locked_ancestor = nullptr;
@@ -360,11 +353,8 @@ Element* DisplayLockUtilities::HighestLockedExclusiveAncestor(
       parent = nullptr;
     }
 
-    if (!parent) {
+    if (!parent)
       parent = GetFrameOwnerNode(last_node);
-      if (parent)
-        parent->UpdateDistributionForFlatTreeTraversal();
-    }
   }
   return locked_ancestor;
 }
@@ -420,7 +410,6 @@ bool DisplayLockUtilities::IsInLockedSubtreeCrossingFrames(
       return true;
   }
   const Node* node = &source_node;
-  const_cast<Node*>(node)->UpdateDistributionForFlatTreeTraversal();
 
   // Since we handled the self-check above, we need to do inclusive checks
   // starting from the parent.

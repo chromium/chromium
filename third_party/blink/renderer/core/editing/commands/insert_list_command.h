@@ -31,6 +31,7 @@
 namespace blink {
 
 class HTMLElement;
+class HTMLLIElement;
 class HTMLUListElement;
 
 class CORE_EXPORT InsertListCommand final : public CompositeEditCommand {

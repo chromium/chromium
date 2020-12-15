@@ -42,19 +42,12 @@ class RuleData;
 class SelectorFilter;
 class StyleRuleUsageTracker;
 
-// TODO(kochi): ShadowV0CascadeOrder is used only for Shadow DOM V0
-// bug-compatible cascading order. Once Shadow DOM V0 implementation is gone,
-// remove this completely.
-using ShadowV0CascadeOrder = unsigned;
-const ShadowV0CascadeOrder kIgnoreCascadeOrder = 0;
-
 class MatchedRule {
   DISALLOW_NEW();
 
  public:
   MatchedRule(const RuleData* rule_data,
               unsigned specificity,
-              ShadowV0CascadeOrder cascade_order,
               unsigned style_sheet_index,
               const CSSStyleSheet* parent_style_sheet)
       : rule_data_(rule_data),
@@ -62,10 +55,8 @@ class MatchedRule {
         parent_style_sheet_(parent_style_sheet) {
     DCHECK(rule_data_);
     static const unsigned kBitsForPositionInRuleData = 18;
-    static const unsigned kBitsForStyleSheetIndex = 32;
-    position_ = ((uint64_t)cascade_order
-                 << (kBitsForStyleSheetIndex + kBitsForPositionInRuleData)) +
-                ((uint64_t)style_sheet_index << kBitsForPositionInRuleData) +
+    position_ = (static_cast<uint64_t>(style_sheet_index)
+                 << kBitsForPositionInRuleData) +
                 rule_data_->GetPosition();
   }
 
@@ -131,11 +122,8 @@ class CORE_EXPORT ElementRuleCollector {
   RuleIndexList* MatchedCSSRuleList();
 
   void CollectMatchingRules(const MatchRequest&,
-                            ShadowV0CascadeOrder = kIgnoreCascadeOrder,
                             bool matching_tree_boundary_rules = false);
-  void CollectMatchingShadowHostRules(
-      const MatchRequest&,
-      ShadowV0CascadeOrder = kIgnoreCascadeOrder);
+  void CollectMatchingShadowHostRules(const MatchRequest&);
   void CollectMatchingPartPseudoRules(const MatchRequest&,
                                       PartNames&,
                                       bool for_shadow_pseudo);
@@ -168,7 +156,6 @@ class CORE_EXPORT ElementRuleCollector {
 
   template <typename RuleDataListType>
   void CollectMatchingRulesForList(const RuleDataListType*,
-                                   ShadowV0CascadeOrder,
                                    const MatchRequest&,
                                    PartRequest* = nullptr);
 
@@ -177,7 +164,6 @@ class CORE_EXPORT ElementRuleCollector {
              MatchResult&);
   void DidMatchRule(const RuleData*,
                     const SelectorChecker::MatchResult&,
-                    ShadowV0CascadeOrder,
                     const MatchRequest&);
 
   template <class CSSRuleCollection>

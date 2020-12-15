@@ -3,6 +3,6 @@ PASS element.createShadowRoot should not exist
 PASS element.getDestinationInsertionPoints should not exist
 PASS text.getDestinationInsertionPoints should not exist
 FAIL event.path should not exist assert_false: expected false got true
-FAIL HTMLContentElement should not exist assert_false: expected false got true
+PASS HTMLContentElement should not exist
 Harness: the test ran to completion.
 

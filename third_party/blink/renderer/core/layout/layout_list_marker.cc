@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/platform/fonts/font.h"
 
 namespace blink {
+class HTMLLIElement;
 
 LayoutListMarker::LayoutListMarker(Element* element) : LayoutBox(element) {
   DCHECK(ListItem());

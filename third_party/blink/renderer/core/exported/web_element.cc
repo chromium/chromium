@@ -37,8 +37,6 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
-#include "third_party/blink/renderer/core/html/custom/v0_custom_element.h"
-#include "third_party/blink/renderer/core/html/custom/v0_custom_element_processing_stack.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -103,10 +101,6 @@ WebString WebElement::GetAttribute(const WebString& attr_name) const {
 
 void WebElement::SetAttribute(const WebString& attr_name,
                               const WebString& attr_value) {
-  // TODO: Custom element callbacks need to be called on WebKit API methods that
-  // mutate the DOM in any way.
-  V0CustomElementProcessingStack::CallbackDeliveryScope
-      deliver_custom_element_callbacks;
   Unwrap<Element>()->setAttribute(attr_name, attr_value,
                                   IGNORE_EXCEPTION_FOR_TESTING);
 }
@@ -141,8 +135,6 @@ bool WebElement::IsAutonomousCustomElement() const {
   auto* element = ConstUnwrap<Element>();
   if (element->GetCustomElementState() == CustomElementState::kCustom)
     return CustomElement::IsValidName(element->localName());
-  if (element->GetV0CustomElementState() == Node::kV0Upgraded)
-    return V0CustomElement::IsValidName(element->localName());
   return false;
 }
 

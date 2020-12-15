@@ -336,7 +336,6 @@ bool Frame::IsAdRoot() const {
 void Frame::UpdateInertIfPossible() {
   if (auto* frame_owner_element =
           DynamicTo<HTMLFrameOwnerElement>(owner_.Get())) {
-    frame_owner_element->UpdateDistributionForFlatTreeTraversal();
     if (frame_owner_element->IsInert())
       SetIsInert(true);
   }

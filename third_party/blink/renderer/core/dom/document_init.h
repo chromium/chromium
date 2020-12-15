@@ -33,7 +33,6 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
-#include "third_party/blink/renderer/core/html/custom/v0_custom_element_registration_context.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -135,10 +134,6 @@ class CORE_EXPORT DocumentInit final {
 
   DocumentInit& WithSrcdocDocument(bool is_srcdoc_document);
 
-  DocumentInit& WithRegistrationContext(V0CustomElementRegistrationContext*);
-  V0CustomElementRegistrationContext* RegistrationContext(Document*) const;
-  DocumentInit& WithNewRegistrationContext();
-
   DocumentInit& WithWebBundleClaimedUrl(const KURL& web_bundle_claimed_url);
   const KURL& GetWebBundleClaimedUrl() const { return web_bundle_claimed_url_; }
 
@@ -163,8 +158,6 @@ class CORE_EXPORT DocumentInit final {
   // affects security checks, since srcdoc's content comes directly from
   // the parent document, not from loading a URL.
   bool is_srcdoc_document_ = false;
-  V0CustomElementRegistrationContext* registration_context_ = nullptr;
-  bool create_new_registration_context_ = false;
 
   // The claimed URL inside Web Bundle file from which the document is loaded.
   // This URL is used for window.location and document.URL and relative path

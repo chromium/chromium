@@ -75,7 +75,6 @@ ListItemOrdinal::NodeAndOrdinal ListItemOrdinal::NextListItem(
 
   const Node* current = item ? item : list_node;
   DCHECK(current);
-  DCHECK(!current->GetDocument().ChildNeedsDistributionRecalc());
   current = LayoutTreeBuilderTraversal::Next(*current, list_node);
 
   while (current) {
@@ -103,7 +102,6 @@ ListItemOrdinal::NodeAndOrdinal ListItemOrdinal::PreviousListItem(
     const Node* item) {
   const Node* current = item;
   DCHECK(current);
-  DCHECK(!current->GetDocument().ChildNeedsDistributionRecalc());
   for (current = LayoutTreeBuilderTraversal::Previous(*current, list_node);
        current && current != list_node;
        current = LayoutTreeBuilderTraversal::Previous(*current, list_node)) {
@@ -260,8 +258,6 @@ void ListItemOrdinal::InvalidateAllItemsForOrderedList(
 // slots don't have cached value. See http://crbug.com/844277 for details.
 void ListItemOrdinal::ItemUpdated(const LayoutObject* layout_list_item,
                                   UpdateType type) {
-  // If distribution recalc is needed, updateListMarkerNumber will be re-invoked
-  // after distribution is calculated.
   const Node* item_node = layout_list_item->GetNode();
   if (item_node->GetDocument().IsSlotAssignmentOrLegacyDistributionDirty())
     return;

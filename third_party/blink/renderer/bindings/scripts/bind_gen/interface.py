@@ -1448,18 +1448,8 @@ def make_steps_of_ce_reactions(cg_context):
     nodes = []
 
     ext_attrs = cg_context.member_like.extended_attributes
-    if "CustomElementCallbacks" in ext_attrs or "Reflect" in ext_attrs:
-        if "CustomElementCallbacks" in ext_attrs:
-            nodes.append(T("// [CustomElementCallbacks]"))
-        elif "Reflect" in ext_attrs:
-            nodes.append(T("// [Reflect]"))
-        nodes.append(
-            T("V0CustomElementProcessingStack::CallbackDeliveryScope "
-              "v0_custom_element_scope;"))
-        nodes[-1].accumulate(
-            CodeGenAccumulator.require_include_headers([
-                "third_party/blink/renderer/core/html/custom/v0_custom_element_processing_stack.h"
-            ]))
+    if "Reflect" in ext_attrs:
+        nodes.append(T("// [Reflect]"))
 
     if "CEReactions" in ext_attrs:
         nodes.append(T("// [CEReactions]"))
@@ -1813,12 +1803,12 @@ EventListener* event_handler = JSEventHandler::CreateOrNull(
                 has_cereactions = True
             elif key == "Reflect":
                 has_reflect = True
-            elif key in ("Affects", "CustomElementCallbacks", "DeprecateAs",
-                         "Exposed", "LogActivity", "LogAllWorlds", "Measure",
-                         "MeasureAs", "ReflectEmpty", "ReflectInvalid",
-                         "ReflectMissing", "ReflectOnly",
-                         "RuntimeCallStatsCounter", "RuntimeEnabled",
-                         "SecureContext", "URL", "Unscopable"):
+            elif key in ("Affects", "DeprecateAs", "Exposed", "LogActivity",
+                         "LogAllWorlds", "Measure", "MeasureAs",
+                         "ReflectEmpty", "ReflectInvalid", "ReflectMissing",
+                         "ReflectOnly", "RuntimeCallStatsCounter",
+                         "RuntimeEnabled", "SecureContext", "URL",
+                         "Unscopable"):
                 pass
             else:
                 return None

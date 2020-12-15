@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
-#include "third_party/blink/renderer/core/dom/v0_insertion_point.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
@@ -140,13 +139,8 @@ scoped_refptr<const ComputedStyle> HighlightPseudoStyle(Node* node,
   if (!element)
     element = Traversal<Element>::FirstAncestorOrSelf(*node);
 
-  // <content> and <shadow> elements do not have ComputedStyle, hence they will
-  // return null for StyleForPseudoElement(). Return early to avoid DCHECK
-  // failure for GetComputedStyle() inside StyleForPseudoElement() below.
-  if (!element || element->IsPseudoElement() ||
-      IsActiveV0InsertionPoint(*element)) {
+  if (!element || element->IsPseudoElement())
     return nullptr;
-  }
 
   PseudoElementStyleRequest request(pseudo);
 

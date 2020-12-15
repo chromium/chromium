@@ -83,8 +83,8 @@ struct PhysicalRect;
 
 const int kDOMNodeTypeShift = 2;
 const int kElementNamespaceTypeShift = 4;
-const int kNodeStyleChangeShift = 17;
-const int kNodeCustomElementShift = 19;
+const int kNodeStyleChangeShift = 15;
+const int kNodeCustomElementShift = 17;
 
 // Values for kChildNeedsStyleRecalcFlag, controlling whether a node gets its
 // style recalculated.
@@ -321,19 +321,6 @@ class CORE_EXPORT Node : public EventTarget {
     return GetCustomElementState() != CustomElementState::kUncustomized;
   }
   void SetCustomElementState(CustomElementState);
-  bool IsV0CustomElement() const { return GetFlag(kV0CustomElementFlag); }
-  enum V0CustomElementState {
-    kV0NotCustomElement = 0,
-    kV0WaitingForUpgrade = 1 << 0,
-    kV0Upgraded = 1 << 1
-  };
-  V0CustomElementState GetV0CustomElementState() const {
-    return IsV0CustomElement()
-               ? (GetFlag(kV0CustomElementUpgradedFlag) ? kV0Upgraded
-                                                        : kV0WaitingForUpgrade)
-               : kV0NotCustomElement;
-  }
-  void SetV0CustomElementState(V0CustomElementState new_state);
 
   virtual bool IsMediaControlElement() const { return false; }
   virtual bool IsMediaControls() const { return false; }
@@ -355,14 +342,10 @@ class CORE_EXPORT Node : public EventTarget {
   bool IsDocumentNode() const;
   bool IsTreeScope() const;
   bool IsShadowRoot() const { return IsDocumentFragment() && IsTreeScope(); }
-  bool IsV0InsertionPoint() const { return GetFlag(kIsV0InsertionPointFlag); }
 
   bool CanParticipateInFlatTree() const;
-  bool IsActiveSlotOrActiveV0InsertionPoint() const;
-  // A re-distribution across v0 and v1 shadow trees is not supported.
-  bool IsSlotable() const {
-    return IsTextNode() || (IsElementNode() && !IsV0InsertionPoint());
-  }
+  bool IsActiveSlot() const;
+  bool IsSlotable() const { return IsTextNode() || IsElementNode(); }
   AtomicString SlotName() const;
 
   bool HasCustomStyleCallbacks() const {
@@ -530,19 +513,6 @@ class CORE_EXPORT Node : public EventTarget {
     return NeedsStyleRecalc() || GetForceReattachLayoutTree();
   }
 
-  bool NeedsDistributionRecalc() const;
-
-  bool ChildNeedsDistributionRecalc() const {
-    return GetFlag(kChildNeedsDistributionRecalcFlag);
-  }
-  void SetChildNeedsDistributionRecalc() {
-    SetFlag(kChildNeedsDistributionRecalcFlag);
-  }
-  void ClearChildNeedsDistributionRecalc() {
-    ClearFlag(kChildNeedsDistributionRecalcFlag);
-  }
-  void MarkAncestorsWithChildNeedsDistributionRecalc();
-
   // True if the style invalidation process should traverse this node's children
   // when looking for pending invalidations.
   bool ChildNeedsStyleInvalidation() const {
@@ -565,20 +535,6 @@ class CORE_EXPORT Node : public EventTarget {
   // MarkAncestorsWithChildNeedsStyleInvalidation
   void SetNeedsStyleInvalidation();
 
-  // This needs to be called before using FlatTreeTraversal.
-  // Once Shadow DOM v0 is removed, this function can be removed.
-  void UpdateDistributionForFlatTreeTraversal() {
-    UpdateDistributionInternal();
-  }
-
-  // This is not what you might want to call in most cases.
-  // You should call UpdateDistributionForFlatTreeTraversal, instead.
-  // Only the implementation of v0 shadow trees uses this.
-  void UpdateDistributionForLegacyDistributedNodes() {
-    // The implementation is same to UpdateDistributionForFlatTreeTraversal.
-    UpdateDistributionInternal();
-  }
-
   // Please don't use this function.
   // Background: When we investigated the usage of (old) UpdateDistribution,
   // some caller's intents were unclear. Thus, we had to introduce this function
@@ -586,8 +542,6 @@ class CORE_EXPORT Node : public EventTarget {
   // can replace that with calling UpdateDistributionForFlatTreeTraversal (or
   // just RecalcSlotAssignments()) on a case-by-case basis.
   void UpdateDistributionForUnknownReasons();
-
-  bool MayContainLegacyNodeTreeWhereDistributionShouldBeSupported() const;
 
   void SetIsLink(bool f);
 
@@ -657,11 +611,8 @@ class CORE_EXPORT Node : public EventTarget {
   }
 
   ShadowRoot* ParentElementShadowRoot() const;
-  bool IsInV1ShadowTree() const;
-  bool IsInV0ShadowTree() const;
-  bool IsChildOfV1ShadowHost() const;
-  bool IsChildOfV0ShadowHost() const;
-  ShadowRoot* V1ShadowRootOfParent() const;
+  bool IsChildOfShadowHost() const;
+  ShadowRoot* ShadowRootOfParent() const;
   Element* FlatTreeParentForChildDirty() const;
   Element* GetStyleRecalcParent() const {
     return FlatTreeParentForChildDirty();
@@ -946,49 +897,44 @@ class CORE_EXPORT Node : public EventTarget {
     kIsContainerFlag = 1 << 1,
     kDOMNodeTypeMask = 0x3 << kDOMNodeTypeShift,
     kElementNamespaceTypeMask = 0x3 << kElementNamespaceTypeShift,
-    kIsV0InsertionPointFlag = 1 << 6,
 
     // Changes based on if the element should be treated like a link,
     // ex. When setting the href attribute on an <a>.
-    kIsLinkFlag = 1 << 7,
+    kIsLinkFlag = 1 << 6,
 
     // Changes based on :hover, :active and :focus state.
-    kIsUserActionElementFlag = 1 << 8,
+    kIsUserActionElementFlag = 1 << 7,
 
     // Tree state flags. These change when the element is added/removed
     // from a DOM tree.
-    kIsConnectedFlag = 1 << 9,
-    kIsInShadowTreeFlag = 1 << 10,
+    kIsConnectedFlag = 1 << 8,
+    kIsInShadowTreeFlag = 1 << 9,
 
     // Set by the parser when the children are done parsing.
-    kIsFinishedParsingChildrenFlag = 1 << 11,
+    kIsFinishedParsingChildrenFlag = 1 << 10,
 
     // Flags related to recalcStyle.
-    kHasCustomStyleCallbacksFlag = 1 << 12,
-    kChildNeedsStyleInvalidationFlag = 1 << 13,
-    kNeedsStyleInvalidationFlag = 1 << 14,
-    kChildNeedsDistributionRecalcFlag = 1 << 15,
-    kChildNeedsStyleRecalcFlag = 1 << 16,
+    kHasCustomStyleCallbacksFlag = 1 << 11,
+    kChildNeedsStyleInvalidationFlag = 1 << 12,
+    kNeedsStyleInvalidationFlag = 1 << 13,
+    kChildNeedsStyleRecalcFlag = 1 << 14,
     kStyleChangeMask = 0x3 << kNodeStyleChangeShift,
 
     kCustomElementStateMask = 0x7 << kNodeCustomElementShift,
 
-    kHasNameOrIsEditingTextFlag = 1 << 22,
-    kHasEventTargetDataFlag = 1 << 23,
+    kHasNameOrIsEditingTextFlag = 1 << 20,
+    kHasEventTargetDataFlag = 1 << 21,
 
-    kV0CustomElementFlag = 1 << 24,
-    kV0CustomElementUpgradedFlag = 1 << 25,
+    kNeedsReattachLayoutTree = 1 << 22,
+    kChildNeedsReattachLayoutTree = 1 << 23,
 
-    kNeedsReattachLayoutTree = 1 << 26,
-    kChildNeedsReattachLayoutTree = 1 << 27,
+    kHasDuplicateAttributes = 1 << 24,
 
-    kHasDuplicateAttributes = 1 << 28,
-
-    kForceReattachLayoutTree = 1 << 29,
+    kForceReattachLayoutTree = 1 << 25,
 
     kDefaultNodeFlags = kIsFinishedParsingChildrenFlag,
 
-    // 3 bits remaining.
+    // 7 bits remaining.
   };
 
   ALWAYS_INLINE bool GetFlag(NodeFlags mask) const {
@@ -1051,7 +997,6 @@ class CORE_EXPORT Node : public EventTarget {
                         static_cast<NodeFlags>(DOMNodeType::kElement) |
                         static_cast<NodeFlags>(ElementNamespaceType::kSVG),
     kCreateDocument = kCreateContainer | kIsConnectedFlag,
-    kCreateV0InsertionPoint = kCreateHTMLElement | kIsV0InsertionPointFlag,
     kCreateEditingText = kCreateText | kHasNameOrIsEditingTextFlag,
   };
 
@@ -1106,9 +1051,6 @@ class CORE_EXPORT Node : public EventTarget {
   bool IsUserActionElementHovered() const;
   bool IsUserActionElementFocused() const;
   bool IsUserActionElementHasFocusWithin() const;
-
-  void UpdateDistributionInternal();
-  void RecalcDistribution();
 
   void SetStyleChange(StyleChangeType change_type) {
     node_flags_ = (node_flags_ & ~kStyleChangeMask) | change_type;

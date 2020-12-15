@@ -1462,13 +1462,11 @@ bool AXObject::IsClickable() const {
 }
 
 bool AXObject::AccessibilityIsIgnored() const {
-  UpdateDistributionForFlatTreeTraversal();
   UpdateCachedAttributeValuesIfNeeded();
   return cached_is_ignored_;
 }
 
 bool AXObject::AccessibilityIsIgnoredButIncludedInTree() const {
-  UpdateDistributionForFlatTreeTraversal();
   UpdateCachedAttributeValuesIfNeeded();
   return cached_is_ignored_but_included_in_tree_;
 }
@@ -2127,27 +2125,6 @@ bool AXObject::CanBeActiveDescendant() const {
 
   return IsARIAControlledByTextboxWithActiveDescendant() ||
          AncestorExposesActiveDescendant();
-}
-
-void AXObject::UpdateDistributionForFlatTreeTraversal() const {
-  Node* node = GetNode();
-  if (!node) {
-    AXObject* parent = this->ParentObject();
-    while (!node && parent) {
-      node = parent->GetNode();
-      parent = parent->ParentObject();
-    }
-  }
-
-  if (node)
-    node->UpdateDistributionForFlatTreeTraversal();
-
-  // TODO(aboxhall): Instead of this, propagate inert down through frames
-  Document* document = GetDocument();
-  while (document && document->LocalOwner()) {
-    document->LocalOwner()->UpdateDistributionForFlatTreeTraversal();
-    document = document->LocalOwner()->ownerDocument();
-  }
 }
 
 bool AXObject::IsARIAControlledByTextboxWithActiveDescendant() const {

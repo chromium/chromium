@@ -165,7 +165,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void InitialViewportChanged();
   void ViewportRulesChanged();
   void HtmlImportAddedOrRemoved();
-  void V0ShadowAddedOnV1Document();
 
   void InjectSheet(const StyleSheetKey&, StyleSheetContents*,
                    WebDocument::CSSOrigin =

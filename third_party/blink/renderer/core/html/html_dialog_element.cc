@@ -192,13 +192,6 @@ void HTMLDialogElement::showModal(ExceptionState& exception_state) {
 
 void HTMLDialogElement::RemovedFrom(ContainerNode& insertion_point) {
   HTMLElement::RemovedFrom(insertion_point);
-
-  // TODO(671907): Calling UpdateDistributionForFlatTreeTraversal here is a
-  // workaround for https://crbug.com/895511. This shouldn't be done during DOM
-  // mutation. However, Shadow DOM v0 will be removed, at which point this call
-  // can be removed.
-  GetDocument().UpdateDistributionForFlatTreeTraversal();
-
   InertSubtreesChanged(GetDocument());
 }
 

@@ -78,8 +78,9 @@ Color SVGStopElement::StopColorIncludingOpacity() const {
   const ComputedStyle* style = GetComputedStyle();
 
   // Normally, we should always have a computed style for <stop> elements. But
-  // there are some odd corner cases (*cough* shadow DOM v0 undistributed light
-  // tree *cough*) which leave it null.
+  // there are some odd corner cases which leave it null. It is possible that
+  // the only such corner cases were due to Shadow DOM v0. This may be able
+  // to be removed.
   if (!style)
     return Color::kBlack;
 

@@ -493,9 +493,6 @@ html element colgroup
     property span
     property vAlign
     property width
-html element content
-    property getDistributedNodes
-    property select
 html element data
     property value
 html element datalist
@@ -923,8 +920,6 @@ html element select
     property validity
     property value
     property willValidate
-html element shadow
-    property getDistributedNodes
 html element slot
     property assign
     property assignedElements

@@ -376,9 +376,7 @@ function createShadowRootWithin(node) {
       continue;
     parent.removeChild(template);
     var shadowRoot;
-    if (mode == 'v0') {
-      shadowRoot = parent.createShadowRoot();
-    } else if (mode == 'open' || mode == 'closed') {
+    if (mode == 'open' || mode == 'closed') {
       var delegatesFocus = template.hasAttribute('shadowdelegatesfocus');
       shadowRoot = parent.attachShadow({'mode': mode,
                                         'delegatesFocus': delegatesFocus});

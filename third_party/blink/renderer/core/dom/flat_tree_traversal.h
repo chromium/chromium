@@ -33,15 +33,12 @@
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/traversal_range.h"
-#include "third_party/blink/renderer/core/dom/v0_insertion_point.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
 class ContainerNode;
 class Node;
-
-bool CanBeDistributedToV0InsertionPoint(const Node& node);
 
 // Flat tree version of |NodeTraversal|.
 //
@@ -54,7 +51,6 @@ class CORE_EXPORT FlatTreeTraversal {
   STATIC_ONLY(FlatTreeTraversal);
 
  public:
-  typedef LayoutTreeBuilderTraversal::ParentDetails ParentTraversalDetails;
   using TraversalNodeType = Node;
 
 #if DCHECK_IS_ON()
@@ -75,7 +71,7 @@ class CORE_EXPORT FlatTreeTraversal {
   static Node* LastChild(const Node&);
   static bool HasChildren(const Node&);
 
-  static ContainerNode* Parent(const Node&, ParentTraversalDetails* = nullptr);
+  static ContainerNode* Parent(const Node&);
   static Element* ParentElement(const Node&);
 
   static Node* NextSibling(const Node&);
@@ -173,7 +169,6 @@ class CORE_EXPORT FlatTreeTraversal {
 
   static void AssertPrecondition(const Node& node) {
     DCHECK(!node.GetDocument().IsFlatTreeTraversalForbidden());
-    DCHECK(!node.NeedsDistributionRecalc());
     DCHECK(node.CanParticipateInFlatTree());
   }
 
@@ -185,7 +180,6 @@ class CORE_EXPORT FlatTreeTraversal {
   }
 
   static Node* ResolveDistributionStartingAt(const Node*, TraversalDirection);
-  static Node* V0ResolveDistributionStartingAt(const Node&, TraversalDirection);
 
   static Node* TraverseNext(const Node&);
   static Node* TraverseNext(const Node&, const Node* stay_within);
@@ -197,20 +191,14 @@ class CORE_EXPORT FlatTreeTraversal {
   static Node* TraverseLastChild(const Node&);
   static Node* TraverseChild(const Node&, TraversalDirection);
 
-  static ContainerNode* TraverseParent(const Node&,
-                                       ParentTraversalDetails* = nullptr);
-  // TODO(hayato): Make ParentTraversalDetails be aware of slot elements too.
-  static ContainerNode* TraverseParentForV0(const Node&,
-                                            ParentTraversalDetails* = nullptr);
+  static ContainerNode* TraverseParent(const Node&);
   static ContainerNode* TraverseParentOrHost(const Node&);
 
   static Node* TraverseNextSibling(const Node&);
   static Node* TraversePreviousSibling(const Node&);
 
   static Node* TraverseSiblings(const Node&, TraversalDirection);
-  static Node* TraverseSiblingsForV1HostChild(const Node&, TraversalDirection);
-  static Node* TraverseSiblingsForV0Distribution(const Node&,
-                                                 TraversalDirection);
+  static Node* TraverseSiblingsForHostChild(const Node&, TraversalDirection);
 
   static Node* TraverseNextAncestorSibling(const Node&);
   static Node* TraversePreviousAncestorSibling(const Node&);
@@ -218,11 +206,9 @@ class CORE_EXPORT FlatTreeTraversal {
                                                 const Node* stay_within);
 };
 
-inline ContainerNode* FlatTreeTraversal::Parent(
-    const Node& node,
-    ParentTraversalDetails* details) {
+inline ContainerNode* FlatTreeTraversal::Parent(const Node& node) {
   AssertPrecondition(node);
-  ContainerNode* result = TraverseParent(node, details);
+  ContainerNode* result = TraverseParent(node);
   AssertPostcondition(result);
   return result;
 }

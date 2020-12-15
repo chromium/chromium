@@ -2898,12 +2898,6 @@ interface HTMLCollection
     method constructor
     method item
     method namedItem
-interface HTMLContentElement : HTMLElement
-    attribute @@toStringTag
-    getter select
-    method constructor
-    method getDistributedNodes
-    setter select
 interface HTMLDListElement : HTMLElement
     attribute @@toStringTag
     getter compact
@@ -3987,10 +3981,6 @@ interface HTMLSelectElement : HTMLElement
     setter selectedIndex
     setter size
     setter value
-interface HTMLShadowElement : HTMLElement
-    attribute @@toStringTag
-    method constructor
-    method getDistributedNodes
 interface HTMLSlotElement : HTMLElement
     attribute @@toStringTag
     getter name

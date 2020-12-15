@@ -34,6 +34,8 @@
 
 namespace blink {
 
+class HTMLAnchorElement;
+
 namespace {
 
 // If an inline text box is truncated by an ellipsis, text box markers paint

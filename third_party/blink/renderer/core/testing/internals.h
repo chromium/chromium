@@ -123,8 +123,6 @@ class Internals final : public ScriptWrappable {
 
   ShadowRoot* shadowRoot(Element* host);
   String shadowRootType(const Node*, ExceptionState&) const;
-  bool hasShadowInsertionPoint(const Node*, ExceptionState&) const;
-  bool hasContentElement(const Node*, ExceptionState&) const;
   uint32_t countElementShadow(const Node*, ExceptionState&) const;
   const AtomicString& shadowPseudoId(Element*);
 
@@ -139,7 +137,6 @@ class Internals final : public ScriptWrappable {
   // animation update for CSS and advance the SMIL timeline by one frame.
   void advanceImageAnimation(Element* image, ExceptionState&);
 
-  bool isValidContentSelect(Element* insertion_point, ExceptionState&);
   Node* treeScopeRootNode(Node*);
   Node* parentTreeScope(Node*);
   uint16_t compareTreeScopePosition(const Node*,

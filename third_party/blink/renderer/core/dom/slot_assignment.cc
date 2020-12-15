@@ -224,7 +224,6 @@ SlotAssignment::SlotAssignment(ShadowRoot& owner)
       owner_(&owner),
       needs_collect_slots_(false),
       slot_count_(0) {
-  DCHECK(owner.IsV1());
 }
 
 void SlotAssignment::SetNeedsAssignmentRecalc() {

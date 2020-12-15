@@ -104,8 +104,7 @@ def attribute_context(interface, attribute, interfaces, component_info):
     is_ce_reactions = 'CEReactions' in extended_attributes
     if is_ce_reactions:
         includes.add('core/html/custom/ce_reactions_scope.h')
-    # [CustomElementCallbacks], [Reflect]
-    is_custom_element_callbacks = 'CustomElementCallbacks' in extended_attributes
+    # [Reflect]
     is_reflect = 'Reflect' in extended_attributes
     # [ReflectOnly]
     reflect_only = extended_attribute_value_as_list(attribute, 'ReflectOnly')
@@ -113,8 +112,6 @@ def attribute_context(interface, attribute, interfaces, component_info):
         reflect_only = map(
             lambda v: cpp_content_attribute_value_name(interface, v),
             reflect_only)
-    if is_custom_element_callbacks or is_reflect:
-        includes.add('core/html/custom/v0_custom_element_processing_stack.h')
     # [PerWorldBindings]
     if 'PerWorldBindings' in extended_attributes:
         assert idl_type.is_wrapper_type or 'LogActivity' in \
@@ -238,7 +235,6 @@ def attribute_context(interface, attribute, interfaces, component_info):
         'is_check_security_for_receiver': is_check_security_for_receiver,
         'is_check_security_for_return_value':
         is_check_security_for_return_value,
-        'is_custom_element_callbacks': is_custom_element_callbacks,
         # TODO(yukishiino): Make all DOM attributes accessor-type properties.
         'is_data_type_property': is_data_type_property(interface, attribute),
         'is_getter_raises_exception':  # [RaisesException]

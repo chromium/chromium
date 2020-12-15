@@ -342,8 +342,7 @@ void TextIteratorAlgorithm<Strategy>::Advance() {
         if (std::is_same<Strategy, EditingStrategy>::value &&
             EntersOpenShadowRoots() && element && element->OpenShadowRoot()) {
           ShadowRoot* youngest_shadow_root = element->OpenShadowRoot();
-          DCHECK(youngest_shadow_root->GetType() == ShadowRootType::V0 ||
-                 youngest_shadow_root->GetType() == ShadowRootType::kOpen);
+          DCHECK(youngest_shadow_root->IsOpen());
           node_ = youngest_shadow_root;
           iteration_progress_ = kHandledNone;
           ++shadow_depth_;
@@ -442,8 +441,7 @@ void TextIteratorAlgorithm<Strategy>::Advance() {
             should_stop_ = true;
             return;
           }
-          if (shadow_root->GetType() == ShadowRootType::V0 ||
-              shadow_root->GetType() == ShadowRootType::kOpen) {
+          if (shadow_root->IsOpen()) {
             // We are the shadow root; exit from here and go back to
             // where we were.
             node_ = &shadow_root->host();

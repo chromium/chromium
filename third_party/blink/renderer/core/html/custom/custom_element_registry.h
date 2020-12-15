@@ -27,7 +27,6 @@ class LocalDOMWindow;
 class ScriptPromiseResolver;
 class ScriptState;
 class ScriptValue;
-class V0CustomElementRegistrationContext;
 class V8CustomElementConstructor;
 
 class CORE_EXPORT CustomElementRegistry final : public ScriptWrappable {
@@ -60,8 +59,6 @@ class CORE_EXPORT CustomElementRegistry final : public ScriptWrappable {
                             ExceptionState&);
   void upgrade(Node* root);
 
-  void Entangle(V0CustomElementRegistrationContext*);
-
   void Trace(Visitor*) const override;
 
  private:
@@ -70,8 +67,6 @@ class CORE_EXPORT CustomElementRegistry final : public ScriptWrappable {
                                           CustomElementDefinitionBuilder&,
                                           const ElementDefinitionOptions*,
                                           ExceptionState&);
-
-  bool V0NameIsDefined(const AtomicString& name);
 
   void CollectCandidates(const CustomElementDescriptor&,
                          HeapVector<Member<Element>>*);
@@ -85,10 +80,6 @@ class CORE_EXPORT CustomElementRegistry final : public ScriptWrappable {
   NameIdMap name_id_map_;
 
   Member<const LocalDOMWindow> owner_;
-
-  using V0RegistrySet =
-      HeapHashSet<WeakMember<V0CustomElementRegistrationContext>>;
-  Member<V0RegistrySet> v0_;
 
   using UpgradeCandidateSet = HeapHashSet<WeakMember<Element>>;
   using UpgradeCandidateMap =

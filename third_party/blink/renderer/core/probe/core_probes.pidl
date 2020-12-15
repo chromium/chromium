@@ -72,7 +72,6 @@ interface CoreProbes {
   void WillChangeStyleElement([Keep] Element*);
   void CharacterDataModified([Keep] CharacterData*);
   void DidInvalidateStyleAttr([Keep] Node*);
-  void DidPerformElementShadowDistribution([Keep] Element*);
   void DidPerformSlotDistribution([Keep] HTMLSlotElement*);
   void DocumentDetached([Keep] Document*);
   void ActiveStyleSheetsUpdated([Keep] Document*);

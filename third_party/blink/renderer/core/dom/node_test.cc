@@ -101,17 +101,14 @@ TEST_F(NodeTest, customElementState) {
   Element* div = GetDocument().getElementById("div");
   EXPECT_EQ(CustomElementState::kUncustomized, div->GetCustomElementState());
   EXPECT_TRUE(div->IsDefined());
-  EXPECT_EQ(Node::kV0NotCustomElement, div->GetV0CustomElementState());
 
   div->SetCustomElementState(CustomElementState::kUndefined);
   EXPECT_EQ(CustomElementState::kUndefined, div->GetCustomElementState());
   EXPECT_FALSE(div->IsDefined());
-  EXPECT_EQ(Node::kV0NotCustomElement, div->GetV0CustomElementState());
 
   div->SetCustomElementState(CustomElementState::kCustom);
   EXPECT_EQ(CustomElementState::kCustom, div->GetCustomElementState());
   EXPECT_TRUE(div->IsDefined());
-  EXPECT_EQ(Node::kV0NotCustomElement, div->GetV0CustomElementState());
 }
 
 TEST_F(NodeTest, AttachContext_PreviousInFlow_TextRoot) {

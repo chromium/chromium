@@ -34,7 +34,6 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_init.h"
 #include "third_party/blink/renderer/core/dom/document_parser.h"
-#include "third_party/blink/renderer/core/html/custom/v0_custom_element_sync_microtask_queue.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/imports/html_import_child.h"
 #include "third_party/blink/renderer/core/html/imports/html_imports_controller.h"
@@ -44,10 +43,7 @@
 namespace blink {
 
 HTMLImportLoader::HTMLImportLoader(HTMLImportsController* controller)
-    : controller_(controller),
-      state_(kStateLoading),
-      microtask_queue_(
-          MakeGarbageCollected<V0CustomElementSyncMicrotaskQueue>()) {}
+    : controller_(controller), state_(kStateLoading) {}
 
 HTMLImportLoader::~HTMLImportLoader() = default;
 
@@ -101,7 +97,6 @@ HTMLImportLoader::State HTMLImportLoader::StartWritingAndParsing(
       DocumentInit::Create()
           .WithImportsController(controller_)
           .WithExecutionContext(tree_root->GetExecutionContext())
-          .WithRegistrationContext(tree_root->RegistrationContext())
           .WithURL(response.CurrentRequestUrl()));
   document_->OpenForNavigation(
       RuntimeEnabledFeatures::ForceSynchronousHTMLParsingEnabled()
@@ -202,15 +197,10 @@ bool HTMLImportLoader::ShouldBlockScriptExecution() const {
   return FirstImport()->GetState().ShouldBlockScriptExecution();
 }
 
-V0CustomElementSyncMicrotaskQueue* HTMLImportLoader::MicrotaskQueue() const {
-  return microtask_queue_;
-}
-
 void HTMLImportLoader::Trace(Visitor* visitor) const {
   visitor->Trace(controller_);
   visitor->Trace(imports_);
   visitor->Trace(document_);
-  visitor->Trace(microtask_queue_);
   DocumentParserClient::Trace(visitor);
   RawResourceClient::Trace(visitor);
 }

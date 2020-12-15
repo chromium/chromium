@@ -94,10 +94,6 @@ ALWAYS_INLINE bool StyleInvalidator::MatchesCurrentInvalidationSets(
     return true;
   }
 
-  if (invalidation_flags_.InsertionPointCrossing() &&
-      element.IsV0InsertionPoint())
-    return true;
-
   for (auto* const invalidation_set : invalidation_sets_) {
     if (invalidation_set->InvalidatesElement(element))
       return true;
@@ -308,12 +304,6 @@ void StyleInvalidator::Invalidate(Element& element, SiblingData& sibling_data) {
     auto* html_slot_element = DynamicTo<HTMLSlotElement>(element);
     if (html_slot_element && InvalidatesSlotted())
       InvalidateSlotDistributedElements(*html_slot_element);
-
-    if (InsertionPointCrossing() && element.IsV0InsertionPoint()) {
-      element.SetNeedsStyleRecalc(kSubtreeStyleChange,
-                                  StyleChangeReasonForTracing::Create(
-                                      style_change_reason::kStyleInvalidator));
-    }
   }
 
   // We need to recurse into children if:

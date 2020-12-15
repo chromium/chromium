@@ -55,9 +55,6 @@ class CORE_EXPORT ElementResolveContext {
     return LayoutParent() ? LayoutParent()->GetComputedStyle() : nullptr;
   }
   EInsideLink ElementLinkState() const { return element_link_state_; }
-  bool DistributedToV0InsertionPoint() const {
-    return distributed_to_insertion_point_;
-  }
 
  private:
   Element* element_;
@@ -65,7 +62,6 @@ class CORE_EXPORT ElementResolveContext {
   ContainerNode* layout_parent_;
   scoped_refptr<const ComputedStyle> root_element_style_;
   EInsideLink element_link_state_;
-  bool distributed_to_insertion_point_;
 };
 
 }  // namespace blink

@@ -14,7 +14,6 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/custom/ce_reactions_scope.h"
-#include "third_party/blink/renderer/core/html/custom/v0_custom_element_processing_stack.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/xml/dom_parser.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
@@ -112,7 +111,6 @@ void V8SetReflectedBooleanAttribute(
   v8::Isolate* isolate = info.GetIsolate();
   Element* impl = V8Element::ToImpl(info.Holder());
 
-  V0CustomElementProcessingStack::CallbackDeliveryScope delivery_scope;
   ExceptionState exception_state(isolate, ExceptionState::kSetterContext,
                                  interface_name, idl_attribute_name);
   CEReactionsScope ce_reactions_scope;
@@ -131,7 +129,6 @@ void V8SetReflectedDOMStringAttribute(
     const QualifiedName& content_attr) {
   Element* impl = V8Element::ToImpl(info.Holder());
 
-  V0CustomElementProcessingStack::CallbackDeliveryScope delivery_scope;
   CEReactionsScope ce_reactions_scope;
 
   // Prepare the value to be set.
@@ -147,7 +144,6 @@ void V8SetReflectedNullableDOMStringAttribute(
     const QualifiedName& content_attr) {
   Element* impl = V8Element::ToImpl(info.Holder());
 
-  V0CustomElementProcessingStack::CallbackDeliveryScope delivery_scope;
   CEReactionsScope ce_reactions_scope;
 
   // Prepare the value to be set.
@@ -485,9 +481,6 @@ void PerformAttributeSetCEReactionsReflect(
     return;
   }
 
-  // [Reflect]
-  V0CustomElementProcessingStack::CallbackDeliveryScope v0_custom_element_scope;
-  // [CEReactions]
   CEReactionsScope ce_reactions_scope;
 
   Element* blink_receiver = V8Element::ToWrappableUnsafe(info.This());

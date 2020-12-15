@@ -113,10 +113,6 @@
       interfaceName: "HTMLUnknownElement",
     },
     {
-      name: "content",
-      interfaceName: "HTMLContentElement",
-    },
-    {
       name: "data",
       interfaceName: "HTMLDataElement",
     },
@@ -340,10 +336,6 @@
     {
       name: "output",
       interfaceHeaderDir: "third_party/blink/renderer/core/html/forms",
-    },
-    {
-      name: "shadow",
-      interfaceName: "HTMLShadowElement",
     },
     {
       name: "p",

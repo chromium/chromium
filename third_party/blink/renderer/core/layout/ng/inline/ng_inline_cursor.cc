@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/paint/ng/ng_paint_fragment_traversal.h"
 
 namespace blink {
+class HTMLBRElement;
 
 namespace {
 

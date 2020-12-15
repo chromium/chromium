@@ -34,7 +34,7 @@
     [RuntimeCallStatsCounter=HTMLElementClick] void click();
     [CEReactions, RuntimeEnabled=InertAttribute, Reflect] attribute boolean inert;
     [CEReactions, Reflect] attribute DOMString accessKey;
-    [CEReactions, CustomElementCallbacks] attribute boolean draggable;
+    [CEReactions] attribute boolean draggable;
     [CEReactions] attribute boolean spellcheck;
     [Measure] attribute DOMString autocapitalize;
 
@@ -42,7 +42,7 @@
 
     // HTMLElement includes ElementContentEditable
     // https://html.spec.whatwg.org/C/#contenteditable
-    [CEReactions, CustomElementCallbacks, RaisesException=Setter] attribute DOMString contentEditable;
+    [CEReactions, RaisesException=Setter] attribute DOMString contentEditable;
     [RuntimeEnabled=EnterKeyHintAttribute, CEReactions, Reflect, ReflectOnly=("enter","done","go","next","previous","search","send")] attribute DOMString enterKeyHint;
     [ImplementedAs=isContentEditableForBinding] readonly attribute boolean isContentEditable;
     [CEReactions, Reflect, ReflectOnly=("none","text","tel","url","email","numeric","decimal","search")] attribute DOMString inputMode;
@@ -65,8 +65,8 @@
     [Affects=Nothing, SameObject, PerWorldBindings, PutForwards=cssText] readonly attribute CSSStyleDeclaration style;
 
     // Non-standard APIs
-    [Affects=Nothing, CEReactions, CustomElementCallbacks, RaisesException=Setter, MeasureAs=HTMLElementInnerText] attribute ([TreatNullAs=EmptyString] DOMString or TrustedScript) innerText;
-    [Affects=Nothing, CEReactions, CustomElementCallbacks, RaisesException=Setter, MeasureAs=HTMLElementOuterText] attribute [TreatNullAs=EmptyString] DOMString outerText;
+    [Affects=Nothing, CEReactions, RaisesException=Setter, MeasureAs=HTMLElementInnerText] attribute ([TreatNullAs=EmptyString] DOMString or TrustedScript) innerText;
+    [Affects=Nothing, CEReactions, RaisesException=Setter, MeasureAs=HTMLElementOuterText] attribute [TreatNullAs=EmptyString] DOMString outerText;
 };
 
 HTMLElement includes GlobalEventHandlers;

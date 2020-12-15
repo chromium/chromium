@@ -298,13 +298,6 @@ WebInputEventResult GestureManager::HandleGestureTap(
   WebInputEventResult click_event_result = WebInputEventResult::kNotHandled;
   if (tapped_element) {
     if (current_hit_test.InnerNode()) {
-      // Updates distribution because a mouseup (or mousedown) event listener
-      // can make the tree dirty at dispatchMouseEvent() invocation above.
-      // Unless distribution is updated, commonAncestor would hit DCHECK.  Both
-      // tappedNonTextNode and currentHitTest.innerNode()) don't need to be
-      // updated because commonAncestor() will exit early if their documents are
-      // different.
-      tapped_element->UpdateDistributionForFlatTreeTraversal();
       Node* click_target_node = current_hit_test.InnerNode()->CommonAncestor(
           *tapped_element, event_handling_util::ParentForClickEvent);
       auto* click_target_element = DynamicTo<Element>(click_target_node);

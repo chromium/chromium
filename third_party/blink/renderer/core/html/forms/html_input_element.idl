@@ -40,37 +40,37 @@ enum SelectionMode { "select", "start", "end", "preserve" };
     // https://www.w3.org/Bugs/Public/show_bug.cgi?id=22682
     attribute FileList? files;
     [CEReactions] attribute DOMString formAction;
-    [CEReactions, CustomElementCallbacks] attribute DOMString formEnctype;
-    [CEReactions, CustomElementCallbacks] attribute DOMString formMethod;
+    [CEReactions] attribute DOMString formEnctype;
+    [CEReactions] attribute DOMString formMethod;
     [CEReactions, Reflect] attribute boolean formNoValidate;
     [CEReactions, Reflect] attribute DOMString formTarget;
-    [CEReactions, CustomElementCallbacks] attribute unsigned long height;
+    [CEReactions] attribute unsigned long height;
     attribute boolean indeterminate;
     readonly attribute HTMLElement? list;
     [CEReactions, Reflect] attribute DOMString max;
-    [CEReactions, RaisesException=Setter, CustomElementCallbacks] attribute long maxLength;
+    [CEReactions, RaisesException=Setter] attribute long maxLength;
     [CEReactions, Reflect] attribute DOMString min;
-    [CEReactions, RaisesException=Setter, CustomElementCallbacks] attribute long minLength;
+    [CEReactions, RaisesException=Setter] attribute long minLength;
     [CEReactions, Reflect] attribute boolean multiple;
     [CEReactions, Reflect] attribute DOMString name;
     [CEReactions, Reflect] attribute DOMString pattern;
     [CEReactions, Reflect] attribute DOMString placeholder;
     [CEReactions, Reflect] attribute boolean readOnly;
     [CEReactions, Reflect] attribute boolean required;
-    [CEReactions, RaisesException=Setter, CustomElementCallbacks] attribute unsigned long size;
+    [CEReactions, RaisesException=Setter] attribute unsigned long size;
     [CEReactions, Reflect, URL] attribute DOMString src;
     [CEReactions, Reflect] attribute DOMString step;
-    [CEReactions, CustomElementCallbacks] attribute DOMString type;
-    [CEReactions, Reflect=value, CustomElementCallbacks] attribute DOMString defaultValue;
-    [CEReactions, RaisesException=Setter, CustomElementCallbacks] attribute [TreatNullAs=EmptyString] DOMString value;
-    [CEReactions, RaisesException=Setter, CustomElementCallbacks, CallWith=ScriptState] attribute object? valueAsDate;
-    [RaisesException=Setter, CustomElementCallbacks] attribute unrestricted double valueAsNumber;
+    [CEReactions] attribute DOMString type;
+    [CEReactions, Reflect=value] attribute DOMString defaultValue;
+    [CEReactions, RaisesException=Setter] attribute [TreatNullAs=EmptyString] DOMString value;
+    [CEReactions, RaisesException=Setter, CallWith=ScriptState] attribute object? valueAsDate;
+    [RaisesException=Setter] attribute unrestricted double valueAsNumber;
     // Note: The spec has valueLow and valueHigh for two-valued range controls.
     // https://www.w3.org/Bugs/Public/show_bug.cgi?id=13154
-    [CEReactions, CustomElementCallbacks] attribute unsigned long width;
+    [CEReactions] attribute unsigned long width;
 
-    [RaisesException, CustomElementCallbacks] void stepUp(optional long n = 1);
-    [RaisesException, CustomElementCallbacks] void stepDown(optional long n = 1);
+    [RaisesException] void stepUp(optional long n = 1);
+    [RaisesException] void stepDown(optional long n = 1);
 
     readonly attribute boolean willValidate;
     readonly attribute ValidityState validity;

@@ -383,11 +383,6 @@ WebInputEventResult MouseEventManager::DispatchMouseClickIfNeeded(
     old_click_target_node = click_target_node;
   } else if (mouse_down_element_->GetDocument() ==
              mouse_release_target->GetDocument()) {
-    // Updates distribution because a 'mouseup' event listener can make the
-    // tree dirty at dispatchMouseEvent() invocation above.
-    // Unless distribution is updated, commonAncestor would hit ASSERT.
-    mouse_down_element_->UpdateDistributionForFlatTreeTraversal();
-    mouse_release_target->UpdateDistributionForFlatTreeTraversal();
     click_target_node = mouse_release_target->CommonAncestor(
         *mouse_down_element_, event_handling_util::ParentForClickEvent);
 

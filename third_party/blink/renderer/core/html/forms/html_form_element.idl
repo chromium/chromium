@@ -28,9 +28,9 @@
     [CEReactions, Reflect=accept_charset] attribute DOMString acceptCharset;
     [CEReactions, URL] attribute USVString action;
     [CEReactions, Reflect, ReflectOnly=("on","off"), ReflectMissing="on", ReflectInvalid="on"] attribute DOMString autocomplete;
-    [CEReactions, CustomElementCallbacks] attribute DOMString enctype;
-    [CEReactions, CustomElementCallbacks] attribute DOMString encoding;
-    [CEReactions, CustomElementCallbacks] attribute DOMString method;
+    [CEReactions] attribute DOMString enctype;
+    [CEReactions] attribute DOMString encoding;
+    [CEReactions] attribute DOMString method;
     [CEReactions, Reflect] attribute DOMString name;
     [CEReactions, Reflect] attribute boolean noValidate;
     [CEReactions, Reflect] attribute DOMString target;
@@ -43,7 +43,7 @@
 
     [ImplementedAs=submitFromJavaScript] void submit();
     [RaisesException] void requestSubmit(optional HTMLElement submitter);
-    [CEReactions, CustomElementCallbacks] void reset();
+    [CEReactions] void reset();
     boolean checkValidity();
     boolean reportValidity();
 };

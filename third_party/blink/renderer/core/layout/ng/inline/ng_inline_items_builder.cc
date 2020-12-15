@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 
 namespace blink {
+class HTMLAreaElement;
 
 // Returns true if items builder is used for other than offset mapping.
 template <typename OffsetMappingBuilder>

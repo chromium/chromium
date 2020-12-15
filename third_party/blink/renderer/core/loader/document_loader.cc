@@ -1743,7 +1743,6 @@ void DocumentLoader::CommitNavigation() {
           .WithURL(Url())
           .WithTypeFrom(MimeType())
           .WithSrcdocDocument(loading_srcdoc_)
-          .WithNewRegistrationContext()
           .WithWebBundleClaimedUrl(web_bundle_claimed_url_)
           .WithUkmSourceId(ukm_source_id_));
 

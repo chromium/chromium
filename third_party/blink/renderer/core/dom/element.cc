@@ -89,11 +89,9 @@
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/scriptable_document_parser.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
-#include "third_party/blink/renderer/core/dom/shadow_root_v0.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment.h"
 #include "third_party/blink/renderer/core/dom/space_split_string.h"
 #include "third_party/blink/renderer/core/dom/text.h"
-#include "third_party/blink/renderer/core/dom/v0_insertion_point.h"
 #include "third_party/blink/renderer/core/dom/whitespace_attacher.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
@@ -115,8 +113,6 @@
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
-#include "third_party/blink/renderer/core/html/custom/v0_custom_element.h"
-#include "third_party/blink/renderer/core/html/custom/v0_custom_element_registration_context.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_controls_collection.h"
 #include "third_party/blink/renderer/core/html/forms/html_options_collection.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
@@ -2091,7 +2087,6 @@ const AtomicString& Element::computedRole() {
     document.View()->UpdateLifecycleToCompositingCleanPlusScrolling(
         DocumentUpdateReason::kJavaScript);
   }
-  UpdateDistributionForFlatTreeTraversal();
   AXContext ax_context(document);
   return ax_context.GetAXObjectCache().ComputedRoleForNode(this);
 }
@@ -2106,7 +2101,6 @@ String Element::computedName() {
     document.View()->UpdateLifecycleToCompositingCleanPlusScrolling(
         DocumentUpdateReason::kJavaScript);
   }
-  UpdateDistributionForFlatTreeTraversal();
   AXContext ax_context(document);
   return ax_context.GetAXObjectCache().ComputedNameForNode(this);
 }
@@ -2261,14 +2255,8 @@ static inline AtomicString MakeIdForStyleResolution(const AtomicString& value,
 DISABLE_CFI_PERF
 void Element::AttributeChanged(const AttributeModificationParams& params) {
   const QualifiedName& name = params.name;
-  if (ShadowRoot* parent_shadow_root =
-          ShadowRootWhereNodeCanBeDistributedForV0(*this)) {
-    if (ShouldInvalidateDistributionWhenAttributeChanged(
-            *parent_shadow_root, name, params.new_value))
-      parent_shadow_root->SetNeedsDistributionRecalc();
-  }
   if (name == html_names::kSlotAttr && params.old_value != params.new_value) {
-    if (ShadowRoot* root = V1ShadowRootOfParent())
+    if (ShadowRoot* root = ShadowRootOfParent())
       root->DidChangeHostChildSlotName(params.old_value, params.new_value);
   }
 
@@ -2395,47 +2383,6 @@ void Element::UpdateClassList(const AtomicString& old_class_string,
     return;
   if (DOMTokenList* class_list = GetElementRareData()->GetClassList())
     class_list->DidUpdateAttributeValue(old_class_string, new_class_string);
-}
-
-bool Element::ShouldInvalidateDistributionWhenAttributeChanged(
-    ShadowRoot& shadow_root,
-    const QualifiedName& name,
-    const AtomicString& new_value) {
-  if (shadow_root.IsV1())
-    return false;
-  const SelectRuleFeatureSet& feature_set =
-      shadow_root.V0().EnsureSelectFeatureSet();
-
-  if (name == html_names::kIdAttr) {
-    AtomicString old_id = GetElementData()->IdForStyleResolution();
-    AtomicString new_id =
-        MakeIdForStyleResolution(new_value, GetDocument().InQuirksMode());
-    if (new_id != old_id) {
-      if (!old_id.IsEmpty() && feature_set.HasSelectorForId(old_id))
-        return true;
-      if (!new_id.IsEmpty() && feature_set.HasSelectorForId(new_id))
-        return true;
-    }
-  }
-
-  if (name == html_names::kClassAttr) {
-    const AtomicString& new_class_string = new_value;
-    if (ClassStringHasClassName(new_class_string) ==
-        ClassStringContent::kHasClasses) {
-      const SpaceSplitString& old_classes = GetElementData()->ClassNames();
-      const SpaceSplitString new_classes(GetDocument().InQuirksMode()
-                                             ? new_class_string.LowerASCII()
-                                             : new_class_string);
-      if (feature_set.CheckSelectorsForClassChange(old_classes, new_classes))
-        return true;
-    } else {
-      const SpaceSplitString& old_classes = GetElementData()->ClassNames();
-      if (feature_set.CheckSelectorsForClassChange(old_classes))
-        return true;
-    }
-  }
-
-  return feature_set.HasSelectorForAttribute(name.LocalName());
 }
 
 // Returns true if the given attribute is an event handler.
@@ -2594,8 +2541,6 @@ Node::InsertionNotificationRequest Element::InsertedInto(
 
     if (GetCustomElementState() == CustomElementState::kCustom)
       CustomElement::EnqueueConnectedCallback(*this);
-    else if (IsUpgradedV0CustomElement())
-      V0CustomElement::DidAttach(this, GetDocument());
     else if (GetCustomElementState() == CustomElementState::kUndefined)
       CustomElement::TryToUpgrade(*this);
   }
@@ -2655,8 +2600,6 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
 
     if (GetCustomElementState() == CustomElementState::kCustom)
       CustomElement::EnqueueDisconnectedCallback(*this);
-    else if (IsUpgradedV0CustomElement())
-      V0CustomElement::DidDetach(this, insertion_point.GetDocument());
   }
 
   GetDocument().GetRootScrollerController().ElementRemoved(*this);
@@ -2928,10 +2871,7 @@ void Element::RecalcStyle(const StyleRecalcChange change) {
 
   if (child_change.TraverseChildren(*this)) {
     SelectorFilterParentScope filter_scope(*this);
-    if (IsActiveV0InsertionPoint(*this)) {
-      To<V0InsertionPoint>(this)->RecalcStyleForInsertionPointChildren(
-          child_change);
-    } else if (ShadowRoot* root = GetShadowRoot()) {
+    if (ShadowRoot* root = GetShadowRoot()) {
       root->RecalcDescendantStyles(child_change);
       // Sad panda. This is only to clear ensured ComputedStyles for elements
       // outside the flat tree for getComputedStyle() in the cases where we
@@ -3003,19 +2943,6 @@ static const StyleRecalcChange ApplyComputedStyleDiff(
 
 StyleRecalcChange Element::RecalcOwnStyle(const StyleRecalcChange change) {
   DCHECK(GetDocument().InStyleRecalc());
-  if (!CanParticipateInFlatTree()) {
-    // This is a V0InsertionPoint. This whole block can be removed when Shadow
-    // DOM V0 is removed.
-    DCHECK(IsV0InsertionPoint());
-    if (NeedsStyleRecalc())
-      SetComputedStyle(nullptr);
-    if (GetForceReattachLayoutTree())
-      return change.ForceReattachLayoutTree();
-    // Keep recalculating computed style for fallback children as if they were
-    // children of the insertion point parent.
-    return change;
-  }
-
   if (change.RecalcChildren() && HasRareData() && NeedsStyleRecalc()) {
     // This element needs recalc because its parent changed inherited
     // properties or there was some style change in the ancestry which needed a
@@ -3307,8 +3234,6 @@ ShadowRoot& Element::CreateAndAttachShadowRoot(ShadowRootType type) {
   EnsureElementRareData().SetShadowRoot(*shadow_root);
   shadow_root->SetParentOrShadowHostNode(this);
   shadow_root->SetParentTreeScope(GetTreeScope());
-  if (type == ShadowRootType::V0)
-    shadow_root->SetNeedsDistributionRecalc();
   shadow_root->InsertedInto(*this);
 
   probe::DidPushShadowRoot(this, shadow_root);
@@ -3373,20 +3298,6 @@ void Element::SetNeedsCompositingUpdate() {
     layout_object->SetNeedsPaintPropertyUpdate();
 }
 
-void Element::V0SetCustomElementDefinition(
-    V0CustomElementDefinition* definition) {
-  if (!HasRareData() && !definition)
-    return;
-  DCHECK(!GetV0CustomElementDefinition());
-  EnsureElementRareData().V0SetCustomElementDefinition(definition);
-}
-
-V0CustomElementDefinition* Element::GetV0CustomElementDefinition() const {
-  if (HasRareData())
-    return GetElementRareData()->GetV0CustomElementDefinition();
-  return nullptr;
-}
-
 void Element::SetCustomElementDefinition(CustomElementDefinition* definition) {
   DCHECK(definition);
   DCHECK(!GetCustomElementDefinition());
@@ -3427,63 +3338,11 @@ const ElementInternals* Element::GetElementInternals() const {
   return HasRareData() ? GetElementRareData()->GetElementInternals() : nullptr;
 }
 
-ShadowRoot* Element::createShadowRoot(ExceptionState& exception_state) {
-  // TODO(crbug.com/937746): Anything caught by this CHECK is using the
-  // now-removed Shadow DOM v0 API. Please don't delete any of this code just
-  // yet, it will be removed very soon once there's been time to make sure
-  // nothing is broken by this removal. If this shows up in crash reports,
-  // please assign bugs to masonfreed at chromium dot org.
-  CHECK(false) << "Shadow DOM v0 has been removed.";
-
-  DCHECK(RuntimeEnabledFeatures::ShadowDOMV0Enabled());
-  if (ShadowRoot* root = GetShadowRoot()) {
-    if (root->IsUserAgent()) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kInvalidStateError,
-          "Shadow root cannot be created on a host which already hosts a "
-          "user-agent shadow tree.");
-    } else {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kInvalidStateError,
-          "Shadow root cannot be created on a host which already hosts a "
-          "shadow tree.");
-    }
-    return nullptr;
-  }
-  if (AlwaysCreateUserAgentShadowRoot()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "Shadow root cannot be created on a host which already hosts a "
-        "user-agent shadow tree.");
-    return nullptr;
-  }
-  // Some elements make assumptions about what kind of layoutObjects they allow
-  // as children so we can't allow author shadows on them for now.
-  if (!AreAuthorShadowsAllowed()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kHierarchyRequestError,
-        "Author-created shadow roots are disabled for this element.");
-    return nullptr;
-  }
-
-  return &CreateShadowRootInternal();
-}
-
-ShadowRoot& Element::CreateShadowRootInternal() {
-  DCHECK(RuntimeEnabledFeatures::ShadowDOMV0Enabled());
-  DCHECK(!ClosedShadowRoot());
-  DCHECK(AreAuthorShadowsAllowed());
-  DCHECK(!AlwaysCreateUserAgentShadowRoot());
-  GetDocument().SetShadowCascadeOrder(ShadowCascadeOrder::kShadowCascadeV0);
-  return CreateAndAttachShadowRoot(ShadowRootType::V0);
-}
-
 bool Element::CanAttachShadowRoot() const {
   const AtomicString& tag_name = localName();
-  // Checking Is{V0}CustomElement() here is just an optimization
+  // Checking IsCustomElement() here is just an optimization
   // because IsValidName is not cheap.
   return (IsCustomElement() && CustomElement::IsValidName(tag_name)) ||
-         (IsV0CustomElement() && V0CustomElement::IsValidName(tag_name)) ||
          tag_name == html_names::kArticleTag ||
          tag_name == html_names::kAsideTag ||
          tag_name == html_names::kBlockquoteTag ||
@@ -3619,7 +3478,7 @@ ShadowRoot& Element::AttachShadowRootInternal(
       << type;
   DCHECK(!AlwaysCreateUserAgentShadowRoot());
 
-  GetDocument().SetShadowCascadeOrder(ShadowCascadeOrder::kShadowCascadeV1);
+  GetDocument().SetShadowCascadeOrder(ShadowCascadeOrder::kShadowCascade);
 
   if (auto* shadow_root = GetShadowRoot()) {
     // NEW. If shadow host has a non-null shadow root whose "is declarative
@@ -3653,12 +3512,7 @@ ShadowRoot& Element::AttachShadowRootInternal(
 
 ShadowRoot* Element::OpenShadowRoot() const {
   ShadowRoot* root = GetShadowRoot();
-  if (!root)
-    return nullptr;
-  return root->GetType() == ShadowRootType::V0 ||
-                 root->GetType() == ShadowRootType::kOpen
-             ? root
-             : nullptr;
+  return root && root->GetType() == ShadowRootType::kOpen ? root : nullptr;
 }
 
 ShadowRoot* Element::ClosedShadowRoot() const {
@@ -3751,7 +3605,7 @@ void Element::ChildrenChanged(const ChildrenChange& change) {
         change.sibling_after_change);
 
   if (ShadowRoot* shadow_root = GetShadowRoot())
-    shadow_root->SetNeedsDistributionRecalcWillBeSetNeedsAssignmentRecalc();
+    shadow_root->SetNeedsAssignmentRecalc();
 }
 
 void Element::FinishParsingChildren() {
@@ -4220,7 +4074,6 @@ bool Element::ActivateDisplayLockIfNeeded(DisplayLockActivationReason reason) {
               .GetDisplayLockDocumentState()
               .DisplayLockBlockingAllActivationCount())
     return false;
-  const_cast<Element*>(this)->UpdateDistributionForFlatTreeTraversal();
 
   HeapVector<std::pair<Member<Element>, Member<Element>>> activatable_targets;
   for (Node& ancestor : FlatTreeTraversal::InclusiveAncestorsOf(*this)) {
@@ -4259,7 +4112,6 @@ bool Element::DisplayLockPreventsActivation(
   if (GetDocument().GetDisplayLockDocumentState().LockedDisplayLockCount() == 0)
     return false;
 
-  const_cast<Element*>(this)->UpdateDistributionForFlatTreeTraversal();
   // TODO(vmpstr): Similar to Document::EnsurePaintLocationDataValidForNode(),
   // this iterates up to the ancestor hierarchy looking for locked display
   // locks. This is inefficient, particularly since it's unlikely that this will
@@ -5640,18 +5492,14 @@ void Element::WillModifyAttribute(const QualifiedName& name,
 
   if (old_value != new_value) {
     GetDocument().GetStyleEngine().AttributeChangedForElement(name, *this);
-    if (IsUpgradedV0CustomElement()) {
-      V0CustomElement::AttributeDidChange(this, name.LocalName(), old_value,
-                                          new_value);
-    }
   }
 
   if (MutationObserverInterestGroup* recipients =
           MutationObserverInterestGroup::CreateForAttributesMutation(*this,
-                                                                     name))
+                                                                     name)) {
     recipients->EnqueueMutationRecord(
         MutationRecord::CreateAttributes(this, name, old_value));
-
+  }
   probe::WillModifyDOMAttr(this, old_value, new_value);
 }
 
@@ -5851,9 +5699,6 @@ Node::InsertionNotificationRequest Node::InsertedInto(
   }
   if (ParentOrShadowHostNode()->IsInShadowTree())
     SetFlag(kIsInShadowTreeFlag);
-  if (ChildNeedsDistributionRecalc() &&
-      !insertion_point.ChildNeedsDistributionRecalc())
-    insertion_point.MarkAncestorsWithChildNeedsDistributionRecalc();
   if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache())
     cache->ChildrenChanged(&insertion_point);
   return kInsertionDone;

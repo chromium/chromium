@@ -27,7 +27,7 @@ callback TreatNonObjectAsNullBooleanFunction = boolean ();
 
 interface TestCallbackFunctions {
     // Extended attributes
-    [CustomElementCallbacks] readonly attribute long customElementsCallbacksReadonlyAttribute;
+    [Reflect] readonly attribute long fooCallbacksReadonlyAttribute;
 
     // Methods
     VoidCallbackFunction returnCallbackFunctionMethod();
@@ -40,5 +40,5 @@ interface TestCallbackFunctions {
     void voidMethodOptionalCallbackFunctionInArg(optional VoidCallbackFunction voidCallbackFunctionArg);
     void voidMethodNullableCallbackFunctionInArg(VoidCallbackFunction? voidCallbackFunctionArg);
     // Extended attributes
-    [CustomElementCallbacks] void customElementCallbacksMethod();
+    [Reflect] void fooCallbacksMethod();
 };

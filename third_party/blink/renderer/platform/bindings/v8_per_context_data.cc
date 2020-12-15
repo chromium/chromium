@@ -37,7 +37,6 @@
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/platform/bindings/origin_trial_features.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/bindings/v0_custom_element_binding.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/bindings/v8_object_constructor.h"
 #include "third_party/blink/renderer/platform/bindings/wrapper_type_info.h"
@@ -139,11 +138,6 @@ bool V8PerContextData::GetExistingConstructorAndPrototypeForType(
   *prototype_object = PrototypeForType(type);
   DCHECK(!prototype_object->IsEmpty());
   return true;
-}
-
-void V8PerContextData::AddCustomElementBinding(
-    std::unique_ptr<V0CustomElementBinding> binding) {
-  custom_element_bindings_.push_back(std::move(binding));
 }
 
 void V8PerContextData::AddData(const char* key, Data* data) {

@@ -88,9 +88,6 @@ class CORE_EXPORT StyleResolverState {
   EInsideLink ElementLinkState() const {
     return element_context_.ElementLinkState();
   }
-  bool DistributedToV0InsertionPoint() const {
-    return element_context_.DistributedToV0InsertionPoint();
-  }
 
   const ElementResolveContext& ElementContext() const {
     return element_context_;

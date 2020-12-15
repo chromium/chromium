@@ -397,9 +397,7 @@ int16_t ComparePositions(const PositionInFlatTree& position_a,
   DCHECK(position_a.IsNotNull());
   DCHECK(position_b.IsNotNull());
 
-  position_a.AnchorNode()->UpdateDistributionForFlatTreeTraversal();
   Node* container_a = position_a.ComputeContainerNode();
-  position_b.AnchorNode()->UpdateDistributionForFlatTreeTraversal();
   Node* container_b = position_b.ComputeContainerNode();
   int offset_a = position_a.ComputeOffsetInContainerNode();
   int offset_b = position_b.ComputeOffsetInContainerNode();
@@ -588,10 +586,6 @@ PositionInFlatTree ToPositionInFlatTree(const Position& pos) {
   if (pos.IsOffsetInAnchor()) {
     if (anchor->IsCharacterDataNode())
       return PositionInFlatTree(anchor, pos.ComputeOffsetInContainerNode());
-    if (IsActiveV0InsertionPoint(*anchor)) {
-      return ToPositionInFlatTree(Position(NodeTraversal::Parent(*anchor),
-                                           NodeTraversal::Index(*anchor)));
-    }
     DCHECK(!anchor->IsElementNode() || anchor->CanParticipateInFlatTree());
     int offset = pos.ComputeOffsetInContainerNode();
     if (!offset) {
@@ -603,7 +597,6 @@ PositionInFlatTree ToPositionInFlatTree(const Position& pos) {
       Node* node = anchor->IsShadowRoot() ? anchor->OwnerShadowHost() : anchor;
       return PositionInFlatTree::LastPositionInNode(*node);
     }
-    child->UpdateDistributionForFlatTreeTraversal();
     if (!child->CanParticipateInFlatTree()) {
       if (anchor->IsShadowRoot())
         return PositionInFlatTree(anchor->OwnerShadowHost(), offset);
@@ -622,8 +615,6 @@ PositionInFlatTree ToPositionInFlatTree(const Position& pos) {
 
   if (anchor->IsShadowRoot())
     return PositionInFlatTree(anchor->OwnerShadowHost(), pos.AnchorType());
-  if (IsActiveV0InsertionPoint(*anchor))
-    return ToPositionInFlatTree(pos.ToOffsetInAnchor());
   DCHECK(anchor->CanParticipateInFlatTree());
   if (pos.IsBeforeAnchor() || pos.IsAfterAnchor()) {
     if (!FlatTreeTraversal::Parent(*anchor)) {

@@ -108,8 +108,6 @@ inline bool SelectorMatches(const CSSSelector& selector,
 
 bool SelectorQuery::Matches(Element& target_element) const {
   QUERY_STATS_RESET();
-  if (needs_updated_distribution_)
-    target_element.UpdateDistributionForFlatTreeTraversal();
   return SelectorListMatches(target_element, target_element);
 }
 
@@ -117,8 +115,6 @@ Element* SelectorQuery::Closest(Element& target_element) const {
   QUERY_STATS_RESET();
   if (selectors_.IsEmpty())
     return nullptr;
-  if (needs_updated_distribution_)
-    target_element.UpdateDistributionForFlatTreeTraversal();
 
   for (Element* current_element = &target_element; current_element;
        current_element = current_element->parentElement()) {
@@ -311,7 +307,7 @@ static ShadowRoot* AuthorShadowRootOf(const ContainerNode& node) {
   if (!node.IsElementNode())
     return nullptr;
   ShadowRoot* root = node.GetShadowRoot();
-  if (root && root->IsOpenOrV0())
+  if (root && root->IsOpen())
     return root;
   return nullptr;
 }
@@ -417,9 +413,7 @@ void SelectorQuery::Execute(
     return;
 
   if (use_slow_scan_) {
-    if (needs_updated_distribution_)
-      root_node.UpdateDistributionForFlatTreeTraversal();
-    if (uses_deep_combinator_or_shadow_pseudo_) {
+    if (uses_shadow_pseudo_) {
       ExecuteSlowTraversingShadowTree<SelectorQueryTrait>(root_node, output);
     } else {
       ExecuteSlow<SelectorQueryTrait>(root_node, output);
@@ -428,8 +422,7 @@ void SelectorQuery::Execute(
   }
 
   DCHECK_EQ(selectors_.size(), 1u);
-  DCHECK(!needs_updated_distribution_);
-  DCHECK(!uses_deep_combinator_or_shadow_pseudo_);
+  DCHECK(!uses_shadow_pseudo_);
 
   // In quirks mode getElementById("a") is case sensitive and should only
   // match elements with lowercase id "a", but querySelector is case-insensitive
@@ -477,8 +470,7 @@ SelectorQuery::SelectorQuery(CSSSelectorList selector_list)
     : selector_list_(std::move(selector_list)),
       selector_id_is_rightmost_(true),
       selector_id_affected_by_sibling_combinator_(false),
-      uses_deep_combinator_or_shadow_pseudo_(false),
-      needs_updated_distribution_(false),
+      uses_shadow_pseudo_(false),
       use_slow_scan_(true) {
   selectors_.ReserveInitialCapacity(selector_list_.ComputeLength());
   for (const CSSSelector* selector = selector_list_.First(); selector;
@@ -486,13 +478,10 @@ SelectorQuery::SelectorQuery(CSSSelectorList selector_list)
     if (selector->MatchesPseudoElement())
       continue;
     selectors_.UncheckedAppend(selector);
-    uses_deep_combinator_or_shadow_pseudo_ |=
-        selector->HasDeepCombinatorOrShadowPseudo();
-    needs_updated_distribution_ |= selector->NeedsUpdatedDistribution();
+    uses_shadow_pseudo_ |= selector->HasShadowPseudo();
   }
 
-  if (selectors_.size() == 1 && !uses_deep_combinator_or_shadow_pseudo_ &&
-      !needs_updated_distribution_) {
+  if (selectors_.size() == 1 && !uses_shadow_pseudo_) {
     use_slow_scan_ = false;
     for (const CSSSelector* current = selectors_[0]; current;
          current = current->TagHistory()) {

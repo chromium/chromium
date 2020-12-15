@@ -39,7 +39,6 @@
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/space_split_string.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_definition.h"
-#include "third_party/blink/renderer/core/html/custom/v0_custom_element_definition.h"
 #include "third_party/blink/renderer/core/intersection_observer/element_intersection_observer_data.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -125,13 +124,6 @@ class ElementRareData : public NodeRareData {
 
   bool HasPseudoElements() const;
   void ClearPseudoElements();
-
-  void V0SetCustomElementDefinition(V0CustomElementDefinition* definition) {
-    v0_custom_element_definition_ = definition;
-  }
-  V0CustomElementDefinition* GetV0CustomElementDefinition() const {
-    return v0_custom_element_definition_.Get();
-  }
 
   void SetCustomElementDefinition(CustomElementDefinition* definition) {
     custom_element_definition_ = definition;
@@ -228,8 +220,6 @@ class ElementRareData : public NodeRareData {
   Member<ElementIntersectionObserverData> intersection_observer_data_;
   Member<ResizeObserverDataMap> resize_observer_data_;
 
-  // TODO(davaajav):remove this field when v0 custom elements are deprecated
-  Member<V0CustomElementDefinition> v0_custom_element_definition_;
   Member<CustomElementDefinition> custom_element_definition_;
   AtomicString is_value_;
   Member<ElementInternals> element_internals_;

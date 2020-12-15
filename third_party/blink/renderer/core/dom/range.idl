@@ -46,11 +46,11 @@
     const unsigned short END_TO_START = 3;
     [RaisesException] short compareBoundaryPoints(unsigned short how, Range sourceRange);
 
-    [RaisesException, CEReactions, CustomElementCallbacks] void deleteContents();
-    [NewObject, RaisesException, CEReactions, CustomElementCallbacks, DoNotTestNewObject] DocumentFragment extractContents();
-    [NewObject, RaisesException, CEReactions, CustomElementCallbacks] DocumentFragment cloneContents();
-    [RaisesException, CEReactions, CustomElementCallbacks] void insertNode(Node node);
-    [RaisesException, CEReactions, CustomElementCallbacks] void surroundContents(Node newParent);
+    [RaisesException, CEReactions] void deleteContents();
+    [NewObject, RaisesException, CEReactions, DoNotTestNewObject] DocumentFragment extractContents();
+    [NewObject, RaisesException, CEReactions] DocumentFragment cloneContents();
+    [RaisesException, CEReactions] void insertNode(Node node);
+    [RaisesException, CEReactions] void surroundContents(Node newParent);
 
     [NewObject] Range cloneRange();
     [MeasureAs=RangeDetach] void detach();
@@ -69,7 +69,7 @@
 
     // DOM Parsing and Serialization
     // https://w3c.github.io/DOM-Parsing/#extensions-to-the-range-interface
-    [NewObject, RaisesException, CEReactions, CustomElementCallbacks] DocumentFragment createContextualFragment(HTMLString fragment);
+    [NewObject, RaisesException, CEReactions] DocumentFragment createContextualFragment(HTMLString fragment);
 
     // Non-standard API
     [RaisesException, DeprecateAs=RangeExpand] void expand(optional DOMString unit = "");

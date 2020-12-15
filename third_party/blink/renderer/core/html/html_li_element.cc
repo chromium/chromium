@@ -96,7 +96,6 @@ void HTMLLIElement::AttachLayoutTree(AttachContext& context) {
   HTMLElement::AttachLayoutTree(context);
 
   if (ListItemOrdinal* ordinal = ListItemOrdinal::Get(*this)) {
-    DCHECK(!GetDocument().ChildNeedsDistributionRecalc());
     ParseValue(FastGetAttribute(html_names::kValueAttr), ordinal);
   }
 }

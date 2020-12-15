@@ -212,16 +212,6 @@ std::ostream& operator<<(std::ostream& ostream,
 
 EphemeralRangeInFlatTree ToEphemeralRangeInFlatTree(
     const EphemeralRange& range) {
-  // We need to update the distribution before getting the position in the flat
-  // tree, since that operation requires us to navigate the flat tree.
-  if (range.StartPosition().AnchorNode()) {
-    range.StartPosition()
-        .AnchorNode()
-        ->UpdateDistributionForFlatTreeTraversal();
-  }
-  if (range.EndPosition().AnchorNode()) {
-    range.EndPosition().AnchorNode()->UpdateDistributionForFlatTreeTraversal();
-  }
   PositionInFlatTree start = ToPositionInFlatTree(range.StartPosition());
   PositionInFlatTree end = ToPositionInFlatTree(range.EndPosition());
   if (start.IsNull() || end.IsNull() ||

@@ -132,10 +132,10 @@ void JSBasedEventListener::Invoke(
     current_event = window->CurrentEvent();
 
     // Step 8-2: If |struct|’s invocation-target-in-shadow-tree is false (i.e.,
-    // event's target is in a V1 shadow tree), then set |global|’s current
+    // event's target is in a shadow tree), then set |global|’s current
     // event to event.
     Node* target_node = event->target()->ToNode();
-    if (!(target_node && target_node->IsInV1ShadowTree()))
+    if (!(target_node && target_node->IsInShadowTree()))
       window->SetCurrentEvent(event);
   }
 

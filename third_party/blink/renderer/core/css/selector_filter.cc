@@ -152,12 +152,6 @@ void SelectorFilter::CollectIdentifierHashes(
   unsigned* hash = identifier_hashes;
   unsigned* end = identifier_hashes + maximum_identifier_count;
   CSSSelector::RelationType relation = selector.Relation();
-  if (selector.RelationIsAffectedByPseudoContent()) {
-    // Disable fastRejectSelector.
-    *identifier_hashes = 0;
-    return;
-  }
-
   // Skip the rightmost compound. It is handled quickly by the rule hashes.
   bool skip_over_subselectors = true;
   for (const CSSSelector* current = selector.TagHistory(); current;
@@ -177,11 +171,9 @@ void SelectorFilter::CollectIdentifierHashes(
         *identifier_hashes = 0;
         return;
       case CSSSelector::kDescendant:
-      case CSSSelector::kShadowDeepAsDescendant:
       case CSSSelector::kChild:
       case CSSSelector::kShadowPseudo:
       case CSSSelector::kShadowPart:
-      case CSSSelector::kShadowDeep:
         skip_over_subselectors = false;
         CollectDescendantSelectorIdentifierHashes(*current, hash);
         break;
@@ -189,11 +181,6 @@ void SelectorFilter::CollectIdentifierHashes(
     if (hash == end)
       return;
     relation = current->Relation();
-    if (current->RelationIsAffectedByPseudoContent()) {
-      // Disable fastRejectSelector.
-      *identifier_hashes = 0;
-      return;
-    }
   }
   *hash = 0;
 }

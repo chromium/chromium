@@ -346,14 +346,8 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
     return !slotted_pseudo_element_rules_.IsEmpty();
   }
 
-  bool HasV0BoundaryCrossingRules() const {
-    return !deep_combinator_or_shadow_pseudo_rules_.IsEmpty() ||
-           !content_pseudo_element_rules_.IsEmpty();
-  }
-
   bool NeedsFullRecalcForRuleSetInvalidation() const {
-    return features_.NeedsFullRecalcForRuleSetInvalidation() ||
-           HasV0BoundaryCrossingRules();
+    return features_.NeedsFullRecalcForRuleSetInvalidation();
   }
 
   bool DidMediaQueryResultsChange(const MediaQueryEvaluator& evaluator) const;

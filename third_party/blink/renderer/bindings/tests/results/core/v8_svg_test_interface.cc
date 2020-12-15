@@ -17,7 +17,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_configuration.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/html/custom/v0_custom_element_processing_stack.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -85,8 +84,6 @@ static void TypeAttributeSetter(
   ALLOW_UNUSED_LOCAL(holder);
 
   SVGTestInterface* impl = V8SVGTestInterface::ToImpl(holder);
-
-  V0CustomElementProcessingStack::CallbackDeliveryScope delivery_scope;
 
   // Prepare the value to be set.
   V8StringResource<> cpp_value{ v8_value };

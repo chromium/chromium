@@ -52,7 +52,6 @@
 #include "third_party/blink/renderer/core/frame/deprecation.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/custom/ce_reactions_scope.h"
-#include "third_party/blink/renderer/core/html/custom/v0_custom_element_processing_stack.h"
 #include "third_party/blink/renderer/core/html/forms/html_data_list_options_collection.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_controls_collection.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
@@ -3163,8 +3162,6 @@ static void ReflectTestInterfaceAttributeAttributeSetter(
 
   TestObject* impl = V8TestObject::ToImpl(holder);
 
-  V0CustomElementProcessingStack::CallbackDeliveryScope delivery_scope;
-
   ExceptionState exception_state(isolate, ExceptionState::kSetterContext, "TestObject", "reflectTestInterfaceAttribute");
 
   // Prepare the value to be set.
@@ -3196,8 +3193,6 @@ static void ReflectReflectedNameAttributeTestAttributeAttributeSetter(
   ALLOW_UNUSED_LOCAL(holder);
 
   TestObject* impl = V8TestObject::ToImpl(holder);
-
-  V0CustomElementProcessingStack::CallbackDeliveryScope delivery_scope;
 
   ExceptionState exception_state(isolate, ExceptionState::kSetterContext, "TestObject", "reflectReflectedNameAttributeTestAttribute");
 
@@ -3231,8 +3226,6 @@ static void ReflectBooleanAttributeAttributeSetter(
 
   TestObject* impl = V8TestObject::ToImpl(holder);
 
-  V0CustomElementProcessingStack::CallbackDeliveryScope delivery_scope;
-
   ExceptionState exception_state(isolate, ExceptionState::kSetterContext, "TestObject", "reflectBooleanAttribute");
 
   // Prepare the value to be set.
@@ -3260,8 +3253,6 @@ static void ReflectLongAttributeAttributeSetter(
   ALLOW_UNUSED_LOCAL(holder);
 
   TestObject* impl = V8TestObject::ToImpl(holder);
-
-  V0CustomElementProcessingStack::CallbackDeliveryScope delivery_scope;
 
   ExceptionState exception_state(isolate, ExceptionState::kSetterContext, "TestObject", "reflectLongAttribute");
 
@@ -3291,8 +3282,6 @@ static void ReflectUnsignedShortAttributeAttributeSetter(
 
   TestObject* impl = V8TestObject::ToImpl(holder);
 
-  V0CustomElementProcessingStack::CallbackDeliveryScope delivery_scope;
-
   ExceptionState exception_state(isolate, ExceptionState::kSetterContext, "TestObject", "reflectUnsignedShortAttribute");
 
   // Prepare the value to be set.
@@ -3320,8 +3309,6 @@ static void ReflectUnsignedLongAttributeAttributeSetter(
   ALLOW_UNUSED_LOCAL(holder);
 
   TestObject* impl = V8TestObject::ToImpl(holder);
-
-  V0CustomElementProcessingStack::CallbackDeliveryScope delivery_scope;
 
   ExceptionState exception_state(isolate, ExceptionState::kSetterContext, "TestObject", "reflectUnsignedLongAttribute");
 
@@ -3351,8 +3338,6 @@ static void IdAttributeSetter(
 
   TestObject* impl = V8TestObject::ToImpl(holder);
 
-  V0CustomElementProcessingStack::CallbackDeliveryScope delivery_scope;
-
   // Prepare the value to be set.
   V8StringResource<> cpp_value{ v8_value };
   if (!cpp_value.Prepare())
@@ -3378,8 +3363,6 @@ static void NameAttributeSetter(
   ALLOW_UNUSED_LOCAL(holder);
 
   TestObject* impl = V8TestObject::ToImpl(holder);
-
-  V0CustomElementProcessingStack::CallbackDeliveryScope delivery_scope;
 
   // Prepare the value to be set.
   V8StringResource<> cpp_value{ v8_value };
@@ -3407,8 +3390,6 @@ static void ClassAttributeSetter(
 
   TestObject* impl = V8TestObject::ToImpl(holder);
 
-  V0CustomElementProcessingStack::CallbackDeliveryScope delivery_scope;
-
   // Prepare the value to be set.
   V8StringResource<> cpp_value{ v8_value };
   if (!cpp_value.Prepare())
@@ -3434,8 +3415,6 @@ static void ReflectedIdAttributeSetter(
   ALLOW_UNUSED_LOCAL(holder);
 
   TestObject* impl = V8TestObject::ToImpl(holder);
-
-  V0CustomElementProcessingStack::CallbackDeliveryScope delivery_scope;
 
   // Prepare the value to be set.
   V8StringResource<> cpp_value{ v8_value };
@@ -3463,8 +3442,6 @@ static void ReflectedNameAttributeSetter(
 
   TestObject* impl = V8TestObject::ToImpl(holder);
 
-  V0CustomElementProcessingStack::CallbackDeliveryScope delivery_scope;
-
   // Prepare the value to be set.
   V8StringResource<> cpp_value{ v8_value };
   if (!cpp_value.Prepare())
@@ -3490,8 +3467,6 @@ static void ReflectedClassAttributeSetter(
   ALLOW_UNUSED_LOCAL(holder);
 
   TestObject* impl = V8TestObject::ToImpl(holder);
-
-  V0CustomElementProcessingStack::CallbackDeliveryScope delivery_scope;
 
   // Prepare the value to be set.
   V8StringResource<> cpp_value{ v8_value };
@@ -3529,8 +3504,6 @@ static void LimitedToOnlyOneAttributeAttributeSetter(
   ALLOW_UNUSED_LOCAL(holder);
 
   TestObject* impl = V8TestObject::ToImpl(holder);
-
-  V0CustomElementProcessingStack::CallbackDeliveryScope delivery_scope;
 
   // Prepare the value to be set.
   V8StringResource<> cpp_value{ v8_value };
@@ -3573,8 +3546,6 @@ static void LimitedToOnlyAttributeAttributeSetter(
 
   TestObject* impl = V8TestObject::ToImpl(holder);
 
-  V0CustomElementProcessingStack::CallbackDeliveryScope delivery_scope;
-
   // Prepare the value to be set.
   V8StringResource<> cpp_value{ v8_value };
   if (!cpp_value.Prepare())
@@ -3614,8 +3585,6 @@ static void LimitedToOnlyOtherAttributeAttributeSetter(
 
   TestObject* impl = V8TestObject::ToImpl(holder);
 
-  V0CustomElementProcessingStack::CallbackDeliveryScope delivery_scope;
-
   // Prepare the value to be set.
   V8StringResource<> cpp_value{ v8_value };
   if (!cpp_value.Prepare())
@@ -3654,8 +3623,6 @@ static void LimitedWithMissingDefaultAttributeAttributeSetter(
   ALLOW_UNUSED_LOCAL(holder);
 
   TestObject* impl = V8TestObject::ToImpl(holder);
-
-  V0CustomElementProcessingStack::CallbackDeliveryScope delivery_scope;
 
   // Prepare the value to be set.
   V8StringResource<> cpp_value{ v8_value };
@@ -3697,8 +3664,6 @@ static void LimitedWithInvalidMissingDefaultAttributeAttributeSetter(
   ALLOW_UNUSED_LOCAL(holder);
 
   TestObject* impl = V8TestObject::ToImpl(holder);
-
-  V0CustomElementProcessingStack::CallbackDeliveryScope delivery_scope;
 
   // Prepare the value to be set.
   V8StringResource<> cpp_value{ v8_value };
@@ -3955,8 +3920,6 @@ static void UrlStringAttributeAttributeSetter(
 
   TestObject* impl = V8TestObject::ToImpl(holder);
 
-  V0CustomElementProcessingStack::CallbackDeliveryScope delivery_scope;
-
   // Prepare the value to be set.
   V8StringResource<> cpp_value{ v8_value };
   if (!cpp_value.Prepare())
@@ -3982,8 +3945,6 @@ static void UrlStringAttributeAttributeSetter(
   ALLOW_UNUSED_LOCAL(holder);
 
   TestObject* impl = V8TestObject::ToImpl(holder);
-
-  V0CustomElementProcessingStack::CallbackDeliveryScope delivery_scope;
 
   // Prepare the value to be set.
   V8StringResource<> cpp_value{ v8_value };

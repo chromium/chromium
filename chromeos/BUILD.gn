@@ -291,6 +291,9 @@ if (is_chromeos_device) {
 
       # crbug.com/1156006
       "filemanager.DragDrop",
+
+      # crbug.com/1158051
+      "policy.AllowDinosaurEasterEgg",
     ]
   }
 

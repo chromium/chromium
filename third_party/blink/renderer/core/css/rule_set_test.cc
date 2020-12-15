@@ -134,18 +134,6 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_TagThenAttrThenId) {
   ASSERT_EQ(tag_str, rules->at(0)->Selector().TagQName().LocalName());
 }
 
-TEST(RuleSetTest, findBestRuleSetAndAdd_DivWithContent) {
-  css_test_helpers::TestStyleSheet sheet;
-
-  sheet.AddCSSRules("div::content { }");
-  RuleSet& rule_set = sheet.GetRuleSet();
-  AtomicString str("div");
-  const HeapVector<Member<const RuleData>>* rules = rule_set.TagRules(str);
-  ASSERT_EQ(1u, rules->size());
-  AtomicString value_str("content");
-  ASSERT_EQ(value_str, rules->at(0)->Selector().TagHistory()->Value());
-}
-
 TEST(RuleSetTest, findBestRuleSetAndAdd_Host) {
   css_test_helpers::TestStyleSheet sheet;
 

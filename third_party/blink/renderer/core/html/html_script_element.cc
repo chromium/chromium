@@ -294,7 +294,7 @@ void HTMLScriptElement::DispatchErrorEvent() {
 
 void HTMLScriptElement::SetScriptElementForBinding(
     HTMLScriptElementOrSVGScriptElement& element) {
-  if (!IsInV1ShadowTree())
+  if (!IsInShadowTree())
     element.SetHTMLScriptElement(this);
 }
 

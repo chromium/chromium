@@ -79,10 +79,6 @@ static void {{method.camel_case_name}}{{method.overload_index}}Method{{world_suf
   {% endif %}
   {% endif %}
 
-  {% if method.is_custom_element_callbacks %}
-  V0CustomElementProcessingStack::CallbackDeliveryScope delivery_scope;
-  {% endif %}
-
   {{function_call | trim | indent(2)}}
 }
 {% endfilter %}

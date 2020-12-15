@@ -109,7 +109,7 @@ int TreeScopeEventContext::CalculateTreeOrderAndSetNearestAncestorClosedTree(
   pre_order_ = order_number;
   auto* shadow_root = DynamicTo<ShadowRoot>(&RootNode());
   containing_closed_shadow_tree_ =
-      (shadow_root && !shadow_root->IsOpenOrV0())
+      (shadow_root && !shadow_root->IsOpen())
           ? this
           : nearest_ancestor_closed_tree_scope_event_context;
   for (const auto& context : children_) {

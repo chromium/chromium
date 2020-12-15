@@ -25,7 +25,6 @@
 #include "third_party/blink/renderer/core/html/custom/custom_element_descriptor.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_reaction_stack.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_upgrade_sorter.h"
-#include "third_party/blink/renderer/core/html/custom/v0_custom_element_registration_context.h"
 #include "third_party/blink/renderer/core/html_element_type_helpers.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
@@ -78,19 +77,12 @@ bool ThrowIfValidName(const AtomicString& name,
 CustomElementRegistry::CustomElementRegistry(const LocalDOMWindow* owner)
     : element_definition_is_running_(false),
       owner_(owner),
-      v0_(MakeGarbageCollected<V0RegistrySet>()),
       upgrade_candidates_(MakeGarbageCollected<UpgradeCandidateMap>()),
-      reaction_stack_(&CustomElementReactionStack::Current()) {
-  Document* document = owner->document();
-  if (V0CustomElementRegistrationContext* v0 =
-          document ? document->RegistrationContext() : nullptr)
-    Entangle(v0);
-}
+      reaction_stack_(&CustomElementReactionStack::Current()) {}
 
 void CustomElementRegistry::Trace(Visitor* visitor) const {
   visitor->Trace(definitions_);
   visitor->Trace(owner_);
-  visitor->Trace(v0_);
   visitor->Trace(upgrade_candidates_);
   visitor->Trace(when_defined_promise_map_);
   visitor->Trace(reaction_stack_);
@@ -124,7 +116,7 @@ CustomElementDefinition* CustomElementRegistry::DefineInternal(
   if (ThrowIfInvalidName(name, allow_embedder_names, exception_state))
     return nullptr;
 
-  if (NameIsDefined(name) || V0NameIsDefined(name)) {
+  if (NameIsDefined(name)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
         "the name \"" + name + "\" has already been used with this registry");
@@ -265,19 +257,6 @@ bool CustomElementRegistry::NameIsDefined(const AtomicString& name) const {
   return name_id_map_.Contains(name);
 }
 
-void CustomElementRegistry::Entangle(V0CustomElementRegistrationContext* v0) {
-  v0_->insert(v0);
-  v0->SetV1(this);
-}
-
-bool CustomElementRegistry::V0NameIsDefined(const AtomicString& name) {
-  for (const auto& v0 : *v0_) {
-    if (v0->NameIsDefined(name))
-      return true;
-  }
-  return false;
-}
-
 CustomElementDefinition* CustomElementRegistry::DefinitionForName(
     const AtomicString& name) const {
   return DefinitionForId(name_id_map_.at(name));
@@ -295,7 +274,7 @@ void CustomElementRegistry::AddCandidate(Element& candidate) {
     if (!is.IsNull())
       name = is;
   }
-  if (NameIsDefined(name) || V0NameIsDefined(name))
+  if (NameIsDefined(name))
     return;
   UpgradeCandidateMap::iterator it = upgrade_candidates_->find(name);
   UpgradeCandidateSet* set;

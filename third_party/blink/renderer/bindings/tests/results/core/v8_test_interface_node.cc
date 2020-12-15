@@ -19,7 +19,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_node.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_test_interface_empty.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/html/custom/v0_custom_element_processing_stack.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -196,8 +195,6 @@ static void ReflectStringAttributeAttributeSetter(
 
   TestInterfaceNode* impl = V8TestInterfaceNode::ToImpl(holder);
 
-  V0CustomElementProcessingStack::CallbackDeliveryScope delivery_scope;
-
   // Prepare the value to be set.
   V8StringResource<> cpp_value{ v8_value };
   if (!cpp_value.Prepare())
@@ -223,8 +220,6 @@ static void ReflectUrlStringAttributeAttributeSetter(
   ALLOW_UNUSED_LOCAL(holder);
 
   TestInterfaceNode* impl = V8TestInterfaceNode::ToImpl(holder);
-
-  V0CustomElementProcessingStack::CallbackDeliveryScope delivery_scope;
 
   // Prepare the value to be set.
   V8StringResource<> cpp_value{ v8_value };

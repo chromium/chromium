@@ -412,11 +412,8 @@ void RuleSet::AddChildRules(const HeapVector<Member<StyleRuleBase>>& rules,
       for (const CSSSelector* selector = selector_list.First(); selector;
            selector = selector_list.Next(*selector)) {
         wtf_size_t selector_index = selector_list.SelectorIndex(*selector);
-        if (selector->HasDeepCombinatorOrShadowPseudo()) {
+        if (selector->HasShadowPseudo()) {
           deep_combinator_or_shadow_pseudo_rules_.push_back(
-              MinimalRuleData(style_rule, selector_index, add_rule_flags));
-        } else if (selector->HasContentPseudo()) {
-          content_pseudo_element_rules_.push_back(
               MinimalRuleData(style_rule, selector_index, add_rule_flags));
         } else if (selector->HasSlottedPseudo()) {
           slotted_pseudo_element_rules_.push_back(

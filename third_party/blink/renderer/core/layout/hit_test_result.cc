@@ -387,8 +387,6 @@ String HitTestResult::Title(TextDirection& dir) const {
   // Find the title in the nearest enclosing DOM node.
   // For <area> tags in image maps, walk the tree for the <area>, not the <img>
   // using it.
-  if (inner_node_.Get())
-    inner_node_->UpdateDistributionForFlatTreeTraversal();
   for (Node* title_node = inner_node_.Get(); title_node;
        title_node = FlatTreeTraversal::Parent(*title_node)) {
     if (auto* element = DynamicTo<Element>(title_node)) {

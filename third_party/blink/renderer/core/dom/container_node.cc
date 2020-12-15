@@ -326,7 +326,7 @@ void ContainerNode::InsertNodeVector(
       Node& child = *target_node;
       mutator(*this, child, next);
       ChildListMutationScope(*this).ChildAdded(child);
-      if (GetDocument().ContainsV1ShadowTree())
+      if (GetDocument().ContainsShadowTree())
         child.CheckSlotChangeAfterInserted();
       probe::DidInsertDOMNode(&child);
       NotifyNodeInsertedInternal(child, *post_insertion_notification_targets);
@@ -920,7 +920,7 @@ void ContainerNode::NotifyNodeInserted(Node& root,
 #endif
   DCHECK(!root.IsShadowRoot());
 
-  if (GetDocument().ContainsV1ShadowTree())
+  if (GetDocument().ContainsShadowTree())
     root.CheckSlotChangeAfterInserted();
 
   probe::DidInsertDOMNode(&root);
@@ -1384,12 +1384,9 @@ void ContainerNode::RebuildChildrenLayoutTrees(
     WhitespaceAttacher& whitespace_attacher) {
   DCHECK(!NeedsReattachLayoutTree());
 
-  if (IsActiveSlotOrActiveV0InsertionPoint()) {
+  if (IsActiveSlot()) {
     if (auto* slot = DynamicTo<HTMLSlotElement>(this)) {
       slot->RebuildDistributedChildrenLayoutTrees(whitespace_attacher);
-    } else {
-      To<V0InsertionPoint>(this)->RebuildDistributedChildrenLayoutTrees(
-          whitespace_attacher);
     }
     return;
   }

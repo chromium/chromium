@@ -99,10 +99,8 @@ void TreeScopeAdopter::MoveShadowTreeToNewDocument(
     shadow_root.SetAdoptedStyleSheets(empty_vector);
   }
 
-  if (shadow_root.GetType() == ShadowRootType::V0) {
-    new_document.SetShadowCascadeOrder(ShadowCascadeOrder::kShadowCascadeV0);
-  } else if (shadow_root.IsV1() && !shadow_root.IsUserAgent()) {
-    new_document.SetShadowCascadeOrder(ShadowCascadeOrder::kShadowCascadeV1);
+  if (!shadow_root.IsUserAgent()) {
+    new_document.SetShadowCascadeOrder(ShadowCascadeOrder::kShadowCascade);
   }
   MoveTreeToNewDocument(shadow_root, old_document, new_document);
 }

@@ -56,11 +56,8 @@
     Node effectiveRootScroller(Document document);
 
     [RaisesException] DOMString shadowRootType(Node root);
-    [RaisesException] boolean hasShadowInsertionPoint(Node root);
-    [RaisesException] boolean hasContentElement(Node root);
     [RaisesException] unsigned long countElementShadow(Node Root);
     DOMString shadowPseudoId(Element element);
-    [RaisesException] boolean isValidContentSelect(Element contentElement);
     Node treeScopeRootNode(Node node);
     Node parentTreeScope(Node node);
     [RaisesException] unsigned short compareTreeScopePosition(Node treeScope1, Node treeScope2);

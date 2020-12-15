@@ -45,7 +45,6 @@ TEST(CSSSelector, Representations) {
       "#id.class { }"
       "[attr]#id { }"
       "div[attr]#id { }"
-      "div::content { }"
       "div::first-line { }"
       ".a.b.c { }"
       "div:not(.a) { }"        // without class a
@@ -67,7 +66,7 @@ TEST(CSSSelector, Representations) {
       ".a.b .c {}";
 
   sheet.AddCSSRules(css_rules);
-  EXPECT_EQ(30u,
+  EXPECT_EQ(29u,
             sheet.GetRuleSet().RuleCount());  // .a, .b counts as two rules.
 #ifndef NDEBUG
   sheet.GetRuleSet().Show();

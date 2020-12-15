@@ -164,9 +164,7 @@ bool SupportsInvalidation(CSSSelector::PseudoType type) {
     case CSSSelector::kPseudoCue:
     case CSSSelector::kPseudoFutureCue:
     case CSSSelector::kPseudoPastCue:
-    case CSSSelector::kPseudoUnresolved:
     case CSSSelector::kPseudoDefined:
-    case CSSSelector::kPseudoContent:
     case CSSSelector::kPseudoHost:
     case CSSSelector::kPseudoShadow:
     case CSSSelector::kPseudoSpatialNavigationFocus:
@@ -504,11 +502,8 @@ void RuleFeatureSet::UpdateFeaturesFromCombinator(
 
   if (last_in_compound.IsShadowSelector())
     descendant_features.invalidation_flags.SetTreeBoundaryCrossing(true);
-  if (last_in_compound.Relation() == CSSSelector::kShadowSlot ||
-      last_in_compound.RelationIsAffectedByPseudoContent())
+  if (last_in_compound.Relation() == CSSSelector::kShadowSlot)
     descendant_features.invalidation_flags.SetInsertionPointCrossing(true);
-  if (last_in_compound.RelationIsAffectedByPseudoContent())
-    descendant_features.content_pseudo_crossing = true;
 }
 
 void RuleFeatureSet::ExtractInvalidationSetFeaturesFromSimpleSelector(
@@ -604,7 +599,6 @@ InvalidationSet* RuleFeatureSet::InvalidationSetForSimpleSelector(
       case CSSSelector::kPseudoPictureInPicture:
       case CSSSelector::kPseudoInRange:
       case CSSSelector::kPseudoOutOfRange:
-      case CSSSelector::kPseudoUnresolved:
       case CSSSelector::kPseudoDefined:
       case CSSSelector::kPseudoVideoPersistent:
       case CSSSelector::kPseudoVideoPersistentAncestor:
@@ -891,8 +885,6 @@ void RuleFeatureSet::AddFeaturesToInvalidationSetsForSelectorList(
 
     if (simple_selector.IsHostPseudoClass())
       descendant_features.invalidation_flags.SetTreeBoundaryCrossing(true);
-    if (simple_selector.IsV0InsertionPointCrossing())
-      descendant_features.invalidation_flags.SetInsertionPointCrossing(true);
 
     descendant_features.has_features_for_rule_set_invalidation = false;
 

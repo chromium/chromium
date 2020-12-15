@@ -348,16 +348,6 @@ DeprecationInfo GetDeprecationInfo(WebFeature feature) {
               "https://www.chromestatus.com/feature/6451284559265792 for more "
               "details."};
 
-    case WebFeature::kCSSDeepCombinator:
-      return {"CSSDeepCombinator", kM65,
-              "/deep/ combinator is no longer supported in CSS dynamic "
-              "profile. "
-              "It is now effectively no-op, acting as if it were a descendant "
-              "combinator. /deep/ combinator will be removed, and will be "
-              "invalid at M65. You should remove it. See "
-              "https://www.chromestatus.com/features/4964279606312960 for more "
-              "details."};
-
     case WebFeature::kCSSSelectorInternalMediaControlsOverlayCastButton:
       return {"CSSSelectorInternalMediaControlsOverlayCastButton", kUnknown,
               "The disableRemotePlayback attribute should be used in order to "
@@ -401,25 +391,6 @@ DeprecationInfo GetDeprecationInfo(WebFeature feature) {
               "The HTML Imports feature has been removed. See "
               "https://www.chromestatus.com/feature/5144752345317376 for more "
               "details."};
-
-    case WebFeature::kElementCreateShadowRoot:
-      return {"ElementCreateShadowRoot", kUnknown,
-              "The Shadow DOM v0 API has been removed. See "
-              "https://www.chromestatus.com/feature/4507242028072960 for more "
-              "details."};
-
-    case WebFeature::kDocumentRegisterElement:
-      return {"DocumentRegisterElement", kUnknown,
-              "The Custom Elements v0 API has been removed. See "
-              "https://www.chromestatus.com/feature/4642138092470272 for more "
-              "details."};
-
-    case WebFeature::kCSSSelectorPseudoUnresolved:
-      return {
-          "CSSSelectorPseudoUnresolved", kUnknown,
-          "The Custom Elements v0 API (:unresolved pseudo selector) has been "
-          "removed. See https://www.chromestatus.com/feature/4642138092470272 "
-          "for more details."};
 
     case WebFeature::kLocalCSSFileExtensionRejected:
       return {"LocalCSSFileExtensionRejected", kM64,
@@ -712,11 +683,11 @@ void Deprecation::CountDeprecation(ExecutionContext* context,
 
   // Don't count usage of WebComponentsV0 for chrome:// URLs, but still report
   // the deprecation messages.
+  // Note that this only applies to HTML Imports, as Shadow DOM v0 and Custom
+  // Elements v0 have both now been removed.
   bool count_usage = true;
   if (context->Url().ProtocolIs("chrome") &&
-      (feature == WebFeature::kHTMLImports ||
-       feature == WebFeature::kElementCreateShadowRoot ||
-       feature == WebFeature::kDocumentRegisterElement)) {
+      feature == WebFeature::kHTMLImports) {
     count_usage = false;
   }
   if (count_usage)

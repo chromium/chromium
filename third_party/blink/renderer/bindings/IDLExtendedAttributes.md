@@ -957,23 +957,6 @@ v8::Local<v8::Value> V8XXX::CallAsFunctionCallback(const v8::Arguments& args) {
 }
 ```
 
-### [CustomElementCallbacks] _(m, a)_
-
-Summary: Wraps the method/accessor with a Custom Elements "callback delivery scope" which will dispatch Custom Element callbacks (createdCallback, attributeChangedCallback, etc.) before returning to script.
-
-*** note
-This attribute is only for Custom Elements V0,
-and is superceded by `[CEReactions]` for V1.
-***
-
-If the method/accessor creates elements or modifies DOM nodes in any way, it should be tagged with this extended attribute. Even if you're not a Node, this may apply to you! For example [DOMTokenList.toggle](https://code.google.com/p/chromium/codesearch#chromium/src/third_party/blink/renderer/core/dom/dom_token_list.idl&l=34) can be reflected in the attribute of its associated element, so it needs to be tagged with CustomElementCallbacks. If the method/accessor only calls something that may modify the DOM (for example, it runs user script as a callback) you don't need to tag your method with `[CustomElementCallbacks]`; that is the responsibility of the binding that actually modifies the DOM. In general over-applying this extended attribute is safe, with one caveat:
-
-* This extended attribute MUST NOT be used on members that operate on non-main threads, because the callback delivery scope accesses statics.
-* Basically: Don't apply this extended attribute to anything that can be called from a worker.
-* This criterion (accessible by workers) depends on implementation and cannot easily be checked from the IDL or C++ headers (it includes obvious cases like `[Exposed=Worker]`, where there is a constructor on the (JS) global object, but also cases where the C++ creates or accesses methods internally), so please be careful.
-
-Usage: `[CustomElementCallbacks]` takes no arguments.
-
 ### [HighEntropy] _(m, a, c)_
 
 Summary: Denotes an API that exposes data that folks on the internet find useful for fingerprinting.

@@ -409,10 +409,6 @@ static void {{attribute.camel_case_name}}AttributeSetter{{world_suffix}}(
   if (!result)
     return;
   {% else %}{# attribute.is_put_forwards #}
-  {% if attribute.is_custom_element_callbacks or attribute.is_reflect %}
-  V0CustomElementProcessingStack::CallbackDeliveryScope delivery_scope;
-  {% endif %}
-
   {% if attribute.has_setter_exception_state %}
   {{define_exception_state}}
   {% endif %}

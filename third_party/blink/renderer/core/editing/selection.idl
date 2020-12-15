@@ -54,7 +54,7 @@
     [MeasureAs=SelectionSetBaseAndExtent, RaisesException] void setBaseAndExtent(Node? baseNode, unsigned long baseOffset,
                                                                                  Node? extentNode, unsigned long extentOffset);
     [MeasureAs=SelectionSelectAllChildren, RaisesException] void selectAllChildren(Node node);
-    [MeasureAs=SelectionDeleteDromDocument, CEReactions, CustomElementCallbacks] void deleteFromDocument();
+    [MeasureAs=SelectionDeleteDromDocument, CEReactions] void deleteFromDocument();
     [MeasureAs=SelectionContainsNode] boolean containsNode(Node node, optional boolean allowPartialContainment = false);
     [MeasureAs=SelectionDOMString] stringifier;
 

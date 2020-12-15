@@ -191,20 +191,12 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
                             ElementRuleCollector&,
                             bool for_shadow_pseudo = false);
   void MatchPseudoPartRulesForUAHost(const Element&, ElementRuleCollector&);
-  void MatchScopedRulesV0(const Element&,
-                          ElementRuleCollector&,
-                          ScopedStyleResolver*);
   void MatchAuthorRules(const Element&,
                         ScopedStyleResolver*,
                         ElementRuleCollector&);
-  void MatchAuthorRulesV0(const Element&,
-                          ScopedStyleResolver*,
-                          ElementRuleCollector&);
   void MatchAllRules(StyleResolverState&,
                      ElementRuleCollector&,
                      bool include_smil_properties);
-  void CollectTreeBoundaryCrossingRulesV0CascadeOrder(const Element&,
-                                                      ElementRuleCollector&);
   void ApplyMathMLCustomStyleProperties(Element*, StyleResolverState&);
 
   struct CacheSuccess {

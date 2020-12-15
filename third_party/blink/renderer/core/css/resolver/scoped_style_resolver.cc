@@ -265,52 +265,48 @@ void ScopedStyleResolver::KeyframesRulesAdded(const TreeScope& tree_scope) {
 }
 
 void ScopedStyleResolver::CollectMatchingElementScopeRules(
-    ElementRuleCollector& collector,
-    ShadowV0CascadeOrder cascade_order) {
+    ElementRuleCollector& collector) {
   wtf_size_t sheet_index = 0;
   for (auto sheet : style_sheets_) {
     DCHECK(sheet->ownerNode() || sheet->IsConstructed());
     MatchRequest match_request(&sheet->Contents()->GetRuleSet(),
                                &scope_->RootNode(), sheet, sheet_index++);
-    collector.CollectMatchingRules(match_request, cascade_order);
+    collector.CollectMatchingRules(match_request);
   }
 }
 
 void ScopedStyleResolver::CollectMatchingShadowHostRules(
-    ElementRuleCollector& collector,
-    ShadowV0CascadeOrder cascade_order) {
+    ElementRuleCollector& collector) {
   wtf_size_t sheet_index = 0;
   for (auto sheet : style_sheets_) {
     DCHECK(sheet->ownerNode() || sheet->IsConstructed());
     MatchRequest match_request(&sheet->Contents()->GetRuleSet(),
                                &scope_->RootNode(), sheet, sheet_index++);
-    collector.CollectMatchingShadowHostRules(match_request, cascade_order);
+    collector.CollectMatchingShadowHostRules(match_request);
   }
 }
 
 void ScopedStyleResolver::CollectMatchingSlottedRules(
-    ElementRuleCollector& collector,
-    ShadowV0CascadeOrder cascade_order) {
+    ElementRuleCollector& collector) {
   if (!slotted_rule_set_)
     return;
 
   for (const auto& rules : *slotted_rule_set_) {
     MatchRequest request(rules->rule_set_.Get(), &GetTreeScope().RootNode(),
                          rules->parent_style_sheet_, rules->parent_index_);
-    collector.CollectMatchingRules(request, cascade_order, true);
+    collector.CollectMatchingRules(request, true);
   }
 }
 
 void ScopedStyleResolver::CollectMatchingTreeBoundaryCrossingRules(
-    ElementRuleCollector& collector,
-    ShadowV0CascadeOrder cascade_order) {
+    ElementRuleCollector& collector) {
   if (!tree_boundary_crossing_rule_set_)
     return;
 
   for (const auto& rules : *tree_boundary_crossing_rule_set_) {
     MatchRequest request(rules->rule_set_.Get(), &GetTreeScope().RootNode(),
                          rules->parent_style_sheet_, rules->parent_index_);
-    collector.CollectMatchingRules(request, cascade_order, true);
+    collector.CollectMatchingRules(request, true);
   }
 }
 
@@ -383,21 +379,6 @@ void ScopedStyleResolver::AddTreeBoundaryCrossingRules(
       parent_style_sheet, sheet_index, rule_set_for_scope));
 }
 
-void ScopedStyleResolver::V0ShadowAddedOnV1Document() {
-  // See the comment in AddSlottedRules().
-  if (!slotted_rule_set_)
-    return;
-
-  if (!tree_boundary_crossing_rule_set_) {
-    tree_boundary_crossing_rule_set_ =
-        MakeGarbageCollected<CSSStyleSheetRuleSubSet>();
-    GetTreeScope().GetDocument().GetStyleEngine().AddTreeBoundaryCrossingScope(
-        GetTreeScope());
-  }
-  tree_boundary_crossing_rule_set_->AppendVector(*slotted_rule_set_);
-  slotted_rule_set_ = nullptr;
-}
-
 void ScopedStyleResolver::AddSlottedRules(const RuleSet& rules,
                                           CSSStyleSheet* parent_style_sheet,
                                           unsigned sheet_index) {
@@ -408,28 +389,6 @@ void ScopedStyleResolver::AddSlottedRules(const RuleSet& rules,
   auto* slotted_rule_set = MakeGarbageCollected<RuleSet>();
   AddRules(slotted_rule_set, rules.SlottedPseudoElementRules());
 
-  // In case ::slotted rule is used in V0/V1 mixed document, put ::slotted
-  // rules in tree boundary crossing rules as the pure v1 fast path in
-  // StyleResolver misses them.
-  // Adding this tree scope to tree boundary crossing scopes may end up in
-  // O(N^2) where N is number of scopes which has ::slotted() rules.
-  // Once the document-wide cascade order flag downgrades from V1 to V0,
-  // these slotted rules have to be moved back to tree boundary crossing
-  // rule sets. See V0ShadowAddedOnV1Document().
-  if (GetTreeScope().GetDocument().MayContainV0Shadow()) {
-    if (!tree_boundary_crossing_rule_set_) {
-      tree_boundary_crossing_rule_set_ =
-          MakeGarbageCollected<CSSStyleSheetRuleSubSet>();
-      GetTreeScope()
-          .GetDocument()
-          .GetStyleEngine()
-          .AddTreeBoundaryCrossingScope(GetTreeScope());
-    }
-    tree_boundary_crossing_rule_set_->push_back(
-        MakeGarbageCollected<RuleSubSet>(parent_style_sheet, sheet_index,
-                                         slotted_rule_set));
-    return;
-  }
   if (!slotted_rule_set_)
     slotted_rule_set_ = MakeGarbageCollected<CSSStyleSheetRuleSubSet>();
   slotted_rule_set_->push_back(MakeGarbageCollected<RuleSubSet>(

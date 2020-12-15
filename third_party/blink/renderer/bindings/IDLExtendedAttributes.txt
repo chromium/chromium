@@ -49,7 +49,6 @@ ContextEnabled=*
 CrossOrigin=|Getter|Setter
 Custom=|Getter|Setter|LegacyCallAsFunction|PropertyGetter|PropertyEnumerator|PropertyQuery
 CustomConstructor
-CustomElementCallbacks
 DefaultValue=Undefined
 DeprecateAs=*
 DoNotCheckConstants

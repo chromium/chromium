@@ -82,8 +82,7 @@ Document* HTMLDocument::CloneDocumentWithoutChildren() const {
   return MakeGarbageCollected<HTMLDocument>(
       DocumentInit::Create()
           .WithExecutionContext(GetExecutionContext())
-          .WithURL(Url())
-          .WithRegistrationContext(RegistrationContext()));
+          .WithURL(Url()));
 }
 
 // --------------------------------------------------------------------------

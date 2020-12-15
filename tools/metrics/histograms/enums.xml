@@ -27239,7 +27239,7 @@ Called by update_use_counter_feature_enum.py.-->
       label="WebkitEditableContentChangedOnContentEditableObsolete"/>
   <int value="454" label="WebkitEditableContentChangedOnNotNodeObsolete"/>
   <int value="455" label="HTMLImports"/>
-  <int value="456" label="ElementCreateShadowRoot"/>
+  <int value="456" label="OBSOLETE_ElementCreateShadowRoot"/>
   <int value="457" label="DocumentRegisterElement"/>
   <int value="458" label="EditingAppleInterchangeNewline"/>
   <int value="459" label="EditingAppleConvertedSpace"/>
@@ -27251,10 +27251,10 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="465" label="XMLHttpRequestSynchronous"/>
   <int value="466" label="CSSSelectorPseudoUnresolved"/>
   <int value="467" label="CSSSelectorPseudoShadow"/>
-  <int value="468" label="CSSSelectorPseudoContent"/>
+  <int value="468" label="OBSOLETE_CSSSelectorPseudoContent"/>
   <int value="469" label="CSSSelectorPseudoHost"/>
   <int value="470" label="CSSSelectorPseudoHostContext"/>
-  <int value="471" label="CSSDeepCombinator"/>
+  <int value="471" label="OBSOLETE_CSSDeepCombinator"/>
   <int value="472" label="SyncXHRWithCredentials"/>
   <int value="473" label="UseAsm"/>
   <int value="474" label="KeyEventNotAllowedInFullScreen"/>
@@ -28117,7 +28117,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="1306" label="MediaStreamTrackRemote"/>
   <int value="1307" label="V8Node_IsConnected_AttributeGetter"/>
   <int value="1308" label="ShadowRootDelegatesFocus"/>
-  <int value="1309" label="MixedShadowRootV0AndV1"/>
+  <int value="1309" label="OBSOLETE_MixedShadowRootV0AndV1"/>
   <int value="1310" label="ImageDocumentInFrame"/>
   <int value="1311" label="MediaDocument"/>
   <int value="1312" label="MediaDocumentInFrame"/>
@@ -28182,7 +28182,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="1372" label="UntrustedEventDefaultHandled"/>
   <int value="1373" label="FixedRasterScaleBlurryContent"/>
   <int value="1374" label="FixedRasterScalePotentialPerformanceRegression"/>
-  <int value="1375" label="CSSDeepCombinatorAndShadow"/>
+  <int value="1375" label="OBSOLETE_CSSDeepCombinatorAndShadow"/>
   <int value="1376" label="OpacityWithPreserve3DQuirk"/>
   <int value="1377" label="CSSSelectorPseudoReadOnly"/>
   <int value="1378" label="CSSSelectorPseudoReadWrite"/>
@@ -28230,7 +28230,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="1420" label="OBSOLETE_DocumentOpen"/>
   <int value="1421" label="ElementRequestPointerLockInShadow"/>
   <int value="1422" label="ShadowRootPointerLockElement"/>
-  <int value="1423" label="DocumentPointerLockElementInV0Shadow"/>
+  <int value="1423" label="OBSOLETE_DocumentPointerLockElementInV0Shadow"/>
   <int value="1424" label="TextAreaMaxLength"/>
   <int value="1425" label="TextAreaMinLength"/>
   <int value="1426" label="TopNavigationFromSubFrame"/>
@@ -28475,7 +28475,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="1662" label="RTCConfigurationIceTransportPolicy"/>
   <int value="1663" label="RTCConfigurationIceTransportPolicyNone"/>
   <int value="1664" label="RTCConfigurationIceTransports"/>
-  <int value="1665" label="DocumentFullscreenElementInV0Shadow"/>
+  <int value="1665" label="OBSOLETE_DocumentFullscreenElementInV0Shadow"/>
   <int value="1666" label="ScriptWithCSPBypassingSchemeParserInserted"/>
   <int value="1667" label="ScriptWithCSPBypassingSchemeNotParserInserted"/>
   <int value="1668" label="DocumentCreateElement2ndArgStringHandling"/>
@@ -28712,8 +28712,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="1893" label="WebBluetoothRemoteServerGetPrimaryServices"/>
   <int value="1894" label="WebBluetoothRemoteServiceGetCharacteristic"/>
   <int value="1895" label="WebBluetoothRemoteServiceGetCharacteristics"/>
-  <int value="1896" label="HTMLContentElement"/>
-  <int value="1897" label="HTMLShadowElement"/>
+  <int value="1896" label="OBSOLETE_HTMLContentElement"/>
+  <int value="1897" label="OBSOLETE_HTMLShadowElement"/>
   <int value="1898" label="HTMLSlotElement"/>
   <int value="1899" label="AccelerometerConstructor"/>
   <int value="1900" label="AbsoluteOrientationSensorConstructor"/>
@@ -28997,7 +28997,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="2161"
       label="V8LineOrParagraphSeparatorAsLineTerminator (obsolete)"/>
   <int value="2162" label="AnimationSetPlaybackRateCompensatorySeek"/>
-  <int value="2163" label="DeepCombinatorInStaticProfile"/>
+  <int value="2163" label="OBSOLETE_DeepCombinatorInStaticProfile"/>
   <int value="2164" label="PseudoShadowInStaticProfile"/>
   <int value="2165" label="SchemeBypassesCSP"/>
   <int value="2166" label="InnerSchemeBypassesCSP"/>
@@ -29077,7 +29077,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="2242" label="V8MediaCapabilitiesInfo_Smooth_AttributeGetter"/>
   <int value="2243"
       label="V8MediaCapabilitiesInfo_PowerEfficient_AttributeGetter"/>
-  <int value="2244" label="WindowEventInV0ShadowTree"/>
+  <int value="2244" label="OBSOLETE_WindowEventInV0ShadowTree"/>
   <int value="2245"
       label="OBSOLETE_HTMLAnchorElementDownloadInSandboxWithUserGesture"/>
   <int value="2246"

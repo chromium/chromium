@@ -88,7 +88,6 @@ class SpaceSplitString;
 class StringOrTrustedHTMLOrTrustedScriptOrTrustedScriptURL;
 class StylePropertyMap;
 class StylePropertyMapReadOnly;
-class V0CustomElementDefinition;
 
 enum class CSSPropertyID;
 enum class CSSValueID;
@@ -521,10 +520,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   }
   bool NeedsRebuildLayoutTree(
       const WhitespaceAttacher& whitespace_attacher) const {
-    // TODO(futhark@chromium.org): !CanParticipateInFlatTree() can be removed
-    // when Shadow DOM V0 support is removed.
     return NeedsReattachLayoutTree() || ChildNeedsReattachLayoutTree() ||
-           !CanParticipateInFlatTree() ||
            (whitespace_attacher.TraverseIntoDisplayContents() &&
             HasDisplayContentsStyle());
   }
@@ -535,12 +531,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   void SetNeedsCompositingUpdate();
 
-  // If type of ShadowRoot (either closed or open) is explicitly specified,
-  // creation of multiple shadow roots is prohibited in any combination and
-  // throws an exception.  Multiple shadow roots are allowed only when
-  // createShadowRoot() is used without any parameters from JavaScript.
-  ShadowRoot* createShadowRoot(ExceptionState&);
-
   ShadowRoot* attachShadow(const ShadowRootInit*, ExceptionState&);
 
   void AttachDeclarativeShadowRoot(HTMLTemplateElement*,
@@ -548,9 +538,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
                                    FocusDelegation,
                                    SlotAssignmentMode);
 
-  ShadowRoot& CreateV0ShadowRootForTesting() {
-    return CreateShadowRootInternal();
-  }
   ShadowRoot& CreateUserAgentShadowRoot();
   ShadowRoot& AttachShadowRootInternal(
       ShadowRootType,
@@ -563,8 +550,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   ShadowRoot* ClosedShadowRoot() const;
   ShadowRoot* AuthorShadowRoot() const;
   ShadowRoot* UserAgentShadowRoot() const;
-
-  ShadowRoot* ShadowRootIfV1() const;
 
   ShadowRoot& EnsureUserAgentShadowRoot();
 
@@ -602,12 +587,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
     // https://dom.spec.whatwg.org/#concept-element-defined
     return GetCustomElementState() == CustomElementState::kUncustomized ||
            GetCustomElementState() == CustomElementState::kCustom;
-  }
-  bool IsUpgradedV0CustomElement() {
-    return GetV0CustomElementState() == kV0Upgraded;
-  }
-  bool IsUnresolvedV0CustomElement() {
-    return GetV0CustomElementState() == kV0WaitingForUpgrade;
   }
 
   bool ComputeInheritedDirPseudoClass(TextDirection direction) const;
@@ -817,9 +796,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   }
 
   virtual void BuildPendingResource() {}
-
-  void V0SetCustomElementDefinition(V0CustomElementDefinition*);
-  V0CustomElementDefinition* GetV0CustomElementDefinition() const;
 
   void SetCustomElementDefinition(CustomElementDefinition*);
   CustomElementDefinition* GetCustomElementDefinition() const;
@@ -1044,7 +1020,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   bool IsDocumentNode() const =
       delete;  // This will catch anyone doing an unnecessary check.
 
-  ShadowRoot& CreateShadowRootInternal();
   bool CanAttachShadowRoot() const;
   const char* ErrorMessageForAttachShadow() const;
 

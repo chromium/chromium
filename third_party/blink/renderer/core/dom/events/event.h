@@ -180,7 +180,6 @@ class CORE_EXPORT Event : public ScriptWrappable {
   bool bubbles() const { return bubbles_; }
   bool cancelable() const { return cancelable_; }
   bool composed() const { return composed_; }
-  bool IsScopedInV0() const;
 
   // Event creation timestamp in milliseconds. It returns a DOMHighResTimeStamp
   // using the platform timestamp (see |platform_time_stamp_|).
@@ -327,7 +326,6 @@ class CORE_EXPORT Event : public ScriptWrappable {
   unsigned bubbles_ : 1;
   unsigned cancelable_ : 1;
   unsigned composed_ : 1;
-  unsigned is_event_type_scoped_in_v0_ : 1;
 
   unsigned propagation_stopped_ : 1;
   unsigned immediate_propagation_stopped_ : 1;

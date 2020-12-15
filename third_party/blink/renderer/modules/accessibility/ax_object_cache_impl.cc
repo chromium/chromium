@@ -1009,10 +1009,6 @@ void AXObjectCacheImpl::SelectionChangedWithCleanLayout(Node* node) {
   if (!node)
     return;
 
-  // Something about the call chain for this method seems to leave distribution
-  // in a dirty state - update it before we call GetOrCreate so that we don't
-  // crash.
-  node->UpdateDistributionForFlatTreeTraversal();
   AXObject* ax_object = GetOrCreate(node);
   if (ax_object)
     ax_object->SelectionChanged();
@@ -1778,7 +1774,6 @@ void AXObjectCacheImpl::HandleNodeGainedFocusWithCleanLayout(Node* node) {
   node = FocusedElement();  // Needs to get this with clean layout.
   if (!node || !node->GetDocument().View())
     return;
-  node->UpdateDistributionForFlatTreeTraversal();
 
   if (node->GetDocument().NeedsLayoutTreeUpdateForNode(*node)) {
     // This should only occur when focus goes into a popup document. The main

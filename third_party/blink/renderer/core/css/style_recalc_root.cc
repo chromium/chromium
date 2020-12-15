@@ -6,7 +6,6 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
-#include "third_party/blink/renderer/core/dom/shadow_root_v0.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 
@@ -49,18 +48,6 @@ base::Optional<Member<Element>> FirstFlatTreeAncestorForChildDirty(
   ShadowRoot* root = parent.GetShadowRoot();
   if (!root)
     return To<Element>(&parent);
-  if (root->IsV0()) {
-    // The child has already been removed, so we cannot look up its insertion
-    // point directly. Find the insertion point which was part of the ancestor
-    // chain before the removal by checking the child-dirty bits. Since the
-    // recalc root was removed, there is at most one such child-dirty insertion
-    // point.
-    for (const auto& insertion_point : root->V0().DescendantInsertionPoints()) {
-      if (insertion_point->ChildNeedsStyleRecalc())
-        return insertion_point;
-    }
-    return base::nullopt;
-  }
   if (!root->HasSlotAssignment())
     return base::nullopt;
   // The child has already been removed, so we cannot look up its slot

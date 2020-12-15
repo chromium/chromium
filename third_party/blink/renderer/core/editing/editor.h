@@ -49,6 +49,7 @@ class EditorCommand;
 class FrameSelection;
 class LocalFrame;
 class HitTestResult;
+class KeyboardEvent;
 class KillRing;
 class SpellChecker;
 class CSSPropertyValueSet;

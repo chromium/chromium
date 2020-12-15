@@ -310,9 +310,6 @@ ScopedFocusNavigation ScopedFocusNavigation::OwnedByIFrame(
     const HTMLFrameOwnerElement& frame,
     FocusController::OwnerMap& owner_map) {
   DCHECK(frame.ContentFrame());
-  To<LocalFrame>(frame.ContentFrame())
-      ->GetDocument()
-      ->UpdateDistributionForLegacyDistributedNodes();
   return ScopedFocusNavigation(
       *To<LocalFrame>(frame.ContentFrame())->GetDocument(), nullptr, owner_map);
 }
@@ -427,7 +424,7 @@ inline bool IsShadowHostWithoutCustomFocusLogic(const Element& element) {
 
 inline bool IsNonKeyboardFocusableShadowHost(const Element& element) {
   return IsShadowHostWithoutCustomFocusLogic(element) &&
-         !(element.ShadowRootIfV1()
+         !(element.GetShadowRoot()
                ? (element.IsFocusable() || element.DelegatesFocus())
                : element.IsKeyboardFocusable());
 }
@@ -1023,7 +1020,6 @@ bool FocusController::AdvanceFocusInDocumentOrder(
   TRACE_EVENT0("input", "FocusController::AdvanceFocusInDocumentOrder");
   DCHECK(frame);
   Document* document = frame->GetDocument();
-  document->UpdateDistributionForLegacyDistributedNodes();
   OwnerMap owner_map;
 
   Element* current = start;

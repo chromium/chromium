@@ -547,14 +547,6 @@ void WebRuntimeFeatures::EnableAllowSyncXHRInPageDismissal(bool enable) {
   RuntimeEnabledFeatures::SetAllowSyncXHRInPageDismissalEnabled(enable);
 }
 
-void WebRuntimeFeatures::EnableShadowDOMV0(bool enable) {
-  RuntimeEnabledFeatures::SetShadowDOMV0Enabled(enable);
-}
-
-void WebRuntimeFeatures::EnableCustomElementsV0(bool enable) {
-  RuntimeEnabledFeatures::SetCustomElementsV0Enabled(enable);
-}
-
 void WebRuntimeFeatures::EnableHTMLImports(bool enable) {
   RuntimeEnabledFeatures::SetHTMLImportsEnabled(enable);
 }
