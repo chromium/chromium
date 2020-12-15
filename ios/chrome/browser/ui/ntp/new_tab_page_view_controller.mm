@@ -82,4 +82,45 @@
       UIEdgeInsetsMake(collectionView.contentSize.height, 0, 0, 0);
 }
 
+#pragma mark - UIScrollViewDelegate
+
+- (void)scrollViewDidScroll:(UIScrollView*)scrollView {
+  // TODO(crbug.com/1114792): Handle scrolling.
+}
+
+- (void)scrollViewWillBeginDragging:(UIScrollView*)scrollView {
+  // TODO(crbug.com/1114792): Handle scrolling.
+}
+
+- (void)scrollViewWillEndDragging:(UIScrollView*)scrollView
+                     withVelocity:(CGPoint)velocity
+              targetContentOffset:(inout CGPoint*)targetContentOffset {
+  // TODO(crbug.com/1114792): Handle scrolling.
+}
+
+- (void)scrollViewDidEndDragging:(UIScrollView*)scrollView
+                  willDecelerate:(BOOL)decelerate {
+  // TODO(crbug.com/1114792): Handle scrolling.
+}
+
+- (void)scrollViewDidScrollToTop:(UIScrollView*)scrollView {
+  // TODO(crbug.com/1114792): Handle scrolling.
+}
+
+- (void)scrollViewWillBeginDecelerating:(UIScrollView*)scrollView {
+  // TODO(crbug.com/1114792): Handle scrolling.
+}
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView*)scrollView {
+  // TODO(crbug.com/1114792): Handle scrolling.
+}
+
+- (void)scrollViewDidEndScrollingAnimation:(UIScrollView*)scrollView {
+  // TODO(crbug.com/1114792): Handle scrolling.
+}
+
+- (BOOL)scrollViewShouldScrollToTop:(UIScrollView*)scrollView {
+  return NO;
+}
+
 @end

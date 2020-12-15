@@ -12,7 +12,7 @@
 
 // View controller containing all the content presented on a standard,
 // non-incognito new tab page.
-@interface NewTabPageViewController : UIViewController
+@interface NewTabPageViewController : UIViewController <UIScrollViewDelegate>
 
 // Initializes view controller with NTP content view controllers.
 // |discoverFeedViewController| represents the Discover feed for suggesting

@@ -44,6 +44,11 @@ class DiscoverFeedProvider {
   virtual bool IsDiscoverFeedEnabled();
   // Returns the Discover Feed ViewController.
   virtual UIViewController* NewFeedViewController(Browser* browser);
+  // Returns the Discover Feed ViewController with a custom
+  // UIScrollViewDelegate.
+  virtual UIViewController* NewFeedViewControllerWithScrollDelegate(
+      Browser* browser,
+      id<UIScrollViewDelegate> scrollDelegate);
   // Removes the Discover |feedViewController|. It should be called whenever
   // |feedViewController| will no longer be used.
   virtual void RemoveFeedViewController(UIViewController* feedViewController);

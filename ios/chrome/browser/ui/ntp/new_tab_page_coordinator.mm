@@ -97,6 +97,7 @@
     [self.contentSuggestionsCoordinator start];
 
     if (IsRefactoredNTP()) {
+      // TODO(crbug.com/1114792): Use function with scroll delegate.
       UIViewController* discoverFeed =
           ios::GetChromeBrowserProvider()
               ->GetDiscoverFeedProvider()
