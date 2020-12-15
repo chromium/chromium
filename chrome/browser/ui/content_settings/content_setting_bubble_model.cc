@@ -89,6 +89,7 @@
 using base::UserMetricsAction;
 using content::WebContents;
 using content_settings::PageSpecificContentSettings;
+using content_settings::SessionModel;
 using content_settings::SETTING_SOURCE_NONE;
 using content_settings::SETTING_SOURCE_USER;
 using content_settings::SettingInfo;
@@ -1309,6 +1310,7 @@ ContentSettingGeolocationBubbleModel::ContentSettingGeolocationBubbleModel(
     : ContentSettingSingleRadioGroup(delegate,
                                      web_contents,
                                      ContentSettingsType::GEOLOCATION) {
+  SetCustomLink();
 #if defined(OS_MAC)
   if (base::FeatureList::IsEnabled(
           ::features::kMacCoreLocationImplementation)) {
@@ -1354,7 +1356,6 @@ void ContentSettingGeolocationBubbleModel::OnManageButtonClicked() {
 void ContentSettingGeolocationBubbleModel::CommitChanges() {
   if (show_system_geolocation_bubble_)
     return;
-
   ContentSettingSingleRadioGroup::CommitChanges();
 }
 
@@ -1372,6 +1373,17 @@ void ContentSettingGeolocationBubbleModel::
   set_radio_group(RadioGroup());
   show_system_geolocation_bubble_ = true;
 #endif  // defined(OS_MAC)
+}
+
+void ContentSettingGeolocationBubbleModel::SetCustomLink() {
+  auto* map = HostContentSettingsMapFactory::GetForProfile(
+      web_contents()->GetBrowserContext());
+  SettingInfo info;
+  const GURL url =
+      web_contents()->GetMainFrame()->GetLastCommittedOrigin().GetURL();
+  map->GetWebsiteSetting(url, url, ContentSettingsType::GEOLOCATION, &info);
+  if (info.session_model == SessionModel::OneTime)
+    set_custom_link(l10n_util::GetStringUTF16(IDS_GEOLOCATION_WILL_ASK_AGAIN));
 }
 
 // ContentSettingSubresourceFilterBubbleModel ----------------------------------

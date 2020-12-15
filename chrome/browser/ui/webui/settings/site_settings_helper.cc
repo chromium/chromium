@@ -729,6 +729,11 @@ ContentSetting GetContentSettingForOrigin(
       CalculateSiteSettingSource(profile, content_type, origin, info, result));
   *display_name = GetDisplayNameForGURL(origin, extension_registry);
 
+  if (info.session_model == content_settings::SessionModel::OneTime) {
+    DCHECK_EQ(content_type, ContentSettingsType::GEOLOCATION);
+    DCHECK_EQ(result.content_setting, CONTENT_SETTING_ALLOW);
+    return CONTENT_SETTING_DEFAULT;
+  }
   return result.content_setting;
 }
 
