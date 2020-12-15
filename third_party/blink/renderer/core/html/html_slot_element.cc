@@ -224,7 +224,7 @@ void HTMLSlotElement::assign(HeapVector<Member<Node>> nodes,
 
   if (candidates_changed) {
     assigned_nodes_candidates_.Swap(candidates);
-    ContainingShadowRoot()->GetSlotAssignment().SetNeedsAssignmentRecalc();
+    SetShadowRootNeedsAssignmentRecalc();
     DidSlotChange(SlotChangeType::kSignalSlotChangeEvent);
   }
 }
@@ -567,7 +567,7 @@ void HTMLSlotElement::DidSlotChangeAfterRemovedFromShadowTree() {
 void HTMLSlotElement::DidSlotChangeAfterRenaming() {
   DCHECK(SupportsAssignment());
   EnqueueSlotChangeEvent();
-  SetNeedsAssignmentRecalc();
+  SetShadowRootNeedsAssignmentRecalc();
   CheckSlotChange(SlotChangeType::kSuppressSlotChangeEvent);
 }
 
@@ -681,7 +681,7 @@ void HTMLSlotElement::NotifySlottedNodesOfFlatTreeChangeNaive(
   }
 }
 
-void HTMLSlotElement::SetNeedsAssignmentRecalc() {
+void HTMLSlotElement::SetShadowRootNeedsAssignmentRecalc() {
   ContainingShadowRoot()->GetSlotAssignment().SetNeedsAssignmentRecalc();
 }
 
@@ -689,7 +689,7 @@ void HTMLSlotElement::DidSlotChange(SlotChangeType slot_change_type) {
   DCHECK(SupportsAssignment());
   if (slot_change_type == SlotChangeType::kSignalSlotChangeEvent)
     EnqueueSlotChangeEvent();
-  SetNeedsAssignmentRecalc();
+  SetShadowRootNeedsAssignmentRecalc();
   // Check slotchange recursively since this slotchange may cause another
   // slotchange.
   CheckSlotChange(SlotChangeType::kSuppressSlotChangeEvent);
