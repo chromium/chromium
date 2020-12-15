@@ -12,6 +12,7 @@
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/debug/alias.h"
 #include "base/feature_list.h"
@@ -25,6 +26,7 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "cc/base/devtools_instrumentation.h"
 #include "cc/base/histograms.h"
+#include "cc/base/switches.h"
 #include "cc/raster/scoped_grcontext_access.h"
 #include "cc/raster/tile_task.h"
 #include "cc/tiles/mipmap_util.h"
@@ -105,15 +107,16 @@ SkFilterQuality CalculateDesiredFilterQuality(const DrawImage& draw_image) {
 
 // Calculate the mip level to upload-scale the image to before uploading. We use
 // mip levels rather than exact scales to increase re-use of scaled images.
-int CalculateUploadScaleMipLevel(const DrawImage& draw_image) {
+int CalculateUploadScaleMipLevel(const DrawImage& draw_image,
+                                 bool enable_clipped_image_scaling = false) {
   // Images which are being clipped will have color-bleeding if scaled.
   // TODO(ericrk): Investigate uploading clipped images to handle this case and
   // provide further optimization. crbug.com/620899
-  if (draw_image.src_rect() !=
-      SkIRect::MakeWH(draw_image.paint_image().width(),
-                      draw_image.paint_image().height())) {
+  const bool is_clipped = draw_image.src_rect() !=
+                          SkIRect::MakeWH(draw_image.paint_image().width(),
+                                          draw_image.paint_image().height());
+  if (is_clipped && !enable_clipped_image_scaling)
     return 0;
-  }
 
   gfx::Size base_size(draw_image.paint_image().width(),
                       draw_image.paint_image().height());
@@ -998,6 +1001,9 @@ GpuImageDecodeCache::GpuImageDecodeCache(
       context_(context),
       max_texture_size_(max_texture_size),
       generator_client_id_(generator_client_id),
+      enable_clipped_image_scaling_(
+          base::CommandLine::ForCurrentProcess()->HasSwitch(
+              switches::kEnableClippedImageScaling)),
       persistent_cache_(PersistentCache::NO_AUTO_EVICT),
       max_working_set_bytes_(max_working_set_bytes),
       max_working_set_items_(kMaxItemsInWorkingSet),
@@ -2821,8 +2827,9 @@ GpuImageDecodeCache::ImageData* GpuImageDecodeCache::GetImageDataForDrawImage(
 bool GpuImageDecodeCache::IsCompatible(const ImageData* image_data,
                                        const DrawImage& draw_image) const {
   bool is_scaled = image_data->upload_scale_mip_level != 0;
-  bool scale_is_compatible = CalculateUploadScaleMipLevel(draw_image) >=
-                             image_data->upload_scale_mip_level;
+  bool scale_is_compatible =
+      CalculateUploadScaleMipLevel(draw_image, enable_clipped_image_scaling_) >=
+      image_data->upload_scale_mip_level;
   bool quality_is_compatible =
       CalculateDesiredFilterQuality(draw_image) <= image_data->quality;
   bool color_is_compatible =

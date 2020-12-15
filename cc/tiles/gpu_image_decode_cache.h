@@ -745,6 +745,7 @@ class CC_EXPORT GpuImageDecodeCache
   bool allow_accelerated_jpeg_decodes_ = false;
   bool allow_accelerated_webp_decodes_ = false;
   SkYUVAPixmapInfo::SupportedDataTypes yuva_supported_data_types_;
+  const bool enable_clipped_image_scaling_;
 
   // All members below this point must only be accessed while holding |lock_|.
   // The exception are const members like |normal_max_cache_bytes_| that can
