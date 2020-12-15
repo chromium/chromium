@@ -355,31 +355,6 @@ TEST_F(AutofillFieldFillerTest, IsFieldFillable) {
 }
 
 // Verify that non credit card related fields with the autocomplete attribute
-// set to off don't get filled on desktop when the feature to Autofill all
-// addresses is disabled.
-TEST_F(AutofillFieldFillerTest,
-       FillFormField_AutocompleteOffRespected_AddressField) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kAutofillAlwaysFillAddresses);
-
-  AutofillField field;
-  field.should_autocomplete = false;
-  field.set_heuristic_type(NAME_FIRST);
-
-  // Non credit card related field.
-  address()->SetRawInfo(NAME_FIRST, ASCIIToUTF16("Test"));
-  FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
-  filler.FillFormField(field, *address(), &field, /*cvc=*/base::string16());
-
-  // Verify that the field is filled on mobile but not on desktop.
-  if (IsDesktopPlatform()) {
-    EXPECT_EQ(base::string16(), field.value);
-  } else {
-    EXPECT_EQ(ASCIIToUTF16("Test"), field.value);
-  }
-}
-
-// Verify that non credit card related fields with the autocomplete attribute
 // set to off are filled on desktop when the feature to Autofill all
 // addresses is enabled (default).
 TEST_F(AutofillFieldFillerTest,

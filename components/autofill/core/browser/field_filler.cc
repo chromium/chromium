@@ -820,16 +820,6 @@ bool FieldFiller::FillFormField(const AutofillField& field,
                                 std::string* failure_to_fill) {
   const AutofillType type = field.Type();
 
-  // Don't fill if autocomplete=off is set on |field| on desktop for non credit
-  // card related fields.
-  if (!base::FeatureList::IsEnabled(features::kAutofillAlwaysFillAddresses) &&
-      !field.should_autocomplete && IsDesktopPlatform() &&
-      (type.group() != CREDIT_CARD)) {
-    if (failure_to_fill)
-      *failure_to_fill += "autocomplete=off. ";
-    return false;
-  }
-
   if (data_model.ShouldSkipFillingOrSuggesting(type.GetStorableType())) {
     if (failure_to_fill)
       *failure_to_fill += "ShouldSkipFillingOrSuggesting() returned true. ";

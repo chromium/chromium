@@ -3084,68 +3084,6 @@ TEST_P(AutofillManagerStructuredProfileTest,
 }
 
 // Test that non credit card related fields with the autocomplete attribute set
-// to off are not filled on desktop when the feature to autofill all addresses
-// is disabled.
-TEST_P(AutofillManagerStructuredProfileTest,
-       FillAddressForm_AutocompleteOffRespected) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kAutofillAlwaysFillAddresses);
-
-  FormData address_form;
-  address_form.name = ASCIIToUTF16("MyForm");
-  address_form.url = GURL("https://myform.com/form.html");
-  address_form.action = GURL("https://myform.com/submit.html");
-  FormFieldData field;
-  test::CreateTestFormField("First name", "firstname", "", "text", &field);
-  address_form.fields.push_back(field);
-  test::CreateTestFormField("Middle name", "middle", "", "text", &field);
-  field.should_autocomplete = false;
-  address_form.fields.push_back(field);
-  test::CreateTestFormField("Last name", "lastname", "", "text", &field);
-  field.should_autocomplete = true;
-  address_form.fields.push_back(field);
-  test::CreateTestFormField("Address Line 1", "addr1", "", "text", &field);
-  field.should_autocomplete = false;
-  address_form.fields.push_back(field);
-  std::vector<FormData> address_forms(1, address_form);
-  FormsSeen(address_forms);
-
-  // Fill the address form.
-  const char guid[] = "00000000-0000-0000-0000-000000000001";
-  int response_page_id = 0;
-  FormData response_data;
-  FillAutofillFormDataAndSaveResults(
-      kDefaultPageID, address_form, address_form.fields[0],
-      MakeFrontendID(std::string(), guid), &response_page_id, &response_data);
-
-  // The fist name should be filled.
-  ExpectFilledField("First name", "firstname", "Elvis", "text",
-                    response_data.fields[0]);
-
-  // The middle name should not be filled on desktop.
-  if (IsDesktopPlatform()) {
-    ExpectFilledField("Middle name", "middle", "", "text",
-                      response_data.fields[1]);
-  } else {
-    ExpectFilledField("Middle name", "middle", "Aaron", "text",
-                      response_data.fields[1]);
-  }
-
-  // The last name should be filled.
-  ExpectFilledField("Last name", "lastname", "Presley", "text",
-                    response_data.fields[2]);
-
-  // The address line 1 should not be filled on desktop.
-  if (IsDesktopPlatform()) {
-    ExpectFilledField("Address Line 1", "addr1", "", "text",
-                      response_data.fields[3]);
-  } else {
-    ExpectFilledField("Address Line 1", "addr1", "3734 Elvis Presley Blvd.",
-                      "text", response_data.fields[3]);
-  }
-}
-
-// Test that non credit card related fields with the autocomplete attribute set
 // to off are filled on all platforms when the feature to autofill all addresses
 // is enabled (default).
 TEST_P(AutofillManagerStructuredProfileTest,
@@ -7385,47 +7323,6 @@ TEST_P(AutofillManagerStructuredProfileTest,
   }
 }
 
-// Verify that no suggestions are shown on desktop for non credit card related
-// fields if the initiating field has the "autocomplete" attribute set to off
-// and the feature to autofill all addresses is also off.
-TEST_P(AutofillManagerStructuredProfileTest,
-       DisplaySuggestions_AutocompleteOffRespected_AddressField) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kAutofillAlwaysFillAddresses);
-
-  // Set up an address form.
-  FormData mixed_form;
-  mixed_form.name = ASCIIToUTF16("MyForm");
-  mixed_form.url = GURL("https://myform.com/form.html");
-  mixed_form.action = GURL("https://myform.com/submit.html");
-  FormFieldData field;
-  test::CreateTestFormField("First name", "firstname", "", "text", &field);
-  field.should_autocomplete = false;
-  mixed_form.fields.push_back(field);
-  test::CreateTestFormField("Last name", "lastname", "", "text", &field);
-  field.should_autocomplete = true;
-  mixed_form.fields.push_back(field);
-  test::CreateTestFormField("Address", "address", "", "text", &field);
-  field.should_autocomplete = true;
-  mixed_form.fields.push_back(field);
-  std::vector<FormData> mixed_forms(1, mixed_form);
-  FormsSeen(mixed_forms);
-
-  // Suggestions should not be displayed on desktop for this field.
-  GetAutofillSuggestions(mixed_form, mixed_form.fields[0]);
-  if (IsDesktopPlatform()) {
-    EXPECT_FALSE(external_delegate_->on_suggestions_returned_seen());
-  } else {
-    EXPECT_TRUE(external_delegate_->on_suggestions_returned_seen());
-  }
-
-  // Suggestions should always be displayed for all the other fields.
-  for (size_t i = 1U; i < mixed_form.fields.size(); ++i) {
-    GetAutofillSuggestions(mixed_form, mixed_form.fields[i]);
-    EXPECT_TRUE(external_delegate_->on_suggestions_returned_seen());
-  }
-}
-
 // Verify that suggestions are shown on desktop for credit card related fields
 // even if the initiating field field has the "autocomplete" attribute set to
 // off.
@@ -8970,10 +8867,6 @@ TEST_P(OnFocusOnFormFieldTest, AddressSuggestions) {
 }
 
 TEST_P(OnFocusOnFormFieldTest, AddressSuggestions_AutocompleteOffNotRespected) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillAlwaysFillAddresses);
-
   FormData form;
   form.name = ASCIIToUTF16("MyForm");
   form.url = GURL("https://myform.com/form.html");
@@ -8992,34 +8885,6 @@ TEST_P(OnFocusOnFormFieldTest, AddressSuggestions_AutocompleteOffNotRespected) {
 
   autofill_manager_->OnFocusOnFormFieldImpl(form, form.fields[1], gfx::RectF());
   CheckSuggestionsAvailableIfScreenReaderRunning();
-}
-
-TEST_P(OnFocusOnFormFieldTest, AddressSuggestions_AutocompleteOffRespected) {
-  if (!IsDesktopPlatform())
-    return;
-
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kAutofillAlwaysFillAddresses);
-
-  FormData form;
-  form.name = ASCIIToUTF16("MyForm");
-  form.url = GURL("https://myform.com/form.html");
-  form.action = GURL("https://myform.com/submit.html");
-  FormFieldData field;
-  // Set a valid autocomplete attribute for the first name.
-  test::CreateTestFormField("First name", "firstname", "", "text", &field);
-  field.autocomplete_attribute = "given-name";
-  form.fields.push_back(field);
-  // Set an autocomplete=off attribute for the last name.
-  test::CreateTestFormField("Last Name", "lastname", "", "text", &field);
-  field.should_autocomplete = false;
-  form.fields.push_back(field);
-  std::vector<FormData> forms(1, form);
-  FormsSeen(forms);
-
-  autofill_manager_->OnFocusOnFormFieldImpl(form, form.fields[1], gfx::RectF());
-  CheckNoSuggestionsAvailableOnFieldFocus();
 }
 
 TEST_P(OnFocusOnFormFieldTest, CreditCardSuggestions_SecureContext) {

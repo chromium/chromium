@@ -2559,15 +2559,6 @@ void AutofillManager::GetAvailableSuggestions(
       return;
     }
   } else {
-    // On desktop, don't return non credit card related suggestions for forms
-    // or fields that have the "autocomplete" attribute set to off, only if
-    // the feature to always fill addresses is off.
-    if (!base::FeatureList::IsEnabled(features::kAutofillAlwaysFillAddresses) &&
-        IsDesktopPlatform() && !field.should_autocomplete) {
-      context->suppress_reason = SuppressReason::kAutocompleteOff;
-      return;
-    }
-
     *suggestions = GetProfileSuggestions(*context->form_structure, field,
                                          *context->focused_field);
   }
