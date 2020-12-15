@@ -81,7 +81,6 @@ bool InterfaceProperties::Update(
 
 void InterfaceProperties::AppendNetworkInterfaces(
     NetworkInterfaceList* interfaces) const {
-  uint32_t address_counter = 1;
   for (const auto& fidl_address : properties_.addresses()) {
     IPAddress address = FuchsiaIpAddressToIPAddress(fidl_address.addr().addr);
     if (address.empty()) {
@@ -93,11 +92,8 @@ void InterfaceProperties::AppendNetworkInterfaces(
     // TODO(crbug.com/1131220): Set correct attributes once available in
     // fuchsia::net::interfaces::Properties.
     const int kAttributes = 0;
-    std::string interface_name = base::StringPrintf(
-        "%s-%d", properties_.name().c_str(), address_counter);
-    address_counter++;
     interfaces->emplace_back(
-        interface_name, interface_name, properties_.id(),
+        properties_.name(), properties_.name(), properties_.id(),
         internal::ConvertConnectionType(properties_.device_class()),
         std::move(address), fidl_address.addr().prefix_len, kAttributes);
   }
