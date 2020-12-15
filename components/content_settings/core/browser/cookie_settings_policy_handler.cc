@@ -10,6 +10,7 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
+#include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 
 namespace content_settings {
 
@@ -30,6 +31,20 @@ void CookieSettingsPolicyHandler::ApplyPolicySettings(
         static_cast<int>(third_party_cookie_blocking->GetBool()
                              ? CookieControlsMode::kBlockThirdParty
                              : CookieControlsMode::kOff));
+    // Copy only the disabled managed state of cookie controls to privacy
+    // sandbox while privacy sandbox is an experiment.
+    if (third_party_cookie_blocking->GetBool()) {
+      prefs->SetBoolean(prefs::kPrivacySandboxApisEnabled, false);
+    }
+  }
+  // Also check against the default cookie content settings policy and disable
+  // privacy sandbox if it is set to BLOCK.
+  const base::Value* default_cookie_setting =
+      policies.GetValue(policy::key::kDefaultCookiesSetting);
+  if (default_cookie_setting &&
+      static_cast<ContentSetting>(default_cookie_setting->GetInt()) ==
+          CONTENT_SETTING_BLOCK) {
+    prefs->SetBoolean(prefs::kPrivacySandboxApisEnabled, false);
   }
 }
 
