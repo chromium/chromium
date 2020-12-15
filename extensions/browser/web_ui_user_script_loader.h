@@ -29,7 +29,7 @@ class WebUIUserScriptLoader : public extensions::UserScriptLoader {
 
  private:
   struct UserScriptRenderInfo;
-  using UserScriptRenderInfoMap = std::map<int, UserScriptRenderInfo>;
+  using UserScriptRenderInfoMap = std::map<std::string, UserScriptRenderInfo>;
 
   // UserScriptLoader:
   void AddScripts(std::unique_ptr<extensions::UserScriptList> scripts,
@@ -37,7 +37,7 @@ class WebUIUserScriptLoader : public extensions::UserScriptLoader {
                   int render_frame_id) override;
   void LoadScripts(std::unique_ptr<extensions::UserScriptList> user_scripts,
                    const std::set<HostID>& changed_hosts,
-                   const std::set<int>& added_script_ids,
+                   const std::set<std::string>& added_script_ids,
                    LoadScriptsCallback callback) override;
 
   // Called at the end of each fetch, tracking whether all fetches are done.

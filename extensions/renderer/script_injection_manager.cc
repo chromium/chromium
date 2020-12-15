@@ -84,7 +84,7 @@ class ScriptInjectionManager::RFOHelper : public content::RenderFrameObserver {
   virtual void OnExecuteCode(const ExtensionMsg_ExecuteCode_Params& params);
   virtual void OnExecuteDeclarativeScript(int tab_id,
                                           const ExtensionId& extension_id,
-                                          int script_id,
+                                          const std::string& script_id,
                                           const GURL& url);
   virtual void OnPermitScriptInjection(int64_t request_id);
 
@@ -221,7 +221,7 @@ void ScriptInjectionManager::RFOHelper::OnExecuteCode(
 void ScriptInjectionManager::RFOHelper::OnExecuteDeclarativeScript(
     int tab_id,
     const ExtensionId& extension_id,
-    int script_id,
+    const std::string& script_id,
     const GURL& url) {
   // TODO(markdittmer): URL-checking isn't the best security measure.
   // Begin script injection workflow only if the current URL is identical to
@@ -478,7 +478,7 @@ void ScriptInjectionManager::HandleExecuteDeclarativeScript(
     content::RenderFrame* render_frame,
     int tab_id,
     const ExtensionId& extension_id,
-    int script_id,
+    const std::string& script_id,
     const GURL& url) {
   std::unique_ptr<ScriptInjection> injection =
       user_script_set_manager_->GetInjectionForDeclarativeScript(

@@ -33,7 +33,7 @@ namespace {
 
 #if DCHECK_IS_ON()
 bool AreScriptsUnique(const UserScriptList& scripts) {
-  std::set<int> script_ids;
+  std::set<std::string> script_ids;
   for (const std::unique_ptr<UserScript>& script : scripts) {
     if (script_ids.count(script->id()))
       return false;
@@ -182,7 +182,7 @@ void UserScriptLoader::AddScripts(std::unique_ptr<UserScriptList> scripts) {
       << "AddScripts() expects scripts with unique IDs.";
 #endif  // DCHECK_IS_ON()
   for (std::unique_ptr<UserScript>& user_script : *scripts) {
-    int id = user_script->id();
+    const std::string& id = user_script->id();
     removed_script_hosts_.erase(UserScriptIDPair(id));
     if (added_scripts_map_.count(id) == 0)
       added_scripts_map_[id] = std::move(user_script);
@@ -268,7 +268,7 @@ void UserScriptLoader::StartLoad() {
     }
   }
 
-  std::set<int> added_script_ids;
+  std::set<std::string> added_script_ids;
   scripts_to_load->reserve(scripts_to_load->size() + added_scripts_map_.size());
   for (auto& id_and_script : added_scripts_map_) {
     std::unique_ptr<UserScript>& script = id_and_script.second;

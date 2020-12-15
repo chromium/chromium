@@ -80,7 +80,7 @@ class UserScriptInjector : public ScriptInjector,
   // The id of the associated user script. We cache this because when we update
   // the |script_| associated with this injection, the old referance may be
   // deleted.
-  int script_id_;
+  std::string script_id_;
 
   // The associated host id, preserved for the same reason as |script_id|.
   HostID host_id_;

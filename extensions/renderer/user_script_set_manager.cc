@@ -33,7 +33,7 @@ void UserScriptSetManager::RemoveObserver(Observer* observer) {
 
 std::unique_ptr<ScriptInjection>
 UserScriptSetManager::GetInjectionForDeclarativeScript(
-    int script_id,
+    const std::string& script_id,
     content::RenderFrame* render_frame,
     int tab_id,
     const GURL& url,

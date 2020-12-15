@@ -217,7 +217,7 @@ TEST(ExtensionUserScriptTest, Pickle) {
   script1.add_exclude_url_pattern(exclude1);
   script1.add_exclude_url_pattern(exclude2);
 
-  const int64_t kId = 12;
+  const std::string kId = "_12";
   script1.set_id(kId);
   const std::string kExtensionId = "foo";
   HostID id(HostID::EXTENSIONS, kExtensionId);

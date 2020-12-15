@@ -34,7 +34,7 @@ class WebViewRendererState {
     int rules_registry_id;
     std::string partition_id;
     std::string owner_host;
-    std::set<int> content_script_ids;
+    std::set<std::string> content_script_ids;
 
     WebViewInfo();
     WebViewInfo(const WebViewInfo& other);
@@ -68,10 +68,10 @@ class WebViewRendererState {
 
   void AddContentScriptIDs(int embedder_process_id,
                            int view_instance_id,
-                           const std::set<int>& script_ids);
+                           const std::set<std::string>& script_ids);
   void RemoveContentScriptIDs(int embedder_process_id,
                               int view_instance_id,
-                              const std::set<int>& script_ids);
+                              const std::set<std::string>& script_ids);
 
  private:
   friend class WebViewGuest;

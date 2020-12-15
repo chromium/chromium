@@ -59,7 +59,7 @@ class UserScriptSetManager : public content::RenderThreadObserver {
   // |extension_id| in the context of the given |web_frame|, |tab_id|,
   // and |url|.
   std::unique_ptr<ScriptInjection> GetInjectionForDeclarativeScript(
-      int script_id,
+      const std::string& script_id,
       content::RenderFrame* render_frame,
       int tab_id,
       const GURL& url,

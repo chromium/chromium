@@ -59,7 +59,7 @@ class ExtensionsGuestViewMessageFilter
 
   // Message handlers on the UI thread.
   void OnCanExecuteContentScript(int render_view_id,
-                                 int script_id,
+                                 const std::string& script_id,
                                  bool* allowed);
   void OnCreateMimeHandlerViewGuest(int render_frame_id,
                                     const std::string& view_id,

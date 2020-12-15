@@ -121,15 +121,14 @@ bool WebViewRendererState::GetPartitionID(int guest_process_id,
 void WebViewRendererState::AddContentScriptIDs(
     int embedder_process_id,
     int view_instance_id,
-    const std::set<int>& script_ids) {
+    const std::set<std::string>& script_ids) {
   base::AutoLock auto_lock(web_view_info_map_lock_);
 
   for (auto& render_id_info : web_view_info_map_) {
     WebViewInfo& info = render_id_info.second;
     if (info.embedder_process_id == embedder_process_id &&
         info.instance_id == view_instance_id) {
-      for (int id : script_ids)
-        info.content_script_ids.insert(id);
+      info.content_script_ids.insert(script_ids.begin(), script_ids.end());
       return;
     }
   }
@@ -138,14 +137,14 @@ void WebViewRendererState::AddContentScriptIDs(
 void WebViewRendererState::RemoveContentScriptIDs(
     int embedder_process_id,
     int view_instance_id,
-    const std::set<int>& script_ids) {
+    const std::set<std::string>& script_ids) {
   base::AutoLock auto_lock(web_view_info_map_lock_);
 
   for (auto& render_id_info : web_view_info_map_) {
     WebViewInfo& info = render_id_info.second;
     if (info.embedder_process_id == embedder_process_id &&
         info.instance_id == view_instance_id) {
-      for (int id : script_ids)
+      for (const std::string& id : script_ids)
         info.content_script_ids.erase(id);
       return;
     }

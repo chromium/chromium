@@ -59,7 +59,7 @@ void WebViewContentScriptManager::AddContentScripts(
   DCHECK(script_set);
 
   // We need to update WebViewRenderState.
-  std::set<int> ids_to_add;
+  std::set<std::string> ids_to_add;
 
   GuestMapKey key = std::pair<int, int>(embedder_process_id, view_instance_id);
   auto iter = guest_content_script_map_.find(key);
@@ -152,7 +152,7 @@ void WebViewContentScriptManager::RemoveContentScripts(
   CHECK(script_set);
 
   // We need to update WebViewRenderState.
-  std::set<int> ids_to_delete;
+  std::set<std::string> ids_to_delete;
   std::set<UserScriptIDPair> scripts_to_delete;
 
   // Step 1: removes content scripts from |set| and updates
@@ -197,10 +197,10 @@ void WebViewContentScriptManager::RemoveContentScripts(
   }
 }
 
-std::set<int> WebViewContentScriptManager::GetContentScriptIDSet(
+std::set<std::string> WebViewContentScriptManager::GetContentScriptIDSet(
     int embedder_process_id,
     int view_instance_id) {
-  std::set<int> ids;
+  std::set<std::string> ids;
 
   GuestMapKey key = std::pair<int, int>(embedder_process_id, view_instance_id);
   GuestContentScriptMap::const_iterator iter =

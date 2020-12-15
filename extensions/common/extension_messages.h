@@ -607,7 +607,7 @@ IPC_MESSAGE_CONTROL4(ExtensionMsg_UpdateUserScripts,
 IPC_MESSAGE_ROUTED4(ExtensionMsg_ExecuteDeclarativeScript,
                     int /* tab identifier */,
                     extensions::ExtensionId /* extension identifier */,
-                    int /* script identifier */,
+                    std::string /* script identifier */,
                     GURL /* page URL where script should be injected */)
 
 // Tell the render view which browser window it's being attached to.

@@ -91,7 +91,7 @@ class ScriptInjectionManager : public UserScriptSetManager::Observer {
   void HandleExecuteDeclarativeScript(content::RenderFrame* web_frame,
                                       int tab_id,
                                       const ExtensionId& extension_id,
-                                      int script_id,
+                                      const std::string& script_id,
                                       const GURL& url);
 
   // Handle the GrantInjectionPermission extension message.

@@ -53,7 +53,7 @@ class ExtensionUserScriptLoader : public UserScriptLoader,
   // UserScriptLoader:
   void LoadScripts(std::unique_ptr<UserScriptList> user_scripts,
                    const std::set<HostID>& changed_hosts,
-                   const std::set<int>& added_script_ids,
+                   const std::set<std::string>& added_script_ids,
                    LoadScriptsCallback callback) override;
 
   // Updates |hosts_info_| to contain info for each element of

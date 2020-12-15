@@ -61,7 +61,7 @@ class UserScriptSet {
                      bool log_activity);
 
   std::unique_ptr<ScriptInjection> GetDeclarativeScriptInjection(
-      int script_id,
+      const std::string& script_id,
       content::RenderFrame* render_frame,
       int tab_id,
       UserScript::RunLocation run_location,

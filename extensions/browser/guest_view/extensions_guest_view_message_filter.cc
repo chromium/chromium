@@ -97,7 +97,7 @@ GuestViewManager* ExtensionsGuestViewMessageFilter::
 
 void ExtensionsGuestViewMessageFilter::OnCanExecuteContentScript(
     int render_view_id,
-    int script_id,
+    const std::string& script_id,
     bool* allowed) {
   WebViewRendererState::WebViewInfo info;
   WebViewRendererState::GetInstance()->GetInfo(render_process_id_,

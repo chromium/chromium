@@ -58,10 +58,8 @@ void WebUIUserScriptLoader::AddScripts(
     int render_process_id,
     int render_frame_id) {
   UserScriptRenderInfo info(render_process_id, render_frame_id);
-  for (const std::unique_ptr<extensions::UserScript>& script : *scripts) {
-    script_render_info_map_.insert(
-        std::pair<int, UserScriptRenderInfo>(script->id(), info));
-  }
+  for (const std::unique_ptr<extensions::UserScript>& script : *scripts)
+    script_render_info_map_.emplace(script->id(), info);
 
   extensions::UserScriptLoader::AddScripts(std::move(scripts));
 }
@@ -69,7 +67,7 @@ void WebUIUserScriptLoader::AddScripts(
 void WebUIUserScriptLoader::LoadScripts(
     std::unique_ptr<extensions::UserScriptList> user_scripts,
     const std::set<HostID>& changed_hosts,
-    const std::set<int>& added_script_ids,
+    const std::set<std::string>& added_script_ids,
     LoadScriptsCallback callback) {
   DCHECK(!user_scripts_cache_) << "Loading scripts in flight.";
   user_scripts_cache_.swap(user_scripts);

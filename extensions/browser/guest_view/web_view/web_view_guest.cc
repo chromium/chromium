@@ -877,7 +877,7 @@ void WebViewGuest::ReadyToCommitNavigation(
       WebViewContentScriptManager::Get(browser_context());
   int embedder_process_id =
       owner_web_contents()->GetMainFrame()->GetProcess()->GetID();
-  std::set<int> script_ids = script_manager->GetContentScriptIDSet(
+  std::set<std::string> script_ids = script_manager->GetContentScriptIDSet(
       embedder_process_id, view_instance_id());
   if (script_ids.empty())
     return;

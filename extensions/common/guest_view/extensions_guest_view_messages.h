@@ -21,7 +21,7 @@
 IPC_SYNC_MESSAGE_CONTROL2_1(
     ExtensionsGuestViewHostMsg_CanExecuteContentScriptSync,
     int /* routing_id */,
-    int /* script_id */,
+    std::string /* script_id */,
     bool /* allowed */)
 
 // A renderer sends this message when it wants to resize a guest.

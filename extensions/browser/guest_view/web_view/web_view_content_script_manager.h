@@ -60,8 +60,8 @@ class WebViewContentScriptManager : public base::SupportsUserData::Data,
 
   // Returns the content script IDs added by the WebView specified by
   // |embedder_process_id| and |view_instance_id|.
-  std::set<int> GetContentScriptIDSet(int embedder_process_id,
-                                      int view_instance_id);
+  std::set<std::string> GetContentScriptIDSet(int embedder_process_id,
+                                              int view_instance_id);
 
   // Checks if there is any pending content scripts to load.
   // If no, run |callback| immediately; otherwise caches the |callback|, and
