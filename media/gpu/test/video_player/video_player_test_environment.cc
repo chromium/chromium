@@ -56,15 +56,7 @@ VideoPlayerTestEnvironment::VideoPlayerTestEnvironment(
             media::kVaapiAV1Decoder,
 #endif
           },
-          /*disabled_features=*/
-          {
-#if BUILDFLAG(USE_VAAPI)
-            // Disable this feature so that the decoder test can test a
-            // resolution which is denied for the sake of performance. See
-            // b/171041334.
-            kVaapiEnforceVideoMinMaxResolution,
-#endif
-          }),
+          /*disabled_featureas=*/{}),
       video_(std::move(video)),
       enable_validator_(enable_validator),
       implementation_(implementation),
