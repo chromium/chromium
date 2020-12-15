@@ -281,6 +281,7 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoOptional:
     case kPseudoPlaceholder:
     case kPseudoPlaceholderShown:
+    case kPseudoFileSelectorButton:
     case kPseudoRequired:
     case kPseudoReadOnly:
     case kPseudoReadWrite:
@@ -403,6 +404,7 @@ const static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"empty", CSSSelector::kPseudoEmpty},
     {"enabled", CSSSelector::kPseudoEnabled},
     {"end", CSSSelector::kPseudoEnd},
+    {"file-selector-button", CSSSelector::kPseudoFileSelectorButton},
     {"first", CSSSelector::kPseudoFirstPage},
     {"first-child", CSSSelector::kPseudoFirstChild},
     {"first-letter", CSSSelector::kPseudoFirstLetter},
@@ -622,6 +624,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoMarker:
     case kPseudoPart:
     case kPseudoPlaceholder:
+    case kPseudoFileSelectorButton:
     case kPseudoResizer:
     case kPseudoScrollbar:
     case kPseudoScrollbarCorner:
@@ -1118,7 +1121,8 @@ bool CSSSelector::IsTreeAbidingPseudoElement() const {
   return Match() == CSSSelector::kPseudoElement &&
          (GetPseudoType() == kPseudoBefore || GetPseudoType() == kPseudoAfter ||
           GetPseudoType() == kPseudoMarker ||
-          GetPseudoType() == kPseudoPlaceholder);
+          GetPseudoType() == kPseudoPlaceholder ||
+          GetPseudoType() == kPseudoFileSelectorButton);
 }
 
 bool CSSSelector::IsAllowedAfterPart() const {
@@ -1131,6 +1135,7 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoBefore:
     case kPseudoAfter:
     case kPseudoPlaceholder:
+    case kPseudoFileSelectorButton:
     case kPseudoFirstLine:
     case kPseudoFirstLetter:
     case kPseudoSelection:

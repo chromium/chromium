@@ -172,6 +172,7 @@ static void ExtractSelectorValues(const CSSSelector* selector,
         case CSSSelector::kPseudoAnyLink:
         case CSSSelector::kPseudoFocus:
         case CSSSelector::kPseudoPlaceholder:
+        case CSSSelector::kPseudoFileSelectorButton:
         case CSSSelector::kPseudoHost:
         case CSSSelector::kPseudoHostContext:
         case CSSSelector::kPseudoSpatialNavigationInterest:
@@ -262,11 +263,14 @@ bool RuleSet::FindBestRuleSetAndAdd(const CSSSelector& component,
       focus_pseudo_class_rules_.push_back(rule_data);
       return true;
     case CSSSelector::kPseudoPlaceholder:
+    case CSSSelector::kPseudoFileSelectorButton:
       if (it->FollowsPart()) {
         part_pseudo_rules_.push_back(rule_data);
       } else {
-        AddToRuleSet(shadow_element_names::kPseudoInputPlaceholder,
-                     EnsurePendingRules()->shadow_pseudo_element_rules,
+        const auto& name = pseudo_type == CSSSelector::kPseudoFileSelectorButton
+                               ? shadow_element_names::kPseudoFileUploadButton
+                               : shadow_element_names::kPseudoInputPlaceholder;
+        AddToRuleSet(name, EnsurePendingRules()->shadow_pseudo_element_rules,
                      rule_data);
       }
       return true;

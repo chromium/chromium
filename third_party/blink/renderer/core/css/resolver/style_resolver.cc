@@ -452,8 +452,11 @@ static void MatchElementScopeRules(const Element& element,
 void StyleResolver::MatchPseudoPartRulesForUAHost(
     const Element& element,
     ElementRuleCollector& collector) {
-  if (element.ShadowPseudoId() != shadow_element_names::kPseudoInputPlaceholder)
+  const AtomicString& pseudo_id = element.ShadowPseudoId();
+  if (pseudo_id != shadow_element_names::kPseudoInputPlaceholder &&
+      pseudo_id != shadow_element_names::kPseudoFileUploadButton) {
     return;
+  }
 
   // We allow ::placeholder pseudo element after ::part(). See
   // MatchSlottedRulesForUAHost for a more detailed explanation.

@@ -1206,6 +1206,11 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
   return false;
 }
 
+static bool MatchesUAShadowElement(Element& element, const AtomicString& id) {
+  ShadowRoot* root = element.ContainingShadowRoot();
+  return root && root->IsUserAgent() && element.ShadowPseudoId() == id;
+}
+
 bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
                                          MatchResult& result) const {
   const CSSSelector& selector = *context.selector;
@@ -1234,29 +1239,17 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
           return false;
       }
       return true;
+    case CSSSelector::kPseudoFileSelectorButton:
+      return MatchesUAShadowElement(
+          element, shadow_element_names::kPseudoFileUploadButton);
     case CSSSelector::kPseudoPlaceholder:
-      if (ShadowRoot* root = element.ContainingShadowRoot()) {
-        return root->IsUserAgent() &&
-               element.ShadowPseudoId() ==
-                   shadow_element_names::kPseudoInputPlaceholder;
-      }
-      return false;
-    case CSSSelector::kPseudoWebKitCustomElement: {
-      if (ShadowRoot* root = element.ContainingShadowRoot()) {
-        if (!root->IsUserAgent())
-          return false;
-        if (element.ShadowPseudoId() != selector.Value())
-          return false;
-        return true;
-      }
-      return false;
-    }
+      return MatchesUAShadowElement(
+          element, shadow_element_names::kPseudoInputPlaceholder);
+    case CSSSelector::kPseudoWebKitCustomElement:
+      return MatchesUAShadowElement(element, selector.Value());
     case CSSSelector::kPseudoBlinkInternalElement:
       DCHECK(is_ua_rule_);
-      if (ShadowRoot* root = element.ContainingShadowRoot())
-        return root->IsUserAgent() &&
-               element.ShadowPseudoId() == selector.Value();
-      return false;
+      return MatchesUAShadowElement(element, selector.Value());
     case CSSSelector::kPseudoSlotted: {
       SelectorCheckingContext sub_context(context);
       sub_context.is_sub_selector = true;

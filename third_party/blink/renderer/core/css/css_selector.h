@@ -214,6 +214,7 @@ class CORE_EXPORT CSSSelector {
     kPseudoLang,
     kPseudoNot,
     kPseudoPlaceholder,
+    kPseudoFileSelectorButton,
     kPseudoResizer,
     kPseudoRoot,
     kPseudoScope,

@@ -96,6 +96,7 @@ RelationType CSSParserSelector::GetImplicitShadowCombinatorForMatching() const {
     case PseudoType::kPseudoBlinkInternalElement:
     case PseudoType::kPseudoCue:
     case PseudoType::kPseudoPlaceholder:
+    case PseudoType::kPseudoFileSelectorButton:
     case PseudoType::kPseudoShadow:
       return RelationType::kShadowPseudo;
     case PseudoType::kPseudoPart:

@@ -90,6 +90,10 @@
       Symbol: "kPseudoInputPlaceholder",
     },
     {
+      name: "-webkit-file-upload-button",
+      Symbol: "kPseudoFileUploadButton",
+    },
+    {
       name: "-internal-input-suggested",
       Symbol: "kPseudoInternalInputSuggested",
     },
