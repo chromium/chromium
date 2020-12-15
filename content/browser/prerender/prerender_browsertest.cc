@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/synchronization/lock.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/thread_annotations.h"
 #include "content/browser/prerender/prerender_host_registry.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -33,6 +36,8 @@ class PrerenderBrowserTest : public ContentBrowserTest,
   ~PrerenderBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
     // Make sure the feature param is correctly set before testing.
     if (IsActivationDisabled()) {
       ASSERT_EQ(blink::features::kPrerender2Param.Get(),
@@ -52,14 +57,19 @@ class PrerenderBrowserTest : public ContentBrowserTest,
   }
 
   void TearDownOnMainThread() override {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
     EXPECT_TRUE(ssl_server_.ShutdownAndWaitUntilComplete());
   }
 
   void MonitorResourceRequest(const net::test_server::HttpRequest& request) {
+    // This should be called on `EmbeddedTestServer::io_thread_`.
+    DCHECK(!BrowserThread::CurrentlyOn(BrowserThread::UI));
+    base::AutoLock auto_lock(lock_);
     request_count_by_path_[request.GetURL().PathForRequest()]++;
   }
 
   PrerenderHostRegistry& GetPrerenderHostRegistry() {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
     auto* storage_partition = static_cast<StoragePartitionImpl*>(
         BrowserContext::GetDefaultStoragePartition(
             shell()->web_contents()->GetBrowserContext()));
@@ -69,6 +79,7 @@ class PrerenderBrowserTest : public ContentBrowserTest,
   // Adds <link rel=prerender> in the current main frame and waits until the
   // completion of prerendering.
   void AddPrerender(const GURL& prerendering_url) {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
     // Start watching new web contents to be created for prerendering.
     content::TestNavigationObserver observer(prerendering_url);
     observer.StartWatchingNewWebContents();
@@ -87,6 +98,7 @@ class PrerenderBrowserTest : public ContentBrowserTest,
   // destroyed during activation and results in crashes.
   // See https://crbug.com/1154501 for the MPArch migration.
   void NavigateWithLocation(const GURL& url) {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
     content::TestNavigationObserver observer(shell()->web_contents());
     EXPECT_TRUE(
         ExecJs(shell()->web_contents(), JsReplace("location = $1", url)));
@@ -95,10 +107,13 @@ class PrerenderBrowserTest : public ContentBrowserTest,
   }
 
   GURL GetUrl(const std::string& path) {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
     return ssl_server_.GetURL("a.test", path);
   }
 
   int GetRequestCount(const GURL& url) {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    base::AutoLock auto_lock(lock_);
     return request_count_by_path_[url.PathForRequest()];
   }
 
@@ -111,9 +126,12 @@ class PrerenderBrowserTest : public ContentBrowserTest,
   // Counts of requests sent to the server. Keyed by path (not by full URL)
   // because the host part of the requests is translated ("a.test" to
   // "127.0.0.1") before the server handles them.
-  std::map<std::string, int> request_count_by_path_;
+  // This is accessed from the UI thread and `EmbeddedTestServer::io_thread_`.
+  std::map<std::string, int> request_count_by_path_ GUARDED_BY(lock_);
 
   base::test::ScopedFeatureList feature_list_;
+
+  base::Lock lock_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
