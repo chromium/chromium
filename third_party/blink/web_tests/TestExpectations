@@ -5925,3 +5925,6 @@ crbug.com/626703 [ Mac ] external/wpt/mediacapture-image/MediaStreamTrack-getCon
 
 # WPT importer Sheriff 2020-12-14
 crbug.com/1158672 [ Mac ] external/wpt/html/dom/idlharness.https.html?include=(Document|Window) [ Pass Failure ]
+
+# Sheriff 2020-12-14
+crbug.com/1046784 http/tests/devtools/console/console-context-selector.js [ Pass Timeout ]
