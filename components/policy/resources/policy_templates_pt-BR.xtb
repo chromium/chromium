@@ -1249,11 +1249,6 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="2801065672151277034">Configurações de gerenciamento do certificado</translation>
 <translation id="2801155097555584385">Configurar o início do carregamento personalizado da bateria, em porcentagem</translation>
 <translation id="2805707493867224476">Permitir que todos os sites exibam pop-ups</translation>
-<translation id="2813281962735757923">Essa política controla os períodos durante os quais o dispositivo <ph name="PRODUCT_OS_NAME" /> não tem permissão para procurar atualizações automaticamente.
-      Veja o que acontece quando ela é definida como uma lista não vazia de intervalos de tempo:
-      Os dispositivos não podem procurar atualizações automaticamente durante os intervalos especificados. Os dispositivos que precisam de uma reversão ou que são anteriores à versão mínima do <ph name="PRODUCT_OS_NAME" /> não são afetados por essa política para evitar possíveis problemas de segurança. Além disso, a política não bloqueia verificações de atualização solicitadas por usuários ou administradores.
-      Veja o que acontece quando a política não é definida ou não tem nenhum intervalo de tempo:
-      Nenhuma verificação automática de atualização será bloqueada por ela, mas as verificações poderão ser bloqueadas por outras políticas. Esse recurso só é ativado em dispositivos Chrome configurados como quiosques de início automático. Outros dispositivos não serão restringidos por essa política.</translation>
 <translation id="2818074121667686266">Se a política for definida como ativada ou não for definida, o usuário receberá uma solicitação para acesso de captura de áudio, exceto para URLs configurados na lista AudioCaptureAllowedUrls.
 
       Se a política for definida como desativada as solicitações serão desativadas e a captura de áudio só estará disponível para URLs configurados na lista AudioCaptureAllowedUrls.
@@ -1785,6 +1780,13 @@ Se esta política for definida como falsa, o <ph name="PRODUCT_NAME" /> não usa
       Se a política for definida como "Desativada", esses softwares poderão injetar códigos executáveis nos processos do <ph name="PRODUCT_NAME" />.
 
       Independentemente do valor da política, o navegador não impedirá que softwares de terceiros injetem código executável nos processos dele em uma máquina conectada a um domínio do <ph name="MS_AD_NAME" />.</translation>
+<translation id="3456292544936505775">Essa política controla os períodos durante os quais o dispositivo <ph name="PRODUCT_OS_NAME" /> não tem permissão para procurar atualizações automaticamente.
+      Isto é o que acontece quando ela é definida como uma lista não vazia de intervalos de tempo:
+      Os dispositivos não podem procurar atualizações automaticamente durante os intervalos especificados. Os dispositivos que precisam de uma reversão empresarial ou que são mais antigos que a versão mínima do <ph name="PRODUCT_OS_NAME" /> não são afetados por esta política para evitar possíveis problemas de segurança. Além disso, a política não bloqueia verificações de atualização solicitadas por usuários ou administradores.
+      A partir da versão M88, a política cancelará atualizações em andamento quando um intervalo de tempo restrito for alcançado. A atualização automática seguinte ao fim do intervalo de tempo restrito retomará o processo. Os dispositivos atualizados para um Quick Fix Build não serão afetados por esta política.
+      Isto é o que acontece quando a política não é definida ou não tem um intervalo de tempo:
+      Nenhuma verificação automática de atualização será bloqueada por ela, mas as verificações poderão ser bloqueadas por outras políticas.
+      Até a versão M88, este recurso será ativado apenas em dispositivos <ph name="PRODUCT_OS_NAME" /> configurados como quiosques de início automático. Outros dispositivos não serão restringidos por essa política. No entanto, a partir da versão M89, a política será ativada em todos os dispositivos <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="3459509316159669723">Imprimir</translation>
 <translation id="3461279434465463233">Informa o status de energia</translation>
 <translation id="3478024346823118645">Limpa os dados do usuário ao sair</translation>

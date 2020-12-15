@@ -12,6 +12,7 @@
 <translation id="10614374240317010">ಉಳಿಸಿಯೇ ಇಲ್ಲ</translation>
 <translation id="1067922213147265141">ಇತರ Google ಸೇವೆಗಳು</translation>
 <translation id="107147699690128016">ಫೈಲ್ ವಿಸ್ತರಣೆಯನ್ನು ಬದಲಾಯಿಸಿದರೆ, ಇತರ ಅಪ್ಲಿಕೇಶನ್‌ಗಳಲ್ಲಿ ಫೈಲ್‌ ಅನ್ನು ತೆರೆಯಬಹುದು ಮತ್ತು ನಿಮ್ಮ ಸಾಧನವನ್ನು ಹಾನಿಗೊಳಿಸಬಹುದು.</translation>
+<translation id="1094515529340404628">Web crowd ಮತ್ತು ಜಾಹೀರಾತು ಮಾಪನ</translation>
 <translation id="1100066534610197918">ಗುಂಪಿನ ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ತೆರೆ</translation>
 <translation id="1105960400813249514">ಪರದೆ ಕ್ಯಾಪ್ಚರ್</translation>
 <translation id="1111673857033749125">ನಿಮ್ಮ ಇತರ ಸಾಧನಗಳಲ್ಲಿ ಉಳಿಸಲಾದ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು ಇಲ್ಲಿ ಗೋಚರಿಸುತ್ತವೆ.</translation>
@@ -228,6 +229,7 @@
 <translation id="2536728043171574184">ಈ ಪುಟದ ಆಫ್‌ಲೈನ್ ನಕಲನ್ನು ವೀಕ್ಷಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="2537178555904266562">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಸಿಂಕ್ ಮಾಡುವಾಗ ದೋಷ ಉಂಟಾಗಿದೆ</translation>
 <translation id="2546283357679194313">ಕುಕೀಗಳು ಮತ್ತು ಸೈಟ್ ಡೇಟಾ</translation>
+<translation id="2562889244313180139">ಗುರುತಿಸಲಾಗದ ಅಲಿಯಾಸ್ ಅನ್ನು ಬಳಸಿಕೊಂಡು ನಿಮಗೆ ಹೆಚ್ಚು ಉಪಯುಕ್ತವಾದ ಅನುಭವವನ್ನು ನೀಡಲು ವೆಬ್‌ಸೈಟ್‌ಗಳು ಮತ್ತು ಆ್ಯಪ್‌ಗಳಿಗೆ ಅನುಮತಿಸಿ.</translation>
 <translation id="2567385386134582609">ಚಿತ್ರ</translation>
 <translation id="2571711316400087311">Google Translate ಗೆ ಪುಟಗಳನ್ನು ಇತರ ಭಾಷೆಗಳಲ್ಲಿ ಕಳುಹಿಸುವ ಪ್ರಸ್ತಾಪ ಮಾಡಿ</translation>
 <translation id="2581165646603367611">ಇದು ಕುಕೀಗಳು, ಕ್ಯಾಷ್ ಮತ್ತು ಪ್ರಮುಖವಲ್ಲವೆಂದು Chrome ಭಾವಿಸುವ ಸೈಟ್‌ಗಳ ಇತರ ಡೇಟಾವನ್ನು ತೆರವುಗೊಳಿಸುತ್ತದೆ.</translation>
@@ -714,6 +716,7 @@
 <translation id="6005538289190791541">ಸೂಚಿಸಿದ ಪಾಸ್‌ವರ್ಡ್</translation>
 <translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{ನೀವು <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> ಪುಟಾವನ್ನು ಹೊಂದಿರುವಿರಿ}one{ನೀವು <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> ಪುಟಗಳನ್ನು ಹೊಂದಿರುವಿರಿ}other{ನೀವು <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> ಪುಟಗಳನ್ನು ಹೊಂದಿರುವಿರಿ}}</translation>
 <translation id="6014293228235665243">ಓದದಿರುವುದು</translation>
+<translation id="6018309500671889594">ಗುರುತಿಸಲಾಗದ ಮಾಹಿತಿಯನ್ನು ಬಳಸಿಕೊಂಡು ಜಾಹೀರಾತು ಅಭಿಯಾನಗಳನ್ನು ಅಧ್ಯಯನ ಮಾಡಲು ಜಾಹೀರಾತುದಾರರಿಗೆ ಅನುಮತಿಸಿ.</translation>
 <translation id="6036057147555329831">ಹೆಚ್ಚುವರಿ ICU</translation>
 <translation id="6039379616847168523">ಮುಂದಿನ ಟ್ಯಾಬ್‌ಗೆ ಹೋಗಿ</translation>
 <translation id="6040143037577758943">ಮುಚ್ಚಿರಿ</translation>
@@ -922,6 +925,7 @@
 <translation id="7403691278183511381">Chrome ಮೊದಲ ರನ್ ಅನುಭವ</translation>
 <translation id="741204030948306876">ಹೌದು, ನಾನಿದ್ದೇನೆ</translation>
 <translation id="7413229368719586778">ಪ್ರಾರಂಭ ದಿನಾಂಕ <ph name="DATE" /></translation>
+<translation id="7416941666639889592">Web Crowd ಅನ್ನು ಸೇರಿಕೊಳ್ಳುವ ಮೂಲಕ, ವೈಯಕ್ತಿಕವಾಗಿ ಗುರುತಿಸಬಲ್ಲ ಮಾಹಿತಿಯನ್ನು ಬಳಸದೆ ನಿಮ್ಮ ವೆಬ್ ಅನುಭವವನ್ನು ಉಪಯುಕ್ತವಾಗಿಸಲು ನೀವು ವೆಬ್‌ಸೈಟ್‌ಗಳನ್ನು ಅನುಮತಿಸುತ್ತೀರಿ. ಸಂಗೀತ ಕಚೇರಿಯಲ್ಲಿನ ಗುಂಪಿನಂತೆಯೇ, ಸಾವಿರಾರು ಬಳಕೆದಾರರು ಒಂದೇ ರೀತಿಯ ಆಸಕ್ತಿಯನ್ನು ಹಂಚಿಕೊಳ್ಳುತ್ತಾರೆಂದು ವೆಬ್‌ಸೈಟ್‌ಗಳು ಮತ್ತು ಜಾಹೀರಾತುದಾರರು ಮಾತ್ರ ತಿಳಿಯಬಹುದು.</translation>
 <translation id="7431991332293347422">ಹುಡುಕಾಟ ಮತ್ತು ಇನ್ನೂ ಹೆಚ್ಚಿನವುಗಳನ್ನು ವೈಯಕ್ತೀಕರಿಸಲು ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸವನ್ನು ಹೇಗೆ ಬಳಸಲಾಗುತ್ತದೆ ಎಂಬುದನ್ನು ನಿಯಂತ್ರಿಸಿ</translation>
 <translation id="7435356471928173109">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಆಫ್ ಮಾಡಿದ್ದಾರೆ</translation>
 <translation id="7437998757836447326">Chrome ನಿಂದ ಸೈನ್ ಔಟ್ ಮಾಡಿ</translation>
@@ -1123,6 +1127,7 @@
 <translation id="8748850008226585750">ವಿಷಯಗಳನ್ನು ಮರೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="8788265440806329501">ನ್ಯಾವಿಗೇಶನ್ ಇತಿಹಾಸ ಮುಚ್ಚಿದೆ</translation>
 <translation id="8788968922598763114">ಕೊನೆಯದಾಗಿ ಮುಚ್ಚಿದ ಟ್ಯಾಬ್ ಮರುತೆರೆಯಿರಿ</translation>
+<translation id="8795672590390389447">ಗೌಪ್ಯತೆ ಸ್ಯಾಂಡ್‌ಬಾಕ್ಸ್‌</translation>
 <translation id="8798449543960971550">ಓದಲಾಗಿದೆ</translation>
 <translation id="8812260976093120287">ಕೆಲವು ವೆಬ್‌ಸೈಟ್‌ಗಳಲ್ಲಿ, ನೀವು ಮೇಲೆ ಬೆಂಬಲಿಸಲಾದ ಪಾವತಿ ಅಪ್ಲಿಕೇಶನ್‌ಗಳನ್ನು ಬಳಸಿಕೊಂಡು ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಪಾವತಿಸಬಹುದು.</translation>
 <translation id="881688628773363275">ಪೂರ್ವವೀಕ್ಷಣೆ ಟ್ಯಾಬ್ ವಿಷಯವನ್ನು ವೀಕ್ಷಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ.</translation>

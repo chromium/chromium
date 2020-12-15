@@ -293,6 +293,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="4121993058175073134">Aby wysłać dane net-export, skonfiguruj konto e-mail w aplikacji Ustawienia.</translation>
 <translation id="4124987746317609294">Zakres czasowy</translation>
 <translation id="4152011295694446843">Tu znajdziesz swoje zakładki</translation>
+<translation id="4152093603141133546">Organizacja Cię wylogowała.</translation>
 <translation id="4172051516777682613">Zawsze pokazuj</translation>
 <translation id="418156467088430727">Wyświetl wersję offline w nowej karcie</translation>
 <translation id="4181841719683918333">Języki</translation>
@@ -535,6 +536,7 @@ Postaraj się używać innego hasła w każdej witrynie.</translation>
 <translation id="6668619169535738264">Edytuj zakładkę</translation>
 <translation id="667999046851023355">Dokument</translation>
 <translation id="6691331417640343772">Zarządzaj synchronizowanymi danymi w Panelu Google</translation>
+<translation id="6710079714193676716">Zarządzana przez Twoją organizację. Niektóre funkcje mogą być niedostępne. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Nie można wyeksportować haseł</translation>
 <translation id="6748108480210050150">Od</translation>
@@ -688,6 +690,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8487667956631253959">Włączono</translation>
 <translation id="8487700953926739672">Dostępny offline</translation>
 <translation id="8490978609246021741">Zapisz zmiany</translation>
+<translation id="8495097701594799854">Wyłączone przez organizację.</translation>
 <translation id="8503813439785031346">Nazwa użytkownika</translation>
 <translation id="850600235656508448">Otwórz w trybie incognito</translation>
 <translation id="8510057420705599706">Spowoduje to wylogowanie Cię i wyłączenie synchronizacji, ale Twoje zakładki, historia, hasła i inne dane Chrome pozostaną na tym urządzeniu.</translation>

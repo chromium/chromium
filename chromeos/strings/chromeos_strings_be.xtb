@@ -52,6 +52,7 @@
 <translation id="2517472476991765520">Пошук</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> праходзіць праверку...</translation>
 <translation id="2620436844016719705">Сістэма</translation>
+<translation id="2658845327196595460">{COUNT,plural, =1{Файл адсканіраванага відарыса захаваны!}one{Файлы адсканіраваных відарысаў захаваны!}few{Файлы адсканіраваных відарысаў захаваны!}many{Файлы адсканіраваных відарысаў захаваны!}other{Файлы адсканіраваных відарысаў захаваны!}}</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2805756323405976993">Праграмы</translation>
 <translation id="2872961005593481000">Завяршыць працу</translation>
@@ -189,6 +190,7 @@
 <translation id="7177485034254901881">Гэтай прыладай <ph name="DEVICE_TYPE" /> кіруе <ph name="MANAGER" />. Адміністратары могуць аддалена задаваць налады прылады.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Тып файла</translation>
+<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Сканіраванне завершана. Адсканіравана 1 старонка}one{Сканіраванне завершана. Адсканіравана {NUMBER_OF_PAGES} старонка}few{Сканіраванне завершана. Адсканіравана {NUMBER_OF_PAGES} старонкі}many{Сканіраванне завершана. Адсканіравана {NUMBER_OF_PAGES} старонак}other{Сканіраванне завершана. Адсканіравана {NUMBER_OF_PAGES} старонкі}}</translation>
 <translation id="7441459999606975924">Ёмістасць акумулятараў зніжаецца па меры іх выкарыстання</translation>
 <translation id="7561454561030345039">Гэтым дзеяннем кіруе адміністратар</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>

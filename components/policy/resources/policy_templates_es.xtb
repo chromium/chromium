@@ -1266,11 +1266,6 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="2801065672151277034">Ajustes de gestión de certificados</translation>
 <translation id="2801155097555584385">Define un porcentaje personalizado de inicio de carga de la batería</translation>
 <translation id="2805707493867224476">Permitir que todos los sitios muestren ventanas emergentes</translation>
-<translation id="2813281962735757923">Esta política controla los intervalos de tiempo durante los cuales el dispositivo <ph name="PRODUCT_OS_NAME" /> no tiene permiso para buscar actualizaciones automáticamente.
-      Si a esta política se le asigna una lista de intervalos de tiempo que no esté vacía:
-      Los dispositivos no podrán buscar actualizaciones automáticamente durante los intervalos especificados. Por motivos de seguridad, los dispositivos que deban restaurarse, o cuya versión del sistema operativo sea anterior a <ph name="PRODUCT_OS_NAME" />, no se verán afectados por esta política. Esta política no bloqueará las comprobaciones de actualizaciones solicitadas por los usuarios o administradores.
-      Si no se asigna ningún valor a esta política o no contiene ningún intervalo de tiempo:
-      La política no bloqueará ninguna comprobación de actualizaciones automática, pero otras políticas podrían hacerlo. Esta función solo está habilitada en los dispositivos Chrome configurados como kioscos de inicio automático. Esta política no afectará a otros dispositivos.</translation>
 <translation id="2818074121667686266">Si se asigna el valor "Habilitada" a esta política o no se le asigna ninguno, significa que, con la excepción de las URL que se hayan incluido en la lista AudioCaptureAllowedUrls, se solicitará a los usuarios acceso a la captura de audio.
 
       Si se le asigna el valor "Inhabilitada", se desactivarán los mensajes de solicitud de acceso y la captura de audio solo estará disponible para las URL incluidas en la lista AudioCaptureAllowedUrls.
@@ -1808,6 +1803,13 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
       Si la política se inhabilita, el software podrá insertar dicho código en los procesos de <ph name="PRODUCT_NAME" />.
 
       Independientemente del valor de esta política, actualmente el navegador no impedirá que el software de terceros inserte código ejecutable en sus procesos en un equipo que esté vinculado a un dominio de <ph name="MS_AD_NAME" />.</translation>
+<translation id="3456292544936505775">Esta política controla los intervalos de tiempo durante los cuales el dispositivo <ph name="PRODUCT_OS_NAME" /> no tiene permiso para buscar actualizaciones automáticamente.
+      Si a esta política se le asigna una lista de intervalos de tiempo que no esté vacía:
+      Los dispositivos no podrán buscar actualizaciones automáticamente durante los intervalos de tiempo especificados. Por motivos de seguridad, los dispositivos que necesiten una restauración para empresas, o cuya versión del sistema operativo sea anterior a <ph name="PRODUCT_OS_NAME" />, no se verán afectados por esta política. Esta política no bloqueará las comprobaciones de actualizaciones solicitadas por los usuarios o administradores.
+      A partir de la versión M88, esta política cancelará las actualizaciones en curso cuando alcancen un intervalo de tiempo restringido. La actualización automática que se implemente después de que finalice el intervalo de tiempo restringido reanudará el proceso de actualización automáticamente. Los dispositivos que se estén actualizando a una versión Quick Fix no se verán afectados por esta política.
+      Si no se asigna ningún valor a esta política o no contiene ningún intervalo de tiempo:
+      Esta política no bloqueará ninguna comprobación de actualizaciones automática, pero es posible que otras políticas sí lo hagan.
+      Hasta la versión M88, esta función solo está habilitada en los dispositivos <ph name="PRODUCT_OS_NAME" /> configurados como kioscos de inicio automático. Esta política no afectará a otros dispositivos. Sin embargo, a partir de la versión M89, esta política está habilitada en todos los dispositivos <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="3459509316159669723">Imprimir</translation>
 <translation id="3461279434465463233">Informar sobre el estado de la energía</translation>
 <translation id="3478024346823118645">Borrar los datos del usuario al cerrar sesión</translation>

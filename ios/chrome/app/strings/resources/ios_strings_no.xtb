@@ -295,6 +295,7 @@ Følg fremgangsmåten under:</translation>
 <translation id="4121993058175073134">For å sende data for netteksport må du konfigurere e-postkontoen din i Innstillinger-appen.</translation>
 <translation id="4124987746317609294">Tidsperiode</translation>
 <translation id="4152011295694446843">Her finner du bokmerkene dine</translation>
+<translation id="4152093603141133546">Organisasjonen din har logget deg av.</translation>
 <translation id="4172051516777682613">Vis alltid</translation>
 <translation id="418156467088430727">Se versjonen uten nett i en ny fane</translation>
 <translation id="4181841719683918333">Språk</translation>
@@ -537,6 +538,7 @@ Prøv å bruke unike passord for hvert nettsted.</translation>
 <translation id="6668619169535738264">Rediger bokmerke</translation>
 <translation id="667999046851023355">Dokument</translation>
 <translation id="6691331417640343772">Administrer synkroniserte data i Google Oversikt</translation>
+<translation id="6710079714193676716">Administreres av organisasjonen din. Noen funksjoner er kanskje ikke tilgjengelige. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Kan ikke eksportere passordene</translation>
 <translation id="6748108480210050150">Fra</translation>
@@ -690,6 +692,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8487667956631253959">På</translation>
 <translation id="8487700953926739672">Tilgjengelig utenfor nettet</translation>
 <translation id="8490978609246021741">Lagre endringene</translation>
+<translation id="8495097701594799854">Organisasjonen din har slått av denne funksjonen.</translation>
 <translation id="8503813439785031346">Brukernavn</translation>
 <translation id="850600235656508448">Åpne i inkognitomodus</translation>
 <translation id="8510057420705599706">Dette medfører at du blir logget av og synkronisering blir slått av, men bokmerker, loggen, passord og andre Chrome-data blir værende på denne enheten.</translation>

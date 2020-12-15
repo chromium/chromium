@@ -30,6 +30,7 @@
 <translation id="3706101708757577809">Sada možete koristiti Chrome svaki put kada dodirnete linkove u porukama, dokumentima i drugim aplikacijama.</translation>
 <translation id="384394811301901750">Google Chrome trenutno ne može koristiti vašu kameru</translation>
 <translation id="3980220367029651214">Prebacujete sinhronizirane račune s <ph name="USER_EMAIL1" /> na <ph name="USER_EMAIL2" />. Vašim postojećim Chrome podacima upravlja domena <ph name="DOMAIN" />. Ovo će izbrisati sve podatke s uređaja, ali vaši podaci će ostati na računu <ph name="USER_EMAIL1" />.</translation>
+<translation id="3984746313391923992">Vaša organizacija zahtijeva da ostanete odjavljeni s Chromea.</translation>
 <translation id="3988789688219830639">Google Chrome nema pristup vašim fotografijama ili videozapisima. Omogućite pristup u meniju iOS postavke &gt; Privatnost &gt; Fotografije.</translation>
 <translation id="4099578267706723511">Poboljšajte Chrome šaljući Googleu statistike upotrebe i izvješća o rušenju.</translation>
 <translation id="415767770115540173">Doživite bolje iskustvo s Googleom na Chromeu sa svoje lokacije.</translation>
@@ -54,6 +55,7 @@
 <translation id="6600954340915313787">Kopirano u Chrome</translation>
 <translation id="6648150602980899529">Prijavljujete se s računom kojim upravlja domena <ph name="DOMAIN" /> i dajete njenom administratoru kontrolu nad vašim podacima iz Chromea. Vaši podaci će se trajno povezati s ovim računom. Odjavom iz Chromea izbrisat će se vaši podaci iz ovog uređaja, ali će ostati pohranjeni na vašem Google računu.</translation>
 <translation id="6676840375528380067">Obrisati Chrome podatke s ovog uređaja?</translation>
+<translation id="6822363243974874813">Kada ste bili odjavljeni s Chromea, s ovog uređaja izbrisane su vaše oznake, povijest, zaporke i ostale postavke. Vaš Google račun i dalje čuva vaše sinkronizirane podatke iz Chromea.</translation>
 <translation id="6822673484890854830">Chrome nije mogao provjeriti sve lozinke. Pokušajte ponovo kasnije.</translation>
 <translation id="7124339256045485976">Redovno ažurirajte Chrome</translation>
 <translation id="7161390184744336561">Google Chrome je zastario</translation>

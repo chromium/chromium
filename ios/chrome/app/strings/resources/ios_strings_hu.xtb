@@ -295,6 +295,7 @@ Hajtsa végre az alábbi lépéseket:</translation>
 <translation id="4121993058175073134">Net-export adatok küldéséhez, kérjük, konfigurálja e-mail fiókját a Beállítások alkalmazásban.</translation>
 <translation id="4124987746317609294">Időintervallum</translation>
 <translation id="4152011295694446843">Itt láthatja majd a könyvjelzőit</translation>
+<translation id="4152093603141133546">Szervezete kijelentkeztette.</translation>
 <translation id="4172051516777682613">Mindig mutassa</translation>
 <translation id="418156467088430727">Offline verzió megtekintése új lapon</translation>
 <translation id="4181841719683918333">Nyelvek</translation>
@@ -537,6 +538,7 @@ Próbáljon minden webhelyen egyedi jelszót használni.</translation>
 <translation id="6668619169535738264">Könyvjelző szerkesztése</translation>
 <translation id="667999046851023355">Dokumentum</translation>
 <translation id="6691331417640343772">Szinkronizált adatok kezelése a Google Irányítópulton</translation>
+<translation id="6710079714193676716">Az Ön szervezete kezeli. Előfordulhat, hogy egyes funkciók nem állnak rendelkezésre. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Nem sikerült a jelszavak exportálása</translation>
 <translation id="6748108480210050150">Feladó</translation>
@@ -690,6 +692,7 @@ A webhelyek használhatnak cookie-kat arra, hogy megfigyeljék más webhelyekre 
 <translation id="8487667956631253959">Bekapcsolva</translation>
 <translation id="8487700953926739672">Offline elérhető</translation>
 <translation id="8490978609246021741">Módosítások mentése</translation>
+<translation id="8495097701594799854">Kikapcsolta a szervezete.</translation>
 <translation id="8503813439785031346">Felhasználónév</translation>
 <translation id="850600235656508448">Megnyitás inkognitó módban</translation>
 <translation id="8510057420705599706">Ezzel kijelentkezik, és kikapcsol a szinkronizálás, de könyvjelzői, előzményei, jelszavai és egyéb Chrome-adatai továbbra is megmaradnak ezen az eszközön.</translation>

@@ -52,6 +52,7 @@
 <translation id="2517472476991765520">Scanează</translation>
 <translation id="2570743873672969996">Se rulează testul <ph name="TEST_NAME" />...</translation>
 <translation id="2620436844016719705">Sistem</translation>
+<translation id="2658845327196595460">{COUNT,plural, =1{Fișierul scanat a fost salvat!}few{Fișierele scanate au fost salvate!}other{Fișierele scanate au fost salvate!}}</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2805756323405976993">Aplicații</translation>
 <translation id="2872961005593481000">Închide</translation>
@@ -189,6 +190,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="7177485034254901881">Acest <ph name="DEVICE_TYPE" /> este gestionat de <ph name="MANAGER" />. Administratorii pot să configureze dispozitivul de la distanță.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Tip de fișier</translation>
+<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Scanare finalizată. S-a scanat o pagină.}few{Scanare finalizată. S-au scanat {NUMBER_OF_PAGES} pagini.}other{Scanare finalizată. S-au scanat {NUMBER_OF_PAGES} de pagini.}}</translation>
 <translation id="7441459999606975924">Capacitatea bateriei scade pe măsura utilizării</translation>
 <translation id="7561454561030345039">Această setare este gestionată de administrator</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>

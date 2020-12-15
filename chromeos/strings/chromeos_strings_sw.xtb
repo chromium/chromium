@@ -9,6 +9,7 @@
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> hii inasimamiwa na <ph name="MANAGER" />.</translation>
 <translation id="1195447618553298278">Hitilafu isiyojulikana.</translation>
 <translation id="1204296502688602597">Muda wa Kusubiri wa DNS</translation>
+<translation id="123124571410524056">Inashukiwa kuna ukurasa wa mwanzo</translation>
 <translation id="1238612778414822719">Muda wa kusubiri maombi ya HTTPS</translation>
 <translation id="1290331692326790741">Mtandao si thabiti</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -36,6 +37,7 @@
 <translation id="1947737735496445907">Imechapishwa</translation>
 <translation id="1979103255016296513">Muda wa kubadilisha nenosiri umeisha</translation>
 <translation id="1980044825731880088">Kasi ya CPU</translation>
+<translation id="1999615961760456652">Ukurasa wa Mwanzo</translation>
 <translation id="2008685064673031089">Prime search</translation>
 <translation id="2080070583977670716">Mipangilio zaidi</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -52,6 +54,7 @@
 <translation id="2517472476991765520">Tafuta</translation>
 <translation id="2570743873672969996">Inatekeleza jaribio la <ph name="TEST_NAME" />...</translation>
 <translation id="2620436844016719705">Mfumo</translation>
+<translation id="2658845327196595460">{COUNT,plural, =1{Faili iliyochanganuliwa imehifadhiwa!}other{Faili zilizochanganuliwa zimehifadhiwa!}}</translation>
 <translation id="2740531572673183784">Sawa</translation>
 <translation id="2805756323405976993">Programu</translation>
 <translation id="2872961005593481000">Zima</translation>
@@ -114,6 +117,7 @@
 <translation id="4773299976671772492">Imesimamishwa</translation>
 <translation id="4808449224298348341">Kazi ya kuchapisha ya <ph name="DOCUMENT_TITLE" /> ilighairiwa</translation>
 <translation id="4832079907277790330">Chagua folda katika programu ya Faili...</translation>
+<translation id="4835901797422965222">Hakuna mitandao inayotumika</translation>
 <translation id="4848429997038228357">LINATEKELEZWA</translation>
 <translation id="4890353053343094602">Chagua nenosiri jipya mara moja</translation>
 <translation id="4891842000192098784">Shinikizo</translation>
@@ -134,6 +138,7 @@
 <translation id="5317780077021120954">Hifadhi</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Chagua nenosiri jipya sasa</translation>
+<translation id="5333530671332546086">Hali ya ukurasa wa mwanzo isiyojulikana</translation>
 <translation id="5372659122375744710">Mtandao wa WiFi si salama</translation>
 <translation id="5401938042319910061">Tekeleza Ratiba Zote</translation>
 <translation id="5431318178759467895">Rangi</translation>
@@ -188,7 +193,9 @@
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> hii inadhibitiwa na <ph name="MANAGER" />. Wasimamizi wanaweza kuweka mipangilio ya kifaa kwa mbali.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Aina ya faili</translation>
+<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Imemaliza kuchanganua. Ukurasa mmoja umechanganuliwa}other{Imemaliza kuchanganua. Kurasa {NUMBER_OF_PAGES} zimechanganuliwa}}</translation>
 <translation id="7441459999606975924">Nguvu za betri hupungua kadri inavyotumiwa</translation>
+<translation id="7469648432129124067">Imetambua ukurasa wa mwanzo</translation>
 <translation id="7561454561030345039">Kitendo hiki kinadhibitiwa na msimamizi wako</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Muda mwingi wa kusubiri maombi ya HTTPS</translation>

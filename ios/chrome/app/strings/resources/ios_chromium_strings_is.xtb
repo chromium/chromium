@@ -22,6 +22,7 @@
 <translation id="2650312721222849884">Kveiktu á samstillingu til að sjá flipana þína hvar sem þú notar Chromium</translation>
 <translation id="2730884209570016437">Chromium getur ekki notað myndavélina því að annað forrit er að nota hana</translation>
 <translation id="2915596697727466327">Chromium notar andlitskennsl til að tryggja heimilaðan aðgang að aðgangsorðum þínum.</translation>
+<translation id="2918709798697875261">Fyrirtækið þitt krefst þess að þú skráir þig ekki inn í Chromium.</translation>
 <translation id="2977470724722393594">Chromium er uppfært</translation>
 <translation id="3256316712990552818">Afritað í Chromium</translation>
 <translation id="3344973607274501920">Chromium gat ekki athugað aðgangsorðin þín. Athugaðu nettenginguna þína.</translation>
@@ -74,6 +75,7 @@
 <translation id="8776843108004031667">Þessi reikningur og öll óvistuð gögn verða fjarlægð úr Chromium.</translation>
 <translation id="9022552996538154597">Skráðu þig inn á Chromium</translation>
 <translation id="9089354809943900324">Chromium er úrelt</translation>
+<translation id="912386518501777532">Þegar þú varst skráð(ur) út úr Chromium voru bókamerkin þín, ferillinn, aðgangsorðin og aðrar stillingar hreinsuð úr þessu tæki. Samstilltu gögnin þín eru áfram vistuð á reikningnum þínum.</translation>
 <translation id="921174536258924340">Chromium gat ekki athugað öll aðgangsorð. Reyndu aftur á morgun eða <ph name="BEGIN_LINK" />athugaðu aðgangsorð á Google reikningnum þínum.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">Höfundar Chromium</translation>
 </translationbundle>

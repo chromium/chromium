@@ -295,6 +295,7 @@ Siga estas etapas:</translation>
 <translation id="4121993058175073134">Para enviar dados de exportação líquida, configure sua conta de e-mail no aplicativo "Configurações".</translation>
 <translation id="4124987746317609294">Período</translation>
 <translation id="4152011295694446843">Você verá seus favoritos aqui</translation>
+<translation id="4152093603141133546">Sua conta foi desconectada pela organização.</translation>
 <translation id="4172051516777682613">Sempre mostrar</translation>
 <translation id="418156467088430727">Ver versão off-line em uma nova guia</translation>
 <translation id="4181841719683918333">Idiomas</translation>
@@ -537,6 +538,7 @@ Tente usar uma senha exclusiva para cada site.</translation>
 <translation id="6668619169535738264">Editar favorito</translation>
 <translation id="667999046851023355">Documento</translation>
 <translation id="6691331417640343772">Gerenciar dados sincronizados no Painel de controle do Google</translation>
+<translation id="6710079714193676716">Gerenciado pela sua organização. Talvez alguns recursos estejam indisponíveis. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Não é possível exportar as senhas</translation>
 <translation id="6748108480210050150">De</translation>
@@ -690,6 +692,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8487667956631253959">Ativada</translation>
 <translation id="8487700953926739672">Disponível off-line</translation>
 <translation id="8490978609246021741">Salvar alterações</translation>
+<translation id="8495097701594799854">Desativado pela organização.</translation>
 <translation id="8503813439785031346">Nome de usuário</translation>
 <translation id="850600235656508448">Abrir em modo de navegação anônima</translation>
 <translation id="8510057420705599706">Essa ação desconectará sua conta e desativará a sincronização, mas os favoritos, o histórico, as senhas e outros dados do Chrome permanecerão neste dispositivo.</translation>

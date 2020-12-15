@@ -52,6 +52,7 @@
 <translation id="2517472476991765520">Buscar</translation>
 <translation id="2570743873672969996">Ejecutando la prueba <ph name="TEST_NAME" />…</translation>
 <translation id="2620436844016719705">Sistema</translation>
+<translation id="2658845327196595460">{COUNT,plural, =1{¡Se guardó el archivo escaneado!}other{¡Se guardaron los archivos escaneados!}}</translation>
 <translation id="2740531572673183784">Aceptar</translation>
 <translation id="2805756323405976993">Aplicaciones</translation>
 <translation id="2872961005593481000">Apagar</translation>
@@ -189,6 +190,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> administra el dispositivo <ph name="DEVICE_TYPE" />. Los administradores pueden configurarlo de forma remota.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Tipo de archivo</translation>
+<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Se completó el escaneo. Se escaneó 1 página}other{Se completó el escaneo. Se escanearon {NUMBER_OF_PAGES} páginas}}</translation>
 <translation id="7441459999606975924">La capacidad de las baterías se reduce con el uso</translation>
 <translation id="7561454561030345039">El administrador controla esta acción</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>

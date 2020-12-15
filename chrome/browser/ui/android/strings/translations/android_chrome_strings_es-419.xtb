@@ -563,6 +563,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="4970824347203572753">No disponible en tu ubicación</translation>
 <translation id="4971735654804503942">Protección más rápida y proactiva contra descargas, extensiones y sitios web peligrosos. Te advierte sobre violaciones de la seguridad de las contraseñas. Requiere que se envíen datos de navegación a Google.</translation>
 <translation id="497421865427891073">Avanzar</translation>
+<translation id="4986638582553854481">Título</translation>
 <translation id="4988210275050210843">Descargando archivo (<ph name="MEGABYTES" />)</translation>
 <translation id="4988526792673242964">Páginas</translation>
 <translation id="5004416275253351869">Controles de actividad de Google</translation>
@@ -895,6 +896,7 @@ Solo se borran de Chrome los datos de las sesiones de incógnito cuando <ph name
 <translation id="718926126787620637">La lista de carpetas de favoritos está totalmente abierta</translation>
 <translation id="7189372733857464326">Esperando que los servicios de Google Play terminen de actualizarse</translation>
 <translation id="7191430249889272776">Pestaña abierta en segundo plano</translation>
+<translation id="720894724577012575">Categorías: <ph name="COMMA_SEPERATED_CATEGORY_LIST" /></translation>
 <translation id="7233236755231902816">Para ver la Web en tu idioma, obtén la versión más reciente de Chrome</translation>
 <translation id="7248069434667874558">Comprueba que <ph name="TARGET_DEVICE_NAME" /> tenga activada la sincronización en Chrome</translation>
 <translation id="7274013316676448362">Sitio bloqueado</translation>

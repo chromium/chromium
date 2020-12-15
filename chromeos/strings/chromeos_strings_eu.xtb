@@ -52,6 +52,7 @@
 <translation id="2517472476991765520">Bilatu</translation>
 <translation id="2570743873672969996">Abian da <ph name="TEST_NAME" /> proba…</translation>
 <translation id="2620436844016719705">Sistema</translation>
+<translation id="2658845327196595460">{COUNT,plural, =1{Gorde da eskaneatutako fitxategia}other{Gorde dira eskaneatutako fitxategiak}}</translation>
 <translation id="2740531572673183784">Ados</translation>
 <translation id="2805756323405976993">Aplikazioak</translation>
 <translation id="2872961005593481000">Itzali</translation>
@@ -189,6 +190,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> domeinuak kudeatzen du <ph name="DEVICE_TYPE" /> gailua. Baliteke administratzaileek urrunetik konfiguratzea gailua.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Fitxategi mota</translation>
+<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Amaitu da eskaneatzen. 1 orri eskaneatu da.}other{Amaitu da eskaneatzen. {NUMBER_OF_PAGES} orri eskaneatu dira.}}</translation>
 <translation id="7441459999606975924">Bateriak erabiltzearekin batera jaisten da haien ahalmena</translation>
 <translation id="7561454561030345039">Administratzaileak kudeatzen du ekintza hau</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>

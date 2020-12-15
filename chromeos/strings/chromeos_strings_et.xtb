@@ -52,6 +52,7 @@
 <translation id="2517472476991765520">Kontrolli</translation>
 <translation id="2570743873672969996">Testi <ph name="TEST_NAME" /> käitamine …</translation>
 <translation id="2620436844016719705">Süsteem</translation>
+<translation id="2658845327196595460">{COUNT,plural, =1{Skannitud fail on salvestatud.}other{Skannitud failid on salvestatud.}}</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2805756323405976993">Rakendused</translation>
 <translation id="2872961005593481000">Lülita välja</translation>
@@ -189,6 +190,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="7177485034254901881">Seadet <ph name="DEVICE_TYPE" /> haldab <ph name="MANAGER" />. Administraatorid saavad seda seadet kaugühenduse teel seadistada.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Faili tüüp</translation>
+<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skannimine on lõpetatud. Skanniti üks leht.}other{Skannimine on lõpetatud. Skanniti {NUMBER_OF_PAGES} lehte}}</translation>
 <translation id="7441459999606975924">Akude maht väheneb kasutuse käigus</translation>
 <translation id="7561454561030345039">Seda toimingut haldab administraator.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>

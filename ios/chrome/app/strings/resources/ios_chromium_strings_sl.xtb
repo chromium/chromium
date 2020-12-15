@@ -22,6 +22,7 @@
 <translation id="2650312721222849884">Če si želite ogledati zavihke iz naprav, v katerih uporabljate Chromium, vklopite sinhronizacijo</translation>
 <translation id="2730884209570016437">Chromium ne more uporabljati fotoaparata, ker ga uporablja druga aplikacija</translation>
 <translation id="2915596697727466327">Chromium uporablja funkcijo Face ID za zagotavljanje pooblaščenega dostopa do vaših gesel.</translation>
+<translation id="2918709798697875261">Vaša organizacija zahteva, da niste prijavljeni v Chromium.</translation>
 <translation id="2977470724722393594">Chromium je posodobljen</translation>
 <translation id="3256316712990552818">Kopirano v Chromium</translation>
 <translation id="3344973607274501920">Chromiumu ni uspelo preveriti vaših gesel. Poskusite preveriti internetno povezavo.</translation>
@@ -74,6 +75,7 @@
 <translation id="8776843108004031667">Ta račun in neshranjeni podatki bodo odstranjeni iz Chromiuma.</translation>
 <translation id="9022552996538154597">Prijava v Chromium</translation>
 <translation id="9089354809943900324">Chromium je zastarel</translation>
+<translation id="912386518501777532">Ko ste bili odjavljeni iz Chromiuma, so bili iz naprave izbrisani zaznamki, zgodovina, gesla in druge nastavitve. Sinhronizirani podatki se še vedno shranjujejo v računu.</translation>
 <translation id="921174536258924340">Chromiumu ni uspelo preveriti vseh gesel. Poskusite znova jutri ali <ph name="BEGIN_LINK" />preverite gesla v računu Google.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">Ustvarjalci Chromiuma</translation>
 </translationbundle>

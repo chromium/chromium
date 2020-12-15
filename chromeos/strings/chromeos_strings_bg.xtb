@@ -52,6 +52,7 @@
 <translation id="2517472476991765520">Сканиране</translation>
 <translation id="2570743873672969996">Изпълняван тест: <ph name="TEST_NAME" /></translation>
 <translation id="2620436844016719705">Система</translation>
+<translation id="2658845327196595460">{COUNT,plural, =1{Сканираният файл е запазен!}other{Сканираните файлове са запазени!}}</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2805756323405976993">Приложения</translation>
 <translation id="2872961005593481000">Изключване</translation>
@@ -189,6 +190,7 @@
 <translation id="7177485034254901881">Това устройство <ph name="DEVICE_TYPE" /> се управлява от <ph name="MANAGER" />. Администраторите може да го конфигурират отдалечено.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Файлов тип</translation>
+<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Сканирането завърши. Сканирана бе 1 страница}other{Сканирането завърши. Сканирани бяха {NUMBER_OF_PAGES} страници}}</translation>
 <translation id="7441459999606975924">Капацитетът на батерията намалява с течение на използването ѝ</translation>
 <translation id="7561454561030345039">Това действие се управлява от администратора ви</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>

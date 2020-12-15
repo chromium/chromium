@@ -295,6 +295,7 @@ Quyidagi amallarni bajaring:</translation>
 <translation id="4121993058175073134">Tozalangan ma’lumotlarni eksport qilish uchun “Sozlamalar” ilovasida yaroqli e-pochta hisobini kiriting.</translation>
 <translation id="4124987746317609294">Vaqt diapazoni</translation>
 <translation id="4152011295694446843">Brauzer bukmarklari shu yerda chiqadi</translation>
+<translation id="4152093603141133546">Tashkilotingiz sizni hisobdan chiqardi.</translation>
 <translation id="4172051516777682613">Doim ko‘rsatilsin</translation>
 <translation id="418156467088430727">Oflayn versiyasini yangi varaqda ochish</translation>
 <translation id="4181841719683918333">Tillar</translation>
@@ -304,7 +305,7 @@ Quyidagi amallarni bajaring:</translation>
 <translation id="4272631900155121838">QR-kodni skanerlash uchun sozlamalar orqali kamerani yoqing.</translation>
 <translation id="4276041135170112053">Tuzatish.</translation>
 <translation id="4277990410970811858">Saytlarni xavfsiz kezish</translation>
-<translation id="4281844954008187215">Foydalanish shartlari</translation>
+<translation id="4281844954008187215">Xizmat shartlari</translation>
 <translation id="430793432425771671">Barchasini sinxronlash</translation>
 <translation id="4309403553630140242">Batafsil axborot olish uchun ikki marta bosing.</translation>
 <translation id="430967081421617822">Shu kungacha</translation>
@@ -537,6 +538,7 @@ Har bir sayt uchun alohida parol ishlating.</translation>
 <translation id="6668619169535738264">Bukmarkni tahrirlash</translation>
 <translation id="667999046851023355">Hujjat</translation>
 <translation id="6691331417640343772">Google shaxsiy kabinetidagi sinxronlangan ma’lumotlarni boshqarish</translation>
+<translation id="6710079714193676716">Tashkilotingiz tomonidan boshqariladi. Ayrim funksiyalar ishlamasligi mumkin. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Parollar eksport qilinmadi</translation>
 <translation id="6748108480210050150">Kimdan:</translation>
@@ -690,6 +692,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="8487667956631253959">Yoniq</translation>
 <translation id="8487700953926739672">Internetsiz foydalanish mumkin</translation>
 <translation id="8490978609246021741">Oʻzgarishlarni saqlash</translation>
+<translation id="8495097701594799854">Tashkilotingiz uchun faolsizlantirish.</translation>
 <translation id="8503813439785031346">Foydalanuvchi nomi</translation>
 <translation id="850600235656508448">Inkognito rejimida ochish</translation>
 <translation id="8510057420705599706">Bu hisobingizdan chiqarib, sinxronizatsiyani faolsizlantiradi, lekin bu qurilmadagi bukmarklar, tarix, parollar va boshqa Chrome maʼlumotlaringiz saqlanib qoladi.</translation>

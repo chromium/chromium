@@ -52,6 +52,7 @@
 <translation id="2517472476991765520">فحص</translation>
 <translation id="2570743873672969996">جارٍ تنفيذ اختبار <ph name="TEST_NAME" />...</translation>
 <translation id="2620436844016719705">النظام</translation>
+<translation id="2658845327196595460">{COUNT,plural, =1{تم حفظ الملف الذي تم مسحه ضوئيًا.}zero{تم حفظ الملفات التي تم مسحها ضوئيًا.}two{تم حفظ الملفِّين اللذين تم مسحهما ضوئيًا.}few{تم حفظ الملفات التي تم مسحها ضوئيًا.}many{تم حفظ الملفات التي تم مسحها ضوئيًا.}other{تم حفظ الملفات التي تم مسحها ضوئيًا.}}</translation>
 <translation id="2740531572673183784">حسنًا</translation>
 <translation id="2805756323405976993">التطبيقات</translation>
 <translation id="2872961005593481000">إيقاف التشغيل</translation>
@@ -189,6 +190,7 @@
 <translation id="7177485034254901881">يدير <ph name="MANAGER" /> جهاز <ph name="DEVICE_TYPE" /> هذا. ويمكن للمشرفين إعداد هذا الجهاز عن بُعد.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">نوع الملف</translation>
+<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{اكتمل المسح الضوئي. تم مسح صفحة واحدة ضوئيًا.}zero{اكتمل المسح الضوئي. تم مسح {NUMBER_OF_PAGES} صفحة ضوئيًا.}two{اكتمل المسح الضوئي. تم مسح صفحتَين ({NUMBER_OF_PAGES}) ضوئيًا.}few{اكتمل المسح الضوئي. تم مسح {NUMBER_OF_PAGES} صفحات ضوئيًا.}many{اكتمل المسح الضوئي. تم مسح {NUMBER_OF_PAGES} صفحةً ضوئيًا.}other{اكتمل المسح الضوئي. تم مسح {NUMBER_OF_PAGES} صفحة ضوئيًا.}}</translation>
 <translation id="7441459999606975924">تقلّ سعة البطاريات عند استخدامها.</translation>
 <translation id="7561454561030345039">يتولّى مشرفك إدارة هذا الإجراء.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>

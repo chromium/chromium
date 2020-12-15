@@ -120,6 +120,7 @@
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 ay önce}other{# ay önce}}</translation>
 <translation id="4289300219472526559">Konuşmaya Başla</translation>
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" />, <ph name="FOLDER_NAME" />klasörüne taşındı</translation>
+<translation id="4306392492252714209">Panodan kaldır.</translation>
 <translation id="4316910396681052118">TÜM UYGULAMALAR</translation>
 <translation id="4491109536499578614">Resim</translation>
 <translation id="4588090240171750605">Sağa Kaydır</translation>
@@ -214,6 +215,7 @@
 <translation id="7430878839542012341">Bu arama, geçmişinizden silinsin mi?</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7507604095951736240">Emoji</translation>
+<translation id="7620655452534002301">Kaldırıldı.</translation>
 <translation id="7658239707568436148">İptal</translation>
 <translation id="7781829728241885113">Dün</translation>
 <translation id="7814458197256864873">K&amp;opyala</translation>

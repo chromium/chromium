@@ -52,6 +52,7 @@
 <translation id="2517472476991765520">Որոնել</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" />ը ստուգվում է…</translation>
 <translation id="2620436844016719705">Համակարգ</translation>
+<translation id="2658845327196595460">{COUNT,plural, =1{Սկանավորված ֆայլը պահված է}one{Սկանավորված ֆայլերը պահված են}other{Սկանավորված ֆայլերը պահված են}}</translation>
 <translation id="2740531572673183784">Եղավ</translation>
 <translation id="2805756323405976993">Հավելվածներ</translation>
 <translation id="2872961005593481000">Անջատել</translation>
@@ -189,6 +190,7 @@
 <translation id="7177485034254901881">Այս <ph name="DEVICE_TYPE" /> սարքը կառավարվում է <ph name="MANAGER" />-ի կողմից։ Ադմինիստրատորները կարող են հեռակա փոխել սարքի կարգավորումները։</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Ֆայլի տեսակ</translation>
+<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Սկանավորումն ավարտվել է։ Սկանավորվել է 1 էջ։}one{Սկանավորումն ավարտվել է։ Սկանավորվել է {NUMBER_OF_PAGES} էջ։}other{Սկանավորումն ավարտվել է։ Սկանավորվել է {NUMBER_OF_PAGES} էջ։}}</translation>
 <translation id="7441459999606975924">Օգտագործման ընթացքում մարտկոցի հզորությունը նվազում է</translation>
 <translation id="7561454561030345039">Այս գործողությունը կառավարվում է ձեր ադմինիստրատորի կողմից</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>

@@ -52,6 +52,7 @@
 <translation id="2517472476991765520">Scansiona</translation>
 <translation id="2570743873672969996">Esecuzione del test <ph name="TEST_NAME" /> in corso…</translation>
 <translation id="2620436844016719705">Sistema</translation>
+<translation id="2658845327196595460">{COUNT,plural, =1{File scansionato salvato.}other{File scansionati salvati.}}</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2805756323405976993">App</translation>
 <translation id="2872961005593481000">Spegni</translation>
@@ -189,6 +190,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="7177485034254901881">Questo dispositivo <ph name="DEVICE_TYPE" /> è gestito da <ph name="MANAGER" />. Gli amministratori possono configurarlo da remoto.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Tipo di file</translation>
+<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Scansione completata. 1 pagina scansionata.}other{Scansione completata. {NUMBER_OF_PAGES} pagine scansionate.}}</translation>
 <translation id="7441459999606975924">La capacità delle batterie si riduce con l'utilizzo</translation>
 <translation id="7561454561030345039">Questa azione è gestita dall'amministratore</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>

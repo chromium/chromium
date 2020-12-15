@@ -295,6 +295,7 @@ Follow the steps below:</translation>
 <translation id="4121993058175073134">To send net-export data, please configure your email account in the Settings app.</translation>
 <translation id="4124987746317609294">Time Range</translation>
 <translation id="4152011295694446843">You'll find your bookmarks here</translation>
+<translation id="4152093603141133546">Your organisation signed you out.</translation>
 <translation id="4172051516777682613">Always show</translation>
 <translation id="418156467088430727">View Offline Version in New Tab</translation>
 <translation id="4181841719683918333">Languages</translation>
@@ -537,6 +538,7 @@ Try to use a unique password for every site.</translation>
 <translation id="6668619169535738264">Edit bookmark</translation>
 <translation id="667999046851023355">Document</translation>
 <translation id="6691331417640343772">Manage synced data on Google Dashboard</translation>
+<translation id="6710079714193676716">Managed by your organisation. Some features may be unavailable. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Can't Export Passwords</translation>
 <translation id="6748108480210050150">From</translation>
@@ -690,6 +692,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8487667956631253959">On</translation>
 <translation id="8487700953926739672">Available offline</translation>
 <translation id="8490978609246021741">Save changes</translation>
+<translation id="8495097701594799854">Turned off by your organisation.</translation>
 <translation id="8503813439785031346">Username</translation>
 <translation id="850600235656508448">Open in Incognito</translation>
 <translation id="8510057420705599706">This will sign you out and turn off sync, but your bookmarks, history, passwords and other Chrome data will remain on this device.</translation>

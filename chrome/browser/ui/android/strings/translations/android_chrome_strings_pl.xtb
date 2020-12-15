@@ -12,6 +12,7 @@
 <translation id="10614374240317010">Nigdy nie zapisane</translation>
 <translation id="1067922213147265141">Inne usługi Google</translation>
 <translation id="107147699690128016">Jeśli zmienisz rozszerzenie pliku, będzie mogła go otworzyć inna aplikacja, co może nie być bezpieczne dla Twojego urządzenia.</translation>
+<translation id="1094515529340404628">Pomiary tłumu internetowego i reklam</translation>
 <translation id="1100066534610197918">Otwórz w nowej karcie w grupie</translation>
 <translation id="1105960400813249514">Zrzut ekranu</translation>
 <translation id="1111673857033749125">Tutaj wyświetlą się zakładki z innych urządzeń.</translation>
@@ -227,6 +228,7 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="2536728043171574184">Oglądasz kopię offline tej strony</translation>
 <translation id="2537178555904266562">Błąd podczas synchronizowania haseł</translation>
 <translation id="2546283357679194313">Pliki cookie i dane stron</translation>
+<translation id="2562889244313180139">Zezwól witrynom i aplikacjom na działanie lepiej dostosowane do Twoich potrzeb, używając aliasu, który nie umożliwia identyfikacji.</translation>
 <translation id="2567385386134582609">OBRAZ</translation>
 <translation id="2571711316400087311">Proponuj przesyłanie stron w innych językach do Tłumacza Google</translation>
 <translation id="2581165646603367611">Spowoduje to skasowanie plików cookie, pamięci podręcznej i innych danych witryn, które Chrome uzna za nieistotne.</translation>
@@ -714,6 +716,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="6005538289190791541">Proponowane hasło</translation>
 <translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Masz <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> stronę}few{Masz <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> strony}many{Masz <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> stron}other{Masz <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> strony}}</translation>
 <translation id="6014293228235665243">Nieprzeczytane</translation>
+<translation id="6018309500671889594">Zezwól reklamodawcom na analizowanie kampanii reklamowych przy użyciu informacji nieumożliwiających identyfikacji osób.</translation>
 <translation id="6036057147555329831">Dodatkowy moduł ICU</translation>
 <translation id="6039379616847168523">Przejdź do następnej karty</translation>
 <translation id="6040143037577758943">Zamknij</translation>
@@ -922,6 +925,7 @@ Dane sesji incognito zostaną usunięte z Chrome dopiero po <ph name="BEGIN_BOL
 <translation id="7403691278183511381">Pierwsze uruchomienie Chrome</translation>
 <translation id="741204030948306876">Tak</translation>
 <translation id="7413229368719586778">Data rozpoczęcia: <ph name="DATE" /></translation>
+<translation id="7416941666639889592">Dołączając do tłumu internetowego, zezwalasz na dostosowanie działania stron internetowych do Twoich potrzeb bez korzystania z informacji umożliwiających identyfikację. Podobnie jak to jest w przypadku tłumu na koncercie, strony i reklamodawcy wiedzą tylko tyle, że podobne zainteresowania mają tysiące użytkowników.</translation>
 <translation id="7431991332293347422">Zarządzaj personalizacją wyszukiwarki i innych funkcji na podstawie historii przeglądania</translation>
 <translation id="7435356471928173109">Wyłączył administrator</translation>
 <translation id="7437998757836447326">Wyloguj się z Chrome</translation>
@@ -1123,6 +1127,7 @@ Dane sesji incognito zostaną usunięte z Chrome dopiero po <ph name="BEGIN_BOL
 <translation id="8748850008226585750">Treści ukryte</translation>
 <translation id="8788265440806329501">Historia nawigacji jest zamknięta</translation>
 <translation id="8788968922598763114">Ponownie otwórz ostatnio zamknięte karty</translation>
+<translation id="8795672590390389447">Piaskownica prywatności</translation>
 <translation id="8798449543960971550">Przeczytane</translation>
 <translation id="8812260976093120287">Używając swojego urządzenia, na niektórych stronach możesz płacić za pomocą powyższych obsługiwanych aplikacji do płatności.</translation>
 <translation id="881688628773363275">Nie można wyświetlić zawartości karty podglądu.</translation>

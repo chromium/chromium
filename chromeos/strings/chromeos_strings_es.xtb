@@ -9,6 +9,7 @@
 <translation id="1175697296044146566"><ph name="MANAGER" /> gestiona el dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1195447618553298278">Error desconocido.</translation>
 <translation id="1204296502688602597">Latencia de DNS</translation>
+<translation id="123124571410524056">Posible portal</translation>
 <translation id="1238612778414822719">Latencia de HTTPS</translation>
 <translation id="1290331692326790741">Señal débil</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -36,6 +37,7 @@
 <translation id="1947737735496445907">Impreso</translation>
 <translation id="1979103255016296513">Ya ha terminado el plazo para cambiar la contraseña</translation>
 <translation id="1980044825731880088">Velocidad de CPU</translation>
+<translation id="1999615961760456652">Portal cautivo</translation>
 <translation id="2008685064673031089">Búsqueda principal</translation>
 <translation id="2080070583977670716">Más ajustes</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
@@ -52,6 +54,7 @@
 <translation id="2517472476991765520">Buscar</translation>
 <translation id="2570743873672969996">Ejecutando prueba <ph name="TEST_NAME" />...</translation>
 <translation id="2620436844016719705">Sistema</translation>
+<translation id="2658845327196595460">{COUNT,plural, =1{Archivo analizado guardado.}other{Archivos analizados guardados.}}</translation>
 <translation id="2740531572673183784">Aceptar</translation>
 <translation id="2805756323405976993">Aplicaciones</translation>
 <translation id="2872961005593481000">Apagar</translation>
@@ -114,6 +117,7 @@
 <translation id="4773299976671772492">Detenido</translation>
 <translation id="4808449224298348341">Trabajo de impresión <ph name="DOCUMENT_TITLE" /> cancelado</translation>
 <translation id="4832079907277790330">Seleccionar carpeta en aplicación Files...</translation>
+<translation id="4835901797422965222">No hay redes activas</translation>
 <translation id="4848429997038228357">EN CURSO</translation>
 <translation id="4890353053343094602">Selecciona otra inmediatamente</translation>
 <translation id="4891842000192098784">Esfuerzo</translation>
@@ -134,6 +138,7 @@
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Selecciona otra ahora</translation>
+<translation id="5333530671332546086">Estado del portal desconocido</translation>
 <translation id="5372659122375744710">La red Wi-Fi no es segura</translation>
 <translation id="5401938042319910061">Ejecutar todas las rutinas</translation>
 <translation id="5431318178759467895">Color</translation>
@@ -188,7 +193,9 @@
 <translation id="7177485034254901881"><ph name="MANAGER" /> gestiona este <ph name="DEVICE_TYPE" />. Los administradores pueden configurar el dispositivo de forma remota.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Tipo de archivo</translation>
+<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Escaneo completado. 1 página escaneada}other{Escaneo completado. {NUMBER_OF_PAGES} páginas escaneadas}}</translation>
 <translation id="7441459999606975924">La capacidad de las baterías disminuye con el uso</translation>
+<translation id="7469648432129124067">Portal detectado</translation>
 <translation id="7561454561030345039">Esta acción la gestiona tu administrador</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Latencia de HTTPS alta</translation>

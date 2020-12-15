@@ -22,6 +22,7 @@
 <translation id="2650312721222849884">Schakel synchroniseren in om je tabbladen te bekijken vanaf elk apparaat waarop je Chromium gebruikt</translation>
 <translation id="2730884209570016437">Chromium kan je camera niet gebruiken omdat deze wordt gebruikt door een andere app</translation>
 <translation id="2915596697727466327">Chromium gebruikt Face ID om geautoriseerde toegang tot je wachtwoorden mogelijk te maken.</translation>
+<translation id="2918709798697875261">Je organisatie vereist dat je uitgelogd blijft bij Chromium.</translation>
 <translation id="2977470724722393594">Chromium is up-to-date</translation>
 <translation id="3256316712990552818">Gekopieerd naar Chromium</translation>
 <translation id="3344973607274501920">Chromium kan je wachtwoorden niet checken. Check de internetverbinding.</translation>
@@ -74,6 +75,7 @@
 <translation id="8776843108004031667">Dit account en niet-opgeslagen gegevens worden verwijderd uit Chromium.</translation>
 <translation id="9022552996538154597">Inloggen bij Chromium</translation>
 <translation id="9089354809943900324">Chromium is verouderd</translation>
+<translation id="912386518501777532">Toen je werd uitgelogd bij Chromium, zijn je bookmarks, geschiedenis, wachtwoorden en andere instellingen gewist op dit apparaat. Je gesynchroniseerde gegevens zijn nog wel opgeslagen in je account.</translation>
 <translation id="921174536258924340">Chromium kan niet alle wachtwoorden checken. Probeer het morgen opnieuw of <ph name="BEGIN_LINK" />check de wachtwoorden in je Google-account<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">De auteurs van Chromium</translation>
 </translationbundle>
