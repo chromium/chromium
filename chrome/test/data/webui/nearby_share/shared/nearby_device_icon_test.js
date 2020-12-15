@@ -8,6 +8,7 @@
 // #import 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js';
 // #import 'chrome://nearby/shared/nearby_device_icon.m.js';
 // #import 'chrome://nearby/mojo/nearby_share_target_types.mojom-lite.js';
+// #import 'chrome://nearby/mojo/nearby_share_share_type.mojom-lite.js';
 // #import 'chrome://nearby/mojo/nearby_share.mojom-lite.js';
 // #import {assertEquals} from '../../chai_assert.js';
 // clang-format on

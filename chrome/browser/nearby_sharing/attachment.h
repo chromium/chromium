@@ -8,6 +8,8 @@
 #include <stdint.h>
 #include <string>
 
+#include "chrome/browser/ui/webui/nearby_share/nearby_share_share_type.mojom.h"
+
 struct ShareTarget;
 
 // A single attachment to be sent by / received from a ShareTarget, can be
@@ -31,6 +33,7 @@ class Attachment {
 
   virtual void MoveToShareTarget(ShareTarget& share_target) = 0;
   virtual const std::string& GetDescription() const = 0;
+  virtual nearby_share::mojom::ShareType GetShareType() const = 0;
 
  private:
   int64_t id_;

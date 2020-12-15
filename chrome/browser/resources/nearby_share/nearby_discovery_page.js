@@ -14,6 +14,7 @@ import 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-l
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import './shared/nearby_device.m.js';
 import './mojo/nearby_share_target_types.mojom-lite.js';
+import './mojo/nearby_share_share_type.mojom-lite.js';
 import './mojo/nearby_share.mojom-lite.js';
 import './shared/nearby_page_template.m.js';
 import './shared/nearby_preview.m.js';

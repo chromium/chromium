@@ -6,10 +6,15 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 assert(is_chromeos, "Nearby Share is CrOS only")
 
+mojom("share_type") {
+  sources = [ "nearby_share_share_type.mojom" ]
+}
+
 mojom("mojom") {
   sources = [ "nearby_share.mojom" ]
 
   public_deps = [
+    ":share_type",
     "//chromeos/services/nearby/public/mojom:nearby_share_target_types",
     "//mojo/public/mojom/base",
   ]

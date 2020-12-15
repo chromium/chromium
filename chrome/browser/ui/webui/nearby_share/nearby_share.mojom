@@ -4,6 +4,7 @@
 
 module nearby_share.mojom;
 
+import "chrome/browser/ui/webui/nearby_share/nearby_share_share_type.mojom";
 import "chromeos/services/nearby/public/mojom/nearby_share_target_types.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 
@@ -99,40 +100,6 @@ struct TransferMetadata {
 interface TransferUpdateListener {
   // Called when the status of the current transfer changes.
   OnTransferUpdate(TransferStatus status, string? token);
-};
-
-// This enum combines both text and file share attachment types into a single
-// enum that more directly maps to what is shown to user for preview.
-enum ShareType {
-  // A generic non-file text share.
-  kText,
-  // A text share representing a url, opened in browser.
-  kUrl,
-  // A text share representing a phone number, opened in dialer.
-  kPhone,
-  // A text share representing an address, opened in browser.
-  kAddress,
-  // Multiple files are being shared, we don't capture the specific types.
-  kMultipleFiles,
-  // Single file attachment with a mime type of 'image/*'.
-  kImageFile,
-  // Single file attachment with a mime type of 'video/*'.
-  kVideoFile,
-  // Single file attachment with a mime type of 'audio/*'.
-  kAudioFile,
-  // Single file attachment with a mime type of 'application/pdf'.
-  kPdfFile,
-  // Single file attachment with a mime type of
-  // 'application/vnd.google-apps.document'.
-  kGoogleDocsFile,
-  // Single file attachment with a mime type of
-  // 'application/vnd.google-apps.spreadsheet'.
-  kGoogleSheetsFile,
-  // Single file attachment with a mime type of
-  // 'application/vnd.google-apps.presentation'.
-  kGoogleSlidesFile,
-  // Single file attachment with un-matched mime type.
-  kUnknownFile,
 };
 
 // Contains the minimum amount of information needed to show the user a preview

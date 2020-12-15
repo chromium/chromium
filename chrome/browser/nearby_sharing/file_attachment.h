@@ -38,6 +38,7 @@ class FileAttachment : public Attachment {
   // Attachment:
   void MoveToShareTarget(ShareTarget& share_target) override;
   const std::string& GetDescription() const override;
+  nearby_share::mojom::ShareType GetShareType() const override;
 
   void set_file_path(base::Optional<base::FilePath> path) {
     file_path_ = std::move(path);
