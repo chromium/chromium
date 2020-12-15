@@ -53,6 +53,7 @@ class CC_EXPORT DroppedFrameCounter {
   uint32_t GetAverageThroughput() const;
 
   double GetMostRecentAverageSmoothness() const;
+  double GetMostRecent95PercentileSmoothness() const;
 
   typedef base::RingBuffer<FrameState, 180> RingBufferType;
   RingBufferType::Iterator begin() const { return ring_buffer_.Begin(); }

@@ -149,6 +149,13 @@ class CC_EXPORT HeadsUpDisplayLayerImpl : public LayerImpl {
                              int top,
                              int width) const;
 
+  // This function draws a single smoothness related metric.
+  int DrawSinglePercentageMetric(PaintCanvas* canvas,
+                                 int left,
+                                 int right,
+                                 int top,
+                                 std::string name,
+                                 double value) const;
   SkRect DrawSmoothnessMetrics(PaintCanvas* canvas,
                                int left,
                                int top,

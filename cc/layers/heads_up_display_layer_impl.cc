@@ -1154,18 +1154,32 @@ SkRect HeadsUpDisplayLayerImpl::DrawWebVitalMetrics(PaintCanvas* canvas,
   return area;
 }
 
+int HeadsUpDisplayLayerImpl::DrawSinglePercentageMetric(PaintCanvas* canvas,
+                                                        int left,
+                                                        int right,
+                                                        int top,
+                                                        std::string name,
+                                                        double value) const {
+  std::string value_str = "-";
+  SkColor metrics_color = DebugColors::HUDTitleColor();
+  value_str = ToStringTwoDecimalPrecision(value) + "%";
+
+  PaintFlags flags;
+  flags.setColor(DebugColors::HUDTitleColor());
+  DrawText(canvas, flags, name, TextAlign::kLeft, metrics_sizes.kFontHeight,
+           left + metrics_sizes.kSidePadding, top);
+  flags.setColor(metrics_color);
+  DrawText(canvas, flags, value_str, TextAlign::kRight,
+           metrics_sizes.kFontHeight, right - metrics_sizes.kSidePadding, top);
+
+  return top + metrics_sizes.kFontHeight + metrics_sizes.kPadding;
+}
+
 SkRect HeadsUpDisplayLayerImpl::DrawSmoothnessMetrics(PaintCanvas* canvas,
                                                       int left,
                                                       int top,
                                                       int width) const {
-  std::string avg_smoothness = "-";
-  double smoothness_data = layer_tree_impl()
-                               ->dropped_frame_counter()
-                               ->GetMostRecentAverageSmoothness();
-  if (smoothness_data >= 0.f)
-    avg_smoothness = ToStringTwoDecimalPrecision(smoothness_data) + " %";
-
-  const int height = ComputeTotalHeight(1);
+  const int height = ComputeTotalHeight(3);
   const SkRect area = SkRect::MakeXYWH(left, top, width, height);
 
   PaintFlags flags;
@@ -1177,15 +1191,26 @@ SkRect HeadsUpDisplayLayerImpl::DrawSmoothnessMetrics(PaintCanvas* canvas,
     DrawSeparatorLine(canvas, &flags, separator);
   }
 
-  SkPoint metrics_pos = SkPoint::Make(
-      left + width - metrics_sizes.kSidePadding,
-      top + metrics_sizes.kTopPadding + metrics_sizes.kFontHeight);
-  flags.setColor(DebugColors::HUDTitleColor());
-  DrawText(canvas, flags, "Average Dropped Frame", TextAlign::kLeft,
-           metrics_sizes.kFontHeight, left + metrics_sizes.kSidePadding,
-           top + metrics_sizes.kFontHeight + metrics_sizes.kTopPadding);
-  DrawText(canvas, flags, avg_smoothness, TextAlign::kRight,
-           metrics_sizes.kFontHeight, metrics_pos);
+  int current_top = top + metrics_sizes.kTopPadding + metrics_sizes.kFontHeight;
+  double avg_smoothness = layer_tree_impl()
+                              ->dropped_frame_counter()
+                              ->GetMostRecentAverageSmoothness();
+  current_top =
+      DrawSinglePercentageMetric(canvas, left, left + width, current_top,
+                                 "Average Dropped Frame", avg_smoothness);
+  double worst_smoothness = layer_tree_impl()
+                                ->dropped_frame_counter()
+                                ->sliding_window_max_percent_dropped();
+  current_top =
+      DrawSinglePercentageMetric(canvas, left, left + width, current_top,
+                                 "Max Dropped Frame", worst_smoothness);
+  double percentile_smoothness = layer_tree_impl()
+                                     ->dropped_frame_counter()
+                                     ->GetMostRecent95PercentileSmoothness();
+  current_top =
+      DrawSinglePercentageMetric(canvas, left, left + width, current_top,
+                                 "95th Percentile DF", percentile_smoothness);
+
   return area;
 }
 
