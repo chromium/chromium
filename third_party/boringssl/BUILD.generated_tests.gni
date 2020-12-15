@@ -43,7 +43,7 @@ crypto_test_sources = [
   "src/crypto/curve25519/ed25519_test.cc",
   "src/crypto/curve25519/spake25519_test.cc",
   "src/crypto/curve25519/x25519_test.cc",
-  "src/crypto/dh/dh_test.cc",
+  "src/crypto/dh_extra/dh_test.cc",
   "src/crypto/digest_extra/digest_test.cc",
   "src/crypto/dsa/dsa_test.cc",
   "src/crypto/ecdh_extra/ecdh_test.cc",
