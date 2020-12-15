@@ -10,6 +10,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "chrome/updater/constants.h"
 #include "chrome/updater/launchd_util.h"
 #include "chrome/updater/mac/xpc_service_names.h"
 
@@ -24,7 +25,7 @@ void SetupDone(base::OnceCallback<void(int)> callback, int result) {
   }
   PollLaunchctlList(
       kUpdateServiceInternalLaunchdName, LaunchctlPresence::kPresent,
-      base::TimeDelta::FromSeconds(3),
+      base::TimeDelta::FromSeconds(kWaitForLaunchctlUpdateSec),
       base::BindOnce(
           [](base::OnceCallback<void(int)> callback, bool service_exists) {
             std::move(callback).Run(

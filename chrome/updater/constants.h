@@ -139,9 +139,8 @@ extern const char kUninstallScript[];
 extern const char kDevOverrideKeyUrl[];
 extern const char kDevOverrideKeyUseCUP[];
 
-#if defined(OS_WIN)
 // Timing constants.
-//
+#if defined(OS_WIN)
 // How long to wait for an application installer (such as
 // chrome_installer.exe) to complete.
 constexpr int kWaitForAppInstallerSec = 60;
@@ -149,7 +148,10 @@ constexpr int kWaitForAppInstallerSec = 60;
 // How often the installer progress from registry is sampled. This value may
 // be changed to provide a smoother progress experience (crbug.com/1067475).
 constexpr int kWaitForInstallerProgressSec = 1;
-#endif  // OS_WIN
+#elif defined(OS_MAC)
+// How long to wait for launchd changes to be reported by launchctl.
+constexpr int kWaitForLaunchctlUpdateSec = 5;
+#endif  // defined(OS_MAC)
 
 // Install Errors.
 //
