@@ -8,6 +8,22 @@ import "chrome/browser/ui/webui/nearby_share/nearby_share_share_type.mojom";
 import "chromeos/services/nearby/public/mojom/nearby_share_target_types.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 
+// Contains the minimum amount of information needed to show the user a preview
+// of their share when they are confirming a send or receive with a share
+// target.
+struct PayloadPreview {
+  // A description that is different for each sharing case:
+  // 1) For a text share this is a limited/redacted preview of the full text.
+  // 2) For a single file share this is the file name.
+  // 3) For a multiple file share this contains the first file name. This will
+  //    be used in a translation template like this 'file.ext and N other files'
+  string description;
+  // 0 for a direct text share, or the number of files being shared.
+  int32 file_count;
+  // The type of share so the UI knows how to preview it.
+  ShareType share_type;
+};
+
 // Describes a nearby device that is able to receive data via Nearby Share.
 struct ShareTarget {
   // Unique identifier during the current discovery session. The same physical
@@ -17,6 +33,8 @@ struct ShareTarget {
   string name;
   // Device type of this share target.
   ShareTargetType type;
+  // Payload preview for the attachment(s).
+  PayloadPreview payload_preview;
 };
 
 // Result of selecting a share target.
@@ -102,25 +120,10 @@ interface TransferUpdateListener {
   OnTransferUpdate(TransferStatus status, string? token);
 };
 
-// Contains the minimum amount of information needed to show the user a preview
-// of their share when they are confirming a send to a share target.
-struct SendPreview {
-  // A description that is different for each sharing case:
-  // 1) For a text share this is a limited/redacted preview of the full text.
-  // 2) For a single file share this is the file name.
-  // 3) For a multiple file share this contains the first file name. This will
-  //    be used in a translation template like this 'file.ext and N other files'
-  string description;
-  // 0 for a direct text share, or the number of files being shared.
-  int32 file_count;
-  // The type of share so the UI knows how to preview it.
-  ShareType share_type;
-};
-
 // Manager interface for nearby device discovery. Implemented on the browser
 // process and used by UI surfaces. The discovery manager is also responsible
-// for previewing the current share with GetSendPreview() so the user can verify
-// the attachments being sent before calling SelectShareTarget().
+// for previewing the current share with GetPayloadPreview() so the user can
+// verify the attachments being sent before calling SelectShareTarget().
 interface DiscoveryManager {
   // Starts discovering nearby devices. The passed |listener| will be called
   // with any discovered devices.
@@ -136,9 +139,9 @@ interface DiscoveryManager {
           pending_receiver<TransferUpdateListener>? transfer_update_listener,
           pending_remote<ConfirmationManager>? confirmation_manager);
 
-  // Gets the SendPreview so the UI can show the user what they are about to
+  // Gets the PayloadPreview so the UI can show the user what they are about to
   // share.
-  GetSendPreview() => (SendPreview send_preview);
+  GetPayloadPreview() => (PayloadPreview payload_preview);
 };
 
 // Manager interface for the Nearby Share confirmation screen. Implemented on

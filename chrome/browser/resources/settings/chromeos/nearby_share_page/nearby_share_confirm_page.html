@@ -71,11 +71,12 @@
       <div id="centerContent" slot="content">
         <div id="processRow">
           <div id="processRowContent">
-            <!-- TODO(vecore): Replace with real ui. -->
             <div id="shareTargetName">[[shareTarget.name]]</div>
             <div id="connectionToken">
               [[getConnectionTokenString_(connectionToken)]]
             </div>
+            <nearby-preview payload-preview="[[shareTarget.payloadPreview]]">
+            </nearby-preview>
           </div>
         </div>
 

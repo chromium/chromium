@@ -33,7 +33,7 @@ suite('PreviewTest', function() {
 
   test('renders title', function() {
     const title = 'Title';
-    previewElement.sendPreview = {
+    previewElement.payloadPreview = {
       description: title,
       fileCount: 1,
       shareType: /** @type {nearbyShare.mojom.ShareType} */ (0)

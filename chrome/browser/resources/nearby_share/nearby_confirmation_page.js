@@ -93,9 +93,9 @@ Polymer({
     /**
      * Preview info for the file(s) to send. Expected to start
      * as null, then change to a valid object before this component is shown.
-     * @type {?nearbyShare.mojom.SendPreview}
+     * @type {?nearbyShare.mojom.PayloadPreview}
      */
-    sendPreview: {
+    payloadPreview: {
       type: Object,
       value: null,
     },
@@ -274,8 +274,8 @@ Polymer({
    * @private
    */
   attachmentTitle_() {
-    return this.sendPreview && this.sendPreview.description ?
-        this.sendPreview.description :
+    return this.payloadPreview && this.payloadPreview.description ?
+        this.payloadPreview.description :
         'Unknown file';
   },
 });

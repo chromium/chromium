@@ -270,31 +270,35 @@ void NearbyPerSessionDiscoveryManager::SelectShareTarget(
                           mojo::NullReceiver(), mojo::NullRemote());
 }
 
-void NearbyPerSessionDiscoveryManager::GetSendPreview(
-    GetSendPreviewCallback callback) {
-  nearby_share::mojom::SendPreviewPtr send_preview =
-      nearby_share::mojom::SendPreview::New();
-  send_preview->file_count = 0;
-  send_preview->share_type = nearby_share::mojom::ShareType::kText;
+void NearbyPerSessionDiscoveryManager::GetPayloadPreview(
+    GetPayloadPreviewCallback callback) {
+  // TODO(crbug.com/1158627): Extract this which is very similar to logic in
+  // nearby share mojo traits.
+  nearby_share::mojom::PayloadPreviewPtr payload_preview =
+      nearby_share::mojom::PayloadPreview::New();
+  payload_preview->file_count = 0;
+  payload_preview->share_type = nearby_share::mojom::ShareType::kText;
   if (attachments_.empty()) {
     // Return with an empty text attachment.
-    std::move(callback).Run(std::move(send_preview));
+    std::move(callback).Run(std::move(payload_preview));
     return;
   }
 
   // We have at least 1 attachment, use that one for the default description.
   auto& attachment = attachments_[0];
-  send_preview->description = attachment->GetDescription();
+  payload_preview->description = attachment->GetDescription();
 
   if (attachment->family() == Attachment::Family::kFile)
-    send_preview->file_count = attachments_.size();
+    payload_preview->file_count = attachments_.size();
 
-  if (send_preview->file_count > 1)
-    send_preview->share_type = nearby_share::mojom::ShareType::kMultipleFiles;
-  else
-    send_preview->share_type = attachment->GetShareType();
+  if (payload_preview->file_count > 1) {
+    payload_preview->share_type =
+        nearby_share::mojom::ShareType::kMultipleFiles;
+  } else {
+    payload_preview->share_type = attachment->GetShareType();
+  }
 
-  std::move(callback).Run(std::move(send_preview));
+  std::move(callback).Run(std::move(payload_preview));
 }
 
 void NearbyPerSessionDiscoveryManager::UnregisterSendSurface() {

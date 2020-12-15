@@ -96,6 +96,7 @@ suite('NearbyShare', function() {
           target.name, confirmPage.$$('#shareTargetName').textContent.trim());
       assertTrue(
           confirmPage.$$('#connectionToken').textContent.includes('1234'));
+      assertTrue(test_util.isChildVisible(confirmPage, 'nearby-preview'));
 
       confirmPage.$$('nearby-page-template').$$('#actionButton').click();
       const shareTargetId = await fakeReceiveManager.whenCalled('accept');
@@ -116,6 +117,7 @@ suite('NearbyShare', function() {
           target.name, confirmPage.$$('#shareTargetName').textContent.trim());
       assertTrue(
           confirmPage.$$('#connectionToken').textContent.includes('1234'));
+      assertTrue(test_util.isChildVisible(confirmPage, 'nearby-preview'));
 
       confirmPage.$$('nearby-page-template').$$('#cancelButton').click();
       const shareTargetId = await fakeReceiveManager.whenCalled('reject');

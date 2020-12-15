@@ -54,9 +54,9 @@ Polymer({
   properties: {
     /**
      * Preview info for the file(s) to be shared.
-     * @type {?nearbyShare.mojom.SendPreview}
+     * @type {?nearbyShare.mojom.PayloadPreview}
      */
-    sendPreview: {
+    payloadPreview: {
       notify: true,
       type: Object,
       value: null,
@@ -198,9 +198,8 @@ Polymer({
           this.onShareTargetLost_.bind(this)),
     ];
 
-    getDiscoveryManager().getSendPreview().then(result => {
-      this.sendPreview = result.sendPreview;
-      // TODO (vecore): Setup icon and handle case of more than one attachment.
+    getDiscoveryManager().getPayloadPreview().then(result => {
+      this.payloadPreview = result.payloadPreview;
     });
 
     getDiscoveryManager()

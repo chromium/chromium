@@ -16,9 +16,9 @@ Polymer({
     /**
      * Preview info for the file(s) to send. Expected to start
      * as null, then change to a valid object before this component is shown.
-     * @type {?nearbyShare.mojom.SendPreview}
+     * @type {?nearbyShare.mojom.PayloadPreview}
      */
-    sendPreview: {
+    payloadPreview: {
       type: Object,
       value: null,
     },
@@ -38,15 +38,15 @@ Polymer({
    * @private
    */
   getTitle_() {
-    if (!this.sendPreview) {
+    if (!this.payloadPreview) {
       return '';
     }
 
-    if (this.sendPreview.fileCount && this.sendPreview.fileCount > 1) {
+    if (this.payloadPreview.fileCount && this.payloadPreview.fileCount > 1) {
       return this.i18n(
-          'nearbySharePreviewMultipleFileTitle', this.sendPreview.fileCount);
-    } else if (this.sendPreview.description) {
-      return this.sendPreview.description;
+          'nearbySharePreviewMultipleFileTitle', this.payloadPreview.fileCount);
+    } else if (this.payloadPreview.description) {
+      return this.payloadPreview.description;
     } else {
       return '';
     }
@@ -57,12 +57,12 @@ Polymer({
    * @private
    */
   getIronIconName_() {
-    if (!this.sendPreview || this.sendPreview.shareType === null ||
-        this.sendPreview.shareType === undefined) {
+    if (!this.payloadPreview || this.payloadPreview.shareType === null ||
+        this.payloadPreview.shareType === undefined) {
       return '';
     }
 
-    switch (this.sendPreview.shareType) {
+    switch (this.payloadPreview.shareType) {
       case nearbyShare.mojom.ShareType.kUnknownFile:
         return 'nearbysharetype68:unknown-file';
       case nearbyShare.mojom.ShareType.kMultipleFiles:
@@ -90,7 +90,7 @@ Polymer({
         return 'nearbysharetype68:phone';
       default:
         assertNotReached(
-            'No icon defined for share type ' + this.sendPreview.shareType);
+            'No icon defined for share type ' + this.payloadPreview.shareType);
         return 'nearbysharetype68:unknown-file';
     }
   },

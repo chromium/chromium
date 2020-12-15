@@ -71,9 +71,9 @@ Polymer({
 
     /**
      * Preview info of attachment to be sent, set by the nearby-discovery-page.
-     * @private {?nearbyShare.mojom.SendPreview}
+     * @private {?nearbyShare.mojom.PayloadPreview}
      */
-    sendPreview_: {
+    payloadPreview_: {
       type: Object,
       value: null,
     },

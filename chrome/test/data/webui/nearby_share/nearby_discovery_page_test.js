@@ -96,6 +96,11 @@ suite('DiscoveryPageTest', function() {
       id: {high: BigInt(0), low: BigInt(nextId++)},
       name,
       type: nearbyShare.mojom.ShareTargetType.kPhone,
+      payloadPreview: {
+        description: '',
+        fileCount: 0,
+        shareType: /** @type {!nearbyShare.mojom.ShareType} */ (0),
+      },
     };
   }
 
@@ -142,10 +147,10 @@ suite('DiscoveryPageTest', function() {
   test('renders component', async function() {
     assertEquals('NEARBY-DISCOVERY-PAGE', discoveryPageElement.tagName);
     discoveryPageElement.fire('view-enter-start');
-    await discoveryManager.whenCalled('getSendPreview');
+    await discoveryManager.whenCalled('getPayloadPreview');
     assertEquals(
         discoveryManager.shareDescription,
-        discoveryPageElement.$$('nearby-preview').sendPreview.description);
+        discoveryPageElement.$$('nearby-preview').payloadPreview.description);
   });
 
   test('selects share target with success', async function() {

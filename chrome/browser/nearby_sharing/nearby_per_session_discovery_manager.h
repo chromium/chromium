@@ -48,7 +48,7 @@ class NearbyPerSessionDiscoveryManager
       StartDiscoveryCallback callback) override;
   void SelectShareTarget(const base::UnguessableToken& share_target_id,
                          SelectShareTargetCallback callback) override;
-  void GetSendPreview(GetSendPreviewCallback callback) override;
+  void GetPayloadPreview(GetPayloadPreviewCallback callback) override;
 
  private:
   // Used for metrics. These values are persisted to logs, and the entries are

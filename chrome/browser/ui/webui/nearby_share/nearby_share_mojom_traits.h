@@ -19,6 +19,8 @@ struct StructTraits<nearby_share::mojom::ShareTargetDataView, ShareTarget> {
   static std::string name(const ShareTarget& share_target);
   static nearby_share::mojom::ShareTargetType type(
       const ShareTarget& share_target);
+  static nearby_share::mojom::PayloadPreviewPtr payload_preview(
+      const ShareTarget& share_target);
   static bool Read(nearby_share::mojom::ShareTargetDataView data,
                    ShareTarget* out);
 };

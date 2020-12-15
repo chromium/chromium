@@ -38,8 +38,18 @@ cr.define('nearby_share', function() {
       };
     }
 
-    simulateShareTargetArrival(name, connectionToken) {
-      const target = {id: {low: 1, high: 2}, name: name, type: 1};
+    simulateShareTargetArrival(
+        name, connectionToken, payloadDescription = '', payloadType = 0) {
+      const target = {
+        id: {low: 1, high: 2},
+        name: name,
+        type: 1,
+        payloadPreview: {
+          description: '',
+          fileCount: 0,
+          shareType: 0,
+        }
+      };
       const metadata = {
         'status': nearbyShare.mojom.TransferStatus.kAwaitingLocalConfirmation,
         progress: 0.0,

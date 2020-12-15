@@ -88,11 +88,13 @@ suite('ConfirmatonPageTest', function() {
 
   test('renders share target name', function() {
     const name = 'Device Name';
-    confirmationPageElement.shareTarget = {
-      id: {high: BigInt(0), low: BigInt(0)},
-      name,
-      type: nearbyShare.mojom.ShareTargetType.kPhone,
-    };
+    confirmationPageElement.shareTarget =
+        /** @type {!nearbyShare.mojom.ShareTarget} */ ({
+          id: {high: BigInt(0), low: BigInt(0)},
+          name,
+          type: nearbyShare.mojom.ShareTargetType.kPhone,
+          payloadPreview: null,
+        });
     const renderedName = confirmationPageElement.$$('nearby-progress')
                              .$$('#device-name')
                              .innerText;
@@ -101,7 +103,7 @@ suite('ConfirmatonPageTest', function() {
 
   test('renders attachment title', function() {
     const title = 'Filename';
-    confirmationPageElement.sendPreview = {
+    confirmationPageElement.payloadPreview = {
       description: title,
       fileCount: 1,
       shareType: nearbyShare.mojom.ShareType.kUnknownFile

@@ -3,7 +3,11 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/nearby_share/nearby_share_mojom_traits.h"
+
 #include "base/notreached.h"
+#include "chrome/browser/nearby_sharing/attachment.h"
+#include "chrome/browser/nearby_sharing/file_attachment.h"
+#include "chrome/browser/nearby_sharing/text_attachment.h"
 
 namespace mojo {
 
@@ -25,6 +29,42 @@ nearby_share::mojom::ShareTargetType
 StructTraits<nearby_share::mojom::ShareTargetDataView, ShareTarget>::type(
     const ShareTarget& share_target) {
   return share_target.type;
+}
+
+// static
+nearby_share::mojom::PayloadPreviewPtr
+StructTraits<nearby_share::mojom::ShareTargetDataView,
+             ShareTarget>::payload_preview(const ShareTarget& share_target) {
+  // TODO(crbug.com/1158627): Extract this which is very similar to logic in
+  // NearbyPerSessionDiscoveryManager.
+  nearby_share::mojom::PayloadPreviewPtr payload_preview =
+      nearby_share::mojom::PayloadPreview::New();
+  payload_preview->file_count = share_target.file_attachments.size();
+  payload_preview->share_type = nearby_share::mojom::ShareType::kText;
+
+  // Retrieve the attachment that we'll use for the default description.
+  const Attachment* attachment = nullptr;
+  if (!share_target.file_attachments.empty()) {
+    attachment = &share_target.file_attachments[0];
+  } else if (!share_target.text_attachments.empty()) {
+    attachment = &share_target.text_attachments[0];
+  }
+
+  // If there are no attachments, return an empty text preview.
+  if (!attachment)
+    return payload_preview;
+
+  payload_preview->description = attachment->GetDescription();
+
+  // Determine the share type.
+  if (payload_preview->file_count > 1) {
+    payload_preview->share_type =
+        nearby_share::mojom::ShareType::kMultipleFiles;
+  } else {
+    payload_preview->share_type = attachment->GetShareType();
+  }
+
+  return payload_preview;
 }
 
 // static

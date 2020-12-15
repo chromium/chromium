@@ -110,8 +110,8 @@ class NearbyPerSessionDiscoveryManagerTest : public testing::Test {
       NearbyPerSessionDiscoveryManager::SelectShareTargetCallback>;
   using MockStartDiscoveryCallback = base::MockCallback<
       NearbyPerSessionDiscoveryManager::StartDiscoveryCallback>;
-  using MockGetSendPreviewCallback = base::MockCallback<
-      nearby_share::mojom::DiscoveryManager::GetSendPreviewCallback>;
+  using MockGetPayloadPreviewCallback = base::MockCallback<
+      nearby_share::mojom::DiscoveryManager::GetPayloadPreviewCallback>;
 
   NearbyPerSessionDiscoveryManagerTest() = default;
   ~NearbyPerSessionDiscoveryManagerTest() override = default;
@@ -514,14 +514,14 @@ TEST_F(NearbyPerSessionDiscoveryManagerTest, TransferUpdateWithoutListener) {
 TEST_F(NearbyPerSessionDiscoveryManagerTest, PreviewText) {
   NearbyPerSessionDiscoveryManager manager(&sharing_service(),
                                            CreateTextAttachments());
-  MockGetSendPreviewCallback callback;
-  nearby_share::mojom::SendPreview send_preview;
+  MockGetPayloadPreviewCallback callback;
+  nearby_share::mojom::PayloadPreview payload_preview;
   EXPECT_CALL(callback, Run(_))
-      .WillOnce(testing::SaveArgPointee<0>(&send_preview));
-  manager.GetSendPreview(callback.Get());
-  EXPECT_EQ(send_preview.description, kTextAttachmentBody);
-  EXPECT_EQ(send_preview.file_count, 0);
-  EXPECT_EQ(send_preview.share_type, nearby_share::mojom::ShareType::kText);
+      .WillOnce(testing::SaveArgPointee<0>(&payload_preview));
+  manager.GetPayloadPreview(callback.Get());
+  EXPECT_EQ(payload_preview.description, kTextAttachmentBody);
+  EXPECT_EQ(payload_preview.file_count, 0);
+  EXPECT_EQ(payload_preview.share_type, nearby_share::mojom::ShareType::kText);
 }
 
 TEST_F(NearbyPerSessionDiscoveryManagerTest, PreviewSingleVideo) {
@@ -529,14 +529,14 @@ TEST_F(NearbyPerSessionDiscoveryManagerTest, PreviewSingleVideo) {
       &sharing_service(),
       CreateFileAttachments(/*count=*/1, /*mime_type=*/"",
                             /*type=*/FileAttachment::Type::kVideo));
-  MockGetSendPreviewCallback callback;
-  nearby_share::mojom::SendPreview send_preview;
+  MockGetPayloadPreviewCallback callback;
+  nearby_share::mojom::PayloadPreview payload_preview;
   EXPECT_CALL(callback, Run(_))
-      .WillOnce(testing::SaveArgPointee<0>(&send_preview));
-  manager.GetSendPreview(callback.Get());
-  EXPECT_EQ(send_preview.description, "File-0");
-  EXPECT_EQ(send_preview.file_count, 1);
-  EXPECT_EQ(send_preview.share_type,
+      .WillOnce(testing::SaveArgPointee<0>(&payload_preview));
+  manager.GetPayloadPreview(callback.Get());
+  EXPECT_EQ(payload_preview.description, "File-0");
+  EXPECT_EQ(payload_preview.file_count, 1);
+  EXPECT_EQ(payload_preview.share_type,
             nearby_share::mojom::ShareType::kVideoFile);
 }
 
@@ -545,14 +545,15 @@ TEST_F(NearbyPerSessionDiscoveryManagerTest, PreviewSinglePDF) {
       &sharing_service(),
       CreateFileAttachments(/*count=*/1, /*mime_type=*/"application/pdf",
                             /*type=*/FileAttachment::Type::kUnknown));
-  MockGetSendPreviewCallback callback;
-  nearby_share::mojom::SendPreview send_preview;
+  MockGetPayloadPreviewCallback callback;
+  nearby_share::mojom::PayloadPreview payload_preview;
   EXPECT_CALL(callback, Run(_))
-      .WillOnce(testing::SaveArgPointee<0>(&send_preview));
-  manager.GetSendPreview(callback.Get());
-  EXPECT_EQ(send_preview.description, "File-0");
-  EXPECT_EQ(send_preview.file_count, 1);
-  EXPECT_EQ(send_preview.share_type, nearby_share::mojom::ShareType::kPdfFile);
+      .WillOnce(testing::SaveArgPointee<0>(&payload_preview));
+  manager.GetPayloadPreview(callback.Get());
+  EXPECT_EQ(payload_preview.description, "File-0");
+  EXPECT_EQ(payload_preview.file_count, 1);
+  EXPECT_EQ(payload_preview.share_type,
+            nearby_share::mojom::ShareType::kPdfFile);
 }
 
 TEST_F(NearbyPerSessionDiscoveryManagerTest, PreviewSingleUnknownFile) {
@@ -560,14 +561,14 @@ TEST_F(NearbyPerSessionDiscoveryManagerTest, PreviewSingleUnknownFile) {
       &sharing_service(),
       CreateFileAttachments(/*count=*/1, /*mime_type=*/"",
                             /*type=*/FileAttachment::Type::kUnknown));
-  MockGetSendPreviewCallback callback;
-  nearby_share::mojom::SendPreview send_preview;
+  MockGetPayloadPreviewCallback callback;
+  nearby_share::mojom::PayloadPreview payload_preview;
   EXPECT_CALL(callback, Run(_))
-      .WillOnce(testing::SaveArgPointee<0>(&send_preview));
-  manager.GetSendPreview(callback.Get());
-  EXPECT_EQ(send_preview.description, "File-0");
-  EXPECT_EQ(send_preview.file_count, 1);
-  EXPECT_EQ(send_preview.share_type,
+      .WillOnce(testing::SaveArgPointee<0>(&payload_preview));
+  manager.GetPayloadPreview(callback.Get());
+  EXPECT_EQ(payload_preview.description, "File-0");
+  EXPECT_EQ(payload_preview.file_count, 1);
+  EXPECT_EQ(payload_preview.share_type,
             nearby_share::mojom::ShareType::kUnknownFile);
 }
 
@@ -576,14 +577,14 @@ TEST_F(NearbyPerSessionDiscoveryManagerTest, PreviewMultipleFiles) {
       &sharing_service(),
       CreateFileAttachments(/*count=*/2, /*mime_type=*/"",
                             /*type=*/FileAttachment::Type::kUnknown));
-  MockGetSendPreviewCallback callback;
-  nearby_share::mojom::SendPreview send_preview;
+  MockGetPayloadPreviewCallback callback;
+  nearby_share::mojom::PayloadPreview payload_preview;
   EXPECT_CALL(callback, Run(_))
-      .WillOnce(testing::SaveArgPointee<0>(&send_preview));
-  manager.GetSendPreview(callback.Get());
-  EXPECT_EQ(send_preview.description, "File-0");
-  EXPECT_EQ(send_preview.file_count, 2);
-  EXPECT_EQ(send_preview.share_type,
+      .WillOnce(testing::SaveArgPointee<0>(&payload_preview));
+  manager.GetPayloadPreview(callback.Get());
+  EXPECT_EQ(payload_preview.description, "File-0");
+  EXPECT_EQ(payload_preview.file_count, 2);
+  EXPECT_EQ(payload_preview.share_type,
             nearby_share::mojom::ShareType::kMultipleFiles);
 }
 
@@ -592,12 +593,12 @@ TEST_F(NearbyPerSessionDiscoveryManagerTest, PreviewNoAttachments) {
       &sharing_service(),
       CreateFileAttachments(/*count=*/0, /*mime_type=*/"",
                             /*type=*/FileAttachment::Type::kUnknown));
-  MockGetSendPreviewCallback callback;
-  nearby_share::mojom::SendPreview send_preview;
+  MockGetPayloadPreviewCallback callback;
+  nearby_share::mojom::PayloadPreview payload_preview;
   EXPECT_CALL(callback, Run(_))
-      .WillOnce(testing::SaveArgPointee<0>(&send_preview));
-  manager.GetSendPreview(callback.Get());
-  EXPECT_EQ(send_preview.description, "");
-  EXPECT_EQ(send_preview.file_count, 0);
-  EXPECT_EQ(send_preview.share_type, nearby_share::mojom::ShareType::kText);
+      .WillOnce(testing::SaveArgPointee<0>(&payload_preview));
+  manager.GetPayloadPreview(callback.Get());
+  EXPECT_EQ(payload_preview.description, "");
+  EXPECT_EQ(payload_preview.file_count, 0);
+  EXPECT_EQ(payload_preview.share_type, nearby_share::mojom::ShareType::kText);
 }
