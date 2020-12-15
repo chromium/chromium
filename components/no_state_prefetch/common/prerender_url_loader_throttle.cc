@@ -41,10 +41,11 @@ PrerenderURLLoaderThrottle::PrerenderURLLoaderThrottle(
     prerender::mojom::PrerenderMode mode,
     const std::string& histogram_prefix,
     mojo::PendingRemote<prerender::mojom::PrerenderCanceler> canceler)
-    : mode_(mode),
-      histogram_prefix_(histogram_prefix),
-      canceler_(std::move(canceler)) {
+    : histogram_prefix_(histogram_prefix), canceler_(std::move(canceler)) {
   DCHECK(canceler_);
+  // TODO(https://crbug.com/755921): Remove the `mode` param. This is now kept
+  // just for validation check until mojom::PrerenderMode is completely removed.
+  DCHECK_EQ(mode, mojom::PrerenderMode::kPrefetchOnly);
 }
 
 PrerenderURLLoaderThrottle::~PrerenderURLLoaderThrottle() {
@@ -68,11 +69,9 @@ void PrerenderURLLoaderThrottle::DetachFromCurrentSequence() {
 void PrerenderURLLoaderThrottle::WillStartRequest(
     network::ResourceRequest* request,
     bool* defer) {
-  if (mode_ == prerender::mojom::PrerenderMode::kPrefetchOnly) {
-    request->load_flags |= net::LOAD_PREFETCH;
-    request->cors_exempt_headers.SetHeader(kPurposeHeaderName,
-                                           kPurposeHeaderValue);
-  }
+  request->load_flags |= net::LOAD_PREFETCH;
+  request->cors_exempt_headers.SetHeader(kPurposeHeaderName,
+                                         kPurposeHeaderValue);
 
   resource_type_ =
       static_cast<blink::mojom::ResourceType>(request->resource_type);
@@ -122,12 +121,10 @@ void PrerenderURLLoaderThrottle::WillStartRequest(
   }
 #endif  // OS_ANDROID
 
-  if (mode_ == prerender::mojom::PrerenderMode::kPrefetchOnly) {
-    detached_timer_.Start(FROM_HERE,
-                          base::TimeDelta::FromMilliseconds(
-                              content::kDefaultDetachableCancelDelayMs),
-                          this, &PrerenderURLLoaderThrottle::OnTimedOut);
-  }
+  detached_timer_.Start(FROM_HERE,
+                        base::TimeDelta::FromMilliseconds(
+                            content::kDefaultDetachableCancelDelayMs),
+                        this, &PrerenderURLLoaderThrottle::OnTimedOut);
 }
 
 void PrerenderURLLoaderThrottle::WillRedirectRequest(
@@ -138,11 +135,9 @@ void PrerenderURLLoaderThrottle::WillRedirectRequest(
     net::HttpRequestHeaders* /* modified_headers */,
     net::HttpRequestHeaders* /* modified_cors_exempt_headers */) {
   redirect_count_++;
-  if (mode_ == prerender::mojom::PrerenderMode::kPrefetchOnly) {
-    RecordPrefetchResponseReceived(
-        histogram_prefix_, blink::IsResourceTypeFrame(resource_type_),
-        true /* is_redirect */, IsNoStoreResponse(response_head));
-  }
+  RecordPrefetchResponseReceived(
+      histogram_prefix_, blink::IsResourceTypeFrame(resource_type_),
+      true /* is_redirect */, IsNoStoreResponse(response_head));
 
   std::string follow_only_when_prerender_shown_header;
   if (response_head.headers) {
@@ -167,10 +162,6 @@ void PrerenderURLLoaderThrottle::WillProcessResponse(
     const GURL& response_url,
     network::mojom::URLResponseHead* response_head,
     bool* defer) {
-  if (mode_ != prerender::mojom::PrerenderMode::kPrefetchOnly) {
-    return;
-  }
-
   bool is_main_resource = blink::IsResourceTypeFrame(resource_type_);
   RecordPrefetchResponseReceived(histogram_prefix_, is_main_resource,
                                  true /* is_redirect */,

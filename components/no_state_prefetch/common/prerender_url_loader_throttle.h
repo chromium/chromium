@@ -54,7 +54,6 @@ class PrerenderURLLoaderThrottle
 
   void OnTimedOut();
 
-  prerender::mojom::PrerenderMode mode_;
   std::string histogram_prefix_;
 
   bool deferred_ = false;
