@@ -75,6 +75,7 @@
 #include "net/test/url_request/url_request_failed_job.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
@@ -219,6 +220,23 @@ const char* non_cacheable_html_response =
     "content-type: text/html; charset=UTF-8\n"
     "\n"
     "HTML content.";
+
+// Insert a navigation throttle blocking every navigation in its
+// WillProcessResponse handler.
+std::unique_ptr<content::TestNavigationThrottleInserter>
+BlockNavigationWillProcessResponse(WebContentsImpl* web_content) {
+  return std::make_unique<content::TestNavigationThrottleInserter>(
+      web_content,
+      base::BindLambdaForTesting(
+          [&](NavigationHandle* handle) -> std::unique_ptr<NavigationThrottle> {
+            auto throttle = std::make_unique<TestNavigationThrottle>(handle);
+            throttle->SetResponse(TestNavigationThrottle::WILL_PROCESS_RESPONSE,
+                                  TestNavigationThrottle::SYNCHRONOUS,
+                                  NavigationThrottle::BLOCK_RESPONSE);
+
+            return throttle;
+          }));
+}
 
 }  // namespace
 
@@ -4039,6 +4057,65 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   // Both document have the same URL. Only the first sets CSP:sandbox, but both
   // are sandboxed. They get an opaque origin different from each others.
   EXPECT_NE(current_frame_host()->GetLastCommittedOrigin(), origin_committed);
+}
+
+// Regression test for https://crbug.com/1158306.
+// Navigate to a response, which set Content-Security-Policy: sandbox AND block
+// the response. The error page shouldn't set sandbox flags.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, ErrorPageFromCspSandboxResponse) {
+  // Block every navigation in WillProcessResponse.
+  std::unique_ptr<content::TestNavigationThrottleInserter> blocker =
+      BlockNavigationWillProcessResponse(web_contents());
+
+  // Navigate toward a document witch sets CSP:sandbox.
+  GURL url = embedded_test_server()->GetURL(
+      "a.com", "/set-header?Content-Security-Policy: sandbox");
+  TestNavigationManager manager(web_contents(), url);
+  shell()->LoadURL(url);
+  manager.WaitForNavigationFinished();
+
+  // An error page committed. It doesn't have any sandbox flags, despite the
+  // original response headers.
+  EXPECT_TRUE(current_frame_host()->is_error_page());
+  EXPECT_EQ(network::mojom::WebSandboxFlags::kNone,
+            current_frame_host()->active_sandbox_flags());
+
+  EXPECT_EQ(url, current_frame_host()->GetLastCommittedURL());
+  EXPECT_TRUE(current_frame_host()->GetLastCommittedOrigin().opaque());
+  EXPECT_TRUE(
+      current_frame_host()->GetLastCommittedOrigin().CanBeDerivedFrom(url));
+}
+
+// Do sandbox flags apply to error page in sandboxed iframes?
+// Apparently yes.
+// TODO(https://crbug.com/1158370): Reconsider this.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, ErrorPageFromInSandboxedIframe) {
+  GURL url = embedded_test_server()->GetURL("a.com", "/empty.html");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // Block every navigation in WillProcessResponse.
+  std::unique_ptr<content::TestNavigationThrottleInserter> blocker =
+      BlockNavigationWillProcessResponse(web_contents());
+
+  TestNavigationManager manager(web_contents(), url);
+  ExecuteScriptAsync(current_frame_host(), R"(
+    let iframe = document.createElement("iframe");
+    iframe.src = location.href;
+    iframe.sandbox = "allow-orientation-lock";
+    document.body.appendChild(iframe);
+  )");
+  manager.WaitForNavigationFinished();
+
+  RenderFrameHostImpl* child_rfh =
+      current_frame_host()->child_at(0)->current_frame_host();
+
+  // An error page committed. Apparently, the error page inherited sandbox flags
+  // from its parent.
+  // TODO(https://crbug.com/1158370): Reconsider this.
+  EXPECT_TRUE(child_rfh->is_error_page());
+  EXPECT_EQ(network::mojom::WebSandboxFlags::kAll &
+                ~network::mojom::WebSandboxFlags::kOrientationLock,
+            child_rfh->active_sandbox_flags());
 }
 
 IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, OriginToCommitSandboxFromFrame) {

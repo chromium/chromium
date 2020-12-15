@@ -1435,7 +1435,7 @@ void NavigationRequest::BeginNavigation() {
     EnterChildTraceEvent("ResponseStarted", this);
 
     is_loaded_from_mhtml_archive_ = IsForMhtmlSubframe();
-    ComputeSandboxFlagsToCommit();
+    ComputeSandboxFlagsToCommit(/*response_head=*/nullptr);
 
     // Same-document navigations occur in the currently loaded document. See
     // also RenderFrameHostManager::DidCreateNavigationRequest() which will
@@ -2222,7 +2222,7 @@ void NavigationRequest::OnResponseStarted(
 
   is_loaded_from_mhtml_archive_ = is_mhtml_archive || IsForMhtmlSubframe();
 
-  ComputeSandboxFlagsToCommit();
+  ComputeSandboxFlagsToCommit(response_head_.get());
 
   // The navigation may have encountered an origin policy or Origin-Isolation
   // header that requests isolation for the url's origin. Before we pick the
@@ -3209,7 +3209,12 @@ void NavigationRequest::CommitErrorPage(
 
   is_loaded_from_mhtml_archive_ = false;
   sandbox_flags_to_commit_.reset();
-  ComputeSandboxFlagsToCommit();
+  // TODO(https://crbug.com/1158370): Apparently, error pages inherit sandbox
+  // flags from their parent/opener. Document loaded from the network
+  // shouldn't have any influence over Chrome's internal error page. We should
+  // define our own flags, preferably the strictest ones instead.
+  ComputeSandboxFlagsToCommit(/*response_head=*/nullptr);
+
   ReadyToCommitNavigation(true);
   // Use a separate cache shard, and no cookies, for error pages.
   isolation_info_for_subresources_ = net::IsolationInfo::CreateTransient();
@@ -5281,7 +5286,8 @@ NavigationRequest::TakeCookieObservers() {
   return cookie_observers_.TakeReceivers();
 }
 
-void NavigationRequest::ComputeSandboxFlagsToCommit() {
+void NavigationRequest::ComputeSandboxFlagsToCommit(
+    const network::mojom::URLResponseHead* response_head) {
   DCHECK(commit_params_);
   DCHECK(!HasCommitted());
   DCHECK(!IsErrorPage());
@@ -5290,9 +5296,9 @@ void NavigationRequest::ComputeSandboxFlagsToCommit() {
   sandbox_flags_to_commit_ = commit_params_->frame_policy.sandbox_flags;
 
   // The response can also restrict the policy further.
-  if (response_head_) {
+  if (response_head) {
     for (const auto& csp :
-         response_head_->parsed_headers->content_security_policy) {
+         response_head->parsed_headers->content_security_policy) {
       *sandbox_flags_to_commit_ |= csp->sandbox;
     }
   }
