@@ -44,17 +44,23 @@ class ASH_EXPORT HoldingSpaceTrayIconPreview
       delete;
   ~HoldingSpaceTrayIconPreview() override;
 
-  // Animates this preview in at the specified `index`.
-  void AnimateIn(size_t index);
+  // Animates this preview in. The item is animated at `*pending_index_`. This
+  // will move `pending_index_` value to `index_`.
+  // `additional_delay` - the delay that should be added on top of initial delay
+  // when starting the animation.
+  void AnimateIn(base::TimeDelta additional_delay);
 
   // Animates this preview out, invoking the specified closure on completion.
   void AnimateOut(base::OnceClosure animate_out_closure);
 
-  // Animates a shift of this preview.
-  void AnimateShift();
+  // Shifts this preview. The item is shifted to `*pending_index_`. This
+  // will move `pending_index_` value to `index_`.
+  void AnimateShift(base::TimeDelta delay);
 
-  // Animates an unshift of this preview.
-  void AnimateUnshift();
+  // Updates the preview transform to keep relative position to the end of the
+  // visible bounds when the icon container size changes.
+  // Transform is updated without animation.
+  void AdjustTransformForContainerSizeChange(const gfx::Vector2d& size_change);
 
   // Invoked when the shelf associated with `icon_` has changed from
   // `old_shelf_alignment` to `new_shelf_alignment`.
@@ -63,6 +69,13 @@ class ASH_EXPORT HoldingSpaceTrayIconPreview
 
   // Returns the holding space `item_` visually represented by this preview.
   const HoldingSpaceItem* item() const { return item_; }
+
+  ui::Layer* layer() { return layer_.get(); }
+
+  const base::Optional<size_t>& index() const { return index_; }
+
+  const base::Optional<size_t>& pending_index() const { return pending_index_; }
+  void set_pending_index(size_t index) { pending_index_ = index; }
 
  private:
   // ui::LayerDelegate:
@@ -80,7 +93,8 @@ class ASH_EXPORT HoldingSpaceTrayIconPreview
   // Creates the `layer_` for this preview. Note that `layer_` may be created
   // multiple times throughout this preview's lifetime as `layer_` will only
   // exist while in the viewport for the holding space tray `icon_`.
-  void CreateLayer();
+  // |initial_transform| - The transform that should be set on the layer.
+  void CreateLayer(const gfx::Transform& initial_transform);
 
   // Returns whether this preview needs a layer for its current `transform_`.
   // Since we only maintain `layer_` while it appears in the viewport for the
@@ -121,6 +135,14 @@ class ASH_EXPORT HoldingSpaceTrayIconPreview
   // Closure to invoke on completion of `AnimateOut()`. It is expected that this
   // preview may be deleted during invocation.
   base::OnceClosure animate_out_closure_;
+
+  // If set, the preview index within the holding space tray icon. May be unset
+  // during icon update transition before the preview is animated in.
+  base::Optional<size_t> index_;
+
+  // If set, the index within the holding space tray icon to which the preview
+  // is about to move. Set while the holding space tray icon is updating.
+  base::Optional<size_t> pending_index_;
 
   // The `layer_` for this preview is parented by `icon_`'s layer. It is
   // necessary to observe and react to bounds changes in `icon_` to keep

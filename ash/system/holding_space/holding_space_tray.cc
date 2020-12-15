@@ -22,6 +22,7 @@
 #include "ash/system/holding_space/holding_space_tray_icon.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
+#include "base/containers/adapters.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -231,39 +232,29 @@ void HoldingSpaceTray::HideBubble(const TrayBubbleView* bubble_view) {
 void HoldingSpaceTray::OnHoldingSpaceModelAttached(HoldingSpaceModel* model) {
   model_observer_.Observe(model);
   UpdateVisibility();
-  if (PreviewsShown())
-    previews_tray_icon_->OnHoldingSpaceModelAttached(model);
-  UpdatePreviewsVisibility();
+  UpdatePreviewsState();
 }
 
 void HoldingSpaceTray::OnHoldingSpaceModelDetached(HoldingSpaceModel* model) {
   model_observer_.Reset();
   UpdateVisibility();
-  if (PreviewsShown())
-    previews_tray_icon_->OnHoldingSpaceModelDetached(model);
-  UpdatePreviewsVisibility();
+  UpdatePreviewsState();
 }
 
 void HoldingSpaceTray::OnHoldingSpaceItemAdded(const HoldingSpaceItem* item) {
   UpdateVisibility();
-  if (PreviewsShown())
-    previews_tray_icon_->OnHoldingSpaceItemAdded(item);
-  UpdatePreviewsVisibility();
+  UpdatePreviewsState();
 }
 
 void HoldingSpaceTray::OnHoldingSpaceItemRemoved(const HoldingSpaceItem* item) {
   UpdateVisibility();
-  if (PreviewsShown())
-    previews_tray_icon_->OnHoldingSpaceItemRemoved(item);
-  UpdatePreviewsVisibility();
+  UpdatePreviewsState();
 }
 
 void HoldingSpaceTray::OnHoldingSpaceItemFinalized(
     const HoldingSpaceItem* item) {
   UpdateVisibility();
-  if (PreviewsShown())
-    previews_tray_icon_->OnHoldingSpaceItemFinalized(item);
-  UpdatePreviewsVisibility();
+  UpdatePreviewsState();
 }
 
 void HoldingSpaceTray::ExecuteCommand(int command_id, int event_flags) {
@@ -347,7 +338,7 @@ void HoldingSpaceTray::OnWidgetDestroying(views::Widget* widget) {
 }
 
 void HoldingSpaceTray::OnActiveUserPrefServiceChanged(PrefService* prefs) {
-  UpdatePreviewsVisibility();
+  UpdatePreviewsState();
   ObservePrefService(prefs);
 }
 
@@ -359,8 +350,13 @@ void HoldingSpaceTray::ObservePrefService(PrefService* prefs) {
   // is owned by `this` so it is safe to bind with an unretained raw pointer.
   holding_space_prefs::AddPreviewsEnabledChangedCallback(
       pref_change_registrar_.get(),
-      base::BindRepeating(&HoldingSpaceTray::UpdatePreviewsVisibility,
+      base::BindRepeating(&HoldingSpaceTray::UpdatePreviewsState,
                           base::Unretained(this)));
+}
+
+void HoldingSpaceTray::UpdatePreviewsState() {
+  UpdatePreviewsVisibility();
+  SchedulePreviewsIconUpdate();
 }
 
 void HoldingSpaceTray::UpdatePreviewsVisibility() {
@@ -370,18 +366,45 @@ void HoldingSpaceTray::UpdatePreviewsVisibility() {
 
   if (PreviewsShown() == show_previews)
     return;
-
   default_tray_icon_->SetVisible(!show_previews);
 
-  if (previews_tray_icon_) {
-    previews_tray_icon_->SetVisible(show_previews);
+  DCHECK(previews_tray_icon_);
+  previews_tray_icon_->SetVisible(show_previews);
+}
 
-    if (show_previews) {
-      previews_tray_icon_->Init();
-    } else {
-      previews_tray_icon_->Reset();
-    }
+void HoldingSpaceTray::SchedulePreviewsIconUpdate() {
+  if (previews_update_.IsRunning())
+    return;
+
+  // Schedule async task with a short (somewhat arbitrary) delay to update
+  // previews so items added in quick succession are handled together.
+  base::TimeDelta delay = use_zero_previews_update_delay_
+                              ? base::TimeDelta()
+                              : base::TimeDelta::FromMilliseconds(50);
+  previews_update_.Start(FROM_HERE, delay,
+                         base::BindOnce(&HoldingSpaceTray::UpdatePreviewsIcon,
+                                        base::Unretained(this)));
+}
+
+void HoldingSpaceTray::UpdatePreviewsIcon() {
+  if (!PreviewsShown()) {
+    if (previews_tray_icon_)
+      previews_tray_icon_->Clear();
+    return;
   }
+
+  std::vector<const HoldingSpaceItem*> items_with_previews;
+  std::set<base::FilePath> paths_with_previews;
+  for (const auto& item :
+       base::Reversed(HoldingSpaceController::Get()->model()->items())) {
+    if (!item->IsFinalized())
+      continue;
+    if (base::Contains(paths_with_previews, item->file_path()))
+      continue;
+    items_with_previews.push_back(item.get());
+    paths_with_previews.insert(item->file_path());
+  }
+  previews_tray_icon_->UpdatePreviews(items_with_previews);
 }
 
 bool HoldingSpaceTray::PreviewsShown() const {

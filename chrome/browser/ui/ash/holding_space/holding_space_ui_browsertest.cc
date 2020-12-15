@@ -505,6 +505,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiPreviewsBrowserTest, TogglePreviews) {
 
   // After pinning a file, we should have a single preview in the tray icon.
   AddPinnedFile();
+  FlushMessageLoop();
 
   EXPECT_FALSE(default_tray_icon->GetVisible());
   EXPECT_TRUE(previews_tray_icon->GetVisible());
@@ -514,6 +515,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiPreviewsBrowserTest, TogglePreviews) {
 
   // After downloading a file, we should have two previews in the tray icon.
   AddDownloadFile();
+  FlushMessageLoop();
 
   EXPECT_FALSE(default_tray_icon->GetVisible());
   EXPECT_TRUE(previews_tray_icon->GetVisible());
@@ -522,6 +524,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiPreviewsBrowserTest, TogglePreviews) {
 
   // After taking a screenshot, we should have three previews in the tray icon.
   AddScreenshotFile();
+  FlushMessageLoop();
 
   EXPECT_FALSE(default_tray_icon->GetVisible());
   EXPECT_TRUE(previews_tray_icon->GetVisible());
@@ -538,6 +541,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiPreviewsBrowserTest, TogglePreviews) {
   PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN);
   PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
   EXPECT_FALSE(views::MenuController::GetActiveInstance());
+  FlushMessageLoop();
 
   // The tray icon should now contain no previews, but have a single child which
   // contains the static image to show when previews are disabled.
@@ -556,6 +560,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiPreviewsBrowserTest, TogglePreviews) {
   PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN);
   PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
   EXPECT_FALSE(views::MenuController::GetActiveInstance());
+  FlushMessageLoop();
 
   // The tray icon should once again show three previews.
   EXPECT_FALSE(default_tray_icon->GetVisible());

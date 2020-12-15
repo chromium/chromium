@@ -35,6 +35,10 @@ constexpr base::TimeDelta kBounceAnimationSegmentDuration =
 constexpr base::TimeDelta kBounceAnimationBaseDelay =
     base::TimeDelta::FromMilliseconds(150);
 
+// The duration of shift animation.
+constexpr base::TimeDelta kShiftAnimationDuration =
+    base::TimeDelta::FromMilliseconds(250);
+
 // Helpers ---------------------------------------------------------------------
 
 // Returns the preview icon contents size.
@@ -159,12 +163,17 @@ HoldingSpaceTrayIconPreview::HoldingSpaceTrayIconPreview(
 
 HoldingSpaceTrayIconPreview::~HoldingSpaceTrayIconPreview() = default;
 
-void HoldingSpaceTrayIconPreview::AnimateIn(size_t index) {
+void HoldingSpaceTrayIconPreview::AnimateIn(base::TimeDelta additional_delay) {
   DCHECK(transform_.IsIdentity());
+  DCHECK(!index_.has_value());
+  DCHECK(pending_index_.has_value());
+
+  index_ = *pending_index_;
+  pending_index_.reset();
 
   const gfx::Size preview_size = GetPreviewSize();
-  if (index > 0u) {
-    gfx::Vector2dF translation(index * preview_size.width() / 2, 0);
+  if (*index_ > 0u) {
+    gfx::Vector2dF translation(*index_ * preview_size.width() / 2, 0);
     AdjustForShelfAlignmentAndTextDirection(&translation);
     transform_.Translate(translation);
   }
@@ -172,19 +181,11 @@ void HoldingSpaceTrayIconPreview::AnimateIn(size_t index) {
   if (!NeedsLayer())
     return;
 
-  CreateLayer();
+  gfx::Transform pre_transform;
+  pre_transform.Translate(transform_.To2dTranslation().x(),
+                          -preview_size.height());
 
-  gfx::Transform pre_transform(transform_);
-  pre_transform.Translate(0, -preview_size.height());
-  layer_->SetTransform(pre_transform);
-
-  icon_->layer()->Add(layer_.get());
-
-  if (index > 0u) {
-    ui::Layer* const parent = layer_->parent();
-    const std::vector<ui::Layer*> children = parent->children();
-    parent->StackBelow(layer_.get(), children[children.size() - index - 1]);
-  }
+  CreateLayer(pre_transform);
 
   gfx::Transform mid_transform(transform_);
   mid_transform.Translate(0, preview_size.height() * 0.25f);
@@ -196,7 +197,8 @@ void HoldingSpaceTrayIconPreview::AnimateIn(size_t index) {
   std::unique_ptr<ui::LayerAnimationSequence> sequence =
       std::make_unique<ui::LayerAnimationSequence>();
   sequence->AddElement(ui::LayerAnimationElement::CreatePauseElement(
-      ui::LayerAnimationElement::TRANSFORM, kBounceAnimationBaseDelay));
+      ui::LayerAnimationElement::TRANSFORM,
+      kBounceAnimationBaseDelay + additional_delay));
 
   std::unique_ptr<ui::LayerAnimationElement> initial_drop =
       ui::LayerAnimationElement::CreateTransformElement(
@@ -216,6 +218,10 @@ void HoldingSpaceTrayIconPreview::AnimateIn(size_t index) {
 void HoldingSpaceTrayIconPreview::AnimateOut(
     base::OnceClosure animate_out_closure) {
   animate_out_closure_ = std::move(animate_out_closure);
+  DCHECK(index_.has_value());
+  DCHECK(!pending_index_.has_value());
+
+  index_.reset();
 
   if (!layer_) {
     std::move(animate_out_closure_).Run();
@@ -230,54 +236,60 @@ void HoldingSpaceTrayIconPreview::AnimateOut(
   layer_->SetVisible(false);
 }
 
-void HoldingSpaceTrayIconPreview::AnimateShift() {
-  gfx::Vector2dF translation(GetPreviewSize().width() / 2, 0);
+void HoldingSpaceTrayIconPreview::AnimateShift(base::TimeDelta delay) {
+  DCHECK(index_.has_value());
+  DCHECK(pending_index_.has_value());
+
+  index_ = *pending_index_;
+  pending_index_.reset();
+
+  if (!layer_ && NeedsLayer())
+    CreateLayer(transform_);
+
+  // Calculate the target preview transform for the new position in the icon.
+  // Avoid adjustments based on relative index change, as the current transform
+  // may not match the previous index in case the icon view has been resized
+  // since last update - see `AdjustTransformForContainerSizeChange()`.
+  transform_ = gfx::Transform();
+  gfx::Vector2dF translation(index_.value() * GetPreviewSize().width() / 2, 0);
   AdjustForShelfAlignmentAndTextDirection(&translation);
   transform_.Translate(translation);
 
   if (!layer_)
     return;
 
-  ui::ScopedLayerAnimationSettings animation_settings(layer_->GetAnimator());
-  SetUpAnimation(&animation_settings);
-  animation_settings.AddObserver(this);
+  ui::ScopedLayerAnimationSettings scoped_settings(layer_->GetAnimator());
+  scoped_settings.SetPreemptionStrategy(
+      ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
 
-  layer_->SetTransform(transform_);
+  std::unique_ptr<ui::LayerAnimationSequence> sequence =
+      std::make_unique<ui::LayerAnimationSequence>();
+  sequence->AddElement(ui::LayerAnimationElement::CreatePauseElement(
+      ui::LayerAnimationElement::TRANSFORM, delay));
 
-  if (!NeedsLayer()) {
-    layer_->SetOpacity(0.f);
-    layer_->SetVisible(false);
-  }
+  std::unique_ptr<ui::LayerAnimationElement> shift =
+      ui::LayerAnimationElement::CreateTransformElement(
+          transform_, kShiftAnimationDuration);
+  shift->set_tween_type(gfx::Tween::FAST_OUT_SLOW_IN);
+  sequence->AddElement(std::move(shift));
+
+  layer_->GetAnimator()->StartAnimation(sequence.release());
 }
 
-void HoldingSpaceTrayIconPreview::AnimateUnshift() {
-  gfx::Vector2dF translation(-GetPreviewSize().width() / 2, 0);
-  AdjustForShelfAlignmentAndTextDirection(&translation);
-  transform_.Translate(translation);
-
-  if (!layer_ && !NeedsLayer())
+void HoldingSpaceTrayIconPreview::AdjustTransformForContainerSizeChange(
+    const gfx::Vector2d& size_change) {
+  if (!index_.has_value())
     return;
-
-  if (!layer_) {
-    CreateLayer();
-
-    gfx::Transform pre_transform(transform_);
-    pre_transform.Translate(-translation);
-    layer_->SetTransform(pre_transform);
-
-    layer_->SetOpacity(0.f);
-
-    icon_->layer()->Add(layer_.get());
-    icon_->layer()->StackAtBottom(layer_.get());
+  int direction = base::i18n::IsRTL() ? -1 : 1;
+  transform_.Translate(direction * size_change.x(), size_change.y());
+  if (layer()) {
+    // Update the layer transform. The current layer transform may be different
+    // from `transform_` if a transform animation is in progress, so calculate
+    // the new target transform using the current layer transform as the base.
+    gfx::Transform layer_transform = layer()->transform();
+    layer_transform.Translate(direction * size_change.x(), size_change.y());
+    layer()->SetTransform(layer_transform);
   }
-
-  layer_->SetVisible(true);
-
-  ui::ScopedLayerAnimationSettings animation_settings(layer_->GetAnimator());
-  SetUpAnimation(&animation_settings);
-
-  layer_->SetTransform(transform_);
-  layer_->SetOpacity(1.f);
 }
 
 void HoldingSpaceTrayIconPreview::OnShelfAlignmentChanged(
@@ -354,11 +366,10 @@ void HoldingSpaceTrayIconPreview::OnDeviceScaleFactorChanged(
 }
 
 void HoldingSpaceTrayIconPreview::OnImplicitAnimationsCompleted() {
-  if (layer_->visible())
-    return;
-
-  icon_->layer()->Remove(layer_.get());
-  layer_.reset();
+  if (!NeedsLayer()) {
+    icon_->layer()->Remove(layer_.get());
+    layer_.reset();
+  }
 
   // NOTE: Running `animate_out_closure_` may delete `this`.
   if (animate_out_closure_)
@@ -376,25 +387,20 @@ void HoldingSpaceTrayIconPreview::OnViewIsDeleting(views::View* view) {
   icon_observer_.Remove(icon_);
 }
 
-void HoldingSpaceTrayIconPreview::CreateLayer() {
+void HoldingSpaceTrayIconPreview::CreateLayer(
+    const gfx::Transform& initial_transform) {
   DCHECK(!layer_);
   layer_ = std::make_unique<ui::Layer>(ui::LAYER_TEXTURED);
   layer_->SetFillsBoundsOpaquely(false);
-  layer_->SetTransform(transform_);
+  layer_->SetTransform(initial_transform);
   layer_->set_delegate(this);
   UpdateLayerBounds();
+
+  icon_->layer()->Add(layer_.get());
 }
 
 bool HoldingSpaceTrayIconPreview::NeedsLayer() const {
-  // With horizontal shelf in RTL, `primary_axis_translation` is expected to be
-  // negative prior to taking its absolute value since it represents an offset
-  // relative to the parent layer's right bound.
-  const float primary_axis_translation =
-      std::abs(icon_->shelf()->PrimaryAxisValue(
-          /*horizontal=*/transform_.To2dTranslation().x(),
-          /*vertical=*/transform_.To2dTranslation().y()));
-  return primary_axis_translation <
-         kHoldingSpaceTrayIconMaxVisiblePreviews * GetPreviewSize().width() / 2;
+  return index_ && *index_ <= kHoldingSpaceTrayIconMaxVisiblePreviews;
 }
 
 void HoldingSpaceTrayIconPreview::InvalidateLayer() {

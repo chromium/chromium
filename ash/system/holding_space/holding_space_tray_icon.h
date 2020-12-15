@@ -33,14 +33,21 @@ class ASH_EXPORT HoldingSpaceTrayIcon : public views::View,
   HoldingSpaceTrayIcon& operator=(const HoldingSpaceTrayIcon&) = delete;
   ~HoldingSpaceTrayIcon() override;
 
+  // Updates the list of previews shown in the icon. The icon will be changed to
+  // show previews for holding space items in `items`. The order of previews in
+  // the icon will match the order in `items`.
+  // The items are updated in the following stages:
+  // 1. Remove obsolete items.
+  // 2. Update the icon preferred size.
+  // 3. Shift existing items to their new position.
+  // 4. Animate new items in.
+  void UpdatePreviews(const std::vector<const HoldingSpaceItem*> items);
+
   // Invoked when the system locale has changed.
   void OnLocaleChanged();
 
-  // Updates the icon to match the current model state.
-  void Init();
-
   // Clears the icon.
-  void Reset();
+  void Clear();
 
   // Returns the shelf associated with this holding space tray icon.
   Shelf* shelf() { return shelf_; }
@@ -66,24 +73,48 @@ class ASH_EXPORT HoldingSpaceTrayIcon : public views::View,
 
   // Invoked when the specified preview has completed animating out. At this
   // point it is owned by `removed_previews_` and should be destroyed.
-  void OnHoldingSpaceTrayIconPreviewAnimatedOut(HoldingSpaceTrayIconPreview*);
+  void OnOldItemAnimatedOut(HoldingSpaceTrayIconPreview*,
+                            const base::RepeatingClosure& callback);
+
+  // Called when all obsolete previews have been animated out during previews
+  // update.
+  void OnOldItemsRemoved();
+
+  // Starts shift animation for existing items. Done while updating the previews
+  // shown in the icon.
+  void ShiftExistingItems();
+
+  // Animates new items in. Done while updating the previews shown in the icon.
+  void AnimateInNewItems();
 
   // The shelf associated with this holding space tray icon.
   Shelf* const shelf_;
 
   // A preview is added to the tray icon to visually represent each holding
-  // space item. Upon creation, previews are added to `previews_` where they
-  // are owned until being animated out. Upon being animated out, previews are
-  // moved to `removed_previews_` where they are owned until the out animation
-  // completes and they are subsequently destroyed.
-  std::vector<std::unique_ptr<HoldingSpaceTrayIconPreview>> previews_;
+  // space item. Upon creation, previews are added to `previews_by_id_` where
+  // they are owned until being animated out. Upon being animated out, previews
+  // are moved to `removed_previews_` where they are owned until the out
+  // animation completes and they are subsequently destroyed. NOTE:
+  // `previews_by_id_` maps holding space item IDs to their respective previews.
+  std::map<std::string, std::unique_ptr<HoldingSpaceTrayIconPreview>>
+      previews_by_id_;
   std::vector<std::unique_ptr<HoldingSpaceTrayIconPreview>> removed_previews_;
+
+  // Ordered list of holding space item IDs represented in the tray icon
+  // (including items that are not currently visible).
+  std::vector<std::string> item_ids_;
 
   ScopedObserver<Shell,
                  ShellObserver,
                  &Shell::AddShellObserver,
                  &Shell::RemoveShellObserver>
       shell_observer_{this};
+
+  // The factory to which callbacks for stages of the previews list update are
+  // bound to. The goal is to easily cancel in-progress updates if the list of
+  // items gets updated.
+  base::WeakPtrFactory<HoldingSpaceTrayIcon> previews_update_weak_factory_{
+      this};
 };
 
 }  // namespace ash
