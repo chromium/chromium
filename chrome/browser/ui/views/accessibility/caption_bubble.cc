@@ -322,6 +322,8 @@ void CaptionBubble::Init() {
       SkColorSetA(gfx::kGoogleGrey900, kCaptionBubbleAlpha);
   set_color(caption_bubble_color_);
   set_close_on_deactivate(false);
+  // The caption bubble starts out hidden and unable to be activated.
+  SetCanActivate(false);
 
   auto label = std::make_unique<views::Label>();
   label->SetMultiLine(true);
@@ -666,6 +668,9 @@ void CaptionBubble::UpdateBubbleVisibility() {
 void CaptionBubble::OnWidgetVisibilityChanged(views::Widget* widget,
                                               bool visible) {
   DCHECK_EQ(widget, GetWidget());
+  // The caption bubble can only be activated when it is visible. Nothing else,
+  // including the focus manager, can activate the caption bubble.
+  SetCanActivate(visible);
   // Ensure that the widget is only activated when it is visible.
   // TODO(crbug.com/1144201): Investigate whether Hide() should always
   // deactivate widgets, and if so, remove this.
