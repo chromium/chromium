@@ -124,6 +124,8 @@ class CupsPrintersManager : public PrinterInstallationManager,
   // Records the total number of detected network printers and the
   // number of detected network printers that have not been saved.
   virtual void RecordNearbyNetworkPrinterCounts() const = 0;
+
+  virtual PrintServersManager* GetPrintServersManager() const = 0;
 };
 
 }  // namespace chromeos

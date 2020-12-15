@@ -5814,6 +5814,7 @@ test("unit_tests") {
       } else {
         sources += [
           "../browser/ui/webui/print_preview/local_printer_handler_chromeos_unittest.cc",
+          "../browser/ui/webui/print_preview/print_preview_handler_chromeos_unittest.cc",
           "../browser/ui/webui/settings/chromeos/cups_printers_handler_unittest.cc",
           "../browser/ui/webui/settings/chromeos/server_printer_url_util_unittest.cc",
         ]

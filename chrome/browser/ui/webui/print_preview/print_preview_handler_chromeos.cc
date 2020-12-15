@@ -19,8 +19,11 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/account_manager/account_manager_util.h"
 #include "chrome/browser/chromeos/drive/drive_integration_service.h"
+#include "chrome/browser/chromeos/printing/cups_printers_manager.h"
+#include "chrome/browser/chromeos/printing/cups_printers_manager_factory.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_handler.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_ui.h"
 #include "chrome/browser/ui/webui/print_preview/printer_handler.h"
@@ -32,6 +35,31 @@
 #include "content/public/browser/web_ui.h"
 
 namespace printing {
+
+namespace {
+
+using chromeos::CupsPrintersManager;
+using chromeos::CupsPrintersManagerFactory;
+
+base::Value ConvertPrintServersConfig(
+    const chromeos::PrintServersConfig& config) {
+  base::Value ui_print_servers(base::Value::Type::LIST);
+  for (const auto& print_server : config.print_servers) {
+    base::Value ui_print_server(base::Value::Type::DICTIONARY);
+    ui_print_server.SetStringKey("id", print_server.GetId());
+    ui_print_server.SetStringKey("name", print_server.GetName());
+    ui_print_servers.Append(std::move(ui_print_server));
+  }
+  base::Value ui_print_servers_config(base::Value::Type::DICTIONARY);
+  ui_print_servers_config.SetKey("printServers", std::move(ui_print_servers));
+  ui_print_servers_config.SetBoolKey(
+      "isSingleServerFetchingMode",
+      config.fetching_mode ==
+          chromeos::ServerPrintersFetchingMode::kSingleServerOnly);
+  return ui_print_servers_config;
+}
+
+}  // namespace
 
 class PrintPreviewHandlerChromeOS::AccessTokenService
     : public OAuth2AccessTokenManager::Consumer {
@@ -102,12 +130,37 @@ void PrintPreviewHandlerChromeOS::RegisterMessages() {
       base::BindRepeating(
           &PrintPreviewHandlerChromeOS::HandleRequestPrinterStatusUpdate,
           base::Unretained(this)));
+  if (base::FeatureList::IsEnabled(chromeos::features::kPrintServerScaling)) {
+    web_ui()->RegisterMessageCallback(
+        "choosePrintServer",
+        base::BindRepeating(
+            &PrintPreviewHandlerChromeOS::HandleChoosePrintServer,
+            base::Unretained(this)));
+    web_ui()->RegisterMessageCallback(
+        "getPrintServersConfig",
+        base::BindRepeating(
+            &PrintPreviewHandlerChromeOS::HandleGetPrintServersConfig,
+            base::Unretained(this)));
+  }
+}
+
+void PrintPreviewHandlerChromeOS::OnJavascriptAllowed() {
+  if (base::FeatureList::IsEnabled(chromeos::features::kPrintServerScaling)) {
+    Profile* profile = Profile::FromWebUI(web_ui());
+    print_servers_manager_ =
+        CupsPrintersManagerFactory::GetForBrowserContext(profile)
+            ->GetPrintServersManager();
+    print_servers_manager_->AddObserver(this);
+  }
 }
 
 void PrintPreviewHandlerChromeOS::OnJavascriptDisallowed() {
   // Normally the handler and print preview will be destroyed together, but
   // this is necessary for refresh or navigation from the chrome://print page.
   weak_factory_.InvalidateWeakPtrs();
+  if (base::FeatureList::IsEnabled(chromeos::features::kPrintServerScaling)) {
+    print_servers_manager_->RemoveObserver(this);
+  }
 }
 
 void PrintPreviewHandlerChromeOS::HandleGrantExtensionPrinterAccess(
@@ -266,6 +319,50 @@ void PrintPreviewHandlerChromeOS::OnPrinterStatusUpdated(
     const std::string& callback_id,
     const base::Value& cups_printer_status) {
   ResolveJavascriptCallback(base::Value(callback_id), cups_printer_status);
+}
+
+void PrintPreviewHandlerChromeOS::HandleChoosePrintServer(
+    const base::ListValue* args) {
+  CHECK_EQ(1U, args->GetSize());
+
+  const base::Value& val = args->GetList()[0];
+  std::vector<std::string> print_server_ids;
+  for (const auto& id : val.GetList()) {
+    print_server_ids.push_back(id.GetString());
+  }
+  MaybeAllowJavascript();
+  FireWebUIListener("server-printers-loading", base::Value(true));
+  print_servers_manager_->ChoosePrintServer(print_server_ids);
+}
+
+void PrintPreviewHandlerChromeOS::HandleGetPrintServersConfig(
+    const base::ListValue* args) {
+  std::string callback_id;
+  CHECK(args->GetString(0, &callback_id));
+  CHECK(!callback_id.empty());
+
+  const chromeos::PrintServersConfig print_servers_config =
+      print_servers_manager_->GetPrintServersConfig();
+  base::Value ui_print_servers_config =
+      ConvertPrintServersConfig(print_servers_config);
+  ResolveJavascriptCallback(base::Value(callback_id), ui_print_servers_config);
+}
+
+void PrintPreviewHandlerChromeOS::OnPrintServersChanged(
+    const chromeos::PrintServersConfig& config) {
+  if (base::FeatureList::IsEnabled(chromeos::features::kPrintServerScaling)) {
+    base::Value ui_print_servers_config = ConvertPrintServersConfig(config);
+    MaybeAllowJavascript();
+    FireWebUIListener("print-servers-config-changed", ui_print_servers_config);
+  }
+}
+
+void PrintPreviewHandlerChromeOS::OnServerPrintersChanged(
+    const std::vector<chromeos::PrinterDetector::DetectedPrinter>& printers) {
+  if (base::FeatureList::IsEnabled(chromeos::features::kPrintServerScaling)) {
+    MaybeAllowJavascript();
+    FireWebUIListener("server-printers-loading", base::Value(false));
+  }
 }
 
 }  // namespace printing

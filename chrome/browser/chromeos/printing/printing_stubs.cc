@@ -20,4 +20,8 @@ base::Optional<Printer> StubCupsPrintersManager::GetPrinter(
   return {};
 }
 
+PrintServersManager* StubCupsPrintersManager::GetPrintServersManager() const {
+  return nullptr;
+}
+
 }  // namespace chromeos

@@ -23,6 +23,7 @@ class StubCupsPrintersManager : public CupsPrintersManager {
   std::vector<Printer> GetPrinters(PrinterClass printer_class) const override;
   bool IsPrinterInstalled(const Printer& printer) const override;
   base::Optional<Printer> GetPrinter(const std::string& id) const override;
+  PrintServersManager* GetPrintServersManager() const override;
 
   void SavePrinter(const Printer& printer) override {}
   void RemoveSavedPrinter(const std::string& printer_id) override {}

@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/chromeos/printing/print_servers_manager.h"
 #include "chrome/common/buildflags.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -32,7 +33,9 @@ class PrinterHandler;
 class PrintPreviewHandler;
 
 // The handler for Javascript messages related to the print preview dialog.
-class PrintPreviewHandlerChromeOS : public content::WebUIMessageHandler {
+class PrintPreviewHandlerChromeOS
+    : public content::WebUIMessageHandler,
+      public chromeos::PrintServersManager::Observer {
  public:
   PrintPreviewHandlerChromeOS();
   ~PrintPreviewHandlerChromeOS() override;
@@ -40,6 +43,7 @@ class PrintPreviewHandlerChromeOS : public content::WebUIMessageHandler {
   // WebUIMessageHandler implementation.
   void RegisterMessages() override;
   void OnJavascriptDisallowed() override;
+  void OnJavascriptAllowed() override;
 
  protected:
   // Protected so unit tests can override.
@@ -92,8 +96,24 @@ class PrintPreviewHandlerChromeOS : public content::WebUIMessageHandler {
   void OnPrinterStatusUpdated(const std::string& callback_id,
                               const base::Value& cups_printer_status);
 
+  // PrintServersManager::Observer implementation
+  void OnPrintServersChanged(
+      const chromeos::PrintServersConfig& config) override;
+  void OnServerPrintersChanged(
+      const std::vector<chromeos::PrinterDetector::DetectedPrinter>& printers)
+      override;
+
+  // Loads printers corresponding to the print server(s).  First element of
+  // |args| is the print server IDs.
+  void HandleChoosePrintServer(const base::ListValue* args);
+
+  // Gets the list of print servers and fetching mode.
+  void HandleGetPrintServersConfig(const base::ListValue* args);
+
   // Holds token service to get OAuth2 access tokens.
   std::unique_ptr<AccessTokenService> token_service_;
+
+  chromeos::PrintServersManager* print_servers_manager_;
 
   base::WeakPtrFactory<PrintPreviewHandlerChromeOS> weak_factory_{this};
 

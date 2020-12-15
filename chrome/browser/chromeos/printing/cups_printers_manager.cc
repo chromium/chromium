@@ -397,6 +397,10 @@ class CupsPrintersManagerImpl
                                 nearby_zeroconf_printers_count);
   }
 
+  PrintServersManager* GetPrintServersManager() const override {
+    return print_servers_manager_.get();
+  }
+
   // Callback for FetchPrinterStatus
   void OnPrinterInfoFetched(const std::string& printer_id,
                             PrinterStatusCallback cb,
