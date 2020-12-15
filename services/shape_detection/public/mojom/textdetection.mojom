@@ -16,6 +16,7 @@ struct TextDetectionResult {
 };
 
 interface TextDetection {
-  Detect(skia.mojom.BitmapN32 bitmap_data)
+  // |bitmap_data| contains tightly packed image pixels in row-major order.
+  Detect(skia.mojom.BitmapWithArbitraryBpp bitmap_data)
     => (array<TextDetectionResult> results);
 };

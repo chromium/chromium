@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import com.google.android.gms.vision.Frame;
 
 import org.chromium.mojo_base.BigBufferUtil;
+import org.chromium.skia.mojom.ColorType;
 
 import java.nio.ByteBuffer;
 
@@ -16,19 +17,20 @@ import java.nio.ByteBuffer;
  * Utility class to convert a Bitmap to a GMS core YUV Frame.
  */
 public class BitmapUtils {
-    public static Bitmap convertToBitmap(org.chromium.skia.mojom.BitmapN32 bitmapData) {
-        // A null BitmapN32 has null pixelData. Otherwise, BitmapN32 always has
-        // a valid N32 (aka RGBA_8888 or BGRA_8888 depending on the build
-        // config) colorType.
-        if (bitmapData.pixelData == null) {
-            return null;
-        }
-
+    public static Bitmap convertToBitmap(
+            org.chromium.skia.mojom.BitmapWithArbitraryBpp bitmapData) {
+        if (bitmapData.imageInfo == null) return null;
         int width = bitmapData.imageInfo.width;
         int height = bitmapData.imageInfo.height;
         final long numPixels = (long) width * height;
         // TODO(mcasas): https://crbug.com/670028 homogeneize overflow checking.
-        if (width <= 0 || height <= 0 || numPixels > (Long.MAX_VALUE / 4)) {
+        if (bitmapData.pixelData == null || width <= 0 || height <= 0
+                || numPixels > (Long.MAX_VALUE / 4)) {
+            return null;
+        }
+
+        if (bitmapData.imageInfo.colorType != ColorType.RGBA_8888
+                && bitmapData.imageInfo.colorType != ColorType.BGRA_8888) {
             return null;
         }
 
@@ -44,7 +46,7 @@ public class BitmapUtils {
         return bitmap;
     }
 
-    public static Frame convertToFrame(org.chromium.skia.mojom.BitmapN32 bitmapData) {
+    public static Frame convertToFrame(org.chromium.skia.mojom.BitmapWithArbitraryBpp bitmapData) {
         Bitmap bitmap = convertToBitmap(bitmapData);
         if (bitmap == null) {
             return null;
