@@ -22,7 +22,6 @@
 #include "third_party/blink/renderer/modules/nfc/ndef_reading_event.h"
 #include "third_party/blink/renderer/modules/nfc/nfc_proxy.h"
 #include "third_party/blink/renderer/modules/nfc/nfc_type_converters.h"
-#include "third_party/blink/renderer/modules/nfc/nfc_utils.h"
 #include "third_party/blink/renderer/modules/permissions/permission_utils.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
@@ -36,6 +35,34 @@ using mojom::blink::PermissionService;
 using mojom::blink::PermissionStatus;
 
 namespace {
+
+DOMException* NDEFErrorTypeToDOMException(
+    device::mojom::blink::NDEFErrorType error_type,
+    const String& error_message) {
+  switch (error_type) {
+    case device::mojom::blink::NDEFErrorType::NOT_ALLOWED:
+      return MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotAllowedError, error_message);
+    case device::mojom::blink::NDEFErrorType::NOT_SUPPORTED:
+      return MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotSupportedError, error_message);
+    case device::mojom::blink::NDEFErrorType::NOT_READABLE:
+      return MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotReadableError, error_message);
+    case device::mojom::blink::NDEFErrorType::INVALID_MESSAGE:
+      return MakeGarbageCollected<DOMException>(DOMExceptionCode::kSyntaxError,
+                                                error_message);
+    case device::mojom::blink::NDEFErrorType::OPERATION_CANCELLED:
+      return MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError,
+                                                error_message);
+    case device::mojom::blink::NDEFErrorType::IO_ERROR:
+      return MakeGarbageCollected<DOMException>(DOMExceptionCode::kNetworkError,
+                                                error_message);
+  }
+  NOTREACHED();
+  // Don't need to handle the case after a NOTREACHED().
+  return nullptr;
+}
 
 constexpr char kNotSupportedOrPermissionDenied[] =
     "Web NFC is unavailable or permission denied.";
