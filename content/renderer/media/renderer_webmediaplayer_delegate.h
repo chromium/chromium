@@ -14,6 +14,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/single_sample_metrics.h"
 #include "base/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/timer/timer.h"
@@ -164,6 +165,10 @@ class CONTENT_EXPORT RendererWebMediaPlayerDelegate
   // Determined at construction time based on system information; determines
   // when the idle cleanup timer should be fired more aggressively.
   bool is_low_end_;
+
+  // Records the peak player count for this render frame.
+  size_t peak_player_count_ = 0u;
+  std::unique_ptr<base::SingleSampleMetric> peak_player_count_uma_;
 
   DISALLOW_COPY_AND_ASSIGN(RendererWebMediaPlayerDelegate);
 };

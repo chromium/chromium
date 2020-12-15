@@ -48,6 +48,11 @@ RendererWebMediaPlayerDelegate::RendererWebMediaPlayerDelegate(
   is_low_end_ = base::SysInfo::IsLowEndDevice();
   idle_cleanup_timer_.SetTaskRunner(
       render_frame->GetTaskRunner(blink::TaskType::kInternalMedia));
+
+  // This corresponds to UMA_HISTOGRAM_COUNTS_1000.
+  peak_player_count_uma_ =
+      base::SingleSampleMetricsFactory::Get()->CreateCustomCountsMetric(
+          "Media.PeakWebMediaPlayerCount", 0, 1000, 50);
 }
 
 RendererWebMediaPlayerDelegate::~RendererWebMediaPlayerDelegate() {}
@@ -64,7 +69,12 @@ bool RendererWebMediaPlayerDelegate::IsFrameClosed() {
 }
 
 int RendererWebMediaPlayerDelegate::AddObserver(Observer* observer) {
-  return id_map_.Add(observer);
+  const auto result = id_map_.Add(observer);
+  if (id_map_.size() > peak_player_count_) {
+    peak_player_count_ = id_map_.size();
+    peak_player_count_uma_->SetSample(peak_player_count_);
+  }
+  return result;
 }
 
 void RendererWebMediaPlayerDelegate::RemoveObserver(int player_id) {

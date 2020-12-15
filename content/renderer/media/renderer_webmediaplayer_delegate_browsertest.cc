@@ -312,6 +312,20 @@ TEST_F(RendererWebMediaPlayerDelegateTest, IdleDelegatesAreSuspended) {
   }
 }
 
+TEST_F(RendererWebMediaPlayerDelegateTest, PeakPlayerHistogram) {
+  NiceMock<MockWebMediaPlayerDelegateObserver> observer;
+  NiceMock<MockWebMediaPlayerDelegateObserver> observer2;
+  delegate_manager_->AddObserver(&observer);
+  delegate_manager_->AddObserver(&observer2);
+
+  base::HistogramTester histogram_tester;
+
+  constexpr char kHistogramName[] = "Media.PeakWebMediaPlayerCount";
+  histogram_tester.ExpectTotalCount(kHistogramName, 0);
+  delegate_manager_.reset();
+  histogram_tester.ExpectUniqueSample(kHistogramName, 2, 1);
+}
+
 #if defined(OS_ANDROID)
 
 TEST_F(RendererWebMediaPlayerDelegateTest, Histograms) {
