@@ -22,7 +22,7 @@ async function ensureFullscreen() {
   }
 
   const toolbar = viewer.shadowRoot.querySelector('viewer-pdf-toolbar-new');
-  toolbar.dispatchEvent(new CustomEvent('fullscreen-click'));
+  toolbar.dispatchEvent(new CustomEvent('present-click'));
   await eventToPromise('fullscreenchange', scroller);
 }
 

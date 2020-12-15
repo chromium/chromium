@@ -298,17 +298,17 @@ const tests = [
     toggleButton.click();
   },
 
-  async function testEnterFullscreenButton() {
+  async function testPresentButton() {
     const toolbar = createToolbar();
-    let button = toolbar.shadowRoot.querySelector('#fullscreen-button');
+    let button = toolbar.shadowRoot.querySelector('#present-button');
     chrome.test.assertEq(null, button);
 
     toolbar.presentationModeEnabled = true;
     await flushTasks();
-    button = toolbar.shadowRoot.querySelector('#fullscreen-button');
+    button = toolbar.shadowRoot.querySelector('#present-button');
     chrome.test.assertTrue(button !== null);
 
-    const whenFired = eventToPromise('fullscreen-click', toolbar);
+    const whenFired = eventToPromise('present-click', toolbar);
     button.click();
     await whenFired;
     chrome.test.succeed();

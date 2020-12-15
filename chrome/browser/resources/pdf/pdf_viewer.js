@@ -705,7 +705,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
   }
 
   /** @private */
-  onFullscreenClick_() {
+  onPresentClick_() {
     assert(this.presentationModeEnabled_);
 
     const onWheel = e => {

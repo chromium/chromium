@@ -219,10 +219,10 @@ export class ViewerPdfToolbarNewElement extends PolymerElement {
   }
 
   /** @private */
-  onFullscreenClick_() {
+  onPresentClick_() {
     assert(this.presentationModeEnabled);
     this.getMenu_().close();
-    this.dispatchEvent(new CustomEvent('fullscreen-click'));
+    this.dispatchEvent(new CustomEvent('present-click'));
   }
 
   /**
