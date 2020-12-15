@@ -60,7 +60,10 @@ public class DateListPaginator implements DateOrderedListMutator.ListPaginator {
             outputList.add(item);
         }
 
-        if (showPagination) outputList.add(new ListItem.PaginationListItem());
+        if (showPagination) {
+            outputList.add(new ListItem.PaginationListItem());
+            mCurrentPageIndex = outputList.size() / DEFAULT_PAGE_SIZE - 1;
+        }
 
         return outputList;
     }

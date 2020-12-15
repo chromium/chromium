@@ -45,10 +45,12 @@ import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.url_formatter.UrlFormatterJni;
 import org.chromium.ui.modelutil.ListObservable.ListObserver;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 /** Unit tests for the DateOrderedListMutator class. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -71,6 +73,8 @@ public class DateOrderedListMutatorTest {
 
     private ListMutationController mMutationController;
 
+    private boolean mAccessibilityMode;
+
     @Before
     public void setUp() {
         mModel = new ListItemModel();
@@ -83,6 +87,7 @@ public class DateOrderedListMutatorTest {
     @After
     public void tearDown() {
         mModel = null;
+        mAccessibilityMode = false;
     }
 
     /**
@@ -1107,6 +1112,52 @@ public class DateOrderedListMutatorTest {
         Assert.assertEquals(2, mModel.size());
     }
 
+    /**
+     * Action                               List
+     * 1. Set()                             [ DATE    @ 4:00 5/1/2018
+     *                                        10 items
+     *                                        DATE    @ 4:00 4/1/2018
+     *                                        20 items
+     *                                        More
+     *                                      ]
+     * 2. Click more button                 [ DATE    @ 4:00 5/1/2018
+     *                                        10 items
+     *                                        DATE    @ 4:00 4/1/2018
+     *                                        20 items
+     *                                        DATE    @ 4:00 3/1/2018
+     *                                        60 items
+     *                                        More
+     *                                      ]
+     *
+     */
+    @Test
+    public void testPaginationHeaderInAccessibilityMode() {
+        mAccessibilityMode = true;
+        when(mSource.getItems()).thenReturn(Collections.emptySet());
+        DateOrderedListMutator list = createMutatorWithoutJustNowProvider();
+        mModel.addObserver(mObserver);
+
+        OfflineItem item1 = buildItem("3", buildCalendar(2018, 1, 5, 4), OfflineItemFilter.VIDEO);
+        OfflineItem item2 = buildItem("3", buildCalendar(2018, 1, 4, 4), OfflineItemFilter.VIDEO);
+        OfflineItem item3 = buildItem("3", buildCalendar(2018, 1, 3, 4), OfflineItemFilter.VIDEO);
+        OfflineItem item4 = buildItem("3", buildCalendar(2018, 1, 2, 4), OfflineItemFilter.VIDEO);
+        List<OfflineItem> listItems = new ArrayList<>();
+        for (int i = 0; i < 10; i++) listItems.add(item1);
+        for (int i = 0; i < 20; i++) listItems.add(item2);
+        for (int i = 0; i < 60; i++) listItems.add(item3);
+        for (int i = 0; i < 5; i++) listItems.add(item4);
+        when(mSource.getItems()).thenReturn(listItems);
+        list.onItemsAdded(listItems);
+
+        Assert.assertEquals(33, mModel.size());
+
+        mMutationController.loadMorePages();
+        Assert.assertEquals(94, mModel.size());
+
+        mMutationController.loadMorePages();
+        Assert.assertEquals(99, mModel.size());
+    }
+
     private static Calendar buildCalendar(int year, int month, int dayOfMonth, int hourOfDay) {
         Calendar calendar = CalendarFactory.get();
         calendar.set(year, month, dayOfMonth, hourOfDay, 0);
@@ -1149,6 +1200,7 @@ public class DateOrderedListMutatorTest {
         return new DownloadManagerUiConfig.Builder()
                 .setUseNewDownloadPath(true)
                 .setSupportsGrouping(true)
+                .setShowPaginationHeaders(mAccessibilityMode)
                 .build();
     }
 
