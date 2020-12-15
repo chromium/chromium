@@ -53,6 +53,8 @@
 namespace {
 
 const char kOfflinePreviewsMimeType[] = "multipart/related";
+extern const base::Feature kLayoutShiftNormalizationRecordUKM{
+    "LayoutShiftNormalizationRecordUKM", base::FEATURE_DISABLED_BY_DEFAULT};
 
 bool IsSupportedProtocol(page_load_metrics::NetworkProtocol protocol) {
   switch (protocol) {
@@ -844,7 +846,8 @@ void UkmPageLoadMetricsObserver::ReportMainResourceTimingMetrics(
 }
 
 void UkmPageLoadMetricsObserver::ReportLayoutStability() {
-  ukm::builders::PageLoad(GetDelegate().GetPageUkmSourceId())
+  ukm::builders::PageLoad builder(GetDelegate().GetPageUkmSourceId());
+  builder
       .SetLayoutInstability_CumulativeShiftScore(
           page_load_metrics::LayoutShiftUkmValue(
               GetDelegate().GetPageRenderData().layout_shift_score))
@@ -860,8 +863,38 @@ void UkmPageLoadMetricsObserver::ReportLayoutStability() {
           page_load_metrics::LayoutShiftUkmValue(
               GetDelegate()
                   .GetMainFrameRenderData()
-                  .layout_shift_score_before_input_or_scroll))
-      .Record(ukm::UkmRecorder::Get());
+                  .layout_shift_score_before_input_or_scroll));
+  // Record CLS normalization UKM.
+  if (base::FeatureList::IsEnabled(kLayoutShiftNormalizationRecordUKM) &&
+      !GetDelegate().GetNormalizedCLSData().data_tainted) {
+    builder
+        .SetLayoutInstability_MaxCumulativeShiftScore_SessionWindow_Gap1000ms(
+            page_load_metrics::LayoutShiftUkmValue(
+                GetDelegate()
+                    .GetNormalizedCLSData()
+                    .session_windows_gap1000ms_maxMax_max_cls))
+        .SetLayoutInstability_MaxCumulativeShiftScore_SessionWindow_Gap1000ms_Max5000ms(
+            page_load_metrics::LayoutShiftUkmValue(
+                GetDelegate()
+                    .GetNormalizedCLSData()
+                    .session_windows_gap1000ms_max5000ms_max_cls))
+        .SetLayoutInstability_MaxCumulativeShiftScore_SlidingWindow_Duration1000ms(
+            page_load_metrics::LayoutShiftUkmValue(
+                GetDelegate()
+                    .GetNormalizedCLSData()
+                    .sliding_windows_duration1000ms_max_cls))
+        .SetLayoutInstability_MaxCumulativeShiftScore_SlidingWindow_Duration300ms(
+            page_load_metrics::LayoutShiftUkmValue(
+                GetDelegate()
+                    .GetNormalizedCLSData()
+                    .sliding_windows_duration300ms_max_cls))
+        .SetLayoutInstability_AverageCumulativeShiftScore_SessionWindow_Gap5000ms(
+            page_load_metrics::LayoutShiftUkmValue(
+                GetDelegate()
+                    .GetNormalizedCLSData()
+                    .session_windows_gap5000ms_maxMax_average_cls));
+  }
+  builder.Record(ukm::UkmRecorder::Get());
 
   // TODO(crbug.com/1064483): We should move UMA recording to components/
 

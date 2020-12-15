@@ -398,7 +398,7 @@ TEST_F(AMPPageLoadMetricsObserverTest, SubFrameMetrics_LayoutInstability) {
   tester()->SimulateMetadataUpdate(metadata, subframe);
 
   page_load_metrics::mojom::FrameRenderDataUpdate render_data(1.0, 0.5, 0, 0, 0,
-                                                              0);
+                                                              0, {});
   tester()->SimulateRenderDataUpdate(render_data, subframe);
 
   // Navigate the main frame to trigger metrics recording.

@@ -3913,6 +3913,26 @@
             ]
         }
     ],
+    "LayoutShiftNormalization": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LayoutShiftNormalizationEmitShiftsForKeyMetrics",
+                        "LayoutShiftNormalizationRecordUKM"
+                    ]
+                }
+            ]
+        }
+    ],
     "LegacyTLSDeprecation2": [
         {
             "platforms": [

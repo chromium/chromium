@@ -6,6 +6,8 @@ import("//testing/test.gni")
 
 source_set("browser") {
   sources = [
+    "layout_shift_normalization.cc",
+    "layout_shift_normalization.h",
     "metrics_navigation_throttle.cc",
     "metrics_navigation_throttle.h",
     "metrics_web_contents_observer.cc",
@@ -85,6 +87,7 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "layout_shift_normalization_unittest.cc",
     "metrics_web_contents_observer_unittest.cc",
     "observers/click_input_tracker_unittest.cc",
     "observers/core/uma_page_load_metrics_observer_unittest.cc",

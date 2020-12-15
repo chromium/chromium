@@ -29,6 +29,7 @@ class FrameMetadata;
 
 struct UserInitiatedInfo;
 struct PageRenderData;
+struct NormalizedCLSData;
 
 // This class tracks global state for the page load that should be accessible
 // from any PageLoadMetricsObserver.
@@ -121,6 +122,7 @@ class PageLoadMetricsObserverDelegate {
   // such as subframe intersections is initialized to defaults.
   virtual const mojom::FrameMetadata& GetSubframeMetadata() const = 0;
   virtual const PageRenderData& GetPageRenderData() const = 0;
+  virtual const NormalizedCLSData& GetNormalizedCLSData() const = 0;
   // InputTiming data accumulated across all frames.
   virtual const mojom::InputTiming& GetPageInputTiming() const = 0;
   virtual const blink::MobileFriendliness& GetMobileFriendliness() const = 0;

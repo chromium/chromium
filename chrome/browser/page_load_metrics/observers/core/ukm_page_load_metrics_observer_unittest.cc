@@ -1455,7 +1455,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, LayoutInstability) {
   NavigateAndCommit(GURL(kTestUrl1));
 
   page_load_metrics::mojom::FrameRenderDataUpdate render_data(1.0, 1.0, 0, 0, 0,
-                                                              0);
+                                                              0, {});
   tester()->SimulateRenderDataUpdate(render_data);
 
   // Simulate hiding the tab (the report should include shifts after hide).
@@ -1576,7 +1576,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, LayoutInstabilitySubframeAggregation) {
 
   // Simulate layout instability in the main frame.
   page_load_metrics::mojom::FrameRenderDataUpdate render_data(1.0, 1.0, 0, 0, 0,
-                                                              0);
+                                                              0, {});
   tester()->SimulateRenderDataUpdate(render_data);
 
   RenderFrameHost* subframe =
@@ -1908,7 +1908,7 @@ void CLSUkmPageLoadMetricsObserverTest::SimulateShiftDelta(
     float delta,
     content::RenderFrameHost* frame) {
   page_load_metrics::mojom::FrameRenderDataUpdate render_data(delta, delta, 0,
-                                                              0, 0, 0);
+                                                              0, 0, 0, {});
   tester()->SimulateRenderDataUpdate(render_data, frame);
 }
 
