@@ -79,7 +79,8 @@ class TestReporter : public TotalAnimationThroughputReporter {
 using TotalAnimationThroughputReporterTest =
     AnimationThroughputReporterTestBase;
 
-TEST_F(TotalAnimationThroughputReporterTest, SingleAnimation) {
+// Flaky: crbug.com/1157649
+TEST_F(TotalAnimationThroughputReporterTest, DISABLED_SingleAnimation) {
   Layer layer;
   layer.SetOpacity(0.5f);
   root_layer()->Add(&layer);
@@ -98,8 +99,9 @@ TEST_F(TotalAnimationThroughputReporterTest, SingleAnimation) {
   EXPECT_TRUE(reporter.reported());
 }
 
+// Flaky: crbug.com/1157649
 // Tests the stopping last animation will trigger the animation.
-TEST_F(TotalAnimationThroughputReporterTest, StopAnimation) {
+TEST_F(TotalAnimationThroughputReporterTest, DISABLED_StopAnimation) {
   Layer layer;
   layer.SetOpacity(0.5f);
   root_layer()->Add(&layer);
@@ -153,8 +155,10 @@ TEST_F(TotalAnimationThroughputReporterTest, MultipleAnimations) {
   EXPECT_TRUE(reporter.reported());
 }
 
+// Flaky: crbug.com/1157649
 // Tests the longest animation on a single layer will triger the report.
-TEST_F(TotalAnimationThroughputReporterTest, MultipleAnimationsOnSingleLayer) {
+TEST_F(TotalAnimationThroughputReporterTest,
+       DISABLED_MultipleAnimationsOnSingleLayer) {
   Layer layer;
   layer.SetOpacity(0.5f);
   layer.SetLayerBrightness(0.5f);
@@ -302,8 +306,9 @@ TEST_F(TotalAnimationThroughputReporterTest, PersistedAnimation) {
   EXPECT_TRUE(reporter.reported());
 }
 
+// Flaky: crbug.com/1157649
 // Make sure the once reporter is called only once.
-TEST_F(TotalAnimationThroughputReporterTest, OnceReporter) {
+TEST_F(TotalAnimationThroughputReporterTest, DISABLED_OnceReporter) {
   Layer layer;
   layer.SetOpacity(0.5f);
   root_layer()->Add(&layer);
@@ -327,9 +332,11 @@ TEST_F(TotalAnimationThroughputReporterTest, OnceReporter) {
   EXPECT_FALSE(reporter.reported());
 }
 
+// Flaky: crbug.com/1157649
 // One reporter marked as "should_delete" should be deleted when
 // reported.
-TEST_F(TotalAnimationThroughputReporterTest, OnceReporterShouldDelete) {
+TEST_F(TotalAnimationThroughputReporterTest,
+       DISABLED_OnceReporterShouldDelete) {
   class DeleteTestReporter : public TotalAnimationThroughputReporter {
    public:
     DeleteTestReporter(Compositor* compositor,
