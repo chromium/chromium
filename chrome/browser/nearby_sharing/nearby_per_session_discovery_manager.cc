@@ -9,6 +9,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/nearby_sharing/attachment.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/nearby_confirmation_manager.h"
@@ -41,7 +42,8 @@ base::Optional<nearby_share::mojom::TransferStatus> GetTransferStatus(
     case TransferMetadata::Status::kFailed:
       return nearby_share::mojom::TransferStatus::kFailed;
     case TransferMetadata::Status::kAwaitingRemoteAcceptanceFailed:
-      return nearby_share::mojom::TransferStatus::kAwaitingRemoteAcceptanceFailed;
+      return nearby_share::mojom::TransferStatus::
+          kAwaitingRemoteAcceptanceFailed;
     case TransferMetadata::Status::kUnknown:
       return nearby_share::mojom::TransferStatus::kUnknown;
     case TransferMetadata::Status::kConnecting:
@@ -99,6 +101,13 @@ nearby_share::mojom::ShareType GetFileShareType(
   }
 }
 
+std::string GetDeviceIdForLogs(const ShareTarget& share_target) {
+  return (share_target.device_id
+              ? base::HexEncode(share_target.device_id.value().data(),
+                                share_target.device_id.value().size())
+              : "[null]");
+}
+
 }  // namespace
 
 NearbyPerSessionDiscoveryManager::NearbyPerSessionDiscoveryManager(
@@ -150,6 +159,9 @@ void NearbyPerSessionDiscoveryManager::OnTransferUpdate(
 
 void NearbyPerSessionDiscoveryManager::OnShareTargetDiscovered(
     ShareTarget share_target) {
+  NS_LOG(VERBOSE) << "NearbyPerSessionDiscoveryManager::" << __func__
+                  << ": id=" << share_target.id
+                  << ", device_id=" << GetDeviceIdForLogs(share_target);
   // Update metrics.
   UpdateFurthestDiscoveryProgressIfNecessary(
       DiscoveryProgress::kDiscoveredShareTargetNothingSent);
@@ -165,16 +177,44 @@ void NearbyPerSessionDiscoveryManager::OnShareTargetDiscovered(
         base::TimeTicks::Now() - *discovery_start_time_);
   }
 
-  base::InsertOrAssign(discovered_share_targets_, share_target.id,
-                       share_target);
+  // Dedup by the more stable device ID if possible.
+  if (share_target.device_id) {
+    auto it = std::find_if(discovered_share_targets_.begin(),
+                           discovered_share_targets_.end(),
+                           [&share_target](const auto& id_share_target_pair) {
+                             return share_target.device_id ==
+                                    id_share_target_pair.second.device_id;
+                           });
+
+    if (it != discovered_share_targets_.end()) {
+      NS_LOG(VERBOSE) << "NearbyPerSessionDiscoveryManager::" << __func__
+                      << ": Removing previously discovered share target with "
+                      << "identical device_id="
+                      << GetDeviceIdForLogs(share_target);
+      OnShareTargetLost(it->second);
+    }
+  }
+
+  discovered_share_targets_.insert_or_assign(share_target.id, share_target);
   share_target_listener_->OnShareTargetDiscovered(share_target);
 }
 
 void NearbyPerSessionDiscoveryManager::OnShareTargetLost(
     ShareTarget share_target) {
-  if (base::Contains(discovered_share_targets_, share_target.id)) {
-    ++num_lost_;
+  NS_LOG(VERBOSE) << "NearbyPerSessionDiscoveryManager::" << __func__
+                  << ": id=" << share_target.id
+                  << ", device_id=" << GetDeviceIdForLogs(share_target);
+
+  // It is possible that we already removed a ShareTarget from the map when
+  // deduping by ShareTarget device_id.
+  if (!base::Contains(discovered_share_targets_, share_target.id)) {
+    NS_LOG(VERBOSE) << "NearbyPerSessionDiscoveryManager::" << __func__
+                    << ": Share target id=" << share_target.id
+                    << " already removed. Taking no action.";
+    return;
   }
+
+  ++num_lost_;
   discovered_share_targets_.erase(share_target.id);
   share_target_listener_->OnShareTargetLost(share_target);
 }

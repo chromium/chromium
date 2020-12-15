@@ -197,6 +197,44 @@ TEST_F(NearbyPerSessionDiscoveryManagerTest, OnShareTargetDiscovered) {
       .WillOnce(testing::Return(NearbySharingService::StatusCodes::kOk));
 }
 
+TEST_F(NearbyPerSessionDiscoveryManagerTest,
+       OnShareTargetDiscovered_DuplicateDeviceId) {
+  MockShareTargetListener listener;
+  EXPECT_CALL(sharing_service(),
+              RegisterSendSurface(testing::_, testing::_, testing::_))
+      .WillOnce(testing::Return(NearbySharingService::StatusCodes::kOk));
+
+  manager().StartDiscovery(listener.Bind(), base::DoNothing());
+
+  ShareTarget share_target1;
+  share_target1.device_id = "device_id";
+  ShareTarget share_target2;
+  share_target2.device_id = "device_id";
+
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(listener, OnShareTargetDiscovered(MatchesTarget(share_target1)))
+        .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+    manager().OnShareTargetDiscovered(share_target1);
+    run_loop.Run();
+  }
+
+  // If a newly discovered share target has the same device ID as a previously
+  // discovered share target, remove the old share target then add the new share
+  // target.
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(listener, OnShareTargetLost(MatchesTarget(share_target1)));
+    EXPECT_CALL(listener, OnShareTargetDiscovered(MatchesTarget(share_target2)))
+        .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+    manager().OnShareTargetDiscovered(share_target2);
+    run_loop.Run();
+  }
+
+  EXPECT_CALL(sharing_service(), UnregisterSendSurface(&manager(), &manager()))
+      .WillOnce(testing::Return(NearbySharingService::StatusCodes::kOk));
+}
+
 TEST_F(NearbyPerSessionDiscoveryManagerTest, OnShareTargetLost) {
   MockShareTargetListener listener;
   EXPECT_CALL(sharing_service(),
@@ -207,13 +245,26 @@ TEST_F(NearbyPerSessionDiscoveryManagerTest, OnShareTargetLost) {
 
   ShareTarget share_target;
 
-  base::RunLoop run_loop;
+  // A share-target-lost notification should only be sent if the lost share
+  // target has already been discovered and has not already been removed from
+  // the list of discovered devices.
   EXPECT_CALL(listener, OnShareTargetLost(MatchesTarget(share_target)))
-      .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
-
+      .Times(0);
   manager().OnShareTargetLost(share_target);
-
-  run_loop.Run();
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(listener, OnShareTargetDiscovered(MatchesTarget(share_target)))
+        .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+    manager().OnShareTargetDiscovered(share_target);
+    run_loop.Run();
+  }
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(listener, OnShareTargetLost(MatchesTarget(share_target)))
+        .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+    manager().OnShareTargetLost(share_target);
+    run_loop.Run();
+  }
 
   EXPECT_CALL(sharing_service(), UnregisterSendSurface(&manager(), &manager()))
       .WillOnce(testing::Return(NearbySharingService::StatusCodes::kOk));
