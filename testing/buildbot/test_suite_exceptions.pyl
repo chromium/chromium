@@ -2707,12 +2707,6 @@
       },
     },
   },
-  'url_unittests': {
-    'remove_from': [
-      # crbug.com/1054240
-      'Fuchsia ARM64',
-    ],
-  },
   'video_decode_accelerator_gl_unittest': {
     'remove_from': [
       # Windows Intel doesn't have the GL extensions to support this test.
