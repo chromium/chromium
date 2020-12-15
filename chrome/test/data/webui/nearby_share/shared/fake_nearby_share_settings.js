@@ -28,6 +28,8 @@ cr.define('nearby_share', function() {
       /** @private {!nearbyShare.mojom.DeviceNameValidationResult} */
       this.nextDeviceNameResult_ =
           nearbyShare.mojom.DeviceNameValidationResult.kValid;
+      /** @private {!boolean} */
+      this.isOnboardingComplete_ = false;
       /** @private {Object} */
       this.$ = {
         close() {},
@@ -64,9 +66,19 @@ cr.define('nearby_share', function() {
      */
     setEnabled(enabled) {
       this.enabled_ = enabled;
+      if (this.enabled_) {
+        this.isOnboardingComplete_ = true;
+      }
       if (this.observer_) {
         this.observer_.onEnabledChanged(enabled);
       }
+    }
+
+    /**
+     * @return {!Promise<{completed: !boolean}>}
+     */
+    async isOnboardingComplete() {
+      return {completed: this.isOnboardingComplete_};
     }
 
     /**
@@ -156,6 +168,13 @@ cr.define('nearby_share', function() {
       if (this.observer_) {
         this.observer_.onAllowedContactsChanged(this.allowedContacts_);
       }
+    }
+
+    /**
+     * @param { !boolean } completed
+     */
+    setIsOnboardingCompleteForTest(completed) {
+      this.isOnboardingComplete_ = completed;
     }
   }
   // #cr_define_end

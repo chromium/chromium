@@ -17,7 +17,8 @@ cr.define('nearby_share', function() {
    *            deviceName:string,
    *            dataUsage:nearbyShare.mojom.DataUsage,
    *            visibility:nearbyShare.mojom.Visibility,
-   *            allowedContacts:Array<string>
+   *            allowedContacts:Array<string>,
+   *            isOnboardingComplete:boolean,
    *          }}
    */
   /* #export */ let NearbySettings;
@@ -55,6 +56,7 @@ cr.define('nearby_share', function() {
             this.nearbyShareSettings_.getDataUsage(),
             this.nearbyShareSettings_.getVisibility(),
             this.nearbyShareSettings_.getAllowedContacts(),
+            this.nearbyShareSettings_.isOnboardingComplete(),
           ])
           .then((results) => {
             this.set('settings.enabled', results[0].enabled);
@@ -62,6 +64,7 @@ cr.define('nearby_share', function() {
             this.set('settings.dataUsage', results[2].dataUsage);
             this.set('settings.visibility', results[3].visibility);
             this.set('settings.allowedContacts', results[4].allowedContacts);
+            this.set('settings.isOnboardingComplete', results[5].completed);
             this.onSettingsRetrieved();
           });
     },

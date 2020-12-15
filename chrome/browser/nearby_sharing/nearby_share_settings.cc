@@ -77,6 +77,11 @@ const std::vector<std::string> NearbyShareSettings::GetAllowedContacts() const {
   return allowed_contacts;
 }
 
+bool NearbyShareSettings::IsOnboardingComplete() const {
+  return pref_service_->GetBoolean(
+      prefs::kNearbySharingOnboardingCompletePrefName);
+}
+
 bool NearbyShareSettings::IsDisabledByPolicy() const {
   return !GetEnabled() && pref_service_->IsManagedPreference(
                               prefs::kNearbySharingEnabledPrefName);
@@ -100,6 +105,11 @@ void NearbyShareSettings::SetEnabled(bool enabled) {
     pref_service_->SetBoolean(prefs::kNearbySharingOnboardingCompletePrefName,
                               true);
   }
+}
+
+void NearbyShareSettings::IsOnboardingComplete(
+    base::OnceCallback<void(bool)> callback) {
+  std::move(callback).Run(IsOnboardingComplete());
 }
 
 void NearbyShareSettings::GetDeviceName(

@@ -35,6 +35,7 @@ suite('nearby-onboarding-page', function() {
       deviceName: deviceName,
       dataUsage: nearbyShare.mojom.DataUsage.kOnline,
       visibility: nearbyShare.mojom.Visibility.kAllContacts,
+      isOnboardingComplete: false,
       allowedContacts: [],
     };
     document.body.appendChild(element);

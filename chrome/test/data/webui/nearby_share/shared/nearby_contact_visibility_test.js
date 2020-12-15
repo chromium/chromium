@@ -32,6 +32,7 @@ suite('nearby-contact-visibility', () => {
       deviceName: 'deviceName',
       dataUsage: nearbyShare.mojom.DataUsage.kOnline,
       visibility: nearbyShare.mojom.Visibility.kUnknown,
+      isOnboardingComplete: false,
       allowedContacts: [],
     };
 

@@ -52,6 +52,7 @@ class NearbyShareSettings : public nearby_share::mojom::NearbyShareSettings,
   nearby_share::mojom::DataUsage GetDataUsage() const;
   nearby_share::mojom::Visibility GetVisibility() const;
   const std::vector<std::string> GetAllowedContacts() const;
+  bool IsOnboardingComplete() const;
 
   // Returns true if the feature is disabled by policy.
   bool IsDisabledByPolicy() const;
@@ -62,6 +63,7 @@ class NearbyShareSettings : public nearby_share::mojom::NearbyShareSettings,
           observer) override;
   void GetEnabled(base::OnceCallback<void(bool)> callback) override;
   void SetEnabled(bool enabled) override;
+  void IsOnboardingComplete(base::OnceCallback<void(bool)> callback) override;
   void GetDeviceName(
       base::OnceCallback<void(const std::string&)> callback) override;
   void ValidateDeviceName(

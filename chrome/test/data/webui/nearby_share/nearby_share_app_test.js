@@ -18,6 +18,8 @@ import {FakeNearbyShareSettings} from './shared/fake_nearby_share_settings.m.js'
 suite('ShareAppTest', function() {
   /** @type {!NearbyShareAppElement} */
   let shareAppElement;
+  /** @type {!nearbyShare.mojom.NearbyShareSettingsInterface} */
+  let fakeSettings;
 
   /** @param {!string} page Page to check if it is active. */
   function isPageActive(page) {
@@ -29,10 +31,12 @@ suite('ShareAppTest', function() {
    * This allows both sub-suites to share the same setup logic but with a
    * different enabled state which changes the routing of the first view.
    * @param {boolean} enabled The value of the enabled setting.
+   * @param {boolean=} isOnboardingComplete The value of the onboarding
+   *     completion state.
    */
-  function sharedSetup(enabled) {
-    /** @type {!nearbyShare.mojom.NearbyShareSettingsInterface} */
-    let fakeSettings = new FakeNearbyShareSettings();
+  function sharedSetup(enabled, isOnboardingComplete) {
+    fakeSettings = new FakeNearbyShareSettings();
+    fakeSettings.setIsOnboardingCompleteForTest(!!isOnboardingComplete);
     fakeSettings.setEnabled(enabled);
     setNearbyShareSettingsForTesting(fakeSettings);
 
@@ -68,13 +72,24 @@ suite('ShareAppTest', function() {
   });
 
   suite('DisabledTests', function() {
-    setup(function() {
-      sharedSetup(false);
-    });
-
     teardown(sharedTeardown);
 
+    test(
+        'enables feature and opens discovery if onboarding is complete',
+        async function() {
+          sharedSetup(false, true);
+          assertEquals('NEARBY-SHARE-APP', shareAppElement.tagName);
+          assertEquals(null, shareAppElement.$$('.active'));
+          // We have to wait for settings to return from the mojo after which
+          // the app will route to the correct page.
+          await waitAfterNextRender(shareAppElement);
+          const enabledResponse = await fakeSettings.getEnabled();
+          assertTrue(enabledResponse && enabledResponse.enabled);
+          assertTrue(isPageActive('discovery'));
+        });
+
     test('renders onboarding page when disabled', async function() {
+      sharedSetup(false);
       assertEquals('NEARBY-SHARE-APP', shareAppElement.tagName);
       assertEquals(null, shareAppElement.$$('.active'));
       // We have to wait for settings to return from the mojo after which
@@ -84,6 +99,7 @@ suite('ShareAppTest', function() {
     });
 
     test('changes page on event', async function() {
+      sharedSetup(false);
       assertEquals('NEARBY-SHARE-APP', shareAppElement.tagName);
       assertEquals(null, shareAppElement.$$('.active'));
       // We have to wait for settings to return from the mojo after which
