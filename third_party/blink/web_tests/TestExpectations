@@ -5783,6 +5783,12 @@ crbug.com/1042877 http/tests/security/mixedContent/strict-mode-via-pref-image-bl
 # Mixed content autoupgrades cause test to fail because test relied on http subresources to test a different origin, needs to be changed to not rely on HTTP URLs.
 crbug.com/1042877 http/tests/security/img-crossorigin-redirect-credentials.https.html [ Failure ]
 
+# Temporarily disable tests to land DevTools frontend changes
+crbug.com/1152082 http/tests/devtools/bindings/blackboxed-sourcemap-detach.js [ Pass Failure Timeout ]
+crbug.com/1152082 http/tests/devtools/console/console-linkify-message-location.js [ Pass Failure Timeout ]
+crbug.com/1152082 http/tests/devtools/sources/debugger-frameworks/frameworks-blackbox-by-source-code.js [ Pass Failure Timeout ]
+crbug.com/1152082 http/tests/devtools/sources/debugger-frameworks/frameworks-blackbox-patterns.js [ Pass Failure Timeout ]
+
 # Sheriff 2020-10-09
 crbug.com/1136687 external/wpt/pointerevents/pointerlock/pointerevent_pointerlock_supercedes_capture.html [ Pass Failure ]
 crbug.com/1136726 [ Linux ] virtual/gpu-rasterization/images/imagemap-focus-ring-outline-color-not-inherited-from-map.html [ Failure ]
