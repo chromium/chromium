@@ -300,7 +300,7 @@
   {
     "name": "autofill-enable-toolbar-status-chip",
     "owners": [ "siyua" ],
-    "expiry_milestone": 88
+    "expiry_milestone": 96
   },
   {
     "name": "autofill-enable-virtual-card",
@@ -1260,7 +1260,7 @@
   {
     "name": "enable-autofill-credit-card-ablation-experiment",
     "owners": [ "jsaul@google.com" ],
-    "expiry_milestone": 88
+    "expiry_milestone": 96
   },
   {
     "name": "enable-autofill-credit-card-authentication",
@@ -1283,7 +1283,7 @@
   {
     "name": "enable-autofill-credit-card-upload-feedback",
     "owners": [ "siyua@chromium.org, payments-autofill-team@google.com" ],
-    "expiry_milestone": 88
+    "expiry_milestone": 96
   },
   {
     "name": "enable-autofill-infobar-account-indication-footer-for-single-account-users",
