@@ -3788,10 +3788,11 @@ TEST_P(AppListPresenterDelegateHomeLauncherTest, BackgroundOpacity) {
   // The opacity should be set on the color, not the layer. Setting opacity on
   // the layer will change the opacity of the blur effect, which is not desired.
   const U8CPU clamshell_background_opacity = static_cast<U8CPU>(255 * 0.8);
-  EXPECT_EQ(
-      SkColorSetA(AppListColorProvider::Get()->GetAppListBackgroundColor(),
-                  clamshell_background_opacity),
-      GetAppListView()->GetAppListBackgroundShieldColorForTest());
+  EXPECT_EQ(SkColorSetA(AppListColorProvider::Get()->GetAppListBackgroundColor(
+                            /*is_tablet_mode*/
+                            false),
+                        clamshell_background_opacity),
+            GetAppListView()->GetAppListBackgroundShieldColorForTest());
   EXPECT_EQ(1, GetAppListView()
                    ->GetAppListBackgroundShieldForTest()
                    ->layer()
@@ -3801,10 +3802,11 @@ TEST_P(AppListPresenterDelegateHomeLauncherTest, BackgroundOpacity) {
   EnableTabletMode(true);
 
   const U8CPU tablet_background_opacity = static_cast<U8CPU>(0);
-  EXPECT_EQ(
-      SkColorSetA(AppListColorProvider::Get()->GetAppListBackgroundColor(),
-                  tablet_background_opacity),
-      GetAppListView()->GetAppListBackgroundShieldColorForTest());
+  EXPECT_EQ(SkColorSetA(AppListColorProvider::Get()->GetAppListBackgroundColor(
+                            /*is_tablet_mode*/
+                            true),
+                        tablet_background_opacity),
+            GetAppListView()->GetAppListBackgroundShieldColorForTest());
   EXPECT_EQ(1, GetAppListView()
                    ->GetAppListBackgroundShieldForTest()
                    ->layer()

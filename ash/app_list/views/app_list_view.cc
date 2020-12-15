@@ -157,10 +157,12 @@ class SearchBoxFocusHost : public views::View {
 };
 
 SkColor GetBackgroundShieldColor(const std::vector<SkColor>& colors,
-                                 float color_opacity) {
+                                 float color_opacity,
+                                 bool is_tablet_mode) {
   const U8CPU sk_opacity_value = static_cast<U8CPU>(255 * color_opacity);
-  return SkColorSetA(AppListColorProvider::Get()->GetAppListBackgroundColor(),
-                     sk_opacity_value);
+  return SkColorSetA(
+      AppListColorProvider::Get()->GetAppListBackgroundColor(is_tablet_mode),
+      sk_opacity_value);
 }
 
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kExcludeWindowFromEventHandling, false)
@@ -410,8 +412,10 @@ class BoundsAnimationObserver : public ui::ImplicitAnimationObserver {
 // The view for the app list background shield which changes color and radius.
 class AppListBackgroundShieldView : public views::View {
  public:
-  explicit AppListBackgroundShieldView(int shelf_background_corner_radius)
-      : color_(AppListColorProvider::Get()->GetAppListBackgroundColor()),
+  explicit AppListBackgroundShieldView(int shelf_background_corner_radius,
+                                       bool is_tablet_mode)
+      : color_(AppListColorProvider::Get()->GetAppListBackgroundColor(
+            is_tablet_mode)),
         shelf_background_corner_radius_(shelf_background_corner_radius) {
     SetPaintToLayer(ui::LAYER_SOLID_COLOR);
     layer()->SetFillsBoundsOpaquely(false);
@@ -590,8 +594,8 @@ void AppListView::InitContents() {
   DCHECK(!announcement_view_);
 
   auto app_list_background_shield =
-      std::make_unique<AppListBackgroundShieldView>(delegate_->GetShelfSize() /
-                                                    2);
+      std::make_unique<AppListBackgroundShieldView>(
+          delegate_->GetShelfSize() / 2, delegate_->IsInTabletMode());
   app_list_background_shield->UpdateBackground(
       /*use_blur*/ !delegate_->IsInTabletMode() && is_background_blur_enabled_);
   app_list_background_shield_ =
@@ -2208,8 +2212,9 @@ void AppListView::SetBackgroundShieldColor() {
     color_opacity = kAppListOpacityWithBlur;
   }
 
-  app_list_background_shield_->UpdateColor(GetBackgroundShieldColor(
-      delegate_->GetWallpaperProminentColors(), color_opacity));
+  app_list_background_shield_->UpdateColor(
+      GetBackgroundShieldColor(delegate_->GetWallpaperProminentColors(),
+                               color_opacity, delegate_->IsInTabletMode()));
 }
 
 void AppListView::RecordFolderMetrics() {

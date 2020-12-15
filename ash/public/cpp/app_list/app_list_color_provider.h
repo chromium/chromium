@@ -25,7 +25,7 @@ class ASH_PUBLIC_EXPORT AppListColorProvider {
   virtual float GetExpandArrowInkDropOpacity() const = 0;
   virtual SkColor GetExpandArrowIconBaseColor() const = 0;
   virtual SkColor GetExpandArrowIconBackgroundColor() const = 0;
-  virtual SkColor GetAppListBackgroundColor() const = 0;
+  virtual SkColor GetAppListBackgroundColor(bool is_tablet_mode) const = 0;
   virtual SkColor GetSearchBoxBackgroundColor() const = 0;
   virtual SkColor GetSearchBoxTextColor(SkColor default_color) const = 0;
   virtual SkColor GetSearchBoxSecondaryTextColor(

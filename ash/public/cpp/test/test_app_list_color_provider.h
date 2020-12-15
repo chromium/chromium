@@ -20,7 +20,7 @@ class TestAppListColorProvider : public AppListColorProvider {
   float GetExpandArrowInkDropOpacity() const override;
   SkColor GetExpandArrowIconBaseColor() const override;
   SkColor GetExpandArrowIconBackgroundColor() const override;
-  SkColor GetAppListBackgroundColor() const override;
+  SkColor GetAppListBackgroundColor(bool is_tablet_mode) const override;
   SkColor GetSearchBoxBackgroundColor() const override;
   SkColor GetSearchBoxTextColor(SkColor default_color) const override;
   SkColor GetSearchBoxSecondaryTextColor(SkColor default_color) const override;

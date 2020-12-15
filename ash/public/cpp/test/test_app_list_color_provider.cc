@@ -24,8 +24,10 @@ SkColor TestAppListColorProvider::GetExpandArrowIconBackgroundColor() const {
   return SkColorSetA(SK_ColorWHITE, 0x1A);
 }
 
-SkColor TestAppListColorProvider::GetAppListBackgroundColor() const {
-  return gfx::kGoogleGrey900;
+SkColor TestAppListColorProvider::GetAppListBackgroundColor(
+    bool is_tablet_mode) const {
+  return SkColorSetA(gfx::kGoogleGrey900,
+                     is_tablet_mode ? 0x66 /*40%*/ : 0xCD /*80%*/);
 }
 
 SkColor TestAppListColorProvider::GetSearchBoxBackgroundColor() const {

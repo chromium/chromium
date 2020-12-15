@@ -48,9 +48,11 @@ SkColor AppListColorProviderImpl::GetExpandArrowIconBackgroundColor() const {
       /*default_color*/ SkColorSetARGB(0xF, 0xFF, 0xFF, 0xFF));
 }
 
-SkColor AppListColorProviderImpl::GetAppListBackgroundColor() const {
+SkColor AppListColorProviderImpl::GetAppListBackgroundColor(
+    bool is_tablet_mode) const {
   return DeprecatedGetShieldLayerColor(
-      AshColorProvider::ShieldLayerType::kShield80,
+      is_tablet_mode ? AshColorProvider::ShieldLayerType::kShield40
+                     : AshColorProvider::ShieldLayerType::kShield80,
       /*default_color*/ gfx::kGoogleGrey900);
 }
 
