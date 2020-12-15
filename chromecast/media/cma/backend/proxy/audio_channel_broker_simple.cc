@@ -4,12 +4,18 @@
 
 #include "chromecast/media/cma/backend/proxy/cast_runtime_audio_channel_broker.h"
 
+#include "base/notreached.h"
+
 namespace chromecast {
 namespace media {
 
-CastRuntimeAudioChannelBroker::~CastRuntimeAudioChannelBroker() = default;
-
-CastRuntimeAudioChannelBroker::Handler::~Handler() = default;
+// static
+std::unique_ptr<CastRuntimeAudioChannelBroker>
+CastRuntimeAudioChannelBroker::Create(
+    CastRuntimeAudioChannelBroker::Handler* handler) {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
 
 }  // namespace media
 }  // namespace chromecast
