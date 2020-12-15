@@ -13,8 +13,13 @@ RobotsRulesParserCache::RobotsRulesParserCache()
 
 RobotsRulesParserCache::~RobotsRulesParserCache() = default;
 
-void RobotsRulesParserCache::UpdateRobotsRules(const url::Origin& origin,
-                                               const std::string& rules) {
+bool RobotsRulesParserCache::DoRobotsRulesExist(const url::Origin& origin) {
+  return parsers_cache_.Get(origin) != parsers_cache_.end();
+}
+
+void RobotsRulesParserCache::UpdateRobotsRules(
+    const url::Origin& origin,
+    const base::Optional<std::string>& rules) {
   GetRobotsRulesParserForOrigin(origin).UpdateRobotsRules(rules);
 }
 

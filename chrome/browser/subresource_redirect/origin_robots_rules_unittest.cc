@@ -77,7 +77,7 @@ class SubresourceRedirectOriginRobotsRulesTest : public testing::Test {
   void CreateRobotsRulesFetcher(const std::string& origin) {
     rules_fetcher_state_ = std::make_unique<RobotsRulesFetcherState>();
     origin_robots_rules_ = std::make_unique<OriginRobotsRules>(
-        shared_url_loader_factory_, url::SchemeHostPort(GURL(origin)),
+        shared_url_loader_factory_, url::Origin::Create(GURL(origin)),
         rules_fetcher_state_->GetResponseErrorCallback());
   }
 

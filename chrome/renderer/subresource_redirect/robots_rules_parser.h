@@ -65,7 +65,7 @@ class RobotsRulesParser {
 
   // Update the robots rules. This causes any pending check requests to be
   // processed immediately and called with the result.
-  void UpdateRobotsRules(const std::string& rules);
+  void UpdateRobotsRules(const base::Optional<std::string>& rules);
 
   // Check whether the URL is allowed or disallowed by robots rules. When the
   // determination can be made immediately, the decision should be returned.

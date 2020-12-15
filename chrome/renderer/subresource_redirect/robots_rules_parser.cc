@@ -99,12 +99,13 @@ RobotsRulesParser::~RobotsRulesParser() {
     rules_receive_timeout_timer_.FireNow();
 }
 
-void RobotsRulesParser::UpdateRobotsRules(const std::string& rules) {
+void RobotsRulesParser::UpdateRobotsRules(
+    const base::Optional<std::string>& rules) {
   robots_rules_.clear();
   rules_receive_timeout_timer_.Stop();
 
   proto::RobotsRules robots_rules;
-  bool is_parse_success = robots_rules.ParseFromString(rules);
+  bool is_parse_success = rules && robots_rules.ParseFromString(*rules);
   RecordRobotsRulesReceiveResultHistogram(
       is_parse_success
           ? SubresourceRedirectRobotsRulesReceiveResult::kSuccess

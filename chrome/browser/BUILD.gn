@@ -1784,6 +1784,8 @@ static_library("browser") {
     "subresource_redirect/litepages_service_bypass_decider.h",
     "subresource_redirect/origin_robots_rules.cc",
     "subresource_redirect/origin_robots_rules.h",
+    "subresource_redirect/origin_robots_rules_cache.cc",
+    "subresource_redirect/origin_robots_rules_cache.h",
     "subresource_redirect/subresource_redirect_observer.cc",
     "subresource_redirect/subresource_redirect_observer.h",
     "subresource_redirect/subresource_redirect_util.cc",

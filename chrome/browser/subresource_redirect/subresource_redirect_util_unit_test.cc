@@ -36,7 +36,7 @@ TEST(SubresourceRedirectUtilTest, GetRobotsServerURL) {
     EXPECT_EQ(
         GURL("https://litepages.googlezip.net/robots?u=" +
              EscapeURLForQueryParam(base::StrCat({origin, "robots.txt"}))),
-        GetRobotsServerURL(url::SchemeHostPort(GURL(origin))));
+        GetRobotsServerURL(url::Origin::Create(GURL(origin))));
   }
 }
 
@@ -54,7 +54,7 @@ TEST(SubresourceRedirectUtilTest, GetRobotsServerURL_ModifiedLitePagesOrigin) {
     EXPECT_EQ(
         GURL("https://modified.litepages.com/robots?u=" +
              EscapeURLForQueryParam(base::StrCat({origin, "robots.txt"}))),
-        GetRobotsServerURL(url::SchemeHostPort(GURL(origin))));
+        GetRobotsServerURL(url::Origin::Create(GURL(origin))));
   }
 }
 

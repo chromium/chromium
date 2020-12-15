@@ -27,13 +27,18 @@ void PublicResourceDeciderAgent::OnDestruct() {
   delete this;
 }
 
-void PublicResourceDeciderAgent::NotifyCompressedResourceFetchFailed(
-    base::TimeDelta retry_after) {
+mojo::AssociatedRemote<subresource_redirect::mojom::SubresourceRedirectService>&
+PublicResourceDeciderAgent::GetSubresourceRedirectServiceRemote() {
   if (!subresource_redirect_service_remote_) {
     render_frame()->GetRemoteAssociatedInterfaces()->GetInterface(
         &subresource_redirect_service_remote_);
   }
-  subresource_redirect_service_remote_->NotifyCompressedImageFetchFailed(
+  return subresource_redirect_service_remote_;
+}
+
+void PublicResourceDeciderAgent::NotifyCompressedResourceFetchFailed(
+    base::TimeDelta retry_after) {
+  GetSubresourceRedirectServiceRemote()->NotifyCompressedImageFetchFailed(
       retry_after);
 }
 

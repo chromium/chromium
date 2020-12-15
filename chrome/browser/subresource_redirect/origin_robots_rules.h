@@ -13,7 +13,7 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
-#include "url/scheme_host_port.h"
+#include "url/origin.h"
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -37,7 +37,7 @@ class OriginRobotsRules {
 
   OriginRobotsRules(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      const url::SchemeHostPort& origin,
+      const url::Origin& origin,
       NotifyResponseErrorCallback response_error_callback);
   ~OriginRobotsRules();
 

@@ -27,7 +27,7 @@ OriginRobotsRules::FetcherInfo::~FetcherInfo() = default;
 
 OriginRobotsRules::OriginRobotsRules(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    const url::SchemeHostPort& origin,
+    const url::Origin& origin,
     NotifyResponseErrorCallback response_error_callback) {
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("litepages_robots_rules",

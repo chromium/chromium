@@ -29,6 +29,7 @@
 #include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
 #include "chrome/browser/subresource_redirect/https_image_compression_infobar_decider.h"
 #include "chrome/browser/subresource_redirect/litepages_service_bypass_decider.h"
+#include "chrome/browser/subresource_redirect/origin_robots_rules_cache.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/pref_names.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_compression_stats.h"
@@ -252,6 +253,9 @@ void DataReductionProxyChromeSettings::InitDataReductionProxySettings(
                                                               this);
     litepages_service_bypass_decider_ =
         std::make_unique<LitePagesServiceBypassDecider>();
+    origin_robots_rules_cache_ =
+        std::make_unique<subresource_redirect::OriginRobotsRulesCache>(
+            url_loader_factory, litepages_service_bypass_decider_->AsWeakPtr());
   }
 }
 

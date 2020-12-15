@@ -10,6 +10,7 @@
 #include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings_factory.h"
 #include "chrome/browser/subresource_redirect/https_image_compression_infobar_decider.h"
 #include "chrome/browser/subresource_redirect/litepages_service_bypass_decider.h"
+#include "chrome/browser/subresource_redirect/origin_robots_rules_cache.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_settings.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/escape.h"
@@ -30,8 +31,7 @@ bool IsSubresourceRedirectEnabled() {
 DataReductionProxyChromeSettings* GetDataReductionProxyChromeSettings(
     content::WebContents* web_contents) {
   DCHECK(base::FeatureList::IsEnabled(blink::features::kSubresourceRedirect));
-  if (!web_contents)
-    return nullptr;
+  DCHECK(web_contents);
   return DataReductionProxyChromeSettingsFactory::GetForBrowserContext(
       web_contents->GetBrowserContext());
 }
@@ -123,9 +123,9 @@ void NotifyCompressedImageFetchFailed(content::WebContents* web_contents,
       ->NotifyFetchFailure(retry_after);
 }
 
-GURL GetRobotsServerURL(const url::SchemeHostPort& origin) {
+GURL GetRobotsServerURL(const url::Origin& origin) {
   DCHECK(ShouldEnableLoginRobotsCheckedCompression());
-  DCHECK(origin.IsValid());
+  DCHECK(!origin.opaque());
 
   GURL origin_url = origin.GetURL();
   GURL::Replacements origin_replacement;
@@ -148,6 +148,22 @@ GURL GetRobotsServerURL(const url::SchemeHostPort& origin) {
   lite_page_robots_url = lite_page_robots_url.ReplaceComponents(replacements);
   DCHECK(lite_page_robots_url.is_valid());
   return lite_page_robots_url;
+}
+
+OriginRobotsRulesCache* GetOriginRobotsRulesCache(
+    content::WebContents* web_contents) {
+  DCHECK(web_contents);
+  if (const auto* data_reduction_proxy_settings =
+          GetDataReductionProxyChromeSettings(web_contents)) {
+    return data_reduction_proxy_settings->origin_robots_rules_cache();
+  }
+  return nullptr;
+}
+
+int MaxOriginRobotsRulesCacheSize() {
+  return base::GetFieldTrialParamByFeatureAsInt(
+      blink::features::kSubresourceRedirect,
+      "max_browser_origin_robots_rules_cache_size", 20);
 }
 
 base::TimeDelta GetLitePagesBypassRandomDuration() {

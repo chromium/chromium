@@ -8,7 +8,7 @@
 #include "base/macros.h"
 #include "base/time/time.h"
 #include "url/gurl.h"
-#include "url/scheme_host_port.h"
+#include "url/origin.h"
 
 namespace content {
 class NavigationHandle;
@@ -16,6 +16,8 @@ class WebContents;
 }  // namespace content
 
 namespace subresource_redirect {
+
+class OriginRobotsRulesCache;
 
 // Returns whether LiteMode is enabled for the profile associated with the
 // |web_contents|.
@@ -46,7 +48,15 @@ void NotifyCompressedImageFetchFailed(content::WebContents* web_contents,
 
 // Returns the LitePages robots rules server endpoint URL to fetch for the given
 // |origin|.
-GURL GetRobotsServerURL(const url::SchemeHostPort& origin);
+GURL GetRobotsServerURL(const url::Origin& origin);
+
+// Returns the robots rules cache for the profile of |web_contents|.
+OriginRobotsRulesCache* GetOriginRobotsRulesCache(
+    content::WebContents* web_contents);
+
+// Returns the maximum number of origin robots rules the browser should cache
+// in-memory to be sent to the renderers immediately.
+int MaxOriginRobotsRulesCacheSize();
 
 // Returns a random duration LitePages service should bypass for, when a
 // LitePages response fails without RetryAfter header.

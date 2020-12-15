@@ -59,8 +59,9 @@ LoginRobotsDeciderAgent::LoginRobotsDeciderAgent(
 
 LoginRobotsDeciderAgent::~LoginRobotsDeciderAgent() = default;
 
-void LoginRobotsDeciderAgent::UpdateRobotsRules(const url::Origin& origin,
-                                                const std::string& rules) {
+void LoginRobotsDeciderAgent::UpdateRobotsRules(
+    const url::Origin& origin,
+    const base::Optional<std::string>& rules) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!origin.opaque());
   if (!render_frame()->IsMainFrame())

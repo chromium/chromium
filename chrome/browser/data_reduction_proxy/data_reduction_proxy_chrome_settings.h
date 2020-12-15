@@ -29,6 +29,10 @@ class DataReductionProxyData;
 class DataStore;
 }  // namespace data_reduction_proxy
 
+namespace subresource_redirect {
+class OriginRobotsRulesCache;
+}
+
 class HttpsImageCompressionInfoBarDecider;
 class LitePagesServiceBypassDecider;
 class PrefService;
@@ -91,6 +95,11 @@ class DataReductionProxyChromeSettings
     return litepages_service_bypass_decider_.get();
   }
 
+  subresource_redirect::OriginRobotsRulesCache* origin_robots_rules_cache()
+      const {
+    return origin_robots_rules_cache_.get();
+  }
+
  private:
   // Helper method for migrating the Data Reduction Proxy away from using the
   // proxy pref. Returns the ProxyPrefMigrationResult value indicating the
@@ -107,6 +116,10 @@ class DataReductionProxyChromeSettings
   // service bypass.
   std::unique_ptr<LitePagesServiceBypassDecider>
       litepages_service_bypass_decider_;
+
+  // Maintains the cache of robots rules.
+  std::unique_ptr<subresource_redirect::OriginRobotsRulesCache>
+      origin_robots_rules_cache_;
 
   // Null before InitDataReductionProxySettings is called.
   Profile* profile_;

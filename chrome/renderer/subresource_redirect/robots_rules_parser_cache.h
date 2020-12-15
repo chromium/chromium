@@ -21,8 +21,12 @@ class RobotsRulesParserCache {
   RobotsRulesParserCache(const RobotsRulesParserCache&) = delete;
   RobotsRulesParserCache& operator=(const RobotsRulesParserCache&) = delete;
 
+  // Returns if robots rules parser is available for |origin|.
+  bool DoRobotsRulesExist(const url::Origin& origin);
+
   // Update the robots rules to the parser for the |origin|.
-  void UpdateRobotsRules(const url::Origin& origin, const std::string& rules);
+  void UpdateRobotsRules(const url::Origin& origin,
+                         const base::Optional<std::string>& rules);
 
   // Returns the result of checking whether resource |url| is allowed by robots
   // rules parser for the url origin. When the determination can be made

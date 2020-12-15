@@ -42,6 +42,10 @@ class PublicResourceDeciderAgent
   void NotifyCompressedResourceFetchFailed(
       base::TimeDelta retry_after) override;
 
+  mojo::AssociatedRemote<
+      subresource_redirect::mojom::SubresourceRedirectService>&
+  GetSubresourceRedirectServiceRemote();
+
  private:
   // content::RenderFrameObserver:
   void OnDestruct() override;
