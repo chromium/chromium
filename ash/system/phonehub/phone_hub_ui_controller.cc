@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "chromeos/components/phonehub/connection_scheduler.h"
 #include "chromeos/components/phonehub/phone_hub_manager.h"
+#include "chromeos/components/phonehub/user_action_recorder.h"
 
 using FeatureStatus = chromeos::phonehub::FeatureStatus;
 
@@ -80,15 +81,16 @@ std::unique_ptr<PhoneHubContentView> PhoneHubUiController::CreateContentView(
   }
 }
 
-void PhoneHubUiController::MaybeRequestConnection() {
+void PhoneHubUiController::HandleBubbleOpened() {
   if (!phone_hub_manager_)
     return;
 
   auto feature_status =
       phone_hub_manager_->GetFeatureStatusProvider()->GetStatus();
-
   if (feature_status == FeatureStatus::kEnabledButDisconnected)
     phone_hub_manager_->GetConnectionScheduler()->ScheduleConnectionNow();
+
+  phone_hub_manager_->GetUserActionRecorder()->RecordUiOpened();
 }
 
 void PhoneHubUiController::AddObserver(Observer* observer) {

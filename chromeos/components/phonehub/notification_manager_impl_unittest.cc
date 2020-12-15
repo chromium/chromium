@@ -10,6 +10,7 @@
 #include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/components/phonehub/fake_message_sender.h"
+#include "chromeos/components/phonehub/fake_user_action_recorder.h"
 #include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -86,18 +87,16 @@ class NotificationManagerImplTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    fake_message_sender_ = std::make_unique<FakeMessageSender>();
-    fake_multidevice_setup_client_ =
-        std::make_unique<multidevice_setup::FakeMultiDeviceSetupClient>();
     manager_ = std::make_unique<NotificationManagerImpl>(
-        fake_message_sender_.get(), fake_multidevice_setup_client_.get());
+        &fake_message_sender_, &fake_user_action_recorder_,
+        &fake_multidevice_setup_client_);
     manager_->AddObserver(&fake_observer_);
   }
 
   void TearDown() override { manager_->RemoveObserver(&fake_observer_); }
 
   NotificationManager& manager() { return *manager_; }
-  FakeMessageSender& fake_message_sender() { return *fake_message_sender_; }
+  FakeMessageSender& fake_message_sender() { return fake_message_sender_; }
 
   void SetNotificationsInternal(
       const base::flat_set<Notification>& notifications) {
@@ -116,15 +115,18 @@ class NotificationManagerImplTest : public testing::Test {
   }
 
   void SetNotificationFeatureStatus(FeatureState feature_state) {
-    fake_multidevice_setup_client_->SetFeatureState(
+    fake_multidevice_setup_client_.SetFeatureState(
         Feature::kPhoneHubNotifications, feature_state);
   }
 
+  FakeUserActionRecorder fake_user_action_recorder_;
+
  private:
   FakeObserver fake_observer_;
-  std::unique_ptr<FakeMessageSender> fake_message_sender_;
-  std::unique_ptr<multidevice_setup::FakeMultiDeviceSetupClient>
-      fake_multidevice_setup_client_;
+
+  FakeMessageSender fake_message_sender_;
+  multidevice_setup::FakeMultiDeviceSetupClient fake_multidevice_setup_client_;
+
   std::unique_ptr<NotificationManager> manager_;
 };
 
@@ -183,6 +185,7 @@ TEST_F(NotificationManagerImplTest, DismissNotifications) {
   EXPECT_EQ(NotificationState::kAdded, GetNotificationState(expected_id2));
 
   manager().DismissNotification(expected_id2);
+  EXPECT_EQ(1u, fake_user_action_recorder_.num_notification_dismissals());
   EXPECT_EQ(1u, GetNumNotifications());
   EXPECT_EQ(NotificationState::kAdded, GetNotificationState(expected_id1));
   EXPECT_EQ(NotificationState::kRemoved, GetNotificationState(expected_id2));
@@ -192,6 +195,7 @@ TEST_F(NotificationManagerImplTest, DismissNotifications) {
 
   // Dismiss the same notification again, verify nothing happens.
   manager().DismissNotification(expected_id2);
+  EXPECT_EQ(1u, fake_user_action_recorder_.num_notification_dismissals());
   EXPECT_EQ(1u, GetNumNotifications());
   EXPECT_EQ(NotificationState::kAdded, GetNotificationState(expected_id1));
   EXPECT_EQ(NotificationState::kRemoved, GetNotificationState(expected_id2));
@@ -231,6 +235,7 @@ TEST_F(NotificationManagerImplTest, SendInlineReply) {
   // Simulate sending an inline reply to a notification.
   const base::string16& expected_reply(base::UTF8ToUTF16("test reply"));
   manager().SendInlineReply(expected_id1, expected_reply);
+  EXPECT_EQ(1u, fake_user_action_recorder_.num_notification_replies());
   EXPECT_EQ(1u, GetNumNotifications());
   EXPECT_EQ(NotificationState::kAdded, GetNotificationState(expected_id1));
   EXPECT_EQ(1u,
@@ -244,6 +249,7 @@ TEST_F(NotificationManagerImplTest, SendInlineReply) {
   // that no new reply calls were called and that the most recent reply is the
   // same as the previous inline reply call.
   manager().SendInlineReply(/*notification_id=*/5, /*reply=*/base::string16());
+  EXPECT_EQ(1u, fake_user_action_recorder_.num_notification_replies());
   EXPECT_EQ(1u,
             fake_message_sender().GetNotificationInlineReplyRequestCallCount());
   pair = fake_message_sender().GetRecentNotificationInlineReplyRequest();

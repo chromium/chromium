@@ -70,9 +70,9 @@ class ASH_EXPORT PhoneHubUiController
   std::unique_ptr<views::View> CreateStatusHeaderView(
       PhoneStatusView::Delegate* delegate);
 
-  // Request a connection to the phone if there is no current connection and
-  // PhoneHub is set up.
-  void MaybeRequestConnection();
+  // Handler for when the bubble is opened. Requests a connection to the phone
+  // if there is no current connection, and records metrics.
+  void HandleBubbleOpened();
 
   // Observer functions.
   void AddObserver(Observer* observer);

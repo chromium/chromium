@@ -6,15 +6,18 @@
 
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/phonehub/message_sender.h"
+#include "chromeos/components/phonehub/user_action_recorder.h"
 
 namespace chromeos {
 namespace phonehub {
 
 FindMyDeviceControllerImpl::FindMyDeviceControllerImpl(
     DoNotDisturbController* do_not_disturb_controller,
-    MessageSender* message_sender)
+    MessageSender* message_sender,
+    UserActionRecorder* user_action_recorder)
     : do_not_disturb_controller_(do_not_disturb_controller),
-      message_sender_(message_sender) {
+      message_sender_(message_sender),
+      user_action_recorder_(user_action_recorder) {
   DCHECK(do_not_disturb_controller_);
   DCHECK(message_sender_);
 
@@ -45,6 +48,7 @@ void FindMyDeviceControllerImpl::RequestNewPhoneRingingState(bool ringing) {
 
   PA_LOG(INFO) << "Attempting to set Find My Device phone ring state; new "
                << "value: " << ringing;
+  user_action_recorder_->RecordFindMyDeviceAttempt();
   message_sender_->SendRingDeviceRequest(ringing);
 }
 

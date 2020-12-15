@@ -48,8 +48,8 @@ PhoneConnectedView::PhoneConnectedView(
 
   auto* phone_model = phone_hub_manager->GetPhoneModel();
   if (phone_model) {
-    setup_layered_view(
-        AddChildView(std::make_unique<TaskContinuationView>(phone_model)));
+    setup_layered_view(AddChildView(std::make_unique<TaskContinuationView>(
+        phone_model, phone_hub_manager->GetUserActionRecorder())));
   }
 }
 

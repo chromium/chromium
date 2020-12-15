@@ -18,6 +18,8 @@ namespace {
 using multidevice_setup::MultiDeviceSetupClient;
 }  // namespace
 
+class UserActionRecorder;
+
 // TetherController implementation which utilizes MultiDeviceSetupClient and
 // CrosNetworkConfig in order to interact with Instant Tethering. If Instant
 // Tethering is user disabled, AttemptConnection() will first enable the feature
@@ -36,8 +38,9 @@ class TetherControllerImpl
       public multidevice_setup::MultiDeviceSetupClient::Observer,
       public chromeos::network_config::mojom::CrosNetworkConfigObserver {
  public:
-  explicit TetherControllerImpl(
+  TetherControllerImpl(
       PhoneModel* phone_model,
+      UserActionRecorder* user_action_recorder,
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client);
   ~TetherControllerImpl() override;
 
@@ -114,6 +117,7 @@ class TetherControllerImpl
   // parameter constructor calls this constructor.
   TetherControllerImpl(
       PhoneModel* phone_model,
+      UserActionRecorder* user_action_recorder,
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
       std::unique_ptr<TetherControllerImpl::TetherNetworkConnector> connector);
 
@@ -154,6 +158,7 @@ class TetherControllerImpl
   TetherController::Status ComputeStatus() const;
 
   PhoneModel* phone_model_;
+  UserActionRecorder* user_action_recorder_;
   multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
   ConnectDisconnectStatus connect_disconnect_status_ =
       ConnectDisconnectStatus::kIdle;

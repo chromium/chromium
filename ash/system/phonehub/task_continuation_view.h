@@ -10,6 +10,12 @@
 #include "ui/views/view.h"
 #include "ui/views/view_model.h"
 
+namespace chromeos {
+namespace phonehub {
+class UserActionRecorder;
+}  // namespace phonehub
+}  // namespace chromeos
+
 namespace ash {
 
 // A view in Phone Hub bubble that allows user to pick up unfinished task left
@@ -18,7 +24,9 @@ class ASH_EXPORT TaskContinuationView
     : public views::View,
       public chromeos::phonehub::PhoneModel::Observer {
  public:
-  explicit TaskContinuationView(chromeos::phonehub::PhoneModel* phone_model);
+  TaskContinuationView(
+      chromeos::phonehub::PhoneModel* phone_model,
+      chromeos::phonehub::UserActionRecorder* user_action_recorder);
   ~TaskContinuationView() override;
   TaskContinuationView(TaskContinuationView&) = delete;
   TaskContinuationView operator=(TaskContinuationView&) = delete;
@@ -60,6 +68,7 @@ class ASH_EXPORT TaskContinuationView
   void Update();
 
   chromeos::phonehub::PhoneModel* phone_model_ = nullptr;
+  chromeos::phonehub::UserActionRecorder* user_action_recorder_ = nullptr;
   TaskChipsView* chips_view_ = nullptr;
 };
 

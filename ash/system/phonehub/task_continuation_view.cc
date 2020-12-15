@@ -71,8 +71,9 @@ class HeaderView : public views::Label {
 }  // namespace
 
 TaskContinuationView::TaskContinuationView(
-    chromeos::phonehub::PhoneModel* phone_model)
-    : phone_model_(phone_model) {
+    chromeos::phonehub::PhoneModel* phone_model,
+    chromeos::phonehub::UserActionRecorder* user_action_recorder)
+    : phone_model_(phone_model), user_action_recorder_(user_action_recorder) {
   SetID(PhoneHubViewID::kTaskContinuationView);
 
   phone_model_->AddObserver(this);
@@ -182,7 +183,8 @@ void TaskContinuationView::Update() {
   int index = 0;
   for (const BrowserTabsModel::BrowserTabMetadata& metadata :
        browser_tabs.most_recent_tabs()) {
-    chips_view_->AddTaskChip(new ContinueBrowsingChip(metadata, index));
+    chips_view_->AddTaskChip(new ContinueBrowsingChip(
+        metadata, index, user_action_recorder_));
     index++;
   }
 

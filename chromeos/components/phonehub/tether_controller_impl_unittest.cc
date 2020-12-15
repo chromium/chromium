@@ -10,6 +10,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
+#include "chromeos/components/phonehub/fake_user_action_recorder.h"
 #include "chromeos/components/phonehub/mutable_phone_model.h"
 #include "chromeos/components/phonehub/phone_status_model.h"
 #include "chromeos/network/network_state_handler.h"
@@ -173,7 +174,8 @@ class TetherControllerImplTest : public testing::Test {
 
     controller_ =
         base::WrapUnique<TetherControllerImpl>(new TetherControllerImpl(
-            &fake_phone_model_, &fake_multidevice_setup_client_,
+            &fake_phone_model_, &fake_user_action_recorder_,
+            &fake_multidevice_setup_client_,
             std::make_unique<FakeTetherNetworkConnector>()));
     controller_->AddObserver(&fake_observer_);
   }
@@ -266,7 +268,13 @@ class TetherControllerImplTest : public testing::Test {
         /*expected_enabled=*/expected_enabled, base::nullopt, success);
   }
 
-  void AttemptConnection() { controller_->AttemptConnection(); }
+  void AttemptConnection() {
+    size_t num_recorded_connection_attempts_before_call =
+        fake_user_action_recorder_.num_tether_attempts();
+    controller_->AttemptConnection();
+    EXPECT_EQ(num_recorded_connection_attempts_before_call + 1,
+              fake_user_action_recorder_.num_tether_attempts());
+  }
 
   void Disconnect() { controller_->Disconnect(); }
 
@@ -286,6 +294,7 @@ class TetherControllerImplTest : public testing::Test {
   std::string service_path_;
   multidevice_setup::FakeMultiDeviceSetupClient fake_multidevice_setup_client_;
   MutablePhoneModel fake_phone_model_;
+  FakeUserActionRecorder fake_user_action_recorder_;
   FakeObserver fake_observer_;
   std::unique_ptr<TetherControllerImpl> controller_;
 };

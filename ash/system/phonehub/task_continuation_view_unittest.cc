@@ -8,6 +8,7 @@
 #include "ash/system/phonehub/continue_browsing_chip.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/components/phonehub/fake_user_action_recorder.h"
 #include "chromeos/components/phonehub/mutable_phone_model.h"
 #include "chromeos/components/phonehub/phone_model_test_util.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -46,8 +47,8 @@ class TaskContinuationViewTest : public AshTestBase {
     feature_list_.InitAndEnableFeature(chromeos::features::kPhoneHub);
     AshTestBase::SetUp();
 
-    task_continuation_view_ =
-        std::make_unique<TaskContinuationView>(&phone_model_);
+    task_continuation_view_ = std::make_unique<TaskContinuationView>(
+        &phone_model_, &fake_user_action_recorder_);
   }
 
   void TearDown() override {
@@ -62,6 +63,7 @@ class TaskContinuationViewTest : public AshTestBase {
 
  private:
   std::unique_ptr<TaskContinuationView> task_continuation_view_;
+  chromeos::phonehub::FakeUserActionRecorder fake_user_action_recorder_;
   chromeos::phonehub::MutablePhoneModel phone_model_;
   base::test::ScopedFeatureList feature_list_;
   MockNewWindowDelegate new_window_delegate_;

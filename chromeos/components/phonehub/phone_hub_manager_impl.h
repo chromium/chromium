@@ -38,6 +38,7 @@ class MessageReceiver;
 class MultideviceSetupStateUpdater;
 class MutablePhoneModel;
 class PhoneStatusProcessor;
+class UserActionRecorder;
 
 // Implemented as a KeyedService which is keyed by the primary Profile.
 class PhoneHubManagerImpl : public PhoneHubManager, public KeyedService {
@@ -62,11 +63,13 @@ class PhoneHubManagerImpl : public PhoneHubManager, public KeyedService {
   OnboardingUiTracker* GetOnboardingUiTracker() override;
   PhoneModel* GetPhoneModel() override;
   TetherController* GetTetherController() override;
+  UserActionRecorder* GetUserActionRecorder() override;
 
  private:
   // KeyedService:
   void Shutdown() override;
 
+  std::unique_ptr<UserActionRecorder> user_action_recorder_;
   std::unique_ptr<ConnectionManager> connection_manager_;
   std::unique_ptr<FeatureStatusProvider> feature_status_provider_;
   std::unique_ptr<MessageReceiver> message_receiver_;

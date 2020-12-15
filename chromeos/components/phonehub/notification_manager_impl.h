@@ -16,6 +16,7 @@ namespace chromeos {
 namespace phonehub {
 
 class MessageSender;
+class UserActionRecorder;
 
 class NotificationManagerImpl
     : public NotificationManager,
@@ -23,6 +24,7 @@ class NotificationManagerImpl
  public:
   NotificationManagerImpl(
       MessageSender* message_sender,
+      UserActionRecorder* user_action_recorder,
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client);
   ~NotificationManagerImpl() override;
 
@@ -38,6 +40,7 @@ class NotificationManagerImpl
           feature_states_map) override;
 
   MessageSender* message_sender_;
+  UserActionRecorder* user_action_recorder_;
   multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
   multidevice_setup::mojom::FeatureState notifications_feature_status_;
 };
