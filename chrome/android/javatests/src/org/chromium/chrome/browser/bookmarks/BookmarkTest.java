@@ -61,6 +61,7 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkModelObserver;
 import org.chromium.chrome.browser.bookmarks.BookmarkPromoHeader.PromoState;
+import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
@@ -1103,6 +1104,34 @@ public class BookmarkTest {
         TestThreadUtils.runOnUiThreadBlocking(more::callOnClick);
         onView(withText("Delete")).check(matches(isDisplayed())).perform(click());
         CriteriaHelper.pollUiThread(() -> mBookmarkModel.getReadingListItem(TEST_URL_A) == null);
+    }
+
+    @Test
+    @SmallTest
+    @Features.EnableFeatures({ChromeFeatureList.READ_LATER})
+    public void testReadingListOpenInCCT() throws Exception {
+        addReadingListBookmark(TEST_PAGE_TITLE_GOOGLE, TEST_URL_A);
+        BookmarkPromoHeader.forcePromoStateForTests(PromoState.PROMO_NONE);
+        openBookmarkManager();
+        CriteriaHelper.pollUiThread(() -> mBookmarkModel.getReadingListItem(TEST_URL_A) != null);
+
+        // Open the "Reading list" folder.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mManager.openFolder(mBookmarkModel.getRootFolderId()));
+        onView(withText("Reading list")).perform(click());
+        RecyclerViewTestUtils.waitForStableRecyclerView(mItemsContainer);
+        View readingListRow = mItemsContainer.findViewHolderForAdapterPosition(1).itemView;
+        Assert.assertEquals("The 2nd view should be reading list.", BookmarkType.READING_LIST,
+                getIdByPosition(1).getType());
+
+        // Click a reading list item, the page should be opened in a CCT.
+        CustomTabActivity activity = ApplicationTestUtils.waitForActivityWithClass(
+                CustomTabActivity.class, Stage.CREATED, () -> { readingListRow.performClick(); });
+        CriteriaHelper.pollUiThread(() -> activity.getActivityTab() != null);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertTrue(activity.getActivityTab().getUrl().getSpec().startsWith(TEST_URL_A));
+        });
+        activity.finish();
     }
 
     @Test

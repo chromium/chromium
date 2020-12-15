@@ -46,6 +46,7 @@ public abstract class BrowserServicesIntentDataProvider {
         int READER_MODE = 3;
         int MINIMAL_UI_WEBAPP = 4;
         int OFFLINE_PAGE = 5;
+        int READ_LATER = 6;
     }
 
     // The type of Disclosure for TWAs to use.
