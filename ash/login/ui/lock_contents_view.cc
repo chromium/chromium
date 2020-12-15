@@ -775,13 +775,13 @@ void LockContentsView::ShowEnterpriseDomainManager(
     return;
   bottom_status_indicator_->SetIcon(
       chromeos::kEnterpriseIcon,
-      AshColorProvider::ContentLayerType::kButtonIconColorPrimary);
+      AshColorProvider::ContentLayerType::kIconColorPrimary);
   bottom_status_indicator_->SetText(l10n_util::GetStringFUTF16(
       IDS_ASH_LOGIN_MANAGED_DEVICE_INDICATOR, ui::GetChromeOSDeviceName(),
       base::UTF8ToUTF16(entreprise_domain_manager)));
   bottom_status_indicator_->SetEnabledTextColors(
       AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kButtonLabelColorPrimary));
+          AshColorProvider::ContentLayerType::kTextColorPrimary));
   bottom_status_indicator_->set_role_for_accessibility(
       ax::mojom::Role::kButton);
   bottom_status_indicator_status_ = BottomIndicatorState::kManagedDevice;
