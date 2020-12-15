@@ -63,10 +63,24 @@
     MULTI_CLASS_RUNNER_NAME_(test_name)::ActuallyRunTestOnMainThread(this); \
   }
 
-// In this case IN_PROC_BROWSER_TEST_F could realistically be used; however, in
-// some cases, we're conditionally enabling runtimes. This method thus enables
-// easily "switching" between having only one runtime enabled and having two or
-// more runtimes enabled, and helps make the "ALL_RUNTIMES" macros possible.
+#define IN_PROC_NORMAL_PLUS_INCOGNITO_BROWSER_TEST_F(test_class1, base_class, \
+                                                     test_name)               \
+  DEFINE_RUN_TEST_IMPL_(test_name, base_class)                                \
+  DEFINE_BROWSER_TEST_(test_class1, test_name)                                \
+  DEFINE_INCOGNITO_BROWSER_TEST_(test_class1, test_name)                      \
+  void MULTI_CLASS_RUNNER_NAME_(test_name)::ActuallyRunTestOnMainThread(      \
+      base_class* t)
+
+// TODO(https://crbug.com/1158016): The "MULTI_CLASS" macros are not really
+// needed anymore, and the individual tests should be wrapped with a check to
+// the openxr buildflag. However, there is a non-trivial amount of churn to move
+// the tests off of the "ALL_RUNTIMES" macros. So this lets us stage the work in
+// the meantime.
+#define MULTI_CLASS_BROWSER_TEST_STUB(base_class, test_name)             \
+  DEFINE_RUN_TEST_IMPL_(test_name, base_class)                           \
+  void MULTI_CLASS_RUNNER_NAME_(test_name)::ActuallyRunTestOnMainThread( \
+      base_class* t)
+
 #define IN_PROC_MULTI_CLASS_BROWSER_TEST_F1(test_class1, base_class,     \
                                             test_name)                   \
   DEFINE_RUN_TEST_IMPL_(test_name, base_class)                           \
@@ -74,61 +88,24 @@
   void MULTI_CLASS_RUNNER_NAME_(test_name)::ActuallyRunTestOnMainThread( \
       base_class* t)
 
-#define IN_PROC_MULTI_CLASS_BROWSER_TEST_F2(test_class1, test_class2,    \
-                                            base_class, test_name)       \
-  DEFINE_RUN_TEST_IMPL_(test_name, base_class)                           \
-  DEFINE_BROWSER_TEST_(test_class1, test_name)                           \
-  DEFINE_BROWSER_TEST_(test_class2, test_name)                           \
-  void MULTI_CLASS_RUNNER_NAME_(test_name)::ActuallyRunTestOnMainThread( \
-      base_class* t)
-
-#define IN_PROC_MULTI_CLASS_PLUS_INCOGNITO_BROWSER_TEST_F2(              \
-    test_class1, test_class2, base_class, test_name)                     \
-  DEFINE_RUN_TEST_IMPL_(test_name, base_class)                           \
-  DEFINE_BROWSER_TEST_(test_class1, test_name)                           \
-  DEFINE_BROWSER_TEST_(test_class2, test_name)                           \
-  DEFINE_INCOGNITO_BROWSER_TEST_(test_class1, test_name)                 \
-  DEFINE_INCOGNITO_BROWSER_TEST_(test_class2, test_name)                 \
-  void MULTI_CLASS_RUNNER_NAME_(test_name)::ActuallyRunTestOnMainThread( \
-      base_class* t)
-
-// In this case IN_PROC_BROWSER_TEST_F could realistically be used; however, in
-// some cases, we're conditionally enabling runtimes. This method thus enables
-// easily "switching" between having only one runtime enabled and having two or
-// more runtimes enabled, and helps make the "ALL_RUNTIMES" macros possible.
-#define IN_PROC_MULTI_CLASS_PLUS_INCOGNITO_BROWSER_TEST_F1(              \
-    test_class1, base_class, test_name)                                  \
-  DEFINE_RUN_TEST_IMPL_(test_name, base_class)                           \
-  DEFINE_BROWSER_TEST_(test_class1, test_name)                           \
-  DEFINE_INCOGNITO_BROWSER_TEST_(test_class1, test_name)                 \
-  void MULTI_CLASS_RUNNER_NAME_(test_name)::ActuallyRunTestOnMainThread( \
-      base_class* t)
-
-// Helper macro to cut down on duplicate code since most uses of
-// IN_PROC_MULTI_CLASS_BROWSER_TEST_F2 are passed the same WMR, and OpenXR
-// classes and the same base class
 #if BUILDFLAG(ENABLE_OPENXR)
 #define WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(test_name)         \
-  IN_PROC_MULTI_CLASS_BROWSER_TEST_F2(WebXrVrWmrBrowserTest,    \
-                                      WebXrVrOpenXrBrowserTest, \
+  IN_PROC_MULTI_CLASS_BROWSER_TEST_F1(WebXrVrOpenXrBrowserTest, \
                                       WebXrVrBrowserTestBase, test_name)
 #else
-#define WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(test_name)      \
-  IN_PROC_MULTI_CLASS_BROWSER_TEST_F1(WebXrVrWmrBrowserTest, \
-                                      WebXrVrBrowserTestBase, test_name)
+#define WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(test_name) \
+  MULTI_CLASS_BROWSER_TEST_STUB(WebXrVrBrowserTestBase, test_name)
 #endif  // BUILDFLAG(ENABLE_OPENXR)
 
 // The same as WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F, but runs the tests in
 // incognito mode as well.
 #if BUILDFLAG(ENABLE_OPENXR)
-#define WEBXR_VR_ALL_RUNTIMES_PLUS_INCOGNITO_BROWSER_TEST_F(test_name)         \
-  IN_PROC_MULTI_CLASS_PLUS_INCOGNITO_BROWSER_TEST_F2(                          \
-      WebXrVrOpenXrBrowserTest, WebXrVrWmrBrowserTest, WebXrVrBrowserTestBase, \
-      test_name)
+#define WEBXR_VR_ALL_RUNTIMES_PLUS_INCOGNITO_BROWSER_TEST_F(test_name) \
+  IN_PROC_NORMAL_PLUS_INCOGNITO_BROWSER_TEST_F(                        \
+      WebXrVrOpenXrBrowserTest, WebXrVrBrowserTestBase, test_name)
 #else
 #define WEBXR_VR_ALL_RUNTIMES_PLUS_INCOGNITO_BROWSER_TEST_F(test_name) \
-  IN_PROC_MULTI_CLASS_PLUS_INCOGNITO_BROWSER_TEST_F1(                  \
-      WebXrVrWmrBrowserTest, WebXrVrBrowserTestBase, test_name)
+  MULTI_CLASS_BROWSER_TEST_STUB(WebXrVrBrowserTestBase, test_name)
 #endif  // ENABLE_OPENXR
 
 // Helper class to disable a specific runtime of the above

@@ -41,6 +41,11 @@ class OpenXrTestHelper : public device::ServiceTestHook {
  public:
   OpenXrTestHelper();
   ~OpenXrTestHelper();
+
+  // Because the test helper isn't intended to be recreated, even if an instance
+  // is destroyed, this should be called whenever a session is/would have been
+  // terminated regardless of the path it took to be terminated; otherwise, it
+  // may not be possible to request a new session.
   void Reset();
   void TestFailure();
 

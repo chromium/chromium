@@ -37,17 +37,12 @@ IN_PROC_BROWSER_TEST_F(WebXrVrRuntimelessBrowserTest,
 #ifdef OS_WIN
 
 #if BUILDFLAG(ENABLE_OPENXR)
-IN_PROC_MULTI_CLASS_BROWSER_TEST_F2(WebXrVrWmrBrowserTestWebXrDisabled,
-                                    WebXrVrOpenXrBrowserTestWebXrDisabled,
+IN_PROC_MULTI_CLASS_BROWSER_TEST_F1(WebXrVrOpenXrBrowserTestWebXrDisabled,
                                     WebXrVrBrowserTestBase,
                                     TestWebXrDisabledWithoutFlagSet) {
-#else
-IN_PROC_MULTI_CLASS_BROWSER_TEST_F1(WebXrVrWmrBrowserTestWebXrDisabled,
-                                    WebXrVrBrowserTestBase,
-                                    TestWebXrDisabledWithoutFlagSet) {
-#endif  // BUILDFLAG(ENABLE_OPENXR)
   TestApiDisabledWithoutFlagSetImpl(t, "test_webxr_disabled_without_flag_set");
 }
+#endif  // BUILDFLAG(ENABLE_OPENXR)
 
 // Tests that window.requestAnimationFrame continues to fire when we have a
 // non-immersive WebXR session.

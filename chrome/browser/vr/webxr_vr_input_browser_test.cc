@@ -334,11 +334,10 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestInputSourcesChange) {
                                  WebXrVrBrowserTestBase::kPollTimeoutShort);
   t->RunJavaScriptOrFail("updateCachedInputSource(0)");
 
-  // At least currently, there is no way for WMR/OpenXR to have insufficient
+  // At least currently, there is no way for OpenXR to have insufficient
   // buttons for a gamepad as long as a controller is connected, so skip this
-  // part on WMR/OpenXR since it'll always fail
-  if (t->GetRuntimeType() != XrBrowserTestBase::RuntimeType::RUNTIME_WMR &&
-      t->GetRuntimeType() != XrBrowserTestBase::RuntimeType::RUNTIME_OPENXR) {
+  // part on OpenXR since it'll always fail
+  if (t->GetRuntimeType() != XrBrowserTestBase::RuntimeType::RUNTIME_OPENXR) {
     my_mock.UpdateControllerSupport(controller_index, insufficient_axis_types,
                                     insufficient_buttons);
 
@@ -367,13 +366,12 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestGamepadMinimumData) {
 
   VerifyInputCounts(t, 1, 1);
 
-  // We only actually connect the data for the one button, but WMR/OpenXR
-  // expects the WMR/OpenXR  controller (which has all of the required and
+  // We only actually connect the data for the one button, but OpenXR
+  // expects the OpenXR  controller (which has all of the required and
   // optional buttons) and so adds dummy/placeholder buttons regardless of what
   // data we send up.
   std::string button_count = "1";
-  if (t->GetRuntimeType() == XrBrowserTestBase::RuntimeType::RUNTIME_WMR ||
-      t->GetRuntimeType() == XrBrowserTestBase::RuntimeType::RUNTIME_OPENXR)
+  if (t->GetRuntimeType() == XrBrowserTestBase::RuntimeType::RUNTIME_OPENXR)
     button_count = "4";
 
   t->PollJavaScriptBooleanOrFail("isButtonCountEqualTo(" + button_count + ")",
@@ -389,15 +387,7 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestGamepadMinimumData) {
   t->PollJavaScriptBooleanOrFail("isButtonPressedEqualTo(0, true)",
                                  WebXrVrBrowserTestBase::kPollTimeoutShort);
 
-  if (t->GetRuntimeType() == XrBrowserTestBase::RuntimeType::RUNTIME_WMR) {
-    // WMR will still report having grip, touchpad, and thumbstick because it
-    // only supports that type of controller and fills in default values if
-    // those inputs don't exist.
-    VerifyInputSourceProfilesArray(
-        t, {"windows-mixed-reality",
-            "generic-trigger-squeeze-touchpad-thumbstick"});
-  } else if (t->GetRuntimeType() ==
-             XrBrowserTestBase::RuntimeType::RUNTIME_OPENXR) {
+  if (t->GetRuntimeType() == XrBrowserTestBase::RuntimeType::RUNTIME_OPENXR) {
     // OpenXR will still report having squeeze, menu, touchpad, and thumbstick
     // because it only supports that type of controller and fills in default
     // values if those inputs don't exist.
@@ -424,13 +414,12 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestMultipleGamepads) {
 
   VerifyInputCounts(t, 2, 2);
 
-  // We only actually connect the data for the one button, but WMR/OpenXR
-  // expects the WMR/OpenXR controller (which has all of the required and
+  // We only actually connect the data for the one button, but OpenXR
+  // expects the OpenXR controller (which has all of the required and
   // optional buttons) and so adds dummy/placeholder buttons regardless of what
   // data we send up.
   std::string button_count = "1";
-  if (t->GetRuntimeType() == XrBrowserTestBase::RuntimeType::RUNTIME_WMR ||
-      t->GetRuntimeType() == XrBrowserTestBase::RuntimeType::RUNTIME_OPENXR)
+  if (t->GetRuntimeType() == XrBrowserTestBase::RuntimeType::RUNTIME_OPENXR)
     button_count = "4";
 
   // Make sure both gamepads have the expected button count and mapping.
@@ -467,15 +456,7 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestMultipleGamepads) {
   my_mock.TogglePrimaryTrigger(controller_index1);
   t->PollJavaScriptBooleanOrFail("isButtonPressedEqualTo(0, false, 0)");
 
-  if (t->GetRuntimeType() == XrBrowserTestBase::RuntimeType::RUNTIME_WMR) {
-    // WMR will still report having grip, touchpad, and thumbstick because it
-    // only supports that type of controller and fills in default values if
-    // those inputs don't exist.
-    VerifyInputSourceProfilesArray(
-        t, {"windows-mixed-reality",
-            "generic-trigger-squeeze-touchpad-thumbstick"});
-  } else if (t->GetRuntimeType() ==
-             XrBrowserTestBase::RuntimeType::RUNTIME_OPENXR) {
+  if (t->GetRuntimeType() == XrBrowserTestBase::RuntimeType::RUNTIME_OPENXR) {
     // OpenXR will still report having squeeze, menu, touchpad, and thumbstick
     // because it only supports that type of controller and fills in default
     // values if those inputs don't exist.
@@ -571,15 +552,7 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestGamepadCompleteData) {
   t->PollJavaScriptBooleanOrFail("isButtonTouchedEqualTo(3, true)",
                                  WebXrVrBrowserTestBase::kPollTimeoutShort);
 
-  if (t->GetRuntimeType() == XrBrowserTestBase::RuntimeType::RUNTIME_WMR) {
-    // WMR will still report having grip, touchpad, and thumbstick because it
-    // only supports that type of controller and fills in default values if
-    // those inputs don't exist.
-    VerifyInputSourceProfilesArray(
-        t, {"windows-mixed-reality",
-            "generic-trigger-squeeze-touchpad-thumbstick"});
-  } else if (t->GetRuntimeType() ==
-             XrBrowserTestBase::RuntimeType::RUNTIME_OPENXR) {
+  if (t->GetRuntimeType() == XrBrowserTestBase::RuntimeType::RUNTIME_OPENXR) {
     // OpenXR will still report having squeeze, menu, touchpad, and thumbstick
     // because it only supports that type of controller and fills in default
     // values if those inputs don't exist.
@@ -672,26 +645,6 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestMultipleControllerInputRegistered) {
   t->WaitOnJavaScriptStep();
 
   t->EndTest();
-}
-
-// Test that voice input is registered via WebXR's input method. WMR only since
-// it's the only platform we are testing that supports select via voice.
-IN_PROC_BROWSER_TEST_F(WebXrVrWmrBrowserTest, TestVoiceSelectRegistered) {
-  WebXrControllerInputMock my_mock;
-  unsigned int index = my_mock.CreateVoiceController();
-
-  // Load the test page and enter presentation.
-  LoadFileAndAwaitInitialization("test_webxr_input");
-  EnterSessionWithUserGestureOrFail();
-
-  RunJavaScriptOrFail("stepSetupListeners(1)");
-
-  // Simulate the user saying "select" and make sure the select events are
-  // registered for it. Must wait for JS to receive the "select" event.
-  my_mock.PressReleasePrimaryTrigger(index);
-  WaitOnJavaScriptStep();
-
-  EndTest();
 }
 
 // Test that controller input is registered via WebXR's input method.

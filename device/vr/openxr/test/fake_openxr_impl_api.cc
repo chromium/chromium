@@ -285,6 +285,11 @@ XrResult xrDestroyActionSet(XrActionSet action_set) {
 XrResult xrDestroyInstance(XrInstance instance) {
   DVLOG(2) << __FUNCTION__;
   RETURN_IF_XR_FAILED(g_test_helper.ValidateInstance(instance));
+  // Though Reset() primarily clears variables relating to being able to create
+  // a new session, some tests may instead destroy the device (to simulate a
+  // crash or simply removing the headset). It is impossible to keep an active
+  // session with a destroyed instance, so this ensures that the test helper is
+  // setup to allow a new session to be requested.
   g_test_helper.Reset();
   return XR_SUCCESS;
 }
@@ -292,6 +297,8 @@ XrResult xrDestroyInstance(XrInstance instance) {
 XrResult xrDestroySession(XrSession session) {
   DVLOG(2) << __FUNCTION__;
   RETURN_IF_XR_FAILED(g_test_helper.ValidateSession(session));
+  // Clear the test helper state so that tests can request multiple sessions.
+  g_test_helper.Reset();
   return XR_SUCCESS;
 }
 

@@ -60,9 +60,6 @@ void MyXRMock::OnFrameSubmitted(
 }  // namespace
 
 WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestNoStalledFrameLoop) {
-  // TODO(https://crbug.com/1126786): WaitForFrames seems to be timing out on
-  // the WMR runtime.
-  WEBXR_VR_DISABLE_TEST_ON(XrBrowserTestBase::RuntimeType::RUNTIME_WMR);
   MyXRMock my_mock;
 
   // Load the test page, and enter presentation.

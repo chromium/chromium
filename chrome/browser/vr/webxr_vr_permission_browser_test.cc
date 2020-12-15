@@ -16,7 +16,7 @@ namespace vr {
 // move to a higher level and tests could be run on all supported runtimes if
 // desired.
 class WebXrVrPermissionsBrowserTest
-    : public WebXrVrWmrBrowserTestBase,
+    : public WebXrVrOpenXrBrowserTestBase,
       public permissions::PermissionRequestManager::Observer {
  public:
   WebXrVrPermissionsBrowserTest() = default;

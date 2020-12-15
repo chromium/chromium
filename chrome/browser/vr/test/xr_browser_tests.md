@@ -107,10 +107,10 @@ You should consider using the standard IN_PROC_BROWSER_TEST_F macros instead.
 Small snippets of runtime-specific code are acceptable, but if it affects
 readability significantly, the tests should probably remain separate.
 
-Most tests simply use the standard `WebXrVrOpenXrBrowserTest` and
-`WebXrVrWmrBrowserTest` classes. In this case, you can instead use the
-`WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F` macro, which only needs to take the test
-name, further cutting down on boilerplate code.
+Most tests simply use the standard `WebXrVrOpenXrBrowserTest` class.
+In this case, you can instead use the `WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F`
+macro, which only needs to take the test name, further cutting down on
+boilerplate code.
 
 You can also use `WEBXR_VR_ALL_RUNTIMES_PLUS_INCOGNITO_BROWSER_TEST_F` if you
 want the same functionality as `WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F`, but
