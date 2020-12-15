@@ -335,6 +335,7 @@
 <translation id="1374844444528092021">네트워크 '<ph name="NETWORK_NAME" />'에 필요한 인증서가 설치되지 않았거나 더 이상 유효하지 않습니다. 새로운 인증서를 받아 다시 연결하세요.</translation>
 <translation id="1375321115329958930">저장된 비밀번호</translation>
 <translation id="137651782282853227">저장한 주소가 여기 표시됩니다.</translation>
+<translation id="1376771218494401509">창 이름 지정(&amp;W)...</translation>
 <translation id="1377600615067678409">건너뛰기</translation>
 <translation id="1378613616312864539"><ph name="NAME" />이(가) 이 설정을 제어함</translation>
 <translation id="1380028686461971526">네트워크 자동 연결</translation>
@@ -5995,7 +5996,6 @@
 <translation id="7974566588408714340"><ph name="EXTENSIONNAME" />을(를) 사용하여 다시 시도</translation>
 <translation id="7974936243149753750">오버스캔</translation>
 <translation id="7975504106303186033">Chrome Education 기기를 Education 계정에 등록해야 합니다. 새 계정으로 가입하려면 g.co/workspace/edusignup 페이지로 이동하세요.</translation>
-<translation id="7977404132325989121">&amp;창 이름 지정...</translation>
 <translation id="7978412674231730200">비공개 키</translation>
 <translation id="7978450511781612192">Google 계정에서 로그아웃됩니다. 북마크, 방문 기록, 비밀번호 등이 더 이상 동기화되지 않습니다.</translation>
 <translation id="7980084013673500153">애셋 ID: <ph name="ASSET_ID" /></translation>
@@ -6560,7 +6560,6 @@
 <translation id="8648408795949963811">야간 조명 색상 온도</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" />의 권한 요청: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> 등</translation>
 <translation id="8650543407998814195">더 이상 기존 프로필에 액세스할 수 없지만 삭제할 수는 있습니다.</translation>
-<translation id="865118751078059229">&amp;창 이름 지정...</translation>
 <translation id="8651585100578802546">캐시를 무시하고 페이지 새로고침</translation>
 <translation id="8652400352452647993">확장 프로그램 패키지 오류</translation>
 <translation id="8654151524613148204">파일이 너무 커서 컴퓨터에서 처리할 수 없습니다.</translation>
@@ -6979,6 +6978,7 @@
 <translation id="9102610709270966160">확장 프로그램 사용</translation>
 <translation id="9103479157856427471">키보드 포커스를 따라 확대된 화면 이동</translation>
 <translation id="9103868373786083162">돌아가려면 뒤로 버튼을 누르고, 방문 기록을 보려면 컨텍스트 메뉴 키를 누릅니다.</translation>
+<translation id="9108035152087032312">창 이름 지정(&amp;W)...</translation>
 <translation id="9108072915170399168">현재 데이터 사용 설정은 인터넷 사용 안함입니다</translation>
 <translation id="9108692355621501797"><ph name="LINK_BEGIN" />G Suite for Education 개인정보처리방침<ph name="LINK_END" />은 G Suite for Education 사용자와 부모가 제품에서 수집하는 데이터의 유형과 데이터를 수집하는 이유, 데이터의 용도를 이해할 수 있도록 돕기 위한 것입니다.</translation>
 <translation id="9108808586816295166">보안 DNS가 항상 제공되지는 않을 수도 있습니다.</translation>

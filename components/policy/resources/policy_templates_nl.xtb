@@ -4429,7 +4429,7 @@ Als je ervoor kiest het volgende te gebruiken:
 <translation id="7373200034079131670">Opnieuw opstarten bij uitloggen gebruiker als Android of een VM is gestart.</translation>
 <translation id="7373680616478819439">Met deze instelling kun je onderschepping bij inloggen in- of uitschakelen.
 
-      Als je dit beleid niet instelt of het instelt op True, wordt het dialoogvenster voor onderschepping bij inloggen getoond als een Google-account wordt toegevoegd op het web en de gebruiker er mogelijk baat bij heeft als dit account wordt verplaatst naar een ander (nieuw of bestaand) profiel.
+      Als je dit beleid niet instelt of instelt op True, wordt het dialoogvenster voor onderschepping bij inloggen getoond als een Google-account wordt toegevoegd op het web en de gebruiker er mogelijk baat bij heeft als dit account wordt verplaatst naar een ander (nieuw of bestaand) profiel.
 
       Als je het beleid instelt op False, wordt geen dialoogvenster voor onderschepping bij inloggen getoond.</translation>
 <translation id="7375785904116479354">Als je het beleid inschakelt, wordt de standaard zoekmachine van de vorige standaardbrowser geïmporteerd bij de eerste uitvoering. Als je het beleid uitschakelt of niet instelt, wordt de standaard zoekmachine niet geïmporteerd bij de eerste uitvoering.

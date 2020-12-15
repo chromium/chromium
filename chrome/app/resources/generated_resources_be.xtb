@@ -338,6 +338,7 @@
 <translation id="1374844444528092021">Сертыфікат, які запытвае сетка "<ph name="NETWORK_NAME" />", не ўсталяваны або больш не сапраўдны.  Атрымайце новы сертыфікат і паўтарыце падключэнне.</translation>
 <translation id="1375321115329958930">Захаваныя паролі</translation>
 <translation id="137651782282853227">Захаваныя адрасы з'явяцца тут</translation>
+<translation id="1376771218494401509">Дадаць назву &amp;акна...</translation>
 <translation id="1377600615067678409">Прапусціць</translation>
 <translation id="1378613616312864539">Гэту наладу кантралюе <ph name="NAME" /></translation>
 <translation id="1380028686461971526">Падключацца да сеткі аўтаматычна</translation>
@@ -6000,7 +6001,6 @@
 <translation id="7974566588408714340">Паўтарыць спробу, выкарыстаўшы <ph name="EXTENSIONNAME" /></translation>
 <translation id="7974936243149753750">Вылет разгорткі</translation>
 <translation id="7975504106303186033">Вы павінны зарэгістраваць гэту прыладу Chrome Education у навучальным уліковым запісе. Каб стварыць новы ўліковы запіс, наведайце старонку g.co/workspace/edusignup.</translation>
-<translation id="7977404132325989121">&amp;Дадаць назву акна...</translation>
 <translation id="7978412674231730200">Закрыты ключ</translation>
 <translation id="7978450511781612192">Вы выйдзеце з Уліковых запісаў Google. Вашы закладкі, гісторыя, паролі і г. д. больш не будуць сінхранізавацца.</translation>
 <translation id="7980084013673500153">Ідэнтыфікатар аб'екта ўласнасці: <ph name="ASSET_ID" /></translation>
@@ -6564,7 +6564,6 @@
 <translation id="8648408795949963811">Тэмпература колеру для Начной падсветкі</translation>
 <translation id="8648544143274677280">Сайт <ph name="SITE_NAME" /> запытвае наступныя дазволы: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> і іншыя</translation>
 <translation id="8650543407998814195">У вас больш няма доступу да старога профілю, але вы можаце выдаліць яго.</translation>
-<translation id="865118751078059229">&amp;Дадаць назву акна...</translation>
 <translation id="8651585100578802546">Перазагрузіць гэту старонку прымусова</translation>
 <translation id="8652400352452647993">Не ўдалося ўпакаваць пашырэнне</translation>
 <translation id="8654151524613148204">Файл занадта вялікі для вашага камп'ютара. Прабачце.</translation>
@@ -6986,6 +6985,7 @@
 <translation id="9102610709270966160">Уключыць пашырэнне</translation>
 <translation id="9103479157856427471">Пры павелічэнні маштабу перамяшчаць павялічаны ўчастак экрана за фокусам клавіятуры</translation>
 <translation id="9103868373786083162">Націсніце гэту кнопку, каб перайсці назад, кантэкстнае меню – для прагляду гісторыі</translation>
+<translation id="9108035152087032312">Дадаць назву &amp;акна...</translation>
 <translation id="9108072915170399168">Бягучая налада выкарыстання трафіка: без падключэння да інтэрнэту</translation>
 <translation id="9108692355621501797">У <ph name="LINK_BEGIN" />Паведамленні аб прыватнасці G Suite for Education<ph name="LINK_END" /> бацькам і карыстальнікам G Suite for Education тлумачыцца, якія даныя прадукт збірае і як яны выкарыстоўваюцца.</translation>
 <translation id="9108808586816295166">Абароненая DNS можа не быць даступнай пастаянна</translation>

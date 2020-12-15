@@ -335,6 +335,7 @@
 <translation id="1374844444528092021">網路「<ph name="NETWORK_NAME" />」要求的憑證尚未安裝或已經無效。請取得新憑證，然後嘗試重新連線。</translation>
 <translation id="1375321115329958930">已儲存的密碼</translation>
 <translation id="137651782282853227">你所儲存的地址會顯示在這裡</translation>
+<translation id="1376771218494401509">命名視窗...(&amp;W)</translation>
 <translation id="1377600615067678409">暫時略過</translation>
 <translation id="1378613616312864539">這項設定目前受「<ph name="NAME" />」控制</translation>
 <translation id="1380028686461971526">自動連線至網路</translation>
@@ -5995,7 +5996,6 @@
 <translation id="7974566588408714340">使用「<ph name="EXTENSIONNAME" />」重試</translation>
 <translation id="7974936243149753750">遮視區域</translation>
 <translation id="7975504106303186033">你必須將這部 Chrome Education 裝置註冊至教育版帳戶。如要註冊新帳戶，請前往 g.co/workspace/edusignup。</translation>
-<translation id="7977404132325989121">命名視窗...(&amp;N)</translation>
 <translation id="7978412674231730200">秘密金鑰</translation>
 <translation id="7978450511781612192">你將登出自己的 Google 帳戶。你的書籤、歷史記錄、密碼和其他設定將不再保持同步。</translation>
 <translation id="7980084013673500153">資產 ID：<ph name="ASSET_ID" /></translation>
@@ -6559,7 +6559,6 @@
 <translation id="8648408795949963811">夜燈模式色溫</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> 要求<ph name="FIRST_PERMISSION" />以及<ph name="SECOND_PERMISSION" />等權限</translation>
 <translation id="8650543407998814195">雖然你無法再使用舊的設定檔，但仍可將其移除。</translation>
-<translation id="865118751078059229">命名視窗...(&amp;N)</translation>
 <translation id="8651585100578802546">強制重新載入此網頁</translation>
 <translation id="8652400352452647993">封裝擴充功能錯誤</translation>
 <translation id="8654151524613148204">很抱歉，檔案過大，你的電腦無法處理。</translation>
@@ -6978,6 +6977,7 @@
 <translation id="9102610709270966160">啟用擴充功能</translation>
 <translation id="9103479157856427471">放大的螢幕畫面會追蹤鍵盤焦點</translation>
 <translation id="9103868373786083162">按下即可返回，內容選單會顯示歷史記錄</translation>
+<translation id="9108035152087032312">命名視窗...(&amp;W)</translation>
 <translation id="9108072915170399168">目前的數據用量設定是不使用網際網路</translation>
 <translation id="9108692355621501797">《<ph name="LINK_BEGIN" />G Suite 教育版隱私權聲明<ph name="LINK_END" />》旨在協助 G Suite 教育版使用者和家長瞭解這項產品會收集哪些資料、收集這些資料的原因和用途。</translation>
 <translation id="9108808586816295166">可能無法隨時使用安全 DNS</translation>

@@ -335,6 +335,7 @@
 <translation id="1374844444528092021">ネットワーク「<ph name="NETWORK_NAME" />」が要求する証明書がインストールされていないか、証明書の有効期限が切れています。新しい証明書を取得して、もう一度接続してみてください。</translation>
 <translation id="1375321115329958930">保存したパスワード</translation>
 <translation id="137651782282853227">保存した住所がここに表示されます</translation>
+<translation id="1376771218494401509">ウィンドウに名前を付ける(&amp;W)...</translation>
 <translation id="1377600615067678409">今回はスキップ</translation>
 <translation id="1378613616312864539">この設定は <ph name="NAME" /> により制御されています</translation>
 <translation id="1380028686461971526">自動接続するネットワーク</translation>
@@ -5997,7 +5998,6 @@
 <translation id="7974566588408714340">「<ph name="EXTENSIONNAME" />」で再試行</translation>
 <translation id="7974936243149753750">オーバースキャン</translation>
 <translation id="7975504106303186033">この Chrome Education デバイスを教育機関向けアカウントに登録する必要があります。新しいアカウントに登録する場合は、g.co/workspace/edusignup にアクセスしてください。</translation>
-<translation id="7977404132325989121">ウィンドウに名前を付ける(&amp;N)...</translation>
 <translation id="7978412674231730200">秘密鍵</translation>
 <translation id="7978450511781612192">この操作を行うと Google アカウントからログアウトし、ブックマーク、履歴、パスワードなどの設定は同期されなくなります。</translation>
 <translation id="7980084013673500153">アセット ID: <ph name="ASSET_ID" /></translation>
@@ -6562,7 +6562,6 @@
 <translation id="8648408795949963811">夜間モードの色温度</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> が次の許可を求めています: <ph name="FIRST_PERMISSION" />、<ph name="SECOND_PERMISSION" /> など</translation>
 <translation id="8650543407998814195">古いプロフィールにアクセスすることはできませんが、削除することはできます。</translation>
-<translation id="865118751078059229">ウィンドウに名前を付ける(&amp;N)...</translation>
 <translation id="8651585100578802546">ページを再読み込み</translation>
 <translation id="8652400352452647993">拡張機能のパッケージ化のエラー</translation>
 <translation id="8654151524613148204">ファイル サイズが大きすぎるため、お使いのパソコンでは処理できません。</translation>
@@ -6981,6 +6980,7 @@
 <translation id="9102610709270966160">拡張機能を有効にする</translation>
 <translation id="9103479157856427471">キーボード フォーカスに合わせて画面を拡大する</translation>
 <translation id="9103868373786083162">ボタンを押して前に戻ります。履歴を表示するにはコンテキスト メニューを選択します</translation>
+<translation id="9108035152087032312">ウィンドウに名前を付ける(&amp;W)...</translation>
 <translation id="9108072915170399168">現在のデータ使用設定は「インターネットを使用しない」です</translation>
 <translation id="9108692355621501797"><ph name="LINK_BEGIN" />G Suite for Education のプライバシーに関するお知らせ<ph name="LINK_END" />は、G Suite for Education のユーザーとパートナーの皆様に、このサービスで収集されるデータと収集する理由、Google でのデータの取り扱いについて理解を深めていただくためのものです。</translation>
 <translation id="9108808586816295166">セキュア DNS は使用できない場合があります</translation>

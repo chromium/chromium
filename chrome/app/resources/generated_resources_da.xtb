@@ -336,6 +336,7 @@
 <translation id="1374844444528092021">Det certifikat, som netværket "<ph name="NETWORK_NAME" />" kræver, er enten ikke installeret eller ikke længere gyldigt.  Få fat i et nyt certifikat, og prøv at oprette forbindelse igen.</translation>
 <translation id="1375321115329958930">Gemte adgangskoder</translation>
 <translation id="137651782282853227">Dine gemte adresser vises her</translation>
+<translation id="1376771218494401509">Navngiv vindue...</translation>
 <translation id="1377600615067678409">Vent til senere</translation>
 <translation id="1378613616312864539"><ph name="NAME" /> kontrollerer denne indstilling</translation>
 <translation id="1380028686461971526">Opret automatisk forbindelse til netværket</translation>
@@ -5998,7 +5999,6 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="7974566588408714340">Prøv igen ved hjælp af <ph name="EXTENSIONNAME" /></translation>
 <translation id="7974936243149753750">Overscan</translation>
 <translation id="7975504106303186033">Denne Chrome Education-enhed skal tilmeldes med en skolekonto. Du kan oprette en ny konto på g.co/workspace/edusignup.</translation>
-<translation id="7977404132325989121">&amp;Navngiv vindue...</translation>
 <translation id="7978412674231730200">Privat nøgle</translation>
 <translation id="7978450511781612192">Dermed logges du ud af dine Google-konti. Dine bogmærker, din historik, dine adgangskoder m.m. synkroniseres ikke længere.</translation>
 <translation id="7980084013673500153">Aktiv-id: <ph name="ASSET_ID" /></translation>
@@ -6563,7 +6563,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8648408795949963811">Farvetemperatur for Nattelys</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> vil gerne have tilladelse til at: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> og andre ting</translation>
 <translation id="8650543407998814195">Du kan godt fjerne din gamle profil, selvom du ikke længere har adgang til den.</translation>
-<translation id="865118751078059229">&amp;Navngiv vindue...</translation>
 <translation id="8651585100578802546">Gennemtving genindlæsning af denne side</translation>
 <translation id="8652400352452647993">Fejl i pakkeudvidelse</translation>
 <translation id="8654151524613148204">Filen er desværre for stor til, at computeren kan håndtere den.</translation>
@@ -6984,6 +6983,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="9102610709270966160">Aktivér udvidelse</translation>
 <translation id="9103479157856427471">Den tekst, der zoomes ind på, følger indtastningen på tastaturet</translation>
 <translation id="9103868373786083162">Tryk for at gå tilbage til genvejsmenuen for at se historik</translation>
+<translation id="9108035152087032312">Navngiv vindue...</translation>
 <translation id="9108072915170399168">Den aktuelle indstilling for dataforbrug er Uden internet</translation>
 <translation id="9108692355621501797"><ph name="LINK_BEGIN" />Erklæringen om privatliv for G Suite for Education<ph name="LINK_END" /> har til formål at hjælpe G Suite for Education-brugere og forældre med at forstå, hvilke data produktet indsamler, hvorfor dataene indsamles, og hvad dataene bruges til.</translation>
 <translation id="9108808586816295166">Sikre DNS-servere er muligvis ikke altid tilgængelige</translation>

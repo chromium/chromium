@@ -337,6 +337,7 @@
 <translation id="1374844444528092021">«<ph name="NETWORK_NAME" />» ցանցի պահանջած վկայագիրը կամ տեղադրված չէ, կամ այլևս վավեր չէ: Ստացեք նոր վկայագիր և կրկին փորձեք կապակցել:</translation>
 <translation id="1375321115329958930">Պահված գաղտնաբառեր</translation>
 <translation id="137651782282853227">Պահված հասցեները կցուցադրվեն այստեղ</translation>
+<translation id="1376771218494401509">Անվանել պատուհանը…</translation>
 <translation id="1377600615067678409">Առայժմ բաց թողնել</translation>
 <translation id="1378613616312864539"><ph name="NAME" /> ընդլայնումը վերահսկում է այս կարգավորումը</translation>
 <translation id="1380028686461971526">Ավտոմատ միանալ ցանցին</translation>
@@ -431,7 +432,7 @@
 <translation id="1468571364034902819">Հնարավոր չէ օգտագործել այս պրոֆիլը</translation>
 <translation id="1470084204649225129">{NUM_TABS,plural, =1{Ավելացնել ներդիր նոր խմբում}one{Ավելացնել ներդիրներ նոր խմբում}other{Ավելացնել ներդիրներ նոր խմբում}}</translation>
 <translation id="1470946456740188591">Ստեղնային դիտարկումը միացնելու/անջատելու համար օգտագործեք Ctrl + Search + 7 դյուրանցումը</translation>
-<translation id="1472675084647422956">Ցույց տալ ավելի շատ</translation>
+<translation id="1472675084647422956">Ցույց տալ ավելին</translation>
 <translation id="1474785664565228650">Վերագործարկեք Parallels Desktop-ը, որպեսզի խոսափողի կարգավորումը փոխվի, և դուք կարողանաք շարունակել աշխատանքը։</translation>
 <translation id="1475502736924165259">Ֆայլը պարունակում է հավաստագրեր, որոնք չեն համապատասխանում մյուս կատեգորիաներից ոչ մեկին</translation>
 <translation id="1476088332184200792">Պատճենել սարքում</translation>
@@ -6001,7 +6002,6 @@
 <translation id="7974566588408714340">Կրկնել՝ օգտագործելով <ph name="EXTENSIONNAME" />-ը</translation>
 <translation id="7974936243149753750">էկրանի շրջանակ</translation>
 <translation id="7975504106303186033">Գրանցեք Chrome Education լիցենզիայով այս սարքը ուսումնական հաշվում։ Նոր հաշիվ ստեղծելու համար անցեք g.co/workspace/edusignup էջ։</translation>
-<translation id="7977404132325989121">&amp;Անվանել պատուհանը…</translation>
 <translation id="7978412674231730200">Մասնավոր բանալի</translation>
 <translation id="7978450511781612192">Դուք դուրս կգաք Google հաշվից: Ձեր էջանիշները, այցելությունների պատմությունը, գաղտնաբառերը և մյուս կարգավորումներն այլևս չեն համաժամացվի:</translation>
 <translation id="7980084013673500153">Օբյեկտի ID-ն՝ <ph name="ASSET_ID" /></translation>
@@ -6565,7 +6565,6 @@
 <translation id="8648408795949963811">Գիշերային լույսի ռեժիմում գույնի ջերմաստիճանը</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> կայքն ուզում է <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> և այլն</translation>
 <translation id="8650543407998814195">Չնայած այլևս չեք կարող մուտք գործել ձեր հին պրոֆիլ, դուք կարող եք այն ջնջել:</translation>
-<translation id="865118751078059229">&amp;Անվանել պատուհանը…</translation>
 <translation id="8651585100578802546">Force Reload This Page</translation>
 <translation id="8652400352452647993">Ընդլայնման փաթեթավորման սխալ կա</translation>
 <translation id="8654151524613148204">Ֆայլը չափազանց մեծ է ձեր համակարգչի համար:</translation>
@@ -6985,6 +6984,7 @@
 <translation id="9102610709270966160">Միացնել ընդլայնումը</translation>
 <translation id="9103479157856427471">Մեծացված էկրանի տեղափոխում ստեղնաշարի միջոցով</translation>
 <translation id="9103868373786083162">Սեղմեք՝ հետ գնալու համար, բացեք տեղային ընտրացանկը՝ պատմությունը տեսնելու համար</translation>
+<translation id="9108035152087032312">Անվանել պատուհանը…</translation>
 <translation id="9108072915170399168">Տվյալների փոխանցման ընթացիկ կարգավորումը՝ «Առանց ինտերնետի»</translation>
 <translation id="9108692355621501797"><ph name="LINK_BEGIN" />G Suite for Education-ի գաղտնիության ծանուցագրի<ph name="LINK_END" /> մեջ օգտատերերին և ծնողներին տրամադրվում է տեղեկություն այն մասին, թե ծառայությունն ինչպիսի տվյալներ է հավաքում և ինչպես է դրանք օգտագործում։</translation>
 <translation id="9108808586816295166">Ապահով DNS-ը կարող է ամբողջ ընթացքում հասանելի չլինել</translation>

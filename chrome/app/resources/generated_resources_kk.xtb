@@ -335,6 +335,7 @@
 <translation id="1374844444528092021">"<ph name="NETWORK_NAME" />" желісіне қажетті сертификат орнатылмаған немесе жарамсыз болып қалды. Жаңа сертификат алып, қайта қосылып көріңіз.</translation>
 <translation id="1375321115329958930">Сақталған құпия сөздер</translation>
 <translation id="137651782282853227">Сақталған мекенжайлар осы жерге шығады</translation>
+<translation id="1376771218494401509">Терезеге ат қою…</translation>
 <translation id="1377600615067678409">Қазірге өткізіп жіберу</translation>
 <translation id="1378613616312864539">Бұл параметрді <ph name="NAME" /> басқарады</translation>
 <translation id="1380028686461971526">Желіге автоматты қосылу</translation>
@@ -5994,7 +5995,6 @@
 <translation id="7974566588408714340"><ph name="EXTENSIONNAME" /> қайта пайдаланып көріңіз</translation>
 <translation id="7974936243149753750">Экран жиегі</translation>
 <translation id="7975504106303186033">Chrome Education құрылғысын Education есептік жазбасына тіркеңіз. Жаңа есептік жазбаны тіркеу үшін g.co/workspace/edusignup бетіне өтіңіз.</translation>
-<translation id="7977404132325989121">Терезеге &amp;ат қою...</translation>
 <translation id="7978412674231730200">Жеке кілт</translation>
 <translation id="7978450511781612192">Google есептік жазбаларыңыздан шығарыласыз. Бетбелгілер, тарих, құпия сөздер, т.б. синхрондалмайтын болады.</translation>
 <translation id="7980084013673500153">Актив идентификаторы: <ph name="ASSET_ID" /></translation>
@@ -6558,7 +6558,6 @@
 <translation id="8648408795949963811">"Түнгі жарық" түс температурасы</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> сайтына келесі рұқсаттар қажет: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" />, т.б.</translation>
 <translation id="8650543407998814195">Ескі профиліңізге кіре алмасаңыз да, оны өшіруге болады.</translation>
-<translation id="865118751078059229">Терезеге &amp;ат қою...</translation>
 <translation id="8651585100578802546">Бұл бетті күштеп қайта жүктеу</translation>
 <translation id="8652400352452647993">Пакет кеңейтімі қатесі</translation>
 <translation id="8654151524613148204">Файл компьютеріңізде өңдеу үшін тым үлкен. Кешіріңіз.</translation>
@@ -6977,6 +6976,7 @@
 <translation id="9102610709270966160">Кеңейтімді қосу</translation>
 <translation id="9103479157856427471">Экранды пернетақта көмегімен ұлғайту</translation>
 <translation id="9103868373786083162">Журналды көру үшін, оралу, контекстік мәзір түймесін басыңыз</translation>
+<translation id="9108035152087032312">Терезеге ат қою…</translation>
 <translation id="9108072915170399168">Қазіргі дерек трафигінің параметрі: "Интернетсіз"</translation>
 <translation id="9108692355621501797"><ph name="LINK_BEGIN" />G Suite for Education Құпия ақпаратқа қатысты ескертпесінде<ph name="LINK_END" /> қандай деректер жиналатыны, не үшін жиналатыны және қалай өңделетіні туралы G Suite for Education пайдаланушылары мен ата-аналарға түсіндіріледі.</translation>
 <translation id="9108808586816295166">Қауіпсіз DNS барлық уақытта қолжетімді болмауы мүмкін.</translation>

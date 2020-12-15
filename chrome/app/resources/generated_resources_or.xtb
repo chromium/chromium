@@ -334,6 +334,7 @@
 <translation id="1374844444528092021">ନେଟ୍‍ୱର୍କ "<ph name="NETWORK_NAME" />" ପାଇଁ ଆବଶ୍ୟକ ସାର୍ଟିଫିକେଟ୍‌ ଇନ୍‍ଷ୍ଟଲ୍‌ କରାଯାଇନାହିଁ ନହେଲେ ଏହା ଆଉ ବୈଧ ନାହିଁ।  ଦୟାକରି, ଏକ ନୂଆ ସାର୍ଟିଫିକେଟ୍‌ ପ୍ରାପ୍ତ କରନ୍ତୁ ଏବଂ ପୁଣି ସଂଯୋଗ କରିବାକୁ ଚେଷ୍ଟାକରନ୍ତୁ।</translation>
 <translation id="1375321115329958930">ସେଭ୍ କରାଯାଇଥିବା ପାସ୍‌ୱର୍ଡଗୁଡ଼ିକ</translation>
 <translation id="137651782282853227">ସେଭ୍ କରାଯାଇଥିବା ଠିକଣାଗୁଡ଼ିକ ଏଠାରେ ଦୃଶ୍ୟମାନ ହେବ</translation>
+<translation id="1376771218494401509">ୱିଣ୍ଡୋର ନାମ ଦିଅନ୍ତୁ...</translation>
 <translation id="1377600615067678409">ବର୍ତ୍ତମାନ ପାଇଁ ଛାଡ଼ିଦିଅନ୍ତୁ</translation>
 <translation id="1378613616312864539"><ph name="NAME" /> ଏହି ସେଟିଂକୁ ନିୟନ୍ତ୍ରଣ କରୁଛି</translation>
 <translation id="1380028686461971526">ନେଟୱାର୍କ ସହ ସ୍ୱତଃ ସଂଯୋଗ କରନ୍ତୁ</translation>
@@ -5991,7 +5992,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7974566588408714340"><ph name="EXTENSIONNAME" /> ବ୍ୟବହାର କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="7974936243149753750">ଓଭରସ୍କାନ୍‌</translation>
 <translation id="7975504106303186033">ଆପଣ ଏହି Chrome Education ଡିଭାଇସକୁ ଏକ ଶିକ୍ଷା ସମ୍ବନ୍ଧିତ ଆକାଉଣ୍ଟରେ ପଞ୍ଜିକରଣ କରିବା ଆବଶ୍ୟକ। ଏକ ନୂଆ ଆକାଉଣ୍ଟ ପାଇଁ ସାଇନ୍ ଅପ୍ କରିବାକୁ, ଦୟାକରି https://g.co/workspace/edusignupକୁ ଭିଜିଟ୍ କରନ୍ତୁ।</translation>
-<translation id="7977404132325989121">&amp;ୱିଣ୍ଡୋ ନାମ...</translation>
 <translation id="7978412674231730200">ବ୍ୟକ୍ତିଗତ କୀ</translation>
 <translation id="7978450511781612192">ଏହା ଆପଣଙ୍କୁ Google ଆକାଉଣ୍ଟରୁ ସାଇନ୍ ଆଉଟ୍ କରିଦେବ। ଆଉ ଆପଣଙ୍କର ବୁକ୍‍ମାର୍କ, ଇତିବୃତ୍ତି, ପାସ୍‌ୱାର୍ଡ ଏବଂ ଆହୁରି ଅନେକ କିଛି ସିଙ୍କ୍ କରାଯିବ ନାହିଁ।</translation>
 <translation id="7980084013673500153">ଆସେଟ୍ ID: <ph name="ASSET_ID" /></translation>
@@ -6553,7 +6553,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8648408795949963811">ନାଇଟ୍ ଲାଇଟ୍ ରଙ୍ଗ ତାପମାତ୍ରା</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> ଏହା ଚାହୁଁଛି: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> ଏବଂ ଆହୁରି ଅନେକ ଅନୁମତି</translation>
 <translation id="8650543407998814195">ଯଦିଓ, ଆପଣ ଆପଣଙ୍କର ପୁରୁଣା ପ୍ରୋଫାଇଲ୍‌କୁ ଏବେ ଆଉ ଆକ୍ସେସ୍‌ କରିପାରୁନାହାନ୍ତି, ତଥାପି ଆପଣ ଏହାକୁ ଏବେ ମଧ୍ୟ କାଢିପାରିବେ।</translation>
-<translation id="865118751078059229">&amp;ୱିଣ୍ଡୋ ନାମ...</translation>
 <translation id="8651585100578802546">ଏହି ପୃଷ୍ଠାକୁ ବାଧ୍ୟତାମୂଳକ ଭାବରେ ପୁନଃଲୋଡ୍ କରନ୍ତୁ</translation>
 <translation id="8652400352452647993">ପ୍ୟାକ୍ ଏକ୍ସଟେନ୍‌ସନ୍ ତ୍ରୁଟି</translation>
 <translation id="8654151524613148204">ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟର୍‌ ପାଇଁ ଫାଇଲ୍‌ଟି ବହୁତ ବଡ ଅଟେ। କ୍ଷମା କରିବେ…</translation>
@@ -6972,6 +6971,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="9102610709270966160">ଏକ୍ସଟେନ୍‌ସନ୍ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="9103479157856427471">ଜୁମ୍ ଇନ୍ କରାଯାଇଥିବା ସ୍କ୍ରିନ୍ କୀବୋର୍ଡ ଫୋକସର ଅନୁସରଣ କରେ</translation>
 <translation id="9103868373786083162">ଇତିବୃତ୍ତି ଦେଖିବାକୁ ଦୟାକରି ପ୍ରସଙ୍ଗ ମେନୁକୁ ଫେରନ୍ତୁ</translation>
+<translation id="9108035152087032312">ୱିଣ୍ଡୋର ନାମ ଦିଅନ୍ତୁ...</translation>
 <translation id="9108072915170399168">ଡାଟା ବ୍ୟବହାରର ବର୍ତ୍ତମାନ ସେଟିଂ "ବିନା ଇଣ୍ଟର୍ନେଟ୍"ରେ ସେଟ୍ ହୋଇଛି</translation>
 <translation id="9108692355621501797"><ph name="LINK_BEGIN" />G Suite for Educationର ଗୋପନୀୟତା ନୋଟିସ୍<ph name="LINK_END" /> G Suite for Educationର ଉପଯୋଗକର୍ତ୍ତା ଏବଂ ବାପାମା'ମାନଙ୍କୁ ଏହି ପ୍ରଡକ୍ଟ କେଉଁ ଡାଟା ସଂଗ୍ରହ କରେ, କାହିଁକି ସଂଗ୍ରହ କରେ ଏବଂ ଏହା ସହିତ କଣ କରାଯାଏ ତାହା ବୁଝିବାରେ ସାହାଯ୍ୟ କରେ।</translation>
 <translation id="9108808586816295166">ସୁରକ୍ଷିତ DNS ସବୁ ସମୟରେ ଉପଲବ୍ଧ ହୋଇନପାରେ</translation>

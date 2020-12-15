@@ -335,6 +335,7 @@
 <translation id="1374844444528092021">„<ph name="NETWORK_NAME" />“ ქსელის მიერ მოთხოვნილი სერთიფიკატი ან არ არის დაყენებული ან აღარ მოქმედებს. გთხოვთ, მიიღოთ ახალი სერტიფიკატი და ხელახლა სცადოთ დაკავშირება.</translation>
 <translation id="1375321115329958930">შენახული პაროლები</translation>
 <translation id="137651782282853227">შენახული მისამართები აქ გამოჩნდება</translation>
+<translation id="1376771218494401509">&amp;ფანჯრის დასათაურება...</translation>
 <translation id="1377600615067678409">გამოტოვება</translation>
 <translation id="1378613616312864539">ამ პარამეტრს აკონტროლებს <ph name="NAME" /></translation>
 <translation id="1380028686461971526">ქსელთან ავტომატურად დაკავშირება</translation>
@@ -5996,7 +5997,6 @@
 <translation id="7974566588408714340"><ph name="EXTENSIONNAME" />-ით გამეორება</translation>
 <translation id="7974936243149753750">ეკრანის არშია</translation>
 <translation id="7975504106303186033">ეს Chrome Education მოწყობილობა საგანმანათლებლო ანგარიშში უნდა დაარეგისტრიროთ. ახალი ანგარიშის შესაქმნელად გადადით აქ: g.co/workspace/edusignup.</translation>
-<translation id="7977404132325989121">ფანჯრისთვის სახელის &amp;დარქმევა...</translation>
 <translation id="7978412674231730200">პირადი გასაღები</translation>
 <translation id="7978450511781612192">ამ ქმედებით გამოხვალთ თქვენი Google ანგარიშებიდან. თქვენი სანიშნეები, ისტორია, პაროლები და სხვა კონტენტი აღარ იქნება სინქრონიზებული.</translation>
 <translation id="7980084013673500153">საინვენტარო ID: <ph name="ASSET_ID" /></translation>
@@ -6559,7 +6559,6 @@
 <translation id="8648408795949963811">ღამის განათების ფერის ტემპერატურა</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" />-ს სურს: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> და სხვა</translation>
 <translation id="8650543407998814195">ძველ პროფილზე წვდომის არქონის მიუხედავად, შეგიძლიათ მისი ამოშლა.</translation>
-<translation id="865118751078059229">ფანჯრისთვის სახელის &amp;დარქმევა...</translation>
 <translation id="8651585100578802546">ამ გვერდის ხელახლა ჩატვირთვის იძულება</translation>
 <translation id="8652400352452647993">პაკეტის გაფართოების შეცდომა</translation>
 <translation id="8654151524613148204">ფაილი ძალიან დიდია თქვენს კომპიუტერში დასამუშავებლად. ბოდიშს გიხდით.</translation>
@@ -6978,6 +6977,7 @@
 <translation id="9102610709270966160">გაფართოების ჩართვა</translation>
 <translation id="9103479157856427471">ეკრანი გადიდებული მასშტაბით იმეორებს კლავიატურით ფოკუსში მოქცეულს</translation>
 <translation id="9103868373786083162">დააჭირეთ უკან გასასვლელად, კონტექსტურ მენიუს ისტორიის სანახავად.</translation>
+<translation id="9108035152087032312">&amp;ფანჯრის დასათაურება...</translation>
 <translation id="9108072915170399168">მონაცემთა გადაცემისთვის ამჟამად არჩეული გაქვთ „ინტერნეტის გარეშე“</translation>
 <translation id="9108692355621501797"><ph name="LINK_BEGIN" />შეტყობინება მონაცემთა კონფიდენციალურობის წესების თაობაზე G Suite for Education-ისთვის<ph name="LINK_END" /> G Suite for Education-ის მომხმარებლებისა და მშობლებისთვის განმარტავს შეგროვებული მონაცემების ტიპებს, შეგროვების მიზეზებსა და დამუშავების ხერხებს.</translation>
 <translation id="9108808586816295166">დაცული DNS შეიძლება ზოგჯერ მიუწვდომელი იყოს</translation>
