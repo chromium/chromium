@@ -152,8 +152,8 @@ class LocationBarPhone extends LocationBarLayout {
     }
 
     @Override
-    public void finishUrlFocusChange(boolean hasFocus) {
-        super.finishUrlFocusChange(hasFocus);
+    public void finishUrlFocusChange(boolean hasFocus, boolean shouldShowKeyboard) {
+        super.finishUrlFocusChange(hasFocus, shouldShowKeyboard);
         if (!hasFocus) {
             mUrlActionContainer.setVisibility(GONE);
         }
