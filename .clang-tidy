@@ -1,6 +1,9 @@
 ---
   Checks:          '-*,
                     bugprone-argument-comment,
+                    bugprone-dangling-handle,
+                    bugprone-inaccurate-erase,
+                    bugprone-string-constructor,
                     bugprone-string-integer-assignment,
                     bugprone-unused-raii,
                     bugprone-use-after-move,
@@ -25,6 +28,10 @@
                     modernize-use-transparent-functors,
                     readability-redundant-member-init'
   CheckOptions:
+    - key:          bugprone-dangling-handle.HandleClasses
+      value:        ::std::basic_string_view;::std::span;::base::BasicStringPiece;::base::span
+    - key:          bugprone-string-constructor.StringNames
+      value:        ::std::basic_string;::std::basic_string_view;::base::BasicStringPiece
     - key:          modernize-use-default-member-init.UseAssignment
       value:        1
     # This relaxes modernize-use-emplace in some cases; we might want to make it
