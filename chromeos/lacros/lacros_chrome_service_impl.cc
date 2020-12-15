@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "build/chromeos_buildflags.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/lacros/lacros_chrome_service_delegate.h"
 #include "chromeos/startup/startup.h"
@@ -237,6 +238,12 @@ class LacrosChromeServiceNeverBlockingState
     ash_chrome_service_->BindMetricsReporting(std::move(receiver));
   }
 
+  void BindTestControllerReceiver(
+      mojo::PendingReceiver<crosapi::mojom::TestController> pending_receiver) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    ash_chrome_service_->BindTestController(std::move(pending_receiver));
+  }
+
   base::WeakPtr<LacrosChromeServiceNeverBlockingState> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
@@ -421,6 +428,16 @@ void LacrosChromeServiceImpl::BindReceiver(
             &LacrosChromeServiceNeverBlockingState::BindFileManagerReceiver,
             weak_sequenced_state_, std::move(pending_receiver)));
   }
+
+  if (IsTestControllerAvailable()) {
+    mojo::PendingReceiver<crosapi::mojom::TestController> pending_receiver =
+        test_controller_remote_.BindNewPipeAndPassReceiver();
+    never_blocking_sequence_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &LacrosChromeServiceNeverBlockingState::BindTestControllerReceiver,
+            weak_sequenced_state_, std::move(pending_receiver)));
+  }
 }
 
 // static
@@ -484,6 +501,19 @@ bool LacrosChromeServiceImpl::IsFileManagerAvailable() {
   return version &&
          version.value() >=
              AshChromeService::MethodMinVersions::kBindFileManagerMinVersion;
+}
+
+bool LacrosChromeServiceImpl::IsTestControllerAvailable() {
+#if BUILDFLAG(IS_CHROMEOS_DEVICE)
+  // The test controller is not available on production devices as tests only
+  // run on Linux.
+  return false;
+#else
+  base::Optional<uint32_t> version = AshChromeServiceVersion();
+  return version &&
+         version.value() >=
+             AshChromeService::MethodMinVersions::kBindTestControllerMinVersion;
+#endif
 }
 
 bool LacrosChromeServiceImpl::IsScreenManagerAvailable() {

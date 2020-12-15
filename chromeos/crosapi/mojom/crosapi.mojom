@@ -13,6 +13,7 @@ import "chromeos/crosapi/mojom/message_center.mojom";
 import "chromeos/crosapi/mojom/metrics_reporting.mojom";
 import "chromeos/crosapi/mojom/screen_manager.mojom";
 import "chromeos/crosapi/mojom/select_file.mojom";
+import "chromeos/crosapi/mojom/test_controller.mojom";
 import "mojo/public/mojom/base/big_string.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/token.mojom";
@@ -41,8 +42,8 @@ struct LacrosInfo {
 // milestone when you added it, to help us reason about compatibility between
 // lacros-chrome and older ash-chrome binaries.
 //
-// Next version: 9
-// Next method id: 14
+// Next version: 10
+// Next method id: 15
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e"]
 interface AshChromeService {
   // Binds Chrome OS Account Manager for Identity management.
@@ -107,6 +108,11 @@ interface AshChromeService {
   // Lacros-Chrome.
   // Added in M89.
   [MinVersion=7] BindCertDatabase@12(pending_receiver<CertDatabase> receiver);
+
+  // Binds the test controller service, which tests can use to mutate ash. This
+  // is not available on production devices.
+  [MinVersion=9] BindTestController@14(
+      pending_receiver<TestController> receiver);
 
   // Passes generic lacros information such as lacros version, etc into ash
   // in |lacros_info| during startup.

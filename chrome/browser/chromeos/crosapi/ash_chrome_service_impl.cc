@@ -21,6 +21,7 @@
 #include "chrome/browser/chromeos/crosapi/metrics_reporting_ash.h"
 #include "chrome/browser/chromeos/crosapi/screen_manager_ash.h"
 #include "chrome/browser/chromeos/crosapi/select_file_ash.h"
+#include "chrome/browser/chromeos/crosapi/test_controller_ash.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -44,7 +45,8 @@ AshChromeServiceImpl::AshChromeServiceImpl(
       metrics_reporting_ash_(std::make_unique<MetricsReportingAsh>(
           g_browser_process->local_state())),
       screen_manager_ash_(std::make_unique<ScreenManagerAsh>()),
-      cert_database_ash_(std::make_unique<CertDatabaseAsh>()) {
+      cert_database_ash_(std::make_unique<CertDatabaseAsh>()),
+      test_controller_ash_(std::make_unique<TestControllerAsh>()) {
   // TODO(hidehiko): Remove non-critical log from here.
   // Currently this is the signal that the connection is established.
   LOG(WARNING) << "AshChromeService connected.";
@@ -159,6 +161,11 @@ void AshChromeServiceImpl::BindMediaSessionAudioFocusDebug(
 void AshChromeServiceImpl::BindCertDatabase(
     mojo::PendingReceiver<mojom::CertDatabase> receiver) {
   cert_database_ash_->BindReceiver(std::move(receiver));
+}
+
+void AshChromeServiceImpl::BindTestController(
+    mojo::PendingReceiver<mojom::TestController> receiver) {
+  test_controller_ash_->BindReceiver(std::move(receiver));
 }
 
 void AshChromeServiceImpl::OnLacrosStartup(mojom::LacrosInfoPtr lacros_info) {

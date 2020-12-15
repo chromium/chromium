@@ -1,0 +1,22 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+// This interface is implemented by Ash-Chrome.
+// This interface provides tests a mechanism to mutate or query ash.
+// In the future, this interface may merge with an automation or a11y interface.
+[Stable, Uuid="1f93f9d7-e466-466c-a675-c21b48cf30d3"]
+interface TestController {
+  // Queries whether a window with the given |window_id| exists. |window_id|
+  // should be obtained from PlatformWindow::GetWindowUniqueId(). A typical
+  // format might be: "org.chromium.lacros.9A82A161B2A0B9BADF75E9BB958B9FCB"
+  DoesWindowExist@0(string window_id) => (bool exist);
+
+  // Clicks the middle of the window. Assumes that the window exists and is
+  // visible on screen. |window_id| should be obtained from
+  // PlatformWindow::GetWindowUniqueId(). A typical format might be:
+  // "org.chromium.lacros.9A82A161B2A0B9BADF75E9BB958B9FCB"
+  ClickWindow@1(string window_id);
+};

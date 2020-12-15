@@ -18,4 +18,7 @@ specific_include_rules = {
     # For Chrome OS-specific file manager parameters.
     "+chrome/browser/ui/views/select_file_dialog_extension.h",
   ],
+  "window_util\.cc":[
+    "+ash/shell.h",
+  ],
 }

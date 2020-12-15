@@ -22,6 +22,7 @@
 #include "chromeos/crosapi/mojom/metrics_reporting.mojom.h"
 #include "chromeos/crosapi/mojom/screen_manager.mojom.h"
 #include "chromeos/crosapi/mojom/select_file.mojom.h"
+#include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -191,6 +192,16 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
     return file_manager_remote_;
   }
 
+  // test_controller_remote() can only be used if this method returns true.
+  bool IsTestControllerAvailable();
+
+  // Must be called on the affine sequence.
+  mojo::Remote<crosapi::mojom::TestController>& test_controller_remote() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
+    DCHECK(IsTestControllerAvailable());
+    return test_controller_remote_;
+  }
+
   // --------------------------------------------------------------------------
   // Some clients will want to use mojo::Remotes on arbitrary sequences (e.g.
   // background threads). The following methods allow the client to construct a
@@ -283,6 +294,7 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
   mojo::Remote<crosapi::mojom::CertDatabase> cert_database_remote_;
   mojo::Remote<crosapi::mojom::KeystoreService> keystore_service_remote_;
   mojo::Remote<crosapi::mojom::FileManager> file_manager_remote_;
+  mojo::Remote<crosapi::mojom::TestController> test_controller_remote_;
 
   // This member is instantiated on the affine sequence alongside the
   // constructor. All subsequent invocations of this member, including

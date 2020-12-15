@@ -22,6 +22,7 @@ class MessageCenterAsh;
 class MetricsReportingAsh;
 class ScreenManagerAsh;
 class SelectFileAsh;
+class TestControllerAsh;
 
 // Implementation of AshChromeService. It provides a set of APIs that
 // lacros-chrome can call into.
@@ -61,6 +62,8 @@ class AshChromeServiceImpl : public mojom::AshChromeService {
   void BindMediaSessionAudioFocusDebug(
       mojo::PendingReceiver<media_session::mojom::AudioFocusManagerDebug>
           receiver) override;
+  void BindTestController(
+      mojo::PendingReceiver<mojom::TestController> receiver) override;
 
  private:
   mojo::Receiver<mojom::AshChromeService> receiver_;
@@ -74,6 +77,7 @@ class AshChromeServiceImpl : public mojom::AshChromeService {
   std::unique_ptr<SelectFileAsh> select_file_ash_;
   std::unique_ptr<FeedbackAsh> feedback_ash_;
   std::unique_ptr<CertDatabaseAsh> cert_database_ash_;
+  std::unique_ptr<TestControllerAsh> test_controller_ash_;
 };
 
 }  // namespace crosapi

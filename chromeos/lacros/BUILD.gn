@@ -14,6 +14,7 @@ component("lacros") {
   defines = [ "IS_CHROMEOS_LACROS_IMPL" ]
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//chromeos/crosapi/mojom",
     "//chromeos/startup",
     "//mojo/public/cpp/bindings",
