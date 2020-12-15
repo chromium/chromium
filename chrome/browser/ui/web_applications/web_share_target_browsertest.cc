@@ -85,7 +85,8 @@ class WebShareTargetBrowserTest : public WebAppControllerBrowserTest {
   }
 
   content::WebContents* LaunchAppWithIntent(const AppId& app_id,
-                                            apps::mojom::IntentPtr&& intent) {
+                                            apps::mojom::IntentPtr&& intent,
+                                            const GURL& expected_url) {
     apps::AppLaunchParams params = apps::CreateAppLaunchParamsForIntent(
         app_id,
         /*event_flags=*/0, apps::mojom::AppLaunchSource::kSourceAppLauncher,
@@ -94,13 +95,14 @@ class WebShareTargetBrowserTest : public WebAppControllerBrowserTest {
         std::move(intent));
 
     ui_test_utils::UrlLoadObserver url_observer(
-        share_target_url(), content::NotificationService::AllSources());
+        expected_url, content::NotificationService::AllSources());
     content::WebContents* const web_contents =
         GetAppServiceProxy(profile())
             ->BrowserAppLauncher()
             ->LaunchAppWithParams(std::move(params));
     DCHECK(web_contents);
     url_observer.Wait();
+    EXPECT_EQ(expected_url, web_contents->GetVisibleURL());
     return web_contents;
   }
 };
@@ -126,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, ShareTextFiles) {
   }
 
   content::WebContents* const web_contents =
-      LaunchAppWithIntent(app_id, std::move(intent));
+      LaunchAppWithIntent(app_id, std::move(intent), share_target_url());
   EXPECT_EQ("1,2,3,4,5 6,7,8,9,0", ReadTextContent(web_contents, "records"));
 
   RemoveWebShareDirectory(directory);
@@ -153,7 +155,7 @@ IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, ShareImageWithText) {
   }
 
   content::WebContents* const web_contents =
-      LaunchAppWithIntent(app_id, std::move(intent));
+      LaunchAppWithIntent(app_id, std::move(intent), share_target_url());
   EXPECT_EQ("picture", ReadTextContent(web_contents, "graphs"));
 
   EXPECT_EQ("Elements", ReadTextContent(web_contents, "headline"));
@@ -187,7 +189,7 @@ IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, ShareAudio) {
   }
 
   content::WebContents* const web_contents =
-      LaunchAppWithIntent(app_id, std::move(intent));
+      LaunchAppWithIntent(app_id, std::move(intent), share_target_url());
   EXPECT_EQ("a b c", ReadTextContent(web_contents, "notes"));
 
   RemoveWebShareDirectory(directory);
@@ -215,13 +217,47 @@ IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, PostLink) {
       /*share_title=*/shared_title);
 
   content::WebContents* const web_contents =
-      LaunchAppWithIntent(app_id, std::move(intent));
+      LaunchAppWithIntent(app_id, std::move(intent), share_target_url());
   EXPECT_EQ("POST", ReadTextContent(web_contents, "method"));
   EXPECT_EQ("application/x-www-form-urlencoded",
             ReadTextContent(web_contents, "type"));
 
   EXPECT_EQ(shared_title, ReadTextContent(web_contents, "headline"));
   // Poster web app's service worker detects omitted value.
+  EXPECT_EQ("N/A", ReadTextContent(web_contents, "author"));
+  EXPECT_EQ(shared_link, ReadTextContent(web_contents, "link"));
+}
+
+IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, GetLink) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL app_url =
+      embedded_test_server()->GetURL("/web_share_target/gatherer.html");
+  const AppId app_id = web_app::InstallWebAppFromManifest(browser(), app_url);
+  const apps::ShareTarget* share_target =
+      WebAppProvider::Get(browser()->profile())
+          ->registrar()
+          .GetAppShareTarget(app_id);
+  EXPECT_EQ(share_target->method, apps::ShareTarget::Method::kGet);
+  EXPECT_EQ(share_target->enctype, apps::ShareTarget::Enctype::kFormUrlEncoded);
+
+  const std::string shared_title = "My News";
+  const std::string shared_link = "http://example.com/news";
+  const GURL expected_url(share_target_url().spec() +
+                          "?headline=My+News&link=http://example.com/news");
+
+  apps::mojom::IntentPtr intent = apps_util::CreateShareIntentFromFiles(
+      profile(), /*file_paths=*/std::vector<base::FilePath>(),
+      /*mime_types=*/std::vector<std::string>(),
+      /*share_text=*/shared_link,
+      /*share_title=*/shared_title);
+
+  content::WebContents* const web_contents =
+      LaunchAppWithIntent(app_id, std::move(intent), expected_url);
+  EXPECT_EQ("GET", ReadTextContent(web_contents, "method"));
+  EXPECT_EQ(expected_url.spec(), ReadTextContent(web_contents, "url"));
+
+  EXPECT_EQ(shared_title, ReadTextContent(web_contents, "headline"));
+  // Gatherer web app's service worker detects omitted value.
   EXPECT_EQ("N/A", ReadTextContent(web_contents, "author"));
   EXPECT_EQ(shared_link, ReadTextContent(web_contents, "link"));
 }

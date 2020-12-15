@@ -26,6 +26,7 @@ function respondToShare(event) {
 
     body = body.replace('{{method}}', event.request.method)
                .replace('{{type}}', event.request.headers.get('Content-Type'))
+               .replace('{{url}}', event.request.url)
                .replace('{{headline}}', readField(formData, 'headline', 'N/A'))
                .replace('{{author}}', readField(formData, 'author', 'N/A'))
                .replace('{{link}}', readField(formData, 'link', 'N/A'));

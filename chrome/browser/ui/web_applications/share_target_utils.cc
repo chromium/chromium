@@ -131,25 +131,27 @@ NavigateParams NavigateParamsForShareTarget(
     is_value_file_uris.push_back(false);
   }
 
-  // TODO(crbug.com/1125880): Support Web Share Target with method=GET.
-  scoped_refptr<network::ResourceRequestBody> post_data;
-  std::string header_list;
   if (share_target.enctype == apps::ShareTarget::Enctype::kMultipartFormData) {
     const std::string boundary = net::GenerateMimeMultipartBoundary();
-    header_list = base::StringPrintf(
+    nav_params.extra_headers = base::StringPrintf(
         "Content-Type: multipart/form-data; boundary=%s\r\n", boundary.c_str());
-    post_data = web_share_target::ComputeMultipartBody(
+    nav_params.post_data = web_share_target::ComputeMultipartBody(
         names, values, is_value_file_uris, filenames, types, boundary);
   } else {
-    const std::string body =
+    const std::string serialization =
         web_share_target::ComputeUrlEncodedBody(names, values);
-    header_list = "Content-Type: application/x-www-form-urlencoded\r\n";
-    post_data = network::ResourceRequestBody::CreateFromBytes(body.c_str(),
-                                                              body.length());
+    if (share_target.method == apps::ShareTarget::Method::kPost) {
+      nav_params.extra_headers =
+          "Content-Type: application/x-www-form-urlencoded\r\n";
+      nav_params.post_data = network::ResourceRequestBody::CreateFromBytes(
+          serialization.c_str(), serialization.length());
+    } else {
+      url::Replacements<char> replacements;
+      replacements.SetQuery(serialization.c_str(),
+                            url::Component(0, serialization.length()));
+      nav_params.url = nav_params.url.ReplaceComponents(replacements);
+    }
   }
-
-  nav_params.post_data = post_data;
-  nav_params.extra_headers = header_list;
 #else
   // TODO(crbug.com/1153194): Support Web Share Target on Windows.
   // TODO(crbug.com/1153195): Support Web Share Target on Mac.
