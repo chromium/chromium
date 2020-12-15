@@ -489,9 +489,13 @@ void CompositorFrameReportingController::CreateReportersForDroppedFrames(
 
   // Up to 100 frames will be reported (100 closest frames to new_args).
   const uint32_t kMaxFrameCount = 100;
-  uint32_t index = (interval > kMaxFrameCount) ? interval - kMaxFrameCount : 1;
-  auto timestamp = old_args.frame_time + (old_args.interval * index);
-  for (uint32_t i = index; i < interval; ++i, timestamp += old_args.interval) {
+
+  // If there are more than 100 frames skipped, ignore them
+  if (interval > kMaxFrameCount)
+    return;
+
+  auto timestamp = old_args.frame_time + old_args.interval;
+  for (uint32_t i = 1; i < interval; ++i, timestamp += old_args.interval) {
     auto args = viz::BeginFrameArgs::Create(
         BEGINFRAME_FROM_HERE, old_args.frame_id.source_id,
         old_args.frame_id.sequence_number + i, timestamp,
