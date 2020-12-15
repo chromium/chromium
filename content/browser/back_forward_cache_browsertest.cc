@@ -7650,7 +7650,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, CoepReporter) {
   GURL url_a(https_server()->GetURL("a.com",
                                     "/set-header?"
                                     "Cross-Origin-Embedder-Policy-Report-Only: "
-                                    "same-origin; report-to%3d\"a\""));
+                                    "require-corp; report-to%3d\"a\""));
   GURL url_b(https_server()->GetURL("b.com", "/title1.html"));
 
   // Navigate to a document that set RenderFrameHostImpl::coep_reporter().
@@ -7696,6 +7696,35 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, CoopReporter) {
   EXPECT_EQ(rfh_a, current_frame_host());
 
   EXPECT_TRUE(rfh_a->coop_reporter());
+}
+
+// RenderFrameHostImpl::cross_origin_embedder_policy() must be preserved when
+// doing a back navigation using the BackForwardCache.
+// Regression test for https://crbug.com/1021846.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, Coep) {
+  ASSERT_TRUE(CreateHttpsServer()->Start());
+  GURL url_a(https_server()->GetURL(
+      "a.com", "/set-header?Cross-Origin-Embedder-Policy: require-corp"));
+  GURL url_b(https_server()->GetURL("b.com", "/title1.html"));
+
+  // Navigate to a document that sets COEP.
+  network::CrossOriginEmbedderPolicy coep;
+  coep.value = network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp;
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImpl* rfh_a = current_frame_host();
+  EXPECT_EQ(coep, rfh_a->cross_origin_embedder_policy());
+
+  // Navigate away and back using the BackForwardCache.
+  // RenderFrameHostImpl::cross_origin_embedder_policy() should return the same
+  // result.
+  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+  EXPECT_FALSE(delete_observer_rfh_a.deleted());
+  EXPECT_EQ(rfh_a, current_frame_host());
+
+  EXPECT_EQ(coep, rfh_a->cross_origin_embedder_policy());
 }
 
 namespace {

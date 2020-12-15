@@ -1115,6 +1115,16 @@ NavigationRequest::NavigationRequest(
       }
     }
   }
+
+  // Initialize the ClientSecurityState's COEP to that of the current document.
+  // It will be updated when a network response is received. For navigations
+  // that do not result in a network request, the COEP of the current document
+  // is passed to the next one.
+  // TODO(pmeuleman, clamy): Should we take into account the initiator COEP
+  // instead?
+  client_security_state_->cross_origin_embedder_policy =
+      frame_tree_node_->current_frame_host()->cross_origin_embedder_policy();
+
   NavigationControllerImpl* controller = GetNavigationController();
 
   if (frame_entry) {
@@ -2431,14 +2441,8 @@ void NavigationRequest::OnResponseStarted(
   if (!render_frame_host_)
     DCHECK(!response_should_be_rendered_);
 
-  if (render_frame_host_) {
+  if (render_frame_host_)
     DetermineOriginIsolationEndResult(IsOptInIsolationRequested(GetURL()));
-
-    // TODO(pmeuleman, ahemery): Only set COEP values on RenderFrameHost when
-    // the navigation commits. In the meantime, keep them in NavigationRequest.
-    render_frame_host_->set_cross_origin_embedder_policy(
-        cross_origin_embedder_policy);
-  }
   client_security_state_->cross_origin_embedder_policy =
       cross_origin_embedder_policy;
 
@@ -3406,12 +3410,14 @@ void NavigationRequest::CommitNavigation() {
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
         reporter_remote;
     coep_reporter()->Clone(reporter_remote.InitWithNewPipeAndPassReceiver());
+    network::CrossOriginEmbedderPolicy navigation_coep;
+    if (client_security_state_)
+      navigation_coep = client_security_state_->cross_origin_embedder_policy;
     // Notify the service worker navigation handle that navigation commit is
     // about to go.
     service_worker_handle_->OnBeginNavigationCommit(
         render_frame_host_->GetProcess()->GetID(),
-        render_frame_host_->GetRoutingID(),
-        render_frame_host_->cross_origin_embedder_policy(),
+        render_frame_host_->GetRoutingID(), navigation_coep,
         std::move(reporter_remote), &service_worker_container_info,
         commit_params_->document_ukm_source_id);
   }

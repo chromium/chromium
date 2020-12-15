@@ -8879,6 +8879,10 @@ void RenderFrameHostImpl::DidCommitNewDocument(
 
   cross_origin_opener_policy_ =
       navigation_request->coop_status().current_coop();
+  if (navigation_request->IsWaitingToCommit()) {
+    cross_origin_embedder_policy_ =
+        last_committed_client_security_state_->cross_origin_embedder_policy;
+  }
   coop_reporter_ = navigation_request->coop_status().TakeCoopReporter();
   virtual_browsing_context_group_ =
       navigation_request->coop_status().virtual_browsing_context_group();
