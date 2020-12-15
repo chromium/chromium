@@ -156,10 +156,6 @@
         "name": "system_health.common_desktop/browse:news:reddit:2018"
     },
     {
-        "duration": "48.0",
-        "name": "system_health.common_desktop/browse:search:google:2018"
-    },
-    {
         "duration": "35.0",
         "name": "system_health.common_desktop/browse:search:google_india:2018"
     },

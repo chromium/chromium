@@ -396,12 +396,12 @@ class GoogleDesktopStory2018(_ArticleBrowsingStory):
     _ Scroll the search page.
 
   """
-  NAME = 'browse:search:google:2018'
+  NAME = 'browse:search:google:2020'
   URL = 'https://www.google.com/search?q=flower&hl=en'
   _SEARCH_BOX_SELECTOR = 'input[aria-label="Search"]'
   _SEARCH_PAGE_2_SELECTOR = 'a[aria-label="Page 2"]'
   SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
-  TAGS = [story_tags.YEAR_2018]
+  TAGS = [story_tags.YEAR_2020]
 
   def _DidLoadDocument(self, action_runner):
     # Click on flower Wikipedia link.

@@ -3360,10 +3360,6 @@
         "name": "system_health.common_desktop/browse:news:reddit:2018"
     },
     {
-        "duration": "53.0",
-        "name": "system_health.common_desktop/browse:search:google:2018"
-    },
-    {
         "duration": "38.0",
         "name": "system_health.common_desktop/browse:search:google_india:2018"
     },
@@ -3674,10 +3670,6 @@
     {
         "duration": "44.0",
         "name": "system_health.memory_desktop/browse:news:reddit:2018"
-    },
-    {
-        "duration": "43.0",
-        "name": "system_health.memory_desktop/browse:search:google:2018"
     },
     {
         "duration": "30.0",
@@ -4032,10 +4024,6 @@
         "name": "v8.browsing_desktop-future/browse:news:reddit:2018"
     },
     {
-        "duration": "65.0",
-        "name": "v8.browsing_desktop-future/browse:search:google:2018"
-    },
-    {
         "duration": "40.0",
         "name": "v8.browsing_desktop-future/browse:search:google_india:2018"
     },
@@ -4138,10 +4126,6 @@
     {
         "duration": "60.0",
         "name": "v8.browsing_desktop/browse:news:reddit:2018"
-    },
-    {
-        "duration": "68.0",
-        "name": "v8.browsing_desktop/browse:search:google:2018"
     },
     {
         "duration": "43.0",

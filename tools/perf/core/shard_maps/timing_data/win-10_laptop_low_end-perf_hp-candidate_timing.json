@@ -48,10 +48,6 @@
         "name": "v8.browsing_desktop/browse:news:reddit:2018"
     },
     {
-        "duration": "101.0",
-        "name": "v8.browsing_desktop/browse:search:google:2018"
-    },
-    {
         "duration": "85.0",
         "name": "v8.browsing_desktop/browse:search:google_india:2018"
     },

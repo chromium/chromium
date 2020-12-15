@@ -96,7 +96,7 @@ ACTIVE_STORIES = set([
     'browse:social:twitter:2018',
     'browse:social:tumblr_infinite_scroll:2018',
     'browse:media:googleplaystore:2018',
-    'browse:search:google:2018',
+    'browse:search:google:2020',
     'browse:news:cnn:2018',
     'browse:news:reddit:2018',
     'browse:search:google_india:2018',
