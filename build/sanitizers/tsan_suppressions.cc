@@ -132,6 +132,9 @@ char kTSanDefaultSuppressions[] =
     // https://crbug.com/1056011
     "race:third_party/libjpeg_turbo/simd/x86_64/jsimd.c\n"
 
+    // https://crbug.com/1158622
+    "race:absl::synchronization_internal::Waiter::Post\n"
+
     // End of suppressions.
     ;  // Please keep this semicolon.
 
