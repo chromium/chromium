@@ -196,7 +196,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Crostini.Crosvm.RssPercentage" units="%"
-    expires_after="2021-04-11">
+    expires_after="2021-06-13">
   <owner>clumptini@google.com</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
@@ -242,7 +242,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Crostini.FilesystemCorruption" enum="CorruptionStates"
-    expires_after="2021-04-11">
+    expires_after="2021-06-13">
   <owner>clumptini@google.com</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
