@@ -537,6 +537,7 @@ public class AppMenuPropertiesDelegateUnitTest {
         CachedFeatureFlags.setForTesting(ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_REGROUP, true);
         CachedFeatureFlags.setForTesting(
                 ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_THREE_BUTTON_ACTIONBAR, true);
+        CachedFeatureFlags.setForTesting(ChromeFeatureList.READ_LATER, true);
         AppMenuPropertiesDelegateImpl.ACTION_BAR_VARIATION.setForTesting("share_button");
         AppMenuPropertiesDelegateImpl.THREE_BUTTON_ACTION_BAR_VARIATION.setForTesting(
                 "add_to_option");
@@ -560,7 +561,8 @@ public class AppMenuPropertiesDelegateUnitTest {
         Integer[] expectedActionBarItems = {
                 R.id.forward_menu_id, R.id.share_menu_button_id, R.id.reload_menu_id};
         Integer[] expectedAddToItems = {R.id.add_to_bookmarks_menu_id,
-                R.id.add_to_downloads_menu_id, R.id.add_to_homescreen_menu_id};
+                R.id.add_to_reading_list_menu_id, R.id.add_to_downloads_menu_id,
+                R.id.add_to_homescreen_menu_id};
         assertMenuItemsAreEqual(menu, expectedItems);
         assertActionBarItemsAreEqual(menu, expectedActionBarItems);
         assertAddToItemsAreEqual(menu, expectedAddToItems);
