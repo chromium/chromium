@@ -42382,6 +42382,7 @@ from previous Chrome versions.
   <int value="-1791226955" label="BreakingNewsPush:enabled"/>
   <int value="-1790227231" label="show-autofill-signatures"/>
   <int value="-1789139269" label="SmbFs:disabled"/>
+  <int value="-1784831690" label="Bento:disabled"/>
   <int value="-1784788154" label="NewRemotePlaybackPipeline:disabled"/>
   <int value="-1780306716"
       label="OmniboxSpeculativeServiceWorkerStartOnQueryInput:enabled"/>
@@ -43603,6 +43604,7 @@ from previous Chrome versions.
       label="OmniboxUIExperimentBlueTitlesAndGrayUrlsOnPageSuggestions:disabled"/>
   <int value="-666508951" label="CrOSContainer:enabled"/>
   <int value="-665514294" label="FontAccess:disabled"/>
+  <int value="-665006585" label="Bento:enabled"/>
   <int value="-663476391" label="enable-pixel-canvas-recording:enabled"/>
   <int value="-662720891" label="PreviewsCoinFlipHoldback_UKMOnly:enabled"/>
   <int value="-662314979"

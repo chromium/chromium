@@ -313,6 +313,10 @@ const char kBackForwardCacheDescription[] =
     "To enable caching pages on same-site navigations too, choose 'enabled "
     "same-site support'.";
 
+const char kBentoName[] = "Virtual Desks enhancements";
+const char kBentoDescription[] =
+    "Enables a set of feature enhancements for Virtual Desks.";
+
 const char kBypassAppBannerEngagementChecksName[] =
     "Bypass user engagement checks";
 const char kBypassAppBannerEngagementChecksDescription[] =

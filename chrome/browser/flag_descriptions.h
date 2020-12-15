@@ -193,6 +193,9 @@ extern const char kAvatarToolbarButtonDescription[];
 extern const char kBackForwardCacheName[];
 extern const char kBackForwardCacheDescription[];
 
+extern const char kBentoName[];
+extern const char kBentoDescription[];
+
 extern const char kBypassAppBannerEngagementChecksName[];
 extern const char kBypassAppBannerEngagementChecksDescription[];
 

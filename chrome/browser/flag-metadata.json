@@ -2562,6 +2562,11 @@
     "expiry_milestone": 92
   },
   {
+    "name": "enhanced-desks",
+    "owners": ["afakhry", "cattalyya", "tclaiborne"],
+    "expiry_milestone": 93
+  },
+  {
     "name": "enterprise-realtime-extension-request",
     "owners": ["zmin", "pastarmovj"],
     "expiry_milestone": 94
