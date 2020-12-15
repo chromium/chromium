@@ -16,39 +16,29 @@ import org.chromium.payments.mojom.PaymentValidationErrors;
  * Guards against invalid mojo parameters and enforces correct call sequence from mojo IPC in the
  * untrusted renderer, so PaymentRequestService does not have to.
  */
-/* package */ class MojoPaymentRequestGateKeeper implements PaymentRequest {
-    private final PaymentRequestServiceCreator mPaymentRequestServiceCreator;
+public class MojoPaymentRequestGateKeeper implements PaymentRequest {
+    private final Delegate mDelegate;
     private PaymentRequestService mPaymentRequestService;
 
-    /** The creator of PaymentRequestService. */
-    /* package */ interface PaymentRequestServiceCreator {
+    /** The delegate of the class. */
+    public interface Delegate {
         /**
-         * Create an instance of PaymentRequestService if the parameters are valid.
+         * Create an instance of PaymentRequestService.
          * @param client The client of the renderer PaymentRequest, need validation before usage.
-         * @param methodData The supported methods specified by the merchant, need validation before
-         *         usage.
-         * @param details The payment details specified by the merchant, need validation before
-         *         usage.
-         * @param options The payment options specified by the merchant, need validation before
-         *         usage.
-         * @param googlePayBridgeEligible True when the renderer process deems the current request
-         *         eligible for the skip-to-GPay experimental flow. It is ultimately up to the
-         * browser process to determine whether to trigger it.
          * @param onClosedListener The listener that's invoked when PaymentRequestService has
          *         just closed.
          * @return The created instance, if the parameters are valid; otherwise, null.
          */
-        PaymentRequestService createPaymentRequestServiceIfParamsValid(PaymentRequestClient client,
-                PaymentMethodData[] methodData, PaymentDetails details, PaymentOptions options,
-                boolean googlePayBridgeEligible, Runnable onClosedListener);
+        PaymentRequestService createPaymentRequestService(
+                PaymentRequestClient client, Runnable onClosedListener);
     }
 
     /**
      * Create an instance of MojoPaymentRequestGateKeeper.
-     * @param creator The creator of PaymentRequestService.
+     * @param delegate The delegate of the instance.
      */
-    /* package */ MojoPaymentRequestGateKeeper(PaymentRequestServiceCreator creator) {
-        mPaymentRequestServiceCreator = creator;
+    public MojoPaymentRequestGateKeeper(Delegate delegate) {
+        mDelegate = delegate;
     }
 
     // Implement PaymentRequest:
@@ -62,11 +52,10 @@ import org.chromium.payments.mojom.PaymentValidationErrors;
             return;
         }
 
-        // Note that a null value would be assigned when the params are invalid.
-        mPaymentRequestService =
-                mPaymentRequestServiceCreator.createPaymentRequestServiceIfParamsValid(client,
-                        methodData, details, options, googlePayBridgeEligible,
-                        this::onPaymentRequestServiceClosed);
+        PaymentRequestService service =
+                mDelegate.createPaymentRequestService(client, this::onPaymentRequestServiceClosed);
+        if (!service.init(methodData, details, options, googlePayBridgeEligible)) return;
+        mPaymentRequestService = service;
     }
 
     private void onPaymentRequestServiceClosed() {

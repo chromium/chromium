@@ -14,6 +14,7 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.chrome.browser.payments.ChromePaymentRequestFactory;
 import org.chromium.chrome.browser.payments.ChromePaymentRequestService;
 import org.chromium.components.autofill.EditableOption;
+import org.chromium.components.payments.BrowserPaymentRequest;
 import org.chromium.components.payments.PaymentApp;
 import org.chromium.components.payments.PaymentRequestService;
 import org.chromium.components.payments.PaymentRequestService.NativeObserverForTest;
@@ -49,6 +50,12 @@ public class PaymentRequestTestBridge {
         public boolean skipUiForBasicCard() {
             return mSkipUiForBasicCard;
         }
+
+        @Override
+        public BrowserPaymentRequest createBrowserPaymentRequest(
+                PaymentRequestService paymentRequestService) {
+            return new ChromePaymentRequestService(paymentRequestService, this);
+        }
     }
 
     /**
@@ -56,7 +63,8 @@ public class PaymentRequestTestBridge {
      * answers about the state of the system, in order to control which paths should be tested in
      * the ChromePaymentRequestService.
      */
-    private static class PaymentRequestDelegateForTest implements PaymentRequestService.Delegate {
+    private abstract static class PaymentRequestDelegateForTest
+            implements PaymentRequestService.Delegate {
         private final boolean mIsOffTheRecord;
         private final boolean mIsValidSsl;
         private final boolean mPrefsCanMakePayment;

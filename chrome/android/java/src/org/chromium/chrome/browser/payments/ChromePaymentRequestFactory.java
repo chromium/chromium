@@ -10,7 +10,9 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.payments.BrowserPaymentRequest;
 import org.chromium.components.payments.InvalidPaymentRequest;
+import org.chromium.components.payments.MojoPaymentRequestGateKeeper;
 import org.chromium.components.payments.OriginSecurityChecker;
 import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.payments.PaymentRequestService;
@@ -62,6 +64,12 @@ public class ChromePaymentRequestFactory implements InterfaceFactory<PaymentRequ
 
         private ChromePaymentRequestDelegateImpl(RenderFrameHost renderFrameHost) {
             mRenderFrameHost = renderFrameHost;
+        }
+
+        @Override
+        public BrowserPaymentRequest createBrowserPaymentRequest(
+                PaymentRequestService paymentRequestService) {
+            return new ChromePaymentRequestService(paymentRequestService, this);
         }
 
         @Override
@@ -162,8 +170,8 @@ public class ChromePaymentRequestFactory implements InterfaceFactory<PaymentRequ
         WebContents webContents = WebContentsStatics.fromRenderFrameHost(mRenderFrameHost);
         if (webContents == null || webContents.isDestroyed()) return new InvalidPaymentRequest();
 
-        return PaymentRequestService.createPaymentRequest(mRenderFrameHost, delegate,
-                (paymentRequestService)
-                        -> new ChromePaymentRequestService(paymentRequestService, delegate));
+        return new MojoPaymentRequestGateKeeper(
+                (client, onClosed)
+                        -> new PaymentRequestService(mRenderFrameHost, client, onClosed, delegate));
     }
 }

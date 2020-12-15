@@ -8,7 +8,6 @@ import androidx.annotation.Nullable;
 
 import org.mockito.Mockito;
 
-import org.chromium.components.payments.BrowserPaymentRequest.Factory;
 import org.chromium.components.payments.PaymentRequestService.Delegate;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
@@ -31,7 +30,7 @@ public class PaymentRequestServiceBuilder implements PaymentRequestService.Deleg
     private final RenderFrameHost mRenderFrameHost;
     private final Runnable mOnClosedListener;
     private final PaymentAppService mPaymentAppService;
-    private final Factory mBrowserPaymentRequestFactory;
+    private final BrowserPaymentRequest mBrowserPaymentRequest;
     private WebContents mWebContents;
     private boolean mIsOffTheRecord = true;
     private PaymentRequestClient mClient;
@@ -84,10 +83,16 @@ public class PaymentRequestServiceBuilder implements PaymentRequestService.Deleg
         Mockito.doReturn(total).when(mSpec).getRawTotal();
         Map<String, PaymentMethodData> methodDataMap = new HashMap<>();
         Mockito.doReturn(methodDataMap).when(mSpec).getMethodData();
-        mBrowserPaymentRequestFactory = (paymentRequestService) -> browserPaymentRequest;
+        mBrowserPaymentRequest = browserPaymentRequest;
         mOnClosedListener = onClosedListener;
         mClient = client;
         mPaymentAppService = appService;
+    }
+
+    @Override
+    public BrowserPaymentRequest createBrowserPaymentRequest(
+            PaymentRequestService paymentRequestService) {
+        return mBrowserPaymentRequest;
     }
 
     @Override
@@ -258,8 +263,9 @@ public class PaymentRequestServiceBuilder implements PaymentRequestService.Deleg
     }
 
     /* package */ PaymentRequestService build() {
-        return PaymentRequestService.createIfParamsValid(mRenderFrameHost,
-                mBrowserPaymentRequestFactory, mClient, mMethodData, mDetails, mOptions,
-                mGooglePayBridgeEligible, mOnClosedListener, mDelegate);
+        PaymentRequestService service =
+                new PaymentRequestService(mRenderFrameHost, mClient, mOnClosedListener, mDelegate);
+        boolean success = service.init(mMethodData, mDetails, mOptions, mGooglePayBridgeEligible);
+        return success ? service : null;
     }
 }

@@ -7,7 +7,9 @@ package org.chromium.weblayer_private.payments;
 import androidx.annotation.Nullable;
 
 import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
+import org.chromium.components.payments.BrowserPaymentRequest;
 import org.chromium.components.payments.InvalidPaymentRequest;
+import org.chromium.components.payments.MojoPaymentRequestGateKeeper;
 import org.chromium.components.payments.OriginSecurityChecker;
 import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.payments.PaymentRequestService;
@@ -40,6 +42,12 @@ public class WebLayerPaymentRequestFactory implements InterfaceFactory<PaymentRe
 
         /* package */ WebLayerPaymentRequestDelegateImpl(RenderFrameHost renderFrameHost) {
             mRenderFrameHost = renderFrameHost;
+        }
+
+        @Override
+        public BrowserPaymentRequest createBrowserPaymentRequest(
+                PaymentRequestService paymentRequestService) {
+            return new WebLayerPaymentRequestService(paymentRequestService, this);
         }
 
         @Override
@@ -112,9 +120,8 @@ public class WebLayerPaymentRequestFactory implements InterfaceFactory<PaymentRe
 
         WebContents webContents = WebContentsStatics.fromRenderFrameHost(mRenderFrameHost);
         if (webContents == null || webContents.isDestroyed()) return new InvalidPaymentRequest();
-
-        return PaymentRequestService.createPaymentRequest(mRenderFrameHost, delegate,
-                (paymentRequestService)
-                        -> new WebLayerPaymentRequestService(paymentRequestService, delegate));
+        return new MojoPaymentRequestGateKeeper(
+                (client, onClosed)
+                        -> new PaymentRequestService(mRenderFrameHost, client, onClosed, delegate));
     }
 }
