@@ -1693,6 +1693,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityIframe) {
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityIframeAriaHidden) {
+  RunHtmlTest(FILE_PATH_LITERAL("iframe-aria-hidden.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityIframeScrollable) {
   RunHtmlTest(FILE_PATH_LITERAL("iframe-scrollable.html"));
 }
