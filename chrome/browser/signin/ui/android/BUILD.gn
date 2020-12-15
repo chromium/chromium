@@ -69,10 +69,12 @@ android_library("junit") {
     "junit/src/org/chromium/chrome/browser/signin/ui/ConfirmImportSyncDataDialogTest.java",
     "junit/src/org/chromium/chrome/browser/signin/ui/ConfirmManagedSyncDataDialogTest.java",
     "junit/src/org/chromium/chrome/browser/signin/ui/ConfirmSyncDataStateMachineDelegateTest.java",
+    "junit/src/org/chromium/chrome/browser/signin/ui/ConfirmSyncDataStateMachineTest.java",
     "junit/src/org/chromium/chrome/browser/signin/ui/SignOutDialogFragmentTest.java",
   ]
   deps = [
     ":java",
+    "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//chrome/browser/profiles/android:java",
