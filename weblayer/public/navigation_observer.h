@@ -112,6 +112,14 @@ class NavigationObserver {
       const base::TimeTicks& navigation_start,
       const base::TimeDelta& first_contentful_paint) {}
 
+  // This is fired when the largest contentful paint page load metric is
+  // available. |navigation_start| is the navigation start time.
+  // |largest_contentful_paint| is the duration to largest contentful paint from
+  // navigation start.
+  virtual void OnLargestContentfulPaint(
+      const base::TimeTicks& navigation_start,
+      const base::TimeDelta& largest_contentful_paint) {}
+
   // Called after each navigation to indicate that the old page is no longer
   // being rendered. Note this is not ordered with respect to
   // OnFirstContentfulPaint.

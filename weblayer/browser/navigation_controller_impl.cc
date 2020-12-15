@@ -171,6 +171,25 @@ void NavigationControllerImpl::OnFirstContentfulPaint(
     observer.OnFirstContentfulPaint(navigation_start, first_contentful_paint);
 }
 
+void NavigationControllerImpl::OnLargestContentfulPaint(
+    const base::TimeTicks& navigation_start,
+    const base::TimeDelta& largest_contentful_paint) {
+#if defined(OS_ANDROID)
+  TRACE_EVENT0("weblayer",
+               "Java_NavigationControllerImpl_onLargestContentfulPaint2");
+  int64_t largest_contentful_paint_ms =
+      largest_contentful_paint.InMilliseconds();
+  Java_NavigationControllerImpl_onLargestContentfulPaint(
+      AttachCurrentThread(), java_controller_,
+      (navigation_start - base::TimeTicks()).InMicroseconds(),
+      largest_contentful_paint_ms);
+#endif
+
+  for (auto& observer : observers_)
+    observer.OnLargestContentfulPaint(navigation_start,
+                                      largest_contentful_paint);
+}
+
 #if defined(OS_ANDROID)
 void NavigationControllerImpl::SetNavigationControllerImpl(
     JNIEnv* env,

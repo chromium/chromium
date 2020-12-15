@@ -388,6 +388,16 @@ public class NavigationController {
         }
 
         @Override
+        public void onLargestContentfulPaint(
+                long navigationStartMs, long largestContentfulPaintDurationMs) {
+            StrictModeWorkaround.apply();
+            for (NavigationCallback callback : mCallbacks) {
+                callback.onLargestContentfulPaint(
+                        navigationStartMs, largestContentfulPaintDurationMs);
+            }
+        }
+
+        @Override
         public void onOldPageNoLongerRendered(String uri) {
             StrictModeWorkaround.apply();
             for (NavigationCallback callback : mCallbacks) {

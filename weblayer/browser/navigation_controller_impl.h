@@ -55,6 +55,14 @@ class NavigationControllerImpl : public NavigationController,
   void OnFirstContentfulPaint(const base::TimeTicks& navigation_start,
                               const base::TimeDelta& first_contentful_paint);
 
+  // Called when the largest contentful paint page load metric is available.
+  // |navigation_start| is the navigation start time.
+  // |largest_contentful_paint| is the duration to largest contentful paint from
+  // navigation start.
+  void OnLargestContentfulPaint(
+      const base::TimeTicks& navigation_start,
+      const base::TimeDelta& largest_contentful_paint);
+
 #if defined(OS_ANDROID)
   void SetNavigationControllerImpl(
       JNIEnv* env,

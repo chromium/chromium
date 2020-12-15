@@ -16,10 +16,22 @@ class PageLoadMetricsObserverImpl
   ~PageLoadMetricsObserverImpl() override = default;
 
   // page_load_metrics::PageLoadMetricsObserver implementation:
+  ObservePolicy FlushMetricsOnAppEnterBackground(
+      const page_load_metrics::mojom::PageLoadTiming& timing) override;
+  ObservePolicy OnHidden(
+      const page_load_metrics::mojom::PageLoadTiming& timing) override;
+  void OnComplete(
+      const page_load_metrics::mojom::PageLoadTiming& timing) override;
   ObservePolicy OnCommit(content::NavigationHandle* navigation_handle,
                          ukm::SourceId source_id) override;
   void OnFirstContentfulPaintInPage(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
+
+  void ReportBufferedMetrics(
+      const page_load_metrics::mojom::PageLoadTiming& timing);
+
+ private:
+  bool reported_buffered_metrics_ = false;
 };
 
 }  // namespace weblayer
