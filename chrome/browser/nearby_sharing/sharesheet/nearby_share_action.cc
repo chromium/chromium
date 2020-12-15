@@ -106,6 +106,10 @@ void NearbyShareAction::LaunchAction(
   // load chrome://nearby into the webview
   web_view->LoadInitialURL(GURL(chrome::kChromeUINearbyShareURL));
 
+  // Without requesting focus, the sharesheet will launch in an unfocused state
+  // which raises accessibility issues with the "Device name" input.
+  web_view->RequestFocus();
+
   auto* webui = web_view->GetWebContents()->GetWebUI();
   DCHECK(webui != nullptr);
 

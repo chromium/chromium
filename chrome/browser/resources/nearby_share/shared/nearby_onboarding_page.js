@@ -27,21 +27,9 @@ Polymer({
 
   listeners: {
     'next': 'onNext_',
+    'view-enter-start': 'onViewEnterStart_',
   },
 
-  /** @override */
-  attached() {
-    // Manually focus the device name field. Typically we would use the
-    // autofocus attribute, but because the view is initially hidden via CSS the
-    // input is not present on page load. We instead set focus in an async
-    // function.
-    const deviceName = this.$$('#deviceName');
-    if (deviceName) {
-      setTimeout(function() {
-        deviceName.focus();
-      }, 0);
-    }
-  },
 
   /**
    * @private
@@ -56,6 +44,11 @@ Polymer({
             this.fire('change-page', {page: 'visibility'});
           }
         });
+  },
+
+  /** @private */
+  onViewEnterStart_() {
+    this.$$('#deviceName').focus();
   },
 
   /** @private */

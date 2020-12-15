@@ -39,6 +39,7 @@ suite('nearby-onboarding-page', function() {
       allowedContacts: [],
     };
     document.body.appendChild(element);
+    element.fire('view-enter-start');
   });
 
   test('Renders onboarding page', async function() {
