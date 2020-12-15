@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_ARC_ACCESSIBILITY_DRAWER_LAYOUT_HANDLER_H_
-#define CHROME_BROWSER_CHROMEOS_ARC_ACCESSIBILITY_DRAWER_LAYOUT_HANDLER_H_
+#ifndef CHROME_BROWSER_CHROMEOS_ARC_ACCESSIBILITY_AUTO_COMPLETE_HANDLER_H_
+#define CHROME_BROWSER_CHROMEOS_ARC_ACCESSIBILITY_AUTO_COMPLETE_HANDLER_H_
 
 #include <memory>
-#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/optional.h"
 #include "chrome/browser/chromeos/arc/accessibility/ax_tree_source_arc.h"
@@ -22,14 +22,15 @@ namespace mojom {
 class AccessibilityEventData;
 }
 
-class DrawerLayoutHandler : public AXTreeSourceArc::Hook {
+class AutoCompleteHandler : public AXTreeSourceArc::Hook {
  public:
-  static base::Optional<
-      std::pair<int32_t, std::unique_ptr<DrawerLayoutHandler>>>
+  static std::vector<std::pair<int32_t, std::unique_ptr<AutoCompleteHandler>>>
   CreateIfNecessary(AXTreeSourceArc* tree_source,
                     const mojom::AccessibilityEventData& event_data);
 
-  explicit DrawerLayoutHandler(const std::string& name) : name_(name) {}
+  explicit AutoCompleteHandler(const int32_t editable_node_id);
+
+  ~AutoCompleteHandler() override;
 
   // AXTreeSourceArc::Hook overrides:
   bool PreDispatchEvent(
@@ -38,9 +39,11 @@ class DrawerLayoutHandler : public AXTreeSourceArc::Hook {
   void PostSerializeNode(ui::AXNodeData* out_data) const override;
 
  private:
-  const std::string name_;
+  const int32_t anchored_node_id_;
+  base::Optional<int32_t> suggestion_window_id_;
+  base::Optional<int32_t> selected_node_id_;
 };
 
 }  // namespace arc
 
-#endif  // CHROME_BROWSER_CHROMEOS_ARC_ACCESSIBILITY_DRAWER_LAYOUT_HANDLER_H_
+#endif  // CHROME_BROWSER_CHROMEOS_ARC_ACCESSIBILITY_AUTO_COMPLETE_HANDLER_H_

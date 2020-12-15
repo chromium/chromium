@@ -38,6 +38,7 @@ using AXStringListProperty = mojom::AccessibilityStringListProperty;
 using AXStringProperty = mojom::AccessibilityStringProperty;
 using AXWindowBooleanProperty = mojom::AccessibilityWindowBooleanProperty;
 using AXWindowInfoData = mojom::AccessibilityWindowInfoData;
+using AXWindowIntProperty = mojom::AccessibilityWindowIntProperty;
 using AXWindowIntListProperty = mojom::AccessibilityWindowIntListProperty;
 using AXWindowStringProperty = mojom::AccessibilityWindowStringProperty;
 
@@ -73,6 +74,12 @@ void SetProperty(AXWindowInfoData* window,
                  AXWindowBooleanProperty prop,
                  bool value) {
   arc::SetProperty(window->boolean_properties, prop, value);
+}
+
+void SetProperty(AXWindowInfoData* window,
+                 AXWindowIntProperty prop,
+                 int value) {
+  arc::SetProperty(window->int_properties, prop, value);
 }
 
 void SetProperty(AXWindowInfoData* window,
@@ -1405,6 +1412,121 @@ TEST_F(AXTreeSourceArcTest, ControlReceivesFocus) {
   ui::AXTreeData tree_data;
   EXPECT_TRUE(CallGetTreeData(&tree_data));
   EXPECT_EQ(node->id, tree_data.focus_id);
+}
+
+TEST_F(AXTreeSourceArcTest, AutoComplete) {
+  auto event = AXEventData::New();
+  event->task_id = 1;
+
+  event->window_data = std::vector<mojom::AccessibilityWindowInfoDataPtr>();
+  event->window_data->push_back(AXWindowInfoData::New());
+  AXWindowInfoData* root_window = event->window_data->back().get();
+  root_window->window_id = 100;
+  root_window->root_node_id = 10;
+
+  event->node_data.push_back(AXNodeInfoData::New());
+  AXNodeInfoData* root = event->node_data.back().get();
+  root->id = 10;
+  root->window_id = 100;
+  SetProperty(root, AXIntListProperty::CHILD_NODE_IDS, std::vector<int>({1}));
+  SetProperty(root, AXBooleanProperty::IMPORTANCE, true);
+
+  event->node_data.push_back(AXNodeInfoData::New());
+  AXNodeInfoData* editable = event->node_data.back().get();
+  editable->id = 1;
+  editable->window_id = 100;
+  SetProperty(editable, AXBooleanProperty::IMPORTANCE, true);
+  SetProperty(editable, AXBooleanProperty::VISIBLE_TO_USER, true);
+  SetProperty(editable, AXBooleanProperty::EDITABLE, true);
+  SetProperty(editable, AXStringProperty::CLASS_NAME,
+              "android.widget.MultiAutoCompleteTextView");
+
+  // Check basic properties.
+  event->event_type = AXEventType::WINDOW_CONTENT_CHANGED;
+  event->source_id = root->id;
+
+  CallNotifyAccessibilityEvent(event.get());
+
+  ui::AXNodeData data;
+  data = GetSerializedNode(editable->id);
+  ASSERT_EQ(ax::mojom::Role::kTextField, data.role);
+  std::string attribute;
+  ASSERT_TRUE(data.GetStringAttribute(ax::mojom::StringAttribute::kAutoComplete,
+                                      &attribute));
+  EXPECT_EQ("list", attribute);
+  EXPECT_TRUE(data.HasState(ax::mojom::State::kCollapsed));
+
+  // Add a sub-window anchoring the editable.
+  event->window_data->push_back(AXWindowInfoData::New());
+  AXWindowInfoData* popup_window = event->window_data->back().get();
+  popup_window->window_id = 200;
+  popup_window->root_node_id = 20;
+  SetProperty(popup_window, AXWindowIntProperty::ANCHOR_NODE_ID, editable->id);
+  SetProperty(root_window, AXWindowIntListProperty::CHILD_WINDOW_IDS, {200});
+
+  event->node_data.push_back(AXNodeInfoData::New());
+  AXNodeInfoData* candidate_list = event->node_data.back().get();
+  candidate_list->id = 20;
+  candidate_list->window_id = 200;
+  SetProperty(candidate_list, AXBooleanProperty::IMPORTANCE, true);
+  SetProperty(candidate_list, AXBooleanProperty::VISIBLE_TO_USER, true);
+  SetProperty(candidate_list, AXIntListProperty::CHILD_NODE_IDS,
+              std::vector<int>({21}));
+
+  event->node_data.push_back(AXNodeInfoData::New());
+  AXNodeInfoData* list_item = event->node_data.back().get();
+  list_item->id = 21;
+  list_item->window_id = 200;
+  SetProperty(list_item, AXBooleanProperty::IMPORTANCE, true);
+  SetProperty(list_item, AXBooleanProperty::VISIBLE_TO_USER, true);
+  list_item->collection_item_info = AXCollectionItemInfoData::New();
+
+  // Verify the relationship of window and editable.
+  event->event_type = AXEventType::WINDOWS_CHANGED;
+  event->source_id = root->id;
+
+  CallNotifyAccessibilityEvent(event.get());
+
+  data = GetSerializedNode(editable->id);
+  EXPECT_TRUE(data.HasState(ax::mojom::State::kExpanded));
+  std::vector<int32_t> controlled_ids;
+  ASSERT_TRUE(data.GetIntListAttribute(
+      ax::mojom::IntListAttribute::kControlsIds, &controlled_ids));
+  ASSERT_EQ(1U, controlled_ids.size());
+  ASSERT_EQ(popup_window->window_id, controlled_ids[0]);
+
+  // Invoke a selection event from the list.
+  SetProperty(list_item, AXBooleanProperty::SELECTED, true);
+
+  // Verify that active descendant is updated.
+  event->event_type = AXEventType::VIEW_SELECTED;
+  event->source_id = list_item->id;
+
+  CallNotifyAccessibilityEvent(event.get());
+
+  data = GetSerializedNode(editable->id);
+  int32_t active_descendant;
+  ASSERT_TRUE(data.GetIntAttribute(ax::mojom::IntAttribute::kActivedescendantId,
+                                   &active_descendant));
+  ASSERT_EQ(list_item->id, active_descendant);
+
+  // Delete popup window.
+  event->node_data.pop_back();
+  event->node_data.pop_back();
+  event->window_data->pop_back();
+  SetProperty(root_window, AXWindowIntListProperty::CHILD_WINDOW_IDS, {});
+
+  // Verify autocomplete properties are still populated.
+  event->event_type = AXEventType::WINDOWS_CHANGED;
+  event->source_id = root->id;
+
+  CallNotifyAccessibilityEvent(event.get());
+
+  data = GetSerializedNode(editable->id);
+  ASSERT_TRUE(data.GetStringAttribute(ax::mojom::StringAttribute::kAutoComplete,
+                                      &attribute));
+  EXPECT_EQ("list", attribute);
+  EXPECT_TRUE(data.HasState(ax::mojom::State::kCollapsed));
 }
 
 }  // namespace arc

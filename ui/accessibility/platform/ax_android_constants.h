@@ -12,6 +12,7 @@ namespace ui {
 
 // Classnames.
 
+AX_EXPORT extern const char kAXAutoCompleteTextViewClassname[];
 AX_EXPORT extern const char kAXAbsListViewClassname[];
 AX_EXPORT extern const char kAXButtonClassname[];
 AX_EXPORT extern const char kAXCheckBoxClassname[];
@@ -26,6 +27,7 @@ AX_EXPORT extern const char kAXImageButtonClassname[];
 AX_EXPORT extern const char kAXImageViewClassname[];
 AX_EXPORT extern const char kAXListViewClassname[];
 AX_EXPORT extern const char kAXMenuItemClassname[];
+AX_EXPORT extern const char kAXMultiAutoCompleteTextViewClassname[];
 AX_EXPORT extern const char kAXPagerClassname[];
 AX_EXPORT extern const char kAXProgressBarClassname[];
 AX_EXPORT extern const char kAXRadioButtonClassname[];

@@ -13,6 +13,7 @@
 #include "chrome/browser/chromeos/arc/accessibility/accessibility_node_info_data_wrapper.h"
 #include "chrome/browser/chromeos/arc/accessibility/accessibility_window_info_data_wrapper.h"
 #include "chrome/browser/chromeos/arc/accessibility/arc_accessibility_util.h"
+#include "chrome/browser/chromeos/arc/accessibility/auto_complete_handler.h"
 #include "chrome/browser/chromeos/arc/accessibility/drawer_layout_handler.h"
 #include "components/exo/input_method_surface.h"
 #include "components/exo/wm_helper.h"
@@ -23,10 +24,7 @@
 
 namespace arc {
 
-using AXBooleanProperty = mojom::AccessibilityBooleanProperty;
 using AXEventData = mojom::AccessibilityEventData;
-using AXEventIntListProperty = mojom::AccessibilityEventIntListProperty;
-using AXEventIntProperty = mojom::AccessibilityEventIntProperty;
 using AXEventType = mojom::AccessibilityEventType;
 using AXIntProperty = mojom::AccessibilityIntProperty;
 using AXIntListProperty = mojom::AccessibilityIntListProperty;
@@ -237,7 +235,7 @@ void AXTreeSourceArc::NotifyAccessibilityEventInternal(
     return;
   }
 
-  ProcessHooksOnEvent(event_data);
+  std::vector<int32_t> update_ids = ProcessHooksOnEvent(event_data);
 
   // Bundle the event and send it to automation.
   ExtensionMsg_AccessibilityEventBundleParams event_bundle;
@@ -263,8 +261,6 @@ void AXTreeSourceArc::NotifyAccessibilityEventInternal(
 
   HandleLiveRegions(&event_bundle.events);
 
-  event_bundle.updates.emplace_back();
-
   // Force the tree, to update, so unignored fields get updated.
   // On event type of WINDOW_STATE_CHANGED, update the entire tree so that
   // window location is correctly calculated.
@@ -272,11 +268,16 @@ void AXTreeSourceArc::NotifyAccessibilityEventInternal(
       (event_data.event_type == AXEventType::WINDOW_STATE_CHANGED)
           ? *root_id_
           : event_data.source_id;
-  event_bundle.updates[0].node_id_to_clear = node_id_to_clear;
-  current_tree_serializer_->InvalidateSubtree(GetFromId(node_id_to_clear));
 
-  current_tree_serializer_->SerializeChanges(GetFromId(node_id_to_clear),
-                                             &event_bundle.updates.back());
+  update_ids.push_back(node_id_to_clear);
+
+  for (const int32_t update_root : update_ids) {
+    event_bundle.updates.emplace_back();
+    event_bundle.updates.back().node_id_to_clear = update_root;
+    current_tree_serializer_->InvalidateSubtree(GetFromId(update_root));
+    current_tree_serializer_->SerializeChanges(GetFromId(update_root),
+                                               &event_bundle.updates.back());
+  }
 
   GetAutomationEventRouter()->DispatchAccessibilityEvents(event_bundle);
 }
@@ -345,57 +346,6 @@ AXTreeSourceArc::FindFirstFocusableNodeInFullFocusMode(
   return nullptr;
 }
 
-AccessibilityInfoDataWrapper*
-AXTreeSourceArc::GetSelectedNodeInfoFromAdapterView(
-    const AXEventData& event_data) const {
-  AccessibilityInfoDataWrapper* source_node = GetFromId(event_data.source_id);
-  if (!source_node || !source_node->IsNode())
-    return nullptr;
-
-  AXNodeInfoData* node_info = source_node->GetNode();
-  if (!node_info)
-    return nullptr;
-
-  AccessibilityInfoDataWrapper* selected_node = source_node;
-  if (!node_info->collection_item_info) {
-    // The event source is not an item of AdapterView. If the event source is
-    // AdapterView, select the child. Otherwise, this is an unrelated event.
-    int item_count, from_index, current_item_index;
-    if (!GetProperty(event_data.int_properties, AXEventIntProperty::ITEM_COUNT,
-                     &item_count) ||
-        !GetProperty(event_data.int_properties, AXEventIntProperty::FROM_INDEX,
-                     &from_index) ||
-        !GetProperty(event_data.int_properties,
-                     AXEventIntProperty::CURRENT_ITEM_INDEX,
-                     &current_item_index)) {
-      return nullptr;
-    }
-
-    int index = current_item_index - from_index;
-    if (index < 0)
-      return nullptr;
-
-    std::vector<AccessibilityInfoDataWrapper*> children;
-    source_node->GetChildren(&children);
-    if (index >= static_cast<int>(children.size()))
-      return nullptr;
-
-    selected_node = children[index];
-  }
-
-  // Sometimes a collection item is wrapped by a non-focusable node.
-  // Find a node with focusable property.
-  while (selected_node && !GetBooleanProperty(selected_node->GetNode(),
-                                              AXBooleanProperty::FOCUSABLE)) {
-    std::vector<AccessibilityInfoDataWrapper*> children;
-    selected_node->GetChildren(&children);
-    if (children.size() != 1)
-      break;
-    selected_node = children[0];
-  }
-  return selected_node;
-}
-
 bool AXTreeSourceArc::UpdateAndroidFocusedId(const AXEventData& event_data) {
   AccessibilityInfoDataWrapper* source_node = GetFromId(event_data.source_id);
   if (source_node) {
@@ -437,7 +387,7 @@ bool AXTreeSourceArc::UpdateAndroidFocusedId(const AXEventData& event_data) {
     bool is_range_change = !node_info->range_info.is_null();
     if (!is_range_change) {
       AccessibilityInfoDataWrapper* selected_node =
-          GetSelectedNodeInfoFromAdapterView(event_data);
+          GetSelectedNodeInfoFromAdapterViewEvent(event_data, source_node);
       if (!selected_node || !selected_node->IsVisibleToUser())
         return false;
 
@@ -499,16 +449,32 @@ bool AXTreeSourceArc::UpdateAndroidFocusedId(const AXEventData& event_data) {
   return true;
 }
 
-void AXTreeSourceArc::ProcessHooksOnEvent(const AXEventData& event_data) {
+std::vector<int32_t> AXTreeSourceArc::ProcessHooksOnEvent(
+    const AXEventData& event_data) {
   base::EraseIf(hooks_, [this](const auto& it) {
     return this->GetFromId(it.first) == nullptr;
   });
+
+  std::vector<int32_t> serialization_needed_ids;
+  for (const auto& modifier : hooks_) {
+    if (modifier.second->PreDispatchEvent(this, event_data))
+      serialization_needed_ids.push_back(modifier.first);
+  }
 
   // Add new hook implementations if necessary.
   auto drawer_layout_hook =
       DrawerLayoutHandler::CreateIfNecessary(this, event_data);
   if (drawer_layout_hook.has_value())
     hooks_.insert(std::move(*drawer_layout_hook));
+
+  auto auto_complete_hooks =
+      AutoCompleteHandler::CreateIfNecessary(this, event_data);
+  for (auto& modifier : auto_complete_hooks) {
+    if (hooks_.count(modifier.first) == 0)
+      hooks_.insert(std::move(modifier));
+  }
+
+  return serialization_needed_ids;
 }
 
 void AXTreeSourceArc::HandleLiveRegions(std::vector<ui::AXEvent>* events) {

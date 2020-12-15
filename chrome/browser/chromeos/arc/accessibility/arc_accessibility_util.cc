@@ -11,11 +11,9 @@
 
 namespace arc {
 
-using AXActionType = mojom::AccessibilityActionType;
 using AXBooleanProperty = mojom::AccessibilityBooleanProperty;
-using AXIntListProperty = mojom::AccessibilityIntListProperty;
+using AXEventIntProperty = mojom::AccessibilityEventIntProperty;
 using AXNodeInfoData = mojom::AccessibilityNodeInfoData;
-using AXStringProperty = mojom::AccessibilityStringProperty;
 
 base::Optional<ax::mojom::Event> FromContentChangeTypesToAXEvent(
     const std::vector<int32_t>& arc_content_change_types) {
@@ -149,6 +147,56 @@ base::Optional<mojom::AccessibilityActionType> ConvertToAndroidAction(
     default:
       return base::nullopt;
   }
+}
+
+AccessibilityInfoDataWrapper* GetSelectedNodeInfoFromAdapterViewEvent(
+    const mojom::AccessibilityEventData& event_data,
+    AccessibilityInfoDataWrapper* source_node) {
+  if (!source_node || !source_node->IsNode())
+    return nullptr;
+
+  AXNodeInfoData* node_info = source_node->GetNode();
+  if (!node_info)
+    return nullptr;
+
+  AccessibilityInfoDataWrapper* selected_node = source_node;
+  if (!node_info->collection_item_info) {
+    // The event source is not an item of AdapterView. If the event source is
+    // AdapterView, select the child. Otherwise, this is an unrelated event.
+    int item_count, from_index, current_item_index;
+    if (!GetProperty(event_data.int_properties, AXEventIntProperty::ITEM_COUNT,
+                     &item_count) ||
+        !GetProperty(event_data.int_properties, AXEventIntProperty::FROM_INDEX,
+                     &from_index) ||
+        !GetProperty(event_data.int_properties,
+                     AXEventIntProperty::CURRENT_ITEM_INDEX,
+                     &current_item_index)) {
+      return nullptr;
+    }
+
+    int index = current_item_index - from_index;
+    if (index < 0)
+      return nullptr;
+
+    std::vector<AccessibilityInfoDataWrapper*> children;
+    source_node->GetChildren(&children);
+    if (index >= static_cast<int>(children.size()))
+      return nullptr;
+
+    selected_node = children[index];
+  }
+
+  // Sometimes a collection item is wrapped by a non-focusable node.
+  // Find a node with focusable property.
+  while (selected_node && !GetBooleanProperty(selected_node->GetNode(),
+                                              AXBooleanProperty::FOCUSABLE)) {
+    std::vector<AccessibilityInfoDataWrapper*> children;
+    selected_node->GetChildren(&children);
+    if (children.size() != 1)
+      break;
+    selected_node = children[0];
+  }
+  return selected_node;
 }
 
 std::string ToLiveStatusString(mojom::AccessibilityLiveRegionType type) {

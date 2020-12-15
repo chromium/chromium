@@ -17,7 +17,9 @@
 #include "ui/accessibility/ax_enum_util.h"
 
 namespace arc {
+
 class AccessibilityInfoDataWrapper;
+
 // This function is only called when EventType is WINDOW_STATE_CHANGED or
 // WINDOW_CONTENT_CHANGED.
 base::Optional<ax::mojom::Event> FromContentChangeTypesToAXEvent(
@@ -31,6 +33,10 @@ ax::mojom::Event ToAXEvent(
 
 base::Optional<mojom::AccessibilityActionType> ConvertToAndroidAction(
     ax::mojom::Action action);
+
+AccessibilityInfoDataWrapper* GetSelectedNodeInfoFromAdapterViewEvent(
+    const mojom::AccessibilityEventData& event_data,
+    AccessibilityInfoDataWrapper* source_node);
 
 std::string ToLiveStatusString(mojom::AccessibilityLiveRegionType type);
 

@@ -52,8 +52,20 @@ class AXTreeSourceArc : public ui::AXTreeSource<AccessibilityInfoDataWrapper*,
     Hook() = default;
     virtual ~Hook() = default;
 
+    // Called prior to accessibility event dispatch.
+    // Hook implementations can update the internal state if necessary so that
+    // hooks can update the serialization state in PostSerializeNode().
+    // Return true if re-serialization of attaching node is needed.
+    virtual bool PreDispatchEvent(
+        AXTreeSourceArc* tree_source,
+        const mojom::AccessibilityEventData& event_data) = 0;
+
     // Called after the default serialization of the attaching node.
-    // Implementations can modify the serialization of given |out_data|.
+    // Hook implementations can modify the serialization of given |out_data|.
+    // Note that serialization is executed only when ui::AXTreeSerializer calls
+    // SerializeNode() from AXTreeSerializer.SerializeChanges().
+    // To ensure the node re-serialized, the class must return |true| on
+    // PreDispatchEvent() if the event is NOT coming from its ancestry.
     virtual void PostSerializeNode(ui::AXNodeData* out_data) const = 0;
   };
 
@@ -131,9 +143,6 @@ class AXTreeSourceArc : public ui::AXTreeSource<AccessibilityInfoDataWrapper*,
   AccessibilityInfoDataWrapper* FindFirstFocusableNodeInFullFocusMode(
       AccessibilityInfoDataWrapper* info_data) const;
 
-  AccessibilityInfoDataWrapper* GetSelectedNodeInfoFromAdapterView(
-      const mojom::AccessibilityEventData& event_data) const;
-
   // Updates android_focused_id_ from given AccessibilityEventData.
   // Having this method, |android_focused_id_| is one of these:
   // - input focus in Android
@@ -144,7 +153,10 @@ class AXTreeSourceArc : public ui::AXTreeSource<AccessibilityInfoDataWrapper*,
   // event to chrome automation. Otherwise, this returns true.
   bool UpdateAndroidFocusedId(const mojom::AccessibilityEventData& event_data);
 
-  void ProcessHooksOnEvent(const mojom::AccessibilityEventData& event_data);
+  // Processes implementations of Hooks and returns a list node id that needs
+  // re-serialization.
+  std::vector<int32_t> ProcessHooksOnEvent(
+      const mojom::AccessibilityEventData& event_data);
 
   // Compare previous live region and current live region, and add event to the
   // given vector if there is any difference.

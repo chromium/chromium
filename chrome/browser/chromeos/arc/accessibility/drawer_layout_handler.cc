@@ -70,6 +70,12 @@ DrawerLayoutHandler::CreateIfNecessary(
   return base::nullopt;
 }
 
+bool DrawerLayoutHandler::PreDispatchEvent(
+    AXTreeSourceArc* tree_source,
+    const mojom::AccessibilityEventData& event_data) {
+  return false;
+}
+
 void DrawerLayoutHandler::PostSerializeNode(ui::AXNodeData* out_data) const {
   out_data->role = ax::mojom::Role::kMenu;
   if (!name_.empty())
