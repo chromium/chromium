@@ -2,11 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {ProgressCenterItem} from '../../file_manager/common/js/progress_center_common.m.js';
+// #import {ProgressCenterPanelInterface} from '../progress_center_panel.m.js';
+// clang-format on
+
 /**
  * Progress center at the background page.
  * @interface
  */
-class ProgressCenter {
+/* #export */ class ProgressCenter {
   /**
    * Turns off sending updates when a file operation reaches 'completed' state.
    * Used for testing UI that can be ephemeral otherwise.

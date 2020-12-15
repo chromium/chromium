@@ -7,9 +7,8 @@
  * of this interface must @extends {cr.EventTarget}.
  *
  * @interface
- * @extends {EventTarget}
  */
-class DriveSyncHandler extends EventTarget {
+/* #export */ class DriveSyncHandler extends EventTarget {
   /**
    * Returns the completed event name.
    * @return {string}

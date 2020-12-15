@@ -38,7 +38,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ContentMetadataProvider) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, Crostini) {
-  RunTestURL("background/js/crostini_unittest_gen.html");
+  RunTestURL("background/js/crostini_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, DeviceHandlerTest) {

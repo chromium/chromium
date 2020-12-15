@@ -2,12 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+// #import {assert} from 'chrome://resources/js/assert.m.js';
+// #import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
+// #import {Crostini} from '../../../externs/background/crostini.m.js';
+// #import {VolumeManager} from '../../../externs/volume_manager.m.js';
+// clang-format on
+
 /**
  * Implementation of Crostini shared path state handler.
  *
  * @implements {Crostini}
  */
-class CrostiniImpl {
+/* #export */ class CrostiniImpl {
   constructor() {
     /**
      * True if VM is enabled.
@@ -189,7 +197,7 @@ class CrostiniImpl {
    * Returns true if entry can be shared with the specified VM.
    * @param {string} vmName
    * @param {!Entry} entry
-   * @param {boolean} persist If path is to be persisted.
+   * @return {boolean} persist If path is to be persisted.
    */
   canSharePath(vmName, entry, persist) {
     if (!this.enabled_[vmName]) {

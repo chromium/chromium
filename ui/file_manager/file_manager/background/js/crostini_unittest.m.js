@@ -2,7 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+// clang-format off
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import { assertFalse,assertTrue} from 'chrome://test/chai_assert.js';
+
+import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
+import {Crostini} from '../../../externs/background/crostini.m.js';
+import {EntryLocation} from '../../../externs/entry_location.m.js';
+import {VolumeManager} from '../../../externs/volume_manager.m.js';
+import { MockDirectoryEntry, MockEntry,MockFileSystem} from '../../common/js/mock_entry.m.js';
+
+import {createCrostiniForTest} from './mock_crostini.m.js';
+// clang-format on
 
 /**
  * Mock metrics.
@@ -22,15 +33,13 @@ let volumeManager;
 let crostini;
 
 // Set up the test components.
-function setUp() {
+export function setUp() {
   // Mock LoadTimeData strings.
-  window.loadTimeData = {
-    data: {},
-    getBoolean: function(key) {
-      return window.loadTimeData.data[key];
-    },
-    getString: id => id,
+  loadTimeData.data = {};
+  loadTimeData.getBoolean = function(key) {
+    return loadTimeData.data_[key];
   };
+  loadTimeData.getString = id => id;
 
   // Create a fake volume manager that provides entry location info.
   volumeManager = /** @type {!VolumeManager} */ ({
@@ -53,15 +62,15 @@ function setUp() {
 /**
  * Tests init sets crostini and PluginVm enabled status.
  */
-function testInitCrostiniPluginVmEnabled() {
-  window.loadTimeData.data['CROSTINI_ENABLED'] = true;
-  window.loadTimeData.data['PLUGIN_VM_ENABLED'] = true;
+export function testInitCrostiniPluginVmEnabled() {
+  loadTimeData.data_['CROSTINI_ENABLED'] = true;
+  loadTimeData.data_['PLUGIN_VM_ENABLED'] = true;
   crostini.initEnabled();
   assertTrue(crostini.isEnabled('termina'));
   assertTrue(crostini.isEnabled('PvmDefault'));
 
-  window.loadTimeData.data['CROSTINI_ENABLED'] = false;
-  window.loadTimeData.data['PLUGIN_VM_ENABLED'] = false;
+  loadTimeData.data_['CROSTINI_ENABLED'] = false;
+  loadTimeData.data_['PLUGIN_VM_ENABLED'] = false;
   crostini.initEnabled();
   assertFalse(crostini.isEnabled('termina'));
   assertFalse(crostini.isEnabled('PvmDefault'));
@@ -70,7 +79,7 @@ function testInitCrostiniPluginVmEnabled() {
 /**
  * Tests path sharing.
  */
-function testIsPathShared() {
+export function testIsPathShared() {
   const mockFileSystem = new MockFileSystem('volumeId');
   const root = MockDirectoryEntry.create(mockFileSystem, '/');
   const a = MockDirectoryEntry.create(mockFileSystem, '/a');
@@ -143,7 +152,7 @@ function testIsPathShared() {
 /*
  * Tests disallowed and allowed shared paths.
  */
-function testCanSharePath() {
+export function testCanSharePath() {
   crostini.setEnabled('vm', true);
 
   const mockFileSystem = new MockFileSystem('test');

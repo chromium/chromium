@@ -2,13 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+// #import {CrostiniImpl} from './crostini.m.js';
+// #import {Crostini} from '../../../externs/background/crostini.m.js';
+
+/* #ignore */ 'use strict';
 
 /**
  * Crostini shared path state handler factory for foreground tests. Change it
  * to a mock when tests need to override {CrostiniImpl} behavior.
  * @return {!Crostini}
  */
-function createCrostiniForTest() {
+/* #export */ function createCrostiniForTest() {
   return new CrostiniImpl();
 }

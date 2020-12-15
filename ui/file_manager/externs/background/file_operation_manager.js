@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// #import {VolumeManager} from '../volume_manager.m.js';
+// #import {FilesAppEntry, FakeEntry} from '../files_app_entry_interfaces.m.js';
+
 /**
  * FileOperationManager: manager of file operations. Implementations of this
  * interface must @extends {cr.EventTarget} or implement the EventTarget API on
@@ -9,7 +12,7 @@
  *
  * @interface
  */
-class FileOperationManager extends EventTarget {
+/* #export */ class FileOperationManager extends EventTarget {
   /**
    * Says if there are any tasks in the queue.
    * @return {boolean} True, if there are any tasks.

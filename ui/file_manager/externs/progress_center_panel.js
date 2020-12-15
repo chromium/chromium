@@ -2,13 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {ProgressCenterItem, ProgressItemState} from '../file_manager/common/js/progress_center_common.m.js';
+// clang-format on
+
 /**
  * Interface implemented in foreground page that the background page uses to
  * send progress event updates to the foreground page, and to receive cancel
  * and dismiss events from the foreground page.
  * @interface
  */
-class ProgressCenterPanelInterface {
+/* #export */ class ProgressCenterPanelInterface {
   constructor() {
     /**
      * Callback to be called with the ID of the progress item when the cancel

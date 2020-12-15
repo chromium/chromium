@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// #import {VolumeManager} from '../volume_manager.m.js';
+
 /**
  * Crostini shared path state handler.
  *
  * @interface
  */
-class Crostini {
+/* #export */ class Crostini {
   /**
    * Initialize enabled settings.
    * Must be done after loadTimeData is available.
@@ -66,7 +68,7 @@ class Crostini {
    * Returns true if entry can be shared with the specified VM.
    * @param {string} vmName
    * @param {!Entry} entry
-   * @param {boolean} persist If path is to be persisted.
+   * @return {boolean} persist If path is to be persisted.
    */
   canSharePath(vmName, entry, persist) {}
 }
