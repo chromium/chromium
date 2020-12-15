@@ -61,6 +61,7 @@ if (optimize_webui) {
       "chrome://resources/mojo/skia/public/mojom/image_info.mojom-lite.js",
       "chrome://resources/mojo/url/mojom/url.mojom-lite.js",
       "mojo/nearby_share.mojom-lite.js",
+      "mojo/nearby_share_share_type.mojom-lite.js",
       "mojo/nearby_share_target_types.mojom-lite.js",
       "mojo/nearby_share_settings.mojom-lite.js",
     ]
@@ -115,6 +116,7 @@ if (optimize_webui) {
       "app-management/image.mojom-lite.js",
       "app-management/types.mojom-lite.js",
       "mojo/nearby_share.mojom-lite.js",
+      "mojo/nearby_share_share_type.mojom-lite.js",
       "mojo/nearby_share_target_types.mojom-lite.js",
       "mojo/nearby_share_settings.mojom-lite.js",
     ]

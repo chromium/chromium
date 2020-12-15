@@ -71,3 +71,29 @@ void FileAttachment::MoveToShareTarget(ShareTarget& share_target) {
 const std::string& FileAttachment::GetDescription() const {
   return file_name_;
 }
+
+nearby_share::mojom::ShareType FileAttachment::GetShareType() const {
+  switch (type()) {
+    case FileAttachment::Type::kImage:
+      return nearby_share::mojom::ShareType::kImageFile;
+    case FileAttachment::Type::kVideo:
+      return nearby_share::mojom::ShareType::kVideoFile;
+    case FileAttachment::Type::kAudio:
+      return nearby_share::mojom::ShareType::kAudioFile;
+    default:
+      break;
+  }
+
+  // Try matching on mime type if the attachment type is unrecognized.
+  if (mime_type() == "application/pdf") {
+    return nearby_share::mojom::ShareType::kPdfFile;
+  } else if (mime_type() == "application/vnd.google-apps.document") {
+    return nearby_share::mojom::ShareType::kGoogleDocsFile;
+  } else if (mime_type() == "application/vnd.google-apps.spreadsheet") {
+    return nearby_share::mojom::ShareType::kGoogleSheetsFile;
+  } else if (mime_type() == "application/vnd.google-apps.presentation") {
+    return nearby_share::mojom::ShareType::kGoogleSlidesFile;
+  } else {
+    return nearby_share::mojom::ShareType::kUnknownFile;
+  }
+}

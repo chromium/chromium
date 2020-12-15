@@ -55,6 +55,7 @@ generate_grd("build_grd") {
   ]
   resource_path_rewrites = [
     "chrome/browser/ui/webui/nearby_share/nearby_share.mojom-lite.js|mojo/nearby_share.mojom-lite.js",
+    "chrome/browser/ui/webui/nearby_share/nearby_share_share_type.mojom-lite.js|mojo/nearby_share_share_type.mojom-lite.js",
     "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom-lite.js|mojo/nearby_share_settings.mojom-lite.js",
     "chromeos/services/nearby/public/mojom/nearby_share_target_types.mojom-lite.js|mojo/nearby_share_target_types.mojom-lite.js",
   ]
@@ -89,6 +90,7 @@ generate_grd("build_mojo_grdp") {
   manifest_files = [ "$target_gen_dir/$preprocess_mojo_manifest" ]
   resource_path_rewrites = [
     "chrome/browser/ui/webui/nearby_share/nearby_share.mojom-lite.js|mojo/nearby_share.mojom-lite.js",
+    "chrome/browser/ui/webui/nearby_share/nearby_share_share_type.mojom-lite.js|mojo/nearby_share_share_type.mojom-lite.js",
     "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom-lite.js|mojo/nearby_share_settings.mojom-lite.js",
     "chromeos/services/nearby/public/mojom/nearby_share_target_types.mojom-lite.js|mojo/nearby_share_target_types.mojom-lite.js",
   ]
@@ -106,6 +108,7 @@ preprocess_if_expr("preprocess_mojo") {
   out_manifest = "$target_gen_dir/$preprocess_mojo_manifest"
   in_files = [
     "chrome/browser/ui/webui/nearby_share/nearby_share.mojom-lite.js",
+    "chrome/browser/ui/webui/nearby_share/nearby_share_share_type.mojom-lite.js",
     "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom-lite.js",
     "chromeos/services/nearby/public/mojom/nearby_share_target_types.mojom-lite.js",
   ]
@@ -140,8 +143,10 @@ js_library("app") {
 }
 
 js_library("discovery_manager") {
-  deps =
-      [ "//chrome/browser/ui/webui/nearby_share:mojom_js_library_for_compile" ]
+  deps = [
+    "//chrome/browser/ui/webui/nearby_share:mojom_js_library_for_compile",
+    "//chrome/browser/ui/webui/nearby_share:share_type_js_library_for_compile",
+  ]
 }
 
 js_library("nearby_confirmation_page") {
@@ -149,6 +154,7 @@ js_library("nearby_confirmation_page") {
     "./shared:nearby_preview.m",
     "./shared:nearby_progress.m",
     "//chrome/browser/ui/webui/nearby_share:mojom_js_library_for_compile",
+    "//chrome/browser/ui/webui/nearby_share:share_type_js_library_for_compile",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/cr_elements/cr_checkbox:cr_checkbox.m",
@@ -159,9 +165,10 @@ js_library("nearby_confirmation_page") {
 js_library("nearby_discovery_page") {
   deps = [
     ":discovery_manager",
-    "./shared:nearby_preview.m",
     "./shared:nearby_device.m",
+    "./shared:nearby_preview.m",
     "//chrome/browser/ui/webui/nearby_share:mojom_js_library_for_compile",
+    "//chrome/browser/ui/webui/nearby_share:share_type_js_library_for_compile",
     "//third_party/polymer/v3_0/components-chromium/iron-list",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
