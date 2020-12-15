@@ -159,10 +159,8 @@ class GalleryWatchManagerTest : public GalleryWatchManagerObserver,
 
   void AddAndConfirmWatch(MediaGalleryPrefId gallery_id) {
     base::RunLoop loop;
-    manager()->AddWatch(profile(),
-                        extension(),
-                        gallery_id,
-                        base::Bind(&ConfirmWatch, base::Unretained(&loop)));
+    manager()->AddWatch(profile(), extension(), gallery_id,
+                        base::BindOnce(&ConfirmWatch, base::Unretained(&loop)));
     loop.Run();
   }
 
@@ -230,18 +228,13 @@ TEST_F(GalleryWatchManagerTest, MAYBE_Basic) {
 
   base::RunLoop loop;
   if (GalleryWatchesSupported()) {
-    manager()->AddWatch(profile(),
-                        extension(),
-                        id,
-                        base::Bind(&ConfirmWatch, base::Unretained(&loop)));
+    manager()->AddWatch(profile(), extension(), id,
+                        base::BindOnce(&ConfirmWatch, base::Unretained(&loop)));
   } else {
     manager()->AddWatch(
-        profile(),
-        extension(),
-        id,
-        base::Bind(&ExpectWatchError,
-                   base::Unretained(&loop),
-                   GalleryWatchManager::kCouldNotWatchGalleryError));
+        profile(), extension(), id,
+        base::BindOnce(&ExpectWatchError, base::Unretained(&loop),
+                       GalleryWatchManager::kCouldNotWatchGalleryError));
   }
   loop.Run();
 }
