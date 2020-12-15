@@ -1,4 +1,4 @@
-{% from 'templates/macros.tmpl' import license, source_files_for_generated_file %}
+{% from 'templates/macros.tmpl' import license, source_files_for_generated_file, platform_define %}
 {{license()}}
 
 {{source_files_for_generated_file(template_file, input_files)}}
@@ -9,6 +9,7 @@
 #include <array>
 #include <iterator>
 #include "base/containers/contains.h"
+#include "build/chromeos_buildflags.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
@@ -100,7 +101,7 @@ bool origin_trials::FeatureEnabledForOS(OriginTrialFeature feature) {
 #if
   {%- for os in feature.origin_trial_os %}
   {%- if not loop.first %} ||{% endif %}
- defined(OS_{{os | upper}})
+ {{platform_define(os)}}
   {%- endfor %}
 
       return true;

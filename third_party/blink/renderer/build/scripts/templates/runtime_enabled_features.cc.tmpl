@@ -1,9 +1,10 @@
-{% from 'templates/macros.tmpl' import license, source_files_for_generated_file %}
+{% from 'templates/macros.tmpl' import license, source_files_for_generated_file, platform_define %}
 {{license()}}
 
 {{source_files_for_generated_file(template_file, input_files)}}
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
@@ -33,7 +34,7 @@ void RuntimeEnabledFeatures::Set{{feature_set|capitalize}}FeaturesEnabled(bool e
 
   // Platform-dependent features
   {% for platform in platforms %}
-#if defined(OS_{{platform | upper}})
+#if {{platform_define(platform)}}
   {% for feature in features if feature.status_type == 'dict' and feature.status[platform] == feature_set %}
   Set{{feature.name}}Enabled(enable);
   {% endfor %}
@@ -44,7 +45,7 @@ void RuntimeEnabledFeatures::Set{{feature_set|capitalize}}FeaturesEnabled(bool e
 #if
   {%- for platform in platforms %}
   {%- if not loop.first %} &&{% endif %}
- !defined(OS_{{platform | upper}})
+ !{{platform_define(platform)}}
   {%- endfor %}
 
   {% for feature in features if feature.status_type == 'dict' and feature.status['default'] == feature_set %}
@@ -112,7 +113,7 @@ bool RuntimeEnabledFeatures::{{feature.data_member_name}} = {{'true' if feature.
 
 // Platform-dependent features
 {% for platform in platforms %}
-#if defined(OS_{{platform | upper}})
+#if {{platform_define(platform)}}
 {% for feature in features %}
 {% if feature.status_type == 'dict' %}
 bool RuntimeEnabledFeatures::{{feature.data_member_name}} = {{'true' if feature.status[platform] == 'stable' else 'false'}};
@@ -125,7 +126,7 @@ bool RuntimeEnabledFeatures::{{feature.data_member_name}} = {{'true' if feature.
 #if
 {%- for platform in platforms %}
 {%- if not loop.first %} &&{% endif %}
- !defined(OS_{{platform | upper}})
+ !{{platform_define(platform)}}
 {%- endfor %}
 
 {% for feature in features %}
