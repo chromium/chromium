@@ -853,6 +853,7 @@
     <provider  # DIFF-ANCHOR: 2215b9cd
         android:authorities="$PACKAGE.ChromeBrowserProvider;$PACKAGE.browser;$PACKAGE"
         android:exported="true"
+        android:initOrder="10000"
         android:name="org.chromium.chrome.browser.provider.ChromeBrowserProvider">
       <path-permission android:path="/bookmarks/search_suggest_query" android:readPermission="android.permission.GLOBAL_SEARCH"/>
     </provider>  # DIFF-ANCHOR: 2215b9cd

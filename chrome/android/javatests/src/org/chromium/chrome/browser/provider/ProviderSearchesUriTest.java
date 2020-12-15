@@ -37,7 +37,7 @@ public class ProviderSearchesUriTest {
 
     @Before
     public void setUp() {
-        mSearchesUri = ChromeBrowserProvider.getSearchesApiUri(mProviderTestRule.getActivity());
+        mSearchesUri = ChromeBrowserProviderImpl.getSearchesApiUri(mProviderTestRule.getActivity());
         mProviderTestRule.getContentResolver().delete(mSearchesUri, null, null);
     }
 
@@ -176,15 +176,15 @@ public class ProviderSearchesUriTest {
 
         Uri insertUri = mProviderTestRule.getContentResolver().insert(mSearchesUri, value);
         Cursor cursor = mProviderTestRule.getContentResolver().query(mSearchesUri,
-                ChromeBrowserProvider.SEARCHES_PROJECTION, SearchColumns.SEARCH + " = ?",
+                ChromeBrowserProviderImpl.SEARCHES_PROJECTION, SearchColumns.SEARCH + " = ?",
                 new String[] {insertSearch}, null);
         int id;
         try {
             Assert.assertTrue(cursor.moveToNext());
             Assert.assertEquals(insertSearch,
-                    cursor.getString(ChromeBrowserProvider.SEARCHES_PROJECTION_SEARCH_INDEX));
+                    cursor.getString(ChromeBrowserProviderImpl.SEARCHES_PROJECTION_SEARCH_INDEX));
             Assert.assertEquals(createDate,
-                    cursor.getLong(ChromeBrowserProvider.SEARCHES_PROJECTION_DATE_INDEX));
+                    cursor.getLong(ChromeBrowserProviderImpl.SEARCHES_PROJECTION_DATE_INDEX));
             id = cursor.getInt(idIndex);
         } finally {
             cursor.close();
@@ -199,14 +199,14 @@ public class ProviderSearchesUriTest {
         mProviderTestRule.getContentResolver().update(
                 mSearchesUri, value, SearchColumns.ID + " = " + id, null);
         cursor = mProviderTestRule.getContentResolver().query(mSearchesUri,
-                ChromeBrowserProvider.SEARCHES_PROJECTION, SearchColumns.ID + " = " + id, null,
+                ChromeBrowserProviderImpl.SEARCHES_PROJECTION, SearchColumns.ID + " = " + id, null,
                 null);
         try {
             Assert.assertTrue(cursor.moveToNext());
             Assert.assertEquals(updateSearch,
-                    cursor.getString(ChromeBrowserProvider.SEARCHES_PROJECTION_SEARCH_INDEX));
+                    cursor.getString(ChromeBrowserProviderImpl.SEARCHES_PROJECTION_SEARCH_INDEX));
             Assert.assertEquals(updateDate,
-                    cursor.getLong(ChromeBrowserProvider.SEARCHES_PROJECTION_DATE_INDEX));
+                    cursor.getLong(ChromeBrowserProviderImpl.SEARCHES_PROJECTION_DATE_INDEX));
             Assert.assertEquals(id, cursor.getInt(idIndex));
         } finally {
             cursor.close();
@@ -214,7 +214,7 @@ public class ProviderSearchesUriTest {
         // Test: delete
         mProviderTestRule.getContentResolver().delete(insertUri, null, null);
         cursor = mProviderTestRule.getContentResolver().query(mSearchesUri,
-                ChromeBrowserProvider.SEARCHES_PROJECTION, SearchColumns.ID + " = " + id, null,
+                ChromeBrowserProviderImpl.SEARCHES_PROJECTION, SearchColumns.ID + " = " + id, null,
                 null);
         try {
             Assert.assertEquals(0, cursor.getCount());

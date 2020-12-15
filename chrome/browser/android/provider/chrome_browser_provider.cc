@@ -20,7 +20,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
-#include "chrome/android/chrome_jni_headers/ChromeBrowserProvider_jni.h"
+#include "chrome/android/chrome_jni_headers/ChromeBrowserProviderImpl_jni.h"
 #include "chrome/browser/android/provider/blocking_ui_thread_async_request.h"
 #include "chrome/browser/android/provider/bookmark_model_task.h"
 #include "chrome/browser/android/provider/run_on_ui_thread_blocking.h"
@@ -99,7 +99,7 @@ const int64_t kInvalidBookmarkId = -1;
 
 // ------------- Java-related utility methods ------------- //
 
-jlong JNI_ChromeBrowserProvider_ConvertJLongObjectToPrimitive(
+jlong JNI_ChromeBrowserProviderImpl_ConvertJLongObjectToPrimitive(
     JNIEnv* env,
     const JavaRef<jobject>& long_obj) {
   ScopedJavaLocalRef<jclass> jlong_clazz = GetClass(env, "java/lang/Long");
@@ -108,7 +108,7 @@ jlong JNI_ChromeBrowserProvider_ConvertJLongObjectToPrimitive(
   return env->CallLongMethod(long_obj.obj(), long_value, nullptr);
 }
 
-jboolean JNI_ChromeBrowserProvider_ConvertJBooleanObjectToPrimitive(
+jboolean JNI_ChromeBrowserProviderImpl_ConvertJBooleanObjectToPrimitive(
     JNIEnv* env,
     const JavaRef<jobject>& boolean_object) {
   ScopedJavaLocalRef<jclass> jboolean_clazz =
@@ -123,7 +123,7 @@ base::Time ConvertJlongToTime(jlong value) {
          base::TimeDelta::FromMilliseconds((int64_t)value);
 }
 
-jint JNI_ChromeBrowserProvider_ConvertJIntegerToJint(
+jint JNI_ChromeBrowserProviderImpl_ConvertJIntegerToJint(
     JNIEnv* env,
     const JavaRef<jobject>& integer_obj) {
   ScopedJavaLocalRef<jclass> jinteger_clazz =
@@ -712,7 +712,7 @@ class RemoveSearchTermsFromAPITask : public SearchTermTask {
 // ------------- Other utility methods (may use tasks) ------------- //
 
 // Fills the bookmark |row| with the given java objects.
-void JNI_ChromeBrowserProvider_FillBookmarkRow(
+void JNI_ChromeBrowserProviderImpl_FillBookmarkRow(
     JNIEnv* env,
     const JavaRef<jobject>& obj,
     const JavaRef<jstring>& url,
@@ -742,16 +742,18 @@ void JNI_ChromeBrowserProvider_FillBookmarkRow(
 
   if (!created.is_null())
     row->set_created(ConvertJlongToTime(
-        JNI_ChromeBrowserProvider_ConvertJLongObjectToPrimitive(env, created)));
+        JNI_ChromeBrowserProviderImpl_ConvertJLongObjectToPrimitive(env,
+                                                                    created)));
 
   if (!isBookmark.is_null())
     row->set_is_bookmark(
-        JNI_ChromeBrowserProvider_ConvertJBooleanObjectToPrimitive(env,
-                                                                   isBookmark));
+        JNI_ChromeBrowserProviderImpl_ConvertJBooleanObjectToPrimitive(
+            env, isBookmark));
 
   if (!date.is_null())
     row->set_last_visit_time(ConvertJlongToTime(
-        JNI_ChromeBrowserProvider_ConvertJLongObjectToPrimitive(env, date)));
+        JNI_ChromeBrowserProviderImpl_ConvertJLongObjectToPrimitive(env,
+                                                                    date)));
 
   if (!favicon.is_null()) {
     std::vector<uint8_t> bytes;
@@ -764,7 +766,7 @@ void JNI_ChromeBrowserProvider_FillBookmarkRow(
 
   if (!visits.is_null())
     row->set_visit_count(
-        JNI_ChromeBrowserProvider_ConvertJIntegerToJint(env, visits));
+        JNI_ChromeBrowserProviderImpl_ConvertJIntegerToJint(env, visits));
 
   // Make sure parent_id is always in the mobile_node branch.
   IsInMobileBookmarksBranchTask task(model, model_loader);
@@ -773,7 +775,7 @@ void JNI_ChromeBrowserProvider_FillBookmarkRow(
 }
 
 // Fills the bookmark |row| with the given java objects if it is not null.
-void JNI_ChromeBrowserProvider_FillSearchRow(
+void JNI_ChromeBrowserProviderImpl_FillSearchRow(
     JNIEnv* env,
     const JavaRef<jobject>& obj,
     const JavaRef<jstring>& search_term,
@@ -784,15 +786,17 @@ void JNI_ChromeBrowserProvider_FillSearchRow(
 
   if (!date.is_null())
     row->set_search_time(ConvertJlongToTime(
-        JNI_ChromeBrowserProvider_ConvertJLongObjectToPrimitive(env, date)));
+        JNI_ChromeBrowserProviderImpl_ConvertJLongObjectToPrimitive(env,
+                                                                    date)));
 }
 
 }  // namespace
 
 // ------------- Native initialization and destruction ------------- //
 
-static jlong JNI_ChromeBrowserProvider_Init(JNIEnv* env,
-                                            const JavaParamRef<jobject>& obj) {
+static jlong JNI_ChromeBrowserProviderImpl_Init(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj) {
   ChromeBrowserProvider* provider = new ChromeBrowserProvider(env, obj);
   return reinterpret_cast<intptr_t>(provider);
 }
@@ -877,7 +881,7 @@ jlong ChromeBrowserProvider::AddBookmarkFromAPI(
   DCHECK(url);
 
   history::HistoryAndBookmarkRow row;
-  JNI_ChromeBrowserProvider_FillBookmarkRow(
+  JNI_ChromeBrowserProviderImpl_FillBookmarkRow(
       env, obj, url, created, isBookmark, date, favicon, title, visits,
       parent_id, &row, bookmark_model_, bookmark_model_loader_);
 
@@ -959,7 +963,7 @@ jint ChromeBrowserProvider::UpdateBookmarkFromAPI(
     const JavaParamRef<jstring>& selections,
     const JavaParamRef<jobjectArray>& selection_args) {
   history::HistoryAndBookmarkRow row;
-  JNI_ChromeBrowserProvider_FillBookmarkRow(
+  JNI_ChromeBrowserProviderImpl_FillBookmarkRow(
       env, obj, url, created, isBookmark, date, favicon, title, visits,
       parent_id, &row, bookmark_model_, bookmark_model_loader_);
 
@@ -1016,7 +1020,8 @@ jlong ChromeBrowserProvider::AddSearchTermFromAPI(
   DCHECK(search_term);
 
   history::SearchRow row;
-  JNI_ChromeBrowserProvider_FillSearchRow(env, obj, search_term, date, &row);
+  JNI_ChromeBrowserProviderImpl_FillSearchRow(env, obj, search_term, date,
+                                              &row);
 
   // URL must be valid.
   if (row.search_term().empty()) {
@@ -1092,7 +1097,8 @@ jint ChromeBrowserProvider::UpdateSearchTermFromAPI(
     const JavaParamRef<jstring>& selections,
     const JavaParamRef<jobjectArray>& selection_args) {
   history::SearchRow row;
-  JNI_ChromeBrowserProvider_FillSearchRow(env, obj, search_term, date, &row);
+  JNI_ChromeBrowserProviderImpl_FillSearchRow(env, obj, search_term, date,
+                                              &row);
 
   std::vector<base::string16> where_args;
   AppendJavaStringArrayToStringVector(env, selection_args, &where_args);
@@ -1145,14 +1151,14 @@ void ChromeBrowserProvider::BookmarkModelChanged() {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj;
   if (GetJavaProviderOrDeleteSelf(&obj, env))
-    Java_ChromeBrowserProvider_onBookmarkChanged(env, obj);
+    Java_ChromeBrowserProviderImpl_onBookmarkChanged(env, obj);
 }
 
 void ChromeBrowserProvider::OnHistoryChanged() {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj;
   if (GetJavaProviderOrDeleteSelf(&obj, env))
-    Java_ChromeBrowserProvider_onHistoryChanged(env, obj);
+    Java_ChromeBrowserProviderImpl_onHistoryChanged(env, obj);
 }
 
 void ChromeBrowserProvider::OnURLVisited(
@@ -1178,7 +1184,7 @@ void ChromeBrowserProvider::OnKeywordSearchTermUpdated(
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj;
   if (GetJavaProviderOrDeleteSelf(&obj, env))
-    Java_ChromeBrowserProvider_onSearchTermChanged(env, obj);
+    Java_ChromeBrowserProviderImpl_onSearchTermChanged(env, obj);
 }
 
 void ChromeBrowserProvider::OnKeywordSearchTermDeleted(

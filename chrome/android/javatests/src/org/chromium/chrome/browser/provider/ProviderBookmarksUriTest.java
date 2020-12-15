@@ -41,7 +41,8 @@ public class ProviderBookmarksUriTest {
 
     @Before
     public void setUp() {
-        mBookmarksUri = ChromeBrowserProvider.getBookmarksApiUri(mProviderTestRule.getActivity());
+        mBookmarksUri =
+                ChromeBrowserProviderImpl.getBookmarksApiUri(mProviderTestRule.getActivity());
         mProviderTestRule.getContentResolver().delete(mBookmarksUri, null, null);
     }
 

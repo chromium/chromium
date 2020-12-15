@@ -47,12 +47,12 @@ public class ProviderTestRule extends ChromeTabbedActivityTestRule {
         final ContentProvider provider = new ChromeBrowserProvider();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ProviderInfo providerInfo = new ProviderInfo();
-            providerInfo.authority = ChromeBrowserProvider.getApiAuthority(activity);
+            providerInfo.authority = ChromeBrowserProviderImpl.getApiAuthority(activity);
             provider.attachInfo(activity, providerInfo);
         });
 
         MockContentResolver resolver = new MockContentResolver();
-        resolver.addProvider(ChromeBrowserProvider.getApiAuthority(activity), provider);
+        resolver.addProvider(ChromeBrowserProviderImpl.getApiAuthority(activity), provider);
 
         mContext = new IsolatedContext(resolver, activity);
         Assert.assertTrue(getContentResolver() instanceof MockContentResolver);

@@ -869,14 +869,6 @@ by a child template that "extends" this file.
             android:isolatedProcess="true"
             android:process=":decoder_service" />
 
-        <!-- Providers for chrome data. -->
-        <provider android:name="org.chromium.chrome.browser.provider.ChromeBrowserProvider"
-            android:authorities="{{ manifest_package }}.ChromeBrowserProvider;{{ manifest_package }}.browser;{{ manifest_package }}"
-            android:exported="true">
-            <path-permission android:path="/bookmarks/search_suggest_query"
-                    android:readPermission="android.permission.GLOBAL_SEARCH" />
-        </provider>
-
         <!-- Broadcast receiver that will be notified of account changes -->
         <receiver android:name="org.chromium.chrome.browser.services.AccountsChangedReceiver"
             android:exported="true">
@@ -1244,6 +1236,15 @@ by a child template that "extends" this file.
           android:grantUriPermissions="true">
           <meta-data android:name="android.support.FILE_PROVIDER_PATHS"
               android:resource="@xml/file_paths" />
+      </provider>
+
+      <!-- Provider for chrome data. -->
+      <provider android:name="org.chromium.chrome.browser.provider.ChromeBrowserProvider"
+          android:authorities="{{ manifest_package }}.ChromeBrowserProvider;{{ manifest_package }}.browser;{{ manifest_package }}"
+          android:initOrder="10000"
+          android:exported="true">
+          <path-permission android:path="/bookmarks/search_suggest_query"
+                  android:readPermission="android.permission.GLOBAL_SEARCH" />
       </provider>
 
       {% block base_application_definitions %}

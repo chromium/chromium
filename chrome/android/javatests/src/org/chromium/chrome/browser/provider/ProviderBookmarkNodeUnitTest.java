@@ -15,8 +15,8 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.provider.ChromeBrowserProvider.BookmarkNode;
-import org.chromium.chrome.browser.provider.ChromeBrowserProvider.Type;
+import org.chromium.chrome.browser.provider.ChromeBrowserProviderImpl.BookmarkNode;
+import org.chromium.chrome.browser.provider.ChromeBrowserProviderImpl.Type;
 
 import java.util.Random;
 

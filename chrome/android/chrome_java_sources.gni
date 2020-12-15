@@ -1191,7 +1191,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/privacy/settings/PrivacySettings.java",
   "java/src/org/chromium/chrome/browser/provider/BaseColumns.java",
   "java/src/org/chromium/chrome/browser/provider/BookmarkColumns.java",
-  "java/src/org/chromium/chrome/browser/provider/ChromeBrowserProvider.java",
+  "java/src/org/chromium/chrome/browser/provider/ChromeBrowserProviderImpl.java",
   "java/src/org/chromium/chrome/browser/provider/ChromeBrowserProviderSuggestionsCursor.java",
   "java/src/org/chromium/chrome/browser/provider/SearchColumns.java",
   "java/src/org/chromium/chrome/browser/push_messaging/PushMessagingServiceObserver.java",
