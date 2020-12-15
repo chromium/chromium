@@ -98,11 +98,11 @@ void PolicyErrorCallback(
 }  // namespace
 
 It2MeNativeMessagingHost::It2MeNativeMessagingHost(
-    bool needs_elevation,
+    bool is_process_elevated,
     std::unique_ptr<PolicyWatcher> policy_watcher,
     std::unique_ptr<ChromotingHostContext> context,
     std::unique_ptr<It2MeHostFactory> factory)
-    : needs_elevation_(needs_elevation),
+    : is_process_elevated_(is_process_elevated),
       host_context_(std::move(context)),
       factory_(std::move(factory)),
       policy_watcher_(std::move(policy_watcher)) {
@@ -219,7 +219,26 @@ void It2MeNativeMessagingHost::ProcessConnect(
     return;
   }
 
-  if (needs_elevation_) {
+#if defined(OS_WIN)
+  // Requests that the support host is launched with UiAccess on Windows.
+  // This value, in conjuction with the platform policy, is used to determine
+  // if an elevated host should be used.
+  bool use_elevated_host = false;
+  message->GetBoolean("useElevatedHost", &use_elevated_host);
+
+  if (!is_process_elevated_) {
+    auto allow_elevation_policy = GetAllowElevatedHostPolicyValue();
+    // Honor the platform policy value if it is set, otherwise use the value
+    // provided through the native messaging host.
+    use_elevated_host_ = allow_elevation_policy.has_value()
+                             ? allow_elevation_policy.value()
+                             : use_elevated_host;
+  }
+#else
+  CHECK(!is_process_elevated_) << "Unexpected value for this platform";
+#endif
+
+  if (use_elevated_host_) {
     // Attempt to pass the current message to the elevated process.  This method
     // will spin up the elevated process if it is not already running.  On
     // success, the elevated process will process the message and respond.
@@ -356,7 +375,7 @@ void It2MeNativeMessagingHost::ProcessDisconnect(
   DCHECK(task_runner()->BelongsToCurrentThread());
   DCHECK(policy_received_);
 
-  if (needs_elevation_) {
+  if (use_elevated_host_) {
     // Attempt to pass the current message to the elevated process.  This method
     // will spin up the elevated process if it is not already running.  On
     // success, the elevated process will process the message and respond.
@@ -379,7 +398,7 @@ void It2MeNativeMessagingHost::ProcessDisconnect(
 void It2MeNativeMessagingHost::ProcessIncomingIq(
     std::unique_ptr<base::DictionaryValue> message,
     std::unique_ptr<base::DictionaryValue> response) {
-  if (needs_elevation_) {
+  if (use_elevated_host_) {
     // Attempt to pass the current message to the elevated process.  This method
     // will spin up the elevated process if it is not already running.  On
     // success, the elevated process will process the message and respond.
@@ -529,26 +548,9 @@ std::string It2MeNativeMessagingHost::HostStateToString(
 
 void It2MeNativeMessagingHost::OnPolicyUpdate(
     std::unique_ptr<base::DictionaryValue> policies) {
-  // Don't dynamically change the elevation status since we don't have a good
-  // way to communicate changes to the user.
   if (!policy_received_) {
-    bool allow_elevated_host = false;
-    if (!policies->GetBoolean(
-            policy::key::kRemoteAccessHostAllowUiAccessForRemoteAssistance,
-            &allow_elevated_host)) {
-      LOG(WARNING) << "Failed to retrieve elevated host policy value.";
-    }
-#if defined(OS_WIN)
-    LOG(INFO) << "Allow UiAccess for Remote Assistance: "
-              << allow_elevated_host;
-#endif  // defined(OS_WIN)
-
     policy_received_ = true;
 
-    // If |allow_elevated_host| is false, then we will fall back to using a host
-    // running in the current context regardless of the elevation request.  This
-    // may not be ideal, but is still functional.
-    needs_elevation_ = needs_elevation_ && allow_elevated_host;
     if (pending_connect_) {
       std::move(pending_connect_).Run();
     }
@@ -557,6 +559,27 @@ void It2MeNativeMessagingHost::OnPolicyUpdate(
   if (it2me_host_) {
     it2me_host_->OnPolicyUpdate(std::move(policies));
   }
+}
+
+base::Optional<bool>
+It2MeNativeMessagingHost::GetAllowElevatedHostPolicyValue() {
+  DCHECK(policy_received_);
+#if defined(OS_WIN)
+  std::unique_ptr<base::DictionaryValue> platform_policies =
+      policy_watcher_->GetPlatformPolicies();
+  if (platform_policies) {
+    auto* platform_policy_value = platform_policies->FindPath(
+        policy::key::kRemoteAccessHostAllowUiAccessForRemoteAssistance);
+    if (platform_policy_value) {
+      // Use the platform policy value.
+      bool value = platform_policy_value->GetBool();
+      LOG(INFO) << "Allow UiAccess for remote support policy value: " << value;
+      return value;
+    }
+  }
+#endif  // defined(OS_WIN)
+
+  return base::nullopt;
 }
 
 void It2MeNativeMessagingHost::OnPolicyError() {
@@ -625,7 +648,7 @@ std::string It2MeNativeMessagingHost::ExtractAccessToken(
 bool It2MeNativeMessagingHost::DelegateToElevatedHost(
     std::unique_ptr<base::DictionaryValue> message) {
   DCHECK(task_runner()->BelongsToCurrentThread());
-  DCHECK(needs_elevation_);
+  DCHECK(use_elevated_host_);
 
   if (!elevated_host_) {
     base::FilePath binary_path =

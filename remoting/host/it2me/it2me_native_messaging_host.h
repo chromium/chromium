@@ -11,6 +11,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
@@ -46,7 +47,7 @@ class PolicyWatcher;
 class It2MeNativeMessagingHost : public It2MeHost::Observer,
                                  public extensions::NativeMessageHost {
  public:
-  It2MeNativeMessagingHost(bool needs_elevation,
+  It2MeNativeMessagingHost(bool is_process_elevated,
                            std::unique_ptr<PolicyWatcher> policy_watcher,
                            std::unique_ptr<ChromotingHostContext> host_context,
                            std::unique_ptr<It2MeHostFactory> host_factory);
@@ -120,8 +121,14 @@ class It2MeNativeMessagingHost : public It2MeHost::Observer,
   // Extracts OAuth access token from the message passed from the client.
   std::string ExtractAccessToken(const base::DictionaryValue* message);
 
-  // Used to determine whether to create and pass messages to an elevated host.
-  bool needs_elevation_ = false;
+  // Returns the value of the 'allow_elevated_host' platform policy or empty.
+  base::Optional<bool> GetAllowElevatedHostPolicyValue();
+
+  // Indicates whether the current process is already elevated.
+  bool is_process_elevated_ = false;
+
+  // Forward messages to an |elevated_host_|.
+  bool use_elevated_host_ = false;
 
 #if defined(OS_WIN)
   // Controls the lifetime of the elevated native messaging host process.

@@ -134,7 +134,7 @@ int It2MeNativeMessagingHostMain(int argc, char** argv) {
 
   base::File read_file;
   base::File write_file;
-  bool needs_elevation = false;
+  bool is_process_elevated_ = false;
 
 #if defined(OS_WIN)
 
@@ -142,6 +142,7 @@ int It2MeNativeMessagingHostMain(int argc, char** argv) {
       base::CommandLine::ForCurrentProcess();
 
   if (command_line->HasSwitch(kElevateSwitchName)) {
+    is_process_elevated_ = true;
 #if defined(OFFICIAL_BUILD)
     // Unofficial builds won't have 'UiAccess' since it requires signing.
     if (!CurrentProcessHasUiAccess()) {
@@ -179,8 +180,6 @@ int It2MeNativeMessagingHostMain(int argc, char** argv) {
       return kInitializationFailed;
     }
   } else {
-    needs_elevation = true;
-
     // GetStdHandle() returns pseudo-handles for stdin and stdout even if
     // the hosting executable specifies "Windows" subsystem. However the
     // returned  handles are invalid in that case unless standard input and
@@ -250,7 +249,8 @@ int It2MeNativeMessagingHostMain(int argc, char** argv) {
   std::unique_ptr<PolicyWatcher> policy_watcher =
       PolicyWatcher::CreateWithTaskRunner(context->file_task_runner());
   std::unique_ptr<extensions::NativeMessageHost> host(
-      new It2MeNativeMessagingHost(needs_elevation, std::move(policy_watcher),
+      new It2MeNativeMessagingHost(is_process_elevated_,
+                                   std::move(policy_watcher),
                                    std::move(context), std::move(factory)));
 
   host->Start(native_messaging_pipe.get());
