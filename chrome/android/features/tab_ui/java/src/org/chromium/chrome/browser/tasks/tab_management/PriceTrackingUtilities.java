@@ -8,6 +8,10 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.sync.ProfileSyncService;
+import org.chromium.components.sync.ModelType;
 
 /**
  * A class to handle whether price tracking-related features are turned on by users,
@@ -26,6 +30,22 @@ public class PriceTrackingUtilities {
     public static final SharedPreferencesManager SHARED_PREFERENCES_MANAGER =
             SharedPreferencesManager.getInstance();
 
+    private static Boolean sIsSignedInAndSyncEnabledForTesting;
+
+    /**
+     * @return Whether the price tracking feature is eligible to work. Now it is used to determine
+     *         whether the menu item "track prices" is visible and whether the tab has {@link
+     *         TabProperties#SHOPPING_PERSISTED_TAB_DATA_FETCHER}.
+     */
+    public static boolean isPriceTrackingEligible() {
+        if (sIsSignedInAndSyncEnabledForTesting != null) {
+            return TabUiFeatureUtilities.isPriceTrackingEnabled()
+                    && sIsSignedInAndSyncEnabledForTesting;
+        }
+        return TabUiFeatureUtilities.isPriceTrackingEnabled() && isSignedIn()
+                && isOpenTabsSyncEnabled();
+    }
+
     /**
      * Update SharedPreferences when users turn on/off the feature tracking prices on tabs.
      */
@@ -39,8 +59,9 @@ public class PriceTrackingUtilities {
      * @return Whether the track prices on tabs is turned on by users.
      */
     public static boolean isTrackPricesOnTabsEnabled() {
-        return SHARED_PREFERENCES_MANAGER.readBoolean(
-                TRACK_PRICES_ON_TABS, TabUiFeatureUtilities.isPriceTrackingEnabled());
+        return isPriceTrackingEligible()
+                && SHARED_PREFERENCES_MANAGER.readBoolean(
+                        TRACK_PRICES_ON_TABS, TabUiFeatureUtilities.isPriceTrackingEnabled());
     }
 
     /**
@@ -55,5 +76,22 @@ public class PriceTrackingUtilities {
      */
     public static boolean isPriceWelcomeMessageCardDisabled() {
         return !SHARED_PREFERENCES_MANAGER.readBoolean(PRICE_WELCOME_MESSAGE_CARD, true);
+    }
+
+    private static boolean isSignedIn() {
+        return IdentityServicesProvider.get()
+                .getIdentityManager(Profile.getLastUsedRegularProfile())
+                .hasPrimaryAccount();
+    }
+
+    private static boolean isOpenTabsSyncEnabled() {
+        ProfileSyncService syncService = ProfileSyncService.get();
+        return syncService != null && syncService.isSyncRequested()
+                && syncService.getActiveDataTypes().contains(ModelType.SESSIONS);
+    }
+
+    @VisibleForTesting
+    public static void setIsSignedInAndSyncEnabledForTesting(Boolean isSignedInAndSyncEnabled) {
+        sIsSignedInAndSyncEnabledForTesting = isSignedInAndSyncEnabled;
     }
 }

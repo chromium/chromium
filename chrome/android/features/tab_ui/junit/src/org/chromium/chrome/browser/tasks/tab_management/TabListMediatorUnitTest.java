@@ -1852,11 +1852,12 @@ public class TabListMediatorUnitTest {
     @Test
     public void testPriceTrackingProperty() {
         TabUiFeatureUtilities.ENABLE_PRICE_TRACKING.setForTesting(true);
-        for (boolean signedIn : new boolean[] {false, true}) {
+        for (boolean signedInAndSyncEnabled : new boolean[] {false, true}) {
             for (boolean priceTrackingEnabled : new boolean[] {false, true}) {
                 for (boolean incognito : new boolean[] {false, true}) {
                     TabListMediator mMediatorSpy = spy(mMediator);
-                    doReturn(signedIn).when(mMediatorSpy).isSignedIn();
+                    PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(
+                            signedInAndSyncEnabled);
                     PriceTrackingUtilities.SHARED_PREFERENCES_MANAGER.writeBoolean(
                             PriceTrackingUtilities.TRACK_PRICES_ON_TABS, priceTrackingEnabled);
                     Profile.setLastUsedProfileForTesting(mProfile);
@@ -1875,7 +1876,7 @@ public class TabListMediatorUnitTest {
 
                     mMediatorSpy.resetWithListOfTabs(PseudoTab.getListOfPseudoTab(tabs),
                             /*quickMode =*/false, /*mruMode =*/false);
-                    if (signedIn && priceTrackingEnabled && !incognito) {
+                    if (signedInAndSyncEnabled && priceTrackingEnabled && !incognito) {
                         mModel.get(0)
                                 .model.get(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER)
                                 .fetch((shoppingPersistedTabData) -> {

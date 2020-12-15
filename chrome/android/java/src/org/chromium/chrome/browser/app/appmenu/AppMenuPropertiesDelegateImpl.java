@@ -547,8 +547,8 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                                 .getTabsWithNoOtherRelatedTabs()
                                 .size()
                         > 1;
-        boolean isPriceTrackingVisible = TabUiFeatureUtilities.isPriceTrackingEnabled()
-                && !DeviceClassManager.enableAccessibilityLayout();
+        boolean isPriceTrackingVisible = PriceTrackingUtilities.isPriceTrackingEligible()
+                && !DeviceClassManager.enableAccessibilityLayout() && !isIncognito;
         boolean isPriceTrackingEnabled = isPriceTrackingVisible;
 
         for (int i = 0; i < menu.size(); ++i) {

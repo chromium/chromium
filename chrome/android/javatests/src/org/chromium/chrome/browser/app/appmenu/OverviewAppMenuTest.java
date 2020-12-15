@@ -25,6 +25,7 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.tasks.tab_management.PriceTrackingUtilities;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -308,6 +309,7 @@ public class OverviewAppMenuTest {
     public void
     testTrackPriceOnTabsIsDisabled() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(true);
             AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
         });
 
@@ -333,6 +335,7 @@ public class OverviewAppMenuTest {
     public void
     testTrackPriceOnTabsIsEnabled() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(true);
             AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
         });
 
@@ -359,6 +362,59 @@ public class OverviewAppMenuTest {
     @Test
     @SmallTest
     @Feature({"Browser", "Main"})
+    @Features.EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study"})
+    @Features.DisableFeatures({ChromeFeatureList.START_SURFACE_ANDROID})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
+            "force-fieldtrial-params=Study.Group:enable_price_tracking/true"})
+    public void
+    testTrackPriceOnTabsIsDisabledInIncognitoMode() throws Exception {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(true);
+            mActivityTestRule.getActivity().getTabModelSelector().selectModel(true);
+            AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
+        });
+
+        int checkedMenuItems = 0;
+        Menu menu = mActivityTestRule.getMenu();
+        for (int i = 0; i < menu.size(); ++i) {
+            MenuItem item = menu.getItem(i);
+            if (item.getItemId() == R.id.track_prices_row_menu_id) {
+                assertFalse(item.isVisible());
+                checkedMenuItems++;
+            }
+        }
+        assertThat(checkedMenuItems, equalTo(2));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Browser", "Main"})
+    @Features.EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study"})
+    @Features.DisableFeatures({ChromeFeatureList.START_SURFACE_ANDROID})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
+            "force-fieldtrial-params=Study.Group:enable_price_tracking/true"})
+    public void
+    testTrackPriceOnTabsIsDisabledIfSyncDisabledOrNotSignedIn() throws Exception {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(false);
+            AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
+        });
+
+        int checkedMenuItems = 0;
+        Menu menu = mActivityTestRule.getMenu();
+        for (int i = 0; i < menu.size(); ++i) {
+            MenuItem item = menu.getItem(i);
+            if (item.getItemId() == R.id.track_prices_row_menu_id) {
+                assertFalse(item.isVisible());
+                checkedMenuItems++;
+            }
+        }
+        assertThat(checkedMenuItems, equalTo(2));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Browser", "Main"})
     @Features.EnableFeatures({ChromeFeatureList.START_SURFACE_ANDROID,
             ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study"})
     @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
@@ -366,6 +422,7 @@ public class OverviewAppMenuTest {
     public void
     testTrackPriceOnTabsIsDisabledWithStartSurface() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(true);
             AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
         });
 
@@ -392,6 +449,7 @@ public class OverviewAppMenuTest {
     public void
     testTrackPriceOnTabsIsEnabledWithStartSurface() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(true);
             AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
         });
 
