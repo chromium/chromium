@@ -16,6 +16,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_command_line.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/chromeos/arc/icon_decode_request.h"
@@ -41,6 +42,7 @@
 #include "chrome/browser/web_applications/test/test_system_web_app_manager.h"
 #include "chrome/browser/web_applications/test/test_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
@@ -91,6 +93,9 @@ class ShelfContextMenuTest : public ChromeAshTestBase {
 
   void SetUp() override {
     ChromeAshTestBase::SetUp();
+
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kDisableDefaultApps);
 
     extensions::TestExtensionSystem* extension_system(
         static_cast<extensions::TestExtensionSystem*>(
@@ -217,6 +222,7 @@ class ShelfContextMenuTest : public ChromeAshTestBase {
     provider->SetRunSubsystemStartupTasks(true);
   }
 
+  base::test::ScopedCommandLine scoped_command_line_;
   TestingProfile profile_;
   std::unique_ptr<CrostiniTestHelper> crostini_helper_;
   ArcAppTest arc_test_;

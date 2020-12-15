@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/ui/app_list/page_break_constants.h"
 #include "chrome/browser/ui/app_list/test/fake_app_list_model_updater.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
@@ -224,6 +226,9 @@ class AppListSyncableServiceTest : public AppListTestBase {
   void SetUp() override {
     AppListTestBase::SetUp();
 
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kDisableDefaultApps);
+
     // Make sure we have a Profile Manager.
     DCHECK(temp_dir_.CreateUniqueTempDir());
     TestingBrowserProcess::GetGlobal()->SetProfileManager(
@@ -303,6 +308,7 @@ class AppListSyncableServiceTest : public AppListTestBase {
   }
 
  private:
+  base::test::ScopedCommandLine scoped_command_line_;
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<AppListModelUpdater::TestApi> model_updater_test_api_;
   std::unique_ptr<app_list::AppListSyncableService> app_list_syncable_service_;

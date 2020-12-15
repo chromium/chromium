@@ -17,6 +17,7 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
@@ -34,6 +35,7 @@
 #include "chrome/browser/web_applications/test/test_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/arc/mojom/app.mojom.h"
 #include "components/arc/mojom/app_permissions.mojom.h"
@@ -99,6 +101,9 @@ class AppServiceWrapperTest : public ::testing::Test {
   // testing::Test:
   void SetUp() override {
     testing::Test::SetUp();
+
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kDisableDefaultApps);
 
     feature_list_.InitAndEnableFeature(features::kPerAppTimeLimits);
 
@@ -252,6 +257,7 @@ class AppServiceWrapperTest : public ::testing::Test {
     provider->Start();
   }
 
+  base::test::ScopedCommandLine scoped_command_line_;
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
 

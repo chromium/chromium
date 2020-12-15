@@ -13,6 +13,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_command_line.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -45,6 +46,7 @@
 #include "chrome/browser/web_applications/test/test_web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -306,6 +308,9 @@ class WebAppBuilderTest : public AppServiceAppModelBuilderTest {
   void SetUp() override {
     AppServiceAppModelBuilderTest::SetUp();
 
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kDisableDefaultApps);
+
     base::RunLoop run_loop;
     web_app::WebAppProvider::Get(testing_profile())
         ->on_registry_ready()
@@ -387,6 +392,9 @@ class WebAppBuilderTest : public AppServiceAppModelBuilderTest {
           ui::GetScaleForScaleFactor(scale_factor));
     }
   }
+
+ private:
+  base::test::ScopedCommandLine scoped_command_line_;
 };
 
 TEST_F(BuiltInAppTest, Build) {
