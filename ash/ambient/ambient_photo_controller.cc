@@ -602,7 +602,7 @@ void AmbientPhotoController::OnAllPhotoDecoded(bool from_downloading,
     // Try to read from cache when failure happens.
     TryReadPhotoRawData();
     return;
-  } else if (ambient_backend_model_.HashMatchesNextImage(hash)) {
+  } else if (ambient_backend_model_.IsHashDuplicate(hash)) {
     LOG(WARNING) << "Skipping loading duplicate image.";
     TryReadPhotoRawData();
     return;

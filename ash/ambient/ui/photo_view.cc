@@ -50,7 +50,7 @@ const char* PhotoView::GetClassName() const {
   return "PhotoView";
 }
 
-void PhotoView::OnImagesChanged() {
+void PhotoView::OnImageAdded() {
   // If NeedToAnimate() is true, will start transition animation and
   // UpdateImages() when animation completes. Otherwise, update images
   // immediately.
@@ -77,27 +77,32 @@ void PhotoView::Init() {
   }
 
   // Hides one image view initially for fade in animation.
-  image_views_[1]->layer()->SetOpacity(0.0f);
+  image_views_.back()->layer()->SetOpacity(0.0f);
 
   auto* model = delegate_->GetAmbientBackendModel();
   scoped_backend_model_observer_.Observe(model);
 
+  // |PhotoView::Init| is called after
+  // |AmbientBackendModelObserver::OnImagesReady| has been called.
+  // |AmbientBackendModel| has two images ready and views should be constructed
+  // for each one.
   UpdateImage(model->GetCurrentImage());
+  UpdateImage(model->GetNextImage());
 }
 
 void PhotoView::UpdateImage(const PhotoWithDetails& next_image) {
   if (next_image.photo.isNull())
     return;
 
-  image_views_[image_index_]->UpdateImage(next_image.photo,
-                                          next_image.related_photo);
-  image_views_[image_index_]->UpdateImageDetails(
-      base::UTF8ToUTF16(next_image.details));
+  image_views_.at(image_index_)
+      ->UpdateImage(next_image.photo, next_image.related_photo);
+  image_views_.at(image_index_)
+      ->UpdateImageDetails(base::UTF8ToUTF16(next_image.details));
   image_index_ = 1 - image_index_;
 }
 
 void PhotoView::StartTransitionAnimation() {
-  ui::Layer* visible_layer = image_views_[image_index_]->layer();
+  ui::Layer* visible_layer = image_views_.at(image_index_)->layer();
   {
     ui::ScopedLayerAnimationSettings animation(visible_layer->GetAnimator());
     animation.SetTransitionDuration(kAnimationDuration);
@@ -113,7 +118,7 @@ void PhotoView::StartTransitionAnimation() {
     visible_layer->SetOpacity(0.0f);
   }
 
-  ui::Layer* invisible_layer = image_views_[1 - image_index_]->layer();
+  ui::Layer* invisible_layer = image_views_.at(1 - image_index_)->layer();
   {
     ui::ScopedLayerAnimationSettings animation(invisible_layer->GetAnimator());
     animation.SetTransitionDuration(kAnimationDuration);
@@ -140,11 +145,11 @@ void PhotoView::OnImplicitAnimationsCompleted() {
 bool PhotoView::NeedToAnimateTransition() const {
   // Can do transition animation if both two images in |images_unscaled_| are
   // not nullptr. Check the image index 1 is enough.
-  return !image_views_[1]->GetCurrentImage().isNull();
+  return !image_views_.back()->GetCurrentImage().isNull();
 }
 
-const gfx::ImageSkia& PhotoView::GetCurrentImagesForTesting() {
-  return image_views_[image_index_]->GetCurrentImage();
+const gfx::ImageSkia& PhotoView::GetVisibleImageForTesting() {
+  return image_views_.at(image_index_)->GetCurrentImage();
 }
 
 }  // namespace ash

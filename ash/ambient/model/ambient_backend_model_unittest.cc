@@ -13,11 +13,13 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/controls/image_view.h"
+
+#define EXPECT_NO_CALLS(args...) EXPECT_CALL(args).Times(0);
 
 namespace ash {
 
@@ -28,6 +30,8 @@ class MockAmbientBackendModelObserver : public AmbientBackendModelObserver {
   ~MockAmbientBackendModelObserver() override = default;
 
   MOCK_METHOD(void, OnImagesFailed, (), (override));
+  MOCK_METHOD(void, OnImagesReady, (), (override));
+  MOCK_METHOD(void, OnImageAdded, (), (override));
 };
 
 }  // namespace
@@ -94,6 +98,10 @@ class AmbientBackendModelTest : public AshTestBase {
     return ambient_backend_model_->GetNextImage();
   }
 
+  PhotoWithDetails GetCurrentImage() {
+    return ambient_backend_model_->GetCurrentImage();
+  }
+
   int failure_count() { return ambient_backend_model_->failures_; }
 
  private:
@@ -104,13 +112,15 @@ class AmbientBackendModelTest : public AshTestBase {
 TEST_F(AmbientBackendModelTest, AddFirstImage) {
   AddNTestImages(1);
 
-  EXPECT_TRUE(EqualsToTestImage(GetNextImage()));
+  EXPECT_TRUE(EqualsToTestImage(GetCurrentImage()));
+  EXPECT_TRUE(GetNextImage().IsNull());
 }
 
 // Test adding the second image.
 TEST_F(AmbientBackendModelTest, AddSecondImage) {
   AddNTestImages(1);
-  EXPECT_TRUE(EqualsToTestImage(GetNextImage()));
+  EXPECT_TRUE(EqualsToTestImage(GetCurrentImage()));
+  EXPECT_TRUE(GetNextImage().IsNull());
 
   AddNTestImages(1);
   EXPECT_TRUE(EqualsToTestImage(GetNextImage()));
@@ -140,10 +150,10 @@ TEST_F(AmbientBackendModelTest, ShouldReturnExpectedPhotoRefreshInterval) {
 TEST_F(AmbientBackendModelTest, ShouldNotifyObserversIfImagesFailed) {
   ambient_backend_model()->Clear();
   testing::NiceMock<MockAmbientBackendModelObserver> observer;
-  ScopedObserver<AmbientBackendModel, AmbientBackendModelObserver> scoped_obs{
-      &observer};
+  base::ScopedObservation<AmbientBackendModel, AmbientBackendModelObserver>
+      scoped_obs{&observer};
 
-  scoped_obs.Add(ambient_backend_model());
+  scoped_obs.Observe(ambient_backend_model());
 
   EXPECT_CALL(observer, OnImagesFailed).Times(1);
 
@@ -154,12 +164,12 @@ TEST_F(AmbientBackendModelTest, ShouldNotifyObserversIfImagesFailed) {
 
 TEST_F(AmbientBackendModelTest, ShouldResetFailuresOnAddImage) {
   testing::NiceMock<MockAmbientBackendModelObserver> observer;
-  ScopedObserver<AmbientBackendModel, AmbientBackendModelObserver> scoped_obs{
-      &observer};
+  base::ScopedObservation<AmbientBackendModel, AmbientBackendModelObserver>
+      scoped_obs{&observer};
 
-  scoped_obs.Add(ambient_backend_model());
+  scoped_obs.Observe(ambient_backend_model());
 
-  EXPECT_CALL(observer, OnImagesFailed).Times(0);
+  EXPECT_NO_CALLS(observer, OnImagesFailed);
 
   for (int i = 0; i < kMaxConsecutiveReadPhotoFailures - 1; i++) {
     ambient_backend_model()->AddImageFailure();
@@ -170,6 +180,37 @@ TEST_F(AmbientBackendModelTest, ShouldResetFailuresOnAddImage) {
   AddNTestImages(1);
 
   EXPECT_EQ(failure_count(), 0);
+}
+
+TEST_F(AmbientBackendModelTest, ShouldNotifyObserversOnImagesReady) {
+  testing::NiceMock<MockAmbientBackendModelObserver> observer;
+  base::ScopedObservation<AmbientBackendModel, AmbientBackendModelObserver>
+      scoped_obs{&observer};
+
+  scoped_obs.Observe(ambient_backend_model());
+
+  EXPECT_CALL(observer, OnImageAdded).Times(1);
+  EXPECT_NO_CALLS(observer, OnImagesReady);
+  AddNTestImages(1);
+
+  EXPECT_CALL(observer, OnImageAdded).Times(1);
+  EXPECT_CALL(observer, OnImagesReady).Times(1);
+  AddNTestImages(1);
+}
+
+TEST_F(AmbientBackendModelTest, ShouldNotifyObserversOnImageAdded) {
+  testing::NiceMock<MockAmbientBackendModelObserver> observer;
+  base::ScopedObservation<AmbientBackendModel, AmbientBackendModelObserver>
+      scoped_obs{&observer};
+
+  scoped_obs.Observe(ambient_backend_model());
+
+  EXPECT_CALL(observer, OnImagesReady).Times(1);
+  EXPECT_CALL(observer, OnImageAdded).Times(2);
+  AddNTestImages(2);
+
+  EXPECT_CALL(observer, OnImageAdded).Times(3);
+  AddNTestImages(3);
 }
 
 }  // namespace ash

@@ -60,22 +60,40 @@ bool AmbientBackendModel::ImagesReady() const {
 
 void AmbientBackendModel::AddNextImage(
     const PhotoWithDetails& photo_with_details) {
+  DCHECK(!photo_with_details.IsNull());
+
   ResetImageFailures();
+
+  bool should_notify_ready = false;
+
   if (current_image_.IsNull()) {
+    // If |current_image_| is null, |photo_with_details| should be the first
+    // image stored. |next_image_| should also be null.
+    DCHECK(next_image_.IsNull());
     current_image_ = photo_with_details;
   } else if (next_image_.IsNull()) {
+    // |current_image_| and |next_image_| are set.
     next_image_ = photo_with_details;
-    NotifyImagesReady();
+    should_notify_ready = true;
   } else {
+    // Cycle out the old |current_image_|.
     current_image_ = next_image_;
     next_image_ = photo_with_details;
   }
 
-  NotifyImagesChanged();
+  NotifyImageAdded();
+
+  // Observers expect |OnImagesReady| after |OnImageAdded|.
+  if (should_notify_ready)
+    NotifyImagesReady();
 }
 
-bool AmbientBackendModel::HashMatchesNextImage(const std::string& hash) const {
-  return GetNextImage().hash == hash;
+bool AmbientBackendModel::IsHashDuplicate(const std::string& hash) const {
+  // Make sure that a photo does not appear twice in a row. If |next_image_| is
+  // not null, the new image must not be identical to |next_image_|.
+  const auto& image_to_compare =
+      next_image_.IsNull() ? current_image_ : next_image_;
+  return image_to_compare.hash == hash;
 }
 
 void AmbientBackendModel::AddImageFailure() {
@@ -108,13 +126,6 @@ void AmbientBackendModel::Clear() {
   next_image_.Clear();
 }
 
-const PhotoWithDetails& AmbientBackendModel::GetNextImage() const {
-  if (!next_image_.IsNull())
-    return next_image_;
-
-  return current_image_;
-}
-
 float AmbientBackendModel::GetTemperatureInCelsius() const {
   return (temperature_fahrenheit_ - 32) * 5 / 9;
 }
@@ -136,9 +147,9 @@ void AmbientBackendModel::NotifyTopicsChanged() {
     observer.OnTopicsChanged();
 }
 
-void AmbientBackendModel::NotifyImagesChanged() {
+void AmbientBackendModel::NotifyImageAdded() {
   for (auto& observer : observers_)
-    observer.OnImagesChanged();
+    observer.OnImageAdded();
 }
 
 void AmbientBackendModel::NotifyImagesReady() {

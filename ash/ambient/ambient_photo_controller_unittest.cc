@@ -41,7 +41,7 @@ class MockAmbientBackendModelObserver : public AmbientBackendModelObserver {
   ~MockAmbientBackendModelObserver() override = default;
 
   // AmbientBackendModelObserver:
-  MOCK_METHOD(void, OnImagesChanged, (), (override));
+  MOCK_METHOD(void, OnImageAdded, (), (override));
   MOCK_METHOD(void, OnImagesReady, (), (override));
 };
 
@@ -224,7 +224,7 @@ TEST_F(AmbientPhotoControllerTest, ShouldReadCacheWhenNoMoreTopics) {
   FetchImage();
   FastForwardToNextImage();
   // Topics is empty. Will read from cache, which is empty.
-  auto image = photo_controller()->ambient_backend_model()->GetNextImage();
+  auto image = photo_controller()->ambient_backend_model()->GetCurrentImage();
   EXPECT_TRUE(image.IsNull());
 
   // Save a file to check if it gets read for display.
@@ -236,7 +236,7 @@ TEST_F(AmbientPhotoControllerTest, ShouldReadCacheWhenNoMoreTopics) {
   photo_controller()->StopScreenUpdate();
   FetchImage();
   FastForwardToNextImage();
-  image = photo_controller()->ambient_backend_model()->GetNextImage();
+  image = photo_controller()->ambient_backend_model()->GetCurrentImage();
   EXPECT_FALSE(image.IsNull());
 
   // Clean up.
@@ -251,7 +251,7 @@ TEST_F(AmbientPhotoControllerTest,
   FetchImage();
   FastForwardToNextImage();
   // Topics is empty. Will read from cache, which is empty.
-  auto image = photo_controller()->ambient_backend_model()->GetNextImage();
+  auto image = photo_controller()->ambient_backend_model()->GetCurrentImage();
   EXPECT_TRUE(image.IsNull());
 
   // The initial file name to be read is 0. Save a file with 99.img to check if
@@ -264,7 +264,7 @@ TEST_F(AmbientPhotoControllerTest,
   photo_controller()->StopScreenUpdate();
   FetchImage();
   FastForwardToNextImage();
-  image = photo_controller()->ambient_backend_model()->GetNextImage();
+  image = photo_controller()->ambient_backend_model()->GetCurrentImage();
   EXPECT_FALSE(image.IsNull());
 }
 
@@ -277,7 +277,7 @@ TEST_F(AmbientPhotoControllerTest, ShouldReadCacheWhenImageDownloadingFailed) {
   // Forward a little bit time. FetchTopics() will succeed. Downloading should
   // fail. Will read from cache, which is empty.
   task_environment()->FastForwardBy(0.2 * kTopicFetchInterval);
-  auto image = photo_controller()->ambient_backend_model()->GetNextImage();
+  auto image = photo_controller()->ambient_backend_model()->GetCurrentImage();
   EXPECT_TRUE(image.IsNull());
 
   // Save a file to check if it gets read for display.
@@ -291,7 +291,7 @@ TEST_F(AmbientPhotoControllerTest, ShouldReadCacheWhenImageDownloadingFailed) {
   // Forward a little bit time. FetchTopics() will succeed. Downloading should
   // fail. Will read from cache.
   task_environment()->FastForwardBy(0.2 * kTopicFetchInterval);
-  image = photo_controller()->ambient_backend_model()->GetNextImage();
+  image = photo_controller()->ambient_backend_model()->GetCurrentImage();
   EXPECT_FALSE(image.IsNull());
 }
 
@@ -430,18 +430,18 @@ TEST_F(AmbientPhotoControllerTest, ShouldNotLoadDuplicateImages) {
   FastForwardTiny();
 
   // Should contain hash of downloaded data.
-  EXPECT_TRUE(photo_controller()->ambient_backend_model()->HashMatchesNextImage(
+  EXPECT_TRUE(photo_controller()->ambient_backend_model()->IsHashDuplicate(
       base::SHA1HashString("image data")));
   // Only one image should have been loaded.
   EXPECT_FALSE(photo_controller()->ambient_backend_model()->ImagesReady());
 
   // Now expect a call because second image is loaded.
-  EXPECT_CALL(mock_backend_observer, OnImagesChanged).Times(1);
+  EXPECT_CALL(mock_backend_observer, OnImagesReady).Times(1);
   SetDownloadPhotoData("image data 2");
   FastForwardToNextImage();
 
   // Second image should have been loaded.
-  EXPECT_TRUE(photo_controller()->ambient_backend_model()->HashMatchesNextImage(
+  EXPECT_TRUE(photo_controller()->ambient_backend_model()->IsHashDuplicate(
       base::SHA1HashString("image data 2")));
   EXPECT_TRUE(photo_controller()->ambient_backend_model()->ImagesReady());
 }

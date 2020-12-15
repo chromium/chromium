@@ -37,7 +37,6 @@ class GlanceableInfoView : public views::View,
 
   // AmbientBackendModelObserver:
   void OnWeatherInfoUpdated() override;
-  void OnImagesChanged() override {}
 
   void Show();
 

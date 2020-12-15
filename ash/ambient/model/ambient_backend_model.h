@@ -63,8 +63,13 @@ class ASH_EXPORT AmbientBackendModel {
   // Add image to local storage.
   void AddNextImage(const PhotoWithDetails& photo);
 
-  // If the hash matches the hash of the next image to be displayed.
-  bool HashMatchesNextImage(const std::string& hash) const;
+  // Returns true if |hash| would cause an identical image to appear twice in a
+  // row. For example:
+  // {A, B} + B => true
+  // {A, B} + A => false
+  // {A, _} + B => false
+  // {A, _} + A => true
+  bool IsHashDuplicate(const std::string& hash) const;
 
   // Record that fetching an image has failed.
   void AddImageFailure();
@@ -77,7 +82,7 @@ class ASH_EXPORT AmbientBackendModel {
   void Clear();
 
   // Get images from local storage. Could be null image.
-  const PhotoWithDetails& GetNextImage() const;
+  const PhotoWithDetails& GetNextImage() const { return next_image_; }
   const PhotoWithDetails& GetCurrentImage() const { return current_image_; }
 
   // Updates the weather information and notifies observers if the icon image is
@@ -107,7 +112,7 @@ class ASH_EXPORT AmbientBackendModel {
   friend class AmbientAshTestBase;
 
   void NotifyTopicsChanged();
-  void NotifyImagesChanged();
+  void NotifyImageAdded();
   void NotifyImagesReady();
   void NotifyWeatherInfoUpdated();
 
