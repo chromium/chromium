@@ -149,9 +149,13 @@ bool DrmOverlayManager::CanHandleCandidate(
   if (candidate.transform == gfx::OVERLAY_TRANSFORM_INVALID)
     return false;
 
+  // The remaining checks are for ensuring consistency between GL compositing
+  // and overlays. If we must use an overlay, then skip the remaining checks.
+  if (candidate.requires_overlay)
+    return true;
+
   // Reject candidates that don't fall on a pixel boundary.
-  if (!candidate.requires_overlay &&
-      !gfx::IsNearestRectWithinDistance(candidate.display_rect, 0.01f))
+  if (!gfx::IsNearestRectWithinDistance(candidate.display_rect, 0.01f))
     return false;
 
   // DRM supposedly supports subpixel source crop. However, according to
