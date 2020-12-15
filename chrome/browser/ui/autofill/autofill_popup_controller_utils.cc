@@ -40,6 +40,7 @@ const struct {
     {"scanCreditCardIcon", IDR_ANDROID_AUTOFILL_CC_SCAN_NEW},
     {"settings", IDR_ANDROID_AUTOFILL_SETTINGS},
     {"create", IDR_ANDROID_AUTOFILL_CREATE},
+    {"offerTag", IDR_ANDROID_AUTOFILL_OFFER_TAG_GREEN},
 #endif  // OS_ANDROID
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     {"googlePay", IDR_AUTOFILL_GOOGLE_PAY},

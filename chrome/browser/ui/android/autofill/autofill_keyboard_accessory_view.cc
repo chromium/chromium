@@ -9,11 +9,14 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/callback.h"
+#include "base/strings/utf_string_conversions.h"
+
 #include "chrome/android/features/keyboard_accessory/jni_headers/AutofillKeyboardAccessoryViewBridge_jni.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller_utils.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -69,12 +72,23 @@ void AutofillKeyboardAccessoryView::Show() {
       android_icon_id = ResourceMapper::MapToJavaDrawableId(
           GetIconResourceID(suggestion.icon));
     }
-
+    // Set the offer title to display as the item tag.
+    base::string16 item_tag = base::string16();
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillEnableOffersInClankKeyboardAccessory) &&
+        !suggestion.offer_label.empty()) {
+      item_tag = suggestion.offer_label;
+      // If the offer label is not empty then replace the network icon by the
+      // offer tag.
+      android_icon_id =
+          ResourceMapper::MapToJavaDrawableId(GetIconResourceID("offerTag"));
+    }
     Java_AutofillKeyboardAccessoryViewBridge_addToAutofillSuggestionArray(
         env, data_array, position++,
         ConvertUTF16ToJavaString(env, controller_->GetSuggestionValueAt(i)),
         ConvertUTF16ToJavaString(env, controller_->GetSuggestionLabelAt(i)),
-        android_icon_id, suggestion.frontend_id,
+        ConvertUTF16ToJavaString(env, item_tag), android_icon_id,
+        suggestion.frontend_id,
         controller_->GetRemovalConfirmationText(i, nullptr, nullptr));
   }
   Java_AutofillKeyboardAccessoryViewBridge_show(env, java_object_, data_array,

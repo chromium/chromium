@@ -146,15 +146,17 @@ public class AutofillKeyboardAccessoryViewBridge
      * @param sublabel Hint for the suggested text. The text that's going to be filled in the
      *                 unfocused fields of the form. If {@see label} is empty, then this must be
      *                 empty too.
+     * @param itemTag Tag for the autofill suggestion. This text will be displayed as an IPH Bubble.
      * @param iconId The resource ID for the icon associated with the suggestion, or 0 for no icon.
      * @param suggestionId Identifier for the suggestion type.
      * @param isDeletable Whether the item can be deleted by the user.
      */
     @CalledByNative
     private static void addToAutofillSuggestionArray(AutofillSuggestion[] array, int index,
-            String label, String sublabel, int iconId, int suggestionId, boolean isDeletable) {
+            String label, String sublabel, String itemTag, int iconId, int suggestionId,
+            boolean isDeletable) {
         int drawableId = iconId == 0 ? DropdownItem.NO_ICON : iconId;
-        array[index] = new AutofillSuggestion(label, sublabel, /* itemTag= */ "", drawableId,
+        array[index] = new AutofillSuggestion(label, sublabel, itemTag, drawableId,
                 false /* isIconAtStart */, suggestionId, isDeletable, false /* isMultilineLabel */,
                 false /* isBoldLabel */);
     }
