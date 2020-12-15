@@ -25,7 +25,8 @@ namespace dom_distiller {
 
 namespace {
 
-const char* const kFilterlist[] = {"www.reddit.com", "tools.usps.com"};
+const char* const kFilterlist[] = {"www.reddit.com", "tools.usps.com",
+                                   "old.reddit.com"};
 
 enum RejectionBuckets {
   NOT_ARTICLE = 0,
