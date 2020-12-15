@@ -52,6 +52,7 @@ class AddressField : public FormField {
   static const int kZipCodeMatchType;
   static const int kCityMatchType;
   static const int kStateMatchType;
+  static const int kDependentLocalityMatchType;
 
   explicit AddressField(LogManager* log_manager);
 
@@ -73,15 +74,19 @@ class AddressField : public FormField {
   bool ParseZipCode(AutofillScanner* scanner,
                     const LanguageCode& page_language);
 
+  bool ParseDependentLocality(AutofillScanner* scanner,
+                              const LanguageCode& page_language);
+
   bool ParseCity(AutofillScanner* scanner, const LanguageCode& page_language);
 
   bool ParseState(AutofillScanner* scanner, const LanguageCode& page_language);
 
   // Parses the current field pointed to by |scanner|, if it exists, and tries
-  // to figure out whether the field's type: city, state, country, zip, or
-  // none of those.
-  bool ParseCityStateCountryZipCode(AutofillScanner* scanner,
-                                    const LanguageCode& page_language);
+  // to determine if the field's type corresponds to one of the following:
+  // dependent locality, city, state, country, zip, or none of those.
+  bool ParseDependentLocalityCityStateCountryZipCode(
+      AutofillScanner* scanner,
+      const LanguageCode& page_language);
 
   // Like ParseFieldSpecifics(), but applies |pattern| against the name and
   // label of the current field separately. If the return value is
@@ -100,6 +105,10 @@ class AddressField : public FormField {
   // RESULT_MATCH_NAME_LABEL, then |scanner| advances and the field is set.
   // Otherwise |scanner| rewinds and the field is cleared.
   ParseNameLabelResult ParseNameAndLabelForZipCode(
+      AutofillScanner* scanner,
+      const LanguageCode& page_language);
+
+  ParseNameLabelResult ParseNameAndLabelForDependentLocality(
       AutofillScanner* scanner,
       const LanguageCode& page_language);
 
@@ -124,6 +133,7 @@ class AddressField : public FormField {
   AutofillField* address3_ = nullptr;
   AutofillField* street_address_ = nullptr;
   AutofillField* apartment_number_ = nullptr;
+  AutofillField* dependent_locality_ = nullptr;
   AutofillField* city_ = nullptr;
   AutofillField* state_ = nullptr;
   AutofillField* zip_ = nullptr;

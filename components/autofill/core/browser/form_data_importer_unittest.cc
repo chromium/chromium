@@ -584,6 +584,10 @@ TEST_P(FormDataImporterTest, ImportStructuredNameAddressProfile) {
 }
 
 TEST_P(FormDataImporterTest, ImportAddressProfiles) {
+  base::test::ScopedFeatureList dependent_locality_feature;
+  dependent_locality_feature.InitAndEnableFeature(
+      features::kAutofillEnableDependentLocalityParsing);
+
   FormData form;
   form.url = GURL("https://wwww.foo.com");
 
@@ -600,6 +604,9 @@ TEST_P(FormDataImporterTest, ImportAddressProfiles) {
   test::CreateTestFormField("Address:", "address1", "21 Laussat St", "text",
                             &field);
   form.fields.push_back(field);
+  test::CreateTestFormField("Neighborhood:", "neighborhood", "Nob Hill", "text",
+                            &field);
+  form.fields.push_back(field);
   test::CreateTestFormField("City:", "city", "San Francisco", "text", &field);
   form.fields.push_back(field);
   test::CreateTestFormField("State:", "state", "California", "text", &field);
@@ -613,8 +620,8 @@ TEST_P(FormDataImporterTest, ImportAddressProfiles) {
   AutofillProfile expected(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetProfileInfo(&expected, "George", nullptr, "Washington",
                        "theprez@gmail.com", nullptr, "21 Laussat St", nullptr,
-                       "San Francisco", "California", "94102", nullptr,
-                       nullptr);
+                       "Nob Hill", "San Francisco", "California", "94102",
+                       nullptr, nullptr);
   const std::vector<AutofillProfile*>& results =
       personal_data_manager_->GetProfiles();
   ASSERT_EQ(1U, results.size());

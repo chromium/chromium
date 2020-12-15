@@ -80,6 +80,12 @@ const base::Feature kAutofillEnableAugmentedPhoneCountryCode{
     "AutofillEnableAugmentedPhoneCountryCode",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls if Autofill parses ADDRESS_HOME_DEPENDENT_LOCALITY.
+// TODO(crbug.com/1157405): Remove once launched.
+const base::Feature kAutofillEnableDependentLocalityParsing{
+    "AutofillEnableDependentLocalityParsing",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether we show "Hide suggestions" item in the suggestions menu.
 const base::Feature kAutofillEnableHideSuggestionsUI{
     "AutofillEnableHideSuggestionsUI", base::FEATURE_DISABLED_BY_DEFAULT};

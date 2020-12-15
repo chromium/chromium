@@ -38,6 +38,9 @@ bool SetFieldAndAdvanceCursor(AutofillScanner* scanner, AutofillField** field) {
 const int AddressField::kZipCodeMatchType =
     MATCH_DEFAULT | MATCH_TELEPHONE | MATCH_NUMBER;
 
+const int AddressField::kDependentLocalityMatchType =
+    MATCH_DEFAULT | MATCH_SELECT | MATCH_SEARCH;
+
 // Select fields are allowed here.  This occurs on top-100 site rediff.com.
 const int AddressField::kCityMatchType =
     MATCH_DEFAULT | MATCH_SELECT | MATCH_SEARCH;
@@ -100,8 +103,8 @@ std::unique_ptr<FormField> AddressField::Parse(
                                    {.augment_types = MATCH_TEXT_AREA})) {
       continue;
     } else if (address_field->ParseAddress(scanner, page_language) ||
-               address_field->ParseCityStateCountryZipCode(scanner,
-                                                           page_language) ||
+               address_field->ParseDependentLocalityCityStateCountryZipCode(
+                   scanner, page_language) ||
                address_field->ParseCompany(scanner, page_language)) {
       has_trailing_non_labeled_fields = false;
       continue;
@@ -141,7 +144,8 @@ std::unique_ptr<FormField> AddressField::Parse(
       address_field->street_address_ || address_field->city_ ||
       address_field->state_ || address_field->zip_ || address_field->zip4_ ||
       address_field->street_name_ || address_field->house_number_ ||
-      address_field->country_ || address_field->apartment_number_) {
+      address_field->country_ || address_field->apartment_number_ ||
+      address_field->dependent_locality_) {
     // Don't slurp non-labeled fields at the end into the address.
     if (has_trailing_non_labeled_fields)
       scanner->RewindTo(begin_trailing_non_labeled_fields);
@@ -173,6 +177,8 @@ void AddressField::AddClassifications(
   AddClassification(address3_, ADDRESS_HOME_LINE3, kBaseAddressParserScore,
                     field_candidates);
   AddClassification(street_address_, ADDRESS_HOME_STREET_ADDRESS,
+                    kBaseAddressParserScore, field_candidates);
+  AddClassification(dependent_locality_, ADDRESS_HOME_DEPENDENT_LOCALITY,
                     kBaseAddressParserScore, field_candidates);
   AddClassification(city_, ADDRESS_HOME_CITY, kBaseAddressParserScore,
                     field_candidates);
@@ -416,6 +422,24 @@ bool AddressField::ParseZipCode(AutofillScanner* scanner,
   return true;
 }
 
+bool AddressField::ParseDependentLocality(AutofillScanner* scanner,
+                                          const LanguageCode& page_language) {
+  const bool is_enabled_dependent_locality_parsing =
+      base::FeatureList::IsEnabled(
+          features::kAutofillEnableDependentLocalityParsing);
+  // TODO(crbug.com/1157405) Remove feature check when launched.
+  if (dependent_locality_ || !is_enabled_dependent_locality_parsing)
+    return false;
+
+  const std::vector<MatchingPattern>& dependent_locality_patterns =
+      PatternProvider::GetInstance().GetMatchPatterns(
+          "ADDRESS_HOME_DEPENDENT_LOCALITY", page_language);
+  return ParseFieldSpecifics(scanner, UTF8ToUTF16(kDependentLocalityRe),
+                             kDependentLocalityMatchType,
+                             dependent_locality_patterns, &dependent_locality_,
+                             {log_manager_, "kDependentLocalityRe"});
+}
+
 bool AddressField::ParseCity(AutofillScanner* scanner,
                              const LanguageCode& page_language) {
   if (city_)
@@ -472,28 +496,43 @@ AddressField::ParseNameLabelResult AddressField::ParseNameAndLabelSeparately(
   return RESULT_MATCH_NONE;
 }
 
-bool AddressField::ParseCityStateCountryZipCode(
+bool AddressField::ParseDependentLocalityCityStateCountryZipCode(
     AutofillScanner* scanner,
     const LanguageCode& page_language) {
   // The |scanner| is not pointing at a field.
   if (scanner->IsEnd())
     return false;
 
+  int num_of_missing_types = 0;
+  for (const auto* field :
+       {dependent_locality_, city_, state_, country_, zip_}) {
+    if (!field)
+      ++num_of_missing_types;
+  }
+
   // All the field types have already been detected.
-  if (city_ && state_ && country_ && zip_)
+  if (num_of_missing_types == 0)
     return false;
 
   // Exactly one field type is missing.
-  if (state_ && country_ && zip_)
-    return ParseCity(scanner, page_language);
-  if (city_ && country_ && zip_)
-    return ParseState(scanner, page_language);
-  if (city_ && state_ && zip_)
-    return ParseCountry(scanner, page_language);
-  if (city_ && state_ && country_)
-    return ParseZipCode(scanner, page_language);
+  if (num_of_missing_types == 1) {
+    if (!dependent_locality_)
+      return ParseDependentLocality(scanner, page_language);
+    if (!city_)
+      return ParseCity(scanner, page_language);
+    if (!state_)
+      return ParseState(scanner, page_language);
+    if (!country_)
+      return ParseCountry(scanner, page_language);
+    if (!zip_)
+      return ParseZipCode(scanner, page_language);
+  }
 
   // Check for matches to both the name and the label.
+  ParseNameLabelResult dependent_locality_result =
+      ParseNameAndLabelForDependentLocality(scanner, page_language);
+  if (dependent_locality_result == RESULT_MATCH_NAME_LABEL)
+    return true;
   ParseNameLabelResult city_result =
       ParseNameAndLabelForCity(scanner, page_language);
   if (city_result == RESULT_MATCH_NAME_LABEL)
@@ -511,36 +550,47 @@ bool AddressField::ParseCityStateCountryZipCode(
   if (zip_result == RESULT_MATCH_NAME_LABEL)
     return true;
 
+  int num_of_matches = 0;
+  for (const auto result : {dependent_locality_result, city_result,
+                            state_result, country_result, zip_result}) {
+    if (result != RESULT_MATCH_NONE)
+      ++num_of_matches;
+  }
+
   // Check if there is only one potential match.
-  bool maybe_city = city_result != RESULT_MATCH_NONE;
-  bool maybe_state = state_result != RESULT_MATCH_NONE;
-  bool maybe_country = country_result != RESULT_MATCH_NONE;
-  bool maybe_zip = zip_result != RESULT_MATCH_NONE;
-  if (maybe_city && !maybe_state && !maybe_country && !maybe_zip)
-    return SetFieldAndAdvanceCursor(scanner, &city_);
-  if (maybe_state && !maybe_city && !maybe_country && !maybe_zip)
-    return SetFieldAndAdvanceCursor(scanner, &state_);
-  if (maybe_country && !maybe_city && !maybe_state && !maybe_zip)
-    return SetFieldAndAdvanceCursor(scanner, &country_);
-  if (maybe_zip && !maybe_city && !maybe_state && !maybe_country)
-    return ParseZipCode(scanner, page_language);
+  if (num_of_matches == 1) {
+    if (dependent_locality_result != RESULT_MATCH_NONE)
+      return SetFieldAndAdvanceCursor(scanner, &dependent_locality_);
+    if (city_result != RESULT_MATCH_NONE)
+      return SetFieldAndAdvanceCursor(scanner, &city_);
+    if (state_result != RESULT_MATCH_NONE)
+      return SetFieldAndAdvanceCursor(scanner, &state_);
+    if (country_result != RESULT_MATCH_NONE)
+      return SetFieldAndAdvanceCursor(scanner, &country_);
+    if (zip_result != RESULT_MATCH_NONE)
+      return ParseZipCode(scanner, page_language);
+  }
 
   // If there is a clash between the country and the state, set the type of
   // the field to the country.
-  if (maybe_state && maybe_country && !maybe_city && !maybe_zip)
+  if (num_of_matches == 2 && state_result != RESULT_MATCH_NONE &&
+      country_result != RESULT_MATCH_NONE)
     return SetFieldAndAdvanceCursor(scanner, &country_);
 
   // By default give the name priority over the label.
-  ParseNameLabelResult resultsToMatch[] = {RESULT_MATCH_NAME,
-                                           RESULT_MATCH_LABEL};
+  ParseNameLabelResult results_to_match[] = {RESULT_MATCH_NAME,
+                                             RESULT_MATCH_LABEL};
   if (page_language == LanguageCode("tr") &&
       base::FeatureList::IsEnabled(
           features::kAutofillEnableLabelPrecedenceForTurkishAddresses)) {
-    // Give the label priority over the name.
-    std::swap(resultsToMatch[0], resultsToMatch[1]);
+    // Give the label priority over the name to avoid misclassifications when
+    // the name has a misleading value (e.g. province field is named "city").
+    std::swap(results_to_match[0], results_to_match[1]);
   }
 
-  for (auto result : resultsToMatch) {
+  for (const auto result : results_to_match) {
+    if (dependent_locality_result == result)
+      return SetFieldAndAdvanceCursor(scanner, &dependent_locality_);
     if (city_result == result)
       return SetFieldAndAdvanceCursor(scanner, &city_);
     if (state_result == result)
@@ -594,6 +644,26 @@ AddressField::ParseNameLabelResult AddressField::ParseNameAndLabelForZipCode(
                         {log_manager_, "kZip4Re"});
   }
   return result;
+}
+
+AddressField::ParseNameLabelResult
+AddressField::ParseNameAndLabelForDependentLocality(
+    AutofillScanner* scanner,
+    const LanguageCode& page_language) {
+  const bool is_enabled_dependent_locality_parsing =
+      base::FeatureList::IsEnabled(
+          features::kAutofillEnableDependentLocalityParsing);
+  // TODO(crbug.com/1157405) Remove feature check when launched.
+  if (dependent_locality_ || !is_enabled_dependent_locality_parsing)
+    return RESULT_MATCH_NONE;
+
+  const std::vector<MatchingPattern>& dependent_locality_patterns =
+      PatternProvider::GetInstance().GetMatchPatterns(
+          "ADDRESS_HOME_DEPENDENT_LOCALITY", page_language);
+  return ParseNameAndLabelSeparately(
+      scanner, UTF8ToUTF16(kDependentLocalityRe), kDependentLocalityMatchType,
+      dependent_locality_patterns, &dependent_locality_,
+      {log_manager_, "kDependentLocalityRe"});
 }
 
 AddressField::ParseNameLabelResult AddressField::ParseNameAndLabelForCity(

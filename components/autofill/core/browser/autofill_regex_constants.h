@@ -25,6 +25,7 @@ extern const char kDependentLocality[];
 extern const char kCountryLocationRe[];
 extern const char kZipCodeRe[];
 extern const char kZip4Re[];
+extern const char kDependentLocalityRe[];
 extern const char kCityRe[];
 extern const char kStateRe[];
 extern const char kNameOnCardRe[];

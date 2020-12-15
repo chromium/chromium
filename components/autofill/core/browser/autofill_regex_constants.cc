@@ -127,6 +127,10 @@ const char kZipCodeRe[] =
 const char kZip4Re[] =
     "zip|^-$|post2"
     "|codpos2";  // pt-BR, pt-PT
+const char kDependentLocalityRe[] =
+    "neighbo(u)?rhood"  // en
+    "|bairro"           // pt-BR, pt-PT
+    "|mahalle|köy";     // tr
 const char kCityRe[] =
     "city|town"
     "|\\bort\\b|stadt"                                  // de-DE

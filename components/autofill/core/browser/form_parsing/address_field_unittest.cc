@@ -53,9 +53,12 @@ class AddressFieldTest : public testing::Test {
 
   // Apply parsing and verify the expected types.
   // |parsed| indicates if at least one field could be parsed successfully.
-  void ClassifyAndVerify(bool parsed = true) {
+  // |page_language| the language to be used for parsing, default empty value
+  // means the language is unknown and patterns of all languages are used.
+  void ClassifyAndVerify(bool parsed = true,
+                         const LanguageCode& page_language = LanguageCode("")) {
     AutofillScanner scanner(list_);
-    field_ = Parse(&scanner);
+    field_ = Parse(&scanner, page_language);
 
     if (!parsed) {
       ASSERT_EQ(nullptr, field_.get());
@@ -81,12 +84,6 @@ class AddressFieldTest : public testing::Test {
         AddressField::Parse(scanner, page_language, nullptr);
     return std::unique_ptr<AddressField>(
         static_cast<AddressField*>(field.release()));
-  }
-
-  static std::unique_ptr<AddressField> Parse(AutofillScanner* scanner) {
-    // An empty page_language means the language is unknown and patterns of all
-    // languages are used.
-    return Parse(scanner, LanguageCode(""));
   }
 
   FieldRendererId MakeFieldRendererId() {
@@ -193,6 +190,19 @@ TEST_F(AddressFieldTest, NotParseHouseNumberWithoutStreetName) {
   ClassifyAndVerify(/*parsed=*/false);
 }
 
+// Tests that the dependent locality is correctly classified with
+// an unambiguous field name and label.
+TEST_F(AddressFieldTest, ParseDependentLocality) {
+  // TODO(crbug.com/1157405): Remove once launched.
+  base::test::ScopedFeatureList enabled;
+  enabled.InitAndEnableFeature(
+      features::kAutofillEnableDependentLocalityParsing);
+
+  AddTextFormFieldData("neighborhood", "Neighborhood",
+                       ADDRESS_HOME_DEPENDENT_LOCALITY);
+  ClassifyAndVerify();
+}
+
 TEST_F(AddressFieldTest, ParseCity) {
   AddTextFormFieldData("city", "City", ADDRESS_HOME_CITY);
   ClassifyAndVerify();
@@ -226,9 +236,17 @@ TEST_F(AddressFieldTest, ParseCompany) {
   ClassifyAndVerify();
 }
 
-// Tests that the city, state, country and zip-code fields are correctly
-// classfied with unambiguous field names and labels.
-TEST_F(AddressFieldTest, ParseCityStateCountryZipcodeTogether) {
+// Tests that the dependent locality, city, state, country and zip-code
+// fields are correctly classfied with unambiguous field names and labels.
+TEST_F(AddressFieldTest,
+       ParseDependentLocalityCityStateCountryZipcodeTogether) {
+  // TODO(crbug.com/1157405): Remove once launched.
+  base::test::ScopedFeatureList enabled;
+  enabled.InitAndEnableFeature(
+      features::kAutofillEnableDependentLocalityParsing);
+
+  AddTextFormFieldData("neighborhood", "Neighborhood",
+                       ADDRESS_HOME_DEPENDENT_LOCALITY);
   AddTextFormFieldData("city", "City", ADDRESS_HOME_CITY);
   AddTextFormFieldData("state", "State", ADDRESS_HOME_STATE);
   AddTextFormFieldData("country", "Country", ADDRESS_HOME_COUNTRY);
@@ -259,32 +277,9 @@ TEST_F(AddressFieldTest, ParseTurkishCityStateWithLabelPrecedence) {
   enabled.InitAndEnableFeature(
       features::kAutofillEnableLabelPrecedenceForTurkishAddresses);
 
-  FormFieldData field;
-  field.form_control_type = "text";
-
-  field.label = ASCIIToUTF16("Il");
-  field.name = ASCIIToUTF16("city");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId state = list_.back()->unique_renderer_id;
-
-  field.label = ASCIIToUTF16("Ilce");
-  field.name = ASCIIToUTF16("county");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId city = list_.back()->unique_renderer_id;
-
-  AutofillScanner scanner(list_);
-  field_ = Parse(&scanner, LanguageCode("tr"));
-  ASSERT_NE(nullptr, field_.get());
-  field_->AddClassificationsForTesting(&field_candidates_map_);
-
-  ASSERT_TRUE(field_candidates_map_.find(state) != field_candidates_map_.end());
-  EXPECT_EQ(ADDRESS_HOME_STATE,
-            field_candidates_map_[state].BestHeuristicType());
-
-  ASSERT_TRUE(field_candidates_map_.find(city) != field_candidates_map_.end());
-  EXPECT_EQ(ADDRESS_HOME_CITY, field_candidates_map_[city].BestHeuristicType());
+  AddTextFormFieldData("city", "Il", ADDRESS_HOME_STATE);
+  AddTextFormFieldData("county", "Ilce", ADDRESS_HOME_CITY);
+  ClassifyAndVerify(/*parsed=*/true, LanguageCode("tr"));
 }
 
 }  // namespace autofill
