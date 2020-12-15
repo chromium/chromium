@@ -240,7 +240,7 @@ bool StackCopierSignal::CopyStack(StackBuffer* stack_buffer,
       *timestamp = maybe_timestamp.value();
     else {
       TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cpu_profiler.debug"),
-                   "Fallback on TimeTicks::Now()")
+                   "Fallback on TimeTicks::Now()");
       *timestamp = TimeTicks::Now();
     }
   }
