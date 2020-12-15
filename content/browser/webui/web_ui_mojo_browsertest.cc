@@ -173,10 +173,6 @@ class TestWebUIControllerFactory : public WebUIControllerFactory {
                       const GURL& url) override {
     return GetWebUIType(browser_context, url) != WebUI::kNoWebUI;
   }
-  bool UseWebUIBindingsForURL(BrowserContext* browser_context,
-                              const GURL& url) override {
-    return GetWebUIType(browser_context, url) != WebUI::kNoWebUI;
-  }
 
   void set_web_ui_enabled(bool enabled) { web_ui_enabled_ = enabled; }
 

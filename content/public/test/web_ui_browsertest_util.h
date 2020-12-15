@@ -64,8 +64,6 @@ class TestWebUIControllerFactory : public WebUIControllerFactory {
                              const GURL& url) override;
   bool UseWebUIForURL(BrowserContext* browser_context,
                       const GURL& url) override;
-  bool UseWebUIBindingsForURL(BrowserContext* browser_context,
-                              const GURL& url) override;
 
  private:
   bool disable_xfo_ = false;

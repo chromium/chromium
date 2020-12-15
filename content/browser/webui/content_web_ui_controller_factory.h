@@ -22,8 +22,6 @@ class CONTENT_EXPORT ContentWebUIControllerFactory
                              const GURL& url) override;
   bool UseWebUIForURL(BrowserContext* browser_context,
                       const GURL& url) override;
-  bool UseWebUIBindingsForURL(BrowserContext* browser_context,
-                              const GURL& url) override;
   std::unique_ptr<WebUIController> CreateWebUIControllerForURL(
       WebUI* web_ui,
       const GURL& url) override;

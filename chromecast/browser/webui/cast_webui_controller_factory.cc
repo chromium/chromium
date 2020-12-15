@@ -42,12 +42,6 @@ bool CastWebUiControllerFactory::UseWebUIForURL(
   return GetWebUIType(browser_context, url) != content::WebUI::kNoWebUI;
 }
 
-bool CastWebUiControllerFactory::UseWebUIBindingsForURL(
-    content::BrowserContext* browser_context,
-    const GURL& url) {
-  return UseWebUIForURL(browser_context, url);
-}
-
 std::unique_ptr<content::WebUIController>
 CastWebUiControllerFactory::CreateWebUIControllerForURL(content::WebUI* web_ui,
                                                         const GURL& url) {

@@ -27,8 +27,6 @@ class CONTENT_EXPORT WebUIControllerFactoryRegistry
                              const GURL& url) override;
   bool UseWebUIForURL(BrowserContext* browser_context,
                       const GURL& url) override;
-  bool UseWebUIBindingsForURL(BrowserContext* browser_context,
-                              const GURL& url) override;
 
   // Returns true if the given URL can be loaded by Web UI system. This allows
   // URLs that UseWebUIForURL returns true for, and also URLs that can be loaded

@@ -64,9 +64,3 @@ bool TestSystemWebAppWebUIControllerFactory::UseWebUIForURL(
   return url.SchemeIs(content::kChromeUIScheme) &&
          url.host_piece() == source_name_;
 }
-
-bool TestSystemWebAppWebUIControllerFactory::UseWebUIBindingsForURL(
-    content::BrowserContext* browser_context,
-    const GURL& url) {
-  return UseWebUIForURL(browser_context, url);
-}

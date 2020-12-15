@@ -120,11 +120,6 @@ class JsLibraryTestWebUIControllerFactory
                       const GURL& url) override {
     return IsSystemAppTestURL(url);
   }
-
-  bool UseWebUIBindingsForURL(content::BrowserContext* browser_context,
-                              const GURL& url) override {
-    return IsSystemAppTestURL(url);
-  }
 };
 
 }  // namespace

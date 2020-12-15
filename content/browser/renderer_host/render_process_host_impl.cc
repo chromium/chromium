@@ -3972,10 +3972,19 @@ bool RenderProcessHostImpl::IsSuitableHost(
     CHECK(process_lock.is_invalid());
   } else {
     // WebUI checks.
-    bool url_requires_web_ui_bindings =
-        WebUIControllerFactoryRegistry::GetInstance()->UseWebUIBindingsForURL(
+    bool url_is_for_web_ui =
+        WebUIControllerFactoryRegistry::GetInstance()->UseWebUIForURL(
             browser_context, site_info.site_url());
-    if (host_has_web_ui_bindings != url_requires_web_ui_bindings)
+    if (host_has_web_ui_bindings && !url_is_for_web_ui)
+      return false;
+    // A host with no bindings is not necessarily unsuitable for a WebUI, but we
+    // incorrectly return false here. For example, some WebUIs, like
+    // chrome://process-internals, don't have bindings, so this method would
+    // return false for a chrome://process-internals host and a
+    // chrome://process-internals target URL.
+    // TODO(crbug.com/1158277): Don't return false for suitable WebUI hosts
+    // and WebUI target URLs.
+    if (!host_has_web_ui_bindings && url_is_for_web_ui)
       return false;
 
     if (process_lock.is_locked_to_site()) {

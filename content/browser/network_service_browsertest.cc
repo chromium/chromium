@@ -71,10 +71,6 @@ class WebUITestWebUIControllerFactory : public WebUIControllerFactory {
                       const GURL& url) override {
     return HasWebUIScheme(url);
   }
-  bool UseWebUIBindingsForURL(BrowserContext* browser_context,
-                              const GURL& url) override {
-    return HasWebUIScheme(url);
-  }
 };
 
 class TestWebUIDataSource : public URLDataSource {

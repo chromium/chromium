@@ -72,12 +72,6 @@ bool AwWebUIControllerFactory::UseWebUIForURL(
   return GetWebUIType(browser_context, url) != WebUI::kNoWebUI;
 }
 
-bool AwWebUIControllerFactory::UseWebUIBindingsForURL(
-    content::BrowserContext* browser_context,
-    const GURL& url) {
-  return UseWebUIForURL(browser_context, url);
-}
-
 std::unique_ptr<WebUIController>
 AwWebUIControllerFactory::CreateWebUIControllerForURL(WebUI* web_ui,
                                                       const GURL& url) {

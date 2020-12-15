@@ -79,18 +79,6 @@ bool WebUIControllerFactoryRegistry::UseWebUIForURL(
   return false;
 }
 
-bool WebUIControllerFactoryRegistry::UseWebUIBindingsForURL(
-    BrowserContext* browser_context,
-    const GURL& url) {
-  std::vector<WebUIControllerFactory*>* factories =
-      g_web_ui_controller_factories.Pointer();
-  for (size_t i = 0; i < factories->size(); ++i) {
-    if ((*factories)[i]->UseWebUIBindingsForURL(browser_context, url))
-      return true;
-  }
-  return false;
-}
-
 bool WebUIControllerFactoryRegistry::IsURLAcceptableForWebUI(
     BrowserContext* browser_context,
     const GURL& url) {

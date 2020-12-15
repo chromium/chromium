@@ -212,10 +212,4 @@ bool TestWebUIControllerFactory::UseWebUIForURL(BrowserContext* browser_context,
   return GetWebUIType(browser_context, url) != WebUI::kNoWebUI;
 }
 
-bool TestWebUIControllerFactory::UseWebUIBindingsForURL(
-    BrowserContext* browser_context,
-    const GURL& url) {
-  return GetWebUIType(browser_context, url) != WebUI::kNoWebUI;
-}
-
 }  // namespace content

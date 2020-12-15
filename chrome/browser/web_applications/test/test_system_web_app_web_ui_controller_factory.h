@@ -38,8 +38,6 @@ class TestSystemWebAppWebUIControllerFactory
 
   bool UseWebUIForURL(content::BrowserContext* browser_context,
                       const GURL& url) override;
-  bool UseWebUIBindingsForURL(content::BrowserContext* browser_context,
-                              const GURL& url) override;
 
  private:
   std::string source_name_;

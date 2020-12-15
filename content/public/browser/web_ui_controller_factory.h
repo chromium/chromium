@@ -45,10 +45,6 @@ class CONTENT_EXPORT WebUIControllerFactory {
   // (faster) and can be used to determine security policy.
   virtual bool UseWebUIForURL(BrowserContext* browser_context,
                               const GURL& url) = 0;
-
-  // Returns true for the subset of WebUIs that actually need WebUI bindings.
-  virtual bool UseWebUIBindingsForURL(BrowserContext* browser_context,
-                                      const GURL& url) = 0;
 };
 
 }  // namespace content

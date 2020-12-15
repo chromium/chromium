@@ -41,8 +41,6 @@ class ChromeWebUIControllerFactory : public content::WebUIControllerFactory {
                                       const GURL& url) override;
   bool UseWebUIForURL(content::BrowserContext* browser_context,
                       const GURL& url) override;
-  bool UseWebUIBindingsForURL(content::BrowserContext* browser_context,
-                              const GURL& url) override;
   std::unique_ptr<content::WebUIController> CreateWebUIControllerForURL(
       content::WebUI* web_ui,
       const GURL& url) override;

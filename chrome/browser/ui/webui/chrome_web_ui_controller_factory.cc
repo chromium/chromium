@@ -1003,12 +1003,6 @@ bool ChromeWebUIControllerFactory::UseWebUIForURL(
   return GetWebUIType(browser_context, url) != WebUI::kNoWebUI;
 }
 
-bool ChromeWebUIControllerFactory::UseWebUIBindingsForURL(
-    content::BrowserContext* browser_context,
-    const GURL& url) {
-  return UseWebUIForURL(browser_context, url);
-}
-
 std::unique_ptr<WebUIController>
 ChromeWebUIControllerFactory::CreateWebUIControllerForURL(WebUI* web_ui,
                                                           const GURL& url) {

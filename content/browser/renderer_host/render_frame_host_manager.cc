@@ -1363,7 +1363,7 @@ RenderFrameHostManager::ShouldSwapBrowsingInstancesForNavigation(
   // page and one isn't, or if the WebUI types differ.
   if (ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
           render_frame_host_->GetProcess()->GetID()) ||
-      WebUIControllerFactoryRegistry::GetInstance()->UseWebUIBindingsForURL(
+      WebUIControllerFactoryRegistry::GetInstance()->UseWebUIForURL(
           browser_context, current_effective_url)) {
     // If so, force a swap if destination is not an acceptable URL for Web UI.
     // Here, data URLs are never allowed.
@@ -1382,7 +1382,7 @@ RenderFrameHostManager::ShouldSwapBrowsingInstancesForNavigation(
     }
   } else {
     // Force a swap if it's a Web UI URL.
-    if (WebUIControllerFactoryRegistry::GetInstance()->UseWebUIBindingsForURL(
+    if (WebUIControllerFactoryRegistry::GetInstance()->UseWebUIForURL(
             browser_context, destination_effective_url)) {
       return ShouldSwapBrowsingInstance::kYes_ForceSwap;
     }

@@ -144,10 +144,6 @@ class TestWebUIControllerFactory : public content::WebUIControllerFactory {
                       const GURL& url) override {
     return url.SchemeIs(content::kChromeUIScheme);
   }
-  bool UseWebUIBindingsForURL(content::BrowserContext* browser_context,
-                              const GURL& url) override {
-    return url.SchemeIs(content::kChromeUIScheme);
-  }
 
  private:
   DISALLOW_COPY_AND_ASSIGN(TestWebUIControllerFactory);
