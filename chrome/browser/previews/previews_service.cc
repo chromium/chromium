@@ -189,6 +189,7 @@ void PreviewsService::Initialize(
   OptimizationGuideKeyedService* optimization_guide_keyed_service =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
   if (optimization_guide_keyed_service &&
+      previews::params::ArePreviewsAllowed() &&
       data_reduction_proxy::DataReductionProxySettings::
           IsDataSaverEnabledByUser(profile->IsOffTheRecord(),
                                    profile->GetPrefs())) {
