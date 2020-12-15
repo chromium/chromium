@@ -1,0 +1,7 @@
+include_rules = [
+  # draw_gl compiles its own shared library for a single entry point
+  # for testing. Therefore it cannot depend on any other module,
+  # except for shared definitions.
+  "-android_webview",
+  "+android_webview/public/browser",
+]
