@@ -24,16 +24,11 @@ class CORE_EXPORT NGInlineChildLayoutContext {
   STACK_ALLOCATED();
 
  public:
-  NGInlineChildLayoutContext();
+  NGInlineChildLayoutContext(const NGInlineNode& node,
+                             WritingDirectionMode writing_direction);
   ~NGInlineChildLayoutContext();
 
-  NGFragmentItemsBuilder* ItemsBuilder() { return items_builder_; }
-  void SetItemsBuilder(NGFragmentItemsBuilder* builder) {
-    DCHECK(!items_builder_ || !builder);
-    items_builder_ = builder;
-    if (builder)
-      builder->AddLogicalLineItemsPool(&logical_line_items_);
-  }
+  NGFragmentItemsBuilder* ItemsBuilder() { return &items_builder_; }
 
   // Returns an instance of |NGLogicalLineItems|. This is reused when laying out
   // the next line.
@@ -65,9 +60,7 @@ class CORE_EXPORT NGInlineChildLayoutContext {
   void PropagateBreakToken(scoped_refptr<const NGBlockBreakToken>);
 
  private:
-  // TODO(kojii): Probably better to own |NGInlineChildLayoutContext|. While we
-  // transit, allocating separately is easier.
-  NGFragmentItemsBuilder* items_builder_ = nullptr;
+  NGFragmentItemsBuilder items_builder_;
 
   NGLogicalLineItems logical_line_items_;
 
