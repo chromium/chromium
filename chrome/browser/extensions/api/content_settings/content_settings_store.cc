@@ -341,15 +341,12 @@ void ContentSettingsStore::SetExtensionContentSettingFromList(
       // This could be if it's a string from an old settings type that has been
       // deleted. DCHECK to make sure this is the case (not some random string).
       DCHECK(content_settings_type_str == "fullscreen" ||
-             content_settings_type_str == "mouselock");
+             content_settings_type_str == "mouselock" ||
+             content_settings_type_str == "plugins");
 
       // In this case, we just skip over that setting, effectively deleting it
       // from the in-memory model. This will implicitly delete these old
       // settings from the pref store when it is written back.
-      continue;
-    }
-    if (content_settings_type == ContentSettingsType::PLUGINS) {
-      // Plugin content settings are no longer supported for extensions.
       continue;
     }
 
