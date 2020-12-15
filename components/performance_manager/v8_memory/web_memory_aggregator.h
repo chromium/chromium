@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/optional.h"
+#include "base/sequence_checker.h"
 #include "components/performance_manager/public/mojom/web_memory.mojom.h"
 #include "url/origin.h"
 
@@ -19,9 +20,9 @@ class PageNode;
 namespace v8_memory {
 
 // Traverses the graph of execution contexts to find the results of the last
-// memory measurement and aggregates them according to the rules defined in
-// https://wicg.github.io/performance-measure-memory. (This implements the
-// draft of 20 October 2020.)
+// memory measurement and aggregates them according to the rules defined in the
+// performance.measureMemory spec. (See public/v8_memory/web_memory.h for the
+// link and spec version.)
 class WebMemoryAggregator {
  public:
   // Constructs an aggregator for the results of a memory request from
@@ -94,7 +95,10 @@ class WebMemoryAggregator {
 
   // Stores the result of the aggregation. This is populated by
   // AggregateMeasureMemoryResult.
-  mojom::WebMemoryMeasurementPtr aggregation_result_;
+  mojom::WebMemoryMeasurementPtr aggregation_result_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 namespace internal {

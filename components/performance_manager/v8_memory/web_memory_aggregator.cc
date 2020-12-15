@@ -88,6 +88,8 @@ WebMemoryAggregator::~WebMemoryAggregator() = default;
 
 WebMemoryAggregator::NodeAggregationType
 WebMemoryAggregator::FindNodeAggregationType(const FrameNode* frame_node) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
 #if DCHECK_IS_ON()
   auto* node = frame_node;
   while (node && node != aggregation_start_node_) {
@@ -126,6 +128,7 @@ WebMemoryAggregator::FindNodeAggregationType(const FrameNode* frame_node) {
 
 mojom::WebMemoryMeasurementPtr
 WebMemoryAggregator::AggregateMeasureMemoryResult() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   aggregation_result_ = mojom::WebMemoryMeasurement::New();
   VisitFrame(nullptr, aggregation_start_node_);
 
@@ -141,6 +144,7 @@ WebMemoryAggregator::AggregateMeasureMemoryResult() {
 bool WebMemoryAggregator::VisitFrame(
     mojom::WebMemoryBreakdownEntry* enclosing_aggregation_point,
     const FrameNode* frame_node) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(aggregation_result_);
   DCHECK(enclosing_aggregation_point || frame_node == aggregation_start_node_);
   DCHECK(frame_node);
@@ -224,6 +228,7 @@ bool WebMemoryAggregator::VisitFrame(
 bool WebMemoryAggregator::VisitOpenedPage(
     mojom::WebMemoryBreakdownEntry* enclosing_aggregation_point,
     const PageNode* page_node) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (ShouldFollowOpenerLink(page_node)) {
     // Visit only the "current" main frame instead of all of the main frames
     // (non-current ones are either about to die, or represent an ongoing

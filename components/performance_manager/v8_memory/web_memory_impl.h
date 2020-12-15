@@ -8,12 +8,15 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/sequence_checker.h"
 #include "components/performance_manager/public/mojom/web_memory.mojom.h"
 #include "components/performance_manager/public/v8_memory/v8_detailed_memory.h"
+#include "components/performance_manager/public/v8_memory/web_memory.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace performance_manager {
 
+class FrameNode;
 class ProcessNode;
 
 namespace v8_memory {
@@ -28,24 +31,52 @@ class WebMemoryMeasurer {
   using MeasurementCallback =
       base::OnceCallback<void(mojom::WebMemoryMeasurementPtr)>;
 
-  WebMemoryMeasurer(const blink::LocalFrameToken&,
-                    V8DetailedMemoryRequest::MeasurementMode,
-                    MeasurementCallback);
+  // Implements WebMeasureMemory (from public/v8_memory/web_memory.h) by
+  // instantiating a WebMemoryMeasurer.
+  static void MeasureMemory(const FrameNode* frame_node,
+                            mojom::WebMemoryMeasurement::Mode mode,
+                            MeasurementCallback callback);
+
   ~WebMemoryMeasurer();
 
   WebMemoryMeasurer(const WebMemoryMeasurer& other) = delete;
   WebMemoryMeasurer& operator=(const WebMemoryMeasurer& other) = delete;
 
-  V8DetailedMemoryRequestOneShot* request() const { return request_.get(); }
+  V8DetailedMemoryRequestOneShot* request() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return request_.get();
+  }
 
   // A callback for V8DetailedMemoryRequestOneShot.
   void MeasurementComplete(const ProcessNode*,
                            const V8DetailedMemoryProcessData*);
 
  private:
+  friend class WebMemoryImplTest;
+
+  WebMemoryMeasurer(const blink::LocalFrameToken&,
+                    V8DetailedMemoryRequest::MeasurementMode,
+                    MeasurementCallback);
+
   blink::LocalFrameToken frame_token_;
   MeasurementCallback callback_;
-  std::unique_ptr<V8DetailedMemoryRequestOneShot> request_;
+  std::unique_ptr<V8DetailedMemoryRequestOneShot> request_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  SEQUENCE_CHECKER(sequence_checker_);
+};
+
+// The default implementation of WebMeasureMemorySecurityChecker.
+class WebMeasureMemorySecurityCheckerImpl
+    : public WebMeasureMemorySecurityChecker {
+ public:
+  WebMeasureMemorySecurityCheckerImpl() = default;
+  ~WebMeasureMemorySecurityCheckerImpl() override = default;
+
+  void CheckMeasureMemoryIsAllowed(
+      const FrameNode* frame,
+      base::OnceClosure measure_memory_closure,
+      mojo::ReportBadMessageCallback bad_message_callback) const override;
 };
 
 }  // namespace v8_memory

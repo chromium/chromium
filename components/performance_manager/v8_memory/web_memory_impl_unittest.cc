@@ -31,14 +31,31 @@ namespace performance_manager {
 
 namespace v8_memory {
 
-namespace {
-
 using WebMemoryImplPMTest = V8MemoryPerformanceManagerTestHarness;
 
 class WebMemoryImplTest : public WebMemoryTestHarness {
  protected:
   void MeasureAndVerify(FrameNodeImpl* frame,
                         base::flat_map<std::string, Bytes> expected);
+};
+
+class FakeSecurityChecker : public WebMeasureMemorySecurityChecker {
+ public:
+  explicit FakeSecurityChecker(bool allowed) : allowed_(allowed) {}
+
+  void CheckMeasureMemoryIsAllowed(
+      const FrameNode* frame_node,
+      base::OnceClosure measure_memory_closure,
+      mojo::ReportBadMessageCallback bad_message_callback) const override {
+    if (allowed_) {
+      std::move(measure_memory_closure).Run();
+    } else {
+      std::move(bad_message_callback).Run("disallowed");
+    }
+  }
+
+ private:
+  bool allowed_;
 };
 
 void WebMemoryImplTest::MeasureAndVerify(
@@ -110,6 +127,11 @@ TEST_F(WebMemoryImplPMTest, WebMeasureMemory) {
         EXPECT_EQ(1001u, entry->bytes);
         run_loop.Quit();
       });
+  auto bad_message_callback =
+      base::BindLambdaForTesting([&](const std::string& error) {
+        ADD_FAILURE() << error;
+        run_loop.Quit();
+      });
 
   base::WeakPtr<FrameNode> frame_node_wrapper =
       PerformanceManager::GetFrameNodeForRenderFrameHost(main_frame());
@@ -117,9 +139,10 @@ TEST_F(WebMemoryImplPMTest, WebMeasureMemory) {
       FROM_HERE, base::BindLambdaForTesting([&]() {
         ASSERT_TRUE(frame_node_wrapper);
         FrameNode* frame_node = frame_node_wrapper.get();
-        WebMeasureMemory(frame_node,
-                         mojom::WebMemoryMeasurement::Mode::kDefault,
-                         std::move(measurement_callback));
+        WebMeasureMemory(
+            frame_node, mojom::WebMemoryMeasurement::Mode::kDefault,
+            std::make_unique<FakeSecurityChecker>(true),
+            std::move(measurement_callback), std::move(bad_message_callback));
       }));
 
   // Set up and bind the mock reporter.
@@ -148,6 +171,8 @@ TEST_F(WebMemoryImplPMTest, MeasurementInterrupted) {
       base::BindOnce([](mojom::WebMemoryMeasurementPtr result) {
         FAIL() << "Measurement callback ran unexpectedly";
       });
+  auto bad_message_callback =
+      base::BindOnce([](const std::string& error) { FAIL() << error; });
 
   base::WeakPtr<FrameNode> frame_node_wrapper =
       PerformanceManager::GetFrameNodeForRenderFrameHost(child_frame());
@@ -155,9 +180,10 @@ TEST_F(WebMemoryImplPMTest, MeasurementInterrupted) {
       FROM_HERE, base::BindLambdaForTesting([&]() {
         ASSERT_TRUE(frame_node_wrapper);
         FrameNode* frame_node = frame_node_wrapper.get();
-        WebMeasureMemory(frame_node,
-                         mojom::WebMemoryMeasurement::Mode::kDefault,
-                         std::move(measurement_callback));
+        WebMeasureMemory(
+            frame_node, mojom::WebMemoryMeasurement::Mode::kDefault,
+            std::make_unique<FakeSecurityChecker>(true),
+            std::move(measurement_callback), std::move(bad_message_callback));
       }));
 
   // Set up and bind the mock reporter.
@@ -183,7 +209,35 @@ TEST_F(WebMemoryImplPMTest, MeasurementInterrupted) {
   task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(5));
 }
 
-}  // namespace
+TEST_F(WebMemoryImplPMTest, MeasurementDisallowed) {
+  // Call WebMeasureMemory on the performance manager sequence but expect the
+  // mojo ReportBadMessage callback to be called.
+  base::RunLoop run_loop;
+  auto measurement_callback =
+      base::BindLambdaForTesting([&](mojom::WebMemoryMeasurementPtr result) {
+        ADD_FAILURE() << "Measurement callback ran unexpectedly.";
+        run_loop.Quit();
+      });
+  auto bad_message_callback =
+      base::BindLambdaForTesting([&](const std::string& error) {
+        SUCCEED() << error;
+        run_loop.Quit();
+      });
+
+  base::WeakPtr<FrameNode> frame_node_wrapper =
+      PerformanceManager::GetFrameNodeForRenderFrameHost(main_frame());
+  PerformanceManager::CallOnGraph(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        ASSERT_TRUE(frame_node_wrapper);
+        FrameNode* frame_node = frame_node_wrapper.get();
+        WebMeasureMemory(
+            frame_node, mojom::WebMemoryMeasurement::Mode::kDefault,
+            std::make_unique<FakeSecurityChecker>(false),
+            std::move(measurement_callback), std::move(bad_message_callback));
+      }));
+
+  run_loop.Run();
+}
 
 }  // namespace v8_memory
 

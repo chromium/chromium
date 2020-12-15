@@ -12,7 +12,6 @@
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/graph/worker_node_impl.h"
 #include "components/performance_manager/public/v8_memory/web_memory.h"
-#include "third_party/blink/public/common/features.h"
 
 namespace performance_manager {
 
@@ -684,9 +683,9 @@ void FrameNodeImpl::DocumentProperties::Reset(FrameNodeImpl* frame_node,
 void FrameNodeImpl::OnWebMemoryMeasurementRequested(
     mojom::WebMemoryMeasurement::Mode mode,
     OnWebMemoryMeasurementRequestedCallback callback) {
-  CHECK(base::FeatureList::IsEnabled(
-      blink::features::kWebMeasureMemoryViaPerformanceManager));
-  v8_memory::WebMeasureMemory(this, mode, std::move(callback));
+  v8_memory::WebMeasureMemory(
+      this, mode, v8_memory::WebMeasureMemorySecurityChecker::Create(),
+      std::move(callback), mojo::GetBadMessageCallback());
 }
 
 }  // namespace performance_manager
