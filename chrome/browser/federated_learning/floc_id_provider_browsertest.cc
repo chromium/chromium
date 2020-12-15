@@ -238,7 +238,7 @@ class FlocIdProviderWithCustomizedServicesBrowserTest
             base::string16(), options,
             base::BindLambdaForTesting([&](history::QueryResults results) {
               for (const history::URLResult& url_result : results) {
-                if (!url_result.floc_allowed())
+                if (!url_result.publicly_routable())
                   continue;
 
                 if (url_result.visit_time() < history_begin_time)

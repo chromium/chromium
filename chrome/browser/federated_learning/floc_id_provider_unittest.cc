@@ -339,7 +339,7 @@ TEST_F(FlocIdProviderUnitTest, DefaultScheduledUpdateInterval) {
   history::HistoryAddPageArgs add_page_args;
   add_page_args.url = GURL(base::StrCat({"https://www.", domain1}));
   add_page_args.time = kSevenDaysBeforeStart;
-  add_page_args.floc_allowed = true;
+  add_page_args.publicly_routable = true;
   history_service_->AddPage(add_page_args);
 
   task_environment_.RunUntilIdle();
@@ -416,7 +416,7 @@ TEST_F(FlocIdProviderOneDayUpdateIntervalUnitTest, QualifiedInitialHistory) {
   history::HistoryAddPageArgs add_page_args;
   add_page_args.url = GURL(base::StrCat({"https://www.", domain}));
   add_page_args.time = kTime;
-  add_page_args.floc_allowed = true;
+  add_page_args.publicly_routable = true;
   history_service_->AddPage(add_page_args);
 
   task_environment_.RunUntilIdle();
@@ -460,7 +460,7 @@ TEST_F(FlocIdProviderOneDayUpdateIntervalUnitTest, UnqualifiedInitialHistory) {
   history::HistoryAddPageArgs add_page_args;
   add_page_args.url = GURL(base::StrCat({"https://www.", domain}));
   add_page_args.time = base::Time::Now() - base::TimeDelta::FromDays(8);
-  add_page_args.floc_allowed = true;
+  add_page_args.publicly_routable = true;
   history_service_->AddPage(add_page_args);
 
   task_environment_.RunUntilIdle();
@@ -520,7 +520,7 @@ TEST_F(FlocIdProviderOneDayUpdateIntervalUnitTest,
       base::Time::Now() - base::TimeDelta::FromDays(7);
   add_page_args.url = GURL(base::StrCat({"https://www.", domain1}));
   add_page_args.time = kSevenDaysBeforeStart;
-  add_page_args.floc_allowed = true;
+  add_page_args.publicly_routable = true;
   history_service_->AddPage(add_page_args);
 
   // Add a history entry with a timestamp exactly 6 days back from now.
@@ -580,7 +580,7 @@ TEST_F(FlocIdProviderOneDayUpdateIntervalUnitTest, ScheduledUpdateSameFloc) {
   history::HistoryAddPageArgs add_page_args;
   add_page_args.url = GURL(base::StrCat({"https://www.", domain}));
   add_page_args.time = kTime;
-  add_page_args.floc_allowed = true;
+  add_page_args.publicly_routable = true;
   history_service_->AddPage(add_page_args);
 
   task_environment_.RunUntilIdle();
@@ -730,7 +730,7 @@ TEST_F(FlocIdProviderOneDayUpdateIntervalUnitTest,
   GURL url_a = GURL("https://a.test");
 
   history::URLResult url_result(url_a, kTime1);
-  url_result.set_floc_allowed(true);
+  url_result.set_publicly_routable(true);
 
   history::QueryResults query_results;
   query_results.SetURLResults({url_result});
@@ -827,10 +827,10 @@ TEST_F(FlocIdProviderOneDayUpdateIntervalUnitTest, MultipleHistoryEntries) {
   const base::Time kTime3 = base::Time::FromTimeT(3);
 
   history::URLResult url_result_a(GURL("https://a.test"), kTime1);
-  url_result_a.set_floc_allowed(true);
+  url_result_a.set_publicly_routable(true);
 
   history::URLResult url_result_b(GURL("https://b.test"), kTime2);
-  url_result_b.set_floc_allowed(true);
+  url_result_b.set_publicly_routable(true);
 
   history::URLResult url_result_c(GURL("https://c.test"), kTime3);
 
@@ -856,7 +856,7 @@ TEST_F(FlocIdProviderOneDayUpdateIntervalUnitTest, TurnSyncOffAndOn) {
   history::HistoryAddPageArgs add_page_args;
   add_page_args.url = GURL(base::StrCat({"https://www.", domain}));
   add_page_args.time = kTime;
-  add_page_args.floc_allowed = true;
+  add_page_args.publicly_routable = true;
   history_service_->AddPage(add_page_args);
 
   task_environment_.RunUntilIdle();
@@ -992,7 +992,7 @@ TEST_F(FlocIdProviderUnitTestSortingLshEnabled,
   history::HistoryAddPageArgs add_page_args;
   add_page_args.url = GURL(base::StrCat({"https://www.", domain1}));
   add_page_args.time = kSevenDaysBeforeStart;
-  add_page_args.floc_allowed = true;
+  add_page_args.publicly_routable = true;
   history_service_->AddPage(add_page_args);
 
   // Add a history entry with a timestamp exactly 6 days back from now.
@@ -1161,7 +1161,7 @@ TEST_F(FlocIdProviderUnitTestSortingLshEnabled, SortingLshPostProcessing) {
   history::HistoryAddPageArgs add_page_args;
   add_page_args.url = GURL(base::StrCat({"https://www.", domain}));
   add_page_args.time = kTime;
-  add_page_args.floc_allowed = true;
+  add_page_args.publicly_routable = true;
   history_service_->AddPage(add_page_args);
 
   task_environment_.RunUntilIdle();
@@ -1264,7 +1264,7 @@ class FlocIdProviderUnitTestLastFlocUnexpired
     history::HistoryAddPageArgs add_page_args;
     add_page_args.url = GURL("https://domain1.com");
     add_page_args.time = kFourDaysBeforeStart;
-    add_page_args.floc_allowed = true;
+    add_page_args.publicly_routable = true;
     history_service_->AddPage(add_page_args);
 
     add_page_args.url = GURL("https://domain2.com");
@@ -1293,7 +1293,7 @@ TEST_F(FlocIdProviderUnitTestLastFlocUnexpired, NextScheduledUpdate) {
   history::HistoryAddPageArgs add_page_args;
   add_page_args.url = GURL("https://www.foo.com");
   add_page_args.time = kTwoDaysBeforeStart;
-  add_page_args.floc_allowed = true;
+  add_page_args.publicly_routable = true;
   history_service_->AddPage(add_page_args);
 
   // Turn on sync-history.
@@ -1382,7 +1382,7 @@ class FlocIdProviderUnitTestLastFlocExpired
     history::HistoryAddPageArgs add_page_args;
     add_page_args.url = GURL("https://domain1.com");
     add_page_args.time = kTwentyDaysBeforeStart;
-    add_page_args.floc_allowed = true;
+    add_page_args.publicly_routable = true;
     history_service_->AddPage(add_page_args);
 
     add_page_args.url = GURL("https://domain2.com");
@@ -1406,7 +1406,7 @@ TEST_F(FlocIdProviderUnitTestLastFlocExpired, ComputeOnInitialSetupReady) {
   history::HistoryAddPageArgs add_page_args;
   add_page_args.url = GURL("https://www.foo.com");
   add_page_args.time = kTwoDaysBeforeStart;
-  add_page_args.floc_allowed = true;
+  add_page_args.publicly_routable = true;
   history_service_->AddPage(add_page_args);
 
   // Turn on sync-history. This should trigger the computation.

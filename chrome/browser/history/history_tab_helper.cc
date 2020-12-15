@@ -95,19 +95,14 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
     page_transition = ui::PageTransitionFromInt(ui::PAGE_TRANSITION_FROM_API_3 |
                                                 page_transition);
   }
-
-  // In the future, this may encapsulate more conditions, e.g. page level
-  // opt-in, opt-out, etc.
-  bool floc_allowed =
-      navigation_handle->GetSocketAddress().address().IsPubliclyRoutable();
-
   history::HistoryAddPageArgs add_page_args(
       navigation_handle->GetURL(), timestamp,
       history::ContextIDForWebContents(web_contents()), nav_entry_id,
       navigation_handle->GetReferrer().url,
       navigation_handle->GetRedirectChain(), page_transition, hidden,
       history::SOURCE_BROWSED, navigation_handle->DidReplaceEntry(),
-      !content_suggestions_navigation, floc_allowed,
+      !content_suggestions_navigation,
+      navigation_handle->GetSocketAddress().address().IsPubliclyRoutable(),
       navigation_handle->IsSameDocument()
           ? base::Optional<base::string16>(
                 navigation_handle->GetWebContents()->GetTitle())
@@ -221,7 +216,7 @@ void HistoryTabHelper::DidActivatePortal(
       /* redirects */ {}, ui::PAGE_TRANSITION_LINK,
       /* hidden */ false, history::SOURCE_BROWSED, did_replace_entry,
       /* consider_for_ntp_most_visited */ true,
-      /* floc_allowed */ false, last_committed_entry->GetTitle());
+      /* publicly_routable */ false, last_committed_entry->GetTitle());
   hs->AddPage(add_page_args);
 }
 

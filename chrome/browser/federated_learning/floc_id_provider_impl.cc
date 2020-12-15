@@ -327,7 +327,7 @@ void FlocIdProviderImpl::OnGetRecentlyVisitedURLsCompleted(
   base::Time history_end_time = base::Time::Min();
 
   for (const history::URLResult& url_result : results) {
-    if (!url_result.floc_allowed())
+    if (!url_result.publicly_routable())
       continue;
 
     if (url_result.visit_time() < history_begin_time)

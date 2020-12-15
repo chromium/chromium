@@ -23,14 +23,14 @@ VisitRow::VisitRow(URLID arg_url_id,
                    ui::PageTransition arg_transition,
                    SegmentID arg_segment_id,
                    bool arg_incremented_omnibox_typed_score,
-                   bool floc_allowed)
+                   bool publicly_routable)
     : url_id(arg_url_id),
       visit_time(arg_visit_time),
       referring_visit(arg_referring_visit),
       transition(arg_transition),
       segment_id(arg_segment_id),
       incremented_omnibox_typed_score(arg_incremented_omnibox_typed_score),
-      floc_allowed(floc_allowed) {}
+      publicly_routable(publicly_routable) {}
 
 VisitRow::~VisitRow() {
 }
@@ -260,7 +260,7 @@ HistoryAddPageArgs::HistoryAddPageArgs(const GURL& url,
                                        VisitSource source,
                                        bool did_replace_entry,
                                        bool consider_for_ntp_most_visited,
-                                       bool floc_allowed,
+                                       bool publicly_routable,
                                        base::Optional<base::string16> title)
     : url(url),
       time(time),
@@ -273,7 +273,7 @@ HistoryAddPageArgs::HistoryAddPageArgs(const GURL& url,
       visit_source(source),
       did_replace_entry(did_replace_entry),
       consider_for_ntp_most_visited(consider_for_ntp_most_visited),
-      floc_allowed(floc_allowed),
+      publicly_routable(publicly_routable),
       title(title) {}
 
 HistoryAddPageArgs::HistoryAddPageArgs(const HistoryAddPageArgs& other) =
