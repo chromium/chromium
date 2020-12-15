@@ -66,6 +66,11 @@ void MockMediaStreamVideoSource::OnHasConsumers(bool has_consumers) {
   is_suspended_ = !has_consumers;
 }
 
+base::WeakPtr<MediaStreamVideoSource> MockMediaStreamVideoSource::GetWeakPtr()
+    const {
+  return weak_factory_.GetWeakPtr();
+}
+
 void MockMediaStreamVideoSource::DoChangeSource(
     const MediaStreamDevice& new_device) {
   ChangeSourceImpl(new_device);

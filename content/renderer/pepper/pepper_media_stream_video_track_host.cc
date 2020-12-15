@@ -444,6 +444,10 @@ class PepperMediaStreamVideoTrackHost::VideoSource final
       host_->frame_deliverer_ = nullptr;
   }
 
+  base::WeakPtr<MediaStreamVideoSource> GetWeakPtr() const final {
+    return weak_factory_.GetWeakPtr();
+  }
+
  private:
   base::Optional<media::VideoCaptureFormat> GetCurrentFormat() const override {
     if (host_) {
@@ -456,6 +460,7 @@ class PepperMediaStreamVideoTrackHost::VideoSource final
   }
 
   const base::WeakPtr<PepperMediaStreamVideoTrackHost> host_;
+  base::WeakPtrFactory<MediaStreamVideoSource> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(VideoSource);
 };

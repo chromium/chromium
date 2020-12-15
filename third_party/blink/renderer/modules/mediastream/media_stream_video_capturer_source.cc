@@ -165,6 +165,11 @@ void MediaStreamVideoCapturerSource::ChangeSourceImpl(
                          WTF::Unretained(this), capture_params_));
 }
 
+base::WeakPtr<MediaStreamVideoSource>
+MediaStreamVideoCapturerSource::GetWeakPtr() const {
+  return weak_factory_.GetWeakPtr();
+}
+
 void MediaStreamVideoCapturerSource::OnRunStateChanged(
     const media::VideoCaptureParams& new_capture_params,
     bool is_running) {

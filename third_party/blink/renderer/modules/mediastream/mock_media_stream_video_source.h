@@ -71,6 +71,7 @@ class MockMediaStreamVideoSource : public blink::MediaStreamVideoSource {
   base::Optional<media::VideoCaptureParams> GetCurrentCaptureParams()
       const override;
   void OnHasConsumers(bool has_consumers) override;
+  base::WeakPtr<MediaStreamVideoSource> GetWeakPtr() const override;
 
  protected:
   // Implements MediaStreamSource.
@@ -97,6 +98,8 @@ class MockMediaStreamVideoSource : public blink::MediaStreamVideoSource {
   bool is_suspended_ = false;
   blink::VideoCaptureDeliverFrameCB frame_callback_;
   EncodedVideoFrameCB encoded_frame_callback_;
+
+  base::WeakPtrFactory<MediaStreamVideoSource> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MockMediaStreamVideoSource);
 };

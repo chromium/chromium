@@ -32,11 +32,14 @@ class MODULES_EXPORT PushableMediaStreamVideoSource
   void StartSourceImpl(VideoCaptureDeliverFrameCB frame_callback,
                        EncodedVideoFrameCB encoded_frame_callback) override;
   void StopSourceImpl() override;
+  base::WeakPtr<MediaStreamVideoSource> GetWeakPtr() const override;
 
  private:
   bool running_ = false;
   VideoCaptureDeliverFrameCB deliver_frame_cb_;
+
   THREAD_CHECKER(thread_checker_);
+  base::WeakPtrFactory<MediaStreamVideoSource> weak_factory_{this};
 };
 
 }  // namespace blink

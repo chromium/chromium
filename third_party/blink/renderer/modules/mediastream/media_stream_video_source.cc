@@ -142,8 +142,8 @@ void MediaStreamVideoSource::RemoveTrack(MediaStreamVideoTrack* video_track,
       // sources created after that StopSource() call, but before the actual
       // stop takes place. See https://crbug.com/778039.
       remove_last_track_callback_ = std::move(callback);
-      StopForRestart(WTF::Bind(&MediaStreamVideoSource::DidStopSource,
-                               weak_factory_.GetWeakPtr()));
+      StopForRestart(
+          WTF::Bind(&MediaStreamVideoSource::DidStopSource, GetWeakPtr()));
       if (state_ == STOPPING_FOR_RESTART || state_ == STOPPED_FOR_RESTART) {
         // If the source supports restarting, it is necessary to call
         // FinalizeStopSource() to ensure the same behavior as StopSource(),
@@ -457,8 +457,8 @@ void MediaStreamVideoSource::StartFrameMonitoring() {
     GetTrackAdapter()->SetSourceFrameSize(current_format->frame_size);
   }
   GetTrackAdapter()->StartFrameMonitoring(
-      frame_rate, WTF::BindRepeating(&MediaStreamVideoSource::SetMutedState,
-                                     weak_factory_.GetWeakPtr()));
+      frame_rate,
+      WTF::BindRepeating(&MediaStreamVideoSource::SetMutedState, GetWeakPtr()));
 }
 
 void MediaStreamVideoSource::SetReadyState(

@@ -500,6 +500,11 @@ void MediaStreamRemoteVideoSource::RequestRefreshFrame() {
   }
 }
 
+base::WeakPtr<MediaStreamVideoSource> MediaStreamRemoteVideoSource::GetWeakPtr()
+    const {
+  return weak_factory_.GetWeakPtr();
+}
+
 void MediaStreamRemoteVideoSource::OnEncodedSinkEnabled() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!observer_ || !observer_->track()) {

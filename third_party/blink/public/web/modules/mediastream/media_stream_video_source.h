@@ -182,9 +182,7 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
     return tracks_.size();
   }
 
-  base::WeakPtr<MediaStreamVideoSource> GetWeakPtr() {
-    return weak_factory_.GetWeakPtr();
-  }
+  virtual base::WeakPtr<MediaStreamVideoSource> GetWeakPtr() const = 0;
 
  protected:
   // MediaStreamSource implementation.
@@ -364,9 +362,6 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
   // died before this callback is resolved, we still need to trigger the
   // callback to notify the caller that the request is canceled.
   base::OnceClosure remove_last_track_callback_;
-
-  // NOTE: Weak pointers must be invalidated before all other member variables.
-  base::WeakPtrFactory<MediaStreamVideoSource> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MediaStreamVideoSource);
 };

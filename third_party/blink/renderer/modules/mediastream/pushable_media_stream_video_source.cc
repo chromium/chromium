@@ -48,4 +48,9 @@ void PushableMediaStreamVideoSource::StopSourceImpl() {
   running_ = false;
 }
 
+base::WeakPtr<MediaStreamVideoSource>
+PushableMediaStreamVideoSource::GetWeakPtr() const {
+  return weak_factory_.GetWeakPtr();
+}
+
 }  // namespace blink

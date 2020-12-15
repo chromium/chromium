@@ -81,6 +81,7 @@ class MODULES_EXPORT MediaStreamVideoCapturerSource
   base::Optional<media::VideoCaptureParams> GetCurrentCaptureParams()
       const override;
   void ChangeSourceImpl(const MediaStreamDevice& new_device) override;
+  base::WeakPtr<MediaStreamVideoSource> GetWeakPtr() const override;
 
   // Method to bind as RunningCallback in VideoCapturerSource::StartCapture().
   void OnRunStateChanged(const media::VideoCaptureParams& new_capture_params,
@@ -107,6 +108,8 @@ class MODULES_EXPORT MediaStreamVideoCapturerSource
   media::VideoCaptureParams capture_params_;
   VideoCaptureDeliverFrameCB frame_callback_;
   DeviceCapturerFactoryCallback device_capturer_factory_callback_;
+
+  base::WeakPtrFactory<MediaStreamVideoSource> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MediaStreamVideoCapturerSource);
 };
