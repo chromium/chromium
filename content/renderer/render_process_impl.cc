@@ -147,34 +147,32 @@ RenderProcessImpl::RenderProcessImpl()
   constexpr char kAtomicsFlag[] = "--harmony-atomics";
   v8::V8::SetFlagsFromString(kAtomicsFlag, sizeof(kAtomicsFlag));
 
-  // SharedArrayBuffers require the feature flag, or site isolation. On Android,
-  // the feature is disabled by default, so site isolation is required. On
-  // desktop, site isolation is optional while we migrate existing apps to use
-  // COOP+COEP.
-  bool enableSharedArrayBuffer = false;
-  bool enableWebAssemblyThreads = false;
-  if (base::FeatureList::IsEnabled(features::kWebAssemblyThreads)) {
-    enableWebAssemblyThreads = true;
-    enableSharedArrayBuffer = true;
-  } else {
-    bool processIscrossOriginIsolated =
-        base::FeatureList::IsEnabled(network::features::kCrossOriginIsolated) &&
-        blink::IsCrossOriginIsolated();
-    enableSharedArrayBuffer =
-        base::FeatureList::IsEnabled(features::kSharedArrayBuffer) ||
-        processIscrossOriginIsolated;
+  // SharedArrayBuffers require the feature flag, or the WebAssembly threads
+  // feature, or site isolation. On Android, SABs are disabled by default, so
+  // site isolation is required. On desktop, site isolation is optional while we
+  // migrate existing web pages to require site isolation.
+  bool enable_wasm_threads =
+      base::FeatureList::IsEnabled(features::kWebAssemblyThreads);
+  bool restrict_shared_array_buffers =
+      base::FeatureList::IsEnabled(features::kRestrictSharedArrayBuffer);
+  bool cross_origin_isolated =
+      base::FeatureList::IsEnabled(network::features::kCrossOriginIsolated) &&
+      blink::IsCrossOriginIsolated();
+
+  bool enable_shared_array_buffer = false;
+  if (cross_origin_isolated) {
+    enable_shared_array_buffer = true;
+  } else if (!restrict_shared_array_buffers) {
+    enable_shared_array_buffer =
+        enable_wasm_threads ||
+        base::FeatureList::IsEnabled(features::kSharedArrayBuffer);
   }
 
-  if (base::FeatureList::IsEnabled(features::kRestrictSharedArrayBuffer)) {
-    // Both SABs and Wasm threads should be disabled for developer testing.
-    enableWebAssemblyThreads = false;
-    enableSharedArrayBuffer = false;
-  }
-  if (enableWebAssemblyThreads) {
+  if (enable_wasm_threads) {
     constexpr char kWasmThreadsFlag[] = "--experimental-wasm-threads";
     v8::V8::SetFlagsFromString(kWasmThreadsFlag, sizeof(kWasmThreadsFlag));
   }
-  if (enableSharedArrayBuffer) {
+  if (enable_shared_array_buffer) {
     constexpr char kSABFlag[] = "--harmony-sharedarraybuffer";
     v8::V8::SetFlagsFromString(kSABFlag, sizeof(kSABFlag));
   } else {
