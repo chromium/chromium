@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.signin;
+package org.chromium.chrome.browser.signin.ui;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -25,7 +25,6 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -33,14 +32,10 @@ import org.mockito.Mock;
 import org.chromium.base.Callback;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.browser.signin.ui.ConfirmSyncDataStateMachine;
-import org.chromium.chrome.browser.signin.ui.ConfirmSyncDataStateMachineDelegate;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DummyUiActivityTestCase;
@@ -65,12 +60,6 @@ public class ConfirmSyncDataIntegrationTest extends DummyUiActivityTestCase {
     private static final String NEW_ACCOUNT_NAME = "test.account.new@gmail.com";
     private static final String MANAGED_DOMAIN = "managed-domain.com";
 
-    @Rule
-    public final JniMocker mocker = new JniMocker();
-
-    @Mock
-    private SigninManagerImpl.Natives mSigninManagerNativeMock;
-
     @Mock
     private SigninManager mSigninManagerMock;
 
@@ -88,7 +77,6 @@ public class ConfirmSyncDataIntegrationTest extends DummyUiActivityTestCase {
     @Before
     public void setUp() {
         initMocks(this);
-        mocker.mock(SigninManagerImplJni.TEST_HOOKS, mSigninManagerNativeMock);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
         Profile.setLastUsedProfileForTesting(mProfile);
         when(IdentityServicesProvider.get().getSigninManager(any())).thenReturn(mSigninManagerMock);
@@ -123,7 +111,7 @@ public class ConfirmSyncDataIntegrationTest extends DummyUiActivityTestCase {
     public void testNonManagedAccountToManagedAccountFlow() {
         mockSigninManagerIsAccountManaged(true);
         String managedNewAccountName = "test.account@" + MANAGED_DOMAIN;
-        when(mSigninManagerNativeMock.extractDomainName(managedNewAccountName))
+        when(mSigninManagerMock.extractDomainName(managedNewAccountName))
                 .thenReturn(MANAGED_DOMAIN);
         startConfirmSyncFlow(OLD_ACCOUNT_NAME, managedNewAccountName);
         onView(withId(R.id.sync_confirm_import_choice)).inRoot(isDialog()).perform(click());
@@ -138,7 +126,7 @@ public class ConfirmSyncDataIntegrationTest extends DummyUiActivityTestCase {
     public void testNonManagedAccountToManagedAccountCancelledFlow() {
         mockSigninManagerIsAccountManaged(true);
         String managedNewAccountName = "test.account@" + MANAGED_DOMAIN;
-        when(mSigninManagerNativeMock.extractDomainName(managedNewAccountName))
+        when(mSigninManagerMock.extractDomainName(managedNewAccountName))
                 .thenReturn(MANAGED_DOMAIN);
         startConfirmSyncFlow(OLD_ACCOUNT_NAME, managedNewAccountName);
         onView(withId(R.id.sync_keep_separate_choice)).inRoot(isDialog()).perform(click());
@@ -164,7 +152,7 @@ public class ConfirmSyncDataIntegrationTest extends DummyUiActivityTestCase {
     public void testNoPreviousAccountToManagedAccountFlow() {
         mockSigninManagerIsAccountManaged(true);
         String managedNewAccountName = "test.account@" + MANAGED_DOMAIN;
-        when(mSigninManagerNativeMock.extractDomainName(managedNewAccountName))
+        when(mSigninManagerMock.extractDomainName(managedNewAccountName))
                 .thenReturn(MANAGED_DOMAIN);
         startConfirmSyncFlow("", managedNewAccountName);
         onView(withText(R.string.policy_dialog_proceed)).inRoot(isDialog()).perform(click());

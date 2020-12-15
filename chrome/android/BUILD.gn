@@ -1088,6 +1088,7 @@ android_library("chrome_test_java") {
     "//chrome/browser/signin/services/android:java",
     "//chrome/browser/signin/services/android:javatests",
     "//chrome/browser/signin/ui/android:java",
+    "//chrome/browser/signin/ui/android:javatests",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/tabmodel/internal:java",
