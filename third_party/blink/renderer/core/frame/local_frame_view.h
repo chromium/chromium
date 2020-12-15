@@ -854,8 +854,6 @@ class CORE_EXPORT LocalFrameView final
 
   LayoutSVGRoot* EmbeddedReplacedContent() const;
 
-  void PrepareForLifecycleUpdateRecursive();
-
   // Returns whether the lifecycle was successfully updated to the
   // target state.
   bool UpdateLifecyclePhases(DocumentLifecycle::LifecycleState target_state,
@@ -1077,6 +1075,7 @@ class CORE_EXPORT LocalFrameView final
 
   // This is set on the local root frame view only.
   DocumentLifecycle::LifecycleState target_state_;
+  bool past_layout_lifecycle_update_;
 
   using AnchoringAdjustmentQueue =
       HeapLinkedHashSet<WeakMember<ScrollableArea>>;
