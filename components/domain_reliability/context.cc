@@ -5,6 +5,7 @@
 #include "components/domain_reliability/context.h"
 
 #include <algorithm>
+#include <limits>
 #include <utility>
 
 #include "base/bind.h"
@@ -131,7 +132,19 @@ void DomainReliabilityContext::StartUpload() {
   if (beacons_.empty())
     return;
 
-  MarkUpload();
+  // Find the first beacon with an `upload_depth` of at most
+  // kMaxUploadDepthToSchedule, in preparation to create a report containing all
+  // beacons with matching NetworkIsolationKeys.
+  bool found_beacon_to_upload = false;
+  for (const auto& beacon : beacons_) {
+    if (beacon->upload_depth <= kMaxUploadDepthToSchedule) {
+      uploading_beacons_network_isolation_key_ = beacon->network_isolation_key;
+      found_beacon_to_upload = true;
+      break;
+    }
+  }
+  if (!found_beacon_to_upload)
+    return;
 
   size_t collector_index = scheduler_.OnUploadStart();
   const GURL& collector_url = *config().collectors[collector_index];
@@ -150,7 +163,7 @@ void DomainReliabilityContext::StartUpload() {
 
   uploader_->UploadReport(
       report_json, max_upload_depth, collector_url,
-      net::NetworkIsolationKey::Todo(),
+      uploading_beacons_network_isolation_key_,
       base::BindOnce(&DomainReliabilityContext::OnUploadComplete,
                      weak_factory_.GetWeakPtr()));
 }
@@ -165,23 +178,41 @@ void DomainReliabilityContext::OnUploadComplete(
   DCHECK(!upload_time_.is_null());
   last_upload_time_ = upload_time_;
   upload_time_ = base::TimeTicks();
+
+  // If there are pending beacons with a low enough depth, inform the scheduler
+  // - it's possible only some beacons were added because of NetworkIsolationKey
+  // mismatches, rather than due to new beacons being created.
+  if (GetMinBeaconUploadDepth() <= kMaxUploadDepthToSchedule)
+    scheduler_.OnBeaconAdded();
 }
 
 std::unique_ptr<const Value> DomainReliabilityContext::CreateReport(
     base::TimeTicks upload_time,
     const GURL& collector_url,
-    int* max_upload_depth_out) const {
+    int* max_upload_depth_out) {
+  DCHECK_GT(beacons_.size(), 0u);
+  DCHECK_EQ(0u, uploading_beacons_size_);
+
   int max_upload_depth = 0;
 
   std::unique_ptr<ListValue> beacons_value(new ListValue());
   for (const auto& beacon : beacons_) {
+    // Only include beacons with a matching NetworkIsolationKey in the report.
+    if (beacon->network_isolation_key !=
+        uploading_beacons_network_isolation_key_) {
+      continue;
+    }
+
     beacons_value->Append(beacon->ToValue(upload_time,
                                           *last_network_change_time_,
                                           collector_url,
                                           config().path_prefixes));
     if (beacon->upload_depth > max_upload_depth)
       max_upload_depth = beacon->upload_depth;
+    ++uploading_beacons_size_;
   }
+
+  DCHECK_GT(uploading_beacons_size_, 0u);
 
   std::unique_ptr<DictionaryValue> report_value(new DictionaryValue());
   report_value->SetString("reporter", upload_reporter_string_);
@@ -191,22 +222,22 @@ std::unique_ptr<const Value> DomainReliabilityContext::CreateReport(
   return std::move(report_value);
 }
 
-void DomainReliabilityContext::MarkUpload() {
-  DCHECK_EQ(0u, uploading_beacons_size_);
-  uploading_beacons_size_ = beacons_.size();
-  DCHECK_NE(0u, uploading_beacons_size_);
-}
-
 void DomainReliabilityContext::CommitUpload() {
-  auto begin = beacons_.begin();
-  auto end = begin + uploading_beacons_size_;
-  beacons_.erase(begin, end);
-  DCHECK_NE(0u, uploading_beacons_size_);
-  uploading_beacons_size_ = 0;
+  auto current = beacons_.begin();
+  while (uploading_beacons_size_ > 0) {
+    DCHECK(current != beacons_.end());
+
+    auto last = current;
+    ++current;
+    if ((*last)->network_isolation_key ==
+        uploading_beacons_network_isolation_key_) {
+      beacons_.erase(last);
+      --uploading_beacons_size_;
+    }
+  }
 }
 
 void DomainReliabilityContext::RollbackUpload() {
-  DCHECK_NE(0u, uploading_beacons_size_);
   uploading_beacons_size_ = 0;
 }
 
@@ -216,12 +247,15 @@ void DomainReliabilityContext::RemoveOldestBeacon() {
   DVLOG(1) << "Beacon queue for " << config().origin << " full; "
            << "removing oldest beacon";
 
-  beacons_.pop_front();
-
-  // If that just removed a beacon counted in uploading_beacons_size_, decrement
-  // that.
-  if (uploading_beacons_size_ > 0)
+  // If the beacon being removed has a NetworkIsolationKey that matches that of
+  // the current upload, decrement |uploading_beacons_size_|.
+  if (uploading_beacons_size_ > 0 &&
+      beacons_.front()->network_isolation_key ==
+          uploading_beacons_network_isolation_key_) {
     --uploading_beacons_size_;
+  }
+
+  beacons_.pop_front();
 }
 
 void DomainReliabilityContext::RemoveExpiredBeacons() {
@@ -229,6 +263,16 @@ void DomainReliabilityContext::RemoveExpiredBeacons() {
   const base::TimeDelta kMaxAge = base::TimeDelta::FromHours(1);
   while (!beacons_.empty() && now - beacons_.front()->start_time >= kMaxAge)
     beacons_.pop_front();
+}
+
+// Gets the minimum depth of all entries in |beacons_|.
+int DomainReliabilityContext::GetMinBeaconUploadDepth() const {
+  int min = std::numeric_limits<int>::max();
+  for (const auto& beacon : beacons_) {
+    if (beacon->upload_depth < min)
+      min = beacon->upload_depth;
+  }
+  return min;
 }
 
 }  // namespace domain_reliability

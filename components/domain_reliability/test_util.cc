@@ -84,7 +84,7 @@ void TestCallback::OnCalled() {
 }
 
 MockUploader::MockUploader(UploadRequestCallback callback)
-    : callback_(std::move(callback)), discard_uploads_(true) {}
+    : callback_(callback), discard_uploads_(true) {}
 
 MockUploader::~MockUploader() = default;
 
@@ -96,8 +96,8 @@ void MockUploader::UploadReport(
     const GURL& upload_url,
     const net::NetworkIsolationKey& network_isolation_key,
     UploadCallback callback) {
-  std::move(callback_).Run(report_json, max_upload_depth, upload_url,
-                           network_isolation_key, std::move(callback));
+  callback_.Run(report_json, max_upload_depth, upload_url,
+                network_isolation_key, std::move(callback));
 }
 
 void MockUploader::Shutdown() {}

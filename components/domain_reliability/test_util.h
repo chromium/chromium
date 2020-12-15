@@ -41,7 +41,7 @@ class TestCallback {
 
 class MockUploader : public DomainReliabilityUploader {
  public:
-  typedef base::OnceCallback<void(
+  typedef base::RepeatingCallback<void(
       const std::string& report_json,
       int max_upload_depth,
       const GURL& upload_url,
