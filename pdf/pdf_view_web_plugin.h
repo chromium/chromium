@@ -6,6 +6,7 @@
 #define PDF_PDF_VIEW_WEB_PLUGIN_H_
 
 #include "base/memory/weak_ptr.h"
+#include "pdf/paint_manager.h"
 #include "pdf/pdf_view_plugin_base.h"
 #include "pdf/ppapi_migration/url_loader.h"
 #include "third_party/blink/public/web/web_plugin.h"
@@ -20,7 +21,8 @@ namespace chrome_pdf {
 // Skeleton for a `blink::WebPlugin` to replace `OutOfProcessInstance`.
 class PdfViewWebPlugin final : public PdfViewPluginBase,
                                public blink::WebPlugin,
-                               public BlinkUrlLoader::Client {
+                               public BlinkUrlLoader::Client,
+                               public PaintManager::Client {
  public:
   explicit PdfViewWebPlugin(const blink::WebPluginParams& params);
   PdfViewWebPlugin(const PdfViewWebPlugin& other) = delete;
@@ -113,6 +115,13 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   std::unique_ptr<blink::WebAssociatedURLLoader> CreateAssociatedURLLoader(
       const blink::WebAssociatedURLLoaderOptions& options) override;
 
+  // PaintManager::Client:
+  std::unique_ptr<Graphics> CreatePaintGraphics(const gfx::Size& size) override;
+  bool BindPaintGraphics(Graphics& graphics) override;
+  void OnPaint(const std::vector<gfx::Rect>& paint_rects,
+               std::vector<PaintReadyRect>* ready,
+               std::vector<gfx::Rect>* pending) override;
+
  protected:
   // PdfViewPluginBase:
   base::WeakPtr<PdfViewPluginBase> GetWeakPtr() override;
@@ -127,6 +136,8 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
 
   blink::WebPluginParams initial_params_;
   blink::WebPluginContainer* container_ = nullptr;
+
+  PaintManager paint_manager_{this};
 
   // The background color of the PDF viewer.
   uint32_t background_color_ = 0;

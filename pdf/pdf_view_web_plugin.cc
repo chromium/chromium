@@ -20,6 +20,7 @@
 #include "pdf/pdf_engine.h"
 #include "pdf/pdf_init.h"
 #include "pdf/pdfium/pdfium_engine.h"
+#include "pdf/ppapi_migration/graphics.h"
 #include "pdf/ppapi_migration/url_loader.h"
 #include "ppapi/c/pp_errors.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
@@ -337,6 +338,26 @@ PdfViewWebPlugin::CreateAssociatedURLLoader(
   DCHECK(IsValid());
   return container_->GetDocument().GetFrame()->CreateAssociatedURLLoader(
       options);
+}
+
+std::unique_ptr<Graphics> PdfViewWebPlugin::CreatePaintGraphics(
+    const gfx::Size& size) {
+  auto graphics = SkiaGraphics::Create(size);
+  DCHECK(graphics);
+  return graphics;
+}
+
+bool PdfViewWebPlugin::BindPaintGraphics(Graphics& graphics) {
+  NOTIMPLEMENTED_LOG_ONCE();
+  return false;
+}
+
+// TODO(https://crbug.com/1099020): To be implemented as a Pepper-free version
+// of `OutOfProcessInstance::OnPaint()`
+void PdfViewWebPlugin::OnPaint(const std::vector<gfx::Rect>& paint_rects,
+                               std::vector<PaintReadyRect>* ready,
+                               std::vector<gfx::Rect>* pending) {
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 base::WeakPtr<PdfViewPluginBase> PdfViewWebPlugin::GetWeakPtr() {
