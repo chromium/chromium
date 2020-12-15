@@ -76,9 +76,11 @@ public class PaymentRequestService
     private static NativeObserverForTest sNativeObserverForTest;
     private static boolean sIsLocalHasEnrolledInstrumentQueryQuotaEnforcedForTest;
     private final Runnable mOnClosedListener;
+    private final RenderFrameHost mRenderFrameHost;
+    private final Delegate mDelegate;
+    private final List<PaymentApp> mPendingApps = new ArrayList<>();
     private WebContents mWebContents;
     private JourneyLogger mJourneyLogger;
-    private final RenderFrameHost mRenderFrameHost;
     private String mTopLevelOrigin;
     private String mPaymentRequestOrigin;
     private Origin mPaymentRequestSecurityOrigin;
@@ -91,9 +93,7 @@ public class PaymentRequestService
     private boolean mRequestPayerName;
     private boolean mRequestPayerPhone;
     private boolean mRequestPayerEmail;
-    private final Delegate mDelegate;
     private int mShippingType;
-    private final List<PaymentApp> mPendingApps = new ArrayList<>();
     private PaymentRequestSpec mSpec;
     private boolean mHasClosed;
     private boolean mIsFinishedQueryingPaymentApps;
@@ -414,8 +414,7 @@ public class PaymentRequestService
             @Nullable PaymentOptions options, boolean googlePayBridgeEligible) {
         if (mRenderFrameHost.getLastCommittedOrigin() == null
                 || mRenderFrameHost.getLastCommittedURL() == null) {
-            abortForInvalidDataFromRenderer(
-                    /*client=*/null, /*journeyLogger=*/null, ErrorStrings.NO_FRAME);
+            abortForInvalidDataFromRenderer(ErrorStrings.NO_FRAME);
             return false;
         }
         mPaymentRequestSecurityOrigin = mRenderFrameHost.getLastCommittedOrigin();
@@ -425,8 +424,7 @@ public class PaymentRequestService
 
         mWebContents = mDelegate.getLiveWebContents(mRenderFrameHost);
         if (mWebContents == null || mWebContents.isDestroyed()) {
-            abortForInvalidDataFromRenderer(
-                    /*client=*/null, /*journeyLogger=*/null, ErrorStrings.NO_WEB_CONTENTS);
+            abortForInvalidDataFromRenderer(ErrorStrings.NO_WEB_CONTENTS);
             return false;
         }
         // TODO(crbug.com/992593): replace UrlFormatter with GURL operations.
@@ -438,35 +436,30 @@ public class PaymentRequestService
         mJourneyLogger = mDelegate.createJourneyLogger(mIsOffTheRecord, mWebContents);
 
         if (mClient == null) {
-            abortForInvalidDataFromRenderer(
-                    /*client=*/null, mJourneyLogger, ErrorStrings.INVALID_STATE);
+            abortForInvalidDataFromRenderer(ErrorStrings.INVALID_STATE);
             return false;
         }
 
         if (!mDelegate.isOriginSecure(mWebContents.getLastCommittedUrl())) {
-            abortForInvalidDataFromRenderer(
-                    mClient, mJourneyLogger, ErrorStrings.NOT_IN_A_SECURE_ORIGIN);
+            abortForInvalidDataFromRenderer(ErrorStrings.NOT_IN_A_SECURE_ORIGIN);
             return false;
         }
 
         if (methodData == null) {
-            abortForInvalidDataFromRenderer(
-                    mClient, mJourneyLogger, ErrorStrings.INVALID_PAYMENT_METHODS_OR_DATA);
+            abortForInvalidDataFromRenderer(ErrorStrings.INVALID_PAYMENT_METHODS_OR_DATA);
             return false;
         }
 
         // details has default value, so could never be null, according to payment_request.idl.
         if (details == null) {
-            abortForInvalidDataFromRenderer(
-                    mClient, mJourneyLogger, ErrorStrings.INVALID_PAYMENT_DETAILS);
+            abortForInvalidDataFromRenderer(ErrorStrings.INVALID_PAYMENT_DETAILS);
             return false;
         }
 
         // options has default value, so could never be null, according to
         // payment_request.idl.
         if (options == null) {
-            abortForInvalidDataFromRenderer(
-                    mClient, mJourneyLogger, ErrorStrings.INVALID_PAYMENT_OPTIONS);
+            abortForInvalidDataFromRenderer(ErrorStrings.INVALID_PAYMENT_OPTIONS);
             return false;
         }
         mPaymentOptions = options;
@@ -531,16 +524,6 @@ public class PaymentRequestService
         if (sNativeObserverForTest != null) {
             sNativeObserverForTest.onConnectionTerminated();
         }
-    }
-
-    private static void abortForInvalidDataFromRenderer(@Nullable PaymentRequestClient client,
-            @Nullable JourneyLogger journeyLogger, String debugMessage) {
-        Log.d(TAG, debugMessage);
-        if (client != null) {
-            client.onError(PaymentErrorReason.INVALID_DATA_FROM_RENDERER, debugMessage);
-        }
-        if (journeyLogger != null) journeyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
-        if (sNativeObserverForTest != null) sNativeObserverForTest.onConnectionTerminated();
     }
 
     /**
@@ -1383,7 +1366,9 @@ public class PaymentRequestService
      * @param debugMessage The debug message to be sent to the renderer.
      */
     /* package */ void abortForInvalidDataFromRenderer(String debugMessage) {
-        mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
+        if (mJourneyLogger != null) {
+            mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
+        }
         disconnectFromClientWithDebugMessage(
                 debugMessage, PaymentErrorReason.INVALID_DATA_FROM_RENDERER);
     }
@@ -1413,7 +1398,9 @@ public class PaymentRequestService
 
         mOnClosedListener.run();
 
-        mJourneyLogger.destroy();
+        if (mJourneyLogger != null) {
+            mJourneyLogger.destroy();
+        }
 
         if (mSpec != null) {
             mSpec.destroy();
