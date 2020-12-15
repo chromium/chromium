@@ -932,7 +932,6 @@ chrome_java_resources = [
   "java/res/layout/sharing_device_picker.xml",
   "java/res/layout/sheet_tab_toolbar.xml",
   "java/res/layout/signin_activity.xml",
-  "java/res/layout/signout_wipe_storage_dialog.xml",
   "java/res/layout/start_top_toolbar.xml",
   "java/res/layout/status_indicator_container.xml",
   "java/res/layout/suggestions_site_tile_grid_modern.xml",

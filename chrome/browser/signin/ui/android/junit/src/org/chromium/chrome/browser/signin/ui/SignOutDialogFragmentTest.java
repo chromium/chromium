@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.signin;
+package org.chromium.chrome.browser.signin.ui;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -31,7 +31,6 @@ import org.robolectric.shadows.ShadowAlertDialog;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileAccountManagementMetrics;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -50,7 +49,6 @@ public class SignOutDialogFragmentTest {
         @Override
         public void onSignOutClicked(boolean forceWipeUserData) {}
     }
-
 
     @Rule
     public final JniMocker mocker = new JniMocker();

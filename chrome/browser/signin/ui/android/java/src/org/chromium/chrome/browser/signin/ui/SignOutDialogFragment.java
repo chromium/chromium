@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.signin;
+package org.chromium.chrome.browser.signin.ui;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -16,7 +16,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileAccountManagementMetrics;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -28,8 +27,8 @@ import org.chromium.components.signin.GAIAServiceType;
  * Shows the dialog that explains the user the consequences of signing out of Chrome.
  * Calls the listener callback if the user signs out.
  */
-public class SignOutDialogFragment extends DialogFragment implements
-        DialogInterface.OnClickListener {
+public class SignOutDialogFragment
+        extends DialogFragment implements DialogInterface.OnClickListener {
     /**
      * The extra key used to specify the GAIA service that triggered this dialog.
      */
@@ -65,8 +64,8 @@ public class SignOutDialogFragment extends DialogFragment implements
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         if (getArguments() != null) {
-            mGaiaServiceType = getArguments().getInt(
-                    SHOW_GAIA_SERVICE_TYPE_EXTRA, mGaiaServiceType);
+            mGaiaServiceType =
+                    getArguments().getInt(SHOW_GAIA_SERVICE_TYPE_EXTRA, mGaiaServiceType);
         }
         String domain = IdentityServicesProvider.get()
                                 .getSigninManager(Profile.getLastUsedRegularProfile())

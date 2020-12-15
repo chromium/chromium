@@ -15,6 +15,7 @@ android_library("java") {
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/embedder_support/android:util_java",
+    "//components/signin/core/browser:signin_enums_java",
     "//components/signin/public/android:java",
     "//third_party/android_deps:androidx_annotation_annotation_java",
     "//third_party/android_deps:androidx_appcompat_appcompat_java",
@@ -31,6 +32,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/signin/ui/ConsentTextTracker.java",
     "java/src/org/chromium/chrome/browser/signin/ui/GoogleActivityController.java",
     "java/src/org/chromium/chrome/browser/signin/ui/PersonalizedSigninPromoView.java",
+    "java/src/org/chromium/chrome/browser/signin/ui/SignOutDialogFragment.java",
     "java/src/org/chromium/chrome/browser/signin/ui/SigninActivityLauncher.java",
     "java/src/org/chromium/chrome/browser/signin/ui/SigninScrollView.java",
     "java/src/org/chromium/chrome/browser/signin/ui/SigninView.java",
@@ -50,6 +52,7 @@ android_resources("java_resources") {
     "java/res/layout/personalized_signin_promo_view_settings.xml",
     "java/res/layout/signin_progress_bar_dialog.xml",
     "java/res/layout/signin_view.xml",
+    "java/res/layout/signout_wipe_storage_dialog.xml",
   ]
   deps = [
     "//chrome/browser/ui/android/strings:ui_strings_grd",
@@ -66,12 +69,15 @@ android_library("junit") {
     "junit/src/org/chromium/chrome/browser/signin/ui/ConfirmImportSyncDataDialogTest.java",
     "junit/src/org/chromium/chrome/browser/signin/ui/ConfirmManagedSyncDataDialogTest.java",
     "junit/src/org/chromium/chrome/browser/signin/ui/ConfirmSyncDataStateMachineDelegateTest.java",
+    "junit/src/org/chromium/chrome/browser/signin/ui/SignOutDialogFragmentTest.java",
   ]
   deps = [
     ":java",
+    "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/signin/services/android:java",
+    "//components/signin/core/browser:signin_enums_java",
     "//third_party/android_deps:androidx_appcompat_appcompat_java",
     "//third_party/android_deps:androidx_fragment_fragment_java",
     "//third_party/android_deps:robolectric_all_java",
