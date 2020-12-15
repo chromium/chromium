@@ -41,8 +41,8 @@ class CORE_EXPORT FirstMeaningfulPaintDetector
                                          int visible_height);
   void NotifyInputEvent();
   void NotifyPaint();
-  void ReportSwapTime(PaintEvent, WebSwapResult, base::TimeTicks);
-  void NotifyFirstContentfulPaint(base::TimeTicks swap_stamp);
+  void ReportPresentationTime(PaintEvent, WebSwapResult, base::TimeTicks);
+  void NotifyFirstContentfulPaint(base::TimeTicks presentation_time);
   void OnNetwork2Quiet();
   bool SeenFirstMeaningfulPaint() const;
 
@@ -58,14 +58,14 @@ class CORE_EXPORT FirstMeaningfulPaintDetector
 
   enum DeferFirstMeaningfulPaint {
     kDoNotDefer,
-    kDeferOutstandingSwapPromises,
+    kDeferOutstandingPresentationPromises,
     kDeferFirstContentfulPaintNotSet
   };
 
   Document* GetDocument();
   int ActiveConnections();
-  void RegisterNotifySwapTime(PaintEvent);
-  void SetFirstMeaningfulPaint(base::TimeTicks swap_stamp);
+  void RegisterNotifyPresentationTime(PaintEvent);
+  void SetFirstMeaningfulPaint(base::TimeTicks presentation_time);
 
   bool next_paint_is_meaningful_ = false;
   HadUserInput had_user_input_ = kNoUserInput;
@@ -74,14 +74,14 @@ class CORE_EXPORT FirstMeaningfulPaintDetector
 
   Member<PaintTiming> paint_timing_;
   base::TimeTicks provisional_first_meaningful_paint_;
-  base::TimeTicks provisional_first_meaningful_paint_swap_;
+  base::TimeTicks provisional_first_meaningful_paint_presentation_;
   double max_significance_so_far_ = 0.0;
   double accumulated_significance_while_having_blank_text_ = 0.0;
   unsigned prev_layout_object_count_ = 0;
   bool seen_first_meaningful_paint_candidate_ = false;
   bool network_quiet_reached_ = false;
   base::TimeTicks first_meaningful_paint_;
-  unsigned outstanding_swap_promise_count_ = 0;
+  unsigned outstanding_presentation_promise_count_ = 0;
   DeferFirstMeaningfulPaint defer_first_meaningful_paint_ = kDoNotDefer;
 };
 

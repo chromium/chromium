@@ -272,7 +272,8 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
                      const cc::PaintImage&,
                      base::OnceCallback<void(bool)>) override;
 
-  void NotifySwapTime(LocalFrame& frame, ReportTimeCallback callback) override;
+  void NotifyPresentationTime(LocalFrame& frame,
+                              ReportTimeCallback callback) override;
 
   void RequestBeginMainFrameNotExpected(LocalFrame& frame,
                                         bool request) override;

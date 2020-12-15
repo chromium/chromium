@@ -80,20 +80,10 @@ class LargestContentfulPaintCalculatorTest : public RenderingTest {
         .UpdateLargestContentfulPaintCandidate();
   }
 
-  void SimulateContentSwapPromise() {
-    mock_text_callback_manager_->InvokeSwapTimeCallback(
+  void SimulateContentPresentationPromise() {
+    mock_text_callback_manager_->InvokePresentationTimeCallback(
         simulated_clock_.NowTicks());
-    mock_image_callback_manager_->InvokeSwapTimeCallback(
-        simulated_clock_.NowTicks());
-    // Outside the tests, this is invoked by
-    // |PaintTimingCallbackManagerImpl::ReportPaintTime|.
-    UpdateLargestContentfulPaintCandidate();
-  }
-
-  // Outside the tests, the text callback and the image callback are run
-  // together, as in |SimulateContentSwapPromise|.
-  void SimulateImageSwapPromise() {
-    mock_image_callback_manager_->InvokeSwapTimeCallback(
+    mock_image_callback_manager_->InvokePresentationTimeCallback(
         simulated_clock_.NowTicks());
     // Outside the tests, this is invoked by
     // |PaintTimingCallbackManagerImpl::ReportPaintTime|.
@@ -101,9 +91,19 @@ class LargestContentfulPaintCalculatorTest : public RenderingTest {
   }
 
   // Outside the tests, the text callback and the image callback are run
-  // together, as in |SimulateContentSwapPromise|.
-  void SimulateTextSwapPromise() {
-    mock_text_callback_manager_->InvokeSwapTimeCallback(
+  // together, as in |SimulateContentPresentationPromise|.
+  void SimulateImagePresentationPromise() {
+    mock_image_callback_manager_->InvokePresentationTimeCallback(
+        simulated_clock_.NowTicks());
+    // Outside the tests, this is invoked by
+    // |PaintTimingCallbackManagerImpl::ReportPaintTime|.
+    UpdateLargestContentfulPaintCandidate();
+  }
+
+  // Outside the tests, the text callback and the image callback are run
+  // together, as in |SimulateContentPresentationPromise|.
+  void SimulateTextPresentationPromise() {
+    mock_text_callback_manager_->InvokePresentationTimeCallback(
         simulated_clock_.NowTicks());
     // Outside the tests, this is invoked by
     // |PaintTimingCallbackManagerImpl::ReportPaintTime|.
@@ -130,7 +130,7 @@ TEST_F(LargestContentfulPaintCalculatorTest, SingleImage) {
   )HTML");
   SetImage("target", 100, 150);
   UpdateAllLifecyclePhasesForTest();
-  SimulateImageSwapPromise();
+  SimulateImagePresentationPromise();
 
   EXPECT_EQ(LargestReportedSize(), 15000u);
   EXPECT_EQ(CountCandidates(), 1u);
@@ -142,7 +142,7 @@ TEST_F(LargestContentfulPaintCalculatorTest, SingleText) {
     <p>This is some text</p>
   )HTML");
   UpdateAllLifecyclePhasesForTest();
-  SimulateTextSwapPromise();
+  SimulateTextPresentationPromise();
 
   EXPECT_GT(LargestReportedSize(), 0u);
   EXPECT_EQ(CountCandidates(), 1u);
@@ -156,10 +156,10 @@ TEST_F(LargestContentfulPaintCalculatorTest, ImageLargerText) {
   )HTML");
   SetImage("target", 3, 3);
   UpdateAllLifecyclePhasesForTest();
-  SimulateImageSwapPromise();
+  SimulateImagePresentationPromise();
   EXPECT_EQ(LargestReportedSize(), 9u);
   EXPECT_EQ(CountCandidates(), 1u);
-  SimulateTextSwapPromise();
+  SimulateTextPresentationPromise();
 
   EXPECT_GT(LargestReportedSize(), 9u);
   EXPECT_EQ(CountCandidates(), 2u);
@@ -173,10 +173,10 @@ TEST_F(LargestContentfulPaintCalculatorTest, ImageSmallerText) {
   )HTML");
   SetImage("target", 100, 200);
   UpdateAllLifecyclePhasesForTest();
-  SimulateImageSwapPromise();
+  SimulateImagePresentationPromise();
   EXPECT_EQ(LargestReportedSize(), 20000u);
   EXPECT_EQ(CountCandidates(), 1u);
-  SimulateTextSwapPromise();
+  SimulateTextPresentationPromise();
 
   // Text should not be reported, since it is smaller than the image.
   EXPECT_EQ(LargestReportedSize(), 20000u);
@@ -191,7 +191,7 @@ TEST_F(LargestContentfulPaintCalculatorTest, TextLargerImage) {
   )HTML");
   SetImage("target", 100, 200);
   UpdateAllLifecyclePhasesForTest();
-  SimulateContentSwapPromise();
+  SimulateContentPresentationPromise();
 
   EXPECT_EQ(LargestReportedSize(), 20000u);
   EXPECT_EQ(CountCandidates(), 1u);
@@ -205,7 +205,7 @@ TEST_F(LargestContentfulPaintCalculatorTest, TextSmallerImage) {
   )HTML");
   SetImage("target", 3, 3);
   UpdateAllLifecyclePhasesForTest();
-  SimulateContentSwapPromise();
+  SimulateContentPresentationPromise();
 
   // Image should not be reported, since it is smaller than the text.
   EXPECT_GT(LargestReportedSize(), 9u);
@@ -222,8 +222,8 @@ TEST_F(LargestContentfulPaintCalculatorTest, LargestImageRemoved) {
   SetImage("large", 100, 200);
   SetImage("small", 3, 3);
   UpdateAllLifecyclePhasesForTest();
-  SimulateImageSwapPromise();
-  SimulateTextSwapPromise();
+  SimulateImagePresentationPromise();
+  SimulateTextPresentationPromise();
   // Image is larger than the text.
   EXPECT_EQ(LargestReportedSize(), 20000u);
   EXPECT_EQ(CountCandidates(), 1u);
@@ -248,11 +248,11 @@ TEST_F(LargestContentfulPaintCalculatorTest, LargestTextRemoved) {
   )HTML");
   SetImage("medium", 10, 5);
   UpdateAllLifecyclePhasesForTest();
-  SimulateImageSwapPromise();
-  SimulateTextSwapPromise();
+  SimulateImagePresentationPromise();
+  SimulateTextPresentationPromise();
   // Test is larger than the image.
   EXPECT_GT(LargestReportedSize(), 50u);
-  // Image swap occurred first, so we have would have two candidates.
+  // Image presentation occurred first, so we have would have two candidates.
   EXPECT_EQ(CountCandidates(), 2u);
 
   GetDocument().getElementById("large")->remove();

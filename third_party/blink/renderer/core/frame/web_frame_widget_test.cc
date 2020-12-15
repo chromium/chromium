@@ -490,7 +490,7 @@ class NotifySwapTimesWebFrameWidgetTest : public SimTest {
     base::RunLoop swap_run_loop;
     base::RunLoop presentation_run_loop;
 
-    // Register callbacks for swap time and presentation time.
+    // Register callbacks for presentation time.
     base::TimeTicks swap_time;
     MainFrame().FrameWidget()->NotifySwapAndPresentationTime(
         base::BindOnce(

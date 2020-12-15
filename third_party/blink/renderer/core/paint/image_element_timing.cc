@@ -175,14 +175,14 @@ void ImageElementTiming::NotifyImagePaintedInternal(
   element_timings_.emplace_back(MakeGarbageCollected<ElementTimingInfo>(
       image_url, intersection_rect, load_time, attr,
       cached_image.IntrinsicSize(respect_orientation), id, element));
-  // Only queue a swap promise when |element_timings_| was empty. All of the
-  // records in |element_timings_| will be processed when the promise succeeds
-  // or fails, and at that time the vector is cleared.
+  // Only queue a presentation promise when |element_timings_| was empty. All of
+  // the records in |element_timings_| will be processed when the promise
+  // succeeds or fails, and at that time the vector is cleared.
   if (element_timings_.size() == 1) {
-    frame->GetChromeClient().NotifySwapTime(
-        *frame,
-        CrossThreadBindOnce(&ImageElementTiming::ReportImagePaintSwapTime,
-                            WrapCrossThreadWeakPersistent(this)));
+    frame->GetChromeClient().NotifyPresentationTime(
+        *frame, CrossThreadBindOnce(
+                    &ImageElementTiming::ReportImagePaintPresentationTime,
+                    WrapCrossThreadWeakPersistent(this)));
   }
 }
 
@@ -217,8 +217,9 @@ void ImageElementTiming::NotifyBackgroundImagePainted(
   }
 }
 
-void ImageElementTiming::ReportImagePaintSwapTime(WebSwapResult,
-                                                  base::TimeTicks timestamp) {
+void ImageElementTiming::ReportImagePaintPresentationTime(
+    WebSwapResult,
+    base::TimeTicks timestamp) {
   WindowPerformance* performance =
       DOMWindowPerformance::performance(*GetSupplementable());
   if (performance) {

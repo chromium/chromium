@@ -198,7 +198,7 @@ class CORE_EXPORT ImageRecordsManager {
   // This stores the image records, which are ordered by size.
   ImageRecordSet size_ordered_set_;
   // |ImageRecord|s waiting for paint time are stored in this queue
-  // until they get a swap time.
+  // until they get a presentation time.
   Deque<base::WeakPtr<ImageRecord>> images_queued_for_paint_time_;
   // Map containing timestamps of when LayoutObject::ImageNotifyFinished is
   // first called.
@@ -267,12 +267,13 @@ class CORE_EXPORT ImagePaintTimingDetector final
   void StopRecordEntries();
   inline bool IsRecording() const { return is_recording_; }
   inline bool FinishedReportingImages() const {
-    return !is_recording_ && num_pending_swap_callbacks_ == 0;
+    return !is_recording_ && num_pending_presentation_callbacks_ == 0;
   }
   void ResetCallbackManager(PaintTimingCallbackManager* manager) {
     callback_manager_ = manager;
   }
-  void ReportSwapTime(unsigned last_queued_frame_index, base::TimeTicks);
+  void ReportPresentationTime(unsigned last_queued_frame_index,
+                              base::TimeTicks);
 
   // Return the candidate.
   ImageRecord* UpdateCandidate();
@@ -288,7 +289,7 @@ class CORE_EXPORT ImagePaintTimingDetector final
   friend class LargestContentfulPaintCalculatorTest;
 
   void PopulateTraceValue(TracedValue&, const ImageRecord& first_image_paint);
-  void RegisterNotifySwapTime();
+  void RegisterNotifyPresentationTime();
   void ReportCandidateToTrace(ImageRecord&);
   void ReportNoCandidateToTrace();
   // Computes the size of an image for the purpose of LargestContentfulPaint,
@@ -312,9 +313,10 @@ class CORE_EXPORT ImagePaintTimingDetector final
   // no effect on recording the loading status.
   bool is_recording_ = true;
 
-  // Used to determine how many swap callbacks are pending. In combination with
-  // |is_recording|, helps determine whether this detector can be destroyed.
-  int num_pending_swap_callbacks_ = 0;
+  // Used to determine how many presentation callbacks are pending. In
+  // combination with |is_recording|, helps determine whether this detector can
+  // be destroyed.
+  int num_pending_presentation_callbacks_ = 0;
 
   // This need to be set whenever changes that can affect the output of
   // |FindLargestPaintCandidate| occur during the paint tree walk.

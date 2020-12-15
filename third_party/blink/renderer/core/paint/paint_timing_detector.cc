@@ -456,10 +456,10 @@ void PaintTimingCallbackManagerImpl::
   frame_callbacks_ =
       std::make_unique<PaintTimingCallbackManager::CallbackQueue>();
 
-  // |ReportPaintTime| on |layerTreeView| will queue a swap-promise, the
-  // callback is called when the swap for current render frame completes or
-  // fails to happen.
-  frame.GetPage()->GetChromeClient().NotifySwapTime(
+  // |ReportPaintTime| on |layerTreeView| will queue a presentation-promise, the
+  // callback is called when the presentation for current render frame completes
+  // or fails to happen.
+  frame.GetPage()->GetChromeClient().NotifyPresentationTime(
       frame, std::move(combined_callback));
 }
 

@@ -192,7 +192,7 @@ class ImagePaintTimingDetectorTest : public testing::Test,
     UpdateAllLifecyclePhases();
     SimulatePassOfTime();
     while (mock_callback_manager_->CountCallbacks() > 0)
-      InvokeSwapTimeCallback(mock_callback_manager_);
+      InvokePresentationTimeCallback(mock_callback_manager_);
   }
 
   void SetBodyInnerHTML(const std::string& content) {
@@ -220,17 +220,17 @@ class ImagePaintTimingDetectorTest : public testing::Test,
 
   void InvokeCallback() {
     DCHECK_GT(mock_callback_manager_->CountCallbacks(), 0UL);
-    InvokeSwapTimeCallback(mock_callback_manager_);
+    InvokePresentationTimeCallback(mock_callback_manager_);
   }
 
   void InvokeChildFrameCallback() {
     DCHECK_GT(child_mock_callback_manager_->CountCallbacks(), 0UL);
-    InvokeSwapTimeCallback(child_mock_callback_manager_);
+    InvokePresentationTimeCallback(child_mock_callback_manager_);
   }
 
-  void InvokeSwapTimeCallback(
+  void InvokePresentationTimeCallback(
       MockPaintTimingCallbackManager* image_callback_manager) {
-    image_callback_manager->InvokeSwapTimeCallback(
+    image_callback_manager->InvokePresentationTimeCallback(
         test_task_runner_->NowTicks());
     UpdateCandidate();
   }
@@ -832,10 +832,11 @@ TEST_P(ImagePaintTimingDetectorTest,
                                     3 * kQuantumOfTime);
 }
 
-// This is to prove that a swap time is assigned only to nodes of the frame who
-// register the swap time. In other words, swap time A should match frame A;
-// swap time B should match frame B.
-TEST_P(ImagePaintTimingDetectorTest, MatchSwapTimeToNodesOfDifferentFrames) {
+// This is to prove that a presentation time is assigned only to nodes of the
+// frame who register the presentation time. In other words, presentation time A
+// should match frame A; presentation time B should match frame B.
+TEST_P(ImagePaintTimingDetectorTest,
+       MatchPresentationTimeToNodesOfDifferentFrames) {
   SetBodyInnerHTML(R"HTML(
     <div id="parent">
       <img height="5" width="5" id="smaller"></img>
@@ -889,7 +890,7 @@ TEST_P(ImagePaintTimingDetectorTest,
   EXPECT_EQ(result2, ExperimentalLargestPaintTime());
 }
 
-TEST_P(ImagePaintTimingDetectorTest, OneSwapPromiseForOneFrame) {
+TEST_P(ImagePaintTimingDetectorTest, OnePresentationPromiseForOneFrame) {
   SetBodyInnerHTML(R"HTML(
     <style>img { display:block }</style>
     <div id="parent">

@@ -871,13 +871,13 @@ void ChromeClientImpl::RequestDecode(LocalFrame* frame,
   widget->RequestDecode(image, std::move(callback));
 }
 
-void ChromeClientImpl::NotifySwapTime(LocalFrame& frame,
-                                      ReportTimeCallback callback) {
+void ChromeClientImpl::NotifyPresentationTime(LocalFrame& frame,
+                                              ReportTimeCallback callback) {
   FrameWidget* widget = frame.GetWidgetForLocalRoot();
   if (!widget)
     return;
-  widget->NotifySwapAndPresentationTimeInBlink(
-      base::NullCallback(), ConvertToBaseOnceCallback(std::move(callback)));
+  widget->NotifyPresentationTimeInBlink(
+      ConvertToBaseOnceCallback(std::move(callback)));
 }
 
 void ChromeClientImpl::RequestBeginMainFrameNotExpected(LocalFrame& frame,

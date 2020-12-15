@@ -48,7 +48,7 @@ class CORE_EXPORT ImageElementTiming final
   base::TimeTicks GetBackgroundImageLoadTime(const StyleFetchedImage*);
 
   // Called when the LayoutObject has been painted. This method might queue a
-  // swap promise to compute and report paint timestamps.
+  // presentation promise to compute and report paint timestamps.
   void NotifyImagePainted(
       const LayoutObject&,
       const ImageResourceContent& cached_image,
@@ -77,8 +77,9 @@ class CORE_EXPORT ImageElementTiming final
       base::TimeTicks load_time,
       const IntRect& image_border);
 
-  // Callback for the swap promise. Reports paint timestamps.
-  void ReportImagePaintSwapTime(WebSwapResult, base::TimeTicks timestamp);
+  // Callback for the presentation promise. Reports paint timestamps.
+  void ReportImagePaintPresentationTime(WebSwapResult,
+                                        base::TimeTicks timestamp);
 
   // Class containing information about image element timing.
   class ElementTimingInfo final : public GarbageCollected<ElementTimingInfo> {
@@ -113,7 +114,7 @@ class CORE_EXPORT ImageElementTiming final
   };
 
   // Vector containing the element timing infos that will be reported during the
-  // next swap promise callback.
+  // next presentation promise callback.
   HeapVector<Member<ElementTimingInfo>> element_timings_;
   struct ImageInfo {
     ImageInfo() {}

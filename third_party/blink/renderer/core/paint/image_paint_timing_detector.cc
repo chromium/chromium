@@ -151,7 +151,7 @@ void ImagePaintTimingDetector::OnPaintFinished() {
     return;
 
   last_registered_frame_index_ = frame_index_ - 1;
-  RegisterNotifySwapTime();
+  RegisterNotifyPresentationTime();
 }
 
 void ImagePaintTimingDetector::NotifyImageRemoved(
@@ -179,24 +179,25 @@ void ImagePaintTimingDetector::StopRecordEntries() {
   }
 }
 
-void ImagePaintTimingDetector::RegisterNotifySwapTime() {
-  auto callback = WTF::Bind(&ImagePaintTimingDetector::ReportSwapTime,
+void ImagePaintTimingDetector::RegisterNotifyPresentationTime() {
+  auto callback = WTF::Bind(&ImagePaintTimingDetector::ReportPresentationTime,
                             WrapCrossThreadWeakPersistent(this),
                             last_registered_frame_index_);
   callback_manager_->RegisterCallback(std::move(callback));
-  num_pending_swap_callbacks_++;
+  num_pending_presentation_callbacks_++;
 }
 
-void ImagePaintTimingDetector::ReportSwapTime(unsigned last_queued_frame_index,
-                                              base::TimeTicks timestamp) {
+void ImagePaintTimingDetector::ReportPresentationTime(
+    unsigned last_queued_frame_index,
+    base::TimeTicks timestamp) {
   if (!is_recording_)
     return;
   // The callback is safe from race-condition only when running on main-thread.
   DCHECK(ThreadState::Current()->IsMainThread());
   records_manager_.AssignPaintTimeToRegisteredQueuedRecords(
       timestamp, last_queued_frame_index);
-  num_pending_swap_callbacks_--;
-  DCHECK_GE(num_pending_swap_callbacks_, 0);
+  num_pending_presentation_callbacks_--;
+  DCHECK_GE(num_pending_presentation_callbacks_, 0);
 }
 
 void ImageRecordsManager::AssignPaintTimeToRegisteredQueuedRecords(

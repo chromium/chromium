@@ -246,21 +246,21 @@ class CORE_EXPORT TextPaintTimingDetector final
     return records_manager_.UpdateCandidate();
   }
   void ReportLargestIgnoredText();
-  void ReportSwapTime(base::TimeTicks timestamp);
+  void ReportPresentationTime(base::TimeTicks timestamp);
   void Trace(Visitor*) const;
 
  private:
   friend class LargestContentfulPaintCalculatorTest;
 
-  void RegisterNotifySwapTime(
+  void RegisterNotifyPresentationTime(
       PaintTimingCallbackManager::LocalThreadCallback callback);
 
   TextRecordsManager records_manager_;
 
   Member<PaintTimingCallbackManager> callback_manager_;
 
-  // Make sure that at most one swap promise is ongoing.
-  bool awaiting_swap_promise_ = false;
+  // Make sure that at most one presentation promise is ongoing.
+  bool awaiting_presentation_promise_ = false;
 
   bool need_update_timing_at_frame_end_ = false;
 

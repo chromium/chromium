@@ -493,11 +493,13 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   }
 
   // The |callback| will be fired when the corresponding renderer frame for the
-  // |frame| is submitted (still called "swapped") to the display compositor
-  // (either with DidSwap or DidNotSwap).
+  // |frame| is presented in the display compositor. The reported time could
+  // sometimes be the swap time, as is the case when the swap is aborted. In
+  // this case, WebSwapResult will be DidNotSwap.
   using ReportTimeCallback =
       WTF::CrossThreadOnceFunction<void(WebSwapResult, base::TimeTicks)>;
-  virtual void NotifySwapTime(LocalFrame& frame, ReportTimeCallback callback) {}
+  virtual void NotifyPresentationTime(LocalFrame& frame,
+                                      ReportTimeCallback callback) {}
 
   // Enable or disable BeginMainFrameNotExpected signals from the compositor of
   // the local root of |frame|. These signals would be consumed by the blink

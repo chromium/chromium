@@ -187,8 +187,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   void RegisterSelection(cc::LayerSelection selection) final;
   void RequestDecode(const cc::PaintImage&,
                      base::OnceCallback<void(bool)>) override;
-  void NotifySwapAndPresentationTimeInBlink(
-      WebReportTimeCallback swap_callback,
+  void NotifyPresentationTimeInBlink(
       WebReportTimeCallback presentation_callback) final;
   void RequestBeginMainFrameNotExpected(bool request) final;
   int GetLayerTreeId() final;

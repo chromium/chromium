@@ -346,36 +346,37 @@ void WindowPerformance::RegisterEventTiming(const AtomicString& event_type,
       MonotonicTimeToDOMHighResTimeStamp(processing_start),
       MonotonicTimeToDOMHighResTimeStamp(processing_end), cancelable, target);
   // Add |entry| to the end of the queue along with the frame index at which is
-  // is being queued to know when to queue a swap promise for it.
+  // is being queued to know when to queue a presentation promise for it.
   event_timings_.push_back(entry);
   event_frames_.push_back(frame_index_);
-  bool should_queue_swap_promise = false;
-  // If there are no pending swap promises, we should queue one. This ensures
-  // that |event_timings_| are processed even if the Blink lifecycle does not
-  // occur due to no DOM updates.
-  if (pending_swap_promise_count_ == 0u) {
-    should_queue_swap_promise = true;
+  bool should_queue_presentation_promise = false;
+  // If there are no pending presentation promises, we should queue one. This
+  // ensures that |event_timings_| are processed even if the Blink lifecycle
+  // does not occur due to no DOM updates.
+  if (pending_presentation_promise_count_ == 0u) {
+    should_queue_presentation_promise = true;
   } else {
-    // There are pending swap promises, so only queue one if the event
-    // corresponds to a later frame than the one of the latest queued swap
-    // promise.
-    should_queue_swap_promise = frame_index_ > last_registered_frame_index_;
+    // There are pending presentation promises, so only queue one if the event
+    // corresponds to a later frame than the one of the latest queued
+    // presentation promise.
+    should_queue_presentation_promise =
+        frame_index_ > last_registered_frame_index_;
   }
-  if (should_queue_swap_promise) {
-    DomWindow()->GetFrame()->GetChromeClient().NotifySwapTime(
+  if (should_queue_presentation_promise) {
+    DomWindow()->GetFrame()->GetChromeClient().NotifyPresentationTime(
         *DomWindow()->GetFrame(),
         CrossThreadBindOnce(&WindowPerformance::ReportEventTimings,
                             WrapCrossThreadWeakPersistent(this), frame_index_));
     last_registered_frame_index_ = frame_index_;
-    ++pending_swap_promise_count_;
+    ++pending_presentation_promise_count_;
   }
 }
 
 void WindowPerformance::ReportEventTimings(uint64_t frame_index,
                                            WebSwapResult result,
                                            base::TimeTicks timestamp) {
-  DCHECK(pending_swap_promise_count_);
-  --pending_swap_promise_count_;
+  DCHECK(pending_presentation_promise_count_);
+  --pending_presentation_promise_count_;
   // |event_timings_| and |event_frames_| should always have the same size.
   DCHECK(event_timings_.size() == event_frames_.size());
   if (event_timings_.IsEmpty())

@@ -70,9 +70,9 @@ class CORE_EXPORT WindowPerformance final : public Performance,
 
   bool FirstInputDetected() const { return !!first_input_timing_; }
 
-  // This method creates a PerformanceEventTiming and if needed creates a swap
-  // promise to calculate the |duration| attribute when such promise is
-  // resolved.
+  // This method creates a PerformanceEventTiming and if needed creates a
+  // presentation promise to calculate the |duration| attribute when such
+  // promise is resolved.
   void RegisterEventTiming(const AtomicString& event_type,
                            base::TimeTicks start_time,
                            base::TimeTicks processing_start,
@@ -123,8 +123,8 @@ class CORE_EXPORT WindowPerformance final : public Performance,
 
   void BuildJSONValue(V8ObjectBuilder&) const override;
 
-  // Method called once swap promise is resolved. It will add all event timings
-  // that have not been added since the last swap promise.
+  // Method called once presentation promise is resolved. It will add all event
+  // timings that have not been added since the last presentation promise.
   void ReportEventTimings(uint64_t frame_index,
                           WebSwapResult result,
                           base::TimeTicks timestamp);
@@ -133,13 +133,13 @@ class CORE_EXPORT WindowPerformance final : public Performance,
 
   // Counter of the current frame index, based on calls to OnPaintFinished().
   uint64_t frame_index_ = 1;
-  // Monotonically increasing value with the last frame index on which a swap
-  // promise was queued;
+  // Monotonically increasing value with the last frame index on which a
+  // presentation promise was queued;
   uint64_t last_registered_frame_index_ = 0;
-  // Number of pending swap promises.
-  uint16_t pending_swap_promise_count_ = 0;
+  // Number of pending presentation promises.
+  uint16_t pending_presentation_promise_count_ = 0;
   // PerformanceEventTiming entries that have not been sent to observers yet:
-  // the event dispatch has been completed but the swap promise used to
+  // the event dispatch has been completed but the presentation promise used to
   // determine |duration| has not yet been resolved. It is handled as a queue:
   // FIFO.
   HeapDeque<Member<PerformanceEventTiming>> event_timings_;

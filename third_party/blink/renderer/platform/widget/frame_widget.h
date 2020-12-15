@@ -70,8 +70,7 @@ class PLATFORM_EXPORT FrameWidget {
   // The |callback| will be fired when the corresponding renderer frame is
   // submitted (still called "swapped") to the display compositor (either with
   // DidSwap or DidNotSwap).
-  virtual void NotifySwapAndPresentationTimeInBlink(
-      WebReportTimeCallback swap_callback,
+  virtual void NotifyPresentationTimeInBlink(
       WebReportTimeCallback presentation_callback) = 0;
 
   // Enable or disable BeginMainFrameNotExpected signals from the compositor,

@@ -96,8 +96,8 @@ void FirstMeaningfulPaintDetector::NotifyPaint() {
     return;
 
   had_user_input_before_provisional_first_meaningful_paint_ = had_user_input_;
-  provisional_first_meaningful_paint_swap_ = base::TimeTicks();
-  RegisterNotifySwapTime(PaintEvent::kProvisionalFirstMeaningfulPaint);
+  provisional_first_meaningful_paint_presentation_ = base::TimeTicks();
+  RegisterNotifyPresentationTime(PaintEvent::kProvisionalFirstMeaningfulPaint);
 }
 
 // This is called only on FirstMeaningfulPaintDetector for main frame.
@@ -115,31 +115,33 @@ void FirstMeaningfulPaintDetector::OnNetwork2Quiet() {
   network_quiet_reached_ = true;
 
   if (!provisional_first_meaningful_paint_.is_null()) {
-    base::TimeTicks first_meaningful_paint_swap;
+    base::TimeTicks first_meaningful_paint_presentation;
     // Enforce FirstContentfulPaint <= FirstMeaningfulPaint.
     if (provisional_first_meaningful_paint_ <
         paint_timing_->FirstContentfulPaintRendered()) {
       first_meaningful_paint_ = paint_timing_->FirstContentfulPaintRendered();
-      first_meaningful_paint_swap = paint_timing_->FirstContentfulPaint();
+      first_meaningful_paint_presentation =
+          paint_timing_->FirstContentfulPaint();
       // It's possible that this timer fires between when the first contentful
-      // paint is set and its SwapPromise is fulfilled. If this happens, defer
-      // until NotifyFirstContentfulPaint() is called.
-      if (first_meaningful_paint_swap.is_null())
+      // paint is set and its presentation promise is fulfilled. If this
+      // happens, defer until NotifyFirstContentfulPaint() is called.
+      if (first_meaningful_paint_presentation.is_null())
         defer_first_meaningful_paint_ = kDeferFirstContentfulPaintNotSet;
     } else {
       first_meaningful_paint_ = provisional_first_meaningful_paint_;
-      first_meaningful_paint_swap = provisional_first_meaningful_paint_swap_;
-      // We might still be waiting for one or more swap promises, in which case
-      // we want to defer reporting first meaningful paint until they complete.
-      // Otherwise, we would either report the wrong swap timestamp or none at
-      // all.
-      if (outstanding_swap_promise_count_ > 0)
-        defer_first_meaningful_paint_ = kDeferOutstandingSwapPromises;
+      first_meaningful_paint_presentation =
+          provisional_first_meaningful_paint_presentation_;
+      // We might still be waiting for one or more presentation promises, in
+      // which case we want to defer reporting first meaningful paint until they
+      // complete. Otherwise, we would either report the wrong presentation
+      // timestamp or none at all.
+      if (outstanding_presentation_promise_count_ > 0)
+        defer_first_meaningful_paint_ = kDeferOutstandingPresentationPromises;
     }
     if (defer_first_meaningful_paint_ == kDoNotDefer) {
       // Report FirstMeaningfulPaint when the page reached network 2-quiet if
-      // we aren't waiting for a swap timestamp.
-      SetFirstMeaningfulPaint(first_meaningful_paint_swap);
+      // we aren't waiting for a presentation timestamp.
+      SetFirstMeaningfulPaint(first_meaningful_paint_presentation);
     }
   }
 }
@@ -148,34 +150,36 @@ bool FirstMeaningfulPaintDetector::SeenFirstMeaningfulPaint() const {
   return !first_meaningful_paint_.is_null();
 }
 
-void FirstMeaningfulPaintDetector::RegisterNotifySwapTime(PaintEvent event) {
-  ++outstanding_swap_promise_count_;
-  paint_timing_->RegisterNotifySwapTime(
-      CrossThreadBindOnce(&FirstMeaningfulPaintDetector::ReportSwapTime,
+void FirstMeaningfulPaintDetector::RegisterNotifyPresentationTime(
+    PaintEvent event) {
+  ++outstanding_presentation_promise_count_;
+  paint_timing_->RegisterNotifyPresentationTime(
+      CrossThreadBindOnce(&FirstMeaningfulPaintDetector::ReportPresentationTime,
                           WrapCrossThreadWeakPersistent(this), event));
 }
 
-void FirstMeaningfulPaintDetector::ReportSwapTime(PaintEvent event,
-                                                  WebSwapResult result,
-                                                  base::TimeTicks timestamp) {
+void FirstMeaningfulPaintDetector::ReportPresentationTime(
+    PaintEvent event,
+    WebSwapResult result,
+    base::TimeTicks timestamp) {
   DCHECK(event == PaintEvent::kProvisionalFirstMeaningfulPaint);
-  DCHECK_GT(outstanding_swap_promise_count_, 0U);
-  --outstanding_swap_promise_count_;
+  DCHECK_GT(outstanding_presentation_promise_count_, 0U);
+  --outstanding_presentation_promise_count_;
 
-  // If the swap fails for any reason, we use the timestamp when the SwapPromise
-  // was broken. |result| == WebSwapResult::kDidNotSwapSwapFails
-  // usually means the compositor decided not swap because there was no actual
-  // damage, which can happen when what's being painted isn't visible. In this
-  // case, the timestamp will be consistent with the case where the swap
-  // succeeds, as they both capture the time up to swap. In other failure cases
-  // (aborts during commit), this timestamp is an improvement over the blink
-  // paint time, but does not capture some time we're interested in, e.g.  image
-  // decoding.
+  // If the presentation fails for any reason, we use the timestamp when the
+  // presentation promise was broken. |result| ==
+  // WebSwapResult::kDidNotSwapSwapFails usually means the compositor decided
+  // not swap because there was no actual damage, which can happen when what's
+  // being painted isn't visible. In this case, the timestamp will be consistent
+  // with the case where the presentation succeeds, as they both capture the
+  // time up to presentation. In other failure cases (aborts during commit),
+  // this timestamp is an improvement over the blink paint time, but does not
+  // capture some time we're interested in, e.g.  image decoding.
   //
   // TODO(crbug.com/738235): Consider not reporting any timestamp when failing
   // for reasons other than kDidNotSwapSwapFails.
   paint_timing_->ReportSwapResultHistogram(result);
-  provisional_first_meaningful_paint_swap_ = timestamp;
+  provisional_first_meaningful_paint_presentation_ = timestamp;
 
   probe::PaintTiming(GetDocument(), "firstMeaningfulPaintCandidate",
                      timestamp.since_origin().InSecondsF());
@@ -186,39 +190,42 @@ void FirstMeaningfulPaintDetector::ReportSwapTime(PaintEvent event,
     seen_first_meaningful_paint_candidate_ = true;
   } else {
     paint_timing_->SetFirstMeaningfulPaintCandidate(
-        provisional_first_meaningful_paint_swap_);
+        provisional_first_meaningful_paint_presentation_);
   }
 
-  if (defer_first_meaningful_paint_ == kDeferOutstandingSwapPromises &&
-      outstanding_swap_promise_count_ == 0) {
+  if (defer_first_meaningful_paint_ == kDeferOutstandingPresentationPromises &&
+      outstanding_presentation_promise_count_ == 0) {
     DCHECK(!first_meaningful_paint_.is_null());
-    SetFirstMeaningfulPaint(provisional_first_meaningful_paint_swap_);
+    SetFirstMeaningfulPaint(provisional_first_meaningful_paint_presentation_);
   }
 }
 
 void FirstMeaningfulPaintDetector::NotifyFirstContentfulPaint(
-    base::TimeTicks swap_stamp) {
+    base::TimeTicks presentation_time) {
   if (defer_first_meaningful_paint_ != kDeferFirstContentfulPaintNotSet)
     return;
-  SetFirstMeaningfulPaint(swap_stamp);
+  SetFirstMeaningfulPaint(presentation_time);
 }
 
 void FirstMeaningfulPaintDetector::SetFirstMeaningfulPaint(
-    base::TimeTicks swap_stamp) {
+    base::TimeTicks presentation_time) {
   DCHECK(paint_timing_->FirstMeaningfulPaint().is_null());
-  DCHECK(!swap_stamp.is_null());
+  DCHECK(!presentation_time.is_null());
   DCHECK(network_quiet_reached_);
 
-  double swap_time_seconds = swap_stamp.since_origin().InSecondsF();
-  probe::PaintTiming(GetDocument(), "firstMeaningfulPaint", swap_time_seconds);
+  double presentation_time_seconds =
+      presentation_time.since_origin().InSecondsF();
+  probe::PaintTiming(GetDocument(), "firstMeaningfulPaint",
+                     presentation_time_seconds);
 
   // If there's only been one contentful paint, then there won't have been
   // a meaningful paint signalled to the Scheduler, so mark one now.
   // This is a no-op if a FMPC has already been marked.
-  paint_timing_->SetFirstMeaningfulPaintCandidate(swap_stamp);
+  paint_timing_->SetFirstMeaningfulPaintCandidate(presentation_time);
 
   paint_timing_->SetFirstMeaningfulPaint(
-      swap_stamp, had_user_input_before_provisional_first_meaningful_paint_);
+      presentation_time,
+      had_user_input_before_provisional_first_meaningful_paint_);
 }
 
 // static

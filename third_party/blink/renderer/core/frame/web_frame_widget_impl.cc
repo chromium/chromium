@@ -2843,10 +2843,9 @@ class ReportTimeSwapPromise : public cc::SwapPromise {
   DISALLOW_COPY_AND_ASSIGN(ReportTimeSwapPromise);
 };
 
-void WebFrameWidgetImpl::NotifySwapAndPresentationTimeInBlink(
-    WebReportTimeCallback swap_time_callback,
+void WebFrameWidgetImpl::NotifyPresentationTimeInBlink(
     WebReportTimeCallback presentation_time_callback) {
-  NotifySwapAndPresentationTime(std::move(swap_time_callback),
+  NotifySwapAndPresentationTime(base::NullCallback(),
                                 std::move(presentation_time_callback));
 }
 

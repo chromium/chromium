@@ -60,56 +60,57 @@ class FirstMeaningfulPaintDetectorTest : public PageTestBase {
 
   void SimulateUserInput() { Detector().NotifyInputEvent(); }
 
-  void ClearFirstPaintSwapPromise() {
+  void ClearFirstPaintPresentationPromise() {
     platform()->AdvanceClock(base::TimeDelta::FromMilliseconds(1));
-    GetPaintTiming().ReportSwapTime(PaintEvent::kFirstPaint,
-                                    WebSwapResult::kDidSwap, Now());
+    GetPaintTiming().ReportPresentationTime(PaintEvent::kFirstPaint,
+                                            WebSwapResult::kDidSwap, Now());
   }
 
-  void ClearFirstContentfulPaintSwapPromise() {
+  void ClearFirstContentfulPaintPresentationPromise() {
     platform()->AdvanceClock(base::TimeDelta::FromMilliseconds(1));
-    GetPaintTiming().ReportSwapTime(PaintEvent::kFirstContentfulPaint,
-                                    WebSwapResult::kDidSwap, Now());
+    GetPaintTiming().ReportPresentationTime(PaintEvent::kFirstContentfulPaint,
+                                            WebSwapResult::kDidSwap, Now());
   }
 
-  void ClearProvisionalFirstMeaningfulPaintSwapPromise() {
+  void ClearProvisionalFirstMeaningfulPaintPresentationPromise() {
     platform()->AdvanceClock(base::TimeDelta::FromMilliseconds(1));
-    ClearProvisionalFirstMeaningfulPaintSwapPromise(Now());
+    ClearProvisionalFirstMeaningfulPaintPresentationPromise(Now());
   }
 
-  void ClearProvisionalFirstMeaningfulPaintSwapPromise(
+  void ClearProvisionalFirstMeaningfulPaintPresentationPromise(
       base::TimeTicks timestamp) {
-    Detector().ReportSwapTime(PaintEvent::kProvisionalFirstMeaningfulPaint,
-                              WebSwapResult::kDidSwap, timestamp);
+    Detector().ReportPresentationTime(
+        PaintEvent::kProvisionalFirstMeaningfulPaint, WebSwapResult::kDidSwap,
+        timestamp);
   }
 
-  unsigned OutstandingDetectorSwapPromiseCount() {
-    return Detector().outstanding_swap_promise_count_;
+  unsigned OutstandingDetectorPresentationPromiseCount() {
+    return Detector().outstanding_presentation_promise_count_;
   }
 
-  void MarkFirstContentfulPaintAndClearSwapPromise() {
+  void MarkFirstContentfulPaintAndClearPresentationPromise() {
     GetPaintTiming().MarkFirstContentfulPaint();
-    ClearFirstContentfulPaintSwapPromise();
+    ClearFirstContentfulPaintPresentationPromise();
   }
 
-  void MarkFirstPaintAndClearSwapPromise() {
+  void MarkFirstPaintAndClearPresentationPromise() {
     GetPaintTiming().MarkFirstPaint();
-    ClearFirstPaintSwapPromise();
+    ClearFirstPaintPresentationPromise();
   }
 };
 
 TEST_F(FirstMeaningfulPaintDetectorTest, NoFirstPaint) {
   SimulateLayoutAndPaint(1);
-  EXPECT_EQ(OutstandingDetectorSwapPromiseCount(), 0U);
+  EXPECT_EQ(OutstandingDetectorPresentationPromiseCount(), 0U);
   SimulateNetworkStable();
   EXPECT_EQ(GetPaintTiming().FirstMeaningfulPaint(), base::TimeTicks());
 }
 
 TEST_F(FirstMeaningfulPaintDetectorTest, OneLayout) {
-  MarkFirstContentfulPaintAndClearSwapPromise();
+  MarkFirstContentfulPaintAndClearPresentationPromise();
   SimulateLayoutAndPaint(1);
-  EXPECT_EQ(OutstandingDetectorSwapPromiseCount(), 1U);
-  ClearProvisionalFirstMeaningfulPaintSwapPromise();
+  EXPECT_EQ(OutstandingDetectorPresentationPromiseCount(), 1U);
+  ClearProvisionalFirstMeaningfulPaintPresentationPromise();
   base::TimeTicks after_paint = AdvanceClockAndGetTime();
   EXPECT_EQ(GetPaintTiming().FirstMeaningfulPaint(), base::TimeTicks());
   SimulateNetworkStable();
@@ -117,14 +118,14 @@ TEST_F(FirstMeaningfulPaintDetectorTest, OneLayout) {
 }
 
 TEST_F(FirstMeaningfulPaintDetectorTest, TwoLayoutsSignificantSecond) {
-  MarkFirstContentfulPaintAndClearSwapPromise();
+  MarkFirstContentfulPaintAndClearPresentationPromise();
   SimulateLayoutAndPaint(1);
-  EXPECT_EQ(OutstandingDetectorSwapPromiseCount(), 1U);
-  ClearProvisionalFirstMeaningfulPaintSwapPromise();
+  EXPECT_EQ(OutstandingDetectorPresentationPromiseCount(), 1U);
+  ClearProvisionalFirstMeaningfulPaintPresentationPromise();
   base::TimeTicks after_layout1 = AdvanceClockAndGetTime();
   SimulateLayoutAndPaint(10);
-  EXPECT_EQ(OutstandingDetectorSwapPromiseCount(), 1U);
-  ClearProvisionalFirstMeaningfulPaintSwapPromise();
+  EXPECT_EQ(OutstandingDetectorPresentationPromiseCount(), 1U);
+  ClearProvisionalFirstMeaningfulPaintPresentationPromise();
   base::TimeTicks after_layout2 = AdvanceClockAndGetTime();
   SimulateNetworkStable();
   EXPECT_GT(GetPaintTiming().FirstMeaningfulPaint(), after_layout1);
@@ -132,13 +133,13 @@ TEST_F(FirstMeaningfulPaintDetectorTest, TwoLayoutsSignificantSecond) {
 }
 
 TEST_F(FirstMeaningfulPaintDetectorTest, TwoLayoutsSignificantFirst) {
-  MarkFirstContentfulPaintAndClearSwapPromise();
+  MarkFirstContentfulPaintAndClearPresentationPromise();
   SimulateLayoutAndPaint(10);
-  EXPECT_EQ(OutstandingDetectorSwapPromiseCount(), 1U);
-  ClearProvisionalFirstMeaningfulPaintSwapPromise();
+  EXPECT_EQ(OutstandingDetectorPresentationPromiseCount(), 1U);
+  ClearProvisionalFirstMeaningfulPaintPresentationPromise();
   base::TimeTicks after_layout1 = AdvanceClockAndGetTime();
   SimulateLayoutAndPaint(1);
-  EXPECT_EQ(OutstandingDetectorSwapPromiseCount(), 0U);
+  EXPECT_EQ(OutstandingDetectorPresentationPromiseCount(), 0U);
   SimulateNetworkStable();
   EXPECT_GT(GetPaintTiming().FirstMeaningfulPaint(),
             GetPaintTiming().FirstPaintRendered());
@@ -146,38 +147,38 @@ TEST_F(FirstMeaningfulPaintDetectorTest, TwoLayoutsSignificantFirst) {
 }
 
 TEST_F(FirstMeaningfulPaintDetectorTest, FirstMeaningfulPaintCandidate) {
-  MarkFirstContentfulPaintAndClearSwapPromise();
+  MarkFirstContentfulPaintAndClearPresentationPromise();
   EXPECT_EQ(GetPaintTiming().FirstMeaningfulPaintCandidate(),
             base::TimeTicks());
   SimulateLayoutAndPaint(1);
-  EXPECT_EQ(OutstandingDetectorSwapPromiseCount(), 1U);
-  ClearProvisionalFirstMeaningfulPaintSwapPromise();
+  EXPECT_EQ(OutstandingDetectorPresentationPromiseCount(), 1U);
+  ClearProvisionalFirstMeaningfulPaintPresentationPromise();
   base::TimeTicks after_paint = AdvanceClockAndGetTime();
   // The first candidate gets ignored.
   EXPECT_EQ(GetPaintTiming().FirstMeaningfulPaintCandidate(),
             base::TimeTicks());
   SimulateLayoutAndPaint(10);
-  EXPECT_EQ(OutstandingDetectorSwapPromiseCount(), 1U);
-  ClearProvisionalFirstMeaningfulPaintSwapPromise();
+  EXPECT_EQ(OutstandingDetectorPresentationPromiseCount(), 1U);
+  ClearProvisionalFirstMeaningfulPaintPresentationPromise();
   // The second candidate gets reported.
   EXPECT_GT(GetPaintTiming().FirstMeaningfulPaintCandidate(), after_paint);
   base::TimeTicks candidate = GetPaintTiming().FirstMeaningfulPaintCandidate();
   // The third candidate gets ignored since we already saw the first candidate.
   SimulateLayoutAndPaint(20);
-  EXPECT_EQ(OutstandingDetectorSwapPromiseCount(), 1U);
-  ClearProvisionalFirstMeaningfulPaintSwapPromise();
+  EXPECT_EQ(OutstandingDetectorPresentationPromiseCount(), 1U);
+  ClearProvisionalFirstMeaningfulPaintPresentationPromise();
   EXPECT_EQ(GetPaintTiming().FirstMeaningfulPaintCandidate(), candidate);
 }
 
 TEST_F(FirstMeaningfulPaintDetectorTest,
        OnlyOneFirstMeaningfulPaintCandidateBeforeNetworkStable) {
-  MarkFirstContentfulPaintAndClearSwapPromise();
+  MarkFirstContentfulPaintAndClearPresentationPromise();
   EXPECT_EQ(GetPaintTiming().FirstMeaningfulPaintCandidate(),
             base::TimeTicks());
   base::TimeTicks before_paint = AdvanceClockAndGetTime();
   SimulateLayoutAndPaint(1);
-  EXPECT_EQ(OutstandingDetectorSwapPromiseCount(), 1U);
-  ClearProvisionalFirstMeaningfulPaintSwapPromise();
+  EXPECT_EQ(OutstandingDetectorPresentationPromiseCount(), 1U);
+  ClearProvisionalFirstMeaningfulPaintPresentationPromise();
   // The first candidate is initially ignored.
   EXPECT_EQ(GetPaintTiming().FirstMeaningfulPaintCandidate(),
             base::TimeTicks());
@@ -187,31 +188,31 @@ TEST_F(FirstMeaningfulPaintDetectorTest,
   base::TimeTicks candidate = GetPaintTiming().FirstMeaningfulPaintCandidate();
   // The second candidate is then ignored.
   SimulateLayoutAndPaint(10);
-  EXPECT_EQ(OutstandingDetectorSwapPromiseCount(), 0U);
+  EXPECT_EQ(OutstandingDetectorPresentationPromiseCount(), 0U);
   EXPECT_EQ(GetPaintTiming().FirstMeaningfulPaintCandidate(), candidate);
 }
 
 TEST_F(FirstMeaningfulPaintDetectorTest,
        NetworkStableBeforeFirstContentfulPaint) {
-  MarkFirstPaintAndClearSwapPromise();
+  MarkFirstPaintAndClearPresentationPromise();
   SimulateLayoutAndPaint(1);
-  EXPECT_EQ(OutstandingDetectorSwapPromiseCount(), 1U);
-  ClearProvisionalFirstMeaningfulPaintSwapPromise();
+  EXPECT_EQ(OutstandingDetectorPresentationPromiseCount(), 1U);
+  ClearProvisionalFirstMeaningfulPaintPresentationPromise();
   SimulateNetworkStable();
   EXPECT_EQ(GetPaintTiming().FirstMeaningfulPaint(), base::TimeTicks());
-  MarkFirstContentfulPaintAndClearSwapPromise();
+  MarkFirstContentfulPaintAndClearPresentationPromise();
   SimulateNetworkStable();
   EXPECT_NE(GetPaintTiming().FirstMeaningfulPaint(), base::TimeTicks());
 }
 
 TEST_F(FirstMeaningfulPaintDetectorTest,
        FirstMeaningfulPaintShouldNotBeBeforeFirstContentfulPaint) {
-  MarkFirstPaintAndClearSwapPromise();
+  MarkFirstPaintAndClearPresentationPromise();
   SimulateLayoutAndPaint(10);
-  EXPECT_EQ(OutstandingDetectorSwapPromiseCount(), 1U);
-  ClearProvisionalFirstMeaningfulPaintSwapPromise();
+  EXPECT_EQ(OutstandingDetectorPresentationPromiseCount(), 1U);
+  ClearProvisionalFirstMeaningfulPaintPresentationPromise();
   platform()->AdvanceClock(base::TimeDelta::FromMilliseconds(1));
-  MarkFirstContentfulPaintAndClearSwapPromise();
+  MarkFirstContentfulPaintAndClearPresentationPromise();
   SimulateNetworkStable();
   EXPECT_GE(GetPaintTiming().FirstMeaningfulPaint(),
             GetPaintTiming().FirstContentfulPaint());
@@ -219,82 +220,83 @@ TEST_F(FirstMeaningfulPaintDetectorTest,
 
 TEST_F(FirstMeaningfulPaintDetectorTest,
        FirstMeaningfulPaintAfterUserInteraction) {
-  MarkFirstContentfulPaintAndClearSwapPromise();
+  MarkFirstContentfulPaintAndClearPresentationPromise();
   SimulateUserInput();
   SimulateLayoutAndPaint(10);
-  EXPECT_EQ(OutstandingDetectorSwapPromiseCount(), 1U);
-  ClearProvisionalFirstMeaningfulPaintSwapPromise();
+  EXPECT_EQ(OutstandingDetectorPresentationPromiseCount(), 1U);
+  ClearProvisionalFirstMeaningfulPaintPresentationPromise();
   SimulateNetworkStable();
   EXPECT_EQ(GetPaintTiming().FirstMeaningfulPaint(), base::TimeTicks());
 }
 
 TEST_F(FirstMeaningfulPaintDetectorTest, UserInteractionBeforeFirstPaint) {
   SimulateUserInput();
-  MarkFirstContentfulPaintAndClearSwapPromise();
+  MarkFirstContentfulPaintAndClearPresentationPromise();
   SimulateLayoutAndPaint(10);
-  EXPECT_EQ(OutstandingDetectorSwapPromiseCount(), 1U);
-  ClearProvisionalFirstMeaningfulPaintSwapPromise();
+  EXPECT_EQ(OutstandingDetectorPresentationPromiseCount(), 1U);
+  ClearProvisionalFirstMeaningfulPaintPresentationPromise();
   SimulateNetworkStable();
   EXPECT_NE(GetPaintTiming().FirstMeaningfulPaint(), base::TimeTicks());
 }
 
 TEST_F(FirstMeaningfulPaintDetectorTest,
-       WaitForSingleOutstandingSwapPromiseAfterNetworkStable) {
-  MarkFirstContentfulPaintAndClearSwapPromise();
+       WaitForSingleOutstandingPresentationPromiseAfterNetworkStable) {
+  MarkFirstContentfulPaintAndClearPresentationPromise();
   SimulateLayoutAndPaint(10);
-  EXPECT_EQ(OutstandingDetectorSwapPromiseCount(), 1U);
+  EXPECT_EQ(OutstandingDetectorPresentationPromiseCount(), 1U);
   SimulateNetworkStable();
   EXPECT_EQ(GetPaintTiming().FirstMeaningfulPaint(), base::TimeTicks());
-  ClearProvisionalFirstMeaningfulPaintSwapPromise();
+  ClearProvisionalFirstMeaningfulPaintPresentationPromise();
   EXPECT_NE(GetPaintTiming().FirstMeaningfulPaint(), base::TimeTicks());
 }
 
 TEST_F(FirstMeaningfulPaintDetectorTest,
-       WaitForMultipleOutstandingSwapPromisesAfterNetworkStable) {
-  MarkFirstContentfulPaintAndClearSwapPromise();
+       WaitForMultipleOutstandingPresentationPromisesAfterNetworkStable) {
+  MarkFirstContentfulPaintAndClearPresentationPromise();
   SimulateLayoutAndPaint(1);
-  EXPECT_EQ(OutstandingDetectorSwapPromiseCount(), 1U);
+  EXPECT_EQ(OutstandingDetectorPresentationPromiseCount(), 1U);
   platform()->AdvanceClock(base::TimeDelta::FromMilliseconds(1));
   SimulateLayoutAndPaint(10);
-  EXPECT_EQ(OutstandingDetectorSwapPromiseCount(), 2U);
-  // Having outstanding swap promises should defer setting FMP.
+  EXPECT_EQ(OutstandingDetectorPresentationPromiseCount(), 2U);
+  // Having outstanding presentation promises should defer setting FMP.
   SimulateNetworkStable();
   EXPECT_EQ(GetPaintTiming().FirstMeaningfulPaint(), base::TimeTicks());
-  // Clearing the first swap promise should have no effect on FMP.
-  ClearProvisionalFirstMeaningfulPaintSwapPromise();
-  EXPECT_EQ(OutstandingDetectorSwapPromiseCount(), 1U);
+  // Clearing the first presentation promise should have no effect on FMP.
+  ClearProvisionalFirstMeaningfulPaintPresentationPromise();
+  EXPECT_EQ(OutstandingDetectorPresentationPromiseCount(), 1U);
   EXPECT_EQ(GetPaintTiming().FirstMeaningfulPaint(), base::TimeTicks());
-  base::TimeTicks after_first_swap = AdvanceClockAndGetTime();
-  // Clearing the last outstanding swap promise should set FMP.
-  ClearProvisionalFirstMeaningfulPaintSwapPromise();
-  EXPECT_EQ(OutstandingDetectorSwapPromiseCount(), 0U);
+  base::TimeTicks after_first_presentation = AdvanceClockAndGetTime();
+  // Clearing the last outstanding presentation promise should set FMP.
+  ClearProvisionalFirstMeaningfulPaintPresentationPromise();
+  EXPECT_EQ(OutstandingDetectorPresentationPromiseCount(), 0U);
   EXPECT_GT(GetPaintTiming().FirstMeaningfulPaint(), base::TimeTicks());
-  EXPECT_GT(GetPaintTiming().FirstMeaningfulPaint(), after_first_swap);
+  EXPECT_GT(GetPaintTiming().FirstMeaningfulPaint(), after_first_presentation);
 }
 
 TEST_F(FirstMeaningfulPaintDetectorTest,
-       WaitForFirstContentfulPaintSwapAfterNetworkStable) {
-  MarkFirstPaintAndClearSwapPromise();
+       WaitForFirstContentfulPaintPresentationpAfterNetworkStable) {
+  MarkFirstPaintAndClearPresentationPromise();
   SimulateLayoutAndPaint(10);
-  EXPECT_EQ(OutstandingDetectorSwapPromiseCount(), 1U);
-  ClearProvisionalFirstMeaningfulPaintSwapPromise();
+  EXPECT_EQ(OutstandingDetectorPresentationPromiseCount(), 1U);
+  ClearProvisionalFirstMeaningfulPaintPresentationPromise();
   platform()->AdvanceClock(base::TimeDelta::FromMilliseconds(1));
   GetPaintTiming().MarkFirstContentfulPaint();
-  // FCP > FMP candidate, but still waiting for FCP swap.
+  // FCP > FMP candidate, but still waiting for FCP presentation.
   SimulateNetworkStable();
   EXPECT_EQ(GetPaintTiming().FirstMeaningfulPaint(), base::TimeTicks());
-  // Trigger notifying the detector about the FCP swap.
-  ClearFirstContentfulPaintSwapPromise();
+  // Trigger notifying the detector about the FCP presentation.
+  ClearFirstContentfulPaintPresentationPromise();
   EXPECT_GT(GetPaintTiming().FirstMeaningfulPaint(), base::TimeTicks());
   EXPECT_EQ(GetPaintTiming().FirstMeaningfulPaint(),
             GetPaintTiming().FirstContentfulPaint());
 }
 
-TEST_F(FirstMeaningfulPaintDetectorTest,
-       ProvisionalTimestampChangesAfterNetworkQuietWithOutstandingSwapPromise) {
-  MarkFirstContentfulPaintAndClearSwapPromise();
+TEST_F(
+    FirstMeaningfulPaintDetectorTest,
+    ProvisionalTimestampChangesAfterNetworkQuietWithOutstandingPresentationPromise) {
+  MarkFirstContentfulPaintAndClearPresentationPromise();
   SimulateLayoutAndPaint(1);
-  EXPECT_EQ(OutstandingDetectorSwapPromiseCount(), 1U);
+  EXPECT_EQ(OutstandingDetectorPresentationPromiseCount(), 1U);
 
   // Simulate network stable so provisional FMP will be set on next layout.
   base::TimeTicks pre_stable_timestamp = AdvanceClockAndGetTime();
@@ -302,17 +304,17 @@ TEST_F(FirstMeaningfulPaintDetectorTest,
   SimulateNetworkStable();
   EXPECT_EQ(GetPaintTiming().FirstMeaningfulPaint(), base::TimeTicks());
 
-  // Force another FMP candidate while there is a pending swap promise and the
-  // FMP non-swap timestamp is set.
+  // Force another FMP candidate while there is a pending presentation promise
+  // and the FMP non-presentation timestamp is set.
   platform()->AdvanceClock(base::TimeDelta::FromMilliseconds(1));
   SimulateLayoutAndPaint(10);
-  EXPECT_EQ(OutstandingDetectorSwapPromiseCount(), 1U);
+  EXPECT_EQ(OutstandingDetectorPresentationPromiseCount(), 1U);
 
-  // Simulate a delay in receiving the SwapPromise timestamp. Clearing this
-  // SwapPromise will set FMP, and this will crash if the new provisional
-  // non-swap timestamp is used.
-  ClearProvisionalFirstMeaningfulPaintSwapPromise(pre_stable_timestamp);
-  EXPECT_EQ(OutstandingDetectorSwapPromiseCount(), 0U);
+  // Simulate a delay in receiving the PresentationPromise timestamp. Clearing
+  // this PresentationPromise will set FMP, and this will crash if the new
+  // provisional non-presentation timestamp is used.
+  ClearProvisionalFirstMeaningfulPaintPresentationPromise(pre_stable_timestamp);
+  EXPECT_EQ(OutstandingDetectorPresentationPromiseCount(), 0U);
   EXPECT_GT(GetPaintTiming().FirstMeaningfulPaint(), base::TimeTicks());
   EXPECT_EQ(GetPaintTiming().FirstMeaningfulPaint(), pre_stable_timestamp);
 }
