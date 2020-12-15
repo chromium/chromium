@@ -12,6 +12,7 @@
 #include "base/allocator/partition_allocator/partition_stats.h"
 #include "base/bits.h"
 #include "base/no_destructor.h"
+#include "base/numerics/checked_math.h"
 #include "build/build_config.h"
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
@@ -134,7 +135,8 @@ void* PartitionCalloc(const AllocatorDispatch*,
                       size_t n,
                       size_t size,
                       void* context) {
-  return Allocator()->AllocFlagsNoHooks(base::PartitionAllocZeroFill, n * size);
+  const size_t total = base::CheckMul(n, size).ValueOrDie();
+  return Allocator()->AllocFlagsNoHooks(base::PartitionAllocZeroFill, total);
 }
 
 void* PartitionMemalign(const AllocatorDispatch*,
