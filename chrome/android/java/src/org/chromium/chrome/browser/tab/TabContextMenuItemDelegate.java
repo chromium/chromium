@@ -44,7 +44,6 @@ import org.chromium.content_public.common.Referrer;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
-import org.chromium.url.URI;
 
 import java.util.Locale;
 
@@ -283,7 +282,7 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
     }
 
     @Override
-    public void onOpenInChrome(String linkUrl, String pageUrl) {
+    public void onOpenInChrome(String linkUrl, GURL pageUrl) {
         Context applicationContext = ContextUtils.getApplicationContext();
         Intent chromeIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(linkUrl));
         chromeIntent.setPackage(applicationContext.getPackageName());
@@ -300,15 +299,9 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
 
         boolean activityStarted = false;
         if (pageUrl != null) {
-            try {
-                URI pageUri = URI.create(pageUrl);
-                if (UrlUtilities.isInternalScheme(pageUri)) {
-                    IntentHandler.startChromeLauncherActivityForTrustedIntent(chromeIntent);
-                    activityStarted = true;
-                }
-            } catch (IllegalArgumentException ex) {
-                // Ignore the exception for creating the URI and launch the intent
-                // without the trusted intent extras.
+            if (UrlUtilities.isInternalScheme(pageUrl)) {
+                IntentHandler.startChromeLauncherActivityForTrustedIntent(chromeIntent);
+                activityStarted = true;
             }
         }
 

@@ -233,6 +233,7 @@ static_library("context_menu") {
     "//base",
     "//content/public/browser",
     "//content/public/common",
+    "//url:gurl_android",
   ]
 }
 
@@ -248,6 +249,7 @@ android_library("context_menu_java") {
     "//third_party/android_deps:androidx_annotation_annotation_java",
     "//third_party/blink/public:blink_headers_java",
     "//ui/android:ui_no_recycler_view_java",
+    "//url:gurl_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   sources = [ "java/src/org/chromium/components/embedder_support/contextmenu/ContextMenuParams.java" ]

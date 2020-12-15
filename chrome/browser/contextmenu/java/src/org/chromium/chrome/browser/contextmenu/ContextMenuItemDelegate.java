@@ -10,6 +10,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.Referrer;
+import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -183,7 +184,7 @@ public interface ContextMenuItemDelegate {
      * @param linkUrl URL that should be opened.
      * @param pageUrl URL of the current page.
      */
-    void onOpenInChrome(String linkUrl, String pageUrl);
+    void onOpenInChrome(String linkUrl, GURL pageUrl);
 
     /**
      * Returns true if menu entries should be added for open in chrome.

@@ -38,6 +38,7 @@ import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,8 +73,9 @@ public class RevampedContextMenuCoordinatorTest {
 
     @Test
     public void testGetItemListWithImageLink() {
-        final ContextMenuParams params = new ContextMenuParams(
-                0, ContextMenuDataMediaType.IMAGE, "", "", "", "", "", "", null, false, 0, 0, 0);
+        final ContextMenuParams params = new ContextMenuParams(0, ContextMenuDataMediaType.IMAGE,
+                GURL.emptyGURL(), GURL.emptyGURL(), "", GURL.emptyGURL(), GURL.emptyGURL(), "",
+                null, false, 0, 0, 0);
         List<Pair<Integer, ModelList>> rawItems = new ArrayList<>();
         // Link items
         ModelList groupOne = new ModelList();
@@ -111,8 +113,9 @@ public class RevampedContextMenuCoordinatorTest {
         // isn't image or video, the header mediator tries to get a favicon for us and calls
         // Profile.getLastUsedRegularProfile(), which throws an exception because native isn't
         // initialized. mediaType here doesn't have any effect on what we're testing.
-        final ContextMenuParams params = new ContextMenuParams(
-                0, ContextMenuDataMediaType.IMAGE, "", "", "", "", "", "", null, false, 0, 0, 0);
+        final ContextMenuParams params = new ContextMenuParams(0, ContextMenuDataMediaType.IMAGE,
+                GURL.emptyGURL(), GURL.emptyGURL(), "", GURL.emptyGURL(), GURL.emptyGURL(), "",
+                null, false, 0, 0, 0);
         List<Pair<Integer, ModelList>> rawItems = new ArrayList<>();
         // Link items
         ModelList groupOne = new ModelList();
@@ -136,8 +139,9 @@ public class RevampedContextMenuCoordinatorTest {
 
     @Test
     public void testGetItemListWithVideo() {
-        final ContextMenuParams params = new ContextMenuParams(
-                0, ContextMenuDataMediaType.VIDEO, "", "", "", "", "", "", null, false, 0, 0, 0);
+        final ContextMenuParams params = new ContextMenuParams(0, ContextMenuDataMediaType.VIDEO,
+                GURL.emptyGURL(), GURL.emptyGURL(), "", GURL.emptyGURL(), GURL.emptyGURL(), "",
+                null, false, 0, 0, 0);
         List<Pair<Integer, ModelList>> rawItems = new ArrayList<>();
         // Video items
         ModelList groupOne = new ModelList();

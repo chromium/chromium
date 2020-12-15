@@ -67,6 +67,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.GURL;
 import org.chromium.url.URI;
 
 import java.lang.annotation.Retention;
@@ -850,7 +851,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     @Override
     public @Nullable ChipDelegate getChipDelegate() {
         if (LensUtils.enableImageChip(isIncognito())) {
-            return new LensChipDelegate(mParams.getPageUrl(), mParams.getTitleText(),
+            // TODO(crbug.com/783819): Migrate LensChipDelegate to GURL.
+            return new LensChipDelegate(mParams.getPageUrl().getSpec(), mParams.getTitleText(),
                     mParams.getSrcUrl(), getPageTitle(), isIncognito(),
                     mItemDelegate.getWebContents(), mNativeDelegate, getOnChipClickedCallback(),
                     getOnChipShownCallback());
@@ -914,7 +916,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
      * @return An immutable map. Can be used to check whether a specific Lens menu item is enabled.
      */
     private Map<String, Boolean> getSearchByImageMenuItemsToShowAndRecordMetrics(
-            String pageUrl, boolean isIncognito) {
+            GURL pageUrl, boolean isIncognito) {
         // If Google Lens feature is not supported, show search by image menu item.
         if (!LensUtils.isGoogleLensFeatureEnabled(isIncognito)) {
             // TODO(yusuyoutube): Cleanup. Remove repetition.

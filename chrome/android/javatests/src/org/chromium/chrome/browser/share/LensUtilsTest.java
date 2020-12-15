@@ -34,6 +34,7 @@ import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.url.GURL;
 
 /**
  * Tests of {@link LensUtils}.
@@ -559,8 +560,8 @@ public class LensUtilsTest {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
                 ()
                         -> LensUtils.getShareWithGoogleLensIntent(mContext, imageUri, isIncognito,
-                                currentTimeNanos, srcUrl, titleOrAltText, pageUrl, lensQueryResult,
-                                requiresConfirmation));
+                                currentTimeNanos, srcUrl, titleOrAltText, new GURL(pageUrl),
+                                lensQueryResult, requiresConfirmation));
     }
 
     /**
@@ -709,7 +710,7 @@ public class LensUtilsTest {
         Assert.assertEquals("Intent with image has incorrect Page URL",
                 "googleapp://lens?LensBitmapUriKey=content%3A%2F%2Fimage-url&AccountNameUriKey="
                         + "&IncognitoUriKey=false&ActivityLaunchTimestampNanos=1234&PageUrl="
-                        + "https%3A%2F%2Fwww.google.com%3FtestQueryParam",
+                        + "https%3A%2F%2Fwww.google.com%2F%3FtestQueryParam",
                 intentWithContentUri.getData().toString());
     }
 
@@ -845,7 +846,7 @@ public class LensUtilsTest {
     @SmallTest
     public void
     isInShoppingAllowlistWithDomainAllowlistTest() {
-        final String pageUrl = "shopping-site-2.com/product_1";
+        final GURL pageUrl = new GURL("https://shopping-site-2.com/product_1");
         assertTrue(isInShoppingAllowlistOnUiThread(pageUrl));
     }
 
@@ -856,12 +857,13 @@ public class LensUtilsTest {
     Add({"enable-features=" + ChromeFeatureList.CONTEXT_MENU_ENABLE_LENS_SHOPPING_ALLOWLIST
                     + "<FakeStudyName",
             "force-fieldtrials=FakeStudyName/Enabled",
-            "force-fieldtrial-params=FakeStudyName.Enabled:shoppingUrlPatterns/^shopping-site.*"})
+            "force-fieldtrial-params=FakeStudyName.Enabled:shoppingUrlPatterns/"
+                    + "^https...shopping-site.*"})
     @Test
     @SmallTest
     public void
     isInShoppingAllowlistWithShoppingUrlPatternsTest() {
-        final String pageUrl = "shopping-site-2.com/product_1";
+        final GURL pageUrl = new GURL("https://shopping-site-2.com/product_1");
         assertTrue(isInShoppingAllowlistOnUiThread(pageUrl));
     }
 
@@ -905,13 +907,14 @@ public class LensUtilsTest {
     @SmallTest
     @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_ENABLE_LENS_SHOPPING_ALLOWLIST})
     public void isInShoppingAllowlistWithDefaultShoppingUrlPatternTest() {
-        final String googleShoppingItemUrl = "https://www.google.com/shopping/product_1";
-        final String googleShoppingPageUrl = "https://www.google.com/search?=8893t5/tbm=shop/dress";
+        final GURL googleShoppingItemUrl = new GURL("https://www.google.com/shopping/product_1");
+        final GURL googleShoppingPageUrl =
+                new GURL("https://www.google.com/search?=8893t5/tbm=shop/dress");
         assertTrue(isInShoppingAllowlistOnUiThread(googleShoppingPageUrl));
         assertTrue(isInShoppingAllowlistOnUiThread(googleShoppingItemUrl));
     }
 
-    private boolean isInShoppingAllowlistOnUiThread(String imageUri) {
+    private boolean isInShoppingAllowlistOnUiThread(GURL imageUri) {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> LensUtils.isInShoppingAllowlist(imageUri));
     }

@@ -28,6 +28,7 @@ android_library("java") {
     "//content/public/android:content_java",
     "//third_party/android_deps:androidx_annotation_annotation_java",
     "//ui/android:ui_no_recycler_view_java",
+    "//url:gurl_java",
   ]
 }
 

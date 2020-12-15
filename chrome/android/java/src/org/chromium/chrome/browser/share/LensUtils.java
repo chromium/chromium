@@ -23,6 +23,7 @@ import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.variations.VariationsAssociatedData;
+import org.chromium.url.GURL;
 
 /**
  * This class provides utilities for intenting into Google Lens.
@@ -267,7 +268,7 @@ public class LensUtils {
      */
     public static Intent getShareWithGoogleLensIntent(final Context context, final Uri imageUri,
             final boolean isIncognito, final long currentTimeNanos, final String srcUrl,
-            final String titleOrAltText, final String pageUrl, LensQueryResult lensQueryResult,
+            final String titleOrAltText, final GURL pageUrl, LensQueryResult lensQueryResult,
             final boolean requiresConfirmation) {
         final CoreAccountInfo coreAccountInfo =
                 IdentityServicesProvider.get()
@@ -317,7 +318,7 @@ public class LensUtils {
                         && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                                 ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS,
                                 SEND_PAGE_PARAM_NAME, false)) {
-                    lensUriBuilder.appendQueryParameter(PAGE_URI_KEY, pageUrl);
+                    lensUriBuilder.appendQueryParameter(PAGE_URI_KEY, pageUrl.getSpec());
                 }
                 String variations = sFakeVariationsForTesting == null
                         ? VariationsAssociatedData.getGoogleAppVariations()
@@ -484,7 +485,7 @@ public class LensUtils {
      * Check if the page uri to determine whether the image is shoppable.
      * @return true if the image is shoppable.
      */
-    public static boolean isInShoppingAllowlist(final String url) {
+    public static boolean isInShoppingAllowlist(final GURL url) {
         if (sFakeImageUrlInShoppingAllowlistForTesting) {
             return true;
         }
@@ -493,7 +494,7 @@ public class LensUtils {
             return false;
         }
 
-        if (url == null || url.isEmpty()) {
+        if (GURL.isEmptyOrInvalid(url)) {
             return false;
         }
 
@@ -545,25 +546,25 @@ public class LensUtils {
     /**
      * Check if the uri matches any shopping url patterns.
      */
-    private static boolean hasShoppingUrlPattern(final String url) {
+    private static boolean hasShoppingUrlPattern(final GURL url) {
         String shoppingUrlPatterns = getShoppingUrlPatterns();
         if (shoppingUrlPatterns == null || shoppingUrlPatterns.isEmpty()) {
             // Fallback to default shopping url patterns.
             shoppingUrlPatterns = LENS_DEFAULT_SHOPPING_URL_PATTERNS;
         }
 
-        return url.matches(shoppingUrlPatterns);
+        return url.getSpec().matches(shoppingUrlPatterns);
     }
 
     /**
      * Check if the uri domain is in the Lens shopping domain Allowlist.
      */
-    private static boolean isInDomainAllowList(final String url) {
+    private static boolean isInDomainAllowList(final GURL url) {
         final String allowlistEntries = getAllowlistEntries();
         final String[] allowlist = allowlistEntries.split(",");
 
         for (final String allowlistEntry : allowlist) {
-            if (allowlistEntry.length() > 0 && url.contains(allowlistEntry)) {
+            if (allowlistEntry.length() > 0 && url.getSpec().contains(allowlistEntry)) {
                 return true;
             }
         }
