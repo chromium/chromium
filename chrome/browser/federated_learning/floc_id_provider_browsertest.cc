@@ -151,8 +151,9 @@ class FlocIdProviderWithCustomizedServicesBrowserTest
     : public FlocIdProviderBrowserTest {
  public:
   FlocIdProviderWithCustomizedServicesBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kFlocIdComputedEventLogging}, {});
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kFederatedLearningOfCohorts,
+        {{"minimum_history_domain_size_required", "1"}});
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -681,9 +682,10 @@ class FlocIdProviderSortingLshEnabledBrowserTest
  public:
   FlocIdProviderSortingLshEnabledBrowserTest() {
     scoped_feature_list_.Reset();
-    scoped_feature_list_.InitWithFeatures(
-        {features::kFlocIdComputedEventLogging,
-         features::kFlocIdSortingLshBasedComputation},
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kFederatedLearningOfCohorts,
+          {{"minimum_history_domain_size_required", "1"}}},
+         {features::kFlocIdSortingLshBasedComputation, {}}},
         {});
   }
 };

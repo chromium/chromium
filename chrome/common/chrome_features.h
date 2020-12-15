@@ -281,9 +281,11 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kFlocIdSortingLshBasedComputation;
 
 COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::Feature kFlocIdScheduledUpdate;
+extern const base::Feature kFederatedLearningOfCohorts;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<base::TimeDelta> kFlocIdScheduledUpdateInterval;
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<int> kFlocIdMinimumHistoryDomainSizeRequired;
 
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kFocusMode;

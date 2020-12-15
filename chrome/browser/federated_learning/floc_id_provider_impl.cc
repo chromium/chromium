@@ -26,7 +26,6 @@ namespace federated_learning {
 
 namespace {
 
-constexpr size_t kMinHistoryDomainSizeToReportFlocId = 1;
 constexpr int kQueryHistoryWindowInDays = 7;
 
 // The placeholder sorting-lsh version when the sorting-lsh feature is disabled.
@@ -341,7 +340,9 @@ void FlocIdProviderImpl::OnGetRecentlyVisitedURLsCompleted(
         net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES));
   }
 
-  if (domains.size() < kMinHistoryDomainSizeToReportFlocId) {
+  if (domains.size() <
+      static_cast<size_t>(
+          features::kFlocIdMinimumHistoryDomainSizeRequired.Get())) {
     std::move(callback).Run(ComputeFlocResult());
     return;
   }
