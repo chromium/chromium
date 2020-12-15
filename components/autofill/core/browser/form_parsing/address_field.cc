@@ -141,7 +141,7 @@ std::unique_ptr<FormField> AddressField::Parse(
       address_field->street_address_ || address_field->city_ ||
       address_field->state_ || address_field->zip_ || address_field->zip4_ ||
       address_field->street_name_ || address_field->house_number_ ||
-      address_field->country_) {
+      address_field->country_ || address_field->apartment_number_) {
     // Don't slurp non-labeled fields at the end into the address.
     if (has_trailing_non_labeled_fields)
       scanner->RewindTo(begin_trailing_non_labeled_fields);
@@ -186,6 +186,8 @@ void AddressField::AddClassifications(
                     kBaseAddressParserScore, field_candidates);
   AddClassification(street_name_, ADDRESS_HOME_STREET_NAME,
                     kBaseAddressParserScore, field_candidates);
+  AddClassification(apartment_number_, ADDRESS_HOME_APT_NUM,
+                    kBaseAddressParserScore, field_candidates);
 }
 
 bool AddressField::ParseCompany(AutofillScanner* scanner,
@@ -222,6 +224,9 @@ bool AddressField::ParseAddressFieldSequence(
   const std::vector<MatchingPattern>& house_number_patterns =
       PatternProvider::GetInstance().GetMatchPatterns(ADDRESS_HOME_HOUSE_NUMBER,
                                                       page_language);
+  const std::vector<MatchingPattern>& apartement_number_patterns =
+      PatternProvider::GetInstance().GetMatchPatterns(ADDRESS_HOME_APT_NUM,
+                                                      page_language);
 
   while (!scanner->IsEnd()) {
     if (!street_name_ &&
@@ -231,23 +236,36 @@ bool AddressField::ParseAddressFieldSequence(
       continue;
     }
     if (!house_number_ &&
-        ParseFieldSpecifics(scanner, UTF8ToUTF16(kHouseNumberRe), MATCH_DEFAULT,
+        ParseFieldSpecifics(scanner, UTF8ToUTF16(kHouseNumberRe),
+                            MATCH_DEFAULT | MATCH_NUMBER | MATCH_TELEPHONE,
                             house_number_patterns, &house_number_,
                             {log_manager_, "kHouseNumberRe"})) {
+      continue;
+    }
+
+    // TODO(crbug.com/1153715): Remove finch guard once launched.
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillEnableSupportForApartmentNumbers) &&
+        !apartment_number_ &&
+        ParseFieldSpecifics(scanner, UTF8ToUTF16(kApartmentNumberRe),
+                            MATCH_DEFAULT | MATCH_NUMBER | MATCH_TELEPHONE,
+                            apartement_number_patterns, &apartment_number_,
+                            {log_manager_, "kApartmentNumberRe"})) {
       continue;
     }
 
     break;
   }
 
+  // The street name and house number are non-optional.
   if (street_name_ && house_number_)
     return true;
 
-  // Reset both fields in case one of them was found.
-  if (street_name_ || house_number_) {
-    street_name_ = nullptr;
-    house_number_ = nullptr;
-  }
+  // Reset all fields if the non-optional requirements could not be met.
+  street_name_ = nullptr;
+  house_number_ = nullptr;
+  apartment_number_ = nullptr;
+
   scanner->RewindTo(cursor_position);
   return false;
 }

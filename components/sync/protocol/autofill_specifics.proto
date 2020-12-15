@@ -108,6 +108,8 @@ message AutofillProfileSpecifics {
   optional string address_home_dependent_thoroughfare_name = 40;
   optional string address_home_premise_name = 41;
   optional string address_home_subpremise_name = 42;
+  optional string address_home_apt_num = 56;
+  optional string address_home_floor = 57;
 
   // Validation status records for address fields.
   optional VerificationStatus address_home_city_status = 43;
@@ -124,6 +126,8 @@ message AutofillProfileSpecifics {
       53;
   optional VerificationStatus address_home_premise_name_status = 54;
   optional VerificationStatus address_home_subpremise_name_status = 55;
+  optional VerificationStatus address_home_apt_num_status = 58;
+  optional VerificationStatus address_home_floor_status = 59;
 
   // Phone.
   repeated string phone_home_whole_number = 13;

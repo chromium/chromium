@@ -20,6 +20,16 @@
         "match_field_input_types": 1
       }
     ],
+    "es" : [
+      {
+        "pattern_identifier": "es_street_name",
+        "positive_pattern": "calle",
+        "positive_score": 1.1,
+        "negative_pattern": null,
+        "match_field_attributes": 3,
+        "match_field_input_types": 1
+      }
+    ],
     "ru" : [
       {
         "pattern_identifier": "ru_street_name",
@@ -41,6 +51,68 @@
       }
     ]
   },
+  "ADDRESS_HOME_APT_NUMBER": {
+    "en": [
+      {
+        "pattern_identifier": "en_apartment_number",
+        "positive_pattern": "apartment",
+        "positive_score": 1.1,
+        "negative_pattern": null,
+        "match_field_attributes": 3,
+        "match_field_input_types": 69
+      }
+	],
+    "es": [
+      {
+        "pattern_identifier": "es_apartment_number",
+        "positive_pattern": "interior|número.*apartamento",
+        "positive_score": 1.1,
+        "negative_pattern": null,
+        "match_field_attributes": 3,
+        "match_field_input_types": 69
+      }
+	],
+    "de": [
+      {
+        "pattern_identifier": "de_apartment_number",
+        "positive_pattern": "wohnung",
+        "positive_score": 1.1,
+        "negative_pattern": null,
+        "match_field_attributes": 3,
+        "match_field_input_types": 69
+      }
+	],
+    "ru": [
+      {
+        "pattern_identifier": "ru_apartment_number",
+        "positive_pattern": "квартир",
+        "positive_score": 1.1,
+        "negative_pattern": null,
+        "match_field_attributes": 3,
+        "match_field_input_types": 69
+      }
+	],
+    "it": [
+      {
+        "pattern_identifier": "it_apartment_number",
+        "positive_pattern": "numero.*appartamento",
+        "positive_score": 1.1,
+        "negative_pattern": null,
+        "match_field_attributes": 3,
+        "match_field_input_types": 69
+      }
+	],
+    "fr": [
+      {
+        "pattern_identifier": "fr_apartment_number",
+        "positive_pattern": "numéro.*appartement",
+        "positive_score": 1.1,
+        "negative_pattern": null,
+        "match_field_attributes": 3,
+        "match_field_input_types": 69
+      }
+	]
+  },
   "ADDRESS_HOME_HOUSE_NUMBER":{
     "en": [
       {
@@ -49,7 +121,7 @@
         "positive_score": 1.1,
         "negative_pattern": null,
         "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_input_types": 69
       }
     ],
     "de": [
@@ -59,7 +131,7 @@
         "positive_score": 1.1,
         "negative_pattern": null,
         "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_input_types": 69
       }
     ],
     "pt": [
@@ -69,9 +141,19 @@
         "positive_score": 1.1,
         "negative_pattern": null,
         "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_input_types": 69
       }
     ],
+    "es": [
+      {
+        "pattern_identifier": "es_house_number",
+        "positive_pattern": "n(u|ú)mero.*apartamento|exterior",
+        "positive_score": 1.1,
+        "negative_pattern": null,
+        "match_field_attributes": 3,
+        "match_field_input_types": 69
+      }
+	],
     "ru": [
       {
         "pattern_identifier": "ru_house_number",
@@ -79,7 +161,7 @@
         "positive_score": 1.1,
         "negative_pattern": null,
         "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_input_types": 69
       }
     ]
   },

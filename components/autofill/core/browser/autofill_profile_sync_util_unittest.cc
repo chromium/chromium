@@ -109,8 +109,12 @@ AutofillProfile ConstructCompleteProfile() {
                                            VerificationStatus::kFormatted);
 
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_SUBPREMISE,
-                                           ASCIIToUTF16("Subpremise"),
-                                           VerificationStatus::kFormatted);
+                                           ASCIIToUTF16("Apt 10 Floor 2"),
+                                           VerificationStatus::kObserved);
+  profile.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_APT_NUM, ASCIIToUTF16("10"), VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_FLOOR, ASCIIToUTF16("2"), VerificationStatus::kParsed);
 
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_PREMISE_NAME,
                                            ASCIIToUTF16("Premise"),
@@ -203,9 +207,17 @@ AutofillProfileSpecifics ConstructCompleteSpecifics() {
   specifics.set_address_home_thoroughfare_number_status(
       sync_pb::AutofillProfileSpecifics_VerificationStatus_FORMATTED);
 
-  specifics.set_address_home_subpremise_name("Subpremise");
+  specifics.set_address_home_subpremise_name("Apt 10 Floor 2");
   specifics.set_address_home_subpremise_name_status(
-      sync_pb::AutofillProfileSpecifics_VerificationStatus_FORMATTED);
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_OBSERVED);
+
+  specifics.set_address_home_apt_num("10");
+  specifics.set_address_home_apt_num_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_PARSED);
+
+  specifics.set_address_home_floor("2");
+  specifics.set_address_home_floor_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_PARSED);
 
   specifics.set_address_home_premise_name("Premise");
   specifics.set_address_home_premise_name_status(

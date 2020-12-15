@@ -1046,7 +1046,7 @@ TEST_F(AutofillTableTest, AutofillProfile_StructuredAddresses) {
 
   profile.SetRawInfoWithVerificationStatus(
       ADDRESS_HOME_STREET_ADDRESS,
-      ASCIIToUTF16("Street Name House Number Premise Subpremise"),
+      ASCIIToUTF16("Street Name House Number Premise APT 10 Floor 2"),
       VerificationStatus::kUserVerified);
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_STREET_NAME,
                                            ASCIIToUTF16("Street Name"),
@@ -1079,8 +1079,12 @@ TEST_F(AutofillTableTest, AutofillProfile_StructuredAddresses) {
                                            ASCIIToUTF16("House Number"),
                                            VerificationStatus::kUserVerified);
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_SUBPREMISE,
-                                           ASCIIToUTF16("Subpremise"),
+                                           ASCIIToUTF16("APT 10 Floor 2"),
                                            VerificationStatus::kUserVerified);
+  profile.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_APT_NUM, ASCIIToUTF16("10"), VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_FLOOR, ASCIIToUTF16("2"), VerificationStatus::kParsed);
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_PREMISE_NAME,
                                            ASCIIToUTF16("Premise"),
                                            VerificationStatus::kUserVerified);
@@ -1107,6 +1111,12 @@ TEST_F(AutofillTableTest, AutofillProfile_StructuredAddresses) {
 
   EXPECT_EQ(db_profile->GetVerificationStatus(ADDRESS_HOME_SUBPREMISE),
             VerificationStatus::kUserVerified);
+
+  EXPECT_EQ(db_profile->GetVerificationStatus(ADDRESS_HOME_APT_NUM),
+            VerificationStatus::kParsed);
+
+  EXPECT_EQ(db_profile->GetVerificationStatus(ADDRESS_HOME_FLOOR),
+            VerificationStatus::kParsed);
 
   EXPECT_EQ(db_profile->GetVerificationStatus(ADDRESS_HOME_PREMISE_NAME),
             VerificationStatus::kUserVerified);
@@ -1136,7 +1146,9 @@ TEST_F(AutofillTableTest, AutofillProfile_StructuredAddresses) {
   EXPECT_EQ(db_profile->GetRawInfo(ADDRESS_HOME_HOUSE_NUMBER),
             ASCIIToUTF16("House Number"));
   EXPECT_EQ(db_profile->GetRawInfo(ADDRESS_HOME_SUBPREMISE),
-            ASCIIToUTF16("Subpremise"));
+            ASCIIToUTF16("APT 10 Floor 2"));
+  EXPECT_EQ(db_profile->GetRawInfo(ADDRESS_HOME_APT_NUM), ASCIIToUTF16("10"));
+  EXPECT_EQ(db_profile->GetRawInfo(ADDRESS_HOME_FLOOR), ASCIIToUTF16("2"));
   EXPECT_EQ(db_profile->GetRawInfo(ADDRESS_HOME_PREMISE_NAME),
             ASCIIToUTF16("Premise"));
   EXPECT_EQ(db_profile->GetRawInfo(ADDRESS_HOME_DEPENDENT_LOCALITY),

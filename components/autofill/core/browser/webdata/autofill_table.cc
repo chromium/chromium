@@ -271,8 +271,10 @@ bool AddAutofillProfileAddresses(const AutofillProfile& profile,
         "state, state_status, "
         "zip_code, zip_code_status, "
         "sorting_code, sorting_code_status, "
-        "country_code, country_code_status) "
-        "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"));
+        "country_code, country_code_status, "
+        "apartment_number, apartment_number_status, "
+        "floor, floor_status) "
+        "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"));
 
     s.BindString(0, profile.guid());
     s.BindString16(1, profile.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS));
@@ -301,6 +303,10 @@ bool AddAutofillProfileAddresses(const AutofillProfile& profile,
     s.BindInt(22, profile.GetVerificationStatusInt(ADDRESS_HOME_SORTING_CODE));
     s.BindString16(23, profile.GetRawInfo(ADDRESS_HOME_COUNTRY));
     s.BindInt(24, profile.GetVerificationStatusInt(ADDRESS_HOME_COUNTRY));
+    s.BindString16(25, profile.GetRawInfo(ADDRESS_HOME_APT_NUM));
+    s.BindInt(26, profile.GetVerificationStatusInt(ADDRESS_HOME_APT_NUM));
+    s.BindString16(27, profile.GetRawInfo(ADDRESS_HOME_FLOOR));
+    s.BindInt(28, profile.GetVerificationStatusInt(ADDRESS_HOME_FLOOR));
 
     return s.Run();
   }
@@ -388,7 +394,9 @@ bool AddAutofillProfileAddressesToProfile(sql::Database* db,
         "state, state_status, "
         "zip_code, zip_code_status, "
         "sorting_code, sorting_code_status, "
-        "country_code, country_code_status "
+        "country_code, country_code_status, "
+        "apartment_number, apartment_number_status, "
+        "floor, floor_status "
         "FROM autofill_profile_addresses "
         "WHERE guid=? "
         "LIMIT 1"));
@@ -455,6 +463,10 @@ bool AddAutofillProfileAddressesToProfile(sql::Database* db,
             ADDRESS_HOME_SORTING_CODE, sorting_code, s.ColumnInt(22));
         profile->SetRawInfoWithVerificationStatusInt(ADDRESS_HOME_COUNTRY,
                                                      country, s.ColumnInt(24));
+        profile->SetRawInfoWithVerificationStatusInt(
+            ADDRESS_HOME_APT_NUM, s.ColumnString16(25), s.ColumnInt(26));
+        profile->SetRawInfoWithVerificationStatusInt(
+            ADDRESS_HOME_FLOOR, s.ColumnString16(27), s.ColumnInt(28));
       } else {
         // Remove the structured information from the table for
         // eventual deletion consistency.
@@ -759,6 +771,9 @@ bool AutofillTable::MigrateToVersion(int version,
     case 90:
       *update_compatible_version = false;
       return MigrateToVersion90AddNewStructuredAddressColumns();
+    case 91:
+      *update_compatible_version = false;
+      return MigrateToVersion91AddMoreStructuredAddressColumns();
   }
   return true;
 }
@@ -3317,6 +3332,35 @@ bool AutofillTable::MigrateToVersion90AddNewStructuredAddressColumns() {
   }
   return true;
 }
+
+bool AutofillTable::MigrateToVersion91AddMoreStructuredAddressColumns() {
+  if (!db_->DoesTableExist("autofill_profile_addresses"))
+    InitProfileAddressesTable();
+
+  for (const char* column : {"apartment_number", "floor"}) {
+    if (!db_->DoesColumnExist("autofill_profile_addresses", column) &&
+        !db_->Execute(
+            base::StrCat({"ALTER TABLE autofill_profile_addresses ADD COLUMN ",
+                          column, " VARCHAR"})
+                .c_str())) {
+      return false;
+    }
+  }
+
+  for (const char* column : {"apartment_number_status", "floor_status"}) {
+    // The default value of 0 corresponds to the verification status
+    // |kNoStatus|.
+    if (!db_->DoesColumnExist("autofill_profile_addresses", column) &&
+        !db_->Execute(
+            base::StrCat({"ALTER TABLE autofill_profile_addresses ADD COLUMN ",
+                          column, " INTEGER DEFAULT 0"})
+                .c_str())) {
+      return false;
+    }
+  }
+  return true;
+}
+
 bool AutofillTable::
     MigrateToVersion89AddInstrumentIdColumnToMaskedCreditCard() {
   // Add the new instrument_id column to the masked_credit_cards table and set
@@ -3687,7 +3731,11 @@ bool AutofillTable::InitProfileAddressesTable() {
                       "state_status INTEGER DEFAULT 0, "
                       "zip_code_status INTEGER DEFAULT 0, "
                       "sorting_code_status INTEGER DEFAULT 0, "
-                      "country_code_status INTEGER DEFAULT 0)")) {
+                      "country_code_status INTEGER DEFAULT 0, "
+                      "apartment_number VARCHAR, "
+                      "floor VARCHAR, "
+                      "apartment_number_status INTEGER DEFAULT 0, "
+                      "floor_status INTEGER DEFAULT 0)")) {
       NOTREACHED();
       return false;
     }

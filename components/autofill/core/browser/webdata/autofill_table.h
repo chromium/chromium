@@ -125,6 +125,8 @@ struct PaymentsCustomerData;
 //                      or organizations that might not be geographically
 //                      contiguous.
 //   premise_name       The name of the premise.
+//   apartment_number   The number of the apartment.
+//   floor              The floor in which the apartment is located.
 //   street_address_status
 //   street_name_status
 //   dependent_street_name_status
@@ -137,6 +139,8 @@ struct PaymentsCustomerData;
 //   zip_code_status
 //   country_code_status
 //   sorting_code_status
+//   apartment_number_status
+//   floor_status
 //                      Each token of the address has an additional validation
 //                      status that indicates if Autofill parsed the value out
 //                      of an unstructured (last) name, or if autofill formatted
@@ -674,6 +678,7 @@ class AutofillTable : public WebDatabaseTable,
   bool MigrateToVersion88AddNewNameColumns();
   bool MigrateToVersion89AddInstrumentIdColumnToMaskedCreditCard();
   bool MigrateToVersion90AddNewStructuredAddressColumns();
+  bool MigrateToVersion91AddMoreStructuredAddressColumns();
 
   // Max data length saved in the table, AKA the maximum length allowed for
   // form data.

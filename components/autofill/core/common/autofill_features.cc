@@ -57,6 +57,12 @@ const base::Feature kAutofillCacheQueryResponses{
 const base::Feature kAutofillCreateDataForTest{
     "AutofillCreateDataForTest", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls if Chrome support filling and importing apartment numbers.
+// TODO(crbug.com/1153715): Remove once launched.
+const base::Feature kAutofillEnableSupportForApartmentNumbers{
+    "AutofillEnableSupportForApartmentNumbers",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether we download server credit cards to the ephemeral
 // account-based storage when sync the transport is enabled.
 const base::Feature kAutofillEnableAccountWalletStorage {

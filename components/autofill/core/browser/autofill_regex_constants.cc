@@ -31,16 +31,24 @@ const char kCompanyRe[] =
     "|شرکت"                      // fa
     "|회사|직장";                // ko-KR
 const char kStreetNameRe[] =
-    "stra(ss|ß)e"               // de
-    "|street"                   // en
-    "|улица|название.?улицы"    // ru
-    "|rua|avenida"              // pt-PT, pt-BR
-    "|((?<!do |de )endereço)";  // pt-BR
+    "stra(ss|ß)e"              // de
+    "|street"                  // en
+    "|улица|название.?улицы"   // ru
+    "|rua|avenida"             // pt-PT, pt-BR
+    "|((?<!do |de )endereço)"  // pt-BR
+    "|calle";                  // es-MX
 const char kHouseNumberRe[] =
     "(house.?|street.?|^)number"              // en
     "|(haus|^)nummer"                         // de
     "|^\\*?.?número(.?\\*?$| da residência)"  // pt-BR, pt-PT
-    "|дом|номер.?дома";                       // ru
+    "|дом|номер.?дома"                        // ru
+    "|exterior";                              // es-MX
+const char kApartmentNumberRe[] =
+    "apartment"                      // en
+    "|interior"                      // es-MX
+    "|n(u|ú)mero.*app?art(a|e)ment"  // es,fr,it
+    "|Wohnung"                       // de
+    "|квартир";                      // ru
 const char kAddressLine1Re[] =
     "^address$|address[_-]?line(one)?|address1|addr1|street"
     "|(?:shipping|billing)address$"

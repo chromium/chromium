@@ -123,6 +123,7 @@ class AddressField : public FormField {
   AutofillField* address2_ = nullptr;
   AutofillField* address3_ = nullptr;
   AutofillField* street_address_ = nullptr;
+  AutofillField* apartment_number_ = nullptr;
   AutofillField* city_ = nullptr;
   AutofillField* state_ = nullptr;
   AutofillField* zip_ = nullptr;

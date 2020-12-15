@@ -157,6 +157,9 @@ base::string16 Address::GetRawInfo(ServerFieldType type) const {
     case ADDRESS_HOME_APT_NUM:
       return base::string16();
 
+    case ADDRESS_HOME_FLOOR:
+      return base::string16();
+
     // The following tokens are used for creating new type votes but should not
     // be filled into fields.
     case ADDRESS_HOME_STREET_NAME:
@@ -297,6 +300,14 @@ void Address::SetRawInfoWithVerificationStatus(ServerFieldType type,
 
     case ADDRESS_HOME_SUBPREMISE:
       subpremise_ = value;
+      break;
+
+    // Not implemented for unstructured addresses.
+    case ADDRESS_HOME_APT_NUM:
+      break;
+
+    // Not implemented for unstructured addresses.
+    case ADDRESS_HOME_FLOOR:
       break;
 
     default:

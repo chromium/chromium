@@ -14,7 +14,7 @@
 // corresponding changes must happen in the unit tests, and new migration test
 // added.  See |WebDatabaseMigrationTest::kCurrentTestedVersionNumber|.
 // static
-const int WebDatabase::kCurrentVersionNumber = 90;
+const int WebDatabase::kCurrentVersionNumber = 91;
 
 const int WebDatabase::kDeprecatedVersionNumber = 51;
 
