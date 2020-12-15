@@ -188,6 +188,7 @@ PageSchedulerImpl::PageSchedulerImpl(
       keep_active_(
           agent_group_scheduler.GetMainThreadScheduler().SchedulerKeepActive()),
       had_recent_title_or_favicon_update_(false),
+      focused_(delegate ? delegate->IsFocused() : true),
       delegate_(delegate),
       delay_for_background_tab_freezing_(GetDelayForBackgroundTabFreezing()),
       freeze_on_network_idle_enabled_(base::FeatureList::IsEnabled(
@@ -360,6 +361,13 @@ void PageSchedulerImpl::SetPageBackForwardCached(
                             GetWeakPtr()),
         GetTimeToDelayIPCTrackingWhileStoredInBackForwardCache());
   }
+}
+
+void PageSchedulerImpl::OnFocusChanged(bool focused) {
+  DCHECK_NE(focused_, focused);
+
+  focused_ = focused;
+  NotifyFrames();
 }
 
 void PageSchedulerImpl::SetUpIPCTaskDetection() {
@@ -579,6 +587,10 @@ void PageSchedulerImpl::OnTraceLogEnabled() {
   for (FrameSchedulerImpl* frame_scheduler : frame_schedulers_) {
     frame_scheduler->OnTraceLogEnabled();
   }
+}
+
+bool PageSchedulerImpl::IsPageFocused() const {
+  return focused_;
 }
 
 bool PageSchedulerImpl::IsWaitingForMainFrameContentfulPaint() const {

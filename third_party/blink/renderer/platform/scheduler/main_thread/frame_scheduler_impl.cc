@@ -960,6 +960,10 @@ bool FrameSchedulerImpl::ShouldThrottleTaskQueues() const {
     return false;
   if (!parent_page_scheduler_->IsPageVisible())
     return true;
+  if (base::FeatureList::IsEnabled(kThrottleVisibleNotFocusedTimers) &&
+      !parent_page_scheduler_->IsPageFocused()) {
+    return true;
+  }
   return RuntimeEnabledFeatures::TimerThrottlingForHiddenFramesEnabled() &&
          !frame_visible_ && IsCrossOriginToMainFrame();
 }

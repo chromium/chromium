@@ -38,6 +38,8 @@ class PLATFORM_EXPORT PageScheduler {
     // Returns true iff the network is idle for the local main frame.
     // Always returns false if the main frame is remote.
     virtual bool LocalMainFrameNetworkIsAlmostIdle() const { return true; }
+    // Returns if the page has focus.
+    virtual bool IsFocused() const = 0;
   };
 
   virtual ~PageScheduler() = default;
@@ -51,6 +53,8 @@ class PLATFORM_EXPORT PageScheduler {
   virtual void SetPageFrozen(bool) = 0;
   // Handles operations required for storing the page in the back-forward cache.
   virtual void SetPageBackForwardCached(bool) = 0;
+  // Handle page focus changed.
+  virtual void OnFocusChanged(bool focused) = 0;
   // Tells the scheduler about "keep-alive" state which can be due to:
   // service workers, shared workers, or fetch keep-alive.
   // If true, then the scheduler should not freeze relevant task queues.

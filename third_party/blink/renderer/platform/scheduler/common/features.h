@@ -301,6 +301,9 @@ constexpr base::FeatureParam<PerAgentSignal> kPerAgentSignal{
     &kPerAgentSchedulingExperiments, "signal",
     PerAgentSignal::kFirstMeaningfulPaint, &kPerAgentSignalOptions};
 
+const base::Feature kThrottleVisibleNotFocusedTimers{
+    "ThrottleVisibleNotFocusedTimers", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace scheduler
 }  // namespace blink
 
