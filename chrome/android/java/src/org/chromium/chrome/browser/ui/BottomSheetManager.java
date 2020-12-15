@@ -241,7 +241,9 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements Destroyable
                 }
 
                 if (mTabProvider.get() != tab) return;
+                int previousToken = mToken;
                 mToken = controller.suppressSheet(StateChangeReason.COMPOSITED_UI);
+                controller.unsuppressSheet(previousToken);
             }
 
             @Override
