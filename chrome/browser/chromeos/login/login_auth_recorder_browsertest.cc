@@ -140,8 +140,11 @@ IN_PROC_BROWSER_TEST_F(LoginAuthRecorderTest, AuthMethodSwitch) {
   session_manager::SessionManager::Get()->SetSessionState(
       session_manager::SessionState::LOCKED);
 
+  // Switch from nothing to password.
   SetAuthMethod(LoginAuthRecorder::AuthMethod::kPassword);
-  histogram_tester_->ExpectTotalCount(kAuthMethodSwitchHistogramName, 0);
+  ExpectBucketCount(kAuthMethodSwitchHistogramName,
+                    LoginAuthRecorder::AuthMethodSwitchType::kNothingToPassword,
+                    1);
 
   // Switch from password to pin.
   SetAuthMethod(LoginAuthRecorder::AuthMethod::kPin);

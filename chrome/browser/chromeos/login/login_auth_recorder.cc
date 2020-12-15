@@ -27,6 +27,7 @@ base::Optional<AuthMethodSwitchType> SwitchFromPasswordTo(AuthMethod current) {
     case AuthMethod::kChallengeResponse:
       return AuthMethodSwitchType::kPasswordToChallengeResponse;
     case AuthMethod::kPassword:
+    case AuthMethod::kNothing:
       NOTREACHED();
       return base::nullopt;
   }
@@ -43,6 +44,7 @@ base::Optional<AuthMethodSwitchType> SwitchFromPinTo(AuthMethod current) {
       return AuthMethodSwitchType::kPinToFingerprint;
     case AuthMethod::kPin:
     case AuthMethod::kChallengeResponse:
+    case AuthMethod::kNothing:
       NOTREACHED();
       return base::nullopt;
   }
@@ -59,6 +61,7 @@ base::Optional<AuthMethodSwitchType> SwitchFromSmartlockTo(AuthMethod current) {
       return AuthMethodSwitchType::kSmartlockToFingerprint;
     case AuthMethod::kSmartlock:
     case AuthMethod::kChallengeResponse:
+    case AuthMethod::kNothing:
       NOTREACHED();
       return base::nullopt;
   }
@@ -76,6 +79,26 @@ base::Optional<AuthMethodSwitchType> SwitchFromFingerprintTo(
       return AuthMethodSwitchType::kFingerprintToPin;
     case AuthMethod::kFingerprint:
     case AuthMethod::kChallengeResponse:
+    case AuthMethod::kNothing:
+      NOTREACHED();
+      return base::nullopt;
+  }
+}
+
+base::Optional<AuthMethodSwitchType> SwitchFromNothingTo(AuthMethod current) {
+  DCHECK_NE(AuthMethod::kNothing, current);
+  switch (current) {
+    case AuthMethod::kPassword:
+      return AuthMethodSwitchType::kNothingToPassword;
+    case AuthMethod::kPin:
+      return AuthMethodSwitchType::kNothingToPin;
+    case AuthMethod::kSmartlock:
+      return AuthMethodSwitchType::kNothingToSmartlock;
+    case AuthMethod::kFingerprint:
+      return AuthMethodSwitchType::kNothingToFingerprint;
+    case AuthMethod::kChallengeResponse:
+      return AuthMethodSwitchType::kNothingToChallengeResponse;
+    case AuthMethod::kNothing:
       NOTREACHED();
       return base::nullopt;
   }
@@ -93,6 +116,8 @@ base::Optional<AuthMethodSwitchType> FindSwitchType(AuthMethod previous,
       return SwitchFromSmartlockTo(current);
     case AuthMethod::kFingerprint:
       return SwitchFromFingerprintTo(current);
+    case AuthMethod::kNothing:
+      return SwitchFromNothingTo(current);
     case AuthMethod::kChallengeResponse:
       NOTREACHED();
       return base::nullopt;
@@ -110,6 +135,7 @@ LoginAuthRecorder::~LoginAuthRecorder() {
 }
 
 void LoginAuthRecorder::RecordAuthMethod(AuthMethod method) {
+  DCHECK_NE(method, AuthMethod::kNothing);
   if (session_manager::SessionManager::Get()->session_state() !=
       session_manager::SessionState::LOCKED) {
     return;
@@ -158,7 +184,7 @@ void LoginAuthRecorder::RecordFingerprintUnlockResult(
 
 void LoginAuthRecorder::OnSessionStateChanged() {
   // Reset local state.
-  last_auth_method_ = AuthMethod::kPassword;
+  last_auth_method_ = AuthMethod::kNothing;
 }
 
 }  // namespace chromeos

@@ -961,6 +961,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Ash.Login.Lock.AuthMethod.Switched"
     enum="AuthMethodSwitchType" expires_after="2021-05-16">
   <owner>rsorokin@chromium.org</owner>
+  <owner>tellier@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
     The count of auth method switching actions in ChromeOS lock screen.
@@ -970,20 +971,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Ash.Login.Lock.AuthMethod.Used.ClamShellMode"
     enum="AuthMethod" expires_after="2021-05-16">
   <owner>rsorokin@chromium.org</owner>
+  <owner>tellier@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
     The usage of different auth methods (PIN / Password / Smartlock /
-    Fingerprint) in ChromeOS lock screen clamshell mode.
+    Fingerprint / Challenge response) in ChromeOS lock screen clamshell mode.
   </summary>
 </histogram>
 
 <histogram name="Ash.Login.Lock.AuthMethod.Used.TabletMode" enum="AuthMethod"
     expires_after="2021-05-16">
   <owner>rsorokin@chromium.org</owner>
+  <owner>tellier@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
     The usage of different auth methods (PIN / Password / Smartlock /
-    Fingerprint) in ChromeOS lock screen tablet mode.
+    Fingerprint / Challenge response) in ChromeOS lock screen tablet mode.
   </summary>
 </histogram>
 
