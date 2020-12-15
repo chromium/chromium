@@ -137,8 +137,10 @@ TEST_F(NotificationPlatformBridgeMacTest, TestDisplayNoButtons) {
   EXPECT_NSEQ(@"Title", [delivered_notification title]);
   EXPECT_NSEQ(@"Context", [delivered_notification informativeText]);
   EXPECT_NSEQ(@"gmail.com", [delivered_notification subtitle]);
-  EXPECT_NSEQ(@"Close", [delivered_notification otherButtonTitle]);
   EXPECT_NSEQ(@"Settings", [delivered_notification actionButtonTitle]);
+
+  if (!base::mac::IsAtLeastOS11())
+    EXPECT_NSEQ(@"Close", [delivered_notification otherButtonTitle]);
 }
 
 TEST_F(NotificationPlatformBridgeMacTest, TestDisplayNoSettings) {
@@ -159,8 +161,10 @@ TEST_F(NotificationPlatformBridgeMacTest, TestDisplayNoSettings) {
   EXPECT_NSEQ(@"Title", [delivered_notification title]);
   EXPECT_NSEQ(@"Context", [delivered_notification informativeText]);
   EXPECT_NSEQ(@"gmail.com", [delivered_notification subtitle]);
-  EXPECT_NSEQ(@"Close", [delivered_notification otherButtonTitle]);
   EXPECT_FALSE([delivered_notification hasActionButton]);
+
+  if (!base::mac::IsAtLeastOS11())
+    EXPECT_NSEQ(@"Close", [delivered_notification otherButtonTitle]);
 }
 
 TEST_F(NotificationPlatformBridgeMacTest, TestDisplayOneButton) {
@@ -179,8 +183,11 @@ TEST_F(NotificationPlatformBridgeMacTest, TestDisplayOneButton) {
   EXPECT_NSEQ(@"Title", [delivered_notification title]);
   EXPECT_NSEQ(@"Context", [delivered_notification informativeText]);
   EXPECT_NSEQ(@"gmail.com", [delivered_notification subtitle]);
-  EXPECT_NSEQ(@"Close", [delivered_notification otherButtonTitle]);
-  EXPECT_NSEQ(@"More", [delivered_notification actionButtonTitle]);
+
+  if (!base::mac::IsAtLeastOS11()) {
+    EXPECT_NSEQ(@"Close", [delivered_notification otherButtonTitle]);
+    EXPECT_NSEQ(@"More", [delivered_notification actionButtonTitle]);
+  }
 }
 
 TEST_F(NotificationPlatformBridgeMacTest, TestDisplayProgress) {

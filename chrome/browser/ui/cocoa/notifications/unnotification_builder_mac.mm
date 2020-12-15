@@ -38,7 +38,9 @@
                                objectForKey:notification_constants::
                                                 kNotificationCloseButtonTag]
                    options:UNNotificationActionOptionNone];
-  [buttonsArray addObject:closeButton];
+  // macOS 11 shows a close button in the top-left corner.
+  if (!base::mac::IsAtLeastOS11())
+    [buttonsArray addObject:closeButton];
 
   if ([_notificationData
           objectForKey:notification_constants::kNotificationButtonOne]) {
@@ -77,7 +79,7 @@
   // be set as [button, Close] so that close is on top. This is to safeguard the
   // order of the buttons in case respondsToSelector:@selector(alternateAction)
   // were to return false.
-  if ([buttonsArray count] == 2) {
+  if (!base::mac::IsAtLeastOS11() && [buttonsArray count] == 2) {
     // Remove the close button and move it to the end of the array
     [buttonsArray removeObject:closeButton];
     [buttonsArray addObject:closeButton];
@@ -98,8 +100,9 @@
   // This uses a private API to make sure the close button is always visible in
   // both alerts and banners, and modifies its content so that it is consistent
   // with the rest of the notification buttons. Otherwise, the text inside the
-  // close button will come from the Apple API
-  if ([category respondsToSelector:@selector(alternateAction)]) {
+  // close button will come from the Apple API.
+  if (!base::mac::IsAtLeastOS11() &&
+      [category respondsToSelector:@selector(alternateAction)]) {
     [buttonsArray removeObject:closeButton];
     [category setValue:buttonsArray forKey:@"actions"];
     [category setValue:closeButton forKey:@"_alternateAction"];

@@ -5,6 +5,7 @@
 #import <UserNotifications/UserNotifications.h>
 
 #include "base/bind.h"
+#include "base/mac/mac_util.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -416,8 +417,12 @@ TEST_F(UNNotificationPlatformBridgeMacTest, TestNotificationNoButtons) {
       // If this selector from the private API is available the close button
       // will be set in alernateAction, and the other buttons will be set in
       // actions. Otherwise, all buttons will be setting in actions which causes
-      // the total count to differ by one.
-      if ([category respondsToSelector:@selector(alternateAction)]) {
+      // the total count to differ by one. On macOS 11+ we don't need to add the
+      // close button as there will always be one in the top left corner.
+      if (base::mac::IsAtLeastOS11()) {
+        ASSERT_EQ(1ul, [[category actions] count]);
+        EXPECT_NSEQ(@"Settings", [[[category actions] lastObject] title]);
+      } else if ([category respondsToSelector:@selector(alternateAction)]) {
         ASSERT_EQ(1ul, [[category actions] count]);
         EXPECT_NSEQ(@"Close",
                     [[category valueForKey:@"_alternateAction"] title]);

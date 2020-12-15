@@ -64,12 +64,14 @@
 
     [toast setValue:@YES forKey:@"_showsButtons"];
     // A default close button label is provided by the platform but we
-    // explicitly override it in case the user decides to not
-    // use the OS language in Chrome.
-    [toast
-        setOtherButtonTitle:[_notificationData
-                                objectForKey:notification_constants::
-                                                 kNotificationCloseButtonTag]];
+    // explicitly override it in case the user decides to not use the OS
+    // language in Chrome. macOS 11 shows a close button in the top-left corner.
+    if (!base::mac::IsAtLeastOS11()) {
+      [toast
+          setOtherButtonTitle:
+              [_notificationData objectForKey:notification_constants::
+                                                  kNotificationCloseButtonTag]];
+    }
 
     NSMutableArray* buttons = [NSMutableArray arrayWithCapacity:3];
     if ([_notificationData
@@ -108,10 +110,18 @@
           [toast respondsToSelector:@selector(_alwaysShowAlternateActionMenu)]);
       DCHECK(
           [toast respondsToSelector:@selector(_alternateActionButtonTitles)]);
-      [toast setActionButtonTitle:
-                 [_notificationData
-                     objectForKey:notification_constants::
-                                      kNotificationOptionsButtonTag]];
+      // macOS 11 does not support overriding the text of the overflow button
+      // and will always show "Options" via this API. Setting actionButtonTitle
+      // just appends another button into the overflow menu. Only the new
+      // UNNotification API allows overriding this title on macOS 11.
+      if (base::mac::IsAtLeastOS11()) {
+        [toast setValue:@NO forKey:@"_hasActionButton"];
+      } else {
+        [toast setActionButtonTitle:
+                   [_notificationData
+                       objectForKey:notification_constants::
+                                        kNotificationOptionsButtonTag]];
+      }
       [toast setValue:@YES forKey:@"_alwaysShowAlternateActionMenu"];
       [toast setValue:buttons forKey:@"_alternateActionButtonTitles"];
     }
