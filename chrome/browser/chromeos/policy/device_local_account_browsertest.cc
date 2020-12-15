@@ -2082,9 +2082,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, TermsOfServiceWithLocaleSwitch) {
 
   // Wait for the Terms of Service to finish downloading.
   chromeos::test::OobeJS()
-      .CreateWaiter(GetOobeElementPath({"terms-of-service"}) + ".uiState == " +
-                    base::NumberToString(static_cast<int>(
-                        chromeos::TermsOfServiceScreen::ScreenState::LOADED)))
+      .CreateWaiter(GetOobeElementPath({"terms-of-service"}) + ".isLoaded_()")
       ->Wait();
 
   // Verify that the locale and keyboard layout have been applied.
@@ -2669,9 +2667,7 @@ IN_PROC_BROWSER_TEST_P(TermsOfServiceDownloadTest, TermsOfServiceScreen) {
         ->Wait();
 
     chromeos::test::OobeJS().ExpectTrue(
-        GetOobeElementPath({"terms-of-service"}) + ".uiState == " +
-        base::NumberToString(static_cast<int>(
-            chromeos::TermsOfServiceScreen::ScreenState::ERROR)));
+        GetOobeElementPath({"terms-of-service"}) + ".hasError_()");
 
     chromeos::test::OobeJS().ExpectDisabledPath(
         {"terms-of-service", "acceptButton"});
@@ -2679,9 +2675,7 @@ IN_PROC_BROWSER_TEST_P(TermsOfServiceDownloadTest, TermsOfServiceScreen) {
   }
 
   chromeos::test::OobeJS()
-      .CreateWaiter(GetOobeElementPath({"terms-of-service"}) + ".uiState == " +
-                    base::NumberToString(static_cast<int>(
-                        chromeos::TermsOfServiceScreen::ScreenState::LOADED)))
+      .CreateWaiter(GetOobeElementPath({"terms-of-service"}) + ".isLoaded_()")
       ->Wait();
 
   chromeos::test::OobeJS()
@@ -2720,9 +2714,7 @@ IN_PROC_BROWSER_TEST_P(TermsOfServiceDownloadTest, TermsOfServiceScreen) {
   EXPECT_EQ(terms_of_service, content);
 
   chromeos::test::OobeJS().ExpectFalse(
-      GetOobeElementPath({"terms-of-service"}) + ".uiState == " +
-      base::NumberToString(static_cast<int>(
-          chromeos::TermsOfServiceScreen::ScreenState::ERROR)));
+      GetOobeElementPath({"terms-of-service"}) + ".hasError_()");
 
   chromeos::test::OobeJS().ExpectEnabledPath(
       {"terms-of-service", "acceptButton"});

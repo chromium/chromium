@@ -25,7 +25,7 @@
         title-key="termsOfServiceError"
         subtitle-key="termsOfServiceTryAgain"
         aria-label$="[[i18nDynamic(locale, 'termsOfServiceError')]]"
-        hidden="[[!isInErrorState_(uiState)]]" has-buttons>
+        for-step="error" has-buttons>
       <iron-icon icon="cr:warning" slot="oobe-icon" class="warning">
       </iron-icon>
       <div slot="back-navigation">
@@ -46,7 +46,7 @@
          dialog is marked as no-lazy. -->
     <oobe-dialog id="termsOfServiceDialog" role="dialog"
         aria-labelledby="title"
-        hidden="[[isInErrorState_(uiState)]]" has-buttons no-lazy>
+        for-step="loading, loaded" has-buttons no-lazy>
       <hd-iron-icon slot="oobe-icon" id="termsOfServiceGoogleIcon"
           icon1x="oobe-32:googleg" icon2x="oobe-64:googleg">
       </hd-iron-icon>
@@ -62,11 +62,11 @@
                                               tosDomain_)]]</div>
       </div>
       <div slot="footer" class="flex layout center-justified vertical">
-        <div hidden="[[!isLoading_(uiState)]]">
+        <div hidden="[[!isLoading_()]]">
           <throbber-notice text-key="termsOfServiceLoading">
           </throbber-notice>
         </div>
-        <webview id="termsOfServiceFrame" hidden="[[isLoading_(uiState)]]"
+        <webview id="termsOfServiceFrame" hidden="[[isLoading_()]]"
             role="document" allowTransparency
             class="focus-on-show flex oobe-tos-webview">
         </webview>
