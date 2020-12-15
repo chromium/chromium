@@ -37,6 +37,7 @@ export class TestManageProfilesBrowserProxy extends TestBrowserProxy {
     this.profileSample = {
       profilePath: 'profile1',
       localProfileName: 'Work',
+      needsSignin: false,
       isSyncing: true,
       gaiaName: 'Alice',
       userName: 'Alice@gmail.com',

@@ -713,6 +713,9 @@
     <message name="IDS_PROFILE_PICKER_BACK_BUTTON_LABEL" desc="Label for a button that navigates user to the previous page">
       Back
     </message>
+    <message name="IDS_PROFILE_PICKER_PROFILE_CARD_NEEDS_SIGNIN_PROMPT" desc="Text on the profile card signaling that the user must sign-in in order to open a profile">
+      Sign in
+    </message>
     <message name="IDS_PROFILE_PICKER_PROFILE_MENU_BUTTON_NAME" desc="Text to be spoken when the focus is set to the menu button of the profile card on the picker main screen or shown on hover.">
       Customize your profile, including its name
     </message>

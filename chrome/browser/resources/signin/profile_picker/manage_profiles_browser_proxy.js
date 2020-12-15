@@ -10,6 +10,7 @@ import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js
  *   profilePath: string,
  *   localProfileName: string,
  *   isSyncing: boolean,
+ *   needsSignin: boolean,
  *   gaiaName: string,
  *   userName: string,
  *   isManaged: boolean,
@@ -106,8 +107,8 @@ export class ManageProfilesBrowserProxy {
 
   /**
    * Loads Google sign in page (and silently creates a profile with the
-   * specified color).
-   * @param {number} profileColor
+   * specified color, if specified).
+   * @param {?number} profileColor
    */
   loadSignInProfileCreationFlow(profileColor) {}
 

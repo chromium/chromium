@@ -236,10 +236,7 @@ js_library("manage_profiles_browser_proxy") {
 }
 
 js_library("policy_helper") {
-  deps = [
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
+  deps = [ "//ui/webui/resources/js:load_time_data.m" ]
 }
 
 group("web_components") {

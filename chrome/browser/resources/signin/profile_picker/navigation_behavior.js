@@ -18,6 +18,7 @@ const Pages = {
   PROFILE_TYPE_CHOICE: 1,
   LOCAL_PROFILE_CUSTOMIZATION: 2,
   LOAD_SIGNIN: 3,
+  LOAD_FORCE_SIGNIN: 4,
 };
 
 /**
@@ -35,10 +36,9 @@ export const Routes = {
  */
 export const ProfileCreationSteps = {
   PROFILE_TYPE_CHOICE: 'profileTypeChoice',
-  // Not supported yet
   LOCAL_PROFILE_CUSTOMIZATION: 'localProfileCustomization',
-  // Not supported yet
   LOAD_SIGNIN: 'loadSignIn',
+  LOAD_FORCE_SIGNIN: 'loadForceSignIn',
 };
 
 /**
@@ -55,7 +55,7 @@ function computeStep(route) {
         return ProfileCreationSteps.LOCAL_PROFILE_CUSTOMIZATION;
       }
       if (isForceSigninEnabled()) {
-        return ProfileCreationSteps.LOAD_SIGNIN;
+        return ProfileCreationSteps.LOAD_FORCE_SIGNIN;
       }
       return ProfileCreationSteps.PROFILE_TYPE_CHOICE;
     default:
@@ -99,6 +99,8 @@ function recordNavigation() {
       break;
     case ProfileCreationSteps.LOAD_SIGNIN:
       page = Pages.LOAD_SIGNIN;
+    case ProfileCreationSteps.LOAD_FORCE_SIGNIN:
+      page = Pages.LOAD_FORCE_SIGNIN;
     default:
       assertNotReached();
   }

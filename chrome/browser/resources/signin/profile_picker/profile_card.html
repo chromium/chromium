@@ -1,4 +1,4 @@
-<style include="profile-picker-shared">
+<style include="profile-picker-shared cr-hidden-style">
   #profileCardContainer {
     border-radius: inherit;
     /* Allows descendants to be absolute positioned relatively to the
@@ -59,12 +59,20 @@
     right: initial;
   }
 
-  #iconContainer[hidden] {
-    display: none;
-  }
-
   iron-icon {
     --iron-icon-fill-color: var(--google-grey-refresh-700);
+  }
+
+  #forceSigninContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  #forceSigninIcon {
+    height: 16px;
+    margin: 0 4px;
+    width: 16px;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -95,7 +103,13 @@
         <iron-icon icon="cr:domain"></iron-icon>
       </div>
     </div>
-    <div class="profile-card-info">[[profileState.gaiaName]]</div>
+    <div class="profile-card-info">
+      <div hidden="[[profileState.needsSignin]]">[[profileState.gaiaName]]</div>
+      <div id="forceSigninContainer" hidden="[[!profileState.needsSignin]]">
+        <div>$i18n{needsSigninPrompt}</div>
+        <iron-icon id="forceSigninIcon" icon="profiles:lock"></iron-icon>
+      </div>
+    </div>
   </cr-button>
   <profile-card-menu profile-state="[[profileState]]"></profile-card-menu>
 </div>

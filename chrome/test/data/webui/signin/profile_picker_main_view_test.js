@@ -85,6 +85,7 @@ suite('ProfilePickerMainViewTest', function() {
                profilePath: `profilePath${i}`,
                localProfileName: `profile${i}`,
                isSyncing: sync,
+               needsSignin: false,
                gaiaName: sync ? `User${i}` : '',
                userName: sync ? `User${i}@gmail.com` : '',
                isManaged: i % 4 === 0,
@@ -106,8 +107,14 @@ suite('ProfilePickerMainViewTest', function() {
           profiles[i].shadowRoot.querySelectorAll('.profile-card-info');
       assertEquals(profileCardInfo.length, 2);
       assertEquals(
-          profileCardInfo[0].innerHTML, expectedProfiles[i].localProfileName);
-      assertEquals(profileCardInfo[1].innerHTML, expectedProfiles[i].gaiaName);
+          profileCardInfo[0].innerText, expectedProfiles[i].localProfileName);
+      assertEquals(
+          profiles[i].$$('#forceSigninContainer').hidden,
+          !expectedProfiles[i].needsSignin);
+      if (!expectedProfiles[i].needsSignin) {
+        assertEquals(
+            profileCardInfo[1].innerText, expectedProfiles[i].gaiaName);
+      }
       assertEquals(
           profiles[i].$$('#iconContainer').hidden,
           !expectedProfiles[i].isManaged);
@@ -250,5 +257,18 @@ suite('ProfilePickerMainViewTest', function() {
     // Checkbox hidden even if there are multiple profiles because of
     // disableAskOnStartup.
     assertTrue(mainViewElement.$$('cr-checkbox').hidden);
+  });
+
+  test('ForceSigninIsEnabled', async function() {
+    loadTimeData.overrideValues({isForceSigninEnabled: true});
+    resetTest();
+
+    await browserProxy.whenCalled('initializeMainView');
+    const profiles = generateProfilesList(2);
+    profiles[0].needsSignin = true;
+    webUIListenerCallback('profiles-list-changed', [...profiles]);
+    flushTasks();
+    await verifyProfileCard(
+        profiles, mainViewElement.shadowRoot.querySelectorAll('profile-card'));
   });
 });
