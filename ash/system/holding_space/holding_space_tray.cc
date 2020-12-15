@@ -95,6 +95,8 @@ HoldingSpaceTray::HoldingSpaceTray(Shelf* shelf) : TrayBackgroundView(shelf) {
   // the holding space model will already have been attached.
   if (HoldingSpaceController::Get()->model())
     OnHoldingSpaceModelAttached(HoldingSpaceController::Get()->model());
+
+  set_use_bounce_in_animation(true);
 }
 
 HoldingSpaceTray::~HoldingSpaceTray() = default;
