@@ -129,8 +129,7 @@ PrerenderContents::PrerenderContents(
     const content::Referrer& referrer,
     const base::Optional<url::Origin>& initiator_origin,
     Origin origin)
-    : prerender_mode_(prerender::mojom::PrerenderMode::kNoPrerender),
-      prerendering_has_started_(false),
+    : prerendering_has_started_(false),
       prerender_manager_(prerender_manager),
       delegate_(std::move(delegate)),
       prerender_url_(url),
@@ -168,11 +167,6 @@ PrerenderContents::PrerenderContents(
 
 bool PrerenderContents::Init() {
   return AddAliasURL(prerender_url_);
-}
-
-void PrerenderContents::SetPrerenderMode(prerender::mojom::PrerenderMode mode) {
-  DCHECK(!prerendering_has_started_);
-  prerender_mode_ = mode;
 }
 
 // static

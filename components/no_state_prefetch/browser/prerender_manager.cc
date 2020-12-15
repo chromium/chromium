@@ -324,10 +324,8 @@ PrerenderManager::GetAllNoStatePrefetchingContentsForTesting() const {
 
   for (const auto& prerender : active_prerenders_) {
     WebContents* contents = prerender->contents()->prerender_contents();
-    if (contents && prerender->contents()->prerender_mode() ==
-                        prerender::mojom::PrerenderMode::kPrefetchOnly) {
+    if (contents)
       result.push_back(contents);
-    }
   }
 
   return result;
@@ -609,8 +607,6 @@ PrerenderManager::AddPrerenderWithPreconnectFallback(
       CreatePrerenderContents(url, referrer, initiator_origin, origin);
   DCHECK(prerender_contents);
   PrerenderContents* prerender_contents_ptr = prerender_contents.get();
-  prerender_contents_ptr->SetPrerenderMode(
-      prerender::mojom::PrerenderMode::kPrefetchOnly);
   active_prerenders_.push_back(
       std::make_unique<PrerenderData>(this, std::move(prerender_contents),
                                       GetExpiryTimeForNewPrerender(origin)));

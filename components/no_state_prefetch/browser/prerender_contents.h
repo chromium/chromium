@@ -111,9 +111,6 @@ class PrerenderContents : public content::NotificationObserver,
 
   bool Init();
 
-  // Set the mode of this contents. This must be called before prerender has
-  // started.
-  void SetPrerenderMode(prerender::mojom::PrerenderMode mode);
   prerender::mojom::PrerenderMode prerender_mode() const {
     return prerender_mode_;
   }
@@ -241,7 +238,8 @@ class PrerenderContents : public content::NotificationObserver,
   std::unique_ptr<content::WebContents> CreateWebContents(
       content::SessionStorageNamespace* session_storage_namespace);
 
-  prerender::mojom::PrerenderMode prerender_mode_;
+  const prerender::mojom::PrerenderMode prerender_mode_ =
+      mojom::PrerenderMode::kPrefetchOnly;
   bool prerendering_has_started_;
 
   // Time at which we started to load the URL.  This is used to compute
