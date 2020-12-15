@@ -2054,8 +2054,9 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessEmulatedTouchBrowserTest,
   RunTest(ScrollBubbling);
 }
 
+// TODO(crbug.com/1156243): Disabled as flaky because of crrev.com/c/2562796
 IN_PROC_BROWSER_TEST_F(SitePerProcessEmulatedTouchBrowserTest,
-                       EmulatedTouchPinchGoesToMainFrame) {
+                       DISABLED_EmulatedTouchPinchGoesToMainFrame) {
   RunTest(PinchGoesToMainFrame);
 }
 
