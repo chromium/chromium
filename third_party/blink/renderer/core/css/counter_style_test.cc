@@ -326,4 +326,34 @@ TEST_F(CounterStyleTest, AdditiveWithExtendedRange) {
   EXPECT_EQ("A", extended.GenerateRepresentation(1));
 }
 
+TEST_F(CounterStyleTest, CustomFirstSymbolValue) {
+  InsertStyleElement(R"CSS(
+    @counter-style base {
+      system: fixed 2;
+      symbols: A B C;
+    }
+
+    @counter-style extended {
+      system: extends base;
+    }
+  )CSS");
+  UpdateAllLifecyclePhasesForTest();
+
+  // Getting custom first symbol value directly from descriptor value.
+  const CounterStyle& base = GetCounterStyle("base");
+  EXPECT_EQ("1", base.GenerateRepresentation(1));
+  EXPECT_EQ("A", base.GenerateRepresentation(2));
+  EXPECT_EQ("B", base.GenerateRepresentation(3));
+  EXPECT_EQ("C", base.GenerateRepresentation(4));
+  EXPECT_EQ("5", base.GenerateRepresentation(5));
+
+  // Getting custom first symbol value indirectly using 'extends'.
+  const CounterStyle& extended = GetCounterStyle("extended");
+  EXPECT_EQ("1", extended.GenerateRepresentation(1));
+  EXPECT_EQ("A", extended.GenerateRepresentation(2));
+  EXPECT_EQ("B", extended.GenerateRepresentation(3));
+  EXPECT_EQ("C", extended.GenerateRepresentation(4));
+  EXPECT_EQ("5", extended.GenerateRepresentation(5));
+}
+
 }  // namespace blink

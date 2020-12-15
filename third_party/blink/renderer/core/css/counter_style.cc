@@ -238,6 +238,9 @@ CounterStyle::CounterStyle(const StyleRuleCounterStyle& rule)
     if (system_ == CounterStyleSystem::kUnresolvedExtends) {
       const auto& second = To<CSSValuePair>(system)->Second();
       extends_name_ = To<CSSCustomIdentValue>(second).Value();
+    } else if (system_ == CounterStyleSystem::kFixed && system->IsValuePair()) {
+      const auto& second = To<CSSValuePair>(system)->Second();
+      first_symbol_value_ = To<CSSPrimitiveValue>(second).GetIntValue();
     }
   }
 
@@ -284,7 +287,7 @@ CounterStyle::CounterStyle(const StyleRuleCounterStyle& rule)
     }
   }
 
-  // TODO(crbug.com/687225): Implement and populate other fields.
+  // TODO(crbug.com/687225): Implement 'prefix', 'suffix' and 'speak-as'.
 }
 
 void CounterStyle::ResolveExtends(const CounterStyle& extended) {
@@ -292,6 +295,9 @@ void CounterStyle::ResolveExtends(const CounterStyle& extended) {
   extended_style_ = extended;
 
   system_ = extended.system_;
+
+  if (system_ == CounterStyleSystem::kFixed)
+    first_symbol_value_ = extended.first_symbol_value_;
 
   if (!style_rule_->GetFallback()) {
     fallback_name_ = extended.fallback_name_;
@@ -315,7 +321,7 @@ void CounterStyle::ResolveExtends(const CounterStyle& extended) {
   if (!style_rule_->GetRange())
     range_ = extended.range_;
 
-  // TODO(crbug.com/687225): Implement and populate other fields.
+  // TODO(crbug.com/687225): Implement 'prefix', 'suffix' and 'speak-as'.
 }
 
 void CounterStyle::ResetExtends() {
@@ -425,8 +431,8 @@ String CounterStyle::GenerateInitialRepresentation(int value) const {
       symbol_indexes = CyclicAlgorithm(value, symbols_.size());
       break;
     case CounterStyleSystem::kFixed:
-      // TODO(crbug.com/687225): Implement non-default first symbol values.
-      symbol_indexes = FixedAlgorithm(value - 1, symbols_.size());
+      symbol_indexes =
+          FixedAlgorithm(value - first_symbol_value_, symbols_.size());
       break;
     case CounterStyleSystem::kNumeric:
       symbol_indexes = NumericAlgorithm(value, symbols_.size());

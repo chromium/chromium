@@ -110,6 +110,9 @@ class CORE_EXPORT CounterStyle final : public GarbageCollected<CounterStyle> {
   String pad_symbol_;
   wtf_size_t pad_length_ = 0;
 
+  // First symbol value, for 'fixed' system only.
+  wtf_size_t first_symbol_value_ = 1;
+
   friend class CounterStyleMapTest;
 };
 
