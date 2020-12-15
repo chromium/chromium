@@ -89,6 +89,7 @@ import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tabmodel.EmptyTabModelSelectorObserver;
@@ -3329,7 +3330,10 @@ public class ContextualSearchManagerTest {
     public void testFirstRunNotCompleted(@EnabledFeature int enabledFeature) throws Exception {
         // Store the original value in a temp, and mark the first run as not completed
         // for this test case.
-        boolean originalIsFirstRunComplete = FirstRunStatus.getFirstRunFlowComplete();
+        // Getting value from shared preference rather than FirstRunStatus#getFirstRunFlowComplete
+        // to get rid of the impact from commandline switch. See https://crbug.com/1158467
+        boolean originalIsFirstRunComplete = SharedPreferencesManager.getInstance().readBoolean(
+                ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE, false);
         FirstRunStatus.setFirstRunFlowComplete(false);
 
         // Simulate a tap that resolves to show the Bar.
