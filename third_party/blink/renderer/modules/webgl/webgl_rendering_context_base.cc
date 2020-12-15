@@ -2043,6 +2043,24 @@ void WebGLRenderingContextBase::bindTexture(GLenum target,
       return;
     }
     texture_units_[active_texture_unit_].texture_video_image_binding_ = texture;
+  } else if (target == GL_TEXTURE_EXTERNAL_OES) {
+    if (!ExtensionEnabled(kWebGLWebCodecsVideoFrameName)) {
+      SynthesizeGLError(
+          GL_INVALID_ENUM, "bindTexture",
+          "unhandled type, WEBGL_webcodecs_video_frame extension not enabled");
+      return;
+    }
+    texture_units_[active_texture_unit_].texture_external_oes_binding_ =
+        texture;
+  } else if (target == GL_TEXTURE_RECTANGLE_ARB) {
+    if (!ExtensionEnabled(kWebGLWebCodecsVideoFrameName)) {
+      SynthesizeGLError(
+          GL_INVALID_ENUM, "bindTexture",
+          "unhandled type, WEBGL_webcodecs_video_frame extension not enabled");
+      return;
+    }
+    texture_units_[active_texture_unit_].texture_rectangle_arb_binding_ =
+        texture;
   } else {
     SynthesizeGLError(GL_INVALID_ENUM, "bindTexture", "invalid target");
     return;
@@ -7388,6 +7406,24 @@ WebGLTexture* WebGLRenderingContextBase::ValidateTextureBinding(
       tex = texture_units_[active_texture_unit_]
                 .texture_video_image_binding_.Get();
       break;
+    case GL_TEXTURE_EXTERNAL_OES:
+      if (!ExtensionEnabled(kWebGLWebCodecsVideoFrameName)) {
+        SynthesizeGLError(GL_INVALID_ENUM, function_name,
+                          "invalid texture target");
+        return nullptr;
+      }
+      tex = texture_units_[active_texture_unit_]
+                .texture_external_oes_binding_.Get();
+      break;
+    case GL_TEXTURE_RECTANGLE_ARB:
+      if (!ExtensionEnabled(kWebGLWebCodecsVideoFrameName)) {
+        SynthesizeGLError(GL_INVALID_ENUM, function_name,
+                          "invalid texture target");
+        return nullptr;
+      }
+      tex = texture_units_[active_texture_unit_]
+                .texture_rectangle_arb_binding_.Get();
+      break;
     default:
       SynthesizeGLError(GL_INVALID_ENUM, function_name,
                         "invalid texture target");
@@ -8664,6 +8700,8 @@ void WebGLRenderingContextBase::TextureUnitState::Trace(
   visitor->Trace(texture3d_binding_);
   visitor->Trace(texture2d_array_binding_);
   visitor->Trace(texture_video_image_binding_);
+  visitor->Trace(texture_external_oes_binding_);
+  visitor->Trace(texture_rectangle_arb_binding_);
 }
 
 void WebGLRenderingContextBase::Trace(Visitor* visitor) const {

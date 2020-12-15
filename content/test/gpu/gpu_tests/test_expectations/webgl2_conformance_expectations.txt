@@ -88,6 +88,9 @@
 crbug.com/776222 [ android ] WebglExtension_WEBGL_video_texture [ Skip ]
 crbug.com/1058744 [ no-passthrough ] WebglExtension_OES_draw_buffers_indexed [ Skip ]
 
+crbug.com/1142754 [ linux ] WebglExtension_WEBGL_webcodecs_video_frame [ Skip ]
+crbug.com/1142754 [ fuchsia ] WebglExtension_WEBGL_webcodecs_video_frame [ Skip ]
+
 # Disabling all multiview checks temporarily while ANGLE side changes
 # get merged in.
 crbug.com/864524 [ win ] WebglExtension_OVR_multiview2 [ Skip ]

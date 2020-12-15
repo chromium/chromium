@@ -31,6 +31,7 @@ modules_dictionary_idl_files = [
   "image_frame.idl",
   "image_track.idl",
   "plane_init.idl",
+  "video_color_space.idl",
   "video_decoder_config.idl",
   "video_decoder_init.idl",
   "video_encoder_config.idl",
@@ -43,6 +44,10 @@ modules_dictionary_idl_files = [
 
 modules_typedefs_enums_only_idl_files = [
   "codec_state.idl",
+  "color_space_matrix_id.idl",
+  "color_space_primary_id.idl",
+  "color_space_range_id.idl",
+  "color_space_transfer_id.idl",
   "video_pixel_format.idl",
 ]
 

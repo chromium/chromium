@@ -6,6 +6,10 @@ include_rules = [
     "+gpu/command_buffer/client/raster_interface.h",
     "+gpu/command_buffer/common/capabilities.h",
     "+gpu/config/gpu_feature_info.h",
+    "+media/base/video_frame.h",
+    "+media/base/wait_and_replace_sync_token_client.h",
     "+skia/ext",
+    "+third_party/blink/renderer/modules/webcodecs",
     "+ui/gl/gpu_preference.h",
+    "+ui/gfx/color_transform.h",
 ]

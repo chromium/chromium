@@ -10,4 +10,10 @@ enum VideoPixelFormat {
 
     // 4:2:0 subsampled 2 plane Y,UV
     "NV12",
+
+    // 32bpp RGBA (byte-order), 1 plane.
+    "ABGR",
+
+    // 24bpp BGRX (byte-order), 1 plane.
+    "XRGB",
 };

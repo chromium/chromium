@@ -1,0 +1,23 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+enum ColorSpaceTransferID {
+  "BT709",
+  "GAMMA22",
+  "GAMMA28",
+  "SMPTE170M",
+  "SMPTE240M",
+  "LINEAR",
+  "LOG",
+  "LOG_SQRT",
+  "IEC61966_2_4",
+  "BT1361_ECG",
+  "IEC61966_2_1",
+  "BT2020_10",
+  "BT2020_12",
+  "SMPTEST2084",
+  "SMPTEST428_1",
+};

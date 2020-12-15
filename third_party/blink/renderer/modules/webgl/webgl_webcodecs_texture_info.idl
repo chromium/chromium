@@ -1,0 +1,22 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://www.khronos.org/registry/webgl/extensions/proposals/WEBGL_webcodecs_video_frame/
+
+dictionary WebGLWebCodecsTextureInfo {
+  // webgl texture
+  WebGLTexture texture;
+
+  // texture target: { GL_TEXTURE_2D, GL_TEXTURE_EXTERNAL_OES, ...}
+  GLenum target;
+
+  // {"sampler", "samplerExternalOES", ...}
+  DOMString samplerType;
+
+  // {"texture2D", ...}
+  DOMString samplerFunc;
+
+  // {"r", "rg", "rgb", ...}
+  DOMString components;
+};

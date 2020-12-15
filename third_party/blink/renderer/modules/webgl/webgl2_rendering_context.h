@@ -31,6 +31,7 @@ class WebGLMultiDraw;
 class WebGLMultiDrawInstancedBaseVertexBaseInstance;
 class KHRParallelShaderCompile;
 class WebGLVideoTexture;
+class WebGLWebCodecsVideoFrame;
 
 class WebGL2RenderingContext : public WebGL2RenderingContextBase {
   DEFINE_WRAPPERTYPEINFO();
@@ -98,6 +99,7 @@ class WebGL2RenderingContext : public WebGL2RenderingContextBase {
   Member<WebGLMultiDrawInstancedBaseVertexBaseInstance>
       webgl_multi_draw_instanced_base_vertex_base_instance_;
   Member<WebGLVideoTexture> webgl_video_texture_;
+  Member<WebGLWebCodecsVideoFrame> webgl_webcodecs_video_frame_;
 };
 
 }  // namespace blink

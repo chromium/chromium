@@ -1,0 +1,22 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://www.khronos.org/registry/webgl/extensions/proposals/WEBGL_webcodecs_video_frame/
+
+[
+  RuntimeEnabled=WebGLDraftExtensions,
+  LegacyNoInterfaceObject
+] interface WebGLWebCodecsVideoFrame {
+  // This imports a VideoFrame from WebCodecs, and returns a
+  // VideoFrameHandle which is needed to access this VideoFrame
+  // in WebGL. If the VideoFrame is not backed by GPU, null is
+  // returned. The VideoFrame keeps being locked until
+  // releaseVideoFrame is called.
+  [CallWith=ExecutionContext, RaisesException]
+    WebGLWebCodecsVideoFrameHandle importVideoFrame(VideoFrame videoFrame);
+
+  // Unlocks the VideoFrame.
+  [CallWith=ExecutionContext, RaisesException]
+    boolean releaseVideoFrame(WebGLWebCodecsVideoFrameHandle handle);
+};

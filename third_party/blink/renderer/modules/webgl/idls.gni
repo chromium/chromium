@@ -75,11 +75,14 @@ modules_idl_files = [
   "webgl_vertex_array_object.idl",
   "webgl_vertex_array_object_oes.idl",
   "webgl_video_texture.idl",
+  "webgl_webcodecs_video_frame.idl",
 ]
 
 modules_dictionary_idl_files = [
   "webgl_context_attributes.idl",
   "webgl_context_event_init.idl",
+  "webgl_webcodecs_texture_info.idl",
+  "webgl_webcodecs_video_frame_handle.idl",
 ]
 
 modules_dependency_idl_files = [

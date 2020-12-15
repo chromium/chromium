@@ -629,6 +629,8 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
     Member<WebGLTexture> texture3d_binding_;
     Member<WebGLTexture> texture2d_array_binding_;
     Member<WebGLTexture> texture_video_image_binding_;
+    Member<WebGLTexture> texture_external_oes_binding_;
+    Member<WebGLTexture> texture_rectangle_arb_binding_;
 
     void Trace(Visitor*) const;
   };

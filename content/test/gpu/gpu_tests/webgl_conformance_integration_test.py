@@ -184,6 +184,7 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
           'WEBGL_lose_context',
           'WEBGL_multi_draw',
           'WEBGL_video_texture',
+          'WEBGL_webcodecs_video_frame',
       ]
     else:
       return [
@@ -212,6 +213,7 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
           'WEBGL_multi_draw',
           'WEBGL_multi_draw_instanced_base_vertex_base_instance',
           'WEBGL_video_texture',
+          'WEBGL_webcodecs_video_frame',
       ]
 
   def RunActualGpuTest(self, test_path, *args):

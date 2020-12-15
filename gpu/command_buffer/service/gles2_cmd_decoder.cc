@@ -2739,6 +2739,9 @@ class GLES2DecoderImpl : public GLES2Decoder,
   bool multi_draw_explicitly_enabled_;
   bool draw_instanced_base_vertex_base_instance_explicitly_enabled_;
   bool multi_draw_instanced_base_vertex_base_instance_explicitly_enabled_;
+  bool arb_texture_rectangle_enabled_;
+  bool oes_egl_image_external_enabled_;
+  bool nv_egl_stream_consumer_external_enabled_;
 
   bool compile_shader_always_succeeds_;
 
@@ -3513,6 +3516,9 @@ GLES2DecoderImpl::GLES2DecoderImpl(
       multi_draw_explicitly_enabled_(false),
       draw_instanced_base_vertex_base_instance_explicitly_enabled_(false),
       multi_draw_instanced_base_vertex_base_instance_explicitly_enabled_(false),
+      arb_texture_rectangle_enabled_(false),
+      oes_egl_image_external_enabled_(false),
+      nv_egl_stream_consumer_external_enabled_(false),
       compile_shader_always_succeeds_(false),
       lose_context_when_out_of_memory_(false),
       should_use_native_gmb_for_backbuffer_(false),
@@ -4444,6 +4450,19 @@ bool GLES2DecoderImpl::InitializeShaderTranslator() {
     case CONTEXT_TYPE_WEBGL1:
       shader_spec = SH_WEBGL_SPEC;
       resources.OES_standard_derivatives = derivatives_explicitly_enabled_;
+      resources.ARB_texture_rectangle =
+          (features().arb_texture_rectangle && arb_texture_rectangle_enabled_)
+              ? 1
+              : 0;
+      resources.OES_EGL_image_external =
+          (features().oes_egl_image_external && oes_egl_image_external_enabled_)
+              ? 1
+              : 0;
+      resources.NV_EGL_stream_consumer_external =
+          (features().nv_egl_stream_consumer_external &&
+           nv_egl_stream_consumer_external_enabled_)
+              ? 1
+              : 0;
       resources.EXT_frag_depth = frag_depth_explicitly_enabled_;
       resources.EXT_draw_buffers = draw_buffers_explicitly_enabled_;
       if (!draw_buffers_explicitly_enabled_)
@@ -4454,6 +4473,19 @@ bool GLES2DecoderImpl::InitializeShaderTranslator() {
       break;
     case CONTEXT_TYPE_WEBGL2:
       shader_spec = SH_WEBGL2_SPEC;
+      resources.ARB_texture_rectangle =
+          (features().arb_texture_rectangle && arb_texture_rectangle_enabled_)
+              ? 1
+              : 0;
+      resources.OES_EGL_image_external =
+          (features().oes_egl_image_external && oes_egl_image_external_enabled_)
+              ? 1
+              : 0;
+      resources.NV_EGL_stream_consumer_external =
+          (features().nv_egl_stream_consumer_external &&
+           nv_egl_stream_consumer_external_enabled_)
+              ? 1
+              : 0;
       break;
     case CONTEXT_TYPE_OPENGLES2:
       shader_spec = SH_GLES2_SPEC;
@@ -17258,6 +17290,9 @@ error::Error GLES2DecoderImpl::HandleRequestExtensionCHROMIUM(
   bool desire_multi_draw = false;
   bool desire_draw_instanced_base_vertex_base_instance = false;
   bool desire_multi_draw_instanced_base_vertex_base_instance = false;
+  bool desire_arb_texture_rectangle = false;
+  bool desire_oes_egl_image_external = false;
+  bool desire_nv_egl_stream_consumer_external = false;
   if (feature_info_->context_type() == CONTEXT_TYPE_WEBGL1) {
     desire_standard_derivatives =
         feature_str.find("GL_OES_standard_derivatives ") != std::string::npos;
@@ -17284,6 +17319,13 @@ error::Error GLES2DecoderImpl::HandleRequestExtensionCHROMIUM(
   if (feature_info_->IsWebGLContext()) {
     desire_multi_draw =
         feature_str.find("GL_WEBGL_multi_draw ") != std::string::npos;
+    desire_arb_texture_rectangle =
+        feature_str.find("GL_ANGLE_texture_rectangle ") != std::string::npos;
+    desire_oes_egl_image_external =
+        feature_str.find("GL_OES_EGL_image_external ") != std::string::npos;
+    desire_nv_egl_stream_consumer_external =
+        feature_str.find("GL_NV_EGL_stream_consumer_external ") !=
+        std::string::npos;
   }
   if (desire_standard_derivatives != derivatives_explicitly_enabled_ ||
       desire_fbo_render_mipmap != fbo_render_mipmap_explicitly_enabled_ ||
@@ -17294,7 +17336,11 @@ error::Error GLES2DecoderImpl::HandleRequestExtensionCHROMIUM(
       desire_draw_instanced_base_vertex_base_instance !=
           draw_instanced_base_vertex_base_instance_explicitly_enabled_ ||
       desire_multi_draw_instanced_base_vertex_base_instance !=
-          multi_draw_instanced_base_vertex_base_instance_explicitly_enabled_) {
+          multi_draw_instanced_base_vertex_base_instance_explicitly_enabled_ ||
+      desire_arb_texture_rectangle != arb_texture_rectangle_enabled_ ||
+      desire_oes_egl_image_external != oes_egl_image_external_enabled_ ||
+      desire_nv_egl_stream_consumer_external !=
+          nv_egl_stream_consumer_external_enabled_) {
     derivatives_explicitly_enabled_ |= desire_standard_derivatives;
     fbo_render_mipmap_explicitly_enabled_ |= desire_fbo_render_mipmap;
     frag_depth_explicitly_enabled_ |= desire_frag_depth;
@@ -17305,6 +17351,10 @@ error::Error GLES2DecoderImpl::HandleRequestExtensionCHROMIUM(
         desire_draw_instanced_base_vertex_base_instance;
     multi_draw_instanced_base_vertex_base_instance_explicitly_enabled_ |=
         desire_multi_draw_instanced_base_vertex_base_instance;
+    arb_texture_rectangle_enabled_ |= desire_arb_texture_rectangle;
+    oes_egl_image_external_enabled_ |= desire_oes_egl_image_external;
+    nv_egl_stream_consumer_external_enabled_ |=
+        desire_nv_egl_stream_consumer_external;
     DestroyShaderTranslator();
   }
 
