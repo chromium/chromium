@@ -9,6 +9,7 @@
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
@@ -219,13 +220,23 @@ MetricProvider::RecordAttemptStatus MetricProvider::GetAppSyncState() {
     return RecordAttemptStatus::kProfileManagerUnset;
 
   std::vector<Profile*> profiles = profile_manager_->GetLoadedProfiles();
-  if (profiles.size() == 0)
-    return RecordAttemptStatus::kNoLoadedProfile;
+  // Tracks the number of user profiles initialized on Chrome OS other than the
+  // Default profile.
+  int user_profile_count = 0;
 
   for (Profile* profile : profiles) {
+    // The Default profile on Chrome OS is used when the user has not logged in
+    // and this profile always disables sync. We skip this profile and look at
+    // sync settings of user profiles.
+    if (chromeos::ProfileHelper::IsSigninProfile(profile))
+      continue;
     if (!IsAppSyncEnabledForUserProfile(profile))
       return RecordAttemptStatus::kAppSyncDisabled;
+    user_profile_count++;
   }
+
+  if (user_profile_count == 0)
+    return RecordAttemptStatus::kNoLoadedProfile;
 
   return RecordAttemptStatus::kAppSyncEnabled;
 }

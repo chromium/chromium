@@ -9989,7 +9989,8 @@ histogram as enum -->
     profile(s) is unset.
   </int>
   <int value="2" label="No loaded user profile is found">
-    Profile data was redacted since there is no user profile initialized.
+    Profile data was redacted since there is no user profile initialized. When
+    looking at user profile(s), the Default profile in Chrome OS is skipped.
   </int>
   <int value="3" label="App sync is disabled">
     Profile data was redacted since App Sync is disabled.

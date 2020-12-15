@@ -17,6 +17,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -306,6 +307,11 @@ class MetricProviderSyncSettingsTest : public testing::Test {
     testing_profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(testing_profile_manager_->SetUp());
+    // A Default profile is always loaded before all other user profiles are
+    // initialized on Chrome OS. So creating the Default profile here to reflect
+    // this. The Default profile is skipped when getting the sync settings from
+    // user profile(s).
+    testing_profile_manager_->CreateTestingProfile(chrome::kInitialProfile);
     metric_provider_ = std::make_unique<TestMetricProvider>(
         std::make_unique<TestMetricCollector>(test_params),
         testing_profile_manager_->profile_manager());
@@ -372,6 +378,9 @@ class MetricProviderSyncSettingsTest : public testing::Test {
 };
 
 TEST_F(MetricProviderSyncSettingsTest, NoLoadedUserProfile) {
+  // The Default profile is skipped and there is no other user profile
+  // initialized. So we would expect the perf data to be redacted and a
+  // histogram count of kNoLoadedProfile.
   base::HistogramTester histogram_tester;
   std::vector<SampledProfile> stored_profiles;
   metric_provider_->OnUserLoggedIn();
@@ -396,7 +405,8 @@ TEST_F(MetricProviderSyncSettingsTest, SplitSettingsAppSyncEnabled) {
   metric_provider_->OnUserLoggedIn();
   feature_list_.InitAndEnableFeature(chromeos::features::kSplitSettingsSync);
 
-  // Set up two testing profiles, both with OS App Sync enabled.
+  // Set up two testing profiles, both with OS App Sync enabled. The Default
+  // profile has OS App Sync disabled but is skipped.
   TestSyncService* sync_service1 =
       GetSyncService(testing_profile_manager_->CreateTestingProfile("user1"));
   TestSyncService* sync_service2 =
@@ -453,7 +463,8 @@ TEST_F(MetricProviderSyncSettingsTest, UnifiedSettingsAppSyncEnabled) {
   metric_provider_->OnUserLoggedIn();
   feature_list_.InitAndDisableFeature(chromeos::features::kSplitSettingsSync);
 
-  // Set up two testing profiles, both with App Sync enabled.
+  // Set up two testing profiles, both with App Sync enabled. The Default
+  // profile has App Sync disabled but is skipped.
   TestSyncService* sync_service1 =
       GetSyncService(testing_profile_manager_->CreateTestingProfile("user1"));
   TestSyncService* sync_service2 =
