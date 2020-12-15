@@ -444,6 +444,54 @@ class QueryBuilderUnittest(unittest.TestCase):
         data_types.Result('test_name', ['webgl-version-2'], 'Failure',
                           'step_name', '2345'))
 
+  def testSuiteExceptionMap(self):
+    """Tests that the suite passed to the query changes for some suites."""
+    # These don't actually matter, we just need to ensure that something valid
+    # is returned so QueryBuilder doesn't explode.
+    query_results = [
+        {
+            'id':
+            'build-1234',
+            'test_id': ('ninja://chrome/test:telemetry_gpu_integration_test/'
+                        'gpu_tests.webgl_conformance_integration_test.'
+                        'WebGLConformanceIntegrationTest.test_name'),
+            'status':
+            'FAIL',
+            'typ_expectations': [
+                'RetryOnFailure',
+            ],
+            'typ_tags': [
+                'webgl-version-1',
+            ],
+            'step_name':
+            'step_name',
+        },
+    ]
+    self._process_mock.return_value = json.dumps(query_results)
+
+    def assertSuiteInQuery(suite, call_args):
+      cmd = call_args[0][0]
+      s = 'r"gpu_tests\\.%s\\."' % suite
+      for c in cmd:
+        if s in c:
+          return
+      self.fail()
+
+    # Non-special cased suite.
+    _, _ = queries.QueryBuilder('builder', 'ci', 'pixel', 'project', 5)
+    assertSuiteInQuery('pixel_integration_test', self._process_mock.call_args)
+
+    # Special-cased suites.
+    _, _ = queries.QueryBuilder('builder', 'ci', 'info_collection', 'project',
+                                5)
+    assertSuiteInQuery('info_collection_test', self._process_mock.call_args)
+    _, _ = queries.QueryBuilder('builder', 'ci', 'power', 'project', 5)
+    assertSuiteInQuery('power_measurement_integration_test',
+                       self._process_mock.call_args)
+
+    _, _ = queries.QueryBuilder('builder', 'ci', 'trace_test', 'project', 5)
+    assertSuiteInQuery('trace_integration_test', self._process_mock.call_args)
+
 
 class FillExpectationMapForBuildersUnittest(unittest.TestCase):
   def setUp(self):

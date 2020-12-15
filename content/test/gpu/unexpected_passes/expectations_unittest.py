@@ -369,6 +369,83 @@ crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
     with open(self.filename) as f:
       self.assertEqual(f.read(), expected_contents)
 
+  def testNestedBlockComments(self):
+    """Tests that nested disable block comments throw exceptions."""
+    contents = validate_tag_consistency.TAG_HEADER + """
+# finder:disable
+# finder:disable
+crbug.com/1234 [ win ] foo/test [ Failure ]
+# finder:enable
+# finder:enable
+"""
+    with open(self.filename, 'w') as f:
+      f.write(contents)
+    with self.assertRaises(RuntimeError):
+      expectations.RemoveExpectationsFromFile([], self.filename)
+
+    contents = validate_tag_consistency.TAG_HEADER + """
+# finder:enable
+crbug.com/1234 [ win ] foo/test [ Failure ]
+"""
+    with open(self.filename, 'w') as f:
+      f.write(contents)
+    with self.assertRaises(RuntimeError):
+      expectations.RemoveExpectationsFromFile([], self.filename)
+
+  def testBlockComments(self):
+    """Tests that expectations in a disable block comment are not removed."""
+    contents = validate_tag_consistency.TAG_HEADER + """
+crbug.com/1234 [ win ] foo/test [ Failure ]
+# finder:disable
+crbug.com/1234 [ win ] foo/test [ Failure ]
+crbug.com/1234 [ win ] foo/test [ Failure ]
+# finder:enable
+crbug.com/1234 [ win ] foo/test [ Failure ]
+"""
+    stale_expectations = [
+        data_types.Expectation('foo/test', ['win'], ['Failure'])
+    ]
+    expected_contents = validate_tag_consistency.TAG_HEADER + """
+# finder:disable
+crbug.com/1234 [ win ] foo/test [ Failure ]
+crbug.com/1234 [ win ] foo/test [ Failure ]
+# finder:enable
+"""
+    with open(self.filename, 'w') as f:
+      f.write(contents)
+    expectations.RemoveExpectationsFromFile(stale_expectations, self.filename)
+    with open(self.filename) as f:
+      self.assertEqual(f.read(), expected_contents)
+
+  def testInlineComments(self):
+    """Tests that expectations with inline disable comments are not removed."""
+    contents = validate_tag_consistency.TAG_HEADER + """
+crbug.com/1234 [ win ] foo/test [ Failure ]
+crbug.com/1234 [ win ] foo/test [ Failure ]  # finder:disable
+crbug.com/1234 [ win ] foo/test [ Failure ]
+"""
+    stale_expectations = [
+        data_types.Expectation('foo/test', ['win'], ['Failure'])
+    ]
+    expected_contents = validate_tag_consistency.TAG_HEADER + """
+crbug.com/1234 [ win ] foo/test [ Failure ]  # finder:disable
+"""
+    with open(self.filename, 'w') as f:
+      f.write(contents)
+    expectations.RemoveExpectationsFromFile(stale_expectations, self.filename)
+    with open(self.filename) as f:
+      self.assertEqual(f.read(), expected_contents)
+
+  def testGetDisableReasonFromComment(self):
+    """Tests that the disable reason can be pulled from a line."""
+    self.assertEqual(
+        expectations._GetDisableReasonFromComment('# finder:disable foo'),
+        'foo')
+    self.assertEqual(
+        expectations._GetDisableReasonFromComment(
+            'crbug.com/1234 [ win ] bar/test [ Failure ]  # finder:disable foo'
+        ), 'foo')
+
 
 if __name__ == '__main__':
   unittest.main(verbosity=2)

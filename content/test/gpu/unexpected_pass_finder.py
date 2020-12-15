@@ -19,6 +19,14 @@ Concrete example:
 unexpected_pass_finder.py \
   --project luci-resultdb-dev \
   --suite pixel
+
+You would typically want to pass in --remove-stale-expectations as well in order
+to have the script automatically remove any expectations it determines are no
+longer necessary. If a particular expectation proves to be erroneously flagged
+and removed (e.g. due to a very low flake rate that doesn't get caught
+consistently by the script), expectations can be omitted from automatic removal
+using an inline `# finder:disable` comment for a single expectation or a pair of
+`# finder:disable`/`# finder:enable` comments for a block of expectations.
 """
 
 import argparse

@@ -11,6 +11,10 @@ from typ import expectations_parser
 from unexpected_passes import data_types
 
 
+FINDER_DISABLE_COMMENT = 'finder:disable'
+FINDER_ENABLE_COMMENT = 'finder:enable'
+
+
 def CreateTestExpectationMap(expectation_file, tests):
   """Creates an expectation map based off a file or list of tests.
 
@@ -190,6 +194,9 @@ def SplitExpectationsByStaleness(test_expectation_map):
 def RemoveExpectationsFromFile(expectations, expectation_file):
   """Removes lines corresponding to |expectations| from |expectation_file|.
 
+  Ignores any lines that match but are within a disable block or have an inline
+  disable comment.
+
   Args:
     expectations: A list of data_types.Expectations to remove.
     expectation_file: A filepath pointing to an expectation file to remove lines
@@ -201,11 +208,31 @@ def RemoveExpectationsFromFile(expectations, expectation_file):
     input_contents = f.read()
 
   output_contents = ''
+  in_disable_block = False
+  disable_block_reason = ''
   for line in input_contents.splitlines(True):
     # Auto-add any comments or empty lines
     stripped_line = line.strip()
     if not stripped_line or stripped_line.startswith('#'):
       output_contents += line
+      assert not (FINDER_DISABLE_COMMENT in line
+                  and FINDER_ENABLE_COMMENT in line)
+      # Handle disable/enable block comments.
+      if FINDER_DISABLE_COMMENT in line:
+        if in_disable_block:
+          raise RuntimeError(
+              'Invalid expectation file %s - contains a disable comment "%s" '
+              'that is in another disable block.' %
+              (expectation_file, stripped_line))
+        in_disable_block = True
+        disable_block_reason = _GetDisableReasonFromComment(line)
+      if FINDER_ENABLE_COMMENT in line:
+        if not in_disable_block:
+          raise RuntimeError(
+              'Invalid expectation file %s - contains an enable comment "%s" '
+              'that is outside of a disable block.' %
+              (expectation_file, stripped_line))
+        in_disable_block = False
       continue
 
     single_line_content = header + line
@@ -219,8 +246,26 @@ def RemoveExpectationsFromFile(expectations, expectation_file):
 
     # Add any lines containing expectations that don't match any of the given
     # expectations to remove.
-    if not any([e for e in expectations if e == current_expectation]):
+    if any([e for e in expectations if e == current_expectation]):
+      # Skip any expectations that match if we're in a disable block or there
+      # is an inline disable comment.
+      if in_disable_block:
+        output_contents += line
+        logging.info(
+            'Would have removed expectation %s, but inside a disable block '
+            'with reason %s', stripped_line, disable_block_reason)
+      elif FINDER_DISABLE_COMMENT in line:
+        output_contents += line
+        logging.info(
+            'Would have removed expectation %s, but it has an inline disable '
+            'comment with reason %s',
+            stripped_line.split('#')[0], _GetDisableReasonFromComment(line))
+    else:
       output_contents += line
 
   with open(expectation_file, 'w') as f:
     f.write(output_contents)
+
+
+def _GetDisableReasonFromComment(line):
+  return line.split(FINDER_DISABLE_COMMENT, 1)[1].strip()

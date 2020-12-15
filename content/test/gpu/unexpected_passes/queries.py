@@ -49,7 +49,7 @@ WITH
         AND STRUCT("builder", @builder_name) IN UNNEST(variant)
         AND REGEXP_CONTAINS(
           test_id,
-          r"gpu_tests\.{suite}_integration_test\.")
+          r"gpu_tests\.{suite}\.")
       GROUP BY exported.id
       ORDER BY ANY_VALUE(partition_time) DESC
       LIMIT @num_builds
@@ -65,6 +65,15 @@ WITH
 SELECT tr.*
 FROM tests t, t.test_results tr
 """
+
+# The suite reported to Telemetry for selecting which suite to run is not
+# necessarily the same one that is reported to typ/ResultDB, so map any special
+# cases here.
+TELEMETRY_SUITE_TO_RDB_SUITE_EXCEPTION_MAP = {
+    'info_collection': 'info_collection_test',
+    'power': 'power_measurement_integration_test',
+    'trace_test': 'trace_integration_test',
+}
 
 
 def FillExpectationMapForCiBuilders(expectation_map, builders, suite, project,
@@ -242,6 +251,12 @@ def QueryBuilder(builder, builder_type, suite, project, num_samples):
         lambda tags: 'webgl-version-%s' % webgl_version in tags
   else:
     check_webgl_version = lambda tags: True
+
+  # Most test names are |suite|_integration_test, but there are several that
+  # are not reported that way in typ, and by extension ResultDB, so adjust that
+  # here.
+  suite = TELEMETRY_SUITE_TO_RDB_SUITE_EXCEPTION_MAP.get(
+      suite, suite + '_integration_test')
 
   query = GPU_BQ_QUERY_TEMPLATE.format(builder_type=builder_type, suite=suite)
   cmd = [
