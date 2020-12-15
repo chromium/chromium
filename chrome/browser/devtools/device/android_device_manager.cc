@@ -453,10 +453,10 @@ void AndroidDeviceManager::Device::QueryDeviceInfo(
 }
 
 void AndroidDeviceManager::Device::OpenSocket(const std::string& socket_name,
-                                              const SocketCallback& callback) {
+                                              SocketCallback callback) {
   task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&DeviceProvider::OpenSocket, provider_, serial_,
-                                socket_name, callback));
+                                socket_name, std::move(callback)));
 }
 
 void AndroidDeviceManager::Device::SendJsonRequest(

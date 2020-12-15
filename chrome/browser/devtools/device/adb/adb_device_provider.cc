@@ -60,10 +60,11 @@ void AdbDeviceProvider::QueryDeviceInfo(const std::string& serial,
 
 void AdbDeviceProvider::OpenSocket(const std::string& serial,
                                    const std::string& socket_name,
-                                   const SocketCallback& callback) {
+                                   SocketCallback callback) {
   std::string request =
       base::StringPrintf(kLocalAbstractCommand, socket_name.c_str());
-  AdbClientSocket::TransportQuery(kAdbPort, serial, request, callback);
+  AdbClientSocket::TransportQuery(kAdbPort, serial, request,
+                                  std::move(callback));
 }
 
 AdbDeviceProvider::~AdbDeviceProvider() {

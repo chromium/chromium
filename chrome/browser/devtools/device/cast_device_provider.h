@@ -31,7 +31,7 @@ class CastDeviceProvider
                        const DeviceInfoCallback& callback) override;
   void OpenSocket(const std::string& serial,
                   const std::string& socket_name,
-                  const SocketCallback& callback) override;
+                  SocketCallback callback) override;
 
   // ServiceDiscoveryDeviceLister::Delegate implementation:
   void OnDeviceChanged(

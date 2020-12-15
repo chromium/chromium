@@ -16,7 +16,7 @@ class AdbDeviceProvider : public AndroidDeviceManager::DeviceProvider {
 
   void OpenSocket(const std::string& serial,
                   const std::string& socket_name,
-                  const SocketCallback& callback) override;
+                  SocketCallback callback) override;
 
  private:
   ~AdbDeviceProvider() override;

@@ -176,8 +176,8 @@ void CastDeviceProvider::QueryDeviceInfo(const std::string& serial,
 
 void CastDeviceProvider::OpenSocket(const std::string& serial,
                                     const std::string& socket_name,
-                                    const SocketCallback& callback) {
-  tcp_provider_->OpenSocket(serial, socket_name, callback);
+                                    SocketCallback callback) {
+  tcp_provider_->OpenSocket(serial, socket_name, std::move(callback));
 }
 
 void CastDeviceProvider::OnDeviceChanged(

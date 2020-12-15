@@ -33,18 +33,17 @@ namespace {
 const char kDeviceModel[] = "Remote Target";
 const char kBrowserName[] = "Target";
 
-static void RunSocketCallback(
-    const AndroidDeviceManager::SocketCallback& callback,
-    std::unique_ptr<net::StreamSocket> socket,
-    int result) {
-  callback.Run(result, std::move(socket));
+static void RunSocketCallback(AndroidDeviceManager::SocketCallback callback,
+                              std::unique_ptr<net::StreamSocket> socket,
+                              int result) {
+  std::move(callback).Run(result, std::move(socket));
 }
 
 class ResolveHostAndOpenSocket final : public network::ResolveHostClientBase {
  public:
   ResolveHostAndOpenSocket(const net::HostPortPair& address,
-                           const AndroidDeviceManager::SocketCallback& callback)
-      : callback_(callback) {
+                           AndroidDeviceManager::SocketCallback callback)
+      : callback_(std::move(callback)) {
     mojo::Remote<network::mojom::HostResolver> resolver;
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(
@@ -74,7 +73,8 @@ class ResolveHostAndOpenSocket final : public network::ResolveHostClientBase {
       const net::ResolveErrorInfo& resolve_error_info,
       const base::Optional<net::AddressList>& resolved_addresses) override {
     if (result != net::OK) {
-      RunSocketCallback(callback_, nullptr, resolve_error_info.error);
+      RunSocketCallback(std::move(callback_), nullptr,
+                        resolve_error_info.error);
       delete this;
       return;
     }
@@ -83,8 +83,8 @@ class ResolveHostAndOpenSocket final : public network::ResolveHostClientBase {
                                  nullptr, net::NetLogSource()));
     net::StreamSocket* socket_ptr = socket.get();
     net::CompletionRepeatingCallback on_connect =
-        base::AdaptCallbackForRepeating(
-            base::BindOnce(&RunSocketCallback, callback_, std::move(socket)));
+        base::AdaptCallbackForRepeating(base::BindOnce(
+            &RunSocketCallback, std::move(callback_), std::move(socket)));
     result = socket_ptr->Connect(on_connect);
     if (result != net::ERR_IO_PENDING)
       on_connect.Run(result);
@@ -142,12 +142,13 @@ void TCPDeviceProvider::QueryDeviceInfo(const std::string& serial,
 
 void TCPDeviceProvider::OpenSocket(const std::string& serial,
                                    const std::string& socket_name,
-                                   const SocketCallback& callback) {
+                                   SocketCallback callback) {
   // Use plain socket for remote debugging and port forwarding on Desktop
   // (debugging purposes).
   int port;
   base::StringToInt(socket_name, &port);
-  new ResolveHostAndOpenSocket(net::HostPortPair(serial, port), callback);
+  new ResolveHostAndOpenSocket(net::HostPortPair(serial, port),
+                               std::move(callback));
 }
 
 void TCPDeviceProvider::ReleaseDevice(const std::string& serial) {

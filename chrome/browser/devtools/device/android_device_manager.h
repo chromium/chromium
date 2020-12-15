@@ -31,7 +31,7 @@ class AndroidDeviceManager {
   using CommandCallback =
       base::Callback<void(int, const std::string&)>;
   using SocketCallback =
-      base::Callback<void(int result, std::unique_ptr<net::StreamSocket>)>;
+      base::OnceCallback<void(int result, std::unique_ptr<net::StreamSocket>)>;
   // |body_head| should contain the body (WebSocket frame data) part that has
   // been read during processing the header (WebSocket handshake).
   using HttpUpgradeCallback =
@@ -117,8 +117,7 @@ class AndroidDeviceManager {
    public:
     void QueryDeviceInfo(const DeviceInfoCallback& callback);
 
-    void OpenSocket(const std::string& socket_name,
-                    const SocketCallback& callback);
+    void OpenSocket(const std::string& socket_name, SocketCallback callback);
 
     void SendJsonRequest(const std::string& socket_name,
                          const std::string& request,
@@ -172,7 +171,7 @@ class AndroidDeviceManager {
 
     virtual void OpenSocket(const std::string& serial,
                             const std::string& socket_name,
-                            const SocketCallback& callback) = 0;
+                            SocketCallback callback) = 0;
 
     virtual void SendJsonRequest(const std::string& serial,
                                  const std::string& socket_name,

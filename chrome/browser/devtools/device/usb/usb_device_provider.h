@@ -30,7 +30,7 @@ class UsbDeviceProvider : public AndroidDeviceManager::DeviceProvider {
 
   void OpenSocket(const std::string& serial,
                   const std::string& socket_name,
-                  const SocketCallback& callback) override;
+                  SocketCallback callback) override;
 
   void ReleaseDevice(const std::string& serial) override;
 

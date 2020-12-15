@@ -4,9 +4,12 @@
 
 #include "chrome/browser/devtools/device/usb/usb_device_provider.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback_forward.h"
+#include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/devtools/device/usb/android_rsa.h"
@@ -22,13 +25,13 @@ const char kLocalAbstractCommand[] = "localabstract:%s";
 
 const int kBufferSize = 16 * 1024;
 
-void OnOpenSocket(const UsbDeviceProvider::SocketCallback& callback,
+void OnOpenSocket(UsbDeviceProvider::SocketCallback callback,
                   net::StreamSocket* socket_raw,
                   int result) {
   std::unique_ptr<net::StreamSocket> socket(socket_raw);
   if (result != net::OK)
     socket.reset();
-  callback.Run(result, std::move(socket));
+  std::move(callback).Run(result, std::move(socket));
 }
 
 void OnRead(net::StreamSocket* socket,
@@ -106,24 +109,26 @@ void UsbDeviceProvider::QueryDeviceInfo(const std::string& serial,
 
 void UsbDeviceProvider::OpenSocket(const std::string& serial,
                                    const std::string& name,
-                                   const SocketCallback& callback) {
+                                   SocketCallback callback) {
   auto it = device_map_.find(serial);
   if (it == device_map_.end()) {
-    callback.Run(net::ERR_CONNECTION_FAILED,
-                 base::WrapUnique<net::StreamSocket>(NULL));
+    std::move(callback).Run(net::ERR_CONNECTION_FAILED, nullptr);
     return;
   }
   std::string socket_name =
       base::StringPrintf(kLocalAbstractCommand, name.c_str());
   net::StreamSocket* socket = it->second->CreateSocket(socket_name);
   if (!socket) {
-    callback.Run(net::ERR_CONNECTION_FAILED,
-                 base::WrapUnique<net::StreamSocket>(NULL));
+    std::move(callback).Run(net::ERR_CONNECTION_FAILED, nullptr);
     return;
   }
-  int result = socket->Connect(base::BindOnce(&OnOpenSocket, callback, socket));
+
+  base::RepeatingCallback<void(int, std::unique_ptr<net::StreamSocket>)>
+      on_result = base::AdaptCallbackForRepeating(std::move(callback));
+  int result =
+      socket->Connect(base::BindOnce(&OnOpenSocket, on_result, socket));
   if (result != net::ERR_IO_PENDING)
-    callback.Run(result, base::WrapUnique<net::StreamSocket>(NULL));
+    on_result.Run(result, nullptr);
 }
 
 void UsbDeviceProvider::ReleaseDevice(const std::string& serial) {
