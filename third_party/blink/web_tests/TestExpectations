@@ -6283,3 +6283,6 @@ crbug.com/1148259 [ Mac ] external/wpt/html/browsers/browsing-the-web/navigating
 # Disable flaky tests when scroll unification is enabled
 crbug.com/1130020 virtual/scroll-unification/fast/scrolling/scrollbars/scrollbar-mousedown-move-mouseup.html [ Pass Failure Timeout ]
 crbug.com/1130020 virtual/threaded-prefer-compositing/fast/scrolling/scrollbars/scrollbar-mousedown-move-mouseup.html [ Pass Failure Timeout ]
+
+# Branch sheriff 2020-12-14
+crbug.com/1152532 http/tests/devtools/service-workers/user-agent-override.js [ Pass Timeout ]
