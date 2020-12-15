@@ -1175,14 +1175,6 @@ bool CSSSelector::FollowsPart() const {
   return previous->GetPseudoType() == kPseudoPart;
 }
 
-bool CSSSelector::NeedsUpdatedDistribution() const {
-  return ForAnyInTagHistory(
-      [](const CSSSelector& selector) -> bool {
-        return selector.GetPseudoType() == CSSSelector::kPseudoHostContext;
-      },
-      *this);
-}
-
 String CSSSelector::FormatPseudoTypeForDebugging(PseudoType type) {
   for (const auto& s : kPseudoTypeWithoutArgumentsMap) {
     if (s.type == type)

@@ -399,7 +399,6 @@ class CORE_EXPORT CSSSelector {
   bool HasShadowPseudo() const;
   // Returns true if the immediately preceeding simple selector is ::part.
   bool FollowsPart() const;
-  bool NeedsUpdatedDistribution() const;
 
   static String FormatPseudoTypeForDebugging(PseudoType);
 
