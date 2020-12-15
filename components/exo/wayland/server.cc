@@ -339,7 +339,10 @@ void Server::OnDisplayAdded(const display::Display& new_display) {
 
 void Server::OnDisplayRemoved(const display::Display& old_display) {
   DCHECK_EQ(outputs_.count(old_display.id()), 1u);
+  std::unique_ptr<WaylandDisplayOutput> output =
+      std::move(outputs_[old_display.id()]);
   outputs_.erase(old_display.id());
+  output.release()->OnDisplayRemoved();
 }
 
 wl_resource* Server::GetOutputResource(wl_client* client, int64_t display_id) {

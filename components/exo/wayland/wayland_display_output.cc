@@ -11,11 +11,27 @@
 
 #include "base/logging.h"
 #include "base/stl_util.h"
+#include "base/task/thread_pool.h"
 #include "components/exo/surface.h"
 #include "components/exo/wayland/server_util.h"
 
 namespace exo {
 namespace wayland {
+namespace {
+base::TimeDelta kDeleteTaskDelay = base::TimeDelta::FromSeconds(3);
+
+void DoDelete(WaylandDisplayOutput* output, int retry_count) {
+  if (retry_count > 0 && output->output_counts() > 0) {
+    // Try a few times to give a client chance to release it.
+    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE, base::BindOnce(&DoDelete, output, retry_count - 1),
+        kDeleteTaskDelay);
+  } else {
+    delete output;
+  }
+}
+
+}  // namespace
 
 WaylandDisplayOutput::WaylandDisplayOutput(int64_t id) : id_(id) {}
 
@@ -27,6 +43,15 @@ WaylandDisplayOutput::~WaylandDisplayOutput() {
 
   if (global_)
     wl_global_destroy(global_);
+}
+
+void WaylandDisplayOutput::OnDisplayRemoved() {
+  if (global_)
+    wl_global_remove(global_);
+
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, base::BindOnce(&DoDelete, this, /*retry_count=*/3),
+      kDeleteTaskDelay);
 }
 
 int64_t WaylandDisplayOutput::id() const {
