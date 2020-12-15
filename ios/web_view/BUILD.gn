@@ -526,6 +526,7 @@ js_compile_bundle("web_view_main_frame") {
   closure_entry_point = "__crWeb.webViewMainFrame"
   sources = [
     "//components/password_manager/ios/resources/password_controller.js",
+    "//components/translate/ios/browser/resources/language_detection.js",
     "resources/web_view_main_frame.js",
   ]
 }

@@ -32,6 +32,8 @@ const char kJavaScriptReplyCommandPrefix[] = "frameMessaging_";
 
 namespace web {
 
+const double kJavaScriptFunctionCallDefaultTimeout = 100.0;
+
 WebFrameImpl::WebFrameImpl(const std::string& frame_id,
                            bool is_main_frame,
                            GURL security_origin,

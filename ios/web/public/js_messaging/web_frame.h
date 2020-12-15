@@ -19,6 +19,9 @@ class Value;
 
 namespace web {
 
+// Default timeout in milliseconds for |CallJavaScriptFunction|.
+extern const double kJavaScriptFunctionCallDefaultTimeout;
+
 class WebFrame : public base::SupportsUserData {
  public:
   // The frame identifier which uniquely identifies this frame across the

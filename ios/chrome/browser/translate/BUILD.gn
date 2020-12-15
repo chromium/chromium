@@ -82,7 +82,7 @@ source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
-    "js_language_detection_manager_unittest.mm",
+    "language_detection_javascript_unittest.mm",
     "translate_infobar_delegate_observer_bridge_unittest.mm",
     "translate_service_ios_unittest.cc",
   ]
@@ -96,6 +96,7 @@ source_set("unit_tests") {
     "//components/translate/ios/browser",
     "//ios/chrome/browser",
     "//ios/chrome/browser/web:test_support",
+    "//ios/chrome/browser/web:web_internal",
     "//ios/chrome/common",
     "//ios/public/provider/chrome/browser:test_support",
     "//ios/web/public",

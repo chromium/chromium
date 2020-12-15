@@ -10,6 +10,8 @@
  * @suppress {checkTypes}
  */
 
+goog.provide('__crWeb.languageDetection');
+
 __gCrWeb.languageDetection = {};
 
 // Store languageDetection namespace object in a global __gCrWeb object
@@ -139,7 +141,7 @@ __gCrWeb.languageDetection['detectLanguage'] = function() {
     // |-detectLanguage| to the native side.
     // Matches desktop implementation.
     // Note: This should stay in sync with the constant in
-    // js_language_detection_manager.mm .
+    // language_detection_controller.mm .
     const kMaxIndexChars = 65535;
     const captureBeginTime = new Date();
     __gCrWeb.languageDetection.activeRequests += 1;
