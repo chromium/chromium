@@ -4,21 +4,21 @@
 
 #include "chrome/browser/translate/translate_model_service_factory.h"
 
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_key.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/translate/translate_model_service_impl.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/keyed_service/core/simple_dependency_manager.h"
-#include "components/translate/content/browser/translate_model_service.h"
 #include "components/translate/core/common/translate_util.h"
+#include "content/public/browser/browser_context.h"
 
 // static
-translate::TranslateModelService*
-TranslateModelServiceFactory::GetOrBuildForKey(SimpleFactoryKey* key) {
-  return static_cast<translate::TranslateModelService*>(
-      GetInstance()->GetServiceForKey(key, true));
+TranslateModelServiceImpl* TranslateModelServiceFactory::GetForProfile(
+    Profile* profile) {
+  if (translate::IsTFLiteLanguageDetectionEnabled()) {
+    return static_cast<TranslateModelServiceImpl*>(
+        GetInstance()->GetServiceForBrowserContext(profile, true));
+  }
+  return nullptr;
 }
 
 // static
@@ -28,31 +28,19 @@ TranslateModelServiceFactory* TranslateModelServiceFactory::GetInstance() {
 }
 
 TranslateModelServiceFactory::TranslateModelServiceFactory()
-    : SimpleKeyedServiceFactory("TranslateModelService",
-                                SimpleDependencyManager::GetInstance()) {}
+    : BrowserContextKeyedServiceFactory(
+          "TranslateModelService",
+          BrowserContextDependencyManager::GetInstance()) {}
 
 TranslateModelServiceFactory::~TranslateModelServiceFactory() = default;
 
-std::unique_ptr<KeyedService>
-TranslateModelServiceFactory::BuildServiceInstanceFor(
-    SimpleFactoryKey* key) const {
-  if (!translate::IsTFLiteLanguageDetectionEnabled())
-    return nullptr;
-  // The optimization guide service must be available for the translate model
-  // service to be created.
-  auto* opt_guide = OptimizationGuideKeyedServiceFactory::GetForProfile(
-      ProfileManager::GetProfileFromProfileKey(
-          ProfileKey::FromSimpleFactoryKey(key)));
-  if (opt_guide)
-    return std::make_unique<translate::TranslateModelService>(opt_guide);
-  return nullptr;
+KeyedService* TranslateModelServiceFactory::BuildServiceInstanceFor(
+    content::BrowserContext* context) const {
+  return new TranslateModelServiceImpl();
 }
 
-SimpleFactoryKey* TranslateModelServiceFactory::GetKeyToUse(
-    SimpleFactoryKey* key) const {
-  // The translate model service should be able to
-  // operate in off the record sessions if the model is available from the
-  // optimization guide.
-  ProfileKey* profile_key = ProfileKey::FromSimpleFactoryKey(key);
-  return profile_key->GetOriginalKey();
+content::BrowserContext* TranslateModelServiceFactory::GetBrowserContextToUse(
+    content::BrowserContext* context) const {
+  // Use the original profile's TranslateModelService, even in Incognito mode.
+  return chrome::GetBrowserContextRedirectedInIncognito(context);
 }
