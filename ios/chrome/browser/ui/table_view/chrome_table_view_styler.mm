@@ -22,7 +22,7 @@
           [UIColor colorNamed:kSecondaryBackgroundColor];
       _cellBackgroundColor = UIColor.cr_secondarySystemGroupedBackgroundColor;
     } else {
-      _tableViewBackgroundColor = UIColor.cr_systemGroupedBackgroundColor;
+      _tableViewBackgroundColor = UIColor.cr_systemBackgroundColor;
     }
   }
   return self;
