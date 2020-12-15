@@ -221,7 +221,7 @@ class ClipboardHtmlReader final : public ClipboardReader {
   }
 };
 
-// Reads SVG from the System Clipboard as a Blob with image/svg content.
+// Reads SVG from the System Clipboard as a Blob with image/svg+xml content.
 class ClipboardSvgReader final : public ClipboardReader {
  public:
   ClipboardSvgReader(SystemClipboard* system_clipboard,
