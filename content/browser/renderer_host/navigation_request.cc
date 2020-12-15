@@ -3264,6 +3264,13 @@ void NavigationRequest::CommitNavigation() {
 
   AddOldPageInfoToCommitParamsIfNeeded();
 
+  // TODO(crbug.com/979296): Consider changing this code to copy an origin
+  // instead of creating one from a URL which lacks opacity information.
+  isolation_info_for_subresources_ =
+      render_frame_host_->ComputeIsolationInfoForSubresourcesForPendingCommit(
+          GetOriginForURLLoaderFactory());
+  DCHECK(!isolation_info_for_subresources_.IsEmpty());
+
   if (IsServedFromBackForwardCache()) {
     // Navigations served from the back-forward cache must be a history
     // navigation, and thus should have a valid |pending_history_list_offset|
@@ -3347,13 +3354,6 @@ void NavigationRequest::CommitNavigation() {
       IgnoreInterfaceDisconnection();
     }
   }
-
-  // TODO(crbug.com/979296): Consider changing this code to copy an origin
-  // instead of creating one from a URL which lacks opacity information.
-  isolation_info_for_subresources_ =
-      render_frame_host_->ComputeIsolationInfoForSubresourcesForPendingCommit(
-          GetOriginForURLLoaderFactory());
-  DCHECK(!isolation_info_for_subresources_.IsEmpty());
 
   CreateCoepReporter(render_frame_host_->GetProcess()->GetStoragePartition());
   coop_status_.UpdateReporterStoragePartition(
