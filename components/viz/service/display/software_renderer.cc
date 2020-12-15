@@ -550,12 +550,11 @@ void SoftwareRenderer::DrawRenderPassQuad(
                             SkMatrix::kFill_ScaleToFit);
 
   sk_sp<SkShader> shader;
+  SkSamplingOptions sampling(current_paint_.getFilterQuality());
   if (!filter_image) {
-    shader = source_bitmap.makeShader(SkTileMode::kClamp, SkTileMode::kClamp,
-                                      &content_mat);
+    shader = source_bitmap.makeShader(sampling, content_mat);
   } else {
-    shader = filter_image->makeShader(SkTileMode::kClamp, SkTileMode::kClamp,
-                                      &content_mat);
+    shader = filter_image->makeShader(sampling, content_mat);
   }
 
   if (quad->mask_resource_id()) {
@@ -572,9 +571,8 @@ void SoftwareRenderer::DrawRenderPassQuad(
     SkMatrix mask_mat;
     mask_mat.setRectToRect(mask_rect, dest_rect, SkMatrix::kFill_ScaleToFit);
 
-    current_paint_.setMaskFilter(
-        SkShaderMaskFilter::Make(mask_lock.sk_image()->makeShader(
-            SkTileMode::kClamp, SkTileMode::kClamp, &mask_mat)));
+    current_paint_.setMaskFilter(SkShaderMaskFilter::Make(
+        mask_lock.sk_image()->makeShader(sampling, mask_mat)));
   }
 
   // If we have a backdrop filter shader, render its results first.
@@ -902,7 +900,8 @@ sk_sp<SkShader> SoftwareRenderer::GetBackdropFilterShader(
   canvas.drawImageRect(filtered_image, src_rect, dst_rect, &paint);
 
   return SkImage::MakeFromBitmap(bitmap)->makeShader(
-      content_tile_mode, content_tile_mode, &filter_backdrop_transform);
+      content_tile_mode, content_tile_mode, SkSamplingOptions(),
+      &filter_backdrop_transform);
 }
 
 void SoftwareRenderer::UpdateRenderPassTextures(
