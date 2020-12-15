@@ -18,18 +18,25 @@ namespace autofill {
 class StrikeDatabaseIntegratorTestStrikeDatabase
     : public StrikeDatabaseIntegratorBase {
  public:
-  StrikeDatabaseIntegratorTestStrikeDatabase(StrikeDatabase* strike_database);
+  StrikeDatabaseIntegratorTestStrikeDatabase(
+      StrikeDatabase* strike_database,
+      base::Optional<int64_t> expiry_time_micros);
+  explicit StrikeDatabaseIntegratorTestStrikeDatabase(
+      StrikeDatabase* strike_database);
   ~StrikeDatabaseIntegratorTestStrikeDatabase() override;
 
   std::string GetProjectPrefix() override;
   int GetMaxStrikesLimit() override;
-  int64_t GetExpiryTimeMicros() override;
+  base::Optional<int64_t> GetExpiryTimeMicros() override;
   bool UniqueIdsRequired() override;
 
   void SetUniqueIdsRequired(bool unique_ids_required);
 
  private:
   bool unique_ids_required_ = false;
+  base::Optional<int64_t> expiry_time_micros_ =
+      static_cast<int64_t>(1000000) * 60 * 60 * 24 *
+      365;  // Default expiry time is 1 year.
 };
 
 }  // namespace autofill

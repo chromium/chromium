@@ -30,7 +30,7 @@ class FidoAuthenticationStrikeDatabase : public StrikeDatabaseIntegratorBase {
 
   std::string GetProjectPrefix() override;
   int GetMaxStrikesLimit() override;
-  int64_t GetExpiryTimeMicros() override;
+  base::Optional<int64_t> GetExpiryTimeMicros() override;
   bool UniqueIdsRequired() override;
 };
 

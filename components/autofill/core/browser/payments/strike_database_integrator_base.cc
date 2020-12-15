@@ -73,11 +73,15 @@ void StrikeDatabaseIntegratorBase::ClearAllStrikes() {
 }
 
 void StrikeDatabaseIntegratorBase::RemoveExpiredStrikes() {
+  if (!GetExpiryTimeMicros().has_value()) {
+    // Strikes don't expire.
+    return;
+  }
   std::vector<std::string> expired_keys;
   for (auto entry : strike_database_->strike_map_cache_) {
     if (AutofillClock::Now().ToDeltaSinceWindowsEpoch().InMicroseconds() -
             entry.second.last_update_timestamp() >
-        GetExpiryTimeMicros()) {
+        GetExpiryTimeMicros().value()) {
       if (strike_database_->GetStrikes(entry.first) > 0) {
         expired_keys.push_back(entry.first);
         base::UmaHistogramCounts1000(

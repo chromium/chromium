@@ -24,7 +24,7 @@ int CreditCardSaveStrikeDatabase::GetMaxStrikesLimit() {
   return 3;
 }
 
-int64_t CreditCardSaveStrikeDatabase::GetExpiryTimeMicros() {
+base::Optional<int64_t> CreditCardSaveStrikeDatabase::GetExpiryTimeMicros() {
   // Expiry time is 6 months.
   return (int64_t)1000000 * 60 * 60 * 24 * 180;
 }

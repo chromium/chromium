@@ -12,6 +12,12 @@ const char kProjectPrefix[] = "StrikeDatabaseIntegratorTest";
 const int kMaxStrikesLimit = 6;
 
 StrikeDatabaseIntegratorTestStrikeDatabase::
+    StrikeDatabaseIntegratorTestStrikeDatabase(
+        StrikeDatabase* strike_database,
+        base::Optional<int64_t> expiry_time_micros)
+    : StrikeDatabaseIntegratorTestStrikeDatabase(strike_database) {}
+
+StrikeDatabaseIntegratorTestStrikeDatabase::
     StrikeDatabaseIntegratorTestStrikeDatabase(StrikeDatabase* strike_database)
     : StrikeDatabaseIntegratorBase(strike_database) {
   RemoveExpiredStrikes();
@@ -28,9 +34,9 @@ int StrikeDatabaseIntegratorTestStrikeDatabase::GetMaxStrikesLimit() {
   return kMaxStrikesLimit;
 }
 
-int64_t StrikeDatabaseIntegratorTestStrikeDatabase::GetExpiryTimeMicros() {
-  // Expiry time is 1 year.
-  return (int64_t)1000000 * 60 * 60 * 24 * 365;
+base::Optional<int64_t>
+StrikeDatabaseIntegratorTestStrikeDatabase::GetExpiryTimeMicros() {
+  return expiry_time_micros_;
 }
 
 bool StrikeDatabaseIntegratorTestStrikeDatabase::UniqueIdsRequired() {

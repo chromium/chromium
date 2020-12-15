@@ -30,7 +30,8 @@ int FidoAuthenticationStrikeDatabase::GetMaxStrikesLimit() {
   return 3;
 }
 
-int64_t FidoAuthenticationStrikeDatabase::GetExpiryTimeMicros() {
+base::Optional<int64_t>
+FidoAuthenticationStrikeDatabase::GetExpiryTimeMicros() {
   // Expiry time is six months.
   return (int64_t)1000000 * 60 * 60 * 24 * 30 * 6;
 }
