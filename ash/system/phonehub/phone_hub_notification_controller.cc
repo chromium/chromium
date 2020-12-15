@@ -265,13 +265,20 @@ void PhoneHubNotificationController::OnFeatureStatusChanged() {
   DCHECK(feature_status_provider_);
 
   auto status = feature_status_provider_->GetStatus();
+
+  // Various states in which the feature is enabled, even if it is not actually
+  // in use (e.g., if Bluetooth is disabled or if the screen is locked).
   bool is_feature_enabled =
+      status == chromeos::phonehub::FeatureStatus::kUnavailableBluetoothOff ||
+      status == chromeos::phonehub::FeatureStatus::kLockOrSuspended ||
       status == chromeos::phonehub::FeatureStatus::kEnabledButDisconnected ||
       status == chromeos::phonehub::FeatureStatus::kEnabledAndConnecting ||
       status == chromeos::phonehub::FeatureStatus::kEnabledAndConnected;
 
-  // Reset the set of shown notifications when PhoneHub is no longer available
-  // (e.g. when the screen is locked).
+  // Reset the set of shown notifications when Phone Hub is disabled. If it is
+  // enabled, we skip this step to ensure that notifications that have already
+  // been shown do not pop up again and spam the user. See
+  // https://crbug.com/1157523 for details.
   if (!is_feature_enabled)
     shown_notification_ids_.clear();
 }
