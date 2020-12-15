@@ -60,7 +60,7 @@ class MTPDeviceDelegateImplWin : public MTPDeviceAsyncDelegate {
  private:
   friend void OnGetStorageInfoCreateDelegate(
       const base::string16& device_location,
-      const CreateMTPDeviceAsyncDelegateCallback& callback,
+      CreateMTPDeviceAsyncDelegateCallback callback,
       base::string16* pnp_device_id,
       base::string16* storage_object_id,
       bool succeeded);

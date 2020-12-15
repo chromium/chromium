@@ -39,7 +39,7 @@ class MTPDeviceDelegateImplLinux : public MTPDeviceAsyncDelegate {
   friend void CreateMTPDeviceAsyncDelegate(
       const std::string&,
       const bool read_only,
-      const CreateMTPDeviceAsyncDelegateCallback&);
+      CreateMTPDeviceAsyncDelegateCallback);
 
   enum InitializationState {
     UNINITIALIZED = 0,

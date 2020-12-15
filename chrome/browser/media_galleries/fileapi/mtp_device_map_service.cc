@@ -41,8 +41,8 @@ void MTPDeviceMapService::RegisterMTPFileSystem(
     // to be created before use of it expects it to be there.
     CreateMTPDeviceAsyncDelegate(
         device_location, read_only,
-        base::Bind(&MTPDeviceMapService::AddAsyncDelegate,
-                   base::Unretained(this), device_location, read_only));
+        base::BindOnce(&MTPDeviceMapService::AddAsyncDelegate,
+                       base::Unretained(this), device_location, read_only));
     mtp_device_usage_map_[key] = 0;
   }
 

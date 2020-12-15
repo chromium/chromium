@@ -558,7 +558,7 @@ MTPDeviceDelegateImplMac::ReadDirectoryRequest::~ReadDirectoryRequest() {}
 void CreateMTPDeviceAsyncDelegate(
     const base::FilePath::StringType& device_location,
     const bool read_only,
-    const CreateMTPDeviceAsyncDelegateCallback& cb) {
+    CreateMTPDeviceAsyncDelegateCallback cb) {
   // Write operation is not supported on Mac.
   DCHECK(read_only);
 
@@ -570,5 +570,5 @@ void CreateMTPDeviceAsyncDelegate(
   DCHECK(cracked);
   DCHECK_EQ(storage_monitor::StorageInfo::MAC_IMAGE_CAPTURE, type);
 
-  cb.Run(new MTPDeviceDelegateImplMac(device_id, device_location));
+  std::move(cb).Run(new MTPDeviceDelegateImplMac(device_id, device_location));
 }

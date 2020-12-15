@@ -294,7 +294,7 @@ void DeletePortableDeviceOnBlockingPoolThread(
 // delegate on the IO thread.
 void OnGetStorageInfoCreateDelegate(
     const base::string16& device_location,
-    const CreateMTPDeviceAsyncDelegateCallback& callback,
+    CreateMTPDeviceAsyncDelegateCallback callback,
     base::string16* pnp_device_id,
     base::string16* storage_object_id,
     bool succeeded) {
@@ -303,15 +303,14 @@ void OnGetStorageInfoCreateDelegate(
   DCHECK(storage_object_id);
   if (!succeeded)
     return;
-  callback.Run(new MTPDeviceDelegateImplWin(device_location,
-                                            *pnp_device_id,
-                                            *storage_object_id));
+  std::move(callback).Run(new MTPDeviceDelegateImplWin(
+      device_location, *pnp_device_id, *storage_object_id));
 }
 
 void CreateMTPDeviceAsyncDelegate(
     const base::string16& device_location,
     const bool read_only,
-    const CreateMTPDeviceAsyncDelegateCallback& callback) {
+    CreateMTPDeviceAsyncDelegateCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
   // Write operation is not supported on Windows.
@@ -325,8 +324,8 @@ void CreateMTPDeviceAsyncDelegate(
       base::BindOnce(&GetStorageInfoOnUIThread, device_location,
                      base::Unretained(pnp_device_id),
                      base::Unretained(storage_object_id)),
-      base::BindOnce(&OnGetStorageInfoCreateDelegate, device_location, callback,
-                     base::Owned(pnp_device_id),
+      base::BindOnce(&OnGetStorageInfoCreateDelegate, device_location,
+                     std::move(callback), base::Owned(pnp_device_id),
                      base::Owned(storage_object_id)));
 }
 

@@ -1892,7 +1892,8 @@ void MTPDeviceDelegateImplLinux::EvictCachedPathToId(uint32_t id) {
 void CreateMTPDeviceAsyncDelegate(
     const std::string& device_location,
     const bool read_only,
-    const CreateMTPDeviceAsyncDelegateCallback& callback) {
+    CreateMTPDeviceAsyncDelegateCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  callback.Run(new MTPDeviceDelegateImplLinux(device_location, read_only));
+  std::move(callback).Run(
+      new MTPDeviceDelegateImplLinux(device_location, read_only));
 }
