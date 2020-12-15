@@ -55,7 +55,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.interstitial.IncognitoInterstitialDelegate;
 import org.chromium.chrome.browser.signin.account_picker.AccountPickerBottomSheetCoordinator;
-import org.chromium.chrome.browser.signin.account_picker.AccountPickerDelegate;
+import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerDelegate;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;

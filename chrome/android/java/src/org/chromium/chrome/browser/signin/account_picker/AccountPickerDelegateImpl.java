@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.signin.SigninUtils;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.WebSigninBridge;
+import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
