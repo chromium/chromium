@@ -203,12 +203,12 @@ class FlipboardDesktopStory2018(_ArticleBrowsingStory):
   TAGS = [story_tags.YEAR_2018]
 
 
-class HackerNewsDesktopStory2018(_ArticleBrowsingStory):
-  NAME = 'browse:news:hackernews:2018'
+class HackerNewsDesktopStory2020(_ArticleBrowsingStory):
+  NAME = 'browse:news:hackernews:2020'
   URL = 'https://news.ycombinator.com'
   ITEM_SELECTOR = '.athing .title > a'
   SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
-  TAGS = [story_tags.YEAR_2018]
+  TAGS = [story_tags.YEAR_2020]
 
 
 class NytimesDesktopStory2020(_ArticleBrowsingStory):
