@@ -104,8 +104,8 @@
 #include "content/browser/accessibility/browser_accessibility_win.h"
 #include "content/browser/renderer_host/legacy_render_widget_host_win.h"
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
-#include "ui/base/ime/input_method_keyboard_controller.h"
-#include "ui/base/ime/input_method_keyboard_controller_observer.h"
+#include "ui/base/ime/virtual_keyboard_controller.h"
+#include "ui/base/ime/virtual_keyboard_controller_observer.h"
 #include "ui/base/win/hidden_window.h"
 #include "ui/display/win/screen_win.h"
 #include "ui/gfx/gdi_util.h"
@@ -122,7 +122,7 @@
 #endif
 
 #if defined(OS_FUCHSIA)
-#include "ui/base/ime/input_method_keyboard_controller.h"
+#include "ui/base/ime/virtual_keyboard_controller.h"
 #endif
 
 using gfx::RectToSkIRect;
@@ -1789,8 +1789,7 @@ void RenderWidgetHostViewAura::FocusedNodeChanged(
 #elif defined(OS_FUCHSIA)
   if (!editable && window_) {
     if (input_method) {
-      input_method->GetInputMethodKeyboardController()
-          ->DismissVirtualKeyboard();
+      input_method->GetVirtualKeyboardController()->DismissVirtualKeyboard();
     }
   }
 #endif

@@ -47,7 +47,7 @@ class DummyInputMethod : public InputMethod {
 
   void AddObserver(InputMethodObserver* observer) override;
   void RemoveObserver(InputMethodObserver* observer) override;
-  InputMethodKeyboardController* GetInputMethodKeyboardController() override;
+  VirtualKeyboardController* GetVirtualKeyboardController() override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(DummyInputMethod);

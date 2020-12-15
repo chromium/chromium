@@ -220,8 +220,8 @@ bool MockInputMethodManager::GetImeMenuFeatureEnabled(
 
 void MockInputMethodManager::NotifyObserversImeExtraInputStateChange() {}
 
-ui::InputMethodKeyboardController*
-MockInputMethodManager::GetInputMethodKeyboardController() {
+ui::VirtualKeyboardController*
+MockInputMethodManager::GetVirtualKeyboardController() {
   return this;
 }
 
@@ -238,10 +238,10 @@ bool MockInputMethodManager::DisplayVirtualKeyboard() {
 void MockInputMethodManager::DismissVirtualKeyboard() {}
 
 void MockInputMethodManager::AddObserver(
-    ui::InputMethodKeyboardControllerObserver* observer) {}
+    ui::VirtualKeyboardControllerObserver* observer) {}
 
 void MockInputMethodManager::RemoveObserver(
-    ui::InputMethodKeyboardControllerObserver* observer) {}
+    ui::VirtualKeyboardControllerObserver* observer) {}
 
 bool MockInputMethodManager::IsKeyboardVisible() {
   return false;

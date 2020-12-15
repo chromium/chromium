@@ -12,7 +12,7 @@
 #include "base/win/com_init_util.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/windows_version.h"
-#include "ui/base/ime/input_method_keyboard_controller_observer.h"
+#include "ui/base/ime/virtual_keyboard_controller_observer.h"
 
 namespace ui {
 
@@ -282,13 +282,13 @@ void OnScreenKeyboardDisplayManagerInputPane::DismissVirtualKeyboard() {
 }
 
 void OnScreenKeyboardDisplayManagerInputPane::AddObserver(
-    InputMethodKeyboardControllerObserver* observer) {
+    VirtualKeyboardControllerObserver* observer) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   observers_.AddObserver(observer);
 }
 
 void OnScreenKeyboardDisplayManagerInputPane::RemoveObserver(
-    InputMethodKeyboardControllerObserver* observer) {
+    VirtualKeyboardControllerObserver* observer) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   observers_.RemoveObserver(observer);
 }
@@ -314,7 +314,7 @@ void OnScreenKeyboardDisplayManagerInputPane::NotifyObserversOnKeyboardShown(
     gfx::Rect dip_rect) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   is_keyboard_visible_ = true;
-  for (InputMethodKeyboardControllerObserver& observer : observers_)
+  for (VirtualKeyboardControllerObserver& observer : observers_)
     observer.OnKeyboardVisible(dip_rect);
 }
 
@@ -322,7 +322,7 @@ void OnScreenKeyboardDisplayManagerInputPane::
     NotifyObserversOnKeyboardHidden() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   is_keyboard_visible_ = false;
-  for (InputMethodKeyboardControllerObserver& observer : observers_)
+  for (VirtualKeyboardControllerObserver& observer : observers_)
     observer.OnKeyboardHidden();
 }
 

@@ -1451,13 +1451,13 @@ void InputMethodManagerImpl::NotifyObserversImeExtraInputStateChange() {
   }
 }
 
-ui::InputMethodKeyboardController*
-InputMethodManagerImpl::GetInputMethodKeyboardController() {
+ui::VirtualKeyboardController*
+InputMethodManagerImpl::GetVirtualKeyboardController() {
   ui::IMEEngineHandlerInterface* engine =
       ui::IMEBridge::Get()->GetCurrentEngineHandler();
   if (!engine)
     return nullptr;
-  return engine->GetInputMethodKeyboardController();
+  return engine->GetVirtualKeyboardController();
 }
 
 void InputMethodManagerImpl::ReloadKeyboard() {

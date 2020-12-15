@@ -129,8 +129,7 @@ void MockInputMethod::RemoveObserver(InputMethodObserver* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-InputMethodKeyboardController*
-MockInputMethod::GetInputMethodKeyboardController() {
+VirtualKeyboardController* MockInputMethod::GetVirtualKeyboardController() {
   return &keyboard_controller_;
 }
 

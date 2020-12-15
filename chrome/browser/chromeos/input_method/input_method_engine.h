@@ -106,8 +106,7 @@ class InputMethodEngine : public InputMethodEngineBase,
       const ui::ime::AssistiveWindowButton& button) override;
   void SetMirroringEnabled(bool mirroring_enabled) override;
   void SetCastingEnabled(bool casting_enabled) override;
-  ui::InputMethodKeyboardController* GetInputMethodKeyboardController()
-      const override;
+  ui::VirtualKeyboardController* GetVirtualKeyboardController() const override;
 
   // SuggestionHandlerInterface overrides.
   bool DismissSuggestion(int context_id, std::string* error) override;

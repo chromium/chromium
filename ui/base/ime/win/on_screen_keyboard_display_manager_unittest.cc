@@ -12,23 +12,23 @@
 #include "base/win/windows_version.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/ime/input_method_keyboard_controller_observer.h"
+#include "ui/base/ime/virtual_keyboard_controller_observer.h"
 #include "ui/base/ime/win/on_screen_keyboard_display_manager_input_pane.h"
 #include "ui/base/ime/win/on_screen_keyboard_display_manager_tab_tip.h"
 
 namespace ui {
 
-class MockInputMethodKeyboardControllerObserver
-    : public InputMethodKeyboardControllerObserver {
+class MockVirtualKeyboardControllerObserver
+    : public VirtualKeyboardControllerObserver {
  public:
-  MockInputMethodKeyboardControllerObserver() = default;
-  virtual ~MockInputMethodKeyboardControllerObserver() = default;
+  MockVirtualKeyboardControllerObserver() = default;
+  virtual ~MockVirtualKeyboardControllerObserver() = default;
 
   MOCK_METHOD1(OnKeyboardVisible, void(const gfx::Rect&));
   MOCK_METHOD0(OnKeyboardHidden, void());
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(MockInputMethodKeyboardControllerObserver);
+  DISALLOW_COPY_AND_ASSIGN(MockVirtualKeyboardControllerObserver);
 };
 
 class MockInputPane
@@ -168,8 +168,8 @@ TEST_F(OnScreenKeyboardTest, InputPane) {
   std::unique_ptr<OnScreenKeyboardDisplayManagerInputPane>
       keyboard_display_manager = CreateInputPane();
 
-  std::unique_ptr<MockInputMethodKeyboardControllerObserver> observer =
-      std::make_unique<MockInputMethodKeyboardControllerObserver>();
+  std::unique_ptr<MockVirtualKeyboardControllerObserver> observer =
+      std::make_unique<MockVirtualKeyboardControllerObserver>();
 
   Microsoft::WRL::ComPtr<MockInputPane> input_pane =
       Microsoft::WRL::Make<MockInputPane>();
@@ -196,8 +196,8 @@ TEST_F(OnScreenKeyboardTest, InputPaneDebounceTimerTest) {
   std::unique_ptr<OnScreenKeyboardDisplayManagerInputPane>
       keyboard_display_manager = CreateInputPane();
 
-  std::unique_ptr<MockInputMethodKeyboardControllerObserver> observer =
-      std::make_unique<MockInputMethodKeyboardControllerObserver>();
+  std::unique_ptr<MockVirtualKeyboardControllerObserver> observer =
+      std::make_unique<MockVirtualKeyboardControllerObserver>();
 
   Microsoft::WRL::ComPtr<MockInputPane> input_pane =
       Microsoft::WRL::Make<MockInputPane>();
@@ -230,8 +230,8 @@ TEST_F(OnScreenKeyboardTest, InputPaneDestruction) {
   std::unique_ptr<OnScreenKeyboardDisplayManagerInputPane>
       keyboard_display_manager = CreateInputPane();
 
-  std::unique_ptr<MockInputMethodKeyboardControllerObserver> observer =
-      std::make_unique<MockInputMethodKeyboardControllerObserver>();
+  std::unique_ptr<MockVirtualKeyboardControllerObserver> observer =
+      std::make_unique<MockVirtualKeyboardControllerObserver>();
 
   Microsoft::WRL::ComPtr<MockInputPane> input_pane =
       Microsoft::WRL::Make<MockInputPane>();

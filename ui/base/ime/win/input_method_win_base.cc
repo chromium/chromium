@@ -31,7 +31,7 @@ namespace {
 // is returned to IME for improving conversion accuracy.
 constexpr size_t kExtraNumberOfChars = 20;
 
-std::unique_ptr<InputMethodKeyboardController> CreateKeyboardController(
+std::unique_ptr<VirtualKeyboardController> CreateKeyboardController(
     HWND toplevel_window_handle) {
   if (base::FeatureList::IsEnabled(features::kInputPaneOnScreenKeyboard) &&
       base::win::GetVersion() >= base::win::Version::WIN10_RS4) {

@@ -207,8 +207,8 @@ void InputMethodEngineBase::SetCompositionBounds(
   observer_->OnCompositionBoundsChanged(bounds);
 }
 
-ui::InputMethodKeyboardController*
-InputMethodEngineBase::GetInputMethodKeyboardController() const {
+ui::VirtualKeyboardController*
+InputMethodEngineBase::GetVirtualKeyboardController() const {
   return nullptr;
 }
 

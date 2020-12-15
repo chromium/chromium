@@ -74,10 +74,10 @@
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/dragdrop/os_exchange_data_provider.h"
 #include "ui/base/ime/input_method.h"
-#include "ui/base/ime/input_method_keyboard_controller.h"
 #include "ui/base/ime/text_edit_commands.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/text_input_type.h"
+#include "ui/base/ime/virtual_keyboard_controller.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -1257,7 +1257,7 @@ void OmniboxViewViews::ShowVirtualKeyboardIfEnabled() {
 
 void OmniboxViewViews::HideImeIfNeeded() {
   if (auto* input_method = GetInputMethod()) {
-    if (auto* keyboard = input_method->GetInputMethodKeyboardController())
+    if (auto* keyboard = input_method->GetVirtualKeyboardController())
       keyboard->DismissVirtualKeyboard();
   }
 }

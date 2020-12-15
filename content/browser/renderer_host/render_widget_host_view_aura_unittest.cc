@@ -98,9 +98,9 @@
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/ime/init/input_method_factory.h"
 #include "ui/base/ime/input_method.h"
-#include "ui/base/ime/input_method_keyboard_controller.h"
 #include "ui/base/ime/mock_input_method.h"
 #include "ui/base/ime/mojom/text_input_state.mojom.h"
+#include "ui/base/ime/virtual_keyboard_controller.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/compositor/compositor.h"
@@ -6473,10 +6473,10 @@ TEST_F(RenderWidgetHostViewAuraInputMethodTest,
 }
 
 #if defined(OS_WIN)
-class MockInputMethodKeyboardController final
-    : public ui::InputMethodKeyboardController {
+class MockVirtualKeyboardController final
+    : public ui::VirtualKeyboardController {
  public:
-  MockInputMethodKeyboardController() = default;
+  MockVirtualKeyboardController() = default;
   bool DisplayVirtualKeyboard() override {
     virtual_keyboard_requested_ = true;
     return virtual_keyboard_requested_;
@@ -6486,13 +6486,12 @@ class MockInputMethodKeyboardController final
     virtual_keyboard_requested_ = false;
   }
 
-  void AddObserver(
-      ui::InputMethodKeyboardControllerObserver* observer) override {
+  void AddObserver(ui::VirtualKeyboardControllerObserver* observer) override {
     observer_count_++;
   }
 
   void RemoveObserver(
-      ui::InputMethodKeyboardControllerObserver* observer) override {
+      ui::VirtualKeyboardControllerObserver* observer) override {
     observer_count_--;
   }
 
@@ -6504,7 +6503,7 @@ class MockInputMethodKeyboardController final
   size_t observer_count_ = 0;
   bool virtual_keyboard_requested_ = false;
 
-  DISALLOW_COPY_AND_ASSIGN(MockInputMethodKeyboardController);
+  DISALLOW_COPY_AND_ASSIGN(MockVirtualKeyboardController);
 };
 
 class RenderWidgetHostViewAuraKeyboardMockInputMethod
@@ -6512,8 +6511,7 @@ class RenderWidgetHostViewAuraKeyboardMockInputMethod
  public:
   RenderWidgetHostViewAuraKeyboardMockInputMethod()
       : MockInputMethod(nullptr) {}
-  ui::InputMethodKeyboardController* GetInputMethodKeyboardController()
-      override {
+  ui::VirtualKeyboardController* GetVirtualKeyboardController() override {
     return &keyboard_controller_;
   }
   size_t keyboard_controller_observer_count() const {
@@ -6525,7 +6523,7 @@ class RenderWidgetHostViewAuraKeyboardMockInputMethod
   bool IsKeyboardVisible() { return keyboard_controller_.IsKeyboardVisible(); }
 
  private:
-  MockInputMethodKeyboardController keyboard_controller_;
+  MockVirtualKeyboardController keyboard_controller_;
   DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostViewAuraKeyboardMockInputMethod);
 };
 

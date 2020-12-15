@@ -4,8 +4,8 @@
 
 #include "ui/base/ime/win/input_method_win_tsf.h"
 
-#include "ui/base/ime/input_method_keyboard_controller.h"
 #include "ui/base/ime/text_input_client.h"
+#include "ui/base/ime/virtual_keyboard_controller.h"
 #include "ui/base/ime/win/tsf_bridge.h"
 #include "ui/base/ime/win/tsf_event_router.h"
 
@@ -176,7 +176,7 @@ void InputMethodWinTSF::ConfirmCompositionText() {
 }
 
 void InputMethodWinTSF::ShowVirtualKeyboardIfEnabled() {
-  if (auto* controller = GetInputMethodKeyboardController())
+  if (auto* controller = GetVirtualKeyboardController())
     controller->DisplayVirtualKeyboard();
 }
 

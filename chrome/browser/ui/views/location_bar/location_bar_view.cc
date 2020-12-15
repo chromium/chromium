@@ -95,7 +95,7 @@
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/ime/input_method.h"
-#include "ui/base/ime/input_method_keyboard_controller.h"
+#include "ui/base/ime/virtual_keyboard_controller.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/theme_provider.h"
@@ -800,7 +800,7 @@ bool LocationBarView::ShouldHidePageActionIcons() const {
 // static
 bool LocationBarView::IsVirtualKeyboardVisible(views::Widget* widget) {
   if (auto* input_method = widget->GetInputMethod()) {
-    auto* keyboard = input_method->GetInputMethodKeyboardController();
+    auto* keyboard = input_method->GetVirtualKeyboardController();
     return keyboard && keyboard->IsKeyboardVisible();
   }
   return false;

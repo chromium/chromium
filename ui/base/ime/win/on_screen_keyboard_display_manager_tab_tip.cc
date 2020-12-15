@@ -20,7 +20,7 @@
 #include "base/win/scoped_co_mem.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
-#include "ui/base/ime/input_method_keyboard_controller_observer.h"
+#include "ui/base/ime/virtual_keyboard_controller_observer.h"
 #include "ui/base/win/hidden_window.h"
 #include "ui/display/win/screen_win.h"
 #include "ui/gfx/geometry/dip_util.h"
@@ -288,12 +288,12 @@ void OnScreenKeyboardDisplayManagerTabTip::DismissVirtualKeyboard() {
 }
 
 void OnScreenKeyboardDisplayManagerTabTip::AddObserver(
-    InputMethodKeyboardControllerObserver* observer) {
+    VirtualKeyboardControllerObserver* observer) {
   observers_.AddObserver(observer);
 }
 
 void OnScreenKeyboardDisplayManagerTabTip::RemoveObserver(
-    InputMethodKeyboardControllerObserver* observer) {
+    VirtualKeyboardControllerObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
@@ -368,12 +368,12 @@ bool OnScreenKeyboardDisplayManagerTabTip::IsKeyboardVisible() {
 
 void OnScreenKeyboardDisplayManagerTabTip::NotifyKeyboardVisible(
     const gfx::Rect& occluded_rect) {
-  for (InputMethodKeyboardControllerObserver& observer : observers_)
+  for (VirtualKeyboardControllerObserver& observer : observers_)
     observer.OnKeyboardVisible(occluded_rect);
 }
 
 void OnScreenKeyboardDisplayManagerTabTip::NotifyKeyboardHidden() {
-  for (InputMethodKeyboardControllerObserver& observer : observers_)
+  for (VirtualKeyboardControllerObserver& observer : observers_)
     observer.OnKeyboardHidden();
 }
 

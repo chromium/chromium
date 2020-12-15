@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/base/ime/fuchsia/input_method_keyboard_controller_fuchsia.h"
+#include "ui/base/ime/fuchsia/virtual_keyboard_controller_fuchsia.h"
 
 #include <lib/sys/cpp/component_context.h>
 #include <utility>
@@ -14,7 +14,7 @@
 
 namespace ui {
 
-InputMethodKeyboardControllerFuchsia::InputMethodKeyboardControllerFuchsia(
+VirtualKeyboardControllerFuchsia::VirtualKeyboardControllerFuchsia(
     fuchsia::ui::input::ImeService* ime_service)
     : ime_service_(ime_service),
       ime_visibility_(
@@ -32,29 +32,28 @@ InputMethodKeyboardControllerFuchsia::InputMethodKeyboardControllerFuchsia(
   };
 }
 
-InputMethodKeyboardControllerFuchsia::~InputMethodKeyboardControllerFuchsia() =
-    default;
+VirtualKeyboardControllerFuchsia::~VirtualKeyboardControllerFuchsia() = default;
 
-bool InputMethodKeyboardControllerFuchsia::DisplayVirtualKeyboard() {
+bool VirtualKeyboardControllerFuchsia::DisplayVirtualKeyboard() {
   ime_service_->ShowKeyboard();
   return true;
 }
 
-void InputMethodKeyboardControllerFuchsia::DismissVirtualKeyboard() {
+void VirtualKeyboardControllerFuchsia::DismissVirtualKeyboard() {
   ime_service_->HideKeyboard();
 }
 
-void InputMethodKeyboardControllerFuchsia::AddObserver(
-    InputMethodKeyboardControllerObserver* observer) {
+void VirtualKeyboardControllerFuchsia::AddObserver(
+    VirtualKeyboardControllerObserver* observer) {
   NOTIMPLEMENTED();
 }
 
-void InputMethodKeyboardControllerFuchsia::RemoveObserver(
-    InputMethodKeyboardControllerObserver* observer) {
+void VirtualKeyboardControllerFuchsia::RemoveObserver(
+    VirtualKeyboardControllerObserver* observer) {
   NOTIMPLEMENTED();
 }
 
-bool InputMethodKeyboardControllerFuchsia::IsKeyboardVisible() {
+bool VirtualKeyboardControllerFuchsia::IsKeyboardVisible() {
   return keyboard_visible_;
 }
 

@@ -39,8 +39,8 @@ void MockInputMethodEngine::SetSurroundingText(const base::string16& text,
 void MockInputMethodEngine::SetCompositionBounds(
     const std::vector<gfx::Rect>& bounds) {}
 
-ui::InputMethodKeyboardController*
-MockInputMethodEngine::GetInputMethodKeyboardController() const {
+ui::VirtualKeyboardController*
+MockInputMethodEngine::GetVirtualKeyboardController() const {
   return nullptr;
 }
 

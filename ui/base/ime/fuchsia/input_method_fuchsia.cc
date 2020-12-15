@@ -29,8 +29,7 @@ InputMethodFuchsia::InputMethodFuchsia(internal::InputMethodDelegate* delegate,
 
 InputMethodFuchsia::~InputMethodFuchsia() {}
 
-InputMethodKeyboardController*
-InputMethodFuchsia::GetInputMethodKeyboardController() {
+VirtualKeyboardController* InputMethodFuchsia::GetVirtualKeyboardController() {
   return &virtual_keyboard_controller_;
 }
 

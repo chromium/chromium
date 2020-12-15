@@ -28,9 +28,9 @@
 #include "base/time/time.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/ime/input_method.h"
-#include "ui/base/ime/input_method_keyboard_controller.h"
 #include "ui/base/ime/input_method_observer.h"
 #include "ui/base/ime/text_input_type.h"
+#include "ui/base/ime/virtual_keyboard_controller.h"
 #include "ui/events/event.h"
 #include "ui/events/gestures/gesture_types.h"
 #include "ui/gfx/geometry/rect.h"
@@ -241,8 +241,8 @@ class KEYBOARD_EXPORT KeyboardUIController
 
   aura::Window* parent_container() { return parent_container_; }
 
-  ui::InputMethodKeyboardController* input_method_keyboard_controller() {
-    return input_method_keyboard_controller_.get();
+  ui::VirtualKeyboardController* virtual_keyboard_controller() {
+    return virtual_keyboard_controller_.get();
   }
 
   bool keyboard_locked() const { return keyboard_locked_; }
@@ -416,8 +416,7 @@ class KEYBOARD_EXPORT KeyboardUIController
 
   std::unique_ptr<KeyboardUIFactory> ui_factory_;
   std::unique_ptr<KeyboardUI> ui_;
-  std::unique_ptr<ui::InputMethodKeyboardController>
-      input_method_keyboard_controller_;
+  std::unique_ptr<ui::VirtualKeyboardController> virtual_keyboard_controller_;
   KeyboardLayoutDelegate* layout_delegate_ = nullptr;
   ScopedObserver<ui::InputMethod, ui::InputMethodObserver> ime_observer_{this};
 

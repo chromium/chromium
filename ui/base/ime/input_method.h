@@ -24,7 +24,7 @@ namespace internal {
 class InputMethodDelegate;
 }  // namespace internal
 
-class InputMethodKeyboardController;
+class VirtualKeyboardController;
 class InputMethodObserver;
 class KeyEvent;
 class TextInputClient;
@@ -167,7 +167,7 @@ class InputMethod {
   virtual void SetOnScreenKeyboardBounds(const gfx::Rect& new_bounds) {}
 
   // Return the keyboard controller; used only on Windows.
-  virtual InputMethodKeyboardController* GetInputMethodKeyboardController() = 0;
+  virtual VirtualKeyboardController* GetVirtualKeyboardController() = 0;
 };
 
 }  // namespace ui

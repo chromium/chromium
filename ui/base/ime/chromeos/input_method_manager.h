@@ -23,7 +23,7 @@ class Profile;
 
 namespace ui {
 class IMEEngineHandlerInterface;
-class InputMethodKeyboardController;
+class VirtualKeyboardController;
 }  // namespace ui
 
 namespace chromeos {
@@ -354,8 +354,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) InputMethodManager {
   virtual void NotifyObserversImeExtraInputStateChange() = 0;
 
   // Gets the implementation of the keyboard controller.
-  virtual ui::InputMethodKeyboardController*
-  GetInputMethodKeyboardController() = 0;
+  virtual ui::VirtualKeyboardController* GetVirtualKeyboardController() = 0;
 
   // Notifies an input method extension is added or removed.
   virtual void NotifyInputMethodExtensionAdded(

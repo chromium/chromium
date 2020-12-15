@@ -93,8 +93,7 @@ void DummyInputMethod::AddObserver(InputMethodObserver* observer) {
 void DummyInputMethod::RemoveObserver(InputMethodObserver* observer) {
 }
 
-InputMethodKeyboardController*
-DummyInputMethod::GetInputMethodKeyboardController() {
+VirtualKeyboardController* DummyInputMethod::GetVirtualKeyboardController() {
   return nullptr;
 }
 

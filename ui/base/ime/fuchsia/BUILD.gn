@@ -10,8 +10,8 @@ component("fuchsia") {
   sources = [
     "input_method_fuchsia.cc",
     "input_method_fuchsia.h",
-    "input_method_keyboard_controller_fuchsia.cc",
-    "input_method_keyboard_controller_fuchsia.h",
+    "virtual_keyboard_controller_fuchsia.cc",
+    "virtual_keyboard_controller_fuchsia.h",
   ]
 
   defines = [ "IS_UI_BASE_IME_FUCHSIA_IMPL" ]

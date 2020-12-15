@@ -13,8 +13,8 @@
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "ui/base/ime/input_method.h"
-#include "ui/base/ime/input_method_keyboard_controller_stub.h"
 #include "ui/base/ime/input_method_observer.h"
+#include "ui/base/ime/virtual_keyboard_controller_stub.h"
 
 namespace ui {
 
@@ -58,7 +58,7 @@ class COMPONENT_EXPORT(UI_BASE_IME) MockInputMethod : public InputMethod {
   void ShowVirtualKeyboardIfEnabled() override;
   void AddObserver(InputMethodObserver* observer) override;
   void RemoveObserver(InputMethodObserver* observer) override;
-  InputMethodKeyboardController* GetInputMethodKeyboardController() override;
+  VirtualKeyboardController* GetVirtualKeyboardController() override;
 
  private:
 
@@ -66,7 +66,7 @@ class COMPONENT_EXPORT(UI_BASE_IME) MockInputMethod : public InputMethod {
   base::ObserverList<InputMethodObserver>::Unchecked observer_list_;
   internal::InputMethodDelegate* delegate_;
 
-  InputMethodKeyboardControllerStub keyboard_controller_;
+  VirtualKeyboardControllerStub keyboard_controller_;
 
   DISALLOW_COPY_AND_ASSIGN(MockInputMethod);
 };

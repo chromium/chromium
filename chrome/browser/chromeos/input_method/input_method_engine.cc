@@ -120,16 +120,15 @@ void InputMethodEngine::SetCastingEnabled(bool casting_enabled) {
   }
 }
 
-ui::InputMethodKeyboardController*
-InputMethodEngine::GetInputMethodKeyboardController() const {
+ui::VirtualKeyboardController* InputMethodEngine::GetVirtualKeyboardController()
+    const {
   // Callers expect a nullptr when the keyboard is disabled. See
   // https://crbug.com/850020.
   if (!keyboard::KeyboardUIController::HasInstance() ||
       !keyboard::KeyboardUIController::Get()->IsEnabled()) {
     return nullptr;
   }
-  return keyboard::KeyboardUIController::Get()
-      ->input_method_keyboard_controller();
+  return keyboard::KeyboardUIController::Get()->virtual_keyboard_controller();
 }
 
 void InputMethodEngine::OnSuggestionsChanged(

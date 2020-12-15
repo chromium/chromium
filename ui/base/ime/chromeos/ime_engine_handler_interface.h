@@ -24,7 +24,7 @@ class Rect;
 
 namespace ui {
 
-class InputMethodKeyboardController;
+class VirtualKeyboardController;
 class KeyEvent;
 
 namespace ime {
@@ -111,7 +111,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) IMEEngineHandlerInterface {
   virtual void SetCompositionBounds(const std::vector<gfx::Rect>& bounds) = 0;
 
   // Gets the implementation of the keyboard controller.
-  virtual ui::InputMethodKeyboardController* GetInputMethodKeyboardController()
+  virtual ui::VirtualKeyboardController* GetVirtualKeyboardController()
       const = 0;
 
   // Called when a property is activated or changed.

@@ -7,7 +7,7 @@
 
 #include "base/macros.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
-#include "ui/base/ime/input_method_keyboard_controller_observer.h"
+#include "ui/base/ime/virtual_keyboard_controller_observer.h"
 
 namespace gfx {
 class Rect;
@@ -24,7 +24,7 @@ namespace content {
 
 class RenderWidgetHostViewAura;
 
-// This class implements the ui::InputMethodKeyboardControllerObserver interface
+// This class implements the ui::VirtualKeyboardControllerObserver interface
 // which provides notifications about the on-screen keyboard on Windows getting
 // displayed or hidden in response to taps on editable fields.
 // It provides functionality to request blink to scroll the input field if it
@@ -33,7 +33,7 @@ class RenderWidgetHostViewAura;
 // respectively.
 // https://docs.microsoft.com/en-us/uwp/api/windows.ui.viewmanagement.inputpane?view=winrt-18362
 class VirtualKeyboardControllerWin
-    : public ui::InputMethodKeyboardControllerObserver {
+    : public ui::VirtualKeyboardControllerObserver {
  public:
   VirtualKeyboardControllerWin(RenderWidgetHostViewAura* host_view,
                                ui::InputMethod* input_method);
@@ -47,7 +47,7 @@ class VirtualKeyboardControllerWin
   void FocusedNodeChanged(bool is_editable);
   void HideAndNotifyKeyboardInset();
 
-  // InputMethodKeyboardControllerObserver overrides.
+  // VirtualKeyboardControllerObserver overrides.
   void OnKeyboardVisible(const gfx::Rect& keyboard_rect) override;
   void OnKeyboardHidden() override;
 

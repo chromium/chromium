@@ -284,15 +284,14 @@ bool InputMethodChromeOS::IsCandidatePopupOpen() const {
   return false;
 }
 
-InputMethodKeyboardController*
-InputMethodChromeOS::GetInputMethodKeyboardController() {
+VirtualKeyboardController* InputMethodChromeOS::GetVirtualKeyboardController() {
   chromeos::input_method::InputMethodManager* manager =
       chromeos::input_method::InputMethodManager::Get();
   if (manager) {
-    if (auto* controller = manager->GetInputMethodKeyboardController())
+    if (auto* controller = manager->GetVirtualKeyboardController())
       return controller;
   }
-  return InputMethodBase::GetInputMethodKeyboardController();
+  return InputMethodBase::GetVirtualKeyboardController();
 }
 
 void InputMethodChromeOS::OnFocus() {

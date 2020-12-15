@@ -7,8 +7,8 @@
 #include "base/trace_event/trace_event.h"
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"
 #include "ui/base/ime/input_method.h"
-#include "ui/base/ime/input_method_keyboard_controller.h"
 #include "ui/base/ime/mojom/text_input_state.mojom.h"
+#include "ui/base/ime/virtual_keyboard_controller.h"
 #include "ui/events/event_utils.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -24,13 +24,13 @@ VirtualKeyboardControllerWin::VirtualKeyboardControllerWin(
 VirtualKeyboardControllerWin::~VirtualKeyboardControllerWin() {
   if (observers_registered_) {
     // De-register the input pane observers.
-    if (auto* controller = input_method_->GetInputMethodKeyboardController())
+    if (auto* controller = input_method_->GetVirtualKeyboardController())
       controller->RemoveObserver(this);
   }
 }
 
 void VirtualKeyboardControllerWin::HideAndNotifyKeyboardInset() {
-  if (auto* controller = input_method_->GetInputMethodKeyboardController()) {
+  if (auto* controller = input_method_->GetVirtualKeyboardController()) {
     if (virtual_keyboard_shown_) {
       // If the VK is already showing, then dismiss it first.
       controller->DismissVirtualKeyboard();
@@ -73,7 +73,7 @@ void VirtualKeyboardControllerWin::OnKeyboardHidden() {
 
 void VirtualKeyboardControllerWin::ShowVirtualKeyboard() {
   TRACE_EVENT0("vk", "VirtualKeyboardControllerWin::ShowVirtualKeyboard");
-  if (auto* controller = input_method_->GetInputMethodKeyboardController()) {
+  if (auto* controller = input_method_->GetVirtualKeyboardController()) {
     if (!virtual_keyboard_shown_) {
       virtual_keyboard_shown_ = true;
       input_method_->ShowVirtualKeyboardIfEnabled();
@@ -83,7 +83,7 @@ void VirtualKeyboardControllerWin::ShowVirtualKeyboard() {
 
 void VirtualKeyboardControllerWin::HideVirtualKeyboard() {
   TRACE_EVENT0("vk", "VirtualKeyboardControllerWin::HideVirtualKeyboard");
-  if (auto* controller = input_method_->GetInputMethodKeyboardController()) {
+  if (auto* controller = input_method_->GetVirtualKeyboardController()) {
     if (virtual_keyboard_shown_) {
       virtual_keyboard_shown_ = false;
       controller->DismissVirtualKeyboard();
@@ -104,7 +104,7 @@ void VirtualKeyboardControllerWin::UpdateTextInputState(
   // If there are no keyboard controllers or the pointer type is neither pen or
   // touch or accessibility has not set focus into an editable element, then
   // don't change the state of the keyboard.
-  auto* controller = input_method_->GetInputMethodKeyboardController();
+  auto* controller = input_method_->GetVirtualKeyboardController();
   is_manual_policy_ =
       state->vk_policy == ui::mojom::VirtualKeyboardPolicy::MANUAL;
   if (!controller ||
