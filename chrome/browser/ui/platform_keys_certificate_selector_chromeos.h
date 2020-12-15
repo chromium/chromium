@@ -22,7 +22,7 @@ typedef std::vector<scoped_refptr<X509Certificate>> CertificateList;
 
 namespace chromeos {
 
-typedef base::Callback<void(
+typedef base::OnceCallback<void(
     const scoped_refptr<net::X509Certificate>& selected_certificate)>
     CertificateSelectedCallback;
 
@@ -37,7 +37,7 @@ void ShowPlatformKeysCertificateSelector(
     content::WebContents* web_contents,
     const std::string& extension_id,
     const net::CertificateList& certificates,
-    const CertificateSelectedCallback& callback);
+    CertificateSelectedCallback callback);
 
 }  // namespace chromeos
 

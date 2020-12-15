@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/platform_keys/extension_platform_keys_service_factory.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -39,7 +40,7 @@ class DefaultSelectDelegate
 
   void Select(const std::string& extension_id,
               const net::CertificateList& certs,
-              const CertificateSelectedCallback& callback,
+              CertificateSelectedCallback callback,
               content::WebContents* web_contents,
               content::BrowserContext* context) override {
     CHECK(web_contents);
@@ -47,21 +48,21 @@ class DefaultSelectDelegate
         extensions::ExtensionRegistry::Get(context)->GetExtensionById(
             extension_id, extensions::ExtensionRegistry::ENABLED);
     if (!extension) {
-      callback.Run(nullptr /* no certificate selected */);
+      std::move(callback).Run(nullptr /* no certificate selected */);
       return;
     }
     ShowPlatformKeysCertificateSelector(
         web_contents, extension->short_name(), certs,
         // Don't call |callback| once this delegate is destructed, thus use a
         // WeakPtr.
-        base::Bind(&DefaultSelectDelegate::SelectedCertificate,
-                   weak_factory_.GetWeakPtr(), callback));
+        base::BindOnce(&DefaultSelectDelegate::SelectedCertificate,
+                       weak_factory_.GetWeakPtr(), std::move(callback)));
   }
 
   void SelectedCertificate(
-      const CertificateSelectedCallback& callback,
+      CertificateSelectedCallback callback,
       const scoped_refptr<net::X509Certificate>& selected_cert) {
-    callback.Run(selected_cert);
+    std::move(callback).Run(selected_cert);
   }
 
  private:

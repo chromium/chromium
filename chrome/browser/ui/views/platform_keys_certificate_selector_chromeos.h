@@ -29,7 +29,7 @@ class PlatformKeysCertificateSelector : public chrome::CertificateSelector {
   // |callback| must not be null.
   PlatformKeysCertificateSelector(const net::CertificateList& certificates,
                                   const std::string& extension_name,
-                                  const CertificateSelectedCallback& callback,
+                                  CertificateSelectedCallback callback,
                                   content::WebContents* web_contents);
   ~PlatformKeysCertificateSelector() override;
 

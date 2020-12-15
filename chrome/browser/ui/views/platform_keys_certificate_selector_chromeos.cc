@@ -56,12 +56,12 @@ net::ClientCertIdentityList CertificateListToIdentityList(
 PlatformKeysCertificateSelector::PlatformKeysCertificateSelector(
     const net::CertificateList& certificates,
     const std::string& extension_name,
-    const CertificateSelectedCallback& callback,
+    CertificateSelectedCallback callback,
     content::WebContents* web_contents)
     : CertificateSelector(CertificateListToIdentityList(certificates),
                           web_contents),
       extension_name_(extension_name),
-      callback_(callback) {
+      callback_(std::move(callback)) {
   DCHECK(!callback_.is_null());
   SetCancelCallback(base::BindOnce(
       [](PlatformKeysCertificateSelector* dialog) {
@@ -103,11 +103,10 @@ void ShowPlatformKeysCertificateSelector(
     content::WebContents* web_contents,
     const std::string& extension_name,
     const net::CertificateList& certificates,
-    const base::Callback<void(const scoped_refptr<net::X509Certificate>&)>&
-        callback) {
+    CertificateSelectedCallback callback) {
   PlatformKeysCertificateSelector* selector =
       new PlatformKeysCertificateSelector(certificates, extension_name,
-                                          callback, web_contents);
+                                          std::move(callback), web_contents);
   selector->Init();
   selector->Show();
 }

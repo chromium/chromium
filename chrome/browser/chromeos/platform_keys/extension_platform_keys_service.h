@@ -64,7 +64,7 @@ class ExtensionPlatformKeysService : public KeyedService {
     // certificates were requested and are not null.
     virtual void Select(const std::string& extension_id,
                         const net::CertificateList& certs,
-                        const CertificateSelectedCallback& callback,
+                        CertificateSelectedCallback callback,
                         content::WebContents* web_contents,
                         content::BrowserContext* context) = 0;
 
