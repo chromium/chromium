@@ -31,6 +31,36 @@ _IGNORE_WARNINGS = (
     r'does not contain `Foo`',
 )
 
+# Missing types for desugaring that do not affect the final output. Do not add
+# targets that we own to this list (e.g. any chromium targets).
+_IGNORE_DESUGAR_WARNINGS = (
+    r'Type `androidx.',
+    r'Type `com.barchart.',
+    r'Type `com.google.android.aidl.',
+    r'Type `com.google.android.apps.common.testing',
+    r'Type `com.google.android.gms.common.config.',
+    r'Type `com.google.android.gms.common.util.',
+    r'Type `com.google.android.gms.dynamic.',
+    r'Type `com.google.android.gms.dynamite.',
+    r'Type `com.google.android.libraries.stitch.util.Preconditions`',
+    r'Type `com.google.common.collect.',
+    r'Type `com.google.protobuf.',
+    r'Type `com.ning.',
+    r'Type `dalvik.system.VMStack`',
+    r'Type `difflib.DiffUtils`',
+    r'Type `gnu.io',
+    r'Type `java.',
+    r'Type `net.bytebuddy.',
+    r'Type `org.jboss.',
+    r'Type `net.jpountz',
+    r'Type `org.apache.',
+    r'Type `org.eclipse.',
+    r'Type `org.newsclub.net.unix.AFUNIXSocket`',
+    r'Type `org.objectweb.asm.',
+    r'Type `org.slf4j.',
+    r'Type `sun.misc.Unsafe`',
+)
+
 
 def _ParseArgs(args):
   args = build_utils.ExpandFileArgs(args)
@@ -142,14 +172,22 @@ def _ParseArgs(args):
 
 def CreateStderrFilter(show_desugar_default_interface_warnings):
   def filter_stderr(output):
-    patterns = _IGNORE_WARNINGS
-    # When using Bazel's Desugar tool to desugar lambdas and interface methods,
-    # we do not provide D8 with a classpath, which causes a lot of warnings
-    # from D8's default interface desugaring pass.
-    # Not having a classpath makes incremental dexing much more effective.
-    # D8 still does backported method desugaring.
+    patterns = list(_IGNORE_WARNINGS)
     if not show_desugar_default_interface_warnings:
-      patterns = list(patterns) + ['default or static interface methods']
+      # When using Bazel's Desugar tool to desugar lambdas and interface
+      # methods, we do not provide D8 with a classpath, which causes a lot of
+      # warnings from D8's default interface desugaring pass. Not having a
+      # classpath makes incremental dexing much more effective. D8 still does
+      # backported method desugaring.
+      patterns += ['default or static interface methods']
+    else:
+      # We pass the full transitive classpath to D8, but it still emits warnings
+      # in its default interface desugaring pass since we have many targets that
+      # are third-party prebuilt jars which do not specify most of their compile
+      # time deps. These deps generally do not affect the final output, but D8
+      # does not have Bazel's Desugar tool's --best_effort_tolerate_missing_deps
+      # flag, requiring us to manually curate an ignore list.
+      patterns += list(_IGNORE_DESUGAR_WARNINGS)
 
     combined_pattern = '|'.join(re.escape(p) for p in patterns)
     output = build_utils.FilterLines(output, combined_pattern)

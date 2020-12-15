@@ -1267,7 +1267,10 @@ if (enable_java_templates) {
         rebase_path(_desugared_library_keep_rule_output_path, root_build_dir),
       ]
     }
-    if (!enable_bazel_desugar) {
+    _ignore_desugar_missing_deps =
+        defined(invoker.ignore_desugar_missing_deps) &&
+        invoker.ignore_desugar_missing_deps
+    if (!_ignore_desugar_missing_deps && !enable_bazel_desugar) {
       _args += [ "--show-desugar-default-interface-warnings" ]
     }
 
@@ -1755,7 +1758,10 @@ if (enable_java_templates) {
               rebase_path(_desugar_jdk_libs_json, root_build_dir),
             ]
           }
-          if (!enable_bazel_desugar) {
+          _ignore_desugar_missing_deps =
+              defined(invoker.ignore_desugar_missing_deps) &&
+              invoker.ignore_desugar_missing_deps
+          if (!_ignore_desugar_missing_deps && !enable_bazel_desugar) {
             args += [ "--show-desugar-default-interface-warnings" ]
           }
         }
@@ -4081,6 +4087,7 @@ if (enable_java_templates) {
 
     if (_build_device_jar) {
       dex("${target_name}__dex") {
+        forward_variables_from(invoker, [ "ignore_desugar_missing_deps" ])
         input_class_jars = [ _device_processed_jar_path ]
         enable_desugar = _enable_desugar
 
