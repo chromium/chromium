@@ -9,9 +9,13 @@
 #include "base/files/file_util.h"
 #include "base/mac/foundation_util.h"
 #include "base/path_service.h"
+#include "base/run_loop.h"
+#include "base/strings/sys_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/version.h"
 #include "chrome/common/mac/launchd.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/launchd_util.h"
 #import "chrome/updater/mac/util.h"
 #include "chrome/updater/mac/xpc_service_names.h"
 #include "chrome/updater/prefs.h"
@@ -29,6 +33,17 @@ namespace test {
 #if !defined(COMPONENT_BUILD)
 
 namespace {
+
+void RemoveJobFromLaunchd(Launchd::Domain domain,
+                          Launchd::Type type,
+                          base::ScopedCFTypeRef<CFStringRef> name) {
+  EXPECT_TRUE(Launchd::GetInstance()->DeletePlist(domain, type, name))
+      << "Failed to delete plist for " << name;
+
+  // Return value is ignored, since RemoveJob returns false if the job already
+  // doesn't exist.
+  Launchd::GetInstance()->RemoveJob(base::SysCFStringRefToUTF8(name));
+}
 
 base::FilePath GetExecutablePath() {
   base::FilePath test_executable;
@@ -58,6 +73,19 @@ base::FilePath GetProductPath() {
       .AppendASCII(PRODUCT_FULLNAME_STRING);
 }
 
+void ExpectServiceAbsent(const std::string& service) {
+  bool success = false;
+  base::RunLoop loop;
+  PollLaunchctlList(service, LaunchctlPresence::kAbsent,
+                    base::TimeDelta::FromSeconds(7),
+                    base::BindLambdaForTesting([&](bool result) {
+                      success = result;
+                      loop.QuitClosure().Run();
+                    }));
+  loop.Run();
+  EXPECT_TRUE(success) << service << " is unexpectedly present.";
+}
+
 }  // namespace
 
 base::FilePath GetDataDirPath() {
@@ -85,6 +113,13 @@ void Clean() {
     [userDefaults
         removeObjectForKey:[NSString
                                stringWithUTF8String:kDevOverrideKeyUseCUP]];
+
+    // TODO(crbug.com/1096654): support machine case (Launchd::Domain::Local and
+    // Launchd::Type::Daemon).
+    RemoveJobFromLaunchd(Launchd::Domain::User, Launchd::Type::Agent,
+                         CopyUpdateServiceLaunchdName());
+    RemoveJobFromLaunchd(Launchd::Domain::User, Launchd::Type::Agent,
+                         CopyUpdateServiceInternalLaunchdName());
   }
 }
 
@@ -99,6 +134,8 @@ void ExpectClean() {
   EXPECT_FALSE(Launchd::GetInstance()->PlistExists(
       Launchd::User, Launchd::Agent, updater::CopyUpdateServiceLaunchdName()));
   EXPECT_FALSE(base::PathExists(GetDataDirPath()));
+  ExpectServiceAbsent(kUpdateServiceLaunchdName);
+  ExpectServiceAbsent(kUpdateServiceInternalLaunchdName);
 }
 
 void EnterTestMode() {

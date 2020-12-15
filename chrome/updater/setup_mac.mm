@@ -23,7 +23,8 @@ void SetupDone(base::OnceCallback<void(int)> callback, int result) {
     return;
   }
   PollLaunchctlList(
-      kUpdateServiceInternalLaunchdName, base::TimeDelta::FromSeconds(3),
+      kUpdateServiceInternalLaunchdName, LaunchctlPresence::kPresent,
+      base::TimeDelta::FromSeconds(3),
       base::BindOnce(
           [](base::OnceCallback<void(int)> callback, bool service_exists) {
             std::move(callback).Run(

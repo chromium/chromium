@@ -183,7 +183,7 @@ TEST_F(IntegrationTest, RegisterTestApp) {
   Uninstall();
 }
 
-TEST_F(IntegrationTest, DISABLED_UnregisterUninstalledApp) {
+TEST_F(IntegrationTest, UnregisterUninstalledApp) {
   RegisterTestApp();
   ExpectInstalled();
   ExpectActiveVersion(UPDATER_VERSION_STRING);

@@ -14,7 +14,8 @@ namespace updater {
 
 void AppInstall::WakeCandidateDone() {
   PollLaunchctlList(
-      kUpdateServiceLaunchdName, base::TimeDelta::FromSeconds(5),
+      kUpdateServiceLaunchdName, LaunchctlPresence::kPresent,
+      base::TimeDelta::FromSeconds(5),
       base::BindOnce([](scoped_refptr<AppInstall> installer,
                         bool unused) { installer->RegisterUpdater(); },
                      base::WrapRefCounted(this)));

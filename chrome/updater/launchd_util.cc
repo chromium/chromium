@@ -21,6 +21,7 @@ namespace updater {
 namespace {
 
 void PollLaunchctlListImpl(const std::string& service,
+                           LaunchctlPresence expectation,
                            base::TimeTicks deadline,
                            base::OnceCallback<void(bool)> callback) {
   if (base::TimeTicks::Now() > deadline) {
@@ -42,13 +43,14 @@ void PollLaunchctlListImpl(const std::string& service,
     std::move(callback).Run(false);
     return;
   }
-  if (exit_code == 0) {
+  if ((exit_code == 0 && expectation == LaunchctlPresence::kPresent) ||
+      (exit_code != 0 && expectation == LaunchctlPresence::kAbsent)) {
     std::move(callback).Run(true);
     return;
   }
   base::ThreadPool::PostDelayedTask(
       FROM_HERE, {base::WithBaseSyncPrimitives()},
-      base::BindOnce(&PollLaunchctlListImpl, service, deadline,
+      base::BindOnce(&PollLaunchctlListImpl, service, expectation, deadline,
                      std::move(callback)),
       base::TimeDelta::FromMilliseconds(500));
 }
@@ -56,12 +58,14 @@ void PollLaunchctlListImpl(const std::string& service,
 }  // namespace
 
 void PollLaunchctlList(const std::string& service,
+                       LaunchctlPresence expectation,
                        base::TimeDelta timeout,
                        base::OnceCallback<void(bool)> callback) {
   base::ThreadPool::PostTask(
       FROM_HERE, {base::WithBaseSyncPrimitives()},
       base::BindOnce(
-          &PollLaunchctlListImpl, service, base::TimeTicks::Now() + timeout,
+          &PollLaunchctlListImpl, service, expectation,
+          base::TimeTicks::Now() + timeout,
           base::BindOnce(
               [](scoped_refptr<base::TaskRunner> runner,
                  base::OnceCallback<void(bool)> callback, bool result) {
