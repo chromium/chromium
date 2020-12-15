@@ -73,10 +73,6 @@ constexpr int32_t kMaxPendingBuffers = 8;
 // never completed, or (c) we're hopelessly behind.
 constexpr int32_t kAbsoluteMaxPendingBuffers = 32;
 
-// Maximum number of consecutive frames that can fail to decode before
-// requesting fallback to software decode.
-constexpr int32_t kMaxConsecutiveErrors = 5;
-
 // Map webrtc::VideoCodecType to media::VideoCodec.
 media::VideoCodec ToVideoCodec(webrtc::VideoCodecType video_codec_type) {
   switch (video_codec_type) {
@@ -445,12 +441,8 @@ int32_t RTCVideoDecoderStreamAdapter::Decode(
       // drop any other non-key frame.
       key_frame_required_ = true;
 
-      // If we hit the limit too many times, or if we hit the absolute limit,
-      // then give up.
-      // TODO(crbug.com/1150100): `consecutive_error_count_` doesn't measure
-      // this now.  Probably the whole case can be removed.
-      if (++consecutive_error_count_ > kMaxConsecutiveErrors ||
-          pending_buffer_count_ >= kAbsoluteMaxPendingBuffers) {
+      // If we hit the absolute limit, then give up.
+      if (pending_buffer_count_ >= kAbsoluteMaxPendingBuffers) {
         has_error_ = true;
         PostCrossThreadTask(
             *media_task_runner_.get(), FROM_HERE,
@@ -668,7 +660,6 @@ void RTCVideoDecoderStreamAdapter::OnFrameReady(
   if (pending_buffer_count_ > 0)
     pending_buffer_count_--;
   decode_complete_callback_->Decoded(rtc_frame);
-  consecutive_error_count_ = 0;
   AdjustQueueLength_Locked();
 }
 

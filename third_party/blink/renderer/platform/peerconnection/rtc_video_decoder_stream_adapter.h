@@ -157,7 +157,6 @@ class PLATFORM_EXPORT RTCVideoDecoderStreamAdapter
 
   // Shared members.
   base::Lock lock_;
-  int32_t consecutive_error_count_ GUARDED_BY(lock_) = 0;
   bool has_error_ GUARDED_BY(lock_) = false;
   // Current maximum number of in-flight undecoded frames.
   size_t max_pending_buffer_count_ GUARDED_BY(lock_);
