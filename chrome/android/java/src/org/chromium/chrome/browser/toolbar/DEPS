@@ -2,8 +2,10 @@ noparent = True
 
 include_rules = [
   "-chrome/android/java/src/org/chromium/chrome/browser",
+  "+base/android/java/src/org/chromium/base/supplier",
   "+chrome/android/java/src/org/chromium/chrome/browser/toolbar",
   "+chrome/android/java/src/org/chromium/chrome/browser/omnibox",
+  "+ui/android/java/src/org/chromium/ui/base",
 ]
 
 specific_include_rules = {

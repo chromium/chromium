@@ -330,8 +330,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (mActivity == null) return;
         mToolbarButtonIphTabSupplier = new ObservableSupplierImpl<>();
         mToolbarButtonInProductHelpController =
-                new ToolbarButtonInProductHelpController(mActivity, mAppMenuCoordinator,
-                        mActivity.getLifecycleDispatcher(), mToolbarButtonIphTabSupplier);
+                new ToolbarButtonInProductHelpController(mActivity, mActivity.getWindowAndroid(),
+                        mAppMenuCoordinator, mActivity.getLifecycleDispatcher(),
+                        mToolbarButtonIphTabSupplier, mActivity::isInOverviewMode,
+                        mToolbarManager.getMenuButtonView(), mToolbarManager.getSecurityIconView());
         ActivityTabProvider activityTabProvider = mActivity.getActivityTabProvider();
         mToolbarButtonIphTabObserver = new ActivityTabTabObserver(activityTabProvider) {
             @Override

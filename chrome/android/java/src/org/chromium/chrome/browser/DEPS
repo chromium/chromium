@@ -339,9 +339,6 @@ specific_include_rules = {
   "ReturnToChromeExperimentsUtil\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
-  "ToolbarButtonInProductHelpController\.java": [
-    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
-  ],
   "CustomTabToolbar\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
