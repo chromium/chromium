@@ -327,7 +327,9 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             mTitleBar.setLayoutParams(lp);
             mTitleBar.setTextSize(TypedValue.COMPLEX_UNIT_PX,
                     getResources().getDimension(R.dimen.custom_tabs_title_text_size));
-            mLocationBar.updateStatusIcon();
+            // Refresh the status icon and url bar.
+            mLocationBarModel.notifyUrlChanged();
+            mLocationBarModel.notifySecurityStateChanged();
         } else {
             assert false : "Unreached state";
         }
@@ -370,7 +372,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 setUrlBarHidden(false);
             }
         }
-        mLocationBar.updateStatusIcon();
+        mLocationBarModel.notifySecurityStateChanged();
     }
 
     private void updateButtonsTint() {
@@ -568,7 +570,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         boolean useDarkColors = !ColorUtils.shouldUseLightForegroundOnBackground(backgroundColor);
         if (mUseDarkColors == useDarkColors) return;
         mUseDarkColors = useDarkColors;
-        mLocationBar.onUseDarkColorsChanged();
+        mLocationBar.updateUseDarkColors();
     }
 
     @Override
@@ -662,7 +664,10 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                     new UrlBarCoordinator(urlBar, /*windowDelegate=*/null, actionModeCallback,
                             /*focusChangeCallback=*/
                             (unused) -> {}, this, new NoOpkeyboardVisibilityDelegate());
-            onPrimaryColorChanged();
+            updateUseDarkColors();
+            updateSecurityIcon();
+            updateProgressBarColors();
+            updateUrlBar();
         }
 
         public void onNativeLibraryReady() {
@@ -699,18 +704,74 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         @Override
         public void gestureDetected(boolean isLongPress) {}
 
+        // LocationBarDataProvider.Observer implementation
+        // Using the default empty onIncognitoStateChanged.
+        // Using the default empty onNtpStartedLoading.
+
         @Override
-        public void setShowTitle(boolean showTitle) {
-            if (showTitle) {
-                mState = STATE_DOMAIN_AND_TITLE;
-                mAnimDelegate.prepareTitleAnim(mUrlBar, mTitleBar);
-            } else {
-                mState = STATE_DOMAIN_ONLY;
-            }
+        public void onPrimaryColorChanged() {
+            updateUseDarkColors();
+            updateSecurityIcon();
+            updateProgressBarColors();
+        }
+
+        @Override
+        public void onSecurityStateChanged() {
+            updateSecurityIcon();
         }
 
         @Override
         public void onTitleChanged() {
+            updateTitleBar();
+        }
+
+        @Override
+        public void onUrlChanged() {
+            updateUrlBar();
+        }
+
+        @Override
+        public void updateVisualsForState() {
+            updateSecurityIcon();
+            updateProgressBarColors();
+            updateUrlBar();
+        }
+
+        private void updateProgressBarColors() {
+            final ToolbarProgressBar progressBar = getProgressBar();
+            if (progressBar == null) return;
+            final Resources resources = getResources();
+            final int backgroundColor = getBackground().getColor();
+            if (ToolbarColors.isUsingDefaultToolbarColor(
+                        resources, /*isIncognito=*/false, backgroundColor)) {
+                progressBar.setBackgroundColor(
+                        ApiCompatibilityUtils.getColor(resources, R.color.progress_bar_background));
+                progressBar.setForegroundColor(
+                        ApiCompatibilityUtils.getColor(resources, R.color.progress_bar_foreground));
+            } else {
+                progressBar.setThemeColor(backgroundColor, /*isIncognito=*/false);
+            }
+        }
+
+        private void updateSecurityIcon() {
+            if (mState == STATE_TITLE_ONLY) return;
+
+            int securityIconResource = mLocationBarDataProvider.getSecurityIconResource(
+                    DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext()));
+            if (securityIconResource != 0) {
+                ColorStateList colorStateList = AppCompatResources.getColorStateList(
+                        getContext(), mLocationBarDataProvider.getSecurityIconColorStateList());
+                ApiCompatibilityUtils.setImageTintList(mSecurityButton, colorStateList);
+            }
+            mAnimDelegate.updateSecurityButton(securityIconResource);
+
+            int contentDescriptionId =
+                    mLocationBarDataProvider.getSecurityIconContentDescriptionResourceId();
+            String contentDescription = getContext().getString(contentDescriptionId);
+            mSecurityButton.setContentDescription(contentDescription);
+        }
+
+        private void updateTitleBar() {
             String title = mLocationBarDataProvider.getTitle();
             if (!mLocationBarDataProvider.hasTab() || TextUtils.isEmpty(title)) {
                 mTitleBar.setText("");
@@ -731,8 +792,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             mTitleBar.setText(title);
         }
 
-        @Override
-        public void onUrlChanged() {
+        private void updateUrlBar() {
             Tab tab = getCurrentTab();
             if (tab == null) {
                 mUrlCoordinator.setUrlBarData(
@@ -744,7 +804,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             String url = publisherUrl != null ? publisherUrl : tab.getUrlString().trim();
             if (mState == STATE_TITLE_ONLY) {
                 if (!TextUtils.isEmpty(mLocationBarDataProvider.getTitle())) {
-                    onTitleChanged();
+                    updateTitleBar();
                 }
             }
 
@@ -793,23 +853,11 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                     UrlBar.ScrollType.SCROLL_TO_TLD, SelectionState.SELECT_ALL);
         }
 
-        @Override
-        public void onIncognitoStateChanged() {}
-
-        @Override
-        public void onNtpStartedLoading() {}
-
-        @Override
-        public void onPrimaryColorChanged() {
-            onUseDarkColorsChanged();
-            updateProgressBarColors();
-        }
-
-        private void onUseDarkColorsChanged() {
+        private void updateUseDarkColors() {
             updateButtonsTint();
             if (mUrlCoordinator.setUseDarkTextColors(mUseDarkColors)) {
                 // Update the URL to make it use the new color scheme.
-                onUrlChanged();
+                updateUrlBar();
             }
 
             mTitleBar.setTextColor(ApiCompatibilityUtils.getColor(getResources(),
@@ -818,53 +866,14 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         }
 
         @Override
-        public void updateLoadingState(boolean updateUrl) {
-            if (updateUrl) onUrlChanged();
-            updateStatusIcon();
-        }
-
-        @Override
-        public void updateVisualsForState() {
-            updateStatusIcon();
-            updateProgressBarColors();
-        }
-
-        private void updateProgressBarColors() {
-            final ToolbarProgressBar progressBar = getProgressBar();
-            if (progressBar == null) return;
-            final Resources resources = getResources();
-            final int backgroundColor = getBackground().getColor();
-            if (ToolbarColors.isUsingDefaultToolbarColor(
-                        resources, /*isIncognito=*/false, backgroundColor)) {
-                progressBar.setBackgroundColor(
-                        ApiCompatibilityUtils.getColor(resources, R.color.progress_bar_background));
-                progressBar.setForegroundColor(
-                        ApiCompatibilityUtils.getColor(resources, R.color.progress_bar_foreground));
+        public void setShowTitle(boolean showTitle) {
+            if (showTitle) {
+                mState = STATE_DOMAIN_AND_TITLE;
+                mAnimDelegate.prepareTitleAnim(mUrlBar, mTitleBar);
             } else {
-                progressBar.setThemeColor(backgroundColor, /*isIncognito=*/false);
+                mState = STATE_DOMAIN_ONLY;
             }
-        }
-
-        @Override
-        public void updateStatusIcon() {
-            if (mState == STATE_TITLE_ONLY) return;
-
-            int securityIconResource = mLocationBarDataProvider.getSecurityIconResource(
-                    DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext()));
-            if (securityIconResource != 0) {
-                ColorStateList colorStateList = AppCompatResources.getColorStateList(
-                        getContext(), mLocationBarDataProvider.getSecurityIconColorStateList());
-                ApiCompatibilityUtils.setImageTintList(mSecurityButton, colorStateList);
-            }
-            mAnimDelegate.updateSecurityButton(securityIconResource);
-
-            int contentDescriptionId =
-                    mLocationBarDataProvider.getSecurityIconContentDescriptionResourceId();
-            String contentDescription = getContext().getString(contentDescriptionId);
-            mSecurityButton.setContentDescription(contentDescription);
-
-            onUrlChanged();
-            mUrlBar.invalidate();
+            mLocationBarModel.notifyTitleChanged();
         }
 
         @Override

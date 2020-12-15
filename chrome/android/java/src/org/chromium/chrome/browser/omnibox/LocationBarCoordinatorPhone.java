@@ -8,6 +8,8 @@ import android.animation.Animator;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
+
 import java.util.List;
 
 /**
@@ -15,14 +17,18 @@ import java.util.List;
  */
 public class LocationBarCoordinatorPhone implements LocationBarCoordinator.SubCoordinator {
     private LocationBarPhone mLocationBarPhone;
+    private StatusCoordinator mStatusCoordinator;
 
-    public LocationBarCoordinatorPhone(LocationBarPhone phoneLayout) {
+    public LocationBarCoordinatorPhone(
+            LocationBarPhone phoneLayout, StatusCoordinator statusCoordinator) {
         mLocationBarPhone = phoneLayout;
+        mStatusCoordinator = statusCoordinator;
     }
 
     @Override
     public void destroy() {
         mLocationBarPhone = null;
+        mStatusCoordinator = null;
     }
 
     /**
@@ -54,9 +60,15 @@ public class LocationBarCoordinatorPhone implements LocationBarCoordinator.SubCo
      * @param hasFocus Whether the URL field has gained focus.
      * @param shouldShowKeyboard Whether the keyboard should be shown. This value should be the same
      *         as hasFocus by default.
+     * @param shouldShowInOverviewMode Whether the location bar should be shown when in overview
+     *         mode.
      */
-    public void finishUrlFocusChange(boolean hasFocus, boolean shouldShowKeyboard) {
+    public void finishUrlFocusChange(
+            boolean hasFocus, boolean shouldShowKeyboard, boolean shouldShowInOverviewMode) {
         mLocationBarPhone.finishUrlFocusChange(hasFocus, shouldShowKeyboard);
+        if (shouldShowInOverviewMode) {
+            mStatusCoordinator.onSecurityStateChanged();
+        }
     }
 
     /**

@@ -181,15 +181,6 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
         // This method is only used in CustomTabToolbar.
     }
 
-    /**
-     * Update the location bar visuals based on a loading state change.
-     * @param updateUrl Whether to update the URL as a result of this call.
-     */
-    /*package */ void updateLoadingState(boolean updateUrl) {
-        if (updateUrl) mLocationBarLayout.setUrl(mLocationBarDataProvider.getCurrentUrl());
-        mStatusCoordinator.updateStatusIcon();
-    }
-
     /*package */ void showUrlBarCursorWithoutFocusAnimations() {
         if (mLocationBarLayout.isUrlBarFocused() || mLocationBarLayout.didFocusUrlFromFakebox()) {
             return;
@@ -216,13 +207,6 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
         } else {
             mLocationBarLayout.setUrl(mLocationBarDataProvider.getCurrentUrl());
         }
-    }
-
-    /** Updates the security icon displayed in the LocationBar. */
-    /*package */ void updateStatusIcon() {
-        mStatusCoordinator.updateStatusIcon();
-        // Update the URL in case the scheme change triggers a URL emphasis change.
-        mLocationBarLayout.setUrl(mLocationBarDataProvider.getCurrentUrl());
     }
 
     /* package */ void onUrlTextChanged() {
@@ -328,6 +312,7 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
         return mLocationBarLayout.didFocusUrlFromQueryTiles();
     }
 
+    /** Updates the visibility of the buttons inside the location bar. */
     /* package */ void updateButtonVisibility() {
         mLocationBarLayout.updateButtonVisibility();
     }
@@ -365,17 +350,8 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
     }
 
     // LocationBarData.Observer implementation
-
-    @Override
-    public void onTitleChanged() {}
-
-    @Override
-    public void onUrlChanged() {
-        mLocationBarLayout.setUrl(mLocationBarDataProvider.getCurrentUrl());
-        // Profile may be null if switching to a tab that has not yet been initialized.
-        Profile profile = mProfileSupplier.get();
-        if (profile != null && mOmniboxPrerender != null) mOmniboxPrerender.clear(profile);
-    }
+    // Using the default empty onSecurityStateChanged.
+    // Using the default empty onTitleChanged.
 
     @Override
     public void onIncognitoStateChanged() {
@@ -390,6 +366,25 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
     @Override
     public void onPrimaryColorChanged() {
         mLocationBarLayout.onPrimaryColorChanged();
+    }
+
+    @Override
+    public void onUrlChanged() {
+        updateUrl();
+        updateOmniboxPrerender();
+        updateButtonVisibility();
+    }
+
+    private void updateUrl() {
+        mLocationBarLayout.setUrl(mLocationBarDataProvider.getCurrentUrl());
+    }
+
+    private void updateOmniboxPrerender() {
+        if (mOmniboxPrerender == null) return;
+        // Profile may be null if switching to a tab that has not yet been initialized.
+        Profile profile = mProfileSupplier.get();
+        if (profile == null) return;
+        mOmniboxPrerender.clear(profile);
     }
 
     // FakeboxDelegate implementation.

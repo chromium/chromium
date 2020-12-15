@@ -168,6 +168,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         notifyTitleChanged();
         notifyUrlChanged();
         notifyPrimaryColorChanged();
+        notifySecurityStateChanged();
     }
 
     @Override
@@ -553,6 +554,12 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         }
 
         return ThemeUtils.getThemedToolbarIconTintRes(false);
+    }
+
+    public void notifySecurityStateChanged() {
+        for (LocationBarDataProvider.Observer observer : mLocationBarDataObservers) {
+            observer.onSecurityStateChanged();
+        }
     }
 
     /** @return The formatted URL suitable for editing. */

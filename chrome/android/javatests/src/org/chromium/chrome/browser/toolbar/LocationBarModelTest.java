@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.toolbar;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -28,6 +29,7 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtils;
@@ -196,6 +198,19 @@ public class LocationBarModelTest {
         } else {
             verify(observer, times(0)).onIncognitoStateChanged();
         }
+    }
+
+    @Test
+    @MediumTest
+    public void testOnSecurityStateChanged() {
+        LocationBarModel locationBarModel =
+                mActivityTestRule.getActivity().getToolbarManager().getLocationBarModelForTesting();
+        LocationBarDataProvider.Observer observer = mock(LocationBarDataProvider.Observer.class);
+        TestThreadUtils.runOnUiThreadBlocking(() -> { locationBarModel.addObserver(observer); });
+
+        mActivityTestRule.loadUrl(UrlUtils.encodeHtmlDataUri("test content"));
+
+        verify(observer, atLeast(1)).onSecurityStateChanged();
     }
 
     private void assertDisplayAndEditText(

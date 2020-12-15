@@ -512,7 +512,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 if (mLocationBarModel.getTab() == null) return;
 
                 assert tab == mLocationBarModel.getTab();
-                mLocationBar.updateStatusIcon();
+                mLocationBarModel.notifySecurityStateChanged();
                 mLocationBarModel.notifyUrlChanged();
             }
 
@@ -565,13 +565,14 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                     mLocationBar.showUrlBarCursorWithoutFocusAnimations();
                 }
                 // Paint preview status might have been changed. Update the omnibox chip.
-                mLocationBar.updateStatusIcon();
+                mLocationBarModel.notifySecurityStateChanged();
             }
 
             @Override
             public void onWebContentsSwapped(Tab tab, boolean didStartLoad, boolean didFinishLoad) {
                 if (!didStartLoad) return;
-                mLocationBar.updateLoadingState(true);
+                mLocationBarModel.notifyUrlChanged();
+                mLocationBarModel.notifySecurityStateChanged();
             }
 
             @Override
@@ -623,7 +624,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                     // Some previews are not fully decided until the page commits. If this
                     // is a preview, update the security icon which will also update the verbose
                     // status view to make sure the "Lite" badge is displayed.
-                    mLocationBar.updateStatusIcon();
+                    mLocationBarModel.notifySecurityStateChanged();
                     PreviewsUma.recordLitePageAtCommit(
                             PreviewsAndroidBridge.getInstance().getPreviewsType(
                                     tab.getWebContents()),
@@ -1642,8 +1643,11 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     }
 
     private void updateTabLoadingState(boolean updateUrl) {
-        mLocationBar.updateLoadingState(updateUrl);
-        if (updateUrl) updateButtonStatus();
+        mLocationBarModel.notifySecurityStateChanged();
+        if (updateUrl) {
+            mLocationBarModel.notifyUrlChanged();
+            updateButtonStatus();
+        }
     }
 
     /**
@@ -1695,7 +1699,13 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         mControlContainer.setLayoutParams(layoutParams);
     }
 
-    /** Return the location bar model for testing purposes. */
+    /** Returns {@link LocationBar} for access in tests. */
+    @VisibleForTesting
+    public LocationBar getLocationBarForTesting() {
+        return mLocationBar;
+    }
+
+    /** Returns {@link LocationBarModel} for access in tests. */
     @VisibleForTesting
     public LocationBarModel getLocationBarModelForTesting() {
         return mLocationBarModel;

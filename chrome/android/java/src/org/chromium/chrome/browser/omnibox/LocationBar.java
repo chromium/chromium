@@ -35,13 +35,6 @@ public interface LocationBar extends Destroyable {
     void setShowTitle(boolean showTitle);
 
     /**
-     * Update the visuals based on a loading state change.
-     *
-     * @param updateUrl Whether to update the URL as a result of the this call.
-     */
-    void updateLoadingState(boolean updateUrl);
-
-    /**
      * Triggers the cursor to be visible in the UrlBar without triggering any of the focus animation
      * logic.
      *
@@ -57,9 +50,6 @@ public interface LocationBar extends Destroyable {
      * change the focus state of the location bar.
      */
     void revertChanges();
-
-    /** Updates the security icon displayed in the LocationBar. */
-    void updateStatusIcon();
 
     /** Returns {@link ViewGroup} that this container holds. */
     View getContainerView();

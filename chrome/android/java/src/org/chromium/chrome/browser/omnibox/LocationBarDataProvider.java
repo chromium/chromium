@@ -30,18 +30,20 @@ public interface LocationBarDataProvider {
      * consumer will query the data it cares about.
      */
     interface Observer {
-        void onIncognitoStateChanged();
-        void onNtpStartedLoading();
+        default void onIncognitoStateChanged(){};
+        default void onNtpStartedLoading(){};
 
         /**
          * Notifies about a possible change of the value of {@link #getPrimaryColor()}, or {@link
          * #isUsingBrandColor()}.
          */
-        void onPrimaryColorChanged();
-        void onTitleChanged();
-        void onUrlChanged();
-        // TODO(https://crbug.com/1139481): Add methods for other LocationBarDataProvider
-        // data, e.g. security state.
+        default void onPrimaryColorChanged(){};
+
+        /** Notifies about possible changes to values affecting the status icon. */
+        default void onSecurityStateChanged(){};
+
+        default void onTitleChanged(){};
+        default void onUrlChanged(){};
     }
 
     /** Adds an observer of changes to LocationBarDataProvider's data. */
@@ -77,15 +79,14 @@ public interface LocationBarDataProvider {
 
     /**
      * Returns whether the LocationBar's embedder is currently being displayed in overview mode and
-     *         showing the
-     *  omnibox.
+     * showing the omnibox.
      */
     boolean isInOverviewAndShowingOmnibox();
 
     /** Returns the current {@link Profile}. */
     Profile getProfile();
 
-    /** Returns the contents of the {@link org.chromium.chrome.browser.omnibox.UrlBar}. */
+    /** Returns the contents of the {@link UrlBar}. */
     UrlBarData getUrlBarData();
 
     /** Returns the title of the current page, or the empty string if there is currently no tab. */
@@ -114,13 +115,15 @@ public interface LocationBarDataProvider {
 
     /**
      * Returns the current page classification.
+     *
      * @param isFocusedFromFakebox If the omnibox focus originated from the fakebox.
-     * @return Integer value representing the OmniboxEventProto.PageClassification.
+     * @return Integer value representing the {@code OmniboxEventProto.PageClassification}.
      */
     int getPageClassification(boolean isFocusedFromFakebox);
 
     /**
      * Returns the resource ID of the icon that should be displayed or 0 if no icon should be shown.
+     *
      * @param isTablet Whether or not the display context of the icon is a tablet.
      */
     @DrawableRes

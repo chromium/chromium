@@ -7,8 +7,10 @@ package org.chromium.chrome.browser.omnibox.status;
 import android.app.Activity;
 import android.content.res.Resources;
 import android.view.View;
+
 import androidx.annotation.DrawableRes;
 import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
@@ -29,7 +31,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * A component for displaying a status icon (e.g. security icon or navigation icon) and optional
  * verbose status text.
  */
-public class StatusCoordinator implements View.OnClickListener {
+public class StatusCoordinator implements View.OnClickListener, LocationBarDataProvider.Observer {
     // TODO(crbug.com/1109369): Do not store the StatusView
     private final StatusView mStatusView;
     private final StatusMediator mMediator;
@@ -91,6 +93,8 @@ public class StatusCoordinator implements View.OnClickListener {
         // glitch on tablet devices. This glitch would be typically seen upon launch of app, right
         // before the landing page is presented to the user.
         updateStatusIcon();
+        updateVerboseStatusVisibility();
+        mLocationBarDataProvider.addObserver(this);
     }
 
     /**
@@ -100,6 +104,7 @@ public class StatusCoordinator implements View.OnClickListener {
      */
     public void setLocationBarDataProviderForTesting(
             LocationBarDataProvider locationBarDataProvider) {
+        mLocationBarDataProvider.removeObserver(this);
         mLocationBarDataProvider = locationBarDataProvider;
         mMediator.setLocationBarDataProviderForTesting(mLocationBarDataProvider);
         mStatusView.setLocationBarDataProvider(mLocationBarDataProvider);
@@ -107,6 +112,8 @@ public class StatusCoordinator implements View.OnClickListener {
         // glitch on tablet devices. This glitch would be typically seen upon launch of app, right
         // before the landing page is presented to the user.
         updateStatusIcon();
+        updateVerboseStatusVisibility();
+        mLocationBarDataProvider.addObserver(this);
     }
 
     /** Signals that native initialization has completed. */
@@ -150,16 +157,26 @@ public class StatusCoordinator implements View.OnClickListener {
         updateStatusIcon();
     }
 
+    // LocationBarData.Observer implementation
+    // Using the default empty onIncognitoStateChanged.
+    // Using the default empty onNtpStartedLoading.
+    // Using the default empty onPrimaryColorChanged.
+    // Using the default empty onTitleChanged.
+    // Using the default empty onUrlChanged.
+
+    @Override
+    public void onSecurityStateChanged() {
+        updateStatusIcon();
+        updateVerboseStatusVisibility();
+    }
+
     /** Updates the security icon displayed in the LocationBar. */
-    public void updateStatusIcon() {
+    private void updateStatusIcon() {
         mMediator.setSecurityIconResource(
                 mLocationBarDataProvider.getSecurityIconResource(mIsTablet));
         mMediator.setSecurityIconTint(mLocationBarDataProvider.getSecurityIconColorStateList());
         mMediator.setSecurityIconDescription(
                 mLocationBarDataProvider.getSecurityIconContentDescriptionResourceId());
-
-        // TODO(ender): drop these during final cleanup round.
-        updateVerboseStatusVisibility();
     }
 
     /** Returns the view displaying the security icon. */
@@ -199,8 +216,6 @@ public class StatusCoordinator implements View.OnClickListener {
      * omnibox.
      */
     private void updateVerboseStatusVisibility() {
-        // TODO(ender): turn around logic for LocationBarDataProvider to offer
-        // notifications rather than polling for these attributes.
         mMediator.setPageSecurityLevel(mLocationBarDataProvider.getSecurityLevel());
         mMediator.setPageIsOffline(mLocationBarDataProvider.isOfflinePage());
         mMediator.setPageIsPreview(mLocationBarDataProvider.isPreview());
@@ -287,5 +302,10 @@ public class StatusCoordinator implements View.OnClickListener {
      */
     public void onDefaultMatchClassified(boolean defaultMatchIsSearch) {
         mMediator.updateLocationBarIconForDefaultMatchCategory(defaultMatchIsSearch);
+    }
+
+    public void destroy() {
+        mLocationBarDataProvider.removeObserver(this);
+        mLocationBarDataProvider = null;
     }
 }

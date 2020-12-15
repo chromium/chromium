@@ -114,15 +114,7 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
         mWindowDelegate = windowDelegate;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mActivityLifecycleDispatcher.register(this);
-
         mAutocompleteAnchorView = autocompleteAnchorView;
-
-        if (locationBarLayout instanceof LocationBarPhone) {
-            mSubCoordinator = new LocationBarCoordinatorPhone((LocationBarPhone) locationBarLayout);
-        } else if (locationBarLayout instanceof LocationBarTablet) {
-            mSubCoordinator =
-                    new LocationBarCoordinatorTablet((LocationBarTablet) locationBarLayout);
-        }
 
         mUrlBar = mLocationBarLayout.findViewById(R.id.url_bar);
         OneshotSupplierImpl<AssistantVoiceSearchService> assistantVoiceSearchSupplier =
@@ -133,6 +125,7 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
                 assistantVoiceSearchSupplier, profileObservableSupplier,
                 PrivacyPreferencesManagerImpl.getInstance(), overrideUrlLoadingDelegate,
                 LocaleManager.getInstance(), mTemplateUrlServiceSupplier);
+
         mUrlCoordinator =
                 new UrlBarCoordinator((UrlBar) mUrlBar, windowDelegate, actionModeCallback,
                         mCallbackController.makeCancelable(mLocationBarMediator::onUrlFocusChange),
@@ -163,6 +156,14 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
         mLocationBarLayout.initialize(mAutocompleteCoordinator, mUrlCoordinator, mStatusCoordinator,
                 locationBarDataProvider, windowDelegate, windowAndroid,
                 mLocationBarMediator.getVoiceRecognitionHandler(), assistantVoiceSearchSupplier);
+
+        if (locationBarLayout instanceof LocationBarPhone) {
+            mSubCoordinator = new LocationBarCoordinatorPhone(
+                    (LocationBarPhone) locationBarLayout, mStatusCoordinator);
+        } else if (locationBarLayout instanceof LocationBarTablet) {
+            mSubCoordinator =
+                    new LocationBarCoordinatorTablet((LocationBarTablet) locationBarLayout);
+        }
     }
 
     @Override
@@ -181,6 +182,7 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
         mLocationBarLayout.removeUrlFocusChangeListener(mAutocompleteCoordinator);
         mAutocompleteCoordinator.destroy();
         mAutocompleteCoordinator = null;
+        mStatusCoordinator.destroy();
         mStatusCoordinator = null;
         mLocationBarLayout.destroy();
         mLocationBarLayout = null;
@@ -223,11 +225,6 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
     }
 
     @Override
-    public void updateLoadingState(boolean updateUrl) {
-        mLocationBarMediator.updateLoadingState(updateUrl);
-    }
-
-    @Override
     public void showUrlBarCursorWithoutFocusAnimations() {
         mLocationBarMediator.showUrlBarCursorWithoutFocusAnimations();
     }
@@ -240,11 +237,6 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
     @Override
     public void revertChanges() {
         mLocationBarMediator.revertChanges();
-    }
-
-    @Override
-    public void updateStatusIcon() {
-        mLocationBarMediator.updateStatusIcon();
     }
 
     @Override

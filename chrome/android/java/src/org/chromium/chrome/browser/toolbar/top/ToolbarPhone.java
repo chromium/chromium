@@ -2137,13 +2137,10 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
                     mLayoutLocationBarInFocusedMode = false;
                     requestLayout();
                 }
-                mLocationBar.getPhoneCoordinator().finishUrlFocusChange(
-                        hasFocus, shouldShowKeyboard);
+                mLocationBar.getPhoneCoordinator().finishUrlFocusChange(hasFocus,
+                        shouldShowKeyboard,
+                        getToolbarDataProvider().shouldShowLocationBarInOverviewMode());
                 mUrlFocusChangeInProgress = false;
-
-                if (getToolbarDataProvider().shouldShowLocationBarInOverviewMode()) {
-                    mLocationBar.updateStatusIcon();
-                }
             }
         });
         mUrlFocusLayoutAnimator.start();
