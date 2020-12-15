@@ -436,18 +436,6 @@
       },
     },
   },
-  'boringssl_crypto_tests': {
-    'remove_from': [
-      # https://crbug.com/1054545
-      'Fuchsia ARM64',
-    ],
-  },
-  'boringssl_ssl_tests': {
-    'remove_from': [
-      # https://crbug.com/1054545
-      'Fuchsia ARM64',
-    ],
-  },
   'breakpad_unittests': {
     'modifications': {
       'android-asan': {
