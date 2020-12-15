@@ -92,7 +92,7 @@ bool AccessibilityNodeInfoDataWrapper::IsImportantInAndroid() const {
   return IsVirtualNode() || GetProperty(AXBooleanProperty::IMPORTANCE);
 }
 
-bool AccessibilityNodeInfoDataWrapper::CanBeAccessibilityFocused() const {
+bool AccessibilityNodeInfoDataWrapper::IsFocusableInFullFocusMode() const {
   if (!IsAccessibilityFocusableContainer() && !HasAccessibilityFocusableText())
     return false;
 

@@ -712,7 +712,7 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, ControlIsFocusable) {
       data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
   ASSERT_EQ(ax::mojom::Role::kSlider, data.role);
 
-  ASSERT_TRUE(wrapper.CanBeAccessibilityFocused());
+  ASSERT_TRUE(wrapper.IsFocusableInFullFocusMode());
 }
 
 TEST_F(AccessibilityNodeInfoDataWrapperTest, FocusAndClickAction) {

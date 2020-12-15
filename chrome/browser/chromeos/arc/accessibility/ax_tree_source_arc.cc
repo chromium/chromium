@@ -328,7 +328,7 @@ void AXTreeSourceArc::ComputeEnclosingBoundsInternal(
 
   if (!info_data->IsVisibleToUser())
     return;
-  if (info_data->CanBeAccessibilityFocused()) {
+  if (info_data->IsFocusableInFullFocusMode()) {
     // Only consider nodes that can possibly be accessibility focused.
     computed_bounds->Union(info_data->GetBounds());
     return;
@@ -342,18 +342,20 @@ void AXTreeSourceArc::ComputeEnclosingBoundsInternal(
   return;
 }
 
-AccessibilityInfoDataWrapper* AXTreeSourceArc::FindFirstFocusableNode(
+AccessibilityInfoDataWrapper*
+AXTreeSourceArc::FindFirstFocusableNodeInFullFocusMode(
     AccessibilityInfoDataWrapper* info_data) const {
   if (!IsValid(info_data))
     return nullptr;
 
-  if (info_data->IsVisibleToUser() && info_data->CanBeAccessibilityFocused())
+  if (info_data->IsVisibleToUser() && info_data->IsFocusableInFullFocusMode())
     return info_data;
 
   std::vector<AccessibilityInfoDataWrapper*> children;
   GetChildren(info_data, &children);
   for (AccessibilityInfoDataWrapper* child : children) {
-    AccessibilityInfoDataWrapper* candidate = FindFirstFocusableNode(child);
+    AccessibilityInfoDataWrapper* candidate =
+        FindFirstFocusableNodeInFullFocusMode(child);
     if (candidate)
       return candidate;
   }
@@ -419,8 +421,9 @@ bool AXTreeSourceArc::UpdateAndroidFocusedId(const AXEventData& event_data) {
     if (source_node && source_node->IsVisibleToUser()) {
       // Sometimes Android sets focus on unfocusable node, e.g. ListView.
       AccessibilityInfoDataWrapper* adjusted_node =
-          UseFullFocusMode() ? FindFirstFocusableNode(source_node)
-                             : source_node;
+          UseFullFocusMode()
+              ? FindFirstFocusableNodeInFullFocusMode(source_node)
+              : source_node;
       if (IsValid(adjusted_node))
         android_focused_id_ = adjusted_node->GetId();
     }
@@ -468,7 +471,8 @@ bool AXTreeSourceArc::UpdateAndroidFocusedId(const AXEventData& event_data) {
 
     // Otherwise, try focus on the first focusable node.
     if (!IsValid(new_focus) && UseFullFocusMode())
-      new_focus = FindFirstFocusableNode(GetFromId(event_data.source_id));
+      new_focus = FindFirstFocusableNodeInFullFocusMode(
+          GetFromId(event_data.source_id));
 
     if (IsValid(new_focus))
       android_focused_id_ = new_focus->GetId();

@@ -40,7 +40,7 @@ class AccessibilityInfoDataWrapper {
   virtual bool IsVirtualNode() const = 0;
   virtual bool IsIgnored() const = 0;
   virtual bool IsImportantInAndroid() const = 0;
-  virtual bool CanBeAccessibilityFocused() const = 0;
+  virtual bool IsFocusableInFullFocusMode() const = 0;
   virtual bool IsAccessibilityFocusableContainer() const = 0;
   virtual void PopulateAXRole(ui::AXNodeData* out_data) const = 0;
   virtual void PopulateAXState(ui::AXNodeData* out_data) const = 0;
