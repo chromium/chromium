@@ -15,6 +15,7 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.tab.state.FilePersistedTabDataStorage.FileSaveRequest;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 
@@ -25,6 +26,7 @@ import java.util.concurrent.Semaphore;
  * Tests relating to  {@link FilePersistedTabDataStorage}
  */
 @RunWith(BaseJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 public class FilePersistedTabDataStorageTest {
     @Rule
     public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();

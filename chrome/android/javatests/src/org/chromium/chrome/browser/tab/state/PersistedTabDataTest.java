@@ -15,6 +15,7 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
+import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 
@@ -22,6 +23,7 @@ import org.chromium.chrome.browser.tab.Tab;
  * Test relating to {@link PersistedTabData}
  */
 @RunWith(BaseJUnit4ClassRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public class PersistedTabDataTest {
     private static final int INITIAL_VALUE = 42;
     private static final int CHANGED_VALUE = 51;
