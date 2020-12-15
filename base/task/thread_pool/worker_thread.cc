@@ -310,9 +310,8 @@ void WorkerThread::RunWorker() {
   // If this process has a HangWatcher register this thread for watching.
   base::ScopedClosureRunner unregister_for_hang_watching;
   if (watch_for_hangs) {
-    unregister_for_hang_watching =
-        base::HangWatcher::GetInstance()->RegisterThread(
-            base::HangWatcher::ThreadType::kThreadPoolThread);
+    unregister_for_hang_watching = base::HangWatcher::RegisterThread(
+        base::HangWatcher::ThreadType::kThreadPoolThread);
   }
 
   // A WorkerThread starts out waiting for work.

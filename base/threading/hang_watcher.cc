@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/containers/flat_map.h"
 #include "base/debug/alias.h"
@@ -471,7 +472,8 @@ void HangWatcher::RecordHang() {
   base::debug::Alias(&line_number);
 }
 
-ScopedClosureRunner HangWatcher::RegisterThread(ThreadType thread_type) {
+ScopedClosureRunner HangWatcher::RegisterThreadInternal(
+    ThreadType thread_type) {
   AutoLock auto_lock(watch_state_lock_);
 
   watch_states_.push_back(
@@ -480,6 +482,15 @@ ScopedClosureRunner HangWatcher::RegisterThread(ThreadType thread_type) {
 
   return ScopedClosureRunner(BindOnce(&HangWatcher::UnregisterThread,
                                       Unretained(HangWatcher::GetInstance())));
+}
+
+// static
+ScopedClosureRunner HangWatcher::RegisterThread(ThreadType thread_type) {
+  if (!GetInstance()) {
+    return ScopedClosureRunner();
+  }
+
+  return GetInstance()->RegisterThreadInternal(thread_type);
 }
 
 base::TimeTicks HangWatcher::WatchStateSnapShot::GetHighestDeadline() const {

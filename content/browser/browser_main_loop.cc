@@ -488,9 +488,8 @@ BrowserMainLoop::BrowserMainLoop(
   // works since the UI thread running the message loop is the main thread and
   // that makes it the same as the current one.
   if (base::HangWatcher::IsUIThreadHangWatchingEnabled()) {
-    unregister_thread_closure_ =
-        base::HangWatcher::GetInstance()->RegisterThread(
-            base::HangWatcher::ThreadType::kUIThread);
+    unregister_thread_closure_ = base::HangWatcher::RegisterThread(
+        base::HangWatcher::ThreadType::kUIThread);
   }
 
   if (GetContentClient()->browser()->ShouldCreateThreadPool()) {

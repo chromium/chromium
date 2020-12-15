@@ -181,9 +181,11 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
 
   // Sets up the calling thread to be monitored for threads. Returns a
   // ScopedClosureRunner that unregisters the thread. This closure has to be
-  // called from the registered thread before it's joined.
-  ScopedClosureRunner RegisterThread(ThreadType thread_type)
-      LOCKS_EXCLUDED(watch_state_lock_) WARN_UNUSED_RESULT;
+  // called from the registered thread before it's joined. Returns a null
+  // closure in the case where there is no HangWatcher instance to register the
+  // thread with.
+  static ScopedClosureRunner RegisterThread(ThreadType thread_type)
+      WARN_UNUSED_RESULT;
 
   // Choose a closure to be run at the end of each call to Monitor(). Use only
   // for testing. Reentering the HangWatcher in the closure must be done with
@@ -230,6 +232,10 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
   void Start();
 
  private:
+  // See comment of ::RegisterThread() for details.
+  ScopedClosureRunner RegisterThreadInternal(ThreadType thread_type)
+      LOCKS_EXCLUDED(watch_state_lock_) WARN_UNUSED_RESULT;
+
   // Use to assert that functions are called on the monitoring thread.
   THREAD_CHECKER(hang_watcher_thread_checker_);
 
