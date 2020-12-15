@@ -305,6 +305,9 @@ static const char* const kSwitchNames[] = {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     switches::kPlatformDisallowsChromeOSDirectVideoDecoder,
 #endif
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+    switches::kSchedulerBoostUrgent,
+#endif
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

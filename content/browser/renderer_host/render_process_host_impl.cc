@@ -3356,6 +3356,9 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
     switches::kEnableClearHevcForTesting,
 #endif
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+    switches::kSchedulerBoostUrgent,
+#endif
   };
   renderer_cmd->CopySwitchesFrom(browser_cmd, kSwitchNames,
                                  base::size(kSwitchNames));

@@ -62,6 +62,10 @@ extern const char kForceFieldTrialParams[];
 extern const char kEnableThreadInstructionCount[];
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+extern const char kSchedulerBoostUrgent[];
+#endif
+
 }  // namespace switches
 
 #endif  // BASE_BASE_SWITCHES_H_

@@ -10,6 +10,8 @@
 #include <cstdint>
 #include <atomic>
 
+#include "base/base_switches.h"
+#include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
@@ -42,7 +44,15 @@ namespace {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 std::atomic<bool> g_use_sched_util(true);
-std::atomic<bool> g_feature_checked(false);
+std::atomic<bool> g_scheduler_hints_adjusted(false);
+
+const int kSchedulerBoostDef = 20;
+const int kSchedulerLimitDef = 100;
+const bool kSchedulerUseLatencyTuneDef = true;
+
+int g_scheduler_boost_adj;
+int g_scheduler_limit_adj;
+bool g_scheduler_use_latency_tune_adj;
 
 #if !defined(OS_NACL) && !defined(OS_AIX)
 // sched_attr is used to set scheduler attributes for Linux. It is not a POSIX
@@ -161,18 +171,14 @@ void SetThreadLatencySensitivity(ProcessId process_id,
     return;
 
   // FieldTrial API can be called only once features were parsed.
-  if (g_feature_checked.load()) {
-    uclamp_min_urgent =
-      GetFieldTrialParamByFeatureAsInt(kSchedUtilHints, "MinUrgent", 20);
-    uclamp_max_non_urgent = GetFieldTrialParamByFeatureAsInt(
-        kSchedUtilHints, "MaxNonUrgent", 100);
-    latency_sensitive_urgent = GetFieldTrialParamByFeatureAsBool(
-        kSchedUtilHints, "LatencySensitive", true);
+  if (g_scheduler_hints_adjusted.load()) {
+    uclamp_min_urgent = g_scheduler_boost_adj;
+    uclamp_max_non_urgent = g_scheduler_limit_adj;
+    latency_sensitive_urgent = g_scheduler_use_latency_tune_adj;
   } else {
-    // Use defaults if features were not parsed yet...
-    uclamp_min_urgent = 20;
-    uclamp_max_non_urgent = 100;
-    latency_sensitive_urgent = true;
+    uclamp_min_urgent = kSchedulerBoostDef;
+    uclamp_max_non_urgent = kSchedulerLimitDef;
+    latency_sensitive_urgent = kSchedulerUseLatencyTuneDef;
   }
 
   // The thread_id passed in here is either 0 (in which case we ste for current
@@ -369,8 +375,34 @@ void PlatformThread::InitThreadPostFieldTrial() {
   DCHECK(FeatureList::GetInstance());
   if (!FeatureList::IsEnabled(kSchedUtilHints)) {
     g_use_sched_util.store(false);
+    return;
   }
-  g_feature_checked.store(true);
+
+  int boost_def = kSchedulerBoostDef;
+
+  if (CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kSchedulerBoostUrgent)) {
+    std::string boost_switch_str =
+        CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+            switches::kSchedulerBoostUrgent);
+
+    int boost_switch_val;
+    if (!StringToInt(boost_switch_str, &boost_switch_val) ||
+        boost_switch_val < 0 || boost_switch_val > 100) {
+      DVPLOG(1) << "Invalid input for " << switches::kSchedulerBoostUrgent;
+    } else {
+      boost_def = boost_switch_val;
+    }
+  }
+
+  g_scheduler_boost_adj = GetFieldTrialParamByFeatureAsInt(
+      kSchedUtilHints, "BoostUrgent", boost_def);
+  g_scheduler_limit_adj = GetFieldTrialParamByFeatureAsInt(
+      kSchedUtilHints, "LimitNonUrgent", kSchedulerLimitDef);
+  g_scheduler_use_latency_tune_adj = GetFieldTrialParamByFeatureAsBool(
+      kSchedUtilHints, "LatencyTune", kSchedulerUseLatencyTuneDef);
+
+  g_scheduler_hints_adjusted.store(true);
 }
 #endif
 

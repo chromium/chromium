@@ -287,6 +287,9 @@ bool UtilityProcessHost::StartProcess() {
       sandbox::policy::switches::kAddXrAppContainerCaps,
 #endif
       network::switches::kUseFirstPartySet,
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+      switches::kSchedulerBoostUrgent,
+#endif
     };
     cmd_line->CopySwitchesFrom(browser_command_line, kSwitchNames,
                                base::size(kSwitchNames));

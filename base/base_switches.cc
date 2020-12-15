@@ -164,4 +164,13 @@ const char kForceFieldTrialParams[] = "force-fieldtrial-params";
 const char kEnableThreadInstructionCount[] = "enable-thread-instruction-count";
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+// Override the default scheduling boosting value for urgent tasks.
+// This can be adjusted if a specific chromeos device shows better perf/power
+// ratio (e.g. by running video conference tests).
+// Currently, this values directs to linux scheduler's utilization min clamp.
+// Range is 0(no biased load) ~ 100(mamximum load value).
+const char kSchedulerBoostUrgent[] = "scheduler-boost-urgent";
+#endif
+
 }  // namespace switches
