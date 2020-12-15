@@ -60,6 +60,14 @@ Polymer({
     this.setSelectedUrl_('');  // Nothing is selected.
   },
 
+  focusFirstItem() {
+    const firstFocusableItem =
+        this.shadowRoot.querySelector('[role=menuitem]:not([hidden])');
+    if (firstFocusableItem) {
+      firstFocusableItem.focus();
+    }
+  },
+
   /** @private */
   onAdvancedButtonToggle_() {
     this.advancedOpened = !this.advancedOpened;

@@ -7,7 +7,7 @@
 // clang-format off
 // #import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.m.js';
 //
-// #import {assertFalse, assertTrue} from '../chai_assert.js';
+// #import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
 // clang-format on
 
 suite('cr-toolbar', function() {
@@ -27,5 +27,22 @@ suite('cr-toolbar', function() {
 
     toolbar.autofocus = true;
     assertTrue(toolbar.getSearchField().hasAttribute('autofocus'));
+  });
+
+  test('FocusesMenuButton', async () => {
+    toolbar.showMenu = true;
+    toolbar.focusMenuButton();
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    assertEquals(
+        toolbar.shadowRoot.querySelector('#menuButton'),
+        toolbar.shadowRoot.activeElement);
+  });
+
+  test('ReturnsIfMenuIsFocused', async () => {
+    assertFalse(toolbar.isMenuFocused());
+    toolbar.showMenu = true;
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    toolbar.shadowRoot.querySelector('#menuButton').focus();
+    assertTrue(toolbar.isMenuFocused());
   });
 });

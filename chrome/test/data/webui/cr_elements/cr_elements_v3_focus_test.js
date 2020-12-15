@@ -183,3 +183,16 @@ var CrElementsMenuSelectorFocusTest = class extends CrElementsV3FocusTest {
 TEST_F('CrElementsMenuSelectorFocusTest', 'All', function() {
   mocha.run();
 });
+
+
+// eslint-disable-next-line no-var
+var CrElementsToolbarFocusV3Test = class extends CrElementsV3FocusTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://test?module=cr_elements/cr_toolbar_focus_tests.m.js';
+  }
+};
+
+TEST_F('CrElementsToolbarFocusV3Test', 'All', function() {
+  mocha.run();
+});

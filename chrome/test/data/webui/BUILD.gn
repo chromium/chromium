@@ -218,7 +218,7 @@ if (include_js_tests) {
       "$root_gen_dir/chrome/test/data/webui/cr_elements/cr_slider_test.m.js",
       "$root_gen_dir/chrome/test/data/webui/cr_elements/cr_toast_manager_test.m.js",
       "$root_gen_dir/chrome/test/data/webui/cr_elements/cr_toast_test.m.js",
-      "$root_gen_dir/chrome/test/data/webui/cr_elements/cr_toolbar_tests.m.js",
+      "$root_gen_dir/chrome/test/data/webui/cr_elements/cr_toolbar_focus_tests.m.js",
       "$root_gen_dir/chrome/test/data/webui/cr_elements/cr_view_manager_test.m.js",
       "$root_gen_dir/chrome/test/data/webui/cr_elements/find_shortcut_behavior_test.m.js",
       "$root_gen_dir/chrome/test/data/webui/fake_chrome_event.m.js",

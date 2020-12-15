@@ -216,4 +216,22 @@ suite('SettingsUISearch', function() {
     urlParams = Router.getInstance().getQueryParameters();
     assertFalse(urlParams.has('search'));
   });
+
+  test('MaintainsFocusOnMenus', async () => {
+    // Start in non-narrow mode with focus in the left menu.
+    toolbar.narrow = false;
+    ui.$$('#leftMenu').focusFirstItem();
+    assertEquals(ui.$$('#leftMenu'), ui.shadowRoot.activeElement);
+
+    // Switch to narrow mode and test that focus moves to menu button.
+    toolbar.narrow = true;
+    flush();
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    assertTrue(ui.$.toolbar.isMenuFocused());
+
+    // Switch back to non-narrow mode and test that focus moves to left menu.
+    toolbar.narrow = false;
+    flush();
+    assertEquals(ui.$$('#leftMenu'), ui.shadowRoot.activeElement);
+  });
 });

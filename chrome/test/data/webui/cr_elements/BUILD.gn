@@ -33,8 +33,8 @@ js_modulizer("modulize") {
     "cr_scrollable_behavior_tests.js",
     "cr_search_field_tests.js",
     "cr_slider_test.js",
+    "cr_toolbar_focus_tests.js",
     "cr_toolbar_search_field_tests.js",
-    "cr_toolbar_tests.js",
     "cr_tabs_test.js",
     "cr_toast_test.js",
     "cr_toast_manager_test.js",
@@ -85,8 +85,8 @@ js_type_check("closure_compile") {
     ":cr_toast_manager_test.m",
     ":cr_toast_test.m",
     ":cr_toggle_test.m",
+    ":cr_toolbar_focus_tests.m",
     ":cr_toolbar_search_field_tests.m",
-    ":cr_toolbar_tests.m",
     ":cr_view_manager_test.m",
     ":iron_list_focus_test.m",
   ]
@@ -494,10 +494,8 @@ js_library("cr_toolbar_search_field_tests.m") {
   extra_deps = [ ":modulize" ]
 }
 
-js_library("cr_toolbar_tests.m") {
-  sources = [
-    "$root_gen_dir/chrome/test/data/webui/cr_elements/cr_toolbar_tests.m.js",
-  ]
+js_library("cr_toolbar_focus_tests.m") {
+  sources = [ "$root_gen_dir/chrome/test/data/webui/cr_elements/cr_toolbar_focus_tests.m.js" ]
   deps = [
     "..:chai_assert",
     "..:test_util.m",

@@ -8,7 +8,6 @@
 import {isChromeOS} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {pageVisibility, Router, routes} from 'chrome://settings/settings.js';
-
 // clang-format on
 
 suite('SettingsMenu', function() {

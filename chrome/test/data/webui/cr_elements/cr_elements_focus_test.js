@@ -222,6 +222,27 @@ TEST_F('CrElementsTabsTest', 'All', function() {
 });
 
 // eslint-disable-next-line no-var
+var CrElementsToolbarFocusTest = class extends CrElementsFocusTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.html';
+  }
+
+  /** @override */
+  get extraLibraries() {
+    return [
+      ...PolymerTest.prototype.extraLibraries,
+      '../test_util.js',
+      'cr_toolbar_focus_tests.js',
+    ];
+  }
+};
+
+TEST_F('CrElementsToolbarFocusTest', 'All', function() {
+  mocha.run();
+});
+
+// eslint-disable-next-line no-var
 var IronListFocusTest = class extends CrElementsFocusTest {
   /** @override */
   get browsePreload() {

@@ -68,11 +68,6 @@
        * var(--settings-main-basis), var(--settings-menu-width), and
        * var(--cr-section-padding). */
       @media (max-width: 980px) {
-        #left,
-        #right {
-          display: none;
-        }
-
         #main {
           min-width: auto;
           /* Add some padding to make room for borders and to prevent focus
@@ -82,7 +77,8 @@
       }
     </style>
     <settings-prefs id="prefs" prefs="{{prefs}}"></settings-prefs>
-    <cr-toolbar page-name="$i18n{settings}"
+    <cr-toolbar id="toolbar"
+        page-name="$i18n{settings}"
         clear-label="$i18n{clearSearch}"
         autofocus
         search-prompt="$i18n{searchPrompt}"
@@ -99,7 +95,8 @@
         align="$i18n{textdirection}">
       <div class="drawer-content">
         <template is="dom-if" id="drawerTemplate">
-          <settings-menu page-visibility="[[pageVisibility_]]"
+          <settings-menu id="drawerMenu"
+              page-visibility="[[pageVisibility_]]"
               on-iron-activate="onIronActivate_"
               advanced-opened="{{advancedOpenedInMenu_}}">
           </settings-menu>
@@ -107,8 +104,9 @@
       </div>
     </cr-drawer>
     <div id="container" class="no-outline">
-      <div id="left">
-        <settings-menu page-visibility="[[pageVisibility_]]"
+      <div id="left" hidden$="[[narrow_]]">
+        <settings-menu id="leftMenu"
+            page-visibility="[[pageVisibility_]]"
             on-iron-activate="onIronActivate_"
             advanced-opened="{{advancedOpenedInMenu_}}">
         </settings-menu>
@@ -120,5 +118,5 @@
       </settings-main>
       <!-- An additional child of the flex #container to take up space,
            aligned with the right-hand child of the flex toolbar. -->
-      <div id="right"></div>
+      <div id="right" hidden$="[[narrow_]]"></div>
     </div>

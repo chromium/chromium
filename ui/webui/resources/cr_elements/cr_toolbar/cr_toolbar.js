@@ -69,4 +69,20 @@ Polymer({
     this.fire('cr-toolbar-menu-tap');
   },
 
+  focusMenuButton() {
+    requestAnimationFrame(() => {
+      // Wait for next animation frame in case dom-if has not applied yet and
+      // added the menu button.
+      const menuButton = this.shadowRoot.querySelector('#menuButton');
+      if (menuButton) {
+        menuButton.focus();
+      }
+    });
+  },
+
+  /** @return {boolean} */
+  isMenuFocused() {
+    return Boolean(this.shadowRoot.activeElement) &&
+        this.shadowRoot.activeElement.id === 'menuButton';
+  }
 });

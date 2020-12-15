@@ -156,6 +156,7 @@ js_type_check("closure_compile") {
 
     #":settings_main_test",
     #":settings_menu_test",
+    ":settings_menu_interactive_ui_test",
     ":settings_page_test_util",
 
     #":settings_slider_tests",
@@ -422,6 +423,14 @@ js_library("settings_category_default_radio_group_tests") {
     "..:test_util.m",
     "//chrome/browser/resources/settings:lazy_load",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("settings_menu_interactive_ui_test") {
+  deps = [
+    "..:chai_assert",
+    "//chrome/browser/resources/settings:settings",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
