@@ -5,6 +5,7 @@
 import("//build/config/c++/c++.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/chromecast_build.gni")
+import("//build/config/compiler/compiler.gni")
 import("//build/config/crypto.gni")
 import("//build/config/dcheck_always_on.gni")
 import("//build/config/features.gni")
@@ -331,6 +332,12 @@ config("executable_config") {
     configs += [ "//third_party/instrumented_libraries:locally_built_ldflags" ]
   }
   configs += [ "//build/config/sanitizers:link_executable" ]
+
+  # lld/mac produces broken TLS for position-independent code.
+  # TODO(thakis): Remove this once llvm.org/PR48491 is fixed.
+  if (is_apple && use_lld && !is_nacl) {
+    ldflags = [ "-Wl,-no_pie" ]
+  }
 }
 
 # Shared library configs -------------------------------------------------------
