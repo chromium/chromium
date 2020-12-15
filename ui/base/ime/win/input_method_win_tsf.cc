@@ -176,10 +176,6 @@ void InputMethodWinTSF::ConfirmCompositionText() {
 }
 
 void InputMethodWinTSF::ShowVirtualKeyboardIfEnabled() {
-  // TODO(crbug.com/1031786): Enable this once TSF input pane policy bug is
-  // fixed if (ui::TSFBridge::GetInstance())
-  //   ui::TSFBridge::GetInstance()->SetInputPanelPolicy(
-  //       /*inputPanelPolicyManual*/ false);
   if (auto* controller = GetInputMethodKeyboardController())
     controller->DisplayVirtualKeyboard();
 }

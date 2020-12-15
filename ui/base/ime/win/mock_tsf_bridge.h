@@ -33,7 +33,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) MockTSFBridge : public TSFBridge {
   Microsoft::WRL::ComPtr<ITfThreadMgr> GetThreadManager() override;
   TextInputClient* GetFocusedTextInputClient() const override;
   bool IsInputLanguageCJK() override;
-  void SetInputPanelPolicy(bool input_panel_policy_manual) override;
 
   // Resets MockTSFBridge state including function call counter.
   void Reset();

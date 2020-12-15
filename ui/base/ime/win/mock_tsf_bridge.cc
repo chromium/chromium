@@ -61,11 +61,6 @@ TextInputClient* MockTSFBridge::GetFocusedTextInputClient() const {
   return text_input_client_;
 }
 
-void MockTSFBridge::SetInputPanelPolicy(bool input_panel_policy_manual) {
-  if (tsf_text_store_)
-    tsf_text_store_->SetInputPanelPolicy(input_panel_policy_manual);
-}
-
 bool MockTSFBridge::IsInputLanguageCJK() {
   return false;
 }

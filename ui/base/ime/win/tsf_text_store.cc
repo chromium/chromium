@@ -248,12 +248,7 @@ HRESULT TSFTextStore::GetSelection(ULONG selection_index,
 HRESULT TSFTextStore::GetStatus(TS_STATUS* status) {
   if (!status)
     return E_INVALIDARG;
-  // TODO(snianu): Uncomment this once TSF fix for input pane policy is
-  // serviced.
-  // if (input_panel_policy_manual_)
-  //   status->dwDynamicFlags |= TS_SD_INPUTPANEMANUALDISPLAYENABLE;
-  // else
-  //   status->dwDynamicFlags &= ~TS_SD_INPUTPANEMANUALDISPLAYENABLE;
+
   status->dwDynamicFlags |= TS_SD_INPUTPANEMANUALDISPLAYENABLE;
   // We don't support hidden text.
   // TODO(IME): Remove TS_SS_TRANSITORY to support Korean reconversion
@@ -1319,14 +1314,6 @@ bool TSFTextStore::ConfirmComposition() {
   ResetCompositionState();
 
   return TerminateComposition();
-}
-
-void TSFTextStore::SetInputPanelPolicy(bool input_panel_policy_manual) {
-  input_panel_policy_manual_ = input_panel_policy_manual;
-  // This notification tells TSF that the input pane flag has changed.
-  // TSF queries for the status of this flag using GetStatus and gets
-  // the updated value.
-  text_store_acp_sink_->OnStatusChange(TS_SD_INPUTPANEMANUALDISPLAYENABLE);
 }
 
 void TSFTextStore::SendOnLayoutChange() {

@@ -251,8 +251,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) TSFTextStore
   // Sends OnLayoutChange() via |text_store_acp_sink_|.
   void SendOnLayoutChange();
 
-  void SetInputPanelPolicy(bool input_panel_policy_manual);
-
  private:
   friend class TSFTextStoreTest;
   friend class TSFTextStoreTestCallback;
@@ -441,15 +439,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) TSFTextStore
   Microsoft::WRL::ComPtr<ITfCategoryMgr> category_manager_;
   Microsoft::WRL::ComPtr<ITfDisplayAttributeMgr> display_attribute_manager_;
   Microsoft::WRL::ComPtr<ITfContext> context_;
-
-  // input_panel_policy_manual_ equals to false would make the SIP policy
-  // to automatic meaning TSF would raise/dismiss the SIP based on TSFTextStore
-  // focus and other heuristics that input service have added on Windows to
-  // provide a consistent behavior across all apps on Windows.
-  // input_panel_policy_manual_ equals to true would make the SIP policy to
-  // manual meaning TSF wouldn't raise/dismiss the SIP automatically. This is
-  // used to control the SIP behavior based on user interaction with the page.
-  bool input_panel_policy_manual_ = true;
 
   DISALLOW_COPY_AND_ASSIGN(TSFTextStore);
 };
