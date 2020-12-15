@@ -148,6 +148,15 @@ enum DeviceMode {
   kDemo,
 };
 
+// Whether or not metrics reporting in ash is managed by policy.
+[Stable, Extensible]
+enum MetricsReportingManaged {
+  // Default value for backwards compatibility with old versions of ash.
+  kUnknown = 0,
+  kNotManaged = 1,
+  kManaged = 2,
+};
+
 // Default directories on the system.
 [Stable]
 struct DefaultPaths {
@@ -181,7 +190,7 @@ struct DefaultPaths {
 // If ash-chrome is newer than lacros-chrome, then some fields may not be
 // processed by lacros-chrome.
 //
-// Next version: 8
+// Next version: 9
 [Stable]
 struct LacrosInitParams {
   // This is ash-chrome's version of the AshChromeService interface. This is
@@ -230,6 +239,14 @@ struct LacrosInitParams {
   // Added in M89.
   [MinVersion=7]
   string? device_account_gaia_id@7;
+
+  // Whether or not metrics reporting in ash is managed by policy. This is
+  // passed independently because the metrics reporting state is controlled by
+  // ash-level device policy, but we want to show the "managed" icon in the
+  // browser preferences UI as if it was controlled by user policy.
+  // Added in M89.
+  [MinVersion=8]
+  MetricsReportingManaged ash_metrics_managed@8;
 };
 
 // LacrosChromeService defines the APIs that live in lacros-chrome and

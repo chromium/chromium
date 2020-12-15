@@ -79,8 +79,13 @@ mojom::LacrosInitParamsPtr GetLacrosInitParams(
   params->ash_chrome_service_version =
       crosapi::mojom::AshChromeService::Version_;
   params->deprecated_ash_metrics_enabled_has_value = true;
-  params->ash_metrics_enabled = g_browser_process->local_state()->GetBoolean(
-      metrics::prefs::kMetricsReportingEnabled);
+  PrefService* local_state = g_browser_process->local_state();
+  params->ash_metrics_enabled =
+      local_state->GetBoolean(metrics::prefs::kMetricsReportingEnabled);
+  params->ash_metrics_managed =
+      local_state->IsManagedPreference(metrics::prefs::kMetricsReportingEnabled)
+          ? mojom::MetricsReportingManaged::kManaged
+          : mojom::MetricsReportingManaged::kNotManaged;
 
   params->session_type = environment_provider->GetSessionType();
   params->device_mode = environment_provider->GetDeviceMode();

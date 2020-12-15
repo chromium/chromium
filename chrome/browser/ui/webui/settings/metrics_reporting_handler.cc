@@ -76,7 +76,18 @@ std::unique_ptr<base::DictionaryValue>
   dict->SetBoolean(
       "enabled",
       ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled());
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // To match the pre-Lacros settings UX, we show the managed icon if the ash
+  // device-level metrics reporting pref is managed. https://crbug.com/1148604
+  auto* lacros_chrome_service = chromeos::LacrosChromeServiceImpl::Get();
+  // Service may be null in tests.
+  bool managed = lacros_chrome_service &&
+                 lacros_chrome_service->init_params()->ash_metrics_managed ==
+                     crosapi::mojom::MetricsReportingManaged::kManaged;
+  dict->SetBoolean("managed", managed);
+#else
   dict->SetBoolean("managed", IsMetricsReportingPolicyManaged());
+#endif
   return dict;
 }
 
