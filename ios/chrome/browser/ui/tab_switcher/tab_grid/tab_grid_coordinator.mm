@@ -228,11 +228,9 @@
 }
 
 - (void)showTabViewController:(UIViewController*)viewController
+           shouldCloseTabGrid:(BOOL)shouldCloseTabGrid
                    completion:(ProceduralBlock)completion {
-  DCHECK(viewController);
-
-  // Record when the tab switcher is dismissed.
-  base::RecordAction(base::UserMetricsAction("MobileTabGridExited"));
+  DCHECK(viewController || (IsThumbStripEnabled() && self.bvcContainer));
 
   // If thumb strip is enabled, this will always be true except during initial
   // setup before the BVC container has been created.
@@ -241,12 +239,17 @@
     self.baseViewController.childViewControllerForStatusBarStyle =
         viewController;
     [self.baseViewController setNeedsStatusBarAppearanceUpdate];
-    [self.thumbStripCoordinator.panHandler setState:ViewRevealState::Hidden
-                                           animated:YES];
+    if (shouldCloseTabGrid) {
+      [self.thumbStripCoordinator.panHandler setState:ViewRevealState::Hidden
+                                             animated:YES];
+      [self.delegate tabGridDismissTransitionDidEnd:self];
+
+      // Record when the tab switcher is dismissed.
+      base::RecordAction(base::UserMetricsAction("MobileTabGridExited"));
+    }
     if (completion) {
       completion();
     }
-    [self.delegate tabGridDismissTransitionDidEnd:self];
     return;
   }
 
@@ -448,19 +451,40 @@
 
 #pragma mark - TabPresentationDelegate
 
-- (void)showActiveTabInPage:(TabGridPage)page focusOmnibox:(BOOL)focusOmnibox {
+- (void)showActiveTabInPage:(TabGridPage)page
+               focusOmnibox:(BOOL)focusOmnibox
+               closeTabGrid:(BOOL)closeTabGrid {
   DCHECK(self.regularBrowser && self.incognitoBrowser);
+  DCHECK(closeTabGrid || IsThumbStripEnabled());
   Browser* activeBrowser = nullptr;
   switch (page) {
     case TabGridPageIncognitoTabs:
-      DCHECK_GT(self.incognitoBrowser->GetWebStateList()->count(), 0);
+      if (self.incognitoBrowser->GetWebStateList()->count() == 0) {
+        DCHECK(IsThumbStripEnabled());
+        [self showTabViewController:nil
+                 shouldCloseTabGrid:closeTabGrid
+                         completion:nil];
+        return;
+      }
       activeBrowser = self.incognitoBrowser;
       break;
     case TabGridPageRegularTabs:
-      DCHECK_GT(self.regularBrowser->GetWebStateList()->count(), 0);
+      if (self.regularBrowser->GetWebStateList()->count() == 0) {
+        DCHECK(IsThumbStripEnabled());
+        [self showTabViewController:nil
+                 shouldCloseTabGrid:closeTabGrid
+                         completion:nil];
+        return;
+      }
       activeBrowser = self.regularBrowser;
       break;
     case TabGridPageRemoteTabs:
+      if (IsThumbStripEnabled()) {
+        [self showTabViewController:nil
+                 shouldCloseTabGrid:closeTabGrid
+                         completion:nil];
+        return;
+      }
       NOTREACHED() << "It is invalid to have an active tab in remote tabs.";
       // This appears to come up in release -- see crbug.com/1069243.
       // Defensively early return instead of continuing.
@@ -469,8 +493,9 @@
   // Trigger the transition through the delegate. This will in turn call back
   // into this coordinator.
   [self.delegate tabGrid:self
-      shouldFinishWithBrowser:activeBrowser
-                 focusOmnibox:focusOmnibox];
+      shouldActivateBrowser:activeBrowser
+             dismissTabGrid:closeTabGrid
+               focusOmnibox:focusOmnibox];
 }
 
 - (void)showCloseAllConfirmationActionSheetWitTabGridMediator:
@@ -538,22 +563,25 @@
 
 - (void)showActiveRegularTabFromRecentTabs {
   [self.delegate tabGrid:self
-      shouldFinishWithBrowser:self.regularBrowser
-                 focusOmnibox:NO];
+      shouldActivateBrowser:self.regularBrowser
+             dismissTabGrid:YES
+               focusOmnibox:NO];
 }
 
 #pragma mark - HistoryPresentationDelegate
 
 - (void)showActiveRegularTabFromHistory {
   [self.delegate tabGrid:self
-      shouldFinishWithBrowser:self.regularBrowser
-                 focusOmnibox:NO];
+      shouldActivateBrowser:self.regularBrowser
+             dismissTabGrid:YES
+               focusOmnibox:NO];
 }
 
 - (void)showActiveIncognitoTabFromHistory {
   [self.delegate tabGrid:self
-      shouldFinishWithBrowser:self.incognitoBrowser
-                 focusOmnibox:NO];
+      shouldActivateBrowser:self.incognitoBrowser
+             dismissTabGrid:YES
+               focusOmnibox:NO];
 }
 
 - (void)openAllTabsFromSession:(const synced_sessions::DistantSession*)session {

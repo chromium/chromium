@@ -768,7 +768,9 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       break;
   }
   auto completionBlock = ^(BOOL completed, BOOL finished) {
-    completion(completed, finished);
+    if (completion) {
+      completion(completed, finished);
+    }
     self.collectionView.scrollEnabled = YES;
     self.currentLayout = nextLayout;
   };

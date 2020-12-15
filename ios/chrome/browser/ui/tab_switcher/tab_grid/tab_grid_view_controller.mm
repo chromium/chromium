@@ -288,11 +288,13 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     [self broadcastIncognitoContentVisibility];
     [self configureButtonsForActiveAndCurrentPage];
   }
+  [self arriveAtCurrentPage];
 }
 
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView*)scrollView {
   self.currentPage = GetPageFromScrollView(scrollView);
   self.scrollViewAnimatingContentOffset = NO;
+  [self arriveAtCurrentPage];
   [self broadcastIncognitoContentVisibility];
   [self configureButtonsForActiveAndCurrentPage];
 }
@@ -467,12 +469,15 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
                         (void (^)(BOOL completed, BOOL finished))completion {
   GridViewController* regularViewController =
       [self gridViewControllerForPage:TabGridPageRegularTabs];
-  [regularViewController willTransitionToLayout:nextState
-                                     completion:completion];
   GridViewController* incognitoViewController =
       [self gridViewControllerForPage:TabGridPageIncognitoTabs];
-  [incognitoViewController willTransitionToLayout:nextState
-                                       completion:completion];
+
+  // Each LayoutSwitcher method calls regular and icognito grid controller's
+  // corresponding method. Thus, attaching the completion to only one of the
+  // grid view controllers should suffice.
+  [regularViewController willTransitionToLayout:nextState
+                                     completion:completion];
+  [incognitoViewController willTransitionToLayout:nextState completion:nil];
 }
 
 - (void)didUpdateTransitionLayoutProgress:(CGFloat)progress {
@@ -726,6 +731,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     // Important updates (e.g., button configurations, incognito visibility) are
     // made at the end of scrolling animations after |self.currentPage| is set.
     // Since this codepath has no animations, updates must be called manually.
+    [self arriveAtCurrentPage];
     [self broadcastIncognitoContentVisibility];
     [self configureButtonsForActiveAndCurrentPage];
   } else {
@@ -748,6 +754,19 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   if (targetPage == TabGridPageRemoteTabs) {
     [self.remoteTabsViewController loadModel];
     [self.remoteTabsViewController.tableView reloadData];
+  }
+}
+
+// Updates the state when the scroll view stops scrolling at a given page,
+// whether the scroll is from dragging or programmatic.
+- (void)arriveAtCurrentPage {
+  if (!self.viewVisible) {
+    return;
+  }
+  if (IsThumbStripEnabled()) {
+    [self.tabPresentationDelegate showActiveTabInPage:self.currentPage
+                                         focusOmnibox:NO
+                                         closeTabGrid:NO];
   }
 }
 
@@ -1287,7 +1306,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   }
   self.activePage = page;
   [self.tabPresentationDelegate showActiveTabInPage:page
-                                       focusOmnibox:focusOmnibox];
+                                       focusOmnibox:focusOmnibox
+                                       closeTabGrid:YES];
 }
 
 // Creates and shows a new regular tab.
@@ -1376,7 +1396,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   }
   self.activePage = self.currentPage;
   [self.tabPresentationDelegate showActiveTabInPage:self.currentPage
-                                       focusOmnibox:NO];
+                                       focusOmnibox:NO
+                                       closeTabGrid:YES];
   gridViewController.showsSelectionUpdates = YES;
 }
 
@@ -1493,7 +1514,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   // disabled. Ensure that action is only taken on a valid state.
   if (![[self gridViewControllerForPage:newActivePage] isGridEmpty]) {
     [self.tabPresentationDelegate showActiveTabInPage:newActivePage
-                                         focusOmnibox:NO];
+                                         focusOmnibox:NO
+                                         closeTabGrid:YES];
     // Record when users exit the tab grid to return to the current foreground
     // tab.
     base::RecordAction(base::UserMetricsAction("MobileTabGridDone"));
