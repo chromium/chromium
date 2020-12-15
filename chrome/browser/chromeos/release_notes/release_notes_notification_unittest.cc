@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/release_notes/release_notes_notification.h"
 
 #include "base/feature_list.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/version.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
@@ -96,6 +97,8 @@ TEST_F(ReleaseNotesNotificationTest, ShowReleaseNotesNotification) {
   EXPECT_EQ(ui::SubstituteChromeOSDeviceType(
                 IDS_RELEASE_NOTES_DEVICE_SPECIFIC_NOTIFICATION_TITLE),
             GetReleaseNotesNotification().title());
+  EXPECT_EQ("Work better across devices, do things faster, and more",
+            base::UTF16ToASCII(GetReleaseNotesNotification().message()));
   EXPECT_EQ(1, notification_count_);
 }
 

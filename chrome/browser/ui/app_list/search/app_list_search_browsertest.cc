@@ -142,9 +142,7 @@ IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest,
 
   auto* result = FindResult("help-app://updates");
   ASSERT_TRUE(result);
-  // Has Release notes title.
-  EXPECT_EQ(base::UTF16ToASCII(result->title()),
-            "See what's new on your Chrome device");
+  EXPECT_EQ(base::UTF16ToASCII(result->title()), "What's new with Chrome OS");
   // Displayed in first position.
   EXPECT_EQ(result->position_priority(), 1.0f);
   EXPECT_EQ(result->display_type(), DisplayType::kChip);
