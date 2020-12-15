@@ -326,10 +326,6 @@ TEST_P(EmbeddedTestServerTest, ConnectionListenerRead) {
 }
 
 TEST_P(EmbeddedTestServerTest, ConnectionListenerComplete) {
-  if (GetParam() == EmbeddedTestServer::TYPE_HTTP) {
-    // Test is flaky on HTTP. crbug/1073761.
-    return;
-  }
   ASSERT_TRUE(server_->Start());
 
   TestDelegate delegate;
