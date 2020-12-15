@@ -17,14 +17,34 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_handle.h"
+#include "build/branding_buildflags.h"
 #include "crypto/random.h"
 
 namespace extensions {
 
-const wchar_t kNativeMessagingRegistryKey[] =
+const wchar_t kChromeNativeMessagingRegistryKey[] =
     L"SOFTWARE\\Google\\Chrome\\NativeMessagingHosts";
+#if BUILDFLAG(CHROMIUM_BRANDING)
+const wchar_t kChromiumNativeMessagingRegistryKey[] =
+    L"SOFTWARE\\Chromium\\NativeMessagingHosts";
+#endif
 
 namespace {
+
+// Reads path to the native messaging host manifest from a specific subkey in
+// the registry. Returns false if the path isn't found.
+bool GetManifestPathWithFlagsFromSubkey(HKEY root_key,
+                                        DWORD flags,
+                                        const wchar_t* subkey,
+                                        const base::string16& host_name,
+                                        base::string16* result) {
+  base::win::RegKey key;
+
+  return key.Open(root_key, subkey, KEY_QUERY_VALUE | flags) == ERROR_SUCCESS &&
+         key.OpenKey(host_name.c_str(), KEY_QUERY_VALUE | flags) ==
+             ERROR_SUCCESS &&
+         key.ReadValue(nullptr, result) == ERROR_SUCCESS;
+}
 
 // Reads path to the native messaging host manifest from the registry. Returns
 // false if the path isn't found.
@@ -32,17 +52,18 @@ bool GetManifestPathWithFlags(HKEY root_key,
                               DWORD flags,
                               const base::string16& host_name,
                               base::string16* result) {
-  base::win::RegKey key;
-
-  if (key.Open(root_key, kNativeMessagingRegistryKey,
-               KEY_QUERY_VALUE | flags) != ERROR_SUCCESS ||
-      key.OpenKey(host_name.c_str(),
-                  KEY_QUERY_VALUE | flags) != ERROR_SUCCESS ||
-      key.ReadValue(NULL, result) != ERROR_SUCCESS) {
-    return false;
+#if BUILDFLAG(CHROMIUM_BRANDING)
+  // Try to read the path using the Chromium-specific registry for Chromium.
+  // If that fails, fallback to Chrome-specific registry key below.
+  if (GetManifestPathWithFlagsFromSubkey(root_key, flags,
+                                         kChromiumNativeMessagingRegistryKey,
+                                         host_name, result)) {
+    return true;
   }
+#endif
 
-  return true;
+  return GetManifestPathWithFlagsFromSubkey(
+      root_key, flags, kChromeNativeMessagingRegistryKey, host_name, result);
 }
 
 bool GetManifestPath(HKEY root_key,
