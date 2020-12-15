@@ -228,9 +228,9 @@ void PluginVmInstallerView::OnStateUpdated(InstallingState new_state) {
 }
 
 void PluginVmInstallerView::OnLinkClicked() {
-  NavigateParams params(
-      profile_, GURL("https://support.google.com/chromebook/?p=pluginvm"),
-      ui::PAGE_TRANSITION_LINK);
+  NavigateParams params(profile_,
+                        GURL("https://support.google.com/chrome/a/?p=pluginvm"),
+                        ui::PAGE_TRANSITION_LINK);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   Navigate(&params);
 }
