@@ -516,7 +516,7 @@ crbug.com/1027776 [ mac nvidia-0xfe9 ] conformance2/rendering/framebuffer-textur
 crbug.com/1037650 [ mac nvidia-0xfe9 ] conformance2/textures/canvas_sub_rectangle/* [ RetryOnFailure ]
 crbug.com/1073538 [ mac nvidia-0xfe9 ] deqp/functional/gles3/shadermatrix/div_dynamic.html [ RetryOnFailure ]
 crbug.com/1086194 [ mac nvidia-0xfe9 ] conformance/textures/canvas_sub_rectangle/* [ RetryOnFailure ]
-crbug.com/1153689 [ mac nvidia-0xfe9 ] conformance/extensions/s3tc-and-rgtc.html [ Failure ]
+crbug.com/1136231 [ mac nvidia-0xfe9 ] conformance/extensions/s3tc-and-rgtc.html [ Failure ]
 
 # Mac AMD
 # AMD Radeon HD 8870M (1002:6821)
