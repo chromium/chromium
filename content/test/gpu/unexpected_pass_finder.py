@@ -40,6 +40,7 @@ from unexpected_passes import queries
 from unexpected_passes import result_output
 
 SUITE_TO_EXPECTATIONS_MAP = {
+    'power': 'power_measurement',
     'webgl_conformance1': 'webgl_conformance',
     'webgl_conformance2': 'webgl2_conformance',
 }
