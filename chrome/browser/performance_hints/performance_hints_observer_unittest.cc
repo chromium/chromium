@@ -66,10 +66,14 @@ class PerformanceHintsObserverTest : public ChromeRenderViewHostTestHarness {
   }
   ~PerformanceHintsObserverTest() override = default;
 
-  void SetUp() override {
+  virtual void SetUpCommandLine() {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         optimization_guide::switches::
             kDisableCheckingUserPermissionsForTesting);
+  }
+
+  void SetUp() override {
+    SetUpCommandLine();
 
     ChromeRenderViewHostTestHarness::SetUp();
     content::RenderFrameHostTester::For(main_rfh())
@@ -941,12 +945,20 @@ TEST_F(OverrideUnknownPerformanceHintsObserverTest,
       "PerformanceHints.Observer.PerformanceClassForURL", /*kUnknown*/ 0, 2);
 }
 
+class OverrideUnknownPerformanceHintsObserverFetchingNotEnabledTest
+    : public OverrideUnknownPerformanceHintsObserverTest {
+ public:
+  void SetUpCommandLine() override {
+    base::CommandLine::ForCurrentProcess()->RemoveSwitch(
+        optimization_guide::switches::
+            kDisableCheckingUserPermissionsForTesting);
+  }
+};
+
 // Uses OverrideUnknownPerformanceHintsObserverTest to ensure
 // PERFORMANCE_UNKNOWN is not overridden to FAST when fetching is disabled.
-TEST_F(OverrideUnknownPerformanceHintsObserverTest, HintFetchingNotEnabled) {
-  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
-      optimization_guide::switches::kDisableCheckingUserPermissionsForTesting);
-
+TEST_F(OverrideUnknownPerformanceHintsObserverFetchingNotEnabledTest,
+       HintFetchingNotEnabled) {
   PerformanceHintsObserver::CreateForWebContents(web_contents());
   CallDidFinishNavigation(web_contents());
 

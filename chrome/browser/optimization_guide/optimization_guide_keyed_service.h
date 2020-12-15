@@ -25,24 +25,26 @@ class BrowserContext;
 class NavigationHandle;
 }  // namespace content
 
-namespace leveldb_proto {
-class ProtoDatabaseProvider;
-}  // namespace leveldb_proto
-
 namespace optimization_guide {
 namespace android {
 class OptimizationGuideBridge;
 }  // namespace android
-class OptimizationGuideService;
-class TopHostProvider;
 class PredictionManager;
 class PredictionManagerBrowserTestBase;
 class PredictionModelDownloadClient;
+class TopHostProvider;
 }  // namespace optimization_guide
 
 class GURL;
 class OptimizationGuideHintsManager;
 
+// Keyed service that can be used to get information received from the remote
+// Optimization Guide Service. For regular profiles, this will do the work to
+// fetch the necessary information from the remote Optimization Guide Service
+// in anticipation for when it is needed. For off the record profiles, this will
+// act in a "read-only" mode where it will only serve information that was
+// received from the remote Optimization Guide Service when not off the record
+// and no information will be retrieved.
 class OptimizationGuideKeyedService
     : public KeyedService,
       public optimization_guide::OptimizationGuideDecider {
@@ -107,18 +109,12 @@ class OptimizationGuideKeyedService
   friend class HintsFetcherBrowserTest;
   friend class OptimizationGuideKeyedServiceBrowserTest;
   friend class OptimizationGuideWebContentsObserver;
-  friend class ProfileManager;
   friend class optimization_guide::PredictionModelDownloadClient;
   friend class optimization_guide::PredictionManagerBrowserTestBase;
   friend class optimization_guide::android::OptimizationGuideBridge;
 
-  // Initializes the service. |optimization_guide_service| is the
-  // Optimization Guide Service that is being listened to and is guaranteed to
-  // outlive |this|. |profile_path| is the path to user data on disk.
-  void Initialize(
-      optimization_guide::OptimizationGuideService* optimization_guide_service,
-      leveldb_proto::ProtoDatabaseProvider* database_provider,
-      const base::FilePath& profile_path);
+  // Initializes |this|.
+  void Initialize();
 
   // Virtualized for testing.
   virtual OptimizationGuideHintsManager* GetHintsManager();

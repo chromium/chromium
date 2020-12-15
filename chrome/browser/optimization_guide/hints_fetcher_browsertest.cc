@@ -1277,6 +1277,27 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
             kRaceNavigationFetchHost,
         1);
   }
+
+  // Incognito page loads should not initiate any fetches.
+  {
+    base::HistogramTester incognito_histogram_tester;
+    // Instantiate off the record Optimization Guide Service.
+    OptimizationGuideKeyedServiceFactory::GetForProfile(
+        browser()->profile()->GetPrimaryOTRProfile())
+        ->RegisterOptimizationTypes({optimization_guide::proto::NOSCRIPT});
+
+    Browser* otr_browser = CreateIncognitoBrowser(browser()->profile());
+    ui_test_utils::NavigateToURL(otr_browser, GURL(full_url));
+
+    // Make sure no additional hints requests were received.
+    RetryForHistogramUntilCountReached(
+        &incognito_histogram_tester,
+        optimization_guide::kLoadedHintLocalHistogramString, 1);
+    EXPECT_EQ(2u, count_hints_requests_received());
+
+    incognito_histogram_tester.ExpectTotalCount(
+        "OptimizationGuide.HintsManager.RaceNavigationFetchAttemptStatus", 0);
+  }
 }
 
 // Test that the hints are fetched at the time of the navigation.
