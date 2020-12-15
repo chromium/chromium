@@ -331,9 +331,6 @@ void BubbleBorder::PaintNoShadow(const View& view, gfx::Canvas* canvas) {
 }
 
 void BubbleBackground::Paint(gfx::Canvas* canvas, views::View* view) const {
-  if (border_->shadow() == BubbleBorder::NO_SHADOW_OPAQUE_BORDER)
-    canvas->DrawColor(border_->background_color());
-
   // Fill the contents with a round-rect region to match the border images.
   cc::PaintFlags flags;
   flags.setAntiAlias(true);

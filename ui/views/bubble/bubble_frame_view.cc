@@ -251,7 +251,6 @@ int BubbleFrameView::NonClientHitTest(const gfx::Point& point) {
 void BubbleFrameView::GetWindowMask(const gfx::Size& size,
                                     SkPath* window_mask) {
   if (bubble_border_->shadow() != BubbleBorder::SMALL_SHADOW &&
-      bubble_border_->shadow() != BubbleBorder::NO_SHADOW_OPAQUE_BORDER &&
       bubble_border_->shadow() != BubbleBorder::NO_ASSETS)
     return;
 
@@ -274,8 +273,7 @@ void BubbleFrameView::GetWindowMask(const gfx::Size& size,
       SkIntToScalar(size.height() - border_insets.bottom() +
                     kBorderStrokeSize)};
 
-  if (bubble_border_->shadow() == BubbleBorder::NO_SHADOW_OPAQUE_BORDER ||
-      bubble_border_->shadow() == BubbleBorder::NO_ASSETS) {
+  if (bubble_border_->shadow() == BubbleBorder::NO_ASSETS) {
     window_mask->addRoundRect(rect, kCornerRadius, kCornerRadius);
   } else {
     static const int kBottomBorderShadowSize = 2;

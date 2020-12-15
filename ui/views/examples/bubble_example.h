@@ -33,7 +33,6 @@ class VIEWS_EXAMPLES_EXPORT BubbleExample : public ExampleBase {
                   const ui::Event& event);
 
   Button* no_shadow_;
-  Button* no_shadow_opaque_;
   Button* big_shadow_;
   Button* small_shadow_;
   Button* no_assets_;

@@ -61,7 +61,6 @@ class VIEWS_EXPORT BubbleBorder : public Border {
 
   enum Shadow {
     NO_SHADOW = 0,
-    NO_SHADOW_OPAQUE_BORDER,
     BIG_SHADOW,
     SMALL_SHADOW,
     // NO_ASSETS borders don't draw a stroke or a shadow. This is used for

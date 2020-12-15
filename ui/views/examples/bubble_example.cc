@@ -99,11 +99,6 @@ void BubbleExample::CreateExampleView(View* container) {
       base::BindRepeating(&BubbleExample::ShowBubble, base::Unretained(this),
                           &no_shadow_, BubbleBorder::NO_SHADOW, false),
       ASCIIToUTF16("No Shadow")));
-  no_shadow_opaque_ = container->AddChildView(std::make_unique<LabelButton>(
-      base::BindRepeating(&BubbleExample::ShowBubble, base::Unretained(this),
-                          &no_shadow_opaque_,
-                          BubbleBorder::NO_SHADOW_OPAQUE_BORDER, false),
-      ASCIIToUTF16("Opaque Border")));
   big_shadow_ = container->AddChildView(std::make_unique<LabelButton>(
       base::BindRepeating(&BubbleExample::ShowBubble, base::Unretained(this),
                           &big_shadow_, BubbleBorder::BIG_SHADOW, false),
