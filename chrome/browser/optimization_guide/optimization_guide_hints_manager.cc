@@ -291,6 +291,8 @@ OptimizationGuideHintsManager::OptimizationGuideHintsManager(
               ExternalAppPackageNamesApprovedForFetch()),
       top_host_provider_(top_host_provider),
       clock_(base::DefaultClock::GetInstance()) {
+  DCHECK(optimization_guide_service_);
+
   RegisterOptimizationTypes(optimization_types_at_initialization);
 
   g_browser_process->network_quality_tracker()
@@ -304,27 +306,23 @@ OptimizationGuideHintsManager::OptimizationGuideHintsManager(
 
   NavigationPredictorKeyedService* navigation_predictor_service =
       NavigationPredictorKeyedServiceFactory::GetForProfile(profile_);
-  if (navigation_predictor_service)
-    navigation_predictor_service->AddObserver(this);
+  navigation_predictor_service->AddObserver(this);
 }
 
 OptimizationGuideHintsManager::~OptimizationGuideHintsManager() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (optimization_guide_service_)
-    optimization_guide_service_->RemoveObserver(this);
+  optimization_guide_service_->RemoveObserver(this);
   g_browser_process->network_quality_tracker()
       ->RemoveEffectiveConnectionTypeObserver(this);
 
   NavigationPredictorKeyedService* navigation_predictor_service =
       NavigationPredictorKeyedServiceFactory::GetForProfile(profile_);
-  if (navigation_predictor_service)
-    navigation_predictor_service->RemoveObserver(this);
+  navigation_predictor_service->RemoveObserver(this);
 }
 
 void OptimizationGuideHintsManager::Shutdown() {
-  if (optimization_guide_service_)
-    optimization_guide_service_->RemoveObserver(this);
+  optimization_guide_service_->RemoveObserver(this);
   g_browser_process->network_quality_tracker()
       ->RemoveEffectiveConnectionTypeObserver(this);
 }
@@ -537,8 +535,7 @@ void OptimizationGuideHintsManager::OnHintCacheInitialized() {
 
   // Register as an observer regardless of hint proto override usage. This is
   // needed as a signal during testing.
-  if (optimization_guide_service_)
-    optimization_guide_service_->AddObserver(this);
+  optimization_guide_service_->AddObserver(this);
 }
 
 void OptimizationGuideHintsManager::UpdateComponentHints(
@@ -1234,7 +1231,6 @@ bool OptimizationGuideHintsManager::IsAllowedToFetchNavigationHints(
 
   if (!IsUserPermittedToFetchFromRemoteOptimizationGuide(profile_))
     return false;
-  DCHECK(!profile_->IsOffTheRecord());
 
   if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS())
     return false;

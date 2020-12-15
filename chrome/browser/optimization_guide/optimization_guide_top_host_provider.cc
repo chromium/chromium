@@ -203,11 +203,6 @@ void OptimizationGuideTopHostProvider::MaybeUpdateTopHostBlacklist(
 
   Profile* profile = Profile::FromBrowserContext(
       navigation_handle->GetWebContents()->GetBrowserContext());
-
-  // Do not update the top host list if the profile is off the record.
-  if (profile->IsOffTheRecord())
-    return;
-
   PrefService* pref_service = profile->GetPrefs();
 
   bool is_user_permitted_to_fetch_hints =

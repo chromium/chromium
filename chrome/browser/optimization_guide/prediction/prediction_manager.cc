@@ -180,13 +180,6 @@ void RecordModelTypeChanged(
       changed);
 }
 
-// Returns whether models and host model features should be fetched from the
-// remote Optimization Guide Service.
-bool ShouldFetchModelsAndHostModelFeatures(Profile* profile) {
-  return optimization_guide::features::IsRemoteFetchingEnabled() &&
-         !profile->IsOffTheRecord();
-}
-
 }  // namespace
 
 namespace optimization_guide {
@@ -617,7 +610,7 @@ void PredictionManager::SetPredictionModelDownloadManagerForTesting(
 void PredictionManager::FetchModelsAndHostModelFeatures() {
   SEQUENCE_CHECKER(sequence_checker_);
 
-  if (!ShouldFetchModelsAndHostModelFeatures(profile_))
+  if (!features::IsRemoteFetchingEnabled())
     return;
 
   ScheduleModelsAndHostModelFeaturesFetch();
@@ -1117,7 +1110,7 @@ bool PredictionManager::ProcessAndStoreHostModelFeatures(
 }
 
 void PredictionManager::MaybeScheduleModelAndHostModelFeaturesFetch() {
-  if (!ShouldFetchModelsAndHostModelFeatures(profile_))
+  if (!features::IsRemoteFetchingEnabled())
     return;
 
   if (optimization_guide::switches::
