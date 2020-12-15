@@ -23,6 +23,7 @@
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/stl_util.h"
+#include "base/strings/strcat.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -101,9 +102,8 @@ LoadedConfigs LoadConfigsBlocking(const base::FilePath& config_dir) {
     std::unique_ptr<base::Value> app_config =
         deserializer.Deserialize(nullptr, &error_msg);
     if (!app_config) {
-      result.errors.push_back(
-          (std::stringstream() << file << " was not valid JSON: " << error_msg)
-              .str());
+      result.errors.push_back(base::StrCat(
+          {file.AsUTF8Unsafe(), " was not valid JSON: ", error_msg}));
       VLOG(1) << result.errors.back();
       continue;
     }
