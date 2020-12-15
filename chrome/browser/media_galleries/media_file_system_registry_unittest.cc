@@ -513,29 +513,30 @@ void ProfileState::CheckGalleries(
   std::vector<base::string16> empty_names;
   registry->GetMediaFileSystemsForExtension(
       single_web_contents_.get(), no_permissions_extension_.get(),
-      base::Bind(&ProfileState::CompareResults, base::Unretained(this),
-                 base::StringPrintf("%s (no permission)", test.c_str()),
-                 std::cref(empty_names), std::cref(empty_expectation)));
+      base::BindOnce(&ProfileState::CompareResults, base::Unretained(this),
+                     base::StringPrintf("%s (no permission)", test.c_str()),
+                     std::cref(empty_names), std::cref(empty_expectation)));
   content::RunAllTasksUntilIdle();
   EXPECT_EQ(1, GetAndClearComparisonCount());
 
   // Read permission only.
   registry->GetMediaFileSystemsForExtension(
       single_web_contents_.get(), regular_permission_extension_.get(),
-      base::Bind(&ProfileState::CompareResults, base::Unretained(this),
-                 base::StringPrintf("%s (regular permission)", test.c_str()),
-                 std::cref(compare_names_read_),
-                 std::cref(regular_extension_galleries)));
+      base::BindOnce(
+          &ProfileState::CompareResults, base::Unretained(this),
+          base::StringPrintf("%s (regular permission)", test.c_str()),
+          std::cref(compare_names_read_),
+          std::cref(regular_extension_galleries)));
   content::RunAllTasksUntilIdle();
   EXPECT_EQ(1, GetAndClearComparisonCount());
 
   // All galleries permission.
   registry->GetMediaFileSystemsForExtension(
       single_web_contents_.get(), all_permission_extension_.get(),
-      base::Bind(&ProfileState::CompareResults, base::Unretained(this),
-                 base::StringPrintf("%s (all permission)", test.c_str()),
-                 std::cref(compare_names_all_),
-                 std::cref(all_extension_galleries)));
+      base::BindOnce(&ProfileState::CompareResults, base::Unretained(this),
+                     base::StringPrintf("%s (all permission)", test.c_str()),
+                     std::cref(compare_names_all_),
+                     std::cref(all_extension_galleries)));
   content::RunAllTasksUntilIdle();
   EXPECT_EQ(1, GetAndClearComparisonCount());
 }
@@ -546,7 +547,7 @@ FSInfoMap ProfileState::GetGalleriesInfo(extensions::Extension* extension) {
       g_browser_process->media_file_system_registry();
   registry->GetMediaFileSystemsForExtension(
       single_web_contents_.get(), extension,
-      base::Bind(&GetGalleryInfoCallback, base::Unretained(&results)));
+      base::BindOnce(&GetGalleryInfoCallback, base::Unretained(&results)));
   content::RunAllTasksUntilIdle();
   return results;
 }
