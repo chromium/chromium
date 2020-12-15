@@ -68,7 +68,8 @@
    * Returns true if entry can be shared with the specified VM.
    * @param {string} vmName
    * @param {!Entry} entry
-   * @return {boolean} persist If path is to be persisted.
+   * @param {boolean} persist If path is to be persisted.
+   * @return {boolean}
    */
   canSharePath(vmName, entry, persist) {}
 }
