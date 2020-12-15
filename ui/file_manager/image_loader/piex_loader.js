@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-console.log('[PiexLoader] loaded');
-
 /**
  * Declares the piex-wasm Module interface. The Module has many interfaces
  * but only declare the parts required for PIEX work.
  *
  * @typedef {{
  *  calledRun: boolean,
- *  onAbort: function((!Error|string)):undefined,
  *  HEAP8: !Uint8Array,
  *  _malloc: function(number):number,
  *  _free: function(number):undefined,
@@ -20,10 +17,29 @@ console.log('[PiexLoader] loaded');
 let PiexWasmModule;
 
 /**
- * Module defined by 'piex.js.wasm' script.
+ * Subset of the Emscripten Module API required for initialization. See
+ * https://emscripten.org/docs/api_reference/module.html#module.
+ * @typedef {{
+ *  onAbort: function((!Error|string)):undefined,
+ * }}
+ */
+let ModuleInitParams;
+
+/**
+ * Module defined by 'piex.js.wasm' script upon initialization.
  * @type {!PiexWasmModule}
  */
-const PiexModule = /** @type {!PiexWasmModule} */ (globalThis['Module']) || {};
+let PiexModule;
+
+/**
+ * Module constructor defined by 'piex.js.wasm' script.
+ * @type {function(!ModuleInitParams): !Promise<!PiexWasmModule>}
+ */
+const initPiexModule =
+    /** @type {function(!ModuleInitParams): !Promise<!PiexWasmModule>} */ (
+        globalThis['createPiexModule']);
+
+console.log(`[PiexLoader] available [init=${typeof initPiexModule}]`);
 
 /**
  * Set true if the Module.onAbort() handler is called.
@@ -31,17 +47,39 @@ const PiexModule = /** @type {!PiexWasmModule} */ (globalThis['Module']) || {};
  */
 let piexFailed = false;
 
-/**
- * Installs an (Emscripten) Module.onAbort handler. Record that the Module
- * has failed in piexFailed and re-throw the error.
- *
- * @param {!Error|string} error
- * @throws {!Error|string}
- */
-PiexModule.onAbort = (error) => {
-  piexFailed = true;
-  throw error;
+const MODULE_SETTINGS = {
+  /**
+   * Installs an (Emscripten) Module.onAbort handler. Record that the
+   * Module has failed in piexFailed and re-throw the error.
+   *
+   * @param {!Error|string} error
+   * @throws {!Error|string}
+   */
+  onAbort: (error) => {
+    piexFailed = true;
+    throw error;
+  }
 };
+
+/** @type {?Promise<undefined>} */
+let initPiexModulePromise = null;
+/**
+ * Returns a promise that resolves once initialization is complete. PiexModule
+ * may be undefined before this promise resolves.
+ * @return {!Promise<undefined>}
+ */
+function piexModuleInitialized() {
+  if (!initPiexModulePromise) {
+    initPiexModulePromise = new Promise(resolve => {
+      initPiexModule(MODULE_SETTINGS).then(module => {
+        PiexModule = module;
+        console.log(`[PiexLoader] loaded [module=${typeof module}]`);
+        resolve();
+      });
+    });
+  }
+  return initPiexModulePromise;
+}
 
 /**
  * Module failure recovery: if piexFailed is set via onAbort due to OOM in
@@ -699,8 +737,9 @@ PiexLoader.load = function(source, onPiexModuleFailed) {
   /** @type {?ImageBuffer} */
   let imageBuffer;
 
-  return readSourceData(source)
-      .then((buffer) => {
+  return piexModuleInitialized()
+      .then(() => readSourceData(source))
+      .then((/** !ArrayBuffer */ buffer) => {
         if (piexModuleFailed()) {
           throw new Error('piex wasm module failed');
         }

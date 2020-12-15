@@ -245,14 +245,16 @@ found in the LICENSE file.
     console.log('test:', name, 'details hash', hash, details);
   }
 
-  window.Module = {
-    onRuntimeInitialized: () => document.title = 'READY',
-  };
-
   window.onload = function loadPiexModule() {
     let script = document.createElement('script');
     document.head.appendChild(script);
     script.src = '/piex.js.wasm';
+    script.onload = () => {
+      createPiexModule().then(module => {
+        window.Module = module;
+        document.title = 'READY';
+      });
+    };
   };
 
   window.onerror = (error) => {
