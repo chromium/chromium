@@ -74,7 +74,7 @@ android_apk("webview_instrumentation_apk") {
     "shell/src/org/chromium/android_webview/shell/AwShellApplication.java",
     "shell/src/org/chromium/android_webview/shell/AwShellResourceProvider.java",
     "shell/src/org/chromium/android_webview/shell/AwShellSwitches.java",
-    "shell/src/org/chromium/android_webview/shell/DrawFn.java",
+    "shell/src/org/chromium/android_webview/shell/ContextManager.java",
     "shell/src/org/chromium/android_webview/test/AwJUnit4ClassRunner.java",
     "shell/src/org/chromium/android_webview/test/AwTestContainerView.java",
     "shell/src/org/chromium/android_webview/test/AwTestRunnerActivity.java",
@@ -137,12 +137,24 @@ android_assets("webview_instrumentation_apk_assets") {
   }
 }
 
+generate_jni("draw_fn_impl_jni_headers") {
+  sources =
+      [ "shell/src/org/chromium/android_webview/shell/ContextManager.java" ]
+}
+
 shared_library("libstandalonelibwebviewchromium") {
   testonly = true
-  sources = [ "shell/src/draw_gl/draw_fn.cc" ]
+  sources = [
+    "shell/src/draw_fn/allocator.cc",
+    "shell/src/draw_fn/allocator.h",
+    "shell/src/draw_fn/context_manager.cc",
+    "shell/src/draw_fn/context_manager.h",
+  ]
   ldflags = [ "-Wl,-shared,-Bsymbolic" ]
   deps = [
+    ":draw_fn_impl_jni_headers",
     ":webview_instrumentation_test_native_jni_impl",
+    "//android_webview/browser/gfx",
     "//android_webview/lib",
     "//android_webview/lib:webview_entry_point",
     "//android_webview/nonembedded",
@@ -151,7 +163,9 @@ shared_library("libstandalonelibwebviewchromium") {
     "//components/autofill/android/provider/test_support:component_autofill_provider_native_test_support",
     "//components/heap_profiling/multi_process:test_support",
     "//content/public/test/android:content_native_test_support",
+    "//ui/gl",
   ]
+  libs = [ "android" ]
   configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
   configs += [ "//build/config/android:hide_all_but_jni" ]
 }

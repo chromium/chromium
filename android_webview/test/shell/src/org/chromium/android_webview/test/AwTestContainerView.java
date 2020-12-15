@@ -9,16 +9,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
-import android.opengl.GLSurfaceView;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.view.DragEvent;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
+import android.view.Surface;
 import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.accessibility.AccessibilityNodeProvider;
 import android.view.inputmethod.EditorInfo;
@@ -27,14 +29,9 @@ import android.widget.FrameLayout;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.gfx.AwDrawFnImpl;
-import org.chromium.android_webview.shell.DrawFn;
+import org.chromium.android_webview.shell.ContextManager;
 import org.chromium.base.Callback;
 import org.chromium.content_public.browser.WebContents;
-
-import java.nio.ByteBuffer;
-
-import javax.microedition.khronos.egl.EGLConfig;
-import javax.microedition.khronos.opengles.GL10;
 
 /**
  * A View used for testing the AwContents internals.
@@ -42,6 +39,9 @@ import javax.microedition.khronos.opengles.GL10;
  * This class takes the place android.webkit.WebView would have in the production configuration.
  */
 public class AwTestContainerView extends FrameLayout {
+    private static HandlerThread sRenderThread;
+    private static Handler sRenderThreadHandler;
+
     private AwContents mAwContents;
     private AwContents.InternalAccessDelegate mInternalAccessDelegate;
 
@@ -50,67 +50,60 @@ public class AwTestContainerView extends FrameLayout {
 
     private Rect mWindowVisibleDisplayFrameOverride;
 
-    private class HardwareView extends GLSurfaceView {
-        private static final int MODE_DRAW = 0;
-        private static final int MODE_PROCESS = 1;
-        private static final int MODE_PROCESS_NO_CONTEXT = 2;
-        private static final int MODE_SYNC = 3;
+    private static final class WaitableEvent {
+        private final Object mLock = new Object();
+        private boolean mSignaled;
 
-        // mSyncLock is used to synchronized requestRender on the UI thread
-        // and drawGL on the rendering thread. The variables following
-        // are protected by it.
-        private final Object mSyncLock = new Object();
-        private int mFunctor;
-        private int mLastDrawnFunctor;
-        private boolean mSyncDone;
-        private boolean mPendingDestroy;
+        public void waitForEvent() {
+            synchronized (mLock) {
+                while (!mSignaled) {
+                    try {
+                        mLock.wait();
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        }
+
+        public void signal() {
+            synchronized (mLock) {
+                assert !mSignaled;
+                mSignaled = true;
+                mLock.notifyAll();
+            }
+        }
+    }
+
+    private class HardwareView extends SurfaceView implements SurfaceHolder.Callback {
+        // Only accessed on UI thread.
+        private int mWidth;
+        private int mHeight;
         private int mLastScrollX;
         private int mLastScrollY;
-        private Callback<int[]> mQuadrantReadbackCallback;
-
-        // Only used by drawGL on render thread to store the value of scroll offsets at most recent
-        // sync for subsequent draws.
-        private int mCommittedScrollX;
-        private int mCommittedScrollY;
-
         private boolean mHaveSurface;
         private Runnable mReadyToRenderCallback;
-        private Runnable mReadyToDetachCallback;
+
+        // Only accessed on render thread.
+        private final ContextManager mContextManager;
 
         public HardwareView(Context context) {
             super(context);
-            setEGLContextClientVersion(2); // GLES2
+            if (sRenderThread == null) {
+                sRenderThread = new HandlerThread("RenderThreadInstr");
+                sRenderThread.start();
+                sRenderThreadHandler = new Handler(sRenderThread.getLooper());
+            }
+            mContextManager = new ContextManager();
             getHolder().setFormat(PixelFormat.OPAQUE);
-            setPreserveEGLContextOnPause(true);
-            setRenderer(new Renderer() {
-                private int mWidth;
-                private int mHeight;
-
-                @Override
-                public void onDrawFrame(GL10 gl) {
-                    HardwareView.this.onDrawFrame(gl, mWidth, mHeight);
-                }
-
-                @Override
-                public void onSurfaceChanged(GL10 gl, int width, int height) {
-                    gl.glViewport(0, 0, width, height);
-                    gl.glScissor(0, 0, width, height);
-                    mWidth = width;
-                    mHeight = height;
-                }
-
-                @Override
-                public void onSurfaceCreated(GL10 gl, EGLConfig config) {}
-            });
-
-            setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+            getHolder().addCallback(this);
         }
 
         public void readbackQuadrantColors(Callback<int[]> callback) {
-            synchronized (mSyncLock) {
-                mQuadrantReadbackCallback = callback;
-            }
-            super.requestRender();
+            sRenderThreadHandler.post(() -> {
+                callback.onResult(mContextManager.draw(
+                        mWidth, mHeight, mLastScrollX, mLastScrollY, /*readbackQuadrants=*/true));
+            });
         }
 
         public boolean isReadyToRender() {
@@ -122,130 +115,57 @@ public class AwTestContainerView extends FrameLayout {
             mReadyToRenderCallback = runner;
         }
 
-        public void setReadyToDetachCallback(Runnable runner) {
-            mReadyToDetachCallback = runner;
-        }
+        @Override
+        public void surfaceCreated(SurfaceHolder holder) {}
 
         @Override
-        public void surfaceCreated(SurfaceHolder holder) {
+        public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+            mWidth = width;
+            mHeight = height;
             mHaveSurface = true;
+
+            Surface surface = holder.getSurface();
+            sRenderThreadHandler.post(() -> { mContextManager.setSurface(surface); });
+
             if (mReadyToRenderCallback != null) {
                 mReadyToRenderCallback.run();
                 mReadyToRenderCallback = null;
             }
-            super.surfaceCreated(holder);
         }
 
         @Override
         public void surfaceDestroyed(SurfaceHolder holder) {
             mHaveSurface = false;
-            if (mReadyToDetachCallback != null) {
-                mReadyToDetachCallback.run();
-                mReadyToDetachCallback = null;
-            }
-            super.surfaceDestroyed(holder);
+            WaitableEvent event = new WaitableEvent();
+            sRenderThreadHandler.post(() -> {
+                mContextManager.setSurface(null);
+                event.signal();
+            });
+            event.waitForEvent();
         }
 
         public void updateScroll(int x, int y) {
-            synchronized (mSyncLock) {
-                mLastScrollX = x;
-                mLastScrollY = y;
-            }
-        }
-
-        public void awContentsDetached() {
-            synchronized (mSyncLock) {
-                super.requestRender();
-                assert !mPendingDestroy;
-                mPendingDestroy = true;
-                try {
-                    while (!mPendingDestroy) {
-                        mSyncLock.wait();
-                    }
-                } catch (InterruptedException e) {
-                    // ...
-                }
-            }
+            mLastScrollX = x;
+            mLastScrollY = y;
         }
 
         public void drawWebViewFunctor(int functor) {
-            synchronized (mSyncLock) {
-                super.requestRender();
-                assert mFunctor == 0;
-                mFunctor = functor;
-                mSyncDone = false;
-                try {
-                    while (!mSyncDone) {
-                        mSyncLock.wait();
-                    }
-                } catch (InterruptedException e) {
-                    // ...
-                }
+            if (!mHaveSurface) {
+                return;
             }
+
+            WaitableEvent syncEvent = new WaitableEvent();
+            sRenderThreadHandler.post(() -> {
+                drawOnRt(syncEvent, functor, mWidth, mHeight, mLastScrollX, mLastScrollY);
+            });
+            syncEvent.waitForEvent();
         }
 
-        public void onDrawFrame(GL10 gl, int width, int height) {
-            int functor;
-            int scrollX;
-            int scrollY;
-            synchronized (mSyncLock) {
-                scrollX = mLastScrollX;
-                scrollY = mLastScrollY;
-
-                if (mFunctor != 0) {
-                    assert !mSyncDone;
-                    functor = mFunctor;
-                    mLastDrawnFunctor = mFunctor;
-                    mFunctor = 0;
-                    DrawFn.sync(functor, false);
-                    mSyncDone = true;
-                    mSyncLock.notifyAll();
-                } else {
-                    functor = mLastDrawnFunctor;
-                    if (mPendingDestroy) {
-                        DrawFn.destroyReleased();
-                        mPendingDestroy = false;
-                        mLastDrawnFunctor = 0;
-                        mSyncLock.notifyAll();
-                        return;
-                    }
-                }
-            }
-            if (functor != 0) {
-                DrawFn.drawGL(functor, width, height, scrollX, scrollY);
-
-                Callback<int[]> quadrantReadbackCallback = null;
-                synchronized (mSyncLock) {
-                    if (mQuadrantReadbackCallback != null) {
-                        quadrantReadbackCallback = mQuadrantReadbackCallback;
-                        mQuadrantReadbackCallback = null;
-                    }
-                }
-                if (quadrantReadbackCallback != null) {
-                    int quadrantColors[] = new int[4];
-                    int quarterWidth = width / 4;
-                    int quarterHeight = height / 4;
-                    ByteBuffer buffer = ByteBuffer.allocate(4);
-                    gl.glReadPixels(quarterWidth, quarterHeight * 3, 1, 1, GL10.GL_RGBA,
-                            GL10.GL_UNSIGNED_BYTE, buffer);
-                    quadrantColors[0] = readbackToColor(buffer);
-                    gl.glReadPixels(quarterWidth * 3, quarterHeight * 3, 1, 1, GL10.GL_RGBA,
-                            GL10.GL_UNSIGNED_BYTE, buffer);
-                    quadrantColors[1] = readbackToColor(buffer);
-                    gl.glReadPixels(quarterWidth, quarterHeight, 1, 1, GL10.GL_RGBA,
-                            GL10.GL_UNSIGNED_BYTE, buffer);
-                    quadrantColors[2] = readbackToColor(buffer);
-                    gl.glReadPixels(quarterWidth * 3, quarterHeight, 1, 1, GL10.GL_RGBA,
-                            GL10.GL_UNSIGNED_BYTE, buffer);
-                    quadrantColors[3] = readbackToColor(buffer);
-                    quadrantReadbackCallback.onResult(quadrantColors);
-                }
-            }
-        }
-
-        private int readbackToColor(ByteBuffer buffer) {
-            return Color.argb(buffer.get(3) & 0xff, buffer.get(0) & 0xff, buffer.get(1) & 0xff,
-                    buffer.get(2) & 0xff);
+        private void drawOnRt(WaitableEvent syncEvent, int functor, int width, int height,
+                int scrollX, int scrollY) {
+            mContextManager.sync(functor, false);
+            syncEvent.signal();
+            mContextManager.draw(width, height, scrollX, scrollY, /*readbackQuadrants=*/false);
         }
     }
 
@@ -278,7 +198,7 @@ public class AwTestContainerView extends FrameLayout {
     public void initialize(AwContents awContents) {
         mAwContents = awContents;
         if (isBackedByHardwareView()) {
-            AwDrawFnImpl.setDrawFnFunctionTable(DrawFn.getDrawFnFunctionTable());
+            AwDrawFnImpl.setDrawFnFunctionTable(ContextManager.getDrawFnFunctionTable());
         }
     }
 
@@ -339,15 +259,6 @@ public class AwTestContainerView extends FrameLayout {
         mAttachedContents = true;
     }
 
-    private void detachedContentsInternal() {
-        assert mAttachedContents;
-        mAwContents.onDetachedFromWindow();
-        mAttachedContents = false;
-        if (mHardwareView != null) {
-            mHardwareView.awContentsDetached();
-        }
-    }
-
     @Override
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
@@ -356,22 +267,14 @@ public class AwTestContainerView extends FrameLayout {
         } else {
             mHardwareView.setReadyToRenderCallback(() -> attachedContentsInternal());
         }
-
-        if (mHardwareView != null) {
-            mHardwareView.setReadyToDetachCallback(() -> detachedContentsInternal());
-        }
     }
 
     @Override
     public void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        if (mHardwareView == null || mHardwareView.isReadyToRender()) {
-            detachedContentsInternal();
-
-            if (mHardwareView != null) {
-                mHardwareView.setReadyToRenderCallback(null);
-                mHardwareView.setReadyToDetachCallback(null);
-            }
+        if (mAttachedContents) {
+            mAwContents.onDetachedFromWindow();
+            mAttachedContents = false;
         }
     }
 
