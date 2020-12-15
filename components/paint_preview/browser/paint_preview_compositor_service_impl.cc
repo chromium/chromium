@@ -61,7 +61,7 @@ PaintPreviewCompositorServiceImpl::CreateCompositor(
       FROM_HERE,
       base::BindOnce(
           [](mojo::Remote<mojom::PaintPreviewCompositorCollection>* remote,
-             PaintPreviewCompositorClientImpl* compositor,
+             mojo::Remote<mojom::PaintPreviewCompositor>* compositor,
              base::OnceCallback<void(const base::UnguessableToken&)>
                  on_connected) {
             // This binds the remote in compositor to the
@@ -70,7 +70,10 @@ PaintPreviewCompositorServiceImpl::CreateCompositor(
                 compositor->BindNewPipeAndPassReceiver(),
                 std::move(on_connected));
           },
-          compositor_service_.get(), compositor.get(),
+          // These are both deleted on `compositor_task_runner_` using
+          // TaskRunnerDeleter and at this point neither can be scheduled for
+          // deletion so passing raw pointers is safe.
+          compositor_service_.get(), compositor->GetCompositor(),
           // This builder ensures the callback it returns is called on the
           // correct sequence.
           compositor->BuildCompositorCreatedCallback(

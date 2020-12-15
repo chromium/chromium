@@ -139,12 +139,6 @@ void PaintPreviewCompositorClientImpl::IsBoundAndConnected(
                      std::move(callback)));
 }
 
-mojo::PendingReceiver<mojom::PaintPreviewCompositor>
-PaintPreviewCompositorClientImpl::BindNewPipeAndPassReceiver() {
-  DCHECK(compositor_task_runner_->RunsTasksInCurrentSequence());
-  return compositor_->BindNewPipeAndPassReceiver();
-}
-
 PaintPreviewCompositorClientImpl::OnCompositorCreatedCallback
 PaintPreviewCompositorClientImpl::BuildCompositorCreatedCallback(
     base::OnceClosure user_closure,

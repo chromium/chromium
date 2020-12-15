@@ -59,9 +59,10 @@ class PaintPreviewCompositorClientImpl : public PaintPreviewCompositorClient {
       override;
   void SetRootFrameUrl(const GURL& url) override;
 
-  // Exposes underlying BindNewPipeAndPassReceiver method of |compositor_|.
-  mojo::PendingReceiver<mojom::PaintPreviewCompositor>
-  BindNewPipeAndPassReceiver();
+  // The returned remote should only be used on `compositor_task_runner_`.
+  mojo::Remote<mojom::PaintPreviewCompositor>* GetCompositor() {
+    return compositor_.get();
+  }
 
   void IsBoundAndConnected(base::OnceCallback<void(bool)> callback);
 
