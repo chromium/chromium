@@ -11,12 +11,9 @@ import com.google.android.gms.cast.framework.CastOptions;
 import com.google.android.gms.cast.framework.OptionsProvider;
 import com.google.android.gms.cast.framework.SessionProvider;
 
-import org.chromium.base.annotations.UsedByReflection;
-
 import java.util.List;
 
 /** {@link OptionsProvider} implementation for Chrome MR. */
-@UsedByReflection("CastContext.java in cast_framework")
 public class CastOptionsProvider implements OptionsProvider {
     @Override
     public CastOptions getCastOptions(Context context) {
