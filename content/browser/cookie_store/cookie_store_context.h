@@ -9,6 +9,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/thread_annotations.h"
 #include "content/browser/cookie_store/cookie_store_manager.h"
 #include "content/common/content_export.h"
 #include "services/network/public/mojom/network_service.mojom.h"
@@ -106,14 +107,19 @@ class CONTENT_EXPORT CookieStoreContext
       mojo::PendingReceiver<blink::mojom::CookieStore> receiver);
 
   // Only accessed on the service worker core thread.
-  std::unique_ptr<CookieStoreManager> cookie_store_manager_;
+  std::unique_ptr<CookieStoreManager> cookie_store_manager_
+      GUARDED_BY_CONTEXT(core_sequence_checker_);
 
 #if DCHECK_IS_ON()
-  // Only accesssed on the UI thread.
-  bool initialize_called_ = false;
+  // Only accessed on the UI thread.
+  bool initialize_called_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 #endif  // DCHECK_IS_ON()
 
+  // Tracks accesses on the UI thread.
   SEQUENCE_CHECKER(sequence_checker_);
+
+  // Tracks accesses on the service worker core thread.
+  SEQUENCE_CHECKER(core_sequence_checker_);
 
   DISALLOW_COPY_AND_ASSIGN(CookieStoreContext);
 };
