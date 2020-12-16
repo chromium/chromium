@@ -91,8 +91,9 @@ class BluetoothPrivateSetAdapterStateFunction
  private:
   ~BluetoothPrivateSetAdapterStateFunction() override;
 
-  base::Closure CreatePropertySetCallback(const std::string& property_name);
-  base::Closure CreatePropertyErrorCallback(const std::string& property_name);
+  base::OnceClosure CreatePropertySetCallback(const std::string& property_name);
+  base::OnceClosure CreatePropertyErrorCallback(
+      const std::string& property_name);
   void OnAdapterPropertySet(const std::string& property);
   void OnAdapterPropertyError(const std::string& property);
   void SendError();

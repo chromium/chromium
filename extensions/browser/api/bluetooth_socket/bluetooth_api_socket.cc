@@ -119,9 +119,8 @@ void BluetoothApiSocket::Receive(
     return;
   }
 
-  socket_->Receive(count,
-                   success_callback,
-                   base::Bind(&OnSocketReceiveError, error_callback));
+  socket_->Receive(count, success_callback,
+                   base::BindOnce(&OnSocketReceiveError, error_callback));
 }
 
 // static
@@ -158,10 +157,8 @@ void BluetoothApiSocket::Send(scoped_refptr<net::IOBuffer> buffer,
     return;
   }
 
-  socket_->Send(buffer,
-                buffer_size,
-                success_callback,
-                base::Bind(&OnSocketSendError, error_callback));
+  socket_->Send(buffer, buffer_size, success_callback,
+                base::BindOnce(&OnSocketSendError, error_callback));
 }
 
 // static
@@ -184,7 +181,7 @@ void BluetoothApiSocket::Accept(
   }
 
   socket_->Accept(success_callback,
-                  base::Bind(&OnSocketAcceptError, error_callback));
+                  base::BindOnce(&OnSocketAcceptError, error_callback));
 }
 
 // static

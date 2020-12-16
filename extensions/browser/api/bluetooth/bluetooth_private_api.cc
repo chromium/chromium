@@ -252,20 +252,20 @@ void BluetoothPrivateSetAdapterStateFunction::DoWork(
     Respond(NoArguments());
 }
 
-base::Closure
+base::OnceClosure
 BluetoothPrivateSetAdapterStateFunction::CreatePropertySetCallback(
     const std::string& property_name) {
   BLUETOOTH_LOG(DEBUG) << "Set property succeeded: " << property_name;
-  return base::Bind(
+  return base::BindOnce(
       &BluetoothPrivateSetAdapterStateFunction::OnAdapterPropertySet, this,
       property_name);
 }
 
-base::Closure
+base::OnceClosure
 BluetoothPrivateSetAdapterStateFunction::CreatePropertyErrorCallback(
     const std::string& property_name) {
   BLUETOOTH_LOG(DEBUG) << "Set property failed: " << property_name;
-  return base::Bind(
+  return base::BindOnce(
       &BluetoothPrivateSetAdapterStateFunction::OnAdapterPropertyError, this,
       property_name);
 }
@@ -394,10 +394,10 @@ void BluetoothPrivateDisconnectAllFunction::DoWork(
   }
 
   device->Disconnect(
-      base::Bind(&BluetoothPrivateDisconnectAllFunction::OnSuccessCallback,
-                 this),
-      base::Bind(&BluetoothPrivateDisconnectAllFunction::OnErrorCallback, this,
-                 adapter, params_->device_address));
+      base::BindOnce(&BluetoothPrivateDisconnectAllFunction::OnSuccessCallback,
+                     this),
+      base::BindOnce(&BluetoothPrivateDisconnectAllFunction::OnErrorCallback,
+                     this, adapter, params_->device_address));
 }
 
 void BluetoothPrivateDisconnectAllFunction::OnSuccessCallback() {
@@ -437,10 +437,10 @@ void BluetoothPrivateForgetDeviceFunction::DoWork(
   }
 
   device->Forget(
-      base::Bind(&BluetoothPrivateForgetDeviceFunction::OnSuccessCallback,
-                 this),
-      base::Bind(&BluetoothPrivateForgetDeviceFunction::OnErrorCallback, this,
-                 adapter, params_->device_address));
+      base::BindOnce(&BluetoothPrivateForgetDeviceFunction::OnSuccessCallback,
+                     this),
+      base::BindOnce(&BluetoothPrivateForgetDeviceFunction::OnErrorCallback,
+                     this, adapter, params_->device_address));
 }
 
 void BluetoothPrivateForgetDeviceFunction::OnSuccessCallback() {
