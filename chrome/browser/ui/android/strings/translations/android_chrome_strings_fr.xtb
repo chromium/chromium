@@ -12,6 +12,7 @@
 <translation id="10614374240317010">Jamais enregistrés</translation>
 <translation id="1067922213147265141">Autres services Google</translation>
 <translation id="107147699690128016">Si vous modifiez l'extension du fichier, celui-ci pourrait s'ouvrir dans une application différente et potentiellement endommager votre appareil.</translation>
+<translation id="1094515529340404628">Groupe Web et mesure des performances publicitaires</translation>
 <translation id="1100066534610197918">Dans nouvel onglet dans groupe</translation>
 <translation id="1105960400813249514">Capture d'écran</translation>
 <translation id="1111673857033749125">Les favoris enregistrés sur vos autres appareils s'affichent ici.</translation>
@@ -227,6 +228,7 @@ Appuyez sur n'importe quel mot pour effectuer une recherche. Pour affiner la rec
 <translation id="2536728043171574184">Affichage d'une copie hors connexion de la page</translation>
 <translation id="2537178555904266562">Erreur lors de la synchronisation des mots de passe</translation>
 <translation id="2546283357679194313">Cookies et données de sites</translation>
+<translation id="2562889244313180139">Autorisez les sites Web et les applications à vous proposer une expérience mieux adaptée à l'aide d'un alias non identifiable.</translation>
 <translation id="2567385386134582609">IMAGE</translation>
 <translation id="2571711316400087311">Proposer d'envoyer les pages dans d'autres langues vers Google Traduction</translation>
 <translation id="2581165646603367611">Cette action aura pour effet de vider le cache et de supprimer les cookies, ainsi que d'autres données de site que Chrome ne considère pas comme importantes.</translation>
@@ -714,6 +716,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="6005538289190791541">Mot de passe suggéré</translation>
 <translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Vous avez <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> page}one{Vous avez <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> page}other{Vous avez <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> pages}}</translation>
 <translation id="6014293228235665243">Non lu</translation>
+<translation id="6018309500671889594">Autorisez les annonceurs à analyser les campagnes publicitaires à l'aide d'informations non identifiables.</translation>
 <translation id="6036057147555329831">ICU supplémentaire</translation>
 <translation id="6039379616847168523">Accéder à l'onglet suivant</translation>
 <translation id="6040143037577758943">Fermer</translation>
@@ -896,6 +899,7 @@ Les données de votre session de navigation privée ne sont effacées de Chrome 
 <translation id="718926126787620637">Liste des dossiers de favoris ouverte à hauteur maximale</translation>
 <translation id="7189372733857464326">En attente de la fin de la mise à jour des services Google Play</translation>
 <translation id="7191430249889272776">L'onglet a été ouvert en arrière-plan.</translation>
+<translation id="720894724577012575">Catégories : <ph name="COMMA_SEPERATED_CATEGORY_LIST" />.</translation>
 <translation id="7233236755231902816">Pour afficher le Web dans votre langue, téléchargez la dernière version de Chrome</translation>
 <translation id="7248069434667874558">Assurez-vous que la synchronisation est activée sur votre <ph name="TARGET_DEVICE_NAME" /> dans Chrome</translation>
 <translation id="7274013316676448362">Site bloqué</translation>
@@ -921,6 +925,7 @@ Les données de votre session de navigation privée ne sont effacées de Chrome 
 <translation id="7403691278183511381">Expérience de première utilisation de Chrome</translation>
 <translation id="741204030948306876">J'accepte</translation>
 <translation id="7413229368719586778">Date de début : <ph name="DATE" /></translation>
+<translation id="7416941666639889592">En rejoignant un groupe Web, vous autorisez les sites à adapter votre expérience Web sans utiliser vos informations personnelles. De cette façon, les sites Web et les annonceurs savent seulement que des milliers d'utilisateurs ont un centre d'intérêt en commun.</translation>
 <translation id="7431991332293347422">Contrôler la manière dont votre historique de navigation est utilisé pour personnaliser la recherche et plus encore</translation>
 <translation id="7435356471928173109">Mode désactivé par votre administrateur</translation>
 <translation id="7437998757836447326">Se déconnecter de Chrome</translation>
@@ -1122,6 +1127,7 @@ Les données de votre session de navigation privée ne sont effacées de Chrome 
 <translation id="8748850008226585750">Contenu masqué</translation>
 <translation id="8788265440806329501">Historique de navigation fermé</translation>
 <translation id="8788968922598763114">Rouvrir le dernier onglet fermé</translation>
+<translation id="8795672590390389447">Privacy sandbox</translation>
 <translation id="8798449543960971550">Lu</translation>
 <translation id="8812260976093120287">Sur certains sites Web, vous pouvez payer depuis votre appareil avec les applications de paiement compatibles indiquées ci-dessus.</translation>
 <translation id="881688628773363275">Le contenu de l'onglet "Aperçu" n'est pas visible.</translation>

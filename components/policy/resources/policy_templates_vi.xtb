@@ -1802,6 +1802,13 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
       Việc đặt chính sách này thành Tắt sẽ cho phép phần mềm này đưa mã nêu trên vào các quy trình của <ph name="PRODUCT_NAME" />.
 
       Bất kể chính sách này có giá trị như thế nào, thì trình duyệt cũng sẽ không ngăn chặn phần mềm bên thứ ba đưa mã thực thi vào các quy trình của trình duyệt trên một máy liên kết với miền <ph name="MS_AD_NAME" />.</translation>
+<translation id="3456292544936505775">Chính sách này kiểm soát khung thời gian mà thiết bị <ph name="PRODUCT_OS_NAME" /> không được phép tự động kiểm tra xem có bản cập nhật hay không.
+      Khi bạn đặt chính sách này thành một danh sách các khoảng thời gian chứ không phải danh sách trống:
+      Các thiết bị sẽ không thể tự động kiểm tra xem có bản cập nhật hay không trong những khoảng thời gian đã chỉ định. Do các vấn đề bảo mật tiềm ẩn, chính sách này sẽ không ảnh hưởng đến các thiết bị yêu cầu hạ cấp phiên bản doanh nghiệp hoặc các thiết bị chạy phiên bản <ph name="PRODUCT_OS_NAME" /> thấp hơn phiên bản tối thiểu. Ngoài ra, chính sách này sẽ không chặn hoạt động kiểm tra bản cập nhật do người dùng hoặc quản trị viên yêu cầu.
+      Kể từ phiên bản M88, chính sách này sẽ hủy quá trình cập nhật liên tục khi đạt đến khoảng thời gian hạn chế. Quá trình tự động cập nhật tiếp theo sau khi hết khoảng thời gian hạn chế sẽ tự động tiếp tục. Chính sách này sẽ không ảnh hưởng đến các thiết bị cập nhật lên Bản dựng Quick Fix.
+      Khi chính sách này không được đặt hoặc không chứa khoảng thời gian:
+      Chính sách này sẽ không chặn quá trình tự động kiểm tra bản cập nhật, nhưng các chính sách khác có thể sẽ chặn.
+      Cho đến phiên bản M88, tính năng này chỉ được bật trên các thiết bị <ph name="PRODUCT_OS_NAME" /> được định cấu hình thành kiosk tự động chạy. Chính sách này sẽ không hạn chế các thiết bị khác. Tuy nhiên, kể từ phiên bản M89, chính sách này được bật trên tất cả thiết bị <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="3459509316159669723">In</translation>
 <translation id="3461279434465463233">Báo cáo trạng thái nguồn</translation>
 <translation id="3478024346823118645">Xóa dữ liệu người dùng khi đăng xuất</translation>

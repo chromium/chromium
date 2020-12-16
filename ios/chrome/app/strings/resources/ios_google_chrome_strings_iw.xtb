@@ -30,6 +30,7 @@
 <translation id="3706101708757577809">‏אפשר עכשיו להשתמש ב-Chrome בכל פעם שמקישים על קישורים בהודעות, במסמכים ובאפליקציות אחרות.</translation>
 <translation id="384394811301901750">‏Google Chrome לא יכול להשתמש עכשיו במצלמה</translation>
 <translation id="3980220367029651214">‏מתבצעת החלפה של חשבונות סנכרון מ-<ph name="USER_EMAIL1" /> ל-<ph name="USER_EMAIL2" />. הנתונים הקיימים שלך ב-Chrome מנוהלים על-ידי <ph name="DOMAIN" />. פעולה זו תמחק את הנתונים שלך מהמכשיר הזה, אבל הם יישארו ב-<ph name="USER_EMAIL1" />.</translation>
+<translation id="3984746313391923992">‏לפי דרישת הארגון שלך, אין אפשרות להתחבר לחשבון ב-Chrome.</translation>
 <translation id="3988789688219830639">‏ל-Google Chrome אין גישה לתמונות או לסרטונים שלך. אפשר גישה ב'הגדרות iOS' &gt; 'פרטיות' &gt; 'תמונות'.</translation>
 <translation id="4099578267706723511">‏אם שולחים אלינו נתוני שימוש ודוחות קריסה, עוזרים לשפר את Chrome.</translation>
 <translation id="415767770115540173">‏תוכל ליהנות מחוויית Google משופרת ב-Chrome בהתבסס על המיקום שלך.</translation>
@@ -54,6 +55,7 @@
 <translation id="6600954340915313787">‏הועתק אל Chrome</translation>
 <translation id="6648150602980899529">‏נכנסת עם חשבון המנוהל על-ידי <ph name="DOMAIN" /> שמעניק למנהל שלו שליטה על הנתונים שלך ב-Chrome. הנתונים שלך ישויכו לצמיתות אל החשבון הזה. יציאה מ-Chrome תמחק את הנתונים שלך מהמכשיר הזה, אבל הם יישארו בחשבון Google שלך.</translation>
 <translation id="6676840375528380067">‏למחוק את נתוני Chrome שלך מהמכשיר הזה?</translation>
+<translation id="6822363243974874813">‏לאחר היציאה מהחשבון ב-Chrome, הסימניות, ההיסטוריה, הסיסמאות והגדרות אחרות במחשב הוסרו ממכשיר זה. הנתונים המסונכרנים של Chrome עדיין שמורים בחשבון שלך.</translation>
 <translation id="6822673484890854830">‏Chrome לא הצליח לבדוק את כל הסיסמאות. אפשר לנסות שוב מאוחר יותר.</translation>
 <translation id="7124339256045485976">‏Chrome יתעדכן באופן קבוע</translation>
 <translation id="7161390184744336561">‏Google Chrome אינו מעודכן</translation>

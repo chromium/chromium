@@ -226,7 +226,7 @@
 <translation id="1327466551276625742">Habilitar mensaje de configuración de red si no hay conexión</translation>
 <translation id="1330145147221172764">Habilitar el teclado en pantalla</translation>
 <translation id="13356285923490863">Nombre de la política</translation>
-<translation id="1338603603553894503">Especifica si el selector de perfiles se habilita, inhabilita o fuerza al iniciar el navegador.
+<translation id="1338603603553894503">Especifica si el selector de perfiles está habilitado, inhabilitado o forzado al iniciar el navegador.
 
       De forma predeterminada, no se mostrará el selector de perfiles si se inicia el navegador en modo Incógnito o de invitado, se especifica un directorio de perfiles o URL por línea de comandos, se solicita de forma explícita que se abra una app, se inició el navegador mediante una notificación nativa, hay un solo perfil disponible o se establece la política ForceBrowserSignin como verdadera.
 

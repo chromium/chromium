@@ -3968,6 +3968,11 @@ Durch Festlegen dieser Richtlinie bestimmen Sie, ob sich ein Nutzer in <ph name=
 
       Ist diese Richtlinie deaktiviert oder nicht konfiguriert, werden keine Informationen zur App-Nutzung gesendet.</translation>
 <translation id="6821268164692776674"><ph name="CLOUD_PRINT_NAME" />- und "In Google Drive speichern"-Ziele</translation>
+<translation id="6823273740874361732">Mit dieser Richtlinie werden Einstellungen zur Erweiterungsverwaltung für <ph name="PRODUCT_NAME" /> gesteuert, darunter Einstellungen, die von anderen auf Erweiterungen bezogenen Richtlinien geregelt werden. Durch diese Richtlinie werden alle älteren Richtlinien überschrieben.
+
+      Mit dieser Richtlinie wird eine Erweiterungs-ID oder eine Update-URL nur ihrer bestimmten Einstellung zugeordnet. Eine Standardkonfiguration kann für die Spezial-ID „<ph name="DEFAULT_SCOPE" />“ festgelegt werden, die auf alle Erweiterungen angewendet wird, für die keine benutzerdefinierte Konfiguration in dieser Richtlinie konfiguriert ist. Bei einer Update-URL wird die Konfiguration auf alle Erweiterungen mit genau der im Manifest dieser Erweiterung angegebenen Update-URL angewendet ( http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy ). Wenn für „override_update_url“ die Option „True“ festgelegt ist, wird die Erweiterung über die in der Richtlinie „<ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />“ oder im Feld „update_url“ dieser Richtlinie angegebene Update-URL installiert und aktualisiert. Das Flag „override_update_url“ wird ignoriert, wenn „update_url“ eine URL für den Chrome Web Store ist.
+
+      Hinweis: In Windows®-Instanzen, die nicht Teil einer <ph name="MS_AD_NAME" />-Domain sind, bleibt die erzwungene Installation auf die im Chrome Web Store aufgeführten Apps und Erweiterungen beschränkt.</translation>
 <translation id="6823711520976094072">Wenn Sie einen Wert unter 1 MB oder gar keinen Wert festlegen, verwendet <ph name="PRODUCT_OS_NAME" /> beim Installieren durch mehrere Nutzer auf demselben Gerät die Standardgröße von 256 MiB zum Speichern von Apps und Erweiterungen im Cache. Hierdurch wird ein nochmaliges Herunterladen für jeden Nutzer vermieden.</translation>
 <translation id="682408981080798691">Ist die Richtlinie aktiviert oder nicht konfiguriert, wird die Renderer-Codeintegrität aktiviert.
 
@@ -4440,6 +4445,7 @@ Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, 
       Wenn die Richtlinie nicht konfiguriert ist, sind keine Ausnahmen möglich.
 
       Unter <ph name="MS_WIN_NAME" /> steht diese Funktion nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain sind, auf denen Windows 10 Pro läuft oder die über <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> verwaltet werden. Unter <ph name="MAC_OS_NAME" /> steht diese Funktion nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden oder per MCX mit einer Domain verbunden sind.</translation>
+<translation id="7417438464912687020">Verbindungen zu diesem Computer per Remotezugriff erlauben</translation>
 <translation id="7417972229667085380">Prozentsatz für die Skalierung der Inaktivitätsspanne im Präsentationsmodus (veraltet)</translation>
 <translation id="7421483919690710988">Cache-Größe für Mediendatenträger in Byte festlegen</translation>
 <translation id="7424751532654212117">Liste der Ausnahmen von der Liste der deaktivierten Plug-ins</translation>
@@ -4873,6 +4879,31 @@ Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, 
 <translation id="8133152694354699657">Wenn die Richtlinie auf "True" gesetzt oder nicht konfiguriert ist, steht Nutzern "Zum Suchen tippen" zur Verfügung und sie können die Funktion aktivieren oder deaktivieren.
 
       Ist sie auf "False" gesetzt, wird "Zum Suchen tippen" vollständig deaktiviert.</translation>
+<translation id="8135271712389620651">Konfiguriert eine Liste mit Regeln zur Vermeidung von Datenlecks in <ph name="PRODUCT_OS_NAME" />.
+      Datenlecks können unter anderem beim Kopieren und Einfügen von Daten, beim Übertragen von Dateien, beim Drucken, bei der Bildschirmfreigabe oder beim Aufnehmen von Screenshots auftreten.
+
+Jede Regel hat folgende Bestandteile:
+– Eine Liste von Quellen, die als URLs definiert sind. Alle Daten in den Quellen werden als vertrauliche Daten behandelt, auf die Einschränkungen angewendet werden.
+      – Eine Liste von Zielen, die als URLs oder Komponenten definiert sind und für die vertrauliche Daten entweder freigegeben oder nicht freigegeben werden dürfen.
+      – Eine Liste von Einschränkungen, die auf die Daten der Quellen angewendet werden.
+
+      Regeln können hinzugefügt werden, um Einschränkungen für Folgendes zu steuern:
+– Daten in der Zwischenablage, die zwischen Quellen und Zielen geteilt werden.
+      – Die Aufnahme von Screenshots der Quellen.
+      – Das Drucken von Quellen.
+      – Die Privatsphärefunktion, wenn jemand eine der Quellen sehen könnte.
+      – Die Bildschirmfreigabe, wenn eine der Quellen sichtbar ist.
+
+      Die Einschränkungsebene kann mit BLOCK oder ALLOW festgelegt werden.
+      – Wenn die Einschränkung auf BLOCK gesetzt ist, wird die Aktion nicht zugelassen.
+      – Wenn die Einschränkung auf ALLOW gesetzt ist, wird die Aktion zugelassen.
+
+      Hinweise:
+– Die Einschränkung PRIVACY_SCREEN blockiert nicht das Aktivieren der Privatsphärefunktion, sondern erzwingt diese, wenn die Einschränkungsklasse auf BLOCK gesetzt ist.
+      – Ziele dürfen nicht leer sein, für den Fall, dass eine der Einschränkungen CLIPBOARD lautet. Sie wirken sich jedoch nicht auf andere Einschränkungen aus.
+      – Formatieren Sie die URL-Muster entsprechend dem Format https://www.chromium.org/administrators/url-blacklist-filter-format.
+
+Wenn die Richtlinie nicht festgelegt ist, werden keine Einschränkungen angewendet.</translation>
 <translation id="8136906469922284163">Wenn die Richtlinie auf „True“ gesetzt ist, dürfen Seiten Pop-ups anzeigen, während die Seiten entfernt werden.
 
       Wenn die Richtlinie auf „False“ gesetzt oder nicht konfiguriert ist, können Seiten keine Pop-ups anzeigen, während die Seiten entfernt werden.
@@ -4918,6 +4949,9 @@ Wird diese Richtlinie nicht konfiguriert, ist der Datenschutzbildschirm anfangs 
 
       Ist die Richtlinie deaktiviert oder nicht konfiguriert, werden keine Pakete gesendet.</translation>
 <translation id="816783746144552109">Konfigurieren Sie die für das Gerät erforderliche Mindestversion von Chrome OS.</translation>
+<translation id="8171025799847651230">Wenn diese Richtlinie deaktiviert ist, kann der Host für den Remotezugriff keine eingehenden Verbindungen annehmen.  Diese Richtlinien wirkt sich nicht auf die Remote-Unterstützung aus.
+
+          Diese Richtlinie ist nicht wirksam, wenn sie auf „True“ gesetzt, leer gelassen oder nicht konfiguriert wird.</translation>
 <translation id="8171924760436219650">Mit dieser Richtlinie kann die rechte Maustaste auf dem Anmeldebildschirm als primäre Maustaste festgelegt werden</translation>
 <translation id="8176035528522326671">Unternehmensnutzer nur als primären Nutzer mehrerer Profile zulassen (Standardverhalten für von Unternehmen verwaltete Nutzer)</translation>
 <translation id="8179161412673077784">Verhindern, dass Websites mit irreführenden Inhalten neue Fenster oder Tabs öffnen</translation>
@@ -5185,6 +5219,7 @@ Die Richtlinie wird in M75 entfernt.</translation>
 <translation id="8537051350735478658">Wenn die Richtlinie auf "True" gesetzt ist, werden die Suchvorschläge in der Adressleiste von <ph name="PRODUCT_NAME" /> aktiviert. Ist sie auf "False" gesetzt, werden die Suchvorschläge deaktiviert.
 
       Wenn Sie diese Richtlinie konfigurieren, kann sie von Nutzern nicht geändert werden. Wird sie nicht konfiguriert, sind die Suchvorschläge standardmäßig aktiviert, können aber jederzeit von Nutzern deaktiviert werden.</translation>
+<translation id="8543108307976719751">Verbindungen per Remotezugriff verhindern</translation>
 <translation id="8544375438507658205">Standardanwendung für HTML-Darstellung in <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="8544465954173828789">Zulassen, dass SMS zwischen Smartphone mit Chromebook synchronisiert werden.</translation>
 <translation id="8566842294717252664">Web Store auf der "Neuer Tab"-Seite und im App Launcher ausblenden</translation>

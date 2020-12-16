@@ -9,6 +9,7 @@
 <translation id="1175697296044146566">ഈ <ph name="DEVICE_TYPE" /> മാനേജ് ചെയ്യുന്നത് <ph name="MANAGER" /> ആണ്.</translation>
 <translation id="1195447618553298278">അജ്ഞാത പിശക്.</translation>
 <translation id="1204296502688602597">DNS പ്രതികരണ സമയം</translation>
+<translation id="123124571410524056">പോർട്ടൽ ഉണ്ടെന്ന് സംശയിക്കുന്നു</translation>
 <translation id="1238612778414822719">HTTPS പ്രതികരണ സമയം</translation>
 <translation id="1290331692326790741">ദുർബലമായ സിഗ്നൽ</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -36,6 +37,7 @@
 <translation id="1947737735496445907">പ്രിന്റ് ചെയ്‌തു</translation>
 <translation id="1979103255016296513">പാസ്‌വേഡ് മാറ്റേണ്ട സമയം കഴിഞ്ഞു</translation>
 <translation id="1980044825731880088">CPU വേഗത</translation>
+<translation id="1999615961760456652">ക്യാപ്‌റ്റീവ് പോർട്ടൽ</translation>
 <translation id="2008685064673031089">പ്രധാന തിരയൽ</translation>
 <translation id="2080070583977670716">കൂടുതൽ ക്രമീകരണങ്ങൾ</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -115,6 +117,7 @@
 <translation id="4773299976671772492">അവസാനിപ്പിച്ചു</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> എന്ന പ്രിന്റ് ജോലി റദ്ദാക്കി</translation>
 <translation id="4832079907277790330">Files ആപ്പിൽ ഫോൾഡർ തിരഞ്ഞെടുക്കുക...</translation>
+<translation id="4835901797422965222">സജീവമായ നെറ്റ്‌വർക്കുകളൊന്നുമില്ല</translation>
 <translation id="4848429997038228357">റൺ ചെയ്യുന്നു</translation>
 <translation id="4890353053343094602">പുതിയ പാസ്‌വേഡ് പെട്ടെന്ന് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="4891842000192098784">സമ്മർദ്ദം</translation>
@@ -135,6 +138,7 @@
 <translation id="5317780077021120954">സംരക്ഷിക്കുക</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">പുതിയ പാസ്‌വേഡ് തിരഞ്ഞെടുക്കുക</translation>
+<translation id="5333530671332546086">അജ്ഞാത പോര്‍ട്ടല്‍ നില</translation>
 <translation id="5372659122375744710">വെെഫെെ നെറ്റ്‌വർക്ക് സുരക്ഷിതമല്ല</translation>
 <translation id="5401938042319910061">എല്ലാ ദിനചര്യകളും റൺ ചെയ്യുക</translation>
 <translation id="5431318178759467895">വര്‍ണ്ണം</translation>
@@ -191,6 +195,7 @@
 <translation id="7359657277149375382">ഫയല്‍ തരം</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{സ്‌കാൻ ചെയ്യൽ പൂർത്തിയായി. 1 പേജ് സ്‌കാൻ ചെയ്‌തു}other{സ്‌കാൻ ചെയ്യൽ പൂർത്തിയായി. {NUMBER_OF_PAGES} പേജുകൾ സ്‌കാൻ ചെയ്‌തു}}</translation>
 <translation id="7441459999606975924">ഉപയോഗത്തിനനുസരിച്ച് ബാറ്ററികളുടെ ശേഷി കുറയുന്നു</translation>
+<translation id="7469648432129124067">പോര്‍ട്ടല്‍ തിരിച്ചറിഞ്ഞു</translation>
 <translation id="7561454561030345039">ഈ പ്രവർത്തനം മാനേജ് ചെയ്യുന്നത് നിങ്ങളുടെ അഡ്‌മിനാണ്</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">ഉയർന്ന HTTPS പ്രതികരണ സമയം</translation>

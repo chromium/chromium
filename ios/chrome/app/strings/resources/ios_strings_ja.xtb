@@ -295,6 +295,7 @@
 <translation id="4121993058175073134">エクスポート データのみを送信するには、設定アプリでメール アカウントを設定してください。</translation>
 <translation id="4124987746317609294">期間</translation>
 <translation id="4152011295694446843">ブックマークはここに表示されます</translation>
+<translation id="4152093603141133546">組織によってログアウトされました。</translation>
 <translation id="4172051516777682613">常に表示</translation>
 <translation id="418156467088430727">オフライン版を新しいタブで表示</translation>
 <translation id="4181841719683918333">言語</translation>
@@ -537,6 +538,7 @@
 <translation id="6668619169535738264">ブックマークを編集</translation>
 <translation id="667999046851023355">ドキュメント</translation>
 <translation id="6691331417640343772">Google ダッシュボードで同期データを管理</translation>
+<translation id="6710079714193676716">組織によって管理されています。一部の機能は使用できません。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">パスワードをエクスポートできません</translation>
 <translation id="6748108480210050150">From</translation>
@@ -690,6 +692,7 @@
 <translation id="8487667956631253959">オン</translation>
 <translation id="8487700953926739672">オフラインでの利用</translation>
 <translation id="8490978609246021741">変更を保存</translation>
+<translation id="8495097701594799854">組織によって無効にされています。</translation>
 <translation id="8503813439785031346">ユーザー名</translation>
 <translation id="850600235656508448">シークレット モードで開く</translation>
 <translation id="8510057420705599706">この操作を行うと、ログアウトして同期がオフになりますが、ブックマーク、履歴、パスワード、その他の Chrome のデータはこのデバイスに残ります。</translation>

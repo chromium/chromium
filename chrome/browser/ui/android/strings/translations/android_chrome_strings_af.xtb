@@ -12,6 +12,7 @@
 <translation id="10614374240317010">Nooit gestoor nie</translation>
 <translation id="1067922213147265141">Ander Google-dienste</translation>
 <translation id="107147699690128016">As jy die lêeruitbreiding verander, sal die lêer dalk in 'n ander program oopmaak en sal dit potensieel skadelik wees vir jou toestel.</translation>
+<translation id="1094515529340404628">Webskare en advertensiemeting</translation>
 <translation id="1100066534610197918">Open in nuwe oortjie in groep</translation>
 <translation id="1105960400813249514">Skermskoot</translation>
 <translation id="1111673857033749125">Boekmerke wat op jou ander toestelle gestoor is, sal hier verskyn.</translation>
@@ -227,6 +228,7 @@ Raak en hou enige woord om te soek. Kies meer of minder woorde as jy jou soektog
 <translation id="2536728043171574184">Bekyk tans 'n vanlyn kopie van hierdie bladsy</translation>
 <translation id="2537178555904266562">Kon nie wagwoorde sinkroniseer nie</translation>
 <translation id="2546283357679194313">Webkoekies en werfdata</translation>
+<translation id="2562889244313180139">Webwerwe en programme kan 'n nie-identifiseerbare alias gebruik om jou 'n relevanter ervaring te gee.</translation>
 <translation id="2567385386134582609">PRENT</translation>
 <translation id="2571711316400087311">Bied aan om bladsye in ander tale na Google Vertaal te stuur</translation>
 <translation id="2581165646603367611">Dit sal koekies, kas en ander data uitvee van werwe wat Chrome nie dink belangrik is nie.</translation>
@@ -714,6 +716,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="6005538289190791541">Voorgestelde wagwoord</translation>
 <translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Jy het <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> bladsy}other{Jy het <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> bladsye}}</translation>
 <translation id="6014293228235665243">Ongelees</translation>
+<translation id="6018309500671889594">Adverteerders kan nie-identifiseerbare inligting gebruik om advertensieveldtogte te bestudeer.</translation>
 <translation id="6036057147555329831">Ekstra ICU</translation>
 <translation id="6039379616847168523">Spring na die volgende oortjie</translation>
 <translation id="6040143037577758943">Maak toe</translation>
@@ -922,6 +925,7 @@ Data van jou Incognito-sessie af sal slegs in Chrome uitgevee word wanneer jy <p
 <translation id="7403691278183511381">Chrome se eerste laatloopervaring</translation>
 <translation id="741204030948306876">Ja, ek's in</translation>
 <translation id="7413229368719586778">Begindatum <ph name="DATE" /></translation>
+<translation id="7416941666639889592">As jy by Webskare aansluit, kan webwerwe jou webervaring relevant maak sonder om inligting te gebruik wat persoonlik identifiseerbaar is. Net soos 'n skare by 'n konsert, is al wat webwerwe en adverteerders kan weet dat duisende gebruikers 'n soortgelyke belangstelling deel.</translation>
 <translation id="7431991332293347422">Beheer hoe jou blaaigeskiedenis gebruik word om Search en meer te personaliseer</translation>
 <translation id="7435356471928173109">Afgeskakel deur jou administrateur</translation>
 <translation id="7437998757836447326">Meld af uit Chrome</translation>
@@ -1123,6 +1127,7 @@ Data van jou Incognito-sessie af sal slegs in Chrome uitgevee word wanneer jy <p
 <translation id="8748850008226585750">Inhoud word versteek</translation>
 <translation id="8788265440806329501">Navigasiegeskiedenis is toegemaak.</translation>
 <translation id="8788968922598763114">Heropen oortjie wat laaste toegemaak is</translation>
+<translation id="8795672590390389447">Privaatheidsandput</translation>
 <translation id="8798449543960971550">Lees</translation>
 <translation id="8812260976093120287">Op sommige webwerwe kan jy met gesteunde betalingprogramme op jou toestel betaal.</translation>
 <translation id="881688628773363275">Voorskou-oortjie se inhoud kan nie bekyk word.</translation>

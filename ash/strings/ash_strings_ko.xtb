@@ -338,7 +338,6 @@
 <translation id="4112140312785995938">뒤로 탐색</translation>
 <translation id="4114315158543974537">휴대전화 허브 사용 설정</translation>
 <translation id="4121728057981832179">가상 머신에서 마이크를 사용 중입니다.</translation>
-<translation id="4126167871198063089">텍스트 읽어주기 종료</translation>
 <translation id="4129129681837227511">잠금 화면에 알림이 표시되도록 하려면 잠금을 해제하여 설정을 변경하세요.</translation>
 <translation id="4146833061457621061">음악을 틀어 줘</translation>
 <translation id="415719264485676252">화면 캡처가 차단됨</translation>
@@ -645,7 +644,7 @@
 <translation id="6910714959251846841">업데이트하려면 기기에서 파워워시를 실행해야 합니다. 최신 <ph name="SYSTEM_APP_NAME" /> 업데이트에 관해 자세히 알아보세요.</translation>
 <translation id="6919251195245069855">스마트 카드를 인식할 수 없습니다. 다시 시도해 보세요.</translation>
 <translation id="6945221475159498467">선택</translation>
-<translation id="6961121602502368900">직장 프로필에서 휴대전화 무음 설정을 사용할 수 없음</translation>
+<translation id="6961121602502368900">직장 프로필에서는 휴대전화 무음 설정을 사용할 수 없음</translation>
 <translation id="6965382102122355670">확인</translation>
 <translation id="6972754398087986839">시작하기</translation>
 <translation id="6981982820502123353">접근성</translation>
@@ -877,7 +876,6 @@
 <translation id="8990809378771970590"><ph name="IME_NAME" /> 사용 중</translation>
 <translation id="899350903320462459">알림 작업을 실행하려면 <ph name="LOGIN_ID" />(으)로 기기의 잠금을 해제하세요.</translation>
 <translation id="9017320285115481645">Family Link 부모 액세스 코드를 입력하세요.</translation>
-<translation id="9029474291399787231">Adobe Flash Player 업데이트 가능</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> 설정 열기</translation>
 <translation id="9056839673611986238">기기가 롤백됨</translation>
 <translation id="9065203028668620118">수정</translation>

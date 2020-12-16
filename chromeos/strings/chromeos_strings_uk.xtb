@@ -9,6 +9,7 @@
 <translation id="1175697296044146566">Цим пристроєм <ph name="DEVICE_TYPE" /> керує <ph name="MANAGER" />.</translation>
 <translation id="1195447618553298278">Невідома помилка.</translation>
 <translation id="1204296502688602597">Затримка DNS</translation>
+<translation id="123124571410524056">Можливо, виявлено портал</translation>
 <translation id="1238612778414822719">Затримка HTTPS</translation>
 <translation id="1290331692326790741">слабкий сигнал</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -36,6 +37,7 @@
 <translation id="1947737735496445907">Надруковано</translation>
 <translation id="1979103255016296513">Час для зміни пароля минув</translation>
 <translation id="1980044825731880088">Швидкість ЦП</translation>
+<translation id="1999615961760456652">Адаптивний портал</translation>
 <translation id="2008685064673031089">Пошук Prime</translation>
 <translation id="2080070583977670716">Більше налаштувань</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -115,6 +117,7 @@
 <translation id="4773299976671772492">Зупинено</translation>
 <translation id="4808449224298348341">Завдання друку "<ph name="DOCUMENT_TITLE" />" скасовано</translation>
 <translation id="4832079907277790330">Вибрати папку в додатку "Файли"…</translation>
+<translation id="4835901797422965222">Немає активних мереж</translation>
 <translation id="4848429997038228357">ТРИВАЄ</translation>
 <translation id="4890353053343094602">Негайно виберіть новий</translation>
 <translation id="4891842000192098784">Стрес</translation>
@@ -136,6 +139,7 @@
 <translation id="5317780077021120954">Зберегти</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Виберіть новий зараз</translation>
+<translation id="5333530671332546086">Невідомий стан порталу</translation>
 <translation id="5372659122375744710">Мережа Wi-Fi ненадійна</translation>
 <translation id="5401938042319910061">Виконати всі послідовності дій</translation>
 <translation id="5431318178759467895">Колір</translation>
@@ -192,6 +196,7 @@
 <translation id="7359657277149375382">Тип файлу</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Сканування завершено. Відскановано 1 сторінку}one{Сканування завершено. Відскановано {NUMBER_OF_PAGES} сторінку}few{Сканування завершено. Відскановано {NUMBER_OF_PAGES} сторінки}many{Сканування завершено. Відскановано {NUMBER_OF_PAGES} сторінок}other{Сканування завершено. Відскановано {NUMBER_OF_PAGES} сторінки}}</translation>
 <translation id="7441459999606975924">Ємність акумулятора зменшується внаслідок використання</translation>
+<translation id="7469648432129124067">Виявлено портал</translation>
 <translation id="7561454561030345039">Цією дією керує адміністратор</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">велика затримка HTTPS</translation>

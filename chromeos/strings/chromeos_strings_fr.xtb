@@ -9,6 +9,7 @@
 <translation id="1175697296044146566">Votre <ph name="DEVICE_TYPE" /> est géré par <ph name="MANAGER" />.</translation>
 <translation id="1195447618553298278">Erreur inconnue</translation>
 <translation id="1204296502688602597">Latence avec le DNS</translation>
+<translation id="123124571410524056">Un portail semble activé</translation>
 <translation id="1238612778414822719">Latence des requêtes HTTPS</translation>
 <translation id="1290331692326790741">Signal de faible intensité</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -36,6 +37,7 @@
 <translation id="1947737735496445907">Impression terminée</translation>
 <translation id="1979103255016296513">Mot de passe à modifier</translation>
 <translation id="1980044825731880088">Vitesse du CPU</translation>
+<translation id="1999615961760456652">Portail captif</translation>
 <translation id="2008685064673031089">Recherche de nombres premiers</translation>
 <translation id="2080070583977670716">Plus de paramètres</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
@@ -52,6 +54,7 @@
 <translation id="2517472476991765520">Rechercher</translation>
 <translation id="2570743873672969996">Exécution du test <ph name="TEST_NAME" />…</translation>
 <translation id="2620436844016719705">Système</translation>
+<translation id="2658845327196595460">{COUNT,plural, =1{Le fichier numérisé a bien été enregistré.}one{Le fichier numérisé a bien été enregistré.}other{Les fichiers numérisés ont bien été enregistrés.}}</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2805756323405976993">Applications</translation>
 <translation id="2872961005593481000">Éteindre</translation>
@@ -114,6 +117,7 @@
 <translation id="4773299976671772492">Interrompu</translation>
 <translation id="4808449224298348341">Tâche d'impression annulée pour <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4832079907277790330">Sélectionner un dossier dans l'application Fichiers…</translation>
+<translation id="4835901797422965222">Aucun réseau actif</translation>
 <translation id="4848429997038228357">EN COURS</translation>
 <translation id="4890353053343094602">Choisissez-en un nouveau immédiatement</translation>
 <translation id="4891842000192098784">Contrainte</translation>
@@ -135,6 +139,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="5317780077021120954">Enregistrer</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Choisissez-en un nouveau maintenant</translation>
+<translation id="5333530671332546086">État du portail inconnu</translation>
 <translation id="5372659122375744710">Réseau Wi-Fi non sécurisé</translation>
 <translation id="5401938042319910061">Exécuter toutes les routines</translation>
 <translation id="5431318178759467895">Couleur</translation>
@@ -189,7 +194,9 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="7177485034254901881">Votre <ph name="DEVICE_TYPE" /> est géré par <ph name="MANAGER" />. Les administrateurs peuvent le configurer à distance.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Type de fichier</translation>
+<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Numérisation terminée. 1 page numérisée}one{Numérisation terminée. {NUMBER_OF_PAGES} page numérisée}other{Numérisation terminée. {NUMBER_OF_PAGES} pages numérisées}}</translation>
 <translation id="7441459999606975924">L'autonomie de la batterie diminue au fur et à mesure de son utilisation</translation>
+<translation id="7469648432129124067">Portail détecté</translation>
 <translation id="7561454561030345039">Cette action est gérée par votre administrateur</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Latence élevée des requêtes HTTPS</translation>

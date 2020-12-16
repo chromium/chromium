@@ -3432,7 +3432,6 @@
 <translation id="4917385247580444890">Јак</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> жели да комуницира са додатком „<ph name="EXTENSION_NAME" />“</translation>
 <translation id="4918086044614829423">Прихвати</translation>
-<translation id="4918221908152712722">Инсталирајте апликацију <ph name="APP_NAME" /> (не треба да је преузимате)</translation>
 <translation id="4921290200821452703">Информације о школском налогу за родитеље</translation>
 <translation id="4921348630401250116">Претварање текста у говор</translation>
 <translation id="49226369361073053">{0,plural, =0{Ажурирајте уређај}=1{Ажурирајте уређај у року од 1 секунде}one{Ажурирајте уређај у року од # секунде}few{Ажурирајте уређај у року од # секунде}other{Ажурирајте уређај у року од # секунди}}</translation>
@@ -4574,7 +4573,6 @@
 <translation id="6248988683584659830">Претражите подешавања</translation>
 <translation id="6249200942125593849">Управљајте функцијама приступачности</translation>
 <translation id="6251870443722440887">GDI надимци</translation>
-<translation id="6251889282623539337">Услови коришћења услуге домена <ph name="DOMAIN" /></translation>
 <translation id="625369703868467034">Стање мреже</translation>
 <translation id="6254503684448816922">Кључ је компромитован</translation>
 <translation id="6257602895346497974">Укључи синхронизацију...</translation>
@@ -5465,7 +5463,6 @@
 <translation id="7290242001003353852">Ова услуга пријављивања, коју хостује <ph name="SAML_DOMAIN" />, приступа вашој камери.</translation>
 <translation id="7295614427631867477">Имајте на уму да су Android, Play и повезане апликације регулисани сопственим смерницама за прикупљање података и коришћење.</translation>
 <translation id="729583233778673644">Дозвољава AES и RC4 шифровање. Коришћење ове опције вас излаже већем ризику јер су RC4 шифре небезбедне.</translation>
-<translation id="7296774163727375165">Услови за <ph name="DOMAIN" /></translation>
 <translation id="7297443947353982503">Корисничко име/лозинка је нетачна или EAP потврда аутентичности није успела</translation>
 <translation id="729761647156315797">Изаберите језик и тастатуру</translation>
 <translation id="7297726121602187087">Тамнозелена</translation>
@@ -6448,7 +6445,6 @@
 <translation id="8398877366907290961">Ипак настави</translation>
 <translation id="8400146488506985033">Управљај људима</translation>
 <translation id="8401432541486058167">Наведите PIN који је повезан са паметном картицом.</translation>
-<translation id="8405046151008197676">Погледајте резиме најновијег ажурирања</translation>
 <translation id="8407199357649073301">Ниво евиденције:</translation>
 <translation id="8408068190360279472">Мрежа <ph name="NETWORK_TYPE" />, повезује се</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -7137,7 +7133,6 @@
 <translation id="9168436347345867845">Урадићу то касније</translation>
 <translation id="9169496697824289689">Приказ тастерских пречица</translation>
 <translation id="916964310188958970">Зашто овај предлог?</translation>
-<translation id="9169931577761441333">Додајте <ph name="APP_NAME" /> на почетни екран</translation>
 <translation id="9170061643796692986">Актуелно подешавање видљивости је: Сви контакти</translation>
 <translation id="9170848237812810038">&amp;Опозови</translation>
 <translation id="9170884462774788842">Други програм на рачунару је додао тему која може да промени начин на који Chrome функционише.</translation>

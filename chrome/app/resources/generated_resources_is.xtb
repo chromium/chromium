@@ -3434,7 +3434,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4917385247580444890">Sterkt</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> vill eiga samskipti við viðbótina „<ph name="EXTENSION_NAME" />“</translation>
 <translation id="4918086044614829423">Samþykkja</translation>
-<translation id="4918221908152712722">Settu upp <ph name="APP_NAME" /> (ekkert niðurhal)</translation>
 <translation id="4921290200821452703">Upplýsingar um skólareikning fyrir foreldra</translation>
 <translation id="4921348630401250116">Upplestur</translation>
 <translation id="49226369361073053">{0,plural, =0{Uppfærðu tækið núna}=1{Uppfærðu tækið innan einnar sekúndu}one{Uppfærðu tækið innan # sekúndu}other{Uppfærðu tækið innan # sekúndna}}</translation>
@@ -4574,7 +4573,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="6248988683584659830">Leitarstillingar</translation>
 <translation id="6249200942125593849">Stjórna a11y</translation>
 <translation id="6251870443722440887">GDI-heiti</translation>
-<translation id="6251889282623539337">Þjónustuskilmálar <ph name="DOMAIN" /></translation>
 <translation id="625369703868467034">Ástand nets</translation>
 <translation id="6254503684448816922">Lykli stofnað í hættu</translation>
 <translation id="6257602895346497974">Kveikja á samstillingu...</translation>
@@ -5465,7 +5463,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7290242001003353852">Þessi innskráningarþjónusta, sem er hýst af <ph name="SAML_DOMAIN" />, fær aðgang að myndavélinni.</translation>
 <translation id="7295614427631867477">Athugaðu að Android, Play og tengd forrit eru háð sínum eigin reglum um gagnasöfnun og notkun.</translation>
 <translation id="729583233778673644">Leyfa AES- og RC4-dulkóðun. Þessi valkostur felur í sér meiri áhættu, þar sem RC4-dulmálslyklar eru óöruggir.</translation>
-<translation id="7296774163727375165">Skilmálar <ph name="DOMAIN" /></translation>
 <translation id="7297443947353982503">Rangt notandanafn/aðgangsorð eða EAP-sannvottun mistókst</translation>
 <translation id="729761647156315797">Veldu tungumál og lyklaborð</translation>
 <translation id="7297726121602187087">Dökkgrænn</translation>
@@ -6446,7 +6443,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8398877366907290961">Halda samt áfram</translation>
 <translation id="8400146488506985033">Vinna með einstaklinga</translation>
 <translation id="8401432541486058167">Sláðu inn PIN-númerið fyrir snjallkortið þitt.</translation>
-<translation id="8405046151008197676">Fá það helsta úr nýjustu uppfærslunni</translation>
 <translation id="8407199357649073301">Skráningarstig:</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" />-net, tengist</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -7134,7 +7130,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="9168436347345867845">Gera þetta seinna</translation>
 <translation id="9169496697824289689">Skoða flýtilykla</translation>
 <translation id="916964310188958970">Hvers vegna þessi tillaga?</translation>
-<translation id="9169931577761441333">Bæta <ph name="APP_NAME" /> á heimaskjá</translation>
 <translation id="9170061643796692986">Sýnileiki er stilltur á alla tengiliði</translation>
 <translation id="9170848237812810038">Aft&amp;urkalla</translation>
 <translation id="9170884462774788842">Annað forrit í tölvunni þinni bætti við þema sem gæti breytt því hvernig Chrome virkar.</translation>

@@ -295,6 +295,7 @@
 <translation id="4121993058175073134">순 내보내기 데이터를 전송하려면 설정 앱에서 이메일 계정을 설정하시기 바랍니다.</translation>
 <translation id="4124987746317609294">기간</translation>
 <translation id="4152011295694446843">여기에서 북마크를 확인할 수 있습니다</translation>
+<translation id="4152093603141133546">조직에서 나를 로그아웃시켰습니다.</translation>
 <translation id="4172051516777682613">항상 표시</translation>
 <translation id="418156467088430727">새 탭에서 오프라인 버전 보기</translation>
 <translation id="4181841719683918333">언어</translation>
@@ -537,6 +538,7 @@
 <translation id="6668619169535738264">북마크 수정</translation>
 <translation id="667999046851023355">문서</translation>
 <translation id="6691331417640343772">Google 대시보드에서 동기화된 데이터 관리</translation>
+<translation id="6710079714193676716">조직에서 관리합니다. 일부 기능은 제공되지 않을 수 있습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">비밀번호를 내보낼 수 없음</translation>
 <translation id="6748108480210050150">올린이</translation>
@@ -690,6 +692,7 @@
 <translation id="8487667956631253959">사용</translation>
 <translation id="8487700953926739672">오프라인으로 사용 가능</translation>
 <translation id="8490978609246021741">변경사항 저장</translation>
+<translation id="8495097701594799854">조직에서 사용 중지했습니다.</translation>
 <translation id="8503813439785031346">사용자이름</translation>
 <translation id="850600235656508448">시크릿 모드에서 열기</translation>
 <translation id="8510057420705599706">로그아웃되고 동기화가 사용 중지되지만 북마크, 방문 기록, 비밀번호 및 기타 Chrome 데이터는 기기에 그대로 유지됩니다.</translation>

@@ -12,6 +12,7 @@
 <translation id="10614374240317010">Nikdy se neukládají</translation>
 <translation id="1067922213147265141">Další služby Google</translation>
 <translation id="107147699690128016">Pokud změníte příponu souboru, může se soubor otevřít v jiné aplikaci a potenciálně může být rizikem pro vaše zařízení.</translation>
+<translation id="1094515529340404628">Weboví návštěvníci a měření reklam</translation>
 <translation id="1100066534610197918">Otevřít na nové kartě ve skup.</translation>
 <translation id="1105960400813249514">Snímky obrazovky</translation>
 <translation id="1111673857033749125">Zde se objeví záložky, které jste si uložili v ostatních zařízeních.</translation>
@@ -227,6 +228,7 @@ Vyhledávání spustíte podržením libovolného slova. Vyhledávání můžete
 <translation id="2536728043171574184">Prohlížíte offline kopii stránky</translation>
 <translation id="2537178555904266562">Při synchronizaci došlo k chybě</translation>
 <translation id="2546283357679194313">Soubory cookie a data webových stránek</translation>
+<translation id="2562889244313180139">Umožněte, aby vaše práce s weby a aplikacemi byla relevantnější, a přitom jste nemuseli používat údaje umožňující vaši identifikaci.</translation>
 <translation id="2567385386134582609">OBRÁZEK</translation>
 <translation id="2571711316400087311">Nabízet odeslání stránek v jiných jazycích do Překladače Google</translation>
 <translation id="2581165646603367611">Tímto vymažete soubory cookie, mezipaměť a další data webů, která Chrome považuje za nedůležitá.</translation>
@@ -714,6 +716,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="6005538289190791541">Navrhované heslo</translation>
 <translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Máte <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> stránku}few{Máte <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> stránky}many{Máte <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> stránky}other{Máte <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> stránek}}</translation>
 <translation id="6014293228235665243">Nepřečtené</translation>
+<translation id="6018309500671889594">Umožněte inzerentům, aby mohli studovat reklamní kampaně, a přitom jste nemuseli používat údaje umožňující vaši identifikaci.</translation>
 <translation id="6036057147555329831">Extra ICU</translation>
 <translation id="6039379616847168523">Přejít na další kartu</translation>
 <translation id="6040143037577758943">Zavřít</translation>
@@ -922,6 +925,7 @@ Data z anonymní relace budou vymazána jedině po <ph name="BEGIN_BOLD2" />zav
 <translation id="7403691278183511381">První spuštění Chromu</translation>
 <translation id="741204030948306876">Ano</translation>
 <translation id="7413229368719586778">Datum zahájení <ph name="DATE" /></translation>
+<translation id="7416941666639889592">Když se přidáte mezi webové návštěvníky, umožníte tím, aby vaše návštěvy webů byly relevantní bez použití údajů umožňujících zjištění totožnosti. Je to podobné jako koncerty: weby a inzerenti pouze zjistí, že tisíce lidí sdílejí stejné zájmy.</translation>
 <translation id="7431991332293347422">Nastavte, jak se má vaše historie prohlížení používat k personalizaci Vyhledávání a dalších služeb</translation>
 <translation id="7435356471928173109">Vypnuto administrátorem</translation>
 <translation id="7437998757836447326">Odhlášení z Chromu</translation>
@@ -1123,6 +1127,7 @@ Data z anonymní relace budou vymazána jedině po <ph name="BEGIN_BOLD2" />zav
 <translation id="8748850008226585750">Skrytý obsah</translation>
 <translation id="8788265440806329501">Historie navigace je zavřená</translation>
 <translation id="8788968922598763114">Znovu otevřít naposledy zavřenou kartu</translation>
+<translation id="8795672590390389447">Izolovaný prostor k ochraně soukromí</translation>
 <translation id="8798449543960971550">Čtení</translation>
 <translation id="8812260976093120287">Na některých webech můžete platit pomocí výše uvedených podporovaných platebních aplikací v zařízení.</translation>
 <translation id="881688628773363275">Obsah karty náhledu nelze zobrazit.</translation>

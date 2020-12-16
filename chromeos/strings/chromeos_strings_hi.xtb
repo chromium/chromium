@@ -9,6 +9,7 @@
 <translation id="1175697296044146566">इस <ph name="DEVICE_TYPE" /> को <ph name="MANAGER" /> प्रबंधित करता है.</translation>
 <translation id="1195447618553298278">अज्ञात गड़बड़ी.</translation>
 <translation id="1204296502688602597">डिवाइस और डीएनएस के बीच के इंतज़ार का समय</translation>
+<translation id="123124571410524056">पोर्टल में गड़बड़ी हो सकती है</translation>
 <translation id="1238612778414822719">एचटीटीपीएस पेजों के खुलने में इंतज़ार का समय</translation>
 <translation id="1290331692326790741">कमज़ोर सिग्नल</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -36,6 +37,7 @@
 <translation id="1947737735496445907">प्रिंट किया गया</translation>
 <translation id="1979103255016296513">पासवर्ड बदलने का समय निकल चुका है</translation>
 <translation id="1980044825731880088">सीपीयू की रफ़्तार</translation>
+<translation id="1999615961760456652">कैप्टिव पोर्टल</translation>
 <translation id="2008685064673031089">प्राइम सर्च</translation>
 <translation id="2080070583977670716">ज़्यादा सेटिंग</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -115,6 +117,7 @@
 <translation id="4773299976671772492">रोक दिया गया</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> के प्रिंट का काम बंद किया गया</translation>
 <translation id="4832079907277790330">फ़ाइल ऐप्लिकेशन में कोई फ़ोल्डर चुनें...</translation>
+<translation id="4835901797422965222">कोई भी नेटवर्क चालू नहीं है</translation>
 <translation id="4848429997038228357">चल रहा है</translation>
 <translation id="4890353053343094602">तुरंत कोई नया पासवर्ड चुनें</translation>
 <translation id="4891842000192098784">स्ट्रेस</translation>
@@ -136,6 +139,7 @@
 <translation id="5317780077021120954">सेव करें</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">कोई नया पासवर्ड चुनें</translation>
+<translation id="5333530671332546086">पोर्टल की स्थिति की जानकारी नहीं है</translation>
 <translation id="5372659122375744710">यह वाई-फ़ाई नेटवर्क सुरक्षित नहीं है</translation>
 <translation id="5401938042319910061">सभी रूटीन चलाएं</translation>
 <translation id="5431318178759467895">रंग</translation>
@@ -192,6 +196,7 @@
 <translation id="7359657277149375382">फ़ाइल प्रकार</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{स्कैन करने की प्रोसेस पूरी हुई. 1 पेज स्कैन हो गया}one{स्कैन करने की प्रोसेस पूरी हुई. {NUMBER_OF_PAGES} पेज स्कैन हो गया}other{स्कैन करने की प्रोसेस पूरी हुई. {NUMBER_OF_PAGES} पेज स्कैन हो गए}}</translation>
 <translation id="7441459999606975924">इस्तेमाल के साथ, बैटरी की क्षमता में कमी आती जाती है</translation>
+<translation id="7469648432129124067">पोर्टल पहचाना गया</translation>
 <translation id="7561454561030345039">इस कार्रवाई को आपका एडमिन प्रबंधित करता है</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">एचटीटीपीएस अनुरोधों में इंतज़ार का समय ज़्यादा है</translation>

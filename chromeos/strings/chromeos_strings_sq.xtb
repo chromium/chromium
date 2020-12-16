@@ -9,6 +9,7 @@
 <translation id="1175697296044146566">Kjo pajisje <ph name="DEVICE_TYPE" /> menaxhohet nga <ph name="MANAGER" />.</translation>
 <translation id="1195447618553298278">Gabim i panjohur.</translation>
 <translation id="1204296502688602597">Vonesa e DNS-së</translation>
+<translation id="123124571410524056">Dyshohet për portal</translation>
 <translation id="1238612778414822719">Vonesa e HTTPS</translation>
 <translation id="1290331692326790741">Sinjal i dobët</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -36,6 +37,7 @@
 <translation id="1947737735496445907">Printuar</translation>
 <translation id="1979103255016296513">Afati i ndryshimit të fjalëkalimit ka kaluar</translation>
 <translation id="1980044825731880088">Shpejtësia e njësisë CPU</translation>
+<translation id="1999615961760456652">Portal izolues</translation>
 <translation id="2008685064673031089">Kërkimi kryesor</translation>
 <translation id="2080070583977670716">Cilësime të tjera</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -115,6 +117,7 @@
 <translation id="4773299976671772492">Ndaloi</translation>
 <translation id="4808449224298348341">U anulua printimi i "<ph name="DOCUMENT_TITLE" />"</translation>
 <translation id="4832079907277790330">Zgjidh dosjen në aplikacionin "Skedarët"...</translation>
+<translation id="4835901797422965222">Nuk ka asnjë rrjet aktiv</translation>
 <translation id="4848429997038228357">NË EKZEKUTIM</translation>
 <translation id="4890353053343094602">Zgjidh një të re menjëherë</translation>
 <translation id="4891842000192098784">Tensioni</translation>
@@ -135,6 +138,7 @@
 <translation id="5317780077021120954">Ruaj</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Zgjidh një të ri tani</translation>
+<translation id="5333530671332546086">Gjendje e panjohur portali</translation>
 <translation id="5372659122375744710">Rrjeti Wi-Fi nuk është i sigurt</translation>
 <translation id="5401938042319910061">Ekzekuto të gjitha rutinat</translation>
 <translation id="5431318178759467895">Ngjyra</translation>
@@ -191,6 +195,7 @@
 <translation id="7359657277149375382">Lloji i skedarit</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skanimi përfundoi. U skanua 1 faqe}other{Skanimi përfundoi. U skanuan {NUMBER_OF_PAGES} faqe}}</translation>
 <translation id="7441459999606975924">Kapaciteti i baterisë bie me përdorimin e saj</translation>
+<translation id="7469648432129124067">U zbulua një portal</translation>
 <translation id="7561454561030345039">Ky veprim menaxhohet nga administratori yt</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Vonesë e lartë në HTTPS</translation>

@@ -1435,6 +1435,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2602501489742255173">Perbraukite aukštyn, jei norite pradėti</translation>
 <translation id="2603115962224169880">Išvalykite kompiuterį</translation>
 <translation id="2603463522847370204">Atidaryti &amp;inkognito lange</translation>
+<translation id="2603656971249947488">Skirtuko juostelė</translation>
 <translation id="2604255671529671813">Tinklo ryšio klaida</translation>
 <translation id="2606246518223360146">Susieti duomenis</translation>
 <translation id="2606454609872547359">Ne, tęsti be „ChromeVox“</translation>
@@ -1803,6 +1804,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3007771295016901659">Kurti skirtuko kopiją</translation>
 <translation id="3008232374986381779">Paleiskite „Linux“ įrankius, redagavimo priemones ir IDE savo „<ph name="DEVICE_TYPE" />“. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Iš naujo nustatyti leidimus</translation>
+<translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> reikalauja prisijungti prie „Wi-Fi“ šiandien ir atsisiųsti naujinį. Arba atsisiųskite naudodami matuojamą ryšį (gali būti taikomi mokesčiai).}one{<ph name="MANAGER" /> reikalauja prisijungti prie „Wi-Fi“ ir atsisiųsti naujinį iki nurodyto termino. Arba atsisiųskite naudodami matuojamą ryšį (gali būti taikomi mokesčiai).}few{<ph name="MANAGER" /> reikalauja prisijungti prie „Wi-Fi“ ir atsisiųsti naujinį iki nurodyto termino. Arba atsisiųskite naudodami matuojamą ryšį (gali būti taikomi mokesčiai).}many{<ph name="MANAGER" /> reikalauja prisijungti prie „Wi-Fi“ ir atsisiųsti naujinį iki nurodyto termino. Arba atsisiųskite naudodami matuojamą ryšį (gali būti taikomi mokesčiai).}other{<ph name="MANAGER" /> reikalauja prisijungti prie „Wi-Fi“ ir atsisiųsti naujinį iki nurodyto termino. Arba atsisiųskite naudodami matuojamą ryšį (gali būti taikomi mokesčiai).}}</translation>
 <translation id="3009300415590184725">Ar tikrai norite atšaukti duomenų paslaugos mobiliesiems sąrankos procesą?</translation>
 <translation id="3009779501245596802">Indeksuoti duomenys</translation>
 <translation id="3010279545267083280">Slaptažodis ištrintas</translation>
@@ -1827,6 +1829,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3024374909719388945">Naudoti 24 val. laikrodį</translation>
 <translation id="3027296729579831126">Įjungti Bendrinimo netoliese funkciją</translation>
 <translation id="3029466929721441205">Rašiklio įrankių rodymas lentynoje</translation>
+<translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> reikalauja atsisiųsti naujinį šiandien. Naujinys bus atsisiųstas automatiškai, kai prisijungsite prie interneto.}one{<ph name="MANAGER" /> reikalauja atsisiųsti naujinį iki nurodyto termino. Naujinys bus atsisiųstas automatiškai, kai prisijungsite prie interneto.}few{<ph name="MANAGER" /> reikalauja atsisiųsti naujinį iki nurodyto termino. Naujinys bus atsisiųstas automatiškai, kai prisijungsite prie interneto.}many{<ph name="MANAGER" /> reikalauja atsisiųsti naujinį iki nurodyto termino. Naujinys bus atsisiųstas automatiškai, kai prisijungsite prie interneto.}other{<ph name="MANAGER" /> reikalauja atsisiųsti naujinį iki nurodyto termino. Naujinys bus atsisiųstas automatiškai, kai prisijungsite prie interneto.}}</translation>
 <translation id="3031417829280473749">Slaptasis agentas</translation>
 <translation id="3031557471081358569">Pasirinkite elementus importuoti:</translation>
 <translation id="3036327949511794916">Terminas, iki kurio buvo galima grąžinti šį „<ph name="DEVICE_TYPE" />“ įrenginį, jau praėjo.</translation>
@@ -1883,6 +1886,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3103941660000130485">Naujovinant „Linux“ įvyko klaida</translation>
 <translation id="3105796011181310544">Pakeisti atgal į „Google“?</translation>
 <translation id="310671807099593501">Svetainė naudoja „Bluetooth“</translation>
+<translation id="3108931485517391283">Nepavyko gauti</translation>
 <translation id="3109724472072898302">Suskleista</translation>
 <translation id="3115147772012638511">Laukiama talpyklos...</translation>
 <translation id="3115580024857770654">Sutraukti viską</translation>
@@ -1898,6 +1902,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3127156390846601284">Bus ištrinti visi duomenys, kuriuos jūsų įrenginyje išsaugojo visos rodomos svetainės. Ar norite tęsti?</translation>
 <translation id="3127860049873093642">Norėdami išvengti įkrovimo ir veikimo problemų naudokite suderinamą „Dell“ arba „Type-C“ USB maitinimo adapterį.</translation>
 <translation id="3127862849166875294">„Linux“ disko dydžio keitimas</translation>
+<translation id="3127882968243210659">Kad galėtumėte paleisti „Google Play“, <ph name="MANAGER" /> reikalauja sukurti atsarginę duomenų kopiją ir atkurti gamyklinius šio „Chromebook“ nustatymus.</translation>
 <translation id="3129173833825111527">Kairioji paraštė</translation>
 <translation id="3129215702932019810">Pristatant programą įvyko klaida</translation>
 <translation id="3130528281680948470">Įrenginys bus nustatytas iš naujo ir visos naudotojų paskyros bei vietiniai duomenys bus pašalinti. Šio veiksmo anuliuoti negalėsite.</translation>
@@ -2016,6 +2021,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3275778913554317645">Atidaryti kaip langą</translation>
 <translation id="3277691515294482687">Prieš naujovinant „Linux“ sukurti programų ir failų atsarginę kopiją aplanke „Mano failai“.</translation>
 <translation id="3278001907972365362">Reikia atkreipti dėmesį į „Google“ paskyrą (-as)</translation>
+<translation id="3279092821516760512">Pasirinkti kontaktai gali bendrinti su jumis, kai būna netoliese. Perdavimai nebus pradėti, kol nesutiksite.</translation>
 <translation id="3279230909244266691">Šis procesas gali užtrukti kelias minutes. Paleidžiamas virtualus įrenginys.</translation>
 <translation id="3280237271814976245">Išsaugoti &amp;kaip...</translation>
 <translation id="3280243678470289153">Toliau naršyti „Chrome“</translation>
@@ -2573,6 +2579,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3882165008614329320">Esamas vaizdo įrašas iš kameros ar failo</translation>
 <translation id="3884152383786131369">Žiniatinklio turiniui, kuris pasiekiamas keliomis kalbomis, bus naudojama pirma palaikoma kalba iš šio sąrašo. Šios nuostatos sinchronizuojamos su naršyklės nustatymais. <ph name="BEGIN_LINK_LEARN_MORE" />Sužinokite daugiau<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Jūsų užklausa pasiekti šią svetainę išsiųsta <ph name="NAME" />.</translation>
+<translation id="3888364689515978571">Išjungta. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="3888550877729210209">Užrašų kūrimas naudojant „<ph name="LOCK_SCREEN_APP_NAME" />“</translation>
 <translation id="3890064827463908288">Norėdami naudoti „Wi-Fi“ sinchronizavimą, įjunkite „Chrome“ sinchronizavimo funkciją</translation>
 <translation id="3892414795099177503">Atidaryti „OpenVPN“ / L2TP...</translation>
@@ -2653,6 +2660,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="3958088479270651626">Importuoti žymes ir nustatymus</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3964480518399667971">Išjungti mobiliojo ryšio tinklą</translation>
+<translation id="3965730875470565266">Įjungta, <ph name="MINUTES" /> min.</translation>
 <translation id="3965811923470826124">Naudojant</translation>
 <translation id="3965965397408324205">Išeiti iš „<ph name="PROFILE_NAME" />“</translation>
 <translation id="3966072572894326936">Pasirinkti kitą aplanką...</translation>
@@ -2722,6 +2730,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# kontaktas nepasiekiamas. Jei norite kartu naudoti „Bendrinimo netoliese“ funkciją, prie savo kontaktų pridėkite el. pašto adresą, susietą su jo (jos) „Google“ paskyra.}one{# kontaktas nepasiekiamas. Jei norite kartu naudoti „Bendrinimo netoliese“ funkciją, prie savo kontaktų pridėkite el. pašto adresus, susietus su jų „Google“ paskyromis.}few{# kontaktai nepasiekiami. Jei norite kartu naudoti „Bendrinimo netoliese“ funkciją, prie savo kontaktų pridėkite el. pašto adresus, susietus su jų „Google“ paskyromis.}many{# kontakto nepasiekiama. Jei norite kartu naudoti „Bendrinimo netoliese“ funkciją, prie savo kontaktų pridėkite el. pašto adresus, susietus su jų „Google“ paskyromis.}other{# kontaktų nepasiekiama. Jei norite kartu naudoti „Bendrinimo netoliese“ funkciją, prie savo kontaktų pridėkite el. pašto adresus, susietus su jų „Google“ paskyromis.}}</translation>
 <translation id="4050225813016893843">Autentifikavimo metodas</translation>
 <translation id="4052120076834320548">Mažytis</translation>
+<translation id="4054070260844648638">Matoma visiems</translation>
 <translation id="4056908315660577142">Pasiekėte laiko apribojimą, kurį vienas iš tėvų nustatė „Chrome“ programai „<ph name="APP_NAME" />“. Rytoj galėsite ją naudoti <ph name="TIME_LIMIT" />.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">Peržiūrėti parduotuvėje</translation>
@@ -3427,7 +3436,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4917385247580444890">Stiprus</translation>
 <translation id="4918021164741308375">„<ph name="ORIGIN" />“ nori užmegzti ryšį su plėtiniu „<ph name="EXTENSION_NAME" />“</translation>
 <translation id="4918086044614829423">Priimti</translation>
-<translation id="4918221908152712722">Įdiekite „<ph name="APP_NAME" />“ (nereikia atsisiųsti)</translation>
 <translation id="4921290200821452703">Tėvams skirta mokyklos paskyros informacija</translation>
 <translation id="4921348630401250116">Tekstas į kalbą</translation>
 <translation id="49226369361073053">{0,plural, =0{Įrenginio atnaujinimas dabar}=1{Įrenginio atnaujinimas po 1 sekundės}one{Įrenginio atnaujinimas po # sekundės}few{Įrenginio atnaujinimas po # sekundžių}many{Įrenginio atnaujinimas po # sekundės}other{Įrenginio atnaujinimas po # sekundžių}}</translation>
@@ -3660,6 +3668,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="5213891612754844763">Rodyti tarpinio serverio nustatymus</translation>
 <translation id="5215502535566372932">Pasirinkite šalį</translation>
 <translation id="521582610500777512">Nuotrauka buvo atmesta</translation>
+<translation id="5217189792977407501">Priskirti darbalaukiui</translation>
 <translation id="5222403284441421673">Nesaugus atsisiuntimas užblokuotas</translation>
 <translation id="5222676887888702881">Atsijungti</translation>
 <translation id="52232769093306234">Nepavyko supakuoti.</translation>
@@ -4197,6 +4206,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="5832813618714645810">Profiliai</translation>
 <translation id="583281660410589416">Nežinoma</translation>
 <translation id="5833397272224757657">Naudojamas svetainių, kuriose lankotės, turinys ir naršyklės veikla bei sąveikos suasmeninimo tikslais</translation>
+<translation id="5833551944249825624">Jūsų „Chromebook“ bus matomas visiems netoliese esantiems žmonėms penkias minutes</translation>
 <translation id="5833726373896279253">Šiuos nustatymus gali keisti tik savininkas:</translation>
 <translation id="5834581999798853053">Liko apie <ph name="TIME" /> min.</translation>
 <translation id="5835486486592033703">„<ph name="WINDOW_TITLE" />“ – fotoaparato ar mikrofono įrašymas</translation>
@@ -4567,7 +4577,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="6248988683584659830">Ieškoti nustatymų</translation>
 <translation id="6249200942125593849">Valdyti pasiekiamumą</translation>
 <translation id="6251870443722440887">GDI tvarkomi elementai</translation>
-<translation id="6251889282623539337"><ph name="DOMAIN" /> paslaugų teikimo sąlygos</translation>
 <translation id="625369703868467034">Tinklo būsena</translation>
 <translation id="6254503684448816922">Rakto pažeidimo galimybė</translation>
 <translation id="6257602895346497974">Įjungti sinchronizavimą...</translation>
@@ -4602,6 +4611,8 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="628352644014831790">4 sek.</translation>
 <translation id="6285120108426285413">„<ph name="FILE_NAME" />“ nėra įprastai atsisiunčiamas ir gali būti pavojingas.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Naujas spausdintuvas tinkle}one{Nauji spausdintuvai tinkle}few{Nauji spausdintuvai tinkle}many{Nauji spausdintuvai tinkle}other{Nauji spausdintuvai tinkle}}</translation>
+<translation id="6285770818046456882">Įrenginys, kuris bendrina su jumis, atšaukė perdavimą</translation>
+<translation id="6290613030083731160">Nėra jokių pasiekiamų įrenginių, bendrinančių netoliese. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="6291949900244949761">Paklausti, kai svetainė nori pasiekti USB įrenginius (rekomenduojama)</translation>
 <translation id="6291953229176937411">&amp;Rodyti ieškojimo priemonėje</translation>
 <translation id="6295158916970320988">Visos svetainės</translation>
@@ -4646,6 +4657,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="6331818708794917058">Svetainėse gali būti prašoma prisijungti prie MIDI įrenginių</translation>
 <translation id="6333064448949140209">Failas bus išsiųstas į sistemą „Google“ atlikti derinimą</translation>
 <translation id="6334444530352320327">Programos ir OS nustatymai bus sinchronizuojami su „Chromebook“ įrenginiais, kuriuose būsite prisijungę naudodami šią paskyrą. <ph name="LINK_BEGIN" />Sinchronizavimo nustatymai<ph name="LINK_END" /></translation>
+<translation id="6335920438823100346">Kad galėtumėte paleisti „Linux“, <ph name="MANAGER" /> reikalauja sukurti atsarginę duomenų kopiją ir atkurti gamyklinius šio „Chromebook“ nustatymus.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> išjungė ADB derinimą. „<ph name="DEVICE_TYPE" />“ bus iš naujo nustatytas po 24 val. Sukurkite visų norimų išsaugoti failų atsarginę kopiją.</translation>
 <translation id="6338981933082930623">Visose svetainėse galima rodyti jums bet kokius skelbimus</translation>
 <translation id="6339668969738228384">Kurti naują <ph name="USER_EMAIL_ADDRESS" /> profilį</translation>
@@ -5455,7 +5467,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="7290242001003353852">Ši prisijungimo paslauga, priglobiama <ph name="SAML_DOMAIN" />, pasiekia jūsų fotoaparatą.</translation>
 <translation id="7295614427631867477">Atminkite, kad „Android“, „Play“ ir susijusioms programoms taikoma atskira jų duomenų rinkimo ir naudojimo politika.</translation>
 <translation id="729583233778673644">Leisti AES ir RC4 šifruotes. Naudojant šią parinktį padidėja rizika, nes RC4 šifrai nesaugūs.</translation>
-<translation id="7296774163727375165"><ph name="DOMAIN" /> sąlygos</translation>
 <translation id="7297443947353982503">Naudotojo vardas / slaptažodis netinkamas arba EAP autentifikavimas nepavyko</translation>
 <translation id="729761647156315797">Kalbos ir klaviatūros pasirinkimas</translation>
 <translation id="7297726121602187087">Tamsiai žalia</translation>
@@ -5499,6 +5510,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="7347943691222276892">Spustelėkite, kad išeitumėte iš papildomo puslapio „<ph name="SUBPAGE_TITLE" />“.</translation>
 <translation id="7348093485538360975">Ekraninė klaviatūra</translation>
 <translation id="7352651011704765696">Kažkas negerai</translation>
+<translation id="7353261921908507769">Jūsų kontaktai gali bendrinti su jumis, kai būna netoliese. Perdavimai nebus pradėti, kol nesutiksite.</translation>
 <translation id="735361434055555355">Įdiegiama „Linux“...</translation>
 <translation id="7354341762311560488">Kontrolinio kodo jutiklis yra ant klaviatūros apatinio kairiojo klavišo. Lengvai jį palieskite bet kuriuo pirštu.</translation>
 <translation id="7356908624372060336">Tinklo žurnalai</translation>
@@ -5898,6 +5910,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="779308894558717334">Šviesiai žalia</translation>
 <translation id="7793098747275782155">Tamsiai mėlyna</translation>
 <translation id="7797571222998226653">Išjungta</translation>
+<translation id="7798259165971079056">Niekas negalės bendrinti su jumis, kol nebūsite matomi.<ph name="BR" /><ph name="BR" />Jei norite būti matomi laikinai, pasirinkdami laiką atidarykite būsenos sritį, tada pasirinkite matomumo netoliese funkciją.</translation>
 <translation id="7798844538707273832">Automatiškai užblokuota: <ph name="PERMISSION" /></translation>
 <translation id="7799299114731150374">Ekrano fonas nustatytas sėkmingai</translation>
 <translation id="7800518121066352902">Sukti prieš l&amp;aikrodžio rodyklę</translation>
@@ -6436,7 +6449,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8398877366907290961">Vis tiek tęsti</translation>
 <translation id="8400146488506985033">Tvarkyti žmones</translation>
 <translation id="8401432541486058167">Nurodykite su išmaniąja kortele susietą PIN kodą.</translation>
-<translation id="8405046151008197676">Gaukite svarbiausios informacijos apie paskiausią naujinį</translation>
 <translation id="8407199357649073301">Žurnalo lygis:</translation>
 <translation id="8408068190360279472">Tinklas: <ph name="NETWORK_TYPE" />, jungiamasi</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -6889,6 +6901,7 @@ Paspauskite priskirtą jungiklį, kad pašalintumėte priskyrimą.</translation>
 <translation id="8898840733695078011">Signalo stiprumas</translation>
 <translation id="8899851313684471736">Atidaryti nuorodą naujame &amp;lange</translation>
 <translation id="8900413463156971200">Įgalinti mobilųjį ryšį</translation>
+<translation id="8902059453911237649">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> reikalauja sukurti atsarginę duomenų kopiją ir grąžinti šį „<ph name="DEVICE_TYPE" />“ įrenginį šiandien.}one{<ph name="MANAGER" /> reikalauja sukurti atsarginę duomenų kopiją ir grąžinti šį „<ph name="DEVICE_TYPE" />“ įrenginį iki nurodyto termino.}few{<ph name="MANAGER" /> reikalauja sukurti atsarginę duomenų kopiją ir grąžinti šį „<ph name="DEVICE_TYPE" />“ įrenginį iki nurodyto termino.}many{<ph name="MANAGER" /> reikalauja sukurti atsarginę duomenų kopiją ir grąžinti šį „<ph name="DEVICE_TYPE" />“ įrenginį iki nurodyto termino.}other{<ph name="MANAGER" /> reikalauja sukurti atsarginę duomenų kopiją ir grąžinti šį „<ph name="DEVICE_TYPE" />“ įrenginį iki nurodyto termino.}}</translation>
 <translation id="8902667442496790482">Atidaryti funkcijos „Teksto ištarimas“ nustatymus</translation>
 <translation id="8903263458134414071">Pasirinkite paskyrą, su kuria norite prisijungti</translation>
 <translation id="890616557918890486">Keisti šaltinį</translation>
@@ -7125,7 +7138,6 @@ Paspauskite priskirtą jungiklį, kad pašalintumėte priskyrimą.</translation>
 <translation id="9168436347345867845">Atlikti vėliau</translation>
 <translation id="9169496697824289689">Peržiūrėti sparčiuosius klavišus</translation>
 <translation id="916964310188958970">Kodėl tai siūloma?</translation>
-<translation id="9169931577761441333">Pridėkite „<ph name="APP_NAME" />“ prie pagrindinio ekrano</translation>
 <translation id="9170061643796692986">Dabartinis matomumo nustatymas yra „Visi kontaktai“</translation>
 <translation id="9170848237812810038">&amp;Atšaukti</translation>
 <translation id="9170884462774788842">Kita jūsų kompiuteryje esanti programa pridėjo temą, kuri gali pakeisti „Chrome“ veikimo būdą.</translation>

@@ -12,6 +12,7 @@
 <translation id="10614374240317010">Nie speichern für…</translation>
 <translation id="1067922213147265141">Weitere Google-Dienste</translation>
 <translation id="107147699690128016">Eine Änderung der Dateiendung kann zum Öffnen der Datei in einer anderen Anwendung führen und Schäden an Ihrem Gerät verursachen.</translation>
+<translation id="1094515529340404628">Web Crowd und Anzeigenanalyse</translation>
 <translation id="1100066534610197918">In neuem Tab in Gruppe öffnen</translation>
 <translation id="1105960400813249514">Bildschirmaufnahme</translation>
 <translation id="1111673857033749125">Hier werden die Lesezeichen angezeigt, die auf Ihren anderen Geräten gespeichert sind.</translation>
@@ -227,6 +228,7 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="2536728043171574184">Eine Offline-Kopie dieser Seite wird angezeigt.</translation>
 <translation id="2537178555904266562">Fehler beim Synchronisieren von Passwörtern</translation>
 <translation id="2546283357679194313">Cookies und Websitedaten</translation>
+<translation id="2562889244313180139">Ermöglichen Sie Websites und Apps, Ihnen ein relevanteres Erlebnis zu bieten durch Verwendung eines nicht identifizierbaren Alias.</translation>
 <translation id="2567385386134582609">BILD</translation>
 <translation id="2571711316400087311">Anbieten, Seiten in anderen Sprachen an Google Übersetzer zu senden</translation>
 <translation id="2581165646603367611">Alle Cookies, der Cache und andere Daten von Websites, die Chrome nicht für wichtig hält, werden gelöscht.</translation>
@@ -714,6 +716,7 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="6005538289190791541">Vorgeschlagenes Passwort</translation>
 <translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Sie haben noch <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> Seite}other{Sie haben noch <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> Seiten}}</translation>
 <translation id="6014293228235665243">Ungelesen</translation>
+<translation id="6018309500671889594">Erlauben Sie Werbetreibenden, Werbekampagnen unter Verwendung nicht identifizierbarer Informationen zu untersuchen.</translation>
 <translation id="6036057147555329831">Extra ICU</translation>
 <translation id="6039379616847168523">Zum nächsten Tab wechseln</translation>
 <translation id="6040143037577758943">Schließen</translation>
@@ -896,6 +899,7 @@ Daten aus Ihrer Inkognitositzung werden erst aus Chrome gelöscht, wenn Sie <ph 
 <translation id="718926126787620637">Liste der Lesezeichenordner ist vollständig geöffnet</translation>
 <translation id="7189372733857464326">Warten auf Abschluss der Google Play-Dienste-Aktualisierung</translation>
 <translation id="7191430249889272776">Tab im Hintergrund geöffnet</translation>
+<translation id="720894724577012575">Kategorien: <ph name="COMMA_SEPERATED_CATEGORY_LIST" />.</translation>
 <translation id="7233236755231902816">Das Web in Ihrer Sprache – mit der aktuellen Version von Chrome</translation>
 <translation id="7248069434667874558">Prüfen Sie, ob auf <ph name="TARGET_DEVICE_NAME" /> die Synchronisierung in Chrome aktiviert ist</translation>
 <translation id="7274013316676448362">Blockierte Website</translation>
@@ -921,6 +925,7 @@ Daten aus Ihrer Inkognitositzung werden erst aus Chrome gelöscht, wenn Sie <ph 
 <translation id="7403691278183511381">Eindruck beim ersten Ausführen von Chrome</translation>
 <translation id="741204030948306876">Ja, bitte</translation>
 <translation id="7413229368719586778">Startdatum: <ph name="DATE" /></translation>
+<translation id="7416941666639889592">Wenn Sie sich einer Web Crowd anschließen, können Ihnen Websites ein relevantes Weberlebnis bieten, ohne personenidentifizierbaren Informationen zu verwenden. Ähnlich wie beim Publikum bei einem Konzert wissen Websites und Werbetreibende nur, dass Tausende Nutzer ein ähnliches Interesse teilen.</translation>
 <translation id="7431991332293347422">Legen Sie fest, wie Ihr Browserverlauf zur Personalisierung der Google Suche verwendet wird</translation>
 <translation id="7435356471928173109">Von Ihrem Administrator deaktiviert</translation>
 <translation id="7437998757836447326">Von Chrome abmelden</translation>
@@ -1122,6 +1127,7 @@ Daten aus Ihrer Inkognitositzung werden erst aus Chrome gelöscht, wenn Sie <ph 
 <translation id="8748850008226585750">Inhalte ausgeblendet</translation>
 <translation id="8788265440806329501">Der Navigationsverlauf wurde geschlossen</translation>
 <translation id="8788968922598763114">Zuletzt geschlossenen Tab öffnen</translation>
+<translation id="8795672590390389447">Privacy Sandbox</translation>
 <translation id="8798449543960971550">Gelesen</translation>
 <translation id="8812260976093120287">Auf manchen Websites können Sie über Ihr Gerät mit den obigen unterstützten Zahlungs-Apps bezahlen.</translation>
 <translation id="881688628773363275">Vorschau des Tab-Inhalts kann nicht angezeigt werden.</translation>

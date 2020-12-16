@@ -985,6 +985,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4901778704868714008">Desa...</translation>
 <translation id="4913987521957242411">Encunyació a la part superior esquerra</translation>
+<translation id="4918221908152712722">Instal·la l'aplicació <ph name="APP_NAME" /> (no cal que la baixis)</translation>
 <translation id="4923459931733593730">Pagament</translation>
 <translation id="4926049483395192435">S'ha d'especificar.</translation>
 <translation id="4926159001844873046"><ph name="SITE" /> diu</translation>
@@ -1350,6 +1351,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6328786501058569169">Aquest lloc web és enganyós</translation>
 <translation id="6337133576188860026">Allibera menys de <ph name="SIZE" />. És possible que alguns llocs web es carreguin més a poc a poc la propera vegada que els visitis.</translation>
 <translation id="6337534724793800597">Filtra les polítiques pel nom</translation>
+<translation id="6349101878882523185">Instal·la <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Cap}=1{1 contrasenya per a <ph name="DOMAIN_LIST" /> (sincronitzats)}=2{2 contrasenyes per a <ph name="DOMAIN_LIST" /> (sincronitzats)}other{# contrasenyes per a <ph name="DOMAIN_LIST" /> (sincronitzats)}}</translation>
 <translation id="6358450015545214790">Què vol dir tot això?</translation>
 <translation id="6361757823711327522">B7</translation>
@@ -2039,6 +2041,7 @@ Detalls addicionals:
 <translation id="9158625974267017556">C6 (sobre)</translation>
 <translation id="9168814207360376865">Permet que els llocs web comprovin si tens formes de pagament desades</translation>
 <translation id="9169664750068251925">Bloqueja sempre en aquest lloc</translation>
+<translation id="9169931577761441333">Afegeix <ph name="APP_NAME" /> a la pantalla d'inici</translation>
 <translation id="9170848237812810038">&amp;Desfés</translation>
 <translation id="9171296965991013597">Vols sortir de l'aplicació?</translation>
 <translation id="9173282814238175921">Document únic / Full nou</translation>

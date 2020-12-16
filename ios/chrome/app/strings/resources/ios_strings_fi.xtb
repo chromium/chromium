@@ -295,6 +295,7 @@ Seuraa alla olevia ohjeita:</translation>
 <translation id="4121993058175073134">Tee sähköp.tilin määritykset asetuksissa lähettääksesi nettovientitiet.</translation>
 <translation id="4124987746317609294">Aikaväli</translation>
 <translation id="4152011295694446843">Näet kirjanmerkkisi täällä</translation>
+<translation id="4152093603141133546">Organisaatiosi on kirjannut sinut ulos.</translation>
 <translation id="4172051516777682613">Näytä aina</translation>
 <translation id="418156467088430727">Näytä offline-versio uudella välilehdellä</translation>
 <translation id="4181841719683918333">Kielet</translation>
@@ -537,6 +538,7 @@ Yritä käyttää jokaisella sivustolla yksilöllistä salasanaa.</translation>
 <translation id="6668619169535738264">Muokkaa kirjanmerkkiä</translation>
 <translation id="667999046851023355">Dokumentti</translation>
 <translation id="6691331417640343772">Synkronoidun datan valinnat Google Hallintapaneelissa</translation>
+<translation id="6710079714193676716">Organisaatiosi ylläpitämä. Kaikki ominaisuudet eivät välttämättä ole saatavilla. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Salasanojen vienti epäonnistui</translation>
 <translation id="6748108480210050150">Lähettäjä</translation>
@@ -690,6 +692,7 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="8487667956631253959">Päällä</translation>
 <translation id="8487700953926739672">Käytettävissä offline-tilassa</translation>
 <translation id="8490978609246021741">Tallenna muutokset</translation>
+<translation id="8495097701594799854">Organisaatiosi on laittanut tämän pois päältä.</translation>
 <translation id="8503813439785031346">Käyttäjätunnus</translation>
 <translation id="850600235656508448">Avaa incognito-tilassa</translation>
 <translation id="8510057420705599706">Tämä kirjaa sinut ulos ja laittaa synkronoinnin pois päältä, mutta kirjanmerkit, historia, salasanat ja muu Chrome-datasi pysyy tällä laitteella.</translation>

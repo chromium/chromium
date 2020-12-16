@@ -154,7 +154,7 @@
 <translation id="1164899421101904659">Introducir código PUK</translation>
 <translation id="1165039591588034296">Error</translation>
 <translation id="1166212789817575481">Cerrar pestañas a la derecha</translation>
-<translation id="116624467691206283">El PUK no es válido. Queda 1 intento.</translation>
+<translation id="116624467691206283">PUK no válido. Te queda 1 intento.</translation>
 <translation id="1168020859489941584">Abriendo en <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168100932582989117">Servidores de nombres de Google</translation>
 <translation id="1170288591054440704">Preguntar cuando un sitio web quiera usar fuentes instaladas en el dispositivo</translation>
@@ -1141,7 +1141,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2262888617381992508">No puede reproducir contenido protegido</translation>
 <translation id="2263189956353037928">Cerrar la sesión y volver a iniciarla</translation>
 <translation id="2263371730707937087">Frecuencia de actualización de la pantalla</translation>
-<translation id="2265889263013046172">El PUK no es correcto. Te quedan <ph name="RETRIES" /> intentos más antes de tener que ponerte en contacto con tu operador para recuperar el acceso a la red.</translation>
+<translation id="2265889263013046172">PUK incorrecto. Te quedan <ph name="RETRIES" /> intentos más antes de tener que ponerte en contacto con tu operador para recuperar el acceso a la red.</translation>
 <translation id="22665427234727190">Preguntar cuando un sitio web quiera acceder a los dispositivos Bluetooth (recomendado)</translation>
 <translation id="2266957463645820432">Protocolo IPP por USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Intercambiar datos con cualquier dispositivo del dominio <ph name="DOMAIN" /></translation>
@@ -1906,7 +1906,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="313205617302240621">¿Has olvidado tu contraseña?</translation>
 <translation id="3132277757485842847">No se ha podido mantener la conexión con tu teléfono. Comprueba que tengas el teléfono cerca, que esté desbloqueado y que las conexiones Bluetooth y Wi‑Fi estén activadas.</translation>
 <translation id="3132996321662585180">Actualizar todos los días</translation>
-<translation id="3138624403379688522">El PIN no es válido. Quedan <ph name="RETRIES" /> intentos.</translation>
+<translation id="3138624403379688522">PIN no válido. Te quedan <ph name="RETRIES" /> intentos.</translation>
 <translation id="313963229645891001">Descargando (<ph name="STATUS" />)</translation>
 <translation id="3139925690611372679">Avatar amarillo predeterminado</translation>
 <translation id="3141318088920353606">Escuchando...</translation>
@@ -2485,7 +2485,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3792890930871100565">Desconectar impresoras</translation>
 <translation id="3793395331556663376">Hay demasiados sistemas de archivos abiertos.</translation>
 <translation id="3793588272211751505">{NUM_DAYS,plural, =1{Chrome no ha detectado software dañino en tu ordenador • Comprobado hace 1 día}other{Chrome no ha detectado software dañino en tu ordenador • Comprobado hace {NUM_DAYS} días}}</translation>
-<translation id="379500251094592809">Para usar la función Compartir con Nearby, asegúrate de que los dos dispositivos estén desbloqueados, se encuentren cerca y tengan el Bluetooth activado. Si vas a compartir archivos con un Chromebook que no esté en tus contactos, comprueba que esté activa la visibilidad de Nearby (selecciona la hora para abrir el área de estado y luego activa la visibilidad de Nearby). <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
+<translation id="379500251094592809">Para usar la función Compartir con Nearby, asegúrate de que los dos dispositivos estén desbloqueados, se encuentren cerca y tengan el Bluetooth activado. Si vas a compartir archivos con un Chromebook que no está en tus contactos, comprueba que esté activa la visibilidad de Nearby (selecciona la hora para abrir el área de estado y luego activa la visibilidad de Nearby). <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="379509625511193653">Desactivado</translation>
 <translation id="3796648294839530037">Redes favoritas:</translation>
 <translation id="3797739167230984533">Tu organización <ph name="BEGIN_LINK" />administra este <ph name="DEVICE_TYPE" /><ph name="END_LINK" />.</translation>
@@ -2511,7 +2511,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3817579325494460411">No proporcionada</translation>
 <translation id="3819257035322786455">Copia de seguridad</translation>
 <translation id="3819261658055281761">El sistema no ha podido almacenar el token de acceso a la API a largo plazo de este dispositivo.</translation>
-<translation id="3819448694985509187">PIN incorrecto. Queda 1 intento.</translation>
+<translation id="3819448694985509187">PIN incorrecto. Te queda 1 intento.</translation>
 <translation id="3819800052061700452">&amp;Pantalla completa</translation>
 <translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Mostrar}other{Mostrar todo}}</translation>
 <translation id="3820749202859700794">Curva elíptica SECG secp521r1 (también denominada NIST P-521)</translation>
@@ -2952,7 +2952,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4358313196493694334">Estabilizar ubicación de clic</translation>
 <translation id="4359408040881008151">Instalada debido a las extensiones dependientes</translation>
 <translation id="4359717112757026264">Paisaje urbano</translation>
-<translation id="4360237979279036412"><ph name="MANAGER" /> necesita que actualices este dispositivo <ph name="DEVICE_TYPE" /> antes de la fecha límite.</translation>
+<translation id="4360237979279036412"><ph name="MANAGER" /> necesita que actualices este <ph name="DEVICE_TYPE" /> antes de la fecha límite.</translation>
 <translation id="4361142739114356624">Falta la clave privada de este certificado de cliente o no es válida</translation>
 <translation id="4361745360460842907">Abrir como pestaña</translation>
 <translation id="4363771538994847871">No se han encontrado destinos para enviar contenido. ¿Necesitas ayuda?</translation>
@@ -3432,7 +3432,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4917385247580444890">Buena</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> quiere comunicarse con al extensión <ph name="EXTENSION_NAME" /></translation>
 <translation id="4918086044614829423">Aceptar</translation>
-<translation id="4918221908152712722">Instala <ph name="APP_NAME" /> (sin descargar nada)</translation>
 <translation id="4921290200821452703">Información de la cuenta de centro educativo para padres</translation>
 <translation id="4921348630401250116">Síntesis de voz</translation>
 <translation id="49226369361073053">{0,plural, =0{Actualizar dispositivo ahora}=1{Actualizar dispositivo dentro de 1 segundo}other{Actualizar dispositivo dentro de # segundos}}</translation>
@@ -3588,7 +3587,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">Tu disco duro está lleno. Guarda el archivo en otra ubicación o libera espacio en el disco duro.</translation>
 <translation id="5123433949759960244">Balón de baloncesto</translation>
-<translation id="5125167430897995218">El PUK no es correcto. Te queda 1 intento más antes de tener que ponerte en contacto con tu operador para recuperar el acceso a la red.</translation>
+<translation id="5125167430897995218">PUK incorrecto. Te queda 1 intento más antes de tener que ponerte en contacto con tu operador para recuperar el acceso a la red.</translation>
 <translation id="5125751979347152379">La URL no es válida.</translation>
 <translation id="5126611267288187364">Ver cambios</translation>
 <translation id="5127620150973591153">Identificador de conexión segura: <ph name="TOKEN" /></translation>
@@ -3920,7 +3919,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="5501809658163361512">{COUNT,plural, =1{No se han podido recibir <ph name="ATTACHMENTS" /> de <ph name="DEVICE_NAME" />}other{No se han podido recibir <ph name="ATTACHMENTS" /> de <ph name="DEVICE_NAME" />}}</translation>
 <translation id="5502500733115278303">Importado desde Firefox</translation>
 <translation id="5502915260472117187">Un niño/a</translation>
-<translation id="5503858713116291452">Comprueba que tengas el teléfono cerca, que esté desbloqueado y que las conexiones Bluetooth y Wi‑Fi estén activadas. Sigue los pasos en tu teléfono para completar la configuración.</translation>
+<translation id="5503858713116291452">Comprueba que tengas el teléfono cerca, que esté desbloqueado y que el Bluetooth y el Wi‑Fi estén activados. Sigue los pasos en tu teléfono para completar la configuración.</translation>
 <translation id="5503982651688210506">Permitir que <ph name="HOST" /> siga usando y moviendo tu cámara y usando tu micrófono</translation>
 <translation id="5505264765875738116">Los sitios web no pueden preguntarte si quieres que te envíen notificaciones</translation>
 <translation id="5505307013568720083">No hay tinta</translation>
@@ -4573,7 +4572,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6248988683584659830">Buscar ajustes</translation>
 <translation id="6249200942125593849">Gestionar ajustes de accesibilidad</translation>
 <translation id="6251870443722440887">GDI administra</translation>
-<translation id="6251889282623539337">Condiciones de Servicio de <ph name="DOMAIN" /></translation>
 <translation id="625369703868467034">Estado de la red</translation>
 <translation id="6254503684448816922">Compromiso de clave</translation>
 <translation id="6257602895346497974">Activar sincronización...</translation>
@@ -4655,7 +4653,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6333064448949140209">El archivo se enviará a Google para depurarlo</translation>
 <translation id="6334444530352320327">Tus aplicaciones y ajustes de Chrome OS se sincronizarán en los Chromebooks en los que hayas iniciado sesión con esta cuenta. <ph name="LINK_BEGIN" />Ajustes de sincronización<ph name="LINK_END" /></translation>
 <translation id="6335920438823100346">Para iniciar Linux, <ph name="MANAGER" /> necesita que crees una copia de seguridad de tus datos y restablezcas los ajustes de fábrica de este Chromebook.</translation>
-<translation id="6336038146639916978"><ph name="MANAGER" /> ha inhabilitado la depuración ADB. Este proceso restablecerá tu <ph name="DEVICE_TYPE" /> dentro de 24 horas. Haz copias de seguridad de los archivos que quieras conservar.</translation>
+<translation id="6336038146639916978"><ph name="MANAGER" /> ha inhabilitado la depuración ADB. Se restablecerá tu <ph name="DEVICE_TYPE" /> dentro de 24 horas. Haz copias de seguridad de los archivos que quieras conservar.</translation>
 <translation id="6338981933082930623">Todos los sitios web pueden mostrarte cualquier anuncio</translation>
 <translation id="6339668969738228384">Crear un perfil para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340017061976355871">No se ha podido conectar con el servidor. Comprueba la conexión de red y vuelve a intentarlo. Si el problema persiste, reinicia el Chromebook.</translation>
@@ -4680,7 +4678,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6367985768157257101">¿Recibir a través de Compartir con Nearby?</translation>
 <translation id="636850387210749493">Registro de empresa</translation>
 <translation id="6370021412472292592">No se ha podido cargar el archivo de manifiesto.</translation>
-<translation id="6370863890073808080">Asegúrate de que los dos dispositivos estén desbloqueados, se encuentren cerca y tengan el Bluetooth activado. Si vas a compartir archivos con un Chromebook que no esté en tus contactos, comprueba que esté activa la visibilidad de Nearby (selecciona la hora para abrir el área de estado y luego selecciona la visibilidad de Nearby). <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
+<translation id="6370863890073808080">Asegúrate de que los dos dispositivos estén desbloqueados, se encuentren cerca y tengan el Bluetooth activado. Si vas a compartir archivos con un Chromebook que no está en tus contactos, comprueba que esté activa la visibilidad de Nearby (selecciona la hora para abrir el área de estado y luego selecciona la visibilidad de Nearby). <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Reintentar</translation>
 <translation id="6377268785556383139">1 resultado para "<ph name="SEARCH_TEXT" />"</translation>
@@ -5464,7 +5462,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7290242001003353852">Este servicio de inicio de sesión (que se aloja en <ph name="SAML_DOMAIN" />) está accediendo a la cámara.</translation>
 <translation id="7295614427631867477">Ten en cuenta que Android, Google Play y las aplicaciones asociadas se rigen por sus propias políticas de recogida y uso de datos.</translation>
 <translation id="729583233778673644">Permite los cifrados AES y RC4. Esta opción aumenta el riesgo, ya que los algoritmos de cifrado de RC4 no son seguros.</translation>
-<translation id="7296774163727375165">Términos de <ph name="DOMAIN" /></translation>
 <translation id="7297443947353982503">Nombre de usuario o contraseña incorrectos o error de autenticación EAP</translation>
 <translation id="729761647156315797">Selecciona el idioma y el teclado</translation>
 <translation id="7297726121602187087">Verde oscuro</translation>
@@ -6286,7 +6283,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8206745257863499010">Música</translation>
 <translation id="8206859287963243715">Móvil</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Notificación nueva}other{# notificaciones nuevas}}</translation>
-<translation id="8211551284753798479">El PUK no es válido. Quedan <ph name="RETRIES" /> intentos.</translation>
+<translation id="8211551284753798479">PUK no válido. Te quedan <ph name="RETRIES" /> intentos.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Descarga en curso}other{Descargas en curso}}</translation>
 <translation id="8213449224684199188">Se ha cambiado al modo de foto</translation>
 <translation id="8214489666383623925">Abrir archivo...</translation>
@@ -6366,7 +6363,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8293206222192510085">Añadir marcador</translation>
 <translation id="8294431847097064396">Origen</translation>
 <translation id="8297006494302853456">Débil</translation>
-<translation id="8298429963694909221">Ya puedes recibir notificaciones de tu teléfono en tu <ph name="DEVICE_TYPE" />. Cuando cierres una notificación en tu <ph name="DEVICE_TYPE" />, también se cerrará en tu teléfono. Comprueba que tengas el teléfono cerca y que las conexiones Bluetooth y Wi‑Fi estén activadas.</translation>
+<translation id="8298429963694909221">Ahora puedes recibir notificaciones de tu teléfono en tu <ph name="DEVICE_TYPE" />. Cuando cierres una notificación en tu <ph name="DEVICE_TYPE" />, también se cerrará en tu teléfono. Comprueba que tengas el teléfono cerca y que el Bluetooth y el Wi‑Fi estén activados.</translation>
 <translation id="8299319456683969623">Actualmente no tienes conexión.</translation>
 <translation id="8300011035382349091">Editar marcador de esta pestaña</translation>
 <translation id="8300374739238450534">Azul noche</translation>
@@ -6447,7 +6444,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8398877366907290961">Continuar de todos modos</translation>
 <translation id="8400146488506985033">Gestionar usuarios</translation>
 <translation id="8401432541486058167">Introduce el PIN asociado a tu tarjeta inteligente.</translation>
-<translation id="8405046151008197676">Consulta los aspectos destacados de la última actualización</translation>
 <translation id="8407199357649073301">Nivel de registro:</translation>
 <translation id="8408068190360279472">Red <ph name="NETWORK_TYPE" />, conectando</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -6637,7 +6633,7 @@ Pulsa un interruptor asignado para quitar la asignación.</translation>
 <translation id="8636284842992792762">Inicializando extensiones...</translation>
 <translation id="8637542770513281060">Tu ordenador contiene un módulo de seguridad, que se utiliza para implementar un gran número de funciones importantes de seguridad en Chrome OS. Accede al Centro de Ayuda de los Chromebooks (https://support.google.com/chromebook/?p=sm) para obtener más información.</translation>
 <translation id="8637688295594795546">Hay disponible una actualización del sistema. Preparando para descargar…</translation>
-<translation id="863903787380594467">PIN incorrecto. Quedan <ph name="RETRIES" /> intentos.</translation>
+<translation id="863903787380594467">PIN incorrecto. Te quedan <ph name="RETRIES" /> intentos.</translation>
 <translation id="8639047128869322042">Buscando software dañino...</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> (puerto)</translation>
 <translation id="8639635302972078117">Envía datos de uso y diagnóstico. Este dispositivo envía automáticamente a Google datos de diagnóstico, del dispositivo y del uso de las aplicaciones. Los datos no se usarán para identificar a tu hijo, sino para aumentar la estabilidad de las aplicaciones y del sistema, y realizar otras mejoras. Parte de los datos agregados también ayudarán a las aplicaciones y los partners de Google, como los desarrolladores de Android. Si la opción Actividad en la Web y en Aplicaciones Adicional está activada, es posible que estos datos se guarden en la cuenta de Google de tu hijo.</translation>
@@ -7113,7 +7109,7 @@ Pulsa un interruptor asignado para quitar la asignación.</translation>
 <translation id="9147392381910171771">&amp;Opciones</translation>
 <translation id="9148058034647219655">Salir</translation>
 <translation id="9148126808321036104">Volver a iniciar sesión</translation>
-<translation id="914873105831852105">El PIN no es válido. Queda 1 intento.</translation>
+<translation id="914873105831852105">PIN no válido. Te queda 1 intento.</translation>
 <translation id="9148963623915467028">Este sitio web puede acceder a tu ubicación.</translation>
 <translation id="9149866541089851383">Editar...</translation>
 <translation id="9150045010208374699">Utilizar la cámara</translation>
@@ -7134,7 +7130,6 @@ Pulsa un interruptor asignado para quitar la asignación.</translation>
 <translation id="9168436347345867845">En otro momento</translation>
 <translation id="9169496697824289689">Ver combinaciones de teclas</translation>
 <translation id="916964310188958970">¿Por qué aparece esta sugerencia?</translation>
-<translation id="9169931577761441333">Añadir <ph name="APP_NAME" /> a la pantalla de inicio</translation>
 <translation id="9170061643796692986">El ajuste de visibilidad actual es todos los contactos</translation>
 <translation id="9170848237812810038">&amp;Deshacer</translation>
 <translation id="9170884462774788842">Otro programa de tu ordenador ha añadido un tema que puede cambiar el funcionamiento de Chrome.</translation>

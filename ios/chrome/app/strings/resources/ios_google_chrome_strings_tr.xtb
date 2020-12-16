@@ -30,6 +30,7 @@
 <translation id="3706101708757577809">Artık mesajlardaki, dokümanlardaki ve diğer uygulamalardaki bağlantıları tıkladığınızda Chrome'u kullanabilirsiniz.</translation>
 <translation id="384394811301901750">Google Chrome şu anda kameranızı kullanamıyor</translation>
 <translation id="3980220367029651214">Senkronizasyon hesapları arasında (<ph name="USER_EMAIL1" /> hesabından <ph name="USER_EMAIL2" /> hesabına) geçiş yapıyorsunuz. Mevcut Chrome verileriniz <ph name="DOMAIN" /> tarafından yönetiliyor. Bu işlemle verileriniz bu cihazdan silinir, ancak <ph name="USER_EMAIL1" /> hesabınızda kalmaya devam eder.</translation>
+<translation id="3984746313391923992">Kuruluşunuz, Chrome'da oturum kapatmış olarak kalmanızı zorunlu tutuyor.</translation>
 <translation id="3988789688219830639">Google Chrome, fotoğraflarınıza veya videolarınıza erişemiyor. iOS Ayarlar &gt; Gizlilik &gt; Fotoğraflar'dan erişimi etkinleştirin.</translation>
 <translation id="4099578267706723511">Google'a kullanım istatistikleri ve kilitlenme raporları göndererek Chrome'u iyileştirmeye yardımcı olun.</translation>
 <translation id="415767770115540173">Chrome'da, konumunuza dayalı olarak daha iyi bir Google deneyimi yaşayın.</translation>
@@ -54,6 +55,7 @@
 <translation id="6600954340915313787">Chrome'a kopyalandı</translation>
 <translation id="6648150602980899529"><ph name="DOMAIN" /> tarafından yönetilen bir hesapla oturum açıyorsunuz ve yöneticiye tüm Chrome verileriniz üzerinde denetim olanağı veriyorsunuz. Verileriniz kalıcı olarak bu hesaba bağlanacaktır. Chrome'da oturumu kapattığınızda verileriniz bu cihazdan silinir ancak Google Hesabınızda kalmaya devam eder.</translation>
 <translation id="6676840375528380067">Chrome verileriniz bu cihazdan temizlensin mi?</translation>
+<translation id="6822363243974874813">Chrome'da oturumunuz kapandığında yer işaretleriniz, geçmişiniz, şifreleriniz ve diğer ayarlarınız bu cihazdan temizlendi. Senkronize edilmiş Chrome verileriniz, Google hesabınızda durmaya devam ediyor.</translation>
 <translation id="6822673484890854830">Chrome, şifrelerin tümünü kontrol edemedi. Daha sonra tekrar deneyin.</translation>
 <translation id="7124339256045485976">Chrome'u güncel tutun</translation>
 <translation id="7161390184744336561">Google Chrome güncel değil</translation>

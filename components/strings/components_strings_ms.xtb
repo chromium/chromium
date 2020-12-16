@@ -997,6 +997,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4901778704868714008">Simpan...</translation>
 <translation id="4913987521957242411">Tebukan atas sebelah kiri</translation>
+<translation id="4918221908152712722">Pasang <ph name="APP_NAME" /> (tidak perlu dimuat turun)</translation>
 <translation id="4923459931733593730">Pembayaran</translation>
 <translation id="4926049483395192435">Mesti ditentukan.</translation>
 <translation id="4926159001844873046"><ph name="SITE" /> menyatakan</translation>
@@ -1362,6 +1363,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6328786501058569169">Tapak ini mengelirukan</translation>
 <translation id="6337133576188860026">Mengosongkan kurang daripada <ph name="SIZE" />. Sesetengah tapak mungkin dimuatkan dengan lebih perlahan pada lawatan anda yang seterusnya.</translation>
 <translation id="6337534724793800597">Tapis dasar mengikut nama</translation>
+<translation id="6349101878882523185">Pasang <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Tiada}=1{1 kata laluan (untuk <ph name="DOMAIN_LIST" />, disegerakkan)}=2{2 kata laluan (untuk <ph name="DOMAIN_LIST" />, disegerakkan)}other{# kata laluan (untuk <ph name="DOMAIN_LIST" />, disegerakkan)}}</translation>
 <translation id="6358450015545214790">Apakah maksudnya?</translation>
 <translation id="6361757823711327522">B7</translation>
@@ -2052,6 +2054,7 @@ Butiran tambahan:
 <translation id="9158625974267017556">C6 (Sampul Surat)</translation>
 <translation id="9168814207360376865">Benarkan tapak menyemak sama ada anda mempunyai kaedah pembayaran yang disimpan</translation>
 <translation id="9169664750068251925">Sentiasa sekat di tapak ini</translation>
+<translation id="9169931577761441333">Tambahkan <ph name="APP_NAME" /> pada Skrin utama</translation>
 <translation id="9170848237812810038">&amp;Buat asal</translation>
 <translation id="9171296965991013597">Tinggalkan apl?</translation>
 <translation id="9173282814238175921">Satu dokumen/Helaian baharu</translation>

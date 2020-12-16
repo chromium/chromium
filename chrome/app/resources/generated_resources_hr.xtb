@@ -3434,7 +3434,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4917385247580444890">Jak</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> želi komunicirati s proširenjem "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4918086044614829423">Prihvati</translation>
-<translation id="4918221908152712722">Instalirajte aplikaciju <ph name="APP_NAME" /> (preuzimanje nije potrebno)</translation>
 <translation id="4921290200821452703">Podaci o školskom računu za roditelje</translation>
 <translation id="4921348630401250116">Pretvaranje teksta u govor</translation>
 <translation id="49226369361073053">{0,plural, =0{Odmah ažurirajte uređaj}=1{Ažurirajte uređaj u roku od jedne sekunde}one{Ažurirajte uređaj u roku od # sekunde}few{Ažurirajte uređaj u roku od # sekunde}other{Ažurirajte uređaj u roku od # sekundi}}</translation>
@@ -4575,7 +4574,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="6248988683584659830">Pretraživanje postavki</translation>
 <translation id="6249200942125593849">Upravljanje značajkama pristupačnosti</translation>
 <translation id="6251870443722440887">Rukuje GDI</translation>
-<translation id="6251889282623539337">Uvjeti pružanja usluge domene <ph name="DOMAIN" /></translation>
 <translation id="625369703868467034">Stanje mreže</translation>
 <translation id="6254503684448816922">Kompromis ključa</translation>
 <translation id="6257602895346497974">Uključite sinkronizaciju...</translation>
@@ -5465,7 +5463,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="7290242001003353852">Usluga prijave, koju hostira <ph name="SAML_DOMAIN" />, pristupa vašoj kameri.</translation>
 <translation id="7295614427631867477">Napominjemo da su Android, Play i povezane aplikacije regulirani vlastitim pravilima o prikupljanju i upotrebi podataka.</translation>
 <translation id="729583233778673644">Dopuštanje AES i RC4 šifriranja. Upotreba te opcije izlaže vas većoj opasnosti jer RC4 šifre nisu sigurne.</translation>
-<translation id="7296774163727375165">Uvjeti domene <ph name="DOMAIN" /></translation>
 <translation id="7297443947353982503">Netočno korisničko ime/zaporka ili neuspjela EAP autentifikacija</translation>
 <translation id="729761647156315797">Odaberite jezik i tipkovnicu</translation>
 <translation id="7297726121602187087">Tamnozelena</translation>
@@ -6447,7 +6444,6 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="8398877366907290961">Svejedno nastavi</translation>
 <translation id="8400146488506985033">Upravljaj korisnicima</translation>
 <translation id="8401432541486058167">Unesite PIN za pametnu karticu.</translation>
-<translation id="8405046151008197676">Primite najzanimljivije dijelove najnovijeg ažuriranja</translation>
 <translation id="8407199357649073301">Razina zapisnika:</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> mreža, povezivanje</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -7134,7 +7130,6 @@ Pritisnite dodijeljeni prekidač da biste uklonili dodjelu.</translation>
 <translation id="9168436347345867845">Učinite to kasnije</translation>
 <translation id="9169496697824289689">Prikaz tipkovnih prečaca</translation>
 <translation id="916964310188958970">Zašto taj prijedlog?</translation>
-<translation id="9169931577761441333">Dodajte <ph name="APP_NAME" /> na početni zaslon</translation>
 <translation id="9170061643796692986">Trenutačna postavka vidljivosti obuhvaća sve kontakte</translation>
 <translation id="9170848237812810038">&amp;Poništi</translation>
 <translation id="9170884462774788842">Drugi program na vašem računalu dodao je temu koja može promijeniti način na koji radi Chrome.</translation>

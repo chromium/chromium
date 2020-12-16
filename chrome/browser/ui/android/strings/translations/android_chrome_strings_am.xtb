@@ -12,6 +12,7 @@
 <translation id="10614374240317010">በጭራሽ አልተቀመጠም</translation>
 <translation id="1067922213147265141">ሌሎች የGoogle አገልግሎቶች</translation>
 <translation id="107147699690128016">የፋይል ቅጥያውን ከቀየሩት ፋይሉ በተለየ መተግበሪያ ሊከፈት ይችላል፣ እና መሣሪያዎን ሊጎዳ ይችላል።</translation>
+<translation id="1094515529340404628">የድር ስብስብ እና የማስታወቂያ ልኬት</translation>
 <translation id="1100066534610197918">በቡድን ውስጥ አዲስ ትር ይክፈቱ</translation>
 <translation id="1105960400813249514">የማያ ገጽ ቀረጻ</translation>
 <translation id="1111673857033749125">በሌሎች መሣሪያዎችዎ ላይ የተቀመጡ ዕልባቶችዎ እዚህ ብቅ ይላሉ።</translation>
@@ -227,6 +228,7 @@
 <translation id="2536728043171574184">የዚህን ገጽ የመስመር ውጭ ቅጂ በመመልከት ላይ</translation>
 <translation id="2537178555904266562">የይለፍ ቃሎችን ማስመር ላይ ስሕተት</translation>
 <translation id="2546283357679194313">ኩኪዎች እና የጣቢያ ውሂብ</translation>
+<translation id="2562889244313180139">ድር ጣቢያዎች እና መተግበሪያዎች ተለይቶ መታወቅ የማይችል ተለዋጭ ስምን በመጠቀም ይበልጥ ተገቢ የሆነ ተሞክሮ እንዲሰጡዎት ይፍቀዱላቸው።</translation>
 <translation id="2567385386134582609">ምስል</translation>
 <translation id="2571711316400087311">በሌሎች ቋንቋዎች ያሉ ገጾችን ወደ Google ትርጉም ለመላክ ያቅርቡ</translation>
 <translation id="2581165646603367611">ይሄ Chrome አስፈላጊ ናቸው ብሎ የማያስባቸውን ኩኪዎች፣ መሸጎጫ እና ሌሎች ጣቢያዎች ያጸዳል።</translation>
@@ -714,6 +716,7 @@
 <translation id="6005538289190791541">የተጠቆመ የይለፍ ቃል</translation>
 <translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{እርስዎ <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> ገጽ አለዎት}one{እርስዎ <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> ገጾች አሉዎት}other{እርስዎ <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> ገጾች አሉዎት}}</translation>
 <translation id="6014293228235665243">ያልተነበበ</translation>
+<translation id="6018309500671889594">ማስታወቂያ ሰሪዎች በግል የማያስለዩ መረጃዎችን በመጠቀም የማስታወቂያ ዘመቻዎችን እንዲያጠኑ ይፍቀዱላቸው።</translation>
 <translation id="6036057147555329831">ተጨማሪ አይሲዩ</translation>
 <translation id="6039379616847168523">ወደ ቀጣዩ ትር ዝለል</translation>
 <translation id="6040143037577758943">ዝጋ</translation>
@@ -922,6 +925,7 @@
 <translation id="7403691278183511381">Chrome የመጀመሪያ አሂድ ተሞክሮ</translation>
 <translation id="741204030948306876">አዎ፣ ገብቼያለሁ</translation>
 <translation id="7413229368719586778">መጀመሪያ ቀን <ph name="DATE" /></translation>
+<translation id="7416941666639889592">የድር ስብስቦችን በመቀላቀል ድር ጣቢያዎች በግል የሚያስለዩ መረጃዎችን ሳይጠቀሙ የድር ተሞክሮዎ ተገቢ እንዲሆኑ ያስችላቸዋል። በኮንሰርት ውስጥ ካለ ህዝብ ጋር ተመሳሳይ በሆነ መልኩ ድር ጣቢያዎች እና ማስታወቂያ ሰሪዎች በሺዎች የሚቆጠሩ ተጠቃሚዎች ተመሳሳይ ፍላጎት ሲጋሩ ብቻ ማወቅ ይችላሉ።</translation>
 <translation id="7431991332293347422">ፍለጋን እና ተጨማሪ ነገሮችን ግላዊነት ለማላበስ የእርስዎ የአሰሳ ታሪክ እንዴት ጥቅም ላይ እንደሚውል ይቆጣጠሩ</translation>
 <translation id="7435356471928173109">በአስተዳዳሪዎ ጠፍቷል</translation>
 <translation id="7437998757836447326">ዘግተው ከChrome ይውጡ</translation>
@@ -1123,6 +1127,7 @@
 <translation id="8748850008226585750">ይዘቶች ተደብቀዋል</translation>
 <translation id="8788265440806329501">የዳሰሳ ታሪክ ተዘግቷል</translation>
 <translation id="8788968922598763114">መጨረሻ ላይ የተዘጋውን ትር ዳግም ክፈት</translation>
+<translation id="8795672590390389447">የግላዊነት ማጠሪያ</translation>
 <translation id="8798449543960971550">ያንብቡ</translation>
 <translation id="8812260976093120287">በአንዳንድ ድር ጣቢያዎች ላይ ከላይ ባሉ የሚደገፉ የክፍያ መተግበሪያዎች በመሣሪያዎ ላይ መክፈል ይችላሉ።</translation>
 <translation id="881688628773363275">የቅድመ-እይታ ትር ይዘት ሊታይ የሚችል አይደለም።</translation>

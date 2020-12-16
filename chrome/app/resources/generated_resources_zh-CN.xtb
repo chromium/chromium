@@ -254,6 +254,7 @@
 <translation id="1274997165432133392">Cookie 及其他网站数据</translation>
 <translation id="1275718070701477396">已选中</translation>
 <translation id="1276994519141842946">无法卸载 <ph name="APP_NAME" /></translation>
+<translation id="1278703349931574538">管理联系人</translation>
 <translation id="127946606521051357">附近的设备正在分享内容</translation>
 <translation id="1280820357415527819">正在搜索移动网络</translation>
 <translation id="1280965841156951489">修改文件</translation>
@@ -537,6 +538,7 @@
 <translation id="1588870296199743671">链接打开方式...</translation>
 <translation id="1589055389569595240">显示拼写和语法</translation>
 <translation id="1591679663873027990">授权 Parallels Desktop 访问 USB 设备。Parallels Desktop 不会记住已被拔出的 USB 设备。</translation>
+<translation id="1592074621872221573"><ph name="MANAGER" /> 已停用 ADB 调试，这会重置您的 <ph name="DEVICE_TYPE" />。请先备份您的文件，然后再重启设备。</translation>
 <translation id="1593594475886691512">正在格式化…</translation>
 <translation id="159359590073980872">图片缓存</translation>
 <translation id="1593926297800505364">保存付款方式</translation>
@@ -1353,6 +1355,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">扫描</translation>
 <translation id="2518024842978892609">使用您的客户端证书</translation>
+<translation id="2519517390894391510">证书名称</translation>
 <translation id="2520644704042891903">正在等待可用的套接字…</translation>
 <translation id="2521854691574443804">正在检查 <ph name="FILE_NAME" /> 是否符合贵组织的安全政策…</translation>
 <translation id="252219247728877310">组件未更新</translation>
@@ -1706,6 +1709,7 @@
 <translation id="2915996080311180594">暂不重启</translation>
 <translation id="2916073183900451334">在网页上按 Tab 可突出显示链接以及表单字段</translation>
 <translation id="2916745397441987255">搜索扩展程序</translation>
+<translation id="2918484644467055090">该设备无法注册到您帐号所属的组织，因为它已被标记为受另一组织管理。</translation>
 <translation id="2921081876747860777">请设置密码，以保护您的本地数据。</translation>
 <translation id="2923006468155067296">您的 <ph name="DEVICE_TYPE" /> 将立即锁定。
 <ph name="DOMAIN" /> 要求您使智能卡保持插入状态。</translation>
@@ -2023,6 +2027,7 @@
 <translation id="3308116878371095290">系统已禁止设置此网页的 Cookie。</translation>
 <translation id="3308134619352333507">隐藏按钮</translation>
 <translation id="3308852433423051161">正在加载 Google 助理…</translation>
+<translation id="3309330461362844500">证书 ID</translation>
 <translation id="3311445899360743395">系统可能会从此设备上移除与该应用相关的数据。</translation>
 <translation id="3312424061798279731">已启用的语言</translation>
 <translation id="3313622045786997898">证书签名值</translation>
@@ -2887,6 +2892,7 @@
 <translation id="4312701113286993760">{COUNT,plural, =1{1 个 Google 帐号}other{<ph name="EXTRA_ACCOUNTS" /> 个 Google 帐号}}</translation>
 <translation id="4312866146174492540">屏蔽（默认）</translation>
 <translation id="4314815835985389558">管理同步数据</translation>
+<translation id="4316735916549342071">按键不一致。当前按下的是“<ph name="UNEXPECTEDKEY" />”键。先前按下的是“<ph name="CURRENTKEY" />”键。按任意键即可退出。</translation>
 <translation id="4316850752623536204">开发者网站</translation>
 <translation id="4317820549299924617">验证失败</translation>
 <translation id="4320177379694898372">未连接到互联网</translation>
@@ -3391,7 +3397,6 @@
 <translation id="4917385247580444890">强</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> 希望与“<ph name="EXTENSION_NAME" />”扩展程序通信</translation>
 <translation id="4918086044614829423">接受</translation>
-<translation id="4918221908152712722">安装<ph name="APP_NAME" />（不需要下载）</translation>
 <translation id="4921290200821452703">致家长：学校帐号信息</translation>
 <translation id="4921348630401250116">文字转语音</translation>
 <translation id="49226369361073053">{0,plural, =0{立即更新此设备}=1{请在 1 秒内更新此设备}other{请在 # 秒内更新此设备}}</translation>
@@ -3584,6 +3589,7 @@
 <translation id="5160857336552977725">登录您的<ph name="DEVICE_TYPE" /></translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> 已被禁用</translation>
 <translation id="5163910114647549394">此标签页已移至标签栏的末尾</translation>
+<translation id="5165085578392358314">为以下操作分配开关键：<ph name="ACTION" /></translation>
 <translation id="5166596762332123936">“<ph name="PLUGIN_NAME" />”已因过期而被停用</translation>
 <translation id="5170568018924773124">在文件夹中显示</translation>
 <translation id="5171045022955879922">搜索或输入网址</translation>
@@ -4017,6 +4023,7 @@
 <translation id="5667546120811588575">正在设置 Google Play…</translation>
 <translation id="5669267381087807207">正在激活</translation>
 <translation id="5669691691057771421">请输入新的 PIN 码</translation>
+<translation id="56702779821643359">与附近的人分享文件。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5671641761787789573">已拦截图片</translation>
 <translation id="5671658447180261823">移除该项推荐内容：<ph name="SUGGESTION_NAME" /></translation>
@@ -4335,10 +4342,12 @@
 <translation id="604388835206766544">无法解析配置</translation>
 <translation id="6043994281159824495">立即退出</translation>
 <translation id="6044805581023976844"><ph name="APP_NAME" /> 正在与 <ph name="TAB_NAME" /> 共享 Chrome 标签页和音频。</translation>
+<translation id="6045114302329202345">TrackPoint 主按钮</translation>
 <translation id="6049004884579590341">按住 |<ph name="ACCELERATOR" />| 即可退出全屏模式</translation>
 <translation id="6051354611314852653">糟糕！系统无法将 API 访问权限授予此设备。</translation>
 <translation id="6052976518993719690">SSL 证书授权中心</translation>
 <translation id="6053401458108962351">清除浏览数据(&amp;C)...</translation>
+<translation id="6054961935262556546">更改公开范围</translation>
 <translation id="6055171183283175969">您输入的密码不正确。</translation>
 <translation id="6055392876709372977">PKCS #1，带有 RSA 加密的 SHA-256</translation>
 <translation id="6055907707645252013">“<ph name="NETWORK_TYPE" />”类型的网络，未连接</translation>
@@ -4520,7 +4529,6 @@
 <translation id="6248988683584659830">在设置中搜索</translation>
 <translation id="6249200942125593849">管理无障碍设置</translation>
 <translation id="6251870443722440887">GDI处理函数</translation>
-<translation id="6251889282623539337"><ph name="DOMAIN" /> 服务条款</translation>
 <translation id="625369703868467034">网络状况</translation>
 <translation id="6254503684448816922">密钥泄漏</translation>
 <translation id="6257602895346497974">开启同步功能…</translation>
@@ -4598,6 +4606,7 @@
 <translation id="6331818708794917058">网站可以请求连接到 MIDI 设备</translation>
 <translation id="6333064448949140209">文件将发送到 Google 进行调试</translation>
 <translation id="6334444530352320327">您的应用和操作系统设置会在您使用此帐号登录的所有 Chromebook 上保持同步。<ph name="LINK_BEGIN" />同步设置<ph name="LINK_END" /></translation>
+<translation id="6336038146639916978"><ph name="MANAGER" /> 已停用 ADB 调试。这会导致您的 <ph name="DEVICE_TYPE" /> 在 24 小时后重置。请备份您想保留的所有文件。</translation>
 <translation id="6338981933082930623">所有网站都可以向您显示任何广告</translation>
 <translation id="6339668969738228384">为 <ph name="USER_EMAIL_ADDRESS" /> 创建新的个人资料</translation>
 <translation id="6340017061976355871">无法与此服务器建立连接。请检查您的网络连接，然后重试。如果问题仍然存在，请重新启动您的 Chromebook。</translation>
@@ -4636,6 +4645,7 @@
 <translation id="6393156038355142111">建议一个安全系数高的密码</translation>
 <translation id="6393550101331051049">允许显示不安全内容</translation>
 <translation id="6395423953133416962">发送<ph name="BEGIN_LINK1" />系统信息<ph name="END_LINK1" />和<ph name="BEGIN_LINK2" />指标<ph name="END_LINK2" /></translation>
+<translation id="6396481367412417758">再按一次“<ph name="CURRENTKEY" />”键即可撤消分配并退出。</translation>
 <translation id="6396988158856674517">禁止网站使用动态传感器</translation>
 <translation id="6398715114293939307">移除 Google Play 商店</translation>
 <translation id="6398765197997659313">退出全屏模式</translation>
@@ -5335,6 +5345,8 @@
 <translation id="7207457272187520234">发送使用情况数据和诊断数据。目前，此设备会自动向 Google 发送诊断数据、设备数据和应用使用情况数据。这些数据会有助于提高系统和应用的稳定性以及实现其他方面的改进。部分汇总数据还会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。这项设置是由此设备的所有者强制指定的。如果您已开启“其他网络与应用活动记录”设置，这些数据可能会被保存到您的 Google 帐号中。</translation>
 <translation id="7207631048330366454">搜索应用</translation>
 <translation id="7210499381659830293">扩展打印机</translation>
+<translation id="7211769023302873228">再按一次“<ph name="CURRENTKEY" />”键即可确认分配并退出。</translation>
+<translation id="7211783048245131419">尚未分配任何开关</translation>
 <translation id="7211890396916697230">设置 eSIM 卡</translation>
 <translation id="7212097698621322584">请输入您的当前 PIN 码以更改它。如果您不知道 PIN 码，则需要重置安全密钥，然后创建新 PIN 码。</translation>
 <translation id="7213903639823314449">地址栏中使用的搜索引擎</translation>
@@ -5400,7 +5412,6 @@
 <translation id="7290242001003353852">这项由 <ph name="SAML_DOMAIN" /> 托管的登录服务正在使用您的摄像头。</translation>
 <translation id="7295614427631867477">请注意，Android、Play 及相关应用受各自的数据收集和使用政策的约束。</translation>
 <translation id="729583233778673644">允许使用 AES 和 RC4 加密。选中此选项会令您面临更大的风险，因为 RC4 加密不安全。</translation>
-<translation id="7296774163727375165"><ph name="DOMAIN" /> 条款</translation>
 <translation id="7297443947353982503">用户名/密码错误或 EAP 身份验证失败</translation>
 <translation id="729761647156315797">选择语言和键盘</translation>
 <translation id="7297726121602187087">深绿色</translation>
@@ -5420,6 +5431,7 @@
 <translation id="7324297612904500502">Chrome（测试版）论坛</translation>
 <translation id="7325209047678309347">纸张卡住了</translation>
 <translation id="7326004502692201767">为孩子设置此 <ph name="DEVICE_TYPE" /></translation>
+<translation id="7327989755579928735"><ph name="MANAGER" /> 已停用 ADB 调试。重启 <ph name="DEVICE_TYPE" /> 后，您将无法旁加载应用。</translation>
 <translation id="7328699668338161242">Google 助理已能识别出您的语音</translation>
 <translation id="7328867076235380839">无效的组合</translation>
 <translation id="7329154610228416156">由于已配置为使用不安全的网址 (<ph name="BLOCKED_URL" />)，因此登录失败了。请与管理员联系。</translation>
@@ -5957,6 +5969,7 @@
 <translation id="7919210519031517829"><ph name="DURATION" /> 秒</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> 可以查看“<ph name="FILENAME" />”的内容</translation>
 <translation id="7920482456679570420">添加您想让“拼写检查”功能跳过的字词</translation>
+<translation id="7921276565737611663">这是为“选择”操作分配的唯一开关，因此无法移除。按任意键即可退出。</translation>
 <translation id="7924358170328001543">转发端口时出错</translation>
 <translation id="792514962475806987">停靠的放大镜的缩放级别：</translation>
 <translation id="7925247922861151263">AAA 检查失败</translation>
@@ -6376,7 +6389,6 @@
 <translation id="8398877366907290961">仍然继续</translation>
 <translation id="8400146488506985033">管理用户</translation>
 <translation id="8401432541486058167">请提供与您的智能卡关联的 PIN 码。</translation>
-<translation id="8405046151008197676">了解最近更新的主要内容</translation>
 <translation id="8407199357649073301">日志级别：</translation>
 <translation id="8408068190360279472">“<ph name="NETWORK_TYPE" />”类型的网络，正在连接</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -6509,6 +6521,8 @@
 <translation id="8574990355410201600">始终允许 <ph name="HOST" /> 播放声音</translation>
 <translation id="8575286410928791436">按住 <ph name="KEY_EQUIVALENT" /> 键即可退出</translation>
 <translation id="8576249514688522074">未初始化</translation>
+<translation id="8576785408880814823">按一下新开关即可开始分配。
+按一下所分配的开关即可撤消分配。</translation>
 <translation id="8576885347118332789">{NUM_TABS,plural, =1{向阅读清单中添加 1 个标签页}other{向阅读清单中添加多个标签页}}</translation>
 <translation id="8578639784464423491">不能超过 99 个字母</translation>
 <translation id="857943718398505171">允许（推荐）</translation>
@@ -6525,6 +6539,7 @@
 <translation id="859246725979739260">此网站无法使用您的位置信息。</translation>
 <translation id="8593121833493516339">发送使用情况数据和诊断数据。通过自动向 Google 发送诊断数据、设备数据和应用使用情况数据，帮助改善您孩子的 Android 使用体验。这些数据不会被用来辨识您孩子的身份，而是会被用来帮助提高系统和应用的稳定性以及实现其他方面的改进。部分汇总数据也会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。如果您已为孩子开启“其他网络与应用活动记录”设置，这些数据可能会被保存到其 Google 帐号中。<ph name="BEGIN_LINK1" />了解详情<ph name="END_LINK1" /></translation>
 <translation id="8593735906501637689">已移除“<ph name="MODULE_TITLE" />”</translation>
+<translation id="859418833001586249">按一下新开关即可开始分配。</translation>
 <translation id="8594908476761052472">拍摄视频</translation>
 <translation id="8596540852772265699">自定义文件</translation>
 <translation id="8597845839771543242">属性格式：</translation>
@@ -6541,6 +6556,7 @@
 <translation id="8613786722548417558"><ph name="FILE_NAME" /> 太大，无法进行安全检查。您只能打开不超过 50 MB 的文件。</translation>
 <translation id="8615618338313291042">隐身模式下使用的应用...<ph name="APP_NAME" /></translation>
 <translation id="8616441548384109662">将“<ph name="CONTACT_NAME" />”添加到您的通讯录</translation>
+<translation id="8617748779076050570">安全配对号码：<ph name="CONNECTION_ID" /></translation>
 <translation id="8619803522055190423">阴影</translation>
 <translation id="8619892228487928601"><ph name="CERTIFICATE_NAME" />：<ph name="ERROR" /></translation>
 <translation id="8620436878122366504">您的父母尚未批准此请求</translation>
@@ -6803,6 +6819,7 @@
 <translation id="8877448029301136595">[上级目录]</translation>
 <translation id="8879284080359814990">显示为标签页(&amp;S)</translation>
 <translation id="8879921471468674457">记住登录信息</translation>
+<translation id="8880054210564666174">无法下载联系人列表。请检查您的网络连接，或<ph name="LINK_BEGIN" />重试<ph name="LINK_END" />。</translation>
 <translation id="8881020143150461183">请重试。如需技术支持，请联系<ph name="CARRIER_NAME" />。</translation>
 <translation id="8883273463630735858">启用触控板加速</translation>
 <translation id="8884570509232205463">现在，您的设备会在<ph name="UNLOCK_TIME" /> 锁定。</translation>
@@ -7052,7 +7069,6 @@
 <translation id="9168436347345867845">以后再说</translation>
 <translation id="9169496697824289689">查看键盘快捷键</translation>
 <translation id="916964310188958970">为什么显示这项推荐内容？</translation>
-<translation id="9169931577761441333">将“<ph name="APP_NAME" />”添加到主屏幕</translation>
 <translation id="9170061643796692986">当前的公开范围设置是“所有联系人”</translation>
 <translation id="9170848237812810038">撤消(&amp;U)</translation>
 <translation id="9170884462774788842">您计算机上的其他程序添加了一个主题背景，该主题背景可能会改变 Chrome 的工作方式。</translation>

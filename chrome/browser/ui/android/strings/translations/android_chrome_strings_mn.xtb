@@ -12,6 +12,7 @@
 <translation id="10614374240317010">Огт хадгалагдаагүй байна</translation>
 <translation id="1067922213147265141">Google-н бусад үйлчилгээ</translation>
 <translation id="107147699690128016">Хэрэв та файлын өргөтгөлийг өөрчилбөл файлыг өөр хэрэглээний программ дээр нээж болох бөгөөд таны төхөөрөмжид аюултай байж болзошгүй.</translation>
+<translation id="1094515529340404628">Web crowd болон зарын хэмжилт</translation>
 <translation id="1100066534610197918">Бүлэгт шинэ табад нээнэ үү</translation>
 <translation id="1105960400813249514">Дэлгэцийн зураг авах</translation>
 <translation id="1111673857033749125">Таны бусад төхөөрөмжид хадгалсан хавчуурга энд харагдах болно</translation>
@@ -227,6 +228,7 @@
 <translation id="2536728043171574184">Энэ хуудсын офлайн хуулбарыг харж байна</translation>
 <translation id="2537178555904266562">Нууц үгийг синк хийхэд алдаа гарлаа</translation>
 <translation id="2546283357679194313">Cookies болон сайтын дата</translation>
+<translation id="2562889244313180139">Вебсайтууд болон аппуудад тодорхойлох боломжгүй хуурмаг нэр ашиглан танд илүү хамааралтай туршлага өгөхийг зөвшөөрнө.</translation>
 <translation id="2567385386134582609">ЗУРАГ</translation>
 <translation id="2571711316400087311">Google Орчуулагчид өөр хэлнүүдийн хуудаснууд илгээх санал тавих</translation>
 <translation id="2581165646603367611">Энэ нь күүки, кэш болон Chrome-н чухалд тооцдоггүй бусад сайтын өгөгдлийг устгах болно.</translation>
@@ -713,6 +715,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6005538289190791541">Санал болгосон нууц үг</translation>
 <translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Танд <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> хуудас байна}other{Танд <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> хуудас байна}}</translation>
 <translation id="6014293228235665243">Уншаагүй</translation>
+<translation id="6018309500671889594">Сурталчлагчдад тодорхойлох боломжгүй мэдээлэл ашиглан сурталчилгааны кампанит ажлыг судлахыг зөвшөөрнө.</translation>
 <translation id="6036057147555329831">Нэмэлт ICU</translation>
 <translation id="6039379616847168523">Дараагийн табад очих</translation>
 <translation id="6040143037577758943">Хаах</translation>
@@ -921,6 +924,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7403691278183511381">Chrome-г анх удаа ажиллуулах туршлага</translation>
 <translation id="741204030948306876">Тийм, би зөвшөөрч байна</translation>
 <translation id="7413229368719586778">Эхлэх огноо <ph name="DATE" /></translation>
+<translation id="7416941666639889592">Та Web Crowd-д нэгдсэнээр вебсайтуудад таны вебийн туршлагыг хувь хүнийг тодорхойлох мэдээллийг ашиглалгүйгээр хамааралтай болгохыг зөвшөөрнө. Тоглолтод цугларсан хүмүүсийн нэгэн адилаар вебсайтууд болон сурталчлагчид зөвхөн мянга мянган хэрэглэгч ижил сонирхолтой болохыг мэдэх боломжтой.</translation>
 <translation id="7431991332293347422">Таны хайлтын түүх Хайлт болон бусад зүйлийг хувийн болгоход хэрхэн ашигладгийг хянах</translation>
 <translation id="7435356471928173109">Танай администратор идэвхгүй болгосон</translation>
 <translation id="7437998757836447326">Chrome-с гарах</translation>
@@ -1122,6 +1126,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8748850008226585750">Агуулгыг нуусан</translation>
 <translation id="8788265440806329501">Навигацын түүх хаалттай байна</translation>
 <translation id="8788968922598763114">Сүүлд хаасан чихтэй хуудсыг дахин нээх</translation>
+<translation id="8795672590390389447">Нууцлалын sandbox</translation>
 <translation id="8798449543960971550">Унших</translation>
 <translation id="8812260976093120287">Зарим веб хуудаст та төлбөр хийхдээ таны төхөөрөмжид дэмжсэн дээрх төлбөрийн аппыг ашиглах боломжтой.</translation>
 <translation id="881688628773363275">Урьдчилан үзэх табын контентыг үзэх боломжгүй.</translation>

@@ -12,6 +12,7 @@
 <translation id="10614374240317010">저장하지 않음</translation>
 <translation id="1067922213147265141">다른 Google 서비스</translation>
 <translation id="107147699690128016">파일 확장자를 변경하면 파일이 다른 애플리케이션에서 열리고 기기가 위험에 노출될 수도 있습니다.</translation>
+<translation id="1094515529340404628">웹 크라우드 및 광고 측정</translation>
 <translation id="1100066534610197918">새 탭을 그룹에서 열기</translation>
 <translation id="1105960400813249514">화면 캡처</translation>
 <translation id="1111673857033749125">다른 기기에서 저장한 북마크가 여기에 표시됩니다.</translation>
@@ -227,6 +228,7 @@
 <translation id="2536728043171574184">이 페이지의 오프라인 사본 보는 중</translation>
 <translation id="2537178555904266562">비밀번호 동기화 중 오류 발생</translation>
 <translation id="2546283357679194313">쿠키 및 사이트 데이터</translation>
+<translation id="2562889244313180139">웹사이트와 앱에서 식별할 수 없는 별칭을 사용하여 나에게 관련성 높은 사용 환경을 제공하도록 허용합니다.</translation>
 <translation id="2567385386134582609">이미지</translation>
 <translation id="2571711316400087311">다른 언어로 된 페이지를 Google 번역으로 전송하는 옵션 제공</translation>
 <translation id="2581165646603367611">이를 통해 쿠키, 캐시 및 Chrome에서 중요하다고 간주하지 않는 사이트의 기타 데이터가 삭제됩니다.</translation>
@@ -714,6 +716,7 @@
 <translation id="6005538289190791541">추천 비밀번호</translation>
 <translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{페이지가 <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" />개 있습니다.}other{페이지가 <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" />개 있습니다.}}</translation>
 <translation id="6014293228235665243">읽지 않음</translation>
+<translation id="6018309500671889594">광고주가 식별할 수 없는 정보를 사용하여 광고 캠페인을 조사하도록 허용합니다.</translation>
 <translation id="6036057147555329831">추가 ICU</translation>
 <translation id="6039379616847168523">다음 탭으로 이동</translation>
 <translation id="6040143037577758943">닫기</translation>
@@ -922,6 +925,7 @@
 <translation id="7403691278183511381">Chrome 첫 실행</translation>
 <translation id="741204030948306876">사용</translation>
 <translation id="7413229368719586778">시작일: <ph name="DATE" /></translation>
+<translation id="7416941666639889592">웹 크라우드에 참여하면 웹사이트가 개인 식별 정보를 사용하지 않고 나에게 관련성 높은 웹 환경을 제공하도록 허용하게 됩니다. 특정 가수의 공연장에 있는 군중들이 비슷한 취향을 공유하듯 웹사이트와 광고주만이 수천 명의 사용자가 비슷한 관심사를 공유한다는 사실을 알 수 있습니다.</translation>
 <translation id="7431991332293347422">검색 등을 맞춤설정하는 데 인터넷 방문 기록이 사용되는 방식 관리</translation>
 <translation id="7435356471928173109">관리자가 사용 중지했습니다.</translation>
 <translation id="7437998757836447326">Chrome에서 로그아웃</translation>
@@ -1123,6 +1127,7 @@
 <translation id="8748850008226585750">숨겨진 콘텐츠</translation>
 <translation id="8788265440806329501">탐색 기록 닫힘</translation>
 <translation id="8788968922598763114">마지막으로 닫은 탭 다시 열기</translation>
+<translation id="8795672590390389447">개인정보 보호 샌드박스</translation>
 <translation id="8798449543960971550">읽음</translation>
 <translation id="8812260976093120287">일부 웹사이트에서는 위의 결제 앱을 사용하여 내 기기에서 결제할 수 있습니다.</translation>
 <translation id="881688628773363275">미리보기 탭 콘텐츠를 볼 수 없습니다.</translation>

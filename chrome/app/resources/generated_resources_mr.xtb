@@ -2478,7 +2478,7 @@
 <translation id="3792890930871100565">प्रिंटर डिस्कनेक्ट करा</translation>
 <translation id="3793395331556663376">खूप जास्त फाइल सिस्टम उघडल्या आहेत.</translation>
 <translation id="3793588272211751505">{NUM_DAYS,plural, =1{Chrome ला तुमच्या कॉंप्युटरवर हानिकारक सॉफ्टवेअर आढळले नाही • एका दिवसापूर्वी तपासले}other{Chrome ला तुमच्या कॉंप्युटरवर हानिकारक सॉफ्टवेअर आढळले नाही • {NUM_DAYS} दिवसांपूर्वी तपासले}}</translation>
-<translation id="379500251094592809">Nearby सह शेअरिंग वापरण्यासाठी, दोन्ही डिव्हाइस अनलॉक असल्याची, एकमेकांच्‍या जवळ धरल्‍याची आणि त्‍यांचे ब्लूटूथ सुरू असल्‍याची खात्री करा. तुम्ही तुमच्या संपर्कामध्ये नसलेल्या Chromebook सह शेअर करत असल्यास, त्यामध्ये Nearby दृश्यमानता सुरू असल्याची खात्री करा (वेळ निवडून स्थिती क्षेत्र उघडा, त्यानंतर Nearby दृश्यमानता सुरू करा <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
+<translation id="379500251094592809">Nearby सह शेअरिंग वापरण्यासाठी, दोन्ही डिव्हाइस अनलॉक असल्याची, एकमेकांच्‍या जवळ धरल्‍याची आणि त्‍यांचे ब्लूटूथ सुरू असल्‍याची खात्री करा. तुम्ही तुमच्या संपर्कामध्ये नसलेल्या Chromebook सह शेअर करत असल्यास, त्यामध्ये Nearby दृश्यमानता सुरू असल्याची खात्री करा (वेळ निवडून स्थिती क्षेत्र उघडा, त्यानंतर Nearby दृश्यमानता सुरू करा) <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="379509625511193653">बंद</translation>
 <translation id="3796648294839530037">आवडीचे नेटवर्क:</translation>
 <translation id="3797739167230984533">तुमच्या संस्थेद्वारे तुमचे <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /><ph name="END_LINK" /> व्यवस्थापित केले आहे</translation>
@@ -2969,7 +2969,7 @@
 <translation id="4387890294700445764">धोक्यात असलेले पासवर्ड</translation>
 <translation id="4389091756366370506">वापरकर्ता <ph name="VALUE" /></translation>
 <translation id="4390000551125140321">{0,plural, =1{गुप्त}other{# गुप्त विंडो उघडा}}</translation>
-<translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> आणखी <ph name="NUMBER_OF_OTHER_SWITCHES" /> स्विच</translation>
+<translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" />, आणि आणखी <ph name="NUMBER_OF_OTHER_SWITCHES" /> स्विच</translation>
 <translation id="439266289085815679">ब्लूटूथ कॉंफिगरेशन <ph name="USER_EMAIL" /> नियंत्रित करते.</translation>
 <translation id="4392896746540753732">कॉंफिगरेशन फाइल संपादित करा</translation>
 <translation id="4394049700291259645">अक्षम करा</translation>
@@ -3421,7 +3421,6 @@
 <translation id="4917385247580444890">मजबूत</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> एक्स्टेंशनशी कम्युनिकेट करू इच्छित आहे "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4918086044614829423">स्वीकारा</translation>
-<translation id="4918221908152712722"><ph name="APP_NAME" /> इंस्टॉल करा (डाउनलोड करण्याची आवश्यकता नाही)</translation>
 <translation id="4921290200821452703">पालकांसाठी शाळा खाते माहिती</translation>
 <translation id="4921348630401250116">टेक्‍स्‍ट टू स्‍पीच</translation>
 <translation id="49226369361073053">{0,plural, =0{डिव्हाइस आता अपडेट करा}=1{डिव्हाइस एका सेकंदाच्या आत अपडेट करा}other{डिव्हाइस # सेकंदांच्या आत अपडेट करा}}</translation>
@@ -4561,7 +4560,6 @@
 <translation id="6248988683584659830">शोध सेटिंग</translation>
 <translation id="6249200942125593849">a11y व्यवस्थापित करा</translation>
 <translation id="6251870443722440887">GDI हँडल</translation>
-<translation id="6251889282623539337"><ph name="DOMAIN" /> सेवा अटी</translation>
 <translation id="625369703868467034">नेटवर्क हेल्थ</translation>
 <translation id="6254503684448816922">की तडजोड</translation>
 <translation id="6257602895346497974">सिंक सुरू करा…</translation>
@@ -5449,7 +5447,6 @@
 <translation id="7290242001003353852"><ph name="SAML_DOMAIN" /> नी होस्ट केलेली, ही साइन-इन सेवा, आपल्या कॅमेर्‍यामध्ये प्रवेश करीत आहे.</translation>
 <translation id="7295614427631867477">लक्षात ठेवा की, Android, Play आणि सहयोगी ॲप्स त्यांच्या स्वतःच्या डेटा संग्रह आणि वापर धोरणे याद्वारे व्यवस्थापित केले जातात.</translation>
 <translation id="729583233778673644">AES आणि RC4 एंक्रिप्‍शनला अनुमती द्या. हा पर्याय वापरल्याने तुमचा धोका वाढतो, कारण RC4 सायफर असुरक्षित आहेत.</translation>
-<translation id="7296774163727375165"><ph name="DOMAIN" /> अटी</translation>
 <translation id="7297443947353982503">वापरकर्ता नाव/पासवर्ड चुकीचा किंवा EAP-ऑथेंटिकेशन अयशस्वी</translation>
 <translation id="729761647156315797">तुमची भाषा आणि कीबोर्ड निवडा</translation>
 <translation id="7297726121602187087">गडद हिरवा</translation>
@@ -6146,7 +6143,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8063535366119089408">फाइल पहा</translation>
 <translation id="8064279191081105977">गट <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8068253693380742035">साइन इन साठी स्पर्श करा</translation>
-<translation id="8069615408251337349">Google क्लाउड प्रिंट</translation>
+<translation id="8069615408251337349">Google Cloud Print</translation>
 <translation id="8071432093239591881">इमेज म्हणून प्रिंट करा</translation>
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />अ‍ॅप डेटा म्हणजे अ‍ॅपने (डेव्हलपर सेटिंग्जवर आधारित) सेव्ह केलेला कोणताही डेटा असू शकतो , ज्यामध्ये संपर्क, मेसेज आणि फोटो यासारख्या डेटाचा समावेश आहे.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />बॅकअप डेटा तुमच्या लहान मुलाच्या ड्राइव्ह स्टोरेज कोट्यामध्ये गणला जाणार नाही.<ph name="END_PARAGRAPH2" />
@@ -6347,7 +6344,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8293206222192510085">बुकमार्क जोडा</translation>
 <translation id="8294431847097064396">स्रोत</translation>
 <translation id="8297006494302853456">कमकुवत</translation>
-<translation id="8298429963694909221">तुम्ही आता तुमच्या फोनमधील सूचना तुमच्या <ph name="DEVICE_TYPE" /> वर मिळवू शकता. तुमच्या <ph name="DEVICE_TYPE" /> वर सूचना डिसमिस केल्याने त्या तुमच्या फोनवरूनदेखील डिसमिस होतील. तुमचा फोन जवळपास असल्याची, अनलॉक केलेला असल्याची आणि त्यात ब्लूटूथ व वाय-फाय सुरू असल्याची खात्री करा.</translation>
+<translation id="8298429963694909221">तुम्ही आता तुमच्या फोनमधील सूचना तुमच्या <ph name="DEVICE_TYPE" /> वर मिळवू शकता. तुमच्या <ph name="DEVICE_TYPE" /> वर सूचना डिसमिस केल्याने त्या तुमच्या फोनवरूनदेखील डिसमिस होतील. तुमचा फोन जवळपास असल्याची आणि त्यात ब्लूटूथ व वाय-फाय सुरू असल्याची खात्री करा.</translation>
 <translation id="8299319456683969623">तुम्ही सध्या ऑफलाइन आहात.</translation>
 <translation id="8300011035382349091">या टॅबचे बुकमार्क संपादित करा</translation>
 <translation id="8300374739238450534">भडक निळा</translation>
@@ -6428,7 +6425,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8398877366907290961">तरीही पुढे चला</translation>
 <translation id="8400146488506985033">लोकांना व्यवस्थापित करा</translation>
 <translation id="8401432541486058167">तुमच्या स्‍मार्ट कार्डशी संलग्न असलेला पिन द्या.</translation>
-<translation id="8405046151008197676">नवीनतम अपडेटमधून हायलाइट मिळवा</translation>
 <translation id="8407199357649073301">लॉग पातळी:</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> नेटवर्क, कनेक्ट करत आहे</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -7115,7 +7111,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="9168436347345867845">ते नंतर करा</translation>
 <translation id="9169496697824289689">कीबोर्ड शॉर्टकट पहा</translation>
 <translation id="916964310188958970">ही सूचना कशासाठी आहे?</translation>
-<translation id="9169931577761441333"><ph name="APP_NAME" /> ला होम स्क्रीनवर जोडा</translation>
 <translation id="9170061643796692986">सध्याचे दृश्यमानता सेटिंग हे सर्व संपर्क आहेत</translation>
 <translation id="9170848237812810038">&amp;पूर्ववत करा</translation>
 <translation id="9170884462774788842">तुमच्या कॉंप्युटरवरील दुसऱ्या प्रोग्रामने Chrome च्या काम करण्याचा मार्ग बदलू शकणारी थीम जोडली.</translation>

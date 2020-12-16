@@ -12,6 +12,7 @@
 <translation id="10614374240317010">Сайты, пароли для которых не сохраняются</translation>
 <translation id="1067922213147265141">Другие сервисы Google</translation>
 <translation id="107147699690128016">Если вы сделаете это, файл может открыться в другом приложении и нанести вред устройству.</translation>
+<translation id="1094515529340404628">Web Crowd и оценка эффективности рекламы</translation>
 <translation id="1100066534610197918">Открыть в новой вкладке группы</translation>
 <translation id="1105960400813249514">Демонстрация экрана</translation>
 <translation id="1111673857033749125">Здесь появятся закладки, сохраненные на других устройствах.</translation>
@@ -227,6 +228,7 @@
 <translation id="2536728043171574184">Офлайн-копия страницы</translation>
 <translation id="2537178555904266562">Не удалось синхронизировать пароли.</translation>
 <translation id="2546283357679194313">Файлы сookie и данные сайтов</translation>
+<translation id="2562889244313180139">Сайты и приложения смогут предоставлять вам более релевантную информацию, используя обезличенный псевдоним.</translation>
 <translation id="2567385386134582609">ИЗОБРАЖЕНИЕ</translation>
 <translation id="2571711316400087311">Предлагать отправлять страницы на других языках в Google Переводчик</translation>
 <translation id="2581165646603367611">Будет очищен кеш, а также удалены файлы cookie и другие данные, которые система сочтет маловажными.</translation>
@@ -714,6 +716,7 @@
 <translation id="6005538289190791541">Предложенный пароль</translation>
 <translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{В нем <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> страница.}one{В нем <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> страница.}few{В нем <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> страницы.}many{В нем <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> страниц.}other{В нем <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> страницы.}}</translation>
 <translation id="6014293228235665243">Не прочитано</translation>
+<translation id="6018309500671889594">Рекламодатели смогут анализировать рекламные кампании, используя обезличенную информацию.</translation>
 <translation id="6036057147555329831">Дополнительный модуль ICU</translation>
 <translation id="6039379616847168523">Перейти к следующей вкладке</translation>
 <translation id="6040143037577758943">Закрыть</translation>
@@ -922,6 +925,7 @@
 <translation id="7403691278183511381">Первый запуск Chrome</translation>
 <translation id="741204030948306876">ОК</translation>
 <translation id="7413229368719586778">Дата начала: <ph name="DATE" /></translation>
+<translation id="7416941666639889592">Присоединяясь к Web Crowd, вы разрешаете сайтам использовать персонализацию без доступа к информации, позволяющей идентифицировать личность. Если мы посмотрим на людей, которые пришли на концерт, то сможем сделать предположения только об их музыкальных пристрастиях. Аналогично сайты и рекламодатели могут сказать о тысячах своих пользователей только то, что у них есть схожие интересы.</translation>
 <translation id="7431991332293347422">Укажите, как Google может использовать историю браузера для персонализации Поиска и других сервисов.</translation>
 <translation id="7435356471928173109">Функцию отключил администратор.</translation>
 <translation id="7437998757836447326">Выход из Chrome</translation>
@@ -1123,6 +1127,7 @@
 <translation id="8748850008226585750">Содержимое скрыто</translation>
 <translation id="8788265440806329501">История переходов закрыта</translation>
 <translation id="8788968922598763114">Открыть последнюю закрытую вкладку</translation>
+<translation id="8795672590390389447">Privacy Sandbox</translation>
 <translation id="8798449543960971550">Прочитано</translation>
 <translation id="8812260976093120287">На некоторых сайтах вы можете совершать платежи со своего устройства с помощью перечисленных выше приложений.</translation>
 <translation id="881688628773363275">Контент вкладки предпросмотра недоступен для показа.</translation>

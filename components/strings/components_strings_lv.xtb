@@ -993,6 +993,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4901778704868714008">Saglabāt...</translation>
 <translation id="4913987521957242411">Caurums augšējā kreisajā malā</translation>
+<translation id="4918221908152712722">Instalējiet lietotni <ph name="APP_NAME" /> (nav nepieciešama lejupielāde)</translation>
 <translation id="4923459931733593730">Maksājums</translation>
 <translation id="4926049483395192435">Jābūt norādītai.</translation>
 <translation id="4926159001844873046">Vietnē <ph name="SITE" /> ir rakstīts</translation>
@@ -1358,6 +1359,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="6328786501058569169">Šī vietne ir krāpnieciska</translation>
 <translation id="6337133576188860026">Tiks atbrīvots mazāk nekā <ph name="SIZE" />. Dažas vietnes nākamajā apmeklējumā var ielādēt lēnāk.</translation>
 <translation id="6337534724793800597">Filtrēt politikas pēc nosaukuma</translation>
+<translation id="6349101878882523185">Instalēt <ph name="APP_NAME" /> lietotni</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Nav}=1{1 parole (šādiem domēniem: <ph name="DOMAIN_LIST" />, sinhronizēta)}=2{2 paroles (šādiem domēniem: <ph name="DOMAIN_LIST" />, sinhronizētas)}zero{# paroļu (šādiem domēniem: <ph name="DOMAIN_LIST" />, sinhronizētas)}one{# parole (šādiem domēniem: <ph name="DOMAIN_LIST" />, sinhronizētas)}other{# paroles (šādiem domēniem: <ph name="DOMAIN_LIST" />, sinhronizētas)}}</translation>
 <translation id="6358450015545214790">Ko tas nozīmē?</translation>
 <translation id="6361757823711327522">B7</translation>
@@ -2048,6 +2050,7 @@ Papildu informācija:
 <translation id="9158625974267017556">C6 (aploksne)</translation>
 <translation id="9168814207360376865">Atļaut vietnēm pārbaudīt, vai jums ir saglabāti maksājumu veidi</translation>
 <translation id="9169664750068251925">Vienmēr bloķēt šajā vietnē</translation>
+<translation id="9169931577761441333">Pievienot lietotni <ph name="APP_NAME" /> sākuma ekrānam</translation>
 <translation id="9170848237812810038">&amp;Atsaukt</translation>
 <translation id="9171296965991013597">Vai aizvērt lietotni?</translation>
 <translation id="9173282814238175921">Viens dokuments/jauna lapa</translation>

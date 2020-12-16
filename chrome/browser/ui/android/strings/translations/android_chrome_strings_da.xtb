@@ -12,6 +12,7 @@
 <translation id="10614374240317010">Gemmes aldrig</translation>
 <translation id="1067922213147265141">Andre Google-tjenester</translation>
 <translation id="107147699690128016">Hvis du ændrer filtypen, åbnes filen muligvis i en anden app og kan være skadelig for din enhed.</translation>
+<translation id="1094515529340404628">Webmålgruppe og annoncemåling</translation>
 <translation id="1100066534610197918">Åbn i en ny fane i en gruppe</translation>
 <translation id="1105960400813249514">Screenshot</translation>
 <translation id="1111673857033749125">Bogmærker, der er gemt på dine andre enheder, vises her.</translation>
@@ -227,6 +228,7 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="2536728043171574184">Du ser en offlinekopi af denne side</translation>
 <translation id="2537178555904266562">Adgangskoderne kunne ikke synkroniseres</translation>
 <translation id="2546283357679194313">Cookies og websitedata</translation>
+<translation id="2562889244313180139">Tillad, at websites og apps giver dig en mere relevant brugeroplevelse ved hjælp af et ikke-identificerbart alias.</translation>
 <translation id="2567385386134582609">BILLEDE</translation>
 <translation id="2571711316400087311">Tilbyd at sende sider på andre sprog til Google Oversæt</translation>
 <translation id="2581165646603367611">Dette rydder cookies, cache og andre data fra websites, som ikke er vigtige ifølge Chrome.</translation>
@@ -714,6 +716,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="6005538289190791541">Foreslået adgangskode</translation>
 <translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Du har <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> side}one{Du har <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> side}other{Du har <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> sider}}</translation>
 <translation id="6014293228235665243">Ulæst</translation>
+<translation id="6018309500671889594">Tillad, at annoncører undersøger annoncekampagner ved hjælp af ikke-identificerbare oplysninger.</translation>
 <translation id="6036057147555329831">Ekstra ICU</translation>
 <translation id="6039379616847168523">Gå til den næste fane</translation>
 <translation id="6040143037577758943">Luk</translation>
@@ -922,6 +925,7 @@ Data fra din inkognitosession ryddes først fra Chrome, når du <ph name="BEGIN_
 <translation id="7403691278183511381">Førstegangsoplevelse af Chrome</translation>
 <translation id="741204030948306876">Ja tak</translation>
 <translation id="7413229368719586778">Startdato <ph name="DATE" /></translation>
+<translation id="7416941666639889592">Når du tilmelder dig en webmålgruppe, giver du websites tilladelse til at gøre din weboplevelse relevant uden brug af personhenførbare oplysninger. Ligesom med publikummet til en koncert ved websites og annoncører kun, at de tusindvis af gæster har en fælles interesse.</translation>
 <translation id="7431991332293347422">Bestem selv, hvordan din browserhistorik skal bruges til at tilpasse søgeresultater m.m.</translation>
 <translation id="7435356471928173109">Deaktiveret af din administrator</translation>
 <translation id="7437998757836447326">Log ud af Chrome</translation>
@@ -1123,6 +1127,7 @@ Data fra din inkognitosession ryddes først fra Chrome, når du <ph name="BEGIN_
 <translation id="8748850008226585750">Indholdet er skjult</translation>
 <translation id="8788265440806329501">Navigationsoversigt er lukket</translation>
 <translation id="8788968922598763114">Åbn den senest lukkede fane igen</translation>
+<translation id="8795672590390389447">Privacy Sandbox</translation>
 <translation id="8798449543960971550">Læst</translation>
 <translation id="8812260976093120287">På nogle websites kan du betale med ovenstående understøttede betalingsapps på din enhed.</translation>
 <translation id="881688628773363275">Indholdet på fanen Forhåndsvisning kan ikke vises.</translation>

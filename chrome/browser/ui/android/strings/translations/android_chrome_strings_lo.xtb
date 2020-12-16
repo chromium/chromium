@@ -12,6 +12,7 @@
 <translation id="10614374240317010">ຢ່າ​ບັນທຶກ</translation>
 <translation id="1067922213147265141">ການບໍລິການອື່ນຂອງ Google</translation>
 <translation id="107147699690128016">ຖ້າທ່ານປ່ຽນແປງນາມສະກຸນໄຟລ໌, ໄຟລ໌ອາດຈະເປີດໃນແອັບພລິເຄຊັນອື່ນ ແລະ ເປັນໄປໄດ້ວ່າອາດຈະເປັນອັນຕະລາຍຕໍ່ກັບອຸປະກອນຂອງທ່ານ.</translation>
+<translation id="1094515529340404628">Web crowd ແລະ ການວັດຜົນໂຄສະນາ</translation>
 <translation id="1100066534610197918">ເປີດໃນແຖບໃໝ່ເປັນກຸ່ມ</translation>
 <translation id="1105960400813249514">ການຖ່າຍຮູບໜ້າຈໍ</translation>
 <translation id="1111673857033749125">ບຸກມາກທີ່ບັນທຶກໄວ້ຢູ່ໃນອຸປະກອນອື່ນຂອງທ່ານຈະປາກົດຢູ່ທີ່ນີ້.</translation>
@@ -227,6 +228,7 @@
 <translation id="2536728043171574184">ກຳ​ລັງ​ເຂົ້າ​ເບິ່ງ​ສຳ​ເນົາ​ອັອບ​ລາຍ​ຂອງ​ໜ້າ​ນີ້</translation>
 <translation id="2537178555904266562">ເກີດຄວາມຜິດພາດໃນການຊິ້ງຂໍ້ມູນລະຫັດຜ່ານ</translation>
 <translation id="2546283357679194313">ຄຸກກີ້ ແລະຂໍ້ມູນເວັບໄຊທ໌...</translation>
+<translation id="2562889244313180139">ອະນຸຍາດໃຫ້ເວັບໄຊ ແລະ ແອັບໃຫ້ປະສົບການທີ່ກ່ຽວຂ້ອງກວ່າແກ່ທ່ານໂດຍໃຊ້ນາມແຝງທີ່ລະບຸຕົວຕົນບໍ່ໄດ້.</translation>
 <translation id="2567385386134582609">ຮູບ</translation>
 <translation id="2571711316400087311">ສະເໜີສົ່ງໜ້າເປັນພາສາອື່ນໃຫ້ Google ແປພາສາ</translation>
 <translation id="2581165646603367611">ນີ້ຈະລຶບລ້າງຄຸກກີ້, ແຄສ ແລະ ຂໍ້ມູນອື່ນຂອງເວັບໄຊທີ່ Chrome ຄິດວ່າບໍ່ສຳຄັນ.</translation>
@@ -714,6 +716,7 @@
 <translation id="6005538289190791541">ລະຫັດຜ່ານທີ່ແນະນຳ</translation>
 <translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{ທ່ານມີ <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> ໜ້າ}other{ທ່ານມີ <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> ໜ້າ}}</translation>
 <translation id="6014293228235665243">ຍັງບໍ່ໄດ້ອ່ານ</translation>
+<translation id="6018309500671889594">ອະນຸຍາດໃຫ້ຜູ້ລົງໂຄສະນາສຶກສາແຄມເປນໂຄສະນາໂດຍໃຊ້ຂໍ້ມູນທີ່ລະບຸຕົວຕົນບໍ່ໄດ້.</translation>
 <translation id="6036057147555329831">ICU ເພີ່ມເຕີມ</translation>
 <translation id="6039379616847168523">ໂດດໄປຫາແຖບຕໍ່ໄປ</translation>
 <translation id="6040143037577758943">ປິດ</translation>
@@ -922,6 +925,7 @@
 <translation id="7403691278183511381">ປະສົບການເປີດໃຊ້ Chrome ຄັ້ງທຳອິດ</translation>
 <translation id="741204030948306876">ແມ່ນ, ຂ້ອຍຂໍເຂົ້າຮ່ວມ</translation>
 <translation id="7413229368719586778">ວັນທີເລີ່ມຕົ້ນ <ph name="DATE" /></translation>
+<translation id="7416941666639889592">ໂດຍການເຂົ້າຮ່ວມ Web Crowd, ແມ່ນຖືວ່າທ່ານອະນຸຍາດໃຫ້ເວັບໄຊສ້າງປະສົບການເວັບຂອງທ່ານທີ່ກ່ຽວຂ້ອງໂດຍບໍ່ໃຊ້ຂໍ້ມູນລະບຸຕົວຕົນ. ເວັບໄຊ ແລະ ຜູ້ລົງໂຄສະນາຈະຮູ້ແຕ່ພຽງວ່າມີຜູ້ໃຊ້ຫຼາຍພັນຄົນມີຄວາມສົນໃຈທີ່ຄ້າຍກັນ ເຊັ່ນດຽວກັບຝູງຄົນໃນຄອນເສີດ.</translation>
 <translation id="7431991332293347422">ຄວບຄຸມວ່າຈະໃຫ້ໃຊ້ປະຫວັດການທ່ອງເວັບຂອງທ່ານແນວໃດເພື່ອປັບແຕ່ງການຊອກຫາ ແລະ ອື່ນໆອີກໃຫ້ເປັນແບບສ່ວນຕົວ</translation>
 <translation id="7435356471928173109">ປິດໄວ້ໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
 <translation id="7437998757836447326">ອອກ​ຈາກ​ Chrome</translation>
@@ -1123,6 +1127,7 @@
 <translation id="8748850008226585750">ເນື້ອຫາຖືກເຊື່ອງໄວ້</translation>
 <translation id="8788265440806329501">ປະຫວັດການນຳທາງປິດຢູ່</translation>
 <translation id="8788968922598763114">ເປີດແຖບທີ່ປິດຫຼ້າສຸດຄືນໃໝ່</translation>
+<translation id="8795672590390389447">ກ່ອງຊາຍຄວາມເປັນສ່ວນຕົວ</translation>
 <translation id="8798449543960971550">ອ່ານ</translation>
 <translation id="8812260976093120287">ໃນບາງເວັບໄຊ, ທ່ານສາມາດຈ່າຍດ້ວຍແອັບການຈ່າຍເງິນທີ່ຮອງຮັບຢູ່ຂ້າງເທິງໃນອຸປະກອນຂອງທ່ານໄດ້.</translation>
 <translation id="881688628773363275">ເບິ່ງເນື້ອຫາໃນແຖບສະແດງຕົວຢ່າງບໍ່ໄດ້.</translation>

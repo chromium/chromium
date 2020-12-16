@@ -9,6 +9,7 @@
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> құрылғысын <ph name="MANAGER" /> басқарады.</translation>
 <translation id="1195447618553298278">Белгісіз қате.</translation>
 <translation id="1204296502688602597">DNS кідірісі</translation>
+<translation id="123124571410524056">Портал болуы мүмкін.</translation>
 <translation id="1238612778414822719">HTTPS кідірісі</translation>
 <translation id="1290331692326790741">Әлсіз сигнал</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -36,6 +37,7 @@
 <translation id="1947737735496445907">Басып шығарылған</translation>
 <translation id="1979103255016296513">Құпия сөзді өзгертуге берілген мерзім аяқталды</translation>
 <translation id="1980044825731880088">Орталық процессор жылдамдығы</translation>
+<translation id="1999615961760456652">Адаптивті портал</translation>
 <translation id="2008685064673031089">Prime search</translation>
 <translation id="2080070583977670716">Қосымша параметрлер</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -115,6 +117,7 @@
 <translation id="4773299976671772492">Тоқтатылды</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> құжатын басып шығарудан бас тартылды.</translation>
 <translation id="4832079907277790330">Files қолданбасында қалта таңдау...</translation>
+<translation id="4835901797422965222">Ешқандай белсенді желі жоқ.</translation>
 <translation id="4848429997038228357">ТЕКСЕРІЛУДЕ</translation>
 <translation id="4890353053343094602">Дереу жаңа құпия сөз таңдаңыз.</translation>
 <translation id="4891842000192098784">Стресс</translation>
@@ -135,6 +138,7 @@
 <translation id="5317780077021120954">Сақтау</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Жаңа құпия сөз енгізіңіз.</translation>
+<translation id="5333530671332546086">Портал күйі белгісіз.</translation>
 <translation id="5372659122375744710">WiFi желісі қауіпсіз емес.</translation>
 <translation id="5401938042319910061">Барлық әрекеттер тізімін іске қосу</translation>
 <translation id="5431318178759467895">Түс</translation>
@@ -191,6 +195,7 @@
 <translation id="7359657277149375382">Файл түрі</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Сканерлеу аяқталды. 1 бет сканерленді.}other{Сканерлеу аяқталды. {NUMBER_OF_PAGES} бет сканерленді.}}</translation>
 <translation id="7441459999606975924">Қолданған сайын, батареялардың заряды отыра береді.</translation>
+<translation id="7469648432129124067">Портал анықталды.</translation>
 <translation id="7561454561030345039">Бұл әрекетті әкімшіңіз басқарады.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">HTTPS кідірісі жоғары.</translation>

@@ -995,6 +995,7 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4901778704868714008">Сақтау...</translation>
 <translation id="4913987521957242411">Жоғарғы сол жақты тесу</translation>
+<translation id="4918221908152712722"><ph name="APP_NAME" /> қолданбасын орнатыңыз (жүктеп алудың қажеті жоқ).</translation>
 <translation id="4923459931733593730">Төлем</translation>
 <translation id="4926049483395192435">Көрсетілуі керек.</translation>
 <translation id="4926159001844873046"><ph name="SITE" /> сайтындағы сұрау</translation>
@@ -1360,6 +1361,7 @@
 <translation id="6328786501058569169">Бұл – жалған сайт</translation>
 <translation id="6337133576188860026"><ph name="SIZE" /> аз орын босатады .Кейбір сайттар келесі кіргенде баяуырақ жүктелуі мүмкін.</translation>
 <translation id="6337534724793800597">Атауы бойынша сүзгі саясаттары</translation>
+<translation id="6349101878882523185"><ph name="APP_NAME" /> қолданбасын орнату</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Жоқ}=1{1 құпия сөз (<ph name="DOMAIN_LIST" />, синхрондалды)}=2{2 құпия сөз (<ph name="DOMAIN_LIST" />, синхрондалды)}other{# құпия сөз (<ph name="DOMAIN_LIST" />, синхрондалды)}}</translation>
 <translation id="6358450015545214790">Бұл нені білдіреді?</translation>
 <translation id="6361757823711327522">B7</translation>
@@ -2049,6 +2051,7 @@
 <translation id="9158625974267017556">C6 (Envelope)</translation>
 <translation id="9168814207360376865">Сайттардың сізде сақталған төлеу әдістері бар-жоғын тексеруіне рұқсат ету</translation>
 <translation id="9169664750068251925">Бұл сайтта әрқашан тыйым салу</translation>
+<translation id="9169931577761441333">Негізі экранға <ph name="APP_NAME" /> қолданбасын енгізу</translation>
 <translation id="9170848237812810038">&amp;Болдырмау</translation>
 <translation id="9171296965991013597">Қолданба жабылсын ба?</translation>
 <translation id="9173282814238175921">Жалғыз құжат/жаңа парақ</translation>

@@ -12,6 +12,7 @@
 <translation id="10614374240317010">Ei ole kunagi salvestatud</translation>
 <translation id="1067922213147265141">Muud Google'i teenused</translation>
 <translation id="107147699690128016">Kui muudate faililaiendit, võib fail avaneda mõnes teises rakenduses ja teie seadmele ohtu kujutada.</translation>
+<translation id="1094515529340404628">Veebipublik ja reklaamide mõõtmine</translation>
 <translation id="1100066534610197918">Ava rühmas uuel vahelehel</translation>
 <translation id="1105960400813249514">Kuva jäädvustamine</translation>
 <translation id="1111673857033749125">Siin kuvatakse teie teistes seadmetes salvestatud järjehoidjad.</translation>
@@ -227,6 +228,7 @@ Puudutage pikalt mis tahes sõna, et seda otsida. Otsingu täpsustamiseks valige
 <translation id="2536728043171574184">Kuvatakse on lehe võrguühenduseta koopia</translation>
 <translation id="2537178555904266562">Viga paroolide sünkroonimisel</translation>
 <translation id="2546283357679194313">Küpsised ja saidiandmed</translation>
+<translation id="2562889244313180139">Lubab veebisaitidel ja rakendustel pakkuda teile asjakohasemat kasutuskogemust, kasutades isikut mittetuvastavat aliast.</translation>
 <translation id="2567385386134582609">KUJUTIS</translation>
 <translation id="2571711316400087311">Paku muudes keeltes olevate lehtede saatmist teenusele Google'i tõlge</translation>
 <translation id="2581165646603367611">See tühjendab vahemälu, kustutab küpsised ja muud andmed, mis pärinevad Chrome'i arvates ebatähtsatelt saitidelt.</translation>
@@ -714,6 +716,7 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="6005538289190791541">Soovitatud parool</translation>
 <translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Teil on <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> leht}other{Teil on <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> lehte}}</translation>
 <translation id="6014293228235665243">Lugemata</translation>
+<translation id="6018309500671889594">Lubab reklaamijatel uurida reklaamikampaaniaid, kasutades isikut mittetuvastavat teavet.</translation>
 <translation id="6036057147555329831">Täiendav ICU</translation>
 <translation id="6039379616847168523">Järgmisele vahelehele liikumine</translation>
 <translation id="6040143037577758943">Sulge</translation>
@@ -922,6 +925,7 @@ Inkognito seanssidest saadud andmed kustutatakse Chrome'ist ainult siis, kui <ph
 <translation id="7403691278183511381">Chrome'i esmakordse käitamise kasutuskogemus</translation>
 <translation id="741204030948306876">Jah, sobib</translation>
 <translation id="7413229368719586778">Alguskuupäev: <ph name="DATE" /></translation>
+<translation id="7416941666639889592">Liitudes veebipublikuga, lubate veebisaitidel muuta teie veebikogemuse asjakohaseks, kasutamata selleks isikut tuvastavat teavet. Veebisaidid ja reklaamijad teavad vaid seda, et tuhandetel kasutajatel on sarnane huvi.</translation>
 <translation id="7431991332293347422">Juhtige, kuidas kasutatakse teie sirvimisajalugu otsingu ja muu isikupärastamiseks</translation>
 <translation id="7435356471928173109">Administraator on välja lülitanud</translation>
 <translation id="7437998757836447326">Chrome'ist väljalogimine</translation>
@@ -1123,6 +1127,7 @@ Inkognito seanssidest saadud andmed kustutatakse Chrome'ist ainult siis, kui <ph
 <translation id="8748850008226585750">Sisu on peidetud</translation>
 <translation id="8788265440806329501">Navigeerimisajalugu on suletud</translation>
 <translation id="8788968922598763114">Viimati suletud vahelehe uuesti avamine</translation>
+<translation id="8795672590390389447">Privaatsuse liivakast</translation>
 <translation id="8798449543960971550">Loetud</translation>
 <translation id="8812260976093120287">Mõnel veebisaidil saate maksta ülalolevate teie seadmes toetatud makserakendustega.</translation>
 <translation id="881688628773363275">Eelvaate vahelehe sisu ei saa vaadata.</translation>

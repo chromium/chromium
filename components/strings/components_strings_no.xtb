@@ -996,6 +996,7 @@ brukere av denne nettleseren.</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4901778704868714008">Lagre</translation>
 <translation id="4913987521957242411">Hull oppe til venstre</translation>
+<translation id="4918221908152712722">Installer <ph name="APP_NAME" /> (ingen nedlasting nødvendig)</translation>
 <translation id="4923459931733593730">Betaling</translation>
 <translation id="4926049483395192435">Må angis.</translation>
 <translation id="4926159001844873046">På <ph name="SITE" /> står det</translation>
@@ -1361,6 +1362,7 @@ brukere av denne nettleseren.</translation>
 <translation id="6328786501058569169">Dette nettstedet er villedende</translation>
 <translation id="6337133576188860026">Frigjør mindre enn <ph name="SIZE" />. Det kan hende enkelte nettsteder lastes inn tregere neste gang du besøker dem.</translation>
 <translation id="6337534724793800597">Filtrér retningslinjer etter navn</translation>
+<translation id="6349101878882523185">Installer <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Ingen}=1{1 passord (for <ph name="DOMAIN_LIST" /> – synkronisert)}=2{2 passord (for <ph name="DOMAIN_LIST" /> – synkronisert)}other{# passord (for <ph name="DOMAIN_LIST" /> – synkronisert)}}</translation>
 <translation id="6358450015545214790">Hva innebærer dette?</translation>
 <translation id="6361757823711327522">B7</translation>
@@ -2049,6 +2051,7 @@ Mer informasjon:
 <translation id="9158625974267017556">C6 (konvolutt)</translation>
 <translation id="9168814207360376865">Tillatt nettsteder å sjekke om du har noen lagrede betalingsmåter</translation>
 <translation id="9169664750068251925">Blokkér alltid på dette nettstedet</translation>
+<translation id="9169931577761441333">Legg til <ph name="APP_NAME" /> på startskjermen</translation>
 <translation id="9170848237812810038">&amp;Angre</translation>
 <translation id="9171296965991013597">Vil du gå ut av appen?</translation>
 <translation id="9173282814238175921">Enkeltdokument / nytt ark</translation>

@@ -9,6 +9,7 @@
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> នេះស្ថិតក្រោម​ការគ្រប់គ្រងរបស់ <ph name="MANAGER" />។</translation>
 <translation id="1195447618553298278">កំហុសឆ្គងមិនស្គាល់។</translation>
 <translation id="1204296502688602597">ការពន្យារ DNS</translation>
+<translation id="123124571410524056">បានសន្មតថាជាច្រក</translation>
 <translation id="1238612778414822719">ការពន្យារ HTTPS</translation>
 <translation id="1290331692326790741">សេវាខ្សោយ</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -36,6 +37,7 @@
 <translation id="1947737735496445907">បានបោះពុម្ព</translation>
 <translation id="1979103255016296513">ការផ្លាស់ប្ដូរពាក្យសម្ងាត់​បានផុតកំណត់ហើយ</translation>
 <translation id="1980044825731880088">ល្បឿន CPU</translation>
+<translation id="1999615961760456652">ច្រកចូលប្រើបណ្ដាញ</translation>
 <translation id="2008685064673031089">ការស្វែងរកចម្បង</translation>
 <translation id="2080070583977670716">ការកំណត់ច្រើនទៀត</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -115,6 +117,7 @@
 <translation id="4773299976671772492">បានឈប់</translation>
 <translation id="4808449224298348341">បានបោះបង់​ការងារបោះពុម្ព <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4832079907277790330">ជ្រើសរើសថតនៅក្នុងកម្មវិធី Files...</translation>
+<translation id="4835901797422965222">មិនមាន​បណ្ដាញ​ដែលសកម្មទេ</translation>
 <translation id="4848429997038228357">កំពុងដំណើរការ</translation>
 <translation id="4890353053343094602">សូមជ្រើសរើស​ពាក្យសម្ងាត់​ថ្មីភ្លាមៗ</translation>
 <translation id="4891842000192098784">ស្ត្រេស</translation>
@@ -135,6 +138,7 @@
 <translation id="5317780077021120954">រក្សាទុក</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">សូមជ្រើសរើស​ពាក្យសម្ងាត់​ថ្មីឥឡូវនេះ</translation>
+<translation id="5333530671332546086">មិនស្គាល់​ស្ថានភាព​ច្រកទេ</translation>
 <translation id="5372659122375744710">បណ្ដាញ WiFi មិនមានសុវត្ថិភាពទេ</translation>
 <translation id="5401938042319910061">ដំណើរការរាល់ការធ្វើតេស្តតាមការកំណត់</translation>
 <translation id="5431318178759467895">ពណ៌</translation>
@@ -191,6 +195,7 @@
 <translation id="7359657277149375382">ប្រភេទ​ឯកសារ</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{ការស្កេន​បានបញ្ចប់។ បានស្កេន 1 ទំព័រ}other{ការស្កេន​បានបញ្ចប់។ បានស្កេន {NUMBER_OF_PAGES} ទំព័រ}}</translation>
 <translation id="7441459999606975924">កម្រិតថ្មធ្លាក់ចុះតាមរយៈការប្រើប្រាស់</translation>
+<translation id="7469648432129124067">បានរកឃើញ​ច្រក</translation>
 <translation id="7561454561030345039">សកម្មភាពនេះត្រូវបានគ្រប់គ្រងដោយអ្នកគ្រប់គ្រងរបស់អ្នក</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">ការពន្យារ HTTPS ខ្ពស់</translation>

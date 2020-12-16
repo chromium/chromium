@@ -22,6 +22,7 @@
 <translation id="2650312721222849884">‏در همه دستگاه‌هایی که در آن‌ها از Chromium استفاده می‌کنید، همگام‌سازی را روشن کنید تا بتوانید برگه‌هایتان را ببینید</translation>
 <translation id="2730884209570016437">‏Chromium نمی‌تواند از دوربین استفاده کند زیرا برنامه دیگری از آن استفاده می‌کند</translation>
 <translation id="2915596697727466327">‏Chromium برای اطمینان از دسترسی مجاز به گذرواژه‌هایتان، از «شناسه تشخیص چهره» استفاده می‌کند.</translation>
+<translation id="2918709798697875261">‏سازمانتان از شما می‌خواهد خارج از سیستم Chromium باقی بمانید.</translation>
 <translation id="2977470724722393594">‏Chromium به‌روز است</translation>
 <translation id="3256316712990552818">‏به Chromium کپی شد</translation>
 <translation id="3344973607274501920">‏Chromium نمی‌تواند گذرواژه‌هایتان را بررسی کند. اتصال اینترنت را بررسی کنید.</translation>
@@ -74,6 +75,7 @@
 <translation id="8776843108004031667">‏این حساب و همه داده‌های ذخیره‌نشده از Chromium برداشته می‌شود.</translation>
 <translation id="9022552996538154597">‏ورود به سیستم Chromium</translation>
 <translation id="9089354809943900324">‏نسخه Chromium قدیمی است</translation>
+<translation id="912386518501777532">‏وقتی که خارج از سیستم Chromium بودید، نشانک‌ها، سابقه، گذرواژه‌ها، و تنظیمات دیگرتان از این دستگاه پاک شد. داده‌های همگام‌سازی‌شده شما همچنان در حسابتان ذخیره شده است.</translation>
 <translation id="921174536258924340">‏Chromium نمی‌تواند همه گذرواژه‌هایتان را بررسی کند. فردا دوباره امتحان کنید یا <ph name="BEGIN_LINK" />گذرواژه‌ها را در «حساب Google» خود بررسی کنید<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">Chromium Authors</translation>
 </translationbundle>

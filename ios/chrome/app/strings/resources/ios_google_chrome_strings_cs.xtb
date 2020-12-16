@@ -30,6 +30,7 @@
 <translation id="3706101708757577809">Nyní můžete Chrome použít pokaždé, když klepnete na odkazy ve zprávách, dokumentech a ostatních aplikacích.</translation>
 <translation id="384394811301901750">Google Chrome teď nemůže použít fotoaparát</translation>
 <translation id="3980220367029651214">Přepínáte účet pro synchronizaci z <ph name="USER_EMAIL1" /> na <ph name="USER_EMAIL2" />. Vaše existující data prohlížeče Chrome jsou spravována doménou <ph name="DOMAIN" />. Touto akcí svá data smažete z tohoto zařízení, v účtu <ph name="USER_EMAIL1" /> však vaše data zůstanou.</translation>
+<translation id="3984746313391923992">Organizace vyžaduje, abyste zůstali odhlášeni z Chromu.</translation>
 <translation id="3988789688219830639">Google Chrome nemá přístup k vašim fotkám nebo videím. Povolte přístup v systému iOS v Nastavení &gt; Soukromí &gt; Fotky.</translation>
 <translation id="4099578267706723511">Pomozte Chrome zlepšovat – posílejte Googlu statistiky o využívání a zprávy o selhání.</translation>
 <translation id="415767770115540173">Služby Google mohou v prohlížeči Chrome díky údajům o poloze fungovat lépe.</translation>
@@ -54,6 +55,7 @@
 <translation id="6600954340915313787">Zkopírováno do Chromu</translation>
 <translation id="6648150602980899529">Přihlašujete se pomocí účtu spravovaného doménou <ph name="DOMAIN" /> a poskytujete jeho správci kontrolu nad svými daty prohlížeče Chrome. Vaše data budou trvale přidružena k tomuto účtu. Odhlášením z Chromu svá data smažete z tohoto zařízení, ve vašem účtu Google však uložena zůstanou.</translation>
 <translation id="6676840375528380067">Vymazat z tohoto zařízení data prohlížeče Chrome?</translation>
+<translation id="6822363243974874813">Když jste byli odhlášeni z Chromu, vaše záložky, historie, hesla a ostatní nastavení byla z tohoto zařízení smazána. Synchronizovaná data v prohlížeči Chrome se nadále ukládají do vašeho účtu Google.</translation>
 <translation id="6822673484890854830">Chromu se nepodařilo zkontrolovat všechna hesla. Zkuste to později.</translation>
 <translation id="7124339256045485976">Udržují Chrome aktuální</translation>
 <translation id="7161390184744336561">Google Chrome je zastaralý</translation>

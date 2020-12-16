@@ -295,6 +295,7 @@ Siga os passos abaixo:</translation>
 <translation id="4121993058175073134">P/enviar dados exp. da Int., config. a conta de email na ap. Definiç.</translation>
 <translation id="4124987746317609294">Intervalo de tempo</translation>
 <translation id="4152011295694446843">Os seus marcadores serão apresentados aqui</translation>
+<translation id="4152093603141133546">A sua entidade terminou a sua sessão.</translation>
 <translation id="4172051516777682613">Mostrar sempre</translation>
 <translation id="418156467088430727">Ver versão offline num novo separador</translation>
 <translation id="4181841719683918333">Idiomas</translation>
@@ -537,6 +538,7 @@ Experimente utilizar uma palavra-passe exclusiva para cada site.</translation>
 <translation id="6668619169535738264">Editar marcador</translation>
 <translation id="667999046851023355">Documento</translation>
 <translation id="6691331417640343772">Gerir dados sincronizados no Painel de Controlo Google</translation>
+<translation id="6710079714193676716">Gerido pela sua entidade. Algumas funcionalidades podem estar indisponíveis. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Não é possível exportar palavras-passe</translation>
 <translation id="6748108480210050150">De</translation>
@@ -690,6 +692,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8487667956631253959">Ativada</translation>
 <translation id="8487700953926739672">Disponível offline</translation>
 <translation id="8490978609246021741">Guardar alterações</translation>
+<translation id="8495097701594799854">Desativado pela sua entidade.</translation>
 <translation id="8503813439785031346">Nome de utilizador</translation>
 <translation id="850600235656508448">Abrir no modo de navegação anónima</translation>
 <translation id="8510057420705599706">Esta ação termina a sua sessão e desativa a sincronização, mas os seus marcadores, histórico, palavras-passe e outros dados do Chrome permanecem neste dispositivo.</translation>

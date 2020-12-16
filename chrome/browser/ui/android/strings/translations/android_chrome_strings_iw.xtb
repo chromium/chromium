@@ -12,6 +12,7 @@
 <translation id="10614374240317010">פריטים שאף פעם לא נשמרו</translation>
 <translation id="1067922213147265141">‏שירותי Google אחרים</translation>
 <translation id="107147699690128016">שינוי של סיומת הקובץ עשוי לגרום לכך שהקובץ ייפתח באפליקציה אחרת. מצב זה עלול לסכן את המכשיר.</translation>
+<translation id="1094515529340404628">‏מדידה של מודעות ו-Web Crowd</translation>
 <translation id="1100066534610197918">פתיחה בכרטיסייה חדשה בקבוצה</translation>
 <translation id="1105960400813249514">צילום מסך</translation>
 <translation id="1111673857033749125">סימניות שנשמרו במכשירים האחרים שלך יופיעו כאן.</translation>
@@ -227,6 +228,7 @@
 <translation id="2536728043171574184">מוצג העתק לא מקוון של עמוד זה</translation>
 <translation id="2537178555904266562">אירעה שגיאה בסנכרון הסיסמאות</translation>
 <translation id="2546283357679194313">‏נתוני אתר וקובצי Cookie</translation>
+<translation id="2562889244313180139">מתן אישור לאתרים ולאפליקציות לספק לך חוויה רלוונטית יותר באמצעות כינוי שלא ניתן לזיהוי.</translation>
 <translation id="2567385386134582609">תמונה</translation>
 <translation id="2571711316400087311">‏הצעה לשלוח דפים בשפות אחרות ל-Google Translate</translation>
 <translation id="2581165646603367611">‏פעולה זו תמחק את קובצי ה-Cookie, את המטמון ונתונים אחרים של אתרים ש-Chrome לא מחשיב כחשובים.</translation>
@@ -714,6 +716,7 @@
 <translation id="6005538289190791541">הצעה לסיסמה</translation>
 <translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{יש לך דף אחד (<ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" />)}two{יש לך <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> דפים}many{יש לך <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> דפים}other{יש לך <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> דפים}}</translation>
 <translation id="6014293228235665243">לא נקראו</translation>
+<translation id="6018309500671889594">מתן אישור למפרסמים לנתח קמפיינים של פרסום באמצעות מידע שלא ניתן לזיהוי.</translation>
 <translation id="6036057147555329831">‏ICU נוסף</translation>
 <translation id="6039379616847168523">מעבר לכרטיסייה הבאה</translation>
 <translation id="6040143037577758943">סגירה</translation>
@@ -922,6 +925,7 @@
 <translation id="7403691278183511381">‏חוויית ההפעלה הראשונה של Chrome</translation>
 <translation id="741204030948306876">כן, אני רוצה</translation>
 <translation id="7413229368719586778">תאריך התחלה <ph name="DATE" /></translation>
+<translation id="7416941666639889592">‏ההצטרפות אל Web Crowd מבטאת את הסכמתך לכך שאתרים יתאימו אליך את חוויית האינטרנט כדי שתהיה רלוונטית לך, ללא שימוש בפרטים אישיים מזהים. כמו קהל בהופעה, אתרים ומפרסמים יכולים לדעת רק שאלפי משתמשים חולקים עניין דומה.</translation>
 <translation id="7431991332293347422">קביעת אופן השימוש בהיסטוריית הגלישה להתאמה אישית של החיפוש ועוד</translation>
 <translation id="7435356471928173109">מנהל המערכת כיבה את התכונה הזו</translation>
 <translation id="7437998757836447326">‏יציאה מ-Chrome</translation>
@@ -1123,6 +1127,7 @@
 <translation id="8748850008226585750">התוכן מוסתר</translation>
 <translation id="8788265440806329501">היסטוריית הניווט סגורה</translation>
 <translation id="8788968922598763114">פתיחה מחדש של הכרטיסייה האחרונה שנסגרה</translation>
+<translation id="8795672590390389447">ארגז חול של הגדרות פרטיות</translation>
 <translation id="8798449543960971550">נקראו</translation>
 <translation id="8812260976093120287">באתרים מסוימים ניתן לשלם דרך המכשיר באמצעות אפליקציות התשלום הנתמכות שמופיעות למעלה.</translation>
 <translation id="881688628773363275">לא ניתן לצפות בתוכן של כרטיסיית 'התצוגה המקדימה'.</translation>

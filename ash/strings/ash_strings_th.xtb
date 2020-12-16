@@ -127,7 +127,7 @@
 <translation id="2079504693865562705">ซ่อนแอปในแถบ</translation>
 <translation id="2083190527011054446">ราตรีสวัสดิ์ <ph name="GIVEN_NAME" /></translation>
 <translation id="209965399369889474">ไม่ได้เชื่อมต่อกับเครือข่าย</translation>
-<translation id="2126242104232412123">โต๊ะทำงานใหม่</translation>
+<translation id="2126242104232412123">เดสก์ใหม่</translation>
 <translation id="2127372758936585790">ที่ชาร์จพลังงานต่ำ</translation>
 <translation id="2132302418721800944">บันทึกแบบเต็มหน้าจอ</translation>
 <translation id="2135456203358955318">แว่นขยายหน้าจอบางส่วน</translation>
@@ -338,7 +338,6 @@
 <translation id="4112140312785995938">ย้อนกลับ</translation>
 <translation id="4114315158543974537">เปิด Phone Hub</translation>
 <translation id="4121728057981832179">เครื่องเสมือนกำลังใช้ไมโครโฟน</translation>
-<translation id="4126167871198063089">ออกจาก "เลือกเพื่อให้อ่าน"</translation>
 <translation id="4129129681837227511">หากต้องการดูการแจ้งเตือนในหน้าจอล็อก ให้ปลดล็อกเพื่อเปลี่ยนการตั้งค่า</translation>
 <translation id="4146833061457621061">เปิดเพลง</translation>
 <translation id="415719264485676252">การจับภาพถูกบล็อก</translation>
@@ -645,7 +644,7 @@
 <translation id="6910714959251846841">อัปเดตนี้จะมีการ Powerwash อุปกรณ์ ดูข้อมูลเพิ่มเติมเกี่ยวกับอัปเดตล่าสุดของ <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="6919251195245069855">ไม่พบสมาร์ทการ์ดของคุณ ลองใหม่</translation>
 <translation id="6945221475159498467">เลือก</translation>
-<translation id="6961121602502368900">ปิดเสียงโทรศัพท์ไม่ได้ในโปรไฟล์งาน</translation>
+<translation id="6961121602502368900">ฟีเจอร์ปิดเสียงโทรศัพท์ใช้งานไม่ได้ในโปรไฟล์งาน</translation>
 <translation id="6965382102122355670">ตกลง</translation>
 <translation id="6972754398087986839">เริ่มต้นใช้งาน</translation>
 <translation id="6981982820502123353">การช่วยเหลือพิเศษ</translation>
@@ -877,7 +876,6 @@
 <translation id="8990809378771970590">กำลังใช้<ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">ปลดล็อกอุปกรณ์โดยใช้ <ph name="LOGIN_ID" /> เพื่อดำเนินการแจ้งเตือน</translation>
 <translation id="9017320285115481645">ป้อนรหัสการเข้าถึง Family Link ของผู้ปกครอง</translation>
-<translation id="9029474291399787231">มีอัปเดต Adobe Flash Player พร้อมใช้งาน</translation>
 <translation id="9047624247355796468">เปิดการตั้งค่าสำหรับ <ph name="NETWORK_NAME" /></translation>
 <translation id="9056839673611986238">อุปกรณ์จะได้รับการคืนค่าสถานะ</translation>
 <translation id="9065203028668620118">แก้ไข</translation>

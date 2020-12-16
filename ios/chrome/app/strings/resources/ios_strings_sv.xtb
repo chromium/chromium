@@ -295,6 +295,7 @@ Följ stegen nedan:</translation>
 <translation id="4121993058175073134">Ange ett e-postkonto i appen Inställningar om du vill skicka nätverksexportdata.</translation>
 <translation id="4124987746317609294">Tidsintervall</translation>
 <translation id="4152011295694446843">Du hittar dina bokmärken här</translation>
+<translation id="4152093603141133546">Din organisation loggade ut dig.</translation>
 <translation id="4172051516777682613">Visa alltid</translation>
 <translation id="418156467088430727">Visa offlineversionen i en ny flik</translation>
 <translation id="4181841719683918333">Språk</translation>
@@ -537,6 +538,7 @@ Sträva efter att använda ett unikt lösenord för varje webbplats.</translatio
 <translation id="6668619169535738264">Redigera bokmärke</translation>
 <translation id="667999046851023355">Dokument</translation>
 <translation id="6691331417640343772">Hantera synkroniserad data via Google Översikt</translation>
+<translation id="6710079714193676716">Hanteras av organisationen. Vissa funktioner kanske inte är tillgängliga. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Det gick inte att exportera lösenord</translation>
 <translation id="6748108480210050150">Från</translation>
@@ -690,6 +692,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8487667956631253959">På</translation>
 <translation id="8487700953926739672">Tillgänglig offline</translation>
 <translation id="8490978609246021741">Spara ändringar</translation>
+<translation id="8495097701594799854">Har inaktiverats av din organisation.</translation>
 <translation id="8503813439785031346">Användarnamn</translation>
 <translation id="850600235656508448">Öppna i inkognitoläge</translation>
 <translation id="8510057420705599706">Med den här åtgärden loggas du ut och synkroniseringen inaktiveras, men bokmärken, historik, lösenord och annan data i Chrome finns kvar på enheten.</translation>

@@ -295,6 +295,7 @@ Gehen Sie so vor:</translation>
 <translation id="4121993058175073134">Zum Senden von Exportdaten E-Mail-Konto in App "Einstellungen" konfigurieren</translation>
 <translation id="4124987746317609294">Zeitraum</translation>
 <translation id="4152011295694446843">Hier werden Ihre Lesezeichen angezeigt</translation>
+<translation id="4152093603141133546">Ihre Organisation hat Sie abgemeldet.</translation>
 <translation id="4172051516777682613">Immer anzeigen</translation>
 <translation id="418156467088430727">Offlineversion in einem neuen Tab ansehen</translation>
 <translation id="4181841719683918333">Sprachen</translation>
@@ -537,6 +538,7 @@ Es empfiehlt sich aber, für jede Website ein eigenes Passwort zu verwenden.</tr
 <translation id="6668619169535738264">Lesezeichen bearbeiten</translation>
 <translation id="667999046851023355">Dokument</translation>
 <translation id="6691331417640343772">Synchronisierte Daten im Google Dashboard verwalten</translation>
+<translation id="6710079714193676716">Von Ihrer Organisation verwaltet. Einige Funktionen sind möglicherweise nicht verfügbar. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Passwörter können nicht exportiert werden</translation>
 <translation id="6748108480210050150">Von</translation>
@@ -690,6 +692,7 @@ Websites können Cookies verwenden, um Ihre Browseraktivitäten auf anderen Webs
 <translation id="8487667956631253959">An</translation>
 <translation id="8487700953926739672">Offline verfügbar</translation>
 <translation id="8490978609246021741">Änderungen speichern</translation>
+<translation id="8495097701594799854">Von Ihrer Organisation ausgeschaltet.</translation>
 <translation id="8503813439785031346">Nutzername</translation>
 <translation id="850600235656508448">Im Inkognitomodus öffnen</translation>
 <translation id="8510057420705599706">Hierdurch werden Sie abgemeldet und die Synchronisierung wird deaktiviert. Ihre Lesezeichen, Ihr Verlauf, Ihre Passwörter sowie andere Chrome-Daten verbleiben jedoch auf diesem Gerät.</translation>

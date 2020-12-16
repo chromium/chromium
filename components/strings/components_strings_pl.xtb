@@ -987,6 +987,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4901778704868714008">Zapisz...</translation>
 <translation id="4913987521957242411">Otwór w lewym górnym rogu</translation>
+<translation id="4918221908152712722">Zainstaluj aplikację <ph name="APP_NAME" /> (nie wymaga pobrania)</translation>
 <translation id="4923459931733593730">Płatność</translation>
 <translation id="4926049483395192435">Musi być określona.</translation>
 <translation id="4926159001844873046">Komunikat ze strony <ph name="SITE" /></translation>
@@ -1352,6 +1353,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="6328786501058569169">Ta strona wprowadza w błąd</translation>
 <translation id="6337133576188860026">Zwolni się mniej niż <ph name="SIZE" />. Podczas następnej wizyty niektóre strony mogą ładować się wolniej.</translation>
 <translation id="6337534724793800597">Filtruj zasady według nazwy</translation>
+<translation id="6349101878882523185">Zainstaluj aplikację <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Brak}=1{1 hasło (do <ph name="DOMAIN_LIST" />, zsynchronizowano)}=2{2 hasła (do <ph name="DOMAIN_LIST" />, zsynchronizowano)}few{# hasła (do <ph name="DOMAIN_LIST" />, zsynchronizowano)}many{# haseł (do <ph name="DOMAIN_LIST" />, zsynchronizowano)}other{# hasła (do <ph name="DOMAIN_LIST" />, zsynchronizowano)}}</translation>
 <translation id="6358450015545214790">Co to oznacza?</translation>
 <translation id="6361757823711327522">B7</translation>
@@ -2041,6 +2043,7 @@ Dodatkowe informacje:
 <translation id="9158625974267017556">C6 (koperta)</translation>
 <translation id="9168814207360376865">Zezwalaj stronom na sprawdzanie, czy masz zapisane formy płatności</translation>
 <translation id="9169664750068251925">Zawsze blokuj w tej witrynie</translation>
+<translation id="9169931577761441333">Dodaj aplikację <ph name="APP_NAME" /> do ekranu głównego</translation>
 <translation id="9170848237812810038">&amp;Cofnij</translation>
 <translation id="9171296965991013597">Zamknąć aplikację?</translation>
 <translation id="9173282814238175921">Pojedynczy dokument / Nowy arkusz</translation>

@@ -12,6 +12,7 @@
 <translation id="10614374240317010">Không bao giờ lưu</translation>
 <translation id="1067922213147265141">Các dịch vụ khác của Google</translation>
 <translation id="107147699690128016">Nếu bạn thay đổi đuôi tệp, thì tệp có thể mở trong một ứng dụng khác và tiềm ẩn nguy cơ đối với thiết bị.</translation>
+<translation id="1094515529340404628">Web Crowd và đo lường quảng cáo</translation>
 <translation id="1100066534610197918">Mở trong thẻ mới trong nhóm</translation>
 <translation id="1105960400813249514">Chụp ảnh màn hình</translation>
 <translation id="1111673857033749125">Dấu trang được lưu trên thiết bị khác của bạn sẽ xuất hiện tại đây.</translation>
@@ -227,6 +228,7 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="2536728043171574184">Xem bản sao ngoại tuyến của trang này</translation>
 <translation id="2537178555904266562">Lỗi khi đồng bộ hóa mật khẩu</translation>
 <translation id="2546283357679194313">Cookie và dữ liệu trang web</translation>
+<translation id="2562889244313180139">Cho phép các trang web và ứng dụng tạo ra trải nghiệm phù hợp hơn với bạn bằng bí danh không thể nhận dạng.</translation>
 <translation id="2567385386134582609">HÌNH ẢNH</translation>
 <translation id="2571711316400087311">Đề xuất gửi các trang xuất hiện ở các ngôn ngữ khác cho Google Dịch</translation>
 <translation id="2581165646603367611">Thao tác này sẽ xóa cookie, bộ nhớ đệm và các dữ liệu khác của các trang web mà Chrome cho rằng không quan trọng.</translation>
@@ -714,6 +716,7 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="6005538289190791541">Mật khẩu đề xuất</translation>
 <translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Bạn có <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> trang}other{Bạn có <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> trang}}</translation>
 <translation id="6014293228235665243">Chưa đọc</translation>
+<translation id="6018309500671889594">Cho phép nhà quảng cáo nghiên cứu các chiến dịch quảng cáo bằng thông tin không thể nhận dạng.</translation>
 <translation id="6036057147555329831">Bộ chuyển đổi giao diện (ICU) bổ sung</translation>
 <translation id="6039379616847168523">Chuyển sang thẻ tiếp theo</translation>
 <translation id="6040143037577758943">Đóng</translation>
@@ -922,6 +925,7 @@ Dữ liệu của phiên Ẩn danh sẽ chỉ bị xóa khỏi Chrome khi bạn 
 <translation id="7403691278183511381">Trải nghiệm lần chạy đầu tiên của Chrome</translation>
 <translation id="741204030948306876">Có, tôi đồng ý</translation>
 <translation id="7413229368719586778">Ngày bắt đầu <ph name="DATE" /></translation>
+<translation id="7416941666639889592">Bằng cách tham gia Web Crowd, bạn cho phép các trang web tạo ra trải nghiệm web phù hợp với bạn mà không sử dụng thông tin nhận dạng cá nhân. Tương tự như một đám đông trong buổi hòa nhạc, các trang web và nhà quảng cáo chỉ có thể biết rằng hàng nghìn người dùng có chung một sở thích.</translation>
 <translation id="7431991332293347422">Kiểm soát cách Google sử dụng lịch sử duyệt web của bạn để cá nhân hóa dịch vụ Tìm kiếm và các dịch vụ khác</translation>
 <translation id="7435356471928173109">Quản trị viên đã tắt</translation>
 <translation id="7437998757836447326">Đăng xuất khỏi Chrome</translation>
@@ -1123,6 +1127,7 @@ Dữ liệu của phiên Ẩn danh sẽ chỉ bị xóa khỏi Chrome khi bạn 
 <translation id="8748850008226585750">Nội dung bị ẩn</translation>
 <translation id="8788265440806329501">Lịch sử di chuyển đã đóng</translation>
 <translation id="8788968922598763114">Mở lại thẻ đóng sau cùng</translation>
+<translation id="8795672590390389447">Hộp cát về quyền riêng tư</translation>
 <translation id="8798449543960971550">Đọc</translation>
 <translation id="8812260976093120287">Trên một số trang web, bạn có thể thanh toán bằng các ứng dụng thanh toán được hỗ trợ bên trên trên thiết bị của bạn.</translation>
 <translation id="881688628773363275">Không thể xem nội dung trên thẻ Xem trước.</translation>

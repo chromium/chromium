@@ -12,6 +12,7 @@
 <translation id="10614374240317010">Ешқашан сақталмайды</translation>
 <translation id="1067922213147265141">Басқа Google қызметтері</translation>
 <translation id="107147699690128016">Файл кеңейтімін өзгертсеңіз, файл басқа қолданбада ашылып, құрылғыны зақымдауы мүмкін.</translation>
+<translation id="1094515529340404628">Интернет аудитория мен жарнама өлшемі</translation>
 <translation id="1100066534610197918">Топтағы жаңа қойындыдан ашу</translation>
 <translation id="1105960400813249514">Экранды жазып алу</translation>
 <translation id="1111673857033749125">Басқа құрылғыларда сақталған бетбелгілер осы жерде шығады.</translation>
@@ -227,6 +228,7 @@
 <translation id="2536728043171574184">Бұл беттің желіден тыс күйдегі көшірмесі көрсетілуде</translation>
 <translation id="2537178555904266562">Құпия сөздерді синхрондау кезінде қате шықты</translation>
 <translation id="2546283357679194313">Cookie файлдары және торап деректері</translation>
+<translation id="2562889244313180139">Жеке тұлғаңыз анықталмайтын лақап ат пайдалану арқылы веб-сайттар мен қолданбаларға сізге сәйкес келетін мүмкіндіктер ұсынуына рұқсат етіңіз.</translation>
 <translation id="2567385386134582609">КЕСКІН</translation>
 <translation id="2571711316400087311">Басқа тілдердегі беттерді Google Translate қызметіне жіберуді ұсыну</translation>
 <translation id="2581165646603367611">Сookie файлдары, кэш және маңызды емес деп саналатын сайттың басқа деректері өшіріледі.</translation>
@@ -714,6 +716,7 @@ Google есептік жазбасының шолу тарихы басқа Goog
 <translation id="6005538289190791541">Ұсынылған құпия сөз</translation>
 <translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{<ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> бет бар.}other{<ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> бет бар.}}</translation>
 <translation id="6014293228235665243">Оқылмаған</translation>
+<translation id="6018309500671889594">Жарнама берушілерге жеке тұлға анықталмайтын ақпарат қолдану арқылы жарнама науқанын зерттеуіне рұқсат етіңіз.</translation>
 <translation id="6036057147555329831">Қосымша ICU</translation>
 <translation id="6039379616847168523">Келесі қойындыға өту</translation>
 <translation id="6040143037577758943">Жабу</translation>
@@ -922,6 +925,7 @@ Google есептік жазбасының шолу тарихы басқа Goog
 <translation id="7403691278183511381">Chrome браузерін алғаш іске қосу</translation>
 <translation id="741204030948306876">Жарайды</translation>
 <translation id="7413229368719586778">Басталу күні: <ph name="DATE" /></translation>
+<translation id="7416941666639889592">"Интернет аудитория" бағдарламасына қосылған кезде, веб-сайттардың жеке тұлғаңызды анықтау ақпаратын пайдаланбай-ақ сізге сәйкес келетін мүмкіндіктер ұсынуына рұқсат етесіз. Концерттегі көрермендер сияқты веб-сайттар мен жарнама берушілер мыңдаған пайдаланушылардың ортақ қызығушылығы туралы ғана біле алады.</translation>
 <translation id="7431991332293347422">Search және т.б. қызметтерді жекелендіру үшін шолу тарихын қалай пайдалану керектігін көрсетіңіз</translation>
 <translation id="7435356471928173109">Әкімші өшіріп қойған.</translation>
 <translation id="7437998757836447326">Chrome жүйесінен шығу</translation>
@@ -1123,6 +1127,7 @@ Google есептік жазбасының шолу тарихы басқа Goog
 <translation id="8748850008226585750">Мазмұны жасырылған</translation>
 <translation id="8788265440806329501">Навигация тарихы жабық.</translation>
 <translation id="8788968922598763114">Соңғы жабылған қойындыны қайта ашу</translation>
+<translation id="8795672590390389447">Privacy Sandbox</translation>
 <translation id="8798449543960971550">Оқу</translation>
 <translation id="8812260976093120287">Кейбір вебсайттарда құрылғыдан жоғарыдағы қолдауға ие төлем қолданбаларымен төлей аласыз.</translation>
 <translation id="881688628773363275">"Алдын ала қарау" қойындысының мазмұнын көру мүмкін емес.</translation>

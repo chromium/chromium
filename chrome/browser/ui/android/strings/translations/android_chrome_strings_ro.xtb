@@ -12,6 +12,7 @@
 <translation id="10614374240317010">Nu se salvează niciodată</translation>
 <translation id="1067922213147265141">Alte servicii Google</translation>
 <translation id="107147699690128016">Dacă modifici extensia de fișier, fișierul poate să se deschidă în altă aplicație și să dăuneze dispozitivului.</translation>
+<translation id="1094515529340404628">Grupul de pe web și măsurarea anunțurilor</translation>
 <translation id="1100066534610197918">Deschide în filă nouă în grup</translation>
 <translation id="1105960400813249514">Captură de ecran</translation>
 <translation id="1111673857033749125">Marcajele salvate pe alte dispozitive vor apărea aici.</translation>
@@ -227,6 +228,7 @@ Atinge lung orice cuvânt pentru a-l căuta. Pentru a rafina căutarea, selectea
 <translation id="2536728043171574184">Se afișează o versiune offline a acestei pagini</translation>
 <translation id="2537178555904266562">Eroare la sincronizarea parolelor</translation>
 <translation id="2546283357679194313">Cookie-uri și date privind site-ul</translation>
+<translation id="2562889244313180139">Permite ca site-urile și aplicațiile să îți ofere o experiență mai personalizată, folosind un alias fără date cu caracter personal.</translation>
 <translation id="2567385386134582609">IMAGINE</translation>
 <translation id="2571711316400087311">Oferă trimiterea paginilor în alte limbi la Google Traducere</translation>
 <translation id="2581165646603367611">Astfel, vor fi șterse cookie-urile, memoria cache și alte date ale site-urilor pe care Chrome nu le consideră importante.</translation>
@@ -714,6 +716,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="6005538289190791541">Parola sugerată</translation>
 <translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Ai <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> pagină}few{Ai <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> pagini}other{Ai <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> de pagini}}</translation>
 <translation id="6014293228235665243">Necitite</translation>
+<translation id="6018309500671889594">Permite ca advertiserii să analizeze campanii publicitare fără a folosi date cu caracter personal.</translation>
 <translation id="6036057147555329831">ICU suplimentar</translation>
 <translation id="6039379616847168523">Accesează fila următoare</translation>
 <translation id="6040143037577758943">Închide</translation>
@@ -922,6 +925,7 @@ Datele din sesiunea incognito vor fi șterse din Chrome numai când <ph name="BE
 <translation id="7403691278183511381">Experiența primei rulări Chrome</translation>
 <translation id="741204030948306876">Da, accept</translation>
 <translation id="7413229368719586778">Data de începere <ph name="DATE" /></translation>
+<translation id="7416941666639889592">Dacă te alături unui grup de pe web, permiți site-urilor să îți ofere o experiență web personalizată, fără a folosi date cu caracter personal. La fel ca în cazul mulțimii de la un concert, site-urile și advertiserii știu doar că mii de utilizatori au interese similare.</translation>
 <translation id="7431991332293347422">Controlează modul în care istoricul de navigare este folosit pentru a personaliza Căutarea și alte servicii</translation>
 <translation id="7435356471928173109">Dezactivată de administrator</translation>
 <translation id="7437998757836447326">Deconectează-te de la Chrome</translation>
@@ -1123,6 +1127,7 @@ Datele din sesiunea incognito vor fi șterse din Chrome numai când <ph name="BE
 <translation id="8748850008226585750">Conținutul este ascuns</translation>
 <translation id="8788265440806329501">Istoricul de navigare este închis</translation>
 <translation id="8788968922598763114">Redeschide ultima filă închisă</translation>
+<translation id="8795672590390389447">Mediu de testare securizat pentru confidențialitate</translation>
 <translation id="8798449543960971550">Citite</translation>
 <translation id="8812260976093120287">Pe unele site-uri, poți plăti folosind aplicațiile acceptate pentru plăți de mai sus de pe dispozitiv.</translation>
 <translation id="881688628773363275">Conținutul filei Previzualizează nu poate fi afișat.</translation>

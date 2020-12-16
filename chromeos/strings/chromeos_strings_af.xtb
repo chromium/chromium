@@ -9,6 +9,7 @@
 <translation id="1175697296044146566">Hierdie <ph name="DEVICE_TYPE" /> word bestuur deur <ph name="MANAGER" />.</translation>
 <translation id="1195447618553298278">Onbekende fout.</translation>
 <translation id="1204296502688602597">DNS-traagheid</translation>
+<translation id="123124571410524056">Portaal vermoed</translation>
 <translation id="1238612778414822719">HTTPS-traaagheid</translation>
 <translation id="1290331692326790741">Swak sein</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -36,6 +37,7 @@
 <translation id="1947737735496445907">Gedruk</translation>
 <translation id="1979103255016296513">Wagwoord moes al verander geword het</translation>
 <translation id="1980044825731880088">CPU-spoed</translation>
+<translation id="1999615961760456652">Kontroleringsportaal</translation>
 <translation id="2008685064673031089">Hoofsoektog</translation>
 <translation id="2080070583977670716">Nog instellings</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -115,6 +117,7 @@
 <translation id="4773299976671772492">Gestop</translation>
 <translation id="4808449224298348341">Gekanselleerde druktaak <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4832079907277790330">Kies vouer in Lêers-program …</translation>
+<translation id="4835901797422965222">Geen aktiewe netwerke nie</translation>
 <translation id="4848429997038228357">LOOP TANS</translation>
 <translation id="4890353053343094602">Kies onmiddellik 'n nuwe een</translation>
 <translation id="4891842000192098784">Stres</translation>
@@ -136,6 +139,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="5317780077021120954">Berg</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Kies nou 'n nuwe een</translation>
+<translation id="5333530671332546086">Onbekende portaalstatus</translation>
 <translation id="5372659122375744710">Wi-fi-netwerk is nie veilig nie</translation>
 <translation id="5401938042319910061">Laat loop alle roetines</translation>
 <translation id="5431318178759467895">Kleur</translation>
@@ -192,6 +196,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="7359657277149375382">Lêertipe</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skandering is voltooi. 1 bladsy is geskandeer}other{Skandering is voltooi. {NUMBER_OF_PAGES} bladsye is geskandeer}}</translation>
 <translation id="7441459999606975924">Batterye se kapasiteit neem af met gebruik</translation>
+<translation id="7469648432129124067">Portaal is bespeur</translation>
 <translation id="7561454561030345039">Jou administrateur bestuur hierdie handeling</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Hoë HTTPS-traagheid</translation>

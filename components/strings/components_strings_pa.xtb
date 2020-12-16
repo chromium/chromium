@@ -983,6 +983,7 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4901778704868714008">ਰੱਖਿਅਤ ਕਰੋ...</translation>
 <translation id="4913987521957242411">ਉੱਪਰ ਖੱਬੇ ਪਾਸੇ ਮੋਰੀ</translation>
+<translation id="4918221908152712722"><ph name="APP_NAME" /> ਸਥਾਪਤ ਕਰੋ (ਕੋਈ ਡਾਊਨਲੋਡ ਲੋੜੀਂਦਾ ਨਹੀਂ ਹੈ)</translation>
 <translation id="4923459931733593730">ਭੁਗਤਾਨ ਵਿਧੀ</translation>
 <translation id="4926049483395192435">ਨਿਰਦਿਸ਼ਟ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ।</translation>
 <translation id="4926159001844873046"><ph name="SITE" /> ਦੇ ਮੁਤਾਬਕ</translation>
@@ -1347,6 +1348,7 @@
 <translation id="6328786501058569169">ਇਹ ਸਾਈਟ ਗੁੰਮਰਾਹਕੁੰਨ ਹੈ</translation>
 <translation id="6337133576188860026"><ph name="SIZE" /> ਤੋਂ ਘੱਟ ਜਗ੍ਹਾ ਖਾਲੀ ਕਰਦਾ ਹੈ। ਤੁਹਾਡੀ ਅਗਲੀ ਫੇਰੀ 'ਤੇ ਕੁਝ ਸਾਈਟਾਂ ਵਧੇਰੇ ਹੌਲੀ ਲੋਡ ਹੋ ਸਕਦੀਆਂ ਹਨ।</translation>
 <translation id="6337534724793800597">ਨਾਮ ਮੁਤਾਬਕ ਨੀਤੀਆਂ ਫਿਲਟਰ ਕਰੋ</translation>
+<translation id="6349101878882523185"><ph name="APP_NAME" /> ਸਥਾਪਤ ਕਰੋ</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{ਕੋਈ ਨਹੀਂ}=1{1 ਪਾਸਵਰਡ (<ph name="DOMAIN_LIST" /> ਲਈ, ਸਮਕਾਲੀਕਿਰਤ ਕੀਤਾ ਗਿਆ)}=2{2 ਪਾਸਵਰਡ (<ph name="DOMAIN_LIST" /> ਲਈ, ਸਮਕਾਲੀਕਿਰਤ ਕੀਤੇ ਗਏ)}other{# ਪਾਸਵਰਡ (<ph name="DOMAIN_LIST" /> ਲਈ, ਸਮਕਾਲੀਕਿਰਤ ਕੀਤੇ ਗਏ)}}</translation>
 <translation id="6358450015545214790">ਇਹਨਾਂ ਦਾ ਕੀ ਮਤਲਬ ਹੈ?</translation>
 <translation id="6361757823711327522">B7</translation>
@@ -2036,6 +2038,7 @@
 <translation id="9158625974267017556">C6 (ਲਿਫ਼ਾਫ਼ਾ)</translation>
 <translation id="9168814207360376865">ਸਾਈਟਾਂ ਨੂੰ ਇਹ ਜਾਂਚ ਕਰਨ ਦਿਓ ਕਿ ਤੁਸੀਂ ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਰੱਖਿਅਤ ਕੀਤੀਆਂ ਹੋਈਆਂ ਹਨ ਜਾਂ ਨਹੀਂ</translation>
 <translation id="9169664750068251925">ਹਮੇਸ਼ਾਂ ਇਸ ਸਾਈਟ 'ਤੇ ਬਲਾਕ ਕਰੋ</translation>
+<translation id="9169931577761441333"><ph name="APP_NAME" /> ਨੂੰ ਹੋਮ ਸਕ੍ਰੀਨ 'ਤੇ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="9170848237812810038">&amp;ਅਨਡੂ</translation>
 <translation id="9171296965991013597">ਕੀ ਐਪ ਛੱਡਣੀ ਹੈ?</translation>
 <translation id="9173282814238175921">ਇਕਹਿਰਾ ਦਸਤਾਵੇਜ਼/ਨਵੀਂ ਸ਼ੀਟ</translation>

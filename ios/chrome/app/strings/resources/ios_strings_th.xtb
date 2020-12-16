@@ -295,6 +295,7 @@
 <translation id="4121993058175073134">หากต้องการส่งข้อมูล net-export โปรดกำหนดค่าบัญชีอีเมลของคุณในแอปการตั้งค่า</translation>
 <translation id="4124987746317609294">ช่วงเวลา</translation>
 <translation id="4152011295694446843">คุณจะเห็นบุ๊กมาร์กที่นี่</translation>
+<translation id="4152093603141133546">องค์กรนำคุณออกจากระบบ</translation>
 <translation id="4172051516777682613">แสดงทุกครั้ง</translation>
 <translation id="418156467088430727">ดูเวอร์ชันออฟไลน์ในแท็บใหม่</translation>
 <translation id="4181841719683918333">ภาษา</translation>
@@ -537,6 +538,7 @@
 <translation id="6668619169535738264">แก้ไขบุ๊กมาร์ก</translation>
 <translation id="667999046851023355">เอกสาร</translation>
 <translation id="6691331417640343772">จัดการข้อมูลที่ซิงค์ใน Google แดชบอร์ด</translation>
+<translation id="6710079714193676716">จัดการโดยองค์กร ฟีเจอร์บางอย่างอาจไม่พร้อมใช้งาน <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">ส่งออกรหัสผ่านไม่ได้</translation>
 <translation id="6748108480210050150">จาก</translation>
@@ -690,6 +692,7 @@
 <translation id="8487667956631253959">เปิด</translation>
 <translation id="8487700953926739672">ใช้งานแบบออฟไลน์ได้</translation>
 <translation id="8490978609246021741">บันทึกการเปลี่ยนแปลง</translation>
+<translation id="8495097701594799854">ปิดโดยองค์กรของคุณ</translation>
 <translation id="8503813439785031346">ชื่อผู้ใช้</translation>
 <translation id="850600235656508448">เปิดในโหมดไม่ระบุตัวตน</translation>
 <translation id="8510057420705599706">การดำเนินการนี้จะนำคุณออกจากระบบและปิดการซิงค์ แต่บุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และข้อมูลอื่นๆ ใน Chrome จะยังอยู่ในอุปกรณ์นี้</translation>

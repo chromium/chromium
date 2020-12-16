@@ -3433,7 +3433,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="4917385247580444890">Sterk</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> wil communiceren met de extensie '<ph name="EXTENSION_NAME" />'</translation>
 <translation id="4918086044614829423">Accepteren</translation>
-<translation id="4918221908152712722"><ph name="APP_NAME" /> installeren (geen download vereist)</translation>
 <translation id="4921290200821452703">Informatie over schoolaccounts voor ouders</translation>
 <translation id="4921348630401250116">Tekst-naar-spraak</translation>
 <translation id="49226369361073053">{0,plural, =0{Apparaat nu updaten}=1{Apparaat binnen 1 seconde updaten}other{Apparaat binnen # seconden updaten}}</translation>
@@ -4574,7 +4573,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="6248988683584659830">Zoek in de instellingen</translation>
 <translation id="6249200942125593849">A11y beheren</translation>
 <translation id="6251870443722440887">GDI-handles</translation>
-<translation id="6251889282623539337">Servicevoorwaarden voor <ph name="DOMAIN" /></translation>
 <translation id="625369703868467034">Status van netwerk</translation>
 <translation id="6254503684448816922">Inbreuk op sleutel</translation>
 <translation id="6257602895346497974">Synchronisatie inschakelen...</translation>
@@ -5465,7 +5463,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="7290242001003353852">Deze inlogservice wordt gehost door <ph name="SAML_DOMAIN" /> en heeft toegang tot je camera.</translation>
 <translation id="7295614427631867477">Houd er rekening mee dat Android, Play en bijbehorende apps zijn onderworpen aan hun eigen beleid voor gegevensverzameling en -gebruik.</translation>
 <translation id="729583233778673644">AES- en RC4-versleuteling toestaan. Als je deze optie gebruikt, loop je meer risico, aangezien RC4-codering onbeveiligd is.</translation>
-<translation id="7296774163727375165">Voorwaarden voor <ph name="DOMAIN" /></translation>
 <translation id="7297443947353982503">Gebruikersnaam/wachtwoord onjuist of EAP-verificatie mislukt</translation>
 <translation id="729761647156315797">Kies je taal en toetsenbord</translation>
 <translation id="7297726121602187087">Donkergroen</translation>
@@ -6447,7 +6444,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8398877366907290961">Toch doorgaan</translation>
 <translation id="8400146488506985033">Mensen beheren</translation>
 <translation id="8401432541486058167">Geef de pincode op die hoort bij je smartkaart.</translation>
-<translation id="8405046151008197676">Ontvang de hoogtepunten van de nieuwste update</translation>
 <translation id="8407199357649073301">Logniveau:</translation>
 <translation id="8408068190360279472">Netwerk: <ph name="NETWORK_TYPE" />, verbinden</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -7135,7 +7131,6 @@ Druk op een toegewezen schakelaar om de toewijzing te verwijderen.</translation>
 <translation id="9168436347345867845">Later doen</translation>
 <translation id="9169496697824289689">Sneltoetsen bekijken</translation>
 <translation id="916964310188958970">Waarom deze suggestie?</translation>
-<translation id="9169931577761441333"><ph name="APP_NAME" /> toevoegen aan startscherm</translation>
 <translation id="9170061643796692986">Huidige zichtbaarheidsinstelling is 'Alle contacten'</translation>
 <translation id="9170848237812810038">&amp;Ongedaan maken</translation>
 <translation id="9170884462774788842">Een ander programma op je computer heeft een thema toegevoegd dat de manier waarop Chrome werkt kan wijzigen.</translation>

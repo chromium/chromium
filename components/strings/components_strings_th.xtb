@@ -984,6 +984,7 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" /> และ <ph name="TYPE_3" /></translation>
 <translation id="4901778704868714008">บันทึก...</translation>
 <translation id="4913987521957242411">เจาะรูด้านซ้ายบน</translation>
+<translation id="4918221908152712722">ติดตั้ง <ph name="APP_NAME" /> (ไม่จำเป็นต้องดาวน์โหลด)</translation>
 <translation id="4923459931733593730">การชำระเงิน</translation>
 <translation id="4926049483395192435">ต้องระบุ</translation>
 <translation id="4926159001844873046"><ph name="SITE" /> บอกว่า</translation>
@@ -1349,6 +1350,7 @@
 <translation id="6328786501058569169">เว็บไซต์นี้มีการหลอกลวง</translation>
 <translation id="6337133576188860026">หากเพิ่มพื้นที่ว่างไม่ถึง <ph name="SIZE" /> ไซต์บางแห่งอาจโหลดช้าลงเมื่อคุณเข้าชมครั้งถัดไป</translation>
 <translation id="6337534724793800597">กรองนโยบายตามชื่อ</translation>
+<translation id="6349101878882523185">ติดตั้ง <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{ไม่มี}=1{มีรหัสผ่าน 1 รายการ (สำหรับ <ph name="DOMAIN_LIST" />, ซิงค์แล้ว)}=2{มีรหัสผ่าน 2 รายการ (สำหรับ <ph name="DOMAIN_LIST" />, ซิงค์แล้ว)}other{มีรหัสผ่าน # รายการ (สำหรับ <ph name="DOMAIN_LIST" />, ซิงค์แล้ว)}}</translation>
 <translation id="6358450015545214790">นี่หมายถึงอะไร</translation>
 <translation id="6361757823711327522">B7</translation>
@@ -1623,7 +1625,7 @@
 <translation id="7508255263130623398">รหัสอุปกรณ์นโยบายที่ส่งกลับว่างเปล่าหรือไม่ตรงกับรหัสอุปกรณ์ปัจจุบัน</translation>
 <translation id="7508870219247277067">เขียวอะโวคาโด</translation>
 <translation id="7511955381719512146">Wi-Fi ที่คุณใช้อาจต้องการให้คุณไปที่ <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /></translation>
-<translation id="7512685745044087310">นโยบายนี้ตั้งค่าเป็น "จริง" ไม่ได้ และบังคับให้ตั้งค่าไม่ได้ จึงมีการเปลี่ยนเป็นนโยบายที่แนะนำ</translation>
+<translation id="7512685745044087310">นโยบายนี้ตั้งค่าเป็น "จริง" ไม่ได้ และกำหนดเป็นการตั้งค่าแบบบังคับไม่ได้ ดังนั้นจึงมีการเปลี่ยนค่าเป็น "ที่แนะนำ"</translation>
 <translation id="7514365320538308">ดาวน์โหลด</translation>
 <translation id="7518003948725431193">ไม่พบหน้าเว็บสำหรับที่อยู่เว็บ: <ph name="URL" /></translation>
 <translation id="7520302887438682816">C8 (ซองจดหมาย)</translation>
@@ -2039,6 +2041,7 @@
 <translation id="9158625974267017556">C6 (ซองจดหมาย)</translation>
 <translation id="9168814207360376865">อนุญาตให้เว็บไซต์ตรวจสอบว่าคุณได้บันทึกวิธีการชำระเงินไว้ไหม</translation>
 <translation id="9169664750068251925">บล็อกบนไซต์นี้เสมอ</translation>
+<translation id="9169931577761441333">เพิ่ม <ph name="APP_NAME" /> ในหน้าจอหลัก</translation>
 <translation id="9170848237812810038">เ&amp;ลิกทำ</translation>
 <translation id="9171296965991013597">ออกจากแอปไหม</translation>
 <translation id="9173282814238175921">เอกสารเดียว/แผ่นงานใหม่</translation>

@@ -9,6 +9,7 @@
 <translation id="1175697296044146566">Šo <ph name="DEVICE_TYPE" /> ierīci pārvalda <ph name="MANAGER" />.</translation>
 <translation id="1195447618553298278">Nezināma kļūda.</translation>
 <translation id="1204296502688602597">DNS latentums</translation>
+<translation id="123124571410524056">Aizdomas par portālu</translation>
 <translation id="1238612778414822719">HTTPS latentums</translation>
 <translation id="1290331692326790741">Vājš signāls</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -36,6 +37,7 @@
 <translation id="1947737735496445907">Izdrukāts</translation>
 <translation id="1979103255016296513">Paroles maiņa ir nokavēta</translation>
 <translation id="1980044825731880088">Centrālā procesora ātrums</translation>
+<translation id="1999615961760456652">Caurlaides lapa</translation>
 <translation id="2008685064673031089">Pirmskaitļu meklēšana</translation>
 <translation id="2080070583977670716">Vairāk iestatījumu</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -115,6 +117,7 @@
 <translation id="4773299976671772492">Pārtraukts</translation>
 <translation id="4808449224298348341">Drukas uzdevums “<ph name="DOCUMENT_TITLE" />” tika atcelts</translation>
 <translation id="4832079907277790330">Atlasīt mapi lietotnē Faili…</translation>
+<translation id="4835901797422965222">Nav aktīvu tīklu</translation>
 <translation id="4848429997038228357">TIEK VEIKTA</translation>
 <translation id="4890353053343094602">Nekavējoties izvēlieties jaunu</translation>
 <translation id="4891842000192098784">Izturība</translation>
@@ -136,6 +139,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="5317780077021120954">Saglabāt</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />: <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Izvēlieties jaunu jau tūlīt</translation>
+<translation id="5333530671332546086">Nezināms portāla statuss</translation>
 <translation id="5372659122375744710">Wi-Fi tīkls nav drošs</translation>
 <translation id="5401938042319910061">Izpildīt visas pārbaudes</translation>
 <translation id="5431318178759467895">Krāsās</translation>
@@ -192,6 +196,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="7359657277149375382">Faila tips</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Pārbaude pabeigta. Pārbaudīta 1 lapa.}zero{Pārbaude pabeigta. Pārbaudītas {NUMBER_OF_PAGES} lapas.}one{Pārbaude pabeigta. Pārbaudīta {NUMBER_OF_PAGES} lapa.}other{Pārbaude pabeigta. Pārbaudītas {NUMBER_OF_PAGES} lapas.}}</translation>
 <translation id="7441459999606975924">Lietošanas laikā akumulatora kapacitāte samazinās.</translation>
+<translation id="7469648432129124067">Konstatēts portāls</translation>
 <translation id="7561454561030345039">Šo darbību pārvalda administrators</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Liels HTTPS latentums</translation>

@@ -295,6 +295,7 @@ Aşağıdaki adımları uygulayın:</translation>
 <translation id="4121993058175073134">Net-export verilerini göndermek için lütfen Ayarlar uygulamasında e-posta hesabınızı yapılandırın.</translation>
 <translation id="4124987746317609294">Zaman Aralığı</translation>
 <translation id="4152011295694446843">Yer işaretlerinizi burada bulabilirsiniz</translation>
+<translation id="4152093603141133546">Kuruluşunuz, oturumunuzu kapattı.</translation>
 <translation id="4172051516777682613">Her zaman göster</translation>
 <translation id="418156467088430727">Çevrimdışı Sürümü Yeni Sekmede Göster</translation>
 <translation id="4181841719683918333">Diller</translation>
@@ -537,6 +538,7 @@ Her site için benzersiz bir şifre kullanmaya çalışın.</translation>
 <translation id="6668619169535738264">Yer İşaretini Düzenle</translation>
 <translation id="667999046851023355">Doküman</translation>
 <translation id="6691331417640343772">Google Hesap Özeti'nde senkronize edilen verileri yönet</translation>
+<translation id="6710079714193676716">Kuruluşunuz tarafından yönetiliyor. Bazı özellikler kullanılamayabilir. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Şifreler Dışa Aktarılamıyor</translation>
 <translation id="6748108480210050150">Nereden</translation>
@@ -690,6 +692,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="8487667956631253959">Açık</translation>
 <translation id="8487700953926739672">Çevrimdışı kullanılabilir</translation>
 <translation id="8490978609246021741">Değişiklikleri Kaydet</translation>
+<translation id="8495097701594799854">Kuruluşunuz tarafından kapatıldı.</translation>
 <translation id="8503813439785031346">Kullanıcı adı</translation>
 <translation id="850600235656508448">Gizli modda aç</translation>
 <translation id="8510057420705599706">Bu işlem, oturumunuzun ve senkronizasyonun kapatılmasını sağlayacak, ancak yer işaretleri, geçmiş, şifreler ve diğer Chrome verileriniz bu cihazda kalmaya devam edecek.</translation>

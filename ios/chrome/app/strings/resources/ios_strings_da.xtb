@@ -295,6 +295,7 @@ Følg vejledningen nedenfor:</translation>
 <translation id="4121993058175073134">For at sende oplysninger om nettoeksporten skal du konfigurere din mailkonto i appen Indstillinger.</translation>
 <translation id="4124987746317609294">Tidsinterval</translation>
 <translation id="4152011295694446843">Her finder du dine bogmærker</translation>
+<translation id="4152093603141133546">Din organisation loggede dig ud.</translation>
 <translation id="4172051516777682613">Vis altid</translation>
 <translation id="418156467088430727">Se offlineversion på en ny fane</translation>
 <translation id="4181841719683918333">Sprog</translation>
@@ -537,6 +538,7 @@ Du bør bruge en unik adgangskode for hvert website.</translation>
 <translation id="6668619169535738264">Rediger bogmærke</translation>
 <translation id="667999046851023355">Dokument</translation>
 <translation id="6691331417640343772">Administrer synkroniserede data i Google Kontrolpanel</translation>
+<translation id="6710079714193676716">Administreret af din organisation. Nogle funktioner er muligvis ikke tilgængelige. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Der kan ikke eksporteres adgangskoder</translation>
 <translation id="6748108480210050150">Fra</translation>
@@ -690,6 +692,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8487667956631253959">Til</translation>
 <translation id="8487700953926739672">Tilgængelig offline</translation>
 <translation id="8490978609246021741">Gem ændringer</translation>
+<translation id="8495097701594799854">Slået fra af din organisation.</translation>
 <translation id="8503813439785031346">Brugernavn</translation>
 <translation id="850600235656508448">Åbn i inkognitotilstand</translation>
 <translation id="8510057420705599706">Du logges ud, og synkronisering deaktiveres, men alle dine bogmærker, din historik, dine adgangskoder og øvrige Chrome-data vil stadig være på enheden.</translation>

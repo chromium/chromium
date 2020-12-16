@@ -295,6 +295,7 @@
 <translation id="4121993058175073134">如要傳送淨匯出資料，請在「設定」應用程式中設定你的電子郵件帳戶。</translation>
 <translation id="4124987746317609294">時間範圍</translation>
 <translation id="4152011295694446843">這裡會顯示你的書籤</translation>
+<translation id="4152093603141133546">貴機構已將你登出帳戶。</translation>
 <translation id="4172051516777682613">一律顯示</translation>
 <translation id="418156467088430727">在新分頁中檢視離線版本</translation>
 <translation id="4181841719683918333">語言</translation>
@@ -537,6 +538,7 @@
 <translation id="6668619169535738264">編輯書籤</translation>
 <translation id="667999046851023355">文件</translation>
 <translation id="6691331417640343772">管理 Google 資訊主頁中已同步處理的資料</translation>
+<translation id="6710079714193676716">由貴機構管理，部分功能可能無法使用。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">無法匯出密碼</translation>
 <translation id="6748108480210050150">寄件者</translation>
@@ -690,6 +692,7 @@
 <translation id="8487667956631253959">開啟</translation>
 <translation id="8487700953926739672">可離線使用</translation>
 <translation id="8490978609246021741">儲存變更</translation>
+<translation id="8495097701594799854">已由貴機構停用。</translation>
 <translation id="8503813439785031346">使用者名稱</translation>
 <translation id="850600235656508448">以無痕模式開啟</translation>
 <translation id="8510057420705599706">這項操作會將你登出帳戶並關閉同步功能，但是你的書籤、歷史記錄、密碼和其他 Chrome 資料會繼續保留在這部裝置上。</translation>

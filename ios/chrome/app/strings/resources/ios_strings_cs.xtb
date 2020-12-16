@@ -295,6 +295,7 @@ Postupujte podle následujících pokynů:</translation>
 <translation id="4121993058175073134">Chcete-li odesílat data nástroje net-export, nakonfigurujte e-mailový účet v aplikaci Nastavení.</translation>
 <translation id="4124987746317609294">Časové období</translation>
 <translation id="4152011295694446843">Zde najdete své záložky</translation>
+<translation id="4152093603141133546">Vaše organizace vás odhlásila.</translation>
 <translation id="4172051516777682613">Vždy zobrazovat</translation>
 <translation id="418156467088430727">Zobrazit offline verzi na nové kartě</translation>
 <translation id="4181841719683918333">Jazyky</translation>
@@ -537,6 +538,7 @@ Pro každý web se pokuste použít jedinečné heslo.</translation>
 <translation id="6668619169535738264">Upravit záložku</translation>
 <translation id="667999046851023355">Dokument</translation>
 <translation id="6691331417640343772">Spravovat synchronizovaná data na Hlavním panelu Google</translation>
+<translation id="6710079714193676716">Spravováno vaší organizací. Některé funkce mohou být nedostupné. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Aplikace od Googlu</translation>
 <translation id="6730682669179532099">Hesla se nepodařilo exportovat</translation>
 <translation id="6748108480210050150">Od</translation>
@@ -690,6 +692,7 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="8487667956631253959">Zapnuto</translation>
 <translation id="8487700953926739672">Dostupné offline</translation>
 <translation id="8490978609246021741">Uložit změny</translation>
+<translation id="8495097701594799854">Vypnuto vaší organizací.</translation>
 <translation id="8503813439785031346">Uživatelské jméno</translation>
 <translation id="850600235656508448">Otevřít v anonymním okně</translation>
 <translation id="8510057420705599706">Tímto se odhlásíte a vypnete synchronizaci, ale vaše záložky, historie, hesla a další data prohlížeče Chrome na tomto zařízení zůstanou.</translation>

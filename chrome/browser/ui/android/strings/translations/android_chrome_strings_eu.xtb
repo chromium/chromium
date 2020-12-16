@@ -12,6 +12,7 @@
 <translation id="10614374240317010">Sekula gorde gabeak</translation>
 <translation id="1067922213147265141">Beste Google-ren zerbitzu batzuk</translation>
 <translation id="107147699690128016">Fitxategi-luzapena aldatzen baduzu, baliteke fitxategia beste aplikazio batean irekitzea eta zure gailuan kalteak eragitea.</translation>
+<translation id="1094515529340404628">Sare multzoa eta iragarkien neurketa</translation>
 <translation id="1100066534610197918">Ireki beste fitxa bat taldean</translation>
 <translation id="1105960400813249514">Pantaila-argazkia</translation>
 <translation id="1111673857033749125">Beste gailuetan gordeta dituzun laster-markak hemen agertuko dira.</translation>
@@ -227,6 +228,7 @@ Eduki sakatuta bilatu nahi duzun hitza. Bilaketa mugatzeko, hautatu hitz gehiago
 <translation id="2536728043171574184">Orriaren konexiorik gabeko kopia ikusten ari zara</translation>
 <translation id="2537178555904266562">Errore bat gertatu da pasahitzak sinkronizatzean</translation>
 <translation id="2546283357679194313">Cookieak eta webgune-datuak</translation>
+<translation id="2562889244313180139">Eman erabilera nabarmenago bat eskaintzeko baimena webguneei eta aplikazioei; horretarako, erabili identifikatu ezin den alias bat.</translation>
 <translation id="2567385386134582609">IRUDIA</translation>
 <translation id="2571711316400087311">Eskaini beste hizkuntzetan dauden orriak Google Translate-ra bidaltzea</translation>
 <translation id="2581165646603367611">Chrome-k garrantzi gabekotzat jotzen dituen cookieak, cachea eta bestelako datuak ezabatuko dira.</translation>
@@ -714,6 +716,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="6005538289190791541">Iradokitako pasahitza</translation>
 <translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{<ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> orri duzu}other{<ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> orri dituzu}}</translation>
 <translation id="6014293228235665243">Irakurri gabe</translation>
+<translation id="6018309500671889594">Eman iragarleek publizitate-kanpainak aztertzeko baimena; horretarako, erabili identifikatu ezin den informazioa.</translation>
 <translation id="6036057147555329831">ICU osagai gehigarriak</translation>
 <translation id="6039379616847168523">Saltatu hurrengo fitxara</translation>
 <translation id="6040143037577758943">Itxi</translation>
@@ -922,6 +925,7 @@ Ezkutuko moduko saioaren datuak <ph name="BEGIN_BOLD2" />ezkutuko moduko fitxa g
 <translation id="7403691278183511381">Chrome-ren lehenengo erabilera</translation>
 <translation id="741204030948306876">Bai, ados</translation>
 <translation id="7413229368719586778">Hasiera-data: <ph name="DATE" /></translation>
+<translation id="7416941666639889592">Sare multzo batekin bat egiterakoan, sareko erabilera nabarmentzeko aukera ematen diezu webguneei jendea pertsonalki identifikatzeko balio duen informaziorik erabili gabe. Kontzertu bateko ikus-entzuleak balira bezala, webguneek eta iragarleek interes bera duten milaka erabiltzaile bakarrik ezagut ditzakete.</translation>
 <translation id="7431991332293347422">Kontrolatu arakatze-historia nola erabiltzen den Bilaketa eta beste zerbitzu batzuk pertsonalizatzeko</translation>
 <translation id="7435356471928173109">Administratzaileak desaktibatu du</translation>
 <translation id="7437998757836447326">Amaitu Chrome-ko saioa</translation>
@@ -1123,6 +1127,7 @@ Ezkutuko moduko saioaren datuak <ph name="BEGIN_BOLD2" />ezkutuko moduko fitxa g
 <translation id="8748850008226585750">Ezkutatuta dago edukia</translation>
 <translation id="8788265440806329501">Nabigazio-historia itxita dago</translation>
 <translation id="8788968922598763114">Ireki itxitako azken fitxa</translation>
+<translation id="8795672590390389447">Pribatutasunaren proben eremua</translation>
 <translation id="8798449543960971550">Irakurrita</translation>
 <translation id="8812260976093120287">Webgune batzuetan, gailuko ordainketa-aplikazio bateragarri horiek erabil ditzakezu ordainketak egiteko.</translation>
 <translation id="881688628773363275">Ezin da ikusi aurrebista-fitxaren edukia.</translation>

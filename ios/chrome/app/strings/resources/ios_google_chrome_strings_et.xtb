@@ -30,6 +30,7 @@
 <translation id="3706101708757577809">Nüüd saate kasutada Chrome'i iga kord, kui puudutate linke sõnumites, dokumentides ja muudes rakendustes.</translation>
 <translation id="384394811301901750">Chrome ei saa praegu kaamerat kasutada</translation>
 <translation id="3980220367029651214">Vahetate kontode sünkroonimise kontolt <ph name="USER_EMAIL1" /> kontole <ph name="USER_EMAIL2" />. Olemasolevaid Chrome'i andmeid haldab domeen <ph name="DOMAIN" />. See kustutab teie andmed sellest seadmest, kuid teie andmed jäävad alles kontole <ph name="USER_EMAIL1" />.</translation>
+<translation id="3984746313391923992">Teie organisatsioon nõuab, et jääksite Chrome'ist väljalogituks.</translation>
 <translation id="3988789688219830639">Google Chrome'il pole juurdepääsu fotodele ega videotele. Lubage iOS-is juurdep. valikutega Seaded &gt; Privaatsus &gt; Fotod.</translation>
 <translation id="4099578267706723511">Aidake muuta Chrome'i paremaks, saates Google'ile kasutusstatistikat ja krahhiaruandeid.</translation>
 <translation id="415767770115540173">Asukohapõhised andmed tagavad teile parema Google Chrome'i kasutuskogemuse.</translation>
@@ -54,6 +55,7 @@
 <translation id="6600954340915313787">Chrome'i kopeeritud</translation>
 <translation id="6648150602980899529">Logite sisse kontoga, mida haldab <ph name="DOMAIN" />, ja annate selle administraatorile üle Chrome'i andmete juhtimise. Teie andmed seotakse jäädavalt selle kontoga. Chrome'ist väljalogimisel kustutatakse teie andmed sellest seadmest, kuid need jäävad alles teie Google'i kontole.</translation>
 <translation id="6676840375528380067">Kas kustutada sellest seadmest Chrome'i andmed?</translation>
+<translation id="6822363243974874813">Kui teid Chrome'ist välja logiti, kustutati sellest seadmest teie järjehoidjad, ajalugu, paroolid ja muud seaded. Teie sünkroonitud Chrome'i andmed on siiski salvestatud teie Google'i kontole.</translation>
 <translation id="6822673484890854830">Chrome'il ei õnnestunud kõiki paroole kontrollida. Proovige hiljem uuesti.</translation>
 <translation id="7124339256045485976">Hoidke Chrome ajakohasena</translation>
 <translation id="7161390184744336561">Google Chrome on aegunud</translation>

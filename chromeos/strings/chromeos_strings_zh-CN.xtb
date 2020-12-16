@@ -52,6 +52,7 @@
 <translation id="2517472476991765520">扫描</translation>
 <translation id="2570743873672969996">正在运行<ph name="TEST_NAME" />测试…</translation>
 <translation id="2620436844016719705">系统</translation>
+<translation id="2658845327196595460">{COUNT,plural, =1{扫描的文件已保存！}other{扫描的文件已保存！}}</translation>
 <translation id="2740531572673183784">确定</translation>
 <translation id="2805756323405976993">应用</translation>
 <translation id="2872961005593481000">关机</translation>
@@ -189,6 +190,7 @@
 <translation id="7177485034254901881">此 <ph name="DEVICE_TYPE" /> 由 <ph name="MANAGER" /> 管理。管理员可能会远程配置此设备。</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">文件类型</translation>
+<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{已完成扫描。扫描了 1 页}other{已完成扫描。扫描了 {NUMBER_OF_PAGES} 页}}</translation>
 <translation id="7441459999606975924">电池容量会随使用时长的增加而减少</translation>
 <translation id="7561454561030345039">此操作由您的管理员管理</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>

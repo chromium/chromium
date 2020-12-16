@@ -9,6 +9,7 @@
 <translation id="1175697296044146566">ይህ <ph name="DEVICE_TYPE" /> በ<ph name="MANAGER" /> የሚተዳደር ነው።</translation>
 <translation id="1195447618553298278">ያልታወቀ ስህተት።</translation>
 <translation id="1204296502688602597">የዲኤንስ የሥርዓት ምላሽ ጊዜ</translation>
+<translation id="123124571410524056">መግቢያ ተጠርጥሯል</translation>
 <translation id="1238612778414822719">የHTTPS የስርዓተ ምላሽ ጊዜ</translation>
 <translation id="1290331692326790741">ደካማ ሲግናል</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -36,6 +37,7 @@
 <translation id="1947737735496445907">ታትሟል</translation>
 <translation id="1979103255016296513">የይለፍ ቃል ለውጥ ማድረጊያ ጊዜው አልፏል</translation>
 <translation id="1980044825731880088">የሲፒዩ ፍጥነት</translation>
+<translation id="1999615961760456652">ተያዥ መግቢያ</translation>
 <translation id="2008685064673031089">ዋና ፍለጋ</translation>
 <translation id="2080070583977670716">ተጨማሪ ቅንብሮች</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -115,6 +117,7 @@
 <translation id="4773299976671772492">ቆሟል</translation>
 <translation id="4808449224298348341">የተሰረዘ የሕትመት ሥራ <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4832079907277790330">በፋይሎች መተግበሪያ ውስጥ አቃፊን ይምረጡ...</translation>
+<translation id="4835901797422965222">ምንም ንቁ አውታረ መረቦች የሉም</translation>
 <translation id="4848429997038228357">በማሄድ ላይ</translation>
 <translation id="4890353053343094602">ወዲያውኑ አዲስ ይምረጡ</translation>
 <translation id="4891842000192098784">ጭንቀት</translation>
@@ -136,6 +139,7 @@
 <translation id="5317780077021120954">አስቀምጥ</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />፣ <ph name="PRINTER_NAME" />፣ <ph name="CREATION_TIME" />፣ <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">አሁን አዲስ ይምረጡ</translation>
+<translation id="5333530671332546086">ያልታወቀ የመግቢያ ሁኔታ</translation>
 <translation id="5372659122375744710">የWiFi አውታረ መረብ ደህንነት የተጠበቀ አይደለም</translation>
 <translation id="5401938042319910061">ሁሉንም የዕለት ተዕለት ተግባራት አሂድ</translation>
 <translation id="5431318178759467895">ቀለም</translation>
@@ -192,6 +196,7 @@
 <translation id="7359657277149375382">የፋይል አይነት</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{ቅኝት ተጠናቅቋል። 1 ገጽ ተቃኝቷል}one{ቅኝት ተጠናቅቋል። {NUMBER_OF_PAGES} ገጾች ተቃኝተዋል}other{ቅኝት ተጠናቅቋል። {NUMBER_OF_PAGES} ገጾች ተቃኝተዋል}}</translation>
 <translation id="7441459999606975924">የባትሪዎች አቅም ከአጠቃቀም ጋር እየቀነሰ ይሄዳል</translation>
+<translation id="7469648432129124067">መግቢያ ተገኝቷል</translation>
 <translation id="7561454561030345039">ይህ ቅንብር በአስተዳዳሪዎ የሚቀናበር ነው።</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">ከፍተኛ የHTTPS የስርዓተ ምላሽ ጊዜ</translation>

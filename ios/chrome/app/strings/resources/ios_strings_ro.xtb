@@ -295,6 +295,7 @@ Urmează pașii de mai jos:</translation>
 <translation id="4121993058175073134">Pentru trimitere date de export în rețea, configurați e-mailul în Setări.</translation>
 <translation id="4124987746317609294">Interval de timp</translation>
 <translation id="4152011295694446843">Aici vei vedea marcajele</translation>
+<translation id="4152093603141133546">Organizația te-a deconectat.</translation>
 <translation id="4172051516777682613">Afișați întotdeauna</translation>
 <translation id="418156467088430727">Vezi versiunea offline într-o filă nouă</translation>
 <translation id="4181841719683918333">Limbi</translation>
@@ -537,6 +538,7 @@ Folosește o parolă unică pentru fiecare site.</translation>
 <translation id="6668619169535738264">Editează marcajul</translation>
 <translation id="667999046851023355">Document</translation>
 <translation id="6691331417640343772">Gestionează datele sincronizate în Tabloul de bord Google</translation>
+<translation id="6710079714193676716">Gestionat de organizația ta. Este posibil ca unele funcții să nu fie disponibile. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Nu se pot exporta parole</translation>
 <translation id="6748108480210050150">De la</translation>
@@ -690,6 +692,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8487667956631253959">Aprinsă</translation>
 <translation id="8487700953926739672">Disponibil offline</translation>
 <translation id="8490978609246021741">Salvează modificările</translation>
+<translation id="8495097701594799854">Dezactivată de organizație.</translation>
 <translation id="8503813439785031346">Nume utilizator</translation>
 <translation id="850600235656508448">Deschide în modul incognito</translation>
 <translation id="8510057420705599706">Astfel, te vei deconecta și vei dezactiva sincronizarea, dar marcajele, istoricul, parolele și alte date Chrome vor rămâne pe acest dispozitiv.</translation>

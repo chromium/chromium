@@ -12,6 +12,7 @@
 <translation id="10614374240317010">常に保存しない</translation>
 <translation id="1067922213147265141">他の Google サービス</translation>
 <translation id="107147699690128016">ファイル拡張子を変更すると、ファイルが別のアプリケーションで開かれる可能性があり、場合によってはデバイスに損害が生じます。</translation>
+<translation id="1094515529340404628">ウェブクラウドと広告の効果測定</translation>
 <translation id="1100066534610197918">新しいタブをグループで開く</translation>
 <translation id="1105960400813249514">画面キャプチャ</translation>
 <translation id="1111673857033749125">他のデバイスに保存されているブックマークがここに表示されます。</translation>
@@ -227,6 +228,7 @@
 <translation id="2536728043171574184">このページのオフライン コピーを表示しています</translation>
 <translation id="2537178555904266562">パスワードの同期中にエラーが発生しました</translation>
 <translation id="2546283357679194313">Cookie とサイトデータ</translation>
+<translation id="2562889244313180139">ウェブサイトとアプリは、個人を特定できないエイリアスを使って、ユーザーの利便性を改善できるようになります。</translation>
 <translation id="2567385386134582609">画像</translation>
 <translation id="2571711316400087311">他の言語のページを Google で翻訳するか尋ねる</translation>
 <translation id="2581165646603367611">Chrome で重要度が低いと判断されるサイトの Cookie やキャッシュなどのデータを削除します。</translation>
@@ -714,6 +716,7 @@
 <translation id="6005538289190791541">推奨パスワード</translation>
 <translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{未読のページが <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> 件あります}other{未読のページが <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> 件あります}}</translation>
 <translation id="6014293228235665243">未読</translation>
+<translation id="6018309500671889594">広告主は、個人を特定できない情報を使って、広告キャンペーンを分析できるようになります。</translation>
 <translation id="6036057147555329831">その他の ICU</translation>
 <translation id="6039379616847168523">次のタブに移動する</translation>
 <translation id="6040143037577758943">閉じる</translation>
@@ -922,6 +925,7 @@
 <translation id="7403691278183511381">Chrome 初回起動時の操作</translation>
 <translation id="741204030948306876">有効にする</translation>
 <translation id="7413229368719586778">開始日: <ph name="DATE" /></translation>
+<translation id="7416941666639889592">ウェブクラウドに参加することで、ウェブサイトによるユーザーの利便性改善に同意するものとします。個人を特定できる情報が使用されることはありません。ウェブサイトや広告主は、コンサートの観客と同じように、数千のユーザーが同様の興味を持っていることだけを把握できます。</translation>
 <translation id="7431991332293347422">検索などのカスタマイズを目的とした閲覧履歴の使用方法を設定</translation>
 <translation id="7435356471928173109">管理者によってオフにされています</translation>
 <translation id="7437998757836447326">Chrome からログアウト</translation>
@@ -1123,6 +1127,7 @@
 <translation id="8748850008226585750">メッセージは非表示です</translation>
 <translation id="8788265440806329501">ナビゲーション履歴は閉じられています</translation>
 <translation id="8788968922598763114">最後に閉じたタブを開く</translation>
+<translation id="8795672590390389447">プライバシー サンドボックス</translation>
 <translation id="8798449543960971550">既読</translation>
 <translation id="8812260976093120287">一部のウェブサイトでは、デバイスでサポートされている上記のお支払いアプリを使って支払いができます。</translation>
 <translation id="881688628773363275">タブのコンテンツのプレビューを表示できません。</translation>

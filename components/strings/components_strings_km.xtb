@@ -1000,6 +1000,7 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4901778704868714008">រក្សាទុក...</translation>
 <translation id="4913987521957242411">ចោះ​ខាងលើ​ផ្នែកខាងឆ្វេង</translation>
+<translation id="4918221908152712722">ដំឡើង <ph name="APP_NAME" /> (មិនតម្រូវ​ឱ្យទាញយកទេ)</translation>
 <translation id="4923459931733593730">ការបង់ប្រាក់</translation>
 <translation id="4926049483395192435">ត្រូវតែបញ្ជាក់</translation>
 <translation id="4926159001844873046"><ph name="SITE" /> និយាយ​ថា</translation>
@@ -1365,6 +1366,7 @@
 <translation id="6328786501058569169">ទំព័រនេះមានការបោកប្រាស់</translation>
 <translation id="6337133576188860026">បង្កើន​ទំហំផ្ទុក​តិចជាង <ph name="SIZE" /> ។ ទំព័រ​មួយចំនួន​អាចផ្ទុក​យឺតជាងមុន នៅពេលដែលអ្នក​ចូល​លើកក្រោយ។</translation>
 <translation id="6337534724793800597">ត្រងគោលការណ៍តាមឈ្មោះ</translation>
+<translation id="6349101878882523185">ដំឡើង <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{គ្មាន}=1{ពាក្យសម្ងាត់ 1 (សម្រាប់ <ph name="DOMAIN_LIST" />, បាន​ធ្វើសមកាលកម្ម)}=2{ពាក្យសម្ងាត់ 2 (សម្រាប់ <ph name="DOMAIN_LIST" />, បាន​ធ្វើសមកាលកម្ម)}other{ពាក្យសម្ងាត់ # (សម្រាប់ <ph name="DOMAIN_LIST" />, បាន​ធ្វើសមកាលកម្ម)}}</translation>
 <translation id="6358450015545214790">តើវាមានន័យដូចម្តេច?</translation>
 <translation id="6361757823711327522">B7</translation>
@@ -2055,6 +2057,7 @@
 <translation id="9158625974267017556">C6 (ស្រោម​សំបុត្រ)</translation>
 <translation id="9168814207360376865">អនុញ្ញាត​ឱ្យ​គេហទំព័រ​ពិនិត្យមើល​ថា​វិធីបង់ប្រាក់របស់អ្នកត្រូវបានរក្សាទុក​ហើយឬនៅ</translation>
 <translation id="9169664750068251925">រារាំងនៅលើគេហទំព័រនេះជានិច្ច</translation>
+<translation id="9169931577761441333">បញ្ចូល <ph name="APP_NAME" /> ទៅ​អេក្រង់​ដើម</translation>
 <translation id="9170848237812810038">បកក្រោយ</translation>
 <translation id="9171296965991013597">ចាកចេញ​ពីកម្មវិធី?</translation>
 <translation id="9173282814238175921">ឯកសារ​តែមួយ/សន្លឹកថ្មី</translation>

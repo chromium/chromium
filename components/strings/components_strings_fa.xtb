@@ -994,6 +994,7 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />،‏ <ph name="TYPE_2" />،‏ <ph name="TYPE_3" /></translation>
 <translation id="4901778704868714008">ذخیره...</translation>
 <translation id="4913987521957242411">سوراخ سمت راست بالا</translation>
+<translation id="4918221908152712722">نصب <ph name="APP_NAME" /> (بارگیری لازم نیست)</translation>
 <translation id="4923459931733593730">پرداخت</translation>
 <translation id="4926049483395192435">باید مشخص شود.</translation>
 <translation id="4926159001844873046"><ph name="SITE" /> می‌گوید</translation>
@@ -1359,6 +1360,7 @@
 <translation id="6328786501058569169">این سایت گول‌زننده است</translation>
 <translation id="6337133576188860026">کمتر از <ph name="SIZE" /> از فضا را آزاد می‌کند. ممکن است برخی از سایت‌ها در بازدیدهای بعدی کندتر بارگیری شوند.</translation>
 <translation id="6337534724793800597">فیلتر کردن خط‌مشی‌ها براساس نام</translation>
+<translation id="6349101878882523185">نصب <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{هیچ‌کدام}=1{۱ گذرواژه (برای <ph name="DOMAIN_LIST" />، همگام‌سازی‌شده)}=2{۲ گذرواژه (برای <ph name="DOMAIN_LIST" />، همگام‌سازی‌شده)}one{# گذرواژه (برای <ph name="DOMAIN_LIST" />، همگام‌سازی‌شده)}other{# گذرواژه (برای <ph name="DOMAIN_LIST" />، همگام‌سازی‌شده)}}</translation>
 <translation id="6358450015545214790">معنی این‌ها چیست؟</translation>
 <translation id="6361757823711327522">B7</translation>
@@ -2048,6 +2050,7 @@
 <translation id="9158625974267017556">C6 (Envelope)</translation>
 <translation id="9168814207360376865">سایت‌ها بتوانند بررسی کنند روش پرداخت ذخیره‌شده‌ای دارید یا نه</translation>
 <translation id="9169664750068251925">همیشه مسدود در این سایت</translation>
+<translation id="9169931577761441333"><ph name="APP_NAME" /> را به صفحه اصلی اضافه کنید</translation>
 <translation id="9170848237812810038">&amp;واگرد</translation>
 <translation id="9171296965991013597">از برنامه خارج می‌شوید؟</translation>
 <translation id="9173282814238175921">سند تکی/برگ جدید</translation>

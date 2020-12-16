@@ -1432,6 +1432,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2602501489742255173">Vuốt lên để bắt đầu</translation>
 <translation id="2603115962224169880">Dọn dẹp máy tính</translation>
 <translation id="2603463522847370204">Mở trong cửa sổ ẩ&amp;n danh</translation>
+<translation id="2603656971249947488">Dải thẻ</translation>
 <translation id="2604255671529671813">Lỗi kết nối mạng</translation>
 <translation id="2606246518223360146">Liên kết dữ liệu</translation>
 <translation id="2606454609872547359">Không, tiếp tục mà không dùng ChromeVox</translation>
@@ -1800,6 +1801,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3007771295016901659">Sao chép thẻ</translation>
 <translation id="3008232374986381779">Chạy các công cụ, trình chỉnh sửa và môi trường phát triển được tích hợp (IDE) của Linux trên <ph name="DEVICE_TYPE" /> của bạn. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Đặt lại quyền</translation>
+<translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> yêu cầu bạn kết nối Wi-Fi ngay hôm nay để tải bản cập nhật xuống, hoặc tải xuống qua một đường kết nối có đo lượng dữ liệu (cước phí có thể phát sinh).}other{<ph name="MANAGER" /> yêu cầu bạn kết nối Wi-Fi và tải bản cập nhật xuống trước thời hạn, hoặc tải xuống qua một đường kết nối có đo lượng dữ liệu (cước phí có thể phát sinh).}}</translation>
 <translation id="3009300415590184725">Bạn có chắc chắn muốn hủy quá trình thiết lập dịch vụ dữ liệu di động không?</translation>
 <translation id="3009779501245596802">Cơ sở dữ liệu được lập chỉ mục</translation>
 <translation id="3010279545267083280">Đã xóa mật khẩu</translation>
@@ -1824,6 +1826,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3024374909719388945">Sử dụng đồng hồ 24 giờ</translation>
 <translation id="3027296729579831126">Bật tính năng Chia sẻ lân cận</translation>
 <translation id="3029466929721441205">Hiển thị các công cụ bút cảm ứng trong giá</translation>
+<translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> yêu cầu bạn tải bản cập nhật xuống ngay hôm nay. Bản cập nhật sẽ tự động tải xuống khi bạn kết nối Internet.}other{<ph name="MANAGER" /> yêu cầu bạn tải bản cập nhật xuống trước thời hạn. Bản cập nhật sẽ tự động tải xuống khi bạn kết nối Internet.}}</translation>
 <translation id="3031417829280473749">Đặc vụ X</translation>
 <translation id="3031557471081358569">Chọn các mục cần nhập:</translation>
 <translation id="3036327949511794916">Đã quá thời hạn trả lại thiết bị <ph name="DEVICE_TYPE" /> này.</translation>
@@ -1880,6 +1883,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3103941660000130485">Lỗi khi nâng cấp Linux</translation>
 <translation id="3105796011181310544">Chuyển lại về Google?</translation>
 <translation id="310671807099593501">Trang web đang sử dụng Bluetooth</translation>
+<translation id="3108931485517391283">Không thể nhận</translation>
 <translation id="3109724472072898302">Đã thu gọn</translation>
 <translation id="3115147772012638511">Đang chờ bộ nhớ đệm…</translation>
 <translation id="3115580024857770654">Thu gọn tất cả</translation>
@@ -1895,6 +1899,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3127156390846601284">Thao tác này sẽ xóa mọi dữ liệu được lưu trữ trên thiết bị của bạn cho tất cả trang web hiển thị. Bạn có muốn tiếp tục không?</translation>
 <translation id="3127860049873093642">Để tránh gặp phải các vấn đề về hiệu suất và sạc pin, hãy dùng bộ chuyển đổi điện USB Type-C hoặc bộ chuyển đổi điện Dell tương thích.</translation>
 <translation id="3127862849166875294">Đổi kích thước ổ đĩa Linux</translation>
+<translation id="3127882968243210659">Để khởi động Google Play, <ph name="MANAGER" /> yêu cầu bạn phải sao lưu dữ liệu và đặt lại thiết bị Chromebook này về trạng thái cài đặt ban đầu.</translation>
 <translation id="3129173833825111527">Lề trái</translation>
 <translation id="3129215702932019810">Lỗi khi chạy ứng dụng</translation>
 <translation id="3130528281680948470">Thiết bị của bạn sẽ được đặt lại và tất cả các tài khoản người dùng và dữ liệu cục bộ sẽ bị xóa. Không thể hoàn tác thao tác này.</translation>
@@ -2013,6 +2018,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3275778913554317645">Mở dưới dạng cửa sổ</translation>
 <translation id="3277691515294482687">Sao lưu ứng dụng và tệp vào thư mục Tệp của tôi trước khi nâng cấp Linux.</translation>
 <translation id="3278001907972365362">Bạn cần chú ý đến Tài khoản Google của mình</translation>
+<translation id="3279092821516760512">Những người liên hệ mà bạn đã chọn có thể chia sẻ với bạn khi họ ở gần. Quá trình chuyển sẽ bắt đầu khi bạn chấp nhận.</translation>
 <translation id="3279230909244266691">Quá trình này có thể mất vài phút. Đang khởi động máy ảo.</translation>
 <translation id="3280237271814976245">Lưu &amp;thành...</translation>
 <translation id="3280243678470289153">Tiếp tục điều hướng trong Chrome</translation>
@@ -2570,6 +2576,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3882165008614329320">Video hiện có từ camera hoặc tệp</translation>
 <translation id="3884152383786131369">Nội dung web có nhiều phiên bản ngôn ngữ sẽ dùng ngôn ngữ đầu tiên được hỗ trợ trong danh sách này. Những tùy chọn này được đồng bộ hóa với tùy chọn cài đặt của trình duyệt. <ph name="BEGIN_LINK_LEARN_MORE" />Tìm hiểu thêm<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Yêu cầu truy cập trang web này của bạn đã được gửi tới <ph name="NAME" /></translation>
+<translation id="3888364689515978571">Tắt. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="3888550877729210209">Ghi chú bằng <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3890064827463908288">Bật Chrome Sync để dùng tính năng Đồng bộ hóa Wi-Fi</translation>
 <translation id="3892414795099177503">Thêm OpenVPN / L2TP...</translation>
@@ -2650,6 +2657,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3958088479270651626">Nhập dấu trang và các mục cài đặt</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3964480518399667971">Tắt Mạng di động</translation>
+<translation id="3965730875470565266">Bật, <ph name="MINUTES" /> phút</translation>
 <translation id="3965811923470826124">Với</translation>
 <translation id="3965965397408324205">Thoát khỏi <ph name="PROFILE_NAME" /></translation>
 <translation id="3966072572894326936">Chọn một thư mục khác...</translation>
@@ -2719,6 +2727,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4049783682480068824">{COUNT,plural, =1{Không chia sẻ được với # người liên hệ. Để chia sẻ với người này bằng tính năng Chia sẻ lân cận, hãy thêm địa chỉ email liên kết với Tài khoản Google của họ vào danh bạ của bạn.}other{Không chia sẻ được với # người liên hệ. Để chia sẻ với những người này bằng tính năng Chia sẻ lân cận, hãy thêm các địa chỉ email liên kết với Tài khoản Google của họ vào danh bạ của bạn.}}</translation>
 <translation id="4050225813016893843">Phương thức xác thực</translation>
 <translation id="4052120076834320548">Rất nhỏ</translation>
+<translation id="4054070260844648638">Hiển thị với mọi người</translation>
 <translation id="4056908315660577142">Bạn đã đạt tới giới hạn thời gian mà cha mẹ bạn đặt cho ứng dụng <ph name="APP_NAME" /> trên Chrome. Bạn có thể dùng ứng dụng này trong <ph name="TIME_LIMIT" /> vào ngày mai.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">Xem trong cửa hàng</translation>
@@ -3424,7 +3433,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4917385247580444890">Mạnh</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> muốn giao tiếp với tiện ích "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4918086044614829423">Chấp nhận</translation>
-<translation id="4918221908152712722">Cài đặt <ph name="APP_NAME" /> (không cần tải xuống)</translation>
 <translation id="4921290200821452703">Thông tin về tài khoản trường học dành cho cha mẹ</translation>
 <translation id="4921348630401250116">Chuyển văn bản sang lời nói</translation>
 <translation id="49226369361073053">{0,plural, =0{Cập nhật thiết bị ngay}=1{Cập nhật thiết bị trong vòng 1 giây}other{Cập nhật thiết bị trong vòng # giây}}</translation>
@@ -3657,6 +3665,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="5213891612754844763">Hiển thị cài đặt proxy</translation>
 <translation id="5215502535566372932">Chọn quốc gia</translation>
 <translation id="521582610500777512">Đã hủy ảnh</translation>
+<translation id="5217189792977407501">Chỉ định cho không gian làm việc</translation>
 <translation id="5222403284441421673">Tệp không an toàn đã bị chặn tải xuống</translation>
 <translation id="5222676887888702881">Đăng xuất</translation>
 <translation id="52232769093306234">Không đóng gói được.</translation>
@@ -4193,6 +4202,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="5832813618714645810">Hồ sơ</translation>
 <translation id="583281660410589416">Không xác định</translation>
 <translation id="5833397272224757657">Dùng nội dung trên trang web bạn truy cập cũng như các tương tác và hoạt động trên trình duyệt để cá nhân hóa</translation>
+<translation id="5833551944249825624">Tất cả những người ở gần có thể nhìn thấy Chromebook của bạn trong vòng 5 phút</translation>
 <translation id="5833726373896279253">Chỉ chủ sở hữu mới có thể sửa đổi các tùy chọn cài đặt này:</translation>
 <translation id="5834581999798853053">Còn khoảng <ph name="TIME" /> phút</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - Đang ghi âm hoặc quay phim</translation>
@@ -4563,7 +4573,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="6248988683584659830">Tìm kiếm trong phần cài đặt</translation>
 <translation id="6249200942125593849">Quản lý chế độ a11y</translation>
 <translation id="6251870443722440887">Quản lý GDI</translation>
-<translation id="6251889282623539337">Điều khoản dịch vụ <ph name="DOMAIN" /></translation>
 <translation id="625369703868467034">Tình trạng mạng</translation>
 <translation id="6254503684448816922">Lộ Khoá</translation>
 <translation id="6257602895346497974">Bật tính năng đồng bộ hóa...</translation>
@@ -4598,6 +4607,8 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="628352644014831790">4 giây</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> thường không được tải xuống và có thể nguy hiểm.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Máy in mới trên mạng của bạn}other{Máy in mới trên mạng của bạn}}</translation>
+<translation id="6285770818046456882">Thiết bị đang chia sẻ với bạn đã hủy quá trình chuyển tệp</translation>
+<translation id="6290613030083731160">Không có thiết bị nào ở gần đang chia sẻ với bạn. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="6291949900244949761">Hỏi khi một trang web muốn truy cập vào các thiết bị USB (khuyên dùng)</translation>
 <translation id="6291953229176937411">&amp;Hiển thị trong Trình tìm kiếm</translation>
 <translation id="6295158916970320988">Tất cả các trang web</translation>
@@ -4642,6 +4653,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="6331818708794917058">Các trang web có thể yêu cầu kết nối với thiết bị MIDI</translation>
 <translation id="6333064448949140209">Tệp sẽ được gửi tới Google để được gỡ lỗi</translation>
 <translation id="6334444530352320327">Các ứng dụng và tùy chọn cài đặt hệ điều hành của bạn sẽ đồng bộ hóa giữa các thiết bị Chromebook mà bạn đăng nhập bằng tài khoản này.<ph name="LINK_BEGIN" />Cài đặt đồng bộ hóa<ph name="LINK_END" /></translation>
+<translation id="6335920438823100346">Để khởi động Linux, <ph name="MANAGER" /> yêu cầu bạn sao lưu dữ liệu và đặt lại thiết bị Chromebook này về trạng thái cài đặt ban đầu.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> đã tắt tùy chọn gỡ lỗi ADB. Thao tác này sẽ đặt lại <ph name="DEVICE_TYPE" /> của bạn sau 24 giờ nữa. Hãy sao lưu mọi tệp bạn muốn giữ lại.</translation>
 <translation id="6338981933082930623">Mọi trang web đều có thể hiển thị quảng cáo bất kỳ cho bạn</translation>
 <translation id="6339668969738228384">Tạo hồ sơ mới cho <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -5451,7 +5463,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="7290242001003353852">Dịch vụ đăng nhập này, do <ph name="SAML_DOMAIN" /> lưu trữ, đang truy cập vào máy ảnh của bạn.</translation>
 <translation id="7295614427631867477">Xin lưu ý rằng Android, Play và các ứng dụng liên kết chịu sự điều chỉnh của những chính sách thu thập và sử dụng dữ liệu riêng.</translation>
 <translation id="729583233778673644">Cho phép mã hóa AES và RC4. Việc sử dụng tùy chọn này sẽ làm gia tăng rủi ro vì các thuật toán mã hóa RC4 là không an toàn.</translation>
-<translation id="7296774163727375165">Điều khoản dành cho <ph name="DOMAIN" /></translation>
 <translation id="7297443947353982503">Tên người dùng/mật khẩu không đúng hoặc xác thực EAP không thành công</translation>
 <translation id="729761647156315797">Chọn ngôn ngữ và bàn phím của bạn</translation>
 <translation id="7297726121602187087">Xanh lục đậm</translation>
@@ -5495,6 +5506,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="7347943691222276892">Nhấp để thoát khỏi <ph name="SUBPAGE_TITLE" />.</translation>
 <translation id="7348093485538360975">Bàn phím ảo</translation>
 <translation id="7352651011704765696">Đã xảy ra lỗi</translation>
+<translation id="7353261921908507769">Người liên hệ của bạn có thể chia sẻ với bạn khi họ ở gần. Quá trình chuyển sẽ bắt đầu khi bạn chấp nhận.</translation>
 <translation id="735361434055555355">Đang cài đặt Linux...</translation>
 <translation id="7354341762311560488">Cảm biến vân tay là phím dưới cùng bên trái của bàn phím. Hãy chạm nhẹ ngón tay bất kỳ vào đó.</translation>
 <translation id="7356908624372060336">Nhật ký mạng</translation>
@@ -5894,6 +5906,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="779308894558717334">Xanh lục nhạt</translation>
 <translation id="7793098747275782155">Xanh lam đậm</translation>
 <translation id="7797571222998226653">Đang tắt</translation>
+<translation id="7798259165971079056">Không ai có thể chia sẻ với bạn trừ phi bạn đặt chế độ hiển thị chính mình.<ph name="BR" /><ph name="BR" />Để đặt chế độ này tạm thời, hãy mở khu vực trạng thái bằng cách chọn giờ, sau đó bật Chế độ hiển thị lân cận.</translation>
 <translation id="7798844538707273832">Đã tự động chặn <ph name="PERMISSION" /></translation>
 <translation id="7799299114731150374">Đã đặt hình nền thành công</translation>
 <translation id="7800518121066352902">Xoay &amp;ngược chiều kim đồng hồ</translation>
@@ -6432,7 +6445,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8398877366907290961">Tiếp tục truy cập</translation>
 <translation id="8400146488506985033">Quản lý mọi người</translation>
 <translation id="8401432541486058167">Hãy cung cấp mã PIN liên kết với thẻ thông minh của bạn.</translation>
-<translation id="8405046151008197676">Xem những điểm nổi bật của bản cập nhật mới nhất</translation>
 <translation id="8407199357649073301">Cấp độ nhật ký:</translation>
 <translation id="8408068190360279472">Đang kết nối mạng <ph name="NETWORK_TYPE" /></translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -6882,6 +6894,7 @@ Nhấn một công tắc đã gán để xóa.</translation>
 <translation id="8898840733695078011">Cường độ tín hiệu</translation>
 <translation id="8899851313684471736">Mở liên kết bằng cửa sổ &amp;mới</translation>
 <translation id="8900413463156971200">Bật mạng di động</translation>
+<translation id="8902059453911237649">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> yêu cầu bạn sao lưu dữ liệu và trả lại thiết bị <ph name="DEVICE_TYPE" /> này ngay hôm nay.}other{<ph name="MANAGER" /> yêu cầu bạn sao lưu dữ liệu và trả lại thiết bị <ph name="DEVICE_TYPE" /> này trước thời hạn.}}</translation>
 <translation id="8902667442496790482">Mở mục cài đặt chọn để nói</translation>
 <translation id="8903263458134414071">Chọn một tài khoản để đăng nhập</translation>
 <translation id="890616557918890486">Thay đổi nguồn</translation>
@@ -7118,7 +7131,6 @@ Nhấn một công tắc đã gán để xóa.</translation>
 <translation id="9168436347345867845">Thực hiện sau</translation>
 <translation id="9169496697824289689">Xem phím tắt</translation>
 <translation id="916964310188958970">Tại sao bạn thấy đề xuất này?</translation>
-<translation id="9169931577761441333">Thêm <ph name="APP_NAME" /> vào Màn hình chính</translation>
 <translation id="9170061643796692986">Tùy chọn hiển thị hiện tại là tất cả những người liên hệ</translation>
 <translation id="9170848237812810038">H&amp;oàn tác</translation>
 <translation id="9170884462774788842">Một chương trình khác trên máy tính của bạn đã thêm một chủ đề có thể thay đổi cách Chrome hoạt động.</translation>

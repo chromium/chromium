@@ -3428,7 +3428,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4917385247580444890">Sterkt</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> ønsker å kommunisere med «<ph name="EXTENSION_NAME" />»-utvidelsen</translation>
 <translation id="4918086044614829423">Godta</translation>
-<translation id="4918221908152712722">Installer <ph name="APP_NAME" /> (ingen nedlasting nødvendig)</translation>
 <translation id="4921290200821452703">Skolekontoinformasjon for foreldre</translation>
 <translation id="4921348630401250116">Tekst til tale</translation>
 <translation id="49226369361073053">{0,plural, =0{Oppdater enheten nå}=1{Oppdater enheten innen 1 sekund}other{Oppdater enheten innen # sekunder}}</translation>
@@ -4569,7 +4568,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="6248988683584659830">Søk i innstillingene</translation>
 <translation id="6249200942125593849">Administrer a11y</translation>
 <translation id="6251870443722440887">GDI håndterer</translation>
-<translation id="6251889282623539337"><ph name="DOMAIN" />-vilkår</translation>
 <translation id="625369703868467034">Nettverkstilstand</translation>
 <translation id="6254503684448816922">Nøkkelkompromiss</translation>
 <translation id="6257602895346497974">Slå på synkronisering</translation>
@@ -5460,7 +5458,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="7290242001003353852">Denne påloggingstjenesten, som driftes av <ph name="SAML_DOMAIN" />, har tilgang til kameraet ditt</translation>
 <translation id="7295614427631867477">Merk at Android, Play og tilknyttede apper er styrt av sine egne retningslinjer for datainnsamling og bruk.</translation>
 <translation id="729583233778673644">Tillat AES- og RC4-kryptering. Hvis du bruker dette alternativet, øker risikoen, ettersom RC4-chiffere ikke er sikre.</translation>
-<translation id="7296774163727375165"><ph name="DOMAIN" />-vilkår</translation>
 <translation id="7297443947353982503">Brukernavn/passord er galt, eller så mislyktes EAP-autorisasjonen</translation>
 <translation id="729761647156315797">Velg språket og tastaturet ditt</translation>
 <translation id="7297726121602187087">Mørk grønn</translation>
@@ -6443,7 +6440,6 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8398877366907290961">Fortsett likevel</translation>
 <translation id="8400146488506985033">Administrer personer</translation>
 <translation id="8401432541486058167">Oppgi PIN-koden som er tilknyttet smartkortet ditt.</translation>
-<translation id="8405046151008197676">Se høydepunktene i den nyeste oppdateringen</translation>
 <translation id="8407199357649073301">Loggnivå:</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" />-nettverk – kobler til</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -7130,7 +7126,6 @@ Trykk på en tilordnet bryter for å fjerne tilordningen.</translation>
 <translation id="9168436347345867845">Gjør det senere</translation>
 <translation id="9169496697824289689">Se tastaturets hurtigtaster</translation>
 <translation id="916964310188958970">Hvorfor dette forslaget?</translation>
-<translation id="9169931577761441333">Legg til <ph name="APP_NAME" /> på startskjermen</translation>
 <translation id="9170061643796692986">Den gjeldende synlighetsinnstillingen er alle kontakter</translation>
 <translation id="9170848237812810038">&amp;Angre</translation>
 <translation id="9170884462774788842">Et annet program på datamaskinen la til et tema som kan endre måten Chrome fungerer på.</translation>

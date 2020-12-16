@@ -295,6 +295,7 @@ Segueix aquests passos:</translation>
 <translation id="4121993058175073134">Definiu el vostre compte de correu electrònic a l'aplicació Configuració per enviar dades d'exportació de xarxa.</translation>
 <translation id="4124987746317609294">Interval de temps</translation>
 <translation id="4152011295694446843">Trobaràs les adreces d'interès aquí</translation>
+<translation id="4152093603141133546">La teva organització t'ha tancat la sessió.</translation>
 <translation id="4172051516777682613">Mostra sempre</translation>
 <translation id="418156467088430727">Mostra versió sense connexió en una pestanya nova</translation>
 <translation id="4181841719683918333">Idiomes</translation>
@@ -537,6 +538,7 @@ Prova d'utilitzar una contrasenya única per a cada lloc web.</translation>
 <translation id="6668619169535738264">Edita l'adreça d'interès</translation>
 <translation id="667999046851023355">Document</translation>
 <translation id="6691331417640343772">Gestiona les dades sincronitzades des del Tauler de control de Google</translation>
+<translation id="6710079714193676716">Gestionat per la teva organització. Pot ser que algunes funcions no estiguin disponibles. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">No es poden exportar les contrasenyes</translation>
 <translation id="6748108480210050150">De</translation>
@@ -690,6 +692,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8487667956631253959">Activada</translation>
 <translation id="8487700953926739672">Disponible sense connexió</translation>
 <translation id="8490978609246021741">Desa els canvis</translation>
+<translation id="8495097701594799854">Desactivat per l'organització.</translation>
 <translation id="8503813439785031346">Nom d'usuari</translation>
 <translation id="850600235656508448">Obre en mode d'incògnit</translation>
 <translation id="8510057420705599706">Amb aquesta acció es tancarà la sessió i es desactivarà la sincronització, però les adreces d'interès, l'historial, les contrasenyes i altres dades de Chrome es conservaran en aquest dispositiu.</translation>

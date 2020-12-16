@@ -996,6 +996,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4901778704868714008">Guardar…</translation>
 <translation id="4913987521957242411">Perfurar na parte superior esquerda</translation>
+<translation id="4918221908152712722">Instale a aplicação <ph name="APP_NAME" /> (não é necessária qualquer transferência).</translation>
 <translation id="4923459931733593730">Pagamento</translation>
 <translation id="4926049483395192435">Tem de ser especificado.</translation>
 <translation id="4926159001844873046"><ph name="SITE" /> diz</translation>
@@ -1361,6 +1362,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6328786501058569169">Este site é fraudulento</translation>
 <translation id="6337133576188860026">Liberta menos de <ph name="SIZE" />. É possível que alguns sites sejam carregados mais lentamente na sua próxima visita.</translation>
 <translation id="6337534724793800597">Filtrar políticas pelo nome</translation>
+<translation id="6349101878882523185">Instale a aplicação <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Nenhuma}=1{1 palavra-passe (de <ph name="DOMAIN_LIST" />, sincronizada)}=2{2 palavras-passe (de <ph name="DOMAIN_LIST" />, sincronizadas)}other{# palavras-passe (de <ph name="DOMAIN_LIST" />, sincronizadas)}}</translation>
 <translation id="6358450015545214790">O que significam?</translation>
 <translation id="6361757823711327522">B7</translation>
@@ -2050,6 +2052,7 @@ Detalhes adicionais:
 <translation id="9158625974267017556">C6 (Envelope)</translation>
 <translation id="9168814207360376865">Permitir que os sites verifiquem se tem métodos de pagamento guardados</translation>
 <translation id="9169664750068251925">Bloquear sempre neste Website</translation>
+<translation id="9169931577761441333">Adicionar <ph name="APP_NAME" /> ao ecrã principal</translation>
 <translation id="9170848237812810038">An&amp;ular</translation>
 <translation id="9171296965991013597">Pretende sair da aplicação?</translation>
 <translation id="9173282814238175921">Documento único/Nova folha</translation>

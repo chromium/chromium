@@ -22,6 +22,7 @@
 <translation id="2650312721222849884">Laita synkronointi päälle, niin voit nähdä Chromium-välilehtesi missä tahansa</translation>
 <translation id="2730884209570016437">Chromium ei voi käyttää kameraa, koska se on toisen sovelluksen käytössä.</translation>
 <translation id="2915596697727466327">Chromium varmistaa Face ID:llä, että sinulla on lupa käyttää salasanoja.</translation>
+<translation id="2918709798697875261">Organisaatiosi edellyttää, että et kirjaudu sisään Chromiumiin.</translation>
 <translation id="2977470724722393594">Chromium on ajan tasalla.</translation>
 <translation id="3256316712990552818">Kopioitiin Chromiumiin.</translation>
 <translation id="3344973607274501920">Chromium ei voinut tarkistaa salasanojasi. Tarkista internetyhteytesi.</translation>
@@ -74,6 +75,7 @@
 <translation id="8776843108004031667">Tämä tili ja kaikki tallentamaton data poistetaan Chromiumista.</translation>
 <translation id="9022552996538154597">Kirjaudu sisään Chromiumiin</translation>
 <translation id="9089354809943900324">Chromium on vanhentunut</translation>
+<translation id="912386518501777532">Kun olit kirjautuneena ulos Chromiumista, kirjanmerkkisi, historiasi, salasanasi ja muut asetuksesi poistettiin tältä laitteelta. Synkronoitu datasi tallennetaan edelleen tilillesi.</translation>
 <translation id="921174536258924340">Chromium ei voinut tarkistaa kaikkia salasanoja. Yritä uudelleen huomenna tai <ph name="BEGIN_LINK" />tarkista salasanat Google-tililtä<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

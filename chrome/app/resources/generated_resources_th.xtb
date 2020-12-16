@@ -1432,6 +1432,7 @@
 <translation id="2602501489742255173">เลื่อนขึ้นเพื่อเริ่มต้นใช้งาน</translation>
 <translation id="2603115962224169880">ล้างข้อมูลในคอมพิวเตอร์</translation>
 <translation id="2603463522847370204">เปิดใน&amp;หน้าต่างที่ไม่ระบุตัวตน</translation>
+<translation id="2603656971249947488">แนวแท็บ</translation>
 <translation id="2604255671529671813">ข้อผิดพลาดในการเชื่อมต่อเครือข่าย</translation>
 <translation id="2606246518223360146">ลิงก์ข้อมูล</translation>
 <translation id="2606454609872547359">ไม่ ดำเนินการต่อโดยไม่ใช้ ChromeVox</translation>
@@ -1800,6 +1801,7 @@
 <translation id="3007771295016901659">ทำซ้ำแท็บ</translation>
 <translation id="3008232374986381779">เรียกใช้เครื่องมือ ตัวแก้ไข และ IDE ของ Linux ใน <ph name="DEVICE_TYPE" /> <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">รีเซ็ตสิทธิ์</translation>
+<translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> กำหนดให้คุณเชื่อมต่อ Wi-Fi วันนี้เพื่อดาวน์โหลดอัปเดต หรือดาวน์โหลดจากการเชื่อมต่อที่มีการวัดปริมาณอินเทอร์เน็ต (อาจมีค่าบริการ)}other{<ph name="MANAGER" /> กำหนดให้คุณเชื่อมต่อ Wi-Fi และดาวน์โหลดอัปเดตก่อนเวลาที่กำหนด หรือดาวน์โหลดจากการเชื่อมต่อที่มีการวัดปริมาณอินเทอร์เน็ต (อาจมีค่าบริการ)}}</translation>
 <translation id="3009300415590184725">คุณแน่ใจหรือไม่ว่าต้องการยกเลิกขั้นตอนการตั้งค่าบริการข้อมูลโทรศัพท์มือถือ</translation>
 <translation id="3009779501245596802">ฐานข้อมูลที่มีการจัดทำดัชนี</translation>
 <translation id="3010279545267083280">ลบรหัสผ่านแล้ว</translation>
@@ -1824,6 +1826,7 @@
 <translation id="3024374909719388945">ใช้เวลารูปแบบ 24 ชั่วโมง</translation>
 <translation id="3027296729579831126">เปิดการแชร์ใกล้เคียง</translation>
 <translation id="3029466929721441205">แสดงเครื่องมือสไตลัสในชั้นวาง</translation>
+<translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> กำหนดให้คุณดาวน์โหลดอัปเดตวันนี้ ระบบจะดาวน์โหลดอัปเดตโดยอัตโนมัติเมื่อคุณเชื่อมต่ออินเทอร์เน็ต}other{<ph name="MANAGER" /> กำหนดให้คุณดาวน์โหลดอัปเดตก่อนเวลาที่กำหนด ระบบจะดาวน์โหลดอัปเดตโดยอัตโนมัติเมื่อคุณเชื่อมต่ออินเทอร์เน็ต}}</translation>
 <translation id="3031417829280473749">เอเจนต์เอ็กซ์</translation>
 <translation id="3031557471081358569">เลือกรายการที่จะนำเข้าต่อไปนี้:</translation>
 <translation id="3036327949511794916">เลยกำหนดเวลาส่งคืน <ph name="DEVICE_TYPE" /> เครื่องนี้แล้ว</translation>
@@ -1880,6 +1883,7 @@
 <translation id="3103941660000130485">เกิดข้อผิดพลาดในการอัปเกรด Linux</translation>
 <translation id="3105796011181310544">ต้องการเปลี่ยนกลับไปใช้ Google ไหม</translation>
 <translation id="310671807099593501">เว็บไซต์กำลังใช้บลูทูธ</translation>
+<translation id="3108931485517391283">รับไม่ได้</translation>
 <translation id="3109724472072898302">ยุบแล้ว</translation>
 <translation id="3115147772012638511">กำลังรอแคช...</translation>
 <translation id="3115580024857770654">ยุบทั้งหมด</translation>
@@ -1895,6 +1899,7 @@
 <translation id="3127156390846601284">การดำเนินการนี้จะลบข้อมูลของเว็บไซต์ทั้งหมดที่แสดงซึ่งเก็บไว้ในอุปกรณ์ คุณต้องการดำเนินการต่อไหม</translation>
 <translation id="3127860049873093642">โปรดใช้อะแดปเตอร์ Dell หรือ USB Type-C เพื่อหลีกเลี่ยงปัญหาด้านการชาร์จและประสิทธิภาพ</translation>
 <translation id="3127862849166875294">ปรับขนาดดิสก์ใน Linux</translation>
+<translation id="3127882968243210659">ในการเริ่มต้น Google Play <ph name="MANAGER" /> จะขอให้คุณสำรองข้อมูลและรีเซ็ต Chromebook เครื่องนี้เป็นการตั้งค่าเริ่มต้น</translation>
 <translation id="3129173833825111527">ขอบซ้าย</translation>
 <translation id="3129215702932019810">เกิดข้อผิดพลาดในการเปิดแอปพลิเคชัน</translation>
 <translation id="3130528281680948470">ระบบจะรีเซ็ตอุปกรณ์ของคุณ บัญชีผู้ใช้ทั้งหมดและข้อมูลในเครื่องจะถูกนำออก ซึ่งขั้นตอนนี้ไม่สามารถยกเลิกได้</translation>
@@ -2013,6 +2018,7 @@
 <translation id="3275778913554317645">เปิดเป็นหน้าต่าง</translation>
 <translation id="3277691515294482687">สำรองข้อมูลแอปและไฟล์ในโฟลเดอร์ไฟล์ของฉันก่อนที่จะอัปเกรด Linux</translation>
 <translation id="3278001907972365362">บัญชี Google ของคุณต้องการการดำเนินการ</translation>
+<translation id="3279092821516760512">รายชื่อติดต่อที่เลือกจะแชร์กับคุณได้เมื่ออยู่ใกล้เคียง การโอนจะไม่เริ่มจนกว่าคุณจะยอมรับ</translation>
 <translation id="3279230909244266691">ขั้นตอนนี้อาจใช้เวลาสักครู่ กำลังเริ่มเครื่องเสมือน</translation>
 <translation id="3280237271814976245">บันทึกใ&amp;ห้เป็น...</translation>
 <translation id="3280243678470289153">อยู่ภายใน Chrome</translation>
@@ -2479,7 +2485,7 @@
 <translation id="3792890930871100565">ยกเลิกการเชื่อมต่อเครื่องพิมพ์</translation>
 <translation id="3793395331556663376">เปิดระบบไฟล์ไว้มากเกินไป</translation>
 <translation id="3793588272211751505">{NUM_DAYS,plural, =1{Chrome ไม่พบซอฟต์แวร์ที่เป็นอันตรายในคอมพิวเตอร์ของคุณ • ตรวจสอบเมื่อ 1 วันที่ผ่านมา}other{Chrome ไม่พบซอฟต์แวร์ที่เป็นอันตรายในคอมพิวเตอร์ของคุณ • ตรวจสอบเมื่อ {NUM_DAYS} วันที่ผ่านมา}}</translation>
-<translation id="379500251094592809">ในการใช้การแชร์ใกล้เคียง ให้ตรวจสอบว่าอุปกรณ์ทั้งคู่ปลดล็อกแล้ว อยู่ใกล้กัน และเปิดบลูทูธอยู่ หากจะแชร์กับ Chromebook ที่ไม่ได้อยู่ในรายชื่อติดต่อของคุณ ให้ตรวจสอบว่าอุปกรณ์ดังกล่าวเปิดการมองเห็นใกล้เคียงแล้ว (เปิดพื้นที่แสดงสถานะโดยเลือกเวลา แล้วเปิดการมองเห็นใกล้เคียง) <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
+<translation id="379500251094592809">หากต้องการใช้การแชร์ใกล้เคียง ให้ตรวจสอบว่าอุปกรณ์ทั้งคู่ปลดล็อกแล้ว อยู่ใกล้กัน และเปิดบลูทูธอยู่ หากจะแชร์กับ Chromebook ที่ไม่ได้อยู่ในรายชื่อติดต่อของคุณ ให้ตรวจสอบว่าอุปกรณ์ดังกล่าวเปิดการมองเห็นใกล้เคียงแล้ว (เปิดพื้นที่แสดงสถานะโดยเลือกเวลา แล้วเปิด "การมองเห็นใกล้เคียง") <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="379509625511193653">ปิด</translation>
 <translation id="3796648294839530037">เครือข่ายที่ชื่นชอบ:</translation>
 <translation id="3797739167230984533"><ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> ได้รับการจัดการ<ph name="END_LINK" />โดยองค์กรของคุณ</translation>
@@ -2570,6 +2576,7 @@
 <translation id="3882165008614329320">วิดีโอที่มีอยู่จากกล้องหรือไฟล์</translation>
 <translation id="3884152383786131369">เนื้อหาเว็บที่มีหลายภาษาจะใช้ภาษาแรกที่รองรับจากรายการนี้ ระบบจะซิงค์ค่ากำหนดเหล่านี้กับการตั้งค่าเบราว์เซอร์ <ph name="BEGIN_LINK_LEARN_MORE" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">ระบบส่งคำขอเข้าถึงเว็บไซต์นี้ของคุณให้ <ph name="NAME" /> แล้ว</translation>
+<translation id="3888364689515978571">ปิด <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="3888550877729210209">จดโน้ตด้วย <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3890064827463908288">เปิดการซิงค์ของ Chrome เพื่อใช้การซิงค์ Wi-Fi</translation>
 <translation id="3892414795099177503">เพิ่ม OpenVPN/L2TP...</translation>
@@ -2650,6 +2657,7 @@
 <translation id="3958088479270651626">นำเข้าบุ๊กมาร์กและการตั้งค่า</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3964480518399667971">ปิดเครือข่ายมือถือ</translation>
+<translation id="3965730875470565266">เปิด <ph name="MINUTES" /> นาที</translation>
 <translation id="3965811923470826124">ด้วย</translation>
 <translation id="3965965397408324205">ออกจาก <ph name="PROFILE_NAME" /></translation>
 <translation id="3966072572894326936">เลือกโฟลเดอร์อื่น...</translation>
@@ -2719,6 +2727,7 @@
 <translation id="4049783682480068824">{COUNT,plural, =1{รายชื่อติดต่อ # รายการไม่พร้อมใช้งาน หากต้องการใช้การแชร์ใกล้เคียงกับรายชื่อดังกล่าว ให้เพิ่มอีเมลที่เชื่อมโยงกับบัญชี Google ของรายชื่อนั้นลงในรายชื่อติดต่อของคุณ}other{รายชื่อติดต่อ # รายการไม่พร้อมใช้งาน หากต้องการใช้การแชร์ใกล้เคียงกับรายชื่อดังกล่าว ให้เพิ่มอีเมลที่เชื่อมโยงกับบัญชี Google ของรายชื่อเหล่านั้นลงในรายชื่อติดต่อของคุณ}}</translation>
 <translation id="4050225813016893843">วิธีการตรวจสอบสิทธิ์</translation>
 <translation id="4052120076834320548">ขนาดจิ๋ว</translation>
+<translation id="4054070260844648638">ปรากฏแก่ทุกคน</translation>
 <translation id="4056908315660577142">คุณใช้งานแอป <ph name="APP_NAME" /> สำหรับ Chrome ถึงขีดจำกัดเวลาที่ผู้ปกครองตั้งไว้แล้ว พรุ่งนี้คุณจะใช้แอปได้ <ph name="TIME_LIMIT" /></translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">ดูในสโตร์</translation>
@@ -2944,7 +2953,7 @@
 <translation id="4358313196493694334">ปรับให้ตำแหน่งการคลิกคงที่</translation>
 <translation id="4359408040881008151">ติดตั้งแล้วเนื่องจากมีส่วนขยายที่ต้องพึ่งพา</translation>
 <translation id="4359717112757026264">ทิวทัศน์ของเมือง</translation>
-<translation id="4360237979279036412"><ph name="MANAGER" /> กำหนดให้คุณต้องอัปเดต <ph name="DEVICE_TYPE" /> นี้ก่อนกำหนดเวลาสุดท้าย</translation>
+<translation id="4360237979279036412"><ph name="MANAGER" /> กำหนดให้คุณต้องอัปเดต <ph name="DEVICE_TYPE" /> นี้ก่อนเวลาที่กำหนด</translation>
 <translation id="4361142739114356624">คีย์ส่วนตัวของใบรับรองไคลเอ็นต์นี้หายไปหรือไม่ถูกต้อง</translation>
 <translation id="4361745360460842907">เปิดเป็นแท็บ</translation>
 <translation id="4363771538994847871">ไม่พบปลายทางการแคสต์ ต้องการความช่วยเหลือไหม</translation>
@@ -3424,7 +3433,6 @@
 <translation id="4917385247580444890">แรง</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> ต้องการสื่อสารกับส่วนขยาย "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4918086044614829423">ยอมรับ</translation>
-<translation id="4918221908152712722">ติดตั้ง <ph name="APP_NAME" /> (ไม่จำเป็นต้องดาวน์โหลด)</translation>
 <translation id="4921290200821452703">ข้อมูลบัญชีโรงเรียนสำหรับผู้ปกครอง</translation>
 <translation id="4921348630401250116">การอ่านออกเสียงข้อความ</translation>
 <translation id="49226369361073053">{0,plural, =0{อัปเดตอุปกรณ์ทันที}=1{อัปเดตอุปกรณ์ภายใน 1 วินาที}other{อัปเดตอุปกรณ์ภายใน # วินาที}}</translation>
@@ -3657,6 +3665,7 @@
 <translation id="5213891612754844763">แสดงการตั้งค่าพร็อกซี</translation>
 <translation id="5215502535566372932">เลือกประเทศ</translation>
 <translation id="521582610500777512">รูปภาพถูกยกเลิกแล้ว</translation>
+<translation id="5217189792977407501">กำหนดให้กับเดสก์</translation>
 <translation id="5222403284441421673">บล็อกการดาวน์โหลดที่ไม่ปลอดภัยแล้ว</translation>
 <translation id="5222676887888702881">ออกจากระบบ</translation>
 <translation id="52232769093306234">การบรรจุล้มเหลว</translation>
@@ -3988,7 +3997,7 @@
     <ph name="BEGIN_PARAGRAPH2" />การปิดฟีเจอร์นี้จะไม่ส่งผลต่อความสามารถของอุปกรณ์ในการส่งข้อมูลที่จำเป็นต้องใช้ในบริการสำคัญอย่างเช่น การอัปเดตระบบ และความปลอดภัย<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />เจ้าของจะควบคุมฟีเจอร์นี้ได้จากการตั้งค่า &gt; ขั้นสูง &gt; ส่งข้อมูลการวินิจฉัยและการใช้งานไปยัง Google โดยอัตโนมัติ<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />หากการตั้งค่ากิจกรรมเพิ่มเติมบนเว็บและแอปเปิดอยู่ ระบบอาจบันทึกข้อมูลนี้ไว้ในบัญชี Google คุณจะดูหรือลบข้อมูล และเปลี่ยนแปลงการตั้งค่าบัญชีได้ที่ account.google.com<ph name="END_PARAGRAPH4" /></translation>
-<translation id="5584936575630273819">คุณต้องการเปิดใช้งาน ChromeVox ซึ่งเป็นโปรแกรมอ่านหน้าจอในตัวสำหรับ Chrome OS ไหม หากต้องการ ให้กดปุ่มปรับระดับเสียงทั้งคู่ค้างไว้ 5 วินาที</translation>
+<translation id="5584936575630273819">คุณต้องการเปิดใช้งาน ChromeVox ซึ่งเป็นโปรแกรมอ่านหน้าจอในตัวสำหรับ Chrome OS ไหม ถ้าต้องการ ให้กดปุ่มปรับระดับเสียงทั้งคู่ค้างไว้ 5 วินาที</translation>
 <translation id="5585019845078534178">บัตร</translation>
 <translation id="5585118885427931890">ไม่สามารถสร้างโฟลเดอร์บุ๊กมาร์ก</translation>
 <translation id="558563010977877295">เปิดหน้าที่เฉพาะเจาะจงหรือชุดของหน้า</translation>
@@ -4193,6 +4202,7 @@
 <translation id="5832813618714645810">โปรไฟล์</translation>
 <translation id="583281660410589416">ไม่รู้จัก</translation>
 <translation id="5833397272224757657">ใช้เนื้อหาในเว็บไซต์ที่คุณเข้าชม รวมถึงกิจกรรมและการโต้ตอบในเบราว์เซอร์เพื่อการปรับเปลี่ยนในแบบของคุณ</translation>
+<translation id="5833551944249825624">ทุกคนที่อยู่ใกล้เคียงจะมองเห็น Chromebook เป็นเวลา 5 นาที</translation>
 <translation id="5833726373896279253">เจ้าของเท่านั้นที่สามารถปรับการตั้งค่าเหล่านี้ได้:</translation>
 <translation id="5834581999798853053">เหลือเวลาอีกประมาณ <ph name="TIME" /> นาที</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - กำลังบันทึกด้วยกล้องหรือไมโครโฟน</translation>
@@ -4563,7 +4573,6 @@
 <translation id="6248988683584659830">ค้นการตั้งค่า</translation>
 <translation id="6249200942125593849">จัดการการช่วยเหลือพิเศษ</translation>
 <translation id="6251870443722440887">GDI จัดการ</translation>
-<translation id="6251889282623539337">ข้อกำหนดในการให้บริการของ <ph name="DOMAIN" /></translation>
 <translation id="625369703868467034">สถานภาพเครือข่าย</translation>
 <translation id="6254503684448816922">คีย์ไม่สมบูรณ์</translation>
 <translation id="6257602895346497974">เปิดการซิงค์...</translation>
@@ -4598,6 +4607,8 @@
 <translation id="628352644014831790">4 วินาที</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> ไม่ได้ถูกดาวน์โหลดตามปกติและอาจเป็นอันตราย</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{เครื่องพิมพ์ใหม่บนเครือข่ายของคุณ}other{เครื่องพิมพ์ใหม่บนเครือข่ายของคุณ}}</translation>
+<translation id="6285770818046456882">อุปกรณ์ที่กำลังแชร์กับคุณได้ยกเลิกการโอน</translation>
+<translation id="6290613030083731160">ไม่มีอุปกรณ์ที่กำลังแชร์อยู่ใกล้เคียง <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="6291949900244949761">ถามเมื่อเว็บไซต์ต้องการเข้าถึงอุปกรณ์ USB (แนะนำ)</translation>
 <translation id="6291953229176937411">&amp;แสดงใน Finder</translation>
 <translation id="6295158916970320988">เว็บไซต์ทั้งหมด</translation>
@@ -4642,6 +4653,7 @@
 <translation id="6331818708794917058">เว็บไซต์ขอเชื่อมต่อกับอุปกรณ์ MIDI ได้</translation>
 <translation id="6333064448949140209">ระบบจะส่งไฟล์ไปยัง Google เพื่อแก้ไขข้อบกพร่อง</translation>
 <translation id="6334444530352320327">แอปและการตั้งค่า Chrome OS จะซิงค์กับ Chromebook ทุกเครื่องที่คุณลงชื่อเข้าใช้ด้วยบัญชีนี้ <ph name="LINK_BEGIN" />การตั้งค่าการซิงค์<ph name="LINK_END" /></translation>
+<translation id="6335920438823100346">ในการเริ่มต้น Linux <ph name="MANAGER" /> จะขอให้คุณสำรองข้อมูลและรีเซ็ต Chromebook เครื่องนี้เป็นการตั้งค่าเริ่มต้น</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> ปิดใช้การแก้ไขข้อบกพร่อง ADB ซึ่งจะเป็นการรีเซ็ต <ph name="DEVICE_TYPE" /> ของคุณใน 24 ชั่วโมง โปรดสำรองข้อมูลไฟล์ที่ต้องการเก็บไว้</translation>
 <translation id="6338981933082930623">เว็บไซต์ทั้งหมดแสดงโฆษณาใดก็ตามให้คุณเห็นได้</translation>
 <translation id="6339668969738228384">สร้างโปรไฟล์ใหม่สำหรับ <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -5451,7 +5463,6 @@
 <translation id="7290242001003353852">บริการลงชื่อเข้าใช้ที่โฮสต์โดย <ph name="SAML_DOMAIN" /> กำลังเข้าถึงกล้องถ่ายรูปของคุณ</translation>
 <translation id="7295614427631867477">โปรดทราบว่า Android, Play และแอปที่เชื่อมโยงจะอยู่ภายใต้นโยบายการรวบรวมและการใช้งานข้อมูลของตน</translation>
 <translation id="729583233778673644">อนุญาตการเข้ารหัส AES และ RC4 การใช้ตัวเลือกนี้เป็นการเพิ่มความเสี่ยงเนื่องจากการเข้ารหัส RC4 นั้นไม่ปลอดภัย</translation>
-<translation id="7296774163727375165">ข้อกำหนดของ <ph name="DOMAIN" /></translation>
 <translation id="7297443947353982503">ชื่อผู้ใช้/รหัสผ่านไม่ถูกต้องหรือการตรวจสอบสิทธิ์ EAP ล้มเหลว</translation>
 <translation id="729761647156315797">เลือกภาษาและแป้นพิมพ์</translation>
 <translation id="7297726121602187087">สีเขียวเข้ม</translation>
@@ -5495,6 +5506,7 @@
 <translation id="7347943691222276892">คลิกเพื่อออกจากหน้า<ph name="SUBPAGE_TITLE" /></translation>
 <translation id="7348093485538360975">แป้นพิมพ์บนหน้าจอ</translation>
 <translation id="7352651011704765696">มีข้อผิดพลาดเกิดขึ้น</translation>
+<translation id="7353261921908507769">รายชื่อติดต่อจะแชร์กับคุณได้เมื่ออยู่ใกล้เคียง การโอนจะไม่เริ่มจนกว่าคุณจะยอมรับ</translation>
 <translation id="735361434055555355">กำลังติดตั้ง Linux...</translation>
 <translation id="7354341762311560488">เซ็นเซอร์ลายนิ้วมืออยู่ในแป้นด้านซ้ายล่างของแป้นพิมพ์ ให้แตะเบาๆ ด้วยนิ้วใดก็ได้</translation>
 <translation id="7356908624372060336">บันทึกเครือข่าย</translation>
@@ -5894,6 +5906,7 @@
 <translation id="779308894558717334">สีเขียวอ่อน</translation>
 <translation id="7793098747275782155">สีน้ำเงินเข้ม</translation>
 <translation id="7797571222998226653">ปิด</translation>
+<translation id="7798259165971079056">ไม่มีคนที่แชร์ได้จนกว่าคุณจะทำให้คนอื่นมองเห็นได้<ph name="BR" /><ph name="BR" />หากต้องการดำเนินการดังกล่าวชั่วคราว ให้เปิดพื้นที่แสดงสถานะโดยเลือกเวลา แล้วเปิด "การมองเห็นใกล้เคียง"</translation>
 <translation id="7798844538707273832">บล็อก<ph name="PERMISSION" />โดยอัตโนมัติ</translation>
 <translation id="7799299114731150374">ตั้งค่าวอลเปเปอร์เรียบร้อยแล้ว</translation>
 <translation id="7800518121066352902">หมุน&amp;ทวนเข็มนาฬิกา</translation>
@@ -6432,7 +6445,6 @@
 <translation id="8398877366907290961">ดำเนินการต่อ</translation>
 <translation id="8400146488506985033">จัดการบุคคล</translation>
 <translation id="8401432541486058167">ใส่ PIN ที่เชื่อมโยงกับสมาร์ทการ์ดของคุณ</translation>
-<translation id="8405046151008197676">ดูไฮไลต์จากอัปเดตล่าสุด</translation>
 <translation id="8407199357649073301">ระดับบันทึก:</translation>
 <translation id="8408068190360279472">เครือข่าย <ph name="NETWORK_TYPE" /> กำลังเชื่อมต่อ</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -6882,6 +6894,7 @@
 <translation id="8898840733695078011">ความแรงสัญญาณ</translation>
 <translation id="8899851313684471736">เปิดลิงก์ใน&amp;หน้าต่างใหม่</translation>
 <translation id="8900413463156971200">เปิดใช้เครือข่ายมือถือ</translation>
+<translation id="8902059453911237649">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> กำหนดให้คุณสำรองข้อมูลและส่งคืน <ph name="DEVICE_TYPE" /> เครื่องนี้วันนี้}other{<ph name="MANAGER" /> กำหนดให้คุณสำรองข้อมูลและส่งคืน <ph name="DEVICE_TYPE" /> เครื่องนี้ก่อนเวลาที่กำหนด}}</translation>
 <translation id="8902667442496790482">เปิดการตั้งค่าการเลือกเพื่อให้อ่าน</translation>
 <translation id="8903263458134414071">เลือกบัญชีที่จะลงชื่อเข้าใช้</translation>
 <translation id="890616557918890486">เปลี่ยนแหล่งที่มา</translation>
@@ -7118,7 +7131,6 @@
 <translation id="9168436347345867845">ข้ามไปก่อน</translation>
 <translation id="9169496697824289689">ดูแป้นพิมพ์ลัด</translation>
 <translation id="916964310188958970">ทำไมแนะนำการค้นหานี้</translation>
-<translation id="9169931577761441333">เพิ่ม <ph name="APP_NAME" /> ในหน้าจอหลัก</translation>
 <translation id="9170061643796692986">การตั้งค่าระดับการเข้าถึงปัจจุบันคือรายชื่อติดต่อทั้งหมด</translation>
 <translation id="9170848237812810038">เ&amp;ลิกทำ</translation>
 <translation id="9170884462774788842">โปรแกรมอื่นในคอมพิวเตอร์ของคุณเพิ่มธีมที่อาจเปลี่ยนวิธีการทำงานของ Chrome</translation>

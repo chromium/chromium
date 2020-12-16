@@ -12,6 +12,7 @@
 <translation id="10614374240317010">المواقع التي لن تحفظ كلمات المرور أبدًا</translation>
 <translation id="1067922213147265141">‏خدمات Google الأخرى</translation>
 <translation id="107147699690128016">في حال تغيير امتداد الملف، قد يفتح الملف في تطبيق مختلف ومن المحتمل أن يشكّل خطورة على جهازك.</translation>
+<translation id="1094515529340404628">‏Web Crowd وقياس الإعلانات</translation>
 <translation id="1100066534610197918">فتح في علامة تبويب جديدة في مجموعة</translation>
 <translation id="1105960400813249514">التقاط الشاشة</translation>
 <translation id="1111673857033749125">ستظهر هنا الإشارات التي تم حفظها على أجهزتك الأخرى.</translation>
@@ -227,6 +228,7 @@
 <translation id="2536728043171574184">عرض نسخة بلا اتصال من هذه الصفحة</translation>
 <translation id="2537178555904266562">حدث خطأ أثناء مزامنة كلمات المرور</translation>
 <translation id="2546283357679194313">ملفات تعريف الارتباط وبيانات المواقع</translation>
+<translation id="2562889244313180139">السماح للمواقع الإلكترونية والألعاب بتقديم تجربة تناسبك بشكل أكبر باستخدام اسم مستعار لا يُحدِّد الهوية الشخصية</translation>
 <translation id="2567385386134582609">صورة</translation>
 <translation id="2571711316400087311">‏اقتراح إرسال صفحات بلغات أخرى إلى "ترجمة Google"</translation>
 <translation id="2581165646603367611">‏سيؤدي هذا إلى محو ملفات تعريف الارتباط وذاكرة التخزين المؤقت والبيانات الأخرى للمواقع التي لا يعتقد Chrome أنها مهمة.</translation>
@@ -714,6 +716,7 @@
 <translation id="6005538289190791541">كلمة المرور المُقترحَة</translation>
 <translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{لديك صفحة واحدة (<ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" />).}zero{لديك <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> صفحة.}two{لديك صفحتان (<ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" />).}few{لديك <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> صفحات.}many{لديك <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> صفحة.}other{لديك <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> صفحة.}}</translation>
 <translation id="6014293228235665243">غير مقروءة</translation>
+<translation id="6018309500671889594">السماح للمُعلنين بدراسة الحملات الإعلانية باستخدام معلومات لا تُحدِّد الهوية الشخصية</translation>
 <translation id="6036057147555329831">وحدة الرعاية المركزية الإضافية</translation>
 <translation id="6039379616847168523">الانتقال السريع إلى علامة التبويب التالية</translation>
 <translation id="6040143037577758943">إغلاق</translation>
@@ -922,6 +925,7 @@
 <translation id="7403691278183511381">‏أول تجربة تشغيل لمتصفح Chrome</translation>
 <translation id="741204030948306876">نعم، موافق</translation>
 <translation id="7413229368719586778">تاريخ البدء: <ph name="DATE" /></translation>
+<translation id="7416941666639889592">‏انضمامك إلى Web Crowd يعني السماح للمواقع الإلكترونية بتقديم تجربة تناسبك بشكل أكبر على الويب بدون استخدام معلومات تحديد الهوية الشخصية. وهذا أشبه بحشد في حفل، حيث لا ترى المواقع الإلكترونية والمعلنون إلا آلاف المستخدمين الذين يتشاركون الاهتمام نفسه.</translation>
 <translation id="7431991332293347422">التحكُّم في كيفية استخدامنا لسِجل التصفُّح لتخصيص البحث والمزيد</translation>
 <translation id="7435356471928173109">أوقَف المشرف وضع "التصفُّح الآمن".</translation>
 <translation id="7437998757836447326">‏تسجيل الخروج من Chrome</translation>
@@ -1123,6 +1127,7 @@
 <translation id="8748850008226585750">المحتوى مخفي</translation>
 <translation id="8788265440806329501">يتم إغلاق سجلّ التنقُّل.</translation>
 <translation id="8788968922598763114">إعادة فتح آخر علامة تبويب تم إغلاقها</translation>
+<translation id="8795672590390389447">Privacy Sandbox</translation>
 <translation id="8798449543960971550">مقروءة</translation>
 <translation id="8812260976093120287">يمكنك على مواقع إلكترونية معيّنة الدفع باستخدام تطبيقات الدفع المتوافقة أعلاه على جهازك.</translation>
 <translation id="881688628773363275">محتوى علامة تبويب المعاينة غير قابل للعرض.</translation>

@@ -9,6 +9,7 @@
 <translation id="1175697296044146566">此 <ph name="DEVICE_TYPE" /> 由 <ph name="MANAGER" /> 管理。</translation>
 <translation id="1195447618553298278">未知的錯誤。</translation>
 <translation id="1204296502688602597">DNS 延遲時間</translation>
+<translation id="123124571410524056">可能有網絡入口</translation>
 <translation id="1238612778414822719">HTTPS 延遲時間</translation>
 <translation id="1290331692326790741">訊號微弱</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -36,6 +37,7 @@
 <translation id="1947737735496445907">已列印</translation>
 <translation id="1979103255016296513">變更密碼已逾期</translation>
 <translation id="1980044825731880088">CPU 速度</translation>
+<translation id="1999615961760456652">強制網絡入口</translation>
 <translation id="2008685064673031089">尖峰搜尋</translation>
 <translation id="2080070583977670716">顯示更多設定</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -115,6 +117,7 @@
 <translation id="4773299976671772492">已停止</translation>
 <translation id="4808449224298348341">取消咗列印工作 <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4832079907277790330">在「檔案」應用程式中選取資料夾...</translation>
+<translation id="4835901797422965222">沒有使用中的網絡</translation>
 <translation id="4848429997038228357">執行中</translation>
 <translation id="4890353053343094602">立即選擇新密碼</translation>
 <translation id="4891842000192098784">壓力</translation>
@@ -136,6 +139,7 @@
 <translation id="5317780077021120954">儲存</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />、<ph name="PRINTER_NAME" />、<ph name="CREATION_TIME" />、<ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">立即選擇新密碼</translation>
+<translation id="5333530671332546086">入口網站狀態不明</translation>
 <translation id="5372659122375744710">Wi-Fi 網絡不安全</translation>
 <translation id="5401938042319910061">執行所有日常安排</translation>
 <translation id="5431318178759467895">顏色</translation>
@@ -192,6 +196,7 @@
 <translation id="7359657277149375382">檔案類型</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{完成咗掃瞄。掃瞄咗 1 個頁面}other{完成咗掃瞄。掃瞄咗 {NUMBER_OF_PAGES} 個頁面}}</translation>
 <translation id="7441459999606975924">電池容量會隨使用時間增加而下降</translation>
+<translation id="7469648432129124067">已偵測到網絡入口</translation>
 <translation id="7561454561030345039">此操作由管理員管理</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">HTTPS 延遲時間長</translation>

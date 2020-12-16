@@ -30,6 +30,7 @@
 <translation id="3706101708757577809">Giờ đây, bạn có thể dùng Chrome bất cứ khi nào nhấn vào các đường liên kết trong thư/tin nhắn, tài liệu và các ứng dụng khác.</translation>
 <translation id="384394811301901750">Chrome không thể dùng máy ảnh bây giờ</translation>
 <translation id="3980220367029651214">Bạn đang chuyển các tài khoản đồng bộ hóa từ <ph name="USER_EMAIL1" /> về <ph name="USER_EMAIL2" />. Dữ liệu Chrome hiện có của bạn do <ph name="DOMAIN" /> quản lý. Thao tác này sẽ xóa dữ liệu của bạn khỏi thiết bị này nhưng dữ liệu đó sẽ vẫn còn trong <ph name="USER_EMAIL1" />.</translation>
+<translation id="3984746313391923992">Tổ chức của bạn yêu cầu bạn duy trì trạng thái đăng xuất khỏi Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome không có quyền truy cập ảnh hoặc video của bạn. Hãy cho phép truy cập trong Cài đặt iOS &gt; Bảo mật &gt; Ảnh.</translation>
 <translation id="4099578267706723511">Giúp cải thiện Chrome bằng cách gửi số liệu thống kê sử dụng và báo cáo sự cố cho Google.</translation>
 <translation id="415767770115540173">Nhận trải nghiệm Google tốt hơn trong Chrome dựa vào vị trí của bạn.</translation>
@@ -54,6 +55,7 @@
 <translation id="6600954340915313787">Đã sao chép vào Chrome</translation>
 <translation id="6648150602980899529">Bạn đang đăng nhập bằng tài khoản do <ph name="DOMAIN" /> quản lý và cấp cho quản trị viên quyền kiểm soát dữ liệu Chrome của bạn. Dữ liệu của bạn sẽ được liên kết vĩnh viễn với tài khoản này. Việc đăng xuất khỏi Chrome sẽ xóa dữ liệu của bạn khỏi thiết bị này nhưng dữ liệu đó sẽ vẫn được lưu trữ trong Tài khoản Google.</translation>
 <translation id="6676840375528380067">Xóa dữ liệu Chrome của bạn khỏi thiết bị này?</translation>
+<translation id="6822363243974874813">Khi bạn đã đăng xuất khỏi Chrome, dấu trang, các trang web đã truy cập, mật khẩu và các tùy chọn cài đặt khác đều bị xóa khỏi thiết bị này. Dữ liệu đã đồng bộ hóa trên Chrome sẽ vẫn được lưu vào Tài khoản Google của bạn.</translation>
 <translation id="6822673484890854830">Chrome không thể kiểm tra một số mật khẩu. Hãy thử lại sau.</translation>
 <translation id="7124339256045485976">Giữ cho Chrome luôn cập nhật</translation>
 <translation id="7161390184744336561">Google Chrome đã lỗi thời</translation>

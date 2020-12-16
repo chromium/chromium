@@ -295,6 +295,7 @@ Svolgi i passaggi che seguono:</translation>
 <translation id="4121993058175073134">Per inviare dati net-export, configura il tuo account email nell'app Impostazioni.</translation>
 <translation id="4124987746317609294">Intervallo di tempo</translation>
 <translation id="4152011295694446843">Qui troverai i tuoi preferiti</translation>
+<translation id="4152093603141133546">La tua organizzazione ha disconnesso il tuo account.</translation>
 <translation id="4172051516777682613">Mostra sempre</translation>
 <translation id="418156467088430727">Visualizza versione offline in una nuova scheda</translation>
 <translation id="4181841719683918333">Lingue</translation>
@@ -537,6 +538,7 @@ Cerca di usare una password univoca per ogni sito.</translation>
 <translation id="6668619169535738264">Modifica preferito</translation>
 <translation id="667999046851023355">Documento</translation>
 <translation id="6691331417640343772">Gestisci dati sincronizzati sulla Dashboard di Google</translation>
+<translation id="6710079714193676716">Gestito dalla tua organizzazione. Alcune funzionalità potrebbero non essere disponibili. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Impossibile esportare le password</translation>
 <translation id="6748108480210050150">Da</translation>
@@ -690,6 +692,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8487667956631253959">Attiva</translation>
 <translation id="8487700953926739672">Disponibile offline</translation>
 <translation id="8490978609246021741">Salva modifiche</translation>
+<translation id="8495097701594799854">Disattivato dalla tua organizzazione.</translation>
 <translation id="8503813439785031346">Nome utente</translation>
 <translation id="850600235656508448">Apri in modalità di navigazione in incognito</translation>
 <translation id="8510057420705599706">In questo modo il tuo account verrà disconnesso e la sincronizzazione verrà disattivata, ma i preferiti, la cronologia, le password e altri dati di Chrome rimarranno salvati nel dispositivo.</translation>

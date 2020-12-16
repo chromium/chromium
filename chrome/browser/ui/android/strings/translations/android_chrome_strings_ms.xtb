@@ -12,6 +12,7 @@
 <translation id="10614374240317010">Tidak pernah disimpan</translation>
 <translation id="1067922213147265141">Perkhidmatan Google yang lain</translation>
 <translation id="107147699690128016">Jika anda menukar sambungan fail, fail itu mungkin akan dibuka dalam aplikasi lain dan berkemungkinan mendatangkan bahaya kepada peranti anda.</translation>
+<translation id="1094515529340404628">Pengukuran khalayak web dan iklan</translation>
 <translation id="1100066534610197918">Buka dlm tab baru dlm kumpulan</translation>
 <translation id="1105960400813249514">Tangkapan Skrin</translation>
 <translation id="1111673857033749125">Penanda halaman yang disimpan pada peranti anda yang lain akan dipaparkan di sini.</translation>
@@ -227,6 +228,7 @@ Sentuh &amp; tahan mana-mana perkataan untuk mencari. Untuk memperhalus carian a
 <translation id="2536728043171574184">Melihat salinan luar talian halaman ini</translation>
 <translation id="2537178555904266562">Ralat semasa menyegerakkan kata laluan</translation>
 <translation id="2546283357679194313">Kuki dan data tapak</translation>
+<translation id="2562889244313180139">Benarkan laman web dan apl memberi anda pengalaman yang lebih berkaitan menggunakan alias yang tidak boleh dikenal pasti.</translation>
 <translation id="2567385386134582609">IMEJ</translation>
 <translation id="2571711316400087311">Tawarkan untuk menghantar halaman dalam bahasa lain kepada Google Terjemah</translation>
 <translation id="2581165646603367611">Tindakan ini akan menghapuskan kuki, cache dan data tapak yang lain yang Chrome anggap tidak penting.</translation>
@@ -714,6 +716,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<
 <translation id="6005538289190791541">Kata laluan yang disyorkan</translation>
 <translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Anda mempunyai <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> halaman}other{Anda mempunyai <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> halaman}}</translation>
 <translation id="6014293228235665243">Belum dibaca</translation>
+<translation id="6018309500671889594">Benarkan pengiklan mengkaji kempen pengiklanan menggunakan maklumat yang tidak boleh dikenal pasti.</translation>
 <translation id="6036057147555329831">ICU tambahan</translation>
 <translation id="6039379616847168523">Lompat ke tab seterusnya</translation>
 <translation id="6040143037577758943">Tutup</translation>
@@ -922,6 +925,7 @@ Data daripada sesi Inkognito anda hanya akan dikosongkan daripada Chrome apabila
 <translation id="7403691278183511381">Pengalaman First Run Chrome</translation>
 <translation id="741204030948306876">Ya, saya setuju</translation>
 <translation id="7413229368719586778">Tarikh mula <ph name="DATE" /></translation>
+<translation id="7416941666639889592">Dengan menyertai Web Crowd, anda membenarkan laman web menjadikan pengalaman web anda berkaitan tanpa menggunakan maklumat peribadi yang boleh dikenal pasti. Sama seperti khalayak yang menonton konsert, laman web dan pengiklan hanya dapat mengetahui bahawa ribuan pengguna berkongsi minat yang sama.</translation>
 <translation id="7431991332293347422">Kawal cara sejarah penyemakan imbas anda digunakan untuk memperibadikan Carian dan pelbagai lagi</translation>
 <translation id="7435356471928173109">Dimatikan oleh pentadbir anda</translation>
 <translation id="7437998757836447326">Log keluar dari Chrome</translation>
@@ -1123,6 +1127,7 @@ Data daripada sesi Inkognito anda hanya akan dikosongkan daripada Chrome apabila
 <translation id="8748850008226585750">Kandungan tersembunyi</translation>
 <translation id="8788265440806329501">Sejarah navigasi ditutup</translation>
 <translation id="8788968922598763114">Buka semula tab yang terakhir ditutup</translation>
+<translation id="8795672590390389447">Kotak pasir privasi</translation>
 <translation id="8798449543960971550">Baca</translation>
 <translation id="8812260976093120287">Pada sesetengah tapak web, anda boleh membayar menggunakan apl pembayaran yang disokong di atas pada peranti anda.</translation>
 <translation id="881688628773363275">Kandungan tab pratonton tidak boleh dilihat.</translation>

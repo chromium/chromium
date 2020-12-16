@@ -62,7 +62,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1455242230282523554">Onyesha mipangilio ya lugha</translation>
 <translation id="1460620680449458626">Umezima sauti.</translation>
 <translation id="1467432559032391204">Kushoto</translation>
-<translation id="147310119694673958">Betri ya simu <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="147310119694673958">Betri ya simu: asilimia <ph name="BATTERY_PERCENTAGE" /></translation>
 <translation id="1479909375538722835">Menyu ya ufikivu inayoelea</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1503394326855300303">Akaunti hii ya mmiliki lazima iwe ya kwanza kuingiwa katika kipindi cha kuingia katika akaunti mara nyingi.</translation>
@@ -338,7 +338,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="4112140312785995938">Sogeza Nyuma</translation>
 <translation id="4114315158543974537">Washa Phone Hub</translation>
 <translation id="4121728057981832179">Mashine pepe inatumia maikrofoni yako</translation>
-<translation id="4126167871198063089">Funga kipengele cha Kuchagua ili Izungumze</translation>
 <translation id="4129129681837227511">Ili uone arifa kwenye skrini iliyofungwa, ifungue ili ubadilishe mipangilio hii</translation>
 <translation id="4146833061457621061">Cheza muziki</translation>
 <translation id="415719264485676252">Kipengele cha kupiga picha ya skrini kimezuiwa</translation>
@@ -873,12 +872,11 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8936501819958976551">kimezimwa</translation>
 <translation id="8938800817013097409">Kifaa cha USB-C (mlango wa kulia nyuma)</translation>
 <translation id="8940956008527784070">Betri inaisha (<ph name="PERCENTAGE" />%)</translation>
-<translation id="8982906748181120328">Uonekanaji wa karibu</translation>
+<translation id="8982906748181120328">Kuonekana</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Unatumia <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Fungua kifaa kwa kuingia katika akaunti ukitumia <ph name="LOGIN_ID" /> ili utekeleze kitendo cha arifa</translation>
 <translation id="9017320285115481645">Weka msimbo wa kufikia wa mzazi katika Family Link.</translation>
-<translation id="9029474291399787231">Sasisho la Adobe Flash Player linapatikana</translation>
 <translation id="9047624247355796468">Fungua mipangilio ya <ph name="NETWORK_NAME" /></translation>
 <translation id="9056839673611986238">Mipangilio ya awali itarejeshwa kwenye kifaa</translation>
 <translation id="9065203028668620118">Badilisha</translation>

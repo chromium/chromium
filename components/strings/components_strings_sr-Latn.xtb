@@ -996,6 +996,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4901778704868714008">Sačuvaj...</translation>
 <translation id="4913987521957242411">Bušenje u gornjem levom uglu</translation>
+<translation id="4918221908152712722">Instalirajte aplikaciju <ph name="APP_NAME" /> (ne treba da je preuzimate)</translation>
 <translation id="4923459931733593730">Plaćanje</translation>
 <translation id="4926049483395192435">Mora da bude navedeno.</translation>
 <translation id="4926159001844873046"><ph name="SITE" /> navodi:</translation>
@@ -1360,6 +1361,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6328786501058569169">Ovaj sajt je obmanjujuć</translation>
 <translation id="6337133576188860026">Oslobađa manje od <ph name="SIZE" />. Neki sajtovi će se možda sporije učitavati kad ih sledeći put posetite.</translation>
 <translation id="6337534724793800597">Filtriraj smernice prema nazivu</translation>
+<translation id="6349101878882523185">Instalirajte <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Nijedna}=1{1 lozinka (za <ph name="DOMAIN_LIST" />, sinhronizovano)}=2{2 lozinke (za <ph name="DOMAIN_LIST" />, sinhronizovano)}one{# lozinka (za <ph name="DOMAIN_LIST" />, sinhronizovano)}few{# lozinke (za <ph name="DOMAIN_LIST" />, sinhronizovano)}other{# lozinki (za <ph name="DOMAIN_LIST" />, sinhronizovano)}}</translation>
 <translation id="6358450015545214790">Šta ovo znači?</translation>
 <translation id="6361757823711327522">B7</translation>
@@ -2050,6 +2052,7 @@ Dodatni detalji:
 <translation id="9158625974267017556">C6 (koverat)</translation>
 <translation id="9168814207360376865">Dozvoli sajtovima da proveravaju da li imam sačuvane načine plaćanja</translation>
 <translation id="9169664750068251925">Uvek blokiraj na ovom sajtu</translation>
+<translation id="9169931577761441333">Dodajte <ph name="APP_NAME" /> na početni ekran</translation>
 <translation id="9170848237812810038">&amp;Opozovi</translation>
 <translation id="9171296965991013597">Želite li da izađete iz aplikacije?</translation>
 <translation id="9173282814238175921">Jedan dokument/novi list</translation>

@@ -9,6 +9,7 @@
 <translation id="1175697296044146566">ဤ <ph name="DEVICE_TYPE" /> ကို <ph name="MANAGER" /> က စီမံသည်။</translation>
 <translation id="1195447618553298278">မှားရသည့်အကြောင်း မသိပါ။</translation>
 <translation id="1204296502688602597">DNS တုံ့ပြန်ချိန်</translation>
+<translation id="123124571410524056">စာမျက်နှာကို သံသယရှိသည်</translation>
 <translation id="1238612778414822719">HTTPS တုံ့ပြန်ချိန်</translation>
 <translation id="1290331692326790741">လိုင်းအား မကောင်းပါ</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -36,6 +37,7 @@
 <translation id="1947737735496445907">ပုံနှိပ်ထုတ်ပြီးပြီ</translation>
 <translation id="1979103255016296513">စကားဝှက်ပြောင်းလဲမှု သက်တမ်းကုန်သွားပါပြီ</translation>
 <translation id="1980044825731880088">CPU မြန်နှုန်း</translation>
+<translation id="1999615961760456652">စတင်ဝင်ရန် စာမျက်နှာ</translation>
 <translation id="2008685064673031089">အဓိက ရှာဖွေမှု</translation>
 <translation id="2080070583977670716">ဆက်တင်များ ပိုမိုပြရန်</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -115,6 +117,7 @@
 <translation id="4773299976671772492">ဆိုင်းငံ့ထား</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> ပရင့်ထုတ်ခြင်းကို ပယ်ဖျက်လိုက်သည်။</translation>
 <translation id="4832079907277790330">Files အက်ပ်တွင် ဖိုင်တွဲကိုရွေးရန်...</translation>
+<translation id="4835901797422965222">ဖွင့်ထားသော ကွန်ရက်မရှိပါ</translation>
 <translation id="4848429997038228357">လုပ်ဆောင်နေသည်</translation>
 <translation id="4890353053343094602">ချက်ချင်း အသစ်တစ်ခု ‌ရွေးပါ</translation>
 <translation id="4891842000192098784">ဖိအား</translation>
@@ -135,6 +138,7 @@
 <translation id="5317780077021120954">သိမ်းရန်</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />၊ <ph name="PRINTER_NAME" />၊ <ph name="CREATION_TIME" />၊ <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">ယခု အသစ်တစ်ခု ရွေးရန်</translation>
+<translation id="5333530671332546086">အမျိုးအမည်မသိ စာမျက်နှာအခြေအနေ</translation>
 <translation id="5372659122375744710">WiFi ကွန်ရက်က မလုံခြုံပါ</translation>
 <translation id="5401938042319910061">'ပုံမှန်အစီအစဉ်" အားလုံး အသုံးပြုရန်</translation>
 <translation id="5431318178759467895">အရောင်</translation>
@@ -191,6 +195,7 @@
 <translation id="7359657277149375382">ဖိုင်အမျိုးအစား</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{စကင်ဖတ်၍ ပြီးပြီ။ စာမျက်နှာ 1 မျက်နှာကို စကင်ဖတ်ထားသည်}other{စကင်ဖတ်၍ ပြီးပြီ။ စာမျက်နှာ {NUMBER_OF_PAGES} မျက်နှာကို စကင်ဖတ်ထားသည်}}</translation>
 <translation id="7441459999606975924">အသုံးပြုသည်နှင့်အမျှ ဘက်ထရီပမာဏ လျော့ကျသွားသည်</translation>
+<translation id="7469648432129124067">စာမျက်နှာကို တွေ့ရှိသည်</translation>
 <translation id="7561454561030345039">ဤလုပ်ဆောင်ချက်ကို သင့်စီမံခန့်ခွဲသူက စီမံသည်</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">HTTPS တုံ့ပြန်ချိန် မြင့်သည်</translation>

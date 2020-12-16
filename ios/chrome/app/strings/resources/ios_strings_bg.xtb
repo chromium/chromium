@@ -295,6 +295,7 @@
 <translation id="4121993058175073134">За изпращане на експ. данни от мрежата конфиг. имейла си в Настройки.</translation>
 <translation id="4124987746317609294">Период от време</translation>
 <translation id="4152011295694446843">Тук ще се показват отметките ви</translation>
+<translation id="4152093603141133546">Излязохте от профила си заради правилата на организацията ви.</translation>
 <translation id="4172051516777682613">Показване винаги</translation>
 <translation id="418156467088430727">Преглед на офлайн версията в нов раздел</translation>
 <translation id="4181841719683918333">Езици</translation>
@@ -537,6 +538,7 @@
 <translation id="6668619169535738264">Редактиране на отметката</translation>
 <translation id="667999046851023355">Документ</translation>
 <translation id="6691331417640343772">Управление на синхронизираните данни чрез Google Табло за управление</translation>
+<translation id="6710079714193676716">Управлява се от организацията ви. Някои функции може да не са достъпни. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Паролите не могат да бъдат експортирани</translation>
 <translation id="6748108480210050150">От</translation>
@@ -690,6 +692,7 @@
 <translation id="8487667956631253959">Включено</translation>
 <translation id="8487700953926739672">Налице офлайн</translation>
 <translation id="8490978609246021741">Запазване на промените</translation>
+<translation id="8495097701594799854">Изключено от организацията ви.</translation>
 <translation id="8503813439785031346">Потребителско име</translation>
 <translation id="850600235656508448">Отваряне в режим „инкогнито“</translation>
 <translation id="8510057420705599706">Това действие ще прекрати сесията ви и ще изключи синхронизирането, но отметките, историята, паролите и другите ви данни в Chrome ще останат на това устройство.</translation>

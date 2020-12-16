@@ -9,6 +9,7 @@
 <translation id="1175697296044146566"><ph name="MANAGER" /> administra el dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1195447618553298278">Error desconocido.</translation>
 <translation id="1204296502688602597">Latencia de DNS</translation>
+<translation id="123124571410524056">Posible portal</translation>
 <translation id="1238612778414822719">Latencia de HTTPS</translation>
 <translation id="1290331692326790741">Señal débil</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -36,6 +37,7 @@
 <translation id="1947737735496445907">Impreso</translation>
 <translation id="1979103255016296513">Está pendiente el cambio de contraseña</translation>
 <translation id="1980044825731880088">Velocidad de la CPU</translation>
+<translation id="1999615961760456652">Portal cautivo</translation>
 <translation id="2008685064673031089">Búsqueda de números primos</translation>
 <translation id="2080070583977670716">Más opciones de configuración</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -115,6 +117,7 @@
 <translation id="4773299976671772492">Detenida</translation>
 <translation id="4808449224298348341">Se canceló el trabajo de impresión <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4832079907277790330">Seleccionar carpeta en la app de Archivos…</translation>
+<translation id="4835901797422965222">No hay redes activas</translation>
 <translation id="4848429997038228357">EN EJECUCIÓN</translation>
 <translation id="4890353053343094602">Elige una nueva de inmediato</translation>
 <translation id="4891842000192098784">Esfuerzo</translation>
@@ -136,6 +139,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Elige una nueva ahora</translation>
+<translation id="5333530671332546086">Estado desconocido del portal</translation>
 <translation id="5372659122375744710">la red Wi-Fi no es segura</translation>
 <translation id="5401938042319910061">Ejecutar todas las rutinas</translation>
 <translation id="5431318178759467895">Color</translation>
@@ -192,6 +196,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="7359657277149375382">Tipo de archivo</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Se completó el escaneo. Se escaneó 1 página}other{Se completó el escaneo. Se escanearon {NUMBER_OF_PAGES} páginas}}</translation>
 <translation id="7441459999606975924">La capacidad de las baterías se reduce con el uso</translation>
+<translation id="7469648432129124067">Se detectó un portal</translation>
 <translation id="7561454561030345039">El administrador controla esta acción</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Latencia de HTTPS alta</translation>

@@ -295,6 +295,7 @@ Realiza los siguientes pasos:</translation>
 <translation id="4121993058175073134">Configura cuenta en Configuración p/ enviar datos exportaciones netas.</translation>
 <translation id="4124987746317609294">Intervalo de tiempo</translation>
 <translation id="4152011295694446843">Aquí encontrarás tus favoritos</translation>
+<translation id="4152093603141133546">Tu organización te hizo salir de tu cuenta.</translation>
 <translation id="4172051516777682613">Mostrar siempre</translation>
 <translation id="418156467088430727">Ver la versión sin conexión en una nueva pestaña</translation>
 <translation id="4181841719683918333">Idiomas</translation>
@@ -537,6 +538,7 @@ Intenta usar una contraseña única para cada sitio.</translation>
 <translation id="6668619169535738264">Editar favorito</translation>
 <translation id="667999046851023355">Documento</translation>
 <translation id="6691331417640343772">Administrar los datos sincronizados en el Panel de control de Google</translation>
+<translation id="6710079714193676716">Tu organización administra el navegador. Es posible que algunas funciones no estén disponibles. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">No se pueden exportar las contraseñas</translation>
 <translation id="6748108480210050150">De</translation>
@@ -690,6 +692,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8487667956631253959">Encendida</translation>
 <translation id="8487700953926739672">Disponible sin conexión</translation>
 <translation id="8490978609246021741">Guardar cambios</translation>
+<translation id="8495097701594799854">Tu organización desactivó la función.</translation>
 <translation id="8503813439785031346">Nombre de usuario</translation>
 <translation id="850600235656508448">Abrir en incógnito</translation>
 <translation id="8510057420705599706">Si realizas esta acción, saldrás de tu cuenta y se desactivará la sincronización, pero los favoritos, el historial, las contraseñas y otros datos de Chrome permanecerán en este dispositivo.</translation>

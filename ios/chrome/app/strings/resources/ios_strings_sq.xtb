@@ -295,6 +295,7 @@ Ndiq hapat më poshtë:</translation>
 <translation id="4121993058175073134">Për të dërguar të dhënat neto të eksportuara, konfiguro llogarinë tënde të mail-it në aplikacionin "Cilësimet".</translation>
 <translation id="4124987746317609294">Shtrirja kohore</translation>
 <translation id="4152011295694446843">Këtu do të gjesh faqeshënuesit e tu</translation>
+<translation id="4152093603141133546">Organizata jote të nxori nga llogaria.</translation>
 <translation id="4172051516777682613">Trego gjithmonë</translation>
 <translation id="418156467088430727">Shiko versionin jashtë linje në një skedë të re</translation>
 <translation id="4181841719683918333">Gjuhët</translation>
@@ -537,6 +538,7 @@ Provo të përdorësh një fjalëkalim unik për çdo sajt.</translation>
 <translation id="6668619169535738264">Redakto faqeshënuesin</translation>
 <translation id="667999046851023355">Dokument</translation>
 <translation id="6691331417640343772">Menaxho të dhënat e sinkronizuara në "Panelin analitik të Google"</translation>
+<translation id="6710079714193676716">Menaxhohet nga organizata jote. Disa veçori mund të jenë të padisponueshme. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Apl. Google</translation>
 <translation id="6730682669179532099">Fjalëkalimet nuk mund të eksportohen</translation>
 <translation id="6748108480210050150">Nga</translation>
@@ -690,6 +692,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8487667956631253959">Aktivizo</translation>
 <translation id="8487700953926739672">Mundësohet jashtë linje</translation>
 <translation id="8490978609246021741">Ruaj ndryshimet</translation>
+<translation id="8495097701594799854">Çaktivizuar nga organizata jote.</translation>
 <translation id="8503813439785031346">Emri i përdoruesit</translation>
 <translation id="850600235656508448">Hape në modalitetin "e fshehtë"</translation>
 <translation id="8510057420705599706">Kjo do të të nxjerrë nga llogaria dhe do ta çaktivizojë sinkronizimin, por faqeshënuesit, historiku, fjalëkalimet dhe të dhënat e tjera të Chrome do të mbeten në këtë pajisje.</translation>

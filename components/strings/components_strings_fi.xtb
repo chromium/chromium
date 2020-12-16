@@ -997,6 +997,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4901778704868714008">Tallenna…</translation>
 <translation id="4913987521957242411">Reikä vasemmassa yläkulmassa</translation>
+<translation id="4918221908152712722">Asenna <ph name="APP_NAME" /> (ei vaadi lataamista)</translation>
 <translation id="4923459931733593730">Maksu</translation>
 <translation id="4926049483395192435">On määritettävä.</translation>
 <translation id="4926159001844873046">Viesti osoitteesta <ph name="SITE" /></translation>
@@ -1362,6 +1363,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6328786501058569169">Tämä sivusto on petollinen</translation>
 <translation id="6337133576188860026">Vapauttaa alle <ph name="SIZE" />. Jotkin sivustot saattavat latautua hitaammin seuraavalla käynnillä.</translation>
 <translation id="6337534724793800597">Suodata käytäntöjä nimen mukaan</translation>
+<translation id="6349101878882523185">Asenna <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Ei mitään}=1{1 salasana: (<ph name="DOMAIN_LIST" />, synkronoitu)}=2{2 salasanaa (<ph name="DOMAIN_LIST" />, synkronoitu)}other{# salasanaa (<ph name="DOMAIN_LIST" />, synkronoitu)}}</translation>
 <translation id="6358450015545214790">Mitä nämä tarkoittavat?</translation>
 <translation id="6361757823711327522">B7</translation>
@@ -2052,6 +2054,7 @@ Lisätietoja:
 <translation id="9158625974267017556">C6 (kirjekuori)</translation>
 <translation id="9168814207360376865">Salli sivustojen tarkastaa, oletko tallentanut maksutapoja</translation>
 <translation id="9169664750068251925">Estä aina tämä sivusto</translation>
+<translation id="9169931577761441333">Lisää <ph name="APP_NAME" /> aloitusnäytölle</translation>
 <translation id="9170848237812810038">K&amp;umoa</translation>
 <translation id="9171296965991013597">Poistutaanko sovelluksesta?</translation>
 <translation id="9173282814238175921">Yksittäinen dokumentti / Uusi sivu</translation>

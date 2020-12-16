@@ -12,6 +12,7 @@
 <translation id="10614374240317010">هرگز ذخیره نمی‌شود</translation>
 <translation id="1067922213147265141">‏سایر سرویس‌های Google</translation>
 <translation id="107147699690128016">اگر پسوند فایل را تغییر دهید، ممکن است فایل در برنامه دیگری باز شود و به‌طور بالقوه برای دستگاه مضر باشد.</translation>
+<translation id="1094515529340404628">سنجش آگهی و جمعیت وب</translation>
 <translation id="1100066534610197918">باز کردن در برگه جدید در گروه</translation>
 <translation id="1105960400813249514">گرفتن عکس از صفحه‌</translation>
 <translation id="1111673857033749125">نشانک‌های ذخیره‌شده در سایر دستگاه‌های شما در اینجا نشان داده می‌شوند.</translation>
@@ -227,6 +228,7 @@
 <translation id="2536728043171574184">مشاهده یک کپی آفلاین از این صفحه</translation>
 <translation id="2537178555904266562">خطا در همگام‌سازی گذرواژه‌ها</translation>
 <translation id="2546283357679194313">کوکی‌ها و داده‌های سایت</translation>
+<translation id="2562889244313180139">به وب‌سایت‌ها و برنامه‌ها اجازه دهید بااستفاده از نام‌های مستعار غیرقابل‌شناسایی، تجربه مرتبط‌تری به شما ارائه دهند.</translation>
 <translation id="2567385386134582609">تصویر</translation>
 <translation id="2571711316400087311">‏پیشنهاد ارسال صفحه‌های نوشته‌شده به زبان‌های دیگر به «ترجمه Google»</translation>
 <translation id="2581165646603367611">‏این کار کوکی‌ها، حافظه پنهان و داده‌های دیگر سایت‌ها را که از نظر Chrome مهم نیست پاک می‌کند.</translation>
@@ -714,6 +716,7 @@
 <translation id="6005538289190791541">گذرواژه پیشنهادی</translation>
 <translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{<ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> صفحه دارید}one{<ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> صفحه دارید}other{<ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> صفحه دارید}}</translation>
 <translation id="6014293228235665243">خوانده‌نشده</translation>
+<translation id="6018309500671889594">به تبلیغ‌کنندگان اجازه دهید بااستفاده از اطلاعات غیرقابل‌شناسایی، کمپین‌های تبلیغاتی را مطالعه کنند.</translation>
 <translation id="6036057147555329831">‏ICU اضافی</translation>
 <translation id="6039379616847168523">رفتن به برگه بعدی</translation>
 <translation id="6040143037577758943">بستن</translation>
@@ -922,6 +925,7 @@
 <translation id="7403691278183511381">‏اولین تجربه اجرا Chrome</translation>
 <translation id="741204030948306876">بله، موافقم</translation>
 <translation id="7413229368719586778">تاریخ شروع: <ph name="DATE" /></translation>
+<translation id="7416941666639889592">با پیوستن به «جمعیت وب»، به وب‌سایت‌ها اجازه می‌دهید بدون استفاده از اطلاعات قابل‌شناسایی شخصی، تجربه وب شما را مرتبط کنند. مشابه با جمعیتی که در کنسرت حضور دارند، وب‌سایت‌ها و تبلیغ‌کنندگان می‌توانند فقط هزاران کاربری را که علاقه یکسانی دارند بشناسند.</translation>
 <translation id="7431991332293347422">کنترل نحوه استفاده از سابقه مرور برای شخصی‌سازی «جستجو» و موارد دیگر</translation>
 <translation id="7435356471928173109">سرپرستتان آن را خاموش کرده است</translation>
 <translation id="7437998757836447326">‏خروج از سیستم Chrome</translation>
@@ -1123,6 +1127,7 @@
 <translation id="8748850008226585750">محتوا پنهان است</translation>
 <translation id="8788265440806329501">سابقه «پیمایش» بسته است</translation>
 <translation id="8788968922598763114">دوباره باز کردن آخرین برگه بسته‌شده</translation>
+<translation id="8795672590390389447">جعبه ایمنی حریم‌خصوصی</translation>
 <translation id="8798449543960971550">خواندن</translation>
 <translation id="8812260976093120287">در بعضی از وب‌سایت‌ها، می‌توانید با برنامه‌های پرداخت پشتیبانی‌شده بالا در دستگاهتان پرداخت کنید.</translation>
 <translation id="881688628773363275">محتوای برگه پیش‌نمایش قابل‌مشاهده نیست.</translation>

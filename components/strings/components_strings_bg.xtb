@@ -992,6 +992,7 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" /> и <ph name="TYPE_3" /></translation>
 <translation id="4901778704868714008">Запазване...</translation>
 <translation id="4913987521957242411">Перфориране горе вляво</translation>
+<translation id="4918221908152712722">Инсталирайте <ph name="APP_NAME" /> (не се изисква изтегляне)</translation>
 <translation id="4923459931733593730">Плащане</translation>
 <translation id="4926049483395192435">Трябва да се посочи.</translation>
 <translation id="4926159001844873046"><ph name="SITE" /> изпраща съобщение</translation>
@@ -1357,6 +1358,7 @@
 <translation id="6328786501058569169">Този сайт е измамен</translation>
 <translation id="6337133576188860026">Ще освободите по-малко от <ph name="SIZE" />. Някои сайтове може да се заредят по-бавно при следващото ви посещение.</translation>
 <translation id="6337534724793800597">Филтриране на правилата по име</translation>
+<translation id="6349101878882523185">Инсталиране на <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Няма}=1{1 парола (за <ph name="DOMAIN_LIST" />, синхронизирана)}=2{2 пароли (за <ph name="DOMAIN_LIST" />, синхронизирани)}other{# пароли (за <ph name="DOMAIN_LIST" />, синхронизирани)}}</translation>
 <translation id="6358450015545214790">Какво означават тези неща?</translation>
 <translation id="6361757823711327522">B7</translation>
@@ -2046,6 +2048,7 @@
 <translation id="9158625974267017556">C6 (плик)</translation>
 <translation id="9168814207360376865">Разрешаване на сайтовете да проверяват дали имате запазени начини на плащане</translation>
 <translation id="9169664750068251925">Блокиране винаги на този сайт</translation>
+<translation id="9169931577761441333">Добавяне на <ph name="APP_NAME" /> към началния екран</translation>
 <translation id="9170848237812810038">&amp;Отмяна</translation>
 <translation id="9171296965991013597">Искате ли да затворите приложението?</translation>
 <translation id="9173282814238175921">Един документ/нов лист</translation>

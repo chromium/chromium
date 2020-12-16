@@ -295,6 +295,7 @@
 <translation id="4121993058175073134">برای ارسال داده‌های صادراتی شبکه، لطفاً حساب ایمیل‌تان را در برنامه تنظیمات پیکربندی کنید.</translation>
 <translation id="4124987746317609294">محدوده زمانی</translation>
 <translation id="4152011295694446843">نشانک‌ها را اینجا خواهید دید</translation>
+<translation id="4152093603141133546">سازمانتان شما را از سیستم خارج کرد.</translation>
 <translation id="4172051516777682613">همیشه نشان داده شود</translation>
 <translation id="418156467088430727">مشاهده نسخه آفلاین در برگه جدید</translation>
 <translation id="4181841719683918333">زبان‌ها</translation>
@@ -537,6 +538,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6668619169535738264">ویرایش نشانک</translation>
 <translation id="667999046851023355">سند</translation>
 <translation id="6691331417640343772">‏مدیریت داده‌های همگام‌سازی‌شده در داشبورد Google</translation>
+<translation id="6710079714193676716">توسط سازمانتان مدیریت می‌شود. ممکن است برخی از ویژگی‌ها دردسترس نباشد. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">گذرواژه‌ها صادر نشدند</translation>
 <translation id="6748108480210050150">از</translation>
@@ -690,6 +692,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8487667956631253959">فعال</translation>
 <translation id="8487700953926739672">امکان دسترسی به صورت آفلاین</translation>
 <translation id="8490978609246021741">ذخیره تغییرات</translation>
+<translation id="8495097701594799854">سازمانتان آن را خاموش کرده است.</translation>
 <translation id="8503813439785031346">نام کاربری</translation>
 <translation id="850600235656508448">باز کردن در حالت ناشناس</translation>
 <translation id="8510057420705599706">‏با این کار، از سیستم خارج می‌شوید و همگام‌سازی خاموش می‌شود، اما نشانک‌ها، سابقه، گذرواژه‌ها، و داده‌های دیگر Chrome در این دستگاه باقی خواهند ماند.</translation>

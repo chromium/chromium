@@ -295,6 +295,7 @@ Jarraitu beheko urratsei:</translation>
 <translation id="4121993058175073134">Sare-esportazioaren datuak bidaltzeko, konfiguratu posta-kontu elektronikoa Ezarpenak aplikazioan.</translation>
 <translation id="4124987746317609294">Denbora tartea</translation>
 <translation id="4152011295694446843">Laster-markak aurkituko dituzu hemen</translation>
+<translation id="4152093603141133546">Erakundeak zure saioa amaitu du.</translation>
 <translation id="4172051516777682613">Erakutsi beti</translation>
 <translation id="418156467088430727">Ikusi konexio gabeko bertsioa beste fitxa batean</translation>
 <translation id="4181841719683918333">Hizkuntzak</translation>
@@ -537,6 +538,7 @@ Erabili pasahitz esklusibo bat webgune bakoitzerako.</translation>
 <translation id="6668619169535738264">Editatu laster-marka</translation>
 <translation id="667999046851023355">Dokumentua</translation>
 <translation id="6691331417640343772">Kudeatu sinkronizatutako datuak Google-ren Panela atalean</translation>
+<translation id="6710079714193676716">Erakundeak kudeatzen du. Baliteke eginbide batzuk erabilgarri ez egotea. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Ezin dira esportatu pasahitzak</translation>
 <translation id="6748108480210050150">Igorlea</translation>
@@ -690,6 +692,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="8487667956631253959">Aktibatuta</translation>
 <translation id="8487700953926739672">Konexiorik gabe erabilgarri</translation>
 <translation id="8490978609246021741">Gorde aldaketak</translation>
+<translation id="8495097701594799854">Erakundeak desaktibatu du.</translation>
 <translation id="8503813439785031346">Erabiltzaile-izena</translation>
 <translation id="850600235656508448">Ireki ezkutuko moduan</translation>
 <translation id="8510057420705599706">Horrela, saioa amaitu eta sinkronizazioa desaktibatuko da, baina laster-markek, historiak, pasahitzek eta Chrome-ko beste datu batzuek gailuan jarraituko dute.</translation>

@@ -9,6 +9,7 @@
 <translation id="1175697296044146566">この <ph name="DEVICE_TYPE" /> は <ph name="MANAGER" /> によって管理されています。</translation>
 <translation id="1195447618553298278">不明なエラーです。</translation>
 <translation id="1204296502688602597">DNS レイテンシ</translation>
+<translation id="123124571410524056">ポータルの可能性があります</translation>
 <translation id="1238612778414822719">HTTPS レイテンシ</translation>
 <translation id="1290331692326790741">電波: 弱い</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -36,6 +37,7 @@
 <translation id="1947737735496445907">印刷完了</translation>
 <translation id="1979103255016296513">パスワードの変更期限を過ぎました</translation>
 <translation id="1980044825731880088">CPU 速度</translation>
+<translation id="1999615961760456652">キャプティブ ポータル</translation>
 <translation id="2008685064673031089">Prime サーチ</translation>
 <translation id="2080070583977670716">詳細設定</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -115,6 +117,7 @@
 <translation id="4773299976671772492">停止しました</translation>
 <translation id="4808449224298348341">キャンセルされた印刷ジョブ <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4832079907277790330">ファイルアプリ内のフォルダを選択...</translation>
+<translation id="4835901797422965222">有効なネットワークがありません</translation>
 <translation id="4848429997038228357">実行中</translation>
 <translation id="4890353053343094602">新しいパスワードを今すぐ選択してください</translation>
 <translation id="4891842000192098784">ストレス</translation>
@@ -136,6 +139,7 @@
 <translation id="5317780077021120954">保存</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />、<ph name="PRINTER_NAME" />、<ph name="CREATION_TIME" />、<ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">新しいパスワードを今すぐ選択してください</translation>
+<translation id="5333530671332546086">ポータルの状態が不明です</translation>
 <translation id="5372659122375744710">Wi-Fi ネットワークが保護されていません</translation>
 <translation id="5401938042319910061">ルーティンをすべて実行</translation>
 <translation id="5431318178759467895">カラー</translation>
@@ -192,6 +196,7 @@
 <translation id="7359657277149375382">ファイル形式</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{スキャンが完了しました。1 ページをスキャンしました}other{スキャンが完了しました。{NUMBER_OF_PAGES} ページをスキャンしました}}</translation>
 <translation id="7441459999606975924">バッテリー容量は使用に伴って減少します</translation>
+<translation id="7469648432129124067">ポータルが検出されました</translation>
 <translation id="7561454561030345039">この操作は管理者によって管理されています</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">HTTPS レイテンシが高くなっています</translation>

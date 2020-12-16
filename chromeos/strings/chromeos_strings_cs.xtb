@@ -9,6 +9,7 @@
 <translation id="1175697296044146566">Toto zařízení <ph name="DEVICE_TYPE" /> spravuje doména <ph name="MANAGER" />.</translation>
 <translation id="1195447618553298278">Neznámá chyba.</translation>
 <translation id="1204296502688602597">Latence DNS</translation>
+<translation id="123124571410524056">Podezření na portál</translation>
 <translation id="1238612778414822719">Latence HTTPS</translation>
 <translation id="1290331692326790741">Slabý signál</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -36,6 +37,7 @@
 <translation id="1947737735496445907">Vytištěno</translation>
 <translation id="1979103255016296513">Uběhl termín pro změnu hesla</translation>
 <translation id="1980044825731880088">Rychlost procesoru</translation>
+<translation id="1999615961760456652">Captive portál</translation>
 <translation id="2008685064673031089">Vyhledávání prvočísel</translation>
 <translation id="2080070583977670716">Další nastavení</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
@@ -115,6 +117,7 @@
 <translation id="4773299976671772492">Zastaveno</translation>
 <translation id="4808449224298348341">Byla zrušena tisková úloha <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4832079907277790330">Vyberte složku v aplikaci Soubory…</translation>
+<translation id="4835901797422965222">Žádné aktivní sítě</translation>
 <translation id="4848429997038228357">PROBÍHÁ</translation>
 <translation id="4890353053343094602">Ihned si zvolte nové</translation>
 <translation id="4891842000192098784">Zátěž</translation>
@@ -136,6 +139,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="5317780077021120954">Uložit</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Zvolte si nové</translation>
+<translation id="5333530671332546086">Neznámý stav portálu</translation>
 <translation id="5372659122375744710">Síť Wi-Fi není zabezpečena</translation>
 <translation id="5401938042319910061">Spustit všechny rutiny</translation>
 <translation id="5431318178759467895">Barevně</translation>
@@ -192,6 +196,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="7359657277149375382">Typ souboru</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skenování bylo dokončeno. Naskenována 1 stránka}few{Skenování bylo dokončeno. Naskenovány {NUMBER_OF_PAGES} stránky}many{Skenování bylo dokončeno. Naskenováno {NUMBER_OF_PAGES} stránky}other{Skenování bylo dokončeno. Naskenováno {NUMBER_OF_PAGES} stránek}}</translation>
 <translation id="7441459999606975924">Kapacita baterie se používáním snižuje</translation>
+<translation id="7469648432129124067">Byl zjištěn portál</translation>
 <translation id="7561454561030345039">Tuto akci spravuje administrátor</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Vysoká latence HTTPS</translation>

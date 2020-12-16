@@ -75,7 +75,7 @@
 <translation id="8776843108004031667">Ovaj račun i svi podaci koji nisu sačuvani će se ukloniti iz Chromiuma.</translation>
 <translation id="9022552996538154597">Prijavite se u Chromium</translation>
 <translation id="9089354809943900324">Chromium nije ažuriran</translation>
-<translation id="912386518501777532">Kada ste bili odjavljeni s Chromiuma, s ovog uređaja izbrisane su vaše oznake, povijest, zaporke i ostale postavke. Vaši sinkronizirani podaci i dalje su spremljeni na vašem računu.</translation>
+<translation id="912386518501777532">Kada ste odjavljeni s Chromiuma, vaše oznake, historija, lozinke i druge postavke su obrisane s ovog uređaja. Sinhronizirani podaci su i dalje sačuvani na vašem računu.</translation>
 <translation id="921174536258924340">Chromium nije mogao provjeriti sve lozinke. Pokušajte ponovo sutra ili <ph name="BEGIN_LINK" />provjerite lozinke na Google računu.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">Autori Chromiuma</translation>
 </translationbundle>

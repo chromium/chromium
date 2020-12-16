@@ -986,6 +986,7 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />፣ <ph name="TYPE_2" />፣, <ph name="TYPE_3" /></translation>
 <translation id="4901778704868714008">አስቀምጥ...</translation>
 <translation id="4913987521957242411">ከላይ በግራ ብሳ</translation>
+<translation id="4918221908152712722"><ph name="APP_NAME" />ን ይጫኑ (ምንም ማውረድ አያስፈልግም)</translation>
 <translation id="4923459931733593730">ክፍያ</translation>
 <translation id="4926049483395192435">መገለጽ አለበት።</translation>
 <translation id="4926159001844873046"><ph name="SITE" /> እንዲህ ይላል፦</translation>
@@ -1351,6 +1352,7 @@
 <translation id="6328786501058569169">ይህ ጣቢያ አታላይ ነው</translation>
 <translation id="6337133576188860026">ከ<ph name="SIZE" /> ያነሰ ቦታ ያስለቅቃል። አንዳንድ ጣቢያዎች በሚቀጥለው ጉብኝትዎ ላይ ይበልጥ በዝግታ ሊጫኑ ይችላሉ።</translation>
 <translation id="6337534724793800597">መምሪያዎችን በስም አጣራ</translation>
+<translation id="6349101878882523185"><ph name="APP_NAME" />ን ይጫኑ</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{ምንም}=1{1 ይለፍ ቃል (ለ<ph name="DOMAIN_LIST" />፣ ሰምሯል)}=2{2 ይለፍ ቃላት (ለ<ph name="DOMAIN_LIST" />፣ ሰምሯል)}one{# ይለፍ ቃላት (ለ<ph name="DOMAIN_LIST" />፣ ሰምሯል)}other{# ይለፍ ቃላት (ለ<ph name="DOMAIN_LIST" />፣ ሰምሯል)}}</translation>
 <translation id="6358450015545214790">እነዚህ ምን ማለት ናቸው?</translation>
 <translation id="6361757823711327522">B7</translation>
@@ -2041,6 +2043,7 @@
 <translation id="9158625974267017556">C6 (የደብዳቤ ፖስታ)</translation>
 <translation id="9168814207360376865">የተቀመጡ የመክፈያ ዘዴዎች ካልዎት ጣቢያዎች እንዲፈትሹ ይፍቀዱ</translation>
 <translation id="9169664750068251925">ሁልጊዜ በዚህ ጣቢያ ላይ አግድ</translation>
+<translation id="9169931577761441333"><ph name="APP_NAME" />ን ወደ መነሻ ገጽ ያክሉ</translation>
 <translation id="9170848237812810038">&amp;ቀልብስ</translation>
 <translation id="9171296965991013597">መተግበሪያ ይተው?</translation>
 <translation id="9173282814238175921">ነጠላ ሰነድ/አዲስ ሉህ</translation>

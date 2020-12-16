@@ -12,7 +12,7 @@
 <translation id="10614374240317010">Nikada nije sačuvano</translation>
 <translation id="1067922213147265141">Ostale Googleove usluge</translation>
 <translation id="107147699690128016">Ako promijenite ekstenziju fajla, moguće je da će se fajl otvoriti u drugoj aplikaciji i potencijalno predstavljati opasnost po vaš uređaj.</translation>
-<translation id="1094515529340404628">Publika na webu i mjerenje oglasa</translation>
+<translation id="1094515529340404628">Web Crowd i mjerenje oglasa</translation>
 <translation id="1100066534610197918">Otvori u novoj kartici i grupi</translation>
 <translation id="1105960400813249514">Snimanje ekrana</translation>
 <translation id="1111673857033749125">Oznake koje sačuvate na drugim uređajima će se pojaviti ovdje.</translation>
@@ -228,7 +228,7 @@ Dodirnite i zadržite bilo koju riječ da je pretražite. Za fino podešavanje p
 <translation id="2536728043171574184">Gledate kopiju ove stranice van mreže</translation>
 <translation id="2537178555904266562">Greška prilikom sinhroniziranja lozinki</translation>
 <translation id="2546283357679194313">Kolačići i podaci web lokacije</translation>
-<translation id="2562889244313180139">Dopustite web-lokacijama i aplikacijama da vam pruže relevantnije iskustvo pomoću aliasa koji se ne može identificirati.</translation>
+<translation id="2562889244313180139">Dozvolite web lokacijama i aplikacijama da vam pruže relevantnije iskustvo pomoću pseudonima koji ne može poslužiti za identifikaciju.</translation>
 <translation id="2567385386134582609">SLIKA</translation>
 <translation id="2571711316400087311">Ponudi slanje stranica na drugim jezicima Google Prevodiocu</translation>
 <translation id="2581165646603367611">Na ovaj način će se obrisati kolačići, keš memorija i drugi podaci s web lokacija za koje Chrome smatra da su nebitne.</translation>
@@ -716,7 +716,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="6005538289190791541">Prijedlog za lozinku</translation>
 <translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Imate <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> stranicu}one{Imate <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> stranicu}few{Imate <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> stranice}other{Imate <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> stranica}}</translation>
 <translation id="6014293228235665243">Nepročitano</translation>
-<translation id="6018309500671889594">Omogućite oglašivačima da proučavaju oglasne kampanje pomoću informacija kojima vas ne mogu identificirati.</translation>
+<translation id="6018309500671889594">Dozvolite oglašivačima da proučavaju oglasne kampanje pomoću informacija koje ne mogu poslužiti za identifikaciju.</translation>
 <translation id="6036057147555329831">Dodatni ICU</translation>
 <translation id="6039379616847168523">Pređite na sljedeću karticu</translation>
 <translation id="6040143037577758943">Zatvori</translation>
@@ -925,7 +925,7 @@ Podaci iz vaših anonimnih sesija će se obrisati iz Chromea kada <ph name="BEGI
 <translation id="7403691278183511381">Iskustvo prvog pokretanja Chromea</translation>
 <translation id="741204030948306876">Da, želim</translation>
 <translation id="7413229368719586778">Datum početka: <ph name="DATE" /></translation>
-<translation id="7416941666639889592">Pridruživanjem Web Crowdu omogućujete web-lokacijama da vaše iskustvo na mreži učine relevantnim i bez korištenja podataka koji otkrivaju identitet. Slično publici na koncertu, web-lokacije i oglašivači mogu znati samo da tisuće korisnika imaju sličan interes.</translation>
+<translation id="7416941666639889592">Pridruživanjem Web Crowdu dozvoljavate web lokacijama da vaše iskustvo na webu učine relevantnijim bez korištenja informacija koje mogu poslužiti za ličnu identifikaciju. Slično publici na koncertu, web lokacije i oglašivači mogu znati samo da hiljade korisnika dijeli slično interesovanje.</translation>
 <translation id="7431991332293347422">Kontrolirajte kako se koristi vaša historija pregledanja za personalizaciju Pretraživanja i još mnogo toga</translation>
 <translation id="7435356471928173109">Funkciju je isključio vaš administrator</translation>
 <translation id="7437998757836447326">Odjava iz Chromea</translation>
@@ -1127,7 +1127,7 @@ Podaci iz vaših anonimnih sesija će se obrisati iz Chromea kada <ph name="BEGI
 <translation id="8748850008226585750">Sadržaj je sakriven</translation>
 <translation id="8788265440806329501">Historija navigacije je zatvorena</translation>
 <translation id="8788968922598763114">Ponovo otvori posljednju zatvorenu karticu</translation>
-<translation id="8795672590390389447">Testno okruženje privatnosti</translation>
+<translation id="8795672590390389447">Zaštićeno okruženje za privatnost</translation>
 <translation id="8798449543960971550">Pročitano</translation>
 <translation id="8812260976093120287">Na nekim web lokacijama možete platiti gore navedenim aplikacijama za plaćanje na vašem uređaju.</translation>
 <translation id="881688628773363275">Sadržaj kartice za pregled nije moguće pregledati.</translation>

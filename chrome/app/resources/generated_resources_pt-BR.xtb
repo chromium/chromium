@@ -3435,7 +3435,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4917385247580444890">Forte</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> deseja se comunicar com a extensão "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4918086044614829423">Aceitar</translation>
-<translation id="4918221908152712722">Instale o <ph name="APP_NAME" /> (nenhum download é necessário)</translation>
 <translation id="4921290200821452703">Informações da conta escolar para o pai/mãe</translation>
 <translation id="4921348630401250116">Conversão de texto em voz</translation>
 <translation id="49226369361073053">{0,plural, =0{Atualize o dispositivo agora}=1{Atualize o dispositivo em 1 segundo}one{Atualize o dispositivo em # segundo}other{Atualize o dispositivo em # segundos}}</translation>
@@ -4578,7 +4577,6 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="6248988683584659830">Pesquisar nas configurações</translation>
 <translation id="6249200942125593849">Gerenciar recursos de acessibilidade</translation>
 <translation id="6251870443722440887">Processamentos de GDI</translation>
-<translation id="6251889282623539337">Termos de Serviço de <ph name="DOMAIN" /></translation>
 <translation id="625369703868467034">Integridade da rede</translation>
 <translation id="6254503684448816922">Compromisso da chave</translation>
 <translation id="6257602895346497974">Ativar a sincronização…</translation>
@@ -5469,7 +5467,6 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="7290242001003353852">Este serviço de login, hospedado por <ph name="SAML_DOMAIN" />, está acessando sua câmara.</translation>
 <translation id="7295614427631867477">O Android, o Google Play e os apps associados são regidos pelas próprias políticas de uso e de coleta de dados.</translation>
 <translation id="729583233778673644">Permitir a codificação AES e RC4. O uso dessa opção é mais arriscado, porque as criptografias RC4 não são seguras.</translation>
-<translation id="7296774163727375165">Termos de <ph name="DOMAIN" /></translation>
 <translation id="7297443947353982503">Nome de usuário/senha incorretos ou falha de autenticação EAP</translation>
 <translation id="729761647156315797">Escolher idioma e teclado</translation>
 <translation id="7297726121602187087">Verde-escuro</translation>
@@ -6452,7 +6449,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8398877366907290961">Continuar mesmo assim</translation>
 <translation id="8400146488506985033">Gerenciar pessoas</translation>
 <translation id="8401432541486058167">Insira o PIN associado ao seu cartão inteligente.</translation>
-<translation id="8405046151008197676">Veja os destaques da atualização mais recente</translation>
 <translation id="8407199357649073301">Nível de registro:</translation>
 <translation id="8408068190360279472">Rede <ph name="NETWORK_TYPE" />, conectando</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -7140,7 +7136,6 @@ Pressione um interruptor atribuído para remover a atribuição.</translation>
 <translation id="9168436347345867845">Mais tarde</translation>
 <translation id="9169496697824289689">Ver atalhos de teclado</translation>
 <translation id="916964310188958970">Por que essa sugestão?</translation>
-<translation id="9169931577761441333">Adicionar o app <ph name="APP_NAME" /> à tela inicial</translation>
 <translation id="9170061643796692986">A configuração de visibilidade atual é: todos os contatos</translation>
 <translation id="9170848237812810038">&amp;Desfazer</translation>
 <translation id="9170884462774788842">Outro programa em seu computador adicionou um tema que pode mudar a forma como o Google Chrome funciona.</translation>

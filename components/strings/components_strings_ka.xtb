@@ -985,6 +985,7 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4901778704868714008">შენახვა...</translation>
 <translation id="4913987521957242411">ზედა მარცხენა ნაწილის გახვრეტა</translation>
+<translation id="4918221908152712722">დააინსტალირეთ <ph name="APP_NAME" /> (ჩამოტვირთვა აუცილებელი არ არის)</translation>
 <translation id="4923459931733593730">გადახდა</translation>
 <translation id="4926049483395192435">საჭიროა მიუთითოთ.</translation>
 <translation id="4926159001844873046"><ph name="SITE" /> იუწყება:</translation>
@@ -1350,6 +1351,7 @@
 <translation id="6328786501058569169">ეს საიტი შეცდომაში შემყვანია</translation>
 <translation id="6337133576188860026">გამოთავისუფლდება <ph name="SIZE" /> ან ნაკლები. ზოგიერთი საიტი შემდეგი მონახულებისას შეიძლება უფრო ნელა ჩაიტვირთოს.</translation>
 <translation id="6337534724793800597">ფილტრის წესები სახელის მიხედვით</translation>
+<translation id="6349101878882523185"><ph name="APP_NAME" />-ის ინსტალაცია</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{არცერთი}=1{1 პაროლი (<ph name="DOMAIN_LIST" />-ისთვის, სინქრონიზებული)}=2{2 პაროლი (<ph name="DOMAIN_LIST" />-ისთვის, სინქრონიზებული)}other{# პაროლი (<ph name="DOMAIN_LIST" />-ისთვის, სინქრონიზებული)}}</translation>
 <translation id="6358450015545214790">რას ნიშნავს ეს?</translation>
 <translation id="6361757823711327522">B7</translation>
@@ -2039,6 +2041,7 @@
 <translation id="9158625974267017556">C6 (კონვერტი)</translation>
 <translation id="9168814207360376865">საიტებისთვის შენახული გადახდის მეთოდების ხელმისაწვდომობის შემოწმების დაშვება</translation>
 <translation id="9169664750068251925">ყოველთვის დაიბლოკოს ამ საიტზე</translation>
+<translation id="9169931577761441333"><ph name="APP_NAME" />-ის დამატება მთავარ ეკრანზე</translation>
 <translation id="9170848237812810038">მოქმედების დაბრ&amp;უნება</translation>
 <translation id="9171296965991013597">გსურთ აპიდან გასვლა?</translation>
 <translation id="9173282814238175921">ერთი დოკუმენტი/ახალი ფურცელი</translation>

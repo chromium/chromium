@@ -996,6 +996,7 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4901778704868714008">సేవ్ చేయి...</translation>
 <translation id="4913987521957242411">ఎడమవైపు ఎగువ భాగంలో రంధ్రాలు</translation>
+<translation id="4918221908152712722"><ph name="APP_NAME" />ను ఇన్‌స్టాల్ చేయండి (డౌన్‌లోడ్ చేయాల్సిన అవసరం లేదు)</translation>
 <translation id="4923459931733593730">చెల్లింపు</translation>
 <translation id="4926049483395192435">ఖచ్చితంగా పేర్కొనాలి.</translation>
 <translation id="4926159001844873046"><ph name="SITE" /> ఇలా చెబుతోంది</translation>
@@ -1361,6 +1362,7 @@
 <translation id="6328786501058569169">ఈ సైట్ మోసపూరితమైనది</translation>
 <translation id="6337133576188860026"><ph name="SIZE" /> కంటే తక్కువ స్థలాన్ని ఖాళీ చేస్తుంది. మీ తదుపరి సందర్శనలో కొన్ని సైట్‌లు మరింత నెమ్మదిగా లోడ్ కావచ్చు.</translation>
 <translation id="6337534724793800597">పేరు ద్వారా విధానాలను ఫిల్టర్ చేయి</translation>
+<translation id="6349101878882523185"><ph name="APP_NAME" />‌ను ఇన్‌స్టాల్ చేయండి</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{ఏవీ లేవు}=1{1 పాస్‌వర్డ్ (<ph name="DOMAIN_LIST" />కు చెందినది, సింక్ చేయబడింది)}=2{2 పాస్‌వర్డ్‌లు (<ph name="DOMAIN_LIST" />కు చెందినవి, సింక్ చేయబడ్డాయి)}other{# పాస్‌వర్డ్‌లు (<ph name="DOMAIN_LIST" />కు చెందినవి, సింక్ చేయబడ్డాయి)}}</translation>
 <translation id="6358450015545214790">దీని అర్ధం ఏమిటి?</translation>
 <translation id="6361757823711327522">B7</translation>
@@ -2050,6 +2052,7 @@
 <translation id="9158625974267017556">C6 (ఎన్వలప్)</translation>
 <translation id="9168814207360376865">ఏవైనా పేమెంట్ ఆప్షన్‌లను మీరు సేవ్ చేశారో లేదో చెక్ చేసేందుకు వెబ్‌సైట్‌లను అనుమతించండి</translation>
 <translation id="9169664750068251925">ఈ సైట్‌లో ఎప్పుడూ బ్లాక్ చేయి</translation>
+<translation id="9169931577761441333"><ph name="APP_NAME" />ను హోమ్ స్క్రీన్‌కు జోడించండి</translation>
 <translation id="9170848237812810038">&amp;అన్డు</translation>
 <translation id="9171296965991013597">యాప్ నుండి నిష్క్రమించాలా?</translation>
 <translation id="9173282814238175921">ఒక డాక్యుమెంట్/కొత్త షీట్</translation>

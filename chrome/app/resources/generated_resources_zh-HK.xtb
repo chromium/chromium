@@ -1431,6 +1431,7 @@
 <translation id="2602501489742255173">向上滑動即可開始</translation>
 <translation id="2603115962224169880">清理電腦</translation>
 <translation id="2603463522847370204">在無痕式視窗中開啟(&amp;I)</translation>
+<translation id="2603656971249947488">分頁列</translation>
 <translation id="2604255671529671813">網絡連線錯誤</translation>
 <translation id="2606246518223360146">連結資料</translation>
 <translation id="2606454609872547359">否，不啟動 ChromeVox 並繼續操作</translation>
@@ -1799,6 +1800,7 @@
 <translation id="3007771295016901659">複製標籤</translation>
 <translation id="3008232374986381779">在您的 <ph name="DEVICE_TYPE" /> 上執行 Linux 工具、編輯器和整合開發環境 (IDE)。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">重設權限</translation>
+<translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> 要求您在今天內連接 Wi-Fi 並下載更新，或使用按用量收費連線的下載更新 (可能需支付費用)。}other{<ph name="MANAGER" /> 要求您連接 Wi-Fi 並在期限前下載更新，或使用按用量收費連線的下載更新 (可能需支付費用)。}}</translation>
 <translation id="3009300415590184725">您確定要取消流動數據服務設定程序嗎？</translation>
 <translation id="3009779501245596802">索引數據庫</translation>
 <translation id="3010279545267083280">已刪除密碼</translation>
@@ -1823,6 +1825,7 @@
 <translation id="3024374909719388945">使用 24 小時制時鐘</translation>
 <translation id="3027296729579831126">開啟「咫尺共享」功能</translation>
 <translation id="3029466929721441205">顯示檔案櫃中的觸控筆工具</translation>
+<translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> 要求您在今天內下載更新。系統將在您連接互聯網時自動下載更新。}other{<ph name="MANAGER" /> 要求您在期限前下載更新。系統將在您連接互聯網時自動下載更新。}}</translation>
 <translation id="3031417829280473749">特務 X</translation>
 <translation id="3031557471081358569">選取要匯入的項目：</translation>
 <translation id="3036327949511794916">此 <ph name="DEVICE_TYPE" /> 的退貨期限已過。</translation>
@@ -1879,6 +1882,7 @@
 <translation id="3103941660000130485">升級 Linux 時發生錯誤</translation>
 <translation id="3105796011181310544">要改回使用 Google 嗎？</translation>
 <translation id="310671807099593501">網站正在使用藍牙</translation>
+<translation id="3108931485517391283">無法接收</translation>
 <translation id="3109724472072898302">已收合</translation>
 <translation id="3115147772012638511">等候快取…</translation>
 <translation id="3115580024857770654">收合全部</translation>
@@ -1894,6 +1898,7 @@
 <translation id="3127156390846601284">此操作會刪除所有顯示網站在裝置上儲存的全部資料。要繼續嗎？</translation>
 <translation id="3127860049873093642">為避免發生充電和效能的問題，請使用兼容的 Dell 或 USB-C 電源適配器。</translation>
 <translation id="3127862849166875294">調整 Linux 磁碟大小</translation>
+<translation id="3127882968243210659">「<ph name="MANAGER" />」要求您備份資料，並將此 Chromebook 回復原廠設定，才能開啟 Google Play。</translation>
 <translation id="3129173833825111527">左邊界</translation>
 <translation id="3129215702932019810">啟動應用程式時發生錯誤</translation>
 <translation id="3130528281680948470">您的裝置將會重新設定，且所有使用者帳戶和本機資料都會被移除。這項操作無法復原。</translation>
@@ -2012,6 +2017,7 @@
 <translation id="3275778913554317645">在視窗中開啟</translation>
 <translation id="3277691515294482687">在升級 Linux 前備份應用程式和檔案至「我的檔案」資料夾。</translation>
 <translation id="3278001907972365362">您需要注意自己的 Google 帳戶</translation>
+<translation id="3279092821516760512">所選聯絡人在附近時可與您分享內容。您必須先接受，系統才能傳送檔案。</translation>
 <translation id="3279230909244266691">此程序可能需時幾分鐘。正在啟動虛擬機器。</translation>
 <translation id="3280237271814976245">另存為(&amp;A)…</translation>
 <translation id="3280243678470289153">繼續使用 Chrome</translation>
@@ -2569,6 +2575,7 @@
 <translation id="3882165008614329320">相機或檔案中的現有影片</translation>
 <translation id="3884152383786131369">支援多種語言的網站內容會使用此清單上的第一個支援語言。這些偏好設定會與您的瀏覽器設定同步。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">您想存取此網站的要求已傳送至<ph name="NAME" /></translation>
+<translation id="3888364689515978571">已關閉。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="3888550877729210209">正在使用「<ph name="LOCK_SCREEN_APP_NAME" />」寫筆記</translation>
 <translation id="3890064827463908288">開啟 Chrome 同步功能以使用 Wi-Fi Sync</translation>
 <translation id="3892414795099177503">新增 OpenVPN/L2TP…</translation>
@@ -2649,6 +2656,7 @@
 <translation id="3958088479270651626">匯入書籤和設定</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3964480518399667971">關閉流動網絡</translation>
+<translation id="3965730875470565266">已開啟，剩餘 <ph name="MINUTES" /> 分鐘</translation>
 <translation id="3965811923470826124">包含</translation>
 <translation id="3965965397408324205">退出「<ph name="PROFILE_NAME" />」</translation>
 <translation id="3966072572894326936">選擇其他資料夾…</translation>
@@ -2718,6 +2726,7 @@
 <translation id="4049783682480068824">{COUNT,plural, =1{無法連接 # 個聯絡人。如要與他們使用「咫尺共享」，請將他們的 Google 帳戶電郵地址加入您的通訊錄。}other{無法連接 # 個聯絡人。如要與他們使用「咫尺共享」，請將其 Google 帳戶電郵地址加入您的通訊錄。}}</translation>
 <translation id="4050225813016893843">驗證方法</translation>
 <translation id="4052120076834320548">最小</translation>
+<translation id="4054070260844648638">向所有人顯示</translation>
 <translation id="4056908315660577142">您已達到家長為「<ph name="APP_NAME" />」Chrome 應用程式設定的使用時間限制。明天可以使用 <ph name="TIME_LIMIT" />。</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">前往商店檢視</translation>
@@ -3423,7 +3432,6 @@
 <translation id="4917385247580444890">強</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> 想與「<ph name="EXTENSION_NAME" />」擴充功能保持通訊</translation>
 <translation id="4918086044614829423">接受</translation>
-<translation id="4918221908152712722">安裝「<ph name="APP_NAME" />」(無需下載)</translation>
 <translation id="4921290200821452703">家長專用的學校帳戶資料</translation>
 <translation id="4921348630401250116">文字轉語音</translation>
 <translation id="49226369361073053">{0,plural, =0{立即更新裝置}=1{請在 1 秒內更新裝置}other{請在 # 秒內更新裝置}}</translation>
@@ -3656,6 +3664,7 @@
 <translation id="5213891612754844763">顯示 Proxy 設定</translation>
 <translation id="5215502535566372932">選取國家/地區</translation>
 <translation id="521582610500777512">已捨棄相片</translation>
+<translation id="5217189792977407501">指派至桌面</translation>
 <translation id="5222403284441421673">已封鎖不安全的下載</translation>
 <translation id="5222676887888702881">登出</translation>
 <translation id="52232769093306234">無法封裝。</translation>
@@ -4192,6 +4201,7 @@
 <translation id="5832813618714645810">設定檔</translation>
 <translation id="583281660410589416">不明</translation>
 <translation id="5833397272224757657">使用您瀏覽的網站內容、瀏覽器活動及互動記錄，以提供個人化使用體驗</translation>
+<translation id="5833551944249825624">您的 Chromebook 將會向附近所有人顯示 5 分鐘</translation>
 <translation id="5833726373896279253">只有擁有者才能修改這些設定：</translation>
 <translation id="5834581999798853053">還有大約 <ph name="TIME" /> 分鐘</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - 相機或麥克風錄製中</translation>
@@ -4562,7 +4572,6 @@
 <translation id="6248988683584659830">搜尋設定</translation>
 <translation id="6249200942125593849">管理無障礙功能</translation>
 <translation id="6251870443722440887">GDI 控制代碼</translation>
-<translation id="6251889282623539337"><ph name="DOMAIN" /> 服務條款</translation>
 <translation id="625369703868467034">網絡健康</translation>
 <translation id="6254503684448816922">金鑰洩露</translation>
 <translation id="6257602895346497974">開啟同步處理功能…</translation>
@@ -4597,6 +4606,8 @@
 <translation id="628352644014831790">4 秒</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> 不常下載，代表此檔案可能不安全。</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{您網絡上的新打印機}other{您網絡上的新打印機}}</translation>
+<translation id="6285770818046456882">正在與您分享的裝置已取消傳輸</translation>
+<translation id="6290613030083731160">附近沒有可分享內容的裝置。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="6291949900244949761">在網站要存取 USB 裝置時詢問您 (建議)</translation>
 <translation id="6291953229176937411">在 Finder 中顯示(&amp;S)</translation>
 <translation id="6295158916970320988">所有網站</translation>
@@ -4641,6 +4652,7 @@
 <translation id="6331818708794917058">網站可要求連接 MIDI 裝置</translation>
 <translation id="6333064448949140209">檔案將傳送至 Google 執行偵錯</translation>
 <translation id="6334444530352320327">您的應用程式和作業系統設定將在所有透過此帳戶登入的 Chromebook 上同步。<ph name="LINK_BEGIN" />同步設定<ph name="LINK_END" /></translation>
+<translation id="6335920438823100346">「<ph name="MANAGER" />」要求您備份資料並將此 Chromebook 回復原廠設定，才能啟動 Linux。</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> 已停用 ADB 偵錯。這會讓系統在 24 小時後重設您的 <ph name="DEVICE_TYPE" />。請備份您想保留的檔案。</translation>
 <translation id="6338981933082930623">所有網站都可向您顯示任何廣告</translation>
 <translation id="6339668969738228384">為 <ph name="USER_EMAIL_ADDRESS" /> 建立新的個人檔案</translation>
@@ -5450,7 +5462,6 @@
 <translation id="7290242001003353852">此登入服務商 (由 <ph name="SAML_DOMAIN" /> 代管) 正在存取您的相機。</translation>
 <translation id="7295614427631867477">請注意，Android、Google Play 以及相關聯的應用程式受各自的資料收集政策和使用政策管限。</translation>
 <translation id="729583233778673644">強制使用 AES 和 RC4 加密。由於 RC4 加密不安全，因此使用此選項會提高風險。</translation>
-<translation id="7296774163727375165"><ph name="DOMAIN" /> 條款</translation>
 <translation id="7297443947353982503">使用者名稱/密碼錯誤或 EAP 驗證失敗</translation>
 <translation id="729761647156315797">選擇語言和鍵盤</translation>
 <translation id="7297726121602187087">深綠色</translation>
@@ -5494,6 +5505,7 @@
 <translation id="7347943691222276892">撳一下就可以離開<ph name="SUBPAGE_TITLE" />。</translation>
 <translation id="7348093485538360975">螢幕小鍵盤</translation>
 <translation id="7352651011704765696">發生問題</translation>
+<translation id="7353261921908507769">聯絡人在附近時可與您分享內容。您必須先接受，系統才能傳送檔案。</translation>
 <translation id="735361434055555355">正在安裝 Linux…</translation>
 <translation id="7354341762311560488">指紋感應器位於鍵盤左下方。請用任何一隻手指輕觸指紋感應器。</translation>
 <translation id="7356908624372060336">網絡記錄</translation>
@@ -5893,6 +5905,7 @@
 <translation id="779308894558717334">淺綠色</translation>
 <translation id="7793098747275782155">深藍色</translation>
 <translation id="7797571222998226653">關閉</translation>
+<translation id="7798259165971079056">您需要將自己的狀態設定為顯示，其他人才能與您分享內容。<ph name="BR" /><ph name="BR" />如要將狀態設定為暫時顯示，請按一下電腦右下角的時間欄位來開啟狀態區，再啟用「咫尺共享」分享設定。</translation>
 <translation id="7798844538707273832">已自動封鎖<ph name="PERMISSION" /></translation>
 <translation id="7799299114731150374">已成功設定桌布</translation>
 <translation id="7800518121066352902">逆時針旋轉(&amp;O)</translation>
@@ -6430,7 +6443,6 @@
 <translation id="8398877366907290961">仍要繼續</translation>
 <translation id="8400146488506985033">管理使用者</translation>
 <translation id="8401432541486058167">請輸入與智能資訊卡相關聯的 PIN。</translation>
-<translation id="8405046151008197676">瞭解最新的更新內容摘要</translation>
 <translation id="8407199357649073301">記錄等級：</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" />網絡，正在連線</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -6879,6 +6891,7 @@
 <translation id="8898840733695078011">訊號強度</translation>
 <translation id="8899851313684471736">在新視窗中開啟連結(&amp;W)</translation>
 <translation id="8900413463156971200">啟用流動網絡</translation>
+<translation id="8902059453911237649">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> 要求您備份資料，並在今天內歸還此 <ph name="DEVICE_TYPE" />。}other{<ph name="MANAGER" /> 要求您備份資料，並在期限前歸還此 <ph name="DEVICE_TYPE" />。}}</translation>
 <translation id="8902667442496790482">開啟「選取以朗讀」設定</translation>
 <translation id="8903263458134414071">請選取要登入的帳戶</translation>
 <translation id="890616557918890486">變更來源</translation>
@@ -7115,7 +7128,6 @@
 <translation id="9168436347345867845">稍後再說</translation>
 <translation id="9169496697824289689">查看鍵盤快速鍵</translation>
 <translation id="916964310188958970">為什麼會顯示此建議？</translation>
-<translation id="9169931577761441333">將「<ph name="APP_NAME" />」新增至主畫面</translation>
 <translation id="9170061643796692986">目前嘅分享設定係所有聯絡人</translation>
 <translation id="9170848237812810038">復原(&amp;U)</translation>
 <translation id="9170884462774788842">電腦中其他程式所新增的主題可能會變更 Chrome 的工作方式。</translation>

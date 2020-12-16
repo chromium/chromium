@@ -1432,6 +1432,7 @@
 <translation id="2602501489742255173">開始するには上にスワイプします</translation>
 <translation id="2603115962224169880">パソコンのクリーンアップ</translation>
 <translation id="2603463522847370204">シークレット ウィンドウで開く(&amp;I)</translation>
+<translation id="2603656971249947488">タブバー</translation>
 <translation id="2604255671529671813">ネットワーク接続エラー</translation>
 <translation id="2606246518223360146">データをリンク</translation>
 <translation id="2606454609872547359">いいえ（ChromeVox なしで続行する）</translation>
@@ -1800,6 +1801,7 @@
 <translation id="3007771295016901659">タブを複製</translation>
 <translation id="3008232374986381779"><ph name="DEVICE_TYPE" /> で Linux のツール、エディタ、IDE を実行します。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">権限をリセット</translation>
+<translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> が、Wi-Fi に接続して、今日中にアップデートをダウンロードするよう求めています。Wi-Fi に接続しない場合、従量制接続でダウンロードします（通信料が発生することがあります）。}other{<ph name="MANAGER" /> が、Wi-Fi に接続して、期限までにアップデートをダウンロードするよう求めています。Wi-Fi に接続しない場合、従量制接続でダウンロードします（通信料が発生することがあります）。}}</translation>
 <translation id="3009300415590184725">モバイル データ サービスの設定処理をキャンセルしてもよろしいですか？</translation>
 <translation id="3009779501245596802">Indexed Database</translation>
 <translation id="3010279545267083280">パスワードを削除しました</translation>
@@ -1824,6 +1826,7 @@
 <translation id="3024374909719388945">24 時間形式を使用する</translation>
 <translation id="3027296729579831126">ニアバイシェアをオンにする</translation>
 <translation id="3029466929721441205">シェルフでのタッチペン ツールの表示</translation>
+<translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> が、今日中にアップデートをダウンロードするよう求めています。アップデートは、インターネットに接続すると自動的にダウンロードされます。}other{<ph name="MANAGER" /> が期限までにアップデートをダウンロードするよう求めています。アップデートは、インターネットに接続すると自動的にダウンロードされます。}}</translation>
 <translation id="3031417829280473749">エージェント X</translation>
 <translation id="3031557471081358569">インポートするデータを選択:</translation>
 <translation id="3036327949511794916">この <ph name="DEVICE_TYPE" />の返却期限が過ぎています。</translation>
@@ -1880,6 +1883,7 @@
 <translation id="3103941660000130485">Linux のアップグレード中にエラーが発生しました</translation>
 <translation id="3105796011181310544">Google に戻しますか？</translation>
 <translation id="310671807099593501">サイトで Bluetooth が使用されています</translation>
+<translation id="3108931485517391283">受信できません</translation>
 <translation id="3109724472072898302">折りたたみ表示中</translation>
 <translation id="3115147772012638511">キャッシュを待機しています...</translation>
 <translation id="3115580024857770654">すべて折りたたむ</translation>
@@ -1895,6 +1899,7 @@
 <translation id="3127156390846601284">表示されているすべてのサイトについて、デバイスに保存されているデータを削除します。続行しますか？</translation>
 <translation id="3127860049873093642">充電やパフォーマンスに関する問題を回避するには、対応する Dell または USB Type-C の電源アダプターを使用してください。</translation>
 <translation id="3127862849166875294">Linux のディスクサイズ変更</translation>
+<translation id="3127882968243210659">Google Play を起動するため、<ph name="MANAGER" /> がデータをバックアップし、この Chromebook を初期状態にリセットするよう求めています。</translation>
 <translation id="3129173833825111527">左余白</translation>
 <translation id="3129215702932019810">アプリケーションの起動中にエラーが発生しました</translation>
 <translation id="3130528281680948470">デバイスをリセットし、すべてのユーザー アカウントとローカルデータを削除します。この操作は元に戻せません。</translation>
@@ -2013,6 +2018,7 @@
 <translation id="3275778913554317645">ウィンドウとして開く</translation>
 <translation id="3277691515294482687">Linux をアップグレードする前に、アプリとファイルを [マイファイル] フォルダにバックアップする。</translation>
 <translation id="3278001907972365362">お使いの Google アカウントは対応が必要です</translation>
+<translation id="3279092821516760512">近くにいる選択した連絡先が共有できます。許可するまで転送は行われません。</translation>
 <translation id="3279230909244266691">この処理には数分かかることがあります。仮想マシンを起動します。</translation>
 <translation id="3280237271814976245">名前を付けて保存(&amp;A)...</translation>
 <translation id="3280243678470289153">Chrome に留まる</translation>
@@ -2570,6 +2576,7 @@
 <translation id="3882165008614329320">カメラやファイルに保存されている動画</translation>
 <translation id="3884152383786131369">複数の言語に対応しているウェブ コンテンツでは、次のリストの最初にある対応言語が使用されます。これらの設定はブラウザの設定と同期されています。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">このサイトへのアクセス リクエストを <ph name="NAME" /> さんに送信しました</translation>
+<translation id="3888364689515978571">オフ（<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" />）</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> でメモをとる</translation>
 <translation id="3890064827463908288">Wi-Fi 同期を使用するには Chrome 同期をオンにしてください</translation>
 <translation id="3892414795099177503">OpenVPN / L2TP を追加...</translation>
@@ -2650,6 +2657,7 @@
 <translation id="3958088479270651626">ブックマークと設定のインポート</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3964480518399667971">モバイル ネットワークをオフにする</translation>
+<translation id="3965730875470565266">オン（<ph name="MINUTES" /> 分）</translation>
 <translation id="3965811923470826124">次を使用</translation>
 <translation id="3965965397408324205">「<ph name="PROFILE_NAME" />」を終了</translation>
 <translation id="3966072572894326936">別のフォルダを選択...</translation>
@@ -2719,6 +2727,7 @@
 <translation id="4049783682480068824">{COUNT,plural, =1{使用できない連絡先が # 件あります。これらのユーザーとニアバイシェアを利用するには、該当するユーザーの Google アカウントに関連付けられているメールアドレスを連絡先に追加してください。}other{使用できない連絡先が # 件あります。これらのユーザーとニアバイシェアを利用するには、該当するユーザーの Google アカウントに関連付けられているメールアドレスを連絡先に追加してください。}}</translation>
 <translation id="4050225813016893843">認証方法</translation>
 <translation id="4052120076834320548">極小</translation>
+<translation id="4054070260844648638">全員が検出可能</translation>
 <translation id="4056908315660577142">保護者が設定した <ph name="APP_NAME" /> Chrome アプリの利用時間の上限に達しました。明日は <ph name="TIME_LIMIT" /> まで使えます。</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">ストアで見る</translation>
@@ -3424,7 +3433,6 @@
 <translation id="4917385247580444890">強い</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> が拡張機能「<ph name="EXTENSION_NAME" />」との通信をリクエストしています</translation>
 <translation id="4918086044614829423">同意する</translation>
-<translation id="4918221908152712722"><ph name="APP_NAME" /> をインストール（ダウンロードは不要です）</translation>
 <translation id="4921290200821452703">学校用アカウントについての保護者の方向けの情報</translation>
 <translation id="4921348630401250116">テキスト読み上げ</translation>
 <translation id="49226369361073053">{0,plural, =0{今すぐデバイスを更新してください}=1{1 秒以内にデバイスを更新してください}other{# 秒以内にデバイスを更新してください}}</translation>
@@ -3657,6 +3665,7 @@
 <translation id="5213891612754844763">プロキシ設定を表示</translation>
 <translation id="5215502535566372932">国を選択</translation>
 <translation id="521582610500777512">写真を破棄しました</translation>
+<translation id="5217189792977407501">デスクに割り当て</translation>
 <translation id="5222403284441421673">安全でないダウンロードがブロックされました</translation>
 <translation id="5222676887888702881">ログアウト</translation>
 <translation id="52232769093306234">圧縮できませんでした。</translation>
@@ -4193,6 +4202,7 @@
 <translation id="5832813618714645810">プロファイル</translation>
 <translation id="583281660410589416">不明</translation>
 <translation id="5833397272224757657">ユーザーがアクセスしたサイトのコンテンツと、ブラウザのアクティビティおよび操作をカスタマイズに使用します</translation>
+<translation id="5833551944249825624">あなたの Chromebook は近くにいる誰でも 5 分間検出できるようになります</translation>
 <translation id="5833726373896279253">これらの設定を変更できるのは所有者だけです:</translation>
 <translation id="5834581999798853053">あと約 <ph name="TIME" /> 分</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - カメラまたはマイクで記録中です</translation>
@@ -4563,7 +4573,6 @@
 <translation id="6248988683584659830">設定項目を検索</translation>
 <translation id="6249200942125593849">ユーザー補助設定の管理</translation>
 <translation id="6251870443722440887">GDI ハンドル</translation>
-<translation id="6251889282623539337"><ph name="DOMAIN" /> 利用規約</translation>
 <translation id="625369703868467034">ネットワークの健全性</translation>
 <translation id="6254503684448816922">キーが侵害された</translation>
 <translation id="6257602895346497974">同期を有効にする...</translation>
@@ -4598,6 +4607,8 @@
 <translation id="628352644014831790">4秒</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> は一般的にダウンロードされているファイルではなく、危害を及ぼす可能性があります。</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{ネットワーク上の新しいプリンタ}other{ネットワーク上の新しいプリンタ}}</translation>
+<translation id="6285770818046456882">共有元のデバイスによって転送がキャンセルされました</translation>
+<translation id="6290613030083731160">近くに共有可能なデバイスはありません。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="6291949900244949761">サイトから USB デバイスへのアクセス許可を求められたときに確認する（推奨）</translation>
 <translation id="6291953229176937411">Finder で表示(&amp;S)</translation>
 <translation id="6295158916970320988">すべてのサイト</translation>
@@ -4642,6 +4653,7 @@
 <translation id="6331818708794917058">サイトが MIDI デバイスへの接続を要求できるようにする</translation>
 <translation id="6333064448949140209">ファイルはデバッグのため Google に送信されます</translation>
 <translation id="6334444530352320327">アプリと OS の設定は、このアカウントを使用してログインしているすべての Chromebook で同期されます。<ph name="LINK_BEGIN" />同期設定<ph name="LINK_END" /></translation>
+<translation id="6335920438823100346">Linux を起動するため、<ph name="MANAGER" /> がデータをバックアップし、この Chromebook を初期状態にリセットするよう求めています。</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> により ADB デバッグが無効になりました。<ph name="DEVICE_TYPE" /> は 24 時間以内にリセットされます。必要なファイルがあればバックアップしてください。</translation>
 <translation id="6338981933082930623">すべてのサイトであらゆる広告を表示できるようにする</translation>
 <translation id="6339668969738228384"><ph name="USER_EMAIL_ADDRESS" /> の新しいプロフィールを作成します</translation>
@@ -5451,7 +5463,6 @@
 <translation id="7290242001003353852">このログイン サービスは <ph name="SAML_DOMAIN" /> でホストされており、カメラにアクセスしています。</translation>
 <translation id="7295614427631867477">なお、Android、Play、および関連付けられているアプリには、それぞれ独自のデータ収集と使用のポリシーが適用されます。</translation>
 <translation id="729583233778673644">AES 暗号化と RC4 暗号化を許可します。なお RC4 暗号は安全でないため、このオプションを使用するとリスクが高まります。</translation>
-<translation id="7296774163727375165"><ph name="DOMAIN" /> 利用規約</translation>
 <translation id="7297443947353982503">ユーザー名/パスワードが正しくないか、EAP 認証に失敗しました</translation>
 <translation id="729761647156315797">言語とキーボードの選択</translation>
 <translation id="7297726121602187087">暗い緑</translation>
@@ -5495,6 +5506,7 @@
 <translation id="7347943691222276892">クリックすると <ph name="SUBPAGE_TITLE" /> から移動します。</translation>
 <translation id="7348093485538360975">画面キーボード</translation>
 <translation id="7352651011704765696">問題が発生しました</translation>
+<translation id="7353261921908507769">近くにいる連絡先が共有できます。許可するまで転送は行われません。</translation>
 <translation id="735361434055555355">Linux をインストールしています...</translation>
 <translation id="7354341762311560488">指紋認証センサーはキーボードの左下のキーに搭載されています。いずれかの指で軽く触れてください。</translation>
 <translation id="7356908624372060336">ネットワーク ログ</translation>
@@ -5894,6 +5906,7 @@
 <translation id="779308894558717334">明るい緑</translation>
 <translation id="7793098747275782155">暗い青</translation>
 <translation id="7797571222998226653">オフ</translation>
+<translation id="7798259165971079056">検出を有効にするまで、誰もあなたと共有できません。<ph name="BR" /><ph name="BR" />検出を一時的に有効にするには、時刻を選択してステータス領域を開き、周辺ユーザーによる検出をオンにします。</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" />を自動ブロック</translation>
 <translation id="7799299114731150374">壁紙の設定が完了しました</translation>
 <translation id="7800518121066352902">反時計回りに回転(&amp;O)</translation>
@@ -6432,7 +6445,6 @@
 <translation id="8398877366907290961">このまま続行</translation>
 <translation id="8400146488506985033">ユーザーを管理</translation>
 <translation id="8401432541486058167">スマートカードに関連付けられている PIN を入力してください。</translation>
-<translation id="8405046151008197676">最新のアップデートの概要をご確認ください</translation>
 <translation id="8407199357649073301">ログレベル:</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> ネットワーク、接続中</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -6882,6 +6894,7 @@
 <translation id="8898840733695078011">電波強度</translation>
 <translation id="8899851313684471736">新しいウィンドウで開く(&amp;W)</translation>
 <translation id="8900413463156971200">モバイルデータ通信を有効にする</translation>
+<translation id="8902059453911237649">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> が、データをバックアップして、今日中にこの <ph name="DEVICE_TYPE" />を返却するよう求めています。}other{<ph name="MANAGER" /> が、データをバックアップして、期限までにこの <ph name="DEVICE_TYPE" />を返却するよう求めています。}}</translation>
 <translation id="8902667442496790482">「選択して読み上げ」の設定を開く</translation>
 <translation id="8903263458134414071">ログインするアカウントを選択してください</translation>
 <translation id="890616557918890486">ソースを変更</translation>
@@ -7118,7 +7131,6 @@
 <translation id="9168436347345867845">後で行う</translation>
 <translation id="9169496697824289689">キーボード ショートカットの表示</translation>
 <translation id="916964310188958970">この候補が表示された理由</translation>
-<translation id="9169931577761441333">ホーム画面に <ph name="APP_NAME" /> を追加</translation>
 <translation id="9170061643796692986">現在の公開設定はすべての連絡先です</translation>
 <translation id="9170848237812810038">取消(&amp;U)</translation>
 <translation id="9170884462774788842">パソコン上の別のプログラムにより、Chrome の動作方法を変更する可能性のあるテーマが追加されました。</translation>

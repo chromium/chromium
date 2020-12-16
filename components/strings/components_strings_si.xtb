@@ -991,6 +991,7 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4901778704868714008">සුරකින්න...</translation>
 <translation id="4913987521957242411">ඉහළ වමට අනින්න</translation>
+<translation id="4918221908152712722"><ph name="APP_NAME" /> ස්ථාපනය කරන්න (බාගැනීමක් අවශ්‍ය නොවේ)</translation>
 <translation id="4923459931733593730">ගෙවීම</translation>
 <translation id="4926049483395192435">නිශ්චිතව දැක්විය යුතුය.</translation>
 <translation id="4926159001844873046"><ph name="SITE" /> කියයි</translation>
@@ -1356,6 +1357,7 @@
 <translation id="6328786501058569169">මෙම අඩවිය රැවටිලිකාරය</translation>
 <translation id="6337133576188860026"><ph name="SIZE" />ට වඩා අඩුවෙන් හිස් කරයි. ඔබගේ ඊළඟ පිවිසීමේදී සමහර අඩවි වඩාත් සෙමින් පූරණය විය හැකිය.</translation>
 <translation id="6337534724793800597">නම් වශයෙන් ප්‍රතිපත්ති පෙරන්න</translation>
+<translation id="6349101878882523185"><ph name="APP_NAME" /> ස්ථාපන කරන්න</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{කිසිවක් නැත}=1{1 මුරපදයක් (<ph name="DOMAIN_LIST" /> සඳහා, සමමුහූර්තයි)}=2{මුරපද 2 ක් (<ph name="DOMAIN_LIST" /> සඳහා, සමමුහූර්තයි)}one{මුරපද # ක් (<ph name="DOMAIN_LIST" /> සඳහා, සමමුහූර්තයි)}other{මුරපද # ක් (<ph name="DOMAIN_LIST" /> සඳහා, සමමුහූර්තයි)}}</translation>
 <translation id="6358450015545214790">මෙයින් හැඟෙන්නේ කුමක්ද?</translation>
 <translation id="6361757823711327522">B7</translation>
@@ -2045,6 +2047,7 @@
 <translation id="9158625974267017556">C6 (ලියුම් කවරය)</translation>
 <translation id="9168814207360376865">ඔබ ගෙවීමේ ක්‍රම සුරැක තිබේ දැයි පරීක්ෂා කිරීමට අඩවිවලට ඉඩ දෙන්න</translation>
 <translation id="9169664750068251925">සැමවිටම මෙම අඩවිය බාධා කරන්න</translation>
+<translation id="9169931577761441333">මුල් තිරය වෙත <ph name="APP_NAME" /> එක් කරන්න</translation>
 <translation id="9170848237812810038">&amp;පසුගමනය</translation>
 <translation id="9171296965991013597">යෙදුම හැර යන්න ද?</translation>
 <translation id="9173282814238175921">තනි ලේඛනය/නව පත්‍රය</translation>

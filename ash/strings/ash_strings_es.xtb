@@ -339,7 +339,6 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="4112140312785995938">Ir hacia atrás</translation>
 <translation id="4114315158543974537">Activar Phone Hub</translation>
 <translation id="4121728057981832179">Una máquina virtual está usando tu micrófono</translation>
-<translation id="4126167871198063089">Salir de Enunciar Selección</translation>
 <translation id="4129129681837227511">Para poder ver las notificaciones desde la pantalla de bloqueo, desbloquea el dispositivo para cambiar este ajuste</translation>
 <translation id="4146833061457621061">Pon música</translation>
 <translation id="415719264485676252">Grabación de pantalla bloqueada</translation>
@@ -873,12 +872,11 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="8936501819958976551">desactivado</translation>
 <translation id="8938800817013097409">Dispositivo USB tipo C (puerto derecho situado en la parte trasera)</translation>
 <translation id="8940956008527784070">Poca batería (<ph name="PERCENTAGE" />%)</translation>
-<translation id="8982906748181120328">Visib. de Nearby</translation>
+<translation id="8982906748181120328">Visibilidad Nearby</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Estás usando <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Desbloquea el dispositivo como <ph name="LOGIN_ID" /> para hacer lo que indica la notificación</translation>
 <translation id="9017320285115481645">Introduce el código de acceso parental de Family Link.</translation>
-<translation id="9029474291399787231">Actualización de Adobe Flash Player disponible</translation>
 <translation id="9047624247355796468">Abrir la configuración de <ph name="NETWORK_NAME" /></translation>
 <translation id="9056839673611986238">Se va a instalar una versión anterior en el dispositivo</translation>
 <translation id="9065203028668620118">Editar</translation>

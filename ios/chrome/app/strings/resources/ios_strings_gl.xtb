@@ -295,6 +295,7 @@ Sigue os pasos indicados a continuación:</translation>
 <translation id="4121993058175073134">Para enviar datos de exportación netos, configura a túa conta de correo electrónico na aplicación Configuración.</translation>
 <translation id="4124987746317609294">Intervalo de tempo</translation>
 <translation id="4152011295694446843">Aquí atoparás os teus marcadores</translation>
+<translation id="4152093603141133546">A túa organización pechou a túa sesión.</translation>
 <translation id="4172051516777682613">Mostrar sempre</translation>
 <translation id="418156467088430727">Ver versión sen conexión nunha nova pestana</translation>
 <translation id="4181841719683918333">Idiomas</translation>
@@ -537,6 +538,7 @@ Tenta usar un contrasinal distinto para cada sitio.</translation>
 <translation id="6668619169535738264">Editar marcador</translation>
 <translation id="667999046851023355">Documento</translation>
 <translation id="6691331417640343772">Xestionar os datos sincronizados no Panel de control de Google</translation>
+<translation id="6710079714193676716">Xestionado pola túa organización. É posible que algunhas funcións non estean dispoñibles. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Non se puideron exportar os contrasinais</translation>
 <translation id="6748108480210050150">De</translation>
@@ -690,6 +692,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8487667956631253959">Activada</translation>
 <translation id="8487700953926739672">Dispoñible sen conexión</translation>
 <translation id="8490978609246021741">Gardar cambios</translation>
+<translation id="8495097701594799854">Desactivouno a túa organización.</translation>
 <translation id="8503813439785031346">Nome de usuario</translation>
 <translation id="850600235656508448">Abrir marcador no modo de incógnito</translation>
 <translation id="8510057420705599706">Pecharás sesión e desactivarase a sincronización, pero conservaranse neste dispositivo os marcadores, o historial, os contrasinais e outros datos de Chrome.</translation>

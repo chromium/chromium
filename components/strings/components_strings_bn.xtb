@@ -997,6 +997,7 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4901778704868714008">সেভ করুন...</translation>
 <translation id="4913987521957242411">উপরের বাঁদিকে পাঞ্চ</translation>
+<translation id="4918221908152712722"><ph name="APP_NAME" /> ইনস্টল করুন (ডাউনলোডের প্রয়োজন নেই)</translation>
 <translation id="4923459931733593730">অর্থপ্রদান</translation>
 <translation id="4926049483395192435">নির্দিষ্ট করা উচিত৷</translation>
 <translation id="4926159001844873046"><ph name="SITE" /> এ এটি দেখানো হচ্ছে</translation>
@@ -1361,6 +1362,7 @@
 <translation id="6328786501058569169">এই সাইটটি প্রতারণামূলক</translation>
 <translation id="6337133576188860026"><ph name="SIZE" />-এর চেয়ে কম জায়গা খালি করে। পরের বার যখন দেখবেন তখন কিছু সাইট লোড হতে দেরি হতে পারে।</translation>
 <translation id="6337534724793800597">নাম অনুসারে ফিল্টারগুলি বাছাই করুন</translation>
+<translation id="6349101878882523185"><ph name="APP_NAME" /> ইনস্টল করুন</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{একটিও নয়}=1{১টি পাসওয়ার্ড (<ph name="DOMAIN_LIST" />-এর জন্য, সিঙ্ক করা হয়েছে)}=2{২টি পাসওয়ার্ড (<ph name="DOMAIN_LIST" />-এর জন্য, সিঙ্ক করা হয়েছে)}one{#টি পাসওয়ার্ড (<ph name="DOMAIN_LIST" />-এর জন্য, সিঙ্ক করা হয়েছে)}other{#টি পাসওয়ার্ড (<ph name="DOMAIN_LIST" />-এর জন্য, সিঙ্ক করা হয়েছে)}}</translation>
 <translation id="6358450015545214790">এর অর্থ কী?</translation>
 <translation id="6361757823711327522">B7</translation>
@@ -2050,6 +2052,7 @@
 <translation id="9158625974267017556">C6 (Envelope)</translation>
 <translation id="9168814207360376865">আপনি কোনও পেমেন্ট পদ্ধতি সেভ করেছেন কিনা তা সাইটগুলিকে যাচাই করতে দিন</translation>
 <translation id="9169664750068251925">এই সাইটে সর্বদা অবরোধ করুন</translation>
+<translation id="9169931577761441333"><ph name="APP_NAME" /> অ্যাপটি হোম স্ক্রিনে যোগ করুন</translation>
 <translation id="9170848237812810038">&amp;পূর্বাবস্থায় ফিরুন</translation>
 <translation id="9171296965991013597">অ্যাপ থেকে বেরিয়ে আসতে চান?</translation>
 <translation id="9173282814238175921">একক ডকুমেন্ট/নতুন শিট</translation>

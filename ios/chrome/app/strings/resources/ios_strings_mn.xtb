@@ -295,6 +295,7 @@
 <translation id="4121993058175073134">Цэвэр экспортын өгөгдөл илгээхийн тулд Settings app дээр өөрийн и-мэйл хаягийн тохиргоог хийнэ үү.</translation>
 <translation id="4124987746317609294">Цаг хугацааны хүрээ</translation>
 <translation id="4152011295694446843">Та хавчуургуудаа эндээс олох болно</translation>
+<translation id="4152093603141133546">Танай байгууллага таныг гаргасан.</translation>
 <translation id="4172051516777682613">Байнга харуулж байна уу</translation>
 <translation id="418156467088430727">Офлайн хувилбарыг шинэ табад харах</translation>
 <translation id="4181841719683918333">Хэл</translation>
@@ -536,6 +537,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6668619169535738264">Хавчуургыг засах</translation>
 <translation id="667999046851023355">Бичиг баримт</translation>
 <translation id="6691331417640343772">Синк хийсэн өгөгдлийг Google Хяналтын самбарт удирдах</translation>
+<translation id="6710079714193676716">Танай байгууллагаас удирддаг. Зарим онцлог боломжгүй байж болзошгүй. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Апп</translation>
 <translation id="6730682669179532099">Нууц үгийг экспортлох боломжгүй</translation>
 <translation id="6748108480210050150">Хэнээс</translation>
@@ -689,6 +691,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8487667956631253959">Асаах</translation>
 <translation id="8487700953926739672">Сүлжээнд холбогдоогүй байна</translation>
 <translation id="8490978609246021741">Өөрчлөлтийг хадгалах</translation>
+<translation id="8495097701594799854">Танай байгууллага унтраасан.</translation>
 <translation id="8503813439785031346">Хэрэглэгчийн нэр</translation>
 <translation id="850600235656508448">Нууцлалын горимд нээх</translation>
 <translation id="8510057420705599706">Ингэснээр таныг гаргаж, синк хийхийг унтраах боловч таны хавчуурга, түүх, нууц үгc болон Chrome-н бусад өгөгдөл энэ төхөөрөмж дээр үлдэнэ.</translation>

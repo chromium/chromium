@@ -194,7 +194,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="7177485034254901881">To napravo <ph name="DEVICE_TYPE" /> upravlja domena <ph name="MANAGER" />. Skrbniki lahko napravo konfigurirajo na daljavo.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Vrsta datoteke</translation>
-<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Optično branje je dokončano. Optično prebrana je bila 1 stran.}one{Optično branje je dokončano. Optično prebrana je bila {NUMBER_OF_PAGES} stran.}two{Optično branje je dokončano. Optično prebrani sta bili {NUMBER_OF_PAGES} strani.}few{Optično branje je dokončano. Optično prebranih so bile {NUMBER_OF_PAGES} strani.}other{Optično branje je dokončano. Optično prebranih je bilo {NUMBER_OF_PAGES} strani.}}</translation>
+<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Optično branje je dokončano. Optično prebrana je bila 1 stran.}one{Optično branje je dokončano. Optično prebrana je bila {NUMBER_OF_PAGES} stran.}two{Optično branje je dokončano. Optično prebrani sta bili {NUMBER_OF_PAGES} strani.}few{Optično branje je dokončano. Optično prebrane so bile {NUMBER_OF_PAGES} strani.}other{Optično branje je dokončano. Optično prebranih je bilo {NUMBER_OF_PAGES} strani.}}</translation>
 <translation id="7441459999606975924">Zmogljivost baterij sčasoma upade.</translation>
 <translation id="7469648432129124067">Zaznan je portal</translation>
 <translation id="7561454561030345039">To dejanje upravlja skrbnik</translation>

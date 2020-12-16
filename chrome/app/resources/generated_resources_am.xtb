@@ -1432,6 +1432,7 @@
 <translation id="2602501489742255173">ለመጀመር በጣት ይጥረጉ</translation>
 <translation id="2603115962224169880">ኮምፒውተርን አጽዳ</translation>
 <translation id="2603463522847370204">በ&amp;ማንነትን የማያሳውቅ መስኮት ክፈት</translation>
+<translation id="2603656971249947488">የትር ድርድር</translation>
 <translation id="2604255671529671813">የአውታረ መረብ ግንኙነት ስህተት</translation>
 <translation id="2606246518223360146">ውሂብ አገናኝ</translation>
 <translation id="2606454609872547359">አይ፣ ያለChromeVox ቀጥል</translation>
@@ -1800,6 +1801,7 @@
 <translation id="3007771295016901659">የተባዛ ትር</translation>
 <translation id="3008232374986381779">በእርስዎ <ph name="DEVICE_TYPE" /> ላይ የLinux መሣሪያዎችን፣ ጽሑፍ አቀናባሪዎችን እና አይዲኢዎች ያሂዱ። <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">ፈቃዶችን ዳግም ያቀናብሩ</translation>
+<translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> ዝማኔን ለማውረድ ዛሬ ከWi-Fi ጋር እንዲገናኙ ይፈልግብዎታል። ወይም ደግሞ ከሚለካ ግንኙነት ያውርዱ (ክፍያዎች ሊከፈልባቸው ይችላል)።}one{<ph name="MANAGER" /> ከቀነ ገደቡ በፊት ከWi-Fi ጋር እንዲገናኙ እና ዝማኔን እንዲያወርዱ ይፈልግብዎታል። ወይም ደግሞ ከሚለካ ግንኙነት ያውርዱ (ክፍያዎች ሊከፈልባቸው ይችላል)።}other{<ph name="MANAGER" /> ከቀነ ገደቡ በፊት ከWi-Fi ጋር እንዲገናኙ እና ዝማኔን እንዲያወርዱ ይፈልግብዎታል። ወይም ደግሞ ከሚለካ ግንኙነት ያውርዱ (ክፍያዎች ሊከፈልባቸው ይችላል)።}}</translation>
 <translation id="3009300415590184725">እርግጠኛ ነዎት የተንቀሳቃሽ ስልክ ውሂብ አገልግሎት የማዋቀር ሂደቱን ይቅር ማለት ይፈልጋሉ?</translation>
 <translation id="3009779501245596802">በመረጃ ጠቋሚ የተሰናዱ የውሂብ ጎታዎች</translation>
 <translation id="3010279545267083280">የይለፍ ቃል ተሰርዟል</translation>
@@ -1824,6 +1826,7 @@
 <translation id="3024374909719388945">ባለ 24 ሰዓት ይጠቀሙ</translation>
 <translation id="3027296729579831126">የአቅራቢያ ማጋሪያን ያብሩ</translation>
 <translation id="3029466929721441205">የስታይለስ መሣሪያዎችን በመደርደሪያ ውስጥ አሳይ</translation>
+<translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> ዛሬ ዝማኔን እንዲያወርዱ ይፈልግብዎታል። እርስዎ ከበይነመረብ ጋር ሲገናኙ ይህ ዝማኔ በራስ-ሰር ይወርዳል።}one{<ph name="MANAGER" /> ከቀነ ገደቡ በፊት ዝማኔን እንዲያወርዱ ይፈልግብዎታል። እርስዎ ከበይነመረብ ጋር ሲገናኙ ይህ ዝማኔ በራስ-ሰር ይወርዳል።}other{<ph name="MANAGER" /> ከቀነ ገደቡ በፊት ዝማኔን እንዲያወርዱ ይፈልግብዎታል። እርስዎ ከበይነመረብ ጋር ሲገናኙ ይህ ዝማኔ በራስ-ሰር ይወርዳል።}}</translation>
 <translation id="3031417829280473749">Agent X</translation>
 <translation id="3031557471081358569">ከውጪ ለማስመጣት ንጥሎችን ምረጥ፦</translation>
 <translation id="3036327949511794916">ይህን <ph name="DEVICE_TYPE" /> የሚመልሱበት ቀነገደብ አልፏል።</translation>
@@ -1880,6 +1883,7 @@
 <translation id="3103941660000130485">Linuxን ደረጃ በማሻሻል ላይ ስህተት</translation>
 <translation id="3105796011181310544">ወደ Google መልሰዉ ይቀይሩ?</translation>
 <translation id="310671807099593501">ጣቢያ ብሉቱዝን እየተጠቀመ ነው</translation>
+<translation id="3108931485517391283">መቀበል አልተቻለም።</translation>
 <translation id="3109724472072898302">ተሰብስቧል</translation>
 <translation id="3115147772012638511">መሸጎጫ በመጠበቅ ላይ…</translation>
 <translation id="3115580024857770654">ሁሉንም ሰብስብ</translation>
@@ -1895,6 +1899,7 @@
 <translation id="3127156390846601284">ይህ ለሁሉም ለሚታዩት ጣቢያዎች በእርስዎ መሣሪያ ላይ የተክማቸ ማናቸውንም ውሂብ ይሰርዛል። ለመቀጠል ይፈልጋሉ?</translation>
 <translation id="3127860049873093642">ኃይል መሙላትን እና የአፈጻጸም ችግሮችን ለማስቀረት ተኳዃኝ የሆነ Dell ወይም USB Type-C ኃይል አስማሚ ይጠቀሙ።</translation>
 <translation id="3127862849166875294">የLinux ዲስክ መጠን መለወጥ</translation>
+<translation id="3127882968243210659">Google Playን ለመጀመር <ph name="MANAGER" /> የውሂብዎን ምትኬ እንዲያስቀምጡና ይህን Chromebook ወደ የፋብሪካ ቅንብሮቹ እንዲመልሱ ይፈልግብዎታል።</translation>
 <translation id="3129173833825111527">የግራ ኅዳግ</translation>
 <translation id="3129215702932019810">መተግበሪያን ማስጀመር ላይ ስስህተት</translation>
 <translation id="3130528281680948470">የእርስዎ መሣሪያ ዳግመኛ ይዘጋጃል እና ሁሉም የተጠቃሚ መለያዎች እና የአካባቢ ውሂቦች ይወገዳሉ። ይህ አንዴ ከተደረገ በኋላ ሊቀለበስ አይችልም።</translation>
@@ -2013,6 +2018,7 @@
 <translation id="3275778913554317645">እንደ መስኮት ክፈት</translation>
 <translation id="3277691515294482687">Linuxን ከማላቅዎ በፊት መተግበሪያዎቼን እና ፋይሎቼን ወደ እኔ ፋይሎች አቃፊ ምትኬ አስቀምጥ።</translation>
 <translation id="3278001907972365362">የእርስዎ Google መለያ(ዎች) ትኩረት ይፈልጋል(ሉ)</translation>
+<translation id="3279092821516760512">በአቅራቢያ ሲሆኑ የተመረጡ እውቂያዎች ከእርስዎ ጋር ሊጋሩ ይችላሉ። እስኪቀበሉ ድረስ ዝውውሮች አይጀምሩም።</translation>
 <translation id="3279230909244266691">ይህ ሂደት ጥቂት ደቂቃዎች ሊወስድ ይችላል። ምናባዊ ማሽኑን በመጀመር ላይ።</translation>
 <translation id="3280237271814976245">አስቀምጥ &amp;እንደ…</translation>
 <translation id="3280243678470289153">በChrome ውስጥ ይቆዩ</translation>
@@ -2570,6 +2576,7 @@
 <translation id="3882165008614329320">ከካሜራ ወይም ፋይል ላይ ያለ ቪዲዮ</translation>
 <translation id="3884152383786131369">በበርካታ ቋንቋዎች የሚገኝ የድር ይዘት ከዚህ ዝርዝር ላይ የመጀመሪያውን የሚደገፍ ቋንቋ ይጠቀማል። እነዚህ ምርጫዎች ከአሳሽዎ ቅንብሮች ጋር ይሰምራሉ። <ph name="BEGIN_LINK_LEARN_MORE" />የበለጠ ለመረዳት<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">ይህን ጣቢያ የመድረስ ጥያቄዎ ለ<ph name="NAME" /> ተልኳል</translation>
+<translation id="3888364689515978571">ጠፍቷል። <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
 <translation id="3888550877729210209">ማስታወሻዎችን በ<ph name="LOCK_SCREEN_APP_NAME" /> በመውሰድ ላይ</translation>
 <translation id="3890064827463908288">የWi-Fi ስምረትን ለመጠቀም የChrome ስምረትን ያብሩ</translation>
 <translation id="3892414795099177503">OpenVPN / L2TP ያክሉ...</translation>
@@ -2650,6 +2657,7 @@
 <translation id="3958088479270651626">ዕልባቶችን እና ቅንብሮችን አስመጣ</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3964480518399667971">ተንቀሳቃሽ አውታረ መረብን አጥፋ</translation>
+<translation id="3965730875470565266">በርቷል፣ <ph name="MINUTES" /> ደቂቃ</translation>
 <translation id="3965811923470826124">ከ</translation>
 <translation id="3965965397408324205">ከ<ph name="PROFILE_NAME" /> ውጣ</translation>
 <translation id="3966072572894326936">ሌላ አቃፊ ምረጥ…</translation>
@@ -2719,6 +2727,7 @@
 <translation id="4049783682480068824">{COUNT,plural, =1{# እውቂያ አይገኝም። የአቅራቢያ ማጋሪያን ከእነሱ ጋር ለመጠቀም ከGoogle መለያቸው ጋር የተጎዳኘውን የኢሜይል አድራሻ ወደ የእርስዎ እውቂያዎች ያክሉት።}one{# እውቂያዎች አይገኙም። የአቅራቢያ ማጋሪያን ከእነሱ ጋር ለመጠቀም ከGoogle መለያቸው ጋር የተጎዳኙትን የኢሜይል አድራሻዎች ወደ የእርስዎ እውቂያዎች ያክሏቸው።}other{# እውቂያዎች አይገኙም። የአቅራቢያ ማጋሪያን ከእነሱ ጋር ለመጠቀም ከGoogle መለያቸው ጋር የተጎዳኙትን የኢሜይል አድራሻዎች ወደ የእርስዎ እውቂያዎች ያክሏቸው።}}</translation>
 <translation id="4050225813016893843">የማረጋገጫ ዘዴ</translation>
 <translation id="4052120076834320548">በጣም ትንሽ</translation>
+<translation id="4054070260844648638">ለሁሉም የሚታይ</translation>
 <translation id="4056908315660577142">የእርስዎ ወላጅ ለ<ph name="APP_NAME" /> Chrome መተግበሪያ ያቀናበሩት የጊዜ ገደብ ላይ ደርሰዋል። ነገ ለ<ph name="TIME_LIMIT" /> ሊጠቀሙበት ይችላሉ።</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">በመደብር ውስጥ ይመልከቱ</translation>
@@ -3422,7 +3431,6 @@
 <translation id="4917385247580444890">ጠንካራ</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> ከቅጥያ «<ph name="EXTENSION_NAME" />» ጋር መገናኘት ይፈልጋል</translation>
 <translation id="4918086044614829423">ይቀበሉ</translation>
-<translation id="4918221908152712722"><ph name="APP_NAME" />ን ይጫኑ (ምንም ማውረድ አያስፈልግም)</translation>
 <translation id="4921290200821452703">የትምህርት ቤት መለያ መረጃ ለወላጆች</translation>
 <translation id="4921348630401250116">ጽሑፍ-ወደ-ንግግር</translation>
 <translation id="49226369361073053">{0,plural, =0{አሁን መሣሪያን ያዘምኑ}=1{በ1 ሰከንድ ውስጥ መሣሪያን ያዘምኑ}one{በ# ሰከንዶች ውስጥ መሣሪያን ያዘምኑ}other{በ# ሰከንዶች ውስጥ መሣሪያን ያዘምኑ}}</translation>
@@ -3655,6 +3663,7 @@
 <translation id="5213891612754844763">የተኪ ቅንብሮችን አሳይ</translation>
 <translation id="5215502535566372932">አገር ይምረጡ</translation>
 <translation id="521582610500777512">ፎቶ ተጥሏል</translation>
+<translation id="5217189792977407501">ወደ ዴስክ ይመድቡ</translation>
 <translation id="5222403284441421673">ደህንነቱ ያልተጠበቀ ውርድ ታግዷል</translation>
 <translation id="5222676887888702881">ዘግተህ ውጣ</translation>
 <translation id="52232769093306234">መጠቅለል አልተሳካም።</translation>
@@ -4191,6 +4200,7 @@
 <translation id="5832813618714645810">መገለጫዎች</translation>
 <translation id="583281660410589416">ያልታወቀ </translation>
 <translation id="5833397272224757657">እርስዎ የሚጎበኙዋቸውን ጣቢያዎች ላይ ይዘትን እንዲሁም የአሰሳ እንቅስቃሴ እና መስተጋብሮች ለግላዊነት ለማላበስ ይጠቀማል</translation>
+<translation id="5833551944249825624">የእርስዎ Chromebook ለ5 ደቂቃ በአቅራቢያ ላለ ለሁሉም ይታያል</translation>
 <translation id="5833726373896279253">እነዚህ ቅንብሮች በባለቤቱ ብቻ ነው ሊቀየሩ የሚችሉት።</translation>
 <translation id="5834581999798853053"><ph name="TIME" /> ደቂቃዎች አካባቢ ቀርቷል</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - ካሜራ ወይም ማይክራፎን በመቅረጽ ላይ ነው</translation>
@@ -4561,7 +4571,6 @@
 <translation id="6248988683584659830">የፍለጋ ቅንብሮች </translation>
 <translation id="6249200942125593849">A11yን አቀናብር</translation>
 <translation id="6251870443722440887">የGDI መያዣዎች</translation>
-<translation id="6251889282623539337">የ<ph name="DOMAIN" /> አገልግሎት ውል</translation>
 <translation id="625369703868467034">የአውታረ መረብ ጤና</translation>
 <translation id="6254503684448816922">ቁልፍ ስምምነት ማድረግ</translation>
 <translation id="6257602895346497974">አስምርን አብራ...</translation>
@@ -4596,6 +4605,8 @@
 <translation id="628352644014831790">4 ሰከንዶች</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> በተለምዶ የሚወርድ ፋይል አይደለም፣ እና አደገኛ ሊሆን ይችላል።</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{በእርስዎ አውታረ መረብ ላይ ያለ አዲስ አታሚ}one{በእርስዎ አውታረ መረብ ላይ ያሉ አዲስ አታሚዎች}other{በእርስዎ አውታረ መረብ ላይ ያሉ አዲስ አታሚዎች}}</translation>
+<translation id="6285770818046456882">ከእርስዎ ጋር የተጋራው መሣሪያ ዝውውሩን ሰርዞታል</translation>
+<translation id="6290613030083731160">በአቅራቢያ የሚጋሩ መሣሪያዎች የሉም። <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
 <translation id="6291949900244949761">አንድ ጣቢያ የዩኤስቢ መሣሪያዎችን መድረስ ሲፈልግ ጠይቅ (የሚመከር)</translation>
 <translation id="6291953229176937411">በፈላጊ ውስጥ &amp;አሳይ</translation>
 <translation id="6295158916970320988">ሁሉም ጣቢያዎች</translation>
@@ -4640,6 +4651,7 @@
 <translation id="6331818708794917058">ጣቢያዎች ከMIDI መሣሪያዎች ጋር ለመገናኘት መጠየቅ ይችላሉ</translation>
 <translation id="6333064448949140209">ፋይሉ ለመታረም ወደ Google ይላካል</translation>
 <translation id="6334444530352320327">የእርስዎ የመተግበሪያዎች እና የስርዓተ ክወና ቅንብሮች እርስዎ በዚህ መለያ በገቡባቸው Chromebooks ላይ ይሰምራሉ።<ph name="LINK_BEGIN" />የስምረት ቅንብሮች<ph name="LINK_END" /></translation>
+<translation id="6335920438823100346">Linuxን ለመጀመር <ph name="MANAGER" /> የውሂብዎን ምትኬ እንዲያስቀምጡና ይህን Chromebook ወደ የፋብሪካ ቅንብሮቹ እንዲመልሱት ይፈልግብዎታል።</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> የADB ስሕተት ማረሚያን አሰናክሏል። ይህ የእርስዎን <ph name="DEVICE_TYPE" /> በ24 ሰዓታት ውስጥ ዳግም ያስጀምረዋል። ለማቆየት የሚፈልጓቸውን ማናቸውም ፋይሎች ምትኬ ያስቀምጡላቸው።</translation>
 <translation id="6338981933082930623">ሁሉም ጣቢያዎች ማንኛውንም ማስታወቂያ ለእርስዎ ሊያሳዩዎት ይችላሉ</translation>
 <translation id="6339668969738228384">ለ<ph name="USER_EMAIL_ADDRESS" /> አዲስ መገለጫ ይፈጠሩ</translation>
@@ -5449,7 +5461,6 @@
 <translation id="7290242001003353852">ይህ በ<ph name="SAML_DOMAIN" /> የሚስተናገድ የመለያ መግቢያ አገልግሎት የእርስዎን ካሜራ እየደረሰበት ነው።</translation>
 <translation id="7295614427631867477">Android፣ Play እና ተጓዳኝ መተግበሪያዎች የሚተዳድደሩት በራሳቸው የውሂብ ስብስብ የሚተዳደሩ እና መመሪያዎችን የሚጥጠቀሙ መሆናቸውን ልብ ይበሉ።</translation>
 <translation id="729583233778673644">የAES እና የRC4 ምሥጠራን ይፍቀዱ። የRC4 ምሥጠራዎች ለደህንነት አስተማማኝ ስላልሆኑ ይህን አማራጭ መጠቀም የእርስዎን አደጋ ይጨምራል።</translation>
-<translation id="7296774163727375165"><ph name="DOMAIN" /> ውል</translation>
 <translation id="7297443947353982503">የተጠቃሚ ስም/ይለፍ ቃል ትክክል አይደለም ወይም EAP-auth አልተሳካም</translation>
 <translation id="729761647156315797">የእርስዎን ቋንቋ እና የቁልፍ ሰሌዳ ይምረጡ</translation>
 <translation id="7297726121602187087">ጠቆር ያለ አረንጓዴ</translation>
@@ -5493,6 +5504,7 @@
 <translation id="7347943691222276892">ከ<ph name="SUBPAGE_TITLE" /> ለመውጣት ጠቅ ያድርጉ።</translation>
 <translation id="7348093485538360975">የታይታ የቁልፍ ሰሌዳ</translation>
 <translation id="7352651011704765696">የሆነ ችግር ተፈጥሯል</translation>
+<translation id="7353261921908507769">እውቂያዎችዎ በአቅራቢያ ሲሆኑ ሊያጋሩዎት ይችላሉ። እስኪቀበሉ ድረስ ዝውውሮች አይጀምሩም።</translation>
 <translation id="735361434055555355">Linuxን በመጫን ላይ...</translation>
 <translation id="7354341762311560488">የጣት አሽራ ዳሳሹ በእርስዎ የቁልፍ ሰሌዳ ላይ ከግርጌ ያለው የግራ እጅ ቁልፉ ነው። በማንኛውም ጣት በስሱ ይንኩት።</translation>
 <translation id="7356908624372060336">የአውታረ መረብ ምዝግብ ማስታወሻዎች</translation>
@@ -5892,6 +5904,7 @@
 <translation id="779308894558717334">ፈካ ያለ አረንጓዴ</translation>
 <translation id="7793098747275782155">ጠቆር ያለ ሰማያዊ</translation>
 <translation id="7797571222998226653">ጠፍቷል</translation>
+<translation id="7798259165971079056">ራስዎን እንዲታዩ እስኪያደርጉ ድረስ ማንም ሰው ከእርስዎ ጋር ሊጋራ አይችልም።<ph name="BR" /><ph name="BR" />ራስዎን ለጊዜው እንዲታዩ ለማድረግ ጊዜውን በመምረጥ የሁኔታ አካባቢን ይክፈቱ፣ ከዚያ የአቅራቢያ ታይነትን ያብሩ።</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> በራስ-ሰር ታግዷል</translation>
 <translation id="7799299114731150374">ልጣፍ በተሳካ ሁኔታ ተዘጋጅቷል</translation>
 <translation id="7800518121066352902">በሰዓት መዞሪያ አቅጣጫ &amp;ተቃራኒ አሽከርክር</translation>
@@ -6434,7 +6447,6 @@ nil</translation>
 <translation id="8398877366907290961">ለማንኛውም ቀጥል</translation>
 <translation id="8400146488506985033">ሰዎችን አቀናብር</translation>
 <translation id="8401432541486058167">ከእርስዎ ዘመናዊ ካርድ ጋር የተቆራኘውን ፒን ይስጡ።</translation>
-<translation id="8405046151008197676">ከቅርብ ጊዜው ዝማኔ ድምቀቶችን ያግኙ</translation>
 <translation id="8407199357649073301">የምዝግብ ማስታወሻ ደረጃ፦</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> አውታረ መረብ፣ በመገናኘት ላይ</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -6885,6 +6897,7 @@ nil</translation>
 <translation id="8898840733695078011">የሲግናል ጥንካሬ</translation>
 <translation id="8899851313684471736">አገናኙን በአዲስ &amp;መስኮት ክፈት</translation>
 <translation id="8900413463156971200">ተንቀሳቃሽ ስልክን አንቃ</translation>
+<translation id="8902059453911237649">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> የውሂብዎን ምትኬ እንዲያስቀምጡና እና ይህን <ph name="DEVICE_TYPE" /> ዛሬ እንዲመልሱት ይፈልግብዎታል።}one{<ph name="MANAGER" /> ከቀነ ገደቡ በፊት የውሂብዎን ምትኬ እንዲሰሩ እና ይህን <ph name="DEVICE_TYPE" /> እንዲመልሱ ይፈልግብዎታል።}other{<ph name="MANAGER" /> ከቀነ ገደቡ በፊት የውሂብዎን ምትኬ እንዲሰሩ እና ይህን <ph name="DEVICE_TYPE" /> እንዲመልሱ ይፈልግብዎታል።}}</translation>
 <translation id="8902667442496790482">ለመናገር-ይምረጡ ቅንብሮችን ይክፈቱ</translation>
 <translation id="8903263458134414071">የሚገቡበት መለያ ይምረጡ</translation>
 <translation id="890616557918890486">ምንጭ ይለውጡ</translation>
@@ -7121,7 +7134,6 @@ nil</translation>
 <translation id="9168436347345867845">በኋላ ያድርጉት</translation>
 <translation id="9169496697824289689">የቁልፍ ሰሌዳ አቋራጮችን ይመልከቱ</translation>
 <translation id="916964310188958970">ይህ የአስተያየት ጥቆማ ለምን?</translation>
-<translation id="9169931577761441333"><ph name="APP_NAME" />ን ወደ መነሻ ገጽ ያክሉ</translation>
 <translation id="9170061643796692986">የአሁኑ የታይነት ቅንብር ሁሉም እውቂያዎች ነው</translation>
 <translation id="9170848237812810038">&amp;ቀልብስ</translation>
 <translation id="9170884462774788842">በኮምፒውተርዎ ላይ ያለ ሌላ ፕሮግራም Chrome የሚሰራበት መንገድ ሊቀይር የሚችል አንድ ገጽታ አክሏል።</translation>

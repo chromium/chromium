@@ -1432,6 +1432,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2602501489742255173">Geser ke atas untuk memulai</translation>
 <translation id="2603115962224169880">Bersihkan komputer</translation>
 <translation id="2603463522847370204">Buka di &amp;jendela samaran</translation>
+<translation id="2603656971249947488">Tab setrip</translation>
 <translation id="2604255671529671813">Error koneksi jaringan</translation>
 <translation id="2606246518223360146">Tautkan Data</translation>
 <translation id="2606454609872547359">Tidak, lanjutkan dengan ChromeVox</translation>
@@ -1800,6 +1801,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3007771295016901659">Duplikasi Tab</translation>
 <translation id="3008232374986381779">Menjalankan alat, editor, dan IDE Linux di <ph name="DEVICE_TYPE" /> Anda. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Reset izin</translation>
+<translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> mengharuskan Anda terhubung ke Wi-Fi sekarang untuk mendownload update. Atau, Anda dapat mendownload dengan koneksi berbayar (dapat dikenai biaya).}other{<ph name="MANAGER" /> mengharuskan Anda terhubung ke Wi-Fi dan mendownload update sebelum batas waktu. Atau, Anda dapat mendownload dengan koneksi berbayar (dapat dikenai biaya).}}</translation>
 <translation id="3009300415590184725">Yakin ingin membatalkan proses penyiapan layanan data seluler?</translation>
 <translation id="3009779501245596802">Basis data yang diindeks</translation>
 <translation id="3010279545267083280">Sandi dihapus</translation>
@@ -1824,6 +1826,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3024374909719388945">Gunakan model waktu 24 jam</translation>
 <translation id="3027296729579831126">Aktifkan Berbagi Langsung</translation>
 <translation id="3029466929721441205">Tampilkan alat stilus di rak</translation>
+<translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> mengharuskan Anda mendownload update sekarang. Update akan otomatis didownload ketika Anda terhubung ke internet.}other{<ph name="MANAGER" /> mengharuskan Anda mendownload update sebelum batas waktu. Update akan otomatis didownload ketika Anda terhubung ke internet.}}</translation>
 <translation id="3031417829280473749">Agen X</translation>
 <translation id="3031557471081358569">Pilih item yang akan diimpor:</translation>
 <translation id="3036327949511794916">Batas waktu untuk mengembalikan <ph name="DEVICE_TYPE" /> ini telah habis.</translation>
@@ -1880,6 +1883,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3103941660000130485">Terjadi error saat mengupgrade Linux</translation>
 <translation id="3105796011181310544">Ubah kembali ke Google?</translation>
 <translation id="310671807099593501">Situs sedang menggunakan bluetooth</translation>
+<translation id="3108931485517391283">Tidak dapat menerima</translation>
 <translation id="3109724472072898302">Diciutkan</translation>
 <translation id="3115147772012638511">Menunggu cache...</translation>
 <translation id="3115580024857770654">Ciutkan semua</translation>
@@ -1895,6 +1899,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3127156390846601284">Tindakan ini akan menghapus semua data yang disimpan di perangkat untuk semua situs yang ditampilkan. Ingin melanjutkan?</translation>
 <translation id="3127860049873093642">Untuk menghindari masalah pengisian daya dan performa, gunakan adaptor daya USB Type-C atau Dell yang kompatibel.</translation>
 <translation id="3127862849166875294">Ubah ukuran disk Linux</translation>
+<translation id="3127882968243210659">Untuk memulai Google Play, <ph name="MANAGER" /> mengharuskan Anda mencadangkan data dan mereset Chromebook ini ke setelan pabrik.</translation>
 <translation id="3129173833825111527">Batas kiri</translation>
 <translation id="3129215702932019810">Error saat meluncurkan aplikasi</translation>
 <translation id="3130528281680948470">Perangkat Anda akan direset dan semua akun pengguna serta data lokal akan dibuang. Tindakan ini tidak dapat diurungkan.</translation>
@@ -2013,6 +2018,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3275778913554317645">Buka sebagai jendela</translation>
 <translation id="3277691515294482687">Cadangkan aplikasi dan file saya ke folder File Saya sebelum mengupgrade Linux.</translation>
 <translation id="3278001907972365362">Ada yang perlu diperhatikan di Akun Google Anda</translation>
+<translation id="3279092821516760512">Kontak yang dipilih dapat berbagi dengan Anda saat berada di sekitar. Transfer tidak akan dimulai sampai Anda menerimanya.</translation>
 <translation id="3279230909244266691">Proses ini dapat memerlukan waktu beberapa menit. Memulai mesin virtual.</translation>
 <translation id="3280237271814976245">Simp&amp;an sebagai...</translation>
 <translation id="3280243678470289153">Tetap di Chrome</translation>
@@ -2479,7 +2485,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3792890930871100565">Lepaskan sambungan printer</translation>
 <translation id="3793395331556663376">Terlalu banyak sistem file yang terbuka.</translation>
 <translation id="3793588272211751505">{NUM_DAYS,plural, =1{Chrome tidak menemukan software berbahaya di komputer Anda • Diperiksa 1 hari yang lalu}other{Chrome tidak menemukan software berbahaya di komputer Anda • Diperiksa {NUM_DAYS} hari yang lalu}}</translation>
-<translation id="379500251094592809">Untuk menggunakan Berbagi Langsung, pastikan kedua perangkat tidak terkunci, berdekatan, serta mengaktifkan Bluetooth. Jika Anda berbagi dengan Chromebook yang tidak ada dalam kontak Anda, pastikan Chromebook sudah mengaktifkan visibilitas Berbagi Langsung (buka area status dengan memilih waktu, lalu aktifkan visibilitas Berbagi Langsung). <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
+<translation id="379500251094592809">Untuk menggunakan Berbagi Langsung, pastikan kedua perangkat tidak terkunci, berdekatan, serta mengaktifkan Bluetooth. Jika Anda berbagi dengan Chromebook yang tidak ada dalam kontak Anda, pastikan Chromebook sudah mengaktifkan Visibilitas Berbagi Langsung (buka area status dengan memilih waktu, lalu aktifkan Visibilitas Berbagi Langsung). <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="379509625511193653">Nonaktif</translation>
 <translation id="3796648294839530037">Jaringan Favorit:</translation>
 <translation id="3797739167230984533"><ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> dikelola<ph name="END_LINK" /> oleh organisasi Anda</translation>
@@ -2570,6 +2576,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3882165008614329320">Video yang sudah ada dari kamera atau file</translation>
 <translation id="3884152383786131369">Konten web yang tersedia dalam beberapa bahasa akan menggunakan bahasa pertama yang didukung dari daftar ini. Preferensi ini akan disinkronkan dengan setelan browser Anda. <ph name="BEGIN_LINK_LEARN_MORE" />Pelajari lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Permintaan Anda untuk mengakses situs ini telah dikirim ke <ph name="NAME" /></translation>
+<translation id="3888364689515978571">Nonaktif. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="3888550877729210209">Mencatat dengan <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3890064827463908288">Aktifkan Sinkronisasi Chrome untuk menggunakan Wi-Fi Sync</translation>
 <translation id="3892414795099177503">Tambahkan OpenVPN / L2TP...</translation>
@@ -2650,6 +2657,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3958088479270651626">Impor bookmark dan setelan</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3964480518399667971">Matikan jaringan Seluler</translation>
+<translation id="3965730875470565266">Aktif, <ph name="MINUTES" /> mnt</translation>
 <translation id="3965811923470826124">Dengan</translation>
 <translation id="3965965397408324205">Tutup <ph name="PROFILE_NAME" /></translation>
 <translation id="3966072572894326936">Pilih folder lain...</translation>
@@ -2719,6 +2727,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4049783682480068824">{COUNT,plural, =1{# kontak tidak tersedia. Untuk menggunakan fitur Berbagi Langsung dengan kontak tersebut, tambahkan alamat email yang terkait dengan Akun Google mereka ke kontak Anda.}other{# kontak tidak tersedia. Untuk menggunakan fitur Berbagi Langsung dengan kontak tersebut, tambahkan alamat email yang terkait dengan Akun Google mereka ke kontak Anda.}}</translation>
 <translation id="4050225813016893843">Metode autentikasi</translation>
 <translation id="4052120076834320548">Mungil</translation>
+<translation id="4054070260844648638">Terlihat oleh semua orang</translation>
 <translation id="4056908315660577142">Kamu sudah mencapai batas waktu yang ditetapkan orang tuamu untuk <ph name="APP_NAME" /> aplikasi Chrome. Kamu bisa menggunakannya besok selama <ph name="TIME_LIMIT" />.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">Lihat di Toko</translation>
@@ -3424,7 +3433,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4917385247580444890">Kuat</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> ingin berkomunikasi dengan ekstensi "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4918086044614829423">Terima</translation>
-<translation id="4918221908152712722">Instal <ph name="APP_NAME" /> (tidak perlu didownload)</translation>
 <translation id="4921290200821452703">Informasi akun sekolah untuk orang tua</translation>
 <translation id="4921348630401250116">Text-to-speech</translation>
 <translation id="49226369361073053">{0,plural, =0{Update perangkat sekarang}=1{Update perangkat dalam 1 detik}other{Update perangkat dalam # detik}}</translation>
@@ -3657,6 +3665,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="5213891612754844763">Tampilkan setelan proxy</translation>
 <translation id="5215502535566372932">Pilih negara</translation>
 <translation id="521582610500777512">Foto dibuang</translation>
+<translation id="5217189792977407501">Tetapkan ke desktop</translation>
 <translation id="5222403284441421673">Download tidak aman diblokir</translation>
 <translation id="5222676887888702881">Logout</translation>
 <translation id="52232769093306234">Pengemasan gagal.</translation>
@@ -4193,6 +4202,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="5832813618714645810">Profil</translation>
 <translation id="583281660410589416">Tidak dikenal</translation>
 <translation id="5833397272224757657">Menggunakan konten di situs yang Anda buka serta aktivitas browser dan interaksi untuk personalisasi</translation>
+<translation id="5833551944249825624">Chromebook Anda akan terlihat oleh semua orang di sekitar selama 5 menit</translation>
 <translation id="5833726373896279253">Setelan ini hanya boleh diubah-ubah oleh pemiliknya:</translation>
 <translation id="5834581999798853053">Sekitar <ph name="TIME" /> menit lagi</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - Perekaman kamera atau mikrofon</translation>
@@ -4563,7 +4573,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="6248988683584659830">Telusuri setelan</translation>
 <translation id="6249200942125593849">Kelola a11y</translation>
 <translation id="6251870443722440887">Penanganan GDI</translation>
-<translation id="6251889282623539337"><ph name="DOMAIN" /> Persyaratan Layanan</translation>
 <translation id="625369703868467034">Kondisi Jaringan</translation>
 <translation id="6254503684448816922">Kunci Mencurigakan</translation>
 <translation id="6257602895346497974">Aktifkan sinkronisasi...</translation>
@@ -4598,6 +4607,8 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="628352644014831790">4 detik</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> tidak biasa didownload dan mungkin berbahaya.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Printer baru di jaringan Anda}other{Printer baru di jaringan Anda}}</translation>
+<translation id="6285770818046456882">Perangkat yang berbagi dengan Anda membatalkan transfer</translation>
+<translation id="6290613030083731160">Tidak ada perangkat yang tersedia untuk berbagi di sekitar. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="6291949900244949761">Tanyakan saat situs ingin mengakses perangkat USB (direkomendasikan)</translation>
 <translation id="6291953229176937411">&amp;Tampilkan di Penemu</translation>
 <translation id="6295158916970320988">Semua situs</translation>
@@ -4642,6 +4653,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="6331818708794917058">Situs dapat meminta untuk terhubung ke perangkat MIDI</translation>
 <translation id="6333064448949140209">File akan dikirim ke Google untuk proses debug</translation>
 <translation id="6334444530352320327">Aplikasi dan setelan OS Anda akan disinkronkan di seluruh Chromebook tempat Anda login dengan akun ini. <ph name="LINK_BEGIN" />Setelan Sinkronisasi<ph name="LINK_END" /></translation>
+<translation id="6335920438823100346">Untuk memulai Linux, <ph name="MANAGER" /> mengharuskan Anda mencadangkan data dan mereset Chromebook ini ke setelan pabrik.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> telah menonaktifkan proses debug ADB. Ini akan mereset <ph name="DEVICE_TYPE" /> Anda setelah 24 jam. Cadangkan file yang ingin Anda simpan.</translation>
 <translation id="6338981933082930623">Semua situs dapat menampilkan iklan apa pun kepada Anda</translation>
 <translation id="6339668969738228384">Buat profil baru untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -4667,7 +4679,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="6367985768157257101">Terima menggunakan Berbagi Langsung?</translation>
 <translation id="636850387210749493">Pendaftaran perusahaan</translation>
 <translation id="6370021412472292592">Tidak dapat memuat manifes.</translation>
-<translation id="6370863890073808080">Pastikan kedua perangkat tidak terkunci, berdekatan, serta mengaktifkan Bluetooth. Jika Anda berbagi dengan Chromebook yang tidak ada di kontak Anda, pastikan Chromebook mengaktifkan visibilitas Berbagi Langsung (buka area status dengan memilih waktu, lalu pilih visibilitas Berbagi Langsung). <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
+<translation id="6370863890073808080">Pastikan kedua perangkat tidak terkunci, berdekatan, serta mengaktifkan Bluetooth. Jika Anda berbagi dengan Chromebook yang tidak ada di kontak Anda, pastikan Chromebook mengaktifkan Visibilitas Berbagi Langsung (buka area status dengan memilih waktu, lalu pilih Visibilitas Berbagi Langsung). <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Coba Lagi</translation>
 <translation id="6377268785556383139">1 hasil untuk '<ph name="SEARCH_TEXT" />'</translation>
@@ -5451,7 +5463,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="7290242001003353852">Layanan masuk ini, dihosting oleh <ph name="SAML_DOMAIN" /> dan sedang mengakses kamera Anda.</translation>
 <translation id="7295614427631867477">Perhatikan bahwa Android, Play, dan aplikasi terkait diatur oleh kebijakan pengumpulan dan penggunaan datanya sendiri.</translation>
 <translation id="729583233778673644">Izinkan enkripsi AES dan RC4. Penggunaan opsi ini akan meningkatkan risiko, karena cipher RC4 tidak aman.</translation>
-<translation id="7296774163727375165">Persyaratan <ph name="DOMAIN" /></translation>
 <translation id="7297443947353982503">Nama pengguna/sandi salah atau autentikasi EAP gagal</translation>
 <translation id="729761647156315797">Pilih bahasa &amp; keyboard</translation>
 <translation id="7297726121602187087">Hijau tua</translation>
@@ -5495,6 +5506,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="7347943691222276892">Klik untuk keluar dari <ph name="SUBPAGE_TITLE" />.</translation>
 <translation id="7348093485538360975">Keyboard di layar</translation>
 <translation id="7352651011704765696">Ada yang tidak beres</translation>
+<translation id="7353261921908507769">Kontak dapat berbagi dengan Anda saat mereka berada di sekitar. Transfer tidak akan dimulai sampai Anda menerimanya.</translation>
 <translation id="735361434055555355">Menginstal Linux...</translation>
 <translation id="7354341762311560488">Tombol di kiri bawah keyboard Anda adalah sensor sidik jari. Sentuh sensor menggunakan jari mana pun.</translation>
 <translation id="7356908624372060336">Log Jaringan</translation>
@@ -5894,6 +5906,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="779308894558717334">Hijau muda</translation>
 <translation id="7793098747275782155">Biru tua</translation>
 <translation id="7797571222998226653">Nonaktif</translation>
+<translation id="7798259165971079056">Tidak ada yang dapat berbagi dengan Anda sampai perangkat Anda terlihat.<ph name="BR" /><ph name="BR" />Agar perangkat terlihat untuk sementara, buka area status dengan memilih waktu, lalu aktifkan visibilitas Berbagi Langsung.</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> diblokir secara otomatis</translation>
 <translation id="7799299114731150374">Wallpaper berhasil disetel</translation>
 <translation id="7800518121066352902">Putar &amp;Berlawanan Arah Jarum Jam</translation>
@@ -6432,7 +6445,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8398877366907290961">Tetap lanjutkan</translation>
 <translation id="8400146488506985033">Kelola orang</translation>
 <translation id="8401432541486058167">Masukkan PIN yang terkait dengan kartu smart Anda.</translation>
-<translation id="8405046151008197676">Dapatkan sorotan dari update terakhir</translation>
 <translation id="8407199357649073301">Tingkat Log:</translation>
 <translation id="8408068190360279472">Jaringan <ph name="NETWORK_TYPE" />, menyambungkan</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -6882,6 +6894,7 @@ Tekan kunci tombol akses yang telah ditetapkan untuk menghapus penetapan.</trans
 <translation id="8898840733695078011">Kekuatan sinyal</translation>
 <translation id="8899851313684471736">Buka link di &amp;jendela baru</translation>
 <translation id="8900413463156971200">Aktifkan jaringan Seluler</translation>
+<translation id="8902059453911237649">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> mengharuskan Anda mencadangkan data dan mengembalikan <ph name="DEVICE_TYPE" /> ini hari ini.}other{<ph name="MANAGER" /> mengharuskan Anda mencadangkan data dan mengembalikan <ph name="DEVICE_TYPE" /> ini sebelum batas waktu.}}</translation>
 <translation id="8902667442496790482">Buka setelan klik untuk diucapkan</translation>
 <translation id="8903263458134414071">Pilih akun untuk login</translation>
 <translation id="890616557918890486">Ubah sumber</translation>
@@ -7118,7 +7131,6 @@ Tekan kunci tombol akses yang telah ditetapkan untuk menghapus penetapan.</trans
 <translation id="9168436347345867845">Nanti saja</translation>
 <translation id="9169496697824289689">Lihat pintasan keyboard</translation>
 <translation id="916964310188958970">Mengapa saran ini muncul?</translation>
-<translation id="9169931577761441333">Tambahkan <ph name="APP_NAME" /> ke layar Utama</translation>
 <translation id="9170061643796692986">Visibilitas saat ini disetel ke semua kontak</translation>
 <translation id="9170848237812810038">&amp;Urung</translation>
 <translation id="9170884462774788842">Program lain di komputer Anda menambahkan tema yang dapat mengubah cara kerja Chrome.</translation>

@@ -154,7 +154,7 @@
 <translation id="1164899421101904659">輸入 PIN 解鎖金鑰</translation>
 <translation id="1165039591588034296">錯誤</translation>
 <translation id="1166212789817575481">關閉右側分頁</translation>
-<translation id="116624467691206283">PUK 無效，你還可以嘗試 1 次。</translation>
+<translation id="116624467691206283">PUK 無效，你只剩 1 次重試機會。</translation>
 <translation id="1168020859489941584">將於 <ph name="TIME_REMAINING" /> 內開啟...</translation>
 <translation id="1168100932582989117">Google 名稱伺服器</translation>
 <translation id="1170288591054440704">網站必須先詢問你，才能使用裝置上安裝的字型</translation>
@@ -1141,7 +1141,7 @@
 <translation id="2262888617381992508">不得播放受保護的內容</translation>
 <translation id="2263189956353037928">登出再重新登入</translation>
 <translation id="2263371730707937087">畫面重新整理頻率</translation>
-<translation id="2265889263013046172">PUK 不正確，你還可以嘗試 <ph name="RETRIES" /> 次。如果仍然輸入錯誤，必須請電信業者協助你重新取得網路存取權。</translation>
+<translation id="2265889263013046172">PUK 不正確，你還有 <ph name="RETRIES" /> 次重試機會。如果仍然輸入錯誤，就必須請電信業者協助重新取得網路存取權。</translation>
 <translation id="22665427234727190">網站必須先詢問你，才能存取藍牙裝置 (建議)</translation>
 <translation id="2266957463645820432">USB 型 IPP (IPPUSB)</translation>
 <translation id="2270450558902169558">與 <ph name="DOMAIN" /> 網域中的任何裝置交換資料</translation>
@@ -1431,6 +1431,7 @@
 <translation id="2602501489742255173">向上滑動即可開始使用</translation>
 <translation id="2603115962224169880">清理電腦</translation>
 <translation id="2603463522847370204">在無痕式視窗中開啟(&amp;I)</translation>
+<translation id="2603656971249947488">分頁列</translation>
 <translation id="2604255671529671813">網路連線錯誤</translation>
 <translation id="2606246518223360146">連結資料</translation>
 <translation id="2606454609872547359">否，不啟動 ChromeVox 並繼續操作</translation>
@@ -1799,6 +1800,7 @@
 <translation id="3007771295016901659">複製分頁</translation>
 <translation id="3008232374986381779">在 <ph name="DEVICE_TYPE" /> 上執行 Linux 工具、編輯器和 IDE。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">重設權限</translation>
+<translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> 要求你在今天內透過 Wi-Fi 連線下載更新，或使用計量付費連線下載更新 (可能要支付流量費用)。}other{<ph name="MANAGER" /> 要求你在期限內透過 Wi-Fi 連線下載更新，或使用計量付費連線下載更新 (可能要支付流量費用)。}}</translation>
 <translation id="3009300415590184725">你確定要取消行動數據服務設定程序嗎？</translation>
 <translation id="3009779501245596802">索引資料庫</translation>
 <translation id="3010279545267083280">已刪除密碼</translation>
@@ -1823,6 +1825,7 @@
 <translation id="3024374909719388945">使用 24 小時制時鐘</translation>
 <translation id="3027296729579831126">啟用鄰近分享功能</translation>
 <translation id="3029466929721441205">在檔案櫃中顯示觸控筆工具</translation>
+<translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> 要求你在今天內下載更新。當你連上網際網路時，系統會自動下載更新。}other{<ph name="MANAGER" /> 要求你在期限內下載更新。當你連上網際網路時，系統會自動下載更新。}}</translation>
 <translation id="3031417829280473749">特務 X</translation>
 <translation id="3031557471081358569">選取要匯入的項目：</translation>
 <translation id="3036327949511794916">這部「<ph name="DEVICE_TYPE" />」的退貨期限已過。</translation>
@@ -1879,6 +1882,7 @@
 <translation id="3103941660000130485">升級 Linux 時發生錯誤</translation>
 <translation id="3105796011181310544">要改回 Google 嗎？</translation>
 <translation id="310671807099593501">網站正在使用藍牙</translation>
+<translation id="3108931485517391283">無法接收</translation>
 <translation id="3109724472072898302">已收合</translation>
 <translation id="3115147772012638511">等候快取...</translation>
 <translation id="3115580024857770654">全部收合</translation>
@@ -1894,13 +1898,14 @@
 <translation id="3127156390846601284">這將會刪除所有顯示的網站儲存在你裝置上的全部資料。你要繼續操作嗎?</translation>
 <translation id="3127860049873093642">為避免發生充電和效能問題，請使用相容的 Dell 或 USB Type-C 電源變壓器。</translation>
 <translation id="3127862849166875294">調整 Linux 磁碟大小</translation>
+<translation id="3127882968243210659"><ph name="MANAGER" /> 要求你備份資料，並將這部 Chromebook 恢復原廠設定，才能啟動 Google Play。</translation>
 <translation id="3129173833825111527">左邊界</translation>
 <translation id="3129215702932019810">啟動應用程式時發生錯誤</translation>
 <translation id="3130528281680948470">你的裝置將會進行重設，且所有使用者帳戶和本機資料都會遭到移除。這項操作無法復原。</translation>
 <translation id="313205617302240621">忘記密碼了嗎？</translation>
 <translation id="3132277757485842847">無法與你的手機維持連線狀態。請確認你的手機在附近，且已解鎖及開啟藍牙和 Wi-Fi。</translation>
 <translation id="3132996321662585180">每天重新整理</translation>
-<translation id="3138624403379688522">PIN 碼無效，你還可以嘗試 <ph name="RETRIES" /> 次。</translation>
+<translation id="3138624403379688522">PIN 碼無效，你還有 <ph name="RETRIES" /> 次重試機會。</translation>
 <translation id="313963229645891001">下載中，<ph name="STATUS" /></translation>
 <translation id="3139925690611372679">預設的黃色顯示圖片</translation>
 <translation id="3141318088920353606">聽取中…</translation>
@@ -2012,6 +2017,7 @@
 <translation id="3275778913554317645">在視窗中開啟</translation>
 <translation id="3277691515294482687">先將我的應用程式和檔案備份至「我的檔案」資料夾，再升級 Linux。</translation>
 <translation id="3278001907972365362">你的 Google 帳戶有狀況需處理</translation>
+<translation id="3279092821516760512">所選聯絡人在附近時可與你分享內容。傳輸作業會等到你接受後才開始。</translation>
 <translation id="3279230909244266691">正在啟動虛擬機器，過程可能需要幾分鐘。</translation>
 <translation id="3280237271814976245">另存新檔(&amp;A)...</translation>
 <translation id="3280243678470289153">繼續使用 Chrome</translation>
@@ -2478,7 +2484,7 @@
 <translation id="3792890930871100565">中斷印表機連線</translation>
 <translation id="3793395331556663376">已開啟的檔案系統過多。</translation>
 <translation id="3793588272211751505">{NUM_DAYS,plural, =1{Chrome 並未在電腦上發現任何有害軟體 • 上次檢查時間：1 天前}other{Chrome 並未在電腦上發現任何有害軟體 • 上次檢查時間：{NUM_DAYS} 天前}}</translation>
-<translation id="379500251094592809">如要使用鄰近分享功能，請確認兩部裝置都已解鎖且彼此相鄰，並已開啟藍牙功能。如果要與未設為聯絡人的 Chromebook 分享內容，請確認該裝置已啟用鄰近分享瀏覽權限 (按一下電腦右下角的時間欄位即可開啟狀態區，再從中啟用鄰近分享瀏覽權限) <ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
+<translation id="379500251094592809">如要使用鄰近分享功能，請確認兩部裝置都已解鎖且彼此相鄰，並已開啟藍牙功能。如果要與未設為聯絡人的 Chromebook 分享內容，請確認該裝置已啟用鄰近分享瀏覽權限 (按一下電腦右下角的時間欄位即可開啟狀態區，再從中啟用鄰近分享瀏覽權限)。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="379509625511193653">關閉</translation>
 <translation id="3796648294839530037">慣用的網路：</translation>
 <translation id="3797739167230984533">你的 <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> 受到貴機構管理<ph name="END_LINK" /></translation>
@@ -2504,7 +2510,7 @@
 <translation id="3817579325494460411">未提供</translation>
 <translation id="3819257035322786455">備份</translation>
 <translation id="3819261658055281761">系統無法為這個裝置儲存長期 API 存取憑證。</translation>
-<translation id="3819448694985509187">PIN 碼不正確，你還可以嘗試 1 次。</translation>
+<translation id="3819448694985509187">PIN 碼不正確，你只剩 1 次重試機會。</translation>
 <translation id="3819800052061700452">全螢幕(&amp;F)</translation>
 <translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{顯示}other{全部顯示}}</translation>
 <translation id="3820749202859700794">SECG 橢圓曲線 secp521r1 (亦稱為 NIST P-521)</translation>
@@ -2569,6 +2575,7 @@
 <translation id="3882165008614329320">相機或檔案中的現有影片</translation>
 <translation id="3884152383786131369">支援多種語言的網站內容會使用這個清單上第一個支援的語言。這些偏好設定會與你的瀏覽器設定同步。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">你想存取這個網站的要求已傳送給<ph name="NAME" /></translation>
+<translation id="3888364689515978571">已關閉。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="3888550877729210209">使用「<ph name="LOCK_SCREEN_APP_NAME" />」寫筆記</translation>
 <translation id="3890064827463908288">開啟 Chrome 同步功能以使用 Wi-Fi 同步功能</translation>
 <translation id="3892414795099177503">新增 OpenVPN/L2TP...</translation>
@@ -2648,6 +2655,7 @@
 <translation id="3958088479270651626">匯入書籤和設定</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3964480518399667971">關閉行動數據網路</translation>
+<translation id="3965730875470565266">已開啟，剩餘 <ph name="MINUTES" /> 分鐘</translation>
 <translation id="3965811923470826124">包含</translation>
 <translation id="3965965397408324205">離開<ph name="PROFILE_NAME" /></translation>
 <translation id="3966072572894326936">選擇其他資料夾...</translation>
@@ -2717,6 +2725,7 @@
 <translation id="4049783682480068824">{COUNT,plural, =1{無法與 # 位聯絡人建立連線。如要使用鄰近分享功能分享內容，請將與對方 Google 帳戶相關聯的電子郵件地址加入聯絡人資料。}other{無法與 # 位聯絡人建立連線。如要使用鄰近分享功能分享內容，請將與對方 Google 帳戶相關聯的電子郵件地址加入聯絡人資料。}}</translation>
 <translation id="4050225813016893843">驗證方式</translation>
 <translation id="4052120076834320548">最小</translation>
+<translation id="4054070260844648638">向所有人顯示</translation>
 <translation id="4056908315660577142">你已達到貴家長為「<ph name="APP_NAME" />」這款 Chrome 應用程式設定的使用時間限制。你明天可以使用 <ph name="TIME_LIMIT" />。</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">前往商店查看</translation>
@@ -3422,7 +3431,6 @@
 <translation id="4917385247580444890">強</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> 要求與「<ph name="EXTENSION_NAME" />」擴充功能通訊</translation>
 <translation id="4918086044614829423">接受</translation>
-<translation id="4918221908152712722">安裝「<ph name="APP_NAME" />」(無須下載)</translation>
 <translation id="4921290200821452703">給家長的學校帳戶資訊</translation>
 <translation id="4921348630401250116">文字轉語音</translation>
 <translation id="49226369361073053">{0,plural, =0{請立即更新裝置}=1{請在 1 秒內更新裝置}other{請在 # 秒內更新裝置}}</translation>
@@ -3578,7 +3586,7 @@
 <translation id="5119173345047096771">Mozilla Firefox</translation>
 <translation id="5121130586824819730">你的硬碟已滿。請選擇其他儲存位置，或清出足夠的硬碟空間。</translation>
 <translation id="5123433949759960244">籃球</translation>
-<translation id="5125167430897995218">PUK 不正確，你還可以嘗試 1 次。如果仍然輸入錯誤，必須請電信業者協助你重新取得網路存取權。</translation>
+<translation id="5125167430897995218">PUK 不正確，你只剩 1 次重試機會。如果仍然輸入錯誤，就必須請電信業者協助重新取得網路存取權。</translation>
 <translation id="5125751979347152379">網址無效。</translation>
 <translation id="5126611267288187364">查看變更</translation>
 <translation id="5127620150973591153">安全連線 ID：<ph name="TOKEN" /></translation>
@@ -3655,6 +3663,7 @@
 <translation id="5213891612754844763">顯示 Proxy 設定</translation>
 <translation id="5215502535566372932">選取國家/地區</translation>
 <translation id="521582610500777512">已捨棄相片</translation>
+<translation id="5217189792977407501">指派至桌面</translation>
 <translation id="5222403284441421673">已封鎖不安全的下載內容</translation>
 <translation id="5222676887888702881">登出</translation>
 <translation id="52232769093306234">封裝失敗。</translation>
@@ -4191,6 +4200,7 @@
 <translation id="5832813618714645810">設定檔</translation>
 <translation id="583281660410589416">未知</translation>
 <translation id="5833397272224757657">使用你所造訪網站的內容、瀏覽器活動和瀏覽器互動行為，提供個人化的使用體驗</translation>
+<translation id="5833551944249825624">你的 Chromebook 會向附近的所有人顯示 5 分鐘</translation>
 <translation id="5833726373896279253">你必須是擁有者，才能修改這些設定：</translation>
 <translation id="5834581999798853053">剩下 <ph name="TIME" /> 分鐘</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - 攝影機或麥克風錄影/錄音中</translation>
@@ -4561,7 +4571,6 @@
 <translation id="6248988683584659830">搜尋設定</translation>
 <translation id="6249200942125593849">管理無障礙功能</translation>
 <translation id="6251870443722440887">GDI 控制代碼</translation>
-<translation id="6251889282623539337"><ph name="DOMAIN" /> 服務條款</translation>
 <translation id="625369703868467034">網路健康狀態</translation>
 <translation id="6254503684448816922">金鑰洩露</translation>
 <translation id="6257602895346497974">開啟同步處理功能...</translation>
@@ -4596,6 +4605,8 @@
 <translation id="628352644014831790">4 秒</translation>
 <translation id="6285120108426285413">一般使用者不常下載 <ph name="FILE_NAME" />，代表這個檔案可能不安全。</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{您的網路上有一台新印表機}other{您的網路上有多台新印表機}}</translation>
+<translation id="6285770818046456882">原本與你分享內容的裝置已取消傳輸作業</translation>
+<translation id="6290613030083731160">附近沒有可分享內容的裝置。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="6291949900244949761">網站要求存取 USB 裝置時詢問我 (建議)</translation>
 <translation id="6291953229176937411">在 Finder 中顯示(&amp;S)</translation>
 <translation id="6295158916970320988">所有網站</translation>
@@ -4640,6 +4651,7 @@
 <translation id="6331818708794917058">網站可以要求連線至 MIDI 裝置</translation>
 <translation id="6333064448949140209">檔案會傳送給 Google 進行偵錯</translation>
 <translation id="6334444530352320327">當你使用這個帳戶登入後，所有 Chromebook 上的應用程式和作業系統設定都會保持同步。<ph name="LINK_BEGIN" />同步設定<ph name="LINK_END" /></translation>
+<translation id="6335920438823100346"><ph name="MANAGER" /> 要求你備份資料，並將這部 Chromebook 恢復原廠設定，才能啟動 Linux。</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> 已停用 ADB 偵錯，這會讓系統在 24 小時後重設 <ph name="DEVICE_TYPE" />。請備份你要保留的檔案。</translation>
 <translation id="6338981933082930623">所有網站都可以向你顯示任何廣告</translation>
 <translation id="6339668969738228384">為 <ph name="USER_EMAIL_ADDRESS" /> 建立新的個人資料</translation>
@@ -5449,7 +5461,6 @@
 <translation id="7290242001003353852">這項登入服務 (由 <ph name="SAML_DOMAIN" /> 代管) 正在存取您的攝影機。</translation>
 <translation id="7295614427631867477">請注意，Android、Google Play 以及相關聯的應用程式受各自的資料收集政策和使用政策規範。</translation>
 <translation id="729583233778673644">允許執行 AES 和 RC4 加密。由於 RC4 加密不安全，使用這個加密選項會提高風險。</translation>
-<translation id="7296774163727375165"><ph name="DOMAIN" /> 條款</translation>
 <translation id="7297443947353982503">使用者名稱/密碼錯誤或 EAP 驗證失敗</translation>
 <translation id="729761647156315797">選擇語言和鍵盤</translation>
 <translation id="7297726121602187087">深綠色</translation>
@@ -5493,6 +5504,7 @@
 <translation id="7347943691222276892">按一下即可離開「<ph name="SUBPAGE_TITLE" />」。</translation>
 <translation id="7348093485538360975">螢幕小鍵盤</translation>
 <translation id="7352651011704765696">發生錯誤</translation>
+<translation id="7353261921908507769">聯絡人在附近時可與你分享內容。傳輸作業會等到你接受後才開始。</translation>
 <translation id="735361434055555355">正在安裝 Linux...</translation>
 <translation id="7354341762311560488">指紋感應器位於鍵盤左下方，請單指輕觸這個按鍵。</translation>
 <translation id="7356908624372060336">網路記錄</translation>
@@ -5892,6 +5904,7 @@
 <translation id="779308894558717334">淺綠色</translation>
 <translation id="7793098747275782155">深藍色</translation>
 <translation id="7797571222998226653">關閉</translation>
+<translation id="7798259165971079056">除非你將自己的狀態設為顯示，否則任何人都無法與你分享內容。<ph name="BR" /><ph name="BR" />如要將狀態設為暫時顯示，請按一下電腦右下角的時間欄位來開啟狀態區，再啟用鄰近分享瀏覽權限。</translation>
 <translation id="7798844538707273832">已自動封鎖<ph name="PERMISSION" /></translation>
 <translation id="7799299114731150374">已成功設定桌布</translation>
 <translation id="7800518121066352902">逆時針旋轉(&amp;O)</translation>
@@ -6268,7 +6281,7 @@
 <translation id="8206745257863499010">藍調</translation>
 <translation id="8206859287963243715">手機</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{新通知}other{# 則新通知}}</translation>
-<translation id="8211551284753798479">PUK 無效，你還可以嘗試 <ph name="RETRIES" /> 次。</translation>
+<translation id="8211551284753798479">PUK 無效，你還有 <ph name="RETRIES" /> 次重試機會。</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{正在執行一項下載作業}other{正在執行多項下載作業}}</translation>
 <translation id="8213449224684199188">已進入相片模式</translation>
 <translation id="8214489666383623925">開啟檔案...</translation>
@@ -6429,7 +6442,6 @@
 <translation id="8398877366907290961">仍要繼續</translation>
 <translation id="8400146488506985033">管理使用者</translation>
 <translation id="8401432541486058167">請輸入與智慧型卡片相關聯的 PIN 碼。</translation>
-<translation id="8405046151008197676">瞭解最新的更新內容摘要</translation>
 <translation id="8407199357649073301">記錄層級：</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" />網路，連線中</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -6619,7 +6631,7 @@
 <translation id="8636284842992792762">正在初始化擴充功能...</translation>
 <translation id="8637542770513281060">你的電腦含有安全模組，用於實作 Chrome 作業系統中許多重要的安全性功能。如需瞭解詳情，請造訪 Chromebook 說明中心：https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8637688295594795546">可安裝系統更新，正在準備下載…</translation>
-<translation id="863903787380594467">PIN 碼不正確，你還可以嘗試 <ph name="RETRIES" /> 次。</translation>
+<translation id="863903787380594467">PIN 碼不正確，你還有 <ph name="RETRIES" /> 次重試機會。</translation>
 <translation id="8639047128869322042">正在檢查有害軟體...</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - 通訊埠</translation>
 <translation id="8639635302972078117">傳送使用狀況與診斷資料。這部裝置目前會自動將診斷資料、裝置和應用程式的使用資料傳送給 Google。這些資料將有助於改善系統和應用程式的穩定性與其他功能，並不會用於識別貴子女的身分。此外，部分匯總資料還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 改善自己的產品和服務。如果貴子女的「其他網路和應用程式活動」設定為開啟，這些資料可能會儲存在他們的 Google 帳戶中。</translation>
@@ -6879,6 +6891,7 @@
 <translation id="8898840733695078011">訊號強度</translation>
 <translation id="8899851313684471736">在新視窗中開啟連結(&amp;W)</translation>
 <translation id="8900413463156971200">啟用行動數據</translation>
+<translation id="8902059453911237649">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> 要求你備份自己的資料，並且在今天內返還這部 <ph name="DEVICE_TYPE" />。}other{<ph name="MANAGER" /> 要求你備份自己的資料，並且在期限內返還這部 <ph name="DEVICE_TYPE" />。}}</translation>
 <translation id="8902667442496790482">開啟隨選朗讀設定</translation>
 <translation id="8903263458134414071">請選取要登入的帳戶</translation>
 <translation id="890616557918890486">變更來源</translation>
@@ -7094,7 +7107,7 @@
 <translation id="9147392381910171771">選項 (&amp;O)</translation>
 <translation id="9148058034647219655">結束</translation>
 <translation id="9148126808321036104">重新登入</translation>
-<translation id="914873105831852105">PIN 碼無效，你還可以嘗試 1 次。</translation>
+<translation id="914873105831852105">PIN 碼無效，你只剩 1 次重試機會。</translation>
 <translation id="9148963623915467028">這個網站可以存取你的位置資訊。</translation>
 <translation id="9149866541089851383">編輯...</translation>
 <translation id="9150045010208374699">使用你的相機</translation>
@@ -7115,7 +7128,6 @@
 <translation id="9168436347345867845">稍後再說</translation>
 <translation id="9169496697824289689">查看鍵盤快速鍵</translation>
 <translation id="916964310188958970">為什麼會顯示這項建議？</translation>
-<translation id="9169931577761441333">將 <ph name="APP_NAME" /> 新增至主畫面</translation>
 <translation id="9170061643796692986">目前的瀏覽權限設為「所有聯絡人」</translation>
 <translation id="9170848237812810038">取消(&amp;U)</translation>
 <translation id="9170884462774788842">電腦中其他程式所新增的主題可能會變更 Chrome 的運作方式。</translation>

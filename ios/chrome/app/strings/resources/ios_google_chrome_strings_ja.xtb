@@ -30,6 +30,7 @@
 <translation id="3706101708757577809">メッセージ、ドキュメント、他のアプリのリンクをタップしたときに、常に Chrome が使えるようになります。</translation>
 <translation id="384394811301901750">現在 Google Chrome ではカメラを使用できません</translation>
 <translation id="3980220367029651214">同期アカウントを <ph name="USER_EMAIL1" /> から <ph name="USER_EMAIL2" /> へ切り替えます。既存の Chrome データは <ph name="DOMAIN" /> で管理されています。データはこのデバイスから削除されますが、<ph name="USER_EMAIL1" /> で保持されます。</translation>
+<translation id="3984746313391923992">組織が Chrome にログインしないように求めています。</translation>
 <translation id="3988789688219830639">Google Chrome で写真または動画にアクセスできません。iOS の [設定] &gt; [プライバシー] &gt; [写真] でアクセスを有効にしてください。</translation>
 <translation id="4099578267706723511">使用統計情報と障害レポートを Google に送信して、Chrome の品質向上にご協力ください。</translation>
 <translation id="415767770115540173">ユーザーの場所に基づいてChromeでGoogleを使いやすくします。</translation>
@@ -54,6 +55,7 @@
 <translation id="6600954340915313787">Chrome にコピー済み</translation>
 <translation id="6648150602980899529"><ph name="DOMAIN" /> で管理されているアカウントでログインし、管理者に Chrome データの管理を委託します。今後 Chrome データはこのアカウントに関連付けられます。Chrome からログアウトすると、データはこのデバイスから削除されますが、Google アカウントで保持されます。</translation>
 <translation id="6676840375528380067">Chrome データをこのデバイスから削除しますか？</translation>
+<translation id="6822363243974874813">Chrome からログアウトすると、ブックマーク、履歴、パスワードなどの設定はこのデバイスから削除されます。同期した Chrome データは Google アカウントに保存されます。</translation>
 <translation id="6822673484890854830">Chrome ですべてのパスワードを確認できませんでした。しばらくしてからもう一度お試しください。</translation>
 <translation id="7124339256045485976">Chrome を最新の状態に維持します</translation>
 <translation id="7161390184744336561">Google Chrome は古いバージョンです</translation>

@@ -12,6 +12,7 @@
 <translation id="10614374240317010">कभी नहीं सेव किया गया</translation>
 <translation id="1067922213147265141">Google की दूसरी सेवाएंं</translation>
 <translation id="107147699690128016">अगर आप फ़ाइल का एक्सटेंशन बदलते हैं, तो हो सकता है कि फ़ाइल अलग ऐप्लिकेशन में खुले. इससे आपके डिवाइस को नुकसान पहुंच सकता है.</translation>
+<translation id="1094515529340404628">वेब क्राउड और विज्ञापन का माप</translation>
 <translation id="1100066534610197918">समूह में नए टैब में खोलें</translation>
 <translation id="1105960400813249514">स्‍क्रीन कैप्‍चर</translation>
 <translation id="1111673857033749125">आपके अन्‍य डिवाइस पर सहेजे गए बुकमार्क यहां दिखाई देंगे.</translation>
@@ -227,6 +228,7 @@
 <translation id="2536728043171574184">इस पृष्‍ठ की ऑफ़लाइन कॉपी देख रहे हैं</translation>
 <translation id="2537178555904266562">पासवर्ड सिंक करने में गड़बड़ी हुई</translation>
 <translation id="2546283357679194313">कुकी और साइट डेटा</translation>
+<translation id="2562889244313180139">वेबसाइटों और ऐप्लिकेशन को पहचाना न जा सकने वाला उपनाम इस्तेमाल करके, आपको ज़्यादा काम का अनुभव देने की अनुमति दें.</translation>
 <translation id="2567385386134582609">इमेज</translation>
 <translation id="2571711316400087311">दूसरी भाषाओं वाले पेजों को Google Translate पर भेजने की सुविधा</translation>
 <translation id="2581165646603367611">यह साइट की कुकी, कैश और अन्य डेटा निकाल देगा जो Chrome के विचार में महत्वपूर्ण नहीं है.</translation>
@@ -714,6 +716,7 @@
 <translation id="6005538289190791541">सुझाया गया पासवर्ड</translation>
 <translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{आपने <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> पेज नहीं पढ़ा है}one{आपने <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> पेज नहीं पढ़ा है}other{आपने <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> पेज नहीं पढ़े हैं}}</translation>
 <translation id="6014293228235665243">नहीं पढ़ा गया</translation>
+<translation id="6018309500671889594">विज्ञापन देने वालों को, पहचान न कर पाने वाली जानकारी इस्तेमाल करके, विज्ञापन कैंपेन का अध्ययन करने की अनुमति दें.</translation>
 <translation id="6036057147555329831">कुछ और ICU</translation>
 <translation id="6039379616847168523">सीधे अगले टैब पर जाएं</translation>
 <translation id="6040143037577758943">बंद करें</translation>
@@ -922,6 +925,7 @@
 <translation id="7403691278183511381">Chrome पहली बार चलाने का अनुभव</translation>
 <translation id="741204030948306876">हां मैं सहमत हूं</translation>
 <translation id="7413229368719586778">शुरू होने की तारीख: <ph name="DATE" /></translation>
+<translation id="7416941666639889592">वेब क्राउड में शामिल होकर, आप वेबसाइटों को आपकी व्यक्तिगत रूप से पहचान योग्य जानकारी का इस्तेमाल किए बिना, वेब अनुभव को आपके लिए काम का बनाने की अनुमति देते हैं. किसी कंसर्ट में मौजूद लोगों की तरह, वेबसाइटें और विज्ञापन देने वाले सिर्फ़ यह जान सकते हैं कि हज़ारों उपयोगकर्ताओं की पसंद एक जैसी है.</translation>
 <translation id="7431991332293347422">यह नियंत्रित करें कि खोज वगैरह को मनमुताबिक बनाने के लिए आपके ब्राउज़िंग इतिहास का इस्तेमाल कैसे किया जाए</translation>
 <translation id="7435356471928173109">आपके एडमिन ने ये सुविधा बंद की हुई है</translation>
 <translation id="7437998757836447326">Chrome से साइन आउट करें</translation>
@@ -1123,6 +1127,7 @@
 <translation id="8748850008226585750">छिपी हुई सामग्री</translation>
 <translation id="8788265440806329501">नेविगेशन का इतिहास बंद है</translation>
 <translation id="8788968922598763114">अभी बंद किया हुआ टैब खोलें</translation>
+<translation id="8795672590390389447">निजता सैंडबॉक्स</translation>
 <translation id="8798449543960971550">पढ़ा गया</translation>
 <translation id="8812260976093120287">कुछ वेबसाइटों पर, आप ऊपर समर्थित भुगतान ऐप्लिकेशन के ज़रिए अपने डिवाइस पर भुगतान कर सकते हैं.</translation>
 <translation id="881688628773363275">टैब कॉन्टेंट की झलक देखी नहीं जा सकती.</translation>

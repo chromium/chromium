@@ -995,6 +995,7 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4901778704868714008">सेव्ह करा…</translation>
 <translation id="4913987521957242411">पंच टॉप लेफ्ट</translation>
+<translation id="4918221908152712722"><ph name="APP_NAME" /> इंस्टॉल करा (डाउनलोड करण्याची आवश्यकता नाही)</translation>
 <translation id="4923459931733593730">पेमेंट</translation>
 <translation id="4926049483395192435">निर्दिष्‍ट केले जाणे आवश्‍यक आहे.</translation>
 <translation id="4926159001844873046"><ph name="SITE" /> चे म्हणणे हे आहे की</translation>
@@ -1361,6 +1362,7 @@
 <translation id="6328786501058569169">ही साइट फसवी आहे</translation>
 <translation id="6337133576188860026"><ph name="SIZE" /> पेक्षा कमी जागा मोकळी करते. काही साइट तुमच्या पुढील भेटीच्या वेळी आणखी धीम्या गतीने लोड होऊ शकतात.</translation>
 <translation id="6337534724793800597">धोरणे नावानुसार फिल्टर करा</translation>
+<translation id="6349101878882523185"><ph name="APP_NAME" /> इंस्टॉल करा</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{काहीही नाही}=1{(<ph name="DOMAIN_LIST" /> साठी) एक पासवर्ड सिंक केला}=2{(<ph name="DOMAIN_LIST" /> साठी) दोन पासवर्ड सिंक केले}other{(<ph name="DOMAIN_LIST" /> साठी) # पासवर्ड सिंक केले}}</translation>
 <translation id="6358450015545214790">याचा अर्थ काय आहे?</translation>
 <translation id="6361757823711327522">B7</translation>
@@ -1635,7 +1637,7 @@
 <translation id="7508255263130623398">परत केलेला धोरण डिव्हाइस आयडी रिक्त आहे किंवा वर्तमान डिव्हाइस आयडी शी जुळत नाही</translation>
 <translation id="7508870219247277067">हिरवे पिवळे</translation>
 <translation id="7511955381719512146">तुम्ही वापरत असलेल्या वाय-फाय ला तुम्ही <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> ला भेट देण्याची आवश्यकता असू शकते.</translation>
-<translation id="7512685745044087310">हे धोरण "सत्य" असे सेट केले जाऊ शकत नाही आणि अनिवार्य असू शकते, म्हणून ते शिफारस केलेले वर बदलले.</translation>
+<translation id="7512685745044087310">हे धोरण "सत्य" असे सेट केले जाऊ शकत नाही आणि अनिवार्य असू शकत नाही, म्हणून ते शिफारस केलेले वर बदलले.</translation>
 <translation id="7514365320538308">डाउनलोड करा</translation>
 <translation id="7518003948725431193">या वेबपत्त्यासाठी वेबपेज आढळले नाही: <ph name="URL" /></translation>
 <translation id="7520302887438682816">C8 (Envelope)C8 (Envelope)</translation>
@@ -2050,6 +2052,7 @@
 <translation id="9158625974267017556">C6 (Envelope)C6 (Envelope)</translation>
 <translation id="9168814207360376865">तुम्ही पेमेंट पद्धती सेव्ह केल्या आहेत का हे तपासण्याची साइटला परवानगी द्या</translation>
 <translation id="9169664750068251925">या साइटवर नेहमी अवरोधित करा</translation>
+<translation id="9169931577761441333"><ph name="APP_NAME" /> ला होम स्क्रीनवर जोडा</translation>
 <translation id="9170848237812810038">&amp;पूर्ववत करा</translation>
 <translation id="9171296965991013597">ॲप सोडायचे?</translation>
 <translation id="9173282814238175921">एक दस्तऐवज/नवीन पत्रक</translation>

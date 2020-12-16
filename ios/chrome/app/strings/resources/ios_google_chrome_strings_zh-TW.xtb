@@ -30,6 +30,7 @@
 <translation id="3706101708757577809">現在你只要在訊息、文件或其他應用程式中輕觸連結，即可使用 Chrome。</translation>
 <translation id="384394811301901750">Google Chrome 目前無法使用你的相機</translation>
 <translation id="3980220367029651214">您設定同步處理的帳戶即將從 <ph name="USER_EMAIL1" /> 改為 <ph name="USER_EMAIL2" />。您現有的 Chrome 資料是由 <ph name="DOMAIN" /> 所管理。系統會將您的資料從這個裝置上刪除，但繼續保留在 <ph name="USER_EMAIL1" /> 中。</translation>
+<translation id="3984746313391923992">貴機構要求你在 Chrome 保持登出狀態。</translation>
 <translation id="3988789688219830639">Google Chrome 無法存取您的相片或影片，請前往「iOS 設定」中的 [隱私權] &gt; [相片] 啟用存取權。</translation>
 <translation id="4099578267706723511">將使用統計資料及當機報告傳送給 Google，助我們一臂之力，讓 Chrome 更臻完美。</translation>
 <translation id="415767770115540173">在您使用 Chrome 時，讓 Google 根據您的位置資訊提供更優質的服務。</translation>
@@ -54,6 +55,7 @@
 <translation id="6600954340915313787">已複製到 Chrome</translation>
 <translation id="6648150602980899529">您即將使用由 <ph name="DOMAIN" /> 所管理的帳戶登入，並授權該網域的管理員控管您的 Chrome 資料。您的資料會與這個帳戶建立永久連結。登出 Chrome 後，系統會將您的資料從這個裝置上刪除，但繼續保留在您的 Google 帳戶中。</translation>
 <translation id="6676840375528380067">要清除你在這個裝置上的 Chrome 資料嗎？</translation>
+<translation id="6822363243974874813">登出 Chrome 後，你在這部裝置中的書籤、歷史記錄、密碼和其他設定會全數清除。已同步的 Chrome 資料仍會儲存在你的 Google 帳戶中。</translation>
 <translation id="6822673484890854830">Chrome 無法檢查所有密碼，請稍後再試。</translation>
 <translation id="7124339256045485976">取得 Chrome 最新版本</translation>
 <translation id="7161390184744336561">Google Chrome 版本過舊</translation>

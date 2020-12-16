@@ -52,6 +52,7 @@
 <translation id="2517472476991765520">स्क्यान गर्नुहोस्</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> परीक्षण गरिँदै छ...</translation>
 <translation id="2620436844016719705">सिस्टम</translation>
+<translation id="2658845327196595460">{COUNT,plural, =1{स्क्यान गरिएको फाइल सुरक्षित गरियो!}other{स्क्यान गरिएका फाइलहरू सुरक्षित गरिए!}}</translation>
 <translation id="2740531572673183784">ठिक छ</translation>
 <translation id="2805756323405976993">एप्स</translation>
 <translation id="2872961005593481000">बन्द गर्नुहोस्</translation>
@@ -188,6 +189,7 @@
 <translation id="7177485034254901881"><ph name="MANAGER" /> ले यो <ph name="DEVICE_TYPE" /> व्यवस्थापन गर्छ। एड्मिनहरू टाढैबाट यो यन्त्र कन्फिगर गर्न सक्छन्।</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">फाइलको प्रकार</translation>
+<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{स्क्यान गरिसकियो। एउटा पेज स्क्यान गरियो}other{स्क्यान गरिसकियो। {NUMBER_OF_PAGES} पेज स्क्यान गरिए}}</translation>
 <translation id="7441459999606975924">प्रयोग गर्दै जाँदा ब्याट्रीको क्षमता घट्दै जान्छ</translation>
 <translation id="7561454561030345039">यो कार्य तपाईंका एड्मिनले व्यवस्थापन गर्नुभएको छ</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>

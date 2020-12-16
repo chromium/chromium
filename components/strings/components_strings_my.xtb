@@ -996,6 +996,7 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />၊ <ph name="TYPE_2" />၊ <ph name="TYPE_3" /></translation>
 <translation id="4901778704868714008">သိမ်းရန်...</translation>
 <translation id="4913987521957242411">ဘယ်ဘက်ထိပ်တွင် ဖောက်ရန်</translation>
+<translation id="4918221908152712722"><ph name="APP_NAME" /> ကို ထည့်သွင်းပါ (ဒေါင်းလုဒ်လုပ်ရန် မလိုပါ)</translation>
 <translation id="4923459931733593730">ငွေပေးချေမှု</translation>
 <translation id="4926049483395192435">ဖေါ်ပြပေးရန် လိုသည်။</translation>
 <translation id="4926159001844873046"><ph name="SITE" /> က ဆိုထားသည်မှာ</translation>
@@ -1360,6 +1361,7 @@
 <translation id="6328786501058569169">ဤဆိုက်သည် လှည့်စားထားသည့်ဆိုက်သာ ဖြစ်သည်</translation>
 <translation id="6337133576188860026"><ph name="SIZE" /> အောက် နေရာလွတ်ပြုလုပ်ပါ။ အချို့ဝဘ်ဆိုက်များကို နောက်တစ်ကြိမ်ဖွင့်သည့်အခါ ပိုမိုနှေးကွေးစွာ ဖွင့်ပါလိမ့်မည်။</translation>
 <translation id="6337534724793800597">မူဝါဒများကို အမည်များဖြင့် စစ်ထုတ်ရန်</translation>
+<translation id="6349101878882523185"><ph name="APP_NAME" /> ထည့်သွင်းရန်</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{မရှိ}=1{စကားဝှက် ၁ ခု (<ph name="DOMAIN_LIST" /> အတွက်၊ စင့်ခ်လုပ်ထားသည်)}=2{စကားဝှက် ၂ ခု (<ph name="DOMAIN_LIST" /> အတွက်၊ စင့်ခ်လုပ်ထားသည်)}other{စကားဝှက် # ခု (<ph name="DOMAIN_LIST" /> အတွက်၊ စင့်ခ်လုပ်ထားသည်)}}</translation>
 <translation id="6358450015545214790">ဒါတွေက ဘာကို ဆိုလိုတာလဲ?</translation>
 <translation id="6361757823711327522">B7</translation>
@@ -2050,6 +2052,7 @@
 <translation id="9158625974267017556">C6 (စာအိတ်)</translation>
 <translation id="9168814207360376865">သင့်တွင် သိမ်းထားသော ငွေပေးချေနည်းလမ်းများရှိမရှိ စစ်ဆေးရန် ဝဘ်ဆိုက်များကို ခွင့်ပြုပါ</translation>
 <translation id="9169664750068251925">ဒီဆိုက် ပေါ်မှာ အမြဲတမ်း ပိတ်ဆို့ရန်</translation>
+<translation id="9169931577761441333"><ph name="APP_NAME" /> ကို ပင်မစာမျက်နှာသို့ ထည့်ရန်</translation>
 <translation id="9170848237812810038">&amp;တစ်ဆင့်နောက်ပြန်ရန်</translation>
 <translation id="9171296965991013597">အက်ပ်မှ ထွက်လိုပါသလား။</translation>
 <translation id="9173282814238175921">စာရွက်စာတမ်းတစ်ခုတည်း/စာမျက်နှာ အသစ်</translation>

@@ -984,6 +984,7 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />、<ph name="TYPE_2" />，<ph name="TYPE_3" /></translation>
 <translation id="4901778704868714008">儲存…</translation>
 <translation id="4913987521957242411">打孔 (左上方)</translation>
+<translation id="4918221908152712722">安裝「<ph name="APP_NAME" />」(無需下載)</translation>
 <translation id="4923459931733593730">付款</translation>
 <translation id="4926049483395192435">必須指定。</translation>
 <translation id="4926159001844873046"><ph name="SITE" /> 顯示</translation>
@@ -1349,6 +1350,7 @@
 <translation id="6328786501058569169">這是欺詐網站</translation>
 <translation id="6337133576188860026">釋的快取不到 <ph name="SIZE" />。在您下次瀏覽部分網站時，載入速度可能會變慢。</translation>
 <translation id="6337534724793800597">依名稱篩選政策</translation>
+<translation id="6349101878882523185">安裝 <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{無}=1{有 1 個密碼 (<ph name="DOMAIN_LIST" />，已同步)}=2{有 2 個密碼 (<ph name="DOMAIN_LIST" />，已同步)}other{有 # 個密碼 (<ph name="DOMAIN_LIST" />，已同步)}}</translation>
 <translation id="6358450015545214790">我需要進一步資料</translation>
 <translation id="6361757823711327522">B7</translation>
@@ -2038,6 +2040,7 @@
 <translation id="9158625974267017556">C6 (信封)</translation>
 <translation id="9168814207360376865">允許網站檢查您是否已儲存付款方法</translation>
 <translation id="9169664750068251925">永遠禁止在這個網站執行</translation>
+<translation id="9169931577761441333">將「<ph name="APP_NAME" />」新增至主畫面</translation>
 <translation id="9170848237812810038">復原(&amp;U)</translation>
 <translation id="9171296965991013597">要退出應用程式嗎？</translation>
 <translation id="9173282814238175921">單一文件/新工作表</translation>

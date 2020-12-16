@@ -981,6 +981,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4901778704868714008">Uložiť...</translation>
 <translation id="4913987521957242411">Prederaviť vľavo hore</translation>
+<translation id="4918221908152712722">Nainštalujte si <ph name="APP_NAME" /> (bez nutnosti stiahnutia)</translation>
 <translation id="4923459931733593730">Platba</translation>
 <translation id="4926049483395192435">Musí byť určená.</translation>
 <translation id="4926159001844873046">Správa z webu <ph name="SITE" /></translation>
@@ -1345,6 +1346,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6328786501058569169">Tento web je klamlivý</translation>
 <translation id="6337133576188860026">Uvoľní menej ako <ph name="SIZE" />. Niektoré weby sa môžu pri ďalšej návšteve načítať pomalšie.</translation>
 <translation id="6337534724793800597">Filtrovať pravidlá podľa mena</translation>
+<translation id="6349101878882523185">Inštalovať aplikáciu <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Žiadne}=1{Jedno heslo (pre zoznam domén <ph name="DOMAIN_LIST" />, synchronizované)}=2{Dve heslá (pre zoznam domén <ph name="DOMAIN_LIST" />, synchronizované)}few{# heslá (pre zoznam domén <ph name="DOMAIN_LIST" />, synchronizované)}many{# passwords (for <ph name="DOMAIN_LIST" />, synced)}other{# hesiel (pre zoznam domén <ph name="DOMAIN_LIST" />, synchronizovaných)}}</translation>
 <translation id="6358450015545214790">Čo znamenajú tieto položky?</translation>
 <translation id="6361757823711327522">B7</translation>
@@ -2035,6 +2037,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="9158625974267017556">C6 (obálka)</translation>
 <translation id="9168814207360376865">Povoliť webom zisťovať, či máte uložené spôsoby platby</translation>
 <translation id="9169664750068251925">Vždy blokovať na tomto webe</translation>
+<translation id="9169931577761441333">Pridať aplikáciu <ph name="APP_NAME" /> na plochu</translation>
 <translation id="9170848237812810038">&amp;Naspäť</translation>
 <translation id="9171296965991013597">Opustiť aplikáciu?</translation>
 <translation id="9173282814238175921">Jeden dokument alebo nový hárok</translation>

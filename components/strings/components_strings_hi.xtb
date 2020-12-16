@@ -993,6 +993,7 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4901778704868714008">सेव करें...</translation>
 <translation id="4913987521957242411">सबसे ऊपर बाईं ओर पंच</translation>
+<translation id="4918221908152712722"><ph name="APP_NAME" /> इंस्टॉल करें (डाउनलोड करने की ज़रूरत नहीं है)</translation>
 <translation id="4923459931733593730">भुगतान</translation>
 <translation id="4926049483395192435">बताया जाना चाहिए.</translation>
 <translation id="4926159001844873046"><ph name="SITE" /> का कहना है कि</translation>
@@ -1358,6 +1359,7 @@
 <translation id="6328786501058569169">यह साइट भ्रामक है</translation>
 <translation id="6337133576188860026"><ph name="SIZE" /> से कम जगह खाली करता है. आपकी अगली विज़िट पर कुछ साइटें और भी धीमे लोड हो सकती हैं.</translation>
 <translation id="6337534724793800597">नाम के अनुसार नीतियां फ़िल्टर करें</translation>
+<translation id="6349101878882523185"><ph name="APP_NAME" /> इंस्टॉल करें</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{कोई पासवर्ड नहीं है}=1{(<ph name="DOMAIN_LIST" /> के लिए, सिंक किया गया) 1 पासवर्ड}=2{(<ph name="DOMAIN_LIST" /> के लिए, सिंक किए गए) 2 पासवर्ड}one{(<ph name="DOMAIN_LIST" /> के लिए, सिंक किए गए) # पासवर्ड}other{(<ph name="DOMAIN_LIST" /> के लिए, सिंक किए गए) # पासवर्ड}}</translation>
 <translation id="6358450015545214790">इनका क्‍या अर्थ है?</translation>
 <translation id="6361757823711327522">बी7</translation>
@@ -2048,6 +2050,7 @@
 <translation id="9158625974267017556">सी6 (एन्वेलप)</translation>
 <translation id="9168814207360376865">साइट को यह देखने दें कि आपके 'भुगतान के तरीके' सेव किए गए हैं या नहीं</translation>
 <translation id="9169664750068251925">इस साइट पर हमेशा अवरोधित करें</translation>
+<translation id="9169931577761441333">होम स्क्रीन पर <ph name="APP_NAME" /> जोड़ें</translation>
 <translation id="9170848237812810038">&amp;पूर्ववत् करें</translation>
 <translation id="9171296965991013597">ऐप्लिकेशन बंद करें?</translation>
 <translation id="9173282814238175921">एक दस्तावेज़/नई शीट</translation>

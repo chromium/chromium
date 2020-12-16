@@ -12,6 +12,7 @@
 <translation id="10614374240317010">Nunca guardadas</translation>
 <translation id="1067922213147265141">Outros serviços Google</translation>
 <translation id="107147699690128016">Se alterar a extensão do ficheiro, este pode ser aberto numa aplicação diferente e representar um risco para o seu dispositivo.</translation>
+<translation id="1094515529340404628">Web crowd e medição de anúncios</translation>
 <translation id="1100066534610197918">Abrir num novo sep. no grupo</translation>
 <translation id="1105960400813249514">Ecrã a ser capturado...</translation>
 <translation id="1111673857033749125">Os marcadores guardados nos seus outros dispositivos são apresentados aqui.</translation>
@@ -227,6 +228,7 @@ Toque sem soltar em qualquer palavra para pesquisar. Para refinar a sua pesquisa
 <translation id="2536728043171574184">Visualização de uma cópia offline desta página</translation>
 <translation id="2537178555904266562">Erro ao sincronizar as palavras-passe.</translation>
 <translation id="2546283357679194313">Cookies e dados de Web sites</translation>
+<translation id="2562889244313180139">Permita que os Websites e as apps lhe proporcionem uma experiência mais relevante com um alias não identificável.</translation>
 <translation id="2567385386134582609">IMAGEM</translation>
 <translation id="2571711316400087311">Disponibilizar-se para enviar páginas noutros idiomas para o Google Tradutor</translation>
 <translation id="2581165646603367611">Esta ação elimina os cookies, a cache e outros dados de sites que o Chrome não considera importantes.</translation>
@@ -714,6 +716,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="6005538289190791541">Palavra-passe sugerida</translation>
 <translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Tem <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> página.}other{Tem <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> páginas.}}</translation>
 <translation id="6014293228235665243">Não lidas</translation>
+<translation id="6018309500671889594">Permita que os anunciantes estudem campanhas publicitárias com informações não identificáveis.</translation>
 <translation id="6036057147555329831">ICU extra</translation>
 <translation id="6039379616847168523">Ir para o próximo separador</translation>
 <translation id="6040143037577758943">Fechar</translation>
@@ -922,6 +925,7 @@ Os dados da sua sessão de Navegação anónima apenas serão limpos do Chrome q
 <translation id="7403691278183511381">Experiência de primeira execução do Chrome</translation>
 <translation id="741204030948306876">Sim, aceito</translation>
 <translation id="7413229368719586778">Data de início: <ph name="DATE" /></translation>
+<translation id="7416941666639889592">Ao juntar-se a um Web Crowd, permite aos Websites tornar a sua experiência Web relevante sem utilizar informações de identificação pessoal. Tal como o público num concerto, os Websites e os anunciantes só sabem que milhares de utilizadores partilham um interesse semelhante.</translation>
 <translation id="7431991332293347422">Controle a forma como o histórico de navegação é utilizado para personalizar a Pesquisa e muito mais.</translation>
 <translation id="7435356471928173109">Desativada pelo seu administrador.</translation>
 <translation id="7437998757836447326">Terminar sessão no Chrome</translation>
@@ -1123,6 +1127,7 @@ Os dados da sua sessão de Navegação anónima apenas serão limpos do Chrome q
 <translation id="8748850008226585750">Conteúdo ocultado</translation>
 <translation id="8788265440806329501">O histórico de navegação está fechado.</translation>
 <translation id="8788968922598763114">Reabrir o último separador fechado</translation>
+<translation id="8795672590390389447">Isolamento de processos de privacidade</translation>
 <translation id="8798449543960971550">Lidas</translation>
 <translation id="8812260976093120287">Nalguns Sites, é possível pagar com as aplicações de pagamento compatíveis acima no dispositivo.</translation>
 <translation id="881688628773363275">O conteúdo do separador de pré-visualização não está visível.</translation>

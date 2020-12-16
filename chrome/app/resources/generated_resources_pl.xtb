@@ -3431,7 +3431,6 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="4917385247580444890">Silny</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> chce nawiązać połączenie z rozszerzeniem „<ph name="EXTENSION_NAME" />”</translation>
 <translation id="4918086044614829423">Akceptuj</translation>
-<translation id="4918221908152712722">Zainstaluj aplikację <ph name="APP_NAME" /> (nie wymaga pobrania)</translation>
 <translation id="4921290200821452703">Informacje dla rodziców o koncie szkolnym</translation>
 <translation id="4921348630401250116">Zamiana tekstu na mowę</translation>
 <translation id="49226369361073053">{0,plural, =0{Aktualizacja urządzenia nastąpi teraz}=1{Aktualizacja urządzenia nastąpi w ciągu 1 sekundy}few{Aktualizacja urządzenia nastąpi w ciągu # sekund}many{Aktualizacja urządzenia nastąpi w ciągu # sekund}other{Aktualizacja urządzenia nastąpi w ciągu # sekundy}}</translation>
@@ -4572,7 +4571,6 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="6248988683584659830">Przeszukaj ustawienia</translation>
 <translation id="6249200942125593849">Zarządzaj funkcjami ułatwień dostępu</translation>
 <translation id="6251870443722440887">Uchwyty GDI</translation>
-<translation id="6251889282623539337"><ph name="DOMAIN" /> – warunki korzystania</translation>
 <translation id="625369703868467034">Stan sieci</translation>
 <translation id="6254503684448816922">Złamanie klucza</translation>
 <translation id="6257602895346497974">Włącz synchronizację…</translation>
@@ -5463,7 +5461,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="7290242001003353852">Ta usługa logowania, pochodząca z domeny <ph name="SAML_DOMAIN" />, ma dostęp do kamery.</translation>
 <translation id="7295614427631867477">Pamiętaj, że Android, Play i powiązane aplikacje mogą podlegać własnym zasadom zbierania i wykorzystywania danych.</translation>
 <translation id="729583233778673644">Zezwala na szyfrowanie AES i RC4. Używanie tej opcji jest ryzykowne, ponieważ szyfrowanie RC4 nie zapewnia bezpieczeństwa.</translation>
-<translation id="7296774163727375165"><ph name="DOMAIN" /> – warunki</translation>
 <translation id="7297443947353982503">Niepoprawna nazwa użytkownika lub hasło albo uwierzytelnianie EAP nie powiodło się</translation>
 <translation id="729761647156315797">Wybierz język i klawiaturę</translation>
 <translation id="7297726121602187087">Ciemnozielony</translation>
@@ -6446,7 +6443,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8398877366907290961">Kontynuuj mimo wszystko</translation>
 <translation id="8400146488506985033">Zarządzaj użytkownikami</translation>
 <translation id="8401432541486058167">Wpisz kod PIN powiązany z Twoją kartą elektroniczną.</translation>
-<translation id="8405046151008197676">Poznaj najważniejsze ulepszenia z najnowszej aktualizacji</translation>
 <translation id="8407199357649073301">Poziom rejestrowania:</translation>
 <translation id="8408068190360279472">Sieć <ph name="NETWORK_TYPE" />, łączę</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -7135,7 +7131,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="9168436347345867845">Później</translation>
 <translation id="9169496697824289689">Pokaż skróty klawiszowe</translation>
 <translation id="916964310188958970">Dlaczego ta sugestia?</translation>
-<translation id="9169931577761441333">Dodaj aplikację <ph name="APP_NAME" /> do ekranu głównego</translation>
 <translation id="9170061643796692986">Bieżące ustawienie widoczności: wszystkie kontakty</translation>
 <translation id="9170848237812810038">&amp;Cofnij</translation>
 <translation id="9170884462774788842">Inny program na Twoim komputerze dodał motyw, który może zmienić działanie Chrome.</translation>

@@ -52,6 +52,7 @@
 <translation id="2517472476991765520">اسکین کریں</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> ٹیسٹ چل رہا ہے...</translation>
 <translation id="2620436844016719705">سسٹم</translation>
+<translation id="2658845327196595460">{COUNT,plural, =1{اسکین کردہ فائل محفوظ ہو گئی!}other{اسکین کردہ فائلز محفوظ ہو گئیں!}}</translation>
 <translation id="2740531572673183784">ٹھیک ہے</translation>
 <translation id="2805756323405976993">اطلاقات</translation>
 <translation id="2872961005593481000">بند کریں</translation>
@@ -188,6 +189,7 @@
 <translation id="7177485034254901881">یہ <ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> کے زیر انتظام ہے۔ منتظمین دور سے آلے کو کنفیگر کر سکتے ہیں۔</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">فائل کی قسم</translation>
+<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{اسکیننگ مکمل ہو گئی۔ 1 صفحہ اسکین ہو گیا}other{اسکیننگ مکمل ہو گئی۔ {NUMBER_OF_PAGES} صفحات اسکین ہو گئے}}</translation>
 <translation id="7441459999606975924">استعمال کے ساتھ بیٹریز کی استعداد کم ہوتی ہے</translation>
 <translation id="7561454561030345039">یہ کارروائی آپ کے منتظم کے زیر انتظام ہے</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>

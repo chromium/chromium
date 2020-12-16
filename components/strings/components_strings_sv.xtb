@@ -996,6 +996,7 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4901778704868714008">Spara …</translation>
 <translation id="4913987521957242411">Häfta uppe till vänster</translation>
+<translation id="4918221908152712722">Installera <ph name="APP_NAME" /> (ingen nedladdning krävs)</translation>
 <translation id="4923459931733593730">Betalning</translation>
 <translation id="4926049483395192435">Värdet måste anges.</translation>
 <translation id="4926159001844873046">Från <ph name="SITE" />:</translation>
@@ -1361,6 +1362,7 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="6328786501058569169">Den här webbplatsen är bedräglig</translation>
 <translation id="6337133576188860026">Frigör mindre än <ph name="SIZE" />. Vissa webbplatser kan läsas in långsammare nästa gång du besöker dem.</translation>
 <translation id="6337534724793800597">Filtrera princip efter namn</translation>
+<translation id="6349101878882523185">Installera <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Inga}=1{1 lösenord (för <ph name="DOMAIN_LIST" />, synkroniseras)}=2{2 lösenord (för <ph name="DOMAIN_LIST" />, synkroniseras)}other{# lösenord (för <ph name="DOMAIN_LIST" />, synkroniseras)}}</translation>
 <translation id="6358450015545214790">Vad innebär dessa?</translation>
 <translation id="6361757823711327522">B7</translation>
@@ -2051,6 +2053,7 @@ Mer information:
 <translation id="9158625974267017556">C6 (kuvert)</translation>
 <translation id="9168814207360376865">Tillåt att webbplatser kontrollerar om du har sparade betalningsmetoder</translation>
 <translation id="9169664750068251925">Blockera alltid den här webbplatsen</translation>
+<translation id="9169931577761441333">Lägg till <ph name="APP_NAME" /> på startskärmen</translation>
 <translation id="9170848237812810038">&amp;Ångra</translation>
 <translation id="9171296965991013597">Vill du lämna appen?</translation>
 <translation id="9173282814238175921">Enkelt dokument/nytt ark</translation>

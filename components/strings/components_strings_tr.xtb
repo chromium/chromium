@@ -987,6 +987,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4901778704868714008">Kaydet...</translation>
 <translation id="4913987521957242411">Sol üstte delik</translation>
+<translation id="4918221908152712722"><ph name="APP_NAME" /> uygulamasını yükleyin (indirmek gerekmez)</translation>
 <translation id="4923459931733593730">Ödeme</translation>
 <translation id="4926049483395192435">Belirtilmelidir.</translation>
 <translation id="4926159001844873046"><ph name="SITE" /> web sitesinin mesajı</translation>
@@ -1352,6 +1353,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6328786501058569169">Bu site yanıltıcıdır</translation>
 <translation id="6337133576188860026"><ph name="SIZE" /> boyutundan daha az yer açar. Bir sonraki ziyaretinizde bazı siteler daha yavaş yüklenebilir.</translation>
 <translation id="6337534724793800597">Politikalara ada göre filtre uygula</translation>
+<translation id="6349101878882523185"><ph name="APP_NAME" /> uygulamasını yükle</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Yok}=1{1 şifre (<ph name="DOMAIN_LIST" /> için, senkronize edildi)}=2{2 şifre (<ph name="DOMAIN_LIST" /> için, senkronize edildi)}other{# şifre (<ph name="DOMAIN_LIST" /> için, senkronize edildi)}}</translation>
 <translation id="6358450015545214790">Bunlar ne anlama geliyor?</translation>
 <translation id="6361757823711327522">B7</translation>
@@ -1867,7 +1869,7 @@ Ek ayrıntılar:
 <translation id="8438786541497918448">Kamera ve mikrofon kullanılsın mı?</translation>
 <translation id="8446884382197647889">Daha Fazla Bilgi Edinin</translation>
 <translation id="8457125768502047971">Süresiz</translation>
-<translation id="8461694314515752532">Senkronize edilen verileri senkronizasyon parolanızı kullanarak şifrele</translation>
+<translation id="8461694314515752532">Senkronize edilen verileri kendi senkronizasyon parolanızla şifreleyin</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 kredi kartı}other{# kredi kartı}}</translation>
 <translation id="8473863474539038330">Adresler ve daha fazlası</translation>
 <translation id="8474910779563686872">Geliştirici ayrıntılarını göster</translation>
@@ -2042,6 +2044,7 @@ Ek ayrıntılar:
 <translation id="9158625974267017556">C6 (Zarf)</translation>
 <translation id="9168814207360376865">Sitelerin, kayıtlı ödeme yöntemleriniz olup olmadığını kontrol etmesine izin verin</translation>
 <translation id="9169664750068251925">Bu sitede her zaman engelle</translation>
+<translation id="9169931577761441333"><ph name="APP_NAME" /> uygulamasını Ana ekrana ekle</translation>
 <translation id="9170848237812810038">&amp;Geri al</translation>
 <translation id="9171296965991013597">Uygulamadan çıkılsın mı?</translation>
 <translation id="9173282814238175921">Tek doküman/Yeni sayfa</translation>

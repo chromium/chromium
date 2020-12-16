@@ -9,6 +9,7 @@
 <translation id="1175697296044146566"><ph name="MANAGER" /> દ્વારા <ph name="DEVICE_TYPE" />ને મેનેજ કરવામાં આવે છે.</translation>
 <translation id="1195447618553298278">અજ્ઞાત ભૂલ.</translation>
 <translation id="1204296502688602597">DNS વિલંબતા</translation>
+<translation id="123124571410524056">શંકાસ્પદ પોર્ટલ</translation>
 <translation id="1238612778414822719">HTTPSની વિલંબતા</translation>
 <translation id="1290331692326790741">નબળું સિગ્નલ</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -36,6 +37,7 @@
 <translation id="1947737735496445907">પ્રિન્ટ થઈ ગયું</translation>
 <translation id="1979103255016296513">પાસવર્ડ બદલવાની તારીખ નીકળી ગઈ છે</translation>
 <translation id="1980044825731880088">CPUની ગતિ</translation>
+<translation id="1999615961760456652">કૅપ્ટિવ પોર્ટલ</translation>
 <translation id="2008685064673031089">મુખ્ય શોધ</translation>
 <translation id="2080070583977670716">વધુ સેટિંગ્સ</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -115,6 +117,7 @@
 <translation id="4773299976671772492">રોક્યું</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" />ને પ્રિન્ટ કરવાનું રદ કર્યું</translation>
 <translation id="4832079907277790330">Files ઍપમાં ફોલ્ડર પસંદ કરો...</translation>
+<translation id="4835901797422965222">કોઈ નેટવર્ક સક્રિય નથી</translation>
 <translation id="4848429997038228357">ચાલુ છે</translation>
 <translation id="4890353053343094602">તરત જ નવો પાસવર્ડ પસંદ કરો</translation>
 <translation id="4891842000192098784">તાણ</translation>
@@ -135,6 +138,7 @@
 <translation id="5317780077021120954">સાચવો</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">કૃપા કરીને નવો પાસવર્ડ પસંદ કરો</translation>
+<translation id="5333530671332546086">પોર્ટલની અજાણી સ્થિતિ</translation>
 <translation id="5372659122375744710">આ વાઇ-ફાઇ નેટવર્ક સુરક્ષિત નથી</translation>
 <translation id="5401938042319910061">તમામ રૂટિન ચલાવો</translation>
 <translation id="5431318178759467895">રંગ</translation>
@@ -191,6 +195,7 @@
 <translation id="7359657277149375382">ફાઇલ પ્રકાર</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{સ્કૅન કરવાનું પૂર્ણ થયું. 1 પેજ સ્કૅન કર્યું}one{સ્કૅન કરવાનું પૂર્ણ થયું. {NUMBER_OF_PAGES} પેજ સ્કૅન કર્યું}other{સ્કૅન કરવાનું પૂર્ણ થયું. {NUMBER_OF_PAGES} પેજ સ્કૅન કર્યા}}</translation>
 <translation id="7441459999606975924">વપરાશની સાથે જ બૅટરીની ક્ષમતા ઘટવા લાગે છે</translation>
+<translation id="7469648432129124067">પોર્ટલની જાણકારી મળી</translation>
 <translation id="7561454561030345039">આ ક્રિયાને તમારા વ્યવસ્થાપક દ્વારા મેનેજ કરવામાં આવે છે</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">HTTPSની ઉચ્ચ વિલંબતા</translation>

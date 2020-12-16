@@ -361,13 +361,13 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
           Jika kebijakan ini ditetapkan, pengguna tidak dapat mengubah atau menggantinya.</translation>
 <translation id="1502843533062797703">Aktifkan pemblokiran injeksi software pihak ketiga</translation>
 <translation id="1506017854924185821">Ketersediaan alat pilih profil saat browser dimulai</translation>
-<translation id="1509377996969000672">Jika kebijakan disetel, konfigurasi untuk printer perusahaan yang terikat ke perangkat akan tersedia. Jika formatnya cocok dengan kamus <ph name="NATIVE_PRINTERS_POLICY_NAME" />, dengan tambahan kolom "id" atau "guid" yang diperlukan agar setiap printer dapat mengizinkan atau menolak daftar. Ukuran file tidak boleh lebih dari 5MB dan dalam format JSON. File yang berisi sekitar 21.000 printer dienkode sebagai file 5MB. Hash kriptografi membantu memverifikasi integritas download. File didownload, disimpan dalam cache, dan didownload ulang ketika URL atau hash berubah. <ph name="PRODUCT_OS_NAME" /> mendownload file untuk konfigurasi printer dan menyediakan printer beserta <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" />, dan <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />.
+<translation id="1509377996969000672">Jika kebijakan disetel, konfigurasi untuk printer perusahaan yang terikat ke perangkat akan tersedia. Jika formatnya cocok dengan kamus <ph name="NATIVE_PRINTERS_POLICY_NAME" />, dengan tambahan kolom "id" atau "guid" yang diperlukan agar setiap printer dapat mengizinkan atau menolak daftar. Ukuran file tidak boleh lebih dari 5 MB dan dalam format JSON. File yang berisi sekitar 21.000 printer dienkode sebagai file 5 MB. Hash kriptografi membantu memverifikasi integritas download. File didownload, disimpan dalam cache, dan didownload ulang ketika URL atau hash berubah. <ph name="PRODUCT_OS_NAME" /> mendownload file untuk konfigurasi printer dan menyediakan printer beserta <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" />, dan <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />.
 
       Kebijakan ini:
 
-      * tidak akan memengaruhi kemampuan pengguna dalam mengonfigurasi printer di perangkat individu
+      * tidak akan memengaruhi kemampuan pengguna dalam mengonfigurasi printer di tiap perangkat
 
-      * menambahkan <ph name="BULK_PRINTERS_POLICY_NAME" /> dan penyiapan printer milik pengguna individu
+      * menambahkan <ph name="BULK_PRINTERS_POLICY_NAME" /> dan penyiapan printer milik setiap pengguna
 
       Jika tidak disetel, tidak akan ada printer perangkat dan kebijakan <ph name="DEVICE_NATIVE_PRINTERS_POLICY_PATTERN" /> yang lain akan diabaikan.
 
@@ -382,7 +382,7 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 <translation id="1530812829012954197">Selalu urai pola URL berikut di browser host</translation>
 <translation id="1534690481294492142">Jika kebijakan disetel ke Aktif atau tidak disetel, <ph name="PRODUCT_NAME" /> dapat bertindak sebagai proxy di antara <ph name="CLOUD_PRINT_NAME" /> dan printer lama yang terhubung ke mesin. Dengan Akun Google-nya, pengguna dapat mengaktifkan proxy cloud print melalui autentikasi.
 
-      Jika kebijakan disetel ke Nonaktif, pengguna tidak dapat mengaktifkan proxy, dan mesin tidak dapat membagikan printernya dengan <ph name="CLOUD_PRINT_NAME" />.</translation>
+      Jika kebijakan disetel ke Nonaktif, pengguna tidak dapat mengaktifkan proxy, dan mesin tidak dapat membagikan printernya ke <ph name="CLOUD_PRINT_NAME" />.</translation>
 <translation id="1552418937045050762">Jika setelan ini diaktifkan, pengguna akan diizinkan memilih untuk menggunakan Berbagi Langsung yang memungkinkan mereka mengirim dan menerima file dari pengguna terdekat.
 
       Jika setelan ini dinonaktifkan, pengguna tidak diizinkan memilih untuk menggunakan Berbagi Langsung.
@@ -689,7 +689,7 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 
       Printer yang tersambung ke <ph name="CLOUD_PRINT_NAME" /> dianggap sebagai <ph name="PRINTER_TYPE_CLOUD" />, printer lainnya akan diklasifikasikan sebagai <ph name="PRINTER_TYPE_LOCAL" />.
 
-      Catatan: Menghilangkan kolom berarti semua nilai cocok. Misalnya, tidak menentukan konektivitas menyebabkan Pratinjau Cetak mulai menemukan semua jenis printer, <ph name="PRINTER_TYPE_LOCAL" /> dan <ph name="PRINTER_TYPE_CLOUD" />. Pola ekspresi reguler harus mengikuti sintaks RegExp JavaScript, dan hasil yang cocok peka huruf besar/kecil.</translation>
+      Catatan: Menghilangkan kolom berarti semua nilai cocok. Misalnya, tidak menentukan konektivitas menyebabkan Pratinjau Cetak mulai menemukan semua jenis printer, <ph name="PRINTER_TYPE_LOCAL" /> dan <ph name="PRINTER_TYPE_CLOUD" />. Pola ekspresi reguler harus mengikuti sintaks RegExp JavaScript, dan pencocokan bersifat peka huruf besar/kecil.</translation>
 <translation id="2006530844219044261">Pengelolaan daya</translation>
 <translation id="2014757022750736514">Mengontrol perilaku layar login tempat pengguna login ke akun. Setelan mencakup siapa saja yang dapat login, jenis akun yang diizinkan, metode autentikasi yang harus digunakan, serta aksesibilitas umum, metode masukan, dan setelan lokal.</translation>
 <translation id="201557587962247231">Frekuensi upload laporan status perangkat</translation>
@@ -1353,7 +1353,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
       Jika kebijakan tidak disetel (atau disetel ke URL yang tidak valid), <ph name="PRODUCT_NAME" /> tidak akan menggunakannya sebagai sumber aturan untuk beralih browser.
 
       Catatan: Kebijakan ini mengarah ke file XML dalam format yang sama seperti kebijakan <ph name="IEEM_SITELIST_POLICY" /> <ph name="IE_PRODUCT_NAME" />. Kebijakan ini akan memuat aturan dari file XML, tanpa membagikan aturan tersebut ke <ph name="IE_PRODUCT_NAME" />. Baca selengkapnya terkait kebijakan <ph name="IEEM_SITELIST_POLICY" /> <ph name="IE_PRODUCT_NAME" /> (https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode)</translation>
-<translation id="2947111924404450461">Menyetel kebijakan ini akan mengonfigurasi printer perusahaan. Formatnya cocok dengan kamus <ph name="NATIVE_PRINTERS_POLICY_NAME" />, dengan tambahan kolom <ph name="ID_FIELD" /> dan <ph name="GUID_FIELD" /> yang diperlukan agar setiap printer mengizinkan atau menolak daftar. Ukuran file tidak boleh lebih dari 5MB dan dalam format JSON. File yang berisi sekitar 21.000 printer dienkode sebagai file 5MB. Hash kriptografi membantu memverifikasi integritas download. File didownload, disimpan dalam cache, dan didownload ulang ketika URL atau hash berubah. <ph name="PRODUCT_OS_NAME" /> mendownload file untuk konfigurasi printer dan menyediakan printer beserta <ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="BULK_PRINTERS_WHITELIST" />, dan <ph name="BULK_PRINTERS_BLACKLIST" />.
+<translation id="2947111924404450461">Menyetel kebijakan ini akan mengonfigurasi printer perusahaan. Formatnya cocok dengan kamus <ph name="NATIVE_PRINTERS_POLICY_NAME" />, dengan tambahan kolom <ph name="ID_FIELD" /> dan <ph name="GUID_FIELD" /> yang diperlukan agar setiap printer mengizinkan atau menolak daftar. Ukuran file tidak boleh lebih dari 5 MB dan dalam format JSON. File yang berisi sekitar 21.000 printer dienkode sebagai file 5 MB. Hash kriptografi membantu memverifikasi integritas download. File didownload, disimpan dalam cache, dan didownload ulang ketika URL atau hash berubah. <ph name="PRODUCT_OS_NAME" /> mendownload file untuk konfigurasi printer dan menyediakan printer beserta <ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="BULK_PRINTERS_WHITELIST" />, dan <ph name="BULK_PRINTERS_BLACKLIST" />.
 
       Kebijakan ini tidak memengaruhi kemampuan pengguna untuk mengonfigurasi printer di tiap perangkat. Kebijakan ini ditujukan sebagai tambahan untuk konfigurasi printer yang ditentukan oleh setiap pengguna.
 
@@ -1653,7 +1653,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 
       Menggunakan kebijakan:
 
-      * Sesuaikan formulir bebas <ph name="PRINTER_DISPLAY_NAME" /> dan <ph name="PRINTER_DESCRIPTION" /> untuk kemudahan memilih printer.
+      * Sesuaikan <ph name="PRINTER_DISPLAY_NAME" /> dan <ph name="PRINTER_DESCRIPTION" /> dalam format bebas untuk kemudahan memilih printer.
 
       * Membantu pengguna mengidentifikasi printer menggunakan <ph name="PRINTER_MANUFACTURER" /> dan <ph name="PRINTER_MODEL" />.
 
@@ -1663,7 +1663,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 
       * Menggunakan nama model untuk <ph name="PRINTER_EFFECTIVE_MODEL" /> atau menyetel <ph name="PRINTER_AUTOCONF" /> ke Benar. Printer yang memiliki dua properti atau tanpa properti akan diabaikan.
 
-      PPD didownload setelah printer digunakan dan PPd yang sering digunakan akan disimpan dalam cache. Kebijakan ini tidak akan memengaruhi kemampuan pengguna dalam mengonfigurasi printer di perangkat individu.
+      PPD didownload setelah printer digunakan dan PPD yang sering digunakan akan disimpan dalam cache. Kebijakan ini tidak akan memengaruhi kemampuan pengguna dalam mengonfigurasi printer di tiap perangkat.
 
       Catatan: Untuk perangkat yang dikelola oleh <ph name="MS_AD_NAME" />, kebijakan ini mendukung ekspansi <ph name="MACHINE_NAME_VARIABLE" /> ke nama mesin <ph name="MS_AD_NAME" /> atau substring darinya. Misalnya, jika nama mesin adalah <ph name="MACHINE_NAME_EXAMPLE" />, lalu <ph name="MACHINE_NAME_VARIABLE_EXAMPLE" /> digantikan oleh 4 karakter yang dimulai setelah posisi ke-6, dengan kata lain, <ph name="MACHINE_NAME_PART_EXAMPLE" />. Posisi dimulai dari nol.
 
@@ -1803,6 +1803,13 @@ Jika ditetapkan ke False, <ph name="PRODUCT_NAME" /> tidak akan menggunakan noti
       Jika kebijakan disetel ke Nonaktif, software pihak ketiga akan diizinkan memasukkan kode tersebut ke dalam proses <ph name="PRODUCT_NAME" />.
 
       Apa pun nilai kebijakan ini, browser tidak akan memblokir software pihak ketiga memasukkan kode yang dapat dieksekusi ke dalam prosesnya di perangkat yang dihubungkan ke domain <ph name="MS_AD_NAME" />.</translation>
+<translation id="3456292544936505775">Kebijakan ini mengontrol rentang waktu saat perangkat <ph name="PRODUCT_OS_NAME" /> tidak diizinkan untuk otomatis memeriksa update.
+      Jika kebijakan ini disetel ke daftar interval waktu yang tidak kosong:
+      Perangkat tidak akan dapat otomatis memeriksa update selama interval waktu yang ditentukan. Perangkat yang memerlukan rollback perusahaan atau menjalankan <ph name="PRODUCT_OS_NAME" /> versi di bawah minimum tidak akan terpengaruh oleh kebijakan ini karena potensi masalah keamanan. Selain itu, kebijakan ini tidak akan memblokir pemeriksaan update yang diminta oleh pengguna atau administrator.
+      Mulai dari M88, kebijakan ini akan membatalkan update yang sedang berlangsung saat interval waktu yang dibatasi tercapai. Update otomatis berikutnya setelah interval waktu yang dibatasi berakhir akan otomatis melanjutkan update. Perangkat yang mengupdate ke Quick Fix Build tidak akan terpengaruh oleh kebijakan ini.
+      Jika kebijakan ini tidak disetel atau tidak berisi interval waktu:
+      Tidak ada pemeriksaan update otomatis yang akan diblokir oleh kebijakan ini, tetapi pemeriksaan tersebut dapat diblokir oleh kebijakan lain.
+      Sampai M88, fitur ini hanya diaktifkan di perangkat <ph name="PRODUCT_OS_NAME" /> yang dikonfigurasi sebagai kios dengan peluncuran otomatis. Perangkat lain tidak akan dibatasi oleh kebijakan ini. Namun, mulai dari M89, kebijakan ini akan diaktifkan di semua perangkat <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="3459509316159669723">Pencetakan</translation>
 <translation id="3461279434465463233">Laporkan status daya.</translation>
 <translation id="3478024346823118645">Hapus data pengguna saat keluar</translation>
@@ -1817,7 +1824,7 @@ Jika ditetapkan ke False, <ph name="PRODUCT_NAME" /> tidak akan menggunakan noti
 
           Jika kebijakan ini tidak ditetapkan, fitur klik untuk diucapkan mula-mula akan dinonaktifkan di layar login, tetapi dapat diaktifkan oleh pengguna kapan saja.</translation>
 <translation id="348495353354674884">Aktifkan keyboard virtual</translation>
-<translation id="3485200437120267231">Nonaktifkan login intersepsi</translation>
+<translation id="3485200437120267231">Nonaktifkan intersepsi login</translation>
 <translation id="3492834335089638487">Kebijakan ini mengontrol penggunaan aplikasi Android dari sumber yang tidak tepercaya (selain Google Play Store) untuk perangkat.
 
       Jika nilai kebijakan ini tidak ditetapkan, fungsinya dianggap tidak diizinkan.
@@ -1989,7 +1996,7 @@ Jika ditetapkan ke False, <ph name="PRODUCT_NAME" /> tidak akan menggunakan noti
 
       Menggunakan kebijakan:
 
-      * Sesuaikan formulir bebas <ph name="PRINTER_DISPLAY_NAME" /> dan <ph name="PRINTER_DESCRIPTION" /> untuk kemudahan memilih printer.
+      * Sesuaikan <ph name="PRINTER_DISPLAY_NAME" /> dan <ph name="PRINTER_DESCRIPTION" /> dalam format bebas untuk kemudahan memilih printer.
 
       * Membantu pengguna mengidentifikasi printer menggunakan <ph name="PRINTER_MANUFACTURER" /> dan <ph name="PRINTER_MODEL" />.
 
@@ -1999,7 +2006,7 @@ Jika ditetapkan ke False, <ph name="PRODUCT_NAME" /> tidak akan menggunakan noti
 
       * Menggunakan nama model untuk <ph name="PRINTER_EFFECTIVE_MODEL" /> atau menyetel <ph name="PRINTER_AUTOCONF" /> ke Benar. Printer yang memiliki dua properti atau tanpa properti akan diabaikan.
 
-      PPD didownload setelah printer digunakan dan PPd yang sering digunakan akan disimpan dalam cache. Kebijakan ini tidak akan memengaruhi kemampuan pengguna dalam mengonfigurasi printer di perangkat individu.
+      PPD didownload setelah printer digunakan dan PPD yang sering digunakan akan disimpan dalam cache. Kebijakan ini tidak akan memengaruhi kemampuan pengguna dalam mengonfigurasi printer di tiap perangkat.
 
       Catatan: Untuk perangkat yang dikelola oleh <ph name="MS_AD_NAME" />, kebijakan ini mendukung ekspansi <ph name="MACHINE_NAME_VARIABLE" /> ke nama mesin <ph name="MS_AD_NAME" /> atau substring darinya. Misalnya, jika nama mesin adalah <ph name="MACHINE_NAME_EXAMPLE" />, lalu <ph name="MACHINE_NAME_VARIABLE_EXAMPLE" /> digantikan oleh 4 karakter yang dimulai setelah posisi ke-6, dengan kata lain, <ph name="MACHINE_NAME_PART_EXAMPLE" />. Posisi dimulai dari nol.</translation>
 <translation id="377044054160169374">Penerapan Pencegahan Pengalaman yang Menyinggung</translation>
@@ -3137,7 +3144,7 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 
       Pengguna dapat memicu dialog impor dan kotak centang sandi yang tersimpan akan dicentang atau dihapus centangnya agar cocok dengan nilai kebijakan ini.</translation>
 <translation id="5457924070961220141">Memungkinkan Anda mengonfigurasi perender HTML default saat <ph name="PRODUCT_FRAME_NAME" /> dipasang. Setelan default yang digunakan ketika kebijakan ini tidak disetel adalah mengizinkan browser host melakukan rendering, tetapi Anda dapat menimpanya secara opsional dan membiarkan <ph name="PRODUCT_FRAME_NAME" /> merender halaman HTML secara default.</translation>
-<translation id="545817252640069915">Aktifkan login intersepsi</translation>
+<translation id="545817252640069915">Aktifkan intersepsi login</translation>
 <translation id="5460797984317417682">Aktifkan peringatan layar penuh</translation>
 <translation id="5464816904705580310">Mengonfigurasi setelan untuk pengguna yang dikelola.</translation>
 <translation id="5466596281866046569">Melaporkan informasi aplikasi</translation>
@@ -4131,13 +4138,13 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
       Jika kebijakan diaktifkan, setiap asal bernama dalam daftar yang dipisahkan koma akan dijalankan dalam prosesnya sendiri. Hal ini juga akan mengisolasi asal yang diberi nama berdasarkan subdomain; mis. menentukan https://example.com/ juga akan menyebabkan https://foo.example.com/ diisolasi sebagai bagian dari situs https://example.com/.
       Jika kebijakan dinonaktifkan atau tidak dikonfigurasi, setelan isolasi situs default platform akan digunakan untuk layar login.
       </translation>
-<translation id="6949867264289339206">Jika kebijakan disetel, konfigurasi untuk printer perusahaan yang terikat ke perangkat akan tersedia. Jika formatnya cocok dengan kamus <ph name="PRINTERS_POLICY_NAME" />, dengan tambahan kolom "id" atau "guid" yang diperlukan agar setiap printer dapat mengizinkan atau menolak daftar. Ukuran file tidak boleh lebih dari 5MB dan dalam format JSON. File yang berisi sekitar 21.000 printer dienkode sebagai file 5MB. Hash kriptografi membantu memverifikasi integritas download. File didownload, disimpan dalam cache, dan didownload ulang ketika URL atau hash berubah. <ph name="PRODUCT_OS_NAME" /> mendownload file untuk konfigurasi printer dan menyediakan printer beserta <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" />, dan <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />.
+<translation id="6949867264289339206">Jika kebijakan disetel, konfigurasi untuk printer perusahaan yang terikat ke perangkat akan tersedia. Jika formatnya cocok dengan kamus <ph name="PRINTERS_POLICY_NAME" />, dengan tambahan kolom "id" atau "guid" yang diperlukan agar setiap printer dapat mengizinkan atau menolak daftar. Ukuran file tidak boleh lebih dari 5 MB dan dalam format JSON. File yang berisi sekitar 21.000 printer dienkode sebagai file 5 MB. Hash kriptografi membantu memverifikasi integritas download. File didownload, disimpan dalam cache, dan didownload ulang ketika URL atau hash berubah. <ph name="PRODUCT_OS_NAME" /> mendownload file untuk konfigurasi printer dan menyediakan printer beserta <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" />, dan <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />.
 
       Kebijakan ini:
 
-      * tidak akan memengaruhi kemampuan pengguna dalam mengonfigurasi printer di perangkat individu
+      * tidak akan memengaruhi kemampuan pengguna dalam mengonfigurasi printer di tiap perangkat
 
-      * menambahkan <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> dan penyiapan printer milik pengguna individu
+      * menambahkan <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> dan penyiapan printer milik setiap pengguna
 
       Jika tidak disetel, tidak akan ada printer perangkat dan kebijakan <ph name="DEVICE_PRINTERS_POLICY_PATTERN" /> yang lain akan diabaikan.</translation>
 <translation id="69525503251220566">Parameter menyediakan fitur telusuri pakai gambar untuk penyedia penelusuran default</translation>
@@ -4446,11 +4453,11 @@ Jika kebijakan ini tidak disetel atau kosong, pengguna dapat menyetel akun Googl
       Jika kebijakan ini tidak disetel, baik pengguna yang dikelola maupun tidak dikelola perusahaan akan diizinkan secara default.</translation>
 <translation id="7372831798009983116">Mengaktifkan fitur aksesibilitas klik otomatis</translation>
 <translation id="7373200034079131670">Reboot saat pengguna logout jika Android atau VM telah dimulai.</translation>
-<translation id="7373680616478819439">Setelan ini mengaktifkan atau menonaktifkan login intersepsi.
+<translation id="7373680616478819439">Setelan ini mengaktifkan atau menonaktifkan intersepsi login.
 
-      Jika kebijakan ini tidak disetel atau disetel ke Benar, dialog login intersepsi dipicu saat akun Google ditambahkan di web, dan pengguna bisa mendapatkan keuntungan dengan memindahkan akun ini ke profil lain (profil baru atau yang sudah ada).
+      Jika kebijakan ini tidak disetel atau disetel ke Benar, dialog intersepsi login dipicu saat akun Google ditambahkan di web, dan pengguna mungkin sebaiknya memindahkan akun ini ke profil lain (profil baru atau yang sudah ada).
 
-      Jika disetel ke Salah, dialog login intersepsi masuk tidak akan dipicu.</translation>
+      Jika disetel ke Salah, dialog intersepsi login tidak akan dipicu.</translation>
 <translation id="7375785904116479354">Jika kebijakan disetel ke Aktif, mesin telusur default akan diimpor dari browser default sebelumnya saat pertama kali dijalankan. Jika kebijakan disetel ke Nonaktif atau tidak disetel, tidak ada mesin telusur default yang akan diimpor saat pertama kali dijalankan.
 
       Pengguna dapat memicu dialog impor dan kotak centang mesin telusur default akan dicentang atau dihapus centangnya agar cocok dengan nilai kebijakan ini.</translation>
@@ -4764,7 +4771,7 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
 
           Jika kebijakan ini tidak ditetapkan, kontras tinggi mula-mula akan dinonaktifkan di layar login, tetapi dapat diaktifkan oleh pengguna kapan saja.</translation>
 <translation id="7869986671709030417">Mode pencetakan grafis latar belakang default</translation>
-<translation id="7881421274383404138">Menyetel kebijakan ini akan mengonfigurasi printer perusahaan. Formatnya cocok dengan kamus <ph name="PRINTERS_POLICY_NAME" />, dengan tambahan kolom <ph name="ID_FIELD" /> dan <ph name="GUID_FIELD" /> yang diperlukan agar setiap printer mengizinkan atau menolak daftar. Ukuran file tidak boleh lebih dari 5MB dan dalam format JSON. File yang berisi sekitar 21.000 printer dienkode sebagai file 5MB. Hash kriptografi membantu memverifikasi integritas download. File didownload, disimpan dalam cache, dan didownload ulang ketika URL atau hash berubah. <ph name="PRODUCT_OS_NAME" /> mendownload file untuk konfigurasi printer dan menyediakan printer beserta <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" />, dan <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" />.
+<translation id="7881421274383404138">Menyetel kebijakan ini akan mengonfigurasi printer perusahaan. Formatnya cocok dengan kamus <ph name="PRINTERS_POLICY_NAME" />, dengan tambahan kolom <ph name="ID_FIELD" /> dan <ph name="GUID_FIELD" /> yang diperlukan agar setiap printer mengizinkan atau menolak daftar. Ukuran file tidak boleh lebih dari 5 MB dan dalam format JSON. File yang berisi sekitar 21.000 printer dienkode sebagai file 5 MB. Hash kriptografi membantu memverifikasi integritas download. File didownload, disimpan dalam cache, dan didownload ulang ketika URL atau hash berubah. <ph name="PRODUCT_OS_NAME" /> mendownload file untuk konfigurasi printer dan menyediakan printer beserta <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" />, dan <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" />.
 
       Kebijakan ini tidak memengaruhi kemampuan pengguna untuk mengonfigurasi printer di tiap perangkat. Kebijakan ini ditujukan sebagai tambahan untuk konfigurasi printer yang ditentukan oleh setiap pengguna.
 
@@ -5110,7 +5117,7 @@ Cara yang disarankan untuk mengonfigurasi kebijakan di Windows adalah melalui GP
 <translation id="8314214821702356835">Memungkinkan pengguna memutar media saat perangkat terkunci</translation>
 <translation id="8316913402499361923">Jika kebijakan disetel ke Aktif atau tidak disetel, pengguna akan dapat mencetak dalam <ph name="PRODUCT_NAME" />, tetapi pengguna tidak dapat mengganti setelan ini.
 
-      Jika kebijakan disetel ke Nonaktif, pengguna tidak akan dapat mencetak dari <ph name="PRODUCT_NAME" />. Pencetakan mati di menu kunci inggris, ekstensi, dan aplikasi JavaScript. Hanya dimungkinkan untuk mencetak dari plugin yang mengabaikan <ph name="PRODUCT_NAME" /> saat mencetak.</translation>
+      Jika kebijakan disetel ke Nonaktif, pengguna tidak akan dapat mencetak dari <ph name="PRODUCT_NAME" />. Pencetakan nonaktif di menu kunci inggris, ekstensi, dan aplikasi JavaScript. Hanya dimungkinkan untuk mencetak dari plugin yang mengabaikan <ph name="PRODUCT_NAME" /> saat mencetak.</translation>
 <translation id="8320149248919453401">Mode pengisian daya baterai</translation>
 <translation id="8329984337216493753">Kebijakan ini aktif dalam mode eceran saja.
 

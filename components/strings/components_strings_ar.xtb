@@ -996,6 +996,7 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />، <ph name="TYPE_2" />، <ph name="TYPE_3" /></translation>
 <translation id="4901778704868714008">حفظ...</translation>
 <translation id="4913987521957242411">عمل ثقب أعلى اليسار</translation>
+<translation id="4918221908152712722">تثبيت <ph name="APP_NAME" /> (لا يتطلَّب تنزيلاً)</translation>
 <translation id="4923459931733593730">الدفع</translation>
 <translation id="4926049483395192435">يجب تحديدها.</translation>
 <translation id="4926159001844873046">يعرض موقع <ph name="SITE" /></translation>
@@ -1361,6 +1362,7 @@
 <translation id="6328786501058569169">هذا الموقع مخادع</translation>
 <translation id="6337133576188860026">سيتم توفير أقل من <ph name="SIZE" />. وقد يتم تحميل بعض المواقع الإلكترونية بشكل أبطأ عند زيارتها في المرة القادمة.</translation>
 <translation id="6337534724793800597">تصفية السياسات بحسب الاسم</translation>
+<translation id="6349101878882523185">تثبيت <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{ما من كلمات مرور}=1{كلمة مرور واحدة (للقائمة <ph name="DOMAIN_LIST" />، تمت المزامنة)}=2{كلمتا مرور (للقائمة <ph name="DOMAIN_LIST" />، تمت المزامنة)}few{# كلمات مرور (للقائمة <ph name="DOMAIN_LIST" />، تمت المزامنة)}many{# كلمة مرور (للقائمة <ph name="DOMAIN_LIST" />، تمت المزامنة)}other{# كلمة مرور (للقائمة <ph name="DOMAIN_LIST" />، تمت المزامنة)}}</translation>
 <translation id="6358450015545214790">ماذا تعني هذه الأقسام؟</translation>
 <translation id="6361757823711327522">B7</translation>
@@ -2051,6 +2053,7 @@
 <translation id="9158625974267017556">‏C6 (مغلف)</translation>
 <translation id="9168814207360376865">السماح للمواقع الإلكترونية بالتحقُّق ممّا إذا كانت لديك طرق دفع محفوظة أم لا</translation>
 <translation id="9169664750068251925">الحظر دومًا على هذا الموقع</translation>
+<translation id="9169931577761441333">إضافة تطبيق <ph name="APP_NAME" /> إلى الشاشة الرئيسية</translation>
 <translation id="9170848237812810038">&amp;إلغاء</translation>
 <translation id="9171296965991013597">هل تريد مغادرة التطبيق؟</translation>
 <translation id="9173282814238175921">مستند واحد/ورقة جديدة</translation>

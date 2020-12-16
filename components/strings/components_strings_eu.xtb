@@ -981,6 +981,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4901778704868714008">Gorde…</translation>
 <translation id="4913987521957242411">Zulo bat goian, ezkerretara</translation>
+<translation id="4918221908152712722">Instalatu <ph name="APP_NAME" /> (ez da deskargatu behar)</translation>
 <translation id="4923459931733593730">Ordainketa</translation>
 <translation id="4926049483395192435">Nahitaez zehaztu behar da.</translation>
 <translation id="4926159001844873046"><ph name="SITE" /> webguneak hau dio:</translation>
@@ -1345,6 +1346,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6328786501058569169">Webgune hau iruzurtia da</translation>
 <translation id="6337133576188860026"><ph name="SIZE" /> baino gutxiago utziko ditu libre. Webgune batzuk mantsoago kargatuko dira bisitatzen dituzun hurrengoan.</translation>
 <translation id="6337534724793800597">Iragazi gidalerroak izenaren arabera</translation>
+<translation id="6349101878882523185">Instalatu <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Bat ere ez}=1{<ph name="DOMAIN_LIST" />: 1 pasahitz (sinkronizatuta)}=2{<ph name="DOMAIN_LIST" />: 2 pasahitz (sinkronizatuta)}other{<ph name="DOMAIN_LIST" />: # pasahitz (sinkronizatuta)}}</translation>
 <translation id="6358450015545214790">Zer esan nahi dute hauek?</translation>
 <translation id="6361757823711327522">B7</translation>
@@ -2034,6 +2036,7 @@ Xehetasun gehiago:
 <translation id="9158625974267017556">C6 (gutun-azala)</translation>
 <translation id="9168814207360376865">Baimendu webguneei gordetako ordainketa-metodorik duzun egiaztatzea</translation>
 <translation id="9169664750068251925">Blokeatu beti webgune honetan</translation>
+<translation id="9169931577761441333">Gehitu <ph name="APP_NAME" /> hasierako pantailan</translation>
 <translation id="9170848237812810038">&amp;Desegin</translation>
 <translation id="9171296965991013597">Aplikaziotik irten nahi duzu?</translation>
 <translation id="9173282814238175921">Dokumentu bakarra / Orri berria</translation>

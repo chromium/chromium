@@ -12,6 +12,7 @@
 <translation id="10614374240317010">Mai salvate</translation>
 <translation id="1067922213147265141">Altri servizi Google</translation>
 <translation id="107147699690128016">Se cambi l'estensione del file, il file potrebbe essere aperto in un'altra applicazione e costituire un pericolo per il dispositivo.</translation>
+<translation id="1094515529340404628">Web Crowd e misurazione degli annunci</translation>
 <translation id="1100066534610197918">Apri in nuova scheda in gruppo</translation>
 <translation id="1105960400813249514">Acquisizione schermo</translation>
 <translation id="1111673857033749125">I preferiti salvati sugli altri dispositivi verranno visualizzati qui.</translation>
@@ -227,6 +228,7 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="2536728043171574184">È visualizzata una copia offline della pagina</translation>
 <translation id="2537178555904266562">Errore durante la sincronizzazione delle password</translation>
 <translation id="2546283357679194313">Cookie e dati dei siti</translation>
+<translation id="2562889244313180139">Consenti ai siti web e alle app di offrirti un'esperienza più rilevante utilizzando un alias non identificabile.</translation>
 <translation id="2567385386134582609">IMMAGINE</translation>
 <translation id="2571711316400087311">Proponi di inviare pagine in altre lingue a Google Traduttore</translation>
 <translation id="2581165646603367611">Verrà svuotata la cache e verranno cancellati i cookie e altri dati relativi a siti che Chrome non ritiene importanti.</translation>
@@ -714,6 +716,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="6005538289190791541">Password consigliata</translation>
 <translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Hai <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> pagina}other{Hai <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> pagine}}</translation>
 <translation id="6014293228235665243">Da leggere</translation>
+<translation id="6018309500671889594">Consenti agli inserzionisti di studiare le campagne pubblicitarie utilizzando informazioni non identificabili.</translation>
 <translation id="6036057147555329831">ICU extra</translation>
 <translation id="6039379616847168523">Vai alla scheda successiva</translation>
 <translation id="6040143037577758943">Chiudi</translation>
@@ -922,6 +925,7 @@ I dati della sessione in incognito vengono cancellati da Chrome soltanto quando 
 <translation id="7403691278183511381">Esperienza prima esecuzione di Chrome</translation>
 <translation id="741204030948306876">Sì, accetto</translation>
 <translation id="7413229368719586778">Data di inizio: <ph name="DATE" /></translation>
+<translation id="7416941666639889592">Partecipando a Web Crowd consenti a siti web di rendere la tua esperienza sul Web rilevante senza l'utilizzo di informazioni che consentono l'identificazione personale. Proprio come una folla in un concerto, i siti web e gli inserzionisti sanno solo che migliaia di utenti condividono un interesse simile.</translation>
 <translation id="7431991332293347422">Controlla la modalità di utilizzo della cronologia di navigazione per personalizzare la Ricerca e non solo</translation>
 <translation id="7435356471928173109">Disattivata dall'amministratore</translation>
 <translation id="7437998757836447326">Esci da Chrome</translation>
@@ -1123,6 +1127,7 @@ I dati della sessione in incognito vengono cancellati da Chrome soltanto quando 
 <translation id="8748850008226585750">Contenuti nascosti</translation>
 <translation id="8788265440806329501">La cronologia di navigazione è chiusa</translation>
 <translation id="8788968922598763114">Riapri l'ultima scheda chiusa</translation>
+<translation id="8795672590390389447">Privacy Sandbox</translation>
 <translation id="8798449543960971550">Leggi</translation>
 <translation id="8812260976093120287">In alcuni siti web puoi pagare con le suddette app di pagamento supportate sul tuo dispositivo.</translation>
 <translation id="881688628773363275">I contenuti della scheda di anteprima non sono visualizzabili.</translation>

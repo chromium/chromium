@@ -210,7 +210,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="6885412569789873916">Chrome 베타 앱</translation>
 <translation id="6943584222992551122">선택한 사용자의 인터넷 사용 기록이 이 기기에서 삭제됩니다. 데이터를 복원하려면 <ph name="USER_EMAIL" />(으)로 Chrome에 로그인하세요.</translation>
 <translation id="6967962315388095737">Chrome 베타에서 mDNS 트래픽을 허용하는 인바운드 규칙입니다.</translation>
-<translation id="6982337800632491844">이 기기를 사용하기 전에 <ph name="DOMAIN" />에서 다음 서비스 약관을 읽고 동의해야 합니다. 이 약관은 Chrome OS 약관을 확장, 수정 또는 제한하지 않습니다.</translation>
 <translation id="6989339256997917931">Chrome이 업데이트되었지만, 최소 30일 동안 사용하지 않았습니다.</translation>
 <translation id="7054640471403081847">이 컴퓨터의 하드웨어가 더 이상 지원되지 않으므로 Chrome 업데이트가 곧 중단됩니다.</translation>
 <translation id="7062128746136194023">부모님이 Chrome의 ‘사이트, 앱, 확장 프로그램에 대한 권한’을 사용 중지하셨습니다. 이 <ph name="EXTENSION_TYPE_PARAMETER" /> 추가가 허용되지 않습니다.</translation>

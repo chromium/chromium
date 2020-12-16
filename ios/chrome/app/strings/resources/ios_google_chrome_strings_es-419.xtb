@@ -30,6 +30,7 @@
 <translation id="3706101708757577809">Ahora puedes usar Chrome cada vez que presionas vínculos que aparecen en mensajes, documentos u otras apps.</translation>
 <translation id="384394811301901750">Google Chrome no puede usar tu cámara en este momento</translation>
 <translation id="3980220367029651214">Estás cambiando la cuenta de sincronización de <ph name="USER_EMAIL1" /> a <ph name="USER_EMAIL2" />. <ph name="DOMAIN" /> administra tus datos de Chrome existentes. Esta acción borrará tus datos del dispositivo, pero permanecerán en <ph name="USER_EMAIL1" />.</translation>
+<translation id="3984746313391923992">Tu organización requiere que no accedas a tu cuenta en Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome no puede acceder a tus fotos ni videos. Habilita el acceso en Configuración de iOS &gt; Privacidad &gt; Fotos.</translation>
 <translation id="4099578267706723511">Envía las estadísticas de uso y los informes de fallos a Google para ayudarnos a mejorar Chrome.</translation>
 <translation id="415767770115540173">Obtén una mejor experiencia de Google en Chrome según tu ubicación.</translation>
@@ -54,6 +55,7 @@
 <translation id="6600954340915313787">Se copió en Chrome.</translation>
 <translation id="6648150602980899529">Estás accediendo con una cuenta administrada por <ph name="DOMAIN" /> y dándole permiso a su administrador para que controle tus datos de Chrome. Tus datos se vincularán de forma permanente a esta cuenta. Si sales de Chrome, tus datos se borrarán en este dispositivo, pero quedarán guardados en tu cuenta de Google.</translation>
 <translation id="6676840375528380067">¿Quieres borrar tus datos de Chrome de este dispositivo?</translation>
+<translation id="6822363243974874813">Cuando saliste de Chrome, se borraron tus favoritos, historial, contraseñas y otras opciones de configuración de este dispositivo. Tus datos sincronizados de Chrome siguen guardados en tu Cuenta de Google.</translation>
 <translation id="6822673484890854830">Chrome no pudo verificar todas las contraseñas. Vuelve a intentarlo más tarde.</translation>
 <translation id="7124339256045485976">Mantén Chrome actualizado</translation>
 <translation id="7161390184744336561">Google Chrome está desactualizado</translation>

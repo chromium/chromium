@@ -994,6 +994,7 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4901778704868714008">Salvează...</translation>
 <translation id="4913987521957242411">Perforare în stânga sus</translation>
+<translation id="4918221908152712722">Instalează <ph name="APP_NAME" /> (nu necesită descărcare)</translation>
 <translation id="4923459931733593730">Plată</translation>
 <translation id="4926049483395192435">Valoarea trebuie specificată.</translation>
 <translation id="4926159001844873046"><ph name="SITE" /> afișează mesajul</translation>
@@ -1359,6 +1360,7 @@
 <translation id="6328786501058569169">Acest site este înșelător</translation>
 <translation id="6337133576188860026">Eliberează mai puțin de <ph name="SIZE" />. Este posibil ca unele site-uri să se încarce mai lent la următoarea accesare.</translation>
 <translation id="6337534724793800597">Filtrați politicile după nume</translation>
+<translation id="6349101878882523185">Instalează <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Niciuna}=1{O parolă (pentru <ph name="DOMAIN_LIST" />, sincronizată)}=2{2 parole (pentru <ph name="DOMAIN_LIST" />, sincronizate)}few{# parole (pentru <ph name="DOMAIN_LIST" />, sincronizate)}other{# de parole (pentru <ph name="DOMAIN_LIST" />, sincronizate)}}</translation>
 <translation id="6358450015545214790">Ce înseamnă acestea?</translation>
 <translation id="6361757823711327522">B7</translation>
@@ -2049,6 +2051,7 @@ Detalii suplimentare:
 <translation id="9158625974267017556">C6 (Plic)</translation>
 <translation id="9168814207360376865">Permite site-urilor să verifice dacă ai salvat metode de plată</translation>
 <translation id="9169664750068251925">Blocați întotdeauna pe acest site</translation>
+<translation id="9169931577761441333">Adaugă <ph name="APP_NAME" /> la ecranul de pornire</translation>
 <translation id="9170848237812810038">&amp;Anulează</translation>
 <translation id="9171296965991013597">Ieși din aplicație?</translation>
 <translation id="9173282814238175921">Un document/Foaie nouă</translation>

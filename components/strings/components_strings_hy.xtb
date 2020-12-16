@@ -996,6 +996,7 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4901778704868714008">Պահել…</translation>
 <translation id="4913987521957242411">Անցք վերևի ձախ կողմում</translation>
+<translation id="4918221908152712722">Տեղադրեք <ph name="APP_NAME" /> հավելվածը (ներբեռնում չի պահանջվում)</translation>
 <translation id="4923459931733593730">Վճարում</translation>
 <translation id="4926049483395192435">Նշեք արժեքը:</translation>
 <translation id="4926159001844873046">Հաղորդագրություն <ph name="SITE" /> կայքից</translation>
@@ -1361,6 +1362,7 @@
 <translation id="6328786501058569169">Սա կեղծ կայք է</translation>
 <translation id="6337133576188860026">Կազատվի մինչև <ph name="SIZE" /> տարածք։ Դրանից հետո որոշ կայքեր հնարավոր է՝ ավելի դանդաղ բեռնվեն։</translation>
 <translation id="6337534724793800597">Զտել կանոններն ըստ անվան</translation>
+<translation id="6349101878882523185">Տեղադրել <ph name="APP_NAME" /> հավելվածը</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Չկա}=1{1 գաղտնաբառ (հետևյալ տիրույթների համար՝ <ph name="DOMAIN_LIST" />, համաժամացված է)}=2{2 գաղտնաբառ (հետևյալ տիրույթների համար՝ <ph name="DOMAIN_LIST" />, համաժամացված են)}one{# գաղտնաբառ (հետևյալ տիրույթների համար՝ <ph name="DOMAIN_LIST" />, համաժամացված են)}other{# գաղտնաբառ (հետևյալ տիրույթների համար՝ <ph name="DOMAIN_LIST" />, համաժամացված են)}}</translation>
 <translation id="6358450015545214790">Ի՞նչ է սա նշանակում:</translation>
 <translation id="6361757823711327522">B7</translation>
@@ -2050,6 +2052,7 @@
 <translation id="9158625974267017556">C6 (ծրար)</translation>
 <translation id="9168814207360376865">Թույլ տալ կայքերին ստուգել՝ արդյոք պահված վճարման եղանակներ ունեք</translation>
 <translation id="9169664750068251925">Միշտ արգելափակել այս կայքում</translation>
+<translation id="9169931577761441333">Ավելացնել «<ph name="APP_NAME" />» հավելվածը հիմնական էկրանին</translation>
 <translation id="9170848237812810038">&amp;Հետարկել</translation>
 <translation id="9171296965991013597">Փակե՞լ հավելվածը</translation>
 <translation id="9173282814238175921">Մեկ փաստաթուղթ/նոր թերթ</translation>

@@ -12,6 +12,7 @@
 <translation id="10614374240317010">ไม่เคยบันทึก</translation>
 <translation id="1067922213147265141">บริการอื่นๆ ของ Google</translation>
 <translation id="107147699690128016">หากคุณเปลี่ยนนามสกุลไฟล์ ไฟล์นั้นอาจเปิดในแอปพลิเคชันอื่นและเป็นอันตรายต่ออุปกรณ์ของคุณ</translation>
+<translation id="1094515529340404628">Web Crowd และการวัดผลโฆษณา</translation>
 <translation id="1100066534610197918">เปิดในแท็บใหม่ในกลุ่ม</translation>
 <translation id="1105960400813249514">จับภาพหน้าจอ</translation>
 <translation id="1111673857033749125">บุ๊กมาร์กที่บันทึกไว้ในอุปกรณ์เครื่องอื่นๆ ของคุณจะปรากฏที่นี่</translation>
@@ -227,6 +228,7 @@
 <translation id="2536728043171574184">ดูสำเนาแบบออฟไลน์ของหน้านี้</translation>
 <translation id="2537178555904266562">เกิดข้อผิดพลาดในการซิงค์รหัสผ่าน</translation>
 <translation id="2546283357679194313">คุกกี้และข้อมูลเว็บไซต์</translation>
+<translation id="2562889244313180139">อนุญาตให้เว็บไซต์และแอปนำเสนอประสบการณ์การใช้งานที่เกี่ยวข้องมากขึ้นโดยใช้ชื่อแทนที่ระบุตัวบุคคลนั้นไม่ได้</translation>
 <translation id="2567385386134582609">รูปภาพ</translation>
 <translation id="2571711316400087311">เสนอการส่งหน้าในภาษาอื่นๆ ไปยัง Google แปลภาษา</translation>
 <translation id="2581165646603367611">การดำเนินการนี้จะล้างคุกกี้ แคช และข้อมูลอื่นๆ ของเว็บไซต์ที่ Chrome คิดว่าไม่สำคัญ</translation>
@@ -563,7 +565,7 @@
 <translation id="4970824347203572753">ไม่พร้อมใช้งานในประเทศของคุณ</translation>
 <translation id="4971735654804503942">การปกป้องเชิงรุกอย่างรวดเร็วขึ้นจากเว็บไซต์ การดาวน์โหลด และส่วนขยายที่เป็นอันตราย เตือนคุณเรื่องการละเมิดรหัสผ่าน ต้องส่งข้อมูลการท่องเว็บให้ Google</translation>
 <translation id="497421865427891073">ไปข้างหน้า</translation>
-<translation id="4986638582553854481">ชื่อ</translation>
+<translation id="4986638582553854481">คำนำหน้าชื่อ</translation>
 <translation id="4988210275050210843">กำลังดาวน์โหลดไฟล์ (<ph name="MEGABYTES" />)</translation>
 <translation id="4988526792673242964">หน้า</translation>
 <translation id="5004416275253351869">ส่วนควบคุมกิจกรรมของ Google</translation>
@@ -714,6 +716,7 @@
 <translation id="6005538289190791541">รหัสผ่านที่แนะนำ</translation>
 <translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{คุณมี <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> หน้า}other{คุณมี <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> หน้า}}</translation>
 <translation id="6014293228235665243">ยังไม่อ่าน</translation>
+<translation id="6018309500671889594">อนุญาตให้ผู้ลงโฆษณาศึกษาแคมเปญโฆษณาโดยใช้ข้อมูลที่ระบุตัวบุคคลนั้นไม่ได้</translation>
 <translation id="6036057147555329831">ICU เพิ่มเติม</translation>
 <translation id="6039379616847168523">ข้ามไปยังแท็บถัดไป</translation>
 <translation id="6040143037577758943">ปิด</translation>
@@ -922,6 +925,7 @@
 <translation id="7403691278183511381">ประสบการณ์กับ First Run บน Chrome</translation>
 <translation id="741204030948306876">ได้สิ ตกลง</translation>
 <translation id="7413229368719586778">วันที่เริ่มต้น <ph name="DATE" /></translation>
+<translation id="7416941666639889592">การเข้าร่วม Web Crowd แสดงว่าคุณอนุญาตให้เว็บไซต์นำเสนอประสบการณ์การใช้งานเว็บที่เกี่ยวข้องโดยไม่ใช้ข้อมูลส่วนบุคคลที่ระบุตัวบุคคลนั้นได้ เว็บไซต์และผู้ลงโฆษณาจะทราบแต่เพียงว่ามีผู้ใช้หลายพันรายมีความสนใจที่คล้ายกันเช่นเดียวกับฝูงชนในคอนเสิร์ต</translation>
 <translation id="7431991332293347422">ควบคุมการใช้ประวัติการท่องเว็บเพื่อปรับเปลี่ยน Search และบริการอื่นๆ ในแบบของคุณ</translation>
 <translation id="7435356471928173109">ปิดโดยผู้ดูแลระบบ</translation>
 <translation id="7437998757836447326">ออกจากระบบ Chrome</translation>
@@ -1123,6 +1127,7 @@
 <translation id="8748850008226585750">เนื้อหาถูกซ่อนไว้</translation>
 <translation id="8788265440806329501">ประวัติการนำทางปิดอยู่</translation>
 <translation id="8788968922598763114">เปิดแท็บที่เพิ่งปิดอีกครั้ง</translation>
+<translation id="8795672590390389447">แซนด์บ็อกซ์ความเป็นส่วนตัว</translation>
 <translation id="8798449543960971550">อ่านแล้ว</translation>
 <translation id="8812260976093120287">ในบางเว็บไซต์ คุณสามารถชำระเงินด้วยแอปชำระเงินที่รองรับด้านบนในอุปกรณ์ของคุณ</translation>
 <translation id="881688628773363275">ดูเนื้อหาในแท็บตัวอย่างไม่ได้</translation>

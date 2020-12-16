@@ -3432,7 +3432,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="4917385247580444890">Jak</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> želi da komunicira sa dodatkom „<ph name="EXTENSION_NAME" />“</translation>
 <translation id="4918086044614829423">Prihvati</translation>
-<translation id="4918221908152712722">Instalirajte aplikaciju <ph name="APP_NAME" /> (ne treba da je preuzimate)</translation>
 <translation id="4921290200821452703">Informacije o školskom nalogu za roditelje</translation>
 <translation id="4921348630401250116">Pretvaranje teksta u govor</translation>
 <translation id="49226369361073053">{0,plural, =0{Ažurirajte uređaj}=1{Ažurirajte uređaj u roku od 1 sekunde}one{Ažurirajte uređaj u roku od # sekunde}few{Ažurirajte uređaj u roku od # sekunde}other{Ažurirajte uređaj u roku od # sekundi}}</translation>
@@ -4574,7 +4573,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6248988683584659830">Pretražite podešavanja</translation>
 <translation id="6249200942125593849">Upravljajte funkcijama pristupačnosti</translation>
 <translation id="6251870443722440887">GDI nadimci</translation>
-<translation id="6251889282623539337">Uslovi korišćenja usluge domena <ph name="DOMAIN" /></translation>
 <translation id="625369703868467034">Stanje mreže</translation>
 <translation id="6254503684448816922">Ključ je kompromitovan</translation>
 <translation id="6257602895346497974">Uključi sinhronizaciju...</translation>
@@ -5465,7 +5463,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="7290242001003353852">Ova usluga prijavljivanja, koju hostuje <ph name="SAML_DOMAIN" />, pristupa vašoj kameri.</translation>
 <translation id="7295614427631867477">Imajte na umu da su Android, Play i povezane aplikacije regulisani sopstvenim smernicama za prikupljanje podataka i korišćenje.</translation>
 <translation id="729583233778673644">Dozvoljava AES i RC4 šifrovanje. Korišćenje ove opcije vas izlaže većem riziku jer su RC4 šifre nebezbedne.</translation>
-<translation id="7296774163727375165">Uslovi za <ph name="DOMAIN" /></translation>
 <translation id="7297443947353982503">Korisničko ime/lozinka je netačna ili EAP potvrda autentičnosti nije uspela</translation>
 <translation id="729761647156315797">Izaberite jezik i tastaturu</translation>
 <translation id="7297726121602187087">Tamnozelena</translation>
@@ -6448,7 +6445,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8398877366907290961">Ipak nastavi</translation>
 <translation id="8400146488506985033">Upravljaj ljudima</translation>
 <translation id="8401432541486058167">Navedite PIN koji je povezan sa pametnom karticom.</translation>
-<translation id="8405046151008197676">Pogledajte rezime najnovijeg ažuriranja</translation>
 <translation id="8407199357649073301">Nivo evidencije:</translation>
 <translation id="8408068190360279472">Mreža <ph name="NETWORK_TYPE" />, povezuje se</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -7137,7 +7133,6 @@ Pritisnite dodeljeni prekidač da biste uklonili dodelu.</translation>
 <translation id="9168436347345867845">Uradiću to kasnije</translation>
 <translation id="9169496697824289689">Prikaz tasterskih prečica</translation>
 <translation id="916964310188958970">Zašto ovaj predlog?</translation>
-<translation id="9169931577761441333">Dodajte <ph name="APP_NAME" /> na početni ekran</translation>
 <translation id="9170061643796692986">Aktuelno podešavanje vidljivosti je: Svi kontakti</translation>
 <translation id="9170848237812810038">&amp;Opozovi</translation>
 <translation id="9170884462774788842">Drugi program na računaru je dodao temu koja može da promeni način na koji Chrome funkcioniše.</translation>

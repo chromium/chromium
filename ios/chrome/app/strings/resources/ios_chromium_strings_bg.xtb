@@ -22,6 +22,7 @@
 <translation id="2650312721222849884">Включете синхронизирането, за да виждате разделите си навсякъде, където използвате Chromium</translation>
 <translation id="2730884209570016437">Chromium не може да използва камерата ви, защото е заета от друго приложение</translation>
 <translation id="2915596697727466327">Chromium използва Face ID, за да обезпечи упълномощен достъп до паролите ви.</translation>
+<translation id="2918709798697875261">Организацията ви изисква да не влизате в профила си в Chromium.</translation>
 <translation id="2977470724722393594">Chromium е актуален</translation>
 <translation id="3256316712990552818">Копирано в Chromium</translation>
 <translation id="3344973607274501920">Chromium не успя да провери паролите ви. Проверете връзката си с интернет.</translation>
@@ -74,6 +75,7 @@
 <translation id="8776843108004031667">Този профил и всички незапазени данни ще бъдат премахнати от Chromium.</translation>
 <translation id="9022552996538154597">Вход в Chromium</translation>
 <translation id="9089354809943900324">Chromium не е актуален</translation>
+<translation id="912386518501777532">Когато излязохте от профила си в Chromium, отметките, историята, паролите и другите ви настройки бяха изчистени от това устройство. Синхронизираните ви данни продължават да са запазени в профила ви.</translation>
 <translation id="921174536258924340">Chromium не успя да провери всички пароли. Опитайте отново утре или <ph name="BEGIN_LINK" />ги проверете в профила си в Google<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">Авторите на Chromium</translation>
 </translationbundle>

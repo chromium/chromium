@@ -295,6 +295,7 @@
 <translation id="4121993058175073134">כדי לשלוח נתוני ייצוא ברשת, יש להגדיר את חשבון האימייל שלך ביישום 'הגדרות'.</translation>
 <translation id="4124987746317609294">טווח זמן</translation>
 <translation id="4152011295694446843">הסימניות זמינות כאן</translation>
+<translation id="4152093603141133546">היציאה מהחשבון בוצעה על ידי הארגון שלך.</translation>
 <translation id="4172051516777682613">להציג תמיד</translation>
 <translation id="418156467088430727">הצגת גרסה לא מקוונת בכרטיסייה חדשה</translation>
 <translation id="4181841719683918333">שפות</translation>
@@ -537,6 +538,7 @@
 <translation id="6668619169535738264">עריכת סימנייה</translation>
 <translation id="667999046851023355">מסמך</translation>
 <translation id="6691331417640343772">‏ניהול נתונים מסוכרנים במרכז השליטה של Google</translation>
+<translation id="6710079714193676716">מנוהל על-ידי הארגון שלך. ייתכן שחלק מהתכונות לא יהיו זמינות. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">אי אפשר לייצא סיסמאות</translation>
 <translation id="6748108480210050150">מאת</translation>
@@ -690,6 +692,7 @@
 <translation id="8487667956631253959">מופעל</translation>
 <translation id="8487700953926739672">זמין אופליין</translation>
 <translation id="8490978609246021741">שמירת השינויים</translation>
+<translation id="8495097701594799854">האפשרות הושבתה על ידי הארגון שלך.</translation>
 <translation id="8503813439785031346">שם משתמש</translation>
 <translation id="850600235656508448">פתיחה במצב אנונימי</translation>
 <translation id="8510057420705599706">‏הפעולה הזו תוציא אותך מהחשבון ותשבית את הסנכרון, אבל הסימניות, ההיסטוריה, הסיסמאות ונתונים אחרים ב-Chrome יישארו במכשיר הזה.</translation>

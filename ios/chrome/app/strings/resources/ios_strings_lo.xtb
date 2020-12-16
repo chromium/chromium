@@ -295,6 +295,7 @@
 <translation id="4121993058175073134">ເພື່ອສົ່ງຂໍ້ມູນສົ່ງອອກເຄືອຂ່າຍ, ກະລຸນາປັບຕັ້ງຄ່າບັນຊີອີເມວຂອງທ່ານຢູ່ໃນແອັບການຕັ້ງຄ່າ.</translation>
 <translation id="4124987746317609294">ຂອບເຂດເວລາ</translation>
 <translation id="4152011295694446843">ທ່ານຈະເຫັນບຸກມາກຂອງທ່ານຢູ່ບ່ອນນີ້</translation>
+<translation id="4152093603141133546">ອົງການຂອງທ່ານໄດ້ນຳທ່ານອອກຈາກລະບົບແລ້ວ.</translation>
 <translation id="4172051516777682613">ສະ​ແດງ​ຢູ່ສະ​ເຫມີ​</translation>
 <translation id="418156467088430727">ເບິ່ງເວີຊັນອອບລາຍຢູ່ໃນແຖບໃໝ່</translation>
 <translation id="4181841719683918333">ພາສາ</translation>
@@ -537,6 +538,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6668619169535738264">ແກ້ໄຂບຸກມາກ</translation>
 <translation id="667999046851023355">ເອ​ກະ​ສານ</translation>
 <translation id="6691331417640343772">ຈັດການຂໍ້ມູນທີ່ຊິ້ງໃນ Google Dashboard</translation>
+<translation id="6710079714193676716">ຈັດການໂດຍອົງການຂອງທ່ານ. ບາງຄຸນສົມບັດອາດຈະບໍ່ພ້ອມໃຫ້ນຳໃຊ້. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">ບໍ່ສາມາດສົ່ງລະຫັດຜ່ານອອກໄດ້</translation>
 <translation id="6748108480210050150">ຈາກ</translation>
@@ -690,6 +692,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8487667956631253959">ເປີດ</translation>
 <translation id="8487700953926739672">ມີອອຟລາຍນ໌ຢູ່</translation>
 <translation id="8490978609246021741">ບັນທຶກການປ່ຽນແປງ</translation>
+<translation id="8495097701594799854">ປິດໂດຍອົງການຂອງທ່ານ.</translation>
 <translation id="8503813439785031346">ຊື່​ຜູ້​ໃຊ້</translation>
 <translation id="850600235656508448">ເປີດໃນໂໝດບໍ່ເຜີຍຕົວຕົນ</translation>
 <translation id="8510057420705599706">ນີ້ຈະນຳທ່ານອອກຈາກລະບົບ ແລະ ປິດການຊິ້ງຂໍ້ມູນ, ແຕ່ບຸກມາກ, ປະຫວັດ, ລະຫັດຜ່ານ ແລະ ຂໍ້ມູນ Chrome ອື່ນໆຂອງທ່ານຈະຍັງຄົງຢູ່ໃນອຸປະກອນນີ້.</translation>

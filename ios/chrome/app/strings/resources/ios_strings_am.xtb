@@ -295,6 +295,7 @@
 <translation id="4121993058175073134">የተጣራ-ወደ-ውጭ-የሚላክ ውሂብ ለመላክ እባክዎ የኢሜይል መለያዎን በቅንብሮች መተግበሪያው ውስጥ ያዋቅሩ።</translation>
 <translation id="4124987746317609294">የጊዜ ወሰን</translation>
 <translation id="4152011295694446843">የእርስዎን እልባቶች እዚህ ያገኛሉ</translation>
+<translation id="4152093603141133546">የእርስዎ ድርጅት ዘግቶ አስወጥተዎታል።</translation>
 <translation id="4172051516777682613">ሁልጊዜ አሳይ</translation>
 <translation id="418156467088430727">የመስመር ውጭ ስሪቱን በአዲስ ትር ውስጥ ይመልከቱ</translation>
 <translation id="4181841719683918333">ቋንቋዎች</translation>
@@ -537,6 +538,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6668619169535738264">እልባትን አርትዕ</translation>
 <translation id="667999046851023355">ሰነድ</translation>
 <translation id="6691331417640343772">በGoogle ዳሽቦርድ ላይ የሰመረ ውሂብን ያቀናብሩ</translation>
+<translation id="6710079714193676716">በእርስዎ ድርጅት የሚተዳደር። አንዳንድ ባህሪዎች ላይገኙ ይችላሉ <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">የይለፍ ቃላትን ወደ ውጭ መላክ አልተቻለም</translation>
 <translation id="6748108480210050150">ከ</translation>
@@ -690,6 +692,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8487667956631253959">አብራ</translation>
 <translation id="8487700953926739672">ከመስመር ውጪ ይገኛል</translation>
 <translation id="8490978609246021741">ለውጦችን አስቀምጥ</translation>
+<translation id="8495097701594799854">በድርጅትዎ ጠፍቷል።</translation>
 <translation id="8503813439785031346">የተጣቃሚ ስም</translation>
 <translation id="850600235656508448">ማንነት በማያሳውቅ ሁነታ ይክፈቱ</translation>
 <translation id="8510057420705599706">ይህ እርስዎን ዘግቶ ያስወጣል እና እንዲሁም ስምረትን ያጠፋል፣ ነገር ግን የእርስዎ ዕልባቶች፣ ታሪክ፣ የይለፍ ቃላት እና ሌላ የChrome ውሂብ በዚህ መሣሪያ ላይ እንዳሉ ይቆያሉ።</translation>

@@ -994,6 +994,7 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4901778704868714008">Зберегти…</translation>
 <translation id="4913987521957242411">Пробити отвір угорі ліворуч</translation>
+<translation id="4918221908152712722">Установіть додаток <ph name="APP_NAME" /> (його не потрібно завантажувати)</translation>
 <translation id="4923459931733593730">Оплата</translation>
 <translation id="4926049483395192435">Потрібно вказати.</translation>
 <translation id="4926159001844873046">Повідомлення з <ph name="SITE" /></translation>
@@ -1359,6 +1360,7 @@
 <translation id="6328786501058569169">Це оманливий сайт</translation>
 <translation id="6337133576188860026">Звільняє менше <ph name="SIZE" />. Деякі сайти можуть завантажуватися повільніше під час наступного відвідування.</translation>
 <translation id="6337534724793800597">Фільтрувати правила за назвою</translation>
+<translation id="6349101878882523185">Установіть додаток <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Немає}=1{1 пароль (для <ph name="DOMAIN_LIST" />, синхронізовано)}=2{2 паролі (для <ph name="DOMAIN_LIST" />, синхронізовано)}one{# пароль (для <ph name="DOMAIN_LIST" />, синхронізовано)}few{# паролі (для <ph name="DOMAIN_LIST" />, синхронізовано)}many{# паролів (для <ph name="DOMAIN_LIST" />, синхронізовано)}other{# пароля (для <ph name="DOMAIN_LIST" />, синхронізовано)}}</translation>
 <translation id="6358450015545214790">Що це означає?</translation>
 <translation id="6361757823711327522">B7</translation>
@@ -2049,6 +2051,7 @@
 <translation id="9158625974267017556">C6 (конверт)</translation>
 <translation id="9168814207360376865">Дозволити сайтам перевіряти, чи у вас є збережені способи оплати</translation>
 <translation id="9169664750068251925">Завжди блокувати на цьому сайті</translation>
+<translation id="9169931577761441333">Додати додаток <ph name="APP_NAME" /> на головний екран</translation>
 <translation id="9170848237812810038">&amp;Скасувати</translation>
 <translation id="9171296965991013597">Закрити додаток?</translation>
 <translation id="9173282814238175921">Один документ/новий аркуш</translation>

@@ -12,6 +12,7 @@
 <translation id="10614374240317010">Jangan pernah disimpan</translation>
 <translation id="1067922213147265141">Layanan Google lainnya</translation>
 <translation id="107147699690128016">Jika ekstensi file diubah, file dapat terbuka di aplikasi lain dan berpotensi membahayakan perangkat Anda.</translation>
+<translation id="1094515529340404628">Web crowd dan pengukuran iklan</translation>
 <translation id="1100066534610197918">Buka pada tab baru di grup</translation>
 <translation id="1105960400813249514">Screenshot</translation>
 <translation id="1111673857033749125">Bookmark yang tersimpan di perangkat lainnya akan muncul di sini.</translation>
@@ -227,6 +228,7 @@ Sentuh lama kata apa pun untuk menelusurinya. Untuk menyaring penelusuran, pilih
 <translation id="2536728043171574184">Melihat salinan offline halaman ini</translation>
 <translation id="2537178555904266562">Terjadi error saat menyinkronkan sandi</translation>
 <translation id="2546283357679194313">Cookie dan data situs</translation>
+<translation id="2562889244313180139">Mengizinkan situs dan aplikasi untuk memberi Anda pengalaman yang lebih relevan menggunakan alias yang bukan identitas.</translation>
 <translation id="2567385386134582609">GAMBAR</translation>
 <translation id="2571711316400087311">Menawarkan pengiriman halaman dalam bahasa lain ke Google Terjemahan</translation>
 <translation id="2581165646603367611">Tindakan ini akan mengosongkan cache dan menghapus cookie, serta data lain dari situs yang dianggap tidak penting oleh Chrome.</translation>
@@ -714,6 +716,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="6005538289190791541">Sandi yang disarankan</translation>
 <translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Anda punya <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> halaman}other{Anda punya <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> halaman}}</translation>
 <translation id="6014293228235665243">Belum dibaca</translation>
+<translation id="6018309500671889594">Mengizinkan pengiklan mempelajari kampanye iklan menggunakan informasi yang bukan identitas.</translation>
 <translation id="6036057147555329831">ICU tambahan</translation>
 <translation id="6039379616847168523">Beralih ke tab berikutnya</translation>
 <translation id="6040143037577758943">Tutup</translation>
@@ -922,6 +925,7 @@ Data dari sesi Samaran Anda hanya akan dihapus dari Chrome saat Anda <ph name="B
 <translation id="7403691278183511381">Pengalaman Penggunaan Pertama Chrome</translation>
 <translation id="741204030948306876">Ya, saya setuju</translation>
 <translation id="7413229368719586778">Tanggal mulai <ph name="DATE" /></translation>
+<translation id="7416941666639889592">Dengan bergabung ke Web Crowd, Anda mengizinkan situs untuk menjadikan pengalaman web Anda relevan tanpa menggunakan informasi identitas pribadi. Seperti halnya keramaian dalam konser, situs dan pengiklan hanya dapat mengetahui bahwa ribuan pengguna memiliki minat yang serupa.</translation>
 <translation id="7431991332293347422">Kontrol cara histori browsing digunakan untuk mempersonalisasi Penelusuran dan lainnya</translation>
 <translation id="7435356471928173109">Dinonaktifkan oleh administrator Anda</translation>
 <translation id="7437998757836447326">Logout dari Chrome</translation>
@@ -1123,6 +1127,7 @@ Data dari sesi Samaran Anda hanya akan dihapus dari Chrome saat Anda <ph name="B
 <translation id="8748850008226585750">Konten tersembunyi</translation>
 <translation id="8788265440806329501">Histori navigasi tertutup</translation>
 <translation id="8788968922598763114">Membuka ulang tab yang terakhir ditutup</translation>
+<translation id="8795672590390389447">Privacy sandbox</translation>
 <translation id="8798449543960971550">Telah dibaca</translation>
 <translation id="8812260976093120287">Di beberapa situs, Anda dapat membayar dengan aplikasi pembayaran yang didukung di atas pada perangkat Anda.</translation>
 <translation id="881688628773363275">Pratinjau konten tab tidak terlihat.</translation>

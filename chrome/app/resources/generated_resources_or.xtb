@@ -342,7 +342,7 @@
 <translation id="1376771218494401509">ୱିଣ୍ଡୋର ନାମ ଦିଅନ୍ତୁ...</translation>
 <translation id="1377600615067678409">ବର୍ତ୍ତମାନ ପାଇଁ ଛାଡ଼ିଦିଅନ୍ତୁ</translation>
 <translation id="1378613616312864539"><ph name="NAME" /> ଏହି ସେଟିଂକୁ ନିୟନ୍ତ୍ରଣ କରୁଛି</translation>
-<translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{ଚୋରି ହୋଇଯାଇଥିବା କୌଣସି ପାସୱାର୍ଡଗୁଡ଼ିକ ନାହିଁ}=1{1ଟି ଚୋରି ହୋଇଯାଇଥିବା ପାସୱାର୍ଡ}other{{NUM_COMPROMISED}ଟି ଚୋରି ହୋଇଯାଇଥିବା ପାସୱାର୍ଡ}}</translation>
+<translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{ଚୋରି ହୋଇଯାଇଥିବା କୌଣସି ପାସୱାର୍ଡ ନାହିଁ}=1{1ଟି ଚୋରି ହୋଇଯାଇଥିବା ପାସୱାର୍ଡ}other{{NUM_COMPROMISED}ଟି ଚୋରି ହୋଇଯାଇଥିବା ପାସୱାର୍ଡ}}</translation>
 <translation id="1380028686461971526">ନେଟୱାର୍କ ସହ ସ୍ୱତଃ ସଂଯୋଗ କରନ୍ତୁ</translation>
 <translation id="1380436189840894976">ଯେକୌଣସି ମତେ ଇନ୍‌କଗ୍ନିଟୋ ମୋଡ୍‌ ଛାଡିବେ?</translation>
 <translation id="1383861834909034572">ସମାପନ ହେବାବେଳେ ଖୋଲୁଛି</translation>
@@ -3416,7 +3416,6 @@
 <translation id="4917385247580444890">ଦୃଢ଼</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> "<ph name="EXTENSION_NAME" />" ଏକ୍ସଟେନ୍‌ସନ୍ ସହିତ ବାର୍ତ୍ତାଳାପ କରିବାକୁ ଚାହୁଁଛନ୍ତି</translation>
 <translation id="4918086044614829423">ସ୍ୱୀକାର କରନ୍ତୁ</translation>
-<translation id="4918221908152712722"><ph name="APP_NAME" /> ଇନ୍‍ଷ୍ଟଲ୍‌ କରନ୍ତୁ (ଡାଉନ୍‌ଲୋଡ୍‌ର ଆବଶ୍ୟକତା ନାହିଁ)</translation>
 <translation id="4921290200821452703">ବାପାମାଙ୍କ ପାଇଁ ସ୍କୁଲ ଆକାଉଣ୍ଟର ସୂଚନା</translation>
 <translation id="4921348630401250116">ଟେକ୍ସଟ୍-ଟୁ-ସ୍ପିଚ୍</translation>
 <translation id="49226369361073053">{0,plural, =0{ଡିଭାଇସ୍ ବର୍ତ୍ତମାନ ଅପଡେଟ୍ କରନ୍ତୁ}=1{1 ସେକେଣ୍ଡ ଭିତରେ ଡିଭାଇସ୍ ଅପଡେଟ୍ କରନ୍ତୁ}other{# ସେକେଣ୍ଡ ଭିତରେ ଡିଭାଇସ୍ ଅପଡେଟ୍ କରନ୍ତୁ}}</translation>
@@ -4555,7 +4554,6 @@
 <translation id="6248988683584659830">ସନ୍ଧାନ ସେଟିଂସମୂହ</translation>
 <translation id="6249200942125593849">a11y ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="6251870443722440887">GDI ପରିଚାଳନା କରେ</translation>
-<translation id="6251889282623539337"><ph name="DOMAIN" /> ସେବାର ସର୍ତ୍ତାବଳୀ</translation>
 <translation id="625369703868467034">ନେଟୱାର୍କ ହେଲଥ୍</translation>
 <translation id="6254503684448816922">କୀ କମ୍ପ୍ରୋମାଇଜ୍</translation>
 <translation id="6257602895346497974">ସିଙ୍କ୍‌କୁ ଚାଲୁ କରନ୍ତୁ...</translation>
@@ -5445,7 +5443,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7290242001003353852"><ph name="SAML_DOMAIN" /> ଦ୍ବାରା ହୋଷ୍ଟ କରାଯାଇଥିବା, ଏହି ସାଇନ୍ ଇନ୍ ସେବା, ଆପଣଙ୍କ କ୍ଯାମେରାକୁ ଆକ୍ସେସ୍ କରୁଛି।</translation>
 <translation id="7295614427631867477">ଧ୍ୟାନ ଦିଅନ୍ତୁ ଯେ Android, Play ଏବଂ ସମ୍ବନ୍ଧିତ ଆପ୍‌ଗୁଡ଼ିକ ସେମାନଙ୍କ ନିଜର ଡାଟା ସଂଗ୍ରହ ଦ୍ଵାରା ନିୟନ୍ତ୍ରିତ ହୋଇଥାନ୍ତି ଏବଂ ନୀତିଗୁଡ଼ିକର ବ୍ୟବହାର କରନ୍ତି।</translation>
 <translation id="729583233778673644">AES ଓ RC4 ଏନ୍‌କ୍ରିପ୍ସନ୍ ପାଇଁ ଅନୁମତି ଦିଅନ୍ତୁ। RC4 ସଂକେତାକ୍ଷରଗୁଡ଼ିକ ଅସୁରକ୍ଷିତ ଥିବାରୁ ଏହି ବିକଳ୍ପର ବ୍ୟବହାର ଆପଣଙ୍କର ବିପଦ ବଢ଼ାଇଥାଏ।</translation>
-<translation id="7296774163727375165"><ph name="DOMAIN" />ର ସର୍ତ୍ତାବଳୀ</translation>
 <translation id="7297443947353982503">ଉପଯୋଗକର୍ତ୍ତାନାମ /ପାସ୍‌ୱର୍ଡ ଭୁଲ ଅଛି କିମ୍ବା EAP-ପ୍ରାମାଣିକରଣ ବିଫଳ ହେଲା</translation>
 <translation id="729761647156315797">ନିଜର ଭାଷା ଓ କୀବୋର୍ଡ ବାଛନ୍ତୁ</translation>
 <translation id="7297726121602187087">ଗାଢ଼ ସବୁଜ</translation>
@@ -6422,7 +6419,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8398877366907290961">ଯେକୌଣସି ପ୍ରକାରେ ଆଗେଇ ଚାଲନ୍ତୁ</translation>
 <translation id="8400146488506985033">ଲୋକମାନଙ୍କୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="8401432541486058167">ଆପଣଙ୍କର ସ୍ମାର୍ଟ କାର୍ଡ ସହିତ ସମ୍ବନ୍ଧିତ ଥିବା PIN ପ୍ରଦାନ କରନ୍ତୁ।</translation>
-<translation id="8405046151008197676">ନବୀନତମ ଅପ୍‌ଡେଟ୍‍ରୁ ହାଇଲାଇଟ୍ସ ପାଆନ୍ତୁ</translation>
 <translation id="8407199357649073301">ଲଗ୍ ଲେବଲ୍:</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> ନେଟ୍‍ୱାର୍କ, ସଂଯୁକ୍ତ ହେଉଛି</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -7015,7 +7011,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="9063208415146866933">ଲାଇନ୍ <ph name="ERROR_LINE_START" /> ରୁ <ph name="ERROR_LINE_END" /> ପର୍ଯ୍ୟନ୍ତ ତ୍ରୁଟି</translation>
 <translation id="9064275926664971810">ଗୋଟିଏ କ୍ଲିକ୍‌ରେ ଫର୍ମ ପୂରଣ କରିବାକୁ ଅଟୋଫିଲ୍‍ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="9065203028668620118">ସମ୍ପାଦନ</translation>
-<translation id="9065512565307033593">ଯଦି ଆପଣ ଯାଞ୍ଚ କରିବାକୁ ବିଫଳ ହୁଅନ୍ତି, ତେବେ ଆପଣଙ୍କ ନେଟୱାର୍କ ଆକ୍ସେସକୁ ଅକ୍ଷମ କରାଯିବ।</translation>
+<translation id="9065512565307033593">ଯଦି ଆପଣ ଯାଞ୍ଚ କରିବାକୁ ବିଫଳ ହୁଅନ୍ତି, ତେବେ ଆପଣଙ୍କ ନେଟୱାର୍କ ଆକ୍ସେସକୁ ଅକ୍ଷମ କରିଦିଆଯିବ।</translation>
 <translation id="9066773882585798925">ଜୋରରେ ପଢ଼ାଯାଉଥିବା ଟେକ୍ସଟ୍ ଶୁଣନ୍ତୁ</translation>
 <translation id="9066782832737749352">ଟେକ୍ସଟ୍‌ରୁ ସ୍ପିଚ୍</translation>
 <translation id="9068849894565669697">ରଙ୍ଗ ଚୟନ କରନ୍ତୁ</translation>
@@ -7108,7 +7104,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="9168436347345867845">ଏହାକୁ ପରେ କରନ୍ତୁ</translation>
 <translation id="9169496697824289689">କୀବୋର୍ଡ ସର୍ଟକଟ୍‍ଗୁଡ଼ିକୁ ଦେଖନ୍ତୁ</translation>
 <translation id="916964310188958970">ଏହି ମତାମତ କାହିଁ କି?</translation>
-<translation id="9169931577761441333"><ph name="APP_NAME" />କୁ ମୂଳସ୍କ୍ରିନ୍‌ରେ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="9170061643796692986">ବର୍ତ୍ତମାନର ଭିଜିବିଲିଟୀ ସେଟିଂ ହେଉଛି ସମସ୍ତ ଯୋଗାଯୋଗ</translation>
 <translation id="9170848237812810038">&amp;ପୂର୍ବବତ୍</translation>
 <translation id="9170884462774788842">ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟର୍‍‍ରେ ଅନ୍ୟ ଏକ ପ୍ରୋଗ୍ରାମ୍ ଏକ ଥିମ୍ ଯୋଗ କରିଛନ୍ତି ଯାହା Chromeର କାର୍ଯ୍ୟ କରିବାର ପଦ୍ଧତିକୁ ପରିବର୍ତ୍ତନ କରିପାରେ।</translation>

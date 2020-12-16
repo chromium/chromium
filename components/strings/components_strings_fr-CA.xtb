@@ -985,6 +985,7 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4901778704868714008">Enregistrer…</translation>
 <translation id="4913987521957242411">Perforation en haut à gauche</translation>
+<translation id="4918221908152712722">Installer <ph name="APP_NAME" /> (aucun téléchargement nécessaire)</translation>
 <translation id="4923459931733593730">Paiement</translation>
 <translation id="4926049483395192435">Cette valeur est requise.</translation>
 <translation id="4926159001844873046"><ph name="SITE" /> indique</translation>
@@ -1350,6 +1351,7 @@
 <translation id="6328786501058569169">Ce site est trompeur</translation>
 <translation id="6337133576188860026">Libère moins de <ph name="SIZE" />. Certains sites peuvent être plus longs à charger lors de votre prochaine visite.</translation>
 <translation id="6337534724793800597">Filtrer les règles par nom</translation>
+<translation id="6349101878882523185">Installer <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Aucun}=1{1 mot de passe (pour <ph name="DOMAIN_LIST" />, synchronisé)}=2{2 mots de passe (pour <ph name="DOMAIN_LIST" />, synchronisés)}one{# mot de passe (pour <ph name="DOMAIN_LIST" />, synchronisé)}other{# mots de passe (pour <ph name="DOMAIN_LIST" />, synchronisés)}}</translation>
 <translation id="6358450015545214790">Qu'est-ce que c'est?</translation>
 <translation id="6361757823711327522">B7</translation>
@@ -1624,7 +1626,7 @@ Détails supplémentaires :
 <translation id="7508255263130623398">L'ID d'appareil de la règle renvoyé est vide ou ne correspond pas à l'ID d'appareil actuel</translation>
 <translation id="7508870219247277067">Avocat</translation>
 <translation id="7511955381719512146">Le réseau Wi-Fi que vous utilisez peut vous demander de visiter <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
-<translation id="7512685745044087310">Cette politique ne peut pas être définie à « Vrai » et être obligatoire, alors elle a été définie a Recommandé.</translation>
+<translation id="7512685745044087310">Cette politique ne peut pas être définie à « Vrai » et être obligatoire, alors elle a été définie à Recommandé.</translation>
 <translation id="7514365320538308">Télécharger</translation>
 <translation id="7518003948725431193">Aucune page Web trouvée à l'adresse : <ph name="URL" /></translation>
 <translation id="7520302887438682816">Enveloppe C8</translation>
@@ -2039,6 +2041,7 @@ Détails supplémentaires :
 <translation id="9158625974267017556">Enveloppe C6</translation>
 <translation id="9168814207360376865">Autoriser les sites à vérifier si des modes de paiement sont enregistrés</translation>
 <translation id="9169664750068251925">Toujours bloquer pour ce site</translation>
+<translation id="9169931577761441333">Ajoutez <ph name="APP_NAME" /> à l'écran d'accueil</translation>
 <translation id="9170848237812810038">Ann&amp;uler</translation>
 <translation id="9171296965991013597">Quitter l'application?</translation>
 <translation id="9173282814238175921">Document unique/Nouvelle feuille</translation>

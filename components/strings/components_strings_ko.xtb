@@ -985,6 +985,7 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4901778704868714008">저장...</translation>
 <translation id="4913987521957242411">왼쪽 상단 펀칭</translation>
+<translation id="4918221908152712722"><ph name="APP_NAME" /> 설치(다운로드 필요 없음)</translation>
 <translation id="4923459931733593730">결제</translation>
 <translation id="4926049483395192435">지정해야 합니다.</translation>
 <translation id="4926159001844873046"><ph name="SITE" /> 내용:</translation>
@@ -1350,6 +1351,7 @@
 <translation id="6328786501058569169">사기성 사이트</translation>
 <translation id="6337133576188860026"><ph name="SIZE" /> 미만의 저장용량을 확보합니다. 일부 사이트는 다음 방문 시 로드 속도가 느려질 수 있습니다.</translation>
 <translation id="6337534724793800597">이름별로 정책 필터링</translation>
+<translation id="6349101878882523185"><ph name="APP_NAME" /> 설치</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{없음}=1{비밀번호 1개(도메인: <ph name="DOMAIN_LIST" />, 동기화됨)}=2{비밀번호 2개(도메인: <ph name="DOMAIN_LIST" />, 동기화됨)}other{비밀번호 #개(도메인: <ph name="DOMAIN_LIST" />, 동기화됨)}}</translation>
 <translation id="6358450015545214790">자세히 알아보기</translation>
 <translation id="6361757823711327522">B7</translation>
@@ -2038,6 +2040,7 @@
 <translation id="9158625974267017556">C6(봉투)</translation>
 <translation id="9168814207360376865">사이트에서 저장된 결제 수단이 있는지 확인하도록 허용</translation>
 <translation id="9169664750068251925">이 사이트에서 항상 차단</translation>
+<translation id="9169931577761441333">홈 화면에 <ph name="APP_NAME" /> 추가</translation>
 <translation id="9170848237812810038">실행 취소(&amp;U)</translation>
 <translation id="9171296965991013597">앱을 종료하시겠습니까?</translation>
 <translation id="9173282814238175921">단일 문서/새 시트</translation>

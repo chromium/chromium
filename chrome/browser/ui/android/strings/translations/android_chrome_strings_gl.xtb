@@ -12,6 +12,7 @@
 <translation id="10614374240317010">Contrasinais que non se gardan nunca</translation>
 <translation id="1067922213147265141">Outros servizos de Google</translation>
 <translation id="107147699690128016">Se cambias a extensión do ficheiro, é posible que este se abra nunha aplicación diferente e supoña un perigo para o teu dispositivo.</translation>
+<translation id="1094515529340404628">Multitude web e medición de anuncios</translation>
 <translation id="1100066534610197918">Abrir pestana nova nun grupo</translation>
 <translation id="1105960400813249514">Screen Capture</translation>
 <translation id="1111673857033749125">Aquí aparecerán os marcadores que gardases noutros dispositivos.</translation>
@@ -227,6 +228,7 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="2536728043171574184">Visualización dunha copia sen conexión desta páxina</translation>
 <translation id="2537178555904266562">Produciuse un erro ao sincronizar os contrasinais</translation>
 <translation id="2546283357679194313">Cookies e datos dos sitios</translation>
+<translation id="2562889244313180139">Permite que os sitios web e as aplicacións che ofrezan unha experiencia máis relevante cun alias non identificable.</translation>
 <translation id="2567385386134582609">IMAXE</translation>
 <translation id="2571711316400087311">Ofrecer opción de enviar ao Tradutor de Google as páxinas escritas noutros idiomas</translation>
 <translation id="2581165646603367611">Borraranse as cookies, a memoria caché e outros datos dos sitios que Chrome non considera importantes.</translation>
@@ -714,6 +716,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="6005538289190791541">Contrasinal suxerido</translation>
 <translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Tes <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> páxina}other{Tes <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> páxinas}}</translation>
 <translation id="6014293228235665243">Sen ler</translation>
+<translation id="6018309500671889594">Permite que os anunciantes estuden as campañas publicitarias con información non identificable.</translation>
 <translation id="6036057147555329831">ICU extra</translation>
 <translation id="6039379616847168523">Saltar á seguinte pestana</translation>
 <translation id="6040143037577758943">Pechar</translation>
@@ -922,6 +925,7 @@ Os datos da túa sesión só se borrarán de Chrome ao <ph name="BEGIN_BOLD2" />
 <translation id="7403691278183511381">Experiencia de primeira execución de Chrome</translation>
 <translation id="741204030948306876">Si, acepto</translation>
 <translation id="7413229368719586778">Data de inicio: <ph name="DATE" /></translation>
+<translation id="7416941666639889592">Ao unirte a unha multitude web, permites que os sitios web melloren a túa experiencia en Internet sen usar información que permita a identificación persoal. Como acontece cunha multitude de asistentes a un concerto, os sitios web e os anunciantes só poden saber que hai milleiros de usuarios cun interese similar.</translation>
 <translation id="7431991332293347422">Controla como se utiliza o historial de navegación para personalizar a Busca e moito máis</translation>
 <translation id="7435356471928173109">Desactivada polo teu administrador</translation>
 <translation id="7437998757836447326">Pechar sesión en Chrome</translation>
@@ -1123,6 +1127,7 @@ Os datos da túa sesión só se borrarán de Chrome ao <ph name="BEGIN_BOLD2" />
 <translation id="8748850008226585750">Contido oculto</translation>
 <translation id="8788265440806329501">O historial de navegación está pechado</translation>
 <translation id="8788968922598763114">Volver abrir a última pestana que se pechou</translation>
+<translation id="8795672590390389447">Illamento de procesos de privacidade</translation>
 <translation id="8798449543960971550">Lido</translation>
 <translation id="8812260976093120287">Nalgúns sitios web, podes pagar no teu dispositivo coas aplicacións de pago compatibles mencionadas anteriormente.</translation>
 <translation id="881688628773363275">A vista previa do contido da pestana non está dispoñible.</translation>

@@ -295,6 +295,7 @@ Postupujte podľa krokov nižšie:</translation>
 <translation id="4121993058175073134">Ak chcete odoslať údaje čistého exportu, v aplikácii Nastavenia nakonfigurujte svoj e-mailový účet.</translation>
 <translation id="4124987746317609294">Obdobie</translation>
 <translation id="4152011295694446843">Tu nájdete svoje záložky</translation>
+<translation id="4152093603141133546">Vaša organizácia vás odhlásila.</translation>
 <translation id="4172051516777682613">Vždy zobraziť</translation>
 <translation id="418156467088430727">Zobraziť offline verziu na novej karte</translation>
 <translation id="4181841719683918333">Jazyky</translation>
@@ -537,6 +538,7 @@ Pre každý web skúste použiť jedinečné heslo.</translation>
 <translation id="6668619169535738264">Upraviť záložku</translation>
 <translation id="667999046851023355">Dokument</translation>
 <translation id="6691331417640343772">Spravovať synchronizované dáta v službe Google Dashboard</translation>
+<translation id="6710079714193676716">Spravuje vaša organizácia. Niektoré funkcie nemusia byť k dispozícii. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Heslá sa nedajú exportovať</translation>
 <translation id="6748108480210050150">Od</translation>
@@ -690,6 +692,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8487667956631253959">Zapnúť</translation>
 <translation id="8487700953926739672">K dispozícii offline</translation>
 <translation id="8490978609246021741">Uložiť zmeny</translation>
+<translation id="8495097701594799854">Vypnuté vašou organizáciou.</translation>
 <translation id="8503813439785031346">Meno používateľa</translation>
 <translation id="850600235656508448">Otvoriť v režime inkognito</translation>
 <translation id="8510057420705599706">Touto akciou sa odhlásite a vypnete synchronizáciu, ale vaše záložky, história, heslá a ďalšie údaje Chromu zostanú v tomto zariadení.</translation>

@@ -992,6 +992,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" /> és <ph name="TYPE_3" /></translation>
 <translation id="4901778704868714008">Mentés…</translation>
 <translation id="4913987521957242411">Lyuk balra fent</translation>
+<translation id="4918221908152712722"><ph name="APP_NAME" /> telepítése (nincs szükség letöltésre)</translation>
 <translation id="4923459931733593730">Fizetés</translation>
 <translation id="4926049483395192435">Meg kell határozni.</translation>
 <translation id="4926159001844873046">A(z) <ph name="SITE" /> közlendője</translation>
@@ -1357,6 +1358,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6328786501058569169">A webhely megtévesztő</translation>
 <translation id="6337133576188860026"><ph name="SIZE" />-nál kevesebb hely szabadul fel. Előfordulhat, hogy egyes webhelyek lassabban töltődnek be, amikor legközelebb felkeresi őket.</translation>
 <translation id="6337534724793800597">Házirendek szűrése név szerint</translation>
+<translation id="6349101878882523185"><ph name="APP_NAME" /> telepítése</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Nincs}=1{1 jelszó (a következő domainekhez: <ph name="DOMAIN_LIST" />, szinkronizálva)}=2{2 jelszó (a következő domainekhez: <ph name="DOMAIN_LIST" />, szinkronizálva)}other{# jelszó (a következő domainekhez: <ph name="DOMAIN_LIST" />, szinkronizálva)}}</translation>
 <translation id="6358450015545214790">Mit jelent ez?</translation>
 <translation id="6361757823711327522">B7</translation>
@@ -2047,6 +2049,7 @@ További részletek:
 <translation id="9158625974267017556">C6 (boríték)</translation>
 <translation id="9168814207360376865">Engedélyezés a webhelyek számára, hogy ellenőrizzék, van-e elmentett fizetési módja</translation>
 <translation id="9169664750068251925">Mindig tiltsa ezen az oldalon</translation>
+<translation id="9169931577761441333"><ph name="APP_NAME" /> hozzáadása a kezdőképernyőhöz</translation>
 <translation id="9170848237812810038">&amp;Visszavonás</translation>
 <translation id="9171296965991013597">Bezárja az alkalmazást?</translation>
 <translation id="9173282814238175921">Egy dokumentum/Új lap</translation>

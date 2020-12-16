@@ -997,6 +997,7 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4901778704868714008">Хадгалах...</translation>
 <translation id="4913987521957242411">Зүүн дээд буланд нэг нүх цоолох</translation>
+<translation id="4918221908152712722"><ph name="APP_NAME" />-г суулгах (татаж авах шаардлагагүй)</translation>
 <translation id="4923459931733593730">Төлбөр</translation>
 <translation id="4926049483395192435">Заасан өгсөн байх ёстой.</translation>
 <translation id="4926159001844873046"><ph name="SITE" /> хэлэхдээ</translation>
@@ -1361,6 +1362,7 @@
 <translation id="6328786501058569169">Энэ сайт хуурамч байна</translation>
 <translation id="6337133576188860026"><ph name="SIZE" />-с бага зай гаргана. Зарим сайтад зочлох үед удаан ачаалж болзошгүй.</translation>
 <translation id="6337534724793800597">Журмуудыг нэрээр нь шүү</translation>
+<translation id="6349101878882523185"><ph name="APP_NAME" />-г суулгах</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Байхгүй}=1{(<ph name="DOMAIN_LIST" />-н) 1 нууц үг (синк хийсэн)}=2{(<ph name="DOMAIN_LIST" />-н) 2 нууц үг (синк хийсэн)}other{(<ph name="DOMAIN_LIST" />-н) # нууц үг (синк хийсэн)}}</translation>
 <translation id="6358450015545214790">Эдгээр нь юу гэсэн үг вэ?</translation>
 <translation id="6361757823711327522">B7</translation>
@@ -2050,6 +2052,7 @@
 <translation id="9158625974267017556">C6 (Дугтуй)</translation>
 <translation id="9168814207360376865">Танд хадгалсан төлбөрийн хэрэгсэл байгаа эсэхийг шалгахыг сайтуудад зөвшөөрөх</translation>
 <translation id="9169664750068251925">Энэ сайт дээр үргэлж хориглох</translation>
+<translation id="9169931577761441333"><ph name="APP_NAME" />-г Үндсэн нүүрэнд нэмэх</translation>
 <translation id="9170848237812810038">&amp; Буцаах</translation>
 <translation id="9171296965991013597">Аппыг орхих уу?</translation>
 <translation id="9173282814238175921">Дан документ/Шинэ хүснэгт</translation>

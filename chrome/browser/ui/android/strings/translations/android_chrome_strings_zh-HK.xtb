@@ -12,6 +12,7 @@
 <translation id="10614374240317010">永不儲存</translation>
 <translation id="1067922213147265141">其他 Google 服務</translation>
 <translation id="107147699690128016">如果變更副檔名，此檔案可能會在其他應用程式中開啟，並可能對裝置造成損害。</translation>
+<translation id="1094515529340404628">網絡群眾和廣告評估</translation>
 <translation id="1100066534610197918">在群組的新分頁中開啟</translation>
 <translation id="1105960400813249514">擷取螢幕畫面</translation>
 <translation id="1111673857033749125">儲存在其他裝置上的書籤會在這裡顯示。</translation>
@@ -227,6 +228,7 @@
 <translation id="2536728043171574184">正在瀏覽此網頁的離線版本</translation>
 <translation id="2537178555904266562">同步處理密碼時發生錯誤</translation>
 <translation id="2546283357679194313">Cookie 和網站數據</translation>
+<translation id="2562889244313180139">允許網站和應用程式使用無法識別的電郵別名，為您提供更貼近需要的體驗。</translation>
 <translation id="2567385386134582609">圖片</translation>
 <translation id="2571711316400087311">詢問是否將其他語言的網頁傳送至「Google 翻譯」</translation>
 <translation id="2581165646603367611">這會清除 Chrome 認為不重要的網站內的 Cookie、快取和其他資料。</translation>
@@ -714,6 +716,7 @@
 <translation id="6005538289190791541">建議的密碼</translation>
 <translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{您有 <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> 個網頁}other{您有 <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> 個網頁}}</translation>
 <translation id="6014293228235665243">未讀</translation>
+<translation id="6018309500671889594">允許廣告客戶透過無法識別的資料研究廣告系列。</translation>
 <translation id="6036057147555329831">其他 ICU</translation>
 <translation id="6039379616847168523">跳至下一個分頁</translation>
 <translation id="6040143037577758943">關閉</translation>
@@ -922,6 +925,7 @@
 <translation id="7403691278183511381">Chrome 初次使用體驗</translation>
 <translation id="741204030948306876">確認</translation>
 <translation id="7413229368719586778">開始日期：<ph name="DATE" /></translation>
+<translation id="7416941666639889592">加入「網絡群眾」，即表示您允許網站在不使用個人識別資料的情況下，為您提供貼近需要的網站體驗。這和演唱會中的群眾類似，網站和廣告客戶只會知道數千位使用者擁有類似興趣。</translation>
 <translation id="7431991332293347422">控制系統如何使用您的瀏覽記錄，為您提供個人化的搜尋內容和其他服務</translation>
 <translation id="7435356471928173109">已由管理員關閉</translation>
 <translation id="7437998757836447326">登出 Chrome</translation>
@@ -1123,6 +1127,7 @@
 <translation id="8748850008226585750">內容已隱藏</translation>
 <translation id="8788265440806329501">導覽記錄閂咗</translation>
 <translation id="8788968922598763114">重新開啟最近關閉的分頁</translation>
+<translation id="8795672590390389447">私隱沙箱</translation>
 <translation id="8798449543960971550">讀取</translation>
 <translation id="8812260976093120287">在部分網站上，您可以透過裝置使用上述支援的付款應用程式付款。</translation>
 <translation id="881688628773363275">無法查看預覽分頁內容。</translation>

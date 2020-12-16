@@ -1777,6 +1777,13 @@ Bu politika False (Yanlış) değerine ayarlanırsa <ph name="PRODUCT_NAME" /> y
       Politika Devre Dışı değerine ayarlanırsa bu yazılımın <ph name="PRODUCT_NAME" /> işlemlerine bu tür kod yerleştirmesine izin verilir.
 
       Bu politikanın değerinden bağımsız olarak tarayıcı, üçüncü taraf yazılımlarının bir <ph name="MS_AD_NAME" /> alan adına katılmış makinedeki işlemlerine çalıştırılabilir kod yerleştirmesini engellemeyecektir.</translation>
+<translation id="3456292544936505775">Bu politika, <ph name="PRODUCT_OS_NAME" /> cihazının güncellemeleri otomatik olarak denetlemesine izin verilmeyen zaman aralıklarını kontrol eder.
+      Bu politika, boş olmayan bir zaman aralıkları listesine ayarlandığında:
+      Cihazlar, belirtilen zaman aralıkları sırasında güncellemeleri otomatik olarak kontrol edemez. Geri alma işleminin yapılmasını gerektiren ve minimum <ph name="PRODUCT_OS_NAME" /> sürümünün altındaki cihazlar, olası güvenlik sorunlarından dolayı bu politikadan etkilenmez. Bununla birlikte, bu politika, kullanıcılar veya yöneticiler tarafından istenen güncelleme kontrollerini engellemez.
+      Bu politika, M88 sürümünden itibaren kısıtlanmış zaman aralığına ulaşıldığında devam eden güncellemeyi iptal eder. Kısıtlanmış zaman aralığı sona erdikten sonraki otomatik güncelleme, güncellemeyi otomatik olarak devam ettirir. Hızlı Düzeltme Derlemesi'ne güncellenen cihazlar, bu politikadan etkilenmez.
+      Bu politika ayarlanmazsa veya herhangi bir zaman aralığı içermezse:
+      Hiçbir otomatik güncelleme kontrolü bu politika tarafından engellenmez, ancak kontroller diğer politikalar tarafından engellenebilir.
+      Bu özellik, M88 sürümüne kadar yalnızca otomatik başlatma kioskları olarak yapılandırılan <ph name="PRODUCT_OS_NAME" /> cihazlarda etkindir. Bu politika diğer cihazları kısıtlamak için kullanılamaz. Ancak bu politika, M89 sürümünden itibaren tüm <ph name="PRODUCT_OS_NAME" /> cihazlarda etkindir.</translation>
 <translation id="3459509316159669723">Yazdırma</translation>
 <translation id="3461279434465463233">Güç durumunu bildir</translation>
 <translation id="3478024346823118645">Çıkışta kullanıcı verilerini sil</translation>

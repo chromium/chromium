@@ -997,6 +997,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4901778704868714008">Išsaugoti...</translation>
 <translation id="4913987521957242411">Skylė viršuje kairėje</translation>
+<translation id="4918221908152712722">Įdiekite „<ph name="APP_NAME" />“ (nereikia atsisiųsti)</translation>
 <translation id="4923459931733593730">Mokėjimas</translation>
 <translation id="4926049483395192435">Turi būti nurodyta.</translation>
 <translation id="4926159001844873046">Svetainėje <ph name="SITE" /> nurodyta:</translation>
@@ -1362,6 +1363,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6328786501058569169">Ši svetainė yra apgaulinga</translation>
 <translation id="6337133576188860026">Atlaisvina mažiau nei <ph name="SIZE" />. Per kitą jūsų apsilankymą kai kurios svetainės gali būti įkeliamos lėčiau.</translation>
 <translation id="6337534724793800597">Filtruoti politiką pagal pavadinimą</translation>
+<translation id="6349101878882523185">Įdiegti <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Nėra}=1{1 slaptažodis (skirta <ph name="DOMAIN_LIST" />, sinchronizuojama)}=2{2 slaptažodžiai (skirta <ph name="DOMAIN_LIST" />, sinchronizuojama)}one{# slaptažodis (skirta <ph name="DOMAIN_LIST" />, sinchronizuojama)}few{# slaptažodžiai (skirta <ph name="DOMAIN_LIST" />, sinchronizuojama)}many{# slaptažodžio (skirta <ph name="DOMAIN_LIST" />, sinchronizuojama)}other{# slaptažodžių (skirta <ph name="DOMAIN_LIST" />, sinchronizuojama)}}</translation>
 <translation id="6358450015545214790">Ką tai reiškia?</translation>
 <translation id="6361757823711327522">B7</translation>
@@ -2052,6 +2054,7 @@ Papildoma išsami informacija:
 <translation id="9158625974267017556">C6 (vokas)</translation>
 <translation id="9168814207360376865">Leisti svetainėms tikrinti, ar esate išsaugoję mokėjimo metodus</translation>
 <translation id="9169664750068251925">Visada blokuoti šioje svetainėje</translation>
+<translation id="9169931577761441333">Pridėkite „<ph name="APP_NAME" />“ prie pagrindinio ekrano</translation>
 <translation id="9170848237812810038">&amp;Atšaukti</translation>
 <translation id="9171296965991013597">Išeiti iš programos?</translation>
 <translation id="9173282814238175921">Vienas dokumentas / naujas lapas</translation>

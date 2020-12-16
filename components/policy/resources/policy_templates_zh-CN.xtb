@@ -3812,6 +3812,11 @@
 
       如果此政策已停用或未设置，系统便不会报告使用情况信息。</translation>
 <translation id="6821268164692776674"><ph name="CLOUD_PRINT_NAME" />和“保存到 Google 云端硬盘”目的地</translation>
+<translation id="6823273740874361732">通过设置此政策，您可以控制 <ph name="PRODUCT_NAME" /> 的扩展程序管理设置，其中包括由现有的扩展程序相关政策控制的设置。此政策会取代可能已设置的所有旧版政策。
+
+      此政策仅会将某个扩展程序 ID 或某个更新网址映射至相应设置。您可为特殊 ID<ph name="DEFAULT_SCOPE" />设定默认配置，该配置会应用于未在此政策中设定自定义配置的所有扩展程序。对于更新网址，相应配置会应用于具有在扩展程序清单 ( http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy ) 中注明的确切更新网址的扩展程序。如果“override_update_url”标记设为 true，系统会根据 <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> 政策中或此政策的“update_url”字段中指定的“更新”网址来安装并更新扩展程序。如果“update_url”是 Chrome 网上应用店网址，“override_update_url”标记会被忽略。
+
+      注意：对于未加入 <ph name="MS_AD_NAME" /> 网域的 Windows® 实例，强制安装仅限于 Chrome 网上应用店中所列的应用和扩展程序。</translation>
 <translation id="6823711520976094072">如果此政策设为小于 1 MB 或未设置，<ph name="PRODUCT_OS_NAME" />会使用默认大小 (256 MiB) 缓存应用和扩展程序，以供同一部设备上的多位用户安装，从而避免重新为每位用户下载。</translation>
 <translation id="682408981080798691">如果此政策已启用或未设置，系统会开启“渲染程序代码完整性”。
 
@@ -4268,6 +4273,7 @@
       如果您未设置此政策，网址屏蔽名单将不会有任何例外情况。
 
       在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于通过 MDM 进行管理或通过 MCX 加入网域的实例。</translation>
+<translation id="7417438464912687020">允许与这台计算机建立远程访问连接</translation>
 <translation id="7417972229667085380">演示模式下待机延迟时间的调整幅度（百分比）（已弃用）</translation>
 <translation id="7421483919690710988">设置媒体磁盘缓存大小（字节）</translation>
 <translation id="7424751532654212117">已停用插件列表的例外情况</translation>
@@ -4696,6 +4702,31 @@
 <translation id="8133152694354699657">如果此政策设为 True 或未设置，用户将能够使用“触摸搜索”功能，并能够开启或关闭该功能。
 
       如果此政策设为 False，系统会彻底关闭“触摸搜索”功能。</translation>
+<translation id="8135271712389620651">以列表形式配置一系列规则，防止 <ph name="PRODUCT_OS_NAME" />上发生数据泄露。
+      复制并粘贴数据、传输文件、打印、共享屏幕或截屏等操作都可能会导致数据泄露。
+
+      每条规则均包含以下内容：
+      - 一系列被定义为网址的来源。系统会将这些来源中的所有数据都视为机密数据并对其应用限制。
+      - 一系列被定义为网址或组件的目的地。您可以允许或禁止将机密数据共享到这些目的地。
+      - 一系列要应用在来源所含数据中的限制。
+
+      您可通过添加规则来实现以下目的：
+      - 控制在来源和目的地之间共享的剪贴板数据。
+      - 控制针对任何来源的截屏操作。
+      - 控制针对任何来源的打印操作。
+      - 控制任何来源可见时的隐私保护屏幕。
+      - 控制针对任何来源的屏幕共享操作。
+
+      限制级别可设为 BLOCK 或 ALLOW。
+      - 如果限制级别设为 BLOCK，系统将不允许执行该操作。
+      - 如果限制级别设为 ALLOW，系统将允许执行该操作。
+
+      注意：
+      - PRIVACY_SCREEN 限制不会禁止开启隐私保护屏幕，但会在限制级别设为 BLOCK 时强制使用隐私保护屏幕。
+      - 如果限制列表中含有 CLIPBOARD，目的地便不能为空，但它们对其余的限制没有任何影响。
+      - 所列网址必须采用这种格式 ( https://www.chromium.org/administrators/url-blacklist-filter-format )。
+
+      如果此政策未设置，系统将不会应用任何限制。</translation>
 <translation id="8136906469922284163">如果此政策设为 True，网页将能够在取消加载的过程中显示弹出式窗口。
 
       如果此政策设为 False 或未设置，网页将无法在取消加载的过程中显示弹出式窗口。
@@ -4741,6 +4772,9 @@
 
       如果此政策已停用或未设置，系统将不会发送任何数据包。</translation>
 <translation id="816783746144552109">为设备配置允许使用的最低 Chrome 操作系统版本。</translation>
+<translation id="8171025799847651230">如果此政策已停用，系统将无法启动远程访问主机服务，也无法将该服务配置为接受传入连接。此政策不影响远程支持场景。
+
+          如果设为 true、留空或未设置，此政策将不会产生任何影响。</translation>
 <translation id="8171924760436219650">将在登录屏幕上使用的鼠标主按钮切换成右键</translation>
 <translation id="8176035528522326671">只允许企业用户以主用户的身份登录多个人资料会话（企业托管用户的默认行为）</translation>
 <translation id="8179161412673077784">阻止那些提供误导性体验的网站打开新的窗口或标签页</translation>
@@ -5005,6 +5039,7 @@
 <translation id="8537051350735478658">如果此政策设为 True，系统会在 <ph name="PRODUCT_NAME" /> 地址栏中显示搜索建议。如果此政策设为 False，系统会停用此类搜索建议功能。
 
       如果您设置了此政策，用户便无法更改它。如果您不设置此政策，系统最初会显示搜索建议，但用户可随时停用此功能。</translation>
+<translation id="8543108307976719751">禁止与这台计算机建立远程访问连接</translation>
 <translation id="8544375438507658205">默认 HTML 呈现器为“<ph name="PRODUCT_FRAME_NAME" />”</translation>
 <translation id="8544465954173828789">允许将短信从手机同步到 Chromebook。</translation>
 <translation id="8566842294717252664">在“打开新的标签页”页面和应用启动器中不显示网上应用店</translation>

@@ -12,6 +12,7 @@
 <translation id="10614374240317010">一律不儲存</translation>
 <translation id="1067922213147265141">其他 Google 服務</translation>
 <translation id="107147699690128016">如果變更副檔名，這個檔案可能會在其他應用程式中開啟，並可能對裝置造成損害。</translation>
+<translation id="1094515529340404628">網路群眾與廣告成效評估</translation>
 <translation id="1100066534610197918">在群組的新分頁中開啟</translation>
 <translation id="1105960400813249514">螢幕擷取</translation>
 <translation id="1111673857033749125">儲存在您其他裝置上的書籤會顯示在這裡。</translation>
@@ -227,6 +228,7 @@
 <translation id="2536728043171574184">目前瀏覽的是這個網頁的離線複本</translation>
 <translation id="2537178555904266562">同步密碼時發生錯誤</translation>
 <translation id="2546283357679194313">Cookie 和網站資料</translation>
+<translation id="2562889244313180139">允許網站和應用程式使用無識別作用的別名，為你提供更貼近需求的體驗。</translation>
 <translation id="2567385386134582609">圖片</translation>
 <translation id="2571711316400087311">詢問是否要將其他語言的網頁傳送至 Google 翻譯</translation>
 <translation id="2581165646603367611">這項操作會清除不重要的網站 Cookie、快取等其他資料 (Chrome 會自動判斷資料的重要性)。</translation>
@@ -563,7 +565,7 @@
 <translation id="4970824347203572753">你所在的地區無法使用這項功能</translation>
 <translation id="4971735654804503942">針對不安全的網站、下載內容和擴充功能提供更快速的主動式防護機制。系統會顯示密碼遭外洩的警告訊息。須將瀏覽資料傳送至 Google。</translation>
 <translation id="497421865427891073">往前</translation>
-<translation id="4986638582553854481">標題</translation>
+<translation id="4986638582553854481">稱謂</translation>
 <translation id="4988210275050210843">正在下載檔案 (<ph name="MEGABYTES" />)。</translation>
 <translation id="4988526792673242964">網頁</translation>
 <translation id="5004416275253351869">Google 活動控制項</translation>
@@ -714,6 +716,7 @@
 <translation id="6005538289190791541">建議的密碼</translation>
 <translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{你有 <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> 個網頁}other{你有 <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> 個網頁}}</translation>
 <translation id="6014293228235665243">未讀取</translation>
+<translation id="6018309500671889594">允許廣告客戶使用無識別作用的資訊研究廣告活動。</translation>
 <translation id="6036057147555329831">其他 ICU</translation>
 <translation id="6039379616847168523">跳至下一個分頁</translation>
 <translation id="6040143037577758943">關閉</translation>
@@ -922,6 +925,7 @@
 <translation id="7403691278183511381">Chrome 初次使用體驗</translation>
 <translation id="741204030948306876">是，我要啟用</translation>
 <translation id="7413229368719586778">開始日期：<ph name="DATE" /></translation>
+<translation id="7416941666639889592">一旦加入「網路群眾」，即表示你允許網站在不使用個人識別資訊的情況下，針對你的網路體驗設定關聯。這跟演唱會中的群眾類似，網站和廣告客戶只會知道有數千位使用者擁有類似興趣。</translation>
 <translation id="7431991332293347422">控制 Google 使用瀏覽記錄提供個人化搜尋服務和其他內容的方式</translation>
 <translation id="7435356471928173109">已由系統管理員停用</translation>
 <translation id="7437998757836447326">登出 Chrome</translation>
@@ -1123,6 +1127,7 @@
 <translation id="8748850008226585750">內容已隱藏</translation>
 <translation id="8788265440806329501">瀏覽記錄已關閉</translation>
 <translation id="8788968922598763114">重新開啟最近關閉的分頁</translation>
+<translation id="8795672590390389447">Privacy Sandbox</translation>
 <translation id="8798449543960971550">讀取</translation>
 <translation id="8812260976093120287">在部分網站上，你可以在你的裝置上使用上述支援的付款應用程式付款。</translation>
 <translation id="881688628773363275">無法檢視分頁的預覽內容。</translation>

@@ -9,6 +9,7 @@
 <translation id="1175697296044146566">இந்த <ph name="DEVICE_TYPE" /> சாதனத்தை <ph name="MANAGER" /> நிர்வகிக்கிறது.</translation>
 <translation id="1195447618553298278">தெரியாத பிழை.</translation>
 <translation id="1204296502688602597">DNS தாமதம்</translation>
+<translation id="123124571410524056">போர்டல் இருப்பதுபோல் தெரிகிறது</translation>
 <translation id="1238612778414822719">HTTPS தாமதம்</translation>
 <translation id="1290331692326790741">வலுவற்ற சிக்னல்</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -36,6 +37,7 @@
 <translation id="1947737735496445907">அச்சிடப்பட்டது</translation>
 <translation id="1979103255016296513">கடவுச்சொல்லை மாற்ற வேண்டும்</translation>
 <translation id="1980044825731880088">CPU வேகம்</translation>
+<translation id="1999615961760456652">கேப்டிவ் போர்டல்</translation>
 <translation id="2008685064673031089">முதன்மைத் தேடல்</translation>
 <translation id="2080070583977670716">மேலும் அமைப்புகள்</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -52,6 +54,7 @@
 <translation id="2517472476991765520">ஸ்கேன் செய்</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> சோதனை இயங்குகிறது...</translation>
 <translation id="2620436844016719705">அமைப்பு</translation>
+<translation id="2658845327196595460">{COUNT,plural, =1{ஸ்கேன் செய்யப்பட்ட கோப்பு சேமிக்கப்பட்டது!}other{ஸ்கேன் செய்யப்பட்ட கோப்புகள் சேமிக்கப்பட்டன!}}</translation>
 <translation id="2740531572673183784">சரி</translation>
 <translation id="2805756323405976993">ஆப்ஸ்</translation>
 <translation id="2872961005593481000">நிறுத்து</translation>
@@ -114,6 +117,7 @@
 <translation id="4773299976671772492">நிறுத்தப்பட்டது</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> அச்சுப் பணி ரத்துசெய்யப்பட்டது</translation>
 <translation id="4832079907277790330">Files ஆப்ஸில் கோப்புறையைத் தேர்ந்தெடு...</translation>
+<translation id="4835901797422965222">நெட்நொர்க்குகள் எதுவும் செயலில் இல்லை</translation>
 <translation id="4848429997038228357">நடைபெறுவது</translation>
 <translation id="4890353053343094602">புதிய கடவுச்சொல்லை உடனே தேர்ந்தெடுக்கவும்</translation>
 <translation id="4891842000192098784">ஸ்டிரெஸ்</translation>
@@ -135,6 +139,7 @@
 <translation id="5317780077021120954">சேமி</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">புதிய கடவுச்சொல்லை இப்போதே தேர்ந்தெடுக்கவும்</translation>
+<translation id="5333530671332546086">அறியப்படாத போர்டல் நிலை</translation>
 <translation id="5372659122375744710">WiFi நெட்வொர்க் பாதுகாப்பாக இல்லை</translation>
 <translation id="5401938042319910061">எல்லாச் சோதனைகளையும் இயக்கு</translation>
 <translation id="5431318178759467895">வண்ணம்</translation>
@@ -189,7 +194,9 @@
 <translation id="7177485034254901881">இந்த <ph name="DEVICE_TYPE" /> சாதனத்தை <ph name="MANAGER" /> நிர்வகிக்கிறது. நிர்வாகிகள் இந்தச் சாதனத்தைத் தொலைநிலையிலிருந்து உள்ளமைக்கக்கூடும்.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">கோப்பு வகை</translation>
+<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{ஸ்கேன் செய்யப்பட்டது. ஒரு பக்கம் ஸ்கேன் செய்யப்பட்டது}other{ஸ்கேன் செய்யப்பட்டது. {NUMBER_OF_PAGES} பக்கங்கள் ஸ்கேன் செய்யப்பட்டன}}</translation>
 <translation id="7441459999606975924">உபயோகத்தால் பேட்டரிகளின் திறன் குறைகிறது</translation>
+<translation id="7469648432129124067">போர்டல் கண்டறியப்பட்டது</translation>
 <translation id="7561454561030345039">இந்தச் செயல் உங்கள் நிர்வாகியால் நிர்வகிக்கப்படுகிறது</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">HTTPS கோரிக்கைகள் அதிக நேரம் எடுக்கின்றன</translation>

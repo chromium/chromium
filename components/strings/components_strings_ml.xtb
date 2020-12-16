@@ -990,6 +990,7 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4901778704868714008">സംരക്ഷിക്കുക...</translation>
 <translation id="4913987521957242411">മുകളിൽ ഇടതുവശത്ത് പഞ്ച് ചെയ്യുക</translation>
+<translation id="4918221908152712722"><ph name="APP_NAME" /> ഇൻസ്റ്റാൾ ചെയ്യുക (ഡൗൺലോഡ് ചെയ്യേണ്ടതില്ല)</translation>
 <translation id="4923459931733593730">പേയ്‌മെന്റ് രീതി</translation>
 <translation id="4926049483395192435">വ്യക്തമാക്കേണ്ടതാണ്.</translation>
 <translation id="4926159001844873046"><ph name="SITE" /> പറയുന്നത്:</translation>
@@ -1355,6 +1356,7 @@
 <translation id="6328786501058569169">ഈ സൈറ്റ് വഞ്ചനാപരമായതാണ്</translation>
 <translation id="6337133576188860026"><ph name="SIZE" />-യിൽ കുറഞ്ഞ ഡാറ്റ ലാഭിക്കുന്നു.അടുത്തതവണ നിങ്ങൾ സന്ദർശിക്കുമ്പോൾ ചില സൈറ്റുകൾ ഇതിനേക്കാൾ പതുക്കെ ലോഡാകാം.</translation>
 <translation id="6337534724793800597">പേരിന്‍റെ ക്രമത്തിൽ നയങ്ങൾ ഫിൽട്ടർ ചെയ്യുക</translation>
+<translation id="6349101878882523185"><ph name="APP_NAME" /> ഇൻസ്‌റ്റാൾ ചെയ്യുക</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{ഒന്നുമില്ല}=1{<ph name="DOMAIN_LIST" /> എന്നതിനുള്ള ഒരു പാസ്‌വേഡ് (സമന്വയിപ്പിച്ചത്)}=2{<ph name="DOMAIN_LIST" /> എന്നതിനുള്ള 2 പാസ്‌വേഡുകൾ (സമന്വയിപ്പിച്ചത്)}other{<ph name="DOMAIN_LIST" /> എന്നതിനുള്ള# പാസ്‌വേഡുകൾ (സമന്വയിപ്പിച്ചത്)}}</translation>
 <translation id="6358450015545214790">ഇത് അര്‍ത്ഥമാക്കുന്നതെന്താണ്?</translation>
 <translation id="6361757823711327522">B7</translation>
@@ -1627,7 +1629,7 @@
 <translation id="7508255263130623398">നൽകിയ നയ ഉപകരണ ഐഡി ശൂന്യമാണ് അല്ലെങ്കിൽ നിലവിലെ ഉപകരണ ഐഡിയുമായി യോജിക്കുന്നില്ല</translation>
 <translation id="7508870219247277067">അവക്കാഡോ പച്ച</translation>
 <translation id="7511955381719512146">നിങ്ങൾ ഉപയോഗിക്കുന്ന Wi-Fi <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> സന്ദർശിക്കാൻ നിങ്ങളോട് ആവശ്യപ്പെടാം.</translation>
-<translation id="7512685745044087310">ഈ നയം "ശരി" എന്നതായും നിർബന്ധമാണ് എന്നും സജ്ജീകരിക്കാനാകില്ല, അതിനാൽ അത് നിർദ്ദേശിക്കുന്നത് എന്നാക്കി മാറ്റി.</translation>
+<translation id="7512685745044087310">ഈ നയം "ശരി" എന്നും നിർബന്ധമാണ് എന്നും സജ്ജീകരിക്കാനാകില്ല, അതിനാൽ നിർദ്ദേശിക്കുന്നത് എന്നാക്കി മാറ്റി.</translation>
 <translation id="7514365320538308">ഡൗൺലോഡ് ചെയ്യുക</translation>
 <translation id="7518003948725431193">വെബ് വിലാസത്തിനായി വെബ്‌പേജൊന്നും കണ്ടെത്തിയില്ല: <ph name="URL" /></translation>
 <translation id="7520302887438682816">C8 (എൻവലപ്പ്)</translation>
@@ -2042,6 +2044,7 @@
 <translation id="9158625974267017556">C6 (എൻവലപ്പ്)</translation>
 <translation id="9168814207360376865">നിങ്ങൾ പേയ്‌മെന്റ് രീതികൾ സംരക്ഷിച്ചിട്ടുണ്ടോ എന്ന് പരിശോധിക്കാൻ സൈറ്റുകളെ അനുവദിക്കുക</translation>
 <translation id="9169664750068251925">ഈ സൈറ്റിൽ എല്ലായ്‌പ്പോഴും തടയുക</translation>
+<translation id="9169931577761441333">ഹോം സ്‌ക്രീനിലേക്ക് <ph name="APP_NAME" /> ചേർക്കുക</translation>
 <translation id="9170848237812810038">‍&amp;പൂര്‍വാവസ്ഥയിലാക്കുക</translation>
 <translation id="9171296965991013597">ആപ്പ് വിടണോ?</translation>
 <translation id="9173282814238175921">സിംഗിൾ ഡോക്യുമെന്റ്/പുതിയ ഷീറ്റ്</translation>

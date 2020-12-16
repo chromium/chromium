@@ -996,6 +996,7 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4901778704868714008">સાચવો...</translation>
 <translation id="4913987521957242411">ઉપર ડાબી બાજુએ કાણું પાડો</translation>
+<translation id="4918221908152712722"><ph name="APP_NAME" />ને ઇન્સ્ટૉલ કરો (કોઈ ડાઉનલોડ આવશ્યક નથી)</translation>
 <translation id="4923459931733593730">ચુકવણી</translation>
 <translation id="4926049483395192435">ઉલ્લેખિત હોવું આવશ્યક છે.</translation>
 <translation id="4926159001844873046"><ph name="SITE" /> કહે છે કે</translation>
@@ -1361,6 +1362,7 @@
 <translation id="6328786501058569169">આ સાઇટ ભ્રામક છે</translation>
 <translation id="6337133576188860026"><ph name="SIZE" /> કરતાં ઓછી જગ્યા ખાલી કરે છે. તમારી આગલી મુલાકાત સમયે કેટલીક સાઇટ વધુ ધીમે લોડ થઈ શકે છે.</translation>
 <translation id="6337534724793800597">નામ દ્વારા નીતિઓને ફિલ્ટર કરો</translation>
+<translation id="6349101878882523185"><ph name="APP_NAME" /> ઇન્સ્ટૉલ કરો</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{એકપણ નહીં}=1{1 પાસવર્ડ (<ph name="DOMAIN_LIST" /> માટે, સિંક કરેલા)}=2{2 પાસવર્ડ (<ph name="DOMAIN_LIST" /> માટે, સિંક કરેલા)}one{# પાસવર્ડ (<ph name="DOMAIN_LIST" /> માટે, સિંક કરેલા)}other{# પાસવર્ડ (<ph name="DOMAIN_LIST" /> માટે, સિંક કરેલા)}}</translation>
 <translation id="6358450015545214790">આનો અર્થ શું છે?</translation>
 <translation id="6361757823711327522">B7</translation>
@@ -2050,6 +2052,7 @@
 <translation id="9158625974267017556">C6 (એન્વલપ)</translation>
 <translation id="9168814207360376865">તમારી ચુકવણી પદ્ધતિઓ સાચવવામાં આવી છે કે કેમ તે ચેક કરવાની સાઇટને મંજૂરી આપો</translation>
 <translation id="9169664750068251925">હંમેશા આ સાઇટ પર અવરોધિત કરો</translation>
+<translation id="9169931577761441333"><ph name="APP_NAME" />ને હોમ સ્ક્રીનમાં ઉમેરો</translation>
 <translation id="9170848237812810038">&amp;પૂર્વવત્ કરો</translation>
 <translation id="9171296965991013597">ઍપ છોડીએ?</translation>
 <translation id="9173282814238175921">માત્ર એક દસ્તાવેજ/નવી શીટ</translation>

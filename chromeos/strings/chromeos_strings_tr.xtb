@@ -9,6 +9,7 @@
 <translation id="1175697296044146566">Bu <ph name="DEVICE_TYPE" />, <ph name="MANAGER" /> tarafından yönetiliyor.</translation>
 <translation id="1195447618553298278">Bilinmeyen hata.</translation>
 <translation id="1204296502688602597">DNS Gecikmesi</translation>
+<translation id="123124571410524056">Portal olabilir</translation>
 <translation id="1238612778414822719">HTTPS Gecikmesi</translation>
 <translation id="1290331692326790741">Zayıf sinyal</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -36,6 +37,7 @@
 <translation id="1947737735496445907">Yazdırıldı</translation>
 <translation id="1979103255016296513">Şifre değişikliği zamanı geçti</translation>
 <translation id="1980044825731880088">CPU Hızı</translation>
+<translation id="1999615961760456652">Giriş Portalı</translation>
 <translation id="2008685064673031089">Birincil arama</translation>
 <translation id="2080070583977670716">Daha fazla ayar</translation>
 <translation id="2141644705054017895">%<ph name="PERCENTAGE_VALUE" /></translation>
@@ -115,6 +117,7 @@
 <translation id="4773299976671772492">Durduruldu</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> yazdırma işi iptal edildi</translation>
 <translation id="4832079907277790330">Dosyalar uygulamasında klasör seç...</translation>
+<translation id="4835901797422965222">Etkin ağ yok</translation>
 <translation id="4848429997038228357">ÇALIŞIYOR</translation>
 <translation id="4890353053343094602">Hemen yeni bir tane seçin</translation>
 <translation id="4891842000192098784">Stres</translation>
@@ -136,6 +139,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="5317780077021120954">Kaydet</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Yeni bir tane seçin</translation>
+<translation id="5333530671332546086">Bilinmeyen portal durumu</translation>
 <translation id="5372659122375744710">Kablosuz ağ güvenli değil</translation>
 <translation id="5401938042319910061">Tüm Rutinleri Çalıştır</translation>
 <translation id="5431318178759467895">Renk</translation>
@@ -192,6 +196,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="7359657277149375382">Dosya türü</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Tarama işlemi tamamlandı. 1 sayfa tarandı}other{Tarama işlemi tamamlandı. {NUMBER_OF_PAGES} sayfa tarandı}}</translation>
 <translation id="7441459999606975924">Pil kullanıldıkça kapasitesi azalır</translation>
+<translation id="7469648432129124067">Portal algılandı</translation>
 <translation id="7561454561030345039">Bu işlem, yöneticiniz tarafından yönetilir.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Yüksek HTTPS gecikmesi</translation>

@@ -12,6 +12,7 @@
 <translation id="10614374240317010">Hindi kailanman nag-save</translation>
 <translation id="1067922213147265141">Iba pang serbisyo ng Google</translation>
 <translation id="107147699690128016">Kung babaguhin mo ang file extension, puwedeng bumukas ang file sa ibang application at posible itong maging mapanganib sa iyong device.</translation>
+<translation id="1094515529340404628">Web crowd at pagsukat ng ad</translation>
 <translation id="1100066534610197918">Buksan sa bagong tab sa grupo</translation>
 <translation id="1105960400813249514">Screen Capture</translation>
 <translation id="1111673857033749125">Dito lalabas ang mga naka-save na bookmark sa iba mo pang mga device.</translation>
@@ -227,6 +228,7 @@ Pindutin nang matagal ang anumang salita para maghanap. Para pinuhin ang iyong p
 <translation id="2536728043171574184">Tinitingnan ang isang offline na kopya ng page na ito</translation>
 <translation id="2537178555904266562">Nagka-error sa pag-sync ng mga password</translation>
 <translation id="2546283357679194313">Cookies at data ng site</translation>
+<translation id="2562889244313180139">Payagan ang mga website at app na bigyan ka ng higit pang may kaugnayang karanasan gamit ang mga alyas na hindi nagbibigay ng pagkakakilanlan.</translation>
 <translation id="2567385386134582609">LARAWAN</translation>
 <translation id="2571711316400087311">Mag-alok na ipadala sa Google Translate ang mga page na nasa iba pang wika</translation>
 <translation id="2581165646603367611">Iki-clear nito ang cookies, cache at iba pang data ng mga site na sa tingin ng Chrome ay hindi mahalaga.</translation>
@@ -714,6 +716,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="6005538289190791541">Iminumungkahing password</translation>
 <translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Mayroon kang <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> page}one{Mayroon kang <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> page}other{Mayroon kang <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> na page}}</translation>
 <translation id="6014293228235665243">Hindi pa nababasa</translation>
+<translation id="6018309500671889594">Pinapayagan ang mga advertiser na pag-aralan ang mga campaign ng ad gamit ang mga impormasyong hindi nagbibigay ng pagkakakilanlan.</translation>
 <translation id="6036057147555329831">Karagdagang ICU</translation>
 <translation id="6039379616847168523">Pumunta sa susunod na tab</translation>
 <translation id="6040143037577758943">Isara</translation>
@@ -922,6 +925,7 @@ Maki-clear lang sa Chrome ang data sa iyong Incognito na session kapag <ph name=
 <translation id="7403691278183511381">Unang Karanasan sa Pagtakbo ng Chrome</translation>
 <translation id="741204030948306876">Oo, sali ako</translation>
 <translation id="7413229368719586778">Petsa ng pagsisimula <ph name="DATE" /></translation>
+<translation id="7416941666639889592">Sa pamamagitan ng pagsali sa Web Crowd, pinapayagan mo ang mga website na gawing may kaugnayan ang iyong karanasan sa web nang hindi ginagamit ang impormasyong nagbibigay ng personal na pagkakakilanlan. Katulad ng mga tao sa isang concert, malalaman lang ng mga website at advertiser na libo-libong user ang magkakatulad ng interes.</translation>
 <translation id="7431991332293347422">Kontrolin kung paano ginagamit ang iyong history ng pag-browse para i-personalize ang Paghahanap at higit pa</translation>
 <translation id="7435356471928173109">Na-off ng iyong administrator</translation>
 <translation id="7437998757836447326">Mag-sign out sa Chrome</translation>
@@ -1123,6 +1127,7 @@ Maki-clear lang sa Chrome ang data sa iyong Incognito na session kapag <ph name=
 <translation id="8748850008226585750">Nakatago ang mga content</translation>
 <translation id="8788265440806329501">Nakasara ang history ng pag-navigate</translation>
 <translation id="8788968922598763114">Muling buksan ang huling isinarang tab</translation>
+<translation id="8795672590390389447">Privacy sandbox</translation>
 <translation id="8798449543960971550">Nabasa na</translation>
 <translation id="8812260976093120287">Sa ilang website, maaari kang magbayad sa iyong device gamit ang mga sinusuportahang app sa pagbabayad sa itaas.</translation>
 <translation id="881688628773363275">Hindi puwedeng tingnan ang content ng tab na preview.</translation>

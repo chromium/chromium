@@ -22,6 +22,7 @@
 <translation id="2650312721222849884">За да ги гледате картичките секаде каде што користите Chromium, вклучете синхронизација</translation>
 <translation id="2730884209570016437">Chromium не може да ја користи камерата затоа што друга апликација ја користи во моментов</translation>
 <translation id="2915596697727466327">Chromium користи Face ID за да обезбеди овластен пристап до вашите лозинки.</translation>
+<translation id="2918709798697875261">Вашата организација бара да останете одјавени од Chromium.</translation>
 <translation id="2977470724722393594">Chromium е ажуриран</translation>
 <translation id="3256316712990552818">Копирано на Chromium</translation>
 <translation id="3344973607274501920">Chromium не може да ги провери вашите лозинки. Проверете ја интернет-врската.</translation>
@@ -74,6 +75,7 @@
 <translation id="8776843108004031667">Сметкава и сите незачувани податоци ќе се отстранат од Chromium.</translation>
 <translation id="9022552996538154597">Најавете се на Chromium</translation>
 <translation id="9089354809943900324">Chromium е застарен</translation>
+<translation id="912386518501777532">Кога бевте одјавени од Chromium, обележувачите, историјата, лозинките и другите поставки беа избришани од уредов. Синхронизираните податоци сѐ уште се зачувани во вашата сметка.</translation>
 <translation id="921174536258924340">Chromium не може да ги провери сите лозинки. Обидете се пак утре или <ph name="BEGIN_LINK" />проверете ги лозинките во сметката на Google.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">Автори на Chromium</translation>
 </translationbundle>

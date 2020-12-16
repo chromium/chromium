@@ -12,6 +12,7 @@
 <translation id="10614374240317010">Contrasenyes que no es desen mai</translation>
 <translation id="1067922213147265141">Altres serveis de Google</translation>
 <translation id="107147699690128016">Si canvies l'extensió del fitxer, pot ser que el fitxer s'obri en una altra aplicació i pot arribar a ser perillós per al dispositiu.</translation>
+<translation id="1094515529340404628">Web Crowd i mesurament d'anuncis</translation>
 <translation id="1100066534610197918">Obre en una pestanya d'un grup</translation>
 <translation id="1105960400813249514">Captura de pantalla</translation>
 <translation id="1111673857033749125">Les adreces d'interès desades als altres dispositius es mostraran aquí.</translation>
@@ -227,6 +228,7 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="2536728043171574184">S'està mostrant una còpia sense connexió d'aquesta pàgina</translation>
 <translation id="2537178555904266562">S'ha produït un error en sincronitzar les contrasenyes</translation>
 <translation id="2546283357679194313">Dades de llocs web i galetes</translation>
+<translation id="2562889244313180139">Permet que els llocs web i les aplicacions t'ofereixin una experiència més rellevant utilitzant un àlies que no permeti identificar-te.</translation>
 <translation id="2567385386134582609">IMATGE</translation>
 <translation id="2571711316400087311">Proposa enviar pàgines en altres idiomes al Traductor de Google</translation>
 <translation id="2581165646603367611">Amb aquesta acció, se suprimiran les galetes, la memòria cau i altres dades de llocs que Chrome no consideri importants.</translation>
@@ -714,6 +716,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="6005538289190791541">Contrasenya suggerida</translation>
 <translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Tens <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> pàgina}other{Tens <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> pàgines}}</translation>
 <translation id="6014293228235665243">No llegits</translation>
+<translation id="6018309500671889594">Permet que els anunciants estudiïn les campanyes publicitàries utilitzant informació que no permeti identificar-te.</translation>
 <translation id="6036057147555329831">ICU addicional</translation>
 <translation id="6039379616847168523">Ves a la pestanya següent</translation>
 <translation id="6040143037577758943">Tanca</translation>
@@ -922,6 +925,7 @@ Les dades de la teva sessió d'incògnit només s'esborraran de Chrome quan <ph 
 <translation id="7403691278183511381">Experiència de primera execució de Chrome</translation>
 <translation id="741204030948306876">Sí, ho accepto</translation>
 <translation id="7413229368719586778">Data d'inici: <ph name="DATE" /></translation>
+<translation id="7416941666639889592">En unir-te a Web Crowd, permets que els llocs web facin més rellevant la teva experiència web sense utilitzar informació d'identificació personal. De manera semblant al que passa entre el públic d'un concert, els llocs web i els anunciants només podran saber que milers d'usuaris comparteixen un interès comú.</translation>
 <translation id="7431991332293347422">Controla com s'utilitza l'historial de navegació per personalitzar la Cerca i més</translation>
 <translation id="7435356471928173109">Desactivada per l'administrador</translation>
 <translation id="7437998757836447326">Tanca la sessió de Chrome</translation>
@@ -1123,6 +1127,7 @@ Les dades de la teva sessió d'incògnit només s'esborraran de Chrome quan <ph 
 <translation id="8748850008226585750">Contingut amagat</translation>
 <translation id="8788265440806329501">L'historial de navegació està tancat</translation>
 <translation id="8788968922598763114">Torna a obrir l'última pestanya tancada</translation>
+<translation id="8795672590390389447">Zona de proves de privadesa</translation>
 <translation id="8798449543960971550">Llegits</translation>
 <translation id="8812260976093120287">En alguns llocs web, pots fer servir el teu dispositiu per pagar amb les aplicacions de pagament anteriors admeses.</translation>
 <translation id="881688628773363275">El contingut de la pestanya de previsualització no es pot veure.</translation>

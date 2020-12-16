@@ -30,6 +30,7 @@
 <translation id="3706101708757577809">Du kan nu bruge Chrome, hver gang du trykker på links i meddelelser, dokumenter og andre apps.</translation>
 <translation id="384394811301901750">Google Chrome kan ikke bruge dit kamera lige nu</translation>
 <translation id="3980220367029651214">Du er ved at skifte synkroniseringskonto fra <ph name="USER_EMAIL1" /> til <ph name="USER_EMAIL2" />. Dine eksisterende Chrome-data administreres af <ph name="DOMAIN" />. Denne handling sletter dine data fra denne enhed, men dine data forbliver på <ph name="USER_EMAIL1" />.</translation>
+<translation id="3984746313391923992">Din organisation kræver, at du forbliver logget ud af Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome har ikke adgang til dine billeder eller videoer. Gå til iOS Indstillinger &gt; Privatliv &gt; Billeder for at få adgang.</translation>
 <translation id="4099578267706723511">Vær med til at gøre Chrome bedre ved at sende brugsstatistik og nedbrudsrapporter til Google.</translation>
 <translation id="415767770115540173">Få en bedre Google-oplevelse i Chrome baseret på din placering.</translation>
@@ -54,6 +55,7 @@
 <translation id="6600954340915313787">Kopieret til Chrome</translation>
 <translation id="6648150602980899529">Du er ved at logge ind med en konto, der administreres af <ph name="DOMAIN" />, hvilket giver administratoren kontrol over dine Chrome-data. Dine data tilknyttes denne konto permanent. Hvis du logger ud af Chrome, slettes dine data fra denne enhed, men de forbliver gemt på din Google-konto.</translation>
 <translation id="6676840375528380067">Vil du rydde dine Chrome-data på denne enhed?</translation>
+<translation id="6822363243974874813">Da du var logget ud af Chrome, blev dine bogmærker, din historik, samt dine adgangskoder og øvrige indstillinger ryddet fra denne enhed. Dine synkroniserede Chrome-data er stadig gemt på din Google-konto.</translation>
 <translation id="6822673484890854830">Chrome kunne ikke tjekke alle adgangskoder. Prøv igen senere.</translation>
 <translation id="7124339256045485976">Sørger for, at Chrome er opdateret</translation>
 <translation id="7161390184744336561">Google Chrome er forældet</translation>

@@ -12,6 +12,7 @@
 <translation id="10614374240317010">Ніколи не зберігалося</translation>
 <translation id="1067922213147265141">Інші сервіси Google</translation>
 <translation id="107147699690128016">Якщо ви зміните розширення файлу, він може відкритися в іншому додатку або зашкодити пристрою.</translation>
+<translation id="1094515529340404628">Web Crowd і оцінка ефективності реклами</translation>
 <translation id="1100066534610197918">Відкрити нову вкладку в групі</translation>
 <translation id="1105960400813249514">Знімок екрана</translation>
 <translation id="1111673857033749125">Тут відображатимуться закладки, збережені на інших ваших пристроях.</translation>
@@ -227,6 +228,7 @@
 <translation id="2536728043171574184">Перегляд копії сторінки в режимі офлайн</translation>
 <translation id="2537178555904266562">Не вдалося синхронізувати паролі</translation>
 <translation id="2546283357679194313">Файли cookie та дані із сайтів</translation>
+<translation id="2562889244313180139">Дозволити веб-сайтам і додаткам показувати релевантніший контент, використовуючи для цього знеособлені дані.</translation>
 <translation id="2567385386134582609">ЗОБРАЖЕННЯ</translation>
 <translation id="2571711316400087311">Пропонувати надсилати на переклад сторінки іншими мовами в Google Перекладач</translation>
 <translation id="2581165646603367611">Буде видалено файли cookie, кеш та інші дані сайтів, які Chrome визначив як неважливі.</translation>
@@ -714,6 +716,7 @@
 <translation id="6005538289190791541">Запропонований пароль</translation>
 <translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{У ньому <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> сторінка}one{У ньому <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> сторінка}few{У ньому <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> сторінки}many{У ньому <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> сторінок}other{У ньому <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> сторінки}}</translation>
 <translation id="6014293228235665243">Непрочитані</translation>
+<translation id="6018309500671889594">Дозволити рекламодавцям аналізувати рекламні кампанії, використовуючи знеособлені дані.</translation>
 <translation id="6036057147555329831">Зайвий модуль ICU</translation>
 <translation id="6039379616847168523">Перейти до наступної вкладки</translation>
 <translation id="6040143037577758943">Закрити</translation>
@@ -922,6 +925,7 @@
 <translation id="7403691278183511381">Перший запуск Chrome</translation>
 <translation id="741204030948306876">Увімкнути</translation>
 <translation id="7413229368719586778">Дата початку: <ph name="DATE" /></translation>
+<translation id="7416941666639889592">Підключившись до Web Crowd, ви дозволяєте веб-сайтам показувати вам релевантніший контент, не використовуючи для цього вашу ідентифікаційну інформацію. Глянувши на людей, які прийшли на музичний концерт, ми можемо припустити лише те, що в них схожі музичні смаки. Аналогічно веб-сайти й рекламодавці знають про тисячі своїх користувачів тільки те, що вони мають подібні інтереси.</translation>
 <translation id="7431991332293347422">Указуйте, як використовувати історію веб-перегляду для персоналізації Пошуку тощо</translation>
 <translation id="7435356471928173109">Вимкнено адміністратором</translation>
 <translation id="7437998757836447326">Вихід із Chrome</translation>
@@ -1123,6 +1127,7 @@
 <translation id="8748850008226585750">Вміст сховано</translation>
 <translation id="8788265440806329501">Історію навігації закрито</translation>
 <translation id="8788968922598763114">Відкрити останню закриту вкладку</translation>
+<translation id="8795672590390389447">Privacy Sandbox</translation>
 <translation id="8798449543960971550">Прочитані</translation>
 <translation id="8812260976093120287">На деяких веб-сайтах ви можна оплачувати за допомогою перелічених вище підтримуваних додатків для платежів на вашому пристрої.</translation>
 <translation id="881688628773363275">Попередній перегляд вмісту вкладки не видно.</translation>

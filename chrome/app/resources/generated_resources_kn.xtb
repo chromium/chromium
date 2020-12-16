@@ -3435,7 +3435,6 @@
 <translation id="4917385247580444890">ಪ್ರಬಲ</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> ಅವರು "<ph name="EXTENSION_NAME" />" ವಿಸ್ತರಣೆಯ ಜೊತೆಗೆ ಸಂವಹಿಸಲು ಬಯಸುತ್ತಾರೆ</translation>
 <translation id="4918086044614829423">ಸಮ್ಮತಿಸು</translation>
-<translation id="4918221908152712722"><ph name="APP_NAME" /> ಆ್ಯಪ್ ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್‌ ಮಾಡಿ (ಡೌನ್‌ಲೋಡ್‌ ಮಾಡುವ ಅಗತ್ಯವಿಲ್ಲ)</translation>
 <translation id="4921290200821452703">ಪೋಷಕರಿಗಾಗಿ ಶಾಲಾ ಖಾತೆಯ ಮಾಹಿತಿ</translation>
 <translation id="4921348630401250116">ಪಠ್ಯದಿಂದ ಧ್ವನಿ</translation>
 <translation id="49226369361073053">{0,plural, =0{ಈಗಲೇ ಸಾಧನವನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ}=1{1 ಸೆಕೆಂಡ್ ಒಳಗೆ ಸಾಧನವನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ}one{# ಸೆಕೆಂಡ್‌ಗಳ ಒಳಗೆ ಸಾಧನವನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ}other{# ಸೆಕೆಂಡ್‌ಗಳ ಒಳಗೆ ಸಾಧನವನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ}}</translation>
@@ -4577,7 +4576,6 @@
 <translation id="6248988683584659830">ಸೆಟ್ಟಿಂಗ್‌‌ಗಳಲ್ಲಿ ಹುಡುಕಿ</translation>
 <translation id="6249200942125593849">a11y ಅನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="6251870443722440887">GDI ನಿರ್ವಹಣೆಗಳು</translation>
-<translation id="6251889282623539337"><ph name="DOMAIN" /> ಸೇವಾ ನಿಯಮಗಳು</translation>
 <translation id="625369703868467034">ನೆಟ್‌ವರ್ಕ್ ಹೆಲ್ತ್</translation>
 <translation id="6254503684448816922">ಕೀಲಿ ಹೊಂದಾಣಿಕೆ</translation>
 <translation id="6257602895346497974">ಸಿಂಕ್‌ ಆನ್‌ ಮಾಡಿ...</translation>
@@ -5469,7 +5467,6 @@
 <translation id="7290242001003353852">ಈ ಸೈನ್ ಇನ್ ಸೇವೆಯನ್ನು <ph name="SAML_DOMAIN" /> ಮೂಲಕ ಹೋಸ್ಟ್ ಮಾಡಲಾಗಿದೆ, ಇದು ನಿಮ್ಮ ಕ್ಯಾಮರಾವನ್ನು ಪ್ರವೇಶಿಸುತ್ತದೆ.</translation>
 <translation id="7295614427631867477">Android, Play ಮತ್ತು ಸಂಬಂಧಿಸಿದ ಆ್ಯಪ್‌ಗಳು, ಅವುಗಳ ಸ್ವಂತ ಡೇಟಾ ಸಂಗ್ರಹಣೆ ಮತ್ತು ಬಳಕೆ ಕಾರ್ಯನೀತಿಗಳ ಮೂಲಕ ನಿಯಂತ್ರಣಗೊಳ್ಳುತ್ತವೆ ಎಂಬುದನ್ನು ಗಮನಿಸಿ.</translation>
 <translation id="729583233778673644">AES ಮತ್ತು RC4 ಎನ್‌ಕ್ರಿಪ್ಶನ್ ಅನ್ನು ಅನುಮತಿಸಿ . RC4 ಸೈಫರ್‌ಗಳು ಅಸುರಕ್ಷಿತವಾಗಿರುವುದರಿಂದ ಈ ಆಯ್ಕೆಯನ್ನು ಬಳಸುವುದು ನಿಮ್ಮ ಅಪಾಯವನ್ನು ಹೆಚ್ಚಿಸುತ್ತದೆ.</translation>
-<translation id="7296774163727375165"><ph name="DOMAIN" /> ನಿಯಮಗಳು</translation>
 <translation id="7297443947353982503">ಬಳಕೆದಾರರಹೆಸರು/ಪಾಸ್‌ವರ್ಡ್ ಸರಿಯಾಗಿಲ್ಲ ಅಥವಾ EAP-auth ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="729761647156315797">ನಿಮ್ಮ ಭಾಷೆ ಮತ್ತು ಕೀಬೋರ್ಡ್ ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="7297726121602187087">ಗಾಢ ಹಸಿರು</translation>
@@ -6448,7 +6445,6 @@
 <translation id="8398877366907290961">ಏನಾಗಲಿ ಮುಂದುವರೆಯಿರಿ</translation>
 <translation id="8400146488506985033">ಜನರನ್ನು ನಿರ್ವಹಿಸು</translation>
 <translation id="8401432541486058167">ನಿಮ್ಮ ಸ್ಮಾರ್ಟ್ ಕಾರ್ಡ್‌ನೊಂದಿಗೆ ಸಂಯೋಜಿತವಾಗಿರುವ ಪಿನ್ ಅನ್ನು ಒದಗಿಸಿ.</translation>
-<translation id="8405046151008197676">ಇತ್ತೀಚಿನ ಅಪ್‌ಡೇಟ್ ಕುರಿತು ಮುಖ್ಯಾಂಶಗಳನ್ನು ಪಡೆದುಕೊಳ್ಳಿ</translation>
 <translation id="8407199357649073301">ಲಾಗ್ ಹಂತ:</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> ನೆಟ್‌ವರ್ಕ್, ಸಂಪರ್ಕಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -7136,7 +7132,6 @@
 <translation id="9168436347345867845">ಇದನ್ನು ನಂತರ ಮಾಡಿ</translation>
 <translation id="9169496697824289689">ಕೀಬೋರ್ಡ್ ಶಾರ್ಟ್‌ಕಟ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಿ</translation>
 <translation id="916964310188958970">ಈ ಸಲಹೆ ಏಕೆ ಕಾಣಿಸುತ್ತಿದೆ?</translation>
-<translation id="9169931577761441333"><ph name="APP_NAME" /> ಅನ್ನು ಹೋಮ್‌ನ ಪರದೆಗೆ ಸೇರಿಸಿ</translation>
 <translation id="9170061643796692986">ಪ್ರಸ್ತುತ ಗೋಚರತೆ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಎಲ್ಲಾ ಸಂಪರ್ಕಗಳು ಎಂಬುದಕ್ಕೆ ಹೊಂದಿಸಲಾಗಿದೆ</translation>
 <translation id="9170848237812810038">&amp;ರದ್ದುಮಾಡು</translation>
 <translation id="9170884462774788842">ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್‌ನಲ್ಲಿನ ಮತ್ತೊಂದು ಪ್ರೋಗ್ರಾಂ Chrome ಕಾರ್ಯನಿರ್ವಹಿಸುವ ವಿಧಾನವನ್ನು ಬದಲಿಸಬಹುದಾದಂತಹ ಥೀಮ್ ಅನ್ನು ಸೇರಿಸಿದೆ.</translation>

@@ -12,6 +12,7 @@
 <translation id="10614374240317010">Niekada neišsaugota</translation>
 <translation id="1067922213147265141">Kitos „Google“ paslaugos</translation>
 <translation id="107147699690128016">Jei pakeisite failo plėtinį, failas gali būti atidaromas naudojant kitą programą ir galimai pakenkti įrenginiui.</translation>
+<translation id="1094515529340404628">Žiniatinklio minia ir skelbimų vertinimas</translation>
 <translation id="1100066534610197918">Atidar. naujame grup. skirtuke</translation>
 <translation id="1105960400813249514">Ekrano fiksavimas</translation>
 <translation id="1111673857033749125">Čia bus rodomos kituose įrenginiuose išsaugotos žymės.</translation>
@@ -227,6 +228,7 @@ Norėdami ieškoti, palieskite ir palaikykite bet kurį žodį. Jei norite patik
 <translation id="2536728043171574184">Žiūrima neprisijungus naudojama šio puslapio kopija</translation>
 <translation id="2537178555904266562">Sinchronizuojant slaptažodžius įvyko klaida</translation>
 <translation id="2546283357679194313">Slapukai ir svetainės duomenys</translation>
+<translation id="2562889244313180139">Leiskite svetainėms ir programoms sukurti tinkamesnes funkcijas naudojant neidentifikuojantį alternatyvų el. pašto adresą.</translation>
 <translation id="2567385386134582609">VAIZDAS</translation>
 <translation id="2571711316400087311">Siūlyti siųsti puslapius kitomis kalbomis į „Google“ vertėją</translation>
 <translation id="2581165646603367611">Bus išvalyti slapukai, talpykla ir kiti svetainių duomenys, kurių „Chrome“ nelaiko svarbiais.</translation>
@@ -714,6 +716,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="6005538289190791541">Siūlomas slaptažodis</translation>
 <translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Yra <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> puslapis}one{Yra <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> puslapis}few{Yra <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> puslapiai}many{Yra <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> puslapio}other{Yra <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> puslapių}}</translation>
 <translation id="6014293228235665243">Neskaityta</translation>
+<translation id="6018309500671889594">Leiskite reklamuotojams tyrinėti reklamavimo kampanijas naudojant neidentifikuojančią informaciją.</translation>
 <translation id="6036057147555329831">Papildomas ICU</translation>
 <translation id="6039379616847168523">Pereiti prie kito skirtuko</translation>
 <translation id="6040143037577758943">Uždaryti</translation>
@@ -922,6 +925,7 @@ Inkognito režimo seanso duomenys bus išvalyti iš „Chrome“ tik tada, kai <
 <translation id="7403691278183511381">„Chrome“ pirmosios paleisties patirtis</translation>
 <translation id="741204030948306876">Taip, sutinku</translation>
 <translation id="7413229368719586778">Pradžios data: <ph name="DATE" /></translation>
+<translation id="7416941666639889592">Prisijungdami prie žiniatinklio minios leidžiate svetainėms pritaikyti žiniatinklio funkcijas pagal jūsų poreikius nenaudojant asmens identifikavimo informacijos. Tai panašu į minią koncerte – svetainės ir reklamuotojai gali tik žinoti, jog daugybės naudotojų pomėgis yra toks pats.</translation>
 <translation id="7431991332293347422">Naršymo istorijos naudojimo paieškai ir kitoms funkcijoms suasmeninti valdymas</translation>
 <translation id="7435356471928173109">Išjungė jūsų administratorius</translation>
 <translation id="7437998757836447326">Atsijungimas nuo „Chrome“</translation>
@@ -1123,6 +1127,7 @@ Inkognito režimo seanso duomenys bus išvalyti iš „Chrome“ tik tada, kai <
 <translation id="8748850008226585750">Turinys paslėptas</translation>
 <translation id="8788265440806329501">Naršymo istorija uždaryta</translation>
 <translation id="8788968922598763114">Iš naujo atidaryti paskutinį uždarytą skirtuką</translation>
+<translation id="8795672590390389447">Privatumo „sandbox“ (smėlio dėžė)</translation>
 <translation id="8798449543960971550">Skaityta</translation>
 <translation id="8812260976093120287">Kai kuriose svetainėse galite mokėti naudodami įrenginyje įdiegtas anksčiau nurodytas palaikomas mokėjimo programas.</translation>
 <translation id="881688628773363275">Peržiūros skirtuko turinio peržiūrėti negalima.</translation>

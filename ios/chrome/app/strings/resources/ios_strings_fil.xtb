@@ -295,6 +295,7 @@ Sundin ang mga hakbang sa ibaba:</translation>
 <translation id="4121993058175073134">Upang makapagpadala ng net-export data, paki-configure ang iyong email account sa app ng Mga Setting.</translation>
 <translation id="4124987746317609294">Sakop na Oras</translation>
 <translation id="4152011295694446843">Makikita mo rito ang iyong mga bookmark</translation>
+<translation id="4152093603141133546">Na-sign out ka ng iyong organisasyon.</translation>
 <translation id="4172051516777682613">Palaging ipakita</translation>
 <translation id="418156467088430727">Tingnan ang Offline na Bersyon sa Bagong Tab</translation>
 <translation id="4181841719683918333">Mga Wika</translation>
@@ -537,6 +538,7 @@ Subukang gumamit ng natatanging password para sa bawat site.</translation>
 <translation id="6668619169535738264">I-edit ang Bookmark</translation>
 <translation id="667999046851023355">Dokumento</translation>
 <translation id="6691331417640343772">Pamahalaan ang naka-sync na data sa Google Dashboard</translation>
+<translation id="6710079714193676716">Pinapamahalaan ng iyong organisasyon. Posibleng hindi available ang ilang feature. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Hindi Ma-export ang Mga Password</translation>
 <translation id="6748108480210050150">Mula</translation>
@@ -690,6 +692,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="8487667956631253959">Naka-on</translation>
 <translation id="8487700953926739672">Available sa offline</translation>
 <translation id="8490978609246021741">I-save ang Mga Pagbabago</translation>
+<translation id="8495097701594799854">Na-off ng iyong organisasyon.</translation>
 <translation id="8503813439785031346">Username</translation>
 <translation id="850600235656508448">Buksan sa Incognito</translation>
 <translation id="8510057420705599706">Kapag ginawa ito, masa-sign out ka at mao-off ang pag-sync, pero mananatili sa device na ito ang iyong mga bookmark, history, mga password, at iba pang data ng Chrome.</translation>

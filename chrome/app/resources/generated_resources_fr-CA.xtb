@@ -3426,7 +3426,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4917385247580444890">Fort</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> souhaite communiquer avec l’extension « <ph name="EXTENSION_NAME" /> »</translation>
 <translation id="4918086044614829423">Accepter</translation>
-<translation id="4918221908152712722">Installer <ph name="APP_NAME" /> (aucun téléchargement nécessaire)</translation>
 <translation id="4921290200821452703">Renseignements sur le compte scolaire à l'intention des parents</translation>
 <translation id="4921348630401250116">Transcription de la voix</translation>
 <translation id="49226369361073053">{0,plural, =0{Mettre à jour l'appareil maintenant}=1{Mettre à jour l'appareil d'ici 1 seconde}one{Mettre à jour l'appareil d'ici # seconde}other{Mettre à jour l'appareil d'ici # secondes}}</translation>
@@ -4564,7 +4563,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6248988683584659830">Paramètres de recherche</translation>
 <translation id="6249200942125593849">Gérer l'accessibilité</translation>
 <translation id="6251870443722440887">Descripteurs GDI</translation>
-<translation id="6251889282623539337">Conditions d'utilisation du domaine « <ph name="DOMAIN" /> »</translation>
 <translation id="625369703868467034">Santé du réseau</translation>
 <translation id="6254503684448816922">Clé compromise</translation>
 <translation id="6257602895346497974">Activer la synchronisation…</translation>
@@ -5452,7 +5450,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7290242001003353852">Ce service de connexion, hébergé par <ph name="SAML_DOMAIN" />, est en train d'accéder à votre caméra.</translation>
 <translation id="7295614427631867477">Notez qu'Android, Play et les applications connexes sont régis par leurs propres politiques de collection et d'utilisation des données.</translation>
 <translation id="729583233778673644">Autoriser le chiffrement AES et RC4. L'utilisation de cette option augmente les risques, car les chiffrements RC4 ne sont pas sécurisés.</translation>
-<translation id="7296774163727375165">Conditions d'utilisation du domaine <ph name="DOMAIN" /></translation>
 <translation id="7297443947353982503">Nom d'utilisateur ou mot de passe incorrect, ou échec de l'authentification EAP</translation>
 <translation id="729761647156315797">Choisir votre langue et votre clavier</translation>
 <translation id="7297726121602187087">Vert foncé</translation>
@@ -6431,7 +6428,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8398877366907290961">Continuer</translation>
 <translation id="8400146488506985033">Gérer les personnes</translation>
 <translation id="8401432541486058167">Entrez le NIP associé à votre carte à puce.</translation>
-<translation id="8405046151008197676">Consultez les faits saillants de la dernière mise à jour</translation>
 <translation id="8407199357649073301">Niveau de journalisation :</translation>
 <translation id="8408068190360279472">Réseau <ph name="NETWORK_TYPE" />; connexion en cours…</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -7118,7 +7114,6 @@ Appuyez sur un commutateur attribué pour retirer l'attribution.</translation>
 <translation id="9168436347345867845">Plus tard</translation>
 <translation id="9169496697824289689">Voir les raccourcis clavier</translation>
 <translation id="916964310188958970">Pourquoi cette suggestion s'affiche-t-elle?</translation>
-<translation id="9169931577761441333">Ajoutez <ph name="APP_NAME" /> à l'écran d'accueil</translation>
 <translation id="9170061643796692986">Le paramètre de visibilité actuelle est réglé à tous les contacts</translation>
 <translation id="9170848237812810038">Ann&amp;uler</translation>
 <translation id="9170884462774788842">Un autre programme sur votre ordinateur a ajouté un thème qui risque de modifier le fonctionnement de Google Chrome.</translation>

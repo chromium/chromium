@@ -12,6 +12,7 @@
 <translation id="10614374240317010">Nunca guardado</translation>
 <translation id="1067922213147265141">Otros servicios de Google</translation>
 <translation id="107147699690128016">Si cambias la extensión de archivo, es posible que el archivo se abra en una app diferente y dañe el dispositivo.</translation>
+<translation id="1094515529340404628">Medición de anuncios y Web Crowd</translation>
 <translation id="1100066534610197918">Abrir pestaña nueva en grupo</translation>
 <translation id="1105960400813249514">Captura de pantalla</translation>
 <translation id="1111673857033749125">Los favoritos guardados en tus otros dispositivos aparecerán aquí.</translation>
@@ -227,6 +228,7 @@ Para buscar una palabra, mantenla presionada. Si quieres definir mejor la búsqu
 <translation id="2536728043171574184">Visualizando una copia sin conexión de la página</translation>
 <translation id="2537178555904266562">Se produjo un error al sincronizar las contraseñas</translation>
 <translation id="2546283357679194313">Datos de sitios y cookies</translation>
+<translation id="2562889244313180139">Permite que los sitios web y las apps te proporcionen una experiencia más relevante utilizando un alias no identificable.</translation>
 <translation id="2567385386134582609">IMAGEN</translation>
 <translation id="2571711316400087311">Mostrar la opción para enviar páginas en otros idiomas a Google Traductor</translation>
 <translation id="2581165646603367611">Esta acción borrará la caché, cookies y otros datos de sitios que Chrome no considera importantes.</translation>
@@ -714,6 +716,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="6005538289190791541">Contraseña sugerida</translation>
 <translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Tienes <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> página}other{Tienes <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> páginas}}</translation>
 <translation id="6014293228235665243">No leídas</translation>
+<translation id="6018309500671889594">Permite que los anunciantes estudien campañas publicitarias utilizando información no identificable.</translation>
 <translation id="6036057147555329831">ICU adicional</translation>
 <translation id="6039379616847168523">Ir a la pestaña siguiente</translation>
 <translation id="6040143037577758943">Cerrar</translation>
@@ -922,6 +925,7 @@ Solo se borran de Chrome los datos de las sesiones de incógnito cuando <ph name
 <translation id="7403691278183511381">Primera experiencia de ejecución de Chrome</translation>
 <translation id="741204030948306876">Sí, acepto</translation>
 <translation id="7413229368719586778">Fecha de inicio: <ph name="DATE" /></translation>
+<translation id="7416941666639889592">Al unirte a Web Crowd, permites que los sitios web te proporcionen una experiencia web relevante para ti sin usar información de identificación personal. Los sitios web y los anunciantes solo pueden conocer el interés en común que tienen miles de usuarios, al igual que el público de un concierto.</translation>
 <translation id="7431991332293347422">Controla cómo se usa tu historial de navegación para personalizar la Búsqueda y mucho más</translation>
 <translation id="7435356471928173109">El administrador desactivó la función</translation>
 <translation id="7437998757836447326">Salir de Chrome</translation>
@@ -1123,6 +1127,7 @@ Solo se borran de Chrome los datos de las sesiones de incógnito cuando <ph name
 <translation id="8748850008226585750">Contenidos ocultos</translation>
 <translation id="8788265440806329501">Se cerró el Historial de navegación</translation>
 <translation id="8788968922598763114">Volver a abrir la última pestaña cerrada</translation>
+<translation id="8795672590390389447">Privacy Sandbox</translation>
 <translation id="8798449543960971550">Leídas</translation>
 <translation id="8812260976093120287">En algunos sitios web, puedes usar las apps compatibles que se enumeran anteriormente para hacer pagos en tu dispositivo.</translation>
 <translation id="881688628773363275">No se puede obtener la vista previa del contenido de la pestaña.</translation>

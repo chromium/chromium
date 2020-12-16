@@ -12,6 +12,7 @@
 <translation id="10614374240317010">Netiek saglabātas</translation>
 <translation id="1067922213147265141">Citi Google pakalpojumi</translation>
 <translation id="107147699690128016">Ja mainīsiet faila paplašinājumu, fails var tikt atvērts citā lietojumprogrammā un potenciāli apdraudēt jūsu ierīci.</translation>
+<translation id="1094515529340404628">Tīmekļa kopiena un reklāmu izvērtēšana</translation>
 <translation id="1100066534610197918">Atvērt jaunu cilni grupā</translation>
 <translation id="1105960400813249514">Ekrāna tveršana</translation>
 <translation id="1111673857033749125">Šeit būs redzamas grāmatzīmes, kuras esat saglabājis citās ierīcēs.</translation>
@@ -227,6 +228,7 @@ Nospiediet un turiet jebkuru vārdu, lai to meklētu. Lai precizētu meklēšanu
 <translation id="2536728043171574184">Skata šīs lapas kopiju bezsaistē</translation>
 <translation id="2537178555904266562">Sinhronizējot paroles, radās kūda</translation>
 <translation id="2546283357679194313">Sīkfaili un vietņu dati</translation>
+<translation id="2562889244313180139">Vietnēm un lietotnēm tiek atļauts nodrošināt jums atbilstošāku pieredzi, izmantojot neidentificējošu aizstājvārdu.</translation>
 <translation id="2567385386134582609">ATTĒLS</translation>
 <translation id="2571711316400087311">Piedāvāt citās valodās pieejamās lapas tulkot ar Google tulkotāju</translation>
 <translation id="2581165646603367611">Tādējādi tiks dzēsti sīkfaili, kešatmiņa un citi vietņu dati, kas pārlūkā Chrome netiek uzskatīti par svarīgiem.</translation>
@@ -714,6 +716,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="6005538289190791541">Ieteiktā parole</translation>
 <translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Sarakstā ir <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> lapa}zero{Sarakstā ir <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> lapas}one{Sarakstā ir <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> lapa}other{Sarakstā ir <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> lapas}}</translation>
 <translation id="6014293228235665243">Nelasītas</translation>
+<translation id="6018309500671889594">Reklāmdevējiem tiek atļauts izpētīt reklāmu kampaņas, izmantojot neidentificējošu informāciju.</translation>
 <translation id="6036057147555329831">Citi ICU</translation>
 <translation id="6039379616847168523">Pāriet uz nākamo cilni</translation>
 <translation id="6040143037577758943">Aizvērt</translation>
@@ -922,6 +925,7 @@ No jūsu inkognito sesijas iegūtie dati tiks dzēsti no Chrome tikai tad, kad <
 <translation id="7403691278183511381">Chrome pirmās palaišanas pieredze</translation>
 <translation id="741204030948306876">Jā, piekrītu</translation>
 <translation id="7413229368719586778">Sākuma datums: <ph name="DATE" /></translation>
+<translation id="7416941666639889592">Kad pievienojaties tīmekļa kopienai, jūs atļaujat vietnēm nodrošināt jums atbilstošākas tīmekļa iespējas, neizmantojot personu identificējošu informāciju. Vietnēm un reklāmdevējiem ir zināms tikai tas, ka ir tūkstošiem lietotāju ar līdzīgām interesēm.</translation>
 <translation id="7431991332293347422">Kontrolējiet, kā jūsu pārlūkošanas vēsture tiek izmantota Meklēšanas un cita satura personalizēšanai</translation>
 <translation id="7435356471928173109">Izslēdza jūsu administrators</translation>
 <translation id="7437998757836447326">Izrakstīšanās no pārlūka Chrome</translation>
@@ -1123,6 +1127,7 @@ No jūsu inkognito sesijas iegūtie dati tiks dzēsti no Chrome tikai tad, kad <
 <translation id="8748850008226585750">Saturs paslēpts</translation>
 <translation id="8788265440806329501">Navigācijas vēsture ir aizvērta</translation>
 <translation id="8788968922598763114">Atkārtoti atvērt pēdējo aizvērto cilni</translation>
+<translation id="8795672590390389447">Privacy Sandbox</translation>
 <translation id="8798449543960971550">Lasītas</translation>
 <translation id="8812260976093120287">Dažās vietnēs var norēķināties, ierīcē izmantojot iepriekš norādītās atbalstītās maksājumu lietotnes.</translation>
 <translation id="881688628773363275">Priekšskatāmās cilnes saturu nevar skatīt.</translation>

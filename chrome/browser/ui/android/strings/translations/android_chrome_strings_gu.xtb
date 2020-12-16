@@ -12,6 +12,7 @@
 <translation id="10614374240317010">ક્યારેય ન સચવાયેલું</translation>
 <translation id="1067922213147265141">અન્ય Google સેવાઓ</translation>
 <translation id="107147699690128016">જો તમે ફાઇલનું એક્સ્ટેંશન બદલશો, તો તે કોઈ અલગ ઍપ્લિકેશનમાં ખુલી શકે છે અને તમારા ડિવાઇસ માટે નુકસાનકારક હોવાનું સંભવિત હોય શકે.</translation>
+<translation id="1094515529340404628">વેબ ક્રાઉડ અને જાહેરાતની માપણી</translation>
 <translation id="1100066534610197918">ગ્રૂપમાં નવા ટૅબમાં ખોલો</translation>
 <translation id="1105960400813249514">સ્ક્રીન કૅપ્ચર</translation>
 <translation id="1111673857033749125">તમારા અન્ય ઉપકરણો પર સાચવેલા બુકમાર્ક્સ અહીં દેખાશે.</translation>
@@ -227,6 +228,7 @@
 <translation id="2536728043171574184">આ પેજની ઓફલાઇન કૉપિ જોઈ રહ્યા છે</translation>
 <translation id="2537178555904266562">પાસવર્ડ સિંક કરવામાં ભૂલ આવી</translation>
 <translation id="2546283357679194313">કૂકીઝ અને સાઇટ ડેટા</translation>
+<translation id="2562889244313180139">વેબસાઇટ અને ઍપને તમને ઓળખી ન શકાય તેવા ઉપનામનો ઉપયોગ કરીને વધુ સુસંગત અનુભવ આપવા માટે મંજૂરી આપો.</translation>
 <translation id="2567385386134582609">છબી</translation>
 <translation id="2571711316400087311">Google Translateને અન્ય ભાષાઓમાં પેજ મોકલવાની ઑફર કરો</translation>
 <translation id="2581165646603367611">આ કુકી, કૅશ અને Chromeને લાગતું હોય કે આ મહત્વનું નથી એવા સાઇટના બીજા ડેટાને સાફ કરશે.</translation>
@@ -714,6 +716,7 @@
 <translation id="6005538289190791541">સૂચવેલ પાસવર્ડ</translation>
 <translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{તમારી પાસે <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> પેજ છે}one{તમારી પાસે <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> પેજ છે}other{તમારી પાસે <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> પેજ છે}}</translation>
 <translation id="6014293228235665243">વાંચ્યા વગરના</translation>
+<translation id="6018309500671889594">જાહેરાતકર્તાઓને ઓળખી ન શકાય તેવી માહિતીનો ઉપયોગ કરીને જાહેરાત ઝુંબેશોનો અભ્યાસ કરવાની મંજૂરી આપો.</translation>
 <translation id="6036057147555329831">અતિરિક્ત ICU</translation>
 <translation id="6039379616847168523">આગલા ટૅબ પર જાઓ</translation>
 <translation id="6040143037577758943">બંધ કરો</translation>
@@ -922,6 +925,7 @@
 <translation id="7403691278183511381">Chrome પ્રથમ વાર ઉપયોગ કર્યાનો અનુભવ</translation>
 <translation id="741204030948306876">હા, હું સંમત છું</translation>
 <translation id="7413229368719586778">પ્રારંભ તારીખ <ph name="DATE" /></translation>
+<translation id="7416941666639889592">વેબ ક્રાઉડમાં જોડાઈને, તમે વેબસાઇટને વ્યક્તિગત રૂપે ઓળખી શકાય તેવી માહિતીનો ઉપયોગ કર્યા વિના તમારા વેબ અનુભવને સુસંગત બનાવવાની મંજૂરી આપો છો. કૉન્સર્ટમાં ઉમટેલી ભીડની જેમ જ, વેબસાઇટ અને જાહેરાતકર્તાઓ માત્ર એટલું જાણી શકે છે કે હજારો વપરાશકર્તાઓની રુચિ એક સમાન છે.</translation>
 <translation id="7431991332293347422">શોધ અને અન્ય બાબતોને તમને મનગમતી બનાવવા માટે તમારા બ્રાઉઝિંગ ઇતિહાસનો ઉપયોગ કરવાની રીત નિયંત્રિત કરો</translation>
 <translation id="7435356471928173109">તમારા વ્યવસ્થાપક દ્વારા આ સુવિધા બંધ કરવામાં આવી છે</translation>
 <translation id="7437998757836447326">Chromeમાંથી સાઇન આઉટ કરો</translation>
@@ -1123,6 +1127,7 @@
 <translation id="8748850008226585750">સામગ્રીઓ છુપાવેલ છે</translation>
 <translation id="8788265440806329501">નૅવિગેશન ઇતિહાસ બંધ છે</translation>
 <translation id="8788968922598763114">છેલ્લે બંધ કરેલ ટૅબ ફરીથી ખોલો</translation>
+<translation id="8795672590390389447">પ્રાઇવસી સૅન્ડબૉક્સ</translation>
 <translation id="8798449543960971550">વાંચેલાં</translation>
 <translation id="8812260976093120287">કેટલીક વેબસાઇટ પર, તમે સમર્થિત ચુકવણી ઍપ્લિકેશનો વડે ચુકવણી કરી શકો છો.</translation>
 <translation id="881688628773363275">પ્રીવ્યૂ ટૅબનું કન્ટેન્ટ જોઈ શકાતું નથી.</translation>

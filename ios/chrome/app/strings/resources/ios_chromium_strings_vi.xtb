@@ -22,6 +22,7 @@
 <translation id="2650312721222849884">Để xem các thẻ của bạn trên bất cứ thiết bị nào mà bạn có dùng Chromium, hãy bật tính năng đồng bộ hóa</translation>
 <translation id="2730884209570016437">Chromium không thể sử dụng máy ảnh của bạn do một ứng dụng khác đang dùng máy ảnh.</translation>
 <translation id="2915596697727466327">Chromium sử dụng Face ID để đảm bảo rằng chỉ những người được ủy quyền mới có thể truy cập vào mật khẩu của bạn.</translation>
+<translation id="2918709798697875261">Tổ chức của bạn yêu cầu bạn duy trì trạng thái đăng xuất khỏi Chromium.</translation>
 <translation id="2977470724722393594">Chromium đã được cập nhật</translation>
 <translation id="3256316712990552818">Đã sao chép vào Chromium</translation>
 <translation id="3344973607274501920">Chromium không thể kiểm tra mật khẩu của bạn. Hãy thử kiểm tra kết nối Internet.</translation>
@@ -74,6 +75,7 @@
 <translation id="8776843108004031667">Tài khoản này và mọi dữ liệu chưa lưu sẽ bị xóa khỏi Chromium.</translation>
 <translation id="9022552996538154597">Đăng nhập vào Chromium</translation>
 <translation id="9089354809943900324">Chromium đã lỗi thời</translation>
+<translation id="912386518501777532">Khi bạn đã đăng xuất khỏi Chromium, dấu trang, các trang web đã truy cập, mật khẩu và các tùy chọn cài đặt khác đều bị xóa khỏi thiết bị này. Dữ liệu đã đồng bộ hóa sẽ vẫn được lưu vào tài khoản của bạn.</translation>
 <translation id="921174536258924340">Chromium không thể kiểm tra một số mật khẩu. Hãy thử lại vào ngày mai hoặc <ph name="BEGIN_LINK" />kiểm tra các mật khẩu trong Tài khoản Google của bạn.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">Tác giả Chromium</translation>
 </translationbundle>

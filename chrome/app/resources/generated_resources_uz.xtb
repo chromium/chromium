@@ -106,7 +106,7 @@
 <translation id="1116639326869298217">Shaxsingiz tasdiqlanmadi</translation>
 <translation id="1116694919640316211">Brauzer haqida</translation>
 <translation id="1116779635164066733">Bu sozlamani “<ph name="NAME" />” kengaytmasi boshqaradi.</translation>
-<translation id="1118549423835582252"><ph name="MANAGER" /> bu <ph name="DEVICE_TYPE" /> qurilmasini zudlik bilan oʻchirib yoqishingizni talab qilmoqda.</translation>
+<translation id="1118549423835582252"><ph name="MANAGER" /> ushbu <ph name="DEVICE_TYPE" /> qurilmasi dasturini zudlik bilan yangilashni talab qilmoqda.</translation>
 <translation id="1118738876271697201">Qurilma modeli yoki seriya raqami aniqlanmadi.</translation>
 <translation id="1119447706177454957">Ichki xatolik</translation>
 <translation id="1122068467107743258">Ish</translation>
@@ -1048,7 +1048,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2162838847352058695">Saytlarga bir nechta faylni avtomatik yuklab olishni taqiqlash</translation>
 <translation id="2163004395084716754">Notanish tugma. Chiqish uchun istalgan tugmani bosing.</translation>
 <translation id="2163470535490402084"><ph name="DEVICE_TYPE" /> qurilmasiga kirish uchun internetga ulaning.</translation>
-<translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" />, va yana 1 ta tugma</translation>
+<translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> va yana 1 ta kalit tugma</translation>
 <translation id="2165421703844373933">Asistentdan “Ok Google” deb aytib foydalanish Batareya quvvatini tejash uchun “Yoniq” boʻlishi kerak (tavsiya etiladi). Assistent faqatgina qurilma quvvat manbaiga ulanganda yoki quvvatlanayotganda chiqadi.</translation>
 <translation id="2166369534954157698">Chaqqon malla tulki yalqov itning ustidan sakrab o‘tdi</translation>
 <translation id="2169062631698640254">Tizimga baribir kirish</translation>
@@ -1723,7 +1723,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2915996080311180594">Keyinroq qayta ishga tushirish</translation>
 <translation id="2916073183900451334">Veb-sahifada Ichki oyna bosilsa, havolalar va shakllar ajratib ko‘rsatiladi</translation>
 <translation id="2916745397441987255">Kengaytmalar ichidan qidirish</translation>
-<translation id="2918484644467055090">Bu qurilma allaqachon boshqa tashkilot domenida ro'yxatdan o'tkazilgan.</translation>
+<translation id="2918484644467055090">Bu qurilma allaqachon boshqa tashkilot domenida qayd etilgan.</translation>
 <translation id="2921081876747860777">Mahalliy ma’lumotlarni himoyalash uchun parol kiriting.</translation>
 <translation id="2923006468155067296"><ph name="DEVICE_TYPE" /> hozir qulanadi.
 <ph name="DOMAIN" /> smart karta kiritilishini talab qilmoqda.</translation>
@@ -2483,7 +2483,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3792890930871100565">Printerlarni o‘chirish</translation>
 <translation id="3793395331556663376">Juda koʻp fayl tizimlari ochiq.</translation>
 <translation id="3793588272211751505">{NUM_DAYS,plural, =1{Chrome kompyuteringizdan zararli dasturlarni topa olmadi. • 1 kun oldin tekshirildi}other{Chrome kompyuteringizdan zararli dasturlarni topa olmadi. • {NUM_DAYS} kun oldin tekshirildi}}</translation>
-<translation id="379500251094592809">Atrofga yuborish funksiyasidan foydalanish uchun ikkala qurilma ham ochiq, orasidagi masofa yaqin va Bluetooth yoniq ekanini tekshiring. Agar kontaktlardan tashqari Chromebook qurilmasiga fayl yuborsangiz, unda Atrofga yuborish (holat qatorida vaqt va Atrofga yuborishni tanlang) funksiyasi yoniqligini tekshiring. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
+<translation id="379500251094592809">Yaqin-atrofga yuborish funksiyasidan foydalanish uchun ikkala qurilma ham ochiq, orasidagi masofa yaqin va Bluetooth yoniq ekanini tekshiring. Agar kontaktlardan tashqari Chromebook qurilmasiga fayl yuborsangiz, unda Yaqin-atrofga yuborish (holat qatorida vaqt va Yaqin-atrofga yuborishni tanlang) funksiyasi yoniqligini tekshiring. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="379509625511193653">Yoqilmagan</translation>
 <translation id="3796648294839530037">Sevimli tarmoqlar:</translation>
 <translation id="3797739167230984533"><ph name="BEGIN_LINK" />Bu <ph name="DEVICE_TYPE" /> tashkilotingiz tomonidan boshqariladi<ph name="END_LINK" /></translation>
@@ -2829,7 +2829,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4184885522552335684">Ekranga o‘tkazish uchun sudrang</translation>
 <translation id="4187424053537113647"><ph name="APP_NAME" /> sozlanmoqda...</translation>
 <translation id="4190828427319282529">Klaviatura bilan tanlangan obyektlarni ajratish</translation>
-<translation id="4193575319002689239">Kartalarni ochish</translation>
+<translation id="4193575319002689239">Bildirgilarni chiqarish</translation>
 <translation id="4194570336751258953">Teginib bosish xususiyatini yoqish</translation>
 <translation id="4195643157523330669">Yangi varaqda ochish</translation>
 <translation id="4195814663415092787">Avval ochilgan ichki oynalar</translation>
@@ -2951,7 +2951,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4358313196493694334">Kliklar joylashuvini tekislash</translation>
 <translation id="4359408040881008151">Bog‘liq kengaytmalar mavjudligi sababli, o‘rnatildi.</translation>
 <translation id="4359717112757026264">Shahar manzarasi</translation>
-<translation id="4360237979279036412"><ph name="MANAGER" /> tomonidan <ph name="DEVICE_TYPE" /> qurilmasini muddati tugamasdan oʻchirib yoqish talab qilinmoqda.</translation>
+<translation id="4360237979279036412"><ph name="MANAGER" /> ushbu <ph name="DEVICE_TYPE" /> qurilmasi dasturini muddati tugamasdan yangilashni talab qilmoqda.</translation>
 <translation id="4361142739114356624">Bu mijoz sertifikati uchun yopiq kalit kiritilmagan yoki xato</translation>
 <translation id="4361745360460842907">Varaqda ochish</translation>
 <translation id="4363771538994847871">Translatsiya manzillari topilmadi. Yordam kerakmi?</translation>
@@ -2979,7 +2979,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4387890294700445764">Oshkor etilgan parollar</translation>
 <translation id="4389091756366370506"><ph name="VALUE" /> foydalanuvchisi</translation>
 <translation id="4390000551125140321">{0,plural, =1{Inkognito}other{# ta inkognito oyna ochiq}}</translation>
-<translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" />, va yana <ph name="NUMBER_OF_OTHER_SWITCHES" /> ta tugma</translation>
+<translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> va yana <ph name="NUMBER_OF_OTHER_SWITCHES" /> ta kalit tugma</translation>
 <translation id="439266289085815679">Tarmoq sozlamalari <ph name="USER_EMAIL" /> tomonidan boshqariladi.</translation>
 <translation id="4392896746540753732">Konfiguratsiya faylini tahrirlash</translation>
 <translation id="4394049700291259645">Faolsizlantirish</translation>
@@ -3431,7 +3431,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4917385247580444890">Kuchli</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> “<ph name="EXTENSION_NAME" />” kengaytmasiga ruxsat so‘ramoqda</translation>
 <translation id="4918086044614829423">Qabul qilish</translation>
-<translation id="4918221908152712722">Oʻrnatish: <ph name="APP_NAME" /> (yuklab olinmaydi)</translation>
 <translation id="4921290200821452703">Ota-onalar uchun maktab hisobi axboroti</translation>
 <translation id="4921348630401250116">Matndan nutqqa</translation>
 <translation id="49226369361073053">{0,plural, =0{Qurilmani hoziroq oʻchirib yoqish kerak}=1{Qurilmani 1 soniya ichida oʻchirib yoqish kerak}other{Qurilmani # soniya ichida oʻchirib yoqish kerak}}</translation>
@@ -4571,7 +4570,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6248988683584659830">Qidiruv sozlamalari</translation>
 <translation id="6249200942125593849">Maxsus imkoniyatlarni sozlash</translation>
 <translation id="6251870443722440887">GDI-deskriptorlar</translation>
-<translation id="6251889282623539337"><ph name="DOMAIN" /> Foydalanish shartlari</translation>
 <translation id="625369703868467034">Tarmoq holati</translation>
 <translation id="6254503684448816922">Kalit oshkor bo‘lishi</translation>
 <translation id="6257602895346497974">Sinxronizatsiyani yoqish...</translation>
@@ -4647,7 +4645,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6326175484149238433">Chrome‘dan olib tashlash</translation>
 <translation id="6326855256003666642">Keepalive ulanishlari soni</translation>
 <translation id="6327785803543103246">Proksi-server avtomatik aniqlanishi</translation>
-<translation id="6328378651911184878"><ph name="MANAGER" /> tomonidan bu <ph name="DEVICE_TYPE" /> qurilmasini zudlik bilan oʻchirib yoqish talab qilinmoqda.</translation>
+<translation id="6328378651911184878"><ph name="MANAGER" /> ushbu <ph name="DEVICE_TYPE" /> qurilmasi dasturini zudlik bilan yangilashni talab qilmoqda.</translation>
 <translation id="6331566915566907158">Chrome OS funksiyalari va unumdorligini yaxshilashga yordam bering</translation>
 <translation id="6331818708794917058">Saytlar MIDI qurilmarga ulanishga ruxsat soʻray oladi</translation>
 <translation id="6333064448949140209">Fayl batafsil ko‘rib chiqilishi uchun Google serverlariga yuboriladi</translation>
@@ -4678,7 +4676,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6367985768157257101">Yaqin-atrofdan ulashuv qabul qilinsinmi?</translation>
 <translation id="636850387210749493">Korporativ domen ro‘yxatidan o‘tish</translation>
 <translation id="6370021412472292592">Aniqlovchi faylni yuklab bo‘lmadi.</translation>
-<translation id="6370863890073808080">Ikkala qurilma ham ochiq, orasidagi masofa yaqin va Bluetooth yoniq ekanini tekshiring. Agar kontaktlardan tashqari Chromebook qurilmasiga fayl yuborsangiz, unda Atrofga yuborish (holat qatorida vaqt va Atrofga yuborishni tanlang) funksiyasi yoniqligini tekshiring. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
+<translation id="6370863890073808080">Ikkala qurilma ham ochiq, orasidagi masofa yaqin va Bluetooth yoniq ekanini tekshiring. Agar kontaktlardan tashqari Chromebook qurilmasiga fayl yuborsangiz, unda Yaqin-atrofga yuborish (holat qatorida vaqt va Yaqin-atrofga yuborishni tanlang) funksiyasi yoniqligini tekshiring. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Qaytadan</translation>
 <translation id="6377268785556383139">“<ph name="SEARCH_TEXT" />” uchun bitta natija</translation>
@@ -5462,7 +5460,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="7290242001003353852">Tashqi <ph name="SAML_DOMAIN" /> domenidagi kirish xizmati kamerangizdan foydalanmoqda.</translation>
 <translation id="7295614427631867477">Eslatma: Android, Google Play va hamkor ilovalar oʻz shartlari asosida axborot yigʻadi va boshqariladi.</translation>
 <translation id="729583233778673644">AES va RC4 shifrlash usullaridan foydalanishga ruxsat berish. RC4 shifrlari himoyasizroq, shuning uchun bu usulni tanlash xavfliroq bo‘lishi mumkin.</translation>
-<translation id="7296774163727375165"><ph name="DOMAIN" /> – Foydalanish shartlari</translation>
 <translation id="7297443947353982503">Foydalanuvchi nomi/parol noto‘g‘ri yoki EAP protokoli bo‘yicha haqiqiylikni tekshirish amalga oshmadi</translation>
 <translation id="729761647156315797">Til va klaviaturani tanlang</translation>
 <translation id="7297726121602187087">Toʻq yashil</translation>
@@ -6442,7 +6439,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8398877366907290961">Davom etish</translation>
 <translation id="8400146488506985033">Foydalanuvchilarni boshqarish</translation>
 <translation id="8401432541486058167">Smart kartangiz PIN kodini kiriting.</translation>
-<translation id="8405046151008197676">Oxirgi yangilanishdagi asosiy oʻzgarishlar</translation>
 <translation id="8407199357649073301">Jurnalga yozish darajasi:</translation>
 <translation id="8408068190360279472">Tarmoq: <ph name="NETWORK_TYPE" />, ulanmoqda</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -6576,7 +6572,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8575286410928791436">Chiqish uchun <ph name="KEY_EQUIVALENT" /> tugmalarini bosib turing</translation>
 <translation id="8576249514688522074">Faolsizlantirildi</translation>
 <translation id="8576785408880814823">Tayinlovni belgilash uchun yangi tugmani bosing.
-Tayonlovni bekor qilish uchun belgilangan tugmani bosing.</translation>
+Tayinlovni bekor qilish uchun belgilangan tugmani bosing.</translation>
 <translation id="8576885347118332789">{NUM_TABS,plural, =1{Varaqni mutolaa roʻyxatiga kiritish}other{Varaqlarni mutolaa roʻyxatiga kiritish}}</translation>
 <translation id="8578639784464423491">99 ta harfdan oshmasligi zarur</translation>
 <translation id="857943718398505171">Ruxsat berilgan (tavsiya etiladi)</translation>
@@ -7129,7 +7125,6 @@ Tayonlovni bekor qilish uchun belgilangan tugmani bosing.</translation>
 <translation id="9168436347345867845">Keyinroq</translation>
 <translation id="9169496697824289689">Klaviatura yorliqlarini ko‘rish</translation>
 <translation id="916964310188958970">Bu taklif nega chiqdi?</translation>
-<translation id="9169931577761441333"><ph name="APP_NAME" /> ilovasini bosh ekranga joylash</translation>
 <translation id="9170061643796692986">Ayni vaqtda barcha kontaktlarga ochiqlik sozlangan</translation>
 <translation id="9170848237812810038">&amp;Bekor qilish</translation>
 <translation id="9170884462774788842">Kompyuteringizdagi dasturlardan biri Chrome faoliyatiga ta’sir qiladigan mavzu o‘rnatib qo‘ydi.</translation>

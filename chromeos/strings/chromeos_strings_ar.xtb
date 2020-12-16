@@ -9,6 +9,7 @@
 <translation id="1175697296044146566">تتم إدارة جهاز <ph name="DEVICE_TYPE" /> هذا من خلال <ph name="MANAGER" />.</translation>
 <translation id="1195447618553298278">خطأ  غير محدّد.</translation>
 <translation id="1204296502688602597">وقت استجابة نظام أسماء النطاقات</translation>
+<translation id="123124571410524056">تم الاشتباه في مدخل.</translation>
 <translation id="1238612778414822719">‏وقت استجابة بروتوكول HTTPS</translation>
 <translation id="1290331692326790741">إشارة ضعيفة</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -36,6 +37,7 @@
 <translation id="1947737735496445907">تمت الطباعة</translation>
 <translation id="1979103255016296513">تأخير تغيير كلمة المرور</translation>
 <translation id="1980044825731880088">‏سرعة وحدة المعالجة المركزية (CPU)</translation>
+<translation id="1999615961760456652">مدخل مشروط الوصول إليه</translation>
 <translation id="2008685064673031089">البحث الأوّلي</translation>
 <translation id="2080070583977670716">مزيد من الإعدادات</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -115,6 +117,7 @@
 <translation id="4773299976671772492">متوقفة</translation>
 <translation id="4808449224298348341">تم إلغاء مهمة الطباعة للمستند <ph name="DOCUMENT_TITLE" />.</translation>
 <translation id="4832079907277790330">اختيار مجلّد في تطبيق "الملفات"...</translation>
+<translation id="4835901797422965222">ما مِن شبكات نشِطة.</translation>
 <translation id="4848429997038228357">قيد التشغيل</translation>
 <translation id="4890353053343094602">اختيار كلمة مرور جديدة فورًا</translation>
 <translation id="4891842000192098784">الإجهاد</translation>
@@ -136,6 +139,7 @@
 <translation id="5317780077021120954">حفظ</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />، <ph name="PRINTER_NAME" />، <ph name="CREATION_TIME" />، <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">اختيار كلمة مرور جديدة الآن</translation>
+<translation id="5333530671332546086">حالة المدخل غير معروفة.</translation>
 <translation id="5372659122375744710">‏شبكة Wi-Fi غير آمنة.</translation>
 <translation id="5401938042319910061">تشغيل جميع سلاسل الإجراءات</translation>
 <translation id="5431318178759467895">بالألوان</translation>
@@ -190,8 +194,9 @@
 <translation id="7177485034254901881">يدير <ph name="MANAGER" /> جهاز <ph name="DEVICE_TYPE" /> هذا. ويمكن للمشرفين إعداد هذا الجهاز عن بُعد.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">نوع الملف</translation>
-<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{اكتمل المسح الضوئي. تم مسح صفحة واحدة ضوئيًا.}zero{اكتمل المسح الضوئي. تم مسح {NUMBER_OF_PAGES} صفحة ضوئيًا.}two{اكتمل المسح الضوئي. تم مسح صفحتَين ({NUMBER_OF_PAGES}) ضوئيًا.}few{اكتمل المسح الضوئي. تم مسح {NUMBER_OF_PAGES} صفحات ضوئيًا.}many{اكتمل المسح الضوئي. تم مسح {NUMBER_OF_PAGES} صفحةً ضوئيًا.}other{اكتمل المسح الضوئي. تم مسح {NUMBER_OF_PAGES} صفحة ضوئيًا.}}</translation>
+<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{اكتمل المسح الضوئي. تم مسح صفحة واحدة ضوئيًا.}zero{اكتمل المسح الضوئي. تم مسح {NUMBER_OF_PAGES} صفحة ضوئيًا.}two{اكتمل المسح الضوئي. تم مسح صفحتَين ({NUMBER_OF_PAGES}) ضوئيًا.}few{اكتمل المسح الضوئي. تم مسح {NUMBER_OF_PAGES} صفحات ضوئيًا.}many{اكتمل المسح الضوئي. تم مسح {NUMBER_OF_PAGES} صفحة ضوئيًا.}other{اكتمل المسح الضوئي. تم مسح {NUMBER_OF_PAGES} صفحة ضوئيًا.}}</translation>
 <translation id="7441459999606975924">تقلّ سعة البطاريات عند استخدامها.</translation>
+<translation id="7469648432129124067">تم رصد مدخل.</translation>
 <translation id="7561454561030345039">يتولّى مشرفك إدارة هذا الإجراء.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">‏وقت استجابة بروتوكول HTTPS طويل.</translation>

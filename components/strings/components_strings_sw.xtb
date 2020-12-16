@@ -995,6 +995,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4901778704868714008">Hifadhi...</translation>
 <translation id="4913987521957242411">Toboa juu kushoto</translation>
+<translation id="4918221908152712722">Sakinisha <ph name="APP_NAME" /> (huhitaji kupakua)</translation>
 <translation id="4923459931733593730">Malipo</translation>
 <translation id="4926049483395192435">Sharti ibainishwe.</translation>
 <translation id="4926159001844873046"><ph name="SITE" /> inasema</translation>
@@ -1360,6 +1361,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="6328786501058569169">Tovuti hii ni ya udanganyifu</translation>
 <translation id="6337133576188860026">Huongeza nafasi isiyozidi <ph name="SIZE" />. Baadhi ya tovuti huenda zikapakia polepole zaidi utakapozivinjari tena.</translation>
 <translation id="6337534724793800597">Chuja sera kwa jina</translation>
+<translation id="6349101878882523185">Sakinisha <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Hamna}=1{Nenosiri 1 (la <ph name="DOMAIN_LIST" />, limesawazishwa)}=2{Manenosiri 2 (ya <ph name="DOMAIN_LIST" />, yamesawazishwa)}other{Manenosiri # (ya <ph name="DOMAIN_LIST" />, yamesawazishwa)}}</translation>
 <translation id="6358450015545214790">Je, hii inamaanisha nini?</translation>
 <translation id="6361757823711327522">B7</translation>
@@ -1632,7 +1634,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="7508255263130623398">Kitambulisho cha sera ya kifaa kilichorejeshwa hakina kitu au hakilingani na kitambulisho cha kifaa kilichopo</translation>
 <translation id="7508870219247277067">Kijani cha Parachichi</translation>
 <translation id="7511955381719512146">Wi-Fi unayotumia inaweza kukuhitaji kutembelea <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
-<translation id="7512685745044087310">Sera hii haiwezi kuwekwa kuwa "True" na kuwa ya lazima, kwa hivyo imebadilishwa kuwa "inayopendekezwa".</translation>
+<translation id="7512685745044087310">Sera hii haiwezi kuwekwa kuwa "inatumika" na kuwa ya lazima, kwa hivyo imebadilishwa kuwa "inayopendekezwa".</translation>
 <translation id="7514365320538308">Pakua</translation>
 <translation id="7518003948725431193">Hakuna ukurasa wa wavuti uliopatikana kwa anwani hii ya wavuti: <ph name="URL" /></translation>
 <translation id="7520302887438682816">C8 (Bahasha)</translation>
@@ -2046,6 +2048,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="9158625974267017556">C6 (Bahasha)</translation>
 <translation id="9168814207360376865">Ruhusu tovuti zikague ikiwa umehifadhi njia ya kulipa</translation>
 <translation id="9169664750068251925">Zuia kila wakati kwenye tovuti hii</translation>
+<translation id="9169931577761441333">Ongeza <ph name="APP_NAME" /> kwenye Skrini ya Mwanzo</translation>
 <translation id="9170848237812810038">&amp;Tendua</translation>
 <translation id="9171296965991013597">Ungependa kufunga programu?</translation>
 <translation id="9173282814238175921">Hati moja/Laha jipya</translation>

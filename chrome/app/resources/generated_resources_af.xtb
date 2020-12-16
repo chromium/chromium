@@ -1432,6 +1432,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2602501489742255173">Swiep op om te begin</translation>
 <translation id="2603115962224169880">Maak rekenaar skoon</translation>
 <translation id="2603463522847370204">Maak in incognitovenster oop</translation>
+<translation id="2603656971249947488">Oortjiestrook</translation>
 <translation id="2604255671529671813">Netwerkverbinding-fout</translation>
 <translation id="2606246518223360146">Koppel data</translation>
 <translation id="2606454609872547359">Nee, gaan voort sonder ChromeVox</translation>
@@ -1800,6 +1801,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3007771295016901659">Dupliseer oortjie</translation>
 <translation id="3008232374986381779">Gebruik Linux-nutsgoed, -redigeerders en -IDE's op jou <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Stel toestemmings terug</translation>
+<translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> vereis dat jy vandag aan wi-fi koppel om 'n opdatering af te laai. Of laai oor 'n beperkte verbinding af (heffings kan geld).}other{<ph name="MANAGER" /> vereis dat jy voor die sperdatum aan wi-fi koppel en 'n opdatering aflaai. Of laai oor 'n beperkte verbinding af (heffings kan geld).}}</translation>
 <translation id="3009300415590184725">Is jy seker jy wil die mobieledatadiens se opstelproses kanselleer?</translation>
 <translation id="3009779501245596802">Geïndekseerde databasisse</translation>
 <translation id="3010279545267083280">Wagwoord uitgevee</translation>
@@ -1824,6 +1826,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3024374909719388945">Gebruik 24 uur-horlosie</translation>
 <translation id="3027296729579831126">Skakel Nabydeling aan</translation>
 <translation id="3029466929721441205">Wys stilusnutsgoed in rak</translation>
+<translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> vereis dat jy vandag 'n opdatering aflaai. Die opdatering sal outomaties aflaai wanneer jy aan die internet koppel.}other{<ph name="MANAGER" /> vereis dat jy voor die sperdatum 'n opdatering aflaai. Die opdatering sal outomaties aflaai wanneer jy aan die internet koppel.}}</translation>
 <translation id="3031417829280473749">Agent X</translation>
 <translation id="3031557471081358569">Kies items om in te voer:</translation>
 <translation id="3036327949511794916">Die sperdatum om hierdie <ph name="DEVICE_TYPE" /> terug te gee, is verby.</translation>
@@ -1880,6 +1883,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3103941660000130485">Kon nie Linux opgradeer nie</translation>
 <translation id="3105796011181310544">Verander terug na Google?</translation>
 <translation id="310671807099593501">Werf gebruik tans Bluetooth</translation>
+<translation id="3108931485517391283">Kan nie ontvang nie</translation>
 <translation id="3109724472072898302">Ingevou</translation>
 <translation id="3115147772012638511">Wag tans vir kas …</translation>
 <translation id="3115580024857770654">Vou alles in</translation>
@@ -1895,6 +1899,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3127156390846601284">Dit sal enige data wat op jou toestel geberg word, uitvee vir al die werwe wat gewys word. Wil jy voortgaan?</translation>
 <translation id="3127860049873093642">Gebruik 'n versoenbare Dell- of USB Tipe C-kragprop om laai- en werkverrigtingkwessies te vermy.</translation>
 <translation id="3127862849166875294">Verander skyfgrootte in Linux</translation>
+<translation id="3127882968243210659"><ph name="MANAGER" /> vereis dat jy jou data rugsteun en hierdie Chromebook na die fabriekinstellings terugstel om Google Play te begin.</translation>
 <translation id="3129173833825111527">Linkerkantlyn</translation>
 <translation id="3129215702932019810">Kon nie program begin nie</translation>
 <translation id="3130528281680948470">Jou toestel sal teruggestel word en alle gebruikerrekeninge en plaaslike data sal verwyder word. Dit kan nie ontdoen word nie.</translation>
@@ -2013,6 +2018,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3275778913554317645">Maak as venster oop</translation>
 <translation id="3277691515294482687">Rugsteun my programme en lêers in My Lêers-vouer voordat Linux opgedateer word.</translation>
 <translation id="3278001907972365362">Jou Google-rekening(e) het aandag nodig</translation>
+<translation id="3279092821516760512">Geselekteerde kontakte kan met jou deel wanneer hulle in die omtrek is. Oordragte sal nie begin voordat jy aanvaar het nie.</translation>
 <translation id="3279230909244266691">Hierdie proses kan 'n paar minute neem. Begin tans die virtuele masjien.</translation>
 <translation id="3280237271814976245">Stoor as …</translation>
 <translation id="3280243678470289153">Bly in Chrome</translation>
@@ -2570,6 +2576,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3882165008614329320">Bestaande video van kamera of lêer af</translation>
 <translation id="3884152383786131369">Webinhoud wat in veelvuldige tale beskikbaar is, sal die eerste gesteunde taal op hierdie lys gebruik. Hierdie voorkeure word met jou blaaierinstellings gesinkroniseer. <ph name="BEGIN_LINK_LEARN_MORE" />Kom meer te wete<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Jou versoek om by hierdie werf in te gaan, is na <ph name="NAME" /> gestuur</translation>
+<translation id="3888364689515978571">Af. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="3888550877729210209">Maak tans notas met <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3890064827463908288">Skakel Chrome-sinkronisering aan om Wi-fi-sinkronisering te gebruik</translation>
 <translation id="3892414795099177503">Voeg OpenVPN / L2TP by …</translation>
@@ -2650,6 +2657,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3958088479270651626">Voer boekmerke en instellings in</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3964480518399667971">Skakel sellulêre netwerk af</translation>
+<translation id="3965730875470565266">Aan, <ph name="MINUTES" /> minute</translation>
 <translation id="3965811923470826124">Met</translation>
 <translation id="3965965397408324205">Verlaat <ph name="PROFILE_NAME" /></translation>
 <translation id="3966072572894326936">Kies 'n ander vouer …</translation>
@@ -2719,6 +2727,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="4049783682480068824">{COUNT,plural, =1{# kontak is nie beskikbaar nie. Om Nabydeling met hulle te gebruik, moet jy die e-posadres wat met hul Google-rekening geassosieer word, by jou kontakte voeg.}other{# kontakte is nie beskikbaar nie. Om Nabydeling met hulle te gebruik, moet jy die e-posadresse wat met hul Google-rekeninge geassosieer word, by jou kontakte voeg.}}</translation>
 <translation id="4050225813016893843">Stawingmetode</translation>
 <translation id="4052120076834320548">Klein</translation>
+<translation id="4054070260844648638">Sigbaar vir almal</translation>
 <translation id="4056908315660577142">Jy het die tydlimiet bereik wat jou ouer vir die Chrome-program <ph name="APP_NAME" /> gestel het. Jy kan dit môre <ph name="TIME_LIMIT" /> lank gebruik.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> – <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">Bekyk in winkel</translation>
@@ -3424,7 +3433,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="4917385247580444890">Sterk</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> wil met die uitbreiding "<ph name="EXTENSION_NAME" />" kommunikeer</translation>
 <translation id="4918086044614829423">Aanvaar</translation>
-<translation id="4918221908152712722">Installeer <ph name="APP_NAME" /> (geen aflaai word vereis nie)</translation>
 <translation id="4921290200821452703">Skoolrekeninginligting vir ouers</translation>
 <translation id="4921348630401250116">Teks-na-spraak</translation>
 <translation id="49226369361073053">{0,plural, =0{Dateer toestel nou op}=1{Dateer toestel binne 1 sekonde op}other{Dateer toestel binne # sekondes op}}</translation>
@@ -3657,6 +3665,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="5213891612754844763">Wys instaanbedienerinstellings</translation>
 <translation id="5215502535566372932">Kies land</translation>
 <translation id="521582610500777512">Foto is weggegooi</translation>
+<translation id="5217189792977407501">Ken lessenaar toe</translation>
 <translation id="5222403284441421673">Onveilige aflaai geblokkeer</translation>
 <translation id="5222676887888702881">Meld af</translation>
 <translation id="52232769093306234">Kon nie pak nie.</translation>
@@ -4193,6 +4202,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5832813618714645810">Profiele</translation>
 <translation id="583281660410589416">Onbekend</translation>
 <translation id="5833397272224757657">Gebruik inhoud op werwe wat jy besoek, asook blaaieraktiwiteit en -interaksies vir personalisering</translation>
+<translation id="5833551944249825624">Almal in die omtrek sal jou Chromebook vir 5 minute kan sien</translation>
 <translation id="5833726373896279253">Hierdie instellings kan slegs deur die eienaar verander word:</translation>
 <translation id="5834581999798853053">Ongeveer <ph name="TIME" /> minute oor</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> – Kamera- of mikrofoonopname</translation>
@@ -4563,7 +4573,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6248988683584659830">Soekinstellings</translation>
 <translation id="6249200942125593849">Beheer a11y</translation>
 <translation id="6251870443722440887">GDI-handvatsels</translation>
-<translation id="6251889282623539337"><ph name="DOMAIN" /> se diensbepalings</translation>
 <translation id="625369703868467034">Netwerkgesondheid</translation>
 <translation id="6254503684448816922">Sleutelkompromie</translation>
 <translation id="6257602895346497974">Skakel sinkronisering aan …</translation>
@@ -4598,6 +4607,8 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="628352644014831790">4 sekondes</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> word nie gewoonlik afgelaai nie en kan gevaarlik wees.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Nuwe drukker in jou netwerk}other{Nuwe drukkers in jou netwerk}}</translation>
+<translation id="6285770818046456882">Die toestel wat tans met jou deel, het die oordrag gekanselleer</translation>
+<translation id="6290613030083731160">Geen beskikbare toestelle in die omtrek deel tans nie <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="6291949900244949761">Vra wanneer 'n werf toegang tot USB-toestelle wil hê (aanbeveel)</translation>
 <translation id="6291953229176937411">Wys in vinder</translation>
 <translation id="6295158916970320988">Alle werwe</translation>
@@ -4642,6 +4653,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6331818708794917058">Werwe kan vra om aan MIDI-toestelle te koppel</translation>
 <translation id="6333064448949140209">Lêer sal vir ontfouting na Google gestuur word</translation>
 <translation id="6334444530352320327">Jou programme en OS-instellings sal sinkroniseer op Chromebooks waar jy met hierdie rekening aangemeld is.<ph name="LINK_BEGIN" />Sinkroniseer instellings<ph name="LINK_END" /></translation>
+<translation id="6335920438823100346"><ph name="MANAGER" /> vereis dat jy jou data rugsteun en hierdie Chromebook na die fabriekinstellings terugstel om Linux te begin.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> het ADB-ontfouting gedeaktiveer. Dit sal jou <ph name="DEVICE_TYPE" /> oor 24 uur terugstel. Rugsteun enige lêers wat jy wil hou.</translation>
 <translation id="6338981933082930623">Alle werwe kan enige advertensies vir jou wys</translation>
 <translation id="6339668969738228384">Skep 'n nuwe profiel vir <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -5451,7 +5463,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="7290242001003353852">Hierdie aanmelddiens, waarvan <ph name="SAML_DOMAIN" /> die gasheer is, gaan tans by jou kamera in.</translation>
 <translation id="7295614427631867477">Let daarop dat Android, Play en geassosieerde programme deur hul eie beleide vir data-insameling- en gebruik beheer word.</translation>
 <translation id="729583233778673644">Laat AES- en RC4-enkripsie toe. As jy hierdie opsie gebruik, verhoog dit jou risiko aangesien die RC4-syfers onveilig is.</translation>
-<translation id="7296774163727375165"><ph name="DOMAIN" />-bepalings</translation>
 <translation id="7297443947353982503">Gebruikernaam/wagwoord verkeerd of EAP-stawing het misluk</translation>
 <translation id="729761647156315797">Kies jou taal en sleutelbord</translation>
 <translation id="7297726121602187087">Donkergroen</translation>
@@ -5495,6 +5506,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="7347943691222276892">Klik om weg van <ph name="SUBPAGE_TITLE" /> af te navigeer.</translation>
 <translation id="7348093485538360975">Opskerm-sleutelbord</translation>
 <translation id="7352651011704765696">Iets het verkeerd geloop</translation>
+<translation id="7353261921908507769">Jou kontakte kan met jou deel wanneer hulle in die omtrek is. Oordragte sal nie begin voordat jy aanvaar het nie.</translation>
 <translation id="735361434055555355">Installeer tans Linux …</translation>
 <translation id="7354341762311560488">Die vingerafdruksensor is die sleutel onder links op jou sleutelbord. Raak met enige vinger liggies daaraan.</translation>
 <translation id="7356908624372060336">Netwerkloglêers</translation>
@@ -5894,6 +5906,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="779308894558717334">Liggroen</translation>
 <translation id="7793098747275782155">Donkerblou</translation>
 <translation id="7797571222998226653">Af</translation>
+<translation id="7798259165971079056">Niemand kan met jou deel voordat jy jouself sigbaar maak nie.<ph name="BR" /><ph name="BR" />Om jouself tydelik sigbaar te maak, moet jy die statusarea oopmaak deur die tyd te kies en dan Nabysigbaarheid aan te skakel.</translation>
 <translation id="7798844538707273832">Het <ph name="PERMISSION" /> outomaties geblokkeer</translation>
 <translation id="7799299114731150374">Muurpapier is suksesvol gestel</translation>
 <translation id="7800518121066352902">Draai antikloksgewys</translation>
@@ -6430,7 +6443,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8398877366907290961">Gaan nogtans voort</translation>
 <translation id="8400146488506985033">Bestuur mense</translation>
 <translation id="8401432541486058167">Verskaf die PIN wat met jou slimkaart geassosieer word.</translation>
-<translation id="8405046151008197676">Kry hoogtepunte van die jongste opdatering</translation>
 <translation id="8407199357649073301">Loglêervlak:</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" />-netwerk; koppel tans</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -6880,6 +6892,7 @@ Druk 'n toegewysde skakelaar om toewysing te verwyder.</translation>
 <translation id="8898840733695078011">Seinsterkte</translation>
 <translation id="8899851313684471736">Maak skakel in nuwe venster oop</translation>
 <translation id="8900413463156971200">Aktiveer sellulêre netwerk</translation>
+<translation id="8902059453911237649">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> vereis dat jy jou data rugsteun en hierdie <ph name="DEVICE_TYPE" /> vandag terugstuur.}other{<ph name="MANAGER" /> vereis dat jy jou data rugsteun en hierdie <ph name="DEVICE_TYPE" /> voor die sperdatum terugstuur.}}</translation>
 <translation id="8902667442496790482">Maak Hardoplees-instellings oop</translation>
 <translation id="8903263458134414071">Kies 'n rekening om aan te meld</translation>
 <translation id="890616557918890486">Verander bron</translation>
@@ -7116,7 +7129,6 @@ Druk 'n toegewysde skakelaar om toewysing te verwyder.</translation>
 <translation id="9168436347345867845">Doen dit later</translation>
 <translation id="9169496697824289689">Bekyk sleutelbordkortpaaie</translation>
 <translation id="916964310188958970">Hoekom hierdie voorstel?</translation>
-<translation id="9169931577761441333">Voeg <ph name="APP_NAME" /> by tuisskerm</translation>
 <translation id="9170061643796692986">Huidige sigbaarheidinstelling is alle kontakte</translation>
 <translation id="9170848237812810038">Ontdoen</translation>
 <translation id="9170884462774788842">'n Ander program op jou rekenaar het 'n tema bygevoeg wat Chrome se werkwyse kan verander.</translation>

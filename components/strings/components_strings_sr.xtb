@@ -996,6 +996,7 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4901778704868714008">Сачувај...</translation>
 <translation id="4913987521957242411">Бушење у горњем левом углу</translation>
+<translation id="4918221908152712722">Инсталирајте апликацију <ph name="APP_NAME" /> (не треба да је преузимате)</translation>
 <translation id="4923459931733593730">Плаћање</translation>
 <translation id="4926049483395192435">Мора да буде наведено.</translation>
 <translation id="4926159001844873046"><ph name="SITE" /> наводи:</translation>
@@ -1360,6 +1361,7 @@
 <translation id="6328786501058569169">Овај сајт је обмањујућ</translation>
 <translation id="6337133576188860026">Ослобађа мање од <ph name="SIZE" />. Неки сајтови ће се можда спорије учитавати кад их следећи пут посетите.</translation>
 <translation id="6337534724793800597">Филтрирај смернице према називу</translation>
+<translation id="6349101878882523185">Инсталирајте <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Ниједна}=1{1 лозинка (за <ph name="DOMAIN_LIST" />, синхронизовано)}=2{2 лозинке (за <ph name="DOMAIN_LIST" />, синхронизовано)}one{# лозинка (за <ph name="DOMAIN_LIST" />, синхронизовано)}few{# лозинке (за <ph name="DOMAIN_LIST" />, синхронизовано)}other{# лозинки (за <ph name="DOMAIN_LIST" />, синхронизовано)}}</translation>
 <translation id="6358450015545214790">Шта ово значи?</translation>
 <translation id="6361757823711327522">B7</translation>
@@ -2050,6 +2052,7 @@
 <translation id="9158625974267017556">C6 (коверат)</translation>
 <translation id="9168814207360376865">Дозволи сајтовима да проверавају да ли имам сачуване начине плаћања</translation>
 <translation id="9169664750068251925">Увек блокирај на овом сајту</translation>
+<translation id="9169931577761441333">Додајте <ph name="APP_NAME" /> на почетни екран</translation>
 <translation id="9170848237812810038">&amp;Опозови</translation>
 <translation id="9171296965991013597">Желите ли да изађете из апликације?</translation>
 <translation id="9173282814238175921">Један документ/нови лист</translation>

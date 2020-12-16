@@ -1431,6 +1431,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2602501489742255173">Deslize rapidamente para cima para começar.</translation>
 <translation id="2603115962224169880">Limpar o computador</translation>
 <translation id="2603463522847370204">Abrir na janela de &amp;navegação anónima</translation>
+<translation id="2603656971249947488">Faixa de separadores</translation>
 <translation id="2604255671529671813">Erro de ligação à rede</translation>
 <translation id="2606246518223360146">Associar dados</translation>
 <translation id="2606454609872547359">Não, continuar com o ChromeVox</translation>
@@ -1800,6 +1801,7 @@ Pretende pará-lo?</translation>
 <translation id="3007771295016901659">Duplicar o separador</translation>
 <translation id="3008232374986381779">Execute ferramentas, editores e IDEs do Linux no seu dispositivo <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Repor autorizações</translation>
+<translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requer que estabeleça ligação a uma rede Wi-Fi hoje para transferir uma atualização. Em alternativa, transfira a partir de uma ligação com acesso limitado (podem aplicar-se custos).}other{<ph name="MANAGER" /> requer que estabeleça ligação a uma rede Wi-Fi e transfira uma atualização antes do prazo. Em alternativa, transfira a partir de uma ligação com acesso limitado (podem aplicar-se custos).}}</translation>
 <translation id="3009300415590184725">Tem a certeza de que pretende cancelar o processo de configuração do serviço de dados móveis?</translation>
 <translation id="3009779501245596802">Bases de dados indexadas</translation>
 <translation id="3010279545267083280">Palavra-passe eliminada</translation>
@@ -1824,6 +1826,7 @@ Pretende pará-lo?</translation>
 <translation id="3024374909719388945">Utilizar relógio de 24h</translation>
 <translation id="3027296729579831126">Ativar a funcionalidade Partilhar na proximidade</translation>
 <translation id="3029466929721441205">Mostrar ferramentas da caneta stylus na prateleira</translation>
+<translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requer que transfira uma atualização hoje. A atualização será transferida automaticamente quando estabelecer ligação à Internet.}other{<ph name="MANAGER" /> requer que transfira uma atualização antes do prazo. A atualização será transferida automaticamente quando estabelecer ligação à Internet.}}</translation>
 <translation id="3031417829280473749">Agente X</translation>
 <translation id="3031557471081358569">Selecione os itens a importar:</translation>
 <translation id="3036327949511794916">O prazo para devolver este <ph name="DEVICE_TYPE" /> foi ultrapassado.</translation>
@@ -1880,6 +1883,7 @@ Pretende pará-lo?</translation>
 <translation id="3103941660000130485">Ocorreu um erro ao atualizar o Linux</translation>
 <translation id="3105796011181310544">Pretende reverter para o Google?</translation>
 <translation id="310671807099593501">O site está a utilizar o Bluetooth.</translation>
+<translation id="3108931485517391283">Não é possível receber</translation>
 <translation id="3109724472072898302">Fechado</translation>
 <translation id="3115147772012638511">A aguardar pela cache...</translation>
 <translation id="3115580024857770654">Reduzir tudo</translation>
@@ -1895,6 +1899,7 @@ Pretende pará-lo?</translation>
 <translation id="3127156390846601284">Esta ação irá eliminar todos os dados armazenados no dispositivo para todos os sites apresentados. Pretende continuar?</translation>
 <translation id="3127860049873093642">Para evitar problemas de carregamento e desempenho, utilize um transformador Dell ou USB tipo C compatível.</translation>
 <translation id="3127862849166875294">Redimensionamento de disco do Linux</translation>
+<translation id="3127882968243210659">Para iniciar o Google Play, <ph name="MANAGER" /> necessita que faça uma cópia de segurança dos seus dados e reponha as definições de fábrica deste Chromebook.</translation>
 <translation id="3129173833825111527">Margem esquerda</translation>
 <translation id="3129215702932019810">Erro ao iniciar a app</translation>
 <translation id="3130528281680948470">O dispositivo é reposto e todos os dados locais e as contas de utilizador são removidos. Não é possível anular esta ação.</translation>
@@ -2013,6 +2018,7 @@ Pretende pará-lo?</translation>
 <translation id="3275778913554317645">Abrir como janela</translation>
 <translation id="3277691515294482687">Fazer uma cópia de segurança das minhas apps e ficheiros para a pasta Os meus ficheiros antes de atualizar o Linux.</translation>
 <translation id="3278001907972365362">A(s) sua(s) Conta(s) Google necessita(m) de atenção</translation>
+<translation id="3279092821516760512">Os contactos selecionados podem partilhar consigo quando estiverem nas proximidades. As transferências só irão começar quando aceitar.</translation>
 <translation id="3279230909244266691">Este processo pode demorar alguns minutos. A iniciar a máquina virtual…</translation>
 <translation id="3280237271814976245">Guard&amp;ar como...</translation>
 <translation id="3280243678470289153">Permanecer no Chrome</translation>
@@ -2570,6 +2576,7 @@ Pretende pará-lo?</translation>
 <translation id="3882165008614329320">Vídeo existente da câmara ou do ficheiro</translation>
 <translation id="3884152383786131369">O conteúdo Web disponível em vários idiomas irá utilizar o primeiro idioma suportado desta lista. Estas preferências serão sincronizadas com as definições do seu navegador. <ph name="BEGIN_LINK_LEARN_MORE" />Saiba mais<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">O seu pedido para aceder a este site foi enviado para <ph name="NAME" />.</translation>
+<translation id="3888364689515978571">Desligado. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" />.</translation>
 <translation id="3888550877729210209">Tirar notas com a aplicação <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3890064827463908288">Ative a Sincronização do Chrome para utilizar o Sync Wi-Fi</translation>
 <translation id="3892414795099177503">Adicionar OpenVPN/L2TP...</translation>
@@ -2650,6 +2657,7 @@ Pretende pará-lo?</translation>
 <translation id="3958088479270651626">Importar marcadores e definições</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3964480518399667971">Desativar rede móvel</translation>
+<translation id="3965730875470565266">Ligado, <ph name="MINUTES" /> min</translation>
 <translation id="3965811923470826124">Com</translation>
 <translation id="3965965397408324205">Sair de <ph name="PROFILE_NAME" /></translation>
 <translation id="3966072572894326936">Escolher outra pasta...</translation>
@@ -2719,6 +2727,7 @@ Pretende pará-lo?</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# contacto não está disponível. Para utilizar a funcionalidade Partilhar na proximidade com o mesmo, adicione o endereço de email associado à respetiva Conta Google aos seus contactos.}other{# contactos não estão disponíveis. Para utilizar a funcionalidade Partilhar na proximidade com o mesmo, adicione os endereços de email associados às respetivas Contas Google aos seus contactos.}}</translation>
 <translation id="4050225813016893843">Método de autenticação</translation>
 <translation id="4052120076834320548">Minúsculo</translation>
+<translation id="4054070260844648638">Visível para todas as pessoas</translation>
 <translation id="4056908315660577142">Atingiste o limite de tempo que o teu Pai ou Mãe definiu para a app <ph name="APP_NAME" /> do Chrome. Amanhã, podes utilizá-la durante <ph name="TIME_LIMIT" />.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">Ver na Web Store</translation>
@@ -3424,7 +3433,6 @@ Pretende pará-lo?</translation>
 <translation id="4917385247580444890">Forte</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> pretende comunicar com a extensão "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4918086044614829423">Aceitar</translation>
-<translation id="4918221908152712722">Instale a aplicação <ph name="APP_NAME" /> (não é necessária qualquer transferência).</translation>
 <translation id="4921290200821452703">Informações da conta escolar para pais</translation>
 <translation id="4921348630401250116">Síntese de voz</translation>
 <translation id="49226369361073053">{0,plural, =0{Atualize o dispositivo agora}=1{Atualize o dispositivo dentro de 1 segundo}other{Atualize o dispositivo dentro de # segundos}}</translation>
@@ -3657,6 +3665,7 @@ Pretende pará-lo?</translation>
 <translation id="5213891612754844763">Mostrar definições de proxy</translation>
 <translation id="5215502535566372932">Selecionar país</translation>
 <translation id="521582610500777512">A foto foi rejeitada</translation>
+<translation id="5217189792977407501">Atribuir ao espaço de trabalho</translation>
 <translation id="5222403284441421673">Transferência insegura bloqueada</translation>
 <translation id="5222676887888702881">Terminar sessão</translation>
 <translation id="52232769093306234">Falha no acondicionamento.</translation>
@@ -4194,6 +4203,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5832813618714645810">Perfis</translation>
 <translation id="583281660410589416">Desconhecido</translation>
 <translation id="5833397272224757657">Utiliza conteúdo nos sites que visita e interações e atividades do navegador para personalização.</translation>
+<translation id="5833551944249825624">O seu Chromebook estará visível para todos os utilizadores nas proximidades durante 5 min.</translation>
 <translation id="5833726373896279253">Estas definições só podem ser modificadas pelo proprietário:</translation>
 <translation id="5834581999798853053">Faltam cerca de <ph name="TIME" /> minutos</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> – câmara ou microfone a gravar</translation>
@@ -4564,7 +4574,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6248988683584659830">Pesquisar definições</translation>
 <translation id="6249200942125593849">Gerir a11y</translation>
 <translation id="6251870443722440887">Identificadores de GDI</translation>
-<translation id="6251889282623539337">Termos de Utilização de <ph name="DOMAIN" /></translation>
 <translation id="625369703868467034">Estado da rede</translation>
 <translation id="6254503684448816922">Chave violada</translation>
 <translation id="6257602895346497974">Ativar a sincronização</translation>
@@ -4599,6 +4608,8 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="628352644014831790">4 segundos</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> não é habitualmente transferido e pode ser perigoso.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Nova impressora na rede}other{Novas impressoras na rede}}</translation>
+<translation id="6285770818046456882">O dispositivo que estava a partilhar consigo cancelou a transferência.</translation>
+<translation id="6290613030083731160">Nenhum dispositivo disponível a partilhar nas proximidades. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="6291949900244949761">Perguntar quando um site pretender aceder a dispositivos USB (recomendado)</translation>
 <translation id="6291953229176937411">Mo&amp;strar no Finder</translation>
 <translation id="6295158916970320988">Todos os sites</translation>
@@ -4643,6 +4654,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6331818708794917058">Os sites podem solicitar a ligação a dispositivos MIDI</translation>
 <translation id="6333064448949140209">O ficheiro será enviado para a Google para depuração</translation>
 <translation id="6334444530352320327">As suas definições de apps e SO serão sincronizadas em todos os Chromebooks nos quais tem sessão iniciada com esta conta.<ph name="LINK_BEGIN" />Definições de sincronização<ph name="LINK_END" /></translation>
+<translation id="6335920438823100346">Para iniciar o Linux, <ph name="MANAGER" /> necessita que faça uma cópia de segurança dos seus dados e reponha as definições de fábrica deste Chromebook.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> desativou a depuração do ADB. Esta ação vai repor o seu dispositivo <ph name="DEVICE_TYPE" /> dentro de 24 horas. Faça uma cópia de segurança dos ficheiros que pretende manter.</translation>
 <translation id="6338981933082930623">Todos os sites podem mostrar-lhe anúncios</translation>
 <translation id="6339668969738228384">Criar um novo perfil para <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -5452,7 +5464,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="7290242001003353852">Este serviço de início de sessão, alojado por <ph name="SAML_DOMAIN" />, está a aceder à sua câmara.</translation>
 <translation id="7295614427631867477">Tenha em atenção que o Android, o Google Play e as aplicações associadas são regidos pelas suas próprias políticas de recolha e utilização de dados.</translation>
 <translation id="729583233778673644">Permitir a encriptação AES e RC4. A utilização desta opção aumenta o seu risco, uma vez que as cifras RC4 são inseguras.</translation>
-<translation id="7296774163727375165">Termos de <ph name="DOMAIN" /></translation>
 <translation id="7297443947353982503">Nome de utilizador ou palavra-passe incorreto ou falha na autenticação EAP</translation>
 <translation id="729761647156315797">Escolher o idioma e o teclado</translation>
 <translation id="7297726121602187087">Verde escuro</translation>
@@ -5496,6 +5507,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="7347943691222276892">Clique para sair de <ph name="SUBPAGE_TITLE" />.</translation>
 <translation id="7348093485538360975">Teclado no ecrã</translation>
 <translation id="7352651011704765696">Algo correu mal</translation>
+<translation id="7353261921908507769">Os seus contactos podem partilhar consigo quando estiver nas proximidades. As transferências só irão começar quando aceitar.</translation>
 <translation id="735361434055555355">A instalar o Linux…</translation>
 <translation id="7354341762311560488">O sensor de impressões digitais é a tecla inferior esquerda no seu teclado. Toque levemente no mesmo com qualquer dedo.</translation>
 <translation id="7356908624372060336">Registos de rede</translation>
@@ -5895,6 +5907,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="779308894558717334">Verde claro</translation>
 <translation id="7793098747275782155">Azul escuro</translation>
 <translation id="7797571222998226653">Desativado</translation>
+<translation id="7798259165971079056">Ninguém conseguirá partilhar consigo enquanto não se tornar visível.<ph name="BR" /><ph name="BR" />Para se tornar temporariamente visível, abra a área de estado ao selecionar a hora e, em seguida, ative a Visibilidade na proximidade.</translation>
 <translation id="7798844538707273832">Autorização <ph name="PERMISSION" /> bloqueada automaticamente</translation>
 <translation id="7799299114731150374">Imagem de fundo definida com êxito</translation>
 <translation id="7800518121066352902">Rodar para a &amp;Esquerda</translation>
@@ -6432,7 +6445,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8398877366907290961">Prosseguir</translation>
 <translation id="8400146488506985033">Gerir pessoas</translation>
 <translation id="8401432541486058167">Indique o PIN que está associado ao seu cartão inteligente.</translation>
-<translation id="8405046151008197676">Obtenha os destaques da atualização mais recente.</translation>
 <translation id="8407199357649073301">Nível de registo:</translation>
 <translation id="8408068190360279472">Rede <ph name="NETWORK_TYPE" />, a ligar…</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -6882,6 +6894,7 @@ Prima um comutador atribuído para remover a atribuição.</translation>
 <translation id="8898840733695078011">Intensidade do sinal</translation>
 <translation id="8899851313684471736">Abrir link numa nova &amp;janela</translation>
 <translation id="8900413463156971200">Ativar rede móvel</translation>
+<translation id="8902059453911237649">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requer que faça uma cópia de segurança dos seus dados e devolva este <ph name="DEVICE_TYPE" /> hoje.}other{<ph name="MANAGER" /> requer que faça uma cópia de segurança dos dados e devolva este <ph name="DEVICE_TYPE" /> antes do prazo.}}</translation>
 <translation id="8902667442496790482">Abrir as definições de Selecionar para ativar voz</translation>
 <translation id="8903263458134414071">Selecione uma conta para iniciar sessão</translation>
 <translation id="890616557918890486">Alterar origem</translation>
@@ -7118,7 +7131,6 @@ Prima um comutador atribuído para remover a atribuição.</translation>
 <translation id="9168436347345867845">Fazer isto mais tarde</translation>
 <translation id="9169496697824289689">Ver atalhos de teclado</translation>
 <translation id="916964310188958970">Porquê esta sugestão?</translation>
-<translation id="9169931577761441333">Adicionar <ph name="APP_NAME" /> ao ecrã principal</translation>
 <translation id="9170061643796692986">A definição de visibilidade atual é Todos os contactos.</translation>
 <translation id="9170848237812810038">An&amp;ular</translation>
 <translation id="9170884462774788842">Outro programa do computador adicionou um tema que pode alterar o funcionamento do Chrome.</translation>

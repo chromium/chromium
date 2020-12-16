@@ -9,6 +9,7 @@
 <translation id="1175697296044146566"><ph name="MANAGER" />এ এই <ph name="DEVICE_TYPE" />টো পৰিচালনা কৰে।</translation>
 <translation id="1195447618553298278">অজ্ঞাত আসোঁৱাহ।</translation>
 <translation id="1204296502688602597">DNS বিলম্বতা</translation>
+<translation id="123124571410524056">প’ৰ্টেলৰ সন্দেহ কৰা হৈছে</translation>
 <translation id="1238612778414822719">HTTPSৰ বিলম্বতা</translation>
 <translation id="1290331692326790741">দুৰ্বল সংকেত</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -36,6 +37,7 @@
 <translation id="1947737735496445907">প্ৰিণ্ট কৰা হ’ল</translation>
 <translation id="1979103255016296513">পাছৱর্ড সলনি কৰাৰ সময় উকলিছে</translation>
 <translation id="1980044825731880088">চিপিইউৰ গতি</translation>
+<translation id="1999615961760456652">কেপ্টিভ প’ৰ্টেল</translation>
 <translation id="2008685064673031089">প্ৰাইম সন্ধান</translation>
 <translation id="2080070583977670716">অধিক ছেটিং</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -52,6 +54,7 @@
 <translation id="2517472476991765520">স্কেন কৰক</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> পৰীক্ষা চলাই থকা হৈছে...</translation>
 <translation id="2620436844016719705">ছিষ্টেম</translation>
+<translation id="2658845327196595460">{COUNT,plural, =1{স্কেন কৰা ফাইল ছেভ কৰা হ’ল!}one{স্কেন কৰা ফাইলসমূহ ছেভ কৰা হ’ল!}other{স্কেন কৰা ফাইলসমূহ ছেভ কৰা হ’ল!}}</translation>
 <translation id="2740531572673183784">ঠিক আছে</translation>
 <translation id="2805756323405976993">এপ্</translation>
 <translation id="2872961005593481000">শ্বাট ডাউন কৰক</translation>
@@ -114,6 +117,7 @@
 <translation id="4773299976671772492">বন্ধ হৈছে</translation>
 <translation id="4808449224298348341">বাতিল কৰা প্ৰিণ্টিঙৰ কাৰ্য <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4832079907277790330">Files এপ্‌টোত ফ’ল্ডাৰ বাছনি কৰক...</translation>
+<translation id="4835901797422965222">কোনো সক্ৰিয় নেটৱৰ্ক নাই</translation>
 <translation id="4848429997038228357">চলি আছে</translation>
 <translation id="4890353053343094602">তৎক্ষণাত নতুন এটা বাছনি কৰক</translation>
 <translation id="4891842000192098784">চাপ</translation>
@@ -135,6 +139,7 @@
 <translation id="5317780077021120954">ছেভ কৰক</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">এতিয়া নতুন এটা বাছনি কৰক</translation>
+<translation id="5333530671332546086">অজ্ঞাত প’ৰ্টেলৰ স্থিতি</translation>
 <translation id="5372659122375744710">ৱাই-ফাইৰ নেটৱৰ্কটো সুৰক্ষিত নহয়</translation>
 <translation id="5401938042319910061">সকলো ৰুটিন চলাওক</translation>
 <translation id="5431318178759467895">ৰং</translation>
@@ -189,7 +194,9 @@
 <translation id="7177485034254901881">এই <ph name="DEVICE_TYPE" />টো <ph name="MANAGER" />এ পৰিচালনা কৰে। প্ৰশাসকে দূৰৰ পৰাই ডিভাইচটো কনফিগাৰ কৰিব পাৰে।</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">ফাইলৰ প্রকাৰ</translation>
+<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{স্কেনিং সম্পূৰ্ণ হ’ল। ১ খন পৃষ্ঠা স্কেন কৰা হ’ল}one{স্কেনিং সম্পূৰ্ণ হ’ল। {NUMBER_OF_PAGES} খন পৃষ্ঠা স্কেন কৰা হ’ল}other{স্কেনিং সম্পূৰ্ণ হ’ল। {NUMBER_OF_PAGES} খন পৃষ্ঠা স্কেন কৰা হ’ল}}</translation>
 <translation id="7441459999606975924">ব্যৱহাৰ কৰাৰ সমান্তৰালভাৱে বেটাৰীৰ ক্ষমতা কমি আহে</translation>
+<translation id="7469648432129124067">প’ৰ্টেল চিনাক্ত কৰা হৈছে</translation>
 <translation id="7561454561030345039">এই কাৰ্যটো আপোনাৰ প্ৰশাসকে পৰিচালনা কৰে</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">HTTPSৰ বেছি বিলম্বতা</translation>

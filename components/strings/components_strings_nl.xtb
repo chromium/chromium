@@ -982,6 +982,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4901778704868714008">Opslaan…</translation>
 <translation id="4913987521957242411">Perforatie linksboven</translation>
+<translation id="4918221908152712722"><ph name="APP_NAME" /> installeren (geen download vereist)</translation>
 <translation id="4923459931733593730">Betaling</translation>
 <translation id="4926049483395192435">Moet worden opgegeven.</translation>
 <translation id="4926159001844873046"><ph name="SITE" /> meldt het volgende</translation>
@@ -1346,6 +1347,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="6328786501058569169">Deze site is misleidend</translation>
 <translation id="6337133576188860026">Hiermee wordt minder dan <ph name="SIZE" /> vrijgemaakt. Sommige sites kunnen langzamer worden geladen wanneer je ze weer bezoekt.</translation>
 <translation id="6337534724793800597">Beleid filteren op naam</translation>
+<translation id="6349101878882523185"><ph name="APP_NAME" /> installeren</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Geen}=1{1 wachtwoord (voor <ph name="DOMAIN_LIST" />, gesynchroniseerd)}=2{2 wachtwoorden (voor <ph name="DOMAIN_LIST" />, gesynchroniseerd)}other{# wachtwoorden (voor <ph name="DOMAIN_LIST" />, gesynchroniseerd)}}</translation>
 <translation id="6358450015545214790">Wat betekent dit?</translation>
 <translation id="6361757823711327522">B7</translation>
@@ -2033,6 +2035,7 @@ Aanvullende informatie:
 <translation id="9158625974267017556">C6 (envelop)</translation>
 <translation id="9168814207360376865">Toestaan dat sites controleren of je betaalmethoden hebt opgeslagen</translation>
 <translation id="9169664750068251925">Altijd blokkeren op deze site</translation>
+<translation id="9169931577761441333"><ph name="APP_NAME" /> toevoegen aan startscherm</translation>
 <translation id="9170848237812810038">&amp;Ongedaan maken</translation>
 <translation id="9171296965991013597">App verlaten?</translation>
 <translation id="9173282814238175921">Eén document/nieuw blad</translation>

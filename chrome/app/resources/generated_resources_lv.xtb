@@ -1434,6 +1434,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2602501489742255173">Lai sāktu darbu, velciet augšup</translation>
 <translation id="2603115962224169880">Tīriet datoru</translation>
 <translation id="2603463522847370204">Atvērt &amp;inkognito režīma logā</translation>
+<translation id="2603656971249947488">Ciļņu josla</translation>
 <translation id="2604255671529671813">Tīkla savienojuma kļūda</translation>
 <translation id="2606246518223360146">Saistīt datus</translation>
 <translation id="2606454609872547359">Nē, turpināt bez ChromeVox</translation>
@@ -1802,6 +1803,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3007771295016901659">Dublēt cilni</translation>
 <translation id="3008232374986381779">Palaiž Linux rīkus, redaktorus un IDE jūsu <ph name="DEVICE_TYPE" /> ierīcē. <ph name="LINK_BEGIN" />Uzziniet vairāk<ph name="LINK_END" />.</translation>
 <translation id="3008272652534848354">Atiestatīt atļaujas</translation>
+<translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> pieprasa, lai jūs šodien izveidotu savienojumu ar Wi-Fi tīklu un lejupielādētu atjauninājumu. Varat arī veikt lejupielādi, izmantojot maksas savienojumu.}zero{<ph name="MANAGER" /> pieprasa izveidot savienojumu ar Wi-Fi tīklu un lejupielādēt atjauninājumu pirms noteiktā termiņa beigām. Varat arī veikt lejupielādi, izmantojot maksas savienojumu.}one{<ph name="MANAGER" /> pieprasa izveidot savienojumu ar Wi-Fi tīklu un lejupielādēt atjauninājumu pirms noteiktā termiņa beigām. Varat arī veikt lejupielādi, izmantojot maksas savienojumu.}other{<ph name="MANAGER" /> pieprasa izveidot savienojumu ar Wi-Fi tīklu un lejupielādēt atjauninājumu pirms noteiktā termiņa beigām. Varat arī veikt lejupielādi, izmantojot maksas savienojumu.}}</translation>
 <translation id="3009300415590184725">Vai tiešām vēlaties atcelt mobilo datu pakalpojumu iestatīšanas procesu?</translation>
 <translation id="3009779501245596802">Rādītājā iekļautās datu bāzes</translation>
 <translation id="3010279545267083280">Parole dzēsta</translation>
@@ -1826,6 +1828,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3024374909719388945">Lietot 24 stundu pulksteni</translation>
 <translation id="3027296729579831126">Ieslēgt funkciju Kopīgošana tuvumā</translation>
 <translation id="3029466929721441205">Skārienekrāna pildspalvas rīku rādīšana plauktā</translation>
+<translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> pieprasa, lai jūs lejupielādētu atjauninājumu šodien. Atjauninājums tiks lejupielādēts automātiski, kad izveidosiet savienojumu ar internetu.}zero{<ph name="MANAGER" /> pieprasa, lai jūs lejupielādētu atjauninājumu pirms noteiktā termiņa. Atjauninājums tiks lejupielādēts automātiski, kad izveidosiet savienojumu ar internetu.}one{<ph name="MANAGER" /> pieprasa, lai jūs lejupielādētu atjauninājumu pirms noteiktā termiņa. Atjauninājums tiks lejupielādēts automātiski, kad izveidosiet savienojumu ar internetu.}other{<ph name="MANAGER" /> pieprasa, lai jūs lejupielādētu atjauninājumu pirms noteiktā termiņa. Atjauninājums tiks lejupielādēts automātiski, kad izveidosiet savienojumu ar internetu.}}</translation>
 <translation id="3031417829280473749">Aģente X</translation>
 <translation id="3031557471081358569">Izvēlieties importējamos vienumus:</translation>
 <translation id="3036327949511794916">Šīs <ph name="DEVICE_TYPE" /> ierīces atdošanas termiņš ir pagājis.</translation>
@@ -1882,6 +1885,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3103941660000130485">Jauninot Linux, radās kļūda</translation>
 <translation id="3105796011181310544">Vai mainīt atpakaļ uz Google?</translation>
 <translation id="310671807099593501">Vietne izmanto Bluetooth savienojumu.</translation>
+<translation id="3108931485517391283">Nevar saņemt saturu</translation>
 <translation id="3109724472072898302">Sakļauts</translation>
 <translation id="3115147772012638511">Gaida krtuvi...</translation>
 <translation id="3115580024857770654">Sakļaut visu</translation>
@@ -1897,6 +1901,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3127156390846601284">Veicot šo darbību, tiks dzēsti ierīcē saglabātie dati no visām parādītajām vietnēm. Vai vēlaties turpināt?</translation>
 <translation id="3127860049873093642">Lai izvairītos no uzlādes un veiktspējas problēmām, izmantojiet saderīgu Dell vai USB Type-C strāvas adapteri.</translation>
 <translation id="3127862849166875294">Linux diska lieluma mainīšana</translation>
+<translation id="3127882968243210659"><ph name="MANAGER" /> pieprasa, lai pirms lietotnes Google Play palaišanas jūs dublētu savus datus un atiestatītu šo Chromebook datoru uz rūpnīcas iestatījumiem.</translation>
 <translation id="3129173833825111527">Kreisā piemale</translation>
 <translation id="3129215702932019810">Palaižot lietojumprogrammu, radās kļūda</translation>
 <translation id="3130528281680948470">Ierīce tiks atiestatīta, un visi lietotāju konti un ierīcē glabātie dati tiks noņemti. Šo darbību nevar atsaukt.</translation>
@@ -2015,6 +2020,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3275778913554317645">Atvērt kā logu</translation>
 <translation id="3277691515294482687">Pirms Linux jaunināšanas dublēt manas lietotnes un failus mapē Mani faili.</translation>
 <translation id="3278001907972365362">Pievērsiet uzmanību savam(-iem) Google kontam(-iem).</translation>
+<translation id="3279092821516760512">Atlasītās kontaktpersonas var kopīgot ar jums saturu, kad tās atrodas tuvumā. Satura pārsūtīšana tiks sāka tikai pēc jūsu apstiprinājuma.</translation>
 <translation id="3279230909244266691">Šis process var ilgt dažas minūtes. Notiek virtuālās mašīnas startēšana.</translation>
 <translation id="3280237271814976245">Saglabāt kā...</translation>
 <translation id="3280243678470289153">Turpināt pārlūkā Chrome</translation>
@@ -2572,6 +2578,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3882165008614329320">Esošs videoklips no kameras vai faila</translation>
 <translation id="3884152383786131369">Tīmekļa saturam, kas ir pieejams vairākās valodās, tiks izmantota pirmā atbalstītā valoda no šī saraksta. Šīs preferences tiek sinhronizētas ar jūsu pārlūkprogrammas iestatījumiem. <ph name="BEGIN_LINK_LEARN_MORE" />Uzziniet vairāk<ph name="END_LINK_LEARN_MORE" />.</translation>
 <translation id="3886446263141354045">Pieprasījums piekļūt šai vietnei ir nosūtīts lietotājam <ph name="NAME" /></translation>
+<translation id="3888364689515978571">Izslēgta. <ph name="LINK_BEGIN" />Uzziniet vairāk<ph name="LINK_END" />.</translation>
 <translation id="3888550877729210209">Piezīmju rakstīšana, izmantojot <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3890064827463908288">Lai izmantotu Wi-Fi sinhronizāciju, ieslēdziet Chrome sinhronizāciju</translation>
 <translation id="3892414795099177503">Pievienot OpenVPN/otrā slāņa tunelēšanas protokolu...</translation>
@@ -2652,6 +2659,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="3958088479270651626">Grāmatzīmju un iestatījumu importēšana</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3964480518399667971">Mobilā tīkla izslēgšana</translation>
+<translation id="3965730875470565266">Ieslēgta, <ph name="MINUTES" /> min</translation>
 <translation id="3965811923470826124">Izmantojot</translation>
 <translation id="3965965397408324205">Iziet no profila <ph name="PROFILE_NAME" /></translation>
 <translation id="3966072572894326936">Izvēlēties citu mapi...</translation>
@@ -2721,6 +2729,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4049783682480068824">{COUNT,plural, =1{# kontaktpersona nav pieejama. Lai veiktu kopīgošanu tuvumā ar šo kontaktpersonu, pievienojiet kontaktpersonu sarakstam šīs personas e-pasta adresi, kas saistīta ar tās Google kontu.}zero{# kontaktpersonas nav pieejamas. Lai veiktu kopīgošanu tuvumā ar šīm kontaktpersonām, pievienojiet kontaktpersonu sarakstam šo personu e-pasta adreses, kas saistītas ar viņu Google kontiem.}one{# kontaktpersona nav pieejama. Lai veiktu kopīgošanu tuvumā ar šīm kontaktpersonām, pievienojiet kontaktpersonu sarakstam šo personu e-pasta adreses, kas saistītas ar viņu Google kontiem.}other{# kontaktpersonas nav pieejamas. Lai veiktu kopīgošanu tuvumā ar šīm kontaktpersonām, pievienojiet kontaktpersonu sarakstam šo personu e-pasta adreses, kas saistītas ar viņu Google kontiem.}}</translation>
 <translation id="4050225813016893843">Autentifikācijas metode</translation>
 <translation id="4052120076834320548">Niecīgs</translation>
+<translation id="4054070260844648638">Redzams visiem</translation>
 <translation id="4056908315660577142">Ir sasniegts laika ierobežojums, ko jūsu vecāki iestatīja Chrome lietotnes <ph name="APP_NAME" /> izmantošanai. Rīt to varēsiet izmantot <ph name="TIME_LIMIT" />.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">Skatīt veikalā</translation>
@@ -3426,7 +3435,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4917385247580444890">Spēcīgs</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> vēlas sazināties ar paplašinājumu “<ph name="EXTENSION_NAME" />”</translation>
 <translation id="4918086044614829423">Pieņemt</translation>
-<translation id="4918221908152712722">Instalējiet lietotni <ph name="APP_NAME" /> (nav nepieciešama lejupielāde)</translation>
 <translation id="4921290200821452703">Mācību iestādes konta informācija vecākiem</translation>
 <translation id="4921348630401250116">Teksta pārvēršana runā</translation>
 <translation id="49226369361073053">{0,plural, =0{Ierīce tūlīt jāatjaunina}=1{Ierīces atjaunināšana jāsāk 1 sekundes laikā}zero{Ierīces atjaunināšana jāsāk # sekunžu laikā}one{Ierīces atjaunināšana jāsāk # sekundes laikā}other{Ierīces atjaunināšana jāsāk # sekunžu laikā}}</translation>
@@ -3659,6 +3667,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="5213891612754844763">Rādīt starpniekservera iestatījumus</translation>
 <translation id="5215502535566372932">Atlasīt valsti</translation>
 <translation id="521582610500777512">Fotoattēls tika noraidīts.</translation>
+<translation id="5217189792977407501">Piešķirt darbvietai</translation>
 <translation id="5222403284441421673">Tika bloķēta nedroša lejupielāde</translation>
 <translation id="5222676887888702881">Izrakstīties</translation>
 <translation id="52232769093306234">Neizdevās izveidot pakotni.</translation>
@@ -4195,6 +4204,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="5832813618714645810">Profili</translation>
 <translation id="583281660410589416">Nezināms</translation>
 <translation id="5833397272224757657">Personalizācijai izmanto jūsu apmeklēto vietņu saturu, kā arī darbības un mijiedarbības pārlūkā.</translation>
+<translation id="5833551944249825624">Jūsu Chromebook dators 5 minūtes būs redzams visām tuvumā esošām personām.</translation>
 <translation id="5833726373896279253">Šos iestatījumus drīkst mainīt tikai īpašnieks:</translation>
 <translation id="5834581999798853053">Atlikušas apmēram <ph name="TIME" /> minūtes</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> — ierakstīšana ar kameru vai mikrofonu</translation>
@@ -4565,7 +4575,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="6248988683584659830">Meklēt iestatījumus</translation>
 <translation id="6249200942125593849">Pieejamības funkciju pārvaldība</translation>
 <translation id="6251870443722440887">GDI apstrādātāji</translation>
-<translation id="6251889282623539337">Vietnes <ph name="DOMAIN" /> pakalpojumu sniegšanas noteikumi</translation>
 <translation id="625369703868467034">Tīkla darbspēja</translation>
 <translation id="6254503684448816922">Atslēgas drošības politikas apdraudējums</translation>
 <translation id="6257602895346497974">Ieslēgt sinhronizāciju...</translation>
@@ -4600,6 +4609,8 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="628352644014831790">4 sekundes</translation>
 <translation id="6285120108426285413">Fails <ph name="FILE_NAME" /> parasti netiek lejupielādēts, un tas var būt bīstams.</translation>
 <translation id="6285120908535925801">{NUM_PRINTER,plural, =1{Jauns printeris jūsu tīklā}zero{Jauni printeri jūsu tīklā}one{Jauni printeri jūsu tīklā}other{Jauni printeri jūsu tīklā}}</translation>
+<translation id="6285770818046456882">Ierīcē, no kuras ar jums tiek kopīgots saturs, tika atcelta satura pārsūtīšana.</translation>
+<translation id="6290613030083731160">Tuvumā nav pieejamu ierīču, kas kopīgotu saturu. <ph name="LINK_BEGIN" />Uzziniet vairāk<ph name="LINK_END" />.</translation>
 <translation id="6291949900244949761">Vaicāt, ja vietne vēlas piekļūt USB ierīcēm (ieteicams)</translation>
 <translation id="6291953229176937411">Rādīt lietojumprogrammā &amp;Finder</translation>
 <translation id="6295158916970320988">Visas vietnes</translation>
@@ -4644,6 +4655,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6331818708794917058">Atļaut vietnēm pieprasīt atļauju veidot savienojumu ar MIDI ierīcēm</translation>
 <translation id="6333064448949140209">Fails tiks nosūtīts Google serveriem atkļūdošanai</translation>
 <translation id="6334444530352320327">Lietotnes un OS iestatījumi tiks sinhronizēti Chromebook datoros, kuros esat pierakstījies ar šo kontu. <ph name="LINK_BEGIN" />Sinhronizācijas iestatījumi<ph name="LINK_END" /></translation>
+<translation id="6335920438823100346"><ph name="MANAGER" /> pieprasa, lai pirms Linux palaišanas jūs dublētu savus datus un atiestatītu šo Chromebook datoru uz rūpnīcas iestatījumiem.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> atspējoja ADB atkļūdošanu. Tādēļ 24 stundu laikā tiks atiestatīta jūsu <ph name="DEVICE_TYPE" /> ierīce. Dublējiet visus failus, ko vēlaties paturēt.</translation>
 <translation id="6338981933082930623">Atļaut visām vietnēm rādīt jebkādas reklāmas</translation>
 <translation id="6339668969738228384">Izveidot profilu kontam <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -5453,7 +5465,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="7290242001003353852">Šis domēnā <ph name="SAML_DOMAIN" /> mitinātais pierakstīšanās pakalpojums piekļūst jūsu kamerai.</translation>
 <translation id="7295614427631867477">Ņemiet vērā, ka operētājsistēmu Android, veikalu Play un saistītās lietotnes pārvalda atsevišķas datu vākšanas un lietošanas politikas.</translation>
 <translation id="729583233778673644">Atļaut AES un RC4 šifrēšanu. Ja izmantosiet šo opciju, palielināsies risks, jo RC4 šifri nav droši.</translation>
-<translation id="7296774163727375165">Vietnes <ph name="DOMAIN" /> noteikumi</translation>
 <translation id="7297443947353982503">Lietotājvārds/parole nav pareiza vai arī EAP autentifikācija neizdevās</translation>
 <translation id="729761647156315797">Valodas un tastatūras izvēlēšanās</translation>
 <translation id="7297726121602187087">Tumši zaļa</translation>
@@ -5497,6 +5508,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="7347943691222276892">Noklikšķiniet, lai pārietu atpakaļ no apakšlapas <ph name="SUBPAGE_TITLE" />.</translation>
 <translation id="7348093485538360975">Ekrāntastatūra</translation>
 <translation id="7352651011704765696">Radās problēma</translation>
+<translation id="7353261921908507769">Jūsu kontaktpersonas var kopīgot ar jums saturu, kad tās atrodas tuvumā. Satura pārsūtīšana tiks sāka tikai pēc jūsu apstiprinājuma.</translation>
 <translation id="735361434055555355">Notiek Linux instalēšana...</translation>
 <translation id="7354341762311560488">Pirksta nospieduma sensors atrodas tastatūras apakšējā kreisajā stūrī. Viegli pieskarieties tam ar jebkuru pirkstu.</translation>
 <translation id="7356908624372060336">Tīkla žurnāli</translation>
@@ -5895,6 +5907,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="779308894558717334">Gaiši zaļa</translation>
 <translation id="7793098747275782155">Tumši zila</translation>
 <translation id="7797571222998226653">Izsl.</translation>
+<translation id="7798259165971079056">Neviens nevar kopīgot ar jums saturu, kamēr neesat padarījis sevi redzamu.<ph name="BR" /><ph name="BR" />Lai padarītu sevi īslaicīgi redzamu, atveriet statusa apgabalu, atlasot laiku, un pēc tam ieslēdziet opciju “Tuvumā: redzamība”.</translation>
 <translation id="7798844538707273832">Automātiski bloķēta atļauja “<ph name="PERMISSION" />”</translation>
 <translation id="7799299114731150374">Fona tapete sekmīgi iestatīta</translation>
 <translation id="7800518121066352902">Pagriezt &amp;pretēji pulksteņrādītāju kustības virzienam</translation>
@@ -6433,7 +6446,6 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8398877366907290961">Turpināt jebkurā gadījumā</translation>
 <translation id="8400146488506985033">Pārvaldīt personas</translation>
 <translation id="8401432541486058167">Norādiet PIN, kas ir saistīts ar jūsu viedkarti.</translation>
-<translation id="8405046151008197676">Iegūstiet svarīgāko informāciju no jaunākā atjauninājuma</translation>
 <translation id="8407199357649073301">Žurnāla līmenis:</translation>
 <translation id="8408068190360279472">Tīkls: <ph name="NETWORK_TYPE" />, notiek savienojuma izveide</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -6885,6 +6897,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="8898840733695078011">Signāla stiprums</translation>
 <translation id="8899851313684471736">Atvērt saiti jaunā logā</translation>
 <translation id="8900413463156971200">Mobilā tīkla iespējošana</translation>
+<translation id="8902059453911237649">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> pieprasa, lai jūs dublētu savus datus un atdotu šo <ph name="DEVICE_TYPE" /> ierīci šodien.}zero{<ph name="MANAGER" /> pieprasa, lai jūs dublētu savus datus un atdotu šo <ph name="DEVICE_TYPE" /> ierīci pirms noteiktā termiņa.}one{<ph name="MANAGER" /> pieprasa, lai jūs dublētu savus datus un atdotu šo <ph name="DEVICE_TYPE" /> ierīci pirms noteiktā termiņa.}other{<ph name="MANAGER" /> pieprasa, lai jūs dublētu savus datus un atdotu šo <ph name="DEVICE_TYPE" /> ierīci pirms noteiktā termiņa.}}</translation>
 <translation id="8902667442496790482">Atvērt funkcijas “Atlasīt, lai izrunātu” iestatījumus</translation>
 <translation id="8903263458134414071">Atlasiet kontu, kurā pierakstīties</translation>
 <translation id="890616557918890486">Mainīt avotu</translation>
@@ -7121,7 +7134,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="9168436347345867845">Vēlāk</translation>
 <translation id="9169496697824289689">Skatīt īsinājumtaustiņus</translation>
 <translation id="916964310188958970">Kāpēc tiek rādīts šis ieteikums?</translation>
-<translation id="9169931577761441333">Pievienot lietotni <ph name="APP_NAME" /> sākuma ekrānam</translation>
 <translation id="9170061643796692986">Pašreizējais redzamības iestatījums ir “Visas kontaktpersonas”.</translation>
 <translation id="9170848237812810038">&amp;Atsaukt</translation>
 <translation id="9170884462774788842">Cita datorā instalēta programma ir izraisījusi tāda motīva pievienošanu, kas var ietekmēt pārlūkprogrammas Chrome darbību.</translation>

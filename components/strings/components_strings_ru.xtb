@@ -984,6 +984,7 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" /> и <ph name="TYPE_3" /></translation>
 <translation id="4901778704868714008">Сохранить</translation>
 <translation id="4913987521957242411">Отверстие в левом верхнем углу</translation>
+<translation id="4918221908152712722">Установить приложение "<ph name="APP_NAME" />" (скачивание не требуется)</translation>
 <translation id="4923459931733593730">Платеж</translation>
 <translation id="4926049483395192435">Укажите значение.</translation>
 <translation id="4926159001844873046">Подтвердите действие на странице <ph name="SITE" /></translation>
@@ -1349,6 +1350,7 @@
 <translation id="6328786501058569169">Это поддельный сайт</translation>
 <translation id="6337133576188860026">Освободится менее <ph name="SIZE" /> пространства. После этого некоторые веб-страницы могут загружаться дольше обычного.</translation>
 <translation id="6337534724793800597">Фильтровать политики по названию</translation>
+<translation id="6349101878882523185">Установить приложение "<ph name="APP_NAME" />"</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Нет}=1{1 пароль (для <ph name="DOMAIN_LIST" />, синхронизировано)}=2{2 пароля (для <ph name="DOMAIN_LIST" />, синхронизировано)}one{# пароль (для <ph name="DOMAIN_LIST" />, синхронизировано)}few{# пароля (для <ph name="DOMAIN_LIST" />, синхронизировано)}many{# паролей (для <ph name="DOMAIN_LIST" />, синхронизировано)}other{# пароля (для <ph name="DOMAIN_LIST" />, синхронизировано)}}</translation>
 <translation id="6358450015545214790">Что это значит?</translation>
 <translation id="6361757823711327522">B7</translation>
@@ -2038,6 +2040,7 @@
 <translation id="9158625974267017556">C6 (конверт)</translation>
 <translation id="9168814207360376865">Разрешить сайтам проверять наличие сохраненных способов оплаты</translation>
 <translation id="9169664750068251925">Всегда блокировать на этом сайте</translation>
+<translation id="9169931577761441333">Добавить приложение "<ph name="APP_NAME" />" на главный экран</translation>
 <translation id="9170848237812810038">&amp;Отменить</translation>
 <translation id="9171296965991013597">Закрыть приложение?</translation>
 <translation id="9173282814238175921">Один документ/новый лист</translation>

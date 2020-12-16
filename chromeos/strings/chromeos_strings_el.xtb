@@ -9,6 +9,7 @@
 <translation id="1175697296044146566">Η διαχείριση της συσκευής <ph name="DEVICE_TYPE" /> γίνεται από <ph name="MANAGER" />.</translation>
 <translation id="1195447618553298278">Άγνωστο σφάλμα.</translation>
 <translation id="1204296502688602597">Λανθάνων χρόνος DNS</translation>
+<translation id="123124571410524056">Πιθανή ύπαρξη πύλης</translation>
 <translation id="1238612778414822719">Λανθάνων χρόνος HTTPS</translation>
 <translation id="1290331692326790741">Ασθενές σήμα</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -36,6 +37,7 @@
 <translation id="1947737735496445907">Εκτυπώθηκε</translation>
 <translation id="1979103255016296513">Εκπρόθεσμη αλλαγή κωδικού πρόσβασης</translation>
 <translation id="1980044825731880088">Ταχύτητα CPU</translation>
+<translation id="1999615961760456652">Πύλη υποδοχής</translation>
 <translation id="2008685064673031089">Αναζήτηση Prime</translation>
 <translation id="2080070583977670716">Περισσότερες ρυθμίσεις</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -115,6 +117,7 @@
 <translation id="4773299976671772492">Διακόπηκε</translation>
 <translation id="4808449224298348341">Ακυρώθηκε η εργασία εκτύπωσης <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4832079907277790330">Επιλογή φακέλου στην εφαρμογή Αρχεία…</translation>
+<translation id="4835901797422965222">Δεν υπάρχουν ενεργά δίκτυα</translation>
 <translation id="4848429997038228357">ΕΚΤΕΛΕΙΤΑΙ</translation>
 <translation id="4890353053343094602">Επιλέξτε άμεσα έναν νέο</translation>
 <translation id="4891842000192098784">Καταπόνηση</translation>
@@ -136,6 +139,7 @@
 <translation id="5317780077021120954">Αποθήκευση</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Επιλέξτε έναν νέο τώρα</translation>
+<translation id="5333530671332546086">Άγνωστη κατάσταση πύλης</translation>
 <translation id="5372659122375744710">Το δίκτυο Wi-Fi δεν είναι ασφαλές.</translation>
 <translation id="5401938042319910061">Εκτέλεση όλων των ρουτινών</translation>
 <translation id="5431318178759467895">Χρώμα</translation>
@@ -192,6 +196,7 @@
 <translation id="7359657277149375382">Τύπος αρχείου</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Η σάρωση ολοκληρώθηκε. Σαρώθηκε 1 σελίδα.}other{Η σάρωση ολοκληρώθηκε. Σαρώθηκαν {NUMBER_OF_PAGES} σελίδες.}}</translation>
 <translation id="7441459999606975924">Η χωρητικότητα των μπαταριών μειώνεται με τη χρήση.</translation>
+<translation id="7469648432129124067">Εντοπίστηκε πύλη</translation>
 <translation id="7561454561030345039">Η διαχείριση αυτής της ενέργειας γίνεται από τον διαχειριστή σας.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Μεγάλος λανθάνων χρόνος HTTPS</translation>

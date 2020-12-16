@@ -3436,7 +3436,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4917385247580444890">Močan</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> želi vzpostaviti povezavo z razširitvijo »<ph name="EXTENSION_NAME" />«</translation>
 <translation id="4918086044614829423">Sprejmi</translation>
-<translation id="4918221908152712722">Namestite <ph name="APP_NAME" /> (prenos ni potreben)</translation>
 <translation id="4921290200821452703">Podatki o šolskem računu za starše</translation>
 <translation id="4921348630401250116">Pretvorba besedila v govor</translation>
 <translation id="49226369361073053">{0,plural, =0{Takoj posodobite napravo}=1{Napravo posodobite v 1 sekundi}one{Napravo posodobite v # sekundi}two{Napravo posodobite v # sekundah}few{Napravo posodobite v # sekundah}other{Napravo posodobite v # sekundah}}</translation>
@@ -4579,7 +4578,6 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6248988683584659830">Iskanje nastavitev</translation>
 <translation id="6249200942125593849">Upravljanje funkcij za ljudi s posebnimi potrebami</translation>
 <translation id="6251870443722440887">Kode za dostop GDI</translation>
-<translation id="6251889282623539337">Pogoji storitve za <ph name="DOMAIN" /></translation>
 <translation id="625369703868467034">Stanje delovanja omrežja</translation>
 <translation id="6254503684448816922">Ključ ni več varen</translation>
 <translation id="6257602895346497974">Vklopi sinhronizacijo …</translation>
@@ -5470,7 +5468,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="7290242001003353852">Prijavna storitev, ki jo gosti <ph name="SAML_DOMAIN" />, dostopa do vaše kamere.</translation>
 <translation id="7295614427631867477">Upoštevajte, da Android, Google Play in povezane aplikacije urejajo njihovi pravilniki za zbiranje in uporabo podatkov.</translation>
 <translation id="729583233778673644">Dovoli šifriranje AES in RC4. Če uporabite to možnosti, je tveganje večje, saj šifriranje RC4 ni varno.</translation>
-<translation id="7296774163727375165">Pogoji za <ph name="DOMAIN" /></translation>
 <translation id="7297443947353982503">Napačno uporabniško ime/geslo ali preverjanje pristnosti EAP ni uspelo</translation>
 <translation id="729761647156315797">Izbira jezika in tipkovnice</translation>
 <translation id="7297726121602187087">Temno zelena</translation>
@@ -6030,7 +6027,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920363873148656176">Spletno mesto <ph name="ORIGIN" /> si lahko ogleda datoteko <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Dodajte besede, za katere želite, da jih preverjanje črkovanja preskoči</translation>
-<translation id="7921276565737611663">Edina stikala, dodeljenega dejanju za izbiro, ni bilo mogoče odstraniti. Pritisnite poljubno tipko, če želite zapreti.</translation>
+<translation id="7921276565737611663">Edinega stikala, dodeljenega dejanju za izbiro, ni bilo mogoče odstraniti. Pritisnite poljubno tipko, če želite zapreti.</translation>
 <translation id="7924358170328001543">Napaka pri posredovanju vrat</translation>
 <translation id="792514962475806987">Stopnja povečave zasidrane lupe:</translation>
 <translation id="7925247922861151263">Preverjanje AAA ni uspelo</translation>
@@ -6453,7 +6450,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8398877366907290961">Vseeno nadaljuj</translation>
 <translation id="8400146488506985033">Upravljanje ljudi</translation>
 <translation id="8401432541486058167">Navedite kodo PIN, povezano s pametno kartico.</translation>
-<translation id="8405046151008197676">Oglejte si najzanimivejše dele najnovejše posodobitve</translation>
 <translation id="8407199357649073301">Raven beleženja:</translation>
 <translation id="8408068190360279472">Omrežje <ph name="NETWORK_TYPE" />, vzpostavljanje povezave</translation>
 <translation id="8410775397654368139">Google Play</translation>
@@ -7143,7 +7139,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="9168436347345867845">Pozneje</translation>
 <translation id="9169496697824289689">Ogled bližnjičnih tipk</translation>
 <translation id="916964310188958970">Zakaj ta predlog?</translation>
-<translation id="9169931577761441333">Dodajanje aplikacije <ph name="APP_NAME" /> na začetni zaslon</translation>
 <translation id="9170061643796692986">Trenutna nastavitev vidnosti je za vse stike</translation>
 <translation id="9170848237812810038">&amp;Razveljavi</translation>
 <translation id="9170884462774788842">Drug program v računalniku je dodal temo, ki lahko spremeni način delovanja Chroma.</translation>

@@ -295,6 +295,7 @@
 <translation id="4121993058175073134">Щоб надсил. дані про чистий експорт, налашт. обл. запис у програмі Налаштування.</translation>
 <translation id="4124987746317609294">Період часу</translation>
 <translation id="4152011295694446843">Тут відображатимуться ваші закладки</translation>
+<translation id="4152093603141133546">Адміністратор організації вийшов із вашого облікового запису.</translation>
 <translation id="4172051516777682613">Завжди показувати</translation>
 <translation id="418156467088430727">Переглянути офлайн-версію в новій вкладці</translation>
 <translation id="4181841719683918333">Мови</translation>
@@ -537,6 +538,7 @@
 <translation id="6668619169535738264">Змінити закладку</translation>
 <translation id="667999046851023355">Документ</translation>
 <translation id="6691331417640343772">Керувати синхронізованими даними в Особистому кабінеті Google</translation>
+<translation id="6710079714193676716">Веб-переглядачем керує ваша організація. Деякі функції можуть бути недоступними. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Не вдалось експортувати паролі</translation>
 <translation id="6748108480210050150">З</translation>
@@ -690,6 +692,7 @@
 <translation id="8487667956631253959">Увімкнено</translation>
 <translation id="8487700953926739672">Доступ у режимі офлайн</translation>
 <translation id="8490978609246021741">Зберегти зміни</translation>
+<translation id="8495097701594799854">Вимкнено адміністратором організації.</translation>
 <translation id="8503813439785031346">Ім’я користувача</translation>
 <translation id="850600235656508448">Відкрити в режимі анонімного перегляду</translation>
 <translation id="8510057420705599706">Ваш сеанс в обліковому записі буде завершено, а синхронізацію – вимкнено. Ваші дані Chrome (зокрема закладки, історія та паролі) залишаться на пристрої.</translation>

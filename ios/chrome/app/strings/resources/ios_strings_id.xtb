@@ -295,6 +295,7 @@ Ikuti langkah di bawah:</translation>
 <translation id="4121993058175073134">Konfigurasi akun email Anda di aplikasi Setelan untuk mengirim data net-ekspor.</translation>
 <translation id="4124987746317609294">Rentang Waktu</translation>
 <translation id="4152011295694446843">Bookmark Anda akan ditampilkan di sini</translation>
+<translation id="4152093603141133546">Organisasi memaksa Anda logout.</translation>
 <translation id="4172051516777682613">Selalu tampilkan</translation>
 <translation id="418156467088430727">Tampilkan Versi Offline di Tab Baru</translation>
 <translation id="4181841719683918333">Bahasa</translation>
@@ -537,6 +538,7 @@ Coba gunakan sandi yang unik untuk setiap situs.</translation>
 <translation id="6668619169535738264">Edit Bookmark</translation>
 <translation id="667999046851023355">Dokumen</translation>
 <translation id="6691331417640343772">Kelola data yang disinkronkan pada Google Dasbor</translation>
+<translation id="6710079714193676716">Dikelola oleh organisasi Anda. Beberapa fitur mungkin tidak tersedia. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Tidak Dapat Mengekspor Sandi</translation>
 <translation id="6748108480210050150">Dari</translation>
@@ -690,6 +692,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8487667956631253959">Aktif</translation>
 <translation id="8487700953926739672">Tersedia secara offline</translation>
 <translation id="8490978609246021741">Simpan Perubahan</translation>
+<translation id="8495097701594799854">Dinonaktifkan oleh organisasi Anda.</translation>
 <translation id="8503813439785031346">Nama Pengguna</translation>
 <translation id="850600235656508448">Buka di Samaran</translation>
 <translation id="8510057420705599706">Ini akan membuat Anda logout dan menonaktifkan sinkronisasi, tetapi bookmark, histori, sandi, dan data Chrome lainnya akan tetap berada di perangkat ini.</translation>

@@ -62,7 +62,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1455242230282523554">Mostra impostazioni lingua</translation>
 <translation id="1460620680449458626">Il volume è disattivato.</translation>
 <translation id="1467432559032391204">Sinistra</translation>
-<translation id="147310119694673958">Batteria del telefono al <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="147310119694673958">Batteria del telefono <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1479909375538722835">Menu Accessibilità mobile</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1503394326855300303">Questo account proprietario deve essere il primo account registrato in una sessione con accesso simultaneo.</translation>
@@ -339,7 +339,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="4112140312785995938">Vai indietro</translation>
 <translation id="4114315158543974537">Attiva Phone Hub</translation>
 <translation id="4121728057981832179">Una macchina virtuale sta utilizzando il microfono</translation>
-<translation id="4126167871198063089">Esci da Seleziona per ascoltare</translation>
 <translation id="4129129681837227511">Se vuoi vedere le notifiche nella schermata di blocco, sblocca il dispositivo per cambiare l'impostazione</translation>
 <translation id="4146833061457621061">Fammi ascoltare musica</translation>
 <translation id="415719264485676252">L'acquisizione della schermata è bloccata</translation>
@@ -878,7 +877,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="8990809378771970590">In uso: <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Sblocca il dispositivo con l'account <ph name="LOGIN_ID" /> per eseguire l'azione di notifica</translation>
 <translation id="9017320285115481645">Inserisci il codice accesso genitori di Family Link.</translation>
-<translation id="9029474291399787231">Aggiornamento di Adobe Flash Player disponibile</translation>
 <translation id="9047624247355796468">Apri Impostazioni per <ph name="NETWORK_NAME" /></translation>
 <translation id="9056839673611986238">Verrà eseguito il rollback del dispositivo</translation>
 <translation id="9065203028668620118">Modifica</translation>

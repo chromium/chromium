@@ -985,6 +985,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4901778704868714008">Salvar…</translation>
 <translation id="4913987521957242411">Perfuração na parte superior esquerda</translation>
+<translation id="4918221908152712722">Instale o <ph name="APP_NAME" /> (nenhum download é necessário)</translation>
 <translation id="4923459931733593730">Pagamento</translation>
 <translation id="4926049483395192435">Deve ser especificado.</translation>
 <translation id="4926159001844873046"><ph name="SITE" /> diz</translation>
@@ -1350,6 +1351,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6328786501058569169">Este site é enganoso</translation>
 <translation id="6337133576188860026">Libera menos de <ph name="SIZE" />. O carregamento de alguns sites pode ficar mais lento no seu próximo acesso.</translation>
 <translation id="6337534724793800597">Filtrar políticas por nome</translation>
+<translation id="6349101878882523185">Instalar <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Nenhuma}=1{1 senha (para <ph name="DOMAIN_LIST" />, sincronizada)}=2{2 senhas (para <ph name="DOMAIN_LIST" />, sincronizadas)}one{# senha (para <ph name="DOMAIN_LIST" />, sincronizada)}other{# senhas (para <ph name="DOMAIN_LIST" />, sincronizadas)}}</translation>
 <translation id="6358450015545214790">O que são essas informações?</translation>
 <translation id="6361757823711327522">B7</translation>
@@ -2041,6 +2043,7 @@ incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser 
 <translation id="9158625974267017556">C6 (Envelope)</translation>
 <translation id="9168814207360376865">Permitir que os sites verifiquem se você tem formas de pagamento salvas</translation>
 <translation id="9169664750068251925">Sempre bloquear neste site</translation>
+<translation id="9169931577761441333">Adicionar o app <ph name="APP_NAME" /> à tela inicial</translation>
 <translation id="9170848237812810038">&amp;Desfazer</translation>
 <translation id="9171296965991013597">Sair do app?</translation>
 <translation id="9173282814238175921">Documento avulso/Nova página</translation>

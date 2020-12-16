@@ -9,6 +9,7 @@
 <translation id="1175697296044146566"><ph name="MANAGER" /> управува со овој <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1195447618553298278">Непозната грешка.</translation>
 <translation id="1204296502688602597">DNS-латентност</translation>
+<translation id="123124571410524056">Можеби е откриен портал</translation>
 <translation id="1238612778414822719">Латенција на HTTPS</translation>
 <translation id="1290331692326790741">Слаб сигнал</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -36,6 +37,7 @@
 <translation id="1947737735496445907">Отпечатено</translation>
 <translation id="1979103255016296513">Измина рокот за промена на лозинката</translation>
 <translation id="1980044825731880088">Брзина на CPU</translation>
+<translation id="1999615961760456652">Портал за проверка</translation>
 <translation id="2008685064673031089">Примарно пребарување</translation>
 <translation id="2080070583977670716">Повеќе поставки</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
@@ -115,6 +117,7 @@
 <translation id="4773299976671772492">Сопрено</translation>
 <translation id="4808449224298348341">Откажан налог за печатење: <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4832079907277790330">Изберете папка во апликацијата „Датотеки“…</translation>
+<translation id="4835901797422965222">Нема активни мрежи</translation>
 <translation id="4848429997038228357">СЕ ИЗВРШУВА</translation>
 <translation id="4890353053343094602">Веднаш изберете нова</translation>
 <translation id="4891842000192098784">Стрес</translation>
@@ -136,6 +139,7 @@
 <translation id="5317780077021120954">Зачувај</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Може да изберете нова сега</translation>
+<translation id="5333530671332546086">Непозната состојба на портал</translation>
 <translation id="5372659122375744710">WiFi мрежата не е безбедна</translation>
 <translation id="5401938042319910061">Изврши ги сите рутини</translation>
 <translation id="5431318178759467895">Боја</translation>
@@ -192,6 +196,7 @@
 <translation id="7359657277149375382">Вид датотека</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Скенирањето е завршено. Скенирана е 1 страница}one{Скенирањето е завршено. Скенирана е {NUMBER_OF_PAGES} страница}other{Скенирањето е завршено. Скенирани се {NUMBER_OF_PAGES} страници}}</translation>
 <translation id="7441459999606975924">Капацитетот на батеријата се намалува со користењето</translation>
+<translation id="7469648432129124067">Откриен е портал</translation>
 <translation id="7561454561030345039">Администраторот управува со дејствово</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Висока латенција на HTTPS</translation>

@@ -996,6 +996,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" /> y <ph name="TYPE_3" /></translation>
 <translation id="4901778704868714008">Guardar...</translation>
 <translation id="4913987521957242411">Perforado en la parte superior izquierda</translation>
+<translation id="4918221908152712722">Instala <ph name="APP_NAME" /> (sin descargar nada)</translation>
 <translation id="4923459931733593730">Pago</translation>
 <translation id="4926049483395192435">Se debe especificar un valor.</translation>
 <translation id="4926159001844873046"><ph name="SITE" /> dice</translation>
@@ -1361,6 +1362,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6328786501058569169">Este sitio web es engañoso</translation>
 <translation id="6337133576188860026">Libera menos de <ph name="SIZE" />. Algunos sitios web pueden tardar más en cargarse la próxima vez que accedas a ellos.</translation>
 <translation id="6337534724793800597">Filtrar políticas por nombre</translation>
+<translation id="6349101878882523185">Instalar <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Ninguna}=1{1 contraseña de <ph name="DOMAIN_LIST" /> (sincronizada)}=2{2 contraseñas de <ph name="DOMAIN_LIST" /> (sincronizadas)}other{# contraseñas de <ph name="DOMAIN_LIST" /> (sincronizadas)}}</translation>
 <translation id="6358450015545214790">¿Necesitas ayuda?</translation>
 <translation id="6361757823711327522">B7</translation>
@@ -2050,6 +2052,7 @@ Más información:
 <translation id="9158625974267017556">C6 (sobre)</translation>
 <translation id="9168814207360376865">Permitir a los sitios web saber si tienes métodos de pago guardados</translation>
 <translation id="9169664750068251925">Bloquear siempre en este sitio</translation>
+<translation id="9169931577761441333">Añadir <ph name="APP_NAME" /> a la pantalla de inicio</translation>
 <translation id="9170848237812810038">&amp;Deshacer</translation>
 <translation id="9171296965991013597">¿Quieres salir de la aplicación?</translation>
 <translation id="9173282814238175921">Documento individual/Nueva hoja</translation>

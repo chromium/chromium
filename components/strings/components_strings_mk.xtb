@@ -996,6 +996,7 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4901778704868714008">Зачувај…</translation>
 <translation id="4913987521957242411">Дупка горе лево</translation>
+<translation id="4918221908152712722">Инсталирајте ја <ph name="APP_NAME" /> (не е потребно преземање)</translation>
 <translation id="4923459931733593730">Плаќање</translation>
 <translation id="4926049483395192435">Мора да се назначи.</translation>
 <translation id="4926159001844873046"><ph name="SITE" /> вели</translation>
@@ -1361,6 +1362,7 @@
 <translation id="6328786501058569169">Сајтов е лажен</translation>
 <translation id="6337133576188860026">Ќе ослободи помалку од <ph name="SIZE" />. Некои сајтови може да се вчитуваат побавно при вашата следна посета.</translation>
 <translation id="6337534724793800597">Филтрирај правила по име</translation>
+<translation id="6349101878882523185">Инсталирај <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Ниедна}=1{1 лозинка (за <ph name="DOMAIN_LIST" />, синхронизирана)}=2{2 лозинка (за <ph name="DOMAIN_LIST" />, синхронизирани)}one{# лозинка (за <ph name="DOMAIN_LIST" />, синхронизирани)}other{# лозинки (за <ph name="DOMAIN_LIST" />, синхронизирани)}}</translation>
 <translation id="6358450015545214790">Што значи ова?</translation>
 <translation id="6361757823711327522">B7</translation>
@@ -2050,6 +2052,7 @@
 <translation id="9158625974267017556">C6 (плик)</translation>
 <translation id="9168814207360376865">Дозволете сајтовите да проверуваат дали имате зачувани начини на плаќање</translation>
 <translation id="9169664750068251925">Секогаш блокирај на оваа локација</translation>
+<translation id="9169931577761441333">Додајте ја <ph name="APP_NAME" /> на почетен екран</translation>
 <translation id="9170848237812810038">&amp;Врати</translation>
 <translation id="9171296965991013597">Дали да се излезе од апликацијата?</translation>
 <translation id="9173282814238175921">Еден документ/нов лист</translation>

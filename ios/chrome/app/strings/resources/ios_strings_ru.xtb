@@ -295,6 +295,7 @@
 <translation id="4121993058175073134">Чтобы отправлять очищенные данные для экспорта, задайте соответствующие параметры аккаунта электронной почты в приложении "Настройки".</translation>
 <translation id="4124987746317609294">Временной диапазон</translation>
 <translation id="4152011295694446843">Здесь вы найдете свои закладки</translation>
+<translation id="4152093603141133546">Выполнен выход из аккаунта.</translation>
 <translation id="4172051516777682613">Показывать всегда</translation>
 <translation id="418156467088430727">Открыть офлайн-версию в новой вкладке</translation>
 <translation id="4181841719683918333">Языки</translation>
@@ -537,6 +538,7 @@
 <translation id="6668619169535738264">Изменить закладку</translation>
 <translation id="667999046851023355">Документ</translation>
 <translation id="6691331417640343772">Управление синхронизированными данными в Личном кабинете Google</translation>
+<translation id="6710079714193676716">Браузером управляет ваша организация. Некоторые функции могут быть недоступны. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Не удалось экспортировать пароли</translation>
 <translation id="6748108480210050150">От</translation>
@@ -638,7 +640,7 @@
 <translation id="7839985698273989086">Офлайн-версия страницы</translation>
 <translation id="7840771868269352570">Выбранные элементы будут удалены</translation>
 <translation id="7856733331829174190">Не удалось скачать файл</translation>
-<translation id="7859704718976024901">История просмотра веб-страниц</translation>
+<translation id="7859704718976024901">История браузера</translation>
 <translation id="7887198238286927132">Чтобы обеспечить конфиденциальность ваших данных, Chrome не использует автозаполнение для этого поля.</translation>
 <translation id="7918293828610777738">Список для чтения доступен без подключения к Интернету. Чтобы добавить в него страницу, нажмите <ph name="SHARE_OPENING_ICON" />, а затем –<ph name="READ_LATER_TEXT" />.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
@@ -690,6 +692,7 @@
 <translation id="8487667956631253959">Включено</translation>
 <translation id="8487700953926739672">Доступно в автономном режиме</translation>
 <translation id="8490978609246021741">Сохранить изменения</translation>
+<translation id="8495097701594799854">Функция отключена вашей организацией.</translation>
 <translation id="8503813439785031346">Имя пользователя</translation>
 <translation id="850600235656508448">Открыть в режиме инкогнито</translation>
 <translation id="8510057420705599706">Вы выйдете из аккаунта, синхронизация будет отключена, но ваши закладки, история, пароли и другие данные Chrome останутся на этом устройстве.</translation>

@@ -994,6 +994,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4901778704868714008">Enregistrer…</translation>
 <translation id="4913987521957242411">Perforation en haut à gauche</translation>
+<translation id="4918221908152712722">Installer <ph name="APP_NAME" /> (aucun téléchargement requis)</translation>
 <translation id="4923459931733593730">Paiement</translation>
 <translation id="4926049483395192435">Doit être spécifié.</translation>
 <translation id="4926159001844873046"><ph name="SITE" /> indique</translation>
@@ -1359,6 +1360,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6328786501058569169">Ce site est trompeur</translation>
 <translation id="6337133576188860026">Libère moins de <ph name="SIZE" />. Le chargement de certains sites risque d'être plus lent lors de votre prochaine visite.</translation>
 <translation id="6337534724793800597">Filtrer les règles par nom</translation>
+<translation id="6349101878882523185">Installer <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Aucun}=1{1 mot de passe (associé à <ph name="DOMAIN_LIST" /> ; synchronisé)}=2{2 mots de passe (associés à <ph name="DOMAIN_LIST" /> ; synchronisés)}one{# mot de passe (associé à <ph name="DOMAIN_LIST" /> ; synchronisé)}other{# mots de passe (associés à <ph name="DOMAIN_LIST" /> ; synchronisés)}}</translation>
 <translation id="6358450015545214790">Qu'est-ce que c'est ?</translation>
 <translation id="6361757823711327522">B7</translation>
@@ -2036,7 +2038,7 @@ Informations supplémentaires :
 <translation id="9114524666733003316">Validation de la carte…</translation>
 <translation id="9114581008513152754">Ce navigateur n'est géré par aucune entreprise ni aucune autre organisation. Il se peut que l'activité sur cet appareil soit gérée en dehors de Chrome. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">Importation terminée</translation>
-<translation id="9128870381267983090">Se connecter au réseau</translation>
+<translation id="9128870381267983090">Connectez-vous au réseau</translation>
 <translation id="9137013805542155359">Afficher l'original</translation>
 <translation id="9141013498910525015">Gérer les adresses</translation>
 <translation id="9148088599418889305">Sélectionner un mode de livraison</translation>
@@ -2048,6 +2050,7 @@ Informations supplémentaires :
 <translation id="9158625974267017556">C6 (enveloppe)</translation>
 <translation id="9168814207360376865">Autoriser les sites à vérifier si vous avez enregistré des modes de paiement</translation>
 <translation id="9169664750068251925">Toujours bloquer sur ce site</translation>
+<translation id="9169931577761441333">Ajouter <ph name="APP_NAME" /> à l'écran d'accueil</translation>
 <translation id="9170848237812810038">Ann&amp;uler</translation>
 <translation id="9171296965991013597">Quitter l'application ?</translation>
 <translation id="9173282814238175921">Document unique/Nouvelle feuille</translation>

@@ -202,7 +202,6 @@
 <translation id="6885412569789873916">Chrome ベータ版アプリ</translation>
 <translation id="6943584222992551122">この操作を行うと、このユーザーの閲覧データがこのデバイスから削除されます。データを復元するには、<ph name="USER_EMAIL" /> として Chrome にログインしてください。</translation>
 <translation id="6967962315388095737">mDNS トラフィックを許可する Google Chrome ベータ版のインバウンド ルールです。</translation>
-<translation id="6982337800632491844"><ph name="DOMAIN" /> では、このデバイスを使用する前に下記の利用規約を確認しこれに同意していただく必要があります。これらの規約は Google Chrome OS 利用規約を拡張、変更、制限するものではありません。</translation>
 <translation id="6989339256997917931">Google Chrome が更新されましたが、30 日間以上使用されていません。</translation>
 <translation id="7054640471403081847">このパソコンは、ハードウェアのサポートが終了しているため、まもなく Google Chrome アップデートの受信を停止します。</translation>
 <translation id="7062128746136194023">保護者が Chrome の「サイト、アプリ、拡張機能の権限」をオフにしました。この <ph name="EXTENSION_TYPE_PARAMETER" /> を追加することはできません。</translation>

@@ -12,6 +12,7 @@
 <translation id="10614374240317010">Никогаш не е зачувано</translation>
 <translation id="1067922213147265141">Други услуги на Google</translation>
 <translation id="107147699690128016">Ако ја промените наставката на датотеката, таа може да се отвори во друга апликација и да стане потенцијална опасност за вашиот уред.</translation>
+<translation id="1094515529340404628">Web Crowd и мерење на рекламите</translation>
 <translation id="1100066534610197918">Отвори во нова картичка во група</translation>
 <translation id="1105960400813249514">Screen Capture</translation>
 <translation id="1111673857033749125">Обележувачите зачувани на другите уреди ќе се појават тука.</translation>
@@ -227,6 +228,7 @@
 <translation id="2536728043171574184">Се прикажува офлајн копија на страницата</translation>
 <translation id="2537178555904266562">Грешка при синхронизирање на лозинките</translation>
 <translation id="2546283357679194313">Колачиња и податоци од сајтот</translation>
+<translation id="2562889244313180139">Дозволете им на веб-сајтовите и апликациите да ви даваат порелевантно доживување со користење псевдоними што не го откриваат вашиот идентитет.</translation>
 <translation id="2567385386134582609">СЛИКА</translation>
 <translation id="2571711316400087311">Понудувај да се испраќаат страници на други јазици во „Преведи на Google“</translation>
 <translation id="2581165646603367611">Ова ќе ги избрише колачињата, кешот и другите податоци од сајтовите за коишто Chrome смета дека не се важни.</translation>
@@ -714,6 +716,7 @@
 <translation id="6005538289190791541">Предложена лозинка</translation>
 <translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Имате <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> страница}one{Имате <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> страница}other{Имате <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> страници}}</translation>
 <translation id="6014293228235665243">Непрочитано</translation>
+<translation id="6018309500671889594">Дозволете им на огласувачите да проучуваат рекламни кампањи со користење податоци што не го откриваат вашиот идентитет.</translation>
 <translation id="6036057147555329831">Дополнителен ICU</translation>
 <translation id="6039379616847168523">Скокнете на следната картичка</translation>
 <translation id="6040143037577758943">Затвори</translation>
@@ -922,6 +925,7 @@
 <translation id="7403691278183511381">Искуство при првото извршување на Chrome</translation>
 <translation id="741204030948306876">Да, може</translation>
 <translation id="7413229368719586778">Датум на почеток: <ph name="DATE" /></translation>
+<translation id="7416941666639889592">Ако се придружите на Web Crowd, им дозволувате на веб-сајтовите да го направат вашето доживување на интернет релевантно без користење податоци што го откриваат вашиот идентитет. Слично како посетителите на концерт, веб-сајтовите и огласувачите ќе знаат само дека илјадници корисници споделуваат сличен интерес.</translation>
 <translation id="7431991332293347422">Контролирајте како вашата историја на прелистување се користи за персонализирање на „Пребарувањето“ и друго</translation>
 <translation id="7435356471928173109">Исклучено од администраторот</translation>
 <translation id="7437998757836447326">Одјавете се од Chrome</translation>
@@ -1123,6 +1127,7 @@
 <translation id="8748850008226585750">Содржината е скриена</translation>
 <translation id="8788265440806329501">Историјата на навигација е затворена</translation>
 <translation id="8788968922598763114">Повторно отворете ја последната затворена картичка</translation>
+<translation id="8795672590390389447">Sandbox за приватност</translation>
 <translation id="8798449543960971550">Прочитано</translation>
 <translation id="8812260976093120287">На некои веб-сајтови, може да плаќате со горенаведените поддржани апликации за плаќање на вашиот уред.</translation>
 <translation id="881688628773363275">Содржините на картичката „Преглед“ не се видливи.</translation>
