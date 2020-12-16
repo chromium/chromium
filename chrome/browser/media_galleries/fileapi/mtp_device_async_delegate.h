@@ -43,7 +43,7 @@ class MTPDeviceAsyncDelegate {
 
   // A callback to be called when GetFileInfo/ReadDirectory/CreateSnapshot
   // method call fails.
-  typedef base::Callback<void(base::File::Error error)> ErrorCallback;
+  typedef base::RepeatingCallback<void(base::File::Error error)> ErrorCallback;
 
   // A callback to be called when CreateSnapshotFile method call succeeds.
   typedef base::Callback<

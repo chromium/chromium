@@ -225,7 +225,7 @@ void OnSnapshotFileCreatedRunTask(
       base::Bind(&OnDidCreateSnapshotFile, copyable_callback,
                  base::RetainedRef(context->task_runner()),
                  validate_media_files),
-      base::Bind(&OnCreateSnapshotFileError, copyable_callback));
+      base::BindRepeating(&OnCreateSnapshotFileError, copyable_callback));
 }
 
 }  // namespace
@@ -357,7 +357,7 @@ void DeviceMediaAsyncFileUtil::CreateDirectory(
       url.path(), exclusive, recursive,
       base::Bind(&DeviceMediaAsyncFileUtil::OnDidCreateDirectory,
                  weak_ptr_factory_.GetWeakPtr(), copyable_callback),
-      base::Bind(&OnCreateDirectoryError, copyable_callback));
+      base::BindRepeating(&OnCreateDirectoryError, copyable_callback));
 }
 
 void DeviceMediaAsyncFileUtil::GetFileInfo(
@@ -373,12 +373,13 @@ void DeviceMediaAsyncFileUtil::GetFileInfo(
     return;
   }
   auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
-  delegate->GetFileInfo(url.path(),
-                        base::Bind(&DeviceMediaAsyncFileUtil::OnDidGetFileInfo,
-                                   weak_ptr_factory_.GetWeakPtr(),
-                                   base::RetainedRef(context->task_runner()),
-                                   url.path(), copyable_callback),
-                        base::Bind(&OnGetFileInfoError, copyable_callback));
+  delegate->GetFileInfo(
+      url.path(),
+      base::Bind(&DeviceMediaAsyncFileUtil::OnDidGetFileInfo,
+                 weak_ptr_factory_.GetWeakPtr(),
+                 base::RetainedRef(context->task_runner()), url.path(),
+                 copyable_callback),
+      base::BindRepeating(&OnGetFileInfoError, copyable_callback));
 }
 
 void DeviceMediaAsyncFileUtil::ReadDirectory(
@@ -398,7 +399,7 @@ void DeviceMediaAsyncFileUtil::ReadDirectory(
       base::Bind(&DeviceMediaAsyncFileUtil::OnDidReadDirectory,
                  weak_ptr_factory_.GetWeakPtr(),
                  base::RetainedRef(context->task_runner()), callback),
-      base::Bind(&OnReadDirectoryError, callback));
+      base::BindRepeating(&OnReadDirectoryError, callback));
 }
 
 void DeviceMediaAsyncFileUtil::Touch(
@@ -449,7 +450,7 @@ void DeviceMediaAsyncFileUtil::CopyFileLocal(
       progress_callback,
       base::Bind(&DeviceMediaAsyncFileUtil::OnDidCopyFileLocal,
                  weak_ptr_factory_.GetWeakPtr(), copyable_callback),
-      base::Bind(&OnCopyFileLocalError, copyable_callback));
+      base::BindRepeating(&OnCopyFileLocalError, copyable_callback));
 }
 
 void DeviceMediaAsyncFileUtil::MoveFileLocal(
@@ -477,7 +478,7 @@ void DeviceMediaAsyncFileUtil::MoveFileLocal(
       base::Bind(&CreateSnapshotFileOnBlockingPool, profile_path_),
       base::Bind(&DeviceMediaAsyncFileUtil::OnDidMoveFileLocal,
                  weak_ptr_factory_.GetWeakPtr(), copyable_callback),
-      base::Bind(&OnMoveFileLocalError, copyable_callback));
+      base::BindRepeating(&OnMoveFileLocalError, copyable_callback));
 }
 
 void DeviceMediaAsyncFileUtil::CopyInForeignFile(
@@ -505,7 +506,7 @@ void DeviceMediaAsyncFileUtil::CopyInForeignFile(
       src_file_path, dest_url.path(),
       base::Bind(&DeviceMediaAsyncFileUtil::OnDidCopyInForeignFile,
                  weak_ptr_factory_.GetWeakPtr(), copyable_callback),
-      base::Bind(&OnCopyInForeignFileError, copyable_callback));
+      base::BindRepeating(&OnCopyInForeignFileError, copyable_callback));
 }
 
 void DeviceMediaAsyncFileUtil::DeleteFile(
@@ -530,7 +531,7 @@ void DeviceMediaAsyncFileUtil::DeleteFile(
       url.path(),
       base::Bind(&DeviceMediaAsyncFileUtil::OnDidDeleteFile,
                  weak_ptr_factory_.GetWeakPtr(), copyable_callback),
-      base::Bind(&OnDeleteFileError, copyable_callback));
+      base::BindRepeating(&OnDeleteFileError, copyable_callback));
 }
 
 void DeviceMediaAsyncFileUtil::DeleteDirectory(
@@ -557,7 +558,7 @@ void DeviceMediaAsyncFileUtil::DeleteDirectory(
       url.path(),
       base::Bind(&DeviceMediaAsyncFileUtil::OnDidDeleteDirectory,
                  weak_ptr_factory_.GetWeakPtr(), copyable_callback),
-      base::Bind(&OnDeleteDirectoryError, copyable_callback));
+      base::BindRepeating(&OnDeleteDirectoryError, copyable_callback));
 }
 
 void DeviceMediaAsyncFileUtil::DeleteRecursively(

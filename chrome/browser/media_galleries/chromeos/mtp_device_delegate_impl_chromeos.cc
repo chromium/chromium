@@ -1024,8 +1024,9 @@ void MTPDeviceDelegateImplLinux::ReadBytesInternal(
         *file_id, buf, offset, buf_len,
         base::Bind(&MTPDeviceDelegateImplLinux::OnDidReadBytes,
                    weak_ptr_factory_.GetWeakPtr(), success_callback),
-        base::Bind(&MTPDeviceDelegateImplLinux::HandleDeviceFileError,
-                   weak_ptr_factory_.GetWeakPtr(), error_callback, *file_id));
+        base::BindRepeating(&MTPDeviceDelegateImplLinux::HandleDeviceFileError,
+                            weak_ptr_factory_.GetWeakPtr(), error_callback,
+                            *file_id));
 
     base::Closure closure =
         base::Bind(&ReadBytesOnUIThread, storage_name_, read_only_, request);
@@ -1336,10 +1337,9 @@ void MTPDeviceDelegateImplLinux::WriteDataIntoSnapshotFile(
   SnapshotRequestInfo request_info(
       current_snapshot_request_info_->file_id,
       current_snapshot_request_info_->snapshot_file_path,
-      base::Bind(
-          &MTPDeviceDelegateImplLinux::OnDidWriteDataIntoSnapshotFile,
-          weak_ptr_factory_.GetWeakPtr()),
-      base::Bind(
+      base::Bind(&MTPDeviceDelegateImplLinux::OnDidWriteDataIntoSnapshotFile,
+                 weak_ptr_factory_.GetWeakPtr()),
+      base::BindRepeating(
           &MTPDeviceDelegateImplLinux::OnWriteDataIntoSnapshotFileError,
           weak_ptr_factory_.GetWeakPtr()));
 
@@ -1678,9 +1678,9 @@ void MTPDeviceDelegateImplLinux::OnDidCreateTemporaryFileToCopyFileLocal(
           &MTPDeviceDelegateImplLinux::OnDidCreateSnapshotFileOfCopyFileLocal,
           weak_ptr_factory_.GetWeakPtr(), device_file_path, progress_callback,
           success_callback, error_callback),
-      base::Bind(&MTPDeviceDelegateImplLinux::HandleCopyFileLocalError,
-                 weak_ptr_factory_.GetWeakPtr(), error_callback,
-                 temporary_file_path));
+      base::BindRepeating(&MTPDeviceDelegateImplLinux::HandleCopyFileLocalError,
+                          weak_ptr_factory_.GetWeakPtr(), error_callback,
+                          temporary_file_path));
 }
 
 void MTPDeviceDelegateImplLinux::OnDidCreateSnapshotFileOfCopyFileLocal(
@@ -1702,9 +1702,9 @@ void MTPDeviceDelegateImplLinux::OnDidCreateSnapshotFileOfCopyFileLocal(
           &MTPDeviceDelegateImplLinux::OnDidCopyFileFromLocalOfCopyFileLocal,
           weak_ptr_factory_.GetWeakPtr(), success_callback,
           temporary_file_path),
-      base::Bind(&MTPDeviceDelegateImplLinux::HandleCopyFileLocalError,
-                 weak_ptr_factory_.GetWeakPtr(), error_callback,
-                 temporary_file_path));
+      base::BindRepeating(&MTPDeviceDelegateImplLinux::HandleCopyFileLocalError,
+                          weak_ptr_factory_.GetWeakPtr(), error_callback,
+                          temporary_file_path));
 }
 
 void MTPDeviceDelegateImplLinux::OnDidCopyFileFromLocalOfCopyFileLocal(
@@ -1852,8 +1852,8 @@ void MTPDeviceDelegateImplLinux::FillFileCache(
                  weak_ptr_factory_.GetWeakPtr(),
                  uncached_path);
   ErrorCallback error_callback =
-      base::Bind(&MTPDeviceDelegateImplLinux::OnFillFileCacheFailed,
-                 weak_ptr_factory_.GetWeakPtr());
+      base::BindRepeating(&MTPDeviceDelegateImplLinux::OnFillFileCacheFailed,
+                          weak_ptr_factory_.GetWeakPtr());
   ReadDirectoryInternal(uncached_path, success_callback, error_callback);
 }
 

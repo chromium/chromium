@@ -93,7 +93,7 @@ int64_t MTPFileStreamReader::GetLength(
       url_.path(),
       base::Bind(&MTPFileStreamReader::FinishGetLength,
                  weak_factory_.GetWeakPtr()),
-      base::Bind(
+      base::BindRepeating(
           &MTPFileStreamReader::CallGetLengthCallbackWithPlatformFileError,
           weak_factory_.GetWeakPtr()));
 
@@ -179,6 +179,7 @@ void MTPFileStreamReader::ReadBytes(
 
   delegate->ReadBytes(
       url.path(), buf, offset, buf_len, success_callback,
-      base::Bind(&MTPFileStreamReader::CallReadCallbackwithPlatformFileError,
-                 weak_factory_.GetWeakPtr()));
+      base::BindRepeating(
+          &MTPFileStreamReader::CallReadCallbackwithPlatformFileError,
+          weak_factory_.GetWeakPtr()));
 }
