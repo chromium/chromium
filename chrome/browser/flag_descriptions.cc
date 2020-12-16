@@ -3047,6 +3047,12 @@ const char kAndroidPartnerCustomizationPhenotypeDescription[] =
     "This flag loads a new configuration source of the default homepage and "
     "bookmarks.";
 
+const char kPageInfoDiscoverabilityName[] = "Page info discoverability";
+const char kPageInfoDiscoverabilityDescription[] =
+    "Improve discoverability of permission controls in the page info bubble. "
+    "After a permission decision is made, the page info icon in the address "
+    "bar will show a brief animation.";
+
 const char kPageInfoPerformanceHintsName[] = "Page info performance hints";
 const char kPageInfoPerformanceHintsDescription[] =
     "Show site performance information in the page info menu.";

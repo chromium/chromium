@@ -20,6 +20,7 @@ namespace {
 // this array may either refer to features defined in the header of this file or
 // in other locations in the code base (e.g. content_features.h).
 const base::Feature* kFeaturesExposedToJava[] = {
+    &kPageInfoDiscoverability,
     &kPageInfoV2,
 };
 
