@@ -12,8 +12,8 @@
 #import "ios/chrome/browser/download/download_manager_tab_helper.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
-#import "ios/web/public/test/fakes/test_navigation_manager.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #include "testing/platform_test.h"
@@ -30,13 +30,13 @@ namespace {
 class TabTitleUtilTest : public PlatformTest {
  protected:
   TabTitleUtilTest() {
-    auto navigation_manager = std::make_unique<web::TestNavigationManager>();
+    auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
     navigation_manager_ = navigation_manager.get();
     web_state_.SetNavigationManager(std::move(navigation_manager));
   }
 
-  web::TestWebState web_state_;
-  web::TestNavigationManager* navigation_manager_ = nullptr;
+  web::FakeWebState web_state_;
+  web::FakeNavigationManager* navigation_manager_ = nullptr;
 };
 
 // Tests GetTabTitle when there is a download task in the download manager.

@@ -19,8 +19,8 @@
 #include "ios/web/public/security/ssl_status.h"
 #import "ios/web/public/test/error_test_util.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
-#import "ios/web/public/test/fakes/test_navigation_manager.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -51,10 +51,10 @@ class BreadcrumbManagerTabHelperTest : public PlatformTest {
 
     // Navigation manager is needed for InfobarManager.
     first_web_state_.SetNavigationManager(
-        std::make_unique<web::TestNavigationManager>());
+        std::make_unique<web::FakeNavigationManager>());
     InfoBarManagerImpl::CreateForWebState(&first_web_state_);
     second_web_state_.SetNavigationManager(
-        std::make_unique<web::TestNavigationManager>());
+        std::make_unique<web::FakeNavigationManager>());
     InfoBarManagerImpl::CreateForWebState(&second_web_state_);
 
     CRWWebViewScrollViewProxy* scroll_view_proxy =
@@ -70,8 +70,8 @@ class BreadcrumbManagerTabHelperTest : public PlatformTest {
 
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
-  web::TestWebState first_web_state_;
-  web::TestWebState second_web_state_;
+  web::FakeWebState first_web_state_;
+  web::FakeWebState second_web_state_;
   BreadcrumbManagerKeyedService* breadcrumb_service_;
   UIScrollView* scroll_view_ = nil;
 };
@@ -418,8 +418,8 @@ TEST_F(BreadcrumbManagerTabHelperTest, NavigationError) {
 
 // Tests changes in security states.
 TEST_F(BreadcrumbManagerTabHelperTest, DidChangeVisibleSecurityState) {
-  auto navigation_manager = std::make_unique<web::TestNavigationManager>();
-  web::TestNavigationManager* navigation_manager_ptr = navigation_manager.get();
+  auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
+  web::FakeNavigationManager* navigation_manager_ptr = navigation_manager.get();
   first_web_state_.SetNavigationManager(std::move(navigation_manager));
   ASSERT_EQ(0ul, breadcrumb_service_->GetEvents(0).size());
 

@@ -25,7 +25,7 @@
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/web/public/session/crw_session_storage.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 #include "testing/platform_test.h"
@@ -67,7 +67,7 @@ class SessionServiceTest : public PlatformTest {
     std::unique_ptr<WebStateList> web_state_list =
         std::make_unique<WebStateList>(&web_state_list_delegate_);
     for (int i = 0; i < tabs_count; ++i) {
-      web_state_list->InsertWebState(i, std::make_unique<web::TestWebState>(),
+      web_state_list->InsertWebState(i, std::make_unique<web::FakeWebState>(),
                                      WebStateList::INSERT_FORCE_INDEX,
                                      WebStateOpener());
     }

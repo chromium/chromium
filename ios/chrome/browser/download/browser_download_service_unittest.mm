@@ -19,7 +19,7 @@
 #import "ios/web/public/download/download_controller.h"
 #import "ios/web/public/download/download_task.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/platform_test.h"
 #include "url/gurl.h"
@@ -138,7 +138,7 @@ class BrowserDownloadServiceTest : public PlatformTest {
   TestChromeBrowserState::Builder browser_state_builder_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<BrowserDownloadService> service_;
-  web::TestWebState web_state_;
+  web::FakeWebState web_state_;
   base::HistogramTester histogram_tester_;
 };
 

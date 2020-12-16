@@ -14,7 +14,7 @@
 #include "ios/chrome/browser/download/pass_kit_mime_type.h"
 #import "ios/chrome/test/fakes/fake_pass_kit_tab_helper_delegate.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/url_request/url_fetcher_response_writer.h"
@@ -45,7 +45,7 @@ class PassKitTabHelperTest : public PlatformTest {
     return PassKitTabHelper::FromWebState(&web_state_);
   }
 
-  web::TestWebState web_state_;
+  web::FakeWebState web_state_;
   FakePassKitTabHelperDelegate* delegate_;
   base::HistogramTester histogram_tester_;
 };

@@ -6,7 +6,7 @@
 
 #include "ios/components/security_interstitials/ios_security_interstitial_page.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "testing/platform_test.h"
 #include "url/gurl.h"
 
@@ -80,7 +80,7 @@ class IOSBlockingPageTabHelperTest : public PlatformTest {
     return blocking_page;
   }
 
-  web::TestWebState web_state_;
+  web::FakeWebState web_state_;
 };
 
 // Tests that the helper properly handles the lifetime of a single blocking

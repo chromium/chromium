@@ -15,8 +15,8 @@
 #include "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
-#import "ios/web/public/test/fakes/test_navigation_manager.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "net/http/http_response_headers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -169,8 +169,7 @@ class OpenInTabHelperTest
     tab_helper()->SetDelegate(delegate_);
 
     // Setup navigation manager.
-    std::unique_ptr<web::TestNavigationManager> navigation_manager =
-        std::make_unique<web::TestNavigationManager>();
+    auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
     navigation_manager_ = navigation_manager.get();
     web_state_.SetNavigationManager(std::move(navigation_manager));
   }
@@ -201,8 +200,8 @@ class OpenInTabHelperTest
   }
 
   FakeOpenInTabHelperDelegate* delegate_ = nil;
-  web::TestWebState web_state_;
-  web::TestNavigationManager* navigation_manager_;
+  web::FakeWebState web_state_;
+  web::FakeNavigationManager* navigation_manager_;
   std::unique_ptr<web::NavigationItem> item_;
 };
 
@@ -215,8 +214,7 @@ TEST_F(OpenInTabHelperTest, WebStateObservationStartNavigation) {
 
 // Tests that on web state destruction openIn will be destroyed.
 TEST_F(OpenInTabHelperTest, WebStateObservationDestruction) {
-  std::unique_ptr<web::TestWebState> web_state =
-      std::make_unique<web::TestWebState>();
+  auto web_state = std::make_unique<web::FakeWebState>();
   OpenInTabHelper::CreateForWebState(web_state.get());
   OpenInTabHelper::FromWebState(web_state.get())->SetDelegate(delegate_);
   EXPECT_FALSE(delegate_.openInDestroyed);

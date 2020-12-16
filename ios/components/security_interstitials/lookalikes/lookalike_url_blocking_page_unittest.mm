@@ -15,8 +15,8 @@
 #include "ios/components/security_interstitials/lookalikes/lookalike_url_controller_client.h"
 #include "ios/components/security_interstitials/lookalikes/lookalike_url_tab_allow_list.h"
 #import "ios/web/public/navigation/navigation_item.h"
-#import "ios/web/public/test/fakes/test_navigation_manager.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -55,8 +55,8 @@ std::unique_ptr<LookalikeUrlBlockingPage> CreateBlockingPage(
                                                      request_url, "en-US"));
 }
 
-// A Test web state that sets the visible URL to the last opened URL.
-class TestWebState : public web::TestWebState {
+// A fake web state that sets the visible URL to the last opened URL.
+class FakeWebState : public web::FakeWebState {
  public:
   void OpenURL(const web::WebState::OpenURLParams& params) override {
     SetVisibleURL(params.url);
@@ -69,8 +69,7 @@ class TestWebState : public web::TestWebState {
 class LookalikeUrlBlockingPageTest : public PlatformTest {
  public:
   LookalikeUrlBlockingPageTest() : url_("https://www.chromium.test") {
-    std::unique_ptr<web::TestNavigationManager> navigation_manager =
-        std::make_unique<web::TestNavigationManager>();
+    auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
     navigation_manager_ = navigation_manager.get();
     web_state_.SetNavigationManager(std::move(navigation_manager));
     LookalikeUrlTabAllowList::CreateForWebState(&web_state_);
@@ -101,8 +100,8 @@ class LookalikeUrlBlockingPageTest : public PlatformTest {
  protected:
   web::WebTaskEnvironment task_environment_{
       web::WebTaskEnvironment::IO_MAINLOOP};
-  TestWebState web_state_;
-  web::TestNavigationManager* navigation_manager_ = nullptr;
+  FakeWebState web_state_;
+  web::FakeNavigationManager* navigation_manager_ = nullptr;
   GURL url_;
   std::unique_ptr<IOSSecurityInterstitialPage> page_;
   base::HistogramTester histogram_tester_;

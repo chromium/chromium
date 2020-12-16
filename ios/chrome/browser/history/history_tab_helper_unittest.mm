@@ -16,7 +16,7 @@
 #include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/browser/history/history_service_factory.h"
 #include "ios/web/public/navigation/navigation_item.h"
-#include "ios/web/public/test/fakes/test_web_state.h"
+#include "ios/web/public/test/fakes/fake_web_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
@@ -69,7 +69,7 @@ class HistoryTabHelperTest : public PlatformTest {
  protected:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
-  web::TestWebState web_state_;
+  web::FakeWebState web_state_;
   base::CancelableTaskTracker tracker_;
 
   // Cached data from the last call to |QueryURL()|.

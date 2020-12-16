@@ -6,7 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
@@ -15,14 +15,14 @@
 #error "This file requires ARC support."
 #endif
 
-using web::TestWebState;
+using web::FakeWebState;
 
 using NetworkActivityIndicatorTabHelperTest = PlatformTest;
 
 // Tests that the network activity for a single WebState correctly manages
 // the state of the network activity indicator.
 TEST_F(NetworkActivityIndicatorTabHelperTest, SingleWebStateActivity) {
-  std::unique_ptr<TestWebState> web_state(new TestWebState());
+  auto web_state = std::make_unique<FakeWebState>();
   NetworkActivityIndicatorTabHelper::CreateForWebState(web_state.get(),
                                                        @"web_state1");
 
@@ -41,11 +41,11 @@ TEST_F(NetworkActivityIndicatorTabHelperTest, SingleWebStateActivity) {
 // Tests that the network activity for multiple WebStates correctly manage
 // the state of the network activity indicator.
 TEST_F(NetworkActivityIndicatorTabHelperTest, MultipleWebStateActivity) {
-  std::unique_ptr<TestWebState> web_state1(new TestWebState());
+  auto web_state1 = std::make_unique<FakeWebState>();
   NetworkActivityIndicatorTabHelper::CreateForWebState(web_state1.get(),
                                                        @"web_state1");
 
-  std::unique_ptr<TestWebState> web_state2(new TestWebState());
+  auto web_state2 = std::make_unique<FakeWebState>();
   NetworkActivityIndicatorTabHelper::CreateForWebState(web_state2.get(),
                                                        @"web_state2");
 
@@ -69,7 +69,7 @@ TEST_F(NetworkActivityIndicatorTabHelperTest, MultipleWebStateActivity) {
 // Tests that the network activity for a single WebState correctly stops when
 // the WebState is deallocated.
 TEST_F(NetworkActivityIndicatorTabHelperTest, WebStateDeallocated) {
-  std::unique_ptr<TestWebState> web_state(new TestWebState());
+  auto web_state = std::make_unique<FakeWebState>();
   NetworkActivityIndicatorTabHelper::CreateForWebState(web_state.get(),
                                                        @"web_state1");
 

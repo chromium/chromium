@@ -21,7 +21,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/driver/test_sync_service.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/scoped_testing_web_client.h"
 #include "ios/web_view/internal/web_view_browser_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -68,7 +68,7 @@ class WebViewPasswordManagerClientTest : public PlatformTest {
   }
 
   base::test::ScopedFeatureList scoped_feature;
-  web::TestWebState web_state_;
+  web::FakeWebState web_state_;
   syncer::TestSyncService sync_service_;
   TestingPrefServiceSimple pref_service_;
   autofill::StubLogManager log_manager_;

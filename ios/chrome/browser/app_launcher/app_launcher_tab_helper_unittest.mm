@@ -27,8 +27,8 @@
 #import "ios/chrome/browser/u2f/u2f_tab_helper.h"
 #import "ios/chrome/browser/web/tab_id_tab_helper.h"
 #import "ios/web/common/features.h"
-#import "ios/web/public/test/fakes/test_navigation_manager.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #include "testing/platform_test.h"
@@ -77,7 +77,7 @@ class FakeAppLauncherTabHelperDelegate : public AppLauncherTabHelperDelegate {
 };
 // A fake NavigationManager to be used by the WebState object for the
 // AppLauncher.
-class FakeNavigationManager : public web::TestNavigationManager {
+class FakeNavigationManager : public web::FakeNavigationManager {
  public:
   FakeNavigationManager() = default;
 
@@ -182,7 +182,7 @@ class AppLauncherTabHelperTest : public PlatformTest {
   }
 
   base::test::TaskEnvironment task_environment;
-  web::TestWebState web_state_;
+  web::FakeWebState web_state_;
   FakeNavigationManager* navigation_manager_ = nullptr;
 
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_ = nil;

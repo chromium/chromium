@@ -11,7 +11,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "ios/chrome/browser/passwords/ios_chrome_change_password_url_service_factory.h"
 #import "ios/web/public/navigation/navigation_manager.h"
-#import "ios/web/public/test/fakes/test_web_client.h"
+#import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/fakes/test_web_state_delegate.h"
 #import "ios/web/public/test/navigation_test_util.h"
 #include "ios/web/public/test/web_task_environment.h"
@@ -87,7 +87,7 @@ class TestChangePasswordUrlService
 
 // This test uses a mockserver to simulate different response. To handle the
 // url_loader requests we also mock the response for the url_loader_factory.
-class WellKnownChangePasswordTabHelperTest : public web::TestWebClient,
+class WellKnownChangePasswordTabHelperTest : public web::FakeWebClient,
                                              public web::WebTestWithWebState {
  public:
   using UkmBuilder =

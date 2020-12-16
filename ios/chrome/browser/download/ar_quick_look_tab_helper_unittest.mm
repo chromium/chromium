@@ -15,7 +15,7 @@
 #include "ios/chrome/browser/download/usdz_mime_type.h"
 #import "ios/chrome/test/fakes/fake_ar_quick_look_tab_helper_delegate.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "net/base/net_errors.h"
 #include "net/url_request/url_fetcher_response_writer.h"
@@ -60,7 +60,7 @@ class ARQuickLookTabHelperTest : public PlatformTest,
 
  private:
   web::WebTaskEnvironment task_environment_;
-  web::TestWebState web_state_;
+  web::FakeWebState web_state_;
   FakeARQuickLookTabHelperDelegate* delegate_;
   base::HistogramTester histogram_tester_;
 };

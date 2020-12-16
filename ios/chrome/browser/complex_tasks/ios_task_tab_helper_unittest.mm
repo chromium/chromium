@@ -6,8 +6,8 @@
 
 #include "base/time/time.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
-#import "ios/web/public/test/fakes/test_navigation_manager.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/fakes/test_web_state_delegate.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
 #include "url/gurl.h"
@@ -18,8 +18,8 @@
 
 class IOSTaskTabHelperTest : public web::WebTestWithWebState {
  protected:
-  web::NavigationItem* AddItemToTestNavigationManager(
-      web::TestNavigationManager* test_navigation_manager,
+  web::NavigationItem* AddItemToFakeNavigationManager(
+      web::FakeNavigationManager* test_navigation_manager,
       ui::PageTransition transition) {
     test_navigation_manager->AddItem(GURL(), transition);
     web::NavigationItem* navigation_item =
@@ -34,7 +34,7 @@ class IOSTaskTabHelperTest : public web::WebTestWithWebState {
     web::FakeNavigationContext context;
     web_state_.OnNavigationStarted(&context);
     web::NavigationItem* item =
-        AddItemToTestNavigationManager(static_cast<web::TestNavigationManager*>(
+        AddItemToFakeNavigationManager(static_cast<web::FakeNavigationManager*>(
                                            web_state_.GetNavigationManager()),
                                        transition);
     context.SetPageTransition(transition);
@@ -42,13 +42,13 @@ class IOSTaskTabHelperTest : public web::WebTestWithWebState {
     return item;
   }
 
-  web::TestWebState web_state_;
+  web::FakeWebState web_state_;
 };
 
 // Tests Task ID relationship when navigating via clicking a link
 TEST_F(IOSTaskTabHelperTest, TestLinkedNavigation) {
   web_state_.SetNavigationManager(
-      std::make_unique<web::TestNavigationManager>());
+      std::make_unique<web::FakeNavigationManager>());
   IOSTaskTabHelper::CreateForWebState(&web_state_);
 
   web::NavigationItem* a_navigation_item =
@@ -73,7 +73,7 @@ TEST_F(IOSTaskTabHelperTest, TestLinkedNavigation) {
 // a URL into the omnibox
 TEST_F(IOSTaskTabHelperTest, TestTypedNavigation) {
   web_state_.SetNavigationManager(
-      std::make_unique<web::TestNavigationManager>());
+      std::make_unique<web::FakeNavigationManager>());
   IOSTaskTabHelper::CreateForWebState(&web_state_);
 
   web::NavigationItem* a_navigation_item =

@@ -47,7 +47,7 @@
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_js_test.h"
 #include "services/network/test/test_network_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -91,7 +91,7 @@ using web::WebFrame;
 
 namespace {
 
-class MockWebState : public web::TestWebState {
+class MockWebState : public web::FakeWebState {
  public:
   MOCK_CONST_METHOD0(GetBrowserState, web::BrowserState*(void));
 };

@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_delegate.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/web_state_user_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
@@ -101,7 +101,7 @@ class TabHelperDelegateInstallerTest : public PlatformTest {
 TEST_F(TabHelperDelegateInstallerTest,
        InstallDelegatesForPreExistingTabHelpers) {
   // Insert a WebState into the WebStateList before the installer is created.
-  web_state_list_.InsertWebState(0, std::make_unique<web::TestWebState>(),
+  web_state_list_.InsertWebState(0, std::make_unique<web::FakeWebState>(),
                                  WebStateList::INSERT_NO_FLAGS,
                                  WebStateOpener());
   FakeTabHelper* tab_helper =
@@ -126,7 +126,7 @@ TEST_F(TabHelperDelegateInstallerTest, InstallDelegatesForAddedWebStates) {
   SecondDelegateInstaller second_installer(&second_delegate_, browser_.get());
 
   // Insert a WebState into the WebStateList.
-  web_state_list_.InsertWebState(0, std::make_unique<web::TestWebState>(),
+  web_state_list_.InsertWebState(0, std::make_unique<web::FakeWebState>(),
                                  WebStateList::INSERT_NO_FLAGS,
                                  WebStateOpener());
   FakeTabHelper* tab_helper =
@@ -140,7 +140,7 @@ TEST_F(TabHelperDelegateInstallerTest, InstallDelegatesForAddedWebStates) {
 // Tests that delegates are installed for WebState replacements.
 TEST_F(TabHelperDelegateInstallerTest, InstallDelegatesForReplacedWebStates) {
   // Insert a WebState into the WebStateList before the installer is created.
-  web_state_list_.InsertWebState(0, std::make_unique<web::TestWebState>(),
+  web_state_list_.InsertWebState(0, std::make_unique<web::FakeWebState>(),
                                  WebStateList::INSERT_NO_FLAGS,
                                  WebStateOpener());
   FakeTabHelper* tab_helper =
@@ -155,7 +155,7 @@ TEST_F(TabHelperDelegateInstallerTest, InstallDelegatesForReplacedWebStates) {
   // Replace the WebState with a new one.
   std::unique_ptr<web::WebState> replaced_web_state =
       web_state_list_.ReplaceWebStateAt(0,
-                                        std::make_unique<web::TestWebState>());
+                                        std::make_unique<web::FakeWebState>());
   FakeTabHelper* replacement_tab_helper =
       FakeTabHelper::FromWebState(web_state_list_.GetWebStateAt(0));
 
@@ -172,7 +172,7 @@ TEST_F(TabHelperDelegateInstallerTest, InstallDelegatesForReplacedWebStates) {
 TEST_F(TabHelperDelegateInstallerTest,
        UninstallDelegatesFromDetachedWebStates) {
   // Insert a WebState into the WebStateList before the installer is created.
-  web_state_list_.InsertWebState(0, std::make_unique<web::TestWebState>(),
+  web_state_list_.InsertWebState(0, std::make_unique<web::FakeWebState>(),
                                  WebStateList::INSERT_NO_FLAGS,
                                  WebStateOpener());
   FakeTabHelper* tab_helper =
@@ -197,7 +197,7 @@ TEST_F(TabHelperDelegateInstallerTest,
 TEST_F(TabHelperDelegateInstallerTest,
        UninstallDelegatesForBrowserDestruction) {
   // Insert a WebState into the WebStateList before the installer is created.
-  web_state_list_.InsertWebState(0, std::make_unique<web::TestWebState>(),
+  web_state_list_.InsertWebState(0, std::make_unique<web::FakeWebState>(),
                                  WebStateList::INSERT_NO_FLAGS,
                                  WebStateOpener());
   FakeTabHelper* tab_helper =
@@ -221,7 +221,7 @@ TEST_F(TabHelperDelegateInstallerTest,
 TEST_F(TabHelperDelegateInstallerTest,
        UninstallDelegatesForInstallerDestruction) {
   // Insert a WebState into the WebStateList before the installer is created.
-  web_state_list_.InsertWebState(0, std::make_unique<web::TestWebState>(),
+  web_state_list_.InsertWebState(0, std::make_unique<web::FakeWebState>(),
                                  WebStateList::INSERT_NO_FLAGS,
                                  WebStateOpener());
   FakeTabHelper* tab_helper =

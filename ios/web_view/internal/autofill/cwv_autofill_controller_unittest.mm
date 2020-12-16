@@ -33,10 +33,10 @@
 #include "components/sync/driver/test_sync_service.h"
 #import "ios/web/public/deprecated/crw_test_js_injection_receiver.h"
 #include "ios/web/public/js_messaging/web_frames_manager.h"
+#include "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
-#include "ios/web/public/test/fakes/test_browser_state.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_suggestion_internal.h"
 #import "ios/web_view/internal/autofill/web_view_autofill_client_ios.h"
@@ -143,8 +143,8 @@ class CWVAutofillControllerTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_;
   TestingPrefServiceSimple pref_service_;
-  web::TestBrowserState browser_state_;
-  web::TestWebState web_state_;
+  web::FakeBrowserState browser_state_;
+  web::FakeWebState web_state_;
   autofill::TestPersonalDataManager personal_data_manager_;
   autofill::TestStrikeDatabase strike_database_;
   syncer::TestSyncService sync_service_;

@@ -18,8 +18,8 @@
 #import "ios/chrome/browser/overlays/public/web_content_area/app_launcher_overlay.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
-#import "ios/web/public/test/fakes/test_navigation_manager.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "net/base/mac/url_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
@@ -56,16 +56,14 @@ class AppLauncherBrowserAgentTest : public PlatformTest {
   // WebState.
   web::WebState* AddWebState(web::WebState* opener, size_t nav_item_count) {
     // Create the NavigationManager and populate it with |nav_item_count| items.
-    std::unique_ptr<web::TestNavigationManager> navigation_manager =
-        std::make_unique<web::TestNavigationManager>();
+    auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
     for (size_t i = 0; i < nav_item_count; ++i) {
       navigation_manager->AddItem(GURL("http://www.chromium.test"),
                                   ui::PAGE_TRANSITION_LINK);
     }
     // Create the WebState with the fake NavigationManager.
-    std::unique_ptr<web::TestWebState> passed_web_state =
-        std::make_unique<web::TestWebState>();
-    web::TestWebState* web_state = passed_web_state.get();
+    auto passed_web_state = std::make_unique<web::FakeWebState>();
+    web::FakeWebState* web_state = passed_web_state.get();
     web_state->SetNavigationManager(std::move(navigation_manager));
     web_state->SetHasOpener(opener);
     // Ensure that the tab helper is created.

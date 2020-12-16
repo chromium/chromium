@@ -22,7 +22,6 @@
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/chrome/test/ocmock/OCMockObject+BreakpadControllerTesting.h"
 #import "ios/testing/scoped_block_swizzler.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #include "net/base/network_change_notifier.h"
 #include "testing/platform_test.h"

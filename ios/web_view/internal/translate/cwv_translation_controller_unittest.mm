@@ -18,9 +18,9 @@
 #include "components/translate/core/browser/translate_pref_names.h"
 #include "components/translate/core/browser/translate_prefs.h"
 #import "ios/web/public/deprecated/crw_test_js_injection_receiver.h"
-#include "ios/web/public/test/fakes/test_browser_state.h"
-#import "ios/web/public/test/fakes/test_navigation_manager.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#include "ios/web/public/test/fakes/fake_browser_state.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/scoped_testing_web_client.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "ios/web/public/web_client.h"
@@ -79,7 +79,7 @@ class CWVTranslationControllerTest : public TestWithLocaleAndResources {
  protected:
   CWVTranslationControllerTest() {
     auto test_navigation_manager =
-        std::make_unique<web::TestNavigationManager>();
+        std::make_unique<web::FakeNavigationManager>();
     test_navigation_manager->SetBrowserState(&browser_state_);
     web_state_.SetBrowserState(&browser_state_);
     web_state_.SetNavigationManager(std::move(test_navigation_manager));
@@ -157,8 +157,8 @@ class CWVTranslationControllerTest : public TestWithLocaleAndResources {
   TestLanguageModel language_model_;
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<translate::TranslateAcceptLanguages> accept_languages_;
-  web::TestBrowserState browser_state_;
-  web::TestWebState web_state_;
+  web::FakeBrowserState browser_state_;
+  web::FakeWebState web_state_;
   MockWebViewTranslateClient* translate_client_;
   CWVTranslationController* translation_controller_;
   std::unique_ptr<translate::TranslatePrefs> translate_prefs_;

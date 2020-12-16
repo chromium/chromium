@@ -9,7 +9,7 @@
 #include "base/test/task_environment.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/proxy_config/pref_proxy_config_tracker_impl.h"
-#import "ios/web/public/test/fakes/test_web_client.h"
+#import "ios/web/public/test/fakes/fake_web_client.h"
 #include "ios/web/public/test/scoped_testing_web_client.h"
 #include "ios/web/public/test/test_web_thread.h"
 #include "ios/web/web_thread_impl.h"
@@ -42,7 +42,7 @@ class TestIOThread : public io_thread::IOSIOThread {
 
 class IOSIOThreadTest : public PlatformTest {
  public:
-  IOSIOThreadTest() : web_client_(std::make_unique<web::TestWebClient>()) {
+  IOSIOThreadTest() : web_client_(std::make_unique<web::FakeWebClient>()) {
     web::WebThreadImpl::CreateTaskExecutor();
 
     ui_thread_ = std::make_unique<web::TestWebThread>(

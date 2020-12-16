@@ -9,7 +9,7 @@
 #import "ios/chrome/browser/network_activity/network_activity_indicator_manager.h"
 #import "ios/chrome/test/fakes/fake_download_manager_tab_helper_delegate.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "net/url_request/url_fetcher_response_writer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
@@ -27,7 +27,7 @@ const char kMimeType[] = "";
 class DownloadManagerTabHelperTest : public PlatformTest {
  protected:
   DownloadManagerTabHelperTest()
-      : web_state_(std::make_unique<web::TestWebState>()),
+      : web_state_(std::make_unique<web::FakeWebState>()),
         delegate_([[FakeDownloadManagerTabHelperDelegate alloc] init]) {
     DownloadManagerTabHelper::CreateForWebState(web_state_.get(), delegate_);
   }
@@ -36,7 +36,7 @@ class DownloadManagerTabHelperTest : public PlatformTest {
     return DownloadManagerTabHelper::FromWebState(web_state_.get());
   }
 
-  std::unique_ptr<web::TestWebState> web_state_;
+  std::unique_ptr<web::FakeWebState> web_state_;
   FakeDownloadManagerTabHelperDelegate* delegate_;
 };
 

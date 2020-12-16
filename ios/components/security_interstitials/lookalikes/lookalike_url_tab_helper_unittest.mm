@@ -11,7 +11,7 @@
 #include "ios/components/security_interstitials/lookalikes/lookalike_url_container.h"
 #include "ios/components/security_interstitials/lookalikes/lookalike_url_tab_allow_list.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "net/base/mac/url_conversions.h"
 #include "testing/platform_test.h"
 
@@ -58,7 +58,7 @@ class LookalikeUrlTabHelperTest : public PlatformTest {
   base::HistogramTester histogram_tester_;
 
  private:
-  web::TestWebState web_state_;
+  web::FakeWebState web_state_;
   LookalikeUrlTabAllowList* allow_list_;
 };
 

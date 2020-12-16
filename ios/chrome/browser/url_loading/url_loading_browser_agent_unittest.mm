@@ -26,8 +26,8 @@
 #include "ios/chrome/test/block_cleanup_test.h"
 #include "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/testing/ocmock_complex_type_helper.h"
-#import "ios/web/public/test/fakes/test_navigation_manager.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "third_party/ocmock/gtest_support.h"
 
@@ -105,11 +105,11 @@ class URLLoadingBrowserAgentTest : public BlockCleanupTest {
   }
 
   // Returns a new unique_ptr containing a test webstate.
-  std::unique_ptr<web::TestWebState> CreateTestWebState() {
-    auto web_state = std::make_unique<web::TestWebState>();
+  std::unique_ptr<web::FakeWebState> CreateFakeWebState() {
+    auto web_state = std::make_unique<web::FakeWebState>();
     web_state->SetBrowserState(chrome_browser_state_);
     web_state->SetNavigationManager(
-        std::make_unique<web::TestNavigationManager>());
+        std::make_unique<web::FakeNavigationManager>());
     return web_state;
   }
 
@@ -129,14 +129,14 @@ TEST_F(URLLoadingBrowserAgentTest, TestSwitchToTab) {
   WebStateList* web_state_list = browser_->GetWebStateList();
   ASSERT_EQ(0, web_state_list->count());
 
-  std::unique_ptr<web::TestWebState> web_state = CreateTestWebState();
+  std::unique_ptr<web::FakeWebState> web_state = CreateFakeWebState();
   web::WebState* web_state_ptr = web_state.get();
   web_state->SetCurrentURL(GURL("http://test/1"));
   web_state_list->InsertWebState(0, std::move(web_state),
                                  WebStateList::INSERT_FORCE_INDEX,
                                  WebStateOpener());
 
-  std::unique_ptr<web::TestWebState> web_state_2 = CreateTestWebState();
+  std::unique_ptr<web::FakeWebState> web_state_2 = CreateFakeWebState();
   web::WebState* web_state_ptr_2 = web_state_2.get();
   GURL url("http://test/2");
   web_state_2->SetCurrentURL(url);
@@ -160,7 +160,7 @@ TEST_F(URLLoadingBrowserAgentTest, TestSwitchToTabFromNTP) {
   WebStateList* web_state_list = browser_->GetWebStateList();
   ASSERT_EQ(0, web_state_list->count());
 
-  std::unique_ptr<web::TestWebState> web_state = CreateTestWebState();
+  std::unique_ptr<web::FakeWebState> web_state = CreateFakeWebState();
   web::WebState* web_state_ptr = web_state.get();
   web_state->SetCurrentURL(GURL("chrome://newtab"));
   web_state_list->InsertWebState(0, std::move(web_state),
@@ -170,7 +170,7 @@ TEST_F(URLLoadingBrowserAgentTest, TestSwitchToTabFromNTP) {
   NewTabPageTabHelper::CreateForWebState(web_state_ptr);
   NewTabPageTabHelper::FromWebState(web_state_ptr)->SetDelegate(mock_delegate);
 
-  std::unique_ptr<web::TestWebState> web_state_2 = CreateTestWebState();
+  std::unique_ptr<web::FakeWebState> web_state_2 = CreateFakeWebState();
   web::WebState* web_state_ptr_2 = web_state_2.get();
   GURL url("http://test/2");
   web_state_2->SetCurrentURL(url);
@@ -195,7 +195,7 @@ TEST_F(URLLoadingBrowserAgentTest, TestSwitchToClosedTab) {
   WebStateList* web_state_list = browser_->GetWebStateList();
   ASSERT_EQ(0, web_state_list->count());
 
-  std::unique_ptr<web::TestWebState> web_state = CreateTestWebState();
+  std::unique_ptr<web::FakeWebState> web_state = CreateFakeWebState();
   web_state->SetCurrentURL(GURL("chrome://newtab"));
   web::WebState* web_state_ptr = web_state.get();
   web_state_list->InsertWebState(0, std::move(web_state),

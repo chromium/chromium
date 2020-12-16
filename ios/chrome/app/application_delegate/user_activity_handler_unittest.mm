@@ -41,7 +41,7 @@
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/testing/scoped_block_swizzler.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "net/base/mac/url_conversions.h"
 #include "net/test/gtest_util.h"
 #include "testing/platform_test.h"
@@ -828,13 +828,12 @@ TEST_F(UserActivityHandlerTest, HandleStartupParamsU2F) {
   std::unique_ptr<WebStateList> web_state_list_ =
       std::make_unique<WebStateList>(&_webStateListDelegate);
 
-  auto testWebState = std::make_unique<web::TestWebState>();
-  TabIdTabHelper::CreateForWebState(testWebState.get());
-  FakeU2FTabHelper::CreateForWebState(testWebState.get());
-  web::WebState* web_state = testWebState.get();
-  web_state_list_->InsertWebState(0, std::move(testWebState),
-                                  WebStateList::INSERT_NO_FLAGS,
-                                  WebStateOpener());
+  auto web_state = std::make_unique<web::FakeWebState>();
+  TabIdTabHelper::CreateForWebState(web_state.get());
+  FakeU2FTabHelper::CreateForWebState(web_state.get());
+  web::WebState* web_state_ptr = web_state.get();
+  web_state_list_->InsertWebState(
+      0, std::move(web_state), WebStateList::INSERT_NO_FLAGS, WebStateOpener());
 
   std::unique_ptr<Browser> browser_ = std::make_unique<TestBrowser>(
       browser_state_.get(), web_state_list_.get());
@@ -848,7 +847,7 @@ TEST_F(UserActivityHandlerTest, HandleStartupParamsU2F) {
 
   std::string urlRepresentation = base::StringPrintf(
       "chromium://u2f-callback?isU2F=1&tabID=%s",
-      base::SysNSStringToUTF8(GetTabIdForWebState(web_state)).c_str());
+      base::SysNSStringToUTF8(GetTabIdForWebState(web_state_ptr)).c_str());
 
   GURL gurl(urlRepresentation);
   AppStartupParameters* startupParams =
@@ -882,7 +881,7 @@ TEST_F(UserActivityHandlerTest, HandleStartupParamsU2F) {
 
   // Tests.
   EXPECT_OCMOCK_VERIFY(startupInformationMock);
-  EXPECT_EQ(gurl, GetU2FTabHelperForWebState(web_state)->url());
+  EXPECT_EQ(gurl, GetU2FTabHelperForWebState(web_state_ptr)->url());
   EXPECT_TRUE(tabOpener.urlLoadParams.web_params.url.is_empty());
   EXPECT_TRUE(tabOpener.urlLoadParams.web_params.virtual_url.is_empty());
 }

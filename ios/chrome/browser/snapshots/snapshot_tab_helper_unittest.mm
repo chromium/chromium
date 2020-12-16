@@ -12,7 +12,7 @@
 #import "ios/chrome/browser/ui/image_util/image_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/web/tab_id_tab_helper.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
@@ -100,7 +100,7 @@ class SnapshotTabHelperTest : public PlatformTest {
     SnapshotTabHelper::FromWebState(&web_state_)
         ->SetSnapshotCache(snapshot_cache_);
 
-    // Add a fake view to the TestWebState. This will be used to capture the
+    // Add a fake view to the FakeWebState. This will be used to capture the
     // snapshot. By default the WebState is not ready for taking snapshot.
     CGRect frame = {CGPointZero, kWebStateViewSize};
     UIView* view = [[UIView alloc] initWithFrame:frame];
@@ -134,7 +134,7 @@ class SnapshotTabHelperTest : public PlatformTest {
   TabHelperSnapshotGeneratorDelegate* delegate_ = nil;
   SnapshotCache* snapshot_cache_ = nil;
   NSString* snapshot_id_ = nil;
-  web::TestWebState web_state_;
+  web::FakeWebState web_state_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(SnapshotTabHelperTest);
@@ -350,8 +350,7 @@ TEST_F(SnapshotTabHelperTest, RemoveSnapshot) {
 
 TEST_F(SnapshotTabHelperTest, ClosingWebStateDoesNotRemoveSnapshot) {
   id partialMock = OCMPartialMock(snapshot_cache_);
-  std::unique_ptr<web::WebState> web_state =
-      std::make_unique<web::TestWebState>();
+  auto web_state = std::make_unique<web::FakeWebState>();
   TabIdTabHelper::CreateForWebState(web_state.get());
 
   NSString* tab_id = TabIdTabHelper::FromWebState(web_state.get())->tab_id();

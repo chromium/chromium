@@ -7,7 +7,7 @@
 #include "components/ukm/ios/ukm_url_recorder.h"
 #include "components/ukm/test_ukm_recorder.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
 #include "testing/platform_test.h"
@@ -33,7 +33,7 @@ class PageloadForegroundDurationTabHelperTest : public PlatformTest {
   }
 
   base::test::TaskEnvironment environment_;
-  web::TestWebState web_state_;
+  web::FakeWebState web_state_;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
 };
 

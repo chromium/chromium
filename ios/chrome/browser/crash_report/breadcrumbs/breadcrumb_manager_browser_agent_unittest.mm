@@ -24,7 +24,7 @@
 #include "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #include "ios/chrome/test/ios_chrome_scoped_testing_chrome_browser_state_manager.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #include "ios/web/public/ui/java_script_dialog_type.h"
 #import "ios/web/public/web_state.h"
@@ -37,7 +37,7 @@
 namespace {
 // Creates test state, inserts it into WebState list and activates.
 void InsertWebState(Browser* browser) {
-  auto web_state = std::make_unique<web::TestWebState>();
+  auto web_state = std::make_unique<web::FakeWebState>();
   InfoBarManagerImpl::CreateForWebState(web_state.get());
   BreadcrumbManagerTabHelper::CreateForWebState(web_state.get());
   browser->GetWebStateList()->InsertWebState(

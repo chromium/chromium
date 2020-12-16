@@ -14,8 +14,8 @@
 #include "ios/chrome/browser/ui/badges/badge_type_util.h"
 #import "ios/chrome/browser/ui/infobars/infobar_feature.h"
 #import "ios/chrome/browser/ui/infobars/test/fake_infobar_ui_delegate.h"
-#import "ios/web/public/test/fakes/test_navigation_manager.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -39,7 +39,7 @@ class InfobarBadgeTabHelperTest : public PlatformTest {
 
     // Setup navigation manager. Needed for InfobarManager.
     web_state_.SetNavigationManager(
-        std::make_unique<web::TestNavigationManager>());
+        std::make_unique<web::FakeNavigationManager>());
 
     // Create the InfobarManager for web_state_.
     InfoBarManagerImpl::CreateForWebState(&web_state_);
@@ -69,7 +69,7 @@ class InfobarBadgeTabHelperTest : public PlatformTest {
   }
 
   base::test::ScopedFeatureList feature_list_;
-  web::TestWebState web_state_;
+  web::FakeWebState web_state_;
   FakeInfobarTabHelperDelegate* delegate_ = nil;
 };
 

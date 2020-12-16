@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/platform_test.h"
 
@@ -43,9 +43,9 @@ class AllWebStateListObservationRegistrarTest : public PlatformTest {
   }
 
   void AppendNewWebState(Browser* browser) {
-    auto test_web_state = std::make_unique<web::TestWebState>();
+    auto fake_web_state = std::make_unique<web::FakeWebState>();
     browser->GetWebStateList()->InsertWebState(
-        WebStateList::kInvalidIndex, std::move(test_web_state),
+        WebStateList::kInvalidIndex, std::move(fake_web_state),
         WebStateList::INSERT_NO_FLAGS, WebStateOpener());
   }
 

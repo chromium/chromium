@@ -8,7 +8,7 @@
 
 #include "base/macros.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/platform_test.h"
 
@@ -31,7 +31,7 @@ class PrerenderServiceImplTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<PrerenderService> service_;
-  web::TestWebState web_state_;
+  web::FakeWebState web_state_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(PrerenderServiceImplTest);

@@ -35,7 +35,7 @@
 #import "ios/chrome/test/app/tab_test_util.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_manager.h"
-#include "ios/web/public/test/fakes/test_web_state_observer.h"
+#include "ios/web/public/test/fakes/fake_web_state_observer.h"
 #include "net/base/mac/url_conversions.h"
 #import "third_party/breakpad/breakpad/src/client/ios/BreakpadController.h"
 
@@ -266,8 +266,8 @@ bool PurgeCachedWebViewPages() {
   web_state->SetWebUsageEnabled(false);
   web_state->SetWebUsageEnabled(true);
 
-  auto observer = std::make_unique<web::TestWebStateObserver>(web_state);
-  web::TestWebStateObserver* observer_ptr = observer.get();
+  auto observer = std::make_unique<web::FakeWebStateObserver>(web_state);
+  web::FakeWebStateObserver* observer_ptr = observer.get();
 
   web_state->GetNavigationManager()->LoadIfNecessary();
 

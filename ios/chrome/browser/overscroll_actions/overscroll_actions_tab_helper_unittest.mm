@@ -13,7 +13,7 @@
 #import "ios/chrome/common/ui/colors/dynamic_color_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/test/fakes/fake_overscroll_actions_controller_delegate.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
@@ -78,7 +78,7 @@ class OverscrollActionsTabHelperTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<ChromeBrowserState> browser_state_;
-  web::TestWebState web_state_;
+  web::FakeWebState web_state_;
   FakeOverscrollActionsControllerDelegate* overscroll_delegate_;
   CRWWebViewScrollViewProxy* scroll_view_proxy_;
   UIScrollView* ui_scroll_view_;

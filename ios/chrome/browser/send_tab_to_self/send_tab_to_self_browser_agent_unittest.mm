@@ -20,8 +20,8 @@
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/web/public/navigation/navigation_item.h"
-#import "ios/web/public/test/fakes/test_navigation_manager.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "net/base/mac/url_conversions.h"
 #import "testing/gtest_mac.h"
@@ -113,33 +113,32 @@ class SendTabToSelfBrowserAgentTest : public PlatformTest {
             ->GetSendTabToSelfModel());
   }
 
-  web::TestWebState* AppendNewWebState(const GURL& url) {
+  web::FakeWebState* AppendNewWebState(const GURL& url) {
     return AppendNewWebState(url, WebStateList::INSERT_ACTIVATE,
                              /*is_visible=*/true);
   }
 
-  web::TestWebState* AppendNewWebState(const GURL& url,
+  web::FakeWebState* AppendNewWebState(const GURL& url,
                                        WebStateList::InsertionFlags flags,
                                        bool is_visible) {
-    auto test_web_state = std::make_unique<web::TestWebState>();
-    test_web_state->SetCurrentURL(url);
+    auto fake_web_state = std::make_unique<web::FakeWebState>();
+    fake_web_state->SetCurrentURL(url);
     // Create a navigation item to match the URL and give it a title.
     std::unique_ptr<web::NavigationItem> item = web::NavigationItem::Create();
     item->SetURL(url);
     item->SetTitle(base::UTF8ToUTF16("Page title"));
-    std::unique_ptr<web::TestNavigationManager> navigation_manager =
-        std::make_unique<web::TestNavigationManager>();
+    auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
     navigation_manager->SetLastCommittedItem(item.get());
     // Test nav manager doesn't own its items, so move |item| into the storage
     // vector to define its lifetime.
     navigation_items_.push_back(std::move(item));
-    test_web_state->SetNavigationManager(std::move(navigation_manager));
+    fake_web_state->SetNavigationManager(std::move(navigation_manager));
 
     // Capture a pointer to the created web state to return.
-    web::TestWebState* inserted_web_state = test_web_state.get();
+    web::FakeWebState* inserted_web_state = fake_web_state.get();
     InfoBarManagerImpl::CreateForWebState(inserted_web_state);
     browser_->GetWebStateList()->InsertWebState(WebStateList::kInvalidIndex,
-                                                std::move(test_web_state),
+                                                std::move(fake_web_state),
                                                 flags, WebStateOpener());
 
     if (is_visible) {
