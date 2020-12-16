@@ -15,7 +15,10 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 
-class AppWindowBase;
+namespace ui {
+class BaseWindow;
+}
+
 class ShelfContextMenu;
 
 // This is a ShelfItemDelegate for abstract app windows (extension or ARC).
@@ -27,16 +30,16 @@ class ShelfContextMenu;
 class AppWindowLauncherItemController : public ash::ShelfItemDelegate,
                                         public aura::WindowObserver {
  public:
-  using WindowList = std::list<AppWindowBase*>;
+  using WindowList = std::list<ui::BaseWindow*>;
 
   explicit AppWindowLauncherItemController(const ash::ShelfID& shelf_id);
   ~AppWindowLauncherItemController() override;
 
-  void AddWindow(AppWindowBase* window);
-  void RemoveWindow(AppWindowBase* window);
+  void AddWindow(ui::BaseWindow* window);
+  void RemoveWindow(ui::BaseWindow* window);
 
   void SetActiveWindow(aura::Window* window);
-  AppWindowBase* GetAppWindow(aura::Window* window, bool include_hidden);
+  ui::BaseWindow* GetAppWindow(aura::Window* window, bool include_hidden);
 
   // ash::ShelfItemDelegate overrides:
   AppWindowLauncherItemController* AsAppWindowLauncherItemController() override;
@@ -71,7 +74,7 @@ class AppWindowLauncherItemController : public ash::ShelfItemDelegate,
 
  protected:
   // Returns last active window in the controller or first window.
-  AppWindowBase* GetLastActiveWindow();
+  ui::BaseWindow* GetLastActiveWindow();
 
  private:
   friend class ChromeLauncherControllerTest;
@@ -97,7 +100,7 @@ class AppWindowLauncherItemController : public ash::ShelfItemDelegate,
   // Pointer to the most recently active app window
   // TODO(khmel): Get rid of |last_active_window_| and provide more reliable
   // way to determine active window.
-  AppWindowBase* last_active_window_ = nullptr;
+  ui::BaseWindow* last_active_window_ = nullptr;
 
   // Scoped list of observed windows (for removal on destruction)
   ScopedObserver<aura::Window, aura::WindowObserver> observed_windows_{this};
