@@ -74,6 +74,7 @@ class TabSharingUIViews : public TabSharingUI,
   // WebContentsObserver:
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
+  void WebContentsDestroyed() override;
 
  private:
   void CreateInfobarsForAllTabs();

@@ -256,6 +256,10 @@ void TabSharingUIViews::DidFinishNavigation(content::NavigationHandle* handle) {
   }
 }
 
+void TabSharingUIViews::WebContentsDestroyed() {
+  StopSharing();
+}
+
 void TabSharingUIViews::CreateInfobarsForAllTabs() {
   BrowserList* browser_list = BrowserList::GetInstance();
   for (auto* browser : *browser_list) {
@@ -301,6 +305,9 @@ void TabSharingUIViews::CreateTabCaptureIndicator() {
   const blink::MediaStreamDevice device(
       blink::mojom::MediaStreamType::GUM_TAB_VIDEO_CAPTURE,
       shared_tab_media_id_.ToString(), std::string());
+  if (!shared_tab_)
+    return;
+
   tab_capture_indicator_ui_ = MediaCaptureDevicesDispatcher::GetInstance()
                                   ->GetMediaStreamCaptureIndicator()
                                   ->RegisterMediaStream(shared_tab_, {device});
