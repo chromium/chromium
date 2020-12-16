@@ -11,9 +11,7 @@
 #include "third_party/blink/renderer/core/paint/background_image_geometry.h"
 #include "third_party/blink/renderer/core/paint/box_model_object_painter.h"
 #include "third_party/blink/renderer/core/paint/box_painter_base.h"
-#include "third_party/blink/renderer/core/paint/nine_piece_image_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
@@ -208,46 +206,16 @@ void InlineFlowBoxPainter::PaintMask(const PaintInfo& paint_info,
   PhysicalRect paint_rect = AdjustedFrameRect(paint_offset);
   DrawingRecorder recorder(paint_info.context, inline_flow_box_,
                            paint_info.phase, VisualRect(paint_rect));
+
   bool object_has_multiple_boxes = inline_flow_box_.PrevForSameLayoutObject() ||
                                    inline_flow_box_.NextForSameLayoutObject();
-
   const auto& box_model = *To<LayoutBoxModelObject>(
       LineLayoutAPIShim::LayoutObjectFrom(inline_flow_box_.BoxModelObject()));
-  // Figure out if we need to push a transparency layer to render our mask.
   BackgroundImageGeometry geometry(box_model);
   BoxModelObjectPainter box_painter(box_model, &inline_flow_box_);
-  PaintFillLayers(box_painter, paint_info, Color::kTransparent,
-                  style_.MaskLayers(), paint_rect, geometry,
-                  object_has_multiple_boxes);
-
-  const auto& mask_nine_piece_image = style_.MaskBoxImage();
-  const auto* mask_box_image = mask_nine_piece_image.GetImage();
-  bool has_box_image = mask_box_image && mask_box_image->CanRender();
-  if (!has_box_image || !mask_box_image->IsLoaded()) {
-    // Don't paint anything while we wait for the image to load.
-    return;
-  }
-
-  // The simple case is where we are the only box for this object. In those
-  // cases only a single call to draw is required.
-  PhysicalRect mask_image_paint_rect = paint_rect;
-  GraphicsContextStateSaver state_saver(paint_info.context, false);
-  if (object_has_multiple_boxes) {
-    // We have a mask image that spans multiple lines.
-    state_saver.Save();
-    // FIXME: What the heck do we do with RTL here? The math we're using is
-    // obviously not right, but it isn't even clear how this should work at all.
-    mask_image_paint_rect =
-        PaintRectForImageStrip(paint_rect, TextDirection::kLtr);
-    FloatRect clip_rect(ClipRectForNinePieceImageStrip(
-        style_, inline_flow_box_.SidesToInclude(), mask_nine_piece_image,
-        paint_rect));
-    // TODO(chrishtr): this should be pixel-snapped.
-    paint_info.context.Clip(clip_rect);
-  }
-  NinePieceImagePainter::Paint(paint_info.context, image_observer_, *document_,
-                               node_, mask_image_paint_rect, style_,
-                               mask_nine_piece_image);
+  InlineBoxPainterBase::PaintMask(box_painter, paint_info, paint_rect, geometry,
+                                  object_has_multiple_boxes,
+                                  inline_flow_box_.SidesToInclude());
 }
 
 // This method should not be needed. See crbug.com/530659.

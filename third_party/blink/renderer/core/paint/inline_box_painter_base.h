@@ -63,6 +63,12 @@ class InlineBoxPainterBase {
                       const PhysicalRect&,
                       BackgroundImageGeometry& geometry,
                       bool object_has_multiple_boxes);
+  void PaintMask(BoxPainterBase&,
+                 const PaintInfo&,
+                 const PhysicalRect& paint_rect,
+                 BackgroundImageGeometry&,
+                 bool object_has_multiple_boxes,
+                 PhysicalBoxSides sides_to_include);
   virtual void PaintNormalBoxShadow(const PaintInfo&,
                                     const ComputedStyle&,
                                     const PhysicalRect& paint_rect) = 0;
