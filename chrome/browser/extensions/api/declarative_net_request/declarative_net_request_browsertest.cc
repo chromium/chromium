@@ -1747,9 +1747,15 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   }
 }
 
+#if defined(OS_MAC) && !defined(NDEBUG)
+// Times out on mac-debug: https://crbug.com/1159418
+#define MAYBE_ChromeURLS DISABLED_ChromeURLS
+#else
+#define MAYBE_ChromeURLS ChromeURLS
+#endif
 // Ensure extensions can't intercept chrome:// urls, even after explicitly
 // requesting access to <all_urls>.
-IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, ChromeURLS) {
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, MAYBE_ChromeURLS) {
   // Have the extension block all chrome:// urls.
   TestRule rule = CreateGenericRule();
   rule.condition->url_filter =
