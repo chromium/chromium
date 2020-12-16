@@ -18,10 +18,7 @@ SettingsIdleLoadV3BrowserTest.prototype = {
       'chrome://settings/test_loader.html?module=settings/idle_load_tests.js',
 
   /** @override */
-  extraLibraries: [
-    '//third_party/mocha/mocha.js',
-    '../mocha_adapter.js',
-  ],
+  extraLibraries: [],
 
   /** @override */
   isAsync: true,

@@ -20,10 +20,7 @@ const EduCoexistenceTest = class extends PolymerTest {
 
   /** @override */
   get extraLibraries() {
-    return [
-      '//third_party/mocha/mocha.js',
-      '//chrome/test/data/webui/mocha_adapter.js',
-    ];
+    return [];
   }
 
   /** @param {string} testName The name of the test to run. */

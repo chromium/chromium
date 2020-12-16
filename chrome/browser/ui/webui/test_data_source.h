@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_TEST_DATA_SOURCE_H_
 #define CHROME_BROWSER_UI_WEBUI_TEST_DATA_SOURCE_H_
 
+#include <map>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -16,7 +17,7 @@
 class TestDataSource : public content::URLDataSource {
  public:
   explicit TestDataSource(std::string root);
-  ~TestDataSource() override = default;
+  ~TestDataSource() override;
 
  private:
   void StartDataRequest(
@@ -42,6 +43,7 @@ class TestDataSource : public content::URLDataSource {
 
   base::FilePath src_root_;
   base::FilePath gen_root_;
+  std::map<std::string, std::string> custom_paths_;
 
   DISALLOW_COPY_AND_ASSIGN(TestDataSource);
 };

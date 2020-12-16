@@ -25,10 +25,7 @@ UsbInternalsTest.prototype = {
   isAsync: true,
 
   /** @override */
-  extraLibraries: [
-    '//third_party/mocha/mocha.js',
-    '//chrome/test/data/webui/mocha_adapter.js',
-  ],
+  extraLibraries: [],
 };
 
 TEST_F('UsbInternalsTest', 'WebUIValueRenderTest', function() {

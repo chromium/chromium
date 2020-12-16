@@ -35,8 +35,6 @@ ScanningAppBrowserTest.prototype = {
       'scanning/scanning_app_unified_test.js',
 
   extraLibraries: [
-    '//third_party/mocha/mocha.js',
-    '//chrome/test/data/webui/mocha_adapter.js',
     '//chrome/test/data/webui/test_browser_proxy.js',
     '//ui/webui/resources/js/assert.js',
     '//ui/webui/resources/js/promise_resolver.js',

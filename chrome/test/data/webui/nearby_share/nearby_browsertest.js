@@ -23,10 +23,7 @@ const NearbyBrowserTest = class extends PolymerTest {
    * @override
    */
   get extraLibraries() {
-    return [
-      '//third_party/mocha/mocha.js',
-      '//chrome/test/data/webui/mocha_adapter.js',
-    ];
+    return [];
   }
 
   /** @override */

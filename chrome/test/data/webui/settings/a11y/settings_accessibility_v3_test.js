@@ -69,8 +69,6 @@ SettingsAccessibilityV3Test.prototype = {
 
   // Include files that define the mocha tests.
   extraLibraries: [
-    '//third_party/mocha/mocha.js',
-    '//chrome/test/data/webui/mocha_adapter.js',
     '//third_party/axe-core/axe.js',
   ],
 

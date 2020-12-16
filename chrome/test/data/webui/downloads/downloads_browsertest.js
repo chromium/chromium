@@ -18,10 +18,7 @@ var DownloadsTest = class extends PolymerTest {
 
   /** @override */
   get extraLibraries() {
-    return [
-      '//third_party/mocha/mocha.js',
-      '//chrome/test/data/webui/mocha_adapter.js',
-    ];
+    return [];
   }
 };
 
@@ -66,6 +63,14 @@ var DownloadsUrlTest = class extends DownloadsTest {
   /** @override */
   get browsePreload() {
     return 'chrome://downloads/a/b/';
+  }
+
+  /** @override */
+  get extraLibraries() {
+    return [
+      '//third_party/mocha/mocha.js',
+      '//chrome/test/data/webui/mocha_adapter.js',
+    ];
   }
 };
 

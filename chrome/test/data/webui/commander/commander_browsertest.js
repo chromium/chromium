@@ -14,12 +14,7 @@ var CommanderWebUIBrowserTest = class extends PolymerTest {
   }
   /** @override */
   get extraLibraries() {
-    return [
-      // Even though PolymerTest includes this, we need to override it to
-      // avoid double-importing cr.m.js
-      '//third_party/mocha/mocha.js',
-      '//chrome/test/data/webui/mocha_adapter.js',
-    ];
+    return [];
   }
 };
 

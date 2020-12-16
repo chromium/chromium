@@ -18,10 +18,7 @@ CrostiniUpgraderBrowserTest.prototype = {
   browsePreload:
       'chrome://crostini-upgrader/test_loader.html?module=chromeos/crostini_upgrader_app_test.js',
 
-  extraLibraries: [
-    '//third_party/mocha/mocha.js',
-    '//chrome/test/data/webui/mocha_adapter.js',
-  ],
+  extraLibraries: [],
 
   featureList: {enabled: ['chromeos::features::kCrostiniWebUIUpgrader']},
 };

@@ -38,7 +38,14 @@ TestDataSource::TestDataSource(std::string root) {
   gen_root_ = exe_dir.AppendASCII("gen/chrome/test/data/" + root)
                   .NormalizePathSeparators();
   DCHECK(exe_dir.IsParent(gen_root_));
+
+  custom_paths_ = {
+      {"/chai.js", "third_party/chaijs/chai.js"},
+      {"/mocha.js", "third_party/mocha/mocha.js"},
+  };
 }
+
+TestDataSource::~TestDataSource() = default;
 
 std::string TestDataSource::GetSource() {
   return "test";
@@ -104,12 +111,14 @@ void TestDataSource::ReadFile(
 
   GURL url = GetURLForPath(path);
   CHECK(url.is_valid());
-  if (url.path() == "/chai.js") {
+
+  // First check if a custom path mapping exists for the requested URL.
+  auto it = custom_paths_.find(url.path());
+  if (it != custom_paths_.end()) {
     base::FilePath src_root;
     CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &src_root));
     base::FilePath file_path =
-        src_root.AppendASCII("third_party/chaijs/chai.js")
-            .NormalizePathSeparators();
+        src_root.AppendASCII(it->second).NormalizePathSeparators();
     CHECK(base::ReadFileToString(file_path, &content))
         << url.spec() << "=" << file_path.value();
     scoped_refptr<base::RefCountedString> response =

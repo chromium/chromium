@@ -19,10 +19,7 @@ const BookmarksFocusTest = class extends PolymerInteractiveUITest {
 
   /** @override */
   get extraLibraries() {
-    return [
-      '//third_party/mocha/mocha.js',
-      '//chrome/test/data/webui/mocha_adapter.js',
-    ];
+    return [];
   }
 };
 
