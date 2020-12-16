@@ -1261,55 +1261,6 @@ crbug.com/1068610 external/wpt/css/css-color/predefined-003.html [ Failure ]
 
 # ====== Style team owned tests to here ======
 
-# ====== Form Controls Refresh (chrome://flags/#form-controls-refresh) failures from here ======
-
-# ======
-# From this point until the end of the Form Controls Refresh section, these are
-# in-progress rebaselines, tracked at crbug.com/1053725.
-#
-# PLEASE DO NOT PUT ANYTHING INSIDE THIS SECTION!!
-# ======
-
-
-# ====
-# These need additional triage:
-crbug.com/1053725 [ Mac ] paint/invalidation/repaint-overlay/layers-overlay.html [ Skip ]
-crbug.com/1053725 [ Mac ] virtual/layout_ng_block_frag/external/wpt/css/css-multicol/multicol-basic-006.xht [ Skip ]
-crbug.com/1053725 [ Mac ] tables/mozilla_expected_failures/bugs/bug2479-5.html [ Skip ]
-crbug.com/1053725 [ Mac ] tables/mozilla_expected_failures/bugs/bug45621.html [ Skip ]
-crbug.com/1053725 [ Mac ] tables/mozilla_expected_failures/bugs/bug58402-2.html [ Skip ]
-crbug.com/1053725 [ Mac ] tables/mozilla_expected_failures/bugs/bug92647-1.html [ Skip ]
-crbug.com/1053725 [ Mac ] tables/mozilla_expected_failures/collapsing_borders/bug41262-5.html [ Skip ]
-crbug.com/1053725 [ Mac ] tables/mozilla_expected_failures/collapsing_borders/bug41262-6.html [ Skip ]
-crbug.com/1053725 [ Mac ] tables/mozilla_expected_failures/core/captions1.html [ Skip ]
-crbug.com/1053725 [ Mac ] tables/mozilla_expected_failures/core/captions2.html [ Skip ]
-crbug.com/1053725 [ Mac ] transforms/transformed-caret.html [ Skip ]
-crbug.com/1053725 [ Mac ] transforms/transformed-focused-text-input.html [ Skip ]
-crbug.com/1053725 [ Mac ] transforms/2d/zoom-menulist.html [ Skip ]
-crbug.com/1053725 [ Mac ] transforms/3d/general/perspective-non-layer.html [ Skip ]
-crbug.com/1053725 [ Mac ] fast/forms/implicit-submission.html [ Skip ]
-crbug.com/1053725 [ Mac ] fast/forms/select/option-mouseevents.html [ Skip ]
-crbug.com/1053725 [ Mac ] fast/forms/select/menulist-popup-open-hide-using-keyboard.html [ Skip ]
-crbug.com/1053725 [ Mac ] fast/css/button-height.html [ Skip ]
-crbug.com/1053725 [ Mac ] fast/css-grid-layout/preferred-width-computed-after-layout.html [ Skip ]
-crbug.com/1053725 [ Mac ] editing/selection/replaced-boundaries-3.html [ Skip ]
-crbug.com/1053725 [ Mac ] fast/forms/textarea/textarea-metrics.html [ Skip ]
-
-# Flaky on Win7
-crbug.com/1053725 [ Win7 ] fast/forms/calendar-picker/date-picker-appearance-disabled-previous-month.html [ Pass Failure ]
-
-# ======
-# ====== End of rebaselines for crbug.com/1053725 ======
-# ======
-#
-# PLEASE put new 1053725-related files below this line (AND NOT ABOVE IT!!)...
-#
-#crbug.com/1053725 ...
-
-
-
-# ====== Form Controls Refresh failures until here ======
-
 
 # Bug in FormControlsRefresh <select multiple> tap behavior:
 crbug.com/1045672 fast/forms/select/listbox-tap.html [ Failure ]
@@ -5833,6 +5784,9 @@ crbug.com/1123116 external/wpt/feature-policy/reporting/serial-reporting.https.h
 crbug.com/1123116 external/wpt/feature-policy/reporting/sync-xhr-reporting.html [ Timeout ]
 crbug.com/1123116 external/wpt/feature-policy/reporting/usb-reporting.https.html [ Timeout ]
 crbug.com/1123116 external/wpt/feature-policy/reporting/xr-reporting.https.html [ Timeout ]
+
+crbug.com/1159445 [ Mac ] paint/invalidation/repaint-overlay/layers-overlay.html [ Failure ]
+crbug.com/1159446 [ Mac ] virtual/layout_ng_block_frag/external/wpt/css/css-multicol/multicol-basic-006.xht [ Failure ]
 
 crbug.com/1140329 http/tests/devtools/network/network-filter-service-worker.js [ Pass Timeout Failure ]
 crbug.com/1140329 virtual/threaded/external/wpt/web-animations/timing-model/animations/updating-the-finished-state.html [ Pass Failure Timeout ]
