@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.history;
 
 import static androidx.test.espresso.intent.Intents.intended;
+import static androidx.test.espresso.intent.Intents.intending;
 import static androidx.test.espresso.intent.Intents.times;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasAction;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasData;
@@ -13,6 +14,8 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
+import android.app.Activity;
+import android.app.Instrumentation.ActivityResult;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -37,7 +40,6 @@ import org.chromium.base.test.util.CloseableOnMainThread;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
@@ -209,19 +211,23 @@ public class HistoryActivityTest {
     @Test
     @SmallTest
     public void testOpenItem() throws Exception {
+        intending(allOf(hasAction(equalTo(Intent.ACTION_VIEW)), hasData(mItem1.getUrl())))
+                .respondWith(new ActivityResult(Activity.RESULT_OK, null));
+
         clickItem(2);
-        // Match history item open intent twice (once for launcher, once for tab activity)
-        intended(
-            allOf(
-                hasAction(equalTo(Intent.ACTION_VIEW)),
-                hasData(mItem1.getUrl())),
-            times(2));
+
+        intended(allOf(hasAction(equalTo(Intent.ACTION_VIEW)), hasData(mItem1.getUrl())), times(1));
     }
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1157189")
     public void testOpenSelectedItems() throws Exception {
+        // Stub out intent responses to prevent them from actually being sent.
+        intending(allOf(hasAction(equalTo(Intent.ACTION_VIEW)), hasData(mItem1.getUrl())))
+                .respondWith(new ActivityResult(Activity.RESULT_OK, null));
+        intending(allOf(hasAction(equalTo(Intent.ACTION_VIEW)), hasData(mItem2.getUrl())))
+                .respondWith(new ActivityResult(Activity.RESULT_OK, null));
+
         toggleItemSelection(2);
         toggleItemSelection(3);
 
@@ -231,16 +237,8 @@ public class HistoryActivityTest {
                             R.id.selection_mode_open_in_incognito, 0));
         });
 
-        intended(
-            allOf(
-                hasAction(equalTo(Intent.ACTION_VIEW)),
-                hasData(mItem1.getUrl())),
-            times(2));
-        intended(
-            allOf(
-                hasAction(equalTo(Intent.ACTION_VIEW)),
-                hasData(mItem2.getUrl())),
-            times(2));
+        intended(allOf(hasAction(equalTo(Intent.ACTION_VIEW)), hasData(mItem1.getUrl())), times(1));
+        intended(allOf(hasAction(equalTo(Intent.ACTION_VIEW)), hasData(mItem2.getUrl())), times(1));
     }
 
     @Test
