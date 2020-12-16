@@ -452,14 +452,14 @@ namespace {
 // order_index is the next three MSB == 010 == 2.
 // sub_order_index_mask is a mask for the remaining bits == 11 (masking to 01
 // for the sub_order_index).
-constexpr size_t OrderIndexShift(size_t order) {
+constexpr uint32_t OrderIndexShift(uint32_t order) {
   if (order < kNumBucketsPerOrderBits + 1)
     return 0;
 
   return order - (kNumBucketsPerOrderBits + 1);
 }
 
-constexpr size_t OrderSubIndexMask(size_t order) {
+constexpr size_t OrderSubIndexMask(uint32_t order) {
   if (order == kBitsPerSizeT)
     return static_cast<size_t>(-1) >> (kNumBucketsPerOrderBits + 1);
 
@@ -467,15 +467,15 @@ constexpr size_t OrderSubIndexMask(size_t order) {
          (kNumBucketsPerOrderBits + 1);
 }
 
-#if defined(ARCH_CPU_64_BITS) && !defined(OS_NACL)
+#if defined(PA_HAS_64_BITS_POINTERS)
 #define BITS_PER_SIZE_T 64
 static_assert(kBitsPerSizeT == 64, "");
 #else
 #define BITS_PER_SIZE_T 32
 static_assert(kBitsPerSizeT == 32, "");
-#endif
+#endif  // defined(PA_HAS_64_BITS_POINTERS)
 
-constexpr size_t kOrderIndexShift[BITS_PER_SIZE_T + 1] = {
+constexpr uint32_t kOrderIndexShift[BITS_PER_SIZE_T + 1] = {
     OrderIndexShift(0),  OrderIndexShift(1),  OrderIndexShift(2),
     OrderIndexShift(3),  OrderIndexShift(4),  OrderIndexShift(5),
     OrderIndexShift(6),  OrderIndexShift(7),  OrderIndexShift(8),
