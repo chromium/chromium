@@ -925,7 +925,8 @@ IN_PROC_BROWSER_TEST_F(MediaFeedsBrowserTest,
 }
 
 // Flaky on lacros and windows: crbug.com/1124983
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || defined(OS_WIN)
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || defined(OS_WIN) || \
+    defined(UNDEFINED_SANITIZER)
 #define MAYBE_ResetMediaFeed_WebContentsDestroyed \
   DISABLED_ResetMediaFeed_WebContentsDestroyed
 #else
