@@ -14,4 +14,14 @@ void FakeAppLaunchSplashScreenHandler::SetNetworkReady(bool ready) {
   network_ready_ = ready;
 }
 
+void FakeAppLaunchSplashScreenHandler::UpdateAppLaunchState(
+    AppLaunchState state) {
+  state_ = state;
+}
+
+AppLaunchSplashScreenHandler::AppLaunchState
+FakeAppLaunchSplashScreenHandler::GetAppLaunchState() {
+  return state_;
+}
+
 }  // namespace chromeos
