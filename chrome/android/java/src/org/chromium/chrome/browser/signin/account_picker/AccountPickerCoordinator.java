@@ -8,7 +8,10 @@ import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.signin.account_picker.AccountPickerProperties.ItemType;
+import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
@@ -18,6 +21,7 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
  * It is responsible for setting up the account list's view and model and it serves as an access
  * point for users of this package.
  */
+@MainThread
 public class AccountPickerCoordinator {
     /**
      * Listener for account picker.
@@ -52,7 +56,6 @@ public class AccountPickerCoordinator {
      * @param selectedAccountName The name of the account that should be marked as selected.
      * @param showIncognitoRow whether to show the incognito row in the account picker.
      */
-    @MainThread
     public AccountPickerCoordinator(RecyclerView view, Listener listener,
             @Nullable String selectedAccountName, boolean showIncognitoRow) {
         assert listener != null : "The argument AccountPickerCoordinator.Listener cannot be null!";
@@ -60,12 +63,22 @@ public class AccountPickerCoordinator {
         MVCListAdapter.ModelList listModel = new MVCListAdapter.ModelList();
 
         SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(listModel);
-        adapter.registerType(ItemType.ADD_ACCOUNT_ROW, AddAccountRowViewBinder::buildView,
+
+        final boolean isMobileIdentityConsistencyEnabled =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY);
+        adapter.registerType(ItemType.ADD_ACCOUNT_ROW,
+                new LayoutViewBuilder<>(isMobileIdentityConsistencyEnabled
+                                ? R.layout.account_picker_new_account_row
+                                : R.layout.account_picker_new_account_row_legacy),
                 AddAccountRowViewBinder::bindView);
-        adapter.registerType(ItemType.EXISTING_ACCOUNT_ROW, ExistingAccountRowViewBinder::buildView,
+        adapter.registerType(ItemType.EXISTING_ACCOUNT_ROW,
+                new LayoutViewBuilder<>(isMobileIdentityConsistencyEnabled
+                                ? R.layout.account_picker_row
+                                : R.layout.account_picker_row_legacy),
                 ExistingAccountRowViewBinder::bindView);
         adapter.registerType(ItemType.INCOGNITO_ACCOUNT_ROW,
-                IncognitoAccountRowViewBinder::buildView, IncognitoAccountRowViewBinder::bindView);
+                new LayoutViewBuilder<>(R.layout.account_picker_incognito_row),
+                IncognitoAccountRowViewBinder::bindView);
 
         view.setAdapter(adapter);
         mMediator = new AccountPickerMediator(
@@ -75,7 +88,6 @@ public class AccountPickerCoordinator {
     /**
      * Destroys the resources used by the coordinator.
      */
-    @MainThread
     public void destroy() {
         mMediator.destroy();
     }

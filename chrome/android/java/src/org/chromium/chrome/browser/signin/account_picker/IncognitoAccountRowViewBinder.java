@@ -4,11 +4,8 @@
 
 package org.chromium.chrome.browser.signin.account_picker;
 
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.signin.account_picker.AccountPickerProperties.IncognitoAccountRowProperties;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -19,11 +16,6 @@ import org.chromium.ui.modelutil.PropertyModel;
  */
 class IncognitoAccountRowViewBinder {
     private IncognitoAccountRowViewBinder() {}
-
-    static View buildView(ViewGroup parent) {
-        return LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.account_picker_incognito_row, parent, false);
-    }
 
     static void bindView(PropertyModel model, View view, PropertyKey propertyKey) {
         if (propertyKey == IncognitoAccountRowProperties.ON_CLICK_LISTENER) {
