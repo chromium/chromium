@@ -50,14 +50,14 @@ public class ContextMenuParams {
     /**
      * Whether srcUri points to an image.
      *
-     * @since 89
+     * @since 88
      */
     public final boolean isImage;
 
     /**
      * Whether srcUri points to a video.
      *
-     * @since 89
+     * @since 88
      */
     public final boolean isVideo;
 
@@ -65,7 +65,7 @@ public class ContextMenuParams {
      * Whether this link or image/video can be downloaded. Only if this is true can
      * {@link Tab.download} be called.
      *
-     * @since 89
+     * @since 88
      */
     public final boolean canDownload;
 

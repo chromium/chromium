@@ -833,10 +833,10 @@ public class Tab {
      * @throws IllegalArgumentException if {@link ContextMenuParams.canDownload} is false or if
      *         the ContextMenuParams object parameter wasn't constructed by WebLayer.
      *
-     * @since 89
+     * @since 88
      */
     public void download(ContextMenuParams contextMenuParams) {
-        if (WebLayer.getSupportedMajorVersionInternal() < 89) {
+        if (WebLayer.getSupportedMajorVersionInternal() < 88) {
             throw new UnsupportedOperationException();
         }
         if (!contextMenuParams.canDownload) {

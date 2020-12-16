@@ -1106,7 +1106,7 @@ public final class TabImpl extends ITab.Stub {
     private void showContextMenu(ContextMenuParams params, long nativeContextMenuParams)
             throws RemoteException {
         if (WebLayerFactoryImpl.getClientMajorVersion() < 82) return;
-        if (WebLayerFactoryImpl.getClientMajorVersion() < 89) {
+        if (WebLayerFactoryImpl.getClientMajorVersion() < 88) {
             mClient.showContextMenu(ObjectWrapper.wrap(params.getPageUrl().getSpec()),
                     ObjectWrapper.wrap(nonEmptyOrNull(params.getLinkUrl())),
                     ObjectWrapper.wrap(nonEmptyOrNull(params.getLinkText())),

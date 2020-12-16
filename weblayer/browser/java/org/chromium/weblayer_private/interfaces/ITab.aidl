@@ -82,7 +82,5 @@ interface ITab {
   boolean willAutomaticallyReloadAfterCrash() = 28;
   void setDesktopUserAgentEnabled(in boolean enable) = 29;
   boolean isDesktopUserAgentEnabled() = 30;
-
-  // Added in 89
   void download(in IContextMenuParams contextMenuParams) = 31;
 }

@@ -153,7 +153,7 @@ public class TabCallbackTest {
         file.delete();
     }
 
-    @MinWebLayerVersion(89)
+    @MinWebLayerVersion(88)
     @Test
     @SmallTest
     public void testDownloadFromContextMenu() throws TimeoutException {
@@ -169,7 +169,7 @@ public class TabCallbackTest {
         waitForFileExist(tempDownloadDirectory, "lorem_ipsum.txt");
     }
 
-    @MinWebLayerVersion(89)
+    @MinWebLayerVersion(88)
     @Test
     @SmallTest
     public void testDownloadFromContextMenuImg() throws TimeoutException {
