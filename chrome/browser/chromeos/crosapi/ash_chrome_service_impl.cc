@@ -14,6 +14,7 @@
 #include "chrome/browser/chromeos/crosapi/account_manager_ash.h"
 #include "chrome/browser/chromeos/crosapi/browser_manager.h"
 #include "chrome/browser/chromeos/crosapi/cert_database_ash.h"
+#include "chrome/browser/chromeos/crosapi/clipboard_ash.h"
 #include "chrome/browser/chromeos/crosapi/feedback_ash.h"
 #include "chrome/browser/chromeos/crosapi/file_manager_ash.h"
 #include "chrome/browser/chromeos/crosapi/keystore_service_ash.h"
@@ -46,7 +47,8 @@ AshChromeServiceImpl::AshChromeServiceImpl(
           g_browser_process->local_state())),
       screen_manager_ash_(std::make_unique<ScreenManagerAsh>()),
       cert_database_ash_(std::make_unique<CertDatabaseAsh>()),
-      test_controller_ash_(std::make_unique<TestControllerAsh>()) {
+      test_controller_ash_(std::make_unique<TestControllerAsh>()),
+      clipboard_ash_(std::make_unique<ClipboardAsh>()) {
   // TODO(hidehiko): Remove non-critical log from here.
   // Currently this is the signal that the connection is established.
   LOG(WARNING) << "AshChromeService connected.";
@@ -166,6 +168,11 @@ void AshChromeServiceImpl::BindCertDatabase(
 void AshChromeServiceImpl::BindTestController(
     mojo::PendingReceiver<mojom::TestController> receiver) {
   test_controller_ash_->BindReceiver(std::move(receiver));
+}
+
+void AshChromeServiceImpl::BindClipboard(
+    mojo::PendingReceiver<mojom::Clipboard> receiver) {
+  clipboard_ash_->BindReceiver(std::move(receiver));
 }
 
 void AshChromeServiceImpl::OnLacrosStartup(mojom::LacrosInfoPtr lacros_info) {

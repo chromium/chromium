@@ -184,12 +184,13 @@ bool IsLacrosWindow(const aura::Window* window) {
 
 base::flat_map<base::Token, uint32_t> GetInterfaceVersions() {
   static_assert(
-      crosapi::mojom::AshChromeService::Version_ == 9,
+      crosapi::mojom::AshChromeService::Version_ == 10,
       "if you add a new crosapi, please add it to the version map here");
   InterfaceVersions versions;
   AddVersion<crosapi::mojom::AccountManager>(&versions);
   AddVersion<crosapi::mojom::AshChromeService>(&versions);
   AddVersion<crosapi::mojom::CertDatabase>(&versions);
+  AddVersion<crosapi::mojom::Clipboard>(&versions);
   AddVersion<crosapi::mojom::Feedback>(&versions);
   AddVersion<crosapi::mojom::FileManager>(&versions);
   AddVersion<crosapi::mojom::KeystoreService>(&versions);

@@ -23,6 +23,10 @@ namespace content {
 class DesktopCapturerLacros;
 }  // namespace content
 
+namespace crosapi {
+class ScopedAllowSyncCall;
+}  // namespace crosapi
+
 namespace ui {
 class Compositor;
 }  // namespace ui
@@ -74,6 +78,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) SyncCallRestrictions {
   // Lacros-chrome is allowed to make sync calls to ash-chrome to mimic
   // cross-platform sync APIs.
   friend class content::DesktopCapturerLacros;
+  friend class crosapi::ScopedAllowSyncCall;
   friend class mojo::ScopedAllowSyncCallForTesting;
   // For destroying the GL context/surface that draw to a platform window before
   // the platform window is destroyed.

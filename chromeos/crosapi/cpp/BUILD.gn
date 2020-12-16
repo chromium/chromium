@@ -16,10 +16,13 @@ component("cpp") {
     "bitmap_util.h",
     "crosapi_constants.cc",
     "crosapi_constants.h",
+    "scoped_allow_sync_call.cc",
+    "scoped_allow_sync_call.h",
   ]
   configs += [ ":crosapi_implementation" ]
   deps = [
     "//base",
+    "//mojo/public/cpp/bindings",
     "//skia",
   ]
 }

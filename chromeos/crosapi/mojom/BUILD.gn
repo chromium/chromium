@@ -9,6 +9,7 @@ mojom("mojom") {
     "account_manager.mojom",
     "bitmap.mojom",
     "cert_database.mojom",
+    "clipboard.mojom",
     "crosapi.mojom",
     "feedback.mojom",
     "file_manager.mojom",

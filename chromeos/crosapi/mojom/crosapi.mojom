@@ -6,6 +6,7 @@ module crosapi.mojom;
 
 import "chromeos/crosapi/mojom/account_manager.mojom";
 import "chromeos/crosapi/mojom/cert_database.mojom";
+import "chromeos/crosapi/mojom/clipboard.mojom";
 import "chromeos/crosapi/mojom/feedback.mojom";
 import "chromeos/crosapi/mojom/file_manager.mojom";
 import "chromeos/crosapi/mojom/keystore_service.mojom";
@@ -42,14 +43,23 @@ struct LacrosInfo {
 // milestone when you added it, to help us reason about compatibility between
 // lacros-chrome and older ash-chrome binaries.
 //
-// Next version: 10
-// Next method id: 15
+// Next version: 11
+// Next method id: 16
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e"]
 interface AshChromeService {
   // Binds Chrome OS Account Manager for Identity management.
   // Added in M87.
   [MinVersion=4]
   BindAccountManager@7(pending_receiver<AccountManager> receiver);
+
+  // Binds the CertDatabase interface for initializing certificate database in
+  // Lacros-Chrome.
+  // Added in M89.
+  [MinVersion=7] BindCertDatabase@12(pending_receiver<CertDatabase> receiver);
+
+  // Bind the clipboard interface to allow lacros-chrome to interact with the
+  // system clipboard.
+  [MinVersion=10] BindClipboard@15(pending_receiver<Clipboard> receiver);
 
   // Binds the FileManager interface for showing files, folders, etc.
   // Added in M88.
@@ -103,11 +113,6 @@ interface AshChromeService {
   // Added in M88.
   [MinVersion=6] BindMediaSessionAudioFocusDebug@11(
       pending_receiver<media_session.mojom.AudioFocusManagerDebug> receiver);
-
-  // Binds the CertDatabase interface for initializing certificate database in
-  // Lacros-Chrome.
-  // Added in M89.
-  [MinVersion=7] BindCertDatabase@12(pending_receiver<CertDatabase> receiver);
 
   // Binds the test controller service, which tests can use to mutate ash. This
   // is not available on production devices.

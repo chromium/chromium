@@ -146,6 +146,12 @@
 #include "chrome/browser/signin/dice_web_signin_interceptor_factory.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/cpp/scoped_allow_sync_call.h"
+#include "chromeos/crosapi/mojom/clipboard.mojom.h"
+#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#endif
+
 #if defined(OS_ANDROID)
 using password_manager::CredentialCache;
 #endif
@@ -1305,14 +1311,39 @@ void ChromePasswordManagerClient::OnPaste() {
           << web_contents()->GetMainFrame()->GetRenderViewHost();
 #endif
 
-  ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
   base::string16 text;
-  // Given that this clipboard data read happens in the background and not
-  // initiated by a user gesture, then the user shouldn't see a notification if
-  // the clipboard is restricted by the rules of data leak prevention policy.
-  ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
-      ui::EndpointType::kDefault, /*notify_if_restricted=*/false);
-  clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, &data_dst, &text);
+  bool used_crosapi_workaround = false;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // On Lacros, the ozone/wayland clipboard implementation is asynchronous by
+  // default and runs a nested message loop to fake synchroncity. This in turn
+  // causes crashes. See https://crbug.com/1155662 for details. In the short
+  // term, we skip ozone/wayland entirely and use a synchronous crosapi to get
+  // clipboard text.
+  // TODO(https://crbug.com/913422): This logic can be removed once all
+  // clipboard APIs are async.
+  auto* service = chromeos::LacrosChromeServiceImpl::Get();
+  if (service->IsClipboardAvailable()) {
+    used_crosapi_workaround = true;
+    std::string text_utf8;
+    {
+      crosapi::ScopedAllowSyncCall allow_sync_call;
+      service->clipboard_remote()->GetCopyPasteText(&text_utf8);
+    }
+    text = base::UTF8ToUTF16(text_utf8);
+  }
+#endif
+
+  if (!used_crosapi_workaround) {
+    ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
+    // Given that this clipboard data read happens in the background and not
+    // initiated by a user gesture, then the user shouldn't see a notification
+    // if the clipboard is restricted by the rules of data leak prevention
+    // policy.
+    ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
+        ui::EndpointType::kDefault, /*notify_if_restricted=*/false);
+    clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, &data_dst, &text);
+  }
+
   was_on_paste_called_ = true;
   password_reuse_detection_manager_.OnPaste(std::move(text));
 }

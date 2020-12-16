@@ -3225,6 +3225,7 @@ if (is_chromeos_lacros) {
     sources = [
       "../browser/lacros/browser_test_util.cc",
       "../browser/lacros/browser_test_util.h",
+      "../browser/lacros/clipboard_lacros_browsertest.cc",
       "../browser/lacros/file_manager_lacros_browsertest.cc",
       "../browser/lacros/keystore_service_lacros_browsertest.cc",
       "../browser/lacros/media_session_lacros_browsertest.cc",

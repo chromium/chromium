@@ -202,6 +202,17 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
     return test_controller_remote_;
   }
 
+  // clipboard_remote() can only be used if this method returns true.
+  bool IsClipboardAvailable();
+
+  // This must be called on the affine sequence. It exposes a remote that can
+  // be used to interface with the clipboard
+  mojo::Remote<crosapi::mojom::Clipboard>& clipboard_remote() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
+    DCHECK(IsClipboardAvailable());
+    return clipboard_remote_;
+  }
+
   // --------------------------------------------------------------------------
   // Some clients will want to use mojo::Remotes on arbitrary sequences (e.g.
   // background threads). The following methods allow the client to construct a
@@ -295,6 +306,7 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
   mojo::Remote<crosapi::mojom::KeystoreService> keystore_service_remote_;
   mojo::Remote<crosapi::mojom::FileManager> file_manager_remote_;
   mojo::Remote<crosapi::mojom::TestController> test_controller_remote_;
+  mojo::Remote<crosapi::mojom::Clipboard> clipboard_remote_;
 
   // This member is instantiated on the affine sequence alongside the
   // constructor. All subsequent invocations of this member, including

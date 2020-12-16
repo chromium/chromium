@@ -208,6 +208,12 @@ class LacrosChromeServiceNeverBlockingState
     ash_chrome_service_->BindFileManager(std::move(pending_receiver));
   }
 
+  void BindClipboardReceiver(
+      mojo::PendingReceiver<crosapi::mojom::Clipboard> pending_receiver) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    ash_chrome_service_->BindClipboard(std::move(pending_receiver));
+  }
+
   void BindMediaSessionAudioFocusReceiver(
       mojo::PendingReceiver<media_session::mojom::AudioFocusManager>
           pending_receiver) {
@@ -438,6 +444,16 @@ void LacrosChromeServiceImpl::BindReceiver(
             &LacrosChromeServiceNeverBlockingState::BindTestControllerReceiver,
             weak_sequenced_state_, std::move(pending_receiver)));
   }
+
+  if (IsClipboardAvailable()) {
+    mojo::PendingReceiver<crosapi::mojom::Clipboard> pending_receiver =
+        clipboard_remote_.BindNewPipeAndPassReceiver();
+    never_blocking_sequence_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &LacrosChromeServiceNeverBlockingState::BindClipboardReceiver,
+            weak_sequenced_state_, std::move(pending_receiver)));
+  }
 }
 
 // static
@@ -514,6 +530,13 @@ bool LacrosChromeServiceImpl::IsTestControllerAvailable() {
          version.value() >=
              AshChromeService::MethodMinVersions::kBindTestControllerMinVersion;
 #endif
+}
+
+bool LacrosChromeServiceImpl::IsClipboardAvailable() {
+  base::Optional<uint32_t> version = AshChromeServiceVersion();
+  return version &&
+         version.value() >=
+             AshChromeService::MethodMinVersions::kBindClipboardMinVersion;
 }
 
 bool LacrosChromeServiceImpl::IsScreenManagerAvailable() {
