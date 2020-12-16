@@ -4,8 +4,10 @@
 
 #include "chrome/browser/ui/thumbnails/thumbnail_image.h"
 
+#include <algorithm>
 #include <utility>
 
+#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
@@ -15,15 +17,12 @@
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/skia_util.h"
 
-void ThumbnailImage::Observer::OnThumbnailImageAvailable(
-    gfx::ImageSkia thumbnail_image) {}
+ThumbnailImage::Subscription::Subscription(
+    scoped_refptr<ThumbnailImage> thumbnail)
+    : thumbnail_(std::move(thumbnail)) {}
 
-void ThumbnailImage::Observer::OnCompressedThumbnailDataAvailable(
-    CompressedThumbnailData thumbnail_data) {}
-
-base::Optional<gfx::Size> ThumbnailImage::Observer::GetThumbnailSizeHint()
-    const {
-  return base::nullopt;
+ThumbnailImage::Subscription::~Subscription() {
+  thumbnail_->HandleSubscriptionDestroyed(this);
 }
 
 ThumbnailImage::Delegate::~Delegate() {
@@ -46,29 +45,17 @@ ThumbnailImage::~ThumbnailImage() {
     delegate_->thumbnail_ = nullptr;
 }
 
-void ThumbnailImage::AddObserver(Observer* observer) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(observer);
-  if (!observers_.HasObserver(observer)) {
-    const bool is_first_observer = !observers_.might_have_observers();
-    observers_.AddObserver(observer);
-    if (is_first_observer && delegate_)
-      delegate_->ThumbnailImageBeingObservedChanged(true);
-  }
-}
+std::unique_ptr<ThumbnailImage::Subscription> ThumbnailImage::Subscribe() {
+  // Use explicit new since Subscription constructor is private.
+  auto subscription =
+      base::WrapUnique(new Subscription(base::WrapRefCounted(this)));
+  subscribers_.insert(subscribers_.end(), subscription.get());
 
-void ThumbnailImage::RemoveObserver(Observer* observer) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(observer);
-  if (observers_.HasObserver(observer)) {
-    observers_.RemoveObserver(observer);
-    if (delegate_ && !observers_.might_have_observers())
-      delegate_->ThumbnailImageBeingObservedChanged(false);
-  }
-}
+  // Notify |delegate_| if this is the first subscriber.
+  if (subscribers_.size() == 1)
+    delegate_->ThumbnailImageBeingObservedChanged(true);
 
-bool ThumbnailImage::HasObserver(const Observer* observer) const {
-  return observers_.HasObserver(observer);
+  return subscription;
 }
 
 void ThumbnailImage::AssignSkBitmap(SkBitmap bitmap) {
@@ -139,18 +126,22 @@ void ThumbnailImage::NotifyUncompressedDataObservers(gfx::ImageSkia image) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (async_operation_finished_callback_)
     async_operation_finished_callback_.Run();
-  for (auto& observer : observers_) {
-    auto size_hint = observer.GetThumbnailSizeHint();
-    observer.OnThumbnailImageAvailable(
-        size_hint ? CropPreviewImage(image, *size_hint) : image);
+
+  for (Subscription* subscription : subscribers_) {
+    auto size_hint = subscription->size_hint_;
+    if (subscription->uncompressed_image_callback_)
+      subscription->uncompressed_image_callback_.Run(
+          size_hint ? CropPreviewImage(image, *size_hint) : image);
   }
 }
 
 void ThumbnailImage::NotifyCompressedDataObservers(
     CompressedThumbnailData data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (auto& observer : observers_)
-    observer.OnCompressedThumbnailDataAvailable(data);
+  for (Subscription* subscription : subscribers_) {
+    if (subscription->compressed_image_callback_)
+      subscription->compressed_image_callback_.Run(data);
+  }
 }
 
 // static
@@ -207,4 +198,18 @@ gfx::ImageSkia ThumbnailImage::CropPreviewImage(
   SkBitmap cropped;
   source_image.bitmap()->extractSubset(&cropped, gfx::RectToSkIRect(clip_rect));
   return gfx::ImageSkia::CreateFrom1xBitmap(cropped);
+}
+
+void ThumbnailImage::HandleSubscriptionDestroyed(Subscription* subscription) {
+  // The order of |subscribers_| does not matter. We can simply swap
+  // |subscription| in |subscribers_| with the last element, then pop it
+  // off the back.
+  auto it = std::find(subscribers_.begin(), subscribers_.end(), subscription);
+  DCHECK(it != subscribers_.end());
+  std::swap(*it, *(subscribers_.end() - 1));
+  subscribers_.pop_back();
+
+  // If that was the last subscriber, tell |delegate_|.
+  if (subscribers_.empty())
+    delegate_->ThumbnailImageBeingObservedChanged(false);
 }
