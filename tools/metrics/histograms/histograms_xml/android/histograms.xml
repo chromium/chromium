@@ -2262,7 +2262,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.WebView.DevUi.AppLaunch" enum="Boolean"
-    expires_after="2021-01-20">
+    expires_after="2021-12-14">
   <owner>ntfschr@chromium.org</owner>
   <owner>hazems@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
@@ -2274,7 +2274,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.WebView.DevUi.CrashList.CollectionState"
-    enum="AndroidWebViewCrashCollectionState" expires_after="2021-01-20">
+    enum="AndroidWebViewCrashCollectionState" expires_after="2021-12-14">
   <owner>ntfschr@chromium.org</owner>
   <owner>hazems@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
@@ -2289,7 +2289,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.WebView.DevUi.CrashList.CrashInteraction"
-    enum="AndroidWebViewCrashInteraction" expires_after="2021-01-20">
+    enum="AndroidWebViewCrashInteraction" expires_after="2021-12-14">
   <owner>ntfschr@chromium.org</owner>
   <owner>hazems@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
@@ -2306,7 +2306,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.WebView.DevUi.CrashList.NumberShown"
-    units="crash reports" expires_after="2021-01-20">
+    units="crash reports" expires_after="2021-12-14">
   <owner>ntfschr@chromium.org</owner>
   <owner>hazems@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
@@ -2319,7 +2319,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.WebView.DevUi.DeveloperModeBlockingTime" units="ms"
-    expires_after="2021-01-20">
+    expires_after="2021-12-14">
   <owner>ntfschr@chromium.org</owner>
   <owner>hazems@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
@@ -2332,7 +2332,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.WebView.DevUi.DeveloperModeEnabled"
-    enum="BooleanEnabled" expires_after="2021-01-20">
+    enum="BooleanEnabled" expires_after="2021-12-14">
   <owner>ntfschr@chromium.org</owner>
   <owner>hazems@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
@@ -2344,7 +2344,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.WebView.DevUi.FlagLoadingBlockingTime" units="ms"
-    expires_after="2021-01-20">
+    expires_after="2021-12-14">
   <owner>ntfschr@chromium.org</owner>
   <owner>hazems@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
@@ -2357,7 +2357,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.WebView.DevUi.FlagsUi.ToggledFromSearch"
-    enum="Boolean" expires_after="2021-01-20">
+    enum="Boolean" expires_after="2021-12-14">
   <owner>ntfschr@chromium.org</owner>
   <owner>hazems@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
@@ -2371,7 +2371,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Android.WebView.DevUi.FragmentNavigation"
-    enum="AndroidWebViewDevUiFragments" expires_after="2021-01-20">
+    enum="AndroidWebViewDevUiFragments" expires_after="2021-12-14">
 <!-- Name completed by histogram_suffixes
      name="Android.WebView.DevUi.NavType" -->
 
@@ -2387,7 +2387,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.WebView.DevUi.MenuSelection"
-    enum="AndroidWebViewDevUiMenu" expires_after="2021-01-20">
+    enum="AndroidWebViewDevUiMenu" expires_after="2021-12-14">
   <owner>ntfschr@chromium.org</owner>
   <owner>hazems@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
@@ -2398,7 +2398,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.WebView.DevUi.MonochromeIconStateToggled"
-    enum="BooleanEnabled" expires_after="2021-03-21">
+    enum="BooleanEnabled" expires_after="2021-12-14">
   <owner>ntfschr@chromium.org</owner>
   <owner>hazems@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
@@ -2413,7 +2413,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Android.WebView.DevUi.SessionDuration2" units="ms"
-    expires_after="2021-01-20">
+    expires_after="2021-12-14">
 <!-- Name completed by histogram_suffixes
      name="AndroidWebViewFragments" -->
 
@@ -2426,7 +2426,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.WebView.DevUi.ToggledFlagCount" units="flags"
-    expires_after="2021-01-20">
+    expires_after="2021-12-14">
   <owner>ntfschr@chromium.org</owner>
   <owner>hazems@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
