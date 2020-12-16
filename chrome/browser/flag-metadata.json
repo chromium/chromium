@@ -3965,7 +3965,7 @@
   {
     "name": "post-quantum-cecpq2",
     "owners": [ "agl" ],
-    "expiry_milestone": 86
+    "expiry_milestone": 100
   },
   {
     "name": "prefetch-notification-scheduling-integration",
