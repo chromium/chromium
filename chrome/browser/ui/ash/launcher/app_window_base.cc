@@ -43,7 +43,7 @@ bool AppWindowBase::IsFullscreen() const {
 }
 
 gfx::NativeWindow AppWindowBase::GetNativeWindow() const {
-  return widget_->GetNativeWindow();
+  return widget_ ? widget_->GetNativeWindow() : nullptr;
 }
 
 gfx::Rect AppWindowBase::GetRestoredBounds() const {

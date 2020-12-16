@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/ash/launcher/app_service/app_service_app_window_launcher_controller.h"
+#include "chrome/browser/ui/ash/launcher/app_window_base.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
@@ -43,7 +44,7 @@ void AppServiceAppWindowLauncherItemController::ItemSelected(
     // Tapping the shelf icon of an app that's showing PIP means expanding PIP.
     // Even if the app contains multiple windows, we just expand PIP without
     // showing the menu on the shelf icon.
-    for (ui::BaseWindow* window : windows()) {
+    for (AppWindowBase* window : windows()) {
       aura::Window* native_window = window->GetNativeWindow();
       if (native_window->GetProperty(chromeos::kWindowStateTypeKey) ==
           chromeos::WindowStateType::kPip) {

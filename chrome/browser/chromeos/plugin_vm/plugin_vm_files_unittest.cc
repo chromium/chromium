@@ -17,6 +17,7 @@
 #include "chrome/browser/chromeos/plugin_vm/mock_plugin_vm_manager.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_manager_factory.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_util.h"
+#include "chrome/browser/ui/ash/launcher/app_window_base.h"
 #include "chrome/browser/ui/ash/launcher/app_window_launcher_item_controller.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
 #include "chrome/test/base/testing_profile.h"
@@ -26,8 +27,23 @@
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/common/file_system/file_system_types.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/test/mock_base_window.h"
+
+namespace {
+
+class MockAppWindowBase : public AppWindowBase {
+ public:
+  MockAppWindowBase(const ash::ShelfID& shelf_id, views::Widget* widget)
+      : AppWindowBase(shelf_id, widget) {}
+  ~MockAppWindowBase() = default;
+  MockAppWindowBase(const MockAppWindowBase&) = delete;
+  MockAppWindowBase& operator=(const MockAppWindowBase&) = delete;
+
+  MOCK_METHOD(void, Activate, (), ());
+};
+
+}  // namespace
 
 namespace plugin_vm {
 
@@ -156,11 +172,12 @@ TEST_F(PluginVmFilesTest, LaunchPluginVmApp) {
   std::move(launch_plugin_vm_callback).Run(/*success=*/true);
   ASSERT_FALSE(cicerone_response_callback.is_null());
 
+  ash::ShelfID shelf_id(kPluginVmShelfAppId);
   auto launcher_item_controller =
-      std::make_unique<AppWindowLauncherItemController>(
-          ash::ShelfID(kPluginVmShelfAppId));
-  ui::test::MockBaseWindow mock_window;
+      std::make_unique<AppWindowLauncherItemController>(shelf_id);
+  MockAppWindowBase mock_window(shelf_id, nullptr);
   launcher_item_controller->AddWindow(&mock_window);
+  mock_window.SetController(launcher_item_controller.get());
   shelf_model.SetShelfItemDelegate(ash::ShelfID(kPluginVmShelfAppId),
                                    std::move(launcher_item_controller));
   vm_tools::cicerone::LaunchContainerApplicationResponse response;

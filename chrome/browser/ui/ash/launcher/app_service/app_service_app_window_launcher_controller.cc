@@ -553,23 +553,25 @@ void AppServiceAppWindowLauncherController::AddAppWindowToShelf(
 
   AppWindowLauncherItemController* item_controller =
       owner()->shelf_model()->GetAppWindowLauncherItemController(shelf_id);
-  if (item_controller == nullptr) {
-    auto controller =
-        std::make_unique<AppServiceAppWindowLauncherItemController>(shelf_id,
-                                                                    this);
-    item_controller = controller.get();
-    if (!owner()->GetItem(shelf_id)) {
-      owner()->CreateAppLauncherItem(std::move(controller),
-                                     ash::STATUS_RUNNING);
-    } else {
-      owner()->shelf_model()->SetShelfItemDelegate(shelf_id,
-                                                   std::move(controller));
-      owner()->SetItemStatus(shelf_id, ash::STATUS_RUNNING);
-    }
+  if (item_controller) {
+    item_controller->AddWindow(app_window);
+    app_window->SetController(item_controller);
+    return;
   }
 
+  auto controller = std::make_unique<AppServiceAppWindowLauncherItemController>(
+      shelf_id, this);
+  item_controller = controller.get();
   item_controller->AddWindow(app_window);
   app_window->SetController(item_controller);
+
+  if (!owner()->GetItem(shelf_id)) {
+    owner()->CreateAppLauncherItem(std::move(controller), ash::STATUS_RUNNING);
+  } else {
+    owner()->shelf_model()->SetShelfItemDelegate(shelf_id,
+                                                 std::move(controller));
+    owner()->SetItemStatus(shelf_id, ash::STATUS_RUNNING);
+  }
 }
 
 void AppServiceAppWindowLauncherController::RemoveAppWindowFromShelf(
