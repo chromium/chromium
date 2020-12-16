@@ -63,7 +63,8 @@ bool GetRegistryDescriptionFromExtension(const base::string16& file_ext,
 std::vector<FileFilterSpec> FormatFilterForExtensions(
     const std::vector<base::string16>& file_ext,
     const std::vector<base::string16>& ext_desc,
-    bool include_all_files) {
+    bool include_all_files,
+    bool keep_extension_visible) {
   const base::string16 all_ext = L"*.*";
   const base::string16 all_desc =
       l10n_util::GetStringUTF16(IDS_APP_SAVEAS_ALL_FILES);
@@ -112,6 +113,11 @@ std::vector<FileFilterSpec> FormatFilterForExtensions(
       }
       if (desc.empty())
         desc = L"*." + ext_name;
+    } else if (keep_extension_visible) {
+      // Having '*' in the description could cause the windows file dialog to
+      // not include the file extension in the file dialog. So strip out any '*'
+      // characters if `keep_extension_visible` is set.
+      base::ReplaceChars(desc, L"*", L"", &desc);
     }
 
     result.push_back({desc, ext});
@@ -318,9 +324,9 @@ std::vector<FileFilterSpec> SelectFileDialogImpl::GetFilterForFileTypes(
     }
     exts.push_back(ext_string);
   }
-  return FormatFilterForExtensions(exts,
-                                   file_types->extension_description_overrides,
-                                   file_types->include_all_files);
+  return FormatFilterForExtensions(
+      exts, file_types->extension_description_overrides,
+      file_types->include_all_files, file_types->keep_extension_visible);
 }
 
 }  // namespace

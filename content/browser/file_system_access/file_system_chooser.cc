@@ -8,7 +8,9 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/i18n/file_util_icu.h"
+#include "base/i18n/rtl.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "build/build_config.h"
@@ -19,12 +21,20 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "net/base/mime_util.h"
+#include "ui/gfx/text_elider.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 
 namespace content {
 
 namespace {
+
+// The maximum number of unicode code points the description of a file type is
+// allowed to be. Any longer descriptions will be truncated to this length.
+// The exact number here is fairly arbitrary, since font, font size, dialog
+// size and underlying platform all influence how many characters will actually
+// be visible. As such this can be adjusted as needed.
+constexpr int kMaxDescriptionLength = 64;
 
 std::string TypeToString(blink::mojom::ChooseFileSystemEntryType type) {
   switch (type) {
@@ -144,7 +154,16 @@ bool GetFileTypesFromAcceptsOption(
   if (extensions->empty())
     return false;
 
-  *description = option.description;
+  base::string16 sanitized_description = option.description;
+  if (!sanitized_description.empty()) {
+    sanitized_description = base::CollapseWhitespace(
+        sanitized_description, /*trim_sequences_with_line_breaks=*/false);
+    sanitized_description = gfx::TruncateString(
+        sanitized_description, kMaxDescriptionLength, gfx::CHARACTER_BREAK);
+    base::i18n::SanitizeUserSuppliedString(&sanitized_description);
+  }
+  *description = sanitized_description;
+
   return true;
 }
 
