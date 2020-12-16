@@ -1,0 +1,14 @@
+{
+  "name": "Debugger API test for attaching to target with resricted parent",
+  "version": "1.0",
+  "manifest_version": 2,
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "web_accessible_resources": [
+    "subframe.html"
+  ],
+  "permissions": [
+    "debugger"
+  ]
+}
