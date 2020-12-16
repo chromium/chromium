@@ -3833,7 +3833,7 @@
         "test_id_prefix": "ninja://third_party/boringssl:boringssl_ssl_tests/"
       },
       {
-        "experiment_percentage": 10,
+        "experiment_percentage": 25,
         "isolate_profile_data": true,
         "merge": {
           "args": [],

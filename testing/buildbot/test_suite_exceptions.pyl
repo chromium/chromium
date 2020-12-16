@@ -520,7 +520,7 @@
         },
       },
       'Mac10.13 Tests':{
-        'experiment_percentage': 10 # https://crbug.com/1042757
+        'experiment_percentage': 25 # https://crbug.com/1042757
       },
       'Mac10.13 Tests (dbg)': {
         'swarming': {
