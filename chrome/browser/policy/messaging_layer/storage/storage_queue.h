@@ -64,7 +64,8 @@ class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
 
     // Finalizes the upload (e.g. sends the message to server and gets
     // response). Called always, regardless of whether there were errors.
-    virtual void Completed(Status final_status) = 0;
+    // Set |need_encryption_key| if key is needed (initially or periodically).
+    virtual void Completed(bool need_encryption_key, Status final_status) = 0;
   };
 
   // Callback type for UploadInterface provider for this queue.

@@ -192,12 +192,14 @@ class MockUploadClient : public StorageQueue::UploaderInterface {
         .Run(UploadGap(sequencing_information.sequencing_id(), count));
   }
 
-  void Completed(Status status) override { UploadComplete(status); }
+  void Completed(bool need_encryption_key, Status status) override {
+    UploadComplete(need_encryption_key, status);
+  }
 
   MOCK_METHOD(bool, UploadRecord, (uint64_t, base::StringPiece), (const));
   MOCK_METHOD(bool, UploadRecordFailure, (uint64_t, Status), (const));
   MOCK_METHOD(bool, UploadGap, (uint64_t, uint64_t), (const));
-  MOCK_METHOD(void, UploadComplete, (Status), (const));
+  MOCK_METHOD(void, UploadComplete, (bool, Status), (const));
 
   // Helper class for setting up mock client expectations of a successful
   // completion.
@@ -205,7 +207,7 @@ class MockUploadClient : public StorageQueue::UploaderInterface {
    public:
     explicit SetUp(MockUploadClient* client) : client_(client) {}
     ~SetUp() {
-      EXPECT_CALL(*client_, UploadComplete(Eq(Status::StatusOK())))
+      EXPECT_CALL(*client_, UploadComplete(_, Eq(Status::StatusOK())))
           .Times(1)
           .InSequence(client_->test_upload_sequence_);
     }

@@ -101,6 +101,42 @@ const base::FilePath::CharType kReportingDirectory[] =
 
 }  // namespace
 
+// Uploader is passed to Storage in order to upload messages using the
+// UploadClient.
+class ReportingClient::Uploader : public Storage::UploaderInterface {
+ public:
+  using UploadCallback =
+      base::OnceCallback<Status(std::unique_ptr<std::vector<EncryptedRecord>>)>;
+
+  static StatusOr<std::unique_ptr<Uploader>> Create(
+      UploadCallback upload_callback);
+
+  ~Uploader() override;
+  Uploader(const Uploader& other) = delete;
+  Uploader& operator=(const Uploader& other) = delete;
+
+  void ProcessRecord(EncryptedRecord data,
+                     base::OnceCallback<void(bool)> processed_cb) override;
+  void ProcessGap(SequencingInformation start,
+                  uint64_t count,
+                  base::OnceCallback<void(bool)> processed_cb) override;
+
+  void Completed(bool need_encryption_key, Status final_status) override;
+
+ private:
+  explicit Uploader(UploadCallback upload_callback_);
+
+  static void RunUpload(
+      UploadCallback upload_callback,
+      std::unique_ptr<std::vector<EncryptedRecord>> encrypted_records);
+
+  UploadCallback upload_callback_;
+
+  bool completed_{false};
+  std::unique_ptr<std::vector<EncryptedRecord>> encrypted_records_;
+  scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
+};
+
 ReportingClient::Uploader::Uploader(UploadCallback upload_callback)
     : upload_callback_(std::move(upload_callback)),
       encrypted_records_(std::make_unique<std::vector<EncryptedRecord>>()),
@@ -161,7 +197,8 @@ void ReportingClient::Uploader::ProcessGap(
           std::move(processed_cb)));
 }
 
-void ReportingClient::Uploader::Completed(Status final_status) {
+void ReportingClient::Uploader::Completed(bool need_encryption_key,
+                                          Status final_status) {
   if (!final_status.ok()) {
     // No work to do - something went wrong with storage and it no longer wants
     // to upload the records. Let the records die with |this|.
@@ -173,6 +210,10 @@ void ReportingClient::Uploader::Completed(Status final_status) {
     return;
   }
   completed_ = true;
+
+  if (need_encryption_key) {
+    // Attach encryption key information.
+  }
 
   sequenced_task_runner_->PostTask(
       FROM_HERE,

@@ -664,7 +664,8 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
               scoped_refptr<StorageQueue> storage_queue)
       : TaskRunnerContext<Status>(
             base::BindOnce(&UploaderInterface::Completed,
-                           base::Unretained(uploader.get())),
+                           base::Unretained(uploader.get()),
+                           /*need_encryption_key=*/false),
             storage_queue->sequenced_task_runner_),
         uploader_(std::move(uploader)),
         storage_queue_weakptr_factory_{storage_queue.get()} {

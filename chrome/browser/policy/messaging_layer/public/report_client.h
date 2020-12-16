@@ -212,41 +212,7 @@ class ReportingClient {
       CreateReportQueueCallback create_cb);
 
  private:
-  // Uploader is passed to Storage in order to upload messages using the
-  // UploadClient.
-  class Uploader : public Storage::UploaderInterface {
-   public:
-    using UploadCallback = base::OnceCallback<Status(
-        std::unique_ptr<std::vector<EncryptedRecord>>)>;
-
-    static StatusOr<std::unique_ptr<Uploader>> Create(
-        UploadCallback upload_callback);
-
-    ~Uploader() override;
-    Uploader(const Uploader& other) = delete;
-    Uploader& operator=(const Uploader& other) = delete;
-
-    void ProcessRecord(EncryptedRecord data,
-                       base::OnceCallback<void(bool)> processed_cb) override;
-    void ProcessGap(SequencingInformation start,
-                    uint64_t count,
-                    base::OnceCallback<void(bool)> processed_cb) override;
-
-    void Completed(Status final_status) override;
-
-   private:
-    explicit Uploader(UploadCallback upload_callback_);
-
-    static void RunUpload(
-        UploadCallback upload_callback,
-        std::unique_ptr<std::vector<EncryptedRecord>> encrypted_records);
-
-    UploadCallback upload_callback_;
-
-    bool completed_{false};
-    std::unique_ptr<std::vector<EncryptedRecord>> encrypted_records_;
-    scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
-  };
+  class Uploader;
 
   // Holds the creation request for a ReportQueue.
   class CreateReportQueueRequest {

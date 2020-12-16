@@ -77,6 +77,13 @@ void EncryptionModule::EncryptRecord(
   }
 
   // Encryptor enabled: start encryption of the record as a whole.
+  if (!has_encryption_key()) {
+    // Encryption key is not available.
+    std::move(cb).Run(
+        Status(error::NOT_FOUND, "Cannot encrypt record - no key"));
+    return;
+  }
+  // Encryption key is available, encrypt.
   encryptor_->OpenRecord(base::BindOnce(
       [](base::StringPiece record,
          base::OnceCallback<void(StatusOr<EncryptedRecord>)> cb,

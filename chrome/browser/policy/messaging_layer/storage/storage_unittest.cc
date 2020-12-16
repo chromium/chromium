@@ -15,15 +15,19 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/policy/messaging_layer/encryption/decryption.h"
+#include "chrome/browser/policy/messaging_layer/encryption/encryption.h"
 #include "chrome/browser/policy/messaging_layer/encryption/test_encryption_module.h"
 #include "chrome/browser/policy/messaging_layer/storage/storage_configuration.h"
 #include "chrome/browser/policy/messaging_layer/util/status.h"
+#include "chrome/browser/policy/messaging_layer/util/status_macros.h"
 #include "chrome/browser/policy/messaging_layer/util/statusor.h"
 #include "components/policy/proto/record.pb.h"
 #include "components/policy/proto/record_constants.pb.h"
 #include "crypto/sha2.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/boringssl/src/include/openssl/curve25519.h"
 
 using ::testing::_;
 using ::testing::Between;
@@ -75,6 +79,125 @@ class TestEvent {
   ResType result_;
 };
 
+// Context of single decryption. Self-destructs upon completion or failure.
+class SingleDecryptionContext {
+ public:
+  SingleDecryptionContext(
+      const EncryptedRecord& encrypted_record,
+      scoped_refptr<Decryptor> decryptor,
+      base::OnceCallback<void(StatusOr<base::StringPiece>)> response)
+      : encrypted_record_(encrypted_record),
+        decryptor_(decryptor),
+        response_(std::move(response)) {}
+
+  SingleDecryptionContext(const SingleDecryptionContext& other) = delete;
+  SingleDecryptionContext& operator=(const SingleDecryptionContext& other) =
+      delete;
+
+  ~SingleDecryptionContext() {
+    DCHECK(!response_) << "Self-destruct without prior response";
+  }
+
+  void Start() {
+    base::ThreadPool::PostTask(
+        FROM_HERE,
+        base::BindOnce(&SingleDecryptionContext::RetrieveMatchingPrivateKey,
+                       base::Unretained(this)));
+  }
+
+ private:
+  void Respond(StatusOr<base::StringPiece> result) {
+    std::move(response_).Run(result);
+    delete this;
+  }
+
+  void RetrieveMatchingPrivateKey() {
+    // Retrieve private key that matches public key hash.
+    decryptor_->RetrieveMatchingPrivateKey(
+        encrypted_record_.encryption_info().public_key_id(),
+        base::BindOnce(
+            [](SingleDecryptionContext* self,
+               StatusOr<std::string> private_key_result) {
+              if (!private_key_result.ok()) {
+                self->Respond(private_key_result.status());
+                return;
+              }
+              base::ThreadPool::PostTask(
+                  FROM_HERE,
+                  base::BindOnce(&SingleDecryptionContext::DecryptSharedSecret,
+                                 base::Unretained(self),
+                                 private_key_result.ValueOrDie()));
+            },
+            base::Unretained(this)));
+  }
+
+  void DecryptSharedSecret(base::StringPiece private_key) {
+    // Decrypt shared secret from private key and peer public key.
+    auto shared_secret_result = decryptor_->DecryptSecret(
+        private_key, encrypted_record_.encryption_info().encryption_key());
+    if (!shared_secret_result.ok()) {
+      Respond(shared_secret_result.status());
+      return;
+    }
+    base::ThreadPool::PostTask(
+        FROM_HERE, base::BindOnce(&SingleDecryptionContext::OpenRecord,
+                                  base::Unretained(this),
+                                  shared_secret_result.ValueOrDie()));
+  }
+
+  void OpenRecord(base::StringPiece shared_secret) {
+    decryptor_->OpenRecord(
+        shared_secret,
+        base::BindOnce(
+            [](SingleDecryptionContext* self,
+               StatusOr<Decryptor::Handle*> handle_result) {
+              if (!handle_result.ok()) {
+                self->Respond(handle_result.status());
+                return;
+              }
+              base::ThreadPool::PostTask(
+                  FROM_HERE,
+                  base::BindOnce(&SingleDecryptionContext::AddToRecord,
+                                 base::Unretained(self),
+                                 base::Unretained(handle_result.ValueOrDie())));
+            },
+            base::Unretained(this)));
+  }
+
+  void AddToRecord(Decryptor::Handle* handle) {
+    handle->AddToRecord(
+        encrypted_record_.encrypted_wrapped_record(),
+        base::BindOnce(
+            [](SingleDecryptionContext* self, Decryptor::Handle* handle,
+               Status status) {
+              if (!status.ok()) {
+                self->Respond(status);
+                return;
+              }
+              base::ThreadPool::PostTask(
+                  FROM_HERE,
+                  base::BindOnce(&SingleDecryptionContext::CloseRecord,
+                                 base::Unretained(self),
+                                 base::Unretained(handle)));
+            },
+            base::Unretained(this), base::Unretained(handle)));
+  }
+
+  void CloseRecord(Decryptor::Handle* handle) {
+    handle->CloseRecord(base::BindOnce(
+        [](SingleDecryptionContext* self,
+           StatusOr<base::StringPiece> decryption_result) {
+          self->Respond(decryption_result);
+        },
+        base::Unretained(this)));
+  }
+
+ private:
+  const EncryptedRecord encrypted_record_;
+  const scoped_refptr<Decryptor> decryptor_;
+  base::OnceCallback<void(StatusOr<base::StringPiece>)> response_;
+};
+
 class MockUploadClient : public Storage::UploaderInterface {
  public:
   // Mapping of (generation, seq number) to matching record digest. Whenever a
@@ -87,17 +210,145 @@ class MockUploadClient : public Storage::UploaderInterface {
                           uint64_t /*sequencing number*/>,
                std::string /*digest*/>;
 
-  explicit MockUploadClient(LastRecordDigestMap* last_record_digest_map)
-      : last_record_digest_map_(last_record_digest_map) {}
+  explicit MockUploadClient(LastRecordDigestMap* last_record_digest_map,
+                            scoped_refptr<Decryptor> decryptor)
+      : last_record_digest_map_(last_record_digest_map),
+        decryptor_(decryptor) {}
 
   void ProcessRecord(EncryptedRecord encrypted_record,
                      base::OnceCallback<void(bool)> processed_cb) override {
-    WrappedRecord wrapped_record;
-    ASSERT_TRUE(wrapped_record.ParseFromString(
-        encrypted_record.encrypted_wrapped_record()));
-    // Verify generation match.
     const auto& sequencing_information =
         encrypted_record.sequencing_information();
+    if (!encrypted_record.has_encryption_info()) {
+      // Wrapped record is not encrypted.
+      WrappedRecord wrapped_record;
+      ASSERT_TRUE(wrapped_record.ParseFromString(
+          encrypted_record.encrypted_wrapped_record()));
+      VerifyRecord(sequencing_information, std::move(wrapped_record),
+                   std::move(processed_cb));
+      return;
+    }
+    // Decrypt encrypted_record.
+    (new SingleDecryptionContext(
+         encrypted_record, decryptor_,
+         base::BindOnce(
+             [](SequencingInformation sequencing_information,
+                base::OnceCallback<void(bool)> processed_cb,
+                MockUploadClient* client, StatusOr<base::StringPiece> result) {
+               ASSERT_OK(result.status());
+               WrappedRecord wrapped_record;
+               ASSERT_TRUE(wrapped_record.ParseFromArray(
+                   result.ValueOrDie().data(), result.ValueOrDie().size()));
+               // Verify wrapped record once decrypted.
+               client->VerifyRecord(sequencing_information,
+                                    std::move(wrapped_record),
+                                    std::move(processed_cb));
+             },
+             sequencing_information, std::move(processed_cb),
+             base::Unretained(this))))
+        ->Start();
+  }
+
+  void ProcessGap(SequencingInformation start,
+                  uint64_t count,
+                  base::OnceCallback<void(bool)> processed_cb) override {
+    LOG(FATAL) << "Gap not implemented yet";
+  }
+
+  void Completed(bool need_encryption_key, Status status) override {
+    UploadComplete(need_encryption_key, status);
+  }
+
+  MOCK_METHOD(bool,
+              UploadRecord,
+              (Priority, uint64_t, base::StringPiece),
+              (const));
+  MOCK_METHOD(bool, UploadRecordFailure, (Status), (const));
+  MOCK_METHOD(void, UploadComplete, (bool, Status), (const));
+
+  // Helper class for setting up mock client expectations of a successful
+  // completion.
+  class SetUp {
+   public:
+    SetUp(Priority priority, MockUploadClient* client)
+        : priority_(priority), client_(client) {}
+
+    ~SetUp() {
+      EXPECT_CALL(*client_, UploadRecordFailure(_))
+          .Times(0)
+          .InSequence(client_->test_upload_sequence_);
+      EXPECT_CALL(*client_, UploadComplete(/*need_encryption_key=*/false,
+                                           Eq(Status::StatusOK())))
+          .Times(1)
+          .InSequence(client_->test_upload_sequence_);
+    }
+
+    SetUp& Required(uint64_t sequence_number, base::StringPiece value) {
+      EXPECT_CALL(*client_, UploadRecord(Eq(priority_), Eq(sequence_number),
+                                         StrEq(std::string(value))))
+          .InSequence(client_->test_upload_sequence_)
+          .WillOnce(Return(true));
+      return *this;
+    }
+
+    SetUp& Possible(uint64_t sequence_number, base::StringPiece value) {
+      EXPECT_CALL(*client_, UploadRecord(Eq(priority_), Eq(sequence_number),
+                                         StrEq(std::string(value))))
+          .Times(Between(0, 1))
+          .InSequence(client_->test_upload_sequence_)
+          .WillRepeatedly(Return(true));
+      return *this;
+    }
+
+   private:
+    Priority priority_;
+    MockUploadClient* const client_;
+  };
+
+  // Helper class for setting up mock client expectations on empty queue.
+  class SetEmpty {
+   public:
+    SetEmpty(Priority priority, MockUploadClient* client)
+        : priority_(priority), client_(client) {}
+
+    ~SetEmpty() {
+      EXPECT_CALL(*client_, UploadRecord(Eq(priority_), _, _)).Times(0);
+      EXPECT_CALL(*client_, UploadRecordFailure(_)).Times(0);
+      EXPECT_CALL(*client_, UploadComplete(/*need_encryption_key=*/false,
+                                           Property(&Status::error_code,
+                                                    Eq(error::OUT_OF_RANGE))))
+          .Times(1);
+    }
+
+   private:
+    Priority priority_;
+    MockUploadClient* const client_;
+  };
+
+  // Helper class for setting up mock client expectations for key delivery.
+  class SetKeyDelivery {
+   public:
+    SetKeyDelivery(Priority priority, MockUploadClient* client)
+        : priority_(priority), client_(client) {}
+
+    ~SetKeyDelivery() {
+      EXPECT_CALL(*client_, UploadRecord(Eq(priority_), _, _)).Times(0);
+      EXPECT_CALL(*client_, UploadRecordFailure(_)).Times(0);
+      EXPECT_CALL(*client_, UploadComplete(/*need_encryption_key=*/true,
+                                           Eq(Status::StatusOK())))
+          .Times(1);
+    }
+
+   private:
+    Priority priority_;
+    MockUploadClient* const client_;
+  };
+
+ private:
+  void VerifyRecord(SequencingInformation sequencing_information,
+                    WrappedRecord wrapped_record,
+                    base::OnceCallback<void(bool)> processed_cb) {
+    // Verify generation match.
     if (generation_id_.has_value() &&
         generation_id_.value() != sequencing_information.generation_id()) {
       std::move(processed_cb)
@@ -154,124 +405,90 @@ class MockUploadClient : public Storage::UploaderInterface {
                           wrapped_record.record().data()));
   }
 
-  void ProcessGap(SequencingInformation start,
-                  uint64_t count,
-                  base::OnceCallback<void(bool)> processed_cb) override {
-    LOG(FATAL) << "Gap not implemented yet";
-  }
-
-  void Completed(Status status) override { UploadComplete(status); }
-
-  MOCK_METHOD(bool,
-              UploadRecord,
-              (Priority, uint64_t, base::StringPiece),
-              (const));
-  MOCK_METHOD(bool, UploadRecordFailure, (Status), (const));
-  MOCK_METHOD(void, UploadComplete, (Status), (const));
-
-  // Helper class for setting up mock client expectations of a successful
-  // completion.
-  class SetUp {
-   public:
-    SetUp(Priority priority, MockUploadClient* client)
-        : priority_(priority), client_(client) {}
-
-    ~SetUp() {
-      EXPECT_CALL(*client_, UploadRecordFailure(_))
-          .Times(0)
-          .InSequence(client_->test_upload_sequence_);
-      EXPECT_CALL(*client_, UploadComplete(Eq(Status::StatusOK())))
-          .Times(1)
-          .InSequence(client_->test_upload_sequence_);
-    }
-
-    SetUp& Required(uint64_t sequence_number, base::StringPiece value) {
-      EXPECT_CALL(*client_, UploadRecord(Eq(priority_), Eq(sequence_number),
-                                         StrEq(std::string(value))))
-          .InSequence(client_->test_upload_sequence_)
-          .WillOnce(Return(true));
-      return *this;
-    }
-
-    SetUp& Possible(uint64_t sequence_number, base::StringPiece value) {
-      EXPECT_CALL(*client_, UploadRecord(Eq(priority_), Eq(sequence_number),
-                                         StrEq(std::string(value))))
-          .Times(Between(0, 1))
-          .InSequence(client_->test_upload_sequence_)
-          .WillRepeatedly(Return(true));
-      return *this;
-    }
-
-   private:
-    Priority priority_;
-    MockUploadClient* const client_;
-  };
-
-  // Helper class for setting up mock client expectations on empty queue.
-  class SetEmpty {
-   public:
-    SetEmpty(Priority priority, MockUploadClient* client)
-        : priority_(priority), client_(client) {}
-
-    ~SetEmpty() {
-      EXPECT_CALL(*client_, UploadRecord(Eq(priority_), _, _)).Times(0);
-      EXPECT_CALL(*client_, UploadRecordFailure(_)).Times(0);
-      EXPECT_CALL(*client_, UploadComplete(Property(&Status::error_code,
-                                                    Eq(error::OUT_OF_RANGE))))
-          .Times(1);
-    }
-
-   private:
-    Priority priority_;
-    MockUploadClient* const client_;
-  };
-
- private:
   base::Optional<uint64_t> generation_id_;
   LastRecordDigestMap* const last_record_digest_map_;
+  const scoped_refptr<Decryptor> decryptor_;
 
   Sequence test_upload_sequence_;
 };
 
-class StorageTest : public ::testing::TestWithParam<size_t> {
+class StorageTest
+    : public ::testing::TestWithParam<::testing::tuple<bool, size_t>> {
  protected:
   void SetUp() override {
     ASSERT_TRUE(location_.CreateUniqueTempDir());
-    // Encryption is disabled.
+    // Encryption is disabled by default.
     ASSERT_FALSE(EncryptionModule::is_enabled());
+    if (::testing::get<0>(GetParam())) {
+      // Enable encryption.
+      scoped_feature_list_.InitFromCommandLine(
+          {EncryptionModule::kEncryptedReporting}, {});
+      // Create decryption module.
+      auto decryptor_result = Decryptor::Create();
+      ASSERT_OK(decryptor_result.status()) << decryptor_result.status();
+      decryptor_ = std::move(decryptor_result.ValueOrDie());
+      // First creation of Storage would need key delivered.
+      expect_to_need_key_ = true;
+    }
   }
 
-  StatusOr<scoped_refptr<Storage>> CreateStorageTest(
-      const StorageOptions& options) {
-    test_encryption_module_ =
-        base::MakeRefCounted<test::TestEncryptionModule>();
+  void TearDown() override { ResetTestStorage(); }
+
+  StatusOr<scoped_refptr<Storage>> CreateTestStorage(
+      const StorageOptions& options,
+      scoped_refptr<EncryptionModule> encryption_module) {
+    if (expect_to_need_key_) {
+      // Set uploader expectations for any queue; expect no records and need
+      // key. Make sure no uploads happen, and key is requested.
+      EXPECT_CALL(set_mock_uploader_expectations_, Call(_, NotNull()))
+          .WillOnce(Invoke(
+              [](Priority priority, MockUploadClient* mock_upload_client) {
+                MockUploadClient::SetKeyDelivery(priority, mock_upload_client);
+              }));
+    }
+    // Initialize Storage with no key.
     TestEvent<StatusOr<scoped_refptr<Storage>>> e;
     Storage::Create(options,
                     base::BindRepeating(&StorageTest::BuildMockUploader,
                                         base::Unretained(this)),
-                    test_encryption_module_, e.cb());
-    return e.result();
+                    encryption_module, e.cb());
+    ASSIGN_OR_RETURN(auto storage, e.result());
+    if (expect_to_need_key_) {
+      // Provision the storage with a key.
+      // Key delivery must have been requested above.
+      GenerateAndDeliverKey(storage.get());
+    }
+    return storage;
   }
 
-  void CreateStorageTestOrDie(const StorageOptions& options) {
+  void CreateTestStorageOrDie(
+      const StorageOptions& options,
+      scoped_refptr<EncryptionModule> encryption_module =
+          base::MakeRefCounted<EncryptionModule>()) {
     ASSERT_FALSE(storage_) << "StorageTest already assigned";
     StatusOr<scoped_refptr<Storage>> storage_result =
-        CreateStorageTest(options);
+        CreateTestStorage(options, encryption_module);
     ASSERT_OK(storage_result)
         << "Failed to create StorageTest, error=" << storage_result.status();
     storage_ = std::move(storage_result.ValueOrDie());
   }
 
-  StorageOptions BuildStorageOptions() const {
+  void ResetTestStorage() {
+    task_environment_.RunUntilIdle();
+    storage_.reset();
+    expect_to_need_key_ = false;
+  }
+
+  StorageOptions BuildTestStorageOptions() const {
     return StorageOptions()
         .set_directory(base::FilePath(location_.GetPath()))
-        .set_single_file_size(GetParam());
+        .set_single_file_size(::testing::get<1>(GetParam()));
   }
 
   StatusOr<std::unique_ptr<Storage::UploaderInterface>> BuildMockUploader(
       Priority priority) {
-    auto uploader =
-        std::make_unique<MockUploadClient>(&last_record_digest_map_);
+    auto uploader = std::make_unique<MockUploadClient>(&last_record_digest_map_,
+                                                       decryptor_);
     set_mock_uploader_expectations_.Call(priority, uploader.get());
     return uploader;
   }
@@ -299,11 +516,40 @@ class StorageTest : public ::testing::TestWithParam<size_t> {
     ASSERT_OK(c_result) << c_result;
   }
 
+  void GenerateAndDeliverKey(Storage* storage) {
+    ASSERT_TRUE(decryptor_) << "Decryptor not created";
+    // Generate new pair of private key and public value.
+    uint8_t public_value[X25519_PUBLIC_VALUE_LEN];
+    uint8_t private_key[X25519_PRIVATE_KEY_LEN];
+    X25519_keypair(public_value, private_key);
+    TestEvent<StatusOr<Encryptor::PublicKeyId>> prepare_key_pair;
+    decryptor_->RecordKeyPair(
+        std::string(reinterpret_cast<const char*>(private_key),
+                    X25519_PRIVATE_KEY_LEN),
+        std::string(reinterpret_cast<const char*>(public_value),
+                    X25519_PUBLIC_VALUE_LEN),
+        prepare_key_pair.cb());
+    auto prepare_key_result = prepare_key_pair.result();
+    ASSERT_OK(prepare_key_result.status());
+    Encryptor::PublicKeyId new_public_key_id = prepare_key_result.ValueOrDie();
+    // Deliver public key to storage.
+    SignedEncryptionInfo signed_encryption_key;
+    signed_encryption_key.set_public_asymmetric_key(std::string(
+        reinterpret_cast<const char*>(public_value), X25519_PUBLIC_VALUE_LEN));
+    signed_encryption_key.set_public_key_id(new_public_key_id);
+    // TODO(b/170054326): Add key signature.
+    storage->UpdateEncryptionKey(signed_encryption_key);
+  }
+
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
   base::test::ScopedFeatureList scoped_feature_list_;
 
   base::ScopedTempDir location_;
-  scoped_refptr<test::TestEncryptionModule> test_encryption_module_;
+  scoped_refptr<Decryptor> decryptor_;
   scoped_refptr<Storage> storage_;
+  bool expect_to_need_key_{false};
 
   // Test-wide global mapping of seq number to record digest.
   // Serves all MockUploadClients created by test fixture.
@@ -311,9 +557,6 @@ class StorageTest : public ::testing::TestWithParam<size_t> {
 
   ::testing::MockFunction<void(Priority, MockUploadClient*)>
       set_mock_uploader_expectations_;
-
-  base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
 constexpr std::array<const char*, 3> data = {"Rec1111", "Rec222", "Rec33"};
@@ -321,34 +564,34 @@ constexpr std::array<const char*, 3> more_data = {"More1111", "More222",
                                                   "More33"};
 
 TEST_P(StorageTest, WriteIntoNewStorageAndReopen) {
+  CreateTestStorageOrDie(BuildTestStorageOptions());
   EXPECT_CALL(set_mock_uploader_expectations_, Call(_, NotNull())).Times(0);
-  CreateStorageTestOrDie(BuildStorageOptions());
   WriteStringOrDie(FAST_BATCH, data[0]);
   WriteStringOrDie(FAST_BATCH, data[1]);
   WriteStringOrDie(FAST_BATCH, data[2]);
 
-  storage_.reset();
+  ResetTestStorage();
 
-  CreateStorageTestOrDie(BuildStorageOptions());
+  CreateTestStorageOrDie(BuildTestStorageOptions());
 }
 
 TEST_P(StorageTest, WriteIntoNewStorageReopenAndWriteMore) {
+  CreateTestStorageOrDie(BuildTestStorageOptions());
   EXPECT_CALL(set_mock_uploader_expectations_, Call(_, NotNull())).Times(0);
-  CreateStorageTestOrDie(BuildStorageOptions());
   WriteStringOrDie(FAST_BATCH, data[0]);
   WriteStringOrDie(FAST_BATCH, data[1]);
   WriteStringOrDie(FAST_BATCH, data[2]);
 
-  storage_.reset();
+  ResetTestStorage();
 
-  CreateStorageTestOrDie(BuildStorageOptions());
+  CreateTestStorageOrDie(BuildTestStorageOptions());
   WriteStringOrDie(FAST_BATCH, more_data[0]);
   WriteStringOrDie(FAST_BATCH, more_data[1]);
   WriteStringOrDie(FAST_BATCH, more_data[2]);
 }
 
 TEST_P(StorageTest, WriteIntoNewStorageAndUpload) {
-  CreateStorageTestOrDie(BuildStorageOptions());
+  CreateTestStorageOrDie(BuildTestStorageOptions());
   WriteStringOrDie(FAST_BATCH, data[0]);
   WriteStringOrDie(FAST_BATCH, data[1]);
   WriteStringOrDie(FAST_BATCH, data[2]);
@@ -368,14 +611,14 @@ TEST_P(StorageTest, WriteIntoNewStorageAndUpload) {
 }
 
 TEST_P(StorageTest, WriteIntoNewStorageReopenWriteMoreAndUpload) {
-  CreateStorageTestOrDie(BuildStorageOptions());
+  CreateTestStorageOrDie(BuildTestStorageOptions());
   WriteStringOrDie(FAST_BATCH, data[0]);
   WriteStringOrDie(FAST_BATCH, data[1]);
   WriteStringOrDie(FAST_BATCH, data[2]);
 
-  storage_.reset();
+  ResetTestStorage();
 
-  CreateStorageTestOrDie(BuildStorageOptions());
+  CreateTestStorageOrDie(BuildTestStorageOptions());
   WriteStringOrDie(FAST_BATCH, more_data[0]);
   WriteStringOrDie(FAST_BATCH, more_data[1]);
   WriteStringOrDie(FAST_BATCH, more_data[2]);
@@ -398,7 +641,7 @@ TEST_P(StorageTest, WriteIntoNewStorageReopenWriteMoreAndUpload) {
 }
 
 TEST_P(StorageTest, WriteIntoNewStorageAndFlush) {
-  CreateStorageTestOrDie(BuildStorageOptions());
+  CreateTestStorageOrDie(BuildTestStorageOptions());
   WriteStringOrDie(MANUAL_BATCH, data[0]);
   WriteStringOrDie(MANUAL_BATCH, data[1]);
   WriteStringOrDie(MANUAL_BATCH, data[2]);
@@ -419,14 +662,14 @@ TEST_P(StorageTest, WriteIntoNewStorageAndFlush) {
 }
 
 TEST_P(StorageTest, WriteIntoNewStorageReopenWriteMoreAndFlush) {
-  CreateStorageTestOrDie(BuildStorageOptions());
+  CreateTestStorageOrDie(BuildTestStorageOptions());
   WriteStringOrDie(MANUAL_BATCH, data[0]);
   WriteStringOrDie(MANUAL_BATCH, data[1]);
   WriteStringOrDie(MANUAL_BATCH, data[2]);
 
-  storage_.reset();
+  ResetTestStorage();
 
-  CreateStorageTestOrDie(BuildStorageOptions());
+  CreateTestStorageOrDie(BuildTestStorageOptions());
   WriteStringOrDie(MANUAL_BATCH, more_data[0]);
   WriteStringOrDie(MANUAL_BATCH, more_data[1]);
   WriteStringOrDie(MANUAL_BATCH, more_data[2]);
@@ -450,7 +693,7 @@ TEST_P(StorageTest, WriteIntoNewStorageReopenWriteMoreAndFlush) {
 }
 
 TEST_P(StorageTest, WriteAndRepeatedlyUploadWithConfirmations) {
-  CreateStorageTestOrDie(BuildStorageOptions());
+  CreateTestStorageOrDie(BuildTestStorageOptions());
 
   WriteStringOrDie(FAST_BATCH, data[0]);
   WriteStringOrDie(FAST_BATCH, data[1]);
@@ -527,7 +770,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadWithConfirmations) {
 }
 
 TEST_P(StorageTest, WriteAndRepeatedlyImmediateUpload) {
-  CreateStorageTestOrDie(BuildStorageOptions());
+  CreateTestStorageOrDie(BuildTestStorageOptions());
 
   // Upload is initiated asynchronously, so it may happen after the next
   // record is also written. Because of that we set expectations for the
@@ -565,7 +808,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyImmediateUpload) {
 }
 
 TEST_P(StorageTest, WriteAndRepeatedlyImmediateUploadWithConfirmations) {
-  CreateStorageTestOrDie(BuildStorageOptions());
+  CreateTestStorageOrDie(BuildTestStorageOptions());
 
   // Upload is initiated asynchronously, so it may happen after the next
   // record is also written. Because of the Confirmation below, we set
@@ -639,7 +882,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyImmediateUploadWithConfirmations) {
 }
 
 TEST_P(StorageTest, WriteAndRepeatedlyUploadMultipleQueues) {
-  CreateStorageTestOrDie(BuildStorageOptions());
+  CreateTestStorageOrDie(BuildTestStorageOptions());
 
   // Upload is initiated asynchronously, so it may happen after the next
   // record is also written. Because of the Confirmation below, we set
@@ -715,9 +958,10 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadMultipleQueues) {
 }
 
 TEST_P(StorageTest, WriteEncryptFailure) {
-  CreateStorageTestOrDie(BuildStorageOptions());
-  DCHECK(test_encryption_module_);
-  EXPECT_CALL(*test_encryption_module_, EncryptRecord(_, _))
+  auto test_encryption_module =
+      base::MakeRefCounted<test::TestEncryptionModule>();
+  CreateTestStorageOrDie(BuildTestStorageOptions(), test_encryption_module);
+  EXPECT_CALL(*test_encryption_module, EncryptRecord(_, _))
       .WillOnce(WithArg<1>(
           Invoke([](base::OnceCallback<void(StatusOr<EncryptedRecord>)> cb) {
             std::move(cb).Run(Status(error::UNKNOWN, "Failing for tests"));
@@ -727,23 +971,13 @@ TEST_P(StorageTest, WriteEncryptFailure) {
   EXPECT_EQ(result.error_code(), error::UNKNOWN);
 }
 
-TEST_P(StorageTest, InitFailureWithNoKey) {
-  // Enable encryption.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitFromCommandLine(
-      {EncryptionModule::kEncryptedReporting}, {});
-  // TODO(b/170054326): When lack of key file is handled correctly,
-  // rewrite this test accordingly.
-  StatusOr<scoped_refptr<Storage>> storage_result =
-      CreateStorageTest(BuildStorageOptions());
-  ASSERT_FALSE(storage_result.ok()) << "Storage initialized";
-}
-
-INSTANTIATE_TEST_SUITE_P(VaryingFileSize,
-                         StorageTest,
-                         testing::Values(128 * 1024LL * 1024LL,
+INSTANTIATE_TEST_SUITE_P(
+    VaryingFileSize,
+    StorageTest,
+    ::testing::Combine(::testing::Bool() /* true - encryption enabled */,
+                       ::testing::Values(128 * 1024LL * 1024LL,
                                          256 /* two records in file */,
-                                         1 /* single record in file */));
+                                         1 /* single record in file */)));
 
 }  // namespace
 }  // namespace reporting

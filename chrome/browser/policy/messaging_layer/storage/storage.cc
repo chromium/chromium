@@ -142,8 +142,12 @@ class Storage::QueueUploaderInterface : public StorageQueue::UploaderInterface {
                                    std::move(processed_cb));
   }
 
-  void Completed(Status final_status) override {
-    storage_interface_->Completed(final_status);
+  void Completed(bool need_encryption_key, Status final_status) override {
+    // TODO(b/170054326): Add periodic key request.
+    // if (time to update key) {
+    //   need_encryption_key = true;
+    // }
+    storage_interface_->Completed(need_encryption_key, final_status);
   }
 
  private:
@@ -276,8 +280,7 @@ class Storage::KeyInStorage {
         continue;
       }
       uint64_t file_index = 0;
-      bool success = base::StringToUint64(extension, &file_index);
-      if (!success) {
+      if (!base::StringToUint64(extension.substr(1), &file_index)) {
         // Bad extension - not a number. Should not happen, will remove this
         // file.
         continue;
@@ -317,7 +320,7 @@ class Storage::KeyInStorage {
         continue;
       }
       uint64_t file_index = 0;
-      bool success = base::StringToUint64(extension, &file_index);
+      bool success = base::StringToUint64(extension.substr(1), &file_index);
       if (!success) {
         // Bad extension - not a number. Should not happen (file is corrupt).
         continue;
@@ -452,12 +455,18 @@ void Storage::Create(
       } else {
         if (EncryptionModule::is_enabled()) {
           // Encryptor enabled - we cannot proceed with no keys.
-          // TODO(b/170054326): For now - bail out. Change it to allow the
-          // Storage to be initialized, send Upload with no records and
-          // need_encryption_key flag and reject Enqueues until it is
-          // responded.
-          Response(status);
-          return;
+          // Send Upload with need_encryption_key flag and no records.
+          StatusOr<std::unique_ptr<UploaderInterface>> uploader =
+              storage_->start_upload_cb_.Run(
+                  MANUAL_BATCH);  // Any priority would do.
+          if (!uploader.ok()) {
+            Response(uploader.status());
+            return;
+          }
+          uploader.ValueOrDie()->Completed(/*need_encryption_key=*/true,
+                                           Status::StatusOK());
+          // Continue initialization without waiting for it to respond.
+          // Until the response arrives, we will reject Enqueues.
         }
       }
 
@@ -564,9 +573,6 @@ Status Storage::Flush(Priority priority) {
 
 void Storage::UpdateEncryptionKey(SignedEncryptionInfo signed_encryption_key) {
   // TODO(b/170054326): Verify received key signature. Bail out if failed.
-
-  // TODO(b/170054326): Serialize whole signed_encryption_key to a new file,
-  // discard the old one.
 
   // Assign the received key to encryption module.
   encryption_module_->UpdateAsymmetricKey(

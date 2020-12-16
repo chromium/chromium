@@ -31,9 +31,8 @@ void TestEncryptionModuleStrict::UpdateAsymmetricKey(
     base::StringPiece new_public_key,
     Encryptor::PublicKeyId new_public_key_id,
     base::OnceCallback<void(Status)> response_cb) {
-  std::move(response_cb)
-      .Run(Status(error::UNIMPLEMENTED,
-                  "Test Encryption Module does not accept any keys"));
+  // Ignore keys but return success.
+  std::move(response_cb).Run(Status(Status::StatusOK()));
 }
 
 TestEncryptionModuleStrict::~TestEncryptionModuleStrict() = default;
