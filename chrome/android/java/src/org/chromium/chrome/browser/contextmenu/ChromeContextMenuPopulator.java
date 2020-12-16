@@ -68,11 +68,9 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
-import org.chromium.url.URI;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -253,8 +251,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
          * Records the content types when user downloads the file by long pressing the
          * save link context menu option.
          */
-        static void recordSaveLinkTypes(String url) {
-            String extension = MimeTypeMap.getFileExtensionFromUrl(url);
+        static void recordSaveLinkTypes(GURL url) {
+            String extension = MimeTypeMap.getFileExtensionFromUrl(url.getSpec());
             @Type
             int mimeType = Type.UNKNOWN;
             if (extension != null) {
@@ -354,14 +352,10 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     }
 
     private static String getUrlText(ContextMenuParams params) {
-        // The context menu can be created without native library
-        // being loaded. Only use native URL formatting methods
-        // if the native libraries have been loaded.
-        if (BrowserStartupController.getInstance().isFullBrowserStarted()) {
-            return UrlFormatter.formatUrlForDisplayOmitSchemeOmitTrivialSubdomains(
-                    params.getLinkUrl());
-        }
-        return params.getLinkUrl();
+        // ContextMenuParams can only be created after the browser has started.
+        assert BrowserStartupController.getInstance().isFullBrowserStarted();
+        return UrlFormatter.formatUrlForDisplayOmitSchemeOmitTrivialSubdomains(
+                params.getLinkUrl().getSpec());
     }
 
     @Override
@@ -374,7 +368,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         if (mParams.isAnchor()) {
             ModelList linkGroup = new ModelList();
             if (FirstRunStatus.getFirstRunFlowComplete() && !isEmptyUrl(mParams.getUrl())
-                    && UrlUtilities.isAcceptedScheme(mParams.getUrl())) {
+                    && UrlUtilities.isAcceptedScheme(mParams.getUrl().getSpec())) {
                 if (mMode == ContextMenuMode.NORMAL) {
                     linkGroup.add(createListItem(Item.OPEN_IN_NEW_TAB));
                     if (!mItemDelegate.isIncognito() && mItemDelegate.isIncognitoSupported()) {
@@ -391,7 +385,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                             createListItem(Item.OPEN_IN_EPHEMERAL_TAB, mShowEphemeralTabNewLabel));
                 }
             }
-            if (!MailTo.isMailTo(mParams.getLinkUrl())
+            if (!MailTo.isMailTo(mParams.getLinkUrl().getSpec())
                     && !UrlUtilities.isTelScheme(mParams.getLinkUrl())) {
                 linkGroup.add(createListItem(Item.COPY_LINK_ADDRESS));
                 if (!mParams.getLinkText().trim().isEmpty() && !mParams.isImage()) {
@@ -420,18 +414,18 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                         linkGroup.add(createListItem(Item.ADD_TO_CONTACTS));
                     }
                 }
-                if (MailTo.isMailTo(mParams.getLinkUrl())) {
+                if (MailTo.isMailTo(mParams.getLinkUrl().getSpec())) {
                     if (mItemDelegate.supportsSendEmailMessage()) {
                         linkGroup.add(createListItem(Item.SEND_MESSAGE));
                     }
-                    if (!TextUtils.isEmpty(MailTo.parse(mParams.getLinkUrl()).getTo())
+                    if (!TextUtils.isEmpty(MailTo.parse(mParams.getLinkUrl().getSpec()).getTo())
                             && mItemDelegate.supportsAddToContacts()) {
                         linkGroup.add(createListItem(Item.ADD_TO_CONTACTS));
                     }
                 }
             }
             if (UrlUtilities.isTelScheme(mParams.getLinkUrl())
-                    || MailTo.isMailTo(mParams.getLinkUrl())) {
+                    || MailTo.isMailTo(mParams.getLinkUrl().getSpec())) {
                 linkGroup.add(createListItem(Item.COPY));
             }
             if (linkGroup.size() > 0) {
@@ -546,14 +540,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                 items.add(createListItem(Item.OPEN_IN_CHROME));
             } else if (mMode == ContextMenuMode.CUSTOM_TAB
                     && mItemDelegate.supportsOpenInChromeFromCct()) {
-                boolean addNewEntries = false;
-                try {
-                    URI uri = new URI(mParams.getUrl());
-                    if (!UrlUtilities.isInternalScheme(uri) && !isEmptyUrl(mParams.getUrl())) {
-                        addNewEntries = true;
-                    }
-                } catch (URISyntaxException ignore) {
-                }
+                boolean addNewEntries = !UrlUtilities.isInternalScheme(mParams.getUrl())
+                        && !isEmptyUrl(mParams.getUrl());
                 if (SharedPreferencesManager.getInstance().readBoolean(
                             ChromePreferenceKeys.CHROME_DEFAULT_BROWSER, false)
                         && addNewEntries) {
@@ -634,7 +622,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             recordContextMenuSelection(ContextMenuUma.Action.OPEN_IMAGE_IN_EPHEMERAL_TAB);
             String title = mParams.getTitleText();
             if (TextUtils.isEmpty(title)) {
-                title = URLUtil.guessFileName(mParams.getSrcUrl(), null, null);
+                title = URLUtil.guessFileName(mParams.getSrcUrl().getSpec(), null, null);
             }
             mItemDelegate.onOpenInEphemeralTab(mParams.getSrcUrl(), title);
         } else if (itemId == R.id.contextmenu_copy_image) {
@@ -642,13 +630,13 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             copyImageToClipboard();
         } else if (itemId == R.id.contextmenu_copy_link_address) {
             recordContextMenuSelection(ContextMenuUma.Action.COPY_LINK_ADDRESS);
-            mItemDelegate.onSaveToClipboard(
-                    mParams.getUnfilteredLinkUrl(), ContextMenuItemDelegate.ClipboardType.LINK_URL);
+            mItemDelegate.onSaveToClipboard(mParams.getUnfilteredLinkUrl().getSpec(),
+                    ContextMenuItemDelegate.ClipboardType.LINK_URL);
         } else if (itemId == R.id.contextmenu_call) {
             recordContextMenuSelection(ContextMenuUma.Action.CALL);
             mItemDelegate.onCall(mParams.getLinkUrl());
         } else if (itemId == R.id.contextmenu_send_message) {
-            if (MailTo.isMailTo(mParams.getLinkUrl())) {
+            if (MailTo.isMailTo(mParams.getLinkUrl().getSpec())) {
                 recordContextMenuSelection(ContextMenuUma.Action.SEND_EMAIL);
                 mItemDelegate.onSendEmailMessage(mParams.getLinkUrl());
             } else if (UrlUtilities.isTelScheme(mParams.getLinkUrl())) {
@@ -659,9 +647,10 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             recordContextMenuSelection(ContextMenuUma.Action.ADD_TO_CONTACTS);
             mItemDelegate.onAddToContacts(mParams.getLinkUrl());
         } else if (itemId == R.id.contextmenu_copy) {
-            if (MailTo.isMailTo(mParams.getLinkUrl())) {
+            if (MailTo.isMailTo(mParams.getLinkUrl().getSpec())) {
                 recordContextMenuSelection(ContextMenuUma.Action.COPY_EMAIL_ADDRESS);
-                mItemDelegate.onSaveToClipboard(MailTo.parse(mParams.getLinkUrl()).getTo(),
+                mItemDelegate.onSaveToClipboard(
+                        MailTo.parse(mParams.getLinkUrl().getSpec()).getTo(),
                         ContextMenuItemDelegate.ClipboardType.LINK_URL);
             } else if (UrlUtilities.isTelScheme(mParams.getLinkUrl())) {
                 recordContextMenuSelection(ContextMenuUma.Action.COPY_PHONE_NUMBER);
@@ -684,17 +673,18 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             }
         } else if (itemId == R.id.contextmenu_save_link_as) {
             recordContextMenuSelection(ContextMenuUma.Action.SAVE_LINK);
-            String url = mParams.getUnfilteredLinkUrl();
+            GURL url = mParams.getUnfilteredLinkUrl();
             if (mItemDelegate.startDownload(url, true)) {
                 ContextMenuUma.recordSaveLinkTypes(url);
                 mNativeDelegate.startDownload(true);
             }
         } else if (itemId == R.id.contextmenu_share_link) {
             recordContextMenuSelection(ContextMenuUma.Action.SHARE_LINK);
+            // TODO(https://crbug.com/783819): Migrate ShareParams to GURL.
             ShareParams linkShareParams =
                     new ShareParams
                             .Builder(getWindow(), ContextMenuUtils.getTitle(mParams),
-                                    mParams.getUrl())
+                                    mParams.getUrl().getSpec())
                             .build();
             mShareDelegateSupplier.get().share(linkShareParams,
                     new ChromeShareExtras.Builder().setSaveLastUsed(true).build(),
@@ -710,7 +700,9 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         } else if (itemId == R.id.contextmenu_direct_share_link) {
             recordContextMenuSelection(ContextMenuUma.Action.DIRECT_SHARE_LINK);
             final ShareParams shareParams =
-                    new ShareParams.Builder(getWindow(), mParams.getUrl(), mParams.getUrl())
+                    new ShareParams
+                            .Builder(getWindow(), mParams.getUrl().getSpec(),
+                                    mParams.getUrl().getSpec())
                             .build();
             ShareHelper.shareWithLastUsedComponent(shareParams);
         } else if (itemId == R.id.contextmenu_search_with_google_lens) {
@@ -854,7 +846,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         if (LensUtils.enableImageChip(isIncognito())) {
             // TODO(crbug.com/783819): Migrate LensChipDelegate to GURL.
             return new LensChipDelegate(mParams.getPageUrl().getSpec(), mParams.getTitleText(),
-                    mParams.getSrcUrl(), getPageTitle(), isIncognito(),
+                    mParams.getSrcUrl().getSpec(), getPageTitle(), isIncognito(),
                     mItemDelegate.getWebContents(), mNativeDelegate, getOnChipClickedCallback(),
                     getOnChipShownCallback());
         }
@@ -879,8 +871,9 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
      * @param url The url need to be checked.
      * @return True if the url is empty or "about:blank".
      */
-    private static boolean isEmptyUrl(String url) {
-        return TextUtils.isEmpty(url) || url.equals(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
+    private static boolean isEmptyUrl(GURL url) {
+        return url == null || url.isEmpty()
+                || url.getSpec().equals(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
     }
 
     /**

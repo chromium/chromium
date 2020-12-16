@@ -132,7 +132,7 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
      * @param requiresConfirmation Whether the request requires an confirmation dialog.
      */
     public static void shareImageWithGoogleLens(final WindowAndroid window, Uri imageUri,
-            boolean isIncognito, String srcUrl, String titleOrAltText, GURL pageUrl,
+            boolean isIncognito, GURL srcUrl, String titleOrAltText, GURL pageUrl,
             LensQueryResult lensQueryResult, boolean requiresConfirmation) {
         Intent shareIntent =
                 LensUtils.getShareWithGoogleLensIntent(ContextUtils.getApplicationContext(),

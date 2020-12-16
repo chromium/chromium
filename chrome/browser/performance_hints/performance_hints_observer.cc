@@ -25,6 +25,7 @@
 #if defined(OS_ANDROID)
 #include "base/android/jni_string.h"
 #include "chrome/browser/performance_hints/android/jni_headers/PerformanceHintsObserver_jni.h"
+#include "url/android/gurl_android.h"
 #endif  // OS_ANDROID
 
 using optimization_guide::OptimizationGuideDecision;
@@ -87,11 +88,11 @@ const char* ToString(HintLookupSource source) {
 static jint JNI_PerformanceHintsObserver_GetPerformanceClassForURL(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& java_web_contents,
-    const base::android::JavaParamRef<jstring>& url) {
+    const base::android::JavaParamRef<jobject>& url) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(java_web_contents);
   return PerformanceHintsObserver::PerformanceClassForURL(
-      web_contents, GURL(base::android::ConvertJavaStringToUTF8(url)),
+      web_contents, *url::GURLAndroid::ToNativeGURL(env, url),
       /*record_metrics=*/false);
 }
 

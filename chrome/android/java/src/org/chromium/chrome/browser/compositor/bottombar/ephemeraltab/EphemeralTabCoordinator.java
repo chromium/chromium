@@ -72,7 +72,7 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
     private EphemeralTabSheetContent mSheetContent;
     private EmptyBottomSheetObserver mSheetObserver;
 
-    private String mUrl;
+    private GURL mUrl;
     private int mCurrentMaxViewHeight;
     private boolean mPeeked;
     private boolean mViewed; // Moved up from peek state by user
@@ -126,7 +126,7 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
      * @param title The title to be shown.
      * @param isIncognito Whether we are currently in incognito mode.
      */
-    public void requestOpenSheet(String url, String title, boolean isIncognito) {
+    public void requestOpenSheet(GURL url, String title, boolean isIncognito) {
         mUrl = url;
         Profile profile = getProfile(isIncognito);
         if (mMediator == null) {
@@ -201,9 +201,7 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
         mPeeked = false;
         mViewed = false;
         mFullyOpened = false;
-        // TODO(yfriedman): Remove GURL construction by migrating ContextMenuParams to GURL.
-        // crbug/783819
-        mMediator.requestShowContent(new GURL(url), title);
+        mMediator.requestShowContent(url, title);
 
         Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
         if (tracker.isInitialized()) tracker.notifyEvent(EventConstants.EPHEMERAL_TAB_USED);
@@ -250,7 +248,7 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
         if (mCanPromoteToNewTab && mUrl != null) {
             mBottomSheetController.hideContent(
                     mSheetContent, /* animate= */ true, StateChangeReason.PROMOTE_TAB);
-            mTabCreator.get().createNewTab(new LoadUrlParams(mUrl, PageTransition.LINK),
+            mTabCreator.get().createNewTab(new LoadUrlParams(mUrl.getSpec(), PageTransition.LINK),
                     TabLaunchType.FROM_LINK, mTabProvider.get());
             mMetrics.recordOpenInNewTab();
         }

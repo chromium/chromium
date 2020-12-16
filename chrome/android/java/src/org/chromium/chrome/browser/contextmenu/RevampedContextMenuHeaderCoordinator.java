@@ -44,7 +44,7 @@ class RevampedContextMenuHeaderCoordinator {
     }
 
     private CharSequence getUrl(Activity activity, ContextMenuParams params, Profile profile) {
-        CharSequence url = params.getUrl();
+        CharSequence url = params.getUrl().getSpec();
         if (!TextUtils.isEmpty(url)) {
             boolean useDarkColors = !ColorUtils.inNightMode(activity);
 

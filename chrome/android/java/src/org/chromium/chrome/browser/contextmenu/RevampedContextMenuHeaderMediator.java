@@ -33,12 +33,13 @@ import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.components.favicon.IconType;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.GURL;
 
 class RevampedContextMenuHeaderMediator implements View.OnClickListener {
     private PropertyModel mModel;
 
     private Context mContext;
-    private String mPlainUrl;
+    private GURL mPlainUrl;
 
     RevampedContextMenuHeaderMediator(Context context, PropertyModel model,
             @PerformanceClass int performanceClass, ContextMenuParams params, Profile profile,
@@ -56,7 +57,7 @@ class RevampedContextMenuHeaderMediator implements View.OnClickListener {
                     imageMaxSize, imageMaxSize, this::onImageThumbnailRetrieved);
         } else if (!params.isImage() && !params.isVideo()) {
             LargeIconBridge iconBridge = new LargeIconBridge(profile);
-            iconBridge.getLargeIconForStringUrl(mPlainUrl,
+            iconBridge.getLargeIconForUrl(mPlainUrl,
                     context.getResources().getDimensionPixelSize(R.dimen.default_favicon_min_size),
                     this::onFaviconAvailable);
         } else if (params.isVideo()) {
@@ -86,7 +87,8 @@ class RevampedContextMenuHeaderMediator implements View.OnClickListener {
         // If we didn't get a favicon, generate a monogram instead
         if (icon == null) {
             final RoundedIconGenerator iconGenerator = createRoundedIconGenerator(fallbackColor);
-            icon = iconGenerator.generateIconForUrl(mPlainUrl);
+            // TODO(https://crbug.com/783819): Migrate IconGenerator to GURL.
+            icon = iconGenerator.generateIconForUrl(mPlainUrl.getSpec());
             // generateIconForUrl might return null if the URL is empty or the domain cannot be
             // resolved. See https://crbug.com/987101
             // TODO(sinansahin): Handle the case where generating an icon fails.

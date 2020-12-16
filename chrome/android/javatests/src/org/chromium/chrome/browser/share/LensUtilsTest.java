@@ -560,8 +560,8 @@ public class LensUtilsTest {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
                 ()
                         -> LensUtils.getShareWithGoogleLensIntent(mContext, imageUri, isIncognito,
-                                currentTimeNanos, srcUrl, titleOrAltText, new GURL(pageUrl),
-                                lensQueryResult, requiresConfirmation));
+                                currentTimeNanos, new GURL(srcUrl), titleOrAltText,
+                                new GURL(pageUrl), lensQueryResult, requiresConfirmation));
     }
 
     /**
@@ -802,7 +802,7 @@ public class LensUtilsTest {
         Assert.assertEquals("Intent with image has incorrect URI",
                 "googleapp://lens?LensBitmapUriKey=content%3A%2F%2Fimage-url&AccountNameUriKey="
                         + "&IncognitoUriKey=false&ActivityLaunchTimestampNanos=1234&ImageSrc="
-                        + "http%3A%2F%2Fwww.google.com%3Fkey%3Dval",
+                        + "http%3A%2F%2Fwww.google.com%2F%3Fkey%3Dval",
                 intentWithContentUri.getData().toString());
         Assert.assertEquals("Intent with image has incorrect action", Intent.ACTION_VIEW,
                 intentWithContentUri.getAction());

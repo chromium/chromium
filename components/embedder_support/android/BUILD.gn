@@ -88,6 +88,7 @@ static_library("util") {
     "//services/network/public/cpp:cpp",
     "//services/network/public/mojom:mojom",
     "//url",
+    "//url:gurl_android",
   ]
 }
 

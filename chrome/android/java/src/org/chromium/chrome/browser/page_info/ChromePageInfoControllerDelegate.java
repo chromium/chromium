@@ -271,7 +271,7 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
      * {@inheritDoc}
      */
     @Override
-    public boolean shouldShowPerformanceBadge(String url) {
+    public boolean shouldShowPerformanceBadge(GURL url) {
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.PAGE_INFO_PERFORMANCE_HINTS)) {
             return false;
         }

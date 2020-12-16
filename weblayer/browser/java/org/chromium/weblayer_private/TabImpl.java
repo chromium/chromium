@@ -1108,10 +1108,10 @@ public final class TabImpl extends ITab.Stub {
         if (WebLayerFactoryImpl.getClientMajorVersion() < 82) return;
         if (WebLayerFactoryImpl.getClientMajorVersion() < 88) {
             mClient.showContextMenu(ObjectWrapper.wrap(params.getPageUrl().getSpec()),
-                    ObjectWrapper.wrap(nonEmptyOrNull(params.getLinkUrl())),
+                    ObjectWrapper.wrap(nonEmptyOrNull(params.getLinkUrl().getSpec())),
                     ObjectWrapper.wrap(nonEmptyOrNull(params.getLinkText())),
                     ObjectWrapper.wrap(nonEmptyOrNull(params.getTitleText())),
-                    ObjectWrapper.wrap(nonEmptyOrNull(params.getSrcUrl())));
+                    ObjectWrapper.wrap(nonEmptyOrNull(params.getSrcUrl().getSpec())));
             return;
         }
 
@@ -1121,10 +1121,10 @@ public final class TabImpl extends ITab.Stub {
                         && params.canSaveMedia())
                 || (params.isAnchor() && UrlUtilities.isDownloadableScheme(params.getLinkUrl()));
         mClient.showContextMenu2(ObjectWrapper.wrap(params.getPageUrl().getSpec()),
-                ObjectWrapper.wrap(nonEmptyOrNull(params.getLinkUrl())),
+                ObjectWrapper.wrap(nonEmptyOrNull(params.getLinkUrl().getSpec())),
                 ObjectWrapper.wrap(nonEmptyOrNull(params.getLinkText())),
                 ObjectWrapper.wrap(nonEmptyOrNull(params.getTitleText())),
-                ObjectWrapper.wrap(nonEmptyOrNull(params.getSrcUrl())), params.isImage(),
+                ObjectWrapper.wrap(nonEmptyOrNull(params.getSrcUrl().getSpec())), params.isImage(),
                 params.isVideo(), canDownload,
                 new NativeContextMenuParamsHolder(nativeContextMenuParams));
     }

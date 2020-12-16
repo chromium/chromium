@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.download;
 import android.Manifest.permission;
 import android.app.DownloadManager;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Pair;
@@ -21,9 +20,10 @@ import org.chromium.base.UserData;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.ui.base.PermissionCallback;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
 
 import java.io.File;
 
@@ -191,18 +191,16 @@ public class ChromeDownloadDelegate implements UserData {
      * @param url URL to be downloaded.
      * @return whether the DownloadManager should intercept the download.
      */
-    public boolean shouldInterceptContextMenuDownload(String url) {
-        Uri uri = Uri.parse(url);
-        String scheme = uri.normalizeScheme().getScheme();
-        if (!UrlConstants.HTTP_SCHEME.equals(scheme) && !UrlConstants.HTTPS_SCHEME.equals(scheme)) {
-            return false;
-        }
-        String path = uri.getPath();
+    public boolean shouldInterceptContextMenuDownload(GURL url) {
+        if (!UrlUtilities.isHttpOrHttps(url)) return false;
+        String path = url.getPath();
         if (!OMADownloadHandler.isOMAFile(path)) return false;
         if (mTab == null) return true;
-        String fileName = URLUtil.guessFileName(url, null, MimeUtils.OMA_DRM_MESSAGE_MIME);
+        String fileName =
+                URLUtil.guessFileName(url.getSpec(), null, MimeUtils.OMA_DRM_MESSAGE_MIME);
+        // TODO(https://crbug.com/783819): Convert DownloadInfo to GURL.
         final DownloadInfo downloadInfo =
-                new DownloadInfo.Builder().setUrl(url).setFileName(fileName).build();
+                new DownloadInfo.Builder().setUrl(url.getSpec()).setFileName(fileName).build();
         WindowAndroid window = mTab.getWindowAndroid();
         if (window.hasPermission(permission.WRITE_EXTERNAL_STORAGE)) {
             onDownloadStartNoStream(downloadInfo);

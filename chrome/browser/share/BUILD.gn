@@ -36,5 +36,8 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/share/share_sheet/ChromeOptionShareCallback.java",
   ]
 
-  deps = [ "//components/browser_ui/share/android:java" ]
+  deps = [
+    "//components/browser_ui/share/android:java",
+    "//url:gurl_java",
+  ]
 }

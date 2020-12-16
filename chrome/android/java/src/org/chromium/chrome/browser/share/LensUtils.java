@@ -267,7 +267,7 @@ public class LensUtils {
      * @return The intent to Google Lens.
      */
     public static Intent getShareWithGoogleLensIntent(final Context context, final Uri imageUri,
-            final boolean isIncognito, final long currentTimeNanos, final String srcUrl,
+            final boolean isIncognito, final long currentTimeNanos, final GURL srcUrl,
             final String titleOrAltText, final GURL pageUrl, LensQueryResult lensQueryResult,
             final boolean requiresConfirmation) {
         final CoreAccountInfo coreAccountInfo =
@@ -302,11 +302,10 @@ public class LensUtils {
             }
 
             if (!isIncognito) {
-                if ((srcUrl != null)
-                        && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                                ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS,
-                                SEND_SRC_PARAM_NAME, false)) {
-                    lensUriBuilder.appendQueryParameter(IMAGE_SRC_URI_KEY, srcUrl);
+                if (ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                            ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS,
+                            SEND_SRC_PARAM_NAME, false)) {
+                    lensUriBuilder.appendQueryParameter(IMAGE_SRC_URI_KEY, srcUrl.getSpec());
                 }
                 if ((titleOrAltText != null)
                         && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
@@ -314,10 +313,9 @@ public class LensUtils {
                                 SEND_ALT_PARAM_NAME, false)) {
                     lensUriBuilder.appendQueryParameter(ALT_URI_KEY, titleOrAltText);
                 }
-                if ((pageUrl != null)
-                        && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                                ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS,
-                                SEND_PAGE_PARAM_NAME, false)) {
+                if (ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                            ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS,
+                            SEND_PAGE_PARAM_NAME, false)) {
                     lensUriBuilder.appendQueryParameter(PAGE_URI_KEY, pageUrl.getSpec());
                 }
                 String variations = sFakeVariationsForTesting == null

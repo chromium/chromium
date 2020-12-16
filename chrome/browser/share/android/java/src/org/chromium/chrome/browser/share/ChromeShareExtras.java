@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.share;
 
 import org.chromium.components.browser_ui.share.ShareParams;
+import org.chromium.url.GURL;
 
 /**
  * A container object for passing share extras not contained in {@link ShareParams} to {@link
@@ -34,7 +35,7 @@ public class ChromeShareExtras {
     /**
      * Source URL of the image.
      */
-    private final String mImageSrcUrl;
+    private final GURL mImageSrcUrl;
 
     /** Indicates if text property is highlighted by user. */
     private final boolean mIsUserHighlightedText;
@@ -43,12 +44,12 @@ public class ChromeShareExtras {
     private final boolean mSharingTabGroup;
 
     private ChromeShareExtras(boolean saveLastUsed, boolean shareDirectly,
-            boolean isUrlOfVisiblePage, String imageSrcUrl, boolean isUserHighlightedText,
+            boolean isUrlOfVisiblePage, GURL imageSrcUrl, boolean isUserHighlightedText,
             boolean sharingTabGroup) {
         mSaveLastUsed = saveLastUsed;
         mShareDirectly = shareDirectly;
         mIsUrlOfVisiblePage = isUrlOfVisiblePage;
-        mImageSrcUrl = imageSrcUrl;
+        mImageSrcUrl = imageSrcUrl == null ? GURL.emptyGURL() : imageSrcUrl;
         mIsUserHighlightedText = isUserHighlightedText;
         mSharingTabGroup = sharingTabGroup;
     }
@@ -78,7 +79,7 @@ public class ChromeShareExtras {
     /**
      * @return Source URL of the image.
      */
-    public String getImageSrcUrl() {
+    public GURL getImageSrcUrl() {
         return mImageSrcUrl;
     }
 
@@ -103,7 +104,7 @@ public class ChromeShareExtras {
         private boolean mSaveLastUsed;
         private boolean mShareDirectly;
         private boolean mIsUrlOfVisiblePage;
-        private String mImageSrcUrl;
+        private GURL mImageSrcUrl;
         private boolean mIsUserHighlightedText;
         private boolean mSharingTabGroup;
 
@@ -135,7 +136,7 @@ public class ChromeShareExtras {
         /**
          * Sets source URL of the image.
          */
-        public Builder setImageSrcUrl(String imageSrcUrl) {
+        public Builder setImageSrcUrl(GURL imageSrcUrl) {
             mImageSrcUrl = imageSrcUrl;
             return this;
         }

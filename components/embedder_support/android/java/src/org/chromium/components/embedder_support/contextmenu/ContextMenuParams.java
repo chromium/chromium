@@ -4,8 +4,6 @@
 
 package org.chromium.components.embedder_support.contextmenu;
 
-import android.text.TextUtils;
-
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CalledByNative;
@@ -54,11 +52,10 @@ public class ContextMenuParams {
     }
 
     /**
-     * TODO(https://crbug.com/783819): Convert to GURL.
      * @return The link URL, if any.
      */
-    public String getLinkUrl() {
-        return mLinkUrl.getSpec();
+    public GURL getLinkUrl() {
+        return mLinkUrl;
     }
 
     /**
@@ -76,19 +73,17 @@ public class ContextMenuParams {
     }
 
     /**
-     * TODO(https://crbug.com/783819): Convert to GURL.
      * @return The unfiltered link URL, if any.
      */
-    public String getUnfilteredLinkUrl() {
-        return mUnfilteredLinkUrl.getSpec();
+    public GURL getUnfilteredLinkUrl() {
+        return mUnfilteredLinkUrl;
     }
 
     /**
-     * TODO(https://crbug.com/783819): Convert to GURL.
      * @return The source URL.
      */
-    public String getSrcUrl() {
-        return mSrcUrl.getSpec();
+    public GURL getSrcUrl() {
+        return mSrcUrl;
     }
 
     /**
@@ -151,8 +146,7 @@ public class ContextMenuParams {
      * @return Whether or not the context menu is been shown for a download item.
      */
     public boolean isFile() {
-        if (!TextUtils.isEmpty(getSrcUrl())
-                && getSrcUrl().startsWith(ContentUrlConstants.FILE_URL_PREFIX)) {
+        if (getSrcUrl().getScheme().equals(ContentUrlConstants.FILE_SCHEME)) {
             return true;
         }
         return false;
@@ -161,7 +155,7 @@ public class ContextMenuParams {
     /**
      * @return The valid url of a ContextMenuParams.
      */
-    public String getUrl() {
+    public GURL getUrl() {
         if (isAnchor() && !getLinkUrl().isEmpty()) {
             return getLinkUrl();
         } else {

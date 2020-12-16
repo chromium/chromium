@@ -26,7 +26,7 @@ public final class ContextMenuUtils {
             return params.getLinkText();
         }
         if (params.isImage() || params.isVideo() || params.isFile()) {
-            return URLUtil.guessFileName(params.getSrcUrl(), null, null);
+            return URLUtil.guessFileName(params.getSrcUrl().getSpec(), null, null);
         }
         return "";
     }

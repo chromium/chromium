@@ -423,8 +423,8 @@ class ChromeProvidedSharingOptionsProvider {
             ShareParams shareParams, ChromeShareExtras chromeShareExtras, String tabUrl) {
         if (!TextUtils.isEmpty(shareParams.getUrl())) {
             return shareParams.getUrl();
-        } else if (!TextUtils.isEmpty(chromeShareExtras.getImageSrcUrl())) {
-            return chromeShareExtras.getImageSrcUrl();
+        } else if (!chromeShareExtras.getImageSrcUrl().isEmpty()) {
+            return chromeShareExtras.getImageSrcUrl().getSpec();
         }
         return tabUrl;
     }

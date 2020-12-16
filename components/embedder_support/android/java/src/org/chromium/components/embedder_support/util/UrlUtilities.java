@@ -44,15 +44,15 @@ public class UrlUtilities {
             CollectionUtil.newHashSet(UrlConstants.CHROME_SCHEME, UrlConstants.CHROME_NATIVE_SCHEME,
                     ContentUrlConstants.ABOUT_SCHEME);
 
-    private static final String TEL_URL_PREFIX = "tel:";
+    private static final String TEL_SCHEME = "tel";
 
     /**
      * @param uri A URI.
      *
      * @return True if the URI's scheme is phone number scheme.
      */
-    public static boolean isTelScheme(String uri) {
-        return uri != null && uri.startsWith(TEL_URL_PREFIX);
+    public static boolean isTelScheme(GURL gurl) {
+        return gurl != null && gurl.getScheme().equals(TEL_SCHEME);
     }
 
     /**
@@ -61,11 +61,10 @@ public class UrlUtilities {
      * @return The string after tel: scheme. Normally, it should be a phone number, but isn't
      *         guaranteed.
      */
-    public static String getTelNumber(String uri) {
-        if (uri == null || !uri.contains(":")) return "";
-        String[] parts = uri.split(":");
-        if (parts.length <= 1) return "";
-        return parts[1];
+    public static String getTelNumber(GURL gurl) {
+        if (GURL.isEmptyOrInvalid(gurl)) return "";
+        if (!isTelScheme(gurl)) return "";
+        return gurl.getPath();
     }
 
     /**
@@ -91,8 +90,8 @@ public class UrlUtilities {
      *
      * @return True if the URI's scheme is one that Chrome can download.
      */
-    public static boolean isDownloadableScheme(String uri) {
-        return UrlUtilitiesJni.get().isDownloadable(uri);
+    public static boolean isDownloadableScheme(@NonNull GURL url) {
+        return UrlUtilitiesJni.get().isDownloadable(url);
     }
 
     /**
@@ -100,7 +99,7 @@ public class UrlUtilities {
      *
      * @return Whether the URL's scheme is for a internal chrome page.
      */
-    public static boolean isInternalScheme(GURL gurl) {
+    public static boolean isInternalScheme(@NonNull GURL gurl) {
         return INTERNAL_SCHEMES.contains(gurl.getScheme());
     }
 
@@ -206,6 +205,7 @@ public class UrlUtilities {
     }
 
     /**
+     * TODO(https://crbug.com/783819): This should use UrlFormatter, or GURL machinery.
      * @param url An HTTP or HTTPS URL.
      * @return The URL without the scheme.
      */
@@ -261,7 +261,7 @@ public class UrlUtilities {
 
     @NativeMethods
     public interface Natives {
-        boolean isDownloadable(String url);
+        boolean isDownloadable(GURL url);
         boolean isValidForIntentFallbackNavigation(String url);
         boolean isAcceptedScheme(String url);
         boolean sameDomainOrHost(

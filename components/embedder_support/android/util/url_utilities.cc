@@ -10,6 +10,7 @@
 #include "components/embedder_support/android/util_jni_headers/UrlUtilities_jni.h"
 #include "components/google/core/common/google_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
 using base::android::ConvertJavaStringToUTF8;
@@ -34,9 +35,8 @@ GURL JNI_UrlUtilities_ConvertJavaStringToGURL(JNIEnv* env, jstring url) {
 }
 
 bool CheckSchemeBelongsToList(JNIEnv* env,
-                              const JavaParamRef<jstring>& url,
+                              const GURL& gurl,
                               const char* const* scheme_list) {
-  GURL gurl = JNI_UrlUtilities_ConvertJavaStringToGURL(env, url);
   if (gurl.is_valid()) {
     for (size_t i = 0; scheme_list[i]; i++) {
       if (gurl.scheme() == scheme_list[i]) {
@@ -190,19 +190,22 @@ static jboolean JNI_UrlUtilities_UrlsFragmentsDiffer(
 static jboolean JNI_UrlUtilities_IsAcceptedScheme(
     JNIEnv* env,
     const JavaParamRef<jstring>& url) {
-  return CheckSchemeBelongsToList(env, url, g_supported_schemes);
+  GURL gurl = JNI_UrlUtilities_ConvertJavaStringToGURL(env, url);
+  return CheckSchemeBelongsToList(env, gurl, g_supported_schemes);
 }
 
 static jboolean JNI_UrlUtilities_IsValidForIntentFallbackNavigation(
     JNIEnv* env,
     const JavaParamRef<jstring>& url) {
-  return CheckSchemeBelongsToList(env, url, g_fallback_valid_schemes);
+  GURL gurl = JNI_UrlUtilities_ConvertJavaStringToGURL(env, url);
+  return CheckSchemeBelongsToList(env, gurl, g_fallback_valid_schemes);
 }
 
 static jboolean JNI_UrlUtilities_IsDownloadable(
     JNIEnv* env,
-    const JavaParamRef<jstring>& url) {
-  return CheckSchemeBelongsToList(env, url, g_downloadable_schemes);
+    const JavaParamRef<jobject>& url) {
+  return CheckSchemeBelongsToList(
+      env, *url::GURLAndroid::ToNativeGURL(env, url), g_downloadable_schemes);
 }
 
 }  // namespace embedder_support

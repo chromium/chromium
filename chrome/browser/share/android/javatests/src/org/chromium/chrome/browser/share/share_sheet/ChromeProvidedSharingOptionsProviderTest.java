@@ -336,9 +336,10 @@ public class ChromeProvidedSharingOptionsProviderTest {
     @Test
     @MediumTest
     public void getUrlToShare_noShareParamsUrl_returnsImageUrl() {
+        GURL gurl = new GURL(URL);
         ShareParams shareParams = new ShareParams.Builder(null, /*title=*/"", /*url=*/"").build();
         ChromeShareExtras chromeShareExtras =
-                new ChromeShareExtras.Builder().setImageSrcUrl(URL).build();
+                new ChromeShareExtras.Builder().setImageSrcUrl(gurl).build();
 
         assertEquals("URL should be imageSrcUrl.",
                 ChromeProvidedSharingOptionsProvider.getUrlToShare(
@@ -351,7 +352,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
     public void getUrlToShare_shareParamsUrlExists_returnsShareParamsUrl() {
         ShareParams shareParams = new ShareParams.Builder(null, /*title=*/"", URL).build();
         ChromeShareExtras chromeShareExtras =
-                new ChromeShareExtras.Builder().setImageSrcUrl("").build();
+                new ChromeShareExtras.Builder().setImageSrcUrl(GURL.emptyGURL()).build();
 
         assertEquals("URL should be ShareParams URL.",
                 ChromeProvidedSharingOptionsProvider.getUrlToShare(
@@ -364,7 +365,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
     public void getUrlToShare_noShareParamsUrl_noImageUrl() {
         ShareParams shareParams = new ShareParams.Builder(null, /*title=*/"", /*url=*/"").build();
         ChromeShareExtras chromeShareExtras =
-                new ChromeShareExtras.Builder().setImageSrcUrl("").build();
+                new ChromeShareExtras.Builder().setImageSrcUrl(GURL.emptyGURL()).build();
 
         assertEquals("URL should be ShareParams URL.",
                 ChromeProvidedSharingOptionsProvider.getUrlToShare(

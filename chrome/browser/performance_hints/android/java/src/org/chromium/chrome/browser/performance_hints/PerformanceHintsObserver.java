@@ -9,6 +9,7 @@ import androidx.annotation.IntDef;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -30,7 +31,7 @@ public class PerformanceHintsObserver {
     }
 
     public static @PerformanceClass int getPerformanceClassForURL(
-            WebContents webContents, String url) {
+            WebContents webContents, GURL url) {
         return PerformanceHintsObserverJni.get().getPerformanceClassForURL(webContents, url);
     }
 
@@ -42,7 +43,7 @@ public class PerformanceHintsObserver {
 
     @NativeMethods
     public interface Natives {
-        int getPerformanceClassForURL(WebContents webContents, String url);
+        int getPerformanceClassForURL(WebContents webContents, GURL url);
         boolean isContextMenuPerformanceInfoEnabled();
     }
 }
