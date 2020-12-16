@@ -9,7 +9,10 @@
     android:layout_height="wrap_content"
     android:drawablePadding="16dp"
     android:gravity="center_vertical"
-    android:padding="8dp"
+    android:paddingStart="24dp"
+    android:paddingEnd="24dp"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp"
     android:text="@string/signin_add_account"
     android:textAppearance="@style/TextAppearance.TextMedium.Primary"
     app:drawableStartCompat="@drawable/ic_add_circle_40dp" />
