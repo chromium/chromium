@@ -226,8 +226,11 @@ void SandboxFileStreamWriter::DidWrite(int write_response) {
   if (write_response <= 0) {
     // TODO(crbug.com/1091792): Consider listening explicitly for out
     // of space errors instead of surfacing all write errors to quota.
-    file_system_context_->quota_manager_proxy()->NotifyWriteFailed(
-        url_.origin());
+    QuotaManagerProxy* quota_manager_proxy =
+        file_system_context_->quota_manager_proxy();
+    if (quota_manager_proxy) {
+      quota_manager_proxy->NotifyWriteFailed(url_.origin());
+    }
     if (CancelIfRequested())
       return;
     std::move(write_callback_).Run(write_response);
