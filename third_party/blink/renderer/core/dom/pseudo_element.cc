@@ -99,7 +99,7 @@ bool PseudoElement::IsWebExposed(PseudoId pseudo_id, const Node* parent) {
     case kPseudoIdMarker:
       if (parent && parent->IsPseudoElement())
         return RuntimeEnabledFeatures::CSSMarkerNestedPseudoElementEnabled();
-      return RuntimeEnabledFeatures::CSSMarkerPseudoElementEnabled();
+      return true;
     default:
       return true;
   }
