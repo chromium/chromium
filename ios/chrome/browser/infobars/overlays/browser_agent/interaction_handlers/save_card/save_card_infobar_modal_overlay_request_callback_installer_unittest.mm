@@ -22,8 +22,8 @@
 #include "ios/chrome/browser/overlays/public/overlay_request_queue.h"
 #include "ios/chrome/browser/overlays/public/overlay_response.h"
 #import "ios/chrome/browser/ui/infobars/infobar_feature.h"
-#import "ios/web/public/test/fakes/test_navigation_manager.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/platform_test.h"
 
@@ -46,7 +46,7 @@ class SaveCardInfobarModalOverlayRequestCallbackInstallerTest
                                           {kInfobarUIRebootOnlyiOS13});
     // Create the infobar and add it to the WebState's manager.
     web_state_.SetNavigationManager(
-        std::make_unique<web::TestNavigationManager>());
+        std::make_unique<web::FakeNavigationManager>());
     InfoBarManagerImpl::CreateForWebState(&web_state_);
     std::unique_ptr<MockAutofillSaveCardInfoBarDelegateMobile> delegate =
         delegate_factory_
@@ -79,7 +79,7 @@ class SaveCardInfobarModalOverlayRequestCallbackInstallerTest
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<PrefService> prefs_;
   autofill::CreditCard card_;
-  web::TestWebState web_state_;
+  web::FakeWebState web_state_;
   InfoBarIOS* infobar_ = nullptr;
   OverlayRequest* request_ = nullptr;
   MockSaveCardInfobarModalInteractionHandler mock_handler_;

@@ -17,8 +17,8 @@
 #include "ios/chrome/browser/overlays/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
 #include "ios/chrome/browser/overlays/test/fake_overlay_user_data.h"
-#import "ios/web/public/test/fakes/test_navigation_manager.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
@@ -35,7 +35,7 @@ class InfobarOverlayTabHelperTest : public PlatformTest {
  public:
   InfobarOverlayTabHelperTest() {
     web_state_.SetNavigationManager(
-        std::make_unique<web::TestNavigationManager>());
+        std::make_unique<web::FakeNavigationManager>());
     InfoBarManagerImpl::CreateForWebState(&web_state_);
     InfobarOverlayRequestInserter::CreateForWebState(
         &web_state_, std::make_unique<FakeInfobarOverlayRequestFactory>());
@@ -53,7 +53,7 @@ class InfobarOverlayTabHelperTest : public PlatformTest {
   }
 
  private:
-  web::TestWebState web_state_;
+  web::FakeWebState web_state_;
 };
 
 // Tests that adding an InfoBar to the manager creates a fake banner request.

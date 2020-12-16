@@ -21,8 +21,8 @@
 #import "ios/chrome/browser/translate/fake_translate_infobar_delegate.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
-#import "ios/web/public/test/fakes/test_navigation_manager.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/platform_test.h"
 
@@ -38,12 +38,11 @@ class TranslateInfobarPlaceholderOverlayRequestCancelHandlerTest
     : public PlatformTest {
  public:
   TranslateInfobarPlaceholderOverlayRequestCancelHandlerTest() {
-    std::unique_ptr<web::TestWebState> web_state =
-        std::make_unique<web::TestWebState>();
+    auto web_state = std::make_unique<web::FakeWebState>();
     web_state_ = web_state.get();
     // Set up WebState and InfoBarManager.
     web_state->SetNavigationManager(
-        std::make_unique<web::TestNavigationManager>());
+        std::make_unique<web::FakeNavigationManager>());
     browser_.GetWebStateList()->InsertWebState(0, std::move(web_state),
                                                WebStateList::INSERT_ACTIVATE,
                                                WebStateOpener());
@@ -68,7 +67,7 @@ class TranslateInfobarPlaceholderOverlayRequestCancelHandlerTest
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  web::TestWebState* web_state_;
+  web::FakeWebState* web_state_;
   FakeTranslateInfoBarDelegateFactory delegate_factory_;
   FakeOverlayPresentationContext presentation_context_;
   FakeTranslateInfoBarDelegate* delegate_ = nullptr;

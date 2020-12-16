@@ -12,7 +12,7 @@
 #import "ios/chrome/browser/ui/dialogs/java_script_dialog_blocking_state.h"
 #import "ios/chrome/browser/ui/elements/text_field_configuration.h"
 #include "ios/chrome/grit/ios_strings.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "testing/gtest_mac.h"
 #include "testing/platform_test.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -53,7 +53,7 @@ class JavaScriptDialogOverlayTest
     return GetParam() == web::JAVASCRIPT_DIALOG_TYPE_PROMPT;
   }
 
-  web::TestWebState web_state_;
+  web::FakeWebState web_state_;
   GURL url_;
   NSString* message_ = nil;
   NSString* default_text_field_value_ = nil;

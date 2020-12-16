@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "ios/chrome/browser/overlays/public/overlay_request_queue.h"
 #include "ios/chrome/browser/overlays/test/overlay_test_macros.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -35,7 +35,7 @@ using OverlayRequestQueueUtilTest = PlatformTest;
 // Tests that the expected indices for matching configs returned.
 TEST_F(OverlayRequestQueueUtilTest, MatchingConfigs) {
   // Add requests to |web_state|'s queue.
-  web::TestWebState web_state;
+  web::FakeWebState web_state;
   OverlayRequestQueue* queue =
       OverlayRequestQueue::FromWebState(&web_state, OverlayModality::kTesting);
   queue->AddRequest(OverlayRequest::CreateWithConfig<FirstConfig>());

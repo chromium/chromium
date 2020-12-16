@@ -8,7 +8,7 @@
 #import "ios/chrome/browser/overlays/public/common/infobars/infobar_overlay_request_config.h"
 #include "ios/chrome/browser/overlays/public/overlay_request_queue.h"
 #include "ios/chrome/browser/overlays/test/overlay_test_macros.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -75,7 +75,7 @@ TEST_F(InfobarOverlayUtilTest, GetOverlayRequestInfobarOverlayType) {
 
 // Tests that GetInfobarOverlayRequestIndex() returns the correct indices.
 TEST_F(InfobarOverlayUtilTest, GetInfobarOverlayRequestIndex) {
-  web::TestWebState web_state;
+  web::FakeWebState web_state;
   FakeInfobarIOS infobar0;
   FakeInfobarIOS infobar1;
   FakeInfobarIOS infobar2;

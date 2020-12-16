@@ -13,8 +13,8 @@
 #import "ios/chrome/browser/overlays/public/common/infobars/infobar_overlay_request_config.h"
 #include "ios/chrome/browser/overlays/public/overlay_request.h"
 #include "ios/chrome/browser/overlays/public/overlay_request_queue.h"
-#import "ios/web/public/test/fakes/test_navigation_manager.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
@@ -38,7 +38,7 @@ class InfobarOverlayRequestInserterTest : public PlatformTest {
  public:
   InfobarOverlayRequestInserterTest() {
     web_state_.SetNavigationManager(
-        std::make_unique<web::TestNavigationManager>());
+        std::make_unique<web::FakeNavigationManager>());
     InfobarOverlayRequestInserter::CreateForWebState(
         &web_state_, std::make_unique<FakeInfobarOverlayRequestFactory>());
     InfoBarManagerImpl::CreateForWebState(&web_state_);
@@ -70,7 +70,7 @@ class InfobarOverlayRequestInserterTest : public PlatformTest {
   }
 
  private:
-  web::TestWebState web_state_;
+  web::FakeWebState web_state_;
 };
 
 // Tests that the inserter adds banner OverlayRequests to the correct queue.

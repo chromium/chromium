@@ -8,7 +8,7 @@
 #include "ios/chrome/browser/overlays/public/overlay_request_queue.h"
 #include "ios/chrome/browser/overlays/test/fake_overlay_user_data.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/platform_test.h"
 
@@ -29,10 +29,10 @@ class DefaultOverlayRequestCancelHandlerTest : public PlatformTest {
     return OverlayRequestQueue::FromWebState(&web_state_,
                                              OverlayModality::kWebContentArea);
   }
-  web::TestWebState* web_state() { return &web_state_; }
+  web::FakeWebState* web_state() { return &web_state_; }
 
  private:
-  web::TestWebState web_state_;
+  web::FakeWebState web_state_;
 };
 
 // Tests that the request is removed from the queue for committed, document-

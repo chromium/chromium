@@ -8,7 +8,7 @@
 #import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
 #include "ios/chrome/browser/overlays/test/fake_overlay_request_callback_installer.h"
 #include "ios/chrome/browser/overlays/test/overlay_test_macros.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/platform_test.h"
 
@@ -46,7 +46,7 @@ class OverlayRequestQueueCallbackInstallerTest : public PlatformTest {
   }
 
  protected:
-  web::TestWebState web_state_;
+  web::FakeWebState web_state_;
   testing::StrictMock<MockOverlayRequestCallbackReceiver> callback_receiver_;
   std::unique_ptr<OverlayRequestQueueCallbackInstaller> queue_installer_;
 };

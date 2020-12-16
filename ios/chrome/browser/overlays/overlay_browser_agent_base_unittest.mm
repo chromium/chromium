@@ -18,7 +18,7 @@
 #import "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/platform_test.h"
@@ -83,7 +83,7 @@ class OverlayBrowserAgentBaseTest : public PlatformTest {
     OverlayPresenter::FromBrowser(browser_.get(), kModality)
         ->SetPresentationContext(&presentation_context_);
     // Add and active a WebState over which to present overlays.
-    web_state_list_.InsertWebState(0, std::make_unique<web::TestWebState>(),
+    web_state_list_.InsertWebState(0, std::make_unique<web::FakeWebState>(),
                                    WebStateList::INSERT_ACTIVATE,
                                    WebStateOpener());
     web_state_ = web_state_list_.GetActiveWebState();

@@ -15,8 +15,8 @@
 #include "ios/chrome/browser/overlays/public/overlay_request.h"
 #include "ios/chrome/browser/overlays/public/overlay_request_queue.h"
 #include "ios/chrome/browser/overlays/test/fake_overlay_user_data.h"
-#import "ios/web/public/test/fakes/test_navigation_manager.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -32,7 +32,7 @@ class InfobarModalOverlayRequestCancelHandlerTest : public PlatformTest {
   InfobarModalOverlayRequestCancelHandlerTest() {
     // Set up WebState and InfoBarManager.
     web_state_.SetNavigationManager(
-        std::make_unique<web::TestNavigationManager>());
+        std::make_unique<web::FakeNavigationManager>());
     InfobarOverlayRequestInserter::CreateForWebState(
         &web_state_, std::make_unique<FakeInfobarOverlayRequestFactory>());
     InfoBarManagerImpl::CreateForWebState(&web_state_);
@@ -57,7 +57,7 @@ class InfobarModalOverlayRequestCancelHandlerTest : public PlatformTest {
   }
 
  protected:
-  web::TestWebState web_state_;
+  web::FakeWebState web_state_;
 };
 
 // Tests that the request is cancelled after all modals originating from the

@@ -23,7 +23,7 @@
 #import "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/platform_test.h"
@@ -70,8 +70,7 @@ class InfobarOverlayBrowserAgentTest
         browser_(browser_state_.get(), &web_state_list_) {
     // Add an activated WebState into whose queues infobar OverlayRequests will
     // be added.
-    std::unique_ptr<web::WebState> web_state =
-        std::make_unique<web::TestWebState>();
+    auto web_state = std::make_unique<web::FakeWebState>();
     web_state_ = web_state.get();
     web_state_list_.InsertWebState(/*index=*/0, std::move(web_state),
                                    WebStateList::INSERT_ACTIVATE,

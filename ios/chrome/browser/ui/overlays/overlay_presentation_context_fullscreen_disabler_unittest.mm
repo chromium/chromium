@@ -17,7 +17,7 @@
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/common/crw_web_view_content_view.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
@@ -50,8 +50,7 @@ class OverlayPresentationContextFullscreenDisablerTest : public PlatformTest {
     // callbacks are sent.
     overlay_presenter()->SetPresentationContext(&presentation_context_);
 
-    std::unique_ptr<web::TestWebState> web_state =
-        std::make_unique<web::TestWebState>();
+    auto web_state = std::make_unique<web::FakeWebState>();
     web_state->SetView(content_view_);
     CRWWebViewScrollViewProxy* scroll_view_proxy =
         [[CRWWebViewScrollViewProxy alloc] init];

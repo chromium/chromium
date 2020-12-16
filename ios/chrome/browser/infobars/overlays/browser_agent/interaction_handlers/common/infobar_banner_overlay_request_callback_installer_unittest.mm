@@ -15,7 +15,7 @@
 #include "ios/chrome/browser/overlays/public/overlay_response.h"
 #include "ios/chrome/browser/overlays/test/fake_overlay_request_callback_installer.h"
 #include "ios/chrome/browser/overlays/test/overlay_test_macros.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/platform_test.h"
 
@@ -47,7 +47,7 @@ class InfobarBannerOverlayRequestCallbackInstallerTest : public PlatformTest {
 
  protected:
   FakeInfobarIOS infobar_;
-  web::TestWebState web_state_;
+  web::FakeWebState web_state_;
   OverlayRequest* request_ = nullptr;
   MockInfobarBannerInteractionHandler mock_handler_;
   InfobarBannerOverlayRequestCallbackInstaller installer_;

@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/overlays/public/overlay_request_cancel_handler.h"
 #include "ios/chrome/browser/overlays/test/fake_overlay_request_cancel_handler.h"
 #include "ios/chrome/browser/overlays/test/fake_overlay_user_data.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/platform_test.h"
 
@@ -103,7 +103,7 @@ class NoOpCancelHandler : public OverlayRequestCancelHandler {
 class OverlayRequestQueueImplTest : public PlatformTest {
  public:
   OverlayRequestQueueImplTest()
-      : PlatformTest(), web_state_(std::make_unique<web::TestWebState>()) {
+      : PlatformTest(), web_state_(std::make_unique<web::FakeWebState>()) {
     OverlayRequestQueueImpl::Container::CreateForWebState(web_state_.get());
     queue()->SetDelegate(&delegate_);
     queue()->AddObserver(&observer_);
@@ -135,7 +135,7 @@ class OverlayRequestQueueImplTest : public PlatformTest {
  protected:
   FakeOverlayRequestQueueImplDelegate delegate_;
   MockOverlayRequestQueueImplObserver observer_;
-  std::unique_ptr<web::TestWebState> web_state_;
+  std::unique_ptr<web::FakeWebState> web_state_;
 };
 
 // Tests that state is updated correctly and observer callbacks are received
