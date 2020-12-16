@@ -11,6 +11,11 @@
     --cr-searchable-drop-down-width: 100%;
     display: inline-block;
     flex-grow: 1;
+    width: 100%;
+  }
+
+  .server-search-box-container {
+    width: 100%;
   }
 </style>
 <cr-dialog id="dialog" on-close="onCloseOrCancel_">
@@ -27,7 +32,8 @@
           <option value="">$i18n{addAccountTitle}</option>
         </select>
       </div>
-      <template is="dom-if" if="[[printServerScalingFlagEnabled_]]">
+      <div hidden$="[[printServerScalingFlagEnabled_]]"
+          class="server-search-box-container">
         <!-- TODO(crbug.com/1013408): Uses deprecated iron-dropdown. -->
         <cr-searchable-drop-down class="server-search-box-input"
             hidden$="[[!isSingleServerFetchingMode_]]"
@@ -35,7 +41,7 @@
             value="{{printServerSelected_}}"
             items="[[printServerNames_]]">
         </cr-searchable-drop-down>
-      </template>
+      </div>
     </div>
     <print-preview-search-box id="searchBox"
         label="$i18n{searchBoxPlaceholder}" search-query="{{searchQuery_}}"

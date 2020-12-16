@@ -119,15 +119,23 @@ Polymer({
   /** @private {number} */
   openDropdownTimeoutId_: 0,
 
+  /** @private {?ResizeObserver} */
+  resizeObserver_: null,
+
   /** @override */
   attached() {
     this.pointerDownListener_ = this.onPointerDown_.bind(this);
     document.addEventListener('pointerdown', this.pointerDownListener_);
+    this.resizeObserver_ = new ResizeObserver(() => {
+      this.resizeDropdown_();
+    });
+    this.resizeObserver_.observe(this.$.search);
   },
 
   /** @override */
   detached() {
     document.removeEventListener('pointerdown', this.pointerDownListener_);
+    this.resizeObserver_.unobserve(this.$.search);
   },
 
   /**
@@ -143,6 +151,19 @@ Polymer({
         this.dropdownRefitPending_ = false;
       }, 0);
     }
+  },
+
+  /**
+   * Keeps the dropdown from expanding beyond the width of the search input when
+   * its width is specified as a percentage.
+   * @private
+   */
+  resizeDropdown_() {
+    const dropdown = this.$$('iron-dropdown').containedElement;
+    const dropdownWidth =
+        Math.max(dropdown.offsetWidth, this.$.search.offsetWidth);
+    dropdown.style.width = `${dropdownWidth}px`;
+    this.enqueueDropdownRefit_();
   },
 
   /** @private */
@@ -439,7 +460,7 @@ Polymer({
    * leave the user's text in the dropdown search bar when focus is changed.
    * @private
    */
-  onBlur_ : function () {
+  onBlur_() {
     if (!this.updateValueOnInput) {
       this.$.search.value = this.value;
     }
@@ -453,7 +474,7 @@ Polymer({
    * |invalid| to false.
    * @private
    */
-  updateInvalid_: function () {
+  updateInvalid_() {
     this.invalid =
         !this.updateValueOnInput && (this.value !== this.$.search.value);
   },
