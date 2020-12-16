@@ -129,6 +129,7 @@ struct PaintPropertyTreeBuilderFragmentContext {
   // Therefore, we don't need extra bookkeeping for effect nodes and can
   // generate the effect tree from a DOM-order traversal.
   const EffectPaintPropertyNodeOrAlias* current_effect;
+  bool this_or_ancestor_opacity_is_zero = false;
 
   // If the object is a flow thread, this records the clip rect for this
   // fragment.

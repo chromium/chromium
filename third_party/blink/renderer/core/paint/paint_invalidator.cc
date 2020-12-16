@@ -176,6 +176,11 @@ void PaintInvalidator::UpdateLayoutShiftTracking(
   if (!object.ShouldCheckGeometryForPaintInvalidation())
     return;
 
+  if (tree_builder_context.this_or_ancestor_opacity_is_zero) {
+    object.GetMutableForPainting().SetShouldSkipNextLayoutShiftTracking(true);
+    return;
+  }
+
   auto& layout_shift_tracker = object.GetFrameView()->GetLayoutShiftTracker();
   if (!layout_shift_tracker.NeedsToTrack(object)) {
     object.GetMutableForPainting().SetShouldSkipNextLayoutShiftTracking(true);

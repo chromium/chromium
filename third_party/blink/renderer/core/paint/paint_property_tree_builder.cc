@@ -1295,8 +1295,9 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
     }
   }
 
-  if (properties_->Effect()) {
-    context_.current_effect = properties_->Effect();
+  if (const auto* effect = properties_->Effect()) {
+    context_.current_effect = effect;
+    context_.this_or_ancestor_opacity_is_zero |= effect->Opacity() == 0;
     if (properties_->MaskClip()) {
       context_.current.clip = context_.absolute_position.clip =
           context_.fixed_position.clip = properties_->MaskClip();
