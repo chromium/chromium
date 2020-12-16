@@ -87,6 +87,9 @@ class COMPONENT_EXPORT(UI_BASE_IME) TextInputClient {
     // Move cursor to the position after the last character in the text.
     // e.g. for "hello", the cursor will be right after "o".
     kMoveCursorAfterText,
+    // Move cursor to the position before the first character in the text.
+    // e.g. for "hello", the cursor will be right before "h".
+    kMoveCursorBeforeText,
   };
 
   // Inserts a given text at the insertion point. Current composition text or

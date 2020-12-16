@@ -6025,6 +6025,28 @@ TEST_F(InputMethodResultAuraTest, CommitText) {
   }
 }
 
+TEST_F(InputMethodResultAuraTest, CommitTextBeforeCursor) {
+  base::RepeatingClosure ime_call = base::BindRepeating(
+      &ui::TextInputClient::InsertText, base::Unretained(text_input_client()),
+      base::UTF8ToUTF16("hello"),
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorBeforeText);
+  for (auto index : active_view_sequence_) {
+    ActivateViewForTextInputManager(views_[index], ui::TEXT_INPUT_TYPE_TEXT);
+    ime_call.Run();
+    base::RunLoop().RunUntilIdle();
+
+    MockWidgetInputHandler::MessageVector events =
+        widget_hosts_[index]->input_handler()->GetAndResetDispatchedMessages();
+    EXPECT_EQ("CommitText", GetMessageNames(events));
+
+    MockWidgetInputHandler::DispatchedIMEMessage* ime_message =
+        events[0]->ToIME();
+    EXPECT_TRUE(ime_message);
+    EXPECT_TRUE(ime_message->Matches(base::ASCIIToUTF16("hello"), {},
+                                     gfx::Range::InvalidRange(), -5, -5));
+  }
+}
+
 // This test is for RenderWidgetHostViewAura::FinishImeCompositionSession which
 // is in response to a mouse click during an ongoing composition.
 TEST_F(InputMethodResultAuraTest, FinishImeCompositionSession) {

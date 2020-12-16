@@ -1146,9 +1146,13 @@ void RenderWidgetHostViewAura::InsertText(
 
   if (text_input_manager_ && text_input_manager_->GetActiveWidget()) {
     if (text.length()) {
-      // TODO(crbug.com/1155331): Handle |cursor_behavior| correctly.
+      const int relative_cursor_position =
+          cursor_behavior == InsertTextCursorBehavior::kMoveCursorBeforeText
+              ? -text.length()
+              : 0;
       text_input_manager_->GetActiveWidget()->ImeCommitText(
-          text, std::vector<ui::ImeTextSpan>(), gfx::Range::InvalidRange(), 0);
+          text, std::vector<ui::ImeTextSpan>(), gfx::Range::InvalidRange(),
+          relative_cursor_position);
     } else if (has_composition_text_) {
       text_input_manager_->GetActiveWidget()->ImeFinishComposingText(false);
     }
