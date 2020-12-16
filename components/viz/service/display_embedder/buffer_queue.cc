@@ -53,18 +53,8 @@ void BufferQueue::UpdateBufferDamage(const gfx::Rect& damage) {
 }
 
 gfx::Rect BufferQueue::CurrentBufferDamage() const {
-  if (current_surface_)
-    return current_surface_->damage;
-
-  // In case there is no current_surface_, we get the damage from the surface
-  // that will be set as current_surface_ by the next call to GetNextSurface.
-  if (!available_surfaces_.empty()) {
-    return available_surfaces_.back()->damage;
-  }
-
-  // If we can't determine which surface will be the next current_surface_, we
-  // conservatively invalidate the whole buffer.
-  return gfx::Rect(size_);
+  DCHECK(current_surface_);
+  return current_surface_->damage;
 }
 
 void BufferQueue::SwapBuffers(const gfx::Rect& damage) {
