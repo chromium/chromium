@@ -401,31 +401,6 @@ gfx::Size PadToMatchAspectRatio(const gfx::Size& size,
   return gfx::Size(size.width(), RoundedDivision(x, target.width()));
 }
 
-void CopyRGBToVideoFrame(const uint8_t* source,
-                         int stride,
-                         const gfx::Rect& region_in_frame,
-                         VideoFrame* frame) {
-  const int kY = VideoFrame::kYPlane;
-  const int kU = VideoFrame::kUPlane;
-  const int kV = VideoFrame::kVPlane;
-  CHECK_EQ(frame->stride(kU), frame->stride(kV));
-  const int uv_stride = frame->stride(kU);
-
-  if (region_in_frame != gfx::Rect(frame->coded_size())) {
-    LetterboxVideoFrame(frame, region_in_frame);
-  }
-
-  const int y_offset =
-      region_in_frame.x() + (region_in_frame.y() * frame->stride(kY));
-  const int uv_offset =
-      region_in_frame.x() / 2 + (region_in_frame.y() / 2 * uv_stride);
-
-  libyuv::ARGBToI420(source, stride, frame->data(kY) + y_offset,
-                     frame->stride(kY), frame->data(kU) + uv_offset, uv_stride,
-                     frame->data(kV) + uv_offset, uv_stride,
-                     region_in_frame.width(), region_in_frame.height());
-}
-
 scoped_refptr<VideoFrame> ConvertToMemoryMappedFrame(
     scoped_refptr<VideoFrame> video_frame) {
   DCHECK(video_frame);

@@ -137,13 +137,6 @@ MEDIA_EXPORT gfx::Size GetRectSizeFromOrigin(const gfx::Rect& rect);
 MEDIA_EXPORT gfx::Size PadToMatchAspectRatio(const gfx::Size& size,
                                              const gfx::Size& target);
 
-// Copy an RGB bitmap into the specified |region_in_frame| of a YUV video frame.
-// Fills the regions outside |region_in_frame| with black.
-MEDIA_EXPORT void CopyRGBToVideoFrame(const uint8_t* source,
-                                      int stride,
-                                      const gfx::Rect& region_in_frame,
-                                      VideoFrame* frame);
-
 // A helper function to map GpuMemoryBuffer-based VideoFrame. This function
 // maps the given GpuMemoryBuffer of |frame| as-is without converting pixel
 // format. The returned VideoFrame owns the |frame|.
