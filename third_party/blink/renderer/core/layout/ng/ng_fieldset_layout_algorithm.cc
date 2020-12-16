@@ -246,7 +246,7 @@ void NGFieldsetLayoutAlgorithm::LayoutLegend(NGBlockNode& legend) {
   scoped_refptr<const NGLayoutResult> result =
       legend.Layout(legend_space, BreakToken());
 
-  // TODO(layout-dev): Handle abortions caused by block fragmentation.
+  // Legends are monolithic, so abortions are not expected.
   DCHECK_EQ(result->Status(), NGLayoutResult::kSuccess);
 
   const auto& physical_fragment = result->PhysicalFragment();
@@ -350,9 +350,6 @@ NGBreakStatus NGFieldsetLayoutAlgorithm::LayoutFieldsetContent(
       NGCacheSlot::kLayout);
   auto result = fieldset_content.Layout(child_space, content_break_token.get());
 
-  // TODO(layout-dev): Handle abortions caused by block fragmentation.
-  DCHECK_EQ(result->Status(), NGLayoutResult::kSuccess);
-
   NGBreakStatus break_status = NGBreakStatus::kContinue;
   if (ConstraintSpace().HasBlockFragmentation()) {
     bool has_container_separation = is_legend_past_border_;
@@ -367,6 +364,7 @@ NGBreakStatus NGFieldsetLayoutAlgorithm::LayoutFieldsetContent(
   }
 
   if (break_status == NGBreakStatus::kContinue) {
+    DCHECK_EQ(result->Status(), NGLayoutResult::kSuccess);
     LogicalOffset offset(borders_.inline_start, intrinsic_block_size_);
     container_builder_.AddResult(*result, offset);
     intrinsic_block_size_ +=
