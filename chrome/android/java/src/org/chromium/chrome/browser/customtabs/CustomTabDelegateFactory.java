@@ -21,6 +21,7 @@ import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.cc.input.BrowserControlsState;
+import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -493,7 +494,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         Supplier<ShareDelegate> shareDelegateSupplier =
                 mActivity == null ? null : mActivity.getShareDelegateSupplier();
         return new ChromeContextMenuPopulatorFactory(createTabContextMenuItemDelegate(tab),
-                shareDelegateSupplier, contextMenuMode, ExternalAuthUtils.getInstance());
+                shareDelegateSupplier, contextMenuMode, AppHooks.get().getExternalAuthUtils());
     }
 
     @Override

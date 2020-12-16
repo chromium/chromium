@@ -32,6 +32,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
+import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.database.SQLiteCursor;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
@@ -1132,9 +1133,10 @@ public class ChromeBrowserProviderImpl extends ChromeBrowserProvider.Impl {
     }
 
     private boolean hasPermission(String permission) {
-        boolean isSystemOrGoogleCaller = ExternalAuthUtils.getInstance().isCallerValid(getContext(),
-                ExternalAuthUtils.FLAG_SHOULD_BE_GOOGLE_SIGNED
-                        | ExternalAuthUtils.FLAG_SHOULD_BE_SYSTEM);
+        boolean isSystemOrGoogleCaller =
+                AppHooks.get().getExternalAuthUtils().isCallerValid(getContext(),
+                        ExternalAuthUtils.FLAG_SHOULD_BE_GOOGLE_SIGNED
+                                | ExternalAuthUtils.FLAG_SHOULD_BE_SYSTEM);
 
         if (isSystemOrGoogleCaller) {
             recordPermissionWasGranted("SignaturePassed", permission);

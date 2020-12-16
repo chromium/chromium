@@ -35,20 +35,6 @@ public class ExternalAuthUtils {
     public static final int FLAG_SHOULD_BE_GOOGLE_SIGNED = 1 << 0;
     public static final int FLAG_SHOULD_BE_SYSTEM = 1 << 1;
     private static final String TAG = "ExternalAuthUtils";
-    private static ExternalAuthUtils sInstance = new ExternalAuthUtils();
-
-    private final ExternalAuthGoogleDelegate mGoogleDelegate;
-
-    public ExternalAuthUtils() {
-        mGoogleDelegate = new ExternalAuthGoogleDelegateImpl();
-    }
-
-    /**
-     * @return The singleton instance of ExternalAuthUtils.
-     */
-    public static ExternalAuthUtils getInstance() {
-        return sInstance;
-    }
 
     /**
      * Gets the calling package names for the current transaction.
@@ -98,7 +84,8 @@ public class ExternalAuthUtils {
      * @param packageName The package name to inquire about.
      */
     public boolean isGoogleSigned(String packageName) {
-        return mGoogleDelegate.isGoogleSigned(packageName);
+        // This is overridden in a subclass.
+        return false;
     }
 
     /**
@@ -242,14 +229,6 @@ public class ExternalAuthUtils {
      */
     public boolean canUseFirstPartyGooglePlayServices() {
         return canUseFirstPartyGooglePlayServices(new UserRecoverableErrorHandler.Silent());
-    }
-
-    /**
-     * @return this object's {@link ExternalAuthGoogleDelegate} instance.
-     */
-    @VisibleForTesting
-    public ExternalAuthGoogleDelegate getGoogleDelegateForTesting() {
-        return mGoogleDelegate;
     }
 
     /**

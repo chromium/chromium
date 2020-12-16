@@ -11,6 +11,7 @@ import android.os.Message;
 import android.os.Messenger;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.externalauth.VerifiedHandler;
@@ -25,7 +26,7 @@ public class ChromePrerenderServiceImpl extends ChromePrerenderService.Impl {
      */
     static class IncomingHandler extends VerifiedHandler {
         IncomingHandler(Context context) {
-            super(context, ExternalAuthUtils.getInstance(),
+            super(context, AppHooks.get().getExternalAuthUtils(),
                     ChromeVersionInfo.isLocalBuild()
                             ? 0
                             : ExternalAuthUtils.FLAG_SHOULD_BE_GOOGLE_SIGNED);

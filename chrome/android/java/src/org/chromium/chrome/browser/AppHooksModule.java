@@ -28,7 +28,7 @@ public class AppHooksModule {
 
     @Provides
     public ExternalAuthUtils provideExternalAuthUtils() {
-        return ExternalAuthUtils.getInstance();
+        return AppHooks.get().getExternalAuthUtils();
     }
 
     @Provides
