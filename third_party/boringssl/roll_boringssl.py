@@ -164,6 +164,7 @@ def main():
                         cwd=BORINGSSL_PATH)
 
   # Commit everything.
+  reload(generate_build_files)
   subprocess.check_call(['git', 'add', DEPS_PATH], cwd=SRC_PATH)
   for (osname, arch, _, _, _) in generate_build_files.OS_ARCH_COMBOS:
     path = os.path.join(BORINGSSL_PATH, osname + '-' + arch)
