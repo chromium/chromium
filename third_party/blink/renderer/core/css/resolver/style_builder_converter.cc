@@ -124,7 +124,8 @@ scoped_refptr<StyleSVGResource> StyleBuilderConverter::ConvertElementReference(
 
   const auto& url_value = To<cssvalue::CSSURIValue>(value);
   SVGResource* resource =
-      state.GetElementStyleResources().GetSVGResourceFromValue(url_value);
+      state.GetElementStyleResources().GetSVGResourceFromValue(
+          CSSPropertyID::kInvalid, url_value);
   return StyleSVGResource::Create(resource, url_value.ValueForSerialization());
 }
 
@@ -146,7 +147,8 @@ scoped_refptr<ClipPathOperation> StyleBuilderConverter::ConvertClipPath(
 
   if (const auto* url_value = DynamicTo<cssvalue::CSSURIValue>(value)) {
     SVGResource* resource =
-        state.GetElementStyleResources().GetSVGResourceFromValue(*url_value);
+        state.GetElementStyleResources().GetSVGResourceFromValue(
+            CSSPropertyID::kClipPath, *url_value);
     // TODO(fs): Doesn't work with external SVG references (crbug.com/109212.)
     return ReferenceClipPathOperation::Create(
         url_value->ValueForSerialization(), resource);
@@ -159,8 +161,10 @@ scoped_refptr<ClipPathOperation> StyleBuilderConverter::ConvertClipPath(
 
 FilterOperations StyleBuilderConverter::ConvertFilterOperations(
     StyleResolverState& state,
-    const CSSValue& value) {
-  return FilterOperationResolver::CreateFilterOperations(state, value);
+    const CSSValue& value,
+    CSSPropertyID property_id) {
+  return FilterOperationResolver::CreateFilterOperations(state, value,
+                                                         property_id);
 }
 
 FilterOperations StyleBuilderConverter::ConvertOffscreenFilterOperations(

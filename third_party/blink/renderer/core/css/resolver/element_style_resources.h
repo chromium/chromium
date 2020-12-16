@@ -67,10 +67,8 @@ class ElementStyleResources {
   StyleImage* CachedOrPendingFromValue(CSSPropertyID, const CSSImageValue&);
   StyleImage* SetOrPendingFromValue(CSSPropertyID, const CSSImageSetValue&);
 
-  enum AllowExternal { kDontAllowExternalResource, kAllowExternalResource };
-  SVGResource* GetSVGResourceFromValue(
-      const cssvalue::CSSURIValue&,
-      AllowExternal = kDontAllowExternalResource) const;
+  SVGResource* GetSVGResourceFromValue(CSSPropertyID,
+                                       const cssvalue::CSSURIValue&);
 
   void LoadPendingResources(ComputedStyle&);
 
@@ -89,6 +87,7 @@ class ElementStyleResources {
 
   Element& element_;
   HashSet<CSSPropertyID> pending_image_properties_;
+  HashSet<CSSPropertyID> pending_svg_resource_properties_;
   float device_scale_factor_;
   PseudoElement* pseudo_element_;
 };

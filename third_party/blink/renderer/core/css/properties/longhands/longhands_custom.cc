@@ -488,6 +488,14 @@ const CSSValue* BackdropFilter::CSSValueFromComputedStyleInternal(
     bool allow_visited_style) const {
   return ComputedStyleUtils::ValueForFilter(style, style.BackdropFilter());
 }
+
+void BackdropFilter::ApplyValue(StyleResolverState& state,
+                                const CSSValue& value) const {
+  state.Style()->SetBackdropFilter(
+      StyleBuilderConverter::ConvertFilterOperations(state, value,
+                                                     PropertyID()));
+}
+
 const CSSValue* BackfaceVisibility::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const SVGComputedStyle&,
@@ -2686,6 +2694,12 @@ const CSSValue* Filter::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style) const {
   return ComputedStyleUtils::ValueForFilter(style, style.Filter());
+}
+
+void Filter::ApplyValue(StyleResolverState& state,
+                        const CSSValue& value) const {
+  state.Style()->SetFilter(StyleBuilderConverter::ConvertFilterOperations(
+      state, value, PropertyID()));
 }
 
 const CSSValue* FlexBasis::ParseSingleValue(

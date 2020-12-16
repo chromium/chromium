@@ -156,7 +156,8 @@ double FilterOperationResolver::ResolveNumericArgumentForFunction(
 
 FilterOperations FilterOperationResolver::CreateFilterOperations(
     StyleResolverState& state,
-    const CSSValue& in_value) {
+    const CSSValue& in_value,
+    CSSPropertyID property_id) {
   FilterOperations operations;
 
   if (auto* in_identifier_value = DynamicTo<CSSIdentifierValue>(in_value)) {
@@ -173,8 +174,8 @@ FilterOperations FilterOperationResolver::CreateFilterOperations(
       CountFilterUse(FilterOperation::REFERENCE, state.GetDocument());
 
       SVGResource* resource =
-          state.GetElementStyleResources().GetSVGResourceFromValue(
-              *url_value, ElementStyleResources::kAllowExternalResource);
+          state.GetElementStyleResources().GetSVGResourceFromValue(property_id,
+                                                                   *url_value);
       operations.Operations().push_back(
           MakeGarbageCollected<ReferenceFilterOperation>(
               url_value->ValueForSerialization(), resource));

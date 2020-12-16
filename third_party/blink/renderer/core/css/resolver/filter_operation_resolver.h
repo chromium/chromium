@@ -34,13 +34,16 @@ class CSSFunctionValue;
 class CSSValue;
 class StyleResolverState;
 
+enum class CSSPropertyID;
+
 class CORE_EXPORT FilterOperationResolver {
   STATIC_ONLY(FilterOperationResolver);
 
  public:
   static FilterOperation::OperationType FilterOperationForType(CSSValueID);
   static FilterOperations CreateFilterOperations(StyleResolverState&,
-                                                 const CSSValue&);
+                                                 const CSSValue&,
+                                                 CSSPropertyID);
   static FilterOperations CreateOffscreenFilterOperations(const CSSValue&,
                                                           const Font&);
   static double ResolveNumericArgumentForFunction(

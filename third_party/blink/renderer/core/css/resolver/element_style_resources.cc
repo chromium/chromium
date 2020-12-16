@@ -104,9 +104,14 @@ StyleImage* ElementStyleResources::CachedOrPendingFromValue(
   return value.CachedImage();
 }
 
+static bool AllowExternalResources(CSSPropertyID property) {
+  return property == CSSPropertyID::kBackdropFilter ||
+         property == CSSPropertyID::kFilter;
+}
+
 SVGResource* ElementStyleResources::GetSVGResourceFromValue(
-    const cssvalue::CSSURIValue& value,
-    AllowExternal allow_external) const {
+    CSSPropertyID property,
+    const cssvalue::CSSURIValue& value) {
   if (value.IsLocal(element_.GetDocument())) {
     SVGTreeScopeResources& tree_scope_resources =
         element_.OriginatingTreeScope().EnsureSVGTreeScopedResources();
@@ -114,23 +119,40 @@ SVGResource* ElementStyleResources::GetSVGResourceFromValue(
         value.FragmentIdentifier(), DecodeURLMode::kUTF8OrIsomorphic));
     return tree_scope_resources.ResourceForId(decoded_fragment);
   }
-  if (allow_external == kAllowExternalResource)
+  if (AllowExternalResources(property)) {
+    pending_svg_resource_properties_.insert(property);
     return value.EnsureResourceReference();
+  }
   return nullptr;
 }
 
-void ElementStyleResources::LoadPendingSVGResources(ComputedStyle& style) {
-  if (!style.HasFilter())
-    return;
-  FilterOperations::FilterOperationVector& filter_operations =
-      style.MutableFilter().Operations();
+static void LoadResourcesForFilter(
+    FilterOperations::FilterOperationVector& filter_operations,
+    Document& document) {
   for (const auto& filter_operation : filter_operations) {
     auto* reference_operation =
         DynamicTo<ReferenceFilterOperation>(filter_operation.Get());
     if (!reference_operation)
       continue;
     if (SVGResource* resource = reference_operation->Resource())
-      resource->Load(element_.GetDocument());
+      resource->Load(document);
+  }
+}
+
+void ElementStyleResources::LoadPendingSVGResources(ComputedStyle& style) {
+  Document& document = element_.GetDocument();
+  for (CSSPropertyID property : pending_svg_resource_properties_) {
+    switch (property) {
+      case CSSPropertyID::kBackdropFilter:
+        LoadResourcesForFilter(style.MutableBackdropFilter().Operations(),
+                               document);
+        break;
+      case CSSPropertyID::kFilter:
+        LoadResourcesForFilter(style.MutableFilter().Operations(), document);
+        break;
+      default:
+        NOTREACHED();
+    }
   }
 }
 

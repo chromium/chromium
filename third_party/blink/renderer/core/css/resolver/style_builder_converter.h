@@ -108,7 +108,8 @@ class StyleBuilderConverter {
       StyleResolverState&,
       const CSSValue&);
   static FilterOperations ConvertFilterOperations(StyleResolverState&,
-                                                  const CSSValue&);
+                                                  const CSSValue&,
+                                                  CSSPropertyID);
   static FilterOperations ConvertOffscreenFilterOperations(const CSSValue&,
                                                            const Font&);
   template <typename T>
