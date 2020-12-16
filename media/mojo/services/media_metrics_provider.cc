@@ -45,8 +45,7 @@ MediaMetricsProvider::MediaMetricsProvider(
     learning::FeatureValue origin,
     VideoDecodePerfHistory::SaveCallback save_cb,
     GetLearningSessionCallback learning_session_cb,
-    RecordAggregateWatchTimeCallback record_playback_cb,
-    Source source)
+    RecordAggregateWatchTimeCallback record_playback_cb)
     : player_id_(g_player_id++),
       is_top_frame_(is_top_frame == FrameStatus::kTopFrame),
       source_id_(source_id),
@@ -54,8 +53,7 @@ MediaMetricsProvider::MediaMetricsProvider(
       save_cb_(std::move(save_cb)),
       learning_session_cb_(std::move(learning_session_cb)),
       record_playback_cb_(std::move(record_playback_cb)),
-      uma_info_(is_incognito == BrowsingMode::kIncognito),
-      source_(source) {}
+      uma_info_(is_incognito == BrowsingMode::kIncognito) {}
 
 MediaMetricsProvider::~MediaMetricsProvider() {
   // UKM may be unavailable in content_shell or other non-chrome/ builds; it
@@ -169,14 +167,13 @@ void MediaMetricsProvider::Create(
     VideoDecodePerfHistory::SaveCallback save_cb,
     GetLearningSessionCallback learning_session_cb,
     GetRecordAggregateWatchTimeCallback get_record_playback_cb,
-    mojo::PendingReceiver<mojom::MediaMetricsProvider> receiver,
-    Source source) {
+    mojo::PendingReceiver<mojom::MediaMetricsProvider> receiver) {
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<MediaMetricsProvider>(
           is_incognito, is_top_frame, get_source_id_cb.Run(),
           get_origin_cb.Run(), std::move(save_cb),
           std::move(learning_session_cb),
-          std::move(get_record_playback_cb).Run(), source),
+          std::move(get_record_playback_cb).Run()),
       std::move(receiver));
 }
 
@@ -269,7 +266,7 @@ void MediaMetricsProvider::AcquireWatchTimeRecorder(
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<WatchTimeRecorder>(std::move(properties), source_id_,
                                           is_top_frame_, player_id_,
-                                          record_playback_cb_, source_),
+                                          record_playback_cb_),
       std::move(receiver));
 }
 

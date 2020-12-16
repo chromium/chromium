@@ -4,21 +4,11 @@
 <title>Simple autoplay test page</title>
 <video src='bigbuck.webm'></video>
 <script>
-const video = document.querySelector('video');
-
 function attemptPlay() {
-  video.play().then(function() {
+  document.querySelector('video').play().then(function() {
     window.domAutomationController.send(true);
   }, function() {
     window.domAutomationController.send(false);
-  });
-}
-
-function waitFor10Secs() {
-  video.addEventListener('timeupdate', () => {
-    if (video.currentTime > 10) {
-      window.domAutomationController.send(true);
-    }
   });
 }
 </script>

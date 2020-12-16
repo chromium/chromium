@@ -639,8 +639,6 @@ class Browser : public TabStripModelObserver,
   void MediaWatchTimeChanged(
       const content::MediaPlayerWatchTime& watch_time) override;
   base::WeakPtr<content::WebContentsDelegate> GetDelegateWeakPtr() override;
-  content::WebContentsDelegate::MediaMetricsSource
-  GetMediaMetricsProviderSource(content::WebContents* web_contents) override;
 
   bool is_type_normal() const { return type_ == TYPE_NORMAL; }
   bool is_type_popup() const { return type_ == TYPE_POPUP; }

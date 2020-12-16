@@ -404,16 +404,6 @@ class ActiveURLMessageFilter : public mojo::MessageFilter {
   bool debug_url_set_ = false;
 };
 
-media::MediaMetricsProvider::Source MediaMetricsSourceToSource(
-    WebContentsDelegate::MediaMetricsSource source) {
-  switch (source) {
-    case WebContentsDelegate::MediaMetricsSource::kUnknown:
-      return media::MediaMetricsProvider::Source::kUnknown;
-    case WebContentsDelegate::MediaMetricsSource::kKaleidoscope:
-      return media::MediaMetricsProvider::Source::kKaleidoscope;
-  }
-}
-
 // This class can be added as a MessageFilter to a mojo receiver to detect
 // messages received while the the associated frame is in the Back-Forward
 // Cache. Documents that are in the bfcache should not be sending mojo messages
@@ -7764,11 +7754,6 @@ void RenderFrameHostImpl::BindMediaMetricsProviderReceiver(
                         ->GetSaveCallback();
   }
 
-  WebContents* web_contents =
-      delegate_ ? delegate_->GetAsWebContents() : nullptr;
-  WebContentsDelegate* wc_delegate =
-      web_contents ? web_contents->GetDelegate() : nullptr;
-
   media::MediaMetricsProvider::Create(
       GetProcess()->GetBrowserContext()->IsOffTheRecord()
           ? media::MediaMetricsProvider::BrowsingMode::kIncognito
@@ -7806,11 +7791,7 @@ void RenderFrameHostImpl::BindMediaMetricsProviderReceiver(
       base::BindRepeating(
           &RenderFrameHostImpl::GetRecordAggregateWatchTimeCallback,
           base::Unretained(this)),
-      std::move(receiver),
-      wc_delegate
-          ? MediaMetricsSourceToSource(
-                wc_delegate->GetMediaMetricsProviderSource(web_contents))
-          : media::MediaMetricsProvider::Source::kUnknown);
+      std::move(receiver));
 }
 
 void RenderFrameHostImpl::CreateMediaPlayerHost(

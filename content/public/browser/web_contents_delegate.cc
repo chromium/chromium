@@ -366,9 +366,4 @@ base::WeakPtr<WebContentsDelegate> WebContentsDelegate::GetDelegateWeakPtr() {
   return nullptr;
 }
 
-WebContentsDelegate::MediaMetricsSource
-WebContentsDelegate::GetMediaMetricsProviderSource(WebContents* web_contents) {
-  return WebContentsDelegate::MediaMetricsSource::kUnknown;
-}
-
 }  // namespace content

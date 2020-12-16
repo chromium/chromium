@@ -32,8 +32,6 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
 
   enum class FrameStatus : bool { kTopFrame, kNotTopFrame };
 
-  enum class Source { kUnknown, kKaleidoscope };
-
   using GetLearningSessionCallback =
       base::RepeatingCallback<learning::LearningSession*()>;
 
@@ -52,8 +50,7 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
                        learning::FeatureValue origin,
                        VideoDecodePerfHistory::SaveCallback save_cb,
                        GetLearningSessionCallback learning_session_cb,
-                       RecordAggregateWatchTimeCallback record_playback_cb,
-                       Source source);
+                       RecordAggregateWatchTimeCallback record_playback_cb);
   ~MediaMetricsProvider() override;
 
   // Callback for retrieving a ukm::SourceId.
@@ -83,8 +80,7 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
       VideoDecodePerfHistory::SaveCallback save_cb,
       GetLearningSessionCallback learning_session_cb,
       GetRecordAggregateWatchTimeCallback get_record_playback_cb,
-      mojo::PendingReceiver<mojom::MediaMetricsProvider> receiver,
-      Source source);
+      mojo::PendingReceiver<mojom::MediaMetricsProvider> receiver);
 
  private:
   struct PipelineInfo {
@@ -156,8 +152,6 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
   bool initialized_ = false;
   bool is_mse_;
   mojom::MediaURLScheme url_scheme_;
-
-  const Source source_;
 
   base::TimeDelta time_to_metadata_ = kNoTimestamp;
   base::TimeDelta time_to_first_frame_ = kNoTimestamp;

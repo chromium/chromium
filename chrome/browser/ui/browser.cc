@@ -65,7 +65,6 @@
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/media/history/media_history_keyed_service.h"
 #include "chrome/browser/media/history/media_history_store.h"
-#include "chrome/browser/media/kaleidoscope/kaleidoscope_tab_helper.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/notifications/notification_ui_manager.h"
@@ -1544,18 +1543,6 @@ void Browser::MediaWatchTimeChanged(
 
 base::WeakPtr<content::WebContentsDelegate> Browser::GetDelegateWeakPtr() {
   return weak_factory_.GetWeakPtr();
-}
-
-content::WebContentsDelegate::MediaMetricsSource
-Browser::GetMediaMetricsProviderSource(content::WebContents* web_contents) {
-  auto* tab_helper = KaleidoscopeTabHelper::FromWebContents(web_contents);
-  if (tab_helper) {
-    return tab_helper->IsKaleidoscopeDerived()
-               ? content::WebContentsDelegate::MediaMetricsSource::kKaleidoscope
-               : content::WebContentsDelegate::MediaMetricsSource::kUnknown;
-  }
-
-  return content::WebContentsDelegate::MediaMetricsSource::kUnknown;
 }
 
 bool Browser::IsMouseLocked() const {

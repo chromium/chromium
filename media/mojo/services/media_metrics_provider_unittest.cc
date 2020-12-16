@@ -35,8 +35,7 @@ class MediaMetricsProviderTest : public testing::Test {
                   bool is_incognito,
                   bool is_top_frame,
                   const std::string& origin,
-                  mojom::MediaURLScheme scheme,
-                  MediaMetricsProvider::Source source) {
+                  mojom::MediaURLScheme scheme) {
     source_id_ = test_recorder_->GetNewSourceID();
     test_recorder_->UpdateSourceURL(source_id_, GURL(origin));
 
@@ -53,7 +52,7 @@ class MediaMetricsProviderTest : public testing::Test {
         base::BindRepeating(
             &MediaMetricsProviderTest::GetRecordAggregateWatchTimeCallback,
             base::Unretained(this)),
-        provider_.BindNewPipeAndPassReceiver(), source);
+        provider_.BindNewPipeAndPassReceiver());
     provider_->Initialize(is_mse, scheme);
   }
 
@@ -87,8 +86,7 @@ class MediaMetricsProviderTest : public testing::Test {
   EXPECT_TRUE(test_recorder_->EntryHasMetric(entry, name));
 
 TEST_F(MediaMetricsProviderTest, TestUkm) {
-  Initialize(true, false, true, kTestOrigin, mojom::MediaURLScheme::kHttp,
-             MediaMetricsProvider::Source::kKaleidoscope);
+  Initialize(true, false, true, kTestOrigin, mojom::MediaURLScheme::kHttp);
   provider_.reset();
   base::RunLoop().RunUntilIdle();
 
@@ -123,8 +121,7 @@ TEST_F(MediaMetricsProviderTest, TestUkm) {
   const base::TimeDelta kPlayReadyTime = base::TimeDelta::FromSeconds(3);
 
   ResetMetricRecorders();
-  Initialize(false, false, false, kTestOrigin2, mojom::MediaURLScheme::kHttps,
-             MediaMetricsProvider::Source::kUnknown);
+  Initialize(false, false, false, kTestOrigin2, mojom::MediaURLScheme::kHttps);
   provider_->SetIsEME();
   provider_->SetTimeToMetadata(kMetadataTime);
   provider_->SetTimeToFirstFrame(kFirstFrameTime);
@@ -159,8 +156,7 @@ TEST_F(MediaMetricsProviderTest, TestUkm) {
 
 TEST_F(MediaMetricsProviderTest, TestPipelineUMA) {
   base::HistogramTester histogram_tester;
-  Initialize(false, false, false, kTestOrigin, mojom::MediaURLScheme::kHttps,
-             MediaMetricsProvider::Source::kUnknown);
+  Initialize(false, false, false, kTestOrigin, mojom::MediaURLScheme::kHttps);
   provider_->SetAudioPipelineInfo({false, false, "TestAudioDecoder"});
   provider_->SetVideoPipelineInfo({false, false, "TestVideoDecoder"});
   provider_->SetHasAudio(AudioCodec::kCodecVorbis);
@@ -177,8 +173,7 @@ TEST_F(MediaMetricsProviderTest, TestPipelineUMA) {
 
 TEST_F(MediaMetricsProviderTest, TestPipelineUMANoAudioEMEHW) {
   base::HistogramTester histogram_tester;
-  Initialize(false, false, false, kTestOrigin, mojom::MediaURLScheme::kHttps,
-             MediaMetricsProvider::Source::kUnknown);
+  Initialize(false, false, false, kTestOrigin, mojom::MediaURLScheme::kHttps);
   provider_->SetIsEME();
   provider_->SetVideoPipelineInfo({true, true, "TestEMEVideoDecoder"});
   provider_->SetHasVideo(VideoCodec::kCodecAV1);
@@ -195,8 +190,7 @@ TEST_F(MediaMetricsProviderTest, TestPipelineUMANoAudioEMEHW) {
 
 TEST_F(MediaMetricsProviderTest, TestPipelineUMADecoderFallback) {
   base::HistogramTester histogram_tester;
-  Initialize(false, false, false, kTestOrigin, mojom::MediaURLScheme::kHttps,
-             MediaMetricsProvider::Source::kUnknown);
+  Initialize(false, false, false, kTestOrigin, mojom::MediaURLScheme::kHttps);
   provider_->SetIsEME();
   provider_->SetAudioPipelineInfo({false, false, "TestAudioDecoder"});
   provider_->SetVideoPipelineInfo({true, false, "D3D11VideoDecoder"});
