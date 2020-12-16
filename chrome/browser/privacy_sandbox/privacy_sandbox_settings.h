@@ -6,12 +6,14 @@
 #define CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SETTINGS_H_
 
 #include "base/memory/ref_counted.h"
+#include "base/observer_list.h"
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "net/cookies/cookie_constants.h"
 
+class HostContentSettingsMap;
 class PrefService;
 
 namespace content_settings {
@@ -29,8 +31,16 @@ class Origin;
 // components.
 class PrivacySandboxSettings : public KeyedService {
  public:
-  PrivacySandboxSettings(content_settings::CookieSettings* cookie_settings,
+  class Observer {
+   public:
+    virtual void OnFlocDataAccessibleSinceUpdated() = 0;
+  };
+
+  PrivacySandboxSettings(HostContentSettingsMap* host_content_settings_map,
+                         content_settings::CookieSettings* cookie_settings,
                          PrefService* prefs);
+
+  ~PrivacySandboxSettings() override;
 
   // Determines whether FLoC is allowable in a particular context.
   // |top_frame_origin| is used to check for content settings which could both
@@ -60,6 +70,14 @@ class PrivacySandboxSettings : public KeyedService {
                                   const url::Origin& conversion_origin,
                                   const url::Origin& reporting_origin) const;
 
+  // Called when there's a broad cookies clearing action. For example, this
+  // should be called on "Clear browsing data", but shouldn't be called on the
+  // Clear-Site-Data header, as it's restricted to a specific site.
+  void OnCookiesCleared();
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
  protected:
   // Determines based on the current features, preferences and provided
   // |cookie_settings| whether Privacy Sandbox APIs are generally allowable for
@@ -72,6 +90,9 @@ class PrivacySandboxSettings : public KeyedService {
       const ContentSettingsForOneType& cookie_settings) const;
 
  private:
+  base::ObserverList<Observer>::Unchecked observers_;
+
+  HostContentSettingsMap* host_content_settings_map_;
   content_settings::CookieSettings* cookie_settings_;
   PrefService* pref_service_;
 };

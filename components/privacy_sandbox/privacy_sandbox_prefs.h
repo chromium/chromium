@@ -24,6 +24,10 @@ extern const char kPrivacySandboxManuallyControlled[];
 // enabled.
 extern const char kPrivacySandboxPreferencesReconciled[];
 
+// The point in time from which history is eligible to be used when calculating
+// a user's FLoC ID.
+extern const char kPrivacySandboxFlocDataAccessibleSince[];
+
 }  // namespace prefs
 
 namespace privacy_sandbox {

@@ -69,6 +69,8 @@
 #include "chrome/browser/prefetch/search_prefetch/search_prefetch_service_factory.h"
 #include "chrome/browser/previews/previews_service.h"
 #include "chrome/browser/previews/previews_service_factory.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_settings.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -680,6 +682,11 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
 
     if (filter_builder->GetMode() ==
         BrowsingDataFilterBuilder::Mode::kPreserve) {
+      PrivacySandboxSettings* privacy_sandbox_settings =
+          PrivacySandboxSettingsFactory::GetForProfile(profile_);
+      if (privacy_sandbox_settings)
+        privacy_sandbox_settings->OnCookiesCleared();
+
       MediaDeviceIDSalt::Reset(profile_->GetPrefs());
 
 #if defined(OS_ANDROID)

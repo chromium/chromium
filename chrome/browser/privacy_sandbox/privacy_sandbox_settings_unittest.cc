@@ -6,6 +6,7 @@
 
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/util/values/values_util.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/common/chrome_features.h"
@@ -36,13 +37,20 @@ struct CookieContentSettingException {
 
 class PrivacySandboxSettingsTest : public testing::Test {
  public:
-  PrivacySandboxSettingsTest() = default;
+  PrivacySandboxSettingsTest()
+      : browser_task_environment_(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   void SetUp() override {
+    InitializePrefsBeforeStart();
+
     privacy_sandbox_settings_ = std::make_unique<PrivacySandboxSettings>(
+        HostContentSettingsMapFactory::GetForProfile(profile()),
         CookieSettingsFactory::GetForProfile(profile()).get(),
         profile()->GetPrefs());
   }
+
+  virtual void InitializePrefsBeforeStart() {}
 
   // Sets up preferences and content settings based on provided parameters.
   void SetupTestState(
@@ -434,4 +442,54 @@ TEST_F(PrivacySandboxSettingsTest, ThirdPartyByDefault) {
       url::Origin::Create(GURL("https://embedded.com")),
       url::Origin::Create(GURL("https://embedded.com")),
       url::Origin::Create(GURL("https://embedded.com"))));
+}
+
+TEST_F(PrivacySandboxSettingsTest, FlocDataAccessibleSince) {
+  ASSERT_NE(base::Time(), base::Time::Now());
+
+  EXPECT_EQ(base::Time(),
+            privacy_sandbox_settings()->FlocDataAccessibleSince());
+
+  privacy_sandbox_settings()->OnCookiesCleared();
+
+  EXPECT_EQ(base::Time::Now(),
+            privacy_sandbox_settings()->FlocDataAccessibleSince());
+}
+
+class PrivacySandboxSettingsTestCookiesClearOnExitTurnedOff
+    : public PrivacySandboxSettingsTest {
+ public:
+  void InitializePrefsBeforeStart() override {
+    profile()->GetTestingPrefService()->SetUserPref(
+        prefs::kPrivacySandboxFlocDataAccessibleSince,
+        std::make_unique<base::Value>(
+            ::util::TimeToValue(base::Time::FromTimeT(12345))));
+  }
+};
+
+TEST_F(PrivacySandboxSettingsTestCookiesClearOnExitTurnedOff,
+       UseLastFlocDataAccessibleSince) {
+  EXPECT_EQ(base::Time::FromTimeT(12345),
+            privacy_sandbox_settings()->FlocDataAccessibleSince());
+}
+
+class PrivacySandboxSettingsTestCookiesClearOnExitTurnedOn
+    : public PrivacySandboxSettingsTest {
+ public:
+  void InitializePrefsBeforeStart() override {
+    auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
+    map->SetDefaultContentSetting(ContentSettingsType::COOKIES,
+                                  ContentSetting::CONTENT_SETTING_SESSION_ONLY);
+
+    profile()->GetTestingPrefService()->SetUserPref(
+        prefs::kPrivacySandboxFlocDataAccessibleSince,
+        std::make_unique<base::Value>(
+            ::util::TimeToValue(base::Time::FromTimeT(12345))));
+  }
+};
+
+TEST_F(PrivacySandboxSettingsTestCookiesClearOnExitTurnedOn,
+       UpdateFlocDataAccessibleSince) {
+  EXPECT_EQ(base::Time::Now(),
+            privacy_sandbox_settings()->FlocDataAccessibleSince());
 }

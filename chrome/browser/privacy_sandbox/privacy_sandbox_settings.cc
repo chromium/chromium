@@ -8,12 +8,19 @@
 #include "base/time/time.h"
 #include "chrome/common/chrome_features.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace {
+
+bool IsCookiesClearOnExitEnabled(HostContentSettingsMap* map) {
+  return map->GetDefaultContentSetting(ContentSettingsType::COOKIES,
+                                       /*provider_id=*/nullptr) ==
+         ContentSetting::CONTENT_SETTING_SESSION_ONLY;
+}
 
 bool HasNonDefaultBlockSetting(const ContentSettingsForOneType& cookie_settings,
                                const GURL& url,
@@ -51,12 +58,25 @@ bool HasNonDefaultBlockSetting(const ContentSettingsForOneType& cookie_settings,
 }  // namespace
 
 PrivacySandboxSettings::PrivacySandboxSettings(
+    HostContentSettingsMap* host_content_settings_map,
     content_settings::CookieSettings* cookie_settings,
     PrefService* pref_service)
-    : cookie_settings_(cookie_settings), pref_service_(pref_service) {
+    : host_content_settings_map_(host_content_settings_map),
+      cookie_settings_(cookie_settings),
+      pref_service_(pref_service) {
   DCHECK(pref_service_);
+  DCHECK(host_content_settings_map_);
   DCHECK(cookie_settings_);
+
+  // "Clear on exit" causes a cookie deletion on shutdown. But for practical
+  // purposes, we're notifying the observers on startup (which should be
+  // equivalent, as no cookie operations could have happened while the profile
+  // was shut down).
+  if (IsCookiesClearOnExitEnabled(host_content_settings_map_))
+    OnCookiesCleared();
 }
+
+PrivacySandboxSettings::~PrivacySandboxSettings() = default;
 
 bool PrivacySandboxSettings::IsFlocAllowed(
     const GURL& url,
@@ -68,9 +88,7 @@ bool PrivacySandboxSettings::IsFlocAllowed(
 }
 
 base::Time PrivacySandboxSettings::FlocDataAccessibleSince() const {
-  // Simply indicate that all history is available.
-  // TODO(crbug.com/1152336): Respect clear on exit & storage deletion events.
-  return base::Time();
+  return pref_service_->GetTime(prefs::kPrivacySandboxFlocDataAccessibleSince);
 }
 
 bool PrivacySandboxSettings::IsConversionMeasurementAllowed(
@@ -100,6 +118,23 @@ bool PrivacySandboxSettings::ShouldSendConversionReport(
                                  cookie_settings) &&
          IsPrivacySandboxAllowed(reporting_origin.GetURL(), reporting_origin,
                                  cookie_settings);
+}
+
+void PrivacySandboxSettings::OnCookiesCleared() {
+  pref_service_->SetTime(prefs::kPrivacySandboxFlocDataAccessibleSince,
+                         base::Time::Now());
+
+  for (auto& observer : observers_) {
+    observer.OnFlocDataAccessibleSinceUpdated();
+  }
+}
+
+void PrivacySandboxSettings::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void PrivacySandboxSettings::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 bool PrivacySandboxSettings::IsPrivacySandboxAllowed(

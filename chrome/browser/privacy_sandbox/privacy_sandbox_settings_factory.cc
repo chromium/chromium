@@ -6,6 +6,7 @@
 
 #include "base/memory/singleton.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
@@ -27,6 +28,7 @@ PrivacySandboxSettingsFactory::PrivacySandboxSettingsFactory()
     : BrowserContextKeyedServiceFactory(
           "PrivacySandboxSettings",
           BrowserContextDependencyManager::GetInstance()) {
+  DependsOn(HostContentSettingsMapFactory::GetInstance());
   DependsOn(CookieSettingsFactory::GetInstance());
 }
 
@@ -35,6 +37,7 @@ KeyedService* PrivacySandboxSettingsFactory::BuildServiceInstanceFor(
   Profile* profile = Profile::FromBrowserContext(context);
 
   return new PrivacySandboxSettings(
+      HostContentSettingsMapFactory::GetForProfile(profile),
       CookieSettingsFactory::GetForProfile(profile).get(), profile->GetPrefs());
 }
 
