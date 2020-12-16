@@ -538,6 +538,11 @@ public final class ChromePreferenceKeys {
     public static final String PRICE_TRACKING_PRICE_WELCOME_MESSAGE_CARD =
             "Chrome.PriceTracking.PriceWelcome";
     /**
+     * Indicates how many times the PriceWelcomeMessageCard has shown in the tab switcher.
+     */
+    public static final String PRICE_TRACKING_PRICE_WELCOME_MESSAGE_CARD_SHOW_COUNT =
+            "Chrome.PriceTracking.PriceWelcomeShowCount";
+    /**
      * Whether users turn on the feature track prices on tabs.
      */
     public static final String PRICE_TRACKING_TRACK_PRICES_ON_TABS =
@@ -844,6 +849,7 @@ public final class ChromePreferenceKeys {
                 IMAGE_DESCRIPTIONS_DONT_ASK_AGAIN,
                 PERSISTENT_OFFLINE_CONTENT_AVAILABILITY_STATUS,
                 PRICE_TRACKING_PRICE_WELCOME_MESSAGE_CARD,
+                PRICE_TRACKING_PRICE_WELCOME_MESSAGE_CARD_SHOW_COUNT,
                 PRICE_TRACKING_TRACK_PRICES_ON_TABS,
                 PROMO_IS_DISMISSED.pattern(),
                 PROMO_TIMES_SEEN.pattern(),

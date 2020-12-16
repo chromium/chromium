@@ -341,13 +341,6 @@ public class TabListCoordinator
     }
 
     /**
-     * @return The index of the model list where the PriceWelcomeMessage should be inserted.
-     */
-    int getPriceWelcomeMessageIndex() {
-        return mModel.size();
-    }
-
-    /**
      * @return The container {@link androidx.recyclerview.widget.RecyclerView} that is showing the
      *         tab list UI.
      */

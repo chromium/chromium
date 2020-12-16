@@ -126,6 +126,8 @@ public class TabSwitcherMediatorUnitTest {
     @Mock
     TabSwitcherMediator.MessageItemsController mMessageItemsController;
     @Mock
+    TabSwitcherMediator.PriceWelcomeMessageController mPriceWelcomeMessageController;
+    @Mock
     MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
 
     @Captor
@@ -201,7 +203,8 @@ public class TabSwitcherMediatorUnitTest {
         mModel.addObserver(mPropertyObserver);
         mMediator = new TabSwitcherMediator(mContext, mResetHandler, mModel, mTabModelSelector,
                 mBrowserControlsStateProvider, mCompositorViewHolder, null, mMessageItemsController,
-                mMultiWindowModeStateDispatcher, TabListCoordinator.TabListMode.GRID);
+                mPriceWelcomeMessageController, mMultiWindowModeStateDispatcher,
+                TabListCoordinator.TabListMode.GRID);
         mMediator.initWithNative(null);
         mMediator.addOverviewModeObserver(mOverviewModeObserver);
         mMediator.setOnTabSelectingListener(mLayout::onTabSelecting);
@@ -792,13 +795,15 @@ public class TabSwitcherMediatorUnitTest {
         assertEquals(0, mModel.get(TabListContainerProperties.BOTTOM_PADDING));
         new TabSwitcherMediator(mContext, mResetHandler, mModel, mTabModelSelector,
                 mBrowserControlsStateProvider, mCompositorViewHolder, null, mMessageItemsController,
-                mMultiWindowModeStateDispatcher, TabListCoordinator.TabListMode.GRID);
+                mPriceWelcomeMessageController, mMultiWindowModeStateDispatcher,
+                TabListCoordinator.TabListMode.GRID);
         assertEquals(16, mModel.get(TabListContainerProperties.BOTTOM_PADDING));
 
         mModel.set(TabListContainerProperties.BOTTOM_PADDING, 0);
         new TabSwitcherMediator(mContext, mResetHandler, mModel, mTabModelSelector,
                 mBrowserControlsStateProvider, mCompositorViewHolder, null, mMessageItemsController,
-                mMultiWindowModeStateDispatcher, TabListCoordinator.TabListMode.STRIP);
+                mPriceWelcomeMessageController, mMultiWindowModeStateDispatcher,
+                TabListCoordinator.TabListMode.STRIP);
         assertEquals(0, mModel.get(TabListContainerProperties.BOTTOM_PADDING));
     }
 

@@ -49,6 +49,7 @@ class MessageCardViewProperties {
             new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableObjectPropertyKey<String> TITLE_TEXT =
             new PropertyModel.WritableObjectPropertyKey<>();
+    // TODO(crbug.com/1148020): Change to a more general property CUSTOM_INFO_OBJECT
     public static final PropertyModel
             .WritableObjectPropertyKey<ShoppingPersistedTabData.PriceDrop> PRICE_DROP =
             new PropertyModel.WritableObjectPropertyKey<>();

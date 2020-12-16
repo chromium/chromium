@@ -54,7 +54,8 @@ import java.util.List;
  */
 public class TabSwitcherCoordinator
         implements Destroyable, TabSwitcher, TabSwitcher.TabListDelegate,
-                   TabSwitcherMediator.ResetHandler, TabSwitcherMediator.MessageItemsController {
+                   TabSwitcherMediator.ResetHandler, TabSwitcherMediator.MessageItemsController,
+                   TabSwitcherMediator.PriceWelcomeMessageController {
     /**
      * Interface to control the IPH dialog.
      */
@@ -135,6 +136,9 @@ public class TabSwitcherCoordinator
                         return true;
                     } else if (id == R.id.track_prices_id || id == R.id.track_prices_check_id) {
                         PriceTrackingUtilities.flipTrackPricesOnTabs();
+                        resetWithTabList(mTabModelSelector.getTabModelFilterProvider()
+                                                 .getCurrentTabModelFilter(),
+                                false, TabSwitcherMediator.isShowingTabsInMRUOrder());
                         return true;
                     }
                     return false;
@@ -159,8 +163,8 @@ public class TabSwitcherCoordinator
         PropertyModel containerViewModel = new PropertyModel(TabListContainerProperties.ALL_KEYS);
 
         mMediator = new TabSwitcherMediator(context, this, containerViewModel, tabModelSelector,
-                browserControls, container, tabContentManager, this, multiWindowModeStateDispatcher,
-                mode);
+                browserControls, container, tabContentManager, this, this,
+                multiWindowModeStateDispatcher, mode);
 
         mMultiThumbnailCardProvider =
                 new MultiThumbnailCardProvider(context, tabContentManager, tabModelSelector);
@@ -321,11 +325,13 @@ public class TabSwitcherCoordinator
                 mMessageCardProviderCoordinator.subscribeMessageService(iphMessageService);
             }
 
-            if (TabUiFeatureUtilities.isPriceTrackingEnabled()) {
+            if (TabUiFeatureUtilities.isPriceTrackingEnabled()
+                    && !PriceTrackingUtilities.isPriceWelcomeMessageCardDisabled()) {
                 mPriceWelcomeMessageService =
                         new PriceWelcomeMessageService(mTabListCoordinator, mMediator);
                 mMessageCardProviderCoordinator.subscribeMessageService(
                         mPriceWelcomeMessageService);
+                mMediator.setPriceWelcomeMessageService(mPriceWelcomeMessageService);
             }
         }
         mIsInitialized = true;
@@ -470,6 +476,8 @@ public class TabSwitcherCoordinator
         }
 
         if (tabs != null && tabs.size() > 0) {
+            // TODO(crbug.com/1157578): Auto update the PriceWelcomeMessageService instead of
+            // updating it based on the client caller.
             if (mPriceWelcomeMessageService != null) {
                 mPriceWelcomeMessageService.preparePriceMessage();
             }
@@ -494,8 +502,7 @@ public class TabSwitcherCoordinator
                 mMessageCardProviderCoordinator.getMessageItems();
         for (int i = 0; i < messages.size(); i++) {
             if (messages.get(i).type == MessageService.MessageType.PRICE_WELCOME) {
-                mTabListCoordinator.addSpecialListItem(
-                        mTabListCoordinator.getPriceWelcomeMessageIndex(),
+                mTabListCoordinator.addSpecialListItemToEnd(
                         TabProperties.UiType.PRICE_WELCOME, messages.get(i).model);
             } else {
                 mTabListCoordinator.addSpecialListItemToEnd(
@@ -503,6 +510,18 @@ public class TabSwitcherCoordinator
             }
         }
         sAppendedMessagesForTesting = messages.size() > 0;
+    }
+
+    // PriceWelcomeMessageController implementation.
+    @Override
+    public void removePriceWelcomeMessage() {
+        mTabListCoordinator.removeSpecialListItem(
+                TabProperties.UiType.PRICE_WELCOME, MessageService.MessageType.PRICE_WELCOME);
+    }
+
+    @Override
+    public void restorePriceWelcomeMessage() {
+        appendNextMessage(MessageService.MessageType.PRICE_WELCOME);
     }
 
     private void appendMessagesTo(int index) {
@@ -513,8 +532,7 @@ public class TabSwitcherCoordinator
         for (int i = 0; i < messages.size(); i++) {
             if (messages.get(i).type == MessageService.MessageType.PRICE_WELCOME) {
                 mTabListCoordinator.addSpecialListItem(
-                        mTabListCoordinator.getPriceWelcomeMessageIndex(),
-                        TabProperties.UiType.PRICE_WELCOME, messages.get(i).model);
+                        index + i, TabProperties.UiType.PRICE_WELCOME, messages.get(i).model);
             } else {
                 mTabListCoordinator.addSpecialListItem(
                         index + i, TabProperties.UiType.MESSAGE, messages.get(i).model);
@@ -529,8 +547,13 @@ public class TabSwitcherCoordinator
         MessageCardProviderMediator.Message nextMessage =
                 mMessageCardProviderCoordinator.getNextMessageItemForType(messageType);
         if (nextMessage == null) return;
-        mTabListCoordinator.addSpecialListItemToEnd(
-                TabProperties.UiType.MESSAGE, nextMessage.model);
+        if (messageType == MessageService.MessageType.PRICE_WELCOME) {
+            mTabListCoordinator.addSpecialListItemToEnd(
+                    TabProperties.UiType.PRICE_WELCOME, nextMessage.model);
+        } else {
+            mTabListCoordinator.addSpecialListItemToEnd(
+                    TabProperties.UiType.MESSAGE, nextMessage.model);
+        }
     }
 
     private View getTabGridDialogAnimationSourceView(int tabId) {

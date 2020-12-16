@@ -237,6 +237,7 @@ class TabGridViewBinder {
                         });
             } else {
                 priceCardView.setVisibility(View.GONE);
+                // TODO(crbug.com/1157578): Update the model in mediator.
                 model.set(TabProperties.PRICE_DROP, null);
             }
         } else if (TabProperties.PAGE_INFO_LISTENER == propertyKey) {

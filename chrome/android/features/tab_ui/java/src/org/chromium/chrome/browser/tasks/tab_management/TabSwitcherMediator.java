@@ -110,6 +110,7 @@ class TabSwitcherMediator
     private TabSelectionEditorCoordinator
             .TabSelectionEditorController mTabSelectionEditorController;
     private TabSwitcher.OnTabSelectingListener mOnTabSelectingListener;
+    private PriceWelcomeMessageService mPriceWelcomeMessageService;
 
     /**
      * In cases where a didSelectTab was due to switching models with a toggle,
@@ -190,6 +191,23 @@ class TabSwitcherMediator
     }
 
     /**
+     * An interface to control price welcome message in grid tab switcher.
+     */
+    interface PriceWelcomeMessageController {
+        /**
+         * Remove the price welcome message item in the model list. Right now this is used when
+         * its binding tab is closed in the grid tab switcher.
+         */
+        void removePriceWelcomeMessage();
+
+        /**
+         * Restore the price welcome message item that should show. Right now this is only used
+         * when the closure of the binding tab in tab switcher is undone.
+         */
+        void restorePriceWelcomeMessage();
+    }
+
+    /**
      * Basic constructor for the Mediator.
      * @param context The context to use for accessing {@link android.content.res.Resources}.
      * @param resetHandler The {@link ResetHandler} that handles reset for this Mediator.
@@ -207,6 +225,7 @@ class TabSwitcherMediator
             PropertyModel containerViewModel, TabModelSelector tabModelSelector,
             BrowserControlsStateProvider browserControlsStateProvider, ViewGroup containerView,
             TabContentManager tabContentManager, MessageItemsController messageItemsController,
+            PriceWelcomeMessageController priceWelcomeMessageController,
             MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
             @TabListCoordinator.TabListMode int mode) {
         mResetHandler = resetHandler;
@@ -293,6 +312,9 @@ class TabSwitcherMediator
             public void willCloseTab(Tab tab, boolean animate) {
                 if (mTabModelSelector.getCurrentModel().getCount() == 1) {
                     messageItemsController.removeAllAppendedMessage();
+                } else if (mPriceWelcomeMessageService != null
+                        && mPriceWelcomeMessageService.getBindingTabId() == tab.getId()) {
+                    priceWelcomeMessageController.removePriceWelcomeMessage();
                 }
             }
 
@@ -300,6 +322,19 @@ class TabSwitcherMediator
             public void tabClosureUndone(Tab tab) {
                 if (mTabModelSelector.getCurrentModel().getCount() == 1) {
                     messageItemsController.restoreAllAppendedMessage();
+                } else if (mPriceWelcomeMessageService != null
+                        && mPriceWelcomeMessageService.getBindingTabId() == tab.getId()) {
+                    priceWelcomeMessageController.restorePriceWelcomeMessage();
+                }
+            }
+
+            @Override
+            public void tabClosureCommitted(Tab tab) {
+                // TODO(crbug.com/1157578): Auto update the PriceWelcomeMessageService instead of
+                // updating it based on the client caller.
+                if (mPriceWelcomeMessageService != null
+                        && mPriceWelcomeMessageService.getBindingTabId() == tab.getId()) {
+                    mPriceWelcomeMessageService.invalidateMessage();
                 }
             }
         };
@@ -753,6 +788,10 @@ class TabSwitcherMediator
 
     void setOnTabSelectingListener(TabSwitcher.OnTabSelectingListener listener) {
         mOnTabSelectingListener = listener;
+    }
+
+    void setPriceWelcomeMessageService(PriceWelcomeMessageService priceWelcomeMessageService) {
+        mPriceWelcomeMessageService = priceWelcomeMessageService;
     }
 
     // GridCardOnClickListenerProvider implementation.

@@ -25,6 +25,8 @@ public class PriceTrackingUtilities {
             ChromePreferenceKeys.PRICE_TRACKING_TRACK_PRICES_ON_TABS;
     private static final String PRICE_WELCOME_MESSAGE_CARD =
             ChromePreferenceKeys.PRICE_TRACKING_PRICE_WELCOME_MESSAGE_CARD;
+    private static final String PRICE_WELCOME_MESSAGE_CARD_SHOW_COUNT =
+            ChromePreferenceKeys.PRICE_TRACKING_PRICE_WELCOME_MESSAGE_CARD_SHOW_COUNT;
 
     @VisibleForTesting
     public static final SharedPreferencesManager SHARED_PREFERENCES_MANAGER =
@@ -75,7 +77,23 @@ public class PriceTrackingUtilities {
      * @return Whether the PriceWelcomeMessageCard is disabled by users.
      */
     public static boolean isPriceWelcomeMessageCardDisabled() {
-        return !SHARED_PREFERENCES_MANAGER.readBoolean(PRICE_WELCOME_MESSAGE_CARD, true);
+        return !SHARED_PREFERENCES_MANAGER.readBoolean(
+                PRICE_WELCOME_MESSAGE_CARD, TabUiFeatureUtilities.isPriceTrackingEnabled());
+    }
+
+    /**
+     * Increase the show count of PriceWelcomeMessageCard every time it shows in the tab switcher.
+     */
+    public static void increasePriceWelcomeMessageCardShowCount() {
+        SHARED_PREFERENCES_MANAGER.writeInt(
+                PRICE_WELCOME_MESSAGE_CARD_SHOW_COUNT, getPriceWelcomeMessageCardShowCount() + 1);
+    }
+
+    /**
+     * @return The show count of PriceWelcomeMessageCard.
+     */
+    public static int getPriceWelcomeMessageCardShowCount() {
+        return SHARED_PREFERENCES_MANAGER.readInt(PRICE_WELCOME_MESSAGE_CARD_SHOW_COUNT, 0);
     }
 
     private static boolean isSignedIn() {
