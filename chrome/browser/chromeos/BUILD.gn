@@ -3201,6 +3201,8 @@ static_library("test_support") {
     "borealis/borealis_context_manager_mock.h",
     "borealis/borealis_service_fake.cc",
     "borealis/borealis_service_fake.h",
+    "borealis/borealis_window_manager_mock.cc",
+    "borealis/borealis_window_manager_mock.h",
     "cert_provisioning/mock_cert_provisioning_scheduler.cc",
     "cert_provisioning/mock_cert_provisioning_scheduler.h",
     "certificate_provider/test_certificate_provider_extension.cc",

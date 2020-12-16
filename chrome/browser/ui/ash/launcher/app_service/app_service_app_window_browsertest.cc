@@ -9,6 +9,7 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -16,6 +17,9 @@
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/chromeos/arc/arc_util.h"
 #include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
+#include "chrome/browser/chromeos/borealis/borealis_service.h"
+#include "chrome/browser/chromeos/borealis/borealis_window_manager.h"
+#include "chrome/browser/chromeos/borealis/borealis_window_manager_mock.h"
 #include "chrome/browser/chromeos/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/chromeos/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -355,26 +359,35 @@ class AppServiceAppWindowBorealisBrowserTest
     : public AppServiceAppWindowBrowserTest {
  public:
   ~AppServiceAppWindowBorealisBrowserTest() override = default;
+
+  std::string MakeBorealisApp(const std::string& vm,
+                              const std::string& container,
+                              const std::string& name) {
+    vm_tools::apps::ApplicationList list;
+    list.set_vm_name(vm);
+    list.set_container_name(container);
+    list.set_vm_type(vm_tools::apps::ApplicationList_VmType_BOREALIS);
+    vm_tools::apps::App* app = list.add_apps();
+    app->set_desktop_file_id(name);
+    app->mutable_name()->add_values()->set_value(name);
+    app->set_no_display(false);
+    guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile())
+        ->UpdateApplicationList(list);
+
+    // We need to propagate the newly created app to the various registries
+    // before it can be used.
+    app_service_proxy_->FlushMojoCallsForTesting();
+
+    return guest_os::GuestOsRegistryService::GenerateAppId(name, vm, container);
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(AppServiceAppWindowBorealisBrowserTest,
                        BorealisKnownApp) {
   // Generate a fake app.
-  vm_tools::apps::ApplicationList list;
-  list.set_vm_name("vm");
-  list.set_container_name("container");
-  list.set_vm_type(vm_tools::apps::ApplicationList_VmType_BOREALIS);
-  vm_tools::apps::App* app = list.add_apps();
-  app->set_desktop_file_id("foo.desktop");
-  app->mutable_name()->add_values()->set_value("foo");
-  app->set_no_display(false);
-  guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile())
-      ->UpdateApplicationList(list);
-  app_service_proxy_->FlushMojoCallsForTesting();
+  std::string app_id = MakeBorealisApp("vm", "container", "foo");
 
   views::Widget* widget = CreateExoWindow("org.chromium.borealis.wmclass.foo");
-  std::string app_id = guest_os::GuestOsRegistryService::GenerateAppId(
-      "foo.desktop", "vm", "container");
 
   EXPECT_EQ(1u,
             app_service_proxy_->InstanceRegistry().GetWindows(app_id).size());
@@ -414,6 +427,30 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowBorealisBrowserTest,
   widget->CloseNow();
   EXPECT_TRUE(
       app_service_proxy_->InstanceRegistry().GetWindows(app_id).empty());
+}
+
+IN_PROC_BROWSER_TEST_F(AppServiceAppWindowBorealisBrowserTest,
+                       BorealisSession) {
+  std::string app_id = MakeBorealisApp("vm", "container", "foo");
+
+  testing::StrictMock<borealis::MockLifetimeObserver> observer;
+  base::ScopedObservation<
+      borealis::BorealisWindowManager,
+      borealis::BorealisWindowManager::AppWindowLifetimeObserver>
+      observation(&observer);
+  observation.Observe(
+      &borealis::BorealisService::GetForProfile(profile())->WindowManager());
+
+  testing::InSequence sequence;
+  EXPECT_CALL(observer, OnSessionStarted());
+  EXPECT_CALL(observer, OnAppStarted(app_id));
+  EXPECT_CALL(observer, OnWindowStarted(app_id, testing::_));
+  views::Widget* widget = CreateExoWindow("org.chromium.borealis.wmclass.foo");
+
+  EXPECT_CALL(observer, OnWindowFinished(app_id, widget->GetNativeWindow()));
+  EXPECT_CALL(observer, OnAppFinished(app_id));
+  EXPECT_CALL(observer, OnSessionFinished());
+  widget->CloseNow();
 }
 
 class AppServiceAppWindowWebAppBrowserTest

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "chrome/browser/chromeos/borealis/borealis_window_manager_mock.h"
 #include "chrome/browser/chromeos/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/chromeos/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
@@ -19,43 +20,6 @@ using ::testing::_;
 
 namespace borealis {
 namespace {
-
-class MockAnonObserver
-    : public borealis::BorealisWindowManager::AnonymousAppObserver {
- public:
-  MOCK_METHOD(void,
-              OnAnonymousAppAdded,
-              (const std::string&, const std::string&),
-              ());
-
-  MOCK_METHOD(void, OnAnonymousAppRemoved, (const std::string&), ());
-
-  MOCK_METHOD(void, OnWindowManagerDeleted, (BorealisWindowManager*), ());
-};
-
-class MockLifetimeObserver
-    : public borealis::BorealisWindowManager::AppWindowLifetimeObserver {
- public:
-  MOCK_METHOD(void, OnSessionStarted, (), ());
-
-  MOCK_METHOD(void, OnSessionFinished, (), ());
-
-  MOCK_METHOD(void, OnAppStarted, (const std::string& app_id), ());
-
-  MOCK_METHOD(void, OnAppFinished, (const std::string& app_id), ());
-
-  MOCK_METHOD(void,
-              OnWindowStarted,
-              (const std::string& app_id, aura::Window*),
-              ());
-
-  MOCK_METHOD(void,
-              OnWindowFinished,
-              (const std::string& app_id, aura::Window*),
-              ());
-
-  MOCK_METHOD(void, OnWindowManagerDeleted, (BorealisWindowManager*), ());
-};
 
 class BorealisWindowManagerTest : public testing::Test {
  protected:
