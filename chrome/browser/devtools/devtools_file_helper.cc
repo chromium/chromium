@@ -43,7 +43,6 @@
 #include "ui/shell_dialogs/select_file_dialog.h"
 
 using base::Bind;
-using base::Callback;
 using content::BrowserContext;
 using content::BrowserThread;
 using content::DownloadManager;
@@ -60,25 +59,55 @@ static const char kSelectionCancelled[] = "<selection cancelled>";
 base::LazyInstance<base::FilePath>::Leaky
     g_last_save_path = LAZY_INSTANCE_INITIALIZER;
 
-typedef Callback<void(const base::FilePath&)> SelectedCallback;
-typedef Callback<void(void)> CanceledCallback;
+typedef base::OnceCallback<void(const base::FilePath&)> SelectedCallback;
+typedef base::OnceCallback<void(void)> CanceledCallback;
 
-class SelectFileDialog : public ui::SelectFileDialog::Listener,
-                         public base::RefCounted<SelectFileDialog> {
+class SelectFileDialog : public ui::SelectFileDialog::Listener {
  public:
-  SelectFileDialog(const SelectedCallback& selected_callback,
-                   const CanceledCallback& canceled_callback,
-                   WebContents* web_contents)
-      : selected_callback_(selected_callback),
-        canceled_callback_(canceled_callback),
-        web_contents_(web_contents) {
-    select_file_dialog_ = ui::SelectFileDialog::Create(
-        this, std::make_unique<ChromeSelectFilePolicy>(web_contents));
+  static void Show(SelectedCallback selected_callback,
+                   CanceledCallback canceled_callback,
+                   WebContents* web_contents,
+                   ui::SelectFileDialog::Type type,
+                   const base::FilePath& default_path) {
+    auto* dialog = new SelectFileDialog();
+    dialog->ShowDialog(std::move(selected_callback),
+                       std::move(canceled_callback), web_contents, type,
+                       default_path);
   }
 
-  void Show(ui::SelectFileDialog::Type type,
-            const base::FilePath& default_path) {
-    AddRef();  // Balanced in the three listener outcomes.
+  // ui::SelectFileDialog::Listener implementation.
+  void FileSelected(const base::FilePath& path,
+                    int index,
+                    void* params) override {
+    std::move(selected_callback_).Run(path);
+    delete this;
+  }
+
+  void MultiFilesSelected(const std::vector<base::FilePath>& files,
+                          void* params) override {
+    delete this;
+    NOTREACHED() << "Should not be able to select multiple files";
+  }
+
+  void FileSelectionCanceled(void* params) override {
+    if (!canceled_callback_.is_null())
+      std::move(canceled_callback_).Run();
+    delete this;
+  }
+
+ private:
+  SelectFileDialog() = default;
+  ~SelectFileDialog() override = default;
+
+  void ShowDialog(SelectedCallback selected_callback,
+                  CanceledCallback canceled_callback,
+                  WebContents* web_contents,
+                  ui::SelectFileDialog::Type type,
+                  const base::FilePath& default_path) {
+    selected_callback_ = std::move(selected_callback);
+    canceled_callback_ = std::move(canceled_callback);
+    select_file_dialog_ = ui::SelectFileDialog::Create(
+        this, std::make_unique<ChromeSelectFilePolicy>(web_contents));
     base::FilePath::StringType ext;
     ui::SelectFileDialog::FileTypeInfo file_type_info;
     if (type == ui::SelectFileDialog::SELECT_SAVEAS_FILE &&
@@ -89,37 +118,12 @@ class SelectFileDialog : public ui::SelectFileDialog::Listener,
     }
     select_file_dialog_->SelectFile(
         type, base::string16(), default_path, &file_type_info, 0, ext,
-        platform_util::GetTopLevel(web_contents_->GetNativeView()), nullptr);
+        platform_util::GetTopLevel(web_contents->GetNativeView()), nullptr);
   }
-
-  // ui::SelectFileDialog::Listener implementation.
-  void FileSelected(const base::FilePath& path,
-                    int index,
-                    void* params) override {
-    selected_callback_.Run(path);
-    Release();  // Balanced in ::Show.
-  }
-
-  void MultiFilesSelected(const std::vector<base::FilePath>& files,
-                          void* params) override {
-    Release();  // Balanced in ::Show.
-    NOTREACHED() << "Should not be able to select multiple files";
-  }
-
-  void FileSelectionCanceled(void* params) override {
-    if (!canceled_callback_.is_null())
-      canceled_callback_.Run();
-    Release();  // Balanced in ::Show.
-  }
-
- private:
-  friend class base::RefCounted<SelectFileDialog>;
-  ~SelectFileDialog() override {}
 
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
   SelectedCallback selected_callback_;
   CanceledCallback canceled_callback_;
-  WebContents* web_contents_;
 
   DISALLOW_COPY_AND_ASSIGN(SelectFileDialog);
 };
@@ -269,16 +273,11 @@ void DevToolsFileHelper::Save(const std::string& url,
     }
   }
 
-  scoped_refptr<SelectFileDialog> select_file_dialog = new SelectFileDialog(
-      Bind(&DevToolsFileHelper::SaveAsFileSelected,
-           weak_factory_.GetWeakPtr(),
-           url,
-           content,
-           saveCallback),
-      cancelCallback,
-      web_contents_);
-  select_file_dialog->Show(ui::SelectFileDialog::SELECT_SAVEAS_FILE,
-                           initial_path);
+  SelectFileDialog::Show(
+      base::BindOnce(&DevToolsFileHelper::SaveAsFileSelected,
+                     weak_factory_.GetWeakPtr(), url, content, saveCallback),
+      cancelCallback, web_contents_, ui::SelectFileDialog::SELECT_SAVEAS_FILE,
+      initial_path);
 }
 
 void DevToolsFileHelper::Append(const std::string& url,
@@ -311,14 +310,12 @@ void DevToolsFileHelper::SaveAsFileSelected(const std::string& url,
 void DevToolsFileHelper::AddFileSystem(
     const std::string& type,
     const ShowInfoBarCallback& show_info_bar_callback) {
-  scoped_refptr<SelectFileDialog> select_file_dialog = new SelectFileDialog(
-      Bind(&DevToolsFileHelper::InnerAddFileSystem, weak_factory_.GetWeakPtr(),
-           show_info_bar_callback, type),
-      Bind(&DevToolsFileHelper::FailedToAddFileSystem,
-           weak_factory_.GetWeakPtr(), kSelectionCancelled),
-      web_contents_);
-  select_file_dialog->Show(ui::SelectFileDialog::SELECT_FOLDER,
-                           base::FilePath());
+  SelectFileDialog::Show(
+      base::BindOnce(&DevToolsFileHelper::InnerAddFileSystem,
+                     weak_factory_.GetWeakPtr(), show_info_bar_callback, type),
+      base::BindOnce(&DevToolsFileHelper::FailedToAddFileSystem,
+                     weak_factory_.GetWeakPtr(), kSelectionCancelled),
+      web_contents_, ui::SelectFileDialog::SELECT_FOLDER, base::FilePath());
 }
 
 void DevToolsFileHelper::UpgradeDraggedFileSystemPermissions(
