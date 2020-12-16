@@ -218,7 +218,14 @@ void RemoteFrameView::UpdateCompositingScaleFactor() {
   FrameWidget* widget = local_root_view->GetFrame().GetWidgetForLocalRoot();
   compositing_scale_factor_ =
       widget->GetCompositingScaleFactor() * frame_to_local_root_scale_factor;
-  DCHECK_GE(compositing_scale_factor_, 0.0f);
+
+  // Force compositing scale factor to be at least a reasonable minimum value to
+  // prevent dependent values such as scroll deltas in the compositor going to
+  // zero.  It's possible for the calculated scale factor to go to zero since
+  // it depends on intermediate CSS transforms which could have zero scale.
+  constexpr float kMinCompositingScaleFactor = 0.25f;
+  compositing_scale_factor_ =
+      std::max(compositing_scale_factor_, kMinCompositingScaleFactor);
 
   if (compositing_scale_factor_ != previous_scale_factor)
     remote_frame_->Client()->SynchronizeVisualProperties();
