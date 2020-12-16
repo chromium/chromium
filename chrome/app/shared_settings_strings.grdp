@@ -133,13 +133,13 @@
     Wi-Fi only
   </message>
   <message name="IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_WIFI_ONLY_DESCRIPTION" desc="Description of the data usage setting where only Wi-Fi is to be used for transfers for the Nearby Share feature.">
-    Never use data to transfer
+    Never use mobile data to transfer
   </message>
-  <message name="IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_DATA_LABEL" desc="Label for the data usage setting where Wi-Fi or cell data may be used for transfers for the Nearby Share feature.">
-    Data
+  <message name="IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_MOBILE_DATA_LABEL" desc="Label for the mobile data usage setting where Wi-Fi or cell data may be used for transfers for the Nearby Share feature.">
+    Mobile Data
   </message>
-  <message name="IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_DATA_DESCRIPTION" desc="Description of the data usage setting where Wi-Fi or cell data may be used for transfers for the Nearby Share feature.">
-    May incur data charges
+  <message name="IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_MOBILE_DATA_DESCRIPTION" desc="Description of the mobile data usage setting where Wi-Fi or cell data may be used for transfers for the Nearby Share feature.">
+    May incur mobile data charges
   </message>
   <message name="IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_OFFLINE_LABEL" desc="Label for the data usage setting where transfers will only take place offline for the Nearby Share feature.">
     Without internet
@@ -147,8 +147,8 @@
   <message name="IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_OFFLINE_DESCRIPTION" desc="Description of the data usage setting where transfers will only take place offline for the Nearby Share feature.">
     Files will always be shared offline
   </message>
-  <message name="IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_EDIT_BUTTON_DATA_DESCRIPTION" desc="Description for scren readers, not displayed in UI, specifying the current data usage setting where Wi-Fi or cell data may be used for transfers for the Nearby Share feature." is_accessibility_with_no_ui="true">
-    Current data usage setting is Data
+  <message name="IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_EDIT_BUTTON_DATA_DESCRIPTION" desc="Description for scren readers, not displayed in UI, specifying the current mobile data usage setting where Wi-Fi or cell data may be used for transfers for the Nearby Share feature." is_accessibility_with_no_ui="true">
+    Current data usage setting is Mobile Data
   </message>
   <message name="IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_EDIT_BUTTON_WIFI_ONLY_DESCRIPTION" desc="Description for screen readers, not displayed in UI, specifying the current data usage setting where only Wi-Fi is to be used for transfers for the Nearby Share feature." is_accessibility_with_no_ui="true">
     Current data usage setting is Wi-Fi only
