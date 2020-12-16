@@ -93,7 +93,17 @@ LoginPublicAccountUserView::LoginPublicAccountUserView(
   add_padding(kDistanceFromTopOfBigUserViewToUserIconDp);
   AddChildView(std::move(wrapped_user_view));
   add_padding(kDistanceFromUserViewToArrowButton);
-  arrow_button_ = AddChildView(std::move(arrow_button));
+
+  // Arrow button size should be its preferred size so we wrap it.
+  auto* arrow_button_container =
+      AddChildView(std::make_unique<NonAccessibleView>());
+  auto container_layout = std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal);
+  container_layout->set_main_axis_alignment(
+      views::BoxLayout::MainAxisAlignment::kCenter);
+  arrow_button_container->SetLayoutManager(std::move(container_layout));
+  arrow_button_ = arrow_button_container->AddChildView(std::move(arrow_button));
+
   add_padding(kDistanceFromArrowButtonToBigUserViewBottom);
 
   // Update authentication UI.

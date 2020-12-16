@@ -174,29 +174,36 @@ TEST_F(LoginPublicAccountUserViewTest, ArrowButtonDoesNotChangeViewBounds) {
       public_account_view_->GetBoundsInScreen();
   EXPECT_NE(auth_disabled_bounds, gfx::Rect());
 
+  auto* arrow_button = public_account_test.arrow_button();
   // Move mouse over the view, the arrow button becomes opaque.
   // View bounds should not change.
   GetEventGenerator()->MoveMouseTo(
       public_account_view_->user_view()->GetBoundsInScreen().CenterPoint());
-  EXPECT_EQ(public_account_test.arrow_button()->layer()->opacity(), 1);
+  EXPECT_EQ(arrow_button->layer()->opacity(), 1);
   EXPECT_EQ(public_account_view_->GetBoundsInScreen(), auth_disabled_bounds);
-  EXPECT_EQ(public_account_view_->GetBoundsInScreen().x(),
-            public_account_test.arrow_button()->GetBoundsInScreen().x());
+  int arrow_left_margin = arrow_button->GetBoundsInScreen().x();
+  int arrow_right_margin = public_account_view_->GetBoundsInScreen().width() -
+                           arrow_button->GetBoundsInScreen().x() -
+                           arrow_button->GetBoundsInScreen().width();
+  EXPECT_NEAR(arrow_left_margin, arrow_right_margin, 1);
 
   // Move out the view makes it non-opaque. View bounds should stay the same.
   GetEventGenerator()->MoveMouseTo(
       focusable_view_->GetBoundsInScreen().CenterPoint());
-  EXPECT_EQ(public_account_test.arrow_button()->layer()->opacity(), 0);
+  EXPECT_EQ(arrow_button->layer()->opacity(), 0);
   EXPECT_EQ(public_account_view_->GetBoundsInScreen(), auth_disabled_bounds);
 
   // Set auth enable forces arrow button to be opaque.
   // View bounds should not change.
   public_account_view_->SetAuthEnabled(true /*enabled*/, false /*animate*/);
   EXPECT_TRUE(public_account_view_->auth_enabled());
-  EXPECT_EQ(public_account_test.arrow_button()->layer()->opacity(), 1);
+  EXPECT_EQ(arrow_button->layer()->opacity(), 1);
   EXPECT_EQ(public_account_view_->GetBoundsInScreen(), auth_disabled_bounds);
-  EXPECT_EQ(public_account_view_->GetBoundsInScreen().x(),
-            public_account_test.arrow_button()->GetBoundsInScreen().x());
+  arrow_left_margin = arrow_button->GetBoundsInScreen().x();
+  arrow_right_margin = public_account_view_->GetBoundsInScreen().width() -
+                       arrow_button->GetBoundsInScreen().x() -
+                       arrow_button->GetBoundsInScreen().width();
+  EXPECT_NEAR(arrow_left_margin, arrow_right_margin, 1);
 }
 
 }  // namespace ash
