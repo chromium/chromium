@@ -19,6 +19,7 @@
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/navigation_simulator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
@@ -86,6 +87,10 @@ class DisplayMediaAccessHandlerTest : public ChromeRenderViewHostTestHarness {
         content::NOTIFICATION_WEB_CONTENTS_DESTROYED,
         content::Source<content::WebContents>(web_contents()),
         content::NotificationDetails());
+  }
+
+  DesktopMediaPicker::Params GetParams() {
+    return picker_factory_->picker()->GetParams();
   }
 
   const DisplayMediaAccessHandler::RequestsQueues& GetRequestQueues() {
@@ -191,6 +196,73 @@ TEST_F(DisplayMediaAccessHandlerTest, UpdateMediaRequestStateWithClosing) {
   EXPECT_EQ(0u, queue_it->second.size());
   EXPECT_TRUE(test_flags[0].picker_deleted);
   access_handler_.reset();
+}
+
+TEST_F(DisplayMediaAccessHandlerTest, CorrectHostAsksForPermissions) {
+  const int render_process_id = 0;
+  const int render_frame_id = 0;
+  const int page_request_id = 0;
+  const blink::mojom::MediaStreamType video_stream_type =
+      blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE;
+  const blink::mojom::MediaStreamType audio_stream_type =
+      blink::mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE;
+  FakeDesktopMediaPickerFactory::TestFlags test_flags[] = {
+      {true /* expect_screens */, true /* expect_windows*/,
+       true /* expect_tabs */, true /* expect_audio */,
+       content::DesktopMediaID(), true /* cancelled */}};
+  picker_factory_->SetTestFlags(test_flags, base::size(test_flags));
+  content::MediaStreamRequest request(
+      render_process_id, render_frame_id, page_request_id,
+      GURL("http://origin/"), false, blink::MEDIA_GENERATE_STREAM,
+      std::string(), std::string(), audio_stream_type, video_stream_type,
+      /*disable_local_echo=*/false, /*request_pan_tilt_zoom_permission=*/false);
+  content::MediaResponseCallback callback;
+  content::WebContents* test_web_contents = web_contents();
+  std::unique_ptr<content::NavigationSimulator> navigation =
+      content::NavigationSimulator::CreateBrowserInitiated(
+          GURL("blob:http://127.0.0.1:8000/says: www.google.com"),
+          test_web_contents);
+  navigation->Commit();
+  access_handler_->HandleRequest(test_web_contents, request,
+                                 std::move(callback), nullptr /* extension */);
+  DesktopMediaPicker::Params params = GetParams();
+  access_handler_->UpdateMediaRequestState(
+      render_process_id, render_frame_id, page_request_id, video_stream_type,
+      content::MEDIA_REQUEST_STATE_CLOSING);
+  EXPECT_EQ(base::UTF8ToUTF16("http://127.0.0.1:8000"), params.app_name);
+}
+
+TEST_F(DisplayMediaAccessHandlerTest, CorrectHostAsksForPermissionsNormalURLs) {
+  const int render_process_id = 0;
+  const int render_frame_id = 0;
+  const int page_request_id = 0;
+  const blink::mojom::MediaStreamType video_stream_type =
+      blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE;
+  const blink::mojom::MediaStreamType audio_stream_type =
+      blink::mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE;
+  FakeDesktopMediaPickerFactory::TestFlags test_flags[] = {
+      {true /* expect_screens */, true /* expect_windows*/,
+       true /* expect_tabs */, true /* expect_audio */,
+       content::DesktopMediaID(), true /* cancelled */}};
+  picker_factory_->SetTestFlags(test_flags, base::size(test_flags));
+  content::MediaStreamRequest request(
+      render_process_id, render_frame_id, page_request_id,
+      GURL("http://origin/"), false, blink::MEDIA_GENERATE_STREAM,
+      std::string(), std::string(), audio_stream_type, video_stream_type,
+      /*disable_local_echo=*/false, /*request_pan_tilt_zoom_permission=*/false);
+  content::MediaResponseCallback callback;
+  content::WebContents* test_web_contents = web_contents();
+  std::unique_ptr<content::NavigationSimulator> navigation =
+      content::NavigationSimulator::CreateBrowserInitiated(
+          GURL("https://www.google.com"), test_web_contents);
+  navigation->Commit();
+  access_handler_->HandleRequest(test_web_contents, request,
+                                 std::move(callback), nullptr /* extension */);
+  DesktopMediaPicker::Params params = GetParams();
+  access_handler_->UpdateMediaRequestState(
+      render_process_id, render_frame_id, page_request_id, video_stream_type,
+      content::MEDIA_REQUEST_STATE_CLOSING);
+  EXPECT_EQ(base::UTF8ToUTF16("www.google.com"), params.app_name);
 }
 
 TEST_F(DisplayMediaAccessHandlerTest, WebContentsDestroyed) {

@@ -194,8 +194,8 @@ void DisplayMediaAccessHandler::ProcessQueuedAccessRequest(
   gfx::NativeWindow parent_window = web_contents->GetTopLevelNativeWindow();
   picker_params.context = parent_window;
   picker_params.parent = parent_window;
-  picker_params.app_name = url_formatter::FormatUrlForSecurityDisplay(
-      web_contents->GetLastCommittedURL(),
+  picker_params.app_name = url_formatter::FormatOriginForSecurityDisplay(
+      url::Origin::Create(web_contents->GetLastCommittedURL()),
       url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
   picker_params.target_name = picker_params.app_name;
   picker_params.request_audio =
