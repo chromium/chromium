@@ -4,14 +4,14 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/ntp/discover_feed_view_controller.h"
+#import "ios/chrome/browser/ui/ntp/discover_feed_wrapper_view_controller.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-@implementation DiscoverFeedViewController
+@implementation DiscoverFeedWrapperViewController
 
 - (instancetype)initWithDiscoverFeedViewController:
     (UIViewController*)discoverFeed {

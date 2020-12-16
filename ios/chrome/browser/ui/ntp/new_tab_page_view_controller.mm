@@ -6,7 +6,8 @@
 
 #import "ios/chrome/browser/ui/ntp/new_tab_page_view_controller.h"
 
-#import "ios/chrome/browser/ui/ntp/discover_feed_view_controller.h"
+#import "base/check.h"
+#import "ios/chrome/browser/ui/ntp/discover_feed_wrapper_view_controller.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -14,10 +15,6 @@
 #endif
 
 @interface NewTabPageViewController ()
-
-// View controller representing the Discover feed.
-@property(nonatomic, strong)
-    DiscoverFeedViewController* discoverFeedViewController;
 
 // View controller representing the NTP content suggestions. These suggestions
 // include the most visited site tiles, the shortcut tiles, the fake omnibox and
@@ -29,14 +26,10 @@
 
 @implementation NewTabPageViewController
 
-- (instancetype)initWithDiscoverFeedViewController:
-                    (DiscoverFeedViewController*)discoverFeedViewController
-                  contentSuggestionsViewController:
-                      (UICollectionViewController*)
-                          contentSuggestionsViewController {
+- (instancetype)initWithContentSuggestionsViewController:
+    (UICollectionViewController*)contentSuggestionsViewController {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
-    _discoverFeedViewController = discoverFeedViewController;
     _contentSuggestionsViewController = contentSuggestionsViewController;
   }
 
@@ -46,25 +39,27 @@
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  UIView* discoverFeedView = self.discoverFeedViewController.view;
+  DCHECK(self.discoverFeedWrapperViewController);
 
-  [self.discoverFeedViewController willMoveToParentViewController:self];
-  [self addChildViewController:self.discoverFeedViewController];
+  UIView* discoverFeedView = self.discoverFeedWrapperViewController.view;
+
+  [self.discoverFeedWrapperViewController willMoveToParentViewController:self];
+  [self addChildViewController:self.discoverFeedWrapperViewController];
   [self.view addSubview:discoverFeedView];
-  [self.discoverFeedViewController didMoveToParentViewController:self];
+  [self.discoverFeedWrapperViewController didMoveToParentViewController:self];
 
   discoverFeedView.translatesAutoresizingMaskIntoConstraints = NO;
   AddSameConstraints(discoverFeedView, self.view);
 
   [self.contentSuggestionsViewController
-      willMoveToParentViewController:self.discoverFeedViewController
+      willMoveToParentViewController:self.discoverFeedWrapperViewController
                                          .discoverFeed];
-  [self.discoverFeedViewController.discoverFeed
+  [self.discoverFeedWrapperViewController.discoverFeed
       addChildViewController:self.contentSuggestionsViewController];
-  [self.discoverFeedViewController.feedCollectionView
+  [self.discoverFeedWrapperViewController.feedCollectionView
       addSubview:self.contentSuggestionsViewController.view];
   [self.contentSuggestionsViewController
-      didMoveToParentViewController:self.discoverFeedViewController
+      didMoveToParentViewController:self.discoverFeedWrapperViewController
                                         .discoverFeed];
 }
 
@@ -78,7 +73,7 @@
   self.contentSuggestionsViewController.view.frame =
       CGRectMake(0, -collectionView.contentSize.height,
                  self.view.frame.size.width, collectionView.contentSize.height);
-  self.discoverFeedViewController.feedCollectionView.contentInset =
+  self.discoverFeedWrapperViewController.feedCollectionView.contentInset =
       UIEdgeInsetsMake(collectionView.contentSize.height, 0, 0, 0);
 }
 

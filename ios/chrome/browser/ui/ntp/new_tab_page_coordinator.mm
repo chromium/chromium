@@ -14,7 +14,7 @@
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/main/scene_state_observer.h"
-#import "ios/chrome/browser/ui/ntp/discover_feed_view_controller.h"
+#import "ios/chrome/browser/ui/ntp/discover_feed_wrapper_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/incognito_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_view_controller.h"
@@ -41,7 +41,7 @@
 
 // View controller wrapping the Discover feed.
 @property(nonatomic, strong)
-    DiscoverFeedViewController* discoverFeedViewController;
+    DiscoverFeedWrapperViewController* discoverFeedWrapperViewController;
 
 // View controller for the incognito NTP.
 @property(nonatomic, strong) IncognitoViewController* incognitoViewController;
@@ -97,19 +97,22 @@
     [self.contentSuggestionsCoordinator start];
 
     if (IsRefactoredNTP()) {
-      // TODO(crbug.com/1114792): Use function with scroll delegate.
-      UIViewController* discoverFeed =
+      self.ntpViewController = [[NewTabPageViewController alloc]
+          initWithContentSuggestionsViewController:
+              self.contentSuggestionsCoordinator.viewController];
+
+      UIViewController* discoverFeedViewController =
           ios::GetChromeBrowserProvider()
               ->GetDiscoverFeedProvider()
-              ->NewFeedViewController(self.browser);
+              ->NewFeedViewControllerWithScrollDelegate(self.browser,
+                                                        self.ntpViewController);
 
-      self.discoverFeedViewController = [[DiscoverFeedViewController alloc]
-          initWithDiscoverFeedViewController:discoverFeed];
+      self.discoverFeedWrapperViewController =
+          [[DiscoverFeedWrapperViewController alloc]
+              initWithDiscoverFeedViewController:discoverFeedViewController];
 
-      self.ntpViewController = [[NewTabPageViewController alloc]
-          initWithDiscoverFeedViewController:self.discoverFeedViewController
-            contentSuggestionsViewController:self.contentSuggestionsCoordinator
-                                                 .viewController];
+      self.ntpViewController.discoverFeedWrapperViewController =
+          self.discoverFeedWrapperViewController;
     }
 
     base::RecordAction(base::UserMetricsAction("MobileNTPShowMostVisited"));
@@ -134,6 +137,8 @@
   [sceneState removeObserver:self];
   self.contentSuggestionsCoordinator = nil;
   self.incognitoViewController = nil;
+  self.ntpViewController = nil;
+  self.discoverFeedWrapperViewController = nil;
   self.started = NO;
 }
 

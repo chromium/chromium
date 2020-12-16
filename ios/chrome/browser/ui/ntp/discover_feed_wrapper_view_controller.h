@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_NTP_DISCOVER_FEED_VIEW_CONTROLLER_H_
-#define IOS_CHROME_BROWSER_UI_NTP_DISCOVER_FEED_VIEW_CONTROLLER_H_
+#ifndef IOS_CHROME_BROWSER_UI_NTP_DISCOVER_FEED_WRAPPER_VIEW_CONTROLLER_H_
+#define IOS_CHROME_BROWSER_UI_NTP_DISCOVER_FEED_WRAPPER_VIEW_CONTROLLER_H_
 
 #import <UIKit/UIKit.h>
 
 // View controller wrapping a Discover feed view controller
 // (|self.discoverFeed|) originating from the provider.
-@interface DiscoverFeedViewController : UIViewController
+@interface DiscoverFeedWrapperViewController : UIViewController
 
 // Feed view controller being contained by this view controller. This is the
 // view controller that is wrapped by this view controller.
@@ -30,4 +30,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_NTP_DISCOVER_FEED_VIEW_CONTROLLER_H_
+#endif  // IOS_CHROME_BROWSER_UI_NTP_DISCOVER_FEED_WRAPPER_VIEW_CONTROLLER_H_
