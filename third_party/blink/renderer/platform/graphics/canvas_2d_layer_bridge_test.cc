@@ -829,9 +829,8 @@ TEST_F(Canvas2DLayerBridgeTest, EnsureCCImageCacheUse) {
 }
 
 TEST_F(Canvas2DLayerBridgeTest, EnsureCCImageCacheUseWithColorConversion) {
-  auto color_params = CanvasColorParams(
-      CanvasColorSpace::kSRGB, CanvasColorParams::GetNativeCanvasPixelFormat(),
-      kOpaque);
+  auto color_params = CanvasColorParams(CanvasColorSpace::kSRGB,
+                                        CanvasPixelFormat::kUint8, kOpaque);
   std::unique_ptr<Canvas2DLayerBridge> bridge =
       MakeBridge(IntSize(300, 300), RasterMode::kGPU, color_params);
   Vector<cc::DrawImage> images = {

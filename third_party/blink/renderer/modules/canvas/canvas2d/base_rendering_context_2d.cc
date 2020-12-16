@@ -1917,7 +1917,7 @@ void BaseRenderingContext2D::putImageData(ImageData* data,
       data->GetCanvasColorSpace(),
       data->GetImageDataStorageFormat() != kUint8ClampedArrayStorageFormat
           ? CanvasPixelFormat::kF16
-          : CanvasColorParams::GetNativeCanvasPixelFormat(),
+          : CanvasPixelFormat::kUint8,
       kNonOpaque);
   CanvasColorParams context_color_params = CanvasColorParams(
       GetCanvas2DColorParams().ColorSpace(), PixelFormat(), kNonOpaque);

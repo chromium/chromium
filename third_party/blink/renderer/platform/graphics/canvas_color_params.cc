@@ -82,48 +82,26 @@ CanvasColorParams::CanvasColorParams(CanvasColorSpace color_space,
       pixel_format_(pixel_format),
       opacity_mode_(opacity_mode) {}
 
-CanvasColorParams::CanvasColorParams(const SkImageInfo& info)
-    : CanvasColorParams(info.refColorSpace(), info.colorType()) {}
-
 CanvasResourceParams CanvasColorParams::GetAsResourceParams() const {
-  return CanvasResourceParams(color_space_, GetSkColorType(), GetSkAlphaType());
+  SkAlphaType alpha_type =
+      opacity_mode_ == kOpaque ? kOpaque_SkAlphaType : kPremul_SkAlphaType;
+  return CanvasResourceParams(color_space_, GetSkColorType(), alpha_type);
 }
 
 SkColorType CanvasColorParams::GetSkColorType() const {
   switch (pixel_format_) {
     case CanvasPixelFormat::kF16:
       return kRGBA_F16_SkColorType;
-    case CanvasPixelFormat::kRGBA8:
-      return kRGBA_8888_SkColorType;
-    case CanvasPixelFormat::kBGRA8:
-      return kBGRA_8888_SkColorType;
-    case CanvasPixelFormat::kRGBX8:
-      return kRGB_888x_SkColorType;
+    case CanvasPixelFormat::kUint8:
+      return kN32_SkColorType;
   }
   NOTREACHED();
   return kN32_SkColorType;
 }
 
-SkAlphaType CanvasColorParams::GetSkAlphaType() const {
-  return opacity_mode_ == kOpaque ? kOpaque_SkAlphaType : kPremul_SkAlphaType;
-}
-
-const SkSurfaceProps* CanvasColorParams::GetSkSurfaceProps() const {
-  static const SkSurfaceProps disable_lcd_props(0, kUnknown_SkPixelGeometry);
-  if (opacity_mode_ == kOpaque)
-    return nullptr;
-  return &disable_lcd_props;
-}
 
 uint8_t CanvasColorParams::BytesPerPixel() const {
   return SkColorTypeBytesPerPixel(GetSkColorType());
-}
-
-gfx::ColorSpace CanvasColorParams::GetSamplerGfxColorSpace() const {
-  // TODO(ccameron): If we add support for uint8srgb as a pixel format, this
-  // will need to take into account whether or not this texture will be sampled
-  // in linear or nonlinear space.
-  return CanvasColorSpaceToGfxColorSpace(color_space_);
 }
 
 gfx::ColorSpace CanvasColorParams::GetStorageGfxColorSpace() const {
@@ -135,90 +113,6 @@ sk_sp<SkColorSpace> CanvasColorParams::GetSkColorSpace() const {
                     kN32_SkColorType == kBGRA_8888_SkColorType,
                 "Unexpected kN32_SkColorType value.");
   return CanvasColorSpaceToSkColorSpace(color_space_);
-}
-
-gfx::BufferFormat CanvasColorParams::GetBufferFormat() const {
-  switch (GetSkColorType()) {
-    case kRGBA_F16_SkColorType:
-      return gfx::BufferFormat::RGBA_F16;
-    case kRGBA_8888_SkColorType:
-      return gfx::BufferFormat::RGBA_8888;
-    case kBGRA_8888_SkColorType:
-      return gfx::BufferFormat::BGRA_8888;
-    case kRGB_888x_SkColorType:
-      return gfx::BufferFormat::RGBX_8888;
-    default:
-      NOTREACHED();
-  }
-
-  return gfx::BufferFormat::RGBA_8888;
-}
-
-GLenum CanvasColorParams::GLUnsizedInternalFormat() const {
-  // TODO(junov): try GL_RGB when opacity_mode_ == kOpaque
-  switch (GetSkColorType()) {
-    case kRGBA_F16_SkColorType:
-      return GL_RGBA;
-    case kRGBA_8888_SkColorType:
-      return GL_RGBA;
-    case kBGRA_8888_SkColorType:
-      return GL_BGRA_EXT;
-    case kRGB_888x_SkColorType:
-      return GL_RGB;
-    default:
-      NOTREACHED();
-  }
-
-  return GL_RGBA;
-}
-
-GLenum CanvasColorParams::GLSizedInternalFormat() const {
-  switch (GetSkColorType()) {
-    case kRGBA_F16_SkColorType:
-      return GL_RGBA16F;
-    case kRGBA_8888_SkColorType:
-      return GL_RGBA8;
-    case kBGRA_8888_SkColorType:
-      return GL_BGRA8_EXT;
-    case kRGB_888x_SkColorType:
-      return GL_RGB8;
-    default:
-      NOTREACHED();
-  }
-
-  return GL_RGBA8;
-}
-
-GLenum CanvasColorParams::GLType() const {
-  switch (GetSkColorType()) {
-    case kRGBA_F16_SkColorType:
-      return GL_HALF_FLOAT_OES;
-    case kRGBA_8888_SkColorType:
-    case kBGRA_8888_SkColorType:
-    case kRGB_888x_SkColorType:
-      return GL_UNSIGNED_BYTE;
-    default:
-      NOTREACHED();
-  }
-
-  return GL_UNSIGNED_BYTE;
-}
-
-viz::ResourceFormat CanvasColorParams::TransferableResourceFormat() const {
-  return viz::GetResourceFormat(GetBufferFormat());
-}
-
-CanvasColorParams::CanvasColorParams(const sk_sp<SkColorSpace> sk_color_space,
-                                     SkColorType sk_color_type) {
-  color_space_ = CanvasColorSpaceFromSkColorSpace(sk_color_space.get());
-  pixel_format_ = GetNativeCanvasPixelFormat();
-
-  if (sk_color_type == kRGBA_F16_SkColorType)
-    pixel_format_ = CanvasPixelFormat::kF16;
-  else if (sk_color_type == kRGBA_8888_SkColorType)
-    pixel_format_ = CanvasPixelFormat::kRGBA8;
-  else if (sk_color_type == kRGB_888x_SkColorType)
-    pixel_format_ = CanvasPixelFormat::kRGBX8;
 }
 
 }  // namespace blink

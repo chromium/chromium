@@ -41,7 +41,7 @@ CanvasRenderingContext::CanvasRenderingContext(
     const CanvasContextCreationAttributesCore& attrs)
     : host_(host),
       color_params_(CanvasColorSpace::kSRGB,
-                    CanvasColorParams::GetNativeCanvasPixelFormat(),
+                    CanvasPixelFormat::kUint8,
                     kNonOpaque),
       creation_attributes_(attrs) {
   if (creation_attributes_.pixel_format == kF16CanvasPixelFormatName)
@@ -78,9 +78,7 @@ WTF::String CanvasRenderingContext::PixelFormatAsString() const {
   switch (color_params_.PixelFormat()) {
     case CanvasPixelFormat::kF16:
       return kF16CanvasPixelFormatName;
-    case CanvasPixelFormat::kRGBA8:
-    case CanvasPixelFormat::kBGRA8:
-    case CanvasPixelFormat::kRGBX8:
+    case CanvasPixelFormat::kUint8:
       return kUint8CanvasPixelFormatName;
   };
   CHECK(false);

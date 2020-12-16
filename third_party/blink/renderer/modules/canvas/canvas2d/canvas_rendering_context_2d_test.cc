@@ -903,7 +903,7 @@ void TestPutImageDataOnCanvasWithColorSpaceSettings(
       kRec2020CanvasColorSpaceName, kP3CanvasColorSpaceName};
 
   CanvasPixelFormat canvas_pixel_formats[] = {
-      CanvasPixelFormat::kRGBA8,
+      CanvasPixelFormat::kUint8,
       CanvasPixelFormat::kF16,
       CanvasPixelFormat::kF16,
       CanvasPixelFormat::kF16,
@@ -983,7 +983,7 @@ void TestPutImageDataOnCanvasWithColorSpaceSettings(
       canvas_color_setting->setColorSpace(
           ImageData::CanvasColorSpaceName(canvas_color_spaces[k]));
       switch (canvas_pixel_formats[k]) {
-        case CanvasPixelFormat::kRGBA8:
+        case CanvasPixelFormat::kUint8:
           canvas_color_setting->setStorageFormat(
               kUint8ClampedArrayStorageFormatName);
           break;
@@ -1025,7 +1025,7 @@ void TestPutImageDataOnCanvasWithColorSpaceSettings(
       ColorCorrectionTestUtils::CompareColorCorrectedPixels(
           pixels_from_get_image_data, pixels_converted_manually.get(),
           num_pixels,
-          (canvas_pixel_formats[k] == CanvasPixelFormat::kRGBA8)
+          (canvas_pixel_formats[k] == CanvasPixelFormat::kUint8)
               ? kPixelFormat_8888
               : kPixelFormat_ffff,
           kAlphaUnmultiplied, kUnpremulRoundTripTolerance);

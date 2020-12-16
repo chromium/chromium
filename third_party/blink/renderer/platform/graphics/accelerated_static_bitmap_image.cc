@@ -266,7 +266,7 @@ void AcceleratedStaticBitmapImage::InitializeTextureBacking(
   texture_info.fTarget = texture_target_;
   texture_info.fID = shared_context_texture_id;
   texture_info.fFormat =
-      CanvasColorParams(sk_image_info_).GLSizedInternalFormat();
+      CanvasResourceParams(sk_image_info_).GLSizedInternalFormat();
   GrBackendTexture backend_texture(sk_image_info_.width(),
                                    sk_image_info_.height(), GrMipMapped::kNo,
                                    texture_info);

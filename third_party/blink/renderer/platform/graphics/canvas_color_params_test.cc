@@ -35,24 +35,4 @@ TEST(CanvasColorParamsTest, MatchSkColorSpaceWithGfxColorSpace) {
   }
 }
 
-// Testing internal consistency of pixel format
-TEST(CanvasColorParamsTest, MatchPixelFormat) {
-  CanvasPixelFormat canvas_pixel_format[] = {
-      CanvasPixelFormat::kRGBA8,
-      CanvasPixelFormat::kBGRA8,
-      CanvasPixelFormat::kF16,
-      CanvasPixelFormat::kRGBX8,
-  };
-  for (auto pixelformat : canvas_pixel_format) {
-    CanvasColorParams color_params(CanvasColorSpace::kSRGB, pixelformat,
-                                   kNonOpaque);
-    gfx::BufferFormat buffer_format = color_params.GetBufferFormat();
-    unsigned gl_internal_format =
-        gl::BufferFormatToGLInternalFormat(buffer_format);
-    ASSERT_EQ(gl_internal_format, color_params.GLUnsizedInternalFormat());
-    auto gl_type = gl::BufferFormatToGLDataType(buffer_format);
-    ASSERT_EQ(gl_type, color_params.GLType());
-  }
-}
-
 }  // namespace blink

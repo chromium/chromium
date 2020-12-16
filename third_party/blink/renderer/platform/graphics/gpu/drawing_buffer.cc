@@ -210,7 +210,6 @@ DrawingBuffer::DrawingBuffer(
       want_depth_(want_depth),
       want_stencil_(want_stencil),
       storage_color_space_(color_params.GetStorageGfxColorSpace()),
-      sampler_color_space_(color_params.GetSamplerGfxColorSpace()),
       use_half_float_storage_(color_params.PixelFormat() ==
                               CanvasPixelFormat::kF16),
       filter_quality_(filter_quality),
@@ -520,7 +519,7 @@ bool DrawingBuffer::FinishPrepareTransferableResourceGpu(
         color_buffer_for_mailbox->mailbox, GL_LINEAR, texture_target_,
         color_buffer_for_mailbox->produce_sync_token, gfx::Size(size_),
         is_overlay_candidate);
-    out_resource->color_space = sampler_color_space_;
+    out_resource->color_space = storage_color_space_;
     out_resource->format = color_buffer_for_mailbox->format;
     // This holds a ref on the DrawingBuffer that will keep it alive until the
     // mailbox is released (and while the release callback is running).

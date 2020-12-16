@@ -266,7 +266,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
     return kSRGBCanvasColorSpaceName;
   }
   virtual CanvasPixelFormat PixelFormat() const {
-    return CanvasColorParams::GetNativeCanvasPixelFormat();
+    return CanvasPixelFormat::kUint8;
   }
 
   void RestoreMatrixClipStack(cc::PaintCanvas*) const;

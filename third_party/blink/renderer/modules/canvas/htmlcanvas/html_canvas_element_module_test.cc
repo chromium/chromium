@@ -108,7 +108,7 @@ TEST_P(HTMLCanvasElementModuleTest, LowLatencyCanvasCompositorFrameOpacity) {
   auto context_provider = viz::TestContextProvider::Create();
   context_provider->UnboundTestContextGL()
       ->set_supports_gpu_memory_buffer_format(
-          CanvasColorParams().GetBufferFormat(), true);
+          CanvasColorParams().GetAsResourceParams().GetBufferFormat(), true);
   InitializeSharedGpuContext(context_provider.get());
 
   // To intercept SubmitCompositorFrame/SubmitCompositorFrameSync messages sent

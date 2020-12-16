@@ -193,7 +193,7 @@ bool ColorCorrectionTestUtils::ConvertPixelsToColorSpaceAndPixelFormatForTest(
   src_sk_color_space =
       CanvasColorParams(src_color_space,
                         (src_storage_format == kUint8ClampedArrayStorageFormat)
-                            ? CanvasPixelFormat::kRGBA8
+                            ? CanvasPixelFormat::kUint8
                             : CanvasPixelFormat::kF16,
                         kNonOpaque)
           .GetSkColorSpace();

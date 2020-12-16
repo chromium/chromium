@@ -98,24 +98,6 @@ gfx::BufferFormat CanvasResourceParams::GetBufferFormat() const {
   return gfx::BufferFormat::RGBA_8888;
 }
 
-GLenum CanvasResourceParams::GLUnsizedInternalFormat() const {
-  // TODO(junov): try GL_RGB when alpha_type_ == kOpaque
-  switch (color_type_) {
-    case kRGBA_F16_SkColorType:
-      return GL_RGBA;
-    case kRGBA_8888_SkColorType:
-      return GL_RGBA;
-    case kBGRA_8888_SkColorType:
-      return GL_BGRA_EXT;
-    case kRGB_888x_SkColorType:
-      return GL_RGB;
-    default:
-      NOTREACHED();
-  }
-
-  return GL_RGBA;
-}
-
 GLenum CanvasResourceParams::GLSizedInternalFormat() const {
   switch (color_type_) {
     case kRGBA_F16_SkColorType:

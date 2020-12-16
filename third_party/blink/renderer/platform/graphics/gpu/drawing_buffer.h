@@ -599,10 +599,8 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   const bool want_depth_;
   const bool want_stencil_;
 
-  // The color space of this buffer's storage, and the color space in which
-  // shader samplers will read this buffer.
+  // The color space of this buffer's storage.
   const gfx::ColorSpace storage_color_space_;
-  const gfx::ColorSpace sampler_color_space_;
 
   AntialiasingMode anti_aliasing_mode_ = kAntialiasingModeNone;
 
