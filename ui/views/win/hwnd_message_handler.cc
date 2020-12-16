@@ -211,11 +211,6 @@ bool GetMonitorAndRects(const RECT& rect,
   return true;
 }
 
-struct FindOwnedWindowsData {
-  HWND window;
-  std::vector<Widget*> owned_widgets;
-};
-
 // Enables or disables the menu item for the specified command and menu.
 void EnableMenuItemByCommand(HMENU menu, UINT command, bool enabled) {
   UINT flags = MF_BYCOMMAND | (enabled ? MF_ENABLED : MF_DISABLED | MF_GRAYED);
