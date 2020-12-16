@@ -14,20 +14,20 @@ namespace base {
 class Version;
 }
 
+namespace signin {
+
 // Returns true if this user sign-in upgrade should be shown for |browserState|.
-bool SigninShouldPresentUserSigninUpgrade(ChromeBrowserState* browserState);
+bool ShouldPresentUserSigninUpgrade(ChromeBrowserState* browserState);
 
 // Records in user defaults:
 //   + the Chromium current version.
 //   + increases the sign-in promo display count.
 //   + Gaia ids list.
 // Separated out into a discrete function to allow overriding when testing.
-void SigninRecordVersionSeen();
+void RecordVersionSeen();
 
 // Set the Chromium current version for sign-in. Used for tests only.
-void SetSigninCurrentVersionForTesting(base::Version* version);
-
-namespace signin {
+void SetCurrentVersionForTesting(base::Version* version);
 
 // Returns a boolean indicating whether browser sign-in is allowed by policy.
 bool IsSigninAllowed(const PrefService* prefs);

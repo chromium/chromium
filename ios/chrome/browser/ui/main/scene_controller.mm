@@ -958,7 +958,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 // Presents the sign-in upgrade promo if is relevant and possible.
 // Returns YES if the promo is shown.
 - (BOOL)presentSigninUpgradePromoIfPossible {
-  if (!SigninShouldPresentUserSigninUpgrade(
+  if (!signin::ShouldPresentUserSigninUpgrade(
           self.sceneState.appState.mainBrowserState))
     return NO;
   // Don't show promos if first run is shown in any scene.  (Note:  This flag

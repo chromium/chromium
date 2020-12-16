@@ -52,7 +52,9 @@ NSSet* GaiaIdSetWithIdentities(NSArray* identities) {
 
 #pragma mark - Public
 
-bool SigninShouldPresentUserSigninUpgrade(ChromeBrowserState* browserState) {
+namespace signin {
+
+bool ShouldPresentUserSigninUpgrade(ChromeBrowserState* browserState) {
   if (tests_hook::DisableSigninRecallPromo())
     return false;
 
@@ -110,7 +112,7 @@ bool SigninShouldPresentUserSigninUpgrade(ChromeBrowserState* browserState) {
          ![lastKnownGaiaIdSet isEqualToSet:currentGaiaIdSet];
 }
 
-void SigninRecordVersionSeen() {
+void RecordVersionSeen() {
   NSUserDefaults* standardDefaults = [NSUserDefaults standardUserDefaults];
   [standardDefaults
       setObject:base::SysUTF8ToNSString(CurrentVersion().GetString())
@@ -128,13 +130,9 @@ void SigninRecordVersionSeen() {
                         forKey:kSigninPromoViewDisplayCountKey];
 }
 
-void SetSigninCurrentVersionForTesting(Version* version) {
+void SetCurrentVersionForTesting(Version* version) {
   g_current_version_for_test = version;
 }
-
-// TODO(crbug.com/1157531): Move the other functions inside the signin namespace
-// as well.
-namespace signin {
 
 bool IsSigninAllowed(const PrefService* prefs) {
   // Sign-in is always allowed if the policy handler isn't installed.
