@@ -3232,8 +3232,8 @@
   },
   {
     "name": "mac-v2-gpu-sandbox",
-    "owners": [ "kerrnel@google.com" ],
-    "expiry_milestone": 88
+    "owners": [ "kerrnel@google.com", "rsesek" ],
+    "expiry_milestone": 93
   },
   {
     "name": "managed-bookmarks-ios",
