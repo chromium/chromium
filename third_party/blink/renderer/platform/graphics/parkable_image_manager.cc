@@ -76,7 +76,7 @@ void ParkableImageManager::Remove(DeferredImageDecoder* image) {
 void ParkableImageManager::RecordStatisticsAfter5Minutes() const {
   Statistics stats = ComputeStatistics();
 
-  base::UmaHistogramCounts100000("Memory.ParkableImages.TotalSize.5min",
+  base::UmaHistogramCounts100000("Memory.ParkableImage.TotalSize.5min",
                                  stats.total_size / 1024);  // Record in KiB.
 }
 
