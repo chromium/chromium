@@ -18,7 +18,7 @@ if (is_android) {
   import("//build/config/chromecast_build.gni")
   import("//build/config/fuchsia/generate_runner_scripts.gni")
   import("//build/config/fuchsia/package.gni")
-} else if (is_chromeos) {
+} else if (is_chromeos_ash) {
   import("//build/config/chromeos/rules.gni")
   import("//build/config/sanitizers/sanitizers.gni")
   import("//build/util/generate_wrapper.gni")
@@ -348,7 +348,7 @@ template("test") {
       data_deps += [ ":${_wrapper_output_name}" ]
       write_runtime_deps = _runtime_deps_file
     }
-  } else if (is_chromeos && cros_board != "") {
+  } else if (is_chromeos_ash && cros_board != "") {
     assert(!defined(invoker.use_xvfb) || !invoker.use_xvfb)
 
     # Building for a cros board (ie: not linux-chromeos).
