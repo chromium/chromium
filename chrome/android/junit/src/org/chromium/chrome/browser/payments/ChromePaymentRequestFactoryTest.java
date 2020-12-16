@@ -20,6 +20,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.payments.InvalidPaymentRequest;
+import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.content_public.browser.FeaturePolicyFeature;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
@@ -44,7 +45,7 @@ public class ChromePaymentRequestFactoryTest {
 
     @Before
     public void setUp() {
-        ShadowPaymentFeatureList.setWebPaymentsFeatureEnabled(true);
+        ShadowPaymentFeatureList.setFeatureEnabled(PaymentFeatureList.WEB_PAYMENTS, true);
 
         setWebContentsDestroyed(false);
         ShadowWebContentsStatics.setWebContents(mWebContents);
@@ -96,7 +97,7 @@ public class ChromePaymentRequestFactoryTest {
     @Test
     @Feature({"Payments"})
     public void testDisabledFeatureCausesInvalidPaymentRequest() {
-        ShadowPaymentFeatureList.setWebPaymentsFeatureEnabled(false);
+        ShadowPaymentFeatureList.setFeatureEnabled(PaymentFeatureList.WEB_PAYMENTS, false);
         Assert.assertTrue(
                 createFactory(mRenderFrameHost).createImpl() instanceof InvalidPaymentRequest);
     }

@@ -10,29 +10,31 @@ import org.robolectric.annotation.Resetter;
 
 import org.chromium.components.payments.PaymentFeatureList;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /** The shadow of PaymentFeatureList. */
 @Implements(PaymentFeatureList.class)
 public class ShadowPaymentFeatureList {
-    private static boolean sIsWebPaymentFeatureEnabled;
-
-    /**
-     * Set the {@link PaymentFeatureList.WEB_PAYMENTS} feature to be enabled.
-     * @param enabled Whether to enable the feature.
-     */
-    public static void setWebPaymentsFeatureEnabled(boolean enabled) {
-        sIsWebPaymentFeatureEnabled = enabled;
-    }
+    private static final Map<String, Boolean> sFeatureStatuses = new HashMap<>();
 
     @Resetter
     public static void reset() {
-        sIsWebPaymentFeatureEnabled = false;
+        sFeatureStatuses.clear();
     }
 
     @Implementation
     public static boolean isEnabled(String featureName) {
-        if (featureName.equals(PaymentFeatureList.WEB_PAYMENTS)) {
-            return sIsWebPaymentFeatureEnabled;
-        }
-        return false;
+        assert sFeatureStatuses.containsKey(featureName) : "The feature state has yet been set.";
+        return sFeatureStatuses.get(featureName);
+    }
+
+    /**
+     * Set the given feature to be enabled.
+     * @param featureName The name of the feature.
+     * @param enabled Whether to enable the feature.
+     */
+    public static void setFeatureEnabled(String featureName, boolean enabled) {
+        sFeatureStatuses.put(featureName, enabled);
     }
 }

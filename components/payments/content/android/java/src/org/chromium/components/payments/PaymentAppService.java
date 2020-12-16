@@ -4,6 +4,7 @@
 
 package org.chromium.components.payments;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import java.util.ArrayList;
@@ -63,10 +64,11 @@ public class PaymentAppService implements PaymentAppFactoryInterface {
 
     /**
      * Adds a factory with an id if this id is not added already; otherwise, do nothing.
-     * @param factory The factory to be added.
+     * @param factory The factory to be added, can be null;
      * @param factoryId The id that the caller uses to identify the given factory.
      */
-    public void addUniqueFactory(PaymentAppFactoryInterface factory, String factoryId) {
+    public void addUniqueFactory(@Nullable PaymentAppFactoryInterface factory, String factoryId) {
+        if (factory == null) return;
         assert !factoryId.startsWith(UNTRACKED_FACTORY_ID_PREFIX);
         if (mFactories.containsKey(factoryId)) return;
         mFactories.put(factoryId, factory);

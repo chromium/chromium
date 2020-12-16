@@ -25,15 +25,18 @@ import org.chromium.components.payments.MethodStrings;
 import org.chromium.components.payments.PackageManagerDelegate;
 import org.chromium.components.payments.PaymentApp;
 import org.chromium.components.payments.PaymentAppFactoryDelegate;
+import org.chromium.components.payments.PaymentAppFactoryInterface;
 import org.chromium.components.payments.PaymentAppService;
 import org.chromium.components.payments.PaymentAppType;
 import org.chromium.components.payments.PaymentDetailsUpdateServiceHelper;
 import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.payments.PaymentHandlerHost;
 import org.chromium.components.payments.PaymentOptionsUtils;
+import org.chromium.components.payments.PaymentRequestParams;
 import org.chromium.components.payments.PaymentRequestService;
 import org.chromium.components.payments.PaymentRequestServiceUtil;
 import org.chromium.components.payments.PaymentRequestSpec;
+import org.chromium.components.payments.PaymentRequestUpdateEventListener;
 import org.chromium.components.payments.PaymentResponseHelperInterface;
 import org.chromium.components.payments.SkipToGPayHelper;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -103,6 +106,89 @@ public class ChromePaymentRequestService
          *         true in tests.
          */
         boolean skipUiForBasicCard();
+
+        /**
+         * Create PaymentUiService.
+         * @param delegate The delegate of this instance.
+         * @param webContents The WebContents of the merchant page.
+         * @param isOffTheRecord Whether merchant page is in an isOffTheRecord tab.
+         * @param journeyLogger The logger of the user journey.
+         * @param topLevelOrigin The last committed url of webContents.
+         */
+        default PaymentUiService createPaymentUiService(PaymentUiService.Delegate delegate,
+                PaymentRequestParams params, WebContents webContents, boolean isOffTheRecord,
+                JourneyLogger journeyLogger, String topLevelOrigin) {
+            return new PaymentUiService(/*delegate=*/delegate,
+                    /*params=*/params, webContents, isOffTheRecord, journeyLogger, topLevelOrigin);
+        }
+
+        /**
+         * Looks up the Chrome activity of the given web contents. This can be null. Should never be
+         * cached, because web contents can change activities, e.g., when user selects "Open in
+         * Chrome" menu item.
+         *
+         * @param webContents The web contents for which to lookup the Chrome activity.
+         * @return Possibly null Chrome activity that should never be cached.
+         */
+        @Nullable
+        default ChromeActivity getChromeActivity(WebContents webContents) {
+            return ChromeActivity.fromWebContents(webContents);
+        }
+
+        /**
+         * Creates an instance of Android payment app factory.
+         * @return The instance, can be null for testing.
+         */
+        @Nullable
+        default PaymentAppFactoryInterface createAndroidPaymentAppFactory() {
+            return new AndroidPaymentAppFactory();
+        }
+
+        /**
+         * Creates an instance of service-worker payment app factory.
+         * @return The instance, can be null for testing.
+         */
+        @Nullable
+        default PaymentAppFactoryInterface createServiceWorkerPaymentAppFactory() {
+            return new PaymentAppServiceBridge();
+        }
+
+        /**
+         * Creates an instance of Autofill payment app factory.
+         * @return The instance, can be null for testing.
+         */
+        @Nullable
+        default PaymentAppFactoryInterface createAutofillPaymentAppFactory() {
+            return new AutofillPaymentAppFactory();
+        }
+
+        /**
+         * Whether an autofill transaction is allowed to be made.
+         * @return The instance, can be null for testing.
+         */
+        default boolean canMakeAutofillPayment(Map<String, PaymentMethodData> methodData) {
+            return AutofillPaymentAppFactory.canMakePayments(methodData);
+        }
+
+        /**
+         * @param renderFrameHost The frame that issues the payment request.
+         * @return Whether the WebContents of the merchant frame is alive and visible.
+         */
+        default boolean isWebContentsActive(RenderFrameHost renderFrameHost) {
+            return PaymentRequestServiceUtil.isWebContentsActive(renderFrameHost);
+        }
+
+        /**
+         * Creates an instance of PaymentHandlerHost.
+         * @param webContents The WebContents that issues the payment request.
+         * @param listener The listener to payment method, shipping address, and shipping option
+         *        change events
+         * @return The instance.
+         */
+        default PaymentHandlerHost createPaymentHandlerHost(
+                WebContents webContents, PaymentRequestUpdateEventListener listener) {
+            return new PaymentHandlerHost(webContents, listener);
+        }
     }
 
     /**
@@ -124,7 +210,7 @@ public class ChromePaymentRequestService
         mJourneyLogger = paymentRequestService.getJourneyLogger();
         String topLevelOrigin = paymentRequestService.getTopLevelOrigin();
         assert topLevelOrigin != null;
-        mPaymentUiService = new PaymentUiService(/*delegate=*/this,
+        mPaymentUiService = mDelegate.createPaymentUiService(/*delegate=*/this,
                 /*params=*/paymentRequestService, mWebContents,
                 paymentRequestService.isOffTheRecord(), mJourneyLogger, topLevelOrigin);
         mPaymentRequestService = paymentRequestService;
@@ -208,18 +294,19 @@ public class ChromePaymentRequestService
             PaymentAppService service, PaymentAppFactoryDelegate delegate) {
         String androidFactoryId = AndroidPaymentAppFactory.class.getName();
         if (!service.containsFactory(androidFactoryId)) {
-            service.addUniqueFactory(new AndroidPaymentAppFactory(), androidFactoryId);
+            service.addUniqueFactory(mDelegate.createAndroidPaymentAppFactory(), androidFactoryId);
         }
         String swFactoryId = PaymentAppServiceBridge.class.getName();
         if (!service.containsFactory(swFactoryId)) {
-            service.addUniqueFactory(new PaymentAppServiceBridge(), swFactoryId);
+            service.addUniqueFactory(mDelegate.createServiceWorkerPaymentAppFactory(), swFactoryId);
         }
 
         String autofillFactoryId = AutofillPaymentAppFactory.class.getName();
         if (!service.containsFactory(autofillFactoryId)) {
-            service.addUniqueFactory(new AutofillPaymentAppFactory(), autofillFactoryId);
+            service.addUniqueFactory(
+                    mDelegate.createAutofillPaymentAppFactory(), autofillFactoryId);
         }
-        if (AutofillPaymentAppFactory.canMakePayments(mSpec.getMethodData())) {
+        if (mDelegate.canMakeAutofillPayment(mSpec.getMethodData())) {
             mPaymentUiService.setAutofillPaymentAppCreator(
                     AutofillPaymentAppFactory.createAppCreator(
                             /*delegate=*/delegate));
@@ -230,11 +317,10 @@ public class ChromePaymentRequestService
     @Override
     public String showOrSkipAppSelector(boolean isShowWaitingForUpdatedDetails, PaymentItem total,
             boolean shouldSkipAppSelector) {
-        ChromeActivity chromeActivity = ChromeActivity.fromWebContents(mWebContents);
+        ChromeActivity chromeActivity = mDelegate.getChromeActivity(mWebContents);
         if (chromeActivity == null) return ErrorStrings.ACTIVITY_NOT_FOUND;
         String error = mPaymentUiService.buildPaymentRequestUI(chromeActivity,
-                /*isWebContentsActive=*/
-                PaymentRequestServiceUtil.isWebContentsActive(mRenderFrameHost),
+                /*isWebContentsActive=*/mDelegate.isWebContentsActive(mRenderFrameHost),
                 /*isShowWaitingForUpdatedDetails=*/isShowWaitingForUpdatedDetails);
         if (error != null) return error;
         // Calculate skip ui and build ui only after all payment apps are ready and
@@ -274,14 +360,13 @@ public class ChromePaymentRequestService
     public String onShowCalledAndAppsQueriedAndDetailsFinalized(boolean isUserGestureShow) {
         WindowAndroid windowAndroid = mDelegate.getWindowAndroid(mRenderFrameHost);
         if (windowAndroid == null) return ErrorStrings.WINDOW_NOT_FOUND;
-        Context context = windowAndroid.getContext().get();
+        Context context = mDelegate.getContext(mRenderFrameHost);
         if (context == null) return ErrorStrings.CONTEXT_NOT_FOUND;
 
         // If we are skipping showing the app selector UI, we should call into the payment app
         // immediately after we determine the apps are ready and UI is shown.
         if (mHasSkippedAppSelector) {
             assert !mPaymentUiService.getPaymentApps().isEmpty();
-            assert mPaymentUiService.isPaymentRequestUiAlive();
 
             if (isMinimalUiApplicable(isUserGestureShow)) {
                 if (mPaymentUiService.triggerMinimalUI(windowAndroid, mSpec.getRawTotal(),
@@ -451,8 +536,8 @@ public class ChromePaymentRequestService
 
     private PaymentHandlerHost getPaymentHandlerHost() {
         if (mPaymentHandlerHost == null) {
-            mPaymentHandlerHost =
-                    new PaymentHandlerHost(mWebContents, /*delegate=*/mPaymentRequestService);
+            mPaymentHandlerHost = mDelegate.createPaymentHandlerHost(
+                    mWebContents, /*listener=*/mPaymentRequestService);
         }
         return mPaymentHandlerHost;
     }
