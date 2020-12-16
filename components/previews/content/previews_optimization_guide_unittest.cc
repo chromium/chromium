@@ -154,24 +154,6 @@ class PreviewsOptimizationGuideTest : public testing::Test {
   void SeedOptimizationGuideDeciderWithDefaultResponses() {
     optimization_guide::OptimizationMetadata default_metadata;
 
-    optimization_guide::proto::PreviewsMetadata rlh_previews_metadata;
-    rlh_previews_metadata.set_inflation_percent(123);
-    auto* rlh1 = rlh_previews_metadata.add_resource_loading_hints();
-    rlh1->set_resource_pattern("resource1");
-    rlh1->set_loading_optimization_type(
-        optimization_guide::proto::LOADING_BLOCK_RESOURCE);
-    auto* rlh2 = rlh_previews_metadata.add_resource_loading_hints();
-    rlh2->set_resource_pattern("resource2");
-    rlh2->set_loading_optimization_type(
-        optimization_guide::proto::LOADING_BLOCK_RESOURCE);
-    rlh_previews_metadata.add_resource_loading_hints()->set_resource_pattern(
-        "shouldbeskipped");
-    // Should also be skipped since the resource pattern is empty.
-    rlh_previews_metadata.add_resource_loading_hints()
-        ->set_loading_optimization_type(
-            optimization_guide::proto::LOADING_BLOCK_RESOURCE);
-    optimization_guide::OptimizationMetadata rlh_metadata;
-    rlh_metadata.set_previews_metadata(rlh_previews_metadata);
 
     std::map<std::tuple<GURL, optimization_guide::proto::OptimizationType>,
              std::tuple<optimization_guide::OptimizationGuideDecision,
@@ -187,11 +169,6 @@ class PreviewsOptimizationGuideTest : public testing::Test {
              std::make_tuple(
                  optimization_guide::OptimizationGuideDecision::kUnknown,
                  default_metadata)},
-            {std::make_tuple(resource_loading_hints_url(),
-                             optimization_guide::proto::RESOURCE_LOADING),
-             std::make_tuple(
-                 optimization_guide::OptimizationGuideDecision::kTrue,
-                 rlh_metadata)},
         };
 
     optimization_guide_decider()->SetResponses(responses);
@@ -295,33 +272,6 @@ TEST_F(PreviewsOptimizationGuideTest,
   EXPECT_FALSE(guide.CanApplyPreview(
       /*previews_data=*/nullptr, &navigation_handle,
       PreviewsType::DEPRECATED_LOFI));
-}
-
-TEST_F(PreviewsOptimizationGuideTest,
-       CanApplyPreviewPopulatesResourceLoadingHintsCache) {
-  PreviewsOptimizationGuide guide(optimization_guide_decider());
-  SeedOptimizationGuideDeciderWithDefaultResponses();
-
-  // Make sure resource loading hints not cached.
-  std::vector<std::string> resource_loading_hints;
-  EXPECT_FALSE(guide.GetResourceLoadingHints(resource_loading_hints_url(),
-                                             &resource_loading_hints));
-  EXPECT_TRUE(resource_loading_hints.empty());
-
-  // Check if we can apply it and metadata is properly applied.
-  PreviewsUserData data(/*page_id=*/1);
-  content::MockNavigationHandle navigation_handle;
-  navigation_handle.set_url(resource_loading_hints_url());
-  EXPECT_TRUE(guide.CanApplyPreview(&data, &navigation_handle,
-                                    PreviewsType::RESOURCE_LOADING_HINTS));
-  EXPECT_EQ(123, data.data_savings_inflation_percent());
-
-  // Make sure resource loading hints are validated and cached.
-  EXPECT_TRUE(guide.GetResourceLoadingHints(resource_loading_hints_url(),
-                                            &resource_loading_hints));
-  EXPECT_EQ(2u, resource_loading_hints.size());
-  EXPECT_EQ("resource1", resource_loading_hints[0]);
-  EXPECT_EQ("resource2", resource_loading_hints[1]);
 }
 
 TEST_F(PreviewsOptimizationGuideTest,

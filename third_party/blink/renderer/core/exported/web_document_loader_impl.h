@@ -77,8 +77,6 @@ class CORE_EXPORT WebDocumentLoaderImpl final : public DocumentLoader,
   ExtraData* GetExtraData() const override;
   void SetExtraData(std::unique_ptr<ExtraData>) override;
   void SetSubresourceFilter(WebDocumentSubresourceFilter*) override;
-  void SetLoadingHintsProvider(
-      std::unique_ptr<blink::WebLoadingHintsProvider>) override;
   void SetServiceWorkerNetworkProvider(
       std::unique_ptr<WebServiceWorkerNetworkProvider>) override;
   WebServiceWorkerNetworkProvider* GetServiceWorkerNetworkProvider() override;

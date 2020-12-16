@@ -67,12 +67,6 @@ class OptimizationMetadata {
   // used for testing purposes.
   void SetAnyMetadataForTesting(const google::protobuf::MessageLite& metadata);
 
-  const base::Optional<proto::PreviewsMetadata>& previews_metadata() const {
-    return previews_metadata_;
-  }
-  void set_previews_metadata(const proto::PreviewsMetadata& previews_metadata) {
-    previews_metadata_ = previews_metadata;
-  }
 
   const base::Optional<proto::PerformanceHintsMetadata>&
   performance_hints_metadata() const {
@@ -107,9 +101,6 @@ class OptimizationMetadata {
   // Optimization types that are not specifically specified below will have
   // metadata populated with this field.
   base::Optional<proto::Any> any_metadata_;
-
-  // Only applicable for NOSCRIPT and RESOURCE_LOADING optimization types.
-  base::Optional<proto::PreviewsMetadata> previews_metadata_;
 
   // Only applicable for the PERFORMANCE_HINTS optimization type.
   base::Optional<proto::PerformanceHintsMetadata> performance_hints_metadata_;

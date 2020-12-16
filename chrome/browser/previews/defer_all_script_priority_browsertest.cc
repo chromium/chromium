@@ -209,7 +209,7 @@ class DeferAllScriptPriorityBrowserTest
     ProcessHintsComponent(
         test_hints_component_creator_.CreateHintsComponentInfoWithPageHints(
             optimization_guide::proto::DEFER_ALL_SCRIPT,
-            {hint_setup_url.host()}, page_pattern, {}));
+            {hint_setup_url.host()}, page_pattern));
     LoadHintsForUrl(hint_setup_url);
   }
 

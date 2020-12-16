@@ -33,8 +33,7 @@ class TestHintsComponentCreator {
   optimization_guide::HintsComponentInfo CreateHintsComponentInfoWithPageHints(
       optimization_guide::proto::OptimizationType optimization_type,
       const std::vector<std::string>& whitelisted_hosts,
-      const std::string& page_pattern,
-      const std::vector<std::string>& resource_patterns);
+      const std::string& page_pattern);
 
  private:
   // Returns the scoped temp directory path with the |file_path_suffix| that is

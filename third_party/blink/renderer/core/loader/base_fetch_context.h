@@ -24,7 +24,6 @@ class ConsoleMessage;
 class DOMWrapperWorld;
 class DetachableResourceFetcherProperties;
 class KURL;
-class PreviewsResourceLoadingHints;
 class SecurityOrigin;
 class SubresourceFilter;
 class WebSocketHandshakeThrottle;
@@ -64,8 +63,6 @@ class CORE_EXPORT BaseFetchContext : public FetchContext {
   virtual scoped_refptr<const SecurityOrigin> GetTopFrameOrigin() const = 0;
 
   virtual SubresourceFilter* GetSubresourceFilter() const = 0;
-  virtual PreviewsResourceLoadingHints* GetPreviewsResourceLoadingHints()
-      const = 0;
   virtual bool ShouldBlockWebSocketByMixedContentCheck(const KURL&) const = 0;
   virtual std::unique_ptr<WebSocketHandshakeThrottle>
   CreateWebSocketHandshakeThrottle() = 0;

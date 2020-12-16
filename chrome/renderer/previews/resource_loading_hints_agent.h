@@ -43,8 +43,6 @@ class ResourceLoadingHintsAgent
   GURL GetDocumentURL() const;
 
   // previews::mojom::PreviewsResourceLoadingHintsReceiver:
-  void SetResourceLoadingHints(previews::mojom::PreviewsResourceLoadingHintsPtr
-                                   resource_loading_hints) override;
   void SetLiteVideoHint(
       previews::mojom::LiteVideoHintPtr lite_video_hint) override;
   void SetBlinkOptimizationGuideHints(
@@ -56,9 +54,6 @@ class ResourceLoadingHintsAgent
           previews::mojom::PreviewsResourceLoadingHintsReceiver> receiver);
 
   bool IsMainFrame() const;
-
-  std::vector<std::string> subresource_patterns_to_block_;
-  base::Optional<int64_t> ukm_source_id_;
 
   mojo::AssociatedReceiver<
       previews::mojom::PreviewsResourceLoadingHintsReceiver>

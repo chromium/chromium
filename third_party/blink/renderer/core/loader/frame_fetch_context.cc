@@ -296,13 +296,6 @@ SubresourceFilter* FrameFetchContext::GetSubresourceFilter() const {
   return document_loader_->GetSubresourceFilter();
 }
 
-PreviewsResourceLoadingHints*
-FrameFetchContext::GetPreviewsResourceLoadingHints() const {
-  if (GetResourceFetcherProperties().IsDetached())
-    return nullptr;
-  return document_loader_->GetPreviewsResourceLoadingHints();
-}
-
 PreviewsState FrameFetchContext::previews_state() const {
   if (GetResourceFetcherProperties().IsDetached())
     return PreviewsTypes::kPreviewsUnspecified;

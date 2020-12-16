@@ -63,10 +63,6 @@ class MockBaseFetchContext final : public BaseFetchContext {
   }
   bool AllowScriptFromSource(const KURL&) const override { return false; }
   SubresourceFilter* GetSubresourceFilter() const override { return nullptr; }
-  PreviewsResourceLoadingHints* GetPreviewsResourceLoadingHints()
-      const override {
-    return nullptr;
-  }
   bool ShouldBlockRequestByInspector(const KURL&) const override {
     return false;
   }

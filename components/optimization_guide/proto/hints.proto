@@ -12,7 +12,6 @@ package optimization_guide.proto;
 import "common_types.proto";
 import "loading_predictor_metadata.proto";
 import "performance_hints_metadata.proto";
-import "previews_metadata.proto";
 import "public_image_metadata.proto";
 
 // Information about the hint that the client already has for a host.
@@ -156,7 +155,7 @@ enum KeyRepresentation {
 }
 
 message Optimization {
-  reserved 2, 3, 4, 5, 14;
+  reserved 2, 3, 4, 5, 10, 14;
   // The type of optimization the hint applies to.
   optional OptimizationType optimization_type = 1;
   // The version of the tuning group for the optimization type.
@@ -173,7 +172,6 @@ message Optimization {
   //
   // New clients should utilize any_metadata rather than adding another field.
   oneof metadata {
-    PreviewsMetadata previews_metadata = 10;
     PerformanceHintsMetadata performance_hints_metadata = 11;
     PublicImageMetadata public_image_metadata = 12;
     LoadingPredictorMetadata loading_predictor_metadata = 13;

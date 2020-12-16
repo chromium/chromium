@@ -216,7 +216,6 @@ source_set("blink_headers") {
     "platform/web_inband_text_track_client.h",
     "platform/web_input_event_result.h",
     "platform/web_isolated_world_info.h",
-    "platform/web_loading_hints_provider.h",
     "platform/web_media_key_system_configuration.h",
     "platform/web_media_key_system_media_capability.h",
     "platform/web_media_player.h",

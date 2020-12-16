@@ -14,7 +14,6 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/loader/frame_client_hints_preferences_context.h"
-#include "third_party/blink/renderer/core/loader/previews_resource_loading_hints.h"
 #include "third_party/blink/renderer/core/loader/subresource_filter.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_request.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
@@ -251,13 +250,6 @@ BaseFetchContext::CanRequestInternal(
 
   if (url.PotentiallyDanglingMarkup() && url.ProtocolIsInHTTPFamily()) {
     CountDeprecation(WebFeature::kCanRequestURLHTTPContainingNewline);
-    return ResourceRequestBlockedReason::kOther;
-  }
-
-  // Loading of a subresource may be blocked by previews resource loading hints.
-  if (GetPreviewsResourceLoadingHints() &&
-      !GetPreviewsResourceLoadingHints()->AllowLoad(
-          type, url, resource_request.Priority())) {
     return ResourceRequestBlockedReason::kOther;
   }
 

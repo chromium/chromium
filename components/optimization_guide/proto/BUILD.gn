@@ -19,7 +19,6 @@ proto_library("optimization_guide_proto") {
     "loading_predictor_metadata.proto",
     "models.proto",
     "performance_hints_metadata.proto",
-    "previews_metadata.proto",
     "public_image_metadata.proto",
   ]
 }
@@ -36,7 +35,6 @@ if (is_android) {
       "loading_predictor_metadata.proto",
       "models.proto",
       "performance_hints_metadata.proto",
-      "previews_metadata.proto",
       "public_image_metadata.proto",
     ]
   }

@@ -90,6 +90,9 @@ class DeferAllScriptBrowserTest : public InProcessBrowserTest {
     another_host_url_ =
         https_server_->GetURL("anotherhost.com", "/search_results_page.html");
 
+    https_no_transform_url_ = https_server_->GetURL(
+        "/defer_all_script_with_no_transform_header.html");
+
     InProcessBrowserTest::SetUpOnMainThread();
   }
 
@@ -147,7 +150,7 @@ class DeferAllScriptBrowserTest : public InProcessBrowserTest {
     ProcessHintsComponent(
         test_hints_component_creator_.CreateHintsComponentInfoWithPageHints(
             optimization_guide::proto::DEFER_ALL_SCRIPT,
-            {hint_setup_url.host()}, page_pattern, {}));
+            {hint_setup_url.host()}, page_pattern));
     LoadHintsForUrl(hint_setup_url);
   }
 
@@ -175,6 +178,8 @@ class DeferAllScriptBrowserTest : public InProcessBrowserTest {
 
   const GURL& another_host_url() const { return another_host_url_; }
 
+  const GURL& https_no_transform_url() const { return https_no_transform_url_; }
+
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::ScopedFeatureList param_feature_list_;
@@ -197,6 +202,7 @@ class DeferAllScriptBrowserTest : public InProcessBrowserTest {
   GURL server_redirect_url_;
   GURL server_denylist_url_;
   GURL another_host_url_;
+  GURL https_no_transform_url_;
 
   GURL server_redirect_base_redirect_to_final_server_redirect_url_;
 
@@ -262,6 +268,28 @@ IN_PROC_BROWSER_TEST_F(
 
   histogram_tester.ExpectBucketCount(
       "Previews.OptOut.UserOptedOut.DeferAllScript", 1, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    DeferAllScriptBrowserTest,
+    DISABLE_ON_WIN_MAC_CHROMEOS(DeferAllScriptHttpsWhitelistedNoTransform)) {
+  GURL url = https_no_transform_url();
+
+  // Whitelist DeferAllScript for any path for the url's host.
+  SetDeferAllScriptHintWithPageWithPattern(url, "*");
+
+  base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+
+  ui_test_utils::NavigateToURL(browser(), url);
+
+  RetryForHistogramUntilCountReached(
+      &histogram_tester, "PageLoad.DocumentTiming.NavigationToLoadEventFired",
+      1);
+
+  EXPECT_EQ(kNonDeferredPageExpectedOutput, GetScriptLog(browser()));
+
+  histogram_tester.ExpectTotalCount("Previews.PreviewShown.DeferAllScript", 0);
 }
 
 // Test with an incognito browser.

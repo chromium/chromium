@@ -357,9 +357,6 @@ class OptimizationGuideHintsManagerTest
     optimization_guide::proto::Optimization* default_opt =
         page_hint1->add_whitelisted_optimizations();
     default_opt->set_optimization_type(optimization_guide::proto::NOSCRIPT);
-    optimization_guide::proto::PreviewsMetadata* default_opt_metadata =
-        default_opt->mutable_previews_metadata();
-    default_opt_metadata->set_inflation_percent(1234);
     // Add another hint so somedomain.org hint is not in-memory initially.
     optimization_guide::proto::Hint* hint2 = config.add_hints();
     hint2->set_key("somedomain2.org");
@@ -588,11 +585,6 @@ TEST_F(OptimizationGuideHintsManagerTest, ParseTwoConfigVersions) {
       page_hint1->add_whitelisted_optimizations();
   optimization1->set_optimization_type(
       optimization_guide::proto::RESOURCE_LOADING);
-  optimization_guide::proto::ResourceLoadingHint* resource_loading_hint1 =
-      optimization1->mutable_previews_metadata()->add_resource_loading_hints();
-  resource_loading_hint1->set_loading_optimization_type(
-      optimization_guide::proto::LOADING_BLOCK_RESOURCE);
-  resource_loading_hint1->set_resource_pattern("news_cruft.js");
 
   // Test the first time parsing the config.
   {
@@ -1197,10 +1189,6 @@ TEST_F(OptimizationGuideHintsManagerTest,
   optimization_guide::proto::Optimization* opt1 =
       hint1->add_whitelisted_optimizations();
   opt1->set_optimization_type(optimization_guide::proto::RESOURCE_LOADING);
-  optimization_guide::proto::PreviewsMetadata* opt1_metadata =
-      opt1->mutable_previews_metadata();
-  opt1_metadata->add_resource_loading_hints()->set_resource_pattern(
-      "someresource");
   ProcessHints(config, "1.0.0.0");
 
   hints_manager()->RegisterOptimizationTypes(
@@ -1219,10 +1207,6 @@ TEST_F(OptimizationGuideHintsManagerTest,
       hints_manager()->CanApplyOptimization(
           navigation_handle->GetURL(), /*navigation_id=*/base::nullopt,
           optimization_guide::proto::RESOURCE_LOADING, &optimization_metadata);
-  // Make sure previews metadata is populated.
-  EXPECT_EQ("someresource", optimization_metadata.previews_metadata()
-                                ->resource_loading_hints(0)
-                                .resource_pattern());
   EXPECT_EQ(optimization_guide::OptimizationTypeDecision::kAllowedByHint,
             optimization_type_decision);
 }
@@ -1238,10 +1222,6 @@ TEST_F(OptimizationGuideHintsManagerTest,
       hint1->add_whitelisted_optimizations();
   opt1->set_optimization_type(optimization_guide::proto::RESOURCE_LOADING);
   opt1->set_tuning_version(123456);
-  optimization_guide::proto::PreviewsMetadata* opt1_metadata =
-      opt1->mutable_previews_metadata();
-  opt1_metadata->add_resource_loading_hints()->set_resource_pattern(
-      "someresource");
   ProcessHints(config, "1.0.0.0");
 
   hints_manager()->RegisterOptimizationTypes(
@@ -1262,10 +1242,6 @@ TEST_F(OptimizationGuideHintsManagerTest,
       hints_manager()->CanApplyOptimization(
           navigation_handle->GetURL(), navigation_handle->GetNavigationId(),
           optimization_guide::proto::RESOURCE_LOADING, &optimization_metadata);
-  // Make sure previews metadata is populated.
-  EXPECT_EQ("someresource", optimization_metadata.previews_metadata()
-                                ->resource_loading_hints(0)
-                                .resource_pattern());
   EXPECT_EQ(optimization_guide::OptimizationTypeDecision::kAllowedByHint,
             optimization_type_decision);
 
@@ -1441,10 +1417,6 @@ TEST_F(OptimizationGuideHintsManagerTest,
       hint1->add_whitelisted_optimizations();
   opt1->set_optimization_type(optimization_guide::proto::RESOURCE_LOADING);
   opt1->set_tuning_version(123456);
-  optimization_guide::proto::PreviewsMetadata* opt1_metadata =
-      opt1->mutable_previews_metadata();
-  opt1_metadata->add_resource_loading_hints()->set_resource_pattern(
-      "someresource");
   ProcessHints(config, "1.0.0.0");
 
   hints_manager()->RegisterOptimizationTypes(
@@ -1465,10 +1437,6 @@ TEST_F(OptimizationGuideHintsManagerTest,
       hints_manager()->CanApplyOptimization(
           navigation_handle->GetURL(), /*navigation_id=*/base::nullopt,
           optimization_guide::proto::RESOURCE_LOADING, &optimization_metadata);
-  // Make sure previews metadata is populated.
-  EXPECT_EQ("someresource", optimization_metadata.previews_metadata()
-                                ->resource_loading_hints(0)
-                                .resource_pattern());
   EXPECT_EQ(optimization_guide::OptimizationTypeDecision::kAllowedByHint,
             optimization_type_decision);
 
@@ -1488,10 +1456,6 @@ TEST_F(OptimizationGuideHintsManagerTest,
   optimization_guide::proto::Optimization* opt1 =
       hint1->add_whitelisted_optimizations();
   opt1->set_optimization_type(optimization_guide::proto::RESOURCE_LOADING);
-  optimization_guide::proto::PreviewsMetadata* opt1_metadata =
-      opt1->mutable_previews_metadata();
-  opt1_metadata->add_resource_loading_hints()->set_resource_pattern(
-      "someresource");
   ProcessHints(config, "1.0.0.0");
 
   hints_manager()->RegisterOptimizationTypes(
@@ -1512,10 +1476,6 @@ TEST_F(OptimizationGuideHintsManagerTest,
       hints_manager()->CanApplyOptimization(
           navigation_handle->GetURL(), navigation_handle->GetNavigationId(),
           optimization_guide::proto::RESOURCE_LOADING, &optimization_metadata);
-  // Make sure previews metadata is populated.
-  EXPECT_EQ("someresource", optimization_metadata.previews_metadata()
-                                ->resource_loading_hints(0)
-                                .resource_pattern());
   EXPECT_EQ(optimization_guide::OptimizationTypeDecision::kAllowedByHint,
             optimization_type_decision);
 
@@ -1523,32 +1483,6 @@ TEST_F(OptimizationGuideHintsManagerTest,
   auto entries = ukm_recorder.GetEntriesByName(
       ukm::builders::OptimizationGuideAutotuning::kEntryName);
   EXPECT_EQ(0u, entries.size());
-}
-
-TEST_F(OptimizationGuideHintsManagerTest,
-       CanApplyOptimizationAndPopulatesMetadataWithFirstOptThatMatchesNoExp) {
-  InitializeWithDefaultConfig("1.0.0.0");
-  hints_manager()->RegisterOptimizationTypes(
-      {optimization_guide::proto::NOSCRIPT});
-
-  std::unique_ptr<content::MockNavigationHandle> navigation_handle =
-      CreateMockNavigationHandleWithOptimizationGuideWebContentsObserver(
-          url_with_hints());
-  base::RunLoop run_loop;
-  hints_manager()->OnNavigationStartOrRedirect(navigation_handle.get(),
-                                               run_loop.QuitClosure());
-  run_loop.Run();
-
-  optimization_guide::OptimizationMetadata optimization_metadata;
-  optimization_guide::OptimizationTypeDecision optimization_type_decision =
-      hints_manager()->CanApplyOptimization(
-          navigation_handle->GetURL(), /*navigation_id=*/base::nullopt,
-          optimization_guide::proto::NOSCRIPT, &optimization_metadata);
-  EXPECT_EQ(
-      1234,
-      optimization_metadata.previews_metadata().value().inflation_percent());
-  EXPECT_EQ(optimization_guide::OptimizationTypeDecision::kAllowedByHint,
-            optimization_type_decision);
 }
 
 TEST_F(OptimizationGuideHintsManagerTest,
@@ -1806,14 +1740,20 @@ TEST_F(OptimizationGuideHintsManagerTest,
   hints_manager()->RegisterOptimizationTypes(
       {optimization_guide::proto::NOSCRIPT});
   optimization_guide::OptimizationMetadata optimization_metadata;
-  optimization_metadata.set_previews_metadata(
-      optimization_guide::proto::PreviewsMetadata());
+
+  optimization_guide::proto::PerformanceHintsMetadata hints_metadata;
+  auto* hint = hints_metadata.add_performance_hints();
+  hint->set_wildcard_pattern("test.com");
+  hint->set_performance_class(optimization_guide::proto::PERFORMANCE_SLOW);
+  optimization_guide::OptimizationMetadata metadata;
+  optimization_metadata.set_performance_hints_metadata(hints_metadata);
+
   optimization_guide::OptimizationTypeDecision optimization_type_decision =
       hints_manager()->CanApplyOptimization(
           navigation_handle->GetURL(), /*navigation_id=*/base::nullopt,
           optimization_guide::proto::NOSCRIPT, &optimization_metadata);
 
-  EXPECT_FALSE(optimization_metadata.previews_metadata().has_value());
+  EXPECT_FALSE(optimization_metadata.performance_hints_metadata().has_value());
   EXPECT_EQ(optimization_guide::OptimizationTypeDecision::kNoHintAvailable,
             optimization_type_decision);
 }

@@ -148,10 +148,6 @@ bool IsOptimizationTypeAllowed(
     // metadata if applicable and return.
     if (optimization_metadata) {
       switch (optimization.metadata_case()) {
-        case optimization_guide::proto::Optimization::kPreviewsMetadata:
-          optimization_metadata->set_previews_metadata(
-              optimization.previews_metadata());
-          break;
         case optimization_guide::proto::Optimization::kPerformanceHintsMetadata:
           optimization_metadata->set_performance_hints_metadata(
               optimization.performance_hints_metadata());
@@ -1420,9 +1416,7 @@ void OptimizationGuideHintsManager::AddHintForTesting(
     PrepareToInvokeRegisteredCallbacks(url);
     return;
   }
-  if (metadata->previews_metadata()) {
-    *optimization->mutable_previews_metadata() = *metadata->previews_metadata();
-  } else if (metadata->loading_predictor_metadata()) {
+  if (metadata->loading_predictor_metadata()) {
     *optimization->mutable_loading_predictor_metadata() =
         *metadata->loading_predictor_metadata();
   } else if (metadata->performance_hints_metadata()) {

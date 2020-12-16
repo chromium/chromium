@@ -48,8 +48,6 @@ class WorkerFetchContext final : public BaseFetchContext {
   scoped_refptr<const SecurityOrigin> GetTopFrameOrigin() const override;
 
   SubresourceFilter* GetSubresourceFilter() const override;
-  PreviewsResourceLoadingHints* GetPreviewsResourceLoadingHints()
-      const override;
   bool AllowScriptFromSource(const KURL&) const override;
   bool ShouldBlockRequestByInspector(const KURL&) const override;
   void DispatchDidBlockRequest(const ResourceRequest&,

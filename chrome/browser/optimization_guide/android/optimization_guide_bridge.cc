@@ -41,7 +41,6 @@ ScopedJavaLocalRef<jobject> ToJavaOptimizationMetadata(
   // We do not expect the following metadatas to be populated for optimization
   // types getting called from Java.
   DCHECK(!optimization_metadata.loading_predictor_metadata());
-  DCHECK(!optimization_metadata.previews_metadata());
   DCHECK(!optimization_metadata.public_image_metadata());
 
   if (optimization_metadata.performance_hints_metadata()) {

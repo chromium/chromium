@@ -104,8 +104,6 @@ blink_core_sources_loader = [
   "preload_helper.h",
   "prerender_handle.cc",
   "prerender_handle.h",
-  "previews_resource_loading_hints.cc",
-  "previews_resource_loading_hints.h",
   "progress_tracker.cc",
   "progress_tracker.h",
   "resource/css_style_sheet_resource.cc",

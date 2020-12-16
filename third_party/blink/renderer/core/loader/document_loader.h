@@ -63,7 +63,6 @@
 #include "third_party/blink/renderer/core/loader/frame_loader_types.h"
 #include "third_party/blink/renderer/core/loader/navigation_policy.h"
 #include "third_party/blink/renderer/core/loader/preload_helper.h"
-#include "third_party/blink/renderer/core/loader/previews_resource_loading_hints.h"
 #include "third_party/blink/renderer/core/page/viewport_description.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/client_hints_preferences.h"
@@ -135,13 +134,6 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   void SetSubresourceFilter(SubresourceFilter*);
   SubresourceFilter* GetSubresourceFilter() const {
     return subresource_filter_.Get();
-  }
-  void SetPreviewsResourceLoadingHints(
-      PreviewsResourceLoadingHints* resource_loading_hints) {
-    resource_loading_hints_ = resource_loading_hints;
-  }
-  PreviewsResourceLoadingHints* GetPreviewsResourceLoadingHints() const {
-    return resource_loading_hints_;
   }
 
   const KURL& Url() const;
@@ -467,9 +459,6 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   Member<DocumentParser> parser_;
 
   Member<SubresourceFilter> subresource_filter_;
-
-  // Stores the resource loading hints for this document.
-  Member<PreviewsResourceLoadingHints> resource_loading_hints_;
 
   // A reference to actual request's url and referrer used to
   // inititate this load.

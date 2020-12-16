@@ -44,8 +44,7 @@ optimization_guide::HintsComponentInfo
 TestHintsComponentCreator::CreateHintsComponentInfoWithPageHints(
     optimization_guide::proto::OptimizationType optimization_type,
     const std::vector<std::string>& page_hint_hosts,
-    const std::string& page_pattern,
-    const std::vector<std::string>& resource_blocking_patterns) {
+    const std::string& page_pattern) {
   optimization_guide::proto::Configuration config;
   for (const auto& page_hint_site : page_hint_hosts) {
     optimization_guide::proto::Hint* hint = config.add_hints();
@@ -60,14 +59,6 @@ TestHintsComponentCreator::CreateHintsComponentInfoWithPageHints(
         page_hint->add_whitelisted_optimizations();
     optimization->set_optimization_type(optimization_type);
 
-    for (auto resource_blocking_pattern : resource_blocking_patterns) {
-      optimization_guide::proto::ResourceLoadingHint* resource_loading_hint =
-          optimization->mutable_previews_metadata()
-              ->add_resource_loading_hints();
-      resource_loading_hint->set_loading_optimization_type(
-          optimization_guide::proto::LOADING_BLOCK_RESOURCE);
-      resource_loading_hint->set_resource_pattern(resource_blocking_pattern);
-    }
   }
 
   // Always stick something with no hint version in here.

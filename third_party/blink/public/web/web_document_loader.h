@@ -45,7 +45,6 @@
 namespace blink {
 
 class WebDocumentSubresourceFilter;
-struct WebLoadingHintsProvider;
 class WebServiceWorkerNetworkProvider;
 class WebURL;
 class WebURLResponse;
@@ -124,14 +123,6 @@ class BLINK_EXPORT WebDocumentLoader {
   // or not to allow the load. The passed-in filter object is deleted when the
   // datasource is destroyed or when a new filter is set.
   virtual void SetSubresourceFilter(WebDocumentSubresourceFilter*) = 0;
-
-  // Allows the embedder to inject a loading hints provider that will be
-  // consulted to determine which subresources to load. The passed-in
-  // object is deleted when the datasource is destroyed or when a new filter
-  // is set.
-  virtual void SetLoadingHintsProvider(
-      std::unique_ptr<blink::WebLoadingHintsProvider>) = 0;
-
   // Allows the embedder to set and return the service worker provider
   // associated with the data source. The provider may provide the service
   // worker that controls the resource loading from this data source.

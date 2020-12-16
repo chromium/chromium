@@ -220,7 +220,7 @@ class OptimizationGuideKeyedServiceBrowserTest
     const optimization_guide::HintsComponentInfo& component_info =
         test_hints_component_creator_.CreateHintsComponentInfoWithPageHints(
             optimization_guide::proto::NOSCRIPT, {url_with_hints_.host()},
-            "simple.html", {});
+            "simple.html");
 
     g_browser_process->optimization_guide_service()->MaybeUpdateHintsComponent(
         component_info);

@@ -53,17 +53,6 @@ class ResourceLoadingHintsWebContentsObserver
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
-  // Sends resource loading hints to the renderer.
-  void SendResourceLoadingHints(content::NavigationHandle* navigation_handle);
-
-  // Returns the pattern of resources that should be blocked when loading
-  // |document_gurl|. The pattern may be a single substring to match against the
-  // URL or it may be an ordered set of substrings to match where the substrings
-  // are separated by the ‘*’ wildcard character (with an implicit ‘*’ at the
-  // beginning and end).
-  const std::vector<std::string> GetResourceLoadingHintsResourcePatternsToBlock(
-      const GURL& document_gurl) const;
-
   // Reports the start URL and the end URL in the current redirect chain to
   // previews service.
   void ReportRedirects(content::NavigationHandle* navigation_handle);

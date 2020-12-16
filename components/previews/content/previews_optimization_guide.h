@@ -17,8 +17,6 @@ namespace content {
 class NavigationHandle;
 }  // namespace content
 
-class GURL;
-
 namespace optimization_guide {
 class OptimizationGuideDecider;
 enum class OptimizationGuideDecision;
@@ -54,12 +52,6 @@ class PreviewsOptimizationGuide {
                                content::NavigationHandle* navigation_handle,
                                PreviewsType type);
 
-  // Whether |url| has loaded resource loading hints and, if it does, populates
-  // |out_resource_patterns_to_block| with the resource patterns to block.
-  virtual bool GetResourceLoadingHints(
-      const GURL& url,
-      std::vector<std::string>* out_resource_patterns_to_block);
-
  private:
   // Invoked when |optimization_guide_decider_| sends the decision for whether
   // the page load for the navigation, as expressed by |navigation_id|, is
@@ -71,10 +63,6 @@ class PreviewsOptimizationGuide {
   // The Optimization Guide Decider to consult for whether an optimization can
   // be applied. Not owned.
   optimization_guide::OptimizationGuideDecider* optimization_guide_decider_;
-
-  // An in-memory cache of resource loading hints keyed by the URL. This allows
-  // us to avoid making too many calls to |optimization_guide_decider_|.
-  base::MRUCache<GURL, std::vector<std::string>> resource_loading_hints_cache_;
 
   // An in-memory cache of painful page load decisions keyed by the navigation
   // ID of the navigation handle that the decision was evaluated on.
