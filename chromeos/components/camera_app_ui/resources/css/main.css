@@ -2,6 +2,12 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
+:root {
+  --grey-100: rgb(241, 243, 244);
+  --grey-200: rgb(232, 234, 237);
+  --grey-900: rgb(32, 33, 36);
+}
+
 html {
   height: 100%;  /* Required for printing. */
 }
@@ -1052,7 +1058,7 @@ body:not(.recording-ui-paused) #record-time [i18n-content=record_video_paused_ms
 #tooltip {
   background: rgba(241, 243, 244, 0.8);
   border-radius: 2px;
-  color: rgb(32, 33, 36);
+  color: var(--grey-900);
   font-size: 12px;
   left: 0;
   line-height: 22px;
@@ -1193,7 +1199,7 @@ html[dir=rtl] #banner-close {
   --toggled-color: rgb(140, 180, 245);
 
   align-items: center;
-  color: rgb(241, 243, 244);
+  color: var(--grey-100);
   display: flex;
   flex-shrink: 0;
   font-size: 13px;
@@ -1299,7 +1305,7 @@ body._10sec .description span[i18n-content=label_timer_10s],
 
 .menu-item input::before {
   bottom: 13px;
-  box-shadow: 0 0 0 2px rgb(241, 243, 244);
+  box-shadow: 0 0 0 2px var(--grey-100);
   content: '';
   left: 13px;
   position: absolute;
@@ -1420,7 +1426,7 @@ html[dir=rtl] .icon.end {
 }
 
 .dialog .dialog-msg {
-  color: rgb(32, 33, 36);
+  color: var(--grey-900);
   cursor: text;
   font-size: 14px;
   max-height: 320px;
@@ -1523,7 +1529,7 @@ body:not(.mode-switching):not(.streaming):not(.review-result) #spinner {
 
 .barcode-chip-url {
   align-items: center;
-  background: rgb(32, 33, 36);
+  background: var(--grey-900);
   border-radius: 16px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 4px 8px rgba(0, 0, 0, 0.15);
   box-sizing: border-box;
@@ -1558,7 +1564,7 @@ body:not(.mode-switching):not(.streaming):not(.review-result) #spinner {
 }
 
 .barcode-copy-button {
-  background: url(/images/barcode_copy.svg) center no-repeat, rgb(32, 33, 36);
+  background: url(/images/barcode_copy.svg) center no-repeat, var(--grey-900);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 4px 8px rgba(0, 0, 0, 0.15);
   cursor: pointer;
   height: var(--chip-height);
@@ -1573,12 +1579,12 @@ body:not(.mode-switching):not(.streaming):not(.review-result) #spinner {
  * responsive window design. */
 .snackbar {
   align-items: center;
-  background: rgb(32, 33, 36);
+  background: var(--grey-900);
   border-radius: 4px;
   bottom: 4px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 4px 8px rgba(0, 0, 0, 0.15);
   box-sizing: border-box;
-  color: rgb(232, 234, 237);
+  color: var(--grey-200);
   display: flex;
   font-family: Roboto;
   font-size: 13px;
