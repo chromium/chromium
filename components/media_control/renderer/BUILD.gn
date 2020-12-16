@@ -6,7 +6,7 @@ import("//build/buildflag_header.gni")
 import("//build/config/chromecast_build.gni")
 
 declare_args() {
-  enable_media_control_logging_override = is_chromecast || is_fuchsia
+  enable_media_control_logging_override = is_chromecast
 }
 
 buildflag_header("media_control_buildflags") {
