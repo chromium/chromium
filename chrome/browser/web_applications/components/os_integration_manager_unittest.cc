@@ -44,6 +44,12 @@ class MockOsIntegrationManager : public OsIntegrationManager {
               (override));
 
   MOCK_METHOD(void,
+              RegisterProtocolHandlers,
+              (const AppId& app_id,
+               base::OnceCallback<void(bool success)> callback),
+              (override));
+
+  MOCK_METHOD(void,
               RegisterShortcutsMenu,
               (const AppId& app_id,
                const std::vector<WebApplicationShortcutsMenuItemInfo>&
@@ -92,6 +98,10 @@ class MockOsIntegrationManager : public OsIntegrationManager {
                DeleteShortcutsCallback callback),
               (override));
   MOCK_METHOD(void, UnregisterFileHandlers, (const AppId& app_id), (override));
+  MOCK_METHOD(void,
+              UnregisterProtocolHandlers,
+              (const AppId& app_id),
+              (override));
   MOCK_METHOD(void,
               UnregisterWebAppOsUninstallation,
               (const AppId& app_id),
@@ -176,6 +186,7 @@ TEST_F(OsIntegrationManagerTest, InstallOsHooksEverything) {
   EXPECT_CALL(manager, CreateShortcuts(app_id, true, testing::_))
       .WillOnce(base::test::RunOnceCallback<2>(true));
   EXPECT_CALL(manager, RegisterFileHandlers(app_id, testing::_)).Times(1);
+  EXPECT_CALL(manager, RegisterProtocolHandlers(app_id, testing::_)).Times(1);
   EXPECT_CALL(manager, AddAppToQuickLaunchBar(app_id)).Times(1);
   EXPECT_CALL(manager, ReadAllShortcutsMenuIconsAndRegisterShortcutsMenu(
                            app_id, testing::_))
@@ -190,6 +201,7 @@ TEST_F(OsIntegrationManagerTest, InstallOsHooksEverything) {
   run_loop.Run();
   EXPECT_TRUE(install_results[OsHookType::kShortcuts]);
   EXPECT_TRUE(install_results[OsHookType::kFileHandlers]);
+  EXPECT_TRUE(install_results[OsHookType::kProtocolHandlers]);
   EXPECT_TRUE(install_results[OsHookType::kRunOnOsLogin]);
   // Note: We asked for these to be installed, but their methods were not
   // called. This is because the features are turned off. We only set these
@@ -223,6 +235,7 @@ TEST_F(OsIntegrationManagerTest, UninstallOsHooksEverything) {
                                        testing::_, testing::_))
       .WillOnce(base::test::RunOnceCallback<3>(true));
   EXPECT_CALL(manager, UnregisterFileHandlers(app_id)).Times(1);
+  EXPECT_CALL(manager, UnregisterProtocolHandlers(app_id)).Times(1);
   EXPECT_CALL(manager, UnregisterWebAppOsUninstallation(app_id)).Times(1);
   EXPECT_CALL(manager, UnregisterShortcutsMenu(app_id))
       .WillOnce(testing::Return(true));
@@ -231,6 +244,7 @@ TEST_F(OsIntegrationManagerTest, UninstallOsHooksEverything) {
   run_loop.Run();
   EXPECT_TRUE(uninstall_results[OsHookType::kShortcuts]);
   EXPECT_TRUE(uninstall_results[OsHookType::kFileHandlers]);
+  EXPECT_TRUE(uninstall_results[OsHookType::kProtocolHandlers]);
   EXPECT_TRUE(uninstall_results[OsHookType::kRunOnOsLogin]);
   EXPECT_TRUE(uninstall_results[OsHookType::kShortcutsMenu]);
   EXPECT_TRUE(uninstall_results[OsHookType::kUninstallationViaOsSettings]);

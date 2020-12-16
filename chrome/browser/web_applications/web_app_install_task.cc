@@ -817,6 +817,7 @@ void WebAppInstallTask::OnInstallFinalizedCreateShortcuts(
   // TODO(crbug.com/1087219): Determine if file handlers should be
   // configured from somewhere else rather than always true.
   options.os_hooks[OsHookType::kFileHandlers] = true;
+  options.os_hooks[OsHookType::kProtocolHandlers] = true;
   options.os_hooks[OsHookType::kUninstallationViaOsSettings] = true;
 
   if (install_source_ == webapps::WebappInstallSource::SYNC)

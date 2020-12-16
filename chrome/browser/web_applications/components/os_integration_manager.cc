@@ -208,6 +208,11 @@ void OsIntegrationManager::UninstallOsHooks(const AppId& app_id,
   if (os_hooks[OsHookType::kFileHandlers])
     UnregisterFileHandlers(app_id);
 
+  // TODO(https://crbug.com/1108109) we should return the result of protocol
+  // handler unregistration and record errors during unregistration.
+  if (os_hooks[OsHookType::kProtocolHandlers])
+    UnregisterProtocolHandlers(app_id);
+
   // There is a chance uninstallation point was created with feature flag
   // enabled so we need to clean it up regardless of feature flag state.
   if (os_hooks[OsHookType::kUninstallationViaOsSettings])
@@ -327,6 +332,21 @@ void OsIntegrationManager::RegisterFileHandlers(
   std::move(callback).Run(true);
 }
 
+void OsIntegrationManager::RegisterProtocolHandlers(
+    const AppId& app_id,
+    base::OnceCallback<void(bool success)> callback) {
+  if (!protocol_handler_manager_) {
+    std::move(callback).Run(true);
+    return;
+  }
+
+  // TODO(crbug.com/1019239): Call protocol_handler_manager_ implementation.
+
+  // TODO(crbug.com/1087219): callback should be run after all hooks are
+  // deployed, need to refactor protocol_handler_manager to allow this.
+  std::move(callback).Run(true);
+}
+
 void OsIntegrationManager::RegisterShortcutsMenu(
     const AppId& app_id,
     const std::vector<WebApplicationShortcutsMenuItemInfo>&
@@ -424,6 +444,13 @@ void OsIntegrationManager::UnregisterFileHandlers(const AppId& app_id) {
   file_handler_manager_->DisableAndUnregisterOsFileHandlers(app_id);
 }
 
+void OsIntegrationManager::UnregisterProtocolHandlers(const AppId& app_id) {
+  if (!protocol_handler_manager_)
+    return;
+
+  // TODO(crbug.com/1019239): Call protocol_handler_manager_ implementation.
+}
+
 void OsIntegrationManager::UnregisterWebAppOsUninstallation(
     const AppId& app_id) {
   if (ShouldRegisterUninstallationViaOsSettingsWithOs())
@@ -453,6 +480,11 @@ void OsIntegrationManager::OnShortcutsCreated(
   if (options.os_hooks[OsHookType::kFileHandlers]) {
     RegisterFileHandlers(app_id, barrier->CreateBarrierCallbackForType(
                                      OsHookType::kFileHandlers));
+  }
+
+  if (options.os_hooks[OsHookType::kProtocolHandlers]) {
+    RegisterProtocolHandlers(app_id, barrier->CreateBarrierCallbackForType(
+                                         OsHookType::kProtocolHandlers));
   }
 
   if (options.os_hooks[OsHookType::kShortcuts] &&

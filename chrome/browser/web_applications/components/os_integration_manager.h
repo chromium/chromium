@@ -164,6 +164,9 @@ class OsIntegrationManager {
   virtual void RegisterFileHandlers(
       const AppId& app_id,
       base::OnceCallback<void(bool success)> callback);
+  virtual void RegisterProtocolHandlers(
+      const AppId& app_id,
+      base::OnceCallback<void(bool success)> callback);
   virtual void RegisterShortcutsMenu(
       const AppId& app_id,
       const std::vector<WebApplicationShortcutsMenuItemInfo>&
@@ -191,6 +194,7 @@ class OsIntegrationManager {
                                std::unique_ptr<ShortcutInfo> shortcut_info,
                                DeleteShortcutsCallback callback);
   virtual void UnregisterFileHandlers(const AppId& app_id);
+  virtual void UnregisterProtocolHandlers(const AppId& app_id);
   virtual void UnregisterWebAppOsUninstallation(const AppId& app_id);
 
   // Utility mathods:

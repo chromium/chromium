@@ -46,9 +46,10 @@ enum Type {
   kShortcutsMenu,
   kUninstallationViaOsSettings,
   kFileHandlers,
-  kMaxValue = kFileHandlers,
+  kProtocolHandlers,
+  kMaxValue = kProtocolHandlers,
 };
-}
+}  // namespace OsHookType
 
 // The result of an attempted web app installation, uninstallation or update.
 //

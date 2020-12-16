@@ -635,6 +635,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, NoShortcutsCreatedOnSync) {
   expected_os_hook_requests[OsHookType::kShortcutsMenu] = true;
   expected_os_hook_requests[OsHookType::kUninstallationViaOsSettings] = true;
   expected_os_hook_requests[OsHookType::kFileHandlers] = true;
+  expected_os_hook_requests[OsHookType::kProtocolHandlers] = true;
   EXPECT_EQ(expected_os_hook_requests, last_options->os_hooks);
   EXPECT_TRUE(last_options->add_to_desktop);
   EXPECT_FALSE(last_options->add_to_quick_launch_bar);

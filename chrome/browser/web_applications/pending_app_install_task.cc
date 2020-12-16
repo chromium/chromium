@@ -272,6 +272,7 @@ void PendingAppInstallTask::OnWebAppInstalled(bool is_placeholder,
   // TODO(crbug.com/1087219): Determine if |register_file_handlers| should be
   // configured from somewhere else rather than always true.
   options.os_hooks[OsHookType::kFileHandlers] = true;
+  options.os_hooks[OsHookType::kProtocolHandlers] = true;
   options.os_hooks[OsHookType::kUninstallationViaOsSettings] = true;
 
   os_integration_manager_->InstallOsHooks(
