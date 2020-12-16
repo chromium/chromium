@@ -17,7 +17,7 @@ const FEEDBACK_MIN_WIDTH = 500;
  * @type {number}
  * @const
  */
-const FEEDBACK_MIN_HEIGHT = 585;
+const FEEDBACK_MIN_HEIGHT = 610;
 
 /**
  * @type {number}
@@ -329,11 +329,16 @@ function resizeAppWindow() {
     width = FEEDBACK_MIN_WIDTH;
   }
 
-  // Note: If the display is shorter than this (e.g. if the user has it set to
-  // largest display size), the chrome app api(?) will cap the height of the
-  // window at the height of the screen and add a scroll bar. If we switch away
-  // from chrome apps, make sure that this behavior is the same.
-  let height = document.body.scrollHeight;
+  // The Chrome App window's maxHeight is set to the available screen height. If
+  // |height| would result in a window that exceeds maxHeight a scrollbar will
+  // appear in the content-pane.
+  // |height| is calculated as the sum of the scrollHeights of the body's
+  // children. This is necessary as the content-pane is set to fill the
+  // remaining height of the body after its siblings have been laid out. Summing
+  // the children's scrollHeight gives us the desired height of the content area
+  // which the Chrome App window uses to size the window accordingly.
+  let height = Array.from(document.body.children)
+                   .reduce((acc, el) => acc + el.scrollHeight, 0);
 
   let minHeight = FEEDBACK_MIN_HEIGHT;
   if (feedbackInfo.flow == chrome.feedbackPrivate.FeedbackFlow.LOGIN) {
@@ -341,6 +346,8 @@ function resizeAppWindow() {
   }
   height = Math.max(height, minHeight);
 
+  // Update |outerBounds.maxHeight| in case available screen height has changed.
+  chrome.app.window.current().outerBounds.maxHeight = window.screen.availHeight;
   chrome.app.window.current().innerBounds.width = width;
   chrome.app.window.current().innerBounds.height = height;
 }

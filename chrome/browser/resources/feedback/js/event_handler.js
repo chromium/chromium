@@ -9,11 +9,6 @@
  * @const
  */
 const FEEDBACK_WIDTH = 500;
-/**
- * @type {number}
- * @const
- */
-const FEEDBACK_HEIGHT = 610;
 
 /**
  * @type {string}
@@ -288,7 +283,9 @@ function startFeedbackUI(feedbackInfo) {
         id: FEEDBACK_DEFAULT_WINDOW_ID,
         innerBounds: {
           minWidth: FEEDBACK_WIDTH,
-          minHeight: FEEDBACK_HEIGHT,
+        },
+        outerBounds: {
+          maxHeight: window.screen.availHeight,
         },
         hidden: true,
         resizable: false

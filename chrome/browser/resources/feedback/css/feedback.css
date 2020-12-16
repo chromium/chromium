@@ -13,7 +13,6 @@ body {
   flex-direction: column;
   height: 100%;
   margin: 0;
-  overflow: auto;
   padding: 0;
   width: 100%;
 }
@@ -29,6 +28,7 @@ body {
   box-shadow: 0 1px #d0d0d0;
   color: rgb(80, 80, 82);
   display: -webkit-flex;
+  flex-grow: 0;
   font-size: 15px;
   min-height: 48px;
 }
@@ -42,11 +42,16 @@ body {
   -webkit-flex: 0 1 auto;
 }
 
+#content-pane {
+  flex-grow: 1;
+  flex-shrink: 1;
+  overflow: auto;
+  padding: 20px;
+}
+
 .content {
   color: #444;
-  flex-grow: 1;
   font-size: 12px;
-  margin: 20px;
 }
 
 .content #free-form-text {
@@ -180,14 +185,13 @@ body {
 }
 
 #bottom-buttons-container {
+  box-shadow: 0 -1px #d0d0d0;
   margin: 0;
+  padding: 0 20px;
 }
 
 .content .bottom-buttons {
-  margin-bottom: 20px;
-  margin-inline-end: 20px;
-  margin-inline-start: 20px;
-  margin-top: 0;
+  margin: 20px;
   position: static;
 }
 
