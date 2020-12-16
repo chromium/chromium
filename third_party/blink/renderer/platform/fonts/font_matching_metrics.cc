@@ -114,7 +114,7 @@ void FontMatchingMetrics::ReportLocalFontExistenceByUniqueNameOnly(
 
 void FontMatchingMetrics::InsertFontHashIntoMap(IdentifiableTokenKey input_key,
                                                 SimpleFontData* font_data,
-                                                TokenToTokenHashMap hash_map) {
+                                                TokenToTokenHashMap& hash_map) {
   DCHECK(IdentifiabilityStudySettings::Get()->IsActive());
   if (hash_map.Contains(input_key))
     return;
