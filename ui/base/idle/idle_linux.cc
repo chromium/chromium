@@ -9,6 +9,8 @@
 #if defined(USE_X11)
 #include "ui/base/x/x11_idle_query.h"
 #include "ui/base/x/x11_screensaver_window_finder.h"
+#else
+#include "base/notreached.h"
 #endif
 
 #if defined(USE_OZONE)
