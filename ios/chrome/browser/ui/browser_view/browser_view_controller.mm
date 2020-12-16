@@ -106,6 +106,8 @@
 #import "ios/chrome/browser/ui/main_content/main_content_ui_broadcasting_util.h"
 #import "ios/chrome/browser/ui/main_content/main_content_ui_state.h"
 #import "ios/chrome/browser/ui/main_content/web_scroll_view_main_content_ui_forwarder.h"
+#import "ios/chrome/browser/ui/menu/action_factory.h"
+#import "ios/chrome/browser/ui/menu/menu_histograms.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator.h"
 #import "ios/chrome/browser/ui/ntp/ntp_util.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_presenter.h"
@@ -3608,9 +3610,86 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   if (!params.link_url.is_valid())
     return;
 
+  base::RecordAction(
+      base::UserMetricsAction("MobileWebContextMenuLinkImpression"));
   DCHECK(self.browserState);
+  // TODO(crbug.com/1140387): Add support for the context menu images.
 
-  // TODO(crbug.com/1140387): Add support for the context menu.
+  __weak BrowserViewController* weakSelf = self;
+  GURL link = params.link_url;
+  const GURL& lastCommittedURL = webState->GetLastCommittedURL();
+
+  NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
+
+  NSString* title;
+
+  ActionFactory* actionFactory =
+      [[ActionFactory alloc] initWithBrowser:self.browser
+                                    scenario:MenuScenario::kContextMenuLink];
+
+  if (link.SchemeIs(url::kJavaScriptScheme)) {
+    // Open.
+    title = l10n_util::GetNSStringWithFixup(IDS_IOS_CONTENT_CONTEXT_OPEN);
+    UIAction* open = [actionFactory actionToOpenJavascriptWithBlock:^{
+      [weakSelf openJavascript:base::SysUTF8ToNSString(link.GetContent())];
+    }];
+    [menuElements addObject:open];
+  }
+
+  if (web::UrlHasWebScheme(link)) {
+    web::Referrer referrer(lastCommittedURL, web::ReferrerPolicyDefault);
+
+    // Open in New Tab.
+    UIAction* openNewTab = [actionFactory actionToOpenInNewTabWithBlock:^{
+      BrowserViewController* strongSelf = weakSelf;
+      if (!strongSelf)
+        return;
+      UrlLoadParams params = UrlLoadParams::InNewTab(link);
+      params.SetInBackground(YES);
+      params.in_incognito = strongSelf.isOffTheRecord;
+      params.append_to = kCurrentTab;
+      UrlLoadingBrowserAgent::FromBrowser(strongSelf.browser)->Load(params);
+    }];
+
+    [menuElements addObject:openNewTab];
+
+    if (!_isOffTheRecord) {
+      // Open in Incognito Tab.
+      UIAction* openIncognitoTab =
+          [actionFactory actionToOpenInNewIncognitoTabWithURL:link
+                                                   completion:nil];
+      [menuElements addObject:openIncognitoTab];
+    }
+
+    if (IsMultipleScenesSupported()) {
+      // Open in New Window.
+      UIAction* openNewWindow = [actionFactory
+          actionToOpenInNewWindowWithURL:link
+                          activityOrigin:WindowActivityContextMenuOrigin];
+
+      [menuElements addObject:openNewWindow];
+    }
+
+    // TODO(crbug.com/1140387): Add to reading list action.
+
+    // Copy Link.
+    UIAction* copyLink = [actionFactory actionToCopyURL:link];
+    [menuElements addObject:copyLink];
+
+    // TODO(crbug.com/1140387): Share action.
+  }
+
+  UIContextMenuActionProvider actionProvider =
+      ^(NSArray<UIMenuElement*>* suggestedActions) {
+        RecordMenuShown(MenuScenario::kContextMenuLink);
+        return [UIMenu menuWithTitle:@"" children:menuElements];
+      };
+
+  UIContextMenuConfiguration* configuration =
+      [UIContextMenuConfiguration configurationWithIdentifier:nil
+                                              previewProvider:nil
+                                               actionProvider:actionProvider];
+  completionHandler(configuration);
 }
 
 #pragma mark - CRWWebStateDelegate helpers

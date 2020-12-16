@@ -113,6 +113,7 @@ source_set("browser_view") {
     "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/main_content:main_content_ui",
     "//ios/chrome/browser/ui/main_content:main_content_ui_broadcasting_util",
+    "//ios/chrome/browser/ui/menu",
     "//ios/chrome/browser/ui/ntp",
     "//ios/chrome/browser/ui/ntp:coordinator",
     "//ios/chrome/browser/ui/ntp:util",
