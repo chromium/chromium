@@ -187,7 +187,14 @@ bool IsEyeDropperEnabled() {
 // and Mac. This feature will be released for Android in later milestones. See
 // crbug.com/1086530 for the Desktop launch bug.
 const base::Feature kCSSColorSchemeUARendering = {
-    "CSSColorSchemeUARendering", base::FEATURE_DISABLED_BY_DEFAULT};
+    "CSSColorSchemeUARendering",
+#if defined(OS_WIN) || defined(OS_CHROMEOS) || defined(OS_LINUX) || \
+    defined(OS_APPLE)
+                                            base::FEATURE_ENABLED_BY_DEFAULT
+#else
+    base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+};
 
 bool IsCSSColorSchemeUARenderingEnabled() {
   static const bool css_color_scheme_ua_rendering_enabled =

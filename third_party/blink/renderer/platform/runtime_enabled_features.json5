@@ -466,6 +466,7 @@
       // color property. Enabling this runtime flag will enable dark UA
       // rendering for form controls, scrollbars, etc.
       name: "CSSColorSchemeUARendering",
+      status: "stable",
     },
     {
       name: "CSSContainerQueries",

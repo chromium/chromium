@@ -7,7 +7,7 @@
         // TODO(wangxianzhu): Direct invalidation of overflow control cc::Layers
         // are not tracked by under-invaldiation checking.
         if (window.internals)
-            internals.runtimeFlags.paintUnderInvalidationCheckingEnabled = true;
+            internals.runtimeFlags.paintUnderInvalidationCheckingEnabled = false;
 
         function endTest() {
             if (window.testRunner)
