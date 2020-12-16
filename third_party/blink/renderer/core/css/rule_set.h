@@ -265,10 +265,10 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
     DCHECK(!pending_rules_);
     return tag_rules_.at(key);
   }
-  const HeapVector<Member<const RuleData>>* ShadowPseudoElementRules(
+  const HeapVector<Member<const RuleData>>* UAShadowPseudoElementRules(
       const AtomicString& key) const {
     DCHECK(!pending_rules_);
-    return shadow_pseudo_element_rules_.at(key);
+    return ua_shadow_pseudo_element_rules_.at(key);
   }
   const HeapVector<Member<const RuleData>>* LinkPseudoClassRules() const {
     DCHECK(!pending_rules_);
@@ -323,12 +323,6 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   const HeapVector<Member<StyleRuleScrollTimeline>>& ScrollTimelineRules()
       const {
     return scroll_timeline_rules_;
-  }
-  const HeapVector<MinimalRuleData>& DeepCombinatorOrShadowPseudoRules() const {
-    return deep_combinator_or_shadow_pseudo_rules_;
-  }
-  const HeapVector<MinimalRuleData>& ContentPseudoElementRules() const {
-    return content_pseudo_element_rules_;
   }
   const HeapVector<MinimalRuleData>& SlottedPseudoElementRules() const {
     return slotted_pseudo_element_rules_;
@@ -394,7 +388,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
     PendingRuleMap id_rules;
     PendingRuleMap class_rules;
     PendingRuleMap tag_rules;
-    PendingRuleMap shadow_pseudo_element_rules;
+    PendingRuleMap ua_shadow_pseudo_element_rules;
 
     void Trace(Visitor*) const;
   };
@@ -408,7 +402,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   CompactRuleMap id_rules_;
   CompactRuleMap class_rules_;
   CompactRuleMap tag_rules_;
-  CompactRuleMap shadow_pseudo_element_rules_;
+  CompactRuleMap ua_shadow_pseudo_element_rules_;
   HeapVector<Member<const RuleData>> link_pseudo_class_rules_;
   HeapVector<Member<const RuleData>> cue_pseudo_rules_;
   HeapVector<Member<const RuleData>> focus_pseudo_class_rules_;
@@ -424,8 +418,6 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   HeapVector<Member<StyleRuleProperty>> property_rules_;
   HeapVector<Member<StyleRuleCounterStyle>> counter_style_rules_;
   HeapVector<Member<StyleRuleScrollTimeline>> scroll_timeline_rules_;
-  HeapVector<MinimalRuleData> deep_combinator_or_shadow_pseudo_rules_;
-  HeapVector<MinimalRuleData> content_pseudo_element_rules_;
   HeapVector<MinimalRuleData> slotted_pseudo_element_rules_;
   Vector<MediaQuerySetResult> media_query_set_results_;
 

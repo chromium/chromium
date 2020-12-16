@@ -59,7 +59,7 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_CustomPseudoElements) {
   RuleSet& rule_set = sheet.GetRuleSet();
   AtomicString str("-webkit-details-marker");
   const HeapVector<Member<const RuleData>>* rules =
-      rule_set.ShadowPseudoElementRules(str);
+      rule_set.UAShadowPseudoElementRules(str);
   ASSERT_EQ(1u, rules->size());
   ASSERT_EQ(str, rules->at(0)->Selector().Value());
 }
@@ -245,7 +245,8 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_PlaceholderPseudo) {
   sheet.AddCSSRules("::placeholder { }");
   sheet.AddCSSRules("input::placeholder { }");
   RuleSet& rule_set = sheet.GetRuleSet();
-  auto* rules = rule_set.ShadowPseudoElementRules("-webkit-input-placeholder");
+  auto* rules =
+      rule_set.UAShadowPseudoElementRules("-webkit-input-placeholder");
   ASSERT_EQ(2u, rules->size());
 }
 

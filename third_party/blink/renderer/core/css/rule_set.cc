@@ -237,7 +237,8 @@ bool RuleSet::FindBestRuleSetAndAdd(const CSSSelector& component,
     DCHECK(id.IsEmpty());
     DCHECK(class_name.IsEmpty());
     AddToRuleSet(custom_pseudo_element_name,
-                 EnsurePendingRules()->shadow_pseudo_element_rules, rule_data);
+                 EnsurePendingRules()->ua_shadow_pseudo_element_rules,
+                 rule_data);
     return true;
   }
 
@@ -270,7 +271,7 @@ bool RuleSet::FindBestRuleSetAndAdd(const CSSSelector& component,
         const auto& name = pseudo_type == CSSSelector::kPseudoFileSelectorButton
                                ? shadow_element_names::kPseudoFileUploadButton
                                : shadow_element_names::kPseudoInputPlaceholder;
-        AddToRuleSet(name, EnsurePendingRules()->shadow_pseudo_element_rules,
+        AddToRuleSet(name, EnsurePendingRules()->ua_shadow_pseudo_element_rules,
                      rule_data);
       }
       return true;
@@ -522,8 +523,8 @@ void RuleSet::CompactRules() {
   CompactPendingRules(pending_rules->id_rules, id_rules_);
   CompactPendingRules(pending_rules->class_rules, class_rules_);
   CompactPendingRules(pending_rules->tag_rules, tag_rules_);
-  CompactPendingRules(pending_rules->shadow_pseudo_element_rules,
-                      shadow_pseudo_element_rules_);
+  CompactPendingRules(pending_rules->ua_shadow_pseudo_element_rules,
+                      ua_shadow_pseudo_element_rules_);
   link_pseudo_class_rules_.ShrinkToFit();
   cue_pseudo_rules_.ShrinkToFit();
   focus_pseudo_class_rules_.ShrinkToFit();
@@ -535,9 +536,7 @@ void RuleSet::CompactRules() {
   keyframes_rules_.ShrinkToFit();
   counter_style_rules_.ShrinkToFit();
   property_rules_.ShrinkToFit();
-  deep_combinator_or_shadow_pseudo_rules_.ShrinkToFit();
   part_pseudo_rules_.ShrinkToFit();
-  content_pseudo_element_rules_.ShrinkToFit();
   slotted_pseudo_element_rules_.ShrinkToFit();
 }
 
@@ -589,14 +588,14 @@ void RuleSet::PendingRuleMaps::Trace(Visitor* visitor) const {
   visitor->Trace(id_rules);
   visitor->Trace(class_rules);
   visitor->Trace(tag_rules);
-  visitor->Trace(shadow_pseudo_element_rules);
+  visitor->Trace(ua_shadow_pseudo_element_rules);
 }
 
 void RuleSet::Trace(Visitor* visitor) const {
   visitor->Trace(id_rules_);
   visitor->Trace(class_rules_);
   visitor->Trace(tag_rules_);
-  visitor->Trace(shadow_pseudo_element_rules_);
+  visitor->Trace(ua_shadow_pseudo_element_rules_);
   visitor->Trace(link_pseudo_class_rules_);
   visitor->Trace(cue_pseudo_rules_);
   visitor->Trace(focus_pseudo_class_rules_);
@@ -609,10 +608,8 @@ void RuleSet::Trace(Visitor* visitor) const {
   visitor->Trace(property_rules_);
   visitor->Trace(counter_style_rules_);
   visitor->Trace(scroll_timeline_rules_);
-  visitor->Trace(deep_combinator_or_shadow_pseudo_rules_);
   visitor->Trace(part_pseudo_rules_);
   visitor->Trace(visited_dependent_rules_);
-  visitor->Trace(content_pseudo_element_rules_);
   visitor->Trace(slotted_pseudo_element_rules_);
   visitor->Trace(pending_rules_);
 #ifndef NDEBUG

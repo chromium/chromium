@@ -238,7 +238,7 @@ void ElementRuleCollector::CollectMatchingRules(
   if (!pseudo_id.IsEmpty()) {
     DCHECK(element.IsStyledElement());
     CollectMatchingRulesForList(
-        match_request.rule_set->ShadowPseudoElementRules(pseudo_id),
+        match_request.rule_set->UAShadowPseudoElementRules(pseudo_id),
         match_request);
   }
 
