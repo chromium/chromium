@@ -21,9 +21,10 @@ class DevToolsFileWatcher {
     void operator()(const DevToolsFileWatcher* ptr);
   };
 
-  using WatchCallback = base::Callback<void(const std::vector<std::string>&,
-                                            const std::vector<std::string>&,
-                                            const std::vector<std::string>&)>;
+  using WatchCallback =
+      base::RepeatingCallback<void(const std::vector<std::string>&,
+                                   const std::vector<std::string>&,
+                                   const std::vector<std::string>&)>;
   DevToolsFileWatcher(
       WatchCallback callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner);

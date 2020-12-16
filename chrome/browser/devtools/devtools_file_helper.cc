@@ -385,13 +385,13 @@ DevToolsFileHelper::GetFileSystems() {
   std::vector<FileSystem> file_systems;
   if (!file_watcher_) {
     file_watcher_.reset(new DevToolsFileWatcher(
-        base::Bind(&DevToolsFileHelper::FilePathsChanged,
-                   weak_factory_.GetWeakPtr()),
+        base::BindRepeating(&DevToolsFileHelper::FilePathsChanged,
+                            weak_factory_.GetWeakPtr()),
         base::SequencedTaskRunnerHandle::Get()));
     pref_change_registrar_.Add(
         prefs::kDevToolsFileSystemPaths,
-        base::Bind(&DevToolsFileHelper::FileSystemPathsSettingChanged,
-                   base::Unretained(this)));
+        base::BindRepeating(&DevToolsFileHelper::FileSystemPathsSettingChanged,
+                            base::Unretained(this)));
   }
   for (auto file_system_path : file_system_paths_) {
     base::FilePath path =
@@ -439,9 +439,10 @@ void DevToolsFileHelper::ShowItemInFolder(const std::string& file_system_path) {
   if (file_system_path.empty())
     return;
   base::FilePath path = base::FilePath::FromUTF8Unsafe(file_system_path);
-  platform_util::OpenItem(profile_, path, platform_util::OPEN_FOLDER,
-                          base::Bind(&DevToolsFileHelper::OnOpenItemComplete,
-                                     weak_factory_.GetWeakPtr(), path));
+  platform_util::OpenItem(
+      profile_, path, platform_util::OPEN_FOLDER,
+      base::BindOnce(&DevToolsFileHelper::OnOpenItemComplete,
+                     weak_factory_.GetWeakPtr(), path));
 }
 
 void DevToolsFileHelper::FileSystemPathsSettingChanged() {
