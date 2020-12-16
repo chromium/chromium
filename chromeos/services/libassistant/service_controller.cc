@@ -20,7 +20,11 @@ ServiceController::ServiceController(
     assistant_client::PlatformApi* platform_api)
     : delegate_(delegate), platform_api_(platform_api), receiver_(this) {}
 
-ServiceController::~ServiceController() = default;
+ServiceController::~ServiceController() {
+  // Ensure all our observers know this service is no longer running.
+  // This will be a noop if we're already stopped.
+  Stop();
+}
 
 void ServiceController::Bind(
     mojo::PendingReceiver<mojom::ServiceController> receiver) {
@@ -40,6 +44,11 @@ void ServiceController::Start(const std::string& libassistant_config) {
       assistant_manager_.get(), assistant_manager_internal_);
 
   SetStateAndInformObservers(ServiceState::kStarted);
+
+  for (auto& observer : assistant_manager_observers_) {
+    observer.OnAssistantManagerCreated(assistant_manager(),
+                                       assistant_manager_internal());
+  }
 }
 
 void ServiceController::Stop() {
@@ -47,6 +56,11 @@ void ServiceController::Stop() {
     return;
 
   SetStateAndInformObservers(ServiceState::kStopped);
+
+  for (auto& observer : assistant_manager_observers_) {
+    observer.OnDestroyingAssistantManager(assistant_manager(),
+                                          assistant_manager_internal());
+  }
 
   libassistant_v1_api_ = nullptr;
   assistant_manager_ = nullptr;
@@ -60,6 +74,27 @@ void ServiceController::AddAndFireStateObserver(
   observer->OnStateChanged(state_);
 
   state_observers_.Add(std::move(observer));
+}
+
+void ServiceController::AddAndFireAssistantManagerObserver(
+    AssistantManagerObserver* observer) {
+  DCHECK(observer);
+
+  assistant_manager_observers_.AddObserver(observer);
+
+  if (IsStarted()) {
+    observer->OnAssistantManagerCreated(assistant_manager(),
+                                        assistant_manager_internal());
+  }
+}
+
+void ServiceController::RemoveAssistantManagerObserver(
+    AssistantManagerObserver* observer) {
+  assistant_manager_observers_.RemoveObserver(observer);
+}
+
+bool ServiceController::IsStarted() const {
+  return state_ != mojom::ServiceState::kStopped;
 }
 
 assistant_client::AssistantManager* ServiceController::assistant_manager() {

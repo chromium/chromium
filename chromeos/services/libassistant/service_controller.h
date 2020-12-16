@@ -6,6 +6,9 @@
 #define CHROMEOS_SERVICES_LIBASSISTANT_SERVICE_CONTROLLER_H_
 
 #include "base/component_export.h"
+#include "base/observer_list.h"
+#include "base/scoped_observation.h"
+#include "chromeos/services/libassistant/assistant_manager_observer.h"
 #include "chromeos/services/libassistant/public/mojom/service.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/service_controller.mojom-shared.h"
 #include "libassistant/shared/public/assistant_manager.h"
@@ -54,6 +57,11 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ServiceController
   void AddAndFireStateObserver(
       mojo::PendingRemote<mojom::StateObserver> observer) override;
 
+  void AddAndFireAssistantManagerObserver(AssistantManagerObserver* observer);
+  void RemoveAssistantManagerObserver(AssistantManagerObserver* observer);
+
+  bool IsStarted() const;
+
   // Will return nullptr if the service is stopped.
   assistant_client::AssistantManager* assistant_manager();
   // Will return nullptr if the service is stopped.
@@ -76,7 +84,14 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ServiceController
 
   mojo::Receiver<mojom::ServiceController> receiver_;
   mojo::RemoteSet<mojom::StateObserver> state_observers_;
+  base::ObserverList<AssistantManagerObserver> assistant_manager_observers_;
 };
+
+using ScopedAssistantManagerObserver = base::ScopedObservation<
+    ServiceController,
+    AssistantManagerObserver,
+    &ServiceController::AddAndFireAssistantManagerObserver,
+    &ServiceController::RemoveAssistantManagerObserver>;
 
 }  // namespace libassistant
 }  // namespace chromeos

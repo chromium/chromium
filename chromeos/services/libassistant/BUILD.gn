@@ -10,17 +10,13 @@ component("libassistant") {
   sources = [
     "libassistant_service.cc",
     "libassistant_service.h",
-    "service_controller.cc",
-    "service_controller.h",
   ]
 
   public_deps = [ "//chromeos/services/libassistant/public/mojom" ]
 
   deps = [
-    "//chromeos/services/assistant/public/cpp",
-    "//chromeos/services/assistant/public/cpp/migration",
+    ":internal",
     "//chromeos/services/libassistant/public/mojom",
-    "//libassistant/shared/public",
   ]
 
   defines = [ "IS_LIBASSISTANT_SERVICE_IMPL" ]
@@ -31,11 +27,31 @@ component("libassistant") {
   output_name = "lib_libassistant_service"
 }
 
+source_set("internal") {
+  visibility = [ ":*" ]
+
+  sources = [
+    "assistant_manager_observer.h",
+    "service_controller.cc",
+    "service_controller.h",
+  ]
+
+  deps = [
+    "//chromeos/services/assistant/public/cpp",
+    "//chromeos/services/assistant/public/cpp/migration",
+    "//chromeos/services/libassistant/public/mojom",
+    "//libassistant/shared/public",
+  ]
+
+  defines = [ "IS_LIBASSISTANT_SERVICE_IMPL" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [ "service_controller_unittest.cc" ]
 
   deps = [
+    ":internal",
     ":libassistant",
     "//base",
     "//base/test:test_support",
