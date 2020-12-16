@@ -68,14 +68,15 @@ class BASE_EXPORT ThreadCacheRegistry {
 
   // Starts a periodic timer on the current thread to purge all thread caches.
   void StartPeriodicPurge();
-  void OnDeallocation();
 
   static PartitionLock& GetLock() { return Instance().lock_; }
+  base::TimeDelta purge_interval_for_testing() const { return purge_interval_; }
 
-  bool has_pending_purge_task() const { return has_pending_purge_task_; }
   void ResetForTesting();
 
-  static constexpr TimeDelta kPurgeInterval = TimeDelta::FromSeconds(1);
+  static constexpr TimeDelta kMinPurgeInterval = TimeDelta::FromSeconds(1);
+  static constexpr TimeDelta kMaxPurgeInterval = TimeDelta::FromMinutes(1);
+  static constexpr TimeDelta kDefaultPurgeInterval = 2 * kMinPurgeInterval;
   static constexpr int kMinMainThreadAllocationsForPurging = 1000;
 
  private:
@@ -86,8 +87,8 @@ class BASE_EXPORT ThreadCacheRegistry {
   PartitionLock lock_;
   ThreadCache* list_head_ GUARDED_BY(GetLock()) = nullptr;
   uint64_t allocations_at_last_purge_ = 0;
-  int deallocations_ = 0;
-  bool has_pending_purge_task_ = false;
+  base::TimeDelta purge_interval_ = kDefaultPurgeInterval;
+  bool periodic_purge_running_ = false;
 };
 
 constexpr ThreadCacheRegistry::ThreadCacheRegistry() = default;
@@ -198,10 +199,6 @@ class BASE_EXPORT ThreadCache {
   void Purge();
   void AccumulateStats(ThreadCacheStats* stats) const;
 
-  // Disables the thread cache for its associated root.
-  void Disable();
-  void Enable();
-
   size_t bucket_count_for_testing(size_t index) const {
     return buckets_[index].count;
   }
@@ -241,11 +238,10 @@ class BASE_EXPORT ThreadCache {
       kBucketCount < kNumBuckets,
       "Cannot have more cached buckets than what the allocator supports");
 
-  std::atomic<Mode> mode_{Mode::kNormal};
   Bucket buckets_[kBucketCount];
+  std::atomic<bool> should_purge_;
   ThreadCacheStats stats_;
   PartitionRoot<ThreadSafe>* const root_;
-  ThreadCacheRegistry* const registry_;
 #if DCHECK_IS_ON()
   bool is_in_thread_cache_ = false;
 #endif
@@ -286,8 +282,8 @@ ALWAYS_INLINE bool ThreadCache::MaybePutInCache(void* address,
     ClearBucket(bucket, bucket.limit / 2);
   }
 
-  if (UNLIKELY(mode_.load(std::memory_order_relaxed) != Mode::kNormal))
-    HandleNonNormalMode();
+  if (UNLIKELY(should_purge_.load(std::memory_order_relaxed)))
+    PurgeInternal();
 
   return true;
 }
