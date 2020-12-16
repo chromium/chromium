@@ -164,7 +164,7 @@ std::string WebRequestRulesRegistry::AddRulesImpl(
     std::unique_ptr<WebRequestRule> webrequest_rule = WebRequestRule::Create(
         url_matcher_.condition_factory(), browser_context(), extension,
         extension_installation_time, *rule,
-        base::Bind(&Checker, base::Unretained(extension)), &error);
+        base::BindOnce(&Checker, base::Unretained(extension)), &error);
     if (!error.empty()) {
       // We don't return here, because we want to clear temporary
       // condition sets in the url_matcher_.
