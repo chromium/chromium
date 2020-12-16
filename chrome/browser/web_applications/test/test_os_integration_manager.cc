@@ -10,8 +10,8 @@
 #include "chrome/browser/web_applications/components/protocol_handler_manager.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_ui_manager.h"
+#include "chrome/browser/web_applications/test/fake_protocol_handler_manager.h"
 #include "chrome/browser/web_applications/test/test_file_handler_manager.h"
-#include "chrome/browser/web_applications/test/test_protocol_handler_manager.h"
 
 namespace web_app {
 TestOsIntegrationManager::TestOsIntegrationManager(
@@ -31,7 +31,7 @@ TestOsIntegrationManager::TestOsIntegrationManager(
   }
   if (!this->protocol_handler_manager()) {
     set_protocol_handler_manager(
-        std::make_unique<TestProtocolHandlerManager>(profile));
+        std::make_unique<FakeProtocolHandlerManager>(profile));
   }
 }
 

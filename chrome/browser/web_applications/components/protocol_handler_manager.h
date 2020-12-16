@@ -25,8 +25,8 @@ class ProtocolHandlerManager {
   void Start();
 
   // Gets all protocol handlers for |app_id|.
-  std::vector<apps::ProtocolHandlerInfo> GetAppProtocolHandlerInfos(
-      const std::string& app_id) const;
+  virtual std::vector<apps::ProtocolHandlerInfo> GetAppProtocolHandlerInfos(
+      const std::string& app_id) const = 0;
 
   // Registers OS specific protocol handlers for OSs that need them, using the
   // protocol handler information supplied in the app manifest.
@@ -48,7 +48,6 @@ class ProtocolHandlerManager {
       const AppId& app_id,
       const std::vector<apps::ProtocolHandlerInfo>& protocol_handlers);
 
- private:
   AppRegistrar* app_registrar_;
 };
 

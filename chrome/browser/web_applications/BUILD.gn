@@ -56,6 +56,8 @@ source_set("web_applications") {
     "web_app_migration_user_display_mode_clean_up.h",
     "web_app_proto_utils.cc",
     "web_app_proto_utils.h",
+    "web_app_protocol_handler_manager.cc",
+    "web_app_protocol_handler_manager.h",
     "web_app_provider.cc",
     "web_app_provider.h",
     "web_app_provider_factory.cc",
@@ -124,6 +126,8 @@ source_set("web_applications_test_support") {
   testonly = true
 
   sources = [
+    "test/fake_protocol_handler_manager.cc",
+    "test/fake_protocol_handler_manager.h",
     "test/service_worker_registration_waiter.cc",
     "test/service_worker_registration_waiter.h",
     "test/test_app_registrar.cc",
@@ -144,8 +148,6 @@ source_set("web_applications_test_support") {
     "test/test_pending_app_manager.h",
     "test/test_pending_app_manager_impl.cc",
     "test/test_pending_app_manager_impl.h",
-    "test/test_protocol_handler_manager.cc",
-    "test/test_protocol_handler_manager.h",
     "test/test_system_web_app_manager.cc",
     "test/test_system_web_app_manager.h",
     "test/test_system_web_app_url_data_source.cc",
