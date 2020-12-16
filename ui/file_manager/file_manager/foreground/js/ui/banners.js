@@ -614,6 +614,18 @@ class Banners extends cr.EventTarget {
 
     await this.ready_;
 
+    // The holding space feature is only allowed for specific volume types so
+    // its banner should only be shown for those volumes. Note that the holding
+    // space banner is explicitly disallowed from showing in `DRIVE` to prevent
+    // the possibility of it being shown alongside the Drive banner.
+    const allowedVolumeTypes = util.getHoldingSpaceAllowedVolumeTypes();
+    const currentVolumeInfo = this.directoryModel_.getCurrentVolumeInfo();
+    if (!currentVolumeInfo ||
+        !allowedVolumeTypes.includes(currentVolumeInfo.volumeType) ||
+        currentVolumeInfo.volumeType === VolumeManagerCommon.VolumeType.DRIVE) {
+      return;
+    }
+
     // The holding space banner should not be shown after having been shown
     // enough times to reach the defined limit. Note that if the user explicitly
     // dismisses the banner the counter will be set to the limit to prevent any

@@ -92,3 +92,14 @@ testcase.holdingSpaceWelcomeBannerWontShowAfterReachingLimit = async () => {
   await remoteCall.waitForElement(
       windowIds[2], '.holding-space-welcome[hidden]');
 };
+
+/**
+ * Tests that the holding space welcome banner will not show on Drive.
+ */
+testcase.holdingSpaceWelcomeBannerWontShowOnDrive = async () => {
+  // Open Files app on Drive.
+  const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
+
+  // Check: the holding space welcome banner should be hidden.
+  await remoteCall.waitForElement(appId, '.holding-space-welcome[hidden]');
+};

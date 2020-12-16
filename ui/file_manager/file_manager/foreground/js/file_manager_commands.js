@@ -1795,14 +1795,7 @@ CommandHandler.COMMANDS_['toggle-holding-space'] = new class extends Command {
       return;
     }
 
-    const allowedVolumeTypes = [
-      VolumeManagerCommon.VolumeType.MY_FILES,
-      VolumeManagerCommon.VolumeType.DOWNLOADS,
-      VolumeManagerCommon.VolumeType.DRIVE,
-      VolumeManagerCommon.VolumeType.CROSTINI,
-      VolumeManagerCommon.VolumeType.ANDROID_FILES,
-    ];
-
+    const allowedVolumeTypes = util.getHoldingSpaceAllowedVolumeTypes();
     const currentVolumeInfo = fileManager.directoryModel.getCurrentVolumeInfo();
     if (!currentVolumeInfo ||
         !allowedVolumeTypes.includes(currentVolumeInfo.volumeType)) {
