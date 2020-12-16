@@ -36,7 +36,6 @@
 #include "ui/ozone/platform/wayland/host/wayland_data_device_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_offer.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
-#include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_pointer.h"
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
@@ -395,7 +394,6 @@ void WaylandWindowDragController::HandleDropAndResetState() {
   VLOG(1) << "Notifying drop. window=" << pointer_grab_owner_;
 
   EventFlags pointer_button = EF_LEFT_MOUSE_BUTTON;
-  DCHECK(connection_->event_source()->IsPointerButtonPressed(pointer_button));
   pointer_delegate_->OnPointerButtonEvent(ET_MOUSE_RELEASED, pointer_button,
                                           pointer_grab_owner_);
 
