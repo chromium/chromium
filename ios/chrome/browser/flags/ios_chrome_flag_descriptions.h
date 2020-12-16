@@ -242,6 +242,11 @@ extern const char kInProductHelpDemoModeDescription[];
 extern const char kIOSLegacyTLSInterstitialsName[];
 extern const char kIOSLegacyTLSInterstitialsDescription[];
 
+// Title and description for the flag to enable Shared Highlighting color
+// change in iOS.
+extern const char kIOSSharedHighlightingColorChangeName[];
+extern const char kIOSSharedHighlightingColorChangeDescription[];
+
 // Title and description for the flag to experiment with different location
 // permission user experiences.
 extern const char kLocationPermissionsPromptName[];

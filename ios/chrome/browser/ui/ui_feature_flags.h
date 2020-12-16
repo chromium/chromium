@@ -74,4 +74,7 @@ extern const base::Feature kLocationPermissionsPrompt;
 // Feature flag that experiments with the default browser fullscreen promo UI.
 extern const base::Feature kDefaultBrowserFullscreenPromoExperiment;
 
+// Feature flag that enable Shared Highlighting color change in iOS.
+extern const base::Feature kIOSSharedHighlightingColorChange;
+
 #endif  // IOS_CHROME_BROWSER_UI_UI_FEATURE_FLAGS_H_

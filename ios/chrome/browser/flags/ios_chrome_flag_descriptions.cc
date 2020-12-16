@@ -281,6 +281,12 @@ const char kIOSLegacyTLSInterstitialsDescription[] =
     "that use legacy TLS connections, and subresources using legacy TLS "
     "connections will be blocked.";
 
+const char kIOSSharedHighlightingColorChangeName[] =
+    "IOS Shared Highlighting color change";
+const char kIOSSharedHighlightingColorChangeDescription[] =
+    "Changes the Shared Highlighting color of the text fragment"
+    "away from the default yellow in iOS. Works with #scroll-to-text-ios flag.";
+
 const char kLocationPermissionsPromptName[] =
     "Location Permisssions Prompt Experiment";
 const char kLocationPermissionsPromptDescription[] =

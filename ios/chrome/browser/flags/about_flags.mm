@@ -599,6 +599,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDefaultBrowserFullscreenPromoExperimentDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kDefaultBrowserFullscreenPromoExperiment)},
+    {"ios-shared-highlighting-color-change",
+     flag_descriptions::kIOSSharedHighlightingColorChangeName,
+     flag_descriptions::kIOSSharedHighlightingColorChangeDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kIOSSharedHighlightingColorChange)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

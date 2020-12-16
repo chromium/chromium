@@ -3117,6 +3117,11 @@
     "expiry_milestone": 89
   },
   {
+    "name": "ios-shared-highlighting-color-change",
+    "owners": [ "cheickcisse" ],
+    "expiry_milestone": 92
+  },
+  {
     "name": "ios-synthetic-crash-reports",
     "owners": [ "eugenebut", "olivierrobin", "bling-flags@google.com" ],
     "expiry_milestone": 95
