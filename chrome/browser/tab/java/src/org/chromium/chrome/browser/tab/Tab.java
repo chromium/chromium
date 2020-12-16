@@ -38,6 +38,9 @@ public interface Tab extends TabLifecycle {
      */
     void removeObserver(TabObserver observer);
 
+    /** Returns if the given {@link TabObserver} is present. */
+    boolean hasObserver(TabObserver observer);
+
     /**
      * @return {@link UserDataHost} that manages {@link UserData} objects attached to.
      *         This is used for managing Tab-specific attributes/objects without Tab

@@ -263,12 +263,18 @@ public interface TabObserver {
     void onBackgroundColorChanged(Tab tab, int color);
 
     /**
-     * Called when the Tab is attached or detached from an {@code Activity}.
+     * Called when the Tab is attached or detached from an {@code Activity}. By default, this will
+     * automatically unregister the tab observer if the Tab is detached from the window. To
+     * customize this behavior, override this method. When overriding this, keep in mind that tabs
+     * can outlive the activity in some cases (change of theme, changing from phone/tablet, etc).
      * @param tab The notifying {@link Tab}.
      * @param window {@link WindowAndroid} which the Tab is being associated with. {@code null} if
      *         the tab is being detached.
      */
-    void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window);
+    default void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
+        if (tab == null || window != null) return;
+        tab.removeObserver(this);
+    }
 
     /**
      * A notification when tab changes whether or not it is interactable and is accepting input.

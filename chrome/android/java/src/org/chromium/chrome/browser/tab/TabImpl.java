@@ -265,6 +265,11 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
     }
 
     @Override
+    public boolean hasObserver(TabObserver observer) {
+        return mObservers.hasObserver(observer);
+    }
+
+    @Override
     public UserDataHost getUserDataHost() {
         return mUserDataHost;
     }

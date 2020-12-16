@@ -16,6 +16,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Restriction;
@@ -103,5 +104,12 @@ public class TabObserverTest {
         // The original tab should be hidden.
         interactabilityHelper.waitForCallback(interactableCallCount);
         assertFalse("Tab should not be interactable.", mTab.isUserInteractable());
+    }
+
+    @Test
+    @SmallTest
+    public void testTabDetach_observerUnregistered() {
+        ThreadUtils.runOnUiThreadBlocking(() -> mTab.updateAttachment(null, null));
+        assertFalse(mTab.hasObserver(mTabObserver));
     }
 }

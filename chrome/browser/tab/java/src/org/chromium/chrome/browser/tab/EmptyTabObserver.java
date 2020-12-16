@@ -6,14 +6,11 @@ package org.chromium.chrome.browser.tab;
 
 import android.graphics.Bitmap;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.components.find_in_page.FindMatchRectsDetails;
 import org.chromium.components.find_in_page.FindNotificationDetails;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.net.NetError;
-import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 /**
@@ -118,9 +115,6 @@ public class EmptyTabObserver implements TabObserver {
 
     @Override
     public void onBackgroundColorChanged(Tab tab, int color) {}
-
-    @Override
-    public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {}
 
     @Override
     public void onInteractabilityChanged(Tab tab, boolean isInteractable) {}
