@@ -28,7 +28,7 @@ const char kOntarioName[] = "Ontario";
 TEST(RegionComboboxModelTest, QuebecOntarioRegions) {
   TestRegionDataLoader test_region_data_loader;
   RegionComboboxModel model;
-  model.LoadRegionData("", &test_region_data_loader, 0);
+  model.LoadRegionData("", &test_region_data_loader);
 
   std::vector<std::pair<std::string, std::string>> regions;
   regions.emplace_back(kQuebecCode, kQuebecName);
@@ -47,7 +47,7 @@ TEST(RegionComboboxModelTest, QuebecOntarioRegions) {
 TEST(RegionComboboxModelTest, FailingSource) {
   TestRegionDataLoader test_region_data_loader;
   RegionComboboxModel model;
-  model.LoadRegionData("", &test_region_data_loader, 0);
+  model.LoadRegionData("", &test_region_data_loader);
   test_region_data_loader.SendAsynchronousData(
       std::vector<std::pair<std::string, std::string>>());
 

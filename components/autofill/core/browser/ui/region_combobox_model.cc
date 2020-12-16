@@ -26,16 +26,14 @@ RegionComboboxModel::~RegionComboboxModel() {
 }
 
 void RegionComboboxModel::LoadRegionData(const std::string& country_code,
-                                         RegionDataLoader* region_data_loader,
-                                         int64_t timeout_ms) {
+                                         RegionDataLoader* region_data_loader) {
   DCHECK(region_data_loader);
   DCHECK(!region_data_loader_);
   region_data_loader_ = region_data_loader;
   region_data_loader_->LoadRegionData(
       country_code,
       base::BindRepeating(&RegionComboboxModel::OnRegionDataLoaded,
-                          weak_factory_.GetWeakPtr()),
-      timeout_ms);
+                          weak_factory_.GetWeakPtr()));
 }
 
 int RegionComboboxModel::GetItemCount() const {
