@@ -32,6 +32,7 @@
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/dbus/util/version_loader.h"
 #include "chromeos/services/assistant/assistant_device_settings_delegate.h"
+#include "chromeos/services/assistant/libassistant_service_host_impl.h"
 #include "chromeos/services/assistant/media_session/assistant_media_session.h"
 #include "chromeos/services/assistant/platform_api_impl.h"
 #include "chromeos/services/assistant/proxy/service_controller_proxy.h"
@@ -161,7 +162,8 @@ AssistantManagerServiceImpl::AssistantManagerServiceImpl(
     std::unique_ptr<network::PendingSharedURLLoaderFactory>
         pending_url_loader_factory,
     base::Optional<std::string> s3_server_uri_override,
-    base::Optional<std::string> device_id_override)
+    base::Optional<std::string> device_id_override,
+    std::unique_ptr<LibassistantServiceHost> libassistant_service_host)
     : media_session_(std::make_unique<AssistantMediaSession>(this)),
       action_module_(std::make_unique<action::CrosActionModule>(
           this,
@@ -180,11 +182,21 @@ AssistantManagerServiceImpl::AssistantManagerServiceImpl(
       media_session_.get(),
       assistant_proxy_->background_thread().task_runner());
 
+  if (libassistant_service_host) {
+    // During unittests a custom host is passed in, so we'll use that one.
+    libassistant_service_host_ = std::move(libassistant_service_host);
+  } else {
+    // Use the default service host if none was provided.
+    libassistant_service_host_ = std::make_unique<LibassistantServiceHostImpl>(
+        platform_api_.get(), delegate_.get());
+  }
+
   // |assistant_proxy_| owns the background thread that |platform_api_| needs
-  // for its constructor, but it also needs a reference to |platform_api_|.
-  // To solve this chicken-and-egg problem, we need a separe Initialize() call
-  // to pass |platform_api_| to |assistant_proxy_|.
-  assistant_proxy_->Initialize(platform_api_.get(), delegate_.get());
+  // for its constructor, but it also needs a reference to
+  // |libassistant_service_host| which requires |platform_api_| in its
+  // constructor.
+  // To solve this chicken-and-egg problem, we need a separe Initialize() call.
+  assistant_proxy_->Initialize(libassistant_service_host_.get());
 
   settings_delegate_ =
       std::make_unique<AssistantDeviceSettingsDelegate>(context);

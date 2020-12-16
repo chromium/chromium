@@ -4,6 +4,7 @@
 
 #include "chromeos/services/assistant/assistant_manager_service_impl.h"
 
+#include <string>
 #include <utility>
 
 #include "ash/public/cpp/assistant/controller/assistant_alarm_timer_controller.h"
@@ -19,10 +20,13 @@
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager_internal.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/services/assistant/assistant_manager_service.h"
+#include "chromeos/services/assistant/proxy/libassistant_service_host.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/assistant/public/cpp/migration/fake_assistant_manager_service_delegate.h"
+#include "chromeos/services/assistant/public/cpp/migration/libassistant_v1_api.h"
 #include "chromeos/services/assistant/service_context.h"
+#include "chromeos/services/assistant/test_support/fake_libassistant_service.h"
 #include "chromeos/services/assistant/test_support/fake_service_context.h"
 #include "chromeos/services/assistant/test_support/fully_initialized_assistant_state.h"
 #include "chromeos/services/assistant/test_support/mock_assistant_interaction_subscriber.h"
@@ -31,6 +35,7 @@
 #include "chromeos/services/assistant/test_support/scoped_device_actions.h"
 #include "libassistant/shared/internal_api/assistant_manager_internal.h"
 #include "libassistant/shared/public/assistant_manager.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/media_session/public/mojom/media_session.mojom-shared.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -180,6 +185,21 @@ class CommunicationErrorObserverMock
   DISALLOW_COPY_AND_ASSIGN(CommunicationErrorObserverMock);
 };
 
+class FakeLibassistantServiceHost : public LibassistantServiceHost {
+ public:
+  explicit FakeLibassistantServiceHost(FakeLibassistantService* service)
+      : service_(service) {}
+
+  void Launch(
+      mojo::PendingReceiver<LibassistantServiceMojom> receiver) override {
+    service_->Bind(std::move(receiver));
+  }
+  void Stop() override { service_->Unbind(); }
+
+ private:
+  FakeLibassistantService* service_;
+};
+
 class StateObserverMock : public AssistantManagerService::StateObserver {
  public:
   StateObserverMock() = default;
@@ -220,21 +240,25 @@ class AssistantManagerServiceImplTest : public testing::Test {
 
   void CreateAssistantManagerServiceImpl(
       base::Optional<std::string> s3_server_uri_override = base::nullopt) {
+    // We can not have 2 instances of |AssistantManagerServiceImpl| at the same
+    // time, so we must destroy the old one before creating a new one.
     assistant_manager_service_.reset();
-    delegate_ = nullptr;
-
-    auto delegate = std::make_unique<FakeAssistantManagerServiceDelegate>();
-    delegate_ = delegate.get();
 
     assistant_manager_service_ = std::make_unique<AssistantManagerServiceImpl>(
-        service_context_.get(), std::move(delegate),
+        service_context_.get(),
+        std::make_unique<FakeAssistantManagerServiceDelegate>(),
         shared_url_loader_factory_->Clone(), s3_server_uri_override,
-        /*device_id_override=*/base::nullopt);
+        /*device_id_override=*/base::nullopt,
+        std::make_unique<FakeLibassistantServiceHost>(&libassistant_service_));
   }
 
   void TearDown() override {
     assistant_manager_service_.reset();
     PowerManagerClient::Shutdown();
+  }
+
+  FakeServiceController& mojom_service_controller() {
+    return libassistant_service_.service_controller();
   }
 
   AssistantManagerServiceImpl* assistant_manager_service() {
@@ -243,11 +267,7 @@ class AssistantManagerServiceImplTest : public testing::Test {
 
   ash::AssistantState* assistant_state() { return &assistant_state_; }
 
-  FakeAssistantManagerServiceDelegate* delegate() { return delegate_; }
-
-  FakeAssistantManager* fake_assistant_manager() {
-    return delegate_->assistant_manager();
-  }
+  FakeAssistantManager* fake_assistant_manager() { return &assistant_manager_; }
 
   FakeAssistantManagerInternal* fake_assistant_manager_internal() {
     return &fake_assistant_manager()->assistant_manager_internal();
@@ -318,12 +338,17 @@ class AssistantManagerServiceImplTest : public testing::Test {
   ScopedDeviceActions device_actions_;
   FullyInitializedAssistantState assistant_state_;
 
+  // Fake implementation of the Libassistant Mojom service.
+  FakeLibassistantService libassistant_service_;
+
+  FakeAssistantManager assistant_manager_;
+  LibassistantV1Api libassistant_v1_api_{
+      &assistant_manager_, &assistant_manager_.assistant_manager_internal()};
+
   std::unique_ptr<FakeServiceContext> service_context_;
 
   network::TestURLLoaderFactory url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
-
-  FakeAssistantManagerServiceDelegate* delegate_;
 
   std::unique_ptr<AssistantManagerServiceImpl> assistant_manager_service_;
 
@@ -357,13 +382,13 @@ TEST_F(AssistantManagerServiceImplTest,
 }
 
 TEST_F(AssistantManagerServiceImplTest,
-       StateShouldRemainStartingUntilLibassistantIsStarted) {
-  Start();
+       StateShouldRemainStartingUntilLibassistantServiceIsStarted) {
+  mojom_service_controller().BlockStartCalls();
 
-  fake_assistant_manager()->BlockStartCalls();
+  Start();
   WaitForState(AssistantManagerService::STARTING);
 
-  fake_assistant_manager()->UnblockStartCalls();
+  mojom_service_controller().UnblockStartCalls();
   WaitForState(AssistantManagerService::STARTED);
 }
 
@@ -458,7 +483,7 @@ TEST_F(AssistantManagerServiceImplTest,
   Start();
   WaitForState(AssistantManagerService::STARTED);
 
-  EXPECT_HAS_PATH_WITH_VALUE(delegate()->libassistant_config(),
+  EXPECT_HAS_PATH_WITH_VALUE(mojom_service_controller().libassistant_config(),
                              "testing.s3_grpc_server_uri", "the-uri-override");
 }
 

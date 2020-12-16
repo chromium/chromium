@@ -24,6 +24,7 @@
 #include "chromeos/services/assistant/assistant_settings_impl.h"
 #include "chromeos/services/assistant/chromium_api_delegate.h"
 #include "chromeos/services/assistant/proxy/assistant_proxy.h"
+#include "chromeos/services/assistant/proxy/libassistant_service_host.h"
 #include "chromeos/services/assistant/public/cpp/assistant_notification.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/services/assistant/public/cpp/device_actions.h"
@@ -115,7 +116,10 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
           pending_url_loader_factory,
       base::Optional<std::string> s3_server_uri_override,
-      base::Optional<std::string> device_id_override);
+      base::Optional<std::string> device_id_override,
+      // Allows to inect a custom |LibassistantServiceHost| during unittests.
+      std::unique_ptr<LibassistantServiceHost> libassistant_service_host =
+          nullptr);
 
   ~AssistantManagerServiceImpl() override;
 
@@ -317,6 +321,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   ServiceContext* const context_;
 
   std::unique_ptr<AssistantManagerServiceDelegate> delegate_;
+  std::unique_ptr<LibassistantServiceHost> libassistant_service_host_;
   std::unique_ptr<AssistantDeviceSettingsDelegate> settings_delegate_;
 
   bool spoken_feedback_enabled_ = false;

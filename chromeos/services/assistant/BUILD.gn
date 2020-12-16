@@ -74,6 +74,8 @@ component("lib") {
       "chromium_api_delegate.h",
       "chromium_http_connection.cc",
       "chromium_http_connection.h",
+      "libassistant_service_host_impl.cc",
+      "libassistant_service_host_impl.h",
       "media_session/assistant_media_session.cc",
       "media_session/assistant_media_session.h",
       "platform/audio_device_owner.cc",
@@ -121,6 +123,7 @@ component("lib") {
       "//chromeos/services/assistant/proxy",
       "//chromeos/services/assistant/public/cpp/migration",
       "//chromeos/services/assistant/public/cpp/migration",
+      "//chromeos/services/libassistant",
       "//chromeos/services/network_config/public/mojom",
       "//chromeos/strings",
       "//libassistant/shared/internal_api:fuchsia_api_helper",
@@ -196,6 +199,7 @@ source_set("tests") {
       "//chromeos/assistant/internal:tests",
       "//chromeos/assistant/internal/proto/google3",
       "//chromeos/dbus",
+      "//chromeos/services/assistant/proxy",
       "//chromeos/services/assistant/public/cpp/migration",
       "//chromeos/services/assistant/public/cpp/migration:test_support",
       "//chromeos/services/network_config/public/mojom",
@@ -209,6 +213,10 @@ source_set("tests") {
 static_library("test_support") {
   testonly = true
   sources = [
+    "test_support/fake_libassistant_service.cc",
+    "test_support/fake_libassistant_service.h",
+    "test_support/fake_service_controller.cc",
+    "test_support/fake_service_controller.h",
     "test_support/mock_assistant.cc",
     "test_support/mock_assistant.h",
     "test_support/mock_assistant_interaction_subscriber.cc",
@@ -219,7 +227,10 @@ static_library("test_support") {
     "//chromeos/services/assistant/public/cpp",
     "//chromeos/services/assistant/public/mojom",
     "//chromeos/services/assistant/public/shared",
+    "//chromeos/services/libassistant/public/mojom",
+    "//mojo/public/cpp/bindings",
     "//testing/gmock",
+    "//testing/gtest",
   ]
 }
 
