@@ -46,7 +46,7 @@ void EnableAdbOverUsbForTesting();
 
 // Generates a list of props from |upgrade_params|, each of which takes the form
 // "prefix.prop_name=value"
-std::vector<std::string> GenerateUpgradeProps(
+std::vector<std::string> GenerateUpgradePropsForTesting(
     const UpgradeParams& upgrade_params,
     const std::string& serial_number,
     const std::string& prefix);

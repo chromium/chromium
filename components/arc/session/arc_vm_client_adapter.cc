@@ -148,6 +148,44 @@ ArcBinaryTranslationType IdentifyBinaryTranslationType(
   return ArcBinaryTranslationType::HOUDINI;
 }
 
+std::vector<std::string> GenerateUpgradeProps(
+    const UpgradeParams& upgrade_params,
+    const std::string& serial_number,
+    const std::string& prefix) {
+  std::vector<std::string> result = {
+      base::StringPrintf("%s.disable_boot_completed=%d", prefix.c_str(),
+                         upgrade_params.skip_boot_completed_broadcast),
+      base::StringPrintf("%s.enable_adb_sideloading=%d", prefix.c_str(),
+                         upgrade_params.is_adb_sideloading_enabled),
+      base::StringPrintf("%s.copy_packages_cache=%d", prefix.c_str(),
+                         static_cast<int>(upgrade_params.packages_cache_mode)),
+      base::StringPrintf("%s.skip_gms_core_cache=%d", prefix.c_str(),
+                         upgrade_params.skip_gms_core_cache),
+      base::StringPrintf("%s.arc_demo_mode=%d", prefix.c_str(),
+                         upgrade_params.is_demo_session),
+      base::StringPrintf(
+          "%s.supervision.transition=%d", prefix.c_str(),
+          static_cast<int>(upgrade_params.supervision_transition)),
+      base::StringPrintf("%s.serialno=%s", prefix.c_str(),
+                         serial_number.c_str()),
+  };
+  // Conditionally sets more properties based on |upgrade_params|.
+  if (!upgrade_params.locale.empty()) {
+    result.push_back(base::StringPrintf("%s.locale=%s", prefix.c_str(),
+                                        upgrade_params.locale.c_str()));
+    if (!upgrade_params.preferred_languages.empty()) {
+      result.push_back(base::StringPrintf(
+          "%s.preferred_languages=%s", prefix.c_str(),
+          base::JoinString(upgrade_params.preferred_languages, ",").c_str()));
+    }
+  }
+
+  // TODO(niwa): Handle |is_account_managed| and
+  // |is_managed_adb_sideloading_allowed| in |upgrade_params| when we
+  // implement apk sideloading for ARCVM.
+  return result;
+}
+
 std::vector<std::string> GenerateKernelCmdline(
     const StartParams& start_params,
     const UpgradeParams& upgrade_params,
@@ -871,42 +909,11 @@ void EnableAdbOverUsbForTesting() {
   g_enable_adb_over_usb_for_testing = true;
 }
 
-std::vector<std::string> GenerateUpgradeProps(
+std::vector<std::string> GenerateUpgradePropsForTesting(
     const UpgradeParams& upgrade_params,
     const std::string& serial_number,
     const std::string& prefix) {
-  std::vector<std::string> result = {
-      base::StringPrintf("%s.disable_boot_completed=%d", prefix.c_str(),
-                         upgrade_params.skip_boot_completed_broadcast),
-      base::StringPrintf("%s.enable_adb_sideloading=%d", prefix.c_str(),
-                         upgrade_params.is_adb_sideloading_enabled),
-      base::StringPrintf("%s.copy_packages_cache=%d", prefix.c_str(),
-                         static_cast<int>(upgrade_params.packages_cache_mode)),
-      base::StringPrintf("%s.skip_gms_core_cache=%d", prefix.c_str(),
-                         upgrade_params.skip_gms_core_cache),
-      base::StringPrintf("%s.arc_demo_mode=%d", prefix.c_str(),
-                         upgrade_params.is_demo_session),
-      base::StringPrintf(
-          "%s.supervision.transition=%d", prefix.c_str(),
-          static_cast<int>(upgrade_params.supervision_transition)),
-      base::StringPrintf("%s.serialno=%s", prefix.c_str(),
-                         serial_number.c_str()),
-  };
-  // Conditionally sets more properties based on |upgrade_params|.
-  if (!upgrade_params.locale.empty()) {
-    result.push_back(base::StringPrintf("%s.locale=%s", prefix.c_str(),
-                                        upgrade_params.locale.c_str()));
-    if (!upgrade_params.preferred_languages.empty()) {
-      result.push_back(base::StringPrintf(
-          "%s.preferred_languages=%s", prefix.c_str(),
-          base::JoinString(upgrade_params.preferred_languages, ",").c_str()));
-    }
-  }
-
-  // TODO(niwa): Handle |is_account_managed| and
-  // |is_managed_adb_sideloading_allowed| in |upgrade_params| when we
-  // implement apk sideloading for ARCVM.
-  return result;
+  return GenerateUpgradeProps(upgrade_params, serial_number, prefix);
 }
 
 }  // namespace arc

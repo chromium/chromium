@@ -1392,10 +1392,10 @@ TEST_F(ArcVmClientAdapterTest, TestConnectToBootNotificationServer) {
   EXPECT_EQ(boot_notification_server()->connection_count(), 2);
   EXPECT_FALSE(boot_notification_server()->received_data().empty());
   // Compare received data to expected output
-  std::string expected_props =
-      base::JoinString(GenerateUpgradeProps(GetPopulatedUpgradeParams(),
-                                            kSerialNumber, "ro.boot"),
-                       "\n");
+  std::string expected_props = base::JoinString(
+      GenerateUpgradePropsForTesting(GetPopulatedUpgradeParams(), kSerialNumber,
+                                     "ro.boot"),
+      "\n");
   EXPECT_EQ(boot_notification_server()->received_data(), expected_props);
 }
 
