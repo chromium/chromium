@@ -198,6 +198,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Sync.CookieJarEmptyOnMismatch" enum="BooleanEmpty"
     expires_after="M77">
+  <obsolete>
+    Expired in M77.
+  </obsolete>
   <owner>zea@chromium.org</owner>
   <summary>
     Whether the gaia cookie jar was empty. Recorded on every SESSIONS commit
@@ -208,6 +211,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Sync.CookieJarMatchOnNavigation" enum="BooleanMatched"
     expires_after="M77">
+  <obsolete>
+    Expired in M77.
+  </obsolete>
   <owner>zea@chromium.org</owner>
   <summary>
     Whether the gaia cookie jar included the signed in user (matched) or not.

@@ -40,11 +40,7 @@ class CommitProcessor {
   // exceed |max_entries|.
   // Returns no contribution if previous call collected them from all datatypes
   // and total number of collected entries was less than |max_entries|.
-  // Note: |cookie_jar_mismatch| and |cookie_jar_empty| are used only for
-  // metrics recording purposes specific to the SESSIONS type.
-  Commit::ContributionMap GatherCommitContributions(size_t max_entries,
-                                                    bool cookie_jar_mismatch,
-                                                    bool cookie_jar_empty);
+  Commit::ContributionMap GatherCommitContributions(size_t max_entries);
 
  private:
   // Gathering is split into phases for 2 reasons: 1) to provide prioritization,
@@ -64,8 +60,6 @@ class CommitProcessor {
   size_t GatherCommitContributionsForType(
       ModelType type,
       size_t max_entries,
-      bool cookie_jar_mismatch,
-      bool cookie_jar_empty,
       Commit::ContributionMap* contributions);
 
   // Gathers commit contributions for |types| and populates |*contributions|.
@@ -73,8 +67,6 @@ class CommitProcessor {
   size_t GatherCommitContributionsForTypes(
       ModelTypeSet types,
       size_t max_entries,
-      bool cookie_jar_mismatch,
-      bool cookie_jar_empty,
       Commit::ContributionMap* contributions);
 
   const ModelTypeSet commit_types_;

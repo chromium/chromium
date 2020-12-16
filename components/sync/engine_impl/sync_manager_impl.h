@@ -82,7 +82,7 @@ class SyncManagerImpl
   SyncEncryptionHandler* GetEncryptionHandler() override;
   std::vector<std::unique_ptr<ProtocolEvent>> GetBufferedProtocolEvents()
       override;
-  void OnCookieJarChanged(bool account_mismatch, bool empty_jar) override;
+  void OnCookieJarChanged(bool account_mismatch) override;
   void UpdateInvalidationClientId(const std::string& client_id) override;
   void UpdateSingleClientStatus(bool single_client) override;
 

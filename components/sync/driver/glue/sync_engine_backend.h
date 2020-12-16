@@ -138,7 +138,6 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
 
   // Notify the syncer that the cookie jar has changed.
   void DoOnCookieJarChanged(bool account_mismatch,
-                            bool empty_jar,
                             base::OnceClosure callback);
 
   // Notify about change in client id.

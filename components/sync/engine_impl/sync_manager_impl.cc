@@ -553,11 +553,9 @@ SyncManagerImpl::GetBufferedProtocolEvents() {
   return protocol_event_buffer_.GetBufferedProtocolEvents();
 }
 
-void SyncManagerImpl::OnCookieJarChanged(bool account_mismatch,
-                                         bool empty_jar) {
+void SyncManagerImpl::OnCookieJarChanged(bool account_mismatch) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   cycle_context_->set_cookie_jar_mismatch(account_mismatch);
-  cycle_context_->set_cookie_jar_empty(empty_jar);
 }
 
 void SyncManagerImpl::UpdateInvalidationClientId(const std::string& client_id) {

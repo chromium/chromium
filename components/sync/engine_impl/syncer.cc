@@ -150,8 +150,8 @@ SyncerError Syncer::BuildAndPostCommits(const ModelTypeSet& request_types,
         cycle->context()->max_commit_batch_size(),
         cycle->context()->account_name(), cycle->context()->cache_guid(),
         cycle->context()->cookie_jar_mismatch(),
-        cycle->context()->cookie_jar_empty(), cycle->context()->single_client(),
-        &commit_processor, cycle->context()->extensions_activity()));
+        cycle->context()->single_client(), &commit_processor,
+        cycle->context()->extensions_activity()));
     if (!commit) {
       break;
     }

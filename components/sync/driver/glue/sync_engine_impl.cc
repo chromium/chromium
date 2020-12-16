@@ -390,13 +390,12 @@ void SyncEngineImpl::HandleSyncStatusChanged(const SyncStatus& status) {
 }
 
 void SyncEngineImpl::OnCookieJarChanged(bool account_mismatch,
-                                        bool empty_jar,
                                         base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   sync_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&SyncEngineBackend::DoOnCookieJarChanged, backend_,
-                     account_mismatch, empty_jar, std::move(callback)));
+                     account_mismatch, std::move(callback)));
 }
 
 void SyncEngineImpl::SetInvalidationsForSessionsEnabled(bool enabled) {

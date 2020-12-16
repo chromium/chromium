@@ -112,10 +112,6 @@ class SyncCycleContext {
     cookie_jar_mismatch_ = cookie_jar_mismatch;
   }
 
-  bool cookie_jar_empty() const { return cookie_jar_empty_; }
-
-  void set_cookie_jar_empty(bool empty_jar) { cookie_jar_empty_ = empty_jar; }
-
   bool single_client() const { return single_client_; }
   void set_single_client(bool single_client) { single_client_ = single_client; }
 
@@ -169,9 +165,6 @@ class SyncCycleContext {
   // chrome account. If multiple accounts are present in the cookie jar, a
   // mismatch implies all of them are different from the chrome account.
   bool cookie_jar_mismatch_;
-
-  // If there's a cookie jar mismatch, whether the cookie jar was empty or not.
-  bool cookie_jar_empty_;
 
   // If there are no other known active devices.
   bool single_client_;

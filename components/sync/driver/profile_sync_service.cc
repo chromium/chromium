@@ -1616,8 +1616,7 @@ void ProfileSyncService::OnAccountsInCookieUpdatedWithCallback(
 
   DVLOG(1) << "Cookie jar mismatch: " << cookie_jar_mismatch;
   DVLOG(1) << "Cookie jar empty: " << cookie_jar_empty;
-  engine_->OnCookieJarChanged(cookie_jar_mismatch, cookie_jar_empty,
-                              std::move(callback));
+  engine_->OnCookieJarChanged(cookie_jar_mismatch, std::move(callback));
 }
 
 bool ProfileSyncService::HasCookieJarMismatch(

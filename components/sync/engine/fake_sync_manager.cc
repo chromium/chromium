@@ -186,8 +186,7 @@ void FakeSyncManager::SetInvalidatorEnabled(bool invalidator_enabled) {
   // Do nothing.
 }
 
-void FakeSyncManager::OnCookieJarChanged(bool account_mismatch,
-                                         bool empty_jar) {}
+void FakeSyncManager::OnCookieJarChanged(bool account_mismatch) {}
 
 void FakeSyncManager::UpdateInvalidationClientId(const std::string&) {
   NOTIMPLEMENTED();

@@ -167,7 +167,6 @@ class SyncEngine : public ModelTypeConfigurer {
   // Notify the syncer that the cookie jar has changed.
   // See SyncManager::OnCookieJarChanged.
   virtual void OnCookieJarChanged(bool account_mismatch,
-                                  bool empty_jar,
                                   base::OnceClosure callback) = 0;
 
   // Enables/Disables invalidations for session sync related datatypes.

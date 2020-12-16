@@ -483,10 +483,9 @@ void SyncEngineBackend::DisableProtocolEventForwarding() {
 }
 
 void SyncEngineBackend::DoOnCookieJarChanged(bool account_mismatch,
-                                             bool empty_jar,
                                              base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  sync_manager_->OnCookieJarChanged(account_mismatch, empty_jar);
+  sync_manager_->OnCookieJarChanged(account_mismatch);
   if (!callback.is_null()) {
     host_.Call(FROM_HERE, &SyncEngineImpl::OnCookieJarChangedDoneOnFrontendLoop,
                std::move(callback));

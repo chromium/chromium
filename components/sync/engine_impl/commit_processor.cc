@@ -31,9 +31,7 @@ CommitProcessor::CommitProcessor(ModelTypeSet commit_types,
 CommitProcessor::~CommitProcessor() {}
 
 Commit::ContributionMap CommitProcessor::GatherCommitContributions(
-    size_t max_entries,
-    bool cookie_jar_mismatch,
-    bool cookie_jar_empty) {
+    size_t max_entries) {
   DCHECK_GT(max_entries, 0u);
   if (phase_ == GatheringPhase::kDone) {
     return Commit::ContributionMap();
@@ -45,8 +43,7 @@ Commit::ContributionMap CommitProcessor::GatherCommitContributions(
   // data gets committed before the corresponding NIGORI commit, which can
   // otherwise leave to data loss if the commit fails partially.
   size_t num_entries =
-      GatherCommitContributionsForType(NIGORI, max_entries, cookie_jar_mismatch,
-                                       cookie_jar_empty, &contributions);
+      GatherCommitContributionsForType(NIGORI, max_entries, &contributions);
   if (num_entries > 0) {
     // Encryptable entities cannot get combined in the same commit with NIGORI.
     // NIGORI commits are rare so to keep it simple and to play it safe, the
@@ -56,7 +53,7 @@ Commit::ContributionMap CommitProcessor::GatherCommitContributions(
 
   num_entries += GatherCommitContributionsForTypes(
       GetUserTypesForCurrentCommitPhase(), max_entries - num_entries,
-      cookie_jar_mismatch, cookie_jar_empty, &contributions);
+      &contributions);
   DCHECK_LE(num_entries, max_entries);
   if (num_entries < max_entries) {
     // Move to the next phase because there are no further commit contributions
@@ -70,8 +67,7 @@ Commit::ContributionMap CommitProcessor::GatherCommitContributions(
       // If there are no entries in this phase, return contributions from the
       // next phase immediately. Otherwise, the processor gathers contribution
       // from the next phase in the next commit.
-      return GatherCommitContributions(max_entries, cookie_jar_mismatch,
-                                       cookie_jar_empty);
+      return GatherCommitContributions(max_entries);
     }
   }
   return contributions;
@@ -107,8 +103,6 @@ ModelTypeSet CommitProcessor::GetUserTypesForCurrentCommitPhase() const {
 size_t CommitProcessor::GatherCommitContributionsForType(
     ModelType type,
     size_t max_entries,
-    bool cookie_jar_mismatch,
-    bool cookie_jar_empty,
     Commit::ContributionMap* contributions) {
   if (max_entries == 0) {
     return 0;
@@ -130,28 +124,17 @@ size_t CommitProcessor::GatherCommitContributionsForType(
   DCHECK_LE(num_entries, max_entries);
   contributions->emplace(type, std::move(contribution));
 
-  if (type == SESSIONS) {
-    UMA_HISTOGRAM_BOOLEAN("Sync.CookieJarMatchOnNavigation",
-                          !cookie_jar_mismatch);
-    if (cookie_jar_mismatch) {
-      UMA_HISTOGRAM_BOOLEAN("Sync.CookieJarEmptyOnMismatch", cookie_jar_empty);
-    }
-  }
-
   return num_entries;
 }
 
 size_t CommitProcessor::GatherCommitContributionsForTypes(
     ModelTypeSet types,
     size_t max_entries,
-    bool cookie_jar_mismatch,
-    bool cookie_jar_empty,
     Commit::ContributionMap* contributions) {
   size_t num_entries = 0;
   for (ModelType type : types) {
     num_entries += GatherCommitContributionsForType(
-        type, max_entries - num_entries, cookie_jar_mismatch, cookie_jar_empty,
-        contributions);
+        type, max_entries - num_entries, contributions);
     if (num_entries >= max_entries) {
       DCHECK_EQ(num_entries, max_entries)
           << "Number of commit entries exceeds maximum";

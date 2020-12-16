@@ -30,7 +30,6 @@ SyncCycleContext::SyncCycleContext(
       model_type_registry_(model_type_registry),
       invalidator_client_id_(invalidator_client_id),
       cookie_jar_mismatch_(false),
-      cookie_jar_empty_(false),
       single_client_(false),
       poll_interval_(poll_interval) {
   DCHECK(!poll_interval.is_zero());

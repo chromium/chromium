@@ -91,13 +91,12 @@ std::unique_ptr<Commit> Commit::Init(ModelTypeSet enabled_types,
                                      const std::string& account_name,
                                      const std::string& cache_guid,
                                      bool cookie_jar_mismatch,
-                                     bool cookie_jar_empty,
                                      bool single_client,
                                      CommitProcessor* commit_processor,
                                      ExtensionsActivity* extensions_activity) {
   // Gather per-type contributions.
-  ContributionMap contributions = commit_processor->GatherCommitContributions(
-      max_entries, cookie_jar_mismatch, cookie_jar_empty);
+  ContributionMap contributions =
+      commit_processor->GatherCommitContributions(max_entries);
 
   // Give up if no one had anything to commit.
   if (contributions.empty())
