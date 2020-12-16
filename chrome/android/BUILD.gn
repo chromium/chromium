@@ -1346,6 +1346,7 @@ if (enable_vr || enable_arcore) {
     "//chrome/browser/util:java",
     "//chrome/test/android:chrome_java_test_support",
     "//components/embedder_support/android:util_java",
+    "//components/externalauth/android:google_delegate_public_impl_java",
     "//components/permissions/android:java",
     "//components/policy/android:policy_java",
     "//content/public/android:content_java",

@@ -70,6 +70,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.content_public.browser.ChildProcessLauncherHelper;
@@ -1081,7 +1082,7 @@ public class CustomTabsConnection {
     public boolean isSessionFirstParty(CustomTabsSessionToken session) {
         String packageName = getClientPackageNameForSession(session);
         if (packageName == null) return false;
-        return AppHooks.get().getExternalAuthUtils().isGoogleSigned(packageName);
+        return ExternalAuthUtils.getInstance().isGoogleSigned(packageName);
     }
 
     void setIgnoreUrlFragmentsForSession(CustomTabsSessionToken session, boolean value) {

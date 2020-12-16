@@ -19,7 +19,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.background_sync.BackgroundSyncBackgroundTaskScheduler.BackgroundSyncTask;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
@@ -27,6 +26,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.TabTitleObserver;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.BackgroundSyncNetworkUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -75,7 +75,7 @@ public final class BackgroundSyncTest {
         // fixed.
         // Note that this should be done before the startMainActivityOnBlankPage(), because Chrome
         // will otherwise run this check on startup and disable BackgroundSync code.
-        if (!AppHooks.get().getExternalAuthUtils().canUseGooglePlayServices()) {
+        if (!ExternalAuthUtils.getInstance().canUseGooglePlayServices()) {
             NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
             disableGooglePlayServicesVersionCheck();
         }

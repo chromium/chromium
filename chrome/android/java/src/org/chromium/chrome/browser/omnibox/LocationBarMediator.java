@@ -23,7 +23,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
-import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.gsa.GSAState;
 import org.chromium.chrome.browser.locale.LocaleManager;
@@ -43,6 +42,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
@@ -147,7 +147,7 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
         mOmniboxPrerender = new OmniboxPrerender();
         Context context = mLocationBarLayout.getContext();
         mAssistantVoiceSearchService = new AssistantVoiceSearchService(context,
-                AppHooks.get().getExternalAuthUtils(), mTemplateUrlServiceSupplier.get(),
+                ExternalAuthUtils.getInstance(), mTemplateUrlServiceSupplier.get(),
                 GSAState.getInstance(context), this, SharedPreferencesManager.getInstance());
         mAssistantVoiceSearchSupplier.set(mAssistantVoiceSearchService);
         mLocationBarLayout.onFinishNativeInitialization();

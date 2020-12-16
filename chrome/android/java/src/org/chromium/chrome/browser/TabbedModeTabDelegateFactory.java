@@ -24,6 +24,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
+import org.chromium.components.externalauth.ExternalAuthUtils;
 
 /**
  * {@link TabDelegateFactory} class to be used in all {@link Tab} instances owned by a
@@ -68,7 +69,7 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
                         mEphemeralTabCoordinatorSupplier, mContextMenuCopyLinkObserver,
                         mActivity::getSnackbarManager),
                 mShareDelegateSupplier, ChromeContextMenuPopulator.ContextMenuMode.NORMAL,
-                AppHooks.get().getExternalAuthUtils());
+                ExternalAuthUtils.getInstance());
     }
 
     @Override

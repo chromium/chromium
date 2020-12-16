@@ -638,6 +638,7 @@ if (is_android) {
       ":test_support_ui_android",
       "//chrome:chrome_android_core",
       "//chrome/android:app_hooks_java",
+      "//components/externalauth/android:google_delegate_public_impl_java",
       "//content/test:android_test_message_pump_support",
       "//testing/android/native_test:native_test_support",
     ]

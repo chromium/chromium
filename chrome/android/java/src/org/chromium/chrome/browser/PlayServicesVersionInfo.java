@@ -33,7 +33,7 @@ public class PlayServicesVersionInfo {
         final long installedGmsVersion = getApkVersionNumber(context);
 
         final String accessType;
-        ExternalAuthUtils externalAuthUtils = AppHooks.get().getExternalAuthUtils();
+        ExternalAuthUtils externalAuthUtils = ExternalAuthUtils.getInstance();
         if (externalAuthUtils.canUseFirstPartyGooglePlayServices()) {
             accessType = "1p";
         } else if (externalAuthUtils.canUseGooglePlayServices()) {
