@@ -5891,6 +5891,26 @@ crbug.com/1134459 accessibility/aom-click-action.html [ Pass Timeout ]
 crbug.com/1032451 virtual/threaded-no-composited-antialiasing/animations/stability/animation-iteration-event-destroy-renderer.html [ Pass Timeout ]
 crbug.com/931646 [ Mac ] http/tests/preload/meta-viewport-link-headers-imagesrcset.html [ Failure Pass ]
 
+
+#Imperceptible image diffs after Skia change.
+skbug.com/11019 compositing/reflections/nested-reflection-animated.html [ Pass Failure ]
+skbug.com/11019 virtual/gpu-rasterization-disable-yuv/images/yuv-decode-eligible/color-profile-border-radius.html [ Pass Failure ]
+skbug.com/11019 virtual/gpu-rasterization-disable-yuv/images/yuv-decode-eligible/color-profile-filter.html [ Pass Failure ]
+skbug.com/11019 virtual/gpu-rasterization-disable-yuv/images/yuv-decode-eligible/color-profile-image.html [ Pass Failure ]
+skbug.com/11019 virtual/gpu-rasterization/images/color-profile-background-image-cover.html [ Pass Failure ]
+skbug.com/11019 virtual/gpu-rasterization/images/color-profile-background-image-cross-fade-png.html [ Pass Failure ]
+skbug.com/11019 virtual/gpu-rasterization/images/color-profile-background-image-cross-fade.html [ Pass Failure ]
+skbug.com/11019 virtual/gpu-rasterization/images/color-profile-background-image-repeat.html [ Pass Failure ]
+skbug.com/11019 virtual/gpu-rasterization/images/color-profile-background-image-space.html [ Pass Failure ]
+skbug.com/11019 virtual/gpu-rasterization/images/color-profile-border-image.html [ Pass Failure ]
+skbug.com/11019 virtual/gpu-rasterization/images/color-profile-image-canvas-pattern.html [ Pass Failure ]
+skbug.com/11019 virtual/gpu-rasterization/images/color-profile-image-canvas.html [ Pass Failure ]
+skbug.com/11019 virtual/gpu-rasterization/images/color-profile-mask-image-svg.html [ Pass Failure ]
+skbug.com/11019 virtual/gpu-rasterization/images/color-profile-object.html [ Pass Failure ]
+skbug.com/11019 virtual/gpu-rasterization/images/yuv-decode-eligible/color-profile-filter.html [ Pass Failure ]
+skbug.com/11019 virtual/gpu-rasterization/images/yuv-decode-eligible/color-profile-image.html [ Pass Failure ]
+
+
 # These tests will only run in the virtual test suite where the frequency
 # capping for overlay popup detection is disabled. This eliminates the need
 # for waitings in web tests to trigger a detection event.
