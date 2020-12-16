@@ -5,6 +5,7 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
+import("//chrome/browser/resources/pdf/ink/ink.gni")
 import("//chrome/common/features.gni")
 import("//chromeos/components/chromebox_for_meetings/buildflags/buildflags.gni")
 import("//components/nacl/features.gni")
@@ -926,6 +927,10 @@ static_library("extensions") {
     "//url",
   ]
 
+  if (is_chromeos_ash) {
+    deps += [ "//chromeos/resources:media_app_bundle_resources_grit" ]
+  }
+
   if (enable_autofill_assistant_api) {
     sources += [
       "api/autofill_assistant_private/autofill_assistant_private_api.cc",
@@ -1029,6 +1034,7 @@ static_library("extensions") {
       "//chrome/browser/chromeos/crostini:crostini_installer_types_mojom",
       "//chrome/browser/devtools",
       "//chrome/browser/nearby_sharing/common",
+      "//chrome/browser/resources/pdf/ink:buildflags",
       "//chrome/browser/ui/webui/settings/chromeos/constants:mojom",
       "//chromeos",
       "//chromeos/attestation",

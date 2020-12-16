@@ -224,7 +224,7 @@ Polymer({
     this.ink_.addUndoStateListener(
         e => this.dispatchEvent(
             new CustomEvent('undo-state-changed', {detail: e})));
-    this.ink_.setPDF(data);
+    await this.ink_.setPDF(data);
     this.state_ = State.ACTIVE;
     this.viewportChanged();
     // Wait for the next task to avoid a race where Ink drops the background

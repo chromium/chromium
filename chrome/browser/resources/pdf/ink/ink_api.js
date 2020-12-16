@@ -21,11 +21,11 @@ class InkAPI {
   /**
    * @param {!ArrayBuffer} buffer
    */
-  setPDF(buffer) {
+  async setPDF(buffer) {
     // We change the type from ArrayBuffer to Uint8Array due to the consequences
     // of the buffer being passed across the iframe boundary. This realm has a
     // different ArrayBuffer constructor than `buffer`.
-    this.canvas_.setPDF(new Uint8Array(buffer));
+    return this.canvas_.setPDF(new Uint8Array(buffer));
   }
 
   /**

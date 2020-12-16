@@ -1,0 +1,6 @@
+import("//build/config/chrome_build.gni")
+import("//chromeos/components/media_app_ui/media_app_ui.gni")
+
+declare_args() {
+  enable_use_media_app_ink = enable_cros_media_app
+}

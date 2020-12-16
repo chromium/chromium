@@ -1372,7 +1372,8 @@ group("extra_resources") {
     "//components/autofill/core/browser:autofill_address_rewriter_resources",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos_ash && !enable_use_media_app_ink) {
+    # TODO(crbug/1150244): Remove when enable_use_media_app_ink is default true.
     public_deps += [ "//third_party/ink:ink_resources" ]
   }
 }

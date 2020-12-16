@@ -28,15 +28,23 @@
 #include "base/command_line.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/file_manager/file_manager_string_util.h"
-#include "third_party/ink/grit/ink_resources.h"
+#include "chrome/browser/resources/pdf/ink/buildflags.h"
 #include "ui/file_manager/grit/file_manager_gen_resources_map.h"
 #include "ui/file_manager/grit/file_manager_resources_map.h"
-#endif
+
+#if BUILDFLAG(ENABLE_USE_MEDIA_APP_INK)
+#include "chromeos/grit/chromeos_media_app_bundle_resources.h"
+#else
+// TODO(crbug/1150244): Remove when deprecated.
+#include "third_party/ink/grit/ink_resources.h"
+#endif  // BUILDFLAG(ENABLE_USE_MEDIA_APP_INK)
+
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_PDF)
 #include <utility>
 #include "chrome/browser/pdf/pdf_extension_util.h"
-#endif
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace extensions {
 
@@ -82,11 +90,21 @@ ChromeComponentExtensionResourceManager::Data::Data() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"chrome_app/chrome_app_icon_32.png", IDR_CHROME_APP_ICON_32},
     {"chrome_app/chrome_app_icon_192.png", IDR_CHROME_APP_ICON_192},
+#if BUILDFLAG(ENABLE_USE_MEDIA_APP_INK)
+    // Built in go/bbsrc/lib/BUILD
+    {"pdf/ink/ink_engine_ink.worker.js",
+     IDR_MEDIA_APP_INK_ENGINE_INK_WORKER_JS},
+    {"pdf/ink/ink_engine_ink.wasm", IDR_MEDIA_APP_INK_ENGINE_INK_WASM},
+    {"pdf/ink/ink_lib_binary.js", IDR_MEDIA_APP_EXPORT_CANVAS_BIN_JS},
+    {"pdf/ink/ink_loader.js", IDR_MEDIA_APP_INK_JS},
+#else
+    // TODO(crbug/1150244): Remove these when deprecated.
     {"pdf/ink/ink_lib_binary.js", IDR_INK_LIB_BINARY_JS},
     {"pdf/ink/wasm_ink.worker.js", IDR_INK_WORKER_JS},
     {"pdf/ink/wasm_ink.wasm", IDR_INK_WASM},
     {"pdf/ink/ink_loader.js", IDR_INK_LOADER_JS},
-#endif
+#endif  // BUILDFLAG(ENABLE_USE_MEDIA_APP_INK)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   };
 
   AddComponentResourceEntries(kComponentExtensionResources,
@@ -140,8 +158,8 @@ void ChromeComponentExtensionResourceManager::Data::AddComponentResourceEntries(
   gen_folder_path = gen_folder_path.NormalizePathSeparators();
 
   for (size_t i = 0; i < size; ++i) {
-    base::FilePath resource_path = base::FilePath().AppendASCII(
-        entries[i].name);
+    base::FilePath resource_path =
+        base::FilePath().AppendASCII(entries[i].name);
     resource_path = resource_path.NormalizePathSeparators();
 
     if (!gen_folder_path.IsParent(resource_path)) {

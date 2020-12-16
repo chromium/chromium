@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
+import("//chrome/browser/resources/pdf/ink/ink.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 
 js_type_check("closure_compile") {
@@ -10,8 +12,17 @@ js_type_check("closure_compile") {
 
 js_library("ink_api") {
   deps = [ "..:annotation_tool" ]
-  externs_list = [
-    "//third_party/ink/build/ink_lib_externs.js",
-    "$externs_path/pending.js",
-  ]
+  externs_list = [ "$externs_path/pending.js" ]
+
+  if (enable_use_media_app_ink) {
+    externs_list += [ "drawing_canvas_externs.js" ]
+  } else {
+    externs_list += [ "//third_party/ink/build/ink_lib_externs.js" ]
+  }
+}
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+
+  flags = [ "ENABLE_USE_MEDIA_APP_INK=$enable_use_media_app_ink" ]
 }
