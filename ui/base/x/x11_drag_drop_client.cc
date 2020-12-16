@@ -310,11 +310,11 @@ void XDragDropClient::OnXdndEnter(const x11::ClientMessageEvent& event) {
       GetForWindow(static_cast<x11::Window>(event.data.data32[0]));
   DCHECK(!source_client || source_client->source_provider_);
   target_current_context_ = std::make_unique<XDragContext>(
-      xwindow_, event, source_client,
+      xwindow_, event,
       (source_client ? source_client->source_provider_->GetFormatMap()
                      : SelectionFormatMap()));
 
-  if (!target_current_context()->source_client()) {
+  if (!source_client) {
     // The window doesn't have a DesktopDragDropClientAuraX11, which means it's
     // created by some other process.  Listen for messages on it.
     delegate_->OnBeginForeignDrag(
@@ -485,7 +485,9 @@ void XDragDropClient::UpdateModifierState(int flags) {
 void XDragDropClient::ResetDragContext() {
   if (!target_current_context())
     return;
-  if (!target_current_context()->source_client())
+  XDragDropClient* source_client =
+      GetForWindow(target_current_context()->source_window());
+  if (!source_client)
     delegate_->OnEndForeignDrag();
 
   target_current_context_.reset();

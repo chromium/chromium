@@ -78,6 +78,11 @@ class COMPONENT_EXPORT(UI_BASE_X) XDragDropClient {
   XDragDropClient(const XDragDropClient&) = delete;
   XDragDropClient& operator=(const XDragDropClient&) = delete;
 
+  // We maintain a mapping of live XDragDropClient objects to their X11 windows,
+  // so that we'd able to short circuit sending X11 messages to windows in our
+  // process.
+  static XDragDropClient* GetForWindow(x11::Window window);
+
   x11::Window xwindow() const { return xwindow_; }
   XDragContext* target_current_context() {
     return target_current_context_.get();
@@ -194,11 +199,6 @@ class COMPONENT_EXPORT(UI_BASE_X) XDragDropClient {
                         unsigned long event_time);
   void SendXdndLeave(x11::Window dest_window);
   void SendXdndDrop(x11::Window dest_window);
-
-  // We maintain a mapping of live XDragDropClient objects to their X11 windows,
-  // so that we'd able to short circuit sending X11 messages to windows in our
-  // process.
-  static XDragDropClient* GetForWindow(x11::Window window);
 
   void EndMoveLoop();
 
