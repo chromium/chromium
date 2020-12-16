@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/base/x/property_cache.h"
+#include "ui/gfx/x/property_cache.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/x/x11_util.h"
 #include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/xproto.h"
+#include "ui/gfx/x/xproto_util.h"
 
-namespace ui {
+namespace x11 {
 
 TEST(X11PropertyCacheTest, Basic) {
   x11::Connection connection;
-  auto window = CreateDummyWindow();
+  auto window = CreateDummyWindow("", &connection);
   auto atom = gfx::GetAtom("DUMMY ATOM");
-  SetProperty(window, atom, x11::Atom::ATOM, atom).Sync();
+  SetProperty(window, atom, x11::Atom::ATOM, atom, &connection).Sync();
 
   PropertyCache cache(&connection, window, {atom});
   auto& response = cache.GetProperty(atom);
@@ -27,4 +27,4 @@ TEST(X11PropertyCacheTest, Basic) {
   EXPECT_EQ(response->value_len, 1u);
 }
 
-}  // namespace ui
+}  // namespace x11

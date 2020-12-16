@@ -136,6 +136,7 @@ component("xprotos") {
               "xproto_types.cc",
               "future.h",
               "xproto_util.h",
+              "xproto_util.cc",
             ]
   configs += [ ":x11_private_config" ]
   libs = [ "xcb" ]
@@ -146,10 +147,14 @@ component("x") {
 
   sources = [
     "../gfx_export.h",
+    "property_cache.cc",
+    "property_cache.h",
     "x11_atom_cache.cc",
     "x11_atom_cache.h",
     "x11_path.cc",
     "x11_path.h",
+    "x11_window_event_manager.cc",
+    "x11_window_event_manager.h",
   ]
 
   defines = [ "GFX_IMPLEMENTATION" ]
@@ -163,7 +168,10 @@ component("x") {
 
 source_set("unit_test") {
   testonly = true
-  sources = [ "connection_unittest.cc" ]
+  sources = [
+    "connection_unittest.cc",
+    "property_cache_unittest.cc",
+  ]
   deps = [
     "//base",
     "//testing/gtest",

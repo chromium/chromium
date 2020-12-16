@@ -6,13 +6,8 @@
 #define UI_BASE_X_X11_UTIL_H_
 
 // This file declares utility functions for X11 (Linux only).
-//
-// These functions do not require the Xlib headers to be included (which is why
-// we use a void* for Visual*). The Xlib headers are highly polluting so we try
-// hard to limit their spread into the rest of the code.
 
-#include <stddef.h>
-
+#include <cstddef>
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -129,74 +124,6 @@ struct WmHints {
 // These functions use the default display and this /must/ be called from
 // the UI thread. Thus, they don't support multiple displays.
 
-template <typename T>
-bool GetArrayProperty(x11::Window window,
-                      x11::Atom name,
-                      std::vector<T>* value,
-                      x11::Atom* out_type = nullptr,
-                      size_t amount = 0) {
-  static_assert(sizeof(T) == 1 || sizeof(T) == 2 || sizeof(T) == 4, "");
-
-  size_t bytes = amount * sizeof(T);
-  // The length field specifies the maximum amount of data we would like the
-  // server to give us.  It's specified in units of 4 bytes, so divide by 4.
-  // Add 3 before division to round up.
-  size_t length = (bytes + 3) / 4;
-  using lentype = decltype(x11::GetPropertyRequest::long_length);
-  auto response =
-      x11::Connection::Get()
-          ->GetProperty(x11::GetPropertyRequest{
-              .window = static_cast<x11::Window>(window),
-              .property = name,
-              .long_length =
-                  amount ? length : std::numeric_limits<lentype>::max()})
-          .Sync();
-  if (!response || response->format != CHAR_BIT * sizeof(T))
-    return false;
-
-  DCHECK_EQ(response->format / CHAR_BIT * response->value_len,
-            response->value->size());
-  value->resize(response->value_len);
-  memcpy(value->data(), response->value->data(), response->value->size());
-  if (out_type)
-    *out_type = response->type;
-  return true;
-}
-
-template <typename T>
-bool GetProperty(x11::Window window, const x11::Atom name, T* value) {
-  std::vector<T> values;
-  if (!GetArrayProperty(window, name, &values, nullptr, 1) || values.empty())
-    return false;
-  *value = values[0];
-  return true;
-}
-
-template <typename T>
-x11::Future<void> SetArrayProperty(x11::Window window,
-                                   x11::Atom name,
-                                   x11::Atom type,
-                                   const std::vector<T>& values) {
-  static_assert(sizeof(T) == 1 || sizeof(T) == 2 || sizeof(T) == 4, "");
-  std::vector<uint8_t> data(sizeof(T) * values.size());
-  memcpy(data.data(), values.data(), sizeof(T) * values.size());
-  return x11::Connection::Get()->ChangeProperty(x11::ChangePropertyRequest{
-      .window = static_cast<x11::Window>(window),
-      .property = name,
-      .type = type,
-      .format = CHAR_BIT * sizeof(T),
-      .data_len = values.size(),
-      .data = base::RefCountedBytes::TakeVector(&data)});
-}
-
-template <typename T>
-x11::Future<void> SetProperty(x11::Window window,
-                              x11::Atom name,
-                              x11::Atom type,
-                              const T& value) {
-  return SetArrayProperty(window, name, type, std::vector<T>{value});
-}
-
 COMPONENT_EXPORT(UI_BASE_X)
 void DeleteProperty(x11::Window window, x11::Atom name);
 
@@ -223,9 +150,6 @@ void LowerWindow(x11::Window window);
 
 COMPONENT_EXPORT(UI_BASE_X)
 void DefineCursor(x11::Window window, x11::Cursor cursor);
-
-COMPONENT_EXPORT(UI_BASE_X)
-x11::Window CreateDummyWindow(const std::string& name = "");
 
 // Draws an SkPixmap on |drawable| using the given |gc|, converting to the
 // server side visual as needed.
@@ -356,11 +280,6 @@ void SetAtomArrayProperty(x11::Window window,
                           const std::string& name,
                           const std::string& type,
                           const std::vector<x11::Atom>& value);
-COMPONENT_EXPORT(UI_BASE_X)
-void SetStringProperty(x11::Window window,
-                       x11::Atom property,
-                       x11::Atom type,
-                       const std::string& value);
 
 // Sets the WM_CLASS attribute for a given X11 window.
 COMPONENT_EXPORT(UI_BASE_X)

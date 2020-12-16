@@ -188,8 +188,8 @@ XDragDropClient::XDragDropClient(XDragDropClient::Delegate* delegate,
 
   // Mark that we are aware of drag and drop concepts.
   uint32_t xdnd_version = kMaxXdndVersion;
-  ui::SetProperty(xwindow_, gfx::GetAtom(kXdndAware), x11::Atom::ATOM,
-                  xdnd_version);
+  x11::SetProperty(xwindow_, gfx::GetAtom(kXdndAware), x11::Atom::ATOM,
+                   xdnd_version);
 
   // Some tests change the DesktopDragDropClientAuraX11 associated with an
   // |xwindow|.

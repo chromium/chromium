@@ -13,9 +13,11 @@
 #include "ui/gfx/x/event.h"
 #include "ui/gfx/x/xproto.h"
 
-namespace ui {
-
+namespace x11 {
 class XScopedEventSelector;
+}
+
+namespace ui {
 
 // Listens for global workspace changes and notifies observers.
 class COMPONENT_EXPORT(UI_BASE_X) X11WorkspaceHandler
@@ -48,7 +50,7 @@ class COMPONENT_EXPORT(UI_BASE_X) X11WorkspaceHandler
   x11::Window x_root_window_;
 
   // Events selected on x_root_window_.
-  std::unique_ptr<ui::XScopedEventSelector> x_root_window_events_;
+  std::unique_ptr<x11::XScopedEventSelector> x_root_window_events_;
 
   std::string workspace_;
 

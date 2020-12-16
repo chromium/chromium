@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/base/x/property_cache.h"
+#include "ui/gfx/x/property_cache.h"
 
 #include <limits>
 
@@ -10,7 +10,7 @@
 #include "ui/gfx/x/event.h"
 #include "ui/gfx/x/xproto.h"
 
-namespace ui {
+namespace x11 {
 
 PropertyCache::PropertyCache(x11::Connection* connection,
                              x11::Window window,
@@ -78,4 +78,4 @@ PropertyCache::PropertyValue& PropertyCache::PropertyValue::operator=(
 
 PropertyCache::PropertyValue::~PropertyValue() = default;
 
-}  // namespace ui
+}  // namespace x11

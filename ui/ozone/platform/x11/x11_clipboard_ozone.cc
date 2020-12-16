@@ -84,7 +84,7 @@ X11ClipboardOzone::X11ClipboardOzone()
       atom_timestamp_(gfx::GetAtom(kTimestamp)),
       x_property_(gfx::GetAtom(kChromeSelection)),
       connection_(x11::Connection::Get()),
-      x_window_(CreateDummyWindow("Chromium Clipboard Window")) {
+      x_window_(x11::CreateDummyWindow("Chromium Clipboard Window")) {
   connection_->xfixes().QueryVersion(
       {x11::XFixes::major_version, x11::XFixes::minor_version});
   if (!connection_->xfixes().present())
@@ -149,13 +149,13 @@ void X11ClipboardOzone::OnSelectionRequest(
     std::vector<x11::Atom> atoms;
     for (auto& entry : targets)
       atoms.push_back(gfx::GetAtom(entry.c_str()));
-    ui::SetArrayProperty(event.requestor, event.property, x11::Atom::ATOM,
-                         atoms);
+    x11::SetArrayProperty(event.requestor, event.property, x11::Atom::ATOM,
+                          atoms);
 
   } else if (target == atom_timestamp_) {
     // target=TIMESTAMP.
-    ui::SetProperty(event.requestor, event.property, x11::Atom::INTEGER,
-                    selection_state.acquired_selection_timestamp);
+    x11::SetProperty(event.requestor, event.property, x11::Atom::INTEGER,
+                     selection_state.acquired_selection_timestamp);
   } else {
     // Send clipboard data.
     std::string target_name;
@@ -173,8 +173,8 @@ void X11ClipboardOzone::OnSelectionRequest(
     }
     auto it = offer_data_map.find(key);
     if (it != offer_data_map.end()) {
-      ui::SetArrayProperty(event.requestor, event.property, event.target,
-                           it->second->data());
+      x11::SetArrayProperty(event.requestor, event.property, event.target,
+                            it->second->data());
     }
   }
 
@@ -200,7 +200,7 @@ void X11ClipboardOzone::OnSelectionNotify(
   auto& selection_state = GetSelectionState(selection);
   if (static_cast<x11::Atom>(event.target) == atom_targets_) {
     std::vector<x11::Atom> targets;
-    ui::GetArrayProperty(x_window_, x_property_, &targets);
+    x11::GetArrayProperty(x_window_, x_property_, &targets);
 
     selection_state.mime_types.clear();
     for (auto target : targets) {
@@ -225,7 +225,7 @@ void X11ClipboardOzone::OnSelectionNotify(
   if (static_cast<x11::Atom>(event.property) == x_property_) {
     x11::Atom type;
     std::vector<uint8_t> data;
-    ui::GetArrayProperty(x_window_, x_property_, &data, &type);
+    x11::GetArrayProperty(x_window_, x_property_, &data, &type);
     ui::DeleteProperty(x_window_, x_property_);
     if (type != x11::Atom::None)
       selection_state.data = scoped_refptr<base::RefCountedBytes>(

@@ -24,7 +24,7 @@
 #include "ui/events/platform/platform_event_source.h"
 #include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/events/x/x11_event_translation.h"
-#include "ui/events/x/x11_window_event_manager.h"
+#include "ui/gfx/x/x11_window_event_manager.h"
 #include "ui/platform_window/common/platform_window_defaults.h"
 #include "ui/platform_window/extensions/workspace_extension_delegate.h"
 #include "ui/platform_window/extensions/x11_extension_delegate.h"
@@ -864,7 +864,7 @@ void X11Window::UpdateCursor(
 
 void X11Window::OnBeginForeignDrag(x11::Window window) {
   notified_enter_ = false;
-  source_window_events_ = std::make_unique<ui::XScopedEventSelector>(
+  source_window_events_ = std::make_unique<x11::XScopedEventSelector>(
       window, x11::EventMask::PropertyChange);
 }
 

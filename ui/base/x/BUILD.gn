@@ -12,8 +12,6 @@ component("x") {
   output_name = "ui_base_x"
 
   sources = [
-    "property_cache.cc",
-    "property_cache.h",
     "selection_utils.cc",
     "selection_utils.h",
     "x11_cursor.cc",

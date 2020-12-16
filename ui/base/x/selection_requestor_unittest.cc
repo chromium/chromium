@@ -21,6 +21,7 @@
 #include "ui/gfx/x/event.h"
 #include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/xproto.h"
+#include "ui/gfx/x/xproto_util.h"
 
 namespace ui {
 
@@ -37,8 +38,8 @@ class SelectionRequestorTest : public testing::Test {
   void SendSelectionNotify(x11::Atom selection,
                            x11::Atom target,
                            const std::string& value) {
-    ui::SetStringProperty(x_window_, requestor_->x_property_,
-                          gfx::GetAtom("STRING"), value);
+    x11::SetStringProperty(x_window_, requestor_->x_property_,
+                           gfx::GetAtom("STRING"), value);
 
     requestor_->OnSelectionNotify({
         .requestor = x_window_,
@@ -51,7 +52,7 @@ class SelectionRequestorTest : public testing::Test {
  protected:
   void SetUp() override {
     // Create a window for the selection requestor to use.
-    x_window_ = CreateDummyWindow();
+    x_window_ = x11::CreateDummyWindow();
 
     event_source_ = PlatformEventSource::CreateDefault();
     CHECK(PlatformEventSource::GetInstance());

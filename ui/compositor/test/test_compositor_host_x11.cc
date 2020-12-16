@@ -9,8 +9,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
-#include "ui/events/x/x11_window_event_manager.h"
 #include "ui/gfx/x/future.h"
+#include "ui/gfx/x/x11_window_event_manager.h"
 #include "ui/gfx/x/xproto.h"
 
 namespace ui {
@@ -40,8 +40,8 @@ void TestCompositorHostX11::Show() {
       .c_class = x11::WindowClass::InputOutput,
       .override_redirect = x11::Bool32(true),
   });
-  window_events_ =
-      std::make_unique<XScopedEventSelector>(window_, x11::EventMask::Exposure);
+  window_events_ = std::make_unique<x11::XScopedEventSelector>(
+      window_, x11::EventMask::Exposure);
   connection->MapWindow({window_});
   // Since this window is override-redirect, syncing is sufficient
   // to ensure the map is complete.

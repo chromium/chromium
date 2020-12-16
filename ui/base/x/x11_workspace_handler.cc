@@ -6,8 +6,8 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "ui/base/x/x11_util.h"
-#include "ui/events/x/x11_window_event_manager.h"
 #include "ui/gfx/x/x11_atom_cache.h"
+#include "ui/gfx/x/x11_window_event_manager.h"
 #include "ui/gfx/x/xproto.h"
 
 namespace ui {
@@ -31,7 +31,7 @@ X11WorkspaceHandler::X11WorkspaceHandler(Delegate* delegate)
   DCHECK(delegate_);
   x11::Connection::Get()->AddEventObserver(this);
 
-  x_root_window_events_ = std::make_unique<ui::XScopedEventSelector>(
+  x_root_window_events_ = std::make_unique<x11::XScopedEventSelector>(
       x_root_window_, x11::EventMask::PropertyChange);
 }
 

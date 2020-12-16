@@ -34,6 +34,96 @@ x11::Future<void> SendEvent(
   return connection->SendEvent(send_event);
 }
 
+template <typename T>
+bool GetArrayProperty(x11::Window window,
+                      x11::Atom name,
+                      std::vector<T>* value,
+                      x11::Atom* out_type = nullptr,
+                      size_t amount = 0,
+                      x11::Connection* connection = x11::Connection::Get()) {
+  static_assert(sizeof(T) == 1 || sizeof(T) == 2 || sizeof(T) == 4, "");
+
+  size_t bytes = amount * sizeof(T);
+  // The length field specifies the maximum amount of data we would like the
+  // server to give us.  It's specified in units of 4 bytes, so divide by 4.
+  // Add 3 before division to round up.
+  size_t length = (bytes + 3) / 4;
+  using lentype = decltype(x11::GetPropertyRequest::long_length);
+  auto response =
+      connection
+          ->GetProperty(x11::GetPropertyRequest{
+              .window = static_cast<x11::Window>(window),
+              .property = name,
+              .long_length =
+                  amount ? length : std::numeric_limits<lentype>::max()})
+          .Sync();
+  if (!response || response->format != CHAR_BIT * sizeof(T))
+    return false;
+
+  DCHECK_EQ(response->format / CHAR_BIT * response->value_len,
+            response->value->size());
+  value->resize(response->value_len);
+  memcpy(value->data(), response->value->data(), response->value->size());
+  if (out_type)
+    *out_type = response->type;
+  return true;
+}
+
+template <typename T>
+bool GetProperty(x11::Window window,
+                 const x11::Atom name,
+                 T* value,
+                 x11::Connection* connection = x11::Connection::Get()) {
+  std::vector<T> values;
+  if (!GetArrayProperty(window, name, &values, nullptr, 1, connection) ||
+      values.empty()) {
+    return false;
+  }
+  *value = values[0];
+  return true;
+}
+
+template <typename T>
+x11::Future<void> SetArrayProperty(
+    x11::Window window,
+    x11::Atom name,
+    x11::Atom type,
+    const std::vector<T>& values,
+    x11::Connection* connection = x11::Connection::Get()) {
+  static_assert(sizeof(T) == 1 || sizeof(T) == 2 || sizeof(T) == 4, "");
+  std::vector<uint8_t> data(sizeof(T) * values.size());
+  memcpy(data.data(), values.data(), sizeof(T) * values.size());
+  return connection->ChangeProperty(x11::ChangePropertyRequest{
+      .window = static_cast<x11::Window>(window),
+      .property = name,
+      .type = type,
+      .format = CHAR_BIT * sizeof(T),
+      .data_len = values.size(),
+      .data = base::RefCountedBytes::TakeVector(&data)});
+}
+
+template <typename T>
+x11::Future<void> SetProperty(
+    x11::Window window,
+    x11::Atom name,
+    x11::Atom type,
+    const T& value,
+    x11::Connection* connection = x11::Connection::Get()) {
+  return SetArrayProperty(window, name, type, std::vector<T>{value},
+                          connection);
+}
+
+COMPONENT_EXPORT(X11)
+void SetStringProperty(x11::Window window,
+                       x11::Atom property,
+                       x11::Atom type,
+                       const std::string& value,
+                       x11::Connection* connection = x11::Connection::Get());
+
+COMPONENT_EXPORT(X11)
+Window CreateDummyWindow(const std::string& name = std::string(),
+                         x11::Connection* connection = x11::Connection::Get());
+
 }  // namespace x11
 
 #endif  //  UI_GFX_X_XPROTO_UTIL_H_

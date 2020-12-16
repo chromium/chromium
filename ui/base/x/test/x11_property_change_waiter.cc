@@ -9,8 +9,8 @@
 #include "base/run_loop.h"
 #include "ui/events/event.h"
 #include "ui/events/platform/scoped_event_dispatcher.h"
-#include "ui/events/x/x11_window_event_manager.h"
 #include "ui/gfx/x/x11_atom_cache.h"
+#include "ui/gfx/x/x11_window_event_manager.h"
 #include "ui/gfx/x/xproto.h"
 
 namespace ui {
@@ -20,7 +20,7 @@ X11PropertyChangeWaiter::X11PropertyChangeWaiter(x11::Window window,
     : x_window_(window), property_(property), wait_(true) {
   // Ensure that we are listening to PropertyNotify events for |window|. This
   // is not the case for windows which were not created by X11Window.
-  x_window_events_ = std::make_unique<XScopedEventSelector>(
+  x_window_events_ = std::make_unique<x11::XScopedEventSelector>(
       x_window_, x11::EventMask::PropertyChange);
 
   x11::Connection::Get()->AddEventObserver(this);

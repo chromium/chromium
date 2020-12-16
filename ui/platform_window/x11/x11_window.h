@@ -250,7 +250,7 @@ class X11_WINDOW_EXPORT X11Window : public PlatformWindow,
   std::unique_ptr<X11MoveLoop> drag_loop_;
 
   // Events that we have selected on the source window of the incoming drag.
-  std::unique_ptr<ui::XScopedEventSelector> source_window_events_;
+  std::unique_ptr<x11::XScopedEventSelector> source_window_events_;
 
   base::WeakPtrFactory<X11Window> weak_ptr_factory_{this};
 

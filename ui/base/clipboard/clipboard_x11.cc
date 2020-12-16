@@ -31,14 +31,15 @@
 #include "ui/base/x/selection_requestor.h"
 #include "ui/base/x/selection_utils.h"
 #include "ui/base/x/x11_util.h"
-#include "ui/events/x/x11_window_event_manager.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"
 #include "ui/gfx/x/x11_atom_cache.h"
+#include "ui/gfx/x/x11_window_event_manager.h"
 #include "ui/gfx/x/xfixes.h"
 #include "ui/gfx/x/xproto.h"
+#include "ui/gfx/x/xproto_util.h"
 
 namespace ui {
 
@@ -245,7 +246,7 @@ class ClipboardX11::X11Details : public x11::EventObserver {
   x11::Window x_window_;
 
   // Events selected on |x_window_|.
-  std::unique_ptr<XScopedEventSelector> x_window_events_;
+  std::unique_ptr<x11::XScopedEventSelector> x_window_events_;
 
   // Object which requests and receives selection data.
   SelectionRequestor selection_requestor_;
@@ -263,13 +264,13 @@ class ClipboardX11::X11Details : public x11::EventObserver {
 ClipboardX11::X11Details::X11Details()
     : connection_(x11::Connection::Get()),
       x_root_window_(ui::GetX11RootWindow()),
-      x_window_(CreateDummyWindow("Chromium Clipboard Window")),
+      x_window_(x11::CreateDummyWindow("Chromium Clipboard Window")),
       selection_requestor_(x_window_, this),
       clipboard_owner_(connection_, x_window_, gfx::GetAtom(kClipboard)),
       primary_owner_(connection_, x_window_, x11::Atom::PRIMARY) {
-  SetStringProperty(x_window_, x11::Atom::WM_NAME, x11::Atom::STRING,
-                    "Chromium clipboard");
-  x_window_events_ = std::make_unique<XScopedEventSelector>(
+  x11::SetStringProperty(x_window_, x11::Atom::WM_NAME, x11::Atom::STRING,
+                         "Chromium clipboard");
+  x_window_events_ = std::make_unique<x11::XScopedEventSelector>(
       x_window_, x11::EventMask::PropertyChange);
 
   connection_->AddEventObserver(this);

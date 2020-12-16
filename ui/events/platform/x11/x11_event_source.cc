@@ -21,11 +21,11 @@
 #include "ui/events/platform/x11/x11_hotplug_event_handler.h"
 #include "ui/events/x/events_x_utils.h"
 #include "ui/events/x/x11_event_translation.h"
-#include "ui/events/x/x11_window_event_manager.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/extension_manager.h"
 #include "ui/gfx/x/future.h"
 #include "ui/gfx/x/x11_atom_cache.h"
+#include "ui/gfx/x/x11_window_event_manager.h"
 #include "ui/gfx/x/xkb.h"
 #include "ui/gfx/x/xproto.h"
 
@@ -169,7 +169,7 @@ x11::Time X11EventSource::GetCurrentServerTime() {
         .override_redirect = x11::Bool32(true),
     });
     dummy_atom_ = gfx::GetAtom("CHROMIUM_TIMESTAMP");
-    dummy_window_events_ = std::make_unique<XScopedEventSelector>(
+    dummy_window_events_ = std::make_unique<x11::XScopedEventSelector>(
         dummy_window_, x11::EventMask::PropertyChange);
     dummy_initialized_ = true;
   }

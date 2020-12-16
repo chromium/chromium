@@ -11,8 +11,8 @@
 #include "ui/base/x/selection_utils.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/events/platform/x11/x11_event_source.h"
-#include "ui/events/x/x11_window_event_manager.h"
 #include "ui/gfx/x/x11_atom_cache.h"
+#include "ui/gfx/x/x11_window_event_manager.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_util.h"
 
@@ -60,7 +60,7 @@ bool GetAtomPairArrayProperty(
   std::vector<x11::Atom> atoms;
   // Since this is an array of atom pairs, ensure ensure |atoms|
   // has an element count that's a multiple of 2.
-  if (!ui::GetArrayProperty(window, property, &atoms) || atoms.size() % 2 != 0)
+  if (!x11::GetArrayProperty(window, property, &atoms) || atoms.size() % 2 != 0)
     return false;
 
   value->clear();
@@ -149,8 +149,8 @@ void SelectionOwner::OnSelectionRequest(
 
       // Set the property to indicate which conversions succeeded. This matches
       // what GTK does.
-      ui::SetArrayProperty(requestor, requested_property,
-                           gfx::GetAtom(kAtomPair), conversion_results);
+      x11::SetArrayProperty(requestor, requested_property,
+                            gfx::GetAtom(kAtomPair), conversion_results);
 
       reply.property = requested_property;
     }
@@ -198,8 +198,8 @@ bool SelectionOwner::ProcessTarget(x11::Atom target,
     return false;
 
   if (target == timestamp_atom) {
-    ui::SetProperty(requestor, property, x11::Atom::INTEGER,
-                    acquired_selection_timestamp_);
+    x11::SetProperty(requestor, property, x11::Atom::INTEGER,
+                     acquired_selection_timestamp_);
     return true;
   }
 
@@ -210,7 +210,7 @@ bool SelectionOwner::ProcessTarget(x11::Atom target,
                                       save_targets_atom, multiple_atom};
     RetrieveTargets(&targets);
 
-    ui::SetArrayProperty(requestor, property, x11::Atom::ATOM, targets);
+    x11::SetArrayProperty(requestor, property, x11::Atom::ATOM, targets);
     return true;
   }
 
@@ -222,7 +222,7 @@ bool SelectionOwner::ProcessTarget(x11::Atom target,
       // the size of X requests. Notify the selection requestor that the data
       // will be sent incrementally by returning data of type "INCR".
       uint32_t length = it->second->size();
-      ui::SetProperty(requestor, property, gfx::GetAtom(kIncr), length);
+      x11::SetProperty(requestor, property, gfx::GetAtom(kIncr), length);
 
       // Wait for the selection requestor to indicate that it has processed
       // the selection result before sending the first chunk of data. The
@@ -232,7 +232,7 @@ bool SelectionOwner::ProcessTarget(x11::Atom target,
           base::TimeDelta::FromMilliseconds(kIncrementalTransferTimeoutMs);
       incremental_transfers_.emplace_back(
           requestor, target, property,
-          std::make_unique<XScopedEventSelector>(
+          std::make_unique<x11::XScopedEventSelector>(
               requestor, x11::EventMask::PropertyChange),
           it->second, 0, timeout);
 
@@ -248,7 +248,7 @@ bool SelectionOwner::ProcessTarget(x11::Atom target,
     } else {
       auto& mem = it->second;
       std::vector<uint8_t> data(mem->data(), mem->data() + mem->size());
-      ui::SetArrayProperty(requestor, property, target, data);
+      x11::SetArrayProperty(requestor, property, target, data);
     }
     return true;
   }
@@ -263,8 +263,8 @@ void SelectionOwner::ProcessIncrementalTransfer(IncrementalTransfer* transfer) {
   size_t chunk_length = std::min(remaining, max_request_size_);
   const uint8_t* data = transfer->data->front() + transfer->offset;
   std::vector<uint8_t> buf(data, data + chunk_length);
-  ui::SetArrayProperty(transfer->window, transfer->property, transfer->target,
-                       buf);
+  x11::SetArrayProperty(transfer->window, transfer->property, transfer->target,
+                        buf);
   transfer->offset += chunk_length;
   transfer->timeout =
       base::TimeTicks::Now() +
@@ -310,7 +310,7 @@ SelectionOwner::IncrementalTransfer::IncrementalTransfer(
     x11::Window window,
     x11::Atom target,
     x11::Atom property,
-    std::unique_ptr<XScopedEventSelector> event_selector,
+    std::unique_ptr<x11::XScopedEventSelector> event_selector,
     const scoped_refptr<base::RefCountedMemory>& data,
     int offset,
     base::TimeTicks timeout)

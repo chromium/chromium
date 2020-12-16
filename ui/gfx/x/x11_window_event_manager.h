@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_EVENTS_X_X11_WINDOW_EVENT_MANAGER_H_
-#define UI_EVENTS_X_X11_WINDOW_EVENT_MANAGER_H_
+#ifndef UI_GFX_X_X11_WINDOW_EVENT_MANAGER_H_
+#define UI_GFX_X_X11_WINDOW_EVENT_MANAGER_H_
 
 #include <map>
 
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "ui/events/x/events_x_export.h"
+#include "ui/gfx/gfx_export.h"
 #include "ui/gfx/x/connection.h"
 
 namespace base {
@@ -18,13 +18,13 @@ template <typename T>
 struct DefaultSingletonTraits;
 }
 
-namespace ui {
+namespace x11 {
 
 class XWindowEventManager;
 
 // Ensures events in |event_mask| are selected on |window| for the duration of
 // this object's lifetime.
-class EVENTS_X_EXPORT XScopedEventSelector {
+class GFX_EXPORT XScopedEventSelector {
  public:
   XScopedEventSelector(x11::Window window, x11::EventMask event_mask);
   ~XScopedEventSelector();
@@ -73,6 +73,6 @@ class XWindowEventManager {
   DISALLOW_COPY_AND_ASSIGN(XWindowEventManager);
 };
 
-}  // namespace ui
+}  // namespace x11
 
-#endif  // UI_EVENTS_X_X11_WINDOW_EVENT_MANAGER_H_
+#endif  // UI_GFX_X_X11_WINDOW_EVENT_MANAGER_H_

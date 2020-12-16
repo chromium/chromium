@@ -7,9 +7,9 @@
 #include "base/logging.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "ui/base/x/x11_util.h"
-#include "ui/events/x/x11_window_event_manager.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/x/connection.h"
+#include "ui/gfx/x/x11_window_event_manager.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_util.h"
 
@@ -69,7 +69,7 @@ VulkanSurfaceX11::VulkanSurfaceX11(VkInstance vk_instance,
                     false /* use_protected_memory */),
       parent_window_(parent_window),
       window_(window),
-      event_selector_(std::make_unique<ui::XScopedEventSelector>(
+      event_selector_(std::make_unique<x11::XScopedEventSelector>(
           window,
           x11::EventMask::Exposure)) {
   x11::Connection::Get()->AddEventObserver(this);

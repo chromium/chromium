@@ -33,10 +33,13 @@ class ImageSkia;
 class Transform;
 }  // namespace gfx
 
+namespace x11 {
+class XScopedEventSelector;
+}
+
 namespace ui {
 
 class Event;
-class XScopedEventSelector;
 class X11Cursor;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -269,7 +272,7 @@ class COMPONENT_EXPORT(UI_BASE_X) XWindow {
   x11::Window transient_window_ = x11::Window::None;
 
   // Events selected on |xwindow_|.
-  std::unique_ptr<ui::XScopedEventSelector> xwindow_events_;
+  std::unique_ptr<x11::XScopedEventSelector> xwindow_events_;
 
   // The window manager state bits.
   base::flat_set<x11::Atom> window_properties_;

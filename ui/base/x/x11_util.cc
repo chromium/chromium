@@ -188,8 +188,8 @@ bool GetWmNormalHints(x11::Window window, SizeHints* hints) {
 void SetWmNormalHints(x11::Window window, const SizeHints& hints) {
   std::vector<uint32_t> hints32(sizeof(SizeHints) / 4);
   memcpy(hints32.data(), &hints, sizeof(SizeHints));
-  ui::SetArrayProperty(window, gfx::GetAtom("WM_NORMAL_HINTS"),
-                       gfx::GetAtom("WM_SIZE_HINTS"), hints32);
+  x11::SetArrayProperty(window, gfx::GetAtom("WM_NORMAL_HINTS"),
+                        gfx::GetAtom("WM_SIZE_HINTS"), hints32);
 }
 
 bool GetWmHints(x11::Window window, WmHints* hints) {
@@ -205,8 +205,8 @@ bool GetWmHints(x11::Window window, WmHints* hints) {
 void SetWmHints(x11::Window window, const WmHints& hints) {
   std::vector<uint32_t> hints32(sizeof(WmHints) / 4);
   memcpy(hints32.data(), &hints, sizeof(WmHints));
-  ui::SetArrayProperty(window, gfx::GetAtom("WM_HINTS"),
-                       gfx::GetAtom("WM_HINTS"), hints32);
+  x11::SetArrayProperty(window, gfx::GetAtom("WM_HINTS"),
+                        gfx::GetAtom("WM_HINTS"), hints32);
 }
 
 void WithdrawWindow(x11::Window window) {
@@ -239,24 +239,6 @@ void DefineCursor(x11::Window window, x11::Cursor cursor) {
       ->ChangeWindowAttributes(x11::ChangeWindowAttributesRequest{
           .window = window, .cursor = cursor})
       .Sync();
-}
-
-x11::Window CreateDummyWindow(const std::string& name) {
-  auto* connection = x11::Connection::Get();
-  auto window = connection->GenerateId<x11::Window>();
-  connection->CreateWindow(x11::CreateWindowRequest{
-      .wid = window,
-      .parent = connection->default_root(),
-      .x = -100,
-      .y = -100,
-      .width = 10,
-      .height = 10,
-      .c_class = x11::WindowClass::InputOnly,
-      .override_redirect = x11::Bool32(true),
-  });
-  if (!name.empty())
-    SetStringProperty(window, x11::Atom::WM_NAME, x11::Atom::STRING, name);
-  return window;
 }
 
 void DrawPixmap(x11::Connection* connection,
@@ -649,14 +631,6 @@ void SetAtomArrayProperty(x11::Window window,
                           const std::string& type,
                           const std::vector<x11::Atom>& value) {
   SetArrayProperty(window, gfx::GetAtom(name), gfx::GetAtom(type), value);
-}
-
-void SetStringProperty(x11::Window window,
-                       x11::Atom property,
-                       x11::Atom type,
-                       const std::string& value) {
-  std::vector<char> str(value.begin(), value.end());
-  SetArrayProperty(window, property, type, str);
 }
 
 void SetWindowClassHint(x11::Connection* connection,

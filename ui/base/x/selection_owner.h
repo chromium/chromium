@@ -18,9 +18,11 @@
 #include "ui/base/x/selection_utils.h"
 #include "ui/gfx/x/event.h"
 
-namespace ui {
-
+namespace x11 {
 class XScopedEventSelector;
+}
+
+namespace ui {
 
 COMPONENT_EXPORT(UI_BASE_X) extern const char kIncr[];
 COMPONENT_EXPORT(UI_BASE_X) extern const char kSaveTargets[];
@@ -65,13 +67,14 @@ class COMPONENT_EXPORT(UI_BASE_X) SelectionOwner {
  private:
   // Holds state related to an incremental data transfer.
   struct IncrementalTransfer {
-    IncrementalTransfer(x11::Window window,
-                        x11::Atom target,
-                        x11::Atom property,
-                        std::unique_ptr<XScopedEventSelector> event_selector,
-                        const scoped_refptr<base::RefCountedMemory>& data,
-                        int offset,
-                        base::TimeTicks timeout);
+    IncrementalTransfer(
+        x11::Window window,
+        x11::Atom target,
+        x11::Atom property,
+        std::unique_ptr<x11::XScopedEventSelector> event_selector,
+        const scoped_refptr<base::RefCountedMemory>& data,
+        int offset,
+        base::TimeTicks timeout);
     ~IncrementalTransfer();
 
     // Move-only class.
@@ -85,7 +88,7 @@ class COMPONENT_EXPORT(UI_BASE_X) SelectionOwner {
     x11::Atom property;
 
     // Selects events on |window|.
-    std::unique_ptr<XScopedEventSelector> event_selector;
+    std::unique_ptr<x11::XScopedEventSelector> event_selector;
 
     // The data to be transferred.
     scoped_refptr<base::RefCountedMemory> data;

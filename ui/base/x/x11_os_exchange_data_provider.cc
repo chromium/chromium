@@ -18,6 +18,7 @@
 #include "ui/base/x/selection_utils.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/gfx/x/x11_atom_cache.h"
+#include "ui/gfx/x/xproto_util.h"
 
 // Note: the GetBlah() methods are used immediately by the
 // web_contents_view_aura.cc:PrepareDropData(), while the omnibox is a
@@ -49,7 +50,7 @@ XOSExchangeDataProvider::XOSExchangeDataProvider()
     : connection_(x11::Connection::Get()),
       x_root_window_(ui::GetX11RootWindow()),
       own_window_(true),
-      x_window_(CreateDummyWindow("Chromium Drag & Drop Window")),
+      x_window_(x11::CreateDummyWindow("Chromium Drag & Drop Window")),
       selection_owner_(connection_, x_window_, gfx::GetAtom(kDndSelection)) {}
 
 XOSExchangeDataProvider::~XOSExchangeDataProvider() {

@@ -22,10 +22,13 @@ namespace gfx {
 class Point;
 }
 
+namespace x11 {
+class XScopedEventSelector;
+}
+
 namespace ui {
 
 class X11HotplugEventHandler;
-class XScopedEventSelector;
 
 // Responsible for notifying X11EventSource when new x11::Events are available
 // to be processed/dispatched.
@@ -94,7 +97,7 @@ class EVENTS_EXPORT X11EventSource : public PlatformEventSource,
   bool dummy_initialized_;
   x11::Window dummy_window_;
   x11::Atom dummy_atom_;
-  std::unique_ptr<XScopedEventSelector> dummy_window_events_;
+  std::unique_ptr<x11::XScopedEventSelector> dummy_window_events_;
 
   // Keeps track of whether this source should continue to dispatch all the
   // available events.

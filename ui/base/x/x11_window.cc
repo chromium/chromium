@@ -29,7 +29,6 @@
 #include "ui/events/event_utils.h"
 #include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/events/x/events_x_utils.h"
-#include "ui/events/x/x11_window_event_manager.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
@@ -37,6 +36,7 @@
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/x11_path.h"
+#include "ui/gfx/x/x11_window_event_manager.h"
 #include "ui/gfx/x/xfixes.h"
 #include "ui/gfx/x/xinput.h"
 #include "ui/gfx/x/xproto.h"
@@ -298,7 +298,7 @@ void XWindow::Init(const Configuration& config) {
       x11::EventMask::VisibilityChange | x11::EventMask::StructureNotify |
       x11::EventMask::PropertyChange | x11::EventMask::PointerMotion;
   xwindow_events_ =
-      std::make_unique<XScopedEventSelector>(xwindow_, event_mask);
+      std::make_unique<x11::XScopedEventSelector>(xwindow_, event_mask);
   connection_->Flush();
 
   if (IsXInput2Available())

@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/events/x/x11_window_event_manager.h"
+#include "ui/gfx/x/x11_window_event_manager.h"
 
 #include <stddef.h>
 
 #include "base/memory/singleton.h"
 #include "ui/gfx/x/future.h"
 
-namespace ui {
+namespace x11 {
 
 namespace {
 
@@ -125,4 +125,4 @@ void XWindowEventManager::AfterMaskChanged(x11::Window window,
     mask_map_.erase(window);
 }
 
-}  // namespace ui
+}  // namespace x11

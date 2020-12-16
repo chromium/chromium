@@ -48,7 +48,7 @@ X11UIControlsTestHelper::X11UIControlsTestHelper()
     : connection_(x11::Connection::Get()),
       x_root_window_(ui::GetX11RootWindow()),
       x_window_(
-          ui::CreateDummyWindow("Chromium X11UIControlsTestHelper Window")) {}
+          x11::CreateDummyWindow("Chromium X11UIControlsTestHelper Window")) {}
 
 X11UIControlsTestHelper::~X11UIControlsTestHelper() {
   connection_->DestroyWindow({x_window_});

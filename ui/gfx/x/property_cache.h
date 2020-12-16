@@ -2,26 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_BASE_X_PROPERTY_CACHE_H_
-#define UI_BASE_X_PROPERTY_CACHE_H_
+#ifndef UI_GFX_X_PROPERTY_CACHE_H_
+#define UI_GFX_X_PROPERTY_CACHE_H_
 
 #include <vector>
 
-#include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "ui/events/x/x11_window_event_manager.h"
+#include "ui/gfx/gfx_export.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/future.h"
+#include "ui/gfx/x/x11_window_event_manager.h"
 #include "ui/gfx/x/xproto.h"
 
-namespace ui {
+namespace x11 {
 
 // Watches properties on an X11 window.  Property values are obtained once upon
 // creation and are refreshed after each property change.
-class COMPONENT_EXPORT(UI_BASE_X) PropertyCache : public x11::EventObserver {
+class GFX_EXPORT PropertyCache : public x11::EventObserver {
  public:
   PropertyCache(x11::Connection* connection,
                 x11::Window window,
@@ -64,6 +64,6 @@ class COMPONENT_EXPORT(UI_BASE_X) PropertyCache : public x11::EventObserver {
   base::WeakPtrFactory<PropertyCache> weak_factory_{this};
 };
 
-}  // namespace ui
+}  // namespace x11
 
-#endif  // UI_BASE_X_PROPERTY_CACHE_H_
+#endif  // UI_GFX_X_PROPERTY_CACHE_H_

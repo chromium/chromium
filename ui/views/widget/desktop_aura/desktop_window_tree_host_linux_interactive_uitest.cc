@@ -22,6 +22,7 @@
 #include "ui/base/x/x11_util.h"
 #include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/xproto.h"
+#include "ui/gfx/x/xproto_util.h"
 #include "ui/views/controls/textfield/textfield.h"
 #endif  // defined(USE_X11)
 
@@ -98,8 +99,8 @@ class ActivationWaiter : public ui::X11PropertyChangeWaiter {
   // ui::X11PropertyChangeWaiter:
   bool ShouldKeepOnWaiting() override {
     x11::Window window = x11::Window::None;
-    ui::GetProperty(ui::GetX11RootWindow(), gfx::GetAtom("_NET_ACTIVE_WINDOW"),
-                    &window);
+    x11::GetProperty(ui::GetX11RootWindow(), gfx::GetAtom("_NET_ACTIVE_WINDOW"),
+                     &window);
     return window != window_;
   }
 

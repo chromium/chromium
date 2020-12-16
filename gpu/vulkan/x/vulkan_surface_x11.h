@@ -12,7 +12,7 @@
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"
 
-namespace ui {
+namespace x11 {
 class XScopedEventSelector;
 }
 
@@ -39,7 +39,7 @@ class VulkanSurfaceX11 : public VulkanSurface, public x11::EventObserver {
 
   const x11::Window parent_window_;
   x11::Window window_;
-  std::unique_ptr<ui::XScopedEventSelector> event_selector_;
+  std::unique_ptr<x11::XScopedEventSelector> event_selector_;
 
   DISALLOW_COPY_AND_ASSIGN(VulkanSurfaceX11);
 };

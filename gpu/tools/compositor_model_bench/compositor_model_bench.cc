@@ -170,8 +170,8 @@ class Simulator {
         .event_mask = x11::EventMask::Exposure | x11::EventMask::KeyPress |
                       x11::EventMask::StructureNotify,
     });
-    ui::SetStringProperty(window_, x11::Atom::WM_NAME, x11::Atom::STRING,
-                          "Compositor Model Bench");
+    x11::SetStringProperty(window_, x11::Atom::WM_NAME, x11::Atom::STRING,
+                           "Compositor Model Bench");
 
     connection_->MapWindow({window_});
 
