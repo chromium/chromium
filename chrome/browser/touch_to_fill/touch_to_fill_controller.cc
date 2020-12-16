@@ -68,6 +68,7 @@ void TouchToFillController::Show(base::span<const UiCredential> credentials,
 
 void TouchToFillController::OnCredentialSelected(
     const UiCredential& credential) {
+  view_.reset();
   if (!driver_)
     return;
 
@@ -83,6 +84,7 @@ void TouchToFillController::OnCredentialSelected(
 }
 
 void TouchToFillController::OnManagePasswordsSelected() {
+  view_.reset();
   if (!driver_)
     return;
 
@@ -97,6 +99,7 @@ void TouchToFillController::OnManagePasswordsSelected() {
 }
 
 void TouchToFillController::OnDismiss() {
+  view_.reset();
   if (!driver_)
     return;
 
