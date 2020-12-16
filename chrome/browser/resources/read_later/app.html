@@ -1,15 +1,16 @@
-<style include="mwb-shared-style read-later-shared-style">
+<style include="mwb-shared-style read-later-shared-style cr-hidden-style">
   #top-container {
     display: flex;
+    height: var(--mwb-item-height);
+    justify-content: flex-end;
   }
 
   #header {
     align-items: center;
     color: var(--cr-primary-text-color);
-    display: flex;
     flex-grow: 1;
     font-size: 15px;
-    height: var(--mwb-item-height);
+    line-height: var(--mwb-item-height);
     margin: 0;
     padding-inline-start: var(--mwb-list-item-horizontal-margin);
   }
@@ -50,10 +51,28 @@
     margin-inline-start: var(--mwb-list-item-horizontal-margin);
     margin-top: 4px;
   }
+
+  #empty-state-header {
+    color: var(--cr-primary-text-color);
+    font-size: 15px;
+    line-height: 20px;
+    padding: 0 var(--mwb-list-item-horizontal-margin);
+    text-align: center;
+  }
+
+  #empty-state-subheader {
+    color: var(--cr-secondary-text-color);
+    font-size: var(--mwb-primary-text-font-size);
+    line-height: 20px;
+    padding: 4px var(--mwb-list-item-horizontal-margin) 24px;
+    text-align: center;
+  }
 </style>
 
 <div id="top-container">
-  <div id="header">$i18n{title}</div>
+  <div id="header"
+      hidden="[[isReadingListEmpty_(unreadItems_, readItems_)]]">$i18n{title}
+  </div>
   <cr-icon-button id="closeButton" aria-label="$i18n{tooltipClose}"
       disable-ripple iron-icon="cr:close" on-click="onCloseClick_"
       title="$i18n{tooltipClose}">
@@ -62,15 +81,25 @@
 <div id="read-later-list">
   <iron-selector id="selector" on-keydown="onItemKeyDown_"
       attr-for-selected="data-url" selectable="read-later-item">
-    <div class="sub-heading">$i18n{unreadHeader}</div>
+    <div hidden="[[!unreadItems_.length]]" class="sub-heading">
+      $i18n{unreadHeader}
+    </div>
     <template id="ureadItemsList" is="dom-repeat" items="[[unreadItems_]]">
       <read-later-item data-url$="[[item.url.url]]" on-focus="onItemFocus_"
-          class="mwb-list-item" data="[[item]]" tabindex="0"></read-later-item>
+          class="mwb-list-item" data="[[item]]" tabindex="0">
+      </read-later-item>
     </template>
-    <div class="sub-heading">$i18n{readHeader}</div>
+    <div hidden="[[!readItems_.length]]" class="sub-heading">
+      $i18n{readHeader}
+    </div>
     <template id="readItemsList" is="dom-repeat" items="[[readItems_]]">
       <read-later-item data-url$="[[item.url.url]]" on-focus="onItemFocus_"
-          class="mwb-list-item" data="[[item]]" tabindex="0"></read-later-item>
+          class="mwb-list-item" data="[[item]]" tabindex="0">
+      </read-later-item>
     </template>
   </iron-selector>
+  <div hidden="[[!isReadingListEmpty_(unreadItems_, readItems_)]]">
+    <div id="empty-state-header">$i18n{emptyStateHeader}</div>
+    <div id="empty-state-subheader">$i18n{emptyStateSubheader}</div>
+  </div>
 </div>

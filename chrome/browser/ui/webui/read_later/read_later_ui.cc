@@ -35,6 +35,8 @@ ReadLaterUI::ReadLaterUI(content::WebUI* web_ui)
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUIReadLaterHost);
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"emptyStateHeader", IDS_READ_LATER_MENU_EMPTY_STATE_HEADER},
+      {"emptyStateSubheader", IDS_READ_LATER_MENU_EMPTY_STATE_SUBHEADER},
       {"readHeader", IDS_READ_LATER_MENU_READ_HEADER},
       {"title", IDS_READ_LATER_TITLE},
       {"tooltipClose", IDS_CLOSE},

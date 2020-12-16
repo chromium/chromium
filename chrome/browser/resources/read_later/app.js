@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/cr_elements/mwb_shared_style.js';
 import 'chrome://resources/cr_elements/mwb_shared_vars.js';
@@ -80,6 +81,15 @@ export class ReadLaterAppElement extends PolymerElement {
       this.unreadItems_ = entries.unreadEntries;
       this.readItems_ = entries.readEntries;
     });
+  }
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  isReadingListEmpty_() {
+    return (this.unreadItems_ === undefined || !this.unreadItems_.length) &&
+        (this.readItems_ === undefined || !this.readItems_.length);
   }
 
   /**
