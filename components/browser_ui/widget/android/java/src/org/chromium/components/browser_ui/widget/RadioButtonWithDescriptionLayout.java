@@ -76,7 +76,9 @@ public final class RadioButtonWithDescriptionLayout
     }
 
     /**
-     * @see RadioGroup.OnCheckedChangeListener
+     * Registers an observer for the group of radio buttons in this layout. Aggregates events from
+     * all of the contained radio buttons. You may find this method more preferable to registering
+     * individual listeners to each radio button.
      */
     @Override
     public void setOnCheckedChangeListener(OnCheckedChangeListener onCheckedChangeListener) {
@@ -84,11 +86,15 @@ public final class RadioButtonWithDescriptionLayout
     }
 
     /**
+     * Listens for cheked state changed events for the contained {@link RadioButtonWithDescription}
+     * and forwards them along to the observer set in {@link #setOnCheckedChangeListener(...)}.
      * @see RadioButtonWithDescription.ButtonCheckedStateChangedListener
      */
     @Override
     public void onButtonCheckedStateChanged(RadioButtonWithDescription checkedRadioButton) {
-        mOnCheckedChangeListener.onCheckedChanged(this, checkedRadioButton.getId());
+        if (mOnCheckedChangeListener != null) {
+            mOnCheckedChangeListener.onCheckedChanged(this, checkedRadioButton.getId());
+        }
     }
 
     /**
