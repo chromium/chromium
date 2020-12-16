@@ -214291,6 +214291,14 @@
      "c1016971418b8b0ad0391cc4a77e8b3925dc4ea0",
      []
     ],
+    "Document-createElement-expected.txt": [
+     "23cd12e763d06731ba00478da75d597f0384cce0",
+     []
+    ],
+    "Document-createElementNS-expected.txt": [
+     "82e18577bddb845edada4d97bebc7e2b314b72a0",
+     []
+    ],
     "HTMLElement-constructor-expected.txt": [
      "ca5b35f6cd8057907dc8e9bd209d961f067f76fd",
      []
@@ -214315,10 +214323,6 @@
       []
      ]
     },
-    "historical-expected.txt": [
-     "9ba193753d494deaa6774b59d5e7632f65fd88d6",
-     []
-    ],
     "htmlconstructor": {
      "newtarget-expected.txt": [
       "b460d6247f7b297e509aa09315872f3ca86b32af",
@@ -231822,10 +231826,6 @@
        }
       }
      },
-     "interfaces-expected.txt": [
-      "beb3ed0ac1ca095c25a6311ff53a588a6ad59598",
-      []
-     ],
      "interfaces.js": [
       "96abf61e2ce1e3523ac60427dad07de9686d9c15",
       []
@@ -246190,7 +246190,7 @@
      }
     },
     "historical-expected.txt": [
-     "14ab3becdb400c3288a286a31cee5a685fa7e084",
+     "df7158818d4988a7b294b3b8004536f2dd30fafb",
      []
     ],
     "offsetParent-across-shadow-boundaries-expected.txt": [
@@ -258412,11 +258412,11 @@
        []
       ],
       "fixtures.py": [
-       "78a8a981e353b970fccb58f085b67d3c03a54820",
+       "888c42b1f7211d2a28210987007440d3877299e9",
        []
       ],
       "helpers.py": [
-       "f857083b47743e0925e7baf8b0b964008be7923c",
+       "a1082caf58cf0466185268a3c95e59b643a76bcb",
        []
       ],
       "html": {
@@ -258454,7 +258454,7 @@
        []
       ],
       "merge_dictionaries.py": [
-       "cf06c9b433cee167c5c98e06d64cc7a2e68faff3",
+       "c13ab904e40e82faad1b9c4905003b1d5185baa7",
        []
       ],
       "sync.py": [
@@ -395814,6 +395814,13 @@
       {}
      ]
     ],
+    "permissions-policy-javascript-url-frame-policy.https.html": [
+     "48385485802d220dd1d98198f14bd2302f9417aa",
+     [
+      null,
+      {}
+     ]
+    ],
     "permissions-policy-nested-header-policy-allowed-for-all.https.sub.html": [
      "46ca378d0b9f9d451c0566b8169daa26093cb7b3",
      [
@@ -415811,7 +415818,7 @@
      ]
     ],
     "slots-imperative-api-slotchange.tentative.html": [
-     "1f4ef1531a2b678e016b170244ec47422ff49481",
+     "43627a246cce9d92fdb3e758c113c5fde8e198fb",
      [
       null,
       {}
@@ -416279,7 +416286,7 @@
      ]
     ],
     "detection-HTMLCanvasElement.https.html": [
-     "e66b70241a60bb2f871438f3fa5c25427729c7c4",
+     "4773bc8a66102f22a2897c22a93054165402903f",
      [
       null,
       {}
