@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/thread_annotations.h"
@@ -100,7 +101,18 @@ class PrerenderBrowserTest : public ContentBrowserTest,
   void NavigateWithLocation(const GURL& url) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     content::TestNavigationObserver observer(shell()->web_contents());
-    EXPECT_TRUE(
+    // Ignore the result of ExecJs().
+    //
+    // Depending on timing, activation could destroy the current WebContents
+    // before ExecJs() gets a result from the frame that executed scripts. This
+    // results in execution failure even when the execution succeeded. See
+    // https://crbug.com/1156141 for details.
+    //
+    // This part will drastically be modified by the MPArch, so we take the
+    // approach just to ignore it instead of fixing the timing issue. When
+    // ExecJs() actually fails, the remaining test steps should fail, so it
+    // should be safe to ignore it.
+    ignore_result(
         ExecJs(shell()->web_contents(), JsReplace("location = $1", url)));
     observer.Wait();
     EXPECT_EQ(shell()->web_contents()->GetURL(), url);
