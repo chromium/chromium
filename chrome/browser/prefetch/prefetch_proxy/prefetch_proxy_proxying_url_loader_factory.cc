@@ -11,6 +11,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_params.h"
+#include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_proxy_configurator.h"
+#include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_service.h"
+#include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_service_factory.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_context.h"
@@ -379,6 +382,19 @@ void PrefetchProxyProxyingURLLoaderFactory::CreateLoaderAndStart(
     request_count_++;
     if (request_count_ > PrefetchProxyMaxSubresourcesPerPrerender()) {
       metrics_observer_->OnResourceThrottled(request.url);
+      std::unique_ptr<AbortRequest> request = std::make_unique<AbortRequest>(
+          std::move(loader_receiver), std::move(client));
+      // The request will manage its own lifecycle based on the mojo pipes.
+      request.release();
+      return;
+    }
+
+    // Check that the proxy server is available. If not, fast abort the request.
+    PrefetchProxyService* prefetch_proxy_service =
+        PrefetchProxyServiceFactory::GetForProfile(profile);
+    if (prefetch_proxy_service && !prefetch_proxy_service->proxy_configurator()
+                                       ->IsPrefetchProxyAvailable()) {
+      metrics_observer_->OnProxyUnavailableForResource(request.url);
       std::unique_ptr<AbortRequest> request = std::make_unique<AbortRequest>(
           std::move(loader_receiver), std::move(client));
       // The request will manage its own lifecycle based on the mojo pipes.

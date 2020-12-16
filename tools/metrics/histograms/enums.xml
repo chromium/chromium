@@ -59697,6 +59697,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="25" label="Subresource throttled"/>
   <int value="26" label="Prediction position not eligible"/>
   <int value="27" label="Prefetch Not Eligible: Retry-After not elasped"/>
+  <int value="28" label="Connecting to the prefetch proxy previously failed"/>
 </enum>
 
 <enum name="PrefetchRedirect">

@@ -107,6 +107,7 @@ class PrefetchProxySubresourceManager
   void OnResourceNotEligible(const GURL& url,
                              PrefetchProxyPrefetchStatus status) override;
   void OnResourceThrottled(const GURL& url) override;
+  void OnProxyUnavailableForResource(const GURL& url) override;
   void OnResourceUsedFromCache(const GURL& url) override;
 
   PrefetchProxySubresourceManager(const PrefetchProxySubresourceManager&) =

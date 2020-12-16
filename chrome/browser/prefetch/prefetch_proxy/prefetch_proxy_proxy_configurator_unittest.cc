@@ -7,9 +7,11 @@
 #include <memory>
 
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_features.h"
+#include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_params.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/google_api_keys.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -76,20 +78,25 @@ class PrefetchProxyProxyConfiguratorTest : public testing::Test {
 
   PrefetchProxyProxyConfigurator* configurator() {
     if (!configurator_) {
-      // Lazy construct and init so that any changed field trials can be picked
-      // used.
+      // Lazy construct and init so that any changed field trials can be used.
       configurator_ = std::make_unique<PrefetchProxyProxyConfigurator>();
       mojo::Remote<network::mojom::CustomProxyConfigClient> client_remote;
       config_client_ = std::make_unique<TestCustomProxyConfigClient>(
           client_remote.BindNewPipeAndPassReceiver());
       configurator_->AddCustomProxyConfigClient(std::move(client_remote));
+      configurator_->SetClockForTesting(task_environment_.GetMockClock());
       base::RunLoop().RunUntilIdle();
     }
     return configurator_.get();
   }
 
+  void FastForwardBy(base::TimeDelta delta) {
+    task_environment_.FastForwardBy(delta);
+  }
+
  private:
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<PrefetchProxyProxyConfigurator> configurator_;
   std::unique_ptr<TestCustomProxyConfigClient> config_client_;
 };
@@ -117,4 +124,163 @@ TEST_F(PrefetchProxyProxyConfiguratorTest, ExperimentOverrides) {
   net::HttpRequestHeaders headers;
   headers.SetHeader("test-header", "key=" + google_apis::GetAPIKey());
   VerifyLatestProxyConfig(proxy_url, headers);
+}
+
+TEST_F(PrefetchProxyProxyConfiguratorTest,
+       Fallback_DoesRandomBackoff_ErrFailed) {
+  base::HistogramTester histogram_tester;
+  GURL proxy_url("https://proxy.com");
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kIsolatePrerenders, {{"proxy_host", proxy_url.spec()}});
+
+  net::ProxyServer proxy(
+      net::ProxyServer::GetSchemeFromURI(PrefetchProxyProxyHost().scheme()),
+      net::HostPortPair::FromURL(PrefetchProxyProxyHost()));
+
+  EXPECT_TRUE(configurator()->IsPrefetchProxyAvailable());
+
+  configurator()->OnFallback(proxy, net::ERR_FAILED);
+  EXPECT_FALSE(configurator()->IsPrefetchProxyAvailable());
+  histogram_tester.ExpectUniqueSample(
+      "IsolatedPrerender.Proxy.Fallback.NetError", std::abs(net::ERR_FAILED),
+      1);
+
+  FastForwardBy(base::TimeDelta::FromSeconds(5 * 60 + 1));
+
+  EXPECT_TRUE(configurator()->IsPrefetchProxyAvailable());
+}
+
+TEST_F(PrefetchProxyProxyConfiguratorTest, FallbackDoesRandomBackoff_ErrOK) {
+  base::HistogramTester histogram_tester;
+  GURL proxy_url("https://proxy.com");
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kIsolatePrerenders, {{"proxy_host", proxy_url.spec()}});
+
+  net::ProxyServer proxy(
+      net::ProxyServer::GetSchemeFromURI(PrefetchProxyProxyHost().scheme()),
+      net::HostPortPair::FromURL(PrefetchProxyProxyHost()));
+
+  EXPECT_TRUE(configurator()->IsPrefetchProxyAvailable());
+
+  configurator()->OnFallback(proxy, net::OK);
+  EXPECT_FALSE(configurator()->IsPrefetchProxyAvailable());
+  histogram_tester.ExpectUniqueSample(
+      "IsolatedPrerender.Proxy.Fallback.NetError", net::OK, 1);
+
+  FastForwardBy(base::TimeDelta::FromSeconds(5 * 60 + 1));
+
+  EXPECT_TRUE(configurator()->IsPrefetchProxyAvailable());
+}
+
+TEST_F(PrefetchProxyProxyConfiguratorTest, Fallback_DifferentProxy) {
+  base::HistogramTester histogram_tester;
+  GURL proxy_url("https://proxy.com");
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kIsolatePrerenders, {{"proxy_host", proxy_url.spec()}});
+
+  net::ProxyServer proxy(
+      net::ProxyServer::GetSchemeFromURI(PrefetchProxyProxyHost().scheme()),
+      net::HostPortPair::FromURL(GURL("http://foo.com")));
+
+  EXPECT_TRUE(configurator()->IsPrefetchProxyAvailable());
+
+  configurator()->OnFallback(proxy, net::OK);
+  EXPECT_TRUE(configurator()->IsPrefetchProxyAvailable());
+  histogram_tester.ExpectTotalCount("IsolatedPrerender.Proxy.Fallback.NetError",
+                                    0);
+}
+
+TEST_F(PrefetchProxyProxyConfiguratorTest, TunnelHeaders_200OK) {
+  base::HistogramTester histogram_tester;
+  GURL proxy_url("https://proxy.com");
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kIsolatePrerenders, {{"proxy_host", proxy_url.spec()}});
+
+  net::ProxyServer proxy(
+      net::ProxyServer::GetSchemeFromURI(PrefetchProxyProxyHost().scheme()),
+      net::HostPortPair::FromURL(PrefetchProxyProxyHost()));
+
+  EXPECT_TRUE(configurator()->IsPrefetchProxyAvailable());
+
+  configurator()->OnTunnelHeadersReceived(
+      proxy, base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK"));
+  EXPECT_TRUE(configurator()->IsPrefetchProxyAvailable());
+  histogram_tester.ExpectUniqueSample("IsolatedPrerender.Proxy.RespCode", 200,
+                                      1);
+}
+
+TEST_F(PrefetchProxyProxyConfiguratorTest, TunnelHeaders_DifferentProxy) {
+  base::HistogramTester histogram_tester;
+  GURL proxy_url("https://proxy.com");
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kIsolatePrerenders, {{"proxy_host", proxy_url.spec()}});
+
+  net::ProxyServer proxy(
+      net::ProxyServer::GetSchemeFromURI(PrefetchProxyProxyHost().scheme()),
+      net::HostPortPair::FromURL(GURL("http://foo.com")));
+
+  EXPECT_TRUE(configurator()->IsPrefetchProxyAvailable());
+
+  configurator()->OnTunnelHeadersReceived(
+      proxy, base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK"));
+  EXPECT_TRUE(configurator()->IsPrefetchProxyAvailable());
+  histogram_tester.ExpectTotalCount("IsolatedPrerender.Proxy.RespCode", 0);
+}
+
+TEST_F(PrefetchProxyProxyConfiguratorTest, TunnelHeaders_500NoRetryAfter) {
+  base::HistogramTester histogram_tester;
+  GURL proxy_url("https://proxy.com");
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kIsolatePrerenders, {{"proxy_host", proxy_url.spec()}});
+
+  net::ProxyServer proxy(
+      net::ProxyServer::GetSchemeFromURI(PrefetchProxyProxyHost().scheme()),
+      net::HostPortPair::FromURL(PrefetchProxyProxyHost()));
+
+  EXPECT_TRUE(configurator()->IsPrefetchProxyAvailable());
+
+  configurator()->OnTunnelHeadersReceived(
+      proxy, base::MakeRefCounted<net::HttpResponseHeaders>(
+                 "HTTP/1.1 500 Internal Server Error"));
+  EXPECT_FALSE(configurator()->IsPrefetchProxyAvailable());
+  histogram_tester.ExpectUniqueSample("IsolatedPrerender.Proxy.RespCode", 500,
+                                      1);
+
+  FastForwardBy(base::TimeDelta::FromSeconds(5 * 60 + 1));
+  EXPECT_TRUE(configurator()->IsPrefetchProxyAvailable());
+}
+
+TEST_F(PrefetchProxyProxyConfiguratorTest, TunnelHeaders_500WithRetryAfter) {
+  base::HistogramTester histogram_tester;
+  GURL proxy_url("https://proxy.com");
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kIsolatePrerenders, {{"proxy_host", proxy_url.spec()}});
+
+  net::ProxyServer proxy(
+      net::ProxyServer::GetSchemeFromURI(PrefetchProxyProxyHost().scheme()),
+      net::HostPortPair::FromURL(PrefetchProxyProxyHost()));
+
+  EXPECT_TRUE(configurator()->IsPrefetchProxyAvailable());
+
+  configurator()->OnTunnelHeadersReceived(
+      proxy,
+      base::MakeRefCounted<
+          net::HttpResponseHeaders>(net::HttpUtil::AssembleRawHeaders(
+          "HTTP/1.1 500 Internal Server Error\r\nRetry-After: 120\r\n\r\n")));
+  EXPECT_FALSE(configurator()->IsPrefetchProxyAvailable());
+  histogram_tester.ExpectUniqueSample("IsolatedPrerender.Proxy.RespCode", 500,
+                                      1);
+
+  FastForwardBy(base::TimeDelta::FromSeconds(119));
+  EXPECT_FALSE(configurator()->IsPrefetchProxyAvailable());
+
+  FastForwardBy(base::TimeDelta::FromSeconds(1));
+  EXPECT_TRUE(configurator()->IsPrefetchProxyAvailable());
 }

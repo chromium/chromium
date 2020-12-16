@@ -791,6 +791,14 @@ class PrefetchProxyBrowserTest
       return resp;
     }
 
+    if (request.all_headers.find("CONNECT error.com:443") !=
+        std::string::npos) {
+      std::unique_ptr<net::test_server::BasicHttpResponse> resp =
+          std::make_unique<net::test_server::BasicHttpResponse>();
+      resp->set_code(net::HTTP_BAD_REQUEST);
+      return resp;
+    }
+
     std::vector<std::string> request_lines =
         base::SplitString(request.all_headers, "\r\n", base::TRIM_WHITESPACE,
                           base::SPLIT_WANT_NONEMPTY);
@@ -986,6 +994,55 @@ IN_PROC_BROWSER_TEST_F(
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(auth_observer->GotAuthChallenge());
+}
+
+IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
+                       DISABLE_ON_WIN_MAC_CHROMEOS(ProxyServerBackOff)) {
+  SetDataSaverEnabled(true);
+  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  WaitForUpdatedCustomProxyConfig();
+
+  PrefetchProxyTabHelper* tab_helper =
+      PrefetchProxyTabHelper::FromWebContents(GetWebContents());
+
+  TestTabHelperObserver tab_helper_observer(tab_helper);
+  GURL error_url("https://error.com/");
+
+  base::RunLoop run_loop;
+  tab_helper_observer.SetOnPrefetchErrorClosure(run_loop.QuitClosure());
+  tab_helper_observer.SetExpectedPrefetchErrors(
+      {{error_url, net::ERR_TUNNEL_CONNECTION_FAILED}});
+
+  base::HistogramTester histogram_tester;
+  GURL doc_url("https://www.google.com/search?q=test");
+
+  MakeNavigationPrediction(doc_url, {error_url});
+  run_loop.Run();
+
+  histogram_tester.ExpectUniqueSample("IsolatedPrerender.Proxy.RespCode", 400,
+                                      1);
+  EXPECT_EQ(1U, tab_helper->srp_metrics().predicted_urls_count_);
+  EXPECT_EQ(1U, tab_helper->srp_metrics().prefetch_attempted_count_);
+  EXPECT_EQ(0U, tab_helper->srp_metrics().prefetch_successful_count_);
+
+  ui_test_utils::NavigateToURL(browser(), error_url);
+  ASSERT_TRUE(tab_helper->after_srp_metrics());
+  EXPECT_EQ(
+      base::make_optional(PrefetchProxyPrefetchStatus::kPrefetchFailedNetError),
+      tab_helper->after_srp_metrics()->prefetch_status_);
+
+  // Doing this prefetch again is immediately skipped because the proxy is not
+  // available.
+  MakeNavigationPrediction(doc_url, {error_url});
+  EXPECT_EQ(1U, tab_helper->srp_metrics().predicted_urls_count_);
+  EXPECT_EQ(0U, tab_helper->srp_metrics().prefetch_attempted_count_);
+  EXPECT_EQ(0U, tab_helper->srp_metrics().prefetch_successful_count_);
+
+  ui_test_utils::NavigateToURL(browser(), error_url);
+  ASSERT_TRUE(tab_helper->after_srp_metrics());
+  EXPECT_EQ(base::make_optional(
+                PrefetchProxyPrefetchStatus::kPrefetchProxyNotAvailable),
+            tab_helper->after_srp_metrics()->prefetch_status_);
 }
 
 IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,

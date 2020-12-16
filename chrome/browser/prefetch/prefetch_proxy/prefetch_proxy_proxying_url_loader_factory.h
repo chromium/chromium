@@ -47,6 +47,10 @@ class PrefetchProxyProxyingURLLoaderFactory
     // load is aborted before going to the network.
     virtual void OnResourceThrottled(const GURL& url) = 0;
 
+    // Called when a subresource could not be loaded because the proxy is
+    // unavailable.
+    virtual void OnProxyUnavailableForResource(const GURL& url) = 0;
+
     // Called when a subresource is not eligible to be prefetched.
     virtual void OnResourceNotEligible(const GURL& url,
                                        PrefetchProxyPrefetchStatus status) = 0;

@@ -203,6 +203,16 @@ void PrefetchProxySubresourceManager::OnResourceThrottled(const GURL& url) {
       PrefetchProxyPrefetchStatus::kSubresourceThrottled);
 }
 
+void PrefetchProxySubresourceManager::OnProxyUnavailableForResource(
+    const GURL& url) {
+  if (!metrics_collector_)
+    return;
+  metrics_collector_->OnSubresourceNotEligible(
+      /*mainframe_url=*/url_,
+      /*subresource_url=*/url,
+      PrefetchProxyPrefetchStatus::kPrefetchProxyNotAvailable);
+}
+
 void PrefetchProxySubresourceManager::OnResourceUsedFromCache(const GURL& url) {
   if (!metrics_collector_)
     return;
