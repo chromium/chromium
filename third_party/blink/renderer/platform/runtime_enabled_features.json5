@@ -1113,6 +1113,10 @@
       name: "LayoutNGPrinting",
     },
     {
+      name: "LayoutNGReplaced",
+      depends_on: ["LayoutNG"]
+    },
+    {
       name: "LayoutNGTable",
       depends_on: ["LayoutNG"]
     },

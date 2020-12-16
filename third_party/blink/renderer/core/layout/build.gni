@@ -529,6 +529,8 @@ blink_core_sources_layout = [
   "ng/ng_positioned_float.h",
   "ng/ng_relative_utils.cc",
   "ng/ng_relative_utils.h",
+  "ng/ng_replaced_layout_algorithm.cc",
+  "ng/ng_replaced_layout_algorithm.h",
   "ng/ng_simplified_layout_algorithm.cc",
   "ng/ng_simplified_layout_algorithm.h",
   "ng/ng_simplified_oof_layout_algorithm.cc",
