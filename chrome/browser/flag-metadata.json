@@ -4545,12 +4545,12 @@
   {
     "name": "smart-dim-model-v3",
     "owners": [ "alanlxl", "amoylan", "jiameng" ],
-    "expiry_milestone": 88
+    "expiry_milestone": 90
   },
   {
     "name": "smart-dim-new-ml-agent",
     "owners": [ "alanlxl", "amoylan" ],
-    "expiry_milestone": 88
+    "expiry_milestone": 90
   },
   {
     "name": "smart-suggestion-for-large-downloads",
