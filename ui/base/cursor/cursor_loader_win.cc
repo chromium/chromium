@@ -160,8 +160,6 @@ void CursorLoaderWin::SetPlatformCursor(gfx::NativeCursor* cursor) {
           GetModuleHandle(g_cursor_resource_module_name.Get().c_str()),
           cursor_id);
     }
-    DCHECK(platform_cursor)
-        << "Failed to load a cursor for type " << cursor->type();
     cursor->SetPlatformCursor(platform_cursor);
   }
 }

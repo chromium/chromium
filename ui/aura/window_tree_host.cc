@@ -219,10 +219,6 @@ void WindowTreeHost::ConvertPixelsToDIP(gfx::Point* point) const {
 }
 
 void WindowTreeHost::SetCursor(gfx::NativeCursor cursor) {
-  // Some CursorFactory implementations use nullptr to represent the hidden
-  // cursor (i.e. cursor type kNone).
-  DCHECK(cursor.type() == ui::mojom::CursorType::kNone || cursor.platform());
-
   last_cursor_ = cursor;
   // A lot of code seems to depend on NULL cursors actually showing an arrow,
   // so just pass everything along to the host.
