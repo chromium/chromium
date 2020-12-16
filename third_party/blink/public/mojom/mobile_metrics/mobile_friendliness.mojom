@@ -18,4 +18,7 @@ struct MobileFriendliness {
 
   // Whether the page allows user to zoom in/out.
   bool allow_user_zoom = true;
+
+  // Percentage of small font text area in total text area.
+  int32 small_text_ratio = 0;
 };

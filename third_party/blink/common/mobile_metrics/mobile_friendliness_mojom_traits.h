@@ -26,6 +26,9 @@ class StructTraits<blink::mojom::MobileFriendlinessDataView,
   static bool allow_user_zoom(const blink::MobileFriendliness& mf) {
     return mf.allow_user_zoom;
   }
+  static int small_text_ratio(const blink::MobileFriendliness& mf) {
+    return mf.small_text_ratio;
+  }
   static bool Read(blink::mojom::MobileFriendlinessDataView data,
                    blink::MobileFriendliness* mf);
 };

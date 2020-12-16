@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_fragment_child_iterator.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/mobile_metrics/mobile_friendliness_checker.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
@@ -303,6 +304,7 @@ void PrePaintTreeWalk::Walk(LocalFrameView& frame_view) {
   }
 
   frame_view.GetLayoutShiftTracker().NotifyPrePaintFinished();
+  frame_view.GetMobileFriendlinessChecker().NotifyPrePaintFinished();
   context_storage_.pop_back();
 }
 

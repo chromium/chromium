@@ -26,7 +26,7 @@ struct BLINK_COMMON_EXPORT MobileFriendliness {
 
   // The value specified in meta tag like <meta name="viewport"
   // content="initial-scale=1.0">.
-  double viewport_initial_scale = 0;
+  double viewport_initial_scale = 1.0;
 
   // The value specified in meta tag like <meta name="viewport"
   // content="width=500">.
@@ -35,6 +35,9 @@ struct BLINK_COMMON_EXPORT MobileFriendliness {
   // Whether the page allows user to zoom in/out.
   // It is specified like <meta name="viewport" content="user-scalable=no">.
   bool allow_user_zoom = true;
+
+  // Percentage of small font size text area in all text area.
+  int small_text_ratio = 0;
 };
 
 }  // namespace blink

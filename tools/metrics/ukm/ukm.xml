@@ -8227,10 +8227,15 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="MobileFriendliness">
-  <owner>kumagi@chromium.org</owner>
+  <owner>kumagi@google.com</owner>
   <metric name="AllowUserZoom" enum="Boolean">
     <summary>
       Whether the page allows the user to zoom in/out.
+    </summary>
+  </metric>
+  <metric name="SmallTextRatio">
+    <summary>
+      Percentage of small font text area in total text area.
     </summary>
   </metric>
   <metric name="ViewportDeviceWidth" enum="Boolean">

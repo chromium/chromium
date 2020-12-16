@@ -13,26 +13,43 @@
 namespace blink {
 class Visitor;
 class LocalFrameView;
+class LayoutObject;
 struct ViewportDescription;
+
+CORE_EXPORT extern const base::Feature kSmallTextRatio;
 
 // Calculates the mobile usability of current page, especially friendliness on
 // smart phone devices are checked. The calculated value will be sent as a part
 // of UKM.
 class CORE_EXPORT MobileFriendlinessChecker
     : public GarbageCollected<MobileFriendlinessChecker> {
+  static constexpr int kSmallFontThreshold = 12;
+
  public:
   explicit MobileFriendlinessChecker(LocalFrameView& frame_view);
   virtual ~MobileFriendlinessChecker();
 
   void NotifyViewportUpdated(const ViewportDescription&);
+  void NotifyInvalidatePaint(const LayoutObject& object);
+  void NotifyPrePaintFinished();
   const blink::MobileFriendliness& GetMobileFriendliness() const {
     return mobile_friendliness_;
   }
   void Trace(Visitor* visitor) const;
 
+  struct TextAreaWithFontSize {
+    double small_font_area = 0;
+    double total_text_area = 0;
+    int SmallTextRatio() const;
+  };
+
  private:
+  TextAreaWithFontSize text_area_sizes_;
   Member<LocalFrameView> frame_view_;
   blink::MobileFriendliness mobile_friendliness_;
+  bool font_size_check_enabled_;
+  bool needs_report_mf_;
+  float viewport_scalar_;
 };
 
 }  // namespace blink
