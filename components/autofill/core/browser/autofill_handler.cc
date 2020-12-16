@@ -463,9 +463,10 @@ void AutofillHandler::OnLoadedServerPredictions(
 
   // Will log quality metrics for each FormStructure based on the presence of
   // autocomplete attributes, if available.
-  for (FormStructure* cur_form : queried_forms) {
-    cur_form->LogQualityMetricsBasedOnAutocomplete(
-        form_interactions_ukm_logger());
+  if (auto* logger = form_interactions_ukm_logger()) {
+    for (FormStructure* cur_form : queried_forms) {
+      cur_form->LogQualityMetricsBasedOnAutocomplete(logger);
+    }
   }
 
   // Send field type predictions to the renderer so that it can possibly

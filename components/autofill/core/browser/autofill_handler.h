@@ -182,7 +182,12 @@ class AutofillHandler : public AutofillDownloadManager::Observer {
       const std::vector<FormSignature>& queried_form_signatures) {
     OnLoadedServerPredictions(response, queried_form_signatures);
   }
-
+  void OnServerRequestErrorForTest(
+      FormSignature form_signature,
+      AutofillDownloadManager::RequestType request_type,
+      int http_error) {
+    OnServerRequestError(form_signature, request_type, http_error);
+  }
 #ifdef UNIT_TEST
   // A public wrapper that calls |mutable_form_structures| for testing purposes
   // only.

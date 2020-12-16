@@ -50,7 +50,8 @@ class TestAutofillProvider : public AutofillProvider {
                    const std::vector<FormData>& forms) override {}
   void OnHidePopup(AutofillHandlerProxy* handler) override {}
   void OnServerPredictionsAvailable(AutofillHandlerProxy* handler) override {}
-
+  void OnServerQueryRequestError(AutofillHandlerProxy* handler,
+                                 FormSignature form_signature) override {}
   void Reset(AutofillHandlerProxy* handler) override {}
 };
 

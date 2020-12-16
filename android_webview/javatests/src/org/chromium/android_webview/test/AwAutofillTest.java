@@ -2078,7 +2078,7 @@ public class AwAutofillTest {
     public void testServerPredictionArrivesBeforeAutofillStart() throws Throwable {
         final String data = "<html><head></head><body><form action='a.html' name='formname'>"
                 + "<input type='text' id='text1' name='username'>"
-                + "<input type='text' name='email' id='text2'/>"
+                + "<input type='text' name='email' id='text2' autocomplete='email'/>"
                 + "</form></body></html>";
         final String url = mWebServer.setResponse(FILE, data, null);
         loadUrlSync(url);
@@ -2088,7 +2088,7 @@ public class AwAutofillTest {
                                    .simulateMainFrameAutofillServerResponseForTesting(
                                            mAwContents.getWebContents(),
                                            new String[] {"text1", "text2"},
-                                           new int[] {/*EMAIL_ADDRESS, USERNAME*/ 9, 86}));
+                                           new int[] {/*USERNAME, EMAIL_ADDRESS*/ 86, 9}));
 
         int cnt = 0;
         executeJavaScriptAndWaitForResult("document.getElementById('text1').select();");
@@ -2102,15 +2102,15 @@ public class AwAutofillTest {
         TestViewStructure viewStructure = mTestValues.testViewStructure;
         assertNotNull(viewStructure);
         assertEquals(2, viewStructure.getChildCount());
-        assertEquals("EMAIL_ADDRESS",
+        assertEquals("USERNAME",
                 viewStructure.getChild(0).getHtmlInfo().getAttribute(
                         "crowdsourcing-autofill-hints"));
-        assertEquals("EMAIL_ADDRESS",
-                viewStructure.getChild(0).getHtmlInfo().getAttribute("computed-autofill-hints"));
         assertEquals("USERNAME",
+                viewStructure.getChild(0).getHtmlInfo().getAttribute("computed-autofill-hints"));
+        assertEquals("EMAIL_ADDRESS",
                 viewStructure.getChild(1).getHtmlInfo().getAttribute(
                         "crowdsourcing-autofill-hints"));
-        assertEquals("USERNAME",
+        assertEquals("HTML_TYPE_EMAIL",
                 viewStructure.getChild(1).getHtmlInfo().getAttribute("computed-autofill-hints"));
     }
 
@@ -2121,7 +2121,7 @@ public class AwAutofillTest {
     public void testServerPredictionArrivesAfterAutofillStart() throws Throwable {
         final String data = "<html><head></head><body><form action='a.html' name='formname'>"
                 + "<input type='text' id='text1' name='username'>"
-                + "<input type='text' name='email' id='text2'/>"
+                + "<input type='text' name='email' id='text2' autocomplete='email'/>"
                 + "</form></body></html>";
         final String url = mWebServer.setResponse(FILE, data, null);
         loadUrlSync(url);
@@ -2141,12 +2141,12 @@ public class AwAutofillTest {
         assertEquals("NO_SERVER_DATA",
                 viewStructure.getChild(0).getHtmlInfo().getAttribute(
                         "crowdsourcing-autofill-hints"));
-        assertEquals("NO_SERVER_DATA",
+        assertEquals("UNKNOWN_TYPE",
                 viewStructure.getChild(0).getHtmlInfo().getAttribute("computed-autofill-hints"));
         assertEquals("NO_SERVER_DATA",
                 viewStructure.getChild(1).getHtmlInfo().getAttribute(
                         "crowdsourcing-autofill-hints"));
-        assertEquals("NO_SERVER_DATA",
+        assertEquals("HTML_TYPE_EMAIL",
                 viewStructure.getChild(1).getHtmlInfo().getAttribute("computed-autofill-hints"));
 
         TestThreadUtils.runOnUiThreadBlocking(
@@ -2155,7 +2155,7 @@ public class AwAutofillTest {
                                    .simulateMainFrameAutofillServerResponseForTesting(
                                            mAwContents.getWebContents(),
                                            new String[] {"text1", "text2"},
-                                           new int[] {/*EMAIL_ADDRESS, USERNAME*/ 9, 86}));
+                                           new int[] {/*USERNAME, EMAIL_ADDRESS*/ 86, 9}));
 
         cnt += waitForCallbackAndVerifyTypes(cnt, new Integer[] {AUTOFILL_QUERY_DONE});
         assertTrue(mTestAutofillManagerWrapper.isQuerySucceed());
@@ -2195,6 +2195,51 @@ public class AwAutofillTest {
         assertNull(viewStructure.getChild(1).getHtmlInfo().getAttribute("computed-autofill-hints"));
 
         // TODO(crbug.com/1151542): Complete the test once the prediction update is implemented.
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=AndroidAutofillQueryServerFieldTypes"})
+    public void testServerQueryFailedAfterAutofillStart() throws Throwable {
+        final String data = "<html><head></head><body><form action='a.html' name='formname'>"
+                + "<input type='text' id='text1' name='username'>"
+                + "<input type='text' name='email' id='text2' autocomplete='email'/>"
+                + "</form></body></html>";
+        final String url = mWebServer.setResponse(FILE, data, null);
+        loadUrlSync(url);
+
+        int cnt = 0;
+        executeJavaScriptAndWaitForResult("document.getElementById('text1').select();");
+        dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
+
+        cnt += waitForCallbackAndVerifyTypes(cnt,
+                new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_SESSION_STARTED,
+                        AUTOFILL_VALUE_CHANGED});
+
+        invokeOnProvideAutoFillVirtualStructure();
+        TestViewStructure viewStructure = mTestValues.testViewStructure;
+        assertNotNull(viewStructure);
+        assertEquals(2, viewStructure.getChildCount());
+        assertEquals("NO_SERVER_DATA",
+                viewStructure.getChild(0).getHtmlInfo().getAttribute(
+                        "crowdsourcing-autofill-hints"));
+        assertEquals("UNKNOWN_TYPE",
+                viewStructure.getChild(0).getHtmlInfo().getAttribute("computed-autofill-hints"));
+        assertEquals("NO_SERVER_DATA",
+                viewStructure.getChild(1).getHtmlInfo().getAttribute(
+                        "crowdsourcing-autofill-hints"));
+        assertEquals("HTML_TYPE_EMAIL",
+                viewStructure.getChild(1).getHtmlInfo().getAttribute("computed-autofill-hints"));
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> AutofillProviderTestHelper
+                                   .simulateMainFrameAutofillQueryFailedForTesting(
+                                           mAwContents.getWebContents()));
+
+        cnt += waitForCallbackAndVerifyTypes(cnt, new Integer[] {AUTOFILL_QUERY_DONE});
+        assertFalse(mTestAutofillManagerWrapper.isQuerySucceed());
     }
 
     private void pollJavascriptResult(String script, String expectedResult) throws Throwable {

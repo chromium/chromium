@@ -26,9 +26,15 @@ public class AutofillProviderTestHelper {
                         webContents, fieldIds, fieldTypes);
     }
 
+    public static void simulateMainFrameAutofillQueryFailedForTesting(WebContents webContents) {
+        AutofillProviderTestHelperJni.get().simulateMainFrameAutofillQueryFailedForTesting(
+                webContents);
+    }
+
     @NativeMethods
     interface Natives {
         boolean simulateMainFrameAutofillServerResponseForTesting(
                 WebContents webContents, String[] fieldIds, int[] fieldTypes);
+        void simulateMainFrameAutofillQueryFailedForTesting(WebContents webContents);
     }
 }

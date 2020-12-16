@@ -40,6 +40,8 @@ class AutofillProviderTestHelper : public TestAutofillProvider {
                                 bool autoselect_first_suggestion) override {
     handler_ = handler;
   }
+  void OnServerQueryRequestError(AutofillHandlerProxy* handler,
+                                 FormSignature form_signature) override {}
 
   AutofillHandlerProxy* handler_;
 };

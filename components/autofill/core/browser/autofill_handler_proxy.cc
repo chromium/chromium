@@ -99,6 +99,13 @@ void AutofillHandlerProxy::PropagateAutofillPredictions(
   provider_->OnServerPredictionsAvailable(this);
 }
 
+void AutofillHandlerProxy::OnServerRequestError(
+    FormSignature form_signature,
+    AutofillDownloadManager::RequestType request_type,
+    int http_error) {
+  provider_->OnServerQueryRequestError(this, form_signature);
+}
+
 void AutofillHandlerProxy::Reset() {
   AutofillHandler::Reset();
   has_server_prediction_ = false;

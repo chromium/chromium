@@ -82,6 +82,10 @@ class AutofillHandlerProxy : public AutofillHandler {
       content::RenderFrameHost* rfh,
       const std::vector<FormStructure*>& forms) override;
 
+  void OnServerRequestError(FormSignature form_signature,
+                            AutofillDownloadManager::RequestType request_type,
+                            int http_error) override;
+
  private:
   bool has_server_prediction_ = false;
   AutofillProvider* provider_;

@@ -382,6 +382,26 @@ void AutofillProviderAndroid::OnServerPredictionsAvailable(
   }
 }
 
+void AutofillProviderAndroid::OnServerQueryRequestError(
+    AutofillHandlerProxy* handler,
+    FormSignature form_signature) {
+  if (!IsCurrentlyLinkedHandler(handler) || !form_.get())
+    return;
+
+  if (auto* form_structure = handler_->FindCachedFormByRendererId(
+          form_->form().unique_renderer_id)) {
+    if (form_structure->form_signature() != form_signature)
+      return;
+
+    JNIEnv* env = AttachCurrentThread();
+    ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
+    if (obj.is_null())
+      return;
+
+    Java_AutofillProvider_onQueryDone(env, obj, /*success=*/false);
+  }
+}
+
 void AutofillProviderAndroid::Reset(AutofillHandlerProxy* handler) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (handler == handler_.get()) {
