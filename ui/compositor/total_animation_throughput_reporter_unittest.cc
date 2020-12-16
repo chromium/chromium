@@ -79,8 +79,13 @@ class TestReporter : public TotalAnimationThroughputReporter {
 using TotalAnimationThroughputReporterTest =
     AnimationThroughputReporterTestBase;
 
-// Flaky: crbug.com/1157649
-TEST_F(TotalAnimationThroughputReporterTest, DISABLED_SingleAnimation) {
+// Flaky on ChromeOS: crbug.com/1157649
+#if defined(OS_CHROMEOS)
+#define MAYBE_SingleAnimation DISABLED_SingleAnimation
+#else
+#define MAYBE_SingleAnimation SingleAnimation
+#endif
+TEST_F(TotalAnimationThroughputReporterTest, MAYBE_SingleAnimation) {
   Layer layer;
   layer.SetOpacity(0.5f);
   root_layer()->Add(&layer);
@@ -99,9 +104,14 @@ TEST_F(TotalAnimationThroughputReporterTest, DISABLED_SingleAnimation) {
   EXPECT_TRUE(reporter.reported());
 }
 
-// Flaky: crbug.com/1157649
+// Flaky on ChromeOS: crbug.com/1157649
+#if defined(OS_CHROMEOS)
+#define MAYBE_StopAnimation DISABLED_StopAnimation
+#else
+#define MAYBE_StopAnimation StopAnimation
+#endif
 // Tests the stopping last animation will trigger the animation.
-TEST_F(TotalAnimationThroughputReporterTest, DISABLED_StopAnimation) {
+TEST_F(TotalAnimationThroughputReporterTest, MAYBE_StopAnimation) {
   Layer layer;
   layer.SetOpacity(0.5f);
   root_layer()->Add(&layer);
@@ -155,10 +165,16 @@ TEST_F(TotalAnimationThroughputReporterTest, MultipleAnimations) {
   EXPECT_TRUE(reporter.reported());
 }
 
-// Flaky: crbug.com/1157649
+// Flaky on ChromeOS: crbug.com/1157649
+#if defined(OS_CHROMEOS)
+#define MAYBE_MultipleAnimationsOnSingleLayer \
+  DISABLED_MultipleAnimationsOnSingleLayer
+#else
+#define MAYBE_MultipleAnimationsOnSingleLayer MultipleAnimationsOnSingleLayer
+#endif
 // Tests the longest animation on a single layer will triger the report.
 TEST_F(TotalAnimationThroughputReporterTest,
-       DISABLED_MultipleAnimationsOnSingleLayer) {
+       MAYBE_MultipleAnimationsOnSingleLayer) {
   Layer layer;
   layer.SetOpacity(0.5f);
   layer.SetLayerBrightness(0.5f);
@@ -186,8 +202,14 @@ TEST_F(TotalAnimationThroughputReporterTest,
   EXPECT_TRUE(reporter.reported());
 }
 
+// Flaky on ChromeOS: crbug.com/1157649
+#if defined(OS_CHROMEOS)
+#define MAYBE_AddAnimationWhileAnimating DISABLED_AddAnimationWhileAnimating
+#else
+#define MAYBE_AddAnimationWhileAnimating AddAnimationWhileAnimating
+#endif
 // Tests adding new animation will extends the duration.
-TEST_F(TotalAnimationThroughputReporterTest, AddAnimationWhileAnimating) {
+TEST_F(TotalAnimationThroughputReporterTest, MAYBE_AddAnimationWhileAnimating) {
   Layer layer1;
   layer1.SetOpacity(0.5f);
   root_layer()->Add(&layer1);
@@ -225,8 +247,14 @@ TEST_F(TotalAnimationThroughputReporterTest, AddAnimationWhileAnimating) {
   EXPECT_TRUE(reporter.reported());
 }
 
+// Flaky on ChromeOS: crbug.com/1157649
+#if defined(OS_CHROMEOS)
+#define MAYBE_RemoveWhileAnimating DISABLED_RemoveWhileAnimating
+#else
+#define MAYBE_RemoveWhileAnimating RemoveWhileAnimating
+#endif
 // Tests removing last animation will call report callback.
-TEST_F(TotalAnimationThroughputReporterTest, RemoveWhileAnimating) {
+TEST_F(TotalAnimationThroughputReporterTest, MAYBE_RemoveWhileAnimating) {
   auto layer1 = std::make_unique<Layer>();
   layer1->SetOpacity(0.5f);
   root_layer()->Add(layer1.get());
@@ -259,9 +287,15 @@ TEST_F(TotalAnimationThroughputReporterTest, RemoveWhileAnimating) {
   EXPECT_TRUE(reporter.reported());
 }
 
+// Flaky on ChromeOS: crbug.com/1157649
+#if defined(OS_CHROMEOS)
+#define MAYBE_StartWhileAnimating DISABLED_StartWhileAnimating
+#else
+#define MAYBE_StartWhileAnimating StartWhileAnimating
+#endif
 // Make sure the reporter can start measuring even if the animation
 // has started.
-TEST_F(TotalAnimationThroughputReporterTest, StartWhileAnimating) {
+TEST_F(TotalAnimationThroughputReporterTest, MAYBE_StartWhileAnimating) {
   Layer layer;
   layer.SetOpacity(0.5f);
   root_layer()->Add(&layer);
@@ -280,8 +314,14 @@ TEST_F(TotalAnimationThroughputReporterTest, StartWhileAnimating) {
   EXPECT_TRUE(reporter.reported());
 }
 
+// Flaky on ChromeOS: crbug.com/1157649
+#if defined(OS_CHROMEOS)
+#define MAYBE_PersistedAnimation DISABLED_PersistedAnimation
+#else
+#define MAYBE_PersistedAnimation PersistedAnimation
+#endif
 // Tests the reporter is called multiple times for persistent animation.
-TEST_F(TotalAnimationThroughputReporterTest, PersistedAnimation) {
+TEST_F(TotalAnimationThroughputReporterTest, MAYBE_PersistedAnimation) {
   Layer layer;
   layer.SetOpacity(0.5f);
   root_layer()->Add(&layer);
@@ -306,9 +346,14 @@ TEST_F(TotalAnimationThroughputReporterTest, PersistedAnimation) {
   EXPECT_TRUE(reporter.reported());
 }
 
-// Flaky: crbug.com/1157649
+// Flaky on ChromeOS: crbug.com/1157649
+#if defined(OS_CHROMEOS)
+#define MAYBE_OnceReporter DISABLED_OnceReporter
+#else
+#define MAYBE_OnceReporter OnceReporter
+#endif
 // Make sure the once reporter is called only once.
-TEST_F(TotalAnimationThroughputReporterTest, DISABLED_OnceReporter) {
+TEST_F(TotalAnimationThroughputReporterTest, MAYBE_OnceReporter) {
   Layer layer;
   layer.SetOpacity(0.5f);
   root_layer()->Add(&layer);
@@ -332,11 +377,15 @@ TEST_F(TotalAnimationThroughputReporterTest, DISABLED_OnceReporter) {
   EXPECT_FALSE(reporter.reported());
 }
 
-// Flaky: crbug.com/1157649
+// Flaky on ChromeOS: crbug.com/1157649
+#if defined(OS_CHROMEOS)
+#define MAYBE_OnceReporterShouldDelete DISABLED_OnceReporterShouldDelete
+#else
+#define MAYBE_OnceReporterShouldDelete OnceReporterShouldDelete
+#endif
 // One reporter marked as "should_delete" should be deleted when
 // reported.
-TEST_F(TotalAnimationThroughputReporterTest,
-       DISABLED_OnceReporterShouldDelete) {
+TEST_F(TotalAnimationThroughputReporterTest, MAYBE_OnceReporterShouldDelete) {
   class DeleteTestReporter : public TotalAnimationThroughputReporter {
    public:
     DeleteTestReporter(Compositor* compositor,
