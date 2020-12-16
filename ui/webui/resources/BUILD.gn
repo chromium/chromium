@@ -27,6 +27,18 @@ generate_grd("build_grd") {
     "$target_gen_dir/js/resources.grdp",
   ]
 
+  if (!is_chromeos && !is_android) {
+    # Roboto Font. Roboto-Regular and Roboto-Light is already available on
+    # Android, and Roboto-Medium is not used on Android. All 6 weights of
+    # Roboto are available on Chrome OS.
+    input_files_base_dir = rebase_path(".", "//")
+    input_files = [
+      "roboto/roboto-bold.woff2",
+      "roboto/roboto-medium.woff2",
+      "roboto/roboto-regular.woff2",
+    ]
+  }
+
   if (include_polymer) {
     deps += [
       "cr_components:build_grdp",
