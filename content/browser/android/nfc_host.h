@@ -31,11 +31,10 @@ class NFCHost : public WebContentsObserver {
   // WebContentsObserver implementation.
   void RenderFrameHostChanged(RenderFrameHost* old_host,
                               RenderFrameHost* new_host) override;
-
-  // WebContentsObserver implementation.
   void OnVisibilityChanged(Visibility visibility) override;
 
  private:
+  void MaybeResumeOrSuspendOperations(Visibility visibility);
   void OnPermissionStatusChange(blink::mojom::PermissionStatus status);
   void Close();
 

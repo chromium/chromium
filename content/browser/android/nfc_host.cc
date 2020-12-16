@@ -62,6 +62,7 @@ void NFCHost::GetNFC(RenderFrameHost* render_frame_host,
   if (!nfc_provider_) {
     content::GetDeviceService().BindNFCProvider(
         nfc_provider_.BindNewPipeAndPassReceiver());
+    MaybeResumeOrSuspendOperations(web_contents()->GetVisibility());
   }
 
   JNIEnv* env = base::android::AttachCurrentThread();
@@ -82,6 +83,10 @@ void NFCHost::RenderFrameHostChanged(RenderFrameHost* old_host,
 }
 
 void NFCHost::OnVisibilityChanged(Visibility visibility) {
+  MaybeResumeOrSuspendOperations(visibility);
+}
+
+void NFCHost::MaybeResumeOrSuspendOperations(Visibility visibility) {
   // For cases NFC not initialized, such as the permission has been revoked.
   if (!nfc_provider_)
     return;

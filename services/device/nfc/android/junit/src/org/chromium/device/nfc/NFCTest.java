@@ -1122,6 +1122,77 @@ public class NFCTest {
     }
 
     /**
+     * Test that NFC.watch() is not triggered when NFC operations are suspended.
+     */
+    @Test
+    @Feature({"NFCTest"})
+    public void testWatchWhenOperationsAreSuspended() {
+        TestNfcImpl nfc = new TestNfcImpl(mContext, mDelegate);
+        nfc.suspendNfcOperations();
+        mDelegate.invokeCallback();
+        nfc.setClient(mNfcClient);
+        WatchResponse mockCallback = mock(WatchResponse.class);
+        nfc.watch(mNextWatchId, mockCallback);
+
+        // Check that watch request was completed successfully even if NFC operations are suspended.
+        verify(mockCallback).call(mErrorCaptor.capture());
+        assertNull(mErrorCaptor.getValue());
+
+        // Check that watch is not triggered when NFC tag is in proximity.
+        nfc.processPendingOperationsForTesting(mNfcTagHandler);
+        verify(mNfcClient, times(0))
+                .onWatch(any(int[].class), nullable(String.class), any(NdefMessage.class));
+
+        nfc.resumeNfcOperations();
+        verify(mNfcAdapter, times(1))
+                .enableReaderMode(any(Activity.class), any(ReaderCallback.class), anyInt(),
+                        (Bundle) isNull());
+
+        // Check that client was notified and watch with correct id was triggered.
+        nfc.processPendingOperationsForTesting(mNfcTagHandler);
+        verify(mNfcClient, times(1))
+                .onWatch(mOnWatchCallbackCaptor.capture(), nullable(String.class),
+                        any(NdefMessage.class));
+        assertEquals(mNextWatchId, mOnWatchCallbackCaptor.getValue()[0]);
+    }
+
+    /**
+     * Test that Nfc.push() fails if NFC operations are already suspended.
+     */
+    @Test
+    @Feature({"NFCTest"})
+    public void testPushWhenOperationsAreSuspended() {
+        TestNfcImpl nfc = new TestNfcImpl(mContext, mDelegate);
+        nfc.suspendNfcOperations();
+        mDelegate.invokeCallback();
+        PushResponse mockCallback = mock(PushResponse.class);
+        nfc.push(createMojoNdefMessage(), createNdefWriteOptions(), mockCallback);
+
+        // Check that push request was cancelled with OPERATION_CANCELLED.
+        verify(mockCallback).call(mErrorCaptor.capture());
+        assertNotNull(mErrorCaptor.getValue());
+        assertEquals(NdefErrorType.OPERATION_CANCELLED, mErrorCaptor.getValue().errorType);
+    }
+
+    /**
+     * Test that Nfc.suspendNfcOperations() cancels pending push operation.
+     */
+    @Test
+    @Feature({"NFCTest"})
+    public void testSuspendNfcOperationsCancelPush() {
+        TestNfcImpl nfc = new TestNfcImpl(mContext, mDelegate);
+        mDelegate.invokeCallback();
+        PushResponse mockPushCallback = mock(PushResponse.class);
+        nfc.push(createMojoNdefMessage(), createNdefWriteOptions(), mockPushCallback);
+        nfc.suspendNfcOperations();
+
+        // Check that push request was cancelled with OPERATION_CANCELLED.
+        verify(mockPushCallback).call(mErrorCaptor.capture());
+        assertNotNull(mErrorCaptor.getValue());
+        assertEquals(NdefErrorType.OPERATION_CANCELLED, mErrorCaptor.getValue().errorType);
+    }
+
+    /**
      * Test that Nfc.push() successful when NFC tag is connected.
      */
     @Test
