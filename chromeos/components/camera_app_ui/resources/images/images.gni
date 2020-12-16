@@ -3,8 +3,10 @@
 # found in the LICENSE file.
 
 in_app_assets = [
-  "barcode_url.svg",
   "barcode_copy.svg",
+  "barcode_toggle_off.svg",
+  "barcode_toggle_on.svg",
+  "barcode_url.svg",
   "camera_button_fps_30.svg",
   "camera_button_fps_60.svg",
   "camera_button_grid_off.svg",

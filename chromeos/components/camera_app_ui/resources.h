@@ -54,6 +54,7 @@ const struct {
     {"error_msg_no_camera", IDS_ERROR_MSG_NO_CAMERA},
     {"error_msg_record_start_failed", IDS_ERROR_MSG_RECORD_START_FAILED},
     {"toggle_mic_button", IDS_TOGGLE_MIC_BUTTON},
+    {"toggle_barcode_button", IDS_TOGGLE_BARCODE_BUTTON},
     {"expert_mode_button", IDS_EXPERT_MODE_BUTTON},
     {"expert_preview_metadata", IDS_EXPERT_PREVIEW_METADATA},
     {"expert_save_metadata", IDS_EXPERT_SAVE_METADATA},

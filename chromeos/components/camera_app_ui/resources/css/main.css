@@ -3,6 +3,8 @@
  * found in the LICENSE file. */
 
 :root {
+  --blue-300-rgb: 138, 180, 248;
+  --blue-300: rgb(var(--blue-300-rgb));
   --grey-100: rgb(241, 243, 244);
   --grey-200: rgb(232, 234, 237);
   --grey-900: rgb(32, 33, 36);
@@ -509,6 +511,7 @@ body.video.taking #recordvideo {
 }
 
 body:not(.video) #toggle-mic,
+body:not(.photo) #toggle-barcode,
 body:not(.multi-camera) #switch-device {
   visibility: hidden;
 }
@@ -644,6 +647,16 @@ body._10sec #toggle-timer:checked {
 
 #toggle-mic {
   background-image: url(/images/camera_button_mic_off.svg);
+}
+
+#toggle-barcode:checked {
+  background: url(/images/barcode_toggle_on.svg) center no-repeat,
+              rgba(var(--blue-300-rgb), 0.3);
+}
+
+#toggle-barcode {
+  background-image: url(/images/barcode_toggle_off.svg);
+  border-radius: 50%;
 }
 
 body:not(.multi-fps) #toggle-fps,
@@ -1550,7 +1563,7 @@ body:not(.mode-switching):not(.streaming):not(.review-result) #spinner {
 }
 
 .barcode-chip-url > a {
-  color: rgb(138, 180, 248);
+  color: var(--blue-300);
   max-width: 416px;
   overflow: hidden;
   text-decoration: none;

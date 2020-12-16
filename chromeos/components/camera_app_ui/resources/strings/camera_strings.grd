@@ -324,6 +324,9 @@
       <message desc="Label for the checkbox to toggle the microphone for recording video." name="IDS_TOGGLE_MIC_BUTTON">
         Microphone
       </message>
+      <message desc="Label for the checkbox to toggle barcode (QR code) scanning in photo mode." name="IDS_TOGGLE_BARCODE_BUTTON">
+        QR code
+      </message>
       <message desc="Label for the button of expert mode options." name="IDS_EXPERT_MODE_BUTTON">
         Expert mode
       </message>

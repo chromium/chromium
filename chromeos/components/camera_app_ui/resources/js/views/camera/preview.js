@@ -9,6 +9,7 @@ import {DeviceOperator, parseMetadata} from '../../mojo/device_operator.js';
 import * as nav from '../../nav.js';
 import * as state from '../../state.js';
 import * as util from '../../util.js';
+import {Mode} from '../../type.js';
 
 /**
  * Creates a controller for the video preview of Camera view.
@@ -203,8 +204,7 @@ export class Preview {
     if (this.scanner_ === null) {
       return;
     }
-    // TODO(b/172879638): Only enables barcode scanning in Photo mode.
-    if (state.get(state.State.EXPERT) && state.get(state.State.SCAN_BARCODE)) {
+    if (state.get(Mode.PHOTO) && state.get(state.State.SCAN_BARCODE)) {
       this.scanner_.start();
     } else {
       this.scanner_.stop();
