@@ -41,7 +41,7 @@
   {
     "name": "account-id-migration",
     "owners": [ "msarda" ],
-    "expiry_milestone": 88
+    "expiry_milestone": 92
   },
   {
     "name": "account-management-flows-v2",
@@ -4895,7 +4895,7 @@
   {
     "name": "use-multilogin-endpoint",
     "owners": [ "droger", "msarda" ],
-    "expiry_milestone": 88
+    "expiry_milestone": 92
   },
   {
     "name": "use-of-hash-affiliation-fetcher",
