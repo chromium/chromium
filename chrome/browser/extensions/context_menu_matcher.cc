@@ -48,7 +48,7 @@ ContextMenuMatcher::ContextMenuMatcher(
     content::BrowserContext* browser_context,
     ui::SimpleMenuModel::Delegate* delegate,
     ui::SimpleMenuModel* menu_model,
-    const base::Callback<bool(const MenuItem*)>& filter)
+    base::RepeatingCallback<bool(const MenuItem*)> filter)
     : browser_context_(browser_context),
       menu_model_(menu_model),
       delegate_(delegate),

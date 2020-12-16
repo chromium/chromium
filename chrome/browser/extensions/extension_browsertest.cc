@@ -273,8 +273,8 @@ void ExtensionBrowserTest::SetUpOnMainThread() {
         test_extension_cache_.get());
   }
 
-  test_protocol_handler_ = base::Bind(&ExtensionProtocolTestResourcesHandler,
-                                      GetTestResourcesParentDir());
+  test_protocol_handler_ = base::BindRepeating(
+      &ExtensionProtocolTestResourcesHandler, GetTestResourcesParentDir());
   SetExtensionProtocolTestHandler(&test_protocol_handler_);
 }
 

@@ -105,8 +105,8 @@ void NavigationObserver::PromptToEnableExtensionIfNecessary(
         ExtensionInstallPrompt::GetReEnablePromptTypeForExtension(profile_,
                                                                   extension);
     extension_install_prompt_->ShowDialog(
-        base::Bind(&NavigationObserver::OnInstallPromptDone,
-                   weak_factory_.GetWeakPtr()),
+        base::BindRepeating(&NavigationObserver::OnInstallPromptDone,
+                            weak_factory_.GetWeakPtr()),
         extension, nullptr,
         std::make_unique<ExtensionInstallPrompt::Prompt>(type),
         ExtensionInstallPrompt::GetDefaultShowDialogCallback());

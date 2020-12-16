@@ -141,8 +141,8 @@ class FakeExtensionMessageBubble {
   bool is_closed() { return is_closed_; }
 
   void Show() {
-    controller_->OnShown(
-        base::Bind(&FakeExtensionMessageBubble::Close, base::Unretained(this)));
+    controller_->OnShown(base::BindOnce(&FakeExtensionMessageBubble::Close,
+                                        base::Unretained(this)));
 
     // Depending on the user action, the bubble may be closed as result.
     switch (action_) {

@@ -44,7 +44,7 @@ class ContextMenuMatcher {
   ContextMenuMatcher(content::BrowserContext* context,
                      ui::SimpleMenuModel::Delegate* delegate,
                      ui::SimpleMenuModel* menu_model,
-                     const base::Callback<bool(const MenuItem*)>& filter);
+                     base::RepeatingCallback<bool(const MenuItem*)> filter);
 
   // This is a helper function to append items for one particular extension.
   // The |index| parameter is used for assigning id's, and is incremented for
@@ -113,7 +113,7 @@ class ContextMenuMatcher {
   ui::SimpleMenuModel* menu_model_;
   ui::SimpleMenuModel::Delegate* delegate_;
 
-  base::Callback<bool(const MenuItem*)> filter_;
+  base::RepeatingCallback<bool(const MenuItem*)> filter_;
 
   bool is_smart_text_selection_enabled_;
 

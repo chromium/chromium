@@ -21,10 +21,6 @@ namespace extensions {
 
 namespace {
 
-// A callback that returns true if the condition has been met and takes no
-// arguments.
-using ConditionCallback = base::Callback<bool(void)>;
-
 bool HasPageActionVisibilityReachedTarget(
     Browser* browser,
     size_t target_visible_page_action_count) {

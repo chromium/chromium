@@ -176,7 +176,7 @@ class ExtensionMessageBubbleController : public BrowserListObserver,
   // Called when the bubble is actually shown. Because some bubbles are delayed
   // (in order to weather the "focus storm"), they are not shown immediately.
   // Accepts a callback from platform-specifc ui code to close the bubble.
-  void OnShown(const base::Closure& close_bubble_callback);
+  void OnShown(base::OnceClosure close_bubble_callback);
 
   // Callbacks from bubble. Declared virtual for testing purposes.
   virtual void OnBubbleAction();
@@ -238,7 +238,7 @@ class ExtensionMessageBubbleController : public BrowserListObserver,
   bool is_active_bubble_;
 
   // Platform-specific implementation of closing the bubble.
-  base::Closure close_bubble_callback_;
+  base::OnceClosure close_bubble_callback_;
 
   ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observer_{this};

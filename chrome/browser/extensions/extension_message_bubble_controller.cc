@@ -198,8 +198,8 @@ void ExtensionMessageBubbleController::HighlightExtensionsIfNecessary() {
 }
 
 void ExtensionMessageBubbleController::OnShown(
-    const base::Closure& close_bubble_callback) {
-  close_bubble_callback_ = close_bubble_callback;
+    base::OnceClosure close_bubble_callback) {
+  close_bubble_callback_ = std::move(close_bubble_callback);
   DCHECK(is_active_bubble_);
   delegate_->OnShown(GetExtensionIdList());
 

@@ -60,7 +60,7 @@ ExtensionManagement::ExtensionManagement(Profile* profile)
   is_signin_profile_ = chromeos::ProfileHelper::IsSigninProfile(profile);
 #endif
   pref_change_registrar_.Init(pref_service_);
-  base::Closure pref_change_callback = base::BindRepeating(
+  base::RepeatingClosure pref_change_callback = base::BindRepeating(
       &ExtensionManagement::OnExtensionPrefChanged, base::Unretained(this));
   pref_change_registrar_.Add(pref_names::kInstallAllowList,
                              pref_change_callback);

@@ -729,8 +729,8 @@ void ChromeContentBrowserClientExtensionsPart::
 
 void ChromeContentBrowserClientExtensionsPart::GetURLRequestAutoMountHandlers(
     std::vector<storage::URLRequestAutoMountHandler>* handlers) {
-  handlers->push_back(
-      base::Bind(MediaFileSystemBackend::AttemptAutoMountForURLRequest));
+  handlers->push_back(base::BindRepeating(
+      MediaFileSystemBackend::AttemptAutoMountForURLRequest));
 }
 
 void ChromeContentBrowserClientExtensionsPart::GetAdditionalFileSystemBackends(

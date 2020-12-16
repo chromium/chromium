@@ -15,9 +15,9 @@ StateStoreNotificationObserver::StateStoreNotificationObserver(
     StateStore* state_store)
     : state_store_(state_store) {
   on_session_restored_callback_subscription_ =
-      SessionRestore::RegisterOnSessionRestoredCallback(
-          base::Bind(&StateStoreNotificationObserver::OnSessionRestoreDone,
-                     base::Unretained(this)));
+      SessionRestore::RegisterOnSessionRestoredCallback(base::BindRepeating(
+          &StateStoreNotificationObserver::OnSessionRestoreDone,
+          base::Unretained(this)));
 }
 
 StateStoreNotificationObserver::~StateStoreNotificationObserver() {
