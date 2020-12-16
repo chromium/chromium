@@ -542,9 +542,8 @@ class Desktop:
 
   def check_x_responding(self):
     """Checks if the X server is responding to connections."""
-    with open(os.devnull, "r+") as devnull:
-      exit_code = subprocess.call("xdpyinfo", env=self.child_env,
-                                  stdout=devnull)
+    exit_code = subprocess.call("xdpyinfo", env=self.child_env,
+                                stdout=subprocess.DEVNULL)
     return exit_code == 0
 
   def _wait_for_x(self):
@@ -575,9 +574,9 @@ class Desktop:
 
     self._wait_for_x()
 
-    with open(os.devnull, "r+") as devnull:
-      exit_code = subprocess.call("xrandr", env=self.child_env,
-                                  stdout=devnull, stderr=devnull)
+    exit_code = subprocess.call("xrandr", env=self.child_env,
+                                stdout=subprocess.DEVNULL,
+                                stderr=subprocess.DEVNULL)
     if exit_code == 0:
       # RandR is supported
       self.server_supports_exact_resize = True
@@ -680,43 +679,45 @@ class Desktop:
     if not self.server_supports_randr:
       return
 
-    with open(os.devnull, "r+") as devnull:
-      # Register the screen sizes with RandR, if needed.  Errors here are
-      # non-fatal; the X server will continue to run with the dimensions from
-      # the "-screen" option.
-      if self.randr_add_sizes:
-        for width, height in self.sizes:
-          label = "%dx%d" % (width, height)
-          args = ["xrandr", "--newmode", label, "0", str(width), "0", "0", "0",
-                  str(height), "0", "0", "0"]
-          subprocess.call(args, env=self.child_env, stdout=devnull,
-                          stderr=devnull)
-          args = ["xrandr", "--addmode", "screen", label]
-          subprocess.call(args, env=self.child_env, stdout=devnull,
-                          stderr=devnull)
+    # Register the screen sizes with RandR, if needed.  Errors here are
+    # non-fatal; the X server will continue to run with the dimensions from
+    # the "-screen" option.
+    if self.randr_add_sizes:
+      for width, height in self.sizes:
+        label = "%dx%d" % (width, height)
+        args = ["xrandr", "--newmode", label, "0", str(width), "0", "0", "0",
+                str(height), "0", "0", "0"]
+        subprocess.call(args, env=self.child_env, stdout=subprocess.DEVNULL,
+                        stderr=subprocess.DEVNULL)
+        args = ["xrandr", "--addmode", "screen", label]
+        subprocess.call(args, env=self.child_env, stdout=subprocess.DEVNULL,
+                        stderr=subprocess.DEVNULL)
 
-      # Set the initial mode to the first size specified, otherwise the X server
-      # would default to (max_width, max_height), which might not even be in the
-      # list.
-      initial_size = self.sizes[0]
-      label = "%dx%d" % initial_size
-      args = ["xrandr", "-s", label]
-      subprocess.call(args, env=self.child_env, stdout=devnull, stderr=devnull)
+    # Set the initial mode to the first size specified, otherwise the X server
+    # would default to (max_width, max_height), which might not even be in the
+    # list.
+    initial_size = self.sizes[0]
+    label = "%dx%d" % initial_size
+    args = ["xrandr", "-s", label]
+    subprocess.call(args, env=self.child_env, stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL)
 
-      # Set the physical size of the display so that the initial mode is running
-      # at approximately 96 DPI, since some desktops require the DPI to be set
-      # to something realistic.
-      args = ["xrandr", "--dpi", "96"]
-      subprocess.call(args, env=self.child_env, stdout=devnull, stderr=devnull)
+    # Set the physical size of the display so that the initial mode is running
+    # at approximately 96 DPI, since some desktops require the DPI to be set
+    # to something realistic.
+    args = ["xrandr", "--dpi", "96"]
+    subprocess.call(args, env=self.child_env, stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL)
 
-      # Monitor for any automatic resolution changes from the desktop
-      # environment.
-      args = [SCRIPT_PATH, "--watch-resolution", str(initial_size[0]),
-              str(initial_size[1])]
+    # Monitor for any automatic resolution changes from the desktop
+    # environment.
+    args = [SCRIPT_PATH, "--watch-resolution", str(initial_size[0]),
+            str(initial_size[1])]
 
-      # It is not necessary to wait() on the process here, as this script's main
-      # loop will reap the exit-codes of all child processes.
-      subprocess.Popen(args, env=self.child_env, stdout=devnull, stderr=devnull)
+    # It is not necessary to wait() on the process here, as this script's main
+    # loop will reap the exit-codes of all child processes.
+    subprocess.Popen(args, env=self.child_env, stdout=subprocess.DEVNULL,
+                     stderr=subprocess.DEVNULL)
 
   def _launch_x_session(self):
     # Start desktop session.
@@ -731,7 +732,7 @@ class Desktop:
 
     logging.info("Launching X session: %s" % xsession_command)
     self.session_proc = subprocess.Popen(xsession_command,
-                                         stdin=open(os.devnull, "r"),
+                                         stdin=subprocess.DEVNULL,
                                          stdout=subprocess.PIPE,
                                          stderr=subprocess.STDOUT,
                                          cwd=HOME_DIR,
