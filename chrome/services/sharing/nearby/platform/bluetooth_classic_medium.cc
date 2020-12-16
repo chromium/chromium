@@ -5,6 +5,7 @@
 #include "chrome/services/sharing/nearby/platform/bluetooth_classic_medium.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "chrome/services/sharing/nearby/platform/bluetooth_server_socket.h"
 #include "chrome/services/sharing/nearby/platform/bluetooth_socket.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
@@ -31,6 +32,12 @@ void LogConnectToServiceResult(bool success) {
   base::UmaHistogramBoolean(
       "Nearby.Connections.Bluetooth.ClassicMedium.ConnectToService.Result",
       success);
+}
+
+void LogConnectToServiceDuration(base::TimeDelta duration) {
+  base::UmaHistogramTimes(
+      "Nearby.Connections.Bluetooth.ClassicMedium.ConnectToService.Duration",
+      duration);
 }
 
 void LogListenForServiceResult(bool success) {
@@ -111,11 +118,13 @@ std::unique_ptr<api::BluetoothSocket> BluetoothClassicMedium::ConnectToService(
     const std::string& service_uuid) {
   const std::string& address = remote_device.GetMacAddress();
 
+  auto start_time = base::Time::Now();
   bluetooth::mojom::ConnectToServiceResultPtr result;
   bool success = adapter_->ConnectToServiceInsecurely(
       address, device::BluetoothUUID(service_uuid), &result);
 
   if (success && result) {
+    LogConnectToServiceDuration(base::Time::Now() - start_time);
     LogConnectToServiceResult(true);
     return std::make_unique<chrome::BluetoothSocket>(
         remote_device, std::move(result->socket),
