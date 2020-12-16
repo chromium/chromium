@@ -91,8 +91,8 @@ int64_t MTPFileStreamReader::GetLength(
   get_length_callback_ = std::move(callback);
   delegate->GetFileInfo(
       url_.path(),
-      base::Bind(&MTPFileStreamReader::FinishGetLength,
-                 weak_factory_.GetWeakPtr()),
+      base::BindOnce(&MTPFileStreamReader::FinishGetLength,
+                     weak_factory_.GetWeakPtr()),
       base::BindRepeating(
           &MTPFileStreamReader::CallGetLengthCallbackWithPlatformFileError,
           weak_factory_.GetWeakPtr()));

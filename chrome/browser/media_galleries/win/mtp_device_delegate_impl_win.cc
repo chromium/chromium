@@ -375,7 +375,7 @@ MTPDeviceDelegateImplWin::~MTPDeviceDelegateImplWin() {
 
 void MTPDeviceDelegateImplWin::GetFileInfo(
     const base::FilePath& file_path,
-    const GetFileInfoSuccessCallback& success_callback,
+    GetFileInfoSuccessCallback success_callback,
     const ErrorCallback& error_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   DCHECK(!file_path.empty());
@@ -385,8 +385,9 @@ void MTPDeviceDelegateImplWin::GetFileInfo(
       base::BindOnce(&GetFileInfoOnBlockingPoolThread, storage_device_info_,
                      file_path, base::Unretained(file_info)),
       base::BindOnce(&MTPDeviceDelegateImplWin::OnGetFileInfo,
-                     weak_ptr_factory_.GetWeakPtr(), success_callback,
-                     error_callback, base::Owned(file_info))));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(success_callback), error_callback,
+                     base::Owned(file_info))));
 }
 
 void MTPDeviceDelegateImplWin::CreateDirectory(
@@ -584,14 +585,14 @@ void MTPDeviceDelegateImplWin::OnInitCompleted(bool succeeded) {
 }
 
 void MTPDeviceDelegateImplWin::OnGetFileInfo(
-    const GetFileInfoSuccessCallback& success_callback,
+    GetFileInfoSuccessCallback success_callback,
     const ErrorCallback& error_callback,
     base::File::Info* file_info,
     base::File::Error error) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   DCHECK(file_info);
   if (error == base::File::FILE_OK)
-    success_callback.Run(*file_info);
+    std::move(success_callback).Run(*file_info);
   else
     error_callback.Run(error);
   task_in_progress_ = false;

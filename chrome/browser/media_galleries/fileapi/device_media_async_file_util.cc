@@ -375,10 +375,10 @@ void DeviceMediaAsyncFileUtil::GetFileInfo(
   auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
   delegate->GetFileInfo(
       url.path(),
-      base::Bind(&DeviceMediaAsyncFileUtil::OnDidGetFileInfo,
-                 weak_ptr_factory_.GetWeakPtr(),
-                 base::RetainedRef(context->task_runner()), url.path(),
-                 copyable_callback),
+      base::BindOnce(&DeviceMediaAsyncFileUtil::OnDidGetFileInfo,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     base::RetainedRef(context->task_runner()), url.path(),
+                     copyable_callback),
       base::BindRepeating(&OnGetFileInfoError, copyable_callback));
 }
 

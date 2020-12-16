@@ -106,7 +106,7 @@ void MTPDeviceTaskHelper::OpenStorage(const std::string& storage_name,
 
 void MTPDeviceTaskHelper::GetFileInfo(
     uint32_t file_id,
-    const GetFileInfoSuccessCallback& success_callback,
+    GetFileInfoSuccessCallback success_callback,
     const ErrorCallback& error_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (device_handle_.empty())
@@ -116,8 +116,8 @@ void MTPDeviceTaskHelper::GetFileInfo(
   GetMediaTransferProtocolManager()->GetFileInfo(
       device_handle_, file_ids,
       base::BindOnce(&MTPDeviceTaskHelper::OnGetFileInfo,
-                     weak_ptr_factory_.GetWeakPtr(), success_callback,
-                     error_callback));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(success_callback), error_callback));
 }
 
 void MTPDeviceTaskHelper::CreateDirectory(
@@ -260,7 +260,7 @@ void MTPDeviceTaskHelper::OnDidOpenStorage(
 }
 
 void MTPDeviceTaskHelper::OnGetFileInfo(
-    const GetFileInfoSuccessCallback& success_callback,
+    GetFileInfoSuccessCallback success_callback,
     const ErrorCallback& error_callback,
     std::vector<device::mojom::MtpFileEntryPtr> entries,
     bool error) const {
@@ -271,8 +271,9 @@ void MTPDeviceTaskHelper::OnGetFileInfo(
   }
 
   content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(success_callback, FileInfoFromMTPFileEntry(
-                                                      std::move(entries[0]))));
+      FROM_HERE,
+      base::BindOnce(std::move(success_callback),
+                     FileInfoFromMTPFileEntry(std::move(entries[0]))));
 }
 
 void MTPDeviceTaskHelper::OnCreateDirectory(
