@@ -125,7 +125,7 @@ bool ExecuteCodeFunction::Execute(const std::string& code_string,
       GetWebViewSrc(), script_url_, user_gesture(), css_origin,
       has_callback() ? ScriptExecutor::JSON_SERIALIZED_RESULT
                      : ScriptExecutor::NO_RESULT,
-      base::Bind(&ExecuteCodeFunction::OnExecuteCodeFinished, this));
+      base::BindOnce(&ExecuteCodeFunction::OnExecuteCodeFinished, this));
   return true;
 }
 
