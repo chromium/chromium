@@ -119,7 +119,6 @@ FrameTreeNode::FrameTreeNode(
     const blink::mojom::FrameOwnerProperties& frame_owner_properties,
     blink::mojom::FrameOwnerElementType owner_type)
     : frame_tree_(frame_tree),
-      render_manager_(this, frame_tree->manager_delegate()),
       frame_tree_node_id_(next_frame_tree_node_id_++),
       parent_(parent),
       depth_(parent ? parent->frame_tree_node()->depth_ + 1 : 0u),
@@ -145,7 +144,8 @@ FrameTreeNode::FrameTreeNode(
       devtools_frame_token_(devtools_frame_token),
       frame_owner_properties_(frame_owner_properties),
       was_discarded_(false),
-      blame_context_(frame_tree_node_id_, FrameTreeNode::From(parent)) {
+      blame_context_(frame_tree_node_id_, FrameTreeNode::From(parent)),
+      render_manager_(this, frame_tree->manager_delegate()) {
   std::pair<FrameTreeNodeIdMap::iterator, bool> result =
       g_frame_tree_node_id_map.Get().insert(
           std::make_pair(frame_tree_node_id_, this));
@@ -176,6 +176,7 @@ FrameTreeNode::~FrameTreeNode() {
   frame_tree_->FrameRemoved(this);
   for (auto& observer : observers_)
     observer.OnFrameTreeNodeDestroyed(this);
+  observers_.Clear();
 
   if (opener_)
     opener_->RemoveObserver(opener_observer_.get());

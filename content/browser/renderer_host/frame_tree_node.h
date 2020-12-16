@@ -478,9 +478,6 @@ class CONTENT_EXPORT FrameTreeNode {
   // The FrameTree that owns us.
   FrameTree* frame_tree_;  // not owned.
 
-  // Manages creation and swapping of RenderFrameHosts for this frame.
-  RenderFrameHostManager render_manager_;
-
   // A browser-global identifier for the frame in the page, which stays stable
   // even if the frame does a cross-process navigation.
   const int frame_tree_node_id_;
@@ -587,6 +584,18 @@ class CONTENT_EXPORT FrameTreeNode {
   // browser process activities to this node (when possible).  It is unrelated
   // to the core logic of FrameTreeNode.
   FrameTreeNodeBlameContext blame_context_;
+
+  // Manages creation and swapping of RenderFrameHosts for this frame.
+  //
+  // This field needs to be declared last, because destruction of
+  // RenderFrameHostManager may call arbitrary callbacks (e.g. via
+  // WebContentsObserver::DidFinishNavigation fired after RenderFrameHostManager
+  // destructs a RenderFrameHostImpl and its NavigationRequest).  Such callbacks
+  // may try to use FrameTreeNode's fields above - this would be an undefined
+  // behavior if the fields (even trivially-destructible ones) were destructed
+  // before the RenderFrameHostManager's destructor runs.  See also
+  // https://crbug.com/1157988.
+  RenderFrameHostManager render_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(FrameTreeNode);
 };
