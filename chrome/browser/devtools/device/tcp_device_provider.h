@@ -22,7 +22,7 @@ class TCPDeviceProvider : public AndroidDeviceManager::DeviceProvider {
   using HostPortSet = std::set<net::HostPortPair>;
   explicit TCPDeviceProvider(const HostPortSet& targets);
 
-  void QueryDevices(const SerialsCallback& callback) override;
+  void QueryDevices(SerialsCallback callback) override;
 
   void QueryDeviceInfo(const std::string& serial,
                        const DeviceInfoCallback& callback) override;

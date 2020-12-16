@@ -89,10 +89,10 @@ UsbDeviceProvider::UsbDeviceProvider(Profile* profile) {
   rsa_key_ = AndroidRSAPrivateKey(profile);
 }
 
-void UsbDeviceProvider::QueryDevices(const SerialsCallback& callback) {
+void UsbDeviceProvider::QueryDevices(SerialsCallback callback) {
   AndroidUsbDevice::Enumerate(
-      rsa_key_.get(),
-      base::Bind(&UsbDeviceProvider::EnumeratedDevices, this, callback));
+      rsa_key_.get(), base::BindOnce(&UsbDeviceProvider::EnumeratedDevices,
+                                     this, std::move(callback)));
 }
 
 void UsbDeviceProvider::QueryDeviceInfo(const std::string& serial,
@@ -138,7 +138,7 @@ void UsbDeviceProvider::ReleaseDevice(const std::string& serial) {
 UsbDeviceProvider::~UsbDeviceProvider() {
 }
 
-void UsbDeviceProvider::EnumeratedDevices(const SerialsCallback& callback,
+void UsbDeviceProvider::EnumeratedDevices(SerialsCallback callback,
                                           const AndroidUsbDevices& devices) {
   std::vector<std::string> result;
   device_map_.clear();
@@ -147,5 +147,5 @@ void UsbDeviceProvider::EnumeratedDevices(const SerialsCallback& callback,
     device_map_[(*it)->serial()] = *it;
     (*it)->InitOnCallerThread();
   }
-  callback.Run(result);
+  std::move(callback).Run(std::move(result));
 }

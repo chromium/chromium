@@ -344,9 +344,10 @@ class DevicesRequest : public base::RefCountedThreadSafe<DevicesRequest> {
         base::WrapRefCounted(new DevicesRequest(callback));
     for (auto it = providers.begin(); it != providers.end(); ++it) {
       device_task_runner->PostTask(
-          FROM_HERE, base::BindOnce(&DeviceProvider::QueryDevices, *it,
-                                    base::Bind(&DevicesRequest::ProcessSerials,
-                                               request, *it)));
+          FROM_HERE,
+          base::BindOnce(
+              &DeviceProvider::QueryDevices, *it,
+              base::BindOnce(&DevicesRequest::ProcessSerials, request, *it)));
     }
     device_task_runner->ReleaseSoon(FROM_HERE, std::move(request));
   }
@@ -365,8 +366,7 @@ class DevicesRequest : public base::RefCountedThreadSafe<DevicesRequest> {
 
   typedef std::vector<std::string> Serials;
 
-  void ProcessSerials(scoped_refptr<DeviceProvider> provider,
-                      const Serials& serials) {
+  void ProcessSerials(scoped_refptr<DeviceProvider> provider, Serials serials) {
     for (auto it = serials.begin(); it != serials.end(); ++it) {
       descriptors_->resize(descriptors_->size() + 1);
       descriptors_->back().provider = provider;

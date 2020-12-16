@@ -151,7 +151,7 @@ CastDeviceProvider::CastDeviceProvider() {}
 
 CastDeviceProvider::~CastDeviceProvider() {}
 
-void CastDeviceProvider::QueryDevices(const SerialsCallback& callback) {
+void CastDeviceProvider::QueryDevices(SerialsCallback callback) {
   if (!lister_delegate_) {
     lister_delegate_.reset(new DeviceListerDelegate(
         weak_factory_.GetWeakPtr(), base::ThreadTaskRunnerHandle::Get()));
@@ -163,7 +163,7 @@ void CastDeviceProvider::QueryDevices(const SerialsCallback& callback) {
   for (const auto& device_entry : device_info_map_)
     targets.insert(net::HostPortPair(device_entry.first, kCastInspectPort));
   tcp_provider_ = new TCPDeviceProvider(targets);
-  tcp_provider_->QueryDevices(callback);
+  tcp_provider_->QueryDevices(std::move(callback));
 }
 
 void CastDeviceProvider::QueryDeviceInfo(const std::string& serial,

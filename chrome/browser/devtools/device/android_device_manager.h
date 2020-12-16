@@ -39,8 +39,7 @@ class AndroidDeviceManager {
                           const std::string& extensions,
                           const std::string& body_head,
                           std::unique_ptr<net::StreamSocket>)>;
-  using SerialsCallback =
-      base::Callback<void(const std::vector<std::string>&)>;
+  using SerialsCallback = base::OnceCallback<void(std::vector<std::string>)>;
 
   struct BrowserInfo {
     BrowserInfo();
@@ -164,7 +163,7 @@ class AndroidDeviceManager {
     typedef AndroidDeviceManager::SocketCallback SocketCallback;
     typedef AndroidDeviceManager::CommandCallback CommandCallback;
 
-    virtual void QueryDevices(const SerialsCallback& callback) = 0;
+    virtual void QueryDevices(SerialsCallback callback) = 0;
 
     virtual void QueryDeviceInfo(const std::string& serial,
                                  const DeviceInfoCallback& callback) = 0;

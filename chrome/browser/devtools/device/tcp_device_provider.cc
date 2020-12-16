@@ -108,7 +108,7 @@ TCPDeviceProvider::TCPDeviceProvider(const HostPortSet& targets)
     : targets_(targets) {
 }
 
-void TCPDeviceProvider::QueryDevices(const SerialsCallback& callback) {
+void TCPDeviceProvider::QueryDevices(SerialsCallback callback) {
   std::vector<std::string> result;
   for (const net::HostPortPair& target : targets_) {
     const std::string& host = target.host();
@@ -116,7 +116,7 @@ void TCPDeviceProvider::QueryDevices(const SerialsCallback& callback) {
       continue;
     result.push_back(host);
   }
-  callback.Run(result);
+  std::move(callback).Run(std::move(result));
 }
 
 void TCPDeviceProvider::QueryDeviceInfo(const std::string& serial,

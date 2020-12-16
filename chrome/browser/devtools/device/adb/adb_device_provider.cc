@@ -25,13 +25,12 @@ static void RunCommand(const std::string& serial,
   AdbClientSocket::AdbQuery(kAdbPort, query, callback);
 }
 
-static void ReceivedAdbDevices(
-    const AdbDeviceProvider::SerialsCallback& callback,
-    int result_code,
-    const std::string& response) {
+static void ReceivedAdbDevices(AdbDeviceProvider::SerialsCallback callback,
+                               int result_code,
+                               const std::string& response) {
   std::vector<std::string> result;
   if (result_code < 0) {
-    callback.Run(result);
+    std::move(callback).Run(std::move(result));
     return;
   }
   for (const base::StringPiece& line :
@@ -42,14 +41,15 @@ static void ReceivedAdbDevices(
                                base::SPLIT_WANT_NONEMPTY);
     result.push_back(tokens[0].as_string());
   }
-  callback.Run(result);
+  std::move(callback).Run(std::move(result));
 }
 
 } // namespace
 
-void AdbDeviceProvider::QueryDevices(const SerialsCallback& callback) {
+void AdbDeviceProvider::QueryDevices(SerialsCallback callback) {
   AdbClientSocket::AdbQuery(
-      kAdbPort, kHostDevicesCommand, base::Bind(&ReceivedAdbDevices, callback));
+      kAdbPort, kHostDevicesCommand,
+      base::BindOnce(&ReceivedAdbDevices, std::move(callback)));
 }
 
 void AdbDeviceProvider::QueryDeviceInfo(const std::string& serial,
