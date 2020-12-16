@@ -3676,6 +3676,7 @@ void HTMLMediaElement::
     media_player_receiver_set_.Clear();
     media_player_observer_remote_.reset();
   }
+  OnWebMediaPlayerCleared();
 }
 
 void HTMLMediaElement::ClearMediaPlayer() {

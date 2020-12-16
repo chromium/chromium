@@ -39,6 +39,7 @@ class MODULES_EXPORT VideoFrameCallbackRequesterImpl final
   void cancelVideoFrameCallback(int);
 
   void OnWebMediaPlayerCreated() override;
+  void OnWebMediaPlayerCleared() override;
   void OnRequestVideoFrameCallback() override;
 
   // Called by ScriptedAnimationController as part of the rendering steps,
@@ -109,6 +110,9 @@ class MODULES_EXPORT VideoFrameCallbackRequesterImpl final
   bool in_immersive_session_ = false;
 
   Member<VideoFrameRequestCallbackCollection> callback_collection_;
+
+  // Only used to invalidate pending OnExecution() calls.
+  base::WeakPtrFactory<VideoFrameCallbackRequesterImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(VideoFrameCallbackRequesterImpl);
 };

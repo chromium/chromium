@@ -387,6 +387,7 @@ class CORE_EXPORT HTMLMediaElement
 
   // Called after the creation of |web_media_player_|.
   virtual void OnWebMediaPlayerCreated() {}
+  virtual void OnWebMediaPlayerCleared() {}
 
   void UpdateLayoutObject();
 

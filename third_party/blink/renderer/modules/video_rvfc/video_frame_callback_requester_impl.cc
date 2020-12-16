@@ -85,13 +85,19 @@ void VideoFrameCallbackRequesterImpl::OnWebMediaPlayerCreated() {
     GetSupplementable()->GetWebMediaPlayer()->RequestVideoFrameCallback();
 }
 
+void VideoFrameCallbackRequesterImpl::OnWebMediaPlayerCleared() {
+  // Clear existing issued weak pointers from the factory, so that
+  // pending ScheduleVideoFrameCallbacksExecution are cancelled.
+  weak_factory_.InvalidateWeakPtrs();
+}
+
 void VideoFrameCallbackRequesterImpl::ScheduleWindowRaf() {
   GetSupplementable()
       ->GetDocument()
       .GetScriptedAnimationController()
       .ScheduleVideoFrameCallbacksExecution(
           WTF::Bind(&VideoFrameCallbackRequesterImpl::OnExecution,
-                    WrapWeakPersistent(this)));
+                    weak_factory_.GetWeakPtr()));
 }
 
 void VideoFrameCallbackRequesterImpl::ScheduleExecution() {
@@ -161,8 +167,9 @@ bool VideoFrameCallbackRequesterImpl::TryScheduleImmersiveXRSessionRaf() {
   if (!in_immersive_session_)
     return false;
 
-  session->ScheduleVideoFrameCallbacksExecution(WTF::Bind(
-      &VideoFrameCallbackRequesterImpl::OnExecution, WrapWeakPersistent(this)));
+  session->ScheduleVideoFrameCallbacksExecution(
+      WTF::Bind(&VideoFrameCallbackRequesterImpl::OnExecution,
+                weak_factory_.GetWeakPtr()));
 
   return true;
 }

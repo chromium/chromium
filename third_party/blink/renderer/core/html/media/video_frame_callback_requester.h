@@ -28,6 +28,7 @@ class CORE_EXPORT VideoFrameCallbackRequester
   void Trace(Visitor*) const override;
 
   virtual void OnWebMediaPlayerCreated() = 0;
+  virtual void OnWebMediaPlayerCleared() = 0;
   virtual void OnRequestVideoFrameCallback() = 0;
 
  protected:

@@ -206,6 +206,7 @@ class CORE_EXPORT HTMLVideoElement final
                           RegisteredEventListener&) override;
 
   void OnWebMediaPlayerCreated() final;
+  void OnWebMediaPlayerCleared() final;
 
   void AttributeChanged(const AttributeModificationParams& params) override;
 

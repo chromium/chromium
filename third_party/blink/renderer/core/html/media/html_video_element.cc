@@ -783,6 +783,13 @@ void HTMLVideoElement::OnWebMediaPlayerCreated() {
   }
 }
 
+void HTMLVideoElement::OnWebMediaPlayerCleared() {
+  if (RuntimeEnabledFeatures::RequestVideoFrameCallbackEnabled()) {
+    if (auto* vfc_requester = VideoFrameCallbackRequester::From(*this))
+      vfc_requester->OnWebMediaPlayerCleared();
+  }
+}
+
 void HTMLVideoElement::AttributeChanged(
     const AttributeModificationParams& params) {
   HTMLElement::AttributeChanged(params);
