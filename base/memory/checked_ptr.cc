@@ -4,13 +4,13 @@
 
 #include "base/memory/checked_ptr.h"
 
+#if ENABLE_BACKUP_REF_PTR_IMPL
+
 #include "base/allocator/partition_allocator/partition_alloc.h"
 
 namespace base {
 
 namespace internal {
-
-#if ENABLE_BACKUP_REF_PTR_IMPL
 
 void BackupRefPtrImpl::AcquireInternal(void* ptr) {
   void* slot_start = PartitionAllocGetSlotStart(ptr);
@@ -28,8 +28,8 @@ bool BackupRefPtrImpl::IsPointeeAlive(void* ptr) {
   return PartitionRefCountPointer(slot_start)->IsAlive();
 }
 
-#endif  // ENABLE_BACKUP_REF_PTR_IMPL
-
 }  // namespace internal
 
 }  // namespace base
+
+#endif  // ENABLE_BACKUP_REF_PTR_IMPL
