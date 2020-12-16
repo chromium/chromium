@@ -92,8 +92,9 @@ suite('NearbyShare', function() {
       const confirmPage = dialog.$$('nearby-share-confirm-page');
       Polymer.dom.flush();
 
-      assertEquals(
-          target.name, confirmPage.$$('#shareTargetName').textContent.trim());
+      const progressIcon = confirmPage.$$('#progressIcon');
+      assertTrue(!!progressIcon.shareTarget);
+      assertEquals(target.name, progressIcon.shareTarget.name);
       assertTrue(
           confirmPage.$$('#connectionToken').textContent.includes('1234'));
       assertTrue(test_util.isChildVisible(confirmPage, 'nearby-preview'));
@@ -113,8 +114,9 @@ suite('NearbyShare', function() {
       const confirmPage = dialog.$$('nearby-share-confirm-page');
       Polymer.dom.flush();
 
-      assertEquals(
-          target.name, confirmPage.$$('#shareTargetName').textContent.trim());
+      const progressIcon = confirmPage.$$('#progressIcon');
+      assertTrue(!!progressIcon.shareTarget);
+      assertEquals(target.name, progressIcon.shareTarget.name);
       assertTrue(
           confirmPage.$$('#connectionToken').textContent.includes('1234'));
       assertTrue(test_util.isChildVisible(confirmPage, 'nearby-preview'));

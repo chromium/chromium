@@ -17,6 +17,18 @@
         margin: 0 32px;
       }
 
+      #connectionToken {
+        border-top: 1px dashed var(--google-grey-600);
+        color: var(--google-grey-600);
+        flex-grow: 1;
+        font-size: 9px;
+        letter-spacing: 0.3px;
+        line-height: 12px;
+        margin-top: 46px;
+        padding-top: 6px;
+        text-align: center;
+      }
+
       #processRow {
         display: flex;
         flex-grow: 1;
@@ -71,9 +83,17 @@
       <div id="centerContent" slot="content">
         <div id="processRow">
           <div id="processRowContent">
-            <div id="shareTargetName">[[shareTarget.name]]</div>
-            <div id="connectionToken">
-              [[getConnectionTokenString_(connectionToken)]]
+            <!-- nearby-progress is used with progress=0 to disable progress 
+                 ring and animation -->
+            <nearby-progress id="progressIcon"
+                share-target="[[shareTarget]]"
+                has-error="[[errorTitle_]]"
+                progress="0">
+            </nearby-progress>
+            <div id="connectionToken" aria-live="polite">
+              <template is="dom-if" if="[[connectionToken]]">
+                [[i18n('nearbyShareSecureConnectionId', connectionToken)]]
+              </template>
             </div>
             <nearby-preview payload-preview="[[shareTarget.payloadPreview]]">
             </nearby-preview>
