@@ -1039,8 +1039,8 @@ ContentBrowserClient::GetPluginMimeTypesWithExternalHandlers(
 }
 
 void ContentBrowserClient::AugmentNavigationDownloadPolicy(
-    const WebContents* web_contents,
-    const RenderFrameHost* frame_host,
+    WebContents* web_contents,
+    RenderFrameHost* frame_host,
     bool user_gesture,
     NavigationDownloadPolicy* download_policy) {}
 

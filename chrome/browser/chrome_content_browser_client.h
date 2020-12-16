@@ -633,8 +633,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::BrowserContext* browser_context) override;
 
   void AugmentNavigationDownloadPolicy(
-      const content::WebContents* web_contents,
-      const content::RenderFrameHost* frame_host,
+      content::WebContents* web_contents,
+      content::RenderFrameHost* frame_host,
       bool user_gesture,
       content::NavigationDownloadPolicy* download_policy) override;
 

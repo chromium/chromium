@@ -517,7 +517,7 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
       FrameTreeNode* frame_tree_node);
 
   // Determine if the frame is of a low priority.
-  virtual bool IsFrameLowPriority(const RenderFrameHost* render_frame_host);
+  virtual bool IsFrameLowPriority(RenderFrameHost* render_frame_host);
 
   // Registers a new URL handler for the given protocol.
   virtual void RegisterProtocolHandler(RenderFrameHostImpl* host,

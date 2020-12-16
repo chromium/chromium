@@ -132,7 +132,7 @@ class ContentSubresourceFilterThrottleManager
                              LoadPolicy load_policy) override;
 
   // Returns whether |frame_host| is considered to be an ad.
-  bool IsFrameTaggedAsAd(const content::RenderFrameHost* frame_host) const;
+  bool IsFrameTaggedAsAd(content::RenderFrameHost* frame_host) const;
 
   // Returns whether the last navigation resource in |frame_host| was detected
   // to be an ad. A null optional indicates there was no previous navigation or
@@ -140,7 +140,7 @@ class ContentSubresourceFilterThrottleManager
   // |frame_host|. Load policy is determined by presence of the navigation url
   // in the filter list.
   base::Optional<LoadPolicy> LoadPolicyForLastCommittedNavigation(
-      const content::RenderFrameHost* frame_host) const;
+      content::RenderFrameHost* frame_host) const;
 
   // Notifies the client that the user has requested a reload of a page with
   // blocked ads (e.g., via an infobar).

@@ -8540,8 +8540,7 @@ RenderFrameHostImpl* WebContentsImpl::GetMainFrameForInnerDelegate(
   return nullptr;
 }
 
-bool WebContentsImpl::IsFrameLowPriority(
-    const RenderFrameHost* render_frame_host) {
+bool WebContentsImpl::IsFrameLowPriority(RenderFrameHost* render_frame_host) {
   if (!delegate_)
     return false;
   return delegate_->IsFrameLowPriority(this, render_frame_host);

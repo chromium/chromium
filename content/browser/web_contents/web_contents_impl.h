@@ -704,7 +704,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   GetRecordAggregateWatchTimeCallback() override;
   RenderFrameHostImpl* GetMainFrameForInnerDelegate(
       FrameTreeNode* frame_tree_node) override;
-  bool IsFrameLowPriority(const RenderFrameHost* render_frame_host) override;
+  bool IsFrameLowPriority(RenderFrameHost* render_frame_host) override;
   void RegisterProtocolHandler(RenderFrameHostImpl* source,
                                const std::string& protocol,
                                const GURL& url,

@@ -634,9 +634,8 @@ class Browser : public TabStripModelObserver,
       content::WebContents* new_contents,
       base::OnceCallback<void()> callback) override;
   bool ShouldShowStaleContentOnEviction(content::WebContents* source) override;
-  bool IsFrameLowPriority(
-      const content::WebContents* web_contents,
-      const content::RenderFrameHost* render_frame_host) override;
+  bool IsFrameLowPriority(content::WebContents* web_contents,
+                          content::RenderFrameHost* render_frame_host) override;
   void MediaWatchTimeChanged(
       const content::MediaPlayerWatchTime& watch_time) override;
   base::WeakPtr<content::WebContentsDelegate> GetDelegateWeakPtr() override;

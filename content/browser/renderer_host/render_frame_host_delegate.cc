@@ -156,7 +156,7 @@ RenderFrameHostDelegate::GetRecordAggregateWatchTimeCallback() {
 }
 
 bool RenderFrameHostDelegate::IsFrameLowPriority(
-    const RenderFrameHost* render_frame_host) {
+    RenderFrameHost* render_frame_host) {
   return false;
 }
 

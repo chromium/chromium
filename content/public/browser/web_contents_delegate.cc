@@ -347,8 +347,8 @@ bool WebContentsDelegate::ShouldShowStaleContentOnEviction(
 }
 
 bool WebContentsDelegate::IsFrameLowPriority(
-    const WebContents* web_contents,
-    const RenderFrameHost* render_frame_host) {
+    WebContents* web_contents,
+    RenderFrameHost* render_frame_host) {
   return false;
 }
 

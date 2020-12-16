@@ -1802,8 +1802,8 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Possibly augment |download_policy| based on the status of |frame_host| as
   // well as |user_gesture|.
   virtual void AugmentNavigationDownloadPolicy(
-      const WebContents* web_contents,
-      const RenderFrameHost* frame_host,
+      WebContents* web_contents,
+      RenderFrameHost* frame_host,
       bool user_gesture,
       NavigationDownloadPolicy* download_policy);
 

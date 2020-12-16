@@ -512,13 +512,13 @@ bool ContentSubresourceFilterThrottleManager::CalculateIsAdSubframe(
 }
 
 bool ContentSubresourceFilterThrottleManager::IsFrameTaggedAsAd(
-    const content::RenderFrameHost* frame_host) const {
+    content::RenderFrameHost* frame_host) const {
   return base::Contains(ad_frames_, frame_host);
 }
 
 base::Optional<LoadPolicy>
 ContentSubresourceFilterThrottleManager::LoadPolicyForLastCommittedNavigation(
-    const content::RenderFrameHost* frame_host) const {
+    content::RenderFrameHost* frame_host) const {
   auto it = navigation_load_policies_.find(frame_host);
   if (it != navigation_load_policies_.end())
     return it->second;

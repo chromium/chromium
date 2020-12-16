@@ -715,8 +715,8 @@ class CONTENT_EXPORT WebContentsDelegate {
   virtual bool ShouldShowStaleContentOnEviction(WebContents* source);
 
   // Determine if the frame is of a low priority.
-  virtual bool IsFrameLowPriority(const WebContents* web_contents,
-                                  const RenderFrameHost* render_frame_host);
+  virtual bool IsFrameLowPriority(WebContents* web_contents,
+                                  RenderFrameHost* render_frame_host);
 
   // Returns the user-visible WebContents that is responsible for the activity
   // in the provided WebContents. For example, this delegate may be aware that

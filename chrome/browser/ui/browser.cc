@@ -1526,9 +1526,8 @@ bool Browser::ShouldShowStaleContentOnEviction(content::WebContents* source) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-bool Browser::IsFrameLowPriority(
-    const content::WebContents* web_contents,
-    const content::RenderFrameHost* render_frame_host) {
+bool Browser::IsFrameLowPriority(content::WebContents* web_contents,
+                                 content::RenderFrameHost* render_frame_host) {
   const auto* throttle_manager = subresource_filter::
       ContentSubresourceFilterThrottleManager::FromWebContents(web_contents);
   return throttle_manager &&

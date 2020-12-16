@@ -5684,8 +5684,8 @@ ChromeContentBrowserClient::GetPluginMimeTypesWithExternalHandlers(
 }
 
 void ChromeContentBrowserClient::AugmentNavigationDownloadPolicy(
-    const content::WebContents* web_contents,
-    const content::RenderFrameHost* frame_host,
+    content::WebContents* web_contents,
+    content::RenderFrameHost* frame_host,
     bool user_gesture,
     content::NavigationDownloadPolicy* download_policy) {
   const auto* throttle_manager = subresource_filter::
