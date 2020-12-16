@@ -610,13 +610,7 @@ void StyleEngine::ShadowRootRemovedFromDocument(ShadowRoot* shadow_root) {
   ResetAuthorStyle(*shadow_root);
 }
 
-void StyleEngine::AddTreeBoundaryCrossingScope(const TreeScope& tree_scope) {
-  tree_boundary_crossing_scopes_.Add(&tree_scope.RootNode());
-}
-
 void StyleEngine::ResetAuthorStyle(TreeScope& tree_scope) {
-  tree_boundary_crossing_scopes_.Remove(&tree_scope.RootNode());
-
   ScopedStyleResolver* scoped_resolver = tree_scope.GetScopedStyleResolver();
   if (!scoped_resolver)
     return;
@@ -672,7 +666,6 @@ void StyleEngine::DidDetach() {
   if (global_rule_set_)
     global_rule_set_->Dispose();
   global_rule_set_ = nullptr;
-  tree_boundary_crossing_scopes_.Clear();
   dirty_tree_scopes_.clear();
   active_tree_scopes_.clear();
   viewport_resolver_ = nullptr;
@@ -2393,7 +2386,6 @@ void StyleEngine::Trace(Visitor* visitor) const {
   visitor->Trace(style_sheet_collection_map_);
   visitor->Trace(dirty_tree_scopes_);
   visitor->Trace(active_tree_scopes_);
-  visitor->Trace(tree_boundary_crossing_scopes_);
   visitor->Trace(resolver_);
   visitor->Trace(vision_deficiency_filter_);
   visitor->Trace(viewport_resolver_);

@@ -45,8 +45,8 @@ class StyleSheetContents;
 
 // ScopedStyleResolver collects the style sheets that occur within a TreeScope
 // and provides methods to collect the rules that apply to a given element,
-// broken down by what kind of scope they apply to (e.g. shadow host,
-// tree-boundary-crossing, etc).
+// broken down by what kind of scope they apply to (e.g. shadow host, slotted,
+// etc).
 class CORE_EXPORT ScopedStyleResolver final
     : public GarbageCollected<ScopedStyleResolver> {
  public:
@@ -70,7 +70,6 @@ class CORE_EXPORT ScopedStyleResolver final
   void CollectMatchingElementScopeRules(ElementRuleCollector&);
   void CollectMatchingShadowHostRules(ElementRuleCollector&);
   void CollectMatchingSlottedRules(ElementRuleCollector&);
-  void CollectMatchingTreeBoundaryCrossingRules(ElementRuleCollector&);
   void CollectMatchingPartPseudoRules(ElementRuleCollector&,
                                       PartNames& part_names,
                                       bool for_shadow_pseudo);
@@ -79,7 +78,6 @@ class CORE_EXPORT ScopedStyleResolver final
                          HeapHashSet<Member<const StyleSheetContents>>&
                              visited_shared_style_sheet_contents) const;
   void ResetStyle();
-  bool HasDeepOrShadowSelector() const { return has_deep_or_shadow_selector_; }
   void SetHasUnresolvedKeyframesRule() {
     has_unresolved_keyframes_rule_ = true;
   }
@@ -91,9 +89,6 @@ class CORE_EXPORT ScopedStyleResolver final
   void Trace(Visitor*) const;
 
  private:
-  void AddTreeBoundaryCrossingRules(const RuleSet&,
-                                    CSSStyleSheet*,
-                                    unsigned sheet_index);
   void AddSlottedRules(const RuleSet&, CSSStyleSheet*, unsigned sheet_index);
   void AddFontFaceRules(const RuleSet&);
   void AddKeyframeRules(const RuleSet&);
@@ -128,10 +123,8 @@ class CORE_EXPORT ScopedStyleResolver final
   };
   using CSSStyleSheetRuleSubSet = HeapVector<Member<RuleSubSet>>;
 
-  Member<CSSStyleSheetRuleSubSet> tree_boundary_crossing_rule_set_;
   Member<CSSStyleSheetRuleSubSet> slotted_rule_set_;
 
-  bool has_deep_or_shadow_selector_ = false;
   bool has_unresolved_keyframes_rule_ = false;
   bool needs_append_all_sheets_ = false;
 };

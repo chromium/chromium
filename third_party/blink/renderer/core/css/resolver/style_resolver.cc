@@ -431,7 +431,6 @@ static void MatchElementScopeRules(const Element& element,
   if (element_scope_resolver) {
     collector.ClearMatchedRules();
     element_scope_resolver->CollectMatchingElementScopeRules(collector);
-    element_scope_resolver->CollectMatchingTreeBoundaryCrossingRules(collector);
     collector.SortAndTransferMatchedRules();
   }
 

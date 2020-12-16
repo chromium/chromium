@@ -228,10 +228,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
 
   void ShadowRootInsertedToDocument(ShadowRoot&);
   void ShadowRootRemovedFromDocument(ShadowRoot*);
-  void AddTreeBoundaryCrossingScope(const TreeScope&);
-  const TreeOrderedList& TreeBoundaryCrossingScopes() const {
-    return tree_boundary_crossing_scopes_;
-  }
   void ResetAuthorStyle(TreeScope&);
 
   StyleResolver& GetStyleResolver() const {
@@ -589,7 +585,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   bool user_style_dirty_{false};
   UnorderedTreeScopeSet dirty_tree_scopes_;
   UnorderedTreeScopeSet active_tree_scopes_;
-  TreeOrderedList tree_boundary_crossing_scopes_;
 
   String preferred_stylesheet_set_name_;
 
