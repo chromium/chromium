@@ -389,6 +389,10 @@
 #include "chrome/browser/browser_switcher/browser_switcher_prefs.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/lacros_prefs.h"
+#endif
+
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/device_identity//device_oauth2_token_store_desktop.h"
 #include "chrome/browser/downgrade/downgrade_prefs.h"
@@ -784,6 +788,10 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   system_media_permissions::RegisterSystemMediaPermissionStatesPrefs(registry);
   AppShimRegistry::Get()->RegisterLocalPrefs(registry);
   registry->RegisterBooleanPref(kKeyCreated, false);
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  lacros_prefs::RegisterLocalStatePrefs(registry);
 #endif
 
 #if defined(OS_WIN)

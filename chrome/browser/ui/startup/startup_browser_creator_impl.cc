@@ -79,6 +79,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/lacros_prefs.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/infobars/core/simple_alert_infobar_delegate.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -574,15 +575,25 @@ void StartupBrowserCreatorImpl::AddInfoBarsIfNecessary(
         InfoBarService::FromWebContents(web_contents);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // Show the experimental lacros info bar. auto_expire must be set to false,
-    // since otherwise an automated navigation [which can happen at launch] will
-    // cause the info bar to disappear.
-    SimpleAlertInfoBarDelegate::Create(
-        infobar_service,
-        infobars::InfoBarDelegate::EXPERIMENTAL_INFOBAR_DELEGATE_LACROS,
-        /*vector_icon=*/nullptr,
-        l10n_util::GetStringUTF16(IDS_EXPERIMENTAL_LACROS_WARNING_MESSAGE),
-        /*auto_expire=*/false, /*should_animate=*/false);
+    PrefService* local_state = g_browser_process->local_state();
+    if (local_state) {
+      if (!local_state->GetBoolean(
+              lacros_prefs::kShowedExperimentalBannerPref)) {
+        // Show the experimental lacros info bar. auto_expire must be set to
+        // false, since otherwise an automated navigation [which can happen at
+        // launch] will cause the info bar to disappear.
+        SimpleAlertInfoBarDelegate::Create(
+            infobar_service,
+            infobars::InfoBarDelegate::EXPERIMENTAL_INFOBAR_DELEGATE_LACROS,
+            /*vector_icon=*/nullptr,
+            l10n_util::GetStringUTF16(IDS_EXPERIMENTAL_LACROS_WARNING_MESSAGE),
+            /*auto_expire=*/false, /*should_animate=*/false);
+
+        // Mark the pref as shown, so that we don't show the banner again.
+        local_state->SetBoolean(lacros_prefs::kShowedExperimentalBannerPref,
+                                true);
+      }
+    }
 #endif
 
     if (!google_apis::HasAPIKeyConfigured())
