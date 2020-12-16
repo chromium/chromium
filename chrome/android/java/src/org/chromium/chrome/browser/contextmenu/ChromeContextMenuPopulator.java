@@ -402,7 +402,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                 if (!mItemDelegate.isIncognito()
                         && UrlUtilities.isDownloadableScheme(mParams.getLinkUrl())) {
                     linkGroup.add(createListItem(Item.SAVE_LINK_AS));
-                    if (ChromeFeatureList.isEnabled(ChromeFeatureList.READ_LATER)) {
+                    if (!mParams.isImage()
+                            && ChromeFeatureList.isEnabled(ChromeFeatureList.READ_LATER)) {
                         linkGroup.add(
                                 createListItem(Item.READ_LATER, shouldTriggerReadLaterHelpUi()));
                     }
