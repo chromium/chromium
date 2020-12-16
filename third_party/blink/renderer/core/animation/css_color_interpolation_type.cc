@@ -96,6 +96,20 @@ CSSColorInterpolationType::MaybeCreateInterpolableColor(const CSSValue& value) {
   return CreateInterpolableColor(identifier_value->GetValueID());
 }
 
+Color CSSColorInterpolationType::GetRGBA(const InterpolableValue& value) {
+  const InterpolableList& list = To<InterpolableList>(value);
+  DCHECK_GE(list.length(), kAlpha);
+  double color[kAlpha + 1];
+  for (unsigned i = kRed; i <= kAlpha; i++) {
+    const InterpolableValue& current_value = *(list.Get(i));
+    color[i] = To<InterpolableNumber>(current_value).Value();
+  }
+  return Color(MakeRGBA(std::round(color[kRed] / color[kAlpha]),
+                        std::round(color[kGreen] / color[kAlpha]),
+                        std::round(color[kBlue] / color[kAlpha]),
+                        color[kAlpha]));
+}
+
 static void AddPremultipliedColor(double& red,
                                   double& green,
                                   double& blue,

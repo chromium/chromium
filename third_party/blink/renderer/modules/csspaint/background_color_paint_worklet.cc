@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/csspaint/background_color_paint_worklet.h"
 
 #include "third_party/blink/renderer/core/animation/animation_effect.h"
+#include "third_party/blink/renderer/core/animation/css_color_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/css/css_color_value.h"
 #include "third_party/blink/renderer/core/css/cssom/paint_worklet_deferred_image.h"
@@ -68,10 +69,15 @@ class BackgroundColorPaintWorkletProxyClient
     DCHECK_EQ(animated_property_values.size(), 1u);
     const auto& entry = animated_property_values.begin();
     float progress = entry->second.float_value.value();
-    // TODO(crbug.com/1153668): implement interpolation here, instead of hard
-    // coding.
-    SkColor current_color = progress < 0.5 ? SkColor(animated_colors[0])
-                                           : SkColor(animated_colors[1]);
+    std::unique_ptr<InterpolableValue> from =
+        CSSColorInterpolationType::CreateInterpolableColor(animated_colors[0]);
+    std::unique_ptr<InterpolableValue> to =
+        CSSColorInterpolationType::CreateInterpolableColor(animated_colors[1]);
+    std::unique_ptr<InterpolableValue> result =
+        CSSColorInterpolationType::CreateInterpolableColor(animated_colors[1]);
+    from->Interpolate(*to, progress, *result);
+    Color rgba = CSSColorInterpolationType::GetRGBA(*(result.get()));
+    SkColor current_color = static_cast<SkColor>(rgba);
 
     PaintRenderingContext2DSettings* context_settings =
         PaintRenderingContext2DSettings::Create();
