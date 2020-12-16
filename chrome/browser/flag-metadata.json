@@ -2108,7 +2108,9 @@
   {
     "name": "enable-quic",
     "owners": [ "//net/quic/OWNERS" ],
-    "expiry_milestone": 88
+    // This flag is used by network administrators to debug
+    // network issues related to QUIC. It must not be removed.
+    "expiry_milestone": -1
   },
   {
     "name": "enable-quick-answers",
