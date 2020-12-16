@@ -27,6 +27,8 @@
 
 namespace chromeos {
 namespace phonehub {
+using multidevice_setup::mojom::Feature;
+using multidevice_setup::mojom::FeatureState;
 using multidevice_setup::mojom::HostStatus;
 
 class PhoneStatusProcessorTest : public testing::Test {
@@ -64,7 +66,8 @@ class PhoneStatusProcessorTest : public testing::Test {
         mutable_phone_model_.get());
   }
 
-  void InitializeNotificationProto(proto::Notification* notification) {
+  void InitializeNotificationProto(proto::Notification* notification,
+                                   int64_t id) {
     auto origin_app = std::make_unique<proto::App>();
     origin_app->set_package_name("package");
     origin_app->set_visible_name("visible");
@@ -76,7 +79,7 @@ class PhoneStatusProcessorTest : public testing::Test {
     mutable_action->set_title("action title");
     mutable_action->set_type(proto::Action_InputType::Action_InputType_TEXT);
 
-    notification->set_id(0u);
+    notification->set_id(id);
     notification->set_epoch_time_millis(1u);
     notification->set_allocated_origin_app(origin_app.release());
     notification->set_title("title");
@@ -127,10 +130,13 @@ TEST_F(PhoneStatusProcessorTest, PhoneStatusSnapshotUpdate) {
   expected_snapshot.set_allocated_properties(
       expected_phone_properties.release());
   expected_snapshot.add_notifications();
-  InitializeNotificationProto(expected_snapshot.mutable_notifications(0));
+  InitializeNotificationProto(expected_snapshot.mutable_notifications(0),
+                              /*id=*/0u);
 
   // Simulate feature set to enabled and connected.
   fake_feature_status_provider_->SetStatus(FeatureStatus::kEnabledAndConnected);
+  fake_multidevice_setup_client_->SetFeatureState(
+      Feature::kPhoneHubNotifications, FeatureState::kEnabledByUser);
 
   // Simulate receiving a proto message.
   fake_message_receiver_->NotifyPhoneStatusSnapshotReceived(expected_snapshot);
@@ -192,10 +198,13 @@ TEST_F(PhoneStatusProcessorTest, PhoneStatusUpdate) {
   proto::PhoneStatusUpdate expected_update;
   expected_update.set_allocated_properties(expected_phone_properties.release());
   expected_update.add_updated_notifications();
-  InitializeNotificationProto(expected_update.mutable_updated_notifications(0));
+  InitializeNotificationProto(expected_update.mutable_updated_notifications(0),
+                              /*id=*/0u);
 
   // Simulate feature set to enabled and connected.
   fake_feature_status_provider_->SetStatus(FeatureStatus::kEnabledAndConnected);
+  fake_multidevice_setup_client_->SetFeatureState(
+      Feature::kPhoneHubNotifications, FeatureState::kEnabledByUser);
 
   // Simulate receiving a proto message.
   fake_message_receiver_->NotifyPhoneStatusUpdateReceived(expected_update);
@@ -287,6 +296,47 @@ TEST_F(PhoneStatusProcessorTest, PhoneName) {
       std::make_pair(HostStatus::kHostVerified, kFakePhoneA));
 
   EXPECT_EQ(base::UTF8ToUTF16("Phone A"), mutable_phone_model_->phone_name());
+}
+
+TEST_F(PhoneStatusProcessorTest, NotificationAccess) {
+  fake_multidevice_setup_client_->SetHostStatusWithDevice(
+      std::make_pair(HostStatus::kHostVerified, test_remote_device_));
+  CreatePhoneStatusProcessor();
+
+  auto expected_phone_properties = std::make_unique<proto::PhoneProperties>();
+  proto::PhoneStatusUpdate expected_update;
+
+  expected_update.set_allocated_properties(expected_phone_properties.release());
+  expected_update.add_updated_notifications();
+  InitializeNotificationProto(expected_update.mutable_updated_notifications(0),
+                              /*id=*/0u);
+
+  // Simulate feature set to enabled and connected.
+  fake_feature_status_provider_->SetStatus(FeatureStatus::kEnabledAndConnected);
+  fake_multidevice_setup_client_->SetFeatureState(
+      Feature::kPhoneHubNotifications, FeatureState::kEnabledByUser);
+
+  // Simulate receiving a proto message.
+  fake_message_receiver_->NotifyPhoneStatusUpdateReceived(expected_update);
+
+  EXPECT_EQ(1u, fake_notification_manager_->num_notifications());
+
+  // Simulate notifications feature state set as disabled.
+  fake_multidevice_setup_client_->SetFeatureState(
+      Feature::kPhoneHubNotifications, FeatureState::kDisabledByUser);
+  // Update with 1 new notification, expect no notifications to be processed.
+  expected_update.add_updated_notifications();
+  InitializeNotificationProto(expected_update.mutable_updated_notifications(1),
+                              /*id=*/1u);
+  fake_message_receiver_->NotifyPhoneStatusUpdateReceived(expected_update);
+  EXPECT_EQ(1u, fake_notification_manager_->num_notifications());
+
+  // Re-enable notifications and expect the previous notification to be now
+  // added.
+  fake_multidevice_setup_client_->SetFeatureState(
+      Feature::kPhoneHubNotifications, FeatureState::kEnabledByUser);
+  fake_message_receiver_->NotifyPhoneStatusUpdateReceived(expected_update);
+  EXPECT_EQ(2u, fake_notification_manager_->num_notifications());
 }
 
 }  // namespace phonehub

@@ -14,6 +14,7 @@
 #include "chromeos/components/phonehub/notification.h"
 #include "chromeos/components/phonehub/notification_access_manager.h"
 #include "chromeos/components/phonehub/notification_manager.h"
+#include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "ui/gfx/image/image.h"
 
 #include <algorithm>
@@ -213,8 +214,17 @@ PhoneStatusProcessor::~PhoneStatusProcessor() {
   multidevice_setup_client_->RemoveObserver(this);
 }
 
-void PhoneStatusProcessor::SetReceivedNotifications(
+void PhoneStatusProcessor::ProcessReceivedNotifications(
     const RepeatedPtrField<proto::Notification>& notification_protos) {
+  multidevice_setup::mojom::FeatureState feature_state =
+      multidevice_setup_client_->GetFeatureState(
+          multidevice_setup::mojom::Feature::kPhoneHubNotifications);
+  if (feature_state != multidevice_setup::mojom::FeatureState::kEnabledByUser) {
+    // Do not process any notifications if notifications are not enabled in
+    // settings.
+    return;
+  }
+
   base::flat_set<Notification> notifications;
 
   for (const auto& proto : notification_protos) {
@@ -262,13 +272,13 @@ void PhoneStatusProcessor::OnFeatureStatusChanged() {
 
 void PhoneStatusProcessor::OnPhoneStatusSnapshotReceived(
     proto::PhoneStatusSnapshot phone_status_snapshot) {
-  SetReceivedNotifications(phone_status_snapshot.notifications());
+  ProcessReceivedNotifications(phone_status_snapshot.notifications());
   SetReceivedPhoneStatusModelStates(phone_status_snapshot.properties());
 }
 
 void PhoneStatusProcessor::OnPhoneStatusUpdateReceived(
     proto::PhoneStatusUpdate phone_status_update) {
-  SetReceivedNotifications(phone_status_update.updated_notifications());
+  ProcessReceivedNotifications(phone_status_update.updated_notifications());
   SetReceivedPhoneStatusModelStates(phone_status_update.properties());
 
   if (!phone_status_update.removed_notification_ids().empty()) {

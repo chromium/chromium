@@ -60,7 +60,7 @@ class PhoneStatusProcessor
       const multidevice_setup::MultiDeviceSetupClient::HostStatusWithDevice&
           host_device_with_status) override;
 
-  void SetReceivedNotifications(
+  void ProcessReceivedNotifications(
       const RepeatedPtrField<proto::Notification>& notification_protos);
 
   void SetReceivedPhoneStatusModelStates(
