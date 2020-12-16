@@ -3077,7 +3077,7 @@
   {
     "name": "intent-picker-pwa-persistence",
     "owners": [ "chromeos-apps-foundation-team@google.com" ],
-    "expiry_milestone": 88
+    "expiry_milestone": 92
   },
   {
     "name": "interest-feed-notice-card-auto-dismiss",
