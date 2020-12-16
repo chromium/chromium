@@ -63,6 +63,13 @@ public class AutocompleteController {
         mListener = listener;
     }
 
+    void destroy() {
+        if (mNativeAutocompleteControllerAndroid != 0) {
+            AutocompleteControllerJni.get().releaseJavaObject(mNativeAutocompleteControllerAndroid);
+        }
+        mNativeAutocompleteControllerAndroid = 0;
+    }
+
     /**
      * Resets the underlying autocomplete controller based on the specified profile.
      *
@@ -414,6 +421,7 @@ public class AutocompleteController {
     @NativeMethods
     interface Natives {
         long init(AutocompleteController caller, Profile profile);
+        void releaseJavaObject(long nativeAutocompleteControllerAndroid);
         void start(long nativeAutocompleteControllerAndroid, AutocompleteController caller,
                 String text, int cursorPosition, String desiredTld, String currentUrl,
                 int pageClassification, boolean preventInlineAutocomplete, boolean preferKeyword,

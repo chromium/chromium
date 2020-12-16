@@ -92,6 +92,10 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
       const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& j_gurl);
 
+  // Break the association between the AutocompleteController java and
+  // native instances.
+  void ReleaseJavaObject(JNIEnv* env);
+
   // Perform group by search vs url operation on a range of suggestions.
   // Grouping is performed in place.
   // The range is half-open [first_index, last_index), meaning the last element
