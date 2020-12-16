@@ -222,7 +222,8 @@ class CORE_EXPORT LocalFrame final
   // corresponding method in the Frame base class to return the
   // LocalFrame-specific subclass.
   LocalWindowProxy* WindowProxy(DOMWrapperWorld&);
-  LocalDOMWindow* DomWindow() const;
+  LocalDOMWindow* DomWindow();
+  const LocalDOMWindow* DomWindow() const;
   void SetDOMWindow(LocalDOMWindow*);
   LocalFrameView* View() const override;
   Document* GetDocument() const;

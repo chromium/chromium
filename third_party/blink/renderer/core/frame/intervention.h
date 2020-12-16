@@ -23,7 +23,7 @@ class CORE_EXPORT Intervention {
 
   // Generates a intervention report, to be routed to the Reporting API and any
   // ReportingObservers. Also sends the intervention message to the console.
-  static void GenerateReport(const LocalFrame*,
+  static void GenerateReport(LocalFrame*,
                              const String& id,
                              const String& message);
 

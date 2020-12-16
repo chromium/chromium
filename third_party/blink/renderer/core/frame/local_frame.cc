@@ -835,7 +835,11 @@ LocalWindowProxy* LocalFrame::WindowProxy(DOMWrapperWorld& world) {
   return To<LocalWindowProxy>(Frame::GetWindowProxy(world));
 }
 
-LocalDOMWindow* LocalFrame::DomWindow() const {
+LocalDOMWindow* LocalFrame::DomWindow() {
+  return To<LocalDOMWindow>(dom_window_.Get());
+}
+
+const LocalDOMWindow* LocalFrame::DomWindow() const {
   return To<LocalDOMWindow>(dom_window_.Get());
 }
 
@@ -2207,7 +2211,7 @@ void LocalFrame::UpdateActiveSchedulerTrackedFeatures(uint64_t features_mask) {
 }
 
 const base::UnguessableToken& LocalFrame::GetAgentClusterId() const {
-  if (LocalDOMWindow* window = DomWindow()) {
+  if (const LocalDOMWindow* window = DomWindow()) {
     return window->GetAgentClusterID();
   }
   return base::UnguessableToken::Null();

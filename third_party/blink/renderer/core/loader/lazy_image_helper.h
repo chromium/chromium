@@ -28,7 +28,7 @@ class LazyImageHelper final {
   static void StopMonitoring(Element* element);
 
   static Eligibility DetermineEligibilityAndTrackVisibilityMetrics(
-      const LocalFrame& frame,
+      LocalFrame& frame,
       HTMLImageElement* html_image,
       const KURL& url);
 

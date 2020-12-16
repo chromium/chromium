@@ -558,14 +558,14 @@ void ImageLoader::DoUpdateFromElement(
     }
 
     DCHECK(document.GetFrame());
+    auto* frame = document.GetFrame();
+
     FetchParameters params(std::move(resource_request),
                            resource_loader_options);
-    ConfigureRequest(params, *element_,
-                     document.GetFrame()->GetClientHintsPreferences());
+    ConfigureRequest(params, *element_, frame->GetClientHintsPreferences());
 
     if (update_behavior != kUpdateForcedReload &&
         lazy_image_load_state_ != LazyImageLoadState::kFullImage) {
-      const auto* frame = document.GetFrame();
       if (auto* html_image = DynamicTo<HTMLImageElement>(GetElement())) {
         LoadingAttributeValue loading_attr = GetLoadingAttributeValue(
             html_image->FastGetAttribute(html_names::kLoadingAttr));

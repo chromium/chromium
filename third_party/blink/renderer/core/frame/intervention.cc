@@ -19,7 +19,7 @@
 namespace blink {
 
 // static
-void Intervention::GenerateReport(const LocalFrame* frame,
+void Intervention::GenerateReport(LocalFrame* frame,
                                   const String& id,
                                   const String& message) {
   if (!frame || !frame->Client())

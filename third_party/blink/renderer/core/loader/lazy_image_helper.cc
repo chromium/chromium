@@ -96,7 +96,7 @@ void LazyImageHelper::StopMonitoring(Element* element) {
 // static
 LazyImageHelper::Eligibility
 LazyImageHelper::DetermineEligibilityAndTrackVisibilityMetrics(
-    const LocalFrame& frame,
+    LocalFrame& frame,
     HTMLImageElement* html_image,
     const KURL& url) {
   if (!url.ProtocolIsInHTTPFamily())
