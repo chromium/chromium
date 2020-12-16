@@ -45,6 +45,13 @@
 
 <div id="page-container">
   <h1 id="page-heading">$i18n{privacySandboxPageHeading}</h1>
+  <picture>
+    <source
+        srcset="chrome://settings/images/privacy_sandbox_banner_dark.svg"
+        media="(prefers-color-scheme: dark">
+    <img id="banner" alt=""
+        src="chrome://settings/images/privacy_sandbox_banner.svg">
+  </picture>
   <div>
     <h2 class="section-header" tabindex="-1">
       $i18n{privacySandboxPageHeading}
