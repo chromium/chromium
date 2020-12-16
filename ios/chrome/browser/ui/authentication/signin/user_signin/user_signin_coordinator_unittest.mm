@@ -113,7 +113,8 @@ class UserSigninCoordinatorTest : public PlatformTest {
         setUnifiedConsentViewController:[OCMArg any]]);
     OCMExpect([user_signin_view_controller_mock_
         setModalPresentationStyle:UIModalPresentationFormSheet]);
-    OCMExpect([user_signin_view_controller_mock_ presentationController])
+    // Method not used on iOS 12.
+    OCMStub([user_signin_view_controller_mock_ presentationController])
         .andDo(^(NSInvocation* invocation) {
           id returnValue = nil;
           [invocation setReturnValue:&returnValue];
