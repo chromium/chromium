@@ -87,8 +87,8 @@ FileManagerUI::~FileManagerUI() = default;
 
 void FileManagerUI::BindInterface(
     mojo::PendingReceiver<mojom::PageHandlerFactory> pending_receiver) {
-  DCHECK(!page_factory_receiver_.is_bound());
-
+  if (page_factory_receiver_.is_bound())
+    page_factory_receiver_.reset();
   page_factory_receiver_.Bind(std::move(pending_receiver));
 }
 
