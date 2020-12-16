@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check_op.h"
-#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
@@ -357,9 +356,6 @@ void RulesMonitorService::OnExtensionWillBeInstalled(
   if (!is_update || Manifest::IsUnpackedLocation(extension->location()))
     return;
 
-  if (!base::FeatureList::IsEnabled(kDeclarativeNetRequestGlobalRules))
-    return;
-
   // Allow the extension to retain its pre-update allocation during the next
   // extension load. This can allow the extension to enable some
   // non-manifest-enabled rulesets and to retain much of its pre-update
@@ -451,18 +447,15 @@ void RulesMonitorService::OnExtensionUnloaded(
     UnloadedExtensionReason reason) {
   DCHECK_EQ(context_, browser_context);
 
-  if (base::FeatureList::IsEnabled(kDeclarativeNetRequestGlobalRules)) {
-    // If the extension is unloaded for any reason other than an update, the
-    // unused rule allocation should not be kept for this extension the next
-    // time its rulesets are loaded, as it is no longer "the first load after an
-    // update".
-    if (reason != UnloadedExtensionReason::UPDATE)
-      prefs_->SetDNRKeepExcessAllocation(extension->id(), false);
+  // If the extension is unloaded for any reason other than an update, the
+  // unused rule allocation should not be kept for this extension the next
+  // time its rulesets are loaded, as it is no longer "the first load after an
+  // update".
+  if (reason != UnloadedExtensionReason::UPDATE)
+    prefs_->SetDNRKeepExcessAllocation(extension->id(), false);
 
-    if (ShouldReleaseAllocationOnUnload(prefs_, *extension, reason)) {
-      global_rules_tracker_.ClearExtensionAllocation(extension->id());
-    }
-  }
+  if (ShouldReleaseAllocationOnUnload(prefs_, *extension, reason))
+    global_rules_tracker_.ClearExtensionAllocation(extension->id());
 
   // Return early if the extension does not have an active indexed ruleset.
   if (!ruleset_manager_.GetMatcherForExtension(extension->id()))
@@ -483,8 +476,7 @@ void RulesMonitorService::OnExtensionUninstalled(
   if (reason == UNINSTALL_REASON_REINSTALL)
     return;
 
-  if (base::FeatureList::IsEnabled(kDeclarativeNetRequestGlobalRules))
-    global_rules_tracker_.ClearExtensionAllocation(extension->id());
+  global_rules_tracker_.ClearExtensionAllocation(extension->id());
 
   // Skip if the extension doesn't have a dynamic ruleset.
   int dynamic_checksum;
@@ -649,14 +641,9 @@ void RulesMonitorService::OnInitialRulesetsLoadedFromDisk(
   bool notify_ruleset_failed_to_load = false;
   bool global_rule_limit_exceeded = false;
 
-  bool global_rules_enabled =
-      base::FeatureList::IsEnabled(kDeclarativeNetRequestGlobalRules);
-
-  size_t static_rule_limit = global_rules_enabled
-                                 ? global_rules_tracker_.GetAvailableAllocation(
-                                       load_data.extension_id) +
-                                       GetStaticGuaranteedMinimumRuleCount()
-                                 : GetStaticRuleLimit();
+  size_t static_rule_limit =
+      global_rules_tracker_.GetAvailableAllocation(load_data.extension_id) +
+      GetStaticGuaranteedMinimumRuleCount();
 
   for (RulesetInfo& ruleset : load_data.rulesets) {
     if (!ruleset.did_load_successfully()) {
@@ -679,7 +666,7 @@ void RulesMonitorService::OnInitialRulesetsLoadedFromDisk(
 
     size_t new_rules_count = static_rules_count + matcher->GetRulesCount();
     if (new_rules_count > static_rule_limit) {
-      global_rule_limit_exceeded = global_rules_enabled;
+      global_rule_limit_exceeded = true;
       continue;
     }
 
@@ -705,11 +692,9 @@ void RulesMonitorService::OnInitialRulesetsLoadedFromDisk(
             load_data.extension_id)});
   }
 
-  if (global_rules_enabled) {
-    bool allocation_updated = global_rules_tracker_.OnExtensionRuleCountUpdated(
-        load_data.extension_id, static_rules_count);
-    DCHECK(allocation_updated);
-  }
+  bool allocation_updated = global_rules_tracker_.OnExtensionRuleCountUpdated(
+      load_data.extension_id, static_rules_count);
+  DCHECK(allocation_updated);
 
   if (matchers.empty())
     return;
@@ -736,8 +721,6 @@ void RulesMonitorService::OnNewStaticRulesetsLoaded(
 
   size_t static_rules_count = 0;
   size_t static_regex_rules_count = 0;
-  bool global_rules_enabled =
-      base::FeatureList::IsEnabled(kDeclarativeNetRequestGlobalRules);
   CompositeMatcher* matcher =
       ruleset_manager_.GetMatcherForExtension(load_data.extension_id);
   if (matcher) {
@@ -783,22 +766,15 @@ void RulesMonitorService::OnNewStaticRulesetsLoaded(
     new_matchers.push_back(std::move(matcher));
   }
 
-  if (!global_rules_enabled &&
-      static_rules_count > static_cast<size_t>(GetStaticRuleLimit())) {
-    std::move(callback).Run(kEnabledRulesetsRuleCountExceeded);
-    return;
-  }
-
   if (static_regex_rules_count > static_cast<size_t>(GetRegexRuleLimit())) {
     std::move(callback).Run(kEnabledRulesetsRegexRuleCountExceeded);
     return;
   }
 
-  // If global rules are enabled, attempt to update the extension's extra rule
-  // count. If this update cannot be completed without exceeding the global
-  // limit, then the update is not applied and an error is returned.
-  if (global_rules_enabled &&
-      !global_rules_tracker_.OnExtensionRuleCountUpdated(load_data.extension_id,
+  // Attempt to update the extension's extra rule count. If this update cannot
+  // be completed without exceeding the global limit, then the update is not
+  // applied and an error is returned.
+  if (!global_rules_tracker_.OnExtensionRuleCountUpdated(load_data.extension_id,
                                                          static_rules_count)) {
     std::move(callback).Run(kEnabledRulesetsRuleCountExceeded);
     return;

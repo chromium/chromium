@@ -557,26 +557,16 @@ namespace declarativeNetRequest {
                                  IsRegexSupportedCallback callback);
 
     // Returns the number of static rules an extension can enable before the
-    // global static rule limit is reached.
-    // <!-- TODO(crbug.com/983299): Add documentation once implementation is
-    // complete. -->
-    [nodoc] static void getAvailableStaticRuleCount(
+    // <a href="#global-rule-limit">global static rule limit</a> is reached.
+    static void getAvailableStaticRuleCount(
         GetAvailableStaticRuleCountCallback callback);
   };
 
   interface Properties {
-    // The maximum number of rules that an extension can specify across its
-    // enabled static rulesets. Any excess rules will be ignored and an install
-    // warning will be raised.
-    [value=30000] static long MAX_NUMBER_OF_RULES();
-
-    // The number of rules that an extension can specify across its enabled
-    // static rulesets that will not count towards the global total. Up to this
-    // number of rules can be enabled regardless of the number of rules that
-    // count towards the global total.
-    // <!-- TODO(crbug.com/983299): Add documentation once implementation is
-    // complete. -->
-    [nodoc, value=30000] static long GUARANTEED_MINIMUM_STATIC_RULES();
+    // The minimum number of static rules guaranteed to an extension across its
+    // enabled static rulesets. Any rules above this limit will count towards
+    // the <a href="#global-rule-limit">global rule limit</a>.
+    [value=30000] static long GUARANTEED_MINIMUM_STATIC_RULES();
 
     // The maximum number of dynamic rules that an extension can add.
     [value=5000] static long MAX_NUMBER_OF_DYNAMIC_RULES();

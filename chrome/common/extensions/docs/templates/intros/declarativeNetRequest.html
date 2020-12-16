@@ -59,9 +59,22 @@ a list containing dictionaries of type $(ref:Ruleset), as shown below.
 <p>
 An extension can specify up to $(ref:MAX_NUMBER_OF_STATIC_RULESETS)
 <a href="#type-Ruleset">rulesets</a> as part of the
-<code>"rule_resources"</code> manifest key. The number of rules
-across <b>enabled</b> static rulesets must be less than the
-$(ref:MAX_NUMBER_OF_RULES) constant.
+<code>"rule_resources"</code> manifest key. An extension is allowed to enable up
+to at least $(ref:GUARANTEED_MINIMUM_STATIC_RULES) static rules. Additional
+static rulesets may or may not be enabled depending on the available
+<a href="#global-rule-limit">global static rule limit</a>.
+</p>
+
+<h2 id="global-rule-limit"">Global Static Rule Limit</h2>
+
+<p>
+In addition to the $(ref:GUARANTEED_MINIMUM_STATIC_RULES) guaranteed for each
+extension, extensions can enable additional static rulesets depending on the
+available global static rule limit. This global limit is shared between all
+extensions and can be used by extensions on a first come first serve basis.
+Extensions shouldn't depend on the global limit having a specific value and
+should instead rely on $(ref:getAvailableStaticRuleCount) to find the additional
+rule limit available to them.
 </p>
 
 <h2 id="rules">Rules</h2>
@@ -195,8 +208,10 @@ $(ref:updateEnabledRulesets) API method.
 
 <ul>
   <li>
-    The number of rules across enabled static rulesets must be less than the
-    $(ref:MAX_NUMBER_OF_RULES) constant.
+    The number of rules across enabled static rulesets across all extensions
+    must not exceed the <a href="#global-rule-limit">global limit</a>. Calling
+    $(ref:getAvailableStaticRuleCount) is recommended to check the number of
+    rules an extension can still enable before the global limit is reached.
   </li>
   <li>
     The set of enabled static rulesets is persisted across sessions but not

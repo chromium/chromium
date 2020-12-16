@@ -140,11 +140,6 @@
     "dependencies": ["permission:declarativeNetRequest"],
     "contexts": ["blessed_extension"]
   },
-  "declarativeNetRequest.getAvailableStaticRuleCount": {
-    // TODO(crbug.com/983299): Enable on stable once the global rules limit
-    // feature is enabled by default.
-    "channel": "trunk"
-  },
   // TODO(crbug.com/1043200): Enable on Stable once implementation is complete.
   "declarativeNetRequest.getSessionRules": {
     "channel": "trunk"

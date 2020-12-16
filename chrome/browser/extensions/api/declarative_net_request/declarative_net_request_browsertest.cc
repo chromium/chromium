@@ -5173,10 +5173,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestSubresourceWebBundlesBrowserTest,
 class DeclarativeNetRequestGlobalRulesBrowserTest
     : public DeclarativeNetRequestBrowserTest {
  public:
-  DeclarativeNetRequestGlobalRulesBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        kDeclarativeNetRequestGlobalRules);
-  }
+  DeclarativeNetRequestGlobalRulesBrowserTest() = default;
 
  protected:
   void VerifyExtensionAllocationInPrefs(
@@ -5201,8 +5198,6 @@ class DeclarativeNetRequestGlobalRulesBrowserTest
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
   // Override the API guaranteed minimum to prevent a timeout on loading the
   // extension.
   base::AutoReset<int> guaranteed_minimum_override_ =

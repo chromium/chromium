@@ -60,7 +60,6 @@ int g_override_checksum_for_test = kInvalidOverrideChecksumForTest;
 
 constexpr int kInvalidRuleLimit = -1;
 int g_static_guaranteed_minimum_for_testing = kInvalidRuleLimit;
-int g_static_rule_limit_for_testing = kInvalidRuleLimit;
 int g_global_static_rule_limit_for_testing = kInvalidRuleLimit;
 int g_regex_rule_limit_for_testing = kInvalidRuleLimit;
 
@@ -286,24 +285,13 @@ int GetStaticGuaranteedMinimumRuleCount() {
 }
 
 int GetGlobalStaticRuleLimit() {
-  DCHECK(base::FeatureList::IsEnabled(kDeclarativeNetRequestGlobalRules));
   return g_global_static_rule_limit_for_testing == kInvalidRuleLimit
              ? kMaxStaticRulesPerProfile
              : g_global_static_rule_limit_for_testing;
 }
 
-int GetStaticRuleLimit() {
-  DCHECK(!base::FeatureList::IsEnabled(kDeclarativeNetRequestGlobalRules));
-  return g_static_rule_limit_for_testing == kInvalidRuleLimit
-             ? dnr_api::MAX_NUMBER_OF_RULES
-             : g_static_rule_limit_for_testing;
-}
-
 int GetMaximumRulesPerRuleset() {
-  return base::FeatureList::IsEnabled(kDeclarativeNetRequestGlobalRules)
-             ? GetStaticGuaranteedMinimumRuleCount() +
-                   GetGlobalStaticRuleLimit()
-             : GetStaticRuleLimit();
+  return GetStaticGuaranteedMinimumRuleCount() + GetGlobalStaticRuleLimit();
 }
 
 int GetDynamicRuleLimit() {
@@ -320,11 +308,6 @@ ScopedRuleLimitOverride CreateScopedStaticGuaranteedMinimumOverrideForTesting(
     int minimum) {
   return base::AutoReset<int>(&g_static_guaranteed_minimum_for_testing,
                               minimum);
-}
-
-ScopedRuleLimitOverride CreateScopedStaticRuleLimitOverrideForTesting(
-    int limit) {
-  return base::AutoReset<int>(&g_static_rule_limit_for_testing, limit);
 }
 
 ScopedRuleLimitOverride CreateScopedGlobalStaticRuleLimitOverrideForTesting(

@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
-#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_string_value_serializer.h"
@@ -126,12 +125,11 @@ ReadJSONRulesResult ParseRulesFromJSON(const RulesetID& ruleset_id,
   // values which can't be parsed to maintain backwards compatibility.
   const auto& rules_list = rules.GetList();
 
-  // When the global rule limit is enabled, ignore any rulesets which exceed the
-  // static rule count limit (This is defined as
-  // dnr_api::GUARANTEED_MINIMUM_STATIC_RULES + the global rule count limit). We
-  // do this because such a ruleset can never be enabled in its entirety.
-  if (base::FeatureList::IsEnabled(kDeclarativeNetRequestGlobalRules) &&
-      rules_list.size() > rule_limit && !is_dynamic_ruleset) {
+  // Ignore any rulesets which exceed the static rule count limit (This is
+  // defined as dnr_api::GUARANTEED_MINIMUM_STATIC_RULES + the global rule count
+  // limit). We do this because such a ruleset can never be enabled in its
+  // entirety.
+  if (rules_list.size() > rule_limit && !is_dynamic_ruleset) {
     result.status = ReadJSONRulesResult::Status::kRuleCountLimitExceeded;
     result.error = ErrorUtils::FormatErrorMessage(
         kIndexingRuleLimitExceeded, std::to_string(ruleset_id.value()));

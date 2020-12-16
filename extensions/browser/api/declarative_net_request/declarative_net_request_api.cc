@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/feature_list.h"
 #include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
@@ -516,16 +515,6 @@ DeclarativeNetRequestGetAvailableStaticRuleCountFunction::Run() {
       static_cast<size_t>(declarative_net_request::GetMaximumRulesPerRuleset());
   DCHECK_LE(enabled_static_rule_count, static_rule_limit);
 
-  size_t available_static_rule_count = 0;
-  if (!base::FeatureList::IsEnabled(
-          declarative_net_request::kDeclarativeNetRequestGlobalRules)) {
-    available_static_rule_count = static_rule_limit - enabled_static_rule_count;
-    DCHECK_GE(static_rule_limit, available_static_rule_count);
-
-    return RespondNow(OneArgument(
-        base::Value(static_cast<int>(available_static_rule_count))));
-  }
-
   const declarative_net_request::GlobalRulesTracker& global_rules_tracker =
       rules_monitor_service->global_rules_tracker();
 
@@ -536,6 +525,7 @@ DeclarativeNetRequestGetAvailableStaticRuleCountFunction::Run() {
 
   // If an extension's rule count is below the guaranteed minimum, include the
   // difference.
+  size_t available_static_rule_count = 0;
   if (enabled_static_rule_count < guaranteed_static_minimum) {
     available_static_rule_count =
         (guaranteed_static_minimum - enabled_static_rule_count) +

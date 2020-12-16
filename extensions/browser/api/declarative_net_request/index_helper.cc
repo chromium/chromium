@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/barrier_closure.h"
-#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
@@ -91,16 +90,9 @@ IndexHelper::Result CombineResults(
     }
   }
 
-  // Raise an install warning if the enabled rule count exceeds the API limits.
-  // We don't raise a hard error to maintain forwards compatibility.
-  if (!base::FeatureList::IsEnabled(kDeclarativeNetRequestGlobalRules) &&
-      enabled_rules_count > static_cast<size_t>(GetStaticRuleLimit())) {
-    total_result.warnings.emplace_back(
-        kEnabledRuleCountExceeded,
-        dnr_api::ManifestKeys::kDeclarativeNetRequest,
-        dnr_api::DNRInfo::kRuleResources);
-  } else if (enabled_regex_rules_count >
-             static_cast<size_t>(GetRegexRuleLimit())) {
+  // Raise an install warning if the enabled regex rule count exceeds the API
+  // limits. We don't raise a hard error to maintain forwards compatibility.
+  if (enabled_regex_rules_count > static_cast<size_t>(GetRegexRuleLimit())) {
     total_result.warnings.emplace_back(
         kEnabledRegexRuleCountExceeded,
         dnr_api::ManifestKeys::kDeclarativeNetRequest,

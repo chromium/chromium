@@ -134,8 +134,5 @@ const char kErrorGetMatchedRulesMissingPermissions[] =
     "have activeTab granted for the specified tab ID in order to call this "
     "function.";
 
-const base::Feature kDeclarativeNetRequestGlobalRules{
-    "DeclarativeNetRequestGlobalRules", base::FEATURE_DISABLED_BY_DEFAULT};
-
 }  // namespace declarative_net_request
 }  // namespace extensions

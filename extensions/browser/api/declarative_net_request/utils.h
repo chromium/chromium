@@ -101,10 +101,6 @@ int GetStaticGuaranteedMinimumRuleCount();
 // single profile.
 int GetGlobalStaticRuleLimit();
 
-// Returns the maximum number of static rules an extension can enable. Only
-// valid if global rules are disabled.
-int GetStaticRuleLimit();
-
 // Returns the maximum number of rules a valid static ruleset can have. This is
 // also the maximum number of static rules an extension can enable at any point.
 int GetMaximumRulesPerRuleset();
@@ -121,8 +117,6 @@ int GetRegexRuleLimit();
 using ScopedRuleLimitOverride = base::AutoReset<int>;
 ScopedRuleLimitOverride CreateScopedStaticGuaranteedMinimumOverrideForTesting(
     int minimum);
-ScopedRuleLimitOverride CreateScopedStaticRuleLimitOverrideForTesting(
-    int limit);
 ScopedRuleLimitOverride CreateScopedGlobalStaticRuleLimitOverrideForTesting(
     int limit);
 ScopedRuleLimitOverride CreateScopedRegexRuleLimitOverrideForTesting(int limit);
