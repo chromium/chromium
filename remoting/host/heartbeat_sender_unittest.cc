@@ -102,7 +102,6 @@ class MockDelegate : public HeartbeatSender::Delegate {
   MOCK_METHOD0(OnFirstHeartbeatSuccessful, void());
   MOCK_METHOD0(OnHostNotFound, void());
   MOCK_METHOD0(OnAuthFailed, void());
-  MOCK_METHOD0(OnRemoteRestartHost, void());
 };
 
 class MockObserver : public HeartbeatSender::Observer {
@@ -341,22 +340,6 @@ TEST_F(HeartbeatSenderTest, Unauthenticated) {
 
   // Should retry heartbeating at least once.
   ASSERT_LT(1, heartbeat_count);
-}
-
-TEST_F(HeartbeatSenderTest, RemoteCommand) {
-  EXPECT_CALL(*mock_client_, Heartbeat(_, _))
-      .WillOnce([](std::unique_ptr<apis::v1::HeartbeatRequest> request,
-                   HeartbeatResponseCallback callback) {
-        ValidateHeartbeat(std::move(request), true);
-        auto response = std::make_unique<apis::v1::HeartbeatResponse>();
-        response->set_set_interval_seconds(kGoodIntervalSeconds);
-        response->set_remote_command(apis::v1::HeartbeatResponse::RESTART_HOST);
-        std::move(callback).Run(ProtobufHttpStatus::OK(), std::move(response));
-      });
-  EXPECT_CALL(*mock_observer_, OnHeartbeatSent()).Times(1);
-  EXPECT_CALL(mock_delegate_, OnFirstHeartbeatSuccessful()).Times(1);
-  EXPECT_CALL(mock_delegate_, OnRemoteRestartHost()).Times(1);
-  signal_strategy_->Connect();
 }
 
 TEST_F(HeartbeatSenderTest, GooglerHostname) {

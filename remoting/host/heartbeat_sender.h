@@ -46,8 +46,7 @@ class ProtobufHttpStatus;
 // so that the signaling connector will try to reconnect signaling.
 //
 // The server sends a HeartbeatResponse in response to each successful
-// heartbeat, which may contain a remote command to be executed on the host,
-// e.g. restarting the host process upon reception of the response.
+// heartbeat.
 class HeartbeatSender final : public SignalStrategy::Listener {
  public:
   class Delegate {
@@ -63,9 +62,6 @@ class HeartbeatSender final : public SignalStrategy::Listener {
     // Invoked when the heartbeat sender permanently fails to authenticate the
     // requests.
     virtual void OnAuthFailed() = 0;
-
-    // Invoked when the host has been asked to restart.
-    virtual void OnRemoteRestartHost() = 0;
 
    protected:
     Delegate() = default;
@@ -137,9 +133,6 @@ class HeartbeatSender final : public SignalStrategy::Listener {
   // Handlers for host-offline-reason completion and timeout.
   void OnHostOfflineReasonTimeout();
   void OnHostOfflineReasonAck();
-
-  void OnRemoteCommand(
-      apis::v1::HeartbeatResponse::RemoteCommand remote_command);
 
   // Helper methods used by DoSendStanza() to generate heartbeat stanzas.
   std::unique_ptr<apis::v1::HeartbeatRequest> CreateHeartbeatRequest();

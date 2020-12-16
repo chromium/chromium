@@ -317,7 +317,7 @@ void HeartbeatSender::OnResponse(
     }
 
     if (response->has_remote_command()) {
-      OnRemoteCommand(response->remote_command());
+      LOG(WARNING) << "Remote command ignored: " << response->remote_command();
     }
   } else {
     LOG(ERROR) << "Heartbeat failed. Error code: "
@@ -377,21 +377,6 @@ void HeartbeatSender::OnResponse(
 
   heartbeat_timer_.Start(FROM_HERE, delay, this,
                          &HeartbeatSender::SendHeartbeat);
-}
-
-void HeartbeatSender::OnRemoteCommand(
-    apis::v1::HeartbeatResponse::RemoteCommand remote_command) {
-  HOST_LOG << "Received remote command: "
-           << apis::v1::HeartbeatResponse::RemoteCommand_Name(remote_command)
-           << "(" << remote_command << ")";
-  switch (remote_command) {
-    case apis::v1::HeartbeatResponse::RESTART_HOST:
-      delegate_->OnRemoteRestartHost();
-      break;
-    default:
-      LOG(WARNING) << "Unknown remote command: " << remote_command;
-      break;
-  }
 }
 
 std::unique_ptr<apis::v1::HeartbeatRequest>

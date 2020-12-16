@@ -192,7 +192,6 @@ const int kHostOfflineReasonTimeoutSeconds = 10;
 const char kHostOfflineReasonPolicyReadError[] = "POLICY_READ_ERROR";
 const char kHostOfflineReasonPolicyChangeRequiresRestart[] =
     "POLICY_CHANGE_REQUIRES_RESTART";
-const char kHostOfflineReasonRemoteRestartHost[] = "REMOTE_RESTART_HOST";
 const char kHostOfflineReasonZombieStateDetected[] = "ZOMBIE_STATE_DETECTED";
 
 // The default email domain for Googlers. Used to determine whether the host's
@@ -326,11 +325,10 @@ class HostProcess : public ConfigWatcher::Delegate,
   void StartHostIfReady();
   void StartHost();
 
-  // HeartbeatSender::Delegate implementations.
+  // HeartbeatSender::Delegate implementation.
   void OnFirstHeartbeatSuccessful() override;
   void OnHostNotFound() override;
   void OnAuthFailed() override;
-  void OnRemoteRestartHost() override;
 
   void OnZombieStateDetected();
 
@@ -1603,10 +1601,6 @@ void HostProcess::StartHost() {
 
 void HostProcess::OnAuthFailed() {
   ShutdownHost(kInvalidOauthCredentialsExitCode);
-}
-
-void HostProcess::OnRemoteRestartHost() {
-  RestartHost(kHostOfflineReasonRemoteRestartHost);
 }
 
 void HostProcess::OnZombieStateDetected() {
