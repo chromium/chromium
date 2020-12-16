@@ -15,7 +15,9 @@ StrikeDatabaseIntegratorTestStrikeDatabase::
     StrikeDatabaseIntegratorTestStrikeDatabase(
         StrikeDatabase* strike_database,
         base::Optional<int64_t> expiry_time_micros)
-    : StrikeDatabaseIntegratorTestStrikeDatabase(strike_database) {}
+    : StrikeDatabaseIntegratorTestStrikeDatabase(strike_database) {
+  expiry_time_micros_ = expiry_time_micros;
+}
 
 StrikeDatabaseIntegratorTestStrikeDatabase::
     StrikeDatabaseIntegratorTestStrikeDatabase(StrikeDatabase* strike_database)

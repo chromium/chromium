@@ -127,6 +127,8 @@ TEST_F(StrikeDatabaseIntegratorTestStrikeDatabaseTest,
   // Advance clock very far into the future.
   test_clock.Advance(base::TimeDelta::FromDays(INT_MAX));
 
+  no_expiry_strike_database_->RemoveExpiredStrikes();
+
   // Strike should not be removed.
   EXPECT_EQ(1, no_expiry_strike_database_->GetStrikes());
 }
