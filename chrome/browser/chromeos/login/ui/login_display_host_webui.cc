@@ -1023,6 +1023,8 @@ void LoginDisplayHostWebUI::HideOobeDialog() {
 
 void LoginDisplayHostWebUI::SetShelfButtonsEnabled(bool enabled) {
   ash::LoginScreen::Get()->EnableShelfButtons(enabled);
+  if (GetWebUILoginView())
+    GetWebUILoginView()->set_shelf_enabled(enabled);
 }
 
 void LoginDisplayHostWebUI::UpdateOobeDialogState(ash::OobeDialogState state) {

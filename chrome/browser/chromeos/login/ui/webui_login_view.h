@@ -118,6 +118,8 @@ class WebUILoginView : public views::View,
     should_emit_login_prompt_visible_ = emit;
   }
 
+  void set_shelf_enabled(bool enabled) { shelf_enabled_ = enabled; }
+
  protected:
   static void InitializeWebView(views::WebView* web_view,
                                 const base::string16& title);
@@ -195,6 +197,8 @@ class WebUILoginView : public views::View,
   bool forward_keyboard_event_ = true;
 
   bool observing_system_tray_focus_ = false;
+
+  bool shelf_enabled_ = true;
 
   base::ObserverList<web_modal::ModalDialogHostObserver>::Unchecked
       observer_list_;

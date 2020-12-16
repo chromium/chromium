@@ -68,6 +68,11 @@ const char kCurrentKeyboard[] =
 
 const test::UIPath kChromeVoxHintDialog = {"connect", "welcomeScreen",
                                            "chromeVoxHint"};
+const test::UIPath kDismissChromeVoxButton = {"connect", "welcomeScreen",
+                                              "dismissChromeVoxButton"};
+const test::UIPath kActivateChromeVoxButton = {"connect", "welcomeScreen",
+                                               "activateChromeVoxButton"};
+
 const char kSetAvailableVoices[] = R"(
       chrome.tts.getVoices = function(callback) {
         callback([
@@ -560,8 +565,7 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest, LaptopClick) {
     ASSERT_FALSE(AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
     WaitForChromeVoxHintDialogToOpen();
     test::OobeJS().ExpectAttributeEQ("open", kChromeVoxHintDialog, true);
-    test::OobeJS().ClickOnPath(
-        {"connect", "welcomeScreen", "activateChromeVoxButton"});
+    test::OobeJS().ClickOnPath(kActivateChromeVoxButton);
   });
   monitor.ExpectSpeechPattern("*");
   monitor.Call([this]() {
@@ -705,12 +709,46 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest, DismissAfterHint) {
   screen->GiveChromeVoxHintForTesting();
   WaitForChromeVoxHintDialogToOpen();
   test::OobeJS().ExpectAttributeEQ("open", kChromeVoxHintDialog, true);
-  test::OobeJS().ClickOnPath(
-      {"connect", "welcomeScreen", "dismissChromeVoxButton"});
+  test::OobeJS().ClickOnPath(kDismissChromeVoxButton);
   WaitForChromeVoxHintDialogToClose();
   test::OobeJS().ExpectAttributeEQ("open", kChromeVoxHintDialog, false);
   histogram_tester_.ExpectUniqueSample("OOBE.WelcomeScreen.AcceptChromeVoxHint",
                                        false, 1);
+}
+
+// Assert that the ChromeVox hint dialog behaves as a modal dialog and traps
+// focus when using tab.
+IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest, TrapFocus) {
+  WelcomeScreen* screen = welcome_screen();
+  OobeScreenWaiter(WelcomeView::kScreenId).Wait();
+  TtsExtensionEngine::GetInstance()->DisableBuiltInTTSEngineForTesting();
+  test::ExecuteOobeJS(kSetAvailableVoices);
+  test::OobeJS().ExpectAttributeEQ("open", kChromeVoxHintDialog, false);
+  screen->GiveChromeVoxHintForTesting();
+  WaitForChromeVoxHintDialogToOpen();
+  test::OobeJS().ExpectAttributeEQ("open", kChromeVoxHintDialog, true);
+
+  // Ensure that focus stays inside the dialog's context.
+  // Move forward through the tab order by pressing tab.
+  test::OobeJS().CreateFocusWaiter(kChromeVoxHintDialog)->Wait();
+  ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
+      nullptr, ui::VKEY_TAB, false /* control */, false /* shift */,
+      false /* alt */, false /* command */));
+  test::OobeJS().CreateFocusWaiter(kDismissChromeVoxButton)->Wait();
+  ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
+      nullptr, ui::VKEY_TAB, false /* control */, false /* shift */,
+      false /* alt */, false /* command */));
+  test::OobeJS().CreateFocusWaiter(kActivateChromeVoxButton)->Wait();
+  ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
+      nullptr, ui::VKEY_TAB, false /* control */, false /* shift */,
+      false /* alt */, false /* command */));
+  test::OobeJS().CreateFocusWaiter(kDismissChromeVoxButton)->Wait();
+
+  // Move backward by pressing shift + tab.
+  ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
+      nullptr, ui::VKEY_TAB, false /* control */, true /* shift */,
+      false /* alt */, false /* command */));
+  test::OobeJS().CreateFocusWaiter(kActivateChromeVoxButton)->Wait();
 }
 
 class WelcomeScreenInternationalChromeVoxHintTest

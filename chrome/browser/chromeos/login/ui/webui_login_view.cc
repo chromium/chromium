@@ -390,8 +390,10 @@ bool WebUILoginView::TakeFocus(content::WebContents* source, bool reverse) {
     return false;
 
   // FocusLoginShelf focuses either system tray or login shelf buttons.
-  ash::LoginScreen::Get()->FocusLoginShelf(reverse);
-  return true;
+  // Only do this if the login shelf is enabled.
+  if (shelf_enabled_)
+    ash::LoginScreen::Get()->FocusLoginShelf(reverse);
+  return shelf_enabled_;
 }
 
 void WebUILoginView::RequestMediaAccessPermission(
