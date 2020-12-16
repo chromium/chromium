@@ -265,9 +265,9 @@ namespace {
 const unsigned kOsAll = kOsMac | kOsWin | kOsLinux | kOsCrOS | kOsAndroid;
 const unsigned kOsDesktop = kOsMac | kOsWin | kOsLinux | kOsCrOS;
 
-#if defined(USE_AURA) || defined(OS_ANDROID)
+#if defined(USE_AURA)
 const unsigned kOsAura = kOsWin | kOsLinux | kOsCrOS;
-#endif  // USE_AURA || OS_ANDROID
+#endif  // USE_AURA
 
 #if defined(USE_AURA)
 const FeatureEntry::Choice kPullToRefreshChoices[] = {
@@ -3036,18 +3036,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebBluetoothNewPermissionsBackendDescription,
      kOsAndroid | kOsDesktop,
      FEATURE_VALUE_TYPE(features::kWebBluetoothNewPermissionsBackend)},
-#if defined(USE_AURA) || defined(OS_ANDROID)
-    {"overscroll-history-navigation",
-     flag_descriptions::kOverscrollHistoryNavigationName,
-     flag_descriptions::kOverscrollHistoryNavigationDescription,
-     kOsAura | kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kOverscrollHistoryNavigation)},
-#if !defined(OS_ANDROID)
+#if defined(USE_AURA)
     {"pull-to-refresh", flag_descriptions::kPullToRefreshName,
      flag_descriptions::kPullToRefreshDescription, kOsAura,
      MULTI_VALUE_TYPE(kPullToRefreshChoices)},
-#endif  // OS_ANDROID
-#endif  // USE_AURA || OS_ANDROID
+#endif  // USE_AURA
     {"enable-touch-drag-drop", flag_descriptions::kTouchDragDropName,
      flag_descriptions::kTouchDragDropDescription, kOsWin | kOsCrOS,
      ENABLE_DISABLE_VALUE_TYPE(switches::kEnableTouchDragDrop,

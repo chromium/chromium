@@ -48,11 +48,7 @@ import org.chromium.ui.test.util.UiRestriction;
  * Tests {@link NavigationHandler} navigating back/forward using overscroll history navigation.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-        "enable-features=OverscrollHistoryNavigation<GestureNavigation",
-        "force-fieldtrials=GestureNavigation/Enabled",
-        "force-fieldtrial-params=GestureNavigation.Enabled:"
-                + "gesture_navigation_triggering_area_width/36"})
+@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class NavigationHandlerTest {
     private static final String RENDERED_PAGE = "/chrome/test/data/android/navigate/simple.html";
     private static final boolean LEFT_EDGE = true;
@@ -74,7 +70,7 @@ public class NavigationHandlerTest {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         mActivityTestRule.getActivity().getWindowManager().getDefaultDisplay().getMetrics(
                 displayMetrics);
-        mEdgeWidthPx = displayMetrics.density * NavigationHandler.DEFAULT_EDGE_WIDTH_DP;
+        mEdgeWidthPx = displayMetrics.density * NavigationHandler.EDGE_WIDTH_DP;
         HistoryNavigationCoordinator coordinator = getNavigationCoordinator();
         mNavigationLayout = coordinator.getLayoutForTesting();
         mNavigationHandler = coordinator.getNavigationHandlerForTesting();

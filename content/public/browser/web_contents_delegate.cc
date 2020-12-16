@@ -38,7 +38,11 @@ bool WebContentsDelegate::ShouldTransferNavigation(
 }
 
 bool WebContentsDelegate::CanOverscrollContent() {
+#if defined(USE_AURA)
+  return true;
+#else
   return false;
+#endif
 }
 
 bool WebContentsDelegate::ShouldSuppressDialogs(WebContents* source) {

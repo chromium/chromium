@@ -19,7 +19,6 @@ import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.SwipeRefreshHandler;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -82,7 +81,6 @@ public class HistoryNavigationCoordinator
             Runnable onBackPressed, LayoutManagerImpl layoutManager,
             Consumer<Tab> showHistoryManager, String historyMenu,
             Supplier<BottomSheetController> bottomSheetControllerSupplier) {
-        if (!isFeatureFlagEnabled()) return null;
         HistoryNavigationCoordinator coordinator = new HistoryNavigationCoordinator();
         coordinator.init(window, lifecycleDispatcher, compositorViewHolder, tabProvider,
                 insetObserverView, backShouldCloseTab, onBackPressed, layoutManager,
@@ -201,10 +199,6 @@ public class HistoryNavigationCoordinator
                 return isDetached(tab) ? () -> null : bottomSheetControllerSupplier;
             }
         };
-    }
-
-    private static boolean isFeatureFlagEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.OVERSCROLL_HISTORY_NAVIGATION);
     }
 
     /**

@@ -60,11 +60,7 @@ std::unique_ptr<OverscrollRefresh> CreateRefreshEffect(
     return nullptr;
   }
 
-  float edge_width = base::GetFieldTrialParamByFeatureAsInt(
-                         features::kOverscrollHistoryNavigation,
-                         "gesture_navigation_triggering_area_width",
-                         OverscrollRefresh::kDefaultNavigationEdgeWidth) *
-                     dpi_scale;
+  float edge_width = OverscrollRefresh::kDefaultNavigationEdgeWidth * dpi_scale;
   return std::make_unique<OverscrollRefresh>(overscroll_refresh_handler,
                                              edge_width);
 }
