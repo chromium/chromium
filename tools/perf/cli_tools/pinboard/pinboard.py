@@ -98,7 +98,7 @@ ACTIVE_STORIES = set([
     'browse:media:googleplaystore:2018',
     'browse:search:google:2020',
     'browse:news:cnn:2018',
-    'browse:news:reddit:2018',
+    'browse:news:reddit:2020',
     'browse:search:google_india:2018',
     'browse:media:youtubetv:2019',
 

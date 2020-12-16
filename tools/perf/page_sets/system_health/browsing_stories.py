@@ -247,14 +247,14 @@ class QqMobileStory2019(_ArticleBrowsingStory):
   TAGS = [story_tags.INTERNATIONAL, story_tags.YEAR_2019]
 
 
-class RedditDesktopStory2018(_ArticleBrowsingStory):
+class RedditDesktopStory2020(_ArticleBrowsingStory):
   """The top website in http://www.alexa.com/topsites/category/News"""
-  NAME = 'browse:news:reddit:2018'
+  NAME = 'browse:news:reddit:2020'
   URL = 'https://www.reddit.com/r/news/top/?sort=top&t=week'
   IS_SINGLE_PAGE_APP = True
   ITEM_SELECTOR = 'article'
   SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
-  TAGS = [story_tags.YEAR_2018]
+  TAGS = [story_tags.YEAR_2020]
 
 
 class RedditMobileStory2019(_ArticleBrowsingStory):
