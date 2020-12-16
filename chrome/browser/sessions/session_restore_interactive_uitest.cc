@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/sessions/session_restore_test_helper.h"
@@ -9,6 +10,7 @@
 #include "chrome/browser/sessions/session_service_test_helper.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
@@ -99,4 +101,36 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreInteractiveTest, MAYBE_FocusOnLaunch) {
                   ->GetActiveWebContents()
                   ->GetRenderWidgetHostView()
                   ->HasFocus());
+}
+
+// TODO(https://crbug.com/1152160): Enable RestoreMinimizedWindow on Lacros
+// builds.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_RestoreMinimizedWindow DISABLED_RestoreMinimizedWindow
+#else
+#define MAYBE_RestoreMinimizedWindow RestoreMinimizedWindow
+#endif
+// Verify that restoring a minimized window does not create a blank window.
+// Regression test for https://crbug.com/1018885.
+IN_PROC_BROWSER_TEST_F(SessionRestoreInteractiveTest,
+                       MAYBE_RestoreMinimizedWindow) {
+  // Minimize the window.
+  browser()->window()->Minimize();
+
+  // Restart and session restore the tabs.
+  Browser* restored = QuitBrowserAndRestore(browser(), 3);
+  EXPECT_EQ(1, restored->tab_strip_model()->count());
+
+#if defined(OS_MAC)
+  // On macOS, minimized windows are neither active nor shown, to avoid causing
+  // space switches during session restore.
+  EXPECT_FALSE(restored->window()->IsActive());
+  EXPECT_FALSE(restored->window()->IsVisible());
+#else
+  // Expect the window to be visible.
+  // Prior to the fix for https://crbug.com/1018885, the window was active but
+  // not visible.
+  EXPECT_TRUE(restored->window()->IsActive());
+  EXPECT_TRUE(restored->window()->IsVisible());
+#endif
 }
