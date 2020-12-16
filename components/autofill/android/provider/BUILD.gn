@@ -5,7 +5,17 @@
 import("//build/config/android/rules.gni")
 import("//build/config/locales.gni")
 
+android_aidl("autofill_aidl") {
+  import_include = [ "java/src" ]
+  sources = [
+    "java/src/org/chromium/components/autofill_public/IAutofillHintsService.aidl",
+    "java/src/org/chromium/components/autofill_public/IViewTypeCallback.aidl",
+    "java/src/org/chromium/components/autofill_public/ViewType.aidl",
+  ]
+}
+
 android_library("java") {
+  srcjar_deps = [ ":autofill_aidl" ]
   deps = [
     "//base:base_java",
     "//base:jni_java",
@@ -24,6 +34,7 @@ android_library("java") {
     "java/src/org/chromium/components/autofill/AutofillProviderUMA.java",
     "java/src/org/chromium/components/autofill/FormData.java",
     "java/src/org/chromium/components/autofill/FormFieldData.java",
+    "java/src/org/chromium/components/autofill_public/ViewType.java",
   ]
 }
 
