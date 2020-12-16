@@ -993,7 +993,7 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
 }
 
 // If the RenderFrame determines that the frame is an ad, and the frame changes
-// processes, then the new frame host should still be considered an ad.
+// processes, then the frame should still be considered an ad.
 TEST_P(ContentSubresourceFilterThrottleManagerTest,
        AdTagCarriesAcrossProcesses) {
   content::IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
@@ -1023,7 +1023,6 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
   EXPECT_NE(initial_subframe, final_subframe);
 
   EXPECT_TRUE(throttle_manager()->IsFrameTaggedAsAd(final_subframe));
-  EXPECT_FALSE(throttle_manager()->IsFrameTaggedAsAd(initial_subframe));
   ExpectActivationSignalForFrame(final_subframe, true /* expect_activation */,
                                  true /* is_ad_subframe */);
 }

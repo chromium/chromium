@@ -148,14 +148,16 @@ void ContentSubresourceFilterThrottleManager::OnSubresourceFilterGoingAway() {
 void ContentSubresourceFilterThrottleManager::RenderFrameDeleted(
     content::RenderFrameHost* frame_host) {
   frame_host_filter_map_.erase(frame_host);
-  ad_frames_.erase(frame_host);
-  navigation_load_policies_.erase(frame_host);
   DestroyRulesetHandleIfNoLongerUsed();
 }
 
 void ContentSubresourceFilterThrottleManager::FrameDeleted(
     content::RenderFrameHost* frame_host) {
-  navigated_frames_.erase(frame_host->GetFrameTreeNodeId());
+  int frame_tree_node_id = frame_host->GetFrameTreeNodeId();
+
+  ad_frames_.erase(frame_tree_node_id);
+  navigated_frames_.erase(frame_tree_node_id);
+  navigation_load_policies_.erase(frame_tree_node_id);
 }
 
 // Pull the AsyncDocumentSubresourceFilter and its associated
@@ -163,36 +165,6 @@ void ContentSubresourceFilterThrottleManager::FrameDeleted(
 // it for later filtering of subframe navigations.
 void ContentSubresourceFilterThrottleManager::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
-  // Since the frame hasn't yet committed, GetCurrentRenderFrameHost() points
-  // to the initial RFH.
-  // TODO(crbug.com/843646): Use an API that NavigationHandle supports rather
-  // than trying to infer what the NavigationHandle is doing.
-  content::RenderFrameHost* previous_rfh =
-      navigation_handle->GetWebContents()->UnsafeFindFrameByFrameTreeNodeId(
-          navigation_handle->GetFrameTreeNodeId());
-
-  // If a known ad RenderFrameHost has moved to a new host, update |ad_frames_|.
-  bool transferred_ad_frame = false;
-  if (previous_rfh && previous_rfh != navigation_handle->GetRenderFrameHost()) {
-    auto previous_rfh_it = ad_frames_.find(previous_rfh);
-    if (previous_rfh_it != ad_frames_.end()) {
-      ad_frames_.erase(previous_rfh_it);
-      ad_frames_.insert(navigation_handle->GetRenderFrameHost());
-      transferred_ad_frame = true;
-    }
-
-    // If |previous_rfh| exists and is different than the final render frame
-    // host for the navigation, we need to associate the load policy with the
-    // new rfh.
-    auto navigation_load_policy_it =
-        navigation_load_policies_.find(previous_rfh);
-    if (navigation_load_policy_it != navigation_load_policies_.end()) {
-      navigation_load_policies_.emplace(navigation_handle->GetRenderFrameHost(),
-                                        navigation_load_policy_it->second);
-      navigation_load_policies_.erase(navigation_load_policy_it);
-    }
-  }
-
   if (navigation_handle->GetNetErrorCode() != net::OK)
     return;
 
@@ -228,10 +200,12 @@ void ContentSubresourceFilterThrottleManager::ReadyToCommitNavigation(
       navigation_handle->GetRenderFrameHost();
 
   bool is_ad_subframe =
-      transferred_ad_frame || base::Contains(ad_frames_, frame_host);
+      base::Contains(ad_frames_, navigation_handle->GetFrameTreeNodeId());
   DCHECK(!is_ad_subframe || !navigation_handle->IsInMainFrame());
 
-  bool parent_is_ad = base::Contains(ad_frames_, frame_host->GetParent());
+  bool parent_is_ad =
+      frame_host->GetParent() &&
+      base::Contains(ad_frames_, frame_host->GetParent()->GetFrameTreeNodeId());
 
   blink::mojom::AdFrameType ad_frame_type = blink::mojom::AdFrameType::kNonAd;
   if (is_ad_subframe) {
@@ -453,17 +427,10 @@ void ContentSubresourceFilterThrottleManager::OnSubframeNavigationEvaluated(
     bool is_ad_subframe) {
   DCHECK(!navigation_handle->IsInMainFrame());
 
-  // TODO(crbug.com/843646): Use an API that NavigationHandle supports rather
-  // than trying to infer what the NavigationHandle is doing.
-  content::RenderFrameHost* starting_rfh =
-      navigation_handle->GetWebContents()->UnsafeFindFrameByFrameTreeNodeId(
-          navigation_handle->GetFrameTreeNodeId());
-  DCHECK(starting_rfh);
-
-  navigation_load_policies_[starting_rfh] = load_policy;
-
+  int frame_tree_node_id = navigation_handle->GetFrameTreeNodeId();
+  navigation_load_policies_[frame_tree_node_id] = load_policy;
   if (is_ad_subframe)
-    ad_frames_.insert(starting_rfh);
+    ad_frames_.insert(frame_tree_node_id);
 }
 
 void ContentSubresourceFilterThrottleManager::MaybeAppendNavigationThrottles(
@@ -507,22 +474,25 @@ bool ContentSubresourceFilterThrottleManager::CalculateIsAdSubframe(
 
   return (load_policy != LoadPolicy::ALLOW &&
           load_policy != LoadPolicy::EXPLICITLY_ALLOW) ||
-         base::Contains(ad_frames_, frame_host) ||
-         base::Contains(ad_frames_, parent_frame);
+         base::Contains(ad_frames_, frame_host->GetFrameTreeNodeId()) ||
+         base::Contains(ad_frames_, parent_frame->GetFrameTreeNodeId());
 }
 
 bool ContentSubresourceFilterThrottleManager::IsFrameTaggedAsAd(
     content::RenderFrameHost* frame_host) const {
-  return base::Contains(ad_frames_, frame_host);
+  return frame_host &&
+         base::Contains(ad_frames_, frame_host->GetFrameTreeNodeId());
 }
 
 base::Optional<LoadPolicy>
 ContentSubresourceFilterThrottleManager::LoadPolicyForLastCommittedNavigation(
     content::RenderFrameHost* frame_host) const {
-  auto it = navigation_load_policies_.find(frame_host);
-  if (it != navigation_load_policies_.end())
-    return it->second;
-  return base::nullopt;
+  if (!frame_host)
+    return base::nullopt;
+  auto it = navigation_load_policies_.find(frame_host->GetFrameTreeNodeId());
+  if (it == navigation_load_policies_.end())
+    return base::nullopt;
+  return it->second;
 }
 
 void ContentSubresourceFilterThrottleManager::OnReloadRequested() {
@@ -641,10 +611,10 @@ void ContentSubresourceFilterThrottleManager::OnFrameIsAdSubframe(
     content::RenderFrameHost* render_frame_host) {
   DCHECK(render_frame_host);
 
-  ad_frames_.insert(render_frame_host);
+  ad_frames_.insert(render_frame_host->GetFrameTreeNodeId());
 
-  bool parent_is_ad =
-      base::Contains(ad_frames_, render_frame_host->GetParent());
+  bool parent_is_ad = base::Contains(
+      ad_frames_, render_frame_host->GetParent()->GetFrameTreeNodeId());
   blink::mojom::AdFrameType ad_frame_type =
       parent_is_ad ? blink::mojom::AdFrameType::kChildAd
                    : blink::mojom::AdFrameType::kRootAd;
