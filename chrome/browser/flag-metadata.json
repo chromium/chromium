@@ -4134,7 +4134,7 @@
   {
     "name": "recover-from-never-save-android",
     "owners": [ "ioanap" ],
-    "expiry_milestone": 88
+    "expiry_milestone": 90
   },
   {
     "name": "reduce-display-notifications",
