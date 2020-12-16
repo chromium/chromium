@@ -289,6 +289,8 @@ buildflag_header("buildflags") {
   header = "buildflags.h"
   _use_partition_alloc = use_allocator == "partition"
   _use_tcmalloc = use_allocator == "tcmalloc"
+  assert(use_allocator_shim || !_use_partition_alloc,
+         "Partition alloc requires the allocator shim")
 
   flags = [
     "USE_ALLOCATOR_SHIM=$use_allocator_shim",
