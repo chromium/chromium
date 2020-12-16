@@ -154,7 +154,8 @@ class SelectToSpeak {
      *             currentNodeGroupStartNodeIndex: number,
      *             currentCharIndex: number,
      *             currentStartCharIndex: (number|undefined),
-     *             currentEndCharIndex: (number|undefined)}}
+     *             currentEndCharIndex: (number|undefined),
+     *             supportsNavigationPanel: boolean}}
      */
     this.navigationState_ = {
       /**
@@ -190,6 +191,11 @@ class SelectToSpeak {
        * The current end offset - see currentStartCharIndex, above.
        */
       currentEndCharIndex: undefined,
+
+      /**
+       * Whether the current nodes support use of the navigation panel.
+       */
+      supportsNavigationPanel: true,
     };
 
     /**
@@ -278,7 +284,8 @@ class SelectToSpeak {
    */
   shouldShowNavigationControls_() {
     return this.navigationControlFlag_ &&
-        this.prefsManager_.navigationControlsEnabled();
+        this.prefsManager_.navigationControlsEnabled() &&
+        this.navigationState_.supportsNavigationPanel;
   }
 
   /**
@@ -701,6 +708,7 @@ class SelectToSpeak {
       currentCharIndex: -1,
       currentStartCharIndex: undefined,
       currentEndCharIndex: undefined,
+      supportsNavigationPanel: true,
     };
   }
 
@@ -1123,6 +1131,7 @@ class SelectToSpeak {
       currentCharIndex: 0,
       currentStartCharIndex: startCharIndex,
       currentEndCharIndex: endCharIndex,
+      supportsNavigationPanel: this.isNavigationPanelSupported_(nodes),
     };
 
     // Play TTS according to the current state variables.
@@ -1736,6 +1745,22 @@ class SelectToSpeak {
    */
   getSpeechRate_() {
     return this.overrideSpeechRate_ || this.systemSpeechRate_;
+  }
+
+  /**
+   * @param {!Array<!AutomationNode>} nodes
+   * @return {boolean} Whether all given nodes support the navigation panel.
+   * @private
+   */
+  isNavigationPanelSupported_(nodes) {
+    if (nodes.length === 0) {
+      return true;
+    }
+    // Do not show panel on system UI. System UI can be problematic due to
+    // auto-dismissing behavior (see http://crbug.com/1157148), but also
+    // navigation controls do not work well control-rich interfaces that are
+    // light on text (and therefore sentence and paragraph structures).
+    return !nodes.some((n) => n.root && n.root.role === RoleType.DESKTOP);
   }
 
   /**

@@ -87,7 +87,7 @@ class NodeUtils {
    */
   static getNearestContainingWindow(node) {
     // Go upwards to root nodes' parents until we find the first window.
-    if (node.root.role === RoleType.ROOT_WEB_AREA) {
+    if (node.root && node.root.role === RoleType.ROOT_WEB_AREA) {
       let nextRootParent = node;
       while (nextRootParent != null &&
              nextRootParent.role !== RoleType.WINDOW &&

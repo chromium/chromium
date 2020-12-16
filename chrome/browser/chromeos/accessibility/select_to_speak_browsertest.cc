@@ -8,6 +8,7 @@
 #include "ash/accessibility/accessibility_focus_ring_controller_impl.h"
 #include "ash/accessibility/accessibility_focus_ring_layer.h"
 #include "ash/public/cpp/ash_features.h"
+#include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/system_tray_test_api.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
@@ -32,6 +33,7 @@
 #include "extensions/browser/notification_types.h"
 #include "extensions/browser/process_manager.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/accessibility_switches.h"
 #include "ui/events/test/event_generator.h"
 #include "url/url_constants.h"
@@ -74,6 +76,7 @@ class SelectToSpeakTest : public InProcessBrowserTest {
 
   test::SpeechMonitor sm_;
   std::unique_ptr<ui::test::EventGenerator> generator_;
+  std::unique_ptr<ash::SystemTrayTestApi> tray_test_api_;
 
   gfx::Rect GetWebContentsBounds() const {
     // TODO(katie): Find a way to get the exact bounds programmatically.
@@ -143,7 +146,6 @@ class SelectToSpeakTest : public InProcessBrowserTest {
   }
 
  private:
-  std::unique_ptr<ash::SystemTrayTestApi> tray_test_api_;
   scoped_refptr<content::MessageLoopRunner> loop_runner_;
   scoped_refptr<content::MessageLoopRunner> tray_loop_runner_;
   base::WeakPtrFactory<SelectToSpeakTest> weak_ptr_factory_{this};
@@ -445,6 +447,36 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, WorksWithStickyKeys) {
   sm_.Call([]() { AccessibilityManager::Get()->EnableStickyKeys(false); });
 
   sm_.Replay();
+}
+
+/* Test fixture enabling navigation control */
+class SelectToSpeakTestWithNavigationControl : public SelectToSpeakTest {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        ::features::kSelectToSpeakNavigationControl);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SelectToSpeakTestWithNavigationControl,
+                       SelectToSpeakDoesNotDismissTrayBubble) {
+  // Open tray bubble menu.
+  tray_test_api_->ShowBubble();
+
+  // Search key + click the avatar button.
+  generator_->PressKey(ui::VKEY_LWIN, 0 /* flags */);
+  tray_test_api_->ClickBubbleView(ash::VIEW_ID_USER_AVATAR_BUTTON);
+  generator_->ReleaseKey(ui::VKEY_LWIN, 0 /* flags */);
+
+  // Should read out text.
+  sm_.ExpectSpeechPattern("*stub-user@example.com*");
+  sm_.Replay();
+
+  // Tray bubble menu should remain open.
+  ASSERT_TRUE(tray_test_api_->IsTrayBubbleOpen());
 }
 
 }  // namespace chromeos
