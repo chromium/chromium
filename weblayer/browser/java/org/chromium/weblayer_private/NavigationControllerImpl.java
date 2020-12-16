@@ -239,7 +239,7 @@ public final class NavigationControllerImpl extends INavigationController.Stub {
     @CalledByNative
     private void onLargestContentfulPaint(long navigationStartTick,
             long largestContentfulPaintDurationMs) throws RemoteException {
-        if (WebLayerFactoryImpl.getClientMajorVersion() < 89) return;
+        if (WebLayerFactoryImpl.getClientMajorVersion() < 88) return;
 
         mNavigationControllerClient.onLargestContentfulPaint(
                 (navigationStartTick - getNativeTickOffsetUs()) / 1000,

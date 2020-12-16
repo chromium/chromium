@@ -1292,7 +1292,7 @@ public class NavigationTest {
         Assert.assertTrue(firstContentfulPaint <= (current - navigationStart));
     }
 
-    @MinWebLayerVersion(89)
+    @MinWebLayerVersion(88)
     @Test
     @SmallTest
     public void testOnLargestContentfulPaintTiming() throws Exception {

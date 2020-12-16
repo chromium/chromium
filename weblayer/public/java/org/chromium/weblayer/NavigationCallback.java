@@ -136,7 +136,7 @@ public abstract class NavigationCallback {
      * @param largestContentfulPaintDurationMs the number of milliseconds to largest contentful
      *         paint
      *        from navigation start.
-     * @since 89
+     * @since 88
      */
     public void onLargestContentfulPaint(
             long navigationStartMs, long largestContentfulPaintDurationMs) {}

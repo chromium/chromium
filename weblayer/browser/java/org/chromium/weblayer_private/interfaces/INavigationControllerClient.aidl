@@ -36,7 +36,5 @@ interface INavigationControllerClient {
 
   // Added in M88.
   void onFirstContentfulPaint2(long navigationStartMs, long firstContentfulPaintDurationMs) = 10;
-
-  // Added in M89.
   void onLargestContentfulPaint(long navigationStartMs, long largestContentfulPaintDurationMs) = 11;
 }
