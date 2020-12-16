@@ -104,9 +104,9 @@ html[new-layout] #oobe {
 }
 
 html:not([new-layout]) #outer-container.fullscreen,
-#outer-container.fullscreen #oobe,
-#inner-container,
-#inner-container > .step {
+html:not([new-layout]) #outer-container.fullscreen #oobe,
+html:not([new-layout]) #inner-container,
+html:not([new-layout]) #inner-container > .step {
   height: 100%;
   width: 100%;
 }

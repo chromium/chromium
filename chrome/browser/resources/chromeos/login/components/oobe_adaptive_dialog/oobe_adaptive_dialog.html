@@ -61,10 +61,52 @@
         height: var(--oobe-adaptive-dialog-height);
         width: var(--oobe-adaptive-dialog-width);
         @apply --oobe-default-font;
+        --text-line-height: 18px;
         --oobe-adaptive-dialog-buttons-horizontal-padding: min(40px,
           max(24px, calc(var(--oobe-adaptive-dialog-width) * 0.025)));
         --oobe-adaptive-dialog-buttons-vertical-padding: min(40px,
           max(24px, calc(var(--oobe-adaptive-dialog-height) * 0.025)));
+        --oobe-adaptive-dialog-content-padding: 40px;
+      }
+
+      :host-context([orientation=horizontal]) {
+        --oobe-adaptive-dialog-content-direction: row;
+        --oobe-adaptive-dialog-item-alignment: unset;
+        --oobe-text-alignment: start;
+        --oobe-adaptive-dialog-content-width: calc(
+            var(--oobe-adaptive-dialog-width) -
+            4 * var(--oobe-adaptive-dialog-content-padding) -
+            var(--oobe-adaptive-dialog-header-width));
+        /* Header takes 40% of the width remaining after applying padding */
+        --oobe-adaptive-dialog-header-width: clamp(302px,
+            calc(0.4 * (var(--oobe-adaptive-dialog-width) -
+            4 * var(--oobe-adaptive-dialog-content-padding))) , 346px);
+      }
+
+      :host-context([orientation=vertical]) {
+        --oobe-adaptive-dialog-content-direction: column;
+        --oobe-adaptive-dialog-item-alignment: center;
+        --oobe-text-alignment: center;
+        --oobe-adaptive-dialog-content-width: 100%;
+        /* Header takes 40% of the width remaining after applying padding */
+        --oobe-adaptive-dialog-header-width: clamp(302px,
+            calc(0.4 * (var(--oobe-adaptive-dialog-width) -
+            2 * var(--oobe-adaptive-dialog-content-padding))) , 346px);
+      }
+
+      #oobe-title ::slotted(h1) {
+        color: var(--oobe-header-text-color);
+        @apply --oobe-header-font;
+        margin: 0;
+        text-align: var(--oobe-text-alignment);
+      }
+
+      #oobe-subtitle ::slotted(*) {
+        color: var(--oobe-subheader-text-color);
+        line-height: var(--text-line-height);
+        margin: 0;
+        overflow-wrap: break-word;
+        text-align: var(--oobe-text-alignment);
       }
 
       #main-container {

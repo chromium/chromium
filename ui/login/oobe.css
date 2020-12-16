@@ -46,36 +46,10 @@ html[screen=oobe] body {
   background-color: white;
 }
 
-/* New default paddings and constants */
+/* New dialog size */
 html {
   --oobe-adaptive-dialog-width: var(--oobe-oobe-dialog-width-base);
   --oobe-adaptive-dialog-height: var(--oobe-oobe-dialog-height-base);
-  --oobe-adaptive-dialog-content-padding: 40px;
-}
-
-html[orientation=horizontal] {
-  --oobe-adaptive-dialog-content-direction: row;
-  --oobe-adaptive-dialog-item-alignment: unset;
-  --oobe-subtitle-text-alignment: start;
-  --oobe-adaptive-dialog-content-width: calc(
-      var(--oobe-adaptive-dialog-width) -
-      4 * var(--oobe-adaptive-dialog-content-padding) -
-      var(--oobe-adaptive-dialog-header-width));
-  /* Header width takes 40% of the width remaining after applying padding */
-  --oobe-adaptive-dialog-header-width: clamp(302px,
-      calc(0.4 * (var(--oobe-adaptive-dialog-width) -
-      4 * var(--oobe-adaptive-dialog-content-padding))) , 346px);
-}
-
-html[orientation=vertical] {
-  --oobe-adaptive-dialog-content-direction: column;
-  --oobe-adaptive-dialog-item-alignment: center;
-  --oobe-subtitle-text-alignment: center;
-  --oobe-adaptive-dialog-content-width: 100%;
-  /* Header width takes 40% of the width remaining after applying padding */
-  --oobe-adaptive-dialog-header-width: clamp(302px,
-      calc(0.4 * (var(--oobe-adaptive-dialog-width) -
-      2 * var(--oobe-adaptive-dialog-content-padding))) , 346px);
 }
 
 /* Padding defaults */
