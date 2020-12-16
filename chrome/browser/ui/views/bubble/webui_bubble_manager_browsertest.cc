@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 
@@ -15,7 +16,8 @@ namespace {
 class TestWebUIBubbleManager : public WebUIBubbleManagerBase {
  public:
   explicit TestWebUIBubbleManager(Browser* browser)
-      : WebUIBubbleManagerBase(BrowserView::GetBrowserViewForBrowser(browser),
+      : WebUIBubbleManagerBase(IDS_ACCNAME_TAB_SEARCH,
+                               BrowserView::GetBrowserViewForBrowser(browser),
                                browser->profile(),
                                GURL("chrome://about")) {}
   TestWebUIBubbleManager(const TestWebUIBubbleManager&) = delete;

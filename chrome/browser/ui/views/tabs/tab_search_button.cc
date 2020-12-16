@@ -9,6 +9,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/views/widget/widget.h"
@@ -37,7 +38,8 @@ TabSearchOpenAction GetActionForEvent(const ui::Event& event) {
 
 TabSearchButton::TabSearchButton(TabStrip* tab_strip)
     : NewTabButton(tab_strip, PressedCallback()),
-      webui_bubble_manager_(this,
+      webui_bubble_manager_(IDS_ACCNAME_TAB_SEARCH,
+                            this,
                             tab_strip->controller()->GetProfile(),
                             GURL(chrome::kChromeUITabSearchURL),
                             true),

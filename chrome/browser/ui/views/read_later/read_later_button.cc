@@ -38,6 +38,7 @@ ReadLaterButton::ReadLaterButton(Browser* browser)
                   l10n_util::GetStringUTF16(IDS_READ_LATER_TITLE)),
       browser_(browser),
       webui_bubble_manager_(std::make_unique<WebUIBubbleManager<ReadLaterUI>>(
+          IDS_READ_LATER_TITLE,
           this,
           browser->profile(),
           GURL(chrome::kChromeUIReadLaterURL))) {

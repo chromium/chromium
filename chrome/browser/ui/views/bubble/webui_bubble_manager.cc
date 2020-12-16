@@ -17,11 +17,13 @@ constexpr base::TimeDelta kWebViewRetentionTime =
 }  // namespace
 
 WebUIBubbleManagerBase::WebUIBubbleManagerBase(
+    int task_manager_string_id,
     views::View* anchor_view,
     content::BrowserContext* browser_context,
     const GURL& webui_url,
     bool enable_extension_apis)
-    : anchor_view_(anchor_view),
+    : task_manager_string_id_(task_manager_string_id),
+      anchor_view_(anchor_view),
       browser_context_(browser_context),
       webui_url_(webui_url),
       enable_extension_apis_(enable_extension_apis),

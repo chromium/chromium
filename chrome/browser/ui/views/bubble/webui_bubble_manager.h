@@ -10,6 +10,7 @@
 
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
+#include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_view.h"
 #include "chrome/browser/ui/views/close_bubble_on_tab_activation_helper.h"
 #include "ui/views/controls/webview/webview.h"
@@ -27,7 +28,8 @@ class WebUIBubbleDialogView;
 // and caching of the WebView.
 class WebUIBubbleManagerBase : public views::WidgetObserver {
  public:
-  WebUIBubbleManagerBase(views::View* anchor_view,
+  WebUIBubbleManagerBase(int task_manager_string_id,
+                         views::View* anchor_view,
                          content::BrowserContext* browser_context,
                          const GURL& webui_url,
                          bool enable_extension_apis = false);
@@ -43,6 +45,7 @@ class WebUIBubbleManagerBase : public views::WidgetObserver {
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
 
+  int task_manager_string_id() const { return task_manager_string_id_; }
   content::BrowserContext* browser_context() { return browser_context_; }
   const GURL& webui_url() const { return webui_url_; }
   bool enable_extension_apis() const { return enable_extension_apis_; }
@@ -58,6 +61,10 @@ class WebUIBubbleManagerBase : public views::WidgetObserver {
  private:
   virtual std::unique_ptr<WebUIBubbleView> CreateWebView() = 0;
   void ResetWebView();
+
+  // Used for tagging the web contents so that a distinctive name shows up in
+  // the task manager.
+  const int task_manager_string_id_;
 
   views::View* anchor_view_;
   content::BrowserContext* browser_context_;
@@ -93,12 +100,17 @@ class WebUIBubbleManager : public WebUIBubbleManagerBase {
  private:
   std::unique_ptr<WebUIBubbleView> CreateWebView() override {
     auto web_view = std::make_unique<WebUIBubbleView>(browser_context());
+    content::WebContents* web_contents = web_view->GetWebContents();
     if (enable_extension_apis()) {
       // In order for the WebUI in the renderer to use extensions APIs we must
       // add a ChromeExtensionWebContentsObserver to the WebView's WebContents.
       extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
-          web_view->GetWebContents());
+          web_contents);
     }
+
+    task_manager::WebContentsTags::CreateForToolContents(
+        web_contents, task_manager_string_id());
+
     web_view->template LoadURL<T>(webui_url());
     return web_view;
   }
