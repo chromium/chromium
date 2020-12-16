@@ -23,11 +23,17 @@ declare_args() {
   also_build_ash_chrome = false
 }
 
-# is_chromeos_ash|lacros is used to specify that it is specific to either
+# is_chromeos_{ash,lacros} is used to specify that it is specific to either
 # ash or lacros chrome for chromeos. For platform specific logic that
 # applies to both, use is_chromeos instead.
+# .gn files are evaluated multiple times for each toolchain.
+# is_chromeos_{ash,lacros} should be set true only for builds with target
+# toolchains.
 is_chromeos_ash = is_chromeos && !chromeos_is_browser_only
-is_chromeos_lacros = chromeos_is_browser_only
+
+# TODO(crbug.com/1052397): Remove is_linux once lacros-chrome switches
+# to target_os=chromeos
+is_chromeos_lacros = (is_chromeos || is_linux) && chromeos_is_browser_only
 
 # TODO(crbug.com/1052397):
 # Remove is_ash|lacros once all are replaced by is_chromeos_*.
