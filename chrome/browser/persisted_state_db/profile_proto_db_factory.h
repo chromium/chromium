@@ -15,6 +15,9 @@ namespace {
 const char kPersistedStateDBFolder[] = "persisted_state_db";
 }  // namespace
 
+ProfileProtoDBFactory<persisted_state_db::PersistedStateContentProto>*
+GetPersistedStateProfileProtoDBFactory();
+
 // Factory to create a ProtoDB per profile and per proto. Incognito is
 // currently not supported and the factory will return nullptr for an incognito
 // profile.
@@ -41,6 +44,19 @@ class ProfileProtoDBFactory : public BrowserContextKeyedServiceFactory {
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
 };
+
+// static
+template <typename T>
+ProfileProtoDBFactory<T>* ProfileProtoDBFactory<T>::GetInstance() {
+  static_assert(
+      std::is_base_of<persisted_state_db::PersistedStateContentProto, T>::
+          value /** subsequent supported templates will be ORed in here */,
+      "Provided template is not supported. To support implement a factory "
+      "method similar to GetPersistedStateProfileProtoDBFactory and add to "
+      "list of "
+      "supported templates");
+  return GetPersistedStateProfileProtoDBFactory();
+}
 
 // static
 template <typename T>

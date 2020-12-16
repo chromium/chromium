@@ -7,12 +7,8 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/persisted_state_db/persisted_state_db_content.pb.h"
 
-// Each new proto needs to have its own method defined below (template
-// specialization)
-template <>
 ProfileProtoDBFactory<persisted_state_db::PersistedStateContentProto>*
-ProfileProtoDBFactory<
-    persisted_state_db::PersistedStateContentProto>::GetInstance() {
+GetPersistedStateProfileProtoDBFactory() {
   static base::NoDestructor<
       ProfileProtoDBFactory<persisted_state_db::PersistedStateContentProto>>
       instance;
