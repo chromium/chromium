@@ -21,7 +21,7 @@ namespace {
 const char kSigninChromeSyncKeysPlatformSuffix[] = "android";
 #elif defined(OS_IOS)
 const char kSigninChromeSyncKeysPlatformSuffix[] = "ios";
-#elif BUILDFLAG(IS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
 const char kSigninChromeSyncKeysPlatformSuffix[] = "chromeos";
 #else
 const char kSigninChromeSyncKeysPlatformSuffix[] = "desktop";

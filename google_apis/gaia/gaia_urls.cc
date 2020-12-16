@@ -48,7 +48,7 @@ const char kSigninChromeSyncDice[] = "signin/chrome/sync?ssp=1";
 const char kSigninChromeSyncKeysUrl[] = "encryption/unlock/android";
 #elif defined(OS_IOS)
 const char kSigninChromeSyncKeysUrl[] = "encryption/unlock/ios";
-#elif BUILDFLAG(IS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
 const char kSigninChromeSyncKeysUrl[] = "encryption/unlock/chromeos";
 #else
 const char kSigninChromeSyncKeysUrl[] = "encryption/unlock/desktop";

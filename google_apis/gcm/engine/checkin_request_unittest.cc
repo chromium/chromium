@@ -154,7 +154,7 @@ TEST_F(CheckinRequestTest, FetcherDataAndURL) {
   EXPECT_EQ(kEmailAddress, request_proto.account_cookie(0));
   EXPECT_EQ(kTokenValue, request_proto.account_cookie(1));
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_EQ(checkin_proto::DEVICE_CHROME_OS, request_proto.checkin().type());
 #else
   EXPECT_EQ(checkin_proto::DEVICE_CHROME_BROWSER,
