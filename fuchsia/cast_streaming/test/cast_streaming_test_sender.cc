@@ -17,6 +17,9 @@ namespace cast_streaming {
 
 namespace {
 
+const char kSenderId[] = "testSenderId";
+const char kReceiverId[] = "testReceiverId";
+
 // Converts |data_buffer| into an Open Screen EncodedFrame. The caller must keep
 // a reference to |data_buffer| while using the returned EncodedFrame since they
 // point to the same data.
@@ -79,7 +82,7 @@ bool CastStreamingTestSender::Start(
                      base::Unretained(this)));
   sender_session_ = std::make_unique<openscreen::cast::SenderSession>(
       openscreen::IPAddress::kV6LoopbackAddress(), this, &environment_,
-      message_port_.get());
+      message_port_.get(), kSenderId, kReceiverId);
 
   std::vector<openscreen::cast::AudioCaptureConfig> audio_configs;
   if (audio_config) {
