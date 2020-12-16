@@ -38,7 +38,8 @@ class FeatureStateManagerImpl : public FeatureStateManager,
         HostStatusProvider* host_status_provider,
         device_sync::DeviceSyncClient* device_sync_client,
         AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker,
-        WifiSyncFeatureManager* wifi_sync_feature_manager);
+        WifiSyncFeatureManager* wifi_sync_feature_manager,
+        bool is_secondary_user);
     static void SetFactoryForTesting(Factory* test_factory);
 
    protected:
@@ -48,7 +49,8 @@ class FeatureStateManagerImpl : public FeatureStateManager,
         HostStatusProvider* host_status_provider,
         device_sync::DeviceSyncClient* device_sync_client,
         AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker,
-        WifiSyncFeatureManager* wifi_sync_feature_manager) = 0;
+        WifiSyncFeatureManager* wifi_sync_feature_manager,
+        bool is_secondary_user) = 0;
 
    private:
     static Factory* test_factory_;
@@ -62,7 +64,8 @@ class FeatureStateManagerImpl : public FeatureStateManager,
       HostStatusProvider* host_status_provider,
       device_sync::DeviceSyncClient* device_sync_client,
       AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker,
-      WifiSyncFeatureManager* wifi_sync_feature_manager);
+      WifiSyncFeatureManager* wifi_sync_feature_manager,
+      bool is_secondary_user);
 
   // FeatureStateManager:
   FeatureStatesMap GetFeatureStates() override;
@@ -96,6 +99,10 @@ class FeatureStateManagerImpl : public FeatureStateManager,
   device_sync::DeviceSyncClient* device_sync_client_;
   AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker_;
   WifiSyncFeatureManager* wifi_sync_feature_manager_;
+
+  // Certain features may be unavailable to secondary users logged into a
+  // Chromebook. Currently, such features include PhoneHub and its subfeatures.
+  const bool is_secondary_user_;
 
   // Map from feature to the pref name which indicates the enabled/disabled
   // boolean state for the feature.

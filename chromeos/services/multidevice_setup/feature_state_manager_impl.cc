@@ -250,16 +250,19 @@ std::unique_ptr<FeatureStateManager> FeatureStateManagerImpl::Factory::Create(
     HostStatusProvider* host_status_provider,
     device_sync::DeviceSyncClient* device_sync_client,
     AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker,
-    WifiSyncFeatureManager* wifi_sync_feature_manager) {
+    WifiSyncFeatureManager* wifi_sync_feature_manager,
+    bool is_secondary_user) {
   if (test_factory_) {
     return test_factory_->CreateInstance(
         pref_service, host_status_provider, device_sync_client,
-        android_sms_pairing_state_tracker, wifi_sync_feature_manager);
+        android_sms_pairing_state_tracker, wifi_sync_feature_manager,
+        is_secondary_user);
   }
 
   return base::WrapUnique(new FeatureStateManagerImpl(
       pref_service, host_status_provider, device_sync_client,
-      android_sms_pairing_state_tracker, wifi_sync_feature_manager));
+      android_sms_pairing_state_tracker, wifi_sync_feature_manager,
+      is_secondary_user));
 }
 
 // static
@@ -275,12 +278,14 @@ FeatureStateManagerImpl::FeatureStateManagerImpl(
     HostStatusProvider* host_status_provider,
     device_sync::DeviceSyncClient* device_sync_client,
     AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker,
-    WifiSyncFeatureManager* wifi_sync_feature_manager)
+    WifiSyncFeatureManager* wifi_sync_feature_manager,
+    bool is_secondary_user)
     : pref_service_(pref_service),
       host_status_provider_(host_status_provider),
       device_sync_client_(device_sync_client),
       android_sms_pairing_state_tracker_(android_sms_pairing_state_tracker),
       wifi_sync_feature_manager_(wifi_sync_feature_manager),
+      is_secondary_user_(is_secondary_user),
       feature_to_enabled_pref_name_map_(GenerateFeatureToEnabledPrefNameMap()),
       feature_to_allowed_pref_name_map_(GenerateFeatureToAllowedPrefNameMap()),
       cached_feature_state_map_(GenerateInitialDefaultCachedStateMap()) {
@@ -451,6 +456,11 @@ bool FeatureStateManagerImpl::IsSupportedByChromebook(mojom::Feature feature) {
   for (const auto& pair : kFeatureAndClientSoftwareFeaturePairs) {
     if (pair.first != feature)
       continue;
+
+    if (pair.second == multidevice::SoftwareFeature::kPhoneHubClient &&
+        is_secondary_user_) {
+      return false;
+    }
 
     return device_sync_client_->GetLocalDeviceMetadata()
                ->GetSoftwareFeatureState(pair.second) !=

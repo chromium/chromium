@@ -48,8 +48,8 @@ class FakeMultiDeviceSetupInitializerFactory
       OobeCompletionTracker* oobe_completion_tracker,
       AndroidSmsAppHelperDelegate* android_sms_app_helper_delegate,
       AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker,
-      const device_sync::GcmDeviceInfoProvider* gcm_device_info_provider)
-      override {
+      const device_sync::GcmDeviceInfoProvider* gcm_device_info_provider,
+      bool is_secondary_user) override {
     EXPECT_TRUE(fake_multidevice_setup_);
     return std::move(fake_multidevice_setup_);
   }
@@ -127,7 +127,7 @@ class MultiDeviceSetupClientImplTest : public testing::Test {
         nullptr /* oobe_completion_tracker */,
         nullptr /* android_sms_app_helper_delegate */,
         nullptr /* android_sms_pairing_state_tracker */,
-        nullptr /* gcm_device_info_provider */);
+        nullptr /* gcm_device_info_provider */, false /* is_secondary_user */);
   }
 
   void InitializeClient(

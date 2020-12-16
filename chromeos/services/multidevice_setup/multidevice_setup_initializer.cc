@@ -30,18 +30,21 @@ MultiDeviceSetupInitializer::Factory::Create(
     OobeCompletionTracker* oobe_completion_tracker,
     AndroidSmsAppHelperDelegate* android_sms_app_helper_delegate,
     AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker,
-    const device_sync::GcmDeviceInfoProvider* gcm_device_info_provider) {
+    const device_sync::GcmDeviceInfoProvider* gcm_device_info_provider,
+    bool is_secondary_user) {
   if (test_factory_) {
     return test_factory_->CreateInstance(
         pref_service, device_sync_client, auth_token_validator,
         oobe_completion_tracker, android_sms_app_helper_delegate,
-        android_sms_pairing_state_tracker, gcm_device_info_provider);
+        android_sms_pairing_state_tracker, gcm_device_info_provider,
+        is_secondary_user);
   }
 
   return base::WrapUnique(new MultiDeviceSetupInitializer(
       pref_service, device_sync_client, auth_token_validator,
       oobe_completion_tracker, android_sms_app_helper_delegate,
-      android_sms_pairing_state_tracker, gcm_device_info_provider));
+      android_sms_pairing_state_tracker, gcm_device_info_provider,
+      is_secondary_user));
 }
 
 // static
@@ -77,14 +80,16 @@ MultiDeviceSetupInitializer::MultiDeviceSetupInitializer(
     OobeCompletionTracker* oobe_completion_tracker,
     AndroidSmsAppHelperDelegate* android_sms_app_helper_delegate,
     AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker,
-    const device_sync::GcmDeviceInfoProvider* gcm_device_info_provider)
+    const device_sync::GcmDeviceInfoProvider* gcm_device_info_provider,
+    bool is_secondary_user)
     : pref_service_(pref_service),
       device_sync_client_(device_sync_client),
       auth_token_validator_(auth_token_validator),
       oobe_completion_tracker_(oobe_completion_tracker),
       android_sms_app_helper_delegate_(android_sms_app_helper_delegate),
       android_sms_pairing_state_tracker_(android_sms_pairing_state_tracker),
-      gcm_device_info_provider_(gcm_device_info_provider) {
+      gcm_device_info_provider_(gcm_device_info_provider),
+      is_secondary_user_(is_secondary_user) {
   // If |device_sync_client_| is null, this interface cannot perform its tasks.
   if (!device_sync_client_)
     return;
@@ -280,7 +285,8 @@ void MultiDeviceSetupInitializer::InitializeImplementation() {
   multidevice_setup_impl_ = MultiDeviceSetupImpl::Factory::Create(
       pref_service_, device_sync_client_, auth_token_validator_,
       oobe_completion_tracker_, android_sms_app_helper_delegate_,
-      android_sms_pairing_state_tracker_, gcm_device_info_provider_);
+      android_sms_pairing_state_tracker_, gcm_device_info_provider_,
+      is_secondary_user_);
 
   if (pending_delegate_) {
     multidevice_setup_impl_->SetAccountStatusChangeDelegate(

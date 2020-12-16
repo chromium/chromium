@@ -46,7 +46,8 @@ class FakeMultiDeviceSetupFactory : public MultiDeviceSetupImpl::Factory {
       FakeAndroidSmsPairingStateTracker*
           expected_android_sms_pairing_state_tracker,
       const device_sync::FakeGcmDeviceInfoProvider*
-          expected_gcm_device_info_provider)
+          expected_gcm_device_info_provider,
+      bool expected_is_secondary_user)
       : expected_testing_pref_service_(expected_testing_pref_service),
         expected_device_sync_client_(expected_device_sync_client),
         expected_auth_token_validator_(expected_auth_token_validator),
@@ -55,7 +56,8 @@ class FakeMultiDeviceSetupFactory : public MultiDeviceSetupImpl::Factory {
             expected_android_sms_app_helper_delegate),
         expected_android_sms_pairing_state_tracker_(
             expected_android_sms_pairing_state_tracker),
-        expected_gcm_device_info_provider_(expected_gcm_device_info_provider) {}
+        expected_gcm_device_info_provider_(expected_gcm_device_info_provider),
+        expected_is_secondary_user_(expected_is_secondary_user) {}
 
   ~FakeMultiDeviceSetupFactory() override = default;
 
@@ -69,8 +71,8 @@ class FakeMultiDeviceSetupFactory : public MultiDeviceSetupImpl::Factory {
       OobeCompletionTracker* oobe_completion_tracker,
       AndroidSmsAppHelperDelegate* android_sms_app_helper_delegate,
       AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker,
-      const device_sync::GcmDeviceInfoProvider* gcm_device_info_provider)
-      override {
+      const device_sync::GcmDeviceInfoProvider* gcm_device_info_provider,
+      bool is_secondary_user) override {
     EXPECT_FALSE(instance_);
     EXPECT_EQ(expected_testing_pref_service_, pref_service);
     EXPECT_EQ(expected_device_sync_client_, device_sync_client);
@@ -81,6 +83,7 @@ class FakeMultiDeviceSetupFactory : public MultiDeviceSetupImpl::Factory {
     EXPECT_EQ(expected_android_sms_pairing_state_tracker_,
               android_sms_pairing_state_tracker);
     EXPECT_EQ(expected_gcm_device_info_provider_, gcm_device_info_provider);
+    EXPECT_EQ(expected_is_secondary_user_, is_secondary_user);
 
     auto instance = std::make_unique<FakeMultiDeviceSetup>();
     instance_ = instance.get();
@@ -96,6 +99,7 @@ class FakeMultiDeviceSetupFactory : public MultiDeviceSetupImpl::Factory {
       expected_android_sms_pairing_state_tracker_;
   const device_sync::FakeGcmDeviceInfoProvider*
       expected_gcm_device_info_provider_;
+  bool expected_is_secondary_user_;
 
   FakeMultiDeviceSetup* instance_ = nullptr;
 
@@ -134,7 +138,7 @@ class MultiDeviceSetupServiceTest : public testing::Test {
             fake_oobe_completion_tracker_.get(),
             fake_android_sms_app_helper_delegate_.get(),
             fake_android_sms_pairing_state_tracker_.get(),
-            fake_gcm_device_info_provider_.get());
+            fake_gcm_device_info_provider_.get(), is_secondary_user_);
     MultiDeviceSetupImpl::Factory::SetFactoryForTesting(
         fake_multidevice_setup_factory_.get());
 
@@ -143,7 +147,7 @@ class MultiDeviceSetupServiceTest : public testing::Test {
         fake_auth_token_validator_.get(), fake_oobe_completion_tracker_.get(),
         fake_android_sms_app_helper_delegate_.get(),
         fake_android_sms_pairing_state_tracker_.get(),
-        fake_gcm_device_info_provider_.get());
+        fake_gcm_device_info_provider_.get(), is_secondary_user_);
 
     service_->BindMultiDeviceSetup(
         multidevice_setup_remote_.BindNewPipeAndPassReceiver());
@@ -211,6 +215,7 @@ class MultiDeviceSetupServiceTest : public testing::Test {
       fake_android_sms_pairing_state_tracker_;
   std::unique_ptr<device_sync::FakeGcmDeviceInfoProvider>
       fake_gcm_device_info_provider_;
+  bool is_secondary_user_ = false;
 
   std::unique_ptr<FakeMultiDeviceSetupFactory> fake_multidevice_setup_factory_;
 

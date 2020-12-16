@@ -329,12 +329,14 @@ class FakeFeatureStateManagerFactory : public FeatureStateManagerImpl::Factory {
       FakeHostStatusProviderFactory* fake_host_status_provider_factory,
       device_sync::FakeDeviceSyncClient* expected_device_sync_client,
       FakeAndroidSmsPairingStateTracker*
-          expected_android_sms_pairing_state_tracker)
+          expected_android_sms_pairing_state_tracker,
+      bool expected_is_secondary_user)
       : expected_testing_pref_service_(expected_testing_pref_service),
         fake_host_status_provider_factory_(fake_host_status_provider_factory),
         expected_device_sync_client_(expected_device_sync_client),
         expected_android_sms_pairing_state_tracker_(
-            expected_android_sms_pairing_state_tracker) {}
+            expected_android_sms_pairing_state_tracker),
+        expected_is_secondary_user_(expected_is_secondary_user) {}
 
   ~FakeFeatureStateManagerFactory() override = default;
 
@@ -347,7 +349,8 @@ class FakeFeatureStateManagerFactory : public FeatureStateManagerImpl::Factory {
       HostStatusProvider* host_status_provider,
       device_sync::DeviceSyncClient* device_sync_client,
       AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker,
-      WifiSyncFeatureManager* wifi_sync_feature_manager) override {
+      WifiSyncFeatureManager* wifi_sync_feature_manager,
+      bool is_secondary_user) override {
     EXPECT_FALSE(instance_);
     EXPECT_EQ(expected_testing_pref_service_, pref_service);
     EXPECT_EQ(fake_host_status_provider_factory_->instance(),
@@ -355,6 +358,7 @@ class FakeFeatureStateManagerFactory : public FeatureStateManagerImpl::Factory {
     EXPECT_EQ(expected_device_sync_client_, device_sync_client);
     EXPECT_EQ(expected_android_sms_pairing_state_tracker_,
               android_sms_pairing_state_tracker);
+    EXPECT_EQ(expected_is_secondary_user_, is_secondary_user);
 
     auto instance = std::make_unique<FakeFeatureStateManager>();
     instance_ = instance.get();
@@ -366,6 +370,7 @@ class FakeFeatureStateManagerFactory : public FeatureStateManagerImpl::Factory {
   device_sync::FakeDeviceSyncClient* expected_device_sync_client_;
   FakeAndroidSmsPairingStateTracker*
       expected_android_sms_pairing_state_tracker_;
+  bool expected_is_secondary_user_;
 
   FakeFeatureStateManager* instance_ = nullptr;
 
@@ -607,7 +612,7 @@ class MultiDeviceSetupImplTest : public ::testing::TestWithParam<bool> {
         std::make_unique<FakeFeatureStateManagerFactory>(
             test_pref_service_.get(), fake_host_status_provider_factory_.get(),
             fake_device_sync_client_.get(),
-            fake_android_sms_pairing_state_tracker_.get());
+            fake_android_sms_pairing_state_tracker_.get(), is_secondary_user_);
     FeatureStateManagerImpl::Factory::SetFactoryForTesting(
         fake_feature_state_manager_factory_.get());
 
@@ -645,7 +650,7 @@ class MultiDeviceSetupImplTest : public ::testing::TestWithParam<bool> {
         fake_auth_token_validator_.get(), fake_oobe_completion_tracker_.get(),
         fake_android_sms_app_helper_delegate_.get(),
         fake_android_sms_pairing_state_tracker_.get(),
-        fake_gcm_device_info_provider_.get());
+        fake_gcm_device_info_provider_.get(), is_secondary_user_);
   }
 
   void TearDown() override {
@@ -974,6 +979,7 @@ class MultiDeviceSetupImplTest : public ::testing::TestWithParam<bool> {
   std::unique_ptr<OobeCompletionTracker> fake_oobe_completion_tracker_;
   std::unique_ptr<device_sync::FakeGcmDeviceInfoProvider>
       fake_gcm_device_info_provider_;
+  bool is_secondary_user_ = false;
 
   std::unique_ptr<FakeEligibleHostDevicesProviderFactory>
       fake_eligible_host_devices_provider_factory_;

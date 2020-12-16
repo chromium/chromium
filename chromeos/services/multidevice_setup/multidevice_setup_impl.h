@@ -58,7 +58,8 @@ class MultiDeviceSetupImpl : public MultiDeviceSetupBase,
         OobeCompletionTracker* oobe_completion_tracker,
         AndroidSmsAppHelperDelegate* android_sms_app_helper_delegate,
         AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker,
-        const device_sync::GcmDeviceInfoProvider* gcm_device_info_provider);
+        const device_sync::GcmDeviceInfoProvider* gcm_device_info_provider,
+        bool is_secondary_user);
     static void SetFactoryForTesting(Factory* test_factory);
 
    protected:
@@ -70,7 +71,8 @@ class MultiDeviceSetupImpl : public MultiDeviceSetupBase,
         OobeCompletionTracker* oobe_completion_tracker,
         AndroidSmsAppHelperDelegate* android_sms_app_helper_delegate,
         AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker,
-        const device_sync::GcmDeviceInfoProvider* gcm_device_info_provider) = 0;
+        const device_sync::GcmDeviceInfoProvider* gcm_device_info_provider,
+        bool is_secondary_user) = 0;
 
    private:
     static Factory* test_factory_;
@@ -88,7 +90,8 @@ class MultiDeviceSetupImpl : public MultiDeviceSetupBase,
       OobeCompletionTracker* oobe_completion_tracker,
       AndroidSmsAppHelperDelegate* android_sms_app_helper_delegate,
       AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker,
-      const device_sync::GcmDeviceInfoProvider* gcm_device_info_provider);
+      const device_sync::GcmDeviceInfoProvider* gcm_device_info_provider,
+      bool is_secondary_user);
 
   // mojom::MultiDeviceSetup:
   void SetAccountStatusChangeDelegate(

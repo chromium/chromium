@@ -45,7 +45,8 @@ MultiDeviceSetupService::MultiDeviceSetupService(
     OobeCompletionTracker* oobe_completion_tracker,
     AndroidSmsAppHelperDelegate* android_sms_app_helper_delegate,
     AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker,
-    const device_sync::GcmDeviceInfoProvider* gcm_device_info_provider)
+    const device_sync::GcmDeviceInfoProvider* gcm_device_info_provider,
+    bool is_secondary_user)
     : multidevice_setup_(MultiDeviceSetupInitializer::Factory::Create(
           pref_service,
           device_sync_client,
@@ -53,7 +54,8 @@ MultiDeviceSetupService::MultiDeviceSetupService(
           oobe_completion_tracker,
           android_sms_app_helper_delegate,
           android_sms_pairing_state_tracker,
-          gcm_device_info_provider)),
+          gcm_device_info_provider,
+          is_secondary_user)),
       privileged_host_device_setter_(
           PrivilegedHostDeviceSetterImpl::Factory::Create(
               multidevice_setup_.get())) {}

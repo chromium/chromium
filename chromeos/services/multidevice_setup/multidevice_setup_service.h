@@ -40,7 +40,8 @@ class MultiDeviceSetupService {
       OobeCompletionTracker* oobe_completion_tracker,
       AndroidSmsAppHelperDelegate* android_sms_app_helper_delegate,
       AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker,
-      const device_sync::GcmDeviceInfoProvider* gcm_device_info_provider);
+      const device_sync::GcmDeviceInfoProvider* gcm_device_info_provider,
+      bool is_secondary_user);
   ~MultiDeviceSetupService();
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);

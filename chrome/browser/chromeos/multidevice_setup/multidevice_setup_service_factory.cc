@@ -17,12 +17,14 @@
 #include "chrome/browser/chromeos/multidevice_setup/auth_token_validator_factory.h"
 #include "chrome/browser/chromeos/multidevice_setup/auth_token_validator_impl.h"
 #include "chrome/browser/chromeos/multidevice_setup/oobe_completion_tracker_factory.h"
+#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/services/multidevice_setup/multidevice_setup_service.h"
 #include "chromeos/services/multidevice_setup/public/cpp/prefs.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/user_manager/user_manager.h"
 
 namespace chromeos {
 namespace multidevice_setup {
@@ -34,6 +36,17 @@ class MultiDeviceSetupServiceHolder : public KeyedService {
  public:
   explicit MultiDeviceSetupServiceHolder(content::BrowserContext* context)
       : profile_(Profile::FromBrowserContext(context)) {
+    const user_manager::User* user =
+        ProfileHelper::Get()->GetUserByProfile(profile_);
+    const user_manager::User* primary_user =
+        user_manager::UserManager::Get()->GetPrimaryUser();
+
+    DCHECK(user);
+    DCHECK(primary_user);
+
+    bool is_secondary_user =
+        user->GetAccountId() != primary_user->GetAccountId();
+
     android_sms::AndroidSmsService* android_sms_service =
         chromeos::android_sms::AndroidSmsServiceFactory::GetForBrowserContext(
             context);
@@ -47,7 +60,7 @@ class MultiDeviceSetupServiceHolder : public KeyedService {
         android_sms_service
             ? android_sms_service->android_sms_pairing_state_tracker()
             : nullptr,
-        GcmDeviceInfoProviderImpl::GetInstance());
+        GcmDeviceInfoProviderImpl::GetInstance(), is_secondary_user);
   }
 
   MultiDeviceSetupService* multidevice_setup_service() {

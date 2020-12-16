@@ -67,18 +67,21 @@ std::unique_ptr<MultiDeviceSetupBase> MultiDeviceSetupImpl::Factory::Create(
     OobeCompletionTracker* oobe_completion_tracker,
     AndroidSmsAppHelperDelegate* android_sms_app_helper_delegate,
     AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker,
-    const device_sync::GcmDeviceInfoProvider* gcm_device_info_provider) {
+    const device_sync::GcmDeviceInfoProvider* gcm_device_info_provider,
+    bool is_secondary_user) {
   if (test_factory_) {
     return test_factory_->CreateInstance(
         pref_service, device_sync_client, auth_token_validator,
         oobe_completion_tracker, android_sms_app_helper_delegate,
-        android_sms_pairing_state_tracker, gcm_device_info_provider);
+        android_sms_pairing_state_tracker, gcm_device_info_provider,
+        is_secondary_user);
   }
 
   return base::WrapUnique(new MultiDeviceSetupImpl(
       pref_service, device_sync_client, auth_token_validator,
       oobe_completion_tracker, android_sms_app_helper_delegate,
-      android_sms_pairing_state_tracker, gcm_device_info_provider));
+      android_sms_pairing_state_tracker, gcm_device_info_provider,
+      is_secondary_user));
 }
 
 // static
@@ -96,7 +99,8 @@ MultiDeviceSetupImpl::MultiDeviceSetupImpl(
     OobeCompletionTracker* oobe_completion_tracker,
     AndroidSmsAppHelperDelegate* android_sms_app_helper_delegate,
     AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker,
-    const device_sync::GcmDeviceInfoProvider* gcm_device_info_provider)
+    const device_sync::GcmDeviceInfoProvider* gcm_device_info_provider,
+    bool is_secondary_user)
     : eligible_host_devices_provider_(
           EligibleHostDevicesProviderImpl::Factory::Create(device_sync_client)),
       host_backend_delegate_(HostBackendDelegateImpl::Factory::Create(
@@ -126,7 +130,8 @@ MultiDeviceSetupImpl::MultiDeviceSetupImpl(
           host_status_provider_.get(),
           device_sync_client,
           android_sms_pairing_state_tracker,
-          wifi_sync_feature_manager_.get())),
+          wifi_sync_feature_manager_.get(),
+          is_secondary_user)),
       host_device_timestamp_manager_(
           HostDeviceTimestampManagerImpl::Factory::Create(
               host_status_provider_.get(),
