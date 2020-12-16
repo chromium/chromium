@@ -4,6 +4,9 @@
 
 #include "components/full_restore/restore_data.h"
 
+#include <memory>
+#include <utility>
+
 #include "components/full_restore/app_launch_info.h"
 #include "components/full_restore/app_restore_data.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -56,6 +59,34 @@ class RestoreDataTest : public testing::Test {
     return intent;
   }
 
+  void AddAppLaunchInfos() {
+    std::unique_ptr<AppLaunchInfo> app_launch_info1 =
+        std::make_unique<AppLaunchInfo>(
+            kAppId1, kId1, apps::mojom::LaunchContainer::kLaunchContainerWindow,
+            WindowOpenDisposition::NEW_WINDOW, kDisplayId1,
+            std::vector<base::FilePath>{base::FilePath(kFilePath1),
+                                        base::FilePath(kFilePath2)},
+            CreateIntent(kIntentActionSend, kMimeType, kShareText1));
+
+    std::unique_ptr<AppLaunchInfo> app_launch_info2 =
+        std::make_unique<AppLaunchInfo>(
+            kAppId1, kId2, apps::mojom::LaunchContainer::kLaunchContainerTab,
+            WindowOpenDisposition::NEW_FOREGROUND_TAB, kDisplayId2,
+            std::vector<base::FilePath>{base::FilePath(kFilePath2)},
+            CreateIntent(kIntentActionView, kMimeType, kShareText2));
+
+    std::unique_ptr<AppLaunchInfo> app_launch_info3 =
+        std::make_unique<AppLaunchInfo>(
+            kAppId2, kId3, apps::mojom::LaunchContainer::kLaunchContainerNone,
+            WindowOpenDisposition::NEW_POPUP, kDisplayId2,
+            std::vector<base::FilePath>{base::FilePath(kFilePath1)},
+            CreateIntent(kIntentActionView, kMimeType, kShareText1));
+
+    restore_data().AddAppLaunchInfo(std::move(app_launch_info1));
+    restore_data().AddAppLaunchInfo(std::move(app_launch_info2));
+    restore_data().AddAppLaunchInfo(std::move(app_launch_info3));
+  }
+
   void VerifyAppRestoreData(const std::unique_ptr<AppRestoreData>& data,
                             apps::mojom::LaunchContainer container,
                             WindowOpenDisposition disposition,
@@ -82,10 +113,59 @@ class RestoreDataTest : public testing::Test {
     EXPECT_EQ(intent->share_text, data->intent.value()->share_text);
   }
 
+  void VerifyRestoreData(const RestoreData& restore_data) {
+    EXPECT_EQ(2u, app_id_to_launch_list(restore_data).size());
+
+    // Verify for |kAppId1|
+    const auto launch_list_it1 =
+        app_id_to_launch_list(restore_data).find(kAppId1);
+    EXPECT_TRUE(launch_list_it1 != app_id_to_launch_list(restore_data).end());
+    EXPECT_EQ(2u, launch_list_it1->second.size());
+
+    const auto app_restore_data_it1 = launch_list_it1->second.find(kId1);
+    EXPECT_TRUE(app_restore_data_it1 != launch_list_it1->second.end());
+
+    VerifyAppRestoreData(
+        app_restore_data_it1->second,
+        apps::mojom::LaunchContainer::kLaunchContainerWindow,
+        WindowOpenDisposition::NEW_WINDOW, kDisplayId1,
+        std::vector<base::FilePath>{base::FilePath(kFilePath1),
+                                    base::FilePath(kFilePath2)},
+        CreateIntent(kIntentActionSend, kMimeType, kShareText1));
+
+    const auto app_restore_data_it2 = launch_list_it1->second.find(kId2);
+    EXPECT_TRUE(app_restore_data_it2 != launch_list_it1->second.end());
+    VerifyAppRestoreData(
+        app_restore_data_it2->second,
+        apps::mojom::LaunchContainer::kLaunchContainerTab,
+        WindowOpenDisposition::NEW_FOREGROUND_TAB, kDisplayId2,
+        std::vector<base::FilePath>{base::FilePath(kFilePath2)},
+        CreateIntent(kIntentActionView, kMimeType, kShareText2));
+
+    // Verify for |kAppId2|
+    const auto launch_list_it2 =
+        app_id_to_launch_list(restore_data).find(kAppId2);
+    EXPECT_TRUE(launch_list_it2 != app_id_to_launch_list(restore_data).end());
+    EXPECT_EQ(1u, launch_list_it2->second.size());
+
+    EXPECT_EQ(kId3, launch_list_it2->second.begin()->first);
+    VerifyAppRestoreData(
+        launch_list_it2->second.begin()->second,
+        apps::mojom::LaunchContainer::kLaunchContainerNone,
+        WindowOpenDisposition::NEW_POPUP, kDisplayId2,
+        std::vector<base::FilePath>{base::FilePath(kFilePath1)},
+        CreateIntent(kIntentActionView, kMimeType, kShareText1));
+  }
+
   RestoreData& restore_data() { return restore_data_; }
 
-  const RestoreData::AppIdToLaunchList& app_id_to_launch_list() {
+  const RestoreData::AppIdToLaunchList& app_id_to_launch_list() const {
     return restore_data_.app_id_to_launch_list();
+  }
+
+  const RestoreData::AppIdToLaunchList& app_id_to_launch_list(
+      const RestoreData& restore_data) const {
+    return restore_data.app_id_to_launch_list();
   }
 
  private:
@@ -98,68 +178,29 @@ TEST_F(RestoreDataTest, AddNullAppLaunchInfo) {
 }
 
 TEST_F(RestoreDataTest, AddAppLaunchInfos) {
-  std::unique_ptr<AppLaunchInfo> app_launch_info1 =
-      std::make_unique<AppLaunchInfo>(
-          kAppId1, kId1, apps::mojom::LaunchContainer::kLaunchContainerWindow,
-          WindowOpenDisposition::NEW_WINDOW, kDisplayId1,
-          std::vector<base::FilePath>{base::FilePath(kFilePath1),
-                                      base::FilePath(kFilePath2)},
-          CreateIntent(kIntentActionSend, kMimeType, kShareText1));
+  AddAppLaunchInfos();
 
-  std::unique_ptr<AppLaunchInfo> app_launch_info2 =
-      std::make_unique<AppLaunchInfo>(
-          kAppId1, kId2, apps::mojom::LaunchContainer::kLaunchContainerTab,
-          WindowOpenDisposition::NEW_FOREGROUND_TAB, kDisplayId2,
-          std::vector<base::FilePath>{base::FilePath(kFilePath2)},
-          CreateIntent(kIntentActionView, kMimeType, kShareText2));
+  VerifyRestoreData(restore_data());
+}
 
-  std::unique_ptr<AppLaunchInfo> app_launch_info3 =
-      std::make_unique<AppLaunchInfo>(
-          kAppId2, kId3, apps::mojom::LaunchContainer::kLaunchContainerNone,
-          WindowOpenDisposition::NEW_POPUP, kDisplayId2,
-          std::vector<base::FilePath>{base::FilePath(kFilePath1)},
-          CreateIntent(kIntentActionView, kMimeType, kShareText1));
+TEST_F(RestoreDataTest, Convert) {
+  AddAppLaunchInfos();
+  std::unique_ptr<base::Value> value =
+      std::make_unique<base::Value>(restore_data().ConvertToValue());
+  std::unique_ptr<RestoreData> restore_data =
+      std::make_unique<RestoreData>(std::move(value));
+  VerifyRestoreData(*restore_data);
+}
 
-  restore_data().AddAppLaunchInfo(std::move(app_launch_info1));
-  restore_data().AddAppLaunchInfo(std::move(app_launch_info2));
-  restore_data().AddAppLaunchInfo(std::move(app_launch_info3));
+TEST_F(RestoreDataTest, ConvertNullData) {
+  restore_data().AddAppLaunchInfo(nullptr);
+  EXPECT_TRUE(app_id_to_launch_list().empty());
 
-  EXPECT_EQ(2u, app_id_to_launch_list().size());
-
-  // Verify for |kAppId1|
-  const auto launch_list_it1 = app_id_to_launch_list().find(kAppId1);
-  EXPECT_TRUE(launch_list_it1 != app_id_to_launch_list().end());
-  EXPECT_EQ(2u, launch_list_it1->second.size());
-
-  const auto app_restore_data_it1 = launch_list_it1->second.find(kId1);
-  EXPECT_TRUE(app_restore_data_it1 != launch_list_it1->second.end());
-
-  VerifyAppRestoreData(app_restore_data_it1->second,
-                       apps::mojom::LaunchContainer::kLaunchContainerWindow,
-                       WindowOpenDisposition::NEW_WINDOW, kDisplayId1,
-                       std::vector<base::FilePath>{base::FilePath(kFilePath1),
-                                                   base::FilePath(kFilePath2)},
-                       CreateIntent(kIntentActionSend, kMimeType, kShareText1));
-
-  const auto app_restore_data_it2 = launch_list_it1->second.find(kId2);
-  EXPECT_TRUE(app_restore_data_it2 != launch_list_it1->second.end());
-  VerifyAppRestoreData(app_restore_data_it2->second,
-                       apps::mojom::LaunchContainer::kLaunchContainerTab,
-                       WindowOpenDisposition::NEW_FOREGROUND_TAB, kDisplayId2,
-                       std::vector<base::FilePath>{base::FilePath(kFilePath2)},
-                       CreateIntent(kIntentActionView, kMimeType, kShareText2));
-
-  // Verify for |kAppId2|
-  const auto launch_list_it2 = app_id_to_launch_list().find(kAppId2);
-  EXPECT_TRUE(launch_list_it2 != app_id_to_launch_list().end());
-  EXPECT_EQ(1u, launch_list_it2->second.size());
-
-  EXPECT_EQ(kId3, launch_list_it2->second.begin()->first);
-  VerifyAppRestoreData(launch_list_it2->second.begin()->second,
-                       apps::mojom::LaunchContainer::kLaunchContainerNone,
-                       WindowOpenDisposition::NEW_POPUP, kDisplayId2,
-                       std::vector<base::FilePath>{base::FilePath(kFilePath1)},
-                       CreateIntent(kIntentActionView, kMimeType, kShareText1));
+  std::unique_ptr<base::Value> value =
+      std::make_unique<base::Value>(restore_data().ConvertToValue());
+  std::unique_ptr<RestoreData> restore_data =
+      std::make_unique<RestoreData>(std::move(value));
+  EXPECT_TRUE(app_id_to_launch_list(*restore_data).empty());
 }
 
 }  // namespace full_restore

@@ -15,6 +15,15 @@ const char kWildCardAny[] = "*";
 const char kMimeTypeSeparator[] = "/";
 constexpr size_t kMimeTypeComponentSize = 2;
 
+const char kActionKey[] = "action";
+const char kUrlKey[] = "url";
+const char kMimeTypeKey[] = "mime_type";
+const char kFileUrlsKey[] = "file_urls";
+const char kActivityNameKey[] = "activity_name";
+const char kDriveShareUrlKey[] = "drive_share_url";
+const char kShareTextKey[] = "share_text";
+const char kShareTitleKey[] = "share_title";
+
 // Get the intent condition value based on the condition type.
 base::Optional<std::string> GetIntentConditionValueByType(
     apps::mojom::ConditionType condition_type,
@@ -343,6 +352,115 @@ bool IsIntentValid(const apps::mojom::IntentPtr& intent) {
     }
   }
   return true;
+}
+
+base::Value ConvertIntentToValue(const apps::mojom::IntentPtr& intent) {
+  base::Value intent_value(base::Value::Type::DICTIONARY);
+  if (intent->action.has_value() && !intent->action.value().empty())
+    intent_value.SetStringKey(kActionKey, intent->action.value());
+
+  if (intent->url.has_value()) {
+    DCHECK(intent->url.value().is_valid());
+    intent_value.SetStringKey(kUrlKey, intent->url.value().spec());
+  }
+
+  if (intent->mime_type.has_value() && !intent->mime_type.value().empty())
+    intent_value.SetStringKey(kMimeTypeKey, intent->mime_type.value());
+
+  if (intent->file_urls.has_value() && !intent->file_urls.value().empty()) {
+    base::Value file_urls_list(base::Value::Type::LIST);
+    for (auto& url : intent->file_urls.value()) {
+      DCHECK(url.is_valid());
+      file_urls_list.Append(base::Value(url.spec()));
+    }
+    intent_value.SetKey(kFileUrlsKey, std::move(file_urls_list));
+  }
+
+  if (intent->activity_name.has_value() &&
+      !intent->activity_name.value().empty()) {
+    intent_value.SetStringKey(kActivityNameKey, intent->activity_name.value());
+  }
+
+  if (intent->drive_share_url.has_value()) {
+    DCHECK(intent->drive_share_url.value().is_valid());
+    intent_value.SetStringKey(kDriveShareUrlKey,
+                              intent->drive_share_url.value().spec());
+  }
+
+  if (intent->share_text.has_value() && !intent->share_text.value().empty())
+    intent_value.SetStringKey(kShareTextKey, intent->share_text.value());
+
+  if (intent->share_title.has_value() && !intent->share_title.value().empty())
+    intent_value.SetStringKey(kShareTitleKey, intent->share_title.value());
+
+  return intent_value;
+}
+
+base::Optional<std::string> GetStringValueFromDict(
+    const base::DictionaryValue& dict,
+    const std::string& key_name) {
+  if (!dict.HasKey(key_name))
+    return base::nullopt;
+
+  const std::string* value = dict.FindStringKey(key_name);
+  if (!value || value->empty())
+    return base::nullopt;
+
+  return *value;
+}
+
+base::Optional<GURL> GetGurlValueFromDict(const base::DictionaryValue& dict,
+                                          const std::string& key_name) {
+  if (!dict.HasKey(key_name))
+    return base::nullopt;
+
+  const std::string* url_spec = dict.FindStringKey(key_name);
+  if (!url_spec)
+    return base::nullopt;
+
+  GURL url(*url_spec);
+  if (!url.is_valid())
+    return base::nullopt;
+
+  return url;
+}
+
+base::Optional<std::vector<::GURL>> GetFileUrlsFromDict(
+    const base::DictionaryValue& dict,
+    const std::string& key_name) {
+  if (!dict.HasKey(key_name))
+    return base::nullopt;
+
+  const base::Value* value = dict.FindListKey(key_name);
+  if (!value || !value->is_list() || value->GetList().empty())
+    return base::nullopt;
+
+  std::vector<::GURL> file_urls;
+  for (const auto& item : value->GetList()) {
+    GURL url(item.GetString());
+    if (url.is_valid())
+      file_urls.push_back(std::move(url));
+  }
+  return file_urls;
+}
+
+apps::mojom::IntentPtr ConvertValueToIntent(base::Value&& value) {
+  auto intent = apps::mojom::Intent::New();
+
+  base::DictionaryValue* dict = nullptr;
+  if (!value.is_dict() || !value.GetAsDictionary(&dict) || !dict)
+    return intent;
+
+  intent->action = GetStringValueFromDict(*dict, kActionKey);
+  intent->url = GetGurlValueFromDict(*dict, kUrlKey);
+  intent->mime_type = GetStringValueFromDict(*dict, kMimeTypeKey);
+  intent->file_urls = GetFileUrlsFromDict(*dict, kFileUrlsKey);
+  intent->activity_name = GetStringValueFromDict(*dict, kActivityNameKey);
+  intent->drive_share_url = GetGurlValueFromDict(*dict, kDriveShareUrlKey);
+  intent->share_text = GetStringValueFromDict(*dict, kShareTextKey);
+  intent->share_title = GetStringValueFromDict(*dict, kShareTitleKey);
+
+  return intent;
 }
 
 }  // namespace apps_util

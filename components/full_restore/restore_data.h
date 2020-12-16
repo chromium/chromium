@@ -36,6 +36,8 @@ class COMPONENT_EXPORT(FULL_RESTORE) RestoreData {
   using AppIdToLaunchList = std::map<std::string, LaunchList>;
 
   RestoreData();
+  explicit RestoreData(std::unique_ptr<base::Value> restore_data_value);
+
   ~RestoreData();
 
   RestoreData(const RestoreData&) = delete;
@@ -77,7 +79,7 @@ class COMPONENT_EXPORT(FULL_RESTORE) RestoreData {
   // Add |app_launch_info| to |app_id_to_launch_list_|.
   void AddAppLaunchInfo(std::unique_ptr<AppLaunchInfo> app_launch_info);
 
-  const AppIdToLaunchList& app_id_to_launch_list() {
+  const AppIdToLaunchList& app_id_to_launch_list() const {
     return app_id_to_launch_list_;
   }
 

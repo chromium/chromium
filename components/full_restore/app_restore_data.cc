@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <utility>
-
 #include "components/full_restore/app_restore_data.h"
 
+#include <utility>
+
+#include "base/strings/string_number_conversions.h"
+#include "base/values.h"
 #include "components/full_restore/app_launch_info.h"
+#include "components/services/app_service/public/cpp/intent_util.h"
 
 namespace full_restore {
 
@@ -18,74 +21,12 @@ const char kDispositionKey[] = "disposition";
 const char kDisplayIdKey[] = "display_id";
 const char kUrlKey[] = "url";
 const char kIntentKey[] = "intent";
-const char kActionKey[] = "action";
-const char kMimeTypeKey[] = "mime_type";
-const char kFileUrlsKey[] = "file_urls";
-const char kActivityNameKey[] = "activity_name";
-const char kDriveShareUrlKey[] = "drive_share_url";
-const char kShareTextKey[] = "share_text";
-const char kShareTitleKey[] = "share_title";
 const char kFilePathsKey[] = "file_paths";
 const char kActivationIndexKey[] = "index";
 const char kDeskIdKey[] = "desk_id";
 const char kRestoredBoundsKey[] = "restored_bounds";
 const char kcurrentBoundsKey[] = "current_bounds";
 const char kWindowStateTypeKey[] = "window_state_type";
-
-// Converts |intent| to base::Value, e.g.:
-// {
-//    "action": "xx",
-//    "url": "abc.com",
-//    "mime_type": "text/plain",
-//    "file_urls": "/abc, /a",
-//    "activity_name": "yy",
-//    "drive_share_url": "aa.com",
-//    "share_text": "text",
-//    "share_title": "title",
-// }
-base::Value ConvertIntentToValue(const apps::mojom::IntentPtr& intent) {
-  DCHECK(intent);
-
-  base::Value intent_value(base::Value::Type::DICTIONARY);
-  if (intent->action.has_value() && !intent->action.value().empty())
-    intent_value.SetStringKey(kActionKey, intent->action.value());
-
-  if (intent->url.has_value()) {
-    DCHECK(intent->url.value().is_valid());
-    intent_value.SetStringKey(kUrlKey, intent->url.value().spec());
-  }
-
-  if (intent->mime_type.has_value() && !intent->mime_type.value().empty())
-    intent_value.SetStringKey(kMimeTypeKey, intent->mime_type.value());
-
-  if (intent->file_urls.has_value() && !intent->file_urls.value().empty()) {
-    base::Value file_urls_list(base::Value::Type::LIST);
-    for (auto& url : intent->file_urls.value()) {
-      DCHECK(intent->drive_share_url.value().is_valid());
-      file_urls_list.Append(base::Value(url.spec()));
-    }
-    intent_value.SetKey(kFileUrlsKey, std::move(file_urls_list));
-  }
-
-  if (intent->activity_name.has_value() &&
-      !intent->activity_name.value().empty()) {
-    intent_value.SetStringKey(kActivityNameKey, intent->activity_name.value());
-  }
-
-  if (intent->drive_share_url.has_value()) {
-    DCHECK(intent->drive_share_url.value().is_valid());
-    intent_value.SetStringKey(kDriveShareUrlKey,
-                              intent->drive_share_url.value().spec());
-  }
-
-  if (intent->share_text.has_value() && !intent->share_text.value().empty())
-    intent_value.SetStringKey(kShareTextKey, intent->share_text.value());
-
-  if (intent->share_title.has_value() && !intent->share_title.value().empty())
-    intent_value.SetStringKey(kShareTitleKey, intent->share_title.value());
-
-  return intent_value;
-}
 
 // Converts |rect| to base::Value, e.g. { 0, 100, 200, 300 }.
 base::Value ConvertRectToValue(const gfx::Rect& rect) {
@@ -97,9 +38,104 @@ base::Value ConvertRectToValue(const gfx::Rect& rect) {
   return rect_list;
 }
 
+// Gets int value from base::DictionaryValue, e.g. { "key": 100 } returns 100.
+base::Optional<int32_t> GetIntValueFromDict(const base::DictionaryValue& dict,
+                                            const std::string& key_name) {
+  return dict.HasKey(key_name) ? dict.FindIntKey(key_name) : base::nullopt;
+}
+
+// Gets display id from base::DictionaryValue, e.g. { "display_id": "22000000" }
+// returns 22000000.
+base::Optional<int64_t> GetDisplayIdFromDict(
+    const base::DictionaryValue& dict) {
+  if (!dict.HasKey(kDisplayIdKey))
+    return base::nullopt;
+
+  const std::string* display_id_str = dict.FindStringKey(kDisplayIdKey);
+  int64_t display_id_value;
+  if (display_id_str &&
+      base::StringToInt64(*display_id_str, &display_id_value)) {
+    return display_id_value;
+  }
+
+  return base::nullopt;
+}
+
+// Gets std::vector<base::FilePath> from base::DictionaryValue, e.g.
+// {"file_paths": { "aa.cc", "bb.h", ... }} returns
+// std::vector<base::FilePath>{"aa.cc", "bb.h", ...}.
+base::Optional<std::vector<base::FilePath>> GetFilePathsFromDict(
+    const base::DictionaryValue& dict) {
+  if (!dict.HasKey(kFilePathsKey))
+    return base::nullopt;
+
+  const base::Value* file_paths_value = dict.FindListKey(kFilePathsKey);
+  if (!file_paths_value || !file_paths_value->is_list() ||
+      file_paths_value->GetList().empty())
+    return base::nullopt;
+
+  std::vector<base::FilePath> file_paths;
+  for (const auto& item : file_paths_value->GetList()) {
+    if (item.GetString().empty())
+      continue;
+    file_paths.push_back(base::FilePath(item.GetString()));
+  }
+
+  return file_paths;
+}
+
+// Gets gfx::Rect from base::Value, e.g. { 0, 100, 200, 300 } returns
+// gfx::Rect(0, 100, 200, 300).
+base::Optional<gfx::Rect> GetBoundsRectFromDict(
+    const base::DictionaryValue& dict,
+    const std::string& key_name) {
+  if (!dict.HasKey(key_name))
+    return base::nullopt;
+
+  const base::Value* rect_value = dict.FindListKey(key_name);
+  if (!rect_value || !rect_value->is_list() || rect_value->GetList().empty())
+    return base::nullopt;
+
+  std::vector<int> rect;
+  for (const auto& item : rect_value->GetList())
+    rect.push_back(item.GetInt());
+
+  if (rect.size() != 4)
+    return base::nullopt;
+
+  return gfx::Rect(rect[0], rect[1], rect[2], rect[3]);
+}
+
 }  // namespace
 
 AppRestoreData::AppRestoreData() = default;
+
+AppRestoreData::AppRestoreData(base::Value&& value) {
+  base::DictionaryValue* data_dict = nullptr;
+  if (!value.is_dict() || !value.GetAsDictionary(&data_dict) || !data_dict) {
+    DVLOG(0) << "Fail to parse app restore data. "
+             << "Cannot find the app restore data dict.";
+    return;
+  }
+
+  event_flag = GetIntValueFromDict(*data_dict, kEventFlagKey);
+  container = GetIntValueFromDict(*data_dict, kContainerKey);
+  disposition = GetIntValueFromDict(*data_dict, kDispositionKey);
+  display_id = GetDisplayIdFromDict(*data_dict);
+  url = apps_util::GetGurlValueFromDict(*data_dict, kUrlKey);
+  file_paths = GetFilePathsFromDict(*data_dict);
+  activation_index = GetIntValueFromDict(*data_dict, kActivationIndexKey);
+  desk_id = GetIntValueFromDict(*data_dict, kDeskIdKey);
+  restored_bounds = GetBoundsRectFromDict(*data_dict, kRestoredBoundsKey);
+  current_bounds = GetBoundsRectFromDict(*data_dict, kcurrentBoundsKey);
+  window_state_type = GetIntValueFromDict(*data_dict, kWindowStateTypeKey);
+
+  if (data_dict->HasKey(kIntentKey)) {
+    intent = apps_util::ConvertValueToIntent(
+        std::move(*data_dict->FindDictKey(kIntentKey)));
+  }
+}
+
 AppRestoreData::~AppRestoreData() = default;
 
 base::Value AppRestoreData::ConvertToValue() const {
@@ -122,8 +158,10 @@ base::Value AppRestoreData::ConvertToValue() const {
   if (url.has_value())
     launch_info_dict.SetStringKey(kUrlKey, url.value().spec());
 
-  if (intent.has_value() && intent.value())
-    launch_info_dict.SetKey(kIntentKey, ConvertIntentToValue(intent.value()));
+  if (intent.has_value() && intent.value()) {
+    launch_info_dict.SetKey(kIntentKey,
+                            apps_util::ConvertIntentToValue(intent.value()));
+  }
 
   if (file_paths.has_value() && !file_paths.value().empty()) {
     base::Value file_paths_list(base::Value::Type::LIST);
@@ -148,8 +186,8 @@ base::Value AppRestoreData::ConvertToValue() const {
                             ConvertRectToValue(current_bounds.value()));
   }
 
-  if (Window_state_type.has_value())
-    launch_info_dict.SetIntKey(kWindowStateTypeKey, Window_state_type.value());
+  if (window_state_type.has_value())
+    launch_info_dict.SetIntKey(kWindowStateTypeKey, window_state_type.value());
 
   return launch_info_dict;
 }

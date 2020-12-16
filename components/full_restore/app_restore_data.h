@@ -14,6 +14,10 @@
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
+namespace base {
+class Value;
+}
+
 namespace full_restore {
 
 struct AppLaunchInfo;
@@ -23,6 +27,8 @@ struct AppLaunchInfo;
 // written to the FullRestoreData file.
 struct COMPONENT_EXPORT(FULL_RESTORE) AppRestoreData {
   AppRestoreData();
+  explicit AppRestoreData(base::Value&& value);
+
   ~AppRestoreData();
 
   AppRestoreData(const AppRestoreData&) = delete;
@@ -61,7 +67,7 @@ struct COMPONENT_EXPORT(FULL_RESTORE) AppRestoreData {
   base::Optional<int32_t> desk_id;
   base::Optional<gfx::Rect> restored_bounds;
   base::Optional<gfx::Rect> current_bounds;
-  base::Optional<int32_t> Window_state_type;
+  base::Optional<int32_t> window_state_type;
 };
 
 }  // namespace full_restore

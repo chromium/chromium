@@ -2,37 +2,71 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <utility>
-
 #include "components/full_restore/restore_data.h"
 
+#include <utility>
+
+#include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "components/full_restore/app_launch_info.h"
 
 namespace full_restore {
 
 RestoreData::RestoreData() = default;
+
+RestoreData::RestoreData(std::unique_ptr<base::Value> restore_data_value) {
+  base::DictionaryValue* restore_data_dict = nullptr;
+  if (!restore_data_value || !restore_data_value->is_dict() ||
+      !restore_data_value->GetAsDictionary(&restore_data_dict) ||
+      !restore_data_dict) {
+    DVLOG(0) << "Fail to parse full restore data. "
+             << "Cannot find the full restore data dict.";
+    return;
+  }
+
+  for (base::DictionaryValue::Iterator iter(*restore_data_dict);
+       !iter.IsAtEnd(); iter.Advance()) {
+    const std::string& app_id = iter.key();
+    base::Value* value = restore_data_dict->FindDictKey(app_id);
+    base::DictionaryValue* data_dict = nullptr;
+    if (!value || !value->is_dict() || !value->GetAsDictionary(&data_dict) ||
+        !data_dict) {
+      DVLOG(0) << "Fail to parse full restore data. "
+               << "Cannot find the app restore data dict.";
+      continue;
+    }
+
+    for (base::DictionaryValue::Iterator data_iter(*data_dict);
+         !data_iter.IsAtEnd(); data_iter.Advance()) {
+      int id = 0;
+      if (!base::StringToInt(data_iter.key(), &id)) {
+        DVLOG(0) << "Fail to parse full restore data. "
+                 << "Cannot find the valid id.";
+        continue;
+      }
+      app_id_to_launch_list_[app_id][id] = std::make_unique<AppRestoreData>(
+          std::move(*data_dict->FindDictKey(data_iter.key())));
+    }
+  }
+}
+
 RestoreData::~RestoreData() = default;
 
 base::Value RestoreData::ConvertToValue() const {
-  base::Value restore_data_list(base::Value::Type::LIST);
+  base::Value restore_data_dict(base::Value::Type::DICTIONARY);
   for (const auto& it : app_id_to_launch_list_) {
     if (it.second.empty())
       continue;
 
-    base::Value launch_list(base::Value::Type::LIST);
+    base::Value info_dict(base::Value::Type::DICTIONARY);
     for (const auto& data : it.second) {
-      base::Value info_dict(base::Value::Type::DICTIONARY);
       info_dict.SetKey(base::NumberToString(data.first),
                        data.second->ConvertToValue());
-      launch_list.Append(std::move(info_dict));
     }
 
-    base::Value restore_data_dict(base::Value::Type::DICTIONARY);
-    restore_data_dict.SetKey(it.first, std::move(launch_list));
-    restore_data_list.Append(std::move(restore_data_dict));
+    restore_data_dict.SetKey(it.first, std::move(info_dict));
   }
-  return restore_data_list;
+  return restore_data_dict;
 }
 
 void RestoreData::AddAppLaunchInfo(

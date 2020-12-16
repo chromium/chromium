@@ -323,7 +323,9 @@ struct IntentFilter {
 };
 
 // Action and resource handling request. This includes the scheme and URL at
-// the moment, and will be extended to handle files in the future.
+// the moment, and will be extended to handle files in the future. This should
+// be kept in sync with ConvertIntentToValue and ConvertValueToIntent in
+// components/services/app_service/public/cpp/intent_util.*
 struct Intent {
   string? action; // Intent action. e.g. view, send.
   url.mojom.Url? url; // The URL of the intent. e.g. https://www.google.com/.

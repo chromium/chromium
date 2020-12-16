@@ -32,6 +32,26 @@ class IntentUtilTest : public testing::Test {
     intent->mime_type = mime_type;
     return intent;
   }
+
+  apps::mojom::IntentPtr CreateIntent(const std::string& action,
+                                      const GURL& url,
+                                      const std::string& mime_type,
+                                      const std::vector<::GURL>& file_urls,
+                                      const std::string& activity_name,
+                                      const GURL& drive_share_url,
+                                      const std::string& share_text,
+                                      const std::string& share_title) {
+    auto intent = apps::mojom::Intent::New();
+    intent->action = action;
+    intent->url = url;
+    intent->mime_type = mime_type;
+    intent->file_urls = file_urls;
+    intent->activity_name = activity_name;
+    intent->drive_share_url = drive_share_url;
+    intent->share_text = share_text;
+    intent->share_title = share_title;
+    return intent;
+  }
 };
 
 TEST_F(IntentUtilTest, AllConditionMatches) {
@@ -391,4 +411,47 @@ TEST_F(IntentUtilTest, FileWithTitleText) {
   EXPECT_FALSE(intent->share_text.has_value());
   EXPECT_FALSE(intent->share_title.has_value());
   EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter));
+}
+
+TEST_F(IntentUtilTest, Convert) {
+  const std::string action = apps_util::kIntentActionSend;
+  GURL test_url1 = GURL("https://www.google.com/");
+  GURL test_url2 = GURL("https://www.abc.com/");
+  GURL test_url3 = GURL("https://www.foo.com/");
+  const std::string mime_type = "image/jpeg";
+  const std::string activity_name = "test";
+  const std::string share_text = "share text";
+  const std::string share_title = "share title";
+
+  auto src_intent =
+      CreateIntent(action, test_url1, mime_type, {test_url1, test_url2},
+                   activity_name, test_url3, share_text, share_title);
+  base::Value value = apps_util::ConvertIntentToValue(src_intent);
+  auto dst_intent = apps_util::ConvertValueToIntent(std::move(value));
+
+  EXPECT_EQ(action, dst_intent->action.value());
+  EXPECT_EQ(test_url1, dst_intent->url.value());
+  EXPECT_EQ(mime_type, dst_intent->mime_type.value());
+  EXPECT_EQ(2u, dst_intent->file_urls->size());
+  EXPECT_EQ(test_url1, dst_intent->file_urls.value()[0]);
+  EXPECT_EQ(test_url2, dst_intent->file_urls.value()[1]);
+  EXPECT_EQ(activity_name, dst_intent->activity_name.value());
+  EXPECT_EQ(test_url3, dst_intent->drive_share_url.value());
+  EXPECT_EQ(share_text, dst_intent->share_text.value());
+  EXPECT_EQ(share_title, dst_intent->share_title.value());
+}
+
+TEST_F(IntentUtilTest, ConvertEmptyIntent) {
+  auto intent = apps::mojom::Intent::New();
+  base::Value value = apps_util::ConvertIntentToValue(intent);
+  auto dst_intent = apps_util::ConvertValueToIntent(std::move(value));
+
+  EXPECT_FALSE(dst_intent->action.has_value());
+  EXPECT_FALSE(dst_intent->url.has_value());
+  EXPECT_FALSE(dst_intent->mime_type.has_value());
+  EXPECT_FALSE(dst_intent->file_urls.has_value());
+  EXPECT_FALSE(dst_intent->activity_name.has_value());
+  EXPECT_FALSE(dst_intent->drive_share_url.has_value());
+  EXPECT_FALSE(dst_intent->share_text.has_value());
+  EXPECT_FALSE(dst_intent->share_title.has_value());
 }

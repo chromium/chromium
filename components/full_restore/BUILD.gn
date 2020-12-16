@@ -26,6 +26,7 @@ component("full_restore") {
   public_deps = [
     "//ash/public/cpp",
     "//base",
+    "//components/services/app_service/public/cpp:intents",
     "//components/services/app_service/public/mojom",
     "//ui/aura",
   ]
