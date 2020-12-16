@@ -94,6 +94,7 @@ android_library("javatests") {
   sources = [
     "java/src/org/chromium/chrome/browser/signin/ui/ConfirmManagedSyncDataDialogIntegrationTest.java",
     "java/src/org/chromium/chrome/browser/signin/ui/ConfirmSyncDataIntegrationTest.java",
+    "java/src/org/chromium/chrome/browser/signin/ui/SignOutDialogRenderTest.java",
   ]
   deps = [
     ":java",
@@ -103,6 +104,7 @@ android_library("javatests") {
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/signin/services/android:java",
     "//chrome/test/android:chrome_java_test_support",
+    "//components/signin/core/browser:signin_enums_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_deps:androidx_test_runner_java",
     "//third_party/android_deps:espresso_java",

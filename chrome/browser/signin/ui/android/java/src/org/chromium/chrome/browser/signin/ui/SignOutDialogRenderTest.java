@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.signin;
+package org.chromium.chrome.browser.signin.ui;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.pressBack;
@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtilsJni;
-import org.chromium.chrome.browser.signin.ui.SignOutDialogFragment;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.signin.GAIAServiceType;
