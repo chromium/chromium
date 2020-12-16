@@ -111,25 +111,27 @@ std::pair<int, int> BoundsToIntegerPair(const CSSValuePair& bounds) {
 // https://drafts.csswg.org/css-counter-styles/#cyclic-system
 Vector<wtf_size_t> CyclicAlgorithm(int value, wtf_size_t num_symbols) {
   DCHECK(num_symbols);
-  value -= 1;
   value %= static_cast<int>(num_symbols);
+  value -= 1;
   if (value < 0)
     value += num_symbols;
   return {value};
 }
 
 // https://drafts.csswg.org/css-counter-styles/#fixed-system
-Vector<wtf_size_t> FixedAlgorithm(int value, wtf_size_t num_symbols) {
-  if (value < 0 || static_cast<wtf_size_t>(value) >= num_symbols)
+Vector<wtf_size_t> FixedAlgorithm(int value,
+                                  int first_symbol_value,
+                                  wtf_size_t num_symbols) {
+  if (value < first_symbol_value ||
+      static_cast<unsigned>(value - first_symbol_value) >= num_symbols)
     return Vector<wtf_size_t>();
-  return {value};
+  return {value - first_symbol_value};
 }
 
 // https://drafts.csswg.org/css-counter-styles/#symbolic-system
-Vector<wtf_size_t> SymbolicAlgorithm(int value, wtf_size_t num_symbols) {
+Vector<wtf_size_t> SymbolicAlgorithm(unsigned value, wtf_size_t num_symbols) {
   DCHECK(num_symbols);
-  DCHECK_GE(value, 0);
-  if (value == 0)
+  if (!value)
     return Vector<wtf_size_t>();
   wtf_size_t index = (value - 1) % num_symbols;
   wtf_size_t repetitions = (value + num_symbols - 1) / num_symbols;
@@ -139,10 +141,9 @@ Vector<wtf_size_t> SymbolicAlgorithm(int value, wtf_size_t num_symbols) {
 }
 
 // https://drafts.csswg.org/css-counter-styles/#alphabetic-system
-Vector<wtf_size_t> AlphabeticAlgorithm(int value, wtf_size_t num_symbols) {
+Vector<wtf_size_t> AlphabeticAlgorithm(unsigned value, wtf_size_t num_symbols) {
   DCHECK(num_symbols);
-  DCHECK_GE(value, 0);
-  if (value == 0)
+  if (!value)
     return Vector<wtf_size_t>();
   Vector<wtf_size_t> result;
   while (value) {
@@ -158,10 +159,9 @@ Vector<wtf_size_t> AlphabeticAlgorithm(int value, wtf_size_t num_symbols) {
 }
 
 // https://drafts.csswg.org/css-counter-styles/#numeric-system
-Vector<wtf_size_t> NumericAlgorithm(int value, wtf_size_t num_symbols) {
+Vector<wtf_size_t> NumericAlgorithm(unsigned value, wtf_size_t num_symbols) {
   DCHECK_GT(num_symbols, 1u);
-  DCHECK_GE(value, 0);
-  if (value == 0)
+  if (!value)
     return {0};
 
   Vector<wtf_size_t> result;
@@ -177,11 +177,10 @@ Vector<wtf_size_t> NumericAlgorithm(int value, wtf_size_t num_symbols) {
 }
 
 // https://drafts.csswg.org/css-counter-styles/#additive-system
-Vector<wtf_size_t> AdditiveAlgorithm(int value,
-                                     const Vector<wtf_size_t>& weights) {
+Vector<wtf_size_t> AdditiveAlgorithm(unsigned value,
+                                     const Vector<unsigned>& weights) {
   DCHECK(weights.size());
-  DCHECK_GE(value, 0);
-  if (value == 0) {
+  if (!value) {
     if (weights.back() == 0u)
       return {weights.size() - 1};
     return Vector<wtf_size_t>();
@@ -422,8 +421,8 @@ String CounterStyle::GenerateRepresentation(int value) const {
 String CounterStyle::GenerateInitialRepresentation(int value) const {
   if (!RangeContains(value))
     return String();
-  if (NeedsNegativeSign(value))
-    value = -value;
+
+  unsigned abs_value = value < 0 ? -value : value;
 
   Vector<wtf_size_t> symbol_indexes;
   switch (system_) {
@@ -432,19 +431,19 @@ String CounterStyle::GenerateInitialRepresentation(int value) const {
       break;
     case CounterStyleSystem::kFixed:
       symbol_indexes =
-          FixedAlgorithm(value - first_symbol_value_, symbols_.size());
+          FixedAlgorithm(value, first_symbol_value_, symbols_.size());
       break;
     case CounterStyleSystem::kNumeric:
-      symbol_indexes = NumericAlgorithm(value, symbols_.size());
+      symbol_indexes = NumericAlgorithm(abs_value, symbols_.size());
       break;
     case CounterStyleSystem::kSymbolic:
-      symbol_indexes = SymbolicAlgorithm(value, symbols_.size());
+      symbol_indexes = SymbolicAlgorithm(abs_value, symbols_.size());
       break;
     case CounterStyleSystem::kAlphabetic:
-      symbol_indexes = AlphabeticAlgorithm(value, symbols_.size());
+      symbol_indexes = AlphabeticAlgorithm(abs_value, symbols_.size());
       break;
     case CounterStyleSystem::kAdditive:
-      symbol_indexes = AdditiveAlgorithm(value, additive_weights_);
+      symbol_indexes = AdditiveAlgorithm(abs_value, additive_weights_);
       break;
     case CounterStyleSystem::kUnresolvedExtends:
       NOTREACHED();

@@ -24,6 +24,19 @@ class CounterStyleTest : public PageTestBase,
     return CounterStyleMap::GetUACounterStyleMap()
         ->FindCounterStyleAcrossScopes(name);
   }
+
+  const CounterStyle AddCounterStyle(const AtomicString& name,
+                                     const String& descriptors) {
+    StringBuilder declaration;
+    declaration.Append("@counter-style ");
+    declaration.Append(name);
+    declaration.Append("{");
+    declaration.Append(descriptors);
+    declaration.Append("}");
+    InsertStyleElement(declaration.ToString().Utf8());
+    UpdateAllLifecyclePhasesForTest();
+    return GetCounterStyle(name);
+  }
 };
 
 TEST_F(CounterStyleTest, NumericAlgorithm) {
@@ -354,6 +367,78 @@ TEST_F(CounterStyleTest, CustomFirstSymbolValue) {
   EXPECT_EQ("B", extended.GenerateRepresentation(3));
   EXPECT_EQ("C", extended.GenerateRepresentation(4));
   EXPECT_EQ("5", extended.GenerateRepresentation(5));
+}
+
+TEST_F(CounterStyleTest, ExtremeValuesCyclic) {
+  const CounterStyle& cyclic =
+      AddCounterStyle("cyclic", "system: cyclic; symbols: A B C;");
+  EXPECT_EQ("A",
+            cyclic.GenerateRepresentation(std::numeric_limits<int>::min()));
+  EXPECT_EQ("A",
+            cyclic.GenerateRepresentation(std::numeric_limits<int>::max()));
+}
+
+TEST_F(CounterStyleTest, ExtremeValuesNumeric) {
+  const CounterStyle& numeric =
+      AddCounterStyle("numeric",
+                      "system: numeric; symbols: '0' '1' '2' '3' '4' '5' '6' "
+                      "'7' '8' '9' A B C D E F");
+  EXPECT_EQ("-80000000",
+            numeric.GenerateRepresentation(std::numeric_limits<int>::min()));
+  EXPECT_EQ("7FFFFFFF",
+            numeric.GenerateRepresentation(std::numeric_limits<int>::max()));
+}
+
+TEST_F(CounterStyleTest, ExtremeValuesAlphabetic) {
+  const CounterStyle& alphabetic = AddCounterStyle(
+      "alphabetic",
+      "system: alphabetic; symbols: A B C; range: infinite infinite;");
+  EXPECT_EQ("-ABAABABBBAACCCACACCB",
+            alphabetic.GenerateRepresentation(std::numeric_limits<int>::min()));
+  EXPECT_EQ("ABAABABBBAACCCACACCA",
+            alphabetic.GenerateRepresentation(std::numeric_limits<int>::max()));
+}
+
+TEST_F(CounterStyleTest, ExtremeValuesAdditive) {
+  const CounterStyle& additive =
+      AddCounterStyle("additive",
+                      "system: additive; range: infinite infinite;"
+                      "additive-symbols: 2000000000 '2B',"
+                      "                   100000000 '1CM',"
+                      "                    40000000 '4DM',"
+                      "                     7000000 '7M',"
+                      "                      400000 '4CK',"
+                      "                       80000 '8DK',"
+                      "                        3000 '3K',"
+                      "                         600 '6C',"
+                      "                          40 '4D',"
+                      "                           8 '8I',"
+                      "                           7 '7I';");
+  EXPECT_EQ("-2B1CM4DM7M4CK8DK3K6C4D8I",
+            additive.GenerateRepresentation(std::numeric_limits<int>::min()));
+  EXPECT_EQ("2B1CM4DM7M4CK8DK3K6C4D7I",
+            additive.GenerateRepresentation(std::numeric_limits<int>::max()));
+}
+
+TEST_F(CounterStyleTest, ExtremeValuesSymbolic) {
+  // No symbolic counter style can possibly represent such large values without
+  // exceeding the length limit. Always fallbacks to 'decimal'.
+  const CounterStyle& symbolic = AddCounterStyle(
+      "symbolic",
+      "system: symbolic; symbols: A B C; range: infinite infinite;");
+  EXPECT_EQ("-2147483648",
+            symbolic.GenerateRepresentation(std::numeric_limits<int>::min()));
+  EXPECT_EQ("2147483647",
+            symbolic.GenerateRepresentation(std::numeric_limits<int>::max()));
+}
+
+TEST_F(CounterStyleTest, ExtremeValuesFixed) {
+  const CounterStyle& fixed =
+      AddCounterStyle("fixed", "system: fixed 2147483646; symbols: A B C D;");
+  // An int subtraction would overflow and return 2 as the result.
+  EXPECT_EQ("-2147483648",
+            fixed.GenerateRepresentation(std::numeric_limits<int>::min()));
+  EXPECT_EQ("B", fixed.GenerateRepresentation(std::numeric_limits<int>::max()));
 }
 
 }  // namespace blink

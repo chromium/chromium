@@ -99,7 +99,7 @@ class CORE_EXPORT CounterStyle final : public GarbageCollected<CounterStyle> {
   Vector<String> symbols_;
 
   // Additive weights, for the 'additive' system only.
-  Vector<wtf_size_t> additive_weights_;
+  Vector<unsigned> additive_weights_;
 
   // Value of 'range' descriptor. Empty vector means 'auto'.
   Vector<std::pair<int, int>> range_;
