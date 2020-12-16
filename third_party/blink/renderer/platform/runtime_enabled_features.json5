@@ -1663,7 +1663,7 @@
     },
     {
       name: "ReadableByteStream",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "RemotePlayback",
