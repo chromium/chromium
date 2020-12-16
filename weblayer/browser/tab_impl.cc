@@ -7,6 +7,7 @@
 #include <cmath>
 
 #include "base/auto_reset.h"
+#include "base/feature_list.h"
 #include "base/guid.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
@@ -16,6 +17,7 @@
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/autofill_provider.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/blocked_content/popup_blocker.h"
 #include "components/blocked_content/popup_blocker_tab_helper.h"
 #include "components/blocked_content/popup_opener_tab_helper.h"
@@ -1319,10 +1321,21 @@ void TabImpl::InitializeAutofill() {
       !autofill::ContentAutofillDriverFactory::FromWebContents(web_contents));
 
   AutofillClientImpl::CreateForWebContents(web_contents);
+
+  autofill::AutofillHandler::AutofillDownloadManagerState
+      enable_autofill_download_manager =
+          autofill::AutofillHandler::DISABLE_AUTOFILL_DOWNLOAD_MANAGER;
+#if defined(OS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAndroidAutofillQueryServerFieldTypes)) {
+    enable_autofill_download_manager =
+        autofill::AutofillHandler::ENABLE_AUTOFILL_DOWNLOAD_MANAGER;
+  }
+#endif  // OS_ANDROID
+
   autofill::ContentAutofillDriverFactory::CreateForWebContentsAndDelegate(
       web_contents, AutofillClientImpl::FromWebContents(web_contents),
-      i18n::GetApplicationLocale(),
-      autofill::AutofillManager::DISABLE_AUTOFILL_DOWNLOAD_MANAGER,
+      i18n::GetApplicationLocale(), enable_autofill_download_manager,
       autofill_provider_.get());
 }
 

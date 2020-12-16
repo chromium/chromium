@@ -65,6 +65,7 @@
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/navigation_interception/intercept_navigation_delegate.h"
 #include "components/safe_browsing/core/features.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
@@ -97,7 +98,6 @@
 #include "ui/gfx/image/image.h"
 struct AwDrawSWFunctionTable;
 
-using autofill::AutofillManager;
 using autofill::ContentAutofillDriverFactory;
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF16;
@@ -319,7 +319,10 @@ void AwContents::InitAutofillIfNecessary(bool autocomplete_enabled) {
   ContentAutofillDriverFactory::CreateForWebContentsAndDelegate(
       web_contents, AwAutofillClient::FromWebContents(web_contents),
       base::android::GetDefaultLocaleString(),
-      AutofillManager::DISABLE_AUTOFILL_DOWNLOAD_MANAGER,
+      base::FeatureList::IsEnabled(
+          autofill::features::kAndroidAutofillQueryServerFieldTypes)
+          ? autofill::AutofillHandler::ENABLE_AUTOFILL_DOWNLOAD_MANAGER
+          : autofill::AutofillHandler::DISABLE_AUTOFILL_DOWNLOAD_MANAGER,
       autofill_provider_.get());
 }
 

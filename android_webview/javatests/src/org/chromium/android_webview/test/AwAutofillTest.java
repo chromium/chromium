@@ -47,6 +47,7 @@ import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
@@ -2073,6 +2074,7 @@ public class AwAutofillTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=AndroidAutofillQueryServerFieldTypes"})
     public void testServerPredictionArrivesBeforeAutofillStart() throws Throwable {
         final String data = "<html><head></head><body><form action='a.html' name='formname'>"
                 + "<input type='text' id='text1' name='username'>"
@@ -2115,6 +2117,7 @@ public class AwAutofillTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=AndroidAutofillQueryServerFieldTypes"})
     public void testServerPredictionArrivesAfterAutofillStart() throws Throwable {
         final String data = "<html><head></head><body><form action='a.html' name='formname'>"
                 + "<input type='text' id='text1' name='username'>"
@@ -2158,6 +2161,40 @@ public class AwAutofillTest {
         assertTrue(mTestAutofillManagerWrapper.isQuerySucceed());
 
         // TODO(crbug.com/1151542): Verify the field types once they are sent from service.
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"disable-features=AndroidAutofillQueryServerFieldTypes"})
+    public void testServerPredictionQueryDisabled() throws Throwable {
+        final String data = "<html><head></head><body><form action='a.html' name='formname'>"
+                + "<input type='text' id='text1' name='username'>"
+                + "<input type='text' name='email' id='text2'/>"
+                + "</form></body></html>";
+        final String url = mWebServer.setResponse(FILE, data, null);
+        loadUrlSync(url);
+
+        int cnt = 0;
+        executeJavaScriptAndWaitForResult("document.getElementById('text1').select();");
+        dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
+
+        cnt += waitForCallbackAndVerifyTypes(cnt,
+                new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_SESSION_STARTED,
+                        AUTOFILL_VALUE_CHANGED});
+
+        invokeOnProvideAutoFillVirtualStructure();
+        TestViewStructure viewStructure = mTestValues.testViewStructure;
+        assertNotNull(viewStructure);
+        assertEquals(2, viewStructure.getChildCount());
+        assertNull(viewStructure.getChild(0).getHtmlInfo().getAttribute(
+                "crowdsourcing-autofill-hints"));
+        assertNull(viewStructure.getChild(0).getHtmlInfo().getAttribute("computed-autofill-hints"));
+        assertNull(viewStructure.getChild(1).getHtmlInfo().getAttribute(
+                "crowdsourcing-autofill-hints"));
+        assertNull(viewStructure.getChild(1).getHtmlInfo().getAttribute("computed-autofill-hints"));
+
+        // TODO(crbug.com/1151542): Complete the test once the prediction update is implemented.
     }
 
     private void pollJavascriptResult(String script, String expectedResult) throws Throwable {

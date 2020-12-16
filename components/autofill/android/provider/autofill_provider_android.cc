@@ -9,11 +9,13 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/feature_list.h"
 #include "components/autofill/android/provider/form_data_android.h"
 #include "components/autofill/android/provider/jni_headers/AutofillProvider_jni.h"
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/autofill_handler_proxy.h"
 #include "components/autofill/core/common/autofill_constants.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
@@ -33,6 +35,12 @@ using gfx::RectF;
 namespace autofill {
 
 using mojom::SubmissionSource;
+
+static jboolean JNI_AutofillProvider_IsQueryServerFieldTypesEnabled(
+    JNIEnv* env) {
+  return base::FeatureList::IsEnabled(
+      features::kAndroidAutofillQueryServerFieldTypes);
+}
 
 AutofillProviderAndroid::AutofillProviderAndroid(
     const JavaRef<jobject>& jcaller,

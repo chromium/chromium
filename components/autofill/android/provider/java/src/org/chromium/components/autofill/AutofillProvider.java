@@ -58,6 +58,8 @@ import org.chromium.ui.display.DisplayAndroid;
 @JNINamespace("autofill")
 public class AutofillProvider {
     private static final String TAG = "AutofillProvider";
+    private static Boolean sIsQueryServerFieldTypesEnabled;
+
     private static class FocusField {
         public final short fieldIndex;
         public final Rect absBound;
@@ -118,10 +120,10 @@ public class AutofillProvider {
                                 .addAttribute("ua-autofill-hints", field.mHeuristicType)
                                 .addAttribute("id", field.mId);
 
-                // TODO(crbug.com/1151542): Only add the additional attributes if the crowdsourcing
-                // feature is enabled.
-                builder.addAttribute("crowdsourcing-autofill-hints", field.getServerType());
-                builder.addAttribute("computed-autofill-hints", field.getComputedType());
+                if (isQueryServerFieldTypesEnabled()) {
+                    builder.addAttribute("crowdsourcing-autofill-hints", field.getServerType());
+                    builder.addAttribute("computed-autofill-hints", field.getComputedType());
+                }
 
                 switch (field.getControlType()) {
                     case FormFieldData.ControlType.LIST:
@@ -714,6 +716,14 @@ public class AutofillProvider {
         mAutofillManager.onQueryDone(success);
     }
 
+    private static boolean isQueryServerFieldTypesEnabled() {
+        if (sIsQueryServerFieldTypesEnabled == null) {
+            sIsQueryServerFieldTypesEnabled =
+                    AutofillProviderJni.get().isQueryServerFieldTypesEnabled();
+        }
+        return sIsQueryServerFieldTypesEnabled;
+    }
+
     private void forceNotifyFormValues() {
         if (mRequest == null) return;
         for (int i = 0; i < mRequest.getFieldCount(); ++i) {
@@ -805,5 +815,7 @@ public class AutofillProvider {
 
         void setAnchorViewRect(long nativeAutofillProviderAndroid, AutofillProvider caller,
                 View anchorView, float x, float y, float width, float height);
+
+        boolean isQueryServerFieldTypesEnabled();
     }
 }

@@ -97,6 +97,7 @@ extern const base::Feature kAutofillUseUniqueRendererIDsOnIOS;
 #endif  // OS_IOS
 
 #if defined(OS_ANDROID)
+extern const base::Feature kAndroidAutofillQueryServerFieldTypes;
 extern const base::Feature kWalletRequiresFirstSyncSetupComplete;
 #endif
 
