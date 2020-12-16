@@ -80169,6 +80169,19 @@
         }
        ]
       ],
+      "image-orientation-exif-png.html": [
+       "85d807e39869cfc5f847bb7454b2465de9eb8c40",
+       [
+        null,
+        [
+         [
+          "/css/css-images/image-orientation/reference/image-orientation-exif-png-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "image-orientation-from-image-composited-dynamic1.html": [
        "29355518fdef34a1579592bf4b3b70967ee74f1c",
        [
@@ -195989,6 +196002,10 @@
         "a146af365758be1453c769e01b7cfb999ba2a525",
         []
        ],
+       "image-orientation-exif-png-ref.html": [
+        "39e361d80c1204a3dbee2601767a6dd89375b459",
+        []
+       ],
        "image-orientation-from-image-content-images-ref.html": [
         "c0d29909f9068803dfcfe9bd6818f354d4fb6ca8",
         []
@@ -196051,6 +196068,22 @@
        ]
       },
       "support": {
+       "F-exif-early.png": [
+        "6714cec8253723237cfbe95b319e0ae2162120e6",
+        []
+       ],
+       "F-exif-late.png": [
+        "38f6defc58e9ddd8f00562455db70f764aa0a2fe",
+        []
+       ],
+       "F-rotated.png": [
+        "f515edd823253f7b3d61cae8f7f82cba4d7ab4f1",
+        []
+       ],
+       "F-upright.png": [
+        "c44e72d0f4f7f62f0379e0f625b6a5a4a84d8a21",
+        []
+       ],
        "cursor-8-llo.jpg": [
         "ef26ad4aaaee12269323379e36c5274aad44d00b",
         []
@@ -242890,10 +242923,6 @@
        "af8fa95d141476336e1f1fdf87617eb41a69dc9d",
        []
       ],
-      "iframe-inheritance-javascript-child-expected.txt": [
-       "ddbff28509361177f53859b051007bffbec892d6",
-       []
-      ],
       "resources": {
        "make-html-script.js": [
         "a013fa64b305b3ceca8a1014afd7e59ff7be7d10",
@@ -242926,6 +242955,10 @@
       []
      ],
      "resources": {
+      "img-with-referrer-policy.svg": [
+       "d54232d7bbd5903e009a2ea1645e8ba276590064",
+       []
+      ],
       "referrer.py": [
        "2d15dc09c4e86b5938d5d95cefa65417b16f82ae",
        []
@@ -410158,7 +410191,7 @@
        ]
       ],
       "iframe-inheritance-javascript-child.html": [
-       "b7f8dabc0cd4b68a5b9c6b40c901f1cf3699c143",
+       "e6df2098d472dfa4b26b85bc5b1da0ef0faeefb8",
        [
         null,
         {}
@@ -410188,6 +410221,13 @@
      },
      "link-rel-prefetch.html": [
       "72e831c92129aed2d80a4178fb56f9d7c20dacad",
+      [
+       null,
+       {}
+      ]
+     ],
+     "meta-tag-in-svg-image.html": [
+      "5bdc2c1abfa82777bac25b03a583898c51585ff6",
       [
        null,
        {}

@@ -2509,6 +2509,7 @@ crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-20
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-206.xht [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-images/image-orientation/image-orientation-exif-png.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-conditional/css-supports-040.xht [ Failure ]
 crbug.com/626703 external/wpt/css/css-conditional/css-supports-042.xht [ Failure ]
 crbug.com/626703 external/wpt/css/css-conditional/css-supports-041.xht [ Failure ]
