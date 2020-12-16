@@ -46,6 +46,11 @@ namespace {
 std::atomic<bool> g_use_sched_util(true);
 std::atomic<bool> g_scheduler_hints_adjusted(false);
 
+// When a device doesn't specify uclamp values via chrome switches,
+// default boosting for urgent tasks is hardcoded here as 20%.
+// Higher values can lead to higher power consumption thus this value
+// is chosen conservatively where it does not show noticeable
+// power usage increased from several perf/power tests.
 const int kSchedulerBoostDef = 20;
 const int kSchedulerLimitDef = 100;
 const bool kSchedulerUseLatencyTuneDef = true;
@@ -55,6 +60,11 @@ int g_scheduler_limit_adj;
 bool g_scheduler_use_latency_tune_adj;
 
 #if !defined(OS_NACL) && !defined(OS_AIX)
+
+// Defined by linux uclamp ABI of sched_setattr().
+const uint32_t kSchedulerUclampMin = 0;
+const uint32_t kSchedulerUclampMax = 1024;
+
 // sched_attr is used to set scheduler attributes for Linux. It is not a POSIX
 // struct and glibc does not expose it.
 struct sched_attr {
@@ -95,6 +105,14 @@ struct sched_attr {
 #else
 #error "We don't have an __NR_sched_setattr for this architecture."
 #endif
+#endif
+
+#if !defined(SCHED_FLAG_UTIL_CLAMP_MIN)
+#define SCHED_FLAG_UTIL_CLAMP_MIN 0x20
+#endif
+
+#if !defined(SCHED_FLAG_UTIL_CLAMP_MAX)
+#define SCHED_FLAG_UTIL_CLAMP_MAX 0x40
 #endif
 
 int sched_getattr(pid_t pid,
@@ -164,7 +182,8 @@ void SetThreadLatencySensitivity(ProcessId process_id,
                                  ThreadPriority priority) {
   struct sched_attr attr;
   bool is_urgent = false;
-  int uclamp_min_urgent, uclamp_max_non_urgent, latency_sensitive_urgent;
+  int boost_percent, limit_percent;
+  int latency_sensitive_urgent;
 
   // Scheduler boost defaults to true unless disabled.
   if (!g_use_sched_util.load())
@@ -172,12 +191,12 @@ void SetThreadLatencySensitivity(ProcessId process_id,
 
   // FieldTrial API can be called only once features were parsed.
   if (g_scheduler_hints_adjusted.load()) {
-    uclamp_min_urgent = g_scheduler_boost_adj;
-    uclamp_max_non_urgent = g_scheduler_limit_adj;
+    boost_percent = g_scheduler_boost_adj;
+    limit_percent = g_scheduler_limit_adj;
     latency_sensitive_urgent = g_scheduler_use_latency_tune_adj;
   } else {
-    uclamp_min_urgent = kSchedulerBoostDef;
-    uclamp_max_non_urgent = kSchedulerLimitDef;
+    boost_percent = kSchedulerBoostDef;
+    limit_percent = kSchedulerLimitDef;
     latency_sensitive_urgent = kSchedulerUseLatencyTuneDef;
   }
 
@@ -226,13 +245,19 @@ void SetThreadLatencySensitivity(ProcessId process_id,
         << "Failed to write latency file.\n";
   }
 
+  attr.sched_flags |= SCHED_FLAG_UTIL_CLAMP_MIN;
+  attr.sched_flags |= SCHED_FLAG_UTIL_CLAMP_MAX;
+
   if (is_urgent) {
-    attr.sched_util_min = uclamp_min_urgent;
-    attr.sched_util_max = 100;
+    attr.sched_util_min = (boost_percent * kSchedulerUclampMax + 50) / 100;
+    attr.sched_util_max = kSchedulerUclampMax;
   } else {
-    attr.sched_util_min = 0;
-    attr.sched_util_max = uclamp_max_non_urgent;
+    attr.sched_util_min = kSchedulerUclampMin;
+    attr.sched_util_max = (limit_percent * kSchedulerUclampMax + 50) / 100;
   }
+
+  DCHECK_GE(attr.sched_util_min, kSchedulerUclampMin);
+  DCHECK_LE(attr.sched_util_max, kSchedulerUclampMax);
 
   attr.size = sizeof(struct sched_attr);
   if (sched_setattr(thread_id, &attr, 0) == -1) {
