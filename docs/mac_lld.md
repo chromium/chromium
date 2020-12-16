@@ -13,8 +13,11 @@ Chrome OS, Fuchsia), and it's faster than other COFF linkers (the executable
 file format on Windows).
 
 ld64, the standard Mach-O linker (the executable file format on iOS and macOS),
-is on the other hand already fast and works well, so there are fewer advantages
-to using LLD here.
+is on the other hand already fairly fast and works well, so there are fewer
+advantages to using LLD here. (Having said that, LLD is currently 2-3x faster
+than ld64 in symbol\_level=0 release builds, despite ld64 being already fast.
+Maybe that's due to LLD not yet doing critical things and it will get slower,
+but at the moment it's faster than ld64.)
 
 LLD does have a few advantages unrelated to speed, however:
 
@@ -53,12 +56,22 @@ different platforms.
 
 - LLD/Mach-O is moving quickly, so things usually work best with a trunk build
   of LLD instead of the prebuilt one
+- LLD-linked binaries don't work on macOS 10.13 or older
+  ([bug](https://llvm.org/PR48395), fixed upstream)
+- LLD-linked `protoc` crashes when it runs as part of the build
+  ([bug](https://llvm.org/PR48491), fixed upstream)
+- LLD-linked `v8_context_snapshot_generator` crashes when it runs as part of
+  the build ([bug](https://llvm.org/PR48511),
+  [in-progress patch](https://reviews.llvm.org/D93369))
+- verify\_framework\_order fails in LLD builds (FIXME: file bug)
+- LLD-built Chromium.app crashes with `malloc: *** error for object
+  0x7fa46941f20a: pointer being freed was not allocated` at starutp (FIXME:
+  file bug)
 - LLD does not yet have any ARM support
   ([in-progress patch](https://reviews.llvm.org/D88629))
-- LLD-linked binaries don't work on macOS 10.13 or older
-  ([bug](https://llvm.org/PR48395), fixed on llvm trunk)
-- LLD cannot yet link swiftshader binaries ([bug](https://llvm.org/PR48332)) --
-  but other than that, all targets build
+- LLD cannot yet link swiftshader binaries ([bug](https://llvm.org/PR48332),
+  [in-progress patch](https://reviews.llvm.org/D93267)) --
+  need to locally hack up LLD to warn instead of error on this for now
 - LLD likely produces bad debug info, and LLD-linked binaries likely don't
   yet work in a debugger
 - LLD-linked base\_unittests fails some unwind-related tests
@@ -70,8 +83,6 @@ different platforms.
 - LLD doesn't yet call graph profile sort
 - LLD doesn't yet implement `-exported_symbol` or `-exported_symbols_list`,
   leading to some linker warnings
-- LLD-linked `protoc` crashes when it runs as part of the build
-  ([bug](https://llvm.org/PR48491))
 
 ## Opting in
 
