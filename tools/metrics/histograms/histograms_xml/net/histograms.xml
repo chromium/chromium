@@ -1477,7 +1477,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.ExpectCT.EntriesOnLoad" units="entries"
-    expires_after="2021-01-07">
+    expires_after="2021-08-07">
   <owner>mmenke@chromium.org</owner>
   <owner>estark@chromium.org</owner>
   <summary>
