@@ -35,8 +35,8 @@
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/web_state_list/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #include "ios/web/common/features.h"
-#import "ios/web/public/test/fakes/test_navigation_manager.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -256,7 +256,7 @@ class TabGridMediatorTest : public PlatformTest {
 
     // Insert some web states.
     for (int i = 0; i < 3; i++) {
-      auto web_state = CreateTestWebStateWithURL(GURL("https://foo/bar"));
+      auto web_state = CreateFakeWebStateWithURL(GURL("https://foo/bar"));
       NSString* identifier =
           TabIdTabHelper::FromWebState(web_state.get())->tab_id();
       // Tab IDs should be unique.
@@ -277,12 +277,12 @@ class TabGridMediatorTest : public PlatformTest {
     mediator_.tabRestoreService = tab_restore_service_;
   }
 
-  // Creates a TestWebState with a navigation history containing exactly only
+  // Creates a FakeWebState with a navigation history containing exactly only
   // the given |url|.
-  std::unique_ptr<web::TestWebState> CreateTestWebStateWithURL(
+  std::unique_ptr<web::FakeWebState> CreateFakeWebStateWithURL(
       const GURL& url) {
-    auto web_state = std::make_unique<web::TestWebState>();
-    auto navigation_manager = std::make_unique<web::TestNavigationManager>();
+    auto web_state = std::make_unique<web::FakeWebState>();
+    auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
     navigation_manager->AddItem(url, ui::PAGE_TRANSITION_LINK);
     navigation_manager->SetLastCommittedItem(
         navigation_manager->GetItemAtIndex(0));
@@ -330,7 +330,7 @@ TEST_F(TabGridMediatorTest, ConsumerPopulateItems) {
 // Tests that the consumer is notified when a web state is inserted.
 TEST_F(TabGridMediatorTest, ConsumerInsertItem) {
   ASSERT_EQ(3UL, consumer_.items.count);
-  auto web_state = std::make_unique<web::TestWebState>();
+  auto web_state = std::make_unique<web::FakeWebState>();
   TabIdTabHelper::CreateForWebState(web_state.get());
   NSString* item_identifier =
       TabIdTabHelper::FromWebState(web_state.get())->tab_id();
@@ -368,7 +368,7 @@ TEST_F(TabGridMediatorTest, ConsumerUpdateSelectedItem) {
 // The selected item is replaced, so the new selected item id should be the
 // id of the new item.
 TEST_F(TabGridMediatorTest, ConsumerReplaceItem) {
-  auto new_web_state = std::make_unique<web::TestWebState>();
+  auto new_web_state = std::make_unique<web::FakeWebState>();
   TabIdTabHelper::CreateForWebState(new_web_state.get());
   NSString* new_item_identifier =
       TabIdTabHelper::FromWebState(new_web_state.get())->tab_id();
@@ -479,16 +479,16 @@ TEST_F(TabGridMediatorTest, UndoCloseAllItemsCommandWithNTP) {
   EXPECT_EQ(0UL, consumer_.items.count);
 
   // Add three new tabs.
-  auto web_state1 = CreateTestWebStateWithURL(GURL("https://test/url1"));
+  auto web_state1 = CreateFakeWebStateWithURL(GURL("https://test/url1"));
   web_state_list_->InsertWebState(0, std::move(web_state1),
                                   WebStateList::INSERT_FORCE_INDEX,
                                   WebStateOpener());
   // Second tab is a NTP.
-  auto web_state2 = CreateTestWebStateWithURL(GURL(kChromeUINewTabURL));
+  auto web_state2 = CreateFakeWebStateWithURL(GURL(kChromeUINewTabURL));
   web_state_list_->InsertWebState(1, std::move(web_state2),
                                   WebStateList::INSERT_FORCE_INDEX,
                                   WebStateOpener());
-  auto web_state3 = CreateTestWebStateWithURL(GURL("https://test/url2"));
+  auto web_state3 = CreateFakeWebStateWithURL(GURL("https://test/url2"));
   web_state_list_->InsertWebState(2, std::move(web_state3),
                                   WebStateList::INSERT_FORCE_INDEX,
                                   WebStateOpener());

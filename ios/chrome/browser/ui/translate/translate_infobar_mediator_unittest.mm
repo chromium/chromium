@@ -22,8 +22,8 @@
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/web/public/deprecated/crw_test_js_injection_receiver.h"
-#import "ios/web/public/test/fakes/test_navigation_manager.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest_mac.h"
 #include "testing/platform_test.h"
@@ -98,14 +98,13 @@ class TranslateInfobarMediatorTest : public PlatformTest {
   LegacyTranslateInfobarMediator* mediator() { return mediator_; }
 
   void CreateTranslateClient() {
-    auto web_state = std::make_unique<web::TestWebState>();
+    auto web_state = std::make_unique<web::FakeWebState>();
 
     // Set up browser state.
     web_state->SetBrowserState(browser_state_.get());
 
     // Set up navigation manager.
-    std::unique_ptr<web::TestNavigationManager> navigation_manager =
-        std::make_unique<web::TestNavigationManager>();
+    auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
     navigation_manager->SetBrowserState(browser_state_.get());
     web_state->SetNavigationManager(std::move(navigation_manager));
 

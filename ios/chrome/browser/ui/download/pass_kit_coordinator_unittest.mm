@@ -21,8 +21,8 @@
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/fakes/fake_pass_kit_tab_helper_delegate.h"
 #import "ios/chrome/test/scoped_key_window.h"
-#import "ios/web/public/test/fakes/test_navigation_manager.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -43,11 +43,11 @@ class PassKitCoordinatorTest : public PlatformTest {
         coordinator_([[PassKitCoordinator alloc]
             initWithBaseViewController:base_view_controller_
                                browser:browser_.get()]),
-        web_state_(std::make_unique<web::TestWebState>()),
+        web_state_(std::make_unique<web::FakeWebState>()),
         delegate_([[FakePassKitTabHelperDelegate alloc]
             initWithWebState:web_state_.get()]),
         test_navigation_manager_(
-            std::make_unique<web::TestNavigationManager>()) {
+            std::make_unique<web::FakeNavigationManager>()) {
     PassKitTabHelper::CreateForWebState(web_state_.get(), delegate_);
     InfoBarManagerImpl::CreateForWebState(web_state_.get());
     web_state_->SetNavigationManager(std::move(test_navigation_manager_));
@@ -63,7 +63,7 @@ class PassKitCoordinatorTest : public PlatformTest {
   UIViewController* base_view_controller_;
   std::unique_ptr<Browser> browser_;
   PassKitCoordinator* coordinator_;
-  std::unique_ptr<web::TestWebState> web_state_;
+  std::unique_ptr<web::FakeWebState> web_state_;
   FakePassKitTabHelperDelegate* delegate_;
   ScopedKeyWindow scoped_key_window_;
   std::unique_ptr<web::NavigationManager> test_navigation_manager_;

@@ -30,7 +30,7 @@
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
@@ -40,7 +40,7 @@
 #import "third_party/ocmock/gtest_support.h"
 
 using shared_highlighting::TextFragment;
-using web::TestWebState;
+using web::FakeWebState;
 using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForJSCompletionTimeout;
 using shared_highlighting::LinkGenerationError;
@@ -59,7 +59,7 @@ const TextFragment kTestTextFragment = TextFragment("selected text");
 const char kSuccessUkmMetric[] = "Success";
 const char kErrorUkmMetric[] = "Error";
 
-class TestWebStateListDelegate : public WebStateListDelegate {
+class FakeWebStateListDelegate : public WebStateListDelegate {
   void WillAddWebState(web::WebState* web_state) override {}
   void WebStateDetached(web::WebState* web_state) override {}
 };
@@ -72,7 +72,7 @@ class LinkToTextMediatorTest : public PlatformTest {
     feature_list_.InitAndEnableFeature(kSharedHighlightingIOS);
     mocked_consumer_ = OCMStrictProtocolMock(@protocol(LinkToTextConsumer));
 
-    auto web_state = std::make_unique<TestWebState>();
+    auto web_state = std::make_unique<FakeWebState>();
     web_state_ = web_state.get();
     web_state_list_.InsertWebState(0, std::move(web_state),
                                    WebStateList::INSERT_ACTIVATE,
@@ -180,9 +180,9 @@ class LinkToTextMediatorTest : public PlatformTest {
       web::WebTaskEnvironment::Options::DEFAULT,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList feature_list_;
-  TestWebStateListDelegate web_state_list_delegate_;
+  FakeWebStateListDelegate web_state_list_delegate_;
   WebStateList web_state_list_;
-  TestWebState* web_state_;
+  FakeWebState* web_state_;
   ukm::TestAutoSetUkmRecorder ukm_recorder_;
   web::FakeWebFramesManager* web_frames_manager_;
   web::FakeWebFrame* main_frame_;

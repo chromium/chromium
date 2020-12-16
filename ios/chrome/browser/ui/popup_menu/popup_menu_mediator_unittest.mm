@@ -49,8 +49,8 @@
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_provider.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
-#import "ios/web/public/test/fakes/test_navigation_manager.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -187,7 +187,7 @@ class PopupMenuMediatorTest : public ChromeWebTest {
   }
 
   void InsertNewWebState(int index) {
-    auto web_state = std::make_unique<web::TestWebState>();
+    auto web_state = std::make_unique<web::FakeWebState>();
     GURL url("http://test/" + std::to_string(index));
     web_state->SetCurrentURL(url);
     web_state_list_->InsertWebState(index, std::move(web_state),

@@ -18,7 +18,7 @@
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/chrome/grit/ios_strings.h"
-#include "ios/web/public/test/fakes/test_web_state.h"
+#include "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest_mac.h"
 #include "testing/platform_test.h"
@@ -69,9 +69,8 @@ class LocationBarSteadyViewMediatorTest : public PlatformTest {
 // over the web content area.
 TEST_F(LocationBarSteadyViewMediatorTest, DisableShareForOverlays) {
   const GURL kUrl("https://chromium.test");
-  std::unique_ptr<web::TestWebState> passed_web_state =
-      std::make_unique<web::TestWebState>();
-  web::TestWebState* web_state = passed_web_state.get();
+  auto passed_web_state = std::make_unique<web::FakeWebState>();
+  web::FakeWebState* web_state = passed_web_state.get();
   web_state->SetCurrentURL(kUrl);
   web_state_list_.InsertWebState(0, std::move(passed_web_state),
                                  WebStateList::INSERT_ACTIVATE,
@@ -97,9 +96,8 @@ TEST_F(LocationBarSteadyViewMediatorTest, DisableShareForOverlays) {
 // dialog is displayed.
 TEST_F(LocationBarSteadyViewMediatorTest, HTTPAuthDialog) {
   const GURL kUrl("https://chromium.test");
-  std::unique_ptr<web::TestWebState> passed_web_state =
-      std::make_unique<web::TestWebState>();
-  web::TestWebState* web_state = passed_web_state.get();
+  auto passed_web_state = std::make_unique<web::FakeWebState>();
+  web::FakeWebState* web_state = passed_web_state.get();
   web_state->SetCurrentURL(kUrl);
   web_state_list_.InsertWebState(0, std::move(passed_web_state),
                                  WebStateList::INSERT_ACTIVATE,
@@ -125,9 +123,8 @@ TEST_F(LocationBarSteadyViewMediatorTest, HTTPAuthDialog) {
 TEST_F(LocationBarSteadyViewMediatorTest,
        HTTPAuthDialogDismissalWithNullWebState) {
   const GURL kUrl("https://chromium.test");
-  std::unique_ptr<web::TestWebState> passed_web_state =
-      std::make_unique<web::TestWebState>();
-  web::TestWebState* web_state = passed_web_state.get();
+  auto passed_web_state = std::make_unique<web::FakeWebState>();
+  web::FakeWebState* web_state = passed_web_state.get();
   web_state->SetCurrentURL(kUrl);
   web_state_list_.InsertWebState(0, std::move(passed_web_state),
                                  WebStateList::INSERT_ACTIVATE,

@@ -24,7 +24,7 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_view_controller.h"
 #include "ios/chrome/test/ios_chrome_scoped_testing_chrome_browser_state_manager.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
@@ -79,7 +79,7 @@ class NewTabPageCoordinatorTest : public PlatformTest {
     coordinator_.webState = &web_state_;
   }
 
-  web::TestWebState web_state_;
+  web::FakeWebState web_state_;
   id toolbar_delegate_;
   id delegate_;
   web::WebTaskEnvironment task_environment_;

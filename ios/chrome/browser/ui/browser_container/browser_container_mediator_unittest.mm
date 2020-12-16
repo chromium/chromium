@@ -14,7 +14,7 @@
 #import "ios/chrome/browser/ui/browser_container/browser_container_consumer.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/platform_test.h"
 
@@ -72,9 +72,8 @@ TEST_F(BrowserContainerMediatorTest, BlockContentForHTTPAuthDialog) {
 
   // Add and activate a WebState with kWebStateUrl.
   const GURL kWebStateUrl("http://www.committed.test");
-  std::unique_ptr<web::TestWebState> passed_web_state =
-      std::make_unique<web::TestWebState>();
-  web::TestWebState* web_state = passed_web_state.get();
+  auto passed_web_state = std::make_unique<web::FakeWebState>();
+  web::FakeWebState* web_state = passed_web_state.get();
   web_state->SetCurrentURL(kWebStateUrl);
   browser_.GetWebStateList()->InsertWebState(0, std::move(passed_web_state),
                                              WebStateList::INSERT_ACTIVATE,

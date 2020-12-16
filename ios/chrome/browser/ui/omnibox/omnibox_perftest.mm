@@ -26,8 +26,8 @@
 #include "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #include "ios/chrome/test/base/perf_test_ios.h"
-#include "ios/web/public/test/fakes/test_navigation_manager.h"
-#include "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "ui/base/test/ios/keyboard_appearance_listener.h"
@@ -87,10 +87,8 @@ class OmniboxPerfTest : public PerfTest {
     // Create a WebStateList that will always return the test WebState as
     // the active WebState.
     web_state_list_ = std::make_unique<WebStateList>(&web_state_list_delegate_);
-    std::unique_ptr<web::TestWebState> web_state =
-        std::make_unique<web::TestWebState>();
-    std::unique_ptr<web::TestNavigationManager> navigation_manager =
-        std::make_unique<web::TestNavigationManager>();
+    auto web_state = std::make_unique<web::FakeWebState>();
+    auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
     web_state->SetNavigationManager(std::move(navigation_manager));
     web_state_list_->InsertWebState(0, std::move(web_state),
                                     WebStateList::INSERT_FORCE_INDEX,

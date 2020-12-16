@@ -25,7 +25,7 @@
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #include "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
@@ -115,7 +115,7 @@ class PaymentRequestFullCardRequesterTest : public PlatformTest {
     personal_data_manager_.AddCreditCard(card);
   }
 
-  web::TestWebState* web_state() { return &web_state_; }
+  web::FakeWebState* web_state() { return &web_state_; }
 
   TestChromeBrowserState* browser_state() {
     return chrome_browser_state_.get();
@@ -128,7 +128,7 @@ class PaymentRequestFullCardRequesterTest : public PlatformTest {
  private:
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
-  web::TestWebState web_state_;
+  web::FakeWebState web_state_;
   autofill::TestPersonalDataManager personal_data_manager_;
 
   std::unique_ptr<autofill::ChromeAutofillClientIOS> autofill_client_;

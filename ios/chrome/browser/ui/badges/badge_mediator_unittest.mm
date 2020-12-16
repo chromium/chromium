@@ -30,8 +30,8 @@
 #import "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
-#import "ios/web/public/test/fakes/test_navigation_manager.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/web_state_user_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -103,10 +103,9 @@ class BadgeMediatorTest : public testing::TestWithParam<TestParam> {
 
   // Inserts a new WebState to the WebStateList at |index| and activates it.
   void InsertActivatedWebState(int index) {
-    std::unique_ptr<web::TestWebState> web_state =
-        std::make_unique<web::TestWebState>();
+    auto web_state = std::make_unique<web::FakeWebState>();
     web_state->SetNavigationManager(
-        std::make_unique<web::TestNavigationManager>());
+        std::make_unique<web::FakeNavigationManager>());
     web_state->SetBrowserState(browser_state());
     InfoBarManagerImpl::CreateForWebState(web_state.get());
     InfobarBadgeTabHelper::CreateForWebState(web_state.get());

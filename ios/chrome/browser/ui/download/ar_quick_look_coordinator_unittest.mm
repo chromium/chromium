@@ -24,7 +24,7 @@
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/chrome/test/scoped_key_window.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
@@ -59,7 +59,7 @@ class ARQuickLookCoordinatorTest : public PlatformTest {
 
     // The Coordinator should install itself as delegate for the existing
     // ARQuickLookTabHelper instances once started.
-    auto web_state = std::make_unique<web::TestWebState>();
+    auto web_state = std::make_unique<web::FakeWebState>();
     auto* web_state_ptr = web_state.get();
     ARQuickLookTabHelper::CreateForWebState(web_state_ptr);
     browser_->GetWebStateList()->InsertWebState(0, std::move(web_state),
@@ -89,7 +89,7 @@ class ARQuickLookCoordinatorTest : public PlatformTest {
 // delegate when ARQuickLookTabHelper instances become available.
 TEST_F(ARQuickLookCoordinatorTest, InstallDelegates) {
   // Coordinator should install itself as delegate for a new web state.
-  auto web_state2 = std::make_unique<web::TestWebState>();
+  auto web_state2 = std::make_unique<web::FakeWebState>();
   auto* web_state_ptr2 = web_state2.get();
   ARQuickLookTabHelper::CreateForWebState(web_state_ptr2);
   EXPECT_FALSE(ARQuickLookTabHelper::FromWebState(web_state_ptr2)->delegate());
@@ -100,7 +100,7 @@ TEST_F(ARQuickLookCoordinatorTest, InstallDelegates) {
 
   // Coordinator should install itself as delegate for a web state replacing an
   // existing one.
-  auto web_state3 = std::make_unique<web::TestWebState>();
+  auto web_state3 = std::make_unique<web::FakeWebState>();
   auto* web_state_ptr3 = web_state3.get();
   ARQuickLookTabHelper::CreateForWebState(web_state_ptr3);
   EXPECT_FALSE(ARQuickLookTabHelper::FromWebState(web_state_ptr3)->delegate());

@@ -13,7 +13,7 @@
 #include "ios/chrome/browser/main/test_browser.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/test/scoped_key_window.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/gtest_mac.h"
 #include "testing/platform_test.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -60,7 +60,7 @@ class RepostFormCoordinatorTest : public PlatformTest {
  private:
   base::test::TaskEnvironment task_environment_;
   ScopedKeyWindow scoped_key_window_;
-  web::TestWebState web_state_;
+  web::FakeWebState web_state_;
   UIViewController* view_controller_;
   std::unique_ptr<Browser> browser_;
 };

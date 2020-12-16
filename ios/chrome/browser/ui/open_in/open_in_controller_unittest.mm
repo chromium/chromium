@@ -12,7 +12,7 @@
 #include "base/test/task_environment.h"
 #import "ios/chrome/browser/ui/open_in/open_in_controller.h"
 #import "ios/chrome/browser/ui/open_in/open_in_controller_testing.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/test_web_thread.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -79,7 +79,7 @@ class OpenInControllerTest : public PlatformTest {
   OpenInController* open_in_controller_;
   UIView* parent_view_;
   base::HistogramTester histogram_tester_;
-  web::TestWebState web_state_;
+  web::FakeWebState web_state_;
 };
 
 TEST_F(OpenInControllerTest, TestDisplayOpenInMenu) {

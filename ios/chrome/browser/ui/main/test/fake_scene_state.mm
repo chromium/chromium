@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/ui/main/test/stub_browser_interface_provider.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -51,7 +51,7 @@
 }
 
 - (void)appendWebStateWithURL:(const GURL)URL {
-  auto test_web_state = std::make_unique<web::TestWebState>();
+  auto test_web_state = std::make_unique<web::FakeWebState>();
   test_web_state->SetCurrentURL(URL);
   WebStateList* web_state_list =
       self.interfaceProvider.mainInterface.browser->GetWebStateList();

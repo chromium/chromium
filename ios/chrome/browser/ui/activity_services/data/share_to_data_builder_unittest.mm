@@ -15,8 +15,8 @@
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/ui/activity_services/data/share_to_data.h"
 #import "ios/testing/ocmock_complex_type_helper.h"
-#import "ios/web/public/test/fakes/test_navigation_manager.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
@@ -42,14 +42,14 @@ class ShareToDataBuilderTest : public PlatformTest {
   ShareToDataBuilderTest() {
     chrome_browser_state_ = TestChromeBrowserState::Builder().Build();
 
-    auto navigation_manager = std::make_unique<web::TestNavigationManager>();
+    auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
     navigation_manager->AddItem(GURL(kExpectedUrl), ui::PAGE_TRANSITION_TYPED);
     navigation_manager->SetLastCommittedItem(navigation_manager->GetItemAtIndex(
         navigation_manager->GetLastCommittedItemIndex()));
     navigation_manager->GetLastCommittedItem()->SetTitle(
         base::UTF8ToUTF16(kExpectedTitle));
 
-    web_state_ = std::make_unique<web::TestWebState>();
+    web_state_ = std::make_unique<web::FakeWebState>();
     web_state_->SetNavigationManager(std::move(navigation_manager));
     web_state_->SetBrowserState(chrome_browser_state_.get());
     web_state_->SetVisibleURL(GURL(kExpectedUrl));
@@ -64,7 +64,7 @@ class ShareToDataBuilderTest : public PlatformTest {
                                                 /*delegate=*/nullptr);
     web_state_->SetTitle(base::UTF8ToUTF16(kExpectedTitle));
 
-    // Add a fake view to the TestWebState. This will be used to capture the
+    // Add a fake view to the FakeWebState. This will be used to capture the
     // snapshot. By default the WebState is not ready for taking snapshot.
     CGRect frame = {CGPointZero, CGSizeMake(300, 400)};
     delegate_.view = [[UIView alloc] initWithFrame:frame];
@@ -77,7 +77,7 @@ class ShareToDataBuilderTest : public PlatformTest {
   FakeSnapshotGeneratorDelegate* delegate_ = nil;
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<ChromeBrowserState> chrome_browser_state_;
-  std::unique_ptr<web::TestWebState> web_state_;
+  std::unique_ptr<web::FakeWebState> web_state_;
 
   DISALLOW_COPY_AND_ASSIGN(ShareToDataBuilderTest);
 };

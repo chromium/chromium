@@ -12,7 +12,7 @@
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -70,10 +70,9 @@ class LegacyToolbarUIUpdaterTest : public PlatformTest {
 
   // Inserts and activates a new WebState at the end of the list, and returns a
   // pointer to the inserted WebState.
-  web::TestWebState* InsertActiveWebState() {
-    std::unique_ptr<web::TestWebState> web_state =
-        std::make_unique<web::TestWebState>();
-    web::TestWebState* inserted_web_state = web_state.get();
+  web::FakeWebState* InsertActiveWebState() {
+    auto web_state = std::make_unique<web::FakeWebState>();
+    web::FakeWebState* inserted_web_state = web_state.get();
     web_state_list_.InsertWebState(0, std::move(web_state),
                                    WebStateList::INSERT_ACTIVATE,
                                    WebStateOpener(nullptr));
@@ -106,7 +105,7 @@ TEST_F(LegacyToolbarUIUpdaterTest, StartUpdating) {
 
 // Tests that the state is not updated after calling |-stopUpdating|.
 TEST_F(LegacyToolbarUIUpdaterTest, StopUpdating) {
-  web::TestWebState* web_state = InsertActiveWebState();
+  web::FakeWebState* web_state = InsertActiveWebState();
   StartUpdating();
   const CGFloat kHeight = 150.0;
   toolbar_owner().expandedTopToolbarHeight = kHeight;
@@ -142,7 +141,7 @@ TEST_F(LegacyToolbarUIUpdaterTest, UpdateActiveWebState) {
 // Tests that the updater polls for the new height when the active WebState
 // starts a user-initiated navigation.
 TEST_F(LegacyToolbarUIUpdaterTest, UserInitiatedNavigation) {
-  web::TestWebState* web_state = InsertActiveWebState();
+  web::FakeWebState* web_state = InsertActiveWebState();
   StartUpdating();
   const CGFloat kCollapsedHeight = 140.0;
   const CGFloat kExpandedHeight = 150.0;
@@ -164,7 +163,7 @@ TEST_F(LegacyToolbarUIUpdaterTest, UserInitiatedNavigation) {
 // Tests that the updater waits until a render-initiated navigation is committed
 // before updating the ui state.
 TEST_F(LegacyToolbarUIUpdaterTest, RendererInitiatedNavigation) {
-  web::TestWebState* web_state = InsertActiveWebState();
+  web::FakeWebState* web_state = InsertActiveWebState();
   StartUpdating();
   const CGFloat kCollapsedHeight = 140.0;
   const CGFloat kExpandedHeight = 150.0;

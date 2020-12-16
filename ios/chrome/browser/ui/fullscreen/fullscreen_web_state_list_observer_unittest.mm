@@ -16,8 +16,8 @@
 #import "ios/web/public/navigation/navigation_item.h"
 #include "ios/web/public/security/ssl_status.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
-#import "ios/web/public/test/fakes/test_navigation_manager.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 #include "testing/platform_test.h"
@@ -28,10 +28,10 @@
 #endif
 
 namespace {
-// A TestWebState subclass that returns mock objects for the view proxies.
-class TestWebStateWithProxy : public web::TestWebState {
+// A FakeWebState subclass that returns mock objects for the view proxies.
+class FakeWebStateWithProxy : public web::FakeWebState {
  public:
-  TestWebStateWithProxy() {
+  FakeWebStateWithProxy() {
     scroll_view_proxy_ = [[CRWWebViewScrollViewProxy alloc] init];
     id web_view_proxy_mock = OCMProtocolMock(@protocol(CRWWebViewProxy));
     [[[web_view_proxy_mock stub] andReturn:scroll_view_proxy_] scrollViewProxy];
@@ -79,12 +79,11 @@ class FullscreenWebStateListObserverTest : public PlatformTest {
 TEST_F(FullscreenWebStateListObserverTest, ObserveActiveWebState) {
   // Insert a WebState into the list.  The observer should create a
   // FullscreenWebStateObserver for the newly activated WebState.
-  std::unique_ptr<TestWebStateWithProxy> inserted_web_state =
-      std::make_unique<TestWebStateWithProxy>();
-  TestWebStateWithProxy* web_state = inserted_web_state.get();
-  std::unique_ptr<web::TestNavigationManager> passed_navigation_manager =
-      std::make_unique<web::TestNavigationManager>();
-  web::TestNavigationManager* navigation_manager =
+  auto inserted_web_state = std::make_unique<FakeWebStateWithProxy>();
+  FakeWebStateWithProxy* web_state = inserted_web_state.get();
+  auto passed_navigation_manager =
+      std::make_unique<web::FakeNavigationManager>();
+  web::FakeNavigationManager* navigation_manager =
       passed_navigation_manager.get();
   web_state->SetNavigationManager(std::move(passed_navigation_manager));
   web_state_list().InsertWebState(0, std::move(inserted_web_state),

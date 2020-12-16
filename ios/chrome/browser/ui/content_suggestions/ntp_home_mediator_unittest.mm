@@ -30,7 +30,7 @@
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/browser/voice/fake_voice_search_availability.h"
 #import "ios/public/provider/chrome/browser/ui/logo_vendor.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -63,7 +63,7 @@ class NTPHomeMediatorTest : public PlatformTest {
     std::unique_ptr<ToolbarTestNavigationManager> navigation_manager =
         std::make_unique<ToolbarTestNavigationManager>();
     navigation_manager_ = navigation_manager.get();
-    test_web_state_ = std::make_unique<web::TestWebState>();
+    fake_web_state_ = std::make_unique<web::FakeWebState>();
     logo_vendor_ = OCMProtocolMock(@protocol(LogoVendor));
     dispatcher_ = OCMProtocolMock(@protocol(NTPHomeMediatorDispatcher));
     suggestions_view_controller_ =
@@ -81,7 +81,7 @@ class NTPHomeMediatorTest : public PlatformTest {
     identity_manager_ =
         IdentityManagerFactory::GetForBrowserState(chrome_browser_state_.get());
     mediator_ = [[NTPHomeMediator alloc]
-               initWithWebState:test_web_state_.get()
+               initWithWebState:fake_web_state_.get()
              templateURLService:ios::TemplateURLServiceFactory::
                                     GetForBrowserState(
                                         chrome_browser_state_.get())
@@ -118,7 +118,7 @@ class NTPHomeMediatorTest : public PlatformTest {
   signin::IdentityManager* identity_manager_;
 
  private:
-  std::unique_ptr<web::TestWebState> test_web_state_;
+  std::unique_ptr<web::FakeWebState> fake_web_state_;
 };
 
 // Tests that the consumer has the right value set up.

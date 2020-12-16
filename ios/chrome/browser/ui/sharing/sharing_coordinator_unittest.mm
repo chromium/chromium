@@ -32,8 +32,8 @@
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/chrome/test/scoped_key_window.h"
-#import "ios/web/public/test/fakes/test_navigation_manager.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -51,15 +51,19 @@
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
 
-class MockTestWebState : public web::TestWebState {
+namespace {
+
+class MockWebState : public web::FakeWebState {
  public:
-  MockTestWebState() : web::TestWebState() {
-    SetNavigationManager(std::make_unique<web::TestNavigationManager>());
+  MockWebState() : web::FakeWebState() {
+    SetNavigationManager(std::make_unique<web::FakeNavigationManager>());
   }
 
   MOCK_METHOD2(ExecuteJavaScript,
                void(const base::string16&, JavaScriptResultCallback));
 };
+
+}  // namespace
 
 // Test fixture for testing SharingCoordinator.
 class SharingCoordinatorTest : public BookmarkIOSUnitTest {
@@ -79,7 +83,7 @@ class SharingCoordinatorTest : public BookmarkIOSUnitTest {
                      forProtocol:@protocol(SnackbarCommands)];
   }
 
-  void AppendNewWebState(std::unique_ptr<web::TestWebState> web_state) {
+  void AppendNewWebState(std::unique_ptr<web::FakeWebState> web_state) {
     browser_->GetWebStateList()->InsertWebState(
         WebStateList::kInvalidIndex, std::move(web_state),
         WebStateList::INSERT_ACTIVATE, WebStateOpener());
@@ -137,7 +141,7 @@ TEST_F(SharingCoordinatorTest, Start_ShareCurrentPage) {
   // Create a test web state.
   GURL test_url = GURL("https://example.com");
   base::Value url_value = base::Value(test_url.spec());
-  auto test_web_state = std::make_unique<MockTestWebState>();
+  auto test_web_state = std::make_unique<MockWebState>();
   test_web_state->SetCurrentURL(test_url);
   test_web_state->SetBrowserState(browser_->GetBrowserState());
 

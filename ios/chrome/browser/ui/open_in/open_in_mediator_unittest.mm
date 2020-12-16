@@ -7,7 +7,7 @@
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/ui/open_in/open_in_toolbar.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
@@ -28,8 +28,8 @@ class OpenInMediatorTest : public PlatformTest {
         browser_(std::make_unique<TestBrowser>(browser_state_.get())),
         mediator_([[OpenInMediator alloc] initWithBrowser:browser_.get()]) {}
 
-  std::unique_ptr<web::TestWebState> CreateWebStateWithView() {
-    auto web_state = std::make_unique<web::TestWebState>();
+  std::unique_ptr<web::FakeWebState> CreateWebStateWithView() {
+    auto web_state = std::make_unique<web::FakeWebState>();
     CGRect web_view_frame = CGRectMake(0, 0, 100, 100);
     UIView* web_state_view = [[UIView alloc] initWithFrame:web_view_frame];
     web_view_proxy_mock = OCMProtocolMock(@protocol(CRWWebViewProxy));

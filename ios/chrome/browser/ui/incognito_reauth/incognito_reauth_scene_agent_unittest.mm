@@ -16,7 +16,7 @@
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
@@ -66,7 +66,7 @@ class IncognitoReauthSceneAgentTest : public PlatformTest {
     std::unique_ptr<WebStateList> web_state_list =
         std::make_unique<WebStateList>(&web_state_list_delegate_);
     for (int i = 0; i < tabs_count; ++i) {
-      web_state_list->InsertWebState(i, std::make_unique<web::TestWebState>(),
+      web_state_list->InsertWebState(i, std::make_unique<web::FakeWebState>(),
                                      WebStateList::INSERT_FORCE_INDEX,
                                      WebStateOpener());
     }
@@ -221,7 +221,7 @@ TEST_F(IncognitoReauthSceneAgentTest,
   EXPECT_FALSE(agent_.authenticationRequired);
 
   // Open another tab.
-  web_state_list_->InsertWebState(0, std::make_unique<web::TestWebState>(),
+  web_state_list_->InsertWebState(0, std::make_unique<web::FakeWebState>(),
                                   WebStateList::INSERT_FORCE_INDEX,
                                   WebStateOpener());
 

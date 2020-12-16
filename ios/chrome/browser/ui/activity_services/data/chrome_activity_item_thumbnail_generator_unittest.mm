@@ -8,7 +8,7 @@
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/snapshots/fake_snapshot_generator_delegate.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "testing/platform_test.h"
 #include "ui/base/test/ios/ui_image_test_utils.h"
 
@@ -27,13 +27,13 @@ class ChromeActivityItemThumbnailGeneratorTest : public PlatformTest {
     CGRect frame = {CGPointZero, CGSizeMake(400, 300)};
     delegate_.view = [[UIView alloc] initWithFrame:frame];
     delegate_.view.backgroundColor = [UIColor redColor];
-    SnapshotTabHelper::CreateForWebState(&test_web_state_,
+    SnapshotTabHelper::CreateForWebState(&fake_web_state_,
                                          [[NSUUID UUID] UUIDString]);
-    SnapshotTabHelper::FromWebState(&test_web_state_)->SetDelegate(delegate_);
+    SnapshotTabHelper::FromWebState(&fake_web_state_)->SetDelegate(delegate_);
   }
 
   void SetIncognito(bool incognito) {
-    test_web_state_.SetBrowserState(
+    fake_web_state_.SetBrowserState(
         incognito ? chrome_browser_state_->GetOffTheRecordChromeBrowserState()
                   : chrome_browser_state_.get());
   }
@@ -41,7 +41,7 @@ class ChromeActivityItemThumbnailGeneratorTest : public PlatformTest {
   FakeSnapshotGeneratorDelegate* delegate_ = nil;
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
-  web::TestWebState test_web_state_;
+  web::FakeWebState fake_web_state_;
 };
 
 TEST_F(ChromeActivityItemThumbnailGeneratorTest,
@@ -51,7 +51,7 @@ TEST_F(ChromeActivityItemThumbnailGeneratorTest,
   CGSize size = CGSizeMake(50, 50);
   ChromeActivityItemThumbnailGenerator* generator =
       [[ChromeActivityItemThumbnailGenerator alloc]
-          initWithWebState:&test_web_state_];
+          initWithWebState:&fake_web_state_];
   EXPECT_TRUE(generator);
   UIImage* thumbnail = [generator thumbnailWithSize:size];
   EXPECT_TRUE(thumbnail);
@@ -65,7 +65,7 @@ TEST_F(ChromeActivityItemThumbnailGeneratorTest,
   CGSize size = CGSizeMake(50, 50);
   ChromeActivityItemThumbnailGenerator* generator =
       [[ChromeActivityItemThumbnailGenerator alloc]
-          initWithWebState:&test_web_state_];
+          initWithWebState:&fake_web_state_];
   EXPECT_TRUE(generator);
   UIImage* thumbnail = [generator thumbnailWithSize:size];
   EXPECT_FALSE(thumbnail);

@@ -5,9 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_UI_TOOLBAR_TEST_TOOLBAR_TEST_WEB_STATE_H_
 #define IOS_CHROME_BROWSER_UI_TOOLBAR_TEST_TOOLBAR_TEST_WEB_STATE_H_
 
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 
-class ToolbarTestWebState : public web::TestWebState {
+class ToolbarTestWebState : public web::FakeWebState {
  public:
   ToolbarTestWebState();
 
