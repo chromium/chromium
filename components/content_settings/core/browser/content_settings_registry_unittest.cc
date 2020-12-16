@@ -124,7 +124,6 @@ TEST_F(ContentSettingsRegistryTest, Inheritance) {
   // disable features like popup blocking, download blocking or ad blocking.
   // They do not allow access to user data.
   const ContentSettingsType safe_types[] = {
-      ContentSettingsType::PLUGINS,
       ContentSettingsType::POPUPS,
       ContentSettingsType::AUTOMATIC_DOWNLOADS,
       ContentSettingsType::ADS,

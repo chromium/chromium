@@ -229,39 +229,6 @@ class PageInfoBubbleViewTest : public testing::Test {
   DISALLOW_COPY_AND_ASSIGN(PageInfoBubbleViewTest);
 };
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-// Waits until a change is observed in content settings.
-class FlashContentSettingsChangeWaiter : public content_settings::Observer {
- public:
-  explicit FlashContentSettingsChangeWaiter(Profile* profile)
-      : profile_(profile) {
-    HostContentSettingsMapFactory::GetForProfile(profile)->AddObserver(this);
-  }
-  ~FlashContentSettingsChangeWaiter() override {
-    HostContentSettingsMapFactory::GetForProfile(profile_)->RemoveObserver(
-        this);
-  }
-
-  // content_settings::Observer:
-  void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
-                               const ContentSettingsPattern& secondary_pattern,
-                               ContentSettingsType content_type) override {
-    if (content_type == ContentSettingsType::PLUGINS)
-      Proceed();
-  }
-
-  void Wait() { run_loop_.Run(); }
-
- private:
-  void Proceed() { run_loop_.Quit(); }
-
-  Profile* profile_;
-  base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(FlashContentSettingsChangeWaiter);
-};
-#endif
-
 }  // namespace
 
 // Each permission selector row is like this: [icon] [label] [selector]

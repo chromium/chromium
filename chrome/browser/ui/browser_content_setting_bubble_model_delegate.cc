@@ -53,9 +53,6 @@ void BrowserContentSettingBubbleModelDelegate::ShowLearnMorePage(
     ContentSettingsType type) {
   GURL learn_more_url;
   switch (type) {
-    case ContentSettingsType::PLUGINS:
-      learn_more_url = GURL(chrome::kBlockedPluginLearnMoreURL);
-      break;
     case ContentSettingsType::ADS:
       learn_more_url = GURL(subresource_filter::kLearnMoreLink);
       break;

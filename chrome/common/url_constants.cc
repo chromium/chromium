@@ -449,9 +449,6 @@ const char kChromeSyncLearnMoreURL[] =
 #endif  // BUILDFLAG(ENABLE_ONE_CLICK_SIGNIN)
 
 #if BUILDFLAG(ENABLE_PLUGINS)
-const char kBlockedPluginLearnMoreURL[] =
-    "https://support.google.com/chrome/?p=ib_blocked_plugin";
-
 const char kOutdatedPluginLearnMoreURL[] =
     "https://support.google.com/chrome/?p=ib_outdated_plugin";
 #endif

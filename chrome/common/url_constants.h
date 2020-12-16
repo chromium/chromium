@@ -411,8 +411,6 @@ extern const char kChromeSyncLearnMoreURL[];
 #endif
 
 #if BUILDFLAG(ENABLE_PLUGINS)
-// The URL for the "Learn more" page for the blocked plugin infobar.
-extern const char kBlockedPluginLearnMoreURL[];
 
 // The URL for the "Learn more" page for the outdated plugin infobar.
 extern const char kOutdatedPluginLearnMoreURL[];
