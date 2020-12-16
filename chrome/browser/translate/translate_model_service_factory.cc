@@ -4,6 +4,9 @@
 
 #include "chrome/browser/translate/translate_model_service_factory.h"
 
+#include "base/memory/scoped_refptr.h"
+#include "base/sequenced_task_runner.h"
+#include "base/task/task_traits.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -43,8 +46,13 @@ TranslateModelServiceFactory::BuildServiceInstanceFor(
   auto* opt_guide = OptimizationGuideKeyedServiceFactory::GetForProfile(
       ProfileManager::GetProfileFromProfileKey(
           ProfileKey::FromSimpleFactoryKey(key)));
-  if (opt_guide)
-    return std::make_unique<translate::TranslateModelService>(opt_guide);
+  if (opt_guide) {
+    scoped_refptr<base::SequencedTaskRunner> background_task_runner =
+        base::ThreadPool::CreateSequencedTaskRunner(
+            {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
+    return std::make_unique<translate::TranslateModelService>(
+        opt_guide, background_task_runner);
+  }
   return nullptr;
 }
 

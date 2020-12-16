@@ -5,14 +5,16 @@
 #ifndef COMPONENTS_TRANSLATE_CONTENT_BROWSER_TRANSLATE_MODEL_SERVICE_H_
 #define COMPONENTS_TRANSLATE_CONTENT_BROWSER_TRANSLATE_MODEL_SERVICE_H_
 
+#include <memory>
+#include <vector>
+
+#include "base/callback.h"
+#include "base/files/file.h"
+#include "base/files/file_path.h"
 #include "base/optional.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/optimization_target_model_observer.h"
 
-namespace base {
-class File;
-class FilePath;
-}  // namespace base
 
 namespace optimization_guide {
 class OptimizationGuideDecider;
@@ -27,8 +29,11 @@ class TranslateModelService
     : public KeyedService,
       public optimization_guide::OptimizationTargetModelObserver {
  public:
-  explicit TranslateModelService(
-      optimization_guide::OptimizationGuideDecider* opt_guide);
+  using GetModelCallback = base::OnceCallback<void(base::File)>;
+
+  TranslateModelService(
+      optimization_guide::OptimizationGuideDecider* opt_guide,
+      const scoped_refptr<base::SequencedTaskRunner>& background_task_runner);
   ~TranslateModelService() override;
 
   // KeyedService implementation:
@@ -39,16 +44,28 @@ class TranslateModelService
       optimization_guide::proto::OptimizationTarget optimization_target,
       const base::FilePath& file_path) override;
 
-  // Returns a loaded file containing the TFLite model capable of detecting the
-  // language of a web page's text.
-  base::Optional<base::File> GetLanguageDetectionModelFile();
+  // Invokes |callback| with a language detection model file when it is
+  // available.
+  void GetLanguageDetectionModelFile(GetModelCallback callback);
 
  private:
-  // Optimization Guide Service that provides model files for this
-  // service. Optimization Guide Service is a
-  // BrowserContextKeyedServiceFactory and should not
-  // be used after ShutDown.
+  void OnModelFileLoaded(base::File model_file);
+
+  // Optimization Guide Service that provides model files for this service.
+  // Optimization Guide Service is a BrowserContextKeyedServiceFactory and
+  // should not be used after Shutdown.
   optimization_guide::OptimizationGuideDecider* opt_guide_;
+
+  // The file that contains the language detection model. Available when the
+  // file path has been provided by the Optimization Guide and has been
+  // successfully loaded.
+  base::Optional<base::File> language_detection_model_file_;
+
+  // The set of callbacks associated with requests for the language detection
+  // model.
+  std::vector<GetModelCallback> pending_model_requests_;
+
+  scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 };
 
 }  //  namespace translate

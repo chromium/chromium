@@ -73,8 +73,6 @@ class OptimizationGuideDecider {
   //
   // It is assumed that any model retrieved this way will be passed to the
   // Machine Learning Service for inference.
-  //
-  // Still being implemented - DO NOT USE YET.
   virtual void AddObserverForOptimizationTargetModel(
       proto::OptimizationTarget optimization_target,
       OptimizationTargetModelObserver* observer) = 0;
@@ -84,8 +82,6 @@ class OptimizationGuideDecider {
   // If |observer| is registered for multiple targets, |observer| must be
   // removed for all targets that it is added for in order for it to be fully
   // removed from receiving any calls.
-  //
-  // Still being implemented - DO NOT USE YET.
   virtual void RemoveObserverForOptimizationTargetModel(
       proto::OptimizationTarget optimization_target,
       OptimizationTargetModelObserver* observer) = 0;

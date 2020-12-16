@@ -2,10 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/base_paths.h"
+#include "base/bind.h"
+#include "base/files/file.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/threading/thread_restrictions.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/translate/translate_model_service_factory.h"
@@ -14,6 +23,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/optimization_guide/optimization_guide_features.h"
+#include "components/optimization_guide/proto/models.pb.h"
 #include "components/translate/core/common/translate_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -111,20 +121,102 @@ class TranslateModelServiceBrowserTest
 
   ~TranslateModelServiceBrowserTest() override = default;
 
+  translate::TranslateModelService* translate_model_service() {
+    return TranslateModelServiceFactory::GetOrBuildForKey(
+        browser()->profile()->GetProfileKey());
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+base::FilePath model_file_path() {
+  base::FilePath model_file_path;
+  EXPECT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &model_file_path));
+  return model_file_path.AppendASCII(
+      "chrome/test/data/optimization_guide/unsignedmodel.crx3");
+}
+
 IN_PROC_BROWSER_TEST_F(TranslateModelServiceBrowserTest,
                        TranslateModelServiceEnabled) {
-  EXPECT_TRUE(TranslateModelServiceFactory::GetOrBuildForKey(
-      browser()->profile()->GetProfileKey()));
+  EXPECT_TRUE(translate_model_service());
 }
 
 IN_PROC_BROWSER_TEST_F(TranslateModelServiceBrowserTest,
                        TranslateModelServiceEnabled_OffTheRecord) {
   EXPECT_TRUE(TranslateModelServiceFactory::GetOrBuildForKey(
       browser()->profile()->GetPrimaryOTRProfile()->GetProfileKey()));
+}
+
+IN_PROC_BROWSER_TEST_F(TranslateModelServiceBrowserTest,
+                       LanguageDetectionModelReadyOnRequest) {
+  base::ScopedAllowBlockingForTesting allow_io_for_test_setup;
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(translate_model_service());
+
+  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+      ->OverrideTargetModelFileForTesting(
+          optimization_guide::proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
+          model_file_path());
+
+  RetryForHistogramUntilCountReached(
+      &histogram_tester,
+      "TranslateModelService.LanguageDetectionModel.WasLoaded", 1);
+  histogram_tester.ExpectUniqueSample(
+      "TranslateModelService.LanguageDetectionModel.WasLoaded", true, 1);
+
+  std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
+  translate_model_service()->GetLanguageDetectionModelFile(base::BindOnce(
+      [](base::RunLoop* run_loop, base::File model_file) {
+        EXPECT_TRUE(model_file.IsValid());
+        run_loop->Quit();
+      },
+      run_loop.get()));
+
+  run_loop->Run();
+}
+
+IN_PROC_BROWSER_TEST_F(TranslateModelServiceBrowserTest,
+                       LanguageDetectionModelLoadedAfterRequest) {
+  base::ScopedAllowBlockingForTesting allow_io_for_test_setup;
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(translate_model_service());
+  std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
+  translate_model_service()->GetLanguageDetectionModelFile(base::BindOnce(
+      [](base::RunLoop* run_loop, base::File model_file) {
+        EXPECT_TRUE(model_file.IsValid());
+        run_loop->Quit();
+      },
+      run_loop.get()));
+
+  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+      ->OverrideTargetModelFileForTesting(
+          optimization_guide::proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
+          model_file_path());
+
+  RetryForHistogramUntilCountReached(
+      &histogram_tester,
+      "TranslateModelService.LanguageDetectionModel.WasLoaded", 1);
+  histogram_tester.ExpectUniqueSample(
+      "TranslateModelService.LanguageDetectionModel.WasLoaded", true, 1);
+  run_loop->Run();
+}
+
+IN_PROC_BROWSER_TEST_F(TranslateModelServiceBrowserTest,
+                       InvalidModelWhenLoading) {
+  base::ScopedAllowBlockingForTesting allow_io_for_test_setup;
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(translate_model_service());
+  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+      ->OverrideTargetModelFileForTesting(
+          optimization_guide::proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
+          base::FilePath());
+
+  RetryForHistogramUntilCountReached(
+      &histogram_tester,
+      "TranslateModelService.LanguageDetectionModel.WasValid", 1);
+  histogram_tester.ExpectUniqueSample(
+      "TranslateModelService.LanguageDetectionModel.WasValid", false, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(TranslateModelServiceBrowserTest,
