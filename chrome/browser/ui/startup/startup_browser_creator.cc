@@ -282,7 +282,7 @@ bool CanOpenProfileOnStartup(Profile* profile) {
 bool ShouldShowProfilePickerAtProcessLaunch(
     ProfileManager* profile_manager,
     const base::CommandLine& command_line) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return false;
 #else
   // If multiple profiles get restored, do not show the picker.
@@ -319,7 +319,7 @@ bool ShouldShowProfilePickerAtProcessLaunch(
   }
 #endif  // defined(OS_WIN)
   return ProfilePicker::ShouldShowAtLaunch();
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void ShowUserManager(bool is_process_startup) {
@@ -1191,7 +1191,7 @@ std::vector<GURL> GetURLsFromCommandLine(const base::CommandLine& command_line,
 
     const GURL settings_url = GURL(chrome::kChromeUISettingsURL);
     bool url_points_to_an_approved_settings_page = false;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     // In ChromeOS, allow any settings page to be specified on the command line.
     url_points_to_an_approved_settings_page =
         url.GetOrigin() == settings_url.GetOrigin();
@@ -1210,7 +1210,7 @@ std::vector<GURL> GetURLsFromCommandLine(const base::CommandLine& command_line,
         url_points_to_an_approved_settings_page ||
         url == reset_settings_url_with_cct_hash;
 #endif  // defined(OS_WIN)
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     ChildProcessSecurityPolicy* policy =
         ChildProcessSecurityPolicy::GetInstance();
@@ -1264,7 +1264,7 @@ Profile* GetStartupProfile(const base::FilePath& user_data_dir,
                            const base::FilePath& cur_dir,
                            const base::CommandLine& command_line) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   if (ShouldShowProfilePickerAtProcessLaunch(profile_manager, command_line)) {
     // Open the picker only if no URLs have been provided to launch Chrome. If
     // URLs are provided, open them in the last profile, instead.
@@ -1285,7 +1285,7 @@ Profile* GetStartupProfile(const base::FilePath& user_data_dir,
       return guest_profile;
     }
   }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   base::FilePath profile_path =
       GetStartupProfilePath(user_data_dir, command_line);

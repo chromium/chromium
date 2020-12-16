@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_MENU_MODEL_H_
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_MENU_MODEL_H_
 
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 
 class AssignToDesksMenuModel;

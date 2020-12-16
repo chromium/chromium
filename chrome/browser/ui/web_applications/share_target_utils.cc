@@ -10,6 +10,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_share_target/target_util.h"
 #include "components/services/app_service/public/cpp/share_target.h"

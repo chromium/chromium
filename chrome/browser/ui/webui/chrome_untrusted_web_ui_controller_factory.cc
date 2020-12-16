@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/chrome_untrusted_web_ui_controller_factory.h"
 
 #include "base/no_destructor.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
@@ -23,7 +24,7 @@ namespace {
 // constructing from a vector is O(n log n).
 WebUIConfigList CreateConfigs() {
   WebUIConfigList config_list;
-#if defined(OS_CHROMEOS) && !defined(OFFICIAL_BUILD)
+#if BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OFFICIAL_BUILD)
   auto register_config =
       [&config_list](std::unique_ptr<ui::WebUIConfig> config) {
         DCHECK_EQ(config->scheme(), content::kChromeUIUntrustedScheme);

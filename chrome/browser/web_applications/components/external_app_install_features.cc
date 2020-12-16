@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/components/external_app_install_features.h"
 
 #include "base/feature_list.h"
+#include "build/chromeos_buildflags.h"
 
 namespace web_app {
 

@@ -34,7 +34,7 @@ group("resources") {
     ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     public_deps += [
       ":bluetooth_pairing_dialog_resources",
       "chromeos:cellular_setup_resources",
@@ -52,7 +52,7 @@ group("resources") {
     public_deps += [ "webui_js_error:webui_js_error_resources" ]
   }
 
-  if (!is_android && !is_chromeos) {
+  if (!is_android && !is_chromeos_ash) {
     public_deps += [
       "signin/profile_picker:profile_picker_resources",
       "welcome:welcome_resources",

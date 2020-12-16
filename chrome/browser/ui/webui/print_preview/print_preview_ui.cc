@@ -313,7 +313,7 @@ void AddPrintPreviewStrings(content::WebUIDataSource* source) {
     {"selectButton", IDS_PRINT_PREVIEW_BUTTON_SELECT},
     {"seeMore", IDS_PRINT_PREVIEW_SEE_MORE},
     {"seeMoreDestinationsLabel", IDS_PRINT_PREVIEW_SEE_MORE_DESTINATIONS_LABEL},
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     {"serverSearchBoxPlaceholder",
      IDS_PRINT_PREVIEW_SERVER_SEARCH_BOX_PLACEHOLDER},
 #endif
