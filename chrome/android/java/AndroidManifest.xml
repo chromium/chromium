@@ -1222,13 +1222,11 @@ by a child template that "extends" this file.
           "com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
           android:value="org.chromium.components.media_router.caf.CastOptionsProvider"/>
 
-      <!-- These providers are declared in the base module and have the
-           initOrder attribute to ensure they are loaded first, which gives the
-           chrome split preloader more time to work. -->
+      <!-- These providers are declared in the base module to give the chrome
+           split preloader more time to work. -->
       <provider android:name="org.chromium.chrome.browser.util.ChromeFileProvider"
           android:authorities="{{ manifest_package }}.FileProvider"
           android:exported="false"
-          android:initOrder="10000"
           android:grantUriPermissions="true">
           <meta-data android:name="android.support.FILE_PROVIDER_PATHS"
               android:resource="@xml/file_paths" />
@@ -1237,7 +1235,6 @@ by a child template that "extends" this file.
       <provider android:name="org.chromium.chrome.browser.download.DownloadFileProvider"
           android:authorities="{{ manifest_package }}.DownloadFileProvider"
           android:exported="false"
-          android:initOrder="10000"
           android:grantUriPermissions="true">
           <meta-data android:name="android.support.FILE_PROVIDER_PATHS"
               android:resource="@xml/file_paths" />
@@ -1246,7 +1243,6 @@ by a child template that "extends" this file.
       <!-- Provider for chrome data. -->
       <provider android:name="org.chromium.chrome.browser.provider.ChromeBrowserProvider"
           android:authorities="{{ manifest_package }}.ChromeBrowserProvider;{{ manifest_package }}.browser;{{ manifest_package }}"
-          android:initOrder="10000"
           android:exported="true">
           <path-permission android:path="/bookmarks/search_suggest_query"
                   android:readPermission="android.permission.GLOBAL_SEARCH" />

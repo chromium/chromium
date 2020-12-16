@@ -400,16 +400,18 @@ def _GetManifestForModule(bundle_path, module_name):
       ]))
 
 
-def _GetServiceNames(manifest):
+def _GetComponentNames(manifest, tag_name):
   android_name = '{%s}name' % manifest_utils.ANDROID_NAMESPACE
-  return [s.attrib.get(android_name) for s in manifest.iter('service')]
+  return [s.attrib.get(android_name) for s in manifest.iter(tag_name)]
 
 
-def _MaybeCheckServicesPresentInBase(bundle_path, module_zips):
+def _MaybeCheckServicesAndProvidersPresentInBase(bundle_path, module_zips):
   """Checks bundles with isolated splits define all services in the base module.
 
   Due to b/169196314, service classes are not found if they are not present in
-  the base module.
+  the base module. Providers are also checked because they are loaded early in
+  startup, and keeping them in the base module gives more time for the chrome
+  split to load.
   """
   base_manifest = _GetManifestForModule(bundle_path, 'base')
   isolated_splits = base_manifest.get('{%s}isolatedSplits' %
@@ -419,14 +421,21 @@ def _MaybeCheckServicesPresentInBase(bundle_path, module_zips):
 
   # Collect service names from all split manifests.
   base_zip = None
-  service_names = _GetServiceNames(base_manifest)
+  service_names = _GetComponentNames(base_manifest, 'service')
+  provider_names = _GetComponentNames(base_manifest, 'provider')
   for module_zip in module_zips:
     name = os.path.basename(module_zip)[:-len('.zip')]
     if name == 'base':
       base_zip = module_zip
     else:
       service_names.extend(
-          _GetServiceNames(_GetManifestForModule(bundle_path, name)))
+          _GetComponentNames(_GetManifestForModule(bundle_path, name),
+                             'service'))
+      module_providers = _GetComponentNames(
+          _GetManifestForModule(bundle_path, name), 'provider')
+      if module_providers:
+        raise Exception("Providers should all be declared in the base manifest."
+                        " '%s' module declared: %s" % (name, module_providers))
 
   # Extract classes from the base module's dex.
   classes = set()
@@ -457,6 +466,13 @@ def _MaybeCheckServicesPresentInBase(bundle_path, module_zips):
         continue
       raise Exception("Service %s should be present in the base module's dex."
                       " See b/169196314 for more details." % service_name)
+
+  # Ensure all providers are present in base module.
+  for provider_name in provider_names:
+    if provider_name not in classes:
+      raise Exception(
+          "Provider %s should be present in the base module's dex." %
+          provider_name)
 
 
 def main(args):
@@ -516,7 +532,8 @@ def main(args):
       # isolated splits disabled and 2s for bundles with isolated splits
       # enabled.  Consider making this run in parallel or move into a separate
       # step before enabling isolated splits by default.
-      _MaybeCheckServicesPresentInBase(tmp_unsigned_bundle, module_zips)
+      _MaybeCheckServicesAndProvidersPresentInBase(tmp_unsigned_bundle,
+                                                   module_zips)
 
     if options.keystore_path:
       # NOTE: As stated by the public documentation, apksigner cannot be used
