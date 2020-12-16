@@ -31,6 +31,7 @@
 #include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom-forward.h"
+#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-forward.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 #include "third_party/blink/public/platform/web_url_loader.h"
@@ -162,7 +163,8 @@ class CONTENT_EXPORT ResourceDispatcher {
 
   void OnTransferSizeUpdated(int request_id, int32_t transfer_size_diff);
 
-  void EvictFromBackForwardCache(int request_id);
+  void EvictFromBackForwardCache(blink::mojom::RendererEvictionReason reason,
+                                 int request_id);
 
   // Sets the CORS exempt header list for sanity checking.
   void SetCorsExemptHeaderList(const std::vector<std::string>& list);

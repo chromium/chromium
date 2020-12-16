@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_RESPONSE_BODY_LOADER_CLIENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_RESPONSE_BODY_LOADER_CLIENT_H_
 
+#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink-forward.h"
+
 namespace blink {
 
 // A ResponseBodyLoaderClient receives signals for loading a response body.
@@ -27,7 +29,8 @@ class ResponseBodyLoaderClient : public GarbageCollectedMixin {
   virtual void DidCancelLoadingBody() = 0;
 
   // Called when the body loader is suspended and the data pipe is drained.
-  virtual void EvictFromBackForwardCache() = 0;
+  virtual void EvictFromBackForwardCache(
+      mojom::blink::RendererEvictionReason) = 0;
 };
 
 }  // namespace blink

@@ -134,6 +134,17 @@ std::string BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToString(
     case Reason::kFrameTreeNodeStateReset:
       return "document-associated state stored in FrameTreeNode was lost after "
              "navigating away";
+    case Reason::kNavigationCancelledWhileRestoring:
+      return "Navigation request was cancelled after js eviction was disabled";
+    case Reason::kNetworkRequestDatapipeDrained:
+      return "Network requests' datapipe is drained already upon bfcache "
+             "entrance";
+    case Reason::kNetworkRequestRedirected:
+      return "Network request is redirected in bfcache";
+    case Reason::kNetworkRequestTimeout:
+      return "Network request is open for too long and exceeds time limit";
+    case Reason::kNetworkExceedsBufferLimit:
+      return "Network request reads too much data and exceeds buffer limit";
   }
 }
 

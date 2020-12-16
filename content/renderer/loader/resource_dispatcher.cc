@@ -408,12 +408,14 @@ void ResourceDispatcher::OnTransferSizeUpdated(int request_id,
       ->NotifyResourceTransferSizeUpdated(transfer_size_diff);
 }
 
-void ResourceDispatcher::EvictFromBackForwardCache(int request_id) {
+void ResourceDispatcher::EvictFromBackForwardCache(
+    blink::mojom::RendererEvictionReason reason,
+    int request_id) {
   PendingRequestInfo* request_info = GetPendingRequestInfo(request_id);
   if (!request_info)
     return;
 
-  return request_info->peer->EvictFromBackForwardCache();
+  return request_info->peer->EvictFromBackForwardCache(reason);
 }
 
 void ResourceDispatcher::SetCorsExemptHeaderList(

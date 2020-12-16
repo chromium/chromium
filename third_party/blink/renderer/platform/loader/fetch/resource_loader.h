@@ -37,6 +37,7 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom-blink.h"
+#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_url_loader.h"
 #include "third_party/blink/public/platform/web_url_loader_client.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -138,7 +139,7 @@ class PLATFORM_EXPORT ResourceLoader final
                int64_t encoded_data_length,
                int64_t encoded_body_length,
                int64_t decoded_body_length) override;
-  void EvictFromBackForwardCache() override;
+  void EvictFromBackForwardCache(mojom::RendererEvictionReason) override;
 
   blink::mojom::CodeCacheType GetCodeCacheType() const;
   void SendCachedCodeToResource(mojo_base::BigBuffer data);

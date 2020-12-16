@@ -43,6 +43,7 @@
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
+#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
@@ -2102,7 +2103,8 @@ void ResourceFetcher::OnBackForwardCacheEvictionTimerFired() {
     return;
 
   StopFetching();
-  EvictFromBackForwardCache();
+  EvictFromBackForwardCache(
+      mojom::RendererEvictionReason::kNetworkRequestTimeout);
 }
 
 void ResourceFetcher::UpdateAllImageResourcePriorities() {
@@ -2304,10 +2306,11 @@ void ResourceFetcher::RemoveSubresourceWebBundle(
   subresource_web_bundles_.erase(&subresource_web_bundle);
 }
 
-void ResourceFetcher::EvictFromBackForwardCache() {
+void ResourceFetcher::EvictFromBackForwardCache(
+    mojom::RendererEvictionReason reason) {
   if (!resource_load_observer_)
     return;
-  resource_load_observer_->EvictFromBackForwardCache();
+  resource_load_observer_->EvictFromBackForwardCache(reason);
 }
 
 void ResourceFetcher::Trace(Visitor* visitor) const {

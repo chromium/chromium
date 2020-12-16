@@ -410,7 +410,7 @@ class WebURLLoaderImpl::Context : public base::RefCounted<Context> {
   void OnTransferSizeUpdated(int transfer_size_diff);
   void OnReceivedCachedMetadata(mojo_base::BigBuffer data);
   void OnCompletedRequest(const network::URLLoaderCompletionStatus& status);
-  void EvictFromBackForwardCache();
+  void EvictFromBackForwardCache(blink::mojom::RendererEvictionReason);
 
  private:
   friend class base::RefCounted<Context>;
@@ -485,7 +485,7 @@ class WebURLLoaderImpl::RequestPeerImpl : public RequestPeer {
   void OnReceivedCachedMetadata(mojo_base::BigBuffer data) override;
   void OnCompletedRequest(
       const network::URLLoaderCompletionStatus& status) override;
-  void EvictFromBackForwardCache() override;
+  void EvictFromBackForwardCache(blink::mojom::RendererEvictionReason) override;
 
  private:
   scoped_refptr<Context> context_;
@@ -836,8 +836,9 @@ void WebURLLoaderImpl::RequestPeerImpl::OnCompletedRequest(
   context_->OnCompletedRequest(status);
 }
 
-void WebURLLoaderImpl::RequestPeerImpl::EvictFromBackForwardCache() {
-  context_->EvictFromBackForwardCache();
+void WebURLLoaderImpl::RequestPeerImpl::EvictFromBackForwardCache(
+    blink::mojom::RendererEvictionReason reason) {
+  context_->EvictFromBackForwardCache(reason);
 }
 
 // WebURLLoaderImpl -----------------------------------------------------------
@@ -1252,8 +1253,9 @@ void WebURLLoaderImpl::Context::AppendVariationsThrottles(
   VariationsRenderThreadObserver::AppendThrottleIfNeeded(origin, throttles);
 }
 
-void WebURLLoaderImpl::Context::EvictFromBackForwardCache() {
-  client()->EvictFromBackForwardCache();
+void WebURLLoaderImpl::Context::EvictFromBackForwardCache(
+    blink::mojom::RendererEvictionReason reason) {
+  client()->EvictFromBackForwardCache(reason);
 }
 
 }  // namespace content

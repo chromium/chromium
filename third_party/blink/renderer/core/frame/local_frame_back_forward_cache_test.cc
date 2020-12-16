@@ -41,7 +41,9 @@ class TestLocalFrameBackForwardCacheClient
 
   ~TestLocalFrameBackForwardCacheClient() override = default;
 
-  void EvictFromBackForwardCache() override { quit_closure_.Run(); }
+  void EvictFromBackForwardCache(mojom::RendererEvictionReason) override {
+    quit_closure_.Run();
+  }
 
   void WaitUntilEvictedFromBackForwardCache() {
     base::RunLoop run_loop;

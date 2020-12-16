@@ -89,7 +89,8 @@ void TestRequestPeer::OnCompletedRequest(
   context_->completion_status = status;
 }
 
-void TestRequestPeer::EvictFromBackForwardCache() {
+void TestRequestPeer::EvictFromBackForwardCache(
+    blink::mojom::RendererEvictionReason reason) {
   return;
 }
 

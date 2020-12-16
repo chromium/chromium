@@ -179,7 +179,8 @@ bool SyncLoadContext::OnReceivedRedirect(
   return true;
 }
 
-void SyncLoadContext::EvictFromBackForwardCache() {
+void SyncLoadContext::EvictFromBackForwardCache(
+    blink::mojom::RendererEvictionReason reason) {
   return;
 }
 

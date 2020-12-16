@@ -42,7 +42,7 @@ class TestRequestPeer : public RequestPeer {
   void OnReceivedCachedMetadata(mojo_base::BigBuffer data) override;
   void OnCompletedRequest(
       const network::URLLoaderCompletionStatus& status) override;
-  void EvictFromBackForwardCache() override;
+  void EvictFromBackForwardCache(blink::mojom::RendererEvictionReason) override;
 
   struct Context final {
     Context();

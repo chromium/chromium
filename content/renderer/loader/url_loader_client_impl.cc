@@ -17,6 +17,7 @@
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/features.h"
+#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -186,7 +187,8 @@ class URLLoaderClientImpl::BodyBuffer final
 
     if (total_bytes_drained_ > max_bytes_drained_ &&
         owner_->IsDeferredWithBackForwardCache()) {
-      owner_->EvictFromBackForwardCache();
+      owner_->EvictFromBackForwardCache(
+          blink::mojom::RendererEvictionReason::kNetworkExceedsBufferLimit);
       return;
     }
     buffered_body_.emplace(static_cast<const char*>(data),
@@ -384,9 +386,10 @@ void URLLoaderClientImpl::OnReceiveResponse(
                                              std::move(response_head));
   }
 }
-  
-void URLLoaderClientImpl::EvictFromBackForwardCache() {
-  resource_dispatcher_->EvictFromBackForwardCache(request_id_);
+
+void URLLoaderClientImpl::EvictFromBackForwardCache(
+    blink::mojom::RendererEvictionReason reason) {
+  resource_dispatcher_->EvictFromBackForwardCache(reason, request_id_);
 }
 
 void URLLoaderClientImpl::OnReceiveRedirect(
@@ -396,7 +399,7 @@ void URLLoaderClientImpl::OnReceiveRedirect(
   if (deferred_state_ ==
       blink::WebURLLoader::DeferType::kDeferredWithBackForwardCache) {
     // Close the connections and dispatch and OnComplete message.
-    EvictFromBackForwardCache();
+    EvictFromBackForwardCache(blink::mojom::RendererEvictionReason::kNetworkRequestRedirected);
     url_loader_.reset();
     url_loader_client_receiver_.reset();
     OnComplete(network::URLLoaderCompletionStatus(net::ERR_ABORTED));

@@ -1210,8 +1210,9 @@ void ResourceLoader::HandleError(const ResourceError& error) {
                               inflight_keepalive_bytes_);
 }
 
-void ResourceLoader::EvictFromBackForwardCache() {
-  fetcher_->EvictFromBackForwardCache();
+void ResourceLoader::EvictFromBackForwardCache(
+    mojom::RendererEvictionReason reason) {
+  fetcher_->EvictFromBackForwardCache(reason);
 }
 
 void ResourceLoader::RequestSynchronously(const ResourceRequestHead& request) {

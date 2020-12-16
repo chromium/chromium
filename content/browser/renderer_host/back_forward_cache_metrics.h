@@ -86,7 +86,12 @@ class BackForwardCacheMetrics
     // cases where the embedder disabled it due to, e.g., enterprise policy).
     kBackForwardCacheDisabledByCommandLine = 35,
     kFrameTreeNodeStateReset = 36,
-    kMaxValue = kFrameTreeNodeStateReset,
+    kNetworkRequestDatapipeDrained = 37,
+    kNetworkRequestRedirected = 38,
+    kNetworkRequestTimeout = 39,
+    kNetworkExceedsBufferLimit = 40,
+    kNavigationCancelledWhileRestoring = 41,
+    kMaxValue = kNavigationCancelledWhileRestoring,
   };
 
   using NotRestoredReasons =

@@ -33,6 +33,7 @@
 #include "base/single_thread_task_runner.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker_mode.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_url_loader.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -304,7 +305,7 @@ class PLATFORM_EXPORT ResourceFetcher
   void AddSubresourceWebBundle(SubresourceWebBundle& subresource_web_bundle);
   void RemoveSubresourceWebBundle(SubresourceWebBundle& subresource_web_bundle);
 
-  void EvictFromBackForwardCache();
+  void EvictFromBackForwardCache(mojom::RendererEvictionReason reason);
 
  private:
   friend class ResourceCacheValidationSuppressor;

@@ -336,6 +336,28 @@ bool IsLoadDataWithBaseURL(
                                                   validated_params.base_url);
 }
 
+BackForwardCacheMetrics::NotRestoredReason
+RendererEvictionReasonToNotRestoredReason(
+    blink::mojom::RendererEvictionReason reason) {
+  switch (reason) {
+    case blink::mojom::RendererEvictionReason::kJavaScriptExecution:
+      return BackForwardCacheMetrics::NotRestoredReason::kJavaScriptExecution;
+    case blink::mojom::RendererEvictionReason::kNetworkRequestDatapipeDrained:
+      return BackForwardCacheMetrics::NotRestoredReason::
+          kNetworkRequestDatapipeDrained;
+    case blink::mojom::RendererEvictionReason::kNetworkRequestRedirected:
+      return BackForwardCacheMetrics::NotRestoredReason::
+          kNetworkRequestRedirected;
+    case blink::mojom::RendererEvictionReason::kNetworkRequestTimeout:
+      return BackForwardCacheMetrics::NotRestoredReason::kNetworkRequestTimeout;
+    case blink::mojom::RendererEvictionReason::kNetworkExceedsBufferLimit:
+      return BackForwardCacheMetrics::NotRestoredReason::
+          kNetworkExceedsBufferLimit;
+  }
+  NOTREACHED();
+  return BackForwardCacheMetrics::NotRestoredReason::kUnknown;
+}
+
 // Ensure that we reset nav_entry_id_ in DidCommitProvisionalLoad if any of
 // the validations fail and lead to an early return.  Call disable() once we
 // know the commit will be successful.  Resetting nav_entry_id_ avoids acting on
@@ -4459,11 +4481,10 @@ bool RenderFrameHostImpl::IsInactiveAndDisallowReactivation() {
   }
 }
 
-void RenderFrameHostImpl::EvictFromBackForwardCache() {
-  // TODO(hajimehoshi): This function should take the reason from the renderer
-  // side.
+void RenderFrameHostImpl::EvictFromBackForwardCache(
+    blink::mojom::RendererEvictionReason reason) {
   EvictFromBackForwardCacheWithReason(
-      BackForwardCacheMetrics::NotRestoredReason::kJavaScriptExecution);
+      RendererEvictionReasonToNotRestoredReason(reason));
 }
 
 void RenderFrameHostImpl::EvictFromBackForwardCacheWithReason(

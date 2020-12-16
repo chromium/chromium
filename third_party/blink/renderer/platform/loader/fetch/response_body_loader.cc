@@ -8,6 +8,7 @@
 #include <utility>
 #include "base/auto_reset.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_context.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader.h"
@@ -433,8 +434,9 @@ void ResponseBodyLoader::DidCancelLoadingBody() {
 }
 
 // TODO(yuzus): Remove this and provide the capability to the loader.
-void ResponseBodyLoader::EvictFromBackForwardCache() {
-  client_->EvictFromBackForwardCache();
+void ResponseBodyLoader::EvictFromBackForwardCache(
+    mojom::blink::RendererEvictionReason reason) {
+  client_->EvictFromBackForwardCache(reason);
 }
 
 void ResponseBodyLoader::Start() {
@@ -481,7 +483,8 @@ void ResponseBodyLoader::Suspend(WebURLLoader::DeferType suspended_state) {
 
 void ResponseBodyLoader::EvictFromBackForwardCacheIfDrained() {
   if (IsDrained()) {
-    client_->EvictFromBackForwardCache();
+    client_->EvictFromBackForwardCache(
+        mojom::blink::RendererEvictionReason::kNetworkRequestDatapipeDrained);
   }
 }
 
@@ -555,7 +558,8 @@ void ResponseBodyLoader::OnStateChange() {
           // We've read too much data while suspended for back-forward cache.
           // Evict the page from the back-forward cache.
           result = bytes_consumer_->EndRead(available);
-          EvictFromBackForwardCache();
+          EvictFromBackForwardCache(
+              mojom::blink::RendererEvictionReason::kNetworkExceedsBufferLimit);
           return;
         }
       } else {
