@@ -17,15 +17,19 @@ import org.chromium.chrome.browser.signin.account_picker.AccountPickerProperties
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
 
 /**
  * This class regroups the buildView and bindView util methods of the
  * existing account row.
  */
-class ExistingAccountRowViewBinder {
-    private ExistingAccountRowViewBinder() {}
-
-    static void bindView(PropertyModel model, View view, PropertyKey propertyKey) {
+class ExistingAccountRowViewBinder implements ViewBinder<PropertyModel, View, PropertyKey> {
+    /**
+     * View binder that associates an existing account view with the model of
+     * {@link ExistingAccountRowProperties}.
+     */
+    @Override
+    public void bind(PropertyModel model, View view, PropertyKey propertyKey) {
         DisplayableProfileData profileData = model.get(ExistingAccountRowProperties.PROFILE_DATA);
         if (propertyKey == ExistingAccountRowProperties.ON_CLICK_LISTENER) {
             view.setOnClickListener(v

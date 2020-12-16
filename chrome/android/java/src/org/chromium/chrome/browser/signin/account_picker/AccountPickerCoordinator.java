@@ -10,6 +10,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.signin.account_picker.AccountPickerProperties.AddAccountRowProperties;
+import org.chromium.chrome.browser.signin.account_picker.AccountPickerProperties.IncognitoAccountRowProperties;
 import org.chromium.chrome.browser.signin.account_picker.AccountPickerProperties.ItemType;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter;
@@ -70,15 +72,15 @@ public class AccountPickerCoordinator {
                 new LayoutViewBuilder<>(isMobileIdentityConsistencyEnabled
                                 ? R.layout.account_picker_new_account_row
                                 : R.layout.account_picker_new_account_row_legacy),
-                AddAccountRowViewBinder::bindView);
+                new OnClickListenerViewBinder(AddAccountRowProperties.ON_CLICK_LISTENER));
         adapter.registerType(ItemType.EXISTING_ACCOUNT_ROW,
                 new LayoutViewBuilder<>(isMobileIdentityConsistencyEnabled
                                 ? R.layout.account_picker_row
                                 : R.layout.account_picker_row_legacy),
-                ExistingAccountRowViewBinder::bindView);
+                new ExistingAccountRowViewBinder());
         adapter.registerType(ItemType.INCOGNITO_ACCOUNT_ROW,
                 new LayoutViewBuilder<>(R.layout.account_picker_incognito_row),
-                IncognitoAccountRowViewBinder::bindView);
+                new OnClickListenerViewBinder(IncognitoAccountRowProperties.ON_CLICK_LISTENER));
 
         view.setAdapter(adapter);
         mMediator = new AccountPickerMediator(

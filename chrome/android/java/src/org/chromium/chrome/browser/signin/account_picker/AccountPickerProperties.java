@@ -100,13 +100,13 @@ class AccountPickerProperties {
 
         /**
          * Item type for models created with {@link AddAccountRowProperties#createModel} and
-         * use {@link AddAccountRowViewBinder} for view setup.
+         * use {@link OnClickListenerViewBinder} for view setup.
          */
         int ADD_ACCOUNT_ROW = 2;
 
         /**
          * Item type for models created with {@link IncognitoAccountRowProperties#createModel} and
-         * use {@link IncognitoAccountRowViewBinder} for view setup.
+         * use {@link OnClickListenerViewBinder} for view setup.
          */
         int INCOGNITO_ACCOUNT_ROW = 3;
     }
