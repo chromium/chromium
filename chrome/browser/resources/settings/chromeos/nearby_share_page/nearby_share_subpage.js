@@ -3,6 +3,12 @@
 // found in the LICENSE file.
 
 /**
+ * @type {!number}
+ * @private
+ */
+const DEFAULT_HIGH_VISIBILITY_TIMEOUT_S = 300;
+
+/**
  * @fileoverview
  * 'settings-nearby-share-subpage' is the settings subpage for managing the
  * Nearby Share feature.
@@ -83,9 +89,6 @@ Polymer({
     },
   },
 
-  /** @private {?nearbyShare.mojom.ReceiveManagerInterface} */
-  receiveManager_: null,
-
   /** @private {?nearbyShare.mojom.ReceiveObserverReceiver} */
   receiveObserver_: null,
 
@@ -103,7 +106,6 @@ Polymer({
           this.profileName_ = accounts[0].fullName;
           this.profileLabel_ = accounts[0].email;
         });
-    this.receiveManager_ = nearby_share.getReceiveManager();
     this.receiveObserver_ = nearby_share.observeReceiveManager(
         /** @type {!nearbyShare.mojom.ReceiveObserverInterface} */ (this));
   },
@@ -206,9 +208,7 @@ Polymer({
   /** @private */
   onInHighVisibilityToggledByUser_() {
     if (this.inHighVisibility_) {
-      this.receiveManager_.registerForegroundReceiveSurface();
-    } else {
-      this.receiveManager_.unregisterForegroundReceiveSurface();
+      this.showHighVisibilityPage_();
     }
   },
 
@@ -350,11 +350,7 @@ Polymer({
     }
 
     if (queryParams.has('receive')) {
-      // Get shutoffTimeoutInSeconds with a default of 5 minutes (300 seconds)
-      const shutoffTimeoutInSeconds = Number(queryParams.get('timeout')) || 300;
-      this.showReceiveDialog_ = true;
-      Polymer.dom.flush();
-      this.$$('#receiveDialog').showHighVisibilityPage(shutoffTimeoutInSeconds);
+      this.showHighVisibilityPage_(Number(queryParams.get('timeout')));
     }
 
     if (queryParams.has('confirm')) {
@@ -370,6 +366,18 @@ Polymer({
     }
 
     this.attemptDeepLink();
+  },
+
+  /**
+   * @param {number=} timeoutInSeconds
+   * @private
+   */
+  showHighVisibilityPage_(timeoutInSeconds) {
+    const shutoffTimeoutInSeconds =
+        timeoutInSeconds || DEFAULT_HIGH_VISIBILITY_TIMEOUT_S;
+    this.showReceiveDialog_ = true;
+    Polymer.dom.flush();
+    this.$$('#receiveDialog').showHighVisibilityPage(shutoffTimeoutInSeconds);
   },
 
   /**

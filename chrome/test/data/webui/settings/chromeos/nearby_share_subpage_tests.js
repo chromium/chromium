@@ -219,8 +219,13 @@ suite('NearbyShare', function() {
     Polymer.dom.flush();
     assertTrue(fakeReceiveManager.getInHighVisibilityForTest());
 
-    subpage.$$('#highVisibilityToggle').click();
-    Polymer.dom.flush();
+    const dialog = subpage.$$('nearby-share-receive-dialog');
+    assertTrue(!!dialog);
+
+    const highVisibilityDialog = dialog.$$('nearby-share-high-visibility-page');
+    assertTrue(test_util.isVisible(highVisibilityDialog));
+
+    dialog.close_();
     assertFalse(fakeReceiveManager.getInHighVisibilityForTest());
   });
 
