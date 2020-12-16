@@ -4712,8 +4712,15 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
     [self.view addSubview:self.blockingView];
     AddSameConstraints(self.view, self.blockingView);
+    self.blockingView.alpha = 1;
   } else {
-    [self.blockingView removeFromSuperview];
+    [UIView animateWithDuration:0.2
+        animations:^{
+          self.blockingView.alpha = 0;
+        }
+        completion:^(BOOL finished) {
+          [self.blockingView removeFromSuperview];
+        }];
   }
 }
 

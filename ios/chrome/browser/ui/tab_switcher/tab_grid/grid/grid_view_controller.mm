@@ -563,9 +563,16 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     }
 
     [self.view addSubview:self.blockingView];
+    self.blockingView.alpha = 1;
     AddSameConstraints(self.collectionView.frameLayoutGuide, self.blockingView);
   } else {
-    [self.blockingView removeFromSuperview];
+    [UIView animateWithDuration:0.2
+        animations:^{
+          self.blockingView.alpha = 0;
+        }
+        completion:^(BOOL finished) {
+          [self.blockingView removeFromSuperview];
+        }];
   }
 }
 
