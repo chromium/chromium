@@ -66,7 +66,7 @@ gfx::ImageSkia ImageLoader::Load() {
 }
 
 void ImageLoader::OnImageDecoded(const SkBitmap& decoded_image) {
-  decoded_image_ = gfx::ImageSkia(gfx::ImageSkiaRep(decoded_image, 1.0f));
+  decoded_image_ = gfx::ImageSkia::CreateFromBitmap(decoded_image, 1.0f);
   run_loop_.Quit();
 }
 

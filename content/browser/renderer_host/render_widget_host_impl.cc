@@ -2615,7 +2615,7 @@ void RenderWidgetHostImpl::StartDragging(
   }
 
   float scale = GetScaleFactorForView(GetView());
-  gfx::ImageSkia image(gfx::ImageSkiaRep(bitmap, scale));
+  gfx::ImageSkia image = gfx::ImageSkia::CreateFromBitmap(bitmap, scale);
   view->StartDragging(filtered_data, drag_operations_mask, image,
                       bitmap_offset_in_dip, *event_info, this);
 }

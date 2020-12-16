@@ -264,7 +264,7 @@ void MediaNotificationContainerImplView::CreateDragImageWidget() {
                         true /* is_pixel_canvas */)
           .context(),
       GetPreferredSize()));
-  gfx::ImageSkia image(gfx::ImageSkiaRep(bitmap, 1.f));
+  gfx::ImageSkia image = gfx::ImageSkia::CreateFromBitmap(bitmap, 1.f);
   image_view->SetImage(image);
 
   drag_image_widget_->Show();

@@ -207,14 +207,8 @@ TEST_F(IconUtilTest, TestCreateIconFileInvalidParameters) {
   base::FilePath invalid_icon_filename =
       temp_directory_.GetPath().AppendASCII("<>?.ico");
 
-  // Null bitmap.
-  SkBitmap bitmap;
-  image_family.Add(gfx::Image::CreateFrom1xBitmap(bitmap));
-  EXPECT_FALSE(IconUtil::CreateIconFileFromImageFamily(image_family,
-                                                       valid_icon_filename));
-  EXPECT_FALSE(base::PathExists(valid_icon_filename));
-
   // Invalid file name.
+  SkBitmap bitmap;
   image_family.clear();
   bitmap.allocN32Pixels(1, 1);
   image_family.Add(gfx::Image::CreateFrom1xBitmap(bitmap));

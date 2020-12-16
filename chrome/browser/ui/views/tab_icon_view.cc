@@ -36,8 +36,8 @@ gfx::ImageSkia CreateDefaultFavicon() {
 #if defined(OS_WIN)
   // The default window icon is the application icon, not the default favicon.
   HICON app_icon = GetAppIcon();
-  icon = gfx::ImageSkia(gfx::ImageSkiaRep(
-      IconUtil::CreateSkBitmapFromHICON(app_icon, gfx::Size(16, 16)), 1.0f));
+  icon = gfx::ImageSkia::CreateFromBitmap(
+      IconUtil::CreateSkBitmapFromHICON(app_icon, gfx::Size(16, 16)), 1.0f);
   DestroyIcon(app_icon);
 #else
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();

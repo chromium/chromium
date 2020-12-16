@@ -276,7 +276,8 @@ void DragDropOperation::OnDragIconCaptured(const SkBitmap& icon_bitmap) {
   DCHECK(icon_);
 
   float scale_factor = origin_->get()->window()->layer()->device_scale_factor();
-  gfx::ImageSkia icon_skia(gfx::ImageSkiaRep(icon_bitmap, scale_factor));
+  gfx::ImageSkia icon_skia =
+      gfx::ImageSkia::CreateFromBitmap(icon_bitmap, scale_factor);
   gfx::Vector2d icon_offset = -icon_->get()->GetBufferOffset();
 
   if (os_exchange_data_) {

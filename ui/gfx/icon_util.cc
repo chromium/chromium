@@ -98,7 +98,7 @@ bool BuildResizedImageFamily(const gfx::ImageFamily& image_family,
 // |bitmaps| must be an empty vector, and not NULL.
 // Returns true on success, false on failure. This fails if any image in
 // |image_family| is not a 32-bit ARGB image, or is otherwise invalid.
-bool ConvertImageFamilyToBitmaps(
+void ConvertImageFamilyToBitmaps(
     const gfx::ImageFamily& image_family,
     std::vector<SkBitmap>* bitmaps,
     scoped_refptr<base::RefCountedMemory>* png_bytes) {
@@ -117,8 +117,7 @@ bool ConvertImageFamilyToBitmaps(
 
     SkBitmap bitmap = image.AsBitmap();
     CHECK_EQ(bitmap.colorType(), kN32_SkColorType);
-    if (bitmap.isNull())
-      return false;
+    CHECK(!bitmap.isNull());
 
     // Special case: Icons exactly 256x256 are stored in PNG format.
     if (image.Width() == IconUtil::kLargeIconSize &&
@@ -128,8 +127,6 @@ bool ConvertImageFamilyToBitmaps(
       bitmaps->push_back(bitmap);
     }
   }
-
-  return true;
 }
 
 }  // namespace
@@ -461,8 +458,7 @@ bool IconUtil::CreateIconFileFromImageFamily(
 
   std::vector<SkBitmap> bitmaps;
   scoped_refptr<base::RefCountedMemory> png_bytes;
-  if (!ConvertImageFamilyToBitmaps(resized_image_family, &bitmaps, &png_bytes))
-    return false;
+  ConvertImageFamilyToBitmaps(resized_image_family, &bitmaps, &png_bytes);
 
   // Guaranteed true because BuildResizedImageFamily will provide at least one
   // image < 256x256.

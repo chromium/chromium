@@ -195,7 +195,7 @@ class AppIconFactoryTest : public testing::Test {
     ASSERT_TRUE(gfx::PNGCodec::Decode(compressed_data.data(),
                                       compressed_data.size(), &decoded));
 
-    output_image_skia = gfx::ImageSkia(gfx::ImageSkiaRep(decoded, scale));
+    output_image_skia = gfx::ImageSkia::CreateFromBitmap(decoded, scale);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {

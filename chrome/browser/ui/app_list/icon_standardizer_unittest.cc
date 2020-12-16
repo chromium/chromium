@@ -87,7 +87,7 @@ TEST_F(CreateStandardIconTest, CircularIconToStandardIcon) {
 
   // Get the standard icon version of the red circle icon.
   gfx::ImageSkia generated_standard_icon = app_list::CreateStandardIconImage(
-      gfx::ImageSkia(gfx::ImageSkiaRep(circle_icon_bitmap, 2.0f)));
+      gfx::ImageSkia::CreateFromBitmap(circle_icon_bitmap, 2.0f));
 
   // Scale the bitmap to fit the size of a standardized circle icon.
   SkBitmap scaled_bitmap = skia::ImageOperations::Resize(
@@ -123,7 +123,7 @@ TEST_F(CreateStandardIconTest, StandardCircularIconToStandardIcon) {
 
   // Get the standard icon version of the red circle icon.
   gfx::ImageSkia standard_icon = app_list::CreateStandardIconImage(
-      gfx::ImageSkia(gfx::ImageSkiaRep(circle_icon_bitmap, 2.0f)));
+      gfx::ImageSkia::CreateFromBitmap(circle_icon_bitmap, 2.0f));
 
   EXPECT_TRUE(AreBitmapsEqual(*standard_icon.bitmap(), circle_icon_bitmap));
 }

@@ -188,7 +188,7 @@ gfx::ImageSkia GhostImageView::GetIconOutline(
                   bitmap.pixmap().height() + kGhostImagePadding * 2),
         rep.scale(), false /* is_opaque */);
     padded_canvas.DrawImageInt(
-        gfx::ImageSkia(gfx::ImageSkiaRep(bitmap, rep.scale())),
+        gfx::ImageSkia::CreateFromBitmap(bitmap, rep.scale()),
         kGhostImagePadding, kGhostImagePadding);
     bitmap = padded_canvas.GetBitmap();
 

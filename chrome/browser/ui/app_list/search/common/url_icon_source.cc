@@ -100,7 +100,7 @@ void UrlIconSource::OnSimpleLoaderComplete(
 
 void UrlIconSource::OnImageDecoded(const SkBitmap& decoded_image) {
   const float scale = decoded_image.width() / icon_size_;
-  icon_ = gfx::ImageSkia(gfx::ImageSkiaRep(decoded_image, scale));
+  icon_ = gfx::ImageSkia::CreateFromBitmap(decoded_image, scale);
   icon_loaded_callback_.Run();
 }
 
