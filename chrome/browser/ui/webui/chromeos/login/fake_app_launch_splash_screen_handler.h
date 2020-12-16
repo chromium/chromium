@@ -18,12 +18,15 @@ class FakeAppLaunchSplashScreenHandler : public AppLaunchSplashScreenView {
   void UpdateAppLaunchState(AppLaunchState state) override;
   void ToggleNetworkConfig(bool) override {}
   void ShowNetworkConfigureUI() override {}
-
+  void ShowErrorMessage(KioskAppLaunchError::Error error) override;
   bool IsNetworkReady() override;
+
+  KioskAppLaunchError::Error GetErrorMessageType() const;
   void SetNetworkReady(bool ready);
   AppLaunchState GetAppLaunchState();
 
  private:
+  KioskAppLaunchError::Error error_message_type_ = KioskAppLaunchError::NONE;
   bool network_ready_ = false;
   AppLaunchState state_ = APP_LAUNCH_STATE_PREPARING_PROFILE;
 };

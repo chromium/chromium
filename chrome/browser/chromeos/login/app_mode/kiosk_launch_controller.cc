@@ -21,10 +21,14 @@
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/forced_extensions/force_installed_tracker.h"
+#include "chrome/browser/extensions/policy_handlers.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/webui/chromeos/login/encryption_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
+#include "components/policy/core/browser/policy_error_map.h"
+#include "components/policy/core/common/policy_namespace.h"
+#include "components/policy/policy_constants.h"
 #include "content/public/browser/network_service_instance.h"
 
 namespace chromeos {
@@ -101,6 +105,23 @@ extensions::ForceInstalledTracker* GetForceInstalledTracker(Profile* profile) {
 
   extensions::ExtensionService* service = system->extension_service();
   return service ? service->force_installed_tracker() : nullptr;
+}
+
+bool IsExtensionInstallForcelistPolicyValid() {
+  policy::PolicyService* policy_service =
+      g_browser_process->platform_part()
+          ->browser_policy_connector_chromeos()
+          ->GetPolicyService();
+  DCHECK(policy_service);
+
+  const policy::PolicyMap& map =
+      policy_service->GetPolicies(policy::PolicyNamespace(
+          policy::PolicyDomain::POLICY_DOMAIN_CHROME, std::string()));
+
+  extensions::ExtensionInstallForceListPolicyHandler handler;
+  policy::PolicyErrorMap errors;
+  handler.CheckPolicySettings(map, &errors);
+  return errors.GetErrors(policy::key::kExtensionInstallForcelist).empty();
 }
 
 // This is a not-owning wrapper around ArcKioskAppService which allows to be
@@ -330,6 +351,15 @@ void KioskLaunchController::OnAppPrepared() {
   if (network_ui_state_ != NetworkUIState::kNotShowing)
     return;
 
+  if (!IsExtensionInstallForcelistPolicyValid()) {
+    SYSLOG(WARNING) << "The ExtensionInstallForcelist policy value is invalid.";
+
+    splash_screen_view_->ShowErrorMessage(
+        KioskAppLaunchError::EXTENSIONS_POLICY_INVALID);
+    OnForceInstalledExtensionsReady();
+    return;
+  }
+
   app_state_ = AppState::kInstallingExtensions;
   extensions::ForceInstalledTracker* tracker =
       GetForceInstalledTracker(profile_);
@@ -390,7 +420,8 @@ void KioskLaunchController::OnNetworkWaitTimedOut() {
 void KioskLaunchController::OnExtensionWaitTimedOut() {
   SYSLOG(WARNING) << "OnExtensionWaitTimedout...";
 
-  // TODO: show a notification banner, then run the app anyways.
+  splash_screen_view_->ShowErrorMessage(
+      KioskAppLaunchError::EXTENSIONS_LOAD_TIMEOUT);
   OnForceInstalledExtensionsReady();
 }
 

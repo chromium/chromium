@@ -58,6 +58,14 @@ std::string KioskAppLaunchError::GetErrorMessage(Error error) {
     case UNABLE_TO_LAUNCH:
       return l10n_util::GetStringUTF8(IDS_KIOSK_APP_ERROR_UNABLE_TO_LAUNCH);
 
+    case EXTENSIONS_LOAD_TIMEOUT:
+      return l10n_util::GetStringUTF8(
+          IDS_KIOSK_APP_ERROR_EXTENSIONS_LOAD_TIMEOUT);
+
+    case EXTENSIONS_POLICY_INVALID:
+      return l10n_util::GetStringUTF8(
+          IDS_KIOSK_APP_ERROR_EXTENSIONS_POLICY_INVALID);
+
     case ERROR_COUNT:
       // Break onto the NOTREACHED() code path below.
       break;

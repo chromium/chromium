@@ -18,21 +18,25 @@ class KioskAppLaunchError {
   // Enum used for UMA. Do NOT reorder or remove entry. Don't forget to
   // update histograms.xml when adding new entries.
   enum Error {
-    NONE = 0,                     // No error.
-    HAS_PENDING_LAUNCH = 1,       // There is a pending launch already.
-    CRYPTOHOMED_NOT_RUNNING = 2,  // Unable to call cryptohome daemon.
-    ALREADY_MOUNTED = 3,          // Cryptohome is already mounted.
-    UNABLE_TO_MOUNT = 4,          // Unable to mount cryptohome.
-    UNABLE_TO_REMOVE = 5,         // Unable to remove cryptohome.
-    UNABLE_TO_INSTALL = 6,        // Unable to install app.
-    USER_CANCEL = 7,              // Canceled by user.
-    NOT_KIOSK_ENABLED = 8,        // Not a kiosk enabled app.
-    UNABLE_TO_RETRIEVE_HASH = 9,  // Unable to retrieve username hash.
-    POLICY_LOAD_FAILED = 10,      // Failed to load policy for kiosk account.
-    UNABLE_TO_DOWNLOAD = 11,      // Unable to download app's crx file.
-    UNABLE_TO_LAUNCH = 12,        // Unable to launch app.
-    ARC_AUTH_FAILED = 13,         // Failed to authorise ARC session
-    ERROR_COUNT,                  // Count of all errors.
+    NONE = 0,                      // No error.
+    HAS_PENDING_LAUNCH = 1,        // There is a pending launch already.
+    CRYPTOHOMED_NOT_RUNNING = 2,   // Unable to call cryptohome daemon.
+    ALREADY_MOUNTED = 3,           // Cryptohome is already mounted.
+    UNABLE_TO_MOUNT = 4,           // Unable to mount cryptohome.
+    UNABLE_TO_REMOVE = 5,          // Unable to remove cryptohome.
+    UNABLE_TO_INSTALL = 6,         // Unable to install app.
+    USER_CANCEL = 7,               // Canceled by user.
+    NOT_KIOSK_ENABLED = 8,         // Not a kiosk enabled app.
+    UNABLE_TO_RETRIEVE_HASH = 9,   // Unable to retrieve username hash.
+    POLICY_LOAD_FAILED = 10,       // Failed to load policy for kiosk account.
+    UNABLE_TO_DOWNLOAD = 11,       // Unable to download app's crx file.
+    UNABLE_TO_LAUNCH = 12,         // Unable to launch app.
+    ARC_AUTH_FAILED = 13,          // Failed to authorise ARC session
+    EXTENSIONS_LOAD_TIMEOUT = 14,  // Timeout is triggered during loading
+                                   // force-installed extensions.
+    EXTENSIONS_POLICY_INVALID =
+        15,       // The policy value of ExtensionInstallForcelist is invalid.
+    ERROR_COUNT,  // Count of all errors.
   };
 
   // Returns a message for given |error|.

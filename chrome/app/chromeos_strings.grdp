@@ -2942,6 +2942,12 @@
   <message name="IDS_KIOSK_APP_ERROR_UNABLE_TO_LAUNCH" desc="Error message used when a kiosk app fails to launch due to app launching failure.">
     Kiosk application could not be launched.
   </message>
+  <message name="IDS_KIOSK_APP_ERROR_EXTENSIONS_LOAD_TIMEOUT" desc="Error message used when a kiosk app fails to load force-installed extensions within the time limit.">
+    Failed to load extensions within the time limit. Please contact your administrator.
+  </message>
+  <message name="IDS_KIOSK_APP_ERROR_EXTENSIONS_POLICY_INVALID" desc="Error message used when a kiosk app loads an invalid ExtensionInstallForcelist policy value.">
+    The policy value of ExtensionInstallForcelist is invalid. Please contact your administrator.
+  </message>
   <message name="IDS_KIOSK_APP_ERROR_USER_CANCEL" desc="Error message used when a kiosk app launch is canceled by user.">
     Kiosk application launch canceled.
   </message>

@@ -6,8 +6,18 @@
 
 namespace chromeos {
 
+void FakeAppLaunchSplashScreenHandler::ShowErrorMessage(
+    KioskAppLaunchError::Error error) {
+  error_message_type_ = error;
+}
+
 bool FakeAppLaunchSplashScreenHandler::IsNetworkReady() {
   return network_ready_;
+}
+
+KioskAppLaunchError::Error
+FakeAppLaunchSplashScreenHandler::GetErrorMessageType() const {
+  return error_message_type_;
 }
 
 void FakeAppLaunchSplashScreenHandler::SetNetworkReady(bool ready) {

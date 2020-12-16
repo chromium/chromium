@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/public/cpp/login_screen.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/chromeos/login/oobe_screen.h"
@@ -179,6 +180,12 @@ void AppLaunchSplashScreenHandler::ShowNetworkConfigureUI() {
   if (GetCurrentScreen() != ErrorScreenView::kScreenId)
     error_screen_->SetParentScreen(kScreenId);
   error_screen_->Show(nullptr);
+}
+
+void AppLaunchSplashScreenHandler::ShowErrorMessage(
+    KioskAppLaunchError::Error error) {
+  ash::LoginScreen::Get()->ShowKioskAppError(
+      KioskAppLaunchError::GetErrorMessage(error));
 }
 
 bool AppLaunchSplashScreenHandler::IsNetworkReady() {
