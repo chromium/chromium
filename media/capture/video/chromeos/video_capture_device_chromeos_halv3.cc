@@ -4,13 +4,21 @@
 
 #include "media/capture/video/chromeos/video_capture_device_chromeos_halv3.h"
 
+#include "base/strings/string_util.h"
 #include "media/capture/video/chromeos/video_capture_device_chromeos_delegate.h"
 
 namespace media {
 
+constexpr char kVirtualPrefix[] = "VIRTUAL_";
+
 VideoCaptureDeviceChromeOSHalv3::VideoCaptureDeviceChromeOSHalv3(
-    VideoCaptureDeviceChromeOSDelegate* delegate)
-    : vcd_delegate_(delegate), client_type_(ClientType::kPreviewClient) {}
+    VideoCaptureDeviceChromeOSDelegate* delegate,
+    const VideoCaptureDeviceDescriptor& vcd_descriptor)
+    : vcd_delegate_(delegate) {
+  client_type_ = base::StartsWith(vcd_descriptor.device_id, kVirtualPrefix)
+                     ? ClientType::kVideoClient
+                     : ClientType::kPreviewClient;
+}
 
 VideoCaptureDeviceChromeOSHalv3::~VideoCaptureDeviceChromeOSHalv3() {
   vcd_delegate_->Shutdown();

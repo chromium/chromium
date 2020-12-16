@@ -53,6 +53,11 @@ interface CameraAppDeviceProvider {
   // and camera app. Currently only devices running camera HAL v3 support this
   // feature.
   IsSupported() => (bool is_supported);
+
+  // Add/Remove a virtual device for recording stream according to |enabled|.
+  // The virtual device has the same config as |device_id| except facing
+  // attribute.
+  SetMultipleStreamsEnabled(string device_id, bool enabled) => (bool success);
 };
 
 // Inner interface that used to communicate between browser process (Remote) and
@@ -68,6 +73,11 @@ interface CameraAppDeviceBridge {
   // and camera app. Currently only devices running camera HAL v3 support this
   // feature.
   IsSupported() => (bool is_supported);
+
+  // Add/Remove a virtual device for recording stream according to |enabled|.
+  // The virtual device has the same config as |device_id| except facing
+  // attribute.
+  SetMultipleStreamsEnabled(string device_id, bool enabled) => (bool success);
 };
 
 // Interface for communication between Chrome Camera App (Remote) and camera

@@ -19,8 +19,9 @@ class VideoCaptureDeviceChromeOSDelegate;
 class CAPTURE_EXPORT VideoCaptureDeviceChromeOSHalv3 final
     : public VideoCaptureDevice {
  public:
-  explicit VideoCaptureDeviceChromeOSHalv3(
-      VideoCaptureDeviceChromeOSDelegate* delegate);
+  VideoCaptureDeviceChromeOSHalv3(
+      VideoCaptureDeviceChromeOSDelegate* delegate,
+      const VideoCaptureDeviceDescriptor& vcd_descriptor);
 
   ~VideoCaptureDeviceChromeOSHalv3() final;
 
