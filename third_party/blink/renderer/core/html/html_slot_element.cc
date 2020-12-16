@@ -738,7 +738,10 @@ void HTMLSlotElement::EnqueueSlotChangeEvent() {
 
 bool HTMLSlotElement::HasAssignedNodesSlow() const {
   ShadowRoot* root = ContainingShadowRoot();
-  DCHECK(root);
+  if (!root) {
+    NOTREACHED() << "We shouldn't get here - see crbug.com/1159328";
+    return false;
+  }
   SlotAssignment& assignment = root->GetSlotAssignment();
   if (assignment.FindSlotByName(GetName()) != this)
     return false;
