@@ -560,8 +560,8 @@
   },
   {
     "name": "color-picker-eye-dropper",
-    "owners": [ "iopopesc@microsoft.com", "masonfreed", "//third_party/blink/renderer/core/OWNERS" ],
-    "expiry_milestone": 88
+    "owners": [ "iopopesc@microsoft.com", "masonfreed" ],
+    "expiry_milestone": 90
   },
   {
     "name": "color-provider-redirection",
