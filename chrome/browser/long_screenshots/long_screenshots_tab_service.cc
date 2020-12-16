@@ -51,7 +51,11 @@ LongScreenshotsTabService::~LongScreenshotsTabService() {
 }
 
 void LongScreenshotsTabService::CaptureTab(int tab_id,
-                                           content::WebContents* contents) {
+                                           content::WebContents* contents,
+                                           int clipX,
+                                           int clipY,
+                                           int clipWidth,
+                                           int clipHeight) {
   // If the system is under memory pressure don't try to capture.
   auto* memory_monitor = base::MemoryPressureMonitor::Get();
   if (memory_monitor &&
@@ -78,7 +82,8 @@ void LongScreenshotsTabService::CaptureTab(int tab_id,
       base::BindOnce(&LongScreenshotsTabService::CaptureTabInternal,
                      weak_ptr_factory_.GetWeakPtr(), tab_id, key,
                      contents->GetMainFrame()->GetFrameTreeNodeId(),
-                     contents->GetMainFrame()->GetGlobalFrameRoutingId()));
+                     contents->GetMainFrame()->GetGlobalFrameRoutingId(), clipX,
+                     clipY, clipWidth, clipHeight));
 }
 
 void LongScreenshotsTabService::CaptureTabInternal(
@@ -86,6 +91,10 @@ void LongScreenshotsTabService::CaptureTabInternal(
     const paint_preview::DirectoryKey& key,
     int frame_tree_node_id,
     content::GlobalFrameRoutingId frame_routing_id,
+    int clipX,
+    int clipY,
+    int clipWidth,
+    int clipHeight,
     const base::Optional<base::FilePath>& file_path) {
   if (!file_path.has_value()) {
     JNIEnv* env = base::android::AttachCurrentThread();
@@ -110,14 +119,12 @@ void LongScreenshotsTabService::CaptureTabInternal(
     return;
   }
 
-  // TODO(tgupta): Modify this call to specify the size of the capture rather
-  // than the whole area.
   CaptureParams capture_params;
   capture_params.web_contents = contents;
   capture_params.root_dir = &file_path.value();
   capture_params.persistence = paint_preview::RecordingPersistence::kFileSystem;
-  capture_params.clip_rect = gfx::Rect();
-  capture_params.capture_links = true;
+  capture_params.clip_rect = gfx::Rect(clipX, clipY, clipWidth, clipHeight);
+  capture_params.capture_links = false;
   capture_params.max_per_capture_size = kMaxPerCaptureSizeBytes;
   CapturePaintPreview(capture_params,
                       base::BindOnce(&LongScreenshotsTabService::OnCaptured,
@@ -160,11 +167,17 @@ void LongScreenshotsTabService::DeleteAllLongScreenshotFiles() {
 void LongScreenshotsTabService::CaptureTabAndroid(
     JNIEnv* env,
     jint j_tab_id,
-    const base::android::JavaParamRef<jobject>& j_web_contents) {
+    const base::android::JavaParamRef<jobject>& j_web_contents,
+    jint clipX,
+    jint clipY,
+    jint clipWidth,
+    jint clipHeight) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(j_web_contents);
 
-  CaptureTab(static_cast<int>(j_tab_id), web_contents);
+  CaptureTab(static_cast<int>(j_tab_id), web_contents, static_cast<int>(clipX),
+             static_cast<int>(clipY), static_cast<int>(clipWidth),
+             static_cast<int>(clipHeight));
 }
 
 void LongScreenshotsTabService::LongScreenshotsClosedAndroid(JNIEnv* env) {

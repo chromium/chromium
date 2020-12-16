@@ -64,6 +64,19 @@ class MockPaintPreviewRecorder
       this};
 };
 
+std::vector<base::FilePath> ListDir(const base::FilePath& path) {
+  base::FileEnumerator enumerator(
+      path, false,
+      base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES,
+      FILE_PATH_LITERAL("*.skp"));  // Ignore the proto.pb files.
+  std::vector<base::FilePath> files;
+  for (base::FilePath name = enumerator.Next(); !name.empty();
+       name = enumerator.Next()) {
+    files.push_back(name);
+  }
+  return files;
+}
+
 }  // namespace
 
 class LongScreenshotsTabServiceTest : public ChromeRenderViewHostTestHarness {
@@ -121,7 +134,7 @@ TEST_F(LongScreenshotsTabServiceTest, CaptureTab) {
   OverrideInterface(&recorder);
 
   auto* service = GetService();
-  service->CaptureTab(kTabId, web_contents());
+  service->CaptureTab(kTabId, web_contents(), 0, 0, 1000, 1000);
   task_environment()->RunUntilIdle();
 
   auto file_manager = service->GetFileMixin()->GetFileManager();
@@ -142,6 +155,76 @@ TEST_F(LongScreenshotsTabServiceTest, CaptureTab) {
   task_environment()->RunUntilIdle();
 }
 
+// Test a successful capturing a tab multiple times.
+TEST_F(LongScreenshotsTabServiceTest, CaptureTabTwice) {
+  const int kTabId = 1U;
+
+  MockPaintPreviewRecorder recorder;
+  recorder.SetResponse(paint_preview::mojom::PaintPreviewStatus::kOk);
+  OverrideInterface(&recorder);
+
+  auto* service = GetService();
+  service->CaptureTab(kTabId, web_contents(), 0, 0, 1000, 1000);
+
+  task_environment()->RunUntilIdle();
+  auto file_manager = service->GetFileMixin()->GetFileManager();
+  auto key = file_manager->CreateKey(kTabId);
+  service->GetFileMixin()->GetTaskRunner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&FileManager::DirectoryExists, file_manager, key),
+      base::BindOnce([](bool exists) { EXPECT_TRUE(exists); }));
+  task_environment()->RunUntilIdle();
+  base::FilePath path_1;
+  service->GetFileMixin()->GetTaskRunner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&FileManager::CreateOrGetDirectory, file_manager, key,
+                     false),
+      base::BindOnce(
+          [](base::FilePath* out, const base::Optional<base::FilePath>& path) {
+            EXPECT_TRUE(path.has_value());
+            *out = path.value();
+          },
+          &path_1));
+  task_environment()->RunUntilIdle();
+  auto files_1 = ListDir(path_1);
+  ASSERT_EQ(1U, files_1.size());
+
+  service->CaptureTab(kTabId, web_contents(), 1000, 1000, 2000, 2000);
+  task_environment()->RunUntilIdle();
+
+  service->GetFileMixin()->GetTaskRunner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&FileManager::DirectoryExists, file_manager, key),
+      base::BindOnce([](bool exists) { EXPECT_TRUE(exists); }));
+  base::FilePath path_2;
+  service->GetFileMixin()->GetTaskRunner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&FileManager::CreateOrGetDirectory, file_manager, key,
+                     false),
+      base::BindOnce(
+          [](base::FilePath* out, const base::Optional<base::FilePath>& path) {
+            EXPECT_TRUE(path.has_value());
+            *out = path.value();
+          },
+          &path_2));
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(path_2, path_1);
+  auto files_2 = ListDir(path_2);
+  ASSERT_EQ(1U, files_2.size());
+  // The embedding token is used in the filename of the captured SkPicture.
+  // Since the embedding token is the same the filenames should also be the
+  // same.
+  EXPECT_EQ(files_1, files_2);
+
+  service->DeleteAllLongScreenshotFiles();
+  task_environment()->RunUntilIdle();
+  service->GetFileMixin()->GetTaskRunner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&FileManager::DirectoryExists, file_manager, key),
+      base::BindOnce([](bool exists) { EXPECT_FALSE(exists); }));
+  task_environment()->RunUntilIdle();
+}
+
 // Test when PaintPreviewRecorder returns a failure status code.
 TEST_F(LongScreenshotsTabServiceTest, CaptureTabFailed) {
   const int kTabId = 1U;
@@ -151,7 +234,7 @@ TEST_F(LongScreenshotsTabServiceTest, CaptureTabFailed) {
   OverrideInterface(&recorder);
 
   auto* service = GetService();
-  service->CaptureTab(kTabId, web_contents());
+  service->CaptureTab(kTabId, web_contents(), 0, 0, 1000, 1000);
   task_environment()->RunUntilIdle();
 
   auto file_manager = service->GetFileMixin()->GetFileManager();

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.share.long_screenshots;
 
+import android.graphics.Rect;
+
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -67,7 +69,7 @@ public class LongScreenshotsTabService implements NativePaintPreviewServiceProvi
         mCaptureProcessor.processCapturedTab(response, Status.OK);
     }
 
-    public void captureTab(Tab tab) {
+    public void captureTab(Tab tab, Rect clipRect) {
         if (mNativeLongScreenshotsTabService == 0) {
             processCaptureTabStatus(Status.NATIVE_SERVICE_NOT_INITIALIZED);
         }
@@ -76,8 +78,9 @@ public class LongScreenshotsTabService implements NativePaintPreviewServiceProvi
             processCaptureTabStatus(Status.WEB_CONTENTS_GONE);
         }
 
-        LongScreenshotsTabServiceJni.get().captureTabAndroid(
-                mNativeLongScreenshotsTabService, tab.getId(), tab.getWebContents());
+        LongScreenshotsTabServiceJni.get().captureTabAndroid(mNativeLongScreenshotsTabService,
+                tab.getId(), tab.getWebContents(), clipRect.left, clipRect.top, clipRect.right,
+                clipRect.bottom);
     }
 
     public void longScreenshotsClosed() {
@@ -95,8 +98,8 @@ public class LongScreenshotsTabService implements NativePaintPreviewServiceProvi
 
     @NativeMethods
     interface Natives {
-        void captureTabAndroid(
-                long nativeLongScreenshotsTabService, int tabId, WebContents webContents);
+        void captureTabAndroid(long nativeLongScreenshotsTabService, int tabId,
+                WebContents webContents, int clipX, int clipY, int clipWidth, int clipHeight);
 
         void longScreenshotsClosedAndroid(long nativeLongScreenshotsTabService);
     }

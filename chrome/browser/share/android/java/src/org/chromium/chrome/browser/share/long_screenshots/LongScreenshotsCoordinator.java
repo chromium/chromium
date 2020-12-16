@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.share.long_screenshots;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.graphics.Rect;
 
 import org.chromium.chrome.browser.share.screenshot.ScreenshotCoordinator;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
@@ -48,7 +49,8 @@ public class LongScreenshotsCoordinator
      */
     @Override
     public void captureScreenshot() {
-        mLongScreenshotsTabService.captureTab(mTab);
+        // TODO(tgupta): Provide the correct bounds.
+        mLongScreenshotsTabService.captureTab(mTab, new Rect(0, 0, 1000, 1000));
     }
 
     /**

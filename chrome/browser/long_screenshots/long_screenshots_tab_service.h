@@ -62,7 +62,17 @@ class LongScreenshotsTabService
   // Captures a Paint Preview of |contents| which should be associated with
   // |tab_id| for storage. |callback| is invoked on completion to indicate
   // status.
-  void CaptureTab(int tab_id, content::WebContents* contents);
+  // Clip args specify the bounds of the capture:
+  // clipX: Where to start the capture on the X axis
+  // clipY: Where to start the capture on the Y axis
+  // clipWidth: How wide of a capture relative to clipX
+  // clipHeight: How wide of a capture relative to clipY
+  void CaptureTab(int tab_id,
+                  content::WebContents* contents,
+                  int clipX,
+                  int clipY,
+                  int clipWidth,
+                  int clipHeight);
 
   // Delete all old long screenshot files.
   void DeleteAllLongScreenshotFiles();
@@ -71,7 +81,11 @@ class LongScreenshotsTabService
   void CaptureTabAndroid(
       JNIEnv* env,
       jint j_tab_id,
-      const base::android::JavaParamRef<jobject>& j_web_contents);
+      const base::android::JavaParamRef<jobject>& j_web_contents,
+      jint clipX,
+      jint clipY,
+      jint clipWidth,
+      jint clipHeight);
   void LongScreenshotsClosedAndroid(JNIEnv* env);
 
   base::android::ScopedJavaGlobalRef<jobject> GetJavaRef() { return java_ref_; }
@@ -84,6 +98,10 @@ class LongScreenshotsTabService
                           const paint_preview::DirectoryKey& key,
                           int frame_tree_node_id,
                           content::GlobalFrameRoutingId frame_routing_id,
+                          int clipX,
+                          int clipY,
+                          int clipWidth,
+                          int clipHeight,
                           const base::Optional<base::FilePath>& file_path);
 
   void OnCaptured(int tab_id,

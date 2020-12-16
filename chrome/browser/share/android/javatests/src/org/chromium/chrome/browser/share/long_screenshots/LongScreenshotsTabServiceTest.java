@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.share.long_screenshots;
 
+import android.graphics.Rect;
+
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
@@ -92,7 +94,7 @@ public class LongScreenshotsTabServiceTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mTab.loadUrl(new LoadUrlParams(url));
-            mLongScreenshotsTabService.captureTab(mTab);
+            mLongScreenshotsTabService.captureTab(mTab, new Rect(0, 0, 100, 100));
         });
 
         CriteriaHelper.pollUiThread(() -> {
