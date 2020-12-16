@@ -29,6 +29,10 @@ const CGFloat kButtonSpacing = 16.0f;
         [[UIVisualEffectView alloc] initWithEffect:blurEffect];
     [self addSubview:blurBackgroundView];
     blurBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+    // TODO(crbug.com/1138892): add localized text.
+    blurBackgroundView.accessibilityLabel =
+        @"[Test String] Authenticate to access Incognito content";
+    blurBackgroundView.isAccessibilityElement = YES;
     AddSameConstraints(self, blurBackgroundView);
 
     _authenticateButton =
@@ -97,6 +101,18 @@ const CGFloat kButtonSpacing = 16.0f;
   AddSameConstraints(backgroundView, button);
 
   return button;
+}
+
+#pragma mark - voiceover
+
+- (BOOL)accessibilityViewIsModal {
+  return YES;
+}
+
+- (BOOL)accessibilityPerformMagicTap {
+  [self.authenticateButton
+      sendActionsForControlEvents:UIControlEventTouchUpInside];
+  return YES;
 }
 
 @end
