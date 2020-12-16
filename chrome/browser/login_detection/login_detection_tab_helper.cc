@@ -13,6 +13,10 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace login_detection {
 
@@ -24,8 +28,12 @@ PrefService* GetPrefs(content::WebContents* web_contents) {
 }
 
 void RecordLoginDetectionMetrics(
-    LoginDetectionTabHelper::LoginDetectionType type) {
+    LoginDetectionTabHelper::LoginDetectionType type,
+    ukm::SourceId ukm_source_id) {
   base::UmaHistogramEnumeration("Login.PageLoad.DetectionType", type);
+  ukm::builders::LoginDetection builder(ukm_source_id);
+  builder.SetPage_LoginType(static_cast<int64_t>(type))
+      .Record(ukm::UkmRecorder::Get());
 }
 
 }  // namespace
@@ -69,20 +77,24 @@ void LoginDetectionTabHelper::DidFinishNavigation(
   // the time of login will be updated.
   for (const auto& redirect_url : navigation_handle->GetRedirectChain()) {
     if (oauth_login_detector_.CheckSuccessfulLoginFlow(redirect_url)) {
-      prefs::SaveSiteToOAuthSignedInList(GetPrefs(web_contents()), url);
-      RecordLoginDetectionMetrics(LoginDetectionType::kOauthFirstTimeLoginFlow);
+      prefs::SaveSiteToOAuthSignedInList(GetPrefs(web_contents()),
+                                         redirect_url);
+      RecordLoginDetectionMetrics(LoginDetectionType::kOauthFirstTimeLoginFlow,
+                                  navigation_handle->GetNextPageUkmSourceId());
       return;
     }
   }
 
-  // Check if OAuth login for this site was detected earlier, and remembered in
-  // prefs.
+  // Check if OAuth login for this site was detected earlier, and remembered
+  // in prefs.
   if (prefs::IsSiteInOAuthSignedInList(GetPrefs(web_contents()), url)) {
-    RecordLoginDetectionMetrics(LoginDetectionType::kOauthLogin);
+    RecordLoginDetectionMetrics(LoginDetectionType::kOauthLogin,
+                                navigation_handle->GetNextPageUkmSourceId());
     return;
   }
 
-  RecordLoginDetectionMetrics(LoginDetectionType::kNoLogin);
+  RecordLoginDetectionMetrics(LoginDetectionType::kNoLogin,
+                              navigation_handle->GetNextPageUkmSourceId());
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(LoginDetectionTabHelper)
