@@ -25,8 +25,6 @@ class RestoreData;
 // FullRestoreFileHandler is created on the main thread, and does no IO by
 // the constructor. The real work is done by WriteToFile and ReadFromFile, which
 // must be invoked on a background task runner |owning_task_runner|.
-//
-// TODO(crbug.com/1146900): Add the ReadFromFile interface.
 class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreFileHandler
     : public base::RefCountedDeleteOnSequence<FullRestoreFileHandler> {
  public:
@@ -43,8 +41,12 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreFileHandler
   }
 
   // Writes |restore_data| to the full restore file. This method must be invoked
-  // on a background task runer |owning_task_runner|.
+  // on a background task runner |owning_task_runner|.
   void WriteToFile(std::unique_ptr<RestoreData> restore_data);
+
+  // Reads |restore_data| to the full restore file. This method must be invoked
+  // on a background task runner |owning_task_runner|.
+  std::unique_ptr<RestoreData> ReadFromFile();
 
  private:
   friend class base::RefCountedDeleteOnSequence<FullRestoreFileHandler>;
@@ -55,6 +57,11 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreFileHandler
   // Performs blocking I/O. Called on a background task runner
   // |owning_task_runner|.
   void WriteDataBlocking(const std::string& full_restore_data);
+
+  // Performs blocking I/O. Called on a background task runner.
+  // |owning_task_runner|. Returns true on success and false on error. The
+  // reading result is written to |full_restore_data|.
+  bool ReadDataBlocking(std::string& full_restore_data);
 
   base::FilePath file_path_;
 };

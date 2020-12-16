@@ -4,6 +4,8 @@
 
 #include "components/full_restore/full_restore_file_handler.h"
 
+#include <utility>
+
 #include "base/files/file_util.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
@@ -38,6 +40,28 @@ void FullRestoreFileHandler::WriteToFile(
   WriteDataBlocking(json_string);
 }
 
+std::unique_ptr<RestoreData> FullRestoreFileHandler::ReadFromFile() {
+  std::string full_restore_data;
+  if (!ReadDataBlocking(full_restore_data) || full_restore_data.empty())
+    return nullptr;
+
+  // This JSON file is written by Chrome, so it is safe to deserialise it
+  // in-process.
+  JSONStringValueDeserializer deserializer(full_restore_data);
+  int error_code;
+  std::string error_message;
+  auto full_restore_value =
+      deserializer.Deserialize(&error_code, &error_message);
+
+  if (!full_restore_value) {
+    DVLOG(0) << "Fail to deserialize json value from string with error code: "
+             << error_code << " and error message: " << error_message;
+    return nullptr;
+  }
+
+  return std::make_unique<RestoreData>(std::move(full_restore_value));
+}
+
 FullRestoreFileHandler::~FullRestoreFileHandler() = default;
 
 void FullRestoreFileHandler::WriteDataBlocking(
@@ -48,6 +72,12 @@ void FullRestoreFileHandler::WriteDataBlocking(
                                        full_restore_data.size()) != -1;
   if (!write_success)
     DVLOG(0) << "Fail to write full restore data to " << file_path_;
+}
+
+bool FullRestoreFileHandler::ReadDataBlocking(std::string& full_restore_data) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+  return base::ReadFileToString(file_path_, &full_restore_data);
 }
 
 }  // namespace full_restore
