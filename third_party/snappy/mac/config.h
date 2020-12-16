@@ -19,9 +19,6 @@
 /* Define to 1 to use the gflags package for command-line parsing. */
 /* #undef HAVE_GFLAGS */
 
-/* Define to 1 if you have Google Test. */
-/* #undef HAVE_GTEST */
-
 /* Define to 1 if you have the `lzo2' library (-llzo2). */
 /* #undef HAVE_LIBLZO2 */
 
