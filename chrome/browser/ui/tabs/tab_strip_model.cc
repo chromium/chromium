@@ -15,6 +15,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/numerics/ranges.h"
 #include "base/ranges/algorithm.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -118,30 +119,23 @@ InstallRenderWigetVisibilityTracker(const TabStripSelectionChange& selection) {
 class RenderWidgetHostVisibilityTracker
     : public content::RenderWidgetHostObserver {
  public:
-  explicit RenderWidgetHostVisibilityTracker(content::RenderWidgetHost* host)
-      : host_(host) {
-    if (!host_ || host_->GetView()->IsShowing())
+  explicit RenderWidgetHostVisibilityTracker(content::RenderWidgetHost* host) {
+    if (!host || host->GetView()->IsShowing())
       return;
-    host_->AddObserver(this);
+    observation_.Observe(host);
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("ui,latency",
                                       "TabSwitchVisibilityRequest", this);
   }
-
+  ~RenderWidgetHostVisibilityTracker() final = default;
   RenderWidgetHostVisibilityTracker(const RenderWidgetHostVisibilityTracker&) =
       delete;
   RenderWidgetHostVisibilityTracker& operator=(
       const RenderWidgetHostVisibilityTracker&) = delete;
 
-  ~RenderWidgetHostVisibilityTracker() override {
-    if (host_)
-      host_->RemoveObserver(this);
-  }
-
  private:
   // content::RenderWidgetHostObserver:
   void RenderWidgetHostVisibilityChanged(content::RenderWidgetHost* host,
                                          bool became_visible) override {
-    DCHECK_EQ(host_, host);
     DCHECK(became_visible);
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
         "Browser.Tabs.SelectionToVisibilityRequestTime", timer_.Elapsed(),
@@ -152,12 +146,13 @@ class RenderWidgetHostVisibilityTracker
   }
 
   void RenderWidgetHostDestroyed(content::RenderWidgetHost* host) override {
-    DCHECK_EQ(host_, host);
-    host_->RemoveObserver(this);
-    host_ = nullptr;
+    DCHECK(observation_.IsObservingSource(host));
+    observation_.Reset();
   }
 
-  content::RenderWidgetHost* host_ = nullptr;
+  base::ScopedObservation<content::RenderWidgetHost,
+                          content::RenderWidgetHostObserver>
+      observation_{this};
   base::ElapsedTimer timer_;
 };
 
