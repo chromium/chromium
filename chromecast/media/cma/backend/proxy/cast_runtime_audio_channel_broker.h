@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "third_party/openscreen/src/cast/cast_core/api/runtime/cast_audio_decoder_service.pb.h"
+#include "third_party/protobuf/src/google/protobuf/duration.pb.h"
 
 namespace chromecast {
 namespace media {
@@ -28,6 +29,7 @@ namespace media {
 class CastRuntimeAudioChannelBroker {
  public:
   using CastAudioDecoderMode = cast::media::CastAudioDecoderMode;
+  using TimestampInfo = cast::media::TimestampInfo;
 
   // The valid response types for a gRPC Call.
   enum class StatusCode {
@@ -116,10 +118,10 @@ class CastRuntimeAudioChannelBroker {
   virtual void GetMediaTimeAsync() = 0;
 
   // Calls to StateChangeRequest RPC.
-  virtual void StartAsync(int64_t pts_micros) = 0;
+  virtual void StartAsync(int64_t pts_micros, TimestampInfo timestamp_info) = 0;
   virtual void StopAsync() = 0;
   virtual void PauseAsync() = 0;
-  virtual void ResumeAsync() = 0;
+  virtual void ResumeAsync(TimestampInfo timestamp_info) = 0;
 };
 
 }  // namespace media

@@ -236,7 +236,7 @@ void ProxyCallTranslator::Initialize(
 }
 
 void ProxyCallTranslator::Start(int64_t start_pts) {
-  decoder_channel_->StartAsync(start_pts);
+  decoder_channel_->StartAsync(start_pts, {});
 }
 
 void ProxyCallTranslator::Stop() {
@@ -248,7 +248,7 @@ void ProxyCallTranslator::Pause() {
 }
 
 void ProxyCallTranslator::Resume() {
-  decoder_channel_->ResumeAsync();
+  decoder_channel_->ResumeAsync({});
 }
 
 void ProxyCallTranslator::SetPlaybackRate(float rate) {

@@ -43,10 +43,11 @@ class MockDecoderChannel : public CastRuntimeAudioChannelBroker {
   MOCK_METHOD1(SetVolumeAsync, void(float));
   MOCK_METHOD1(SetPlaybackAsync, void(double));
   MOCK_METHOD0(GetMediaTimeAsync, void());
-  MOCK_METHOD1(StartAsync, void(int64_t));
+  MOCK_METHOD2(StartAsync,
+               void(int64_t, CastRuntimeAudioChannelBroker::TimestampInfo));
   MOCK_METHOD0(StopAsync, void());
   MOCK_METHOD0(PauseAsync, void());
-  MOCK_METHOD0(ResumeAsync, void());
+  MOCK_METHOD1(ResumeAsync, void(CastRuntimeAudioChannelBroker::TimestampInfo));
 };
 
 }  // namespace
@@ -111,7 +112,7 @@ TEST_F(ProxyCallTranslatorTest, TestExternalInitialize) {
 
 TEST_F(ProxyCallTranslatorTest, TestExternalStart) {
   constexpr int64_t start_pts = 42;
-  EXPECT_CALL(*decoder_channel_, StartAsync(start_pts));
+  EXPECT_CALL(*decoder_channel_, StartAsync(start_pts, testing::_));
   translator_.Start(start_pts);
 }
 
@@ -126,7 +127,7 @@ TEST_F(ProxyCallTranslatorTest, TestExternalPause) {
 }
 
 TEST_F(ProxyCallTranslatorTest, TestExternalResume) {
-  EXPECT_CALL(*decoder_channel_, ResumeAsync());
+  EXPECT_CALL(*decoder_channel_, ResumeAsync(testing::_));
   translator_.Resume();
 }
 
