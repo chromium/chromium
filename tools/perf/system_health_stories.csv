@@ -80,7 +80,7 @@ load:media:youtube:2018,,"desktop,mobile","2018,emerging_market,health_check"
 load:media:youtubelivingroom:2020,,desktop,"2020,health_check"
 load:news:bbc:2018,,desktop,2018
 load:news:bbc:2019,,mobile,2019
-load:news:cnn:2018,,"desktop,mobile","2018,health_check,javascript_heavy"
+load:news:cnn:2020,,"desktop,mobile","2020,health_check,javascript_heavy"
 load:news:flipboard,,desktop,2016
 load:news:hackernews:2018,,desktop,2018
 load:news:irctc:2019,,mobile,"2019,emerging_market"

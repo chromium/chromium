@@ -52,10 +52,6 @@
         "name": "system_health.common_mobile/load:media:youtube:2018"
     },
     {
-        "duration": "27.0",
-        "name": "system_health.common_mobile/load:news:cnn:2018"
-    },
-    {
         "duration": "32.0",
         "name": "system_health.common_mobile/load:tools:gmail:2019"
     },
@@ -98,10 +94,6 @@
     {
         "duration": "24.0",
         "name": "system_health.memory_mobile/load:media:youtube:2018"
-    },
-    {
-        "duration": "28.0",
-        "name": "system_health.memory_mobile/load:news:cnn:2018"
     },
     {
         "duration": "31.0",

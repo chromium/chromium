@@ -58,7 +58,7 @@ def SplitTestPath(test_result, test_path_format):
 
   Telemetry and Gtest have slightly different test path formats.
   Telemetry uses '{benchmark_name}/{story_name}', e.g.
-  'system_health.common_desktop/load:news:cnn:2018'.
+  'system_health.common_desktop/load:news:cnn:2020'.
   Gtest uses '{test_suite_name}.{test_case_name}', e.g.
   'ZeroToFiveSequence/LuciTestResultParameterizedTest.Variant'
   """

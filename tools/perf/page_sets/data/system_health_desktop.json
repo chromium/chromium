@@ -244,8 +244,8 @@
         "load:news:cnn": {
             "DEFAULT": "system_health_desktop_006.wprgo"
         },
-        "load:news:cnn:2018": {
-            "DEFAULT": "system_health_desktop_3c603ac582.wprgo"
+        "load:news:cnn:2020": {
+            "DEFAULT": "system_health_desktop_a41a5ba414.wprgo"
         },
         "load:news:flipboard": {
             "DEFAULT": "system_health_desktop_020.wprgo"

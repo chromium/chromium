@@ -167,11 +167,11 @@ class LoadBbcMobileStory2019(_LoadingStory):
   SUPPORTED_PLATFORMS = platforms.MOBILE_ONLY
 
 
-class LoadCnnStory2018(_LoadingStory):
-  NAME = 'load:news:cnn:2018'
+class LoadCnnStory2020(_LoadingStory):
+  NAME = 'load:news:cnn:2020'
   URL = 'https://edition.cnn.com'
   TAGS = [
-      story_tags.HEALTH_CHECK, story_tags.JAVASCRIPT_HEAVY, story_tags.YEAR_2018
+      story_tags.HEALTH_CHECK, story_tags.JAVASCRIPT_HEAVY, story_tags.YEAR_2020
   ]
 
 

@@ -285,10 +285,6 @@
     },
     {
         "duration": "21.0",
-        "name": "system_health.common_desktop/load:news:cnn:2018"
-    },
-    {
-        "duration": "21.0",
         "name": "system_health.common_desktop/load:news:flipboard"
     },
     {

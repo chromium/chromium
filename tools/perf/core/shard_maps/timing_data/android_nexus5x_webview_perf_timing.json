@@ -3740,10 +3740,6 @@
         "name": "system_health.common_mobile/load:news:bbc:2019"
     },
     {
-        "duration": "29.0",
-        "name": "system_health.common_mobile/load:news:cnn:2018"
-    },
-    {
         "duration": "22.0",
         "name": "system_health.common_mobile/load:news:irctc:2019"
     },
@@ -4030,10 +4026,6 @@
     {
         "duration": "26.0",
         "name": "system_health.memory_mobile/load:news:bbc:2019"
-    },
-    {
-        "duration": "31.0",
-        "name": "system_health.memory_mobile/load:news:cnn:2018"
     },
     {
         "duration": "27.0",

@@ -3489,10 +3489,6 @@
     },
     {
         "duration": "18.0",
-        "name": "system_health.common_desktop/load:news:cnn:2018"
-    },
-    {
-        "duration": "18.0",
         "name": "system_health.common_desktop/load:news:flipboard"
     },
     {
@@ -3790,10 +3786,6 @@
     {
         "duration": "16.0",
         "name": "system_health.memory_desktop/load:news:bbc:2018"
-    },
-    {
-        "duration": "17.0",
-        "name": "system_health.memory_desktop/load:news:cnn:2018"
     },
     {
         "duration": "16.0",

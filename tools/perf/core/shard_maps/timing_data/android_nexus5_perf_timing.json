@@ -76,10 +76,6 @@
         "name": "system_health.common_mobile/load:media:youtube:2018"
     },
     {
-        "duration": "53.0",
-        "name": "system_health.common_mobile/load:news:cnn:2018"
-    },
-    {
         "duration": "48.0",
         "name": "system_health.common_mobile/load:tools:gmail:2019"
     },

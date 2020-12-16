@@ -3488,10 +3488,6 @@
         "name": "system_health.common_desktop/load:news:bbc:2018"
     },
     {
-        "duration": "41.0",
-        "name": "system_health.common_desktop/load:news:cnn:2018"
-    },
-    {
         "duration": "39.0",
         "name": "system_health.common_desktop/load:news:flipboard"
     },
@@ -3790,10 +3786,6 @@
     {
         "duration": "27.0",
         "name": "system_health.memory_desktop/load:news:bbc:2018"
-    },
-    {
-        "duration": "30.0",
-        "name": "system_health.memory_desktop/load:news:cnn:2018"
     },
     {
         "duration": "30.0",
