@@ -18,8 +18,8 @@ ExtensionInstallPromptTestHelper::~ExtensionInstallPromptTestHelper() {}
 
 ExtensionInstallPrompt::DoneCallback
 ExtensionInstallPromptTestHelper::GetCallback() {
-  return base::Bind(&ExtensionInstallPromptTestHelper::HandleResult,
-                    base::Unretained(this));
+  return base::BindOnce(&ExtensionInstallPromptTestHelper::HandleResult,
+                        base::Unretained(this));
 }
 
 ExtensionInstallPrompt::Result

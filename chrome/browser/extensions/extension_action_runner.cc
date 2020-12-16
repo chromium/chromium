@@ -58,7 +58,7 @@ const int kRefreshRequiredActionsMask =
 
 ExtensionActionRunner::PendingScript::PendingScript(
     UserScript::RunLocation run_location,
-    const base::Closure& permit_script)
+    base::RepeatingClosure permit_script)
     : run_location(run_location), permit_script(permit_script) {}
 
 ExtensionActionRunner::PendingScript::PendingScript(
@@ -98,7 +98,7 @@ ExtensionAction::ShowAction ExtensionActionRunner::RunAction(
     if ((blocked & kRefreshRequiredActionsMask) != 0) {
       ShowBlockedActionBubble(
           extension,
-          base::Bind(
+          base::BindOnce(
               &ExtensionActionRunner::OnBlockedActionBubbleForRunActionClosed,
               weak_factory_.GetWeakPtr(), extension->id()));
       return ExtensionAction::ACTION_NONE;
@@ -150,11 +150,12 @@ void ExtensionActionRunner::HandlePageAccessModified(const Extension* extension,
     // TODO(devlin): The bubble text should make it clear that permissions are
     // granted only after the user accepts the refresh.
     ShowBlockedActionBubble(
-        extension, base::Bind(&ExtensionActionRunner::
-                                  OnBlockedActionBubbleForPageAccessGrantClosed,
-                              weak_factory_.GetWeakPtr(), extension->id(),
-                              web_contents()->GetLastCommittedURL(),
-                              current_access, new_access));
+        extension,
+        base::BindOnce(&ExtensionActionRunner::
+                           OnBlockedActionBubbleForPageAccessGrantClosed,
+                       weak_factory_.GetWeakPtr(), extension->id(),
+                       web_contents()->GetLastCommittedURL(), current_access,
+                       new_access));
     return;
   }
 
@@ -246,7 +247,7 @@ ExtensionActionRunner::RequiresUserConsentForScriptInjection(
 void ExtensionActionRunner::RequestScriptInjection(
     const Extension* extension,
     UserScript::RunLocation run_location,
-    const base::Closure& callback) {
+    base::RepeatingClosure callback) {
   CHECK(extension);
   PendingScriptList& list = pending_scripts_[extension->id()];
   list.push_back(PendingScript(run_location, callback));
@@ -320,8 +321,8 @@ void ExtensionActionRunner::OnRequestScriptInjectionPermission(
       // by this object.
       RequestScriptInjection(
           extension, run_location,
-          base::Bind(&ExtensionActionRunner::PermitScriptInjection,
-                     base::Unretained(this), request_id));
+          base::BindRepeating(&ExtensionActionRunner::PermitScriptInjection,
+                              base::Unretained(this), request_id));
       break;
     case PermissionsData::PageAccess::kDenied:
       // We should usually only get a "deny access" if the page changed (as the
@@ -370,7 +371,7 @@ void ExtensionActionRunner::LogUMA() const {
 
 void ExtensionActionRunner::ShowBlockedActionBubble(
     const Extension* extension,
-    const base::Callback<void(ToolbarActionsBarBubbleDelegate::CloseAction)>&
+    base::OnceCallback<void(ToolbarActionsBarBubbleDelegate::CloseAction)>
         callback) {
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
   ExtensionsContainer* const extensions_container =
@@ -379,11 +380,11 @@ void ExtensionActionRunner::ShowBlockedActionBubble(
     return;
   if (default_bubble_close_action_for_testing_) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(callback, *default_bubble_close_action_for_testing_));
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  *default_bubble_close_action_for_testing_));
   } else {
     extensions_container->ShowToolbarActionBubble(
-        std::make_unique<BlockedActionBubbleDelegate>(callback,
+        std::make_unique<BlockedActionBubbleDelegate>(std::move(callback),
                                                       extension->id()));
   }
 }

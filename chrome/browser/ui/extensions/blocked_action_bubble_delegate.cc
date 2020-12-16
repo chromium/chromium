@@ -12,9 +12,9 @@
 #include "ui/base/ui_base_types.h"
 
 BlockedActionBubbleDelegate::BlockedActionBubbleDelegate(
-    const base::Callback<void(CloseAction)>& callback,
+    base::OnceCallback<void(CloseAction)> callback,
     const std::string& extension_id)
-    : callback_(callback), extension_id_(extension_id) {}
+    : callback_(std::move(callback)), extension_id_(extension_id) {}
 
 BlockedActionBubbleDelegate::~BlockedActionBubbleDelegate() {}
 

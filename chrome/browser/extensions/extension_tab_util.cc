@@ -870,7 +870,7 @@ void ExtensionTabUtil::CreateTab(std::unique_ptr<WebContents> web_contents,
 
 // static
 void ExtensionTabUtil::ForEachTab(
-    const base::Callback<void(WebContents*)>& callback) {
+    base::RepeatingCallback<void(WebContents*)> callback) {
   for (auto* web_contents : AllTabContentses())
     callback.Run(web_contents);
 }

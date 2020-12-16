@@ -247,9 +247,9 @@ void UpdateOverridesLists(Profile* profile,
                             behavior)) {
       // This is the active override, so we need to find all existing
       // tabs for this override and get them to reload the original URL.
-      base::Callback<void(WebContents*)> callback =
-          base::Bind(&UnregisterAndReplaceOverrideForWebContents,
-                     page_override_pair.first, profile);
+      base::RepeatingCallback<void(WebContents*)> callback =
+          base::BindRepeating(&UnregisterAndReplaceOverrideForWebContents,
+                              page_override_pair.first, profile);
       extensions::ExtensionTabUtil::ForEachTab(callback);
     }
   }
@@ -317,7 +317,7 @@ bool ValidateOverrideURL(const base::Value* override_url_value,
 // Fetches each list in the overrides dictionary and runs |callback| on it.
 void ForEachOverrideList(
     Profile* profile,
-    const base::Callback<void(base::ListValue*)>& callback) {
+    base::RepeatingCallback<void(base::ListValue*)> callback) {
   PrefService* prefs = profile->GetPrefs();
   DictionaryPrefUpdate update(prefs, ExtensionWebUI::kExtensionURLOverrides);
   base::DictionaryValue* all_overrides = update.Get();
@@ -519,7 +519,7 @@ size_t ExtensionWebUI::GetNumberOfExtensionsOverridingURL(
 
 // static
 void ExtensionWebUI::InitializeChromeURLOverrides(Profile* profile) {
-  ForEachOverrideList(profile, base::Bind(&InitializeOverridesList));
+  ForEachOverrideList(profile, base::BindRepeating(&InitializeOverridesList));
 }
 
 // static

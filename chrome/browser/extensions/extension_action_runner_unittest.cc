@@ -70,7 +70,7 @@ class ExtensionActionRunnerUnitTest : public ChromeRenderViewHostTestHarness {
 
  private:
   // Returns a closure to use as a script execution for a given extension.
-  base::Closure GetExecutionCallbackForExtension(
+  base::RepeatingClosure GetExecutionCallbackForExtension(
       const std::string& extension_id);
 
   // Increment the number of executions for the given |extension_id|.
@@ -153,12 +153,14 @@ size_t ExtensionActionRunnerUnitTest::GetExecutionCountForExtension(
   return 0u;
 }
 
-base::Closure ExtensionActionRunnerUnitTest::GetExecutionCallbackForExtension(
+base::RepeatingClosure
+ExtensionActionRunnerUnitTest::GetExecutionCallbackForExtension(
     const std::string& extension_id) {
   // We use base unretained here, but if this ever gets executed outside of
   // this test's lifetime, we have a major problem anyway.
-  return base::Bind(&ExtensionActionRunnerUnitTest::IncrementExecutionCount,
-                    base::Unretained(this), extension_id);
+  return base::BindRepeating(
+      &ExtensionActionRunnerUnitTest::IncrementExecutionCount,
+      base::Unretained(this), extension_id);
 }
 
 void ExtensionActionRunnerUnitTest::IncrementExecutionCount(

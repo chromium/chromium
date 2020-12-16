@@ -114,7 +114,7 @@ class ExtensionActionRunner : public content::WebContentsObserver,
   }
   void RequestScriptInjectionForTesting(const Extension* extension,
                                         UserScript::RunLocation run_location,
-                                        const base::Closure& callback) {
+                                        base::RepeatingClosure callback) {
     return RequestScriptInjection(extension, run_location, callback);
   }
   void ClearInjectionsForTesting(const Extension& extension) {
@@ -125,7 +125,7 @@ class ExtensionActionRunner : public content::WebContentsObserver,
  private:
   struct PendingScript {
     PendingScript(UserScript::RunLocation run_location,
-                  const base::Closure& permit_script);
+                  base::RepeatingClosure permit_script);
     PendingScript(const PendingScript& other);
     ~PendingScript();
 
@@ -133,7 +133,7 @@ class ExtensionActionRunner : public content::WebContentsObserver,
     UserScript::RunLocation run_location;
 
     // The callback to run when the script is permitted by the user.
-    base::Closure permit_script;
+    base::RepeatingClosure permit_script;
   };
 
   using PendingScriptList = std::vector<PendingScript>;
@@ -150,7 +150,7 @@ class ExtensionActionRunner : public content::WebContentsObserver,
   // |callback| is run is that, if it is run, it will run on the current page.
   void RequestScriptInjection(const Extension* extension,
                               UserScript::RunLocation run_location,
-                              const base::Closure& callback);
+                              base::RepeatingClosure callback);
 
   // Runs any pending injections for the corresponding extension.
   void RunPendingScriptsForExtension(const Extension* extension);
@@ -176,7 +176,7 @@ class ExtensionActionRunner : public content::WebContentsObserver,
   // closed.
   void ShowBlockedActionBubble(
       const Extension* extension,
-      const base::Callback<void(ToolbarActionsBarBubbleDelegate::CloseAction)>&
+      base::OnceCallback<void(ToolbarActionsBarBubbleDelegate::CloseAction)>
           callback);
 
   // Called when the blocked actions bubble invoked to run the extension action

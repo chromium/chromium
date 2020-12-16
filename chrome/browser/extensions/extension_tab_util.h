@@ -228,7 +228,7 @@ class ExtensionTabUtil {
 
   // Executes the specified callback for all tabs in all browser windows.
   static void ForEachTab(
-      const base::Callback<void(content::WebContents*)>& callback);
+      base::RepeatingCallback<void(content::WebContents*)> callback);
 
   static WindowController* GetWindowControllerOfTab(
       const content::WebContents* web_contents);
