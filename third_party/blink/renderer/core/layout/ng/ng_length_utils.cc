@@ -636,8 +636,7 @@ LayoutUnit ComputeBlockSizeForFragmentInternal(
        style.OverflowBlockDirection() == EOverflow::kScroll))
     return min_max.min_size;
 
-  const bool is_logical_height_auto = logical_height.IsAuto();
-  if (is_logical_height_auto) {
+  if (logical_height.IsAuto()) {
     logical_height = space.StretchBlockSizeIfAuto() ? Length::FillAvailable()
                                                     : Length::FitContent();
   }
@@ -647,8 +646,10 @@ LayoutUnit ComputeBlockSizeForFragmentInternal(
       space, style, border_padding, logical_height, intrinsic_size,
       LengthResolvePhase::kLayout, available_block_size_adjustment,
       opt_percentage_resolution_block_size_for_min_max);
-  if (UNLIKELY((extent == kIndefiniteSize || is_logical_height_auto) &&
-               !style.AspectRatio().IsAuto() && inline_size)) {
+  if (UNLIKELY(!style.AspectRatio().IsAuto() && inline_size &&
+               BlockLengthUnresolvable(
+                   space, logical_height, LengthResolvePhase::kLayout,
+                   opt_percentage_resolution_block_size_for_min_max))) {
     extent =
         BlockSizeFromAspectRatio(border_padding, style.LogicalAspectRatio(),
                                  style.BoxSizing(), *inline_size);
