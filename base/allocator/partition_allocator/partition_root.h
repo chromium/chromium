@@ -452,14 +452,14 @@ namespace {
 // order_index is the next three MSB == 010 == 2.
 // sub_order_index_mask is a mask for the remaining bits == 11 (masking to 01
 // for the sub_order_index).
-constexpr uint32_t OrderIndexShift(uint32_t order) {
+constexpr uint8_t OrderIndexShift(uint8_t order) {
   if (order < kNumBucketsPerOrderBits + 1)
     return 0;
 
   return order - (kNumBucketsPerOrderBits + 1);
 }
 
-constexpr size_t OrderSubIndexMask(uint32_t order) {
+constexpr size_t OrderSubIndexMask(uint8_t order) {
   if (order == kBitsPerSizeT)
     return static_cast<size_t>(-1) >> (kNumBucketsPerOrderBits + 1);
 
@@ -475,7 +475,7 @@ static_assert(kBitsPerSizeT == 64, "");
 static_assert(kBitsPerSizeT == 32, "");
 #endif  // defined(PA_HAS_64_BITS_POINTERS)
 
-constexpr uint32_t kOrderIndexShift[BITS_PER_SIZE_T + 1] = {
+constexpr uint8_t kOrderIndexShift[BITS_PER_SIZE_T + 1] = {
     OrderIndexShift(0),  OrderIndexShift(1),  OrderIndexShift(2),
     OrderIndexShift(3),  OrderIndexShift(4),  OrderIndexShift(5),
     OrderIndexShift(6),  OrderIndexShift(7),  OrderIndexShift(8),
@@ -547,7 +547,7 @@ class BucketIndexLookup final {
     uint16_t* bucket_index_ptr = &bucket_index_lookup_[0];
     uint16_t bucket_index = 0;
 
-    for (uint16_t order = 0; order <= kBitsPerSizeT; ++order) {
+    for (uint8_t order = 0; order <= kBitsPerSizeT; ++order) {
       for (uint16_t j = 0; j < kNumBucketsPerOrder; ++j) {
         if (order < kMinBucketedOrder) {
           // Use the bucket of the finest granularity for malloc(0) etc.
@@ -601,7 +601,7 @@ ALWAYS_INLINE constexpr size_t BucketIndexLookup::GetIndex(size_t size) {
   // This forces the bucket table to be constant-initialized and immediately
   // materialized in the binary.
   constexpr BucketIndexLookup lookup{};
-  const size_t order = kBitsPerSizeT - bits::CountLeadingZeroBitsSizeT(size);
+  const uint8_t order = kBitsPerSizeT - bits::CountLeadingZeroBitsSizeT(size);
   // The order index is simply the next few bits after the most significant
   // bit.
   const size_t order_index =
