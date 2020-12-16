@@ -14,12 +14,67 @@
 #include "ios/web/public/test/web_task_environment.h"
 #include "net/http/http_status_code.h"
 #include "testing/platform_test.h"
-#import "third_party/ocmock/OCMock/OCMock.h"
 #include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+#pragma mark - FakeJSTranslateManager
+
+namespace {
+
+struct HandleTranslateResponseParams {
+  HandleTranslateResponseParams(const std::string& URL,
+                                int request_ID,
+                                int response_code,
+                                const std::string& status_text,
+                                const std::string& response_URL,
+                                const std::string& response_text)
+      : URL(URL),
+        request_ID(request_ID),
+        response_code(response_code),
+        status_text(status_text),
+        response_URL(response_URL),
+        response_text(response_text) {}
+  ~HandleTranslateResponseParams() {}
+  std::string URL;
+  int request_ID;
+  int response_code;
+  std::string status_text;
+  std::string response_URL;
+  std::string response_text;
+};
+
+}  // namespace
+
+// Fake translate manager to store parameters passed to
+// |handleTranslateResponseWithURL:...|
+@interface FakeJSTranslateManager : JsTranslateManager
+
+@property(readonly) HandleTranslateResponseParams* lastHandleResponseParams;
+
+@end
+
+@implementation FakeJSTranslateManager {
+  std::unique_ptr<HandleTranslateResponseParams> _lastHandleResponseParams;
+}
+
+- (HandleTranslateResponseParams*)lastHandleResponseParams {
+  return _lastHandleResponseParams.get();
+}
+
+- (void)handleTranslateResponseWithURL:(const std::string&)URL
+                             requestID:(int)requestID
+                          responseCode:(int)responseCode
+                            statusText:(const std::string&)statusText
+                           responseURL:(const std::string&)responseURL
+                          responseText:(const std::string&)responseText {
+  _lastHandleResponseParams = std::make_unique<HandleTranslateResponseParams>(
+      URL, requestID, responseCode, statusText, responseURL, responseText);
+}
+
+@end
 
 namespace translate {
 
@@ -38,10 +93,10 @@ class TranslateControllerTest : public PlatformTest,
         on_script_ready_called_(false),
         on_translate_complete_called_(false) {
     fake_web_state_->SetBrowserState(fake_browser_state_.get());
-    mock_js_translate_manager_ =
-        [OCMockObject niceMockForClass:[JsTranslateManager class]];
+    fake_js_translate_manager_ =
+        [[FakeJSTranslateManager alloc] initWithWebState:fake_web_state_.get()];
     translate_controller_ = std::make_unique<TranslateController>(
-        fake_web_state_.get(), mock_js_translate_manager_);
+        fake_web_state_.get(), fake_js_translate_manager_);
     translate_controller_->set_observer(this);
   }
 
@@ -69,7 +124,7 @@ class TranslateControllerTest : public PlatformTest,
   std::unique_ptr<web::FakeBrowserState> fake_browser_state_;
   web::FakeWebFrame fake_main_frame_;
   web::FakeWebFrame fake_iframe_;
-  id mock_js_translate_manager_;
+  FakeJSTranslateManager* fake_js_translate_manager_;
   std::unique_ptr<TranslateController> translate_controller_;
   TranslateErrors::Type error_type_;
   double ready_time_;
@@ -225,16 +280,6 @@ TEST_F(TranslateControllerTest, OnTranslateSendRequestWithBadMethod) {
   command.SetString("body", "helloworld");
   command.SetDouble("requestID", 0);
 
-  [[mock_js_translate_manager_ expect]
-      handleTranslateResponseWithURL:
-          @"https://translate.googleapis.com/translate?key=abcd"
-                           requestID:0
-                        responseCode:net::HttpStatusCode::HTTP_BAD_REQUEST
-                          statusText:@""
-                         responseURL:@"https://translate.googleapis.com/"
-                                     @"translate?key=abcd"
-                        responseText:@""];
-
   // The command will be accepted, but a bad method should cause the request to
   // fail shortly thereafter.
   EXPECT_TRUE(translate_controller_->OnJavascriptCommandReceived(
@@ -242,7 +287,17 @@ TEST_F(TranslateControllerTest, OnTranslateSendRequestWithBadMethod) {
       &fake_main_frame_));
   task_environment_.RunUntilIdle();
 
-  [mock_js_translate_manager_ verify];
+  HandleTranslateResponseParams* last_params =
+      fake_js_translate_manager_.lastHandleResponseParams;
+  ASSERT_TRUE(last_params);
+  EXPECT_EQ("https://translate.googleapis.com/translate?key=abcd",
+            last_params->URL);
+  EXPECT_EQ(0, last_params->request_ID);
+  EXPECT_EQ(net::HttpStatusCode::HTTP_BAD_REQUEST, last_params->response_code);
+  EXPECT_EQ("", last_params->status_text);
+  EXPECT_EQ("https://translate.googleapis.com/translate?key=abcd",
+            last_params->response_URL);
+  EXPECT_EQ("", last_params->response_text);
 }
 
 }  // namespace translate

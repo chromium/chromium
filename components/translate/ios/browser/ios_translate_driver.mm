@@ -69,8 +69,8 @@ IOSTranslateDriver::IOSTranslateDriver(
           web_state, translate_manager_->translate_client()->GetPrefs());
 
   // Create the translate controller.
-  JsTranslateManager* js_translate_manager = static_cast<JsTranslateManager*>(
-      [receiver instanceOfClass:[JsTranslateManager class]]);
+  JsTranslateManager* js_translate_manager =
+      [[JsTranslateManager alloc] initWithWebState:web_state];
   translate_controller_ =
       std::make_unique<TranslateController>(web_state, js_translate_manager);
 

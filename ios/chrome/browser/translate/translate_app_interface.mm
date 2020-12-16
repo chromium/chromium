@@ -110,15 +110,10 @@ class TranslateAppInterfaceHelper {
 @implementation FakeJSTranslateManager
 
 - (instancetype)initWithWebState:(web::WebState*)webState {
-  if ((self = [super init])) {
+  if ((self = [super initWithWebState:webState])) {
     _webState = webState;
   }
   return self;
-}
-
-- (void)setScript:(NSString*)script {
-  // No need to set the JavaScript since it will never be used by this fake
-  // object.
 }
 
 - (void)startTranslationFrom:(const std::string&)source
@@ -139,9 +134,10 @@ class TranslateAppInterfaceHelper {
       "myButton.remove();"));
 }
 
-- (void)inject {
-  // Prevent the actual script from being injected and instead just invoke host
-  // with 'translate.ready' followed by 'translate.status'.
+- (void)injectWithTranslateScript:(const std::string&)translate_script {
+  // No need to set the |translate_script| JavaScript since it will never be
+  // used by this fake object. Instead just invoke host with 'translate.ready'
+  // followed by 'translate.status'.
   _webState->ExecuteJavaScript(
       base::UTF8ToUTF16("__gCrWeb.message.invokeOnHost({"
                         "  'command': 'translate.ready',"

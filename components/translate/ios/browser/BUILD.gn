@@ -69,7 +69,6 @@ source_set("unit_tests") {
     "//ios/web/public/deprecated:test_doubles",
     "//ios/web/public/test",
     "//testing/gtest",
-    "//third_party/ocmock",
     "//ui/base",
     "//url",
   ]

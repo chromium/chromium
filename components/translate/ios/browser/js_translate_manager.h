@@ -5,24 +5,28 @@
 #ifndef COMPONENTS_TRANSLATE_IOS_BROWSER_JS_TRANSLATE_MANAGER_H_
 #define COMPONENTS_TRANSLATE_IOS_BROWSER_JS_TRANSLATE_MANAGER_H_
 
-#import "ios/web/public/deprecated/crw_js_injection_manager.h"
-
+#import <Foundation/Foundation.h>
 #include <string>
 
-#include "base/time/time.h"
-
-@class NSString;
+namespace web {
+class WebState;
+}  // namespace web
 
 // Manager for the injection of the Translate JavaScript.
 // Replicates functionality from TranslateAgent in
 // chrome/renderer/translate/translate_agent.cc.
 // JsTranslateManager injects the script in the page and calls it, but is not
 // responsible for loading it or caching it.
-@interface JsTranslateManager : CRWJSInjectionManager
+@interface JsTranslateManager : NSObject
 
-// The translation script. Must be set before |-inject| is called, and is reset
-// after the injection.
-@property(nonatomic, copy) NSString* script;
+- (instancetype)initWithWebState:(web::WebState*)web_state
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
+
+// Injects the |translate_script| into the |web_state| passed in at
+// initialization.
+- (void)injectWithTranslateScript:(const std::string&)translate_script;
 
 // Starts translation of the page from |source| language to |target| language.
 // Equivalent to TranslateAgent::StartTranslation().
@@ -41,12 +45,12 @@
 // |statusText| The status text associated with the response code, may be empty.
 // |responseURL| The final URL from which the response originates.
 // |responseText| The contents of the response.
-- (void)handleTranslateResponseWithURL:(NSString*)URL
+- (void)handleTranslateResponseWithURL:(const std::string&)URL
                              requestID:(int)requestID
                           responseCode:(int)responseCode
-                            statusText:(NSString*)statusText
-                           responseURL:(NSString*)responseURL
-                          responseText:(NSString*)responseText;
+                            statusText:(const std::string&)statusText
+                           responseURL:(const std::string&)responseURL
+                          responseText:(const std::string&)responseText;
 
 @end
 
