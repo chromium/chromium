@@ -41,7 +41,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "third_party/blink/public/common/loader/network_utils.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 
 namespace payments {
 namespace {
@@ -128,7 +128,7 @@ void PaymentRequest::Init(
   client_.Bind(std::move(client));
 
   const GURL last_committed_url = delegate_->GetLastCommittedURL();
-  if (!blink::network_utils::IsOriginSecure(last_committed_url)) {
+  if (!network::IsUrlPotentiallyTrustworthy(last_committed_url)) {
     log_.Error(errors::kNotInASecureOrigin);
     TerminateConnection();
     return;

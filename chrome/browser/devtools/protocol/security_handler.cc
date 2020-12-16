@@ -15,7 +15,7 @@
 #include "net/cert/x509_util.h"
 #include "net/ssl/ssl_cipher_suite_names.h"
 #include "net/ssl/ssl_connection_status_flags.h"
-#include "third_party/blink/public/common/loader/network_utils.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 
 namespace {
@@ -196,7 +196,7 @@ CreateVisibleSecurityState(content::WebContents* web_contents) {
 
   bool secure_origin = scheme_is_cryptographic;
   if (!scheme_is_cryptographic)
-    secure_origin = blink::network_utils::IsOriginSecure(state->url);
+    secure_origin = network::IsUrlPotentiallyTrustworthy(state->url);
 
   bool cert_missing_subject_alt_name =
       state->certificate &&

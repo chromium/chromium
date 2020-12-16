@@ -28,7 +28,7 @@
 #include "net/cert/x509_certificate.h"
 #include "net/ssl/ssl_cipher_suite_names.h"
 #include "net/ssl/ssl_connection_status_flags.h"
-#include "third_party/blink/public/common/loader/network_utils.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/platform/web_mixed_content_context_type.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -510,7 +510,7 @@ blink::SecurityStyle GetSecurityStyle(
     // Some origins are considered secure even if they're not cryptographic, so
     // display a more precise summary.
     if (security_level == security_state::NONE &&
-        blink::network_utils::IsOriginSecure(visible_security_state.url)) {
+        network::IsUrlPotentiallyTrustworthy(visible_security_state.url)) {
       security_style_explanations->summary =
           l10n_util::GetStringUTF8(IDS_NON_CRYPTO_SECURE_SUMMARY);
     }

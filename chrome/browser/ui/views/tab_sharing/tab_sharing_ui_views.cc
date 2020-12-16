@@ -26,7 +26,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/url_util.h"
-#include "third_party/blink/public/common/loader/network_utils.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "ui/gfx/color_palette.h"
 
 #if defined(OS_WIN)
@@ -103,7 +103,7 @@ void SetContentsBorderVisible(content::WebContents* contents, bool visible) {
 base::string16 GetTabName(content::WebContents* tab) {
   GURL url = tab->GetLastCommittedURL();
   const base::string16 tab_name =
-      blink::network_utils::IsOriginSecure(url)
+      network::IsUrlPotentiallyTrustworthy(url)
           ? base::UTF8ToUTF16(net::GetHostAndOptionalPort(url))
           : url_formatter::FormatUrlForSecurityDisplay(url.GetOrigin());
   return tab_name.empty() ? tab->GetTitle() : tab_name;

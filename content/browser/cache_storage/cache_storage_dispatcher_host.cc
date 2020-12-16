@@ -27,9 +27,9 @@
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/cross_origin_resource_policy.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
-#include "third_party/blink/public/common/loader/network_utils.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -47,8 +47,9 @@ using network::mojom::RequestMode;
 
 // TODO(lucmult): Check this before binding.
 bool OriginCanAccessCacheStorage(const url::Origin& origin) {
+  // TODO(https://crbug.com/1158302): Use IsOriginPotentiallyTrustworthy?
   return !origin.opaque() &&
-         blink::network_utils::IsOriginSecure(origin.GetURL());
+         network::IsUrlPotentiallyTrustworthy(origin.GetURL());
 }
 
 // Verifies that the BatchOperation list conforms to the constraints imposed

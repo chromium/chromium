@@ -11,7 +11,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/common/constants.h"
-#include "third_party/blink/public/common/loader/network_utils.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/image/image_skia.h"
@@ -36,7 +36,7 @@ bool ManifestWebAppBrowserController::ShouldShowCustomTabBar() const {
     return false;
 
   // Show if the web_contents is not on a secure origin.
-  if (!blink::network_utils::IsOriginSecure(app_start_url_))
+  if (!network::IsUrlPotentiallyTrustworthy(app_start_url_))
     return true;
 
   // Show if web_contents is not currently in scope.

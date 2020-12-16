@@ -10,14 +10,13 @@
 #include "base/strings/pattern.h"
 #include "content/common/url_schemes.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
-#include "third_party/blink/public/common/loader/network_utils.h"
 #include "url/gurl.h"
 #include "url/url_util.h"
 
 namespace content {
 
 bool OriginCanAccessServiceWorkers(const GURL& url) {
-  if (url.SchemeIsHTTPOrHTTPS() && blink::network_utils::IsOriginSecure(url))
+  if (url.SchemeIsHTTPOrHTTPS() && network::IsUrlPotentiallyTrustworthy(url))
     return true;
 
   if (base::Contains(GetServiceWorkerSchemes(), url.scheme())) {

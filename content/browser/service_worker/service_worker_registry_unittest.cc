@@ -16,10 +16,10 @@
 #include "net/disk_cache/disk_cache.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/loader/network_utils.h"
 #include "third_party/blink/public/common/origin_trials/origin_trial_policy.h"
 
 namespace content {
@@ -1859,7 +1859,7 @@ class ServiceWorkerRegistryOriginTrialsTest : public ServiceWorkerRegistryTest {
     }
 
     bool IsOriginSecure(const GURL& url) const override {
-      return blink::network_utils::IsOriginSecure(url);
+      return network::IsUrlPotentiallyTrustworthy(url);
     }
 
    private:

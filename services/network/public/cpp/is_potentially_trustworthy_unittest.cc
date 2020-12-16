@@ -136,6 +136,67 @@ TEST(IsPotentiallyTrustworthy, Url) {
       "blob:https://www.example.com/guid-goes-here"));
 }
 
+// Tests that were for the removed blink::network_utils::IsOriginSecure.
+// TODO(https://crbug.com/1153336): Merge with IsPotentiallyTrustworthy.Url?
+TEST(IsPotentiallyTrustworthy, LegacyOriginUtilTests) {
+  EXPECT_TRUE(IsUrlPotentiallyTrustworthy("file:///test/fun.html"));
+  EXPECT_TRUE(IsUrlPotentiallyTrustworthy("file:///test/"));
+
+  EXPECT_TRUE(IsUrlPotentiallyTrustworthy("https://example.com/fun.html"));
+  EXPECT_FALSE(IsUrlPotentiallyTrustworthy("http://example.com/fun.html"));
+
+  EXPECT_TRUE(IsUrlPotentiallyTrustworthy("wss://example.com/fun.html"));
+  EXPECT_FALSE(IsUrlPotentiallyTrustworthy("ws://example.com/fun.html"));
+
+  EXPECT_TRUE(IsUrlPotentiallyTrustworthy("http://localhost/fun.html"));
+  EXPECT_TRUE(IsUrlPotentiallyTrustworthy("http://pumpkin.localhost/fun.html"));
+  EXPECT_TRUE(
+      IsUrlPotentiallyTrustworthy("http://crumpet.pumpkin.localhost/fun.html"));
+  EXPECT_TRUE(
+      IsUrlPotentiallyTrustworthy("http://pumpkin.localhost:8080/fun.html"));
+  EXPECT_TRUE(IsUrlPotentiallyTrustworthy(
+      "http://crumpet.pumpkin.localhost:3000/fun.html"));
+  EXPECT_FALSE(IsUrlPotentiallyTrustworthy("http://localhost.com/fun.html"));
+  EXPECT_TRUE(IsUrlPotentiallyTrustworthy("https://localhost.com/fun.html"));
+
+  EXPECT_TRUE(IsUrlPotentiallyTrustworthy("http://127.0.0.1/fun.html"));
+  EXPECT_TRUE(IsUrlPotentiallyTrustworthy("ftp://127.0.0.1/fun.html"));
+  EXPECT_TRUE(IsUrlPotentiallyTrustworthy("http://127.3.0.1/fun.html"));
+  EXPECT_FALSE(IsUrlPotentiallyTrustworthy("http://127.example.com/fun.html"));
+  EXPECT_TRUE(IsUrlPotentiallyTrustworthy("https://127.example.com/fun.html"));
+
+  EXPECT_TRUE(IsUrlPotentiallyTrustworthy("http://[::1]/fun.html"));
+  EXPECT_FALSE(IsUrlPotentiallyTrustworthy("http://[::2]/fun.html"));
+  EXPECT_FALSE(
+      IsUrlPotentiallyTrustworthy("http://[::1].example.com/fun.html"));
+
+  EXPECT_FALSE(IsUrlPotentiallyTrustworthy(
+      "filesystem:http://www.example.com/temporary/"));
+  EXPECT_FALSE(IsUrlPotentiallyTrustworthy(
+      "filesystem:ftp://www.example.com/temporary/"));
+  EXPECT_TRUE(
+      IsUrlPotentiallyTrustworthy("filesystem:ftp://127.0.0.1/temporary/"));
+  EXPECT_TRUE(IsUrlPotentiallyTrustworthy(
+      "filesystem:https://www.example.com/temporary/"));
+
+  EXPECT_TRUE(IsUrlPotentiallyTrustworthy("about:blank"));
+  EXPECT_TRUE(IsUrlPotentiallyTrustworthy("about:blank#ref"));
+  EXPECT_TRUE(IsUrlPotentiallyTrustworthy("about:srcdoc"));
+
+  EXPECT_FALSE(IsUrlPotentiallyTrustworthy("javascript:alert('blah')"));
+
+  EXPECT_TRUE(IsUrlPotentiallyTrustworthy("data:test/plain;blah"));
+
+  EXPECT_FALSE(IsUrlPotentiallyTrustworthy(
+      "blob:http://www.example.com/guid-goes-here"));
+  EXPECT_FALSE(
+      IsUrlPotentiallyTrustworthy("blob:ftp://www.example.com/guid-goes-here"));
+  EXPECT_TRUE(
+      IsUrlPotentiallyTrustworthy("blob:ftp://127.0.0.1/guid-goes-here"));
+  EXPECT_TRUE(IsUrlPotentiallyTrustworthy(
+      "blob:https://www.example.com/guid-goes-here"));
+}
+
 class SecureOriginAllowlistTest : public testing::Test {
   void TearDown() override {
     // Ensure that we reset the allowlisted origins without any flags applied.

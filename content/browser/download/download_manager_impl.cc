@@ -75,6 +75,7 @@
 #include "net/base/upload_bytes_element_reader.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "third_party/blink/public/common/loader/network_utils.h"
@@ -325,14 +326,14 @@ DownloadManagerImpl::DownloadManagerImpl(BrowserContext* browser_context)
     in_progress_manager_ =
         std::make_unique<download::InProgressDownloadManager>(
             this, base::FilePath(), proto_db_provider,
-            base::BindRepeating(&blink::network_utils::IsOriginSecure),
+            base::BindRepeating(&network::IsUrlPotentiallyTrustworthy),
             base::BindRepeating(&DownloadRequestUtils::IsURLSafe),
             /*wake_lock_provider_binder=*/base::NullCallback());
   } else {
     in_progress_manager_->SetDelegate(this);
     in_progress_manager_->set_download_start_observer(nullptr);
     in_progress_manager_->set_is_origin_secure_cb(
-        base::BindRepeating(&blink::network_utils::IsOriginSecure));
+        base::BindRepeating(&network::IsUrlPotentiallyTrustworthy));
   }
 }
 

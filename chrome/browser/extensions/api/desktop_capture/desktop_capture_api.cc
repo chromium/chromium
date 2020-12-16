@@ -13,7 +13,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/url_util.h"
-#include "third_party/blink/public/common/loader/network_utils.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 
 namespace extensions {
 
@@ -69,10 +69,10 @@ DesktopCaptureChooseDesktopMediaFunction::Run() {
 
     if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
             ::switches::kAllowHttpScreenCapture) &&
-        !blink::network_utils::IsOriginSecure(origin)) {
+        !network::IsUrlPotentiallyTrustworthy(origin)) {
       return RespondNow(Error(kDesktopCaptureApiTabUrlNotSecure));
     }
-    target_name = base::UTF8ToUTF16(blink::network_utils::IsOriginSecure(origin)
+    target_name = base::UTF8ToUTF16(network::IsUrlPotentiallyTrustworthy(origin)
                                         ? net::GetHostAndOptionalPort(origin)
                                         : origin.spec());
 

@@ -12,7 +12,7 @@
 #include "components/permissions/features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ppapi/buildflags/buildflags.h"
-#include "third_party/blink/public/common/loader/network_utils.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -128,7 +128,7 @@ bool PermissionMenuModel::ShouldShowAllow(const GURL& url) {
     // Media only supports CONTENT_SETTING_ALLOW for secure origins.
     case ContentSettingsType::MEDIASTREAM_MIC:
     case ContentSettingsType::MEDIASTREAM_CAMERA:
-      return blink::network_utils::IsOriginSecure(url);
+      return network::IsUrlPotentiallyTrustworthy(url);
     // Chooser permissions do not support CONTENT_SETTING_ALLOW.
     case ContentSettingsType::SERIAL_GUARD:
     case ContentSettingsType::USB_GUARD:

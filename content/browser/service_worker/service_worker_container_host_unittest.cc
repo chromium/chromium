@@ -38,9 +38,9 @@
 #include "content/test/test_content_client.h"
 #include "mojo/public/cpp/system/functions.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/loader/network_utils.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
@@ -422,7 +422,7 @@ TEST_F(ServiceWorkerContainerHostTest, ContextSecurity) {
   GURL url(std::string(kServiceWorkerScheme) + "://host");
   url::Origin origin = url::Origin::Create(url);
   EXPECT_TRUE(url.is_valid());
-  EXPECT_FALSE(blink::network_utils::IsOriginSecure(url));
+  EXPECT_FALSE(network::IsUrlPotentiallyTrustworthy(url));
   EXPECT_TRUE(OriginCanAccessServiceWorkers(url));
   container_host_secure_parent->UpdateUrls(
       url, net::SiteForCookies::FromUrl(url), origin);

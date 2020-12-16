@@ -58,7 +58,6 @@
 #include "net/der/parse_values.h"
 #include "net/der/parser.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
-#include "third_party/blink/public/common/loader/network_utils.h"
 #include "url/url_constants.h"
 #include "url/url_util.h"
 
@@ -120,7 +119,8 @@ base::Optional<std::string> ProcessAppIdExtension(std::string appid,
   // Webauthn is only supported on secure origins and |ValidateEffectiveDomain|
   // has already checked this property of |origin| before this call. Thus this
   // step is moot.
-  DCHECK(blink::network_utils::IsOriginSecure(origin.GetURL()));
+  // TODO(https://crbug.com/1158302): Use IsOriginPotentiallyTrustworthy?
+  DCHECK(network::IsUrlPotentiallyTrustworthy(origin.GetURL()));
 
   // Step 2: "If the AppID is null or empty, the client must set the AppID to be
   // the FacetID of the caller, and the operation may proceed without additional

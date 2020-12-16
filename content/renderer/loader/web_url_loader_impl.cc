@@ -55,6 +55,7 @@
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "net/ssl/ssl_info.h"
 #include "services/network/public/cpp/http_raw_request_response_info.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "services/network/public/mojom/trust_tokens.mojom-shared.h"
@@ -62,7 +63,6 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/mime_sniffing_throttle.h"
-#include "third_party/blink/public/common/loader/network_utils.h"
 #include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
@@ -198,7 +198,7 @@ void SetSecurityStyleAndDetails(const GURL& url,
   if (!url.SchemeIsCryptographic()) {
     // Some origins are considered secure even though they're not cryptographic,
     // so treat them as secure in the UI.
-    if (blink::network_utils::IsOriginSecure(url))
+    if (network::IsUrlPotentiallyTrustworthy(url))
       response->SetSecurityStyle(blink::SecurityStyle::kSecure);
     else
       response->SetSecurityStyle(blink::SecurityStyle::kInsecure);
@@ -322,8 +322,8 @@ bool IsBannedCrossSiteAuth(
     // If the first party is secure but the subresource is not, this is
     // mixed-content. Do not allow the image.
     if (!allow_cross_origin_auth_prompt &&
-        blink::network_utils::IsOriginSecure(first_party.RepresentativeUrl()) &&
-        !blink::network_utils::IsOriginSecure(request_url)) {
+        network::IsUrlPotentiallyTrustworthy(first_party.RepresentativeUrl()) &&
+        !network::IsUrlPotentiallyTrustworthy(request_url)) {
       return true;
     }
     return false;

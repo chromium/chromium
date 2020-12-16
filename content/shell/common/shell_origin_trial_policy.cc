@@ -7,7 +7,7 @@
 #include "base/feature_list.h"
 #include "base/stl_util.h"
 #include "content/public/common/content_features.h"
-#include "third_party/blink/public/common/loader/network_utils.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 
 namespace content {
 
@@ -42,7 +42,7 @@ std::vector<base::StringPiece> ShellOriginTrialPolicy::GetPublicKeys() const {
 }
 
 bool ShellOriginTrialPolicy::IsOriginSecure(const GURL& url) const {
-  return blink::network_utils::IsOriginSecure(url);
+  return network::IsUrlPotentiallyTrustworthy(url);
 }
 
 }  // namespace content

@@ -37,9 +37,5 @@ bool IsURLHandledByNetworkService(const GURL& url) {
   return false;
 }
 
-bool IsOriginSecure(const GURL& url) {
-  return network::IsUrlPotentiallyTrustworthy(url);
-}
-
 }  // namespace network_utils
 }  // namespace blink

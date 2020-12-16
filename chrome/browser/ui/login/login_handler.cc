@@ -42,6 +42,7 @@
 #include "net/http/http_auth_scheme.h"
 #include "net/http/http_transaction_factory.h"
 #include "net/url_request/url_request_context.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/loader/network_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/text_elider.h"
@@ -439,7 +440,7 @@ void LoginHandler::GetDialogStrings(const GURL& request_url,
     authority_url = request_url;
   }
 
-  if (!blink::network_utils::IsOriginSecure(authority_url)) {
+  if (!network::IsUrlPotentiallyTrustworthy(authority_url)) {
     // TODO(asanka): The string should be different for proxies and servers.
     // http://crbug.com/620756
     *explanation = l10n_util::GetStringUTF16(IDS_LOGIN_DIALOG_NOT_PRIVATE);

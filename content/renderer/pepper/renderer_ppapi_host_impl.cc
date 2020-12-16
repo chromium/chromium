@@ -23,7 +23,7 @@
 #include "ipc/ipc_platform_file.h"
 #include "ppapi/host/ppapi_host.h"
 #include "ppapi/proxy/host_dispatcher.h"
-#include "third_party/blink/public/common/loader/network_utils.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_element.h"
@@ -279,7 +279,7 @@ bool RendererPpapiHostImpl::IsSecureContext(PP_Instance pp_instance) const {
   if (!instance)
     return false;
   return instance->GetContainer()->GetDocument().IsSecureContext() &&
-         blink::network_utils::IsOriginSecure(instance->GetPluginURL());
+         network::IsUrlPotentiallyTrustworthy(instance->GetPluginURL());
 }
 
 int RendererPpapiHostImpl::GetPluginChildId() const {

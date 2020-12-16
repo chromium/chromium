@@ -260,7 +260,6 @@ source_set("common_unittests_sources") {
     "input/web_input_event_unittest.cc",
     "loader/inter_process_time_ticks_converter_unittest.cc",
     "loader/mime_sniffing_throttle_unittest.cc",
-    "loader/network_utils_unittest.cc",
     "loader/referrer_utils_unittest.cc",
     "loader/throttling_url_loader_unittest.cc",
     "manifest/manifest_icon_selector_unittest.cc",

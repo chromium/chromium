@@ -1,4 +1,4 @@
 include_rules = [
-  "+third_party/blink/public/common/loader/network_utils.h",
+  "+services/network/public/cpp/is_potentially_trustworthy.h",
   "+third_party/blink/public/platform",
 ]

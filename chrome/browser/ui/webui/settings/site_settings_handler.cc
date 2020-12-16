@@ -65,7 +65,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
-#include "third_party/blink/public/common/loader/network_utils.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/text/bytes_formatting.h"
@@ -314,7 +314,7 @@ bool IsPatternValidForType(const std::string& pattern_string,
   // return false with a string saying why.
   GURL url(pattern_string);
   if (url.is_valid() && map->IsRestrictedToSecureOrigins(content_type) &&
-      !blink::network_utils::IsOriginSecure(url)) {
+      !network::IsUrlPotentiallyTrustworthy(url)) {
     *out_error = l10n_util::GetStringUTF8(
         IDS_SETTINGS_NOT_VALID_WEB_ADDRESS_FOR_CONTENT_TYPE);
     return false;

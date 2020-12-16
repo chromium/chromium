@@ -79,7 +79,7 @@
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "third_party/blink/public/common/loader/network_utils.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "url/url_constants.h"
 
@@ -1506,7 +1506,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTest, WebAccessibleResourcesIframeSrc) {
       embedded_test_server()->GetURL("a.com",
                                      "/extensions/api_test/service_worker/"
                                      "web_accessible_resources/webpage.html");
-  EXPECT_FALSE(blink::network_utils::IsOriginSecure(page_url));
+  EXPECT_FALSE(network::IsUrlPotentiallyTrustworthy(page_url));
 
   content::WebContents* web_contents =
       browsertest_util::AddTab(browser(), page_url);

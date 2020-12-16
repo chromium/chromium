@@ -13,7 +13,7 @@
 #include "content/renderer/pepper/renderer_ppapi_host_impl.h"
 #include "content/renderer/pepper/renderer_restrict_dispatch_group.h"
 #include "content/renderer/render_frame_impl.h"
-#include "third_party/blink/public/common/loader/network_utils.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_plugin_container.h"
 
@@ -86,7 +86,7 @@ void HostDispatcherWrapper::AddInstance(PP_Instance instance) {
     PepperPluginInstance* plugin_instance = host->GetPluginInstance(instance);
     bool is_privileged_context =
         plugin_instance->GetContainer()->GetDocument().IsSecureContext() &&
-        blink::network_utils::IsOriginSecure(plugin_instance->GetPluginURL());
+        network::IsUrlPotentiallyTrustworthy(plugin_instance->GetPluginURL());
     render_frame->Send(new FrameHostMsg_DidCreateOutOfProcessPepperInstance(
         plugin_child_id_, instance,
         PepperRendererInstanceData(

@@ -48,7 +48,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/switches.h"
 #include "net/base/url_util.h"
-#include "third_party/blink/public/common/loader/network_utils.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
@@ -81,7 +81,7 @@ base::string16 GetApplicationTitle(content::WebContents* web_contents,
     return base::UTF8ToUTF16(title);
   }
   GURL url = web_contents->GetURL();
-  title = blink::network_utils::IsOriginSecure(url)
+  title = network::IsUrlPotentiallyTrustworthy(url)
               ? net::GetHostAndOptionalPort(url)
               : url.GetOrigin().spec();
   return base::UTF8ToUTF16(title);
@@ -179,7 +179,7 @@ void DesktopCaptureAccessHandler::ProcessScreenCaptureAccessRequest(
       IsBuiltInExtension(request.security_origin);
 
   const bool origin_is_secure =
-      blink::network_utils::IsOriginSecure(request.security_origin) ||
+      network::IsUrlPotentiallyTrustworthy(request.security_origin) ||
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kAllowHttpScreenCapture);
 

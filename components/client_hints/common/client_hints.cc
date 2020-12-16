@@ -4,7 +4,7 @@
 
 #include "components/client_hints/common/client_hints.h"
 
-#include "third_party/blink/public/common/loader/network_utils.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/platform/web_client_hints_type.h"
 #include "url/gurl.h"
 
@@ -17,7 +17,7 @@ void GetAllowedClientHintsFromSource(
   if (client_hints_rules.empty())
     return;
 
-  if (!blink::network_utils::IsOriginSecure(url))
+  if (!network::IsUrlPotentiallyTrustworthy(url))
     return;
 
   const GURL& origin = url.GetOrigin();

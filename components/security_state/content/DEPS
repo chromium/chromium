@@ -5,8 +5,8 @@ include_rules = [
   "+content/public/browser",
   "+content/public/common",
   "+content/public/test",
+  "+services/network/public/cpp/is_potentially_trustworthy.h",
   "+third_party/boringssl/src/include",
-  "+third_party/blink/public/common/loader/network_utils.h",
   # Allow inclusion of blink API headers (POD/enum only).
   "+third_party/blink/public/common/security/security_style.h",
   "+ui/base",

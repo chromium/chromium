@@ -16,12 +16,12 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "storage/browser/database/database_util.h"
 #include "storage/browser/database/vfs_backend.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/common/database/database_identifier.h"
-#include "third_party/blink/public/common/loader/network_utils.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 #include "third_party/sqlite/sqlite3.h"
 #include "url/origin.h"
@@ -346,8 +346,9 @@ void WebDatabaseHostImpl::OpenedValidated(
     int64_t estimated_size) {
   DCHECK(db_tracker_->task_runner()->RunsTasksInCurrentSequence());
 
+  // TODO(https://crbug.com/1158302): Use IsOriginPotentiallyTrustworthy?
   UMA_HISTOGRAM_BOOLEAN("websql.OpenDatabase",
-                        blink::network_utils::IsOriginSecure(origin.GetURL()));
+                        network::IsUrlPotentiallyTrustworthy(origin.GetURL()));
 
   int64_t database_size = 0;
   std::string origin_identifier(storage::GetIdentifierFromOrigin(origin));

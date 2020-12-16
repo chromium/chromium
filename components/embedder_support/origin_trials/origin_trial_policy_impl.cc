@@ -15,7 +15,7 @@
 #include "components/embedder_support/origin_trials/features.h"
 #include "components/embedder_support/switches.h"
 #include "content/public/common/content_features.h"
-#include "third_party/blink/public/common/loader/network_utils.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 
 namespace embedder_support {
 
@@ -94,7 +94,7 @@ bool OriginTrialPolicyImpl::IsFeatureDisabledForUser(
 }
 
 bool OriginTrialPolicyImpl::IsOriginSecure(const GURL& url) const {
-  return blink::network_utils::IsOriginSecure(url);
+  return network::IsUrlPotentiallyTrustworthy(url);
 }
 
 bool OriginTrialPolicyImpl::SetPublicKeysFromASCIIString(

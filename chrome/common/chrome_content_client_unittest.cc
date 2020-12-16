@@ -18,7 +18,6 @@
 #include "ppapi/buildflags/buildflags.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/loader/network_utils.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_util.h"
@@ -105,10 +104,10 @@ TEST(ChromeContentClientTest, AdditionalSchemes) {
             origin.Serialize());
 
   EXPECT_TRUE(
-      blink::network_utils::IsOriginSecure(GURL("chrome-native://newtab/")));
+      network::IsUrlPotentiallyTrustworthy(GURL("chrome-native://newtab/")));
 
   GURL chrome_url(content::GetWebUIURL("dummyurl"));
-  EXPECT_TRUE(blink::network_utils::IsOriginSecure(chrome_url));
+  EXPECT_TRUE(network::IsUrlPotentiallyTrustworthy(chrome_url));
   EXPECT_FALSE(content::OriginCanAccessServiceWorkers(chrome_url));
   EXPECT_TRUE(
       network::IsOriginPotentiallyTrustworthy(url::Origin::Create(chrome_url)));

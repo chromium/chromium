@@ -11,7 +11,6 @@
 #include "device/fido/features.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
-#include "third_party/blink/public/common/loader/network_utils.h"
 #include "third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -41,8 +40,9 @@ blink::mojom::AuthenticatorStatus ValidateEffectiveDomain(
     return blink::mojom::AuthenticatorStatus::OPAQUE_DOMAIN;
   }
 
+  // TODO(https://crbug.com/1158302): Use IsOriginPotentiallyTrustworthy?
   if (url::HostIsIPAddress(caller_origin.host()) ||
-      !blink::network_utils::IsOriginSecure(caller_origin.GetURL())) {
+      !network::IsUrlPotentiallyTrustworthy(caller_origin.GetURL())) {
     return blink::mojom::AuthenticatorStatus::INVALID_DOMAIN;
   }
 
@@ -50,7 +50,7 @@ blink::mojom::AuthenticatorStatus ValidateEffectiveDomain(
   // may be supported in the future but the webauthn relying party is
   // just the domain of the origin so we would have to define how the
   // authority part of other schemes maps to a "domain" without
-  // collisions. Given the |blink::network_utils::IsOriginSecure| check, just
+  // collisions. Given the |network::IsUrlPotentiallyTrustworthy| check, just
   // above, HTTP is effectively restricted to just "localhost".
   if (caller_origin.scheme() != url::kHttpScheme &&
       caller_origin.scheme() != url::kHttpsScheme) {
@@ -174,12 +174,9 @@ WebAuthRequestSecurityChecker::ValidateAPrioriAuthenticatedUrl(
     return blink::mojom::AuthenticatorStatus::INVALID_ICON_URL;
   }
 
-  // https://www.w3.org/TR/mixed-content/#a-priori-authenticated-url
-  if (!url.IsAboutSrcdoc() && !url.IsAboutBlank() &&
-      !url.SchemeIs(url::kDataScheme) &&
-      !blink::network_utils::IsOriginSecure(url)) {
+  // https://w3c.github.io/webappsec-secure-contexts/#is-url-trustworthy
+  if (!network::IsUrlPotentiallyTrustworthy(url))
     return blink::mojom::AuthenticatorStatus::INVALID_ICON_URL;
-  }
 
   return blink::mojom::AuthenticatorStatus::SUCCESS;
 }

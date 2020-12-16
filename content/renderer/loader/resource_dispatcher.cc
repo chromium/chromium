@@ -32,6 +32,7 @@
 #include "net/http/http_response_headers.h"
 #include "net/url_request/referrer_policy.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
@@ -69,7 +70,7 @@ void CheckSchemeForReferrerPolicy(const network::ResourceRequest& request) {
            net::ReferrerPolicy::CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE) &&
       request.referrer.SchemeIsCryptographic() &&
       !url::Origin::Create(request.url).opaque() &&
-      !blink::network_utils::IsOriginSecure(request.url)) {
+      !network::IsUrlPotentiallyTrustworthy(request.url)) {
     LOG(FATAL) << "Trying to send secure referrer for insecure request "
                << "without an appropriate referrer policy.\n"
                << "URL = " << request.url << "\n"

@@ -37,7 +37,7 @@
 #include "extensions/common/features/simple_feature.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/switches.h"
-#include "third_party/blink/public/common/loader/network_utils.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 
 using content::DesktopMediaID;
 using content::WebContentsMediaCaptureId;
@@ -461,7 +461,7 @@ ExtensionFunction::ResponseAction TabCaptureGetMediaStreamIdFunction::Run() {
       return RespondNow(Error(kInvalidOriginError));
     }
 
-    if (!blink::network_utils::IsOriginSecure(origin)) {
+    if (!network::IsUrlPotentiallyTrustworthy(origin)) {
       return RespondNow(Error(kTabUrlNotSecure));
     }
 

@@ -71,6 +71,7 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "services/device/public/cpp/device_features.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/loader/network_utils.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -960,7 +961,7 @@ void ContentSettingMediaStreamBubbleModel::SetRadioGroup() {
   int radio_block_label_id = 0;
   if (state_ & (PageSpecificContentSettings::MICROPHONE_BLOCKED |
                 PageSpecificContentSettings::CAMERA_BLOCKED)) {
-    if (blink::network_utils::IsOriginSecure(url)) {
+    if (network::IsUrlPotentiallyTrustworthy(url)) {
       radio_item_setting_[0] = CONTENT_SETTING_ALLOW;
       radio_allow_label_id = IDS_BLOCKED_MEDIASTREAM_CAMERA_ALLOW;
       if (MicrophoneAccessed())

@@ -20,7 +20,7 @@
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
-#include "third_party/blink/public/common/loader/network_utils.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "url/gurl.h"
 
 #if defined(OS_ANDROID)
@@ -268,7 +268,7 @@ void PermissionUmaUtil::PermissionRequested(ContentSettingsType content_type,
   bool success = PermissionUtil::GetPermissionType(content_type, &permission);
   DCHECK(success);
 
-  bool secure_origin = blink::network_utils::IsOriginSecure(requesting_origin);
+  bool secure_origin = network::IsUrlPotentiallyTrustworthy(requesting_origin);
   base::UmaHistogramEnumeration("ContentSettings.PermissionRequested",
                                 permission, PermissionType::NUM);
   if (secure_origin) {

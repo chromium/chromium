@@ -20,7 +20,7 @@
 #include "components/download/public/common/download_stats.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/blink/public/common/loader/network_utils.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -208,14 +208,14 @@ struct MixedContentDownloadData {
     // Evaluate download security.
     is_redirect_chain_secure_ = true;
     for (const auto& url : item->GetUrlChain()) {
-      if (!blink::network_utils::IsOriginSecure(url)) {
+      if (!network::IsUrlPotentiallyTrustworthy(url)) {
         is_redirect_chain_secure_ = false;
         break;
       }
     }
     const GURL& dl_url = item->GetURL();
     bool is_download_secure = is_redirect_chain_secure_ &&
-                              (blink::network_utils::IsOriginSecure(dl_url) ||
+                              (network::IsUrlPotentiallyTrustworthy(dl_url) ||
                                dl_url.SchemeIsBlob() || dl_url.SchemeIsFile());
 
     // Configure mixed content status.
