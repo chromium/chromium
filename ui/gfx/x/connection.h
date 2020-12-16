@@ -28,11 +28,11 @@ class KeyboardState;
 class WriteBuffer;
 
 // This interface is used by classes wanting to receive
-// x11::Events directly.  For input events (mouse, keyboard, touch), a
+// Events directly.  For input events (mouse, keyboard, touch), a
 // PlatformEventObserver should be used instead.
 class EVENTS_EXPORT EventObserver {
  public:
-  virtual void OnEvent(const x11::Event& xevent) = 0;
+  virtual void OnEvent(const Event& xevent) = 0;
 
  protected:
   virtual ~EventObserver() = default;
@@ -62,7 +62,7 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
   static Connection* Get();
 
   // Sets the thread local connection instance.
-  static void Set(std::unique_ptr<x11::Connection> connection);
+  static void Set(std::unique_ptr<Connection> connection);
 
   template <typename T>
   T GenerateId() {
@@ -106,7 +106,7 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return *default_screen_;
   }
-  x11::Window default_root() const {
+  Window default_root() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return default_screen().root;
   }
@@ -119,7 +119,7 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
     return *default_root_visual_;
   }
 
-  const x11::Event* dispatching_event() const {
+  const Event* dispatching_event() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return dispatching_event_;
   }
@@ -162,7 +162,7 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
   void DispatchAll();
 
   // Directly dispatch an event, bypassing the event queue.
-  void DispatchEvent(const x11::Event& event);
+  void DispatchEvent(const Event& event);
 
   // Returns the old error handler.
   ErrorHandler SetErrorHandler(ErrorHandler new_handler);
@@ -282,7 +282,7 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
 
   void PreDispatchEvent(const Event& event);
 
-  int ScreenIndexFromRootWindow(x11::Window root) const;
+  int ScreenIndexFromRootWindow(Window root) const;
 
   // This function is implemented in the generated read_error.cc.
   void InitErrorParsers();
@@ -315,7 +315,7 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
   base::ObserverList<EventObserver>::Unchecked event_observers_;
 
   // The Event currently being dispatched, or nullptr if there is none.
-  const x11::Event* dispatching_event_ = nullptr;
+  const Event* dispatching_event_ = nullptr;
 
   base::circular_deque<Request> requests_;
   // The sequence ID of requests_.front(), or if |requests_| is empty, then the

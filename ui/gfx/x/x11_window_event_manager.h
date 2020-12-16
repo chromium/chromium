@@ -10,7 +10,6 @@
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "ui/gfx/gfx_export.h"
 #include "ui/gfx/x/connection.h"
 
 namespace base {
@@ -24,14 +23,14 @@ class XWindowEventManager;
 
 // Ensures events in |event_mask| are selected on |window| for the duration of
 // this object's lifetime.
-class GFX_EXPORT XScopedEventSelector {
+class COMPONENT_EXPORT(X11) XScopedEventSelector {
  public:
-  XScopedEventSelector(x11::Window window, x11::EventMask event_mask);
+  XScopedEventSelector(Window window, EventMask event_mask);
   ~XScopedEventSelector();
 
  private:
-  x11::Window window_;
-  x11::EventMask event_mask_;
+  Window window_;
+  EventMask event_mask_;
   base::WeakPtr<XWindowEventManager> event_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(XScopedEventSelector);
@@ -52,18 +51,18 @@ class XWindowEventManager {
   ~XWindowEventManager();
 
   // Guarantees that events in |event_mask| will be reported to Chrome.
-  void SelectEvents(x11::Window window, x11::EventMask event_mask);
+  void SelectEvents(Window window, EventMask event_mask);
 
   // Deselects events on |event_mask|.  Chrome will stop receiving events for
   // any set bit in |event_mask| only if no other client has selected that bit.
-  void DeselectEvents(x11::Window window, x11::EventMask event_mask);
+  void DeselectEvents(Window window, EventMask event_mask);
 
   // Helper method called by SelectEvents and DeselectEvents whenever the mask
   // corresponding to |window| might have changed.  Calls SetEventMask if
   // necessary.
-  void AfterMaskChanged(x11::Window window, x11::EventMask old_mask);
+  void AfterMaskChanged(Window window, EventMask old_mask);
 
-  std::map<x11::Window, std::unique_ptr<MultiMask>> mask_map_;
+  std::map<Window, std::unique_ptr<MultiMask>> mask_map_;
 
   // This is used to set XScopedEventSelector::event_manager_.  If |this| is
   // destroyed before any XScopedEventSelector, the |event_manager_| will become

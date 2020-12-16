@@ -50,7 +50,7 @@ void XEventWaiter::OnEvent(const x11::Event& xev) {
 
 // Returns atom that indidates that the XEvent is marker event.
 x11::Atom XEventWaiter::MarkerEventAtom() {
-  return gfx::GetAtom("marker_event");
+  return x11::GetAtom("marker_event");
 }
 
 }  // namespace ui

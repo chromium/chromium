@@ -18,7 +18,7 @@ XMenuList* XMenuList::GetInstance() {
 }
 
 XMenuList::XMenuList()
-    : menu_type_atom_(gfx::GetAtom("_NET_WM_WINDOW_TYPE_MENU")) {}
+    : menu_type_atom_(x11::GetAtom("_NET_WM_WINDOW_TYPE_MENU")) {}
 
 XMenuList::~XMenuList() {
   menus_.clear();

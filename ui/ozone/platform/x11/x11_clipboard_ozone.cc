@@ -79,10 +79,10 @@ struct X11ClipboardOzone::SelectionState {
 };
 
 X11ClipboardOzone::X11ClipboardOzone()
-    : atom_clipboard_(gfx::GetAtom(kClipboard)),
-      atom_targets_(gfx::GetAtom(kTargets)),
-      atom_timestamp_(gfx::GetAtom(kTimestamp)),
-      x_property_(gfx::GetAtom(kChromeSelection)),
+    : atom_clipboard_(x11::GetAtom(kClipboard)),
+      atom_targets_(x11::GetAtom(kTargets)),
+      atom_timestamp_(x11::GetAtom(kTimestamp)),
+      x_property_(x11::GetAtom(kChromeSelection)),
       connection_(x11::Connection::Get()),
       x_window_(x11::CreateDummyWindow("Chromium Clipboard Window")) {
   connection_->xfixes().QueryVersion(
@@ -148,7 +148,7 @@ void X11ClipboardOzone::OnSelectionRequest(
     ExpandTypes(&targets);
     std::vector<x11::Atom> atoms;
     for (auto& entry : targets)
-      atoms.push_back(gfx::GetAtom(entry.c_str()));
+      atoms.push_back(x11::GetAtom(entry.c_str()));
     x11::SetArrayProperty(event.requestor, event.property, x11::Atom::ATOM,
                           atoms);
 
@@ -314,7 +314,7 @@ void X11ClipboardOzone::ReadRemoteClipboard(x11::Atom selection) {
     }
   }
 
-  connection_->ConvertSelection({x_window_, selection, gfx::GetAtom(target),
+  connection_->ConvertSelection({x_window_, selection, x11::GetAtom(target),
                                  x_property_, x11::Time::CurrentTime});
 }
 

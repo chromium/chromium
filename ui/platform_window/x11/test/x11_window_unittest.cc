@@ -127,7 +127,7 @@ class WMStateWaiter : public X11PropertyChangeWaiter {
   bool ShouldKeepOnWaiting() override {
     std::vector<x11::Atom> hints;
     if (GetAtomArrayProperty(xwindow(), "_NET_WM_STATE", &hints))
-      return base::Contains(hints, gfx::GetAtom(hint_)) != wait_till_set_;
+      return base::Contains(hints, x11::GetAtom(hint_)) != wait_till_set_;
     return true;
   }
 
@@ -288,7 +288,7 @@ TEST_F(X11WindowTest, Shape) {
     EXPECT_FALSE(ShapeRectContainsPoint(shape_rects, 205, 15));
   }
 
-  if (WmSupportsHint(gfx::GetAtom("_NET_WM_STATE_MAXIMIZED_VERT"))) {
+  if (WmSupportsHint(x11::GetAtom("_NET_WM_STATE_MAXIMIZED_VERT"))) {
     // The shape should be changed to a rectangle which fills the entire screen
     // when |widget1| is maximized.
     {
@@ -364,7 +364,7 @@ TEST_F(X11WindowTest, Shape) {
 // Test that the widget reacts on changes in fullscreen state initiated by the
 // window manager (e.g. via a window manager accelerator key).
 TEST_F(X11WindowTest, WindowManagerTogglesFullscreen) {
-  if (!WmSupportsHint(gfx::GetAtom("_NET_WM_STATE_FULLSCREEN")))
+  if (!WmSupportsHint(x11::GetAtom("_NET_WM_STATE_FULLSCREEN")))
     return;
 
   auto* connection = x11::Connection::Get();
@@ -392,8 +392,8 @@ TEST_F(X11WindowTest, WindowManagerTogglesFullscreen) {
   // accelerator key.
   {
     ui::SendClientMessage(
-        x11_window, ui::GetX11RootWindow(), gfx::GetAtom("_NET_WM_STATE"),
-        {0, static_cast<uint32_t>(gfx::GetAtom("_NET_WM_STATE_FULLSCREEN")), 0,
+        x11_window, ui::GetX11RootWindow(), x11::GetAtom("_NET_WM_STATE"),
+        {0, static_cast<uint32_t>(x11::GetAtom("_NET_WM_STATE_FULLSCREEN")), 0,
          1, 0});
 
     WMStateWaiter waiter(x11_window, "_NET_WM_STATE_FULLSCREEN", false);
@@ -446,13 +446,13 @@ TEST_F(X11WindowTest, ToggleMinimizePropogateToPlatformWindowDelegate) {
   // Minimize by sending _NET_WM_STATE_HIDDEN
   {
     std::vector<x11::Atom> atom_list;
-    atom_list.push_back(gfx::GetAtom("_NET_WM_STATE_HIDDEN"));
+    atom_list.push_back(x11::GetAtom("_NET_WM_STATE_HIDDEN"));
     ui::SetAtomArrayProperty(x11_window, "_NET_WM_STATE", "ATOM", atom_list);
 
     x11::PropertyNotifyEvent xevent{
         .send_event = true,
         .window = x11_window,
-        .atom = gfx::GetAtom("_NET_WM_STATE"),
+        .atom = x11::GetAtom("_NET_WM_STATE"),
     };
     x11::SendEvent(xevent, ui::GetX11RootWindow(),
                    x11::EventMask::SubstructureNotify |
@@ -467,13 +467,13 @@ TEST_F(X11WindowTest, ToggleMinimizePropogateToPlatformWindowDelegate) {
   // Show from minimized by sending _NET_WM_STATE_FOCUSED
   {
     std::vector<x11::Atom> atom_list;
-    atom_list.push_back(gfx::GetAtom("_NET_WM_STATE_FOCUSED"));
+    atom_list.push_back(x11::GetAtom("_NET_WM_STATE_FOCUSED"));
     ui::SetAtomArrayProperty(x11_window, "_NET_WM_STATE", "ATOM", atom_list);
 
     x11::PropertyNotifyEvent xevent{
         .send_event = true,
         .window = x11_window,
-        .atom = gfx::GetAtom("_NET_WM_STATE"),
+        .atom = x11::GetAtom("_NET_WM_STATE"),
     };
     x11::SendEvent(xevent, ui::GetX11RootWindow(),
                    x11::EventMask::SubstructureNotify |

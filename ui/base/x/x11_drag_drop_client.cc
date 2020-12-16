@@ -123,22 +123,22 @@ static base::LazyInstance<std::map<x11::Window, XDragDropClient*>>::Leaky
 // we're most likely to take on drop.
 x11::Atom XDragOperationToAtom(int drag_operation) {
   if (drag_operation & DragDropTypes::DRAG_COPY)
-    return gfx::GetAtom(kXdndActionCopy);
+    return x11::GetAtom(kXdndActionCopy);
   if (drag_operation & DragDropTypes::DRAG_MOVE)
-    return gfx::GetAtom(kXdndActionMove);
+    return x11::GetAtom(kXdndActionMove);
   if (drag_operation & DragDropTypes::DRAG_LINK)
-    return gfx::GetAtom(kXdndActionLink);
+    return x11::GetAtom(kXdndActionLink);
 
   return x11::Atom::None;
 }
 
 // Converts a single action atom to a drag operation.
 DragDropTypes::DragOperation AtomToDragOperation(x11::Atom atom) {
-  if (atom == gfx::GetAtom(kXdndActionCopy))
+  if (atom == x11::GetAtom(kXdndActionCopy))
     return DragDropTypes::DRAG_COPY;
-  if (atom == gfx::GetAtom(kXdndActionMove))
+  if (atom == x11::GetAtom(kXdndActionMove))
     return DragDropTypes::DRAG_MOVE;
-  if (atom == gfx::GetAtom(kXdndActionLink))
+  if (atom == x11::GetAtom(kXdndActionLink))
     return DragDropTypes::DRAG_LINK;
 
   return DragDropTypes::DRAG_NONE;
@@ -188,7 +188,7 @@ XDragDropClient::XDragDropClient(XDragDropClient::Delegate* delegate,
 
   // Mark that we are aware of drag and drop concepts.
   uint32_t xdnd_version = kMaxXdndVersion;
-  x11::SetProperty(xwindow_, gfx::GetAtom(kXdndAware), x11::Atom::ATOM,
+  x11::SetProperty(xwindow_, x11::GetAtom(kXdndAware), x11::Atom::ATOM,
                    xdnd_version);
 
   // Some tests change the DesktopDragDropClientAuraX11 associated with an
@@ -203,11 +203,11 @@ XDragDropClient::~XDragDropClient() {
 std::vector<x11::Atom> XDragDropClient::GetOfferedDragOperations() const {
   std::vector<x11::Atom> operations;
   if (drag_operation_ & DragDropTypes::DRAG_COPY)
-    operations.push_back(gfx::GetAtom(kXdndActionCopy));
+    operations.push_back(x11::GetAtom(kXdndActionCopy));
   if (drag_operation_ & DragDropTypes::DRAG_MOVE)
-    operations.push_back(gfx::GetAtom(kXdndActionMove));
+    operations.push_back(x11::GetAtom(kXdndActionMove));
   if (drag_operation_ & DragDropTypes::DRAG_LINK)
-    operations.push_back(gfx::GetAtom(kXdndActionLink));
+    operations.push_back(x11::GetAtom(kXdndActionLink));
   return operations;
 }
 
@@ -267,17 +267,17 @@ void XDragDropClient::ProcessMouseMove(const gfx::Point& screen_point,
 
 bool XDragDropClient::HandleXdndEvent(const x11::ClientMessageEvent& event) {
   x11::Atom message_type = event.type;
-  if (message_type == gfx::GetAtom("XdndEnter"))
+  if (message_type == x11::GetAtom("XdndEnter"))
     OnXdndEnter(event);
-  else if (message_type == gfx::GetAtom("XdndLeave"))
+  else if (message_type == x11::GetAtom("XdndLeave"))
     OnXdndLeave(event);
-  else if (message_type == gfx::GetAtom("XdndPosition"))
+  else if (message_type == x11::GetAtom("XdndPosition"))
     OnXdndPosition(event);
-  else if (message_type == gfx::GetAtom("XdndStatus"))
+  else if (message_type == x11::GetAtom("XdndStatus"))
     OnXdndStatus(event);
-  else if (message_type == gfx::GetAtom("XdndFinished"))
+  else if (message_type == x11::GetAtom("XdndFinished"))
     OnXdndFinished(event);
-  else if (message_type == gfx::GetAtom("XdndDrop"))
+  else if (message_type == x11::GetAtom("XdndDrop"))
     OnXdndDrop(event);
   else
     return false;
@@ -461,9 +461,9 @@ void XDragDropClient::InitDrag(int operation, const OSExchangeData* data) {
 
   std::vector<x11::Atom> actions = GetOfferedDragOperations();
   if (!source_provider_->file_contents_name().empty()) {
-    actions.push_back(gfx::GetAtom(kXdndActionDirectSave));
-    SetStringProperty(xwindow_, gfx::GetAtom(kXdndDirectSave0),
-                      gfx::GetAtom(kMimeTypeText),
+    actions.push_back(x11::GetAtom(kXdndActionDirectSave));
+    SetStringProperty(xwindow_, x11::GetAtom(kXdndDirectSave0),
+                      x11::GetAtom(kMimeTypeText),
                       source_provider_->file_contents_name().AsUTF8Unsafe());
   }
   SetAtomArrayProperty(xwindow_, kXdndActionList, "ATOM", actions);
@@ -471,8 +471,8 @@ void XDragDropClient::InitDrag(int operation, const OSExchangeData* data) {
 
 void XDragDropClient::CleanupDrag() {
   source_provider_ = nullptr;
-  ui::DeleteProperty(xwindow_, gfx::GetAtom(kXdndActionList));
-  ui::DeleteProperty(xwindow_, gfx::GetAtom(kXdndDirectSave0));
+  ui::DeleteProperty(xwindow_, x11::GetAtom(kXdndActionList));
+  ui::DeleteProperty(xwindow_, x11::GetAtom(kXdndDirectSave0));
 }
 
 void XDragDropClient::UpdateModifierState(int flags) {
@@ -578,7 +578,7 @@ x11::ClientMessageEvent XDragDropClient::PrepareXdndClientMessage(
     const char* message,
     x11::Window recipient) const {
   x11::ClientMessageEvent xev;
-  xev.type = gfx::GetAtom(message);
+  xev.type = x11::GetAtom(message);
   xev.window = recipient;
   xev.format = 32;
   xev.data.data32.fill(0);
@@ -600,7 +600,7 @@ x11::Window XDragDropClient::FindWindowFor(const gfx::Point& screen_point) {
   // Figure out which window we should test as XdndAware. If |target| has
   // XdndProxy, it will set that proxy on target, and if not, |target|'s
   // original value will remain.
-  GetProperty(target, gfx::GetAtom(kXdndProxy), &target);
+  GetProperty(target, x11::GetAtom(kXdndProxy), &target);
 
   int version;
   if (GetIntProperty(target, kXdndAware, &version) &&

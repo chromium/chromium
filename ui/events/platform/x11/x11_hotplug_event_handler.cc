@@ -185,7 +185,7 @@ base::FilePath GetDevicePath(x11::Connection* connection,
 
   // Input device has a property "Device Node" pointing to its dev input node,
   // e.g.   Device Node (250): "/dev/input/event8"
-  x11::Atom device_node = gfx::GetAtom("Device Node");
+  x11::Atom device_node = x11::GetAtom("Device Node");
   if (device_node == x11::Atom::None)
     return base::FilePath();
 
@@ -409,13 +409,13 @@ void X11HotplugEventHandler::OnHotplugEvent() {
       continue;
 
     x11::Atom type = device.device_type;
-    if (type == gfx::GetAtom("KEYBOARD"))
+    if (type == x11::GetAtom("KEYBOARD"))
       device_types[id] = DEVICE_TYPE_KEYBOARD;
-    else if (type == gfx::GetAtom("MOUSE"))
+    else if (type == x11::GetAtom("MOUSE"))
       device_types[id] = DEVICE_TYPE_MOUSE;
-    else if (type == gfx::GetAtom("TOUCHPAD"))
+    else if (type == x11::GetAtom("TOUCHPAD"))
       device_types[id] = DEVICE_TYPE_TOUCHPAD;
-    else if (type == gfx::GetAtom("TOUCHSCREEN"))
+    else if (type == x11::GetAtom("TOUCHSCREEN"))
       device_types[id] = DEVICE_TYPE_TOUCHSCREEN;
   }
 
@@ -433,8 +433,8 @@ void X11HotplugEventHandler::OnHotplugEvent() {
 
   // X11 is not thread safe, so first get all the required state.
   DisplayState display_state;
-  display_state.mt_position_x = gfx::GetAtom("Abs MT Position X");
-  display_state.mt_position_y = gfx::GetAtom("Abs MT Position Y");
+  display_state.mt_position_x = x11::GetAtom("Abs MT Position X");
+  display_state.mt_position_y = x11::GetAtom("Abs MT Position Y");
 
   UiCallbacks callbacks;
   callbacks.keyboard_callback = base::BindOnce(&OnKeyboardDevices);

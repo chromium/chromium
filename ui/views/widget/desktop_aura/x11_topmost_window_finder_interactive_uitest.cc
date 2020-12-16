@@ -51,7 +51,7 @@ class MinimizeWaiter : public ui::X11PropertyChangeWaiter {
   bool ShouldKeepOnWaiting() override {
     std::vector<x11::Atom> wm_states;
     if (ui::GetAtomArrayProperty(xwindow(), "_NET_WM_STATE", &wm_states)) {
-      return !base::Contains(wm_states, gfx::GetAtom("_NET_WM_STATE_HIDDEN"));
+      return !base::Contains(wm_states, x11::GetAtom("_NET_WM_STATE_HIDDEN"));
     }
     return true;
   }
@@ -97,7 +97,7 @@ class StackingClientListWaiter : public ui::X11PropertyChangeWaiter {
 
 void IconifyWindow(x11::Connection* connection, x11::Window window) {
   ui::SendClientMessage(window, ui::GetX11RootWindow(),
-                        gfx::GetAtom("WM_CHANGE_STATE"),
+                        x11::GetAtom("WM_CHANGE_STATE"),
                         {ui::WM_STATE_ICONIC, 0, 0, 0, 0});
 }
 
@@ -326,7 +326,7 @@ TEST_F(X11TopmostWindowFinderTest, NonRectangular) {
   skregion2.op(SkIRect::MakeXYWH(0, 10, 10, 90), SkRegion::kUnion_Op);
   skregion2.op(SkIRect::MakeXYWH(10, 0, 90, 100), SkRegion::kUnion_Op);
   x11::Window window2 = CreateAndShowXWindow(gfx::Rect(300, 100, 100, 100));
-  auto region2 = gfx::CreateRegionFromSkRegion(skregion2);
+  auto region2 = x11::CreateRegionFromSkRegion(skregion2);
   x11::Connection::Get()->shape().Rectangles({
       .operation = x11::Shape::So::Set,
       .destination_kind = x11::Shape::Sk::Bounding,
@@ -423,7 +423,7 @@ TEST_F(X11TopmostWindowFinderTest, DISABLED_Menu) {
   });
 
   ui::SetAtomProperty(menu_window, "_NET_WM_WINDOW_TYPE", "ATOM",
-                      gfx::GetAtom("_NET_WM_WINDOW_TYPE_MENU"));
+                      x11::GetAtom("_NET_WM_WINDOW_TYPE_MENU"));
 
   ui::SetUseOSWindowFrame(menu_window, false);
   ShowAndSetXWindowBounds(menu_window, gfx::Rect(140, 110, 100, 100));

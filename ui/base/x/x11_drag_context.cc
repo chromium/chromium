@@ -118,8 +118,8 @@ void XDragContext::RequestNextTarget() {
   unfetched_targets_.pop_back();
 
   x11::Connection::Get()->ConvertSelection(
-      {local_window_, gfx::GetAtom(kXdndSelection), target,
-       gfx::GetAtom(kChromiumDragReciever), position_time_stamp_});
+      {local_window_, x11::GetAtom(kXdndSelection), target,
+       x11::GetAtom(kChromiumDragReciever), position_time_stamp_});
 }
 
 void XDragContext::OnSelectionNotify(const x11::SelectionNotifyEvent& event) {
@@ -136,7 +136,7 @@ void XDragContext::OnSelectionNotify(const x11::SelectionNotifyEvent& event) {
   auto target = static_cast<x11::Atom>(event.target);
 
   if (event.property != x11::Atom::None) {
-    DCHECK_EQ(property, gfx::GetAtom(kChromiumDragReciever));
+    DCHECK_EQ(property, x11::GetAtom(kChromiumDragReciever));
 
     scoped_refptr<base::RefCountedMemory> data;
     x11::Atom type = x11::Atom::None;
@@ -188,17 +188,17 @@ int XDragContext::GetDragOperation() const {
 
 void XDragContext::MaskOperation(x11::Atom xdnd_operation,
                                  int* drag_operation) const {
-  if (xdnd_operation == gfx::GetAtom(kXdndActionCopy))
+  if (xdnd_operation == x11::GetAtom(kXdndActionCopy))
     *drag_operation |= DragDropTypes::DRAG_COPY;
-  else if (xdnd_operation == gfx::GetAtom(kXdndActionMove))
+  else if (xdnd_operation == x11::GetAtom(kXdndActionMove))
     *drag_operation |= DragDropTypes::DRAG_MOVE;
-  else if (xdnd_operation == gfx::GetAtom(kXdndActionLink))
+  else if (xdnd_operation == x11::GetAtom(kXdndActionLink))
     *drag_operation |= DragDropTypes::DRAG_LINK;
 }
 
 bool XDragContext::DispatchPropertyNotifyEvent(
     const x11::PropertyNotifyEvent& prop) {
-  if (prop.atom == gfx::GetAtom(kXdndActionList)) {
+  if (prop.atom == x11::GetAtom(kXdndActionList)) {
     ReadActions();
     return true;
   }

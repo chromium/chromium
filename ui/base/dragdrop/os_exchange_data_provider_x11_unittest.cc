@@ -33,7 +33,7 @@ class OSExchangeDataProviderX11Test : public testing::Test {
     scoped_refptr<base::RefCountedMemory> mem(
         base::RefCountedString::TakeString(&contents_copy));
 
-    provider.format_map_.Insert(gfx::GetAtom(kMimeTypeURIList), mem);
+    provider.format_map_.Insert(x11::GetAtom(kMimeTypeURIList), mem);
   }
 
  protected:

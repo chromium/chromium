@@ -64,8 +64,8 @@ class COMPONENT_EXPORT(X11) Event {
 
   uint32_t sequence() const { return sequence_; }
 
-  x11::Window window() const { return window_ ? *window_ : x11::Window::None; }
-  void set_window(x11::Window window) {
+  Window window() const { return window_ ? *window_ : Window::None; }
+  void set_window(Window window) {
     if (window_)
       *window_ = window;
   }
@@ -86,7 +86,7 @@ class COMPONENT_EXPORT(X11) Event {
 
   // This member points to a field in |event_|, or may be nullptr if there's no
   // associated window for the event.  It's owned by |event_|, not us.
-  x11::Window* window_ = nullptr;
+  Window* window_ = nullptr;
 };
 
 }  // namespace x11

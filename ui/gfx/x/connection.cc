@@ -57,8 +57,8 @@ base::ThreadLocalOwnedPointer<Connection>& GetConnectionTLS() {
   return *tls;
 }
 
-void DefaultErrorHandler(const x11::Error* error, const char* request_name) {
-  LOG(WARNING) << "X error received.  Request: x11::" << request_name
+void DefaultErrorHandler(const Error* error, const char* request_name) {
+  LOG(WARNING) << "X error received.  Request: " << request_name
                << "Request, Error: " << error->ToString();
 }
 
@@ -75,7 +75,7 @@ class UnknownError : public Error {
 
   std::string ToString() const override {
     std::stringstream ss;
-    ss << "x11::UnknownError{";
+    ss << "UnknownError{";
     // Errors are always a fixed 32 bytes.
     for (size_t i = 0; i < 32; i++) {
       char buf[3];
@@ -106,7 +106,7 @@ Connection* Connection::Get() {
 }
 
 // static
-void Connection::Set(std::unique_ptr<x11::Connection> connection) {
+void Connection::Set(std::unique_ptr<Connection> connection) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(connection->sequence_checker_);
   auto& tls = GetConnectionTLS();
   DCHECK(!tls.Get());
@@ -147,8 +147,8 @@ Connection::Connection(const std::string& address)
   // Xlib enables XKB on display creation, so we do that here to maintain
   // compatibility.
   xkb()
-      .UseExtension({x11::Xkb::major_version, x11::Xkb::minor_version})
-      .OnResponse(base::BindOnce([](x11::Xkb::UseExtensionResponse response) {
+      .UseExtension({Xkb::major_version, Xkb::minor_version})
+      .OnResponse(base::BindOnce([](Xkb::UseExtensionResponse response) {
         if (!response || !response->supported)
           DVLOG(1) << "Xkb extension not available.";
       }));
@@ -434,7 +434,7 @@ void Connection::DispatchAll() {
   }
 }
 
-void Connection::DispatchEvent(const x11::Event& event) {
+void Connection::DispatchEvent(const Event& event) {
   PreDispatchEvent(event);
 
   // NB: The event should be reset to nullptr when this function
@@ -683,12 +683,12 @@ void Connection::PreDispatchEvent(const Event& event) {
     if (mapping->request == Mapping::Modifier ||
         mapping->request == Mapping::Keyboard) {
       setup_.min_keycode = mapping->first_keycode;
-      setup_.max_keycode = static_cast<x11::KeyCode>(
+      setup_.max_keycode = static_cast<KeyCode>(
           static_cast<int>(mapping->first_keycode) + mapping->count - 1);
       keyboard_state_->UpdateMapping();
     }
   }
-  if (auto* notify = event.As<x11::Xkb::NewKeyboardNotifyEvent>()) {
+  if (auto* notify = event.As<Xkb::NewKeyboardNotifyEvent>()) {
     setup_.min_keycode = notify->minKeyCode;
     setup_.max_keycode = notify->maxKeyCode;
     keyboard_state_->UpdateMapping();

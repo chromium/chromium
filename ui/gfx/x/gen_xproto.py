@@ -708,7 +708,7 @@ class GenXproto(FileWriter):
                 self.write('%s %s{};' % field_type_name)
 
     # This tries to match XEvent.xany.window, except the window will be
-    # x11::Window::None for events that don't have a window, unlike the XEvent
+    # Window::None for events that don't have a window, unlike the XEvent
     # union which will get whatever data happened to be at the offset of
     # xany.window.
     def get_window_field(self, event):
@@ -924,7 +924,7 @@ class GenXproto(FileWriter):
         name = self.qualtype(error, name)
         with Indent(self, 'std::string %s::ToString() const {' % name, '}'):
             self.write('std::stringstream ss_;')
-            self.write('ss_ << "x11::%s{";' % name)
+            self.write('ss_ << "%s{";' % name)
             fields = [field for field in error.fields if field.visible]
             for i, field in enumerate(fields):
                 terminator = '' if i == len(fields) - 1 else ' << ", "'
@@ -1250,7 +1250,7 @@ class GenXproto(FileWriter):
                 elif isinstance(item, self.xcbgen.xtypes.Request):
                     self.declare_request(item)
             self.write('private:')
-            self.write('x11::Connection* const connection_;')
+            self.write('Connection* const connection_;')
             if self.module.namespace.is_ext:
                 self.write('x11::QueryExtensionReply info_{};')
 
@@ -1290,7 +1290,7 @@ class GenXproto(FileWriter):
         self.write()
         ctor = '%s::%s' % (self.class_name, self.class_name)
         if self.module.namespace.is_ext:
-            self.write(ctor + '(x11::Connection* connection,')
+            self.write(ctor + '(Connection* connection,')
             self.write('    const x11::QueryExtensionReply& info)')
             self.write('    : connection_(connection), info_(info) {}')
         else:
@@ -1598,7 +1598,7 @@ def main():
     for genproto in genprotos:
         genproto.resolve()
 
-    # Give each event a unique type ID.  This is used by x11::Event to
+    # Give each event a unique type ID.  This is used by Event to
     # implement downcasting for events.
     type_id = 1
     for proto in genprotos:

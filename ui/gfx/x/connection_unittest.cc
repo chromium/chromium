@@ -70,9 +70,9 @@ TEST(X11ConnectionTest, Event) {
 
   std::vector<uint8_t> data{0};
   auto prop_future = connection.ChangeProperty({
-      .window = static_cast<x11::Window>(window),
-      .property = x11::Atom::WM_NAME,
-      .type = x11::Atom::STRING,
+      .window = static_cast<Window>(window),
+      .property = Atom::WM_NAME,
+      .type = Atom::STRING,
       .format = CHAR_BIT,
       .data_len = 1,
       .data = base::RefCountedBytes::TakeVector(&data),
@@ -81,9 +81,9 @@ TEST(X11ConnectionTest, Event) {
 
   connection.ReadResponses();
   ASSERT_EQ(connection.events().size(), 1u);
-  auto* prop = connection.events().front().As<x11::PropertyNotifyEvent>();
+  auto* prop = connection.events().front().As<PropertyNotifyEvent>();
   ASSERT_TRUE(prop);
-  EXPECT_EQ(prop->atom, x11::Atom::WM_NAME);
+  EXPECT_EQ(prop->atom, Atom::WM_NAME);
   EXPECT_EQ(prop->state, Property::NewValue);
 }
 
@@ -98,7 +98,7 @@ TEST(X11ConnectionTest, Error) {
   auto* error = geometry.error.get();
   ASSERT_TRUE(error);
   // TODO(thomasanderson): Implement As<> for errors, similar to events.
-  auto* drawable_error = reinterpret_cast<x11::DrawableError*>(error);
+  auto* drawable_error = reinterpret_cast<DrawableError*>(error);
   EXPECT_EQ(drawable_error->bad_value, static_cast<uint32_t>(invalid_window));
 }
 

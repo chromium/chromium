@@ -14,22 +14,20 @@ namespace x11 {
 namespace {
 
 // Asks the X server to set |window|'s event mask to |new_mask|.
-void SetEventMask(x11::Window window, x11::EventMask new_mask) {
-  auto* connection = x11::Connection::Get();
+void SetEventMask(Window window, EventMask new_mask) {
+  auto* connection = Connection::Get();
   // Window |window| may already be destroyed at this point, so the
   // change_attributes request may give a BadWindow error.  In this case, just
   // ignore the error.
   connection
-      ->ChangeWindowAttributes(x11::ChangeWindowAttributesRequest{
-          .window = window,
-          .event_mask = static_cast<x11::EventMask>(new_mask)})
+      ->ChangeWindowAttributes(ChangeWindowAttributesRequest{
+          .window = window, .event_mask = static_cast<EventMask>(new_mask)})
       .IgnoreError();
 }
 
 }  // anonymous namespace
 
-XScopedEventSelector::XScopedEventSelector(x11::Window window,
-                                           x11::EventMask event_mask)
+XScopedEventSelector::XScopedEventSelector(Window window, EventMask event_mask)
     : window_(window),
       event_mask_(event_mask),
       event_manager_(
@@ -53,14 +51,14 @@ class XWindowEventManager::MultiMask {
 
   ~MultiMask() = default;
 
-  void AddMask(x11::EventMask mask) {
+  void AddMask(EventMask mask) {
     for (int i = 0; i < kMaskSize; i++) {
       if (static_cast<uint32_t>(mask) & (1 << i))
         mask_bits_[i]++;
     }
   }
 
-  void RemoveMask(x11::EventMask mask) {
+  void RemoveMask(EventMask mask) {
     for (int i = 0; i < kMaskSize; i++) {
       if (static_cast<uint32_t>(mask) & (1 << i)) {
         DCHECK(mask_bits_[i]);
@@ -69,11 +67,11 @@ class XWindowEventManager::MultiMask {
     }
   }
 
-  x11::EventMask ToMask() const {
-    x11::EventMask mask = x11::EventMask::NoEvent;
+  EventMask ToMask() const {
+    EventMask mask = EventMask::NoEvent;
     for (int i = 0; i < kMaskSize; i++) {
       if (mask_bits_[i])
-        mask = mask | static_cast<x11::EventMask>(1 << i);
+        mask = mask | static_cast<EventMask>(1 << i);
     }
     return mask;
   }
@@ -91,37 +89,34 @@ XWindowEventManager::XWindowEventManager() = default;
 XWindowEventManager::~XWindowEventManager() {
   // Clear events still requested by not-yet-deleted XScopedEventSelectors.
   for (const auto& mask_pair : mask_map_)
-    SetEventMask(mask_pair.first, x11::EventMask::NoEvent);
+    SetEventMask(mask_pair.first, EventMask::NoEvent);
 }
 
-void XWindowEventManager::SelectEvents(x11::Window window,
-                                       x11::EventMask event_mask) {
+void XWindowEventManager::SelectEvents(Window window, EventMask event_mask) {
   std::unique_ptr<MultiMask>& mask = mask_map_[window];
   if (!mask)
     mask = std::make_unique<MultiMask>();
-  x11::EventMask old_mask = mask_map_[window]->ToMask();
+  EventMask old_mask = mask_map_[window]->ToMask();
   mask->AddMask(event_mask);
   AfterMaskChanged(window, old_mask);
 }
 
-void XWindowEventManager::DeselectEvents(x11::Window window,
-                                         x11::EventMask event_mask) {
+void XWindowEventManager::DeselectEvents(Window window, EventMask event_mask) {
   DCHECK(mask_map_.find(window) != mask_map_.end());
   std::unique_ptr<MultiMask>& mask = mask_map_[window];
-  x11::EventMask old_mask = mask->ToMask();
+  EventMask old_mask = mask->ToMask();
   mask->RemoveMask(event_mask);
   AfterMaskChanged(window, old_mask);
 }
 
-void XWindowEventManager::AfterMaskChanged(x11::Window window,
-                                           x11::EventMask old_mask) {
-  x11::EventMask new_mask = mask_map_[window]->ToMask();
+void XWindowEventManager::AfterMaskChanged(Window window, EventMask old_mask) {
+  EventMask new_mask = mask_map_[window]->ToMask();
   if (new_mask == old_mask)
     return;
 
   SetEventMask(window, new_mask);
 
-  if (new_mask == x11::EventMask::NoEvent)
+  if (new_mask == EventMask::NoEvent)
     mask_map_.erase(window);
 }
 

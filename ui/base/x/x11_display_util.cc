@@ -139,7 +139,7 @@ std::vector<uint8_t> GetEDIDProperty(x11::RandR* randr,
                                      x11::RandR::Output output) {
   auto future = randr->GetOutputProperty(x11::RandR::GetOutputPropertyRequest{
       .output = output,
-      .property = gfx::GetAtom(kRandrEdidProperty),
+      .property = x11::GetAtom(kRandrEdidProperty),
       .long_length = 128});
   auto response = future.Sync();
   std::vector<uint8_t> edid;

@@ -7,11 +7,11 @@
 
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "ui/gfx/gfx_export.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/future.h"
 #include "ui/gfx/x/x11_window_event_manager.h"
@@ -21,18 +21,18 @@ namespace x11 {
 
 // Watches properties on an X11 window.  Property values are obtained once upon
 // creation and are refreshed after each property change.
-class GFX_EXPORT PropertyCache : public x11::EventObserver {
+class COMPONENT_EXPORT(X11) PropertyCache : public EventObserver {
  public:
-  PropertyCache(x11::Connection* connection,
-                x11::Window window,
-                const std::vector<x11::Atom>& properties);
+  PropertyCache(Connection* connection,
+                Window window,
+                const std::vector<Atom>& properties);
 
   PropertyCache(const PropertyCache&) = delete;
   PropertyCache& operator=(const PropertyCache&) = delete;
 
   ~PropertyCache() override;
 
-  const x11::GetPropertyResponse& GetProperty(x11::Atom atom);
+  const GetPropertyResponse& GetProperty(Atom atom);
 
  private:
   struct PropertyValue {
@@ -43,23 +43,23 @@ class GFX_EXPORT PropertyCache : public x11::EventObserver {
 
     ~PropertyValue();
 
-    x11::Future<x11::GetPropertyReply> future;
+    Future<GetPropertyReply> future;
     // |response| is nullopt if the request hasn't yet finished.
-    base::Optional<x11::GetPropertyResponse> response = base::nullopt;
+    base::Optional<GetPropertyResponse> response = base::nullopt;
   };
 
-  // x11::EventObserver:
-  void OnEvent(const x11::Event& xev) override;
+  // EventObserver:
+  void OnEvent(const Event& xev) override;
 
-  void FetchProperty(x11::Atom property, PropertyValue* value);
+  void FetchProperty(Atom property, PropertyValue* value);
 
   void OnGetPropertyResponse(PropertyValue* value,
-                             x11::GetPropertyResponse response);
+                             GetPropertyResponse response);
 
-  x11::Connection* connection_;
-  x11::Window window_;
+  Connection* connection_;
+  Window window_;
   XScopedEventSelector event_selector_;
-  base::flat_map<x11::Atom, PropertyValue> properties_;
+  base::flat_map<Atom, PropertyValue> properties_;
 
   base::WeakPtrFactory<PropertyCache> weak_factory_{this};
 };

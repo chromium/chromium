@@ -21,24 +21,24 @@ namespace ui {
 
 std::vector<x11::Atom> GetTextAtomsFrom() {
   std::vector<x11::Atom> atoms;
-  atoms.push_back(gfx::GetAtom(kMimeTypeLinuxUtf8String));
-  atoms.push_back(gfx::GetAtom(kMimeTypeLinuxString));
-  atoms.push_back(gfx::GetAtom(kMimeTypeLinuxText));
-  atoms.push_back(gfx::GetAtom(kMimeTypeText));
-  atoms.push_back(gfx::GetAtom(kMimeTypeTextUtf8));
+  atoms.push_back(x11::GetAtom(kMimeTypeLinuxUtf8String));
+  atoms.push_back(x11::GetAtom(kMimeTypeLinuxString));
+  atoms.push_back(x11::GetAtom(kMimeTypeLinuxText));
+  atoms.push_back(x11::GetAtom(kMimeTypeText));
+  atoms.push_back(x11::GetAtom(kMimeTypeTextUtf8));
   return atoms;
 }
 
 std::vector<x11::Atom> GetURLAtomsFrom() {
   std::vector<x11::Atom> atoms;
-  atoms.push_back(gfx::GetAtom(kMimeTypeURIList));
-  atoms.push_back(gfx::GetAtom(kMimeTypeMozillaURL));
+  atoms.push_back(x11::GetAtom(kMimeTypeURIList));
+  atoms.push_back(x11::GetAtom(kMimeTypeMozillaURL));
   return atoms;
 }
 
 std::vector<x11::Atom> GetURIListAtomsFrom() {
   std::vector<x11::Atom> atoms;
-  atoms.push_back(gfx::GetAtom(kMimeTypeURIList));
+  atoms.push_back(x11::GetAtom(kMimeTypeURIList));
   return atoms;
 }
 
@@ -170,12 +170,12 @@ size_t SelectionData::GetSize() const {
 }
 
 std::string SelectionData::GetText() const {
-  if (type_ == gfx::GetAtom(kMimeTypeLinuxUtf8String) ||
-      type_ == gfx::GetAtom(kMimeTypeLinuxText) ||
-      type_ == gfx::GetAtom(kMimeTypeTextUtf8)) {
+  if (type_ == x11::GetAtom(kMimeTypeLinuxUtf8String) ||
+      type_ == x11::GetAtom(kMimeTypeLinuxText) ||
+      type_ == x11::GetAtom(kMimeTypeTextUtf8)) {
     return RefCountedMemoryToString(memory_);
-  } else if (type_ == gfx::GetAtom(kMimeTypeLinuxString) ||
-             type_ == gfx::GetAtom(kMimeTypeText)) {
+  } else if (type_ == x11::GetAtom(kMimeTypeLinuxString) ||
+             type_ == x11::GetAtom(kMimeTypeText)) {
     std::string result;
     base::ConvertToUtf8AndNormalize(RefCountedMemoryToString(memory_),
                                     base::kCodepageLatin1, &result);
@@ -191,7 +191,7 @@ std::string SelectionData::GetText() const {
 base::string16 SelectionData::GetHtml() const {
   base::string16 markup;
 
-  if (type_ == gfx::GetAtom(kMimeTypeHTML)) {
+  if (type_ == x11::GetAtom(kMimeTypeHTML)) {
     const unsigned char* data = GetData();
     size_t size = GetSize();
 

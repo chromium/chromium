@@ -55,7 +55,7 @@ SelectionRequestor::SelectionRequestor(x11::Window x_window,
       x_property_(x11::Atom::None),
       observer_(observer),
       current_request_index_(0u) {
-  x_property_ = gfx::GetAtom(kChromeSelection);
+  x_property_ = x11::GetAtom(kChromeSelection);
 }
 
 SelectionRequestor::~SelectionRequestor() = default;
@@ -143,7 +143,7 @@ void SelectionRequestor::OnSelectionNotify(
   if (event_property != x11::Atom::None)
     ui::DeleteProperty(x_window_, event_property);
 
-  if (request->out_type == gfx::GetAtom(kIncr)) {
+  if (request->out_type == x11::GetAtom(kIncr)) {
     request->data_sent_incrementally = true;
     request->out_data.clear();
     request->out_type = x11::Atom::None;

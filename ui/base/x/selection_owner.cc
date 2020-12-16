@@ -133,7 +133,7 @@ void SelectionOwner::OnSelectionRequest(
       .property = x11::Atom::None,  // Indicates failure
   };
 
-  if (requested_target == gfx::GetAtom(kMultiple)) {
+  if (requested_target == x11::GetAtom(kMultiple)) {
     // The contents of |requested_property| should be a list of
     // <target,property> pairs.
     std::vector<std::pair<x11::Atom, x11::Atom>> conversions;
@@ -150,7 +150,7 @@ void SelectionOwner::OnSelectionRequest(
       // Set the property to indicate which conversions succeeded. This matches
       // what GTK does.
       x11::SetArrayProperty(requestor, requested_property,
-                            gfx::GetAtom(kAtomPair), conversion_results);
+                            x11::GetAtom(kAtomPair), conversion_results);
 
       reply.property = requested_property;
     }
@@ -189,10 +189,10 @@ void SelectionOwner::OnPropertyEvent(const x11::PropertyNotifyEvent& event) {
 bool SelectionOwner::ProcessTarget(x11::Atom target,
                                    x11::Window requestor,
                                    x11::Atom property) {
-  x11::Atom multiple_atom = gfx::GetAtom(kMultiple);
-  x11::Atom save_targets_atom = gfx::GetAtom(kSaveTargets);
-  x11::Atom targets_atom = gfx::GetAtom(kTargets);
-  x11::Atom timestamp_atom = gfx::GetAtom(kTimestamp);
+  x11::Atom multiple_atom = x11::GetAtom(kMultiple);
+  x11::Atom save_targets_atom = x11::GetAtom(kSaveTargets);
+  x11::Atom targets_atom = x11::GetAtom(kTargets);
+  x11::Atom timestamp_atom = x11::GetAtom(kTimestamp);
 
   if (target == multiple_atom || target == save_targets_atom)
     return false;
@@ -222,7 +222,7 @@ bool SelectionOwner::ProcessTarget(x11::Atom target,
       // the size of X requests. Notify the selection requestor that the data
       // will be sent incrementally by returning data of type "INCR".
       uint32_t length = it->second->size();
-      x11::SetProperty(requestor, property, gfx::GetAtom(kIncr), length);
+      x11::SetProperty(requestor, property, x11::GetAtom(kIncr), length);
 
       // Wait for the selection requestor to indicate that it has processed
       // the selection result before sending the first chunk of data. The

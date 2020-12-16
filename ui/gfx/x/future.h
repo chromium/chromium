@@ -10,7 +10,7 @@
 
 namespace x11 {
 
-// An x11::Future wraps an asynchronous response from the X11 server.  The
+// An Future wraps an asynchronous response from the X11 server.  The
 // response may be waited-for with Sync(), or asynchronously handled by
 // installing a response handler using OnResponse().
 template <typename Reply>

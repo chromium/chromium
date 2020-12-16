@@ -47,7 +47,7 @@ bool X11PropertyChangeWaiter::ShouldKeepOnWaiting() {
 void X11PropertyChangeWaiter::OnEvent(const x11::Event& x11_event) {
   auto* prop = x11_event.As<x11::PropertyNotifyEvent>();
   if (!wait_ || !prop || prop->window != x_window_ ||
-      prop->atom != gfx::GetAtom(property_) || ShouldKeepOnWaiting()) {
+      prop->atom != x11::GetAtom(property_) || ShouldKeepOnWaiting()) {
     return;
   }
 

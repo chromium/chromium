@@ -12,27 +12,27 @@
 
 namespace x11 {
 
-PropertyCache::PropertyCache(x11::Connection* connection,
-                             x11::Window window,
-                             const std::vector<x11::Atom>& properties)
+PropertyCache::PropertyCache(Connection* connection,
+                             Window window,
+                             const std::vector<Atom>& properties)
     : connection_(connection),
       window_(window),
-      event_selector_(window_, x11::EventMask::PropertyChange) {
+      event_selector_(window_, EventMask::PropertyChange) {
   connection_->AddEventObserver(this);
 
-  std::vector<std::pair<x11::Atom, PropertyValue>> mem(properties.size());
+  std::vector<std::pair<Atom, PropertyValue>> mem(properties.size());
   for (size_t i = 0; i < properties.size(); i++) {
     mem[i].first = properties[i];
     FetchProperty(properties[i], &mem[i].second);
   }
-  properties_ = base::flat_map<x11::Atom, PropertyValue>(std::move(mem));
+  properties_ = base::flat_map<Atom, PropertyValue>(std::move(mem));
 }
 
 PropertyCache::~PropertyCache() {
   connection_->RemoveEventObserver(this);
 }
 
-const x11::GetPropertyResponse& PropertyCache::GetProperty(x11::Atom atom) {
+const GetPropertyResponse& PropertyCache::GetProperty(Atom atom) {
   auto it = properties_.find(atom);
   DCHECK(it != properties_.end());
 
@@ -43,8 +43,8 @@ const x11::GetPropertyResponse& PropertyCache::GetProperty(x11::Atom atom) {
   return it->second.response.value();
 }
 
-void PropertyCache::OnEvent(const x11::Event& xev) {
-  auto* prop = xev.As<x11::PropertyNotifyEvent>();
+void PropertyCache::OnEvent(const Event& xev) {
+  auto* prop = xev.As<PropertyNotifyEvent>();
   if (!prop)
     return;
   if (prop->window != window_)
@@ -55,7 +55,7 @@ void PropertyCache::OnEvent(const x11::Event& xev) {
   FetchProperty(it->first, &it->second);
 }
 
-void PropertyCache::FetchProperty(x11::Atom property, PropertyValue* value) {
+void PropertyCache::FetchProperty(Atom property, PropertyValue* value) {
   value->future = connection_->GetProperty({
       .window = window_,
       .property = property,
@@ -66,7 +66,7 @@ void PropertyCache::FetchProperty(x11::Atom property, PropertyValue* value) {
 }
 
 void PropertyCache::OnGetPropertyResponse(PropertyValue* value,
-                                          x11::GetPropertyResponse response) {
+                                          GetPropertyResponse response) {
   value->response = std::move(response);
 }
 

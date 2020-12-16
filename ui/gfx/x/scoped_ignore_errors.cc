@@ -8,7 +8,7 @@ namespace x11 {
 
 namespace {
 
-void IgnoreErrors(const x11::Error* error, const char* request_name) {}
+void IgnoreErrors(const Error* error, const char* request_name) {}
 
 }  // namespace
 

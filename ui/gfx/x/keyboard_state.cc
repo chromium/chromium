@@ -65,7 +65,7 @@ class CoreKeyboardState : public KeyboardState {
               static_cast<int>(keyboard_mapping_.keysyms.size()));
     for (size_t i = 0; i < keyboard_mapping_.keysyms.size(); i++) {
       auto keycode = min_keycode + i / keyboard_mapping_.keysyms_per_keycode;
-      if (keyboard_mapping_.keysyms[i] == static_cast<x11::KeySym>(keysym))
+      if (keyboard_mapping_.keysyms[i] == static_cast<KeySym>(keysym))
         return static_cast<KeyCode>(keycode);
     }
     return {};
@@ -84,7 +84,7 @@ class CoreKeyboardState : public KeyboardState {
                       &mode_switch_, &num_lock_);
   }
 
-  x11::Connection* const connection_;
+  Connection* const connection_;
   GetKeyboardMappingReply keyboard_mapping_;
   uint16_t lock_meaning_ = 0;
   uint8_t mode_switch_ = 0;
@@ -124,7 +124,7 @@ class XkbKeyboardState : public KeyboardState {
       map_ = std::move(*response.reply);
   }
 
-  x11::Connection* const connection_;
+  Connection* const connection_;
   Xkb::GetMapReply map_;
 };
 

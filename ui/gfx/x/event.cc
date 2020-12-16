@@ -20,20 +20,20 @@ namespace x11 {
 Event::Event() = default;
 
 Event::Event(scoped_refptr<base::RefCountedMemory> event_bytes,
-             x11::Connection* connection) {
+             Connection* connection) {
   auto* xcb_event = reinterpret_cast<xcb_generic_event_t*>(
       const_cast<uint8_t*>(event_bytes->data()));
   sequence_ = xcb_event->full_sequence;
   // KeymapNotify events are the only events that don't have a sequence.
   if ((xcb_event->response_type & ~kSendEventMask) !=
-      x11::KeymapNotifyEvent::opcode) {
+      KeymapNotifyEvent::opcode) {
     // On the wire, events are 32 bytes except for generic events which are
     // trailed by additional data.  XCB inserts an extended 4-byte sequence
     // between the 32-byte event and the additional data, so we need to shift
     // the additional data over by 4 bytes so the event is back in its wire
     // format, which is what Xlib and XProto are expecting.
     if ((xcb_event->response_type & ~kSendEventMask) ==
-        x11::GeGenericEvent::opcode) {
+        GeGenericEvent::opcode) {
       auto* ge = reinterpret_cast<xcb_ge_event_t*>(xcb_event);
       constexpr size_t ge_length = sizeof(xcb_raw_generic_event_t);
       constexpr size_t offset = sizeof(ge->full_sequence);

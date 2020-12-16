@@ -39,7 +39,7 @@ class SelectionRequestorTest : public testing::Test {
                            x11::Atom target,
                            const std::string& value) {
     x11::SetStringProperty(x_window_, requestor_->x_property_,
-                           gfx::GetAtom("STRING"), value);
+                           x11::GetAtom("STRING"), value);
 
     requestor_->OnSelectionNotify({
         .requestor = x_window_,
@@ -94,7 +94,7 @@ void PerformBlockingConvertSelection(SelectionRequestor* requestor,
   EXPECT_EQ(expected_data.size(), out_data.size());
   EXPECT_EQ(expected_data, ui::RefCountedMemoryToString(
                                base::RefCountedBytes::TakeVector(&out_data)));
-  EXPECT_EQ(gfx::GetAtom("STRING"), out_type);
+  EXPECT_EQ(x11::GetAtom("STRING"), out_type);
 }
 
 }  // namespace
@@ -105,10 +105,10 @@ TEST_F(SelectionRequestorTest, NestedRequests) {
   // Assume that |selection| will have no owner. If there is an owner, the owner
   // will set the property passed into the XConvertSelection() request which is
   // undesirable.
-  x11::Atom selection = gfx::GetAtom("FAKE_SELECTION");
+  x11::Atom selection = x11::GetAtom("FAKE_SELECTION");
 
-  x11::Atom target1 = gfx::GetAtom("TARGET1");
-  x11::Atom target2 = gfx::GetAtom("TARGET2");
+  x11::Atom target1 = x11::GetAtom("TARGET1");
+  x11::Atom target2 = x11::GetAtom("TARGET2");
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(&PerformBlockingConvertSelection,

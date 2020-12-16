@@ -101,7 +101,7 @@ bool SupportsEWMH() {
 
     x11::Window wm_window = x11::Window::None;
     if (!GetProperty(GetX11RootWindow(),
-                     gfx::GetAtom("_NET_SUPPORTING_WM_CHECK"), &wm_window)) {
+                     x11::GetAtom("_NET_SUPPORTING_WM_CHECK"), &wm_window)) {
       supports_ewmh = false;
       return false;
     }
@@ -117,7 +117,7 @@ bool SupportsEWMH() {
     // we check that too.
     x11::Window wm_window_property = x11::Window::None;
     supports_ewmh =
-        GetProperty(wm_window, gfx::GetAtom("_NET_SUPPORTING_WM_CHECK"),
+        GetProperty(wm_window, x11::GetAtom("_NET_SUPPORTING_WM_CHECK"),
                     &wm_window_property) &&
         wm_window_property == wm_window;
   }
@@ -131,7 +131,7 @@ bool GetWindowManagerName(std::string* wm_name) {
     return false;
 
   x11::Window wm_window = x11::Window::None;
-  if (!GetProperty(GetX11RootWindow(), gfx::GetAtom("_NET_SUPPORTING_WM_CHECK"),
+  if (!GetProperty(GetX11RootWindow(), x11::GetAtom("_NET_SUPPORTING_WM_CHECK"),
                    &wm_window)) {
     return false;
   }
@@ -177,7 +177,7 @@ void DeleteProperty(x11::Window window, x11::Atom name) {
 
 bool GetWmNormalHints(x11::Window window, SizeHints* hints) {
   std::vector<uint32_t> hints32;
-  if (!GetArrayProperty(window, gfx::GetAtom("WM_NORMAL_HINTS"), &hints32))
+  if (!GetArrayProperty(window, x11::GetAtom("WM_NORMAL_HINTS"), &hints32))
     return false;
   if (hints32.size() != sizeof(SizeHints) / 4)
     return false;
@@ -188,13 +188,13 @@ bool GetWmNormalHints(x11::Window window, SizeHints* hints) {
 void SetWmNormalHints(x11::Window window, const SizeHints& hints) {
   std::vector<uint32_t> hints32(sizeof(SizeHints) / 4);
   memcpy(hints32.data(), &hints, sizeof(SizeHints));
-  x11::SetArrayProperty(window, gfx::GetAtom("WM_NORMAL_HINTS"),
-                        gfx::GetAtom("WM_SIZE_HINTS"), hints32);
+  x11::SetArrayProperty(window, x11::GetAtom("WM_NORMAL_HINTS"),
+                        x11::GetAtom("WM_SIZE_HINTS"), hints32);
 }
 
 bool GetWmHints(x11::Window window, WmHints* hints) {
   std::vector<uint32_t> hints32;
-  if (!GetArrayProperty(window, gfx::GetAtom("WM_HINTS"), &hints32))
+  if (!GetArrayProperty(window, x11::GetAtom("WM_HINTS"), &hints32))
     return false;
   if (hints32.size() != sizeof(WmHints) / 4)
     return false;
@@ -205,8 +205,8 @@ bool GetWmHints(x11::Window window, WmHints* hints) {
 void SetWmHints(x11::Window window, const WmHints& hints) {
   std::vector<uint32_t> hints32(sizeof(WmHints) / 4);
   memcpy(hints32.data(), &hints, sizeof(WmHints));
-  x11::SetArrayProperty(window, gfx::GetAtom("WM_HINTS"),
-                        gfx::GetAtom("WM_HINTS"), hints32);
+  x11::SetArrayProperty(window, x11::GetAtom("WM_HINTS"),
+                        x11::GetAtom("WM_HINTS"), hints32);
 }
 
 void WithdrawWindow(x11::Window window) {
@@ -392,7 +392,7 @@ void SetUseOSWindowFrame(x11::Window window, bool use_os_window_frame) {
 
   std::vector<uint32_t> hints(sizeof(MotifWmHints) / sizeof(uint32_t));
   memcpy(hints.data(), &motif_hints, sizeof(MotifWmHints));
-  x11::Atom hint_atom = gfx::GetAtom("_MOTIF_WM_HINTS");
+  x11::Atom hint_atom = x11::GetAtom("_MOTIF_WM_HINTS");
   SetArrayProperty(window, hint_atom, hint_atom, hints);
 }
 
@@ -410,7 +410,7 @@ bool GetCurrentDesktop(int* desktop) {
 
 void SetHideTitlebarWhenMaximizedProperty(x11::Window window,
                                           HideTitlebarWhenMaximized property) {
-  SetProperty(window, gfx::GetAtom("_GTK_HIDE_TITLEBAR_WHEN_MAXIMIZED"),
+  SetProperty(window, x11::GetAtom("_GTK_HIDE_TITLEBAR_WHEN_MAXIMIZED"),
               x11::Atom::CARDINAL, static_cast<uint32_t>(property));
 }
 
@@ -426,7 +426,7 @@ bool IsWindowVisible(x11::Window window) {
   // Minimized windows are not visible.
   std::vector<x11::Atom> wm_states;
   if (GetAtomArrayProperty(window, "_NET_WM_STATE", &wm_states)) {
-    x11::Atom hidden_atom = gfx::GetAtom("_NET_WM_STATE_HIDDEN");
+    x11::Atom hidden_atom = x11::GetAtom("_NET_WM_STATE_HIDDEN");
     if (base::Contains(wm_states, hidden_atom))
       return false;
   }
@@ -548,7 +548,7 @@ bool PropertyExists(x11::Window window, const std::string& property_name) {
   auto response = x11::Connection::Get()
                       ->GetProperty(x11::GetPropertyRequest{
                           .window = static_cast<x11::Window>(window),
-                          .property = gfx::GetAtom(property_name),
+                          .property = x11::GetAtom(property_name),
                           .long_length = 1,
                       })
                       .Sync();
@@ -577,26 +577,26 @@ bool GetRawBytesOfProperty(x11::Window window,
 bool GetIntProperty(x11::Window window,
                     const std::string& property_name,
                     int* value) {
-  return GetProperty(window, gfx::GetAtom(property_name), value);
+  return GetProperty(window, x11::GetAtom(property_name), value);
 }
 
 bool GetIntArrayProperty(x11::Window window,
                          const std::string& property_name,
                          std::vector<int32_t>* value) {
-  return GetArrayProperty(window, gfx::GetAtom(property_name), value);
+  return GetArrayProperty(window, x11::GetAtom(property_name), value);
 }
 
 bool GetAtomArrayProperty(x11::Window window,
                           const std::string& property_name,
                           std::vector<x11::Atom>* value) {
-  return GetArrayProperty(window, gfx::GetAtom(property_name), value);
+  return GetArrayProperty(window, x11::GetAtom(property_name), value);
 }
 
 bool GetStringProperty(x11::Window window,
                        const std::string& property_name,
                        std::string* value) {
   std::vector<char> str;
-  if (!GetArrayProperty(window, gfx::GetAtom(property_name), &str))
+  if (!GetArrayProperty(window, x11::GetAtom(property_name), &str))
     return false;
 
   value->assign(str.data(), str.size());
@@ -615,7 +615,7 @@ void SetIntArrayProperty(x11::Window window,
                          const std::string& name,
                          const std::string& type,
                          const std::vector<int32_t>& value) {
-  SetArrayProperty(window, gfx::GetAtom(name), gfx::GetAtom(type), value);
+  SetArrayProperty(window, x11::GetAtom(name), x11::GetAtom(type), value);
 }
 
 void SetAtomProperty(x11::Window window,
@@ -630,7 +630,7 @@ void SetAtomArrayProperty(x11::Window window,
                           const std::string& name,
                           const std::string& type,
                           const std::vector<x11::Atom>& value) {
-  SetArrayProperty(window, gfx::GetAtom(name), gfx::GetAtom(type), value);
+  SetArrayProperty(window, x11::GetAtom(name), x11::GetAtom(type), value);
 }
 
 void SetWindowClassHint(x11::Connection* connection,
@@ -644,7 +644,7 @@ void SetWindowClassHint(x11::Connection* connection,
 }
 
 void SetWindowRole(x11::Window window, const std::string& role) {
-  x11::Atom prop = gfx::GetAtom("WM_WINDOW_ROLE");
+  x11::Atom prop = x11::GetAtom("WM_WINDOW_ROLE");
   if (role.empty())
     DeleteProperty(window, prop);
   else
@@ -656,7 +656,7 @@ void SetWMSpecState(x11::Window window,
                     x11::Atom state1,
                     x11::Atom state2) {
   SendClientMessage(
-      window, GetX11RootWindow(), gfx::GetAtom("_NET_WM_STATE"),
+      window, GetX11RootWindow(), x11::GetAtom("_NET_WM_STATE"),
       {enabled ? kNetWMStateAdd : kNetWMStateRemove,
        static_cast<uint32_t>(state1), static_cast<uint32_t>(state2), 1, 0});
 }
@@ -672,7 +672,7 @@ void DoWMMoveResize(x11::Connection* connection,
   // grabs when it receives the event below.
   connection->UngrabPointer({x11::Time::CurrentTime});
 
-  SendClientMessage(window, root_window, gfx::GetAtom("_NET_WM_MOVERESIZE"),
+  SendClientMessage(window, root_window, x11::GetAtom("_NET_WM_MOVERESIZE"),
                     {location_px.x(), location_px.y(), direction, 0, 0});
 }
 
@@ -825,7 +825,7 @@ void EnumerateTopLevelWindows(ui::EnumerateWindowsDelegate* delegate) {
 }
 
 bool GetXWindowStack(x11::Window window, std::vector<x11::Window>* windows) {
-  if (!GetArrayProperty(window, gfx::GetAtom("_NET_CLIENT_LIST_STACKING"),
+  if (!GetArrayProperty(window, x11::GetAtom("_NET_CLIENT_LIST_STACKING"),
                         windows)) {
     return false;
   }
@@ -950,7 +950,7 @@ UMALinuxWindowManager GetWindowManagerUMA() {
 bool IsCompositingManagerPresent() {
   auto is_compositing_manager_present_impl = []() {
     auto response = x11::Connection::Get()
-                        ->GetSelectionOwner({gfx::GetAtom("_NET_WM_CM_S0")})
+                        ->GetSelectionOwner({x11::GetAtom("_NET_WM_CM_S0")})
                         .Sync();
     return response && response->owner != x11::Window::None;
   };
@@ -964,7 +964,7 @@ bool IsX11WindowFullScreen(x11::Window window) {
   // If _NET_WM_STATE_FULLSCREEN is in _NET_SUPPORTED, use the presence or
   // absence of _NET_WM_STATE_FULLSCREEN in _NET_WM_STATE to determine
   // whether we're fullscreen.
-  x11::Atom fullscreen_atom = gfx::GetAtom("_NET_WM_STATE_FULLSCREEN");
+  x11::Atom fullscreen_atom = x11::GetAtom("_NET_WM_STATE_FULLSCREEN");
   if (WmSupportsHint(fullscreen_atom)) {
     std::vector<x11::Atom> atom_properties;
     if (GetAtomArrayProperty(window, "_NET_WM_STATE", &atom_properties)) {
@@ -1041,7 +1041,7 @@ gfx::ICCProfile GetICCProfileForMonitor(int monitor) {
                               ? "_ICC_PROFILE"
                               : base::StringPrintf("_ICC_PROFILE_%d", monitor);
   scoped_refptr<base::RefCountedMemory> data;
-  if (GetRawBytesOfProperty(GetX11RootWindow(), gfx::GetAtom(atom_name), &data,
+  if (GetRawBytesOfProperty(GetX11RootWindow(), x11::GetAtom(atom_name), &data,
                             nullptr)) {
     icc_profile = gfx::ICCProfile::FromData(data->data(), data->size());
   }

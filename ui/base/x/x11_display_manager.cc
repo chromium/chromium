@@ -65,7 +65,7 @@ void XDisplayManager::RemoveObserver(display::DisplayObserver* observer) {
 void XDisplayManager::OnEvent(const x11::Event& xev) {
   auto* prop = xev.As<x11::PropertyNotifyEvent>();
   if (xev.As<x11::RandR::NotifyEvent>() ||
-      (prop && prop->atom == gfx::GetAtom("_NET_WORKAREA"))) {
+      (prop && prop->atom == x11::GetAtom("_NET_WORKAREA"))) {
     DispatchDelayedDisplayListUpdate();
   }
 }

@@ -12,18 +12,18 @@
 namespace x11 {
 
 TEST(X11PropertyCacheTest, Basic) {
-  x11::Connection connection;
+  Connection connection;
   auto window = CreateDummyWindow("", &connection);
-  auto atom = gfx::GetAtom("DUMMY ATOM");
-  SetProperty(window, atom, x11::Atom::ATOM, atom, &connection).Sync();
+  auto atom = x11::GetAtom("DUMMY ATOM");
+  SetProperty(window, atom, Atom::ATOM, atom, &connection).Sync();
 
   PropertyCache cache(&connection, window, {atom});
   auto& response = cache.GetProperty(atom);
   ASSERT_TRUE(response);
   EXPECT_EQ(response->bytes_after, 0u);
   EXPECT_EQ(response->format, 32);
-  EXPECT_EQ(response->type, x11::Atom::ATOM);
-  EXPECT_EQ(*response->value->front_as<x11::Atom>(), atom);
+  EXPECT_EQ(response->type, Atom::ATOM);
+  EXPECT_EQ(*response->value->front_as<Atom>(), atom);
   EXPECT_EQ(response->value_len, 1u);
 }
 

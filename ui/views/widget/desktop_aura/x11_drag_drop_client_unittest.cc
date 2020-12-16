@@ -397,7 +397,7 @@ TestDragDropClient::TestDragDropClient(
 TestDragDropClient::~TestDragDropClient() = default;
 
 x11::Atom TestDragDropClient::GetAtom(const char* name) {
-  return gfx::GetAtom(name);
+  return x11::GetAtom(name);
 }
 
 bool TestDragDropClient::MessageHasType(const x11::ClientMessageEvent& event,

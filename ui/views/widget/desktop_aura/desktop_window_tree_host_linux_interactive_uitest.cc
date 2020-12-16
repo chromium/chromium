@@ -99,7 +99,7 @@ class ActivationWaiter : public ui::X11PropertyChangeWaiter {
   // ui::X11PropertyChangeWaiter:
   bool ShouldKeepOnWaiting() override {
     x11::Window window = x11::Window::None;
-    x11::GetProperty(ui::GetX11RootWindow(), gfx::GetAtom("_NET_ACTIVE_WINDOW"),
+    x11::GetProperty(ui::GetX11RootWindow(), x11::GetAtom("_NET_ACTIVE_WINDOW"),
                      &window);
     return window != window_;
   }

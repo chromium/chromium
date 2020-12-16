@@ -11,6 +11,7 @@ assert(use_x11 || ozone_platform_x11)
 xcbproto_path = "//third_party/xcbproto/src"
 
 config("x11_private_config") {
+  visibility = [ ":*" ]
   cflags = [
     # Generated proto files pull all fields from a struct into scope
     # even if they aren't used.  Rather than adding logic in the
@@ -105,7 +106,8 @@ action("gen_xprotos") {
                      root_build_dir) + protos
 }
 
-component("xprotos") {
+source_set("xprotos") {
+  visibility = [ ":x" ]
   deps = [
     ":gen_xprotos",
     ":xlib_loader",
@@ -146,7 +148,6 @@ component("x") {
   output_name = "gfx_x11"
 
   sources = [
-    "../gfx_export.h",
     "property_cache.cc",
     "property_cache.h",
     "x11_atom_cache.cc",
@@ -157,7 +158,7 @@ component("x") {
     "x11_window_event_manager.h",
   ]
 
-  defines = [ "GFX_IMPLEMENTATION" ]
+  configs += [ ":x11_private_config" ]
 
   deps = [
     "//base",
