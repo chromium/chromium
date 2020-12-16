@@ -939,44 +939,6 @@ _BANNED_CPP_FUNCTIONS = (
       (),
     ),
     (
-      'DEFINE_TYPE_CASTS',
-      (
-        'DEFINE_TYPE_CASTS is deprecated. Instead, use downcast helpers from ',
-        '//third_party/blink/renderer/platform/casting.h.'
-      ),
-      True,
-      (
-        r'^third_party/blink/renderer/.*\.(cc|h)$',
-      ),
-    ),
-    (
-      r'/\bIsHTML.+Element\(\b',
-      (
-        'Function IsHTMLXXXXElement is deprecated. Instead, use downcast ',
-        ' helpers IsA<HTMLXXXXElement> from ',
-        '//third_party/blink/renderer/platform/casting.h.'
-      ),
-      False,
-      (
-        r'^third_party/blink/renderer/.*\.(cc|h)$',
-      ),
-    ),
-    (
-      r'/\bToHTML.+Element(|OrNull)\(\b',
-      (
-        'Function ToHTMLXXXXElement and ToHTMLXXXXElementOrNull are '
-        'deprecated. Instead, use downcast helpers To<HTMLXXXXElement> '
-        'and DynamicTo<HTMLXXXXElement> from ',
-        '//third_party/blink/renderer/platform/casting.h.'
-        'auto* html_xxxx_ele = To<HTMLXXXXElement>(n)'
-        'auto* html_xxxx_ele_or_null = DynamicTo<HTMLXXXXElement>(n)'
-      ),
-      False,
-      (
-        r'^third_party/blink/renderer/.*\.(cc|h)$',
-      ),
-    ),
-    (
       r'/\bmojo::DataPipe\b',
       (
         'mojo::DataPipe is deprecated. Use mojo::CreateDataPipe instead.',
