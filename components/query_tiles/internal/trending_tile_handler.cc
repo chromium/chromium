@@ -4,6 +4,7 @@
 
 #include "components/query_tiles/internal/trending_tile_handler.h"
 
+#include "components/query_tiles/internal/stats.h"
 #include "components/query_tiles/internal/tile_config.h"
 #include "components/query_tiles/internal/tile_utils.h"
 #include "components/query_tiles/switches.h"
@@ -36,6 +37,8 @@ std::vector<Tile> TrendingTileHandler::FilterExtraTrendingTiles(
 
 void TrendingTileHandler::OnTileClicked(const std::string& tile_id) {
   tile_impressions_.erase(tile_id);
+  if (IsTrendingTile(tile_id))
+    stats::RecordTrendingTileEvent(stats::TrendingTileEvent::kClicked);
 }
 
 std::vector<std::string> TrendingTileHandler::GetInactiveTrendingTiles() {
@@ -49,6 +52,7 @@ std::vector<std::string> TrendingTileHandler::GetInactiveTrendingTiles() {
     if (it->second >= TileConfig::GetMaxTrendingTileImpressions()) {
       tile_ids.emplace_back(it->first);
       it = tile_impressions_.erase(it);
+      stats::RecordTrendingTileEvent(stats::TrendingTileEvent::kRemoved);
     } else {
       ++it;
     }
@@ -59,6 +63,7 @@ std::vector<std::string> TrendingTileHandler::GetInactiveTrendingTiles() {
 
 void TrendingTileHandler::RecordImpression(const std::string& tile_id) {
   ++tile_impressions_[tile_id];
+  stats::RecordTrendingTileEvent(stats::TrendingTileEvent::kShown);
 }
 
 }  // namespace query_tiles

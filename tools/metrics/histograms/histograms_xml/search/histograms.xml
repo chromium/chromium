@@ -1403,6 +1403,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Search.QueryTiles.TrendingTileEvent" enum="TrendingTileEvent"
+    expires_after="M91">
+  <owner>qinmin@chromium.org</owner>
+  <owner>chrome-upboarding-eng@google.com</owner>
+  <summary>
+    Records events related to trending tiles, including display, removal and
+    click, after the events occur.
+  </summary>
+</histogram>
+
 <histogram name="Search.RelatedSearches.AllUserPermissions"
     enum="ContextualSearchPermissions" expires_after="M91">
   <owner>donnd@chromium.org</owner>
