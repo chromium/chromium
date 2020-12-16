@@ -147,14 +147,6 @@ class OptimizationGuideKeyedService
 
   content::BrowserContext* browser_context_;
 
-  // The optimization types registered prior to initialization.
-  std::vector<optimization_guide::proto::OptimizationType>
-      pre_initialized_optimization_types_;
-
-  // The optimization targets registered prior to initialization.
-  std::vector<optimization_guide::proto::OptimizationTarget>
-      pre_initialized_optimization_targets_;
-
   // Manages the storing, loading, and fetching of hints.
   std::unique_ptr<OptimizationGuideHintsManager> hints_manager_;
 
