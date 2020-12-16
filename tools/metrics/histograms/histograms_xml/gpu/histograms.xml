@@ -697,13 +697,27 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.GPUInitializationTime.V2" units="ms"
-    expires_after="2021-01-08">
+    expires_after="2020-12-15">
+  <obsolete>
+    Removed 12/2020. Moved to GPU.GPUInitializationTime.V3.
+  </obsolete>
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
     The time between the GPU process starts and the GPU Info is collected at GPU
     process startup and recorded in browser process when this piece info is sent
     back to browser process. The range is between 200ms and 5s.
+  </summary>
+</histogram>
+
+<histogram name="GPU.GPUInitializationTime.V3" units="ms"
+    expires_after="2021-12-15">
+  <owner>magchen@chromium.org</owner>
+  <owner>zmo@chromium.org</owner>
+  <summary>
+    The time between the GPU process starts and the GPU Info is collected at GPU
+    process startup and recorded in browser process when this piece info is sent
+    back to browser process. The range is between 5ms and 5s.
   </summary>
 </histogram>
 
