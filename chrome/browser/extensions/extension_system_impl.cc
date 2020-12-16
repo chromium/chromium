@@ -218,8 +218,9 @@ void ExtensionSystemImpl::Shared::Init(bool extensions_enabled) {
       ExtensionPrefs::Get(profile_), Blocklist::Get(profile_),
       autoupdate_enabled, extensions_enabled, &ready_));
 
-  uninstall_ping_sender_.reset(new UninstallPingSender(
-      ExtensionRegistry::Get(profile_), base::Bind(&ShouldSendUninstallPing)));
+  uninstall_ping_sender_ = std::make_unique<UninstallPingSender>(
+      ExtensionRegistry::Get(profile_),
+      base::BindRepeating(&ShouldSendUninstallPing));
 
   // These services must be registered before the ExtensionService tries to
   // load any extensions.

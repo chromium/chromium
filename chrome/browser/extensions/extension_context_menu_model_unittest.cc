@@ -724,7 +724,8 @@ TEST_F(ExtensionContextMenuModelTest, TestPageAccessSubmenu) {
 
   // Pretend the extension wants to run.
   int run_count = 0;
-  base::Closure increment_run_count(base::Bind(&Increment, &run_count));
+  base::RepeatingClosure increment_run_count(
+      base::BindRepeating(&Increment, &run_count));
   action_runner->RequestScriptInjectionForTesting(
       extension, UserScript::DOCUMENT_IDLE, increment_run_count);
 

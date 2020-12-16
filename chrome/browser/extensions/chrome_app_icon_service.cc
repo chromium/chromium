@@ -44,8 +44,8 @@ std::unique_ptr<ChromeAppIcon> ChromeAppIconService::CreateIcon(
     const ResizeFunction& resize_function) {
   std::unique_ptr<ChromeAppIcon> icon = std::make_unique<ChromeAppIcon>(
       delegate, context_,
-      base::Bind(&ChromeAppIconService::OnIconDestroyed,
-                 weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&ChromeAppIconService::OnIconDestroyed,
+                     weak_ptr_factory_.GetWeakPtr()),
       app_id, resource_size_in_dip, resize_function);
 
   icon_map_[icon->app_id()].insert(icon.get());

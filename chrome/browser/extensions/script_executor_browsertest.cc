@@ -99,7 +99,7 @@ class ScriptExecutorBrowserTest : public ExtensionBrowserTest {
   content::RenderFrameHost* GetFrameByName(content::WebContents* web_contents,
                                            const std::string& name) {
     return content::FrameMatchingPredicate(
-        web_contents, base::Bind(&content::FrameMatchesName, name));
+        web_contents, base::BindRepeating(&content::FrameMatchesName, name));
   }
 };
 

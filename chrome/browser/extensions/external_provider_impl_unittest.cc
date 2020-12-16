@@ -173,9 +173,8 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
     ExtensionServiceTestBase::SetUp();
     test_server_ = std::make_unique<net::test_server::EmbeddedTestServer>();
 
-    test_server_->RegisterRequestHandler(
-        base::Bind(&ExternalProviderImplTest::HandleRequest,
-                   base::Unretained(this)));
+    test_server_->RegisterRequestHandler(base::BindRepeating(
+        &ExternalProviderImplTest::HandleRequest, base::Unretained(this)));
     ASSERT_TRUE(test_server_->Start());
 
     test_extension_cache_.reset(new ExtensionCacheFake());
