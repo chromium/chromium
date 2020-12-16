@@ -221,9 +221,11 @@ base::FilePath SavePage(const base::FilePath& scan_to_path,
   return scan_to_path.Append(filename);
 }
 
-// Records the histogram for scan job success.
-void RecordScanJobResult(bool success) {
+// Records the histograms for scan job success and number of pages scanned.
+void RecordScanJobResult(bool success, int num_pages_scanned) {
   base::UmaHistogramBoolean("Scanning.ScanJobSuccessful", success);
+  if (success)
+    base::UmaHistogramCounts100("Scanning.NumPagesScanned", num_pages_scanned);
 }
 
 }  // namespace
@@ -271,7 +273,7 @@ void ScanService::StartScan(
   const std::string scanner_name = GetScannerName(scanner_id);
   if (scanner_name.empty() || !FilePathSupported(settings->scan_to_path)) {
     std::move(callback).Run(false);
-    RecordScanJobResult(false);
+    RecordScanJobResult(false, /*not used*/ 0);
     return;
   }
 
@@ -283,9 +285,7 @@ void ScanService::StartScan(
       base::BindOnce(&ScanService::CancelScan, base::Unretained(this)));
 
   base::Time::Now().LocalExplode(&start_time_);
-  save_failed_ = false;
-  last_scanned_file_path_.clear();
-  scanned_images_.clear();
+  ClearScanState();
   lorgnette_scanner_manager_->Scan(
       scanner_name, mojo::ConvertTo<lorgnette::ScanSettings>(settings),
       base::BindRepeating(&ScanService::OnProgressPercentReceived,
@@ -370,6 +370,7 @@ void ScanService::OnPageReceived(const base::FilePath& scan_to_path,
   scan_job_observer_->OnPageProgress(page_number, kMaxProgressPercent);
   scan_job_observer_->OnPageComplete(
       std::vector<uint8_t>(scanned_image.begin(), scanned_image.end()));
+  ++num_pages_scanned_;
 
   // If the selected file type is PDF, the PDF will be created after all the
   // scanned images are received.
@@ -410,11 +411,8 @@ void ScanService::OnScanCompleted(bool success) {
 }
 
 void ScanService::OnCancelCompleted(bool success) {
-  if (success) {
-    save_failed_ = false;
-    last_scanned_file_path_.clear();
-    scanned_images_.clear();
-  }
+  if (success)
+    ClearScanState();
   scan_job_observer_->OnCancelComplete(success);
 }
 
@@ -429,7 +427,14 @@ void ScanService::OnAllPagesSaved(bool success) {
     last_scanned_file_path_.clear();
 
   scan_job_observer_->OnScanComplete(!save_failed_, last_scanned_file_path_);
-  RecordScanJobResult(!save_failed_);
+  RecordScanJobResult(!save_failed_, num_pages_scanned_);
+}
+
+void ScanService::ClearScanState() {
+  save_failed_ = false;
+  last_scanned_file_path_.clear();
+  scanned_images_.clear();
+  num_pages_scanned_ = 0;
 }
 
 bool ScanService::FilePathSupported(const base::FilePath& file_path) {

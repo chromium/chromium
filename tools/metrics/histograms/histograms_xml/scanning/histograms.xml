@@ -21,6 +21,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<histogram name="Scanning.NumPagesScanned" units="pages"
+    expires_after="2021-12-04">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>Records the number of pages scanned in a successful scan.</summary>
+</histogram>
+
 <histogram name="Scanning.ScanAppEntryPoint" enum="ScanAppEntryPoint"
     expires_after="2021-12-04">
   <owner>gavinwill@chromium.org</owner>

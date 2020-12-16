@@ -106,6 +106,9 @@ class ScanService : public scanning::mojom::ScanService, public KeyedService {
   // Called once the task runner finishes saving the last page of a scan.
   void OnAllPagesSaved(bool success);
 
+  // Sets the local member variables back to their initial empty state.
+  void ClearScanState();
+
   // TODO(jschettler): Replace this with a generic helper function when one is
   // available.
   // Determines whether the service supports saving scanned images to
@@ -150,6 +153,9 @@ class ScanService : public scanning::mojom::ScanService, public KeyedService {
 
   // Task runner used to convert and save scanned images.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
+  // Tracks the number of pages scanned for histogram recording.
+  int num_pages_scanned_;
 
   base::WeakPtrFactory<ScanService> weak_ptr_factory_{this};
 };
