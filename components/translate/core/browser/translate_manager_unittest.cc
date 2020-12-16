@@ -49,6 +49,8 @@ namespace translate {
 namespace {
 
 const char kInitiationStatusName[] = "Translate.InitiationStatus.v2";
+const char kMenuTranslationIsAvailableName[] =
+    "Translate.MenuTranslation.IsAvailable";
 
 // Overrides NetworkChangeNotifier, simulating connection type changes
 // for tests.
@@ -1001,11 +1003,14 @@ TEST_F(TranslateManagerTest, CanManuallyTranslate_PageNeedsTranslation) {
       .WillByDefault(Return(true));
   network_notifier_.SimulateOnline();
 
+  base::HistogramTester histogram_tester;
   translate_manager_->GetLanguageState()->LanguageDetermined("de", false);
   // Users should be able to manually translate the page, even when
   // |page_level_translation_critiera_met| is false.
   EXPECT_TRUE(translate_manager_->CanManuallyTranslate());
+  histogram_tester.ExpectTotalCount(kMenuTranslationIsAvailableName, 0);
   EXPECT_TRUE(translate_manager_->CanManuallyTranslate(true));
+  histogram_tester.ExpectUniqueSample(kMenuTranslationIsAvailableName, true, 1);
 
   translate_manager_->GetLanguageState()->LanguageDetermined("de", true);
   EXPECT_TRUE(translate_manager_->CanManuallyTranslate());
@@ -1022,9 +1027,13 @@ TEST_F(TranslateManagerTest, CanManuallyTranslate_Offline) {
   ON_CALL(mock_translate_client_, IsTranslatableURL(GURL::EmptyGURL()))
       .WillByDefault(Return(true));
 
+  base::HistogramTester histogram_tester;
   network_notifier_.SimulateOffline();
   EXPECT_FALSE(translate_manager_->CanManuallyTranslate());
+  histogram_tester.ExpectTotalCount(kMenuTranslationIsAvailableName, 0);
   EXPECT_FALSE(translate_manager_->CanManuallyTranslate(true));
+  histogram_tester.ExpectUniqueSample(kMenuTranslationIsAvailableName, false,
+                                      1);
 
   network_notifier_.SimulateOnline();
   EXPECT_TRUE(translate_manager_->CanManuallyTranslate());
