@@ -616,6 +616,7 @@ class CONTENT_EXPORT RenderFrameImpl
   void DidFinishSameDocumentNavigation(blink::WebHistoryCommitType commit_type,
                                        bool content_initiated,
                                        bool is_history_api_navigation) override;
+  void DidSetPageLifecycleState() override;
   void DidUpdateCurrentHistoryItem() override;
   base::UnguessableToken GetDevToolsFrameToken() override;
   void AbortClientNavigation() override;

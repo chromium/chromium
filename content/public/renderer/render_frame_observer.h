@@ -103,6 +103,9 @@ class CONTENT_EXPORT RenderFrameObserver : public IPC::Listener,
   virtual void ReadyToCommitNavigation(
       blink::WebDocumentLoader* document_loader) {}
 
+  // Called when a RenderFrame's page lifecycle state gets updated.
+  virtual void DidSetPageLifecycleState() {}
+
   // These match the Blink API notifications
   virtual void DidCreateNewDocument() {}
   virtual void DidCreateDocumentElement() {}

@@ -29,8 +29,6 @@ const base::Feature kLayoutShiftNormalizationEmitShiftsForKeyMetrics{
 namespace {
 const int kInitialTimerDelayMillis = 50;
 const int64_t kInputDelayAdjustmentMillis = int64_t(50);
-const base::Feature kPageLoadMetricsTimerDelayFeature{
-    "PageLoadMetricsTimerDelay", base::FEATURE_DISABLED_BY_DEFAULT};
 }  // namespace
 
 PageTimingMetricsSender::PageTimingMetricsSender(

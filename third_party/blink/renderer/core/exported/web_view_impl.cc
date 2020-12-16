@@ -2349,6 +2349,13 @@ void WebViewImpl::SetPageLifecycleStateInternal(
   ReportActiveSchedulerTrackedFeatures();
 
   GetPage()->SetPageLifecycleState(std::move(new_state));
+
+  // Notify all local frames that we've updated the page lifecycle state.
+  for (WebFrame* frame = MainFrame(); frame; frame = frame->TraverseNext()) {
+    if (frame->IsWebLocalFrame()) {
+      frame->ToWebLocalFrame()->Client()->DidSetPageLifecycleState();
+    }
+  }
 }
 
 void WebViewImpl::ReportActiveSchedulerTrackedFeatures() {

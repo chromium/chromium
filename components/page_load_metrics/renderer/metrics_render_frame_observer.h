@@ -74,6 +74,11 @@ class MetricsRenderFrameObserver
                                       int64_t encoded_body_length,
                                       const std::string& mime_type,
                                       bool from_archive) override;
+  void DidStartNavigation(
+      const GURL& url,
+      base::Optional<blink::WebNavigationType> navigation_type) override;
+  void DidSetPageLifecycleState() override;
+
   void ReadyToCommitNavigation(
       blink::WebDocumentLoader* document_loader) override;
   void DidFailProvisionalLoad() override;

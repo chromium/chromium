@@ -4350,6 +4350,11 @@ void RenderFrameImpl::DidFinishSameDocumentNavigation(
     observer.DidFinishSameDocumentNavigation();
 }
 
+void RenderFrameImpl::DidSetPageLifecycleState() {
+  for (auto& observer : observers_)
+    observer.DidSetPageLifecycleState();
+}
+
 void RenderFrameImpl::DidUpdateCurrentHistoryItem() {
   render_view_->StartNavStateSyncTimerIfNecessary(this);
 }

@@ -250,6 +250,30 @@ void MetricsRenderFrameObserver::WillDetach() {
   }
 }
 
+void MetricsRenderFrameObserver::DidStartNavigation(
+    const GURL& url,
+    base::Optional<blink::WebNavigationType> navigation_type) {
+  // Send current metrics, as we might create a new RenderFrame later due to
+  // this navigation (that might end up in a different process entirely, and
+  // won't notify us until the current RenderFrameHost in the browser changed).
+  // If that happens, it will be too late to send the metrics from WillDetach
+  // or the destructor, because the browser ignores metrics update from
+  // non-current RenderFrameHosts. See crbug.com/1150242 for more details.
+  // TODO(crbug.com/1150242): Remove this when we have the full fix for the bug.
+  if (page_timing_metrics_sender_)
+    page_timing_metrics_sender_->SendLatest();
+}
+
+void MetricsRenderFrameObserver::DidSetPageLifecycleState() {
+  // Send current metrics, as this RenderFrame might be replaced by a new
+  // RenderFrame or its process might be killed, and this might be the last
+  // point we can send the metrics to the browser. See crbug.com/1150242 for
+  // more details.
+  // TODO(crbug.com/1150242): Remove this when we have the full fix for the bug.
+  if (page_timing_metrics_sender_)
+    page_timing_metrics_sender_->SendLatest();
+}
+
 void MetricsRenderFrameObserver::ReadyToCommitNavigation(
     blink::WebDocumentLoader* document_loader) {
   // Create a new data use tracker for the new document load.
