@@ -22,12 +22,14 @@ import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.test.util.Batch;
 
 import java.util.Arrays;
 import java.util.List;
 
 /** Tests for the {@link WrappingLayout} class. */
 @RunWith(ParameterizedRunner.class)
+@Batch(Batch.UNIT_TESTS)
 @UseRunnerDelegate(BaseJUnit4RunnerDelegate.class)
 public class WrappingLayoutTest {
     /**

@@ -19,11 +19,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Batch;
 
 /**
  * Tests the utility methods for highlighting of a view.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public class ViewHighlighterTest {
     private Context mContext;
 

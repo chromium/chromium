@@ -4,27 +4,44 @@
 
 package org.chromium.components.browser_ui.widget;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.FrameLayout;
 
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.components.browser_ui.widget.test.R;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.DisableAnimationsTestRule;
+import org.chromium.ui.test.util.DummyUiActivity;
 
 /**
  * Unit tests for {@link RadioButtonWithDescriptionAndAuxButton}.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
-public class RadioButtonWithDescriptionAndAuxButtonTest extends DummyUiActivityTestCase {
+@Batch(Batch.UNIT_TESTS)
+public class RadioButtonWithDescriptionAndAuxButtonTest {
+    @ClassRule
+    public static DisableAnimationsTestRule disableAnimationsRule = new DisableAnimationsTestRule();
+    @ClassRule
+    public static BaseActivityTestRule<DummyUiActivity> activityTestRule =
+            new BaseActivityTestRule<>(DummyUiActivity.class);
+
     private class AuxButtonClickedListener
             implements RadioButtonWithDescriptionAndAuxButton.OnAuxButtonClickedListener {
         private CallbackHelper mCallbackHelper = new CallbackHelper();
@@ -47,25 +64,30 @@ public class RadioButtonWithDescriptionAndAuxButtonTest extends DummyUiActivityT
         }
     }
 
-    private AuxButtonClickedListener mListener;
-    private Activity mActivity;
+    private static Activity sActivity;
+    private static FrameLayout sContentView;
 
+    private AuxButtonClickedListener mListener;
     private RadioButtonWithDescriptionAndAuxButton mRadioButton;
 
-    @Override
-    public void setUpTest() throws Exception {
-        super.setUpTest();
-        mActivity = getActivity();
-        mListener = new AuxButtonClickedListener();
-
-        setupViewsForTest();
+    @BeforeClass
+    public static void setupSuite() {
+        activityTestRule.launchActivity(null);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            sActivity = activityTestRule.getActivity();
+            sContentView = new FrameLayout(sActivity);
+            sActivity.setContentView(sContentView);
+        });
     }
 
-    private void setupViewsForTest() {
+    @Before
+    public void setupTest() {
+        mListener = new AuxButtonClickedListener();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            View layout = LayoutInflater.from(mActivity).inflate(
+            sContentView.removeAllViews();
+            View layout = LayoutInflater.from(sActivity).inflate(
                     R.layout.radio_button_with_description_and_aux_button_test, null, false);
-            mActivity.setContentView(layout);
+            sContentView.addView(layout, MATCH_PARENT, WRAP_CONTENT);
 
             mRadioButton = layout.findViewById(R.id.test_radio_button);
             Assert.assertNotNull(mRadioButton);

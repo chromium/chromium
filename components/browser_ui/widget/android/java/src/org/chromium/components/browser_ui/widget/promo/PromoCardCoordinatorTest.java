@@ -12,12 +12,14 @@ import android.view.View;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.components.browser_ui.widget.promo.PromoCardCoordinator.LayoutStyle;
 import org.chromium.components.browser_ui.widget.test.R;
@@ -28,6 +30,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Basic test for creating, using the promo component with {@link PromoCardCoordinator}.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public class PromoCardCoordinatorTest {
     private Context mContext;
     private PropertyModel mModel;
@@ -38,6 +41,11 @@ public class PromoCardCoordinatorTest {
     public void setUp() {
         mContext = InstrumentationRegistry.getInstrumentation().getContext();
         mModel = new PropertyModel.Builder(PromoCardProperties.ALL_KEYS).build();
+    }
+
+    @After
+    public void tearDown() {
+        mPromoCardCoordinator.destroy();
     }
 
     private void setupCoordinator(@LayoutStyle int layoutStyle) {

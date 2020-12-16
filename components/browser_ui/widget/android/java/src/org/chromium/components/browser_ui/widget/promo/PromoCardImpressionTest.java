@@ -11,15 +11,22 @@ import android.widget.FrameLayout;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.DisableAnimationsTestRule;
+import org.chromium.ui.test.util.DummyUiActivity;
 
 import java.util.concurrent.TimeoutException;
 
@@ -28,13 +35,41 @@ import java.util.concurrent.TimeoutException;
  * TODO(wenyufu): Add the test when the primary button is hidden initially.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
-public class PromoCardImpressionTest extends DummyUiActivityTestCase {
+@Batch(Batch.UNIT_TESTS)
+public class PromoCardImpressionTest {
+    @ClassRule
+    public static DisableAnimationsTestRule disableAnimationsRule = new DisableAnimationsTestRule();
+    @ClassRule
+    public static BaseActivityTestRule<DummyUiActivity> activityTestRule =
+            new BaseActivityTestRule<>(DummyUiActivity.class);
+
+    private static Activity sActivity;
+    private static FrameLayout sContent;
+
     private PropertyModel mModel;
     private PromoCardCoordinator mCoordinator;
 
-    private FrameLayout mContent;
-
     private final CallbackHelper mPromoSeenCallback = new CallbackHelper();
+
+    @BeforeClass
+    public static void setupSuite() {
+        activityTestRule.launchActivity(null);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            sActivity = activityTestRule.getActivity();
+            sContent = new FrameLayout(sActivity);
+            sActivity.setContentView(sContent);
+        });
+    }
+
+    @Before
+    public void setupTest() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> { sContent.removeAllViews(); });
+    }
+
+    @After
+    public void tearDown() {
+        mCoordinator.destroy();
+    }
 
     private void setUpPromoCard(boolean trackPrimary, boolean hidePromo) {
         mModel = new PropertyModel.Builder(PromoCardProperties.ALL_KEYS)
@@ -47,18 +82,12 @@ public class PromoCardImpressionTest extends DummyUiActivityTestCase {
                          .with(PromoCardProperties.HAS_SECONDARY_BUTTON, false)
                          .build();
 
-        Activity activity = getActivity();
-        mCoordinator = new PromoCardCoordinator(activity, mModel, "impression-test");
+        mCoordinator = new PromoCardCoordinator(sActivity, mModel, "impression-test");
         View promoView = mCoordinator.getView();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             if (hidePromo) promoView.setVisibility(View.INVISIBLE);
-
-            // Set the content and add the promo card into the window
-            mContent = new FrameLayout(activity);
-            activity.setContentView(mContent);
-
-            mContent.addView(promoView,
+            sContent.addView(promoView,
                     new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
         });
     }

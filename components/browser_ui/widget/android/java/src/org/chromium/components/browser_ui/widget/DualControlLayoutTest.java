@@ -23,6 +23,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
+import org.chromium.base.test.util.Batch;
 import org.chromium.components.browser_ui.widget.DualControlLayout.DualControlLayoutAlignment;
 import org.chromium.components.browser_ui.widget.test.R;
 
@@ -30,6 +31,7 @@ import org.chromium.components.browser_ui.widget.test.R;
  * Tests for DualControlLayout.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public class DualControlLayoutTest {
     private static final int PRIMARY_HEIGHT = 16;
     private static final int SECONDARY_HEIGHT = 8;

@@ -4,6 +4,9 @@
 
 package org.chromium.components.browser_ui.widget;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+
 import android.app.Activity;
 import android.support.test.InstrumentationRegistry;
 import android.text.InputType;
@@ -13,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
@@ -20,23 +24,36 @@ import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.components.browser_ui.widget.test.R;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.ui.KeyboardVisibilityDelegate;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.DisableAnimationsTestRule;
+import org.chromium.ui.test.util.DummyUiActivity;
 
 /**
  * Unit tests for {@link RadioButtonWithEditText}.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
-public class RadioButtonWithEditTextTest extends DummyUiActivityTestCase {
+@Batch(Batch.UNIT_TESTS)
+public class RadioButtonWithEditTextTest {
+    @ClassRule
+    public static DisableAnimationsTestRule disableAnimationsRule = new DisableAnimationsTestRule();
+    @ClassRule
+    public static BaseActivityTestRule<DummyUiActivity> activityTestRule =
+            new BaseActivityTestRule<>(DummyUiActivity.class);
+
     private class TestListener implements RadioButtonWithEditText.OnTextChangeListener {
         private CharSequence mCurrentText;
         private int mNumberOfTimesTextChanged;
@@ -71,34 +88,34 @@ public class RadioButtonWithEditTextTest extends DummyUiActivityTestCase {
         }
     }
 
-    private TestListener mListener;
-    private Activity mActivity;
+    private static Activity sActivity;
+    private static FrameLayout sContentView;
 
+    private TestListener mListener;
     private RadioButtonWithEditText mRadioButtonWithEditText;
     private RadioButton mButton;
     private EditText mEditText;
-
     private Button mDummyButton;
 
-    @Override
-    public void beforeActivityLaunch() {
+    @BeforeClass
+    public static void setupSuite() {
         InstrumentationRegistry.getInstrumentation().setInTouchMode(false);
-    }
-
-    @Override
-    public void setUpTest() throws Exception {
-        super.setUpTest();
-        mActivity = getActivity();
-        mListener = new TestListener();
-
-        setupViewsForTest();
-    }
-
-    private void setupViewsForTest() {
+        activityTestRule.launchActivity(null);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            View layout = LayoutInflater.from(mActivity).inflate(
+            sActivity = activityTestRule.getActivity();
+            sContentView = new FrameLayout(sActivity);
+            sActivity.setContentView(sContentView);
+        });
+    }
+
+    @Before
+    public void setupTest() {
+        mListener = new TestListener();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            sContentView.removeAllViews();
+            View layout = LayoutInflater.from(sActivity).inflate(
                     R.layout.radio_button_with_edit_text_test, null, false);
-            mActivity.setContentView(layout);
+            sContentView.addView(layout, MATCH_PARENT, WRAP_CONTENT);
 
             mRadioButtonWithEditText =
                     (RadioButtonWithEditText) layout.findViewById(R.id.test_radio_button);
@@ -126,19 +143,19 @@ public class RadioButtonWithEditTextTest extends DummyUiActivityTestCase {
         Assert.assertEquals("EditText input type is different than attr setting.", textUriInputType,
                 mEditText.getInputType());
         Assert.assertEquals("EditText input hint is different than attr setting.",
-                mActivity.getResources().getString(R.string.test_uri), mEditText.getHint());
+                sActivity.getResources().getString(R.string.test_uri), mEditText.getHint());
 
-        TextView description = mActivity.findViewById(R.id.description);
+        TextView description = sActivity.findViewById(R.id.description);
         Assert.assertNotNull("Description should not be null", description);
         Assert.assertEquals("Description is different than attr setting.",
-                mActivity.getResources().getString(R.string.test_string), description.getText());
+                sActivity.getResources().getString(R.string.test_string), description.getText());
     }
 
     @Test
     @SmallTest
     public void testSetHint() {
         final CharSequence hintMsg = "Text hint";
-        final String resourceString = mActivity.getResources().getString(R.string.test_string);
+        final String resourceString = sActivity.getResources().getString(R.string.test_string);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mRadioButtonWithEditText.setHint(hintMsg);
             Assert.assertEquals("Hint message set from string is different from test setting",
@@ -276,7 +293,7 @@ public class RadioButtonWithEditTextTest extends DummyUiActivityTestCase {
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat("Keyboard visibility does not consist with test setting.",
                     KeyboardVisibilityDelegate.getInstance().isKeyboardShowing(
-                            mActivity, mEditText),
+                            sActivity, mEditText),
                     Matchers.is(isShowing));
         });
     }

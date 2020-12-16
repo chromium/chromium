@@ -3,9 +3,10 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="wrap_content"
     android:layout_width="wrap_content"
+    android:orientation="vertical"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <org.chromium.components.browser_ui.widget.RadioButtonWithEditText
@@ -26,4 +27,4 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/test_string" />
-</FrameLayout>
+</LinearLayout>
