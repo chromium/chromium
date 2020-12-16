@@ -371,7 +371,8 @@ class PersonalDataManagerHelper : public PersonalDataManagerTestBase {
   }
 
   void EnableAutofillProfileCleanup() {
-    personal_data_->is_autofill_profile_cleanup_pending_ = true;
+    personal_data_->personal_data_manager_cleaner_for_testing()
+        ->set_is_autofill_profile_cleanup_pending(true);
   }
 
   void SetUpReferenceProfile(const AutofillProfile& profile) {
@@ -606,7 +607,8 @@ class PersonalDataManagerMockTest : public PersonalDataManagerTestBase,
     personal_data_->pref_service_->SetInteger(
         prefs::kAutofillLastVersionValidated,
         atoi(version_info::GetVersionNumber().c_str()));
-    personal_data_->is_autofill_profile_cleanup_pending_ = true;
+    personal_data_->personal_data_manager_cleaner_for_testing()
+        ->set_is_autofill_profile_cleanup_pending(true);
   }
 
   void TearDown() override {
@@ -3534,8 +3536,7 @@ TEST_F(PersonalDataManagerTest,
   server_cards.push_back(credit_card1);
   server_cards.push_back(credit_card2);
   SetServerCards(server_cards);
-  personal_data_->UpdateServerCardMetadata(credit_card1);
-  personal_data_->UpdateServerCardMetadata(credit_card2);
+  personal_data_->UpdateServerCardsMetadata({credit_card1, credit_card2});
 
   // Add an expired local card last used 180 days ago.
   CreditCard credit_card3("1141084B-72D7-4B73-90CF-3D6AC154673B",
@@ -4613,7 +4614,8 @@ TEST_F(PersonalDataManagerTest, DedupeProfiles_ProfilesToDelete) {
   base::HistogramTester histogram_tester;
   std::unordered_map<std::string, std::string> guids_merge_map;
   std::unordered_set<std::string> profiles_to_delete;
-  personal_data_->DedupeProfiles(&existing_profiles, &profiles_to_delete,
+  personal_data_->personal_data_manager_cleaner_for_testing()
+      ->DedupeProfilesForTesting(&existing_profiles, &profiles_to_delete,
                                  &guids_merge_map);
   // 5 profiles were considered for dedupe.
   histogram_tester.ExpectUniqueSample(
@@ -4698,7 +4700,8 @@ TEST_F(PersonalDataManagerTest, DedupeProfiles_GuidsMergeMap) {
   std::unordered_map<std::string, std::string> guids_merge_map;
   std::unordered_set<std::string> profiles_to_delete;
 
-  personal_data_->DedupeProfiles(&existing_profiles, &profiles_to_delete,
+  personal_data_->personal_data_manager_cleaner_for_testing()
+      ->DedupeProfilesForTesting(&existing_profiles, &profiles_to_delete,
                                  &guids_merge_map);
 
   // The two profile merges should be recorded in the map.
@@ -4755,7 +4758,8 @@ TEST_F(PersonalDataManagerTest, UpdateCardsBillingAddressReference) {
   personal_data_->server_credit_cards_.push_back(
       std::unique_ptr<CreditCard>(credit_card4));
 
-  personal_data_->UpdateCardsBillingAddressReference(guids_merge_map);
+  personal_data_->personal_data_manager_cleaner_for_testing()
+      ->UpdateCardsBillingAddressReferenceForTesting(guids_merge_map);
 
   // The first card's billing address should now be E.
   EXPECT_EQ("E", credit_card1->billing_address_id());
@@ -4876,7 +4880,8 @@ TEST_F(PersonalDataManagerTest,
   // calls to AddProfile.
   EnableAutofillProfileCleanup();
 
-  EXPECT_TRUE(personal_data_->ApplyDedupingRoutine());
+  EXPECT_TRUE(personal_data_->personal_data_manager_cleaner_for_testing()
+                  ->ApplyDedupingRoutineForTesting());
   WaitForOnPersonalDataChanged();
 
   // Get the profiles and cards sorted by frecency to have a deterministic
@@ -4948,7 +4953,8 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_MergedProfileValues) {
 
   base::HistogramTester histogram_tester;
 
-  EXPECT_TRUE(personal_data_->ApplyDedupingRoutine());
+  EXPECT_TRUE(personal_data_->personal_data_manager_cleaner_for_testing()
+                  ->ApplyDedupingRoutineForTesting());
   WaitForOnPersonalDataChanged();
 
   std::vector<AutofillProfile*> profiles = personal_data_->GetProfiles();
@@ -5036,7 +5042,8 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_VerifiedProfileFirst) {
 
   base::HistogramTester histogram_tester;
 
-  EXPECT_TRUE(personal_data_->ApplyDedupingRoutine());
+  EXPECT_TRUE(personal_data_->personal_data_manager_cleaner_for_testing()
+                  ->ApplyDedupingRoutineForTesting());
   WaitForOnPersonalDataChanged();
 
   std::vector<AutofillProfile*> profiles = personal_data_->GetProfiles();
@@ -5100,7 +5107,8 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_VerifiedProfileLast) {
 
   base::HistogramTester histogram_tester;
 
-  EXPECT_TRUE(personal_data_->ApplyDedupingRoutine());
+  EXPECT_TRUE(personal_data_->personal_data_manager_cleaner_for_testing()
+                  ->ApplyDedupingRoutineForTesting());
   WaitForOnPersonalDataChanged();
 
   std::vector<AutofillProfile*> profiles = personal_data_->GetProfiles();
@@ -5163,7 +5171,8 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_MultipleVerifiedProfiles) {
 
   base::HistogramTester histogram_tester;
 
-  EXPECT_TRUE(personal_data_->ApplyDedupingRoutine());
+  EXPECT_TRUE(personal_data_->personal_data_manager_cleaner_for_testing()
+                  ->ApplyDedupingRoutineForTesting());
   WaitForOnPersonalDataChanged();
 
   // Get the profiles, sorted by frecency to have a deterministic order.
@@ -5281,7 +5290,8 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_MultipleDedupes) {
   // |Homer1| should get merged into |Homer2| which should then be merged into
   // |Homer3|. |Marge2| should be discarded in favor of |Marge1| which is
   // verified. |Homer4| and |Barney| should not be deduped at all.
-  EXPECT_TRUE(personal_data_->ApplyDedupingRoutine());
+  EXPECT_TRUE(personal_data_->personal_data_manager_cleaner_for_testing()
+                  ->ApplyDedupingRoutineForTesting());
   WaitForOnPersonalDataChanged();
 
   // Get the profiles, sorted by frecency to have a deterministic order.
@@ -5357,7 +5367,8 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_FeatureDisabled) {
   EXPECT_EQ(2U, personal_data_->GetProfiles().size());
 
   // The deduping routine should not be run.
-  EXPECT_FALSE(personal_data_->ApplyDedupingRoutine());
+  EXPECT_FALSE(personal_data_->personal_data_manager_cleaner_for_testing()
+                   ->ApplyDedupingRoutineForTesting());
 
   // Both profiles should still be present.
   EXPECT_EQ(2U, personal_data_->GetProfiles().size());
@@ -5366,7 +5377,8 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_FeatureDisabled) {
 TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_NopIfZeroProfiles) {
   EXPECT_TRUE(personal_data_->GetProfiles().empty());
   EnableAutofillProfileCleanup();
-  EXPECT_FALSE(personal_data_->ApplyDedupingRoutine());
+  EXPECT_FALSE(personal_data_->personal_data_manager_cleaner_for_testing()
+                   ->ApplyDedupingRoutineForTesting());
 }
 
 TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_NopIfOneProfile) {
@@ -5383,7 +5395,8 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_NopIfOneProfile) {
   // Enable the profile cleanup now. Otherwise it would be triggered by the
   // calls to AddProfile.
   EnableAutofillProfileCleanup();
-  EXPECT_FALSE(personal_data_->ApplyDedupingRoutine());
+  EXPECT_FALSE(personal_data_->personal_data_manager_cleaner_for_testing()
+                   ->ApplyDedupingRoutineForTesting());
 }
 
 // Tests that ApplyDedupingRoutine is not run a second time on the same major
@@ -5411,7 +5424,8 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_OncePerVersion) {
   EnableAutofillProfileCleanup();
 
   // The deduping routine should be run a first time.
-  EXPECT_TRUE(personal_data_->ApplyDedupingRoutine());
+  EXPECT_TRUE(personal_data_->personal_data_manager_cleaner_for_testing()
+                  ->ApplyDedupingRoutineForTesting());
   WaitForOnPersonalDataChanged();
 
   std::vector<AutofillProfile*> profiles = personal_data_->GetProfiles();
@@ -5434,7 +5448,8 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_OncePerVersion) {
   EnableAutofillProfileCleanup();
 
   // The deduping routine should not be run.
-  EXPECT_FALSE(personal_data_->ApplyDedupingRoutine());
+  EXPECT_FALSE(personal_data_->personal_data_manager_cleaner_for_testing()
+                   ->ApplyDedupingRoutineForTesting());
 
   // The two duplicate profiles should still be present.
   EXPECT_EQ(2U, personal_data_->GetProfiles().size());
@@ -5509,7 +5524,8 @@ TEST_F(PersonalDataManagerTest,
   EXPECT_EQ(2U, personal_data_->GetCreditCards().size());
 
   // DeleteDisusedAddresses should return true.
-  EXPECT_TRUE(personal_data_->DeleteDisusedAddresses());
+  EXPECT_TRUE(personal_data_->personal_data_manager_cleaner_for_testing()
+                  ->DeleteDisusedAddressesForTesting());
   WaitForOnPersonalDataChanged();
 
   EXPECT_EQ(3U, personal_data_->GetProfiles().size());
@@ -5587,8 +5603,7 @@ TEST_F(PersonalDataManagerTest,
   server_cards.push_back(credit_card5);
   server_cards.push_back(credit_card6);
   SetServerCards(server_cards);
-  personal_data_->UpdateServerCardMetadata(credit_card5);
-  personal_data_->UpdateServerCardMetadata(credit_card6);
+  personal_data_->UpdateServerCardsMetadata({credit_card5, credit_card6});
 
   WaitForOnPersonalDataChanged();
   EXPECT_EQ(6U, personal_data_->GetCreditCards().size());
@@ -5597,7 +5612,8 @@ TEST_F(PersonalDataManagerTest,
   base::HistogramTester histogram_tester;
 
   // DeleteDisusedCreditCards should return true to indicate it was run.
-  EXPECT_TRUE(personal_data_->DeleteDisusedCreditCards());
+  EXPECT_TRUE(personal_data_->personal_data_manager_cleaner_for_testing()
+                  ->DeleteDisusedCreditCardsForTesting());
 
   // Wait for the data to be refreshed.
   WaitForOnPersonalDataChanged();
@@ -6818,7 +6834,8 @@ TEST_F(PersonalDataManagerTest, ClearProfileNonSettingsOrigins) {
   EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged())
       .Times(2);  // The setting of profiles 0 and 2 will be cleared.
 
-  personal_data_->ClearProfileNonSettingsOrigins();
+  personal_data_->personal_data_manager_cleaner_for_testing()
+      ->ClearProfileNonSettingsOriginsForTesting();
   run_loop.Run();
 
   ASSERT_EQ(4U, personal_data_->GetProfiles().size());
@@ -6868,7 +6885,8 @@ TEST_F(PersonalDataManagerTest, ClearCreditCardNonSettingsOrigins) {
   WaitForOnPersonalDataChanged();
   ASSERT_EQ(4U, personal_data_->GetCreditCards().size());
 
-  personal_data_->ClearCreditCardNonSettingsOrigins();
+  personal_data_->personal_data_manager_cleaner_for_testing()
+      ->ClearCreditCardNonSettingsOriginsForTesting();
 
   WaitForOnPersonalDataChanged();
   ASSERT_EQ(4U, personal_data_->GetCreditCards().size());
@@ -7023,7 +7041,7 @@ TEST_F(PersonalDataManagerTest, UseCorrectStorageForDifferentCards) {
 
   // Set server card metadata.
   server_card.set_use_count(15);
-  personal_data_->UpdateServerCardMetadata(server_card);
+  personal_data_->UpdateServerCardsMetadata({server_card});
 
   WaitForOnPersonalDataChanged();
 

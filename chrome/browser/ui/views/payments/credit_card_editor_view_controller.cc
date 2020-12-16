@@ -427,8 +427,8 @@ bool CreditCardEditorViewController::ValidateModelAndSave() {
     credit_card_to_edit_->set_billing_address_id(
         model->GetItemIdentifierAt(address_combobox->GetSelectedIndex()));
     if (!is_incognito()) {
-      state()->GetPersonalDataManager()->UpdateServerCardMetadata(
-          *credit_card_to_edit_);
+      state()->GetPersonalDataManager()->UpdateServerCardsMetadata(
+          {*credit_card_to_edit_});
     }
     return true;
   }

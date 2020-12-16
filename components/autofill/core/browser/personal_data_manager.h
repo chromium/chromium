@@ -24,10 +24,10 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
-#include "components/autofill/core/browser/data_model/test_data_creator.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/payments/account_info_getter.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
+#include "components/autofill/core/browser/personal_data_manager_cleaner.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/browser/sync_utils.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -201,9 +201,10 @@ class PersonalDataManager : public KeyedService,
   // status can be changed. Looks up the card by server ID.
   virtual void UpdateServerCreditCard(const CreditCard& credit_card);
 
-  // Updates the use stats and billing address id for the server |credit_card|.
-  // Looks up the card by server_id.
-  virtual void UpdateServerCardMetadata(const CreditCard& credit_card);
+  // Updates the use stats and billing address id for the server |credit_cards|.
+  // Looks up the cards by server_id.
+  virtual void UpdateServerCardsMetadata(
+      const std::vector<CreditCard>& credit_cards);
 
   // Resets the card for |guid| to the masked state.
   void ResetFullServerCard(const std::string& guid);
@@ -293,10 +294,6 @@ class PersonalDataManager : public KeyedService,
       bool field_is_autofilled,
       const std::vector<ServerFieldType>& field_types);
 
-  // Tries to delete disused addresses once per major version if the
-  // feature is enabled.
-  bool DeleteDisusedAddresses();
-
   // Returns the credit cards to suggest to the user. Those have been deduped
   // and ordered by frecency with the expired cards put at the end of the
   // vector. If |include_server_cards| is false, server side cards should not
@@ -321,10 +318,6 @@ class PersonalDataManager : public KeyedService,
       const base::string16& field_contents,
       bool include_server_cards);
 
-  // Tries to delete disused credit cards once per major version if the
-  // feature is enabled.
-  bool DeleteDisusedCreditCards();
-
   // Re-loads profiles and credit cards from the WebDatabase asynchronously.
   // In the general case, this is a no-op and will re-create the same
   // in-memory model as existed prior to the call.  If any change occurred to
@@ -348,6 +341,14 @@ class PersonalDataManager : public KeyedService,
   // Sets the country code from the variations service.
   void set_variations_country_code_for_testing(std::string country_code) {
     variations_country_code_ = country_code;
+  }
+
+  // Returns the raw pointer to PersonalDataManagerCleaner used for testing
+  // purposes.
+  PersonalDataManagerCleaner* personal_data_manager_cleaner_for_testing()
+      const {
+    DCHECK(personal_data_manager_cleaner_);
+    return personal_data_manager_cleaner_.get();
   }
 #endif
 
@@ -491,15 +492,12 @@ class PersonalDataManager : public KeyedService,
       PersonalDataManagerTest,
       GetCreditCardSuggestions_NoCreditCardsAddedIfDisabled);
   FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
-                           ClearProfileNonSettingsOrigins);
-  FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
-                           ClearCreditCardNonSettingsOrigins);
-  FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
                            RequestProfileServerValidity);
   FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
                            GetProfileSuggestions_Validity);
 
   friend class autofill::AutofillInteractiveTest;
+  friend class autofill::PersonalDataManagerCleaner;
   friend class autofill::PersonalDataManagerFactory;
   friend class AutofillMetricsTest;
   friend class FormDataImporterTest;
@@ -577,11 +575,6 @@ class PersonalDataManager : public KeyedService,
   // Sets which PrefService to use and observe. |pref_service| is not owned by
   // this class and must outlive |this|.
   void SetPrefService(PrefService* pref_service);
-
-  // Clears the value of the origin field of the autofill profiles or cards that
-  // were not created from the settings page.
-  void ClearProfileNonSettingsOrigins();
-  void ClearCreditCardNonSettingsOrigins();
 
   // Called when the |profile| is validated by the AutofillProfileValidator,
   // updates the profiles on the |ongoing_profile_changes_| and the DB.
@@ -664,36 +657,6 @@ class PersonalDataManager : public KeyedService,
       const base::string16& field_contents,
       const std::vector<CreditCard*>& cards_to_suggest) const;
 
-  // Runs the routine that removes the orphan rows in the autofill tables if
-  // it's never been done.
-  void RemoveOrphanAutofillTableRows();
-
-  // Applies the deduping routine once per major version if the feature is
-  // enabled. Calls DedupeProfiles with the content of |web_profiles_| as a
-  // parameter. Removes the profiles to delete from the database and updates the
-  // others. Also updates the credit cards' billing address references. Returns
-  // true if the routine was run.
-  bool ApplyDedupingRoutine();
-
-  // Goes through all the |existing_profiles| and merges all similar unverified
-  // profiles together. Also discards unverified profiles that are similar to a
-  // verified profile. All the profiles except the results of the merges will be
-  // added to |profile_guids_to_delete|. This routine should be run once per
-  // major version. Records all the merges into the |guids_merge_map|.
-  //
-  // This method should only be called by ApplyDedupingRoutine. It is split for
-  // testing purposes.
-  void DedupeProfiles(
-      std::vector<std::unique_ptr<AutofillProfile>>* existing_profiles,
-      std::unordered_set<std::string>* profile_guids_to_delete,
-      std::unordered_map<std::string, std::string>* guids_merge_map) const;
-
-  // Updates the credit cards' billing address reference based on the merges
-  // that happened during the dedupe, as defined in |guids_merge_map|. Also
-  // updates the cards entries in the database.
-  void UpdateCardsBillingAddressReference(
-      const std::unordered_map<std::string, std::string>& guids_merge_map);
-
   // Converts the Wallet addresses to local autofill profiles. This should be
   // called after all the syncable data has been processed (local cards and
   // profiles, Wallet data and metadata). Also updates Wallet cards' billing
@@ -727,12 +690,6 @@ class PersonalDataManager : public KeyedService,
   // refreshing in the end.
   void RemoveAutofillProfileByGUIDAndBlankCreditCardReference(
       const std::string& guid);
-
-  // Applies various fixes and cleanups on autofill addresses.
-  void ApplyAddressFixesAndCleanups();
-
-  // Applies various fixes and cleanups on autofill credit cards.
-  void ApplyCardFixesAndCleanups();
 
   // Resets |synced_profile_validity_|.
   void ResetProfileValidity();
@@ -773,6 +730,12 @@ class PersonalDataManager : public KeyedService,
   // one copy has a nickname, take that.
   base::string16 GetDisplayNicknameForCreditCard(const CreditCard& card) const;
 
+  // Returns true if the sync is enabled for |model_type|.
+  bool IsSyncEnabledFor(syncer::ModelType model_type);
+
+  // Returns the database that is used for storing local data.
+  scoped_refptr<AutofillWebDataService> GetLocalDatabase();
+
   // Stores the |app_locale| supplied on construction.
   const std::string app_locale_;
 
@@ -798,6 +761,11 @@ class PersonalDataManager : public KeyedService,
   // observing changes in pref_services. We need to set the
   // |profile_validities_need_update_| whenever this is changed.
   std::unique_ptr<UserProfileValidityMap> synced_profile_validity_;
+
+  // PersonalDataManagerCleaner is used to apply various address and credit
+  // card fixes/cleanups one time at browser startup or when the sync starts.
+  // PersonalDataManagerCleaner is declared as a friend class.
+  std::unique_ptr<PersonalDataManagerCleaner> personal_data_manager_cleaner_;
 
   // A timely ordered list of ongoing changes for each profile.
   std::unordered_map<std::string, std::deque<AutofillProfileDeepChange>>
@@ -833,14 +801,6 @@ class PersonalDataManager : public KeyedService,
 
   // An observer to listen for changes to prefs::kAutofillWalletImportEnabled.
   std::unique_ptr<BooleanPrefMember> wallet_enabled_pref_;
-
-  // True if autofill profile cleanup needs to be performed.
-  bool is_autofill_profile_cleanup_pending_ = false;
-
-  // Used to create test data. If the AutofillCreateDataForTest feature is
-  // enabled, this helper creates autofill profiles and credit card data that
-  // would otherwise be difficult to create manually using the UI.
-  TestDataCreator test_data_creator_;
 
   // Whether sync should be considered on in a test.
   bool is_syncing_for_test_ = false;

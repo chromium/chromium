@@ -557,7 +557,7 @@ void PersonalDataManagerAndroid::UpdateServerCardBillingAddress(
   CreditCard card;
   PopulateNativeCreditCardFromJava(jcard, env, &card);
 
-  personal_data_manager_->UpdateServerCardMetadata(card);
+  personal_data_manager_->UpdateServerCardsMetadata({card});
 }
 
 ScopedJavaLocalRef<jstring>

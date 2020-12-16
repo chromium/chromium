@@ -246,6 +246,8 @@ static_library("browser") {
     "payments/webauthn_callback_types.h",
     "personal_data_manager.cc",
     "personal_data_manager.h",
+    "personal_data_manager_cleaner.cc",
+    "personal_data_manager_cleaner.h",
     "personal_data_manager_observer.h",
     "randomized_encoder.cc",
     "randomized_encoder.h",
