@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/services/sharing/nearby/platform/bluetooth_adapter.h"
+#include "base/metrics/histogram_functions.h"
 
 namespace location {
 namespace nearby {
@@ -52,7 +53,11 @@ bool BluetoothAdapter::SetScanMode(BluetoothAdapter::ScanMode scan_mode) {
       adapter_->SetDiscoverable(scan_mode == ScanMode::kConnectableDiscoverable,
                                 &set_discoverable_success);
 
-  return call_success && set_discoverable_success;
+  bool success = call_success && set_discoverable_success;
+  base::UmaHistogramBoolean(
+      "Nearby.Connections.Bluetooth.Adapter.SetScanMode.Result", success);
+
+  return success;
 }
 
 std::string BluetoothAdapter::GetName() const {
@@ -64,7 +69,12 @@ std::string BluetoothAdapter::GetName() const {
 bool BluetoothAdapter::SetName(absl::string_view name) {
   bool set_name_success = false;
   bool call_success = adapter_->SetName(name.data(), &set_name_success);
-  return call_success && set_name_success;
+
+  bool success = call_success && set_name_success;
+  base::UmaHistogramBoolean(
+      "Nearby.Connections.Bluetooth.Adapter.SetName.Result", success);
+
+  return success;
 }
 
 std::string BluetoothAdapter::GetMacAddress() const {
