@@ -976,6 +976,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Render frames per second.</summary>
 </histogram>
 
+<histogram name="Arc.Runtime.Performance.Generic.FirstFrameRendered" units="ms"
+    expires_after="2021-11-28">
+  <owner>camurcu@google.com</owner>
+  <owner>khmel@google.com</owner>
+  <summary>
+    Time (in ms) between an app launch request and the detection of the first
+    rendered frame. Recorded when the frame is detected by the first commit to
+    the Exo surface.
+  </summary>
+</histogram>
+
 <histogram name="Arc.Runtime.Performance.Generic.FrameTime" units="ms"
     expires_after="2021-09-28">
   <owner>camurcu@google.com</owner>
