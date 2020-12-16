@@ -44,10 +44,8 @@ void FillServerExperimentIds(std::vector<std::string>* server_experiment_ids) {
   if (base::FeatureList::IsEnabled(features::kAssistantAppSupport))
     server_experiment_ids->emplace_back(kServersideOpenAppExperimentId);
 
-  if (features::IsResponseProcessingV2Enabled()) {
-    server_experiment_ids->emplace_back(
-        kServersideResponseProcessingV2ExperimentId);
-  }
+  server_experiment_ids->emplace_back(
+      kServersideResponseProcessingV2ExperimentId);
 }
 
 void SetServerExperiments(

@@ -124,13 +124,6 @@ void AssistantResponse::RemoveObserver(
 
 void AssistantResponse::AddUiElement(
     std::unique_ptr<AssistantUiElement> ui_element) {
-  // In processing v1, UI elements are immediately added to the response.
-  if (!chromeos::assistant::features::IsResponseProcessingV2Enabled()) {
-    ui_elements_.push_back(std::move(ui_element));
-    NotifyUiElementAdded(ui_elements_.back().get());
-    return;
-  }
-
   // In processing v2, UI elements are first cached in a pending state...
   auto pending_ui_element = std::make_unique<PendingUiElement>();
   pending_ui_element->ui_element = std::move(ui_element);

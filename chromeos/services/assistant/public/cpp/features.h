@@ -32,12 +32,6 @@ extern const base::Feature kAssistantBetterOnboarding;
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
 extern const base::Feature kAssistantLauncherChipIntegration;
 
-// When enabled, Assistant will use response processing V2. This is a set of
-// synced client and server changes which will turn on default parallel client
-// op processing and eager (streaming) UI element rendering.
-COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
-extern const base::Feature kAssistantResponseProcessingV2;
-
 // Enables Assistant routines.
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
 extern const base::Feature kAssistantRoutines;

@@ -130,15 +130,8 @@ class AssistantInteractionControllerImpl
 
  private:
   void OnTabletModeChanged();
-
-  bool HasUnprocessedPendingResponse();
   bool HasActiveInteraction() const;
-
-  void OnProcessPendingResponse();
-  void OnPendingResponseProcessed(bool is_completed);
-
   void OnUiVisible(AssistantEntryPoint entry_point);
-
   void StartScreenContextInteraction(bool include_assistant_structure,
                                      const gfx::Rect& region,
                                      AssistantQuerySource query_source);

@@ -18,12 +18,6 @@
 
 namespace ash {
 
-namespace {
-
-using chromeos::assistant::features::IsResponseProcessingV2Enabled;
-
-}  // namespace
-
 // AnimatedContainerView::ScopedDisablePreferredSizeChanged --------------------
 
 class AnimatedContainerView::ScopedDisablePreferredSizeChanged {
@@ -53,7 +47,7 @@ AnimatedContainerView::AnimatedContainerView(AssistantViewDelegate* delegate)
 }
 
 AnimatedContainerView::~AnimatedContainerView() {
-  if (IsResponseProcessingV2Enabled() && response_)
+  if (response_)
     response_.get()->RemoveObserver(this);
 
   if (AssistantInteractionController::Get())
@@ -120,7 +114,7 @@ void AnimatedContainerView::OnSuggestionsAdded(
 }
 
 void AnimatedContainerView::RemoveAllViews() {
-  if (IsResponseProcessingV2Enabled() && response_)
+  if (response_)
     response_.get()->RemoveObserver(this);
 
   // We explicitly abort all in progress animations here because we will remove
@@ -170,7 +164,7 @@ std::unique_ptr<ElementAnimator> AnimatedContainerView::HandleSuggestion(
 
 void AnimatedContainerView::ChangeResponse(
     const scoped_refptr<const AssistantResponse>& response) {
-  if (IsResponseProcessingV2Enabled() && response_)
+  if (response_)
     response_.get()->RemoveObserver(this);
 
   // We may have to postpone the response while we animate the previous response
@@ -210,13 +204,6 @@ void AnimatedContainerView::ChangeResponse(
 
 void AnimatedContainerView::AddResponse(
     scoped_refptr<const AssistantResponse> response) {
-  if (!IsResponseProcessingV2Enabled()) {
-    // The response should be fully processed before it is presented.
-    // Note that ProcessingState is only used in v1 of response processing.
-    DCHECK_EQ(AssistantResponse::ProcessingState::kProcessed,
-              response->processing_state());
-  }
-
   // All children should be animated out and removed before the new response is
   // added.
   DCHECK(content_view()->children().empty());
@@ -225,11 +212,9 @@ void AnimatedContainerView::AddResponse(
   // destroyed before we have removed associated views from the view hierarchy.
   response_ = std::move(response);
 
-  if (IsResponseProcessingV2Enabled()) {
-    // In response processing v2, we observe the |response_| so that we handle
-    // new suggestions and UI elements that continue to stream in.
-    response_.get()->AddObserver(this);
-  }
+  // In response processing v2, we observe the |response_| so that we handle
+  // new suggestions and UI elements that continue to stream in.
+  response_.get()->AddObserver(this);
 
   // We can prevent over-propagation of the PreferredSizeChanged event by
   // stopping propagation during batched view hierarchy add/remove operations.

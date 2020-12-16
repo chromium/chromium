@@ -29,9 +29,6 @@ const base::Feature kAssistantDebugging{"AssistantDebugging",
 const base::Feature kAssistantLauncherChipIntegration{
     "AssistantLauncherChipIntegration", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kAssistantResponseProcessingV2{
-    "AssistantResponseProcessingV2", base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kAssistantRoutines{"AssistantRoutines",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -124,10 +121,6 @@ bool IsLibAssistantBetaBackendEnabled() {
   return base::FeatureList::IsEnabled(kEnableLibAssistantBetaBackend);
 }
 
-bool IsResponseProcessingV2Enabled() {
-  return base::FeatureList::IsEnabled(kAssistantResponseProcessingV2);
-}
-
 bool IsRoutinesEnabled() {
   return base::FeatureList::IsEnabled(kAssistantRoutines);
 }
@@ -147,9 +140,7 @@ bool IsVoiceMatchDisabled() {
 }
 
 bool IsWaitSchedulingEnabled() {
-  // Wait scheduling is only supported for response processing v2 and routines.
-  return base::FeatureList::IsEnabled(kAssistantWaitScheduling) &&
-         (IsResponseProcessingV2Enabled() || IsRoutinesEnabled());
+  return base::FeatureList::IsEnabled(kAssistantWaitScheduling);
 }
 
 }  // namespace features

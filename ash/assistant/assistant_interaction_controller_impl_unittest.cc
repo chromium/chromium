@@ -73,19 +73,9 @@ class AssistantInteractionSubscriberMock
 
 // AssistantInteractionControllerImplTest --------------------------------------
 
-class AssistantInteractionControllerImplTest
-    : public AssistantAshTestBase,
-      public testing::WithParamInterface<bool> {
+class AssistantInteractionControllerImplTest : public AssistantAshTestBase {
  public:
-  AssistantInteractionControllerImplTest() {
-    if (GetParam()) {
-      feature_list_.InitAndEnableFeature(
-          chromeos::assistant::features::kAssistantResponseProcessingV2);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          chromeos::assistant::features::kAssistantResponseProcessingV2);
-    }
-  }
+  AssistantInteractionControllerImplTest() = default;
 
   AssistantInteractionControllerImpl* interaction_controller() {
     return static_cast<AssistantInteractionControllerImpl*>(
@@ -111,14 +101,11 @@ class AssistantInteractionControllerImplTest
     result.localized_app_name = app_name;
     return result;
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 }  // namespace
 
-TEST_P(AssistantInteractionControllerImplTest,
+TEST_F(AssistantInteractionControllerImplTest,
        ShouldBecomeActiveWhenInteractionStarts) {
   EXPECT_EQ(interaction_model()->interaction_state(),
             InteractionState::kInactive);
@@ -130,7 +117,7 @@ TEST_P(AssistantInteractionControllerImplTest,
             InteractionState::kActive);
 }
 
-TEST_P(AssistantInteractionControllerImplTest,
+TEST_F(AssistantInteractionControllerImplTest,
        ShouldReturnErrorWhenOpenAppIsCalledWhileInactive) {
   EXPECT_EQ(interaction_model()->interaction_state(),
             InteractionState::kInactive);
@@ -140,7 +127,7 @@ TEST_P(AssistantInteractionControllerImplTest,
   EXPECT_EQ(result, kErrorResult);
 }
 
-TEST_P(AssistantInteractionControllerImplTest,
+TEST_F(AssistantInteractionControllerImplTest,
        ShouldReturnErrorWhenOpenAppIsCalledWithoutAnAndroidIntentHelper) {
   StartInteraction();
 
@@ -149,7 +136,7 @@ TEST_P(AssistantInteractionControllerImplTest,
   EXPECT_EQ(result, kErrorResult);
 }
 
-TEST_P(AssistantInteractionControllerImplTest,
+TEST_F(AssistantInteractionControllerImplTest,
        ShouldReturnErrorWhenOpenAppIsCalledForUnknownAndroidApp) {
   StartInteraction();
   FakeAndroidIntentHelper fake_helper;
@@ -157,7 +144,7 @@ TEST_P(AssistantInteractionControllerImplTest,
                               CreateAndroidAppInfo("unknown-app-name")));
 }
 
-TEST_P(AssistantInteractionControllerImplTest,
+TEST_F(AssistantInteractionControllerImplTest,
        ShouldLaunchAppAndReturnSuccessWhenOpenAppIsCalled) {
   const std::string app_name = "AppName";
   const std::string intent = "intent://AppName";
@@ -172,7 +159,7 @@ TEST_P(AssistantInteractionControllerImplTest,
   EXPECT_EQ(intent, fake_helper.last_launched_android_intent());
 }
 
-TEST_P(AssistantInteractionControllerImplTest,
+TEST_F(AssistantInteractionControllerImplTest,
        ShouldAddSchemeToIntentWhenLaunchingAndroidApp) {
   const std::string app_name = "AppName";
   const std::string intent = "#Intent-without-a-scheme";
@@ -188,7 +175,7 @@ TEST_P(AssistantInteractionControllerImplTest,
   EXPECT_EQ(intent_with_scheme, fake_helper.last_launched_android_intent());
 }
 
-TEST_P(AssistantInteractionControllerImplTest,
+TEST_F(AssistantInteractionControllerImplTest,
        ShouldCorrectlyMapSuggestionTypeToQuerySource) {
   // Mock Assistant interaction subscriber.
   StrictMock<AssistantInteractionSubscriberMock> mock(assistant_service());
@@ -226,7 +213,7 @@ TEST_P(AssistantInteractionControllerImplTest,
   }
 }
 
-TEST_P(AssistantInteractionControllerImplTest, ShouldDisplayGenericErrorOnce) {
+TEST_F(AssistantInteractionControllerImplTest, ShouldDisplayGenericErrorOnce) {
   StartInteraction();
 
   // Call OnTtsStarted twice to mimic the behavior of libassistant when network
@@ -253,7 +240,7 @@ TEST_P(AssistantInteractionControllerImplTest, ShouldDisplayGenericErrorOnce) {
   EXPECT_EQ(ui_elements.front()->type(), AssistantUiElementType::kError);
 }
 
-TEST_P(AssistantInteractionControllerImplTest,
+TEST_F(AssistantInteractionControllerImplTest,
        ShouldUpdateTimeOfLastInteraction) {
   MockAssistantInteractionSubscriber mock_subscriber;
   ScopedAssistantInteractionSubscriber scoped_subscriber{&mock_subscriber};
@@ -276,10 +263,4 @@ TEST_P(AssistantInteractionControllerImplTest,
 
   EXPECT_NEAR(actual.InSeconds(), expected.InSeconds(), 1);
 }
-
-// We parameterize all AssistantInteractionControllerImplTests to verify that
-// they work for both response processing v1 as well as response processing v2.
-INSTANTIATE_TEST_SUITE_P(All,
-                         AssistantInteractionControllerImplTest,
-                         testing::Bool());
 }  // namespace ash
