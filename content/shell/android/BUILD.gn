@@ -94,6 +94,7 @@ android_library("content_shell_java") {
     "//net/android:net_java",
     "//ui/android:ui_java",
     "//ui/base/cursor/mojom:cursor_type_java",
+    "//url:gurl_java",
   ]
   sources = [
     "java/src/org/chromium/content_shell/Shell.java",
@@ -255,6 +256,7 @@ android_library("content_shell_test_java") {
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit:junit",
     "//ui/android:ui_java",
+    "//url:gurl_java",
   ]
   sources = [
     "javatests/src/org/chromium/content_shell_apk/ContentShellActivityTestRule.java",

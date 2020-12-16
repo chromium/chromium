@@ -49,6 +49,7 @@ import org.chromium.ui.modaldialog.SimpleModalDialogController;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.ui.util.ColorUtils;
+import org.chromium.url.GURL;
 
 /**
  * {@link WebContentsDelegateAndroid} that interacts with {@link ChromeActivity} and those
@@ -58,7 +59,7 @@ import org.chromium.ui.util.ColorUtils;
 public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegateAndroid {
     private static final String TAG = "ActivityTabWCDA";
 
-    private final ArrayMap<WebContents, String> mWebContentsUrlMapping = new ArrayMap<>();
+    private final ArrayMap<WebContents, GURL> mWebContentsUrlMapping = new ArrayMap<>();
 
     private final Tab mTab;
 
@@ -115,7 +116,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
 
     @Override
     public void webContentsCreated(WebContents sourceWebContents, long openerRenderProcessId,
-            long openerRenderFrameId, String frameName, String targetUrl,
+            long openerRenderFrameId, String frameName, GURL targetUrl,
             WebContents newWebContents) {
         // The URL can't be taken from the WebContents if it's paused.  Save it for later.
         assert !mWebContentsUrlMapping.containsKey(newWebContents);
@@ -152,7 +153,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
         assert tabCreator != null;
 
         // Grab the URL, which might not be available via the Tab.
-        String url = mWebContentsUrlMapping.remove(webContents);
+        GURL url = mWebContentsUrlMapping.remove(webContents);
 
         // Skip opening a new Tab if it doesn't make sense.
         if (mTab.isClosing()) return false;
@@ -177,7 +178,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
             } else if (disposition == WindowOpenDisposition.NEW_POPUP) {
                 PolicyAuditor auditor = AppHooks.get().getPolicyAuditor();
                 auditor.notifyAuditEvent(ContextUtils.getApplicationContext(),
-                        AuditEvent.OPEN_POPUP_URL_SUCCESS, url, "");
+                        AuditEvent.OPEN_POPUP_URL_SUCCESS, url.getSpec(), "");
             }
         }
 

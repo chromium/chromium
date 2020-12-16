@@ -175,8 +175,7 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
         // calls.
         mFullUrl = mDelegate.isShowingOfflinePage()
                 ? mDelegate.getOfflinePageUrl()
-                : DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(
-                        webContents.getVisibleUrlString());
+                : DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(webContents.getVisibleUrl());
 
         // This can happen if an invalid chrome-distiller:// url was entered.
         if (mFullUrl == null) mFullUrl = "";

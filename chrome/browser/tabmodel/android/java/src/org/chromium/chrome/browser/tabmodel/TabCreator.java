@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.TraceEvent;
@@ -13,6 +14,7 @@ import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.url.GURL;
 
 /**
  * Creates Tabs.  If the TabCreator creates Tabs asynchronously, null pointers will be returned
@@ -68,8 +70,8 @@ public abstract class TabCreator {
      * @param url         URL to show in the Tab. (Needed only for asynchronous tab creation.)
      * @return            Whether a Tab was created successfully.
      */
-    public abstract boolean createTabWithWebContents(
-            @Nullable Tab parent, WebContents webContents, @TabLaunchType int type, String url);
+    public abstract boolean createTabWithWebContents(@Nullable Tab parent, WebContents webContents,
+            @TabLaunchType int type, @NonNull GURL url);
 
     /**
      * Creates a tab around the native web contents pointer.
@@ -80,8 +82,7 @@ public abstract class TabCreator {
      */
     public final boolean createTabWithWebContents(
             Tab parent, WebContents webContents, @TabLaunchType int type) {
-        return createTabWithWebContents(
-                parent, webContents, type, webContents.getVisibleUrlString());
+        return createTabWithWebContents(parent, webContents, type, webContents.getVisibleUrl());
     }
 
     /**

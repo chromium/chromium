@@ -372,7 +372,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
 
     @Override
     public String getOriginalUrl() {
-        return DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(getUrlString());
+        return DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(getUrl());
     }
 
     @CalledByNative

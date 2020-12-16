@@ -171,7 +171,7 @@ public class Shell extends LinearLayout {
                 mPrevButton.setVisibility(hasFocus ? GONE : VISIBLE);
                 mStopReloadButton.setVisibility(hasFocus ? GONE : VISIBLE);
                 if (!hasFocus) {
-                    mUrlTextView.setText(mWebContents.getVisibleUrlString());
+                    mUrlTextView.setText(mWebContents.getVisibleUrl().getSpec());
                 }
             }
         });
@@ -306,9 +306,7 @@ public class Shell extends LinearLayout {
                 .setActionModeCallback(defaultActionCallback());
         mNavigationController = mWebContents.getNavigationController();
         if (getParent() != null) mWebContents.onShow();
-        if (mWebContents.getVisibleUrlString() != null) {
-            mUrlTextView.setText(mWebContents.getVisibleUrlString());
-        }
+        mUrlTextView.setText(mWebContents.getVisibleUrl().getSpec());
         ((FrameLayout) findViewById(R.id.contentview_holder)).addView(cv,
                 new FrameLayout.LayoutParams(
                         FrameLayout.LayoutParams.MATCH_PARENT,

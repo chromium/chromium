@@ -66,7 +66,7 @@ public class WebContentsDelegateAndroid {
 
     @CalledByNative
     public void webContentsCreated(WebContents sourceWebContents, long openerRenderProcessId,
-            long openerRenderFrameId, String frameName, String targetUrl,
+            long openerRenderFrameId, String frameName, GURL targetUrl,
             WebContents newWebContents) {}
 
     @CalledByNative

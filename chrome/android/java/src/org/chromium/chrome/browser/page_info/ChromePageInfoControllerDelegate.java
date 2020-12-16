@@ -173,8 +173,7 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
                     bridge.loadOriginal(mWebContents);
                 });
             };
-            final String previewOriginalHost =
-                    bridge.getOriginalHost(mWebContents.getVisibleUrlString());
+            final String previewOriginalHost = mWebContents.getVisibleUrl().getHost();
             final String loadOriginalText = mContext.getString(
                     R.string.page_info_preview_load_original, previewOriginalHost);
             final SpannableString loadOriginalSpan = SpanApplier.applySpans(loadOriginalText,

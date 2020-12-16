@@ -37,8 +37,8 @@ public class SiteSettingsHelper {
                 PreviewsAndroidBridge.getInstance().shouldShowPreviewUI(webContents);
         // TODO(crbug.com/1033178): dedupe the DomDistillerUrlUtils#getOriginalUrlFromDistillerUrl()
         // calls.
-        String url = DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(
-                webContents.getVisibleUrlString());
+        String url =
+                DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(webContents.getVisibleUrl());
         String scheme = GURLUtils.getScheme(url);
         return !isOfflinePage && !isPreviewPage
                 && (UrlConstants.HTTP_SCHEME.equals(scheme)

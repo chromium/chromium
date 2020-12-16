@@ -8,9 +8,6 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.url.URI;
-
-import java.net.URISyntaxException;
 
 /**
  * Java bridge class to C++ Previews code.
@@ -35,17 +32,6 @@ public final class PreviewsAndroidBridge {
     public boolean shouldShowPreviewUI(WebContents webContents) {
         return PreviewsAndroidBridgeJni.get().shouldShowPreviewUI(
                 mNativePreviewsAndroidBridge, PreviewsAndroidBridge.this, webContents);
-    }
-
-    /**
-     * Returns the original host name for visibleURL. This should only be used on preview pages.
-     */
-    public String getOriginalHost(String visibleURL) {
-        try {
-            return new URI(visibleURL).getHost();
-        } catch (URISyntaxException e) {
-        }
-        return "";
     }
 
     /**

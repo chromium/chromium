@@ -210,7 +210,7 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
 
     @Override
     public void webContentsCreated(WebContents sourceWebContents, long openerRenderProcessId,
-            long openerRenderFrameId, String frameName, String targetUrl,
+            long openerRenderFrameId, String frameName, GURL targetUrl,
             WebContents newWebContents) {
         mDelegate.webContentsCreated(sourceWebContents, openerRenderProcessId, openerRenderFrameId,
                 frameName, targetUrl, newWebContents);

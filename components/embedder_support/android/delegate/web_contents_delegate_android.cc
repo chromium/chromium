@@ -199,11 +199,12 @@ void WebContentsDelegateAndroid::WebContentsCreated(
   if (new_contents)
     jnew_contents = new_contents->GetJavaWebContents();
 
+  ScopedJavaLocalRef<jobject> java_gurl =
+      url::GURLAndroid::FromNativeGURL(env, target_url);
   Java_WebContentsDelegateAndroid_webContentsCreated(
       env, obj, jsource_contents, opener_render_process_id,
       opener_render_frame_id,
-      base::android::ConvertUTF8ToJavaString(env, frame_name),
-      base::android::ConvertUTF8ToJavaString(env, target_url.spec()),
+      base::android::ConvertUTF8ToJavaString(env, frame_name), java_gurl,
       jnew_contents);
 }
 

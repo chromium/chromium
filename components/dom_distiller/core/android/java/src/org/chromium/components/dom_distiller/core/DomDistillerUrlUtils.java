@@ -35,15 +35,21 @@ public final class DomDistillerUrlUtils {
         return DomDistillerUrlUtilsJni.get().getDistillerViewUrlFromUrl(scheme, url, title);
     }
 
+    @Deprecated
+    public static String getOriginalUrlFromDistillerUrl(String url) {
+        if (TextUtils.isEmpty(url)) return url;
+        return DomDistillerUrlUtilsJni.get().getOriginalUrlFromDistillerUrl(url);
+    }
+
     /**
      * Returns the original URL of a distillation given the viewer URL.
      *
      * @param url The current viewer URL.
      * @return the URL of the original page.
      */
-    public static String getOriginalUrlFromDistillerUrl(String url) {
-        if (TextUtils.isEmpty(url)) return url;
-        return DomDistillerUrlUtilsJni.get().getOriginalUrlFromDistillerUrl(url);
+    public static String getOriginalUrlFromDistillerUrl(GURL url) {
+        if (url.isEmpty()) return url.getSpec();
+        return DomDistillerUrlUtilsJni.get().getOriginalUrlFromDistillerUrl(url.getSpec());
     }
 
     public static boolean isDistilledPage(String url) {

@@ -118,12 +118,7 @@ public class MockWebContents implements WebContents {
 
     @Override
     public GURL getVisibleUrl() {
-        return null;
-    }
-
-    @Override
-    public String getVisibleUrlString() {
-        return null;
+        return GURL.emptyGURL();
     }
 
     @Override

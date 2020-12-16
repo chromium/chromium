@@ -184,14 +184,6 @@ public interface WebContents extends Parcelable {
     GURL getVisibleUrl();
 
     /**
-     * @return The URL for the current visible page.
-     *
-     * @deprecated Please use {@link #getVisibleUrl} instead.
-     */
-    @Deprecated
-    String getVisibleUrlString();
-
-    /**
      * @return The character encoding for the current visible page.
      */
     String getEncoding();
