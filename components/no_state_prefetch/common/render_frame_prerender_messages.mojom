@@ -4,13 +4,9 @@
 
 module prerender.mojom;
 
-import "components/no_state_prefetch/common/prerender_types.mojom";
-
 // Prerender messages sent from the browser to the render frame.
 interface PrerenderMessages {
-  // Tells a renderer if it's currently being prerendered.  Must only be set
-  // before any navigation occurs, and only set to kNoPrerender at most once
-  // after that.
-  SetIsPrerendering(prerender.mojom.PrerenderMode mode,
-                    string histogram_prefix);
+  // Tells a renderer that it's currently being prerendered.  Must only be set
+  // before any navigation occurs.
+  SetIsPrerendering(string histogram_prefix);
 };

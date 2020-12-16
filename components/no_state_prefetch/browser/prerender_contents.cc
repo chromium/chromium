@@ -382,7 +382,7 @@ void PrerenderContents::RenderFrameCreated(
   render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
       &prerender_render_frame);
   prerender_render_frame->SetIsPrerendering(
-      prerender_mode_, PrerenderHistograms::GetHistogramPrefix(origin_));
+      PrerenderHistograms::GetHistogramPrefix(origin_));
 }
 
 void PrerenderContents::DidStopLoading() {
@@ -558,19 +558,6 @@ std::unique_ptr<base::DictionaryValue> PrerenderContents::GetAsValue() const {
 
 void PrerenderContents::MarkAsUsedForTesting() {
   SetFinalStatus(FINAL_STATUS_USED);
-
-  if (prerender_contents_.get()) {
-    auto frames = prerender_contents_->GetAllFrames();
-    for (auto* frame : frames) {
-      mojo::AssociatedRemote<prerender::mojom::PrerenderMessages>
-          prerender_render_frame;
-      frame->GetRemoteAssociatedInterfaces()->GetInterface(
-          &prerender_render_frame);
-      prerender_render_frame->SetIsPrerendering(
-          prerender::mojom::PrerenderMode::kNoPrerender, std::string());
-    }
-  }
-
   NotifyPrerenderStop();
 }
 

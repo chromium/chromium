@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_NO_STATE_PREFETCH_RENDERER_PRERENDER_RENDER_FRAME_OBSERVER_H_
 #define COMPONENTS_NO_STATE_PREFETCH_RENDERER_PRERENDER_RENDER_FRAME_OBSERVER_H_
 
-#include "components/no_state_prefetch/common/prerender_types.mojom.h"
 #include "components/no_state_prefetch/common/render_frame_prerender_messages.mojom.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
@@ -25,8 +24,7 @@ class PrerenderRenderFrameObserver
   ~PrerenderRenderFrameObserver() override;
 
   // prerender::mojom::PrerenderMessages:
-  void SetIsPrerendering(prerender::mojom::PrerenderMode mode,
-                         const std::string& histogram_prefix) override;
+  void SetIsPrerendering(const std::string& histogram_prefix) override;
 
  private:
   // RenderFrameObserver implementation.
