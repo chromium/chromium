@@ -36,9 +36,7 @@ namespace {
 
 // The default list of languages the Google translation server supports.
 // We use this list until we receive the list that the server exposes.
-// Server also supports "hmm" (Hmong), "jw" (Javanese) and "rw" (Kinyarwanda),
-// but these are excluded because Chrome l10n library does not support it. This
-// list must be sorted in alphabetical order and contain no duplicates.
+// This list must be sorted in alphabetical order and contain no duplicates.
 const char* const kDefaultSupportedLanguages[] = {
     "af",     // Afrikaans
     "am",     // Amharic
@@ -72,6 +70,7 @@ const char* const kDefaultSupportedLanguages[] = {
     "ha",     // Hausa
     "haw",    // Hawaiian
     "hi",     // Hindi
+    "hmn",    // Hmong
     "hr",     // Croatian
     "ht",     // Haitian Creole
     "hu",     // Hungarian
@@ -82,6 +81,7 @@ const char* const kDefaultSupportedLanguages[] = {
     "it",     // Italian
     "iw",     // Hebrew
     "ja",     // Japanese
+    "jv",     // Javanese
     "ka",     // Georgian
     "kk",     // Kazakh
     "km",     // Khmer
@@ -114,6 +114,7 @@ const char* const kDefaultSupportedLanguages[] = {
     "pt",     // Portuguese
     "ro",     // Romanian
     "ru",     // Russian
+    "rw",     // Kinyarwanda
     "sd",     // Sindhi
     "si",     // Sinhala
     "sk",     // Slovak

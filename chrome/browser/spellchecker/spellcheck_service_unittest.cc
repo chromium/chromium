@@ -419,8 +419,7 @@ static const DictionaryMappingTestCase kHybridDictionaryMappingsParams[] = {
     DictionaryMappingTestCase({"en-PH", "en", "en", "", ""}),
     DictionaryMappingTestCase({"es-MX", "es-MX", "es-MX", "es", "es"}),
     DictionaryMappingTestCase({"ar-SA", "ar", "ar", "", ""}),
-    // Konkani not supported in Chromium.
-    DictionaryMappingTestCase({"kok-Deva-IN", "", "kok-Deva", "", ""}),
+    DictionaryMappingTestCase({"kok-Deva-IN", "kok", "kok-Deva", "", ""}),
     DictionaryMappingTestCase({"sr-Cyrl-RS", "sr", "sr-Cyrl", "", ""}),
     DictionaryMappingTestCase({"sr-Cyrl-ME", "sr", "sr-Cyrl", "", ""}),
     // Only sr with Cyrillic implied supported in Chromium.

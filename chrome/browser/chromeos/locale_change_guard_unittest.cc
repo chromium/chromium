@@ -21,6 +21,7 @@ const char* const kShowNotificationLanguages[] = {
     "am",   // Amharic
     "an",   // Aragonese
     "ar",   // Arabic
+    "as",   // Assamese
     "ast",  // Asturian
     "az",   // Azerbaijani
     "be",   // Belarusian
@@ -31,6 +32,7 @@ const char* const kShowNotificationLanguages[] = {
     "bs",   // Bosnian
     "ca",   // Catalan
     "ceb",  // Cebuano
+    "chr",  // Cherokee
     "ckb",  // Sorani (Kurdish-Arabic)
     "co",   // Corsican
     "cs",   // Czech
@@ -71,6 +73,7 @@ const char* const kShowNotificationLanguages[] = {
     "km",   // Cambodian
     "kn",   // Kannada
     "ko",   // Korean
+    "kok",  // Konkani
     "ku",   // Kurdish
     "ky",   // Kyrgyz
     "la",   // Latin
@@ -106,6 +109,7 @@ const char* const kShowNotificationLanguages[] = {
     "rm",   // Romansh
     "ro",   // Romanian
     "ru",   // Russian
+    "rw",   // Kinyarwanda
     "sd",   // Sindhi
     "sh",   // Serbo-Croatian
     "si",   // Sinhalese
@@ -126,6 +130,7 @@ const char* const kShowNotificationLanguages[] = {
     "th",   // Thai
     "ti",   // Tigrinya
     "tk",   // Turkmen
+    "tn",   // Tswana
     "to",   // Tonga
     "tr",   // Turkish
     "tt",   // Tatar
@@ -136,6 +141,7 @@ const char* const kShowNotificationLanguages[] = {
     "uz",   // Uzbek
     "vi",   // Vietnamese
     "wa",   // Walloon
+    "wo",   // Wolof
     "xh",   // Xhosa
     "yi",   // Yiddish
     "yo",   // Yoruba
