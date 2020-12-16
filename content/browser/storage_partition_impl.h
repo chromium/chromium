@@ -115,8 +115,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   // StorageServiceOutOfProcess feature setting.
   static void ForceInProcessStorageServiceForTesting();
 
-  void OverrideQuotaManagerForTesting(
-      storage::QuotaManager* quota_manager);
+  void OverrideQuotaManagerForTesting(storage::QuotaManager* quota_manager);
   void OverrideSpecialStoragePolicyForTesting(
       storage::SpecialStoragePolicy* special_storage_policy);
   void ShutdownBackgroundSyncContextForTesting();
@@ -545,7 +544,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   std::unique_ptr<leveldb_proto::ProtoDatabaseProvider>
       proto_database_provider_;
   scoped_refptr<ContentIndexContextImpl> content_index_context_;
-  std::unique_ptr<NativeIOContext> native_io_context_;
+  scoped_refptr<NativeIOContext> native_io_context_;
   std::unique_ptr<ConversionManagerImpl> conversion_manager_;
   std::unique_ptr<FontAccessManagerImpl> font_access_manager_;
   std::unique_ptr<PrerenderHostRegistry> prerender_host_registry_;

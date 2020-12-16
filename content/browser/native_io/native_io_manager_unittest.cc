@@ -13,7 +13,7 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
-#include "content/browser/native_io/native_io_context.h"
+#include "content/browser/native_io/native_io_manager.h"
 #include "content/test/fake_mojo_message_dispatch_context.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -151,7 +151,7 @@ class NativeIOFileHostSync {
 const char kExampleOrigin[] = "https://example.com";
 const char kGoogleOrigin[] = "https://google.com";
 
-class NativeIOContextTest : public testing::Test {
+class NativeIOManagerTest : public testing::Test {
  public:
   void SetUp() override {
     ASSERT_TRUE(data_dir_.CreateUniqueTempDir());
@@ -161,13 +161,13 @@ class NativeIOContextTest : public testing::Test {
         /*special storage policy=*/nullptr);
     quota_manager_proxy_ = base::MakeRefCounted<storage::MockQuotaManagerProxy>(
         quota_manager(), base::ThreadTaskRunnerHandle::Get().get());
-    context_ = std::make_unique<NativeIOContext>(
+    manager_ = std::make_unique<NativeIOManager>(
         data_dir_.GetPath(),
         /*special storage policy=*/nullptr, quota_manager_proxy());
 
-    context_->BindReceiver(url::Origin::Create(GURL(kExampleOrigin)),
+    manager_->BindReceiver(url::Origin::Create(GURL(kExampleOrigin)),
                            example_host_remote_.BindNewPipeAndPassReceiver());
-    context_->BindReceiver(url::Origin::Create(GURL(kGoogleOrigin)),
+    manager_->BindReceiver(url::Origin::Create(GURL(kGoogleOrigin)),
                            google_host_remote_.BindNewPipeAndPassReceiver());
 
     example_host_ = std::make_unique<NativeIOHostSync>(
@@ -201,7 +201,7 @@ class NativeIOContextTest : public testing::Test {
     return too_long_filename;
   }
 
-  // This must be above NativeIOContext, to ensure that no file is accessed when
+  // This must be above NativeIOManager, to ensure that no file is accessed when
   // the temporary directory is deleted.
   base::ScopedTempDir data_dir_;
 
@@ -209,9 +209,9 @@ class NativeIOContextTest : public testing::Test {
   // thread pool for file I/O.
   base::test::TaskEnvironment task_environment_;
 
-  // The NativeIOContext is on the heap because it requires the profile path at
+  // The NativeIOManager is on the heap because it requires the profile path at
   // construction, and we only know the path during SetUp.
-  std::unique_ptr<NativeIOContext> context_;
+  std::unique_ptr<NativeIOManager> manager_;
 
   // Hosts for two different origins, used for isolation testing.
   mojo::Remote<blink::mojom::NativeIOHost> example_host_remote_;
@@ -232,7 +232,7 @@ class NativeIOContextTest : public testing::Test {
   scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
 };
 
-TEST_F(NativeIOContextTest, OpenFile_BadNames) {
+TEST_F(NativeIOManagerTest, OpenFile_BadNames) {
   for (const std::string& bad_name : bad_names_) {
     mojo::test::BadMessageObserver bad_message_observer;
 
@@ -255,7 +255,7 @@ TEST_F(NativeIOContextTest, OpenFile_BadNames) {
 #endif  // !defined(OS_WIN)
 }
 
-TEST_F(NativeIOContextTest, OpenFile_Locks_OpenFile) {
+TEST_F(NativeIOManagerTest, OpenFile_Locks_OpenFile) {
   mojo::Remote<blink::mojom::NativeIOFileHost> file_host_remote;
   std::pair<base::File, NativeIOErrorPtr> result = example_host_->OpenFile(
       "test_file", file_host_remote.BindNewPipeAndPassReceiver());
@@ -271,7 +271,7 @@ TEST_F(NativeIOContextTest, OpenFile_Locks_OpenFile) {
       << "A file cannot be opened twice";
 }
 
-TEST_F(NativeIOContextTest, OpenFile_SameName) {
+TEST_F(NativeIOManagerTest, OpenFile_SameName) {
   const std::string kTestData("Test Data");
 
   mojo::Remote<blink::mojom::NativeIOFileHost> file_host_remote;
@@ -298,7 +298,7 @@ TEST_F(NativeIOContextTest, OpenFile_SameName) {
 
 // TODO(rstz): Consider failing upon deletion of an overly long file name for
 // consistency with rename and open.
-TEST_F(NativeIOContextTest, DeleteFile_BadNames) {
+TEST_F(NativeIOManagerTest, DeleteFile_BadNames) {
   for (const std::string& bad_name : bad_names_) {
     mojo::test::BadMessageObserver bad_message_observer;
 
@@ -308,7 +308,7 @@ TEST_F(NativeIOContextTest, DeleteFile_BadNames) {
   }
 }
 
-TEST_F(NativeIOContextTest, OpenFile_Locks_DeleteFile) {
+TEST_F(NativeIOManagerTest, OpenFile_Locks_DeleteFile) {
   mojo::Remote<blink::mojom::NativeIOFileHost> file_host;
   std::pair<base::File, NativeIOErrorPtr> result = example_host_->OpenFile(
       "test_file", file_host.BindNewPipeAndPassReceiver());
@@ -318,7 +318,7 @@ TEST_F(NativeIOContextTest, OpenFile_Locks_DeleteFile) {
             NativeIOErrorType::kNoModificationAllowed);
 }
 
-TEST_F(NativeIOContextTest, OpenFile_Locks_RenameFile) {
+TEST_F(NativeIOManagerTest, OpenFile_Locks_RenameFile) {
   mojo::Remote<blink::mojom::NativeIOFileHost> file_host;
   std::pair<base::File, NativeIOErrorPtr> result = example_host_->OpenFile(
       "test_file_in_use", file_host.BindNewPipeAndPassReceiver());
@@ -346,7 +346,7 @@ TEST_F(NativeIOContextTest, OpenFile_Locks_RenameFile) {
   ;
 }
 
-TEST_F(NativeIOContextTest, DeleteFile_WipesData) {
+TEST_F(NativeIOManagerTest, DeleteFile_WipesData) {
   const std::string kTestData("Test Data");
 
   mojo::Remote<blink::mojom::NativeIOFileHost> file_host_remote;
@@ -372,12 +372,12 @@ TEST_F(NativeIOContextTest, DeleteFile_WipesData) {
   EXPECT_EQ(0, same_file.Read(0, read_buffer, kTestData.size()));
 }
 
-TEST_F(NativeIOContextTest, GetAllFiles_Empty) {
+TEST_F(NativeIOManagerTest, GetAllFiles_Empty) {
   std::vector<std::string> file_names = example_host_->GetAllFileNames();
   EXPECT_EQ(0u, file_names.size());
 }
 
-TEST_F(NativeIOContextTest, GetAllFiles_AfterOpen) {
+TEST_F(NativeIOManagerTest, GetAllFiles_AfterOpen) {
   mojo::Remote<blink::mojom::NativeIOFileHost> file_host_remote;
   std::pair<base::File, NativeIOErrorPtr> result = example_host_->OpenFile(
       "test_file", file_host_remote.BindNewPipeAndPassReceiver());
@@ -390,7 +390,7 @@ TEST_F(NativeIOContextTest, GetAllFiles_AfterOpen) {
   EXPECT_EQ("test_file", file_names[0]);
 }
 
-TEST_F(NativeIOContextTest, RenameFile_AfterOpenAndRename) {
+TEST_F(NativeIOManagerTest, RenameFile_AfterOpenAndRename) {
   mojo::Remote<blink::mojom::NativeIOFileHost> file_host_remote;
   std::pair<base::File, NativeIOErrorPtr> result = example_host_->OpenFile(
       "test_file", file_host_remote.BindNewPipeAndPassReceiver());
@@ -404,7 +404,7 @@ TEST_F(NativeIOContextTest, RenameFile_AfterOpenAndRename) {
   EXPECT_EQ("renamed_test_file", file_names[0]);
 }
 
-TEST_F(NativeIOContextTest, RenameFile_BadNames) {
+TEST_F(NativeIOManagerTest, RenameFile_BadNames) {
   mojo::Remote<blink::mojom::NativeIOFileHost> file_host_remote;
   std::pair<base::File, NativeIOErrorPtr> result = example_host_->OpenFile(
       "test_file", file_host_remote.BindNewPipeAndPassReceiver());
@@ -432,7 +432,7 @@ TEST_F(NativeIOContextTest, RenameFile_BadNames) {
 #endif  // !defined(OS_WIN)
 }
 
-TEST_F(NativeIOContextTest, SetLength_NegativeLength) {
+TEST_F(NativeIOManagerTest, SetLength_NegativeLength) {
   mojo::Remote<blink::mojom::NativeIOFileHost> file_host_remote;
   std::pair<base::File, NativeIOErrorPtr> result = example_host_->OpenFile(
       "test_file", file_host_remote.BindNewPipeAndPassReceiver());
@@ -447,7 +447,7 @@ TEST_F(NativeIOContextTest, SetLength_NegativeLength) {
   file_host.Close();
 }
 
-TEST_F(NativeIOContextTest, OriginIsolation) {
+TEST_F(NativeIOManagerTest, OriginIsolation) {
   const std::string kTestData("Test Data");
 
   mojo::Remote<blink::mojom::NativeIOFileHost> file_host_remote;
@@ -476,13 +476,13 @@ TEST_F(NativeIOContextTest, OriginIsolation) {
   EXPECT_EQ(0, same_file.Read(0, read_buffer, kTestData.size()));
 }
 
-TEST_F(NativeIOContextTest, BindReceiver_UntrustworthyOrigin) {
+TEST_F(NativeIOManagerTest, BindReceiver_UntrustworthyOrigin) {
   mojo::Remote<blink::mojom::NativeIOHost> insecure_host_remote_;
 
   // Create a fake dispatch context to trigger a bad message in.
   FakeMojoMessageDispatchContext fake_dispatch_context;
   mojo::test::BadMessageObserver bad_message_observer;
-  context_->BindReceiver(url::Origin::Create(GURL("http://insecure.com")),
+  manager_->BindReceiver(url::Origin::Create(GURL("http://insecure.com")),
                          insecure_host_remote_.BindNewPipeAndPassReceiver());
   EXPECT_EQ("Called NativeIO from an insecure context",
             bad_message_observer.WaitForBadMessage());

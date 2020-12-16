@@ -12,8 +12,8 @@
 #include "base/sequence_checker.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "content/browser/native_io/native_io_context.h"
 #include "content/browser/native_io/native_io_host.h"
+#include "content/browser/native_io/native_io_manager.h"
 #include "third_party/blink/public/common/native_io/native_io_utils.h"
 #include "third_party/blink/public/mojom/native_io/native_io.mojom.h"
 
@@ -39,7 +39,7 @@ std::pair<base::File, base::File::Error> DoSetLength(const int64_t length,
 void DidSetLength(blink::mojom::NativeIOFileHost::SetLengthCallback callback,
                   std::pair<base::File, base::File::Error> result) {
   NativeIOErrorPtr error =
-      NativeIOContext::FileErrorToNativeIOError(result.second);
+      NativeIOManager::FileErrorToNativeIOError(result.second);
   std::move(callback).Run(std::move(result.first), std::move(error));
 }
 

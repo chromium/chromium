@@ -19,8 +19,8 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/task_runner.h"
-#include "content/browser/native_io/native_io_context.h"
 #include "content/browser/native_io/native_io_file_host.h"
+#include "content/browser/native_io/native_io_manager.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/common/native_io/native_io_utils.h"
@@ -102,7 +102,7 @@ NativeIOErrorPtr DoDeleteFile(const base::FilePath& root_path,
 
   bool success = base::DeleteFile(GetNativeIOFilePath(root_path, name));
   if (!success) {
-    return NativeIOContext::FileErrorToNativeIOError(
+    return NativeIOManager::FileErrorToNativeIOError(
         base::File::GetLastFileError());
   }
   return NativeIOError::New(NativeIOErrorType::kSuccess, "");
@@ -190,20 +190,20 @@ NativeIOErrorPtr DoRenameFile(const base::FilePath& root_path,
 
   base::ReplaceFile(GetNativeIOFilePath(root_path, old_name),
                     GetNativeIOFilePath(root_path, new_name), &error);
-  return NativeIOContext::FileErrorToNativeIOError(error);
+  return NativeIOManager::FileErrorToNativeIOError(error);
 }
 
 }  // namespace
 
-NativeIOHost::NativeIOHost(NativeIOContext* context,
+NativeIOHost::NativeIOHost(NativeIOManager* manager,
                            const url::Origin& origin,
                            base::FilePath root_path)
     : root_path_(std::move(root_path)),
-      context_(context),
+      manager_(manager),
       origin_(origin),
       file_task_runner_(CreateFileTaskRunner()) {
   DCHECK(!root_path_.empty());
-  DCHECK(context != nullptr);
+  DCHECK(manager != nullptr);
 
   // base::Unretained is safe here because this NativeIOHost owns |receivers_|.
   // So, the unretained NativeIOHost is guaranteed to outlive |receivers_| and
@@ -358,7 +358,7 @@ void NativeIOHost::OnFileClose(NativeIOFileHost* file_host) {
 void NativeIOHost::OnReceiverDisconnect() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  context_->OnHostReceiverDisconnect(this);
+  manager_->OnHostReceiverDisconnect(this);
 }
 
 void NativeIOHost::DidOpenFile(
@@ -378,7 +378,7 @@ void NativeIOHost::DidOpenFile(
                      ? open_error
                      : base::File::FILE_ERROR_FAILED;
     std::move(callback).Run(
-        std::move(file), NativeIOContext::FileErrorToNativeIOError(open_error));
+        std::move(file), NativeIOManager::FileErrorToNativeIOError(open_error));
     return;
   }
 
@@ -387,7 +387,7 @@ void NativeIOHost::DidOpenFile(
                                                 this, name)});
 
   std::move(callback).Run(
-      std::move(file), NativeIOContext::FileErrorToNativeIOError(open_error));
+      std::move(file), NativeIOManager::FileErrorToNativeIOError(open_error));
   return;
 }
 

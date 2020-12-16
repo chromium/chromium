@@ -14,11 +14,11 @@
 
 namespace content {
 
-class NativeIOContext;
+class NativeIOManager;
 enum class NativeIOOwner;
 
 // NativeIOQuotaClient is owned by the QuotaManager. There is one per
-// NativeIOContext/NativeIOOwner tuple. Created and accessed on
+// NativeIOManager/NativeIOOwner tuple. Created and accessed on
 // the IO thread.
 class CONTENT_EXPORT NativeIOQuotaClient : public storage::QuotaClient {
  public:
