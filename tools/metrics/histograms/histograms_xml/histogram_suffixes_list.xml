@@ -13779,6 +13779,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram_suffixes name="PermissionPromptDisposition" separator=".">
   <suffix name="AnchoredBubble"
       label="A bubble under the site settings padlock"/>
+  <suffix name="CustomModalDialog" label="Other custom modal dialogs"/>
   <suffix name="LocationBarLeftChip"
       label="A chip on the left-hand side of the location bar that shows a
              bubble when clicked"/>

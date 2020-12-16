@@ -180,6 +180,8 @@ std::string GetPromptDispositionString(
   switch (ui_disposition) {
     case PermissionPromptDisposition::ANCHORED_BUBBLE:
       return "AnchoredBubble";
+    case PermissionPromptDisposition::CUSTOM_MODAL_DIALOG:
+      return "CustomModalDialog";
     case PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP:
       return "LocationBarLeftChip";
     case PermissionPromptDisposition::LOCATION_BAR_RIGHT_ANIMATED_ICON:
