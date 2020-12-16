@@ -225,11 +225,8 @@ public class PictureInPictureController {
     }
 
     private static Rect getVideoBounds(WebContents webContents, Activity activity) {
-        // |getFullscreenVideoSize| may return null if there is a fullscreen video but it has not
-        // yet been detected. However we check |hasActiveEffectivelyFullscreenVideo| in
-        // |shouldAttempt|, so |rect| should never be null.
         Rect rect = webContents.getFullscreenVideoSize();
-        if (rect.width() == 0 || rect.height() == 0) return null;
+        if (rect == null || rect.width() == 0 || rect.height() == 0) return null;
 
         float videoAspectRatio = MathUtils.clamp(rect.width() / (float) rect.height(),
                 MIN_ASPECT_RATIO, MAX_ASPECT_RATIO);
