@@ -262,6 +262,14 @@ NGPositionedFloat PositionFloat(NGUnpositionedFloat* unpositioned_float,
 
       layout_result = node.Layout(space, unpositioned_float->token.get());
 
+      if (layout_result->Status() != NGLayoutResult::kSuccess) {
+        DCHECK_EQ(layout_result->Status(),
+                  NGLayoutResult::kOutOfFragmentainerSpace);
+        need_break_before = true;
+        return NGPositionedFloat(std::move(layout_result), NGBfcOffset(),
+                                 need_break_before);
+      }
+
       // If we knew the right block-offset up front, we're done.
       if (!optimistically_placed)
         break;

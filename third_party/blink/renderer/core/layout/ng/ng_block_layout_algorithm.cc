@@ -1137,11 +1137,6 @@ void NGBlockLayoutAlgorithm::HandleFloat(
   NGPositionedFloat positioned_float =
       PositionFloat(&unpositioned_float, &exclusion_space_);
 
-  const NGLayoutResult& layout_result = *positioned_float.layout_result;
-
-  // TODO(mstensho): Handle abortions caused by block fragmentation.
-  DCHECK_EQ(layout_result.Status(), NGLayoutResult::kSuccess);
-
   if (positioned_float.need_break_before) {
     DCHECK(ConstraintSpace().HasBlockFragmentation());
     LayoutUnit fragmentainer_block_offset =
@@ -1157,6 +1152,8 @@ void NGBlockLayoutAlgorithm::HandleFloat(
     // siblings that could still fit in the current fragmentainer.
     return;
   }
+
+  DCHECK_EQ(positioned_float.layout_result->Status(), NGLayoutResult::kSuccess);
 
   // TODO(mstensho): There should be a class A breakpoint between a float and
   // another float, and also between a float and an in-flow block.
