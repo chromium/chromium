@@ -289,7 +289,7 @@ void ExtensionServiceTestWithInstall::UpdateExtension(
   extensions::CrxInstaller* installer = nullptr;
   content::WindowedNotificationObserver observer(
       extensions::NOTIFICATION_CRX_INSTALLER_DONE,
-      base::Bind(&IsCrxInstallerDone, &installer));
+      base::BindRepeating(&IsCrxInstallerDone, &installer));
   CRXFileInfo crx_info(path, GetTestVerifierFormat());
   crx_info.extension_id = id;
   service()->UpdateExtension(crx_info, true, &installer);

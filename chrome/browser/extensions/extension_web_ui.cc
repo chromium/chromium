@@ -528,8 +528,8 @@ void ExtensionWebUI::ValidateChromeURLOverrides(Profile* profile) {
       extensions::ExtensionRegistry::Get(profile)
           ->GenerateInstalledExtensionsSet();
 
-  ForEachOverrideList(profile,
-                      base::Bind(&ValidateOverridesList, all_extensions.get()));
+  ForEachOverrideList(profile, base::BindRepeating(&ValidateOverridesList,
+                                                   all_extensions.get()));
 }
 
 // static

@@ -919,11 +919,8 @@ void CrxInstaller::CompleteInstall() {
   ExtensionAssetsManager* assets_manager =
       ExtensionAssetsManager::GetInstance();
   assets_manager->InstallExtension(
-      extension(),
-      unpacked_extension_root_,
-      install_directory_,
-      profile(),
-      base::Bind(&CrxInstaller::ReloadExtensionAfterInstall, this));
+      extension(), unpacked_extension_root_, install_directory_, profile(),
+      base::BindOnce(&CrxInstaller::ReloadExtensionAfterInstall, this));
 }
 
 void CrxInstaller::ReloadExtensionAfterInstall(

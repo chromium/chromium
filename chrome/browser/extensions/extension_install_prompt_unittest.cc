@@ -42,34 +42,34 @@ namespace extensions {
 namespace {
 
 void VerifyPromptIconCallback(
-    const base::Closure& quit_closure,
+    base::OnceClosure quit_closure,
     const SkBitmap& expected_bitmap,
     ExtensionInstallPromptShowParams* params,
     ExtensionInstallPrompt::DoneCallback done_callback,
     std::unique_ptr<ExtensionInstallPrompt::Prompt> prompt) {
   EXPECT_TRUE(gfx::BitmapsAreEqual(prompt->icon().AsBitmap(), expected_bitmap));
-  quit_closure.Run();
+  std::move(quit_closure).Run();
 }
 
 void VerifyPromptPermissionsCallback(
-    const base::Closure& quit_closure,
+    base::OnceClosure quit_closure,
     size_t regular_permissions_count,
     ExtensionInstallPromptShowParams* params,
     ExtensionInstallPrompt::DoneCallback done_callback,
     std::unique_ptr<ExtensionInstallPrompt::Prompt> install_prompt) {
   ASSERT_TRUE(install_prompt.get());
   EXPECT_EQ(regular_permissions_count, install_prompt->GetPermissionCount());
-  quit_closure.Run();
+  std::move(quit_closure).Run();
 }
 
 void VerifyPromptWithholdingUICallback(
-    const base::Closure& quit_closure,
+    base::Closure quit_closure,
     const bool should_display,
     ExtensionInstallPromptShowParams* params,
     ExtensionInstallPrompt::DoneCallback done_callback,
     std::unique_ptr<ExtensionInstallPrompt::Prompt> prompt) {
   EXPECT_EQ(should_display, prompt->ShouldDisplayWithholdingUI());
-  quit_closure.Run();
+  std::move(quit_closure).Run();
 }
 
 void SetImage(gfx::Image* image_out,

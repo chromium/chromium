@@ -75,7 +75,7 @@ class WebstoreInstallerBrowserTest
             kNonAppDomain) {}
   ~WebstoreInstallerBrowserTest() override {}
 
-  void SetDoneClosure(base::Closure done_closure) {
+  void SetDoneClosure(base::OnceClosure done_closure) {
     done_closure_ = std::move(done_closure);
   }
 

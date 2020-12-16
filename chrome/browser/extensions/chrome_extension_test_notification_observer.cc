@@ -72,8 +72,9 @@ bool ChromeExtensionTestNotificationObserver::
   ScopedObserver<ExtensionActionAPI, ExtensionActionAPI::Observer> observer(
       this);
   observer.Add(ExtensionActionAPI::Get(GetBrowserContext()));
-  WaitForCondition(
-      base::Bind(&HasPageActionVisibilityReachedTarget, browser_, count), NULL);
+  WaitForCondition(base::BindRepeating(&HasPageActionVisibilityReachedTarget,
+                                       browser_, count),
+                   nullptr);
   return true;
 }
 
@@ -88,7 +89,8 @@ bool ChromeExtensionTestNotificationObserver::WaitForExtensionViewsToLoad() {
   notification_set.Add(content::NOTIFICATION_LOAD_STOP);
   notification_set.AddExtensionFrameUnregistration(manager);
   WaitForCondition(
-      base::Bind(&HaveAllExtensionRenderFrameHostsFinishedLoading, manager),
+      base::BindRepeating(&HaveAllExtensionRenderFrameHostsFinishedLoading,
+                          manager),
       &notification_set);
   return true;
 }
@@ -97,9 +99,9 @@ bool ChromeExtensionTestNotificationObserver::WaitForExtensionIdle(
     const std::string& extension_id) {
   NotificationSet notification_set;
   notification_set.Add(content::NOTIFICATION_RENDERER_PROCESS_TERMINATED);
-  WaitForCondition(
-      base::Bind(&util::IsExtensionIdle, extension_id, GetBrowserContext()),
-      &notification_set);
+  WaitForCondition(base::BindRepeating(&util::IsExtensionIdle, extension_id,
+                                       GetBrowserContext()),
+                   &notification_set);
   return true;
 }
 
@@ -107,7 +109,7 @@ bool ChromeExtensionTestNotificationObserver::WaitForExtensionNotIdle(
     const std::string& extension_id) {
   NotificationSet notification_set;
   notification_set.Add(content::NOTIFICATION_LOAD_STOP);
-  WaitForCondition(base::Bind(
+  WaitForCondition(base::BindRepeating(
                        [](const std::string& extension_id,
                           content::BrowserContext* context) -> bool {
                          return !util::IsExtensionIdle(extension_id, context);
