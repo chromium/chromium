@@ -853,9 +853,9 @@ void NetworkContext::QueueReport(
     const net::NetworkIsolationKey& network_isolation_key,
     const base::Optional<std::string>& user_agent,
     base::Value body) {
-  // TODO(mmenke): Once all callers have been updated to send a
-  // NetworkIsolationKey, DCHECK network_isolation_key() is not null, when
-  // require_network_isolation_key() is set on the URLRequestContext.
+  if (url_request_context_->require_network_isolation_key())
+    DCHECK(!network_isolation_key.IsEmpty());
+
   DCHECK(body.is_dict());
   if (!body.is_dict())
     return;
@@ -885,18 +885,17 @@ void NetworkContext::QueueReport(
 void NetworkContext::QueueSignedExchangeReport(
     mojom::SignedExchangeReportPtr report,
     const net::NetworkIsolationKey& network_isolation_key) {
-  // TODO(mmenke): Once all callers have been updated to send a
-  // NetworkIsolationKey, DCHECK network_isolation_key() is not null, when
-  // require_network_isolation_key() is set on the URLRequestContext.
+  if (url_request_context_->require_network_isolation_key())
+    DCHECK(!network_isolation_key.IsEmpty());
 
-  net::URLRequestContext* request_context = url_request_context();
   net::NetworkErrorLoggingService* logging_service =
-      request_context->network_error_logging_service();
+      url_request_context_->network_error_logging_service();
   if (!logging_service)
     return;
   std::string user_agent;
-  if (request_context->http_user_agent_settings() != nullptr) {
-    user_agent = request_context->http_user_agent_settings()->GetUserAgent();
+  if (url_request_context_->http_user_agent_settings() != nullptr) {
+    user_agent =
+        url_request_context_->http_user_agent_settings()->GetUserAgent();
   }
   net::NetworkErrorLoggingService::SignedExchangeReportDetails details;
   details.network_isolation_key = network_isolation_key;
@@ -1388,9 +1387,8 @@ void NetworkContext::VerifyCertForSignedExchange(
     const std::string& ocsp_result,
     const std::string& sct_list,
     VerifyCertForSignedExchangeCallback callback) {
-  // TODO(https://crbug.com/1087091): DCHECK that |network_isolation_key| is
-  // populated when |require_network_isolation_key| is true, once all consumers
-  // are passing in a NetworkIsolationKey.
+  if (url_request_context_->require_network_isolation_key())
+    DCHECK(!network_isolation_key.IsEmpty());
 
   int cert_verify_id = ++next_cert_verify_id_;
   auto pending_cert_verify = std::make_unique<PendingCertVerify>();
