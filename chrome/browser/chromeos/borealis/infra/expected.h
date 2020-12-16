@@ -26,10 +26,6 @@ class Expected {
   using value_t = T;
   using error_t = E;
 
-  // Convenience callbacks for handling the various states.
-  using ValueCallback = base::OnceCallback<void(T&)>;
-  using ErrorCallback = base::OnceCallback<void(E&)>;
-
   // TODO(b/172501195): This implementation is only partial, either complete it
   // or replace it with the standard. Until then |T| and |E| should probably be
   // movable and copy-able respectively.
@@ -73,11 +69,14 @@ class Expected {
 
   // Invoke exactly one of the |on_value| or |on_error| callbacks, depending on
   // the state of |this|. Works a bit like absl::visit() but more chrome-ey.
-  void Handle(ValueCallback on_value, ErrorCallback on_error) {
+  // Returns whatever type those callbacks return (which must be the same).
+  template <typename R>
+  R Handle(base::OnceCallback<R(T&)> on_value,
+           base::OnceCallback<R(E&)> on_error) {
     if (*this) {
-      std::move(on_value).Run(absl::get<T>(storage_));
+      return std::move(on_value).Run(absl::get<T>(storage_));
     } else {
-      std::move(on_error).Run(absl::get<E>(storage_));
+      return std::move(on_error).Run(absl::get<E>(storage_));
     }
   }
 

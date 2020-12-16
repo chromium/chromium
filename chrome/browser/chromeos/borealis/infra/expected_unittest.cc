@@ -64,17 +64,26 @@ TEST(ExpectedTest, HandleCallsCorrectCallback) {
   CallbackFactory<A> a_callback;
   CallbackFactory<B> b_callback;
 
-  Expected<A, B> a{A()};
   EXPECT_CALL(a_callback, Call).Times(1);
-  a.Handle(
+  Expected<A, B>{A()}.Handle(
       base::BindOnce(&CallbackFactory<A>::Call, base::Unretained(&a_callback)),
       base::BindOnce(&CallbackFactory<B>::Call, base::Unretained(&b_callback)));
 
-  Expected<A, B> b = Unexpected<A>(B{});
   EXPECT_CALL(b_callback, Call).Times(1);
-  b.Handle(
+  Unexpected<A>(B{}).Handle(
       base::BindOnce(&CallbackFactory<A>::Call, base::Unretained(&a_callback)),
       base::BindOnce(&CallbackFactory<B>::Call, base::Unretained(&b_callback)));
+}
+
+TEST(ExpectedTest, HandleCanReturn) {
+  using Exp = Expected<A, B>;
+  EXPECT_EQ("expected",
+            Exp{A()}.Handle(base::BindOnce([](A&) { return "expected"; }),
+                            base::BindOnce([](B&) { return "unexpected"; })));
+
+  EXPECT_EQ("unexpected", Unexpected<A>(B{}).Handle(
+                              base::BindOnce([](A&) { return "expected"; }),
+                              base::BindOnce([](B&) { return "unexpected"; })));
 }
 
 }  // namespace

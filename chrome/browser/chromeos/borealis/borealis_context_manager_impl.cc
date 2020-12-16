@@ -156,30 +156,27 @@ void BorealisContextManagerImpl::Complete(Startup::Result completion_result) {
   DCHECK(in_progress_startup_);
   in_progress_startup_.reset();
 
-  if (completion_result) {
-    context_ = std::move(completion_result.Value());
-  } else {
-    Described<BorealisStartupResult>& failure = completion_result.Error();
-    LOG(ERROR) << "Startup failed: failure=" << failure.error()
-               << " message=" << failure.description();
-  }
-
   BorealisContextManager::Result completion_result_for_clients =
-      GetResult(completion_result);
+      completion_result.Handle(
+          base::BindOnce(
+              [](std::unique_ptr<BorealisContext>* out_context,
+                 std::unique_ptr<BorealisContext>& success) {
+                std::swap(*out_context, success);
+                return BorealisContextManager::Result(out_context->get());
+              },
+              &context_),
+          base::BindOnce([](Described<BorealisStartupResult>& failure) {
+            LOG(ERROR) << "Startup failed: failure=" << failure.error()
+                       << " message=" << failure.description();
+            return BorealisContextManager::Result(failure.error(),
+                                                  failure.description());
+          }));
+
   while (!callback_queue_.empty()) {
     ResultCallback callback = std::move(callback_queue_.front());
     callback_queue_.pop();
     std::move(callback).Run(completion_result_for_clients);
   }
-}
-
-BorealisContextManager::Result BorealisContextManagerImpl::GetResult(
-    const Startup::Result& completion_result) {
-  if (completion_result) {
-    return BorealisContextManager::Result(context_.get());
-  }
-  const Described<BorealisStartupResult>& failure = completion_result.Error();
-  return BorealisContextManager::Result(failure.error(), failure.description());
 }
 
 }  // namespace borealis
