@@ -723,11 +723,6 @@ void PrePaintTreeWalk::WalkNGChildren(const LayoutObject* parent,
             tree_builder_context.fragments[0];
         containing_block_context = &context.current;
         containing_block_context->paint_offset += offset;
-
-        if (box_fragment->IsFragmentainerBox()) {
-          context.absolute_position = *containing_block_context;
-          context.fixed_position = *containing_block_context;
-        }
       }
       WalkChildren(/* parent */ nullptr, iterator,
                    is_wheel_event_regions_enabled);

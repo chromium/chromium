@@ -167,6 +167,7 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
   bool is_fixed_container_;
   bool allow_first_tier_oof_cache_;
   bool has_block_fragmentation_;
+  bool can_traverse_fragments_ = false;
 };
 
 }  // namespace blink

@@ -92,7 +92,9 @@ NGOutOfFlowLayoutPart::NGOutOfFlowLayoutPart(
                             container_node.IsFixedContainer(),
                             container_node.Style(),
                             container_space,
-                            container_builder) {}
+                            container_builder) {
+  can_traverse_fragments_ = container_node.CanTraversePhysicalFragments();
+}
 
 NGOutOfFlowLayoutPart::NGOutOfFlowLayoutPart(
     bool is_absolute_container,
@@ -888,7 +890,7 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::Layout(
         &start_index, &offset);
   }
 
-  if (!only_layout) {
+  if (!only_layout && !can_traverse_fragments_) {
     // Special case: oof css container is a split inline.
     // When css container spans multiple anonymous blocks, its dimensions can
     // only be computed by a block that is an ancestor of all fragments

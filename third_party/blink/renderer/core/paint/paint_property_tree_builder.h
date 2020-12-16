@@ -113,6 +113,8 @@ struct PaintPropertyTreeBuilderFragmentContext {
   // containing block of corresponding positioned descendants.  Overflow clips
   // are also inherited by containing block tree instead of DOM tree, thus they
   // are included in the additional context too.
+  //
+  // Note that these contexts are not used in LayoutNGFragmentTraversal.
   ContainingBlockContext absolute_position;
 
   ContainingBlockContext fixed_position;
@@ -157,6 +159,8 @@ struct PaintPropertyTreeBuilderContext {
   PaintPropertyTreeBuilderContext();
 
   Vector<PaintPropertyTreeBuilderFragmentContext, 1> fragments;
+
+  // TODO(mstensho): Stop using these in LayoutNGFragmentTraversal.
   const LayoutObject* container_for_absolute_position = nullptr;
   const LayoutObject* container_for_fixed_position = nullptr;
 

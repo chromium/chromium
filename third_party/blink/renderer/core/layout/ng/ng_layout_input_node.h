@@ -287,6 +287,13 @@ class CORE_EXPORT NGLayoutInputNode {
     return box_->GetCustomLayoutChild();
   }
 
+  // Return whether we can directly traverse fragments generated from this node
+  // (for painting, hit-testing and other layout read operations). If false is
+  // returned, we need to traverse the layout object tree instead.
+  bool CanTraversePhysicalFragments() const {
+    return box_->CanTraversePhysicalFragments();
+  }
+
   String ToString() const;
 
   explicit operator bool() const { return box_ != nullptr; }

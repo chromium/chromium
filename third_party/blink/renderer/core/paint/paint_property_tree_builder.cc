@@ -2410,108 +2410,61 @@ static PhysicalOffset PaintOffsetInPaginationContainer(
 }
 
 void FragmentPaintPropertyTreeBuilder::UpdatePaintOffset() {
-  if (!IsInNGFragmentTraversal()) {
-    // Paint offsets for fragmented content are computed from scratch.
-    const auto* enclosing_pagination_layer =
-        full_context_.painting_layer->EnclosingPaginationLayer();
-    if (enclosing_pagination_layer &&
-        // Except if the paint_offset_root is below the pagination container, in
-        // which case fragmentation offsets are already baked into the paint
-        // offset transform for paint_offset_root.
-        !context_.current.paint_offset_root->PaintingLayer()
-             ->EnclosingPaginationLayer()) {
-      if (object_.StyleRef().GetPosition() == EPosition::kAbsolute)
-        context_.current = context_.absolute_position;
-      else if (object_.StyleRef().GetPosition() == EPosition::kFixed)
-        context_.current = context_.fixed_position;
+  if (IsInNGFragmentTraversal()) {
+    // Text and non-atomic inlines are special, in that they share one
+    // FragmentData per fragmentainer, so their paint offset is kept at their
+    // container. For all other objects, include the offset now.
+    if (object_.IsBox())
+      context_.current.paint_offset += pre_paint_info_->iterator->Link().offset;
+    return;
+  }
 
-      // Set fragment visual paint offset.
-      PhysicalOffset paint_offset = PaintOffsetInPaginationContainer(
-          object_, *enclosing_pagination_layer);
+  // Paint offsets for fragmented content are computed from scratch.
+  const auto* enclosing_pagination_layer =
+      full_context_.painting_layer->EnclosingPaginationLayer();
+  if (enclosing_pagination_layer &&
+      // Except if the paint_offset_root is below the pagination container, in
+      // which case fragmentation offsets are already baked into the paint
+      // offset transform for paint_offset_root.
+      !context_.current.paint_offset_root->PaintingLayer()
+           ->EnclosingPaginationLayer()) {
+    if (object_.StyleRef().GetPosition() == EPosition::kAbsolute)
+      context_.current = context_.absolute_position;
+    else if (object_.StyleRef().GetPosition() == EPosition::kFixed)
+      context_.current = context_.fixed_position;
 
-      paint_offset += fragment_data_.LegacyPaginationOffset();
-      paint_offset += context_.repeating_paint_offset_adjustment;
-      paint_offset +=
-          VisualOffsetFromPaintOffsetRoot(context_, enclosing_pagination_layer);
+    // Set fragment visual paint offset.
+    PhysicalOffset paint_offset =
+        PaintOffsetInPaginationContainer(object_, *enclosing_pagination_layer);
 
-      // The paint offset root can have a subpixel paint offset adjustment.
-      // The paint offset root always has one fragment.
-      const auto& paint_offset_root_fragment =
-          context_.current.paint_offset_root->FirstFragment();
-      paint_offset += paint_offset_root_fragment.PaintOffset();
+    paint_offset += fragment_data_.LegacyPaginationOffset();
+    paint_offset += context_.repeating_paint_offset_adjustment;
+    paint_offset +=
+        VisualOffsetFromPaintOffsetRoot(context_, enclosing_pagination_layer);
 
-      context_.current.paint_offset = paint_offset;
-      return;
-    }
+    // The paint offset root can have a subpixel paint offset adjustment. The
+    // paint offset root always has one fragment.
+    const auto& paint_offset_root_fragment =
+        context_.current.paint_offset_root->FirstFragment();
+    paint_offset += paint_offset_root_fragment.PaintOffset();
 
-    if (object_.IsFloating() && !object_.IsInLayoutNGInlineFormattingContext())
-      context_.current.paint_offset = context_.paint_offset_for_float;
+    context_.current.paint_offset = paint_offset;
+    return;
+  }
 
-    // Multicolumn spanners are painted starting at the multicolumn container
-    // (but still inherit properties in layout-tree order) so reset the paint
-    // offset.
-    if (object_.IsColumnSpanAll()) {
-      context_.current.paint_offset =
-          object_.Container()->FirstFragment().PaintOffset();
-    }
+  if (object_.IsFloating() && !object_.IsInLayoutNGInlineFormattingContext())
+    context_.current.paint_offset = context_.paint_offset_for_float;
+
+  // Multicolumn spanners are painted starting at the multicolumn container (but
+  // still inherit properties in layout-tree order) so reset the paint offset.
+  if (object_.IsColumnSpanAll()) {
+    context_.current.paint_offset =
+        object_.Container()->FirstFragment().PaintOffset();
   }
 
   if (object_.IsBoxModelObject()) {
     const auto& box_model_object = To<LayoutBoxModelObject>(object_);
-    EPosition position = box_model_object.StyleRef().GetPosition();
-    if (IsInNGFragmentTraversal() &&
-        (position == EPosition::kAbsolute || position == EPosition::kFixed)) {
-      // The LayoutNG fragment tree structure is very similar to the containing
-      // block structure, with the exception of out-of-flow positioned boxes
-      // whose containing block is a non-atomic inline. If this is the case, we
-      // now need to add the offsets introduced by all inlines in the ancestry
-      // that affect us. This is a way to work around the discrepancy between
-      // the NG fragment tree structure and the actual containing block tree
-      // structure.
-      // TODO(mstensho): It's not good to walk up the ancestry
-      // (LayoutObject::Container()) like this, in fact pretty disastrous for
-      // e.g. fixed positioned objects, whose containing block is typically far
-      // up in the tree. Should we introduce a bit on LayoutObject that's set
-      // when this is necessary (or likely to be necessary)?
-      const LayoutObject* container = object_.Container();
-      if (container->IsLayoutInline() || container->IsAnonymousBlock()) {
-        // Set up context_ and full_context_ to be aware of the inline that is
-        // the actual containing block. This will be used by the code further
-        // down in this method.
-        // TODO(mstensho): This is currently incomplete. We're failing cases
-        // where the containing block sets up a filter, for instance.
-        if (position == EPosition::kFixed)
-          full_context_.container_for_fixed_position = container;
-        full_context_.container_for_absolute_position = container;
-        PhysicalOffset relative_offset;
-        if (const auto* box = DynamicTo<LayoutBox>(container)) {
-          // If the OOF is contained by an anonymous block (because of inline
-          // continuations), we need to take that into account.
-          //
-          // Example:
-          // <span style="position:relative;">
-          //   <div>
-          //     <div id="box_model_object" style="position:absolute;">
-          DCHECK(box->IsAnonymousBlock());
-          relative_offset =
-              box->PhysicalLocation() + box->OffsetForInFlowPosition();
-        } else {
-          do {
-            relative_offset +=
-                To<LayoutInline>(container)->OffsetForInFlowPosition();
-            container = container->Container();
-          } while (container->IsLayoutInline());
-        }
-        if (position == EPosition::kFixed) {
-          context_.fixed_position = context_.current;
-          context_.fixed_position.paint_offset += relative_offset;
-        }
-        context_.absolute_position = context_.current;
-        context_.absolute_position.paint_offset += relative_offset;
-      }
-    }
-
-    switch (position) {
+    switch (box_model_object.StyleRef().GetPosition()) {
       case EPosition::kStatic:
         break;
       case EPosition::kRelative:
@@ -2519,21 +2472,15 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffset() {
             box_model_object.OffsetForInFlowPosition();
         break;
       case EPosition::kAbsolute: {
-        // TODO(almaher): Remove call to IsInNGFragmentTraversal().
-        DCHECK(full_context_.container_for_absolute_position ==
-                   box_model_object.Container() ||
-               (IsInNGFragmentTraversal() &&
-                box_model_object.IsInsideFlowThread()));
+        DCHECK_EQ(full_context_.container_for_absolute_position,
+                  box_model_object.Container());
         context_.current = context_.absolute_position;
 
         // Absolutely positioned content in an inline should be positioned
         // relative to the inline.
         const auto* container = full_context_.container_for_absolute_position;
         if (container && container->IsLayoutInline()) {
-          // TODO(almaher): Remove call to IsInNGFragmentTraversal().
-          DCHECK(container->CanContainAbsolutePositionObjects() ||
-                 (IsInNGFragmentTraversal() &&
-                  box_model_object.IsInsideFlowThread()));
+          DCHECK(container->CanContainAbsolutePositionObjects());
           DCHECK(box_model_object.IsBox());
           context_.current.paint_offset +=
               To<LayoutInline>(container)->OffsetForInFlowPositionedInline(
@@ -2544,11 +2491,8 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffset() {
       case EPosition::kSticky:
         break;
       case EPosition::kFixed: {
-        // TODO(almaher): Remove call to IsInNGFragmentTraversal().
-        DCHECK(full_context_.container_for_fixed_position ==
-                   box_model_object.Container() ||
-               (IsInNGFragmentTraversal() &&
-                box_model_object.IsInsideFlowThread()));
+        DCHECK_EQ(full_context_.container_for_fixed_position,
+                  box_model_object.Container());
         context_.current = context_.fixed_position;
         // Fixed-position elements that are fixed to the viewport have a
         // transform above the scroll of the LayoutView. Child content is
@@ -2569,15 +2513,6 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffset() {
       default:
         NOTREACHED();
     }
-  }
-
-  if (IsInNGFragmentTraversal()) {
-    // Text and non-atomic inlines are special, in that they share one
-    // FragmentData per fragmentainer, so their paint offset is kept at their
-    // container. For all other objects, include the offset now.
-    if (object_.IsBox())
-      context_.current.paint_offset += pre_paint_info_->iterator->Link().offset;
-    return;
   }
 
   if (object_.IsBox()) {
