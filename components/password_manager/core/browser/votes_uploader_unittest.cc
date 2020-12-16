@@ -30,7 +30,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using autofill::AutofillDownloadManager;
-using autofill::CalculateFormSignature;
 using autofill::CONFIRMATION_PASSWORD;
 using autofill::FieldSignature;
 using autofill::FormData;
@@ -129,7 +128,6 @@ class VotesUploaderTest : public testing::Test {
       form_to_upload_.form_data.fields.push_back(field);
       submitted_form_.form_data.fields.push_back(field);
     }
-    initial_form_signature_ = CalculateFormSignature(form_to_upload_.form_data);
   }
 
  protected:
@@ -146,11 +144,10 @@ class VotesUploaderTest : public testing::Test {
   PasswordForm submitted_form_;
 
   std::string login_form_signature_ = "123";
-  FormSignature initial_form_signature_;
 };
 
 TEST_F(VotesUploaderTest, UploadPasswordVoteUpdate) {
-  VotesUploader votes_uploader(&client_, true, initial_form_signature_);
+  VotesUploader votes_uploader(&client_, true);
   base::string16 new_password_element = GetFieldNameByIndex(3);
   base::string16 confirmation_element = GetFieldNameByIndex(11);
   form_to_upload_.new_password_element = new_password_element;
@@ -179,7 +176,7 @@ TEST_F(VotesUploaderTest, UploadPasswordVoteUpdate) {
 }
 
 TEST_F(VotesUploaderTest, UploadPasswordVoteSave) {
-  VotesUploader votes_uploader(&client_, false, initial_form_signature_);
+  VotesUploader votes_uploader(&client_, false);
   base::string16 password_element = GetFieldNameByIndex(5);
   base::string16 confirmation_element = GetFieldNameByIndex(12);
   form_to_upload_.password_element = password_element;
@@ -223,8 +220,7 @@ TEST_F(VotesUploaderTest, InitialValueDetection) {
 
   form_data.fields = {other_field, username_field};
 
-  VotesUploader votes_uploader(&client_, true,
-                               CalculateFormSignature(form_data));
+  VotesUploader votes_uploader(&client_, true);
   votes_uploader.StoreInitialFieldValues(form_data);
 
   form_data.fields.at(1).value = ASCIIToUTF16("user entered value");
@@ -250,7 +246,7 @@ TEST_F(VotesUploaderTest, InitialValueDetection) {
 }
 
 TEST_F(VotesUploaderTest, GeneratePasswordAttributesVote) {
-  VotesUploader votes_uploader(&client_, true, initial_form_signature_);
+  VotesUploader votes_uploader(&client_, true);
   // Checks that randomization distorts information about present and missed
   // character classes, but a true value is still restorable with aggregation
   // of many distorted reports.
@@ -318,7 +314,7 @@ TEST_F(VotesUploaderTest, GeneratePasswordAttributesVote) {
 }
 
 TEST_F(VotesUploaderTest, GeneratePasswordSpecialSymbolVote) {
-  VotesUploader votes_uploader(&client_, true, initial_form_signature_);
+  VotesUploader votes_uploader(&client_, true);
 
   const base::string16 password_value = ASCIIToUTF16("password-withsymbols!");
   const int kNumberOfRuns = 2000;
@@ -364,7 +360,7 @@ TEST_F(VotesUploaderTest, GeneratePasswordAttributesVote_OneCharacterPassword) {
   // password has only one character.
   FormData form;
   FormStructure form_structure(form);
-  VotesUploader votes_uploader(&client_, true, CalculateFormSignature(form));
+  VotesUploader votes_uploader(&client_, true);
   votes_uploader.GeneratePasswordAttributesVote(ASCIIToUTF16("1"),
                                                 &form_structure);
   base::Optional<std::pair<PasswordAttribute, bool>> vote =
@@ -377,7 +373,7 @@ TEST_F(VotesUploaderTest, GeneratePasswordAttributesVote_OneCharacterPassword) {
 TEST_F(VotesUploaderTest, GeneratePasswordAttributesVote_AllAsciiCharacters) {
   FormData form;
   FormStructure form_structure(form);
-  VotesUploader votes_uploader(&client_, true, CalculateFormSignature(form));
+  VotesUploader votes_uploader(&client_, true);
   votes_uploader.GeneratePasswordAttributesVote(
       base::UTF8ToUTF16("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqr"
                         "stuvwxyz!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~"),
@@ -396,7 +392,7 @@ TEST_F(VotesUploaderTest, GeneratePasswordAttributesVote_NonAsciiPassword) {
         "ລະຫັດຜ່ານ-l", "စကားဝှက်ကို3", "პაროლი", "पारण शब्द"}) {
     FormData form;
     FormStructure form_structure(form);
-    VotesUploader votes_uploader(&client_, true, CalculateFormSignature(form));
+    VotesUploader votes_uploader(&client_, true);
     votes_uploader.GeneratePasswordAttributesVote(base::UTF8ToUTF16(password),
                                                   &form_structure);
     base::Optional<std::pair<PasswordAttribute, bool>> vote =
@@ -407,7 +403,7 @@ TEST_F(VotesUploaderTest, GeneratePasswordAttributesVote_NonAsciiPassword) {
 }
 
 TEST_F(VotesUploaderTest, NoSingleUsernameDataNoUpload) {
-  VotesUploader votes_uploader(&client_, false, initial_form_signature_);
+  VotesUploader votes_uploader(&client_, false);
   EXPECT_CALL(mock_autofill_download_manager_,
               StartUploadRequest(_, _, _, _, _, _))
       .Times(0);
@@ -417,6 +413,7 @@ TEST_F(VotesUploaderTest, NoSingleUsernameDataNoUpload) {
 TEST_F(VotesUploaderTest, UploadSingleUsername) {
   for (bool credentials_saved : {false, true}) {
     SCOPED_TRACE(testing::Message("credentials_saved = ") << credentials_saved);
+    VotesUploader votes_uploader(&client_, false);
 
     MockFieldInfoManager mock_field_manager;
     ON_CALL(mock_field_manager, GetFieldType(_, _))
@@ -427,8 +424,6 @@ TEST_F(VotesUploaderTest, UploadSingleUsername) {
     constexpr autofill::FieldRendererId kUsernameRendererId(101);
     constexpr FieldSignature kUsernameFieldSignature(1234);
     constexpr FormSignature kFormSignature(1000);
-
-    VotesUploader votes_uploader(&client_, false, kFormSignature);
 
     FormPredictions form_predictions;
     form_predictions.form_signature = kFormSignature;
@@ -459,11 +454,10 @@ TEST_F(VotesUploaderTest, UploadSingleUsername) {
 }
 
 TEST_F(VotesUploaderTest, SaveSingleUsernameVote) {
+  VotesUploader votes_uploader(&client_, false);
   constexpr autofill::FieldRendererId kUsernameRendererId(101);
   constexpr autofill::FieldSignature kUsernameFieldSignature(1234);
   constexpr autofill::FormSignature kFormSignature(1000);
-
-  VotesUploader votes_uploader(&client_, false, kFormSignature);
 
   FormPredictions form_predictions;
   form_predictions.form_signature = kFormSignature;
@@ -499,11 +493,10 @@ TEST_F(VotesUploaderTest, SaveSingleUsernameVote) {
 }
 
 TEST_F(VotesUploaderTest, DontUploadSingleUsernameWhenAlreadyUploaded) {
+  VotesUploader votes_uploader(&client_, false);
   constexpr autofill::FieldRendererId kUsernameRendererId(101);
   constexpr autofill::FieldSignature kUsernameFieldSignature(1234);
   constexpr autofill::FormSignature kFormSignature(1000);
-
-  VotesUploader votes_uploader(&client_, false, kFormSignature);
 
   MockFieldInfoManager mock_field_manager;
   ON_CALL(client_, GetFieldInfoManager())
@@ -528,34 +521,6 @@ TEST_F(VotesUploaderTest, DontUploadSingleUsernameWhenAlreadyUploaded) {
   EXPECT_CALL(mock_autofill_download_manager_, StartUploadRequest).Times(0);
 
   votes_uploader.MaybeSendSingleUsernameVote(true /*credentials_saved*/);
-}
-
-// Tests that if the initial form signature stored by the votes uploader
-// differs from the form signature of the submitted form, upload
-// data should contain the initial form signature.
-TEST_F(VotesUploaderTest, UploadPasswordVoteOnDynamicallyChangedForm) {
-  PasswordForm initial_form;
-  FormData initial_form_data;
-  initial_form_data.name = base::ASCIIToUTF16("some_form");
-  FormFieldData initial_field_data;
-  initial_field_data.name = base::ASCIIToUTF16("some_field");
-  initial_form_data.fields.push_back(initial_field_data);
-  initial_form.form_data = initial_form_data;
-
-  // Create votes uploader and store the initially observed signature.
-  FormSignature initial_signature = CalculateFormSignature(initial_form_data);
-  VotesUploader votes_uploader(&client_, false, initial_signature);
-
-  EXPECT_CALL(
-      mock_autofill_download_manager_,
-      StartUploadRequest(SignatureIsSameAs(initial_form), _, _, _, _, _));
-
-  EXPECT_TRUE(initial_signature.value() !=
-              CalculateFormSignature(form_to_upload_.form_data).value());
-
-  // Upload password votes on a changed form.
-  EXPECT_TRUE(votes_uploader.UploadPasswordVote(
-      form_to_upload_, submitted_form_, PASSWORD, login_form_signature_));
 }
 
 }  // namespace password_manager

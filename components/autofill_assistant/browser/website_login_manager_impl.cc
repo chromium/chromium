@@ -180,9 +180,7 @@ class WebsiteLoginManagerImpl::UpdatePasswordRequest
                 client->IsCommittedMainFrameSecure(),
                 client->GetUkmSourceId(),
                 client->GetPrefs())),
-        votes_uploader_(client,
-                        true /* is_possible_change_password_form */,
-                        CalculateFormSignature(form_data_)) {
+        votes_uploader_(client, true /* is_possible_change_password_form */) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
     password_manager::PasswordStore::FormDigest digest(

@@ -77,8 +77,7 @@ class MultiStorePasswordSaveManagerTest : public testing::Test {
  public:
   MultiStorePasswordSaveManagerTest()
       : votes_uploader_(&client_,
-                        false /* is_possible_change_password_form */,
-                        autofill::FormSignature()) {
+                        false /* is_possible_change_password_form */) {
     GURL origin = GURL("https://accounts.google.com/a/ServiceLoginAuth");
     GURL action = GURL("https://accounts.google.com/a/ServiceLogin");
     GURL psl_origin = GURL("https://myaccounts.google.com/a/ServiceLoginAuth");
@@ -152,9 +151,6 @@ class MultiStorePasswordSaveManagerTest : public testing::Test {
     metrics_recorder_ = base::MakeRefCounted<PasswordFormMetricsRecorder>(
         client_.IsCommittedMainFrameSecure(), client_.GetUkmSourceId(),
         /*pref_service=*/nullptr);
-
-    votes_uploader_.set_initial_form_signature(
-        CalculateFormSignature(observed_form_));
 
     auto mock_profile_form_saver = std::make_unique<NiceMock<MockFormSaver>>();
     mock_profile_form_saver_ = mock_profile_form_saver.get();
