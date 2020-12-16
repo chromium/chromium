@@ -226,6 +226,7 @@ void WindowImpl::Init(HWND parent, const Rect& bounds) {
     bool still_alive = !!weak_this;
     base::debug::Alias(&still_alive);
     base::debug::Alias(&hwnd);
+    base::debug::Alias(&atom);
     bool got_create = got_create_;
     base::debug::Alias(&got_create);
     bool got_valid_hwnd = got_valid_hwnd_;
