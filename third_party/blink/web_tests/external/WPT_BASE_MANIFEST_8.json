@@ -58135,6 +58135,19 @@
        {}
       ]
      ],
+     "contain-size-064.html": [
+      "043a569eb40edbe576a6073a7686087d5bf43239",
+      [
+       null,
+       [
+        [
+         "/css/css-contain/reference/contain-size-064-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "contain-size-baseline-001.html": [
       "0ffed1b3b6a08831792b0a5ac40d1340c142c48d",
       [
@@ -112964,6 +112977,240 @@
         {}
        ]
       ],
+      "break-spaces-before-first-ideographic-char-001.html": [
+       "733da5334bdc11cdc1383ec2803480722e3ad575",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/white-space-break-spaces-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "break-spaces-before-first-ideographic-char-002.html": [
+       "faa69b6b01d19d9e58e9bab2f074b63fb3f2e2f4",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/white-space-break-spaces-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "break-spaces-before-first-ideographic-char-003.html": [
+       "71bb366668bad5abacc70cd9418880465c2fe4ad",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/white-space-break-spaces-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "break-spaces-before-first-ideographic-char-004.html": [
+       "9d8829b70ef1f640f193328d089c2cb531ed32ca",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/white-space-break-spaces-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "break-spaces-before-first-ideographic-char-005.html": [
+       "0bb0673fd867aa097fc49f6b0546549b1feb2af7",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/white-space-break-spaces-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "break-spaces-before-first-ideographic-char-006.html": [
+       "acd6fa20c6cead28a585a2a5dedc742fecaf06d7",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/white-space-break-spaces-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "break-spaces-before-first-ideographic-char-007.html": [
+       "c8c53b573776bd5856485e0b07739aa80175c63c",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/white-space-break-spaces-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "break-spaces-before-first-ideographic-char-008.html": [
+       "f3ffdf28d977673492a1ce5dedbf97553d1862e9",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/white-space-break-spaces-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "break-spaces-before-first-ideographic-char-009.html": [
+       "39118f4b4f7e2c415a4f1648ff185bf0c9ce7520",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/white-space-break-spaces-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "break-spaces-before-first-ideographic-char-010.html": [
+       "0fb4dccd7fcd574940ee0e16b0079ecf4bebe1e2",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/white-space-break-spaces-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "break-spaces-before-first-ideographic-char-011.html": [
+       "6aae96fd7bec4201f25927c1ed7d5e708033fab3",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/white-space-break-spaces-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "break-spaces-before-first-ideographic-char-012.html": [
+       "bcc68e038544d3151694806ce5ec6e7b6d9733bc",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/white-space-break-spaces-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "break-spaces-before-first-ideographic-char-013.html": [
+       "d888f6c9e40b5d45a3bdd516aa0ac837d2e43974",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/white-space-break-spaces-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "break-spaces-before-first-ideographic-char-014.html": [
+       "71bb366668bad5abacc70cd9418880465c2fe4ad",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/white-space-break-spaces-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "break-spaces-before-first-ideographic-char-015.html": [
+       "02ca9c2d1b55f747a6da48eeba1e7b7fff1a1702",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/white-space-break-spaces-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "break-spaces-before-first-ideographic-char-016.html": [
+       "39118f4b4f7e2c415a4f1648ff185bf0c9ce7520",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/white-space-break-spaces-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "break-spaces-before-first-ideographic-char-017.html": [
+       "df8a8d58c781d7183941ac7c0f99acbf07240348",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/white-space-break-spaces-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "break-spaces-before-first-ideographic-char-018.html": [
+       "d888f6c9e40b5d45a3bdd516aa0ac837d2e43974",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/white-space-break-spaces-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "break-spaces-newline-011.html": [
        "068119c29290fdded0dee4e7fa425af397706ea9",
        [
@@ -113114,6 +113361,136 @@
         [
          [
           "/css/css-text/white-space/reference/break-spaces-tab-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "break-spaces-with-ideographic-space-001.html": [
+       "60e0dcae302599810085eadae9440064cd654e55",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/pre-wrap-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "break-spaces-with-ideographic-space-002.html": [
+       "9d060e090448bb948ca07600bfde8c2cdcb04bd2",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/white-space-break-spaces-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "break-spaces-with-ideographic-space-003.html": [
+       "9d060e090448bb948ca07600bfde8c2cdcb04bd2",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/white-space-break-spaces-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "break-spaces-with-ideographic-space-004.html": [
+       "c61fcced0dd16c3294ef74613c2e518bd479bd2a",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/pre-wrap-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "break-spaces-with-ideographic-space-005.html": [
+       "7df2f06eec799b31fbcc64ec2f9bf270d4f7df08",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/white-space-break-spaces-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "break-spaces-with-ideographic-space-006.html": [
+       "a04970f9848d405d689298e7060d3971a6bbb390",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/white-space-break-spaces-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "break-spaces-with-ideographic-space-007.html": [
+       "44fb3d2fc6550de5f56c5bb37a71a5032f49ed08",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/white-space-break-spaces-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "break-spaces-with-ideographic-space-008.html": [
+       "7102439d4697e9d49e29afbc52ab9d2040c95af8",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/white-space-break-spaces-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "break-spaces-with-ideographic-space-009.html": [
+       "52bd181af6b2ce946be432b0495862af6077eb9c",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/white-space-break-spaces-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "break-spaces-with-ideographic-space-010.html": [
+       "d59afcf56d97d4fa5bf900085cd8da487321af8a",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/white-space-break-spaces-005-ref.html",
           "=="
          ]
         ],
@@ -115436,6 +115813,110 @@
          ],
          [
           "/css/css-text/white-space/reference/trailing-ideographic-space-alt-011-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "trailing-ideographic-space-break-spaces-001.html": [
+       "2ab5edffc0c6bee14382cb35c5960a36c62cee46",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/trailing-ideographic-space-break-spaces-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "trailing-ideographic-space-break-spaces-002.html": [
+       "423dd8e1dbdbd196851b1d6669d2ca1c2cdd041f",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/trailing-ideographic-space-break-spaces-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "trailing-ideographic-space-break-spaces-003.html": [
+       "fe09ba7eb3aea007c4f1f29aa3b628b22657f8a8",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/trailing-ideographic-space-break-spaces-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "trailing-ideographic-space-break-spaces-004.html": [
+       "bdc042e815c43f5368ca86fdbe1b78a22114f7b0",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/trailing-ideographic-space-break-spaces-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "trailing-ideographic-space-break-spaces-005.html": [
+       "2d31870cc27a0a7297fca04179896bb69e481d8a",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/trailing-ideographic-space-break-spaces-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "trailing-ideographic-space-break-spaces-006.html": [
+       "5ac80ad1b342888e35eaed187dc301eaef599b5a",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/trailing-ideographic-space-break-spaces-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "trailing-ideographic-space-break-spaces-007.html": [
+       "79c23acba98ab9e0de078c2ff6c3b427a8b02a5d",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/white-space-break-spaces-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "trailing-ideographic-space-break-spaces-008.html": [
+       "386083f10077fd6def5a45ccfe25f6a513fcd521",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/white-space-break-spaces-005-ref.html",
           "=="
          ]
         ],
@@ -183844,10 +184325,6 @@
       "8c15364f38e53cc1651f2f6c115c7b2fca3f4ba9",
       []
      ],
-     "system-color-compute-expected.txt": [
-      "167db12f958839786995ea43e8d2178a92d0ef48",
-      []
-     ],
      "t31-color-currentColor-b-ref.html": [
       "3013c7050c3c6f057e295923d43c87da6c09751f",
       []
@@ -184477,6 +184954,10 @@
       ],
       "contain-size-063-ref.html": [
        "9544ebcac23af0c2caaa279154878c10349990ae",
+       []
+      ],
+      "contain-size-064-ref.html": [
+       "6d2876ae9bce54ab51254b21036aeb70bdc3bfd6",
        []
       ],
       "contain-size-breaks-001-ref.html": [
@@ -204226,6 +204707,10 @@
        ],
        "trailing-ideographic-space-alt-011-ref.html": [
         "03023f5359c62f71138696f8e90c6468de65b9d8",
+        []
+       ],
+       "trailing-ideographic-space-break-spaces-001-ref.html": [
+        "ad629e94eec037153e8e2be3efba09571134a270",
         []
        ],
        "trailing-ogham-001-ref.html": [
@@ -256183,7 +256668,7 @@
         []
        ],
        "TextEvent.inputMode.keyboard.html": [
-        "9d679d708e77a6c0915b79f9565e47c8bb2e1199",
+        "472dd96ddb8548c7c82c3d5f83c2772a7e6bfad5",
         []
        ],
        "TextEvent.inputMode.paste.html": [
@@ -256827,7 +257312,7 @@
    "urlpattern": {
     "resources": {
      "urlpatterntestdata.json": [
-      "66038e03d23bbb14f6d890a02e3e8dbefcb5aefe",
+      "5a1a3ec01eb2d504c6dd76010c17a8a680e0dd67",
       []
      ]
     }
@@ -428501,7 +428986,7 @@
    },
    "urlpattern": {
     "urlpattern.https.any.js": [
-     "27b03d0ff03261d50721edb7b22b8205e0610238",
+     "3d47f57f1184cf06f112e4d4ef59ea6daca7740c",
      [
       "urlpattern/urlpattern.https.any.html",
       {
@@ -444334,7 +444819,7 @@
      ]
     ],
     "webGLCanvasContext_create_xrcompatible.https.html": [
-     "e3e83a50eeec07c090660a3cd2b83af41129123a",
+     "3cdbce99ccd140abe6911e0e3afce6e35382f211",
      [
       null,
       {}
