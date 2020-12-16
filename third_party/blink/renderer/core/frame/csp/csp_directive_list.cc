@@ -375,14 +375,12 @@ bool CSPDirectiveList::CheckSource(
       url.IsEmpty() ? policy_->FallbackUrlForPlugin() : url, redirect_status);
 }
 
-bool CSPDirectiveList::CheckMediaType(MediaListDirective* directive,
+bool CSPDirectiveList::CheckMediaType(const Vector<String>& plugin_types,
                                       const String& type,
                                       const String& type_attribute) const {
-  if (!directive)
-    return true;
   if (type_attribute.IsEmpty() || type_attribute.StripWhiteSpace() != type)
     return false;
-  return directive->Allows(type);
+  return plugin_types.Contains(type);
 }
 
 bool CSPDirectiveList::CheckEvalAndReportViolation(
@@ -446,14 +444,16 @@ bool CSPDirectiveList::CheckWasmEvalAndReportViolation(
 }
 
 bool CSPDirectiveList::CheckMediaTypeAndReportViolation(
-    MediaListDirective* directive,
+    const Vector<String>& plugin_types,
     const String& type,
     const String& type_attribute,
     const String& console_message) const {
-  if (CheckMediaType(directive, type, type_attribute))
+  if (CheckMediaType(plugin_types, type, type_attribute))
     return true;
 
-  String message = console_message + "\'" + directive->GetText() + "\'.";
+  String raw_directive = GetRawDirectiveForMessage(
+      raw_directives_, network::mojom::blink::CSPDirectiveName::PluginTypes);
+  String message = console_message + "\'" + raw_directive + "\'.";
   if (type_attribute.IsEmpty())
     message = message +
               " When enforcing the 'plugin-types' directive, the plugin's "
@@ -464,9 +464,8 @@ bool CSPDirectiveList::CheckMediaTypeAndReportViolation(
   // 'RedirectStatus::NoRedirect' is safe here, as we do the media type check
   // before actually loading data; this means that we shouldn't leak redirect
   // targets, as we won't have had a chance to redirect yet.
-  ReportViolation(directive->GetText(), CSPDirectiveName::PluginTypes,
-                  message + "\n", NullURL(),
-                  ResourceRequest::RedirectStatus::kNoRedirect);
+  ReportViolation(raw_directive, CSPDirectiveName::PluginTypes, message + "\n",
+                  NullURL(), ResourceRequest::RedirectStatus::kNoRedirect);
   return DenyIfEnforcingPolicy();
 }
 
@@ -718,14 +717,17 @@ bool CSPDirectiveList::AllowPluginType(
     const String& type_attribute,
     const KURL& url,
     ReportingDisposition reporting_disposition) const {
+  if (!plugin_types_.has_value())
+    return true;
+
   return reporting_disposition == ReportingDisposition::kReport
              ? CheckMediaTypeAndReportViolation(
-                   plugin_types_.Get(), type, type_attribute,
+                   plugin_types_.value(), type, type_attribute,
                    "Refused to load '" + url.ElidedString() + "' (MIME type '" +
                        type_attribute +
                        "') because it violates the following Content Security "
                        "Policy Directive: ")
-             : CheckMediaType(plugin_types_.Get(), type, type_attribute);
+             : CheckMediaType(plugin_types_.value(), type, type_attribute);
 }
 
 bool CSPDirectiveList::AllowFromSource(
@@ -850,9 +852,10 @@ bool CSPDirectiveList::AllowDynamicWorker() const {
   return CheckDynamic(worker_src, CSPDirectiveName::WorkerSrc);
 }
 
-const String& CSPDirectiveList::PluginTypesText() const {
+String CSPDirectiveList::PluginTypesText() const {
   DCHECK(HasPluginTypes());
-  return plugin_types_->GetText();
+  return GetRawDirectiveForMessage(
+      raw_directives_, network::mojom::blink::CSPDirectiveName::PluginTypes);
 }
 
 bool CSPDirectiveList::ShouldSendCSPHeader(ResourceType type) const {
@@ -1252,8 +1255,7 @@ void CSPDirectiveList::AddDirective(const String& name, const String& value) {
       object_src_ = CSPSourceListParse(name, value, policy_);
       return;
     case CSPDirectiveName::PluginTypes:
-      plugin_types_ =
-          MakeGarbageCollected<MediaListDirective>(name, value, policy_);
+      plugin_types_ = CSPPluginTypesParse(value, policy_);
       return;
     case CSPDirectiveName::PrefetchSrc:
       if (!policy_->ExperimentalFeaturesEnabled())
@@ -1525,7 +1527,6 @@ bool CSPDirectiveList::IsScriptRestrictionReasonable() const {
 
 void CSPDirectiveList::Trace(Visitor* visitor) const {
   visitor->Trace(policy_);
-  visitor->Trace(plugin_types_);
   visitor->Trace(trusted_types_);
   visitor->Trace(require_trusted_types_for_);
 }
