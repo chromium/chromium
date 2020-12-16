@@ -7,6 +7,7 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <time.h>
+#include <unistd.h>
 
 #include <deque>
 #include <set>
@@ -90,6 +91,7 @@ constexpr base::TimeDelta kConnectSleepDurationInitial =
 
 base::Optional<base::TimeDelta> g_connect_timeout_limit_for_testing;
 base::Optional<base::TimeDelta> g_connect_sleep_duration_initial_for_testing;
+base::Optional<int> g_boot_notification_server_fd;
 bool g_enable_adb_over_usb_for_testing = false;
 
 chromeos::ConciergeClient* GetConciergeClient() {
@@ -300,6 +302,9 @@ const sockaddr_un* GetArcVmBootNotificationServerAddress() {
 // Returns the connected socket fd if successful, or else an invalid fd. This
 // function can only be called with base::MayBlock().
 base::ScopedFD ConnectToArcVmBootNotificationServer() {
+  if (g_boot_notification_server_fd)
+    return base::ScopedFD(HANDLE_EINTR(dup(*g_boot_notification_server_fd)));
+
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
   base::ScopedFD fd(socket(AF_UNIX, SOCK_STREAM, 0));
@@ -358,8 +363,6 @@ bool SendUpgradePropsToArcVmBootNotificationServer(
     return false;
 
   if (!base::WriteFileDescriptor(fd.get(), props.c_str(), props.size())) {
-    // TODO(wvk): Add a unittest to cover this failure once the UpgradeArc flow
-    // requires this function to run successfully.
     PLOG(ERROR) << "Unable to write props to "
                 << kArcVmBootNotificationServerSocketPath;
     return false;
@@ -858,6 +861,10 @@ void SetArcVmBootNotificationServerAddressForTesting(
 
   g_connect_timeout_limit_for_testing = connect_timeout_limit;
   g_connect_sleep_duration_initial_for_testing = connect_sleep_duration_initial;
+}
+
+void SetArcVmBootNotificationServerFdForTesting(base::Optional<int> fd) {
+  g_boot_notification_server_fd = fd;
 }
 
 void EnableAdbOverUsbForTesting() {

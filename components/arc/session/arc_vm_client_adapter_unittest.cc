@@ -6,6 +6,7 @@
 
 #include <sys/socket.h>
 #include <sys/un.h>
+#include <unistd.h>
 
 #include <algorithm>
 #include <memory>
@@ -272,6 +273,7 @@ class ArcVmClientAdapterTest : public testing::Test,
 
     // Reset to the original behavior.
     RemoveUpstartStartStopJobFailures();
+    SetArcVmBootNotificationServerFdForTesting(base::nullopt);
 
     boot_server_ = std::make_unique<TestArcVmBootNotificationServer>();
     boot_server_->Start();
@@ -1406,6 +1408,36 @@ TEST_F(ArcVmClientAdapterTest, TestBootNotificationServerIsNotListening) {
                                            base::TimeDelta::FromSeconds(26));
 
   StartMiniArcWithParams(false, {});
+}
+
+// Tests that UpgradeArc() still succeeds even when sending the upgrade props
+// to the boot notification server fails.
+// TODO(wvk): Once mini-VM is implemented, UpgradeArc(true) should be rewritten
+//   to UpgradeArc(false).
+TEST_F(ArcVmClientAdapterTest, UpgradeArc_SendPropFail) {
+  SetValidUserInfo();
+  StartMiniArc();
+
+  // Let ConnectToArcVmBootNotificationServer() return an invalid FD.
+  SetArcVmBootNotificationServerFdForTesting(-1);
+
+  UpgradeArc(true);
+  ASSERT_TRUE(GetTestConciergeClient()->start_arc_vm_called());
+}
+
+// Tests that UpgradeArc() still succeeds even when sending the upgrade props
+// to the boot notification server fails.
+// TODO(wvk): Rewrite this test too.
+TEST_F(ArcVmClientAdapterTest, UpgradeArc_SendPropFailNotWritable) {
+  SetValidUserInfo();
+  StartMiniArc();
+
+  // Let ConnectToArcVmBootNotificationServer() return dup(STDIN_FILENO) which
+  // is not writable.
+  SetArcVmBootNotificationServerFdForTesting(STDIN_FILENO);
+
+  UpgradeArc(true);
+  ASSERT_TRUE(GetTestConciergeClient()->start_arc_vm_called());
 }
 
 struct DalvikMemoryProfileTestParam {

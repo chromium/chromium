@@ -38,6 +38,9 @@ void SetArcVmBootNotificationServerAddressForTesting(
     base::TimeDelta connect_timeout_limit,
     base::TimeDelta connect_sleep_duration_initial);
 
+// Sets the an FD ConnectToArcVmBootNotificationServer() returns for testing.
+void SetArcVmBootNotificationServerFdForTesting(base::Optional<int> fd);
+
 // Enable adb-over-usb and let the adapter start the support daemon for testing.
 void EnableAdbOverUsbForTesting();
 
