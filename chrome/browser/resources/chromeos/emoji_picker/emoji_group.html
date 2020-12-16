@@ -1,0 +1,27 @@
+<style>
+  .emoji-group-emoji {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .emoji-button {
+    font-size: 17px;
+    height: 20px;
+    margin: 8px;
+    text-align: center;
+    width: 20px;
+  }
+  .emoji-button.variants {
+    background-color: red;
+  }
+</style>
+
+<div class="emoji-group">
+  <div class="emoji-group-heading">[[data.group]]</div>
+  <div class="emoji-group-emoji">
+    <template is="dom-repeat" items="[[data.emoji]]">
+      <div class$="[[_className(item.alternates)]]">
+        [[_renderEmoji(item.base)]]
+      </div>
+    </template>
+  </div>
+</div>
