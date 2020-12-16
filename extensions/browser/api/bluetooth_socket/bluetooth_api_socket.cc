@@ -109,7 +109,7 @@ bool BluetoothApiSocket::IsPersistent() const {
 
 void BluetoothApiSocket::Receive(
     int count,
-    const ReceiveCompletionCallback& success_callback,
+    ReceiveCompletionCallback success_callback,
     const ErrorCompletionCallback& error_callback) {
   DCHECK_CURRENTLY_ON(kThreadId);
 
@@ -119,7 +119,7 @@ void BluetoothApiSocket::Receive(
     return;
   }
 
-  socket_->Receive(count, success_callback,
+  socket_->Receive(count, std::move(success_callback),
                    base::BindOnce(&OnSocketReceiveError, error_callback));
 }
 
@@ -169,9 +169,8 @@ void BluetoothApiSocket::OnSocketSendError(
   std::move(error_callback).Run(BluetoothApiSocket::kSystemError, message);
 }
 
-void BluetoothApiSocket::Accept(
-    const AcceptCompletionCallback& success_callback,
-    const ErrorCompletionCallback& error_callback) {
+void BluetoothApiSocket::Accept(AcceptCompletionCallback success_callback,
+                                const ErrorCompletionCallback& error_callback) {
   DCHECK_CURRENTLY_ON(kThreadId);
 
   if (!socket_.get() || IsConnected()) {
@@ -180,7 +179,7 @@ void BluetoothApiSocket::Accept(
     return;
   }
 
-  socket_->Accept(success_callback,
+  socket_->Accept(std::move(success_callback),
                   base::BindOnce(&OnSocketAcceptError, error_callback));
 }
 
