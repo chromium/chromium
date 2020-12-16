@@ -1,0 +1,6 @@
+Tests for certain commands are only available at the top-level target
+Page.captureSnapshot: Command can only be executed on top-level targets
+Page.captureScreenshot: Command can only be executed on top-level targets
+Page.startScreencast: Internal error
+Page.setDownloadBehavior: Command can only be executed on top-level targets
+
