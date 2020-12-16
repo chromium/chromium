@@ -5,7 +5,9 @@
 #ifndef CHROMEOS_SERVICES_IME_DECODER_SYSTEM_ENGINE_H_
 #define CHROMEOS_SERVICES_IME_DECODER_SYSTEM_ENGINE_H_
 
+#include "base/optional.h"
 #include "base/scoped_native_library.h"
+#include "chromeos/services/ime/ime_decoder.h"
 #include "chromeos/services/ime/input_engine.h"
 #include "chromeos/services/ime/public/cpp/shared_lib/interfaces.h"
 #include "chromeos/services/ime/public/mojom/input_engine.mojom.h"
@@ -13,8 +15,9 @@
 namespace chromeos {
 namespace ime {
 
-// Only used in tests to set a fake `ImeEngineMainEntry`.
-void FakeEngineMainEntryForTesting(ImeEngineMainEntry* main_entry);
+// Only used in tests to set a fake `ImeDecoder::EntryPoints`.
+void FakeDecoderEntryPointsForTesting(
+    const ImeDecoder::EntryPoints& decoder_entry_points);
 
 // An enhanced implementation of the basic InputEngine that uses a built-in
 // shared library for handling key events.
@@ -57,9 +60,9 @@ class SystemEngine : public InputEngine {
   void OnReply(const std::vector<uint8_t>& message,
                mojo::Remote<mojom::InputChannel>& remote);
 
-  ImeEngineMainEntry* engine_main_entry_ = nullptr;
-
   ImeCrosPlatform* platform_ = nullptr;
+
+  base::Optional<ImeDecoder::EntryPoints> decoder_entry_points_;
 
   mojo::ReceiverSet<mojom::InputChannel> decoder_channel_receivers_;
 

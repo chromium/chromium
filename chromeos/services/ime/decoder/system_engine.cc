@@ -9,7 +9,6 @@
 #include "base/files/file_util.h"
 #include "chromeos/services/ime/constants.h"
 #include "chromeos/services/ime/decoder/proto_conversion.h"
-#include "chromeos/services/ime/ime_decoder.h"
 #include "chromeos/services/ime/public/cpp/buildflags.h"
 #include "chromeos/services/ime/public/proto/messages.pb.h"
 
@@ -18,7 +17,7 @@ namespace ime {
 
 namespace {
 
-ImeEngineMainEntry* g_fake_main_entry_for_testing = nullptr;
+base::Optional<ImeDecoder::EntryPoints> g_fake_decoder_entry_points_for_testing;
 
 using ReplyCallback =
     base::RepeatingCallback<void(const std::vector<uint8_t>&,
@@ -79,13 +78,14 @@ std::vector<uint8_t> WrapAndSerializeMessage(PublicMessage message) {
 
 }  // namespace
 
-void FakeEngineMainEntryForTesting(ImeEngineMainEntry* main_entry) {
-  g_fake_main_entry_for_testing = main_entry;
+void FakeDecoderEntryPointsForTesting(  // IN-TEST
+    const ImeDecoder::EntryPoints& decoder_entry_points) {
+  g_fake_decoder_entry_points_for_testing = decoder_entry_points;
 }
 
 SystemEngine::SystemEngine(ImeCrosPlatform* platform) : platform_(platform) {
-  if (g_fake_main_entry_for_testing) {
-    engine_main_entry_ = g_fake_main_entry_for_testing;
+  if (g_fake_decoder_entry_points_for_testing) {
+    decoder_entry_points_ = g_fake_decoder_entry_points_for_testing;
   } else {
     if (!TryLoadDecoder()) {
       LOG(WARNING) << "DecoderEngine INIT INCOMPLETED.";
@@ -96,12 +96,11 @@ SystemEngine::SystemEngine(ImeCrosPlatform* platform) : platform_(platform) {
 SystemEngine::~SystemEngine() {}
 
 bool SystemEngine::TryLoadDecoder() {
-  if (engine_main_entry_)
-    return true;
-
   auto* decoder = ImeDecoder::GetInstance();
-  if (decoder->GetStatus() == ImeDecoder::Status::kSuccess) {
-    engine_main_entry_ = decoder->CreateMainEntry(platform_);
+  if (decoder->GetStatus() == ImeDecoder::Status::kSuccess &&
+      decoder->GetEntryPoints().is_ready) {
+    decoder_entry_points_ = decoder->GetEntryPoints();
+    decoder_entry_points_->init_once(platform_);
     return true;
   }
   return false;
@@ -116,7 +115,7 @@ bool SystemEngine::BindRequest(
     // Activates an IME engine via the shared library. Passing a
     // |ClientDelegate| for engine instance created by the shared library to
     // make safe calls on the client.
-    if (engine_main_entry_->ActivateIme(
+    if (decoder_entry_points_->activate_ime(
             ime_spec.c_str(),
             new ClientDelegate(ime_spec, std::move(remote),
                                base::BindRepeating(&SystemEngine::OnReply,
@@ -134,8 +133,8 @@ bool SystemEngine::BindRequest(
 }
 
 bool SystemEngine::IsImeSupportedByDecoder(const std::string& ime_spec) {
-  return engine_main_entry_ &&
-         engine_main_entry_->IsImeSupported(ime_spec.c_str());
+  return decoder_entry_points_ &&
+         decoder_entry_points_->supports(ime_spec.c_str());
 }
 
 void SystemEngine::OnInputMethodChanged(const std::string& engine_id) {
@@ -201,8 +200,8 @@ void SystemEngine::ProcessMessage(const std::vector<uint8_t>& message,
   std::vector<uint8_t> result;
 
   // Handle message via corresponding functions of loaded decoder.
-  if (engine_main_entry_)
-    engine_main_entry_->Process(message.data(), message.size());
+  if (decoder_entry_points_)
+    decoder_entry_points_->process(message.data(), message.size());
 
   std::move(callback).Run(result);
 }

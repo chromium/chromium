@@ -33,15 +33,23 @@ MATCHER_P(EqualsProto,
 
 constexpr char kImeSpec[] = "xkb:us::eng";
 
-class MockImeEngineMainEntry : public ImeEngineMainEntry {
+class MockDecoderEntryPoints;
+
+// The mock decoder entry points has to be available globally because
+// ImeDecoder::EntryPoints cannot contain member functions, so the only way to
+// have a stateful mock is to have a global reference to it.
+MockDecoderEntryPoints* g_mock_decoder_entry_points = nullptr;
+
+class MockDecoderEntryPoints {
  public:
-  bool IsImeSupported(const char*) final { return true; }
-  bool ActivateIme(const char*, ImeClientDelegate* delegate) final {
+  MockDecoderEntryPoints() { g_mock_decoder_entry_points = this; }
+  ~MockDecoderEntryPoints() { g_mock_decoder_entry_points = nullptr; }
+
+  bool ActivateIme(const char*, ImeClientDelegate* delegate) {
     delegate_ = delegate;
     return true;
   }
   MOCK_METHOD(void, Process, (const uint8_t* data, size_t size));
-  void Destroy() final {}
 
   ImeClientDelegate* delegate() const { return delegate_; }
 
@@ -49,18 +57,31 @@ class MockImeEngineMainEntry : public ImeEngineMainEntry {
   ImeClientDelegate* delegate_;
 };
 
+ImeDecoder::EntryPoints CreateDecoderEntryPoints() {
+  ImeDecoder::EntryPoints entry_points;
+  entry_points.init_once = [](ImeCrosPlatform* platform) {};
+  entry_points.supports = [](const char* ime_spec) { return true; };
+  entry_points.activate_ime = [](const char* ime_spec,
+                                 ImeClientDelegate* delegate) {
+    return g_mock_decoder_entry_points->ActivateIme(ime_spec, delegate);
+  };
+  entry_points.process = [](const uint8_t* data, size_t size) {
+    return g_mock_decoder_entry_points->Process(data, size);
+  };
+  entry_points.close = []() {};
+  return entry_points;
+}
+
 // Sets up the test environment for Mojo and inject a mock ImeEngineMainEntry.
 class SystemEngineTest : public testing::Test {
  protected:
   void SetUp() final {
-    FakeEngineMainEntryForTesting(&mock_main_entry_);
+    FakeDecoderEntryPointsForTesting(CreateDecoderEntryPoints());
     scoped_feature_list_.InitWithFeatures(
         {chromeos::features::kSystemLatinPhysicalTyping}, {});
   }
 
-  void TearDown() final { FakeEngineMainEntryForTesting(nullptr); }
-
-  MockImeEngineMainEntry mock_main_entry_;
+  MockDecoderEntryPoints decoder_entry_points_;
 
  private:
   // Mojo calls need a SequencedTaskRunner.
@@ -91,7 +112,7 @@ TEST_F(SystemEngineTest, OnInputMethodChangedSendsMessageToSharedLib) {
   *expected_proto.mutable_public_message() =
       OnInputMethodChangedToProto(/*seq_id=*/0, "xkb:us::eng");
 
-  EXPECT_CALL(mock_main_entry_, Process).With(EqualsProto(expected_proto));
+  EXPECT_CALL(decoder_entry_points_, Process).With(EqualsProto(expected_proto));
 
   client->OnInputMethodChanged("xkb:us::eng");
   client.FlushForTesting();
@@ -112,7 +133,7 @@ TEST_F(SystemEngineTest, OnFocusSendsMessageToSharedLib) {
   *expected_proto.mutable_public_message() =
       OnFocusToProto(/*seq_id=*/0, info.Clone());
 
-  EXPECT_CALL(mock_main_entry_, Process).With(EqualsProto(expected_proto));
+  EXPECT_CALL(decoder_entry_points_, Process).With(EqualsProto(expected_proto));
 
   client->OnFocus(info.Clone());
   client.FlushForTesting();
@@ -127,7 +148,7 @@ TEST_F(SystemEngineTest, OnBlurSendsMessageToSharedLib) {
   ime::Wrapper expected_proto;
   *expected_proto.mutable_public_message() = OnBlurToProto(/*seq_id=*/0);
 
-  EXPECT_CALL(mock_main_entry_, Process).With(EqualsProto(expected_proto));
+  EXPECT_CALL(decoder_entry_points_, Process).With(EqualsProto(expected_proto));
 
   client->OnBlur();
   client.FlushForTesting();
@@ -147,7 +168,7 @@ TEST_F(SystemEngineTest, OnKeyEventRepliesWithCallback) {
 
   // Set up the mock shared library to reply to the key event.
   bool consumed_by_test = false;
-  EXPECT_CALL(mock_main_entry_, Process)
+  EXPECT_CALL(decoder_entry_points_, Process)
       .With(EqualsProto(expected_proto))
       .WillOnce([this]() {
         ime::Wrapper wrapper;
@@ -156,7 +177,7 @@ TEST_F(SystemEngineTest, OnKeyEventRepliesWithCallback) {
             ->set_consumed(true);
         std::vector<uint8_t> output(wrapper.ByteSizeLong());
         wrapper.SerializeToArray(output.data(), output.size());
-        mock_main_entry_.delegate()->Process(output.data(), output.size());
+        decoder_entry_points_.delegate()->Process(output.data(), output.size());
       });
 
   client->OnKeyEvent(
@@ -179,7 +200,7 @@ TEST_F(SystemEngineTest, OnSurroundingTextChangedSendsMessageToSharedLib) {
   *expected_proto.mutable_public_message() = OnSurroundingTextChangedToProto(
       /*seq_id=*/0, "hello", /*offset=*/1, selection->Clone());
 
-  EXPECT_CALL(mock_main_entry_, Process).With(EqualsProto(expected_proto));
+  EXPECT_CALL(decoder_entry_points_, Process).With(EqualsProto(expected_proto));
 
   client->OnSurroundingTextChanged("hello", /*offset=*/1, selection->Clone());
   client.FlushForTesting();
@@ -195,7 +216,7 @@ TEST_F(SystemEngineTest, OnCompositionCanceledSendsMessageToSharedLib) {
   *expected_proto.mutable_public_message() =
       OnCompositionCanceledToProto(/*seq_id=*/0);
 
-  EXPECT_CALL(mock_main_entry_, Process).With(EqualsProto(expected_proto));
+  EXPECT_CALL(decoder_entry_points_, Process).With(EqualsProto(expected_proto));
 
   client->OnCompositionCanceled();
   client.FlushForTesting();
@@ -213,7 +234,7 @@ TEST_F(SystemEngineTest, CommitTextSendsMessageToReceiver) {
   EXPECT_CALL(mock_channel, CommitText("hello"));
 
   const std::string serialized = proto.SerializeAsString();
-  mock_main_entry_.delegate()->Process(
+  decoder_entry_points_.delegate()->Process(
       reinterpret_cast<const uint8_t*>(serialized.data()), serialized.size());
   mock_channel.FlushForTesting();
 }
@@ -230,7 +251,7 @@ TEST_F(SystemEngineTest, SetCompositionSendsMessageToReceiver) {
   EXPECT_CALL(mock_channel, SetComposition("hello"));
 
   const std::string serialized = proto.SerializeAsString();
-  mock_main_entry_.delegate()->Process(
+  decoder_entry_points_.delegate()->Process(
       reinterpret_cast<const uint8_t*>(serialized.data()), serialized.size());
   mock_channel.FlushForTesting();
 }
@@ -252,7 +273,7 @@ TEST_F(SystemEngineTest, SetCompositionRangeSendsMessageToReceiver) {
   EXPECT_CALL(mock_channel, SetCompositionRange(2, 6));
 
   const std::string serialized = proto.SerializeAsString();
-  mock_main_entry_.delegate()->Process(
+  decoder_entry_points_.delegate()->Process(
       reinterpret_cast<const uint8_t*>(serialized.data()), serialized.size());
   mock_channel.FlushForTesting();
 }
@@ -270,7 +291,7 @@ TEST_F(SystemEngineTest, FinishCompositionSendsMessageToReceiver) {
   EXPECT_CALL(mock_channel, FinishComposition());
 
   const std::string serialized = proto.SerializeAsString();
-  mock_main_entry_.delegate()->Process(
+  decoder_entry_points_.delegate()->Process(
       reinterpret_cast<const uint8_t*>(serialized.data()), serialized.size());
   mock_channel.FlushForTesting();
 }
@@ -292,7 +313,7 @@ TEST_F(SystemEngineTest, DeleteSurroundingTextSendsMessageToReceiver) {
   EXPECT_CALL(mock_channel, DeleteSurroundingText(2, 6));
 
   const std::string serialized = proto.SerializeAsString();
-  mock_main_entry_.delegate()->Process(
+  decoder_entry_points_.delegate()->Process(
       reinterpret_cast<const uint8_t*>(serialized.data()), serialized.size());
   mock_channel.FlushForTesting();
 }
