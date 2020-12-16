@@ -286,7 +286,11 @@ void HTMLImageElement::ParseAttribute(
           params.new_value, kSupportReferrerPolicyLegacyKeywords,
           &referrer_policy_);
     }
-
+    if (GetDocument().GetExecutionContext()->IsSecureContext() &&
+        referrer_policy_ == network::mojom::ReferrerPolicy::kAlways) {
+      UseCounter::Count(GetDocument(),
+                        WebFeature::kSetReferrerPolicyUnsafeUrlInSecureContext);
+    }
     if (referrer_policy_ != old_referrer_policy) {
       GetImageLoader().UpdateFromElement(
           ImageLoader::kUpdateIgnorePreviousError, referrer_policy_);

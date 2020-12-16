@@ -406,6 +406,11 @@ void ExecutionContext::SetReferrerPolicy(
   UseCounter::Count(this, WebFeature::kSetReferrerPolicy);
   if (referrer_policy_ != network::mojom::ReferrerPolicy::kDefault)
     UseCounter::Count(this, WebFeature::kResetReferrerPolicy);
+  if (IsSecureContext() &&
+      referrer_policy == network::mojom::ReferrerPolicy::kAlways) {
+    UseCounter::Count(this,
+                      WebFeature::kSetReferrerPolicyUnsafeUrlInSecureContext);
+  }
 
   referrer_policy_ = referrer_policy;
 }

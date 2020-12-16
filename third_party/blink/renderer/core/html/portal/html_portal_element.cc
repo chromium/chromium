@@ -494,6 +494,12 @@ void HTMLPortalElement::ParseAttribute(
       SecurityPolicy::ReferrerPolicyFromString(
           params.new_value, kDoNotSupportReferrerPolicyLegacyKeywords,
           &referrer_policy_);
+      if (GetDocument().GetExecutionContext()->IsSecureContext() &&
+          referrer_policy_ == network::mojom::ReferrerPolicy::kAlways) {
+        UseCounter::Count(
+            GetDocument(),
+            WebFeature::kSetReferrerPolicyUnsafeUrlInSecureContext);
+      }
     }
     return;
   }

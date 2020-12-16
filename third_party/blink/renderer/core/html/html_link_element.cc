@@ -122,6 +122,12 @@ void HTMLLinkElement::ParseAttribute(
           value, kDoNotSupportReferrerPolicyLegacyKeywords, &referrer_policy_);
       UseCounter::Count(GetDocument(),
                         WebFeature::kHTMLLinkElementReferrerPolicyAttribute);
+      if (GetDocument().GetExecutionContext()->IsSecureContext() &&
+          referrer_policy_ == network::mojom::ReferrerPolicy::kAlways) {
+        UseCounter::Count(
+            GetDocument(),
+            WebFeature::kSetReferrerPolicyUnsafeUrlInSecureContext);
+      }
     }
   } else if (name == html_names::kSizesAttr) {
     sizes_->DidUpdateAttributeValue(params.old_value, value);

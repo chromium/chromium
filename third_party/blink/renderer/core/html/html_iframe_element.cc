@@ -184,6 +184,12 @@ void HTMLIFrameElement::ParseAttribute(
           value, kSupportReferrerPolicyLegacyKeywords, &referrer_policy_);
       UseCounter::Count(GetDocument(),
                         WebFeature::kHTMLIFrameElementReferrerPolicyAttribute);
+      if (GetDocument().GetExecutionContext()->IsSecureContext() &&
+          referrer_policy_ == network::mojom::ReferrerPolicy::kAlways) {
+        UseCounter::Count(
+            GetDocument(),
+            WebFeature::kSetReferrerPolicyUnsafeUrlInSecureContext);
+      }
     }
   } else if (name == html_names::kAllowfullscreenAttr) {
     bool old_allow_fullscreen = allow_fullscreen_;

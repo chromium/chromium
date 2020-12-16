@@ -3064,6 +3064,7 @@ enum WebFeature {
   kCrossOriginSubframeWithoutEmbeddingControl = 3742,
   kReadableStreamWithByteSource = 3743,
   kReadableStreamBYOBReader = 3744,
+  kSetReferrerPolicyUnsafeUrlInSecureContext = 3745,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
