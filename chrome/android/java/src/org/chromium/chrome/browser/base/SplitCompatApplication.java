@@ -174,9 +174,6 @@ public class SplitCompatApplication extends Application {
             // Disable MemoryPressureMonitor polling when Chrome goes to the background.
             ApplicationStatus.registerApplicationStateListener(
                     SplitCompatApplication::updateMemoryPressurePolling);
-
-            // Initializes the support for dynamic feature modules (browser only).
-            ModuleUtil.initApplication();
         }
 
         BuildInfo.setFirebaseAppId(FirebaseConfig.getFirebaseAppId());
