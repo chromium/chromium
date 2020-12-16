@@ -57,12 +57,10 @@ struct ResultMetadata {
   ~ResultMetadata();
 
   base::Optional<uint8_t> ae_mode;
-  base::Optional<uint8_t> af_mode;
   base::Optional<uint8_t> awb_mode;
   base::Optional<int32_t> brightness;
   base::Optional<int32_t> contrast;
   base::Optional<int64_t> exposure_time;
-  base::Optional<float> focus_distance;
   base::Optional<int32_t> pan;
   base::Optional<int32_t> saturation;
   base::Optional<int32_t> sharpness;
@@ -280,7 +278,6 @@ class CAPTURE_EXPORT CameraDeviceDelegate final
   bool is_set_brightness_;
   bool is_set_contrast_;
   bool is_set_exposure_time_;
-  bool is_set_focus_distance_;
   bool is_set_pan_;
   bool is_set_saturation_;
   bool is_set_sharpness_;
