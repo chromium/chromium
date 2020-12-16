@@ -6,6 +6,8 @@
 
 """Generate SWA files app main.html from files app main.html"""
 
+from __future__ import print_function
+
 import fileinput
 import optparse
 import os
