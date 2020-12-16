@@ -185,7 +185,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
   ImageData* createImageData(int width, int height, ExceptionState&) const;
   ImageData* createImageData(unsigned,
                              unsigned,
-                             ImageDataColorSettings*,
+                             ImageDataSettings*,
                              ExceptionState&) const;
 
   // For deferred canvases this will have the side effect of drawing recorded
@@ -195,13 +195,13 @@ class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
                           int sy,
                           int sw,
                           int sh,
-                          ImageDataColorSettings*,
+                          ImageDataSettings*,
                           ExceptionState&);
   virtual ImageData* getImageDataInternal(int sx,
                                           int sy,
                                           int sw,
                                           int sh,
-                                          ImageDataColorSettings*,
+                                          ImageDataSettings*,
                                           ExceptionState&);
 
   void putImageData(ImageData*, int dx, int dy, ExceptionState&);

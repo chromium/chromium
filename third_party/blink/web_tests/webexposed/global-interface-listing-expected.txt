@@ -4541,7 +4541,7 @@ interface ImageData
     getter height
     getter width
     method constructor
-    method getColorSettings
+    method getSettings
 interface ImageDecoder
     static method canDecodeType
     attribute @@toStringTag

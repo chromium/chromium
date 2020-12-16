@@ -31,7 +31,7 @@
 
 #include "base/numerics/checked_math.h"
 #include "third_party/blink/renderer/bindings/core/v8/uint8_clamped_array_or_uint16_array_or_float32_array.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_image_data_color_settings.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_image_data_settings.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap_source.h"
@@ -69,14 +69,13 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static ImageData* Create(const IntSize&,
-                           const ImageDataColorSettings* = nullptr);
+  static ImageData* Create(const IntSize&, const ImageDataSettings* = nullptr);
   static ImageData* Create(const IntSize&,
                            CanvasColorSpace,
                            ImageDataStorageFormat);
   static ImageData* Create(const IntSize&,
                            NotShared<DOMArrayBufferView>,
-                           const ImageDataColorSettings* = nullptr);
+                           const ImageDataSettings* = nullptr);
 
   static ImageData* Create(unsigned width, unsigned height, ExceptionState&);
   static ImageData* Create(NotShared<DOMUint8ClampedArray>,
@@ -103,24 +102,24 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
 
   static ImageData* CreateImageData(unsigned width,
                                     unsigned height,
-                                    const ImageDataColorSettings*,
+                                    const ImageDataSettings*,
                                     ExceptionState&);
   static ImageData* CreateImageData(ImageDataArray&,
                                     unsigned width,
                                     unsigned height,
-                                    ImageDataColorSettings*,
+                                    ImageDataSettings*,
                                     ExceptionState&);
 
-  ImageDataColorSettings* getColorSettings() { return color_settings_; }
+  ImageDataSettings* getSettings() { return color_settings_; }
 
   static ImageData* CreateForTest(const IntSize&);
   static ImageData* CreateForTest(const IntSize&,
                                   NotShared<DOMArrayBufferView>,
-                                  const ImageDataColorSettings* = nullptr);
+                                  const ImageDataSettings* = nullptr);
 
   ImageData(const IntSize&,
             NotShared<DOMArrayBufferView>,
-            const ImageDataColorSettings* = nullptr);
+            const ImageDataSettings* = nullptr);
 
   ImageData* CropRect(const IntRect&, bool flip_y = false);
 
@@ -164,12 +163,12 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
       const unsigned& = 0,
       const unsigned& = 0,
       const NotShared<DOMArrayBufferView> = NotShared<DOMArrayBufferView>(),
-      const ImageDataColorSettings* = nullptr,
+      const ImageDataSettings* = nullptr,
       ExceptionState* = nullptr);
 
  private:
   IntSize size_;
-  Member<ImageDataColorSettings> color_settings_;
+  Member<ImageDataSettings> color_settings_;
   ImageDataArray data_;
   NotShared<DOMUint8ClampedArray> data_u8_;
   NotShared<DOMUint16Array> data_u16_;

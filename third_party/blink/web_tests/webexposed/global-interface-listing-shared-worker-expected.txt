@@ -724,7 +724,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter height
 [Worker]     getter width
 [Worker]     method constructor
-[Worker]     method getColorSettings
+[Worker]     method getSettings
 [Worker] interface Lock
 [Worker]     attribute @@toStringTag
 [Worker]     getter mode

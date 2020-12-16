@@ -101,7 +101,7 @@ TEST_F(ImageDataTest, TestCropRect) {
     else
       data_array = data_f32;
 
-    ImageDataColorSettings* color_settings = ImageDataColorSettings::Create();
+    ImageDataSettings* color_settings = ImageDataSettings::Create();
     color_settings->setStorageFormat(image_data_storage_format_names[i]);
     image_data = ImageData::CreateForTest(IntSize(width, height), data_array,
                                           color_settings);

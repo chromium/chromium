@@ -27,7 +27,7 @@ function run_test(canvas_color_space, canvas_pixel_format, data_color_space, dat
   var pixel_expected;
   if (data_color_space == 'srgb')
       pixel_expected = color_srgb_f32;
-  else if (data_color_space == 'p3')
+  else if (data_color_space == 'display-p3')
       pixel_expected = color_p3_f32;
   else if (data_color_space == 'rec2020')
       pixel_expected = color_rec2020_f32;
@@ -63,7 +63,7 @@ function run_test(canvas_color_space, canvas_pixel_format, data_color_space, dat
 }
 
 function drawThenGetImageData() {
-  color_spaces = ['srgb', 'p3', 'rec2020'];
+  color_spaces = ['srgb', 'display-p3', 'rec2020'];
   canvas_pixel_formats = ['uint8', 'float16'];
   image_data_pixel_formats = ['uint8', 'uint16', 'float32'];
   var passed = true;

@@ -695,7 +695,7 @@ ImageData* CanvasRenderingContext2D::getImageDataInternal(
     int sy,
     int sw,
     int sh,
-    ImageDataColorSettings* color_settings,
+    ImageDataSettings* color_settings,
     ExceptionState& exception_state) {
   const IdentifiableSurface surface = IdentifiableSurface::FromTypeAndToken(
       IdentifiableSurface::Type::kCanvasReadback, GetContextType());

@@ -7,7 +7,7 @@
 var xWidth = xHeight = 10;
 
 function checkImageData(expectedColorSetting, imageData) {
-  var imageDataColorSettings = imageData.getColorSettings();
+  var imageDataColorSettings = imageData.getSettings();
   assert_equals(expectedColorSetting.colorSpace, imageDataColorSettings.colorSpace);
   assert_equals(expectedColorSetting.storageFormat, imageDataColorSettings.storageFormat);
   assert_equals(imageData.data.length, 4 * xWidth * xHeight);
@@ -36,7 +36,7 @@ function runTestCreateImageData(canvasColorSettings) {
   checkImageData(imageSetting, imageData);
 
   imageData = ctx.createImageData(helperImageData);
-  checkImageData(helperImageData.getColorSettings(), imageData);
+  checkImageData(helperImageData.getSettings(), imageData);
 }
 
 var testScenariosCreateImageData = [
@@ -47,7 +47,7 @@ var testScenariosCreateImageData = [
   ["Test color managed cretateImageData: {rec2020, float16} -> {rec2020, float32}",
       {colorSpace: "rec2020", pixelFormat: "float16"}],
   ["Test color managed cretateImageData: {p3, float16} -> {p3, float32}",
-      {colorSpace: "p3", pixelFormat: "float16"}],
+      {colorSpace: "display-p3", pixelFormat: "float16"}],
 ];
 
 generate_tests(runTestCreateImageData, testScenariosCreateImageData);
@@ -71,7 +71,7 @@ var testScenariosGetImageData = [
   ["Test color managed getImageData: {rec2020, float16} -> {rec2020, float32}",
       {colorSpace: "rec2020", pixelFormat: "float16"}],
   ["Test color managed getImageData: {p3, float16} -> {p3, float32}",
-      {colorSpace: "p3", pixelFormat: "float16"}],
+      {colorSpace: "display-p3", pixelFormat: "float16"}],
 ];
 
 generate_tests(runTestGetImageData, testScenariosGetImageData);
@@ -85,7 +85,7 @@ generate_tests(runTestGetImageData, testScenariosGetImageData);
 
 var testScenariosPutImageData = [];
 function prepareTestScenariosPutImageData() {
-  var colorSpaces = ["srgb", "p3", "rec2020"];
+  var colorSpaces = ["srgb", "display-p3", "rec2020"];
   var imageDataStorageFormats = ["uint8", "uint16", "float32"];
   var canvasPixelFormats = ["uint8", "float16"];
 

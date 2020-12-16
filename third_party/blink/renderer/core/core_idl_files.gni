@@ -713,7 +713,7 @@ core_dictionary_idl_files =
                     "html/focus_options.idl",
                     "html/assigned_nodes_options.idl",
                     "html/canvas/baselines.idl",
-                    "html/canvas/image_data_color_settings.idl",
+                    "html/canvas/image_data_settings.idl",
                     "html/canvas/image_encode_options.idl",
                     "html/custom/validity_state_flags.idl",
                     "html/forms/form_data_event_init.idl",

@@ -25,7 +25,7 @@ function runTest(colorSettings, expectedColorSettings) {
   imageData = ctx.createImageData(1, 1, colorSettings);
   checkDataTypeAgainstStorageFormat(imageData.data, colorSettings.storageFormat);
   assert_array_equals(imageData.data, [0, 0, 0, 0]);
-  checkColorSettings(imageData.getColorSettings(), expectedColorSettings.colorSpace, expectedColorSettings.storageFormat);
+  checkColorSettings(imageData.getSettings(), expectedColorSettings.colorSpace, expectedColorSettings.storageFormat);
 }
 
 var testScenarios = [
@@ -42,9 +42,9 @@ var testScenarios = [
 	["Test color settings: {rec2020, uint16}", {colorSpace: "rec2020", storageFormat: "uint16"}, {colorSpace: "rec2020", storageFormat: "uint16"}],
 	["Test color settings: {rec2020, float32}", {colorSpace: "rec2020", storageFormat: "float32"}, {colorSpace: "rec2020", storageFormat: "float32"}],
 
-	["Test color settings: {p3, uint8}", {colorSpace: "p3", storageFormat: "uint8"}, {colorSpace: "p3", storageFormat: "uint8"}],
-	["Test color settings: {p3, uint16}", {colorSpace: "p3", storageFormat: "uint16"}, {colorSpace: "p3", storageFormat: "uint16"}],
-	["Test color settings: {p3, float32}", {colorSpace: "p3", storageFormat: "float32"}, {colorSpace: "p3", storageFormat: "float32"}],
+	["Test color settings: {display-p3, uint8}", {colorSpace: "display-p3", storageFormat: "uint8"}, {colorSpace: "display-p3", storageFormat: "uint8"}],
+	["Test color settings: {display-p3, uint16}", {colorSpace: "display-p3", storageFormat: "uint16"}, {colorSpace: "display-p3", storageFormat: "uint16"}],
+	["Test color settings: {display-p3, float32}", {colorSpace: "display-p3", storageFormat: "float32"}, {colorSpace: "display-p3", storageFormat: "float32"}],
 
 ];
 

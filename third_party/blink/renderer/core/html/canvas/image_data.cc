@@ -58,10 +58,10 @@ bool ImageData::ValidateConstructorArguments(
     const unsigned& width,
     const unsigned& height,
     const NotShared<DOMArrayBufferView> data,
-    const ImageDataColorSettings* color_settings,
+    const ImageDataSettings* color_settings,
     ExceptionState* exception_state) {
   // We accept all the combinations of colorSpace and storageFormat in an
-  // ImageDataColorSettings to be stored in an ImageData. Therefore, we don't
+  // ImageDataSettings to be stored in an ImageData. Therefore, we don't
   // check the color settings in this function.
 
   if ((param_flags & kParamWidth) && !width) {
@@ -231,7 +231,7 @@ NotShared<DOMFloat32Array> ImageData::AllocateAndValidateFloat32Array(
 }
 
 ImageData* ImageData::Create(const IntSize& size,
-                             const ImageDataColorSettings* color_settings) {
+                             const ImageDataSettings* color_settings) {
   if (!ValidateConstructorArguments(kParamSize, &size, 0, 0,
                                     NotShared<DOMArrayBufferView>(),
                                     color_settings))
@@ -253,7 +253,7 @@ ImageData* ImageData::Create(const IntSize& size,
 ImageData* ImageData::Create(const IntSize& size,
                              CanvasColorSpace color_space,
                              ImageDataStorageFormat storage_format) {
-  ImageDataColorSettings* color_settings = ImageDataColorSettings::Create();
+  ImageDataSettings* color_settings = ImageDataSettings::Create();
   switch (color_space) {
     case CanvasColorSpace::kSRGB:
       color_settings->setColorSpace(kSRGBCanvasColorSpaceName);
@@ -283,7 +283,7 @@ ImageData* ImageData::Create(const IntSize& size,
 
 ImageData* ImageData::Create(const IntSize& size,
                              NotShared<DOMArrayBufferView> data_array,
-                             const ImageDataColorSettings* color_settings) {
+                             const ImageDataSettings* color_settings) {
   if (!ImageData::ValidateConstructorArguments(
           kParamSize | kParamData, &size, 0, 0, data_array, color_settings))
     return nullptr;
@@ -343,7 +343,7 @@ ImageData* ImageData::Create(NotShared<DOMUint16Array> data,
   unsigned height = base::checked_cast<unsigned>(data->length()) /
                     (width * ImageData::StorageFormatBytesPerPixel(
                                  kUint16ArrayStorageFormatName));
-  ImageDataColorSettings* image_setting = ImageDataColorSettings::Create();
+  ImageDataSettings* image_setting = ImageDataSettings::Create();
   image_setting->setStorageFormat(kUint16ArrayStorageFormatName);
   return MakeGarbageCollected<ImageData>(IntSize(width, height), data,
                                          image_setting);
@@ -358,7 +358,7 @@ ImageData* ImageData::Create(NotShared<DOMUint16Array> data,
           nullptr, &exception_state))
     return nullptr;
 
-  ImageDataColorSettings* image_setting = ImageDataColorSettings::Create();
+  ImageDataSettings* image_setting = ImageDataSettings::Create();
   image_setting->setStorageFormat(kUint16ArrayStorageFormatName);
   return MakeGarbageCollected<ImageData>(IntSize(width, height), data,
                                          image_setting);
@@ -375,7 +375,7 @@ ImageData* ImageData::Create(NotShared<DOMFloat32Array> data,
   unsigned height = base::checked_cast<unsigned>(data->length()) /
                     (width * ImageData::StorageFormatBytesPerPixel(
                                  kFloat32ArrayStorageFormatName));
-  ImageDataColorSettings* image_setting = ImageDataColorSettings::Create();
+  ImageDataSettings* image_setting = ImageDataSettings::Create();
   image_setting->setStorageFormat(kFloat32ArrayStorageFormatName);
   return MakeGarbageCollected<ImageData>(IntSize(width, height), data,
                                          image_setting);
@@ -390,17 +390,16 @@ ImageData* ImageData::Create(NotShared<DOMFloat32Array> data,
           nullptr, &exception_state))
     return nullptr;
 
-  ImageDataColorSettings* image_setting = ImageDataColorSettings::Create();
+  ImageDataSettings* image_setting = ImageDataSettings::Create();
   image_setting->setStorageFormat(kFloat32ArrayStorageFormatName);
   return MakeGarbageCollected<ImageData>(IntSize(width, height), data,
                                          image_setting);
 }
 
-ImageData* ImageData::CreateImageData(
-    unsigned width,
-    unsigned height,
-    const ImageDataColorSettings* color_settings,
-    ExceptionState& exception_state) {
+ImageData* ImageData::CreateImageData(unsigned width,
+                                      unsigned height,
+                                      const ImageDataSettings* color_settings,
+                                      ExceptionState& exception_state) {
   if (!ImageData::ValidateConstructorArguments(
           kParamWidth | kParamHeight, nullptr, width, height,
           NotShared<DOMArrayBufferView>(), color_settings, &exception_state))
@@ -421,12 +420,12 @@ ImageData* ImageData::CreateImageData(
 ImageData* ImageData::CreateImageData(ImageDataArray& data,
                                       unsigned width,
                                       unsigned height,
-                                      ImageDataColorSettings* color_settings,
+                                      ImageDataSettings* color_settings,
                                       ExceptionState& exception_state) {
   NotShared<DOMArrayBufferView> buffer_view;
 
   // When pixels data is provided, we need to override the storage format of
-  // ImageDataColorSettings with the one that matches the data type of the
+  // ImageDataSettings with the one that matches the data type of the
   // pixels.
   String storage_format_name;
 
@@ -476,10 +475,9 @@ ImageData* ImageData::CreateForTest(const IntSize& size) {
 
 // This function is called from unit tests, and all the parameters are supposed
 // to be validated on the call site.
-ImageData* ImageData::CreateForTest(
-    const IntSize& size,
-    NotShared<DOMArrayBufferView> buffer_view,
-    const ImageDataColorSettings* color_settings) {
+ImageData* ImageData::CreateForTest(const IntSize& size,
+                                    NotShared<DOMArrayBufferView> buffer_view,
+                                    const ImageDataSettings* color_settings) {
   return MakeGarbageCollected<ImageData>(size, buffer_view, color_settings);
 }
 
@@ -670,8 +668,8 @@ void ImageData::Trace(Visitor* visitor) const {
 
 ImageData::ImageData(const IntSize& size,
                      NotShared<DOMArrayBufferView> data,
-                     const ImageDataColorSettings* color_settings)
-    : size_(size), color_settings_(ImageDataColorSettings::Create()) {
+                     const ImageDataSettings* color_settings)
+    : size_(size), color_settings_(ImageDataSettings::Create()) {
   DCHECK_GE(size.Width(), 0);
   DCHECK_GE(size.Height(), 0);
   DCHECK(data);

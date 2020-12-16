@@ -33,13 +33,13 @@ function drawSRGBImageOnP3Canvas(source)
   canvas.width = 20;
   canvas.height = 20;
   var ctx = canvas.getContext('2d',
-      {colorSpace: 'p3', pixelFormat:'float16'});
+      {colorSpace: 'display-p3', pixelFormat:'float16'});
   ctx.drawImage(source, 0, 0);
   var tests = [{x: 5, y: 5, color: p3OpaqueRed},
                {x: 15, y: 5, color: p3OpaqueGreen},
                {x: 5, y: 15, color: p3OpaqueBlue},
                {x: 15, y: 15, color: p3OpaqueBlack}];
-  testPixels(ctx, tests, {colorSpace: 'p3', storageFormat:'float32'});
+  testPixels(ctx, tests, {colorSpace: 'display-p3', storageFormat:'float32'});
 }
 
 promise_test(function() {

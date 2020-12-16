@@ -7,7 +7,7 @@
 enum CanvasColorSpace {
     "srgb", // default
     "rec2020",
-    "p3",
+    "display-p3",
 };
 
 enum ImageDataStorageFormat {
@@ -16,7 +16,7 @@ enum ImageDataStorageFormat {
   "float32",
 };
 
-dictionary ImageDataColorSettings {
+dictionary ImageDataSettings {
   CanvasColorSpace colorSpace = "srgb";
   ImageDataStorageFormat storageFormat = "uint8";
 };

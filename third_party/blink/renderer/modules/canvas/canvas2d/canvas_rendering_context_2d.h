@@ -215,7 +215,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
                                   int sy,
                                   int sw,
                                   int sh,
-                                  ImageDataColorSettings*,
+                                  ImageDataSettings*,
                                   ExceptionState&) final;
 
   CanvasColorParams ColorParamsForTest() const {

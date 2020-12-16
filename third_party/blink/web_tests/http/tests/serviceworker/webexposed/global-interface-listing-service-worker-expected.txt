@@ -795,7 +795,7 @@ interface ImageData
     getter height
     getter width
     method constructor
-    method getColorSettings
+    method getSettings
 interface InstallEvent : ExtendableEvent
     attribute @@toStringTag
     method constructor

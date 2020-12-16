@@ -777,8 +777,8 @@ TEST(V8ScriptValueSerializerTest, RoundTripImageDataWithColorSpaceInfo) {
   // ImageData objects with color space information should serialize and
   // deserialize correctly.
   V8TestingScope scope;
-  ImageDataColorSettings* color_settings = ImageDataColorSettings::Create();
-  color_settings->setColorSpace("p3");
+  ImageDataSettings* color_settings = ImageDataSettings::Create();
+  color_settings->setColorSpace("display-p3");
   color_settings->setStorageFormat("float32");
   ImageData* image_data =
       ImageData::CreateImageData(2, 1, color_settings, ASSERT_NO_EXCEPTION);
@@ -790,9 +790,8 @@ TEST(V8ScriptValueSerializerTest, RoundTripImageDataWithColorSpaceInfo) {
   ImageData* new_image_data = V8ImageData::ToImpl(result.As<v8::Object>());
   EXPECT_NE(image_data, new_image_data);
   EXPECT_EQ(image_data->Size(), new_image_data->Size());
-  ImageDataColorSettings* new_color_settings =
-      new_image_data->getColorSettings();
-  EXPECT_EQ("p3", new_color_settings->colorSpace());
+  ImageDataSettings* new_color_settings = new_image_data->getSettings();
+  EXPECT_EQ("display-p3", new_color_settings->colorSpace());
   EXPECT_EQ("float32", new_color_settings->storageFormat());
   EXPECT_EQ(image_data->BufferBase()->ByteLength(),
             new_image_data->BufferBase()->ByteLength());
@@ -846,9 +845,8 @@ TEST(V8ScriptValueSerializerTest, DecodeImageDataV18) {
   ASSERT_TRUE(V8ImageData::HasInstance(result, scope.GetIsolate()));
   ImageData* new_image_data = V8ImageData::ToImpl(result.As<v8::Object>());
   EXPECT_EQ(IntSize(2, 1), new_image_data->Size());
-  ImageDataColorSettings* new_color_settings =
-      new_image_data->getColorSettings();
-  EXPECT_EQ("p3", new_color_settings->colorSpace());
+  ImageDataSettings* new_color_settings = new_image_data->getSettings();
+  EXPECT_EQ("display-p3", new_color_settings->colorSpace());
   EXPECT_EQ("float32", new_color_settings->storageFormat());
   EXPECT_EQ(32u, new_image_data->BufferBase()->ByteLength());
   EXPECT_EQ(200, static_cast<unsigned char*>(

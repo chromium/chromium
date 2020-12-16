@@ -766,7 +766,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter height
 [Worker]     getter width
 [Worker]     method constructor
-[Worker]     method getColorSettings
+[Worker]     method getSettings
 [Worker] interface ImageDecoder
 [Worker]     static method canDecodeType
 [Worker]     attribute @@toStringTag

@@ -28,7 +28,7 @@ function testPixels(actualPixels, expectedPixels, testScenario)
     // https://fiddle.skia.org/c/584fbc0b778a32a6cc2ea3ecbf2c6e8e
     if (testScenario.colorSpace == "srgb" &&
         testScenario.pixelFormat == "uint8" &&
-        ['rec2020', 'p3'].indexOf(
+        ['rec2020', 'display-p3'].indexOf(
             testScenario.colorSpaceConversion) > -1)
         tolerance = 8;
 
@@ -107,7 +107,7 @@ function runAllTests() {
         {colorSpace: 'srgb', pixelFormat: 'uint8'},
         {colorSpace: 'srgb', pixelFormat: 'float16'},
         {colorSpace: 'rec2020', pixelFormat: 'float16'},
-        {colorSpace: 'p3', pixelFormat: 'float16'}
+        {colorSpace: 'display-p3', pixelFormat: 'float16'}
         ];
     var alphaValues = [0.5, 1];
     var colorSpaceConversions = [
@@ -116,7 +116,7 @@ function runAllTests() {
         {colorSpace: 'srgb', storageFormat: 'uint8'},
         {colorSpace: 'srgb', storageFormat: 'float32'},
         {colorSpace: 'rec2020', storageFormat: 'float32'},
-        {colorSpace: 'p3', storageFormat: 'float32'}
+        {colorSpace: 'display-p3', storageFormat: 'float32'}
         ];
 
     var testScenarios = [];

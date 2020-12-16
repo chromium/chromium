@@ -373,7 +373,7 @@ promise_test(function() {
 
 // HTMLCanvasElement - Opaque P3
 promise_test(function() {
-    var testCanvas = initializeTestCanvas('p3', 'float16');
+    var testCanvas = initializeTestCanvas('display-p3', 'float16');
     return testImageBitmapOpaque(testCanvas);
 }, 'createImageBitmap in Rec2020 from an opaque P3 HTMLCanvasElement with resize.');
 
@@ -399,7 +399,7 @@ promise_test(function() {
 
 // HTMLCanvasElement - Transparent P3
 promise_test(function() {
-    var testCanvas = initializeTestCanvasTransparent('p3', 'float16');
+    var testCanvas = initializeTestCanvasTransparent('display-p3', 'float16');
     return testImageBitmapTransparent(testCanvas);
 }, 'createImageBitmap in Rec2020 from a transparent P3 HTMLCanvasElement with resize.');
 
@@ -507,11 +507,11 @@ promise_test(function() {
 
 // ImageData - Opaque P3
 promise_test(function() {
-    var canvas = initializeTestCanvas('p3', 'float16');
+    var canvas = initializeTestCanvas('display-p3', 'float16');
     var ctx = canvas.getContext('2d',
-        {colorSpace: 'p3', pixelFormat:'float16'});
+        {colorSpace: 'display-p3', pixelFormat:'float16'});
     var data = ctx.getImageData(0, 0, 20, 20,
-        {colorSpace: 'p3', storageFormat:'float32'});
+        {colorSpace: 'display-p3', storageFormat:'float32'});
     return testImageBitmapOpaque(data);
 }, 'createImageBitmap in Rec2020 from an opaque P3 ImageData with resize.');
 
@@ -548,11 +548,11 @@ promise_test(function() {
 
 // ImageData - Transparent P3
 promise_test(function() {
-    var canvas = initializeTestCanvasTransparent('p3', 'float16');
+    var canvas = initializeTestCanvasTransparent('display-p3', 'float16');
     var ctx = canvas.getContext('2d',
-        {colorSpace: 'p3', pixelFormat:'float16'});
+        {colorSpace: 'display-p3', pixelFormat:'float16'});
     var data = ctx.getImageData(0, 0, 20, 20,
-        {colorSpace: 'p3', storageFormat:'float32'});
+        {colorSpace: 'display-p3', storageFormat:'float32'});
     return testImageBitmapTransparent(data);
 }, 'createImageBitmap in Rec2020 from a transparent P3 ImageData with resize.');
 
@@ -572,7 +572,7 @@ promise_test(function() {
 
 // ImageBitmap - Opaque P3
 promise_test(function() {
-    var testCanvas = initializeTestCanvas('p3', 'float16');
+    var testCanvas = initializeTestCanvas('display-p3', 'float16');
     return createImageBitmap(testCanvas).then(testImageBitmapOpaque);
 }, 'createImageBitmap in Rec2020 from an opaque P3 ImageBitmap with resize.');
 
@@ -592,7 +592,7 @@ promise_test(function() {
 
 // ImageBitmap - Transparent P3
 promise_test(function() {
-    var testCanvas = initializeTestCanvasTransparent('p3', 'float16');
+    var testCanvas = initializeTestCanvasTransparent('display-p3', 'float16');
     return createImageBitmap(testCanvas).then(testImageBitmapTransparent);
 }, 'createImageBitmap in Rec2020 from a transparent P3 ImageBitmap with resize.');
 
@@ -637,7 +637,7 @@ promise_test(function() {
 
 //OffscreenCanvas - Opaque P3
 promise_test(function() {
-    var offscreen = initializeOffscreenCanvas('p3', 'float16');
+    var offscreen = initializeOffscreenCanvas('display-p3', 'float16');
     return testImageBitmapOpaque(offscreen);
 }, 'createImageBitmap in Rec2020 from an opaque P3 OffscreenCanvas with resize.');
 
@@ -682,7 +682,7 @@ promise_test(function() {
 
 //OffscreenCanvas - Transparent P3
 promise_test(function() {
-    var offscreen = initializeOffscreenCanvasTransparent('p3', 'float16');
+    var offscreen = initializeOffscreenCanvasTransparent('display-p3', 'float16');
     return testImageBitmapTransparent(offscreen);
 }, 'createImageBitmap in Rec2020 from a transparent P3 OffscreenCanvas with resize.');
 

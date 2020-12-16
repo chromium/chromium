@@ -14,8 +14,8 @@ var testScenarios = [
         {colorSpace: "rec2020"},
         {colorSpace: "rec2020", pixelFormat: "uint8"}],
     ["Test CanvasColorSpace value p3, no pixel format, falls back to p3/uint8",
-        {colorSpace: "p3"},
-        {colorSpace: "p3", pixelFormat: "uint8"}],
+        {colorSpace: "display-p3"},
+        {colorSpace: "display-p3", pixelFormat: "uint8"}],
 
     ["Test CanvasPixelFormat value uint8",
         {pixelFormat: "uint8"},
@@ -39,11 +39,11 @@ var testScenarios = [
         {colorSpace: "rec2020", pixelFormat: "float16"}],
 
     ["Test supported color settings p3/uint8, falls back to srgb/uint8",
-        {colorSpace: "p3", pixelFormat: "uint8"},
-        {colorSpace: "p3", pixelFormat: "uint8"}],
+        {colorSpace: "display-p3", pixelFormat: "uint8"},
+        {colorSpace: "display-p3", pixelFormat: "uint8"}],
     ["Test supported color settings p3/float16",
-        {colorSpace: "p3", pixelFormat: "float16"},
-        {colorSpace: "p3", pixelFormat: "float16"}],
+        {colorSpace: "display-p3", pixelFormat: "float16"},
+        {colorSpace: "display-p3", pixelFormat: "float16"}],
 ];
 
 function runTestScenario(contextCreationParameters, expectedContextAttributes) {

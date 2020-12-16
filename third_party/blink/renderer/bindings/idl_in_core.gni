@@ -316,7 +316,7 @@ static_idl_files_in_core = get_path_info(
           "//third_party/blink/renderer/core/html/canvas/baselines.idl",
           "//third_party/blink/renderer/core/html/canvas/html_canvas_element.idl",
           "//third_party/blink/renderer/core/html/canvas/image_data.idl",
-          "//third_party/blink/renderer/core/html/canvas/image_data_color_settings.idl",
+          "//third_party/blink/renderer/core/html/canvas/image_data_settings.idl",
           "//third_party/blink/renderer/core/html/canvas/image_encode_options.idl",
           "//third_party/blink/renderer/core/html/canvas/text_metrics.idl",
           "//third_party/blink/renderer/core/html/custom/custom_element_registry.idl",

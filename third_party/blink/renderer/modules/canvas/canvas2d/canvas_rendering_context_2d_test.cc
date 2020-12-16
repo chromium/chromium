@@ -757,7 +757,7 @@ static void TestDrawSingleHighBitDepthPNGOnCanvas(
     String filepath,
     CanvasRenderingContext2D* context,
     Document& document,
-    ImageDataColorSettings* color_setting,
+    ImageDataSettings* color_setting,
     ScriptState* script_state) {
   scoped_refptr<SharedBuffer> pixel_buffer = test::ReadFromFile(filepath);
   ASSERT_EQ(false, pixel_buffer->IsEmpty());
@@ -828,7 +828,7 @@ static void TestDrawHighBitDepthPNGsOnWideGamutCanvas(
   StringBuilder path;
   path.Append(test::CoreTestDataPath());
   path.Append("/png-16bit/");
-  ImageDataColorSettings* color_setting = ImageDataColorSettings::Create();
+  ImageDataSettings* color_setting = ImageDataSettings::Create();
   color_setting->setStorageFormat(kFloat32ArrayStorageFormatName);
   color_setting->setColorSpace(canvas_color_space);
   for (auto interlace : interlace_status) {
@@ -851,8 +851,8 @@ static void TestDrawHighBitDepthPNGsOnWideGamutCanvas(
 
 TEST_F(CanvasRenderingContext2DTest, DrawHighBitDepthPngOnP3Canvas) {
   TestDrawHighBitDepthPNGsOnWideGamutCanvas(
-      "p3", GetDocument(), Persistent<HTMLCanvasElement>(CanvasElement()),
-      GetScriptState());
+      "display-p3", GetDocument(),
+      Persistent<HTMLCanvasElement>(CanvasElement()), GetScriptState());
 }
 
 TEST_F(CanvasRenderingContext2DTest, DrawHighBitDepthPngOnRec2020Canvas) {
@@ -943,7 +943,7 @@ void TestPutImageDataOnCanvasWithColorSpaceSettings(
   EXPECT_EQ(data_length, data_f32->length());
 
   ImageData* image_data = nullptr;
-  ImageDataColorSettings* color_settings = ImageDataColorSettings::Create();
+  ImageDataSettings* color_settings = ImageDataSettings::Create();
   int num_pixels = data_length / 4;
 
   // At most four bytes are needed for Float32 output per color component.
@@ -978,8 +978,7 @@ void TestPutImageDataOnCanvasWithColorSpaceSettings(
       image_data =
           ImageData::CreateForTest(IntSize(2, 2), data_array, color_settings);
       unsigned k = static_cast<unsigned>(canvas_colorspace_setting);
-      ImageDataColorSettings* canvas_color_setting =
-          ImageDataColorSettings::Create();
+      ImageDataSettings* canvas_color_setting = ImageDataSettings::Create();
       canvas_color_setting->setColorSpace(
           ImageData::CanvasColorSpaceName(canvas_color_spaces[k]));
       switch (canvas_pixel_formats[k]) {
