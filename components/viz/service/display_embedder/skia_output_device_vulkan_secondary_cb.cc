@@ -48,9 +48,10 @@ SkiaOutputDeviceVulkanSecondaryCB::SkiaOutputDeviceVulkanSecondaryCB(
       sk_color_type;
 }
 
-void SkiaOutputDeviceVulkanSecondaryCB::Submit(base::OnceClosure callback) {
+void SkiaOutputDeviceVulkanSecondaryCB::Submit(bool sync_cpu,
+                                               base::OnceClosure callback) {
   // Submit the primary command buffer which may render passes.
-  context_provider_->GetGrContext()->submit();
+  context_provider_->GetGrContext()->submit(sync_cpu);
   context_provider_->EnqueueSecondaryCBPostSubmitTask(std::move(callback));
 }
 

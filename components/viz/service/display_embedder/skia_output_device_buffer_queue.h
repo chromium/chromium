@@ -40,7 +40,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
       delete;
 
   // SkiaOutputDevice overrides.
-  void Submit(base::OnceClosure callback) override;
+  void Submit(bool sync_cpu, base::OnceClosure callback) override;
   void SwapBuffers(BufferPresentedCallback feedback,
                    std::vector<ui::LatencyInfo> latency_info) override;
   void PostSubBuffer(const gfx::Rect& rect,

@@ -81,6 +81,8 @@ struct GpuPreferences {
   bool enforce_vulkan_protected_memory;
   bool disable_vulkan_surface;
   bool disable_vulkan_fallback_to_gl_for_testing;
+  uint32 vulkan_heap_memory_limit;
+  uint32 vulkan_sync_cpu_memory_limit;
   bool enable_metal;
   bool enable_gpu_benchmarking_extension;
   bool enable_webgpu;

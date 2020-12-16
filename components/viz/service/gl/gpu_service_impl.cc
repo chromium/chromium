@@ -369,7 +369,8 @@ GpuServiceImpl::GpuServiceImpl(
     // If GL is using a real GPU, the gpu_info will be passed in and vulkan will
     // use the same GPU.
     vulkan_context_provider_ = VulkanInProcessContextProvider::Create(
-        vulkan_implementation_,
+        vulkan_implementation_, gpu_preferences_.vulkan_heap_memory_limit,
+        gpu_preferences_.vulkan_sync_cpu_memory_limit,
         (is_native_vulkan && is_native_gl) ? &gpu_info : nullptr);
     if (vulkan_context_provider_) {
       // If Vulkan is supported, then OOP-R is supported.

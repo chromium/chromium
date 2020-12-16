@@ -676,6 +676,11 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
       DLOG(ERROR) << "offscreen.surface()->flush() failed.";
       return;
     }
+    bool sync_cpu =
+        gpu::ShouldVulkanSyncCpuForSkiaSubmit(vulkan_context_provider_);
+    if (sync_cpu) {
+      gr_context()->submit(true);
+    }
   }
 }
 
@@ -1416,10 +1421,13 @@ void SkiaOutputSurfaceImplOnGpu::SwapBuffersInternal(
   if (context_is_lost_)
     return;
 
+  bool sync_cpu =
+      gpu::ShouldVulkanSyncCpuForSkiaSubmit(vulkan_context_provider_);
+
   ResetStateOfImages();
-  output_device_->Submit(base::BindOnce(&SkiaOutputSurfaceImplOnGpu::PostSubmit,
-                                        base::Unretained(this),
-                                        std::move(frame)));
+  output_device_->Submit(
+      sync_cpu, base::BindOnce(&SkiaOutputSurfaceImplOnGpu::PostSubmit,
+                               base::Unretained(this), std::move(frame)));
 }
 
 void SkiaOutputSurfaceImplOnGpu::PostSubmit(

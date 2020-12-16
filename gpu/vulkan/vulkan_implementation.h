@@ -157,7 +157,8 @@ COMPONENT_EXPORT(VULKAN)
 std::unique_ptr<VulkanDeviceQueue> CreateVulkanDeviceQueue(
     VulkanImplementation* vulkan_implementation,
     uint32_t option,
-    const GPUInfo* gpu_info = nullptr);
+    const GPUInfo* gpu_info = nullptr,
+    uint32_t heap_memory_limit = 0);
 
 }  // namespace gpu
 

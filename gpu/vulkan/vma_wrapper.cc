@@ -15,6 +15,7 @@ namespace vma {
 VkResult CreateAllocator(VkPhysicalDevice physical_device,
                          VkDevice device,
                          VkInstance instance,
+                         const VkDeviceSize* heap_size_limit,
                          VmaAllocator* pAllocator) {
   auto* function_pointers = gpu::GetVulkanFunctionPointers();
   VmaVulkanFunctions functions = {
@@ -53,6 +54,7 @@ VkResult CreateAllocator(VkPhysicalDevice physical_device,
       // AMD allocator will start making blocks at 1/8 the max size and builds
       // up block size as needed before capping at the max set here.
       .preferredLargeHeapBlockSize = 4 * 1024 * 1024,
+      .pHeapSizeLimit = heap_size_limit,
       .pVulkanFunctions = &functions,
       .instance = instance,
       .vulkanApiVersion = kVulkanRequiredApiVersion,
@@ -152,6 +154,20 @@ void GetPhysicalDeviceProperties(
 
 void CalculateStats(VmaAllocator allocator, VmaStats* stats) {
   vmaCalculateStats(allocator, stats);
+}
+
+uint64_t GetTotalAllocatedMemory(VmaAllocator allocator) {
+  VmaBudget budget[VK_MAX_MEMORY_HEAPS];
+  vmaGetBudget(allocator, budget);
+  const VkPhysicalDeviceMemoryProperties* pPhysicalDeviceMemoryProperties;
+  vmaGetMemoryProperties(allocator, &pPhysicalDeviceMemoryProperties);
+  uint64_t total_allocated_memory = 0;
+  for (uint32_t i = 0; i < pPhysicalDeviceMemoryProperties->memoryHeapCount;
+       ++i) {
+    total_allocated_memory +=
+        std::max(budget[i].blockBytes, budget[i].allocationBytes);
+  }
+  return total_allocated_memory;
 }
 
 }  // namespace vma

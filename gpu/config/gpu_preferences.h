@@ -228,6 +228,15 @@ struct GPU_EXPORT GpuPreferences {
   // testing in order to detect regressions which crash Vulkan.
   bool disable_vulkan_fallback_to_gl_for_testing = false;
 
+  // Heap memory limit for Vulkan. Allocations will fail when this limit is
+  // reached for a heap.
+  uint32_t vulkan_heap_memory_limit = 0u;
+
+  // Sync CPU memory limit for Vulkan. Submission of GPU work will be
+  // synchronize with the CPU in order to free released memory immediately
+  // when this limit is reached.
+  uint32_t vulkan_sync_cpu_memory_limit = 0u;
+
   // Use Metal for rasterization and Skia-based display compositing. Note that
   // this is compatible with GL-based display compositing.
   bool enable_metal = false;

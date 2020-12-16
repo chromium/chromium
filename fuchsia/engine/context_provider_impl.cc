@@ -172,6 +172,8 @@ bool MaybeAddCommandLineArgsFromConfig(const base::Value& config,
       switches::kRendererProcessLimit,
       switches::kWebglAntialiasingMode,
       switches::kWebglMSAASampleCount,
+      switches::kVulkanHeapMemoryLimitMb,
+      switches::kVulkanSyncCpuMemoryLimitMb,
   };
 
   for (const auto& arg : args->DictItems()) {

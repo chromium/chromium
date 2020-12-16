@@ -23,17 +23,24 @@ namespace viz {
 scoped_refptr<VulkanInProcessContextProvider>
 VulkanInProcessContextProvider::Create(
     gpu::VulkanImplementation* vulkan_implementation,
+    uint32_t heap_memory_limit,
+    uint32_t sync_cpu_memory_limit,
     const gpu::GPUInfo* gpu_info) {
   scoped_refptr<VulkanInProcessContextProvider> context_provider(
-      new VulkanInProcessContextProvider(vulkan_implementation));
+      new VulkanInProcessContextProvider(
+          vulkan_implementation, heap_memory_limit, sync_cpu_memory_limit));
   if (!context_provider->Initialize(gpu_info))
     return nullptr;
   return context_provider;
 }
 
 VulkanInProcessContextProvider::VulkanInProcessContextProvider(
-    gpu::VulkanImplementation* vulkan_implementation)
-    : vulkan_implementation_(vulkan_implementation) {}
+    gpu::VulkanImplementation* vulkan_implementation,
+    uint32_t heap_memory_limit,
+    uint32_t sync_cpu_memory_limit)
+    : vulkan_implementation_(vulkan_implementation),
+      heap_memory_limit_(heap_memory_limit),
+      sync_cpu_memory_limit_(sync_cpu_memory_limit) {}
 
 VulkanInProcessContextProvider::~VulkanInProcessContextProvider() {
   Destroy();
@@ -57,8 +64,8 @@ bool VulkanInProcessContextProvider::Initialize(
     }
   }
 
-  device_queue_ =
-      gpu::CreateVulkanDeviceQueue(vulkan_implementation_, flags, gpu_info);
+  device_queue_ = gpu::CreateVulkanDeviceQueue(vulkan_implementation_, flags,
+                                               gpu_info, heap_memory_limit_);
   if (!device_queue_)
     return false;
 
@@ -163,6 +170,10 @@ void VulkanInProcessContextProvider::EnqueueSecondaryCBSemaphores(
 void VulkanInProcessContextProvider::EnqueueSecondaryCBPostSubmitTask(
     base::OnceClosure closure) {
   NOTREACHED();
+}
+
+uint32_t VulkanInProcessContextProvider::GetSyncCpuMemoryLimit() const {
+  return sync_cpu_memory_limit_;
 }
 
 }  // namespace viz

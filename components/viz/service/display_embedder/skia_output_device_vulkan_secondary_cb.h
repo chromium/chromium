@@ -21,7 +21,7 @@ class SkiaOutputDeviceVulkanSecondaryCB final : public SkiaOutputDevice {
       gpu::MemoryTracker* memory_tracker,
       DidSwapBufferCompleteCallback did_swap_buffer_complete_callback);
 
-  void Submit(base::OnceClosure callback) override;
+  void Submit(bool sync_cpu, base::OnceClosure callback) override;
   bool Reshape(const gfx::Size& size,
                float device_scale_factor,
                const gfx::ColorSpace& color_space,

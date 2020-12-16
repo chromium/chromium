@@ -34,6 +34,8 @@ GPU_EXPORT extern const char kWebViewDrawFunctorUsesVulkan[];
 GPU_EXPORT extern const char kEnableVulkanProtectedMemory[];
 GPU_EXPORT extern const char kEnforceVulkanProtectedMemory[];
 GPU_EXPORT extern const char kDisableVulkanFallbackToGLForTesting[];
+GPU_EXPORT extern const char kVulkanHeapMemoryLimitMb[];
+GPU_EXPORT extern const char kVulkanSyncCpuMemoryLimitMb[];
 
 }  // namespace switches
 

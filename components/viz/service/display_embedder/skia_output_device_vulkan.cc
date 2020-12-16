@@ -94,7 +94,7 @@ bool SkiaOutputDeviceVulkan::Reshape(const gfx::Size& size,
   return RecreateSwapChain(size, color_space.ToSkColorSpace(), transform);
 }
 
-void SkiaOutputDeviceVulkan::Submit(base::OnceClosure callback) {
+void SkiaOutputDeviceVulkan::Submit(bool sync_cpu, base::OnceClosure callback) {
   if (LIKELY(scoped_write_)) {
     auto& sk_surface =
         sk_surface_size_pairs_[scoped_write_->image_index()].sk_surface;
@@ -106,7 +106,7 @@ void SkiaOutputDeviceVulkan::Submit(base::OnceClosure callback) {
     sk_surface->flush({}, &state);
   }
 
-  SkiaOutputDevice::Submit(std::move(callback));
+  SkiaOutputDevice::Submit(sync_cpu, std::move(callback));
 }
 
 void SkiaOutputDeviceVulkan::SwapBuffers(
