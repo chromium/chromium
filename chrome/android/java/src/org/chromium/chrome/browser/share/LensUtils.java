@@ -208,7 +208,7 @@ public class LensUtils {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS)) {
             final String serverProvidedMinAgsaVersion =
                     ChromeFeatureList.getFieldTrialParamByFeature(
-                            ChromeFeatureList.CONTEXT_MENU_SHOP_WITH_GOOGLE_LENS,
+                            ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS,
                             MIN_AGSA_VERSION_DIRECT_INTENT_FEATURE_PARAM_NAME);
             if (TextUtils.isEmpty(serverProvidedMinAgsaVersion)) {
                 // Falls into this block if the user enabled the feature using chrome://flags
