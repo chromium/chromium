@@ -184,8 +184,8 @@ void BluetoothSocketEventDispatcher::StartReceive(const SocketParams& params) {
   socket->Receive(
       buffer_size,
       base::BindOnce(&BluetoothSocketEventDispatcher::ReceiveCallback, params),
-      base::Bind(&BluetoothSocketEventDispatcher::ReceiveErrorCallback,
-                 params));
+      base::BindOnce(&BluetoothSocketEventDispatcher::ReceiveErrorCallback,
+                     params));
 }
 
 // static
@@ -268,7 +268,8 @@ void BluetoothSocketEventDispatcher::StartAccept(const SocketParams& params) {
 
   socket->Accept(
       base::BindOnce(&BluetoothSocketEventDispatcher::AcceptCallback, params),
-      base::Bind(&BluetoothSocketEventDispatcher::AcceptErrorCallback, params));
+      base::BindOnce(&BluetoothSocketEventDispatcher::AcceptErrorCallback,
+                     params));
 }
 
 // static

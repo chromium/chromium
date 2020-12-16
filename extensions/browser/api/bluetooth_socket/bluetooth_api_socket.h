@@ -29,17 +29,14 @@ class BluetoothApiSocket : public ApiResource {
   enum ErrorReason { kSystemError, kNotConnected, kNotListening, kIOPending,
                      kDisconnected };
 
-  typedef base::OnceCallback<void(int)> SendCompletionCallback;
-  typedef base::OnceCallback<void(int, scoped_refptr<net::IOBuffer> io_buffer)>
-      ReceiveCompletionCallback;
-  typedef base::OnceCallback<void(const device::BluetoothDevice* device,
-                                  scoped_refptr<device::BluetoothSocket>)>
-      AcceptCompletionCallback;
-  typedef base::Callback<void(ErrorReason, const std::string& error_message)>
-      ErrorCompletionCallback;
-  typedef base::OnceCallback<void(ErrorReason,
-                                  const std::string& error_message)>
-      ErrorCompletionOnceCallback;
+  using SendCompletionCallback = base::OnceCallback<void(int)>;
+  using ReceiveCompletionCallback =
+      base::OnceCallback<void(int, scoped_refptr<net::IOBuffer> io_buffer)>;
+  using AcceptCompletionCallback =
+      base::OnceCallback<void(const device::BluetoothDevice* device,
+                              scoped_refptr<device::BluetoothSocket>)>;
+  using ErrorCompletionCallback =
+      base::OnceCallback<void(ErrorReason, const std::string& error_message)>;
 
   explicit BluetoothApiSocket(const std::string& owner_extension_id);
   BluetoothApiSocket(const std::string& owner_extension_id,
@@ -71,7 +68,7 @@ class BluetoothApiSocket : public ApiResource {
   // |kIOPending| error.
   virtual void Receive(int count,
                        ReceiveCompletionCallback success_callback,
-                       const ErrorCompletionCallback& error_callback);
+                       ErrorCompletionCallback error_callback);
 
   // Sends |buffer| to the socket and calls |success_callback| when data has
   // been successfully sent. |buffer_size| is the numberof bytes contained in
@@ -82,13 +79,13 @@ class BluetoothApiSocket : public ApiResource {
   virtual void Send(scoped_refptr<net::IOBuffer> buffer,
                     int buffer_size,
                     SendCompletionCallback success_callback,
-                    ErrorCompletionOnceCallback error_callback);
+                    ErrorCompletionCallback error_callback);
 
   // Accepts a client connection from the socket and calls |success_callback|
   // when one has connected. If an error occurs, calls |error_callback| with a
   // reason and a message.
   virtual void Accept(AcceptCompletionCallback success_callback,
-                      const ErrorCompletionCallback& error_callback);
+                      ErrorCompletionCallback error_callback);
 
   const std::string& device_address() const { return device_address_; }
   const device::BluetoothUUID& uuid() const { return uuid_; }
@@ -119,17 +116,15 @@ class BluetoothApiSocket : public ApiResource {
   friend class ApiResourceManager<BluetoothApiSocket>;
   static const char* service_name() { return "BluetoothApiSocketManager"; }
 
-  static void OnSocketReceiveError(
-      const ErrorCompletionCallback& error_callback,
-      device::BluetoothSocket::ErrorReason reason,
-      const std::string& message);
+  static void OnSocketReceiveError(ErrorCompletionCallback error_callback,
+                                   device::BluetoothSocket::ErrorReason reason,
+                                   const std::string& message);
 
-  static void OnSocketSendError(ErrorCompletionOnceCallback error_callback,
+  static void OnSocketSendError(ErrorCompletionCallback error_callback,
                                 const std::string& message);
 
-  static void OnSocketAcceptError(
-      const ErrorCompletionCallback& error_callback,
-      const std::string& message);
+  static void OnSocketAcceptError(ErrorCompletionCallback error_callback,
+                                  const std::string& message);
 
   // The underlying device socket instance.
   scoped_refptr<device::BluetoothSocket> socket_;
