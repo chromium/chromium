@@ -1521,9 +1521,6 @@ void LayoutMultiColumnFlowThread::UpdateLayout() {
       // will generate additional columns and pages to hold that overflow,
       // since people do write bad content like <body style="height:0px"> in
       // multi-column layouts.
-      // TODO(mstensho): Once we support nested multicol, adding in overflow
-      // here may result in the need for creating additional rows, since there
-      // may not be enough space remaining in the currently last row.
       LayoutRect layout_rect = LayoutOverflowRect();
       LayoutUnit logical_bottom_in_flow_thread =
           IsHorizontalWritingMode() ? layout_rect.MaxY() : layout_rect.MaxX();

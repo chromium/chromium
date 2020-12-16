@@ -749,8 +749,6 @@ void LayoutBlockFlow::MarkDescendantsWithFloatsForLayoutIfNeeded(
     LayoutUnit new_logical_top,
     LayoutUnit previous_float_logical_bottom) {
   NOT_DESTROYED();
-  // TODO(mstensho): rework the code to return early when there is no need for
-  // marking, instead of this |markDescendantsWithFloats| flag.
   bool mark_descendants_with_floats = false;
   if (new_logical_top != child.LogicalTop() &&
       !child.CreatesNewFormattingContext() && child.ContainsFloats()) {
@@ -794,9 +792,6 @@ bool LayoutBlockFlow::PositionAndLayoutOnceIfNeeded(
           *child_block_flow, new_logical_top, previous_float_logical_bottom);
     }
 
-    // TODO(mstensho): A writing mode root is one thing, but we should be able
-    // to skip anything that establishes a new block formatting context here.
-    // Their floats don't affect us.
     if (!child_block_flow->IsWritingModeRoot() &&
         child_block_flow->ContainsFloats()) {
       // Only do this if the child actually contains floats, so that we don't
@@ -1253,18 +1248,6 @@ static bool ShouldSetStrutOnBlock(const LayoutBlockFlow& block,
 void LayoutBlockFlow::AdjustLinePositionForPagination(RootInlineBox& line_box,
                                                       LayoutUnit& delta) {
   NOT_DESTROYED();
-  // TODO(mstensho): Pay attention to line overflow. It should be painted in the
-  // same column as the rest of the line, possibly overflowing the column. We
-  // currently only allow overflow above the first column. We clip at all other
-  // column boundaries, and that's how it has to be for now. The paint we have
-  // to do when a column has overflow has to be special.
-  // We need to exclude content that paints in a previous column (and content
-  // that paints in the following column).
-  //
-  // FIXME: Another problem with simply moving lines is that the available line
-  // width may change (because of floats). Technically if the location we move
-  // the line to has a different line width than our old position, then we need
-  // to dirty the line and all following lines.
   LayoutUnit logical_offset = line_box.LineTopWithLeading();
   LayoutUnit line_height = line_box.LineBottomWithLeading() - logical_offset;
   logical_offset += delta;
@@ -1298,10 +1281,6 @@ void LayoutBlockFlow::AdjustLinePositionForPagination(RootInlineBox& line_box,
     } else if (line_height > page_logical_height) {
       // Too tall to fit in one page / column. Give up. Don't push to the next
       // page / column.
-      // TODO(mstensho): Get rid of this. This is just utter weirdness, but the
-      // other browsers also do something slightly similar, although in much
-      // more specific cases than we do here, and printing Google Docs depends
-      // on it.
       PaginatedContentWasLaidOut(logical_offset + line_height);
       return;
     }
@@ -2355,11 +2334,6 @@ LayoutUnit LayoutBlockFlow::ApplyForcedBreak(LayoutUnit logical_offset,
   NOT_DESTROYED();
   if (!IsForcedFragmentainerBreakValue(break_value))
     return logical_offset;
-  // TODO(mstensho): honor breakValue. There are different types of forced
-  // breaks. We currently just assume that we want to break to the top of the
-  // next fragmentainer of the fragmentation context we're in. However, we may
-  // want to find the next left or right page - even if we're inside a multicol
-  // container when printing.
   if (!IsPageLogicalHeightKnown()) {
     // Page height is still unknown, so we cannot insert forced breaks.
     return logical_offset;
@@ -4306,16 +4280,10 @@ bool LayoutBlockFlow::AllowsPaginationStrut() const {
   // struts and handle them. We handle floats and regular in-flow children, and
   // that's all. We could handle this in other layout modes as well (and even
   // for out-of-flow children), but currently we don't.
-  // TODO(mstensho): But we *should*.
   if (IsOutOfFlowPositioned())
     return false;
   if (IsLayoutFlowThread()) {
     // Don't let the strut escape the fragmentation context and get lost.
-    // TODO(mstensho): If we're in a nested fragmentation context, we should
-    // ideally convert and propagate the strut to the outer fragmentation
-    // context, so that the inner one is fully pushed to the next outer
-    // fragmentainer, instead of taking up unusable space in the previous one.
-    // But currently we have no mechanism in place to handle this.
     return false;
   }
   const auto* containing_block_flow =

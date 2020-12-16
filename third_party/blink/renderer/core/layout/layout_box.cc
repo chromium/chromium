@@ -6706,8 +6706,6 @@ void LayoutBox::UpdateFragmentationInfoForChild(LayoutBox& child) {
 
 bool LayoutBox::ChildNeedsRelayoutForPagination(const LayoutBox& child) const {
   NOT_DESTROYED();
-  // TODO(mstensho): Should try to get this to work for floats too, instead of
-  // just marking and bailing here.
   if (child.IsFloating())
     return true;
   const LayoutFlowThread* flow_thread = child.FlowThreadContainingBlock();

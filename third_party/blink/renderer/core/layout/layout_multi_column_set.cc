@@ -58,7 +58,6 @@ unsigned LayoutMultiColumnSet::FragmentainerGroupIndexAtFlowThreadOffset(
   DCHECK_GT(fragmentainer_groups_.size(), 0u);
   if (flow_thread_offset <= 0)
     return 0;
-  // TODO(mstensho): Introduce an interval tree or similar to speed up this.
   for (unsigned index = 0; index < fragmentainer_groups_.size(); index++) {
     const auto& row = fragmentainer_groups_[index];
     if (rule == kAssociateWithLatterPage) {
@@ -204,8 +203,6 @@ LayoutUnit LayoutMultiColumnSet::NextLogicalTopForUnbreakableContent(
             content_logical_height);
 
   // There's a likelihood for subsequent rows to be taller than the first one.
-  // TODO(mstensho): if we're doubly nested (e.g. multicol in multicol in
-  // multicol), we need to look beyond the first row here.
   const MultiColumnFragmentainerGroup& first_row = FirstFragmentainerGroup();
   LayoutUnit first_row_logical_bottom_in_flow_thread =
       first_row.LogicalTopInFlowThread() +

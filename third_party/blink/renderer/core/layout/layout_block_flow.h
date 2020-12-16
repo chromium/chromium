@@ -1007,7 +1007,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
 
   // LayoutRubyBase objects need to be able to split and merge, moving their
   // children around (calling makeChildrenNonInline).
-  // TODO(mstensho): Try to get rid of this friendship.
   friend class LayoutRubyBase;
 
   // FIXME-BLOCKFLOW: These methods have implementations in
