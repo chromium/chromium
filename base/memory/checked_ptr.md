@@ -234,6 +234,34 @@ int** ptr_to_raw_int_ptr = reinterpret_cast<int**>(&checked_int_ptr);
 *ptr_to_raw_int_ptr = new int(123);
 ```
 
+#### Fields order leading to dereferencing a destructed CheckedPtr
+
+Fields are destructed in the reverse order of their declarations:
+
+```cpp
+    struct S {
+      Bar bar_;  // Bar is destructed last.
+      CheckedPtr<Foo> foo_ptr_;  // CheckedPtr (not Foo) is destructed first.
+    };
+```
+
+If destructor of `Bar` has a pointer to `S`, then it may try to dereference
+`s->foo_ptr_` after `CheckedPtr` has been already destructed.
+In practice this will lead to a null dereference and a crash
+(e.g. see https://crbug.com/1157988).
+
+Note that this code pattern would have resulted in an Undefined Behavior,
+even if `foo_ptr_` was a raw `Foo*` pointer (see the
+[memory-safete-dev@ discussion](https://groups.google.com/a/chromium.org/g/memory-safety-dev/c/3sEmSnFc61I/m/Ng6PyqDiAAAJ)
+for more details).
+
+Possible solutions (in no particular order):
+- Declare the `bar_` field as the very last field.
+- Declare the `foo_` field (and other POD or raw-pointer-like fields)
+  before any other fields.
+- Avoid accessing `S` from the destructor of `Bar`
+  (and in general, avoid doing significant work from destructors).
+
 #### Other
 
 TODO(bartekn): Document runtime errors encountered by BackupRefPtr
