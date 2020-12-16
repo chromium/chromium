@@ -418,6 +418,12 @@ extern const char kDesktopPWAsMigrationUserDisplayModeCleanUpDescription[];
 extern const char kDesktopPWAsAppIconShortcutsMenuName[];
 extern const char kDesktopPWAsAppIconShortcutsMenuDescription[];
 
+extern const char kDesktopPWAsAttentionBadgingCrOSName[];
+extern const char kDesktopPWAsAttentionBadgingCrOSDescription[];
+extern const char kDesktopPWAsAttentionBadgingCrOSApiAndNotifications[];
+extern const char kDesktopPWAsAttentionBadgingCrOSApiOnly[];
+extern const char kDesktopPWAsAttentionBadgingCrOSNotificationsOnly[];
+
 extern const char kDesktopPWAsElidedExtensionsMenuName[];
 extern const char kDesktopPWAsElidedExtensionsMenuDescription[];
 

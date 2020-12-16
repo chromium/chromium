@@ -164,6 +164,15 @@ const char kDebugEnableFrameToggle[]        = "debug-enable-frame-toggle";
 // apps.
 const char kDebugPackedApps[]               = "debug-packed-apps";
 
+// Enables attention badging for PWA icons in the shelf and launcher.
+const char kDesktopPWAsAttentionBadgingCrOS[] =
+    "desktop-pwas-attention-badging-cros";
+const char kDesktopPWAsAttentionBadgingCrOSApiAndNotifications[] =
+    "api-and-notifications";
+const char kDesktopPWAsAttentionBadgingCrOSApiOnly[] = "api-only";
+const char kDesktopPWAsAttentionBadgingCrOSNotificationsOnly[] =
+    "notifications-only";
+
 // Passes command line parameters to the DevTools front-end.
 const char kDevToolsFlags[]                 = "devtools-flags";
 

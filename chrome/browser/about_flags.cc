@@ -739,6 +739,19 @@ const FeatureEntry::Choice kForceTextDirectionChoices[] = {
      switches::kForceDirectionRTL},
 };
 
+const FeatureEntry::Choice kDesktopPWAsAttentionBadgingCrOSChoices[] = {
+    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
+    {flag_descriptions::kDesktopPWAsAttentionBadgingCrOSApiAndNotifications,
+     switches::kDesktopPWAsAttentionBadgingCrOS,
+     switches::kDesktopPWAsAttentionBadgingCrOSApiAndNotifications},
+    {flag_descriptions::kDesktopPWAsAttentionBadgingCrOSApiOnly,
+     switches::kDesktopPWAsAttentionBadgingCrOS,
+     switches::kDesktopPWAsAttentionBadgingCrOSApiOnly},
+    {flag_descriptions::kDesktopPWAsAttentionBadgingCrOSNotificationsOnly,
+     switches::kDesktopPWAsAttentionBadgingCrOS,
+     switches::kDesktopPWAsAttentionBadgingCrOSNotificationsOnly},
+};
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const FeatureEntry::Choice kSchedulerConfigurationChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
@@ -3351,6 +3364,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDesktopPWAsAppIconShortcutsMenuName,
      flag_descriptions::kDesktopPWAsAppIconShortcutsMenuDescription, kOsWin,
      FEATURE_VALUE_TYPE(features::kDesktopPWAsAppIconShortcutsMenu)},
+    {"enable-desktop-pwas-attention-badging-cros",
+     flag_descriptions::kDesktopPWAsAttentionBadgingCrOSName,
+     flag_descriptions::kDesktopPWAsAttentionBadgingCrOSDescription, kOsCrOS,
+     MULTI_VALUE_TYPE(kDesktopPWAsAttentionBadgingCrOSChoices)},
     {"enable-desktop-pwas-elided-extensions-menu",
      flag_descriptions::kDesktopPWAsElidedExtensionsMenuName,
      flag_descriptions::kDesktopPWAsElidedExtensionsMenuDescription, kOsDesktop,

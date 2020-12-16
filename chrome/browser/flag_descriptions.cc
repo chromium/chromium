@@ -683,6 +683,17 @@ const char kDesktopPWAsAppIconShortcutsMenuDescription[] =
     "Enable installed PWAs to include a menu of shortcuts associated with the "
     "app icon in the taskbar on Windows, or the dock on macOS or Linux.";
 
+extern const char kDesktopPWAsAttentionBadgingCrOSName[] =
+    "Desktop PWAs Attention Badging";
+extern const char kDesktopPWAsAttentionBadgingCrOSDescription[] =
+    "Enable attention badging for PWA icons in the shelf and launcher.";
+extern const char kDesktopPWAsAttentionBadgingCrOSApiAndNotifications[] =
+    "Enable for Badging API and notifications";
+extern const char kDesktopPWAsAttentionBadgingCrOSApiOnly[] =
+    "Enable for Badging API only";
+extern const char kDesktopPWAsAttentionBadgingCrOSNotificationsOnly[] =
+    "Enable for notifications only";
+
 const char kDesktopPWAsElidedExtensionsMenuName[] =
     "Desktop PWAs elided extensions menu";
 const char kDesktopPWAsElidedExtensionsMenuDescription[] =

@@ -45210,6 +45210,7 @@ from previous Chrome versions.
   <int value="887011602" label="enable-spelling-auto-correct"/>
   <int value="889837286" label="EnableHostnameSetting:enabled"/>
   <int value="892899792" label="MaterialDesignIncognitoNTP:disabled"/>
+  <int value="895622710" label="desktop-pwas-attention-badging-cros"/>
   <int value="898311758" label="ReaderMode:disabled"/>
   <int value="900614020" label="ContentSuggestionsShowSummary:disabled"/>
   <int value="902209599" label="ShelfHotseat:enabled"/>
