@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_SHARESHEET_SHARESHEET_BUBBLE_VIEW_H_
-#define CHROME_BROWSER_UI_VIEWS_SHARESHEET_SHARESHEET_BUBBLE_VIEW_H_
+#ifndef CHROME_BROWSER_UI_ASH_SHARESHEET_SHARESHEET_BUBBLE_VIEW_H_
+#define CHROME_BROWSER_UI_ASH_SHARESHEET_SHARESHEET_BUBBLE_VIEW_H_
 
 #include <vector>
 
@@ -15,7 +15,7 @@
 namespace views {
 class GridLayout;
 class Separator;
-}
+}  // namespace views
 
 namespace sharesheet {
 class SharesheetServiceDelegate;
@@ -98,4 +98,4 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView {
   SharesheetExpandButton* expand_button_ = nullptr;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_SHARESHEET_SHARESHEET_BUBBLE_VIEW_H_
+#endif  // CHROME_BROWSER_UI_ASH_SHARESHEET_SHARESHEET_BUBBLE_VIEW_H_

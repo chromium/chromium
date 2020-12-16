@@ -10,7 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharesheet/sharesheet_service.h"
 #include "chrome/browser/sharesheet/sharesheet_service_factory.h"
-#include "chrome/browser/ui/views/sharesheet/sharesheet_bubble_view.h"
+#include "chrome/browser/ui/ash/sharesheet/sharesheet_bubble_view.h"
 #include "ui/views/view.h"
 
 namespace sharesheet {

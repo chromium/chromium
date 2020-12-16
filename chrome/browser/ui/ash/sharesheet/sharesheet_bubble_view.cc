@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/sharesheet/sharesheet_bubble_view.h"
+#include "chrome/browser/ui/ash/sharesheet/sharesheet_bubble_view.h"
 
 #include <memory>
 #include <utility>
@@ -15,8 +15,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharesheet/sharesheet_metrics.h"
 #include "chrome/browser/sharesheet/sharesheet_service_delegate.h"
-#include "chrome/browser/ui/views/sharesheet/sharesheet_expand_button.h"
-#include "chrome/browser/ui/views/sharesheet/sharesheet_target_button.h"
+#include "chrome/browser/ui/ash/sharesheet/sharesheet_expand_button.h"
+#include "chrome/browser/ui/ash/sharesheet/sharesheet_target_button.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "extensions/browser/app_window/app_window.h"

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_SHARESHEET_SHARESHEET_TARGET_BUTTON_H_
-#define CHROME_BROWSER_UI_VIEWS_SHARESHEET_SHARESHEET_TARGET_BUTTON_H_
+#ifndef CHROME_BROWSER_UI_ASH_SHARESHEET_SHARESHEET_TARGET_BUTTON_H_
+#define CHROME_BROWSER_UI_ASH_SHARESHEET_SHARESHEET_TARGET_BUTTON_H_
 
 #include "base/optional.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
@@ -34,4 +34,4 @@ class SharesheetTargetButton : public views::Button {
   gfx::Size CalculatePreferredSize() const override;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_SHARESHEET_SHARESHEET_TARGET_BUTTON_H_
+#endif  // CHROME_BROWSER_UI_ASH_SHARESHEET_SHARESHEET_TARGET_BUTTON_H_

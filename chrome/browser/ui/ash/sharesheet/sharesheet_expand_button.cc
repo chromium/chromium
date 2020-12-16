@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/sharesheet/sharesheet_expand_button.h"
+#include "chrome/browser/ui/ash/sharesheet/sharesheet_expand_button.h"
 
 #include "ash/public/cpp/ash_typography.h"
 #include "chrome/app/vector_icons/vector_icons.h"

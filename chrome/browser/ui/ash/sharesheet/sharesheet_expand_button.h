@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_SHARESHEET_SHARESHEET_EXPAND_BUTTON_H_
-#define CHROME_BROWSER_UI_VIEWS_SHARESHEET_SHARESHEET_EXPAND_BUTTON_H_
+#ifndef CHROME_BROWSER_UI_ASH_SHARESHEET_SHARESHEET_EXPAND_BUTTON_H_
+#define CHROME_BROWSER_UI_ASH_SHARESHEET_SHARESHEET_EXPAND_BUTTON_H_
 
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "ui/views/controls/button/button.h"
@@ -27,4 +27,4 @@ class SharesheetExpandButton : public views::Button {
   views::Label* label_ = nullptr;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_SHARESHEET_SHARESHEET_EXPAND_BUTTON_H_
+#endif  // CHROME_BROWSER_UI_ASH_SHARESHEET_SHARESHEET_EXPAND_BUTTON_H_
