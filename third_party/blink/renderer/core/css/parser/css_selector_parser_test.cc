@@ -798,7 +798,7 @@ TEST(CSSSelectorParserTest, ImplicitShadowCrossingCombinators) {
       {
           "*::placeholder",
           {
-              {"placeholder", CSSSelector::kShadowPseudo},
+              {"placeholder", CSSSelector::kUAShadow},
               {g_null_atom, CSSSelector::kSubSelector},
           },
       },
@@ -812,7 +812,7 @@ TEST(CSSSelectorParserTest, ImplicitShadowCrossingCombinators) {
       {
           "::slotted(*)::placeholder",
           {
-              {"placeholder", CSSSelector::kShadowPseudo},
+              {"placeholder", CSSSelector::kUAShadow},
               {"slotted", CSSSelector::kShadowSlot},
               {g_null_atom, CSSSelector::kSubSelector},
           },
@@ -827,7 +827,7 @@ TEST(CSSSelectorParserTest, ImplicitShadowCrossingCombinators) {
       {
           "video::-webkit-media-controls",
           {
-              {"-webkit-media-controls", CSSSelector::kShadowPseudo},
+              {"-webkit-media-controls", CSSSelector::kUAShadow},
               {"video", CSSSelector::kSubSelector},
           },
       },

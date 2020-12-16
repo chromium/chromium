@@ -320,7 +320,6 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoHostContext:
     case kPseudoPart:
     case kPseudoState:
-    case kPseudoShadow:
     case kPseudoFullScreen:
     case kPseudoFullScreenAncestor:
     case kPseudoFullscreen:
@@ -440,7 +439,6 @@ const static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"root", CSSSelector::kPseudoRoot},
     {"scope", CSSSelector::kPseudoScope},
     {"selection", CSSSelector::kPseudoSelection},
-    {"shadow", CSSSelector::kPseudoShadow},
     {"single-button", CSSSelector::kPseudoSingleButton},
     {"start", CSSSelector::kPseudoStart},
     {"target", CSSSelector::kPseudoTarget},
@@ -633,10 +631,6 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoSlotted:
     case kPseudoTargetText:
       if (match_ != kPseudoElement)
-        pseudo_type_ = kPseudoUnknown;
-      break;
-    case kPseudoShadow:
-      if (match_ != kPseudoElement || context.IsLiveProfile())
         pseudo_type_ = kPseudoUnknown;
       break;
     case kPseudoBlinkInternalElement:
@@ -961,7 +955,7 @@ String CSSSelector::SelectorText() const {
         NOTREACHED();
         break;
       case kShadowPart:
-      case kShadowPseudo:
+      case kUAShadow:
       case kShadowSlot:
         result = builder.ToString() + result;
         break;
@@ -1156,14 +1150,6 @@ bool CSSSelector::HasSlottedPseudo() const {
   return ForAnyInTagHistory(
       [](const CSSSelector& selector) -> bool {
         return selector.GetPseudoType() == CSSSelector::kPseudoSlotted;
-      },
-      *this);
-}
-
-bool CSSSelector::HasShadowPseudo() const {
-  return ForAnyInTagHistory(
-      [](const CSSSelector& selector) -> bool {
-        return selector.GetPseudoType() == CSSSelector::kPseudoShadow;
       },
       *this);
 }

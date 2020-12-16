@@ -210,7 +210,7 @@ bool SelectorChecker::Match(const SelectorCheckingContext& context,
 #endif  // DCHECK_IS_ON()
 
   if (UNLIKELY(context.vtt_originating_element)) {
-    // A kShadowPseudo combinator is required for VTT matching.
+    // A kUAShadow combinator is required for VTT matching.
     if (context.selector->IsLastInTagHistory())
       return false;
   }
@@ -321,9 +321,6 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
             return kSelectorMatches;
         }
       }
-      if (next_context.selector->GetPseudoType() == CSSSelector::kPseudoShadow)
-        return kSelectorFailsCompletely;
-
       for (next_context.element = ParentElement(next_context);
            next_context.element;
            next_context.element = ParentElement(next_context)) {
@@ -345,19 +342,12 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
         }
       }
 
-      if (next_context.selector->GetPseudoType() == CSSSelector::kPseudoShadow)
-        return kSelectorFailsCompletely;
-
       next_context.element = ParentElement(next_context);
       if (!next_context.element)
         return kSelectorFailsCompletely;
       return MatchSelector(next_context, result);
     }
     case CSSSelector::kDirectAdjacent:
-      // Shadow roots can't have sibling elements
-      if (next_context.selector->GetPseudoType() == CSSSelector::kPseudoShadow)
-        return kSelectorFailsCompletely;
-
       if (mode_ == kResolvingStyle) {
         if (ContainerNode* parent =
                 context.element->ParentElementOrShadowRoot())
@@ -370,10 +360,6 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
       return MatchSelector(next_context, result);
 
     case CSSSelector::kIndirectAdjacent:
-      // Shadow roots can't have sibling elements
-      if (next_context.selector->GetPseudoType() == CSSSelector::kPseudoShadow)
-        return kSelectorFailsCompletely;
-
       if (mode_ == kResolvingStyle) {
         if (ContainerNode* parent =
                 context.element->ParentElementOrShadowRoot())
@@ -391,15 +377,9 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
       }
       return kSelectorFailsAllSiblings;
 
-    case CSSSelector::kShadowPseudo: {
-      DCHECK(mode_ == kQueryingRules ||
-             context.selector->GetPseudoType() != CSSSelector::kPseudoShadow);
-      if (context.selector->GetPseudoType() == CSSSelector::kPseudoShadow) {
-        UseCounter::Count(context.element->GetDocument(),
-                          WebFeature::kPseudoShadowInStaticProfile);
-      }
+    case CSSSelector::kUAShadow: {
       // If we're in the same tree-scope as the scoping element, then following
-      // a shadow descendant combinator would escape that and thus the scope.
+      // a kUAShadow combinator would escape that and thus the scope.
       if (context.scope && context.scope->OwnerShadowHost() &&
           context.scope->OwnerShadowHost()->GetTreeScope() ==
               context.element->GetTreeScope())

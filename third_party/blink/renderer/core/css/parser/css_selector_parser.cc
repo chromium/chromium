@@ -234,8 +234,6 @@ unsigned ExtractCompoundFlags(const CSSParserSelector& simple_selector,
                               CSSParserMode parser_mode) {
   if (simple_selector.Match() != CSSSelector::kPseudoElement)
     return 0;
-  if (simple_selector.GetPseudoType() == CSSSelector::kPseudoShadow)
-    return 0;
   // We don't restrict what follows custom ::-webkit-* pseudo elements in UA
   // sheets. We currently use selectors in mediaControls.css like this:
   //
@@ -646,9 +644,6 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
             return nullptr;
         }
         break;
-      case CSSSelector::kPseudoShadow:
-        disallow_nested_complex_ = true;
-        break;
       default:
         break;
     }
@@ -674,8 +669,6 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
     case CSSSelector::kPseudoIs: {
       if (!RuntimeEnabledFeatures::CSSPseudoIsEnabled())
         break;
-      if (disallow_nested_complex_)
-        return nullptr;
 
       DisallowPseudoElementsScope scope(this);
       base::AutoReset<bool> resist_namespace(&resist_default_namespace_, true);
@@ -691,8 +684,6 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
     case CSSSelector::kPseudoWhere: {
       if (!RuntimeEnabledFeatures::CSSPseudoWhereEnabled())
         break;
-      if (disallow_nested_complex_)
-        return nullptr;
 
       DisallowPseudoElementsScope scope(this);
       base::AutoReset<bool> resist_namespace(&resist_default_namespace_, true);
@@ -736,9 +727,6 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
           std::make_unique<CSSSelectorList>();
       *selector_list = ConsumeNestedSelectorList(block);
       if (!selector_list->IsValid() || !block.AtEnd())
-        return nullptr;
-
-      if (disallow_nested_complex_)
         return nullptr;
 
       selector->SetSelectorList(std::move(selector_list));

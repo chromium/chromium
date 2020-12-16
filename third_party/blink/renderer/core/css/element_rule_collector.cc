@@ -182,7 +182,7 @@ void ElementRuleCollector::CollectMatchingRulesForList(
         rejected++;
         continue;
       }
-      DCHECK_EQ(selector.Relation(), CSSSelector::kShadowPseudo);
+      DCHECK_EQ(selector.Relation(), CSSSelector::kUAShadow);
     }
 
     SelectorChecker::MatchResult result;

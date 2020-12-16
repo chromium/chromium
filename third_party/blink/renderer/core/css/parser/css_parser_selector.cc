@@ -97,8 +97,7 @@ RelationType CSSParserSelector::GetImplicitShadowCombinatorForMatching() const {
     case PseudoType::kPseudoCue:
     case PseudoType::kPseudoPlaceholder:
     case PseudoType::kPseudoFileSelectorButton:
-    case PseudoType::kPseudoShadow:
-      return RelationType::kShadowPseudo;
+      return RelationType::kUAShadow;
     case PseudoType::kPseudoPart:
       return RelationType::kShadowPart;
     default:

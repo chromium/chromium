@@ -166,7 +166,6 @@ bool SupportsInvalidation(CSSSelector::PseudoType type) {
     case CSSSelector::kPseudoPastCue:
     case CSSSelector::kPseudoDefined:
     case CSSSelector::kPseudoHost:
-    case CSSSelector::kPseudoShadow:
     case CSSSelector::kPseudoSpatialNavigationFocus:
     case CSSSelector::kPseudoSpatialNavigationInterest:
     case CSSSelector::kPseudoHasDatalist:
@@ -500,7 +499,7 @@ void RuleFeatureSet::UpdateFeaturesFromCombinator(
 
   sibling_features = nullptr;
 
-  if (last_in_compound.IsShadowSelector())
+  if (last_in_compound.IsUAShadowSelector())
     descendant_features.invalidation_flags.SetTreeBoundaryCrossing(true);
   if (last_in_compound.Relation() == CSSSelector::kShadowSlot)
     descendant_features.invalidation_flags.SetInsertionPointCrossing(true);

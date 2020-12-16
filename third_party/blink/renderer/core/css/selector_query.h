@@ -99,10 +99,6 @@ class CORE_EXPORT SelectorQuery {
   void ExecuteSlow(ContainerNode& root_node,
                    typename SelectorQueryTrait::OutputType&) const;
   template <typename SelectorQueryTrait>
-  void ExecuteSlowTraversingShadowTree(
-      ContainerNode& root_node,
-      typename SelectorQueryTrait::OutputType&) const;
-  template <typename SelectorQueryTrait>
   void Execute(ContainerNode& root_node,
                typename SelectorQueryTrait::OutputType&) const;
 
@@ -117,7 +113,6 @@ class CORE_EXPORT SelectorQuery {
   AtomicString selector_id_;
   bool selector_id_is_rightmost_ : 1;
   bool selector_id_affected_by_sibling_combinator_ : 1;
-  bool uses_shadow_pseudo_ : 1;
   bool use_slow_scan_ : 1;
 };
 

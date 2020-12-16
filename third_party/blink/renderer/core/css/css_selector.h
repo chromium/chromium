@@ -144,15 +144,33 @@ class CORE_EXPORT CSSSelector {
   };
 
   enum RelationType {
-    kSubSelector,       // No combinator
-    kDescendant,        // "Space" combinator
-    kChild,             // > combinator
-    kDirectAdjacent,    // + combinator
-    kIndirectAdjacent,  // ~ combinator
-    // Special cases for shadow DOM related selectors.
-    kShadowPseudo,              // ::shadow pseudo element
-    kShadowSlot,                // ::slotted() pseudo element
-    kShadowPart,                // ::part() pseudo element
+    // No combinator. Used between simple selectors within the same compound.
+    kSubSelector,
+    // "Space" combinator
+    kDescendant,
+    // > combinator
+    kChild,
+    // + combinator
+    kDirectAdjacent,
+    // ~ combinator
+    kIndirectAdjacent,
+    // The relation types below are implicit combinators inserted at parse time
+    // before pseudo elements which match another flat tree element than the
+    // rest of the compound.
+    //
+    // Implicit combinator inserted before pseudo elements matching an element
+    // inside a UA shadow tree. This combinator allows the selector matching to
+    // cross a shadow root.
+    //
+    // Examples:
+    // input::placeholder, video::cue(i), video::--webkit-media-controls-panel
+    kUAShadow,
+    // Implicit combinator inserted before ::slotted() selectors.
+    kShadowSlot,
+    // Implicit combinator inserted before ::part() selectors which allows
+    // matching a ::part in shadow-including descendant tree for #host in
+    // "#host::part(button)".
+    kShadowPart,
   };
 
   enum PseudoType {
@@ -256,7 +274,6 @@ class CORE_EXPORT CSSSelector {
     kPseudoHasDatalist,
     kPseudoHost,
     kPseudoHostContext,
-    kPseudoShadow,
     kPseudoSpatialNavigationFocus,
     kPseudoSpatialNavigationInterest,
     kPseudoIsHtml,
@@ -339,7 +356,7 @@ class CORE_EXPORT CSSSelector {
   bool IsAdjacentSelector() const {
     return relation_ == kDirectAdjacent || relation_ == kIndirectAdjacent;
   }
-  bool IsShadowSelector() const { return relation_ == kShadowPseudo; }
+  bool IsUAShadowSelector() const { return relation_ == kUAShadow; }
   bool IsAttributeSelector() const {
     return match_ >= kFirstAttributeSelectorMatch;
   }
@@ -396,7 +413,6 @@ class CORE_EXPORT CSSSelector {
   bool IsAllowedAfterPart() const;
 
   bool HasSlottedPseudo() const;
-  bool HasShadowPseudo() const;
   // Returns true if the immediately preceeding simple selector is ::part.
   bool FollowsPart() const;
 

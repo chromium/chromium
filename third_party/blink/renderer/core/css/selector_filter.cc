@@ -172,7 +172,7 @@ void SelectorFilter::CollectIdentifierHashes(
         return;
       case CSSSelector::kDescendant:
       case CSSSelector::kChild:
-      case CSSSelector::kShadowPseudo:
+      case CSSSelector::kUAShadow:
       case CSSSelector::kShadowPart:
         skip_over_subselectors = false;
         CollectDescendantSelectorIdentifierHashes(*current, hash);

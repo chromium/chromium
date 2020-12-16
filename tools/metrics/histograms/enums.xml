@@ -27271,7 +27271,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="464" label="FontFaceSetReady"/>
   <int value="465" label="XMLHttpRequestSynchronous"/>
   <int value="466" label="CSSSelectorPseudoUnresolved"/>
-  <int value="467" label="CSSSelectorPseudoShadow"/>
+  <int value="467" label="OBSOLETE_CSSSelectorPseudoShadow"/>
   <int value="468" label="OBSOLETE_CSSSelectorPseudoContent"/>
   <int value="469" label="CSSSelectorPseudoHost"/>
   <int value="470" label="CSSSelectorPseudoHostContext"/>
@@ -29019,7 +29019,7 @@ Called by update_use_counter_feature_enum.py.-->
       label="V8LineOrParagraphSeparatorAsLineTerminator (obsolete)"/>
   <int value="2162" label="AnimationSetPlaybackRateCompensatorySeek"/>
   <int value="2163" label="OBSOLETE_DeepCombinatorInStaticProfile"/>
-  <int value="2164" label="PseudoShadowInStaticProfile"/>
+  <int value="2164" label="OBSOLETE_PseudoShadowInStaticProfile"/>
   <int value="2165" label="SchemeBypassesCSP"/>
   <int value="2166" label="InnerSchemeBypassesCSP"/>
   <int value="2167" label="SameOriginApplicationOctetStream"/>

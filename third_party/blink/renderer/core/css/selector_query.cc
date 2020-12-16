@@ -301,57 +301,6 @@ void SelectorQuery::ExecuteSlow(
   }
 }
 
-// FIXME: Move the following helper functions, AuthorShadowRootOf,
-// NextTraversingShadowTree to the best place, e.g. NodeTraversal.
-static ShadowRoot* AuthorShadowRootOf(const ContainerNode& node) {
-  if (!node.IsElementNode())
-    return nullptr;
-  ShadowRoot* root = node.GetShadowRoot();
-  if (root && root->IsOpen())
-    return root;
-  return nullptr;
-}
-
-static ContainerNode* NextTraversingShadowTree(const ContainerNode& node,
-                                               const ContainerNode* root_node) {
-  if (ShadowRoot* shadow_root = AuthorShadowRootOf(node))
-    return shadow_root;
-
-  const ContainerNode* current = &node;
-  while (current) {
-    if (Element* next = ElementTraversal::Next(*current, root_node))
-      return next;
-
-    if (!current->IsInShadowTree())
-      return nullptr;
-
-    ShadowRoot* shadow_root = current->ContainingShadowRoot();
-    if (shadow_root == root_node)
-      return nullptr;
-
-    current = &shadow_root->host();
-  }
-  return nullptr;
-}
-
-template <typename SelectorQueryTrait>
-void SelectorQuery::ExecuteSlowTraversingShadowTree(
-    ContainerNode& root_node,
-    typename SelectorQueryTrait::OutputType& output) const {
-  for (ContainerNode* node = NextTraversingShadowTree(root_node, &root_node);
-       node; node = NextTraversingShadowTree(*node, &root_node)) {
-    auto* element = DynamicTo<Element>(node);
-    if (!element)
-      continue;
-    QUERY_STATS_INCREMENT(slow_traversing_shadow_tree_scan);
-    if (!SelectorListMatches(root_node, *element))
-      continue;
-    SelectorQueryTrait::AppendElement(output, *element);
-    if (SelectorQueryTrait::kShouldOnlyMatchFirstElement)
-      return;
-  }
-}
-
 template <typename SelectorQueryTrait>
 void SelectorQuery::ExecuteWithId(
     ContainerNode& root_node,
@@ -413,16 +362,11 @@ void SelectorQuery::Execute(
     return;
 
   if (use_slow_scan_) {
-    if (uses_shadow_pseudo_) {
-      ExecuteSlowTraversingShadowTree<SelectorQueryTrait>(root_node, output);
-    } else {
-      ExecuteSlow<SelectorQueryTrait>(root_node, output);
-    }
+    ExecuteSlow<SelectorQueryTrait>(root_node, output);
     return;
   }
 
   DCHECK_EQ(selectors_.size(), 1u);
-  DCHECK(!uses_shadow_pseudo_);
 
   // In quirks mode getElementById("a") is case sensitive and should only
   // match elements with lowercase id "a", but querySelector is case-insensitive
@@ -470,7 +414,6 @@ SelectorQuery::SelectorQuery(CSSSelectorList selector_list)
     : selector_list_(std::move(selector_list)),
       selector_id_is_rightmost_(true),
       selector_id_affected_by_sibling_combinator_(false),
-      uses_shadow_pseudo_(false),
       use_slow_scan_(true) {
   selectors_.ReserveInitialCapacity(selector_list_.ComputeLength());
   for (const CSSSelector* selector = selector_list_.First(); selector;
@@ -478,10 +421,9 @@ SelectorQuery::SelectorQuery(CSSSelectorList selector_list)
     if (selector->MatchesPseudoElement())
       continue;
     selectors_.UncheckedAppend(selector);
-    uses_shadow_pseudo_ |= selector->HasShadowPseudo();
   }
 
-  if (selectors_.size() == 1 && !uses_shadow_pseudo_) {
+  if (selectors_.size() == 1) {
     use_slow_scan_ = false;
     for (const CSSSelector* current = selectors_[0]; current;
          current = current->TagHistory()) {
