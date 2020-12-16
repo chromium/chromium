@@ -51,6 +51,9 @@
 <message desc="Label for option to show navigation controls, such as going to the previous or next paragraph, when Select-to-speak is activated." name="IDS_SELECT_TO_SPEAK_OPTIONS_NAVIGATION_CONTROLS_DESCRIPTION">
   Enable navigation controls
 </message>
+<message desc="Subtitle for option to show navigation controls, such as going to the previous or next paragraph, when Select-to-speak is activated." name="IDS_SELECT_TO_SPEAK_OPTIONS_NAVIGATION_CONTROLS_SUBTITLE">
+  Provides controls to speed up, slow down, and pause the reading voice
+</message>
 <message desc="Link to the Text-to-Speech settings page." name="IDS_SELECT_TO_SPEAK_OPTIONS_TEXT_TO_SPEECH_SETTINGS">
   Personalize Text-to-Speech settings
 </message>

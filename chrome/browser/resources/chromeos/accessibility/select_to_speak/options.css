@@ -206,3 +206,15 @@ label {
   margin: 2px 0 2px 0;
   padding: 0 4px 0 4px;
 }
+
+.subtitle {
+  color: rgb(95, 99, 104);
+}
+
+#navigationControlsOption {
+  padding: 10px 20px;
+}
+
+#navigationControlsOption label {
+  line-height: 36px;
+}

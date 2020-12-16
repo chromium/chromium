@@ -792,14 +792,14 @@ This file contains the strings for ash.
       <message name="IDS_ASH_SELECT_TO_SPEAK_PAUSE" desc="The label for the Select-to-speak pause button, that allows users to pause text-to-speech playback.">
         Pause
       </message>
-      <message name="IDS_ASH_SELECT_TO_SPEAK_RESUME" desc="The label for the Select-to-speak resume button, that allows users to resume text-to-speech playback.">
-        Resume
+      <message name="IDS_ASH_SELECT_TO_SPEAK_RESUME" desc="The label for the Select-to-speak resume button, that allows users to continue text-to-speech playback.">
+        Continue
       </message>
       <message name="IDS_ASH_SELECT_TO_SPEAK_READING_SPEED" desc="The label for the Select-to-speak reading speed button, that allows users to update the rate of text-to-speech playback.">
         Reading speed
       </message>
-      <message name="IDS_ASH_SELECT_TO_SPEAK_EXIT" desc="The label for the Select-to-speak exit button, that stops Select-to-speak.">
-        Exit Select-to-speak
+      <message name="IDS_ASH_SELECT_TO_SPEAK_EXIT" desc="The label for the Select-to-speak close button, that stops Select-to-speak.">
+        Close Select-to-speak
       </message>
       <message name="IDS_ASH_SELECT_TO_SPEAK_DEFAULT_OPTION" desc="The label for the Select-to-speak reading speed option where users can select their default system text-to-speech rate.">
         Default
