@@ -546,12 +546,24 @@ Polymer({
     return cr.icon.getImage(iconUrl);
   },
 
+  /**
+   * @return {string}
+   * @private
+   */
   getProfileName_() {
     if (this.isAccountManagerEnabled_ &&
         this.isAccountManagementFlowsV2Enabled_) {
       return loadTimeData.getString('osProfileName');
     }
     return this.profileName_;
+  },
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getSyncSetupIcon_() {
+    return this.isAccountManagementFlowsV2Enabled_ ? 'cr:sync' : '';
   },
 
   /**

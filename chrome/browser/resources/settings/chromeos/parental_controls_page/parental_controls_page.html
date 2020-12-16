@@ -17,6 +17,10 @@
       cr-link-row {
         --cr-section-padding: 0;
       }
+      /* The same width as in cr-link-row */
+      .start-icon {
+        width: var(--cr-link-row-icon-width, var(--cr-icon-size));
+      }
     </style>
     <div id="parental-controls-item" class="settings-box two-line">
       <template is="dom-if" if="[[isChild_]]">
@@ -28,7 +32,11 @@
         </cr-link-row>
       </template>
       <template is="dom-if" if="[[!isChild_]]">
-        <div class="start settings-box-text">
+        <template is="dom-if" if="[[isAccountManagementFlowsV2Enabled_]]">
+          <iron-icon class="start-icon" icon="cr20:kite"></iron-icon>
+        </template>
+        <div class$="[[getLabelClassList_(
+                        isAccountManagementFlowsV2Enabled_)]]">
           <div id="label" aria-hidden="true">
             $i18n{parentalControlsPageTitle}
           </div>

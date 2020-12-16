@@ -30,6 +30,18 @@ Polymer({
         return navigator.onLine;
       }
     },
+
+    /**
+     * True if redesign of account management flows is enabled.
+     * @private
+     */
+    isAccountManagementFlowsV2Enabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('isAccountManagementFlowsV2Enabled');
+      },
+      readOnly: true,
+    },
   },
 
   /** @override */
@@ -79,6 +91,16 @@ Polymer({
     } else {
       return this.i18n('parentalControlsPageConnectToInternetLabel');
     }
+  },
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getLabelClassList_() {
+    return this.isAccountManagementFlowsV2Enabled_ ?
+        'middle settings-box-text' :
+        'start settings-box-text';
   },
 
   /** @private */

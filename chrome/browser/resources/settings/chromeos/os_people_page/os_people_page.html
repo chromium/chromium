@@ -41,6 +41,10 @@
 <dom-module id="os-settings-people-page">
   <template>
     <style include="settings-shared iron-flex">
+      :host {
+        --icon-width: 40px;
+      }
+
       .sync-row {
         align-items: center;
         flex: auto;
@@ -59,8 +63,12 @@
       }
 
       cr-link-row {
-        --cr-link-row-icon-width: 40px;
+        --cr-link-row-icon-width: var(--icon-width);
         border-top: var(--cr-separator-line);
+      }
+
+      settings-parental-controls-page {
+        --cr-link-row-icon-width: var(--icon-width);
       }
 
       .icon-container {
@@ -107,6 +115,8 @@
         </div>
 
         <cr-link-row id="sync-setup"
+            start-icon="[[getSyncSetupIcon_(
+                            isAccountManagementFlowsV2Enabled_)]]"
             label="[[getSyncRowLabel_()]]"
             sub-label="[[getSyncAndGoogleServicesSubtext_(syncStatus)]]"
             on-click="onSyncTap_"
