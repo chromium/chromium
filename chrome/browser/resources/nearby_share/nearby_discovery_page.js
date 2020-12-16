@@ -205,11 +205,18 @@ Polymer({
     getDiscoveryManager()
         .startDiscovery(this.mojoEventTarget_.$.bindNewPipeAndPassRemote())
         .then(response => {
-          if (!response.success) {
-            this.errorTitle_ = this.i18n('nearbyShareErrorCantShare');
-            this.errorDescription_ =
-                this.i18n('nearbyShareErrorSomethingWrong');
-            return;
+          switch (response.result) {
+            case nearbyShare.mojom.StartDiscoveryResult.kErrorGeneric:
+              this.errorTitle_ = this.i18n('nearbyShareErrorCantShare');
+              this.errorDescription_ =
+                  this.i18n('nearbyShareErrorSomethingWrong');
+              return;
+            case nearbyShare.mojom.StartDiscoveryResult
+                .kErrorInProgressTransferring:
+              this.errorTitle_ = this.i18n('nearbyShareErrorCantShare');
+              this.errorDescription_ =
+                  this.i18n('nearbyShareErrorTransferInProgress');
+              return;
           }
         });
   },

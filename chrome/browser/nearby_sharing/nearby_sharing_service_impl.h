@@ -121,6 +121,8 @@ class NearbySharingServiceImpl
                             const std::vector<uint8_t>& endpoint_info,
                             NearbyConnection* connection) override;
 
+  bool IsTransferring() const override;
+
   // Test methods
   void FlushMojoForTesting();
   void set_free_disk_space_for_testing(int64_t free_disk_space) {

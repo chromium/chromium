@@ -143,25 +143,27 @@
       <nearby-preview payload-preview="[[payloadPreview]]"
           disabled="[[errorTitle_]]">
       </nearby-preview>
-      <div id="placeholder"
-          hidden="[[!isShareTargetsEmpty_(shareTargets_.*)]]">
-        $i18n{nearbyShareDiscoveryPagePlaceholder}
-      </div>
-      <template is="dom-if" if="[[!isShareTargetsEmpty_(shareTargets_.*)]]">
-        <iron-list items="[[shareTargets_]]" id="deviceList"
-            selected-item="{{selectedShareTarget}}"
-            on-selected-item-changed="onSelectedShareTargetChanged_"
-            preserve-focus selection-enabled
-            role="radiogroup" aria-live="polite"
-            aria-label="$i18n{nearbyShareDiscoveryPageSubtitle}">
-          <template>
-            <nearby-device tabindex$="[[tabIndex]]" share-target="[[item]]"
-                is-selected="[[selected]]"
-                role="radio"
-                aria-checked$="[[boolToString_(selected)]]">
-            </nearby-device>
-          </template>
-        </iron-list>
+      <template is="dom-if" if="[[!errorTitle_]]" restamp>
+        <div id="placeholder"
+            hidden="[[!isShareTargetsEmpty_(shareTargets_.*)]]">
+          $i18n{nearbyShareDiscoveryPagePlaceholder}
+        </div>
+        <template is="dom-if" if="[[!isShareTargetsEmpty_(shareTargets_.*)]]">
+          <iron-list items="[[shareTargets_]]" id="deviceList"
+              selected-item="{{selectedShareTarget}}"
+              on-selected-item-changed="onSelectedShareTargetChanged_"
+              preserve-focus selection-enabled
+              role="radiogroup" aria-live="polite"
+              aria-label="$i18n{nearbyShareDiscoveryPageSubtitle}">
+            <template>
+              <nearby-device tabindex$="[[tabIndex]]" share-target="[[item]]"
+                  is-selected="[[selected]]"
+                  role="radio"
+                  aria-checked$="[[boolToString_(selected)]]">
+              </nearby-device>
+            </template>
+          </iron-list>
+        </template>
       </template>
     </div>
     <!-- TODO(crbug.com/1149546) factor error section into its own component -->

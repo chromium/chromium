@@ -3130,6 +3130,10 @@ void NearbySharingServiceImpl::OnIncomingConnectionDisconnected(
   UnregisterShareTarget(share_target);
 }
 
+bool NearbySharingServiceImpl::IsTransferring() const {
+  return is_transferring_;
+}
+
 void NearbySharingServiceImpl::OnOutgoingConnectionDisconnected(
     const ShareTarget& share_target) {
   ShareTargetInfo* info = GetShareTargetInfo(share_target);

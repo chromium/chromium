@@ -178,6 +178,14 @@ void NearbyPerSessionDiscoveryManager::OnShareTargetLost(
 void NearbyPerSessionDiscoveryManager::StartDiscovery(
     mojo::PendingRemote<nearby_share::mojom::ShareTargetListener> listener,
     StartDiscoveryCallback callback) {
+  if (nearby_sharing_service_->IsTransferring()) {
+    // Is there is currently a file transfer ongoing, return early with the
+    // corresponding error code.
+    std::move(callback).Run(nearby_share::mojom::StartDiscoveryResult::
+                                kErrorInProgressTransferring);
+    return;
+  }
+
   discovery_start_time_ = base::TimeTicks::Now();
 
   // Starting discovery again closes any previous discovery session.
@@ -198,7 +206,8 @@ void NearbyPerSessionDiscoveryManager::StartDiscovery(
     UpdateFurthestDiscoveryProgressIfNecessary(
         DiscoveryProgress::kFailedToStartDiscovery);
     share_target_listener_.reset();
-    std::move(callback).Run(/*success=*/false);
+    std::move(callback).Run(
+        nearby_share::mojom::StartDiscoveryResult::kErrorGeneric);
     return;
   }
 
@@ -209,7 +218,7 @@ void NearbyPerSessionDiscoveryManager::StartDiscovery(
   // UnregisterSendSurface is called so that the transfer update listeners can
   // get updates even if Discovery is stopped.
   registered_as_send_surface_ = true;
-  std::move(callback).Run(/*success=*/true);
+  std::move(callback).Run(nearby_share::mojom::StartDiscoveryResult::kSuccess);
 }
 
 void NearbyPerSessionDiscoveryManager::SelectShareTarget(

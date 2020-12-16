@@ -153,6 +153,33 @@ suite('DiscoveryPageTest', function() {
         discoveryPageElement.$$('nearby-preview').payloadPreview.description);
   });
 
+  test('error state with generic error', async function() {
+    discoveryManager.startDiscoveryResult =
+        nearbyShare.mojom.StartDiscoveryResult.kErrorGeneric;
+    discoveryPageElement.fire('view-enter-start');
+    await discoveryManager.whenCalled('startDiscovery');
+    flush();
+
+    const expectedMessage = 'Something went wrong. Please try again.';
+    assertEquals(
+        expectedMessage,
+        discoveryPageElement.$$('#errorDescription').textContent.trim());
+  });
+
+  test('error state with in progress transfer', async function() {
+    discoveryManager.startDiscoveryResult =
+        nearbyShare.mojom.StartDiscoveryResult.kErrorInProgressTransferring;
+    discoveryPageElement.fire('view-enter-start');
+    await discoveryManager.whenCalled('startDiscovery');
+    flush();
+
+    const expectedMessage = 'You can only share one file at a time.' +
+        ' Try again when the current transfer is complete.';
+    assertEquals(
+        expectedMessage,
+        discoveryPageElement.$$('#errorDescription').textContent.trim());
+  });
+
   test('selects share target with success', async function() {
     const created = await setupShareTarget();
     discoveryPageElement.selectedShareTarget = created;

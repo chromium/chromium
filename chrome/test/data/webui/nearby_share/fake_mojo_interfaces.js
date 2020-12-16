@@ -53,6 +53,7 @@ export class FakeDiscoveryManagerRemote extends TestBrowserProxy {
       confirmationManager: null,
     };
     this.shareDescription = 'Test is a test share';
+    this.startDiscoveryResult = nearbyShare.mojom.StartDiscoveryResult.kSuccess;
   }
 
   /**
@@ -79,9 +80,12 @@ export class FakeDiscoveryManagerRemote extends TestBrowserProxy {
     return this.selectShareTargetResult;
   }
 
+  /**
+   * @param {nearbyShare.mojom.ShareTargetListenerRemote} listener
+   */
   async startDiscovery(listener) {
     this.methodCalled('startDiscovery', listener);
-    return {success: true};
+    return {result: this.startDiscoveryResult};
   }
 }
 

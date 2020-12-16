@@ -40,6 +40,7 @@ class MockNearbySharingService : public NearbySharingService {
               (override));
   MOCK_METHOD(StatusCodes, ClearForegroundReceiveSurfaces, (), (override));
   MOCK_METHOD(bool, IsInHighVisibility, (), (override));
+  MOCK_METHOD(bool, IsTransferring, (), (const override));
   MOCK_METHOD(StatusCodes,
               SendAttachments,
               (const ShareTarget&, std::vector<std::unique_ptr<Attachment>>),

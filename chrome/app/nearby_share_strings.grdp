@@ -134,6 +134,9 @@
   <message name="IDS_NEARBY_ERROR_NO_RESPONSE" desc="Notify user that the file share failed because the receiver neither accepted nor declined the share. Suggest trying again.">
     The device you're sharing with didn't respond. Please try again.
   </message>
+  <message name="IDS_NEARBY_ERROR_TRANSFER_IN_PROGRESS" desc="Notify user that they are unable to start a Nearby Share because there is already a Nearby Share file transfer in progress. Suggest trying again after the file transfer is complete.">
+    You can only share one file at a time. Try again when the current transfer is complete.
+  </message>
   <message name="IDS_NEARBY_ERROR_NOT_ENOUGH_SPACE" desc="Notify user that the file can't be shared because there isn't enough disk space to store it. Displayed as a subtitle under a more generic file-couldn't-be-shared message.">
     Not enough disk space
   </message>

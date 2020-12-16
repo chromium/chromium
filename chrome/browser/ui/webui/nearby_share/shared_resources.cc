@@ -71,6 +71,8 @@ void RegisterNearbySharedStrings(content::WebUIDataSource* data_source) {
       {"nearbyShareErrorCantShare", IDS_NEARBY_ERROR_CANT_SHARE},
       {"nearbyShareErrorNoResponse", IDS_NEARBY_ERROR_NO_RESPONSE},
       {"nearbyShareErrorNotEnoughSpace", IDS_NEARBY_ERROR_NOT_ENOUGH_SPACE},
+      {"nearbyShareErrorTransferInProgress",
+       IDS_NEARBY_ERROR_TRANSFER_IN_PROGRESS},
       {"nearbyShareErrorRejected", IDS_NEARBY_ERROR_REJECTED},
       {"nearbyShareErrorSomethingWrong", IDS_NEARBY_ERROR_SOMETHING_WRONG},
       {"nearbyShareErrorTimeOut", IDS_NEARBY_ERROR_TIME_OUT},

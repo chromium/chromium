@@ -120,6 +120,17 @@ interface TransferUpdateListener {
   OnTransferUpdate(TransferStatus status, string? token);
 };
 
+// This enum contains the results from attempting to to start nearby discovery.
+enum StartDiscoveryResult {
+  // Nearby was able to start its discovery process sucessfully.
+  kSuccess,
+  // Nearby cannot start discovery because there is an existing file transfer
+  // in progress.
+  kErrorInProgressTransferring,
+  // Generic error for failing to start the nearby discovery process.
+  kErrorGeneric,
+};
+
 // Manager interface for nearby device discovery. Implemented on the browser
 // process and used by UI surfaces. The discovery manager is also responsible
 // for previewing the current share with GetPayloadPreview() so the user can
@@ -128,7 +139,7 @@ interface DiscoveryManager {
   // Starts discovering nearby devices. The passed |listener| will be called
   // with any discovered devices.
   StartDiscovery(pending_remote<ShareTargetListener> listener)
-      => (bool success);
+      => (StartDiscoveryResult result);
 
   // Select a previously discovered |share_target_id| to send data to. On
   // success this will return valid ConfirmationManager and
