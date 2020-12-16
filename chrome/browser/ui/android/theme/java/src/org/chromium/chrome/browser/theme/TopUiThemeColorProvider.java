@@ -56,11 +56,11 @@ public class TopUiThemeColorProvider extends ThemeColorProvider {
         mTabObserver = new CurrentTabObserver(tabSupplier, new EmptyTabObserver() {
             @Override
             public void onDidChangeThemeColor(Tab tab, int themeColor) {
-                updateColor(tab, themeColor, false);
+                updateColor(tab, themeColor, true);
             }
         });
         tabSupplier.addObserver((tab) -> {
-            if (tab != null) updateColor(tab, tab.getThemeColor(), true);
+            if (tab != null) updateColor(tab, tab.getThemeColor(), false);
         });
         mActivityThemeColorSupplier = activityThemeColorSupplier;
         mIsTabletSupplier = isTabletSupplier;
@@ -80,7 +80,13 @@ public class TopUiThemeColorProvider extends ThemeColorProvider {
         mIsDefaultColorUsed = isUsingDefaultColor(tab, themeColor);
     }
 
-    private int calculateColor(Tab tab, int themeColor) {
+    /**
+     * Calculate theme color to be used for a given tab.
+     * @param tab Tab to get the theme color for.
+     * @param themeColor Initial color to calculate the theme color with.
+     * @return Final theme color for a given tab, with other signals taken into account.
+     */
+    public int calculateColor(Tab tab, int themeColor) {
         // This method is used not only for the current tab but also for
         // any given tab. Therefore it should not alter any class state.
         boolean isThemingAllowed = isThemingAllowed(tab);
