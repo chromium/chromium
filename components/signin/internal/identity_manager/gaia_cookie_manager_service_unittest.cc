@@ -830,7 +830,7 @@ TEST_F(GaiaCookieManagerServiceTest, ListAccountsAfterOnCookieChange) {
       "[\"f\", [[\"b\", 0, \"n\", \"a@b.com\", \"p\", 0, 0, 0, 0, 1, \"8\"]]]";
   SimulateListAccountsSuccess(&helper, data);
 
-  // Sanity-check that ListAccounts returns the cached data.
+  // Confidence check that ListAccounts returns the cached data.
   ASSERT_TRUE(helper.ListAccounts(&list_accounts, &signed_out_accounts));
   ASSERT_TRUE(AreAccountListsEqual(nonempty_list_accounts, list_accounts));
   ASSERT_TRUE(signed_out_accounts.empty());
