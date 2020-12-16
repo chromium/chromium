@@ -4391,7 +4391,7 @@ TEST_P(SSLClientSocketVersionTest, CTIsRequiredByExpectCT) {
   const base::Time expiry = current_time + base::TimeDelta::FromSeconds(1000);
   transport_security_state_->AddExpectCT(
       host_port_pair().host(), expiry, true /* enforce */,
-      GURL("https://example-report.test"), NetworkIsolationKey());
+      GURL("https://example-report.test"), network_isolation_key);
   MockExpectCTReporter reporter;
   transport_security_state_->SetExpectCTReporter(&reporter);
 
