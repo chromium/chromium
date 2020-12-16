@@ -2,22 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Polymer, html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {FocusGrid} from 'chrome://resources/js/cr/ui/focus_grid.m.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.m.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import './shared_style.js';
 import './synced_device_card.js';
 import './strings.js';
+
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {FocusGrid} from 'chrome://resources/js/cr/ui/focus_grid.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 import {BrowserService} from './browser_service.js';
+import {SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram} from './constants.js';
 import {ForeignSession, ForeignSessionTab} from './externs.js';
-import {SyncedTabsHistogram, SYNCED_TABS_HISTOGRAM_NAME} from './constants.js';
 
 /**
  * @typedef {{device: string,
@@ -235,8 +237,7 @@ Polymer({
    * @param {boolean} guestSession
    * @return {boolean}
    */
-  showNoSyncedMessage(
-      signInState, syncedDevicesLength, guestSession) {
+  showNoSyncedMessage(signInState, syncedDevicesLength, guestSession) {
     if (guestSession) {
       return true;
     }

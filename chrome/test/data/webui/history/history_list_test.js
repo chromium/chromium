@@ -253,8 +253,7 @@ suite(history_list_test.suiteName, function() {
           assertFalse(field.showingSearch);
 
           const modifier = isMac ? 'meta' : 'ctrl';
-          pressAndReleaseKeyOn(
-              document.body, 65, modifier, 'a');
+          pressAndReleaseKeyOn(document.body, 65, modifier, 'a');
 
           assertDeepEquals(
               [false, false, false, false],
@@ -641,8 +640,7 @@ suite(history_list_test.suiteName, function() {
 
           // Key event should be ignored.
           assertEquals(1, testService.getCallCount('removeVisits'));
-          pressAndReleaseKeyOn(
-              document.body, 46, '', 'Delete');
+          pressAndReleaseKeyOn(document.body, 46, '', 'Delete');
 
           return flushTasks();
         })
@@ -687,8 +685,7 @@ suite(history_list_test.suiteName, function() {
           items = polymerSelectAll(element, 'history-item');
 
           // Dialog should not appear when there is no item selected.
-          pressAndReleaseKeyOn(
-              document.body, 46, '', 'Delete');
+          pressAndReleaseKeyOn(document.body, 46, '', 'Delete');
           return flushTasks();
         })
         .then(function() {
@@ -699,8 +696,7 @@ suite(history_list_test.suiteName, function() {
 
           assertEquals(2, toolbar.count);
 
-          pressAndReleaseKeyOn(
-              document.body, 46, '', 'Delete');
+          pressAndReleaseKeyOn(document.body, 46, '', 'Delete');
           return flushTasks();
         })
         .then(function() {
@@ -708,8 +704,7 @@ suite(history_list_test.suiteName, function() {
           element.$$('.cancel-button').click();
           assertFalse(dialog.open);
 
-          pressAndReleaseKeyOn(
-              document.body, 8, '', 'Backspace');
+          pressAndReleaseKeyOn(document.body, 8, '', 'Backspace');
           return flushTasks();
         })
         .then(function() {

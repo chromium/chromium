@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 import {BrowserService} from './browser_service.js';
-import {HistoryQuery, HistoryEntry, QueryResult} from './externs.js';
+import {HistoryEntry, HistoryQuery, QueryResult} from './externs.js';
 import {QueryState} from './externs.js';
 
 Polymer({

@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 import {BrowserService} from 'chrome://history/history.js';
-import {TestBrowserService} from 'chrome://test/history/test_browser_service.js';
-import {flushTasks} from 'chrome://test/test_util.m.js';
 import {isMac} from 'chrome://resources/js/cr.m.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+import {TestBrowserService} from 'chrome://test/history/test_browser_service.js';
+import {flushTasks} from 'chrome://test/test_util.m.js';
 
 suite('<history-toolbar>', function() {
   let app;
@@ -51,8 +51,7 @@ suite('<history-toolbar>', function() {
     assertTrue(field.showingSearch);
     assertEquals(field.$.searchInput, field.root.activeElement);
 
-    pressAndReleaseKeyOn(
-        field.$.searchInput, 27, '', 'Escape');
+    pressAndReleaseKeyOn(field.$.searchInput, 27, '', 'Escape');
     assertFalse(field.showingSearch, 'Pressing escape closes field.');
     assertNotEquals(field.$.searchInput, field.root.activeElement);
   });

@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 import {BrowserService, ensureLazyLoaded} from 'chrome://history/history.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {TestBrowserService} from 'chrome://test/history/test_browser_service.js';
 import {createHistoryEntry, createHistoryInfo} from 'chrome://test/history/test_util.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {flushTasks} from 'chrome://test/test_util.m.js';
 
 suite('history-toolbar', function() {
@@ -89,5 +89,4 @@ suite('history-toolbar', function() {
           assertFalse(toolbar.spinnerActive);
         });
   });
-
 });

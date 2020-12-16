@@ -6,4 +6,4 @@ import './app.js';
 
 export {ensureLazyLoaded, listenForPrivilegedLinkClicks} from './app.js';
 export {BrowserService} from './browser_service.js';
-export {HistoryPageViewHistogram, SyncedTabsHistogram, SYNCED_TABS_HISTOGRAM_NAME} from './constants.js';
+export {HistoryPageViewHistogram, SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram} from './constants.js';
