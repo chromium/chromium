@@ -50,6 +50,7 @@ class TestAppListColorProvider : public AppListColorProvider {
   SkColor GetFocusRingColor() const override;
   SkColor GetFolderItemFocusRingColor() const override;
   SkColor GetPrimaryIconColor(SkColor default_color) const override;
+  SkColor GetContextMenuHighlightColor(bool is_in_folder) const override;
   float GetFolderBackgrounBlurSigma() const override;
 };
 

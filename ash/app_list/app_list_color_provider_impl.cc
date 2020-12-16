@@ -233,6 +233,13 @@ SkColor AppListColorProviderImpl::GetPrimaryIconColor(
       AshColorProvider::ContentLayerType::kIconColorPrimary, default_color);
 }
 
+SkColor AppListColorProviderImpl::GetContextMenuHighlightColor(
+    bool is_in_folder) const {
+  return DeprecatedGetInkDropRippleColor(
+      is_in_folder ? SkColorSetA(gfx::kGoogleGrey900, 21)
+                   : SkColorSetA(SK_ColorWHITE, 41));
+}
+
 float AppListColorProviderImpl::GetFolderBackgrounBlurSigma() const {
   return static_cast<float>(AshColorProvider::LayerBlurSigma::kBlurDefault);
 }

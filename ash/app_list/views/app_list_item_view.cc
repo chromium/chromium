@@ -72,14 +72,6 @@ constexpr float kCardifyIconScale = 0.84f;
 // The drag and drop icon scaling up or down animation transition duration.
 constexpr int kDragDropAppIconScaleTransitionInMs = 200;
 
-// The color of an item selected via right-click context menu.
-constexpr SkColor kContextSelection =
-    SkColorSetA(SK_ColorWHITE, 41);  // 16% opacity
-
-// The color of an item selected via right-click context menu in a folder.
-constexpr SkColor kContextSelectionFolder =
-    SkColorSetA(gfx::kGoogleGrey900, 21);
-
 // The width of the focus ring within a folder.
 constexpr int kFocusRingWidth = 2;
 
@@ -696,8 +688,8 @@ void AppListItemView::PaintButtonContents(gfx::Canvas* canvas) {
       flags.setStrokeWidth(kFocusRingWidth);
     } else {
       // If a context menu is open, we should instead use a grey selection.
-      flags.setColor(apps_grid_view_->is_in_folder() ? kContextSelectionFolder
-                                                     : kContextSelection);
+      flags.setColor(AppListColorProvider::Get()->GetContextMenuHighlightColor(
+          apps_grid_view_->is_in_folder()));
       flags.setStyle(cc::PaintFlags::kFill_Style);
     }
     gfx::Rect selection_highlight_bounds = GetContentsBounds();

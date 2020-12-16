@@ -56,6 +56,7 @@ class ASH_PUBLIC_EXPORT AppListColorProvider {
   virtual SkColor GetFocusRingColor() const = 0;
   virtual SkColor GetFolderItemFocusRingColor() const = 0;
   virtual SkColor GetPrimaryIconColor(SkColor default_color) const = 0;
+  virtual SkColor GetContextMenuHighlightColor(bool is_in_folder) const = 0;
   virtual float GetFolderBackgrounBlurSigma() const = 0;
 
  protected:

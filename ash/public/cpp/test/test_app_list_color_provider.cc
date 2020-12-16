@@ -151,6 +151,12 @@ SkColor TestAppListColorProvider::GetPrimaryIconColor(
   return default_color;
 }
 
+SkColor TestAppListColorProvider::GetContextMenuHighlightColor(
+    bool is_in_folder) const {
+  return is_in_folder ? SkColorSetA(gfx::kGoogleGrey900, 21)
+                      : SkColorSetA(SK_ColorWHITE, 41);
+}
+
 float TestAppListColorProvider::GetFolderBackgrounBlurSigma() const {
   return 30.0f;
 }
