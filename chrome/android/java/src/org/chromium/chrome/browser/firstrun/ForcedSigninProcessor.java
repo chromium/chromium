@@ -9,7 +9,6 @@ import android.app.Activity;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Log;
-import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.services.AndroidChildAccountHelper;
@@ -17,6 +16,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.ProfileSyncService;
 import org.chromium.chrome.browser.sync.settings.AccountManagementFragment;
+import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.externalauth.UserRecoverableErrorHandler;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.ChildAccountStatus;
@@ -119,7 +119,7 @@ public final class ForcedSigninProcessor {
         if (IdentityServicesProvider.get()
                         .getSigninManager(Profile.getLastUsedRegularProfile())
                         .isForceSigninEnabled()) {
-            AppHooks.get().getExternalAuthUtils().canUseGooglePlayServices(
+            ExternalAuthUtils.getInstance().canUseGooglePlayServices(
                     new UserRecoverableErrorHandler.ModalDialog(activity, false));
         }
     }

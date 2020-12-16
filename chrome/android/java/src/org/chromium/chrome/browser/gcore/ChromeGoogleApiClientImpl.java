@@ -11,7 +11,6 @@ import com.google.android.gms.common.api.GoogleApiClient;
 
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
-import org.chromium.chrome.browser.AppHooks;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 
 import java.util.concurrent.TimeUnit;
@@ -37,7 +36,7 @@ public class ChromeGoogleApiClientImpl implements ChromeGoogleApiClient {
             boolean requireFirstPartyBuild) {
         mApplicationContext = context.getApplicationContext();
         mClient = client;
-        mExternalAuthUtils = AppHooks.get().getExternalAuthUtils();
+        mExternalAuthUtils = ExternalAuthUtils.getInstance();
         if (requireFirstPartyBuild && !mExternalAuthUtils.isChromeGoogleSigned()) {
             throw new IllegalStateException("GoogleApiClient requires first-party build");
         }

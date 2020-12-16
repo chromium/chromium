@@ -21,7 +21,6 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
-import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
@@ -108,7 +107,7 @@ class SigninManagerImpl implements AccountTrackerService.OnSystemAccountsSeededL
         assert identityMutator != null;
         return new SigninManagerImpl(nativeSigninManagerAndroid, accountTrackerService,
                 identityManager, identityMutator, AndroidSyncSettings.get(),
-                AppHooks.get().getExternalAuthUtils());
+                ExternalAuthUtils.getInstance());
     }
 
     @VisibleForTesting

@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.webapps.WebappActivity;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
+import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.ContentUrlConstants;
@@ -1070,7 +1071,7 @@ public class IntentHandler {
         if (isChromeToken(token)) {
             return true;
         }
-        if (AppHooks.get().getExternalAuthUtils().isGoogleSigned(token.getCreatorPackage())) {
+        if (ExternalAuthUtils.getInstance().isGoogleSigned(token.getCreatorPackage())) {
             return true;
         }
         return false;
