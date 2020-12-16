@@ -285,6 +285,42 @@ TEST_F(HeartbeatSenderTest, FailedToHeartbeat_Backoff) {
   ASSERT_EQ(0, GetBackoff().failure_count());
 }
 
+TEST_F(HeartbeatSenderTest, HostComesBackOnlineAfterServiceOutage) {
+  // Each call will simulate ~10 minutes of time (at max backoff duration).
+  // We want to simulate a long outage (~3 hours) so run through 20 iterations.
+  int retry_attempts = 20;
+
+  {
+    InSequence sequence;
+
+    EXPECT_CALL(*mock_client_, Heartbeat(_, _))
+        .Times(retry_attempts)
+        .WillRepeatedly([&](std::unique_ptr<apis::v1::HeartbeatRequest> request,
+                            HeartbeatResponseCallback callback) {
+          ValidateHeartbeat(std::move(request), true);
+          std::move(callback).Run(
+              ProtobufHttpStatus(ProtobufHttpStatus::Code::UNAVAILABLE,
+                                 "unavailable"),
+              nullptr);
+        });
+
+    EXPECT_CALL(*mock_client_, Heartbeat(_, _))
+        .WillOnce(DoValidateHeartbeatAndRespondOk(true));
+  }
+
+  EXPECT_CALL(*mock_observer_, OnHeartbeatSent()).WillRepeatedly(Return());
+
+  ASSERT_EQ(0, GetBackoff().failure_count());
+  signal_strategy_->Connect();
+  for (int i = 1; i <= retry_attempts; i++) {
+    ASSERT_EQ(i, GetBackoff().failure_count());
+    task_environment_.FastForwardBy(GetBackoff().GetTimeUntilRelease());
+  }
+
+  // Host successfully back online.
+  ASSERT_EQ(0, GetBackoff().failure_count());
+}
+
 TEST_F(HeartbeatSenderTest, Unauthenticated) {
   int heartbeat_count = 0;
   EXPECT_CALL(*mock_client_, Heartbeat(_, _))

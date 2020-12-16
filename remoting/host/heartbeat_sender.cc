@@ -352,7 +352,6 @@ void HeartbeatSender::OnResponse(
 
   // Calculate delay before sending the next message.
   base::TimeDelta delay;
-  // See CoreErrorDomainTranslator.java for the mapping
   switch (status.error_code()) {
     case ProtobufHttpStatus::Code::OK:
       delay = base::TimeDelta::FromSeconds(response->set_interval_seconds());
