@@ -1096,6 +1096,10 @@ _CONFIG = [
             'third_party/blink/renderer/modules/url_pattern/',
         ],
         'allowed': [
+            # Required by liburlpattern API in order to pass string data
+            # efficiently.
+            "absl::string_view",
+
             # Needed to work with std::string values returned from
             # liburlpattern API.
             "base::IsStringASCII",

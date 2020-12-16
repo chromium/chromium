@@ -55,7 +55,6 @@ class URLPattern : public ScriptWrappable {
   // matching any input value for the component.  The |component| string is used
   // for exception messages.  The |options| control how the pattern is compiled.
   static Component* CompilePattern(const String& pattern,
-                                   const String& default_pattern,
                                    StringView component,
                                    const liburlpattern::Options& options,
                                    ExceptionState& exception_state);
@@ -70,13 +69,11 @@ class URLPattern : public ScriptWrappable {
 
   // A utility function that constructs a URLPatternComponentResult for
   // a given |component|, |input|, and |group_list|.  The |component| may
-  // be nullptr.  If the result is for the pathname component then you must
-  // set |is_pathname| to true.
+  // be nullptr.
   static URLPatternComponentResult* MakeComponentResult(
       Component* component,
       const String& input,
-      const Vector<String>& group_list,
-      bool is_pathname = false);
+      const Vector<String>& group_list);
 
   // The compiled patterns for each URL component.  If a Component member is
   // nullptr then it should be treated as a wildcard matching any input.

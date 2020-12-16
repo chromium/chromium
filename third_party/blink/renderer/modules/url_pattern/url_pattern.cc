@@ -11,6 +11,8 @@
 #include "third_party/blink/renderer/modules/url_pattern/url_pattern_result.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/liburlpattern/parse.h"
 #include "third_party/liburlpattern/pattern.h"
@@ -81,17 +83,303 @@ const liburlpattern::Options& PathnameOptions() {
   return options;
 }
 
-// The default wildcard pattern used for a component when the constructor
-// input does not provide an explicit value.
-constexpr const char* kDefaultPattern = "(.*)";
+// An enum indicating whether the associated component values be operated
+// on are for patterns or URLs.  Validation and canonicalization will
+// do different things depending on the type.
+enum class ValueType {
+  kPattern,
+  kURL,
+};
 
-// The default wildcard pattern for the pathname component.
-constexpr const char* kDefaultPathnamePattern = "/(.*)";
+// Utility function to determine if a pathname is absolute or not.  For
+// kURL values this mainly consists of a check for a leading slash.  For
+// patterns we do some additional checking for escaped or grouped slashes.
+bool IsAbsolutePathname(const String& pathname, ValueType type) {
+  if (pathname.IsEmpty())
+    return false;
+
+  if (pathname[0] == '/')
+    return true;
+
+  if (type == ValueType::kURL)
+    return false;
+
+  if (pathname.length() < 2)
+    return false;
+
+  // Patterns treat escaped slashes and slashes within an explicit grouping as
+  // valid leading slashes.  For example, "\/foo" or "{/foo}".  Patterns do
+  // not consider slashes within a custom regexp group as valid for the leading
+  // pathname slash for now.  To support that we would need to be able to
+  // detect things like ":name_123(/foo)" as a valid leading group in a pattern,
+  // but that is considered too complex for now.
+  if ((pathname[0] == '\\' || pathname[0] == '{') && pathname[1] == '/') {
+    return true;
+  }
+
+  return false;
+}
+
+// Utility function to validate that a pattern value contains only ASCII.
+void ValidatePatternEncoding(const String& pattern,
+                             StringView label,
+                             ExceptionState& exception_state) {
+  if (pattern.ContainsOnlyASCIIOrEmpty())
+    return;
+
+  // TODO: Consider if we should canonicalize patterns instead.  See:
+  //       https://github.com/WICG/urlpattern/issues/33
+  exception_state.ThrowTypeError("Illegal character in " + label +
+                                 " pattern '" + pattern +
+                                 "'. Patterns must be URL encoded ASCII.");
+}
+
+String StringFromCanonOutput(const url::CanonOutput& output,
+                             url::Component component) {
+  return String::FromUTF8(output.data() + component.begin, component.len);
+}
+
+// Utility function to canonicalize a protocol string.  Throws an exception
+// if the input is invalid.  The canonicalization and/or validation will
+// differ depending on whether |type| is kURL or kPattern.
+String CanonicalizeProtocol(const String& input,
+                            ValueType type,
+                            ExceptionState& exception_state) {
+  if (type == ValueType::kPattern) {
+    ValidatePatternEncoding(input, "protocol", exception_state);
+    return input;
+  }
+
+  bool result = false;
+  url::RawCanonOutputT<char> canon_output;
+  url::Component component;
+  if (input.Is8Bit()) {
+    StringUTF8Adaptor utf8(input);
+    result = url::CanonicalizeScheme(
+        utf8.data(), url::Component(0, utf8.size()), &canon_output, &component);
+  } else {
+    result = url::CanonicalizeScheme(input.Characters16(),
+                                     url::Component(0, input.length()),
+                                     &canon_output, &component);
+  }
+
+  if (!result) {
+    exception_state.ThrowTypeError("Invalid protocol '" + input + "'.");
+    return String();
+  }
+
+  return StringFromCanonOutput(canon_output, component);
+}
+
+// Utility function to canonicalize username and/or password strings. Throws
+// an exception if either is invalid.  The canonicalization and/or validation
+// will differ depending on whether |type| is kURL or kPattern.  On success
+// |username_out| and |password_out| will contain the canonical values.
+void CanonicalizeUsernameAndPassword(const String& username,
+                                     const String& password,
+                                     ValueType type,
+                                     String& username_out,
+                                     String& password_out,
+                                     ExceptionState& exception_state) {
+  if (type == ValueType::kPattern) {
+    ValidatePatternEncoding(username, "username", exception_state);
+    if (exception_state.HadException())
+      return;
+    ValidatePatternEncoding(password, "password", exception_state);
+    if (exception_state.HadException())
+      return;
+    username_out = username;
+    password_out = password;
+    return;
+  }
+
+  bool result = false;
+  url::RawCanonOutputT<char> canon_output;
+  url::Component username_component;
+  url::Component password_component;
+
+  if (username && password && username.Is8Bit() && password.Is8Bit()) {
+    StringUTF8Adaptor username_utf8(username);
+    StringUTF8Adaptor password_utf8(password);
+    result = url::CanonicalizeUserInfo(
+        username_utf8.data(), url::Component(0, username_utf8.size()),
+        password_utf8.data(), url::Component(0, password_utf8.size()),
+        &canon_output, &username_component, &password_component);
+
+  } else {
+    String username16(username);
+    String password16(password);
+    username16.Ensure16Bit();
+    password16.Ensure16Bit();
+    result = url::CanonicalizeUserInfo(
+        username16.Characters16(), url::Component(0, username16.length()),
+        password16.Characters16(), url::Component(0, password16.length()),
+        &canon_output, &username_component, &password_component);
+  }
+
+  if (!result) {
+    exception_state.ThrowTypeError("Invalid username '" + username +
+                                   "' and/or password '" + password + "'.");
+    return;
+  }
+
+  if (username_component.len != -1)
+    username_out = StringFromCanonOutput(canon_output, username_component);
+  if (password_component.len != -1)
+    password_out = StringFromCanonOutput(canon_output, password_component);
+}
+
+// Utility function to canonicalize a hostname string.  Throws an exception
+// if the input is invalid.  The canonicalization and/or validation will
+// differ depending on whether |type| is kURL or kPattern.
+String CanonicalizeHostname(const String& input,
+                            ValueType type,
+                            ExceptionState& exception_state) {
+  if (type == ValueType::kPattern) {
+    ValidatePatternEncoding(input, "hostname", exception_state);
+    return input;
+  }
+
+  bool success = false;
+  String result = SecurityOrigin::CanonicalizeHost(input, &success);
+  if (!success) {
+    exception_state.ThrowTypeError("Invalid hostname '" + input + "'.");
+    return String();
+  }
+
+  return result;
+}
+
+// Utility function to canonicalize a port string.  Throws an exception
+// if the input is invalid.  The canonicalization and/or validation will
+// differ depending on whether |type| is kURL or kPattern.  The |protocol|
+// must be provided in order to handle default ports correctly.
+String CanonicalizePort(const String& input,
+                        ValueType type,
+                        const String& protocol,
+                        ExceptionState& exception_state) {
+  if (type == ValueType::kPattern) {
+    ValidatePatternEncoding(input, "port", exception_state);
+    return input;
+  }
+
+  int default_port = url::PORT_UNSPECIFIED;
+  if (!input.IsEmpty()) {
+    StringUTF8Adaptor protocol_utf8(protocol);
+    default_port =
+        url::DefaultPortForScheme(protocol_utf8.data(), protocol_utf8.size());
+  }
+
+  // Since ports only consist of digits there should be no encoding needed.
+  // Therefore we directly use the UTF8 encoding version of CanonicalizePort().
+  StringUTF8Adaptor utf8(input);
+  url::RawCanonOutputT<char> canon_output;
+  url::Component component;
+  if (!url::CanonicalizePort(utf8.data(), url::Component(0, utf8.size()),
+                             default_port, &canon_output, &component)) {
+    exception_state.ThrowTypeError("Invalid port '" + input + "'.");
+    return String();
+  }
+
+  return component.len == -1 ? g_empty_string
+                             : StringFromCanonOutput(canon_output, component);
+}
+
+// Utility function to canonicalize a pathname string.  Throws an exception
+// if the input is invalid.  The canonicalization and/or validation will
+// differ depending on whether |type| is kURL or kPattern.
+String CanonicalizePathname(const String& input,
+                            ValueType type,
+                            ExceptionState& exception_state) {
+  if (type == ValueType::kPattern) {
+    ValidatePatternEncoding(input, "pathname", exception_state);
+    return input;
+  }
+
+  if (!IsAbsolutePathname(input, type)) {
+    exception_state.ThrowTypeError("Cannot resolve absolute pathname  for '" +
+                                   input + "'.");
+    return String();
+  }
+
+  bool result = false;
+  url::RawCanonOutputT<char> canon_output;
+  url::Component component;
+  if (input.Is8Bit()) {
+    StringUTF8Adaptor utf8(input);
+    result = url::CanonicalizePath(utf8.data(), url::Component(0, utf8.size()),
+                                   &canon_output, &component);
+  } else {
+    result = url::CanonicalizePath(input.Characters16(),
+                                   url::Component(0, input.length()),
+                                   &canon_output, &component);
+  }
+
+  if (!result) {
+    exception_state.ThrowTypeError("Invalid pathname '" + input + "'.");
+    return String();
+  }
+
+  return StringFromCanonOutput(canon_output, component);
+}
+
+// Utility function to canonicalize a search string.  Throws an exception
+// if the input is invalid.  The canonicalization and/or validation will
+// differ depending on whether |type| is kURL or kPattern.
+String CanonicalizeSearch(const String& input,
+                          ValueType type,
+                          ExceptionState& exception_state) {
+  if (type == ValueType::kPattern) {
+    ValidatePatternEncoding(input, "search", exception_state);
+    return input;
+  }
+
+  url::RawCanonOutputT<char> canon_output;
+  url::Component component;
+  if (input.Is8Bit()) {
+    StringUTF8Adaptor utf8(input);
+    url::CanonicalizeQuery(utf8.data(), url::Component(0, utf8.size()),
+                           /*converter=*/nullptr, &canon_output, &component);
+  } else {
+    url::CanonicalizeQuery(input.Characters16(),
+                           url::Component(0, input.length()),
+                           /*converter=*/nullptr, &canon_output, &component);
+  }
+
+  return StringFromCanonOutput(canon_output, component);
+}
+
+// Utility function to canonicalize a hash string.  Throws an exception
+// if the input is invalid.  The canonicalization and/or validation will
+// differ depending on whether |type| is kURL or kPattern.
+String CanonicalizeHash(const String& input,
+                        ValueType type,
+                        ExceptionState& exception_state) {
+  if (type == ValueType::kPattern) {
+    ValidatePatternEncoding(input, "hash", exception_state);
+    return input;
+  }
+
+  url::RawCanonOutputT<char> canon_output;
+  url::Component component;
+  if (input.Is8Bit()) {
+    StringUTF8Adaptor utf8(input);
+    url::CanonicalizeRef(utf8.data(), url::Component(0, utf8.size()),
+                         &canon_output, &component);
+  } else {
+    url::CanonicalizeRef(input.Characters16(),
+                         url::Component(0, input.length()), &canon_output,
+                         &component);
+  }
+
+  return StringFromCanonOutput(canon_output, component);
+}
 
 // A utility method that takes a URLPatternInit, splits it apart, and applies
 // the individual component values in the given set of strings.  The strings
 // are only applied if a value is present in the init structure.
 void ApplyInit(const URLPatternInit* init,
+               ValueType type,
                String& protocol,
                String& username,
                String& password,
@@ -107,43 +395,22 @@ void ApplyInit(const URLPatternInit* init,
   // longer value for each considered component.  We do not allow null strings
   // to persist for these components past this phase since they should no
   // longer be treated as wildcards.
+  KURL base_url;
   if (init->hasBaseURL()) {
-    KURL baseURL(init->baseURL());
-    if (!baseURL.IsValid() || baseURL.IsEmpty()) {
+    base_url = KURL(init->baseURL());
+    if (!base_url.IsValid() || base_url.IsEmpty()) {
       exception_state.ThrowTypeError("Invalid baseURL '" + init->baseURL() +
                                      "'.");
       return;
     }
 
-    if (baseURL.Protocol())
-      protocol = baseURL.Protocol();
-    else
-      protocol = g_empty_string;
-
-    if (baseURL.User())
-      username = baseURL.User();
-    else
-      username = g_empty_string;
-
-    if (baseURL.Pass())
-      password = baseURL.Pass();
-    else
-      password = g_empty_string;
-
-    if (baseURL.Host())
-      hostname = baseURL.Host();
-    else
-      hostname = g_empty_string;
-
-    if (baseURL.Port() > 0)
-      port = String::Number(baseURL.Port());
-    else
-      port = g_empty_string;
-
-    if (baseURL.GetPath())
-      pathname = baseURL.GetPath();
-    else
-      pathname = "/";
+    protocol = base_url.Protocol() ? base_url.Protocol() : g_empty_string;
+    username = base_url.User() ? base_url.User() : g_empty_string;
+    password = base_url.Pass() ? base_url.Pass() : g_empty_string;
+    hostname = base_url.Host() ? base_url.Host() : g_empty_string;
+    port =
+        base_url.Port() > 0 ? String::Number(base_url.Port()) : g_empty_string;
+    pathname = base_url.GetPath() ? base_url.GetPath() : g_empty_string;
 
     // Do no propagate search or hash from the base URL.  This matches the
     // behavior when resolving a relative URL against a base URL.
@@ -151,39 +418,57 @@ void ApplyInit(const URLPatternInit* init,
 
   // Apply the URLPatternInit component values on top of the default and
   // baseURL values.
-  if (init->hasProtocol())
-    protocol = init->protocol();
-  if (init->hasUsername())
-    username = init->username();
-  if (init->hasPassword())
-    password = init->password();
-  if (init->hasHostname())
-    hostname = init->hostname();
-  if (init->hasPort())
-    port = init->port();
-  if (init->hasPathname()) {
-    // TODO: handle relative pathnames
-    pathname = init->pathname();
-    if (pathname.IsEmpty() || pathname[0] != '/') {
-      exception_state.ThrowTypeError(
-          "Could not resolve absolute pathname for '" + pathname + "'.");
+  if (init->hasProtocol()) {
+    protocol = CanonicalizeProtocol(init->protocol(), type, exception_state);
+    if (exception_state.HadException())
       return;
-    }
   }
-  if (init->hasSearch())
-    search = init->search();
-  if (init->hasHash())
-    hash = init->hash();
-}
-
-// Utility function that encodes the given pattern string into ASCII.
-// Non-ascii characters should be percent encoded.
-std::string EncodePattern(const String& input) {
-  // TODO: Implement percent encoding by adapting url::EncodeURIComponent() to
-  //       not escape pattern special characters.
-  // TODO: Should we somehow percent encode pattern special characters that have
-  //       been backslash escaped?  For example, "\{".
-  return input.Utf8();
+  if (init->hasUsername() || init->hasPassword()) {
+    CanonicalizeUsernameAndPassword(init->username(), init->password(), type,
+                                    username, password, exception_state);
+    if (exception_state.HadException())
+      return;
+  }
+  if (init->hasHostname()) {
+    hostname = CanonicalizeHostname(init->hostname(), type, exception_state);
+    if (exception_state.HadException())
+      return;
+  }
+  if (init->hasPort()) {
+    port = CanonicalizePort(init->port(), type, protocol, exception_state);
+    if (exception_state.HadException())
+      return;
+  }
+  if (init->hasPathname()) {
+    pathname = init->pathname();
+    if (base_url.IsValid() && base_url.IsHierarchical() &&
+        !IsAbsolutePathname(pathname, type)) {
+      // Find the last slash in the baseURL pathname.  Since the URL is
+      // hierarchical it should have a slash to be valid, but we are cautious
+      // and check.  If there is no slash then we cannot use resolve the
+      // relative pathname and just treat the init pathname as an absolute
+      // value.
+      auto slash_index = base_url.GetPath().ReverseFind("/");
+      if (slash_index != kNotFound) {
+        // Extract the baseURL path up to and including the first slash.  Append
+        // the relative init pathname to it.
+        pathname = base_url.GetPath().Substring(0, slash_index + 1) + pathname;
+      }
+    }
+    pathname = CanonicalizePathname(pathname, type, exception_state);
+    if (exception_state.HadException())
+      return;
+  }
+  if (init->hasSearch()) {
+    search = CanonicalizeSearch(init->search(), type, exception_state);
+    if (exception_state.HadException())
+      return;
+  }
+  if (init->hasHash()) {
+    hash = CanonicalizeHash(init->hash(), type, exception_state);
+    if (exception_state.HadException())
+      return;
+  }
 }
 
 }  // namespace
@@ -202,8 +487,8 @@ URLPattern* URLPattern::Create(const URLPatternInit* init,
   String hash;
 
   // Apply the input URLPatternInit on top of the default values.
-  ApplyInit(init, protocol, username, password, hostname, port, pathname,
-            search, hash, exception_state);
+  ApplyInit(init, ValueType::kPattern, protocol, username, password, hostname,
+            port, pathname, search, hash, exception_state);
   if (exception_state.HadException())
     return nullptr;
 
@@ -211,45 +496,43 @@ URLPattern* URLPattern::Create(const URLPatternInit* init,
   // be used for matching.  Components that match any input may have a
   // nullptr Component struct pointer.
 
-  auto* protocol_component = CompilePattern(
-      protocol, kDefaultPattern, "protocol", DefaultOptions(), exception_state);
+  auto* protocol_component =
+      CompilePattern(protocol, "protocol", DefaultOptions(), exception_state);
   if (exception_state.HadException())
     return nullptr;
 
-  auto* username_component = CompilePattern(
-      username, kDefaultPattern, "username", DefaultOptions(), exception_state);
+  auto* username_component =
+      CompilePattern(username, "username", DefaultOptions(), exception_state);
   if (exception_state.HadException())
     return nullptr;
 
-  auto* password_component = CompilePattern(
-      password, kDefaultPattern, "password", DefaultOptions(), exception_state);
+  auto* password_component =
+      CompilePattern(password, "password", DefaultOptions(), exception_state);
   if (exception_state.HadException())
     return nullptr;
 
   auto* hostname_component =
-      CompilePattern(hostname, kDefaultPattern, "hostname", HostnameOptions(),
-                     exception_state);
+      CompilePattern(hostname, "hostname", HostnameOptions(), exception_state);
   if (exception_state.HadException())
     return nullptr;
 
-  auto* port_component = CompilePattern(port, kDefaultPattern, "port",
-                                        DefaultOptions(), exception_state);
+  auto* port_component =
+      CompilePattern(port, "port", DefaultOptions(), exception_state);
   if (exception_state.HadException())
     return nullptr;
 
   auto* pathname_component =
-      CompilePattern(pathname, kDefaultPathnamePattern, "pathname",
-                     PathnameOptions(), exception_state);
+      CompilePattern(pathname, "pathname", PathnameOptions(), exception_state);
   if (exception_state.HadException())
     return nullptr;
 
-  auto* search_component = CompilePattern(search, kDefaultPattern, "search",
-                                          DefaultOptions(), exception_state);
+  auto* search_component =
+      CompilePattern(search, "search", DefaultOptions(), exception_state);
   if (exception_state.HadException())
     return nullptr;
 
-  auto* hash_component = CompilePattern(hash, kDefaultPattern, "hash",
-                                        DefaultOptions(), exception_state);
+  auto* hash_component =
+      CompilePattern(hash, "hash", DefaultOptions(), exception_state);
   if (exception_state.HadException())
     return nullptr;
 
@@ -305,20 +588,18 @@ void URLPattern::Trace(Visitor* visitor) const {
 // static
 URLPattern::Component* URLPattern::CompilePattern(
     const String& pattern,
-    const String& default_pattern,
     StringView component,
     const liburlpattern::Options& options,
     ExceptionState& exception_state) {
-  // If the pattern is null or matches the component's default wildcard pattern
-  // then optimize by not compiling the pattern.  Instead, a nullptr Component
-  // is interpreted as matching any input value.
-  // TODO: Should we match after Parse() so that we can treat different
-  //       equivalent input as valid wildcards?
-  if (pattern.IsNull() || pattern == default_pattern)
+  // If the pattern is null then optimize by not compiling a pattern.  Instead,
+  // a nullptr Component is interpreted as matching any input value.
+  if (pattern.IsNull())
     return nullptr;
 
   // Parse the pattern.
-  auto parse_result = liburlpattern::Parse(EncodePattern(pattern), options);
+  StringUTF8Adaptor utf8(pattern);
+  auto parse_result = liburlpattern::Parse(
+      absl::string_view(utf8.data(), utf8.size()), options);
   if (!parse_result.ok()) {
     exception_state.ThrowTypeError("Invalid " + component + " pattern '" +
                                    pattern + "'.");
@@ -366,23 +647,20 @@ bool URLPattern::Match(const USVStringOrURLPatternInit& input,
   String password(g_empty_string);
   String hostname(g_empty_string);
   String port(g_empty_string);
-  String pathname("/");
+  String pathname(g_empty_string);
   String search(g_empty_string);
   String hash(g_empty_string);
 
   if (input.IsURLPatternInit()) {
     // Layer the URLPatternInit values on top of the default empty strings.
-    ApplyInit(input.GetAsURLPatternInit(), protocol, username, password,
-              hostname, port, pathname, search, hash, exception_state);
+    ApplyInit(input.GetAsURLPatternInit(), ValueType::kURL, protocol, username,
+              password, hostname, port, pathname, search, hash,
+              exception_state);
     if (exception_state.HadException()) {
       // Treat exceptions simply as a failure to match.
       exception_state.ClearException();
       return false;
     }
-    // TODO: Canonicalize the hostname manually since we did not run the
-    //       input through KURL.
-    // TODO: URL encode input component values using url::EncodeURIComponent()
-    //       since we did not go through KURL
   } else {
     DCHECK(input.IsUSVString());
 
@@ -413,14 +691,6 @@ bool URLPattern::Match(const USVStringOrURLPatternInit& input,
     if (url.FragmentIdentifier())
       hash = url.FragmentIdentifier();
   }
-
-  // The pathname should be resolved to an absolute value before now.
-  DCHECK(!pathname.IsEmpty());
-  DCHECK(pathname.StartsWith("/"));
-
-  // TODO: Should we do special processing for port to make "default" values
-  //       match things like "80" for an http protocol?  See
-  //       https://github.com/WICG/urlpattern/issues/31.
 
   Vector<String> protocol_group_list;
   Vector<String> username_group_list;
@@ -458,7 +728,11 @@ bool URLPattern::Match(const USVStringOrURLPatternInit& input,
   if (!matched || !result)
     return matched;
 
+  // TODO: The result.input contains the data before canonicalization, but the
+  //       component results will contain inputs after canonicalization.  Is
+  //       this what we want?  See: https://github.com/WICG/urlpattern/issues/34
   result->setInput(input);
+
   result->setProtocol(
       MakeComponentResult(protocol_, protocol, protocol_group_list));
   result->setUsername(
@@ -468,8 +742,8 @@ bool URLPattern::Match(const USVStringOrURLPatternInit& input,
   result->setHostname(
       MakeComponentResult(hostname_, hostname, hostname_group_list));
   result->setPort(MakeComponentResult(port_, port, port_group_list));
-  result->setPathname(MakeComponentResult(
-      pathname_, pathname, pathname_group_list, /*is_pathname=*/true));
+  result->setPathname(
+      MakeComponentResult(pathname_, pathname, pathname_group_list));
   result->setSearch(MakeComponentResult(search_, search, search_group_list));
   result->setHash(MakeComponentResult(hash_, hash, hash_group_list));
   return true;
@@ -479,21 +753,12 @@ bool URLPattern::Match(const USVStringOrURLPatternInit& input,
 URLPatternComponentResult* URLPattern::MakeComponentResult(
     Component* component,
     const String& input,
-    const Vector<String>& group_list,
-    bool is_pathname) {
+    const Vector<String>& group_list) {
   Vector<std::pair<String, String>> groups;
   if (!component) {
     // When there is not Component we must act as if there was a default
-    // wildcard pattern with a group.  For most components the group ends
-    // up including the entire input.  For pathname, however, the leading "/"
-    // is excluded from the group since its considered a prefix.
-    if (is_pathname) {
-      DCHECK(!input.IsEmpty());
-      DCHECK_EQ(input[0], '/');
-      groups.emplace_back("0", input.Substring(1));
-    } else {
-      groups.emplace_back("0", input);
-    }
+    // wildcard pattern with a group.  The group includes the entire input.
+    groups.emplace_back("0", input);
   } else {
     DCHECK_EQ(component->name_list.size(), group_list.size());
     for (wtf_size_t i = 0; i < group_list.size(); ++i) {
