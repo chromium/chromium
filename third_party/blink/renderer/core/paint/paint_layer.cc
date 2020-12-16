@@ -1432,7 +1432,10 @@ void PaintLayer::RemoveOnlyThisLayerAfterStyleChange(
     RemoveChild(current);
     parent_->AddChild(current, next_sib);
 
-    // FIXME: We should call a specialized version of this function.
+    // TODO(crbug.com/1150472): UpdateLayerPositionsAfterLayout() is computing
+    // uncached pseudo styles (for ::first-line) for descendants, which is
+    // problematic since we are called from style recalc. We should call a
+    // specialized version of this function.
     current->UpdateLayerPositionsAfterLayout();
     current = next;
   }
