@@ -415,7 +415,13 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
   // lorgnette. Handles stopping the scan if the request failed.
   void OnGetNextImageResponse(std::string uuid, dbus::Response* response) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    ScanJobState& state = scan_job_state_[uuid];
+    // If the scan was canceled and the scan job has been erased, there's no
+    // need to check the next image response.
+    auto it = scan_job_state_.find(uuid);
+    if (it == scan_job_state_.end())
+      return;
+
+    ScanJobState& state = it->second;
     if (!response) {
       LOG(ERROR) << "Failed to obtain GetNextImage response";
       std::move(state.completion_callback).Run(false);
