@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_NEW_TAB_PAGE_UI_H_
 
 #include "base/macros.h"
+#include "chrome/browser/cart/chrome_cart.mojom.h"
 #include "chrome/browser/media/kaleidoscope/mojom/kaleidoscope.mojom.h"
 #include "chrome/browser/promo_browser_command/promo_browser_command.mojom-forward.h"
 #include "chrome/browser/search/instant_service_observer.h"
@@ -39,6 +40,7 @@ class NewTabPageHandler;
 class Profile;
 class PromoBrowserCommandHandler;
 class TaskModuleHandler;
+class CartHandler;
 
 class NewTabPageUI
     : public ui::MojoWebUIController,
@@ -100,6 +102,11 @@ class NewTabPageUI
       mojo::PendingReceiver<foo::mojom::FooHandler> pending_receiver);
 #endif
 
+  // Instantiates the implementor of the chrome_cart::mojom::CartHandler
+  // mojo interface passing the pending receiver that will be internally bound.
+  void BindInterface(
+      mojo::PendingReceiver<chrome_cart::mojom::CartHandler> pending_receiver);
+
  private:
   // new_tab_page::mojom::PageHandlerFactory:
   void CreatePageHandler(
@@ -137,6 +144,7 @@ class NewTabPageUI
 #if !defined(OFFICIAL_BUILD)
   std::unique_ptr<FooHandler> foo_handler_;
 #endif
+  std::unique_ptr<CartHandler> cart_handler_;
   Profile* profile_;
   InstantService* instant_service_;
   content::WebContents* web_contents_;

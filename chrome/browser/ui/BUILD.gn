@@ -1529,6 +1529,7 @@ static_library("ui") {
       "//chrome/app/vector_icons",
       "//chrome/browser:theme_properties",
       "//chrome/browser/browsing_data:constants",
+      "//chrome/browser/cart:mojo_bindings",
       "//chrome/browser/media/kaleidoscope/mojom",
       "//chrome/browser/media/router",
       "//chrome/browser/profile_resetter:profile_reset_report_proto",

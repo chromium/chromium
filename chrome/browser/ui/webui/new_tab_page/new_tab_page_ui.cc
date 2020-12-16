@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "chrome/browser/buildflags.h"
+#include "chrome/browser/cart/cart_handler.h"
 #include "chrome/browser/media/kaleidoscope/constants.h"
 #include "chrome/browser/media/kaleidoscope/kaleidoscope_data_provider_impl.h"
 #include "chrome/browser/media/kaleidoscope/kaleidoscope_identity_manager_impl.h"
@@ -252,6 +253,9 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
   source->AddBoolean(
       "shoppingTasksModuleEnabled",
       base::FeatureList::IsEnabled(ntp_features::kNtpShoppingTasksModule));
+  source->AddBoolean(
+      "chromeCartModuleEnabled",
+      base::FeatureList::IsEnabled(ntp_features::kNtpChromeCartModule));
 
   webui::SetupWebUIDataSource(
       source, base::make_span(kNewTabPageResources, kNewTabPageResourcesSize),
@@ -389,6 +393,13 @@ void NewTabPageUI::BindInterface(
   foo_handler_ = std::make_unique<FooHandler>(std::move(pending_page_handler));
 }
 #endif
+
+void NewTabPageUI::BindInterface(
+    mojo::PendingReceiver<chrome_cart::mojom::CartHandler>
+        pending_page_handler) {
+  cart_handler_ =
+      std::make_unique<CartHandler>(std::move(pending_page_handler), profile_);
+}
 
 void NewTabPageUI::CreatePageHandler(
     mojo::PendingRemote<new_tab_page::mojom::Page> pending_page,

@@ -1,0 +1,23 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chrome_cart.mojom;
+
+import "url/mojom/url.mojom";
+
+// Information needed to show cart for one merchant in chrome cart module.
+struct MerchantCart {
+  // Merchant that this cart comes from.
+  string merchant;
+  // URL that directs to the cart page.
+  url.mojom.Url cart_url;
+  // List of URLs for product image to show in the cart.
+  array<url.mojom.Url> product_image_urls;
+};
+
+// Browser-side handler for requests from JS.
+interface CartHandler {
+  // Returns the merchant carts in chrome cart.
+  GetMerchantCarts() => (array<MerchantCart> carts);
+};

@@ -252,3 +252,16 @@ var NewTabPageModulesTaskModuleTest = class extends NewTabPageBrowserTest {
 TEST_F('NewTabPageModulesTaskModuleTest', 'All', function() {
   mocha.run();
 });
+
+// eslint-disable-next-line no-var
+var NewTabPageModulesChromeCartModuleTest =
+    class extends NewTabPageBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://new-tab-page/test_loader.html?module=new_tab_page/modules/cart/module_test.js';
+  }
+};
+
+TEST_F('NewTabPageModulesChromeCartModuleTest', 'All', function() {
+  mocha.run();
+});

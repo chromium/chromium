@@ -103,6 +103,7 @@
 #else
 #include "chrome/browser/accessibility/caption_host_impl.h"
 #include "chrome/browser/badging/badge_manager.h"
+#include "chrome/browser/cart/chrome_cart.mojom.h"
 #include "chrome/browser/media/feeds/media_feeds_store.mojom.h"
 #include "chrome/browser/media/kaleidoscope/kaleidoscope_data_provider_impl.h"
 #include "chrome/browser/media/kaleidoscope/kaleidoscope_identity_manager_impl.h"
@@ -658,6 +659,11 @@ void PopulateChromeWebUIFrameBinders(
 
   RegisterWebUIControllerInterfaceBinder<media_feeds::mojom::MediaFeedsStore,
                                          MediaFeedsUI>(map);
+
+  if (base::FeatureList::IsEnabled(ntp_features::kNtpChromeCartModule)) {
+    RegisterWebUIControllerInterfaceBinder<chrome_cart::mojom::CartHandler,
+                                           NewTabPageUI>(map);
+  }
 
   if (base::FeatureList::IsEnabled(ntp_features::kNtpRecipeTasksModule) ||
       base::FeatureList::IsEnabled(ntp_features::kNtpShoppingTasksModule)) {

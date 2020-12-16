@@ -16,6 +16,7 @@ js_library("module_descriptor") {
 js_library("modules") {
   deps = [
     ":module_registry",
+    "cart:module",
     "kaleidoscope:module",
     "task_module:module",
   ]
@@ -54,6 +55,7 @@ html_to_js("web_components_local") {
 group("web_components") {
   public_deps = [
     ":web_components_local",
+    "cart:web_components",
     "dummy:web_components",
     "kaleidoscope:web_components",
     "task_module:web_components",
@@ -91,6 +93,7 @@ preprocess_if_expr("preprocess") {
     "modules.js",
     "module_registry.js",
     "task_module/task_module_handler_proxy.js",
+    "cart/chrome_cart_proxy.js",
   ]
   if (!is_official_build) {
     in_files += [ "dummy/foo_proxy.js" ]
@@ -108,6 +111,7 @@ preprocess_if_expr("preprocess_gen") {
     "module_header.js",
     "module_wrapper.js",
     "task_module/module.js",
+    "cart/module.js",
   ]
   if (!is_official_build) {
     in_files += [ "dummy/module.js" ]

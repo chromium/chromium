@@ -1,0 +1,141 @@
+<style include="cr-hidden-style">
+  :host {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+  }
+
+  #moduleContent {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    float: left;
+    height: 100%;
+    padding-inline-end: 15px;
+    padding-inline-start: 15px;
+    width: 100%;
+  }
+
+  .cart-item {
+    border: 1px solid var(--ntp-border-color);
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    height: 160px;
+    margin: 0 4px;
+    outline: none;
+    text-decoration: none;
+    width: 120px;
+  }
+
+  :host-context(.focus-outline-visible) .cart-item:focus {
+    box-shadow: var(--ntp-focus-shadow);
+  }
+
+  .cart-title {
+    color: var(--ntp-theme-text-color);
+    display: block;
+    font-size: 12px;
+    height: 20px;
+    margin-inline-end: auto;
+    margin-inline-start: auto;
+    margin-top: 6px;
+    text-align: center;
+    width: 72px;
+  }
+
+  .cart-title #merchant {
+    font-weight: 400;
+    max-width: 54px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-shadow: var(--ntp-theme-text-shadow);
+    white-space: nowrap;
+  }
+
+  .cart-title #itemCount {
+    color: var(--cr-secondary-text-color);
+  }
+
+  .favicon-image {
+    border-radius: 2px;
+    display: block;
+    height: 24px;
+    margin-inline-end: auto;
+    margin-inline-start: auto;
+    margin-top: 16px;
+    width: 24px;
+  }
+
+  .thumbnail-container {
+    height: 100%;
+    margin-top: 12px;
+    text-align: center;
+    width: auto;
+  }
+
+  .thumbnail-container ul {
+    list-style-type: none;
+    margin-inline-end: 24px;
+    padding: 0;
+  }
+
+  .thumbnail-container li {
+    display: inline;
+    margin-inline-end: -24px;
+  }
+
+  .thumbnail-img {
+    border: 2px solid white;
+    border-radius: 50%;
+    height: 46px;
+    object-fit: cover;
+    width: 46px;
+  }
+
+  .thumbnail-fallback {
+    height: 48px;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 102px;
+  }
+</style>
+<ntp-module-header module-id="[[id]]"></ntp-module-header>
+<div id="moduleContent">
+  <template id="cartItemRepeat" is="dom-repeat" items="[[cartItems]]">
+    <a class="cart-item" title="[[item.merchant]]"
+        href="[[item.cartUrl.url]]">
+      <img class="favicon-image" is="ntp-img"
+          auto-src="[[getFaviconUrl_(item.cartUrl.url)]]"></img>
+      <div class="cart-title">
+        <span id="merchant">[[item.merchant]]</span>
+        <template is="dom-if" if="[[item.productImageUrls.length]]">
+          <span id="itemCount">
+            &nbsp•&nbsp[[item.productImageUrls.length]]
+          </span>
+        </template>
+      </div>
+      <div class="thumbnail-container">
+        <template is="dom-if"
+            if="[[item.productImageUrls.length]]">
+          <ul id="thumbnailList">
+            <template is="dom-repeat"
+                items="[[getImagesToShow_(item.productImageUrls)]]">
+              <li>
+                <img class="thumbnail-img" is="ntp-img"
+                    auto-src="[[item.url]]"></img>
+              </li>
+            </template>
+          </ul>
+        </template>
+        <template id="thumbnailFallback" is="dom-if"
+            if="[[!item.productImageUrls.length]]">
+          <img class="thumbnail-fallback"
+              src="chrome://new-tab-page/icons/cart_fallback.svg">
+        </template>
+      </div>
+    </a>
+  </template>
+</div>

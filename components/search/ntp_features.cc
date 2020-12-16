@@ -82,6 +82,10 @@ const base::Feature kNtpRecipeTasksModule{"NtpRecipeTasksModule",
 const base::Feature kNtpShoppingTasksModule{"NtpShoppingTasksModule",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, chrome cart module will be shown.
+const base::Feature kNtpChromeCartModule{"NtpChromeCartModule",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
 const char kNtpRepeatableQueriesAgeThresholdDaysParam[] =
     "NtpRepeatableQueriesAgeThresholdDays";
 const char kNtpRepeatableQueriesRecencyHalfLifeSecondsParam[] =

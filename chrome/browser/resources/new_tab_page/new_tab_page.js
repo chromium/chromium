@@ -16,6 +16,8 @@ export {BackgroundManager} from './background_manager.js';
 export {BrowserProxy} from './browser_proxy.js';
 export {BackgroundSelectionType} from './customize_dialog_types.js';
 export {ImgElement} from './img.js';
+export {ChromeCartProxy} from './modules/cart/chrome_cart_proxy.js';
+export {chromeCartDescriptor} from './modules/cart/module.js';
 // <if expr="not is_official_build">
 export {FooProxy} from './modules/dummy/foo_proxy.js';
 export {dummyDescriptor} from './modules/dummy/module.js';
