@@ -1051,6 +1051,16 @@ ci.android_fyi_builder(
 )
 
 ci.android_fyi_builder(
+    name = "android-weblayer-oreo-x86-rel-tests",
+    console_view_entry = consoles.console_view_entry(
+        category = "tester|weblayer",
+        short_name = "O",
+    ),
+    triggered_by = ["android-weblayer-x86-fyi-rel"],
+    notifies = ["weblayer-sheriff"],
+)
+
+ci.android_fyi_builder(
     name = "android-weblayer-pie-x86-rel-tests",
     console_view_entry = consoles.console_view_entry(
         category = "tester|weblayer",
