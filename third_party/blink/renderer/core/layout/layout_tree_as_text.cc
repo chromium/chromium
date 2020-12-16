@@ -448,20 +448,6 @@ static void WriteTextFragment(WTF::TextStream& ts,
 
 static void WriteTextFragment(WTF::TextStream& ts,
                               const NGInlineCursor& cursor) {
-  if (const NGPaintFragment* const paint_fragment =
-          cursor.CurrentPaintFragment()) {
-    const auto* physical_text_fragment =
-        DynamicTo<NGPhysicalTextFragment>(paint_fragment->PhysicalFragment());
-    if (!physical_text_fragment)
-      return;
-    const NGFragment fragment(paint_fragment->Style().GetWritingDirection(),
-                              *physical_text_fragment);
-    WriteTextFragment(ts, paint_fragment->GetLayoutObject(),
-                      paint_fragment->RectInContainerFragment(),
-                      paint_fragment->Style(), physical_text_fragment->Text(),
-                      fragment.InlineSize());
-    return;
-  }
   DCHECK(cursor.CurrentItem());
   const NGFragmentItem& item = *cursor.CurrentItem();
   DCHECK(item.Type() == NGFragmentItem::kText ||

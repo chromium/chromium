@@ -84,20 +84,7 @@ class NGInlineCursorTest : public NGLayoutTest,
   // Test |MoveToNextSibling| and |NGInlineBackwardCursor| return the same
   // instances, except that the order is reversed.
   void TestPrevoiusSibling(const NGInlineCursor& start) {
-    if (start.IsPaintFragmentCursor()) {
-      Vector<const NGPaintFragment*> forwards;
-      for (NGInlineCursor cursor(start); cursor;
-           cursor.MoveToNextSkippingChildren())
-        forwards.push_back(cursor.CurrentPaintFragment());
-      Vector<const NGPaintFragment*> backwards;
-      for (NGInlineBackwardCursor cursor(start); cursor;
-           cursor.MoveToPreviousSibling())
-        backwards.push_back(cursor.Current().PaintFragment());
-      backwards.Reverse();
-      EXPECT_THAT(backwards, forwards);
-      return;
-    }
-    DCHECK(start.IsItemCursor());
+    DCHECK(start.HasRoot());
     Vector<const NGFragmentItem*> forwards;
     for (NGInlineCursor cursor(start); cursor;
          cursor.MoveToNextSkippingChildren())

@@ -209,11 +209,6 @@ class CORE_EXPORT NGPaintFragment : public RefCounted<NGPaintFragment>,
   PhysicalSize Size() const { return PhysicalFragment().Size(); }
   PhysicalRect Rect() const { return {Offset(), Size()}; }
 
-  // Converts the given point, relative to the fragment itself, into a position
-  // in DOM tree.
-  PositionWithAffinity PositionForPoint(const PhysicalOffset&) const;
-  PositionWithAffinity PositionForPointInText(unsigned text_offset) const;
-
   // A range of fragments for |FragmentsFor()|.
   class TraverseNextForSameLayoutObject {
     STATIC_ONLY(TraverseNextForSameLayoutObject);
@@ -300,13 +295,6 @@ class CORE_EXPORT NGPaintFragment : public RefCounted<NGPaintFragment>,
 
   static void DestroyAll(scoped_refptr<NGPaintFragment> fragment);
   void RemoveChildren();
-
-  // Helps for PositionForPoint() when |this| falls in different categories.
-  PositionWithAffinity PositionForPointInText(const PhysicalOffset&) const;
-  PositionWithAffinity PositionForPointInInlineFormattingContext(
-      const PhysicalOffset&) const;
-  PositionWithAffinity PositionForPointInInlineLevelBox(
-      const PhysicalOffset&) const;
 
   // Dirty line boxes containing |layout_object|.
   static void MarkLineBoxesDirtyFor(const LayoutObject& layout_object);

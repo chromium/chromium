@@ -74,7 +74,7 @@ namespace {
 Position GetNextSoftBreak(const NGOffsetMapping& mapping,
                           NGInlineCursor& cursor) {
   while (cursor) {
-    DCHECK(cursor.Current().IsLineBox()) << cursor.Current();
+    DCHECK(cursor.Current().IsLineBox()) << cursor;
     const auto* break_token = cursor.Current().InlineBreakToken();
     cursor.MoveToNextLine();
     // We don't need to emit a LF for the last line.
