@@ -33,6 +33,7 @@
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/resources/grit/ui_resources.h"
 #include "ui/views/animation/animation_delegate_views.h"
@@ -449,14 +450,14 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)
   domain_label_ = AddChildView(std::make_unique<views::Label>(
       base::string16(), CONTEXT_BODY_TEXT_LARGE, views::style::STYLE_SECONDARY,
       gfx::DirectionalityMode::DIRECTIONALITY_AS_URL));
-  domain_label_->SetElideBehavior(gfx::ELIDE_HEAD);
+  domain_label_->SetElideBehavior(gfx::ELIDE_MIDDLE);
   domain_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   domain_label_->SetMultiLine(false);
 
   domain_fade_label_ = AddChildView(std::make_unique<FadeLabel>(
       base::string16(), CONTEXT_BODY_TEXT_LARGE, views::style::STYLE_SECONDARY,
       gfx::DirectionalityMode::DIRECTIONALITY_AS_URL));
-  domain_fade_label_->SetElideBehavior(gfx::ELIDE_HEAD);
+  domain_fade_label_->SetElideBehavior(gfx::ELIDE_MIDDLE);
   domain_fade_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   domain_fade_label_->SetMultiLine(false);
 
@@ -742,13 +743,17 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
   } else {
     title_label_->SetElideBehavior(gfx::ELIDE_TAIL);
     title_label_->SetMultiLine(true);
-    domain = url_formatter::FormatUrl(
-        domain_url,
-        url_formatter::kFormatUrlOmitDefaults |
-            url_formatter::kFormatUrlOmitHTTPS |
-            url_formatter::kFormatUrlOmitTrivialSubdomains |
-            url_formatter::kFormatUrlTrimAfterHost,
-        net::UnescapeRule::NORMAL, nullptr, nullptr, nullptr);
+    if (domain_url.SchemeIsBlob()) {
+      domain = l10n_util::GetStringUTF16(IDS_HOVER_CARD_BLOB_URL_SOURCE);
+    } else {
+      domain = url_formatter::FormatUrl(
+          domain_url,
+          url_formatter::kFormatUrlOmitDefaults |
+              url_formatter::kFormatUrlOmitHTTPS |
+              url_formatter::kFormatUrlOmitTrivialSubdomains |
+              url_formatter::kFormatUrlTrimAfterHost,
+          net::UnescapeRule::NORMAL, nullptr, nullptr, nullptr);
+    }
   }
   UpdateTextFade(0.0);
   title_fade_label_->SetText(title_label_->GetText());
