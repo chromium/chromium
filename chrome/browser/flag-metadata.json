@@ -1253,11 +1253,6 @@
     "expiry_milestone": 90
   },
   {
-    "name": "enable-autofill-cache-server-card-info",
-    "owners": [ "annelim@google.com", "jsaul@google.com" ],
-    "expiry_milestone": 88
-  },
-  {
     "name": "enable-autofill-credit-card-ablation-experiment",
     "owners": [ "jsaul@google.com" ],
     "expiry_milestone": 96

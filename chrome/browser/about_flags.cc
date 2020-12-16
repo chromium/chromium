@@ -6420,10 +6420,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"app-cache", flag_descriptions::kAppCacheName,
      flag_descriptions::kAppCacheDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kAppCache)},
-    {"enable-autofill-cache-server-card-info",
-     flag_descriptions::kEnableAutofillCacheServerCardInfoName,
-     flag_descriptions::kEnableAutofillCacheServerCardInfoDescription, kOsAll,
-     FEATURE_VALUE_TYPE(autofill::features::kAutofillCacheServerCardInfo)},
 
     {"autofill-enable-sticky-payments-bubble",
      flag_descriptions::kAutofillEnableStickyPaymentsBubbleName,

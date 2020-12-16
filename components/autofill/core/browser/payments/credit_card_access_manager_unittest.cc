@@ -1838,8 +1838,6 @@ TEST_F(CreditCardAccessManagerTest, AuthenticationInProgress) {
 
 // Ensures that the use of |unmasked_card_cache_| is set and logged correctly.
 TEST_F(CreditCardAccessManagerTest, FetchCreditCardUsesUnmaskedCardCache) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kAutofillCacheServerCardInfo);
   base::HistogramTester histogram_tester;
   CreateServerCard(kTestGUID, kTestNumber, /*masked=*/false);
   CreditCard* unmasked_card =

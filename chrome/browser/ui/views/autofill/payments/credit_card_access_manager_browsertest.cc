@@ -4,7 +4,6 @@
 
 #include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autofill/autofill_uitest_util.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/ui/autofill/payments/payments_ui_constants.h"
@@ -16,17 +15,13 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/test_autofill_manager.h"
-#include "components/autofill/core/common/autofill_payments_features.h"
 #include "content/public/test/browser_test.h"
 
 namespace autofill {
 
 class CreditCardAccessManagerBrowserTest : public InProcessBrowserTest {
  public:
-  CreditCardAccessManagerBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kAutofillCacheServerCardInfo);
-  }
-
+  CreditCardAccessManagerBrowserTest() = default;
   ~CreditCardAccessManagerBrowserTest() override = default;
 
  protected:
@@ -57,9 +52,6 @@ class CreditCardAccessManagerBrowserTest : public InProcessBrowserTest {
     AddTestServerCreditCard(browser()->profile(), server_card);
     return server_card;
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(CreditCardAccessManagerBrowserTest,

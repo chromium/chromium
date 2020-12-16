@@ -30,7 +30,6 @@
 #include "components/autofill/core/browser/payments/webauthn_callback_types.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_clock.h"
-#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_tick_clock.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -260,18 +259,16 @@ void CreditCardAccessManager::FetchCreditCard(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(features::kAutofillCacheServerCardInfo)) {
-    // If card has been previously unmasked, use cached data.
-    std::unordered_map<std::string, CachedServerCardInfo>::iterator it =
-        unmasked_card_cache_.find(card->server_id());
-    if (it != unmasked_card_cache_.end()) {  // key is in cache
-      accessor->OnCreditCardFetched(/*did_succeed=*/true,
-                                    /*CreditCard=*/&it->second.card,
-                                    /*cvc=*/it->second.cvc);
-      base::UmaHistogramCounts1000("Autofill.UsedCachedServerCard",
-                                   ++it->second.cache_uses);
-      return;
-    }
+  // If card has been previously unmasked, use cached data.
+  std::unordered_map<std::string, CachedServerCardInfo>::iterator it =
+      unmasked_card_cache_.find(card->server_id());
+  if (it != unmasked_card_cache_.end()) {  // key is in cache
+    accessor->OnCreditCardFetched(/*did_succeed=*/true,
+                                  /*credit_card=*/&it->second.card,
+                                  /*cvc=*/it->second.cvc);
+    base::UmaHistogramCounts1000("Autofill.UsedCachedServerCard",
+                                 ++it->second.cache_uses);
+    return;
   }
 
   // Latency metrics should only be logged if the user is verifiable and the

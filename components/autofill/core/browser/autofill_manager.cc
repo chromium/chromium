@@ -1457,8 +1457,7 @@ void AutofillManager::OnCreditCardFetched(bool did_succeed,
   DCHECK(credit_card);
   FillCreditCardForm(credit_card_query_id_, credit_card_form_,
                      credit_card_field_, *credit_card, cvc);
-  if (base::FeatureList::IsEnabled(features::kAutofillCacheServerCardInfo) &&
-      credit_card->record_type() == CreditCard::FULL_SERVER_CARD) {
+  if (credit_card->record_type() == CreditCard::FULL_SERVER_CARD) {
     credit_card_access_manager_->CacheUnmaskedCardInfo(*credit_card, cvc);
   }
 }
