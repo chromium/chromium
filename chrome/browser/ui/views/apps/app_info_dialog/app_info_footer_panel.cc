@@ -123,10 +123,9 @@ void AppInfoFooterPanel::OnExtensionUninstallDialogClosed(
 
 void AppInfoFooterPanel::CreateShortcuts() {
   DCHECK(CanCreateShortcuts(app_));
-  chrome::ShowCreateChromeAppShortcutsDialog(GetWidget()->GetNativeWindow(),
-                                             profile_,
-                                             app_,
-                                             base::Callback<void(bool)>());
+  chrome::ShowCreateChromeAppShortcutsDialog(
+      GetWidget()->GetNativeWindow(), profile_, app_,
+      base::RepeatingCallback<void(bool)>());
 }
 
 // static

@@ -248,8 +248,8 @@ void ChromeNativeAppWindowViewsAuraAsh::ShowContextMenuForViewImpl(
     menu_runner_ = std::make_unique<views::MenuRunner>(
         menu_model_.get(),
         views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::CONTEXT_MENU,
-        base::Bind(&ChromeNativeAppWindowViewsAuraAsh::OnMenuClosed,
-                   base::Unretained(this)));
+        base::BindRepeating(&ChromeNativeAppWindowViewsAuraAsh::OnMenuClosed,
+                            base::Unretained(this)));
     menu_runner_->RunMenuAt(source->GetWidget(), nullptr,
                             gfx::Rect(p, gfx::Size(0, 0)),
                             views::MenuAnchorPosition::kTopLeft, source_type);

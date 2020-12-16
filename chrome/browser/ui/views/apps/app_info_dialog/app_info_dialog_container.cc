@@ -78,7 +78,7 @@ class AppListOverlayBackground : public views::Background {
 class BaseDialogContainer : public views::DialogDelegateView {
  public:
   BaseDialogContainer(std::unique_ptr<views::View> dialog_body,
-                      const base::Closure& close_callback)
+                      base::RepeatingClosure close_callback)
       : dialog_body_(AddChildView(std::move(dialog_body))),
         close_callback_(close_callback) {
     SetButtons(ui::DIALOG_BUTTON_NONE);
@@ -97,7 +97,7 @@ class BaseDialogContainer : public views::DialogDelegateView {
   }
 
   views::View* dialog_body_;
-  const base::Closure close_callback_;
+  const base::RepeatingClosure close_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(BaseDialogContainer);
 };
@@ -186,7 +186,7 @@ class NativeDialogContainer : public BaseDialogContainer {
  public:
   NativeDialogContainer(std::unique_ptr<views::View> dialog_body,
                         const gfx::Size& size,
-                        const base::Closure& close_callback)
+                        base::RepeatingClosure close_callback)
       : BaseDialogContainer(std::move(dialog_body), close_callback) {
     SetLayoutManager(std::make_unique<views::FillLayout>());
     chrome::RecordDialogCreation(chrome::DialogIdentifier::NATIVE_CONTAINER);
@@ -221,6 +221,6 @@ views::DialogDelegateView* CreateAppListContainerForView(
 views::DialogDelegateView* CreateDialogContainerForView(
     std::unique_ptr<views::View> view,
     const gfx::Size& size,
-    const base::Closure& close_callback) {
+    base::RepeatingClosure close_callback) {
   return new NativeDialogContainer(std::move(view), size, close_callback);
 }

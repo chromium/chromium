@@ -127,7 +127,7 @@ class BulletedPermissionsList : public views::View {
   void AddPermissionBullets(base::string16 message,
                             std::vector<base::string16> submessages,
                             gfx::ElideBehavior elide_behavior_for_submessages,
-                            const base::Closure& revoke_callback) {
+                            base::RepeatingClosure revoke_callback) {
     std::unique_ptr<RevokeButton> revoke_button;
     if (!revoke_callback.is_null())
       revoke_button = std::make_unique<RevokeButton>(revoke_callback, message);
@@ -212,29 +212,25 @@ void AppInfoPermissionsPanel::CreatePermissionsList() {
 
   // Add regular and host permission messages.
   for (const auto& message : GetActivePermissionMessages()) {
-    permissions_list->AddPermissionBullets(message.message(),
-                                           message.submessages(),
-                                           gfx::ELIDE_MIDDLE, base::Closure());
+    permissions_list->AddPermissionBullets(
+        message.message(), message.submessages(), gfx::ELIDE_MIDDLE,
+        base::RepeatingClosure());
   }
 
   // Add USB devices, if the app has any.
   if (GetRetainedDeviceCount() > 0) {
     permissions_list->AddPermissionBullets(
-        GetRetainedDeviceHeading(),
-        GetRetainedDevices(),
-        gfx::ELIDE_TAIL,
-        base::Bind(&AppInfoPermissionsPanel::RevokeDevicePermissions,
-                   base::Unretained(this)));
+        GetRetainedDeviceHeading(), GetRetainedDevices(), gfx::ELIDE_TAIL,
+        base::BindRepeating(&AppInfoPermissionsPanel::RevokeDevicePermissions,
+                            base::Unretained(this)));
   }
 
   // Add retained files, if the app has any.
   if (GetRetainedFileCount() > 0) {
     permissions_list->AddPermissionBullets(
-        GetRetainedFileHeading(),
-        GetRetainedFilePaths(),
-        gfx::ELIDE_MIDDLE,
-        base::Bind(&AppInfoPermissionsPanel::RevokeFilePermissions,
-                   base::Unretained(this)));
+        GetRetainedFileHeading(), GetRetainedFilePaths(), gfx::ELIDE_MIDDLE,
+        base::BindRepeating(&AppInfoPermissionsPanel::RevokeFilePermissions,
+                            base::Unretained(this)));
   }
 
   AddChildView(std::move(permissions_list));

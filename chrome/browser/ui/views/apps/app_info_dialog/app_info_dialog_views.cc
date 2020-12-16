@@ -112,7 +112,7 @@ void ShowAppInfoInAppList(gfx::NativeWindow parent,
 void ShowAppInfoInNativeDialog(content::WebContents* web_contents,
                                Profile* profile,
                                const extensions::Extension* app,
-                               const base::Closure& close_callback) {
+                               base::RepeatingClosure close_callback) {
   views::DialogDelegate* dialog = CreateDialogContainerForView(
       std::make_unique<AppInfoDialog>(profile, app), kDialogSize,
       close_callback);
