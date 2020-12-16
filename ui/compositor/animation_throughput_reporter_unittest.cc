@@ -152,6 +152,32 @@ TEST_F(AnimationThroughputReporterTest, AbortedAnimation) {
   Advance(base::TimeDelta::FromMilliseconds(100));
 }
 
+// Tests no report and no leak when underlying layer is gone before reporter.
+TEST_F(AnimationThroughputReporterTest, LayerDestroyedBeforeReporter) {
+  auto layer = std::make_unique<Layer>();
+  layer->SetOpacity(0.5f);
+  root_layer()->Add(layer.get());
+
+  LayerAnimator* animator = layer->GetAnimator();
+  AnimationThroughputReporter reporter(
+      animator, base::BindLambdaForTesting(
+                    [&](const cc::FrameSequenceMetrics::CustomReportData&) {
+                      ADD_FAILURE() << "No report for aborted animations.";
+                    }));
+
+  {
+    ScopedLayerAnimationSettings settings(animator);
+    settings.SetTransitionDuration(base::TimeDelta::FromMilliseconds(48));
+    layer->SetOpacity(1.0f);
+  }
+
+  // Delete |layer| to before the reporter.
+  layer.reset();
+
+  // Wait a bit to ensure that report does not happen.
+  Advance(base::TimeDelta::FromMilliseconds(100));
+}
+
 // Tests animation throughput not reported when detached from timeline.
 TEST_F(AnimationThroughputReporterTest, NoReportOnDetach) {
   auto layer = std::make_unique<Layer>();
