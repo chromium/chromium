@@ -225,6 +225,28 @@ public final class NavigationControllerImpl extends INavigationController.Stub {
             long navigationStartTick, long firstContentfulPaintDurationMs) throws RemoteException {
         if (WebLayerFactoryImpl.getClientMajorVersion() < 88) return;
 
+        mNavigationControllerClient.onFirstContentfulPaint2(
+                (navigationStartTick - getNativeTickOffsetUs()) / 1000,
+                firstContentfulPaintDurationMs);
+    }
+
+    @CalledByNative
+    private void onLargestContentfulPaint(long navigationStartTick,
+            long largestContentfulPaintDurationMs) throws RemoteException {
+        if (WebLayerFactoryImpl.getClientMajorVersion() < 88) return;
+
+        mNavigationControllerClient.onLargestContentfulPaint(
+                (navigationStartTick - getNativeTickOffsetUs()) / 1000,
+                largestContentfulPaintDurationMs);
+    }
+
+    @CalledByNative
+    private void onOldPageNoLongerRendered(String uri) throws RemoteException {
+        if (WebLayerFactoryImpl.getClientMajorVersion() < 85) return;
+        mNavigationControllerClient.onOldPageNoLongerRendered(uri);
+    }
+
+    private long getNativeTickOffsetUs() {
         // See logic in CustomTabsConnection.java that this was based on.
         if (!mNativeTickOffsetUsComputed) {
             // Compute offset from time ticks to uptimeMillis.
@@ -233,18 +255,7 @@ public final class NavigationControllerImpl extends INavigationController.Stub {
             long javaNowUs = SystemClock.uptimeMillis() * 1000;
             mNativeTickOffsetUs = nativeNowUs - javaNowUs;
         }
-        // SystemClock.uptimeMillis() is used here as it (as of June 2017) uses the same system call
-        // as all the native side of Chrome, that is clock_gettime(CLOCK_MONOTONIC). Meaning that
-        // the offset relative to navigationStart is to be compared with a
-        // SystemClock.uptimeMillis() value.
-        mNavigationControllerClient.onFirstContentfulPaint2(
-                (navigationStartTick - mNativeTickOffsetUs) / 1000, firstContentfulPaintDurationMs);
-    }
-
-    @CalledByNative
-    private void onOldPageNoLongerRendered(String uri) throws RemoteException {
-        if (WebLayerFactoryImpl.getClientMajorVersion() < 85) return;
-        mNavigationControllerClient.onOldPageNoLongerRendered(uri);
+        return mNativeTickOffsetUs;
     }
 
     private static final class NavigateParamsImpl extends INavigateParams.Stub {

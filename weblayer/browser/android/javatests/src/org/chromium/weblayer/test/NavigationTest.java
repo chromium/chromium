@@ -189,6 +189,25 @@ public class NavigationTest {
             }
         }
 
+        public static class LargestContentfulPaintCallbackHelper extends CallbackHelper {
+            private long mNavigationStartMillis;
+            private long mLargestContentfulPaintMs;
+
+            public void notifyCalled(long navigationStartMillis, long largestContentfulPaintMs) {
+                mNavigationStartMillis = navigationStartMillis;
+                mLargestContentfulPaintMs = largestContentfulPaintMs;
+                notifyCalled();
+            }
+
+            public long getNavigationStartMillis() {
+                return mNavigationStartMillis;
+            }
+
+            public long getLargestContentfulPaintMs() {
+                return mLargestContentfulPaintMs;
+            }
+        }
+
         public NavigationCallbackHelper onStartedCallback = new NavigationCallbackHelper();
         public NavigationCallbackHelper onRedirectedCallback = new NavigationCallbackHelper();
         public NavigationCallbackHelper onReadyToCommitCallback = new NavigationCallbackHelper();
@@ -201,6 +220,8 @@ public class NavigationTest {
         public CallbackHelper onFirstContentfulPaintCallback = new CallbackHelper();
         public FirstContentfulPaintCallbackHelper onFirstContentfulPaint2Callback =
                 new FirstContentfulPaintCallbackHelper();
+        public LargestContentfulPaintCallbackHelper onLargestContentfulPaintCallback =
+                new LargestContentfulPaintCallbackHelper();
         public UriCallbackHelper onOldPageNoLongerRenderedCallback = new UriCallbackHelper();
 
         @Override
@@ -238,6 +259,13 @@ public class NavigationTest {
                 long navigationStartMillis, long firstContentfulPaintMs) {
             onFirstContentfulPaint2Callback.notifyCalled(
                     navigationStartMillis, firstContentfulPaintMs);
+        }
+
+        @Override
+        public void onLargestContentfulPaint(
+                long navigationStartMillis, long largestContentfulPaintMs) {
+            onLargestContentfulPaintCallback.notifyCalled(
+                    navigationStartMillis, largestContentfulPaintMs);
         }
 
         @Override
@@ -1201,5 +1229,35 @@ public class NavigationTest {
         long firstContentfulPaint =
                 mCallback.onFirstContentfulPaint2Callback.getFirstContentfulPaintMs();
         Assert.assertTrue(firstContentfulPaint <= (current - navigationStart));
+    }
+
+    @MinWebLayerVersion(88)
+    @Test
+    @SmallTest
+    public void testOnLargestContentfulPaintTiming() throws Exception {
+        long activityStartTimeMs = SystemClock.uptimeMillis();
+
+        TestWebServer testServer = TestWebServer.start();
+        InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(null);
+        setNavigationCallback(activity);
+        String url = testServer.setResponse("/ok.html", "<html>ok</html>", null);
+
+        int count = mCallback.onLargestContentfulPaintCallback.getCallCount();
+        mActivityTestRule.navigateAndWait(url);
+
+        // Navigate to a new page, as metrics like LCP are only reported at the end of the page load
+        // lifetime.
+        mActivityTestRule.navigateAndWait("about:blank");
+        mCallback.onLargestContentfulPaintCallback.waitForCallback(count);
+
+        long navigationStart =
+                mCallback.onLargestContentfulPaintCallback.getNavigationStartMillis();
+        long current = SystemClock.uptimeMillis();
+        Assert.assertTrue(navigationStart <= current);
+        Assert.assertTrue(navigationStart >= activityStartTimeMs);
+
+        long largestContentfulPaint =
+                mCallback.onLargestContentfulPaintCallback.getLargestContentfulPaintMs();
+        Assert.assertTrue(largestContentfulPaint <= (current - navigationStart));
     }
 }

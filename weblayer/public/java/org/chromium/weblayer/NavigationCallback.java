@@ -129,6 +129,19 @@ public abstract class NavigationCallback {
             long navigationStartMs, long firstContentfulPaintDurationMs) {}
 
     /**
+     * This is fired when the largest contentful paint metric is available.
+     *
+     * @param navigationStartMs the absolute navigation start time in milliseconds since boot,
+     *        not counting time spent in deep sleep. This comes from SystemClock.uptimeMillis().
+     * @param largestContentfulPaintDurationMs the number of milliseconds to largest contentful
+     *         paint
+     *        from navigation start.
+     * @since 88
+     */
+    public void onLargestContentfulPaint(
+            long navigationStartMs, long largestContentfulPaintDurationMs) {}
+
+    /**
      * Called after each navigation to indicate that the old page is no longer
      * being rendered. Note this is not ordered with respect to onFirstContentfulPaint.
      * @param newNavigationUri Uri of the new navigation.

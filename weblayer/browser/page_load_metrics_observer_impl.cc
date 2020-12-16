@@ -8,6 +8,7 @@
 #include "build/build_config.h"
 #include "components/no_state_prefetch/browser/prerender_manager.h"
 #include "components/no_state_prefetch/browser/prerender_util.h"
+#include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -38,6 +39,33 @@ PageLoadMetricsObserverImpl::OnCommit(
   return CONTINUE_OBSERVING;
 }
 
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+PageLoadMetricsObserverImpl::FlushMetricsOnAppEnterBackground(
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
+  // FlushMetricsOnAppEnterBackground is invoked on Android in cases where the
+  // app is about to be backgrounded, as part of the Activity.onPause()
+  // flow. After this method is invoked, WebLayer may be killed without further
+  // notification, so we record final metrics collected up to this point.
+  ReportBufferedMetrics(timing);
+
+  // We continue observing after being backgrounded, in case we are foregrounded
+  // again without being killed. In those cases we may still report non-buffered
+  // metrics such as FCP after being re-foregrounded.
+  return CONTINUE_OBSERVING;
+}
+
+PageLoadMetricsObserverImpl::ObservePolicy
+PageLoadMetricsObserverImpl::OnHidden(
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
+  ReportBufferedMetrics(timing);
+  return CONTINUE_OBSERVING;
+}
+
+void PageLoadMetricsObserverImpl::OnComplete(
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
+  ReportBufferedMetrics(timing);
+}
+
 void PageLoadMetricsObserverImpl::OnFirstContentfulPaintInPage(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   auto* tab = TabImpl::FromWebContents(GetDelegate().GetWebContents());
@@ -49,6 +77,35 @@ void PageLoadMetricsObserverImpl::OnFirstContentfulPaintInPage(
   nav_controller->OnFirstContentfulPaint(
       GetDelegate().GetNavigationStart(),
       *timing.paint_timing->first_contentful_paint);
+}
+
+void PageLoadMetricsObserverImpl::ReportBufferedMetrics(
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
+  // This method may be invoked multiple times. Make sure that if we already
+  // reported, we do not report again.
+  if (reported_buffered_metrics_)
+    return;
+  reported_buffered_metrics_ = true;
+
+  // Buffered metrics aren't available until after the navigation commits.
+  if (!GetDelegate().DidCommit())
+    return;
+
+  auto* tab = TabImpl::FromWebContents(GetDelegate().GetWebContents());
+  if (!tab)
+    return;
+
+  const page_load_metrics::ContentfulPaintTimingInfo& largest_contentful_paint =
+      GetDelegate()
+          .GetLargestContentfulPaintHandler()
+          .MergeMainFrameAndSubframes();
+  if (!largest_contentful_paint.ContainsValidTime())
+    return;
+
+  auto* nav_controller =
+      static_cast<NavigationControllerImpl*>(tab->GetNavigationController());
+  nav_controller->OnLargestContentfulPaint(GetDelegate().GetNavigationStart(),
+                                           *largest_contentful_paint.Time());
 }
 
 }  // namespace weblayer
