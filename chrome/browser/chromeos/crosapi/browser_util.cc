@@ -93,6 +93,10 @@ mojom::LacrosInitParamsPtr GetLacrosInitParams(
   params->default_paths = environment_provider->GetDefaultPaths();
   params->device_account_gaia_id =
       environment_provider->GetDeviceAccountGaiaId();
+  // TODO(crbug.com/1093194): This should be updated to a new value when
+  // the long term fix is made in ash-chrome, atomically.
+  params->exo_ime_support =
+      crosapi::mojom::ExoImeSupport::kConsumedByImeWorkaround;
 
   return params;
 }

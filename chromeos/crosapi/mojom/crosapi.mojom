@@ -173,6 +173,21 @@ struct DefaultPaths {
   mojo_base.mojom.FilePath downloads@1;
 };
 
+
+[Stable, Extensible]
+enum ExoImeSupport {
+  kUnsupported = 0,
+
+  // To work with the client IME implementation, exo has short term workaround
+  // to filter some wayland key/keysym events by using ConsumedByIme().
+  // Note that this is an approach consistent with ARC's behavior.
+  kConsumedByImeWorkaround = 1,
+
+  // TODO(crbug.com/1093194): For long term, we're looking at a way to remove
+  // the above workaround. It will be exclusive state, so on implementing
+  // ash-chrome's fix, it is necessary to add a new value here, too, atomically.
+};
+
 // LacrosInitParams is a set of parameters for initialization of lacros-chrome,
 // which is passed from ash-chrome to lacros-chrome. Since ash-chrome and
 // lacros-chrome may have different versions, lacros-chrome must handle this
@@ -190,7 +205,7 @@ struct DefaultPaths {
 // If ash-chrome is newer than lacros-chrome, then some fields may not be
 // processed by lacros-chrome.
 //
-// Next version: 9
+// Next version: 10
 [Stable]
 struct LacrosInitParams {
   // This is ash-chrome's version of the AshChromeService interface. This is
@@ -247,6 +262,11 @@ struct LacrosInitParams {
   // Added in M89.
   [MinVersion=8]
   MetricsReportingManaged ash_metrics_managed@8;
+
+  // How exo supports IME on Lacros. Lacros can control IME handling
+  // depending on the ash-chrome's support status via this flag.
+  [MinVersion=9]
+  ExoImeSupport exo_ime_support@9;
 };
 
 // LacrosChromeService defines the APIs that live in lacros-chrome and
