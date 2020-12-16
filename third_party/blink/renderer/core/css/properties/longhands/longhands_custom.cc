@@ -2036,18 +2036,25 @@ CSSValue* ConsumeCounterContent(CSSParserTokenRange args,
         args.ConsumeIncludingWhitespace().Value().ToString());
   }
 
-  CSSIdentifierValue* list_style = nullptr;
+  CSSCustomIdentValue* list_style = nullptr;
   if (css_parsing_utils::ConsumeCommaIncludingWhitespace(args)) {
-    CSSValueID id = args.Peek().Id();
-    if ((id != CSSValueID::kNone &&
-         (id < CSSValueID::kDisc || id > CSSValueID::kKatakanaIroha)))
-      return nullptr;
-    list_style = css_parsing_utils::ConsumeIdent(args);
+    if (!RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled()) {
+      CSSValueID id = args.Peek().Id();
+      if ((id != CSSValueID::kNone &&
+           (id < CSSValueID::kDisc || id > CSSValueID::kKatakanaIroha)))
+        return nullptr;
+      list_style = css_parsing_utils::ConsumeCustomIdent(args, context);
+    } else {
+      // Note: CSS3 spec doesn't allow 'none' but CSS2.1 allows it. We currently
+      // allow it for backward compatibility.
+      // See https://github.com/w3c/csswg-drafts/issues/5795 for details.
+      list_style = css_parsing_utils::ConsumeCustomIdent(args, context);
+    }
   } else {
-    list_style = CSSIdentifierValue::Create(CSSValueID::kDecimal);
+    list_style = MakeGarbageCollected<CSSCustomIdentValue>("decimal");
   }
 
-  if (!args.AtEnd())
+  if (!list_style || !args.AtEnd())
     return nullptr;
   return MakeGarbageCollected<cssvalue::CSSCounterValue>(identifier, list_style,
                                                          separator);
@@ -2129,6 +2136,12 @@ void Content::ApplyInherit(StyleResolverState& state) const {
 
 void Content::ApplyValue(StyleResolverState& state,
                          const CSSValue& value) const {
+  NOTREACHED();
+}
+
+void Content::ApplyValue(StyleResolverState& state,
+                         const ScopedCSSValue& scoped_value) const {
+  const CSSValue& value = scoped_value.GetCSSValue();
   if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     DCHECK(identifier_value->GetValueID() == CSSValueID::kNormal ||
            identifier_value->GetValueID() == CSSValueID::kNone);
@@ -2149,14 +2162,10 @@ void Content::ApplyValue(StyleResolverState& state,
           state.GetStyleImage(CSSPropertyID::kContent, *item));
     } else if (const auto* counter_value =
                    DynamicTo<cssvalue::CSSCounterValue>(item.Get())) {
-      const auto list_style_type =
-          CssValueIDToPlatformEnum<EListStyleType>(counter_value->ListStyle());
-      std::unique_ptr<CounterContent> counter =
-          std::make_unique<CounterContent>(
-              AtomicString(counter_value->Identifier()), list_style_type,
-              AtomicString(counter_value->Separator()));
-      next_content =
-          MakeGarbageCollected<CounterContentData>(std::move(counter));
+      next_content = MakeGarbageCollected<CounterContentData>(
+          AtomicString(counter_value->Identifier()), counter_value->ListStyle(),
+          AtomicString(counter_value->Separator()),
+          scoped_value.GetTreeScope());
     } else if (auto* item_identifier_value =
                    DynamicTo<CSSIdentifierValue>(item.Get())) {
       QuoteType quote_type;

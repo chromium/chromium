@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/css/css_value_id_mappings.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
+#include "third_party/blink/renderer/core/style/content_data.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -28,6 +29,17 @@ PredefinedCounterStyleNameMap BuildPredefinedCounterStyleNameMap() {
   return map;
 }
 
+EListStyleType CounterStyleNameToDeprecatedEnum(const AtomicString& name) {
+  DEFINE_STATIC_LOCAL(PredefinedCounterStyleNameMap,
+                      predefined_counter_style_name_map,
+                      (BuildPredefinedCounterStyleNameMap()));
+  auto iterator = predefined_counter_style_name_map.find(name);
+  if (iterator != predefined_counter_style_name_map.end())
+    return iterator->value;
+  DCHECK(RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled());
+  return EListStyleType::kDecimal;
+}
+
 }  // namespace
 
 void ListStyleTypeData::Trace(Visitor* visitor) const {
@@ -48,16 +60,17 @@ ListStyleTypeData* ListStyleTypeData::CreateCounterStyle(
 }
 
 EListStyleType ListStyleTypeData::ToDeprecatedListStyleTypeEnum() const {
-  DEFINE_STATIC_LOCAL(PredefinedCounterStyleNameMap,
-                      predefined_counter_style_name_map,
-                      (BuildPredefinedCounterStyleNameMap()));
   if (IsString())
     return EListStyleType::kString;
-  auto iterator = predefined_counter_style_name_map.find(GetCounterStyleName());
-  if (iterator != predefined_counter_style_name_map.end())
-    return iterator->value;
-  DCHECK(RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled());
-  return EListStyleType::kDecimal;
+  return CounterStyleNameToDeprecatedEnum(GetCounterStyleName());
+}
+
+// TODO(crbug.com/687225): We temporarily put this function here to share the
+// common logic. Clean it up when @counter-style is shipped.
+EListStyleType CounterContentData::ToDeprecatedListStyleTypeEnum() const {
+  if (ListStyle() == "none")
+    return EListStyleType::kNone;
+  return CounterStyleNameToDeprecatedEnum(ListStyle());
 }
 
 }  // namespace blink

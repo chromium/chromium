@@ -23,7 +23,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_COUNTER_H_
 
 #include "third_party/blink/renderer/core/layout/layout_text.h"
-#include "third_party/blink/renderer/core/style/counter_content.h"
+#include "third_party/blink/renderer/core/style/content_data.h"
 
 namespace blink {
 
@@ -52,7 +52,7 @@ using CounterMap = HashMap<AtomicString, scoped_refptr<CounterNode>>;
 // LayoutCounter during their lifetime (see the static functions below).
 class LayoutCounter final : public LayoutText {
  public:
-  LayoutCounter(PseudoElement&, const CounterContent&);
+  LayoutCounter(PseudoElement&, const CounterContentData&);
   ~LayoutCounter() override;
 
   // These functions are static so that any LayoutObject can call them.
@@ -91,7 +91,7 @@ class LayoutCounter final : public LayoutText {
   // changes.
   void Invalidate();
 
-  CounterContent counter_;
+  Persistent<const CounterContentData> counter_;
   CounterNode* counter_node_;
   LayoutCounter* next_for_same_counter_;
   friend class CounterNode;

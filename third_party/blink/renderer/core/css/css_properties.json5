@@ -1952,6 +1952,7 @@
       computed_style_custom_functions: ["getter", "setter"],
       style_builder_custom_functions: ["initial", "inherit", "value"],
       valid_for_marker: true,
+      tree_scoped_value: true,
     },
     {
       name: "counter-increment",

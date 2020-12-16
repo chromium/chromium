@@ -2021,22 +2021,13 @@ CSSValue* ComputedStyleUtils::ValueForContentData(const ComputedStyle& style,
   for (const ContentData* content_data = style.GetContentData(); content_data;
        content_data = content_data->Next()) {
     if (content_data->IsCounter()) {
-      const CounterContent* counter =
-          To<CounterContentData>(content_data)->Counter();
-      DCHECK(counter);
+      const CounterContentData& counter = To<CounterContentData>(*content_data);
       auto* identifier =
-          MakeGarbageCollected<CSSCustomIdentValue>(counter->Identifier());
+          MakeGarbageCollected<CSSCustomIdentValue>(counter.Identifier());
       auto* separator =
-          MakeGarbageCollected<CSSStringValue>(counter->Separator());
-      CSSValueID list_style_ident = CSSValueID::kNone;
-      if (counter->ListStyle() != EListStyleType::kNone) {
-        // TODO(sashab): Change this to use a converter instead of
-        // CSSPrimitiveValueMappings.
-        list_style_ident =
-            CSSIdentifierValue::Create(counter->ListStyle())->GetValueID();
-      }
-      CSSIdentifierValue* list_style =
-          CSSIdentifierValue::Create(list_style_ident);
+          MakeGarbageCollected<CSSStringValue>(counter.Separator());
+      auto* list_style =
+          MakeGarbageCollected<CSSCustomIdentValue>(counter.ListStyle());
       list->Append(*MakeGarbageCollected<cssvalue::CSSCounterValue>(
           identifier, list_style, separator));
     } else if (content_data->IsImage()) {

@@ -20,7 +20,6 @@ blink_core_sources_style = [
   "computed_style_constants.h",
   "content_data.cc",
   "content_data.h",
-  "counter_content.h",
   "counter_directives.cc",
   "counter_directives.h",
   "cursor_data.h",

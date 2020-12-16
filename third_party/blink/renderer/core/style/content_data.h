@@ -29,10 +29,11 @@
 #include <memory>
 #include <utility>
 
-#include "third_party/blink/renderer/core/style/counter_content.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/style_image.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
 
@@ -40,6 +41,7 @@ class ComputedStyle;
 class LayoutObject;
 enum class LegacyLayout;
 class PseudoElement;
+class TreeScope;
 
 class ContentData : public GarbageCollected<ContentData> {
  public:
@@ -191,34 +193,50 @@ class CounterContentData final : public ContentData {
   friend class ContentData;
 
  public:
-  const CounterContent* Counter() const { return counter_.get(); }
-  void SetCounter(std::unique_ptr<CounterContent> counter) {
-    counter_ = std::move(counter);
-  }
-
-  explicit CounterContentData(std::unique_ptr<CounterContent> counter)
-      : counter_(std::move(counter)) {}
+  explicit CounterContentData(const AtomicString& identifier,
+                              const AtomicString& style,
+                              const AtomicString& separator,
+                              const TreeScope* tree_scope)
+      : identifier_(identifier),
+        list_style_(style),
+        separator_(separator),
+        tree_scope_(tree_scope) {}
 
   bool IsCounter() const override { return true; }
   LayoutObject* CreateLayoutObject(PseudoElement&,
                                    const ComputedStyle&,
                                    LegacyLayout) const override;
 
+  const AtomicString& Identifier() const { return identifier_; }
+  const AtomicString& ListStyle() const { return list_style_; }
+  const AtomicString& Separator() const { return separator_; }
+  const TreeScope* GetTreeScope() const { return tree_scope_; }
+
+  EListStyleType ToDeprecatedListStyleTypeEnum() const;
+
+  void Trace(Visitor*) const override;
+
  private:
   ContentData* CloneInternal() const override {
-    std::unique_ptr<CounterContent> counter_data =
-        std::make_unique<CounterContent>(*Counter());
-    return MakeGarbageCollected<CounterContentData>(std::move(counter_data));
+    return MakeGarbageCollected<CounterContentData>(identifier_, list_style_,
+                                                    separator_, tree_scope_);
   }
 
   bool Equals(const ContentData& data) const override {
     if (!data.IsCounter())
       return false;
-    return *static_cast<const CounterContentData&>(data).Counter() ==
-           *Counter();
+    const CounterContentData& other =
+        static_cast<const CounterContentData&>(data);
+    return Identifier() == other.Identifier() &&
+           ListStyle() == other.ListStyle() &&
+           Separator() == other.Separator() &&
+           GetTreeScope() == other.GetTreeScope();
   }
 
-  std::unique_ptr<CounterContent> counter_;
+  AtomicString identifier_;
+  AtomicString list_style_;
+  AtomicString separator_;
+  Member<const TreeScope> tree_scope_;
 };
 
 template <>

@@ -34,7 +34,7 @@ namespace cssvalue {
 class CSSCounterValue : public CSSValue {
  public:
   CSSCounterValue(CSSCustomIdentValue* identifier,
-                  CSSIdentifierValue* list_style,
+                  CSSCustomIdentValue* list_style,
                   CSSStringValue* separator)
       : CSSValue(kCounterClass),
         identifier_(identifier),
@@ -42,7 +42,7 @@ class CSSCounterValue : public CSSValue {
         separator_(separator) {}
 
   String Identifier() const { return identifier_->Value(); }
-  CSSValueID ListStyle() const { return list_style_->GetValueID(); }
+  AtomicString ListStyle() const { return list_style_->Value(); }
   String Separator() const { return separator_->Value(); }
 
   bool Equals(const CSSCounterValue& other) const {
@@ -56,7 +56,7 @@ class CSSCounterValue : public CSSValue {
 
  private:
   Member<CSSCustomIdentValue> identifier_;  // string
-  Member<CSSIdentifierValue> list_style_;   // ident
+  Member<CSSCustomIdentValue> list_style_;  // ident
   Member<CSSStringValue> separator_;        // string
 };
 

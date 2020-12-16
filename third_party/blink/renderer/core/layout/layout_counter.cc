@@ -483,7 +483,7 @@ CounterNode* MakeCounterNodeIfNeeded(LayoutObject& object,
 }  // namespace
 
 LayoutCounter::LayoutCounter(PseudoElement& pseudo,
-                             const CounterContent& counter)
+                             const CounterContentData& counter)
     : LayoutText(nullptr, StringImpl::empty_),
       counter_(counter),
       counter_node_(nullptr),
@@ -513,7 +513,7 @@ scoped_refptr<StringImpl> LayoutCounter::OriginalText() const {
 
   // Find a container on which to create the counter if one needs creating.
   LayoutObject* container = Parent();
-  bool should_create_counter = counter_.Separator().IsNull();
+  bool should_create_counter = counter_->Separator().IsNull();
   // Optimization: the only reason we need a proper container is if we might not
   // need to create a counter (in which case, we navigate container's
   // ancestors), or if we don't have a counter_node_ (in which case we need to
@@ -550,7 +550,7 @@ scoped_refptr<StringImpl> LayoutCounter::OriginalText() const {
       if (style.ContainsStyle())
         break;
       const CounterDirectives directives =
-          style.GetCounterDirectives(counter_.Identifier());
+          style.GetCounterDirectives(counter_->Identifier());
       if (directives.IsDefined()) {
         should_create_counter = true;
         break;
@@ -563,7 +563,7 @@ scoped_refptr<StringImpl> LayoutCounter::OriginalText() const {
     // as the child, without needing to create a counter on `this`. If we don't
     // have such an ancestor, we need to create a `counter_node_` on `this`.
     if (auto* node = CounterNode::AncestorNodeAcrossStyleContainment(
-            *this, counter_.Identifier())) {
+            *this, counter_->Identifier())) {
       child = node;
     } else {
       should_create_counter = true;
@@ -572,7 +572,7 @@ scoped_refptr<StringImpl> LayoutCounter::OriginalText() const {
 
   if (should_create_counter) {
     if (!counter_node_) {
-      MakeCounterNodeIfNeeded(*container, counter_.Identifier(), true)
+      MakeCounterNodeIfNeeded(*container, counter_->Identifier(), true)
           ->AddLayoutObject(const_cast<LayoutCounter*>(this));
       DCHECK(counter_node_);
     }
@@ -584,20 +584,21 @@ scoped_refptr<StringImpl> LayoutCounter::OriginalText() const {
   DCHECK(child);
 
   int value = ValueForText(child);
-  String text = list_marker_text::GetText(counter_.ListStyle(), value);
+  EListStyleType list_style = counter_->ToDeprecatedListStyleTypeEnum();
+  String text = list_marker_text::GetText(list_style, value);
   // If the separator exists, we need to append all of the parent values as well,
   // including the ones that cross the style containment boundary.
-  if (!counter_.Separator().IsNull()) {
+  if (!counter_->Separator().IsNull()) {
     if (!child->ActsAsReset())
-      child = child->ParentCrossingStyleContainment(counter_.Identifier());
+      child = child->ParentCrossingStyleContainment(counter_->Identifier());
     bool next_result_uses_parent_value = !child->Parent();
     while (CounterNode* parent =
-               child->ParentCrossingStyleContainment(counter_.Identifier())) {
-      text = list_marker_text::GetText(counter_.ListStyle(),
-                                       next_result_uses_parent_value
-                                           ? ValueForText(parent)
-                                           : child->CountInParent()) +
-             counter_.Separator() + text;
+               child->ParentCrossingStyleContainment(counter_->Identifier())) {
+      text =
+          list_marker_text::GetText(list_style, next_result_uses_parent_value
+                                                    ? ValueForText(parent)
+                                                    : child->CountInParent()) +
+          counter_->Separator() + text;
       child = parent;
       next_result_uses_parent_value = !child->Parent();
     }
