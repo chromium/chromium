@@ -33,7 +33,6 @@ class ASH_EXPORT PeripheralBatteryTracker {
 
   scoped_refptr<device::BluetoothAdapter> adapter_;
 
-  std::unique_ptr<HfpBatteryListener> hfp_battery_listener_;
   std::unique_ptr<HidBatteryListener> hid_battery_listener_;
 
   base::WeakPtrFactory<PeripheralBatteryTracker> weak_ptr_factory_{this};
