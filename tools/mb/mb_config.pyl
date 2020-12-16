@@ -327,8 +327,10 @@
       'mac-upload-perfetto': 'release_bot',
       'win-annotator-rel': 'release_bot',
       'win-celab-builder-rel': 'release_bot_minimal_symbols',
-      'win-paeverywhere-x86-fyi-dbg': 'debug_bot_paeverywhere_x86',
-      'win-paeverywhere-x86-fyi-rel': 'release_trybot_paeverywhere_x86',
+      # TODO(bartekn): Switch back to debug_bot_paeverywhere_x86 and
+      # release_trybot_paeverywhere_x86.
+      'win-paeverywhere-x86-fyi-dbg': 'debug_bot_x86',
+      'win-paeverywhere-x86-fyi-rel': 'release_trybot_x86',
       'win-paeverywhere-x64-fyi-dbg': 'debug_bot_paeverywhere_x64',
       'win-paeverywhere-x64-fyi-rel': 'release_trybot_paeverywhere_x64',
       'win-pixel-builder-rel': 'release_bot',
@@ -1861,10 +1863,6 @@
       'debug_bot', 'fuchsia', 'compile_only',
     ],
 
-    'debug_bot_paeverywhere_x86': [
-      'debug_bot', 'paeverywhere', 'x86',
-    ],
-
     'debug_bot_paeverywhere_x64': [
       'debug_bot', 'paeverywhere', 'x64',
     ],
@@ -2506,11 +2504,7 @@
       'use_clang_coverage', 'partial_code_coverage_instrumentation',
     ],
 
-    'release_trybot_paeverywhere_x86': [
-      'release_trybot', 'paeverywhere', 'x86',
-    ],
-
-    'release_trybot_paeverywhere_x64': [
+     'release_trybot_paeverywhere_x64': [
       'release_trybot', 'paeverywhere', 'x64',
     ],
 
@@ -3104,7 +3098,8 @@
     },
 
     'paeverywhere': {
-      'gn_args': 'use_allocator="partition"',
+      # TODO(bartekn): Re-enable.
+      # 'gn_args': 'use_allocator="partition"',
     },
 
     # Used to pass the list of files to instrument for coverage to the compile
