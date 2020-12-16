@@ -29,7 +29,7 @@ class BluetoothApiSocket : public ApiResource {
   enum ErrorReason { kSystemError, kNotConnected, kNotListening, kIOPending,
                      kDisconnected };
 
-  typedef base::Callback<void(int)> SendCompletionCallback;
+  typedef base::OnceCallback<void(int)> SendCompletionCallback;
   typedef base::Callback<void(int, scoped_refptr<net::IOBuffer> io_buffer)>
       ReceiveCompletionCallback;
   typedef base::Callback<void(const device::BluetoothDevice* device,
@@ -37,6 +37,9 @@ class BluetoothApiSocket : public ApiResource {
       AcceptCompletionCallback;
   typedef base::Callback<void(ErrorReason, const std::string& error_message)>
       ErrorCompletionCallback;
+  typedef base::OnceCallback<void(ErrorReason,
+                                  const std::string& error_message)>
+      ErrorCompletionOnceCallback;
 
   explicit BluetoothApiSocket(const std::string& owner_extension_id);
   BluetoothApiSocket(const std::string& owner_extension_id,
@@ -59,7 +62,7 @@ class BluetoothApiSocket : public ApiResource {
       const device::BluetoothUUID& uuid);
 
   // Closes the underlying connection. This is a best effort, and never fails.
-  virtual void Disconnect(const base::Closure& callback);
+  virtual void Disconnect(base::OnceClosure callback);
 
   // Receives data from the socket and calls |success_callback| when data is
   // available. |count| is maximum amount of bytes received. If an error occurs,
@@ -78,8 +81,8 @@ class BluetoothApiSocket : public ApiResource {
   // underlying communication channel is available for sending data.
   virtual void Send(scoped_refptr<net::IOBuffer> buffer,
                     int buffer_size,
-                    const SendCompletionCallback& success_callback,
-                    const ErrorCompletionCallback& error_callback);
+                    SendCompletionCallback success_callback,
+                    ErrorCompletionOnceCallback error_callback);
 
   // Accepts a client connection from the socket and calls |success_callback|
   // when one has connected. If an error occurs, calls |error_callback| with a
@@ -121,9 +124,8 @@ class BluetoothApiSocket : public ApiResource {
       device::BluetoothSocket::ErrorReason reason,
       const std::string& message);
 
-  static void OnSocketSendError(
-      const ErrorCompletionCallback& error_callback,
-      const std::string& message);
+  static void OnSocketSendError(ErrorCompletionOnceCallback error_callback,
+                                const std::string& message);
 
   static void OnSocketAcceptError(
       const ErrorCompletionCallback& error_callback,
