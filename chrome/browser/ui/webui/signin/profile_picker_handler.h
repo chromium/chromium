@@ -73,6 +73,8 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
       const base::FilePath& profile_path) override;
   void OnProfileNameChanged(const base::FilePath& profile_path,
                             const base::string16& old_profile_name) override;
+  void OnProfileHostedDomainChanged(
+      const base::FilePath& profile_path) override;
 
   // content::WebContentsObserver:
   void DidFirstVisuallyNonEmptyPaint() override;

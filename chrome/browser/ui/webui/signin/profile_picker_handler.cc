@@ -627,6 +627,11 @@ void ProfilePickerHandler::OnProfileNameChanged(
   PushProfilesList();
 }
 
+void ProfilePickerHandler::OnProfileHostedDomainChanged(
+    const base::FilePath& profile_path) {
+  PushProfilesList();
+}
+
 void ProfilePickerHandler::DidFirstVisuallyNonEmptyPaint() {
   DCHECK(!creation_time_on_startup_.is_null());
   base::UmaHistogramTimes("ProfilePicker.StartupTime.FirstPaint",
