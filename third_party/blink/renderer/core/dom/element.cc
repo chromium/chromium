@@ -4501,14 +4501,16 @@ Element::EnsureResizeObserverData() {
   return EnsureElementRareData().EnsureResizeObserverData();
 }
 
-DisplayLockContext* Element::GetDisplayLockContext() const {
+DisplayLockContext* Element::GetDisplayLockContextFromRareData() const {
   if (!RuntimeEnabledFeatures::CSSContentVisibilityEnabled())
     return nullptr;
-  return HasRareData() ? GetElementRareData()->GetDisplayLockContext()
-                       : nullptr;
+  DCHECK(HasDisplayLockContext());
+  DCHECK(HasRareData());
+  return GetElementRareData()->GetDisplayLockContext();
 }
 
 DisplayLockContext& Element::EnsureDisplayLockContext() {
+  SetHasDisplayLockContext();
   return *EnsureElementRareData().EnsureDisplayLockContext(this);
 }
 

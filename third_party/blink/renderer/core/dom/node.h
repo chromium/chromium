@@ -887,6 +887,10 @@ class CORE_EXPORT Node : public EventTarget {
   void RegisterScrollTimeline(ScrollTimeline*);
   void UnregisterScrollTimeline(ScrollTimeline*);
 
+  // For Element.
+  void SetHasDisplayLockContext() { SetFlag(kHasDisplayLockContext); }
+  bool HasDisplayLockContext() const { return GetFlag(kHasDisplayLockContext); }
+
   void Trace(Visitor*) const override;
 
  private:
@@ -932,9 +936,11 @@ class CORE_EXPORT Node : public EventTarget {
 
     kForceReattachLayoutTree = 1 << 25,
 
+    kHasDisplayLockContext = 1 << 26,
+
     kDefaultNodeFlags = kIsFinishedParsingChildrenFlag,
 
-    // 7 bits remaining.
+    // 6 bits remaining.
   };
 
   ALWAYS_INLINE bool GetFlag(NodeFlags mask) const {

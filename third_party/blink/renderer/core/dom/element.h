@@ -895,7 +895,11 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   HeapHashMap<Member<ResizeObserver>, Member<ResizeObservation>>&
   EnsureResizeObserverData();
 
-  DisplayLockContext* GetDisplayLockContext() const;
+  DisplayLockContext* GetDisplayLockContext() const {
+    if (LIKELY(!HasDisplayLockContext()))
+      return nullptr;
+    return GetDisplayLockContextFromRareData();
+  }
   DisplayLockContext& EnsureDisplayLockContext();
 
   bool ChildStyleRecalcBlockedByDisplayLock() const;
@@ -1236,6 +1240,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void ForceLegacyLayoutInFragmentationContext(const ComputedStyle& new_style);
   void SynchronizeContentAttributeAndElementReference(
       const QualifiedName& name);
+
+  DisplayLockContext* GetDisplayLockContextFromRareData() const;
 
   Member<ElementData> element_data_;
 };
