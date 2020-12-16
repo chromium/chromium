@@ -22,7 +22,7 @@ public class ConfirmSyncDataStateMachineDelegate {
      * other dialog or calling {@link ConfirmSyncDataStateMachineDelegate#dismissAllDialogs},
      * then {@link #onCancel} will be called once.
      */
-    public interface ProgressDialogListener {
+    interface ProgressDialogListener {
         /**
          * This method is called when user cancels the dialog in any way.
          */
@@ -34,7 +34,7 @@ public class ConfirmSyncDataStateMachineDelegate {
      * other dialog or calling {@link ConfirmSyncDataStateMachineDelegate#dismissAllDialogs},
      * then either {@link #onCancel} or {@link #onRetry} will be called once.
      */
-    public interface TimeoutDialogListener {
+    interface TimeoutDialogListener {
         /**
          * This method is called when user cancels the dialog in any way.
          */
@@ -148,9 +148,8 @@ public class ConfirmSyncDataStateMachineDelegate {
      * Shows progress dialog. Will dismiss other dialogs shown, if any.
      *
      * @param listener The {@link ProgressDialogListener} that will be notified about user actions.
-     * TODO(crbug.com/1155123): Change the method to package private after modularization
      */
-    public void showFetchManagementPolicyProgressDialog(ProgressDialogListener listener) {
+    void showFetchManagementPolicyProgressDialog(ProgressDialogListener listener) {
         dismissAllDialogs();
         showAllowingStateLoss(ProgressDialogFragment.create(listener), PROGRESS_DIALOG_TAG);
     }
@@ -159,9 +158,8 @@ public class ConfirmSyncDataStateMachineDelegate {
      * Shows timeout dialog. Will dismiss other dialogs shown, if any.
      *
      * @param listener The {@link TimeoutDialogListener} that will be notified about user actions.
-     * TODO(crbug.com/1155123): Change the method to package private after modularization
      */
-    public void showFetchManagementPolicyTimeoutDialog(TimeoutDialogListener listener) {
+    void showFetchManagementPolicyTimeoutDialog(TimeoutDialogListener listener) {
         dismissAllDialogs();
         showAllowingStateLoss(TimeoutDialogFragment.create(listener), TIMEOUT_DIALOG_TAG);
     }
@@ -175,9 +173,8 @@ public class ConfirmSyncDataStateMachineDelegate {
      *                        hitting cancel).
      * @param oldAccountName  The previous sync account name.
      * @param newAccountName  The potential next sync account name.
-     * TODO(crbug.com/1155123): Change the method to package private after modularization
      */
-    public void showConfirmImportSyncDataDialog(ConfirmImportSyncDataDialog.Listener listener,
+    void showConfirmImportSyncDataDialog(ConfirmImportSyncDataDialog.Listener listener,
             String oldAccountName, String newAccountName) {
         dismissAllDialogs();
         ConfirmImportSyncDataDialog dialog =
@@ -190,9 +187,8 @@ public class ConfirmSyncDataStateMachineDelegate {
      * (either through sign in or when switching accounts).
      * @param listener Callback for result.
      * @param domain The domain of the managed account.
-     * TODO(crbug.com/1155123): Change the method to package private after modularization
      */
-    public void showSignInToManagedAccountDialog(
+    void showSignInToManagedAccountDialog(
             ConfirmManagedSyncDataDialog.Listener listener, String domain) {
         dismissAllDialogs();
         showAllowingStateLoss(ConfirmManagedSyncDataDialog.create(listener, domain),
@@ -208,7 +204,7 @@ public class ConfirmSyncDataStateMachineDelegate {
     /**
      * Dismisses all dialogs.
      */
-    public void dismissAllDialogs() {
+    void dismissAllDialogs() {
         dismissDialog(PROGRESS_DIALOG_TAG);
         dismissDialog(TIMEOUT_DIALOG_TAG);
         dismissDialog(CONFIRM_IMPORT_SYNC_DATA_DIALOG_TAG);

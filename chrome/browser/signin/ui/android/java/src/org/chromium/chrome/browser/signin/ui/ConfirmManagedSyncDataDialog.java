@@ -20,7 +20,7 @@ public class ConfirmManagedSyncDataDialog extends DialogFragment {
      * A listener to allow the Dialog to report on the action taken. Either
      * {@link Listener#onConfirm} or {@link Listener#onCancel} will be called once.
      */
-    public interface Listener {
+    interface Listener {
         /**
          * The user has accepted the dialog.
          */
@@ -41,10 +41,8 @@ public class ConfirmManagedSyncDataDialog extends DialogFragment {
      * (either through sign in or when switching accounts).
      * @param listener Callback for result.
      * @param domain The domain of the managed account.
-     *
-     * TODO(https://crbug.com/1155123): Change this method to package internal after modularization
      */
-    public static ConfirmManagedSyncDataDialog create(Listener listener, String domain) {
+    static ConfirmManagedSyncDataDialog create(Listener listener, String domain) {
         ConfirmManagedSyncDataDialog dialog = new ConfirmManagedSyncDataDialog();
         Bundle args = new Bundle();
         args.putString(KEY_DOMAIN, domain);

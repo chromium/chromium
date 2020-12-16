@@ -33,7 +33,7 @@ public class ConfirmImportSyncDataDialog
      * Callback for completion of the dialog. Only one of {@link Listener#onConfirm} or
      * {@link Listener#onCancel} will be called and it will only be called once.
      */
-    public interface Listener {
+    interface Listener {
         /**
          * The user has completed the dialog using the positive button.
          * @param wipeData Whether the user requested that existing data should be wiped.
