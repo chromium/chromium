@@ -107,7 +107,7 @@ ClientDiscardableSharedMemoryManager::DiscardableMemoryImpl::
 
 ClientDiscardableSharedMemoryManager::DiscardableMemoryImpl::
     ~DiscardableMemoryImpl() {
-  base::AutoLock lock(manager_->GetLock());
+  base::AutoLock lock(manager_->lock_);
   if (!span_) {
     DCHECK(!is_locked());
     return;
@@ -119,7 +119,7 @@ ClientDiscardableSharedMemoryManager::DiscardableMemoryImpl::
 }
 
 bool ClientDiscardableSharedMemoryManager::DiscardableMemoryImpl::Lock() {
-  base::AutoLock lock(manager_->GetLock());
+  base::AutoLock lock(manager_->lock_);
   DCHECK(!is_locked());
 
   if (span_ && manager_->LockSpan(span_.get()))
@@ -132,7 +132,7 @@ bool ClientDiscardableSharedMemoryManager::DiscardableMemoryImpl::Lock() {
 }
 
 void ClientDiscardableSharedMemoryManager::DiscardableMemoryImpl::Unlock() {
-  base::AutoLock lock(manager_->GetLock());
+  base::AutoLock lock(manager_->lock_);
   DCHECK(is_locked());
   DCHECK(span_);
 
@@ -158,7 +158,7 @@ void* ClientDiscardableSharedMemoryManager::DiscardableMemoryImpl::data()
     const {
 #if DCHECK_IS_ON()
   {
-    base::AutoLock lock(manager_->GetLock());
+    base::AutoLock lock(manager_->lock_);
     DCHECK(is_locked());
   }
 #endif
@@ -174,7 +174,7 @@ void ClientDiscardableSharedMemoryManager::DiscardableMemoryImpl::
     DiscardForTesting() {
 #if DCHECK_IS_ON()
   {
-    base::AutoLock lock(manager_->GetLock());
+    base::AutoLock lock(manager_->lock_);
     DCHECK(!is_locked());
   }
 #endif
@@ -222,7 +222,7 @@ ClientDiscardableSharedMemoryManager::~ClientDiscardableSharedMemoryManager() {
   // touched after it is destroyed, or it will cause a use-after-free. This
   // check ensures that we stop before that can happen, instead of continuing
   // with dangling pointers.
-  CHECK_EQ(heap_->GetSize(), heap_->GetSizeOfFreeLists());
+  CHECK_EQ(heap_->GetSize(), heap_->GetFreelistSize());
   if (heap_->GetSize())
     MemoryUsageChanged(0, 0);
 
@@ -321,7 +321,7 @@ ClientDiscardableSharedMemoryManager::AllocateLockedDiscardableMemory(
 
     // Memory usage is guaranteed to have changed after having removed
     // at least one span from the free lists.
-    MemoryUsageChanged(heap_->GetSize(), heap_->GetSizeOfFreeLists());
+    MemoryUsageChanged(heap_->GetSize(), heap_->GetFreelistSize());
 
     auto discardable_memory =
         std::make_unique<DiscardableMemoryImpl>(this, std::move(free_span));
@@ -335,7 +335,7 @@ ClientDiscardableSharedMemoryManager::AllocateLockedDiscardableMemory(
 
   // Make sure crash keys are up to date in case allocation fails.
   if (heap_->GetSize() != heap_size_prior_to_releasing_purged_memory)
-    MemoryUsageChanged(heap_->GetSize(), heap_->GetSizeOfFreeLists());
+    MemoryUsageChanged(heap_->GetSize(), heap_->GetFreelistSize());
 
   size_t pages_to_allocate =
       std::max(allocation_size / base::GetPageSize(), pages);
@@ -383,7 +383,7 @@ ClientDiscardableSharedMemoryManager::AllocateLockedDiscardableMemory(
                           false);
   }
 
-  MemoryUsageChanged(heap_->GetSize(), heap_->GetSizeOfFreeLists());
+  MemoryUsageChanged(heap_->GetSize(), heap_->GetFreelistSize());
 
   auto discardable_memory =
       std::make_unique<DiscardableMemoryImpl>(this, std::move(new_span));
@@ -398,7 +398,7 @@ bool ClientDiscardableSharedMemoryManager::OnMemoryDump(
   base::AutoLock lock(lock_);
   if (foregrounded_) {
     const size_t total_size = heap_->GetSize() / 1024;                // in KiB
-    const size_t freelist_size = heap_->GetSizeOfFreeLists() / 1024;  // in KiB
+    const size_t freelist_size = heap_->GetFreelistSize() / 1024;     // in KiB
 
     base::UmaHistogramCounts1M("Memory.Discardable.FreelistSize.Foreground",
                                freelist_size);
@@ -416,7 +416,7 @@ size_t ClientDiscardableSharedMemoryManager::GetBytesAllocated() const {
 }
 
 size_t ClientDiscardableSharedMemoryManager::GetBytesAllocatedLocked() const {
-  return heap_->GetSize() - heap_->GetSizeOfFreeLists();
+  return heap_->GetSize() - heap_->GetFreelistSize();
 }
 
 void ClientDiscardableSharedMemoryManager::BackgroundPurge() {
@@ -464,10 +464,10 @@ void ClientDiscardableSharedMemoryManager::PurgeUnlockedMemory(
       DiscardableMemoryImpl* mem = *prev;
 
       // This assert is only required because the static checker can't figure
-      // out that |mem->manager_->GetLock()| is the same as |this->lock_|, as
+      // out that |mem->manager_->lock_| is the same as |this->lock_|, as
       // verified by the DCHECK.
-      DCHECK_EQ(&lock_, &mem->manager_->GetLock());
-      mem->manager_->GetLock().AssertAcquired();
+      DCHECK_EQ(&lock_, &mem->manager_->lock_);
+      mem->manager_->lock_.AssertAcquired();
 
       auto span = mem->Purge(now - min_age);
       if (span) {
@@ -498,7 +498,7 @@ void ClientDiscardableSharedMemoryManager::ReleaseFreeMemoryImpl() {
   heap_->ReleaseFreeMemory();
 
   if (heap_->GetSize() != heap_size_prior_to_releasing_memory)
-    MemoryUsageChanged(heap_->GetSize(), heap_->GetSizeOfFreeLists());
+    MemoryUsageChanged(heap_->GetSize(), heap_->GetFreelistSize());
 }
 
 bool ClientDiscardableSharedMemoryManager::LockSpan(
@@ -557,7 +557,7 @@ void ClientDiscardableSharedMemoryManager::ReleaseSpan(
   heap_->MergeIntoFreeLists(std::move(span));
 
   // Bytes of free memory changed.
-  MemoryUsageChanged(heap_->GetSize(), heap_->GetSizeOfFreeLists());
+  MemoryUsageChanged(heap_->GetSize(), heap_->GetFreelistSize());
 }
 
 base::trace_event::MemoryAllocatorDump*

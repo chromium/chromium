@@ -29,7 +29,7 @@ TEST(DiscardableSharedMemoryHeapTest, Basic) {
   EXPECT_EQ(0u, heap.GetSize());
 
   // Initial size of free lists should be 0.
-  EXPECT_EQ(0u, heap.GetSizeOfFreeLists());
+  EXPECT_EQ(0u, heap.GetFreelistSize());
 
   // Free lists are initially empty.
   EXPECT_FALSE(heap.SearchFreeLists(1, 0));
@@ -51,7 +51,7 @@ TEST(DiscardableSharedMemoryHeapTest, Basic) {
   EXPECT_EQ(memory_size, heap.GetSize());
 
   // Size of free lists should still be 0.
-  EXPECT_EQ(0u, heap.GetSizeOfFreeLists());
+  EXPECT_EQ(0u, heap.GetFreelistSize());
 
   // Free list should still be empty as |new_span| is currently in use.
   EXPECT_FALSE(heap.SearchFreeLists(1, 0));
@@ -60,7 +60,7 @@ TEST(DiscardableSharedMemoryHeapTest, Basic) {
   heap.MergeIntoFreeLists(std::move(new_span));
 
   // Size of free lists should now match |memory_size|.
-  EXPECT_EQ(memory_size, heap.GetSizeOfFreeLists());
+  EXPECT_EQ(memory_size, heap.GetFreelistSize());
 
   // Free lists should not contain a span that is larger than kBlocks.
   EXPECT_FALSE(heap.SearchFreeLists(kBlocks + 1, 0));
@@ -214,7 +214,7 @@ TEST(DiscardableSharedMemoryHeapTest, ReleaseFreeMemory) {
                 next_discardable_shared_memory_id++, base::BindOnce(NullTask));
 
   // Free lists should be empty.
-  EXPECT_EQ(0u, heap.GetSizeOfFreeLists());
+  EXPECT_EQ(0u, heap.GetFreelistSize());
 
   heap.ReleaseFreeMemory();
 
@@ -226,7 +226,7 @@ TEST(DiscardableSharedMemoryHeapTest, ReleaseFreeMemory) {
 
   // Memory should have been released.
   EXPECT_EQ(0u, heap.GetSize());
-  EXPECT_EQ(0u, heap.GetSizeOfFreeLists());
+  EXPECT_EQ(0u, heap.GetFreelistSize());
 }
 
 TEST(DiscardableSharedMemoryHeapTest, ReleasePurgedMemory) {

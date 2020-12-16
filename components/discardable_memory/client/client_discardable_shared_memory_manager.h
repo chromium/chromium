@@ -67,9 +67,9 @@ class DISCARDABLE_MEMORY_EXPORT ClientDiscardableSharedMemoryManager
   void ReleaseFreeMemory() override;
 
   bool LockSpan(DiscardableSharedMemoryHeap::Span* span)
-      EXCLUSIVE_LOCKS_REQUIRED(GetLock());
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
   void UnlockSpan(DiscardableSharedMemoryHeap::Span* span)
-      EXCLUSIVE_LOCKS_REQUIRED(GetLock());
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   base::trace_event::MemoryAllocatorDump* CreateMemoryAllocatorDump(
       DiscardableSharedMemoryHeap::Span* span,
@@ -136,11 +136,10 @@ class DISCARDABLE_MEMORY_EXPORT ClientDiscardableSharedMemoryManager
     // Returns |span_| if it has been unlocked since at least |min_ticks|,
     // otherwise nullptr.
     std::unique_ptr<DiscardableSharedMemoryHeap::Span> Purge(
-        base::TimeTicks min_ticks)
-        EXCLUSIVE_LOCKS_REQUIRED(manager_->GetLock());
+        base::TimeTicks min_ticks) EXCLUSIVE_LOCKS_REQUIRED(manager_->lock_);
 
    private:
-    bool is_locked() const EXCLUSIVE_LOCKS_REQUIRED(manager_->GetLock());
+    bool is_locked() const EXCLUSIVE_LOCKS_REQUIRED(manager_->lock_);
 
     friend class ClientDiscardableSharedMemoryManager;
     // We need to ensure that |manager_| outlives |this|, to avoid a
@@ -149,7 +148,7 @@ class DISCARDABLE_MEMORY_EXPORT ClientDiscardableSharedMemoryManager
     std::unique_ptr<DiscardableSharedMemoryHeap::Span> span_;
     // Set to an invalid base::TimeTicks when |this| is Lock()-ed, and to
     // |TimeTicks::Now()| each time |this| is Unlock()-ed.
-    base::TimeTicks last_locked_ GUARDED_BY(manager_->GetLock());
+    base::TimeTicks last_locked_ GUARDED_BY(manager_->lock_);
   };
 
   // Purge any unlocked memory from foreground that hasn't been touched in a
@@ -180,7 +179,6 @@ class DISCARDABLE_MEMORY_EXPORT ClientDiscardableSharedMemoryManager
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
   void ReleaseSpan(std::unique_ptr<DiscardableSharedMemoryHeap::Span> span)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
-  base::Lock& GetLock() { return lock_; }
   size_t GetBytesAllocatedLocked() const EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;

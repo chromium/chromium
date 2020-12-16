@@ -246,7 +246,7 @@ size_t DiscardableSharedMemoryHeap::GetSize() const {
   return num_blocks_ * block_size_;
 }
 
-size_t DiscardableSharedMemoryHeap::GetSizeOfFreeLists() const {
+size_t DiscardableSharedMemoryHeap::GetFreelistSize() const {
   return num_free_blocks_ * block_size_;
 }
 
@@ -258,7 +258,7 @@ bool DiscardableSharedMemoryHeap::OnMemoryDump(
   // for each segment below.
   auto* total_dump = pmd->CreateAllocatorDump(base::StringPrintf(
       "discardable/child_0x%" PRIXPTR, reinterpret_cast<uintptr_t>(this)));
-  const size_t freelist_size = GetSizeOfFreeLists();
+  const size_t freelist_size = GetFreelistSize();
   total_dump->AddScalar("freelist_size",
                         base::trace_event::MemoryAllocatorDump::kUnitsBytes,
                         freelist_size);

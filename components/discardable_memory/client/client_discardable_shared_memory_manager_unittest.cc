@@ -60,9 +60,9 @@ class TestClientDiscardableSharedMemoryManager
     return heap_->GetSize();
   }
 
-  size_t GetSizeOfFreeLists() const {
+  size_t GetFreelistSize() const {
     base::AutoLock lock(lock_);
-    return heap_->GetSizeOfFreeLists();
+    return heap_->GetFreelistSize();
   }
 
   bool IsPurgeScheduled() const {
@@ -91,7 +91,7 @@ TEST_F(ClientDiscardableSharedMemoryManagerTest, Simple) {
       base::MakeRefCounted<TestClientDiscardableSharedMemoryManager>();
   // Initially, we should have no memory allocated
   ASSERT_EQ(client->GetBytesAllocated(), 0u);
-  ASSERT_EQ(client->GetSizeOfFreeLists(), 0u);
+  ASSERT_EQ(client->GetFreelistSize(), 0u);
 
   auto mem = client->AllocateLockedDiscardableMemory(page_size_);
 
@@ -123,7 +123,7 @@ TEST_F(ClientDiscardableSharedMemoryManagerTest, MultipleOneByOne) {
   auto client =
       base::MakeRefCounted<TestClientDiscardableSharedMemoryManager>();
   ASSERT_EQ(client->GetBytesAllocated(), 0u);
-  ASSERT_EQ(client->GetSizeOfFreeLists(), 0u);
+  ASSERT_EQ(client->GetFreelistSize(), 0u);
 
   auto mem1 = client->AllocateLockedDiscardableMemory(page_size_ * 2.2);
   auto mem2 = client->AllocateLockedDiscardableMemory(page_size_ * 1.1);
@@ -175,7 +175,7 @@ TEST_F(ClientDiscardableSharedMemoryManagerTest, MultipleAtOnce) {
   auto client =
       base::MakeRefCounted<TestClientDiscardableSharedMemoryManager>();
   ASSERT_EQ(client->GetBytesAllocated(), 0u);
-  ASSERT_EQ(client->GetSizeOfFreeLists(), 0u);
+  ASSERT_EQ(client->GetFreelistSize(), 0u);
 
   auto mem1 = client->AllocateLockedDiscardableMemory(page_size_ * 2.2);
   auto mem2 = client->AllocateLockedDiscardableMemory(page_size_ * 1.1);
@@ -204,38 +204,38 @@ TEST_F(ClientDiscardableSharedMemoryManagerTest, Release) {
   auto client =
       base::MakeRefCounted<TestClientDiscardableSharedMemoryManager>();
   ASSERT_EQ(client->GetBytesAllocated(), 0u);
-  ASSERT_EQ(client->GetSizeOfFreeLists(), 0u);
+  ASSERT_EQ(client->GetFreelistSize(), 0u);
 
   auto mem1 = client->AllocateLockedDiscardableMemory(page_size_ * 3);
   auto mem2 = client->AllocateLockedDiscardableMemory(page_size_ * 2);
 
-  size_t freelist_size = client->GetSizeOfFreeLists();
+  size_t freelist_size = client->GetFreelistSize();
   EXPECT_EQ(client->GetBytesAllocated(), 5 * page_size_);
 
   mem1 = nullptr;
 
   // Less memory is now allocated, but freelists are grown.
   EXPECT_EQ(client->GetBytesAllocated(), page_size_ * 2);
-  EXPECT_EQ(client->GetSizeOfFreeLists(), freelist_size + page_size_ * 3);
+  EXPECT_EQ(client->GetFreelistSize(), freelist_size + page_size_ * 3);
 
   client->BackgroundPurge();
 
   // Purging doesn't remove any memory since none is unlocked, also doesn't
   // remove freelists since we still have some.
   EXPECT_EQ(client->GetBytesAllocated(), page_size_ * 2);
-  EXPECT_EQ(client->GetSizeOfFreeLists(), freelist_size + page_size_ * 3);
+  EXPECT_EQ(client->GetFreelistSize(), freelist_size + page_size_ * 3);
 
   mem2 = nullptr;
 
   // No memory is allocated, but freelists are grown.
   EXPECT_EQ(client->GetBytesAllocated(), 0u);
-  EXPECT_EQ(client->GetSizeOfFreeLists(), freelist_size + page_size_ * 5);
+  EXPECT_EQ(client->GetFreelistSize(), freelist_size + page_size_ * 5);
 
   client->BackgroundPurge();
 
   // Purging now shrinks freelists as well.
   EXPECT_EQ(client->GetBytesAllocated(), 0u);
-  EXPECT_EQ(client->GetSizeOfFreeLists(), 0u);
+  EXPECT_EQ(client->GetFreelistSize(), 0u);
 }
 
 // Similar to previous test, but makes sure that freelist still shrinks when
@@ -244,38 +244,38 @@ TEST_F(ClientDiscardableSharedMemoryManagerTest, ReleaseUnlocked) {
   auto client =
       base::MakeRefCounted<TestClientDiscardableSharedMemoryManager>();
   ASSERT_EQ(client->GetBytesAllocated(), 0u);
-  ASSERT_EQ(client->GetSizeOfFreeLists(), 0u);
+  ASSERT_EQ(client->GetFreelistSize(), 0u);
 
   auto mem1 = client->AllocateLockedDiscardableMemory(page_size_ * 3);
   auto mem2 = client->AllocateLockedDiscardableMemory(page_size_ * 2);
 
-  size_t freelist_size = client->GetSizeOfFreeLists();
+  size_t freelist_size = client->GetFreelistSize();
   EXPECT_EQ(client->GetBytesAllocated(), 5 * page_size_);
 
   mem1 = nullptr;
 
   // Less memory is now allocated, but freelists are grown.
   EXPECT_EQ(client->GetBytesAllocated(), page_size_ * 2);
-  EXPECT_EQ(client->GetSizeOfFreeLists(), freelist_size + page_size_ * 3);
+  EXPECT_EQ(client->GetFreelistSize(), freelist_size + page_size_ * 3);
 
   client->BackgroundPurge();
 
   // Purging doesn't remove any memory since none is unlocked, also doesn't
   // remove freelists since we still have some.
   EXPECT_EQ(client->GetBytesAllocated(), page_size_ * 2);
-  EXPECT_EQ(client->GetSizeOfFreeLists(), freelist_size + page_size_ * 3);
+  EXPECT_EQ(client->GetFreelistSize(), freelist_size + page_size_ * 3);
 
   mem2->Unlock();
 
   // No change in memory usage, since memory was only unlocked not released.
   EXPECT_EQ(client->GetBytesAllocated(), page_size_ * 2);
-  EXPECT_EQ(client->GetSizeOfFreeLists(), freelist_size + page_size_ * 3);
+  EXPECT_EQ(client->GetFreelistSize(), freelist_size + page_size_ * 3);
 
   client->BackgroundPurge();
 
   // Purging now shrinks freelists as well.
   EXPECT_EQ(client->GetBytesAllocated(), 0u);
-  EXPECT_EQ(client->GetSizeOfFreeLists(), 0u);
+  EXPECT_EQ(client->GetFreelistSize(), 0u);
 }
 
 // This tests that memory is actually removed by the periodic purging. We mock a
@@ -287,7 +287,7 @@ TEST_F(ClientDiscardableSharedMemoryManagerTest, ScheduledReleaseUnlocked) {
   auto client =
       base::MakeRefCounted<TestClientDiscardableSharedMemoryManager>();
   ASSERT_EQ(client->GetBytesAllocated(), 0u);
-  ASSERT_EQ(client->GetSizeOfFreeLists(), 0u);
+  ASSERT_EQ(client->GetFreelistSize(), 0u);
 
   auto mem1 = client->AllocateLockedDiscardableMemory(page_size_ * 3);
 
@@ -313,7 +313,7 @@ TEST_F(ClientDiscardableSharedMemoryManagerTest,
   auto client =
       base::MakeRefCounted<TestClientDiscardableSharedMemoryManager>();
   ASSERT_EQ(client->GetBytesAllocated(), 0u);
-  ASSERT_EQ(client->GetSizeOfFreeLists(), 0u);
+  ASSERT_EQ(client->GetFreelistSize(), 0u);
 
   auto mem1 = client->AllocateLockedDiscardableMemory(page_size_ * 3);
   auto mem2 = client->AllocateLockedDiscardableMemory(page_size_ * 2);
@@ -349,7 +349,7 @@ TEST_F(ClientDiscardableSharedMemoryManagerTest,
       ClientDiscardableSharedMemoryManager::kMinAgeForScheduledPurge * 2);
 
   EXPECT_EQ(client->GetBytesAllocated(), 0u);
-  EXPECT_EQ(client->GetSizeOfFreeLists(), 0u);
+  EXPECT_EQ(client->GetFreelistSize(), 0u);
 }
 
 // Tests that the UMA for Lock()-ing successes
