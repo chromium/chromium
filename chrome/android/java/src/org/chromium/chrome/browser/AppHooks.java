@@ -48,7 +48,6 @@ import org.chromium.chrome.browser.xsurface.ProcessScopeDependencyProvider;
 import org.chromium.chrome.modules.image_editor.ImageEditorModuleProvider;
 import org.chromium.components.browser_ui.widget.FeatureHighlightProvider;
 import org.chromium.components.external_intents.AuthenticatorNavigationInterceptor;
-import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.policy.AppRestrictionsProvider;
 import org.chromium.components.policy.CombinedPolicyProvider;
 import org.chromium.components.signin.AccountManagerDelegate;
@@ -64,9 +63,6 @@ import java.util.List;
  */
 public abstract class AppHooks {
     private static AppHooksImpl sInstance;
-
-    @Nullable
-    private ExternalAuthUtils mExternalAuthUtils;
 
     /**
      * Sets a mocked instance for testing.
@@ -136,24 +132,6 @@ public abstract class AppHooks {
      */
     public SurveyController createSurveyController() {
         return new SurveyController();
-    }
-
-    /**
-     * @return An instance of ExternalAuthUtils to be installed as a singleton.
-     */
-    protected ExternalAuthUtils createExternalAuthUtils() {
-        return new ExternalAuthUtils();
-    }
-
-    /**
-     * @return The singleton instance of ExternalAuthUtils.
-     */
-    public ExternalAuthUtils getExternalAuthUtils() {
-        if (mExternalAuthUtils == null) {
-            mExternalAuthUtils = createExternalAuthUtils();
-        }
-
-        return mExternalAuthUtils;
     }
 
     /**
