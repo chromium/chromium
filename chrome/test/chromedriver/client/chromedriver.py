@@ -14,7 +14,7 @@ from websocket_connection import WebSocketConnection
 
 ELEMENT_KEY_W3C = "element-6066-11e4-a52e-4f735466cecf"
 ELEMENT_KEY = "ELEMENT"
-MAX_RETRY_COUNT = 3
+MAX_RETRY_COUNT = 5
 
 class ChromeDriverException(Exception):
   pass
@@ -152,9 +152,14 @@ class ChromeDriver(object):
                 p.kill()
 
         if ChromeDriver.retry_count < MAX_RETRY_COUNT:
-          ChromeDriver.retry_count = ChromeDriver.retry_count + 1
           ChromeDriver.retried_tests.append(kwargs.get('test_name'))
-          self._InternalInit(server_url, **kwargs)
+          try:
+            self._InternalInit(server_url, **kwargs)
+          except:
+            # Only count it as retry if failed
+            print 'Retry ', ChromeDriver.retry_count, ' failed'
+            ChromeDriver.retry_count = ChromeDriver.retry_count + 1
+            raise
         else:
           raise
 
