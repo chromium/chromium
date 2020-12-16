@@ -78,6 +78,7 @@ component("webrtc_component") {
     "//third_party/webrtc/pc:rtc_pc_base",
     "//third_party/webrtc/rtc_base",
     "//third_party/webrtc/rtc_base:async_resolver_interface",
+    "//third_party/webrtc/rtc_base:async_resolver",
     "//third_party/webrtc/rtc_base:ip_address",
     "//third_party/webrtc/rtc_base:rtc_base",
     "//third_party/webrtc/rtc_base:rtc_base_approved",
