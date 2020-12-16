@@ -266,6 +266,7 @@ public class BookmarkTest {
 
     @Test
     @SmallTest
+    @Features.DisableFeatures({ChromeFeatureList.READ_LATER})
     public void testAddBookmark() throws Exception {
         mActivityTestRule.loadUrl(mTestPage);
         // Check partner bookmarks are lazily loaded.
@@ -298,6 +299,7 @@ public class BookmarkTest {
 
     @Test
     @SmallTest
+    @Features.DisableFeatures({ChromeFeatureList.READ_LATER})
     public void testAddBookmarkSnackbar() {
         mActivityTestRule.loadUrl(mTestPage);
         // Check partner bookmarks are lazily loaded.
@@ -331,6 +333,7 @@ public class BookmarkTest {
 
     @Test
     @SmallTest
+    @Features.DisableFeatures({ChromeFeatureList.READ_LATER})
     public void testAddBookmarkToOtherFolder() {
         mActivityTestRule.loadUrl(mTestPage);
         readPartnerBookmarks();
@@ -1319,6 +1322,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
+    @Features.DisableFeatures({ChromeFeatureList.READ_LATER})
     public void testTopLevelFolderUpdateAfterSync() throws Exception {
         // Set up the test and open the bookmark manager to the Mobile Bookmarks folder.
         readPartnerBookmarks();
