@@ -30,7 +30,7 @@ BlocklistStateFetcher::~BlocklistStateFetcher() {
 }
 
 void BlocklistStateFetcher::Request(const std::string& id,
-                                    const RequestCallback& callback) {
+                                    RequestCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!safe_browsing_config_) {
     if (g_browser_process && g_browser_process->safe_browsing_service()) {
@@ -38,13 +38,13 @@ void BlocklistStateFetcher::Request(const std::string& id,
           g_browser_process->safe_browsing_service()->GetV4ProtocolConfig());
     } else {
       base::ThreadTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE, base::BindOnce(callback, BLOCKLISTED_UNKNOWN));
+          FROM_HERE, base::BindOnce(std::move(callback), BLOCKLISTED_UNKNOWN));
       return;
     }
   }
 
   bool request_already_sent = base::Contains(callbacks_, id);
-  callbacks_.insert(std::make_pair(id, callback));
+  callbacks_.insert(std::make_pair(id, std::move(callback)));
   if (request_already_sent)
     return;
 
@@ -181,9 +181,9 @@ void BlocklistStateFetcher::OnURLLoaderCompleteInternal(
 
   std::pair<CallbackMultiMap::iterator, CallbackMultiMap::iterator> range =
       callbacks_.equal_range(id);
-  for (CallbackMultiMap::const_iterator callback_it = range.first;
+  for (CallbackMultiMap::iterator callback_it = range.first;
        callback_it != range.second; ++callback_it) {
-    callback_it->second.Run(state);
+    std::move(callback_it->second).Run(state);
   }
 
   callbacks_.erase(range.first, range.second);

@@ -23,7 +23,7 @@ class BlocklistStateFetcherMock : public BlocklistStateFetcher {
 
   ~BlocklistStateFetcherMock() override;
 
-  void Request(const std::string& id, const RequestCallback& callback) override;
+  void Request(const std::string& id, RequestCallback callback) override;
 
   void SetState(const std::string& id, BlocklistState state);
 

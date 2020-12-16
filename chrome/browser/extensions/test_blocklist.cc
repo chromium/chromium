@@ -29,7 +29,7 @@ BlocklistStateFetcherMock::BlocklistStateFetcherMock() : request_count_(0) {}
 BlocklistStateFetcherMock::~BlocklistStateFetcherMock() {}
 
 void BlocklistStateFetcherMock::Request(const std::string& id,
-                                        const RequestCallback& callback) {
+                                        RequestCallback callback) {
   ++request_count_;
 
   BlocklistState result = NOT_BLOCKLISTED;
@@ -37,7 +37,7 @@ void BlocklistStateFetcherMock::Request(const std::string& id,
     result = states_[id];
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(callback, result));
+      FROM_HERE, base::BindOnce(std::move(callback), result));
 }
 
 void BlocklistStateFetcherMock::SetState(const std::string& id,

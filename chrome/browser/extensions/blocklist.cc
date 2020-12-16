@@ -283,7 +283,8 @@ void Blocklist::RequestExtensionsBlocklistState(
                                std::move(callback));
   for (const auto& id : ids) {
     state_fetcher_->Request(
-        id, base::Bind(&Blocklist::OnBlocklistStateReceived, AsWeakPtr(), id));
+        id,
+        base::BindOnce(&Blocklist::OnBlocklistStateReceived, AsWeakPtr(), id));
   }
 }
 

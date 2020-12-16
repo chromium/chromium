@@ -26,13 +26,13 @@ class TestBlocklistStateFetcher;
 
 class BlocklistStateFetcher {
  public:
-  typedef base::Callback<void(BlocklistState)> RequestCallback;
+  typedef base::OnceCallback<void(BlocklistState)> RequestCallback;
 
   BlocklistStateFetcher();
 
   virtual ~BlocklistStateFetcher();
 
-  virtual void Request(const std::string& id, const RequestCallback& callback);
+  virtual void Request(const std::string& id, RequestCallback callback);
 
   void SetSafeBrowsingConfig(const safe_browsing::V4ProtocolConfig& config);
 

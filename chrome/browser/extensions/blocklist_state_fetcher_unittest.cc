@@ -33,7 +33,7 @@ TEST_F(BlocklistStateFetcherTest, RequestBlocklistState) {
       "a", ClientCRXListInfoResponse_Verdict_SECURITY_VULNERABILITY);
 
   BlocklistState result;
-  fetcher.Request("a", base::Bind(&Assign, &result));
+  fetcher.Request("a", base::BindOnce(&Assign, &result));
 
   EXPECT_TRUE(tester.HandleFetcher("a"));
   EXPECT_EQ(BLOCKLISTED_SECURITY_VULNERABILITY, result);
@@ -54,15 +54,15 @@ TEST_F(BlocklistStateFetcherTest, RequestMultipleBlocklistStates) {
       "e", ClientCRXListInfoResponse_Verdict_POTENTIALLY_UNWANTED);
 
   BlocklistState result[9];
-  fetcher.Request("a", base::Bind(&Assign, &result[0]));
-  fetcher.Request("a", base::Bind(&Assign, &result[1]));
-  fetcher.Request("b", base::Bind(&Assign, &result[2]));
-  fetcher.Request("b", base::Bind(&Assign, &result[3]));
-  fetcher.Request("c", base::Bind(&Assign, &result[4]));
-  fetcher.Request("d", base::Bind(&Assign, &result[5]));
-  fetcher.Request("e", base::Bind(&Assign, &result[6]));
-  fetcher.Request("f", base::Bind(&Assign, &result[7]));
-  fetcher.Request("f", base::Bind(&Assign, &result[8]));
+  fetcher.Request("a", base::BindOnce(&Assign, &result[0]));
+  fetcher.Request("a", base::BindOnce(&Assign, &result[1]));
+  fetcher.Request("b", base::BindOnce(&Assign, &result[2]));
+  fetcher.Request("b", base::BindOnce(&Assign, &result[3]));
+  fetcher.Request("c", base::BindOnce(&Assign, &result[4]));
+  fetcher.Request("d", base::BindOnce(&Assign, &result[5]));
+  fetcher.Request("e", base::BindOnce(&Assign, &result[6]));
+  fetcher.Request("f", base::BindOnce(&Assign, &result[7]));
+  fetcher.Request("f", base::BindOnce(&Assign, &result[8]));
 
   // 6 fetchers should be created. Sending responses in shuffled order.
   EXPECT_TRUE(tester.HandleFetcher("e"));
