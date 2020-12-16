@@ -801,10 +801,27 @@ testcase.driveWelcomeBanner = async () => {
   });
 };
 
+/**
+ * Tests that the Drive offline info banner appears when a Drive volume is
+ * opened.
+ */
 testcase.driveOfflineInfoBanner = async () => {
   // Open Files app on Drive.
   const appId = await setupAndWaitUntilReady(RootPath.DRIVE, []);
 
   // Check: the Drive Offline info banner should appear.
   await remoteCall.waitForElement(appId, '#offline-info-banner:not([hidden])');
+};
+
+/**
+ * Tests that the Drive offline info banner does not show when the
+ * DriveFsBidirectionalNativeMessaging flag is disabled.
+ */
+testcase.driveOfflineInfoBannerWithoutFlag = async () => {
+  // Open Files app on Drive.
+  const appId = await setupAndWaitUntilReady(RootPath.DRIVE, []);
+
+  // Check: the Drive Offline info banner should not appear.
+  await remoteCall.waitForElementLost(
+      appId, '#offline-info-banner:not([hidden])');
 };

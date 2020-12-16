@@ -123,6 +123,11 @@ struct TestCase {
     return *this;
   }
 
+  TestCase& EnableDriveDssPin() {
+    options.drive_dss_pin = true;
+    return *this;
+  }
+
   TestCase& EnableSharesheet() {
     options.enable_sharesheet = true;
     return *this;
@@ -161,6 +166,9 @@ struct TestCase {
 
     if (options.zip_no_nacl)
       full_name += "_ZipNoNaCl";
+
+    if (options.drive_dss_pin)
+      full_name += "_DriveDssPin";
 
     if (options.single_partition_format)
       full_name += "_SinglePartitionFormat";
@@ -642,7 +650,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("driveLinkOpenFileThroughLinkedDirectory"),
         TestCase("driveLinkOpenFileThroughTransitiveLink"),
         TestCase("driveWelcomeBanner"),
-        TestCase("driveOfflineInfoBanner")));
+        TestCase("driveOfflineInfoBanner").EnableDriveDssPin(),
+        TestCase("driveOfflineInfoBannerWithoutFlag")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     HoldingSpace, /* holding_space.js */
