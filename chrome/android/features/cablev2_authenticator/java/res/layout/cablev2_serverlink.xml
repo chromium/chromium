@@ -64,6 +64,5 @@
         a:layout_marginTop="4dp"
         a:layout_gravity="center_horizontal"
         a:padding="0px"
-        a:textColor="@color/modern_grey_800"
         a:textSize="14sp"/>
 </LinearLayout>
