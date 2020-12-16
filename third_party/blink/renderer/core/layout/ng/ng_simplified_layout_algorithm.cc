@@ -271,14 +271,7 @@ void NGSimplifiedLayoutAlgorithm::AddChildFragment(
                            previous_physical_container_size_)
           .ToLogical(old_fragment.Offset(), new_fragment.Size());
 
-  // Un-apply the relative position offset.
-  if (const auto* box_child = DynamicTo<NGPhysicalBoxFragment>(*old_fragment)) {
-    if (box_child->Style().GetPosition() == EPosition::kRelative) {
-      child_offset -= ComputeRelativeOffsetForBoxFragment(
-          *box_child, ConstraintSpace().GetWritingDirection(),
-          container_builder_.ChildAvailableSize());
-    }
-  }
+  RemoveRelativeOffset(container_builder_, *old_fragment, &child_offset);
 
   // Add the new fragment to the builder.
   container_builder_.AddChild(new_fragment, child_offset,

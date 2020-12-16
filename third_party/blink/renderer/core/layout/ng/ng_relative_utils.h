@@ -7,13 +7,14 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 
 namespace blink {
 
-class ComputedStyle;
 class NGConstraintSpace;
-class NGPhysicalBoxFragment;
 
 // Implements relative positioning:
 // https://www.w3.org/TR/css-position-3/#rel-pos
@@ -31,6 +32,22 @@ CORE_EXPORT LogicalOffset ComputeRelativeOffsetForBoxFragment(
 CORE_EXPORT LogicalOffset
 ComputeRelativeOffsetForInline(const NGConstraintSpace& space,
                                const ComputedStyle& child_style);
+
+// Un-apply any offset caused by relative positioning. When re-using a previous
+// fragment's offset (from the cache), we need to convert from "paint offset" to
+// "layout offset" before re-adding the fragment, in order to get overflow
+// calculation right.
+inline void RemoveRelativeOffset(const NGBoxFragmentBuilder& builder,
+                                 const NGPhysicalFragment& fragment,
+                                 LogicalOffset* offset) {
+  if (fragment.Style().GetPosition() != EPosition::kRelative)
+    return;
+  if (const auto* box_fragment = DynamicTo<NGPhysicalBoxFragment>(&fragment)) {
+    *offset -= ComputeRelativeOffsetForBoxFragment(
+        *box_fragment, builder.GetWritingDirection(),
+        builder.ChildAvailableSize());
+  }
+}
 
 }  // namespace blink
 

@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_relative_utils.h"
 
 namespace blink {
 
@@ -117,6 +118,8 @@ void NGSimplifiedOOFLayoutAlgorithm::AddChildFragment(const NGLink& child) {
       WritingModeConverter(writing_direction_,
                            previous_physical_container_size_)
           .ToLogical(child.Offset(), fragment->Size());
+
+  RemoveRelativeOffset(container_builder_, *fragment, &child_offset);
 
   // Add the fragment to the builder.
   container_builder_.AddChild(*fragment, child_offset);
