@@ -51,6 +51,7 @@ tools/metrics/histograms/histograms_xml/input/histograms.xml
 tools/metrics/histograms/histograms_xml/installer/histograms.xml
 tools/metrics/histograms/histograms_xml/instant/histograms.xml
 tools/metrics/histograms/histograms_xml/interstitial/histograms.xml
+tools/metrics/histograms/histograms_xml/invalidation/histograms.xml
 tools/metrics/histograms/histograms_xml/ios/histograms.xml
 tools/metrics/histograms/histograms_xml/local/histograms.xml
 tools/metrics/histograms/histograms_xml/login/histograms.xml

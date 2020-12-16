@@ -81670,11 +81670,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Sync.NonRedundantInvalidationPerModelType"
     enum="SyncModelTypes" expires_after="M77">
   <obsolete>
-    Was used during the launch for the new implementation.
+    Deprecated in 10/2019. Was used during the launch of the new implementation.
   </obsolete>
   <owner>melandory@chromium.org</owner>
   <summary>
-    The sync datatype of the recieved invalidation with fresh version.
+    WARNING: The recordings here are incorrect (crbug.com/1158476).
+
+    The sync datatype of the received invalidation with fresh version.
   </summary>
 </histogram>
 

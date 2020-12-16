@@ -153,7 +153,6 @@ void FCMInvalidationServiceBase::OnInvalidate(
 
 void FCMInvalidationServiceBase::OnInvalidatorStateChange(
     syncer::InvalidatorState state) {
-  ReportInvalidatorState(state);
   invalidator_registrar_.UpdateInvalidatorState(state);
   logger_.OnStateChange(state);
 }
@@ -191,11 +190,6 @@ base::DictionaryValue FCMInvalidationServiceBase::CollectDebugData() const {
       "InvalidationService.Service-started",
       base::TimeFormatShortDateAndTime(diagnostic_info_.service_was_started));
   return status;
-}
-
-void FCMInvalidationServiceBase::ReportInvalidatorState(
-    syncer::InvalidatorState state) {
-  base::UmaHistogramEnumeration("Invalidations.StatusChanged", state);
 }
 
 bool FCMInvalidationServiceBase::IsStarted() const {
@@ -298,12 +292,9 @@ void FCMInvalidationServiceBase::OnInstanceIDReceived(
 }
 
 void FCMInvalidationServiceBase::OnDeleteInstanceIDCompleted(
-    instance_id::InstanceID::Result result) {
+    instance_id::InstanceID::Result) {
   // Note: |client_id_| and the pref were already cleared when we initiated the
   // deletion.
-
-  base::UmaHistogramEnumeration("FCMInvalidations.ResetClientIDStatus", result);
-
   diagnostic_info_.instance_id_cleared = base::Time::Now();
 }
 

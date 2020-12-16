@@ -89,7 +89,6 @@ class FCMInvalidationServiceBase
       std::unique_ptr<syncer::FCMInvalidationListener> invalidation_listener);
 
   virtual base::DictionaryValue CollectDebugData() const;
-  void ReportInvalidatorState(syncer::InvalidatorState state);
 
   // Returns true if the service is currently started and able to receive
   // invalidations.
@@ -119,7 +118,7 @@ class FCMInvalidationServiceBase
   void PopulateClientID();
   void ResetClientID();
   void OnInstanceIDReceived(const std::string& instance_id);
-  void OnDeleteInstanceIDCompleted(instance_id::InstanceID::Result result);
+  void OnDeleteInstanceIDCompleted(instance_id::InstanceID::Result);
   void DoUpdateSubscribedTopicsIfNeeded();
   const std::string GetApplicationName();
 

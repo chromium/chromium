@@ -402,6 +402,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <!-- expires-never: For monitoring FCM based invalidations. -->
 
   <owner>melandory@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
   <summary>
     Histogram tracks the number of invalidations received per sync data type.
   </summary>
@@ -852,7 +853,9 @@ can be compared for the same population). -->
   <owner>melandory@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
-    The sync datatype of the recieved invalidation with not-fresh version.
+    WARNING: The recordings here are incorrect (crbug.com/1158476).
+
+    The sync datatype of the received invalidation with not-fresh version.
   </summary>
 </histogram>
 

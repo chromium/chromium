@@ -137,6 +137,7 @@ template("generate_expired_histograms_array") {
       "//tools/metrics/histograms/histograms_xml/storage/histograms.xml",
       "//tools/metrics/histograms/histograms_xml/subresource/histograms.xml",
       "//tools/metrics/histograms/histograms_xml/sync/histograms.xml",
+      "//tools/metrics/histograms/histograms_xml/invalidation/histograms.xml",
       "//tools/metrics/histograms/histograms_xml/tab/histograms.xml",
       "//tools/metrics/histograms/histograms_xml/translate/histograms.xml",
       "//tools/metrics/histograms/histograms_xml/ukm/histograms.xml",

@@ -39079,6 +39079,9 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
 </enum>
 
 <enum name="InvalidatorState">
+  <obsolete>
+    Deprecated in M89 since it's no longer being used for metrics collection.
+  </obsolete>
   <int value="0" label="Enabled"/>
   <int value="1" label="Error"/>
   <int value="2" label="Credentials Rejected"/>
