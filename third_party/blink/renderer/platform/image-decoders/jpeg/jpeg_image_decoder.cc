@@ -809,29 +809,36 @@ class JPEGImageReader final {
 
       case JPEG_DECOMPRESS_PROGRESSIVE:
         if (state_ == JPEG_DECOMPRESS_PROGRESSIVE) {
+          auto all_components_seen = [](const jpeg_decompress_struct& info) {
+            if (info.coef_bits) {
+              for (int c = 0; c < info.num_components; ++c) {
+                if (info.coef_bits[c][0] == -1) {
+                  // Haven't seen this component yet.
+                  return false;
+                }
+              }
+            }
+            return true;
+          };
           int status = 0;
+          int first_scan_to_display =
+              all_components_seen(info_) ? info_.input_scan_number : 0;
           do {
             decoder_error_mgr* err =
                 reinterpret_cast_ptr<decoder_error_mgr*>(info_.err);
             if (err->num_corrupt_warnings)
               break;
             status = jpeg_consume_input(&info_);
-          } while ((status != JPEG_SUSPENDED) && (status != JPEG_REACHED_EOI));
-
-          bool all_components_seen = true;
-          if (info_.coef_bits) {
-            for (int c = 0; c < info_.num_components; ++c) {
-              bool current_component_seen = info_.coef_bits[c][0] != -1;
-              all_components_seen &= current_component_seen;
+            if (status == JPEG_REACHED_SOS || status == JPEG_REACHED_EOI ||
+                status == JPEG_SUSPENDED) {
+              // record the first scan where all components are present
+              if (!first_scan_to_display && all_components_seen(info_)) {
+                first_scan_to_display = info_.input_scan_number;
+              }
             }
-          }
+          } while (!(status == JPEG_SUSPENDED || status == JPEG_REACHED_EOI));
 
-          int first_scan_to_display = 0;
-          if (!first_scan_to_display && all_components_seen) {
-            first_scan_to_display = info_.input_scan_number;
-          }
-
-          if (!all_components_seen) {
+          if (!first_scan_to_display) {
             return false;  // I/O suspension
           }
 
