@@ -30,7 +30,8 @@ namespace chromeos {
 // to change this if we extend this class to support the browser, in which case
 // we will also need to make the notification ids different for different
 // profiles.
-class VmCameraMicManager : public media::CameraActiveClientObserver {
+class VmCameraMicManager : public media::CameraActiveClientObserver,
+                           public media::CameraPrivacySwitchObserver {
  public:
   enum class VmType { kCrostiniVm, kPluginVm };
 
@@ -58,7 +59,8 @@ class VmCameraMicManager : public media::CameraActiveClientObserver {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  // Return true if any of the VMs is using the device.
+  // Return true if any of the VMs is using the device. Note that if the camera
+  // privacy switch is on, this always returns false for `kCamera`.
   bool IsDeviceActive(DeviceType device) const;
 
   // When a VM is using both camera and mic, we only show a single "camera and
@@ -68,14 +70,11 @@ class VmCameraMicManager : public media::CameraActiveClientObserver {
   // `kCamera` but false for `kMic`. If a "mic only" notification is shown, this
   // function returns true for `kMic`.
   bool IsNotificationActive(DeviceType device) const;
-
  private:
   friend class VmCameraMicManagerTest;
 
   using NotificationType =
       std::bitset<static_cast<size_t>(DeviceType::kMaxValue) + 1>;
-  using NotificationMap = base::flat_map<VmType, NotificationType>;
-
   static constexpr NotificationType kNoNotification{};
   static constexpr NotificationType kMicNotification{
       1 << static_cast<size_t>(DeviceType::kMic)};
@@ -84,6 +83,29 @@ class VmCameraMicManager : public media::CameraActiveClientObserver {
   static constexpr NotificationType kCameraWithMicNotification{
       (1 << static_cast<size_t>(DeviceType::kMic)) |
       (1 << static_cast<size_t>(DeviceType::kCamera))};
+
+  class VmInfo {
+   public:
+    VmInfo();
+    VmInfo(const VmInfo&);
+    ~VmInfo();
+
+    NotificationType notification_type() const { return notification_type_; }
+
+    void SetMicActive(bool active);
+    void SetCameraAccessing(bool accessing);
+    void SetCameraPrivacyIsOn(bool on);
+
+   private:
+    void OnCameraUpdated();
+
+    bool camera_accessing_ = false;
+    // We don't actually need to store this separately for each VM, but this
+    // makes code simpler.
+    bool camera_privacy_is_on_ = false;
+
+    NotificationType notification_type_;
+  };
 
   class VmNotificationObserver : public message_center::NotificationObserver {
    public:
@@ -110,9 +132,15 @@ class VmCameraMicManager : public media::CameraActiveClientObserver {
   void OnActiveClientChange(cros::mojom::CameraClientType type,
                             bool is_active) override;
 
+  // media::CameraPrivacySwitchObserver
+  void OnCameraPrivacySwitchStatusChanged(
+      cros::mojom::CameraPrivacySwitchState state) override;
+
   static std::string GetNotificationId(VmType vm, NotificationType type);
 
-  void SetActive(VmType vm, DeviceType device, bool active);
+  void UpdateVmInfoAndNotifications(VmType vm,
+                                    void (VmInfo::*updator)(bool),
+                                    bool value);
   void NotifyActiveChanged();
 
   void OpenNotification(VmType vm, NotificationType type);
@@ -121,7 +149,7 @@ class VmCameraMicManager : public media::CameraActiveClientObserver {
   Profile* primary_profile_ = nullptr;
   VmNotificationObserver crostini_vm_notification_observer_;
   VmNotificationObserver plugin_vm_notification_observer_;
-  NotificationMap notification_map_;
+  base::flat_map<VmType, VmInfo> vm_info_map_;
 
   base::RetainingOneShotTimer observer_timer_;
   base::ObserverList<Observer> observers_;

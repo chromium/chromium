@@ -86,17 +86,19 @@ void VmCameraMicManager::OnPrimaryUserSessionStarted(Profile* primary_profile) {
       primary_profile_, base::BindRepeating(OpenPluginVmSettings));
 
   for (VmType vm : {VmType::kCrostiniVm, VmType::kPluginVm}) {
-    notification_map_[vm] = {};
+    vm_info_map_[vm] = {};
   }
 
   // Camera service does not behave in non ChromeOS environment (e.g. testing,
   // linux chromeos).
   if (base::SysInfo::IsRunningOnChromeOS() &&
       media::ShouldUseCrosCameraService()) {
+    auto* camera = media::CameraHalDispatcherImpl::GetInstance();
     // OnActiveClientChange() will be called automatically after the
     // subscription, so there is no need to get the current status here.
-    media::CameraHalDispatcherImpl::GetInstance()->AddActiveClientObserver(
-        this);
+    camera->AddActiveClientObserver(this);
+    OnCameraPrivacySwitchStatusChanged(
+        camera->AddCameraPrivacySwitchObserver(this));
   }
 }
 
@@ -104,13 +106,19 @@ void VmCameraMicManager::OnPrimaryUserSessionStarted(Profile* primary_profile) {
 // we do not do clean up (e.g. deregister as observers) here.
 VmCameraMicManager::~VmCameraMicManager() = default;
 
-void VmCameraMicManager::SetActive(VmType vm, DeviceType device, bool active) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+void VmCameraMicManager::UpdateVmInfoAndNotifications(
+    VmType vm,
+    void (VmInfo::*updator)(bool),
+    bool value) {
+  auto it = vm_info_map_.find(vm);
+  CHECK(it != vm_info_map_.end());
+  auto& vm_info = it->second;
 
-  NotificationType& notification_type = notification_map_[vm];
-  const NotificationType old_notification_type = notification_type;
-  notification_type.set(static_cast<size_t>(device), active);
-  if (old_notification_type == notification_type)
+  const NotificationType old_notification_type = vm_info.notification_type();
+  (vm_info.*updator)(value);
+  const NotificationType new_notification_type = vm_info.notification_type();
+
+  if (old_notification_type == new_notification_type)
     return;
 
   if (!observer_timer_.IsRunning()) {
@@ -122,14 +130,15 @@ void VmCameraMicManager::SetActive(VmType vm, DeviceType device, bool active) {
   if (old_notification_type != kNoNotification) {
     CloseNotification(vm, old_notification_type);
   }
-  if (notification_type != kNoNotification) {
-    OpenNotification(vm, notification_type);
+  if (new_notification_type != kNoNotification) {
+    OpenNotification(vm, new_notification_type);
   }
 }
 
 bool VmCameraMicManager::IsDeviceActive(DeviceType device) const {
-  for (const auto& vm_notification : notification_map_) {
-    const NotificationType& notification_type = vm_notification.second;
+  for (const auto& vm_info : vm_info_map_) {
+    const NotificationType& notification_type =
+        vm_info.second.notification_type();
     if (notification_type[static_cast<size_t>(device)]) {
       return true;
     }
@@ -138,8 +147,9 @@ bool VmCameraMicManager::IsDeviceActive(DeviceType device) const {
 }
 
 bool VmCameraMicManager::IsNotificationActive(DeviceType device) const {
-  for (const auto& vm_notification : notification_map_) {
-    const NotificationType& notification_type = vm_notification.second;
+  for (const auto& vm_info : vm_info_map_) {
+    const NotificationType& notification_type =
+        vm_info.second.notification_type();
     switch (device) {
       case DeviceType::kMic:
         if (notification_type == kMicNotification) {
@@ -161,14 +171,42 @@ bool VmCameraMicManager::IsNotificationActive(DeviceType device) const {
 void VmCameraMicManager::OnActiveClientChange(
     cros::mojom::CameraClientType type,
     bool is_active) {
+  // Crostini does not support camera yet.
+
   // TODO(b/167491603): `UNKNOWN` is for Parallels using v0 camera API. We
   // should be able to remove it soon.
   if (type == cros::mojom::CameraClientType::UNKNOWN ||
       type == cros::mojom::CameraClientType::PLUGINVM) {
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
-        base::BindOnce(&VmCameraMicManager::SetActive, base::Unretained(this),
-                       VmType::kPluginVm, DeviceType::kCamera, is_active));
+        base::BindOnce(&VmCameraMicManager::UpdateVmInfoAndNotifications,
+                       base::Unretained(this), VmType::kPluginVm,
+                       &VmInfo::SetCameraAccessing, is_active));
+  }
+}
+
+void VmCameraMicManager::OnCameraPrivacySwitchStatusChanged(
+    cros::mojom::CameraPrivacySwitchState state) {
+  using cros::mojom::CameraPrivacySwitchState;
+  bool is_on;
+  switch (state) {
+    case CameraPrivacySwitchState::UNKNOWN:
+    case CameraPrivacySwitchState::OFF:
+      is_on = false;
+      break;
+    case CameraPrivacySwitchState::ON:
+      is_on = true;
+      break;
+  }
+
+  DCHECK(!vm_info_map_.empty());
+  for (auto& vm_and_info : vm_info_map_) {
+    VmType vm = vm_and_info.first;
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(&VmCameraMicManager::UpdateVmInfoAndNotifications,
+                       base::Unretained(this), vm,
+                       &VmInfo::SetCameraPrivacyIsOn, is_on));
   }
 }
 
@@ -280,6 +318,29 @@ void VmCameraMicManager::CloseNotification(VmType vm, NotificationType type) {
   NotificationDisplayService::GetForProfile(primary_profile_)
       ->Close(NotificationHandler::Type::TRANSIENT,
               GetNotificationId(vm, type));
+}
+
+VmCameraMicManager::VmInfo::VmInfo() = default;
+VmCameraMicManager::VmInfo::VmInfo(const VmInfo&) = default;
+VmCameraMicManager::VmInfo::~VmInfo() = default;
+
+void VmCameraMicManager::VmInfo::SetMicActive(bool active) {
+  notification_type_.set(static_cast<size_t>(DeviceType::kMic), active);
+}
+
+void VmCameraMicManager::VmInfo::SetCameraAccessing(bool accessing) {
+  camera_accessing_ = accessing;
+  OnCameraUpdated();
+}
+
+void VmCameraMicManager::VmInfo::SetCameraPrivacyIsOn(bool on) {
+  camera_privacy_is_on_ = on;
+  OnCameraUpdated();
+}
+
+void VmCameraMicManager::VmInfo::OnCameraUpdated() {
+  notification_type_.set(static_cast<size_t>(DeviceType::kCamera),
+                         camera_accessing_ && !camera_privacy_is_on_);
 }
 
 VmCameraMicManager::VmNotificationObserver::VmNotificationObserver() = default;

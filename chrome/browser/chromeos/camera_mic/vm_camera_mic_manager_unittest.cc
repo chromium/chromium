@@ -102,6 +102,8 @@ class VmCameraMicManagerTest : public testing::Test {
     }
   };
 
+  using VmInfo = VmCameraMicManager::VmInfo;
+
   VmCameraMicManagerTest() {
     // Make the profile the primary one.
     auto mock_user_manager =
@@ -127,12 +129,35 @@ class VmCameraMicManagerTest : public testing::Test {
     vm_camera_mic_manager_->OnPrimaryUserSessionStarted(&testing_profile_);
   }
 
+  void SetCameraAccessing(VmType vm, bool value) {
+    vm_camera_mic_manager_->UpdateVmInfoAndNotifications(
+        vm, &VmInfo::SetCameraAccessing, value);
+  }
+
+  void SetCameraPrivacyIsOn(VmType vm, bool value) {
+    vm_camera_mic_manager_->UpdateVmInfoAndNotifications(
+        vm, &VmInfo::SetCameraPrivacyIsOn, value);
+  }
+
+  void SetMicActive(VmType vm, bool value) {
+    vm_camera_mic_manager_->UpdateVmInfoAndNotifications(
+        vm, &VmInfo::SetMicActive, value);
+  }
+
+  // Note that camera privacy is always set to off by this function.
   void SetActive(const ActiveMap& active_map) {
     for (const auto& vm_and_device_active_map : active_map) {
+      VmType vm = vm_and_device_active_map.first;
+      SetCameraPrivacyIsOn(vm, false);
       for (const auto& device_active : vm_and_device_active_map.second) {
-        vm_camera_mic_manager_->SetActive(vm_and_device_active_map.first,
-                                          device_active.first,
-                                          device_active.second);
+        switch (device_active.first) {
+          case kCamera:
+            SetCameraAccessing(vm, device_active.second);
+            break;
+          case kMic:
+            SetMicActive(vm, device_active.second);
+            break;
+        }
       }
     }
   }
@@ -148,6 +173,28 @@ class VmCameraMicManagerTest : public testing::Test {
 
   DISALLOW_COPY_AND_ASSIGN(VmCameraMicManagerTest);
 };
+
+TEST_F(VmCameraMicManagerTest, CameraPrivacy) {
+  SetCameraAccessing(kPluginVm, false);
+  SetCameraPrivacyIsOn(kPluginVm, false);
+  EXPECT_FALSE(vm_camera_mic_manager_->IsDeviceActive(kCamera));
+  EXPECT_FALSE(vm_camera_mic_manager_->IsNotificationActive(kCamera));
+
+  SetCameraAccessing(kPluginVm, true);
+  SetCameraPrivacyIsOn(kPluginVm, false);
+  EXPECT_TRUE(vm_camera_mic_manager_->IsDeviceActive(kCamera));
+  EXPECT_TRUE(vm_camera_mic_manager_->IsNotificationActive(kCamera));
+
+  SetCameraAccessing(kPluginVm, false);
+  SetCameraPrivacyIsOn(kPluginVm, true);
+  EXPECT_FALSE(vm_camera_mic_manager_->IsDeviceActive(kCamera));
+  EXPECT_FALSE(vm_camera_mic_manager_->IsNotificationActive(kCamera));
+
+  SetCameraAccessing(kPluginVm, true);
+  SetCameraPrivacyIsOn(kPluginVm, true);
+  EXPECT_FALSE(vm_camera_mic_manager_->IsDeviceActive(kCamera));
+  EXPECT_FALSE(vm_camera_mic_manager_->IsNotificationActive(kCamera));
+}
 
 // Test `IsDeviceActive()` and `IsNotificationActive()`.
 class VmCameraMicManagerIsActiveTest
