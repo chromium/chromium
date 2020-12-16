@@ -31,29 +31,34 @@
 
 namespace base {
 
-// static
-const base::Feature HangWatcher::kEnableHangWatcher{
-    "EnableHangWatcher", base::FEATURE_DISABLED_BY_DEFAULT};
-
-constexpr base::FeatureParam<int> kIOThreadLogLevel{
-    &HangWatcher::kEnableHangWatcher, "io_thread_log_level", 0};
-constexpr base::FeatureParam<int> kUIThreadLogLevel{
-    &HangWatcher::kEnableHangWatcher, "ui_thread_log_level", 0};
-constexpr base::FeatureParam<int> kThreadPoolLogLevel{
-    &HangWatcher::kEnableHangWatcher, "threadpool_log_level", 0};
-
-// static
-const base::TimeDelta HangWatchScopeEnabled::kDefaultHangWatchTime =
-    base::TimeDelta::FromSeconds(10);
-
 namespace {
-
 // Defines how much logging happens when the HangWatcher monitors the threads.
 // Logging levels are set per thread type through Finch. It's important that
 // the order of the enum members stay the and that their numerical
 // values be in increasing order. The implementation of
 // ThreadTypeLoggingLevelGreaterOrEqual() depends on it.
 enum class LoggingLevel { kNone = 0, kUmaOnly = 1, kUmaAndCrash = 2 };
+}  // namespace
+
+// static
+const base::Feature HangWatcher::kEnableHangWatcher{
+    "EnableHangWatcher", base::FEATURE_ENABLED_BY_DEFAULT};
+
+constexpr base::FeatureParam<int> kIOThreadLogLevel{
+    &HangWatcher::kEnableHangWatcher, "io_thread_log_level",
+    static_cast<int>(LoggingLevel::kUmaOnly)};
+constexpr base::FeatureParam<int> kUIThreadLogLevel{
+    &HangWatcher::kEnableHangWatcher, "ui_thread_log_level",
+    static_cast<int>(LoggingLevel::kUmaOnly)};
+constexpr base::FeatureParam<int> kThreadPoolLogLevel{
+    &HangWatcher::kEnableHangWatcher, "threadpool_log_level",
+    static_cast<int>(LoggingLevel::kNone)};
+
+// static
+const base::TimeDelta HangWatchScopeEnabled::kDefaultHangWatchTime =
+    base::TimeDelta::FromSeconds(10);
+
+namespace {
 
 HangWatcher* g_instance = nullptr;
 std::atomic<bool> g_use_hang_watcher{false};
@@ -294,14 +299,33 @@ bool HangWatcher::IsThreadPoolHangWatchingEnabled() {
          LoggingLevel::kNone;
 }
 
+// static
 bool HangWatcher::IsIOThreadHangWatchingEnabled() {
   return g_io_thread_log_level.load(std::memory_order_relaxed) !=
          LoggingLevel::kNone;
 }
 
+// static
 bool HangWatcher::IsUIThreadHangWatchingEnabled() {
   return g_ui_thread_log_level.load(std::memory_order_relaxed) !=
          LoggingLevel::kNone;
+}
+
+// static
+bool HangWatcher::IsCrashReportingEnabled() {
+  if (g_ui_thread_log_level.load(std::memory_order_relaxed) ==
+      LoggingLevel::kUmaAndCrash) {
+    return true;
+  }
+  if (g_io_thread_log_level.load(std::memory_order_relaxed) ==
+      LoggingLevel::kUmaAndCrash) {
+    return true;
+  }
+  if (g_threadpool_log_level.load(std::memory_order_relaxed) ==
+      LoggingLevel::kUmaAndCrash) {
+    return true;
+  }
+  return false;
 }
 
 HangWatcher::HangWatcher()

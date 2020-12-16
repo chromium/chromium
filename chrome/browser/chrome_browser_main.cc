@@ -1569,9 +1569,9 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   CloudPrintProxyServiceFactory::GetForProfile(profile_);
 #endif
 
-  // Two different types of hang detection cannot run at the same time or they
-  // would interfere with each other.
-  if (!base::HangWatcher::IsEnabled()) {
+  // Two different types of hang detection cannot attempt to upload crashes at
+  // the same time or they would interfere with each other.
+  if (!base::HangWatcher::IsCrashReportingEnabled()) {
     // Start watching all browser threads for responsiveness.
     ThreadWatcherList::StartWatchingAll(parsed_command_line());
   }
