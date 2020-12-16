@@ -276,6 +276,8 @@ bool StructTraits<network::mojom::DataElementDataView, network::DataElement>::
   if (data.type() == network::mojom::DataElementType::kBytes) {
     if (!data.ReadBuf(&out->buf_))
       return false;
+    if (data.length() != out->buf_.size())
+      return false;
   }
   out->type_ = data.type();
   out->data_pipe_getter_ = data.TakeDataPipeGetter<
