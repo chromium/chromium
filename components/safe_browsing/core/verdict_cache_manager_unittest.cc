@@ -750,4 +750,25 @@ TEST_F(VerdictCacheManagerTest, TestCleanUpExpiredVerdictInBackground) {
   ASSERT_EQ(0u, cache_manager_->GetStoredRealTimeUrlCheckVerdictCount());
 }
 
+TEST_F(VerdictCacheManagerTest, TestCleanUpVerdictOlderThanUpperBound) {
+  RTLookupResponse response;
+  // Set the cache duration to 20 days.
+  AddThreatInfoToResponse(response, RTLookupResponse::ThreatInfo::DANGEROUS,
+                          RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING,
+                          /* cache_duration_sec */ 20 * 24 * 60 * 60,
+                          "www.example.com/",
+                          RTLookupResponse::ThreatInfo::EXACT_MATCH);
+
+  cache_manager_->CacheRealTimeUrlVerdict(GURL("https://www.example.com/"),
+                                          response, base::Time::Now(),
+                                          /* store_old_cache */ false);
+  ASSERT_EQ(1u, cache_manager_->GetStoredRealTimeUrlCheckVerdictCount());
+  // Fast forward by 8 days.
+  task_environment_->FastForwardBy(
+      base::TimeDelta::FromSeconds(8 * 24 * 60 * 60));
+  // Although the cache duration is set to 20 days, it is stored longer than the
+  // upper bound(7 days). The cache should be cleaned up.
+  ASSERT_EQ(0u, cache_manager_->GetStoredRealTimeUrlCheckVerdictCount());
+}
+
 }  // namespace safe_browsing

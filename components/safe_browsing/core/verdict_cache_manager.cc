@@ -42,6 +42,10 @@ const int kCleanUpIntervalInitSecond = 120;
 // The interval between every cleanup task.
 const int kCleanUpIntervalSecond = 1800;
 
+// The longest duration that a cache can be stored. If a cache is stored
+// longer than the upper bound, it will be evicted.
+const int kCacheDurationUpperBoundSecond = 7 * 24 * 60 * 60;  // 7 days
+
 // A helper class to include all match params. It is used as a centralized
 // place to determine if the current cache entry should be considered as a
 // match.
@@ -179,6 +183,12 @@ bool IsCacheExpired(int cache_creation_time, int cache_duration) {
          static_cast<double>(cache_creation_time + cache_duration);
 }
 
+bool IsCacheOlderThanUpperBound(int cache_creation_time) {
+  return base::Time::Now().ToDoubleT() >
+         static_cast<double>(cache_creation_time +
+                             kCacheDurationUpperBoundSecond);
+}
+
 template <class T>
 size_t RemoveExpiredEntries(base::Value* verdict_dictionary,
                             const char* proto_name) {
@@ -189,7 +199,8 @@ size_t RemoveExpiredEntries(base::Value* verdict_dictionary,
     T verdict;
     if (!ParseVerdictEntry<T>(&item.second, &verdict_received_time, &verdict,
                               proto_name) ||
-        IsCacheExpired(verdict_received_time, verdict.cache_duration_sec())) {
+        IsCacheExpired(verdict_received_time, verdict.cache_duration_sec()) ||
+        IsCacheOlderThanUpperBound(verdict_received_time)) {
       expired_keys.push_back(item.first);
     }
   }

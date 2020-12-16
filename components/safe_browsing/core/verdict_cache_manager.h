@@ -115,6 +115,8 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
       TestRemoveRealTimeUrlCheckCachedVerdictOnURLsDeleted);
   FRIEND_TEST_ALL_PREFIXES(VerdictCacheManagerTest,
                            TestCleanUpExpiredVerdictInBackground);
+  FRIEND_TEST_ALL_PREFIXES(VerdictCacheManagerTest,
+                           TestCleanUpVerdictOlderThanUpperBound);
 
   void ScheduleNextCleanUpAfterInterval(base::TimeDelta interval);
 
