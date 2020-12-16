@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/webgl_any.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/dactyloscoper.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -844,6 +845,26 @@ bool WebGLRenderingContextBase::DidGpuRestart(
                        kNotCompatibleAfterRestart;
 }
 
+XRSystem* WebGLRenderingContextBase::GetXrSystemFromHost(
+    CanvasRenderingContextHost* host) {
+  XRSystem* xr = nullptr;
+
+  if (host->IsOffscreenCanvas()) {
+    OffscreenCanvas* offscreen_canvas = static_cast<OffscreenCanvas*>(host);
+    if (auto* window = DynamicTo<LocalDOMWindow>(
+            offscreen_canvas->GetExecutionContext())) {
+      if (Document* document = window->document()) {
+        xr = XRSystem::From(*document);
+      }
+    }
+  } else {
+    HTMLCanvasElement* canvas = static_cast<HTMLCanvasElement*>(host);
+    xr = XRSystem::From(canvas->GetDocument());
+  }
+
+  return xr;
+}
+
 bool WebGLRenderingContextBase::MakeXrCompatibleSync(
     CanvasRenderingContextHost* host) {
   if (!RuntimeEnabledFeatures::WebXRMultiGpuEnabled())
@@ -852,33 +873,22 @@ bool WebGLRenderingContextBase::MakeXrCompatibleSync(
   device::mojom::blink::XrCompatibleResult xr_compatible_result =
       device::mojom::blink::XrCompatibleResult::kNoDeviceAvailable;
 
-  if (!host->IsOffscreenCanvas()) {
-    HTMLCanvasElement* canvas = static_cast<HTMLCanvasElement*>(host);
-    if (XRSystem* xr = XRSystem::From(canvas->GetDocument()))
-      xr->MakeXrCompatibleSync(&xr_compatible_result);
-  }
+  if (XRSystem* xr = GetXrSystemFromHost(host))
+    xr->MakeXrCompatibleSync(&xr_compatible_result);
 
   return IsXrCompatibleFromResult(xr_compatible_result);
 }
 
 void WebGLRenderingContextBase::MakeXrCompatibleAsync() {
-  if (!canvas()) {
+  if (XRSystem* xr = GetXrSystemFromHost(Host())) {
+    // The promise will be completed on the callback.
+    xr->MakeXrCompatibleAsync(
+        WTF::Bind(&WebGLRenderingContextBase::OnMakeXrCompatibleFinished,
+                  WrapWeakPersistent(this)));
+  } else {
     xr_compatible_ = false;
     CompleteXrCompatiblePromiseIfPending(DOMExceptionCode::kAbortError);
-    return;
   }
-
-  XRSystem* xr = XRSystem::From(canvas()->GetDocument());
-  if (!xr) {
-    xr_compatible_ = false;
-    CompleteXrCompatiblePromiseIfPending(DOMExceptionCode::kAbortError);
-    return;
-  }
-
-  // The promise will be completed on the callback.
-  xr->MakeXrCompatibleAsync(
-      WTF::Bind(&WebGLRenderingContextBase::OnMakeXrCompatibleFinished,
-                WrapWeakPersistent(this)));
 }
 
 void WebGLRenderingContextBase::OnMakeXrCompatibleFinished(
