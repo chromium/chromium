@@ -151,6 +151,16 @@
   self.thumbStripCoordinator.incognitoBrowser = incognitoBrowser;
 }
 
+- (void)setIncognitoThumbStripAttacher:
+    (id<ThumbStripAttacher>)incognitoThumbStripAttacher {
+  if (incognitoThumbStripAttacher == _incognitoThumbStripAttacher) {
+    return;
+  }
+  _incognitoThumbStripAttacher = incognitoThumbStripAttacher;
+  self.incognitoThumbStripAttacher.thumbStripPanHandler =
+      self.thumbStripCoordinator.panHandler;
+}
+
 - (void)stopChildCoordinatorsWithCompletion:(ProceduralBlock)completion {
   // Recent tabs context menu may be presented on top of the tab grid.
   [self.baseViewController.remoteTabsViewController dismissModals];
@@ -411,7 +421,10 @@
         baseViewController;
     [self.thumbStripCoordinator.panHandler addAnimatee:baseViewController];
 
-    [self setUpThumbStripAttachers];
+    self.incognitoThumbStripAttacher.thumbStripPanHandler =
+        self.thumbStripCoordinator.panHandler;
+    self.regularThumbStripAttacher.thumbStripPanHandler =
+        self.thumbStripCoordinator.panHandler;
   }
 
   // Once the mediators are set up, stop keeping pointers to the browsers used
@@ -632,15 +645,6 @@
     (NSInteger)sectionIdentifier {
   return [self.baseViewController.remoteTabsViewController
       sessionForSectionIdentifier:sectionIdentifier];
-}
-
-#pragma mark - Private methods
-
-- (void)setUpThumbStripAttachers {
-  self.incognitoThumbStripAttacher.thumbStripPanHandler =
-      self.thumbStripCoordinator.panHandler;
-  self.regularThumbStripAttacher.thumbStripPanHandler =
-      self.thumbStripCoordinator.panHandler;
 }
 
 @end

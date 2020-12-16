@@ -1349,6 +1349,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     _voiceSearchController->SetDispatcher(nil);
     _voiceSearchController = nullptr;
   }
+  _fullscreenDisabler = nullptr;
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -2881,8 +2882,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // Disable fullscreen if the thumb strip is about to be shown.
   if (currentViewRevealState == ViewRevealState::Hidden &&
       !_fullscreenDisabler) {
-    _fullscreenDisabler = std::make_unique<ScopedFullscreenDisabler>(
-        FullscreenController::FromBrowser(_browser));
+    _fullscreenDisabler =
+        std::make_unique<ScopedFullscreenDisabler>(self.fullscreenController);
   }
   // Hide the tab strip and take a snapshot of it. If a snapshot of a hidden
   // view is taken, the snapshot will be a blank view. However, if the view's

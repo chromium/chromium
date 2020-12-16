@@ -48,6 +48,7 @@ const CGFloat kThumbStripHeight = 168.0f + 22.0f + 22.0f;
 }
 
 - (void)stop {
+  self.mediator.webViewScrollViewObserver = nil;
   self.panHandler = nil;
   self.mediator = nil;
 }

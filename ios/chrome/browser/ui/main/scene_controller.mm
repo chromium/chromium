@@ -2619,5 +2619,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   // Always set the new otr Browser for the tablet or grid switcher.
   // Notify the TabGrid with the new Incognito Browser.
   self.mainCoordinator.incognitoBrowser = self.incognitoInterface.browser;
+  self.mainCoordinator.incognitoThumbStripAttacher =
+      self.incognitoInterface.bvc;
 }
 @end
