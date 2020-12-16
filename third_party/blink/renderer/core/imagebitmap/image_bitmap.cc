@@ -216,7 +216,9 @@ std::unique_ptr<CanvasResourceProvider> CreateProvider(
     const scoped_refptr<StaticBitmapImage>& source_image,
     bool fallback_to_software) {
   IntSize size(info.width(), info.height());
-  CanvasColorParams color_params(info);
+
+  const SkFilterQuality filter_quality = kLow_SkFilterQuality;
+  const CanvasResourceParams resource_params(info);
 
   if (context_provider) {
     uint32_t usage_flags =
@@ -224,7 +226,7 @@ std::unique_ptr<CanvasResourceProvider> CreateProvider(
             ->SharedImageInterface()
             ->UsageForMailbox(source_image->GetMailboxHolder().mailbox);
     auto resource_provider = CanvasResourceProvider::CreateSharedImageProvider(
-        size, kLow_SkFilterQuality, color_params,
+        size, filter_quality, resource_params,
         CanvasResourceProvider::ShouldInitialize::kNo, context_provider,
         RasterMode::kGPU, source_image->IsOriginTopLeft(), usage_flags);
     if (resource_provider)
@@ -235,7 +237,7 @@ std::unique_ptr<CanvasResourceProvider> CreateProvider(
   }
 
   return CanvasResourceProvider::CreateBitmapProvider(
-      size, kLow_SkFilterQuality, color_params,
+      size, filter_quality, resource_params,
       CanvasResourceProvider::ShouldInitialize::kNo);
 }
 
@@ -253,7 +255,7 @@ std::unique_ptr<CanvasResourceProvider> CreateProviderForVideoElement(
       options->hasResizeWidth() || options->hasResizeHeight()) {
     return CanvasResourceProvider::CreateBitmapProvider(
         IntSize(video->videoWidth(), video->videoHeight()),
-        kLow_SkFilterQuality, CanvasColorParams(),
+        kLow_SkFilterQuality, CanvasResourceParams(),
         CanvasResourceProvider::ShouldInitialize::kCallClear);
   }
 
@@ -261,9 +263,9 @@ std::unique_ptr<CanvasResourceProvider> CreateProviderForVideoElement(
 
   return CanvasResourceProvider::CreateSharedImageProvider(
       IntSize(video->videoWidth(), video->videoHeight()), kLow_SkFilterQuality,
-      CanvasColorParams(CanvasColorSpace::kSRGB,
-                        CanvasColorParams::GetNativeCanvasPixelFormat(),
-                        kNonOpaque),  // Default canvas settings,
+      CanvasResourceParams(CanvasColorSpace::kSRGB,
+                           CanvasColorParams::GetNativeCanvasPixelFormat(),
+                           kNonOpaque),  // Default canvas settings,
       CanvasResourceProvider::ShouldInitialize::kCallClear,
       SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
       false,  // Origin of GL texture is bottom left on screen

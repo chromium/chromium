@@ -310,12 +310,12 @@ class FakeCanvas2DLayerBridge : public Canvas2DLayerBridge {
 class FakeCanvasResourceProvider : public CanvasResourceProvider {
  public:
   FakeCanvasResourceProvider(const IntSize& size,
-                             CanvasColorParams color_params,
+                             CanvasResourceParams params,
                              RasterModeHint hint)
       : CanvasResourceProvider(CanvasResourceProvider::kBitmap,
                                size,
                                kLow_SkFilterQuality,
-                               color_params,
+                               params,
                                /*is_origin_top_left=*/false,
                                nullptr,
                                nullptr),
@@ -608,7 +608,7 @@ TEST_F(CanvasRenderingContext2DTest, GPUMemoryUpdateForAcceleratedCanvas) {
 
   IntSize size(10, 10);
   std::unique_ptr<FakeCanvasResourceProvider> fake_resource_provider =
-      std::make_unique<FakeCanvasResourceProvider>(size, CanvasColorParams(),
+      std::make_unique<FakeCanvasResourceProvider>(size, CanvasResourceParams(),
                                                    RasterModeHint::kPreferGPU);
   std::unique_ptr<FakeCanvas2DLayerBridge> fake_2d_layer_bridge =
       std::make_unique<FakeCanvas2DLayerBridge>(size, CanvasColorParams(),
@@ -639,8 +639,8 @@ TEST_F(CanvasRenderingContext2DTest, GPUMemoryUpdateForAcceleratedCanvas) {
       std::make_unique<FakeCanvas2DLayerBridge>(size2, CanvasColorParams(),
                                                 RasterModeHint::kPreferGPU);
   std::unique_ptr<FakeCanvasResourceProvider> fake_resource_provider2 =
-      std::make_unique<FakeCanvasResourceProvider>(size2, CanvasColorParams(),
-                                                   RasterModeHint::kPreferGPU);
+      std::make_unique<FakeCanvasResourceProvider>(
+          size2, CanvasResourceParams(), RasterModeHint::kPreferGPU);
   anotherCanvas->SetResourceProviderForTesting(
       std::move(fake_resource_provider2), std::move(fake_2d_layer_bridge2),
       size2);

@@ -24,7 +24,8 @@ namespace blink {
 
 TEST(CanvasResourceTest, PrepareTransferableResource_SharedBitmap) {
   scoped_refptr<CanvasResource> canvas_resource =
-      CanvasResourceSharedBitmap::Create(IntSize(10, 10), CanvasColorParams(),
+      CanvasResourceSharedBitmap::Create(IntSize(10, 10),
+                                         CanvasResourceParams(),
                                          nullptr,  // CanvasResourceProvider
                                          kLow_SkFilterQuality);
   EXPECT_TRUE(!!canvas_resource);

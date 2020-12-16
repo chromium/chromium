@@ -591,7 +591,7 @@ scoped_refptr<Image> HTMLVideoElement::GetSourceImageForCanvas(
   // TODO(fserb): this should not be default software.
   std::unique_ptr<CanvasResourceProvider> resource_provider =
       CanvasResourceProvider::CreateBitmapProvider(
-          intrinsic_size, kLow_SkFilterQuality, CanvasColorParams(),
+          intrinsic_size, kLow_SkFilterQuality, CanvasResourceParams(),
           CanvasResourceProvider::ShouldInitialize::kNo);
   if (!resource_provider) {
     *status = kInvalidSourceImageStatus;

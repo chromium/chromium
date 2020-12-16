@@ -806,6 +806,8 @@ component("platform") {
     "graphics/canvas_resource_dispatcher.h",
     "graphics/canvas_resource_host.cc",
     "graphics/canvas_resource_host.h",
+    "graphics/canvas_resource_params.cc",
+    "graphics/canvas_resource_params.h",
     "graphics/canvas_resource_provider.cc",
     "graphics/canvas_resource_provider.h",
     "graphics/color.cc",

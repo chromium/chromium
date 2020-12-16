@@ -148,7 +148,7 @@ TEST_P(OffscreenCanvasTest, CompositorFrameOpacity) {
   const bool context_alpha = GetParam().alpha;
 
   const auto canvas_resource = CanvasResourceSharedBitmap::Create(
-      offscreen_canvas().Size(), CanvasColorParams(), nullptr /* provider */,
+      offscreen_canvas().Size(), CanvasResourceParams(), nullptr /* provider */,
       kLow_SkFilterQuality);
   EXPECT_TRUE(!!canvas_resource);
 

@@ -1,12 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/graphics/canvas_color_params.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_resource_params.h"
 
 #include "cc/paint/skia_paint_canvas.h"
 #include "components/viz/common/resources/resource_format_utils.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_resource_params.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/khronos/GLES2/gl2.h"
@@ -39,57 +38,19 @@ gfx::ColorSpace CanvasColorSpaceToGfxColorSpace(CanvasColorSpace color_space) {
 
 }  // namespace
 
-sk_sp<SkColorSpace> CanvasColorSpaceToSkColorSpace(
-    CanvasColorSpace color_space) {
-  return CanvasColorSpaceToGfxColorSpace(color_space).ToSkColorSpace();
-}
+CanvasResourceParams::CanvasResourceParams() = default;
 
-CanvasColorSpace CanvasColorSpaceFromSkColorSpace(
-    const SkColorSpace* sk_color_space) {
-  // TODO(https://crbug.com/1121448): This function returns sRGB if
-  // |sk_color_space| does not exactly match one of the named color spaces. It
-  // should find the best named match.
-  CanvasColorSpace color_spaces[] = {
-      CanvasColorSpace::kSRGB,
-      CanvasColorSpace::kRec2020,
-      CanvasColorSpace::kP3,
-  };
-  for (const auto& color_space : color_spaces) {
-    if (SkColorSpace::Equals(sk_color_space,
-                             CanvasColorSpaceToGfxColorSpace(color_space)
-                                 .ToSkColorSpace()
-                                 .get())) {
-      return color_space;
-    }
-  }
-  return CanvasColorSpace::kSRGB;
-}
-
-CanvasColorSpace CanvasColorSpaceFromName(const String& color_space_name) {
-  if (color_space_name == kRec2020CanvasColorSpaceName)
-    return CanvasColorSpace::kRec2020;
-  if (color_space_name == kP3CanvasColorSpaceName)
-    return CanvasColorSpace::kP3;
-  return CanvasColorSpace::kSRGB;
-}
-
-CanvasColorParams::CanvasColorParams() = default;
-
-CanvasColorParams::CanvasColorParams(CanvasColorSpace color_space,
-                                     CanvasPixelFormat pixel_format,
-                                     OpacityMode opacity_mode)
+CanvasResourceParams::CanvasResourceParams(CanvasColorSpace color_space,
+                                           CanvasPixelFormat pixel_format,
+                                           OpacityMode opacity_mode)
     : color_space_(color_space),
       pixel_format_(pixel_format),
       opacity_mode_(opacity_mode) {}
 
-CanvasColorParams::CanvasColorParams(const SkImageInfo& info)
-    : CanvasColorParams(info.refColorSpace(), info.colorType()) {}
+CanvasResourceParams::CanvasResourceParams(const SkImageInfo& info)
+    : CanvasResourceParams(info.refColorSpace(), info.colorType()) {}
 
-CanvasResourceParams CanvasColorParams::GetAsResourceParams() const {
-  return CanvasResourceParams(color_space_, pixel_format_, opacity_mode_);
-}
-
-SkColorType CanvasColorParams::GetSkColorType() const {
+SkColorType CanvasResourceParams::GetSkColorType() const {
   switch (pixel_format_) {
     case CanvasPixelFormat::kF16:
       return kRGBA_F16_SkColorType;
@@ -104,40 +65,40 @@ SkColorType CanvasColorParams::GetSkColorType() const {
   return kN32_SkColorType;
 }
 
-SkAlphaType CanvasColorParams::GetSkAlphaType() const {
+SkAlphaType CanvasResourceParams::GetSkAlphaType() const {
   return opacity_mode_ == kOpaque ? kOpaque_SkAlphaType : kPremul_SkAlphaType;
 }
 
-const SkSurfaceProps* CanvasColorParams::GetSkSurfaceProps() const {
+const SkSurfaceProps* CanvasResourceParams::GetSkSurfaceProps() const {
   static const SkSurfaceProps disable_lcd_props(0, kUnknown_SkPixelGeometry);
   if (opacity_mode_ == kOpaque)
     return nullptr;
   return &disable_lcd_props;
 }
 
-uint8_t CanvasColorParams::BytesPerPixel() const {
+uint8_t CanvasResourceParams::BytesPerPixel() const {
   return SkColorTypeBytesPerPixel(GetSkColorType());
 }
 
-gfx::ColorSpace CanvasColorParams::GetSamplerGfxColorSpace() const {
+gfx::ColorSpace CanvasResourceParams::GetSamplerGfxColorSpace() const {
   // TODO(ccameron): If we add support for uint8srgb as a pixel format, this
   // will need to take into account whether or not this texture will be sampled
   // in linear or nonlinear space.
   return CanvasColorSpaceToGfxColorSpace(color_space_);
 }
 
-gfx::ColorSpace CanvasColorParams::GetStorageGfxColorSpace() const {
+gfx::ColorSpace CanvasResourceParams::GetStorageGfxColorSpace() const {
   return CanvasColorSpaceToGfxColorSpace(color_space_);
 }
 
-sk_sp<SkColorSpace> CanvasColorParams::GetSkColorSpace() const {
+sk_sp<SkColorSpace> CanvasResourceParams::GetSkColorSpace() const {
   static_assert(kN32_SkColorType == kRGBA_8888_SkColorType ||
                     kN32_SkColorType == kBGRA_8888_SkColorType,
                 "Unexpected kN32_SkColorType value.");
   return CanvasColorSpaceToSkColorSpace(color_space_);
 }
 
-gfx::BufferFormat CanvasColorParams::GetBufferFormat() const {
+gfx::BufferFormat CanvasResourceParams::GetBufferFormat() const {
   switch (GetSkColorType()) {
     case kRGBA_F16_SkColorType:
       return gfx::BufferFormat::RGBA_F16;
@@ -154,7 +115,7 @@ gfx::BufferFormat CanvasColorParams::GetBufferFormat() const {
   return gfx::BufferFormat::RGBA_8888;
 }
 
-GLenum CanvasColorParams::GLUnsizedInternalFormat() const {
+GLenum CanvasResourceParams::GLUnsizedInternalFormat() const {
   // TODO(junov): try GL_RGB when opacity_mode_ == kOpaque
   switch (GetSkColorType()) {
     case kRGBA_F16_SkColorType:
@@ -172,7 +133,7 @@ GLenum CanvasColorParams::GLUnsizedInternalFormat() const {
   return GL_RGBA;
 }
 
-GLenum CanvasColorParams::GLSizedInternalFormat() const {
+GLenum CanvasResourceParams::GLSizedInternalFormat() const {
   switch (GetSkColorType()) {
     case kRGBA_F16_SkColorType:
       return GL_RGBA16F;
@@ -189,7 +150,7 @@ GLenum CanvasColorParams::GLSizedInternalFormat() const {
   return GL_RGBA8;
 }
 
-GLenum CanvasColorParams::GLType() const {
+GLenum CanvasResourceParams::GLType() const {
   switch (GetSkColorType()) {
     case kRGBA_F16_SkColorType:
       return GL_HALF_FLOAT_OES;
@@ -204,12 +165,13 @@ GLenum CanvasColorParams::GLType() const {
   return GL_UNSIGNED_BYTE;
 }
 
-viz::ResourceFormat CanvasColorParams::TransferableResourceFormat() const {
+viz::ResourceFormat CanvasResourceParams::TransferableResourceFormat() const {
   return viz::GetResourceFormat(GetBufferFormat());
 }
 
-CanvasColorParams::CanvasColorParams(const sk_sp<SkColorSpace> sk_color_space,
-                                     SkColorType sk_color_type) {
+CanvasResourceParams::CanvasResourceParams(
+    const sk_sp<SkColorSpace> sk_color_space,
+    SkColorType sk_color_type) {
   color_space_ = CanvasColorSpaceFromSkColorSpace(sk_color_space.get());
   pixel_format_ = GetNativeCanvasPixelFormat();
 

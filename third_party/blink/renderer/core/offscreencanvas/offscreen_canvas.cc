@@ -398,10 +398,12 @@ CanvasResourceProvider* OffscreenCanvas::GetOrCreateResourceProvider() {
   if (composited_mode)
     shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
+  const CanvasResourceParams resource_params =
+      context_->CanvasRenderingContextColorParams().GetAsResourceParams();
+  const SkFilterQuality filter_quality = FilterQuality();
   if (can_use_gpu) {
     provider = CanvasResourceProvider::CreateSharedImageProvider(
-        surface_size, FilterQuality(),
-        context_->CanvasRenderingContextColorParams(),
+        surface_size, filter_quality, resource_params,
         CanvasResourceProvider::ShouldInitialize::kCallClear,
         SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
         false /*is_origin_top_left*/, shared_image_usage_flags);
@@ -409,8 +411,7 @@ CanvasResourceProvider* OffscreenCanvas::GetOrCreateResourceProvider() {
     // Only try a SoftwareComposited SharedImage if the context has Placeholder
     // canvas and the composited mode is enabled.
     provider = CanvasResourceProvider::CreateSharedImageProvider(
-        surface_size, FilterQuality(),
-        context_->CanvasRenderingContextColorParams(),
+        surface_size, filter_quality, resource_params,
         CanvasResourceProvider::ShouldInitialize::kCallClear,
         SharedGpuContext::ContextProviderWrapper(), RasterMode::kCPU,
         false /*is_origin_top_left*/, shared_image_usage_flags);
@@ -423,8 +424,7 @@ CanvasResourceProvider* OffscreenCanvas::GetOrCreateResourceProvider() {
     base::WeakPtr<CanvasResourceDispatcher> dispatcher_weakptr =
         GetOrCreateResourceDispatcher()->GetWeakPtr();
     provider = CanvasResourceProvider::CreateSharedBitmapProvider(
-        surface_size, FilterQuality(),
-        context_->CanvasRenderingContextColorParams(),
+        surface_size, filter_quality, resource_params,
         CanvasResourceProvider::ShouldInitialize::kCallClear,
         std::move(dispatcher_weakptr));
   }
@@ -433,8 +433,7 @@ CanvasResourceProvider* OffscreenCanvas::GetOrCreateResourceProvider() {
     // If any of the above Create was able to create a valid provider, a
     // BitmapProvider will be created here.
     provider = CanvasResourceProvider::CreateBitmapProvider(
-        surface_size, FilterQuality(),
-        context_->CanvasRenderingContextColorParams(),
+        surface_size, filter_quality, resource_params,
         CanvasResourceProvider::ShouldInitialize::kCallClear);
   }
 

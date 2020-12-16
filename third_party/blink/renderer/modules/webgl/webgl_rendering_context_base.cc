@@ -765,7 +765,7 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage() {
   // Since we are grabbing a snapshot that is not for compositing, we use a
   // custom resource provider. This avoids consuming compositing-specific
   // resources (e.g. GpuMemoryBuffer)
-  auto color_params = CanvasRenderingContextColorParams();
+  auto color_params = CanvasRenderingContextColorParams().GetAsResourceParams();
   std::unique_ptr<CanvasResourceProvider> resource_provider =
       CanvasResourceProvider::CreateSharedImageProvider(
           size, GetDrawingBuffer()->FilterQuality(), color_params,
@@ -8527,7 +8527,7 @@ CanvasResourceProvider* WebGLRenderingContextBase::
   // TODO(fserb): why is this a BITMAP?
   std::unique_ptr<CanvasResourceProvider> temp(
       CanvasResourceProvider::CreateBitmapProvider(
-          size, kLow_SkFilterQuality, CanvasColorParams(),
+          size, kLow_SkFilterQuality, CanvasResourceParams(),
           CanvasResourceProvider::ShouldInitialize::kNo));  // TODO: should this
                                                             // use the canvas's
 

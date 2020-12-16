@@ -193,7 +193,7 @@ TEST_F(BadSharedGpuContextTest, AccelerateImageBufferSurfaceCreationFails) {
   IntSize size(10, 10);
   std::unique_ptr<CanvasResourceProvider> resource_provider =
       CanvasResourceProvider::CreateSharedImageProvider(
-          size, kLow_SkFilterQuality, CanvasColorParams(),
+          size, kLow_SkFilterQuality, CanvasResourceParams(),
           CanvasResourceProvider::ShouldInitialize::kNo,
           SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
           true /*is_origin_top_left*/, 0u /*shared_image_usage_flags*/);
@@ -220,7 +220,7 @@ TEST_F(SharedGpuContextTestViz, AccelerateImageBufferSurfaceAutoRecovery) {
   IntSize size(10, 10);
   std::unique_ptr<CanvasResourceProvider> resource_provider =
       CanvasResourceProvider::CreateSharedImageProvider(
-          size, kLow_SkFilterQuality, CanvasColorParams(),
+          size, kLow_SkFilterQuality, CanvasResourceParams(),
           CanvasResourceProvider::ShouldInitialize::kNo,
           SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
           true /*is_origin_top_left*/, 0u /*shared_image_usage_flags*/);

@@ -10,8 +10,8 @@
 #include "components/viz/test/test_gpu_memory_buffer_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_color_params.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_dispatcher.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_resource_params.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/test/fake_gles2_interface.h"
@@ -74,9 +74,9 @@ class CanvasResourceProviderTest : public Test {
 
 TEST_F(CanvasResourceProviderTest, CanvasResourceProviderAcceleratedOverlay) {
   const IntSize kSize(10, 10);
-  const CanvasColorParams kColorParams(
-      CanvasColorSpace::kSRGB, CanvasColorParams::GetNativeCanvasPixelFormat(),
-      kNonOpaque);
+  const CanvasResourceParams kColorParams(
+      CanvasColorSpace::kSRGB,
+      CanvasResourceParams::GetNativeCanvasPixelFormat(), kNonOpaque);
 
   const uint32_t shared_image_usage_flags =
       gpu::SHARED_IMAGE_USAGE_DISPLAY | gpu::SHARED_IMAGE_USAGE_SCANOUT |
@@ -107,9 +107,9 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderAcceleratedOverlay) {
 
 TEST_F(CanvasResourceProviderTest, CanvasResourceProviderTexture) {
   const IntSize kSize(10, 10);
-  const CanvasColorParams kColorParams(
-      CanvasColorSpace::kSRGB, CanvasColorParams::GetNativeCanvasPixelFormat(),
-      kNonOpaque);
+  const CanvasResourceParams kColorParams(
+      CanvasColorSpace::kSRGB,
+      CanvasResourceParams::GetNativeCanvasPixelFormat(), kNonOpaque);
 
   auto provider = CanvasResourceProvider::CreateSharedImageProvider(
       kSize, kLow_SkFilterQuality, kColorParams,
@@ -134,9 +134,9 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderTexture) {
 
 TEST_F(CanvasResourceProviderTest, CanvasResourceProviderUnacceleratedOverlay) {
   const IntSize kSize(10, 10);
-  const CanvasColorParams kColorParams(
-      CanvasColorSpace::kSRGB, CanvasColorParams::GetNativeCanvasPixelFormat(),
-      kNonOpaque);
+  const CanvasResourceParams kColorParams(
+      CanvasColorSpace::kSRGB,
+      CanvasResourceParams::GetNativeCanvasPixelFormat(), kNonOpaque);
 
   const uint32_t shared_image_usage_flags =
       gpu::SHARED_IMAGE_USAGE_DISPLAY | gpu::SHARED_IMAGE_USAGE_SCANOUT;
@@ -166,9 +166,9 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderUnacceleratedOverlay) {
 TEST_F(CanvasResourceProviderTest,
        CanvasResourceProviderSharedImageResourceRecycling) {
   const IntSize kSize(10, 10);
-  const CanvasColorParams kColorParams(
-      CanvasColorSpace::kSRGB, CanvasColorParams::GetNativeCanvasPixelFormat(),
-      kNonOpaque);
+  const CanvasResourceParams kColorParams(
+      CanvasColorSpace::kSRGB,
+      CanvasResourceParams::GetNativeCanvasPixelFormat(), kNonOpaque);
 
   const uint32_t shared_image_usage_flags =
       gpu::SHARED_IMAGE_USAGE_DISPLAY | gpu::SHARED_IMAGE_USAGE_SCANOUT;
@@ -222,9 +222,9 @@ TEST_F(CanvasResourceProviderTest,
 TEST_F(CanvasResourceProviderTest,
        CanvasResourceProviderSharedImageStaticBitmapImage) {
   const IntSize kSize(10, 10);
-  const CanvasColorParams kColorParams(
-      CanvasColorSpace::kSRGB, CanvasColorParams::GetNativeCanvasPixelFormat(),
-      kNonOpaque);
+  const CanvasResourceParams kColorParams(
+      CanvasColorSpace::kSRGB,
+      CanvasResourceParams::GetNativeCanvasPixelFormat(), kNonOpaque);
 
   const uint32_t shared_image_usage_flags =
       gpu::SHARED_IMAGE_USAGE_DISPLAY | gpu::SHARED_IMAGE_USAGE_SCANOUT;
@@ -271,9 +271,9 @@ TEST_F(CanvasResourceProviderTest,
   fake_context->SetCapabilities(caps);
 
   const IntSize kSize(10, 10);
-  const CanvasColorParams kColorParams(
-      CanvasColorSpace::kSRGB, CanvasColorParams::GetNativeCanvasPixelFormat(),
-      kNonOpaque);
+  const CanvasResourceParams kColorParams(
+      CanvasColorSpace::kSRGB,
+      CanvasResourceParams::GetNativeCanvasPixelFormat(), kNonOpaque);
 
   const uint32_t shared_image_usage_flags =
       gpu::SHARED_IMAGE_USAGE_DISPLAY | gpu::SHARED_IMAGE_USAGE_SCANOUT;
@@ -295,9 +295,9 @@ TEST_F(CanvasResourceProviderTest,
 
 TEST_F(CanvasResourceProviderTest, CanvasResourceProviderBitmap) {
   const IntSize kSize(10, 10);
-  const CanvasColorParams kColorParams(
-      CanvasColorSpace::kSRGB, CanvasColorParams::GetNativeCanvasPixelFormat(),
-      kNonOpaque);
+  const CanvasResourceParams kColorParams(
+      CanvasColorSpace::kSRGB,
+      CanvasResourceParams::GetNativeCanvasPixelFormat(), kNonOpaque);
 
   auto provider = CanvasResourceProvider::CreateBitmapProvider(
       kSize, kLow_SkFilterQuality, kColorParams,
@@ -318,9 +318,9 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderBitmap) {
 
 TEST_F(CanvasResourceProviderTest, CanvasResourceProviderSharedBitmap) {
   const IntSize kSize(10, 10);
-  const CanvasColorParams kColorParams(
-      CanvasColorSpace::kSRGB, CanvasColorParams::GetNativeCanvasPixelFormat(),
-      kNonOpaque);
+  const CanvasResourceParams kColorParams(
+      CanvasColorSpace::kSRGB,
+      CanvasResourceParams::GetNativeCanvasPixelFormat(), kNonOpaque);
 
   MockCanvasResourceDispatcherClient client;
   CanvasResourceDispatcher resource_dispatcher(
@@ -350,9 +350,9 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderSharedBitmap) {
 TEST_F(CanvasResourceProviderTest,
        CanvasResourceProviderDirect2DGpuMemoryBuffer) {
   const IntSize kSize(10, 10);
-  const CanvasColorParams kColorParams(
-      CanvasColorSpace::kSRGB, CanvasColorParams::GetNativeCanvasPixelFormat(),
-      kNonOpaque);
+  const CanvasResourceParams kColorParams(
+      CanvasColorSpace::kSRGB,
+      CanvasResourceParams::GetNativeCanvasPixelFormat(), kNonOpaque);
 
   const uint32_t shared_image_usage_flags =
       gpu::SHARED_IMAGE_USAGE_DISPLAY | gpu::SHARED_IMAGE_USAGE_SCANOUT |
@@ -384,9 +384,9 @@ TEST_F(CanvasResourceProviderTest,
 TEST_F(CanvasResourceProviderTest,
        CanvasResourceProviderDirect3DGpuMemoryBuffer) {
   const IntSize kSize(10, 10);
-  const CanvasColorParams kColorParams(
-      CanvasColorSpace::kSRGB, CanvasColorParams::GetNativeCanvasPixelFormat(),
-      kNonOpaque);
+  const CanvasResourceParams kColorParams(
+      CanvasColorSpace::kSRGB,
+      CanvasResourceParams::GetNativeCanvasPixelFormat(), kNonOpaque);
 
   auto provider = CanvasResourceProvider::CreatePassThroughProvider(
       kSize, kLow_SkFilterQuality, kColorParams, context_provider_wrapper_,
@@ -422,9 +422,9 @@ TEST_F(CanvasResourceProviderTest,
 }
 
 TEST_F(CanvasResourceProviderTest, DimensionsExceedMaxTextureSize_Bitmap) {
-  const CanvasColorParams kColorParams(
-      CanvasColorSpace::kSRGB, CanvasColorParams::GetNativeCanvasPixelFormat(),
-      kNonOpaque);
+  const CanvasResourceParams kColorParams(
+      CanvasColorSpace::kSRGB,
+      CanvasResourceParams::GetNativeCanvasPixelFormat(), kNonOpaque);
 
   auto provider = CanvasResourceProvider::CreateBitmapProvider(
       IntSize(kMaxTextureSize - 1, kMaxTextureSize), kLow_SkFilterQuality,
@@ -441,9 +441,9 @@ TEST_F(CanvasResourceProviderTest, DimensionsExceedMaxTextureSize_Bitmap) {
 }
 
 TEST_F(CanvasResourceProviderTest, DimensionsExceedMaxTextureSize_SharedImage) {
-  const CanvasColorParams kColorParams(
-      CanvasColorSpace::kSRGB, CanvasColorParams::GetNativeCanvasPixelFormat(),
-      kNonOpaque);
+  const CanvasResourceParams kColorParams(
+      CanvasColorSpace::kSRGB,
+      CanvasResourceParams::GetNativeCanvasPixelFormat(), kNonOpaque);
 
   auto provider = CanvasResourceProvider::CreateSharedImageProvider(
       IntSize(kMaxTextureSize - 1, kMaxTextureSize), kLow_SkFilterQuality,
@@ -468,9 +468,9 @@ TEST_F(CanvasResourceProviderTest, DimensionsExceedMaxTextureSize_SharedImage) {
 }
 
 TEST_F(CanvasResourceProviderTest, DimensionsExceedMaxTextureSize_SwapChain) {
-  const CanvasColorParams kColorParams(
-      CanvasColorSpace::kSRGB, CanvasColorParams::GetNativeCanvasPixelFormat(),
-      kNonOpaque);
+  const CanvasResourceParams kColorParams(
+      CanvasColorSpace::kSRGB,
+      CanvasResourceParams::GetNativeCanvasPixelFormat(), kNonOpaque);
   auto provider = CanvasResourceProvider::CreateSwapChainProvider(
       IntSize(kMaxTextureSize - 1, kMaxTextureSize), kLow_SkFilterQuality,
       kColorParams, CanvasResourceProvider::ShouldInitialize::kCallClear,
@@ -495,9 +495,9 @@ TEST_F(CanvasResourceProviderTest, DimensionsExceedMaxTextureSize_SwapChain) {
 }
 
 TEST_F(CanvasResourceProviderTest, DimensionsExceedMaxTextureSize_PassThrough) {
-  const CanvasColorParams kColorParams(
-      CanvasColorSpace::kSRGB, CanvasColorParams::GetNativeCanvasPixelFormat(),
-      kNonOpaque);
+  const CanvasResourceParams kColorParams(
+      CanvasColorSpace::kSRGB,
+      CanvasResourceParams::GetNativeCanvasPixelFormat(), kNonOpaque);
   auto provider = CanvasResourceProvider::CreatePassThroughProvider(
       IntSize(kMaxTextureSize - 1, kMaxTextureSize), kLow_SkFilterQuality,
       kColorParams, context_provider_wrapper_,
@@ -519,9 +519,9 @@ TEST_F(CanvasResourceProviderTest, DimensionsExceedMaxTextureSize_PassThrough) {
 
 TEST_F(CanvasResourceProviderTest, CanvasResourceProviderDirect2DSwapChain) {
   const IntSize kSize(10, 10);
-  const CanvasColorParams kColorParams(
-      CanvasColorSpace::kSRGB, CanvasColorParams::GetNativeCanvasPixelFormat(),
-      kNonOpaque);
+  const CanvasResourceParams kColorParams(
+      CanvasColorSpace::kSRGB,
+      CanvasResourceParams::GetNativeCanvasPixelFormat(), kNonOpaque);
 
   auto provider = CanvasResourceProvider::CreateSwapChainProvider(
       kSize, kLow_SkFilterQuality, kColorParams,
@@ -544,9 +544,9 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderDirect2DSwapChain) {
 
 TEST_F(CanvasResourceProviderTest, FlushForImage) {
   const IntSize kSize(10, 10);
-  const CanvasColorParams kColorParams(
-      CanvasColorSpace::kSRGB, CanvasColorParams::GetNativeCanvasPixelFormat(),
-      kNonOpaque);
+  const CanvasResourceParams kColorParams(
+      CanvasColorSpace::kSRGB,
+      CanvasResourceParams::GetNativeCanvasPixelFormat(), kNonOpaque);
 
   auto src_provider = CanvasResourceProvider::CreateSharedImageProvider(
       kSize, kMedium_SkFilterQuality, kColorParams,
