@@ -1051,7 +1051,7 @@ ExtensionFunction::ResponseAction WebViewInternalClearDataFunction::Run() {
   if (remove_mask_) {
     scheduled = guest_->ClearData(
         remove_since_, remove_mask_,
-        base::Bind(&WebViewInternalClearDataFunction::ClearDataDone, this));
+        base::BindOnce(&WebViewInternalClearDataFunction::ClearDataDone, this));
   }
   if (!remove_mask_ || !scheduled) {
     Release();  // Balanced above.

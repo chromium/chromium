@@ -486,7 +486,7 @@ void WebViewGuest::DidInitialize(const base::DictionaryValue& create_params) {
 
 void WebViewGuest::ClearCodeCache(base::Time remove_since,
                                   uint32_t removal_mask,
-                                  const base::Closure& callback) {
+                                  base::OnceClosure callback) {
   content::StoragePartition* partition =
       content::BrowserContext::GetStoragePartition(
           web_contents()->GetBrowserContext(),
@@ -494,7 +494,7 @@ void WebViewGuest::ClearCodeCache(base::Time remove_since,
   DCHECK(partition);
   base::OnceClosure code_cache_removal_done_callback = base::BindOnce(
       &WebViewGuest::ClearDataInternal, weak_ptr_factory_.GetWeakPtr(),
-      remove_since, removal_mask, callback);
+      remove_since, removal_mask, std::move(callback));
   partition->ClearCodeCaches(remove_since, base::Time::Now(),
                              base::RepeatingCallback<bool(const GURL&)>(),
                              std::move(code_cache_removal_done_callback));
@@ -502,11 +502,11 @@ void WebViewGuest::ClearCodeCache(base::Time remove_since,
 
 void WebViewGuest::ClearDataInternal(base::Time remove_since,
                                      uint32_t removal_mask,
-                                     const base::Closure& callback) {
+                                     base::OnceClosure callback) {
   uint32_t storage_partition_removal_mask =
       GetStoragePartitionRemovalMask(removal_mask);
   if (!storage_partition_removal_mask) {
-    callback.Run();
+    std::move(callback).Run();
     return;
   }
 
@@ -543,7 +543,7 @@ void WebViewGuest::ClearDataInternal(base::Time remove_since,
       content::StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL,
       content::StoragePartition::OriginMatcherFunction(),
       std::move(cookie_delete_filter), perform_cleanup, remove_since,
-      base::Time::Max(), callback);
+      base::Time::Max(), std::move(callback));
 }
 
 void WebViewGuest::GuestViewDidStopLoading() {
@@ -803,7 +803,7 @@ void WebViewGuest::Terminate() {
 
 bool WebViewGuest::ClearData(base::Time remove_since,
                              uint32_t removal_mask,
-                             const base::Closure& callback) {
+                             base::OnceClosure callback) {
   base::RecordAction(UserMetricsAction("WebView.Guest.ClearData"));
   content::StoragePartition* partition =
       content::BrowserContext::GetStoragePartition(
@@ -825,7 +825,7 @@ bool WebViewGuest::ClearData(base::Time remove_since,
 
     base::OnceClosure cache_removal_done_callback = base::BindOnce(
         &WebViewGuest::ClearCodeCache, weak_ptr_factory_.GetWeakPtr(),
-        remove_since, removal_mask, callback);
+        remove_since, removal_mask, std::move(callback));
 
     // We cannot use |BrowsingDataRemover| here since it doesn't support
     // non-default StoragePartition.
@@ -835,7 +835,7 @@ bool WebViewGuest::ClearData(base::Time remove_since,
     return true;
   }
 
-  ClearDataInternal(remove_since, removal_mask, callback);
+  ClearDataInternal(remove_since, removal_mask, std::move(callback));
   return true;
 }
 
