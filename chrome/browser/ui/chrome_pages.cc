@@ -470,12 +470,14 @@ void ShowConnectivityDiagnosticsApp(Profile* profile) {
                      GURL(chromeos::kChromeUIConnectivityDiagnosticsUrl));
 }
 
-void ShowScanningApp(Profile* profile) {
+void ShowScanningApp(Profile* profile,
+                     chromeos::scanning::ScanAppEntryPoint entry_point) {
   DCHECK(base::FeatureList::IsEnabled(chromeos::features::kScanningUI));
+  DCHECK_EQ(chromeos::scanning::ScanAppEntryPoint::kSettings, entry_point);
 
-  // TODO(joonbug): Add uma metric to track entry point for the app.
   LaunchSystemWebApp(profile, web_app::SystemAppType::SCANNING,
                      GURL(chrome::kChromeUIScanningAppURL));
+  chromeos::scanning::RecordScanAppEntryPoint(entry_point);
 }
 
 GURL GetOSSettingsUrl(const std::string& sub_page) {

@@ -22,6 +22,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/printing/print_management/print_management_uma.h"
 #include "chrome/browser/ui/webui/settings/chromeos/app_management/app_management_uma.h"
+#include "chromeos/components/scanning/scanning_uma.h"
 #endif
 
 namespace signin {
@@ -162,7 +163,8 @@ void ShowPrintManagementApp(Profile* profile,
 
 void ShowConnectivityDiagnosticsApp(Profile* profile);
 
-void ShowScanningApp(Profile* profile);
+void ShowScanningApp(Profile* profile,
+                     chromeos::scanning::ScanAppEntryPoint entry_point);
 #endif
 
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)

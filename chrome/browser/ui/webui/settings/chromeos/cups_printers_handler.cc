@@ -43,6 +43,7 @@
 #include "chrome/browser/ui/webui/settings/chromeos/server_printer_url_util.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/components/scanning/scanning_uma.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
@@ -1325,7 +1326,8 @@ void CupsPrintersHandler::HandleOpenPrintManagementApp(
 void CupsPrintersHandler::HandleOpenScanningApp(const base::ListValue* args) {
   DCHECK(args->empty());
   DCHECK(base::FeatureList::IsEnabled(chromeos::features::kScanningUI));
-  chrome::ShowScanningApp(profile_);
+  chrome::ShowScanningApp(profile_,
+                          chromeos::scanning::ScanAppEntryPoint::kSettings);
 }
 
 }  // namespace settings

@@ -66085,7 +66085,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 
   <int value="0" label="Settings"/>
   <int value="1" label="Launcher"/>
-  <int value="2" label="Browser"/>
 </enum>
 
 <enum name="ScheduledNavigationType">

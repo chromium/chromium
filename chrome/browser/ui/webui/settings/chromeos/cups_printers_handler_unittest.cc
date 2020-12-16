@@ -20,6 +20,7 @@
 #include "chrome/browser/download/download_core_service_impl.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/components/scanning/scanning_uma.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
@@ -278,6 +279,18 @@ TEST_F(CupsPrintersHandlerTest, VerifyPrintManagementAppEntryPointHistogram) {
   histogram_tester_.ExpectBucketCount(
       "Printing.CUPS.PrintManagementAppEntryPoint",
       PrintManagementAppEntryPoint::kBrowser, 0);
+}
+
+TEST_F(CupsPrintersHandlerTest, VerifyScanAppEntryPointHistogram) {
+  base::Value args(base::Value::Type::LIST);
+  web_ui_.HandleReceivedMessage("openScanningApp",
+                                &base::Value::AsListValue(args));
+  histogram_tester_.ExpectBucketCount(
+      "Scanning.ScanAppEntryPoint",
+      chromeos::scanning::ScanAppEntryPoint::kSettings, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Scanning.ScanAppEntryPoint",
+      chromeos::scanning::ScanAppEntryPoint::kLauncher, 0);
 }
 
 }  // namespace settings.
