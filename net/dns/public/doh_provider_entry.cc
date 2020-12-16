@@ -90,7 +90,8 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
           {} /* display_countries */),
       new DohProviderEntry(
           "Cznic", DohProviderIdForHistogram::kCznic,
-          {"185.43.135.1", "2001:148f:fffe::1"},
+          {"185.43.135.1", "193.17.47.1", "2001:148f:fffe::1",
+           "2001:148f:ffff::1"},
           {"odvr.nic.cz"} /* dns_over_tls_hostnames */,
           "https://odvr.nic.cz/doh", "CZ.NIC ODVR" /* ui_name */,
           "https://www.nic.cz/odvr/" /* privacy_policy */,
