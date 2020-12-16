@@ -16,22 +16,35 @@ summary.nopadding::marker {
     height: 24px;
 }
 
+.zoomed {
+  zoom: 2;
+}
+
 details {
     font-size: 24px;
+}
+
+div {
+  display: inline-block;
+  width: 40%;
 }
 </style>
 <div style="-webkit-writing-mode: horizontal-tb;">
 <details><summary class="withpadding">Summary</summary></details>
+<details class="zoomed"><summary>Summary</summary></details>
 </div>
 <div style="-webkit-writing-mode: vertical-rl; -webkit-text-orientation: sideways-right;">
 <details><summary class="withpadding">Summary</summary></details>
+<details class="zoomed"><summary>Summary</summary></details>
 </div>
 
 <div style="-webkit-writing-mode: horizontal-tb;">
 <details><summary class="nopadding">Summary</summary></details>
+<details class="zoomed"><summary>Summary</summary></details>
 </div>
 <div style="-webkit-writing-mode: vertical-rl; -webkit-text-orientation: sideways-right;">
 <details><summary class="nopadding">Summary</summary></details>
+<details class="zoomed"><summary>Summary</summary></details>
 </div>
 </body>
 

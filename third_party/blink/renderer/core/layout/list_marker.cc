@@ -30,7 +30,7 @@ const float kClosureMarkerMarginEm = 0.4f;
 namespace {
 
 LayoutUnit DisclosureSymbolSize(const ComputedStyle& style) {
-  return LayoutUnit(style.SpecifiedFontSize() * 0.66);
+  return LayoutUnit(style.SpecifiedFontSize() * style.EffectiveZoom() * 0.66);
 }
 
 }  // namespace
