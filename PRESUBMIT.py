@@ -1787,9 +1787,7 @@ def _GetMessageForMatchingType(input_api, affected_file, line_number, line,
   """
   result = []
 
-  if input_api.re.search(r"^ *//", line):  # Ignore comments about banned types.
-    return result
-  if line.endswith(" nocheck"):  # A // nocheck comment will bypass this error.
+  if line.endswith(" nocheck"):
     return result
 
   matched = False

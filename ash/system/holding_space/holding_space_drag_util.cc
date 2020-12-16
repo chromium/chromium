@@ -325,7 +325,7 @@ class DragImageView : public views::View {
                           /*clear_color=*/SK_ColorTRANSPARENT, is_pixel_canvas)
             .context(),
         size()));
-    return gfx::ImageSkia::CreateFromBitmap(bitmap, scale);
+    return gfx::ImageSkia(gfx::ImageSkiaRep(bitmap, scale));
   }
 
   // Returns the drag offset to use when rendering this view as a drag image.
