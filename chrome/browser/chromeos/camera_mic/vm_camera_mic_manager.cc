@@ -89,8 +89,7 @@ void VmCameraMicManager::OnPrimaryUserSessionStarted(Profile* primary_profile) {
     vm_info_map_[vm] = {};
   }
 
-  // Camera service does not behave in non ChromeOS environment (e.g. testing,
-  // linux chromeos).
+  // Only do the subscription in real ChromeOS environment.
   if (base::SysInfo::IsRunningOnChromeOS() &&
       media::ShouldUseCrosCameraService()) {
     auto* camera = media::CameraHalDispatcherImpl::GetInstance();
@@ -99,6 +98,14 @@ void VmCameraMicManager::OnPrimaryUserSessionStarted(Profile* primary_profile) {
     camera->AddActiveClientObserver(this);
     OnCameraPrivacySwitchStatusChanged(
         camera->AddCameraPrivacySwitchObserver(this));
+
+    CrasAudioHandler::Get()->AddAudioObserver(this);
+    // Fetch the current value.
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &VmCameraMicManager::OnNumberOfInputStreamsWithPermissionChanged,
+            base::Unretained(this)));
   }
 }
 
@@ -363,6 +370,23 @@ void VmCameraMicManager::VmNotificationObserver::Click(
     const base::Optional<base::string16>& reply) {
   // We only have one button --- the settings button.
   open_settings_.Run(profile_);
+}
+
+void VmCameraMicManager::OnNumberOfInputStreamsWithPermissionChanged() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  const auto& clients_and_numbers =
+      CrasAudioHandler::Get()->GetNumberOfInputStreamsWithPermission();
+
+  auto update = [&](CrasAudioHandler::ClientType cras_client_type, VmType vm) {
+    auto it = clients_and_numbers.find(cras_client_type);
+    bool active = (it != clients_and_numbers.end() && it->second != 0);
+
+    UpdateVmInfoAndNotifications(vm, &VmInfo::SetMicActive, active);
+  };
+
+  update(CrasAudioHandler::ClientType::VM_TERMINA, VmType::kCrostiniVm);
+  update(CrasAudioHandler::ClientType::VM_PLUGIN, VmType::kPluginVm);
 }
 
 }  // namespace chromeos

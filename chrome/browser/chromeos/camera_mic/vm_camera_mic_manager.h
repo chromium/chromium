@@ -15,6 +15,7 @@
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
+#include "chromeos/audio/cras_audio_handler.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -31,7 +32,8 @@ namespace chromeos {
 // we will also need to make the notification ids different for different
 // profiles.
 class VmCameraMicManager : public media::CameraActiveClientObserver,
-                           public media::CameraPrivacySwitchObserver {
+                           public media::CameraPrivacySwitchObserver,
+                           public CrasAudioHandler::AudioObserver {
  public:
   enum class VmType { kCrostiniVm, kPluginVm };
 
@@ -135,6 +137,9 @@ class VmCameraMicManager : public media::CameraActiveClientObserver,
   // media::CameraPrivacySwitchObserver
   void OnCameraPrivacySwitchStatusChanged(
       cros::mojom::CameraPrivacySwitchState state) override;
+
+  // CrasAudioHandler::AudioObserver
+  void OnNumberOfInputStreamsWithPermissionChanged() override;
 
   static std::string GetNotificationId(VmType vm, NotificationType type);
 
