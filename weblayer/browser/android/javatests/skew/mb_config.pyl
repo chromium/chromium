@@ -67,7 +67,7 @@
     },
 
     'release_bot': {
-      'mixins': ['release', 'static', 'goma'],
+      'mixins': ['release', 'static'],
     },
 
     'static': {
