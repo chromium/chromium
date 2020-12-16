@@ -83,6 +83,7 @@ js_type_check("closure_compile_jsmodules") {
     ":mock_drive_sync_handler.m",
     ":mock_file_operation_manager.m",
     ":mock_progress_center.m",
+    ":mount_metrics.m",
     ":test_util_base.m",
     ":volume_info_impl.m",
     ":volume_info_list_impl.m",
@@ -785,13 +786,21 @@ js_library("mount_metrics") {
   deps = [ "//ui/file_manager/file_manager/common/js:metrics" ]
 }
 
-js_unittest("mount_metrics_unittest") {
+js_unittest("mount_metrics_unittest.m") {
   deps = [
-    ":mount_metrics",
-    "//ui/file_manager/base/js:mock_chrome",
-    "//ui/file_manager/base/js:test_error_reporting",
-    "//ui/file_manager/base/js:volume_manager_types",
+    ":mount_metrics.m",
+    "//chrome/test/data/webui:chai_assert",
+    "//ui/file_manager/base/js:mock_chrome.m",
+    "//ui/file_manager/base/js:volume_manager_types.m",
+    "//ui/file_manager/file_manager/common/js:metrics.m",
   ]
+}
+
+js_library("mount_metrics.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/background/js/mount_metrics.m.js" ]
+  deps = [ "//ui/file_manager/file_manager/common/js:metrics.m" ]
+
+  extra_deps = [ ":modulize" ]
 }
 
 js_library("volume_manager_impl") {
@@ -871,6 +880,7 @@ js_test_gen_html("js_test_gen_html_modules") {
   deps = [
     ":crostini_unittest.m",
     ":metadata_proxy_unittest.m",
+    ":mount_metrics_unittest.m",
   ]
   js_module = true
 
@@ -893,7 +903,6 @@ js_test_gen_html("js_test_gen_html") {
     ":import_history_unittest",
     ":media_import_handler_unittest",
     ":media_scanner_unittest",
-    ":mount_metrics_unittest",
     ":task_queue_unittest",
     ":trash_unittest",
     ":volume_manager_unittest",
@@ -920,6 +929,7 @@ js_modulizer("modulize") {
     "crostini.js",
     "mock_file_operation_manager.js",
     "mock_progress_center.js",
+    "mount_metrics.js",
   ]
 
   namespace_rewrites = cr_namespace_rewrites

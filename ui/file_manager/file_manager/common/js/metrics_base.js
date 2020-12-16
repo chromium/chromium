@@ -12,7 +12,7 @@
 
 // eslint-disable-next-line no-var
 var metrics;  // Needs to be defined in each window which uses metrics.
-const metricsBase = {};
+const metricsBase = metrics || {};
 
 /**
  * A map from interval name to interval start timestamp.
@@ -66,7 +66,7 @@ metricsBase.call_ = (methodName, args) => {
     console.error(e.stack);
   }
   // Support writing metrics.log in manual testing to log method calls.
-  if (/** @type{{ log: (boolean|undefined) }} */ (metrics).log) {
+  if (/** @type{{ log: (boolean|undefined) }} */ (metricsBase).log) {
     console.log('chrome.metricsPrivate.' + methodName, args);
   }
 };
@@ -77,7 +77,8 @@ metricsBase.call_ = (methodName, args) => {
  * @param {number} value Value to be recorded.
  */
 metricsBase.recordMediumCount = (name, value) => {
-  metrics.call_('recordMediumCount', [metrics.convertName_(name), value]);
+  metricsBase.call_(
+      'recordMediumCount', [metricsBase.convertName_(name), value]);
 };
 
 /**
@@ -86,7 +87,8 @@ metricsBase.recordMediumCount = (name, value) => {
  * @param {number} value Value to be recorded.
  */
 metricsBase.recordSmallCount = (name, value) => {
-  metrics.call_('recordSmallCount', [metrics.convertName_(name), value]);
+  metricsBase.call_(
+      'recordSmallCount', [metricsBase.convertName_(name), value]);
 };
 
 /**
@@ -95,7 +97,7 @@ metricsBase.recordSmallCount = (name, value) => {
  * @param {number} time Time to be recorded in milliseconds.
  */
 metricsBase.recordTime = (name, time) => {
-  metrics.call_('recordTime', [metrics.convertName_(name), time]);
+  metricsBase.call_('recordTime', [metricsBase.convertName_(name), time]);
 };
 
 /**
@@ -104,7 +106,7 @@ metricsBase.recordTime = (name, time) => {
  * @param {boolean} value The value to be recorded.
  */
 metricsBase.recordBoolean = (name, value) => {
-  metrics.call_('recordBoolean', [metrics.convertName_(name), value]);
+  metricsBase.call_('recordBoolean', [metricsBase.convertName_(name), value]);
 };
 
 /**
@@ -112,7 +114,7 @@ metricsBase.recordBoolean = (name, value) => {
  * @param {string} name Short metric name.
  */
 metricsBase.recordUserAction = name => {
-  metrics.call_('recordUserAction', [metrics.convertName_(name)]);
+  metricsBase.call_('recordUserAction', [metricsBase.convertName_(name)]);
 };
 
 /**
@@ -122,7 +124,7 @@ metricsBase.recordUserAction = name => {
  *     that match the histogram definition (in histograms.xml).
  */
 metricsBase.recordValue = (name, value) => {
-  metrics.call_('recordValue', [metrics.convertName_(name), value]);
+  metricsBase.call_('recordValue', [metricsBase.convertName_(name), value]);
 };
 
 /**
@@ -133,8 +135,8 @@ metricsBase.recordValue = (name, value) => {
  * @param {string} name Unique interval name.
  */
 metricsBase.recordInterval = name => {
-  if (name in metrics.intervals) {
-    metrics.recordTime(name, Date.now() - metrics.intervals[name]);
+  if (name in metricsBase.intervals) {
+    metricsBase.recordTime(name, Date.now() - metricsBase.intervals[name]);
   } else {
     console.error('Unknown interval: ' + name);
   }
@@ -153,9 +155,9 @@ metricsBase.recordEnum = (name, value, opt_validValues) => {
   let index;
 
   let validValues = opt_validValues;
-  if (metrics.validEnumValues_ && name in metrics.validEnumValues_) {
+  if (metricsBase.validEnumValues_ && name in metricsBase.validEnumValues_) {
     console.assert(validValues === undefined);
-    validValues = metrics.validEnumValues_[name];
+    validValues = metricsBase.validEnumValues_[name];
   }
   console.assert(validValues !== undefined);
 
@@ -176,13 +178,13 @@ metricsBase.recordEnum = (name, value, opt_validValues) => {
   // bucket AND the underflow bucket.
   // (Source: UMA_HISTOGRAM_ENUMERATION definition in base/metrics/histogram.h)
   const metricDescr = {
-    'metricName': metrics.convertName_(name),
+    'metricName': metricsBase.convertName_(name),
     'type': chrome.metricsPrivate.MetricTypeType.HISTOGRAM_LINEAR,
     'min': 1,
     'max': boundaryValue - 1,
     'buckets': boundaryValue
   };
-  metrics.call_('recordValue', [metricDescr, index]);
+  metricsBase.call_('recordValue', [metricDescr, index]);
 };
 
 // eslint-disable-next-line semi,no-extra-semi

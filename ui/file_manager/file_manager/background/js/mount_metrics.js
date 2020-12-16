@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// #import {metrics} from '../../common/js/metrics.m.js';
+
 /**
  * Records metrics for mount events.
  */
-class MountMetrics {
+/* #export */ class MountMetrics {
   constructor() {
     chrome.fileManagerPrivate.onMountCompleted.addListener(
         this.onMountCompleted_.bind(this));

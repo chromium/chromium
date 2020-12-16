@@ -2,7 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+import {assertEquals} from 'chrome://test/chai_assert.js';
+
+import {installMockChrome, MockCommandLinePrivate} from '../../../base/js/mock_chrome.m.js';
+import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
+import {metrics} from '../../common/js/metrics.m.js';
+
+import {MountMetrics} from './mount_metrics.m.js';
+
 
 /** @type {!MountMetrics} */
 let mountMetrics;
@@ -13,21 +20,8 @@ let mountMetrics;
  */
 let mockChrome;
 
-/**
- * Mock metrics.
- * @type {!Object}
- */
-window.metrics = {
-  calledName: '',
-  calledValue: '',
-  recordEnum: function(name, value, opt_validValues) {
-    window.metrics.calledName = name;
-    window.metrics.calledValue = value;
-  },
-};
-
 // Set up the test components.
-function setUp() {
+export function setUp() {
   mockChrome = {
     fileManagerPrivate: {
       onMountCompletedListeners_: [],
@@ -43,10 +37,25 @@ function setUp() {
               });
         }
       }
-    }
+    },
   };
   installMockChrome(mockChrome);
   new MockCommandLinePrivate();
+
+  // Mock metrics.
+  metrics.calledName = '';
+  metrics.calledValue = '';
+
+  /**
+   * @param {string} name Metric name.
+   * @param {*} value Enum value.
+   * @param {Array<*>|number=} opt_validValues .
+   */
+  metrics.recordEnum = function(name, value, opt_validValues) {
+    metrics.calledName = name;
+    metrics.calledValue = value;
+  };
+
 
   mountMetrics = new MountMetrics();
 }
@@ -55,7 +64,7 @@ function setUp() {
  * Tests mounting a file system provider where the providerId is not known to
  * mount metrics.
  */
-function testMountUnknownProvider() {
+export function testMountUnknownProvider() {
   mockChrome.fileManagerPrivate.onMountCompleted.dispatchEvent({
     eventType: 'mount',
     status: 'success',
@@ -65,14 +74,14 @@ function testMountUnknownProvider() {
     }
   });
 
-  assertEquals(window.metrics.calledName, 'FileSystemProviderMounted');
-  assertEquals(window.metrics.calledValue, 0);
+  assertEquals(metrics.calledName, 'FileSystemProviderMounted');
+  assertEquals(metrics.calledValue, 0);
 }
 
 /**
  * Tests mounting Zip Archiver file system provider.
  */
-function testMountZipArchiver() {
+export function testMountZipArchiver() {
   mockChrome.fileManagerPrivate.onMountCompleted.dispatchEvent({
     eventType: 'mount',
     status: 'success',
@@ -82,6 +91,6 @@ function testMountZipArchiver() {
     }
   });
 
-  assertEquals(window.metrics.calledName, 'FileSystemProviderMounted');
-  assertEquals(window.metrics.calledValue, 15);
+  assertEquals(metrics.calledName, 'FileSystemProviderMounted');
+  assertEquals(metrics.calledValue, 15);
 }
