@@ -2313,7 +2313,7 @@ PhysicalRect LayoutText::LocalSelectionVisualRect() const {
           frame_selection.ComputeLayoutSelectionStatus(cursor);
       if (status.start == status.end)
         continue;
-      PhysicalRect item_rect = ComputeLocalSelectionRectForText(cursor, status);
+      PhysicalRect item_rect = cursor.CurrentLocalSelectionRectForText(status);
       item_rect.offset += cursor.Current().OffsetInContainerFragment();
       rect.Unite(item_rect);
     }

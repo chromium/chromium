@@ -1034,7 +1034,7 @@ PhysicalRect LayoutReplaced::LocalSelectionVisualRect() const {
     NGInlineCursor cursor;
     cursor.MoveTo(*this);
     for (; cursor; cursor.MoveToNextForSameLayoutObject())
-      rect.Unite(ComputeLocalSelectionRectForReplaced(cursor));
+      rect.Unite(cursor.CurrentLocalSelectionRectForReplaced());
     return rect;
   }
 

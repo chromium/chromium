@@ -22,6 +22,52 @@ bool IsBidiControl(StringView string) {
   return string.length() == 1 && Character::IsBidiControl(string[0]);
 }
 
+LogicalRect ExpandedSelectionRectForSoftLineBreakIfNeeded(
+    const LogicalRect& rect,
+    const NGInlineCursor& cursor,
+    const LayoutSelectionStatus& selection_status) {
+  // Expand paint rect if selection covers multiple lines and
+  // this fragment is at the end of line.
+  if (selection_status.line_break == SelectSoftLineBreak::kNotSelected)
+    return rect;
+  const LayoutBlockFlow* const layout_block_flow = cursor.GetLayoutBlockFlow();
+  if (layout_block_flow && layout_block_flow->ShouldTruncateOverflowingText())
+    return rect;
+  // Copy from InlineTextBoxPainter::PaintSelection.
+  const LayoutUnit space_width(cursor.Current().Style().GetFont().SpaceWidth());
+  return {rect.offset,
+          {rect.size.inline_size + space_width, rect.size.block_size}};
+}
+
+// Expands selection height so that the selection rect fills entire line.
+LogicalRect ExpandSelectionRectToLineHeight(
+    const LogicalRect& rect,
+    const LogicalRect& line_logical_rect) {
+  // Unite the rect only in the block direction.
+  const LayoutUnit selection_top =
+      std::min(rect.offset.block_offset, line_logical_rect.offset.block_offset);
+  const LayoutUnit selection_bottom =
+      std::max(rect.BlockEndOffset(), line_logical_rect.BlockEndOffset());
+  return {{rect.offset.inline_offset, selection_top},
+          {rect.size.inline_size, selection_bottom - selection_top}};
+}
+
+LogicalRect ExpandSelectionRectToLineHeight(const LogicalRect& rect,
+                                            const NGInlineCursor& cursor) {
+  NGInlineCursor line(cursor);
+  line.MoveToContainingLine();
+  const PhysicalRect line_physical_rect(
+      line.Current().OffsetInContainerFragment() -
+          cursor.Current().OffsetInContainerFragment(),
+      line.Current().Size());
+  return ExpandSelectionRectToLineHeight(
+      rect, cursor.Current().ConvertChildToLogical(line_physical_rect));
+}
+
+bool IsLastBRInPage(const LayoutObject& layout_object) {
+  return layout_object.IsBR() && !layout_object.NextInPreOrder();
+}
+
 }  // namespace
 
 inline void NGInlineCursor::MoveToItem(const ItemsSpan::iterator& iter) {
@@ -326,6 +372,43 @@ PhysicalRect NGInlineCursor::CurrentLocalRect(unsigned start_offset,
   }
   NOTREACHED();
   return PhysicalRect();
+}
+
+PhysicalRect NGInlineCursor::CurrentLocalSelectionRectForText(
+    const LayoutSelectionStatus& selection_status) const {
+  const PhysicalRect selection_rect =
+      CurrentLocalRect(selection_status.start, selection_status.end);
+  LogicalRect logical_rect = Current().ConvertChildToLogical(selection_rect);
+  // Let LocalRect for line break have a space width to paint line break
+  // when it is only character in a line or only selected in a line.
+  if (selection_status.start != selection_status.end &&
+      Current().IsLineBreak() &&
+      // This is for old compatible that old doesn't paint last br in a page.
+      !IsLastBRInPage(*Current().GetLayoutObject())) {
+    DCHECK(!logical_rect.size.inline_size);
+    logical_rect.size.inline_size =
+        LayoutUnit(Current().Style().GetFont().SpaceWidth());
+  }
+  const LogicalRect line_break_extended_rect =
+      Current().IsLineBreak() ? logical_rect
+                              : ExpandedSelectionRectForSoftLineBreakIfNeeded(
+                                    logical_rect, *this, selection_status);
+  const LogicalRect line_height_expanded_rect =
+      ExpandSelectionRectToLineHeight(line_break_extended_rect, *this);
+  const PhysicalRect physical_rect =
+      Current().ConvertChildToPhysical(line_height_expanded_rect);
+  return physical_rect;
+}
+
+PhysicalRect NGInlineCursor::CurrentLocalSelectionRectForReplaced() const {
+  DCHECK(Current().GetLayoutObject()->IsLayoutReplaced());
+  const PhysicalRect selection_rect = PhysicalRect({}, Current().Size());
+  LogicalRect logical_rect = Current().ConvertChildToLogical(selection_rect);
+  const LogicalRect line_height_expanded_rect =
+      ExpandSelectionRectToLineHeight(logical_rect, *this);
+  const PhysicalRect physical_rect =
+      Current().ConvertChildToPhysical(line_height_expanded_rect);
+  return physical_rect;
 }
 
 PhysicalRect NGInlineCursor::CurrentRectInBlockFlow() const {

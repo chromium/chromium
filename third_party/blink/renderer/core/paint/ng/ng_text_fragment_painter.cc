@@ -312,8 +312,8 @@ class SelectionPaintState {
 
   PhysicalRect ComputeSelectionRect(const PhysicalOffset& box_offset) {
     if (!selection_rect_) {
-      selection_rect_ = ComputeLocalSelectionRectForText(containing_block_,
-                                                         selection_status_);
+      selection_rect_ =
+          containing_block_.CurrentLocalSelectionRectForText(selection_status_);
       selection_rect_->offset += box_offset;
     }
     return *selection_rect_;

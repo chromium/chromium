@@ -315,6 +315,9 @@ class CORE_EXPORT NGInlineCursor {
   // |CurrentTextEndOffset()|. It is error to call other than text.
   PhysicalRect CurrentLocalRect(unsigned start_offset,
                                 unsigned end_offset) const;
+  PhysicalRect CurrentLocalSelectionRectForText(
+      const LayoutSelectionStatus& selection_status) const;
+  PhysicalRect CurrentLocalSelectionRectForReplaced() const;
 
   // Return a rectangle (or just an offset) relatively to containing
   // LayoutBlockFlow, as if all the container fragments were stitched together

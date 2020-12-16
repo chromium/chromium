@@ -18,8 +18,6 @@
 namespace blink {
 
 class NGBlockBreakToken;
-class NGInlineCursor;
-struct LayoutSelectionStatus;
 struct NGContainerInkOverflow;
 enum class NGOutlineType;
 
@@ -342,12 +340,6 @@ extern template class CORE_EXTERN_TEMPLATE_EXPORT
     NGPaintFragment::List<NGPaintFragment::TraverseNextForSameLayoutObject>;
 extern template class CORE_EXTERN_TEMPLATE_EXPORT
     NGPaintFragment::List<NGPaintFragment::TraverseNextSibling>;
-
-PhysicalRect ComputeLocalSelectionRectForText(
-    const NGInlineCursor& cursor,
-    const LayoutSelectionStatus& selection_status);
-
-PhysicalRect ComputeLocalSelectionRectForReplaced(const NGInlineCursor& cursor);
 
 }  // namespace blink
 
