@@ -42,7 +42,6 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/svg/line/svg_root_inline_box.h"
 #include "third_party/blink/renderer/core/layout/vertical_position_cache.h"
-#include "third_party/blink/renderer/core/paint/ng/ng_paint_fragment.h"
 #include "third_party/blink/renderer/platform/text/bidi_resolver.h"
 #include "third_party/blink/renderer/platform/text/character.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -2422,17 +2421,7 @@ void LayoutBlockFlow::AddVisualOverflowFromInlineChildren() {
   DCHECK(!NeedsLayout());
   DCHECK(!ChildPrePaintBlockedByDisplayLock());
 
-  if (const NGPaintFragment* paint_fragment = PaintFragment()) {
-    for (const NGPaintFragment* child : paint_fragment->Children()) {
-      if (child->HasSelfPaintingLayer())
-        continue;
-      PhysicalRect child_rect = child->InkOverflow();
-      if (!child_rect.IsEmpty()) {
-        child_rect.offset += child->Offset();
-        AddContentsVisualOverflow(child_rect);
-      }
-    }
-  } else if (PhysicalFragmentCount()) {
+  if (PhysicalFragmentCount()) {
     // TODO(crbug.com/1144203): This should compute in the stitched coordinate
     // system, but overflows in the block direction is converted to the inline
     // direction in the multicol container. Just unite overflows in the inline
@@ -2837,11 +2826,6 @@ LayoutUnit LayoutBlockFlow::StartAlignedOffsetForLine(
 void LayoutBlockFlow::SetShouldDoFullPaintInvalidationForFirstLine() {
   NOT_DESTROYED();
   DCHECK(ChildrenInline());
-
-  if (const NGPaintFragment* paint_fragment = PaintFragment()) {
-    paint_fragment->SetShouldDoFullPaintInvalidationForFirstLine();
-    return;
-  }
 
   const auto fragments = PhysicalFragments();
   if (!fragments.IsEmpty()) {

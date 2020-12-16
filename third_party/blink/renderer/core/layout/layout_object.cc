@@ -97,7 +97,6 @@
 #include "third_party/blink/renderer/core/page/autoscroll_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/image_element_timing.h"
-#include "third_party/blink/renderer/core/paint/ng/ng_paint_fragment.h"
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
@@ -2398,9 +2397,8 @@ void LayoutObject::SetStyle(scoped_refptr<const ComputedStyle> style,
   }
 
   if (diff.NeedsRecomputeVisualOverflow()) {
-    if (!(IsInLayoutNGInlineFormattingContext() &&
-          RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled()) &&
-        !IsLayoutNGObject() && !IsLayoutBlock() && !NeedsLayout()) {
+    if (!IsInLayoutNGInlineFormattingContext() && !IsLayoutNGObject() &&
+        !IsLayoutBlock() && !NeedsLayout()) {
       // TODO(crbug.com/1128199): This is still needed because
       // RecalcVisualOverflow() does not actually compute the visual overflow
       // for inline elements (legacy layout). However in LayoutNG
@@ -2409,8 +2407,7 @@ void LayoutObject::SetStyle(scoped_refptr<const ComputedStyle> style,
       SetNeedsLayoutAndIntrinsicWidthsRecalc(
           layout_invalidation_reason::kStyleChange);
     } else {
-      if (IsInLayoutNGInlineFormattingContext() && !NeedsLayout() &&
-          RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled()) {
+      if (IsInLayoutNGInlineFormattingContext() && !NeedsLayout()) {
         if (auto* text = DynamicTo<LayoutText>(this))
           text->InvalidateVisualOverflow();
       }
@@ -3588,7 +3585,7 @@ void LayoutObject::InsertedIntoTree() {
 
   // |FirstInlineFragment()| should be cleared. |LayoutObjectChildList| does
   // this, just check here for all new objects in the tree.
-  DCHECK_EQ(FirstInlineFragment(), nullptr);
+  DCHECK(!HasInlineFragments());
 
   if (Parent()->ChildrenInline())
     Parent()->DirtyLinesFromChangedChild(this);

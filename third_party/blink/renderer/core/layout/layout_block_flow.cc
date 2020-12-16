@@ -66,7 +66,6 @@
 #include "third_party/blink/renderer/core/layout/text_autosizer.h"
 #include "third_party/blink/renderer/core/page/named_pages_mapper.h"
 #include "third_party/blink/renderer/core/paint/block_flow_paint_invalidator.h"
-#include "third_party/blink/renderer/core/paint/ng/ng_paint_fragment.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -2444,12 +2443,6 @@ void LayoutBlockFlow::AddLayoutOverflowFromFloats() {
   }
 }
 
-void LayoutBlockFlow::SetPaintFragment(
-    const NGBlockBreakToken*,
-    scoped_refptr<const NGPhysicalFragment>) {
-  NOT_DESTROYED();
-}
-
 void LayoutBlockFlow::ComputeVisualOverflow(bool recompute_floats) {
   NOT_DESTROYED();
   DCHECK(!SelfNeedsLayout());
@@ -2528,12 +2521,6 @@ void LayoutBlockFlow::DeleteLineBoxTree() {
     floating_objects_->ClearLineBoxTreePointers();
 
   line_boxes_.DeleteLineBoxTree();
-
-  // This function is called when children are moved to different parent. Clear
-  // NGPaintFragment now, because clearing NGPaintFragment clears associations
-  // between LayoutObject and NGPaintFragment. It needs to happen before moved
-  // children are laid out and associated.
-  SetPaintFragment(nullptr, nullptr);
 }
 
 int LayoutBlockFlow::LineCount(
@@ -2580,15 +2567,6 @@ LayoutUnit LayoutBlockFlow::FirstLineBoxBaseline() const {
     }
     return FirstLineBox()->LogicalTop() +
            font_data->GetFontMetrics().Ascent(FirstRootBox()->BaselineType());
-  }
-  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
-    if (const NGPaintFragment* paint_fragment = PaintFragment()) {
-      NGBoxFragment box_fragment(
-          StyleRef().GetWritingDirection(),
-          To<NGPhysicalBoxFragment>(paint_fragment->PhysicalFragment()));
-      if (const base::Optional<LayoutUnit> baseline = box_fragment.Baseline())
-        return *baseline;
-    }
   }
   return EmptyLineBaseline(IsHorizontalWritingMode() ? kHorizontalLine
                                                      : kVerticalLine);
@@ -4573,13 +4551,7 @@ void LayoutBlockFlow::RecalcInlineChildrenVisualOverflow() {
   NOT_DESTROYED();
   DCHECK(ChildrenInline());
 
-  if (const NGPaintFragment* paint_fragment = PaintFragment()) {
-    paint_fragment->RecalcInlineChildrenInkOverflow();
-    return;
-  }
-
-  if (PhysicalFragmentCount() &&
-      RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled()) {
+  if (PhysicalFragmentCount()) {
     for (const NGPhysicalBoxFragment& fragment : PhysicalFragments()) {
       if (const NGFragmentItems* items = fragment.Items()) {
         NGInlineCursor cursor(fragment, *items);

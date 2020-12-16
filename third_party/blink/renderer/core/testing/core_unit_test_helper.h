@@ -19,7 +19,6 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
-#include "third_party/blink/renderer/core/paint/ng/ng_paint_fragment.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/testing/layer_tree_host_embedder.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -150,9 +149,6 @@ class RenderingTest : public PageTestBase {
 
   const DisplayItemClient* GetDisplayItemClientFromLayoutObject(
       LayoutObject* obj) const {
-    auto* block_flow = DynamicTo<LayoutNGBlockFlow>(obj);
-    if (block_flow && block_flow->PaintFragment())
-      return block_flow->PaintFragment();
     return obj;
   }
 

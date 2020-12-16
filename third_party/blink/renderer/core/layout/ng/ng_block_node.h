@@ -21,6 +21,7 @@ class NGEarlyBreak;
 class NGFragmentItems;
 class NGLayoutResult;
 class NGPhysicalBoxFragment;
+class NGPhysicalFragment;
 struct NGBoxStrut;
 struct NGLayoutAlgorithmParams;
 

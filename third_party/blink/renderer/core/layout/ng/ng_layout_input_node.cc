@@ -138,10 +138,6 @@ PhysicalSize NGLayoutInputNode::InitialContainingBlockSize() const {
   return PhysicalSize(icb_size);
 }
 
-const NGPaintFragment* NGLayoutInputNode::PaintFragment() const {
-  return GetLayoutBox()->PaintFragment();
-}
-
 String NGLayoutInputNode::ToString() const {
   auto* inline_node = DynamicTo<NGInlineNode>(this);
   return inline_node ? inline_node->ToString()

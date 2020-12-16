@@ -23,7 +23,6 @@ class Document;
 class LayoutObject;
 class LayoutBox;
 class NGConstraintSpace;
-class NGPaintFragment;
 struct MinMaxSizes;
 struct PhysicalSize;
 
@@ -276,10 +275,6 @@ class CORE_EXPORT NGLayoutInputNode {
   bool ChildLayoutBlockedByDisplayLock() const {
     return box_->ChildLayoutBlockedByDisplayLock();
   }
-
-  // Returns the first NGPaintFragment for this node. When block fragmentation
-  // occurs, there will be multiple NGPaintFragment for a node.
-  const NGPaintFragment* PaintFragment() const;
 
   CustomLayoutChild* GetCustomLayoutChild() const {
     // TODO(ikilpatrick): Support NGInlineNode.

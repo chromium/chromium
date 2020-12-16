@@ -23,20 +23,6 @@ class CORE_EXPORT NGInlineFragmentTraversal {
   // specified fragment.
   static Vector<NGPhysicalFragmentWithOffset> DescendantsOf(
       const NGPhysicalContainerFragment&);
-
-  // Returns list of inline fragments produced from the specified LayoutObject.
-  // The search is restricted in the subtree of |container|.
-  // Note: When |target| is a LayoutInline, some/all of its own box fragments
-  // may be absent from the fragment tree, in which case the nearest box/text
-  // descendant fragments are returned.
-  // Note 2: Most callers should use the enclosing block flow fragment of
-  // |target| as |container|. The only exception is
-  // LayoutInline::HitTestCulledInline().
-  // TODO(xiaochengh): As |container| is redundant in most cases, split this
-  // function into two variants that takes/omits |container|.
-  static Vector<NGPhysicalFragmentWithOffset> SelfFragmentsOf(
-      const NGPhysicalContainerFragment& container,
-      const LayoutObject* target);
 };
 
 }  // namespace blink

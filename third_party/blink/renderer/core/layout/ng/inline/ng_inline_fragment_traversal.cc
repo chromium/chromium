@@ -7,7 +7,6 @@
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
-#include "third_party/blink/renderer/core/paint/ng/ng_paint_fragment.h"
 
 namespace blink {
 
@@ -164,27 +163,6 @@ class LayoutInlineCollector final : public NGPhysicalFragmentCollectorBase {
 };
 
 }  // namespace
-
-// static
-Vector<Result> NGInlineFragmentTraversal::SelfFragmentsOf(
-    const NGPhysicalContainerFragment& container,
-    const LayoutObject* layout_object) {
-  if (const auto* layout_inline = DynamicTo<LayoutInline>(layout_object)) {
-    // TODO(crbug.com/874361): Stop partial culling of inline boxes, so that we
-    // can simply check existence of paint fragments below.
-    if (!layout_inline->HasSelfPaintingLayer()) {
-      return LayoutInlineCollector(To<LayoutInline>(*layout_object))
-          .CollectFrom(container);
-    }
-  }
-  Vector<Result> result;
-  for (const NGPaintFragment* fragment :
-       NGPaintFragment::InlineFragmentsFor(layout_object)) {
-    result.push_back(Result{&fragment->PhysicalFragment(),
-                            fragment->OffsetInContainerFragment()});
-  }
-  return result;
-}
 
 // static
 Vector<Result> NGInlineFragmentTraversal::DescendantsOf(

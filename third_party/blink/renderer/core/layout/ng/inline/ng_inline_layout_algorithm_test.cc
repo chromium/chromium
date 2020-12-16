@@ -17,7 +17,6 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
-#include "third_party/blink/renderer/core/paint/ng/ng_paint_fragment.h"
 
 namespace blink {
 namespace {
@@ -447,11 +446,8 @@ TEST_F(NGInlineLayoutAlgorithmTest, InkOverflow) {
   )HTML");
   auto* block_flow =
       To<LayoutBlockFlow>(GetLayoutObjectByElementId("container"));
-  const NGPaintFragment* paint_fragment = block_flow->PaintFragment();
   const NGPhysicalBoxFragment& box_fragment =
       *block_flow->GetPhysicalFragment(0);
-  if (paint_fragment)
-    ASSERT_EQ(&paint_fragment->PhysicalFragment(), &box_fragment);
   EXPECT_EQ(LayoutUnit(10), box_fragment.Size().height);
 
   NGInlineCursor cursor(*block_flow);

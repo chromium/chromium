@@ -12,6 +12,7 @@
 namespace blink {
 
 class LayoutNGTableInterface;
+class NGPhysicalFragment;
 
 class CORE_EXPORT LayoutNGTableCaption final
     : public LayoutNGBlockFlowMixin<LayoutTableCaption> {

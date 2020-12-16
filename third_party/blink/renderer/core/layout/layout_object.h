@@ -87,7 +87,6 @@ class LayoutNGTableSectionInterface;
 class LayoutNGTableCellInterface;
 class LayoutView;
 class LocalFrameView;
-class NGPaintFragment;
 class NGPhysicalBoxFragment;
 class PaintLayer;
 class PseudoElementStyleRequest;
@@ -1977,13 +1976,6 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
   // LayoutInline that's contained by a legacy LayoutBlockFlow).
   inline bool CanTraversePhysicalFragments() const;
 
-  // Returns the associated |NGPaintFragment|. When this is not a |nullptr|,
-  // this is the root of an inline formatting context, laid out by LayoutNG.
-  virtual const NGPaintFragment* PaintFragment() const {
-    NOT_DESTROYED();
-    return nullptr;
-  }
-
   // Return true if |this| produces one or more inline fragments, including
   // whitespace-only text fragments.
   virtual bool HasInlineFragments() const {
@@ -1996,11 +1988,6 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
   // layout-clean. crbug.com/963103
   bool IsFirstInlineFragmentSafe() const;
   void SetIsInLayoutNGInlineFormattingContext(bool);
-  virtual NGPaintFragment* FirstInlineFragment() const {
-    NOT_DESTROYED();
-    return nullptr;
-  }
-  virtual void SetFirstInlineFragment(NGPaintFragment*) { NOT_DESTROYED(); }
   virtual wtf_size_t FirstInlineFragmentItemIndex() const {
     NOT_DESTROYED();
     return 0u;
@@ -4300,10 +4287,6 @@ inline bool LayoutObject::CanTraversePhysicalFragments() const {
     if (!IsInLayoutNGInlineFormattingContext())
       return false;
   }
-  // Bail if we have an NGPaintFragment. NGPaintFragment will be removed, and we
-  // will not attempt to add support for them here.
-  if (PaintFragment())
-    return false;
   // The NG paint system currently doesn't support table-cells.
   if (IsTableCellLegacy())
     return false;
