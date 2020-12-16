@@ -5,16 +5,19 @@
 package org.chromium.chrome.browser.sms;
 
 import android.widget.EditText;
+import android.widget.FrameLayout;
 
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
@@ -24,20 +27,28 @@ import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.InfoBarUtil;
 import org.chromium.components.browser_ui.sms.WebOTPServiceInfoBar;
 import org.chromium.components.browser_ui.sms.WebOTPServiceUma;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.UiUtils;
 
 /**
  * Tests for the WebOTPServiceInfoBar class.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class WebOTPServiceInfoBarTest {
+    @ClassRule
+    public static final ChromeTabbedActivityTestRule sActivityTestRule =
+            new ChromeTabbedActivityTestRule();
+
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public final BlankCTATabInitialStateRule mInitialStateRule =
+            new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
     private ChromeActivity mActivity;
     private static final String INFOBAR_HISTOGRAM = "Blink.Sms.Receive.Infobar";
@@ -46,8 +57,7 @@ public class WebOTPServiceInfoBarTest {
 
     @Before
     public void setUp() throws Exception {
-        mActivityTestRule.startMainActivityOnBlankPage();
-        mActivity = mActivityTestRule.getActivity();
+        mActivity = sActivityTestRule.getActivity();
     }
 
     private WebOTPServiceInfoBar createInfoBar() {
@@ -73,6 +83,11 @@ public class WebOTPServiceInfoBarTest {
     @MediumTest
     @Feature({"InfoBars", "UiCatalogue"})
     public void testSmsInfoBarOk() {
+        // Get current counts because Histogram is not reset between runs with test batching.
+        int shown_count = RecordHistogram.getHistogramValueCountForTesting(
+                INFOBAR_HISTOGRAM, WebOTPServiceUma.InfobarAction.SHOWN);
+        int dismissed_count = RecordHistogram.getHistogramValueCountForTesting(
+                INFOBAR_HISTOGRAM, WebOTPServiceUma.InfobarAction.KEYBOARD_DISMISSED);
         WebOTPServiceInfoBar infoBar = createInfoBar();
 
         Assert.assertFalse(InfoBarUtil.hasSecondaryButton(infoBar));
@@ -80,15 +95,21 @@ public class WebOTPServiceInfoBarTest {
         // Click primary button.
         Assert.assertTrue(InfoBarUtil.clickPrimaryButton(infoBar));
 
-        assertHistogramRecordedCount(INFOBAR_HISTOGRAM, WebOTPServiceUma.InfobarAction.SHOWN, 1);
         assertHistogramRecordedCount(
-                INFOBAR_HISTOGRAM, WebOTPServiceUma.InfobarAction.KEYBOARD_DISMISSED, 0);
+                INFOBAR_HISTOGRAM, WebOTPServiceUma.InfobarAction.SHOWN, shown_count + 1);
+        assertHistogramRecordedCount(INFOBAR_HISTOGRAM,
+                WebOTPServiceUma.InfobarAction.KEYBOARD_DISMISSED, dismissed_count + 0);
     }
 
     @Test
     @MediumTest
     @Feature({"InfoBars", "UiCatalogue"})
     public void testSmsInfoBarClose() {
+        // Get current counts because Histogram is not reset between runs with test batching.
+        int shown_count = RecordHistogram.getHistogramValueCountForTesting(
+                INFOBAR_HISTOGRAM, WebOTPServiceUma.InfobarAction.SHOWN);
+        int dismissed_count = RecordHistogram.getHistogramValueCountForTesting(
+                INFOBAR_HISTOGRAM, WebOTPServiceUma.InfobarAction.KEYBOARD_DISMISSED);
         WebOTPServiceInfoBar infoBar = createInfoBar();
 
         Assert.assertFalse(InfoBarUtil.hasSecondaryButton(infoBar));
@@ -96,21 +117,32 @@ public class WebOTPServiceInfoBarTest {
         // Close infobar.
         Assert.assertTrue(InfoBarUtil.clickCloseButton(infoBar));
 
-        assertHistogramRecordedCount(INFOBAR_HISTOGRAM, WebOTPServiceUma.InfobarAction.SHOWN, 1);
         assertHistogramRecordedCount(
-                INFOBAR_HISTOGRAM, WebOTPServiceUma.InfobarAction.KEYBOARD_DISMISSED, 0);
+                INFOBAR_HISTOGRAM, WebOTPServiceUma.InfobarAction.SHOWN, shown_count + 1);
+        assertHistogramRecordedCount(INFOBAR_HISTOGRAM,
+                WebOTPServiceUma.InfobarAction.KEYBOARD_DISMISSED, dismissed_count + 0);
     }
 
     @Test
     @MediumTest
     @Feature({"InfoBars", "UiCatalogue"})
     public void testHideKeyboardWhenInfoBarIsShown() {
+        // Get current counts because Histogram is not reset between runs with test batching.
+        int shown_count = RecordHistogram.getHistogramValueCountForTesting(
+                INFOBAR_HISTOGRAM, WebOTPServiceUma.InfobarAction.SHOWN);
+        int dismissed_count = RecordHistogram.getHistogramValueCountForTesting(
+                INFOBAR_HISTOGRAM, WebOTPServiceUma.InfobarAction.KEYBOARD_DISMISSED);
+        int time_cancel_count = RecordHistogram.getHistogramValueCountForTesting(
+                TIME_CANCEL_ON_KEYBOARD_DISMISSAL_HISTOGRAM, 0);
         KeyboardVisibilityDelegate keyboardVisibilityDelegate =
-                mActivityTestRule.getKeyboardDelegate();
+                sActivityTestRule.getKeyboardDelegate();
         EditText editText = new EditText(mActivity);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mActivity.setContentView(editText);
+            FrameLayout decor = (FrameLayout) mActivity.getWindow().getDecorView();
+            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
+            decor.addView(editText, params);
             editText.requestFocus();
             keyboardVisibilityDelegate.showKeyboard(editText);
         });
@@ -125,22 +157,35 @@ public class WebOTPServiceInfoBarTest {
         CriteriaHelper.pollUiThread(
                 () -> !keyboardVisibilityDelegate.isKeyboardShowing(mActivity, editText));
 
-        assertHistogramRecordedCount(INFOBAR_HISTOGRAM, WebOTPServiceUma.InfobarAction.SHOWN, 1);
         assertHistogramRecordedCount(
-                INFOBAR_HISTOGRAM, WebOTPServiceUma.InfobarAction.KEYBOARD_DISMISSED, 1);
-        assertHistogramRecordedCount(TIME_CANCEL_ON_KEYBOARD_DISMISSAL_HISTOGRAM, 0);
+                INFOBAR_HISTOGRAM, WebOTPServiceUma.InfobarAction.SHOWN, shown_count + 1);
+        assertHistogramRecordedCount(INFOBAR_HISTOGRAM,
+                WebOTPServiceUma.InfobarAction.KEYBOARD_DISMISSED, dismissed_count + 1);
+        assertHistogramRecordedCount(
+                TIME_CANCEL_ON_KEYBOARD_DISMISSAL_HISTOGRAM, time_cancel_count + 0);
+        TestThreadUtils.runOnUiThreadBlocking(() -> UiUtils.removeViewFromParent(editText));
     }
 
     @Test
     @MediumTest
     @Feature({"InfoBars", "UiCatalogue"})
     public void testUMARecordedWhenInfobarDismissedAfterHidingKeyboard() {
+        // Get current counts because Histogram is not reset between runs with test batching.
+        int shown_count = RecordHistogram.getHistogramValueCountForTesting(
+                INFOBAR_HISTOGRAM, WebOTPServiceUma.InfobarAction.SHOWN);
+        int dismissed_count = RecordHistogram.getHistogramValueCountForTesting(
+                INFOBAR_HISTOGRAM, WebOTPServiceUma.InfobarAction.KEYBOARD_DISMISSED);
+        int time_cancel_count = RecordHistogram.getHistogramValueCountForTesting(
+                TIME_CANCEL_ON_KEYBOARD_DISMISSAL_HISTOGRAM, 0);
         KeyboardVisibilityDelegate keyboardVisibilityDelegate =
-                mActivityTestRule.getKeyboardDelegate();
+                sActivityTestRule.getKeyboardDelegate();
         EditText editText = new EditText(mActivity);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mActivity.setContentView(editText);
+            FrameLayout decor = (FrameLayout) mActivity.getWindow().getDecorView();
+            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
+            decor.addView(editText, params);
             editText.requestFocus();
             keyboardVisibilityDelegate.showKeyboard(editText);
         });
@@ -158,9 +203,12 @@ public class WebOTPServiceInfoBarTest {
         // Close info bar.
         InfoBarUtil.clickCloseButton(infoBar);
 
-        assertHistogramRecordedCount(INFOBAR_HISTOGRAM, WebOTPServiceUma.InfobarAction.SHOWN, 1);
         assertHistogramRecordedCount(
-                INFOBAR_HISTOGRAM, WebOTPServiceUma.InfobarAction.KEYBOARD_DISMISSED, 1);
-        assertHistogramRecordedCount(TIME_CANCEL_ON_KEYBOARD_DISMISSAL_HISTOGRAM, 1);
+                INFOBAR_HISTOGRAM, WebOTPServiceUma.InfobarAction.SHOWN, shown_count + 1);
+        assertHistogramRecordedCount(INFOBAR_HISTOGRAM,
+                WebOTPServiceUma.InfobarAction.KEYBOARD_DISMISSED, dismissed_count + 1);
+        assertHistogramRecordedCount(
+                TIME_CANCEL_ON_KEYBOARD_DISMISSAL_HISTOGRAM, time_cancel_count + 1);
+        TestThreadUtils.runOnUiThreadBlocking(() -> UiUtils.removeViewFromParent(editText));
     }
 }
