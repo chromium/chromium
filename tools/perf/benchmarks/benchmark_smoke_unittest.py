@@ -101,6 +101,7 @@ _BLACK_LIST_TEST_MODULES = {
 # The list of benchmark names to be excluded from our smoke tests.
 _BLACK_LIST_TEST_NAMES = [
     'memory.long_running_idle_gmail_background_tbmv2',
+    'tab_search', # crbug.com/1159462
     'tab_switching.typical_25',
     'UNSCHEDULED_oortonline_tbmv2',
     'webrtc',  # crbug.com/932036
