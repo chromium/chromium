@@ -99,7 +99,8 @@ bool OpenTypeGLYF::ParseSimpleGlyph(Buffer &glyph,
     num_flags = tmp_index + 1;
   }
 
-  if (num_flags > this->maxp->max_points) {
+  if (this->maxp->version_1 &&
+      num_flags > this->maxp->max_points) {
     Warning("Number of contour points exceeds maxp maxPoints, adjusting limit.");
     this->maxp->max_points = num_flags;
   }
@@ -336,7 +337,8 @@ bool OpenTypeGLYF::Parse(const uint8_t *data, size_t length) {
             std::numeric_limits<uint16_t>::max()) {
           return Error("Illegal composite points value "
                        "exceeding 0xFFFF for base glyph %d.", i);
-        } else if (component_point_count.accumulated_component_points >
+        } else if (this->maxp->version_1 &&
+                   component_point_count.accumulated_component_points >
                    this->maxp->max_c_points) {
           Warning("Number of composite points in glyph %d exceeds "
                   "maxp maxCompositePoints: %d vs %d, adjusting limit.",
@@ -413,7 +415,8 @@ bool OpenTypeGLYF::TraverseComponentsCountingPoints(
   if (level > std::numeric_limits<uint16_t>::max()) {
     return Error("Illegal component depth exceeding 0xFFFF in base glyph id %d.",
                  base_glyph_id);
-  } else if (level > this->maxp->max_c_depth) {
+  } else if (this->maxp->version_1 &&
+             level > this->maxp->max_c_depth) {
     this->maxp->max_c_depth = level;
     Warning("Component depth exceeds maxp maxComponentDepth "
             "in glyph %d, adjust limit to %d.",

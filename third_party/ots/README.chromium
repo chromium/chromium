@@ -15,3 +15,5 @@ Local Modifications:
 - glyf.h, glyf.cc - Backport of "Sanitise values for fonts with invalid
   maxPoints and maxComponentPoints"
   https://github.com/khaledhosny/ots/pull/227
+- glyf.cc - Backport of "[glyf] Guard access to maxp version 1 field"
+  Upstream commit 1141c81c411b599e40496679129d0884715e8650
