@@ -50748,6 +50748,7 @@ Called by update_use_counter_css.py.-->
   <int value="2" label="Out-of-order API call"/>
   <int value="3" label="Already stopped"/>
   <int value="4" label="Transfer already in progress"/>
+  <int value="5" label="No available connection medium"/>
 </enum>
 
 <enum name="NearbyShareStartAdvertisingFailureReason">

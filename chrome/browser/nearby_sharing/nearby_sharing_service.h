@@ -45,7 +45,9 @@ class NearbySharingService : public KeyedService {
     // register Receive Surface when
     // sending a file.)
     kTransferAlreadyInProgress = 4,
-    kMaxValue = kTransferAlreadyInProgress
+    // There is no available connection medium to use.
+    kNoAvailableConnectionMedium = 5,
+    kMaxValue = kNoAvailableConnectionMedium
   };
 
   enum class ReceiveSurfaceState {

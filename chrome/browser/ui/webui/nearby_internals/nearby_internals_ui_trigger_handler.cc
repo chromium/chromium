@@ -61,6 +61,8 @@ std::string StatusCodeToString(
       return "STATUS ALREADY STOPPED";
     case NearbySharingService::StatusCodes::kTransferAlreadyInProgress:
       return "TRANSFER ALREADY IN PROGRESS";
+    case NearbySharingService::StatusCodes::kNoAvailableConnectionMedium:
+      return "NO AVAILABLE CONNECTION MEDIUM";
   }
 }
 

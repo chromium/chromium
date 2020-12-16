@@ -1751,7 +1751,8 @@ TEST_F(NearbySharingServiceImplTest,
   MockTransferUpdateCallback callback;
   NearbySharingService::StatusCodes result = service_->RegisterReceiveSurface(
       &callback, NearbySharingService::ReceiveSurfaceState::kForeground);
-  EXPECT_EQ(result, NearbySharingService::StatusCodes::kOk);
+  EXPECT_EQ(result,
+            NearbySharingService::StatusCodes::kNoAvailableConnectionMedium);
   EXPECT_FALSE(fake_nearby_connections_manager_->IsAdvertising());
   EXPECT_FALSE(fake_nearby_connections_manager_->is_shutdown());
 }
@@ -1793,10 +1794,11 @@ TEST_F(NearbySharingServiceImplTest,
   MockTransferUpdateCallback callback;
   NearbySharingService::StatusCodes result = service_->RegisterReceiveSurface(
       &callback, NearbySharingService::ReceiveSurfaceState::kForeground);
-  EXPECT_EQ(result, NearbySharingService::StatusCodes::kOk);
 
   // TODO(crbug.com/1129069): When WiFi LAN is supported we will expect this to
   // be true.
+  EXPECT_EQ(result,
+            NearbySharingService::StatusCodes::kNoAvailableConnectionMedium);
   EXPECT_FALSE(fake_nearby_connections_manager_->IsAdvertising());
 }
 
@@ -1807,10 +1809,11 @@ TEST_F(NearbySharingServiceImplTest,
   MockTransferUpdateCallback callback;
   NearbySharingService::StatusCodes result = service_->RegisterReceiveSurface(
       &callback, NearbySharingService::ReceiveSurfaceState::kForeground);
-  EXPECT_EQ(result, NearbySharingService::StatusCodes::kOk);
 
   // TODO(crbug.com/1129069): When WiFi LAN is supported we will expect this to
   // be true.
+  EXPECT_EQ(result,
+            NearbySharingService::StatusCodes::kNoAvailableConnectionMedium);
   EXPECT_FALSE(fake_nearby_connections_manager_->IsAdvertising());
 }
 
@@ -1821,7 +1824,8 @@ TEST_F(NearbySharingServiceImplTest,
   MockTransferUpdateCallback callback;
   NearbySharingService::StatusCodes result = service_->RegisterReceiveSurface(
       &callback, NearbySharingService::ReceiveSurfaceState::kForeground);
-  EXPECT_EQ(result, NearbySharingService::StatusCodes::kOk);
+  EXPECT_EQ(result,
+            NearbySharingService::StatusCodes::kNoAvailableConnectionMedium);
   EXPECT_FALSE(fake_nearby_connections_manager_->IsAdvertising());
   EXPECT_FALSE(fake_nearby_connections_manager_->is_shutdown());
 }

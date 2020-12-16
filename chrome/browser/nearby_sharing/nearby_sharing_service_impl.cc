@@ -527,6 +527,11 @@ NearbySharingServiceImpl::RegisterReceiveSurface(
     return StatusCodes::kTransferAlreadyInProgress;
   }
 
+  if (!HasAvailableConnectionMediums()) {
+    NS_LOG(VERBOSE) << __func__ << ": No available connection medium.";
+    return StatusCodes::kNoAvailableConnectionMedium;
+  }
+
   // We specifically allow re-registring with out error so it is clear to caller
   // that the transfer_callback is currently registered.
   if (GetReceiveCallbacksFromState(state).HasObserver(transfer_callback)) {
