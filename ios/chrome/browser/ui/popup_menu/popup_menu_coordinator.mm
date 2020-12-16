@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/overlays/public/overlay_presenter.h"
 #include "ios/chrome/browser/reading_list/reading_list_model_factory.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/ui/browser_container/browser_container_mediator.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter.h"
 #import "ios/chrome/browser/ui/bubble/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
@@ -52,6 +53,9 @@ PopupMenuCommandType CommandTypeFromPopupType(PopupMenuType type) {
 @property(nonatomic, strong) PopupMenuPresenter* presenter;
 // Mediator for the popup menu.
 @property(nonatomic, strong) PopupMenuMediator* mediator;
+// Mediator to that alerts the main |mediator| when the web content area
+// is blocked by an overlay.
+@property(nonatomic, strong) BrowserContainerMediator* contentBlockerMediator;
 // ViewController for this mediator.
 @property(nonatomic, strong) PopupMenuTableViewController* viewController;
 // Handles user interaction with the popup menu items.
@@ -240,8 +244,14 @@ PopupMenuCommandType CommandTypeFromPopupType(PopupMenuType type) {
       ios::TemplateURLServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());
   self.mediator.popupMenu = tableViewController;
-  self.mediator.webContentAreaOverlayPresenter = OverlayPresenter::FromBrowser(
+  OverlayPresenter* overlayPresenter = OverlayPresenter::FromBrowser(
       self.browser, OverlayModality::kWebContentArea);
+  self.mediator.webContentAreaOverlayPresenter = overlayPresenter;
+
+  self.contentBlockerMediator = [[BrowserContainerMediator alloc]
+                initWithWebStateList:self.browser->GetWebStateList()
+      webContentAreaOverlayPresenter:overlayPresenter];
+  self.contentBlockerMediator.consumer = self.mediator;
 
   self.actionHandler = [[PopupMenuActionHandler alloc] init];
   self.actionHandler.baseViewController = self.baseViewController;

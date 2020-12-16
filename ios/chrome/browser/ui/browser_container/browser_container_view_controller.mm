@@ -17,12 +17,10 @@
 #endif
 
 @interface BrowserContainerViewController ()
-// BrowserContainerConsumer backing properties.
+// Properties backing public setters.
 @property(nonatomic, strong) UIView* contentView;
 @property(nonatomic, strong) UIViewController* contentViewController;
-@property(nonatomic, strong)
-    UIViewController* webContentsOverlayContainerViewController;
-@property(nonatomic, strong) UIViewController* screenTimeViewController;
+// BrowserContainerConsumer backing properties.
 @property(nonatomic, assign, getter=isContentBlocked) BOOL contentBlocked;
 // The view inserted into the hierarchy when self.contentBlocked is set to YES.
 @property(nonatomic, strong) UIView* contentBlockingView;
