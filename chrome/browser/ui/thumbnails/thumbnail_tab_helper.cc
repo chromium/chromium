@@ -183,6 +183,12 @@ class ThumbnailTabHelper::TabStateTracker
   }
 
   void PageReadinessChanged(PageReadiness readiness) {
+    if (page_readiness_ == readiness)
+      return;
+    // If we transition back to a kNotReady state, clear any existing thumbnail,
+    // as it will contain an old snapshot, possibly from a different domain.
+    if (readiness == PageReadiness::kNotReady)
+      thumbnail_tab_helper_->ClearData();
     page_readiness_ = readiness;
     capture_driver_.UpdatePageReadiness(readiness);
   }
@@ -272,14 +278,20 @@ void ThumbnailTabHelper::StoreThumbnailForTabSwitch(base::TimeTicks start_time,
 
 void ThumbnailTabHelper::StoreThumbnail(CaptureType type,
                                         const SkBitmap& bitmap) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
+  // Failed requests will return an empty bitmap. In tests this can be triggered
+  // on threads other than the UI thread.
   if (bitmap.drawsNothing())
     return;
+
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   RecordCaptureType(type);
   state_->OnFrameCaptured(type);
   thumbnail_->AssignSkBitmap(bitmap);
+}
+
+void ThumbnailTabHelper::ClearData() {
+  thumbnail_->ClearData();
 }
 
 void ThumbnailTabHelper::StartVideoCapture() {

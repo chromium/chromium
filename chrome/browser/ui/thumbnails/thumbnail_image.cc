@@ -81,6 +81,16 @@ void ThumbnailImage::AssignSkBitmap(SkBitmap bitmap) {
                      weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
 }
 
+void ThumbnailImage::ClearData() {
+  // TODO(collinbaker): Update this to notify the observers that the data has
+  // changed. It may be necessary to re-engineer them to accept empty/invalid
+  // data. crbug.com/1152894
+  if (!data_)
+    return;
+  data_->data.clear();
+  data_.reset();
+}
+
 void ThumbnailImage::RequestThumbnailImage() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ConvertJPEGDataToImageSkiaAndNotifyObservers();

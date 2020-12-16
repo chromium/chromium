@@ -593,6 +593,8 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   FRIEND_TEST_ALL_PREFIXES(DelegatedInkPointTest, EventForwardedToCompositor);
   FRIEND_TEST_ALL_PREFIXES(DelegatedInkPointTest,
                            MojoInterfaceReboundOnDisconnect);
+  FRIEND_TEST_ALL_PREFIXES(NoCompositingRenderWidgetHostViewBrowserTest,
+                           NoFallbackAfterHiddenNavigationFails);
 
   void SynchronizeVisualProperties();
 

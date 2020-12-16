@@ -2379,6 +2379,10 @@ void RenderWidgetHostViewAura::CreateSelectionController() {
 }
 
 void RenderWidgetHostViewAura::OnDidNavigateMainFrameToNewPage() {
+  // Invalidate the surface so that we don't attempt to evict it multiple times.
+  window_->InvalidateLocalSurfaceId();
+  if (delegated_frame_host_)
+    delegated_frame_host_->OnNavigateToNewPage();
   CancelActiveTouches();
 }
 

@@ -15,6 +15,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "cc/layers/surface_layer.h"
 #include "content/browser/gpu/compositor_util.h"
 #include "content/browser/renderer_host/dip_util.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
@@ -60,6 +61,8 @@ namespace {
             "forced compositing (or forced-disabled compositing) mode.");  \
     return;  \
   }
+
+}  // namespace
 
 // Common base class for browser tests.  This is subclassed three times: Once to
 // test the browser in forced-compositing mode; once to test with compositing
@@ -274,10 +277,14 @@ IN_PROC_BROWSER_TEST_F(NoCompositingRenderWidgetHostViewBrowserTest,
 
 #if defined(OS_ANDROID)
   // Navigating while hidden should not generate a new surface. As the old one
-  // is maintained as the fallback.
+  // is maintained as the fallback. The DelegatedFrameHost should have not have
+  // a valid active viz::LocalSurfaceId until the first surface after navigation
+  // has been embedded.
   EXPECT_TRUE(dfh->HasPrimarySurface());
   EXPECT_FALSE(dfh->IsPrimarySurfaceEvicted());
-  EXPECT_EQ(initial_local_surface_id, dfh->SurfaceId().local_surface_id());
+  EXPECT_EQ(initial_local_surface_id,
+            dfh->content_layer_for_testing()->surface_id().local_surface_id());
+  EXPECT_FALSE(dfh->SurfaceId().local_surface_id().is_valid());
 #endif
 
   // Showing the view should lead to a new surface being embedded.
@@ -294,6 +301,84 @@ IN_PROC_BROWSER_TEST_F(NoCompositingRenderWidgetHostViewBrowserTest,
   EXPECT_NE(initial_local_surface_id, new_local_surface_id);
 #endif
 }
+
+// Tests that if navigation fails, when re-using a RenderWidgetHostViewBase, and
+// while it is hidden, that the fallback surface if invalidated. Then that when
+// becoming visible, that a new valid surface is produced.
+IN_PROC_BROWSER_TEST_F(NoCompositingRenderWidgetHostViewBrowserTest,
+                       NoFallbackAfterHiddenNavigationFails) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  // Creates the initial RenderWidgetHostViewBase, and connects to a
+  // CompositorFrameSink.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("/page_with_animation.html")));
+  RenderWidgetHostViewBase* rwhvb = GetRenderWidgetHostView();
+  ASSERT_TRUE(rwhvb);
+  viz::LocalSurfaceId rwhvb_local_surface_id = rwhvb->GetLocalSurfaceId();
+  EXPECT_TRUE(rwhvb_local_surface_id.is_valid());
+
+  // Hide the view before performing the next navigation.
+  shell()->web_contents()->WasHidden();
+#if defined(OS_ANDROID)
+  // On Android we want to ensure that we maintain the currently embedded
+  // surface. So that there is something to display when returning to the tab.
+  RenderWidgetHostViewAndroid* rwhva =
+      static_cast<RenderWidgetHostViewAndroid*>(rwhvb);
+  ui::DelegatedFrameHostAndroid* dfh =
+      rwhva->delegated_frame_host_for_testing();
+  EXPECT_TRUE(dfh->HasPrimarySurface());
+  EXPECT_FALSE(dfh->IsPrimarySurfaceEvicted());
+  viz::LocalSurfaceId initial_local_surface_id =
+      dfh->SurfaceId().local_surface_id();
+  EXPECT_TRUE(initial_local_surface_id.is_valid());
+#endif
+
+  // Perform a navigation to the same content source. This will reuse the
+  // existing RenderWidgetHostViewBase.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("/page_with_animation.html")));
+  EXPECT_FALSE(rwhvb->GetLocalSurfaceId().is_valid());
+
+  // Surface Synchronization can lead to several different Surfaces being
+  // embedded during a navigation. Ending once the Browser and Renderer have
+  // agreed to a set of VisualProperties.
+  //
+  // If this takes too long we hit a timeout that attempts to reset us back to
+  // the initial surface. So that some content state can be presented.
+  //
+  // If a navigation were to fail, then this would be invoked before any new
+  // surface is embedded. For which we expect it to clear out the fallback
+  // surfaces. As we cannot fallback to a surface from before navigation.
+  rwhvb->ResetFallbackToFirstNavigationSurface();
+  EXPECT_FALSE(rwhvb->HasFallbackSurface());
+
+#if defined(OS_ANDROID)
+  // Navigating while hidden should not generate a new surface.
+  // The failed navigation above will lead to the primary surface being evicted.
+  // The DelegatedFrameHost should have not have a valid active
+  // viz::LocalSurfaceId until the first surface after navigation has been
+  // embedded.
+  EXPECT_FALSE(dfh->HasPrimarySurface());
+  EXPECT_TRUE(dfh->IsPrimarySurfaceEvicted());
+  EXPECT_FALSE(dfh->content_layer_for_testing()->surface_id().is_valid());
+  EXPECT_FALSE(dfh->SurfaceId().local_surface_id().is_valid());
+#endif
+
+  // Showing the view should lead to a new surface being embedded.
+  shell()->web_contents()->WasShown();
+  viz::LocalSurfaceId new_rwhvb_local_surface_id = rwhvb->GetLocalSurfaceId();
+  EXPECT_TRUE(new_rwhvb_local_surface_id.is_valid());
+  EXPECT_NE(rwhvb_local_surface_id, new_rwhvb_local_surface_id);
+#if defined(OS_ANDROID)
+  EXPECT_TRUE(dfh->HasPrimarySurface());
+  EXPECT_FALSE(dfh->IsPrimarySurfaceEvicted());
+  viz::LocalSurfaceId new_local_surface_id =
+      dfh->SurfaceId().local_surface_id();
+  EXPECT_TRUE(new_local_surface_id.is_valid());
+  EXPECT_NE(initial_local_surface_id, new_local_surface_id);
+#endif
+}
+
 #endif  // !defined(OS_MAC)
 
 namespace {
@@ -896,5 +981,4 @@ INSTANTIATE_TEST_SUITE_P(
 
 #endif  // !defined(OS_ANDROID)
 
-}  // namespace
 }  // namespace content

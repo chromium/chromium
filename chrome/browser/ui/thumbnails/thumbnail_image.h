@@ -84,6 +84,10 @@ class ThumbnailImage : public base::RefCounted<ThumbnailImage> {
   // Sets the SkBitmap data and notifies observers with the resulting image.
   void AssignSkBitmap(SkBitmap bitmap);
 
+  // Clears the currently set |data_|, for when the current thumbnail is no
+  // longer valid to display.
+  void ClearData();
+
   // Requests that a thumbnail image be made available to observers. Does not
   // guarantee that Observer::OnThumbnailImageAvailable() will be called, or how
   // long it will take, though in most cases it should happen very quickly.

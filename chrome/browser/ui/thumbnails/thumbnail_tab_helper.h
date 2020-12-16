@@ -51,6 +51,9 @@ class ThumbnailTabHelper
   void StoreThumbnailForTabSwitch(base::TimeTicks start_time,
                                   const SkBitmap& bitmap);
   void StoreThumbnail(CaptureType type, const SkBitmap& bitmap);
+  // Clears the data associated to the currently set thumbnail. For when the
+  // thumbnail is no longer valid.
+  void ClearData();
 
   // viz::mojom::FrameSinkVideoConsumer:
 

@@ -978,6 +978,8 @@ void RenderWidgetHostViewAndroid::OnDidNavigateMainFrameToNewPage() {
   if (view_.parent())
     view_.parent()->MoveToFront(&view_);
   ResetGestureDetection();
+  if (delegated_frame_host_)
+    delegated_frame_host_->OnNavigateToNewPage();
 }
 
 void RenderWidgetHostViewAndroid::SetDoubleTapSupportEnabled(bool enabled) {

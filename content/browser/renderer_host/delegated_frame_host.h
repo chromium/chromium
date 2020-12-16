@@ -152,6 +152,10 @@ class CONTENT_EXPORT DelegatedFrameHost
   }
 
   void DidNavigate();
+  // Navigation to a different page than the current one has begun. Caches the
+  // current LocalSurfaceId information so that old content can be evicted if
+  // navigation fails to complete.
+  void OnNavigateToNewPage();
 
   void WindowTitleChanged(const std::string& title);
 
@@ -219,6 +223,10 @@ class CONTENT_EXPORT DelegatedFrameHost
   std::unique_ptr<viz::FrameEvictor> frame_evictor_;
 
   viz::LocalSurfaceId first_local_surface_id_after_navigation_;
+  // While navigating we have no active |local_surface_id_|. Track the one from
+  // before a navigation, because if the navigation fails to complete, we will
+  // need to evict its surface.
+  viz::LocalSurfaceId pre_navigation_local_surface_id_;
 
   FrameEvictionState frame_eviction_state_ = FrameEvictionState::kNotStarted;
 
