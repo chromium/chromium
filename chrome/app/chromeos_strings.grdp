@@ -2422,11 +2422,8 @@
     Determining device configuration...
   </message>
 
-  <message name="IDS_TERMS_OF_SERVICE_SCREEN_HEADING" desc="Heading at the top of the Terms of Service screen.">
-    <ph name="DOMAIN">$1<ex>example.com</ex></ph> Terms of Service
-  </message>
-  <message name="IDS_TERMS_OF_SERVICE_SCREEN_CONTENT_HEADING" desc="Heading at the start of the the Terms of Service text.">
-    <ph name="DOMAIN">$1<ex>example.com</ex></ph> Terms
+  <message name="IDS_TERMS_OF_SERVICE_SCREEN_HEADING" desc="Heading at the top of the Terms of Service screen. MANAGER can be a domain or an email address.">
+    <ph name="MANAGER">$1<ex>example.com</ex></ph> Terms of Service
   </message>
   <message name="IDS_TERMS_OF_SERVICE_SCREEN_LOADING" desc="Message shown while the Terms of Service are being downloaded.">
     Loading...

@@ -38,10 +38,9 @@ Polymer({
     // Whether the accept button is disabled.
     acceptButtonDisabled_: {type: Boolean, value: true},
 
-    // The domain that the terms of service belongs to.
-    tosDomain_: {type: String, value: ''},
+    // The manager that the terms of service belongs to.
+    tosManager_: {type: String, value: ''},
   },
-
 
   defaultUIStep() {
     return UIState.LOADING;
@@ -65,7 +64,7 @@ Polymer({
   },
 
   EXTERNAL_API: [
-    'setDomain',
+    'setManager',
     'setTermsOfServiceLoadError',
     'setTermsOfService',
   ],
@@ -140,11 +139,11 @@ Polymer({
 
   /**
    * Updates headings on the screen to indicate that the Terms of Service
-   * being shown belong to |domain|.
-   * @param {string} domain The domain whose Terms of Service are being shown.
+   * being shown belong to |manager|.
+   * @param {string} manager The manager whose Terms of Service are being shown.
    */
-  setDomain(domain) {
-    this.tosDomain_ = domain;
+  setManager(manager) {
+    this.tosManager_ = manager;
   },
 
   /**

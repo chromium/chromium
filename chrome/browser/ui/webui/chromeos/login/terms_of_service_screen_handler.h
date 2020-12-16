@@ -33,8 +33,8 @@ class TermsOfServiceScreenView {
   // Hides the contents of the screen.
   virtual void Hide() = 0;
 
-  // Sets the domain name whose Terms of Service are being shown.
-  virtual void SetDomain(const std::string& domain) = 0;
+  // Sets the manager whose Terms of Service are being shown.
+  virtual void SetManager(const std::string& manager) = 0;
 
   // Called when the download of the Terms of Service fails. Show an error
   // message to the user.
@@ -65,7 +65,7 @@ class TermsOfServiceScreenHandler : public BaseScreenHandler,
   void SetScreen(TermsOfServiceScreen* screen) override;
   void Show() override;
   void Hide() override;
-  void SetDomain(const std::string& domain) override;
+  void SetManager(const std::string& manager) override;
   void OnLoadError() override;
   void OnLoadSuccess(const std::string& terms_of_service) override;
   bool AreTermsLoaded() override;
@@ -79,8 +79,8 @@ class TermsOfServiceScreenHandler : public BaseScreenHandler,
   // matches the UI locale chosen by the user.
   void DoShow();
 
-  // Update the domain name shown in the UI.
-  void UpdateDomainInUI();
+  // Update the manager shown in the UI.
+  void UpdateManagerInUI();
 
   // Update the UI to show an error message or the Terms of Service, depending
   // on whether the download of the Terms of Service was successful. Does
@@ -92,8 +92,8 @@ class TermsOfServiceScreenHandler : public BaseScreenHandler,
   // Whether the screen should be shown right after initialization.
   bool show_on_init_ = false;
 
-  // The domain name whose Terms of Service are being shown.
-  std::string domain_;
+  // The manager whose Terms of Service are being shown.
+  std::string manager_;
 
   // Set to `true` when the download of the Terms of Service fails.
   bool load_error_ = false;

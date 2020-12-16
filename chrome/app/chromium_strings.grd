@@ -804,8 +804,8 @@ Chromium is unable to recover your settings.
 
       <!-- Chrome OS OOBE Terms of Service screen-->
       <if expr="chromeos">
-        <message name="IDS_TERMS_OF_SERVICE_SCREEN_SUBHEADING" desc="Subheading at the top of the Terms of Service screen.">
-          <ph name="DOMAIN">$1<ex>example.com</ex></ph> requires that you read and accept the following Terms of Service before using this device. These terms do not expand, modify or limit the Chromium OS Terms.
+        <message name="IDS_TERMS_OF_SERVICE_SCREEN_SUBHEADING" desc="Subheading at the top of the Terms of Service screen. MANAGER can be a domain or an email address.">
+          <ph name="MANAGER">$1<ex>example.com</ex></ph> requires that you read and accept the following Terms of Service before using this device. These terms do not expand, modify or limit the Chromium OS Terms.
         </message>
       </if>
 

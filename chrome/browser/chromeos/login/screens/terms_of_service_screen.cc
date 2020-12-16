@@ -120,7 +120,7 @@ void TermsOfServiceScreen::ShowImpl() {
   // Set the domain name whose Terms of Service are being shown.
   policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
-  view_->SetDomain(connector->GetEnterpriseDisplayDomain());
+  view_->SetManager(connector->GetEnterpriseDomainManager());
 
   // Show the screen.
   view_->Show();

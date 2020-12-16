@@ -49,8 +49,6 @@ void TermsOfServiceScreenHandler::DeclareLocalizedValues(
                IDS_TERMS_OF_SERVICE_SCREEN_HEADING);
   builder->Add("termsOfServiceScreenSubheading",
                IDS_TERMS_OF_SERVICE_SCREEN_SUBHEADING);
-  builder->Add("termsOfServiceContentHeading",
-               IDS_TERMS_OF_SERVICE_SCREEN_CONTENT_HEADING);
   builder->Add("termsOfServiceLoading", IDS_TERMS_OF_SERVICE_SCREEN_LOADING);
   builder->Add("termsOfServiceError", IDS_TERMS_OF_SERVICE_SCREEN_ERROR);
   builder->Add("termsOfServiceTryAgain", IDS_TERMS_OF_SERVICE_SCREEN_TRY_AGAIN);
@@ -78,9 +76,9 @@ void TermsOfServiceScreenHandler::Show() {
 void TermsOfServiceScreenHandler::Hide() {
 }
 
-void TermsOfServiceScreenHandler::SetDomain(const std::string& domain) {
-  domain_ = domain;
-  UpdateDomainInUI();
+void TermsOfServiceScreenHandler::SetManager(const std::string& manager) {
+  manager_ = manager;
+  UpdateManagerInUI();
 }
 
 void TermsOfServiceScreenHandler::OnLoadError() {
@@ -127,8 +125,8 @@ void TermsOfServiceScreenHandler::DoShow() {
         input_methods.front(), false /* show_message */);
   }
 
-  // Updates the domain name shown in the UI.
-  UpdateDomainInUI();
+  // Updates the manager name shown in the UI.
+  UpdateManagerInUI();
 
   // Update the UI to show an error message or the Terms of Service.
   UpdateTermsOfServiceInUI();
@@ -136,9 +134,9 @@ void TermsOfServiceScreenHandler::DoShow() {
   ShowScreen(kScreenId);
 }
 
-void TermsOfServiceScreenHandler::UpdateDomainInUI() {
+void TermsOfServiceScreenHandler::UpdateManagerInUI() {
   if (page_is_ready())
-    CallJS("login.TermsOfServiceScreen.setDomain", domain_);
+    CallJS("login.TermsOfServiceScreen.setManager", manager_);
 }
 
 void TermsOfServiceScreenHandler::UpdateTermsOfServiceInUI() {
