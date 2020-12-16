@@ -10,6 +10,7 @@
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/chromeos/accessibility/accessibility_manager.h"
 #include "chrome/browser/chromeos/arc/arc_util.h"
 #include "chrome/browser/chromeos/assistant/assistant_util.h"
 #include "chrome/browser/chromeos/login/quick_unlock/quick_unlock_utils.h"
@@ -52,6 +53,13 @@ base::Optional<std::string> ChromeHelpAppUIDelegate::OpenFeedbackDialog() {
 
 void ChromeHelpAppUIDelegate::PopulateLoadTimeData(
     content::WebUIDataSource* source) {
+  // Enable accessibility mode (slower balloons) if either spoken feedback
+  // or switch access is enabled.
+  auto* accessibility_manager = chromeos::AccessibilityManager::Get();
+  source->AddBoolean("accessibility",
+                     accessibility_manager->IsSpokenFeedbackEnabled() ||
+                         accessibility_manager->IsSwitchAccessEnabled());
+
   source->AddString("appLocale", g_browser_process->GetApplicationLocale());
   // Add strings that can be pulled in.
   source->AddString("boardName", base::SysInfo::GetLsbReleaseBoard());
