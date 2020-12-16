@@ -33,7 +33,6 @@ _JAVAC_EXTRACTOR = os.path.join(build_utils.DIR_SOURCE_ROOT, 'third_party',
 ERRORPRONE_WARNINGS_TO_DISABLE = [
     # These should really be turned on.
     'CollectionUndefinedEquality',
-    'ModifyCollectionInEnhancedForLoop',
     # The following are super useful, but existing issues need to be fixed first
     # before they can start failing the build on new errors.
     'InvalidParam',

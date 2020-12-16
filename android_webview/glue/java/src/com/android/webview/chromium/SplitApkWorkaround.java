@@ -14,6 +14,7 @@ import java.io.File;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Map;
 
 /**
@@ -56,14 +57,16 @@ public class SplitApkWorkaround {
 
             // Synchronize on the map while trying to update it, as the framework does.
             synchronized (loaders) {
-                for (Map.Entry<String, ClassLoader> entry : loaders.entrySet()) {
+                // Copy of loaders keys, since we plan to modify loaders while iterating.
+                ArrayList<String> keys = new ArrayList(loaders.keySet());
+                for (String cacheKey : keys) {
                     try {
-                        if (!(entry.getValue() instanceof BaseDexClassLoader)) {
+                        ClassLoader value = loaders.get(cacheKey);
+                        if (!(value instanceof BaseDexClassLoader)) {
                             // If it's some other type it can't be the right one.
                             continue;
                         }
-                        String cacheKey = entry.getKey();
-                        BaseDexClassLoader cl = (BaseDexClassLoader) entry.getValue();
+                        BaseDexClassLoader cl = (BaseDexClassLoader) value;
 
                         // Get the list of files that this classloader uses as its classpath.
                         Object pathList = pathListField.get(cl);
