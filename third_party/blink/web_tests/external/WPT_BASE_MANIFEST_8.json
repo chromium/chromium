@@ -51563,6 +51563,32 @@
        {}
       ]
      ],
+     "box-shadow-radius-000.html": [
+      "7ca2cffad0cd4e89c1e12bd928bd8aa4f3ae28e2",
+      [
+       null,
+       [
+        [
+         "/css/css-backgrounds/box-shadow-radius-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "box-shadow-radius-001.html": [
+      "9b823a0590fb5890a33ed605912879ce24ad81f5",
+      [
+       null,
+       [
+        [
+         "/css/css-backgrounds/box-shadow-radius-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "box-shadow-table-border-collapse-001.html": [
       "a4413ee97ffa0816294700a60f2f82e37d3762f0",
       [
@@ -183220,6 +183246,14 @@
        ]
       }
      },
+     "box-shadow-radius-000-ref.html": [
+      "aa70cf257806c2640166aae7d5f9a85424c6dd33",
+      []
+     ],
+     "box-shadow-radius-001-ref.html": [
+      "96b80aed7b81769158a10829beef193fd4b0f888",
+      []
+     ],
      "child-move-reveals-parent-background-ref.html": [
       "10324966edb042c1c7298ce22dad76766c2a777b",
       []
