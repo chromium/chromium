@@ -12,11 +12,6 @@
 #include "device/base/features.h"
 #include "device/vr/buildflags/buildflags.h"
 
-#if BUILDFLAG(ENABLE_WINDOWS_MR)
-#include "device/vr/windows_mixed_reality/mixed_reality_device.h"
-#include "device/vr/windows_mixed_reality/mixed_reality_statics.h"
-#endif
-
 #if BUILDFLAG(ENABLE_OPENXR)
 #include "device/vr/openxr/openxr_device.h"
 #include "device/vr/openxr/openxr_statics.h"
@@ -111,15 +106,6 @@ void IsolatedXRRuntimeProvider::PollForDeviceChanges() {
   }
 #endif
 
-#if BUILDFLAG(ENABLE_WINDOWS_MR)
-  if (!preferred_device_enabled && IsWMRHardwareAvailable()) {
-    SetWMRRuntimeStatus(RuntimeStatus::kEnable);
-    preferred_device_enabled = true;
-  } else {
-    SetWMRRuntimeStatus(RuntimeStatus::kDisable);
-  }
-#endif
-
   // Schedule this function to run again later.
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
@@ -135,15 +121,6 @@ void IsolatedXRRuntimeProvider::SetupPollingForDeviceChanges() {
   // If none of the following runtimes are enabled,
   // we'll get an error for 'command_line' being unused.
   ALLOW_UNUSED_LOCAL(command_line);
-
-#if BUILDFLAG(ENABLE_WINDOWS_MR)
-  if (IsEnabled(command_line, device::features::kWindowsMixedReality,
-                switches::kWebXrRuntimeWMR)) {
-    wmr_statics_ = device::MixedRealityDeviceStatics::CreateInstance();
-    should_check_wmr_ = wmr_statics_->IsApiAvailable();
-    any_runtimes_available |= should_check_wmr_;
-  }
-#endif
 
 #if BUILDFLAG(ENABLE_OPENXR)
   if (IsEnabled(command_line, device::features::kOpenXR,
@@ -169,18 +146,6 @@ void IsolatedXRRuntimeProvider::RequestDevices(
   client_->OnDevicesEnumerated();
 }
 
-#if BUILDFLAG(ENABLE_WINDOWS_MR)
-bool IsolatedXRRuntimeProvider::IsWMRHardwareAvailable() {
-  return should_check_wmr_ && wmr_statics_->IsHardwareAvailable();
-}
-
-void IsolatedXRRuntimeProvider::SetWMRRuntimeStatus(RuntimeStatus status) {
-  SetRuntimeStatus(client_.get(), status,
-                   base::BindOnce(&CreateDevice<device::MixedRealityDevice>),
-                   &wmr_device_);
-}
-#endif  // BUILDFLAG(ENABLE_WINDOWS_MR)
-
 #if BUILDFLAG(ENABLE_OPENXR)
 bool IsolatedXRRuntimeProvider::IsOpenXrHardwareAvailable() {
   return should_check_openxr_ && openxr_statics_->IsHardwareAvailable();
@@ -203,10 +168,4 @@ void IsolatedXRRuntimeProvider::SetOpenXrRuntimeStatus(RuntimeStatus status) {
 
 IsolatedXRRuntimeProvider::IsolatedXRRuntimeProvider() = default;
 
-IsolatedXRRuntimeProvider::~IsolatedXRRuntimeProvider() {
-#if BUILDFLAG(ENABLE_WINDOWS_MR)
-  // Explicitly null out wmr_device_ to clean up any COM objects that depend
-  // on being RoInitialized
-  wmr_device_ = nullptr;
-#endif  // BUILDFLAG(ENABLE_WINDOWS_MR)
-}
+IsolatedXRRuntimeProvider::~IsolatedXRRuntimeProvider() = default;

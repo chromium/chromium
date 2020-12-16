@@ -23,9 +23,6 @@ mojom_component("vr_service") {
   ]
 
   enabled_features = []
-  if (enable_windows_mr) {
-    enabled_features += [ "enable_windows_mr" ]
-  }
   if (enable_openxr) {
     enabled_features += [ "enable_openxr" ]
   }

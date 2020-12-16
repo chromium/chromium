@@ -125,104 +125,23 @@ if (enable_vr) {
       configs += [ "//third_party/gvr-android-sdk:libgvr_config" ]
     }
 
-    if (enable_windows_mr || enable_openxr) {
-      sources += [
-        "test/test_hook.h",
-        "windows/compositor_base.cc",
-        "windows/compositor_base.h",
-      ]
-    }
-
-    if (is_win && (enable_windows_mr || enable_openxr)) {
-      libs = [
-        "d3d11.lib",
-        "DXGI.lib",
-      ]
-
-      sources += [
-        "windows/d3d11_texture_helper.cc",
-        "windows/d3d11_texture_helper.h",
-        "windows/flip_pixel_shader.h",
-        "windows/geometry_shader.h",
-        "windows/vertex_shader.h",
-      ]
-
-      deps += [ ":directx_helpers" ]
-    }
-
-    if (is_win && enable_windows_mr) {
-      sources += [
-        "windows_mixed_reality/mixed_reality_device.cc",
-        "windows_mixed_reality/mixed_reality_device.h",
-        "windows_mixed_reality/mixed_reality_input_helper.cc",
-        "windows_mixed_reality/mixed_reality_input_helper.h",
-        "windows_mixed_reality/mixed_reality_renderloop.cc",
-        "windows_mixed_reality/mixed_reality_renderloop.h",
-        "windows_mixed_reality/mixed_reality_statics.cc",
-        "windows_mixed_reality/mixed_reality_statics.h",
-        "windows_mixed_reality/wrappers/wmr_holographic_frame.cc",
-        "windows_mixed_reality/wrappers/wmr_holographic_frame.h",
-        "windows_mixed_reality/wrappers/wmr_holographic_space.cc",
-        "windows_mixed_reality/wrappers/wmr_holographic_space.h",
-        "windows_mixed_reality/wrappers/wmr_input_location.cc",
-        "windows_mixed_reality/wrappers/wmr_input_location.h",
-        "windows_mixed_reality/wrappers/wmr_input_manager.cc",
-        "windows_mixed_reality/wrappers/wmr_input_manager.h",
-        "windows_mixed_reality/wrappers/wmr_input_source.cc",
-        "windows_mixed_reality/wrappers/wmr_input_source.h",
-        "windows_mixed_reality/wrappers/wmr_input_source_state.cc",
-        "windows_mixed_reality/wrappers/wmr_input_source_state.h",
-        "windows_mixed_reality/wrappers/wmr_logging.cc",
-        "windows_mixed_reality/wrappers/wmr_logging.h",
-        "windows_mixed_reality/wrappers/wmr_origins.cc",
-        "windows_mixed_reality/wrappers/wmr_origins.h",
-        "windows_mixed_reality/wrappers/wmr_pointer_pose.cc",
-        "windows_mixed_reality/wrappers/wmr_pointer_pose.h",
-        "windows_mixed_reality/wrappers/wmr_pointer_source_pose.cc",
-        "windows_mixed_reality/wrappers/wmr_pointer_source_pose.h",
-        "windows_mixed_reality/wrappers/wmr_rendering.cc",
-        "windows_mixed_reality/wrappers/wmr_rendering.h",
-        "windows_mixed_reality/wrappers/wmr_timestamp.cc",
-        "windows_mixed_reality/wrappers/wmr_timestamp.h",
-        "windows_mixed_reality/wrappers/wmr_wrapper_factories.cc",
-        "windows_mixed_reality/wrappers/wmr_wrapper_factories.h",
-      ]
-
-      # Sources only meant to be actually used in tests, but need to be always
-      # included.
-      sources += [
-        "test/locked_vr_test_hook.cc",
-        "test/locked_vr_test_hook.h",
-        "windows_mixed_reality/wrappers/test/mock_wmr_holographic_frame.cc",
-        "windows_mixed_reality/wrappers/test/mock_wmr_holographic_frame.h",
-        "windows_mixed_reality/wrappers/test/mock_wmr_holographic_space.cc",
-        "windows_mixed_reality/wrappers/test/mock_wmr_holographic_space.h",
-        "windows_mixed_reality/wrappers/test/mock_wmr_input_location.cc",
-        "windows_mixed_reality/wrappers/test/mock_wmr_input_location.h",
-        "windows_mixed_reality/wrappers/test/mock_wmr_input_manager.cc",
-        "windows_mixed_reality/wrappers/test/mock_wmr_input_manager.h",
-        "windows_mixed_reality/wrappers/test/mock_wmr_input_source.cc",
-        "windows_mixed_reality/wrappers/test/mock_wmr_input_source.h",
-        "windows_mixed_reality/wrappers/test/mock_wmr_input_source_state.cc",
-        "windows_mixed_reality/wrappers/test/mock_wmr_input_source_state.h",
-        "windows_mixed_reality/wrappers/test/mock_wmr_origins.cc",
-        "windows_mixed_reality/wrappers/test/mock_wmr_origins.h",
-        "windows_mixed_reality/wrappers/test/mock_wmr_pointer_pose.cc",
-        "windows_mixed_reality/wrappers/test/mock_wmr_pointer_pose.h",
-        "windows_mixed_reality/wrappers/test/mock_wmr_pointer_source_pose.cc",
-        "windows_mixed_reality/wrappers/test/mock_wmr_pointer_source_pose.h",
-        "windows_mixed_reality/wrappers/test/mock_wmr_rendering.cc",
-        "windows_mixed_reality/wrappers/test/mock_wmr_rendering.h",
-        "windows_mixed_reality/wrappers/test/mock_wmr_timestamp.cc",
-        "windows_mixed_reality/wrappers/test/mock_wmr_timestamp.h",
-      ]
-    }
-
     if (enable_openxr) {
-      deps += [
-        "//components/version_info",
-        "//third_party/openxr",
-      ]
+      if (is_win) {
+        libs = [
+          "d3d11.lib",
+          "DXGI.lib",
+        ]
+
+        sources += [
+          "windows/d3d11_texture_helper.cc",
+          "windows/d3d11_texture_helper.h",
+          "windows/flip_pixel_shader.h",
+          "windows/geometry_shader.h",
+          "windows/vertex_shader.h",
+        ]
+
+        deps += [ ":directx_helpers" ]
+      }
 
       sources += [
         "openxr/openxr_api_wrapper.cc",
@@ -245,6 +164,14 @@ if (enable_vr) {
         "openxr/openxr_statics.h",
         "openxr/openxr_util.cc",
         "openxr/openxr_util.h",
+        "test/test_hook.h",
+        "windows/compositor_base.cc",
+        "windows/compositor_base.h",
+      ]
+
+      deps += [
+        "//components/version_info",
+        "//third_party/openxr",
       ]
     }
   }

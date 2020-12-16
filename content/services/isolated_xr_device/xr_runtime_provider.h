@@ -13,8 +13,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace device {
-class MixedRealityDevice;
-class MixedRealityDeviceStatics;
 class OpenXrDevice;
 class OpenXrStatics;
 }  // namespace device
@@ -34,14 +32,6 @@ class IsolatedXRRuntimeProvider
  private:
   void PollForDeviceChanges();
   void SetupPollingForDeviceChanges();
-
-#if BUILDFLAG(ENABLE_WINDOWS_MR)
-  bool IsWMRHardwareAvailable();
-  void SetWMRRuntimeStatus(RuntimeStatus status);
-  bool should_check_wmr_ = false;
-  std::unique_ptr<device::MixedRealityDevice> wmr_device_;
-  std::unique_ptr<device::MixedRealityDeviceStatics> wmr_statics_;
-#endif
 
 #if BUILDFLAG(ENABLE_OPENXR)
   bool IsOpenXrHardwareAvailable();

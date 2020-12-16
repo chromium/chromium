@@ -31,9 +31,6 @@ namespace features {
 #if BUILDFLAG(ENABLE_OPENXR)
 DEVICE_BASE_EXPORT extern const base::Feature kOpenXR;
 #endif  // ENABLE_OPENXR
-#if BUILDFLAG(ENABLE_WINDOWS_MR)
-DEVICE_BASE_EXPORT extern const base::Feature kWindowsMixedReality;
-#endif  // ENABLE_WINDOWS_MR
 }  // namespace features
 }  // namespace device
 

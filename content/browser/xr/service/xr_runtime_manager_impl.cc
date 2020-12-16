@@ -211,12 +211,6 @@ BrowserXRRuntimeImpl* XRRuntimeManagerImpl::GetImmersiveVrRuntime() {
     return openxr;
 #endif
 
-#if BUILDFLAG(ENABLE_WINDOWS_MR)
-  auto* wmr = GetRuntime(device::mojom::XRDeviceId::WINDOWS_MIXED_REALITY_ID);
-  if (wmr)
-    return wmr;
-#endif
-
   return nullptr;
 }
 

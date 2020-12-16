@@ -149,15 +149,6 @@ constexpr device::mojom::XRSessionFeature kARCoreDeviceFeatures[] = {
     device::mojom::XRSessionFeature::IMAGE_TRACKING,
 };
 
-#if BUILDFLAG(ENABLE_WINDOWS_MR)
-constexpr device::mojom::XRSessionFeature kWindowsMixedRealityFeatures[] = {
-    device::mojom::XRSessionFeature::REF_SPACE_VIEWER,
-    device::mojom::XRSessionFeature::REF_SPACE_LOCAL,
-    device::mojom::XRSessionFeature::REF_SPACE_LOCAL_FLOOR,
-    device::mojom::XRSessionFeature::REF_SPACE_BOUNDED_FLOOR,
-};
-#endif
-
 #if BUILDFLAG(ENABLE_OPENXR)
 constexpr device::mojom::XRSessionFeature kOpenXRFeatures[] = {
     device::mojom::XRSessionFeature::REF_SPACE_VIEWER,
@@ -239,11 +230,6 @@ bool BrowserXRRuntimeImpl::SupportsFeature(
     case device::mojom::XRDeviceId::GVR_DEVICE_ID:
       return base::Contains(kGVRDeviceFeatures, feature);
 
-#if BUILDFLAG(ENABLE_WINDOWS_MR)
-    case device::mojom::XRDeviceId::WINDOWS_MIXED_REALITY_ID:
-      return base::Contains(kWindowsMixedRealityFeatures, feature);
-#endif
-
 #if BUILDFLAG(ENABLE_OPENXR)
     case device::mojom::XRDeviceId::OPENXR_DEVICE_ID:
       return base::Contains(kOpenXRFeatures, feature);
@@ -271,10 +257,6 @@ bool BrowserXRRuntimeImpl::SupportsCustomIPD() const {
     case device::mojom::XRDeviceId::ORIENTATION_DEVICE_ID:
     case device::mojom::XRDeviceId::GVR_DEVICE_ID:
       return false;
-#if BUILDFLAG(ENABLE_WINDOWS_MR)
-    case device::mojom::XRDeviceId::WINDOWS_MIXED_REALITY_ID:
-      return true;
-#endif
 #if BUILDFLAG(ENABLE_OPENXR)
     case device::mojom::XRDeviceId::OPENXR_DEVICE_ID:
       return true;
@@ -292,9 +274,6 @@ bool BrowserXRRuntimeImpl::SupportsNonEmulatedHeight() const {
     case device::mojom::XRDeviceId::ORIENTATION_DEVICE_ID:
       return false;
     case device::mojom::XRDeviceId::GVR_DEVICE_ID:
-#if BUILDFLAG(ENABLE_WINDOWS_MR)
-    case device::mojom::XRDeviceId::WINDOWS_MIXED_REALITY_ID:
-#endif
 #if BUILDFLAG(ENABLE_OPENXR)
     case device::mojom::XRDeviceId::OPENXR_DEVICE_ID:
 #endif
