@@ -13,7 +13,18 @@
 
 namespace first_run {
 
-// The different First Run Chrome Login outcomes for users.
+// The different ways to interact with the sign-in flow during First Run.
+enum SignInAttemptStatus {
+  // The user did not attempt to sign in.
+  NOT_ATTEMPTED,
+  // The user attempted to sign in.
+  ATTEMPTED,
+  // Sign-in was not shown because it was disabled by policy.
+  SKIPPED_BY_POLICY,
+};
+
+// The different First Run Chrome Login outcomes for users. This is mapped to
+// the FirstRunSignInResult enum in enums.xml for metrics.
 enum SignInStatus {
   // User skipped sign in by clicking on Skip at the first opportunity.
   SIGNIN_SKIPPED_QUICK,
@@ -33,6 +44,8 @@ enum SignInStatus {
   // the cases where sentinel creation failed. In most likelihood, user will
   // go through First Run again at the next launch - deprecated.
   SENTINEL_CREATION_FAILED,
+  // Sign-in was skipped because it is disabled by policy.
+  SIGNIN_SKIPPED_POLICY,
   // Number of First Run states.
   SIGNIN_SIZE
 };

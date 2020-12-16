@@ -21,6 +21,7 @@
 #include "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #include "ios/chrome/browser/ui/commands/application_commands.h"
 #include "ios/chrome/browser/ui/fancy_ui/primary_action_button.h"
 #import "ios/chrome/browser/ui/first_run/first_run_constants.h"
@@ -185,10 +186,20 @@ const BOOL kDefaultStatsCheckboxValue = YES;
   }
 
   self.firstRunConfig = [[FirstRunConfiguration alloc] init];
+  self.firstRunConfig.signInAttemptStatus =
+      first_run::SignInAttemptStatus::NOT_ATTEMPTED;
   ios::ChromeIdentityService* identityService =
       ios::GetChromeBrowserProvider()->GetChromeIdentityService();
   identityService->WaitUntilCacheIsPopulated();
   self.firstRunConfig.hasSSOAccount = identityService->HasIdentities();
+
+  if (!signin::IsSigninAllowed(_browser->GetBrowserState()->GetPrefs())) {
+    // Sign-in is disabled by policy. Skip the sign-in flow.
+    self.firstRunConfig.signInAttemptStatus =
+        first_run::SignInAttemptStatus::SKIPPED_BY_POLICY;
+    [self completeFirstRunWithNeedsAdvancedSignin:NO];
+    return;
+  }
 
   self.coordinator = [SigninCoordinator
       firstRunCoordinatorWithBaseNavigationController:self.navigationController
@@ -204,45 +215,52 @@ const BOOL kDefaultStatsCheckboxValue = YES;
         SigninCompletionInfo* signinCompletionInfo) {
         [weakSelf.coordinator stop];
         weakSelf.coordinator = nil;
-        [weakSelf finishFirstRunWithSigninResult:signinResult
-                            signinCompletionInfo:signinCompletionInfo];
+        [weakSelf signinDidFinishWithResult:signinResult
+                             completionInfo:signinCompletionInfo];
       };
 
   [self.coordinator start];
 }
 
-// Completes the first run operation depending on the |signinResult| state.
-- (void)finishFirstRunWithSigninResult:(SigninCoordinatorResult)signinResult
-                  signinCompletionInfo:
-                      (SigninCompletionInfo*)signinCompletionInfo {
+// Handles the sign-in completion and proceeds to complete the first run
+// operation depending on the |signinResult| state.
+- (void)signinDidFinishWithResult:(SigninCoordinatorResult)signinResult
+                   completionInfo:(SigninCompletionInfo*)signinCompletionInfo {
   switch (signinResult) {
     case SigninCoordinatorResultSuccess: {
       // User is considered done with First Run only after successful sign-in.
       WriteFirstRunSentinelAndRecordMetrics(
-          _browser->GetBrowserState(), YES,
+          _browser->GetBrowserState(),
+          first_run::SignInAttemptStatus::ATTEMPTED,
           [self.firstRunConfig hasSSOAccount]);
-      web::WebState* currentWebState =
-          _browser->GetWebStateList()->GetActiveWebState();
-      FinishFirstRun(_browser->GetBrowserState(), currentWebState,
-                     self.firstRunConfig, self.presenter);
       break;
     }
     case SigninCoordinatorResultCanceledByUser: {
-      web::WebState* currentWebState =
-          _browser->GetWebStateList()->GetActiveWebState();
-      FinishFirstRun(_browser->GetBrowserState(), currentWebState,
-                     self.firstRunConfig, self.presenter);
+      // No-op
       break;
     }
     case SigninCoordinatorResultInterrupted: {
       NOTREACHED();
     }
   }
+
+  BOOL needsAdvancedSignin = signinCompletionInfo.signinCompletionAction ==
+                             SigninCompletionActionShowAdvancedSettingsSignin;
+  [self completeFirstRunWithNeedsAdvancedSignin:needsAdvancedSignin];
+}
+
+// Completes the first run operation by either showing advanced settings
+// sign-in, showing the location permission prompt, or simply dismissing the
+// welcome page.
+- (void)completeFirstRunWithNeedsAdvancedSignin:
+    (BOOL)needsAvancedSettingsSignin {
+  web::WebState* currentWebState =
+      _browser->GetWebStateList()->GetActiveWebState();
+  FinishFirstRun(_browser->GetBrowserState(), currentWebState,
+                 self.firstRunConfig, self.presenter);
+
   UIViewController* presentingViewController =
       self.navigationController.presentingViewController;
-  BOOL needsAvancedSettingsSignin =
-      signinCompletionInfo.signinCompletionAction ==
-      SigninCompletionActionShowAdvancedSettingsSignin;
   [self.navigationController.presentingViewController
       dismissViewControllerAnimated:YES
                          completion:^{
@@ -264,7 +282,8 @@ const BOOL kDefaultStatsCheckboxValue = YES;
 
 // Marks the sign-in attempted field in first run config.
 - (void)markSigninAttempted:(NSNotification*)notification {
-  [self.firstRunConfig setSignInAttempted:YES];
+  self.firstRunConfig.signInAttemptStatus =
+      first_run::SignInAttemptStatus::ATTEMPTED;
 
   [[NSNotificationCenter defaultCenter]
       removeObserver:self

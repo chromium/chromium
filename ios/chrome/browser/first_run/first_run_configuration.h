@@ -7,10 +7,12 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/first_run/first_run_metrics.h"
+
 // This class holds the state of the first run flow.
 @interface FirstRunConfiguration : NSObject
 
-@property(nonatomic, assign) BOOL signInAttempted;
+@property(nonatomic, assign) first_run::SignInAttemptStatus signInAttemptStatus;
 @property(nonatomic, assign) BOOL hasSSOAccount;
 
 @end

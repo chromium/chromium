@@ -32409,6 +32409,7 @@ Called by update_feature_policy_enum.py.-->
   <int value="4" label="Have SSO account, Successful"/>
   <int value="5" label="Have SSO account, Gave Up"/>
   <int value="6" label="Could not create FirstRun Sentinel - deprecated"/>
+  <int value="7" label="Skipped by policy"/>
 </enum>
 
 <enum name="FirstUserActionType">

@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#include "ios/chrome/browser/first_run/first_run_metrics.h"
+
 class ChromeBrowserState;
 @class FirstRunConfiguration;
 @protocol SyncPresenter;
@@ -28,9 +30,10 @@ extern NSString* const kChromeFirstRunUIDidFinishNotification;
 // only after a successful sign-in or explicitly skipping signing in. First Run
 // metrics are recorded iff the sentinel file didn't previous exist and was
 // successfully created.
-void WriteFirstRunSentinelAndRecordMetrics(ChromeBrowserState* browserState,
-                                           BOOL sign_in_attempted,
-                                           BOOL has_sso_account);
+void WriteFirstRunSentinelAndRecordMetrics(
+    ChromeBrowserState* browserState,
+    first_run::SignInAttemptStatus sign_in_attempt_status,
+    BOOL has_sso_account);
 
 // Methods for writing sentinel and recording metrics and posting notifications
 void FinishFirstRun(ChromeBrowserState* browserState,

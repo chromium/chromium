@@ -10,7 +10,4 @@
 
 @implementation FirstRunConfiguration
 
-@synthesize signInAttempted = _signInAttempted;
-@synthesize hasSSOAccount = _hasSSOAccount;
-
 @end
