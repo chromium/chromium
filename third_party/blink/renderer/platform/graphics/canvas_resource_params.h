@@ -31,26 +31,16 @@ class PLATFORM_EXPORT CanvasResourceParams {
  public:
   // The default constructor will create an output-blended 8-bit surface.
   CanvasResourceParams();
-  CanvasResourceParams(CanvasColorSpace, CanvasPixelFormat, OpacityMode);
+  CanvasResourceParams(CanvasColorSpace, SkColorType, SkAlphaType);
   explicit CanvasResourceParams(const SkImageInfo&);
 
-  static CanvasPixelFormat GetNativeCanvasPixelFormat() {
-    if (kN32_SkColorType == kRGBA_8888_SkColorType)
-      return CanvasPixelFormat::kRGBA8;
-    else if (kN32_SkColorType == kBGRA_8888_SkColorType)
-      return CanvasPixelFormat::kBGRA8;
-  }
-
   CanvasColorSpace ColorSpace() const { return color_space_; }
-  CanvasPixelFormat PixelFormat() const { return pixel_format_; }
-  OpacityMode GetOpacityMode() const { return opacity_mode_; }
 
   void SetCanvasColorSpace(CanvasColorSpace c) { color_space_ = c; }
-  void SetCanvasPixelFormat(CanvasPixelFormat f) { pixel_format_ = f; }
-  void SetOpacityMode(OpacityMode m) { opacity_mode_ = m; }
+  void SetSkColorType(SkColorType color_type) { color_type_ = color_type; }
 
   // The pixel format to use for allocating SkSurfaces.
-  SkColorType GetSkColorType() const;
+  SkColorType GetSkColorType() const { return color_type_; }
   uint8_t BytesPerPixel() const;
 
   // The color space in which pixels read from the canvas via a shader will be
@@ -61,7 +51,7 @@ class PLATFORM_EXPORT CanvasResourceParams {
   // Return the color space of the underlying data for the canvas.
   gfx::ColorSpace GetStorageGfxColorSpace() const;
   sk_sp<SkColorSpace> GetSkColorSpace() const;
-  SkAlphaType GetSkAlphaType() const;
+  SkAlphaType GetSkAlphaType() const { return alpha_type_; }
   const SkSurfaceProps* GetSkSurfaceProps() const;
 
   // Gpu memory buffer parameters
@@ -77,8 +67,8 @@ class PLATFORM_EXPORT CanvasResourceParams {
                        SkColorType color_type);
 
   CanvasColorSpace color_space_ = CanvasColorSpace::kSRGB;
-  CanvasPixelFormat pixel_format_ = GetNativeCanvasPixelFormat();
-  OpacityMode opacity_mode_ = kNonOpaque;
+  SkColorType color_type_ = kN32_SkColorType;
+  SkAlphaType alpha_type_ = kPremul_SkAlphaType;
 };
 
 }  // namespace blink

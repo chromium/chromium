@@ -173,8 +173,7 @@ class CanvasResourceProviderSharedBitmap : public CanvasResourceProviderBitmap {
     if (!IsBitmapFormatSupported(params.TransferableResourceFormat())) {
       // If the rendering format is not supported, downgrate to 8-bits.
       // TODO(junov): Should we try 12-12-12-12 and 10-10-10-2?
-      params.SetCanvasPixelFormat(
-          CanvasResourceParams::GetNativeCanvasPixelFormat());
+      params.SetSkColorType(kN32_SkColorType);
     }
 
     return CanvasResourceSharedBitmap::Create(Size(), params, CreateWeakPtr(),
@@ -218,12 +217,14 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
             filter_quality,
             // TODO(khushalsagar): The software path seems to be assuming N32
             // somewhere in the later pipeline but for offscreen canvas only.
+            // TODO(https://crbug.com/1157747): This is RGBA, but the above
+            // comment suggests N32. See if this can be N32.
             CanvasResourceParams(params.ColorSpace(),
-                                 is_accelerated && params.PixelFormat() !=
-                                                       CanvasPixelFormat::kF16
-                                     ? CanvasPixelFormat::kRGBA8
-                                     : params.PixelFormat(),
-                                 params.GetOpacityMode()),
+                                 is_accelerated && params.GetSkColorType() !=
+                                                       kRGBA_F16_SkColorType
+                                     ? kRGBA_8888_SkColorType
+                                     : params.GetSkColorType(),
+                                 params.GetSkAlphaType()),
             is_origin_top_left,
             std::move(context_provider_wrapper),
             nullptr /* resource_dispatcher */),
@@ -493,9 +494,10 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
     }
     WillDrawInternal(true);
     gpu::raster::RasterInterface* ri = RasterInterface();
-    SkColor background_color = ColorParams().GetOpacityMode() == kOpaque
-                                   ? SK_ColorBLACK
-                                   : SK_ColorTRANSPARENT;
+    SkColor background_color =
+        ColorParams().GetSkAlphaType() == kOpaque_SkAlphaType
+            ? SK_ColorBLACK
+            : SK_ColorTRANSPARENT;
 
     auto list = base::MakeRefCounted<cc::DisplayItemList>(
         cc::DisplayItemList::kTopLevelDisplayItemList);
@@ -1281,7 +1283,7 @@ void CanvasResourceProvider::Clear() {
   // send them directly through to Skia so that they're not replayed for
   // printing operations. See crbug.com/1003114
   DCHECK(IsValid());
-  if (params_.GetOpacityMode() == kOpaque)
+  if (params_.GetSkAlphaType() == kOpaque_SkAlphaType)
     Canvas()->clear(SK_ColorBLACK);
   else
     Canvas()->clear(SK_ColorTRANSPARENT);

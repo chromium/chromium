@@ -263,9 +263,8 @@ std::unique_ptr<CanvasResourceProvider> CreateProviderForVideoElement(
 
   return CanvasResourceProvider::CreateSharedImageProvider(
       IntSize(video->videoWidth(), video->videoHeight()), kLow_SkFilterQuality,
-      CanvasResourceParams(CanvasColorSpace::kSRGB,
-                           CanvasColorParams::GetNativeCanvasPixelFormat(),
-                           kNonOpaque),  // Default canvas settings,
+      CanvasResourceParams(CanvasColorSpace::kSRGB, kN32_SkColorType,
+                           kPremul_SkAlphaType),  // Default canvas settings,
       CanvasResourceProvider::ShouldInitialize::kCallClear,
       SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
       false,  // Origin of GL texture is bottom left on screen

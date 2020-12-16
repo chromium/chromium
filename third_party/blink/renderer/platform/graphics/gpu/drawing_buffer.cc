@@ -684,10 +684,10 @@ scoped_refptr<CanvasResource> DrawingBuffer::ExportLowLatencyCanvasResource(
   switch (canvas_resource_buffer->format) {
     case viz::RGBA_8888:
     case viz::RGBX_8888:
-      resource_params.SetCanvasPixelFormat(CanvasPixelFormat::kRGBA8);
+      resource_params.SetSkColorType(kRGBA_8888_SkColorType);
       break;
     case viz::RGBA_F16:
-      resource_params.SetCanvasPixelFormat(CanvasPixelFormat::kF16);
+      resource_params.SetSkColorType(kRGBA_F16_SkColorType);
       break;
     default:
       NOTREACHED();
@@ -719,13 +719,13 @@ scoped_refptr<CanvasResource> DrawingBuffer::ExportCanvasResource() {
   CanvasResourceParams resource_params;
   switch (out_resource.format) {
     case viz::RGBA_8888:
-      resource_params.SetCanvasPixelFormat(CanvasPixelFormat::kRGBA8);
+      resource_params.SetSkColorType(kRGBA_8888_SkColorType);
       break;
     case viz::RGBX_8888:
-      resource_params.SetCanvasPixelFormat(CanvasPixelFormat::kRGBX8);
+      resource_params.SetSkColorType(kRGB_888x_SkColorType);
       break;
     case viz::RGBA_F16:
-      resource_params.SetCanvasPixelFormat(CanvasPixelFormat::kF16);
+      resource_params.SetSkColorType(kRGBA_F16_SkColorType);
       break;
     default:
       NOTREACHED();

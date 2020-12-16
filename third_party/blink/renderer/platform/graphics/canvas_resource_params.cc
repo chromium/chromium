@@ -41,43 +41,26 @@ gfx::ColorSpace CanvasColorSpaceToGfxColorSpace(CanvasColorSpace color_space) {
 CanvasResourceParams::CanvasResourceParams() = default;
 
 CanvasResourceParams::CanvasResourceParams(CanvasColorSpace color_space,
-                                           CanvasPixelFormat pixel_format,
-                                           OpacityMode opacity_mode)
+                                           SkColorType color_type,
+                                           SkAlphaType alpha_type)
     : color_space_(color_space),
-      pixel_format_(pixel_format),
-      opacity_mode_(opacity_mode) {}
+      color_type_(color_type),
+      alpha_type_(alpha_type) {}
 
 CanvasResourceParams::CanvasResourceParams(const SkImageInfo& info)
-    : CanvasResourceParams(info.refColorSpace(), info.colorType()) {}
-
-SkColorType CanvasResourceParams::GetSkColorType() const {
-  switch (pixel_format_) {
-    case CanvasPixelFormat::kF16:
-      return kRGBA_F16_SkColorType;
-    case CanvasPixelFormat::kRGBA8:
-      return kRGBA_8888_SkColorType;
-    case CanvasPixelFormat::kBGRA8:
-      return kBGRA_8888_SkColorType;
-    case CanvasPixelFormat::kRGBX8:
-      return kRGB_888x_SkColorType;
-  }
-  NOTREACHED();
-  return kN32_SkColorType;
-}
-
-SkAlphaType CanvasResourceParams::GetSkAlphaType() const {
-  return opacity_mode_ == kOpaque ? kOpaque_SkAlphaType : kPremul_SkAlphaType;
+    : CanvasResourceParams(info.refColorSpace(), info.colorType()) {
+  // TODO(https://crbug.com/1157747): This ignores |info|'s SkAlphaType.
 }
 
 const SkSurfaceProps* CanvasResourceParams::GetSkSurfaceProps() const {
   static const SkSurfaceProps disable_lcd_props(0, kUnknown_SkPixelGeometry);
-  if (opacity_mode_ == kOpaque)
+  if (alpha_type_ == kOpaque_SkAlphaType)
     return nullptr;
   return &disable_lcd_props;
 }
 
 uint8_t CanvasResourceParams::BytesPerPixel() const {
-  return SkColorTypeBytesPerPixel(GetSkColorType());
+  return SkColorTypeBytesPerPixel(color_type_);
 }
 
 gfx::ColorSpace CanvasResourceParams::GetSamplerGfxColorSpace() const {
@@ -99,7 +82,7 @@ sk_sp<SkColorSpace> CanvasResourceParams::GetSkColorSpace() const {
 }
 
 gfx::BufferFormat CanvasResourceParams::GetBufferFormat() const {
-  switch (GetSkColorType()) {
+  switch (color_type_) {
     case kRGBA_F16_SkColorType:
       return gfx::BufferFormat::RGBA_F16;
     case kRGBA_8888_SkColorType:
@@ -116,8 +99,8 @@ gfx::BufferFormat CanvasResourceParams::GetBufferFormat() const {
 }
 
 GLenum CanvasResourceParams::GLUnsizedInternalFormat() const {
-  // TODO(junov): try GL_RGB when opacity_mode_ == kOpaque
-  switch (GetSkColorType()) {
+  // TODO(junov): try GL_RGB when alpha_type_ == kOpaque
+  switch (color_type_) {
     case kRGBA_F16_SkColorType:
       return GL_RGBA;
     case kRGBA_8888_SkColorType:
@@ -134,7 +117,7 @@ GLenum CanvasResourceParams::GLUnsizedInternalFormat() const {
 }
 
 GLenum CanvasResourceParams::GLSizedInternalFormat() const {
-  switch (GetSkColorType()) {
+  switch (color_type_) {
     case kRGBA_F16_SkColorType:
       return GL_RGBA16F;
     case kRGBA_8888_SkColorType:
@@ -151,7 +134,7 @@ GLenum CanvasResourceParams::GLSizedInternalFormat() const {
 }
 
 GLenum CanvasResourceParams::GLType() const {
-  switch (GetSkColorType()) {
+  switch (color_type_) {
     case kRGBA_F16_SkColorType:
       return GL_HALF_FLOAT_OES;
     case kRGBA_8888_SkColorType:
@@ -173,14 +156,12 @@ CanvasResourceParams::CanvasResourceParams(
     const sk_sp<SkColorSpace> sk_color_space,
     SkColorType sk_color_type) {
   color_space_ = CanvasColorSpaceFromSkColorSpace(sk_color_space.get());
-  pixel_format_ = GetNativeCanvasPixelFormat();
-
-  if (sk_color_type == kRGBA_F16_SkColorType)
-    pixel_format_ = CanvasPixelFormat::kF16;
-  else if (sk_color_type == kRGBA_8888_SkColorType)
-    pixel_format_ = CanvasPixelFormat::kRGBA8;
-  else if (sk_color_type == kRGB_888x_SkColorType)
-    pixel_format_ = CanvasPixelFormat::kRGBX8;
+  color_type_ = kN32_SkColorType;
+  if (sk_color_type == kRGBA_F16_SkColorType ||
+      sk_color_type == kRGBA_8888_SkColorType ||
+      sk_color_type == kRGB_888x_SkColorType) {
+    color_type_ = sk_color_type;
+  }
 }
 
 }  // namespace blink

@@ -86,7 +86,7 @@ CanvasColorParams::CanvasColorParams(const SkImageInfo& info)
     : CanvasColorParams(info.refColorSpace(), info.colorType()) {}
 
 CanvasResourceParams CanvasColorParams::GetAsResourceParams() const {
-  return CanvasResourceParams(color_space_, pixel_format_, opacity_mode_);
+  return CanvasResourceParams(color_space_, GetSkColorType(), GetSkAlphaType());
 }
 
 SkColorType CanvasColorParams::GetSkColorType() const {
