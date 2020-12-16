@@ -58,6 +58,7 @@
     height: calc(100vh - var(--ntp-one-google-bar-height));
     min-width: fit-content;  /* Prevents OneGoogleBar cutoff at 500% zoom. */
     position: relative;
+    z-index: 1;
   }
 
   :host([iframe-one-google-bar-enabled_]) #content {
@@ -199,6 +200,7 @@
     padding: 8px;
     position: fixed;
     text-shadow: var(--ntp-theme-text-shadow);
+    z-index: -1;
   }
 
   :host-context([dir='ltr']) #backgroundImageAttribution {
