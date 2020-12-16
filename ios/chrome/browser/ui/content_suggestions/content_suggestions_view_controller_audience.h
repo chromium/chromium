@@ -15,6 +15,11 @@
 // provides a reference to the button.
 - (void)discoverHeaderMenuButtonShown:(UIView*)menuButton;
 
+// Notifies the audience that the Discover Feed has been shown.
+// TODO(crbug.com/1126940): This is still a best effort approach and might be
+// called multiple times.
+- (void)discoverFeedShown;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_VIEW_CONTROLLER_AUDIENCE_H_
