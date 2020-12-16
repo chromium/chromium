@@ -170,6 +170,11 @@ bool LayoutShiftTracker::NeedsToTrack(const LayoutObject& object) const {
   if (!object.IsBox())
     return false;
 
+  if (auto* display_lock_context = object.GetDisplayLockContext()) {
+    if (display_lock_context->IsAuto() && display_lock_context->IsLocked())
+      return false;
+  }
+
   // Don't report shift of anonymous objects. Will report the children because
   // we want report real DOM nodes.
   if (object.IsAnonymous())
@@ -178,7 +183,7 @@ bool LayoutShiftTracker::NeedsToTrack(const LayoutObject& object) const {
   if (object.StyleRef().Visibility() != EVisibility::kVisible)
     return false;
 
-  // Ignore sticky-positioend objects that move on scroll.
+  // Ignore sticky-positioned objects that move on scroll.
   // TODO(skobes): Find a way to detect when these objects shift.
   if (object.IsStickyPositioned())
     return false;
@@ -675,7 +680,8 @@ void ReattachHookScope::NotifyDetach(const Node& node) {
   if (!top_)
     return;
   auto* layout_object = node.GetLayoutObject();
-  if (!layout_object || !layout_object->IsBox())
+  if (!layout_object || layout_object->ShouldSkipNextLayoutShiftTracking() ||
+      !layout_object->IsBox())
     return;
 
   auto& map = top_->geometries_before_detach_;
@@ -708,6 +714,7 @@ void ReattachHookScope::NotifyAttach(const Node& node) {
       .SetPreviousGeometryForLayoutShiftTracking(
           iter->value.paint_offset, iter->value.size,
           iter->value.visual_overflow_rect);
+  layout_object->SetShouldSkipNextLayoutShiftTracking(false);
 }
 
 }  // namespace blink

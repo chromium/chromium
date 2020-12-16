@@ -177,8 +177,10 @@ void PaintInvalidator::UpdateLayoutShiftTracking(
     return;
 
   auto& layout_shift_tracker = object.GetFrameView()->GetLayoutShiftTracker();
-  if (!layout_shift_tracker.NeedsToTrack(object))
+  if (!layout_shift_tracker.NeedsToTrack(object)) {
+    object.GetMutableForPainting().SetShouldSkipNextLayoutShiftTracking(true);
     return;
+  }
 
   PropertyTreeStateOrAlias property_tree_state(
       *tree_builder_context.current.transform,
@@ -216,6 +218,10 @@ void PaintInvalidator::UpdateLayoutShiftTracking(
   PhysicalRect new_rect = box.PhysicalVisualOverflowRect();
   PhysicalRect old_rect = box.PreviousPhysicalVisualOverflowRect();
   bool should_report_layout_shift = [&]() -> bool {
+    if (box.ShouldSkipNextLayoutShiftTracking()) {
+      box.GetMutableForPainting().SetShouldSkipNextLayoutShiftTracking(false);
+      return false;
+    }
     // If the layout shift root has changed, LayoutShiftTracker can't use the
     // current paint property tree to map the old rect.
     if (tree_builder_context.current.layout_shift_root_changed)
