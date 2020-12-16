@@ -103,8 +103,17 @@ std::string AbslUnparseFlag(const UDT&) { return ""; }
 
 #define FLAG_DEF(T) ABSL_FLAG(T, T##_flag, {}, "");
 
+#if defined(__clang__) && defined(__linux__)
+// Force the flags used for benchmarks into a separate ELF section.
+// This ensures that, even when other parts of the code might change size,
+// the layout of the flags across cachelines is kept constant. This makes
+// benchmark results more reproducible across unrelated code changes.
+#pragma clang section data = ".benchmark_flags"
+#endif
 BENCHMARKED_TYPES(FLAG_DEF)
-
+#if defined(__clang__) && defined(__linux__)
+#pragma clang section data = ""
+#endif
 // Register thousands of flags to bloat up the size of the registry.
 // This mimics real life production binaries.
 #define DEFINE_FLAG_0(name) ABSL_FLAG(int, name, 0, "");
@@ -130,7 +139,7 @@ namespace {
       benchmark::DoNotOptimize(absl::GetFlag(FLAGS_##T##_flag)); \
     }                                                            \
   }                                                              \
-  BENCHMARK(BM_GetFlag_##T);
+  BENCHMARK(BM_GetFlag_##T)->ThreadRange(1, 16);
 
 BENCHMARKED_TYPES(BM_GetFlag)
 

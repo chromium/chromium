@@ -437,12 +437,6 @@ void SetFlagsHelpMatchSubstr(absl::string_view substr) {
 
 HelpMode GetFlagsHelpMode() {
   absl::MutexLock l(&help_attributes_guard);
-  // Refer to dummy variales to prevent linker dropping them
-  if (FLAGS_help || FLAGS_helpfull || FLAGS_helpshort || FLAGS_helppackage ||
-      FLAGS_version || FLAGS_only_check_args || FLAGS_helpon ||
-      FLAGS_helpmatch) {
-    help_mode = HelpMode::kNone;
-  }
   return help_mode;
 }
 

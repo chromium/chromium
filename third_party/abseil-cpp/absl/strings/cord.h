@@ -361,6 +361,12 @@ class Cord {
     friend class CharIterator;
 
    private:
+    // Stack of right children of concat nodes that we have to visit.
+    // Keep this at the end of the structure to avoid cache-thrashing.
+    // TODO(jgm): Benchmark to see if there's a more optimal value than 47 for
+    // the inlined vector size (47 exists for backward compatibility).
+    using Stack = absl::InlinedVector<absl::cord_internal::CordRep*, 47>;
+
     // Constructs a `begin()` iterator from `cord`.
     explicit ChunkIterator(const Cord* cord);
 
@@ -369,6 +375,10 @@ class Cord {
     void RemoveChunkPrefix(size_t n);
     Cord AdvanceAndReadBytes(size_t n);
     void AdvanceBytes(size_t n);
+
+    // Stack specific operator++
+    ChunkIterator& AdvanceStack();
+
     // Iterates `n` bytes, where `n` is expected to be greater than or equal to
     // `current_chunk_.size()`.
     void AdvanceBytesSlowPath(size_t n);
@@ -382,8 +392,8 @@ class Cord {
     absl::cord_internal::CordRep* current_leaf_ = nullptr;
     // The number of bytes left in the `Cord` over which we are iterating.
     size_t bytes_remaining_ = 0;
-    absl::InlinedVector<absl::cord_internal::CordRep*, 4>
-        stack_of_right_children_;
+    // See 'Stack' alias definition.
+    Stack stack_of_right_children_;
   };
 
   // Cord::ChunkIterator::chunk_begin()
@@ -1104,6 +1114,19 @@ inline Cord::ChunkIterator::ChunkIterator(const Cord* cord)
   } else {
     current_chunk_ = absl::string_view(cord->contents_.data(), cord->size());
   }
+}
+
+inline Cord::ChunkIterator& Cord::ChunkIterator::operator++() {
+  ABSL_HARDENING_ASSERT(bytes_remaining_ > 0 &&
+                        "Attempted to iterate past `end()`");
+  assert(bytes_remaining_ >= current_chunk_.size());
+  bytes_remaining_ -= current_chunk_.size();
+  if (bytes_remaining_ > 0) {
+    return AdvanceStack();
+  } else {
+    current_chunk_ = {};
+  }
+  return *this;
 }
 
 inline Cord::ChunkIterator Cord::ChunkIterator::operator++(int) {

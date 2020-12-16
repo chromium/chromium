@@ -16,6 +16,33 @@
 
 absl_cc_library(
   NAME
+    bits
+  HDRS
+    "bits.h"
+    "internal/bits.h"
+  COPTS
+    ${ABSL_DEFAULT_COPTS}
+  DEPS
+    absl::core_headers
+  PUBLIC
+)
+
+absl_cc_test(
+  NAME
+    bits_test
+  SRCS
+    "bits_test.cc"
+  COPTS
+    ${ABSL_TEST_COPTS}
+  DEPS
+    absl::bits
+    absl::core_headers
+    absl::random_random
+    gmock_main
+)
+
+absl_cc_library(
+  NAME
     int128
   HDRS
     "int128.h"
@@ -26,9 +53,9 @@ absl_cc_library(
   COPTS
     ${ABSL_DEFAULT_COPTS}
   DEPS
-    absl::bits
     absl::config
     absl::core_headers
+    absl::internal_bits
   PUBLIC
 )
 

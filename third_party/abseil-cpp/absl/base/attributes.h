@@ -646,7 +646,7 @@
 // Every usage of a deprecated entity will trigger a warning when compiled with
 // clang's `-Wdeprecated-declarations` option. This option is turned off by
 // default, but the warnings will be reported by clang-tidy.
-#if defined(__clang__) && __cplusplus >= 201103L
+#if defined(__clang__) && defined(__cplusplus) && __cplusplus >= 201103L
 #define ABSL_DEPRECATED(message) __attribute__((deprecated(message)))
 #endif
 

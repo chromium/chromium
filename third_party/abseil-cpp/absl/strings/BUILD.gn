@@ -117,6 +117,7 @@ absl_source_set("str_format_internal") {
 }
 
 absl_source_set("cord_internal") {
+  sources = [ "internal/cord_internal.cc" ]
   public = [
     "internal/cord_internal.h",
     "internal/cord_rep_flat.h",
@@ -125,7 +126,9 @@ absl_source_set("cord_internal") {
   deps = [
     ":strings",
     "//third_party/abseil-cpp/absl/base:base_internal",
+    "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/abseil-cpp/absl/container:compressed_tuple",
+    "//third_party/abseil-cpp/absl/container:inlined_vector",
     "//third_party/abseil-cpp/absl/meta:type_traits",
   ]
 }

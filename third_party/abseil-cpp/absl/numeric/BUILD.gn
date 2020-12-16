@@ -4,6 +4,17 @@
 
 import("//third_party/abseil-cpp/absl.gni")
 
+absl_source_set("bits") {
+  public = [
+    "bits.h",
+    "internal/bits.h",
+  ]
+  deps = [
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/base:core_headers",
+  ]
+}
+
 absl_source_set("int128") {
   sources = [
     "int128.cc",

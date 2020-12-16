@@ -22,6 +22,7 @@
 #include <type_traits>
 
 #include "absl/base/internal/invoke.h"
+#include "absl/base/optimization.h"
 #include "absl/container/internal/compressed_tuple.h"
 #include "absl/meta/type_traits.h"
 #include "absl/strings/string_view.h"
@@ -29,6 +30,39 @@
 namespace absl {
 ABSL_NAMESPACE_BEGIN
 namespace cord_internal {
+
+// Default feature enable states for cord ring buffers
+enum CordFeatureDefaults {
+  kCordEnableRingBufferDefault = false,
+  kCordShallowSubcordsDefault = false
+};
+
+extern std::atomic<bool> cord_ring_buffer_enabled;
+extern std::atomic<bool> shallow_subcords_enabled;
+
+inline void enable_cord_ring_buffer(bool enable) {
+  cord_ring_buffer_enabled.store(enable, std::memory_order_relaxed);
+}
+
+inline void enable_shallow_subcords(bool enable) {
+  shallow_subcords_enabled.store(enable, std::memory_order_relaxed);
+}
+
+enum Constants {
+  // The inlined size to use with absl::InlinedVector.
+  //
+  // Note: The InlinedVectors in this file (and in cord.h) do not need to use
+  // the same value for their inlined size. The fact that they do is historical.
+  // It may be desirable for each to use a different inlined size optimized for
+  // that InlinedVector's usage.
+  //
+  // TODO(jgm): Benchmark to see if there's a more optimal value than 47 for
+  // the inlined vector size (47 exists for backward compatibility).
+  kInlinedVectorSize = 47,
+
+  // Prefer copying blocks of at most this size, otherwise reference count.
+  kMaxBytesToCopy = 511
+};
 
 // Wraps std::atomic for reference counting.
 class Refcount {
@@ -151,6 +185,34 @@ struct CordRep {
   inline const CordRepExternal* external() const;
   inline CordRepFlat* flat();
   inline const CordRepFlat* flat() const;
+
+  // --------------------------------------------------------------------
+  // Memory management
+
+  // This internal routine is called from the cold path of Unref below. Keeping
+  // it in a separate routine allows good inlining of Unref into many profitable
+  // call sites. However, the call to this function can be highly disruptive to
+  // the register pressure in those callers. To minimize the cost to callers, we
+  // use a special LLVM calling convention that preserves most registers. This
+  // allows the call to this routine in cold paths to not disrupt the caller's
+  // register pressure. This calling convention is not available on all
+  // platforms; we intentionally allow LLVM to ignore the attribute rather than
+  // attempting to hardcode the list of supported platforms.
+#if defined(__clang__) && !defined(__i386__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wattributes"
+  __attribute__((preserve_most))
+#pragma clang diagnostic pop
+#endif
+  static void Destroy(CordRep* rep);
+
+  // Increments the reference count of `rep`.
+  // Requires `rep` to be a non-null pointer value.
+  static inline CordRep* Ref(CordRep* rep);
+
+  // Decrements the reference count of `rep`. Destroys rep if count reaches
+  // zero. Requires `rep` to be a non-null pointer value.
+  static inline void Unref(CordRep* rep);
 };
 
 struct CordRepConcat : public CordRep {
@@ -284,7 +346,63 @@ static_assert(sizeof(InlineData) == kMaxInline + 1, "");
 static_assert(sizeof(AsTree) == sizeof(InlineData), "");
 static_assert(offsetof(AsTree, tagged_size) == kMaxInline, "");
 
+inline CordRepConcat* CordRep::concat() {
+  assert(tag == CONCAT);
+  return static_cast<CordRepConcat*>(this);
+}
+
+inline const CordRepConcat* CordRep::concat() const {
+  assert(tag == CONCAT);
+  return static_cast<const CordRepConcat*>(this);
+}
+
+inline CordRepSubstring* CordRep::substring() {
+  assert(tag == SUBSTRING);
+  return static_cast<CordRepSubstring*>(this);
+}
+
+inline const CordRepSubstring* CordRep::substring() const {
+  assert(tag == SUBSTRING);
+  return static_cast<const CordRepSubstring*>(this);
+}
+
+inline CordRepExternal* CordRep::external() {
+  assert(tag == EXTERNAL);
+  return static_cast<CordRepExternal*>(this);
+}
+
+inline const CordRepExternal* CordRep::external() const {
+  assert(tag == EXTERNAL);
+  return static_cast<const CordRepExternal*>(this);
+}
+
+inline CordRepFlat* CordRep::flat() {
+  assert(tag >= FLAT && tag <= MAX_FLAT_TAG);
+  return reinterpret_cast<CordRepFlat*>(this);
+}
+
+inline const CordRepFlat* CordRep::flat() const {
+  assert(tag >= FLAT && tag <= MAX_FLAT_TAG);
+  return reinterpret_cast<const CordRepFlat*>(this);
+}
+
+inline CordRep* CordRep::Ref(CordRep* rep) {
+  assert(rep != nullptr);
+  rep->refcount.Increment();
+  return rep;
+}
+
+inline void CordRep::Unref(CordRep* rep) {
+  assert(rep != nullptr);
+  // Expect refcount to be 0. Avoiding the cost of an atomic decrement should
+  // typically outweigh the cost of an extra branch checking for ref == 1.
+  if (ABSL_PREDICT_FALSE(!rep->refcount.DecrementExpectHighRefcount())) {
+    Destroy(rep);
+  }
+}
+
 }  // namespace cord_internal
+
 ABSL_NAMESPACE_END
 }  // namespace absl
 #endif  // ABSL_STRINGS_INTERNAL_CORD_INTERNAL_H_

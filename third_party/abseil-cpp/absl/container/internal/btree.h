@@ -220,9 +220,6 @@ struct common_params {
   // If Compare is a common comparator for a string-like type, then we adapt it
   // to use heterogeneous lookup and to be a key-compare-to comparator.
   using key_compare = typename key_compare_to_adapter<Compare>::type;
-  // True when key_compare has been adapted to StringBtreeDefault{Less,Greater}.
-  using is_key_compare_adapted =
-      absl::negation<std::is_same<key_compare, Compare>>;
   // A type which indicates if we have a key-compare-to functor or a plain old
   // key-compare functor.
   using is_key_compare_to = btree_is_key_compare_to<key_compare, Key>;
@@ -232,9 +229,6 @@ struct common_params {
   using size_type = std::make_signed<size_t>::type;
   using difference_type = ptrdiff_t;
 
-  // True if this is a multiset or multimap.
-  using is_multi_container = std::integral_constant<bool, Multi>;
-
   using slot_policy = SlotPolicy;
   using slot_type = typename slot_policy::slot_type;
   using value_type = typename slot_policy::value_type;
@@ -243,6 +237,23 @@ struct common_params {
   using const_pointer = const value_type *;
   using reference = value_type &;
   using const_reference = const value_type &;
+
+  // For the given lookup key type, returns whether we can have multiple
+  // equivalent keys in the btree. If this is a multi-container, then we can.
+  // Otherwise, we can have multiple equivalent keys only if all of the
+  // following conditions are met:
+  // - The comparator is transparent.
+  // - The lookup key type is not the same as key_type.
+  // - The comparator is not a StringBtreeDefault{Less,Greater} comparator
+  //   that we know has the same equivalence classes for all lookup types.
+  template <typename LookupKey>
+  constexpr static bool can_have_multiple_equivalent_keys() {
+    return Multi ||
+           (IsTransparent<key_compare>::value &&
+            !std::is_same<LookupKey, Key>::value &&
+            !std::is_same<key_compare, StringBtreeDefaultLess>::value &&
+            !std::is_same<key_compare, StringBtreeDefaultGreater>::value);
+  }
 
   enum {
     kTargetNodeSize = TargetNodeSize,
@@ -439,7 +450,6 @@ struct SearchResult<V, false> {
 template <typename Params>
 class btree_node {
   using is_key_compare_to = typename Params::is_key_compare_to;
-  using is_multi_container = typename Params::is_multi_container;
   using field_type = typename Params::node_count_type;
   using allocator_type = typename Params::allocator_type;
   using slot_type = typename Params::slot_type;
@@ -759,7 +769,7 @@ class btree_node {
   SearchResult<int, true> binary_search_impl(
       const K &k, int s, int e, const CompareTo &comp,
       std::true_type /* IsCompareTo */) const {
-    if (is_multi_container::value) {
+    if (params_type::template can_have_multiple_equivalent_keys<K>()) {
       MatchKind exact_match = MatchKind::kNe;
       while (s != e) {
         const int mid = (s + e) >> 1;
@@ -770,14 +780,14 @@ class btree_node {
           e = mid;
           if (c == 0) {
             // Need to return the first value whose key is not less than k,
-            // which requires continuing the binary search if this is a
-            // multi-container.
+            // which requires continuing the binary search if there could be
+            // multiple equivalent keys.
             exact_match = MatchKind::kEq;
           }
         }
       }
       return {s, exact_match};
-    } else {  // Not a multi-container.
+    } else {  // Can't have multiple equivalent keys.
       while (s != e) {
         const int mid = (s + e) >> 1;
         const absl::weak_ordering c = comp(key(mid), k);
@@ -1054,8 +1064,6 @@ class btree {
   using is_key_compare_to = typename Params::is_key_compare_to;
   using init_type = typename Params::init_type;
   using field_type = typename node_type::field_type;
-  using is_multi_container = typename Params::is_multi_container;
-  using is_key_compare_adapted = typename Params::is_key_compare_adapted;
 
   // We use a static empty node for the root/leftmost/rightmost of empty btrees
   // in order to avoid branching in begin()/end().
@@ -1907,13 +1915,7 @@ auto btree<P>::equal_range(const K &key) -> std::pair<iterator, iterator> {
   }
 
   const iterator next = std::next(lower);
-  // When the comparator is heterogeneous, we can't assume that comparison with
-  // non-`key_type` will be equivalent to `key_type` comparisons so there
-  // could be multiple equivalent keys even in a unique-container. But for
-  // heterogeneous comparisons from the default string adapted comparators, we
-  // don't need to worry about this.
-  if (!is_multi_container::value &&
-      (std::is_same<K, key_type>::value || is_key_compare_adapted::value)) {
+  if (!params_type::template can_have_multiple_equivalent_keys<K>()) {
     // The next iterator after lower must point to a key greater than `key`.
     // Note: if this assert fails, then it may indicate that the comparator does
     // not meet the equivalence requirements for Compare

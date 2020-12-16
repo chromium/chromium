@@ -520,7 +520,7 @@ absl_cc_test(
 
 absl_cc_library(
   NAME
-    bits
+    internal_bits
   HDRS
     "internal/bits.h"
   COPTS
@@ -532,13 +532,13 @@ absl_cc_library(
 
 absl_cc_test(
   NAME
-    bits_test
+    internal_bits_test
   SRCS
     "internal/bits_test.cc"
   COPTS
     ${ABSL_TEST_COPTS}
   DEPS
-    absl::bits
+    absl::internal_bits
     gtest_main
 )
 

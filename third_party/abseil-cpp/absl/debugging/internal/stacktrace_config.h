@@ -21,6 +21,8 @@
 #ifndef ABSL_DEBUGGING_INTERNAL_STACKTRACE_CONFIG_H_
 #define ABSL_DEBUGGING_INTERNAL_STACKTRACE_CONFIG_H_
 
+#include "absl/base/config.h"
+
 #if defined(ABSL_STACKTRACE_INL_HEADER)
 #error ABSL_STACKTRACE_INL_HEADER cannot be directly set
 
@@ -29,19 +31,8 @@
     "absl/debugging/internal/stacktrace_win32-inl.inc"
 
 #elif defined(__APPLE__)
+#ifdef ABSL_HAVE_THREAD_LOCAL
 // Thread local support required for UnwindImpl.
-// Notes:
-// * Xcode's clang did not support `thread_local` until version 8, and
-//   even then not for all iOS < 9.0.
-// * Xcode 9.3 started disallowing `thread_local` for 32-bit iOS simulator
-//   targeting iOS 9.x.
-// * Xcode 10 moves the deployment target check for iOS < 9.0 to link time
-//   making __has_feature unreliable there.
-//
-// Otherwise, `__has_feature` is only supported by Clang so it has be inside
-// `defined(__APPLE__)` check.
-#if __has_feature(cxx_thread_local) && \
-    !(TARGET_OS_IPHONE && __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_9_0)
 #define ABSL_STACKTRACE_INL_HEADER \
   "absl/debugging/internal/stacktrace_generic-inl.inc"
 #endif

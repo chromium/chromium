@@ -1085,7 +1085,7 @@ class raw_hash_set {
 
   template <class InputIt>
   void insert(InputIt first, InputIt last) {
-    for (; first != last; ++first) insert(*first);
+    for (; first != last; ++first) emplace(*first);
   }
 
   template <class T, RequiresNotInit<T> = 0, RequiresInsertable<const T&> = 0>

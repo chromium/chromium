@@ -673,7 +673,7 @@ absl_cc_library(
   LINKOPTS
     ${ABSL_DEFAULT_LINKOPTS}
   DEPS
-    absl::bits
+    absl::internal_bits
     absl::random_internal_fastmath
     absl::random_internal_traits
     absl::type_traits
@@ -690,7 +690,7 @@ absl_cc_library(
   LINKOPTS
     ${ABSL_DEFAULT_LINKOPTS}
   DEPS
-    absl::bits
+    absl::internal_bits
     absl::config
     absl::int128
 )
@@ -706,7 +706,7 @@ absl_cc_library(
   LINKOPTS
     ${ABSL_DEFAULT_LINKOPTS}
   DEPS
-    absl::bits
+    absl::internal_bits
 )
 
 # Internal-only target, do not depend on directly.
@@ -902,7 +902,7 @@ absl_cc_test(
   LINKOPTS
     ${ABSL_DEFAULT_LINKOPTS}
   DEPS
-    absl::bits
+    absl::internal_bits
     absl::flags
     absl::random_internal_generate_real
     gtest_main
@@ -1201,7 +1201,7 @@ absl_cc_test(
     ${ABSL_DEFAULT_LINKOPTS}
   DEPS
     absl::random_internal_wide_multiply
-    absl::bits
+    absl::internal_bits
     absl::int128
     gtest_main
 )

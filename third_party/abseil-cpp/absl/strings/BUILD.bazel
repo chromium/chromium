@@ -267,16 +267,23 @@ cc_test(
 
 cc_library(
     name = "cord_internal",
+    srcs = [
+        "internal/cord_internal.cc",
+    ],
     hdrs = [
         "internal/cord_internal.h",
         "internal/cord_rep_flat.h",
     ],
     copts = ABSL_DEFAULT_COPTS,
-    visibility = ["//visibility:private"],
+    visibility = [
+        "//visibility:private",
+    ],
     deps = [
         ":strings",
         "//absl/base:base_internal",
+        "//absl/base:core_headers",
         "//absl/container:compressed_tuple",
+        "//absl/container:inlined_vector",
         "//absl/meta:type_traits",
     ],
 )
