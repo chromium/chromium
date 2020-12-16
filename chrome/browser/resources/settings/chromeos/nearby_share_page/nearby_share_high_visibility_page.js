@@ -64,6 +64,10 @@ Polymer({
 
   /** @private */
   calculateRemainingTime_() {
+    if (this.shutoffTimestamp === 0) {
+      return;
+    }
+
     const now = performance.now();
     const remainingTimeInMs =
         this.shutoffTimestamp > now ? this.shutoffTimestamp - now : 0;
@@ -86,6 +90,10 @@ Polymer({
    * @protected
    */
   getSubTitle_() {
+    if (this.remainingTimeInSeconds_ === -1) {
+      return '';
+    }
+
     let timeValue = '';
     if (this.remainingTimeInSeconds_ > 60) {
       timeValue = this.i18n(

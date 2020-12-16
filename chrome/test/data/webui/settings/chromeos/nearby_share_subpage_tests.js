@@ -270,14 +270,51 @@ suite('NearbyShare', function() {
     params.append('timeout', '600');  // 10 minutes
     settings.Router.getInstance().navigateTo(
         settings.routes.NEARBY_SHARE, params);
-    Polymer.dom.flush();
 
     const dialog = subpage.$$('nearby-share-receive-dialog');
     assertTrue(!!dialog);
-
     const highVisibilityDialog = dialog.$$('nearby-share-high-visibility-page');
+    assertTrue(!!highVisibilityDialog);
+    assertFalse(highVisibilityDialog.highVisibilityTimedOut_());
+
+    Polymer.dom.flush();
+
     assertTrue(test_util.isVisible(highVisibilityDialog));
     assertEquals(highVisibilityDialog.shutoffTimestamp, 600 * 1000);
+
+    // Restore mock
+    performance.now = originalNow;
+  });
+
+  test('high visibility dialog times out', function() {
+    // Mock performance.now to return a constant 0 for testing.
+    const originalNow = performance.now;
+    performance.now = () => {
+      return 0;
+    };
+
+    const params = new URLSearchParams;
+    params.append('receive', '1');
+    params.append('timeout', '600');  // 10 minutes
+    settings.Router.getInstance().navigateTo(
+        settings.routes.NEARBY_SHARE, params);
+
+    const dialog = subpage.$$('nearby-share-receive-dialog');
+    assertTrue(!!dialog);
+    const highVisibilityDialog = dialog.$$('nearby-share-high-visibility-page');
+    assertTrue(!!highVisibilityDialog);
+
+    highVisibilityDialog.calculateRemainingTime_();
+    assertFalse(highVisibilityDialog.highVisibilityTimedOut_());
+
+    // Set time past the shutoffTime.
+    performance.now = () => {
+      return 6000001;
+    };
+
+    highVisibilityDialog.calculateRemainingTime_();
+    assertTrue(test_util.isVisible(highVisibilityDialog));
+    assertTrue(highVisibilityDialog.highVisibilityTimedOut_());
 
     // Restore mock
     performance.now = originalNow;
