@@ -58,12 +58,6 @@ public class NavigationEntry {
         return mUrl;
     }
 
-    // NOTE(yfriedman): Use |getUrl| instead. Added to faciliate moving internal repo.
-    @Deprecated
-    public String getUrlString() {
-        return mUrl.getSpec();
-    }
-
     /**
      * @return The virtual URL, when nonempty, will override the actual URL of
      *         the page when we display it to the user. This allows us to have
