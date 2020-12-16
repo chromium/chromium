@@ -340,10 +340,11 @@ inline int LazyLineBreakIterator::NextBreakablePosition(
           return i;
         break;
       case BreakSpaceType::kAfterEverySpace:
-        if (is_last_space)
+        if (is_last_space || IsOtherSpaceSeparator<CharacterType>(last_ch))
           return i;
-        if (is_space)
-          continue;
+        if ((is_space || IsOtherSpaceSeparator<CharacterType>(ch)) &&
+            i + 1 < len)
+          return i + 1;
         break;
     }
 
