@@ -107,7 +107,7 @@ ScriptPromise ClipboardPromise::CreateForWriteText(ExecutionContext* context,
 
 ClipboardPromise::ClipboardPromise(ExecutionContext* context,
                                    ScriptState* script_state)
-    : ExecutionContextClient(context),
+    : ExecutionContextLifecycleObserver(context),
       script_state_(script_state),
       script_promise_resolver_(
           MakeGarbageCollected<ScriptPromiseResolver>(script_state)),
@@ -496,13 +496,20 @@ scoped_refptr<base::SingleThreadTaskRunner> ClipboardPromise::GetTaskRunner() {
   return GetExecutionContext()->GetTaskRunner(TaskType::kUserInteraction);
 }
 
+// ExecutionContextLifecycleObserver implementation.
+void ClipboardPromise::ContextDestroyed() {
+  script_promise_resolver_->Reject(MakeGarbageCollected<DOMException>(
+      DOMExceptionCode::kNotAllowedError, "Document detached."));
+  clipboard_writer_.Clear();
+}
+
 void ClipboardPromise::Trace(Visitor* visitor) const {
   visitor->Trace(script_state_);
   visitor->Trace(script_promise_resolver_);
   visitor->Trace(clipboard_writer_);
   visitor->Trace(permission_service_);
   visitor->Trace(clipboard_item_data_);
-  ExecutionContextClient::Trace(visitor);
+  ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
 }  // namespace blink
