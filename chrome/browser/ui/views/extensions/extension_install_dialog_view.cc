@@ -131,12 +131,12 @@ void AddResourceIcon(const gfx::ImageSkia* skia_image, void* data) {
 
 void ShowExtensionInstallDialogImpl(
     ExtensionInstallPromptShowParams* show_params,
-    const ExtensionInstallPrompt::DoneCallback& done_callback,
+    ExtensionInstallPrompt::DoneCallback done_callback,
     std::unique_ptr<ExtensionInstallPrompt::Prompt> prompt) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   ExtensionInstallDialogView* dialog = new ExtensionInstallDialogView(
       show_params->profile(), show_params->GetParentWebContents(),
-      done_callback, std::move(prompt));
+      std::move(done_callback), std::move(prompt));
   constrained_window::CreateBrowserModalDialogViews(
       dialog, show_params->GetParentWindow())
       ->Show();
@@ -193,11 +193,11 @@ void AddPermissions(ExtensionInstallPrompt::Prompt* prompt,
 ExtensionInstallDialogView::ExtensionInstallDialogView(
     Profile* profile,
     content::PageNavigator* navigator,
-    const ExtensionInstallPrompt::DoneCallback& done_callback,
+    ExtensionInstallPrompt::DoneCallback done_callback,
     std::unique_ptr<ExtensionInstallPrompt::Prompt> prompt)
     : profile_(profile),
       navigator_(navigator),
-      done_callback_(done_callback),
+      done_callback_(std::move(done_callback)),
       prompt_(std::move(prompt)),
       title_(prompt_->GetDialogTitle()),
       scroll_view_(nullptr),

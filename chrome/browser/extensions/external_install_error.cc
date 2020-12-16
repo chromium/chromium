@@ -403,8 +403,8 @@ void ExternalInstallError::ShowDialog(Browser* browser) {
   manager_->DidChangeInstallAlertVisibility(this, true);
   ExtensionInstallPrompt::GetDefaultShowDialogCallback().Run(
       install_ui_show_params_.get(),
-      base::Bind(&ExternalInstallError::OnInstallPromptDone,
-                 weak_factory_.GetWeakPtr()),
+      base::BindOnce(&ExternalInstallError::OnInstallPromptDone,
+                     weak_factory_.GetWeakPtr()),
       std::move(prompt_));
 }
 
@@ -457,18 +457,19 @@ void ExternalInstallError::OnFetchComplete() {
       new ExtensionInstallPrompt(Profile::FromBrowserContext(browser_context_),
                                  NULL));  // NULL native window.
 
-  install_ui_->ShowDialog(base::Bind(&ExternalInstallError::OnInstallPromptDone,
-                                     weak_factory_.GetWeakPtr()),
-                          GetExtension(),
-                          nullptr,  // Force a fetch of the icon.
-                          std::move(prompt_),
-                          base::Bind(&ExternalInstallError::OnDialogReady,
-                                     weak_factory_.GetWeakPtr()));
+  install_ui_->ShowDialog(
+      base::BindOnce(&ExternalInstallError::OnInstallPromptDone,
+                     weak_factory_.GetWeakPtr()),
+      GetExtension(),
+      nullptr,  // Force a fetch of the icon.
+      std::move(prompt_),
+      base::BindRepeating(&ExternalInstallError::OnDialogReady,
+                          weak_factory_.GetWeakPtr()));
 }
 
 void ExternalInstallError::OnDialogReady(
     ExtensionInstallPromptShowParams* show_params,
-    const ExtensionInstallPrompt::DoneCallback& callback,
+    ExtensionInstallPrompt::DoneCallback callback,
     std::unique_ptr<ExtensionInstallPrompt::Prompt> prompt) {
   prompt_ = std::move(prompt);
 

@@ -254,11 +254,12 @@ class ExtensionInstallPrompt {
     ABORTED,
   };
 
-  using DoneCallback = base::Callback<void(Result result)>;
+  using DoneCallback = base::OnceCallback<void(Result result)>;
 
-  typedef base::Callback<void(ExtensionInstallPromptShowParams*,
-                              const DoneCallback&,
-                              std::unique_ptr<ExtensionInstallPrompt::Prompt>)>
+  typedef base::RepeatingCallback<void(
+      ExtensionInstallPromptShowParams*,
+      DoneCallback,
+      std::unique_ptr<ExtensionInstallPrompt::Prompt>)>
       ShowDialogCallback;
 
   // Callback to show the default extension install dialog.
@@ -308,11 +309,11 @@ class ExtensionInstallPrompt {
   // current permissions are used.
   //
   // The |install_callback| *MUST* eventually be called.
-  void ShowDialog(const DoneCallback& install_callback,
+  void ShowDialog(DoneCallback install_callback,
                   const extensions::Extension* extension,
                   const SkBitmap* icon,
                   const ShowDialogCallback& show_dialog_callback);
-  void ShowDialog(const DoneCallback& install_callback,
+  void ShowDialog(DoneCallback install_callback,
                   const extensions::Extension* extension,
                   const SkBitmap* icon,
                   std::unique_ptr<Prompt> prompt,
@@ -321,7 +322,7 @@ class ExtensionInstallPrompt {
   // Note: if all you want to do is automatically confirm or cancel, prefer
   // ScopedTestDialogAutoConfirm from extension_dialog_auto_confirm.h
   virtual void ShowDialog(
-      const DoneCallback& install_callback,
+      DoneCallback install_callback,
       const extensions::Extension* extension,
       const SkBitmap* icon,
       std::unique_ptr<Prompt> prompt,

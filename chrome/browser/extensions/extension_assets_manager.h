@@ -25,7 +25,7 @@ class ExtensionAssetsManager {
  public:
   // Callback that is invoked when the extension assets are installed.
   // |file_path| is destination directory on success or empty in case of error.
-  typedef base::Callback<void(const base::FilePath& file_path)>
+  typedef base::OnceCallback<void(const base::FilePath& file_path)>
       InstallExtensionCallback;
 
   static ExtensionAssetsManager* GetInstance();

@@ -798,8 +798,9 @@ void CrxInstaller::ConfirmInstall() {
       (!allow_silent_install_ || !approved_) &&
       !update_from_settings_page_) {
     AddRef();  // Balanced in OnInstallPromptDone().
-    client_->ShowDialog(base::Bind(&CrxInstaller::OnInstallPromptDone, this),
-                        extension(), nullptr, show_dialog_callback_);
+    client_->ShowDialog(
+        base::BindOnce(&CrxInstaller::OnInstallPromptDone, this), extension(),
+        nullptr, show_dialog_callback_);
   } else {
     UpdateCreationFlagsAndCompleteInstall(kDontWithholdPermissions);
   }
@@ -1200,10 +1201,10 @@ void CrxInstaller::ConfirmReEnable() {
     ExtensionInstallPrompt::PromptType type =
         ExtensionInstallPrompt::GetReEnablePromptTypeForExtension(
             service->profile(), extension());
-    client_->ShowDialog(base::Bind(&CrxInstaller::OnInstallPromptDone, this),
-                        extension(), nullptr,
-                        std::make_unique<ExtensionInstallPrompt::Prompt>(type),
-                        ExtensionInstallPrompt::GetDefaultShowDialogCallback());
+    client_->ShowDialog(
+        base::BindOnce(&CrxInstaller::OnInstallPromptDone, this), extension(),
+        nullptr, std::make_unique<ExtensionInstallPrompt::Prompt>(type),
+        ExtensionInstallPrompt::GetDefaultShowDialogCallback());
   }
 }
 

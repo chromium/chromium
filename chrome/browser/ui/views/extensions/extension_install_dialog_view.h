@@ -40,7 +40,7 @@ class ExtensionInstallDialogView
   ExtensionInstallDialogView(
       Profile* profile,
       content::PageNavigator* navigator,
-      const ExtensionInstallPrompt::DoneCallback& done_callback,
+      ExtensionInstallPrompt::DoneCallback done_callback,
       std::unique_ptr<ExtensionInstallPrompt::Prompt> prompt);
   ~ExtensionInstallDialogView() override;
 

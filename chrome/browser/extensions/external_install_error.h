@@ -100,7 +100,7 @@ class ExternalInstallError : public WebstoreDataFetcherDelegate {
   // Called when the dialog has been successfully populated, and is ready to be
   // shown.
   void OnDialogReady(ExtensionInstallPromptShowParams* show_params,
-                     const ExtensionInstallPrompt::DoneCallback& done_callback,
+                     ExtensionInstallPrompt::DoneCallback done_callback,
                      std::unique_ptr<ExtensionInstallPrompt::Prompt> prompt);
 
   // Removes the error.

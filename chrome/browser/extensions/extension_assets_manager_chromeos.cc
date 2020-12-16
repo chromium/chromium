@@ -79,11 +79,11 @@ class ExtensionAssetsManagerHelper {
     install_info.unpacked_extension_root = unpacked_extension_root;
     install_info.local_install_dir = local_install_dir;
     install_info.profile = profile;
-    install_info.callback = callback;
+    install_info.callback = std::move(callback);
 
     std::vector<PendingInstallInfo>& callbacks =
         install_queue_[InstallQueue::key_type(id, version)];
-    callbacks.push_back(install_info);
+    callbacks.push_back(std::move(install_info));
 
     return callbacks.size() == 1;
   }
@@ -153,11 +153,9 @@ void ExtensionAssetsManagerChromeOS::InstallExtension(
     Profile* profile,
     InstallExtensionCallback callback) {
   if (!CanShareAssets(extension, unpacked_extension_root)) {
-    InstallLocalExtension(extension->id(),
-                          extension->VersionString(),
-                          unpacked_extension_root,
-                          local_install_dir,
-                          callback);
+    InstallLocalExtension(extension->id(), extension->VersionString(),
+                          unpacked_extension_root, local_install_dir,
+                          std::move(callback));
     return;
   }
 
@@ -166,7 +164,7 @@ void ExtensionAssetsManagerChromeOS::InstallExtension(
       base::BindOnce(&ExtensionAssetsManagerChromeOS::CheckSharedExtension,
                      extension->id(), extension->VersionString(),
                      unpacked_extension_root, local_install_dir, profile,
-                     callback));
+                     std::move(callback)));
 }
 
 void ExtensionAssetsManagerChromeOS::UninstallExtension(
@@ -293,7 +291,7 @@ void ExtensionAssetsManagerChromeOS::CheckSharedExtension(
         FROM_HERE,
         base::BindOnce(&ExtensionAssetsManagerChromeOS::InstallLocalExtension,
                        id, version, unpacked_extension_root, local_install_dir,
-                       callback));
+                       std::move(callback)));
     return;
   }
 
@@ -324,13 +322,15 @@ void ExtensionAssetsManagerChromeOS::CheckSharedExtension(
 
     // unpacked_extension_root will be deleted by CrxInstaller.
     GetExtensionFileTaskRunner()->PostTask(
-        FROM_HERE, base::BindOnce(callback, base::FilePath(shared_path)));
+        FROM_HERE,
+        base::BindOnce(std::move(callback), base::FilePath(shared_path)));
   } else {
     // Desired version is not found in shared location.
     ExtensionAssetsManagerHelper* helper =
         ExtensionAssetsManagerHelper::GetInstance();
     if (helper->RecordSharedInstall(id, version, unpacked_extension_root,
-                                    local_install_dir, profile, callback)) {
+                                    local_install_dir, profile,
+                                    std::move(callback))) {
       // There is no install in progress for given <id, version> so run install.
       GetExtensionFileTaskRunner()->PostTask(
           FROM_HERE,
@@ -378,7 +378,7 @@ void ExtensionAssetsManagerChromeOS::InstallSharedExtensionDone(
           FROM_HERE,
           base::BindOnce(&ExtensionAssetsManagerChromeOS::InstallLocalExtension,
                          id, version, info.unpacked_extension_root,
-                         info.local_install_dir, info.callback));
+                         info.local_install_dir, std::move(info.callback)));
     }
     return;
   }
@@ -403,7 +403,8 @@ void ExtensionAssetsManagerChromeOS::InstallSharedExtensionDone(
       users->AppendString(info.profile->GetProfileUserName());
 
       GetExtensionFileTaskRunner()->PostTask(
-          FROM_HERE, base::BindOnce(info.callback, shared_version_dir));
+          FROM_HERE,
+          base::BindOnce(std::move(info.callback), shared_version_dir));
   }
   version_info->Set(kSharedExtensionUsers, std::move(users));
   extension_info_weak->SetWithoutPathExpansion(version,
@@ -417,7 +418,7 @@ void ExtensionAssetsManagerChromeOS::InstallLocalExtension(
     const base::FilePath& unpacked_extension_root,
     const base::FilePath& local_install_dir,
     InstallExtensionCallback callback) {
-  callback.Run(file_util::InstallExtension(
+  std::move(callback).Run(file_util::InstallExtension(
       unpacked_extension_root, id, version, local_install_dir));
 }
 

@@ -512,26 +512,26 @@ ExtensionInstallPrompt::~ExtensionInstallPrompt() {
 }
 
 void ExtensionInstallPrompt::ShowDialog(
-    const DoneCallback& done_callback,
+    DoneCallback done_callback,
     const Extension* extension,
     const SkBitmap* icon,
     const ShowDialogCallback& show_dialog_callback) {
-  ShowDialog(done_callback, extension, icon,
+  ShowDialog(std::move(done_callback), extension, icon,
              std::make_unique<Prompt>(INSTALL_PROMPT), show_dialog_callback);
 }
 
 void ExtensionInstallPrompt::ShowDialog(
-    const DoneCallback& done_callback,
+    DoneCallback done_callback,
     const Extension* extension,
     const SkBitmap* icon,
     std::unique_ptr<Prompt> prompt,
     const ShowDialogCallback& show_dialog_callback) {
-  ShowDialog(done_callback, extension, icon, std::move(prompt), nullptr,
-             show_dialog_callback);
+  ShowDialog(std::move(done_callback), extension, icon, std::move(prompt),
+             nullptr, show_dialog_callback);
 }
 
 void ExtensionInstallPrompt::ShowDialog(
-    const DoneCallback& done_callback,
+    DoneCallback done_callback,
     const Extension* extension,
     const SkBitmap* icon,
     std::unique_ptr<Prompt> prompt,
@@ -540,7 +540,7 @@ void ExtensionInstallPrompt::ShowDialog(
   DCHECK(ui_thread_checker_.CalledOnValidThread());
   DCHECK(prompt);
   extension_ = extension;
-  done_callback_ = done_callback;
+  done_callback_ = std::move(done_callback);
   if (icon && !icon->empty())
     SetIcon(icon);
   prompt_ = std::move(prompt);
@@ -667,7 +667,7 @@ void ExtensionInstallPrompt::ShowConfirmation() {
   // a callback on the stack.
   auto cb = std::move(done_callback_);
   std::move(show_dialog_callback_)
-      .Run(show_params_.get(), cb, std::move(prompt_));
+      .Run(show_params_.get(), std::move(cb), std::move(prompt_));
 }
 
 bool ExtensionInstallPrompt::AutoConfirmPromptIfEnabled() {

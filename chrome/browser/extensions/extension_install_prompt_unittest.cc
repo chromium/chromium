@@ -45,7 +45,7 @@ void VerifyPromptIconCallback(
     const base::Closure& quit_closure,
     const SkBitmap& expected_bitmap,
     ExtensionInstallPromptShowParams* params,
-    const ExtensionInstallPrompt::DoneCallback& done_callback,
+    ExtensionInstallPrompt::DoneCallback done_callback,
     std::unique_ptr<ExtensionInstallPrompt::Prompt> prompt) {
   EXPECT_TRUE(gfx::BitmapsAreEqual(prompt->icon().AsBitmap(), expected_bitmap));
   quit_closure.Run();
@@ -55,7 +55,7 @@ void VerifyPromptPermissionsCallback(
     const base::Closure& quit_closure,
     size_t regular_permissions_count,
     ExtensionInstallPromptShowParams* params,
-    const ExtensionInstallPrompt::DoneCallback& done_callback,
+    ExtensionInstallPrompt::DoneCallback done_callback,
     std::unique_ptr<ExtensionInstallPrompt::Prompt> install_prompt) {
   ASSERT_TRUE(install_prompt.get());
   EXPECT_EQ(regular_permissions_count, install_prompt->GetPermissionCount());
@@ -66,7 +66,7 @@ void VerifyPromptWithholdingUICallback(
     const base::Closure& quit_closure,
     const bool should_display,
     ExtensionInstallPromptShowParams* params,
-    const ExtensionInstallPrompt::DoneCallback& done_callback,
+    ExtensionInstallPrompt::DoneCallback done_callback,
     std::unique_ptr<ExtensionInstallPrompt::Prompt> prompt) {
   EXPECT_EQ(should_display, prompt->ShouldDisplayWithholdingUI());
   quit_closure.Run();
@@ -122,13 +122,14 @@ TEST_F(ExtensionInstallPromptUnitTest, PromptShowsPermissionWarnings) {
   content::TestWebContentsFactory factory;
   ExtensionInstallPrompt prompt(factory.CreateWebContents(profile()));
   base::RunLoop run_loop;
-  prompt.ShowDialog(
-      ExtensionInstallPrompt::DoneCallback(), extension.get(), nullptr,
-      std::make_unique<ExtensionInstallPrompt::Prompt>(
-          ExtensionInstallPrompt::PERMISSIONS_PROMPT),
-      std::move(permission_set),
-      base::Bind(&VerifyPromptPermissionsCallback, run_loop.QuitClosure(),
-                 1u));  // |regular_permissions_count|.
+  prompt.ShowDialog(ExtensionInstallPrompt::DoneCallback(), extension.get(),
+                    nullptr,
+                    std::make_unique<ExtensionInstallPrompt::Prompt>(
+                        ExtensionInstallPrompt::PERMISSIONS_PROMPT),
+                    std::move(permission_set),
+                    base::BindRepeating(&VerifyPromptPermissionsCallback,
+                                        run_loop.QuitClosure(),
+                                        1u));  // |regular_permissions_count|.
   run_loop.Run();
 }
 
@@ -156,11 +157,11 @@ TEST_F(ExtensionInstallPromptUnitTest,
       new ExtensionInstallPrompt::Prompt(
           ExtensionInstallPrompt::DELEGATED_PERMISSIONS_PROMPT));
   sub_prompt->set_delegated_username("Username");
-  prompt.ShowDialog(
-      ExtensionInstallPrompt::DoneCallback(), extension.get(), nullptr,
-      std::move(sub_prompt),
-      base::Bind(&VerifyPromptPermissionsCallback, run_loop.QuitClosure(),
-                 2u));  // |regular_permissions_count|.
+  prompt.ShowDialog(ExtensionInstallPrompt::DoneCallback(), extension.get(),
+                    nullptr, std::move(sub_prompt),
+                    base::BindRepeating(&VerifyPromptPermissionsCallback,
+                                        run_loop.QuitClosure(),
+                                        2u));  // |regular_permissions_count|.
   run_loop.Run();
 }
 
@@ -194,10 +195,11 @@ TEST_F(ExtensionInstallPromptTestWithService, ExtensionInstallPromptIconsTest) {
   {
     ExtensionInstallPrompt prompt(web_contents.get());
     base::RunLoop run_loop;
-    prompt.ShowDialog(ExtensionInstallPrompt::DoneCallback(), extension,
-                      nullptr,  // Force an icon fetch.
-                      base::Bind(&VerifyPromptIconCallback,
-                                 run_loop.QuitClosure(), image.AsBitmap()));
+    prompt.ShowDialog(
+        ExtensionInstallPrompt::DoneCallback(), extension,
+        nullptr,  // Force an icon fetch.
+        base::BindRepeating(&VerifyPromptIconCallback, run_loop.QuitClosure(),
+                            image.AsBitmap()));
     run_loop.Run();
   }
 
@@ -205,11 +207,11 @@ TEST_F(ExtensionInstallPromptTestWithService, ExtensionInstallPromptIconsTest) {
     ExtensionInstallPrompt prompt(web_contents.get());
     base::RunLoop run_loop;
     gfx::ImageSkia app_icon = util::GetDefaultAppIcon();
-    prompt.ShowDialog(ExtensionInstallPrompt::DoneCallback(),
-                      extension,
-                      app_icon.bitmap(),  // Use a different icon.
-                      base::Bind(&VerifyPromptIconCallback,
-                                 run_loop.QuitClosure(), *app_icon.bitmap()));
+    prompt.ShowDialog(
+        ExtensionInstallPrompt::DoneCallback(), extension,
+        app_icon.bitmap(),  // Use a different icon.
+        base::BindRepeating(&VerifyPromptIconCallback, run_loop.QuitClosure(),
+                            *app_icon.bitmap()));
     run_loop.Run();
   }
 }
@@ -236,8 +238,8 @@ TEST_F(ExtensionInstallPromptTestWithholdingAllowed,
 
   prompt.ShowDialog(ExtensionInstallPrompt::DoneCallback(), extension.get(),
                     nullptr,
-                    base::Bind(&VerifyPromptWithholdingUICallback,
-                               run_loop.QuitClosure(), true));
+                    base::BindRepeating(&VerifyPromptWithholdingUICallback,
+                                        run_loop.QuitClosure(), true));
   run_loop.Run();
 }
 
@@ -251,8 +253,8 @@ TEST_F(ExtensionInstallPromptTestWithholdingAllowed,
 
   prompt.ShowDialog(ExtensionInstallPrompt::DoneCallback(), extension.get(),
                     nullptr,
-                    base::Bind(&VerifyPromptWithholdingUICallback,
-                               run_loop.QuitClosure(), false));
+                    base::BindRepeating(&VerifyPromptWithholdingUICallback,
+                                        run_loop.QuitClosure(), false));
   run_loop.Run();
 }
 
@@ -269,8 +271,8 @@ TEST_F(ExtensionInstallPromptTestWithholdingAllowed,
 
   prompt.ShowDialog(ExtensionInstallPrompt::DoneCallback(), extension.get(),
                     nullptr,
-                    base::Bind(&VerifyPromptWithholdingUICallback,
-                               run_loop.QuitClosure(), false));
+                    base::BindRepeating(&VerifyPromptWithholdingUICallback,
+                                        run_loop.QuitClosure(), false));
   run_loop.Run();
 }
 

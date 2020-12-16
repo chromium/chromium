@@ -72,18 +72,18 @@ class ProgrammableInstallPrompt
   ~ProgrammableInstallPrompt() override {}
 
   void ShowDialog(
-      const DoneCallback& done_callback,
+      DoneCallback done_callback,
       const extensions::Extension* extension,
       const SkBitmap* icon,
       std::unique_ptr<Prompt> prompt,
       std::unique_ptr<const extensions::PermissionSet> custom_permissions,
       const ShowDialogCallback& show_dialog_callback) override {
-    done_callback_ = done_callback;
+    done_callback_ = std::move(done_callback);
     did_show_dialog = true;
   }
 
   void Resolve(ExtensionInstallPrompt::Result result) {
-    done_callback_.Run(result);
+    std::move(done_callback_).Run(result);
   }
 
  private:

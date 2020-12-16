@@ -386,7 +386,7 @@ void WebstoreStandaloneInstaller::ShowInstallUI() {
 
   install_ui_ = CreateInstallUI();
   install_ui_->ShowDialog(
-      base::Bind(&WebstoreStandaloneInstaller::OnInstallPromptDone, this),
+      base::BindOnce(&WebstoreStandaloneInstaller::OnInstallPromptDone, this),
       localized_extension.get(), &icon_, std::move(install_prompt_),
       ExtensionInstallPrompt::GetDefaultShowDialogCallback());
 }
