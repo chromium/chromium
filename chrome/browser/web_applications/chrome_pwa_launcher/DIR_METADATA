@@ -1,5 +1,5 @@
 monorail:  {
   component:  "UI>Browser>WebAppInstalls"
 }
-team_email:  "web-apps-platform-team@chromium.org"
+team_email:  "pwa-dev@chromium.org"
 os:  WINDOWS
