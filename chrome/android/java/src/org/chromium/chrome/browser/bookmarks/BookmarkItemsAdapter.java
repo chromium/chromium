@@ -317,6 +317,11 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
         if (folder.getType() == BookmarkType.READING_LIST) {
             TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile())
                     .notifyEvent(EventConstants.READ_LATER_BOOKMARK_FOLDER_OPENED);
+            mDelegate.getSelectableListLayout().setEmptyViewText(
+                    R.string.reading_list_empty_list_title, R.string.bookmark_no_result);
+        } else {
+            mDelegate.getSelectableListLayout().setEmptyViewText(
+                    R.string.bookmarks_folder_empty, R.string.bookmark_no_result);
         }
     }
 

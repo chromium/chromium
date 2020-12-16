@@ -1112,6 +1112,27 @@ public class BookmarkTest {
     @Test
     @SmallTest
     @Features.EnableFeatures({ChromeFeatureList.READ_LATER})
+    public void testReadingListEmptyView() throws Exception {
+        BookmarkPromoHeader.forcePromoStateForTests(PromoState.PROMO_NONE);
+        openBookmarkManager();
+
+        // Open the "Reading list" folder.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mManager.openFolder(mBookmarkModel.getRootFolderId()));
+        onView(withText("Reading list")).perform(click());
+
+        // We should see an empty view with reading list text.
+        onView(withText(R.string.reading_list_empty_list_title)).check(matches(isDisplayed()));
+
+        // Open other folders will show the default empty view text.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mManager.openFolder(mBookmarkModel.getMobileFolderId()));
+        onView(withText(R.string.bookmarks_folder_empty)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    @Features.EnableFeatures({ChromeFeatureList.READ_LATER})
     public void testReadingListOpenInCCT() throws Exception {
         addReadingListBookmark(TEST_PAGE_TITLE_GOOGLE, TEST_URL_A);
         BookmarkPromoHeader.forcePromoStateForTests(PromoState.PROMO_NONE);
