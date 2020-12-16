@@ -5285,7 +5285,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20201211",
+                    "name": "Disabled",
                     "disable_features": [
                         "PaintHoldingCrossOrigin"
                     ]
@@ -8586,6 +8586,26 @@
                     "name": "Enabled",
                     "enable_features": [
                         "WebViewZeroCopyVideo"
+                    ]
+                }
+            ]
+        }
+    ],
+    "WheelEventRegions": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20201211",
+                    "enable_features": [
+                        "WheelEventRegions"
                     ]
                 }
             ]
