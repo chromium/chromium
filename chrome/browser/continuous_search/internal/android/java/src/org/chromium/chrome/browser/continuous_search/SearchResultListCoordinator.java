@@ -25,6 +25,7 @@ public class SearchResultListCoordinator implements UserData {
             SearchResultListCoordinator.class;
 
     private Tab mTab;
+    private SearchResultUserData mSearchResultUserData;
     private SearchResultListMediator mMediator;
     private RecyclerView mView;
 
@@ -59,7 +60,8 @@ public class SearchResultListCoordinator implements UserData {
         mView.setAdapter(adapter);
         mMediator = new SearchResultListMediator(
                 listItems, (url) -> tab.loadUrl(new LoadUrlParams(url.getSpec())));
-        SearchResultUserData.getForTab(mTab).addObserver(mMediator);
+        mSearchResultUserData = SearchResultUserData.getForTab(mTab);
+        mSearchResultUserData.addObserver(mMediator);
     }
 
     private View inflateItemView(ViewGroup parentView, @ListItemType int listItemType) {
@@ -82,6 +84,6 @@ public class SearchResultListCoordinator implements UserData {
 
     @Override
     public void destroy() {
-        SearchResultUserData.getForTab(mTab).removeObserver(mMediator);
+        mSearchResultUserData.removeObserver(mMediator);
     }
 }
