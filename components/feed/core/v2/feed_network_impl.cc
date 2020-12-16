@@ -9,6 +9,7 @@
 
 #include "base/base64url.h"
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/containers/flat_set.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -446,6 +447,12 @@ void FeedNetworkImpl::SendQueryRequest(
   bool host_overridden = false;
   std::string host_override =
       pref_service_->GetString(feed::prefs::kHostOverrideHost);
+
+  if (host_override.empty()) {
+    host_override = base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+        "feedv2-host-override");
+  }
+
   if (!host_override.empty()) {
     GURL override_host_url(host_override);
     if (override_host_url.is_valid()) {
