@@ -131,6 +131,19 @@ enum StartDiscoveryResult {
   kErrorGeneric,
 };
 
+// This enum represents the different possible results when registering a
+// Receive Surface.
+enum RegisterReceiveSurfaceResult {
+  // Succeeded.
+  kSuccess,
+  // Failed.
+  kFailure,
+  // Bluetooth and Wi-Fi are unavailable.
+  kNoConnectionMedium,
+  // There is already a transfer in progress.
+  kTransferInProgress,
+};
+
 // Manager interface for nearby device discovery. Implemented on the browser
 // process and used by UI surfaces. The discovery manager is also responsible
 // for previewing the current share with GetPayloadPreview() so the user can
@@ -196,11 +209,11 @@ interface ReceiveManager {
   IsInHighVisibility() => (bool in_high_visibility);
 
   // Attempt to register the receive manager as a foreground receive surface.
-  // If |success| is true, then the surface has been registered; otherwise it
+  // If |result| is kSuccess, then the surface has been registered; otherwise it
   // has not been registered. The foreground surface receives incoming
   // shares, and once one is registered, high visibility will become active
   // after a short while. Calling multiple times will have no additional effect.
-  RegisterForegroundReceiveSurface() => (bool success);
+  RegisterForegroundReceiveSurface() => (RegisterReceiveSurfaceResult result);
 
   // Attempt to unregister the receive manager as a foreground receive surface.
   // If |success| is true, then the surface is no longer registered; otherwise,
