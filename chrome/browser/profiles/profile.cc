@@ -158,6 +158,12 @@ JNI_OTRProfileID_CreateUniqueOTRProfileID(
           base::android::ConvertJavaStringToUTF16(env, j_profile_id_prefix)));
   return profile_id.ConvertToJavaOTRProfileID(env);
 }
+
+// static
+base::android::ScopedJavaLocalRef<jobject> JNI_OTRProfileID_GetPrimaryID(
+    JNIEnv* env) {
+  return Profile::OTRProfileID::PrimaryID().ConvertToJavaOTRProfileID(env);
+}
 #endif
 
 Profile::Profile() {

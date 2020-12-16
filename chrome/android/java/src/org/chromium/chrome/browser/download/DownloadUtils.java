@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.offlinepages.OfflinePageOrigin;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.offlinepages.downloads.OfflinePageDownloadBridge;
+import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -72,6 +73,8 @@ public class DownloadUtils {
 
     private static final String EXTRA_IS_OFF_THE_RECORD =
             "org.chromium.chrome.browser.download.IS_OFF_THE_RECORD";
+    private static final String EXTRA_OTR_PROFILE_ID =
+            "org.chromium.chrome.browser.download.OTR_PROFILE_ID";
     private static final String MIME_TYPE_ZIP = "application/zip";
     private static final String DOCUMENTS_UI_PACKAGE_NAME = "com.android.documentsui";
     public static final String EXTRA_SHOW_PREFETCHED_CONTENT =
@@ -139,7 +142,12 @@ public class DownloadUtils {
             Intent intent = new Intent();
             intent.setClass(appContext, DownloadActivity.class);
             intent.putExtra(EXTRA_SHOW_PREFETCHED_CONTENT, showPrefetchedContent);
-            if (tab != null) intent.putExtra(EXTRA_IS_OFF_THE_RECORD, tab.isIncognito());
+            if (tab != null) {
+                intent.putExtra(EXTRA_IS_OFF_THE_RECORD, tab.isIncognito());
+
+                OTRProfileID id = Profile.fromWebContents(tab.getWebContents()).getOTRProfileID();
+                intent.putExtra(EXTRA_OTR_PROFILE_ID, OTRProfileID.serialize(id));
+            }
             if (activity == null) {
                 // Stands alone in its own task.
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -164,6 +172,15 @@ public class DownloadUtils {
         }
         DownloadMetrics.recordDownloadPageOpen(source);
         return true;
+    }
+
+    /**
+     * @param intent An {@link Intent} instance.
+     * @return The {@link OTRProfileID} that is attached to the given intent.
+     */
+    public static OTRProfileID getOTRProfileIDFromIntent(Intent intent) {
+        String serializedId = IntentUtils.safeGetString(intent.getExtras(), EXTRA_OTR_PROFILE_ID);
+        return OTRProfileID.deserialize(serializedId);
     }
 
     /**
