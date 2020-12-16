@@ -124,12 +124,12 @@ Classes that need destructor logic should provide an explicit `destroy()`
 method. Use [LifetimeAssert](https://chromium.googlesource.com/chromium/src/+/master/base/android/java/src/org/chromium/base/LifetimeAssert.java)
 to ensure in debug builds and tests that `destroy()` is called.
 
-### Other Android Support Library Annotations
+### AndroidX Annotations
 * Use them! They are [documented here](https://developer.android.com/studio/write/annotations).
   * They generally improve readability.
   * Some make lint more useful.
-* `javax.annotation.Nullable` vs `android.support.annotation.Nullable`
-  * Always prefer `android.support.annotation.Nullable`.
+* `javax.annotation.Nullable` vs `androidx.annotation.Nullable`
+  * Always prefer `androidx.annotation.Nullable`.
   * It uses `@Retention(SOURCE)` rather than `@Retention(RUNTIME)`.
 
 ## Tools
