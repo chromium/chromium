@@ -221,6 +221,8 @@ const char* ExternalWebAppManager::kHistogramDisabledCount =
     "WebApp.Preinstalled.DisabledCount";
 const char* ExternalWebAppManager::kHistogramConfigErrorCount =
     "WebApp.Preinstalled.ConfigErrorCount";
+const char* ExternalWebAppManager::kHistogramInstallResult =
+    "Webapp.InstallResult.Default";
 const char* ExternalWebAppManager::kHistogramUninstallAndReplaceCount =
     "WebApp.Preinstalled.UninstallAndReplaceCount";
 
@@ -390,11 +392,10 @@ void ExternalWebAppManager::PostProcessConfigs(ConsumeInstallOptions callback,
     debug_info_->enabled_configs = parsed_configs.options_list;
   }
 
-  UMA_HISTOGRAM_COUNTS_100(ExternalWebAppManager::kHistogramEnabledCount,
+  UMA_HISTOGRAM_COUNTS_100(kHistogramEnabledCount,
                            parsed_configs.options_list.size());
-  UMA_HISTOGRAM_COUNTS_100(ExternalWebAppManager::kHistogramDisabledCount,
-                           disabled_count);
-  UMA_HISTOGRAM_COUNTS_100(ExternalWebAppManager::kHistogramConfigErrorCount,
+  UMA_HISTOGRAM_COUNTS_100(kHistogramDisabledCount, disabled_count);
+  UMA_HISTOGRAM_COUNTS_100(kHistogramConfigErrorCount,
                            parsed_configs.errors.size());
 
   std::move(callback).Run(parsed_configs.options_list);
@@ -424,14 +425,13 @@ void ExternalWebAppManager::OnExternalWebAppsSynchronized(
 
   size_t uninstall_and_replace_count = 0;
   for (const auto& url_and_result : install_results) {
-    UMA_HISTOGRAM_ENUMERATION("Webapp.InstallResult.Default",
+    UMA_HISTOGRAM_ENUMERATION(kHistogramInstallResult,
                               url_and_result.second.code);
     if (url_and_result.second.did_uninstall_and_replace)
       ++uninstall_and_replace_count;
   }
-  UMA_HISTOGRAM_COUNTS_100(
-      ExternalWebAppManager::kHistogramUninstallAndReplaceCount,
-      uninstall_and_replace_count);
+  UMA_HISTOGRAM_COUNTS_100(kHistogramUninstallAndReplaceCount,
+                           uninstall_and_replace_count);
 
   if (callback) {
     std::move(callback).Run(std::move(install_results),
