@@ -185,9 +185,10 @@ void CastChannelAPI::OnListenerAdded(const EventListenerInfo& details) {
   if (message_handler_)
     return;
 
-  message_handler_.reset(new CastMessageHandler(
-      base::Bind(&CastChannelAPI::SendEvent, AsWeakPtr(), details.extension_id),
-      cast_socket_service_));
+  message_handler_ = std::make_unique<CastMessageHandler>(
+      base::BindRepeating(&CastChannelAPI::SendEvent, AsWeakPtr(),
+                          details.extension_id),
+      cast_socket_service_);
   cast_socket_service_->task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&CastMessageHandler::Init,
                                 base::Unretained(message_handler_.get())));
