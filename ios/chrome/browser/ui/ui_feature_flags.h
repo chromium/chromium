@@ -37,9 +37,6 @@ extern const base::Feature kTestFeature;
 // Feature flag that enables the native UI Context Menus (not for Web content).
 extern const base::Feature kEnableNativeContextMenus;
 
-// Feature flag to enable MyGoogle account management UI in iOS Settings.
-extern const base::Feature kEnableMyGoogle;
-
 // Feature flag to enable showing a different UI when the setting is managed by
 // an enterprise policy.
 extern const base::Feature kEnableIOSManagedSettingsUI;

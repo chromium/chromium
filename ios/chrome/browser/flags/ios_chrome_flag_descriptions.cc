@@ -199,10 +199,6 @@ const char kEnableIOSManagedSettingsUIDescription[] =
     "Enable showing a different UI when the setting is managed by an "
     "enterprise policy on iOS.";
 
-const char kEnableMyGoogleName[] = "Enable MyGoogle UI";
-const char kEnableMyGoogleDescription[] =
-    "Enable MyGoogle account management UI in iOS Settings";
-
 const char kEnableNativeContextMenusName[] =
     "Enable Context Menus in Native UI";
 const char kEnableNativeContextMenusDescription[] =

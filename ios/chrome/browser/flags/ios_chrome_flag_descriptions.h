@@ -173,11 +173,6 @@ extern const char kEnableIncognitoModeAvailabilityIOSDescription[];
 extern const char kEnableIOSManagedSettingsUIName[];
 extern const char kEnableIOSManagedSettingsUIDescription[];
 
-// Title and description for the flag to enable MyGoogle account management
-// UI in iOS Settings.
-extern const char kEnableMyGoogleName[];
-extern const char kEnableMyGoogleDescription[];
-
 // Title and description for the flag to enable new context menus for native UI.
 extern const char kEnableNativeContextMenusName[];
 extern const char kEnableNativeContextMenusDescription[];
