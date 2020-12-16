@@ -95,8 +95,8 @@ struct HidDeviceManager::GetApiDevicesParams {
  public:
   GetApiDevicesParams(const Extension* extension,
                       const std::vector<HidDeviceFilter>& filters,
-                      const GetApiDevicesCallback& callback)
-      : extension(extension), filters(filters), callback(callback) {}
+                      GetApiDevicesCallback callback)
+      : extension(extension), filters(filters), callback(std::move(callback)) {}
   ~GetApiDevicesParams() {}
 
   const Extension* extension;
@@ -128,7 +128,7 @@ HidDeviceManager::GetFactoryInstance() {
 void HidDeviceManager::GetApiDevices(
     const Extension* extension,
     const std::vector<HidDeviceFilter>& filters,
-    const GetApiDevicesCallback& callback) {
+    GetApiDevicesCallback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
   LazyInitialize();
 
@@ -136,10 +136,10 @@ void HidDeviceManager::GetApiDevices(
     std::unique_ptr<base::ListValue> devices =
         CreateApiDeviceList(extension, filters);
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(callback, std::move(devices)));
+        FROM_HERE, base::BindOnce(std::move(callback), std::move(devices)));
   } else {
-    pending_enumerations_.push_back(
-        std::make_unique<GetApiDevicesParams>(extension, filters, callback));
+    pending_enumerations_.push_back(std::make_unique<GetApiDevicesParams>(
+        extension, filters, std::move(callback)));
   }
 }
 
@@ -360,7 +360,7 @@ void HidDeviceManager::OnEnumerationComplete(
   for (const auto& params : pending_enumerations_) {
     std::unique_ptr<base::ListValue> devices =
         CreateApiDeviceList(params->extension, params->filters);
-    params->callback.Run(std::move(devices));
+    std::move(params->callback).Run(std::move(devices));
   }
   pending_enumerations_.clear();
 }

@@ -39,7 +39,7 @@ class DevicePermissionsPrompt {
   using UsbDevicesCallback =
       base::Callback<void(std::vector<device::mojom::UsbDeviceInfoPtr>)>;
   using HidDevicesCallback =
-      base::Callback<void(std::vector<device::mojom::HidDeviceInfoPtr>)>;
+      base::OnceCallback<void(std::vector<device::mojom::HidDeviceInfoPtr>)>;
 
   // Context information available to the UI implementation.
   class Prompt : public base::RefCounted<Prompt> {
@@ -136,7 +136,7 @@ class DevicePermissionsPrompt {
                         content::BrowserContext* context,
                         bool multiple,
                         const std::vector<device::HidDeviceFilter>& filters,
-                        const HidDevicesCallback& callback);
+                        HidDevicesCallback callback);
 
   static scoped_refptr<Prompt> CreateHidPromptForTest(
       const Extension* extension,

@@ -87,7 +87,7 @@ ExtensionFunction::ResponseAction HidGetDevicesFunction::Run() {
 
   device_manager->GetApiDevices(
       extension(), filters,
-      base::Bind(&HidGetDevicesFunction::OnEnumerationComplete, this));
+      base::BindOnce(&HidGetDevicesFunction::OnEnumerationComplete, this));
   return RespondLater();
 }
 
@@ -130,7 +130,8 @@ ExtensionFunction::ResponseAction HidGetUserSelectedDevicesFunction::Run() {
   CHECK(prompt_);
   prompt_->AskForHidDevices(
       extension(), browser_context(), multiple, filters,
-      base::Bind(&HidGetUserSelectedDevicesFunction::OnDevicesChosen, this));
+      base::BindOnce(&HidGetUserSelectedDevicesFunction::OnDevicesChosen,
+                     this));
   return RespondLater();
 }
 

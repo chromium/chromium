@@ -38,7 +38,7 @@ class HidDeviceManager : public BrowserContextKeyedAPI,
                          public device::mojom::HidManagerClient,
                          public EventRouter::Observer {
  public:
-  typedef base::Callback<void(std::unique_ptr<base::ListValue>)>
+  typedef base::OnceCallback<void(std::unique_ptr<base::ListValue>)>
       GetApiDevicesCallback;
 
   using ConnectCallback = device::mojom::HidManager::ConnectCallback;
@@ -60,7 +60,7 @@ class HidDeviceManager : public BrowserContextKeyedAPI,
   // objects.
   void GetApiDevices(const Extension* extension,
                      const std::vector<device::HidDeviceFilter>& filters,
-                     const GetApiDevicesCallback& callback);
+                     GetApiDevicesCallback callback);
 
   // Converts a list of device::mojom::HidDeviceInfo objects into a value that
   // can be returned through the API.

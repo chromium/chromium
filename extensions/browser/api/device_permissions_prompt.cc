@@ -195,11 +195,11 @@ class HidDevicePermissionsPrompt : public DevicePermissionsPrompt::Prompt,
       content::BrowserContext* context,
       bool multiple,
       const std::vector<HidDeviceFilter>& filters,
-      const DevicePermissionsPrompt::HidDevicesCallback& callback)
+      DevicePermissionsPrompt::HidDevicesCallback callback)
       : Prompt(extension, context, multiple),
         initialized_(false),
         filters_(filters),
-        callback_(callback) {}
+        callback_(std::move(callback)) {}
 
  private:
   ~HidDevicePermissionsPrompt() override {}
@@ -249,8 +249,7 @@ class HidDevicePermissionsPrompt : public DevicePermissionsPrompt::Prompt,
       }
     }
     DCHECK(multiple() || devices.size() <= 1);
-    callback_.Run(std::move(devices));
-    callback_.Reset();
+    std::move(callback_).Run(std::move(devices));
   }
 
   // device::mojom::HidManagerClient implementation:
@@ -381,9 +380,9 @@ void DevicePermissionsPrompt::AskForHidDevices(
     content::BrowserContext* context,
     bool multiple,
     const std::vector<HidDeviceFilter>& filters,
-    const HidDevicesCallback& callback) {
+    HidDevicesCallback callback) {
   prompt_ = base::MakeRefCounted<HidDevicePermissionsPrompt>(
-      extension, context, multiple, filters, callback);
+      extension, context, multiple, filters, std::move(callback));
   ShowDialog();
 }
 
