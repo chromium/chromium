@@ -423,7 +423,8 @@ TEST_P(VaapiVideoDecodeAcceleratorTest, SupportedPlatforms) {
 }
 
 // This test checks that QueueInputBuffer() fails when state is kUnitialized.
-TEST_P(VaapiVideoDecodeAcceleratorTest, QueueInputBufferAndError) {
+TEST_P(VaapiVideoDecodeAcceleratorTest,
+       QueueInputBufferAndErrorWhenVDAUninitialized) {
   SetVdaStateToUnitialized();
 
   auto region = base::UnsafeSharedMemoryRegion::TakeHandleForSerialization(
@@ -454,8 +455,31 @@ TEST_P(VaapiVideoDecodeAcceleratorTest, QueueInputBufferAndDecodeError) {
   run_loop.Run();
 }
 
+TEST_P(VaapiVideoDecodeAcceleratorTest, QueueVP9Profile2AndError) {
+  if (GetParam().video_codec != VP9PROFILE_PROFILE2)
+    GTEST_SKIP() << "The test parameter is not vp9 profile 2";
+
+  auto region = base::UnsafeSharedMemoryRegion::TakeHandleForSerialization(
+      in_shm_.Duplicate());
+  BitstreamBuffer bitstream_buffer(kBitstreamId, std::move(region), kInputSize);
+  base::RunLoop run_loop;
+  EXPECT_CALL(*mock_decoder_,
+              SetStream(_, IsExpectedDecoderBuffer(kInputSize, nullptr)))
+      .WillOnce(Return());
+  EXPECT_CALL(*mock_decoder_, Decode())
+      .WillOnce(Return(AcceleratedVideoDecoder::kConfigChange));
+  EXPECT_CALL(*mock_decoder_, GetBitDepth()).WillOnce(Return(10u));
+  EXPECT_CALL(*this, NotifyError(VaapiVideoDecodeAccelerator::PLATFORM_FAILURE))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
+
+  QueueInputBuffer(std::move(bitstream_buffer));
+  run_loop.Run();
+}
+
 // Verifies a single fast frame decoding..
 TEST_P(VaapiVideoDecodeAcceleratorTest, DecodeOneFrame) {
+  if (GetParam().video_codec == VP9PROFILE_PROFILE2)
+    GTEST_SKIP() << "Decoding profile 2 is not supported";
   DecodeOneFrameFast(kBitstreamId);
 
   ResetSequence();
@@ -465,6 +489,8 @@ TEST_P(VaapiVideoDecodeAcceleratorTest, DecodeOneFrame) {
 // |vda_| asks for PictureBuffers, that we provide via AssignPictureBuffers().
 TEST_P(VaapiVideoDecodeAcceleratorTest,
        QueueInputBuffersAndAssignPictureBuffers) {
+  if (GetParam().video_codec == VP9PROFILE_PROFILE2)
+    GTEST_SKIP() << "Decoding profile 2 is not supported";
   QueueInputBufferSequence(kNumPictures, kPictureSize, kBitstreamId);
 
   AssignPictureBuffersSequence(kNumPictures, kPictureSize, kBitstreamId);
@@ -479,6 +505,8 @@ TEST_P(VaapiVideoDecodeAcceleratorTest,
 // is purely ingress-wise, i.e. there's no decoded output checks.
 TEST_P(VaapiVideoDecodeAcceleratorTest,
        QueueInputBuffersAndAssignPictureBuffersAndReallocate) {
+  if (GetParam().video_codec == VP9PROFILE_PROFILE2)
+    GTEST_SKIP() << "Decoding profile 2 is not supported";
   QueueInputBufferSequence(kNumPictures, kPictureSize, kBitstreamId);
 
   AssignPictureBuffersSequence(kNumPictures, kPictureSize, kBitstreamId);
@@ -501,7 +529,9 @@ constexpr TestParams kTestCases[] = {
     {H264PROFILE_MIN, true /* decode_using_client_picture_buffers */},
     {VP8PROFILE_MIN, false /* decode_using_client_picture_buffers */},
     {VP9PROFILE_MIN, false /* decode_using_client_picture_buffers */},
-    {VP9PROFILE_MIN, true /* decode_using_client_picture_buffers */}};
+    {VP9PROFILE_MIN, true /* decode_using_client_picture_buffers */},
+    {VP9PROFILE_PROFILE2, false /* decode_using_client_picture_buffers */},
+};
 
 INSTANTIATE_TEST_SUITE_P(All,
                          VaapiVideoDecodeAcceleratorTest,

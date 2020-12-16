@@ -469,10 +469,10 @@ void VaapiVideoDecodeAccelerator::DecodeTask() {
 
     switch (res) {
       case AcceleratedVideoDecoder::kConfigChange: {
+        const uint8_t bit_depth = decoder_->GetBitDepth();
         RETURN_AND_NOTIFY_ON_FAILURE(
-            decoder_->GetBitDepth() == 8u,
-            "Unsupported bit depth: "
-                << base::strict_cast<int>(decoder_->GetBitDepth()),
+            bit_depth == 8u,
+            "Unsupported bit depth: " << base::strict_cast<int>(bit_depth),
             PLATFORM_FAILURE, );
         // The visible rect should be a subset of the picture size. Otherwise,
         // the encoded stream is bad.
