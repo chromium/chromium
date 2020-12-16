@@ -46,7 +46,3 @@ bool ManagedConfigurationAPIFactory::ServiceIsCreatedWithBrowserContext()
     const {
   return true;
 }
-
-bool ManagedConfigurationAPIFactory::ServiceIsNULLWhileTesting() const {
-  return true;
-}

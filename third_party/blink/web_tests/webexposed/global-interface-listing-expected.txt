@@ -1569,9 +1569,12 @@ interface DeviceOrientationEvent : Event
     getter beta
     getter gamma
     method constructor
-interface DeviceService
+interface DeviceService : EventTarget
     attribute @@toStringTag
+    getter onmanagedconfigurationchange
     method constructor
+    method getManagedConfiguration
+    setter onmanagedconfigurationchange
 interface Document : Node
     attribute @@toStringTag
     attribute @@unscopables

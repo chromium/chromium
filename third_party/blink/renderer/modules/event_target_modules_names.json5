@@ -15,6 +15,7 @@
     "BluetoothRemoteGATTCharacteristic",
     "CookieStore",
     "DelegatedInkTrail",
+    "DeviceService",
     "MediaKeySession",
     "FileWriter",
     "GPUDevice",

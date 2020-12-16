@@ -41,7 +41,6 @@ class ManagedConfigurationAPIFactory
   void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
   bool ServiceIsCreatedWithBrowserContext() const override;
-  bool ServiceIsNULLWhileTesting() const override;
 };
 
 #endif  // CHROME_BROWSER_DEVICE_API_MANAGED_CONFIGURATION_API_FACTORY_H_

@@ -176,6 +176,7 @@
     "loadingerror",
     "loadstart",
     "lostpointercapture",
+    "managedconfigurationchange",
     "mark",
     "message",
     "messageerror",

@@ -3,8 +3,28 @@
 // found in the LICENSE file.
 module blink.mojom;
 
+// Managed configuration is JSON configuration that is set by device
+// administrator and is provided by policy.
+// Observes changes to the managed configuration.
+interface ManagedConfigurationObserver {
+  // Is called whenever the managed configuration changes.
+  OnConfigurationChanged();
+};
+
 // This interface is used to handle the information / status passed by the
-// navigator.device interface. It is exposed to trusted applications only.
+// navigator.device interface. It is exposed to trusted origins only.
+// The connection is hosted in the browser process and is used from the
+// renderer process.
+// The connection is terminated when the origin trustness status changes.
 interface DeviceAPIService {
+  // Requests from browser the managed configuration mapped by |keys| provided
+  // by the device administrator. Returns a dictionary, containing JSON
+  // serialized value of the keys that were found in that configuration.
+  GetManagedConfiguration(array<string> keys) =>
+                          (map<string, string> configurations);
+  // Allows to subscribe to the managed configuration updates.
+  SubscribeToManagedConfiguration(
+    pending_remote<ManagedConfigurationObserver> observer);
+
 };
 

@@ -6,10 +6,12 @@
 
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
+#include "third_party/blink/renderer/modules/event_target_modules.h"
 
 namespace blink {
 
@@ -18,7 +20,6 @@ namespace {
 const DOMExceptionCode kDOMExceptionCode = DOMExceptionCode::kNotAllowedError;
 const char kDOMExceptionMessage[] =
     "This API is available only for high trusted apps.";
-
 }  // namespace
 
 const char DeviceService::kSupplementName[] = "DeviceService";
@@ -38,18 +39,31 @@ DeviceService* DeviceService::device(Navigator& navigator) {
 
 DeviceService::DeviceService(Navigator& navigator)
     : Supplement<Navigator>(navigator),
-      device_api_service_(navigator.DomWindow()) {}
+      device_api_service_(navigator.DomWindow()),
+      configuration_observer_(this, navigator.DomWindow()) {}
+
+const AtomicString& DeviceService::InterfaceName() const {
+  return event_target_names::kDeviceService;
+}
 
 ExecutionContext* DeviceService::GetExecutionContext() const {
   return GetSupplementable()->DomWindow();
 }
 
+bool DeviceService::HasPendingActivity() const {
+  // Prevents garbage collecting of this object when not hold by another
+  // object but still has listeners registered.
+  return !pending_promises_.IsEmpty() || HasEventListeners();
+}
+
 void DeviceService::Trace(Visitor* visitor) const {
-  ScriptWrappable::Trace(visitor);
+  EventTargetWithInlineData::Trace(visitor);
+  ActiveScriptWrappable::Trace(visitor);
   Supplement<Navigator>::Trace(visitor);
 
   visitor->Trace(device_api_service_);
   visitor->Trace(pending_promises_);
+  visitor->Trace(configuration_observer_);
 }
 
 mojom::blink::DeviceAPIService* DeviceService::GetService() {
@@ -72,6 +86,72 @@ void DeviceService::OnServiceConnectionError() {
   for (ScriptPromiseResolver* resolver : pending_promises_)
     resolver->Reject(MakeGarbageCollected<DOMException>(kDOMExceptionCode,
                                                         kDOMExceptionMessage));
+}
+
+ScriptPromise DeviceService::getManagedConfiguration(ScriptState* script_state,
+                                                     Vector<String> keys) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  pending_promises_.insert(resolver);
+
+  ScriptPromise promise = resolver->Promise();
+  GetService()->GetManagedConfiguration(
+      keys, Bind(&DeviceService::OnConfigurationReceived,
+                 WrapWeakPersistent(this), WrapPersistent(resolver)));
+  return promise;
+}
+
+void DeviceService::OnConfigurationReceived(
+    ScriptPromiseResolver* scoped_resolver,
+    const HashMap<String, String>& configurations) {
+  pending_promises_.erase(scoped_resolver);
+
+  ScriptState* script_state = scoped_resolver->GetScriptState();
+  ScriptState::Scope scope(script_state);
+
+  V8ObjectBuilder result(script_state);
+  for (const auto& config_pair : configurations) {
+    v8::Local<v8::Value> v8_object;
+    if (v8::JSON::Parse(script_state->GetContext(),
+                        V8String(script_state->GetIsolate(), config_pair.value))
+            .ToLocal(&v8_object)) {
+      result.Add(config_pair.key, v8_object);
+    }
+  }
+  scoped_resolver->Resolve(result.GetScriptValue());
+}
+
+void DeviceService::OnConfigurationChanged() {
+  DispatchEvent(*Event::Create(event_type_names::kManagedconfigurationchange));
+}
+
+void DeviceService::AddedEventListener(
+    const AtomicString& event_type,
+    RegisteredEventListener& registered_listener) {
+  EventTargetWithInlineData::AddedEventListener(event_type,
+                                                registered_listener);
+  if (event_type == event_type_names::kManagedconfigurationchange) {
+    if (!configuration_observer_.is_bound()) {
+      GetService()->SubscribeToManagedConfiguration(
+          configuration_observer_.BindNewPipeAndPassRemote(
+              GetExecutionContext()->GetTaskRunner(
+                  TaskType::kMiscPlatformAPI)));
+    }
+  }
+}
+
+void DeviceService::RemovedEventListener(
+    const AtomicString& event_type,
+    const RegisteredEventListener& registered_listener) {
+  EventTargetWithInlineData::RemovedEventListener(event_type,
+                                                  registered_listener);
+  if (!HasEventListeners())
+    StopObserving();
+}
+
+void DeviceService::StopObserving() {
+  if (!configuration_observer_.is_bound())
+    return;
+  configuration_observer_.reset();
 }
 
 }  // namespace blink
