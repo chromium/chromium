@@ -373,6 +373,10 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   // timers useful for Spectre-style side channel attacks, so are restricted
   // to cross-origin isolated contexts.
   bool SharedArrayBufferTransferAllowed() const;
+  // Returns SharedArrayBufferTransferAllowed() but potentially reports an
+  // inspector issue if the transfer was disallowed, or will be disallowed in
+  // the future.
+  bool CheckSharedArrayBufferTransferAllowedAndReport();
 
   virtual ukm::UkmRecorder* UkmRecorder() { return nullptr; }
   virtual ukm::SourceId UkmSourceID() const { return ukm::kInvalidSourceId; }
@@ -435,6 +439,8 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   bool is_context_destroyed_;
 
   bool is_in_back_forward_cache_ = false;
+
+  bool has_filed_shared_array_buffer_transfer_issue_ = false;
 
   Member<PublicURLManager> public_url_manager_;
 

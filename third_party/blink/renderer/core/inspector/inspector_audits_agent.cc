@@ -192,6 +192,9 @@ blink::protocol::String InspectorIssueCodeValue(
     case mojom::blink::InspectorIssueCode::kContentSecurityPolicyIssue:
       return protocol::Audits::InspectorIssueCodeEnum::
           ContentSecurityPolicyIssue;
+    case mojom::blink::InspectorIssueCode::kSharedArrayBufferTransferIssue:
+      return protocol::Audits::InspectorIssueCodeEnum::
+          SharedArrayBufferTransferIssue;
   }
 }
 
@@ -516,6 +519,21 @@ void InspectorAuditsAgent::InspectorIssueAdded(InspectorIssue* issue) {
     if (d->violating_node_id)
       cspDetails.setViolatingNodeId(d->violating_node_id);
     issueDetails.setContentSecurityPolicyIssueDetails(cspDetails.build());
+  }
+
+  if (issue->Details()->sab_transfer_details) {
+    const auto* d = issue->Details()->sab_transfer_details.get();
+    auto source_location = protocol::Audits::SourceCodeLocation::create()
+                               .setUrl(d->source_location->url)
+                               .setColumnNumber(d->source_location->column)
+                               .setLineNumber(d->source_location->line)
+                               .build();
+    auto details =
+        protocol::Audits::SharedArrayBufferTransferIssueDetails::create()
+            .setIsWarning(d->is_warning)
+            .setSourceCodeLocation(std::move(source_location))
+            .build();
+    issueDetails.setSharedArrayBufferTransferIssueDetails(std::move(details));
   }
 
   auto inspector_issue = protocol::Audits::InspectorIssue::create()

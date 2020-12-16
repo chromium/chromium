@@ -118,7 +118,7 @@ scoped_refptr<SerializedScriptValue> V8ScriptValueSerializer::Serialize(
 
   if (shared_array_buffers_.size()) {
     auto* execution_context = ExecutionContext::From(script_state_);
-    if (!execution_context->SharedArrayBufferTransferAllowed()) {
+    if (!execution_context->CheckSharedArrayBufferTransferAllowedAndReport()) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kDataCloneError,
           "SharedArrayBuffer transfer requires self.crossOriginIsolated.");

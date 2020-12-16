@@ -29,6 +29,7 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "third_party/blink/public/common/feature_policy/document_policy_features.h"
+#include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/feature_policy/policy_disposition.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -184,6 +185,33 @@ unsigned ExecutionContext::ContextLifecycleStateObserverCountForTesting()
 bool ExecutionContext::SharedArrayBufferTransferAllowed() const {
   return RuntimeEnabledFeatures::SharedArrayBufferEnabled(this) ||
          CrossOriginIsolatedCapability();
+}
+
+bool ExecutionContext::CheckSharedArrayBufferTransferAllowedAndReport() {
+  const bool allowed = SharedArrayBufferTransferAllowed();
+  // File an issue if the transfer is prohibited, or if it will be prohibited
+  // in the future, and the problem is encountered for the first time in this
+  // execution context. This preserves postMessage performance during the
+  // transition period.
+  if (!allowed || (!has_filed_shared_array_buffer_transfer_issue_ &&
+                   !CrossOriginIsolatedCapability())) {
+    has_filed_shared_array_buffer_transfer_issue_ = true;
+    auto source_location = SourceLocation::Capture(this);
+    auto details = mojom::blink::InspectorIssueDetails::New();
+    auto issue_details =
+        mojom::blink::SharedArrayBufferTransferIssueDetails::New();
+    issue_details->is_warning = allowed;
+    auto mojo_source_location = network::mojom::blink::SourceLocation::New();
+    mojo_source_location->url = source_location->Url();
+    mojo_source_location->line = source_location->LineNumber();
+    mojo_source_location->column = source_location->ColumnNumber();
+    issue_details->source_location = std::move(mojo_source_location);
+    details->sab_transfer_details = std::move(issue_details);
+    AddInspectorIssue(mojom::blink::InspectorIssueInfo::New(
+        mojom::blink::InspectorIssueCode::kSharedArrayBufferTransferIssue,
+        std::move(details)));
+  }
+  return allowed;
 }
 
 void ExecutionContext::AddConsoleMessageImpl(mojom::ConsoleMessageSource source,

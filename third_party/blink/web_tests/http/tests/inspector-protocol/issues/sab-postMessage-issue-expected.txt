@@ -1,0 +1,18 @@
+Verifies that post-messaging a SAB causes an issue.
+
+Inspector issue: {
+    issue : {
+        code : SharedArrayBufferTransferIssue
+        details : {
+            sharedArrayBufferTransferIssueDetails : {
+                isWarning : true
+                sourceCodeLocation : {
+                    columnNumber : 1
+                    lineNumber : 1
+                    url : 
+                }
+            }
+        }
+    }
+}
+

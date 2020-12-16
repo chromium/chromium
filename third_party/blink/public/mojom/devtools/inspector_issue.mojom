@@ -17,6 +17,7 @@ enum InspectorIssueCode {
   kMixedContentIssue,
   kBlockedByResponseIssue,
   kContentSecurityPolicyIssue,
+  kSharedArrayBufferTransferIssue,
 };
 
 // Information about a cookie that is affected by an issue.
@@ -120,6 +121,11 @@ struct SameSiteCookieIssueDetails {
   AffectedRequest? request;
 };
 
+struct SharedArrayBufferTransferIssueDetails {
+  network.mojom.SourceLocation? source_location;
+  bool is_warning;
+};
+
 // A collection of optional fields that may store additional data depending
 // on the issue code.
 struct InspectorIssueDetails {
@@ -127,6 +133,7 @@ struct InspectorIssueDetails {
   MixedContentIssueDetails? mixed_content_issue_details;
   BlockedByResponseIssueDetails? blocked_by_response_issue_details;
   ContentSecurityPolicyIssueDetails? csp_issue_details;
+  SharedArrayBufferTransferIssueDetails? sab_transfer_details;
 };
 
 struct InspectorIssueInfo {
