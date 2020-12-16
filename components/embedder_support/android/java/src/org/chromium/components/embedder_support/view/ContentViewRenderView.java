@@ -29,7 +29,6 @@ import org.chromium.ui.base.WindowAndroid;
 public class ContentViewRenderView extends FrameLayout {
     // The native side of this object.
     private long mNativeContentViewRenderView;
-    private SurfaceHolder.Callback mSurfaceCallback;
     private WindowAndroid mWindowAndroid;
 
     protected SurfaceBridge mSurfaceBridge;
