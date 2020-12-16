@@ -6228,6 +6228,12 @@ others/histograms.xml -->
       label="BackForwardCache is disabled through command line (may include
              cases where the embedder disabled it due to, e.g., enterprise
              policy)"/>
+  <int value="36" label="kFrameTreeNodeStateReset (removed)"/>
+  <int value="37" label="Network request datapipe drained"/>
+  <int value="38" label="Network request redirected"/>
+  <int value="39" label="Network request timed out"/>
+  <int value="40" label="Network request exceeds buffer limit"/>
+  <int value="41" label="Navigation was cancelled while restoring"/>
 </enum>
 
 <enum name="BackForwardCacheReloadsAfterHistoryNavigation">
