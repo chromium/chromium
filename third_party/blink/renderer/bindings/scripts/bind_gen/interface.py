@@ -1443,24 +1443,18 @@ def make_steps_of_ce_reactions(cg_context):
             or cg_context.named_property_setter
             or cg_context.named_property_deleter)
 
-    T = TextNode
-
-    nodes = []
-
-    ext_attrs = cg_context.member_like.extended_attributes
-    if "Reflect" in ext_attrs:
-        nodes.append(T("// [Reflect]"))
-
-    if "CEReactions" in ext_attrs:
-        nodes.append(T("// [CEReactions]"))
-        nodes.append(T("CEReactionsScope ce_reactions_scope;"))
-        nodes[-1].accumulate(
-            CodeGenAccumulator.require_include_headers([
-                "third_party/blink/renderer/core/html/custom/ce_reactions_scope.h"
-            ]))
-
-    if not nodes:
+    if "CEReactions" not in cg_context.member_like.extended_attributes:
         return None
+
+    nodes = [
+        TextNode("// [CEReactions]"),
+        TextNode("CEReactionsScope ce_reactions_scope;"),
+    ]
+
+    nodes[-1].accumulate(
+        CodeGenAccumulator.require_include_headers([
+            "third_party/blink/renderer/core/html/custom/ce_reactions_scope.h"
+        ]))
 
     # CEReactions scope is not tolerant of V8 exception, so it's necessary to
     # invoke custom element reactions before throwing an exception.  Thus, put
