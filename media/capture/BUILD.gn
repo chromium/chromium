@@ -536,6 +536,7 @@ test("capture_unittests") {
       "video/chromeos/camera_hal_delegate_unittest.cc",
       "video/chromeos/camera_hal_dispatcher_impl_unittest.cc",
       "video/chromeos/request_manager_unittest.cc",
+      "video/chromeos/token_manager_unittest.cc",
     ]
     deps += [
       "//build/config/linux/libdrm",

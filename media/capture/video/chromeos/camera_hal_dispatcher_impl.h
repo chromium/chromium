@@ -58,6 +58,8 @@ class CAPTURE_EXPORT CameraClientObserver {
   cros::mojom::CameraClientType GetType() { return type_; }
   const base::UnguessableToken GetAuthToken() { return auth_token_; }
 
+  bool Authenticate(TokenManager* token_manager);
+
  private:
   cros::mojom::CameraClientType type_;
   base::UnguessableToken auth_token_;

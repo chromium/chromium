@@ -15,6 +15,7 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/rand_util.h"
 #include "base/single_thread_task_runner.h"
@@ -100,6 +101,16 @@ class MojoCameraClientObserver : public CameraClientObserver {
 }  // namespace
 
 CameraClientObserver::~CameraClientObserver() = default;
+
+bool CameraClientObserver::Authenticate(TokenManager* token_manager) {
+  auto authenticated_type =
+      token_manager->AuthenticateClient(type_, auth_token_);
+  if (!authenticated_type) {
+    return false;
+  }
+  type_ = authenticated_type.value();
+  return true;
+}
 
 FailedCameraHalServerCallbacks::FailedCameraHalServerCallbacks()
     : callbacks_(this) {}
@@ -300,14 +311,7 @@ void CameraHalDispatcherImpl::RegisterServerWithToken(
 
 void CameraHalDispatcherImpl::RegisterClient(
     mojo::PendingRemote<cros::mojom::CameraHalClient> client) {
-  // RegisterClient can be called locally by ArcCameraBridge, so it's not
-  // necessarily called on |proxy_thread_|.
-
-  // TODO(b/170075468): Reject this call once we've migrated all camera clients.
-  auto temporary_token = base::UnguessableToken::Create();
-  RegisterClientWithToken(std::move(client),
-                          cros::mojom::CameraClientType::UNKNOWN,
-                          temporary_token, base::DoNothing());
+  NOTREACHED() << "RegisterClient() is disabled";
 }
 
 void CameraHalDispatcherImpl::RegisterClientWithToken(
@@ -551,8 +555,7 @@ void CameraHalDispatcherImpl::AddClientObserverOnProxyThread(
     std::unique_ptr<CameraClientObserver> observer,
     base::OnceCallback<void(int32_t)> result_callback) {
   DCHECK(proxy_task_runner_->BelongsToCurrentThread());
-  if (!token_manager_.AuthenticateClient(observer->GetType(),
-                                         observer->GetAuthToken())) {
+  if (!observer->Authenticate(&token_manager_)) {
     LOG(ERROR) << "Failed to authenticate camera client observer";
     std::move(result_callback).Run(-EPERM);
     return;

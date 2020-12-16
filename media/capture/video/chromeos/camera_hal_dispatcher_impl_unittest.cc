@@ -11,6 +11,7 @@
 #include "base/posix/safe_strerror.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/test/task_environment.h"
 #include "media/capture/video/chromeos/mojom/camera_common.mojom.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom.h"
@@ -90,7 +91,8 @@ class MockCameraActiveClientObserver : public CameraActiveClientObserver {
 
 class CameraHalDispatcherImplTest : public ::testing::Test {
  public:
-  CameraHalDispatcherImplTest() = default;
+  CameraHalDispatcherImplTest()
+      : register_client_event_(base::WaitableEvent::ResetPolicy::AUTOMATIC) {}
 
   ~CameraHalDispatcherImplTest() override = default;
 
@@ -127,12 +129,15 @@ class CameraHalDispatcherImplTest : public ::testing::Test {
                                         std::move(callback));
   }
 
-  static void RegisterClient(
+  static void RegisterClientWithToken(
       CameraHalDispatcherImpl* dispatcher,
-      mojo::PendingRemote<cros::mojom::CameraHalClient> client) {
-    // TODO(b/170075468): Migrate to RegisterClientWithToken once the migration
-    // is done.
-    dispatcher->RegisterClient(std::move(client));
+      mojo::PendingRemote<cros::mojom::CameraHalClient> client,
+      cros::mojom::CameraClientType type,
+      const base::UnguessableToken& token,
+      cros::mojom::CameraHalDispatcher::RegisterClientWithTokenCallback
+          callback) {
+    dispatcher->RegisterClientWithToken(std::move(client), type, token,
+                                        std::move(callback));
   }
 
   void OnRegisteredServer(
@@ -145,10 +150,22 @@ class CameraHalDispatcherImplTest : public ::testing::Test {
     }
   }
 
+  void OnRegisteredClient(int32_t result) {
+    last_register_client_result_ = result;
+    if (result != 0) {
+      // If registration fails, CameraHalClient::SetUpChannel() will not be
+      // called, and we need to quit the run loop here.
+      QuitRunLoop();
+    }
+    register_client_event_.Signal();
+  }
+
  protected:
   // We can't use std::unique_ptr here because the constructor and destructor of
   // CameraHalDispatcherImpl are private.
   CameraHalDispatcherImpl* dispatcher_;
+  base::WaitableEvent register_client_event_;
+  int32_t last_register_client_result_;
 
  private:
   base::test::TaskEnvironment task_environment_;
@@ -179,13 +196,24 @@ TEST_F(CameraHalDispatcherImplTest, ServerConnectionError) {
           base::BindOnce(&CameraHalDispatcherImplTest::OnRegisteredServer,
                          base::Unretained(this))));
   auto client = mock_client->GetPendingRemote();
+  auto type = cros::mojom::CameraClientType::TESTING;
   GetProxyTaskRunner()->PostTask(
       FROM_HERE,
-      base::BindOnce(&CameraHalDispatcherImplTest::RegisterClient,
-                     base::Unretained(dispatcher_), std::move(client)));
+      base::BindOnce(
+          &CameraHalDispatcherImplTest::RegisterClientWithToken,
+          base::Unretained(dispatcher_), std::move(client), type,
+          dispatcher_->GetTokenForTrustedClient(type),
+          base::BindOnce(&CameraHalDispatcherImplTest::OnRegisteredClient,
+                         base::Unretained(this))));
 
   // Wait until the client gets the established Mojo channel.
   DoLoop();
+
+  // The client registration callback may be called after
+  // CameraHalClient::SetUpChannel(). Use a waitable event to make sure we have
+  // the result.
+  register_client_event_.Wait();
+  ASSERT_EQ(last_register_client_result_, 0);
 
   // Re-create a new server to simulate a server crash.
   mock_server = std::make_unique<MockCameraHalServer>();
@@ -234,15 +262,26 @@ TEST_F(CameraHalDispatcherImplTest, ClientConnectionError) {
           base::BindOnce(&CameraHalDispatcherImplTest::OnRegisteredServer,
                          base::Unretained(this))));
   auto client = mock_client->GetPendingRemote();
+  auto type = cros::mojom::CameraClientType::TESTING;
   GetProxyTaskRunner()->PostTask(
       FROM_HERE,
-      base::BindOnce(&CameraHalDispatcherImplTest::RegisterClient,
-                     base::Unretained(dispatcher_), std::move(client)));
+      base::BindOnce(
+          &CameraHalDispatcherImplTest::RegisterClientWithToken,
+          base::Unretained(dispatcher_), std::move(client), type,
+          dispatcher_->GetTokenForTrustedClient(type),
+          base::BindOnce(&CameraHalDispatcherImplTest::OnRegisteredClient,
+                         base::Unretained(this))));
 
   // Wait until the client gets the established Mojo channel.
   DoLoop();
 
-  // Re-create a new server to simulate a server crash.
+  // The client registration callback may be called after
+  // CameraHalClient::SetUpChannel(). Use a waitable event to make sure we have
+  // the result.
+  register_client_event_.Wait();
+  ASSERT_EQ(last_register_client_result_, 0);
+
+  // Re-create a new client to simulate a client crash.
   mock_client = std::make_unique<MockCameraHalClient>();
 
   // Make sure we re-create the Mojo channel from the same server to the new
@@ -254,13 +293,103 @@ TEST_F(CameraHalDispatcherImplTest, ClientConnectionError) {
           InvokeWithoutArgs(this, &CameraHalDispatcherImplTest::QuitRunLoop));
 
   client = mock_client->GetPendingRemote();
+  type = cros::mojom::CameraClientType::TESTING;
   GetProxyTaskRunner()->PostTask(
       FROM_HERE,
-      base::BindOnce(&CameraHalDispatcherImplTest::RegisterClient,
-                     base::Unretained(dispatcher_), std::move(client)));
+      base::BindOnce(
+          &CameraHalDispatcherImplTest::RegisterClientWithToken,
+          base::Unretained(dispatcher_), std::move(client), type,
+          dispatcher_->GetTokenForTrustedClient(type),
+          base::BindOnce(&CameraHalDispatcherImplTest::OnRegisteredClient,
+                         base::Unretained(this))));
 
   // Wait until the clients gets the newly established Mojo channel.
   DoLoop();
+
+  // Make sure the client is still successfully registered.
+  register_client_event_.Wait();
+  ASSERT_EQ(last_register_client_result_, 0);
+}
+
+// Test that trusted camera HAL clients (e.g., Chrome, Android, Testing) can be
+// registered successfully.
+TEST_F(CameraHalDispatcherImplTest, RegisterClientSuccess) {
+  // First verify that a the CameraHalDispatcherImpl establishes a Mojo channel
+  // between the server and the client.
+  auto mock_server = std::make_unique<MockCameraHalServer>();
+
+  auto server = mock_server->GetPendingRemote();
+  GetProxyTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &CameraHalDispatcherImplTest::RegisterServer,
+          base::Unretained(dispatcher_), std::move(server),
+          base::BindOnce(&CameraHalDispatcherImplTest::OnRegisteredServer,
+                         base::Unretained(this))));
+
+  for (auto type : TokenManager::kTrustedClientTypes) {
+    auto mock_client = std::make_unique<MockCameraHalClient>();
+    EXPECT_CALL(*mock_server, DoCreateChannel(_, _)).Times(1);
+    EXPECT_CALL(*mock_client, DoSetUpChannel(_))
+        .Times(1)
+        .WillOnce(
+            InvokeWithoutArgs(this, &CameraHalDispatcherImplTest::QuitRunLoop));
+
+    auto client = mock_client->GetPendingRemote();
+    GetProxyTaskRunner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &CameraHalDispatcherImplTest::RegisterClientWithToken,
+            base::Unretained(dispatcher_), std::move(client), type,
+            dispatcher_->GetTokenForTrustedClient(type),
+            base::BindOnce(&CameraHalDispatcherImplTest::OnRegisteredClient,
+                           base::Unretained(this))));
+
+    // Wait until the client gets the established Mojo channel.
+    DoLoop();
+
+    // The client registration callback may be called after
+    // CameraHalClient::SetUpChannel(). Use a waitable event to make sure we
+    // have the result.
+    register_client_event_.Wait();
+    ASSERT_EQ(last_register_client_result_, 0);
+  }
+}
+
+// Test that CameraHalClient registration fails when a wrong (empty) token is
+// provided.
+TEST_F(CameraHalDispatcherImplTest, RegisterClientFail) {
+  // First verify that a the CameraHalDispatcherImpl establishes a Mojo channel
+  // between the server and the client.
+  auto mock_server = std::make_unique<MockCameraHalServer>();
+  auto mock_client = std::make_unique<MockCameraHalClient>();
+
+  auto server = mock_server->GetPendingRemote();
+  GetProxyTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &CameraHalDispatcherImplTest::RegisterServer,
+          base::Unretained(dispatcher_), std::move(server),
+          base::BindOnce(&CameraHalDispatcherImplTest::OnRegisteredServer,
+                         base::Unretained(this))));
+
+  // Use an empty token to make sure authentication fails.
+  base::UnguessableToken empty_token;
+  auto client = mock_client->GetPendingRemote();
+  GetProxyTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &CameraHalDispatcherImplTest::RegisterClientWithToken,
+          base::Unretained(dispatcher_), std::move(client),
+          cros::mojom::CameraClientType::TESTING, empty_token,
+          base::BindOnce(&CameraHalDispatcherImplTest::OnRegisteredClient,
+                         base::Unretained(this))));
+
+  // We do not need to enter a run loop here because
+  // CameraHalClient::SetUpChannel() isn't expected to called, and we only need
+  // to wait for the callback from CameraHalDispatcher::RegisterClientWithToken.
+  register_client_event_.Wait();
+  ASSERT_EQ(last_register_client_result_, -EPERM);
 }
 
 // Test that CameraHalDispatcherImpl correctly fires CameraActiveClientObserver
