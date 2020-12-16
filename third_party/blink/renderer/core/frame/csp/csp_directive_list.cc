@@ -14,7 +14,6 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/space_split_string.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
-#include "third_party/blink/renderer/core/frame/csp/source_list_directive.h"
 #include "third_party/blink/renderer/core/frame/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_script_element.h"
@@ -344,11 +343,16 @@ void CSPDirectiveList::ReportMixedContent(
   }
 }
 
+bool CSPDirectiveList::RequiresTrustedTypes() const {
+  return require_trusted_types_for_ ==
+         network::mojom::blink::CSPRequireTrustedTypesFor::Script;
+}
+
 bool CSPDirectiveList::AllowTrustedTypeAssignmentFailure(
     const String& message,
     const String& sample,
     const String& sample_prefix) const {
-  if (!require_trusted_types_for_ || !require_trusted_types_for_->require())
+  if (!RequiresTrustedTypes())
     return true;
 
   ReportViolation(ContentSecurityPolicy::GetDirectiveName(
@@ -1140,19 +1144,6 @@ void CSPDirectiveList::AddTrustedTypes(const String& name,
       MakeGarbageCollected<StringListDirective>(name, value, policy_);
 }
 
-void CSPDirectiveList::RequireTrustedTypesFor(const String& name,
-                                              const String& value) {
-  if (require_trusted_types_for_) {
-    policy_->ReportDuplicateDirective(name);
-    return;
-  }
-  require_trusted_types_for_ =
-      MakeGarbageCollected<RequireTrustedTypesForDirective>(name, value,
-                                                            policy_);
-  if (require_trusted_types_for_->require())
-    policy_->RequireTrustedTypes();
-}
-
 void CSPDirectiveList::EnforceStrictMixedContentChecking(const String& name,
                                                          const String& value) {
   if (strict_mixed_content_checking_enforced_) {
@@ -1271,7 +1262,10 @@ void CSPDirectiveList::AddDirective(const String& name, const String& value) {
       ParseReportURI(name, value);
       return;
     case CSPDirectiveName::RequireTrustedTypesFor:
-      RequireTrustedTypesFor(name, value);
+      require_trusted_types_for_ =
+          CSPRequireTrustedTypesForParse(value, policy_);
+      if (RequiresTrustedTypes())
+        policy_->RequireTrustedTypes();
       return;
     case CSPDirectiveName::Sandbox:
       ApplySandboxPolicy(name, value);
@@ -1528,7 +1522,6 @@ bool CSPDirectiveList::IsScriptRestrictionReasonable() const {
 void CSPDirectiveList::Trace(Visitor* visitor) const {
   visitor->Trace(policy_);
   visitor->Trace(trusted_types_);
-  visitor->Trace(require_trusted_types_for_);
 }
 
 }  // namespace blink

@@ -165,9 +165,8 @@ class CORE_EXPORT CSPDirectiveList final
   // this judgement.
   bool IsScriptRestrictionReasonable() const;
 
-  bool RequiresTrustedTypes() const {
-    return require_trusted_types_for_ && require_trusted_types_for_->require();
-  }
+  bool RequiresTrustedTypes() const;
+
   bool TrustedTypesAllowDuplicates() const {
     return trusted_types_ && trusted_types_->IsAllowDuplicates();
   }
@@ -193,7 +192,6 @@ class CORE_EXPORT CSPDirectiveList final
                                          const String& value);
   void EnableInsecureRequestsUpgrade(const String& name, const String& value);
   void AddTrustedTypes(const String& name, const String& value);
-  void RequireTrustedTypesFor(const String& name, const String& value);
 
   CSPDirectiveName FallbackDirective(CSPDirectiveName current_directive,
                                      CSPDirectiveName original_directive) const;
@@ -324,7 +322,7 @@ class CORE_EXPORT CSPDirectiveList final
   network::mojom::blink::CSPSourceListPtr worker_src_;
   network::mojom::blink::CSPSourceListPtr navigate_to_;
   Member<StringListDirective> trusted_types_;
-  Member<RequireTrustedTypesForDirective> require_trusted_types_for_;
+  network::mojom::blink::CSPRequireTrustedTypesFor require_trusted_types_for_;
 
   // If a "report-to" directive is used:
   // - |report_endpoints_| is a list of token parsed from the "report-to"

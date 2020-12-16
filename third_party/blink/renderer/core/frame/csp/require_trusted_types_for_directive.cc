@@ -2,41 +2,33 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "require_trusted_types_for_directive.h"
-
-#include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
+#include "third_party/blink/renderer/core/frame/csp/require_trusted_types_for_directive.h"
 
 namespace blink {
 
-RequireTrustedTypesForDirective::RequireTrustedTypesForDirective(
-    const String& name,
+network::mojom::blink::CSPRequireTrustedTypesFor CSPRequireTrustedTypesForParse(
     const String& value,
-    ContentSecurityPolicy* policy)
-    : CSPDirective(name, value, policy),
-      require_trusted_types_for_script_(false) {
+    ContentSecurityPolicy* policy) {
   Vector<String> list;
   value.SimplifyWhiteSpace().Split(' ', false, list);
+
+  network::mojom::blink::CSPRequireTrustedTypesFor result =
+      network::mojom::blink::CSPRequireTrustedTypesFor::None;
 
   for (const String& v : list) {
     // The only value in the sink group is 'script'.
     // https://w3c.github.io/webappsec-trusted-types/dist/spec/#trusted-types-sink-group
     if (v == "'script'") {
-      require_trusted_types_for_script_ = true;
+      result = network::mojom::blink::CSPRequireTrustedTypesFor::Script;
     } else {
       policy->ReportInvalidRequireTrustedTypesFor(v);
     }
   }
-  if (!require_trusted_types_for_script_) {
+  if (result == network::mojom::blink::CSPRequireTrustedTypesFor::None) {
     policy->ReportInvalidRequireTrustedTypesFor(String());
   }
-}
 
-bool RequireTrustedTypesForDirective::require() const {
-  return require_trusted_types_for_script_;
-}
-
-void RequireTrustedTypesForDirective::Trace(Visitor* visitor) const {
-  CSPDirective::Trace(visitor);
+  return result;
 }
 
 }  // namespace blink

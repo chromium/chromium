@@ -8,25 +8,29 @@
 
 namespace blink {
 
-TEST(RequireTrustedTypesForDirectiveTest, TestSinks) {
+TEST(CSPRequireTrustedTypesForTest, Parse) {
   struct {
     const char* directive;
-    const bool result;
-  } test_cases[] = {{"'script'", true},
-                    {"*", false},
-                    {"", false},
-                    {"''", false},
-                    {"script", false},
-                    {"'script' 'css'", true},
-                    {"'script' 'script'", true}};
+    network::mojom::blink::CSPRequireTrustedTypesFor result;
+  } test_cases[] = {
+      {"'script'", network::mojom::blink::CSPRequireTrustedTypesFor::Script},
+      {"*", network::mojom::blink::CSPRequireTrustedTypesFor::None},
+      {"", network::mojom::blink::CSPRequireTrustedTypesFor::None},
+      {"''", network::mojom::blink::CSPRequireTrustedTypesFor::None},
+      {"script", network::mojom::blink::CSPRequireTrustedTypesFor::None},
+      {"'script' 'css'",
+       network::mojom::blink::CSPRequireTrustedTypesFor::Script},
+      {"'script' 'script'",
+       network::mojom::blink::CSPRequireTrustedTypesFor::Script}};
 
   for (const auto& test_case : test_cases) {
-    RequireTrustedTypesForDirective directive(
-        "require-trusted-types-for", test_case.directive,
-        MakeGarbageCollected<ContentSecurityPolicy>());
     SCOPED_TRACE(testing::Message() << " require-trusted-types-for "
                                     << test_case.directive << ";");
-    EXPECT_EQ(directive.require(), test_case.result);
+    EXPECT_EQ(
+        CSPRequireTrustedTypesForParse(
+            test_case.directive, MakeGarbageCollected<ContentSecurityPolicy>()),
+        test_case.result);
   }
 }
+
 }  // namespace blink

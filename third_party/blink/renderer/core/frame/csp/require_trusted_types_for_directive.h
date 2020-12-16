@@ -5,23 +5,17 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_CSP_REQUIRE_TRUSTED_TYPES_FOR_DIRECTIVE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_CSP_REQUIRE_TRUSTED_TYPES_FOR_DIRECTIVE_H_
 
-#include "third_party/blink/renderer/core/frame/csp/csp_directive.h"
+#include "services/network/public/mojom/content_security_policy.mojom-blink.h"
+#include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
-class ContentSecurityPolicy;
-
-class CORE_EXPORT RequireTrustedTypesForDirective final : public CSPDirective {
- public:
-  RequireTrustedTypesForDirective(const String& name,
-                                  const String& value,
-                                  ContentSecurityPolicy*);
-  void Trace(Visitor*) const override;
-  bool require() const;
-
- private:
-  bool require_trusted_types_for_script_;
-};
+CORE_EXPORT
+network::mojom::blink::CSPRequireTrustedTypesFor CSPRequireTrustedTypesForParse(
+    const String& value,
+    ContentSecurityPolicy* policy);
 
 }  // namespace blink
 
