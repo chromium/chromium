@@ -163,6 +163,9 @@ class ProtocolHandlerRegistry : public KeyedService {
   // Removes the given protocol handler from the registry.
   void RemoveHandler(const ProtocolHandler& handler);
 
+  // Removes multiple protocol handlers from the registry.
+  void RemoveHandlers(const std::vector<ProtocolHandler>& handlers);
+
   // Remove the default handler for the given protocol.
   void RemoveDefaultHandler(const std::string& scheme);
 
@@ -223,6 +226,13 @@ class ProtocolHandlerRegistry : public KeyedService {
 
   // Makes this ProtocolHandler the default handler for its protocol.
   void SetDefault(const ProtocolHandler& handler);
+
+  // Makes these ProtocolHandler the default handlers for their protocols and
+  // registers the handlers with the OS.
+  void SetDefaults(const std::vector<ProtocolHandler>& handlers);
+
+  // Makes a handler the default for its protocol inside the registry.
+  void SetDefaultImpl(const ProtocolHandler& handler);
 
   // Insert the given ProtocolHandler into the registry.
   void InsertHandler(const ProtocolHandler& handler);
