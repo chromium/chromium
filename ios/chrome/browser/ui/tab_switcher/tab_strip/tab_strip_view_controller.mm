@@ -60,6 +60,7 @@ const CGFloat kNewTabButtonBottomImageInset = -2.0;
   self.collectionView.alwaysBounceHorizontal = YES;
   [self.collectionView registerClass:[TabStripCell class]
           forCellWithReuseIdentifier:kReuseIdentifier];
+  [self orderBySelectedTab];
 
   self.buttonNewTab = [[UIButton alloc] init];
   self.buttonNewTab.translatesAutoresizingMaskIntoConstraints = NO;
@@ -189,6 +190,7 @@ const CGFloat kNewTabButtonBottomImageInset = -2.0;
       selectItemAtIndexPath:CreateIndexPath(self.selectedIndex)
                    animated:YES
              scrollPosition:UICollectionViewScrollPositionNone];
+  [self orderBySelectedTab];
 }
 
 #pragma mark - Private
@@ -227,6 +229,20 @@ const CGFloat kNewTabButtonBottomImageInset = -2.0;
   [self.delegate addNewItem];
 }
 
+// Puts the tabs into the right positioning, i.e. the selected tab is in the
+// foreground, and the farther tabs are from the selected tab, the lower
+// zPositioning is.
+- (void)orderBySelectedTab {
+  for (TabSwitcherItem* item in self.items) {
+    NSUInteger index = [self indexOfItemWithID:item.identifier];
+    UICollectionViewCell* cell =
+        [self.collectionView cellForItemAtIndexPath:CreateIndexPath(index)];
+    // Calculating how "far" is the current tab from the selected one.
+    cell.layer.zPosition =
+        (int)(self.selectedIndex - abs(int(self.selectedIndex - index)));
+  }
+}
+
 #pragma mark - Private properties
 
 - (NSUInteger)selectedIndex {
@@ -239,6 +255,7 @@ const CGFloat kNewTabButtonBottomImageInset = -2.0;
     didSelectItemAtIndexPath:(NSIndexPath*)indexPath {
   int index = indexPath.item;
   [self.delegate selectTab:index];
+  [self orderBySelectedTab];
 }
 
 #pragma mark - TabStripCellDelegate
