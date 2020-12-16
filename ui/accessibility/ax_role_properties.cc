@@ -481,6 +481,19 @@ bool IsReadOnlySupported(const ax::mojom::Role role) {
   }
 }
 
+bool IsRootLike(ax::mojom::Role role) {
+  if (IsDialog(role) || IsPlatformDocument(role))
+    return true;
+
+  switch (role) {
+    case ax::mojom::Role::kDesktop:
+    case ax::mojom::Role::kWindow:
+      return true;
+    default:
+      return false;
+  }
+}
+
 bool IsRowContainer(const ax::mojom::Role role) {
   switch (role) {
     case ax::mojom::Role::kGrid:

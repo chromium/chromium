@@ -129,6 +129,11 @@ AX_BASE_EXPORT bool IsRangeValueSupported(const ax::mojom::Role role);
 //       ARIA-1.1+ role='grid' or 'treegrid', and not role='table'.
 AX_BASE_EXPORT bool IsReadOnlySupported(const ax::mojom::Role role);
 
+// Returns true if the provided role is at the root of a window-like container,
+// (AKA a widget in Views terminology), such as the root of the web contents, a
+// window, a dialog or the whole desktop.
+AX_BASE_EXPORT bool IsRootLike(ax::mojom::Role role);
+
 // Returns true if the provided role belongs to a widget that can contain a
 // table or grid row.
 AX_BASE_EXPORT bool IsRowContainer(const ax::mojom::Role role);
