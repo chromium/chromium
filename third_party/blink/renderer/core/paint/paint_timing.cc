@@ -336,7 +336,8 @@ void PaintTiming::SetFirstPaintPresentation(base::TimeTicks stamp) {
 
 void PaintTiming::SetFirstContentfulPaintPresentation(base::TimeTicks stamp) {
   DCHECK(first_contentful_paint_presentation_.is_null());
-  TRACE_EVENT_INSTANT_WITH_TIMESTAMP0("loading", "FirstContentfulPaint",
+  TRACE_EVENT_INSTANT_WITH_TIMESTAMP0("benchmark,loading",
+                                      "FirstContentfulPaint",
                                       TRACE_EVENT_SCOPE_GLOBAL, stamp);
   first_contentful_paint_presentation_ = stamp;
   probe::PaintTiming(
