@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 
 #include "base/stl_util.h"
+#include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/readable_stream_default_reader_or_readable_stream_byob_reader.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_abort_signal.h"
@@ -1423,10 +1424,10 @@ void ReadableStream::InitInternal(ScriptState* script_state,
       UseCounter::Count(ExecutionContext::From(script_state),
                         WebFeature::kReadableStreamWithByteSource);
 
-      UnderlyingSource* underlying_source_dict = UnderlyingSource::Create();
-      V8UnderlyingSource::ToImpl(script_state->GetIsolate(),
-                                 raw_underlying_source.V8Value(),
-                                 underlying_source_dict, exception_state);
+      UnderlyingSource* underlying_source_dict =
+          NativeValueTraits<UnderlyingSource>::NativeValue(
+              script_state->GetIsolate(), raw_underlying_source.V8Value(),
+              exception_state);
       if (!strategy_unpacker.IsSizeUndefined()) {
         exception_state.ThrowRangeError(
             "Cannot create byte stream with size() defined on the strategy");

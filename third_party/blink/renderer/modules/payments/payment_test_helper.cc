@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_method_data.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 

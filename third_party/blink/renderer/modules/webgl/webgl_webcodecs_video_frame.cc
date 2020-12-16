@@ -205,9 +205,10 @@ bool WebGLWebCodecsVideoFrame::releaseVideoFrame(
     WebGLWebCodecsVideoFrameHandle* handle,
     ExceptionState& exception_state) {
   DCHECK(handle);
+  DCHECK(handle->hasTextureInfoArrayNonNull());
   WebGLExtensionScopedContext scoped(this);
   auto* gl = scoped.Context()->ContextGL();
-  auto& info_array = handle->textureInfoArray();
+  auto& info_array = handle->textureInfoArrayNonNull();
   GLuint tex0 = info_array[0]->texture()->Object();
   auto frame = tex0_to_video_frame_map_.Take(tex0);
   for (wtf_size_t i = 0; i < info_array.size(); ++i) {

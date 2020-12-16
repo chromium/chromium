@@ -5,10 +5,10 @@
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_intersection_observer_init.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
-#include "third_party/blink/renderer/core/intersection_observer/intersection_observer_init.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/intersection_observer_test_helper.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"

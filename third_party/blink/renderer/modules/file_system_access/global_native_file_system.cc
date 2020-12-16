@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/modules/file_system_access/native_file_system_directory_handle.h"
 #include "third_party/blink/renderer/modules/file_system_access/native_file_system_error.h"
 #include "third_party/blink/renderer/modules/file_system_access/native_file_system_file_handle.h"
+#include "third_party/blink/renderer/platform/bindings/enumeration_base.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
@@ -285,9 +286,9 @@ ScriptPromise GlobalNativeFileSystem::showOpenFilePicker(
   }
 
   auto starting_directory = mojom::blink::CommonDirectory::kDefault;
-  if (options->hasStartIn()) {
-    starting_directory =
-        ConvertCommonDirectory(options->startIn(), exception_state);
+  if (options->hasStartInNonNull()) {
+    starting_directory = ConvertCommonDirectory(
+        IDLEnumAsString(options->startInNonNull()), exception_state);
     if (exception_state.HadException())
       return ScriptPromise();
   }
@@ -326,9 +327,9 @@ ScriptPromise GlobalNativeFileSystem::showSaveFilePicker(
   }
 
   auto starting_directory = mojom::blink::CommonDirectory::kDefault;
-  if (options->hasStartIn()) {
-    starting_directory =
-        ConvertCommonDirectory(options->startIn(), exception_state);
+  if (options->hasStartInNonNull()) {
+    starting_directory = ConvertCommonDirectory(
+        IDLEnumAsString(options->startInNonNull()), exception_state);
     if (exception_state.HadException())
       return ScriptPromise();
   }
@@ -353,9 +354,9 @@ ScriptPromise GlobalNativeFileSystem::showDirectoryPicker(
   UseCounter::Count(window, WebFeature::kFileSystemPickerMethod);
 
   auto starting_directory = mojom::blink::CommonDirectory::kDefault;
-  if (options->hasStartIn()) {
-    starting_directory =
-        ConvertCommonDirectory(options->startIn(), exception_state);
+  if (options->hasStartInNonNull()) {
+    starting_directory = ConvertCommonDirectory(
+        IDLEnumAsString(options->startInNonNull()), exception_state);
     if (exception_state.HadException())
       return ScriptPromise();
   }
