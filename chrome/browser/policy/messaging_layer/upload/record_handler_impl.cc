@@ -288,13 +288,20 @@ void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload() {
   // Pop the last record that was processed.
   records_->pop_back();
 
-  if (records_->empty()) {
+  if (!records_->empty()) {
+    // Upload the next record but do not request encryption key again.
+    StartUpload(records_->back());
+    return;
+  }
+
+  // No more records to process. Return the highest_sequencing_information_ if
+  // available.
+  if (highest_sequencing_information_.has_value()) {
     Complete(highest_sequencing_information_.value());
     return;
   }
 
-  // Upload the next record but do not request encryption key again.
-  StartUpload(records_->back());
+  Complete(Status(error::INTERNAL, "Unable to upload any records"));
 }
 
 base::Optional<EncryptedRecord>

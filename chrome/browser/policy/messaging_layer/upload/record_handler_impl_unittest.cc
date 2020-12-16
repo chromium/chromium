@@ -28,8 +28,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
+using ::testing::Eq;
 using ::testing::Invoke;
 using ::testing::MockFunction;
+using ::testing::Property;
 using ::testing::Return;
 using ::testing::StrictMock;
 using ::testing::WithArgs;
@@ -382,6 +384,53 @@ TEST_P(RecordHandlerImplTest, UploadsGapRecordOnServerFailure) {
   auto encryption_key_attached_callback =
       base::BindRepeating(&TestEncryptionKeyAttached::Call,
                           base::Unretained(&encryption_key_attached));
+  auto responder_callback = base::BindOnce(&TestCompletionResponder::Call,
+                                           base::Unretained(&responder));
+
+  handler.HandleRecords(need_encryption_key(), std::move(test_records),
+                        std::move(responder_callback),
+                        encryption_key_attached_callback);
+
+  client_waiter.Wait();
+  responder_waiter.Wait();
+}
+
+// There may be cases where the server and the client do not align in the
+// expected response, clients shouldn't crash in these instances, but simply
+// report an internal error.
+TEST_P(RecordHandlerImplTest, HandleUnknownResponseFromServer) {
+  constexpr size_t kNumTestRecords = 10;
+  constexpr uint64_t kGenerationId = 1234;
+  auto test_records = BuildTestRecordsVector(kNumTestRecords, kGenerationId);
+
+  TestCallbackWaiterWithCounter client_waiter{kNumTestRecords};
+  EXPECT_CALL(*client_, UploadEncryptedReport(_, _, _))
+      .Times(kNumTestRecords)
+      .WillRepeatedly(WithArgs<2>(
+          Invoke([&client_waiter](
+                     policy::CloudPolicyClient::ResponseCallback callback) {
+            std::move(callback).Run(base::Value{base::Value::Type::DICTIONARY});
+            client_waiter.Signal();
+          })));
+
+  RecordHandlerImpl handler(client_.get());
+
+  StrictMock<TestEncryptionKeyAttached> encryption_key_attached;
+  StrictMock<TestCompletionResponder> responder;
+  TestCallbackWaiter responder_waiter;
+
+  EXPECT_CALL(encryption_key_attached, Call(_)).Times(0);
+
+  EXPECT_CALL(
+      responder,
+      Call(Property(&StatusOr<SequencingInformation>::status,
+                    Property(&Status::error_code, Eq(error::INTERNAL)))))
+      .WillOnce(Invoke([&responder_waiter]() { responder_waiter.Signal(); }));
+
+  auto encryption_key_attached_callback =
+      base::BindRepeating(&TestEncryptionKeyAttached::Call,
+                          base::Unretained(&encryption_key_attached));
+
   auto responder_callback = base::BindOnce(&TestCompletionResponder::Call,
                                            base::Unretained(&responder));
 
