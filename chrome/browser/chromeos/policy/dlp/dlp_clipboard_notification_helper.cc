@@ -73,8 +73,14 @@ constexpr int kLineHeight = 20;
 // The insets of the bubble borders.
 constexpr gfx::Insets kBubbleBorderInsets(1);
 
-// Clipboard toast ID.
-constexpr char kClipboardToastId[] = "clipboard_dlp_block";
+// Clipboard ARC toast ID.
+constexpr char kClipboardArcToastId[] = "clipboard_dlp_block_arc";
+
+// Clipboard Crostini toast ID.
+constexpr char kClipboardCrostiniToastId[] = "clipboard_dlp_block_crostini";
+
+// Clipboard Plugin VM toast ID.
+constexpr char kClipboardPluginVmToastId[] = "clipboard_dlp_block_plugin_vm";
 
 // The duration of the clipboard toast.
 constexpr int kToastDurationMs = 2500;
@@ -263,21 +269,27 @@ void DlpClipboardNotificationHelper::NotifyBlockedPaste(
 
   if (data_dst) {
     if (data_dst->type() == ui::EndpointType::kCrostini) {
-      ShowClipboardBlockToast(l10n_util::GetStringFUTF16(
-          IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_COPY_VM, host_name,
-          l10n_util::GetStringUTF16(IDS_CROSTINI_LINUX)));
+      ShowClipboardBlockToast(
+          kClipboardCrostiniToastId,
+          l10n_util::GetStringFUTF16(
+              IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_COPY_VM, host_name,
+              l10n_util::GetStringUTF16(IDS_CROSTINI_LINUX)));
       return;
     }
     if (data_dst->type() == ui::EndpointType::kPluginVm) {
-      ShowClipboardBlockToast(l10n_util::GetStringFUTF16(
-          IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_COPY_VM, host_name,
-          l10n_util::GetStringUTF16(IDS_PLUGIN_VM_APP_NAME)));
+      ShowClipboardBlockToast(
+          kClipboardPluginVmToastId,
+          l10n_util::GetStringFUTF16(
+              IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_COPY_VM, host_name,
+              l10n_util::GetStringUTF16(IDS_PLUGIN_VM_APP_NAME)));
       return;
     }
     if (data_dst->type() == ui::EndpointType::kArc) {
-      ShowClipboardBlockToast(l10n_util::GetStringFUTF16(
-          IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_COPY_VM, host_name,
-          l10n_util::GetStringUTF16(IDS_POLICY_DLP_ANDROID_APPS)));
+      ShowClipboardBlockToast(
+          kClipboardArcToastId,
+          l10n_util::GetStringFUTF16(
+              IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_COPY_VM, host_name,
+              l10n_util::GetStringUTF16(IDS_POLICY_DLP_ANDROID_APPS)));
       return;
     }
   }
@@ -321,8 +333,9 @@ void DlpClipboardNotificationHelper::ShowClipboardBlockBubble(
 }
 
 void DlpClipboardNotificationHelper::ShowClipboardBlockToast(
+    const std::string& id,
     const base::string16& text) {
-  ash::ToastData toast(kClipboardToastId, text, kToastDurationMs,
+  ash::ToastData toast(id, text, kToastDurationMs,
                        /*dismiss_text=*/base::nullopt);
   toast.is_managed = true;
   ash::ToastManager::Get()->Show(toast);
