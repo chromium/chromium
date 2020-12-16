@@ -1676,6 +1676,7 @@
   </message>
 
   <!-- Open Network (ONC)-->
+  <!-- TODO(crbug.com/1142857) Move these strings to //chromeos/components/network_ui -->
   <message name="IDS_ONC_IPV4_ADDRESS" desc="ONC Property label for ipv4-IPAddress">
     IP address
   </message>
@@ -1823,12 +1824,6 @@
   <message name="IDS_ONC_EAP_USER_CERT" desc="ONC Property label for EAP User Certs">
     User certificate
   </message>
-  <message name="IDS_ONC_MAC_ADDRESS" desc="ONC Property label for MacAddress">
-    MAC address
-  </message>
-  <message name="IDS_ONC_NAME" desc="ONC Property label for the network Name (displayed when configuring a VPN service name)">
-    Service name
-  </message>
   <message name="IDS_ONC_NOT_CONNECTED" desc="Settings > Internet, text in network summary when a network is not connecting or connected.">
     Not Connected
   </message>
@@ -1939,9 +1934,6 @@
   </message>
   <message name="IDS_ONC_WIFI_SECURITY_EAP" desc="In settings > Internet, a string specifying security type = EAP (802.1X).">
     EAP
-  </message>
-  <message name="IDS_ONC_WIFI_SIGNAL_STRENGTH" desc="ONC Property label for WiFi.SignalStrength">
-    Signal strength
   </message>
   <message name="IDS_ONC_WIFI_SSID" desc="ONC Property label for WiFi.SSID">
     SSID
@@ -2493,41 +2485,6 @@
   </message>
   <message name="IDS_NETWORK_ICON_LABEL_SIGNAL_STRENGTH" desc="Network icon accessibility label for a network that is currently connected with signal strength percentage available.">
     <ph name="NETWORK_TYPE">$1<ex>Instant Tethering</ex></ph> network, signal strength <ph name="SIGNAL_STRENGTH">$2<ex>80</ex></ph>%
-  </message>
-
-  <!-- Common Network type strings -->
-  <message name="IDS_NETWORK_TYPE" desc="Label for network types">
-    Type
-  </message>
-  <message name="IDS_NETWORK_TYPE_ETHERNET" desc="Label for Ethernet networks.">
-    Ethernet
-  </message>
-  <message name="IDS_NETWORK_TYPE_WIFI" desc="Label for WiFi networks.">
-    Wi-Fi
-  </message>
-  <message name="IDS_NETWORK_TYPE_METERED_WIFI" desc="Label for metered Wi-Fi networks (i.e., Wi-Fi networks which have resticted data usage such as a monthly limit).">
-    metered Wi-Fi
-  </message>
-  <message name="IDS_NETWORK_TYPE_BLUETOOTH" desc="Label for Bluetooth networks.">
-    Bluetooth
-  </message>
-  <message name="IDS_NETWORK_TYPE_CELLULAR" desc="Label for Cellular networks.">
-    Cellular
-  </message>
-  <message name="IDS_NETWORK_TYPE_TETHER" desc="Label for Instant Tethering networks.">
-    Instant Tethering
-  </message>
-  <message name="IDS_NETWORK_TYPE_MOBILE_DATA" desc="Label for category which includes both Cellular and Tether networks.">
-    Mobile data
-  </message>
-  <message name="IDS_NETWORK_TYPE_VPN" desc="Label for VPN networks.">
-    VPN
-  </message>
-  <message name="IDS_NETWORK_TYPE_VPN_BUILTIN" desc="The built-in VPN types (Open VPN and L2TP/IPSec).">
-    OpenVPN / L2TP
-  </message>
-  <message name="IDS_NETWORK_TYPE_WIRELESS" desc="Label for wireless networks (Cellular, Tether, and WiFi.).">
-    Wireless
   </message>
 
   <!-- Status bar -->
@@ -3745,35 +3702,6 @@
 
   <message name="IDS_DEVICE_LOG_LINK_TEXT" desc="Message preceeding link to chrome://device-log">
     To view network UI logs, see: <ph name="DEVICE_LOG_LINK">&lt;a href="chrome://device-log"&gt;chrome://device-log&lt;/a&gt;</ph>
-  </message>
-
-  <!-- Network Health display strings -->
-  <message name="IDS_NETWORK_HEALTH_STATE" desc="Label for the current state of a networking device.">
-    State
-  </message>
-  <message name="IDS_NETWORK_HEALTH_STATE_UNINITIALIZED" desc="Network State - Uninitialized. This states is when a network device has not been initialized by the device.">
-    Uninitialized
-  </message>
-  <message name="IDS_NETWORK_HEALTH_STATE_DISABLED" desc="Network State - Disabled. This state is when the network device has been disabled (Turning off WiFi).">
-    Disabled
-  </message>
-  <message name="IDS_NETWORK_HEALTH_STATE_PROHIBITED" desc="Network State - Prohibited. This state represents a network device that has been explicitly disabled by admin policy.">
-    Prohibited
-  </message>
-  <message name="IDS_NETWORK_HEALTH_STATE_NOT_CONNECTED" desc="Network State - Not Connected. This state represents when a device is enabled, but has no active network connection.">
-    Not Connected
-  </message>
-  <message name="IDS_NETWORK_HEALTH_STATE_CONNECTING" desc="Network State - Connecting. This is a transient state when the network device is in the process of connecting to a network.">
-    Connecting
-  </message>
-  <message name="IDS_NETWORK_HEALTH_STATE_PORTAL" desc="Network State - Portal. This state represents a connected network device, but the active network is in a captive portal. (When you login at an airport and need to enter additional information before accessing the internet).">
-    Portal
-  </message>
-  <message name="IDS_NETWORK_HEALTH_STATE_CONNECTED" desc="Network State - Connected. This state is when a network device is connected to network, but cannot access the internet.">
-    Connected
-  </message>
-  <message name="IDS_NETWORK_HEALTH_STATE_ONLINE" desc="Network State - Online. This state is when a network device is connected to a network and can access the internet.">
-    Online
   </message>
 
   <!-- Set time/date UI display strings -->

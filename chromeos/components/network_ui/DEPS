@@ -1,0 +1,7 @@
+include_rules = [
+  "-chrome",
+  "+chromeos/strings/grit/chromeos_strings.h",
+  "+content/public/browser",
+  "+ui/base",
+  "+ui/resources",
+]

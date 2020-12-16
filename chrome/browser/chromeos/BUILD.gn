@@ -2051,8 +2051,6 @@ source_set("chromeos") {
     "net/network_diagnostics/video_conferencing_routine.h",
     "net/network_health/network_health.cc",
     "net/network_health/network_health.h",
-    "net/network_health/network_health_localized_strings.cc",
-    "net/network_health/network_health_localized_strings.h",
     "net/network_health/network_health_service.cc",
     "net/network_health/network_health_service.h",
     "net/network_portal_detector_impl.cc",

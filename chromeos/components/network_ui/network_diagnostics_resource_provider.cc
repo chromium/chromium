@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/connectivity_diagnostics/network_diagnostics_resource_provider.h"
+#include "chromeos/components/network_ui/network_diagnostics_resource_provider.h"
 
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
