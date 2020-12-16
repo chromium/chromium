@@ -664,11 +664,6 @@ const char kEnableDataReductionProxyServerExperimentDescription[] =
     "Enable a different approach to saving data by configuring the back end "
     "server";
 
-const char kDesktopPWAsLocalUpdatingName[] = "Desktop PWAs local updating";
-const char kDesktopPWAsLocalUpdatingDescription[] =
-    "Enable installed PWAs to update their app manifest data when the site "
-    "manifest data has changed.";
-
 const char kDesktopPWAsLocalUpdatingThrottlePersistenceName[] =
     "Desktop PWAs local updating throttle persistence";
 const char kDesktopPWAsLocalUpdatingThrottlePersistenceDescription[] =

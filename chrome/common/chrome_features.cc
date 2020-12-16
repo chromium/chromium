@@ -248,11 +248,6 @@ const base::Feature kDesktopPWAsFlashAppNameInsteadOfOrigin{
     "DesktopPWAsFlashAppNameInsteadOfOrigin",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables local PWA installs to update their app manifest data if the site
-// changes its manifest.
-const base::Feature kDesktopPWAsLocalUpdating{"DesktopPWAsLocalUpdating",
-                                              base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables or disables the WebAppMigrationUserDisplayModeCleanUp code for
 // cleaning up the fallout of https://crbug.com/1125020.
 const base::Feature kDesktopPWAsMigrationUserDisplayModeCleanUp{

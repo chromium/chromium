@@ -3354,10 +3354,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBypassAppBannerEngagementChecksName,
      flag_descriptions::kBypassAppBannerEngagementChecksDescription, kOsAll,
      SINGLE_VALUE_TYPE(switches::kBypassAppBannerEngagementChecks)},
-    {"enable-desktop-pwas-local-updating",
-     flag_descriptions::kDesktopPWAsLocalUpdatingName,
-     flag_descriptions::kDesktopPWAsLocalUpdatingDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kDesktopPWAsLocalUpdating)},
     // TODO(https://crbug.com/1069293): Add macOS and Linux implementations.
     {"enable-desktop-pwas-app-icon-shortcuts-menu",
      flag_descriptions::kDesktopPWAsAppIconShortcutsMenuName,

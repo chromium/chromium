@@ -55,8 +55,7 @@ void ManifestUpdateManager::Shutdown() {
 void ManifestUpdateManager::MaybeUpdate(const GURL& url,
                                         const AppId& app_id,
                                         content::WebContents* web_contents) {
-  if (!started_ ||
-      !base::FeatureList::IsEnabled(features::kDesktopPWAsLocalUpdating)) {
+  if (!started_) {
     return;
   }
 

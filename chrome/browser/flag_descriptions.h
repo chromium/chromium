@@ -409,9 +409,6 @@ extern const char kEnableDataReductionProxyServerExperimentDescription[];
 extern const char kColorProviderRedirectionName[];
 extern const char kColorProviderRedirectionDescription[];
 
-extern const char kDesktopPWAsLocalUpdatingName[];
-extern const char kDesktopPWAsLocalUpdatingDescription[];
-
 extern const char kDesktopPWAsLocalUpdatingThrottlePersistenceName[];
 extern const char kDesktopPWAsLocalUpdatingThrottlePersistenceDescription[];
 

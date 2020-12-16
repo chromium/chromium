@@ -181,10 +181,7 @@ class UpdateCheckResultAwaiter {
 
 class ManifestUpdateManagerBrowserTest : public InProcessBrowserTest {
  public:
-  ManifestUpdateManagerBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kDesktopPWAsLocalUpdating);
-  }
+  ManifestUpdateManagerBrowserTest() {}
   ManifestUpdateManagerBrowserTest(const ManifestUpdateManagerBrowserTest&) =
       delete;
   ManifestUpdateManagerBrowserTest& operator=(
@@ -328,8 +325,6 @@ class ManifestUpdateManagerBrowserTest : public InProcessBrowserTest {
   net::EmbeddedTestServer http_server_;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
   base::Optional<base::RunLoop> shortcut_run_loop_;
   base::Optional<SkColor> updated_shortcut_top_left_color_;
   ScopedOsHooksSuppress os_hooks_suppress_;
