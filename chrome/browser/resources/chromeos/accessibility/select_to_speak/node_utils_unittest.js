@@ -663,6 +663,38 @@ TEST_F(
       assertEquals(result[0], text2);
     });
 
+TEST_F(
+    'SelectToSpeakNodeUtilsUnitTest', 'getNextParagraphNestedBlocks',
+    function() {
+      const root = createMockNode({role: 'rootWebArea'});
+      const paragraph1 = createMockNode(
+          {role: 'paragraph', display: 'block', parent: root, root});
+      const text1 = createMockNode(
+          {role: 'staticText', parent: paragraph1, root, name: 'Before text'});
+      const nestedParagraph = createMockNode(
+          {role: 'paragraph', display: 'block', parent: paragraph1, root});
+      const text2 = createMockNode({
+        role: 'staticText',
+        parent: nestedParagraph,
+        root,
+        name: 'Middle text'
+      });
+      const text3 = createMockNode(
+          {role: 'staticText', parent: paragraph1, root, name: 'After text'});
+
+      // Getting next paragraph from nested paragraph only includes nodes in
+      // the forward direction (does not include itself)
+      let result = NodeUtils.getNextParagraph(text2, constants.Dir.FORWARD);
+      assertEquals(result.length, 1);
+      assertEquals(result[0], text3);
+
+      // Getting next paragraph from nested paragraph only includes nodes in
+      // the backward direction (does not include itself)
+      result = NodeUtils.getNextParagraph(text2, constants.Dir.BACKWARD);
+      assertEquals(result.length, 1);
+      assertEquals(result[0], text1);
+    });
+
 TEST_F('SelectToSpeakNodeUtilsUnitTest', 'getNextParagraphAndroid', function() {
   const root = createMockNode({role: 'application'});
   const container1 =

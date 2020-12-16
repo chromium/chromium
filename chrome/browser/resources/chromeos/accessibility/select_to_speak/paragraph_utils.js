@@ -313,11 +313,17 @@ class ParagraphUtils {
    * representing a paragraph of inline nodes.
    * @param {Array<!AutomationNode>} nodes List of automation nodes to use.
    * @param {number} index The index into nodes at which to start.
-   * @param {boolean} splitOnLanguage flag to determine if we should split nodes
-   *                  up based on language.
+   * @param {{splitOnLanguage: (boolean|undefined),
+   *          clipOverflowWords: (boolean|undefined)}=} opt_options
+   *     splitOnLanguage: flag to determine if we should split nodes
+   *                      up based on language.
+   *     clipOverflowWords: Whether to clip generated text.
    * @return {ParagraphUtils.NodeGroup} info about the node group
    */
-  static buildNodeGroup(nodes, index, splitOnLanguage) {
+  static buildNodeGroup(nodes, index, opt_options) {
+    const options = opt_options || {};
+    const splitOnLanguage = options.splitOnLanguage || false;
+    const clipOverflowWords = options.clipOverflowWords || false;
     let node = nodes[index];
     let next = nodes[index + 1];
     const blockParent = ParagraphUtils.getFirstBlockAncestor(nodes[index]);
@@ -362,9 +368,14 @@ class ParagraphUtils {
               new ParagraphUtils.NodeGroupItem(node, result.text.length, false);
         }
         if (newNode) {
-          result.text += ParagraphUtils.getNodeNameWithoutOverflowWords(
-                             newNode, blockParent) +
-              ' ';
+          if (clipOverflowWords) {
+            result.text += ParagraphUtils.getNodeNameWithoutOverflowWords(
+                newNode, blockParent);
+          } else {
+            result.text += ParagraphUtils.getNodeName(newNode.node);
+          }
+          // Add space between each node.
+          result.text += ' ';
           result.nodes.push(newNode);
         }
       }

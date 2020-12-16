@@ -236,7 +236,7 @@ TEST_F(
       const text3 =
           {role: 'staticText', parent: paragraph2, name: 'text3', root};
       const result = ParagraphUtils.buildNodeGroup(
-          [text1, text2, text3], 0, false /* do not split on language */);
+          [text1, text2, text3], 0, {splitOnLanguage: false});
       assertEquals('text1 text2 ', result.text);
       assertEquals(1, result.endIndex);
       assertEquals(2, result.nodes.length);
@@ -278,7 +278,7 @@ TEST_F(
       };
 
       const result1 = ParagraphUtils.buildNodeGroup(
-          [text1, text2, text3], 0, splitOnLanguage);
+          [text1, text2, text3], 0, {splitOnLanguage});
       assertEquals('text1 text2 ', result1.text);
       assertEquals(1, result1.endIndex);
       assertEquals(2, result1.nodes.length);
@@ -289,7 +289,7 @@ TEST_F(
       assertEquals('en-US', result1.detectedLanguage);
 
       const result2 = ParagraphUtils.buildNodeGroup(
-          [text1, text2, text3], 2, splitOnLanguage);
+          [text1, text2, text3], 2, {splitOnLanguage});
       assertEquals('text3 ', result2.text);
       assertEquals(2, result2.endIndex);
       assertEquals(1, result2.nodes.length);
@@ -309,7 +309,7 @@ TEST_F(
       const text2 = {role: 'staticText', parent: root, name: 'text2', root};
       const text3 = {role: 'staticText', parent: root, name: 'text3', root};
       const result = ParagraphUtils.buildNodeGroup(
-          [text1, text2, text3], 0, splitOnLanguage);
+          [text1, text2, text3], 0, {splitOnLanguage});
       assertEquals('text1 text2 text3 ', result.text);
       assertEquals(2, result.endIndex);
       assertEquals(3, result.nodes.length);
@@ -339,7 +339,7 @@ TEST_F(
         detectedLanguage: 'fr-FR'
       };
       const result = ParagraphUtils.buildNodeGroup(
-          [text1, text2, text3], 0, splitOnLanguage);
+          [text1, text2, text3], 0, {splitOnLanguage});
       assertEquals('text1 text2 text3 ', result.text);
       assertEquals(2, result.endIndex);
       assertEquals(3, result.nodes.length);
@@ -377,7 +377,7 @@ TEST_F(
         detectedLanguage: 'fr-FR'
       };
       const result = ParagraphUtils.buildNodeGroup(
-          [text1, text2, text3, text4], 0, splitOnLanguage);
+          [text1, text2, text3, text4], 0, {splitOnLanguage});
       assertEquals('text1 text2 text3 text4 ', result.text);
       assertEquals(3, result.endIndex);
       assertEquals(4, result.nodes.length);
@@ -413,7 +413,7 @@ TEST_F(
         detectedLanguage: 'fr-FR'
       };
       const result = ParagraphUtils.buildNodeGroup(
-          [text1, text2, text3, text4], 0, splitOnLanguage);
+          [text1, text2, text3, text4], 0, {splitOnLanguage});
       assertEquals('text1 text2 text3 ', result.text);
       assertEquals(2, result.endIndex);
       assertEquals(3, result.nodes.length);
@@ -440,7 +440,7 @@ TEST_F(
       const linkText =
           {role: 'staticText', parent: link, name: 'linkText', root};
       const result = ParagraphUtils.buildNodeGroup(
-          [text1, text2, linkText], 0, false /* do not split on language */);
+          [text1, text2, linkText], 0, {splitOnLanguage: false});
       assertEquals('text1 linkText ', result.text);
       assertEquals(2, result.endIndex);
       assertEquals(2, result.nodes.length);
@@ -468,7 +468,7 @@ TEST_F(
       // If there is no value, it should use the name.
       searchBar.value = '';
       result = ParagraphUtils.buildNodeGroup(
-          [searchBar], 0, false /* do not split on language */);
+          [searchBar], 0, {splitOnLanguage: false});
       assertEquals('Address and search bar ', result.text);
     });
 
@@ -481,6 +481,6 @@ TEST_F('SelectToSpeakParagraphUnitTest', 'BuildNodeGroupWithSvg', function() {
   const inline2 = {role: 'inlineTextBox', parent: text2, root, name: 'world!'};
 
   const result = ParagraphUtils.buildNodeGroup(
-      [inline1, inline2], 0, false /* do not split on language */);
+      [inline1, inline2], 0, {splitOnLanguage: false});
   assertEquals('Hello, world! ', result.text);
 });

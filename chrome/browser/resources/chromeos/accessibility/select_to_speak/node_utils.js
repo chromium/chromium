@@ -495,7 +495,13 @@ class NodeUtils {
       return [];
     }
 
-    return NodeUtils.getAllNodesInParagraph(nextNode);
+    const nextNodes = NodeUtils.getNextNodesInParagraph(nextNode, direction);
+    if (direction === constants.Dir.FORWARD) {
+      nextNodes.unshift(nextNode);
+    } else {
+      nextNodes.push(nextNode);
+    }
+    return nextNodes;
   }
 
   /**

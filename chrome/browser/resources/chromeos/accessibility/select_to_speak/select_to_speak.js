@@ -331,13 +331,11 @@ class SelectToSpeak {
         // more items are being read.
         return;
       }
-      if (this.navigationControlFlag_ && nodes.length === 1 &&
-          nodes[0].role === RoleType.INLINE_TEXT_BOX &&
-          (rect.width === 0 || rect.height === 0)) {
+      if (this.shouldShowNavigationControls_() && nodes.length > 0 &&
+          (rect.width <= SelectToSpeak.PARAGRAPH_SELECTION_MAX_SIZE ||
+           rect.height <= SelectToSpeak.PARAGRAPH_SELECTION_MAX_SIZE)) {
         // If this is a single click (zero sized selection) on a text node, then
         // expand to entire paragraph.
-        // TODO(crbug.com/1143823): Navigate to the sentence instead of whole
-        // block.
         nodes = NodeUtils.getAllNodesInParagraph(nodes[0]);
       }
       this.startSpeechQueue_(nodes, {clearFocusRing: true});
@@ -578,7 +576,7 @@ class SelectToSpeak {
    * @private
    */
   onNullSelection_() {
-    if (!this.navigationControlFlag_) {
+    if (!this.shouldShowNavigationControls_()) {
       this.null_selection_tone_.play();
       return;
     }
@@ -1007,12 +1005,9 @@ class SelectToSpeak {
     // Use current block parent as starting point to navigate from. If it is not
     // a valid block, then use one of the nodes that are currently activated.
     let node = this.currentBlockParent_;
-    if ((node === null || node.isRootNode) &&
-        this.navigationState_.currentNodes.length > 0) {
-      const nodeIdx = direction === constants.Dir.FORWARD ?
-          this.navigationState_.currentNodes.length - 1 :
-          0;
-      node = this.navigationState_.currentNodes[nodeIdx];
+    if ((node === null || node.isRootNode) && this.currentNodeGroup_ &&
+        this.currentNodeGroup_.nodes.length > 0) {
+      node = this.currentNodeGroup_.nodes[0].node;
     }
     if (node === null) {
       // Could not find any nodes to navigate from.
@@ -1158,9 +1153,16 @@ class SelectToSpeak {
     if (currentNodeGroupStartNodeIndex >= currentNodes.length) {
       return;
     }
+    // When navigation controls are enabled, disable the
+    // clipping of overflow words. When overflow words are clipped, words
+    // scrolled out of view are clipped, which is undesirable for our navigation
+    // features as we generate node groups for next/previous paragraphs which
+    // may be fully or partially scrolled out of view.
     const nodeGroup = ParagraphUtils.buildNodeGroup(
-        currentNodes, currentNodeGroupStartNodeIndex,
-        this.enableLanguageDetectionIntegration_);
+        currentNodes, currentNodeGroupStartNodeIndex, {
+          splitOnLanguage: this.enableLanguageDetectionIntegration_,
+          clipOverflowWords: !this.shouldShowNavigationControls_(),
+        });
 
     // |currentCharIndex| is the start char index of the word to be spoken in
     // the nodeGroup text. If the |currentCharIndex| is non-zero, that means we
@@ -1218,7 +1220,7 @@ class SelectToSpeak {
         nodeGroup.detectedLanguage) {
       options.lang = nodeGroup.detectedLanguage;
     }
-    if (this.navigationControlFlag_) {
+    if (this.shouldShowNavigationControls_()) {
       options.rate = this.getSpeechRate_();
     }
 
@@ -1256,8 +1258,16 @@ class SelectToSpeak {
           this.testCurrentNode_();
         }
       } else if (event.type === 'interrupted' || event.type === 'cancelled') {
-        if (!this.shouldShowNavigationControls_() ||
-            !this.pauseCompleteCallback_) {
+        if (!this.shouldShowNavigationControls_()) {
+          this.onStateChanged_(SelectToSpeakState.INACTIVE);
+        }
+        if (this.state_ === SelectToSpeakState.SELECTING) {
+          // Do not go into inactive state if navigation controls are enabled
+          // and we're currently making a new selection. This enables users
+          // to select new nodes while STS is active without first exiting.
+          return;
+        }
+        if (!this.pauseCompleteCallback_) {
           // Auto dismiss when navigation control is not enabled. In addition,
           // if the interrupted or cancelled events are not triggered by
           // |this.pause_| (e.g., from stopAll_), we should leave STS as
@@ -1821,3 +1831,12 @@ SelectToSpeak.READ_SELECTION_KEY_CODE = KeyCode.S;
  * @const {number}
  */
 SelectToSpeak.NODE_STATE_TEST_INTERVAL_MS = 500;
+
+/**
+ * Max size in pixels for a region selection to be considered a paragraph
+ * selection vs a selection of specific nodes. Generally paragraph
+ * selection is a single click (size 0), though allow for a little
+ * jitter.
+ * @const {number}
+ */
+SelectToSpeak.PARAGRAPH_SELECTION_MAX_SIZE = 5;
