@@ -1176,12 +1176,6 @@ void CookieMonster::SetCanonicalCookie(std::unique_ptr<CanonicalCookie> cc,
 
   CookieAccessResult access_result;
 
-  // TODO(morlovich): This is only needed becausea a bunch of spots don't set it
-  // consistently on construction.
-  cc->SetSourceScheme(source_url.SchemeIsCryptographic()
-                          ? net::CookieSourceScheme::kSecure
-                          : net::CookieSourceScheme::kNonSecure);
-
   bool delegate_treats_url_as_trustworthy =
       cookie_access_delegate() &&
       cookie_access_delegate()->ShouldTreatUrlAsTrustworthy(source_url);
