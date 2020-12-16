@@ -88,7 +88,7 @@ class NodeBase {
 
   // Assigned when JoinGraph() is called, up until LeaveGraph() is called, where
   // it is reset to null.
-  GraphImpl* graph_ = nullptr;
+  GraphImpl* graph_ GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

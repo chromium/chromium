@@ -81,11 +81,12 @@ class SiteDataCacheFactory {
  private:
   // A map that associates a BrowserContext's ID with a SiteDataCache. This
   // object owns the caches.
-  base::flat_map<std::string, std::unique_ptr<SiteDataCache>> data_cache_map_;
+  base::flat_map<std::string, std::unique_ptr<SiteDataCache>> data_cache_map_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // A map that associates a BrowserContext's ID with a SiteDataCacheInspector.
-  base::flat_map<std::string, SiteDataCacheInspector*>
-      data_cache_inspector_map_;
+  base::flat_map<std::string, SiteDataCacheInspector*> data_cache_inspector_map_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

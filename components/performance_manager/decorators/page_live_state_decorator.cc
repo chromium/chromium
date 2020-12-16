@@ -29,18 +29,41 @@ class PageLiveStateDataImpl
 
   // PageLiveStateDecorator::Data:
   bool IsConnectedToUSBDevice() const override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return is_connected_to_usb_device_;
   }
   bool IsConnectedToBluetoothDevice() const override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return is_connected_to_bluetooth_device_;
   }
-  bool IsCapturingVideo() const override { return is_capturing_video_; }
-  bool IsCapturingAudio() const override { return is_capturing_audio_; }
-  bool IsBeingMirrored() const override { return is_being_mirrored_; }
-  bool IsCapturingWindow() const override { return is_capturing_window_; }
-  bool IsCapturingDisplay() const override { return is_capturing_display_; }
-  bool IsAutoDiscardable() const override { return is_auto_discardable_; }
-  bool WasDiscarded() const override { return was_discarded_; }
+  bool IsCapturingVideo() const override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return is_capturing_video_;
+  }
+  bool IsCapturingAudio() const override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return is_capturing_audio_;
+  }
+  bool IsBeingMirrored() const override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return is_being_mirrored_;
+  }
+  bool IsCapturingWindow() const override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return is_capturing_window_;
+  }
+  bool IsCapturingDisplay() const override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return is_capturing_display_;
+  }
+  bool IsAutoDiscardable() const override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return is_auto_discardable_;
+  }
+  bool WasDiscarded() const override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return was_discarded_;
+  }
 
   void SetIsConnectedToUSBDeviceForTesting(bool value) override {
     set_is_connected_to_usb_device(value);
@@ -71,6 +94,7 @@ class PageLiveStateDataImpl
   }
 
   void set_is_connected_to_usb_device(bool is_connected_to_usb_device) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (is_connected_to_usb_device_ == is_connected_to_usb_device)
       return;
     is_connected_to_usb_device_ = is_connected_to_usb_device;
@@ -79,6 +103,7 @@ class PageLiveStateDataImpl
   }
   void set_is_connected_to_bluetooth_device(
       bool is_connected_to_bluetooth_device) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (is_connected_to_bluetooth_device_ == is_connected_to_bluetooth_device)
       return;
     is_connected_to_bluetooth_device_ = is_connected_to_bluetooth_device;
@@ -86,6 +111,7 @@ class PageLiveStateDataImpl
       obs.OnIsConnectedToBluetoothDeviceChanged(page_node_);
   }
   void set_is_capturing_video(bool is_capturing_video) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (is_capturing_video_ == is_capturing_video)
       return;
     is_capturing_video_ = is_capturing_video;
@@ -93,6 +119,7 @@ class PageLiveStateDataImpl
       obs.OnIsCapturingVideoChanged(page_node_);
   }
   void set_is_capturing_audio(bool is_capturing_audio) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (is_capturing_audio_ == is_capturing_audio)
       return;
     is_capturing_audio_ = is_capturing_audio;
@@ -100,6 +127,7 @@ class PageLiveStateDataImpl
       obs.OnIsCapturingAudioChanged(page_node_);
   }
   void set_is_being_mirrored(bool is_being_mirrored) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (is_being_mirrored_ == is_being_mirrored)
       return;
     is_being_mirrored_ = is_being_mirrored;
@@ -107,6 +135,7 @@ class PageLiveStateDataImpl
       obs.OnIsBeingMirroredChanged(page_node_);
   }
   void set_is_capturing_window(bool is_capturing_window) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (is_capturing_window_ == is_capturing_window)
       return;
     is_capturing_window_ = is_capturing_window;
@@ -114,6 +143,7 @@ class PageLiveStateDataImpl
       obs.OnIsCapturingWindowChanged(page_node_);
   }
   void set_is_capturing_display(bool is_capturing_display) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (is_capturing_display_ == is_capturing_display)
       return;
     is_capturing_display_ = is_capturing_display;
@@ -121,6 +151,7 @@ class PageLiveStateDataImpl
       obs.OnIsCapturingDisplayChanged(page_node_);
   }
   void set_is_auto_discardable(bool is_auto_discardable) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (is_auto_discardable_ == is_auto_discardable)
       return;
     is_auto_discardable_ = is_auto_discardable;
@@ -128,6 +159,7 @@ class PageLiveStateDataImpl
       obs.OnIsAutoDiscardableChanged(page_node_);
   }
   void set_was_discarded(bool was_discarded) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (was_discarded_ == was_discarded)
       return;
     was_discarded_ = was_discarded;
@@ -144,15 +176,17 @@ class PageLiveStateDataImpl
   explicit PageLiveStateDataImpl(const PageNodeImpl* page_node)
       : page_node_(page_node) {}
 
-  bool is_connected_to_usb_device_ = false;
-  bool is_connected_to_bluetooth_device_ = false;
-  bool is_capturing_video_ = false;
-  bool is_capturing_audio_ = false;
-  bool is_being_mirrored_ = false;
-  bool is_capturing_window_ = false;
-  bool is_capturing_display_ = false;
-  bool is_auto_discardable_ = true;
-  bool was_discarded_ = false;
+  bool is_connected_to_usb_device_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      false;
+  bool is_connected_to_bluetooth_device_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      false;
+  bool is_capturing_video_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  bool is_capturing_audio_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  bool is_being_mirrored_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  bool is_capturing_window_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  bool is_capturing_display_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  bool is_auto_discardable_ GUARDED_BY_CONTEXT(sequence_checker_) = true;
+  bool was_discarded_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   const PageNode* const page_node_;
 };

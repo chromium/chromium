@@ -70,6 +70,7 @@ class LevelDBSiteDataStore : public SiteDataStore {
   // to run on |blocking_task_runner_|, it is guaranteed that the AsyncHelper
   // held by this object will only be destructed once all the tasks that have
   // been posted to it have completed.
+  // TODO(https://crbug.com/1159407): GUARDED_BY_CONTEXT(sequence_checker_)
   std::unique_ptr<AsyncHelper, base::OnTaskRunnerDeleter> async_helper_;
 
   SEQUENCE_CHECKER(sequence_checker_);

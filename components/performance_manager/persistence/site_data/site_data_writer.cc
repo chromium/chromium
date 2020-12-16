@@ -66,12 +66,12 @@ void SiteDataWriter::NotifyLoadTimePerformanceMeasurement(
 }
 
 const url::Origin& SiteDataWriter::Origin() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return impl_->origin();
 }
 
 SiteDataWriter::SiteDataWriter(scoped_refptr<internal::SiteDataImpl> impl)
     : impl_(std::move(impl)) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 }  // namespace performance_manager

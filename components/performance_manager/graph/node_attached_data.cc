@@ -20,6 +20,7 @@ void NodeAttachedDataMapHelper::AttachInMap(
     const Node* node,
     std::unique_ptr<NodeAttachedData> data) {
   GraphImpl* graph = GraphImpl::FromGraph(node->GetGraph());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(graph->sequence_checker_);
   const NodeBase* node_base = NodeBase::FromNode(node);
   DCHECK(graph->NodeInGraph(node_base));
   GraphImpl::NodeAttachedDataKey data_key =
@@ -33,6 +34,7 @@ void NodeAttachedDataMapHelper::AttachInMap(
 NodeAttachedData* NodeAttachedDataMapHelper::GetFromMap(const Node* node,
                                                         const void* key) {
   GraphImpl* graph = GraphImpl::FromGraph(node->GetGraph());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(graph->sequence_checker_);
   const NodeBase* node_base = NodeBase::FromNode(node);
   DCHECK(graph->NodeInGraph(node_base));
   GraphImpl::NodeAttachedDataKey data_key = std::make_pair(node, key);
@@ -49,6 +51,7 @@ std::unique_ptr<NodeAttachedData> NodeAttachedDataMapHelper::DetachFromMap(
     const Node* node,
     const void* key) {
   GraphImpl* graph = GraphImpl::FromGraph(node->GetGraph());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(graph->sequence_checker_);
   const NodeBase* node_base = NodeBase::FromNode(node);
   DCHECK(graph->NodeInGraph(node_base));
   GraphImpl::NodeAttachedDataKey data_key = std::make_pair(node, key);

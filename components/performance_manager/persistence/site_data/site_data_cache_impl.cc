@@ -168,6 +168,7 @@ void SiteDataCacheImpl::ClearAllSiteData() {
 
 void SiteDataCacheImpl::SetInitializationCallbackForTesting(
     base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   data_store_->SetInitializationCallbackForTesting(std::move(callback));
 }
 

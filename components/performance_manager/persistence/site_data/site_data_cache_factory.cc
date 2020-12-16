@@ -130,9 +130,9 @@ void SiteDataCacheFactory::OnBrowserContextCreated(
 
 void SiteDataCacheFactory::OnBrowserContextDestroyed(
     const std::string& browser_context_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(base::Contains(data_cache_map_, browser_context_id));
   data_cache_map_.erase(browser_context_id);
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 }  // namespace performance_manager

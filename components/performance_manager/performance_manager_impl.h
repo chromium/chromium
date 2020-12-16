@@ -173,8 +173,9 @@ class PerformanceManagerImpl : public PerformanceManager {
 
   static void SetOnDestroyedCallbackImpl(base::OnceClosure callback);
 
-  GraphImpl graph_;
-  base::OnceClosure on_destroyed_callback_;
+  GraphImpl graph_ GUARDED_BY_CONTEXT(sequence_checker_);
+  base::OnceClosure on_destroyed_callback_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

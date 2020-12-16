@@ -68,6 +68,7 @@ class SiteDataNodeData : public NodeAttachedDataImpl<SiteDataNodeData>,
 
   // Set the SiteDataCache that should be used to create the writer.
   void set_data_cache(SiteDataCache* data_cache) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(data_cache);
     data_cache_ = data_cache;
   }
@@ -112,23 +113,25 @@ class SiteDataNodeData : public NodeAttachedDataImpl<SiteDataNodeData>,
                                          FeatureType feature_type);
 
   TabVisibility GetPageNodeVisibility() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return page_node_->is_visible() ? TabVisibility::kForeground
                                     : TabVisibility::kBackground;
   }
 
   // The SiteDataCache used to serve writers for the PageNode owned by this
   // object.
-  SiteDataCache* data_cache_ = nullptr;
+  SiteDataCache* data_cache_ GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
 
   // The PageNode that owns this object.
-  const PageNodeImpl* page_node_ = nullptr;
+  const PageNodeImpl* page_node_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      nullptr;
 
   // The time at which this tab switched to LoadingState::kLoadedIdle, null if
   // this tab is not currently in that state.
-  base::TimeTicks loaded_idle_time_;
+  base::TimeTicks loaded_idle_time_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  std::unique_ptr<SiteDataWriter> writer_;
-  std::unique_ptr<SiteDataReader> reader_;
+  std::unique_ptr<SiteDataWriter> writer_ GUARDED_BY_CONTEXT(sequence_checker_);
+  std::unique_ptr<SiteDataReader> reader_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

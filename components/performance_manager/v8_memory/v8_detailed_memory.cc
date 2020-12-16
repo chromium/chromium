@@ -64,8 +64,10 @@ class V8DetailedMemoryDecorator::MeasurementRequestQueue {
       base::RepeatingCallback<void(V8DetailedMemoryRequest*)> callback) const;
 
   // Lists of requests sorted by min_time_between_requests (lowest first).
-  std::vector<V8DetailedMemoryRequest*> bounded_measurement_requests_;
-  std::vector<V8DetailedMemoryRequest*> lazy_measurement_requests_;
+  std::vector<V8DetailedMemoryRequest*> bounded_measurement_requests_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  std::vector<V8DetailedMemoryRequest*> lazy_measurement_requests_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
@@ -129,9 +131,11 @@ const V8DetailedMemoryRequest* ChooseHigherPriorityRequest(
   return b;
 }
 
+// May only be used from the performance manager sequence.
 internal::BindV8DetailedMemoryReporterCallback* g_test_bind_callback = nullptr;
 
 #if DCHECK_IS_ON()
+// May only be used from the performance manager sequence.
 bool g_test_eager_measurement_requests_enabled = false;
 #endif
 
@@ -209,8 +213,9 @@ class ExecutionContextAttachedData
   friend class performance_manager::v8_memory::
       V8DetailedMemoryExecutionContextData;
 
-  V8DetailedMemoryExecutionContextData data_;
-  bool data_available_ = false;
+  V8DetailedMemoryExecutionContextData data_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  bool data_available_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
@@ -256,9 +261,10 @@ class NodeAttachedProcessData
 
   // Measurement requests that will be sent to this process only.
   V8DetailedMemoryDecorator::MeasurementRequestQueue
-      process_measurement_requests_;
+      process_measurement_requests_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  mojo::Remote<blink::mojom::V8DetailedMemoryReporter> resource_usage_reporter_;
+  mojo::Remote<blink::mojom::V8DetailedMemoryReporter> resource_usage_reporter_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // State transitions:
   //
@@ -277,19 +283,21 @@ class NodeAttachedProcessData
     kMeasuringBounded,  // Waiting for results from a bounded measurement.
     kMeasuringLazy,     // Waiting for results from a lazy measurement.
   };
-  State state_ = State::kIdle;
+  State state_ GUARDED_BY_CONTEXT(sequence_checker_) = State::kIdle;
 
   // Used to schedule the next measurement.
-  base::TimeTicks last_request_time_;
-  base::OneShotTimer request_timer_;
-  base::OneShotTimer bounded_upgrade_timer_;
+  base::TimeTicks last_request_time_ GUARDED_BY_CONTEXT(sequence_checker_);
+  base::OneShotTimer request_timer_ GUARDED_BY_CONTEXT(sequence_checker_);
+  base::OneShotTimer bounded_upgrade_timer_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
-  V8DetailedMemoryProcessData data_;
-  bool data_available_ = false;
+  V8DetailedMemoryProcessData data_ GUARDED_BY_CONTEXT(sequence_checker_);
+  bool data_available_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<NodeAttachedProcessData> weak_factory_{this};
+  base::WeakPtrFactory<NodeAttachedProcessData> weak_factory_
+      GUARDED_BY_CONTEXT(sequence_checker_){this};
 };
 
 NodeAttachedProcessData::NodeAttachedProcessData(
@@ -494,6 +502,8 @@ void NodeAttachedProcessData::OnV8MemoryUsage(
     } else {
       ExecutionContextAttachedData* frame_data =
           ExecutionContextAttachedData::GetOrCreate(frame_node);
+      DCHECK_CALLED_ON_VALID_SEQUENCE(frame_data->sequence_checker_);
+
       frame_data->data_available_ = true;
       frame_data->data_.set_v8_bytes_used(it->second->bytes_used);
       // Zero out this datum as its usage has been consumed.
@@ -891,6 +901,7 @@ V8DetailedMemoryExecutionContextData::ForExecutionContext(
 V8DetailedMemoryExecutionContextData*
 V8DetailedMemoryExecutionContextData::CreateForTesting(const FrameNode* node) {
   auto* node_data = ExecutionContextAttachedData::GetOrCreate(node);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(node_data->sequence_checker_);
   node_data->data_available_ = true;
   return &node_data->data_;
 }
@@ -1044,6 +1055,7 @@ void V8DetailedMemoryDecorator::RemoveMeasurementRequest(
 
 void V8DetailedMemoryDecorator::ApplyToAllRequestQueues(
     RequestQueueCallback callback) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   callback.Run(measurement_requests_.get());
   NodeAttachedProcessData::ApplyToAllRenderers(
       graph_, base::BindRepeating(
@@ -1175,6 +1187,7 @@ void V8DetailedMemoryDecorator::MeasurementRequestQueue::Validate() {
 
 void V8DetailedMemoryDecorator::MeasurementRequestQueue::ApplyToAllRequests(
     base::RepeatingCallback<void(V8DetailedMemoryRequest*)> callback) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // First collect all requests to notify. The callback may add or remove
   // requests from the queue, invalidating iterators.
   std::vector<V8DetailedMemoryRequest*> requests_to_notify;
@@ -1302,6 +1315,7 @@ V8DetailedMemoryRequestOneShotAnySeq::~V8DetailedMemoryRequestOneShotAnySeq() {
 void V8DetailedMemoryRequestOneShotAnySeq::StartMeasurement(
     RenderProcessHostId process_id,
     MeasurementCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // GetProcessNodeForRenderProcessHostId must be called from the UI thread.
   auto ui_task_runner = content::GetUIThreadTaskRunner({});
   if (ui_task_runner->RunsTasksInCurrentSequence()) {

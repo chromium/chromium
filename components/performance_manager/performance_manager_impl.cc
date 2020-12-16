@@ -215,6 +215,7 @@ PerformanceManagerImpl::GetTaskRunner() {
 }
 
 PerformanceManagerImpl* PerformanceManagerImpl::GetInstance() {
+  DCHECK(GetTaskRunner()->RunsTasksInCurrentSequence());
   return g_performance_manager;
 }
 
@@ -358,8 +359,10 @@ void PerformanceManagerImpl::SetOnDestroyedCallbackImpl(
     base::OnceClosure callback) {
   DCHECK(GetTaskRunner()->RunsTasksInCurrentSequence());
 
-  if (g_performance_manager)
+  if (g_performance_manager) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(g_performance_manager->sequence_checker_);
     g_performance_manager->on_destroyed_callback_ = std::move(callback);
+  }
 }
 
 }  // namespace performance_manager

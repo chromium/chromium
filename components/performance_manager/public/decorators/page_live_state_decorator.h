@@ -109,9 +109,9 @@ class PageLiveStateDecorator::Data {
   virtual void SetWasDiscardedForTesting(bool value) = 0;
 
  protected:
-  base::ObserverList<PageLiveStateObserver> observers_;
+  base::ObserverList<PageLiveStateObserver> observers_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
- private:
   SEQUENCE_CHECKER(sequence_checker_);
 };
 

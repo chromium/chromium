@@ -117,26 +117,36 @@ class SiteDataImpl : public base::RefCounted<SiteDataImpl> {
       uint64_t private_footprint_kb_estimate);
 
   base::TimeDelta last_loaded_time_for_testing() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return InternalRepresentationToTimeDelta(
         site_characteristics_.last_loaded());
   }
 
   const SiteDataProto& site_characteristics_for_testing() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return site_characteristics_;
   }
 
-  size_t loaded_tabs_count_for_testing() const { return loaded_tabs_count_; }
+  size_t loaded_tabs_count_for_testing() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return loaded_tabs_count_;
+  }
 
   size_t loaded_tabs_in_background_count_for_testing() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return loaded_tabs_in_background_count_;
   }
 
   base::TimeTicks background_session_begin_for_testing() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return background_session_begin_;
   }
 
   const url::Origin& origin() const { return origin_; }
-  bool is_dirty() const { return is_dirty_; }
+  bool is_dirty() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return is_dirty_;
+  }
 
   void ExpireAllObservationWindowsForTesting();
 
@@ -144,7 +154,10 @@ class SiteDataImpl : public base::RefCounted<SiteDataImpl> {
     ClearObservationsAndInvalidateReadOperation();
   }
 
-  bool fully_initialized_for_testing() const { return fully_initialized_; }
+  bool fully_initialized_for_testing() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return fully_initialized_;
+  }
 
   static const base::TimeDelta GetFeatureObservationWindowLengthForTesting();
 
@@ -212,7 +225,10 @@ class SiteDataImpl : public base::RefCounted<SiteDataImpl> {
   void NotifyFeatureUsage(SiteDataFeatureProto* feature_proto,
                           const char* feature_name);
 
-  bool IsLoaded() const { return loaded_tabs_count_ > 0U; }
+  bool IsLoaded() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return loaded_tabs_count_ > 0U;
+  }
 
   // Callback that needs to be called by the data store once it has finished
   // trying to read the protobuf.
@@ -233,12 +249,15 @@ class SiteDataImpl : public base::RefCounted<SiteDataImpl> {
 
   // This site's characteristics, contains the features and other values are
   // measured.
-  SiteDataProto site_characteristics_;
+  SiteDataProto site_characteristics_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The in-memory storage for the moving performance averages.
-  ExponentialMovingAverage load_duration_;       // microseconds.
-  ExponentialMovingAverage cpu_usage_estimate_;  // microseconds.
-  ExponentialMovingAverage private_footprint_kb_estimate_;
+  ExponentialMovingAverage load_duration_
+      GUARDED_BY_CONTEXT(sequence_checker_);  // microseconds.
+  ExponentialMovingAverage cpu_usage_estimate_
+      GUARDED_BY_CONTEXT(sequence_checker_);  // microseconds.
+  ExponentialMovingAverage private_footprint_kb_estimate_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // This site's origin.
   const url::Origin origin_;
@@ -247,15 +266,16 @@ class SiteDataImpl : public base::RefCounted<SiteDataImpl> {
   // same origin might share the same instance of this object, this counter
   // will allow to properly update the observation time (starts when the first
   // tab gets loaded, stops when the last one gets unloaded).
-  size_t loaded_tabs_count_;
+  size_t loaded_tabs_count_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Number of loaded tabs currently in background for this origin, the
   // implementation doesn't need to track unloaded tabs running in background.
-  size_t loaded_tabs_in_background_count_;
+  size_t loaded_tabs_in_background_count_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The time at which the |loaded_tabs_in_background_count_| counter changed
   // from 0 to 1.
-  base::TimeTicks background_session_begin_;
+  base::TimeTicks background_session_begin_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The data store used to store the site characteristics, it should outlive
   // this object.
@@ -268,19 +288,21 @@ class SiteDataImpl : public base::RefCounted<SiteDataImpl> {
   // Indicates if this object has been fully initialized, either because the
   // read operation from the database has completed or because it has been
   // cleared.
-  bool fully_initialized_;
+  bool fully_initialized_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Dirty bit, indicates if any of the fields in |site_characteristics_| has
   // changed since it has been initialized.
-  bool is_dirty_;
+  bool is_dirty_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // A collection of callbacks to be invoked when this object becomes fully
   // initialized.
-  std::vector<base::OnceClosure> data_loaded_callbacks_;
+  std::vector<base::OnceClosure> data_loaded_callbacks_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<SiteDataImpl> weak_factory_{this};
+  base::WeakPtrFactory<SiteDataImpl> weak_factory_
+      GUARDED_BY_CONTEXT(sequence_checker_){this};
 
   DISALLOW_COPY_AND_ASSIGN(SiteDataImpl);
 };

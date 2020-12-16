@@ -70,6 +70,7 @@ class PageLoadTrackerDecoratorHelper::WebContentsObserver
   // content::WebContentsObserver:
   void DidStartLoading() override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(web_contents()->IsLoading());
     DCHECK_EQ(loading_state_, LoadingState::kNotLoading);
 
@@ -84,6 +85,7 @@ class PageLoadTrackerDecoratorHelper::WebContentsObserver
 
   void DidReceiveResponse() override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     // Only observe top-level navigation to a different document.
     if (!web_contents()->IsLoadingToDifferentDocument())
@@ -98,6 +100,7 @@ class PageLoadTrackerDecoratorHelper::WebContentsObserver
 
   void DidStopLoading() override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     // The state can be |kNotLoading| if this isn't a top-level navigation to a
     // different document.
@@ -118,7 +121,9 @@ class PageLoadTrackerDecoratorHelper::WebContentsObserver
   // Removes the WebContentsObserver from the linked list and deletes it.
   void DetachAndDestroy() {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (prev_) {
+      DCHECK_CALLED_ON_VALID_SEQUENCE(prev_->sequence_checker_);
       DCHECK_EQ(prev_->next_, this);
       prev_->next_ = next_;
     } else {
@@ -126,6 +131,7 @@ class PageLoadTrackerDecoratorHelper::WebContentsObserver
       outer_->first_web_contents_observer_ = next_;
     }
     if (next_) {
+      DCHECK_CALLED_ON_VALID_SEQUENCE(next_->sequence_checker_);
       DCHECK_EQ(next_->prev_, this);
       next_->prev_ = prev_;
     }
@@ -137,8 +143,8 @@ class PageLoadTrackerDecoratorHelper::WebContentsObserver
   // TODO(https://crbug.com/1048719): Extract the logic to manage a linked list
   // of WebContentsObservers to a helper class.
   PageLoadTrackerDecoratorHelper* const outer_;
-  WebContentsObserver* prev_;
-  WebContentsObserver* next_;
+  WebContentsObserver* prev_ GUARDED_BY_CONTEXT(sequence_checker_);
+  WebContentsObserver* next_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   enum class LoadingState {
     // Initial state.
@@ -156,7 +162,8 @@ class PageLoadTrackerDecoratorHelper::WebContentsObserver
     kLoadingDidReceiveResponse,
   };
 
-  LoadingState loading_state_ = LoadingState::kNotLoading;
+  LoadingState loading_state_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      LoadingState::kNotLoading;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

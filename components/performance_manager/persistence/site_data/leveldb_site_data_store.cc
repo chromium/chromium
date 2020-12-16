@@ -158,14 +158,21 @@ class LevelDBSiteDataStore::AsyncHelper {
   // Returns a struct with unset fields on failure.
   DatabaseSizeResult GetDatabaseSize();
 
-  bool DBIsInitialized() { return db_ != nullptr; }
+  bool DBIsInitialized() {
+    // TODO(https://crbug.com/1159407):
+    // DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return db_ != nullptr;
+  }
 
   leveldb::DB* GetDBForTesting() {
+    // TODO(https://crbug.com/1159407):
+    // DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(DBIsInitialized());
     return db_.get();
   }
 
   void SetInitializationCallbackForTesting(base::OnceClosure callback) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     init_callback_for_testing_ = std::move(callback);
     if (DBIsInitialized())
       std::move(init_callback_for_testing_).Run();
@@ -184,24 +191,28 @@ class LevelDBSiteDataStore::AsyncHelper {
 
   // A levelDB environment that gets used for testing. This allows using an
   // in-memory database when needed.
-  std::unique_ptr<leveldb::Env> env_for_testing_;
+  std::unique_ptr<leveldb::Env> env_for_testing_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The on disk location of the database.
-  const base::FilePath db_path_;
+  const base::FilePath db_path_ GUARDED_BY_CONTEXT(sequence_checker_);
   // The connection to the LevelDB database.
+  // TODO(https://crbug.com/1159407): GUARDED_BY_CONTEXT(sequence_checker_)
   std::unique_ptr<leveldb::DB> db_;
   // The options to be used for all database read operations.
-  leveldb::ReadOptions read_options_;
+  leveldb::ReadOptions read_options_ GUARDED_BY_CONTEXT(sequence_checker_);
   // The options to be used for all database write operations.
-  leveldb::WriteOptions write_options_;
+  leveldb::WriteOptions write_options_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  base::OnceClosure init_callback_for_testing_;
+  base::OnceClosure init_callback_for_testing_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
   DISALLOW_COPY_AND_ASSIGN(AsyncHelper);
 };
 
 void LevelDBSiteDataStore::AsyncHelper::OpenOrCreateDatabase() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   OpeningType opening_type = OpenOrCreateDatabaseImpl();
 
   if (init_callback_for_testing_)
@@ -507,10 +518,14 @@ void LevelDBSiteDataStore::SetInitializationCallbackForTesting(
 }
 
 bool LevelDBSiteDataStore::DatabaseIsInitializedForTesting() {
+  // TODO(https://crbug.com/1159407):
+  // DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return async_helper_->DBIsInitialized();
 }
 
 leveldb::DB* LevelDBSiteDataStore::GetDBForTesting() {
+  // TODO(https://crbug.com/1159407):
+  // DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return async_helper_->GetDBForTesting();
 }
 

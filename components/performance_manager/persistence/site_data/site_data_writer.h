@@ -40,7 +40,10 @@ class SiteDataWriter {
 
   virtual const url::Origin& Origin() const;
 
-  internal::SiteDataImpl* impl_for_testing() const { return impl_.get(); }
+  internal::SiteDataImpl* impl_for_testing() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return impl_.get();
+  }
 
  protected:
   friend class SiteDataWriterTest;
@@ -53,7 +56,8 @@ class SiteDataWriter {
 
  private:
   // The SiteDataImpl object we delegate to.
-  const scoped_refptr<internal::SiteDataImpl> impl_;
+  const scoped_refptr<internal::SiteDataImpl> impl_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

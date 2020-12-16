@@ -52,6 +52,7 @@ class ExecutionContextRegistryImpl
       const WorkerNode* worker_node) override;
 
   size_t GetExecutionContextCountForTesting() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return execution_contexts_.size();
   }
 
@@ -89,12 +90,12 @@ class ExecutionContextRegistryImpl
   std::unordered_set<const ExecutionContext*,
                      ExecutionContextHash,
                      ExecutionContextKeyEqual>
-      execution_contexts_;
+      execution_contexts_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::ObserverList<ExecutionContextObserver,
                      /* check_empty = */ true,
                      /* allow_reentrancy */ false>
-      observers_;
+      observers_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

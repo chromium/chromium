@@ -268,9 +268,10 @@ class V8DetailedMemoryDecorator
 
   void UpdateProcessMeasurementSchedules() const;
 
-  Graph* graph_ = nullptr;
+  Graph* graph_ GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
 
-  std::unique_ptr<MeasurementRequestQueue> measurement_requests_;
+  std::unique_ptr<MeasurementRequestQueue> measurement_requests_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
@@ -413,7 +414,10 @@ class V8DetailedMemoryRequest {
     return min_time_between_requests_;
   }
 
-  MeasurementMode mode() const { return mode_; }
+  MeasurementMode mode() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return mode_;
+  }
 
   // Requests measurements for all ProcessNode's in |graph|. There must be at
   // most one call to this or StartMeasurementForProcess for each
@@ -470,22 +474,28 @@ class V8DetailedMemoryRequest {
       Graph* graph);
   void StartMeasurementImpl(Graph* graph, const ProcessNode* process_node);
 
-  base::TimeDelta min_time_between_requests_;
-  MeasurementMode mode_;
-  V8DetailedMemoryDecorator* decorator_ = nullptr;
-  base::ObserverList<V8DetailedMemoryObserver, /*check_empty=*/true> observers_;
+  base::TimeDelta min_time_between_requests_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  MeasurementMode mode_ GUARDED_BY_CONTEXT(sequence_checker_);
+  V8DetailedMemoryDecorator* decorator_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      nullptr;
+  base::ObserverList<V8DetailedMemoryObserver, /*check_empty=*/true> observers_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Pointer back to the off-sequence V8DetailedMemoryRequestAnySeq that
   // created this, if any.
-  base::WeakPtr<V8DetailedMemoryRequestAnySeq> off_sequence_request_;
+  base::WeakPtr<V8DetailedMemoryRequestAnySeq> off_sequence_request_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Sequence that |off_sequence_request_| lives on.
-  scoped_refptr<base::SequencedTaskRunner> off_sequence_request_sequence_;
+  scoped_refptr<base::SequencedTaskRunner> off_sequence_request_sequence_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Additional closure that will be called from OnOwnerUnregistered for
   // one-shot requests. Used to clean up resources in the
   // V8DetailedMemoryRequestOneShot wrapper.
-  base::OnceClosure on_owner_unregistered_closure_;
+  base::OnceClosure on_owner_unregistered_closure_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
@@ -533,7 +543,10 @@ class V8DetailedMemoryRequestOneShot final : public V8DetailedMemoryObserver {
   void StartMeasurement(const ProcessNode* process,
                         MeasurementCallback callback);
 
-  MeasurementMode mode() const { return mode_; }
+  MeasurementMode mode() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return mode_;
+  }
 
   // V8DetailedMemoryObserver implementation.
 
@@ -559,12 +572,13 @@ class V8DetailedMemoryRequestOneShot final : public V8DetailedMemoryObserver {
   void OnOwnerUnregistered();
 
 #if DCHECK_IS_ON()
-  const ProcessNode* process_;
+  const ProcessNode* process_ GUARDED_BY_CONTEXT(sequence_checker_);
 #endif
 
-  MeasurementCallback callback_;
-  MeasurementMode mode_;
-  std::unique_ptr<V8DetailedMemoryRequest> request_;
+  MeasurementCallback callback_ GUARDED_BY_CONTEXT(sequence_checker_);
+  MeasurementMode mode_ GUARDED_BY_CONTEXT(sequence_checker_);
+  std::unique_ptr<V8DetailedMemoryRequest> request_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
@@ -645,9 +659,10 @@ class V8DetailedMemoryRequestAnySeq {
       MeasurementMode mode,
       base::Optional<base::WeakPtr<ProcessNode>> process_to_measure);
 
-  std::unique_ptr<V8DetailedMemoryRequest> request_;
+  std::unique_ptr<V8DetailedMemoryRequest> request_
+      GUARDED_BY_CONTEXT(sequence_checker_);
   base::ObserverList<V8DetailedMemoryObserverAnySeq, /*check_empty=*/true>
-      observers_;
+      observers_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // This object can live on any sequence but all methods and the destructor
   // must be called from that sequence.
@@ -703,17 +718,18 @@ class V8DetailedMemoryRequestOneShotAnySeq {
       const ProcessNode* process_node,
       const V8DetailedMemoryProcessData* process_data);
 
-  MeasurementMode mode_;
+  MeasurementMode mode_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The wrapped request. Must only be accessed from the PM sequence.
-  std::unique_ptr<V8DetailedMemoryRequestOneShot> request_;
+  std::unique_ptr<V8DetailedMemoryRequestOneShot> request_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // This object can live on any sequence but all methods and the destructor
   // must be called from that sequence.
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<V8DetailedMemoryRequestOneShotAnySeq> weak_factory_{
-      this};
+  base::WeakPtrFactory<V8DetailedMemoryRequestOneShotAnySeq> weak_factory_
+      GUARDED_BY_CONTEXT(sequence_checker_){this};
 };
 
 //////////////////////////////////////////////////////////////////////////////
