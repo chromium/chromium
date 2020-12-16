@@ -24,6 +24,7 @@
 #include "components/signin/ios/browser/features.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
+#include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "ios/web/common/web_view_creation_util.h"
 #include "ios/web/public/browser_state.h"
@@ -122,6 +123,9 @@ class AccountConsistencyHandler : public web::WebStatePolicyDecider,
       web::PageLoadCompletionStatus load_completion_status) override;
 
   // web::WebStatePolicyDecider override.
+  WebStatePolicyDecider::PolicyDecision ShouldAllowRequest(
+      NSURLRequest* request,
+      const web::WebStatePolicyDecider::RequestInfo& request_info) override;
   // Decides on navigation corresponding to |response| whether the navigation
   // should continue and updates authentication cookies on Google domains.
   void ShouldAllowResponse(
@@ -133,11 +137,15 @@ class AccountConsistencyHandler : public web::WebStatePolicyDecider,
   // Marks that GAIA cookies have been restored.
   void MarkGaiaCookiesRestored();
 
+  // Loads |url| in the current tab.
+  void NavigateToURL(GURL url);
+
   bool show_consistency_promo_ = false;
   bool gaia_cookies_restored_ = false;
   AccountConsistencyService* account_consistency_service_;  // Weak.
   AccountReconcilor* account_reconcilor_;                   // Weak.
   signin::IdentityManager* identity_manager_;
+  web::WebState* web_state_;
   __weak id<ManageAccountsDelegate> delegate_;
   base::WeakPtrFactory<AccountConsistencyHandler> weak_ptr_factory_;
 };
@@ -153,9 +161,28 @@ AccountConsistencyHandler::AccountConsistencyHandler(
       account_consistency_service_(service),
       account_reconcilor_(account_reconcilor),
       identity_manager_(identity_manager),
+      web_state_(web_state),
       delegate_(delegate),
       weak_ptr_factory_(this) {
   web_state->AddObserver(this);
+}
+
+web::WebStatePolicyDecider::PolicyDecision
+AccountConsistencyHandler::ShouldAllowRequest(
+    NSURLRequest* request,
+    const web::WebStatePolicyDecider::RequestInfo& request_info) {
+  GURL url = net::GURLWithNSURL(request.URL);
+  if (base::FeatureList::IsEnabled(signin::kRestoreGaiaCookiesOnUserAction) &&
+      signin::IsUrlEligibleForMirrorCookie(url) &&
+      identity_manager_->HasPrimaryAccount()) {
+    // CHROME_CONNECTED cookies are added asynchronously on google.com and
+    // youtube.com domains when Chrome detects that the user is signed-in. By
+    // continuing to fulfill the navigation once the cookie request is sent,
+    // Chrome adopts a best-effort strategy for signing the user into the web if
+    // necessary.
+    account_consistency_service_->AddChromeConnectedCookies();
+  }
+  return PolicyDecision::Allow();
 }
 
 void AccountConsistencyHandler::ShouldAllowResponse(
@@ -235,6 +262,23 @@ void AccountConsistencyHandler::ShouldAllowResponse(
       if (identity_manager_->HasPrimaryAccount()) {
         LogIOSGaiaCookiesState(GaiaCookieStateOnSignedInNavigation::
                                    kGaiaCookieAbsentOnAddSessionNavigation);
+        if (base::FeatureList::IsEnabled(
+                signin::kRestoreGaiaCookiesOnUserAction)) {
+          // Reset boolean that tracks displaying the sign-in notification
+          // infobar. This ensures that only the most recent navigation will
+          // trigger an infobar.
+          gaia_cookies_restored_ = false;
+          GURL continue_url = GURL(params.continue_url);
+          DLOG_IF(ERROR,
+                  !params.continue_url.empty() && !continue_url.is_valid())
+              << "Invalid continuation URL: \"" << continue_url << "\"";
+          identity_manager_->GetAccountsCookieMutator()
+              ->ForceTriggerOnCookieChange();
+          account_consistency_service_->AddCookieRestoreCallback(
+              base::BindOnce(&AccountConsistencyHandler::NavigateToURL,
+                             weak_ptr_factory_.GetWeakPtr(), continue_url));
+          return;
+        }
       }
       if (params.show_consistency_promo) {
         show_consistency_promo_ = true;
@@ -268,6 +312,13 @@ void AccountConsistencyHandler::ShouldAllowResponse(
 
 void AccountConsistencyHandler::MarkGaiaCookiesRestored() {
   gaia_cookies_restored_ = true;
+}
+
+void AccountConsistencyHandler::NavigateToURL(GURL url) {
+  gaia_cookies_restored_ = true;
+  web_state_->OpenURL(web::WebState::OpenURLParams(
+      url, web::Referrer(), WindowOpenDisposition::CURRENT_TAB,
+      ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false));
 }
 
 void AccountConsistencyHandler::PageLoaded(
@@ -362,6 +413,12 @@ void AccountConsistencyService::RemoveWebStateHandler(
   web_state_handlers_.erase(web_state);
 }
 
+void AccountConsistencyService::AddCookieRestoreCallback(
+    base::OnceClosure cookies_restored_callback) {
+  gaia_cookies_restored_callbacks_.push_back(
+      std::move(cookies_restored_callback));
+}
+
 void AccountConsistencyService::SetGaiaCookiesIfDeleted(
     base::OnceClosure cookies_restored_callback) {
   // We currently enforce a time threshold to update the Gaia cookie
@@ -407,9 +464,7 @@ void AccountConsistencyService::TriggerGaiaCookieChangeIfDeleted(
 
   // Re-generate cookie to ensure that the user is properly signed in.
   identity_manager_->GetAccountsCookieMutator()->ForceTriggerOnCookieChange();
-  if (!cookies_restored_callback.is_null()) {
-    std::move(cookies_restored_callback).Run();
-  }
+  AddCookieRestoreCallback(std::move(cookies_restored_callback));
 }
 
 void AccountConsistencyService::RemoveAllChromeConnectedCookies(
@@ -582,4 +637,15 @@ void AccountConsistencyService::OnAccountsInCookieUpdated(
     const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
     const GoogleServiceAuthError& error) {
   AddChromeConnectedCookies();
+
+  // If signed-in accounts have been recently restored through GAIA cookie
+  // restoration then run the relevant callback to finish the update process.
+  if (accounts_in_cookie_jar_info.signed_in_accounts.size() > 0 &&
+      !gaia_cookies_restored_callbacks_.empty()) {
+    std::vector<base::OnceClosure> callbacks;
+    std::swap(gaia_cookies_restored_callbacks_, callbacks);
+    for (base::OnceClosure& callback : callbacks) {
+      std::move(callback).Run();
+    }
+  }
 }

@@ -70,6 +70,9 @@ class AccountConsistencyService : public KeyedService,
   // Removes the handler associated with |web_state|.
   void RemoveWebStateHandler(web::WebState* web_state);
 
+  // Adds the callback to the list to call when Gaia cookies are restored.
+  void AddCookieRestoreCallback(base::OnceClosure cookies_restored_callback);
+
   // Checks for the presence of Gaia cookies and if they have been deleted
   // notifies the AccountReconcilor (the class responsible for rebuilding Gaia
   // cookies if needed). Calls callback if Gaia cookies were restored.
@@ -85,6 +88,9 @@ class AccountConsistencyService : public KeyedService,
   // Removes CHROME_CONNECTED cookies on all the Google domains where it was
   // set. Calls callback once all cookies were removed.
   void RemoveAllChromeConnectedCookies(base::OnceClosure callback);
+
+  // Adds CHROME_CONNECTED cookies on all the main Google domains.
+  void AddChromeConnectedCookies();
 
   // Notifies the AccountConsistencyService that browsing data has been removed
   // for any time period.
@@ -127,9 +133,6 @@ class AccountConsistencyService : public KeyedService,
       const std::vector<const GURL>& urls,
       const base::TimeDelta& cookie_refresh_interval);
 
-  // Adds CHROME_CONNECTED cookies on all the main Google domains.
-  void AddChromeConnectedCookies();
-
   // Triggers a Gaia cookie update on the Google domain. Calls
   // |cookies_restored_callback| if the Gaia cookies were restored.
   void TriggerGaiaCookieChangeIfDeleted(
@@ -171,6 +174,9 @@ class AccountConsistencyService : public KeyedService,
 
   // Last time Gaia cookie was updated for the Google domain.
   base::Time last_gaia_cookie_verification_time_;
+
+  // List of callbacks to be called following GAIA cookie restoration.
+  std::vector<base::OnceClosure> gaia_cookies_restored_callbacks_;
 
   // Handlers reacting on GAIA responses with the X-Chrome-Manage-Accounts
   // header set.
