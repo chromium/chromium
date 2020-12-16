@@ -5479,10 +5479,13 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled4",
+                    "name": "Enabled5",
                     "enable_features": [
                         "PartitionConnectionsByNetworkIsolationKey",
+                        "PartitionDomainReliabilityByNetworkIsolationKey",
+                        "PartitionExpectCTStateByNetworkIsolationKey",
                         "PartitionHttpServerPropertiesByNetworkIsolationKey",
+                        "PartitionNelAndReportingByNetworkIsolationKey",
                         "PartitionSSLSessionsByNetworkIsolationKey",
                         "SplitHostCacheByNetworkIsolationKey"
                     ]
