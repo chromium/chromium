@@ -59,13 +59,13 @@ luci.notifier(
     ],
 )
 
-TREE_CLOSING_STEPS = [
+TREE_CLOSING_STEPS_REGEXP = "\\b({})\\b".format("|".join([
     "bot_update",
     "compile",
     "gclient runhooks",
     "runhooks",
     "update",
-]
+]))
 
 # This results in a notifier with no recipients, so nothing will actually be
 # notified. This still creates a "notifiable" that can be passed to the notifies
@@ -91,7 +91,7 @@ def tree_closer(*, name, tree_status_host, **kwargs):
 tree_closer(
     name = "chromium-tree-closer",
     tree_status_host = "chromium-status.appspot.com",
-    failed_step_regexp = TREE_CLOSING_STEPS,
+    failed_step_regexp = TREE_CLOSING_STEPS_REGEXP,
 )
 
 tree_closer(
@@ -104,7 +104,7 @@ def tree_closure_notifier(*, name, **kwargs):
         luci.notifier(
             name = name,
             on_occurrence = ["FAILURE"],
-            failed_step_regexp = TREE_CLOSING_STEPS,
+            failed_step_regexp = TREE_CLOSING_STEPS_REGEXP,
             **kwargs
         )
     else:
