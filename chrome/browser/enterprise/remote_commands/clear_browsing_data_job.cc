@@ -12,6 +12,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 
 namespace enterprise_commands {
@@ -77,6 +78,27 @@ bool ClearBrowsingDataJob::ParseCommandPayload(
   // path from UTF8, and ending up with an invalid path will fail later in
   // RunImpl when we attempt to get the profile from the path.
   profile_path_ = base::FilePath::FromUTF8Unsafe(*path);
+#if defined(OS_WIN)
+  // For Windows machines, the path that Chrome reports for the profile is
+  // "Normalized" to all lower-case on the reporting server. This means that
+  // when the server sends the command, the path will be all lower case and
+  // the profile manager won't be able to use it as a key. To avoid this issue,
+  // This code will iterate over all profile paths and find the one that matches
+  // in a case-insensitive comparison. If this doesn't find one, RunImpl will
+  // fail in the same manner as if the profile didn't exist, which is the
+  // expected behavior.
+  ProfileAttributesStorage& storage =
+      profile_manager_->GetProfileAttributesStorage();
+  for (ProfileAttributesEntry* entry : storage.GetAllProfilesAttributes()) {
+    base::FilePath entry_path = entry->GetPath();
+
+    if (base::FilePath::CompareEqualIgnoreCase(profile_path_.value(),
+                                               entry_path.value())) {
+      profile_path_ = entry_path;
+      break;
+    }
+  }
+#endif
 
   // Not specifying these fields is equivalent to setting them to false.
   clear_cache_ = root->FindBoolKey(kClearCacheField).value_or(false);
