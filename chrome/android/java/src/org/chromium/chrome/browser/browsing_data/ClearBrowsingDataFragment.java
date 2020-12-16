@@ -9,7 +9,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -213,9 +212,6 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
     // important domains from being cleared.
     private ConfirmImportantSitesDialogFragment mConfirmImportantSitesDialog;
 
-    // Time in ms, when the dialog was created.
-    private long mDialogOpened;
-
     /**
      * @return All available {@link DialogOption} entries.
      */
@@ -327,9 +323,6 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
         for (@DialogOption Integer option : options) {
             dataTypes.add(getDataType(option));
         }
-
-        RecordHistogram.recordMediumTimesHistogram("History.ClearBrowsingData.TimeSpentInDialog",
-                SystemClock.elapsedRealtime() - mDialogOpened);
 
         final @CookieOrCacheDeletionChoice int choice;
         if (dataTypes.contains(BrowsingDataType.COOKIES)) {
@@ -522,7 +515,6 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
         if (savedInstanceState != null) {
             mFetcher = savedInstanceState.getParcelable(CLEAR_BROWSING_DATA_FETCHER);
         }
-        mDialogOpened = SystemClock.elapsedRealtime();
         getActivity().setTitle(R.string.clear_browsing_data_title);
         SettingsUtils.addPreferencesFromResource(this, R.xml.clear_browsing_data_preferences_tab);
         List<Integer> options = getDialogOptions();

@@ -201,15 +201,6 @@ Polymer({
           'computeHasOtherError_(syncStatus, isSyncPaused_, hasPassphraseError_)',
     },
 
-    /**
-     * Time in ms, when the dialog was opened.
-     * @private
-     */
-    dialogOpenedTime_: {
-      type: Number,
-      value: 0,
-    },
-
     /** @private {Array<string>} */
     tabsNames_: {
       type: Array,
@@ -261,7 +252,6 @@ Polymer({
   /** @override */
   attached() {
     this.browserProxy_ = ClearBrowsingDataBrowserProxyImpl.getInstance();
-    this.dialogOpenedTime_ = Date.now();
     this.browserProxy_.initialize().then(() => {
       this.$.clearBrowsingDataDialog.showModal();
     });
@@ -311,7 +301,6 @@ Polymer({
   currentRouteChanged(currentRoute) {
     if (currentRoute === routes.CLEAR_BROWSER_DATA) {
       chrome.metricsPrivate.recordUserAction('ClearBrowsingData_DialogCreated');
-      this.dialogOpenedTime_ = Date.now();
     }
   },
 
@@ -482,9 +471,6 @@ Polymer({
         showPasswordsNotice && !showHistoryNotice;
     this.showPasswordsDeletionDialogLater_ =
         showPasswordsNotice && showHistoryNotice;
-    chrome.metricsPrivate.recordMediumTime(
-        'History.ClearBrowsingData.TimeSpentInDialog',
-        Date.now() - this.dialogOpenedTime_);
 
     // Close the clear browsing data or installed apps dialog if they are open.
     const isLastDialog = !showHistoryNotice && !showPasswordsNotice;
