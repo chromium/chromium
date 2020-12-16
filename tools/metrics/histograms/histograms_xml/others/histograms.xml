@@ -14537,13 +14537,17 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="Spellcheck.Android.Available" enum="BooleanAvailable"
-    expires_after="M77">
+    expires_after="M92">
   <owner>timvolodine@chromium.org</owner>
+  <owner>chrome-language@google.com</owner>
   <summary>
     Whether the Android spellchecking service was available at the start of a
     new spellchecking session. Note that the user can disable the Android
     spellchecking service in settings, in which case it will show up as not
     available in the histogram.
+
+    Warning: for chrome versions 78-88 this histogram was listed as expired, so
+    for that period the data might be missing or incomplete.
   </summary>
 </histogram>
 
