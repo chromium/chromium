@@ -220,98 +220,98 @@ class InputMethodManagerImplTest :  public BrowserWithTestWindowTest {
     ext_xkb_engine_us.engine_id = "xkb:us::eng";
     ext_xkb_engine_us.display_name = "xkb:us::eng";
     ext_xkb_engine_us.language_codes.emplace_back("en-US");
-    ext_xkb_engine_us.layouts.emplace_back("us");
+    ext_xkb_engine_us.layout = "us";
     ext_xkb.engines.push_back(ext_xkb_engine_us);
 
     ComponentExtensionEngine ext_xkb_engine_intl;
     ext_xkb_engine_intl.engine_id = "xkb:us:intl:eng";
     ext_xkb_engine_intl.display_name = "xkb:us:intl:eng";
     ext_xkb_engine_intl.language_codes.emplace_back("en-US");
-    ext_xkb_engine_intl.layouts.emplace_back("us(intl)");
+    ext_xkb_engine_intl.layout = "us(intl)";
     ext_xkb.engines.push_back(ext_xkb_engine_intl);
 
     ComponentExtensionEngine ext_xkb_engine_altgr_intl;
     ext_xkb_engine_altgr_intl.engine_id = "xkb:us:altgr-intl:eng";
     ext_xkb_engine_altgr_intl.display_name = "xkb:us:altgr-intl:eng";
     ext_xkb_engine_altgr_intl.language_codes.emplace_back("en-US");
-    ext_xkb_engine_altgr_intl.layouts.emplace_back("us(altgr-intl)");
+    ext_xkb_engine_altgr_intl.layout = "us(altgr-intl)";
     ext_xkb.engines.push_back(ext_xkb_engine_altgr_intl);
 
     ComponentExtensionEngine ext_xkb_engine_dvorak;
     ext_xkb_engine_dvorak.engine_id = "xkb:us:dvorak:eng";
     ext_xkb_engine_dvorak.display_name = "xkb:us:dvorak:eng";
     ext_xkb_engine_dvorak.language_codes.emplace_back("en-US");
-    ext_xkb_engine_dvorak.layouts.emplace_back("us(dvorak)");
+    ext_xkb_engine_dvorak.layout = "us(dvorak)";
     ext_xkb.engines.push_back(ext_xkb_engine_dvorak);
 
     ComponentExtensionEngine ext_xkb_engine_dvp;
     ext_xkb_engine_dvp.engine_id = "xkb:us:dvp:eng";
     ext_xkb_engine_dvp.display_name = "xkb:us:dvp:eng";
     ext_xkb_engine_dvp.language_codes.emplace_back("en-US");
-    ext_xkb_engine_dvp.layouts.emplace_back("us(dvp)");
+    ext_xkb_engine_dvp.layout = "us(dvp)";
     ext_xkb.engines.push_back(ext_xkb_engine_dvp);
 
     ComponentExtensionEngine ext_xkb_engine_colemak;
     ext_xkb_engine_colemak.engine_id = "xkb:us:colemak:eng";
     ext_xkb_engine_colemak.display_name = "xkb:us:colemak:eng";
     ext_xkb_engine_colemak.language_codes.emplace_back("en-US");
-    ext_xkb_engine_colemak.layouts.emplace_back("us(colemak)");
+    ext_xkb_engine_colemak.layout = "us(colemak)";
     ext_xkb.engines.push_back(ext_xkb_engine_colemak);
 
     ComponentExtensionEngine ext_xkb_engine_workman;
     ext_xkb_engine_workman.engine_id = "xkb:us:workman:eng";
     ext_xkb_engine_workman.display_name = "xkb:us:workman:eng";
     ext_xkb_engine_workman.language_codes.emplace_back("en-US");
-    ext_xkb_engine_workman.layouts.emplace_back("us(workman)");
+    ext_xkb_engine_workman.layout = "us(workman)";
     ext_xkb.engines.push_back(ext_xkb_engine_workman);
 
     ComponentExtensionEngine ext_xkb_engine_workman_intl;
     ext_xkb_engine_workman_intl.engine_id = "xkb:us:workman-intl:eng";
     ext_xkb_engine_workman_intl.display_name = "xkb:us:workman-intl:eng";
     ext_xkb_engine_workman_intl.language_codes.emplace_back("en-US");
-    ext_xkb_engine_workman_intl.layouts.emplace_back("us(workman-intl)");
+    ext_xkb_engine_workman_intl.layout = "us(workman-intl)";
     ext_xkb.engines.push_back(ext_xkb_engine_workman_intl);
 
     ComponentExtensionEngine ext_xkb_engine_fr;
     ext_xkb_engine_fr.engine_id = "xkb:fr::fra";
     ext_xkb_engine_fr.display_name = "xkb:fr::fra";
     ext_xkb_engine_fr.language_codes.emplace_back("fr");
-    ext_xkb_engine_fr.layouts.emplace_back("fr");
+    ext_xkb_engine_fr.layout = "fr";
     ext_xkb.engines.push_back(ext_xkb_engine_fr);
 
     ComponentExtensionEngine ext_xkb_engine_se;
     ext_xkb_engine_se.engine_id = "xkb:se::swe";
     ext_xkb_engine_se.display_name = "xkb:se::swe";
     ext_xkb_engine_se.language_codes.emplace_back("sv");
-    ext_xkb_engine_se.layouts.emplace_back("se");
+    ext_xkb_engine_se.layout = "se";
     ext_xkb.engines.push_back(ext_xkb_engine_se);
 
     ComponentExtensionEngine ext_xkb_engine_jp;
     ext_xkb_engine_jp.engine_id = "xkb:jp::jpn";
     ext_xkb_engine_jp.display_name = "xkb:jp::jpn";
     ext_xkb_engine_jp.language_codes.emplace_back("ja");
-    ext_xkb_engine_jp.layouts.emplace_back("jp");
+    ext_xkb_engine_jp.layout = "jp";
     ext_xkb.engines.push_back(ext_xkb_engine_jp);
 
     ComponentExtensionEngine ext_xkb_engine_ru;
     ext_xkb_engine_ru.engine_id = "xkb:ru::rus";
     ext_xkb_engine_ru.display_name = "xkb:ru::rus";
     ext_xkb_engine_ru.language_codes.emplace_back("ru");
-    ext_xkb_engine_ru.layouts.emplace_back("ru");
+    ext_xkb_engine_ru.layout = "ru";
     ext_xkb.engines.push_back(ext_xkb_engine_ru);
 
     ComponentExtensionEngine ext_xkb_engine_hu;
     ext_xkb_engine_hu.engine_id = "xkb:hu::hun";
     ext_xkb_engine_hu.display_name = "xkb:hu::hun";
     ext_xkb_engine_hu.language_codes.emplace_back("hu");
-    ext_xkb_engine_hu.layouts.emplace_back("hu");
+    ext_xkb_engine_hu.layout = "hu";
     ext_xkb.engines.push_back(ext_xkb_engine_hu);
 
     ComponentExtensionEngine ext_xkb_engine_de;
     ext_xkb_engine_de.engine_id = "xkb:de::ger";
     ext_xkb_engine_de.display_name = "xkb:de::ger";
     ext_xkb_engine_de.language_codes.emplace_back("de");
-    ext_xkb_engine_de.layouts.emplace_back("de");
+    ext_xkb_engine_de.layout = "de";
     ext_xkb.engines.push_back(ext_xkb_engine_de);
 
     ime_list.push_back(ext_xkb);
@@ -325,14 +325,14 @@ class InputMethodManagerImplTest :  public BrowserWithTestWindowTest {
     ext1_engine1.engine_id = "nacl_mozc_us";
     ext1_engine1.display_name = "ext1_engine_1_display_name";
     ext1_engine1.language_codes.emplace_back("ja");
-    ext1_engine1.layouts.emplace_back("us");
+    ext1_engine1.layout = "us";
     ext1.engines.push_back(ext1_engine1);
 
     ComponentExtensionEngine ext1_engine2;
     ext1_engine2.engine_id = "nacl_mozc_jp";
     ext1_engine2.display_name = "ext1_engine_1_display_name";
     ext1_engine2.language_codes.emplace_back("ja");
-    ext1_engine2.layouts.emplace_back("jp");
+    ext1_engine2.layout = "jp";
     ext1.engines.push_back(ext1_engine2);
 
     ime_list.push_back(ext1);
@@ -346,14 +346,14 @@ class InputMethodManagerImplTest :  public BrowserWithTestWindowTest {
     ext2_engine1.engine_id = kExt2Engine1Id;
     ext2_engine1.display_name = "ext2_engine_1_display_name";
     ext2_engine1.language_codes.emplace_back("en");
-    ext2_engine1.layouts.emplace_back("us");
+    ext2_engine1.layout = "us";
     ext2.engines.push_back(ext2_engine1);
 
     ComponentExtensionEngine ext2_engine2;
     ext2_engine2.engine_id = kExt2Engine2Id;
     ext2_engine2.display_name = "ext2_engine_2_display_name";
     ext2_engine2.language_codes.emplace_back("en");
-    ext2_engine2.layouts.emplace_back("us(dvorak)");
+    ext2_engine2.layout = "us(dvorak)";
     ext2.engines.push_back(ext2_engine2);
 
     ime_list.push_back(ext2);
@@ -1047,21 +1047,17 @@ TEST_F(InputMethodManagerImplTest, TestAddRemoveExtensionInputMethods) {
   EXPECT_EQ("us(dvorak)", keyboard_->last_layout_);
 
   // Add two Extension IMEs.
-  std::vector<std::string> layouts;
-  layouts.emplace_back("us");
   std::vector<std::string> languages;
   languages.emplace_back("en-US");
 
   const std::string ext1_id =
       extension_ime_util::GetInputMethodID(kExtensionId1, "engine_id");
-  const InputMethodDescriptor descriptor1(ext1_id,
-                                          "deadbeef input method",
+  const InputMethodDescriptor descriptor1(ext1_id, "deadbeef input method",
                                           "DB",
-                                          layouts,
+                                          "us",  // layout
                                           languages,
                                           false,  // is_login_keyboard
-                                          GURL(),
-                                          GURL());
+                                          GURL(), GURL());
   MockInputMethodEngine engine;
   InputMethodDescriptors descriptors;
   descriptors.push_back(descriptor1);
@@ -1086,14 +1082,12 @@ TEST_F(InputMethodManagerImplTest, TestAddRemoveExtensionInputMethods) {
 
   const std::string ext2_id =
       extension_ime_util::GetInputMethodID(kExtensionId2, "engine_id");
-  const InputMethodDescriptor descriptor2(ext2_id,
-                                          "cafebabe input method",
+  const InputMethodDescriptor descriptor2(ext2_id, "cafebabe input method",
                                           "CB",
-                                          layouts,
+                                          "us",  // layout
                                           languages,
                                           false,  // is_login_keyboard
-                                          GURL(),
-                                          GURL());
+                                          GURL(), GURL());
   descriptors.clear();
   descriptors.push_back(descriptor2);
   MockInputMethodEngine engine2;
@@ -1132,22 +1126,17 @@ TEST_F(InputMethodManagerImplTest, TestAddExtensionInputThenLockScreen) {
             manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
   EXPECT_EQ("us", keyboard_->last_layout_);
 
-  // Add an Extension IME.
-  std::vector<std::string> layouts;
-  layouts.emplace_back("us(dvorak)");
+  // Add an Extension IME
   std::vector<std::string> languages;
   languages.emplace_back("en-US");
 
   const std::string ext_id =
       extension_ime_util::GetInputMethodID(kExtensionId1, "engine_id");
-  const InputMethodDescriptor descriptor(ext_id,
-                                         "deadbeef input method",
-                                         "DB",
-                                         layouts,
+  const InputMethodDescriptor descriptor(ext_id, "deadbeef input method", "DB",
+                                         "us(dvorak)",  // layout
                                          languages,
                                          false,  // is_login_keyboard
-                                         GURL(),
-                                         GURL());
+                                         GURL(), GURL());
   MockInputMethodEngine engine;
   InputMethodDescriptors descriptors;
   descriptors.push_back(descriptor);
@@ -1547,7 +1536,6 @@ TEST_F(InputMethodManagerImplTest, TestAddRemoveArcInputMethods) {
   EXPECT_EQ(1u, manager_->GetActiveIMEState()->GetNumActiveInputMethods());
 
   // Add an ARC IMEs.
-  std::vector<std::string> layouts({"us"});
   std::vector<std::string> languages({"en-US"});
 
   MockInputMethodEngine engine;
@@ -1555,7 +1543,7 @@ TEST_F(InputMethodManagerImplTest, TestAddRemoveArcInputMethods) {
   const std::string ime_id =
       extension_ime_util::GetArcInputMethodID(kExtensionId1, "engine_id");
   const InputMethodDescriptor descriptor(
-      ime_id, "arc ime", "AI", layouts, languages,
+      ime_id, "arc ime", "AI", "us" /* layout */, languages,
       false /* is_login_keyboard */, GURL(), GURL());
   InputMethodDescriptors descriptors({descriptor});
   manager_->GetActiveIMEState()->AddInputMethodExtension(kExtensionId1,

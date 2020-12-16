@@ -31,8 +31,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS)
                     const std::string& manifest,
                     const base::FilePath& path) = 0;
 
-  virtual bool IsInLoginLayoutAllowlist(
-      const std::vector<std::string>& layouts) = 0;
+  virtual bool IsInLoginLayoutAllowlist(const std::string& layout) = 0;
 };
 
 }  // namespace chromeos

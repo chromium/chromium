@@ -19,40 +19,33 @@ InputMethodDescriptor::InputMethodDescriptor(
     const std::string& id,
     const std::string& name,
     const std::string& indicator,
-    const std::vector<std::string>& keyboard_layouts,
+    const std::string& keyboard_layout,
     const std::vector<std::string>& language_codes,
     bool is_login_keyboard,
     const GURL& options_page_url,
     const GURL& input_view_url)
     : id_(id),
       name_(name),
-      keyboard_layouts_(keyboard_layouts),
+      keyboard_layout_(keyboard_layout),
       language_codes_(language_codes),
       indicator_(indicator),
       is_login_keyboard_(is_login_keyboard),
       options_page_url_(options_page_url),
-      input_view_url_(input_view_url) {
-}
+      input_view_url_(input_view_url) {}
 
 InputMethodDescriptor::InputMethodDescriptor(
     const InputMethodDescriptor& other) = default;
-
-std::string InputMethodDescriptor::GetPreferredKeyboardLayout() const {
-  // TODO(nona): Investigate better way to guess the preferred layout
-  //             http://crbug.com/170601.
-  return keyboard_layouts_.empty() ? "us" : keyboard_layouts_[0];
-}
 
 std::string InputMethodDescriptor::GetIndicator() const {
   // Return the empty string for ARC IMEs.
   if (extension_ime_util::IsArcIME(id_))
     return std::string();
 
-  // If indicator is empty, use the first two character in its preferred
-  // keyboard layout or language code.
+  // If indicator is empty, use the first two character in its keyboard layout
+  // or language code.
   if (indicator_.empty()) {
     if (extension_ime_util::IsKeyboardLayoutExtension(id_)) {
-      return base::ToUpperASCII(GetPreferredKeyboardLayout().substr(0, 2));
+      return base::ToUpperASCII(keyboard_layout_.substr(0, 2));
     }
     DCHECK(language_codes_.size() > 0);
     return base::ToUpperASCII(language_codes_[0].substr(0, 2));

@@ -236,8 +236,8 @@ void InitLocaleAndInputMethodsForNewUser(
     // default input method (e.g. from GaiaScreen), use the hardware input
     // method. Note that the hardware input method can be non-login-able.
     // Refer to the issue chrome-os-partner:48623.
-    if (descriptor && descriptor->GetPreferredKeyboardLayout() ==
-                          preferred_input_method.GetPreferredKeyboardLayout()) {
+    if (descriptor && descriptor->keyboard_layout() ==
+                          preferred_input_method.keyboard_layout()) {
       preferred_input_method = *descriptor;
     }
   }

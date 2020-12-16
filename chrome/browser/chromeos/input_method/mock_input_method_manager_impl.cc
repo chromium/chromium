@@ -51,7 +51,7 @@ InputMethodDescriptor MockInputMethodManagerImpl::State::GetCurrentInputMethod()
   if (!current_input_method_id.empty()) {
     return InputMethodDescriptor(
         current_input_method_id, descriptor.name(), descriptor.indicator(),
-        descriptor.keyboard_layouts(), descriptor.language_codes(), true,
+        descriptor.keyboard_layout(), descriptor.language_codes(), true,
         GURL(),   // options page url.
         GURL());  // input view page url.
   }

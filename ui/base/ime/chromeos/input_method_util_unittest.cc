@@ -82,7 +82,7 @@ class InputMethodUtilTest : public testing::Test {
       bool is_login_keyboard) {
     return InputMethodDescriptor(Id(id), description,
                                  indicator,  // Short name used for indicator.
-                                 {layout}, language_codes, is_login_keyboard,
+                                 layout, language_codes, is_login_keyboard,
                                  GURL(),   // options page url
                                  GURL());  // input view page url
   }
@@ -226,7 +226,7 @@ TEST_F(InputMethodUtilTest, TestGetInputMethodDescriptorFromId) {
       util_.GetInputMethodDescriptorFromId(Id(pinyin_ime_id));
   ASSERT_TRUE(nullptr != descriptor);  // ASSERT_NE doesn't compile.
   EXPECT_EQ(Id(pinyin_ime_id), descriptor->id());
-  EXPECT_EQ("us", descriptor->GetPreferredKeyboardLayout());
+  EXPECT_EQ("us", descriptor->keyboard_layout());
   // This used to be "zh" but now we have "zh-CN" in input_methods.h,
   // hence this should be zh-CN now.
   ASSERT_TRUE(!descriptor->language_codes().empty());

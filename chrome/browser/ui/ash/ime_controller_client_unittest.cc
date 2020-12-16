@@ -47,12 +47,12 @@ class TestInputMethodManager : public MockInputMethodManager {
    public:
     TestState() {
       // Set up two input methods.
-      std::vector<std::string> layouts({"us"});
+      std::string layout("us");
       std::vector<std::string> languages({"en-US"});
-      InputMethodDescriptor ime1("id1", "name1", "indicator1", layouts,
+      InputMethodDescriptor ime1("id1", "name1", "indicator1", layout,
                                  languages, true /* is_login_keyboard */,
                                  GURL(), GURL());
-      InputMethodDescriptor ime2("id2", "name2", "indicator2", layouts,
+      InputMethodDescriptor ime2("id2", "name2", "indicator2", layout,
                                  languages, false /* is_login_keyboard */,
                                  GURL(), GURL());
       current_ime_id_ = ime1.id();

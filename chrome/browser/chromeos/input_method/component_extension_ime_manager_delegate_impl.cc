@@ -196,13 +196,8 @@ void ComponentExtensionIMEManagerDelegateImpl::Load(
 }
 
 bool ComponentExtensionIMEManagerDelegateImpl::IsInLoginLayoutAllowlist(
-    const std::vector<std::string>& layouts) {
-  for (const auto& layout : layouts) {
-    if (login_layout_set_.find(layout) != login_layout_set_.end()) {
-      return true;
-    }
-  }
-  return false;
+    const std::string& layout) {
+  return login_layout_set_.find(layout) != login_layout_set_.end();
 }
 
 std::unique_ptr<base::DictionaryValue>
@@ -268,14 +263,17 @@ bool ComponentExtensionIMEManagerDelegateImpl::ReadEngineComponent(
   DCHECK(!languages.empty());
   out->language_codes.assign(languages.begin(), languages.end());
 
+  // For legacy reasons, multiple physical keyboard XKB layouts can be specified
+  // in the IME extension manifest for each input method. However, CrOS only
+  // supports one layout per input method. Thus use the "first" layout if
+  // specified, else default to "us". CrOS IME extension manifests should
+  // specify one and only one layout per input method to avoid confusion.
   const base::ListValue* layouts = nullptr;
   if (!dict.GetList(extensions::manifest_keys::kLayouts, &layouts))
     return false;
 
-  for (size_t i = 0; i < layouts->GetSize(); ++i) {
-    std::string buffer;
-    if (layouts->GetString(i, &buffer))
-      out->layouts.push_back(buffer);
+  if (layouts->empty() || !layouts->GetString(0, &out->layout)) {
+    out->layout = "us";
   }
 
   std::string url_string;

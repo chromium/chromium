@@ -162,10 +162,10 @@ std::string InputMethodManagerImpl::StateImpl::Dump() const {
      << (profile ? profile->GetProfileUserName() : std::string("NULL"))
      << " #################\n";
 
-  os << "last_used_input_method: '"
-     << last_used_input_method.GetPreferredKeyboardLayout() << "'\n";
-  os << "current_input_method: '"
-     << current_input_method.GetPreferredKeyboardLayout() << "'\n";
+  os << "last_used_input_method: '" << last_used_input_method.keyboard_layout()
+     << "'\n";
+  os << "current_input_method: '" << current_input_method.keyboard_layout()
+     << "'\n";
   os << "active_input_method_ids (size=" << active_input_method_ids.size()
      << "):";
   for (const auto& active_input_method_id : active_input_method_ids) {
@@ -1127,9 +1127,9 @@ void InputMethodManagerImpl::ChangeInputMethodInternalFromActiveState(
 
   // Change the keyboard layout to a preferred layout for the input method.
   if (!keyboard_->SetCurrentKeyboardLayoutByName(
-          state_->current_input_method.GetPreferredKeyboardLayout())) {
+          state_->current_input_method.keyboard_layout())) {
     LOG(ERROR) << "Failed to change keyboard layout to "
-               << state_->current_input_method.GetPreferredKeyboardLayout();
+               << state_->current_input_method.keyboard_layout();
   }
 
   // Update input method indicators (e.g. "US", "DV") in Chrome windows.

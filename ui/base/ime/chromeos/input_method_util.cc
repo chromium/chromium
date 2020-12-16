@@ -580,8 +580,7 @@ void InputMethodUtil::GetFirstLoginInputMethodIds(
   // screen or set in UserContext when starting a public session).
   out_input_method_ids->push_back(preferred_input_method.id());
 
-  const std::string current_layout =
-      preferred_input_method.GetPreferredKeyboardLayout();
+  const std::string current_layout = preferred_input_method.keyboard_layout();
   for (const auto& i : kDefaultInputMethodRecommendation) {
     if (i.locale == language_code &&
         (!i.layout[0] || i.layout == current_layout)) {
@@ -792,19 +791,15 @@ void InputMethodUtil::InitXkbInputMethodsForTesting(
 }
 
 InputMethodDescriptor InputMethodUtil::GetFallbackInputMethodDescriptor() {
-  std::vector<std::string> layouts;
-  layouts.emplace_back("us");
   std::vector<std::string> languages;
   languages.emplace_back("en-US");
   return InputMethodDescriptor(
-      extension_ime_util::GetInputMethodIDByEngineID("xkb:us::eng"),
-      "",
-      "US",
-      layouts,
+      extension_ime_util::GetInputMethodIDByEngineID("xkb:us::eng"), "", "US",
+      "us",  // layout
       languages,
-      true,  // login keyboard.
-      GURL(),  // options page, not available.
-      GURL()); // input view page, not available.
+      true,     // login keyboard.
+      GURL(),   // options page, not available.
+      GURL());  // input view page, not available.
 }
 
 }  // namespace input_method

@@ -126,9 +126,9 @@ class ArcInputMethodStateDelegateImpl : public ArcInputMethodState::Delegate {
 
   chromeos::input_method::InputMethodDescriptor BuildInputMethodDescriptor(
       const mojom::ImeInfoPtr& info) const override {
-    // We don't care too much about |layouts| at this point since the feature is
+    // We don't care too much about |layout| at this point since the feature is
     // for tablet mode.
-    const std::vector<std::string> layouts{"us"};
+    const std::string layout("us");
 
     // Set the fake language so that the IME is shown in the special section in
     // chrome://settings.
@@ -144,7 +144,7 @@ class ArcInputMethodStateDelegateImpl : public ArcInputMethodState::Delegate {
             proxy_ime_extension_id, info->ime_id);
     // TODO(yhanada): Set the indicator string after the UI spec is finalized.
     return chromeos::input_method::InputMethodDescriptor(
-        input_method_id, display_name, std::string() /* indicator */, layouts,
+        input_method_id, display_name, std::string() /* indicator */, layout,
         languages, false /* is_login_keyboard */, GURL(info->settings_url),
         GURL() /* input_view_url */);
   }

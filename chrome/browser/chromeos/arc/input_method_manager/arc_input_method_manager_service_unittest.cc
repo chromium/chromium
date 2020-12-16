@@ -137,9 +137,8 @@ class TestInputMethodManager : public im::MockInputMethodManager {
 
     im::InputMethodDescriptor GetCurrentInputMethod() const override {
       im::InputMethodDescriptor descriptor(
-          active_ime_id_, "", "", std::vector<std::string>(),
-          std::vector<std::string>(), false /* is_login_keyboard */, GURL(),
-          GURL());
+          active_ime_id_, "", "", "", std::vector<std::string>(),
+          false /* is_login_keyboard */, GURL(), GURL());
       return descriptor;
     }
 

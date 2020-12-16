@@ -21,7 +21,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) InputMethodDescriptor {
   InputMethodDescriptor(const std::string& id,
                         const std::string& name,
                         const std::string& indicator,
-                        const std::vector<std::string>& keyboard_layouts,
+                        const std::string& keyboard_layout,
                         const std::vector<std::string>& language_codes,
                         bool is_login_keyboard,
                         const GURL& options_page_url,
@@ -38,14 +38,9 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) InputMethodDescriptor {
   }
   const GURL& options_page_url() const { return options_page_url_; }
   const GURL& input_view_url() const { return input_view_url_; }
-  const std::vector<std::string>& keyboard_layouts() const {
-    return keyboard_layouts_;
-  }
+  const std::string& keyboard_layout() const { return keyboard_layout_; }
 
   bool is_login_keyboard() const { return is_login_keyboard_; }
-
-  // Returns preferred keyboard layout.
-  std::string GetPreferredKeyboardLayout() const;
 
   // Returns the indicator text of this input method.
   std::string GetIndicator() const;
@@ -59,9 +54,9 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) InputMethodDescriptor {
   // only used by extension IMEs, and should be blank for internal IMEs.
   std::string name_;
 
-  // A preferred physical keyboard layout for the input method (e.g., "us",
+  // A physical keyboard XKB layout for the input method (e.g., "us",
   // "us(dvorak)", "jp"). Comma separated layout names do NOT appear.
-  std::vector<std::string> keyboard_layouts_;
+  std::string keyboard_layout_;
 
   // Language code like "ko", "ja", "en-US", and "zh-CN".
   std::vector<std::string> language_codes_;

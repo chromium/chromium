@@ -546,8 +546,17 @@ bool InputImeEventRouter::RegisterImeExtension(
     for (const auto& component : input_components) {
       DCHECK(component.type == INPUT_COMPONENT_TYPE_IME);
 
-      std::vector<std::string> layouts;
-      layouts.assign(component.layouts.begin(), component.layouts.end());
+      // For legacy reasons, multiple physical keyboard XKB layouts can be
+      // specified in the IME extension manifest for each input method. However,
+      // CrOS only supports one layout per input method. Thus use the "first"
+      // layout if specified, else default to "us". Please note however, as
+      // "layouts" in the manifest are considered unordered and parsed into an
+      // std::set, if there are multiple, it's actually undefined as to which
+      // "first" entry is used. CrOS IME extension manifests should therefore
+      // specify one and only one layout per input method to avoid confusion.
+      const std::string& layout =
+          component.layouts.empty() ? "us" : *component.layouts.begin();
+
       std::vector<std::string> languages;
       languages.assign(component.languages.begin(), component.languages.end());
 
@@ -555,14 +564,11 @@ bool InputImeEventRouter::RegisterImeExtension(
           chromeos::extension_ime_util::GetInputMethodID(extension_id,
                                                          component.id);
       descriptors.push_back(chromeos::input_method::InputMethodDescriptor(
-          input_method_id,
-          component.name,
+          input_method_id, component.name,
           std::string(),  // TODO(uekawa): Set short name.
-          layouts,
-          languages,
+          layout, languages,
           false,  // 3rd party IMEs are always not for login.
-          component.options_page_url,
-          component.input_view_url));
+          component.options_page_url, component.input_view_url));
     }
   }
 

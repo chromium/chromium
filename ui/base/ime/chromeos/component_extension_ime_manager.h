@@ -30,7 +30,7 @@ struct COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) ComponentExtensionEngine {
   std::string indicator;
   std::vector<std::string> language_codes;  // e.g. "en".
   std::string description;
-  std::vector<std::string> layouts;
+  std::string layout;
   GURL options_page_url;
   GURL input_view_url;
 };
@@ -82,7 +82,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) ComponentExtensionIMEManager {
   bool FindEngineEntry(const std::string& input_method_id,
                        ComponentExtensionIME* out_extension);
 
-  bool IsInLoginLayoutAllowlist(const std::vector<std::string>& layouts);
+  bool IsInLoginLayoutAllowlist(const std::string& layout);
 
   std::unique_ptr<ComponentExtensionIMEManagerDelegate> delegate_;
 

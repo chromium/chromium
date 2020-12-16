@@ -102,7 +102,7 @@ class MyMockInputMethodManager : public MockInputMethodManagerImpl {
         const InputMethodDescriptors& descriptors,
         ui::IMEEngineHandlerInterface* instance) override {
       InputMethodDescriptor descriptor(
-          id, std::string(), std::string(), std::vector<std::string>(),
+          id, std::string(), std::string(), std::string(),
           std::vector<std::string>(), false, GURL(), GURL());
       input_method_extensions_->push_back(descriptor);
     }
@@ -274,21 +274,21 @@ class InputMethodPreferencesTest : public PreferencesTest {
     ext_xkb_engine_se.engine_id = "xkb:se::swe";
     ext_xkb_engine_se.display_name = "xkb:se::swe";
     ext_xkb_engine_se.language_codes.push_back("sv");
-    ext_xkb_engine_se.layouts.push_back("se");
+    ext_xkb_engine_se.layout = "se";
     ext_xkb.engines.push_back(ext_xkb_engine_se);
 
     ComponentExtensionEngine ext_xkb_engine_jp;
     ext_xkb_engine_jp.engine_id = "xkb:jp::jpn";
     ext_xkb_engine_jp.display_name = "xkb:jp::jpn";
     ext_xkb_engine_jp.language_codes.push_back("ja");
-    ext_xkb_engine_jp.layouts.push_back("jp");
+    ext_xkb_engine_jp.layout = "jp";
     ext_xkb.engines.push_back(ext_xkb_engine_jp);
 
     ComponentExtensionEngine ext_xkb_engine_ru;
     ext_xkb_engine_ru.engine_id = "xkb:ru::rus";
     ext_xkb_engine_ru.display_name = "xkb:ru::rus";
     ext_xkb_engine_ru.language_codes.push_back("ru");
-    ext_xkb_engine_ru.layouts.push_back("ru");
+    ext_xkb_engine_ru.layout = "ru";
     ext_xkb.engines.push_back(ext_xkb_engine_ru);
 
     ime_list.push_back(ext_xkb);
@@ -302,14 +302,14 @@ class InputMethodPreferencesTest : public PreferencesTest {
     ext_engine1.engine_id = "nacl_mozc_us";
     ext_engine1.display_name = "ext_engine_1_display_name";
     ext_engine1.language_codes.push_back("ja");
-    ext_engine1.layouts.push_back("us");
+    ext_engine1.layout = "us";
     ext.engines.push_back(ext_engine1);
 
     ComponentExtensionEngine ext_engine2;
     ext_engine2.engine_id = "nacl_mozc_jp";
     ext_engine2.display_name = "ext_engine_2_display_name";
     ext_engine2.language_codes.push_back("ja");
-    ext_engine2.layouts.push_back("jp");
+    ext_engine2.layout = "jp";
     ext.engines.push_back(ext_engine2);
 
     ime_list.push_back(ext);

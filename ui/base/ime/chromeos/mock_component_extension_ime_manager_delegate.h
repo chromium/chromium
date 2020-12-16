@@ -24,8 +24,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS)
             const std::string& extension_id,
             const std::string& manifest,
             const base::FilePath& path) override;
-  bool IsInLoginLayoutAllowlist(
-      const std::vector<std::string>& layouts) override;
+  bool IsInLoginLayoutAllowlist(const std::string& layout) override;
 
   void set_ime_list(const std::vector<ComponentExtensionIME>& ime_list) {
     ime_list_ = ime_list;

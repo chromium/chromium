@@ -34,8 +34,7 @@ class ComponentExtensionIMEManagerDelegateImpl
             const std::string& extension_id,
             const std::string& manifest,
             const base::FilePath& file_path) override;
-  bool IsInLoginLayoutAllowlist(
-      const std::vector<std::string>& layouts) override;
+  bool IsInLoginLayoutAllowlist(const std::string& layout) override;
 
   static bool IsIMEExtensionID(const std::string& id);
 
@@ -57,7 +56,7 @@ class ComponentExtensionIMEManagerDelegateImpl
 
   // Reads each engine component in |dict|. |dict| is given by GetList with
   // kInputComponents key from manifest. This function returns true on success,
-  // otherwise retrun false. This function must be called on FILE thread.
+  // otherwise return false. This function must be called on FILE thread.
   static bool ReadEngineComponent(
       const ComponentExtensionIME& component_extension,
       const base::DictionaryValue& dict,

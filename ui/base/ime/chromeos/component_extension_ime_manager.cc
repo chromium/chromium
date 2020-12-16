@@ -110,13 +110,12 @@ input_method::InputMethodDescriptors
       const std::string input_method_id =
           extension_ime_util::GetComponentInputMethodID(
               ext.id, ime.engine_id);
-      const std::vector<std::string>& layouts = ime.layouts;
       result.push_back(input_method::InputMethodDescriptor(
-          input_method_id, ime.display_name, ime.indicator, layouts,
+          input_method_id, ime.display_name, ime.indicator, ime.layout,
           ime.language_codes,
           // Enables extension based xkb keyboards on login screen.
           extension_ime_util::IsKeyboardLayoutExtension(input_method_id) &&
-              delegate_->IsInLoginLayoutAllowlist(layouts),
+              delegate_->IsInLoginLayoutAllowlist(ime.layout),
           ime.options_page_url, ime.input_view_url));
     }
   }

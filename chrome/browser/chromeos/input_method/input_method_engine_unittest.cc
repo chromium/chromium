@@ -61,7 +61,7 @@ void InitInputMethod() {
   ComponentExtensionEngine ext1_engine1;
   ext1_engine1.engine_id = kTestImeComponentId;
   ext1_engine1.language_codes.emplace_back("en-US");
-  ext1_engine1.layouts.emplace_back("us");
+  ext1_engine1.layout = "us";
   ext1.engines.push_back(ext1_engine1);
 
   std::vector<ComponentExtensionIME> ime_list;

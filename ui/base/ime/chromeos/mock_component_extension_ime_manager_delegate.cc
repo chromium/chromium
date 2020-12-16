@@ -26,13 +26,8 @@ void MockComponentExtensionIMEManagerDelegate::Load(
     const base::FilePath& path) {}
 
 bool MockComponentExtensionIMEManagerDelegate::IsInLoginLayoutAllowlist(
-    const std::vector<std::string>& layouts) {
-  for (const auto& layout : layouts) {
-    if (login_layout_set_.find(layout) != login_layout_set_.end()) {
-      return true;
-    }
-  }
-  return false;
+    const std::string& layout) {
+  return login_layout_set_.find(layout) != login_layout_set_.end();
 }
 
 }  // namespace input_method
