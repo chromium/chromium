@@ -6801,6 +6801,21 @@
             ]
         }
     ],
+    "SmartSuggestionForLargeDownloads": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SmartSuggestionForLargeDownloads"
+                    ]
+                }
+            ]
+        }
+    ],
     "SmoothnessModeForAnimatedScrolls": [
         {
             "platforms": [
