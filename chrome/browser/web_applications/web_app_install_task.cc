@@ -145,6 +145,9 @@ void WebAppInstallTask::InstallWebAppFromManifest(
 
   auto web_app_info = std::make_unique<WebApplicationInfo>();
 
+  if (install_params_)
+    ApplyParamsToWebApplicationInfo(*install_params_, *web_app_info);
+
   data_retriever_->CheckInstallabilityAndRetrieveManifest(
       web_contents(), bypass_service_worker_check,
       base::BindOnce(&WebAppInstallTask::OnDidPerformInstallableCheck,
@@ -465,6 +468,11 @@ void WebAppInstallTask::OnGetWebApplicationInfo(
 void WebAppInstallTask::ApplyParamsToWebApplicationInfo(
     const InstallManager::InstallParams& install_params,
     WebApplicationInfo& web_app_info) {
+  if (install_params.user_display_mode != DisplayMode::kUndefined) {
+    web_app_info.open_as_window =
+        install_params.user_display_mode != DisplayMode::kBrowser;
+  }
+
   // If `additional_search_terms` was a manifest property, it would be
   // sanitized while parsing the manifest. Since it's not, we sanitize it
   // here.
@@ -750,11 +758,6 @@ void WebAppInstallTask::OnDialogCompleted(
           install_params_->add_to_management;
       finalize_options.chromeos_data->is_disabled =
           install_params_->is_disabled;
-    }
-
-    if (install_params_->user_display_mode != DisplayMode::kUndefined) {
-      web_app_info_copy.open_as_window =
-          install_params_->user_display_mode != DisplayMode::kBrowser;
     }
   }
 

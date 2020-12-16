@@ -293,6 +293,9 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest,
   EXPECT_EQ(registrar().GetAppShortName(app_id), kAppName);
   EXPECT_EQ(registrar().GetAppStartUrl(app_id).spec(), kAppStartUrl);
   EXPECT_EQ(registrar().GetAppScope(app_id).spec(), kAppScope);
+  EXPECT_EQ(registrar().GetAppUserDisplayMode(app_id),
+            DisplayMode::kStandalone);
+  EXPECT_EQ(registrar().GetAppDisplayMode(app_id), DisplayMode::kMinimalUi);
   // theme_color must be installed opaque.
   EXPECT_EQ(registrar().GetAppThemeColor(app_id),
             SkColorSetARGB(0xFF, 0xBB, 0xCC, 0xDD));
@@ -345,6 +348,9 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest,
   EXPECT_EQ(registrar().GetAppShortName(app_id), "Basic web app");
   EXPECT_EQ(registrar().GetAppStartUrl(app_id).spec(), install_url);
   EXPECT_EQ(registrar().GetAppScope(app_id).spec(), scope);
+  EXPECT_EQ(registrar().GetAppUserDisplayMode(app_id),
+            DisplayMode::kStandalone);
+  EXPECT_EQ(registrar().GetAppDisplayMode(app_id), DisplayMode::kStandalone);
 }
 
 // Check that offline only installs work offline.
@@ -383,6 +389,9 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest,
   EXPECT_EQ(registrar().GetAppShortName(app_id), kAppName);
   EXPECT_EQ(registrar().GetAppStartUrl(app_id).spec(), kAppStartUrl);
   EXPECT_EQ(registrar().GetAppScope(app_id).spec(), kAppScope);
+  EXPECT_EQ(registrar().GetAppUserDisplayMode(app_id),
+            DisplayMode::kStandalone);
+  EXPECT_EQ(registrar().GetAppDisplayMode(app_id), DisplayMode::kMinimalUi);
   // theme_color must be installed opaque.
   EXPECT_EQ(registrar().GetAppThemeColor(app_id),
             SkColorSetARGB(0xFF, 0xBB, 0xCC, 0xDD));
@@ -432,6 +441,9 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest,
   EXPECT_EQ(registrar().GetAppShortName(app_id), kAppName);
   EXPECT_EQ(registrar().GetAppStartUrl(app_id).spec(), start_url);
   EXPECT_EQ(registrar().GetAppScope(app_id).spec(), scope);
+  EXPECT_EQ(registrar().GetAppUserDisplayMode(app_id),
+            DisplayMode::kStandalone);
+  EXPECT_EQ(registrar().GetAppDisplayMode(app_id), DisplayMode::kMinimalUi);
   // theme_color must be installed opaque.
   EXPECT_EQ(registrar().GetAppThemeColor(app_id),
             SkColorSetARGB(0xFF, 0xBB, 0xCC, 0xDD));
