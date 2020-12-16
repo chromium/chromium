@@ -596,11 +596,15 @@ void HTMLMetaElement::ProcessContent() {
     if (base::FeatureList::IsEnabled(blink::features::kPolicyContainer)) {
       LocalFrame* frame = GetDocument().GetFrame();
       // If frame is null, this document is not attached to a frame, hence it
-      // has no Policy Container, so we ignore the next step. This function will
+      // has no PolicyContainer, so we ignore the next step. This function will
       // run again anyway, should this document or this element be attached to a
       // frame.
-      if (frame) {
-        GetDocument().GetFrame()->GetPolicyContainer()->UpdateReferrerPolicy(
+      //
+      // SVG images (loaded via the img tag) create a fake LocalFrame which has
+      // no PolicyContainer. Ignore policy updates from meta tags inside SVG
+      // images.
+      if (frame && frame->GetPolicyContainer()) {
+        frame->GetPolicyContainer()->UpdateReferrerPolicy(
             GetExecutionContext()->GetReferrerPolicy());
       }
     }
