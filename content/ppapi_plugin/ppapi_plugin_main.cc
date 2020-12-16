@@ -67,6 +67,11 @@ int PpapiPluginMain(const MainFunctionParams& parameters) {
   const base::CommandLine& command_line = parameters.command_line;
 
 #if defined(OS_WIN)
+  // https://crbug.com/1139752 Premature unload of shell32 caused process to
+  // crash during process shutdown.
+  HMODULE shell32_pin = ::LoadLibrary(L"shell32.dll");
+  UNREFERENCED_PARAMETER(shell32_pin);
+
   g_target_services = parameters.sandbox_info->target_services;
 #endif
 
