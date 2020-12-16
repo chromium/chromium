@@ -12,6 +12,7 @@
 #include "base/strings/abseil_string_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "third_party/abseil-cpp/absl/strings/str_cat.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 
 namespace quiche {
 
@@ -30,8 +31,14 @@ inline std::string QuicheStrCatImpl(const Args&... args) {
 }
 
 template <typename... Args>
-inline std::string QuicheStringPrintfImpl(const Args&... args) {
-  return base::StringPrintf(std::forward<const Args&>(args)...);
+inline std::string QuicheStringPrintfImpl(const char* format,
+                                          const Args&... args) {
+  std::string out;
+  std::vector<absl::FormatArg> args_converted{absl::FormatArg(args)...};
+  bool success = absl::FormatUntyped(&out, absl::UntypedFormatSpec(format),
+                                     args_converted);
+  DCHECK(success);
+  return out;
 }
 
 }  // namespace quiche
