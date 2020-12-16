@@ -89,6 +89,15 @@ bool InstanceUpdate::StateIsNull() const {
   return state_ == nullptr;
 }
 
+bool InstanceUpdate::IsCreation() const {
+  return StateIsNull() && (State() & apps::InstanceState::kDestroyed) ==
+                              apps::InstanceState::kUnknown;
+}
+
+bool InstanceUpdate::IsDestruction() const {
+  return StateChanged() && State() == apps::InstanceState::kDestroyed;
+}
+
 const std::string& InstanceUpdate::AppId() const {
   return delta_ ? delta_->AppId() : state_->AppId();
 }

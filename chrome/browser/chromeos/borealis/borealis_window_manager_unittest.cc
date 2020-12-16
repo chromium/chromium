@@ -11,6 +11,7 @@
 #include "chrome/browser/chromeos/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/exo/shell_surface_util.h"
+#include "components/services/app_service/public/cpp/instance.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,6 +24,31 @@ namespace {
 
 class BorealisWindowManagerTest : public testing::Test {
  protected:
+  // A helper class used to emulate the behaviour of the InstanceRegistry when
+  // windows are created/destroyed.
+  class ScopedTestWindow {
+   public:
+    ScopedTestWindow(std::unique_ptr<aura::Window> window,
+                     BorealisWindowManager* manager)
+        : window_(std::move(window)), manager_(manager) {
+      apps::Instance instance(manager_->GetShelfAppId(window_.get()),
+                              window_.get());
+      manager_->OnInstanceUpdate(apps::InstanceUpdate(nullptr, &instance));
+    }
+
+    ~ScopedTestWindow() {
+      apps::Instance instance(manager_->GetShelfAppId(window_.get()),
+                              window_.get());
+      std::unique_ptr<apps::Instance> delta = instance.Clone();
+      delta->UpdateState(apps::InstanceState::kDestroyed, base::Time::Now());
+      manager_->OnInstanceUpdate(apps::InstanceUpdate(&instance, delta.get()));
+    }
+
+   private:
+    std::unique_ptr<aura::Window> window_;
+    BorealisWindowManager* manager_;
+  };
+
   Profile* profile() { return &profile_; }
   // Creates a widget for use in testing.
   std::unique_ptr<aura::Window> MakeWindow(std::string name) {
@@ -30,6 +56,13 @@ class BorealisWindowManagerTest : public testing::Test {
     win->Init(ui::LAYER_NOT_DRAWN);
     exo::SetShellApplicationId(win.get(), name);
     return win;
+  }
+
+  std::unique_ptr<ScopedTestWindow> MakeAndTrackWindow(
+      std::string name,
+      BorealisWindowManager* manager) {
+    return std::make_unique<ScopedTestWindow>(MakeWindow(std::move(name)),
+                                              manager);
   }
 
  private:
@@ -48,6 +81,22 @@ TEST_F(BorealisWindowManagerTest, BorealisWindowHasAnId) {
   std::unique_ptr<aura::Window> window =
       MakeWindow("org.chromium.borealis.foobarbaz");
   EXPECT_NE(window_manager.GetShelfAppId(window.get()), "");
+}
+
+TEST_F(BorealisWindowManagerTest, IdDetectionDoesNotImplyTracking) {
+  BorealisWindowManager window_manager(profile());
+
+  testing::StrictMock<MockAnonObserver> anon_observer;
+  testing::StrictMock<MockLifetimeObserver> life_observer;
+  window_manager.AddObserver(&anon_observer);
+  window_manager.AddObserver(&life_observer);
+
+  std::unique_ptr<aura::Window> window =
+      MakeWindow("org.chromium.borealis.foobarbaz");
+  window_manager.GetShelfAppId(window.get());
+
+  window_manager.RemoveObserver(&anon_observer);
+  window_manager.RemoveObserver(&life_observer);
 }
 
 TEST_F(BorealisWindowManagerTest, ObserversNotifiedOnManagerShutdown) {
@@ -75,9 +124,8 @@ TEST_F(BorealisWindowManagerTest, ObserverCalledForAnonymousApp) {
 
   BorealisWindowManager window_manager(profile());
   window_manager.AddObserver(&observer);
-  std::unique_ptr<aura::Window> window =
-      MakeWindow("org.chromium.borealis.anonymous_app");
-  window_manager.GetShelfAppId(window.get());
+  std::unique_ptr<ScopedTestWindow> window = MakeAndTrackWindow(
+      "org.chromium.borealis.anonymous_app", &window_manager);
 
   EXPECT_CALL(observer,
               OnAnonymousAppRemoved(testing::ContainsRegex("anonymous_app")));
@@ -99,22 +147,19 @@ TEST_F(BorealisWindowManagerTest, LifetimeObserverTracksWindows) {
   EXPECT_CALL(observer, OnSessionStarted());
   EXPECT_CALL(observer, OnAppStarted(_));
   EXPECT_CALL(observer, OnWindowStarted(_, _));
-  std::unique_ptr<aura::Window> first_foo =
-      MakeWindow("org.chromium.borealis.foo");
-  window_manager.GetShelfAppId(first_foo.get());
+  std::unique_ptr<ScopedTestWindow> first_foo =
+      MakeAndTrackWindow("org.chromium.borealis.foo", &window_manager);
 
   // A window for the same app only starts that window.
   EXPECT_CALL(observer, OnWindowStarted(_, _));
-  std::unique_ptr<aura::Window> second_foo =
-      MakeWindow("org.chromium.borealis.foo");
-  window_manager.GetShelfAppId(second_foo.get());
+  std::unique_ptr<ScopedTestWindow> second_foo =
+      MakeAndTrackWindow("org.chromium.borealis.foo", &window_manager);
 
   // Whereas a new app starts both the app and the window.
   EXPECT_CALL(observer, OnAppStarted(_));
   EXPECT_CALL(observer, OnWindowStarted(_, _));
-  std::unique_ptr<aura::Window> only_bar =
-      MakeWindow("org.chromium.borealis.bar");
-  window_manager.GetShelfAppId(only_bar.get());
+  std::unique_ptr<ScopedTestWindow> only_bar =
+      MakeAndTrackWindow("org.chromium.borealis.bar", &window_manager);
 
   // Deleting an app window while one still exists does not end the app.
   EXPECT_CALL(observer, OnWindowFinished(_, _));
@@ -144,12 +189,10 @@ TEST_F(BorealisWindowManagerTest, HandlesMultipleAnonymousWindows) {
   // one observer call.
   EXPECT_CALL(observer, OnAnonymousAppAdded(_, _)).Times(1);
 
-  std::unique_ptr<aura::Window> window1 =
-      MakeWindow("org.chromium.borealis.anonymous_app");
-  window_manager.GetShelfAppId(window1.get());
-  std::unique_ptr<aura::Window> window2 =
-      MakeWindow("org.chromium.borealis.anonymous_app");
-  window_manager.GetShelfAppId(window2.get());
+  std::unique_ptr<ScopedTestWindow> window1 = MakeAndTrackWindow(
+      "org.chromium.borealis.anonymous_app", &window_manager);
+  std::unique_ptr<ScopedTestWindow> window2 = MakeAndTrackWindow(
+      "org.chromium.borealis.anonymous_app", &window_manager);
 
   // We only expect to see the app removed after the last window closes.
   window1.reset();
@@ -176,9 +219,8 @@ TEST_F(BorealisWindowManagerTest, AnonymousObserverNotCalledForKnownApp) {
 
   BorealisWindowManager window_manager(profile());
   window_manager.AddObserver(&observer);
-  std::unique_ptr<aura::Window> window =
-      MakeWindow("org.chromium.borealis.wmclass.foo");
-  window_manager.GetShelfAppId(window.get());
+  std::unique_ptr<ScopedTestWindow> window =
+      MakeAndTrackWindow("org.chromium.borealis.wmclass.foo", &window_manager);
 
   window_manager.RemoveObserver(&observer);
 }

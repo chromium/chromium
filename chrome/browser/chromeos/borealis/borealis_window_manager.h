@@ -11,7 +11,8 @@
 #include "base/containers/flat_set.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "ui/aura/window_observer.h"
+#include "base/scoped_observation.h"
+#include "components/services/app_service/public/cpp/instance_registry.h"
 
 class Profile;
 
@@ -25,7 +26,7 @@ namespace borealis {
 // borealis apps. This includes determining which windows belong to a borealis
 // app, what the lifetime of the app is relative to its windows, and the
 // presence of borealis windows with an unknown app (see go/anonymous-apps).
-class BorealisWindowManager : public aura::WindowObserver {
+class BorealisWindowManager : public apps::InstanceRegistry::Observer {
  public:
   // Returns true if this window belongs to a borealis VM (based on its app_id
   // and startup_id).
@@ -104,20 +105,22 @@ class BorealisWindowManager : public aura::WindowObserver {
   void RemoveObserver(AppWindowLifetimeObserver* observer);
 
   // Returns the application ID for the given window, or "" if the window does
-  // not belong to borealis. If the window does belong to borealis, this call
-  // will also cause the manager to track the window.
-  //
-  // TODO(b/175152663): Refactor this into two methods so that it is clear which
-  // one has side-effects.
+  // not belong to borealis.
   std::string GetShelfAppId(aura::Window* window);
 
- private:
-  // aura::WindowObserver overrides.
-  void OnWindowDestroying(aura::Window* window) override;
+  // apps::InstanceRegistry::Observer overrides.
+  void OnInstanceUpdate(const apps::InstanceUpdate& update) override;
+  void OnInstanceRegistryWillBeDestroyed(
+      apps::InstanceRegistry* cache) override;
 
-  void HandleWindow(aura::Window* window, const std::string& app_id);
+ private:
+  void HandleWindowDestruction(aura::Window* window, const std::string& app_id);
+  void HandleWindowCreation(aura::Window* window, const std::string& app_id);
 
   Profile* const profile_;
+  base::ScopedObservation<apps::InstanceRegistry,
+                          apps::InstanceRegistry::Observer>
+      instance_registry_observation_;
   base::flat_map<std::string, base::flat_set<aura::Window*>> ids_to_windows_;
   base::ObserverList<AnonymousAppObserver> anon_observers_;
   base::ObserverList<AppWindowLifetimeObserver> lifetime_observers_;

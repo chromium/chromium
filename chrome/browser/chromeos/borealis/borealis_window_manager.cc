@@ -10,10 +10,11 @@
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/chromeos/borealis/borealis_util.h"
 #include "chrome/browser/chromeos/crostini/crostini_shelf_utils.h"
 #include "components/exo/shell_surface_util.h"
-#include "ui/aura/window.h"
 
 namespace {
 
@@ -75,7 +76,7 @@ bool BorealisWindowManager::IsBorealisWindow(aura::Window* window) {
 }
 
 BorealisWindowManager::BorealisWindowManager(Profile* profile)
-    : profile_(profile) {}
+    : profile_(profile), instance_registry_observation_(this) {}
 
 BorealisWindowManager::~BorealisWindowManager() {
   for (auto& observer : anon_observers_) {
@@ -109,14 +110,37 @@ std::string BorealisWindowManager::GetShelfAppId(aura::Window* window) {
   if (!IsBorealisWindow(window))
     return {};
 
-  std::string app_id = WindowToAppId(profile_, window);
-  HandleWindow(window, app_id);
+  // We delay the observation until the first time we actually see a borealis
+  // window, which prevents unnecessary messages being sent and breaks an
+  // init-cycle.
+  if (!instance_registry_observation_.IsObserving()) {
+    instance_registry_observation_.Observe(
+        &apps::AppServiceProxyFactory::GetForProfile(profile_)
+             ->InstanceRegistry());
+  }
 
-  return app_id;
+  return WindowToAppId(profile_, window);
 }
 
-void BorealisWindowManager::OnWindowDestroying(aura::Window* window) {
-  std::string app_id = WindowToAppId(profile_, window);
+void BorealisWindowManager::OnInstanceUpdate(
+    const apps::InstanceUpdate& update) {
+  if (!IsBorealisWindow(update.Window()))
+    return;
+  if (update.IsCreation()) {
+    HandleWindowCreation(update.Window(), update.AppId());
+  } else if (update.IsDestruction()) {
+    HandleWindowDestruction(update.Window(), update.AppId());
+  }
+}
+
+void BorealisWindowManager::OnInstanceRegistryWillBeDestroyed(
+    apps::InstanceRegistry* cache) {
+  DCHECK(instance_registry_observation_.IsObservingSource(cache));
+  instance_registry_observation_.Reset();
+}
+
+void BorealisWindowManager::HandleWindowDestruction(aura::Window* window,
+                                                    const std::string& app_id) {
   for (auto& observer : lifetime_observers_) {
     observer.OnWindowFinished(app_id, window);
   }
@@ -143,8 +167,8 @@ void BorealisWindowManager::OnWindowDestroying(aura::Window* window) {
     observer.OnSessionFinished();
 }
 
-void BorealisWindowManager::HandleWindow(aura::Window* window,
-                                         const std::string& app_id) {
+void BorealisWindowManager::HandleWindowCreation(aura::Window* window,
+                                                 const std::string& app_id) {
   // If this is the first window, the session has started.
   if (ids_to_windows_.empty()) {
     for (auto& observer : lifetime_observers_)
@@ -160,10 +184,8 @@ void BorealisWindowManager::HandleWindow(aura::Window* window,
         observer.OnAnonymousAppAdded(app_id, anon_name);
     }
   }
-  // If this window was not already in the set, observe it and notify our
-  // observers about it.
+  // If this window was not already in the set, notify our observers about it.
   if (ids_to_windows_[app_id].emplace(window).second) {
-    window->AddObserver(this);
     for (auto& observer : lifetime_observers_)
       observer.OnWindowStarted(app_id, window);
   }
