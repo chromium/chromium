@@ -1588,8 +1588,6 @@ body:not(.mode-switching):not(.streaming):not(.review-result) #spinner {
   z-index: 50;
 }
 
-/* TODO(b/172879638): Tune the position and layout after we finalized the
- * responsive window design. */
 .snackbar {
   align-items: center;
   background: var(--grey-900);
