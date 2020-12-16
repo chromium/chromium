@@ -210,8 +210,10 @@ void BluetoothStartDiscoveryFunction::DoWork(
   GetEventRouter(browser_context())
       ->StartDiscoverySession(
           adapter.get(), GetExtensionId(),
-          base::Bind(&BluetoothStartDiscoveryFunction::OnSuccessCallback, this),
-          base::Bind(&BluetoothStartDiscoveryFunction::OnErrorCallback, this));
+          base::BindOnce(&BluetoothStartDiscoveryFunction::OnSuccessCallback,
+                         this),
+          base::BindOnce(&BluetoothStartDiscoveryFunction::OnErrorCallback,
+                         this));
 }
 
 void BluetoothStopDiscoveryFunction::OnSuccessCallback() {
@@ -227,8 +229,10 @@ void BluetoothStopDiscoveryFunction::DoWork(
   GetEventRouter(browser_context())
       ->StopDiscoverySession(
           adapter.get(), GetExtensionId(),
-          base::Bind(&BluetoothStopDiscoveryFunction::OnSuccessCallback, this),
-          base::Bind(&BluetoothStopDiscoveryFunction::OnErrorCallback, this));
+          base::BindOnce(&BluetoothStopDiscoveryFunction::OnSuccessCallback,
+                         this),
+          base::BindOnce(&BluetoothStopDiscoveryFunction::OnErrorCallback,
+                         this));
 }
 
 }  // namespace api

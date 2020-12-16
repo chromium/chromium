@@ -517,10 +517,10 @@ void BluetoothPrivateSetDiscoveryFilterFunction::DoWork(
       ->event_router()
       ->SetDiscoveryFilter(
           std::move(discovery_filter), adapter.get(), GetExtensionId(),
-          base::Bind(
+          base::BindOnce(
               &BluetoothPrivateSetDiscoveryFilterFunction::OnSuccessCallback,
               this),
-          base::Bind(
+          base::BindOnce(
               &BluetoothPrivateSetDiscoveryFilterFunction::OnErrorCallback,
               this));
 }
