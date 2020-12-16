@@ -8,7 +8,6 @@ load("//lib/try.star", "try_")
 load("//project.star", "settings")
 
 try_.defaults.set(
-    add_to_list_view = True,
     bucket = "try",
     build_numbers = True,
     caches = [

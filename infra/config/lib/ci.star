@@ -21,7 +21,6 @@ load("./builders.star", "builders")
 
 defaults = args.defaults(
     extends = builders.defaults,
-    add_to_console_view = False,
     console_view = args.COMPUTE,
     header = None,
     main_console_view = None,
@@ -331,7 +330,6 @@ def ci_builder(
         *,
         name,
         branch_selector = branches.MAIN,
-        add_to_console_view = args.DEFAULT,
         console_view = args.DEFAULT,
         main_console_view = args.DEFAULT,
         cq_mirrors_console_view = args.DEFAULT,
@@ -348,25 +346,17 @@ def ci_builder(
       branch_selector - A branch selector value controlling whether the
         builder definition is executed. See branches.star for more
         information.
-      add_to_console_view - A bool indicating whether an entry should be
-        created for the builder in the console identified by
-        `console_view`. Supports a module-level default that defaults to
-        False.
       console_view - A string identifying the ID of the console view to
         add an entry to. Supports a module-level default that defaults to
-        the group of the builder, if provided. An entry will be added
-        only if `add_to_console_view` is True and `console_view_entry` is
-        provided.
+        the group of the builder, if provided.
       main_console_view - A string identifying the ID of the main console
         view to add an entry to. Supports a module-level default that
         defaults to None. An entry will be added only if
-        `console_view_entry` is provided. Note that `add_to_console_view`
-        has no effect on creating an entry to the main console view.
+        `console_view_entry` is provided.
       cq_mirrors_console_view - A string identifying the ID of the CQ
         mirrors console view to add an entry to. Supports a module-level
         default that defaults to None. An entry will be added only if
-        `console_view_entry` is provided. Note that `add_to_console_view`
-        has no effect on creating an entry to the main console view.
+        `console_view_entry` is provided.
       console_view_entry - A structure providing the details of the entry
         to add to the console view. See `ci.console_view_entry` for details.
       tree_closing - If true, failed builds from this builder that meet certain
@@ -427,20 +417,14 @@ def ci_builder(
             console_view = defaults.get_value_from_kwargs("builder_group", kwargs)
 
         if console_view:
-            add_to_console_view = defaults.get_value(
-                "add_to_console_view",
-                add_to_console_view,
-            )
-
             builder = "{}/{}".format(bucket, name)
 
-            if add_to_console_view:
-                luci.console_view_entry(
-                    builder = builder,
-                    console_view = console_view,
-                    category = console_view_entry.category,
-                    short_name = console_view_entry.short_name,
-                )
+            luci.console_view_entry(
+                builder = builder,
+                console_view = console_view,
+                category = console_view_entry.category,
+                short_name = console_view_entry.short_name,
+            )
 
             overview_console_category = console_view
             if console_view_entry.category:

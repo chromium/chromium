@@ -6,7 +6,6 @@ load("//lib/builders.star", "cpu", "goma", "os")
 load("//lib/try.star", "try_")
 
 try_.defaults.set(
-    add_to_list_view = True,
     bucket = "try",
     build_numbers = True,
     caches = [

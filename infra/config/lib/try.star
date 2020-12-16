@@ -32,7 +32,6 @@ DEFAULT_EXCLUDE_REGEXPS = [
 
 defaults = args.defaults(
     extends = builders.defaults,
-    add_to_list_view = False,
     cq_group = None,
     list_view = args.COMPUTE,
     main_list_view = None,
@@ -115,7 +114,6 @@ def try_builder(
         *,
         name,
         branch_selector = branches.MAIN,
-        add_to_list_view = args.DEFAULT,
         cq_group = args.DEFAULT,
         list_view = args.DEFAULT,
         main_list_view = args.DEFAULT,
@@ -131,24 +129,17 @@ def try_builder(
       branch_selector - A branch selector value controlling whether the
         builder definition is executed. See branches.star for more
         information.
-      add_to_list_view - A bool indicating whether an entry should be
-        created for the builder in the console identified by
-        `list_view`. Supports a module-level default that defaults to
-        False.
       cq_group - The CQ group to add the builder to. If tryjob is None, it will
         be added as includable_only.
       list_view - A string identifying the ID of the list view to
         add an entry to. Supports a module-level default that defaults to
-        the group of the builder, if provided. An entry will be added
-        only if `add_to_list_view` is True.
+        the group of the builder, if provided.
       main_console_view - A string identifying the ID of the main list
         view to add an entry to. Supports a module-level default that
-        defaults to None. Note that `add_to_list_view` has no effect on
-        adding an entry to the main list view.
+        defaults to None.
       subproject_list_view - A string identifying the ID of the
         subproject list view to add an entry to. Suppoers a module-level
-        default that defaults to None. Not that `add_to_list_view` has
-        no effect on adding an entry to the subproject list view.
+        default that defaults to None.
       tryjob - A struct containing the details of the tryjob verifier for the
         builder, obtained by calling the `tryjob` function.
       experiments - a dict of experiment name to the percentage chance (0-100)
@@ -218,22 +209,15 @@ def try_builder(
             includable_only = True,
         )
 
-    add_to_list_view = defaults.get_value("add_to_list_view", add_to_list_view)
-    if add_to_list_view:
-        list_view = defaults.get_value("list_view", list_view)
-        if list_view == args.COMPUTE:
-            list_view = defaults.get_value_from_kwargs("builder_group", kwargs)
+    list_view = defaults.get_value("list_view", list_view)
+    if list_view == args.COMPUTE:
+        list_view = defaults.get_value_from_kwargs("builder_group", kwargs)
 
-        if list_view:
-            add_to_list_view = defaults.get_value(
-                "add_to_list_view",
-                add_to_list_view,
-            )
-
-            luci.list_view_entry(
-                builder = builder,
-                list_view = list_view,
-            )
+    if list_view:
+        luci.list_view_entry(
+            builder = builder,
+            list_view = list_view,
+        )
 
     main_list_view = defaults.get_value("main_list_view", main_list_view)
     if main_list_view:
