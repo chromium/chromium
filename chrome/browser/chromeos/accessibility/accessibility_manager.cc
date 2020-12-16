@@ -909,8 +909,21 @@ void AccessibilityManager::OnSwitchAccessChanged() {
   const bool enabled = profile_->GetPrefs()->GetBoolean(
       ash::prefs::kAccessibilitySwitchAccessEnabled);
 
-  if (enabled)
+  if (enabled) {
+    // Only update |was_vk_enabled_before_switch_access_| if the profile
+    // changed.
+    if (profile_ != switch_access_loader_->profile()) {
+      was_vk_enabled_before_switch_access_ =
+          ChromeKeyboardControllerClient::Get()->IsEnableFlagSet(
+              keyboard::KeyboardEnableFlag::kExtensionEnabled);
+    }
+
     switch_access_loader_->SetProfile(profile_, base::Closure());
+
+    // Make sure we always update the VK state, on every profile transition.
+    ChromeKeyboardControllerClient::Get()->SetEnableFlag(
+        keyboard::KeyboardEnableFlag::kExtensionEnabled);
+  }
 
   if (switch_access_enabled_ == enabled)
     return;
@@ -1441,12 +1454,6 @@ void AccessibilityManager::PostUnloadSelectToSpeak() {
 
 void AccessibilityManager::PostLoadSwitchAccess() {
   InitializeFocusRings(extension_misc::kSwitchAccessExtensionId);
-
-  was_vk_enabled_before_switch_access_ =
-      ChromeKeyboardControllerClient::Get()->IsEnableFlagSet(
-          keyboard::KeyboardEnableFlag::kExtensionEnabled);
-  ChromeKeyboardControllerClient::Get()->SetEnableFlag(
-      keyboard::KeyboardEnableFlag::kExtensionEnabled);
 }
 
 void AccessibilityManager::PostUnloadSwitchAccess() {
