@@ -398,10 +398,13 @@ public class ChromeTabCreator extends TabCreator {
                             mActivity.getCompositorViewHolder(), mActivity.getWindowAndroid(),
                             createDefaultTabDelegateFactory()),
                     params.getFinalizeCallback());
-            // TODO(crbug.com/1108562): This is a temporary fix for RBS issue crbug.com/1105810,
+            // TODO(crbug.com/1108562): Photos/videos viewed in custom tabs aren't displayed
+            // properly after reparenting. This is a temporary fix for RBS issue crbug.com/1105810,
             // investigate and fix the root cause.
             if (tab.getUrl().getScheme().equals(UrlConstants.FILE_SCHEME)) {
                 tab.reloadIgnoringCache();
+            } else if (tab.needsReload()) {
+                tab.reload();
             }
         }
         if (tab == null) {

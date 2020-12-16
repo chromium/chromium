@@ -71,6 +71,10 @@ public class TabReparentingController {
         mDelegate.getTabModelSelector().enterReparentingMode();
         for (int i = 0; i < tabs.size(); i++) {
             Tab tab = tabs.get(i);
+            if (tab.isLoading()) {
+                tab.stopLoading();
+                tab.getWebContents().getNavigationController().setNeedsReload();
+            }
 
             // The current tab has already been detached/stored and is waiting for andorid to
             // recreate the activity.

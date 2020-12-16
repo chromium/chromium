@@ -31,6 +31,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabReparentingParams;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.content_public.browser.NavigationController;
+import org.chromium.content_public.browser.WebContents;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -209,6 +211,18 @@ public class TabReparentingControllerTest {
         verify(mTask, times(3)).detach();
     }
 
+    @Test
+    public void testReparenting_stopLoadingIfNeeded() {
+        // New tab pages aren't reparented intentionally.
+        mForegroundTab = createAndAddMockTab(1, false, "https://www.google.com");
+        doReturn(true).when(mForegroundTab).isLoading();
+
+        mController.prepareTabsForReparenting();
+
+        verify(mForegroundTab).stopLoading();
+        verify(mForegroundTab.getWebContents().getNavigationController()).setNeedsReload();
+    }
+
     /**
      * Adds a tab to the correct model and sets the index in the mapping.
      *
@@ -219,7 +233,11 @@ public class TabReparentingControllerTest {
      */
     private Tab createAndAddMockTab(int id, boolean incognito, String url) {
         Tab tab = Mockito.mock(Tab.class);
+        WebContents wc = Mockito.mock(WebContents.class);
+        NavigationController nc = Mockito.mock(NavigationController.class);
         doReturn(url).when(tab).getUrlString();
+        doReturn(wc).when(tab).getWebContents();
+        doReturn(nc).when(wc).getNavigationController();
         UserDataHost udh = new UserDataHost();
         udh.setUserData(ReparentingTask.class, mTask);
         doReturn(udh).when(tab).getUserDataHost();
