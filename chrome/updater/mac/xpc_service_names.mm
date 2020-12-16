@@ -47,8 +47,7 @@ base::scoped_nsobject<NSString> GetUpdateServiceInternalLaunchdLabel() {
 base::scoped_nsobject<NSString> GetUpdateServiceMachName(
     base::scoped_nsobject<NSString> name) {
   return base::scoped_nsobject<NSString>(
-      [name stringByAppendingFormat:@".%lu", [name hash]],
-      base::scoped_policy::RETAIN);
+      [name stringByAppendingString:@".mach"], base::scoped_policy::RETAIN);
 }
 
 base::scoped_nsobject<NSString> GetUpdateServiceMachName() {
@@ -56,17 +55,7 @@ base::scoped_nsobject<NSString> GetUpdateServiceMachName() {
 }
 
 base::scoped_nsobject<NSString> GetUpdateServiceInternalMachName() {
-  base::scoped_nsobject<NSString> serviceLaunchdLabel(
-      GetUpdateServiceLaunchdLabel(), base::scoped_policy::RETAIN);
-  base::scoped_nsobject<NSString> updaterVersionString(
-      base::SysUTF8ToNSString(UPDATER_VERSION_STRING),
-      base::scoped_policy::RETAIN);
-
-  base::scoped_nsobject<NSString> name(
-      [NSString stringWithFormat:@"%@.%@", serviceLaunchdLabel.get(),
-                                 updaterVersionString.get()],
-      base::scoped_policy::RETAIN);
-  return GetUpdateServiceMachName(name);
+  return GetUpdateServiceMachName(GetUpdateServiceInternalLaunchdLabel());
 }
 
 }  // namespace updater
