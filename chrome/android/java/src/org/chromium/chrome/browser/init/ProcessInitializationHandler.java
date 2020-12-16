@@ -74,7 +74,7 @@ import org.chromium.chrome.browser.rlz.RevenueStats;
 import org.chromium.chrome.browser.searchwidget.SearchWidgetProvider;
 import org.chromium.chrome.browser.share.clipboard.ClipboardImageFileProvider;
 import org.chromium.chrome.browser.sharing.shared_clipboard.SharedClipboardShareActivity;
-import org.chromium.chrome.browser.signin.SigninHelper;
+import org.chromium.chrome.browser.signin.SigninHelperProvider;
 import org.chromium.chrome.browser.sync.SyncController;
 import org.chromium.chrome.browser.uid.UniqueIdentificationGeneratorFactory;
 import org.chromium.chrome.browser.uid.UuidBasedUniqueIdentificationGenerator;
@@ -386,7 +386,7 @@ public class ProcessInitializationHandler {
         deferredStartupHandler.addDeferredTask(new Runnable() {
             @Override
             public void run() {
-                SigninHelper.get().onMainActivityStart();
+                SigninHelperProvider.get().onMainActivityStart();
                 RevenueStats.getInstance();
             }
         });

@@ -15,7 +15,7 @@ import org.chromium.chrome.browser.init.BrowserParts;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.init.EmptyBrowserParts;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.SigninHelper;
+import org.chromium.chrome.browser.signin.SigninHelperProvider;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.components.signin.AccountTrackerService;
@@ -52,7 +52,7 @@ public class AccountsChangedReceiver extends BroadcastReceiver {
                                     Profile.getLastUsedRegularProfile());
                     // TODO(bsazonov): Check whether invalidateAccountSeedStatus is needed here.
                     trackerService.invalidateAccountSeedStatus(false /* don't refresh right now */);
-                    SigninHelper.get().validateAccountSettings(true);
+                    SigninHelperProvider.get().validateAccountSettings(true);
                 });
             }
 

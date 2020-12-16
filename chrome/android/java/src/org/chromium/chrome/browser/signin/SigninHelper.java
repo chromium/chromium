@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.signin;
 
 import android.accounts.Account;
-import android.annotation.SuppressLint;
 import android.content.Context;
 
 import androidx.annotation.VisibleForTesting;
@@ -20,12 +19,9 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.task.AsyncTask;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInCallback;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
-import org.chromium.chrome.browser.sync.SyncController;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountTrackerService;
 import org.chromium.components.signin.AccountUtils;
@@ -45,11 +41,6 @@ import java.util.List;
  */
 public class SigninHelper implements ApplicationStatus.ApplicationStateListener {
     private static final String TAG = "SigninHelper";
-
-    private static final Object LOCK = new Object();
-
-    @SuppressLint("StaticFieldLeak")
-    private static SigninHelper sInstance;
 
     /**
      * Retrieve more detailed information from account changed intents.
@@ -94,24 +85,15 @@ public class SigninHelper implements ApplicationStatus.ApplicationStateListener 
 
     private final SigninPreferencesManager mPrefsManager;
 
-    public static SigninHelper get() {
-        synchronized (LOCK) {
-            if (sInstance == null) {
-                sInstance = new SigninHelper();
-            }
-        }
-        return sInstance;
-    }
-
-    private SigninHelper() {
-        // Initialize sync.
-        SyncController.get();
-
-        Profile profile = Profile.getLastUsedRegularProfile();
-        mSigninManager = IdentityServicesProvider.get().getSigninManager(profile);
-        mAccountTrackerService = IdentityServicesProvider.get().getAccountTrackerService(profile);
-        mPrefsManager = SigninPreferencesManager.getInstance();
-
+    /**
+     * Please use SigninHelperProvider to get SigninHelper instance instead of creating it
+     * manually.
+     */
+    SigninHelper(SigninManager signinManager, AccountTrackerService accountTrackerService,
+            SigninPreferencesManager signinPreferencesManager) {
+        mSigninManager = signinManager;
+        mAccountTrackerService = accountTrackerService;
+        mPrefsManager = signinPreferencesManager;
         ApplicationStatus.registerApplicationStateListener(this);
     }
 
