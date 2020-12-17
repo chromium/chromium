@@ -100,8 +100,6 @@ struct CheckedPtrNoOpImpl {
   static ALWAYS_INLINE void IncrementSwapCountForTest() {}
 };
 
-#if defined(ARCH_CPU_64_BITS) && !defined(OS_NACL)
-
 #if ENABLE_BACKUP_REF_PTR_IMPL
 
 struct BackupRefPtrImpl {
@@ -204,8 +202,6 @@ struct BackupRefPtrImpl {
 
 #endif  // ENABLE_BACKUP_REF_PTR_IMPL
 
-#endif  // defined(ARCH_CPU_64_BITS) && !defined(OS_NACL)
-
 }  // namespace internal
 
 // DO NOT USE! EXPERIMENTAL ONLY! This is helpful for local testing!
@@ -223,15 +219,13 @@ struct BackupRefPtrImpl {
 //    we aren't striving to maximize compatibility with raw pointers, merely
 //    adding support for cases encountered so far).
 template <typename T,
-#if defined(ARCH_CPU_64_BITS) && !defined(OS_NACL) && \
-    BUILDFLAG(USE_PARTITION_ALLOC)
+#if BUILDFLAG(USE_PARTITION_ALLOC)
 #if ENABLE_BACKUP_REF_PTR_IMPL
           typename Impl = internal::BackupRefPtrImpl>
 #else
           typename Impl = internal::CheckedPtrNoOpImpl>
 #endif
-#else  // defined(ARCH_CPU_64_BITS) && !defined(OS_NACL) &&
-       // BUILDFLAG(USE_PARTITION_ALLOC)
+#else  // BUILDFLAG(USE_PARTITION_ALLOC)
           typename Impl = internal::CheckedPtrNoOpImpl>
 #endif
 class CheckedPtr {

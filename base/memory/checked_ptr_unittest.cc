@@ -705,8 +705,6 @@ TEST_F(CheckedPtrTest, AssignmentFromNullptr) {
 
 }  // namespace
 
-#if defined(ARCH_CPU_64_BITS) && !defined(OS_NACL)
-
 namespace base {
 namespace internal {
 
@@ -760,5 +758,3 @@ TEST(BackupRefPtrImpl, Basic) {
         // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 }  // namespace internal
 }  // namespace base
-
-#endif  // defined(ARCH_CPU_64_BITS) && !defined(OS_NACL)
