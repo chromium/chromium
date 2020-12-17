@@ -25,6 +25,8 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 
+using signin::PrimaryAccountChangeEvent;
+
 PrimaryAccountManager::PrimaryAccountManager(
     SigninClient* client,
     ProfileOAuth2TokenService* token_service,
@@ -155,11 +157,16 @@ void PrimaryAccountManager::SetUnconsentedPrimaryAccountInfo(
   }
 
   bool account_changed = account_info != primary_account_info();
+  PrimaryAccountChangeEvent::State previous_state(
+      primary_account_info(), signin::ConsentLevel::kNotRequired);
   SetPrimaryAccountInternal(account_info, /*consented_to_sync=*/false);
 
   if (account_changed) {
+    PrimaryAccountChangeEvent::State current_state(
+        account_info, signin::ConsentLevel::kNotRequired);
+    PrimaryAccountChangeEvent event_details(previous_state, current_state);
     for (Observer& observer : observers_)
-      observer.UnconsentedPrimaryAccountChanged(primary_account_info());
+      observer.UnconsentedPrimaryAccountChanged(event_details);
   }
 }
 
@@ -243,12 +250,21 @@ void PrimaryAccountManager::SignIn(const std::string& username) {
   }
 
   bool account_changed = info != primary_account_info();
+  PrimaryAccountChangeEvent::State previous_state(
+      primary_account_info(), signin::ConsentLevel::kNotRequired);
+  PrimaryAccountChangeEvent::State current_state(info,
+                                                 signin::ConsentLevel::kSync);
+  PrimaryAccountChangeEvent event_details(previous_state, current_state);
+
   SetAuthenticatedAccountInfo(info);
 
   for (Observer& observer : observers_) {
+    // TODO(https://crbug.com/1158855): Remove call to
+    // UnconsentedPrimaryAccountChanged() after IdentityManager::Observer
+    // migration has been completed.
     if (account_changed)
-      observer.UnconsentedPrimaryAccountChanged(info);
-    observer.GoogleSigninSucceeded(info);
+      observer.UnconsentedPrimaryAccountChanged(event_details);
+    observer.GoogleSigninSucceeded(event_details);
   }
 }
 
@@ -335,9 +351,10 @@ void PrimaryAccountManager::OnSignoutDecisionReached(
   }
 
   const CoreAccountInfo account_info = primary_account_info();
+  const bool has_sync_consent = HasPrimaryAccount(signin::ConsentLevel::kSync);
   client_->GetPrefs()->ClearPref(prefs::kGoogleServicesHostedDomain);
   // Revoke the sync consent.
-  if (HasPrimaryAccount(signin::ConsentLevel::kSync))
+  if (has_sync_consent)
     SetPrimaryAccountInternal(account_info, /*consented_to_sync=*/false);
 
   DCHECK(!HasPrimaryAccount(signin::ConsentLevel::kSync));
@@ -357,8 +374,15 @@ void PrimaryAccountManager::OnSignoutDecisionReached(
       break;
   }
 
+  PrimaryAccountChangeEvent::State previous_state;
+  previous_state.primary_account = account_info;
+  previous_state.consent_level = has_sync_consent
+                                     ? signin::ConsentLevel::kSync
+                                     : signin::ConsentLevel::kNotRequired;
+  PrimaryAccountChangeEvent event_details(previous_state,
+                                          PrimaryAccountChangeEvent::State());
   for (Observer& observer : observers_)
-    observer.GoogleSignedOut(account_info);
+    observer.GoogleSignedOut(event_details);
 }
 
 void PrimaryAccountManager::OnRefreshTokensLoaded() {

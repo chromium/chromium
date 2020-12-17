@@ -30,6 +30,7 @@
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/consent_level.h"
+#include "components/signin/public/identity_manager/primary_account_change_event.h"
 
 class AccountTrackerService;
 class PrefRegistrySimple;
@@ -48,15 +49,17 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
    public:
     // Called whenever a user signs into Google services such as sync.
     // Not called during a reauth.
-    virtual void GoogleSigninSucceeded(const CoreAccountInfo& info) {}
+    virtual void GoogleSigninSucceeded(
+        const signin::PrimaryAccountChangeEvent& event_details) {}
 
     // Called whenever the unconsented primary account changes. This includes
     // the changes for the consented primary account as well.
-    virtual void UnconsentedPrimaryAccountChanged(const CoreAccountInfo& info) {
-    }
+    virtual void UnconsentedPrimaryAccountChanged(
+        const signin::PrimaryAccountChangeEvent& event_details) {}
 
     // Called whenever the currently signed-in user has been signed out.
-    virtual void GoogleSignedOut(const CoreAccountInfo& info) {}
+    virtual void GoogleSignedOut(
+        const signin::PrimaryAccountChangeEvent& event_details) {}
   };
 
   // Used to remove accounts from the token service and the account tracker.

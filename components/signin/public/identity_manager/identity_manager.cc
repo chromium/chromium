@@ -480,9 +480,12 @@ AccountInfo IdentityManager::GetAccountInfoForAccountWithRefreshToken(
 }
 
 void IdentityManager::GoogleSigninSucceeded(
-    const CoreAccountInfo& account_info) {
+    const PrimaryAccountChangeEvent& event_details) {
+  const CoreAccountInfo& account_info =
+      event_details.GetCurrentState().primary_account;
   for (auto& observer : observer_list_) {
     observer.OnPrimaryAccountSet(account_info);
+    observer.OnPrimaryAccountChanged(event_details);
   }
 #if defined(OS_ANDROID)
   if (java_identity_manager_) {
@@ -495,12 +498,19 @@ void IdentityManager::GoogleSigninSucceeded(
 }
 
 void IdentityManager::UnconsentedPrimaryAccountChanged(
-    const CoreAccountInfo& account_info) {
-  for (auto& observer : observer_list_)
+    const PrimaryAccountChangeEvent& event_details) {
+  const CoreAccountInfo& account_info =
+      event_details.GetCurrentState().primary_account;
+  for (auto& observer : observer_list_) {
     observer.OnUnconsentedPrimaryAccountChanged(account_info);
+    observer.OnPrimaryAccountChanged(event_details);
+  }
 }
 
-void IdentityManager::GoogleSignedOut(const CoreAccountInfo& account_info) {
+void IdentityManager::GoogleSignedOut(
+    const PrimaryAccountChangeEvent& event_details) {
+  const CoreAccountInfo& account_info =
+      event_details.GetPreviousState().primary_account;
   DCHECK(!HasPrimaryAccount());
   DCHECK(!account_info.IsEmpty());
   for (auto& observer : observer_list_) {
@@ -509,6 +519,7 @@ void IdentityManager::GoogleSignedOut(const CoreAccountInfo& account_info) {
 
   for (auto& observer : observer_list_) {
     observer.OnPrimaryAccountCleared(account_info);
+    observer.OnPrimaryAccountChanged(event_details);
   }
 
 #if defined(OS_ANDROID)

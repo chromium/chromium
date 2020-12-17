@@ -121,11 +121,13 @@ class PrimaryAccountManagerTest : public testing::Test,
     EXPECT_EQ(1, num_successful_signins_);
   }
 
-  void GoogleSigninSucceeded(const CoreAccountInfo& account_info) override {
+  void GoogleSigninSucceeded(
+      const signin::PrimaryAccountChangeEvent& account_info) override {
     num_successful_signins_++;
   }
 
-  void UnconsentedPrimaryAccountChanged(const CoreAccountInfo& info) override {
+  void UnconsentedPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& info) override {
     num_unconsented_account_changed_++;
   }
 

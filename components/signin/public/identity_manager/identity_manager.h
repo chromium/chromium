@@ -75,14 +75,21 @@ class IdentityManager : public KeyedService,
     Observer(const Observer&) = delete;
     Observer& operator=(const Observer&) = delete;
 
+    // Called when there is a change in the primary account or in the consent
+    // level for the primary account.
+    virtual void OnPrimaryAccountChanged(
+        const PrimaryAccountChangeEvent& event_details) {}
+
     // Called when an account becomes the user's primary account.
     // This method is not called during a reauth.
+    // DEPRECATED: Use OnPrimaryAccountChanged() instead.
     virtual void OnPrimaryAccountSet(
         const CoreAccountInfo& primary_account_info) {}
 
     // Called when the user moves from having a primary account to no longer
     // having a primary account (note that the user may still have an
     // *unconsented* primary account after this event; see./README.md).
+    // DEPRECATED: Use OnPrimaryAccountChanged() instead.
     virtual void OnPrimaryAccountCleared(
         const CoreAccountInfo& previous_primary_account_info) {}
 
@@ -106,6 +113,7 @@ class IdentityManager : public KeyedService,
     // the identity manager does not have clear guarantees that that account
     // cannot change in one atomic operation (without getting cleared in the
     // mean-time).
+    // DEPRECATED: Use OnPrimaryAccountChanged() instead.
     virtual void OnUnconsentedPrimaryAccountChanged(
         const CoreAccountInfo& unconsented_primary_account_info) {}
 
@@ -627,10 +635,11 @@ class IdentityManager : public KeyedService,
       const CoreAccountId& account_id) const;
 
   // PrimaryAccountManager::Observer:
-  void GoogleSigninSucceeded(const CoreAccountInfo& account_info) override;
+  void GoogleSigninSucceeded(
+      const PrimaryAccountChangeEvent& event_details) override;
   void UnconsentedPrimaryAccountChanged(
-      const CoreAccountInfo& account_info) override;
-  void GoogleSignedOut(const CoreAccountInfo& account_info) override;
+      const PrimaryAccountChangeEvent& event_details) override;
+  void GoogleSignedOut(const PrimaryAccountChangeEvent& event_details) override;
 
   // ProfileOAuth2TokenServiceObserver:
   void OnRefreshTokenAvailable(const CoreAccountId& account_id) override;
