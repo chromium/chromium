@@ -25977,7 +25977,8 @@
           "--shared-prefs-file=//chrome/android/shared_preference_files/test/vr_cardboard_skipdon_setupcomplete.json",
           "--additional-apk=//third_party/gvr-android-sdk/test-apks/vr_services/vr_services_current.apk",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices"
+          "--recover-devices",
+          "--vmodule=*xr_frame*=0,*xr_session*=1,*vr*=1,*xr*=2"
         ],
         "merge": {
           "args": [

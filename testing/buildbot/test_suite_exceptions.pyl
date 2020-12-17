@@ -829,6 +829,13 @@
       'android-code-coverage-native', # https://crbug.com/1018780
     ],
     'modifications': {
+      'android-lollipop-arm-rel': {
+        'args': [
+          # TODO(crbug.com/1159619): Remove once the cause of the flakes is
+          # determined with the extra logging.
+          '--vmodule=*xr_frame*=0,*xr_session*=1,*vr*=1,*xr*=2',
+        ],
+      },
       # Use "--remove-system-package" according to crbug.com/931947#c1
       'android-nougat-arm64-rel': {
         'args': [
@@ -837,7 +844,7 @@
           '--remove-system-package=com.google.vr.vrcore',
           '--additional-apk=//third_party/gvr-android-sdk/test-apks/vr_services/vr_services_current.apk',
         ],
-      }
+      },
     },
   },
   'chrome_public_test_vr_apk-vega': {
