@@ -4,8 +4,10 @@
 
 #include "components/performance_manager/graph/page_node_impl_describer.h"
 
+#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/performance_manager/graph/page_node_impl.h"
+#include "components/performance_manager/public/freezing/freezing.h"
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
 #include "components/performance_manager/public/graph/node_data_describer_util.h"
 
@@ -14,6 +16,14 @@ namespace performance_manager {
 namespace {
 
 const char kDescriberName[] = "PageNodeImpl";
+
+const char* FreezingVoteToString(
+    base::Optional<freezing::FreezingVote> freezing_vote) {
+  if (!freezing_vote)
+    return "None";
+
+  return freezing::FreezingVoteValueToString(freezing_vote->value());
+}
 
 }  // namespace
 
@@ -79,6 +89,8 @@ base::Value PageNodeImplDescriber::DescribePageNodeData(
     result.SetStringKey("opened_type",
                         PageNode::ToString(page_node_impl->opened_type_));
   }
+  result.SetStringKey("freezing_vote",
+                      FreezingVoteToString(page_node_impl->freezing_vote()));
 
   return result;
 }

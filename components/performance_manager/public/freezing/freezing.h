@@ -56,6 +56,9 @@ std::unique_ptr<FreezingVoteToken> EmitFreezingVoteForWebContents(
     FreezingVoteValue vote_value,
     const char* vote_reason);
 
+// Converts a FreezingVoteValue to a textual representation.
+const char* FreezingVoteValueToString(FreezingVoteValue freezing_vote_value);
+
 }  // namespace freezing
 }  // namespace performance_manager
 

@@ -10,6 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "components/performance_manager/public/freezing/freezing.h"
 #include "components/performance_manager/public/graph/graph_registered.h"
+#include "components/performance_manager/public/graph/node_data_describer.h"
 #include "components/performance_manager/public/voting/voting.h"
 
 namespace performance_manager {
@@ -33,6 +34,7 @@ using FreezingVoteReceipt = voting::VoteReceipt<FreezingVote>;
 //     graph()->GetRegisteredObjectAs<freezing::FreezingVoteAggregator>();
 class FreezingVoteAggregator final
     : public FreezingVoteObserver,
+      public NodeDataDescriberDefaultImpl,
       public GraphRegisteredImpl<FreezingVoteAggregator> {
  public:
   FreezingVoteAggregator(const FreezingVoteAggregator& rhs) = delete;
@@ -54,6 +56,12 @@ class FreezingVoteAggregator final
                      const FreezingVote& new_vote) override;
   void OnVoteInvalidated(FreezingVoterId voter_id,
                          const PageNode* page_node) override;
+
+  void RegisterNodeDataDescriber(Graph* graph);
+  void UnregisterNodeDataDescriber(Graph* graph);
+
+  // NodeDataDescriber implementation:
+  base::Value DescribePageNodeData(const PageNode* node) const override;
 
  private:
   friend class performance_manager::FreezingVoteDecorator;
@@ -104,6 +112,9 @@ class FreezingVoteAggregator final
 
     // Returns the chosen vote. Invalid to call if IsEmpty() is true.
     const FreezingVote& GetChosenVote();
+
+    // Helper for FreezingVoteAggregator::DescribePageNodeData.
+    void DescribeVotes(base::Value* ret) const;
 
    private:
     friend class FreezingVoteAggregatorTestAccess;

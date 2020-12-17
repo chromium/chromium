@@ -137,5 +137,13 @@ std::unique_ptr<FreezingVoteToken> EmitFreezingVoteForWebContents(
                                                  vote_reason);
 }
 
+const char* FreezingVoteValueToString(FreezingVoteValue freezing_vote_value) {
+  if (freezing_vote_value == freezing::FreezingVoteValue::kCanFreeze) {
+    return "kCanFreeze";
+  } else {
+    return "kCannotFreeze";
+  }
+}
+
 }  // namespace freezing
 }  // namespace performance_manager

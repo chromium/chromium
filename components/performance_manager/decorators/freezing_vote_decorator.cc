@@ -18,9 +18,11 @@ FreezingVoteDecorator::~FreezingVoteDecorator() = default;
 
 void FreezingVoteDecorator::OnPassedToGraph(Graph* graph) {
   graph->RegisterObject(&freezing_vote_aggregator_);
+  freezing_vote_aggregator_.RegisterNodeDataDescriber(graph);
 }
 
 void FreezingVoteDecorator::OnTakenFromGraph(Graph* graph) {
+  freezing_vote_aggregator_.UnregisterNodeDataDescriber(graph);
   graph->UnregisterObject(&freezing_vote_aggregator_);
 }
 

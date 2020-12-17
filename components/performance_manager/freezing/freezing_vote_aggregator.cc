@@ -7,9 +7,16 @@
 #include <algorithm>
 
 #include "base/stl_util.h"
+#include "base/strings/stringprintf.h"
+#include "components/performance_manager/public/freezing/freezing.h"
+#include "components/performance_manager/public/graph/node_data_describer_registry.h"
 
 namespace performance_manager {
 namespace freezing {
+
+namespace {
+const char kDescriberName[] = "FreezingVoteAggregator";
+}
 
 FreezingVoteAggregator::FreezingVoteAggregator()
     : vote_consumer_default_impl_(this) {}
@@ -101,6 +108,26 @@ void FreezingVoteAggregator::OnVoteInvalidated(FreezingVoterId voter_id,
     channel_.ChangeVote(page_node, new_chosen_vote);
 }
 
+void FreezingVoteAggregator::RegisterNodeDataDescriber(Graph* graph) {
+  graph->GetNodeDataDescriberRegistry()->RegisterDescriber(this,
+                                                           kDescriberName);
+}
+
+void FreezingVoteAggregator::UnregisterNodeDataDescriber(Graph* graph) {
+  graph->GetNodeDataDescriberRegistry()->UnregisterDescriber(this);
+}
+
+base::Value FreezingVoteAggregator::DescribePageNodeData(
+    const PageNode* node) const {
+  auto votes_for_page = vote_data_map_.find(node);
+  if (votes_for_page == vote_data_map_.end())
+    return base::Value();
+
+  base::Value ret(base::Value::Type::DICTIONARY);
+  votes_for_page->second.DescribeVotes(&ret);
+  return ret;
+}
+
 FreezingVoteAggregator::FreezingVoteData::FreezingVoteData() = default;
 FreezingVoteAggregator::FreezingVoteData::FreezingVoteData(FreezingVoteData&&) =
     default;
@@ -136,6 +163,17 @@ const FreezingVote& FreezingVoteAggregator::FreezingVoteData::GetChosenVote() {
   // The set of votes is ordered and the first one in the set is the one that
   // should be sent to the consumer.
   return votes_.begin()->second;
+}
+
+void FreezingVoteAggregator::FreezingVoteData::DescribeVotes(
+    base::Value* ret) const {
+  size_t i = 0;
+  for (const auto& it : votes_) {
+    ret->SetStringKey(
+        base::StringPrintf("Vote %zu (%s)", i++,
+                           FreezingVoteValueToString(it.second.value())),
+        it.second.reason());
+  }
 }
 
 FreezingVoteAggregator::FreezingVoteData::VotesDeque::iterator
