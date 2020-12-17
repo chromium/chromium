@@ -25,6 +25,8 @@ namespace content {
 namespace {
 
 constexpr size_t kDefaultMaxBufferedBodyBytes = 100 * 1000;
+constexpr base::TimeDelta kGracePeriodToFinishLoadingWhileInBackForwardCache =
+    base::TimeDelta::FromSeconds(15);
 
 // Determines whether it is safe to redirect from |from_url| to |to_url|.
 bool IsRedirectSafe(const GURL& from_url, const GURL& to_url) {
@@ -280,7 +282,14 @@ URLLoaderClientImpl::URLLoaderClientImpl(
       resource_dispatcher_(resource_dispatcher),
       task_runner_(std::move(task_runner)),
       bypass_redirect_checks_(bypass_redirect_checks),
-      last_loaded_url_(request_url) {}
+      last_loaded_url_(request_url) {
+  back_forward_cache_timeout_ =
+      base::TimeDelta::FromSeconds(base::GetFieldTrialParamByFeatureAsInt(
+          blink::features::kLoadingTasksUnfreezable,
+          "grace_period_to_finish_loading_in_seconds",
+          static_cast<int>(
+              kGracePeriodToFinishLoadingWhileInBackForwardCache.InSeconds())));
+ }
 
 URLLoaderClientImpl::~URLLoaderClientImpl() = default;
 
@@ -288,9 +297,21 @@ void URLLoaderClientImpl::SetDefersLoading(
     blink::WebURLLoader::DeferType value) {
   deferred_state_ = value;
   if (value == blink::WebURLLoader::DeferType::kNotDeferred) {
+    StopBackForwardCacheEvictionTimer();
     task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&URLLoaderClientImpl::FlushDeferredMessages,
-                                  weak_factory_.GetWeakPtr()));
+        FROM_HERE,
+        base::BindOnce(&URLLoaderClientImpl::FlushDeferredMessages,
+                       weak_factory_.GetWeakPtr()));
+  } else if (IsDeferredWithBackForwardCache() && !has_received_complete_ &&
+             !back_forward_cache_eviction_timer_.IsRunning()) {
+    // We should evict the page associated with this load if the connection
+    // takes too long until it either finished or failed.
+    back_forward_cache_eviction_timer_.SetTaskRunner(task_runner_);
+    back_forward_cache_eviction_timer_.Start(
+        FROM_HERE, back_forward_cache_timeout_,
+        base::BindOnce(
+            &URLLoaderClientImpl::EvictFromBackForwardCacheDueToTimeout,
+            weak_factory_.GetWeakPtr()));
   }
 }
 
@@ -389,7 +410,17 @@ void URLLoaderClientImpl::OnReceiveResponse(
 
 void URLLoaderClientImpl::EvictFromBackForwardCache(
     blink::mojom::RendererEvictionReason reason) {
+  StopBackForwardCacheEvictionTimer();
   resource_dispatcher_->EvictFromBackForwardCache(reason, request_id_);
+}
+
+void URLLoaderClientImpl::EvictFromBackForwardCacheDueToTimeout() {
+  EvictFromBackForwardCache(
+      blink::mojom::RendererEvictionReason::kNetworkRequestTimeout);
+}
+
+void URLLoaderClientImpl::StopBackForwardCacheEvictionTimer() {
+  back_forward_cache_eviction_timer_.Stop();
 }
 
 void URLLoaderClientImpl::OnReceiveRedirect(
@@ -513,6 +544,7 @@ void URLLoaderClientImpl::OnStartLoadingResponseBody(
 void URLLoaderClientImpl::OnComplete(
     const network::URLLoaderCompletionStatus& status) {
   has_received_complete_ = true;
+  StopBackForwardCacheEvictionTimer();
 
   // Dispatch completion status to the ResourceDispatcher.
   // Except for errors, there must always be a response's body.

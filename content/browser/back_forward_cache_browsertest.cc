@@ -3864,6 +3864,10 @@ class BackForwardCacheBrowserTestWithUnfreezableLoading
     EnableFeatureAndSetParams(blink::features::kLoadingTasksUnfreezable,
                               "max_buffered_bytes",
                               base::NumberToString(kMaxBufferedBytes));
+    EnableFeatureAndSetParams(
+        blink::features::kLoadingTasksUnfreezable,
+        "grace_period_to_finish_loading_in_seconds",
+        base::NumberToString(kGracePeriodToFinishLoading.InSeconds()));
     BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
   }
 
@@ -3890,6 +3894,8 @@ class BackForwardCacheBrowserTestWithUnfreezableLoading
   }
 
   const int kMaxBufferedBytes = 7000;
+  const base::TimeDelta kGracePeriodToFinishLoading =
+      base::TimeDelta::FromSeconds(5);
 };
 
 // When loading task is unfreezable with the feature flag
@@ -4070,7 +4076,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithUnfreezableLoading,
   EXPECT_TRUE(rfh_1->IsInBackForwardCache());
 
   RenderFrameDeletedObserver delete_observer(rfh_1);
-  // Start sending the image response while in the back-forward cache.
+  // Start sending the image response while in the back-forward cache, but never
+  // finish the request. Eventually the page will get deleted due to network
+  // request timeout.
   image_response.Send(net::HTTP_OK, "image/png");
   std::string body(kMaxBufferedBytes + 1, '*');
   delete_observer.WaitUntilDeleted();
@@ -4084,46 +4092,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithUnfreezableLoading,
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kNetworkRequestTimeout},
       FROM_HERE);
-}
-
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithUnfreezableLoading,
-                       ImageStillLoading_ResponseStartedBeforeFreezing) {
-  net::test_server::ControllableHttpResponse image_response(
-      embedded_test_server(), "/image.png");
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  // 1) Navigate to a page with an image with src == "image.png".
-  RenderFrameHostImpl* rfh_1 = NavigateToPageWithImage(
-      embedded_test_server()->GetURL("a.com", "/title1.html"));
-
-  // Start sending response before the page gets in the back-forward cache.
-  image_response.WaitForRequest();
-  image_response.Send(net::HTTP_OK, "image/png");
-  image_response.Send(" ");
-  // Run some script to ensure the renderer processed its pending tasks.
-  EXPECT_TRUE(ExecJs(rfh_1, "var foo = 42;"));
-
-  // 2) Navigate away.
-  EXPECT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL("b.com", "/title2.html")));
-  // The page was still loading when we navigated away, but it's still eligible
-  // for back-forward cache.
-  EXPECT_TRUE(rfh_1->IsInBackForwardCache());
-
-  // Send body while in the back-forward cache.
-  image_response.Send("image_body");
-  image_response.Done();
-
-  // 3) Go back to the first page. We should restore the page from the
-  // back-forward cache.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored,
-                FROM_HERE);
-
-  // Wait until the deferred body is processed. Since it's not a valid image
-  // value, we'll get the "error" event.
-  EXPECT_EQ("error", EvalJs(rfh_1, "image_load_status"));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -4167,6 +4135,138 @@ IN_PROC_BROWSER_TEST_F(
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kNetworkExceedsBufferLimit},
       FROM_HERE);
+}
+
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithUnfreezableLoading,
+                       TimeoutNotTriggeredAfterDone) {
+  net::test_server::ControllableHttpResponse image_response(
+      embedded_test_server(), "/image.png");
+  ASSERT_TRUE(embedded_test_server()->Start());
+  // 1) Navigate to a page with an image with src == "image.png".
+  RenderFrameHostImpl* rfh_1 = NavigateToPageWithImage(
+      embedded_test_server()->GetURL("a.com", "/title1.html"));
+
+  // Wait for the image request, but don't send anything yet.
+  image_response.WaitForRequest();
+
+  // 2) Navigate away.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("b.com", "/title2.html")));
+  // The page was still loading when we navigated away, but it's still eligible
+  // for back-forward cache.
+  EXPECT_TRUE(rfh_1->IsInBackForwardCache());
+
+  RenderFrameDeletedObserver delete_observer(rfh_1);
+  // Start sending the image response while in the back-forward cache and finish
+  // the request before the active request timeout hits.
+  image_response.Send(net::HTTP_OK, "image/png");
+  image_response.Send(" ");
+  image_response.Done();
+
+  // Make sure enough time passed to trigger network request eviction if the
+  // load above didn't finish.
+  base::RunLoop run_loop;
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(),
+      kGracePeriodToFinishLoading + base::TimeDelta::FromSeconds(1));
+  run_loop.Run();
+
+  // Ensure that the page is still in bfcache.
+  EXPECT_FALSE(delete_observer.deleted());
+  EXPECT_TRUE(rfh_1->IsInBackForwardCache());
+
+  // 3) Go back to the first page. We should restore the page from the
+  // back-forward cache.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored,
+                FROM_HERE);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    BackForwardCacheBrowserTestWithUnfreezableLoading,
+    TimeoutNotTriggeredAfterDone_ResponseStartedBeforeFreezing) {
+  net::test_server::ControllableHttpResponse image_response(
+      embedded_test_server(), "/image.png");
+  ASSERT_TRUE(embedded_test_server()->Start());
+  // 1) Navigate to a page with an image with src == "image.png".
+  RenderFrameHostImpl* rfh_1 = NavigateToPageWithImage(
+      embedded_test_server()->GetURL("a.com", "/title1.html"));
+
+  // Start sending response before the page gets in the back-forward cache.
+  image_response.WaitForRequest();
+  image_response.Send(net::HTTP_OK, "image/png");
+  image_response.Send(" ");
+
+  // 2) Navigate away.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("b.com", "/title2.html")));
+  // The page was still loading when we navigated away, but it's still eligible
+  // for back-forward cache.
+  EXPECT_TRUE(rfh_1->IsInBackForwardCache());
+
+  RenderFrameDeletedObserver delete_observer(rfh_1);
+  // Finish the request before the active request timeout hits.
+  image_response.Done();
+
+  // Make sure enough time passed to trigger network request eviction if the
+  // load above didn't finish.
+  base::RunLoop run_loop;
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(),
+      kGracePeriodToFinishLoading + base::TimeDelta::FromSeconds(1));
+  run_loop.Run();
+
+  // Ensure that the page is still in bfcache.
+  EXPECT_FALSE(delete_observer.deleted());
+  EXPECT_TRUE(rfh_1->IsInBackForwardCache());
+
+  // 3) Go back to the first page. We should restore the page from the
+  // back-forward cache.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored,
+                FROM_HERE);
+}
+
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithUnfreezableLoading,
+                       ImageStillLoading_ResponseStartedBeforeFreezing) {
+  net::test_server::ControllableHttpResponse image_response(
+      embedded_test_server(), "/image.png");
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // 1) Navigate to a page with an image with src == "image.png".
+  RenderFrameHostImpl* rfh_1 = NavigateToPageWithImage(
+      embedded_test_server()->GetURL("a.com", "/title1.html"));
+
+  // Start sending response before the page gets in the back-forward cache.
+  image_response.WaitForRequest();
+  image_response.Send(net::HTTP_OK, "image/png");
+  image_response.Send(" ");
+  // Run some script to ensure the renderer processed its pending tasks.
+  EXPECT_TRUE(ExecJs(rfh_1, "var foo = 42;"));
+
+  // 2) Navigate away.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("b.com", "/title2.html")));
+  // The page was still loading when we navigated away, but it's still eligible
+  // for back-forward cache.
+  EXPECT_TRUE(rfh_1->IsInBackForwardCache());
+
+  // Send body while in the back-forward cache.
+  image_response.Send("image_body");
+  image_response.Done();
+
+  // 3) Go back to the first page. We should restore the page from the
+  // back-forward cache.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored,
+                FROM_HERE);
+
+  // Wait until the deferred body is processed. Since it's not a valid image
+  // value, we'll get the "error" event.
+  EXPECT_EQ("error", EvalJs(rfh_1, "image_load_status"));
 }
 
 // Disabled on Android, since we have problems starting up the websocket test
