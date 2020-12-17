@@ -4,6 +4,10 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_view_layout.h"
 
+#import "base/numerics/ranges.h"
+#import "ios/chrome/browser/ui/util/ui_util.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -11,10 +15,22 @@
 namespace {
 
 // Tab dimensions.
-const CGFloat kTabOverlapStacked = 32.0;
-const CGFloat kMinTabWidthStacked = 200.0;
+const CGFloat kTabOverlap = 32.0;
+const CGFloat kNewTabOverlap = 13.0;
+const CGFloat kMaxTabWidth = 265.0;
+const CGFloat kMinTabWidth = 200.0;
+
+// The size of the new tab button.
+const CGFloat kNewTabButtonWidth = 44;
 
 }  // namespace
+
+@interface TabStripViewLayout ()
+
+// The current tab width.  Recomputed whenever a tab is added or removed.
+@property(nonatomic) CGFloat currentTabWidth;
+
+@end
 
 @implementation TabStripViewLayout
 
@@ -22,8 +38,12 @@ const CGFloat kMinTabWidthStacked = 200.0;
   UICollectionView* collection = self.collectionView;
   NSInteger num = [collection numberOfItemsInSection:0];
 
-  CGFloat width = kMinTabWidthStacked * num;
-  width -= (num - 1) * kTabOverlapStacked;
+  CGFloat visibleSpace = [self tabStripVisibleSpace];
+  _currentTabWidth = (visibleSpace + (kTabOverlap * (num - 1))) / num;
+  _currentTabWidth =
+      base::ClampToRange(_currentTabWidth, kMinTabWidth, kMaxTabWidth);
+
+  CGFloat width = _currentTabWidth * num - (num - 1) * kTabOverlap;
   width = MAX(width, collection.bounds.size.width);
   return CGSizeMake(width, collection.bounds.size.height);
 }
@@ -36,9 +56,9 @@ const CGFloat kMinTabWidthStacked = 200.0;
   CGRect bounds = collection.bounds;
 
   // Calculating tab's length size depending on the number of tabs.
-  CGFloat x = indexPath.row * kMinTabWidthStacked;
+  CGFloat x = indexPath.row * _currentTabWidth;
   if (indexPath.row > 0) {
-    x -= (kTabOverlapStacked * indexPath.row);
+    x -= (kTabOverlap * indexPath.row);
   }
 
   x = MAX(x, bounds.origin.x);
@@ -46,7 +66,7 @@ const CGFloat kMinTabWidthStacked = 200.0;
   UICollectionViewLayoutAttributes* attr = [UICollectionViewLayoutAttributes
       layoutAttributesForCellWithIndexPath:indexPath];
   attr.frame =
-      CGRectMake(x, bounds.origin.y, kMinTabWidthStacked, bounds.size.height);
+      CGRectMake(x, bounds.origin.y, _currentTabWidth, bounds.size.height);
   return attr;
 }
 
@@ -83,6 +103,16 @@ const CGFloat kMinTabWidthStacked = 200.0;
   frame.origin.y = CGRectGetMaxY(frame);
   attr.frame = frame;
   return attr;
+}
+
+#pragma mark - Private
+
+// The available space for the tabstrip which is the view width without newtab-
+// button width.
+- (CGFloat)tabStripVisibleSpace {
+  CGFloat availableSpace = CGRectGetWidth([self.collectionView bounds]) -
+                           kNewTabButtonWidth + kNewTabOverlap;
+  return availableSpace;
 }
 
 @end
