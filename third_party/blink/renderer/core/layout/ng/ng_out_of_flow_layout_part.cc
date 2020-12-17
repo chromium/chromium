@@ -632,10 +632,17 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
 
   while (descendants->size() > 0) {
     for (auto& descendant : *descendants) {
-      LayoutFragmentainerDescendant(descendant);
+      scoped_refptr<const NGLayoutResult> result =
+          LayoutFragmentainerDescendant(descendant);
+      // TODO(bebeaudr): The final offset of the innermost abspos is wrong. It
+      // seems like it is off by exactly the offset of the outermost abspos.
+      // Don't we already take into account that value?
+      container_builder_->PropagateOOFPositionedFragmentainerDescendants(
+          result->PhysicalFragment(), result->OutOfFlowPositionedOffset());
     }
-    // Sweep any descendants that might have been added.
-    // This happens when an absolute container has a fixed child.
+    // Sweep any descendants that might have been bubbled up from the fragment
+    // to the |container_builder_|. This happens when we have nested absolute
+    // position elements.
     descendants->Shrink(0);
     container_builder_->SwapOutOfFlowFragmentainerDescendants(descendants);
   }
@@ -652,7 +659,8 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
   }
 }
 
-void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendant(
+scoped_refptr<const NGLayoutResult>
+NGOutOfFlowLayoutPart::LayoutFragmentainerDescendant(
     const NGLogicalOutOfFlowPositionedNode& descendant) {
   NGBlockNode node = descendant.node;
   const NGPhysicalContainerFragment* containing_block_fragment =
@@ -699,10 +707,10 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendant(
   builder.SetPercentageResolutionSize(container_content_size);
   NGConstraintSpace descendant_constraint_space = builder.ToConstraintSpace();
 
-  Layout(node, descendant_constraint_space, descendant_static_position,
-         container_physical_content_size, container_info,
-         default_writing_direction, /* only_layout */ nullptr,
-         /* is_fragmentainer_descendant */ true);
+  return Layout(node, descendant_constraint_space, descendant_static_position,
+                container_physical_content_size, container_info,
+                default_writing_direction, /* only_layout */ nullptr,
+                /* is_fragmentainer_descendant */ true);
 }
 
 scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::Layout(

@@ -114,7 +114,8 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
   void LayoutFragmentainerDescendants(
       Vector<NGLogicalOutOfFlowPositionedNode>* descendants);
 
-  void LayoutFragmentainerDescendant(const NGLogicalOutOfFlowPositionedNode&);
+  scoped_refptr<const NGLayoutResult> LayoutFragmentainerDescendant(
+      const NGLogicalOutOfFlowPositionedNode&);
 
   scoped_refptr<const NGLayoutResult> Layout(
       NGBlockNode,

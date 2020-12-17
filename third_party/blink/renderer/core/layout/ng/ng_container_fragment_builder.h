@@ -150,6 +150,14 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
   // block layout algorithm, to perform the final OOF layout and positioning.
   void MoveOutOfFlowDescendantCandidatesToDescendants();
 
+  // Propagate the OOF descendants from a fragment to the builder. Since the OOF
+  // descendants on the fragment are NGPhysicalOutOfFlowPositionedNodes, we
+  // first have to create NGLogicalOutOfFlowPositionedNodes copies before
+  // appending them to our list of descendants.
+  void PropagateOOFPositionedFragmentainerDescendants(
+      const NGPhysicalContainerFragment& fragment,
+      LogicalOffset offset);
+
   void SetIsSelfCollapsing() { is_self_collapsing_ = true; }
 
   void SetIsPushedByFloats() { is_pushed_by_floats_ = true; }

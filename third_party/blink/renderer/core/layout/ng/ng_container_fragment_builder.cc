@@ -61,37 +61,7 @@ void NGContainerFragmentBuilder::PropagateChildData(
                                             new_inline_container);
   }
 
-  if (const NGPhysicalBoxFragment* fragment =
-          DynamicTo<NGPhysicalBoxFragment>(&child)) {
-    if (fragment->HasOutOfFlowPositionedFragmentainerDescendants()) {
-      const auto& out_of_flow_fragmentainer_descendants =
-          fragment->OutOfFlowPositionedFragmentainerDescendants();
-      const WritingModeConverter empty_outer_size(GetWritingDirection(),
-                                                  PhysicalSize());
-      for (const auto& descendant : out_of_flow_fragmentainer_descendants) {
-        const NGPhysicalContainerFragment* containing_block_fragment =
-            descendant.containing_block_fragment.get();
-        if (!containing_block_fragment)
-          containing_block_fragment = fragment;
-
-        LogicalOffset containing_block_offset = converter.ToLogical(
-            descendant.containing_block_offset, PhysicalSize());
-        if (!child.IsFragmentainerBox())
-          containing_block_offset.block_offset += child_offset.block_offset;
-        if (IsBlockFragmentationContextRoot()) {
-          containing_block_offset.block_offset +=
-              fragmentainer_consumed_block_size_;
-        }
-
-        NGLogicalStaticPosition static_position =
-            descendant.static_position.ConvertToLogical(empty_outer_size);
-        oof_positioned_fragmentainer_descendants_.emplace_back(
-            descendant.node, static_position, descendant.inline_container,
-            /* needs_block_offset_adjustment */ false, containing_block_offset,
-            containing_block_fragment);
-      }
-    }
-  }
+  PropagateOOFPositionedFragmentainerDescendants(child, child_offset);
 
   // We only need to report if inflow or floating elements depend on the
   // percentage resolution block-size. OOF-positioned children resolve their
@@ -298,6 +268,47 @@ void NGContainerFragmentBuilder::
       candidate.inline_container =
           To<LayoutInline>(candidate.inline_container->ContinuationRoot());
     }
+  }
+}
+
+void NGContainerFragmentBuilder::PropagateOOFPositionedFragmentainerDescendants(
+    const NGPhysicalContainerFragment& fragment,
+    LogicalOffset offset) {
+  const NGPhysicalBoxFragment* box_fragment =
+      DynamicTo<NGPhysicalBoxFragment>(&fragment);
+  // Fragmentainer descendants are only on box fragments.
+  if (!box_fragment ||
+      !box_fragment->HasOutOfFlowPositionedFragmentainerDescendants()) {
+    return;
+  }
+
+  const WritingModeConverter converter(GetWritingDirection(), fragment.Size());
+  const WritingModeConverter empty_outer_size(GetWritingDirection(),
+                                              PhysicalSize());
+
+  const auto& out_of_flow_fragmentainer_descendants =
+      box_fragment->OutOfFlowPositionedFragmentainerDescendants();
+  for (const auto& descendant : out_of_flow_fragmentainer_descendants) {
+    const NGPhysicalContainerFragment* containing_block_fragment =
+        descendant.containing_block_fragment.get();
+    if (!containing_block_fragment)
+      containing_block_fragment = box_fragment;
+
+    LogicalOffset containing_block_offset =
+        converter.ToLogical(descendant.containing_block_offset, PhysicalSize());
+    if (!fragment.IsFragmentainerBox())
+      containing_block_offset.block_offset += offset.block_offset;
+    if (IsBlockFragmentationContextRoot()) {
+      containing_block_offset.block_offset +=
+          fragmentainer_consumed_block_size_;
+    }
+
+    NGLogicalStaticPosition static_position =
+        descendant.static_position.ConvertToLogical(empty_outer_size);
+    AddOutOfFlowFragmentainerDescendant(
+        {descendant.node, static_position, descendant.inline_container,
+         /* needs_block_offset_adjustment */ false, containing_block_offset,
+         containing_block_fragment});
   }
 }
 

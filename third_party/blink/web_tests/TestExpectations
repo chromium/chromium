@@ -1028,7 +1028,7 @@ virtual/layout_ng_block_frag/fast/multicol/vertical-rl/float-edge.html [ Pass ]
 virtual/layout_ng_block_frag/fast/multicol/vertical-rl/nested-columns.html [ Pass ]
 
 ### Tests failing with LayoutNGBlockFragmentation enabled:
-crbug.com/1079031 virtual/layout_ng_block_frag/external/wpt/css/css-break/block-end-aligned-abspos-nested.html [ Failure Crash ]
+crbug.com/1079031 virtual/layout_ng_block_frag/external/wpt/css/css-break/block-end-aligned-abspos-nested.html [ Failure ]
 crbug.com/1113911 virtual/layout_ng_block_frag/external/wpt/css/css-break/fieldset-001.html [ Failure ]
 crbug.com/1154585 virtual/layout_ng_block_frag/external/wpt/css/css-break/ink-overflow-002.html [ Failure ]
 crbug.com/1146973 virtual/layout_ng_block_frag/external/wpt/css/css-break/out-of-flow-in-multicolumn-009.html [ Failure ]
