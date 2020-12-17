@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/ui.gni")
 
 declare_args() {
   # Indicates if V4L plugin is used.
@@ -20,7 +21,8 @@ declare_args() {
   # is typically the case on x86-based ChromeOS devices.
   # VA-API should also be compiled by default on x11-using linux devices
   # using x86/x64.
-  use_vaapi = is_linux && (current_cpu == "x86" || current_cpu == "x64")
+  use_vaapi =
+      is_linux && use_x11 && (current_cpu == "x86" || current_cpu == "x64")
 
   # Indicates if ChromeOS protected media support exists. This is used
   # to enable the CDM daemon in Chrome OS as well as support for
