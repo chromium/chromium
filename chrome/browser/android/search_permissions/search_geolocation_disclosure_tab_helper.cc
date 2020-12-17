@@ -11,8 +11,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
-#include "chrome/android/chrome_jni_headers/GeolocationHeader_jni.h"
 #include "chrome/android/chrome_jni_headers/SearchGeolocationDisclosureTabHelper_jni.h"
+#include "chrome/browser/android/omnibox/geolocation_header.h"
 #include "chrome/browser/android/search_permissions/search_geolocation_disclosure_infobar_delegate.h"
 #include "chrome/browser/android/search_permissions/search_permissions_service.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -152,8 +152,7 @@ void SearchGeolocationDisclosureTabHelper::MaybeShowDisclosureForValidUrl(
   }
 
   // Check that the Chrome app has geolocation permission.
-  JNIEnv* env = base::android::AttachCurrentThread();
-  if (!Java_GeolocationHeader_hasGeolocationPermission(env))
+  if (!HasGeolocationPermission())
     return;
 
   // All good, let's show the disclosure and increment the shown count.

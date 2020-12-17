@@ -283,11 +283,54 @@ public class GeolocationHeader {
      * @param tab The Tab currently being accessed.
      * @return The X-Geo header string or null.
      */
+    @Nullable
     public static String getGeoHeader(String url, Tab tab) {
-        // TODO(lbargu): Refactor and simplify flow.
         Profile profile = Profile.fromWebContents(tab.getWebContents());
         if (profile == null) return null;
 
+        return getGeoHeader(url, profile, tab);
+    }
+
+    /**
+     * Returns an X-Geo HTTP header string if:
+     *  1. The current mode is not incognito.
+     *  2. The url is a google search URL (e.g. www.google.co.uk/search?q=cars), and
+     *  3. The user has not disabled sharing location with this url, and
+     *  4. There is a valid and recent location available.
+     *
+     * Returns null otherwise. This will never prompt for location access.
+     *
+     * @param url The URL of the request with which this header will be sent.
+     * @param profile The Tab currently being accessed.
+     * @return The X-Geo header string or null.
+     */
+    @SuppressWarnings("unused")
+    @CalledByNative
+    @Nullable
+    public static String getGeoHeader(String url, Profile profile) {
+        if (profile == null) return null;
+        Tab tab = null;
+
+        return getGeoHeader(url, profile, tab);
+    }
+
+    /**
+     * Returns an X-Geo HTTP header string if:
+     *  1. The current mode is not incognito.
+     *  2. The url is a google search URL (e.g. www.google.co.uk/search?q=cars), and
+     *  3. The user has not disabled sharing location with this url, and
+     *  4. There is a valid and recent location available.
+     *
+     * Returns null otherwise.
+     *
+     * @param url The URL of the request with which this header will be sent.
+     * @param profile The user profile being accessed.
+     * @param tab The Tab currently being accessed. Can be null, in which case, location permissions
+     *         will never prompt.
+     * @return The X-Geo header string or null.
+     */
+    @Nullable
+    private static String getGeoHeader(String url, Profile profile, Tab tab) {
         Location locationToAttach = null;
         VisibleNetworks visibleNetworksToAttach = null;
         long locationAge = Long.MAX_VALUE;
@@ -328,7 +371,7 @@ public class GeolocationHeader {
                 locationToAttach != null, headerState);
 
         if (locationSource != LocationSource.LOCATION_OFF && appPermission != Permission.BLOCKED
-                && domainPermission != Permission.BLOCKED && !tab.isIncognito()) {
+                && domainPermission != Permission.BLOCKED && !profile.isOffTheRecord()) {
             // Record the Location Age with a histogram.
             recordLocationAgeHistogram(locationSource, locationAge);
             long duration = sFirstLocationTime == Long.MAX_VALUE
@@ -356,6 +399,7 @@ public class GeolocationHeader {
         return header.toString();
     }
 
+    @SuppressWarnings("unused")
     @CalledByNative
     static boolean hasGeolocationPermission() {
         if (sUseAppPermissionGrantedForTesting) return sAppPermissionGrantedForTesting;
@@ -390,8 +434,9 @@ public class GeolocationHeader {
             return sAppPermissionGrantedForTesting ? Permission.GRANTED : Permission.BLOCKED;
         }
         if (hasGeolocationPermission()) return Permission.GRANTED;
-        return tab.getWindowAndroid().canRequestPermission(
-                       Manifest.permission.ACCESS_COARSE_LOCATION)
+        return (tab != null
+                       && tab.getWindowAndroid().canRequestPermission(
+                               Manifest.permission.ACCESS_COARSE_LOCATION))
                 ? Permission.PROMPT
                 : Permission.BLOCKED;
     }

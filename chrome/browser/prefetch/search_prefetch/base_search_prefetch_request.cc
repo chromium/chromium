@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "build/build_config.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -29,6 +30,10 @@
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "url/origin.h"
+
+#if defined(OS_ANDROID)
+#include "chrome/browser/android/omnibox/geolocation_header.h"
+#endif  // defined(OS_ANDROID)
 
 namespace {
 
@@ -173,6 +178,14 @@ bool BaseSearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
       resource_request->url, &(resource_request->headers), profile,
       profile->GetClientHintsControllerDelegate(),
       /*is_ua_override_on=*/false, js_enabled);
+
+#if defined(OS_ANDROID)
+  base::Optional<std::string> geo_header =
+      GetGeolocationHeaderIfAllowed(resource_request->url, profile);
+  if (geo_header) {
+    resource_request->headers.AddHeaderFromString(geo_header.value());
+  }
+#endif  // defined(OS_ANDROID)
 
   // Before sending out the request, allow throttles to modify the request (not
   // the URL). The rest of the URL Loader throttle calls are captured in the
