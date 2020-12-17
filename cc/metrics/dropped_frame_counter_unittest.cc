@@ -321,6 +321,14 @@ TEST_F(DroppedFrameCounterTest, SimplePattern2) {
   // 20th bucket, and as a result 95th percentile is also 20.
 }
 
+TEST_F(DroppedFrameCounterTest, IncompleteWindow) {
+  // There are only 5 frames submitted and both Max and 95pct should report
+  // zero.
+  SimulateFrameSequence({false, false, false, false, true}, 1);
+  EXPECT_EQ(MaxPercentDroppedFrame(), 0.0);
+  EXPECT_EQ(PercentDroppedFrame95Percentile(), 0);
+}
+
 TEST_F(DroppedFrameCounterTest, MaxPercentDroppedChanges) {
   // First 60 frames have 20% dropped.
   SimulateFrameSequence({false, false, false, false, true}, 12);

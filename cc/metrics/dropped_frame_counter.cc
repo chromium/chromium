@@ -29,6 +29,8 @@ void SlidingWindowHistogram::AddPercentDroppedFrame(
 
 uint32_t SlidingWindowHistogram::GetPercentDroppedFramePercentile(
     double percentile) const {
+  if (total_count == 0)
+    return 0;
   DCHECK_GE(percentile, 0.0);
   DCHECK_GE(1.0, percentile);
   int current_index = 100;  // Last bin in historgam
@@ -115,6 +117,9 @@ void DroppedFrameCounter::ReportFrames() {
   UMA_HISTOGRAM_PERCENTAGE(
       "Graphics.Smoothness.95pctPercentDroppedFrames_1sWindow",
       sliding_window_95pct_percent_dropped);
+
+  DCHECK_LE(sliding_window_95pct_percent_dropped,
+            static_cast<uint32_t>(round(sliding_window_max_percent_dropped_)));
 
   if (ukm_smoothness_data_ && total_frames > 0) {
     UkmSmoothnessData smoothness_data;
