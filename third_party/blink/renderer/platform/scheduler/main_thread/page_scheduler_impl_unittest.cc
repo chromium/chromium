@@ -287,17 +287,6 @@ class PageSchedulerImplTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
 };
 
-class PageSchedulerImplStopNonTimersInBackgroundEnabledTest
-    : public PageSchedulerImplTest {
- public:
-  PageSchedulerImplStopNonTimersInBackgroundEnabledTest()
-      : PageSchedulerImplTest({blink::features::kStopInBackground,
-                               blink::features::kStopNonTimersInBackground},
-                              {}) {}
-
-  ~PageSchedulerImplStopNonTimersInBackgroundEnabledTest() override = default;
-};
-
 TEST_F(PageSchedulerImplTest, TestDestructionOfFrameSchedulersBefore) {
   std::unique_ptr<blink::FrameScheduler> frame1(
       page_scheduler_->CreateFrameScheduler(
@@ -1320,15 +1309,13 @@ TEST_F(PageSchedulerImplTest, OpenWebSocketExemptsFromBudgetThrottling) {
 // Verify that freezing a page prevents tasks in its task queues from running.
 // Then, verify that making the page visible unfreezes it and allows tasks in
 // its task queues to run.
-TEST_F(PageSchedulerImplStopNonTimersInBackgroundEnabledTest,
-       PageFreezeAndSetVisible) {
+TEST_F(PageSchedulerImplTest, PageFreezeAndSetVisible) {
   TestFreeze(true);
 }
 
 // Same as before, but unfreeze the page explicitly instead of making it
 // visible.
-TEST_F(PageSchedulerImplStopNonTimersInBackgroundEnabledTest,
-       PageFreezeAndUnfreeze) {
+TEST_F(PageSchedulerImplTest, PageFreezeAndUnfreeze) {
   TestFreeze(false);
 }
 

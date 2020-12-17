@@ -307,11 +307,6 @@ const base::Feature kStopInBackground {
 const base::Feature kFreezeBackgroundTabOnNetworkIdle{
     "freeze-background-tab-on-network-idle", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Freeze non-timer task queues in background, after allowed grace time.
-// "stop" is a legacy name.
-const base::Feature kStopNonTimersInBackground{
-    "stop-non-timers-in-background", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enable the Storage Access API. https://crbug.com/989663.
 const base::Feature kStorageAccessAPI{"StorageAccessAPI",
                                       base::FEATURE_DISABLED_BY_DEFAULT};

@@ -1351,8 +1351,7 @@ MainThreadTaskQueue::QueueTraits
 FrameSchedulerImpl::DeferrableTaskQueueTraits() {
   return QueueTraits()
       .SetCanBeDeferred(true)
-      .SetCanBeFrozen(base::FeatureList::IsEnabled(
-          blink::features::kStopNonTimersInBackground))
+      .SetCanBeFrozen(true)
       .SetCanBePaused(true)
       .SetCanRunWhenVirtualTimePaused(false)
       .SetCanBePausedForAndroidWebview(true);
@@ -1361,8 +1360,7 @@ FrameSchedulerImpl::DeferrableTaskQueueTraits() {
 // static
 MainThreadTaskQueue::QueueTraits FrameSchedulerImpl::PausableTaskQueueTraits() {
   return QueueTraits()
-      .SetCanBeFrozen(base::FeatureList::IsEnabled(
-          blink::features::kStopNonTimersInBackground))
+      .SetCanBeFrozen(true)
       .SetCanBePaused(true)
       .SetCanRunWhenVirtualTimePaused(false)
       .SetCanBePausedForAndroidWebview(true);

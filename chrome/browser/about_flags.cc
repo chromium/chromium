@@ -4638,11 +4638,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabHoverCardImagesDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kTabHoverCardImages)},
 
-    {"stop-non-timers-in-background",
-     flag_descriptions::kStopNonTimersInBackgroundName,
-     flag_descriptions::kStopNonTimersInBackgroundDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kStopNonTimersInBackground)},
-
     {"stop-in-background", flag_descriptions::kStopInBackgroundName,
      flag_descriptions::kStopInBackgroundDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(blink::features::kStopInBackground)},

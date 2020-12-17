@@ -4582,11 +4582,6 @@
     "expiry_milestone": 76
   },
   {
-    "name": "stop-non-timers-in-background",
-    "owners": [ "fdoray" ],
-    "expiry_milestone": 75
-  },
-  {
     "name": "storage-access-api",
     "owners": [ "brandm@microsoft.com" ],
     "expiry_milestone": 90

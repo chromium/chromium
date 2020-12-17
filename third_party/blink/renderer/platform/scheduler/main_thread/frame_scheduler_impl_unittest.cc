@@ -430,22 +430,6 @@ class FrameSchedulerImplTest : public testing::Test {
   scoped_refptr<MainThreadTaskQueue> throttleable_task_queue_;
 };
 
-class FrameSchedulerImplStopNonTimersInBackgroundEnabledTest
-    : public FrameSchedulerImplTest {
- public:
-  FrameSchedulerImplStopNonTimersInBackgroundEnabledTest()
-      : FrameSchedulerImplTest({blink::features::kStopNonTimersInBackground},
-                               {}) {}
-};
-
-class FrameSchedulerImplStopNonTimersInBackgroundDisabledTest
-    : public FrameSchedulerImplTest {
- public:
-  FrameSchedulerImplStopNonTimersInBackgroundDisabledTest()
-      : FrameSchedulerImplTest({},
-                               {blink::features::kStopNonTimersInBackground}) {}
-};
-
 class FrameSchedulerImplStopInBackgroundDisabledTest
     : public FrameSchedulerImplTest,
       public ::testing::WithParamInterface<TaskType> {
@@ -857,8 +841,7 @@ TEST_F(FrameSchedulerImplTest, FreezeForegroundOnlyTasks) {
   EXPECT_EQ(1, counter);
 }
 
-TEST_F(FrameSchedulerImplStopNonTimersInBackgroundEnabledTest,
-       PageFreezeAndUnfreezeFlagEnabled) {
+TEST_F(FrameSchedulerImplTest, PageFreezeAndUnfreeze) {
   int counter = 0;
   LoadingTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE, base::BindOnce(&IncrementCounter, base::Unretained(&counter)));
@@ -882,13 +865,13 @@ TEST_F(FrameSchedulerImplStopNonTimersInBackgroundEnabledTest,
   page_scheduler_->SetPageFrozen(false);
 
   EXPECT_EQ(1, counter);
-  // Same as RunUntilIdle but also advances the clock if necessary.
   task_environment_.FastForwardUntilNoTasksRemain();
   EXPECT_EQ(5, counter);
 }
 
-TEST_F(FrameSchedulerImplStopNonTimersInBackgroundDisabledTest,
-       PageFreezeAndUnfreezeFlagDisabled) {
+// Similar to PageFreezeAndUnfreeze, but unfreezes task queues by making the
+// page visible instead of by invoking SetPageFrozen(false).
+TEST_F(FrameSchedulerImplTest, PageFreezeAndPageVisible) {
   int counter = 0;
   LoadingTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE, base::BindOnce(&IncrementCounter, base::Unretained(&counter)));
@@ -906,13 +889,13 @@ TEST_F(FrameSchedulerImplStopNonTimersInBackgroundDisabledTest,
 
   EXPECT_EQ(0, counter);
   base::RunLoop().RunUntilIdle();
-  // throttleable tasks and loading tasks are frozen, others continue to run.
-  EXPECT_EQ(3, counter);
+  // unpausable tasks continue to run.
+  EXPECT_EQ(1, counter);
 
-  page_scheduler_->SetPageFrozen(false);
+  // Making the page visible should cause frozen queues to resume.
+  page_scheduler_->SetPageVisible(true);
 
-  EXPECT_EQ(3, counter);
-  // Same as RunUntilIdle but also advances the clock if necessary.
+  EXPECT_EQ(1, counter);
   task_environment_.FastForwardUntilNoTasksRemain();
   EXPECT_EQ(5, counter);
 }
@@ -1046,35 +1029,6 @@ TEST_F(FrameSchedulerImplTest, PageFreezeWithKeepActive) {
   // loading task runs
   EXPECT_THAT(tasks, UnorderedElementsAre(String(
                          LoadingTaskQueue()->GetTaskQueue()->GetName())));
-}
-
-TEST_F(FrameSchedulerImplStopNonTimersInBackgroundEnabledTest,
-       PageFreezeAndPageVisible) {
-  int counter = 0;
-  LoadingTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
-      FROM_HERE, base::BindOnce(&IncrementCounter, base::Unretained(&counter)));
-  ThrottleableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
-      FROM_HERE, base::BindOnce(&IncrementCounter, base::Unretained(&counter)));
-  DeferrableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
-      FROM_HERE, base::BindOnce(&IncrementCounter, base::Unretained(&counter)));
-  PausableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
-      FROM_HERE, base::BindOnce(&IncrementCounter, base::Unretained(&counter)));
-  UnpausableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
-      FROM_HERE, base::BindOnce(&IncrementCounter, base::Unretained(&counter)));
-
-  page_scheduler_->SetPageVisible(false);
-  page_scheduler_->SetPageFrozen(true);
-
-  EXPECT_EQ(0, counter);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(1, counter);
-
-  // Making the page visible should cause frozen queues to resume.
-  page_scheduler_->SetPageVisible(true);
-
-  EXPECT_EQ(1, counter);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(5, counter);
 }
 
 class FrameSchedulerImplTestWithUnfreezableLoading

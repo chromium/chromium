@@ -1301,9 +1301,6 @@ extern const char kSpeculativeServiceWorkerStartOnQueryInputDescription[];
 extern const char kStopInBackgroundName[];
 extern const char kStopInBackgroundDescription[];
 
-extern const char kStopNonTimersInBackgroundName[];
-extern const char kStopNonTimersInBackgroundDescription[];
-
 extern const char kStoragePressureEventName[];
 extern const char kStoragePressureEventDescription[];
 
