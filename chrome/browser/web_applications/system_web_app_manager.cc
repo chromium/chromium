@@ -357,8 +357,7 @@ bool SystemWebAppManager::IsAppEnabled(SystemAppType type) {
       return true;
     case SystemAppType::CAMERA:
       return base::FeatureList::IsEnabled(
-                 chromeos::features::kCameraSystemWebApp) &&
-             !user_manager::UserManager::Get()->IsLoggedInAsGuest();
+          chromeos::features::kCameraSystemWebApp);
     case SystemAppType::TERMINAL:
       return true;
     case SystemAppType::MEDIA:
