@@ -1444,8 +1444,7 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
       // false, it means the intersecting damage is from quads above it or from
       // itself.
       bool intersects_damage_from_surface =
-          rect_in_target_space.Intersects(surface_root_rp_damage) &&
-          render_pass_quad->intersects_damage_under;
+          rect_in_target_space.Intersects(surface_root_rp_damage);
       if (intersects_current_damage || intersects_damage_from_parent ||
           intersects_damage_from_surface) {
         render_pass_quad->intersects_damage_under = true;
