@@ -26,9 +26,11 @@ LayoutUnit CalculateColumnContentBlockSize(
     const NGPhysicalContainerFragment& fragment,
     WritingDirectionMode writing_direction) {
   WritingModeConverter converter(writing_direction, fragment.Size());
-  // TODO(mstensho): Once LayoutNG is capable of calculating overflow on its
-  // own, we should probably just move over to relying on that machinery,
-  // instead of doing all this on our own.
+  // Note that what we're doing here is almost the same as what we do when
+  // calculating overflow, with at least one important difference: If the
+  // inline-size of a fragment is 0, the overflow rectangle becomes empty, even
+  // if the fragment's block-size is non-zero. This is correct for overflow
+  // handling, but it would be wrong for column balancing.
   LayoutUnit total_size;
   for (const auto& child : fragment.Children()) {
     LayoutUnit size = converter.ToLogical(child->Size()).block_size;
