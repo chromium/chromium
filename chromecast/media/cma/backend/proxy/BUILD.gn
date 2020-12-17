@@ -58,7 +58,8 @@ cast_source_set("proxy") {
     "//third_party/protobuf:protobuf_full",
   ]
 
-  if (chromecast_branding == "public") {
+  if (!enable_chromium_runtime_cast_renderer ||
+      chromecast_branding == "public") {
     sources += [ "audio_channel_broker_simple.cc" ]
   }
 }
