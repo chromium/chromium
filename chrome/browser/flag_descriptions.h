@@ -819,9 +819,6 @@ extern const char kKaleidoscopeModuleDescription[];
 extern const char kKerberosSettingsSectionName[];
 extern const char kKerberosSettingsSectionDescription[];
 
-extern const char kLauncherSettingsSearchName[];
-extern const char kLauncherSettingsSearchDescription[];
-
 extern const char kLegacyTLSEnforcedName[];
 extern const char kLegacyTLSEnforcedDescription[];
 
