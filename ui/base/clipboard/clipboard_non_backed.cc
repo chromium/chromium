@@ -38,12 +38,13 @@ namespace ui {
 
 namespace {
 
+using InstanceRegistry = std::set<const ClipboardNonBacked*, std::less<>>;
 // Returns the registry which tracks all instances of ClipboardNonBacked in
 // existence. This allows us to determine if any arbitrary Clipboard pointer in
 // fact points to a ClipboardNonBacked instance. Only if a pointer exists in
 // this registry is it safe to cast to ClipboardNonBacked*.
-std::set<const ClipboardNonBacked*>* GetInstanceRegistry() {
-  static base::NoDestructor<std::set<const ClipboardNonBacked*>> registry;
+InstanceRegistry* GetInstanceRegistry() {
+  static base::NoDestructor<InstanceRegistry> registry;
   return registry.get();
 }
 

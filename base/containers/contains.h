@@ -8,7 +8,6 @@
 #include <type_traits>
 #include <utility>
 
-#include "base/functional/identity.h"
 #include "base/ranges/algorithm.h"
 #include "base/ranges/ranges.h"
 #include "base/template_util.h"
@@ -16,6 +15,14 @@
 namespace base {
 
 namespace internal {
+
+// Small helper to detect whether a given type has a nested `key_type` typedef.
+// Used below to catch misuses of the API for associative containers.
+template <typename T, typename SFINAE = void>
+struct HasKeyType : std::false_type {};
+
+template <typename T>
+struct HasKeyType<T, void_t<typename T::key_type>> : std::true_type {};
 
 // Probe whether a `contains` member function exists and return the result of
 // `container.contains(value)` if this is a valid expression. This is the
@@ -51,14 +58,18 @@ constexpr auto ContainsImpl(const Container& container,
 }
 
 // Generic fallback option, using a linear search over `container` to find
-// `value`. Has the lowest priority.
-template <typename Container, typename Value, typename Proj = identity>
+// `value`. Has the lowest priority. This will not compile for associative
+// containers, as this likely is a performance bug.
+template <typename Container, typename Value>
 constexpr bool ContainsImpl(const Container& container,
                             const Value& value,
-                            priority_tag<0>,
-                            Proj proj = {}) {
-  return ranges::find(container, value, std::move(proj)) !=
-         ranges::end(container);
+                            priority_tag<0>) {
+  static_assert(
+      !HasKeyType<Container>::value,
+      "Error: About to perform linear search on an associative container. "
+      "Either use a more generic comparator (e.g. std::less<>) or, if a linear "
+      "search is desired, provide an explicit projection parameter.");
+  return ranges::find(container, value) != ranges::end(container);
 }
 
 }  // namespace internal
@@ -78,8 +89,8 @@ template <typename Container, typename Value, typename Proj>
 constexpr bool Contains(const Container& container,
                         const Value& value,
                         Proj proj) {
-  return internal::ContainsImpl(container, value, internal::priority_tag<0>(),
-                                std::move(proj));
+  return ranges::find(container, value, std::move(proj)) !=
+         ranges::end(container);
 }
 
 }  // namespace base

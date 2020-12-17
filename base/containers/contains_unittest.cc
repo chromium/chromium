@@ -8,6 +8,8 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
+#include "base/functional/identity.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -31,6 +33,14 @@ TEST(ContainsTest, GenericContainsWithProjection) {
   EXPECT_TRUE(Contains(allowed_chars, 'a', &ToLowerASCII<char>));
   EXPECT_FALSE(Contains(allowed_chars, 'z', &ToLowerASCII<char>));
   EXPECT_FALSE(Contains(allowed_chars, 0, &ToLowerASCII<char>));
+}
+
+TEST(ContainsTest, GenericSetContainsWithProjection) {
+  constexpr StringPiece kFoo = "foo";
+  std::set<std::string> set = {"foo", "bar", "baz"};
+
+  // Opt into a linear search by explicitly providing a projection:
+  EXPECT_TRUE(Contains(set, kFoo, identity{}));
 }
 
 TEST(ContainsTest, ContainsWithFindAndNpos) {
