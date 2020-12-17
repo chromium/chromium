@@ -8,6 +8,7 @@
 
 #include <algorithm>
 
+#include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/atomicops.h"
 #include "base/bits.h"
 #include "base/feature_list.h"
@@ -458,6 +459,35 @@ bool DiscardableSharedMemory::Purge(Time current_time) {
 
   last_known_usage_ = Time();
   return true;
+}
+
+void DiscardableSharedMemory::ReleaseMemoryIfPossible(size_t offset,
+                                                      size_t length) {
+#if defined(OS_POSIX) && !defined(OS_NACL)
+// Linux and Android provide MADV_REMOVE which is preferred as it has a
+// behavior that can be verified in tests. Other POSIX flavors (MacOSX, BSDs),
+// provide MADV_FREE which has the same result but memory is purged lazily.
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#define MADV_PURGE_ARGUMENT MADV_REMOVE
+#elif defined(OS_APPLE)
+// MADV_FREE_REUSABLE is similar to MADV_FREE, but also marks the pages with the
+// reusable bit, which allows both Activity Monitor and memory-infra to
+// correctly track the pages.
+#define MADV_PURGE_ARGUMENT MADV_FREE_REUSABLE
+#else  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#define MADV_PURGE_ARGUMENT MADV_FREE
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+  // Advise the kernel to remove resources associated with purged pages.
+  // Subsequent accesses of memory pages will succeed, but might result in
+  // zero-fill-on-demand pages.
+  if (madvise(static_cast<char*>(shared_memory_mapping_.memory()) + offset,
+              length, MADV_PURGE_ARGUMENT)) {
+    DPLOG(ERROR) << "madvise() failed";
+  }
+#else   // defined(OS_POSIX) && !defined(OS_NACL)
+  DiscardSystemPages(
+      static_cast<char*>(shared_memory_mapping_.memory()) + offset, length);
+#endif  // defined(OS_POSIX) && !defined(OS_NACL)
 }
 
 bool DiscardableSharedMemory::IsMemoryResident() const {

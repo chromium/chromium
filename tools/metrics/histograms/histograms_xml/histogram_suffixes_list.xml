@@ -14669,6 +14669,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram_suffixes name="ProcessMemoryAllocatorSmall2" separator=".">
   <suffix name="Discardable.FreelistSize"
       label="Freelist size used by ClientDiscardableMemoryManager."/>
+  <suffix name="Discardable.ResidentSize"
+      label="Amount of resident memory held by
+             ClientDiscardableSharedMemoryManager."/>
   <suffix name="Discardable.VirtualSize"
       label="Virtual memory used by ClientDiscardableMemoryManager."/>
   <suffix name="DownloadService"

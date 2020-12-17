@@ -114,6 +114,7 @@ class DISCARDABLE_MEMORY_EXPORT ClientDiscardableSharedMemoryManager
   bool is_purge_scheduled_ GUARDED_BY(lock_) = false;
 
  private:
+  friend class TestClientDiscardableSharedMemoryManager;
   class DiscardableMemoryImpl : public base::DiscardableMemory {
    public:
     DiscardableMemoryImpl(
@@ -174,8 +175,9 @@ class DISCARDABLE_MEMORY_EXPORT ClientDiscardableSharedMemoryManager
   // Releases all unlocked memory that was last locked at least |min_age| ago.
   void PurgeUnlockedMemory(base::TimeDelta min_age);
   void ReleaseFreeMemoryImpl();
-  void ReleaseMemory(DiscardableMemoryImpl* memory,
-                     std::unique_ptr<DiscardableSharedMemoryHeap::Span> span)
+  void UnlockAndReleaseMemory(
+      DiscardableMemoryImpl* memory,
+      std::unique_ptr<DiscardableSharedMemoryHeap::Span> span)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
   void ReleaseSpan(std::unique_ptr<DiscardableSharedMemoryHeap::Span> span)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);

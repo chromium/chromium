@@ -173,6 +173,8 @@ const Metric kAllocatorDumpNamesForMetrics[] = {
      EmitTo::kSizeInUkmAndUma, &Memory_Experimental::SetDiscardable},
     {"discardable", "Discardable.FreelistSize", MetricSize::kSmall,
      "freelist_size", EmitTo::kSizeInUmaOnly, nullptr},
+    {"discardable", "Discardable.ResidentSize", MetricSize::kSmall,
+     "resident_size", EmitTo::kSizeInUmaOnly, nullptr},
     {"discardable", "Discardable.VirtualSize", MetricSize::kSmall,
      "virtual_size", EmitTo::kSizeInUmaOnly, nullptr},
     {"extensions/functions", "ExtensionFunctions", MetricSize::kLarge,

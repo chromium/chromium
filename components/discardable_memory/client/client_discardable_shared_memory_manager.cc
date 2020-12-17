@@ -112,10 +112,8 @@ ClientDiscardableSharedMemoryManager::DiscardableMemoryImpl::
     DCHECK(!is_locked());
     return;
   }
-  if (is_locked())
-    manager_->UnlockSpan(span_.get());
 
-  manager_->ReleaseMemory(this, std::move(span_));
+  manager_->UnlockAndReleaseMemory(this, std::move(span_));
 }
 
 bool ClientDiscardableSharedMemoryManager::DiscardableMemoryImpl::Lock() {
@@ -537,9 +535,15 @@ void ClientDiscardableSharedMemoryManager::UnlockSpan(
   return span->shared_memory()->Unlock(offset, length);
 }
 
-void ClientDiscardableSharedMemoryManager::ReleaseMemory(
+void ClientDiscardableSharedMemoryManager::UnlockAndReleaseMemory(
     DiscardableMemoryImpl* memory,
     std::unique_ptr<DiscardableSharedMemoryHeap::Span> span) {
+  memory->manager_->lock_.AssertAcquired();
+  // lock_.AssertAcquired();
+  if (memory->is_locked()) {
+    UnlockSpan(span.get());
+  }
+
   DCHECK(span);
   auto removed = allocated_memory_.erase(memory);
   DCHECK_EQ(removed, 1u);

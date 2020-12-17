@@ -150,6 +150,8 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryHeap {
   void ReleaseMemory(const base::DiscardableSharedMemory* shared_memory,
                      size_t size);
 
+  base::Optional<size_t> GetResidentSize() const;
+
   // Dumps memory statistics about a memory segment for chrome://tracing.
   void OnMemoryDump(const base::DiscardableSharedMemory* shared_memory,
                     size_t size,

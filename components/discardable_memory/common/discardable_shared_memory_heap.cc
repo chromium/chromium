@@ -10,15 +10,21 @@
 #include <utility>
 
 #include "base/bits.h"
+#include "base/feature_list.h"
 #include "base/format_macros.h"
 #include "base/memory/aligned_memory.h"
 #include "base/memory/discardable_shared_memory.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/memory_dump_manager.h"
 
 namespace discardable_memory {
+
+const base::Feature kReleaseDiscardableFreeListPages{
+    "ReleaseDiscardableFreeListPages", base::FEATURE_DISABLED_BY_DEFAULT};
+
 namespace {
 
 bool IsInFreeList(DiscardableSharedMemoryHeap::Span* span) {
@@ -142,6 +148,25 @@ void DiscardableSharedMemoryHeap::MergeIntoFreeLists(
   // First add length of |span| to |num_free_blocks_|.
   num_free_blocks_ += span->length_;
 
+  if (base::FeatureList::IsEnabled(kReleaseDiscardableFreeListPages)) {
+    SCOPED_UMA_HISTOGRAM_SHORT_TIMER("Memory.Discardable.FreeListReleaseTime");
+    // Release as much memory as possible before putting it into the freelists
+    // in order to reduce their size. Getting this memory back is still much
+    // cheaper than an IPC, while also saving us space in the freelists.
+    //
+    // The "+ 1" in the offset is for the SharedState that's at the start of
+    // the DiscardableSharedMemory. See DiscardableSharedMemory for details on
+    // what this is used for. We don't want to remove it, so we offset by an
+    // extra page.
+    size_t offset = (1 + span->start_) * base::GetPageSize() -
+                    reinterpret_cast<size_t>(span->shared_memory()->memory());
+    // Since we always offset by at least one page because of the SharedState,
+    // our offset should never be 0.
+    DCHECK_GT(offset, 0u);
+    span->shared_memory()->ReleaseMemoryIfPossible(
+        offset, span->length_ * base::GetPageSize());
+  }
+
   // Merge with previous span if possible.
   auto prev_it = spans_.find(span->start_ - 1);
   if (prev_it != spans_.end() && IsInFreeList(prev_it->second)) {
@@ -250,6 +275,29 @@ size_t DiscardableSharedMemoryHeap::GetFreelistSize() const {
   return num_free_blocks_ * block_size_;
 }
 
+base::Optional<size_t> DiscardableSharedMemoryHeap::GetResidentSize() const {
+  size_t resident_size = 0;
+  // Each member of |free_spans_| is a LinkedList of Spans. We need to iterate
+  // over each of these.
+  for (const base::LinkedList<Span>& span_list : free_spans_) {
+    for (base::LinkNode<Span>* curr = span_list.head(); curr != span_list.end();
+         curr = curr->next()) {
+      Span* free_span = curr->value();
+      // A given span over a piece of Shared Memory (which we will call
+      // |shared_memory|) has Span::start_ initialized to a value equivalent
+      // to reinterpret_cast<shared_memory->memory()) / block_size_.
+      void* mem = reinterpret_cast<void*>(free_span->start() * block_size_);
+      base::Optional<size_t> resident_in_span =
+          base::trace_event::ProcessMemoryDump::CountResidentBytes(
+              mem, free_span->length() * base::GetPageSize());
+      if (!resident_in_span)
+        return base::nullopt;
+      resident_size += resident_in_span.value();
+    }
+  }
+  return resident_size;
+}
+
 bool DiscardableSharedMemoryHeap::OnMemoryDump(
     const base::trace_event::MemoryDumpArgs& args,
     base::trace_event::ProcessMemoryDump* pmd) {
@@ -275,6 +323,12 @@ bool DiscardableSharedMemoryHeap::OnMemoryDump(
     total_dump->AddScalar("virtual_size",
                           base::trace_event::MemoryAllocatorDump::kUnitsBytes,
                           total_size);
+    auto resident_size = GetResidentSize();
+    if (resident_size) {
+      total_dump->AddScalar("resident_size",
+                            base::trace_event::MemoryAllocatorDump::kUnitsBytes,
+                            resident_size.value());
+    }
   } else {
     // This iterates over all the memory allocated by the heap, and calls
     // |OnMemoryDump| for each. It does not contain any information about the
@@ -292,6 +346,7 @@ void DiscardableSharedMemoryHeap::InsertIntoFreeList(
     std::unique_ptr<DiscardableSharedMemoryHeap::Span> span) {
   DCHECK(!IsInFreeList(span.get()));
   size_t index = std::min(span->length_, base::size(free_spans_)) - 1;
+
   free_spans_[index].Append(span.release());
 }
 

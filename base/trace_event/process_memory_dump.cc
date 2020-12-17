@@ -81,8 +81,9 @@ size_t ProcessMemoryDump::GetSystemPageSize() {
 }
 
 // static
-size_t ProcessMemoryDump::CountResidentBytes(void* start_address,
-                                             size_t mapped_size) {
+base::Optional<size_t> ProcessMemoryDump::CountResidentBytes(
+    void* start_address,
+    size_t mapped_size) {
   const size_t page_size = GetSystemPageSize();
   const uintptr_t start_pointer = reinterpret_cast<uintptr_t>(start_address);
   DCHECK_EQ(0u, start_pointer % page_size);
@@ -160,8 +161,8 @@ size_t ProcessMemoryDump::CountResidentBytes(void* start_address,
 
   DCHECK(!failure);
   if (failure) {
-    total_resident_pages = 0;
     LOG(ERROR) << "CountResidentBytes failed. The resident size is invalid";
+    return base::nullopt;
   }
   return total_resident_pages;
 }
