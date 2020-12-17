@@ -75,6 +75,9 @@ crbug.com/591099 external/wpt/css/css-flexbox/image-as-flexitem-size-004v.html [
 crbug.com/591099 external/wpt/css/css-fonts/font-features-across-space-1.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-fonts/font-features-across-space-3.html [ Failure ]
 
+### external/wpt/css/css-images
+crbug.com/1076121 external/wpt/css/css-images/image-orientation/image-orientation-list-style-image.html [ Failure ]
+
 ### external/wpt/css/css-layout-api/
 crbug.com/591099 external/wpt/css/css-layout-api/* [ Skip ]
 
