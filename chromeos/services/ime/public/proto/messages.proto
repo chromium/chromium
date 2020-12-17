@@ -40,6 +40,8 @@ message PublicMessage {
     FinishComposition finish_composition = 12;
     DeleteSurroundingText delete_surrounding_text = 13;
     HandleAutocorrect handle_autocorrect = 14;
+    SuggestionsRequest suggestions_request = 15;
+    SuggestionsResponse suggestions_response = 16;
   }
 }
 
@@ -196,4 +198,37 @@ message DeleteSurroundingText {
 // chromeos/services/ime/public/mojom/input_engine.mojom
 message HandleAutocorrect {
   optional AutocorrectSpan autocorrect_span = 1;
+}
+
+// Protobuf version of CompletionCandidate in
+// chromeos/services/ime/public/mojom/input_engine.mojom
+message CompletionCandidate {
+  optional string text = 1;
+  optional float normalized_score = 2;
+}
+
+// Protobuf version of SuggestionsRequest in
+// chromeos/services/ime/public/mojom/input_engine.mojom
+message SuggestionsRequest {
+  optional string text = 1;
+  repeated CompletionCandidate completion_candidates = 2;
+}
+
+// Protobuf version of MultiWordSuggestionCandidate in
+// chromeos/services/ime/public/mojom/input_engine.mojom
+message MultiWordSuggestionCandidate {
+  optional string text = 1;
+  optional float normalized_score = 2;
+}
+
+// Protobuf version of SuggestionCandidate in
+// chromeos/services/ime/public/mojom/input_engine.mojom
+message SuggestionCandidate {
+  oneof candidate { MultiWordSuggestionCandidate multi_word = 1; }
+}
+
+// Protobuf version of SuggestionsResponse in
+// chromeos/services/ime/public/mojom/input_engine.mojom
+message SuggestionsResponse {
+  repeated SuggestionCandidate candidates = 1;
 }

@@ -143,6 +143,50 @@ struct AutocorrectSpan {
   string original_text;
 };
 
+// Proposed candidate for completing some text.
+// TODO(crbug/1159614): Remove in favour of sending serialized proto data.
+struct CompletionCandidate {
+  // The candidate text
+  string text;
+
+  // Normalized confidence scoring for the candidate
+  float normalized_score;
+};
+
+// Single request to generate suggestion candidates from the given context.
+// TODO(crbug/1159614): Remove in favour of sending serialized proto data.
+struct SuggestionsRequest {
+  // The preceding text used to produced the suggestions.
+  string text;
+
+  // Optional: any candidates generated to complete the current text.
+  array<CompletionCandidate> completion_candidates;
+};
+
+// A suggestion candidate containing multiple predicted words.
+// TODO(crbug/1159614): Remove in favour of sending serialized proto data.
+struct MultiWordSuggestionCandidate {
+  // The words predicted.
+  string text;
+
+  // The normalized confidence scoring for the prediction.
+  float normalized_score;
+};
+
+// Represents a single generated suggestion candidate.
+// TODO(crbug/1159614): Remove in favour of sending serialized proto data.
+union SuggestionCandidate {
+  // A suggestion candidate that contains multiple words.
+  MultiWordSuggestionCandidate multi_word;
+};
+
+// Encapsulates the results of a suggestions request.
+// TODO(crbug/1159614): Remove in favour of sending serialized proto data.
+struct SuggestionsResponse {
+  // A list of suggestion candidates generated.
+  array<SuggestionCandidate> candidates;
+};
+
 // Manages access to a set of IME engines, implemented by the IME service
 // itself. The IME framework in the browser process is responsible for brokering
 // the connection between the IME service and the IME extension, but does not
