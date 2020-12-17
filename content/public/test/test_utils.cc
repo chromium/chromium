@@ -205,6 +205,18 @@ bool AreDefaultSiteInstancesEnabled() {
              features::kProcessSharingWithDefaultSiteInstances);
 }
 
+bool AreStrictSiteInstancesEnabled() {
+  return AreAllSitesIsolatedForTesting() ||
+         base::FeatureList::IsEnabled(
+             features::kProcessSharingWithStrictSiteInstances);
+}
+
+bool IsIsolatedOriginRequiredToGuaranteeDedicatedProcess() {
+  return AreDefaultSiteInstancesEnabled() ||
+         base::FeatureList::IsEnabled(
+             features::kProcessSharingWithStrictSiteInstances);
+}
+
 void IsolateAllSitesForTesting(base::CommandLine* command_line) {
   command_line->AppendSwitch(switches::kSitePerProcess);
 }

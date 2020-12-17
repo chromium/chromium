@@ -501,13 +501,13 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
     EXPECT_EQ(initiator_process_id, observer.last_initiator_process_id());
   }
 
-  // The RenderFrameHost should not have changed unless site-per-process or
-  // proactive BrowsingInstance swap is enabled.
-  if (AreAllSitesIsolatedForTesting() ||
-      CanCrossSiteNavigationsProactivelySwapBrowsingInstances()) {
-    EXPECT_NE(initial_rfh, current_frame_host());
-  } else {
+  // The RenderFrameHost should have changed unless default SiteInstances
+  // are enabled and proactive BrowsingInstance swaps are disabled.
+  if (AreDefaultSiteInstancesEnabled() &&
+      !CanCrossSiteNavigationsProactivelySwapBrowsingInstances()) {
     EXPECT_EQ(initial_rfh, current_frame_host());
+  } else {
+    EXPECT_NE(initial_rfh, current_frame_host());
   }
 }
 

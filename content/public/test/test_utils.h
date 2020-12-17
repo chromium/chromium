@@ -95,6 +95,18 @@ bool AreAllSitesIsolatedForTesting();
 // to mark expectations specific to default SiteInstances.
 bool AreDefaultSiteInstancesEnabled();
 
+// Returns true if the process model only allows a SiteInstance to contain
+// a single site.
+bool AreStrictSiteInstancesEnabled();
+
+// Returns true if a test needs to register an origin for isolation to ensure
+// that navigations, for that origin, are placed in a dedicated process. Some
+// process model modes allow sites to share a process if they are not isolated.
+// This helper indicates when such a mode is in use and indicates the test must
+// register an isolated origin to ensure the origin gets placed in its own
+// process.
+bool IsIsolatedOriginRequiredToGuaranteeDedicatedProcess();
+
 // Appends --site-per-process to the command line, enabling tests to exercise
 // site isolation and cross-process iframes. This must be called early in
 // the test; the flag will be read on the first real navigation.

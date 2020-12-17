@@ -2528,7 +2528,7 @@ IN_PROC_BROWSER_TEST_F(
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
-  if (AreAllSitesIsolatedForTesting()) {
+  if (AreStrictSiteInstancesEnabled()) {
     ExpectNotRestored(
         {BackForwardCacheMetrics::NotRestoredReason::
              kRelatedActiveContentsExist,
@@ -4240,8 +4240,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, CacheHTTPDocumentOnly) {
     // On Android, navigations to about:blank keeps the same RenderFrameHost.
     // Obviously, it can't enter the BackForwardCache, because it is still used
     // to display the current document.
-    if (test_case.url == blank_url &&
-        !SiteIsolationPolicy::UseDedicatedProcessesForAllSites()) {
+    if (test_case.url == blank_url && !AreStrictSiteInstancesEnabled()) {
       EXPECT_FALSE(delete_observer.deleted());
       EXPECT_FALSE(rfh->IsInBackForwardCache());
       EXPECT_EQ(rfh, current_frame_host());
@@ -5060,13 +5059,13 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHostImpl* rfh_a1 = current_frame_host();
   RenderFrameHostImpl* rfh_b = rfh_a1->child_at(0)->current_frame_host();
   EXPECT_TRUE(ExecJs(rfh_b, "window.onunload = () => {} "));
-  EXPECT_EQ(AreAllSitesIsolatedForTesting(),
+  EXPECT_EQ(AreStrictSiteInstancesEnabled(),
             rfh_a1->GetSiteInstance() != rfh_b->GetSiteInstance());
 
   // 2) Navigate to A2.
   EXPECT_TRUE(NavigateToURL(shell(), url_a2));
   RenderFrameHostImpl* rfh_a2 = current_frame_host();
-  if (AreAllSitesIsolatedForTesting()) {
+  if (AreStrictSiteInstancesEnabled()) {
     // We should swap RFH & BIs and A1 should be in the back-forward cache.
     EXPECT_NE(rfh_a1, rfh_a2);
     EXPECT_FALSE(rfh_a1->GetSiteInstance()->IsRelatedSiteInstance(

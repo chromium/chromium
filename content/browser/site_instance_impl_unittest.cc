@@ -431,8 +431,9 @@ TEST_F(SiteInstanceTest, DefaultSiteInstanceProperties) {
   // Make sure feature list command-line options are set in a way that forces
   // default SiteInstance creation on all platforms.
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kProcessSharingWithDefaultSiteInstances);
+  feature_list.InitWithFeatures(
+      /* enable */ {features::kProcessSharingWithDefaultSiteInstances},
+      /* disable */ {features::kProcessSharingWithStrictSiteInstances});
   EXPECT_TRUE(base::FeatureList::IsEnabled(
       features::kProcessSharingWithDefaultSiteInstances));
   EXPECT_FALSE(base::FeatureList::IsEnabled(
@@ -1706,12 +1707,12 @@ TEST_F(SiteInstanceTest, CreateForGuest) {
       context(), UrlInfo::CreateForTesting(kGuestUrl),
       CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
   EXPECT_FALSE(instance1->IsGuest());
-  if (AreAllSitesIsolatedForTesting()) {
+  if (AreDefaultSiteInstancesEnabled()) {
+    EXPECT_TRUE(instance1->IsDefaultSiteInstance());
+  } else {
     EXPECT_NE(kGuestUrl, instance1->GetSiteURL());
     EXPECT_EQ(GURL(std::string(kGuestScheme) + "://abc123/"),
               instance1->GetSiteURL());
-  } else {
-    EXPECT_TRUE(instance1->IsDefaultSiteInstance());
   }
 
   // Verify that a SiteInstance created with CreateForGuest() is considered

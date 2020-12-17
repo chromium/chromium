@@ -1370,8 +1370,8 @@ void RunIframeParentInitiatedOutOfBundleNavigationTest(
             GetLoadResultForNavigationTest(GetFirstChild(web_contents)));
 
   FrameTreeNode* iframe_node = GetFirstChild(web_contents);
-  bool is_same_process = (iframe_node->parent()->GetProcess() ==
-                          iframe_node->current_frame_host()->GetProcess());
+  bool no_proxy_to_parent =
+      iframe_node->render_manager()->GetProxyToParent() == nullptr;
 
   RunScriptAndObserveNavigation(
       "Navigate the iframe to /1-page/", web_contents,
@@ -1387,7 +1387,7 @@ void RunIframeParentInitiatedOutOfBundleNavigationTest(
   // from web bundle. To support this case we need to change
   // NavigationControllerImpl::NavigateFromFrameProxy() to correctly handle
   // the WebBundleHandleTracker.
-  EXPECT_EQ(is_same_process
+  EXPECT_EQ(no_proxy_to_parent
                 ? "/1-page/ from wbn, /1-page/script from wbn"
                 : "/1-page/ from server, /1-page/script from server",
             GetLoadResultForNavigationTest(GetFirstChild(web_contents)));

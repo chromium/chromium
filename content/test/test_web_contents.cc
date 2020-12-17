@@ -272,7 +272,18 @@ void TestWebContents::TestDidFailLoadWithError(const GURL& url,
 }
 
 bool TestWebContents::CrossProcessNavigationPending() {
-  return GetRenderManager()->speculative_render_frame_host_ != nullptr;
+  // If we don't have a speculative RenderFrameHost then it means we did not
+  // change SiteInstances so we must be in the same process.
+  if (GetRenderManager()->speculative_render_frame_host_ == nullptr)
+    return false;
+
+  auto* current_instance =
+      GetRenderManager()->current_frame_host()->GetSiteInstance();
+  auto* speculative_instance =
+      GetRenderManager()->speculative_frame_host()->GetSiteInstance();
+  if (current_instance == speculative_instance)
+    return false;
+  return current_instance->GetProcess() != speculative_instance->GetProcess();
 }
 
 bool TestWebContents::CreateRenderViewForRenderManager(

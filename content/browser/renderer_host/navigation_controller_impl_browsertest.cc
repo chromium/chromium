@@ -4593,7 +4593,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
                             ->GetFrameTree()
                             ->root();
-  SiteInstance* main_site_instance =
+  SiteInstanceImpl* main_site_instance =
       root->current_frame_host()->GetSiteInstance();
 
   // The main frame defaults to an empty name.
@@ -4656,14 +4656,15 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_TRUE(NavigateToURLFromRenderer(foo_subframe, bar_url));
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
-  // When run just with subframe navigation entries enabled and not in
-  // site-per-process-mode the subframe should be in the same SiteInstance as
-  // its parent.
-  if (!AreAllSitesIsolatedForTesting()) {
-    EXPECT_EQ(main_site_instance,
+  if (AreStrictSiteInstancesEnabled()) {
+    EXPECT_NE(main_site_instance,
               foo_subframe->current_frame_host()->GetSiteInstance());
   } else {
-    EXPECT_NE(main_site_instance,
+    // When strict SiteInstances are not being used, the subframe should be
+    // the same as its parent because both sites get routed to the default
+    // SiteInstance.
+    EXPECT_TRUE(main_site_instance->IsDefaultSiteInstance());
+    EXPECT_EQ(main_site_instance,
               foo_subframe->current_frame_host()->GetSiteInstance());
   }
 
@@ -5518,12 +5519,16 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_EQ(main_url_a, new_root->current_url());
   EXPECT_EQ(frame_url_b, new_root->child_at(0)->current_url());
 
-  // The subframe should only be in a different SiteInstance if OOPIFs are
-  // required for all sites.
-  if (AreAllSitesIsolatedForTesting()) {
+  if (AreStrictSiteInstancesEnabled()) {
     EXPECT_NE(new_root->current_frame_host()->GetSiteInstance(),
               new_root->child_at(0)->current_frame_host()->GetSiteInstance());
   } else {
+    // When strict SiteInstances are not enabled, the subframe should be in the
+    // same SiteInstance as the parent because both sites get mapped to the
+    // default SiteInstance.
+    EXPECT_TRUE(new_root->current_frame_host()
+                    ->GetSiteInstance()
+                    ->IsDefaultSiteInstance());
     EXPECT_EQ(new_root->current_frame_host()->GetSiteInstance(),
               new_root->child_at(0)->current_frame_host()->GetSiteInstance());
   }
@@ -5960,9 +5965,9 @@ class RenderProcessKilledObserver : public WebContentsObserver {
 // not modify the underlying last committed entry.)  Not crashing means that
 // the test is successful.
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, ReloadOriginalRequest) {
-  // TODO(lukasza): https://crbug.com/417518: Get tests working with
-  // --site-per-process.
-  if (SiteIsolationPolicy::UseDedicatedProcessesForAllSites() ||
+  // TODO(lukasza): https://crbug.com/1159466: Get tests working for all
+  // process model modes.
+  if (AreStrictSiteInstancesEnabled() ||
       CanCrossSiteNavigationsProactivelySwapBrowsingInstances()) {
     return;
   }

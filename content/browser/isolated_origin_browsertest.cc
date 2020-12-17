@@ -2019,14 +2019,24 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest,
             child->current_frame_host()->GetSiteInstance()->GetSiteURL());
 
   // Navigate the child frame cross-site, but to a non-isolated origin. When
-  // not in --site-per-process, this should bring the subframe back into the
-  // main frame's SiteInstance.
+  // strict SiteInstaces are not enabled, this should bring the subframe back
+  // into the main frame's SiteInstance. If strict SiteInstances are enabled,
+  // we expect the SiteInstances to be different because a SiteInstance is not
+  // allowed to contain multiple sites in that mode. In all cases though we
+  // expect the navigation to end up in the same process.
   GURL bar_url(embedded_test_server()->GetURL("bar.com", "/title1.html"));
   EXPECT_FALSE(IsIsolatedOrigin(bar_url));
   NavigateIframeToURL(web_contents(), "test_iframe", bar_url);
-  EXPECT_EQ(web_contents()->GetSiteInstance(),
-            child->current_frame_host()->GetSiteInstance());
-  EXPECT_FALSE(child->current_frame_host()->IsCrossProcessSubframe());
+
+  if (AreStrictSiteInstancesEnabled()) {
+    EXPECT_NE(web_contents()->GetSiteInstance(),
+              child->current_frame_host()->GetSiteInstance());
+  } else {
+    EXPECT_EQ(web_contents()->GetSiteInstance(),
+              child->current_frame_host()->GetSiteInstance());
+  }
+  EXPECT_EQ(web_contents()->GetSiteInstance()->GetProcess(),
+            child->current_frame_host()->GetSiteInstance()->GetProcess());
 }
 
 // Check that a new isolated origin subframe will attempt to reuse an existing
@@ -2125,12 +2135,13 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest,
   FrameTreeNode* child = root->child_at(0);
 
   // Navigate iframe cross-site, but not to an isolated origin.  This should
-  // stay in the main frame's SiteInstance, unless we're in --site-per-process
-  // mode.  (Note that the bug for which this test is written is exclusive to
-  // --isolate-origins and does not happen with --site-per-process.)
+  // stay in the main frame's SiteInstance, unless we're in a strict
+  // SiteInstance mode (including --site-per-process). (Note that the bug for
+  // which this test is written is exclusive to --isolate-origins and does not
+  // happen with --site-per-process.)
   GURL bar_url(embedded_test_server()->GetURL("bar.com", "/title1.html"));
   NavigateIframeToURL(web_contents(), "test_iframe", bar_url);
-  if (AreAllSitesIsolatedForTesting()) {
+  if (AreStrictSiteInstancesEnabled()) {
     EXPECT_NE(root->current_frame_host()->GetSiteInstance(),
               child->current_frame_host()->GetSiteInstance());
   } else {
@@ -2236,8 +2247,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest,
     // At this point, the popup and the opener should still be in separate
     // SiteInstances.
     EXPECT_NE(newshell_site_instance_impl, root_site_instance_impl);
-    EXPECT_NE(AreAllSitesIsolatedForTesting(),
-              newshell_site_instance_impl->IsDefaultSiteInstance());
+    EXPECT_FALSE(newshell_site_instance_impl->IsDefaultSiteInstance());
     EXPECT_FALSE(root_site_instance_impl->IsDefaultSiteInstance());
   }
 
@@ -3060,7 +3070,11 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginLongListTest, Test) {
   if (!AreAllSitesIsolatedForTesting()) {
     EXPECT_EQ(main_frame->GetProcess()->GetID(),
               subframe3->GetProcess()->GetID());
-    EXPECT_EQ(main_frame->GetSiteInstance(), subframe3->GetSiteInstance());
+    if (AreStrictSiteInstancesEnabled()) {
+      EXPECT_NE(main_frame->GetSiteInstance(), subframe3->GetSiteInstance());
+    } else {
+      EXPECT_EQ(main_frame->GetSiteInstance(), subframe3->GetSiteInstance());
+    }
   }
 
   // isolated.foo.com and foo999.com are on the list of origins to isolate -
@@ -3115,7 +3129,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest, SubframeErrorPages) {
     observer.Wait();
     EXPECT_EQ(child2->current_url(), regular_url);
     EXPECT_TRUE(handle_observer.is_error());
-    if (AreAllSitesIsolatedForTesting()) {
+    if (AreStrictSiteInstancesEnabled()) {
       EXPECT_NE(root->current_frame_host()->GetSiteInstance(),
                 child2->current_frame_host()->GetSiteInstance());
       EXPECT_EQ(SiteInstance::GetSiteForURL(web_contents()->GetBrowserContext(),
@@ -3215,15 +3229,11 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest, AIsolatedCA) {
 
     EXPECT_TRUE(HasDefaultSiteInstance(a));
     EXPECT_FALSE(HasDefaultSiteInstance(b));
-  } else {
-    // Documenting current behavior where the top level document doesn't end
-    // up in a default SiteInstance even though it is not isolated and does not
-    // require a dedicated process. c.com does get placed in a default
-    // SiteInstance because we currently allow subframes that don't require
-    // isolation to share a process. This behavior should go away once we
-    // turn on default SiteInstances by default.
+  } else if (AreStrictSiteInstancesEnabled()) {
+    // All sites have their own SiteInstance and sites that are not isolated
+    // are all placed in the same process.
     EXPECT_NE(a->GetProcess()->GetID(), b->GetProcess()->GetID());
-    EXPECT_NE(a->GetProcess()->GetID(), c->GetProcess()->GetID());
+    EXPECT_EQ(a->GetProcess()->GetID(), c->GetProcess()->GetID());
 
     EXPECT_NE(a->GetSiteInstance(), b->GetSiteInstance());
     EXPECT_NE(a->GetSiteInstance(), c->GetSiteInstance());
@@ -3232,7 +3242,9 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest, AIsolatedCA) {
 
     EXPECT_FALSE(HasDefaultSiteInstance(a));
     EXPECT_FALSE(HasDefaultSiteInstance(b));
-    EXPECT_TRUE(HasDefaultSiteInstance(c));
+    EXPECT_FALSE(HasDefaultSiteInstance(c));
+  } else {
+    FAIL() << "Unexpected process model configuration.";
   }
 }
 
@@ -3466,12 +3478,15 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest,
 
   // The two frames should be in the same process, since neither site is
   // isolated so far.
-  if (!AreAllSitesIsolatedForTesting()) {
+  if (AreStrictSiteInstancesEnabled()) {
+    EXPECT_NE(root->current_frame_host()->GetSiteInstance(),
+              child->current_frame_host()->GetSiteInstance());
+  } else {
     EXPECT_EQ(root->current_frame_host()->GetSiteInstance(),
               child->current_frame_host()->GetSiteInstance());
-    EXPECT_EQ(root->current_frame_host()->GetProcess(),
-              child->current_frame_host()->GetProcess());
   }
+  EXPECT_EQ(root->current_frame_host()->GetProcess(),
+            child->current_frame_host()->GetProcess());
 
   // Start isolating foo.com.
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
@@ -3493,12 +3508,23 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest,
       "bar.com", "/cross_site_iframe_factory.html?bar.com(foo.com)"));
   NavigateIframeToURL(web_contents(), "test_iframe", bar_with_foo_url);
   FrameTreeNode* grandchild = child->child_at(0);
+  if (AreStrictSiteInstancesEnabled()) {
+    EXPECT_NE(root->current_frame_host()->GetSiteInstance(),
+              child->current_frame_host()->GetSiteInstance());
+    EXPECT_NE(child->current_frame_host()->GetSiteInstance(),
+              grandchild->current_frame_host()->GetSiteInstance());
+  } else {
+    EXPECT_EQ(root->current_frame_host()->GetSiteInstance(),
+              child->current_frame_host()->GetSiteInstance());
+    EXPECT_EQ(child->current_frame_host()->GetSiteInstance(),
+              grandchild->current_frame_host()->GetSiteInstance());
+  }
   EXPECT_EQ(root->current_frame_host()->GetSiteInstance(),
-            child->current_frame_host()->GetSiteInstance());
-  EXPECT_EQ(child->current_frame_host()->GetSiteInstance(),
             grandchild->current_frame_host()->GetSiteInstance());
-  EXPECT_EQ(root->current_frame_host()->GetSiteInstance(),
-            grandchild->current_frame_host()->GetSiteInstance());
+  EXPECT_EQ(root->current_frame_host()->GetProcess(),
+            child->current_frame_host()->GetProcess());
+  EXPECT_EQ(child->current_frame_host()->GetProcess(),
+            grandchild->current_frame_host()->GetProcess());
 
   // Create an unrelated window, which will be in a new BrowsingInstance.
   // Ensure that foo.com becomes an isolated origin in that window.  A
@@ -3773,8 +3799,14 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest,
   EXPECT_EQ(child->current_url(), bar_url);
 
   // The iframe should not be in an OOPIF yet.
-  EXPECT_EQ(root->current_frame_host()->GetSiteInstance(),
-            child->current_frame_host()->GetSiteInstance());
+  if (AreStrictSiteInstancesEnabled()) {
+    EXPECT_NE(root->current_frame_host()->GetSiteInstance(),
+              child->current_frame_host()->GetSiteInstance());
+
+  } else {
+    EXPECT_EQ(root->current_frame_host()->GetSiteInstance(),
+              child->current_frame_host()->GetSiteInstance());
+  }
   EXPECT_EQ(root->current_frame_host()->GetProcess(),
             child->current_frame_host()->GetProcess());
 
@@ -3959,8 +3991,13 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest, PerProfileIsolation) {
   root = web_contents()->GetFrameTree()->root();
   child = root->child_at(0);
   EXPECT_EQ(child->current_url(), bar_url);
-  EXPECT_EQ(root->current_frame_host()->GetSiteInstance(),
-            child->current_frame_host()->GetSiteInstance());
+  if (AreStrictSiteInstancesEnabled()) {
+    EXPECT_NE(root->current_frame_host()->GetSiteInstance(),
+              child->current_frame_host()->GetSiteInstance());
+  } else {
+    EXPECT_EQ(root->current_frame_host()->GetSiteInstance(),
+              child->current_frame_host()->GetSiteInstance());
+  }
   EXPECT_EQ(root->current_frame_host()->GetProcess(),
             child->current_frame_host()->GetProcess());
 }
@@ -3982,7 +4019,12 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest, ForceBrowsingInstanceSwap) {
   FrameTreeNode* child = root->child_at(0);
   scoped_refptr<SiteInstance> first_instance =
       root->current_frame_host()->GetSiteInstance();
-  EXPECT_EQ(first_instance, child->current_frame_host()->GetSiteInstance());
+
+  if (AreStrictSiteInstancesEnabled()) {
+    EXPECT_NE(first_instance, child->current_frame_host()->GetSiteInstance());
+  } else {
+    EXPECT_EQ(first_instance, child->current_frame_host()->GetSiteInstance());
+  }
   EXPECT_EQ(root->current_frame_host()->GetProcess(),
             child->current_frame_host()->GetProcess());
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();

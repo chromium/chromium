@@ -90,6 +90,13 @@ namespace content {
 
 namespace {
 
+// Helper function that return true in cases where the current process model
+// will return the same SiteInstance for a cross-process navigation.
+bool ExpectSameSiteInstance() {
+  return AreDefaultSiteInstancesEnabled() &&
+         !CanCrossSiteNavigationsProactivelySwapBrowsingInstances();
+}
+
 const char kOpenUrlViaClickTargetFunc[] =
     "(function(url) {\n"
     "  var lnk = document.createElement(\"a\");\n"
@@ -680,10 +687,10 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   // Should have the same SiteInstance unless we're in site-per-process mode.
   scoped_refptr<SiteInstance> blank_site_instance(
       new_shell->web_contents()->GetSiteInstance());
-  if (AreAllSitesIsolatedForTesting())
-    EXPECT_NE(orig_site_instance, blank_site_instance);
-  else
+  if (AreDefaultSiteInstancesEnabled())
     EXPECT_EQ(orig_site_instance, blank_site_instance);
+  else
+    EXPECT_NE(orig_site_instance, blank_site_instance);
 }
 
 // Test for crbug.com/24447.  Following a cross-site link with rel=noreferrer
@@ -715,14 +722,12 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   EXPECT_EQ("/title2.html",
             shell()->web_contents()->GetLastCommittedURL().path());
 
-  // Should have the same SiteInstance unless we're in site-per-process mode.
   scoped_refptr<SiteInstance> noref_site_instance(
       shell()->web_contents()->GetSiteInstance());
-  if (AreAllSitesIsolatedForTesting() ||
-      CanCrossSiteNavigationsProactivelySwapBrowsingInstances()) {
-    EXPECT_NE(orig_site_instance, noref_site_instance);
-  } else {
+  if (ExpectSameSiteInstance()) {
     EXPECT_EQ(orig_site_instance, noref_site_instance);
+  } else {
+    EXPECT_NE(orig_site_instance, noref_site_instance);
   }
 }
 
@@ -754,14 +759,12 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   EXPECT_EQ("/title2.html",
             shell()->web_contents()->GetLastCommittedURL().path());
 
-  // Should have the same SiteInstance unless we're in site-per-process mode.
   scoped_refptr<SiteInstance> noref_site_instance(
       shell()->web_contents()->GetSiteInstance());
-  if (AreAllSitesIsolatedForTesting() ||
-      CanCrossSiteNavigationsProactivelySwapBrowsingInstances()) {
-    EXPECT_NE(orig_site_instance, noref_site_instance);
-  } else {
+  if (ExpectSameSiteInstance()) {
     EXPECT_EQ(orig_site_instance, noref_site_instance);
+  } else {
+    EXPECT_NE(orig_site_instance, noref_site_instance);
   }
 }
 
@@ -840,7 +843,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
 IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest, MAYBE_DisownOpener) {
   StartEmbeddedServer();
 
-  if (AreDefaultSiteInstancesEnabled()) {
+  if (IsIsolatedOriginRequiredToGuaranteeDedicatedProcess()) {
     // Isolate "foo.com" so we are guaranteed to get a non-default
     // SiteInstance for navigations to this origin.
     IsolateOriginsForTesting(embedded_test_server(), shell()->web_contents(),
@@ -940,7 +943,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest, DisownSubframeOpener) {
 IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
                        PreserveTopFrameWindowNameOnCrossProcessNavigations) {
   StartEmbeddedServer();
-  if (AreDefaultSiteInstancesEnabled()) {
+  if (IsIsolatedOriginRequiredToGuaranteeDedicatedProcess()) {
     // Isolate "foo.com" so we are guaranteed it is placed in a different
     // process.
     IsolateOriginsForTesting(embedded_test_server(), shell()->web_contents(),
@@ -1008,7 +1011,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
 IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
                        SupportCrossProcessPostMessage) {
   StartEmbeddedServer();
-  if (AreDefaultSiteInstancesEnabled()) {
+  if (IsIsolatedOriginRequiredToGuaranteeDedicatedProcess()) {
     // Isolate "foo.com" so we are guaranteed it is placed in a different
     // process.
     IsolateOriginsForTesting(embedded_test_server(), shell()->web_contents(),
@@ -1149,7 +1152,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
 IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
                        SupportCrossProcessPostMessageWithMessagePort) {
   StartEmbeddedServer();
-  if (AreDefaultSiteInstancesEnabled()) {
+  if (IsIsolatedOriginRequiredToGuaranteeDedicatedProcess()) {
     // Isolate "foo.com" so we are guaranteed it is placed in a different
     // process.
     IsolateOriginsForTesting(embedded_test_server(), shell()->web_contents(),
@@ -1239,7 +1242,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
                        AllowTargetedNavigationsInOpenerAfterSwap) {
   StartEmbeddedServer();
 
-  if (AreDefaultSiteInstancesEnabled()) {
+  if (IsIsolatedOriginRequiredToGuaranteeDedicatedProcess()) {
     // Isolate "foo.com" so we are guaranteed to get a non-default
     // SiteInstance for navigations to this origin.
     IsolateOriginsForTesting(embedded_test_server(), shell()->web_contents(),
@@ -1346,7 +1349,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
 IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
                        ProcessExitWithSwappedOutViews) {
   StartEmbeddedServer();
-  if (AreDefaultSiteInstancesEnabled()) {
+  if (IsIsolatedOriginRequiredToGuaranteeDedicatedProcess()) {
     // Isolate "foo.com" so we are guaranteed to get a non-default
     // SiteInstance for navigations to this origin.
     IsolateOriginsForTesting(embedded_test_server(), shell()->web_contents(),
@@ -2349,7 +2352,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
                        DontPreemptNavigationWithFrameTreeUpdate) {
   StartEmbeddedServer();
 
-  if (AreDefaultSiteInstancesEnabled()) {
+  if (IsIsolatedOriginRequiredToGuaranteeDedicatedProcess()) {
     // Isolate "foo.com" so we are guaranteed to get a non-default
     // SiteInstance for navigations to this origin.
     IsolateOriginsForTesting(embedded_test_server(), shell()->web_contents(),
@@ -3080,7 +3083,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
                        ReinitializeOpenerChainAfterCrashAndReload) {
   StartEmbeddedServer();
 
-  if (AreDefaultSiteInstancesEnabled()) {
+  if (IsIsolatedOriginRequiredToGuaranteeDedicatedProcess()) {
     // Isolate "foo.com" so we are guaranteed to get a non-default
     // SiteInstance for navigations to this origin.
     IsolateOriginsForTesting(embedded_test_server(), shell()->web_contents(),
@@ -3149,7 +3152,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
 // the other popup, and ensure that the opener is updated in all processes.
 IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest, UpdateOpener) {
   StartEmbeddedServer();
-  if (AreDefaultSiteInstancesEnabled()) {
+  if (IsIsolatedOriginRequiredToGuaranteeDedicatedProcess()) {
     // Isolate "foo.com" so we are guaranteed it is placed in a different
     // process.
     IsolateOriginsForTesting(embedded_test_server(), shell()->web_contents(),
@@ -3921,9 +3924,9 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest, CoReferencingFrames) {
 
   // The FrameTree contains two successful instances of each site plus an
   // unsuccessfully-navigated third instance of B with a blank URL.  When not in
-  // site-per-process mode, the FrameTreeVisualizer depicts all nodes as
+  // strict SiteInstance mode, the FrameTreeVisualizer depicts all nodes as
   // referencing Site A because iframes are identified with their root site.
-  if (AreAllSitesIsolatedForTesting()) {
+  if (AreStrictSiteInstancesEnabled()) {
     EXPECT_EQ(
         " Site A ------------ proxies for B\n"
         "   +--Site B ------- proxies for A\n"
@@ -4379,8 +4382,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   // Since this is a browser-initiated, cross-site navigation, it will swap
   // BrowsingInstances, and create a new foo.com SiteInstance, distinct from
   // the initial one.
-  if (!AreAllSitesIsolatedForTesting() &&
-      !CanCrossSiteNavigationsProactivelySwapBrowsingInstances()) {
+  if (ExpectSameSiteInstance()) {
     EXPECT_EQ(site_instance, shell()->web_contents()->GetSiteInstance());
   } else {
     EXPECT_NE(site_instance, shell()->web_contents()->GetSiteInstance());
@@ -4785,10 +4787,10 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
                        ErrorPageNavigationReload_InSubframe_NetworkError) {
   StartEmbeddedServer();
 
-  // Isolating a.com helps more robustly exercise platforms without strict site
-  // isolation - we want to ensure that enforcing |initiator_origin| in
-  // BeginNavigation is compatible with process locks, even when only one of the
-  // frames requires isolation.
+  // Isolating a.com helps more robustly exercise platforms without strict
+  // site isolation - we want to ensure that enforcing |initiator_origin| in
+  // BeginNavigation is compatible with process locks, even when only one of
+  // the frames requires isolation.
   IsolateOriginsForTesting(embedded_test_server(), shell()->web_contents(),
                            {"b.com"});
 
@@ -4953,11 +4955,11 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
         child1->current_frame_host()->GetSiteInstance();
 
     GURL c_site_url = child1_site_instance->GetSiteURL();
-    if (AreAllSitesIsolatedForTesting()) {
+    if (AreDefaultSiteInstancesEnabled()) {
+      EXPECT_TRUE(child1_site_instance->IsDefaultSiteInstance());
+    } else {
       EXPECT_EQ("c.com", c_site_url.host());
       EXPECT_EQ(test_url.host(), c_site_url.host());
-    } else {
-      EXPECT_TRUE(child1_site_instance->IsDefaultSiteInstance());
     }
     EXPECT_NE(a_site_url, c_site_url);
     EXPECT_NE(b_site_url, c_site_url);
@@ -5749,13 +5751,15 @@ IN_PROC_BROWSER_TEST_P(
       static_cast<SiteInstanceImpl*>(
           web_contents->GetMainFrame()->GetSiteInstance());
 
-  // Check that A and B are in different BrowsingInstances (both are in default
-  // SiteInstances of different BrowsingInstances) but have the same renderer
-  // process.
+  // Check that A and B are in different BrowsingInstances but have the same
+  // renderer process. When default SiteInstances are enabled, A and B are
+  // both default SiteInstances of different BrowsingInstances.
   EXPECT_FALSE(a_site_instance->IsRelatedSiteInstance(b_site_instance.get()));
-  EXPECT_TRUE(a_site_instance->IsDefaultSiteInstance());
-  EXPECT_TRUE(b_site_instance->IsDefaultSiteInstance());
   EXPECT_EQ(a_site_instance->GetProcess(), b_site_instance->GetProcess());
+  EXPECT_EQ(AreDefaultSiteInstancesEnabled(),
+            a_site_instance->IsDefaultSiteInstance());
+  EXPECT_EQ(AreDefaultSiteInstancesEnabled(),
+            b_site_instance->IsDefaultSiteInstance());
 }
 
 // Different from renderer-initiated cross-site navigations, browser-initiated
@@ -5784,12 +5788,15 @@ IN_PROC_BROWSER_TEST_P(
       static_cast<SiteInstanceImpl*>(
           web_contents->GetMainFrame()->GetSiteInstance());
 
-  // Check that A and B are in different BrowsingInstances (both are in default
-  // SiteInstances of different BrowsingInstances) and renderer processes.
+  // Check that A and B are in different BrowsingInstances and renderer
+  // processes. When default SiteInstances are enabled, A and B are
+  // both default SiteInstances of different BrowsingInstances.
   EXPECT_FALSE(a_site_instance->IsRelatedSiteInstance(b_site_instance.get()));
-  EXPECT_TRUE(a_site_instance->IsDefaultSiteInstance());
-  EXPECT_TRUE(b_site_instance->IsDefaultSiteInstance());
   EXPECT_NE(a_site_instance->GetProcess(), b_site_instance->GetProcess());
+  EXPECT_EQ(AreDefaultSiteInstancesEnabled(),
+            a_site_instance->IsDefaultSiteInstance());
+  EXPECT_EQ(AreDefaultSiteInstancesEnabled(),
+            b_site_instance->IsDefaultSiteInstance());
 }
 
 // A test ContentBrowserClient implementation that enforce process-per-site mode
@@ -5844,13 +5851,14 @@ IN_PROC_BROWSER_TEST_P(
       static_cast<SiteInstanceImpl*>(
           web_contents->GetMainFrame()->GetSiteInstance());
 
-  // Check that A and B are in different BrowsingInstances (both are in default
-  // SiteInstances of different BrowsingInstances) but have the same renderer
-  // process.
+  // Check that A and B are in different BrowsingInstances but have the same
+  // renderer process.
   EXPECT_FALSE(a_site_instance->IsRelatedSiteInstance(b_site_instance.get()));
-  EXPECT_TRUE(a_site_instance->IsDefaultSiteInstance());
-  EXPECT_TRUE(b_site_instance->IsDefaultSiteInstance());
   EXPECT_EQ(b_site_instance->GetProcess(), original_process);
+  EXPECT_EQ(AreDefaultSiteInstancesEnabled(),
+            a_site_instance->IsDefaultSiteInstance());
+  EXPECT_EQ(AreDefaultSiteInstancesEnabled(),
+            b_site_instance->IsDefaultSiteInstance());
 
   // Make sure we will use process-per-site for C.
   // Note this is enforcing process-per-site for all sites, which is why we turn
@@ -5864,10 +5872,11 @@ IN_PROC_BROWSER_TEST_P(
       static_cast<SiteInstanceImpl*>(
           web_contents->GetMainFrame()->GetSiteInstance());
 
-  // Check that B and C are in different BrowsingInstances (both are in default
-  // SiteInstances of different BrowsingInstances) and renderer processes.
+  // Check that B and C are in different BrowsingInstances and renderer
+  // processes.
   EXPECT_FALSE(b_site_instance->IsRelatedSiteInstance(c_site_instance.get()));
-  EXPECT_TRUE(c_site_instance->IsDefaultSiteInstance());
+  EXPECT_EQ(AreDefaultSiteInstancesEnabled(),
+            c_site_instance->IsDefaultSiteInstance());
   EXPECT_NE(c_site_instance->GetProcess(), original_process);
   // C is using the process for C's site.
   EXPECT_EQ(c_site_instance->GetProcess(),
@@ -5885,7 +5894,8 @@ IN_PROC_BROWSER_TEST_P(
           web_contents->GetMainFrame()->GetSiteInstance());
   EXPECT_FALSE(b2_site_instance->IsRelatedSiteInstance(c_site_instance.get()));
   EXPECT_FALSE(b2_site_instance->IsRelatedSiteInstance(b_site_instance.get()));
-  EXPECT_TRUE(b2_site_instance->IsDefaultSiteInstance());
+  EXPECT_EQ(AreDefaultSiteInstancesEnabled(),
+            b2_site_instance->IsDefaultSiteInstance());
   EXPECT_NE(b2_site_instance->GetProcess(), original_process);
   // B will reuse C's process here, even though C is process-per-site, because
   // neither of them require a dedicated process.
@@ -5941,12 +5951,13 @@ IN_PROC_BROWSER_TEST_P(
       static_cast<SiteInstanceImpl*>(
           web_contents->GetMainFrame()->GetSiteInstance());
 
-  // Check that A and B are in different BrowsingInstances (both are in default
-  // SiteInstances of different BrowsingInstances) but B should use the sole
-  // process assigned to site B.
+  // Check that A and B are in different BrowsingInstances but B should use the
+  // sole process assigned to site B.
   EXPECT_FALSE(a_site_instance->IsRelatedSiteInstance(b_site_instance.get()));
-  EXPECT_TRUE(a_site_instance->IsDefaultSiteInstance());
-  EXPECT_TRUE(b_site_instance->IsDefaultSiteInstance());
+  EXPECT_EQ(AreDefaultSiteInstancesEnabled(),
+            a_site_instance->IsDefaultSiteInstance());
+  EXPECT_EQ(AreDefaultSiteInstancesEnabled(),
+            b_site_instance->IsDefaultSiteInstance());
   EXPECT_NE(b_site_instance->GetProcess(), original_process);
   EXPECT_EQ(b_site_instance->GetProcess(), process_for_b);
   EXPECT_EQ(b_site_instance->GetProcess(),
@@ -7697,6 +7708,11 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteTest,
   }
 
   {
+    FrameTreeNode* root = web_contents->GetFrameTree()->root();
+    RenderFrameHostImpl* child_rfh = root->child_at(0)->current_frame_host();
+    bool subframe_was_in_same_site_instance =
+        root->current_frame_host()->GetSiteInstance() ==
+        child_rfh->GetSiteInstance();
     // 4) Set up a script that will call postMessage on a cross-site iframe
     // after we commit the next navigation.
     // TODO(https://crbug.com/1110497): GetAsyncScriptExecutorCallback() must be
@@ -7722,7 +7738,8 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteTest,
     // have already unloaded).
     ExpectBucketCount(kActionAfterPagehideHistogramName,
                       ActionAfterPagehide::kSentPostMessage, 2);
-    if (AreAllSitesIsolatedForTesting() && !IsBackForwardCacheEnabled()) {
+
+    if (!subframe_was_in_same_site_instance && !IsBackForwardCacheEnabled()) {
       ExpectBucketCount(kActionAfterPagehideHistogramName,
                         ActionAfterPagehide::kReceivedPostMessage, 1);
     } else {
@@ -8543,12 +8560,8 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   scoped_refptr<SiteInstanceImpl> new_instance =
       web_contents->GetMainFrame()->GetSiteInstance();
   EXPECT_EQ(url1, web_contents->GetLastCommittedURL());
-  if (AreAllSitesIsolatedForTesting() || AreDefaultSiteInstancesEnabled()) {
-    EXPECT_NE(instance1, new_instance);
-    EXPECT_EQ(GURL(), new_instance->GetSiteURL());
-  } else {
-    EXPECT_EQ(instance1, new_instance);
-  }
+  EXPECT_NE(instance1, new_instance);
+  EXPECT_EQ(GURL(), new_instance->GetSiteURL());
   EXPECT_TRUE(new_instance->HasProcess());
 
   // Because url1 does not set a site URL, it should not lock the new process

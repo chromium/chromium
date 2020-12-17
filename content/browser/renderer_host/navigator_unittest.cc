@@ -40,6 +40,19 @@
 
 namespace content {
 
+namespace {
+
+// Helper function that determines if a test should expect a cross-site
+// navigation to trigger a SiteInstance change based on the current process
+// model.
+bool ExpectSiteInstanceChange(SiteInstanceImpl* site_instance) {
+  return AreAllSitesIsolatedForTesting() ||
+         CanCrossSiteNavigationsProactivelySwapBrowsingInstances() ||
+         !site_instance->IsDefaultSiteInstance();
+}
+
+}  // namespace
+
 class NavigatorTest : public RenderViewHostImplTestHarness {
  public:
   using SiteInstanceDescriptor = RenderFrameHostManager::SiteInstanceDescriptor;
@@ -190,7 +203,10 @@ TEST_F(NavigatorTest, SimpleRendererInitiatedCrossSiteNavigation) {
 
   contents()->NavigateAndCommit(kUrl1);
   EXPECT_TRUE(main_test_rfh()->IsRenderFrameLive());
-  int32_t site_instance_id_1 = main_test_rfh()->GetSiteInstance()->GetId();
+  scoped_refptr<SiteInstanceImpl> site_instance_1 =
+      main_test_rfh()->GetSiteInstance();
+  bool expect_site_instance_change =
+      ExpectSiteInstanceChange(site_instance_1.get());
 
   // Start a renderer-initiated navigation.
   EXPECT_FALSE(main_test_rfh()->navigation_request());
@@ -206,8 +222,7 @@ TEST_F(NavigatorTest, SimpleRendererInitiatedCrossSiteNavigation) {
   EXPECT_EQ(NavigationRequest::WILL_START_REQUEST, request->state());
   EXPECT_EQ(kUrl2, request->common_params().url);
   EXPECT_FALSE(request->browser_initiated());
-  if (AreAllSitesIsolatedForTesting() ||
-      CanCrossSiteNavigationsProactivelySwapBrowsingInstances()) {
+  if (expect_site_instance_change) {
     EXPECT_TRUE(GetSpeculativeRenderFrameHost(node));
   } else {
     EXPECT_FALSE(GetSpeculativeRenderFrameHost(node));
@@ -215,8 +230,7 @@ TEST_F(NavigatorTest, SimpleRendererInitiatedCrossSiteNavigation) {
 
   // Have the current RenderFrameHost commit the navigation.
   navigation->ReadyToCommit();
-  if (AreAllSitesIsolatedForTesting() ||
-      CanCrossSiteNavigationsProactivelySwapBrowsingInstances()) {
+  if (expect_site_instance_change) {
     EXPECT_EQ(navigation->GetFinalRenderFrameHost(),
               GetSpeculativeRenderFrameHost(node));
   }
@@ -228,12 +242,14 @@ TEST_F(NavigatorTest, SimpleRendererInitiatedCrossSiteNavigation) {
   EXPECT_EQ(kUrl2, contents()->GetLastCommittedURL());
   EXPECT_FALSE(GetSpeculativeRenderFrameHost(node));
 
-  // The SiteInstance did not change unless site-per-process is enabled.
-  if (AreAllSitesIsolatedForTesting() ||
-      CanCrossSiteNavigationsProactivelySwapBrowsingInstances()) {
-    EXPECT_NE(site_instance_id_1, main_test_rfh()->GetSiteInstance()->GetId());
+  if (expect_site_instance_change) {
+    EXPECT_NE(site_instance_1->GetId(),
+              main_test_rfh()->GetSiteInstance()->GetId());
+    EXPECT_EQ(site_instance_1->IsDefaultSiteInstance(),
+              main_test_rfh()->GetSiteInstance()->IsDefaultSiteInstance());
   } else {
-    EXPECT_EQ(site_instance_id_1, main_test_rfh()->GetSiteInstance()->GetId());
+    EXPECT_EQ(site_instance_1->GetId(),
+              main_test_rfh()->GetSiteInstance()->GetId());
   }
 }
 
@@ -315,9 +331,11 @@ TEST_F(NavigatorTest, BeginNavigation) {
   EXPECT_FALSE(GetSpeculativeRenderFrameHost(root_node));
 
   // Subframe navigations should never create a speculative RenderFrameHost,
-  // unless site-per-process is enabled. In that case, as the subframe
-  // navigation is to a different site and is still ongoing, it should have one.
-  if (AreAllSitesIsolatedForTesting()) {
+  // unless site-per-process or ProcessSharingWithStrictSiteInstances is
+  // enabled. In that case, as the subframe navigation is to a different site
+  // and is still ongoing, it should have one.
+  bool expect_site_instance_change = AreStrictSiteInstancesEnabled();
+  if (expect_site_instance_change) {
     EXPECT_TRUE(GetSpeculativeRenderFrameHost(subframe_node));
   } else {
     EXPECT_FALSE(GetSpeculativeRenderFrameHost(subframe_node));
@@ -359,7 +377,7 @@ TEST_F(NavigatorTest, BeginNavigation) {
 
   // As the main frame hasn't yet committed the subframe still exists. Thus, the
   // above situation regarding subframe navigations is valid here.
-  if (AreAllSitesIsolatedForTesting()) {
+  if (expect_site_instance_change) {
     EXPECT_TRUE(GetSpeculativeRenderFrameHost(subframe_node));
   } else {
     EXPECT_FALSE(GetSpeculativeRenderFrameHost(subframe_node));
@@ -598,6 +616,8 @@ TEST_F(NavigatorTest, RendererUserInitiatedNavigationCancel) {
   // Initialization.
   contents()->NavigateAndCommit(kUrl0);
   FrameTreeNode* node = main_test_rfh()->frame_tree_node();
+  bool expect_site_instance_change =
+      ExpectSiteInstanceChange(main_test_rfh()->GetSiteInstance());
 
   // Start a browser-initiated navigation to the 1st URL and invoke its
   // beforeUnload completion callback.
@@ -634,8 +654,7 @@ TEST_F(NavigatorTest, RendererUserInitiatedNavigationCancel) {
 
   // Confirm that the speculative RenderFrameHost was destroyed in the non
   // SitePerProcess case.
-  if (AreAllSitesIsolatedForTesting() ||
-      CanCrossSiteNavigationsProactivelySwapBrowsingInstances()) {
+  if (expect_site_instance_change) {
     EXPECT_TRUE(GetSpeculativeRenderFrameHost(node));
   } else {
     EXPECT_FALSE(GetSpeculativeRenderFrameHost(node));
@@ -661,6 +680,8 @@ TEST_F(NavigatorTest,
   // Initialization.
   contents()->NavigateAndCommit(kUrl0);
   FrameTreeNode* node = main_test_rfh()->frame_tree_node();
+  bool expect_site_instance_change =
+      ExpectSiteInstanceChange(main_test_rfh()->GetSiteInstance());
 
   // Start a renderer-initiated user-initiated navigation to the 1st URL.
   EXPECT_FALSE(main_test_rfh()->navigation_request());
@@ -674,8 +695,7 @@ TEST_F(NavigatorTest,
   EXPECT_EQ(kUrl1, request1->common_params().url);
   EXPECT_FALSE(request1->browser_initiated());
   EXPECT_TRUE(request1->common_params().has_user_gesture);
-  if (AreAllSitesIsolatedForTesting() ||
-      CanCrossSiteNavigationsProactivelySwapBrowsingInstances()) {
+  if (expect_site_instance_change) {
     EXPECT_TRUE(GetSpeculativeRenderFrameHost(node));
   } else {
     EXPECT_FALSE(GetSpeculativeRenderFrameHost(node));
@@ -695,8 +715,7 @@ TEST_F(NavigatorTest,
   EXPECT_EQ(kUrl2, request2->common_params().url);
   EXPECT_FALSE(request2->browser_initiated());
   EXPECT_FALSE(request2->common_params().has_user_gesture);
-  if (AreAllSitesIsolatedForTesting() ||
-      CanCrossSiteNavigationsProactivelySwapBrowsingInstances()) {
+  if (expect_site_instance_change) {
     EXPECT_TRUE(GetSpeculativeRenderFrameHost(node));
   } else {
     EXPECT_FALSE(GetSpeculativeRenderFrameHost(node));
@@ -762,6 +781,8 @@ TEST_F(NavigatorTest,
   contents()->NavigateAndCommit(kUrl0);
   FrameTreeNode* node = main_test_rfh()->frame_tree_node();
   int32_t site_instance_id_0 = main_test_rfh()->GetSiteInstance()->GetId();
+  bool expect_site_instance_change =
+      ExpectSiteInstanceChange(main_test_rfh()->GetSiteInstance());
 
   // Start a renderer-initiated non-user-initiated navigation to the 1st URL.
   EXPECT_FALSE(main_test_rfh()->navigation_request());
@@ -776,8 +797,7 @@ TEST_F(NavigatorTest,
   EXPECT_EQ(kUrl1, request1->common_params().url);
   EXPECT_FALSE(request1->browser_initiated());
   EXPECT_FALSE(request1->common_params().has_user_gesture);
-  if (AreAllSitesIsolatedForTesting() ||
-      CanCrossSiteNavigationsProactivelySwapBrowsingInstances()) {
+  if (expect_site_instance_change) {
     EXPECT_TRUE(GetSpeculativeRenderFrameHost(node));
   } else {
     EXPECT_FALSE(GetSpeculativeRenderFrameHost(node));
@@ -797,8 +817,7 @@ TEST_F(NavigatorTest,
   EXPECT_EQ(kUrl2, request2->common_params().url);
   EXPECT_FALSE(request2->browser_initiated());
   EXPECT_FALSE(request2->common_params().has_user_gesture);
-  if (AreAllSitesIsolatedForTesting() ||
-      CanCrossSiteNavigationsProactivelySwapBrowsingInstances()) {
+  if (expect_site_instance_change) {
     EXPECT_TRUE(GetSpeculativeRenderFrameHost(node));
   } else {
     EXPECT_FALSE(GetSpeculativeRenderFrameHost(node));
@@ -811,9 +830,7 @@ TEST_F(NavigatorTest,
   navigation2->Commit();
   EXPECT_EQ(kUrl2, contents()->GetLastCommittedURL());
 
-  // The SiteInstance did not change unless site-per-process is enabled.
-  if (AreAllSitesIsolatedForTesting() ||
-      CanCrossSiteNavigationsProactivelySwapBrowsingInstances()) {
+  if (expect_site_instance_change) {
     EXPECT_NE(site_instance_id_0, main_test_rfh()->GetSiteInstance()->GetId());
   } else {
     EXPECT_EQ(site_instance_id_0, main_test_rfh()->GetSiteInstance()->GetId());
@@ -1042,7 +1059,7 @@ TEST_F(NavigatorTest, SiteInstanceDescriptionConversion) {
       ChildProcessSecurityPolicy::IsolatedOriginSource::TEST,
       browser_context());
   contents()->NavigateAndCommit(kUrl1);
-  SiteInstance* current_instance = main_test_rfh()->GetSiteInstance();
+  SiteInstanceImpl* current_instance = main_test_rfh()->GetSiteInstance();
   ASSERT_TRUE(current_instance);
 
   // 1) Convert a descriptor pointing to the current instance.
@@ -1101,12 +1118,15 @@ TEST_F(NavigatorTest, SiteInstanceDescriptionConversion) {
     EXPECT_NE(current_instance, related_instance.get());
     EXPECT_NE(unrelated_instance.get(), related_instance.get());
 
-    if (AreAllSitesIsolatedForTesting()) {
-      EXPECT_EQ(SiteInstance::GetSiteForURL(browser_context(), kUrlSameSiteAs2),
-                related_instance->GetSiteURL());
+    auto* related_instance_impl =
+        static_cast<SiteInstanceImpl*>(related_instance.get());
+
+    if (AreDefaultSiteInstancesEnabled()) {
+      ASSERT_TRUE(related_instance_impl->IsDefaultSiteInstance());
     } else {
-      EXPECT_TRUE(static_cast<SiteInstanceImpl*>(related_instance.get())
-                      ->IsDefaultSiteInstance());
+      EXPECT_EQ(SiteInstanceImpl::ComputeSiteInfoForTesting(
+                    current_instance->GetIsolationContext(), kUrlSameSiteAs2),
+                related_instance_impl->GetSiteInfo());
     }
   }
 
