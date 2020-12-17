@@ -377,8 +377,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
           initWithType:ItemTypeTableViewInfoButtonWithImage];
   tableViewInfoButtonItemWithLeadingImage.text = @"Info button item";
   tableViewInfoButtonItemWithLeadingImage.statusText = @"Status";
-  tableViewInfoButtonItemWithLeadingImage.iconImageName =
-      @"settings_article_suggestions";
+  tableViewInfoButtonItemWithLeadingImage.image =
+      [UIImage imageNamed:@"settings_article_suggestions"];
   [model addItem:tableViewInfoButtonItemWithLeadingImage
       toSectionWithIdentifier:SectionIdentifierSettings];
 

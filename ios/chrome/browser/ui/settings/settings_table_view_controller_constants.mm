@@ -10,6 +10,8 @@
 
 NSString* const kSettingsTableViewId = @"kSettingsTableViewId";
 NSString* const kSettingsSignInCellId = @"kSettingsSignInCellId";
+NSString* const kSettingsSignInDisabledCellId =
+    @"kSettingsSignInDisabledCellId";
 NSString* const kSettingsAccountCellId = @"kSettingsAccountCellId";
 NSString* const kSettingsSearchEngineCellId = @"kSettingsSearchEngineCellId";
 NSString* const kSettingsManagedSearchEngineCellId =

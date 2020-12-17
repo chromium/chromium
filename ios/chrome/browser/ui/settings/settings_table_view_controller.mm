@@ -48,6 +48,7 @@
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_consumer.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_account_item.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_signin_promo_item.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/settings/about_chrome_table_view_controller.h"
@@ -396,7 +397,13 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForBrowserState(_browserState);
-  if (!authService->IsAuthenticated()) {
+  // If sign-in is disabled by policy, replace the sign-in / account section
+  // with an info button view item.
+  if (!signin::IsSigninAllowed(_browserState->GetPrefs())) {
+    [model addSectionWithIdentifier:SettingsSectionIdentifierSignIn];
+    [model addItem:[self signinDisabledTextItem]
+        toSectionWithIdentifier:SettingsSectionIdentifierSignIn];
+  } else if (!authService->IsAuthenticated()) {
     // Sign in section
     [model addSectionWithIdentifier:SettingsSectionIdentifierSignIn];
     if ([SigninPromoViewMediator
@@ -558,6 +565,26 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   return signInTextItem;
 }
 
+- (TableViewItem*)signinDisabledTextItem {
+  TableViewInfoButtonItem* signinDisabledItem = [[TableViewInfoButtonItem alloc]
+      initWithType:SettingsItemTypeSigninDisabled];
+  signinDisabledItem.text =
+      l10n_util::GetNSString(IDS_IOS_SIGN_IN_TO_CHROME_SETTING_TITLE);
+  signinDisabledItem.detailText =
+      l10n_util::GetNSString(IDS_IOS_SETTINGS_SIGNIN_DISABLED);
+  signinDisabledItem.accessibilityHint =
+      l10n_util::GetNSString(IDS_IOS_TOGGLE_SETTING_MANAGED_ACCESSIBILITY_HINT);
+  signinDisabledItem.accessibilityIdentifier = kSettingsSignInDisabledCellId;
+  signinDisabledItem.image =
+      CircularImageFromImage(ios::GetChromeBrowserProvider()
+                                 ->GetSigninResourcesProvider()
+                                 ->GetDefaultAvatar(),
+                             kAccountProfilePhotoDimension);
+  signinDisabledItem.textColor = [UIColor colorNamed:kTextSecondaryColor];
+  signinDisabledItem.tintColor = [UIColor colorNamed:kGrey300Color];
+  return signinDisabledItem;
+}
+
 - (TableViewItem*)googleServicesCellItem {
   return [self detailItemWithType:SettingsItemTypeGoogleServices
                              text:l10n_util::GetNSString(
@@ -643,7 +670,8 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
           initWithType:SettingsItemTypeManagedDefaultSearchEngine];
   managedDefaultSearchEngineItem.text =
       l10n_util::GetNSString(IDS_IOS_SEARCH_ENGINE_SETTING_TITLE);
-  managedDefaultSearchEngineItem.iconImageName = kSettingsSearchEngineImageName;
+  managedDefaultSearchEngineItem.image =
+      [UIImage imageNamed:kSettingsSearchEngineImageName];
   managedDefaultSearchEngineItem.accessibilityHint =
       l10n_util::GetNSString(IDS_IOS_TOGGLE_SETTING_MANAGED_ACCESSIBILITY_HINT);
 
@@ -959,6 +987,15 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
           forControlEvents:UIControlEventTouchUpInside];
       break;
     }
+    case SettingsItemTypeSigninDisabled: {
+      TableViewInfoButtonCell* managedCell =
+          base::mac::ObjCCastStrict<TableViewInfoButtonCell>(cell);
+      [managedCell.trailingButton
+                 addTarget:self
+                    action:@selector(didTapSigninDisabledInfoButton:)
+          forControlEvents:UIControlEventTouchUpInside];
+      break;
+    }
     default:
       break;
   }
@@ -1097,13 +1134,33 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 
 #pragma mark - Actions
 
-// Called when the user clicks on the information button of a managed
-// settings UI cell. Shows a contextual bubble with the information of the
-// enterprise.
+// Called when the user taps on the information button of a managed setting's UI
+// cell.
+- (void)didTapSigninDisabledInfoButton:(UIButton*)buttonView {
+  NSString* popoverMessage =
+      l10n_util::GetNSString(IDS_IOS_SETTINGS_SIGNIN_DISABLED_POPOVER_TEXT);
+  EnterpriseInfoPopoverViewController* popover =
+      [[EnterpriseInfoPopoverViewController alloc]
+          initWithMessage:popoverMessage
+           enterpriseName:nil];
+
+  [self showEnterprisePopover:popover forInfoButton:buttonView];
+}
+
+// Called when the user taps on the information button of the sign-in setting
+// while sign-in is disabled by policy.
 - (void)didTapManagedUIInfoButton:(UIButton*)buttonView {
-  EnterpriseInfoPopoverViewController* bubbleViewController =
+  EnterpriseInfoPopoverViewController* popover =
       [[EnterpriseInfoPopoverViewController alloc] initWithEnterpriseName:nil];
-  bubbleViewController.delegate = self;
+
+  [self showEnterprisePopover:popover forInfoButton:buttonView];
+}
+
+// Shows a contextual bubble explaining that the tapped setting is managed and
+// includes a link to the chrome://management page.
+- (void)showEnterprisePopover:(EnterpriseInfoPopoverViewController*)popover
+                forInfoButton:(UIButton*)buttonView {
+  popover.delegate = self;
 
   // Disable the button when showing the bubble.
   // The button will be enabled when close the bubble in
@@ -1112,13 +1169,12 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   buttonView.enabled = NO;
 
   // Set the anchor and arrow direction of the bubble.
-  bubbleViewController.popoverPresentationController.sourceView = buttonView;
-  bubbleViewController.popoverPresentationController.sourceRect =
-      buttonView.bounds;
-  bubbleViewController.popoverPresentationController.permittedArrowDirections =
+  popover.popoverPresentationController.sourceView = buttonView;
+  popover.popoverPresentationController.sourceRect = buttonView.bounds;
+  popover.popoverPresentationController.permittedArrowDirections =
       UIPopoverArrowDirectionAny;
 
-  [self presentViewController:bubbleViewController animated:YES completion:nil];
+  [self presentViewController:popover animated:YES completion:nil];
 }
 
 #pragma mark Switch Actions

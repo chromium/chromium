@@ -24,9 +24,8 @@ NSString* const kEnterpriseIconName = @"enterprise_icon";
 
 NSString* const kChromeManagementURL = @"chrome://management";
 
-NSAttributedString* PrimaryMessage() {
-  NSString* fullText =
-      l10n_util::GetNSString(IDS_IOS_ENTERPRISE_MANAGED_SETTING_MESSAGE);
+NSAttributedString* PrimaryMessage(NSString* fullText) {
+  DCHECK(fullText);
   NSDictionary* generalAttributes = @{
     NSForegroundColorAttributeName : [UIColor colorNamed:kTextPrimaryColor],
     NSFontAttributeName : [UIFont preferredFontForTextStyle:UIFontTextStyleBody]
@@ -98,8 +97,15 @@ NSAttributedString* SecondaryMessage(NSString* enterpriseName) {
 @implementation EnterpriseInfoPopoverViewController
 
 - (instancetype)initWithEnterpriseName:(NSString*)enterpriseName {
+  NSString* message =
+      l10n_util::GetNSString(IDS_IOS_ENTERPRISE_MANAGED_SETTING_MESSAGE);
+  return [self initWithMessage:message enterpriseName:enterpriseName];
+}
+
+- (instancetype)initWithMessage:(NSString*)message
+                 enterpriseName:(NSString*)enterpriseName {
   return
-      [super initWithPrimaryAttributedString:PrimaryMessage()
+      [super initWithPrimaryAttributedString:PrimaryMessage(message)
                    secondaryAttributedString:SecondaryMessage(enterpriseName)];
 }
 

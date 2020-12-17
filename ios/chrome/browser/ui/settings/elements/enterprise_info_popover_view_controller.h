@@ -10,7 +10,14 @@
 // Static popover presenting the information of the enterprise.
 @interface EnterpriseInfoPopoverViewController : PopoverLabelViewController
 
-- (instancetype)initWithEnterpriseName:(NSString*)enterpriseName
+// Initializes the popover with default primary text, and secondary text based
+// on the given |enterpriseName|.
+- (instancetype)initWithEnterpriseName:(NSString*)enterpriseName;
+
+// Initializes the popover with the given |message| as primary text, and
+// secondary text based on the given |enterpriseName|.
+- (instancetype)initWithMessage:(NSString*)message
+                 enterpriseName:(NSString*)enterpriseName
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithMessage:(NSString*)message NS_UNAVAILABLE;

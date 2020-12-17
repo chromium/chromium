@@ -46,6 +46,7 @@ typedef NS_ENUM(NSInteger, SettingsItemType) {
   SettingsItemTypeArticlesForYou,
   SettingsItemTypeSafetyCheck,
   SettingsItemTypeDefaultBrowser,
+  SettingsItemTypeSigninDisabled,
 };
 
 // The accessibility identifier of the settings TableView.
@@ -53,6 +54,10 @@ extern NSString* const kSettingsTableViewId;
 
 // The accessibility identifier of the sign in cell.
 extern NSString* const kSettingsSignInCellId;
+
+// The accessibility identifier of the sign in cell when sign-in is disabled by
+// policy.
+extern NSString* const kSettingsSignInDisabledCellId;
 
 // The accessibility identifier of the account cell.
 extern NSString* const kSettingsAccountCellId;

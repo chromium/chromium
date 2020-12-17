@@ -146,6 +146,7 @@ source_set("settings") {
     "//ios/chrome/browser/ui/alert_coordinator",
     "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/ui/authentication/cells",
+    "//ios/chrome/browser/ui/authentication/signin:signin_headers",
     "//ios/chrome/browser/ui/autofill/cells",
     "//ios/chrome/browser/ui/colors",
     "//ios/chrome/browser/ui/commands",

@@ -26,6 +26,9 @@
            withStyler:(ChromeTableViewStyler*)styler {
   [super configureCell:cell withStyler:styler];
   cell.textLabel.text = self.text;
+  if (self.textColor) {
+    cell.textLabel.textColor = self.textColor;
+  }
   if (self.detailText) {
     cell.detailTextLabel.text = self.detailText;
     [cell updatePaddingForDetailText:YES];
@@ -39,11 +42,7 @@
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
   // Update the icon image, if one is present.
-  UIImage* iconImage = nil;
-  if ([self.iconImageName length]) {
-    iconImage = [UIImage imageNamed:self.iconImageName];
-  }
-  [cell setIconImage:iconImage withTintColor:self.tintColor];
+  [cell setIconImage:self.image withTintColor:self.tintColor];
 }
 
 @end

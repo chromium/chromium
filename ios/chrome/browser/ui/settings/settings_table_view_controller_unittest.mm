@@ -4,10 +4,18 @@
 
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller.h"
 
+#import "base/test/scoped_command_line.h"
 #import "base/test/task_environment.h"
+#import "components/pref_registry/pref_registry_syncable.h"
+#import "components/prefs/pref_service.h"
+#import "components/signin/public/base/signin_pref_names.h"
 #import "components/sync/driver/mock_sync_service.h"
+#import "components/sync_preferences/pref_service_mock_factory.h"
+#import "components/sync_preferences/pref_service_syncable.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/chrome_switches.h"
 #import "ios/chrome/browser/main/test_browser.h"
+#import "ios/chrome/browser/prefs/browser_prefs.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
@@ -20,7 +28,9 @@
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_info_button_item.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller_test.h"
+#include "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
@@ -37,6 +47,10 @@
 
 using ::testing::NiceMock;
 using ::testing::Return;
+using sync_preferences::PrefServiceMockFactory;
+using sync_preferences::PrefServiceSyncable;
+using user_prefs::PrefRegistrySyncable;
+using web::WebTaskEnvironment;
 
 namespace {
 std::unique_ptr<KeyedService> CreateMockSyncService(
@@ -63,6 +77,7 @@ class SettingsTableViewControllerTest : public ChromeTableViewControllerTest {
         AuthenticationServiceFactory::GetInstance(),
         base::BindRepeating(
             &AuthenticationServiceFake::CreateAuthenticationService));
+    builder.SetPrefService(CreatePrefService());
     chrome_browser_state_ = builder.Build();
 
     WebStateList* web_state_list = nullptr;
@@ -89,6 +104,15 @@ class SettingsTableViewControllerTest : public ChromeTableViewControllerTest {
     [static_cast<SettingsTableViewController*>(controller())
         settingsWillBeDismissed];
     ChromeTableViewControllerTest::TearDown();
+  }
+
+  std::unique_ptr<PrefServiceSyncable> CreatePrefService() {
+    PrefServiceMockFactory factory;
+    scoped_refptr<PrefRegistrySyncable> registry(new PrefRegistrySyncable);
+    std::unique_ptr<PrefServiceSyncable> prefs =
+        factory.CreateSyncable(registry.get());
+    RegisterBrowserStatePrefs(registry.get());
+    return prefs;
   }
 
   ChromeTableViewController* InstantiateController() override {
@@ -150,4 +174,28 @@ TEST_F(SettingsTableViewControllerTest, SyncOn) {
   ASSERT_NSEQ(
       sync_item.detailText,
       l10n_util::GetNSString(IDS_IOS_SIGN_IN_TO_CHROME_SETTING_SYNC_ON));
+}
+
+// Verifies that the sign-in setting item is replaced by the managed sign-in
+// item if sign-in is disabled by policy.
+TEST_F(SettingsTableViewControllerTest, SigninDisabled) {
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      switches::kInstallBrowserSigninHandler);
+  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
+  CreateController();
+  CheckController();
+
+  NSArray* signin_items = [controller().tableViewModel
+      itemsInSectionWithIdentifier:SettingsSectionIdentifier::
+                                       SettingsSectionIdentifierSignIn];
+  ASSERT_EQ(1U, signin_items.count);
+
+  TableViewInfoButtonItem* signin_item =
+      static_cast<TableViewInfoButtonItem*>(signin_items[0]);
+  ASSERT_NSEQ(signin_item.text,
+              l10n_util::GetNSString(IDS_IOS_SIGN_IN_TO_CHROME_SETTING_TITLE));
+  ASSERT_NSEQ(signin_item.detailText,
+              l10n_util::GetNSString(IDS_IOS_SETTINGS_SIGNIN_DISABLED));
+  ASSERT_NE(signin_item.image, nil);
 }
