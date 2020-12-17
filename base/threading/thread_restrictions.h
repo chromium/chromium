@@ -266,6 +266,7 @@ class ScopedAllowThreadJoinForProxyResolverV8Tracing;
 
 namespace remoting {
 class AutoThread;
+class ScopedBypassIOThreadRestrictions;
 namespace protocol {
 class ScopedAllowThreadJoinForWebRtcTransport;
 }
@@ -317,6 +318,7 @@ class JavaHandlerThread;
 }
 
 namespace internal {
+class GetAppOutputScopedAllowBaseSyncPrimitives;
 class JobTaskSource;
 class TaskTracker;
 }
@@ -324,7 +326,6 @@ class TaskTracker;
 class AdjustOOMScoreHelper;
 class FileDescriptorWatcher;
 class FilePath;
-class GetAppOutputScopedAllowBaseSyncPrimitives;
 class ScopedAllowThreadRecallForStackSamplingProfiler;
 class SimpleThread;
 class StackSamplingProfiler;
@@ -400,6 +401,7 @@ class BASE_EXPORT ScopedAllowBlocking {
   friend class mojo::CoreLibraryInitializer;
   friend class printing::LocalPrinterHandlerDefault;
   friend class printing::PrintJobWorker;
+  friend class remoting::ScopedBypassIOThreadRestrictions;  // crbug.com/1144161
   friend class resource_coordinator::TabManagerDelegate;  // crbug.com/778703
   friend class web::WebSubThread;
   friend class weblayer::BrowserContextImpl;
@@ -450,7 +452,7 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitives {
   // Allowed usage:
   friend class SimpleThread;
   friend class ::ChromeNSSCryptoModuleDelegate;
-  friend class base::GetAppOutputScopedAllowBaseSyncPrimitives;
+  friend class base::internal::GetAppOutputScopedAllowBaseSyncPrimitives;
   friend class blink::SourceStream;
   friend class blink::WorkerThread;
   friend class blink::scheduler::WorkerThread;

@@ -36,13 +36,6 @@ int responsibility_spawnattrs_setdisclaim(posix_spawnattr_t attrs, int disclaim)
 
 namespace base {
 
-// Friend and derived class of ScopedAllowBaseSyncPrimitives which allows
-// GetAppOutputInternal() to join a process. GetAppOutputInternal() can't itself
-// be a friend of ScopedAllowBaseSyncPrimitives because it is in the anonymous
-// namespace.
-class GetAppOutputScopedAllowBaseSyncPrimitives
-    : public base::ScopedAllowBaseSyncPrimitives {};
-
 namespace {
 
 // DPSXCHECK is a Debug Posix Spawn Check macro. The posix_spawn* family of
@@ -131,6 +124,8 @@ struct GetAppOutputOptions {
 
 bool GetAppOutputInternal(const std::vector<std::string>& argv,
                           GetAppOutputOptions* gao_options) {
+  TRACE_EVENT0("base", "GetAppOutput");
+
   ScopedFD read_fd, write_fd;
   {
     int pipefds[2];
@@ -172,8 +167,10 @@ bool GetAppOutputInternal(const std::vector<std::string>& argv,
     }
   } while (read_this_pass > 0);
 
-  // Reap the child process.
-  GetAppOutputScopedAllowBaseSyncPrimitives allow_wait;
+  // It is okay to allow this process to wait on the launched process as a
+  // process launched with GetAppOutput*() shouldn't wait back on the process
+  // that launched it.
+  internal::GetAppOutputScopedAllowBaseSyncPrimitives allow_wait;
   if (!process.WaitForExit(&gao_options->exit_code)) {
     return false;
   }
