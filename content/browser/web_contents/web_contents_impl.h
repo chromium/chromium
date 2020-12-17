@@ -1231,6 +1231,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
     return javascript_dialog_navigation_deferrer_.get();
   }
 
+  float page_scale_factor() { return page_scale_factor_; }
+
   // Returns the focused frame's input handler.
   blink::mojom::FrameWidgetInputHandler* GetFocusedFrameWidgetInputHandler();
 
@@ -1995,9 +1997,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
   std::unique_ptr<RenderWidgetHostInputEventRouter> rwh_input_event_router_;
 
-#if !defined(OS_ANDROID)
-  bool page_scale_factor_is_one_;
-#endif  // !defined(OS_ANDROID)
+  float page_scale_factor_ = 1;
 
   // TextInputManager tracks the IME-related state for all the
   // RenderWidgetHostViews on this WebContents. Only exists on the outermost

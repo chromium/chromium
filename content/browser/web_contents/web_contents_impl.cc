@@ -832,9 +832,6 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
       audio_stream_monitor_(this),
       media_web_contents_observer_(
           std::make_unique<MediaWebContentsObserver>(this)),
-#if !defined(OS_ANDROID)
-      page_scale_factor_is_one_(true),
-#endif  // !defined(OS_ANDROID)
       is_overlay_content_(false),
       showing_context_menu_(false),
       text_autosizer_page_info_({0, 0, 1.f}) {
@@ -5789,22 +5786,21 @@ void WebContentsImpl::OnPageScaleFactorChanged(RenderFrameHostImpl* source,
 #if !defined(OS_ANDROID)
   // While page scale factor is used on mobile, this PageScaleFactorIsOne logic
   // is only needed on desktop.
+  bool was_one = page_scale_factor_ == 1.f;
   bool is_one = page_scale_factor == 1.f;
-  if (is_one != page_scale_factor_is_one_) {
-    page_scale_factor_is_one_ = is_one;
-
+  if (is_one != was_one) {
     HostZoomMapImpl* host_zoom_map =
         static_cast<HostZoomMapImpl*>(HostZoomMap::GetForWebContents(this));
 
     if (host_zoom_map) {
       host_zoom_map->SetPageScaleFactorIsOneForView(
           source->GetProcess()->GetID(),
-          source->GetRenderViewHost()->GetRoutingID(),
-          page_scale_factor_is_one_);
+          source->GetRenderViewHost()->GetRoutingID(), is_one);
     }
   }
 #endif  // !defined(OS_ANDROID)
 
+  page_scale_factor_ = page_scale_factor;
   observers_.ForEachObserver([&](WebContentsObserver* observer) {
     observer->OnPageScaleFactorChanged(page_scale_factor);
   });

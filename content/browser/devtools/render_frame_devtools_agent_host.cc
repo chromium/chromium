@@ -272,9 +272,12 @@ void RenderFrameDevToolsAgentHost::SetFrameTreeNode(
     // here that there is no other agent host.
     g_agent_host_instances.Get()[frame_tree_node] = this;
   }
-  WebContentsObserver::Observe(
-      frame_tree_node_ ? WebContentsImpl::FromFrameTreeNode(frame_tree_node_)
-                       : nullptr);
+  auto* wc = frame_tree_node_
+                 ? WebContentsImpl::FromFrameTreeNode(frame_tree_node_)
+                 : nullptr;
+  if (wc)
+    page_scale_factor_ = wc->page_scale_factor();
+  WebContentsObserver::Observe(wc);
 }
 
 BrowserContext* RenderFrameDevToolsAgentHost::GetBrowserContext() {
