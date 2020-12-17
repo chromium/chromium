@@ -236429,7 +236429,7 @@
      []
     ],
     "webxr-hand-input.idl": [
-     "4334d96793c211deaf8a8816b95b3c944186e2ee",
+     "e89210cd5695049f9455bee42f386999e15da5bc",
      []
     ],
     "webxr.idl": [
@@ -247087,19 +247087,19 @@
      []
     ],
     "idlharness.any-expected.txt": [
-     "ac189daf9bf5a0ef428943eb5ec21e1cfa30d8d5",
+     "8e0e13d04f3bfff0982c7b495f7c31c8378873c0",
      []
     ],
     "idlharness.any.serviceworker-expected.txt": [
-     "ac189daf9bf5a0ef428943eb5ec21e1cfa30d8d5",
+     "8e0e13d04f3bfff0982c7b495f7c31c8378873c0",
      []
     ],
     "idlharness.any.sharedworker-expected.txt": [
-     "ac189daf9bf5a0ef428943eb5ec21e1cfa30d8d5",
+     "8e0e13d04f3bfff0982c7b495f7c31c8378873c0",
      []
     ],
     "idlharness.any.worker-expected.txt": [
-     "ac189daf9bf5a0ef428943eb5ec21e1cfa30d8d5",
+     "8e0e13d04f3bfff0982c7b495f7c31c8378873c0",
      []
     ],
     "readable-streams": {
@@ -262706,7 +262706,7 @@
     },
     "hand-input": {
      "idlharness.https.window-expected.txt": [
-      "6a95e7bbac0f13d1f3be1bca8e84f0cf9ee32ce6",
+      "67da619cf0fca7db22815cbb053a6b22140fd698",
       []
      ]
     },
@@ -263599,7 +263599,7 @@
        []
       ],
       "002.worker-expected.txt": [
-       "f37a7e76aecde09accca0e424d745ac46b1c3279",
+       "d73864c4701f9428e561ccbf2b64702ba87fe845",
        []
       ],
       "003-expected.txt": [
@@ -263615,7 +263615,7 @@
        []
       ],
       "004.any.sharedworker-expected.txt": [
-       "8d98263fff7f785501cce3e0d371c928e9201dcb",
+       "ba2bc24d5f5458cc472838cd8698f2a3117a1f5c",
        []
       ]
      },
@@ -374194,6 +374194,15 @@
          {}
         ]
        ],
+       "checkable-active-onblur.html": [
+        "d4090172812ed8b02e8379a80ea0178298d67ef9",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
        "checkbox-click-events.html": [
         "5051fdd4e6f825526ab2de418ce426a81e6dddc2",
         [
@@ -447779,7 +447788,7 @@
        ]
       ],
       "002.worker.js": [
-       "bbaf66d3383e0957c5ab12ca03688c507081d86d",
+       "065cc6e6f1705fc0157ee80ccd8daee4af4ac534",
        [
         "workers/semantics/interface-objects/002.worker.html",
         {}
@@ -447800,7 +447809,7 @@
        ]
       ],
       "004.any.js": [
-       "ea96197ce19aa47d2d351549f6d570afeffe7920",
+       "2cbb4b54256b4587a9bdc139e03f5e7b07756915",
        [
         "workers/semantics/interface-objects/004.any.sharedworker.html",
         {
