@@ -286,7 +286,12 @@ CounterStyle::CounterStyle(const StyleRuleCounterStyle& rule)
     }
   }
 
-  // TODO(crbug.com/687225): Implement 'prefix', 'suffix' and 'speak-as'.
+  if (const CSSValue* prefix = rule.GetPrefix())
+    prefix_ = SymbolToString(*prefix);
+  if (const CSSValue* suffix = rule.GetSuffix())
+    suffix_ = SymbolToString(*suffix);
+
+  // TODO(crbug.com/687225): Implement 'speak-as'.
 }
 
 void CounterStyle::ResolveExtends(const CounterStyle& extended) {
@@ -320,7 +325,12 @@ void CounterStyle::ResolveExtends(const CounterStyle& extended) {
   if (!style_rule_->GetRange())
     range_ = extended.range_;
 
-  // TODO(crbug.com/687225): Implement 'prefix', 'suffix' and 'speak-as'.
+  if (!style_rule_->GetPrefix())
+    prefix_ = extended.prefix_;
+  if (!style_rule_->GetSuffix())
+    prefix_ = extended.suffix_;
+
+  // TODO(crbug.com/687225): Implement 'speak-as'.
 }
 
 void CounterStyle::ResetExtends() {

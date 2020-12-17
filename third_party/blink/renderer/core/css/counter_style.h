@@ -37,6 +37,9 @@ class CORE_EXPORT CounterStyle final : public GarbageCollected<CounterStyle> {
   // https://drafts.csswg.org/css-counter-styles/#generate-a-counter
   String GenerateRepresentation(int value) const;
 
+  String GetPrefix() const { return prefix_; }
+  String GetSuffix() const { return suffix_; }
+
   AtomicString GetExtendsName() const { return extends_name_; }
   const CounterStyle& GetExtendedStyle() const { return *extended_style_; }
   bool HasUnresolvedExtends() const {
@@ -103,6 +106,9 @@ class CORE_EXPORT CounterStyle final : public GarbageCollected<CounterStyle> {
 
   // Value of 'range' descriptor. Empty vector means 'auto'.
   Vector<std::pair<int, int>> range_;
+
+  String prefix_;
+  String suffix_ = ". ";
 
   String negative_prefix_ = "-";
   String negative_suffix_;
