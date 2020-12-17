@@ -373,8 +373,6 @@ void HttpBridge::OnURLLoadCompleteInternal(
                            fetch_state_.request_succeeded
                                ? fetch_state_.http_status_code
                                : fetch_state_.net_error_code);
-  UMA_HISTOGRAM_LONG_TIMES("Sync.URLFetchTime",
-                           fetch_state_.end_time - fetch_state_.start_time);
 
   // Use a real (non-debug) log to facilitate troubleshooting in the wild.
   VLOG(2) << "HttpBridge::OnURLFetchComplete for: " << final_url.spec();

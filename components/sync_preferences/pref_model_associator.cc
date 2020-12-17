@@ -17,7 +17,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
@@ -629,8 +628,6 @@ void PrefModelAssociator::EnforceRegisteredTypeInStore(
       // done on a higher level.
       user_pref_store_->RemoveValue(
           pref_name, WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
-      UMA_HISTOGRAM_BOOLEAN("Sync.Preferences.ClearedLocalPrefOnTypeMismatch",
-                            true);
     }
   }
 }

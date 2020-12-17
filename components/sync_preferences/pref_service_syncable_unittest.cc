@@ -16,7 +16,6 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "build/chromeos_buildflags.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_notifier_impl.h"
@@ -637,7 +636,6 @@ class ShouldNotBeNotifedObserver : public SyncedPrefObserver {
 };
 
 TEST_F(PrefServiceSyncableMergeTest, RegisterShouldClearTypeMismatchingData) {
-  base::HistogramTester histogram_tester;
   const std::string pref_name = "testing.pref";
   user_prefs_->SetString(pref_name, "string_value");
   ASSERT_TRUE(user_prefs_->GetValue(pref_name, nullptr));
@@ -653,8 +651,6 @@ TEST_F(PrefServiceSyncableMergeTest, RegisterShouldClearTypeMismatchingData) {
   EXPECT_TRUE(GetPreferenceValue(pref_name).GetList().empty());
   EXPECT_FALSE(user_prefs_->GetValue(pref_name, nullptr));
 
-  histogram_tester.ExpectBucketCount(
-      "Sync.Preferences.ClearedLocalPrefOnTypeMismatch", true, 1);
   prefs_.RemoveSyncedPrefObserver(pref_name, &observer);
 }
 

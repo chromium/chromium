@@ -838,7 +838,10 @@ can be compared for the same population). -->
 </histogram>
 
 <histogram name="Sync.Preferences.ClearedLocalPrefOnTypeMismatch"
-    units="BooleanHit" expires_after="M88">
+    units="BooleanHit" expires_after="2020-12-16">
+  <obsolete>
+    Deprecated in 12/2020.
+  </obsolete>
   <owner>tschumann@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -939,12 +942,16 @@ can be compared for the same population). -->
   </summary>
 </histogram>
 
-<histogram name="Sync.Startup.TimeDeferred2" units="ms" expires_after="M88">
+<histogram name="Sync.Startup.TimeDeferred2" units="ms"
+    expires_after="2021-12-16">
   <owner>mastiz@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
-    Time spent after ProfileSyncService *creation* but before SyncEngine
-    initialization.
+    Recorded on browser startup if the SyncEngine initialization is deferred by
+    a fixed (configurable) delay due to performance reasons. In some cases, a
+    data type may force sync to start before the delay finishes, causing the
+    recorded time to be smaller. This histogram records the time spent after the
+    ProfileSyncService *creation* but before the SyncEngine initialization.
   </summary>
 </histogram>
 
@@ -1082,7 +1089,10 @@ can be compared for the same population). -->
   </summary>
 </histogram>
 
-<histogram name="Sync.URLFetchTime" units="ms" expires_after="M88">
+<histogram name="Sync.URLFetchTime" units="ms" expires_after="2020-12-16">
+  <obsolete>
+    Deprecated in 12/2020.
+  </obsolete>
   <owner>mastiz@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
