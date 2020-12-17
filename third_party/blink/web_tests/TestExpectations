@@ -5901,9 +5901,6 @@ crbug.com/1157861 http/tests/devtools/console/paintworklet-console-selector.js [
 crbug.com/626703 [ Linux ] wpt_internal/storage/estimate-usage-details-filesystem.https.tentative.any.html [ Pass Failure ]
 crbug.com/626703 [ Mac ] external/wpt/mediacapture-image/MediaStreamTrack-getConstraints.https.html [ Pass Failure ]
 
-# WPT importer Sheriff 2020-12-14
-crbug.com/1158672 [ Mac ] external/wpt/html/dom/idlharness.https.html?include=(Document|Window) [ Pass Failure ]
-
 # Sheriff 2020-12-14
 crbug.com/1046784 http/tests/devtools/console/console-context-selector.js [ Pass Timeout ]
 
