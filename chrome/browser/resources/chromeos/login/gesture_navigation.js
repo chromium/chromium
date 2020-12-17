@@ -18,11 +18,12 @@ const GesturePage = {
 Polymer({
   is: 'gesture-navigation-element',
 
-  behaviors: [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
+  behaviors: [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior],
 
-  properties: {
-    /** @private */
-    currentPage_: {type: String, value: GesturePage.INTRO},
+  UI_STEPS: GesturePage,
+
+  defaultUIStep() {
+    return GesturePage.INTRO;
   },
 
   /** @override */
@@ -34,26 +35,12 @@ Polymer({
   },
 
   /**
-   * Called before the screen is shown.
-   */
-  onBeforeShow() {
-    this.currentPage_ = GesturePage.INTRO;
-  },
-
-  focus() {
-    let current = this.$[this.currentPage_];
-    if (current) {
-      current.show();
-    }
-  },
-
-  /**
    * This is the 'on-tap' event handler for the 'next' or 'get started' button.
    * @private
    *
    */
   onNext_() {
-    switch (this.currentPage_) {
+    switch (this.uiStep) {
       case GesturePage.INTRO:
         this.setCurrentPage_(GesturePage.HOME);
         break;
@@ -78,7 +65,7 @@ Polymer({
    * @private
    */
   onBack_() {
-    switch (this.currentPage_) {
+    switch (this.uiStep) {
       case GesturePage.HOME:
         this.setCurrentPage_(GesturePage.INTRO);
         break;
@@ -99,21 +86,9 @@ Polymer({
    */
   setCurrentPage_(newPage) {
     this.setPlayCurrentScreenAnimation(false);
-    this.currentPage_ = newPage;
+    this.setUIStep(newPage);
     chrome.send('handleGesturePageChange', [newPage]);
     this.setPlayCurrentScreenAnimation(true);
-
-    let screen = this.$[this.currentPage_];
-    assert(screen);
-    screen.show();
-  },
-
-  /**
-   * Comparison function for the current page.
-   * @private
-   */
-  isEqual_(currentPage_, page_) {
-    return currentPage_ == page_;
   },
 
   /**
@@ -122,8 +97,7 @@ Polymer({
    * @private
    */
   setPlayCurrentScreenAnimation(enabled) {
-    var animation =
-        this.$[this.currentPage_].querySelector('.gesture-animation');
+    var animation = this.$[this.uiStep].querySelector('.gesture-animation');
     if (animation) {
       animation.setPlay(enabled);
     }

@@ -12,11 +12,39 @@
 
 <dom-module id="gesture-navigation-element">
   <template>
-    <style include="oobe-common"></style>
-    <link rel="stylesheet" href="gesture_navigation.css">
+    <style include="oobe-common">
+      .gesture-animation {
+        height: 300px;
+        width: 300px;
+      }
 
-    <oobe-dialog id="gestureIntro" has-buttons class="step hidden"
-        hidden="[[!isEqual_(currentPage_, 'gestureIntro')]]"
+      .gesture-animation-container {
+        height: 300px;
+        margin-top: -22px;
+        overflow: hidden;
+        width: 300px;
+      }
+
+      .gesture-list-item {
+        display: flex;
+        height: 46px;
+        padding-bottom: 4px;
+      }
+
+      .gesture-list-item-icon {
+        align-self: flex-start;
+        height: 24px;
+        margin: auto;
+        width: 24px;
+      }
+
+      .gesture-list-item-text {
+        flex: 1 1 auto;
+        margin: auto;
+        padding-inline-start: 16px;
+      }
+    </style>
+    <oobe-dialog id="gestureIntro" has-buttons for-step="gestureIntro"
         title-key="gestureNavigationIntroTitle"
         aria-label$="[[i18nDynamic(locale, 'gestureNavigationIntroTitle')]]">
       <img slot="oobe-icon" src="images/gestures.svg" width="32" height="32">
@@ -48,8 +76,7 @@
       </div>
     </oobe-dialog>
 
-    <oobe-dialog id="gestureHome" has-buttons  class="step hidden"
-        hidden="[[!isEqual_(currentPage_, 'gestureHome')]]"
+    <oobe-dialog id="gestureHome" has-buttons for-step="gestureHome"
         title-key="gestureNavigationHomeTitle"
         subtitle-key="gestureNavigationHomeDescription"
         aria-label$="[[i18nDynamic(locale, 'gestureNavigationHomeTitle')]]">
@@ -71,8 +98,7 @@
       </div>
     </oobe-dialog>
 
-    <oobe-dialog id="gestureOverview" has-buttons class="step hidden"
-        hidden="[[!isEqual_(currentPage_, 'gestureOverview')]]"
+    <oobe-dialog id="gestureOverview" has-buttons for-step="gestureOverview"
         title-key="gestureNavigationOverviewTitle"
         subtitle-key="gestureNavigationOverviewDescription"
         aria-label$="[[i18nDynamic(locale, 'gestureNavigationOverviewTitle')]]">
@@ -94,8 +120,7 @@
       </div>
     </oobe-dialog>
 
-    <oobe-dialog id="gestureBack" has-buttons class="step hidden"
-        hidden="[[!isEqual_(currentPage_, 'gestureBack')]]"
+    <oobe-dialog id="gestureBack" has-buttons for-step="gestureBack"
         title-key="gestureNavigationBackTitle"
         subtitle-key="gestureNavigationBackDescription"
         aria-label$="[[i18nDynamic(locale, 'gestureNavigationBackTitle')]]">
