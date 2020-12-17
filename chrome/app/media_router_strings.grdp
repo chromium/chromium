@@ -140,6 +140,14 @@ video files, instead of all files.">
     No Thanks
   </message>
 
+  <!-- Cast-to-meeting deprecation/removal -->
+  <message name="IDS_MEDIA_ROUTER_CAST_TO_MEETING_DEPRECATED" desc="Used in the Cast dialog to inform the user that starting a presentation from the Cast dialog will no longer work, and using meet.google.com will be the only option.">
+    Soon this option will no longer be supported. To present a tab, use <ph name="GOOGLE_MEET">$1<ex>Google Meet</ex></ph>.
+  </message>
+  <message name="IDS_MEDIA_ROUTER_CAST_TO_MEETING_REMOVED" desc="Used in the Cast dialog to inform the user that starting a presentation from the Cast dialog is not longer supported, and using meet.google.com is the only option.">
+    This option is no longer to supported. To present a tab, use <ph name="GOOGLE_MEET">$1<ex>Google Meet</ex></ph>.
+  </message>
+
   <!-- Cloud Services Dialog -->
   <message name="IDS_MEDIA_ROUTER_CLOUD_SERVICES_DIALOG_TITLE" desc="Title of the dialog asking whether the user wants to enable the feature allowing them to Cast to cloud services (Google Hangouts, Google Meet, Cast for Education extension).">
     Enable cloud services for Cast?

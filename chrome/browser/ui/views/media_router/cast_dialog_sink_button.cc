@@ -10,12 +10,19 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/media_router/ui_media_sink.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_helper.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/media_router/common/issue.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -27,6 +34,7 @@
 #include "ui/views/controls/color_tracking_icon_view.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/throbber.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/vector_icons.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -94,6 +102,99 @@ base::string16 GetStatusTextForSink(const UIMediaSink& sink) {
       return base::string16();
   }
 }
+
+// Find the index of a tab whose URL matches the given origin and path.  In the
+// case of multiple matches, the active tab is given priority, otherwise returns
+// the index of an arbitrary tab.
+base::Optional<int> FindTabWithUrlPrefix(TabStripModel* tabs,
+                                         const GURL& origin,
+                                         base::StringPiece path) {
+  base::Optional<int> to_activate;
+  for (int i = 0; i < tabs->count(); i++) {
+    auto* content = tabs->GetWebContentsAt(i);
+    const GURL& url = content->GetVisibleURL();
+    if (url.GetOrigin() == origin && url.path() == path) {
+      to_activate = i;
+      if (tabs->active_index() <= i)
+        break;
+    }
+  }
+  return to_activate;
+}
+
+// Selects or creates a tab for a meeting ID.  Tries to select an existing tab
+// in the current window or some other window, and if no tab is found, opens a
+// new tab for the meeting.
+//
+// If there is no meeting ID, this function just selects or creates a tab
+// showing the start page of Google Meet.
+void ShowMeetTab(Profile* profile,
+                 const base::Optional<std::string>& meeting_id) {
+  const GURL origin("https://meet.google.com");
+  const std::string path = meeting_id ? "/" + *meeting_id : std::string();
+
+  const auto& browsers = *BrowserList::GetInstance();
+  for (auto iter = browsers.begin_last_active();
+       iter != browsers.end_last_active(); ++iter) {
+    Browser* browser = *iter;
+    if (browser->profile() == profile && browser->window() &&
+        browser->is_type_normal()) {
+      auto* tabs = browser->tab_strip_model();
+      auto tab_index = FindTabWithUrlPrefix(tabs, origin, path);
+      if (tab_index.has_value()) {
+        browser->window()->Show();
+        tabs->ActivateTabAt(tab_index.value());
+        return;
+      }
+    }
+  }
+
+  NavigateParams params(profile, origin.Resolve(path),
+                        ui::PAGE_TRANSITION_FIRST);
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  Navigate(&params);
+}
+
+class CastToMeetingDeprecationWarningView : public views::View {
+ public:
+  CastToMeetingDeprecationWarningView(const std::string& sink_id,
+                                      Profile* profile) {
+    DCHECK(profile);
+
+    auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>());
+    layout->set_inside_border_insets(gfx::Insets(5));
+    layout->set_cross_axis_alignment(
+        views::BoxLayout::CrossAxisAlignment::kStart);
+
+    // Add space to line up with text in receiver list.
+    auto* spacer = AddChildView(std::make_unique<views::View>());
+    spacer->SetPreferredSize(gfx::Size(55, 1));
+
+    base::string16 text =
+        l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_CAST_TO_MEETING_DEPRECATED);
+    std::vector<base::string16> substrings{base::ASCIIToUTF16("Google Meet")};
+    std::vector<size_t> offsets;
+    text = base::ReplaceStringPlaceholders(text, substrings, &offsets);
+
+    auto* label = AddChildView(std::make_unique<views::StyledLabel>());
+    label->SetText(text);
+
+    // Try to extract a meeting ID from a sink ID.  This should always succeed
+    // unless the "meeting" is actually a Hangout, or if the wrong version of
+    // the Cast extension is installed.
+    base::Optional<std::string> meeting_id;
+    if (sink_id.size() == 17 && base::StartsWith(sink_id, "meet:")) {
+      meeting_id = sink_id.substr(5);
+    }
+
+    gfx::Range link_range(offsets[0], offsets[0] + substrings[0].length());
+    auto link_style =
+        views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
+            &ShowMeetTab, base::Unretained(profile), meeting_id));
+    link_style.disable_line_wrapping = false;
+    label->AddStyleRange(link_range, link_style);
+  }
+};
 
 }  // namespace
 
@@ -204,6 +305,19 @@ void CastDialogSinkButton::OnFocus() {
 void CastDialogSinkButton::OnBlur() {
   if (sink_.state == UIMediaSinkState::CONNECTED)
     RestoreStatusText();
+}
+
+std::unique_ptr<views::View>
+CastDialogSinkButton::MakeCastToMeetingDeprecationWarningView(
+    Profile* profile) {
+  switch (sink_.icon_type) {
+    case SinkIconType::MEETING:
+    case SinkIconType::HANGOUT:
+      return std::make_unique<CastToMeetingDeprecationWarningView>(sink_.id,
+                                                                   profile);
+    default:
+      return nullptr;
+  }
 }
 
 // static
