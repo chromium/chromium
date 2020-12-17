@@ -3836,4 +3836,45 @@ TEST_F(StyleEngineTest, MarkStyleDirtyFromContainerRecalc) {
   EXPECT_NE(old_inner_style, new_inner_style);
 }
 
+TEST_F(StyleEngineTest, FastRejectForHostChild) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      .notfound span {
+        color: pink;
+      }
+    </style>
+    <div id="host">
+      <span id="slotted"></span>
+    </div>
+  )HTML");
+
+  Element* host = GetDocument().getElementById("host");
+  ASSERT_TRUE(host);
+  ShadowRoot& shadow_root =
+      host->AttachShadowRootInternal(ShadowRootType::kOpen);
+  shadow_root.setInnerHTML(R"HTML(
+    <slot></slot>
+  )HTML");
+  UpdateAllLifecyclePhases();
+
+  StyleEngine& engine = GetStyleEngine();
+  // If the Stats() were already enabled, we would not start with 0 counts.
+  EXPECT_FALSE(engine.Stats());
+  engine.SetStatsEnabled(true);
+
+  StyleResolverStats* stats = engine.Stats();
+  ASSERT_TRUE(stats);
+  EXPECT_EQ(0u, stats->rules_fast_rejected);
+
+  Element* span = GetDocument().getElementById("slotted");
+  ASSERT_TRUE(span);
+  span->SetInlineStyleProperty(CSSPropertyID::kColor, "green");
+
+  GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
+  GetStyleEngine().RecalcStyle();
+
+  // Should fast reject ".notfound span"
+  EXPECT_EQ(1u, stats->rules_fast_rejected);
+}
+
 }  // namespace blink

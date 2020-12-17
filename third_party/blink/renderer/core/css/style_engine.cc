@@ -2006,20 +2006,20 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(Element& container) {
 
 void StyleEngine::RecalcStyle(StyleRecalcChange change) {
   DCHECK(GetDocument().documentElement());
-  Element* root_element = &style_recalc_root_.RootElement();
-  Element* parent = root_element->ParentOrShadowHostElement();
+  Element& root_element = style_recalc_root_.RootElement();
+  Element* parent = FlatTreeTraversal::ParentElement(root_element);
 
   SelectorFilterRootScope filter_scope(parent);
-  root_element->RecalcStyle(change);
+  root_element.RecalcStyle(change);
 
-  for (ContainerNode* ancestor = root_element->GetStyleRecalcParent(); ancestor;
+  for (ContainerNode* ancestor = root_element.GetStyleRecalcParent(); ancestor;
        ancestor = ancestor->GetStyleRecalcParent()) {
     if (auto* ancestor_element = DynamicTo<Element>(ancestor))
       ancestor_element->RecalcStyleForTraversalRootAncestor();
     ancestor->ClearChildNeedsStyleRecalc();
   }
   style_recalc_root_.Clear();
-  if (!parent || IsA<HTMLBodyElement>(*root_element))
+  if (!parent || IsA<HTMLBodyElement>(root_element))
     PropagateWritingModeAndDirectionToHTMLRoot();
 }
 
