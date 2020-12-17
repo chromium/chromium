@@ -5,14 +5,14 @@
 import("//third_party/closure_compiler/compile_js.gni")
 
 js_type_check("closure_compile") {
+  uses_js_modules = true
   deps = [ ":index" ]
 }
 
 js_library("index") {
   deps = [
     "//chrome/browser/ui/webui/interventions_internals:mojo_bindings_js_library_for_compile",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:util",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:util.m",
   ]
 }

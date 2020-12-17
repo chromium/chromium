@@ -2,11 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
+import './chrome/browser/ui/webui/interventions_internals/interventions_internals.mojom-lite.js';
+
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {$} from 'chrome://resources/js/util.m.js';
+
 /** The columns that are used to find rows that contain the keyword. */
 const ENABLE_BLOCKLIST_BUTTON = 'Enable Blocklist';
 const IGNORE_BLOCKLIST_BUTTON = 'Ignore Blocklist';
 const IGNORE_BLOCKLIST_MESSAGE = 'Blocklist decisions are ignored.';
 const URL_THRESHOLD = 40;  // Maximum URL length
+// Export on |window| for tests.
+window.URL_THRESHOLD = URL_THRESHOLD;
 
 window.logTableMap = {};
 
@@ -44,6 +53,8 @@ function getTimeFormat(time) {
   const millisec = getPaddedValue(date.getMilliseconds(), 3);
   return dateString + ' ' + hour + ':' + min + ':' + sec + '.' + millisec;
 }
+// Export on |window| for tests.
+window.getTimeFormat = getTimeFormat;
 
 /**
  * Append a button to |element|, so that when the button is clicked, the
@@ -454,6 +465,8 @@ function setupLogClear() {
 const InterventionsInternalPageImpl = function() {
   this.receiver_ = new mojom.InterventionsInternalsPageReceiver(this);
 };
+// Export on |window| for tests.
+window.InterventionsInternalPageImpl = InterventionsInternalPageImpl;
 
 InterventionsInternalPageImpl.prototype = {
   /**
@@ -594,7 +607,6 @@ InterventionsInternalPageImpl.prototype = {
   },
 };
 
-cr.define('interventions_internals', () => {
   let pageHandler = null;
 
   function init(handler) {
@@ -674,10 +686,6 @@ cr.define('interventions_internals', () => {
         });
   }
 
-  return {
-    init: init,
-  };
-});
 
 window.setupFn = window.setupFn || function() {
   return Promise.resolve();
@@ -702,6 +710,6 @@ document.addEventListener('DOMContentLoaded', () => {
       pageHandler.setClientPage(pageImpl.bindNewPipeAndPassRemote());
     }
 
-    interventions_internals.init(pageHandler);
+    init(pageHandler);
   });
 });

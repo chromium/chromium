@@ -186,7 +186,7 @@ TEST_F('InterventionsInternalsUITest', 'GetPreviewsFlagsDetails', function() {
 
 TEST_F('InterventionsInternalsUITest', 'LogNewMessage', function() {
   test('LogMessageIsPostedCorrectly', () => {
-    let pageImpl = new InterventionsInternalPageImpl(null);
+    let pageImpl = new window.InterventionsInternalPageImpl(null);
     let logs = [
       {
         type: 'Type_a',
@@ -225,7 +225,7 @@ TEST_F('InterventionsInternalsUITest', 'LogNewMessage', function() {
                                                 // log table).
 
       expectEquals(
-          getTimeFormat(log.time), row.querySelector('.log-time').textContent);
+          window.getTimeFormat(log.time), row.querySelector('.log-time').textContent);
       expectEquals(log.type, row.querySelector('.log-type').textContent);
       expectEquals(
           log.description, row.querySelector('.log-description').textContent);
@@ -239,7 +239,7 @@ TEST_F('InterventionsInternalsUITest', 'LogNewMessage', function() {
 
 TEST_F('InterventionsInternalsUITest', 'LogNewMessageWithLongUrl', function() {
   test('LogMessageIsPostedCorrectly', () => {
-    let pageImpl = new InterventionsInternalPageImpl(null);
+    let pageImpl = new window.InterventionsInternalPageImpl(null);
     let log = {
       type: 'Some type',
       url: {url: ''},
@@ -263,7 +263,7 @@ TEST_F('InterventionsInternalsUITest', 'LogNewMessageWithLongUrl', function() {
 
 TEST_F('InterventionsInternalsUITest', 'LogNewMessageWithNoUrl', function() {
   test('LogMessageIsPostedCorrectly', () => {
-    let pageImpl = new InterventionsInternalPageImpl(null);
+    let pageImpl = new window.InterventionsInternalPageImpl(null);
     let log = {
       type: 'Some type',
       url: {url: ''},
@@ -285,7 +285,7 @@ TEST_F('InterventionsInternalsUITest', 'LogNewMessageWithNoUrl', function() {
 
 TEST_F('InterventionsInternalsUITest', 'LogNewMessagePageIdZero', function() {
   test('LogMessageWithPageIdZero', () => {
-    let pageImpl = new InterventionsInternalPageImpl(null);
+    let pageImpl = new window.InterventionsInternalPageImpl(null);
     let logs = [
       {
         type: 'Type_a',
@@ -330,7 +330,7 @@ TEST_F('InterventionsInternalsUITest', 'LogNewMessagePageIdZero', function() {
 
 TEST_F('InterventionsInternalsUITest', 'LogNewMessageNewPageId', function() {
   test('LogMessageWithNewPageId', () => {
-    let pageImpl = new InterventionsInternalPageImpl(null);
+    let pageImpl = new window.InterventionsInternalPageImpl(null);
     let logs = [
       {
         type: 'Type_a',
@@ -375,7 +375,7 @@ TEST_F('InterventionsInternalsUITest', 'LogNewMessageNewPageId', function() {
 TEST_F(
     'InterventionsInternalsUITest', 'LogNewMessageExistedPageId', function() {
       test('LogMessageWithExistedPageId', () => {
-        let pageImpl = new InterventionsInternalPageImpl(null);
+        let pageImpl = new window.InterventionsInternalPageImpl(null);
         let logs = [
           {
             type: 'Type_a',
@@ -437,7 +437,7 @@ TEST_F(
     'InterventionsInternalsUITest',
     'LogNewMessageExistedPageIdGroupToTopOfTable', function() {
       test('NewMessagePushedToTopOfTable', () => {
-        let pageImpl = new InterventionsInternalPageImpl(null);
+        let pageImpl = new window.InterventionsInternalPageImpl(null);
         let logs = [
           {
             type: 'Type_a',
@@ -486,7 +486,7 @@ TEST_F(
 
 TEST_F('InterventionsInternalsUITest', 'AddNewBlocklistedHost', function() {
   test('AddNewBlocklistedHost', () => {
-    let pageImpl = new InterventionsInternalPageImpl(null);
+    let pageImpl = new window.InterventionsInternalPageImpl(null);
     let time = 758675653000;  // Jan 15 1994 23:14:13 UTC
     let expectedHost = 'example.com';
     pageImpl.onBlocklistedHost(expectedHost, time);
@@ -507,7 +507,7 @@ TEST_F('InterventionsInternalsUITest', 'AddNewBlocklistedHost', function() {
 
 TEST_F('InterventionsInternalsUITest', 'HostAlreadyBlocklisted', function() {
   test('HostAlreadyBlocklisted', () => {
-    let pageImpl = new InterventionsInternalPageImpl(null);
+    let pageImpl = new window.InterventionsInternalPageImpl(null);
     let time0 = 758675653000;   // Jan 15 1994 23:14:13 UTC
     let time1 = 1507221689240;  // Oct 05 2017 16:41:29 UTC
     let expectedHost = 'example.com';
@@ -536,7 +536,7 @@ TEST_F('InterventionsInternalsUITest', 'HostAlreadyBlocklisted', function() {
 
 TEST_F('InterventionsInternalsUITest', 'UpdateUserBlocklisted', function() {
   test('UpdateUserBlocklistedDisplayCorrectly', () => {
-    let pageImpl = new InterventionsInternalPageImpl(null);
+    let pageImpl = new window.InterventionsInternalPageImpl(null);
     let state = $('user-blocklisted-status-value');
 
     pageImpl.onUserBlocklistedStatusChange(true /* blocklisted */);
@@ -553,7 +553,7 @@ TEST_F('InterventionsInternalsUITest', 'UpdateUserBlocklisted', function() {
 
 TEST_F('InterventionsInternalsUITest', 'OnBlocklistCleared', function() {
   test('OnBlocklistClearedRemovesAllBlocklistedHostInTable', () => {
-    let pageImpl = new InterventionsInternalPageImpl(null);
+    let pageImpl = new window.InterventionsInternalPageImpl(null);
     let state = $('user-blocklisted-status-value');
     let time = 758675653000;  // Jan 15 1994 23:14:13 UTC
 
@@ -572,7 +572,7 @@ TEST_F(
     'InterventionsInternalsUITest', 'ClearLogMessageOnBlocklistCleared',
     function() {
       test('ClearLogsTableOnBlocklistCleared', () => {
-        let pageImpl = new InterventionsInternalPageImpl(null);
+        let pageImpl = new window.InterventionsInternalPageImpl(null);
         let time = 758675653000;  // Jan 15 1994 23:14:13 UTC
         let log = {
           type: 'Some type',
@@ -598,7 +598,7 @@ TEST_F(
 
 TEST_F('InterventionsInternalsUITest', 'OnECTChanged', function() {
   test('UpdateETCOnChange', () => {
-    let pageImpl = new InterventionsInternalPageImpl(null);
+    let pageImpl = new window.InterventionsInternalPageImpl(null);
     let ectTypes = ['type1', 'type2', 'type3'];
     ectTypes.forEach((type) => {
       pageImpl.updateEffectiveConnectionType(type, 'max');
@@ -612,7 +612,7 @@ TEST_F('InterventionsInternalsUITest', 'OnECTChanged', function() {
 
 TEST_F('InterventionsInternalsUITest', 'OnBlocklistIgnoreChange', function() {
   test('OnBlocklistIgnoreChangeDisable', () => {
-    let pageImpl = new InterventionsInternalPageImpl(null);
+    let pageImpl = new window.InterventionsInternalPageImpl(null);
     pageImpl.onIgnoreBlocklistDecisionStatusChanged(true /* ignored */);
     expectEquals('Enable Blocklist', $('ignore-blocklist-button').textContent);
     expectEquals(
