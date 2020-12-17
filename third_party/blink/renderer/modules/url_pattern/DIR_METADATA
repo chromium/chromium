@@ -1,4 +1,4 @@
 monorail {
-  component: "Blink>ServiceWorker"
+  component: "Blink>URLPattern"
 }
 team_email: "worker-dev@chromium.org"
