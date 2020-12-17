@@ -596,6 +596,8 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterIntegerPref(kPasswordManagerOnboardingState, 0);
   registry->RegisterBooleanPref(kWasOnboardingFeatureCheckedBefore, false);
 
+  registry->RegisterBooleanPref(prefs::kWebAppsUserDisplayModeCleanedUp, false);
+
   registry->RegisterBooleanPref(kHistoryMenuPromoShown, true);
 
 #if defined(USE_X11)
@@ -1265,6 +1267,9 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   profile_prefs->ClearPref(kAssistantPrivacyInfoShownInLauncher);
   profile_prefs->ClearPref(kAssistantPrivacyInfoDismissedInLauncher);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Added 12/2020
+  profile_prefs->ClearPref(prefs::kWebAppsUserDisplayModeCleanedUp);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

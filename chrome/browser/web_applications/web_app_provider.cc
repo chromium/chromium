@@ -29,7 +29,6 @@
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_migration_manager.h"
-#include "chrome/browser/web_applications/web_app_migration_user_display_mode_clean_up.h"
 #include "chrome/browser/web_applications/web_app_protocol_handler_manager.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -162,8 +161,6 @@ void WebAppProvider::Shutdown() {
   icon_manager_->Shutdown();
   install_finalizer_->Shutdown();
   registrar_->Shutdown();
-  if (migration_user_display_mode_clean_up_)
-    migration_user_display_mode_clean_up_->Shutdown();
 }
 
 void WebAppProvider::StartImpl() {
@@ -238,9 +235,6 @@ void WebAppProvider::CreateWebAppsSubsystems(Profile* profile) {
   migration_manager_ = std::make_unique<WebAppMigrationManager>(
       profile, database_factory_.get(), icon_manager.get(),
       os_integration_manager_.get());
-  migration_user_display_mode_clean_up_ =
-      WebAppMigrationUserDisplayModeCleanUp::CreateIfNeeded(
-          profile, sync_bridge.get(), os_integration_manager_.get());
 
   // Upcast to unified subsystem types:
   registrar_ = std::move(registrar);
@@ -296,8 +290,6 @@ void WebAppProvider::OnRegistryControllerReady() {
   manifest_update_manager_->Start();
   os_integration_manager_->Start();
   ui_manager_->Start();
-  if (migration_user_display_mode_clean_up_)
-    migration_user_display_mode_clean_up_->Start();
 
   on_registry_ready_.Signal();
 }
@@ -317,7 +309,6 @@ void WebAppProvider::RegisterProfilePrefs(
   WebAppPrefsUtilsRegisterProfilePrefs(registry);
   RegisterInstallBounceMetricProfilePrefs(registry);
   RegisterDailyWebAppMetricsProfilePrefs(registry);
-  WebAppMigrationUserDisplayModeCleanUp::RegisterProfilePrefs(registry);
 }
 
 }  // namespace web_app

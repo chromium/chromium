@@ -72,10 +72,6 @@ void InstallFinalizer::ReparentTab(const AppId& app_id,
                                              shortcut_created);
 }
 
-InstallFinalizer* InstallFinalizer::legacy_finalizer_for_testing() {
-  return nullptr;
-}
-
 AppRegistrar& InstallFinalizer::registrar() const {
   DCHECK(!is_legacy_finalizer());
   return *registrar_;

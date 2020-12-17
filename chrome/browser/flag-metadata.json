@@ -1516,11 +1516,6 @@
     "expiry_milestone": 91
   },
   {
-    "name": "enable-desktop-pwas-migration-user-display-mode-clean-up",
-    "owners": [ "alancutter@chromium.org", "desktop-pwas-team@google.com" ],
-    "expiry_milestone": 89
-  },
-  {
     "name": "enable-desktop-pwas-run-on-os-login",
     "owners": [ "mjackson@microsoft.com", "desktop-pwas-team@google.com" ],
     "expiry_milestone": 90

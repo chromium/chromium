@@ -93,7 +93,6 @@ class InstallFinalizer {
                            content::WebContents* web_contents);
 
   virtual void RemoveLegacyInstallFinalizerForTesting() {}
-  virtual InstallFinalizer* legacy_finalizer_for_testing();
 
   virtual void Start() {}
   virtual void Shutdown() {}

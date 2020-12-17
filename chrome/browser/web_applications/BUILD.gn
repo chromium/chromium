@@ -53,7 +53,6 @@ source_set("web_applications") {
     "web_app_installation_utils.cc",
     "web_app_installation_utils.h",
     "web_app_migration_manager.h",
-    "web_app_migration_user_display_mode_clean_up.h",
     "web_app_proto_utils.cc",
     "web_app_proto_utils.h",
     "web_app_protocol_handler_manager.cc",
@@ -263,7 +262,6 @@ source_set("web_applications_browser_tests") {
     "web_app_audio_focus_browsertest.cc",
     "web_app_icon_manager_browsertest.cc",
     "web_app_migration_manager_browsertest.cc",
-    "web_app_migration_user_display_mode_clean_up_browsertest.cc",
   ]
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
@@ -301,10 +299,7 @@ source_set("web_applications_browser_tests") {
 # TODO(crbug.com/877898): Erase this and move all migration code to
 # //chrome/browser/web_applications/extensions:extensions GN source set.
 source_set("web_applications_on_extensions") {
-  sources = [
-    "web_app_migration_manager.cc",
-    "web_app_migration_user_display_mode_clean_up.cc",
-  ]
+  sources = [ "web_app_migration_manager.cc" ]
 
   deps = [
     ":web_app_group",

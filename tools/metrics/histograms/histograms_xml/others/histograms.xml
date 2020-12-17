@@ -17401,6 +17401,9 @@ regressions. -->
 
 <histogram name="WebApp.Migration.UserDisplayModeCleanUp"
     enum="BooleanMigrated" expires_after="2021-01-01">
+  <obsolete>
+    Removed 12/2020.
+  </obsolete>
   <owner>alancutter@chromium.org</owner>
   <owner>dxie@google.com</owner>
   <owner>loyso@google.com</owner>

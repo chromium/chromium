@@ -409,9 +409,6 @@ extern const char kColorProviderRedirectionDescription[];
 extern const char kDesktopPWAsLocalUpdatingThrottlePersistenceName[];
 extern const char kDesktopPWAsLocalUpdatingThrottlePersistenceDescription[];
 
-extern const char kDesktopPWAsMigrationUserDisplayModeCleanUpName[];
-extern const char kDesktopPWAsMigrationUserDisplayModeCleanUpDescription[];
-
 extern const char kDesktopPWAsAppIconShortcutsMenuName[];
 extern const char kDesktopPWAsAppIconShortcutsMenuDescription[];
 
