@@ -835,14 +835,14 @@ TEST_F(ArcVmClientAdapterTest, UpgradeArc_NoUserId) {
   EXPECT_TRUE(arc_instance_stopped_called());
 }
 
-// Tests that an "invalid Adb Sideload response" case is handled properly.
-TEST_F(ArcVmClientAdapterTest, UpgradeArc_NoValidAdbResponse) {
+// Tests that a "Failed Adb Sideload response" case is handled properly.
+TEST_F(ArcVmClientAdapterTest, UpgradeArc_FailedAdbResponse) {
   SetValidUserInfo();
   StartMiniArc();
 
   // Ask the Fake Session Manager to return a failed Adb Sideload response.
-  chromeos::FakeSessionManagerClient::Get()
-      ->set_force_query_adb_sideload_failure(true);
+  chromeos::FakeSessionManagerClient::Get()->set_adb_sideload_response(
+      chromeos::FakeSessionManagerClient::AdbSideloadResponseCode::FAILED);
   UpgradeArc(false);
   EXPECT_FALSE(GetTestConciergeClient()->start_arc_vm_called());
   EXPECT_FALSE(arc_instance_stopped_called());
@@ -853,6 +853,24 @@ TEST_F(ArcVmClientAdapterTest, UpgradeArc_NoValidAdbResponse) {
   run_loop()->Run();
   EXPECT_EQ(0, GetTestConciergeClient()->stop_vm_call_count());
   EXPECT_TRUE(arc_instance_stopped_called());
+}
+
+// Tests that a "Need_Powerwash Adb Sideload response" case is handled properly.
+TEST_F(ArcVmClientAdapterTest, UpgradeArc_NeedPowerwashAdbResponse) {
+  SetValidUserInfo();
+  StartMiniArc();
+
+  // Ask the Fake Session Manager to return a Need_Powerwash Adb Sideload
+  // response.
+  chromeos::FakeSessionManagerClient::Get()->set_adb_sideload_response(
+      chromeos::FakeSessionManagerClient::AdbSideloadResponseCode::
+          NEED_POWERWASH);
+  UpgradeArc(true);
+  EXPECT_TRUE(GetTestConciergeClient()->start_arc_vm_called());
+  EXPECT_FALSE(arc_instance_stopped_called());
+  EXPECT_TRUE(
+      base::Contains(GetTestConciergeClient()->start_arc_vm_request().params(),
+                     "androidboot.enable_adb_sideloading=0"));
 }
 
 // Tests that adb sideloading is disabled by default.

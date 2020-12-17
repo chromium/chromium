@@ -258,8 +258,8 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
     adb_sideload_enabled_ = adb_sideload_enabled;
   }
 
-  void set_force_query_adb_sideload_failure(bool force_failure) {
-    force_query_adb_sideload_failure_ = force_failure;
+  void set_adb_sideload_response(AdbSideloadResponseCode response) {
+    adb_sideload_response_ = response;
   }
 
   bool session_stopped() const { return session_stopped_; }
@@ -303,9 +303,9 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
   // This simulates a policy load error in session manager.
   bool force_retrieve_policy_load_error_ = false;
 
-  // If set to true, QueryAdbSideload() always replies with a failed
-  // response, irrespective of the value of adb_sideload_enabled_.
-  bool force_query_adb_sideload_failure_ = false;
+  // The response that will be returned when QueryAdbSideload() is called.
+  AdbSideloadResponseCode adb_sideload_response_ =
+      AdbSideloadResponseCode::SUCCESS;
 
   int clear_forced_re_enrollment_vpd_call_count_ = 0;
   // Callback which is run after calling |StartDeviceWipe| or

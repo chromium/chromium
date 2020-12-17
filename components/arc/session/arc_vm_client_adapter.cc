@@ -690,13 +690,19 @@ class ArcVmClientAdapter : public ArcClientAdapter,
     VLOG(1) << "IsAdbSideloadAllowed, response_code="
             << static_cast<int>(response_code) << ", enabled=" << enabled;
 
-    if (response_code !=
-        chromeos::SessionManagerClient::AdbSideloadResponseCode::SUCCESS) {
-      LOG(ERROR) << "Unsuccessful response from QueryAdbSideload";
-      std::move(callback).Run(false);
-      return;
+    switch (response_code) {
+      case chromeos::SessionManagerClient::AdbSideloadResponseCode::FAILED:
+        LOG(ERROR) << "Failed response from QueryAdbSideload";
+        std::move(callback).Run(false);
+        return;
+      case chromeos::SessionManagerClient::AdbSideloadResponseCode::
+          NEED_POWERWASH:
+        params.is_adb_sideloading_enabled = false;
+        break;
+      case chromeos::SessionManagerClient::AdbSideloadResponseCode::SUCCESS:
+        params.is_adb_sideloading_enabled = enabled;
+        break;
     }
-    params.is_adb_sideloading_enabled = enabled;
 
     ConfigureUpstartJobs(
         std::move(jobs),
