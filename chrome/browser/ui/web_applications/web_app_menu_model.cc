@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/web_applications/web_app_menu_model.h"
 
-#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
@@ -13,7 +12,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
@@ -28,39 +26,25 @@
 #endif
 
 constexpr int WebAppMenuModel::kUninstallAppCommandId;
-constexpr int WebAppMenuModel::kExtensionsMenuCommandId;
 
 WebAppMenuModel::WebAppMenuModel(ui::AcceleratorProvider* provider,
-                                 Browser* browser,
-                                 Delegate* delegate)
-    : AppMenuModel(provider, browser), delegate_(delegate) {}
+                                 Browser* browser)
+    : AppMenuModel(provider, browser) {}
 
 WebAppMenuModel::~WebAppMenuModel() {}
 
 bool WebAppMenuModel::IsCommandIdEnabled(int command_id) const {
-  switch (command_id) {
-    case kUninstallAppCommandId:
-      return browser()->app_controller()->CanUninstall();
-    case kExtensionsMenuCommandId:
-      return delegate_ && base::FeatureList::IsEnabled(
-                              features::kDesktopPWAsElidedExtensionsMenu);
-    default:
-      return AppMenuModel::IsCommandIdEnabled(command_id);
-  }
+  return command_id == kUninstallAppCommandId
+             ? browser()->app_controller()->CanUninstall()
+             : AppMenuModel::IsCommandIdEnabled(command_id);
 }
 
 void WebAppMenuModel::ExecuteCommand(int command_id, int event_flags) {
-  switch (command_id) {
-    case kUninstallAppCommandId:
-      LogMenuAction(MENU_ACTION_UNINSTALL_APP);
-      browser()->app_controller()->Uninstall();
-      break;
-    case kExtensionsMenuCommandId:
-      delegate_->OpenExtensionMenu();
-      break;
-    default:
-      AppMenuModel::ExecuteCommand(command_id, event_flags);
-      break;
+  if (command_id == kUninstallAppCommandId) {
+    LogMenuAction(MENU_ACTION_UNINSTALL_APP);
+    browser()->app_controller()->Uninstall();
+  } else {
+    AppMenuModel::ExecuteCommand(command_id, event_flags);
   }
 }
 
@@ -84,9 +68,6 @@ void WebAppMenuModel::Build() {
                    browser()->location_bar_model()->GetVectorIcon()));
 
   AddSeparator(ui::NORMAL_SEPARATOR);
-
-  if (IsCommandIdEnabled(kExtensionsMenuCommandId))
-    AddItemWithStringId(kExtensionsMenuCommandId, IDS_SHOW_EXTENSIONS);
   AddItemWithStringId(IDC_COPY_URL, IDS_COPY_URL);
   AddItemWithStringId(IDC_OPEN_IN_CHROME, IDS_OPEN_IN_CHROME);
 

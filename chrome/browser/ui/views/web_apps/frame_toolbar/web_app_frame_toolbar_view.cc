@@ -223,6 +223,14 @@ ReloadButton* WebAppFrameToolbarView::GetReloadButton() {
   return left_container_ ? left_container_->reload_button() : nullptr;
 }
 
+views::View* WebAppFrameToolbarView::GetLeftContainerForTesting() {
+  return left_container_;
+}
+
+views::View* WebAppFrameToolbarView::GetRightContainerForTesting() {
+  return right_container_;
+}
+
 PageActionIconController*
 WebAppFrameToolbarView::GetPageActionIconControllerForTesting() {
   return right_container_->page_action_icon_controller();

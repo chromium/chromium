@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_container.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/toolbar/browser_actions_container.h"
-#include "chrome/browser/ui/web_applications/web_app_menu_model.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -32,7 +31,6 @@ class WebAppToolbarButtonContainer : public views::View,
                                      public ImmersiveModeController::Observer,
                                      public PageActionIconView::Delegate,
                                      public PageActionIconContainer,
-                                     public WebAppMenuModel::Delegate,
                                      public views::WidgetObserver {
  public:
   // Timing parameters for the origin fade animation.
@@ -134,9 +132,6 @@ class WebAppToolbarButtonContainer : public views::View,
 
   // PageActionIconView::Delegate:
   content::WebContents* GetWebContentsForPageActionIconView() override;
-
-  // WebAppMenuModel::Delegate:
-  void OpenExtensionMenu() override;
 
   // views::WidgetObserver:
   void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;

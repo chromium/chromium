@@ -50,14 +50,9 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
     // always enough space to show at least two icons.
     kNormal,
     // In compact mode, one or both of the menu icon and popped-out action may
-    // be hidden. Compact mode is used in smaller windows (e.g. web apps) where
+    // be hidden. Compact mode is used in smaller windows (e.g. webapps) where
     // there may not be enough space to display the buttons.
     kCompact,
-    // In auto hide mode the menu icon is hidden until
-    // extensions_button()->ShowExtensionsMenu() is called by the embedder. This
-    // is used for windows that want to minimize the number of icons in their
-    // toolbar (e.g. web apps).
-    kAutoHide,
   };
 
   explicit ExtensionsToolbarContainer(
@@ -145,8 +140,6 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
                            const gfx::Point& p) override;
 
  private:
-  friend class ExtensionsToolbarButton;
-
   // A struct representing the position and action being dragged.
   struct DropInfo;
 
@@ -194,22 +187,9 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
   void SetExtensionIconVisibility(ToolbarActionsModel::ActionId id,
                                   bool visible);
 
-  // Calls SetVisible() with ShouldContainerBeVisible().
+  // Calls SetVisible to make sure that the container is showing only when there
+  // are extensions available.
   void UpdateContainerVisibility();
-
-  // Returns whether we should be showing the container e.g. not if there are no
-  // extensions installed or we are inactive in auto hide mode.
-  bool ShouldContainerBeVisible() const;
-
-  // Queues up a call to UpdateContainerVisibility() for when the current layout
-  // animation ends.
-  void UpdateContainerVisibilityAfterAnimation();
-
-  // Event handler for when the extensions menu is opened.
-  void OnMenuOpening();
-
-  // Event handler for when the extensions menu is closed.
-  void OnMenuClosed();
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(
