@@ -35,10 +35,13 @@ namespace {
 class TestDiceWebSigninInterceptorDelegate
     : public DiceWebSigninInterceptor::Delegate {
  public:
-  void ShowSigninInterceptionBubble(
+  std::unique_ptr<ScopedDiceWebSigninInterceptionBubbleHandle>
+  ShowSigninInterceptionBubble(
       content::WebContents* web_contents,
       const BubbleParameters& bubble_parameters,
-      base::OnceCallback<void(SigninInterceptionResult)> callback) override {}
+      base::OnceCallback<void(SigninInterceptionResult)> callback) override {
+    return nullptr;
+  }
   void ShowProfileCustomizationBubble(Browser* browser) override {}
 };
 

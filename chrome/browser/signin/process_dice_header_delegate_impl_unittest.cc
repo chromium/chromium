@@ -40,11 +40,13 @@ class TestDiceWebSigninInterceptorDelegate
     : public DiceWebSigninInterceptor::Delegate {
  public:
   ~TestDiceWebSigninInterceptorDelegate() override = default;
-  void ShowSigninInterceptionBubble(
+  std::unique_ptr<ScopedDiceWebSigninInterceptionBubbleHandle>
+  ShowSigninInterceptionBubble(
       content::WebContents* web_contents,
       const BubbleParameters& bubble_parameters,
       base::OnceCallback<void(SigninInterceptionResult)> callback) override {
     std::move(callback).Run(SigninInterceptionResult::kDeclined);
+    return nullptr;
   }
   void ShowProfileCustomizationBubble(Browser* browser) override {}
 };

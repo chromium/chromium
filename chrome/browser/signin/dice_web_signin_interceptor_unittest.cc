@@ -37,7 +37,7 @@ namespace {
 class MockDiceWebSigninInterceptorDelegate
     : public DiceWebSigninInterceptor::Delegate {
  public:
-  MOCK_METHOD(void,
+  MOCK_METHOD(std::unique_ptr<ScopedDiceWebSigninInterceptionBubbleHandle>,
               ShowSigninInterceptionBubble,
               (content::WebContents * web_contents,
                const BubbleParameters& bubble_parameters,
@@ -456,6 +456,7 @@ TEST_F(DiceWebSigninInterceptorTest, InterceptionInProgress) {
           [&delegate_callback](
               base::OnceCallback<void(SigninInterceptionResult)> callback) {
             delegate_callback = std::move(callback);
+            return nullptr;
           })));
   MaybeIntercept(account_info.account_id);
   testing::Mock::VerifyAndClearExpectations(mock_delegate());
@@ -504,8 +505,10 @@ TEST_F(DiceWebSigninInterceptorTest, DeclineRepeatedly) {
         .WillOnce(testing::WithArg<2>(testing::Invoke(
             [](base::OnceCallback<void(SigninInterceptionResult)> callback) {
               std::move(callback).Run(SigninInterceptionResult::kDeclined);
+              return nullptr;
             })));
     MaybeIntercept(account_info.account_id);
+    EXPECT_EQ(interceptor()->is_interception_in_progress(), false);
     histogram_tester.ExpectUniqueSample(
         "Signin.Intercept.HeuristicOutcome",
         SigninInterceptionHeuristicOutcome::kInterceptEnterprise, i + 1);

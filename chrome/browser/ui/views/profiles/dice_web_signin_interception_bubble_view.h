@@ -8,9 +8,10 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 #include "base/callback.h"
+#include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor.h"
-#include "chrome/browser/ui/browser_list_observer.h"
 
 namespace views {
 class View;
@@ -21,8 +22,7 @@ class Profile;
 // Bubble shown as part of Dice web signin interception. This bubble is
 // implemented as a WebUI page rendered inside a native bubble.
 class DiceWebSigninInterceptionBubbleView
-    : public views::BubbleDialogDelegateView,
-      public BrowserListObserver {
+    : public views::BubbleDialogDelegateView {
  public:
   ~DiceWebSigninInterceptionBubbleView() override;
 
@@ -31,12 +31,16 @@ class DiceWebSigninInterceptionBubbleView
   DiceWebSigninInterceptionBubbleView& operator=(
       const DiceWebSigninInterceptionBubbleView& other) = delete;
 
-  static void CreateBubble(
-      Profile* profile,
-      views::View* anchor_view,
-      const DiceWebSigninInterceptor::Delegate::BubbleParameters&
-          bubble_parameters,
-      base::OnceCallback<void(SigninInterceptionResult)> callback);
+  // Warning: the bubble is closed when the handle is destroyed ; it is the
+  // responsibility of the caller to keep the handle alive until the bubble
+  // should be closed.
+  static std::unique_ptr<ScopedDiceWebSigninInterceptionBubbleHandle>
+  CreateBubble(Profile* profile,
+               views::View* anchor_view,
+               const DiceWebSigninInterceptor::Delegate::BubbleParameters&
+                   bubble_parameters,
+               base::OnceCallback<void(SigninInterceptionResult)> callback)
+      WARN_UNUSED_RESULT;
 
   // Record metrics about the result of the signin interception.
   static void RecordInterceptionResult(
@@ -44,6 +48,9 @@ class DiceWebSigninInterceptionBubbleView
           bubble_parameters,
       Profile* profile,
       SigninInterceptionResult result);
+
+  // Returns true if the user has accepted the interception.
+  bool HasAccepted() const;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptionBubbleBrowserTest,
@@ -53,19 +60,19 @@ class DiceWebSigninInterceptionBubbleView
   FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptionBubbleBrowserTest,
                            BubbleAccepted);
 
-  // base::ScopedObservation does not work for BrowserList because its
-  // AddObserver/RemoveObserver methods are static.
-  class ScopedBrowserListObserver {
+  // Closes the bubble when `ScopedHandle` is destroyed. Does nothing if the
+  // bubble has been already closed.
+  class ScopedHandle : public ScopedDiceWebSigninInterceptionBubbleHandle {
    public:
-    explicit ScopedBrowserListObserver(BrowserListObserver* owner);
-    ~ScopedBrowserListObserver();
+    explicit ScopedHandle(
+        base::WeakPtr<DiceWebSigninInterceptionBubbleView> bubble);
+    ~ScopedHandle() override;
 
-    ScopedBrowserListObserver(const ScopedBrowserListObserver&) = delete;
-    ScopedBrowserListObserver& operator=(const ScopedBrowserListObserver&) =
-        delete;
+    ScopedHandle& operator=(const ScopedHandle&) = delete;
+    ScopedHandle(const ScopedHandle&) = delete;
 
    private:
-    BrowserListObserver* owner_;
+    base::WeakPtr<DiceWebSigninInterceptionBubbleView> bubble_;
   };
 
   DiceWebSigninInterceptionBubbleView(
@@ -75,20 +82,23 @@ class DiceWebSigninInterceptionBubbleView
           bubble_parameters,
       base::OnceCallback<void(SigninInterceptionResult)> callback);
 
+  // Gets a handle on the bubble. Warning: the bubble is closed when the handle
+  // is destroyed ; it is the responsibility of the caller to keep the handle
+  // alive until the bubble should be closed.
+  std::unique_ptr<ScopedDiceWebSigninInterceptionBubbleHandle> GetHandle()
+      const;
+
   // This bubble has no native buttons. The user accepts or cancels through this
   // method, which is called by the inner web UI.
   void OnWebUIUserChoice(bool accept);
 
-  // BrowserListObserver:
-  void OnBrowserAdded(Browser* browser) override;
-
   Profile* profile_;
+  bool has_accepted_ = false;
   DiceWebSigninInterceptor::Delegate::BubbleParameters bubble_parameters_;
   base::OnceCallback<void(SigninInterceptionResult)> callback_;
 
-  // Once the user accepted, a spinner is shown until the new browser is
-  // created, and then the bubble is closed.
-  std::unique_ptr<ScopedBrowserListObserver> browser_list_observer_;
+  // Last member in the class: pointers are invalidated before other fields.
+  base::WeakPtrFactory<DiceWebSigninInterceptionBubbleView> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_DICE_WEB_SIGNIN_INTERCEPTION_BUBBLE_VIEW_H_

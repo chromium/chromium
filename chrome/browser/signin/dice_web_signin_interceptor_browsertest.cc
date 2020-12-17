@@ -6,11 +6,13 @@
 
 #include <map>
 
+#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observer.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -41,18 +43,33 @@
 #include "url/gurl.h"
 
 namespace {
+class FakeDiceWebSigninInterceptorDelegate;
+
+class FakeBubbleHandle : public ScopedDiceWebSigninInterceptionBubbleHandle,
+                         public base::SupportsWeakPtr<FakeBubbleHandle> {
+ public:
+  ~FakeBubbleHandle() override = default;
+};
 
 // Dummy interception delegate that automatically accepts multi user
 // interception.
 class FakeDiceWebSigninInterceptorDelegate
     : public DiceWebSigninInterceptor::Delegate {
  public:
-  void ShowSigninInterceptionBubble(
+  std::unique_ptr<ScopedDiceWebSigninInterceptionBubbleHandle>
+  ShowSigninInterceptionBubble(
       content::WebContents* web_contents,
       const BubbleParameters& bubble_parameters,
       base::OnceCallback<void(SigninInterceptionResult)> callback) override {
     EXPECT_EQ(bubble_parameters.interception_type, expected_interception_type_);
-    std::move(callback).Run(SigninInterceptionResult::kAccepted);
+    auto bubble_handle = std::make_unique<FakeBubbleHandle>();
+    weak_bubble_handle_ = bubble_handle->AsWeakPtr();
+    // The callback must not be called synchronously (see the documentation for
+    // ShowSigninInterceptionBubble).
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  SigninInterceptionResult::kAccepted));
+    return bubble_handle;
   }
   void ShowProfileCustomizationBubble(Browser* browser) override {
     EXPECT_FALSE(customized_browser_)
@@ -66,10 +83,17 @@ class FakeDiceWebSigninInterceptorDelegate
     expected_interception_type_ = type;
   }
 
+  bool intercept_bubble_shown() const { return weak_bubble_handle_.get(); }
+
+  bool intercept_bubble_destroyed() const {
+    return weak_bubble_handle_.WasInvalidated();
+  }
+
  private:
   Browser* customized_browser_ = nullptr;
   DiceWebSigninInterceptor::SigninInterceptionType expected_interception_type_ =
       DiceWebSigninInterceptor::SigninInterceptionType::kMultiUser;
+  base::WeakPtr<FakeBubbleHandle> weak_bubble_handle_;
 };
 
 // Waits until a new profile is created.
@@ -252,6 +276,9 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, InterceptionTest) {
   Profile* new_profile =
       InterceptAndWaitProfileCreation(web_contents, account_info.account_id);
   ASSERT_TRUE(new_profile);
+  FakeDiceWebSigninInterceptorDelegate* source_interceptor_delegate =
+      GetInterceptorDelegate(profile());
+  EXPECT_TRUE(source_interceptor_delegate->intercept_bubble_shown());
   signin::IdentityManager* new_identity_manager =
       IdentityManagerFactory::GetForProfile(new_profile);
   EXPECT_TRUE(new_identity_manager->HasAccountWithRefreshToken(
@@ -285,10 +312,16 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, InterceptionTest) {
 
   CheckHistograms(histogram_tester,
                   SigninInterceptionHeuristicOutcome::kInterceptMultiUser);
+  // Interception bubble is destroyed in the source profile, and was not shown
+  // in the new profile.
+  FakeDiceWebSigninInterceptorDelegate* new_interceptor_delegate =
+      GetInterceptorDelegate(new_profile);
+  EXPECT_TRUE(source_interceptor_delegate->intercept_bubble_destroyed());
+  EXPECT_FALSE(new_interceptor_delegate->intercept_bubble_shown());
+  EXPECT_FALSE(new_interceptor_delegate->intercept_bubble_destroyed());
   // Profile customization UI was shown exactly once in the new profile.
-  EXPECT_EQ(GetInterceptorDelegate(new_profile)->customized_browser(),
-            added_browser);
-  EXPECT_EQ(GetInterceptorDelegate(profile())->customized_browser(), nullptr);
+  EXPECT_EQ(new_interceptor_delegate->customized_browser(), added_browser);
+  EXPECT_EQ(source_interceptor_delegate->customized_browser(), nullptr);
 }
 
 // Tests the complete profile switch flow when the profile is not loaded.
@@ -319,11 +352,14 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, SwitchAndLoad) {
   int original_tab_count = browser()->tab_strip_model()->count();
 
   // Do the signin interception.
-  GetInterceptorDelegate(profile())->set_expected_interception_type(
+  FakeDiceWebSigninInterceptorDelegate* source_interceptor_delegate =
+      GetInterceptorDelegate(profile());
+  source_interceptor_delegate->set_expected_interception_type(
       DiceWebSigninInterceptor::SigninInterceptionType::kProfileSwitch);
   Profile* new_profile =
       InterceptAndWaitProfileCreation(web_contents, account_info.account_id);
   ASSERT_TRUE(new_profile);
+  EXPECT_TRUE(source_interceptor_delegate->intercept_bubble_shown());
   signin::IdentityManager* new_identity_manager =
       IdentityManagerFactory::GetForProfile(new_profile);
   EXPECT_TRUE(new_identity_manager->HasAccountWithRefreshToken(
@@ -348,9 +384,11 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, SwitchAndLoad) {
 
   CheckHistograms(histogram_tester,
                   SigninInterceptionHeuristicOutcome::kInterceptProfileSwitch);
+  // Interception bubble was closed.
+  EXPECT_TRUE(source_interceptor_delegate->intercept_bubble_destroyed());
   // Profile customization was not shown.
   EXPECT_EQ(GetInterceptorDelegate(new_profile)->customized_browser(), nullptr);
-  EXPECT_EQ(GetInterceptorDelegate(profile())->customized_browser(), nullptr);
+  EXPECT_EQ(source_interceptor_delegate->customized_browser(), nullptr);
 }
 
 // Tests the complete profile switch flow when the profile is already loaded.

@@ -22,7 +22,8 @@ class DiceWebSigninInterceptorDelegate
   ~DiceWebSigninInterceptorDelegate() override;
 
   // DiceWebSigninInterceptor::Delegate
-  void ShowSigninInterceptionBubble(
+  std::unique_ptr<ScopedDiceWebSigninInterceptionBubbleHandle>
+  ShowSigninInterceptionBubble(
       content::WebContents* web_contents,
       const BubbleParameters& bubble_parameters,
       base::OnceCallback<void(SigninInterceptionResult)> callback) override;
@@ -30,7 +31,8 @@ class DiceWebSigninInterceptorDelegate
 
  private:
   // Implemented in dice_web_signin_interception_bubble_view.cc
-  void ShowSigninInterceptionBubbleInternal(
+  std::unique_ptr<ScopedDiceWebSigninInterceptionBubbleHandle>
+  ShowSigninInterceptionBubbleInternal(
       Browser* browser,
       const BubbleParameters& bubble_parameters,
       base::OnceCallback<void(SigninInterceptionResult)> callback);

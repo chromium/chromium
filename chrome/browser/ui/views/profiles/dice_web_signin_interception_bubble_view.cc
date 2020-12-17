@@ -10,11 +10,11 @@
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/feature_list.h"
+#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/signin/dice_web_signin_interceptor_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -37,40 +37,55 @@ constexpr int kInterceptionBubbleWidth = 290;
 
 }  // namespace
 
-DiceWebSigninInterceptionBubbleView::ScopedBrowserListObserver::
-    ScopedBrowserListObserver(BrowserListObserver* owner)
-    : owner_(owner) {
-  DCHECK(owner_);
-  BrowserList::AddObserver(owner_);
-}
-
-DiceWebSigninInterceptionBubbleView::ScopedBrowserListObserver::
-    ~ScopedBrowserListObserver() {
-  BrowserList::RemoveObserver(owner_);
-}
-
 DiceWebSigninInterceptionBubbleView::~DiceWebSigninInterceptionBubbleView() {
   // Cancel if the bubble is destroyed without user interaction.
   if (callback_) {
     RecordInterceptionResult(bubble_parameters_, profile_,
                              SigninInterceptionResult::kIgnored);
+    // The callback may synchronously delete a handle, which would attempt to
+    // close this bubble while it is being destroyed. Invalidate the handles now
+    // to prevent this.
+    weak_factory_.InvalidateWeakPtrs();
     std::move(callback_).Run(SigninInterceptionResult::kIgnored);
   }
 }
 
 // static
-void DiceWebSigninInterceptionBubbleView::CreateBubble(
+std::unique_ptr<ScopedDiceWebSigninInterceptionBubbleHandle>
+DiceWebSigninInterceptionBubbleView::CreateBubble(
     Profile* profile,
     views::View* anchor_view,
     const DiceWebSigninInterceptor::Delegate::BubbleParameters&
         bubble_parameters,
     base::OnceCallback<void(SigninInterceptionResult)> callback) {
+  auto interception_bubble =
+      base::WrapUnique(new DiceWebSigninInterceptionBubbleView(
+          profile, anchor_view, bubble_parameters, std::move(callback)));
+  std::unique_ptr<ScopedDiceWebSigninInterceptionBubbleHandle> handle =
+      interception_bubble->GetHandle();
   // The widget is owned by the views system.
   views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(
-      new DiceWebSigninInterceptionBubbleView(
-          profile, anchor_view, bubble_parameters, std::move(callback)));
+      std::move(interception_bubble));
   // TODO(droger): Delay showing the bubble until the web view is loaded.
   widget->Show();
+  return handle;
+}
+
+DiceWebSigninInterceptionBubbleView::ScopedHandle::~ScopedHandle() {
+  if (!bubble_)
+    return;  // The bubble was already closed, do nothing.
+  views::Widget* widget = bubble_->GetWidget();
+  if (!widget)
+    return;
+  widget->CloseWithReason(
+      bubble_->HasAccepted() ? views::Widget::ClosedReason::kAcceptButtonClicked
+                             : views::Widget::ClosedReason::kUnspecified);
+}
+
+DiceWebSigninInterceptionBubbleView::ScopedHandle::ScopedHandle(
+    base::WeakPtr<DiceWebSigninInterceptionBubbleView> bubble)
+    : bubble_(std::move(bubble)) {
+  DCHECK(bubble_);
 }
 
 // static
@@ -116,6 +131,10 @@ void DiceWebSigninInterceptionBubbleView::RecordInterceptionResult(
   }
 }
 
+bool DiceWebSigninInterceptionBubbleView::HasAccepted() const {
+  return has_accepted_;
+}
+
 DiceWebSigninInterceptionBubbleView::DiceWebSigninInterceptionBubbleView(
     Profile* profile,
     views::View* anchor_view,
@@ -128,6 +147,7 @@ DiceWebSigninInterceptionBubbleView::DiceWebSigninInterceptionBubbleView(
       bubble_parameters_(bubble_parameters),
       callback_(std::move(callback)) {
   DCHECK(profile_);
+  DCHECK(callback_);
   set_close_on_deactivate(false);
 
   // Create the web view in the native bubble.
@@ -154,36 +174,30 @@ DiceWebSigninInterceptionBubbleView::DiceWebSigninInterceptionBubbleView(
   SetLayoutManager(std::make_unique<views::FillLayout>());
 }
 
+std::unique_ptr<ScopedDiceWebSigninInterceptionBubbleHandle>
+DiceWebSigninInterceptionBubbleView::GetHandle() const {
+  return std::make_unique<ScopedHandle>(weak_factory_.GetWeakPtr());
+}
+
 void DiceWebSigninInterceptionBubbleView::OnWebUIUserChoice(bool accept) {
+  has_accepted_ = accept;
   SigninInterceptionResult result = accept
                                         ? SigninInterceptionResult::kAccepted
                                         : SigninInterceptionResult::kDeclined;
   RecordInterceptionResult(bubble_parameters_, profile_, result);
   std::move(callback_).Run(result);
-
-  // Only close the dialog when the user declined. If the user accepted the
-  // dialog displays a spinner until the new browser is created.
-  if (accept) {
-    browser_list_observer_ = std::make_unique<ScopedBrowserListObserver>(this);
-  } else {
+  if (!accept) {
+    // Only close the dialog when the user declined. If the user accepted the
+    // dialog displays a spinner until the handle is released.
     GetWidget()->CloseWithReason(
         views::Widget::ClosedReason::kCancelButtonClicked);
   }
 }
 
-void DiceWebSigninInterceptionBubbleView::OnBrowserAdded(Browser* browser) {
-  // This function is only called when the user already accepted.
-  // Close the bubble when any new browser is created, not necessarily the one
-  // related to the signin interception ; this is a good-enough approximation.
-  DCHECK(browser_list_observer_);
-  browser_list_observer_.reset();
-  GetWidget()->CloseWithReason(
-      views::Widget::ClosedReason::kAcceptButtonClicked);
-}
-
 // DiceWebSigninInterceptorDelegate --------------------------------------------
 
-void DiceWebSigninInterceptorDelegate::ShowSigninInterceptionBubbleInternal(
+std::unique_ptr<ScopedDiceWebSigninInterceptionBubbleHandle>
+DiceWebSigninInterceptorDelegate::ShowSigninInterceptionBubbleInternal(
     Browser* browser,
     const DiceWebSigninInterceptor::Delegate::BubbleParameters&
         bubble_parameters,
@@ -194,6 +208,6 @@ void DiceWebSigninInterceptorDelegate::ShowSigninInterceptionBubbleInternal(
                                  ->toolbar_button_provider()
                                  ->GetAvatarToolbarButton();
   DCHECK(anchor_view);
-  DiceWebSigninInterceptionBubbleView::CreateBubble(
+  return DiceWebSigninInterceptionBubbleView::CreateBubble(
       browser->profile(), anchor_view, bubble_parameters, std::move(callback));
 }

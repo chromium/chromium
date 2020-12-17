@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/callback_helpers.h"
 #include "base/optional.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/browser.h"
@@ -25,9 +26,9 @@ class DiceWebSigninInterceptionBubbleBrowserTest : public DialogBrowserTest {
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
-    DiceWebSigninInterceptionBubbleView::CreateBubble(
+    bubble_handle_ = DiceWebSigninInterceptionBubbleView::CreateBubble(
         browser()->profile(), GetAvatarButton(), GetTestBubbleParameters(),
-        base::OnceCallback<void(SigninInterceptionResult)>());
+        base::DoNothing());
   }
 
   // Returns the avatar button, which is the anchor view for the interception
@@ -59,6 +60,7 @@ class DiceWebSigninInterceptionBubbleBrowserTest : public DialogBrowserTest {
   }
 
   base::Optional<SigninInterceptionResult> callback_result_;
+  std::unique_ptr<ScopedDiceWebSigninInterceptionBubbleHandle> bubble_handle_;
 };
 
 IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
@@ -141,16 +143,21 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
   widget->Show();
   EXPECT_FALSE(callback_result_.has_value());
 
+  // Take a handle on the bubble, to close it later.
+  bubble_handle_ = bubble->GetHandle();
+
   views::test::WidgetClosingObserver closing_observer(widget);
+  EXPECT_FALSE(bubble->HasAccepted());
   // Simulate clicking Accept in the WebUI.
   bubble->OnWebUIUserChoice(/*accept=*/true);
   ASSERT_TRUE(callback_result_.has_value());
   EXPECT_EQ(callback_result_, SigninInterceptionResult::kAccepted);
+  EXPECT_TRUE(bubble->HasAccepted());
 
   // Widget was not closed yet.
   ASSERT_FALSE(closing_observer.widget_closed());
-  // Simulate a new browser being created by the interception.
-  CreateGuestBrowser();
+  // Simulate completion of the interception process.
+  bubble_handle_.reset();
   // Widget will close now.
   closing_observer.Wait();
 

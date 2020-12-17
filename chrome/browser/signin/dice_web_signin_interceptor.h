@@ -98,6 +98,14 @@ enum class SigninInterceptionResult {
   kMaxValue = kNotDisplayed,
 };
 
+// The ScopedDiceWebSigninInterceptionBubbleHandle closes the signin intercept
+// bubble when it is destroyed, if the bubble is still opened. Note that this
+// handle does not prevent the bubble from being closed for other reasons.
+class ScopedDiceWebSigninInterceptionBubbleHandle {
+ public:
+  virtual ~ScopedDiceWebSigninInterceptionBubbleHandle() = 0;
+};
+
 // Returns whether the heuristic outcome is a success (the signin should be
 // intercepted).
 bool SigninInterceptionHeuristicOutcomeIsSuccess(
@@ -111,11 +119,16 @@ bool SigninInterceptionHeuristicOutcomeIsSuccess(
 // enterprise or multi-user case:
 // * MaybeInterceptWebSignin() is called when the new signin happens.
 // * Wait until the account info is downloaded.
-// * Interception UI is shown by the delegate.
+// * Interception UI is shown by the delegate. Keep a handle on the bubble.
 // * If the user approved, a new profile is created and the token is moved from
 //   this profile to the new profile, using DiceSignedInProfileCreator.
 // * At this point, the flow ends in this profile, and continues in the new
-//   profile using DiceInterceptedSessionStartupHelper.
+//   profile using DiceInterceptedSessionStartupHelper to add the account.
+// * When the account is available on the web in the new profile:
+//   - A new browser window is created for the new profile,
+//   - The tab is moved to the new profile,
+//   - The interception bubble is closed by deleting the handle,
+//   - The profile customization bubble is shown.
 class DiceWebSigninInterceptor : public KeyedService,
                                  public content::WebContentsObserver,
                                  public signin::IdentityManager::Observer {
@@ -139,7 +152,15 @@ class DiceWebSigninInterceptor : public KeyedService,
     // whether the user should continue in a new profile.
     // The callback is never called if the delegate is deleted before it
     // completes.
-    virtual void ShowSigninInterceptionBubble(
+    // May return a nullptr handle if the bubble cannot be shown.
+    // Warning: the handle closes the bubble when it is destroyed ; it is the
+    // responsibility of the caller to keep the handle alive until the bubble
+    // should be closed.
+    // The callback must not be called synchronously if this function returns a
+    // valid handle (because the caller needs to be able to close the bubble
+    // from the callback).
+    virtual std::unique_ptr<ScopedDiceWebSigninInterceptionBubbleHandle>
+    ShowSigninInterceptionBubble(
         content::WebContents* web_contents,
         const BubbleParameters& bubble_parameters,
         base::OnceCallback<void(SigninInterceptionResult)> callback) = 0;
@@ -183,6 +204,8 @@ class DiceWebSigninInterceptor : public KeyedService,
   void CreateBrowserAfterSigninInterception(
       CoreAccountId account_id,
       content::WebContents* intercepted_contents,
+      std::unique_ptr<ScopedDiceWebSigninInterceptionBubbleHandle>
+          bubble_handle,
       bool show_customization_bubble);
 
   // Returns the outcome of the interception heuristic.
@@ -286,6 +309,9 @@ class DiceWebSigninInterceptor : public KeyedService,
   // is cancelled if the account info cannot be fetched quickly.
   base::CancelableOnceCallback<void()> on_account_info_update_timeout_;
   std::unique_ptr<DiceSignedInProfileCreator> dice_signed_in_profile_creator_;
+  // Used to retain the interception UI bubble until profile creation completes.
+  std::unique_ptr<ScopedDiceWebSigninInterceptionBubbleHandle>
+      interception_bubble_handle_;
   // Used for metrics:
   bool was_interception_ui_displayed_ = false;
   base::TimeTicks account_info_fetch_start_time_;
