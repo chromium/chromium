@@ -11,6 +11,8 @@
 #include "ui/base/ime/candidate_window.h"
 #include "ui/chromeos/ui_chromeos_export.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace ui {
 namespace ime {
@@ -22,6 +24,7 @@ class InformationTextArea;
 class UI_CHROMEOS_EXPORT CandidateWindowView
     : public views::BubbleDialogDelegateView {
  public:
+  METADATA_HEADER(CandidateWindowView);
   // The object can be monitored by the observer.
   class Observer {
    public:
@@ -31,6 +34,8 @@ class UI_CHROMEOS_EXPORT CandidateWindowView
   };
 
   explicit CandidateWindowView(gfx::NativeView parent);
+  CandidateWindowView(const CandidateWindowView&) = delete;
+  CandidateWindowView& operator=(const CandidateWindowView&) = delete;
   ~CandidateWindowView() override;
   views::Widget* InitWidget();
 
@@ -72,9 +77,6 @@ class UI_CHROMEOS_EXPORT CandidateWindowView
 
  private:
   friend class CandidateWindowViewTest;
-
-  // views::BubbleDialogDelegateView:
-  const char* GetClassName() const override;
 
   void SelectCandidateAt(int index_in_page);
   void UpdateVisibility();
@@ -125,11 +127,16 @@ class UI_CHROMEOS_EXPORT CandidateWindowView
   // True if the candidate window was open.  This is used to determine when to
   // send OnCandidateWindowOpened and OnCandidateWindowClosed events.
   bool was_candidate_window_open_;
-
-  DISALLOW_COPY_AND_ASSIGN(CandidateWindowView);
 };
+
+BEGIN_VIEW_BUILDER(UI_CHROMEOS_EXPORT,
+                   CandidateWindowView,
+                   views::BubbleDialogDelegateView)
+END_VIEW_BUILDER
 
 }  // namespace ime
 }  // namespace ui
+
+DEFINE_VIEW_BUILDER(UI_CHROMEOS_EXPORT, ui::ime::CandidateWindowView)
 
 #endif  // CHROME_BROWSER_CHROMEOS_INPUT_METHOD_UI_CANDIDATE_WINDOW_VIEW_H_

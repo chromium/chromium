@@ -16,6 +16,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 namespace ui {
@@ -196,10 +197,6 @@ void SuggestionView::OnThemeChanged() {
   views::View::OnThemeChanged();
 }
 
-const char* SuggestionView::GetClassName() const {
-  return "SuggestionView";
-}
-
 void SuggestionView::Layout() {
   int left = kPadding;
   if (index_label_->GetVisible()) {
@@ -240,6 +237,9 @@ gfx::Size SuggestionView::CalculatePreferredSize() const {
 void SuggestionView::SetMinWidth(int min_width) {
   min_width_ = min_width;
 }
+
+BEGIN_METADATA(SuggestionView, views::Button)
+END_METADATA
 
 }  // namespace ime
 }  // namespace ui

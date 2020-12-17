@@ -16,6 +16,8 @@
 #include "ui/chromeos/ui_chromeos_export.h"
 #include "ui/gfx/font_list.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace ui {
 namespace ime {
@@ -26,8 +28,11 @@ class InfolistEntryView;
 class UI_CHROMEOS_EXPORT InfolistWindow
     : public views::BubbleDialogDelegateView {
  public:
+  METADATA_HEADER(InfolistWindow);
   InfolistWindow(views::View* candidate_window,
                  const std::vector<ui::InfolistEntry>& entries);
+  InfolistWindow(const InfolistWindow&) = delete;
+  InfolistWindow& operator=(const InfolistWindow&) = delete;
   ~InfolistWindow() override;
   void InitWidget();
 
@@ -43,9 +48,6 @@ class UI_CHROMEOS_EXPORT InfolistWindow
   void HideImmediately();
 
  private:
-  // views::BubbleDialogDelegateView:
-  const char* GetClassName() const override;
-
   // views::WidgetDelegate implementation.
   void WindowClosing() override;
 
@@ -59,11 +61,16 @@ class UI_CHROMEOS_EXPORT InfolistWindow
   gfx::FontList description_font_list_;
 
   base::OneShotTimer show_hide_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(InfolistWindow);
 };
+
+BEGIN_VIEW_BUILDER(UI_CHROMEOS_EXPORT,
+                   InfolistWindow,
+                   views::BubbleDialogDelegateView)
+END_VIEW_BUILDER
 
 }  // namespace ime
 }  // namespace ui
+
+DEFINE_VIEW_BUILDER(UI_CHROMEOS_EXPORT, ui::ime::InfolistWindow)
 
 #endif  // CHROME_BROWSER_CHROMEOS_INPUT_METHOD_UI_INFOLIST_WINDOW_H_

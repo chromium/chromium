@@ -11,6 +11,7 @@
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/wm/core/window_animations.h"
 
 namespace ui {
@@ -100,16 +101,15 @@ views::Button* UndoWindow::GetUndoButtonForTesting() {
   return undo_button_;
 }
 
-const char* UndoWindow::GetClassName() const {
-  return "UndoWindow";
-}
-
 void UndoWindow::UndoButtonPressed() {
   const AssistiveWindowButton button = {
       .id = ButtonId::kUndo, .window_type = AssistiveWindowType::kUndoWindow};
   SetButtonHighlighted(button, true);
   delegate_->AssistiveWindowButtonClicked(button);
 }
+
+BEGIN_METADATA(UndoWindow, views::BubbleDialogDelegateView)
+END_METADATA
 
 }  // namespace ime
 }  // namespace ui

@@ -11,6 +11,8 @@
 #include "ui/chromeos/ui_chromeos_export.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
 namespace ui {
@@ -19,8 +21,11 @@ namespace ime {
 // CandidateView renderes a row of a candidate.
 class UI_CHROMEOS_EXPORT CandidateView : public views::Button {
  public:
+  METADATA_HEADER(CandidateView);
   CandidateView(PressedCallback callback,
                 ui::CandidateWindow::Orientation orientation);
+  CandidateView(const CandidateView&) = delete;
+  CandidateView& operator=(const CandidateView&) = delete;
   ~CandidateView() override {}
 
   void GetPreferredWidths(int* shortcut_width, int* candidate_width);
@@ -44,7 +49,6 @@ class UI_CHROMEOS_EXPORT CandidateView : public views::Button {
   void StateChanged(ButtonState old_state) override;
 
   // Overridden from View:
-  const char* GetClassName() const override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;
   void Layout() override;
   gfx::Size CalculatePreferredSize() const override;
@@ -72,11 +76,17 @@ class UI_CHROMEOS_EXPORT CandidateView : public views::Button {
   // 0-based index of this candidate e.g. [0, total_candidates_ -1].
   int candidate_index_;
   int total_candidates_;
-
-  DISALLOW_COPY_AND_ASSIGN(CandidateView);
 };
+
+BEGIN_VIEW_BUILDER(UI_CHROMEOS_EXPORT, CandidateView, views::Button)
+VIEW_BUILDER_PROPERTY(bool, InfolistIcon)
+VIEW_BUILDER_PROPERTY(bool, Highlighted)
+VIEW_BUILDER_PROPERTY(const ui::CandidateWindow::Entry&, Entry)
+END_VIEW_BUILDER
 
 }  // namespace ime
 }  // namespace ui
+
+DEFINE_VIEW_BUILDER(UI_CHROMEOS_EXPORT, ui::ime::CandidateView)
 
 #endif  // CHROME_BROWSER_CHROMEOS_INPUT_METHOD_UI_CANDIDATE_VIEW_H_

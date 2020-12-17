@@ -28,6 +28,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/wm/core/window_animations.h"
 
 namespace ui {
@@ -418,14 +419,13 @@ void CandidateWindowView::SelectCandidateAt(int index_in_page) {
                                                    total_candidates);
 }
 
-const char* CandidateWindowView::GetClassName() const {
-  return "CandidateWindowView";
-}
-
 void CandidateWindowView::CandidateViewPressed(int index) {
   for (Observer& observer : observers_)
     observer.OnCandidateCommitted(index);
 }
+
+BEGIN_METADATA(CandidateWindowView, views::BubbleDialogDelegateView)
+END_METADATA
 
 }  // namespace ime
 }  // namespace ui

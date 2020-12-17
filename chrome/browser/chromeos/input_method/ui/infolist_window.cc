@@ -23,6 +23,7 @@
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_animations.h"
 
@@ -87,9 +88,12 @@ gfx::Insets InfolistBorder::GetInsets() const {
 // InfolistRow renderes a row of a infolist.
 class InfolistEntryView : public views::View {
  public:
+  METADATA_HEADER(InfolistEntryView);
   InfolistEntryView(const ui::InfolistEntry& entry,
                     const gfx::FontList& title_font_list,
                     const gfx::FontList& description_font_list);
+  InfolistEntryView(const InfolistEntryView&) = delete;
+  InfolistEntryView& operator=(const InfolistEntryView&) = delete;
   ~InfolistEntryView() override;
 
   void SetEntry(const ui::InfolistEntry& entry);
@@ -107,9 +111,10 @@ class InfolistEntryView : public views::View {
 
   // The description label. Owned by views hierarchy.
   views::Label* description_label_;
-
-  DISALLOW_COPY_AND_ASSIGN(InfolistEntryView);
 };
+
+BEGIN_METADATA(InfolistEntryView, views::View)
+END_METADATA
 
 InfolistEntryView::InfolistEntryView(const ui::InfolistEntry& entry,
                                      const gfx::FontList& title_font_list,
@@ -268,13 +273,12 @@ void InfolistWindow::HideImmediately() {
   GetWidget()->Close();
 }
 
-const char* InfolistWindow::GetClassName() const {
-  return "InfolistWindow";
-}
-
 void InfolistWindow::WindowClosing() {
   show_hide_timer_.Stop();
 }
+
+BEGIN_METADATA(InfolistWindow, views::BubbleDialogDelegateView)
+END_METADATA
 
 }  // namespace ime
 }  // namespace ui

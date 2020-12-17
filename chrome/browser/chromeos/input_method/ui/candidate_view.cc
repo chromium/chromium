@@ -15,6 +15,7 @@
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 namespace ui {
@@ -26,7 +27,10 @@ namespace {
 // the vertical candidate window.
 class VerticalCandidateLabel : public views::Label {
  public:
+  METADATA_HEADER(VerticalCandidateLabel);
   VerticalCandidateLabel() = default;
+  VerticalCandidateLabel(const VerticalCandidateLabel&) = delete;
+  VerticalCandidateLabel& operator=(const VerticalCandidateLabel&) = delete;
   ~VerticalCandidateLabel() override = default;
 
  private:
@@ -39,11 +43,10 @@ class VerticalCandidateLabel : public views::Label {
     size.SetToMin(gfx::Size(kMaxCandidateLabelWidth, size.height()));
     return size;
   }
-
-  const char* GetClassName() const override { return "VerticalCandidateLabel"; }
-
-  DISALLOW_COPY_AND_ASSIGN(VerticalCandidateLabel);
 };
+
+BEGIN_METADATA(VerticalCandidateLabel, views::Label)
+END_METADATA
 
 // Creates the shortcut label, and returns it (never returns nullptr).
 // The label text is not set in this function.
@@ -211,10 +214,6 @@ void CandidateView::StateChanged(ButtonState old_state) {
     SetHighlighted(true);
 }
 
-const char* CandidateView::GetClassName() const {
-  return "CandidateView";
-}
-
 bool CandidateView::OnMouseDragged(const ui::MouseEvent& event) {
   if (!HitTestPoint(event.location())) {
     // Moves the drag target to the sibling view.
@@ -299,6 +298,9 @@ void CandidateView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->AddIntAttribute(ax::mojom::IntAttribute::kSetSize,
                              total_candidates_);
 }
+
+BEGIN_METADATA(CandidateView, views::Button)
+END_METADATA
 
 }  // namespace ime
 }  // namespace ui
