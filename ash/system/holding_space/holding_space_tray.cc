@@ -107,7 +107,7 @@ void HoldingSpaceTray::ClickedOutsideBubble() {
 }
 
 base::string16 HoldingSpaceTray::GetAccessibleNameForTray() {
-  return l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_TITLE);
+  return l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_A11Y_NAME);
 }
 
 void HoldingSpaceTray::HandleLocaleChange() {

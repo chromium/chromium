@@ -1005,11 +1005,14 @@ This file contains the strings for ash.
       </message>
 
       <!-- Holding space tray-->
+      <message name="IDS_ASH_HOLDING_SPACE_A11Y_NAME" desc="A11y name of the holding space tray and bubble.">
+        Tote: recent screen captures, downloads, and pinned files
+      </message>
       <message name="IDS_ASH_HOLDING_SPACE_TITLE" desc="Title of the holding space tray and bubble.">
-        Recent screen captures and downloads
+        Tote
       </message>
       <message name="IDS_ASH_HOLDING_SPACE_PINNED_TITLE" desc="Title of the pinned files area in the holding space bubble.">
-        Pinned
+        Pinned files
       </message>
       <message name="IDS_ASH_HOLDING_SPACE_PINNED_EMPTY_PROMPT" desc="Prompt shown in the pinned files area of the holding space bubble if the user has no pinned files.">
         You can pin your important files here. Open Files app to get started.
