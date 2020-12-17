@@ -218,10 +218,10 @@ const base::Feature kRTCUnifiedPlanByDefault{"RTCUnifiedPlanByDefault",
 
 // Determines if the SDP attrbute extmap-allow-mixed should be offered by
 // default or not. The default value can be overridden by passing
-// {offerExtmapAllowMixed:true} as an argument to the RTCPeerConnection
+// {offerExtmapAllowMixed:false} as an argument to the RTCPeerConnection
 // constructor.
-const base::Feature kRTCOfferExtmapAllowMixed{
-    "RTCOfferExtmapAllowMixed", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kRTCOfferExtmapAllowMixed{"RTCOfferExtmapAllowMixed",
+                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables waiting for codec support status notification from GPU factory in RTC
 // codec factories.
