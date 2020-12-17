@@ -304,6 +304,7 @@ void SharesheetBubbleView::OnKeyEvent(ui::KeyEvent* event) {
   // TODO(crbug.com/1141741) Update to OnKeyPressed.
   if (!IsKeyboardCodeArrow(event->key_code()) ||
       event->type() != ui::ET_KEY_RELEASED || default_view_ == nullptr) {
+    View::OnKeyEvent(event);
     return;
   }
 
