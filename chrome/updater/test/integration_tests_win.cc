@@ -139,6 +139,10 @@ void Install() {
 }
 
 void Uninstall() {
+  // Copy logs from GetDataDirPath() before updater uninstalls itself
+  // and deletes the path.
+  CopyLog(GetDataDirPath());
+
   // Note: updater.exe --uninstall is run from the build dir, not the install
   // dir, because it is useful for tests to be able to run it to clean the
   // system even if installation has failed or the installed binaries have

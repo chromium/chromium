@@ -29,6 +29,9 @@ void ExpectClean();
 // Places the updater into test mode (use local servers and disable CUP).
 void EnterTestMode();
 
+// Copies the logs to a location where they can be retrieved by ResultDB.
+void CopyLog(const base::FilePath& src_dir);
+
 // Sleeps for the given number of seconds. This should be avoided, but in some
 // cases surrounding uninstall it is necessary since the processes can exit
 // prior to completing the actual uninstallation.

@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
+#include "base/strings/strcat.h"
 #include "base/test/task_environment.h"
 #include "base/version.h"
 #include "build/build_config.h"
@@ -52,8 +53,29 @@ void PrintLog() {
     VLOG(0) << "Failed to read updater.log file.";
   }
 }
-
 }  // namespace
+
+const testing::TestInfo* GetTestInfo() {
+  return testing::UnitTest::GetInstance()->current_test_info();
+}
+
+base::FilePath GetLogDestinationDir() {
+  // Fetch path to ${ISOLATED_OUTDIR} env var.
+  // ResultDB reads logs and test artifacts info from there.
+  return base::FilePath::FromUTF8Unsafe(std::getenv("ISOLATED_OUTDIR"));
+}
+
+void CopyLog(const base::FilePath& src_dir) {
+  // TODO(crbug.com/1159189): copy other test artifacts.
+  base::FilePath dest_dir = GetLogDestinationDir();
+  if (base::PathExists(dest_dir) && base::PathExists(src_dir)) {
+    base::FilePath dest_file_path = dest_dir.AppendASCII(
+        base::StrCat({GetTestInfo()->test_suite_name(), ".",
+                      GetTestInfo()->name(), "_updater.log"}));
+    EXPECT_TRUE(
+        base::CopyFile(src_dir.AppendASCII("updater.log"), dest_file_path));
+  }
+}
 
 void RunWake(int expected_exit_code) {
   const base::FilePath installed_executable_path = GetInstalledExecutablePath();
@@ -134,9 +156,12 @@ class IntegrationTest : public ::testing::Test {
   }
 
   void TearDown() override {
-    ExpectClean();
     if (::testing::Test::HasFailure())
       PrintLog();
+    // TODO(crbug.com/1159189): Use a specific test output directory
+    // because Uninstall() deletes the files under GetDataDirPath().
+    CopyLog(GetDataDirPath());
+    ExpectClean();
     Clean();
   }
 

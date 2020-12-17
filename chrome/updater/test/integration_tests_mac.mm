@@ -200,6 +200,11 @@ void ExpectCandidateUninstalled() {
 }
 
 void Uninstall() {
+  // Copy logs from GetDataDirPath() before updater uninstalls itself
+  // and deletes the path.
+  CopyLog(GetDataDirPath());
+
+  // Uninstall the updater.
   const base::FilePath path = GetExecutablePath();
   ASSERT_FALSE(path.empty());
   base::CommandLine command_line(path);
