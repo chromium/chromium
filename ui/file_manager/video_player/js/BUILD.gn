@@ -22,6 +22,7 @@ js_type_check("closure_compile_jsmodules") {
     ":background.m",
     ":error_util.m",
     ":test_util.m",
+    ":video_player.m",
     ":video_player_metrics.m",
     ":video_player_native_controls.m",
   ]
@@ -139,6 +140,23 @@ js_library("video_player") {
   ]
 }
 
+js_library("video_player.m") {
+  sources =
+      [ "$root_gen_dir/ui/file_manager/video_player/js/video_player.m.js" ]
+  deps = [
+    ":video_player_metrics.m",
+    ":video_player_native_controls.m",
+    "//ui/file_manager/base/js:app_util.m",
+    "//ui/file_manager/base/js:filtered_volume_manager.m",
+    "//ui/file_manager/base/js:volume_manager_types.m",
+    "//ui/file_manager/file_manager/common/js:util.m",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("video_player_metrics") {
   deps = [ "//ui/file_manager/file_manager/common/js:metrics_base" ]
 }
@@ -181,5 +199,6 @@ js_modulizer("modulize") {
     "error_util.js",
     "test_util.js",
     "background.js",
+    "video_player.js",
   ]
 }
