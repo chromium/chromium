@@ -4,6 +4,7 @@
 
 #include "chrome/browser/webapps/chrome_webapps_client.h"
 
+#include "base/logging.h"
 #include "build/build_config.h"
 #include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
@@ -12,6 +13,7 @@
 #if defined(OS_ANDROID)
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/android/tab_web_contents_delegate_android.h"
+#include "chrome/browser/android/webapk/webapk_install_service.h"
 #endif
 
 namespace webapps {
@@ -66,6 +68,18 @@ WebappInstallSource ChromeWebappsClient::GetInstallSource(
   }
   NOTREACHED();
   return WebappInstallSource::COUNT;
+}
+
+bool ChromeWebappsClient::IsInstallationInProgress(
+    content::WebContents* web_contents,
+    const GURL& manifest_url) {
+#if defined(OS_ANDROID)
+  return WebApkInstallService::Get(web_contents->GetBrowserContext())
+      ->IsInstallInProgress(manifest_url);
+#else
+  NOTREACHED();
+  return false;
+#endif
 }
 
 }  // namespace webapps

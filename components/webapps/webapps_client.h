@@ -7,6 +7,8 @@
 
 #include "components/security_state/core/security_state.h"
 
+class GURL;
+
 namespace content {
 class WebContents;
 }  // namespace content
@@ -41,6 +43,9 @@ class WebappsClient {
   virtual WebappInstallSource GetInstallSource(
       content::WebContents* web_contents,
       InstallTrigger trigger) = 0;
+
+  virtual bool IsInstallationInProgress(content::WebContents* web_contents,
+                                        const GURL& manifest_url) = 0;
 };
 
 }  // namespace webapps

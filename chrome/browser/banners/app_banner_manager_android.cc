@@ -16,7 +16,6 @@
 #include "chrome/android/chrome_jni_headers/AppBannerManagerHelper_jni.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/android/tab_web_contents_delegate_android.h"
-#include "chrome/browser/android/webapk/webapk_install_service.h"
 #include "chrome/browser/android/webapk/webapk_metrics.h"
 #include "chrome/browser/android/webapk/webapk_ukm_recorder.h"
 #include "chrome/browser/android/webapk/webapk_web_manifest_checker.h"
@@ -41,6 +40,7 @@
 #include "components/webapps/android/webapps_utils.h"
 #include "components/webapps/installable/installable_data.h"
 #include "components/webapps/installable/installable_metrics.h"
+#include "components/webapps/webapps_client.h"
 #include "content/public/browser/manifest_icon_downloader.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/url_util.h"
@@ -568,8 +568,8 @@ bool AppBannerManagerAndroid::IsWebAppConsideredInstalled() const {
   // one is in flight for the current site.
   return WebappsUtils::IsWebApkInstalled(web_contents()->GetBrowserContext(),
                                          manifest_.start_url) ||
-         WebApkInstallService::Get(web_contents()->GetBrowserContext())
-             ->IsInstallInProgress(manifest_url_);
+         WebappsClient::Get()->IsInstallationInProgress(web_contents(),
+                                                        manifest_url_);
 }
 
 base::WeakPtr<AppBannerManager> AppBannerManagerAndroid::GetWeakPtr() {
