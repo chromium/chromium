@@ -1496,6 +1496,9 @@
   <message name="IDS_CHROMEOS_NETWORK_ERROR_PPP_AUTH_FAILED" desc="Network error details in notifications: PPP_AUTH_FAILED">
     PPP authentication failed due to an incorrect username or password
   </message>
+  <message name="IDS_CHROMEOS_NETWORK_ERROR_NOT_ON_HOME_NETWORK" desc="Network error details in notifications when a user attempts to connect to a Cellular network while not on their home network.">
+    Home network is not available. Mobile data roaming must be enabled to connect.
+  </message>
   <message name="IDS_CHROMEOS_NETWORK_ERROR_CONFIGURE_FAILED" desc="Network error details in notifications: Configuration error">
     Failed to configure network
   </message>

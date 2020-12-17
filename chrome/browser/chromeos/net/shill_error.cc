@@ -102,6 +102,10 @@ base::string16 GetShillErrorString(const std::string& error,
     return l10n_util::GetStringUTF16(
         IDS_CHROMEOS_NETWORK_ERROR_PPP_AUTH_FAILED);
   }
+  if (error == shill::kErrorResultNotOnHomeNetwork) {
+    return l10n_util::GetStringUTF16(
+        IDS_CHROMEOS_NETWORK_ERROR_NOT_ON_HOME_NETWORK);
+  }
 
   if (base::ToLowerASCII(error) == base::ToLowerASCII(shill::kUnknownString)) {
     return l10n_util::GetStringUTF16(IDS_CHROMEOS_NETWORK_ERROR_UNKNOWN);

@@ -501,8 +501,18 @@ void NetworkStateHandler::SetNetworkConnectRequested(
   if (!network)
     return;
   network->connect_requested_ = connect_requested;
+  network->shill_connect_error_.clear();
   network_list_sorted_ = false;
   OnNetworkConnectionStateChanged(network);
+}
+
+void NetworkStateHandler::SetShillConnectError(
+    const std::string& service_path,
+    const std::string& shill_connect_error) {
+  NetworkState* network = GetModifiableNetworkState(service_path);
+  if (!network)
+    return;
+  network->shill_connect_error_ = shill_connect_error;
 }
 
 void NetworkStateHandler::SetNetworkChromePortalDetected(

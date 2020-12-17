@@ -180,8 +180,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   // is connecting before the state is set in Shill. If |connect_requested| is
   // true, NetworkState::IsConnectingState() will return true. This will cause
   // the network to be sorted first and it will be part of the active list.
+  // Also clears shill_connect_error_ for the NetworkState.
   void SetNetworkConnectRequested(const std::string& service_path,
                                   bool connect_requested);
+
+  // Calls NetworkState::set_shill_connect_error_ for |service_path|.
+  void SetShillConnectError(const std::string& service_path,
+                            const std::string& shill_connect_error);
 
   // Called from Chrome's network portal detector to indicate whether Chrome has
   // detected that the network is in a captive portal state. This may or may

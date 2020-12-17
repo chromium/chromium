@@ -168,6 +168,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
 
   bool connect_requested() const { return connect_requested_; }
 
+  const std::string& shill_connect_error() const {
+    return shill_connect_error_;
+  }
+
   PortalState portal_state() const { return portal_state_; }
 
   // Returns true if the network is managed by policy (determined by
@@ -306,6 +310,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   // ClearError() when a connection attempt is initiated and when an associated
   // configuration is updated/removed.
   std::string last_error_;
+
+  // The error message provided by the shill Service.Connect dbus method if the
+  // most recent connect attempt failed. Otherwise empty.
+  std::string shill_connect_error_;
 
   // Cached copy of the Shill Service IPConfig object. For ipv6 properties use
   // the ip_configs_ property in the corresponding DeviceState.

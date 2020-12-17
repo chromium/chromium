@@ -773,6 +773,7 @@ void NetworkConnectionHandlerImpl::HandleShillConnectFailure(
   } else if (dbus_error_name == shill::kErrorResultInProgress) {
     error = kErrorConnecting;
   } else {
+    network_state_handler_->SetShillConnectError(service_path, dbus_error_name);
     error = kErrorConnectFailed;
   }
   NET_LOG(ERROR) << "Connect Failure: " << NetworkPathId(service_path)

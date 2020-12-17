@@ -454,14 +454,15 @@ void NetworkStateNotifier::ShowConnectErrorNotification(
     }
 
     if (network) {
-      // Always log last_error, but only use it if shill_error is empty.
-      // TODO(stevenjb): This shouldn't ever be necessary, but is kept here as
-      // a failsafe since more information is better than less when debugging
-      // and we have encountered some strange edge cases before.
+      // Log all error values for debugging.
       NET_LOG(DEBUG) << "Notify: " << log_id
-                     << ": Network.GetError(): " << network->GetError();
+                     << ": Network.GetError(): " << network->GetError()
+                     << " shill_connect_error: "
+                     << network->shill_connect_error();
       if (shill_error.empty())
         shill_error = network->GetError();
+      if (shill_error.empty())
+        shill_error = network->shill_connect_error();
     }
 
     if (ShillErrorIsIgnored(shill_error)) {
