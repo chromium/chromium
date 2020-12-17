@@ -308,9 +308,6 @@ class NET_EXPORT CanonicalCookie {
 
   // Returns if the cookie with given attributes can be set in context described
   // by |options| and |params|, and if no, describes why.
-  // TODO(cfredric): this does not cover checking whether secure cookies are set
-  // in a secure scheme, since whether the scheme is secure isn't part of
-  // |options|.
   CookieAccessResult IsSetPermittedInContext(
       const GURL& source_url,
       const CookieOptions& options,
