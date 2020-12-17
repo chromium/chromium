@@ -175,7 +175,10 @@ class MockHostResolverProc : public HostResolverProc {
                HostResolverFlags flags = 0,
                const std::string& canonical_name = "") {
     AddressList result;
-    int rv = ParseAddressList(ip_list, canonical_name, &result);
+    std::vector<std::string> dns_aliases;
+    if (canonical_name != "")
+      dns_aliases = {canonical_name};
+    int rv = ParseAddressList(ip_list, dns_aliases, &result);
     DCHECK_EQ(OK, rv);
     AddRule(hostname, family, result, flags);
   }
@@ -185,7 +188,10 @@ class MockHostResolverProc : public HostResolverProc {
                              HostResolverFlags flags = 0,
                              const std::string& canonical_name = "") {
     AddressList result;
-    int rv = ParseAddressList(ip_list, canonical_name, &result);
+    std::vector<std::string> dns_aliases;
+    if (canonical_name != "")
+      dns_aliases = {canonical_name};
+    int rv = ParseAddressList(ip_list, dns_aliases, &result);
     DCHECK_EQ(OK, rv);
     AddRule(hostname, ADDRESS_FAMILY_UNSPECIFIED, result, flags);
     AddRule(hostname, ADDRESS_FAMILY_IPV4, result, flags);
@@ -212,7 +218,7 @@ class MockHostResolverProc : public HostResolverProc {
     --num_slots_available_;
     --num_requests_waiting_;
     if (rules_.empty()) {
-      int rv = ParseAddressList("127.0.0.1", std::string(), addrlist);
+      int rv = ParseAddressList("127.0.0.1", {} /* dns_aliases */, addrlist);
       DCHECK_EQ(OK, rv);
       return OK;
     }
@@ -745,6 +751,24 @@ TEST_F(HostResolverManagerTest, DnsQueryType) {
   EXPECT_THAT(v6_response.result_error(), IsOk());
   EXPECT_THAT(v6_response.request()->GetAddressResults().value().endpoints(),
               testing::ElementsAre(CreateExpected("::5", 80)));
+}
+
+TEST_F(HostResolverManagerTest, DnsQueryWithoutAliases) {
+  proc_->AddRule("host", ADDRESS_FAMILY_IPV4, "192.168.1.20");
+
+  HostResolver::ResolveHostParameters parameters;
+
+  parameters.dns_query_type = DnsQueryType::A;
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      HostPortPair("host", 80), NetworkIsolationKey(), NetLogWithSource(),
+      parameters, resolve_context_.get(), resolve_context_->host_cache()));
+
+  proc_->SignalMultiple(1u);
+
+  EXPECT_THAT(response.result_error(), IsOk());
+  EXPECT_THAT(response.request()->GetAddressResults().value().endpoints(),
+              testing::ElementsAre(CreateExpected("192.168.1.20", 80)));
+  EXPECT_FALSE(response.request()->GetDnsAliasResults());
 }
 
 TEST_F(HostResolverManagerTest, LocalhostIPV4IPV6Lookup) {
@@ -4532,6 +4556,7 @@ TEST_F(HostResolverManagerDnsTest, ServeFromHosts) {
   EXPECT_THAT(response_ipv4.result_error(), IsOk());
   EXPECT_THAT(response_ipv4.request()->GetAddressResults().value().endpoints(),
               testing::ElementsAre(CreateExpected("127.0.0.1", 80)));
+  EXPECT_FALSE(response_ipv4.request()->GetDnsAliasResults());
 
   ResolveHostResponseHelper response_ipv6(resolver_->CreateRequest(
       HostPortPair("nx_ipv6", 80), NetworkIsolationKey(), NetLogWithSource(),
@@ -4539,6 +4564,7 @@ TEST_F(HostResolverManagerDnsTest, ServeFromHosts) {
   EXPECT_THAT(response_ipv6.result_error(), IsOk());
   EXPECT_THAT(response_ipv6.request()->GetAddressResults().value().endpoints(),
               testing::ElementsAre(CreateExpected("::1", 80)));
+  EXPECT_FALSE(response_ipv6.request()->GetDnsAliasResults());
 
   ResolveHostResponseHelper response_both(resolver_->CreateRequest(
       HostPortPair("nx_both", 80), NetworkIsolationKey(), NetLogWithSource(),
@@ -4547,6 +4573,7 @@ TEST_F(HostResolverManagerDnsTest, ServeFromHosts) {
   EXPECT_THAT(response_both.request()->GetAddressResults().value().endpoints(),
               testing::UnorderedElementsAre(CreateExpected("127.0.0.1", 80),
                                             CreateExpected("::1", 80)));
+  EXPECT_FALSE(response_both.request()->GetDnsAliasResults());
 
   // Requests with specified DNS query type.
   HostResolver::ResolveHostParameters parameters;
@@ -4561,6 +4588,7 @@ TEST_F(HostResolverManagerDnsTest, ServeFromHosts) {
                   .value()
                   .endpoints(),
               testing::ElementsAre(CreateExpected("127.0.0.1", 80)));
+  EXPECT_FALSE(response_specified_ipv4.request()->GetDnsAliasResults());
 
   parameters.dns_query_type = DnsQueryType::AAAA;
   ResolveHostResponseHelper response_specified_ipv6(resolver_->CreateRequest(
@@ -4572,6 +4600,7 @@ TEST_F(HostResolverManagerDnsTest, ServeFromHosts) {
                   .value()
                   .endpoints(),
               testing::ElementsAre(CreateExpected("::1", 80)));
+  EXPECT_FALSE(response_specified_ipv6.request()->GetDnsAliasResults());
 
   // Request with upper case.
   ResolveHostResponseHelper response_upper(resolver_->CreateRequest(
@@ -4580,6 +4609,7 @@ TEST_F(HostResolverManagerDnsTest, ServeFromHosts) {
   EXPECT_THAT(response_upper.result_error(), IsOk());
   EXPECT_THAT(response_upper.request()->GetAddressResults().value().endpoints(),
               testing::ElementsAre(CreateExpected("127.0.0.1", 80)));
+  EXPECT_FALSE(response_upper.request()->GetDnsAliasResults());
 }
 
 TEST_F(HostResolverManagerDnsTest, SkipHostsWithUpcomingProcTask) {
@@ -6867,7 +6897,6 @@ TEST_F(HostResolverManagerDnsTest, DnsAliases) {
   DnsResponse expected_A_response = BuildTestDnsResponse(
       "first.test", dns_protocol::kTypeA,
       {BuildTestAddressRecord("fourth.test", IPAddress::IPv4Localhost()),
-
        BuildTestCnameRecord("third.test", "fourth.test"),
        BuildTestCnameRecord("second.test", "third.test"),
        BuildTestCnameRecord("first.test", "second.test")});
@@ -6903,6 +6932,84 @@ TEST_F(HostResolverManagerDnsTest, DnsAliases) {
   EXPECT_THAT(response.request()->GetAddressResults().value().dns_aliases(),
               testing::ElementsAre("fourth.test", "third.test", "second.test",
                                    "first.test"));
+
+  EXPECT_THAT(response.request()->GetDnsAliasResults(),
+              testing::Optional(testing::ElementsAre(
+                  "fourth.test", "third.test", "second.test", "first.test")));
+}
+
+TEST_F(HostResolverManagerDnsTest, DnsAliasesAreSanitized) {
+  MockDnsClientRuleList rules;
+
+  DnsResponse expected_A_response = BuildTestDnsResponse(
+      "host.test", dns_protocol::kTypeA,
+      {BuildTestAddressRecord("localhost", IPAddress::IPv4Localhost()),
+       BuildTestCnameRecord("host.test", "localhost")});
+
+  AddDnsRule(&rules, "host.test", dns_protocol::kTypeA,
+             std::move(expected_A_response), false /* delay */);
+
+  DnsResponse expected_AAAA_response = BuildTestDnsResponse(
+      "host.test", dns_protocol::kTypeAAAA,
+      {BuildTestAddressRecord("localhost", IPAddress::IPv6Localhost()),
+       BuildTestCnameRecord("host.test", "localhost")});
+
+  AddDnsRule(&rules, "host.test", dns_protocol::kTypeAAAA,
+             std::move(expected_AAAA_response), false /* delay */);
+
+  CreateResolver();
+  UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
+  set_allow_fallback_to_proctask(false);
+  HostResolver::ResolveHostParameters params;
+  params.include_canonical_name = true;
+  params.source = HostResolverSource::DNS;
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      HostPortPair("host.test", 80), NetworkIsolationKey(), NetLogWithSource(),
+      params, resolve_context_.get(), resolve_context_->host_cache()));
+
+  // Verify that, while the AddressResults contain the full unsanitized alias
+  // list (which has "localhost" has first element and canonical name i.e.
+  // address record name), the call to ResolveHostRequest::GetDnsAliasResults
+  // returns a sanitized list.
+  ASSERT_THAT(response.result_error(), IsOk());
+  ASSERT_TRUE(response.request()->GetAddressResults());
+  EXPECT_EQ(response.request()->GetAddressResults().value().GetCanonicalName(),
+            "localhost");
+  EXPECT_THAT(response.request()->GetAddressResults().value().dns_aliases(),
+              testing::ElementsAre("localhost", "host.test"));
+  EXPECT_THAT(response.request()->GetDnsAliasResults(),
+              testing::Optional(testing::ElementsAre("host.test")));
+}
+
+TEST_F(HostResolverManagerDnsTest, NoAdditionalDnsAliases) {
+  MockDnsClientRuleList rules;
+
+  AddDnsRule(&rules, "first.test", dns_protocol::kTypeA,
+             IPAddress::IPv4Localhost(), false /* delay */);
+
+  AddDnsRule(&rules, "first.test", dns_protocol::kTypeAAAA,
+             IPAddress::IPv6Localhost(), false /* delay */);
+
+  CreateResolver();
+  UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
+  set_allow_fallback_to_proctask(false);
+  HostResolver::ResolveHostParameters params;
+  params.include_canonical_name = true;
+  params.source = HostResolverSource::DNS;
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      HostPortPair("first.test", 80), NetworkIsolationKey(), NetLogWithSource(),
+      params, resolve_context_.get(), resolve_context_->host_cache()));
+
+  ASSERT_THAT(response.result_error(), IsOk());
+  ASSERT_TRUE(response.request()->GetAddressResults());
+  EXPECT_EQ(response.request()->GetAddressResults().value().GetCanonicalName(),
+            "first.test");
+  EXPECT_THAT(response.request()->GetAddressResults().value().dns_aliases(),
+              testing::ElementsAre("first.test"));
+  EXPECT_THAT(response.request()->GetDnsAliasResults(),
+              testing::Optional(testing::ElementsAre("first.test")));
 }
 
 TEST_F(HostResolverManagerDnsTest, SortsAndDeduplicatesAddresses) {

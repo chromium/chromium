@@ -134,8 +134,7 @@ bool TryCreateAliasedSpdySession(SpdySessionPool* pool,
 
   AddressList address_list;
   EXPECT_THAT(
-      ParseAddressList(ip_address_list, /* canonical_name = */ std::string(),
-                       &address_list),
+      ParseAddressList(ip_address_list, /* dns_aliases = */ {}, &address_list),
       IsOk());
   address_list = AddressList::CopyWithPort(address_list, 443);
 

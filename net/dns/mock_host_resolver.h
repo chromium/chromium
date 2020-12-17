@@ -39,12 +39,14 @@ class IPEndPoint;
 class RuleBasedHostResolverProc;
 class URLRequestContext;
 
-// Fills |*addrlist| with a socket address for |host_list| which should be a
+// Fills `*addrlist` with a socket address for `host_list` which should be a
 // comma-separated list of IPv4 or IPv6 literal(s) without enclosing brackets.
-// If |canonical_name| is non-empty it is used as the DNS canonical name for
-// the host. Returns OK on success, ERR_UNEXPECTED otherwise.
+// If `dns_aliases` is non-empty, its first entry is considered the DNS
+// canonical name (i.e. address record name) for the host, and the alias
+// chain is listed in reverse order through to the last entry, the query name.
+// Returns OK on success, ERR_UNEXPECTED otherwise.
 int ParseAddressList(const std::string& host_list,
-                     const std::string& canonical_name,
+                     const std::vector<std::string>& dns_aliases,
                      AddressList* addrlist);
 
 // In most cases, it is important that unit tests avoid relying on making actual
@@ -390,6 +392,17 @@ class RuleBasedHostResolverProc : public HostResolverProc {
                         const std::string& ip_literal,
                         const std::string& canonical_name);
 
+  // Same as AddIPLiteralRule, but with a parameter allowing multiple DNS
+  // aliases, such as CNAME aliases, instead of only the canonical name. While
+  // a simulation using HostResolverProc to obtain more than a single DNS alias
+  // is currently unrealistic, this capability is useful for clients of
+  // MockHostResolver who need to be able to obtain aliases and can be
+  // agnostic about how the host resolution took place, as the alternative,
+  // MockDnsClient, is not currently hooked up to MockHostResolver.
+  void AddIPLiteralRuleWithDnsAliases(const std::string& host_pattern,
+                                      const std::string& ip_literal,
+                                      std::vector<std::string> dns_aliases);
+
   void AddRuleWithLatency(const std::string& host_pattern,
                           const std::string& replacement,
                           int latency_ms);
@@ -434,16 +447,17 @@ class RuleBasedHostResolverProc : public HostResolverProc {
          AddressFamily address_family,
          HostResolverFlags host_resolver_flags,
          const std::string& replacement,
-         const std::string& canonical_name,
+         std::vector<std::string> dns_aliases,
          int latency_ms);
     Rule(const Rule& other);
+    ~Rule();
 
     ResolverType resolver_type;
     std::string host_pattern;
     AddressFamily address_family;
     HostResolverFlags host_resolver_flags;
     std::string replacement;
-    std::string canonical_name;
+    std::vector<std::string> dns_aliases;
     int latency_ms;  // In milliseconds.
   };
 

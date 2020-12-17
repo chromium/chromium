@@ -37,6 +37,8 @@ source_set("dns") {
       "address_sorter.h",
       "context_host_resolver.cc",
       "context_host_resolver.h",
+      "dns_alias_utility.cc",
+      "dns_alias_utility.h",
       "dns_config.cc",
       "dns_config_service.cc",
       "dns_config_service.h",
@@ -390,6 +392,7 @@ source_set("tests") {
   sources = [
     "address_info_unittest.cc",
     "context_host_resolver_unittest.cc",
+    "dns_alias_utility_unittest.cc",
     "dns_config_service_unittest.cc",
     "dns_hosts_unittest.cc",
     "dns_query_unittest.cc",

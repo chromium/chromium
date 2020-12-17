@@ -47,6 +47,8 @@ class StaleHostResolver::RequestImpl
       const override;
   const base::Optional<std::vector<net::HostPortPair>>& GetHostnameResults()
       const override;
+  const base::Optional<std::vector<std::string>>& GetDnsAliasResults()
+      const override;
   net::ResolveErrorInfo GetResolveErrorInfo() const override;
   const base::Optional<net::HostCache::EntryStaleness>& GetStaleInfo()
       const override;
@@ -201,6 +203,15 @@ StaleHostResolver::RequestImpl::GetHostnameResults() const {
 
   DCHECK(cache_request_);
   return cache_request_->GetHostnameResults();
+}
+
+const base::Optional<std::vector<std::string>>&
+StaleHostResolver::RequestImpl::GetDnsAliasResults() const {
+  if (network_request_)
+    return network_request_->GetDnsAliasResults();
+
+  DCHECK(cache_request_);
+  return cache_request_->GetDnsAliasResults();
 }
 
 net::ResolveErrorInfo StaleHostResolver::RequestImpl::GetResolveErrorInfo()

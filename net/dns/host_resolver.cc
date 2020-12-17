@@ -4,7 +4,9 @@
 
 #include "net/dns/host_resolver.h"
 
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/check.h"
@@ -53,6 +55,13 @@ class FailingRequestImpl : public HostResolver::ResolveHostRequest,
   const base::Optional<std::vector<HostPortPair>>& GetHostnameResults()
       const override {
     static const base::NoDestructor<base::Optional<std::vector<HostPortPair>>>
+        nullopt_result;
+    return *nullopt_result;
+  }
+
+  const base::Optional<std::vector<std::string>>& GetDnsAliasResults()
+      const override {
+    static const base::NoDestructor<base::Optional<std::vector<std::string>>>
         nullopt_result;
     return *nullopt_result;
   }

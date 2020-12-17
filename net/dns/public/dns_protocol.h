@@ -110,9 +110,16 @@ static const uint16_t kOffsetMask = 0x3fff;
 static const uint16_t kMDnsClassMask = 0x7FFF;
 
 // RFC 1035, section 3.1: To simplify implementations, the total length of
-// a domain name (i.e., label octets and label length octets) is restricted
-// to 255 octets or less.
+// a domain name in wire form (i.e., label octets and label length octets) is
+// restricted to 255 octets or less.
 static const int kMaxNameLength = 255;
+
+// The maximum number of ASCII characters allowed in a domain in dotted form,
+// derived from `kMaxNameLength` above by subtracting two from the count to
+// correspond to the first and last byte, which, except in the case of a
+// fully-qualified domain name (where the last byte encodes '.'), are not
+// available to encode characters.
+static const uint16_t kMaxCharNameLength = 253;
 
 // RFC 1035, section 2.3.4: labels 63 octets or less.
 // Section 3.1: Each label is represented as a one octet length field followed

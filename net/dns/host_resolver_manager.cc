@@ -22,9 +22,11 @@
 #include <cmath>
 #include <limits>
 #include <memory>
+#include <string>
 #include <tuple>
 #include <unordered_set>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -71,6 +73,7 @@
 #include "net/base/trace_constants.h"
 #include "net/base/url_util.h"
 #include "net/dns/address_sorter.h"
+#include "net/dns/dns_alias_utility.h"
 #include "net/dns/dns_client.h"
 #include "net/dns/dns_reloader.h"
 #include "net/dns/dns_response.h"
@@ -571,6 +574,12 @@ class HostResolverManager::RequestImpl
     return results_ ? results_.value().hostnames() : *nullopt_result;
   }
 
+  const base::Optional<std::vector<std::string>>& GetDnsAliasResults()
+      const override {
+    DCHECK(complete_);
+    return sanitized_dns_alias_results_;
+  }
+
   const base::Optional<std::vector<bool>>& GetExperimentalResultsForTesting()
       const override {
     DCHECK(complete_);
@@ -679,6 +688,19 @@ class HostResolverManager::RequestImpl
 
   bool complete() const { return complete_; }
 
+  void SanitizeDnsAliasResults() {
+    // If there are no address results, if there are no aliases, or if there
+    // are already sanitized alias results, there is nothing to do.
+    if (!results_ || !results_.value().addresses() ||
+        results_.value().addresses()->dns_aliases().empty() ||
+        sanitized_dns_alias_results_) {
+      return;
+    }
+
+    sanitized_dns_alias_results_ = dns_alias_utility::SanitizeDnsAliases(
+        results_.value().addresses()->dns_aliases());
+  }
+
  private:
   // Logging and metrics for when a request has just been started.
   void LogStartRequest() {
@@ -745,6 +767,7 @@ class HostResolverManager::RequestImpl
   bool complete_;
   base::Optional<HostCache::Entry> results_;
   base::Optional<HostCache::EntryStaleness> stale_info_;
+  base::Optional<std::vector<std::string>> sanitized_dns_alias_results_;
   ResolveErrorInfo error_info_;
 
   const base::TickClock* const tick_clock_;
@@ -2372,6 +2395,11 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
       if (results.error() == OK && !req->parameters().is_speculative) {
         req->set_results(
             results.CopyWithDefaultPort(req->request_host().port()));
+
+        // TODO(cammie): Move the sanitization deeper, possibly in
+        // HttpCache::Entry::SetResult(AddressList addresses), so that it
+        // doesn't happen on a per-request basis.
+        req->SanitizeDnsAliasResults();
       }
       req->OnJobCompleted(
           this, results.error(),
@@ -2766,6 +2794,9 @@ int HostResolverManager::Resolve(RequestImpl* request) {
     if (results.error() == OK && !request->parameters().is_speculative) {
       request->set_results(
           results.CopyWithDefaultPort(request->request_host().port()));
+
+      // TODO(cammie): Sanitize before adding to the cache instead.
+      request->SanitizeDnsAliasResults();
     }
     if (stale_info && !request->parameters().is_speculative)
       request->set_stale_info(std::move(stale_info).value());

@@ -6,6 +6,7 @@
 
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/check_op.h"
 #include "base/no_destructor.h"
@@ -148,6 +149,17 @@ class ContextHostResolver::WrappedResolveHostRequest
     }
 
     return inner_request_->GetHostnameResults();
+  }
+
+  const base::Optional<std::vector<std::string>>& GetDnsAliasResults()
+      const override {
+    if (!inner_request_) {
+      static const base::NoDestructor<base::Optional<std::vector<std::string>>>
+          nullopt_result;
+      return *nullopt_result;
+    }
+
+    return inner_request_->GetDnsAliasResults();
   }
 
   net::ResolveErrorInfo GetResolveErrorInfo() const override {
