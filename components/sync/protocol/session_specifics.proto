@@ -19,7 +19,8 @@ package sync_pb;
 import "components/sync/protocol/sync_enums.proto";
 
 message SessionSpecifics {
-  // Unique id for the client.
+  // Unique id for the client. M89 and higher use sync's cache GUID (client ID)
+  // to populate this tag for *new* sessions.
   optional string session_tag = 1;
   optional SessionHeader header = 2;
   optional SessionTab tab = 3;

@@ -326,7 +326,13 @@ std::vector<const SyncedSession*> SyncedSessionTracker::LookupSessions(
     if (lookup == PRESENTABLE && !IsPresentable(sessions_client_, session)) {
       continue;
     }
-    if (exclude_local_session && session_pair.first == local_session_tag_) {
+    // The comparison against |local_session_tag_| deals with the currently
+    // active sync session (cache GUID or legacy session tag) but in addition
+    // IsRecentLocalCacheGuid() is used to filter out older values of the
+    // local cache GUID.
+    if (exclude_local_session &&
+        (session_pair.first == local_session_tag_ ||
+         sessions_client_->IsRecentLocalCacheGuid(session_pair.first))) {
       continue;
     }
     sessions.push_back(&session);

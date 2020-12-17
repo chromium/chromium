@@ -11,4 +11,7 @@ namespace switches {
 const base::Feature kSyncConsiderEmptyWindowsSyncable{
     "SyncConsiderEmptyWindowsSyncable", base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kSyncUseCacheGuidAsSyncSessionTag{
+    "SyncUseCacheGuidAsSyncSessionTag", base::FEATURE_ENABLED_BY_DEFAULT};
+
 }  // namespace switches

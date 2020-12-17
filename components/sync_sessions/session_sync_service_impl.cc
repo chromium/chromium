@@ -8,10 +8,12 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/feature_list.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/model_impl/client_tag_based_model_type_processor.h"
 #include "components/sync_sessions/session_sync_bridge.h"
 #include "components/sync_sessions/session_sync_prefs.h"
+#include "components/sync_sessions/switches.h"
 #include "components/sync_sessions/sync_sessions_client.h"
 
 namespace sync_sessions {
@@ -65,7 +67,12 @@ void SessionSyncServiceImpl::ProxyTabsStateChanged(
 }
 
 void SessionSyncServiceImpl::SetSyncSessionsGUID(const std::string& guid) {
-  sessions_client_->GetSessionSyncPrefs()->SetSyncSessionsGUID(guid);
+  if (base::FeatureList::IsEnabled(
+          switches::kSyncUseCacheGuidAsSyncSessionTag)) {
+    return;
+  }
+
+  sessions_client_->GetSessionSyncPrefs()->SetLegacySyncSessionsGUID(guid);
 }
 
 OpenTabsUIDelegate*

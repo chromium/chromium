@@ -10,15 +10,15 @@
 namespace sync_sessions {
 namespace {
 
-// The GUID session sync will use to identify this client, even across sync
-// disable/enable events.
-const char kSyncSessionsGUID[] = "sync.session_sync_guid";
+// Legacy GUID to identify this client, no longer newly populated by modern
+// clients but honored if present.
+const char kLegacySyncSessionsGUID[] = "sync.session_sync_guid";
 
 }  // namespace
 
 // static
 void SessionSyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterStringPref(kSyncSessionsGUID, std::string());
+  registry->RegisterStringPref(kLegacySyncSessionsGUID, std::string());
 }
 
 SessionSyncPrefs::SessionSyncPrefs(PrefService* pref_service)
@@ -28,12 +28,16 @@ SessionSyncPrefs::SessionSyncPrefs(PrefService* pref_service)
 
 SessionSyncPrefs::~SessionSyncPrefs() {}
 
-std::string SessionSyncPrefs::GetSyncSessionsGUID() const {
-  return pref_service_->GetString(kSyncSessionsGUID);
+std::string SessionSyncPrefs::GetLegacySyncSessionsGUID() const {
+  return pref_service_->GetString(kLegacySyncSessionsGUID);
 }
 
-void SessionSyncPrefs::SetSyncSessionsGUID(const std::string& guid) {
-  pref_service_->SetString(kSyncSessionsGUID, guid);
+void SessionSyncPrefs::SetLegacySyncSessionsGUID(const std::string& guid) {
+  pref_service_->SetString(kLegacySyncSessionsGUID, guid);
+}
+
+void SessionSyncPrefs::ClearLegacySyncSessionsGUID() {
+  pref_service_->ClearPref(kLegacySyncSessionsGUID);
 }
 
 }  // namespace sync_sessions

@@ -177,7 +177,7 @@ class SessionSyncBridgeTest : public ::testing::Test {
     ON_CALL(mock_sync_sessions_client_, GetLocalSessionEventRouter())
         .WillByDefault(Return(window_getter_.router()));
 
-    session_sync_prefs_.SetSyncSessionsGUID(kLocalSessionTag);
+    session_sync_prefs_.SetLegacySyncSessionsGUID(kLocalSessionTag);
 
     // Even if we use NiceMock, let's be strict about errors and let tests
     // explicitly list them.

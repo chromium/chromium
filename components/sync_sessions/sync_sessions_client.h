@@ -6,6 +6,7 @@
 #define COMPONENTS_SYNC_SESSIONS_SYNC_SESSIONS_CLIENT_H_
 
 #include <memory>
+#include <string>
 
 #include "base/macros.h"
 #include "components/sync/model/model_type_store.h"
@@ -38,6 +39,10 @@ class SyncSessionsClient {
   // TODO(zea): make this a standalone function if the url constants are
   // componentized.
   virtual bool ShouldSyncURL(const GURL& url) const = 0;
+
+  // Returns if the provided |cache_guid| is the local device's current cache\
+  // GUID or is known to have been used in the past as local device GUID.
+  virtual bool IsRecentLocalCacheGuid(const std::string& cache_guid) const = 0;
 
   // Returns the SyncedWindowDelegatesGetter for this client.
   virtual SyncedWindowDelegatesGetter* GetSyncedWindowDelegatesGetter() = 0;

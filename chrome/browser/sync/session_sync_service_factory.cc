@@ -9,6 +9,7 @@
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/glue/sync_start_util.h"
 #include "chrome/browser/sync/model_type_store_service_factory.h"
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router.h"
@@ -20,6 +21,8 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/sync/model/model_type_store_service.h"
+#include "components/sync_device_info/device_info_sync_service.h"
+#include "components/sync_device_info/device_info_tracker.h"
 #include "components/sync_sessions/session_sync_prefs.h"
 #include "components/sync_sessions/session_sync_service_impl.h"
 #include "components/sync_sessions/sync_sessions_client.h"
@@ -82,6 +85,12 @@ class SyncSessionsClientImpl : public sync_sessions::SyncSessionsClient {
 
   bool ShouldSyncURL(const GURL& url) const override {
     return ShouldSyncURLImpl(url);
+  }
+
+  bool IsRecentLocalCacheGuid(const std::string& cache_guid) const override {
+    return DeviceInfoSyncServiceFactory::GetForProfile(profile_)
+        ->GetDeviceInfoTracker()
+        ->IsRecentLocalCacheGuid(cache_guid);
   }
 
   sync_sessions::SyncedWindowDelegatesGetter* GetSyncedWindowDelegatesGetter()

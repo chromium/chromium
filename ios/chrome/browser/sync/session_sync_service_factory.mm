@@ -15,6 +15,8 @@
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/model/model_type_store_service.h"
+#include "components/sync_device_info/device_info_sync_service.h"
+#include "components/sync_device_info/device_info_tracker.h"
 #include "components/sync_sessions/local_session_event_router.h"
 #include "components/sync_sessions/session_sync_prefs.h"
 #include "components/sync_sessions/session_sync_service_impl.h"
@@ -24,6 +26,7 @@
 #include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/browser/favicon/favicon_service_factory.h"
 #include "ios/chrome/browser/history/history_service_factory.h"
+#include "ios/chrome/browser/sync/device_info_sync_service_factory.h"
 #include "ios/chrome/browser/sync/glue/sync_start_util.h"
 #include "ios/chrome/browser/sync/model_type_store_service_factory.h"
 #import "ios/chrome/browser/sync/sessions/ios_chrome_local_session_event_router.h"
@@ -93,6 +96,12 @@ class SyncSessionsClientImpl : public sync_sessions::SyncSessionsClient {
 
   bool ShouldSyncURL(const GURL& url) const override {
     return ShouldSyncURLImpl(url);
+  }
+
+  bool IsRecentLocalCacheGuid(const std::string& cache_guid) const override {
+    return DeviceInfoSyncServiceFactory::GetForBrowserState(browser_state_)
+        ->GetDeviceInfoTracker()
+        ->IsRecentLocalCacheGuid(cache_guid);
   }
 
   sync_sessions::SyncedWindowDelegatesGetter* GetSyncedWindowDelegatesGetter()

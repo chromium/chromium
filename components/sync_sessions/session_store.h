@@ -162,6 +162,8 @@ class SessionStore {
   // In charge of actually persisting changes to disk.
   const std::unique_ptr<syncer::ModelTypeStore> store_;
 
+  SyncSessionsClient* const sessions_client_;
+
   SyncedSessionTracker session_tracker_;
 
   base::WeakPtrFactory<SessionStore> weak_ptr_factory_{this};
