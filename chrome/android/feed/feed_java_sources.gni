@@ -430,6 +430,7 @@ if (enable_feed_v2) {
   feed_junit_test_java_sources += [
     "junit/src/org/chromium/chrome/browser/feed/v2/FakeLinearLayoutManager.java",
     "junit/src/org/chromium/chrome/browser/feed/v2/FeedListContentManagerTest.java",
+    "junit/src/org/chromium/chrome/browser/feed/v2/FeedProcessScopeDependencyProviderTest.java",
     "junit/src/org/chromium/chrome/browser/feed/v2/FeedSliceViewTrackerTest.java",
     "junit/src/org/chromium/chrome/browser/feed/v2/FeedStreamSurfaceTest.java",
     "junit/src/org/chromium/chrome/browser/feed/v2/FeedStreamTest.java",
@@ -745,5 +746,6 @@ if (enable_feed_v1 || enable_feed_v2) {
                       "//chrome/browser/user_education:java",
                       "//third_party/google-truth:google_truth_java",
                       "//third_party/android_deps:guava_android_java",
+                      "//chrome/browser/privacy:java",
                     ]
 }

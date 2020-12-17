@@ -80,4 +80,8 @@ public interface ProcessScopeDependencyProvider {
     default LibraryResolver getLibraryResolver() {
         return null;
     }
+
+    default boolean isXsurfaceUsageAndCrashReportingEnabled() {
+        return false;
+    }
 }

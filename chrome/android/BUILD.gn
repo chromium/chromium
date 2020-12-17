@@ -961,6 +961,8 @@ junit_binary("chrome_junit_tests") {
     "//url/mojom:url_mojom_gurl_java",
   ]
 
+  deps += feed_test_deps
+
   data_deps = [ "//testing/buildbot/filters:chrome_junit_tests_filters" ]
 
   package_name = chrome_public_manifest_package

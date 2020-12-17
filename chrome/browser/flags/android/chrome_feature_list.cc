@@ -117,6 +117,7 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &feed::kInterestFeedV2,
     &feed::kReportFeedUserActions,
     &feed::kWebFeed,
+    &feed::kXsurfaceMetricsReporting,
     &history::kHideFromApi3Transitions,
     &kAdjustWebApkInstallationSpace,
     &kAllowNewIncognitoTabIntents,

@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.feed.v2;
 
 import android.content.Context;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.BundleUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -13,6 +15,9 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.base.SplitCompatUtils;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
+import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.xsurface.ImageFetchClient;
@@ -30,6 +35,9 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
     private Context mContext;
     private ImageFetchClient mImageFetchClient;
     private LibraryResolver mLibraryResolver;
+
+    @VisibleForTesting
+    static PrivacyPreferencesManager sPrivacyPreferencesManagerForTest;
 
     FeedProcessScopeDependencyProvider() {
         mContext = createFeedContext(ContextUtils.getApplicationContext());
@@ -106,6 +114,16 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
     @Override
     public LibraryResolver getLibraryResolver() {
         return mLibraryResolver;
+    }
+
+    @Override
+    public boolean isXsurfaceUsageAndCrashReportingEnabled() {
+        PrivacyPreferencesManager manager = sPrivacyPreferencesManagerForTest;
+        if (manager == null) {
+            manager = PrivacyPreferencesManagerImpl.getInstance();
+        }
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.XSURFACE_METRICS_REPORTING)
+                && manager.isMetricsReportingEnabled();
     }
 
     public static Context createFeedContext(Context context) {

@@ -1921,6 +1921,9 @@ extern const char kWalletRequiresFirstSyncSetupCompleteDescription[];
 extern const char kWebFeedName[];
 extern const char kWebFeedDescription[];
 
+extern const char kXsurfaceMetricsReportingName[];
+extern const char kXsurfaceMetricsReportingDescription[];
+
 // Non-Android ----------------------------------------------------------------
 
 #else  // !defined(OS_ANDROID)

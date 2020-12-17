@@ -6,6 +6,7 @@ include_rules = [
   "+chrome/browser/ui/android/appmenu/java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuDelegate.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/ssl/ChromeSecurityStateModelDelegate.java",
   "+chrome/browser/performance_hints/android/java",
+  "+chrome/browser/privacy/settings",
   "+chrome/browser/profiles/android",
   "+chrome/browser/share",
   "+chrome/browser/signin/services/android/java",

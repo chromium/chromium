@@ -5064,6 +5064,11 @@
     "expiry_milestone": 89
   },
   {
+    "name": "xsurface-metrics-reporting",
+    "owners": [ "//chrom/android/feed/OWNERS", "feed@chromium.org" ],
+    "expiry_milestone": 99
+  },
+  {
     "name": "zero-copy-video-capture",
     "owners": [
       // For CrOS

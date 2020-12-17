@@ -45,6 +45,10 @@ extern const base::Feature kInterestFeedSpinnerAlwaysAnimate;
 // Feature that allows users to keep up with and consume web content.
 extern const base::Feature kWebFeed;
 
+// Feature that enables xsurface to provide the metrics reporting state to an
+// xsurface feed.
+extern const base::Feature kXsurfaceMetricsReporting;
+
 std::string GetFeedReferrerUrl();
 
 }  // namespace feed
