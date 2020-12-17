@@ -1227,10 +1227,12 @@ void RenderWidgetHostViewAndroid::OnSelectionEvent(
       event, GetSelectionRect(*touch_selection_controller_));
 }
 
-void RenderWidgetHostViewAndroid::OnDragUpdate(const gfx::PointF& position) {
+void RenderWidgetHostViewAndroid::OnDragUpdate(
+    const ui::TouchSelectionDraggable::Type type,
+    const gfx::PointF& position) {
   if (!selection_popup_controller_)
     return;
-  selection_popup_controller_->OnDragUpdate(position);
+  selection_popup_controller_->OnDragUpdate(type, position);
 }
 
 ui::TouchSelectionControllerClient*
@@ -2458,6 +2460,7 @@ void RenderWidgetHostViewAndroid::HandleSwipeToMoveCursorGestureAck(
       // 0x0.
       if (rect.width() != 0.f || rect.height() != 0.f) {
         selection_popup_controller_->OnDragUpdate(
+            ui::TouchSelectionDraggable::Type::kNone,
             gfx::PointF(event.PositionInWidget().x(), rect.right_center().y()));
       }
       break;

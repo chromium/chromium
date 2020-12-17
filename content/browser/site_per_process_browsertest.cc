@@ -11154,7 +11154,8 @@ class TouchSelectionControllerClientTestWrapper
 
   void DidScroll() override {}
 
-  void OnDragUpdate(const gfx::PointF& position) override {}
+  void OnDragUpdate(const ui::TouchSelectionDraggable::Type type,
+                    const gfx::PointF& position) override {}
 
   ui::SelectionEventType expected_event_;
   std::unique_ptr<base::RunLoop> run_loop_;

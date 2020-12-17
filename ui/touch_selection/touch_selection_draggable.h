@@ -27,6 +27,15 @@ class UI_TOUCH_SELECTION_EXPORT TouchSelectionDraggableClient {
 
 // Generic interface for entities that manipulate the selection via dragging.
 class UI_TOUCH_SELECTION_EXPORT TouchSelectionDraggable {
+ public:
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.ui.touch_selection
+  // GENERATED_JAVA_CLASS_NAME_OVERRIDE: TouchSelectionDraggableType
+  enum class Type {
+    kNone,
+    kTouchHandle,
+    kLongpress,
+  };
+
  protected:
   virtual ~TouchSelectionDraggable() {}
 

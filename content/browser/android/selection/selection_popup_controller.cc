@@ -133,14 +133,16 @@ void SelectionPopupController::OnSelectionEvent(
       selection_rect.right(), selection_rect.bottom());
 }
 
-void SelectionPopupController::OnDragUpdate(const gfx::PointF& position) {
+void SelectionPopupController::OnDragUpdate(
+    const ui::TouchSelectionDraggable::Type type,
+    const gfx::PointF& position) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_obj_.get(env);
   if (obj.is_null())
     return;
 
-  Java_SelectionPopupControllerImpl_onDragUpdate(env, obj, position.x(),
-                                                 position.y());
+  Java_SelectionPopupControllerImpl_onDragUpdate(
+      env, obj, static_cast<int>(type), position.x(), position.y());
 }
 
 void SelectionPopupController::OnSelectionChanged(const std::string& text) {

@@ -159,7 +159,9 @@ void PDFWebContentsHelper::SelectBetweenCoordinates(const gfx::PointF& base,
 
 void PDFWebContentsHelper::OnSelectionEvent(ui::SelectionEventType event) {}
 
-void PDFWebContentsHelper::OnDragUpdate(const gfx::PointF& position) {}
+void PDFWebContentsHelper::OnDragUpdate(
+    const ui::TouchSelectionDraggable::Type type,
+    const gfx::PointF& position) {}
 
 std::unique_ptr<ui::TouchHandleDrawable>
 PDFWebContentsHelper::CreateDrawable() {

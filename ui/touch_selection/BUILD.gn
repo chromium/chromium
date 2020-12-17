@@ -95,7 +95,10 @@ test("ui_touch_selection_unittests") {
 
 if (is_android) {
   java_cpp_enum("ui_touch_selection_enums_srcjar") {
-    sources = [ "selection_event_type.h" ]
+    sources = [
+      "selection_event_type.h",
+      "touch_selection_draggable.h",
+    ]
   }
   java_cpp_enum("ui_touch_handle_orientation_srcjar") {
     sources = [ "touch_handle_orientation.h" ]

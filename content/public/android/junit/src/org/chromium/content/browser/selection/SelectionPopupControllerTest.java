@@ -59,6 +59,7 @@ import org.chromium.ui.base.MenuSourceType;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.touch_selection.SelectionEventType;
+import org.chromium.ui.touch_selection.TouchSelectionDraggableType;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -493,11 +494,11 @@ public class SelectionPopupControllerTest {
         mController.onSelectionEvent(SelectionEventType.SELECTION_HANDLES_SHOWN, 0, 0, 1, 1);
 
         // Selection handles drag started.
-        mController.onDragUpdate(0.f, 0.f);
+        mController.onDragUpdate(TouchSelectionDraggableType.TOUCH_HANDLE, 0.f, 0.f);
         order.verify(handleObserver).handleDragStartedOrMoved(0.f, 0.f);
 
         // Moving.
-        mController.onDragUpdate(5.f, 5.f);
+        mController.onDragUpdate(TouchSelectionDraggableType.TOUCH_HANDLE, 5.f, 5.f);
         order.verify(handleObserver).handleDragStartedOrMoved(5.f, 5.f);
 
         // Selection handle drag stopped.
@@ -517,11 +518,11 @@ public class SelectionPopupControllerTest {
         mController.onSelectionEvent(SelectionEventType.INSERTION_HANDLE_SHOWN, 0, 0, 1, 1);
 
         // Insertion handle drag started.
-        mController.onDragUpdate(0.f, 0.f);
+        mController.onDragUpdate(TouchSelectionDraggableType.TOUCH_HANDLE, 0.f, 0.f);
         order.verify(handleObserver).handleDragStartedOrMoved(0.f, 0.f);
 
         // Moving.
-        mController.onDragUpdate(5.f, 5.f);
+        mController.onDragUpdate(TouchSelectionDraggableType.TOUCH_HANDLE, 5.f, 5.f);
         order.verify(handleObserver).handleDragStartedOrMoved(5.f, 5.f);
 
         // Insertion handle drag stopped.

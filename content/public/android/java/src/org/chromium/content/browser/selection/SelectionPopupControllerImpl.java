@@ -38,6 +38,7 @@ import android.view.textclassifier.TextClassifier;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.UserData;
@@ -68,6 +69,7 @@ import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.ViewAndroidDelegate.ContainerViewObserver;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.touch_selection.SelectionEventType;
+import org.chromium.ui.touch_selection.TouchSelectionDraggableType;
 
 import java.util.List;
 
@@ -1419,7 +1421,12 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
     @VisibleForTesting
     @CalledByNative
-    /* package */ void onDragUpdate(float x, float y) {
+    /* package */ void onDragUpdate(@TouchSelectionDraggableType int type, float x, float y) {
+        // If this is for longpress drag selector, we can only have mangifier on S and above.
+        if (type == TouchSelectionDraggableType.LONGPRESS && !BuildInfo.isAtLeastS()) {
+            return;
+        }
+
         if (mHandleObserver != null) {
             final float deviceScale = getDeviceScaleFactor();
             x *= deviceScale;

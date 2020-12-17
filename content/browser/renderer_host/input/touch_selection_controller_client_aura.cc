@@ -398,9 +398,11 @@ void TouchSelectionControllerClientAura::InternalClient::OnSelectionEvent(
 }
 
 void TouchSelectionControllerClientAura::OnDragUpdate(
+    const ui::TouchSelectionDraggable::Type type,
     const gfx::PointF& position) {}
 
 void TouchSelectionControllerClientAura::InternalClient::OnDragUpdate(
+    const ui::TouchSelectionDraggable::Type type,
     const gfx::PointF& position) {
   NOTREACHED();
 }

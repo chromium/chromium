@@ -143,6 +143,7 @@ void TouchSelectionControllerClientChildFrame::OnSelectionEvent(
 }
 
 void TouchSelectionControllerClientChildFrame::OnDragUpdate(
+    const ui::TouchSelectionDraggable::Type type,
     const gfx::PointF& position) {
   NOTREACHED();
 }

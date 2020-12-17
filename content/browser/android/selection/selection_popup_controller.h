@@ -40,7 +40,8 @@ class SelectionPopupController : public RenderWidgetHostConnector {
   // Called from native -> java
   void OnSelectionEvent(ui::SelectionEventType event,
                         const gfx::RectF& selection_rect);
-  void OnDragUpdate(const gfx::PointF& position);
+  void OnDragUpdate(const ui::TouchSelectionDraggable::Type type,
+                    const gfx::PointF& position);
   void OnSelectionChanged(const std::string& text);
   bool ShowSelectionMenu(const ContextMenuParams& params, int handle_height);
   void OnSelectWordAroundCaretAck(bool did_select,
