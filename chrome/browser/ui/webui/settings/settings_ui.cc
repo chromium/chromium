@@ -332,9 +332,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   plural_string_handler->AddLocalizedString("securityKeysNewPIN",
                                             IDS_SETTINGS_SECURITY_KEYS_NEW_PIN);
   plural_string_handler->AddLocalizedString(
-      "movePasswordsToAccount",
-      IDS_SETTINGS_PASSWORD_MOVE_PASSWORDS_TO_ACCOUNT_COUNT);
-  plural_string_handler->AddLocalizedString(
       "safetyCheckPasswordsCompromised",
       IDS_SETTINGS_COMPROMISED_PASSWORDS_COUNT_SHORT);
   plural_string_handler->AddLocalizedString(

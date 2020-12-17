@@ -11,7 +11,6 @@
 import './password_list_item.js';
 
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
@@ -31,11 +30,7 @@ Polymer({
       type: Array,
       value: () => [],
     },
-    /** @private */
-    movingPasswordsCountLabel_: {
-      type: String,
-      value: '',
-    },
+    accountEmail: String,
   },
 
   /** @override */
@@ -66,17 +61,5 @@ Polymer({
   /** @private */
   onCancelButtonClick_() {
     this.$.dialog.close();
-  },
-
-  updateMovingPasswordsCountLabel_() {
-    const checkboxes = this.$.dialog.querySelectorAll('cr-checkbox');
-    const selectedPasswordsCount =
-        Array.from(checkboxes).filter(box => box.checked).length;
-
-    PluralStringProxyImpl.getInstance()
-        .getPluralString('movePasswordsToAccount', selectedPasswordsCount)
-        .then(label => {
-          this.movingPasswordsCountLabel_ = label;
-        });
   },
 });

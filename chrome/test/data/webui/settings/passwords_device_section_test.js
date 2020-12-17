@@ -4,7 +4,6 @@
 
 /** @fileoverview Runs the Polymer tests for the PasswordsDeviceSection page. */
 
-import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {MultiStorePasswordUiEntry, PasswordManagerImpl, Router, routes, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {createMultiStorePasswordEntry, createPasswordEntry, PasswordDeviceSectionElementFactory} from 'chrome://test/settings/passwords_and_autofill_fake_data.js';
@@ -365,37 +364,5 @@ suite('PasswordsDeviceSection', function() {
     const firstPasswordItem = moveMultipleDialog.$$('password-list-item');
     assertTrue(firstPasswordItem.$.moreActionsButton.hidden);
   });
-
-  // Testing moving multiple password dialog footer reflects how many passwords
-  // are going to be moved.
-  test('moveMultiplePasswordsDialogFooter', async function() {
-    const deviceEntry1 = createMultiStorePasswordEntry(
-        {url: 'goo.gl', username: 'bart1', deviceId: 41});
-    const deviceEntry2 = createMultiStorePasswordEntry(
-        {url: 'goo.gl', username: 'bart2', deviceId: 54});
-    const moveMultipleDialog = elementFactory.createMoveMultiplePasswordsDialog(
-        [deviceEntry1, deviceEntry2]);
-    flush();
-
-    let expectedCountLabel =
-        await PluralStringProxyImpl.getInstance().getPluralString(
-            'movePasswordsToAccount', 2);
-    let countLabel =
-        moveMultipleDialog.$$('#movingPasswordsCountLabel').textContent.trim();
-    expectEquals(expectedCountLabel, countLabel);
-
-    // Uncheck the first entry
-    const firstPasswordItem = moveMultipleDialog.$$('password-list-item');
-    firstPasswordItem.querySelector('cr-checkbox').click();
-
-    // The footer should have been updated that only one item is selected now.
-    expectedCountLabel =
-        await PluralStringProxyImpl.getInstance().getPluralString(
-            'movePasswordsToAccount', 1);
-    countLabel =
-        moveMultipleDialog.$$('#movingPasswordsCountLabel').textContent.trim();
-    expectEquals(expectedCountLabel, countLabel);
-  });
-
 
 });
