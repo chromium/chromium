@@ -58,7 +58,8 @@ Polymer({
       resetAllowed: false,
     });
 
-    this.addSubmitListener(this.$.oldPasswordInput, 'password');
+    cr.ui.LoginUITools.addSubmitListener(
+        this.$.oldPasswordInput, this.submit_.bind(this));
   },
 
   /** Initial UI State for screen */
@@ -89,10 +90,6 @@ Polymer({
     this.disabled = true;
 
     chrome.send('migrateUserData', [this.$.oldPasswordInput.value]);
-  },
-
-  onFieldSubmit(id) {
-    this.submit_();
   },
 
   /** @private */

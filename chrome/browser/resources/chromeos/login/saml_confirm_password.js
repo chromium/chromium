@@ -52,8 +52,11 @@ Polymer({
     this.initializeLoginScreen('ConfirmSamlPasswordScreen', {
       resetAllowed: true,
     });
-    this.addSubmitListener(this.$.passwordInput, 'password');
-    this.addSubmitListener(this.$.confirmPasswordInput, 'confirm');
+
+    cr.ui.LoginUITools.addSubmitListener(
+        this.$.passwordInput, this.submit_.bind(this));
+    cr.ui.LoginUITools.addSubmitListener(
+        this.$.confirmPasswordInput, this.submit_.bind(this));
   },
 
   /** Initial UI State for screen */
@@ -126,10 +129,6 @@ Polymer({
     this.setUIStep(UIState.PROGRESS);
     this.callback_(this.$.passwordInput.value);
     this.reset();
-  },
-
-  onFieldSubmit(id) {
-    this.submit_();
   },
 
   onDialogOverlayClosed_() {
