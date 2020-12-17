@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/memory/ref_counted.h"
+#include "build/build_config.h"
 #include "net/base/net_export.h"
 #include "net/cert/internal/parsed_certificate.h"
 
@@ -70,6 +71,11 @@ NET_EXPORT std::unique_ptr<SystemTrustStore> CreateSslSystemTrustStore();
 // returned by CreateSslSystemTrustStore() on platforms where system trust
 // store integration is not supported.)
 NET_EXPORT std::unique_ptr<SystemTrustStore> CreateEmptySystemTrustStore();
+
+#if defined(OS_MAC)
+// Initializes trust cache on a worker thread.
+NET_EXPORT void InitializeTrustStoreMacCache();
+#endif
 
 }  // namespace net
 

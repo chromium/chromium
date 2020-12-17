@@ -95,6 +95,9 @@ class NET_EXPORT TrustStoreMac : public TrustStore {
   explicit TrustStoreMac(CFStringRef policy_oid);
   ~TrustStoreMac() override;
 
+  // Initializes the trust cache, if it isn't already initialized.
+  void InitializeTrustCache() const;
+
   // Returns true if the given certificate is present in the system trust
   // domain.
   bool IsKnownRoot(const ParsedCertificate* cert) const;

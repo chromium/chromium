@@ -21,6 +21,8 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "net/cert/internal/cert_errors.h"
 #include "net/cert/internal/parsed_certificate.h"
@@ -176,8 +178,12 @@ class SystemTrustStoreMac : public BaseSystemTrustStore {
     return GetGlobalTrustStoreMac()->IsKnownRoot(trust_anchor);
   }
 
+  static void InitializeTrustCacheOnWorkerThread() {
+    GetGlobalTrustStoreMac()->InitializeTrustCache();
+  }
+
  private:
-  TrustStoreMac* GetGlobalTrustStoreMac() const {
+  static TrustStoreMac* GetGlobalTrustStoreMac() {
     static base::NoDestructor<TrustStoreMac> static_trust_store_mac(
         kSecPolicyAppleSSL);
     return static_trust_store_mac.get();
@@ -186,6 +192,13 @@ class SystemTrustStoreMac : public BaseSystemTrustStore {
 
 std::unique_ptr<SystemTrustStore> CreateSslSystemTrustStore() {
   return std::make_unique<SystemTrustStoreMac>();
+}
+
+void InitializeTrustStoreMacCache() {
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&SystemTrustStoreMac::InitializeTrustCacheOnWorkerThread));
 }
 
 #elif defined(OS_FUCHSIA)
