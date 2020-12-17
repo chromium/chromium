@@ -72,6 +72,10 @@ generate_jni("jni_headers") {
   ]
 }
 
+# Temporarily empty target for downstream to depend on before resources move.
+java_group("minimal_java_resources") {
+}
+
 android_resources("java_resources") {
   sources = payments_java_resources
   deps = [
@@ -183,6 +187,10 @@ android_library("java") {
     ":prefs_strings_generated_srcjar",
   ]
   resources_package = "org.chromium.components.payments"
+}
+
+# Temporarily empty target for downstream to depend on before dependencies move.
+java_group("minimal_java") {
 }
 
 android_aidl("payment_details_update_service_aidl") {
