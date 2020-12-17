@@ -283,14 +283,14 @@ bool DesksController::CanCreateDesks() const {
 }
 
 Desk* DesksController::GetNextDesk() const {
-  int next_index = GetDeskIndex(active_desk_);
+  int next_index = GetDeskIndex(GetTargetActiveDesk());
   if (++next_index >= static_cast<int>(desks_.size()))
     return nullptr;
   return desks_[next_index].get();
 }
 
 Desk* DesksController::GetPreviousDesk() const {
-  int previous_index = GetDeskIndex(active_desk_);
+  int previous_index = GetDeskIndex(GetTargetActiveDesk());
   if (--previous_index < 0)
     return nullptr;
   return desks_[previous_index].get();

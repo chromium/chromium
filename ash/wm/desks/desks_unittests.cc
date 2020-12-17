@@ -29,6 +29,7 @@
 #include "ash/window_factory.h"
 #include "ash/wm/desks/close_desk_button.h"
 #include "ash/wm/desks/desk.h"
+#include "ash/wm/desks/desk_animation_base.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_name_view.h"
 #include "ash/wm/desks/desk_preview_view.h"
@@ -37,6 +38,7 @@
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/new_desk_button.h"
+#include "ash/wm/desks/root_window_desk_switch_animator_test_api.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -3513,6 +3515,38 @@ TEST_F(DesksAcceleratorsTest, CannotMoveAlwaysOnTopWindows) {
   // It remains visible even after switching desks.
   ActivateDesk(desk_2);
   EXPECT_TRUE(win0->IsVisible());
+}
+
+// Tests that hitting an acclerator to switch desks does not cause a crash if we
+// are already at an edge desk. Regression test for https://crbug.com/1159068.
+TEST_F(DesksAcceleratorsTest, HitAcceleratorWhenAlreadyAtEdge) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kEnhancedDeskAnimations);
+
+  NewDesk();
+
+  // Enable animations so that we can make sure that they occur.
+  ui::ScopedAnimationDurationScaleMode regular_animations(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // First go right. Wait until the ending screenshot is taken.
+  const int flags = ui::EF_COMMAND_DOWN;
+  SendAccelerator(ui::VKEY_OEM_6, flags);
+
+  DeskAnimationBase* animation = DesksController::Get()->animation();
+  ASSERT_TRUE(animation);
+  base::RunLoop run_loop;
+  auto* desk_switch_animator =
+      animation->GetDeskSwitchAnimatorAtIndexForTesting(0);
+  ASSERT_TRUE(desk_switch_animator);
+  RootWindowDeskSwitchAnimatorTestApi(desk_switch_animator)
+      .SetOnEndingScreenshotTakenCallback(run_loop.QuitClosure());
+  run_loop.Run();
+
+  // Tap the accelerator to go left to desk 1, then tap again. There should be
+  // no crash.
+  SendAccelerator(ui::VKEY_OEM_4, flags);
+  SendAccelerator(ui::VKEY_OEM_4, flags);
 }
 
 class PerDeskShelfTest : public AshTestBase,
