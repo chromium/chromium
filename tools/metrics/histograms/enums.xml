@@ -53142,6 +53142,12 @@ Called by update_net_trust_anchors.py.-->
   <int value="6" label="URL blocked for supervised user"/>
 </enum>
 
+<enum name="NewUserAdded">
+  <int value="0" label="Other user added"/>
+  <int value="1" label="Family Link user added"/>
+  <int value="2" label="Regular user added"/>
+</enum>
+
 <enum name="NewUserPriorityPrefsSyncResult">
   <int value="0" label="Succeeded"/>
   <int value="1" label="Timed out"/>

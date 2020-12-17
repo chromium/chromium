@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "chrome/browser/chromeos/child_accounts/family_user_app_metrics.h"
 #include "chrome/browser/chromeos/child_accounts/family_user_chrome_activity_metrics.h"
+#include "chrome/browser/chromeos/child_accounts/family_user_device_metrics.h"
 #include "chrome/browser/chromeos/child_accounts/family_user_session_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
@@ -49,6 +50,7 @@ FamilyUserMetricsService::FamilyUserMetricsService(
       std::make_unique<FamilyUserAppMetrics>(profile));
   family_user_metrics_.push_back(
       std::make_unique<FamilyUserChromeActivityMetrics>(profile));
+  family_user_metrics_.push_back(std::make_unique<FamilyUserDeviceMetrics>());
 
   for (auto& family_user_metric : family_user_metrics_)
     AddObserver(family_user_metric.get());

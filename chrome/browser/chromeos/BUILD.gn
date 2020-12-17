@@ -978,6 +978,8 @@ source_set("chromeos") {
     "child_accounts/family_user_app_metrics.h",
     "child_accounts/family_user_chrome_activity_metrics.cc",
     "child_accounts/family_user_chrome_activity_metrics.h",
+    "child_accounts/family_user_device_metrics.cc",
+    "child_accounts/family_user_device_metrics.h",
     "child_accounts/family_user_metrics_service.cc",
     "child_accounts/family_user_metrics_service.h",
     "child_accounts/family_user_metrics_service_factory.cc",

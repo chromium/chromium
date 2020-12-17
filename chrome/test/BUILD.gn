@@ -2431,6 +2431,7 @@ if (!is_android) {
         "../browser/chromeos/base/locale_util_browsertest.cc",
         "../browser/chromeos/child_accounts/child_account_test_utils.cc",
         "../browser/chromeos/child_accounts/child_account_test_utils.h",
+        "../browser/chromeos/child_accounts/family_user_device_metrics_browsertest.cc",
         "../browser/chromeos/child_accounts/parent_access_code/parent_access_service_browsertest.cc",
         "../browser/chromeos/child_accounts/parent_access_code/parent_access_test_utils.cc",
         "../browser/chromeos/child_accounts/parent_access_code/parent_access_test_utils.h",
