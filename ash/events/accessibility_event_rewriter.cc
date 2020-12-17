@@ -239,15 +239,19 @@ void AccessibilityEventRewriter::OnMagnifierKeyPressed(
   switch (event->key_code()) {
     case ui::VKEY_UP:
       controller->SetScrollDirection(MagnificationController::SCROLL_UP);
+      delegate_->SendMagnifierCommand(MagnifierCommand::kMoveUp);
       break;
     case ui::VKEY_DOWN:
       controller->SetScrollDirection(MagnificationController::SCROLL_DOWN);
+      delegate_->SendMagnifierCommand(MagnifierCommand::kMoveDown);
       break;
     case ui::VKEY_LEFT:
       controller->SetScrollDirection(MagnificationController::SCROLL_LEFT);
+      delegate_->SendMagnifierCommand(MagnifierCommand::kMoveLeft);
       break;
     case ui::VKEY_RIGHT:
       controller->SetScrollDirection(MagnificationController::SCROLL_RIGHT);
+      delegate_->SendMagnifierCommand(MagnifierCommand::kMoveRight);
       break;
     default:
       NOTREACHED() << "Unexpected keyboard_code:" << event->key_code();
@@ -259,6 +263,7 @@ void AccessibilityEventRewriter::OnMagnifierKeyReleased(
   MagnificationController* controller =
       Shell::Get()->magnification_controller();
   controller->SetScrollDirection(MagnificationController::SCROLL_NONE);
+  delegate_->SendMagnifierCommand(MagnifierCommand::kMoveStop);
 }
 
 void AccessibilityEventRewriter::UpdateKeyboardDeviceIds() {
@@ -296,7 +301,10 @@ ui::EventDispatchDetails AccessibilityEventRewriter::RewriteEvent(
     captured = RewriteEventForSwitchAccess(event, continuation);
   }
 
-  if (!captured && Shell::Get()->magnification_controller()->IsEnabled()) {
+  if (!captured && Shell::Get()
+                       ->accessibility_controller()
+                       ->fullscreen_magnifier()
+                       .enabled()) {
     captured = RewriteEventForMagnifier(event, continuation);
   }
 

@@ -17,6 +17,7 @@ class Event;
 namespace ash {
 
 enum class SwitchAccessCommand;
+enum class MagnifierCommand;
 
 // Allows a client to implement event processing for accessibility features;
 // used for ChromeVox and Switch Access.
@@ -36,6 +37,9 @@ class ASH_PUBLIC_EXPORT AccessibilityEventRewriterDelegate {
 
   // Sends a point to Switch Access's Point Scan.
   virtual void SendPointScanPoint(const gfx::PointF& point) = 0;
+
+  // Sends a command to Magnifier.
+  virtual void SendMagnifierCommand(MagnifierCommand command) = 0;
 
  protected:
   virtual ~AccessibilityEventRewriterDelegate() {}

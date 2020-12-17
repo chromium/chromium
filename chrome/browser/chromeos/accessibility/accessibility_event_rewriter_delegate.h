@@ -15,6 +15,7 @@
 
 namespace ash {
 enum class SwitchAccessCommand;
+enum class MagnifierCommand;
 }
 
 // Passes key events from Ash's EventRewriter to accessibility component
@@ -39,6 +40,7 @@ class AccessibilityEventRewriterDelegate
   void DispatchMouseEvent(std::unique_ptr<ui::Event> event) override;
   void SendSwitchAccessCommand(ash::SwitchAccessCommand command) override;
   void SendPointScanPoint(const gfx::PointF& point) override;
+  void SendMagnifierCommand(ash::MagnifierCommand command) override;
 
  private:
   // Reports unhandled key events to the EventRewriterController for dispatch.

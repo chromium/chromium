@@ -115,6 +115,19 @@ enum class SwitchAccessCommand {
   kPrevious,
 };
 
+enum class MagnifierCommand {
+  // Stop moving magnifier viewport.
+  kMoveStop,
+  // Command to move magnifier viewport up.
+  kMoveUp,
+  // Command to move magnifier viewport down.
+  kMoveDown,
+  // Command to move magnifier viewport left.
+  kMoveLeft,
+  // Command to move magnifier viewport right.
+  kMoveRight,
+};
+
 // The type of mouse event the Automatic Clicks feature should perform when
 // dwelling. These values are written to prefs and correspond to
 // AutoclickActionType in enums.xml, so should not be changed. New values

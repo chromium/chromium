@@ -63,6 +63,17 @@ chrome.accessibilityPrivate.Gesture = {
 /**
  * @enum {string}
  */
+chrome.accessibilityPrivate.MagnifierCommand = {
+  MOVE_STOP: 'moveStop',
+  MOVE_UP: 'moveUp',
+  MOVE_DOWN: 'moveDown',
+  MOVE_LEFT: 'moveLeft',
+  MOVE_RIGHT: 'moveRight',
+};
+
+/**
+ * @enum {string}
+ */
 chrome.accessibilityPrivate.SwitchAccessCommand = {
   SELECT: 'select',
   NEXT: 'next',
@@ -482,6 +493,13 @@ chrome.accessibilityPrivate.onSwitchAccessCommand;
  * @type {!ChromeEvent}
  */
 chrome.accessibilityPrivate.onPointScanSet;
+
+/**
+ * Fired when Chrome OS has received a key event corresponding to a Magnifier
+ * command.
+ * @type {!ChromeEvent}
+ */
+chrome.accessibilityPrivate.onMagnifierCommand;
 
 /**
  * Fired when an internal component within accessibility wants to force speech

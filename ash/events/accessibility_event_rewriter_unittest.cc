@@ -60,6 +60,7 @@ class ChromeVoxTestDelegate : public AccessibilityEventRewriterDelegate {
   }
   void SendSwitchAccessCommand(SwitchAccessCommand command) override {}
   void SendPointScanPoint(const gfx::PointF& point) override {}
+  void SendMagnifierCommand(MagnifierCommand command) override {}
 };
 
 class ChromeVoxAccessibilityEventRewriterTest
@@ -380,6 +381,8 @@ TEST_F(ChromeVoxAccessibilityEventRewriterTest,
 class EventCapturer : public ui::EventHandler {
  public:
   EventCapturer() = default;
+  EventCapturer(const EventCapturer&) = delete;
+  EventCapturer& operator=(const EventCapturer&) = delete;
   ~EventCapturer() override = default;
 
   void Reset() { last_key_event_.reset(); }
@@ -392,13 +395,13 @@ class EventCapturer : public ui::EventHandler {
   }
 
   std::unique_ptr<ui::KeyEvent> last_key_event_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventCapturer);
 };
 
 class SwitchAccessTestDelegate : public AccessibilityEventRewriterDelegate {
  public:
   SwitchAccessTestDelegate() = default;
+  SwitchAccessTestDelegate(const SwitchAccessTestDelegate&) = delete;
+  SwitchAccessTestDelegate& operator=(const SwitchAccessTestDelegate&) = delete;
   ~SwitchAccessTestDelegate() override = default;
 
   SwitchAccessCommand last_command() { return commands_.back(); }
@@ -409,13 +412,12 @@ class SwitchAccessTestDelegate : public AccessibilityEventRewriterDelegate {
     commands_.push_back(command);
   }
   void SendPointScanPoint(const gfx::PointF& point) override {}
+  void SendMagnifierCommand(MagnifierCommand command) override {}
   void DispatchKeyEventToChromeVox(std::unique_ptr<ui::Event>, bool) override {}
   void DispatchMouseEvent(std::unique_ptr<ui::Event>) override {}
 
  private:
   std::vector<SwitchAccessCommand> commands_;
-
-  DISALLOW_COPY_AND_ASSIGN(SwitchAccessTestDelegate);
 };
 
 class SwitchAccessAccessibilityEventRewriterTest : public AshTestBase {
@@ -721,6 +723,108 @@ TEST_F(SwitchAccessAccessibilityEventRewriterTest, SetKeyboardInputTypes) {
   // AccessibilityEventRewriter.
   generator_->PressKey(ui::VKEY_4, ui::EF_NONE, 4);
   generator_->ReleaseKey(ui::VKEY_4, ui::EF_NONE, 2);
+  EXPECT_TRUE(event_capturer_.last_key_event());
+}
+
+class MagnifierTestDelegate : public AccessibilityEventRewriterDelegate {
+ public:
+  MagnifierTestDelegate() = default;
+  MagnifierTestDelegate(const MagnifierTestDelegate&) = delete;
+  MagnifierTestDelegate& operator=(const MagnifierTestDelegate&) = delete;
+  ~MagnifierTestDelegate() override = default;
+
+  MagnifierCommand last_command() { return commands_.back(); }
+  int command_count() { return commands_.size(); }
+
+  // AccessibilityEventRewriterDelegate:
+  void SendSwitchAccessCommand(SwitchAccessCommand command) override {}
+  void SendPointScanPoint(const gfx::PointF& point) override {}
+  void SendMagnifierCommand(MagnifierCommand command) override {
+    commands_.push_back(command);
+  }
+  void DispatchKeyEventToChromeVox(std::unique_ptr<ui::Event>, bool) override {}
+  void DispatchMouseEvent(std::unique_ptr<ui::Event>) override {}
+
+ private:
+  std::vector<MagnifierCommand> commands_;
+};
+
+class MagnifierAccessibilityEventRewriterTest : public AshTestBase {
+ public:
+  MagnifierAccessibilityEventRewriterTest() {
+    event_rewriter_chromeos_ =
+        std::make_unique<ui::EventRewriterChromeOS>(nullptr, nullptr, false);
+  }
+  ~MagnifierAccessibilityEventRewriterTest() override = default;
+
+  void SetUp() override {
+    AshTestBase::SetUp();
+
+    // This test triggers a resize of WindowTreeHost, which will end up
+    // throttling events. set_throttle_input_on_resize_for_testing() disables
+    // this.
+    aura::Env::GetInstance()->set_throttle_input_on_resize_for_testing(false);
+
+    delegate_ = std::make_unique<MagnifierTestDelegate>();
+    accessibility_event_rewriter_ =
+        std::make_unique<AccessibilityEventRewriter>(
+            event_rewriter_chromeos_.get(), delegate_.get());
+    generator_ = AshTestBase::GetEventGenerator();
+    GetContext()->AddPreTargetHandler(&event_capturer_);
+
+    GetContext()->GetHost()->GetEventSource()->AddEventRewriter(
+        accessibility_event_rewriter_.get());
+
+    controller_ = Shell::Get()->accessibility_controller();
+    controller_->SetAccessibilityEventRewriter(
+        accessibility_event_rewriter_.get());
+    controller_->fullscreen_magnifier().SetEnabled(true);
+  }
+
+  void TearDown() override {
+    GetContext()->RemovePreTargetHandler(&event_capturer_);
+    generator_ = nullptr;
+    controller_ = nullptr;
+    accessibility_event_rewriter_.reset();
+    AshTestBase::TearDown();
+  }
+
+ protected:
+  ui::test::EventGenerator* generator_ = nullptr;
+  EventCapturer event_capturer_;
+  AccessibilityControllerImpl* controller_ = nullptr;
+  std::unique_ptr<MagnifierTestDelegate> delegate_;
+  std::unique_ptr<AccessibilityEventRewriter> accessibility_event_rewriter_;
+  std::unique_ptr<ui::EventRewriterChromeOS> event_rewriter_chromeos_;
+};
+
+TEST_F(MagnifierAccessibilityEventRewriterTest, CaptureKeys) {
+  // Press and release Ctrl+Alt+Up.
+  // Verify that the events are captured by AccessibilityEventRewriter.
+  generator_->PressKey(ui::VKEY_UP, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN);
+  EXPECT_FALSE(event_capturer_.last_key_event());
+  EXPECT_EQ(MagnifierCommand::kMoveUp, delegate_->last_command());
+
+  generator_->ReleaseKey(ui::VKEY_UP, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN);
+  EXPECT_FALSE(event_capturer_.last_key_event());
+  EXPECT_EQ(MagnifierCommand::kMoveStop, delegate_->last_command());
+
+  // Press and release Ctrl+Alt+Down.
+  // Verify that the events are captured by AccessibilityEventRewriter.
+  generator_->PressKey(ui::VKEY_DOWN, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN);
+  EXPECT_FALSE(event_capturer_.last_key_event());
+  EXPECT_EQ(MagnifierCommand::kMoveDown, delegate_->last_command());
+
+  generator_->ReleaseKey(ui::VKEY_DOWN, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN);
+  EXPECT_FALSE(event_capturer_.last_key_event());
+  EXPECT_EQ(MagnifierCommand::kMoveStop, delegate_->last_command());
+
+  // Press and release the "3" key.
+  // Verify that the events are not captured by AccessibilityEventRewriter.
+  generator_->PressKey(ui::VKEY_3, ui::EF_NONE);
+  EXPECT_TRUE(event_capturer_.last_key_event());
+
+  generator_->ReleaseKey(ui::VKEY_3, ui::EF_NONE);
   EXPECT_TRUE(event_capturer_.last_key_event());
 }
 

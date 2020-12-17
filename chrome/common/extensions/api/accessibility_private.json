@@ -39,6 +39,12 @@
         "description": "Accessibility gestures fired by the touch exploration controller."
       },
       {
+        "id": "MagnifierCommand",
+        "type": "string",
+        "enum": [ "moveStop", "moveUp", "moveDown", "moveLeft", "moveRight" ],
+        "description": "Commands for magnifier (e.g. move magnifier viewport up)."
+      },
+      {
         "id": "SwitchAccessCommand",
         "type": "string",
         "enum": [ "select", "next", "previous" ],
@@ -654,6 +660,18 @@
           {
             "name": "point",
             "$ref": "PointScanPoint"
+          }
+        ],
+        "platforms": ["chromeos"]
+      },
+      {
+        "name": "onMagnifierCommand",
+        "type": "function",
+        "description": "Fired when Chrome OS has received a key event corresponding to a Magnifier command.",
+        "parameters": [
+          {
+            "name": "command",
+            "$ref": "MagnifierCommand"
           }
         ],
         "platforms": ["chromeos"]

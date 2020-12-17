@@ -25,8 +25,7 @@
 
 namespace {
 
-std::string AccessibilityPrivateEnumForCommand(
-    ash::SwitchAccessCommand command) {
+std::string ToString(ash::SwitchAccessCommand command) {
   switch (command) {
     case ash::SwitchAccessCommand::kSelect:
       return extensions::api::accessibility_private::ToString(
@@ -42,6 +41,28 @@ std::string AccessibilityPrivateEnumForCommand(
       NOTREACHED();
       return "";
   }
+}
+
+std::string ToString(ash::MagnifierCommand command) {
+  switch (command) {
+    case ash::MagnifierCommand::kMoveStop:
+      return extensions::api::accessibility_private::ToString(
+          extensions::api::accessibility_private::MAGNIFIER_COMMAND_MOVESTOP);
+    case ash::MagnifierCommand::kMoveUp:
+      return extensions::api::accessibility_private::ToString(
+          extensions::api::accessibility_private::MAGNIFIER_COMMAND_MOVEUP);
+    case ash::MagnifierCommand::kMoveDown:
+      return extensions::api::accessibility_private::ToString(
+          extensions::api::accessibility_private::MAGNIFIER_COMMAND_MOVEDOWN);
+    case ash::MagnifierCommand::kMoveLeft:
+      return extensions::api::accessibility_private::ToString(
+          extensions::api::accessibility_private::MAGNIFIER_COMMAND_MOVELEFT);
+    case ash::MagnifierCommand::kMoveRight:
+      return extensions::api::accessibility_private::ToString(
+          extensions::api::accessibility_private::MAGNIFIER_COMMAND_MOVERIGHT);
+  }
+
+  return "";
 }
 
 }  // namespace
@@ -90,7 +111,7 @@ void AccessibilityEventRewriterDelegate::SendSwitchAccessCommand(
       chromeos::AccessibilityManager::Get()->profile());
 
   auto event_args = std::make_unique<base::ListValue>();
-  event_args->AppendString(AccessibilityPrivateEnumForCommand(command));
+  event_args->AppendString(ToString(command));
 
   auto event = std::make_unique<extensions::Event>(
       extensions::events::ACCESSIBILITY_PRIVATE_ON_SWITCH_ACCESS_COMMAND,
@@ -121,6 +142,23 @@ void AccessibilityEventRewriterDelegate::SendPointScanPoint(
 
   event_router->DispatchEventWithLazyListener(
       extension_misc::kSwitchAccessExtensionId, std::move(event));
+}
+
+void AccessibilityEventRewriterDelegate::SendMagnifierCommand(
+    ash::MagnifierCommand command) {
+  extensions::EventRouter* event_router = extensions::EventRouter::Get(
+      chromeos::AccessibilityManager::Get()->profile());
+
+  auto event_args = std::make_unique<base::ListValue>();
+  event_args->AppendString(ToString(command));
+
+  auto event = std::make_unique<extensions::Event>(
+      extensions::events::ACCESSIBILITY_PRIVATE_ON_SWITCH_ACCESS_COMMAND,
+      extensions::api::accessibility_private::OnMagnifierCommand::kEventName,
+      std::move(event_args));
+
+  event_router->DispatchEventWithLazyListener(
+      extension_misc::kAccessibilityCommonExtensionId, std::move(event));
 }
 
 void AccessibilityEventRewriterDelegate::OnUnhandledSpokenFeedbackEvent(
