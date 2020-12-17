@@ -59,10 +59,7 @@ class ToolbarAccountIconContainerViewBrowserTest : public InProcessBrowserTest {
   }
 
   bool IsHighlighted(ToolbarAccountIconContainerView* container) {
-    if (container->highlight_animation_.IsClosing())
-      return false;
-    return container->highlight_animation_.IsShowing() ||
-           container->highlight_animation_.GetCurrentValue() == 1.0f;
+    return container->border_.layer()->GetTargetOpacity() == 1;
   }
 
  private:

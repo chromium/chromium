@@ -8,7 +8,7 @@
 #include <list>
 
 #include "base/observer_list.h"
-#include "ui/gfx/animation/animation_delegate.h"
+#include "ui/compositor/layer_delegate.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/layout/animating_layout_manager.h"
 #include "ui/views/layout/flex_layout.h"
@@ -16,7 +16,6 @@
 
 // A general view container for any type of toolbar icons.
 class ToolbarIconContainerView : public views::View,
-                                 public gfx::AnimationDelegate,
                                  public views::ViewObserver {
  public:
   class Observer : public base::CheckedObserver {
@@ -66,24 +65,41 @@ class ToolbarIconContainerView : public views::View,
 
   static const char kToolbarIconContainerViewClassName[];
 
+ protected:
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
+
  private:
   friend class ToolbarAccountIconContainerViewBrowserTest;
+
+  // Responsible for painting a roundrect border for the owning view.
+  class RoundRectBorder : public ui::LayerDelegate {
+   public:
+    explicit RoundRectBorder(views::View* parent);
+    RoundRectBorder(const RoundRectBorder&) = delete;
+    RoundRectBorder& operator=(const RoundRectBorder&) = delete;
+
+    ui::Layer* layer() { return &layer_; }
+
+    // ui::LayerDelegate:
+    void OnPaintLayer(const ui::PaintContext& context) override;
+    void OnDeviceScaleFactorChanged(float old_device_scale_factor,
+                                    float new_device_scale_factor) override;
+
+   private:
+    views::View* parent_;
+    ui::Layer layer_;
+  };
+
   class WidgetRestoreObserver;
 
   // views::View:
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
-  gfx::Insets GetInsets() const override;
   const char* GetClassName() const override;
   void AddedToWidget() override;
 
-  // gfx::AnimationDelegate:
-  void AnimationProgressed(const gfx::Animation* animation) override;
-  void AnimationEnded(const gfx::Animation* animation) override;
-
   bool ShouldDisplayHighlight();
   void UpdateHighlight();
-  void SetHighlightBorder();
 
   // Called by |button| when its ink drop highlighted state changes.
   void OnButtonHighlightedChanged(views::Button* button);
@@ -104,8 +120,7 @@ class ToolbarIconContainerView : public views::View,
   // them from this set.
   std::set<views::Button*> highlighted_buttons_;
 
-  // Fade-in/out animation for the highlight border.
-  gfx::SlideAnimation highlight_animation_{this};
+  RoundRectBorder border_{this};
 
   // Tracks when the widget is restored and resets the layout.
   std::unique_ptr<WidgetRestoreObserver> restore_observer_;
