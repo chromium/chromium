@@ -186,6 +186,8 @@ IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, ShareAudio) {
     std::vector<std::string> content_types(3, "audio/webm");
     intent = apps_util::CreateShareIntentFromFiles(
         profile(), std::move(file_paths), std::move(content_types));
+    intent->share_text = "";
+    intent->share_title = "";
   }
 
   content::WebContents* const web_contents =
@@ -193,6 +195,25 @@ IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, ShareAudio) {
   EXPECT_EQ("a b c", ReadTextContent(web_contents, "notes"));
 
   RemoveWebShareDirectory(directory);
+}
+
+IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, PostBlank) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL app_url =
+      embedded_test_server()->GetURL("/web_share_target/poster.html");
+  const AppId app_id = web_app::InstallWebAppFromManifest(browser(), app_url);
+
+  apps::mojom::IntentPtr intent = apps_util::CreateShareIntentFromFiles(
+      profile(), /*file_paths=*/std::vector<base::FilePath>(),
+      /*mime_types=*/std::vector<std::string>());
+
+  content::WebContents* const web_contents =
+      LaunchAppWithIntent(app_id, std::move(intent), share_target_url());
+
+  // Poster web app's service worker detects omitted values.
+  EXPECT_EQ("N/A", ReadTextContent(web_contents, "headline"));
+  EXPECT_EQ("N/A", ReadTextContent(web_contents, "author"));
+  EXPECT_EQ("N/A", ReadTextContent(web_contents, "link"));
 }
 
 IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, PostLink) {

@@ -37,7 +37,8 @@ std::vector<SharedField> ExtractSharedFields(
     const apps::mojom::Intent& intent) {
   std::vector<SharedField> result;
 
-  if (!share_target.params.title.empty() && intent.share_title.has_value()) {
+  if (!share_target.params.title.empty() && intent.share_title.has_value() &&
+      !intent.share_title->empty()) {
     result.push_back(
         {.name = share_target.params.title, .value = *intent.share_title});
   }
@@ -125,6 +126,7 @@ NavigateParams NavigateParamsForShareTarget(
   std::vector<SharedField> shared_fields =
       ExtractSharedFields(share_target, intent);
   for (const auto& shared_field : shared_fields) {
+    DCHECK(!shared_field.value.empty());
     names.push_back(shared_field.name);
     values.push_back(shared_field.value);
     filenames.push_back(std::string());

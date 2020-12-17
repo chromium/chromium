@@ -113,4 +113,19 @@ TEST(ShareTargetUtils, ExtractTitleTextUrl) {
   }
 }
 
+TEST(ShareTargetUtils, SkipEmpty) {
+  apps::mojom::Intent intent;
+  intent.share_title = "";
+  intent.share_text = "";
+
+  {
+    apps::ShareTarget share_target;
+    share_target.params.title = "subject";
+    share_target.params.text = "body";
+    share_target.params.url = "link";
+    EXPECT_EQ(ExtractSharedFields(share_target, intent),
+              std::vector<SharedField>());
+  }
+}
+
 }  // namespace web_app
