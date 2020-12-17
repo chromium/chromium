@@ -46,9 +46,12 @@ class MTPDeviceAsyncDelegate {
   typedef base::RepeatingCallback<void(base::File::Error error)> ErrorCallback;
 
   // A callback to be called when CreateSnapshotFile method call succeeds.
-  typedef base::Callback<
-      void(const base::File::Info& file_info,
-           const base::FilePath& local_path)> CreateSnapshotFileSuccessCallback;
+  // TODO: consider make this a OnceCallback. Right now it is repeating because
+  // it is used in SnapshotRequestInfo, which is owned by SnapshotFileDetails,
+  // and SnapshotFileDetails needs const access to SnapshotRequestInfo.
+  typedef base::RepeatingCallback<void(const base::File::Info& file_info,
+                                       const base::FilePath& local_path)>
+      CreateSnapshotFileSuccessCallback;
 
   // A callback to be called when ReadBytes method call succeeds.
   typedef base::Callback<

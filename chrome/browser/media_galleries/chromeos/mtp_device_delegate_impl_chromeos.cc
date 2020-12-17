@@ -1338,8 +1338,9 @@ void MTPDeviceDelegateImplLinux::WriteDataIntoSnapshotFile(
   SnapshotRequestInfo request_info(
       current_snapshot_request_info_->file_id,
       current_snapshot_request_info_->snapshot_file_path,
-      base::Bind(&MTPDeviceDelegateImplLinux::OnDidWriteDataIntoSnapshotFile,
-                 weak_ptr_factory_.GetWeakPtr()),
+      base::BindRepeating(
+          &MTPDeviceDelegateImplLinux::OnDidWriteDataIntoSnapshotFile,
+          weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(
           &MTPDeviceDelegateImplLinux::OnWriteDataIntoSnapshotFileError,
           weak_ptr_factory_.GetWeakPtr()));
@@ -1677,7 +1678,7 @@ void MTPDeviceDelegateImplLinux::OnDidCreateTemporaryFileToCopyFileLocal(
 
   CreateSnapshotFile(
       source_file_path, temporary_file_path,
-      base::Bind(
+      base::BindRepeating(
           &MTPDeviceDelegateImplLinux::OnDidCreateSnapshotFileOfCopyFileLocal,
           weak_ptr_factory_.GetWeakPtr(), device_file_path, progress_callback,
           success_callback, error_callback),
