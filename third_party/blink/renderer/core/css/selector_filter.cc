@@ -169,9 +169,6 @@ void SelectorFilter::CollectIdentifierHashes(
         skip_over_subselectors = true;
         break;
       case CSSSelector::kShadowSlot:
-        // Disable fastRejectSelector.
-        *identifier_hashes = 0;
-        return;
       case CSSSelector::kDescendant:
       case CSSSelector::kChild:
       case CSSSelector::kUAShadow:

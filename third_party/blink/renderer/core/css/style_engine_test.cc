@@ -3877,4 +3877,45 @@ TEST_F(StyleEngineTest, FastRejectForHostChild) {
   EXPECT_EQ(1u, stats->rules_fast_rejected);
 }
 
+TEST_F(StyleEngineTest, RejectSlottedSelector) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <div id="host">
+      <span id="slotted"></span>
+    </div>
+  )HTML");
+
+  Element* host = GetDocument().getElementById("host");
+  ASSERT_TRUE(host);
+  ShadowRoot& shadow_root =
+      host->AttachShadowRootInternal(ShadowRootType::kOpen);
+  shadow_root.setInnerHTML(R"HTML(
+    <style>
+      .notfound ::slotted(span) {
+        color: pink;
+      }
+    </style>
+    <slot></slot>
+  )HTML");
+  UpdateAllLifecyclePhases();
+
+  StyleEngine& engine = GetStyleEngine();
+  // If the Stats() were already enabled, we would not start with 0 counts.
+  EXPECT_FALSE(engine.Stats());
+  engine.SetStatsEnabled(true);
+
+  StyleResolverStats* stats = engine.Stats();
+  ASSERT_TRUE(stats);
+  EXPECT_EQ(0u, stats->rules_fast_rejected);
+
+  Element* span = GetDocument().getElementById("slotted");
+  ASSERT_TRUE(span);
+  span->SetInlineStyleProperty(CSSPropertyID::kColor, "green");
+
+  GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
+  GetStyleEngine().RecalcStyle();
+
+  // Should fast reject ".notfound ::slotted(span)"
+  EXPECT_EQ(1u, stats->rules_fast_rejected);
+}
+
 }  // namespace blink
