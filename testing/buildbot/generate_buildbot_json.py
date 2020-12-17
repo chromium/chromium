@@ -172,6 +172,25 @@ class JUnitGenerator(BaseGenerator):
     return sorted(tests, key=lambda x: x['test'])
 
 
+class SkylabGenerator(BaseGenerator):
+  def __init__(self, bb_gen):
+    super(SkylabGenerator, self).__init__(bb_gen)
+
+  def generate(self, waterfall, tester_name, tester_config, input_tests):
+    scripts = []
+    for test_name, test_config in sorted(input_tests.iteritems()):
+      for config in test_config:
+        test = self.bb_gen.generate_skylab_test(waterfall, tester_name,
+                                                tester_config, test_name,
+                                                config)
+        if test:
+          scripts.append(test)
+    return scripts
+
+  def sort(self, tests):
+    return sorted(tests, key=lambda x: x['test'])
+
+
 def check_compound_references(other_test_suites=None,
                               sub_suite=None,
                               suite=None,
@@ -821,6 +840,21 @@ class BBJSONGenerator(object):
     self.substitute_magic_args(result)
     return result
 
+  def generate_skylab_test(self, waterfall, tester_name, tester_config,
+                           test_name, test_config):
+    if not self.should_run_on_tester(waterfall, tester_name, test_name,
+                                     test_config):
+      return None
+    result = copy.deepcopy(test_config)
+    result.update({
+        'test': test_name,
+    })
+    self.initialize_args_for_test(result, tester_config)
+    result = self.update_and_cleanup_test(result, test_name, tester_name,
+                                          tester_config, waterfall)
+    self.substitute_magic_args(result)
+    return result
+
   def substitute_gpu_args(self, tester_config, swarming_config, args):
     substitutions = {
       # Any machine in waterfalls.pyl which desires to run GPU tests
@@ -918,6 +952,8 @@ class BBJSONGenerator(object):
             JUnitGenerator(self),
         'scripts':
             ScriptGenerator(self),
+        'skylab_tests':
+            SkylabGenerator(self),
     }
 
   def get_test_type_remapper(self):
@@ -1077,6 +1113,12 @@ class BBJSONGenerator(object):
         # by the variant.
         basic_swarming_def.update(variant_swarming_def)
         cloned_config['swarming'] = basic_swarming_def
+
+        # Copy all skylab fields defined by the variant.
+        skylab_config = cloned_variant.get('skylab')
+        if skylab_config:
+          for k, v in skylab_config.items():
+            cloned_config[k] = v
 
         # The identifier is used to make the name of the test unique.
         # Generators in the recipe uniquely identify a test by it's name, so we
