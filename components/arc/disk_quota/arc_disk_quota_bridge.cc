@@ -171,6 +171,7 @@ void ArcDiskQuotaBridge::SetProjectId(uint32_t project_id,
     LOG(ERROR) << "Setting a project ID to path " << android_path
                << " is not allowed";
     std::move(callback).Run(false);
+    return;
   }
 
   auto identifier =
