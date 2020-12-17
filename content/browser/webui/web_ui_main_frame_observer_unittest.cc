@@ -17,6 +17,7 @@
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/test/test_web_contents.h"
@@ -135,11 +136,12 @@ class WebUIMainFrameObserverTest : public RenderViewHostTestHarness {
     RenderViewHostTestHarness::TearDown();
   }
 
-  // Simulate the remote renderer becoming alive.
-  void CreateRenderFrame() {
-    static_cast<TestWebContents*>(web_contents())
-        ->GetRenderViewHost()
-        ->CreateRenderView(base::nullopt, 0, false);
+  // Simulate navigating to the WebUI page. Basically so that
+  // WebUIMainFrameObserver::ReadyToCommitNavigation() gets called, since that
+  // initializes the error handling.
+  void NavigateToPage() {
+    NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
+                                                      GURL(kSourceURL8));
   }
 
   // Calls the observer's OnDidAddMessageToConsole with the given arguments.
@@ -178,7 +180,7 @@ constexpr char WebUIMainFrameObserverTest::kSourceURL8[];
 constexpr char WebUIMainFrameObserverTest::kStackTrace8[];
 
 TEST_F(WebUIMainFrameObserverTest, ErrorReported) {
-  CreateRenderFrame();
+  NavigateToPage();
   CallOnDidAddMessageToConsole(web_ui_->frame_host(),
                                blink::mojom::ConsoleMessageLevel::kError,
                                kMessage16, 5, kSourceId16, kStackTrace16);
@@ -198,7 +200,7 @@ TEST_F(WebUIMainFrameObserverTest, ErrorReported) {
 }
 
 TEST_F(WebUIMainFrameObserverTest, NoStackTrace) {
-  CreateRenderFrame();
+  NavigateToPage();
   CallOnDidAddMessageToConsole(web_ui_->frame_host(),
                                blink::mojom::ConsoleMessageLevel::kError,
                                kMessage16, 5, kSourceId16, base::nullopt);
@@ -208,7 +210,7 @@ TEST_F(WebUIMainFrameObserverTest, NoStackTrace) {
 }
 
 TEST_F(WebUIMainFrameObserverTest, NonErrorsIgnored) {
-  CreateRenderFrame();
+  NavigateToPage();
   CallOnDidAddMessageToConsole(web_ui_->frame_host(),
                                blink::mojom::ConsoleMessageLevel::kWarning,
                                kMessage16, 5, kSourceId16, kStackTrace16);
@@ -223,7 +225,7 @@ TEST_F(WebUIMainFrameObserverTest, NonErrorsIgnored) {
 }
 
 TEST_F(WebUIMainFrameObserverTest, NoProcessorDoesntCrash) {
-  CreateRenderFrame();
+  NavigateToPage();
   FakeJsErrorReportProcessor::SetDefault(nullptr);
   CallOnDidAddMessageToConsole(web_ui_->frame_host(),
                                blink::mojom::ConsoleMessageLevel::kError,
@@ -235,7 +237,7 @@ TEST_F(WebUIMainFrameObserverTest, NotSentIfFlagDisabled) {
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitAndDisableFeature(
       features::kSendWebUIJavaScriptErrorReports);
-  CreateRenderFrame();
+  NavigateToPage();
   CallOnDidAddMessageToConsole(web_ui_->frame_host(),
                                blink::mojom::ConsoleMessageLevel::kError,
                                kMessage16, 5, kSourceId16, kStackTrace16);
@@ -244,7 +246,7 @@ TEST_F(WebUIMainFrameObserverTest, NotSentIfFlagDisabled) {
 }
 
 TEST_F(WebUIMainFrameObserverTest, NotSentIfInvalidURL) {
-  CreateRenderFrame();
+  NavigateToPage();
   CallOnDidAddMessageToConsole(
       web_ui_->frame_host(), blink::mojom::ConsoleMessageLevel::kError,
       kMessage16, 5, base::UTF8ToUTF16("invalid URL"), kStackTrace16);
@@ -255,7 +257,7 @@ TEST_F(WebUIMainFrameObserverTest, NotSentIfInvalidURL) {
 TEST_F(WebUIMainFrameObserverTest, NotSentIfDisabledForPage) {
   static_cast<MockWebUIController*>(web_ui_->GetController())
       ->enable_javascript_error_reporting(false);
-  CreateRenderFrame();
+  NavigateToPage();
   CallOnDidAddMessageToConsole(web_ui_->frame_host(),
                                blink::mojom::ConsoleMessageLevel::kError,
                                kMessage16, 5, kSourceId16, kStackTrace16);
@@ -264,7 +266,7 @@ TEST_F(WebUIMainFrameObserverTest, NotSentIfDisabledForPage) {
 }
 
 TEST_F(WebUIMainFrameObserverTest, URLPathIsPreservedOtherPartsRemoved) {
-  CreateRenderFrame();
+  NavigateToPage();
   struct URLTest {
     const char* const input;
     const char* const expected;
@@ -307,7 +309,7 @@ TEST_F(WebUIMainFrameObserverTest, URLPathIsPreservedOtherPartsRemoved) {
 }
 
 TEST_F(WebUIMainFrameObserverTest, ErrorsNotReportedInOtherFrames) {
-  CreateRenderFrame();
+  NavigateToPage();
   auto another_contents =
       TestWebContents::Create(browser_context(), site_instance_);
   CHECK(another_contents->GetMainFrame());
@@ -319,7 +321,7 @@ TEST_F(WebUIMainFrameObserverTest, ErrorsNotReportedInOtherFrames) {
 }
 
 TEST_F(WebUIMainFrameObserverTest, ErrorsNotReportedForNonChromeURLs) {
-  CreateRenderFrame();
+  NavigateToPage();
   const char* const kNonChromeSourceURLs[] = {
       "chrome-untrusted://media-app",
       "chrome-error://chromewebdata/",

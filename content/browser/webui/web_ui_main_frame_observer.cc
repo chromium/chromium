@@ -19,6 +19,7 @@
 #include "components/crash/content/browser/error_reporting/javascript_error_report.h"
 #include "components/crash/content/browser/error_reporting/js_error_report_processor.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/common/content_features.h"
@@ -55,19 +56,19 @@ void WebUIMainFrameObserver::OnDidAddMessageToConsole(
     const base::string16& source_id,
     const base::Optional<base::string16>& untrusted_stack_trace) {
   // TODO(iby) Change all VLOGs to DVLOGs once tast tests are stable.
-  VLOG(3) << "OnDidAddMessageToConsole called for " << message;
+  DVLOG(3) << "OnDidAddMessageToConsole called for " << message;
   if (untrusted_stack_trace) {
-    VLOG(3) << "stack is " << *untrusted_stack_trace;
+    DVLOG(3) << "stack is " << *untrusted_stack_trace;
   }
 
   if (!error_reporting_enabled_) {
-    VLOG(3) << "Message not reported, error reporting disabled for this page "
-               "or experiment is off";
+    DVLOG(3) << "Message not reported, error reporting disabled for this page "
+                "or experiment is off";
     return;
   }
 
   if (log_level != blink::mojom::ConsoleMessageLevel::kError) {
-    VLOG(3) << "Message not reported, not an error";
+    DVLOG(3) << "Message not reported, not an error";
     return;
   }
 
@@ -75,7 +76,7 @@ void WebUIMainFrameObserver::OnDidAddMessageToConsole(
   // WebUIMainFrameObservers will get a callback when either page gets an error.
   // To avoid duplicates, only report on errors from this page's frame.
   if (source_frame != web_ui_->frame_host()) {
-    VLOG(3) << "Message not reported, different frame";
+    DVLOG(3) << "Message not reported, different frame";
     return;
   }
 
@@ -84,7 +85,7 @@ void WebUIMainFrameObserver::OnDidAddMessageToConsole(
 
   if (!processor) {
     // This usually means we are not on an official Google build, FYI.
-    VLOG(3) << "Message not reported, no processor";
+    DVLOG(3) << "Message not reported, no processor";
     return;
   }
 
@@ -92,7 +93,7 @@ void WebUIMainFrameObserver::OnDidAddMessageToConsole(
   // TODO(https://crbug.com/1121816) Improve redaction.
   GURL url(source_id);
   if (!url.is_valid()) {
-    VLOG(3) << "Message not reported, invalid URL";
+    DVLOG(3) << "Message not reported, invalid URL";
     return;
   }
 
@@ -102,7 +103,7 @@ void WebUIMainFrameObserver::OnDidAddMessageToConsole(
   // content because Chrome cannot control what information is being included in
   // the reports.
   if (!url.SchemeIs(kChromeUIScheme)) {
-    VLOG(3) << "Message not reported, not a chrome:// URL";
+    DVLOG(3) << "Message not reported, not a chrome:// URL";
     return;
   }
 
@@ -124,19 +125,22 @@ void WebUIMainFrameObserver::OnDidAddMessageToConsole(
   report.send_to_production_servers =
       features::kWebUIJavaScriptErrorReportsSendToProductionParam.Get();
 
-  VLOG(3) << "Error being sent to Google";
+  DVLOG(3) << "Error being sent to Google";
   processor->SendErrorReport(std::move(report), base::DoNothing(),
                              web_contents()->GetBrowserContext());
 }
 
-void WebUIMainFrameObserver::RenderFrameCreated(
-    RenderFrameHost* render_frame_host) {
+void WebUIMainFrameObserver::ReadyToCommitNavigation(
+    NavigationHandle* navigation_handle) {
+  DVLOG(3) << "WebUIMainFrameObserver::ReadyToCommitNavigation()";
   if (!base::FeatureList::IsEnabled(
           features::kSendWebUIJavaScriptErrorReports)) {
+    DVLOG(3) << "Experiment is off";
     return;
   }
 
-  if (render_frame_host != web_ui_->frame_host()) {
+  if (navigation_handle->GetRenderFrameHost() != web_ui_->frame_host()) {
+    DVLOG(3) << "Wrong frame";
     return;
   }
 
@@ -149,7 +153,10 @@ void WebUIMainFrameObserver::RenderFrameCreated(
   // frame is created, or it will lock up the communications channel. (See
   // https://crbug.com/1154866).
   if (error_reporting_enabled_) {
+    DVLOG(3) << "Enabled";
     web_ui_->frame_host()->SetWantErrorMessageStackTrace();
+  } else {
+    DVLOG(3) << "Error reporting disabled for this page";
   }
 }
 

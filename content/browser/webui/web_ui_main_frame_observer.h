@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/gtest_prod_util.h"  // FRIEND_TEST_ALL_PREFIXES
 #include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
@@ -54,7 +53,7 @@ class CONTENT_EXPORT WebUIMainFrameObserver : public WebContentsObserver {
       int32_t line_no,
       const base::string16& source_id,
       const base::Optional<base::string16>& untrusted_stack_trace) override;
-  void RenderFrameCreated(RenderFrameHost* render_frame_host) override;
+  void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override;
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
  private:
