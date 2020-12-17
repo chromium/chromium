@@ -8,9 +8,11 @@
 #include "base/macros.h"
 #include "chrome/common/subresource_redirect_service.mojom.h"
 #include "components/optimization_guide/optimization_guide_decider.h"
+#include "content/public/browser/render_document_host_user_data.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_receiver_set.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "url/origin.h"
 
 namespace content {
 class NavigationHandle;
@@ -18,6 +20,38 @@ class WebContents;
 }  // namespace content
 
 namespace subresource_redirect {
+
+class OriginRobotsRulesCache;
+
+// Contains the subresource redirect scoped to document's lifetime. This gets
+// created when navigation commits and lives until a different navigation
+// happens or the web contents is destroyed.
+class SubresourceRedirectDocumentHost
+    : public content::RenderDocumentHostUserData<
+          SubresourceRedirectDocumentHost> {
+ public:
+  ~SubresourceRedirectDocumentHost() override;
+  SubresourceRedirectDocumentHost(const SubresourceRedirectDocumentHost&) =
+      delete;
+  SubresourceRedirectDocumentHost& operator=(
+      const SubresourceRedirectDocumentHost&) = delete;
+
+  // Gets the robots rules for |origin| from the |rules_cache| and invokes the
+  // |callback|.
+  void GetAndUpdateRobotsRules(
+      const url::Origin& origin,
+      OriginRobotsRulesCache* rules_cache,
+      mojom::SubresourceRedirectService::GetRobotsRulesCallback callback);
+
+ private:
+  explicit SubresourceRedirectDocumentHost(
+      content::RenderFrameHost* render_frame_host);
+  friend class content::RenderDocumentHostUserData<
+      SubresourceRedirectDocumentHost>;
+
+  content::RenderFrameHost* render_frame_host_;
+  RENDER_DOCUMENT_HOST_USER_DATA_KEY_DECL();
+};
 
 // Sends the public image URL hints to renderer.
 class SubresourceRedirectObserver
@@ -48,6 +82,9 @@ class SubresourceRedirectObserver
 
   // mojom::SubresourceRedirectService
   void NotifyCompressedImageFetchFailed(base::TimeDelta retry_after) override;
+  void GetRobotsRules(const url::Origin& origin,
+                      mojom::SubresourceRedirectService::GetRobotsRulesCallback
+                          callback) override;
 
   // Invoked when the OptimizationGuideKeyedService has sufficient information
   // to make a decision for whether we can send resource loading image hints.

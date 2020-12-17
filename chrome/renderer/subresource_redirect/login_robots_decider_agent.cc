@@ -59,16 +59,6 @@ LoginRobotsDeciderAgent::LoginRobotsDeciderAgent(
 
 LoginRobotsDeciderAgent::~LoginRobotsDeciderAgent() = default;
 
-void LoginRobotsDeciderAgent::UpdateRobotsRules(
-    const url::Origin& origin,
-    const base::Optional<std::string>& rules) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(!origin.opaque());
-  if (!render_frame()->IsMainFrame())
-    return;
-  GetRobotsRulesParserCache().UpdateRobotsRules(origin, rules);
-}
-
 base::Optional<RedirectResult>
 LoginRobotsDeciderAgent::ShouldRedirectSubresource(
     const GURL& url,
@@ -78,8 +68,21 @@ LoginRobotsDeciderAgent::ShouldRedirectSubresource(
   if (!render_frame()->IsMainFrame())
     return RedirectResult::kIneligibleSubframeResource;
 
+  // Trigger the robots rules fetch if needed.
+  const auto origin = url::Origin::Create(url);
+  RobotsRulesParserCache& robots_rules_parser_cache =
+      GetRobotsRulesParserCache();
+  if (!robots_rules_parser_cache.DoRobotsRulesExist(origin)) {
+    // base::Unretained can be used here since the |robots_rules_parser_cache|
+    // is never destructed.
+    GetSubresourceRedirectServiceRemote()->GetRobotsRules(
+        origin,
+        base::BindOnce(&RobotsRulesParserCache::UpdateRobotsRules,
+                       base::Unretained(&robots_rules_parser_cache), origin));
+  }
+
   base::Optional<RobotsRulesParser::CheckResult> result =
-      GetRobotsRulesParserCache().CheckRobotsRules(
+      robots_rules_parser_cache.CheckRobotsRules(
           url,
           base::BindOnce(&SendRedirectResultToCallback, std::move(callback)));
   if (result)
@@ -104,6 +107,12 @@ void LoginRobotsDeciderAgent::SetCompressPublicImagesHints(
   // subresource compression on non logged-in pages.
   DCHECK(IsLoginRobotsCheckedCompressionEnabled());
   NOTREACHED();
+}
+
+void LoginRobotsDeciderAgent::UpdateRobotsRulesForTesting(
+    const url::Origin& origin,
+    const base::Optional<std::string>& rules) {
+  GetRobotsRulesParserCache().UpdateRobotsRules(origin, rules);
 }
 
 }  // namespace subresource_redirect

@@ -30,13 +30,12 @@ class LoginRobotsDeciderAgent : public PublicResourceDeciderAgent {
   LoginRobotsDeciderAgent(const LoginRobotsDeciderAgent&) = delete;
   LoginRobotsDeciderAgent& operator=(const LoginRobotsDeciderAgent&) = delete;
 
-  // Updates the robots rules for the origin.
-  void UpdateRobotsRules(const url::Origin& origin,
-                         const base::Optional<std::string>& rules);
-
  private:
   friend class SubresourceRedirectLoginRobotsDeciderAgentTest;
   friend class SubresourceRedirectLoginRobotsURLLoaderThrottleTest;
+
+  void UpdateRobotsRulesForTesting(const url::Origin& origin,
+                                   const base::Optional<std::string>& rules);
 
   // mojom::SubresourceRedirectHintsReceiver:
   void SetCompressPublicImagesHints(

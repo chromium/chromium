@@ -123,7 +123,7 @@ class SubresourceRedirectLoginRobotsURLLoaderThrottleTest
 
   void SetUpRobotsRules(const std::string& origin,
                         const std::vector<Rule>& patterns) {
-    login_robots_decider_agent_->UpdateRobotsRules(
+    login_robots_decider_agent_->UpdateRobotsRulesForTesting(
         url::Origin::Create(GURL(origin)), GetRobotsRulesProtoString(patterns));
   }
 
