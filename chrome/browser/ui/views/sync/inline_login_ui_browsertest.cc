@@ -428,9 +428,9 @@ class InlineLoginHelperBrowserTest : public InProcessBrowserTest {
     create_services_subscription_ =
         BrowserContextDependencyManager::GetInstance()
             ->RegisterCreateServicesCallbackForTesting(
-                base::Bind(&InlineLoginHelperBrowserTest::
-                               OnWillCreateBrowserContextServices,
-                           base::Unretained(this)));
+                base::BindRepeating(&InlineLoginHelperBrowserTest::
+                                        OnWillCreateBrowserContextServices,
+                                    base::Unretained(this)));
   }
 
   void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
@@ -742,7 +742,7 @@ class InlineLoginUISafeIframeBrowserTest : public InProcessBrowserTest {
  private:
   void SetUp() override {
     embedded_test_server()->RegisterRequestHandler(
-        base::Bind(&EmptyHtmlResponseHandler));
+        base::BindRepeating(&EmptyHtmlResponseHandler));
 
     // Don't spin up the IO thread yet since no threads are allowed while
     // spawning sandbox host process. See crbug.com/322732.

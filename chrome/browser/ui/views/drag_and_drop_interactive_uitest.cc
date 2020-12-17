@@ -267,8 +267,8 @@ class DragStartWaiter : public aura::client::DragDropClient {
     suppress_passing_of_start_drag_further_ = true;
   }
 
-  void PostTaskWhenDragStarts(const base::Closure& callback) {
-    callback_to_run_inside_drag_and_drop_message_loop_ = callback;
+  void PostTaskWhenDragStarts(base::OnceClosure callback) {
+    callback_to_run_inside_drag_and_drop_message_loop_ = std::move(callback);
   }
 
   // aura::client::DragDropClient overrides:
@@ -334,7 +334,7 @@ class DragStartWaiter : public aura::client::DragDropClient {
   content::WebContents* web_contents_;
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
   aura::client::DragDropClient* old_client_;
-  base::Closure callback_to_run_inside_drag_and_drop_message_loop_;
+  base::OnceClosure callback_to_run_inside_drag_and_drop_message_loop_;
   bool suppress_passing_of_start_drag_further_;
 
   // Data captured during the first intercepted StartDragAndDrop call.
@@ -1081,10 +1081,10 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, MAYBE_DragImageBetweenFrames) {
   // Start the drag in the left frame.
   DragStartWaiter drag_start_waiter(web_contents());
   drag_start_waiter.PostTaskWhenDragStarts(
-      base::Bind(&DragAndDropBrowserTest::DragImageBetweenFrames_Step2,
-                 base::Unretained(this), base::Unretained(&state)));
-  state.dragstart_event_waiter.reset(
-      new DOMDragEventWaiter("dragstart", left_frame()));
+      base::BindOnce(&DragAndDropBrowserTest::DragImageBetweenFrames_Step2,
+                     base::Unretained(this), base::Unretained(&state)));
+  state.dragstart_event_waiter =
+      std::make_unique<DOMDragEventWaiter>("dragstart", left_frame());
   EXPECT_TRUE(SimulateMouseDownAndDragStartInLeftFrame());
 
   // The next step of the test (DragImageBetweenFrames_Step2) runs inside the
@@ -1291,9 +1291,9 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest,
 
   // Start the drag in the left frame.
   DragStartWaiter drag_start_waiter(web_contents());
-  drag_start_waiter.PostTaskWhenDragStarts(
-      base::Bind(&DragAndDropBrowserTest::DragImageFromDisappearingFrame_Step2,
-                 base::Unretained(this), base::Unretained(&state)));
+  drag_start_waiter.PostTaskWhenDragStarts(base::BindOnce(
+      &DragAndDropBrowserTest::DragImageFromDisappearingFrame_Step2,
+      base::Unretained(this), base::Unretained(&state)));
   EXPECT_TRUE(SimulateMouseDownAndDragStartInLeftFrame());
 
   // The next step of the test (DragImageFromDisappearingFrame_Step2) runs
@@ -1404,8 +1404,8 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, MAYBE_CrossSiteDrag) {
   // Start the drag in the left frame.
   DragStartWaiter drag_start_waiter(web_contents());
   drag_start_waiter.PostTaskWhenDragStarts(
-      base::Bind(&DragAndDropBrowserTest::CrossSiteDrag_Step2,
-                 base::Unretained(this), base::Unretained(&state)));
+      base::BindOnce(&DragAndDropBrowserTest::CrossSiteDrag_Step2,
+                     base::Unretained(this), base::Unretained(&state)));
   EXPECT_TRUE(SimulateMouseDownAndDragStartInLeftFrame());
 
   // The next step of the test (CrossSiteDrag_Step2) runs inside the

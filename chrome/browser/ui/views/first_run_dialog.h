@@ -35,7 +35,7 @@ class FirstRunDialog : public views::DialogDelegateView {
 
   views::Checkbox* make_default_ = nullptr;
   views::Checkbox* report_crashes_ = nullptr;
-  base::Closure quit_runloop_;
+  base::RepeatingClosure quit_runloop_;
 
   DISALLOW_COPY_AND_ASSIGN(FirstRunDialog);
 };

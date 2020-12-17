@@ -101,8 +101,8 @@ void PwaInstallView::UpdateImpl() {
           FeaturePromoTextReplacements::WithString(
               webapps::AppBannerManager::GetInstallableWebAppName(
                   web_contents)),
-          base::Bind(&PwaInstallView::OnIphClosed,
-                     weak_ptr_factory_.GetWeakPtr()));
+          base::BindOnce(&PwaInstallView::OnIphClosed,
+                         weak_ptr_factory_.GetWeakPtr()));
     }
   }
   SetVisible(is_probably_promotable || PWAConfirmationBubbleView::IsShowing());

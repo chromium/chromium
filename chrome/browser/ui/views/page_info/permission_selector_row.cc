@@ -176,8 +176,8 @@ PermissionSelectorRow::PermissionSelectorRow(
   // Create the menu model.
   menu_model_ = std::make_unique<PermissionMenuModel>(
       profile, url, permission,
-      base::Bind(&PermissionSelectorRow::PermissionChanged,
-                 base::Unretained(this)));
+      base::BindRepeating(&PermissionSelectorRow::PermissionChanged,
+                          base::Unretained(this)));
 
   // Create the permission combobox.
   InitializeComboboxView(layout, permission);

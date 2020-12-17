@@ -210,9 +210,9 @@ class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
     create_services_subscription_ =
         BrowserContextDependencyManager::GetInstance()
             ->RegisterCreateServicesCallbackForTesting(
-                base::Bind(&ProfilePickerCreationFlowBrowserTest::
-                               OnWillCreateBrowserContextServices,
-                           base::Unretained(this)));
+                base::BindRepeating(&ProfilePickerCreationFlowBrowserTest::
+                                        OnWillCreateBrowserContextServices,
+                                    base::Unretained(this)));
   }
 
   virtual void OnWillCreateBrowserContextServices(

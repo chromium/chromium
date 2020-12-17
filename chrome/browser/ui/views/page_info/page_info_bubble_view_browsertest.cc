@@ -324,9 +324,11 @@ class PageInfoBubbleViewBrowserTest : public DialogBrowserTest {
         ->GetMainFrame()
         ->ExecuteJavaScriptForTests(
             base::ASCIIToUTF16(js),
-            base::BindOnce([](const base::Closure& quit_callback,
-                              base::Value result) { quit_callback.Run(); },
-                           run_loop.QuitClosure()));
+            base::BindOnce(
+                [](base::OnceClosure quit_callback, base::Value result) {
+                  std::move(quit_callback).Run();
+                },
+                run_loop.QuitClosure()));
     run_loop.Run();
   }
 

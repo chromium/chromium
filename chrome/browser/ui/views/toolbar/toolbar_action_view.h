@@ -50,9 +50,6 @@ class ToolbarActionView : public views::MenuButton,
     ~Delegate() override {}
   };
 
-  // Callback type used for testing.
-  using ContextMenuCallback = base::Callback<void(ToolbarActionView*)>;
-
   ToolbarActionView(ToolbarActionViewController* view_controller,
                     Delegate* delegate);
   ToolbarActionView(const ToolbarActionView&) = delete;
