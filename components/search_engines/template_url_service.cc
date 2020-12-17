@@ -2156,9 +2156,8 @@ bool TemplateURLService::RemoveDuplicateReplaceableEnginesOf(
     return false;
   }
 
-  // Partition into two separate lists, non-replaceable vs replaceable. We don't
-  // do it in-place, as we later call Remove(), which invalidates iterators.
-  std::vector<TemplateURL*> non_replaceable_turls;
+  // Gather the replaceable TemplateURLs to be removed. We don't do it in-place,
+  // because Remove() invalidates iterators.
   std::vector<TemplateURL*> replaceable_turls;
   for (auto it = match_range.first; it != match_range.second; ++it) {
     TemplateURL* turl = it->second.first;
@@ -2167,38 +2166,27 @@ bool TemplateURLService::RemoveDuplicateReplaceableEnginesOf(
 
     if (turl->safe_for_autoreplace()) {
       replaceable_turls.push_back(turl);
-    } else {
-      non_replaceable_turls.push_back(turl);
     }
   }
-  // Add the new candidate to the proper list at the end. Because ties are
-  // broken via Sync GUID, we specifically do not promise "last one wins".
-  const bool candidate_is_replaceable = candidate->safe_for_autoreplace();
-  if (candidate_is_replaceable) {
-    replaceable_turls.push_back(candidate);
-  } else {
-    non_replaceable_turls.push_back(candidate);
+
+  // Find the BEST engine for |keyword| factoring in the new |candidate|.
+  TemplateURL* best = GetTemplateURLForKeyword(keyword);
+  if (!best || candidate->IsBetterThanEngineWithConflictingKeyword(best)) {
+    best = candidate;
   }
 
-  // Now we remove all but the BEST replaceable engine.
-  // But if there are ANY non-replaceable engines, we should remove ALL the
-  // replaceable engines, and we do that by considering best == nullptr.
-  TemplateURL* best = nullptr;
-  if (non_replaceable_turls.empty()) {
-    best = *base::ranges::min_element(
-        replaceable_turls, [&](const auto& a, const auto& b) {
-          return a->IsBetterThanEngineWithConflictingKeyword(b);
-        });
-  }
+  // Remove all the replaceable TemplateURLs that are not the best.
   for (TemplateURL* turl : replaceable_turls) {
+    DCHECK_NE(turl, candidate);
+
     // Never actually remove the DSE during this phase. This handling defers
     // deleting the DSE until it's no longer set as the DSE, analagous to how
     // we handle ACTION_DELETE of the DSE in ProcessSyncChanges().
-    if (turl != best && turl != candidate && turl != default_search_provider_) {
+    if (turl != best && turl != default_search_provider_) {
       Remove(turl);
     }
   }
 
   // Caller needs to know if |candidate| would have been deleted.
-  return candidate_is_replaceable && candidate != best;
+  return candidate != best && candidate->safe_for_autoreplace();
 }
