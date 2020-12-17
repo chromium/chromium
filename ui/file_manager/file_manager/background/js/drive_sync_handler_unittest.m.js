@@ -1,7 +1,17 @@
 // Copyright 2018 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-'use strict';
+
+// clang-format off
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {assertEquals,assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
+
+import {installMockChrome} from '../../../base/js/mock_chrome.m.js';
+import {ProgressItemState} from '../../common/js/progress_center_common.m.js';
+
+import {DriveSyncHandlerImpl} from './drive_sync_handler.m.js';
+import {MockProgressCenter} from './mock_progress_center.m.js';
+// clang-format on
 
 /**
  * @type {!MockProgressCenter}
@@ -99,14 +109,12 @@ window.webkitResolveLocalFileSystemURL =
       successCallback(/** @type {!Entry} */ ({name: url}));
     };
 
-// Mock window.str|strf string calls from drive sync handler.
-window.str = (...args) => {
-  return args.join(' ');
-};
-window.strf = window.str;
-
 // Set up the test components.
-function setUp() {
+export function setUp() {
+  // Mock LoadTimeData strings.
+  loadTimeData.data = {};
+  loadTimeData.getString = id => id;
+
   // Install mock chrome APIs.
   installMockChrome(mockChrome);
 
@@ -121,7 +129,7 @@ function setUp() {
 }
 
 // Test that in general case item IDs produced for errors are unique.
-function testUniqueErrorIds() {
+export function testUniqueErrorIds() {
   // Dispatch an event.
   mockChrome.fileManagerPrivate.onDriveSyncError.listener_({
     type: 'service_unavailable',
@@ -142,7 +150,7 @@ function testUniqueErrorIds() {
 }
 
 // Test that item IDs produced for quota errors are same.
-function testErrorDedupe() {
+export function testErrorDedupe() {
   // Dispatch an event.
   mockChrome.fileManagerPrivate.onDriveSyncError.listener_({
     type: 'no_server_space',
@@ -162,7 +170,7 @@ function testErrorDedupe() {
   assertEquals(1, progressCenter.getItemCount());
 }
 
-function testErrorWithoutPath() {
+export function testErrorWithoutPath() {
   const originalStub = window.webkitResolveLocalFileSystemURL;
   /**
    * Temporary stub the entry resolving to always fail.
@@ -191,7 +199,7 @@ function testErrorWithoutPath() {
 }
 
 // Test offline.
-async function testOffline() {
+export async function testOffline() {
   // Start a transfer.
   await mockChrome.fileManagerPrivate.onFileTransfersUpdated.listener_({
     fileUrl: 'name',
@@ -222,7 +230,7 @@ async function testOffline() {
 }
 
 // Test transfer status updates.
-async function testTransferUpdate() {
+export async function testTransferUpdate() {
   // Start a pin transfer.
   await mockChrome.fileManagerPrivate.onPinTransfersUpdated.listener_({
     fileUrl: 'name',

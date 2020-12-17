@@ -54,7 +54,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, DirectoryTreeTest) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, DriveSyncHandlerTest) {
-  RunTestURL("background/js/drive_sync_handler_unittest_gen.html");
+  RunTestURL("background/js/drive_sync_handler_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, DuplicateFinderTest) {

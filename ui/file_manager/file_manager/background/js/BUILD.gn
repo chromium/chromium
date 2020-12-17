@@ -77,6 +77,7 @@ js_type_check("closure_compile_jsmodules") {
     ":app_windows.m",
     ":background_base.m",
     ":crostini.m",
+    ":drive_sync_handler.m",
     ":entry_location_impl.m",
     ":file_operation_util.m",
     ":import_history.m",
@@ -349,13 +350,29 @@ js_library("drive_sync_handler") {
       [ "//ui/file_manager/externs/background/drive_sync_handler.js" ]
 }
 
-js_unittest("drive_sync_handler_unittest") {
+js_library("drive_sync_handler.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/background/js/drive_sync_handler.m.js" ]
   deps = [
-    ":drive_sync_handler",
-    ":file_operation_util",
-    ":mock_progress_center",
-    "//ui/file_manager/base/js:mock_chrome",
-    "//ui/file_manager/base/js:test_error_reporting",
+    ":file_operation_util.m",
+    "//ui/file_manager/externs/background:drive_sync_handler.m",
+    "//ui/file_manager/externs/background:progress_center.m",
+    "//ui/file_manager/file_manager/common/js:async_util.m",
+    "//ui/file_manager/file_manager/common/js:progress_center_common.m",
+    "//ui/file_manager/file_manager/common/js:util.m",
+    "//ui/webui/resources/js/cr:event_target.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
+js_unittest("drive_sync_handler_unittest.m") {
+  deps = [
+    ":drive_sync_handler.m",
+    ":mock_progress_center.m",
+    "//chrome/test/data/webui:chai_assert",
+    "//ui/file_manager/base/js:mock_chrome.m",
+    "//ui/file_manager/file_manager/common/js:progress_center_common.m",
+    "//ui/webui/resources/js:load_time_data.m",
   ]
 }
 
@@ -934,6 +951,7 @@ js_library("volume_manager_util.m") {
 js_test_gen_html("js_test_gen_html_modules") {
   deps = [
     ":crostini_unittest.m",
+    ":drive_sync_handler_unittest.m",
     ":import_history_unittest.m",
     ":metadata_proxy_unittest.m",
     ":mount_metrics_unittest.m",
@@ -953,7 +971,6 @@ js_test_gen_html("js_test_gen_html_modules") {
 js_test_gen_html("js_test_gen_html") {
   deps = [
     ":device_handler_unittest",
-    ":drive_sync_handler_unittest",
     ":duplicate_finder_unittest",
     ":file_operation_handler_unittest",
     ":file_operation_manager_unittest",
@@ -988,6 +1005,7 @@ js_modulizer("modulize") {
     "task_queue.js",
     "test_import_history.js",
     "import_history.js",
+    "drive_sync_handler.js",
   ]
 
   namespace_rewrites = cr_namespace_rewrites
