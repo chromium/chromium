@@ -37,6 +37,8 @@ const CGFloat kFlashDuration = 0.5;
 }  // namespace
 
 @interface ScannerView () {
+  // A scrollview containing the viewport's caption.
+  UIScrollView* _captionContainer;
   // A button to toggle the torch.
   UIBarButtonItem* _torchButton;
   // A view containing the preview layer for camera input.
@@ -181,6 +183,12 @@ const CGFloat kFlashDuration = 0.5;
   return @"";
 }
 
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  _captionContainer.hidden =
+      UIUserInterfaceSizeClassCompact == self.traitCollection.verticalSizeClass;
+}
+
 #pragma mark - private methods
 
 // Creates an image with template rendering mode for use in icons.
@@ -263,35 +271,39 @@ const CGFloat kFlashDuration = 0.5;
   [viewportCaption.layer setMasksToBounds:NO];
   [viewportCaption.layer setShouldRasterize:YES];
 
-  UIScrollView* scrollView = [[UIScrollView alloc] init];
-  scrollView.showsVerticalScrollIndicator = NO;
-  [self addSubview:scrollView];
-  [scrollView addSubview:viewportCaption];
+  _captionContainer = [[UIScrollView alloc] init];
+  _captionContainer.showsVerticalScrollIndicator = NO;
+  [self addSubview:_captionContainer];
+  [_captionContainer addSubview:viewportCaption];
 
   // Constraints for viewportCaption.
-  scrollView.translatesAutoresizingMaskIntoConstraints = NO;
+  _captionContainer.translatesAutoresizingMaskIntoConstraints = NO;
   viewportCaption.translatesAutoresizingMaskIntoConstraints = NO;
 
   [NSLayoutConstraint activateConstraints:@[
-    [scrollView.topAnchor
+    [_captionContainer.topAnchor
         constraintEqualToAnchor:self.centerYAnchor
-                       constant:[self viewportSize].height / 2 +
+                       constant:self.viewportSize.height / 2 +
                                 kViewportCaptionVerticalPadding],
-    [scrollView.bottomAnchor constraintEqualToAnchor:toolbar.topAnchor],
-    [scrollView.leadingAnchor
-        constraintEqualToAnchor:self.leadingAnchor
-                       constant:kViewportCaptionHorizontalPadding],
-    [viewportCaption.leadingAnchor
-        constraintEqualToAnchor:self.leadingAnchor
-                       constant:kViewportCaptionHorizontalPadding],
-    [scrollView.trailingAnchor
-        constraintEqualToAnchor:self.trailingAnchor
-                       constant:-kViewportCaptionHorizontalPadding],
-    [viewportCaption.trailingAnchor
-        constraintEqualToAnchor:self.trailingAnchor
-                       constant:-kViewportCaptionHorizontalPadding],
+    [_captionContainer.bottomAnchor constraintEqualToAnchor:toolbar.topAnchor],
+    [_captionContainer.centerXAnchor
+        constraintEqualToAnchor:_previewOverlay.centerXAnchor],
+    [_captionContainer.contentLayoutGuide.widthAnchor
+        constraintEqualToAnchor:_captionContainer.widthAnchor],
+    [_captionContainer.widthAnchor
+        constraintLessThanOrEqualToAnchor:self.widthAnchor
+                                 constant:-2 *
+                                          kViewportCaptionHorizontalPadding],
+    [_captionContainer.widthAnchor
+        constraintLessThanOrEqualToAnchor:self.heightAnchor
+                                 constant:-2 *
+                                          kViewportCaptionHorizontalPadding],
   ]];
-  AddSameConstraints(scrollView, viewportCaption);
+  AddSameConstraints(_captionContainer, viewportCaption);
+
+  // There is no space for at least 1 line of text in compact height.
+  _captionContainer.hidden =
+      UIUserInterfaceSizeClassCompact == self.traitCollection.verticalSizeClass;
 }
 
 // Adds a preview view to |self| and configures its layout constraints.
