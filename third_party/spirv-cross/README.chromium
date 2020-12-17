@@ -1,0 +1,12 @@
+Name: SPIRV-Cross
+Short Name: SPIRV-Cross
+URL: https://github.com/KhronosGroup/SPIRV-Cross
+Version: Unknown
+Security Critical: yes
+License: Apache 2.0
+License File: spirv-cross/LICENSE
+
+Description:
+A translator from SPIR-V bytecode to other shading languages like GLSL, HLSL
+and MSL. This project is not secure (yet!) and should only be used for
+prototyping, and not shipped to users.

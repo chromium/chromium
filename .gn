@@ -49,13 +49,6 @@ default_args = {
   # Changes some setup for the Crashpad build to set them to build against
   # Chromium's zlib, base, etc.
   crashpad_dependencies = "chromium"
-
-  # Override ANGLE's Vulkan dependencies.
-  angle_vulkan_headers_dir = "//third_party/vulkan-deps/vulkan-headers/src"
-  angle_vulkan_loader_dir = "//third_party/vulkan-deps/vulkan-loader/src"
-  angle_vulkan_tools_dir = "//third_party/vulkan-deps/vulkan-tools/src"
-  angle_vulkan_validation_layers_dir =
-      "//third_party/vulkan-deps/vulkan-validation-layers/src"
 }
 
 # These are the targets to skip header checking by default. The files in targets

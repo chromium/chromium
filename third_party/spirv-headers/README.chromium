@@ -1,0 +1,14 @@
+Name: SPIR-V Headers
+Short Name: spirv-headers
+URL: https://github.com/KhronosGroup/SPIRV-Headers.git
+Version: unknown
+Security Critical: yes
+License: MIT
+License File: LICENSE
+
+Description:
+This repository contains machine-readable files from the SPIR-V Registry. This includes:
+
+* Header files for various languages.
+* JSON files describing the grammar for the SPIR-V core instruction set, and for the GLSL.std.450 extended instruction set.
+* The XML registry file.
