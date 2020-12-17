@@ -2435,6 +2435,14 @@ bool AXTree::HasPaginationSupport() const {
   return has_pagination_support_;
 }
 
+void AXTree::NotifyTreeManagerWillBeRemoved(AXTreeID previous_tree_id) {
+  if (previous_tree_id == AXTreeIDUnknown())
+    return;
+
+  for (AXTreeObserver& observer : observers_)
+    observer.OnTreeManagerWillBeRemoved(previous_tree_id);
+}
+
 void AXTree::RecordError(std::string new_error) {
   if (!error_.empty())
     error_ = error_ + "\n";  // Add visual separation between errors.

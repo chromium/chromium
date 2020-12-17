@@ -1543,4 +1543,12 @@ void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::
   }
 }
 
+void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::
+    OnTreeManagerWillBeRemoved(AXTreeID previous_tree_id) {
+  if (start_->tree_id() == previous_tree_id ||
+      end_->tree_id() == previous_tree_id) {
+    RemoveObserver(previous_tree_id);
+  }
+}
+
 }  // namespace ui

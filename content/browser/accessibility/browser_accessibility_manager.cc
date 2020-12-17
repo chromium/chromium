@@ -1513,6 +1513,13 @@ ui::AXNode* BrowserAccessibilityManager::GetParentNodeFromParentTreeAsAXNode()
   return nullptr;
 }
 
+void BrowserAccessibilityManager::WillBeRemovedFromMap() {
+  if (!ax_tree())
+    return;
+
+  ax_tree()->NotifyTreeManagerWillBeRemoved(ax_tree_id_);
+}
+
 BrowserAccessibilityManager* BrowserAccessibilityManager::GetRootManager()
     const {
   BrowserAccessibility* parent = GetParentNodeFromParentTree();

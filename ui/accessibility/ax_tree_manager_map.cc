@@ -26,8 +26,10 @@ void AXTreeManagerMap::AddTreeManager(AXTreeID tree_id,
 }
 
 void AXTreeManagerMap::RemoveTreeManager(AXTreeID tree_id) {
-  if (tree_id != AXTreeIDUnknown())
+  if (auto* manager = GetManager(tree_id)) {
+    manager->WillBeRemovedFromMap();
     map_.erase(tree_id);
+  }
 }
 
 AXTreeManager* AXTreeManagerMap::GetManager(AXTreeID tree_id) {

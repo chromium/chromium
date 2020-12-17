@@ -25,6 +25,9 @@ using Microsoft::WRL::ComPtr;
 
 namespace content {
 
+#define ASSERT_UIA_ELEMENTNOTAVAILABLE(expr) \
+  ASSERT_EQ(static_cast<HRESULT>(UIA_E_ELEMENTNOTAVAILABLE), (expr))
+
 #define EXPECT_UIA_DOUBLE_SAFEARRAY_EQ(safearray, expected_property_values) \
   {                                                                         \
     EXPECT_EQ(sizeof(V_R8(LPVARIANT(NULL))),                                \
@@ -2659,7 +2662,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
     EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"Before frame");
   }
 
-  // 1. Test when |start_| is not in the iframe but |end_| is.
+  // 2. Test when |start_| is not in the iframe but |end_| is.
   {
     ComPtr<ITextRangeProvider> text_range_provider;
     GetTextRangeProviderFromTextNode(*before_frame_node, &text_range_provider);
@@ -2688,7 +2691,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
     EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"Before frame\nText ");
   }
 
-  // 1. Test when |start_| is in the iframe but |end_| is not.
+  // 3. Test when |start_| is in the iframe but |end_| is not.
   {
     ComPtr<ITextRangeProvider> text_range_provider;
     auto* after_frame_node =
@@ -2717,6 +2720,85 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
 
     waiter.WaitForNotification();
     EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"iframe\nAfter frame");
+  }
+}
+
+// Test that a page reload removes the AXTreeObserver from the AXTree's
+// observers list. If it doesn't, this test will crash.
+IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
+                       ReloadTreeShouldRemoveObserverFromTree) {
+  LoadInitialAccessibilityTreeFromHtmlFilePath(
+      "/accessibility/html/simple_spans.html");
+  auto* web_contents = static_cast<WebContentsImpl*>(shell()->web_contents());
+  WaitForAccessibilityTreeToContainNodeWithName(web_contents, "Some text");
+
+  // 1. Reload the page and trigger a tree update - this should update the tree
+  // id without modifying the observers from the tree.
+  {
+    auto* node = FindNode(ax::mojom::Role::kStaticText, "Some text");
+    ASSERT_NE(nullptr, node);
+
+    ComPtr<ITextRangeProvider> text_range_provider;
+    GetTextRangeProviderFromTextNode(*node, &text_range_provider);
+    ASSERT_NE(nullptr, text_range_provider.Get());
+    EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"Some text");
+    AXTreeID old_tree_id = GetManager()->GetTreeID();
+
+    // Reloading changes the tree id, triggering an AXTreeManager replacement.
+    shell()->Reload();
+
+    AccessibilityNotificationWaiter waiter(web_contents, ui::kAXModeComplete,
+                                           ax::mojom::Event::kChildrenChanged);
+
+    // We do a style change here only to trigger an AXTree update - apparently,
+    // a shell reload doesn't update the tree by itself.
+    EXPECT_TRUE(ExecuteScript(
+        web_contents,
+        "document.getElementById('s1').style.outline = '1px solid black';"));
+
+    waiter.WaitForNotification();
+    ASSERT_NE(old_tree_id, GetManager()->GetTreeID());
+
+    // |text_range_provider| should now be invalid since it is using nodes
+    // pointing to the previous tree id. If the tree id has not been updated
+    // from the page reload, this should fail.
+    base::win::ScopedSafearray children;
+    ASSERT_UIA_ELEMENTNOTAVAILABLE(
+        text_range_provider->GetChildren(children.Receive()));
+  }
+
+  // 2. Validate that the observer for the previous range has been removed. Also
+  // test that the new observer has been added correctly.
+  {
+    auto* node = FindNode(ax::mojom::Role::kStaticText, "Some text");
+    ASSERT_NE(nullptr, node);
+
+    ComPtr<ITextRangeProvider> text_range_provider;
+    GetTextRangeProviderFromTextNode(*node, &text_range_provider);
+    ASSERT_NE(nullptr, text_range_provider.Get());
+    EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"Some text");
+
+    // Make the range span the entire document.
+    EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+        text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
+        /*count*/ 1,
+        /*expected_text*/ L"Some text 3.14159",
+        /*expected_count*/ 1);
+
+    AccessibilityNotificationWaiter waiter(web_contents, ui::kAXModeComplete,
+                                           ax::mojom::Event::kChildrenChanged);
+
+    // We do a style change here only to trigger an AXTree update.
+    EXPECT_TRUE(ExecuteScript(
+        web_contents,
+        "document.getElementById('s2').style.outline = '1px solid black';"));
+
+    waiter.WaitForNotification();
+
+    // If the previous observer was not removed correctly, this will cause a
+    // crash. If it was removed correctly and this EXPECT fails, it's likely
+    // because the new observer has not been added as expected.
+    EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"Some text 3.14159");
   }
 }
 

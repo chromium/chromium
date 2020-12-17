@@ -44,6 +44,10 @@ class AX_EXPORT AXTreeManager {
   // hosts the current tree. Returns nullptr if this tree doesn't have a parent
   // tree.
   virtual AXNode* GetParentNodeFromParentTreeAsAXNode() const = 0;
+
+  // Called when the tree manager is about to be removed from the tree
+  // AXTreeManagerMap.
+  virtual void WillBeRemovedFromMap() {}
 };
 
 }  // namespace ui
