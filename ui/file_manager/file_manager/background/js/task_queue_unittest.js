@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/** @type {!importer.TaskQueue} */
+/** @type {!taskQueueInterfaces.TaskQueue} */
 let queue;
 
-/** @type {!Object<importer.TaskQueue.UpdateType, number>} */
+/** @type {!Object<importer.UpdateType, number>} */
 const updates = {};
 
 function setUp() {
-  queue = new importer.TaskQueueImpl();
+  queue = new taskQueue.TaskQueueImpl();
 
   // Set up a callback to log updates from running tasks.
-  for (const updateType in importer.TaskQueue.UpdateType) {
+  for (const updateType in importer.UpdateType) {
     // Reset counts for all update types.
-    updates[importer.TaskQueue.UpdateType[updateType]] = 0;
+    updates[importer.UpdateType[updateType]] = 0;
   }
 
   // Counts the number of updates of each type that have been received.
@@ -27,7 +27,7 @@ function setUp() {
 /**
  * A Task subclass for testing.
  */
-class TestTask extends importer.TaskQueue.BaseTaskImpl {
+class TestTask extends taskQueue.BaseTaskImpl {
   /**
    * @param {string} taskId
    */
@@ -55,22 +55,22 @@ class TestTask extends importer.TaskQueue.BaseTaskImpl {
 
   /** Sends a quick error notification. */
   notifyError() {
-    this.notify(importer.TaskQueue.UpdateType.ERROR);
+    this.notify(importer.UpdateType.ERROR);
   }
 
   /** Sends a quick completion notification. */
   notifyComplete() {
-    this.notify(importer.TaskQueue.UpdateType.COMPLETE);
+    this.notify(importer.UpdateType.COMPLETE);
   }
 
   /** Sends a quick cancelled notification. */
   notifyCanceled() {
-    this.notify(importer.TaskQueue.UpdateType.CANCELED);
+    this.notify(importer.UpdateType.CANCELED);
   }
 
   /** Sends a quick progress notification. */
   notifyProgress() {
-    this.notify(importer.TaskQueue.UpdateType.PROGRESS);
+    this.notify(importer.UpdateType.PROGRESS);
   }
 
   /** @return {!Promise} A promise that settles once #run is called. */
@@ -165,7 +165,7 @@ function testProgressUpdate(callback) {
   const whenDone = new Promise(resolve => {
     queue.setIdleCallback(() => {
       // Verify that progress was recorded.
-      assertEquals(1, updates[importer.TaskQueue.UpdateType.PROGRESS]);
+      assertEquals(1, updates[importer.UpdateType.PROGRESS]);
       resolve();
     });
   });
@@ -189,7 +189,7 @@ function testSuccessUpdate(callback) {
   const whenDone = new Promise(resolve => {
     queue.setIdleCallback(() => {
       // Verify that the done callback was called.
-      assertEquals(1, updates[importer.TaskQueue.UpdateType.COMPLETE]);
+      assertEquals(1, updates[importer.UpdateType.COMPLETE]);
       resolve();
     });
   });
@@ -214,7 +214,7 @@ function testErrorUpdate(callback) {
   const whenDone = new Promise(resolve => {
     queue.setIdleCallback(() => {
       // Verify that the done callback was called.
-      assertEquals(1, updates[importer.TaskQueue.UpdateType.ERROR]);
+      assertEquals(1, updates[importer.UpdateType.ERROR]);
       resolve();
     });
   });

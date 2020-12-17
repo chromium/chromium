@@ -30,8 +30,8 @@ importer.MediaImportHandlerImpl = class {
     /** @private {!importer.HistoryLoader} */
     this.historyLoader_ = historyLoader;
 
-    /** @private {!importer.TaskQueue} */
-    this.queue_ = new importer.TaskQueueImpl();
+    /** @private {!taskQueueInterfaces.TaskQueue} */
+    this.queue_ = new taskQueue.TaskQueueImpl();
 
     // Prevent the system from sleeping while imports are active.
     this.queue_.setActiveCallback(() => {
@@ -104,8 +104,6 @@ importer.MediaImportHandlerImpl = class {
    * @private
    */
   onTaskProgress_(task, updateType) {
-    const UpdateType = importer.TaskQueue.UpdateType;
-
     let item = this.progressCenter_.getItemById(task.taskId);
     if (!item) {
       item = new ProgressCenterItem();
@@ -120,7 +118,7 @@ importer.MediaImportHandlerImpl = class {
     }
 
     switch (updateType) {
-      case UpdateType.PROGRESS:
+      case importer.UpdateType.PROGRESS:
         item.message =
             strf('CLOUD_IMPORT_ITEMS_REMAINING', task.remainingFilesCount);
         item.progressValue = task.processedBytes;
@@ -131,7 +129,7 @@ importer.MediaImportHandlerImpl = class {
         item.remainingTime = this.speedometer_.getRemainingTime();
         break;
 
-      case UpdateType.COMPLETE:
+      case importer.UpdateType.COMPLETE:
         // Remove the event handler that gets attached for retries.
         this.driveSyncHandler_.removeEventListener(
             this.driveSyncHandler_.getCompletedEventName(),
@@ -166,7 +164,7 @@ importer.MediaImportHandlerImpl = class {
 
         break;
 
-      case UpdateType.CANCELED:
+      case importer.UpdateType.CANCELED:
         item.message = '';
         item.state = ProgressItemState.CANCELED;
         break;
@@ -203,7 +201,7 @@ importer.MediaImportHandlerImpl = class {
  * @implements {importer.MediaImportHandler.ImportTask}
  */
 importer.MediaImportHandler.ImportTaskImpl =
-    class extends importer.TaskQueue.BaseTaskImpl {
+    class extends taskQueue.BaseTaskImpl {
   /**
    * @param {string} taskId
    * @param {!importer.HistoryLoader} historyLoader
@@ -331,7 +329,7 @@ importer.MediaImportHandler.ImportTaskImpl =
   requestCancel() {
     this.canceled_ = true;
     setTimeout(() => {
-      this.notify(importer.TaskQueue.UpdateType.CANCELED);
+      this.notify(importer.UpdateType.CANCELED);
       this.sendImportStats_();
     });
     if (this.cancelCallback_) {
@@ -459,7 +457,7 @@ importer.MediaImportHandler.ImportTaskImpl =
       this.processedBytes_ -= currentBytes;
       this.processedBytes_ += processedBytes;
       currentBytes = processedBytes;
-      this.notify(importer.TaskQueue.UpdateType.PROGRESS);
+      this.notify(importer.UpdateType.PROGRESS);
     };
 
     /**
@@ -473,12 +471,12 @@ importer.MediaImportHandler.ImportTaskImpl =
       this.processedBytes_ += entry.size;
       destinationEntry.size = entry.size;
       this.notify(
-          /** @type {importer.TaskQueue.UpdateType} */
+          /** @type {importer.UpdateType} */
           (importer.MediaImportHandler.ImportTask.UpdateType.ENTRY_CHANGED), {
             sourceUrl: sourceUrl,
             destination: destinationEntry,
           });
-      this.notify(importer.TaskQueue.UpdateType.PROGRESS);
+      this.notify(importer.UpdateType.PROGRESS);
     };
 
     /**
@@ -488,7 +486,7 @@ importer.MediaImportHandler.ImportTaskImpl =
     const onComplete = destinationEntry => {
       this.cancelCallback_ = null;
       this.markAsCopied_(entry, /** @type {!FileEntry} */ (destinationEntry));
-      this.notify(importer.TaskQueue.UpdateType.PROGRESS);
+      this.notify(importer.UpdateType.PROGRESS);
       resolver.resolve(destinationEntry);
     };
 
@@ -498,11 +496,11 @@ importer.MediaImportHandler.ImportTaskImpl =
       if (error.name === util.FileError.ABORT_ERR) {
         // Task cancellations result in the error callback being triggered with
         // an ABORT_ERR, but we want to ignore these errors.
-        this.notify(importer.TaskQueue.UpdateType.PROGRESS);
+        this.notify(importer.UpdateType.PROGRESS);
         resolver.resolve(null);
       } else {
         this.errorCount_++;
-        this.notify(importer.TaskQueue.UpdateType.ERROR);
+        this.notify(importer.UpdateType.ERROR);
         resolver.reject(error);
       }
     };
@@ -555,7 +553,7 @@ importer.MediaImportHandler.ImportTaskImpl =
 
   /** @private */
   onSuccess_() {
-    this.notify(importer.TaskQueue.UpdateType.COMPLETE);
+    this.notify(importer.UpdateType.COMPLETE);
   }
 
   /**

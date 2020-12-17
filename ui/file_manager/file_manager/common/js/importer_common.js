@@ -19,12 +19,10 @@
 // eslint-disable-next-line no-var
 var importer = importer || {};
 
-importer.TaskQueue = importer.TaskQueue || {};
-
 /**
  * @enum {string}
  */
-importer.TaskQueue.UpdateType = {
+importer.UpdateType = {
   PROGRESS: 'PROGRESS',
   COMPLETE: 'COMPLETE',
   ERROR: 'ERROR',

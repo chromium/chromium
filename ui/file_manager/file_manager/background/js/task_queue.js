@@ -2,13 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Namespace
-var importer = importer || {};
+/**
+ * @fileoverview
+ * @suppress {uselessCode} Temporary suppress because of the line exporting.
+ */
 
-importer.TaskQueue = importer.TaskQueue || {};
+// clang-format off
+// #import {importer} from '../../common/js/importer_common.m.js';
+// #import {taskQueueInterfaces} from '../../../externs/background/task_queue.m.js';
+// clang-format on
+
+// Namespace
+const taskQueue = {};
 
 /**
- * A queue of tasks.  Tasks (subclasses of TaskQueue.Task) can be pushed onto
+ * A queue of tasks.  Tasks (subclasses of Task) can be pushed onto
  * the queue.  The queue becomes active whenever it is not empty, and it will
  * begin executing tasks one at a time.  The tasks are executed in a separate
  * asynchronous context.  As each task runs, it can send update notifications
@@ -17,14 +25,16 @@ importer.TaskQueue = importer.TaskQueue || {};
  * be triggered whenever the queue transitions between the active and idle
  * states.
  *
- * @implements {importer.TaskQueue}
+ * @implements {taskQueueInterfaces.TaskQueue}
  */
-importer.TaskQueueImpl = class {
+taskQueue.TaskQueueImpl = class {
   constructor() {
-    /** @private {!Array<!importer.TaskQueue.Task>} */
+    /** @private {!Array<!taskQueueInterfaces.Task>} */
     this.tasks_ = [];
 
-    /** @private {!Array<!function(string, !importer.TaskQueue.Task)>} */
+    /**
+     * @private {!Array<!function(string, !taskQueueInterfaces.Task)>}
+     */
     this.updateCallbacks_ = [];
 
     /** @private {?function()} */
@@ -38,7 +48,7 @@ importer.TaskQueueImpl = class {
   }
 
   /**
-   * @param {!importer.TaskQueue.Task} task
+   * @param {!taskQueueInterfaces.Task} task
    */
   queueTask(task) {
     // The Tasks that are pushed onto the queue aren't required to be inherently
@@ -55,7 +65,7 @@ importer.TaskQueueImpl = class {
 
   /**
    * Sets a callback to be triggered when a task updates.
-   * @param {function(string, !importer.TaskQueue.Task)} callback
+   * @param {function(string, !taskQueueInterfaces.Task)} callback
    */
   addUpdateCallback(callback) {
     this.updateCallbacks_.push(callback);
@@ -83,8 +93,8 @@ importer.TaskQueueImpl = class {
   /**
    * Sends out notifications when a task updates.  This is meant to be called by
    * the running tasks owned by this queue.
-   * @param {!importer.TaskQueue.Task} task
-   * @param {!importer.TaskQueue.UpdateType} updateType
+   * @param {!taskQueueInterfaces.Task} task
+   * @param {!importer.UpdateType} updateType
    * @private
    */
   onTaskUpdate_(task, updateType) {
@@ -94,9 +104,8 @@ importer.TaskQueueImpl = class {
     });
 
     // If the task update is a terminal one, move on to the next task.
-    const UpdateType = importer.TaskQueue.UpdateType;
-    if (updateType === UpdateType.COMPLETE ||
-        updateType === UpdateType.CANCELED) {
+    if (updateType === importer.UpdateType.COMPLETE ||
+        updateType === importer.UpdateType.CANCELED) {
       // Assumption: the currently running task is at the head of the queue.
       console.assert(
           this.tasks_[0] === task,
@@ -139,9 +148,9 @@ importer.TaskQueueImpl = class {
 
 /**
  * Base class for importer tasks.
- * @implements {importer.TaskQueue.Task}
+ * @implements {taskQueueInterfaces.Task}
  */
-importer.TaskQueue.BaseTaskImpl = class {
+taskQueue.BaseTaskImpl = class {
   /**
    * @param {string} taskId
    */
@@ -149,10 +158,10 @@ importer.TaskQueue.BaseTaskImpl = class {
     /** @protected {string} */
     this.taskId_ = taskId;
 
-    /** @private {!Array<!importer.TaskQueue.Task.Observer>} */
+    /** @private {!Array<!taskQueueInterfaces.Task.Observer>} */
     this.observers_ = [];
 
-    /** @private {!importer.Resolver<!importer.TaskQueue.UpdateType>} */
+    /** @private {!importer.Resolver<!importer.UpdateType>} */
     this.finishedResolver_ = new importer.Resolver();
   }
   /** @return {string} The task ID. */
@@ -161,7 +170,7 @@ importer.TaskQueue.BaseTaskImpl = class {
   }
 
   /**
-   * @return {!Promise<!importer.TaskQueue.UpdateType>} Resolves when task
+   * @return {!Promise<!importer.UpdateType>} Resolves when task
    *     is complete, or cancelled, rejects on error.
    */
   get whenFinished() {
@@ -177,14 +186,14 @@ importer.TaskQueue.BaseTaskImpl = class {
   run() {}
 
   /**
-   * @param {importer.TaskQueue.UpdateType} updateType
+   * @param {importer.UpdateType} updateType
    * @param {Object=} opt_data
    * @protected
    */
   notify(updateType, opt_data) {
     switch (updateType) {
-      case importer.TaskQueue.UpdateType.CANCELED:
-      case importer.TaskQueue.UpdateType.COMPLETE:
+      case importer.UpdateType.CANCELED:
+      case importer.UpdateType.COMPLETE:
         this.finishedResolver_.resolve(updateType);
     }
 
@@ -193,3 +202,6 @@ importer.TaskQueue.BaseTaskImpl = class {
     });
   }
 };
+
+// eslint-disable-next-line semi,no-extra-semi
+/* #export */ {taskQueue};

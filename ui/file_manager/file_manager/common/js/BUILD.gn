@@ -56,6 +56,12 @@ js_type_check("closure_compile_jsmodules") {
     ":trash.m",
     ":util.m",
   ]
+
+  closure_flags = strict_error_checking_closure_args + [
+                    "js_module_root=./gen/ui",
+                    "js_module_root=../../ui",
+                    "hide_warnings_for=third_party/",
+                  ]
 }
 
 js_type_check("test_support_type_check") {
@@ -214,6 +220,7 @@ js_library("test_importer_common.m") {
 
 js_unittest("importer_common_unittest.m") {
   deps = [
+    ":importer_common.m",
     ":mock_entry.m",
     ":test_importer_common.m",
     "//chrome/test/data/webui:chai_assert",

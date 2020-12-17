@@ -84,6 +84,7 @@ js_type_check("closure_compile_jsmodules") {
     ":mock_file_operation_manager.m",
     ":mock_progress_center.m",
     ":mount_metrics.m",
+    ":task_queue.m",
     ":test_util_base.m",
     ":volume_info_impl.m",
     ":volume_info_list_impl.m",
@@ -91,6 +92,12 @@ js_type_check("closure_compile_jsmodules") {
     ":volume_manager_impl.m",
     ":volume_manager_util.m",
   ]
+
+  closure_flags = strict_error_checking_closure_args + [
+                    "js_module_root=./gen/ui",
+                    "js_module_root=../../ui",
+                    "hide_warnings_for=third_party/",
+                  ]
 }
 
 js_type_check("test_support_modules_type_check") {
@@ -725,6 +732,18 @@ js_unittest("task_queue_unittest") {
   externs_list = [ "//ui/file_manager/externs/background/task_queue.js" ]
 }
 
+js_library("task_queue.m") {
+  sources = [
+    "$root_gen_dir/ui/file_manager/file_manager/background/js/task_queue.m.js",
+  ]
+
+  deps = [
+    "//ui/file_manager/externs/background:task_queue.m",
+    "//ui/file_manager/file_manager/common/js:importer_common.m",
+  ]
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("test_util_base") {
 }
 
@@ -930,6 +949,7 @@ js_modulizer("modulize") {
     "mock_file_operation_manager.js",
     "mock_progress_center.js",
     "mount_metrics.js",
+    "task_queue.js",
   ]
 
   namespace_rewrites = cr_namespace_rewrites

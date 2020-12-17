@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 // Namespace
+// eslint-disable-next-line no-var
 var importer = importer || {};
 
 /*
@@ -34,7 +35,7 @@ importer.MediaImportHandler = class extends importer.ImportRunner {
  * the FileOperationManager (and thus *spawns* an associated
  * FileOperationManager.CopyTask) but this is a temporary state of affairs.
  *
- * @extends {importer.TaskQueue.BaseTask}
+ * @extends {taskQueueInterfaces.BaseTask}
  * @interface
  */
 importer.MediaImportHandler.ImportTask = class {

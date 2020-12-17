@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Namespace
-var importer = importer || {};
+window.importer = window.importer || {};
 
 /**
  * @enum {string}

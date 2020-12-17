@@ -2,22 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Namespace
-var importer = importer || {};
-
 /**
- * import.TaskQueue.
- * @interface
+ * @fileoverview
+ * @suppress {uselessCode, externsValidation} Temporary suppress because of the
+ * line exporting.
  */
-importer.TaskQueue = class {
+
+// clang-format off
+// #import {importer} from '../../file_manager/common/js/importer_common.m.js';
+// clang-format on
+
+const taskQueueInterfaces = {};
+
+/** @interface */
+taskQueueInterfaces.TaskQueue = class {
   /**
-   * @param {!importer.TaskQueue.Task} task
+   * @param {!taskQueueInterfaces.Task} task
    */
   queueTask(task) {}
 
   /**
    * Sets a callback to be triggered when a task updates.
-   * @param {function(string, !importer.TaskQueue.Task)} callback
+   * @param {function(string, !taskQueueInterfaces.Task)} callback
    */
   addUpdateCallback(callback) {}
 
@@ -41,14 +47,14 @@ importer.TaskQueue = class {
  * Interface for any Task that is to run on the TaskQueue.
  * @interface
  */
-importer.TaskQueue.Task = class {
+taskQueueInterfaces.Task = class {
   constructor() {}
 
   /**
    * Sets the TaskQueue that will own this task.  The TaskQueue must call this
    * prior to enqueuing a Task.
-   * @param {!importer.TaskQueue.Task.Observer} observer A callback that
-   *     will be triggered each time the task has a status update.
+   * @param {!taskQueueInterfaces.Task.Observer} observer A callback
+   *     that will be triggered each time the task has a status update.
    */
   addObserver(observer) {}
 
@@ -62,23 +68,25 @@ importer.TaskQueue.Task = class {
  * Base class for importer tasks.
  * @interface
  */
-importer.TaskQueue.BaseTask = class extends importer.TaskQueue.Task {
+taskQueueInterfaces.BaseTask = class extends taskQueueInterfaces.Task {
   /**
    * @param {string} taskId
    */
-  constructor(taskId) {}
+  constructor(taskId) {
+    super();
+  }
 
   /** @return {string} The task ID. */
   get taskId() {}
 
   /**
-   * @return {!Promise<!importer.TaskQueue.UpdateType>} Resolves when task
+   * @return {!Promise<!importer.UpdateType>} Resolves when task
    *     is complete, or cancelled, rejects on error.
    */
   get whenFinished() {}
 
   /**
-   * @param {importer.TaskQueue.UpdateType} updateType
+   * @param {importer.UpdateType} updateType
    * @param {Object=} opt_data
    * @protected
    */
@@ -89,9 +97,12 @@ importer.TaskQueue.BaseTask = class extends importer.TaskQueue.Task {
  * A callback that is triggered whenever an update is reported on the observed
  * task.  The first argument is a string specifying the type of the update.
  * Standard values used by all tasks are enumerated in
- * importer.TaskQueue.UpdateType, but child classes may add supplementary update
+ * importer.UpdateType, but child classes may add supplementary update
  * types of their own.  The second argument is an Object containing
  * supplementary information pertaining to the update.
- * @typedef {function(!importer.TaskQueue.UpdateType, Object=)}
+ * @typedef {function(!importer.UpdateType, Object=)}
  */
-importer.TaskQueue.Task.Observer;
+taskQueueInterfaces.Task.Observer;
+
+// eslint-disable-next-line semi,no-extra-semi
+/* #export */ {taskQueueInterfaces};

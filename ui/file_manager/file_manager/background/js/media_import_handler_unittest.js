@@ -122,16 +122,16 @@ function testImportMedia(callback) {
   const whenImportDone = new Promise((resolve, reject) => {
     importTask.addObserver(
         /**
-         * @param {!importer.TaskQueue.UpdateType} updateType
+         * @param {!importer.UpdateType} updateType
          * @param {Object=} opt_task
          */
         (updateType, opt_task) => {
           switch (updateType) {
-            case importer.TaskQueue.UpdateType.COMPLETE:
+            case importer.UpdateType.COMPLETE:
               resolve();
               break;
-            case importer.TaskQueue.UpdateType.ERROR:
-              reject(new Error(importer.TaskQueue.UpdateType.ERROR));
+            case importer.UpdateType.ERROR:
+              reject(new Error(importer.UpdateType.ERROR));
               break;
           }
         });
@@ -182,16 +182,16 @@ function testImportMedia_skipAndMarkDuplicatedFiles(callback) {
   const whenImportDone = new Promise((resolve, reject) => {
     importTask.addObserver(
         /**
-         * @param {!importer.TaskQueue.UpdateType} updateType
+         * @param {!importer.UpdateType} updateType
          * @param {Object=} opt_task
          */
         (updateType, opt_task) => {
           switch (updateType) {
-            case importer.TaskQueue.UpdateType.COMPLETE:
+            case importer.UpdateType.COMPLETE:
               resolve();
               break;
-            case importer.TaskQueue.UpdateType.ERROR:
-              reject(new Error(importer.TaskQueue.UpdateType.ERROR));
+            case importer.UpdateType.ERROR:
+              reject(new Error(importer.UpdateType.ERROR));
               break;
           }
         });
@@ -236,16 +236,16 @@ function testImportMedia_EmploysEncodedUrls(callback) {
       new Promise((resolve, reject) => {
         importTask.addObserver(
             /**
-             * @param {!importer.TaskQueue.UpdateType} updateType
+             * @param {!importer.UpdateType} updateType
              * @param {Object=} opt_task
              */
             (updateType, opt_task) => {
               switch (updateType) {
-                case importer.TaskQueue.UpdateType.COMPLETE:
+                case importer.UpdateType.COMPLETE:
                   resolve(/** @type {!MockDirectoryEntry} */
                           (destinationFileSystem.root).getAllChildren());
                   break;
-                case importer.TaskQueue.UpdateType.ERROR:
+                case importer.UpdateType.ERROR:
                   reject('Task failed :(');
                   break;
               }
@@ -284,16 +284,16 @@ function testImportMediaWithDuplicateFilenames(callback) {
   const whenImportDone = new Promise((resolve, reject) => {
     importTask.addObserver(
         /**
-         * @param {!importer.TaskQueue.UpdateType} updateType
+         * @param {!importer.UpdateType} updateType
          * @param {Object=} opt_task
          */
         (updateType, opt_task) => {
           switch (updateType) {
-            case importer.TaskQueue.UpdateType.COMPLETE:
+            case importer.UpdateType.COMPLETE:
               resolve();
               break;
-            case importer.TaskQueue.UpdateType.ERROR:
-              reject(new Error(importer.TaskQueue.UpdateType.ERROR));
+            case importer.UpdateType.ERROR:
+              reject(new Error(importer.UpdateType.ERROR));
               break;
           }
         });
@@ -332,18 +332,18 @@ function testKeepAwakeDuringImport(callback) {
   const whenImportDone = new Promise((resolve, reject) => {
     importTask.addObserver(
         /**
-         * @param {!importer.TaskQueue.UpdateType} updateType
+         * @param {!importer.UpdateType} updateType
          * @param {Object=} opt_task
          */
         (updateType, opt_task) => {
           // Assert that keepAwake is set while the task is active.
           assertTrue(mockChrome.power.requestKeepAwakeStatus);
           switch (updateType) {
-            case importer.TaskQueue.UpdateType.COMPLETE:
+            case importer.UpdateType.COMPLETE:
               resolve();
               break;
-            case importer.TaskQueue.UpdateType.ERROR:
-              reject(new Error(importer.TaskQueue.UpdateType.ERROR));
+            case importer.UpdateType.ERROR:
+              reject(new Error(importer.UpdateType.ERROR));
               break;
           }
         });
@@ -385,16 +385,16 @@ function testUpdatesHistoryAfterImport(callback) {
   const whenImportDone = new Promise((resolve, reject) => {
     importTask.addObserver(
         /**
-         * @param {!importer.TaskQueue.UpdateType} updateType
+         * @param {!importer.UpdateType} updateType
          * @param {Object=} opt_task
          */
         (updateType, opt_task) => {
           switch (updateType) {
-            case importer.TaskQueue.UpdateType.COMPLETE:
+            case importer.UpdateType.COMPLETE:
               resolve();
               break;
-            case importer.TaskQueue.UpdateType.ERROR:
-              reject(new Error(importer.TaskQueue.UpdateType.ERROR));
+            case importer.UpdateType.ERROR:
+              reject(new Error(importer.UpdateType.ERROR));
               break;
           }
         });
@@ -442,11 +442,11 @@ function testImportCancellation(callback) {
   const whenImportCancelled = new Promise((resolve, reject) => {
     importTask.addObserver(
         /**
-         * @param {!importer.TaskQueue.UpdateType} updateType
+         * @param {!importer.UpdateType} updateType
          * @param {Object=} opt_task
          */
         (updateType, opt_task) => {
-          if (updateType === importer.TaskQueue.UpdateType.CANCELED) {
+          if (updateType === importer.UpdateType.CANCELED) {
             resolve();
           }
         });
@@ -503,11 +503,11 @@ function testImportWithErrors(callback) {
   const whenImportDone = new Promise((resolve, reject) => {
     importTask.addObserver(
         /**
-         * @param {!importer.TaskQueue.UpdateType} updateType
+         * @param {!importer.UpdateType} updateType
          * @param {Object=} opt_task
          */
         (updateType, opt_task) => {
-          if (updateType === importer.TaskQueue.UpdateType.COMPLETE) {
+          if (updateType === importer.UpdateType.COMPLETE) {
             resolve();
           }
         });
@@ -546,7 +546,7 @@ function testImportWithErrors(callback) {
  * @return {!Array<!Entry>}
  */
 function setupFileSystem(fileNames) {
-  let fileSystem = new MockFileSystem('fake-media-volume');
+  const fileSystem = new MockFileSystem('fake-media-volume');
   fileSystem.populate(fileNames);
   return fileNames.map((name) => fileSystem.entries[name]);
 }
