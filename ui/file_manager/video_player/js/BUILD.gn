@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/browser/resources/optimize_webui.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//third_party/closure_compiler/js_unit_tests.gni")
 import("//ui/file_manager/base/gn/js_test_gen_html.gni")
@@ -200,5 +201,25 @@ js_modulizer("modulize") {
     "test_util.js",
     "background.js",
     "video_player.js",
+  ]
+}
+
+preprocess_folder =
+    rebase_path("$target_gen_dir/../../preprocessed/video_player/js",
+                root_build_dir)
+
+optimize_webui("build_background") {
+  host = "video_player"
+
+  input = preprocess_folder
+  js_module_in_files = [ "main_background.m.js" ]
+
+  js_out_files = [ "main_background.m.rollup.js" ]
+
+  deps = [
+    ":main_background.m",
+    "//ui/file_manager:preprocess_generated",
+    "//ui/file_manager:preprocess_static",
+    "//ui/webui/resources:preprocess",
   ]
 }

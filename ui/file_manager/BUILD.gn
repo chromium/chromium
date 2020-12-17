@@ -87,6 +87,7 @@ preprocess_if_expr("preprocess_static") {
   in_files = [
     "audio_player/js/main.m.js",
     "audio_player/js/main_background.m.js",
+    "video_player/js/main_background.m.js",
   ]
 
   deps = [ "//ui/file_manager/audio_player/js:main.m" ]
@@ -122,6 +123,7 @@ preprocess_if_expr("preprocess_generated") {
     "file_manager/common/js/file_type.m.js",
     "file_manager/common/js/files_app_entry_types.m.js",
     "file_manager/common/js/lru_cache.m.js",
+    "file_manager/common/js/metrics_base.m.js",
 
     # Externs:
     "externs/entry_location.m.js",
@@ -177,6 +179,12 @@ preprocess_if_expr("preprocess_generated") {
     "file_manager/foreground/js/metadata/function_parallel.m.js",
     "file_manager/foreground/js/metadata/function_sequence.m.js",
     "file_manager/foreground/js/metadata/exif_constants.m.js",
+
+    # Video Player:
+    "video_player/js/error_util.m.js",
+    "video_player/js/test_util.m.js",
+    "video_player/js/background.m.js",
+    "video_player/js/video_player_metrics.m.js",
   ]
 
   deps = [
@@ -191,6 +199,7 @@ preprocess_if_expr("preprocess_generated") {
     "//ui/file_manager/file_manager/foreground/js:modulize",
     "//ui/file_manager/file_manager/foreground/js/metadata:modulize",
     "//ui/file_manager/image_loader:modulize",
+    "//ui/file_manager/video_player/js:modulize",
   ]
 }
 
@@ -209,12 +218,15 @@ generate_grd("build_grd") {
     "file_manager/foreground/elements/files_icon_button.m.js",
     "file_manager/foreground/elements/files_toggle_ripple.m.js",
     "file_manager/foreground/elements/files_ripple.m.js",
+
+    "video_player/js/main_background.m.rollup.js",
   ]
 
   resource_path_rewrites = [
     "audio_player/js/main.m.rollup.js|audio_player/js/main.m.js",
     "audio_player/js/main_background.m.rollup.js|audio_player/js/main_background.m.js",
     "audio_player/js/metadata_worker.m.rollup.js|audio_player/js/metadata_worker.m.js",
+    "video_player/js/main_background.m.rollup.js|video_player/js/main_background.m.js",
   ]
 
   grdp_files = [
@@ -229,6 +241,7 @@ generate_grd("build_grd") {
     "//ui/file_manager/audio_player/js:build_background",
     "//ui/file_manager/audio_player/js:build_worker",
     "//ui/file_manager/file_manager/foreground/elements:elements",
+    "//ui/file_manager/video_player/js:build_background",
   ]
 }
 
