@@ -540,7 +540,6 @@ void ChromeContentRendererClient::RenderFrameCreated(
       // Avoid any race conditions from having the browser tell subframes that
       // they're prerendering.
       new prerender::PrerenderHelper(render_frame,
-                                     prerender_helper->prerender_mode(),
                                      prerender_helper->histogram_prefix());
     }
   }

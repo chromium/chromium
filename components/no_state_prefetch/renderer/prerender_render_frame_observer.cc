@@ -41,9 +41,8 @@ void PrerenderRenderFrameObserver::SetIsPrerendering(
   if (!prerender_helper) {
     // The PrerenderHelper will destroy itself either after recording
     // histograms or on destruction of the RenderView.
-    prerender_helper = new prerender::PrerenderHelper(
-        render_frame(), /*prerender_mode=*/mojom::PrerenderMode::kPrefetchOnly,
-        histogram_prefix);
+    prerender_helper =
+        new prerender::PrerenderHelper(render_frame(), histogram_prefix);
   }
 
   prerender::PrerenderObserverList::SetIsPrerenderingForFrame(

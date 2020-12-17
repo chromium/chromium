@@ -38,14 +38,10 @@ bool IsNoStoreResponse(const network::mojom::URLResponseHead& response_head) {
 }  // namespace
 
 PrerenderURLLoaderThrottle::PrerenderURLLoaderThrottle(
-    prerender::mojom::PrerenderMode mode,
     const std::string& histogram_prefix,
     mojo::PendingRemote<prerender::mojom::PrerenderCanceler> canceler)
     : histogram_prefix_(histogram_prefix), canceler_(std::move(canceler)) {
   DCHECK(canceler_);
-  // TODO(https://crbug.com/755921): Remove the `mode` param. This is now kept
-  // just for validation check until mojom::PrerenderMode is completely removed.
-  DCHECK_EQ(mode, mojom::PrerenderMode::kPrefetchOnly);
 }
 
 PrerenderURLLoaderThrottle::~PrerenderURLLoaderThrottle() {

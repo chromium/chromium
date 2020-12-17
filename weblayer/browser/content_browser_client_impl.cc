@@ -437,7 +437,6 @@ ContentBrowserClientImpl::CreateURLLoaderThrottles(
   if (prerender_contents && prerender_contents->prerender_mode() !=
                                 prerender::mojom::PrerenderMode::kNoPrerender) {
     result.push_back(std::make_unique<prerender::PrerenderURLLoaderThrottle>(
-        prerender_contents->prerender_mode(),
         prerender::PrerenderHistograms::GetHistogramPrefix(
             prerender_contents->origin()),
         GetPrerenderCanceler(web_contents)));

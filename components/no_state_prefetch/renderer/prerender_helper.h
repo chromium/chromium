@@ -27,7 +27,6 @@ class PrerenderHelper
       public content::RenderFrameObserverTracker<PrerenderHelper> {
  public:
   PrerenderHelper(content::RenderFrame* render_frame,
-                  prerender::mojom::PrerenderMode prerender_mode,
                   const std::string& histogram_prefix);
 
   ~PrerenderHelper() override;
@@ -40,12 +39,9 @@ class PrerenderHelper
   // Returns true if |render_frame| is currently prerendering.
   static bool IsPrerendering(const content::RenderFrame* render_frame);
 
-  static prerender::mojom::PrerenderMode GetPrerenderMode(
+  static mojom::PrerenderMode GetPrerenderMode(
       const content::RenderFrame* render_frame);
 
-  prerender::mojom::PrerenderMode prerender_mode() const {
-    return prerender_mode_;
-  }
   std::string histogram_prefix() const { return histogram_prefix_; }
 
  private:
@@ -57,7 +53,6 @@ class PrerenderHelper
   void OnThrottleDestroyed();
   void SendPrefetchFinished();
 
-  const prerender::mojom::PrerenderMode prerender_mode_;
   std::string histogram_prefix_;
 
   int prefetch_count_ = 0;
