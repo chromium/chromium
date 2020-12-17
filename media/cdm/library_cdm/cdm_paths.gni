@@ -11,7 +11,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 # OS name for components is close to "target_os" but has some differences.
 # Explicitly define what we use to avoid confusion.
-if (is_ash) {
+if (is_chromeos_ash) {
   component_os = "cros"
 } else if (is_linux) {
   component_os = "linux"

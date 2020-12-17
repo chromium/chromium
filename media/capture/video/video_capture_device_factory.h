@@ -44,9 +44,9 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactory {
       std::vector<VideoCaptureDeviceInfo> devices_info)>;
   virtual void GetDevicesInfo(GetDevicesInfoCallback callback) = 0;
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   virtual bool IsSupportedCameraAppDeviceBridge();
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
  protected:
   base::ThreadChecker thread_checker_;

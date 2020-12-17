@@ -55,7 +55,7 @@
 #include "media/audio/pulse/pulse_util.h"
 #endif  // defined(USE_PULSEAUDIO)
 
-#if defined(USE_CRAS) && BUILDFLAG(IS_ASH)
+#if defined(USE_CRAS) && BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/audio/audio_devices_pref_handler_stub.h"
 #include "chromeos/audio/cras_audio_handler.h"
 #include "chromeos/dbus/audio/fake_cras_audio_client.h"
@@ -101,7 +101,7 @@ struct TestAudioManagerFactory<std::nullptr_t> {
   }
 };
 
-#if defined(USE_CRAS) && BUILDFLAG(IS_ASH)
+#if defined(USE_CRAS) && BUILDFLAG(IS_CHROMEOS_ASH)
 using chromeos::AudioNode;
 using chromeos::AudioNodeList;
 
@@ -297,7 +297,7 @@ class AudioManagerTest : public ::testing::Test {
         device_info_accessor_->GetAssociatedOutputDeviceID(input_device_id);
   }
 
-#if defined(USE_CRAS) && BUILDFLAG(IS_ASH)
+#if defined(USE_CRAS) && BUILDFLAG(IS_CHROMEOS_ASH)
   void TearDown() override {
     chromeos::CrasAudioHandler::Shutdown();
     audio_pref_handler_ = nullptr;
@@ -334,7 +334,7 @@ class AudioManagerTest : public ::testing::Test {
         AudioParameters::HardwareCapabilities(limits::kMinAudioBufferSize,
                                               limits::kMaxAudioBufferSize));
   }
-#endif  // defined(USE_CRAS) && BUILDFLAG(IS_ASH)
+#endif  // defined(USE_CRAS) && BUILDFLAG(IS_CHROMEOS_ASH)
 
  protected:
   AudioManagerTest() {
@@ -378,7 +378,7 @@ class AudioManagerTest : public ::testing::Test {
     }
   }
 
-#if defined(USE_CRAS) && BUILDFLAG(IS_ASH)
+#if defined(USE_CRAS) && BUILDFLAG(IS_CHROMEOS_ASH)
   // Helper method for (USE_CRAS) which verifies that the device list starts
   // with a valid default record followed by physical device names.
   static void CheckDeviceDescriptionsCras(
@@ -434,7 +434,7 @@ class AudioManagerTest : public ::testing::Test {
     EXPECT_NE(it, device_descriptions.end());
     return it->group_id;
   }
-#endif  // defined(USE_CRAS) && BUILDFLAG(IS_ASH)
+#endif  // defined(USE_CRAS) && BUILDFLAG(IS_CHROMEOS_ASH)
 
   bool InputDevicesAvailable() {
 #if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
@@ -475,13 +475,13 @@ class AudioManagerTest : public ::testing::Test {
   std::unique_ptr<AudioManager> audio_manager_;
   std::unique_ptr<AudioDeviceInfoAccessorForTests> device_info_accessor_;
 
-#if defined(USE_CRAS) && BUILDFLAG(IS_ASH)
+#if defined(USE_CRAS) && BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::CrasAudioHandler* cras_audio_handler_ = nullptr;  // Not owned.
   scoped_refptr<chromeos::AudioDevicesPrefHandlerStub> audio_pref_handler_;
-#endif  // defined(USE_CRAS) && BUILDFLAG(IS_ASH)
+#endif  // defined(USE_CRAS) && BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
-#if defined(USE_CRAS) && BUILDFLAG(IS_ASH)
+#if defined(USE_CRAS) && BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(AudioManagerTest, EnumerateInputDevicesCras) {
   // Setup the devices without internal mic, so that it doesn't exist
   // beamforming capable mic.
@@ -706,7 +706,7 @@ TEST_F(AudioManagerTest, LookupDefaultOutputDeviceWithProperGroupId) {
   EXPECT_EQ(default_device_group_id, speaker_group_id);
   EXPECT_EQ(base::NumberToString(kInternalSpeaker.id), new_default_device_id);
 }
-#else  // !(defined(USE_CRAS) && BUILDFLAG(IS_ASH))
+#else  // !(defined(USE_CRAS) && BUILDFLAG(IS_CHROMEOS_ASH))
 
 TEST_F(AudioManagerTest, HandleDefaultDeviceIDs) {
   // Use a fake manager so we can makeup device ids, this will still use the
@@ -850,7 +850,7 @@ TEST_F(AudioManagerTest, GetAssociatedOutputDeviceID) {
   EXPECT_TRUE(found_an_associated_device);
 #endif  // defined(OS_WIN) || defined(OS_MAC)
 }
-#endif  // defined(USE_CRAS) && BUILDFLAG(IS_ASH)
+#endif  // defined(USE_CRAS) && BUILDFLAG(IS_CHROMEOS_ASH)
 
 class TestAudioManager : public FakeAudioManager {
   // For testing the default implementation of GetGroupId(Input|Output)
@@ -1013,7 +1013,7 @@ TEST_F(AudioManagerTest, CheckMinMaxAudioBufferSizeCallbacks) {
 
 #if defined(OS_MAC)
   CreateAudioManagerForTesting<AudioManagerMac>();
-#elif defined(USE_CRAS) && BUILDFLAG(IS_ASH)
+#elif defined(USE_CRAS) && BUILDFLAG(IS_CHROMEOS_ASH)
   CreateAudioManagerForTesting<AudioManagerChromeOS>();
 #endif
 

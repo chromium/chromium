@@ -223,7 +223,7 @@ TEST_P(ImageProcessorParamTest, ConvertOneTime_MemToMem) {
   EXPECT_TRUE(ip_client->WaitForFrameProcessors());
 }
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // We don't yet have the function to create Dmabuf-backed VideoFrame on
 // platforms except ChromeOS. So MemToDmabuf test is limited on ChromeOS.
 TEST_P(ImageProcessorParamTest, ConvertOneTime_DmabufToMem) {
@@ -287,7 +287,7 @@ TEST_P(ImageProcessorParamTest, ConvertOneTime_GmbToGmb) {
   EXPECT_EQ(ip_client->GetNumOfProcessedImages(), 1u);
   EXPECT_TRUE(ip_client->WaitForFrameProcessors());
 }
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // BGRA -> NV12
 // I420 -> NV12
@@ -335,7 +335,7 @@ INSTANTIATE_TEST_SUITE_P(
                       std::make_tuple(kNV12Image180, kNV12Image90),
                       std::make_tuple(kNV12Image180, kNV12Image)));
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // TODO(hiroh): Add more tests.
 // MEM->DMABUF (V4L2VideoEncodeAccelerator),
 #endif

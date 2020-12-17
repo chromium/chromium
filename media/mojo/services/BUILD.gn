@@ -141,7 +141,7 @@ component("services") {
       deps += [ "//sandbox" ]
     }
   }
-  if (is_ash) {
+  if (is_chromeos_ash) {
     deps +=
         [ "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_gpu" ]
   }
@@ -198,7 +198,7 @@ source_set("unit_tests") {
     deps += [ "//media/cdm:cdm_api" ]
   }
 
-  if (is_ash) {
+  if (is_chromeos_ash) {
     deps += [
       "//components/chromeos_camera:mjpeg_decode_accelerator_service_unittest",
     ]

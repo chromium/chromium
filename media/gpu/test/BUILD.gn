@@ -223,7 +223,7 @@ if (use_vaapi || use_v4l2_codec) {
   }
 }
 
-if (is_ash) {
+if (is_chromeos_ash) {
   static_library("local_gpu_memory_buffer_manager") {
     testonly = true
     sources = [

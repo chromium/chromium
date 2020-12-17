@@ -207,7 +207,7 @@ VideoEncoderTestEnvironment::GetGpuMemoryBufferFactory() const {
 }
 
 bool VideoEncoderTestEnvironment::IsKeplerUsed() const {
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   const VideoCodec codec = VideoCodecProfileToVideoCodec(Profile());
   if (codec != VideoCodec::kCodecVP8)
     return false;
@@ -221,7 +221,7 @@ bool VideoEncoderTestEnvironment::IsKeplerUsed() const {
     if (base::MatchPattern(board, b))
       return true;
   }
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   return false;
 }
 }  // namespace test

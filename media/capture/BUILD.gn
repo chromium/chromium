@@ -271,7 +271,7 @@ component("capture_lib") {
     ]
   }
 
-  if (is_ash) {
+  if (is_chromeos_ash) {
     sources += [
       "video/chromeos/camera_3a_controller.cc",
       "video/chromeos/camera_3a_controller.h",
@@ -394,7 +394,7 @@ source_set("test_support") {
     ]
   }
 
-  if (is_ash) {
+  if (is_chromeos_ash) {
     sources += [
       "video/chromeos/mock_camera_module.cc",
       "video/chromeos/mock_camera_module.h",
@@ -454,7 +454,7 @@ test("capture_unittests") {
     ]
   }
 
-  if (is_ash) {
+  if (is_chromeos_ash) {
     sources += [ "video/linux/camera_config_chromeos_unittest.cc" ]
   }
 
@@ -525,11 +525,11 @@ test("capture_unittests") {
   }
 
   # TODO(https://crbug.com/1043007): use is_linux.
-  if (is_ash) {
+  if (is_chromeos_ash) {
     deps += [ "//media/gpu/test:local_gpu_memory_buffer_manager" ]
   }
 
-  if (is_ash) {
+  if (is_chromeos_ash) {
     sources += [
       "video/chromeos/camera_3a_controller_unittest.cc",
       "video/chromeos/camera_device_delegate_unittest.cc",

@@ -111,7 +111,7 @@ source_set("vaapi") {
     "//ui/gl",
   ]
 
-  if (is_ash) {
+  if (is_chromeos_ash) {
     assert(use_libgav1_parser)
     sources += [
       "av1_vaapi_video_decoder_delegate.cc",
@@ -259,7 +259,7 @@ source_set("vaapi_image_decoder_test_common") {
 }
 
 # TODO(https://crbug.com/1043007): remove is_chromeos.
-if (is_ash) {
+if (is_chromeos_ash) {
   source_set("jpeg_decoder_unit_test") {
     testonly = true
     sources = [ "vaapi_jpeg_decoder_unittest.cc" ]
@@ -324,7 +324,7 @@ test("vaapi_unittest") {
   ]
 
   # TODO(https://crbug.com/1043007): remove is_chromeos.
-  if (is_ash) {
+  if (is_chromeos_ash) {
     deps += [
       ":jpeg_decoder_unit_test",
       ":webp_decoder_unit_test",

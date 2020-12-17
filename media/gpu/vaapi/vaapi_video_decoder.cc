@@ -36,10 +36,10 @@
 #include "media/gpu/vaapi/h265_vaapi_video_decoder_delegate.h"
 #endif
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "media/gpu/av1_decoder.h"
 #include "media/gpu/vaapi/av1_vaapi_video_decoder_delegate.h"
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace media {
 
@@ -742,7 +742,7 @@ Status VaapiVideoDecoder::CreateAcceleratedVideoDecoder() {
         new H265Decoder(std::move(accelerator), profile_, color_space_));
   }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   else if (profile_ >= AV1PROFILE_MIN && profile_ <= AV1PROFILE_MAX) {
     auto accelerator =
         std::make_unique<AV1VaapiVideoDecoderDelegate>(this, vaapi_wrapper_);
@@ -750,7 +750,7 @@ Status VaapiVideoDecoder::CreateAcceleratedVideoDecoder() {
 
     decoder_.reset(new AV1Decoder(std::move(accelerator), profile_));
   }
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   else {
     return Status(StatusCode::kDecoderUnsupportedProfile)
         .WithData("profile", profile_);

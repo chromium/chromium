@@ -343,7 +343,7 @@ AudioOutputStream* AudioManagerBase::MakeAudioOutputStreamProxy(
   std::string output_device_id =
       AudioDeviceDescription::IsDefaultDevice(device_id)
           ?
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
           // On ChromeOS, it is expected that, if the default device is given,
           // no specific device ID should be used since the actual output device
           // should change dynamically if the system default device changes.

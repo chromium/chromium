@@ -314,7 +314,7 @@ static bool IsVP9(VideoCodecProfile profile) {
   return profile >= VP9PROFILE_MIN && profile <= VP9PROFILE_MAX;
 }
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Determine the test is known-to-fail and should be skipped.
 bool ShouldSkipTest(VideoPixelFormat format) {
   struct Pattern {
@@ -362,7 +362,7 @@ bool ShouldSkipTest(VideoPixelFormat format) {
 
   return false;
 }
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Helper functions to do string conversions.
 static base::FilePath::StringType StringToFilePathStringType(
@@ -2793,10 +2793,10 @@ TEST_P(VideoEncodeAcceleratorTest, TestSimpleEncode) {
   const bool force_level = std::get<8>(GetParam());
   const bool scale = std::get<9>(GetParam());
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (ShouldSkipTest(g_env->test_streams_[0]->pixel_format))
     GTEST_SKIP();
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   if (force_level) {
     // Skip ForceLevel test if "--force_level=false".
@@ -2928,10 +2928,10 @@ TEST_P(VideoEncodeAcceleratorSimpleTest, TestSimpleEncode) {
   const int test_type = GetParam();
   ASSERT_LT(test_type, 2) << "Invalid test type=" << test_type;
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (ShouldSkipTest(g_env->test_streams_[0]->pixel_format))
     GTEST_SKIP();
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   if (test_type == 0)
     SimpleTestFunc<VEANoInputClient>();
@@ -3185,7 +3185,7 @@ class VEATestSuite : public base::TestSuite {
   void Initialize() override {
     base::TestSuite::Initialize();
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     task_environment_ = std::make_unique<base::test::TaskEnvironment>(
         base::test::TaskEnvironment::MainThreadType::UI);
 #else
@@ -3277,7 +3277,7 @@ int main(int argc, char** argv) {
     }
 
     if (it->first == "native_input") {
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       media::g_native_input = true;
 #else
       LOG(FATAL) << "Unsupported option";

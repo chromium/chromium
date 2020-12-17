@@ -59,9 +59,9 @@ using media::android_mojo_util::CreateProvisionFetcher;
 using media::android_mojo_util::CreateMediaDrmStorage;
 #endif  // defined(OS_ANDROID)
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/components/cdm_factory_daemon/chromeos_cdm_factory.h"
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace media {
 
@@ -110,7 +110,7 @@ D3D11VideoDecoder::GetD3D11DeviceCB GetD3D11DeviceCallback() {
 // use.
 bool ShouldUseChromeOSDirectVideoDecoder(
     const gpu::GpuPreferences& gpu_preferences) {
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return gpu_preferences.enable_chromeos_direct_video_decoder;
 #else
   return false;
@@ -338,7 +338,7 @@ std::unique_ptr<CdmFactory> GpuMojoMediaClient::CreateCdmFactory(
   return std::make_unique<AndroidCdmFactory>(
       base::BindRepeating(&CreateProvisionFetcher, frame_interfaces),
       base::BindRepeating(&CreateMediaDrmStorage, frame_interfaces));
-#elif BUILDFLAG(IS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
   return std::make_unique<chromeos::ChromeOsCdmFactory>(frame_interfaces);
 #else
   return nullptr;

@@ -22,9 +22,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "media/capture/video/chromeos/video_capture_jpeg_decoder.h"
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using ::testing::_;
 using ::testing::AtLeast;
@@ -38,11 +38,11 @@ namespace media {
 
 namespace {
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 std::unique_ptr<VideoCaptureJpegDecoder> ReturnNullPtrAsJpecDecoder() {
   return nullptr;
 }
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 
@@ -61,7 +61,7 @@ class VideoCaptureDeviceClientTest : public ::testing::Test {
     receiver_ = controller.get();
     gpu_memory_buffer_manager_ =
         std::make_unique<unittest_internal::MockGpuMemoryBufferManager>();
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     device_client_ = std::make_unique<VideoCaptureDeviceClient>(
         VideoCaptureBufferType::kSharedMemory, std::move(controller),
         buffer_pool, base::BindRepeating(&ReturnNullPtrAsJpecDecoder));
@@ -69,7 +69,7 @@ class VideoCaptureDeviceClientTest : public ::testing::Test {
     device_client_ = std::make_unique<VideoCaptureDeviceClient>(
         VideoCaptureBufferType::kSharedMemory, std::move(controller),
         buffer_pool);
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
   ~VideoCaptureDeviceClientTest() override = default;
 

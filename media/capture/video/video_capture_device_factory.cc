@@ -21,10 +21,10 @@ VideoCaptureDeviceFactory::VideoCaptureDeviceFactory() {
 
 VideoCaptureDeviceFactory::~VideoCaptureDeviceFactory() = default;
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 bool VideoCaptureDeviceFactory::IsSupportedCameraAppDeviceBridge() {
   return false;
 }
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace media

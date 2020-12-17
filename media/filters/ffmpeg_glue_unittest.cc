@@ -316,7 +316,7 @@ TEST_F(FFmpegGlueContainerTest, AAC) {
   ExpectContainer(container_names::CONTAINER_AAC);
 }
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(FFmpegGlueContainerTest, AVI) {
   InitializeAndOpen("bear.avi");
   ExpectContainer(container_names::CONTAINER_AVI);
@@ -326,7 +326,7 @@ TEST_F(FFmpegGlueContainerTest, AMR) {
   InitializeAndOpen("bear.amr");
   ExpectContainer(container_names::CONTAINER_AMR);
 }
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
 // Probe something unsupported to ensure we fall back to the our internal guess.

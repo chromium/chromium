@@ -263,7 +263,7 @@ bool IsDefaultSupportedAudioType(const AudioType& type) {
     case kCodecAMR_NB:
     case kCodecAMR_WB:
     case kCodecGSM_MS:
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       return true;
 #else
       return false;
@@ -352,7 +352,7 @@ bool IsDefaultSupportedVideoType(const VideoType& type) {
       return false;
 
     case kCodecMPEG4:
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       return true;
 #else
       return false;

@@ -43,7 +43,7 @@ uint32_t RoundUpToPowerOfTwo(uint32_t v) {
 
 // static
 bool AudioLatency::IsResamplingPassthroughSupported(LatencyType type) {
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return true;
 #elif defined(OS_ANDROID)
   // Only N MR1+ has support for OpenSLES performance modes which allow for

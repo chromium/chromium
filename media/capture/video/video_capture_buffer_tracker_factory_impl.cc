@@ -10,7 +10,7 @@
 #include "build/build_config.h"
 #include "media/capture/video/shared_memory_buffer_tracker.h"
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "media/capture/video/chromeos/gpu_memory_buffer_tracker.h"
 #endif
 
@@ -25,7 +25,7 @@ VideoCaptureBufferTrackerFactoryImpl::CreateTracker(
     VideoCaptureBufferType buffer_type) {
   switch (buffer_type) {
     case VideoCaptureBufferType::kGpuMemoryBuffer:
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       return std::make_unique<GpuMemoryBufferTracker>();
 #elif defined(OS_MAC)
       return std::make_unique<GpuMemoryBufferTrackerMac>();

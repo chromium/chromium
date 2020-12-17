@@ -20,7 +20,7 @@ namespace media {
 namespace {
 std::vector<uint32_t> GetSpatialLayerFrameSize(
     const DecoderBuffer& decoder_buffer) {
-#if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_ASH)
+#if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
   const uint32_t* cue_data =
       reinterpret_cast<const uint32_t*>(decoder_buffer.side_data());
   if (!cue_data) {
@@ -37,7 +37,7 @@ std::vector<uint32_t> GetSpatialLayerFrameSize(
     return {};
   }
   return std::vector<uint32_t>(cue_data, cue_data + num_of_layers);
-#endif  // defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_ASH)
+#endif  // defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
   return {};
 }
 

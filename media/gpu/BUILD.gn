@@ -311,7 +311,7 @@ source_set("common") {
     "//ui/gfx/geometry",
   ]
 
-  if ((is_ash && use_vaapi) || is_win) {
+  if ((is_chromeos_ash && use_vaapi) || is_win) {
     assert(use_libgav1_parser)
     sources += [
       "av1_decoder.cc",
@@ -524,7 +524,7 @@ source_set("unit_tests") {
   if (proprietary_codecs && enable_platform_hevc) {
     sources += [ "h265_decoder_unittest.cc" ]
   }
-  if (is_ash && (use_v4l2_codec || use_vaapi)) {
+  if (is_chromeos_ash && (use_v4l2_codec || use_vaapi)) {
     deps += [ "//media/gpu/chromeos:unit_tests" ]
   }
   if (use_vaapi) {
@@ -539,7 +539,7 @@ source_set("unit_tests") {
     sources += [ "vp8_decoder_unittest.cc" ]
   }
 
-  if ((is_ash && use_vaapi) || is_win) {
+  if ((is_chromeos_ash && use_vaapi) || is_win) {
     sources += [ "av1_decoder_unittest.cc" ]
     deps += [ "//third_party/ffmpeg" ]
   }

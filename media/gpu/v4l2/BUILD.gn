@@ -109,7 +109,7 @@ source_set("v4l2") {
     deps += [ ":libv4l2_stubs" ]
   }
 
-  if (is_ash) {
+  if (is_chromeos_ash) {
     sources += [
       "v4l2_jpeg_encode_accelerator.cc",
       "v4l2_jpeg_encode_accelerator.h",

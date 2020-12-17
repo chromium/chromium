@@ -20,12 +20,12 @@ std::unique_ptr<VideoCaptureDeviceFactory> CAPTURE_EXPORT
 CreateVideoCaptureDeviceFactory(
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner);
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 std::unique_ptr<VideoCaptureDeviceFactory> CAPTURE_EXPORT
 CreateVideoCaptureDeviceFactory(
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
     media::CameraAppDeviceBridgeImpl* camera_app_device_bridge);
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace media
 

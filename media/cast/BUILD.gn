@@ -364,7 +364,7 @@ test("cast_unittests") {
   }
 }
 
-if (is_win || is_mac || is_linux || is_lacros) {
+if (is_win || is_mac || is_linux || is_chromeos_lacros) {
   # This is a target for the collection of cast development tools.  They are
   # not built/linked into the Chromium browser.
   group("testing_tools") {
@@ -465,13 +465,13 @@ if (is_win || is_mac || is_linux || is_lacros) {
       "//net",
     ]
   }
-} else {  # !(is_win || is_mac || is_linux || is_lacros)
+} else {  # !(is_win || is_mac || is_linux || is_chromeos_lacros)
   # The testing tools are only built for the desktop platforms.
   group("testing_tools") {
   }
 }
 
-if (is_linux || is_lacros) {
+if (is_linux || is_chromeos_lacros) {
   test("tap_proxy") {
     sources = [ "test/utility/tap_proxy.cc" ]
 

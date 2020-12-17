@@ -18,7 +18,7 @@
 // TODO(crbug.com/971433). Move the CDMs out of the install directory on
 // ChromeOS.
 #if (defined(OS_MAC) || defined(OS_WIN) || defined(OS_LINUX) || \
-     BUILDFLAG(IS_LACROS))
+     BUILDFLAG(IS_CHROMEOS_LACROS))
 #define CDM_USE_PLATFORM_SPECIFIC_PATH
 #endif
 
@@ -37,7 +37,7 @@ const char kComponentPlatform[] =
     "mac";
 #elif defined(OS_WIN)
     "win";
-#elif BUILDFLAG(IS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
     "cros";
 #elif defined(OS_LINUX)
     "linux";

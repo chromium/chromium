@@ -48,7 +48,7 @@ scoped_refptr<VP9Picture> VaapiVP9Picture::CreateDuplicate() {
   return new VaapiVP9Picture(va_surface_);
 }
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 VaapiAV1Picture::VaapiAV1Picture(
     scoped_refptr<VASurface> display_va_surface,
     scoped_refptr<VASurface> reconstruct_va_surface)
@@ -61,5 +61,5 @@ scoped_refptr<AV1Picture> VaapiAV1Picture::CreateDuplicate() {
   return base::MakeRefCounted<VaapiAV1Picture>(display_va_surface_,
                                                reconstruct_va_surface_);
 }
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }  // namespace media

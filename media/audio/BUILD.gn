@@ -268,7 +268,7 @@ source_set("audio") {
       "cras/cras_unified.h",
     ]
     configs += [ ":libcras" ]
-    if (is_ash) {
+    if (is_chromeos_ash) {
       sources += [
         "cras/audio_manager_chromeos.cc",
         "cras/audio_manager_chromeos.h",
@@ -432,7 +432,7 @@ source_set("unit_tests") {
     ]
   }
 
-  if (is_ash || is_chromecast) {
+  if (is_chromeos_ash || is_chromecast) {
     sources += [
       "test_data.h",
       "wav_audio_handler_unittest.cc",

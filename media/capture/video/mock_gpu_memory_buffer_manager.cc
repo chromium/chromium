@@ -7,7 +7,7 @@
 
 #include "media/video/fake_gpu_memory_buffer.h"
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "media/capture/video/chromeos/request_manager.h"
 #endif
 
@@ -26,7 +26,7 @@ MockGpuMemoryBufferManager::CreateFakeGpuMemoryBuffer(
     gfx::BufferUsage usage,
     gpu::SurfaceHandle surface_handle) {
   auto gmb = std::make_unique<FakeGpuMemoryBuffer>(size, format);
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // For faking a valid JPEG blob buffer.
   if (base::checked_cast<size_t>(size.width()) >= sizeof(Camera3JpegBlob)) {
     Camera3JpegBlob* header = reinterpret_cast<Camera3JpegBlob*>(

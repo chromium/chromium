@@ -19,7 +19,7 @@
 struct IMFCdmProxy;
 #endif
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace chromeos {
 class ChromeOsCdmContext;
 }
@@ -122,7 +122,7 @@ class MEDIA_EXPORT CdmContext {
   virtual FuchsiaCdmContext* GetFuchsiaCdmContext();
 #endif
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Returns a ChromeOsCdmContext interface when the context is backed by the
   // ChromeOS CdmFactoryDaemon. Otherwise return nullptr.
   virtual chromeos::ChromeOsCdmContext* GetChromeOsCdmContext();

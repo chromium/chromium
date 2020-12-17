@@ -35,5 +35,5 @@ declare_args() {
 declare_args() {
   # VA-API also allows decoding of images, but we don't want to use this
   # outside of chromeos, even if video decoding is enabled.
-  use_vaapi_image_codecs = use_vaapi && is_ash
+  use_vaapi_image_codecs = use_vaapi && is_chromeos_ash
 }
