@@ -321,16 +321,11 @@ ContentSubresourceFilterThrottleManager::FilterForFinishedNavigation(
     }
   } else if (ShouldInheritParentActivation(navigation_handle)) {
     // Throttles are only constructed for navigations handled by the network
-    // stack and we only release filters for committed navigations.
-
-    // These redundant DCHECKs are temporarily added to investigate a crash.
-    // TODO(crbug.com/1155870): Remove extra DCHECKs after the crash's cause is
-    // determined.
-    DCHECK(!filter || navigation_handle->HasCommitted());
-    DCHECK(!filter || ShouldInheritActivation(
-                          navigation_handle->GetRedirectChain().front()));
-    DCHECK(!filter || (navigation_handle->GetRedirectChain().size() == 1));
-    DCHECK(!filter);
+    // stack and we only release filters for committed navigations. When a
+    // navigation redirects from a URL handled by the network stack to
+    // about:blank, a filter can already exist here. We replace it to match
+    // behavior for other about:blank frames.
+    DCHECK(!filter || navigation_handle->GetRedirectChain().size() != 1);
     activation_to_inherit =
         GetFrameActivationState(navigation_handle->GetParentFrame());
   }
