@@ -149,7 +149,7 @@ class BadgeManager : public KeyedService, public blink::mojom::BadgeService {
       receivers_;
 
   // Delegate which handles actual setting and clearing of the badge.
-  // Note: This is currently only set on Windows and MacOS.
+  // Note: This is currently set on Windows, MacOS and Chrome OS.
   std::unique_ptr<BadgeManagerDelegate> delegate_;
 
   // Maps app_id to badge contents.

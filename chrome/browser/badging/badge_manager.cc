@@ -37,6 +37,8 @@
 namespace badging {
 
 BadgeManager::BadgeManager(Profile* profile) {
+  // The delegate is also set for Chrome OS but is set from the constructor of
+  // web_apps_chromeos.cc.
 #if defined(OS_MAC)
   SetDelegate(std::make_unique<BadgeManagerDelegateMac>(profile, this));
 #elif defined(OS_WIN)

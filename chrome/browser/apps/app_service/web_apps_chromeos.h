@@ -7,11 +7,14 @@
 
 #include <string>
 
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/apps/app_service/app_notifications.h"
 #include "chrome/browser/apps/app_service/icon_key_util.h"
 #include "chrome/browser/apps/app_service/paused_apps.h"
 #include "chrome/browser/apps/app_service/web_apps_base.h"
+#include "chrome/browser/badging/badge_manager.h"
+#include "chrome/browser/badging/badge_manager_delegate.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
@@ -45,7 +48,24 @@ class WebAppsChromeOs : public WebAppsBase,
 
   void ObserveArc();
 
+  base::WeakPtr<WebAppsChromeOs> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
+  class BadgeManagerDelegate : public badging::BadgeManagerDelegate {
+   public:
+    explicit BadgeManagerDelegate(
+        const base::WeakPtr<WebAppsChromeOs>& web_apps_chrome_os_);
+
+    ~BadgeManagerDelegate() override;
+
+    void OnAppBadgeUpdated(const web_app::AppId& app_id) override;
+
+   private:
+    base::WeakPtr<WebAppsChromeOs> web_apps_chrome_os_;
+  };
+
   void Initialize();
 
   // apps::mojom::Publisher overrides.
@@ -122,6 +142,11 @@ class WebAppsChromeOs : public WebAppsBase,
 
   bool Accepts(const std::string& app_id) override;
 
+  // Returns whether the app should show a badge.
+  apps::mojom::OptionalBool ShouldShowBadge(
+      const std::string& app_id,
+      apps::mojom::OptionalBool has_notification_indicator);
+
   apps::InstanceRegistry* instance_registry_;
 
   PausedApps paused_apps_;
@@ -133,6 +158,10 @@ class WebAppsChromeOs : public WebAppsBase,
       notification_display_service_{this};
 
   AppNotifications app_notifications_;
+
+  badging::BadgeManager* badge_manager_ = nullptr;
+
+  base::WeakPtrFactory<WebAppsChromeOs> weak_ptr_factory_{this};
 };
 
 }  // namespace apps
