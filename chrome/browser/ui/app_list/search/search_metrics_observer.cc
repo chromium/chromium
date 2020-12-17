@@ -60,6 +60,13 @@ void LogTypeAction(const std::string& histogram_prefix,
                    ash::AppListNotifier::Location location,
                    const base::string16& query,
                    const SearchMetricsObserver::Result& result) {
+  if (result.type == ash::SEARCH_RESULT_TYPE_BOUNDARY) {
+    // TODO(crbug.com/1159285): The boundary value is the default value for
+    // result types, but results should have a non-default type. In any case,
+    // return here to prevent a crash from logging the boundary value.
+    return;
+  }
+
   const std::string histogram_name = base::StrCat(
       {histogram_prefix, ".", GetHistogramSuffix(location, query)});
   base::UmaHistogramEnumeration(histogram_name, result.type,
