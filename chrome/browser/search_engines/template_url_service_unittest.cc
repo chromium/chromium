@@ -947,7 +947,7 @@ TEST_F(TemplateURLServiceTest, RepairPrepopulatedSearchEngines) {
   model()->SetUserSelectedDefaultSearchProvider(user_dse);
   EXPECT_EQ(user_dse, model()->GetDefaultSearchProvider());
 
-  // Remove bing.
+  // Remove bing. It will not be restored because of the extension below.
   TemplateURL* bing = model()->GetTemplateURLForKeyword(
       ASCIIToUTF16("bing.com"));
   ASSERT_TRUE(bing);
@@ -959,6 +959,14 @@ TEST_F(TemplateURLServiceTest, RepairPrepopulatedSearchEngines) {
                                   "http://abcdefg", Time());
   EXPECT_TRUE(model()->GetTemplateURLForKeyword(ASCIIToUTF16("bing.com")));
 
+  // Remove yahoo. It will be restored later, but for now verify we removed it.
+  TemplateURL* yahoo =
+      model()->GetTemplateURLForKeyword(ASCIIToUTF16("yahoo.com"));
+  ASSERT_TRUE(yahoo);
+  model()->Remove(yahoo);
+  EXPECT_FALSE(model()->GetTemplateURLForKeyword(ASCIIToUTF16("yahoo.com")));
+
+  // Now perform the actual repair that should restore Yahoo.
   model()->RepairPrepopulatedSearchEngines();
 
   // Google is default.
@@ -968,11 +976,15 @@ TEST_F(TemplateURLServiceTest, RepairPrepopulatedSearchEngines) {
   EXPECT_EQ("www.google.com",
             google->GenerateSearchURL(model()->search_terms_data()).host());
 
-  // Bing was repaired.
+  // Bing was repaired, but still gone because the bing extension caused the
+  // prepopulated engine to be auto-deleted.
   bing =
       model()->FindNonExtensionTemplateURLForKeyword(ASCIIToUTF16("bing.com"));
-  ASSERT_TRUE(bing);
-  EXPECT_EQ(TemplateURL::NORMAL, bing->type());
+  EXPECT_FALSE(bing);
+
+  // Yahoo was repaired and is now restored.
+  yahoo = model()->GetTemplateURLForKeyword(ASCIIToUTF16("yahoo.com"));
+  EXPECT_TRUE(yahoo);
 
   // User search engine is preserved.
   EXPECT_EQ(user_dse, model()->GetTemplateURLForHost("www.goo.com"));
