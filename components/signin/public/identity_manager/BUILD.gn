@@ -34,6 +34,8 @@ source_set("identity_manager") {
     "load_credentials_state.h",
     "primary_account_access_token_fetcher.cc",
     "primary_account_access_token_fetcher.h",
+    "primary_account_change_event.cc",
+    "primary_account_change_event.h",
     "primary_account_mutator.h",
     "scope_set.h",
     "set_accounts_in_cookie_result.h",
@@ -100,6 +102,7 @@ source_set("unit_tests") {
     "identity_test_environment_unittest.cc",
     "identity_utils_unittest.cc",
     "primary_account_access_token_fetcher_unittest.cc",
+    "primary_account_change_event_unittest.cc",
     "primary_account_mutator_unittest.cc",
   ]
 
