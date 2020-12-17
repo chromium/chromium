@@ -229,8 +229,9 @@ CustomTabBarView::CustomTabBarView(BrowserView* browser_view,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (browser_->is_type_custom_tab()) {
     web_app_menu_button_ = AddChildView(std::make_unique<WebAppMenuButton>(
-        browser_view, l10n_util::GetStringUTF16(
-                          IDS_CUSTOM_TABS_ACTION_MENU_ACCESSIBLE_NAME)));
+        browser_view, /*model_delegate=*/nullptr,
+        l10n_util::GetStringUTF16(
+            IDS_CUSTOM_TABS_ACTION_MENU_ACCESSIBLE_NAME)));
 
     // Remove the vertical portion of the interior margin here to avoid
     // increasing the height of the toolbar when |web_app_menu_button_| is drawn

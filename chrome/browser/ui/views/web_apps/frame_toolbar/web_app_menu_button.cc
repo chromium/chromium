@@ -27,10 +27,12 @@
 #include "ui/views/window/hit_test_utils.h"
 
 WebAppMenuButton::WebAppMenuButton(BrowserView* browser_view,
+                                   WebAppMenuModel::Delegate* model_delegate,
                                    base::string16 accessible_name)
     : AppMenuButton(base::BindRepeating(&WebAppMenuButton::ButtonPressed,
                                         base::Unretained(this))),
-      browser_view_(browser_view) {
+      browser_view_(browser_view),
+      model_delegate_(model_delegate) {
   views::SetHitTestComponent(this, static_cast<int>(HTMENU));
 
   SetInkDropMode(InkDropMode::ON);
@@ -77,7 +79,9 @@ void WebAppMenuButton::StartHighlightAnimation() {
 
 void WebAppMenuButton::ButtonPressed(const ui::Event& event) {
   Browser* browser = browser_view_->browser();
-  RunMenu(std::make_unique<WebAppMenuModel>(browser_view_, browser), browser,
+  RunMenu(std::make_unique<WebAppMenuModel>(browser_view_, browser,
+                                            model_delegate_),
+          browser,
           event.IsKeyEvent() ? views::MenuRunner::SHOULD_SHOW_MNEMONICS
                              : views::MenuRunner::NO_FLAGS,
           false);

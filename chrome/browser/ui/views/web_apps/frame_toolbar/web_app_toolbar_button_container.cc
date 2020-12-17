@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser_content_setting_bubble_model_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_menu_button.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_origin_text.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
+#include "chrome/common/chrome_features.h"
 #include "ui/base/hit_test.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/window/hit_test_utils.h"
@@ -104,11 +106,16 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
     // for example, the menu button or other toolbar buttons, and pinned
     // extensions should hide before other toolbar buttons.
     constexpr int kLowPriorityFlexOrder = 2;
+    // TODO(https://crbug.com/1155421): Fix menu button misalignment when
+    // kHiddenByDefault is set for the Extensions toolbar.
+    auto display_mode =
+        base::FeatureList::IsEnabled(features::kDesktopPWAsElidedExtensionsMenu)
+            ? ExtensionsToolbarContainer::DisplayMode::kAutoHide
+            : ExtensionsToolbarContainer::DisplayMode::kCompact;
     if (base::FeatureList::IsEnabled(features::kExtensionsToolbarMenu)) {
       extensions_container_ =
           AddChildView(std::make_unique<ExtensionsToolbarContainer>(
-              browser_view_->browser(),
-              ExtensionsToolbarContainer::DisplayMode::kCompact));
+              browser_view_->browser(), display_mode));
       extensions_container_->SetProperty(
           views::kFlexBehaviorKey,
           views::FlexSpecification(
@@ -133,7 +140,7 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
 
   if (app_controller->HasTitlebarMenuButton()) {
     web_app_menu_button_ =
-        AddChildView(std::make_unique<WebAppMenuButton>(browser_view_));
+        AddChildView(std::make_unique<WebAppMenuButton>(browser_view_, this));
     web_app_menu_button_->SetID(VIEW_ID_APP_MENU);
     const bool is_browser_focus_mode =
         browser_view_->browser()->is_focus_mode();
@@ -349,6 +356,12 @@ WebAppToolbarButtonContainer::GetWebContentsForPageActionIconView() {
   return browser_view_->GetActiveWebContents();
 }
 
+// WebAppMenuModel::Delegate:
+void WebAppToolbarButtonContainer::OpenExtensionMenu() {
+  extensions_container()->extensions_button()->ShowExtensionsMenu();
+}
+
+// views::WidgetObserver:
 void WebAppToolbarButtonContainer::OnWidgetVisibilityChanged(
     views::Widget* widget,
     bool visible) {

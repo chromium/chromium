@@ -13,9 +13,17 @@ class AssignToDesksMenuModel;
 // Menu model for the menu button in a web app browser window.
 class WebAppMenuModel : public AppMenuModel {
  public:
-  static constexpr int kUninstallAppCommandId = 1;
+  class Delegate {
+   public:
+    virtual void OpenExtensionMenu() = 0;
+  };
 
-  WebAppMenuModel(ui::AcceleratorProvider* provider, Browser* browser);
+  static constexpr int kUninstallAppCommandId = 1;
+  static constexpr int kExtensionsMenuCommandId = 2;
+
+  WebAppMenuModel(ui::AcceleratorProvider* provider,
+                  Browser* browser,
+                  Delegate* delegate);
   WebAppMenuModel(const WebAppMenuModel&) = delete;
   WebAppMenuModel& operator=(const WebAppMenuModel&) = delete;
   ~WebAppMenuModel() override;
@@ -30,6 +38,8 @@ class WebAppMenuModel : public AppMenuModel {
   void LogMenuAction(AppMenuAction action_id) override;
 
  private:
+  Delegate* delegate_ = nullptr;
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<AssignToDesksMenuModel> assign_to_desks_submenu_;
 #endif

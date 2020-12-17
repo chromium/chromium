@@ -64,8 +64,9 @@ ExtensionsToolbarContainer::ExtensionsToolbarContainer(Browser* browser,
                                       views::FlexSpecification());
       break;
     case DisplayMode::kCompact:
-      // In compact mode, the menu icon can be hidden but has the highest
-      // priority.
+    case DisplayMode::kAutoHide:
+      // In compact/auto hide mode, the menu icon can be hidden but has the
+      // highest priority.
       extensions_button_->SetProperty(
           views::kFlexBehaviorKey, hide_icon_flex_specification.WithOrder(1));
       break;
@@ -174,8 +175,9 @@ void ExtensionsToolbarContainer::UpdateIconVisibility(
                                  views::FlexSpecification());
         break;
       case DisplayMode::kCompact:
-        // In compact mode, the icon can still drop out, but receives precedence
-        // over other actions.
+      case DisplayMode::kAutoHide:
+        // In compact/auto hide mode, the icon can still drop out, but receives
+        // precedence over other actions.
         action_view->SetProperty(
             views::kFlexBehaviorKey,
             views::FlexSpecification(
@@ -291,6 +293,7 @@ void ExtensionsToolbarContainer::UndoPopOut() {
   ToolbarActionViewController* const popped_out_action = popped_out_action_;
   popped_out_action_ = nullptr;
   UpdateIconVisibility(popped_out_action->GetId());
+  UpdateContainerVisibilityAfterAnimation();
 }
 
 void ExtensionsToolbarContainer::SetPopupOwner(
@@ -299,12 +302,17 @@ void ExtensionsToolbarContainer::SetPopupOwner(
   // never unsetting one when one wasn't set.
   DCHECK((popup_owner_ != nullptr) ^ (popup_owner != nullptr));
   popup_owner_ = popup_owner;
+  if (popup_owner_)
+    UpdateContainerVisibility();
+  else
+    UpdateContainerVisibilityAfterAnimation();
 }
 
 void ExtensionsToolbarContainer::HideActivePopup() {
   if (popup_owner_)
     popup_owner_->HidePopup();
   DCHECK(!popup_owner_);
+  UpdateContainerVisibilityAfterAnimation();
 }
 
 bool ExtensionsToolbarContainer::CloseOverflowMenuIfOpen() {
@@ -324,6 +332,7 @@ void ExtensionsToolbarContainer::PopOutAction(
   popped_out_action_ = action;
   UpdateIconVisibility(action->GetId());
   animating_layout_manager()->PostOrQueueAction(closure);
+  UpdateContainerVisibility();
 }
 
 bool ExtensionsToolbarContainer::ShowToolbarActionPopupForAPICall(
@@ -400,7 +409,7 @@ void ExtensionsToolbarContainer::OnToolbarActionRemoved(
   RemoveChildViewT(GetViewForId(action_id));
   icons_.erase(action_id);
 
-  UpdateContainerVisibility();
+  UpdateContainerVisibilityAfterAnimation();
 }
 
 void ExtensionsToolbarContainer::OnToolbarActionMoved(
@@ -666,7 +675,53 @@ void ExtensionsToolbarContainer::SetExtensionIconVisibility(
 }
 
 void ExtensionsToolbarContainer::UpdateContainerVisibility() {
-  // The container (and extensions-menu button) should be visible if we have at
-  // least one extension.
-  SetVisible(!actions_.empty());
+  bool was_visible = GetVisible();
+  SetVisible(ShouldContainerBeVisible());
+
+  // Layout animation does not handle host view visibility changing; requires
+  // resetting.
+  if (was_visible != GetVisible())
+    animating_layout_manager()->ResetLayout();
+}
+
+bool ExtensionsToolbarContainer::ShouldContainerBeVisible() const {
+  // The container (and extensions-menu button) should not be visible if we have
+  // no extensions.
+  if (actions_.empty())
+    return false;
+
+  // All other display modes are constantly visible.
+  if (display_mode_ != DisplayMode::kAutoHide)
+    return true;
+
+  if (animating_layout_manager()->is_animating())
+    return true;
+
+  // Is menu showing.
+  if (extensions_button_->IsExtensionsMenuShowing())
+    return true;
+
+  // Is extension pop out is showing.
+  if (popped_out_action_)
+    return true;
+
+  // Is extension pop up showing.
+  if (popup_owner_)
+    return true;
+
+  return false;
+}
+
+void ExtensionsToolbarContainer::UpdateContainerVisibilityAfterAnimation() {
+  animating_layout_manager()->PostOrQueueAction(
+      base::BindOnce(&ExtensionsToolbarContainer::UpdateContainerVisibility,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ExtensionsToolbarContainer::OnMenuOpening() {
+  UpdateContainerVisibility();
+}
+
+void ExtensionsToolbarContainer::OnMenuClosed() {
+  UpdateContainerVisibility();
 }

@@ -8,6 +8,7 @@
 #include "base/strings/string16.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
+#include "chrome/browser/ui/web_applications/web_app_menu_model.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_palette.h"
 
@@ -18,6 +19,7 @@ class WebAppMenuButton : public AppMenuButton {
  public:
   static int GetMenuButtonSizeForBrowser(Browser* browser);
   explicit WebAppMenuButton(BrowserView* browser_view,
+                            WebAppMenuModel::Delegate* model_delegate,
                             base::string16 accessible_name = base::string16());
   ~WebAppMenuButton() override;
 
@@ -43,6 +45,8 @@ class WebAppMenuButton : public AppMenuButton {
 
   // The containing browser view.
   BrowserView* browser_view_;
+
+  WebAppMenuModel::Delegate* model_delegate_;
 
   SkColor ink_drop_color_ = gfx::kPlaceholderColor;
 
