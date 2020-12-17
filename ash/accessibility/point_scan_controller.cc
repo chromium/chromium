@@ -11,10 +11,10 @@
 namespace {
 // Scanning time in seconds from the start of the screen (offset_start) to the
 // end of the screen (offset_bound).
-constexpr float kHorizontalScanTimeSecs = 20;
-constexpr float kVerticalScanTimeSecs = 20;
+constexpr float kHorizontalScanTimeSecs = 90;
+constexpr float kVerticalScanTimeSecs = 60;
 constexpr float kHorizontalRangeScanTimeSecs = 30;
-constexpr float kVerticalRangeScanTimeSecs = 20;
+constexpr float kVerticalRangeScanTimeSecs = 25;
 constexpr int kDefaultRangeWidthDips = 150;
 constexpr float kDefaultRangeHeightDips = 120;
 

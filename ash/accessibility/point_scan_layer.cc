@@ -22,6 +22,7 @@ namespace {
 const int kDefaultStrokeWidth = 6;
 constexpr int kDefaultRangeWidthDips = 150;
 constexpr int kDefaultRangeHeightDips = 120;
+constexpr int kDefaultPaddingDips = 4;
 
 display::Display GetPrimaryDisplay() {
   DCHECK(display::Screen::GetScreen());
@@ -42,8 +43,10 @@ PointScanLayer::PointScanLayer(AccessibilityLayerDelegate* delegate)
 
 void PointScanLayer::StartHorizontalRangeScanning() {
   is_range_scan_ = true;
-  gfx::Point end = bounds_.bottom_left();
-  bounds_.set_origin(line_.start);
+  gfx::Point start(kDefaultPaddingDips, 0);
+  gfx::Point end(bounds_.bottom_left().x() + kDefaultPaddingDips,
+                 bounds_.bottom_left().y());
+  line_.start = start;
   line_.end = end;
   is_moving_ = true;
   is_horizontal_range_ = true;
@@ -60,8 +63,10 @@ void PointScanLayer::StartHorizontalScanning() {
 
 void PointScanLayer::StartVerticalRangeScanning() {
   is_range_scan_ = true;
-  gfx::Point end = bounds_.top_right();
-  bounds_.set_origin(line_.start);
+  gfx::Point start(0, kDefaultPaddingDips);
+  gfx::Point end(bounds_.top_right().x(),
+                 bounds_.top_right().y() + kDefaultPaddingDips);
+  line_.start = start;
   line_.end = end;
   is_moving_ = true;
 }
