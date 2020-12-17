@@ -229,7 +229,7 @@ suite('NearbyShare', function() {
     dialog.$$('.action-button').click();
   });
 
-  test('toggle high visibility from UI', function() {
+  test('toggle high visibility from UI', async function() {
     subpage.$$('#highVisibilityToggle').click();
     Polymer.dom.flush();
     assertTrue(fakeReceiveManager.getInHighVisibilityForTest());
@@ -237,6 +237,7 @@ suite('NearbyShare', function() {
     const dialog = subpage.$$('nearby-share-receive-dialog');
     assertTrue(!!dialog);
 
+    await test_util.waitAfterNextRender(dialog);
     const highVisibilityDialog = dialog.$$('nearby-share-high-visibility-page');
     assertTrue(test_util.isVisible(highVisibilityDialog));
 
@@ -273,7 +274,7 @@ suite('NearbyShare', function() {
     assertTrue(!!dialog);
   });
 
-  test('show high visibility dialog', function() {
+  test('show high visibility dialog', async function() {
     // Mock performance.now to return a constant 0 for testing.
     const originalNow = performance.now;
     performance.now = () => {
@@ -293,6 +294,7 @@ suite('NearbyShare', function() {
     assertFalse(highVisibilityDialog.highVisibilityTimedOut_());
 
     Polymer.dom.flush();
+    await test_util.waitAfterNextRender(dialog);
 
     assertTrue(test_util.isVisible(highVisibilityDialog));
     assertEquals(highVisibilityDialog.shutoffTimestamp, 600 * 1000);
@@ -301,7 +303,7 @@ suite('NearbyShare', function() {
     performance.now = originalNow;
   });
 
-  test('high visibility dialog times out', function() {
+  test('high visibility dialog times out', async function() {
     // Mock performance.now to return a constant 0 for testing.
     const originalNow = performance.now;
     performance.now = () => {
@@ -328,6 +330,7 @@ suite('NearbyShare', function() {
     };
 
     highVisibilityDialog.calculateRemainingTime_();
+    await test_util.waitAfterNextRender(dialog);
     assertTrue(test_util.isVisible(highVisibilityDialog));
     assertTrue(highVisibilityDialog.highVisibilityTimedOut_());
 

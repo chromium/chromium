@@ -108,6 +108,9 @@ Polymer({
    */
   highVisibilityShutoffTimestamp_: 0,
 
+  /** @private {?nearbyShare.mojom.RegisterReceiveSurfaceResult} */
+  registerForegroundReceiveSurfaceResult_: null,
+
   /** @override */
   attached() {
     this.closing_ = false;
@@ -260,8 +263,10 @@ Polymer({
         performance.now() + (shutoffTimeoutInSeconds * 1000);
 
     // Register a receive surface to enter high visibility and show the page.
-    this.receiveManager_.registerForegroundReceiveSurface();
-    this.getViewManager_().switchView(Page.HIGH_VISIBILITY);
+    this.receiveManager_.registerForegroundReceiveSurface().then((result) => {
+      this.registerForegroundReceiveSurfaceResult_ = result.result;
+      this.getViewManager_().switchView(Page.HIGH_VISIBILITY);
+    });
   },
 
   /**

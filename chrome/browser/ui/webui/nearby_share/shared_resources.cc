@@ -111,7 +111,15 @@ void RegisterNearbySharedStrings(content::WebUIDataSource* data_source) {
       {"nearbyShareReceiveConfirmPageTitle",
        IDS_NEARBY_RECEIVE_CONFIRM_PAGE_TITLE},
       {"nearbyShareReceiveConfirmPageConnectionId",
-       IDS_NEARBY_RECEIVE_CONFIRM_PAGE_CONNECTION_ID}};
+       IDS_NEARBY_RECEIVE_CONFIRM_PAGE_CONNECTION_ID},
+      {"nearbyShareErrorNoConnectionMedium",
+       IDS_NEARBY_HIGH_VISIBILITY_CONNECTION_MEDIUM_ERROR},
+      {"nearbyShareErrorNoConnectionMediumDescription",
+       IDS_NEARBY_HIGH_VISIBILITY_CONNECTION_MEDIUM_DESCRIPTION},
+      {"nearbyShareErrorTransferInProgressTitle",
+       IDS_NEARBY_HIGH_VISIBILITY_TRANSFER_IN_PROGRESS_ERROR},
+      {"nearbyShareErrorTransferInProgressDescription",
+       IDS_NEARBY_HIGH_VISIBILITY_TRANSFER_IN_PROGRESS_DESCRIPTION}};
   webui::AddLocalizedStringsBulk(data_source, kLocalizedStrings);
 
   data_source->AddString("nearbyShareLearnMoreLink",

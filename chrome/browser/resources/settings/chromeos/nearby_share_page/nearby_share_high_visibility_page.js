@@ -7,6 +7,17 @@
  * user is broadcast in high-visibility mode. The user may cancel to stop high
  * visibility mode at any time.
  */
+
+/**
+ * Represents the current error state, if one exists.
+ * @enum {number}
+ */
+const NearbyVisibilityErrorState = {
+  TIMED_OUT: 0,
+  NO_CONNECTION_MEDIUM: 1,
+  TRANSFER_IN_PROGRESS: 2,
+};
+
 Polymer({
   is: 'nearby-share-high-visibility-page',
 
@@ -41,6 +52,25 @@ Polymer({
       type: Number,
       value: -1,
     },
+
+    /** @private {?nearbyShare.mojom.RegisterReceiveSurfaceResult} */
+    registerResult: {
+      type: nearbyShare.mojom.RegisterReceiveSurfaceResult,
+      value: null,
+    },
+
+    /**
+     * A null |setupState_| indicates that the operation has not yet started.
+     * @private {?NearbyVisibilityErrorState}
+     */
+    errorState_: {
+      type: Number,
+      value: null,
+      computed:
+          'computeErrorState_(shutoffTimestamp, remainingTimeInSeconds_,' +
+          'registerResult)'
+    }
+
   },
 
   /** @private {number} */
@@ -83,6 +113,60 @@ Polymer({
     // timestamp is also set.
     return (this.remainingTimeInSeconds_ === 0) &&
         (this.shutoffTimestamp !== 0);
+  },
+
+  /**
+   * @return {?NearbyVisibilityErrorState}
+   * @protected
+   */
+  computeErrorState_() {
+    if (this.registerResult ===
+        nearbyShare.mojom.RegisterReceiveSurfaceResult.kNoConnectionMedium) {
+      return NearbyVisibilityErrorState.NO_CONNECTION_MEDIUM;
+    }
+    if (this.registerResult ===
+        nearbyShare.mojom.RegisterReceiveSurfaceResult.kTransferInProgress) {
+      return NearbyVisibilityErrorState.TRANSFER_IN_PROGRESS;
+    }
+    if (this.highVisibilityTimedOut_()) {
+      return NearbyVisibilityErrorState.TIMED_OUT;
+    }
+    return null;
+  },
+
+
+  /**
+   * @return {string} localized string
+   * @protected
+   */
+  getErrorTitle_() {
+    switch (this.errorState_) {
+      case NearbyVisibilityErrorState.TIMED_OUT:
+        return this.i18n('nearbyShareErrorTimeOut');
+      case NearbyVisibilityErrorState.NO_CONNECTION_MEDIUM:
+        return this.i18n('nearbyShareErrorNoConnectionMedium');
+      case NearbyVisibilityErrorState.TRANSFER_IN_PROGRESS:
+        return this.i18n('nearbyShareErrorTransferInProgressTitle');
+      default:
+        return '';
+    }
+  },
+
+  /**
+   * @return {string} localized string
+   * @protected
+   */
+  getErrorDescription_() {
+    switch (this.errorState_) {
+      case NearbyVisibilityErrorState.TIMED_OUT:
+        return this.i18nAdvanced('nearbyShareHighVisibilityTimeoutText');
+      case NearbyVisibilityErrorState.NO_CONNECTION_MEDIUM:
+        return this.i18n('nearbyShareErrorNoConnectionMediumDescription');
+      case NearbyVisibilityErrorState.TRANSFER_IN_PROGRESS:
+        return this.i18n('nearbyShareErrorTransferInProgressDescription');
+      default:
+        return '';
+    }
   },
 
   /**

@@ -83,6 +83,7 @@ suite('NearbyShare', function() {
     });
 
     test('show high visibility page, get a target, accept', async function() {
+      await test_util.waitAfterNextRender(dialog);
       // When attached we enter high visibility mode by default
       assertTrue(isVisible('nearby-share-high-visibility-page'));
       assertFalse(isVisible('nearby-share-confirm-page'));
@@ -105,6 +106,7 @@ suite('NearbyShare', function() {
     });
 
     test('show high visibility page, get a target, reject', async function() {
+      await test_util.waitAfterNextRender(dialog);
       // When attached we enter high visibility mode by default
       assertTrue(isVisible('nearby-share-high-visibility-page'));
       assertFalse(isVisible('nearby-share-confirm-page'));
@@ -129,6 +131,7 @@ suite('NearbyShare', function() {
     test(
         'show high visibility page, unregister surface, closes dialog',
         async function() {
+          await test_util.waitAfterNextRender(dialog);
           // When attached we enter high visibility mode by default
           assertTrue(isVisible('nearby-share-high-visibility-page'));
           assertFalse(isVisible('nearby-share-confirm-page'));
@@ -141,6 +144,7 @@ suite('NearbyShare', function() {
     test(
         'unregister surface, OnTransferUpdate, does not close dialog',
         async function() {
+          await test_util.waitAfterNextRender(dialog);
           // When attached we enter high visibility mode by default
           assertTrue(isVisible('nearby-share-high-visibility-page'));
           assertFalse(isVisible('nearby-share-confirm-page'));

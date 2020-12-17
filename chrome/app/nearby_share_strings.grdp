@@ -202,6 +202,18 @@
   <message name="IDS_NEARBY_HIGH_VISIBILITY_TIMEOUT_TEXT" desc="Describes to the user that their device is visible to nearby devices with a specific device name. This is used on the sub-title of the of high visibility receive dialog for the Nearby Share feature.">
     No available devices sharing nearby. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
+  <message name="IDS_NEARBY_HIGH_VISIBILITY_TRANSFER_IN_PROGRESS_ERROR" desc="An error title telling the user that there is already a Nearby Share transfer in progress">
+    Can’t share
+  </message>
+  <message name="IDS_NEARBY_HIGH_VISIBILITY_TRANSFER_IN_PROGRESS_DESCRIPTION" desc="An error description telling the user that there is already a Nearby Share transfer in progress">
+    You can only share one file at a time. Try again when the current transfer is complete.
+  </message>
+    <message name="IDS_NEARBY_HIGH_VISIBILITY_CONNECTION_MEDIUM_ERROR" desc="When the Nearby Share receive dialog is open, an error title telling the user that there is no available connection medium such as wifi or Bluetooth">
+    Bluetooth and Wi-Fi needed
+  </message>
+  <message name="IDS_NEARBY_HIGH_VISIBILITY_CONNECTION_MEDIUM_DESCRIPTION" desc="When the Nearby Share receive dialog is open, an error title telling the user that there is no available connection medium such as wifi or Bluetooth">
+    To use Nearby Share, turn on Bluetooth and Wi-Fi
+  </message>
 
   <!-- Receive Confirmation Page Strings -->
   <message name="IDS_NEARBY_RECEIVE_CONFIRM_PAGE_TITLE" desc="The title of the recieve confirmation page which askign the user to confirm receving a share from a specific device.">
