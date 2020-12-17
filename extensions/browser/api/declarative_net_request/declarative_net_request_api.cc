@@ -105,7 +105,7 @@ void DeclarativeNetRequestUpdateDynamicRulesFunction::OnDynamicRulesUpdated(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (error)
-    Respond(Error(*error));
+    Respond(Error(std::move(*error)));
   else
     Respond(NoArguments());
 }
@@ -184,14 +184,22 @@ DeclarativeNetRequestUpdateSessionRulesFunction::Run() {
   auto* rules_monitor_service =
       declarative_net_request::RulesMonitorService::Get(browser_context());
   DCHECK(rules_monitor_service);
-  std::string update_error;
-  if (!rules_monitor_service->UpdateSessionRules(
-          extension_id(), std::move(rule_ids_to_remove),
-          std::move(rules_to_add), &update_error)) {
-    return RespondNow(Error(std::move(update_error)));
-  }
+  rules_monitor_service->UpdateSessionRules(
+      *extension(), std::move(rule_ids_to_remove), std::move(rules_to_add),
+      base::BindOnce(&DeclarativeNetRequestUpdateSessionRulesFunction::
+                         OnSessionRulesUpdated,
+                     this));
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
 
-  return RespondNow(NoArguments());
+void DeclarativeNetRequestUpdateSessionRulesFunction::OnSessionRulesUpdated(
+    base::Optional<std::string> error) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (error)
+    Respond(Error(std::move(*error)));
+  else
+    Respond(NoArguments());
 }
 
 DeclarativeNetRequestGetSessionRulesFunction::

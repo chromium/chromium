@@ -260,55 +260,20 @@ RulesMonitorService::GetSessionRules(const ExtensionId& extension_id) const {
   return result;
 }
 
-bool RulesMonitorService::UpdateSessionRules(
-    const ExtensionId& extension_id,
+void RulesMonitorService::UpdateSessionRules(
+    const Extension& extension,
     std::vector<int> rule_ids_to_remove,
     std::vector<api::declarative_net_request::Rule> rules_to_add,
-    std::string* error) {
-  DCHECK(error);
-
+    base::OnceCallback<void(base::Optional<std::string> error)> callback) {
   // Sanity check that this is only called for an enabled extension.
-  DCHECK(extension_registry_->enabled_extensions().Contains(extension_id));
+  DCHECK(extension_registry_->enabled_extensions().Contains(extension.id()));
 
-  std::vector<api::declarative_net_request::Rule> new_rules =
-      GetSessionRules(extension_id);
-
-  std::set<int> ids_to_remove(rule_ids_to_remove.begin(),
-                              rule_ids_to_remove.end());
-  base::EraseIf(new_rules, [&ids_to_remove](const dnr_api::Rule& rule) {
-    return base::Contains(ids_to_remove, rule.id);
-  });
-
-  new_rules.insert(new_rules.end(),
-                   std::make_move_iterator(rules_to_add.begin()),
-                   std::make_move_iterator(rules_to_add.end()));
-
-  // TODO(crbug.com/1043200): Implement a shared rules and regex rules limit for
-  // dynamic and session-scoped rules.
-  if (new_rules.size() > kSessionRulesetLimit) {
-    *error = "Number of session scoped rules exceeded";
-    return false;
-  }
-
-  std::unique_ptr<base::ListValue> new_rules_value = base::ListValue::From(
-      json_schema_compiler::util::CreateValueFromArray(new_rules));
-  DCHECK(new_rules_value);
-
-  std::unique_ptr<RulesetMatcher> matcher =
-      CreateSessionScopedMatcher(extension_id, std::move(new_rules), error);
-  if (!matcher)
-    return false;  // |error| should be already populated.
-
-  session_rules_[extension_id] = std::move(*new_rules_value);
-
-  // Update the RulesetMatcher if the extension is not currently loading its
-  // initial rulesets in response to extension load. If it is, then the
-  // session-scoped ruleset will be loaded subsequently in
-  // OnInitialRulesetsLoadedFromDisk.
-  if (!base::Contains(tasks_pending_on_load_, extension_id))
-    UpdateRulesetMatcher(extension_id, std::move(matcher));
-
-  return true;
+  ExecuteOrQueueAPICall(
+      extension,
+      base::BindOnce(&RulesMonitorService::UpdateSessionRulesInternal,
+                     weak_factory_.GetWeakPtr(), extension.id(),
+                     std::move(rule_ids_to_remove), std::move(rules_to_add),
+                     std::move(callback)));
 }
 
 RulesMonitorService::RulesMonitorService(
@@ -503,7 +468,7 @@ void RulesMonitorService::UpdateDynamicRulesInternal(
     DynamicRuleUpdateUICallback callback) {
   if (!extension_registry_->enabled_extensions().Contains(extension_id)) {
     // There is no enabled extension to respond to. While this is probably a
-    // no-op, still dispatch the callback to ensure any related book-keeping is
+    // no-op, still dispatch the callback to ensure any related bookkeeping is
     // done.
     std::move(callback).Run(base::nullopt /* error */);
     return;
@@ -524,6 +489,56 @@ void RulesMonitorService::UpdateDynamicRulesInternal(
       std::move(update_rules_callback));
 }
 
+void RulesMonitorService::UpdateSessionRulesInternal(
+    const ExtensionId& extension_id,
+    std::vector<int> rule_ids_to_remove,
+    std::vector<api::declarative_net_request::Rule> rules_to_add,
+    base::OnceCallback<void(base::Optional<std::string> error)> callback) {
+  if (!extension_registry_->enabled_extensions().Contains(extension_id)) {
+    // There is no enabled extension to respond to. While this is probably a
+    // no-op, still dispatch the callback to ensure any related bookkeeping is
+    // done.
+    std::move(callback).Run(base::nullopt /* error */);
+    return;
+  }
+
+  std::vector<api::declarative_net_request::Rule> new_rules =
+      GetSessionRules(extension_id);
+
+  std::set<int> ids_to_remove(rule_ids_to_remove.begin(),
+                              rule_ids_to_remove.end());
+  base::EraseIf(new_rules, [&ids_to_remove](const dnr_api::Rule& rule) {
+    return base::Contains(ids_to_remove, rule.id);
+  });
+
+  new_rules.insert(new_rules.end(),
+                   std::make_move_iterator(rules_to_add.begin()),
+                   std::make_move_iterator(rules_to_add.end()));
+
+  // TODO(crbug.com/1043200): Implement a shared rules and regex rules limit for
+  // dynamic and session-scoped rules.
+  if (new_rules.size() > kSessionRulesetLimit) {
+    std::move(callback).Run("Number of session scoped rules exceeded");
+    return;
+  }
+
+  std::unique_ptr<base::ListValue> new_rules_value = base::ListValue::From(
+      json_schema_compiler::util::CreateValueFromArray(new_rules));
+  DCHECK(new_rules_value);
+
+  std::string error;
+  std::unique_ptr<RulesetMatcher> matcher =
+      CreateSessionScopedMatcher(extension_id, std::move(new_rules), &error);
+  if (!matcher) {
+    std::move(callback).Run(std::move(error));
+    return;
+  }
+
+  session_rules_[extension_id] = std::move(*new_rules_value);
+  UpdateRulesetMatcher(extension_id, std::move(matcher));
+  std::move(callback).Run(base::nullopt /* error */);
+}
+
 void RulesMonitorService::UpdateEnabledStaticRulesetsInternal(
     const ExtensionId& extension_id,
     std::set<RulesetID> ids_to_disable,
@@ -533,7 +548,7 @@ void RulesMonitorService::UpdateEnabledStaticRulesetsInternal(
       extension_id, ExtensionRegistry::ENABLED);
   if (!extension) {
     // There is no enabled extension to respond to. While this is probably a
-    // no-op, still dispatch the callback to ensure any related book-keeping is
+    // no-op, still dispatch the callback to ensure any related bookkeeping is
     // done.
     std::move(callback).Run(base::nullopt /* error */);
     return;

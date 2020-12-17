@@ -105,13 +105,13 @@ class RulesMonitorService : public BrowserContextKeyedAPI,
   std::vector<api::declarative_net_request::Rule> GetSessionRules(
       const ExtensionId& extension_id) const;
 
-  // Updates the session scoped rules for the given |extension_id|. On failure,
-  // returns false and populates |error|.
-  bool UpdateSessionRules(
-      const ExtensionId& extension_id,
+  // Updates the session scoped rules for the given |extension_id|. Invokes
+  // |callback| with an optional error.
+  void UpdateSessionRules(
+      const Extension& extension,
       std::vector<int> rule_ids_to_remove,
       std::vector<api::declarative_net_request::Rule> rules_to_add,
-      std::string* error);
+      base::OnceCallback<void(base::Optional<std::string> error)> callback);
 
   RulesetManager* ruleset_manager() { return &ruleset_manager_; }
 
@@ -166,6 +166,13 @@ class RulesMonitorService : public BrowserContextKeyedAPI,
       std::set<RulesetID> ids_to_disable,
       std::set<RulesetID> ids_to_enable,
       UpdateEnabledRulesetsUICallback callback);
+
+  // Internal helper for UpdateSessionRules.
+  void UpdateSessionRulesInternal(
+      const ExtensionId& extension_id,
+      std::vector<int> rule_ids_to_remove,
+      std::vector<api::declarative_net_request::Rule> rules_to_add,
+      base::OnceCallback<void(base::Optional<std::string> error)> callback);
 
   // Invoked when we have loaded the rulesets in |load_data| on
   // |file_task_runner_| in response to OnExtensionLoaded.

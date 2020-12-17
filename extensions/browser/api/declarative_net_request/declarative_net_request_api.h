@@ -62,6 +62,9 @@ class DeclarativeNetRequestUpdateSessionRulesFunction
 
   // ExtensionFunction override:
   ExtensionFunction::ResponseAction Run() override;
+
+ private:
+  void OnSessionRulesUpdated(base::Optional<std::string> error);
 };
 
 class DeclarativeNetRequestGetSessionRulesFunction : public ExtensionFunction {
