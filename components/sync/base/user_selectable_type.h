@@ -43,11 +43,6 @@ std::string UserSelectableTypeSetToString(UserSelectableTypeSet types);
 ModelTypeSet UserSelectableTypeToAllModelTypes(UserSelectableType type);
 
 ModelType UserSelectableTypeToCanonicalModelType(UserSelectableType type);
-int UserSelectableTypeToHistogramInt(UserSelectableType type);
-
-constexpr int UserSelectableTypeHistogramNumEntries() {
-  return static_cast<int>(ModelType::NUM_ENTRIES);
-}
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Chrome OS provides a separate UI with sync controls for OS data types. Note

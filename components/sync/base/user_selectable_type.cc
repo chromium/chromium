@@ -196,13 +196,6 @@ ModelType UserSelectableTypeToCanonicalModelType(UserSelectableType type) {
   return GetUserSelectableTypeInfo(type).canonical_model_type;
 }
 
-int UserSelectableTypeToHistogramInt(UserSelectableType type) {
-  // TODO(crbug.com/1007293): Use ModelTypeHistogramValue instead of casting to
-  // int.
-  return static_cast<int>(
-      ModelTypeHistogramValue(UserSelectableTypeToCanonicalModelType(type)));
-}
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const char* GetUserSelectableOsTypeName(UserSelectableOsType type) {
   return GetUserSelectableOsTypeInfo(type).type_name;

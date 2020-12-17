@@ -1330,22 +1330,22 @@ void ProfileSyncService::ConfigureDataTypeManager(ConfigureReason reason) {
     kTransport = 1,
     kMaxValue = kTransport
   };
-  UMA_HISTOGRAM_ENUMERATION("Sync.ConfigureDataTypeManagerOption",
-                            use_transport_only_mode
-                                ? ConfigureDataTypeManagerOption::kTransport
-                                : ConfigureDataTypeManagerOption::kFeature);
+  base::UmaHistogramEnumeration("Sync.ConfigureDataTypeManagerOption",
+                                use_transport_only_mode
+                                    ? ConfigureDataTypeManagerOption::kTransport
+                                    : ConfigureDataTypeManagerOption::kFeature);
 
   // Only if it's the full Sync feature, also record the user's choice of data
   // types.
   if (!use_transport_only_mode) {
     bool sync_everything = sync_prefs_.HasKeepEverythingSynced();
-    UMA_HISTOGRAM_BOOLEAN("Sync.SyncEverything2", sync_everything);
+    base::UmaHistogramBoolean("Sync.SyncEverything2", sync_everything);
 
     if (!sync_everything) {
       for (UserSelectableType type : user_settings_->GetSelectedTypes()) {
-        UMA_HISTOGRAM_ENUMERATION("Sync.CustomSync2",
-                                  UserSelectableTypeToHistogramInt(type),
-                                  UserSelectableTypeHistogramNumEntries());
+        ModelTypeForHistograms canonical_model_type = ModelTypeHistogramValue(
+            UserSelectableTypeToCanonicalModelType(type));
+        base::UmaHistogramEnumeration("Sync.CustomSync3", canonical_model_type);
       }
     }
   }
