@@ -74,11 +74,11 @@ static void PostDeviceInfoCallback(
 
 static void PostCommandCallback(
     scoped_refptr<base::SingleThreadTaskRunner> response_task_runner,
-    const AndroidDeviceManager::CommandCallback& callback,
+    AndroidDeviceManager::CommandCallback callback,
     int result,
     const std::string& response) {
-  response_task_runner->PostTask(FROM_HERE,
-                                 base::BindOnce(callback, result, response));
+  response_task_runner->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), result, response));
 }
 
 static void PostHttpUpgradeCallback(
@@ -99,14 +99,14 @@ class HttpRequest {
   typedef AndroidDeviceManager::HttpUpgradeCallback HttpUpgradeCallback;
 
   static void CommandRequest(const std::string& path,
-                             const CommandCallback& callback,
+                             CommandCallback callback,
                              int result,
                              std::unique_ptr<net::StreamSocket> socket) {
     if (result != net::OK) {
-      callback.Run(result, std::string());
+      std::move(callback).Run(result, std::string());
       return;
     }
-    new HttpRequest(std::move(socket), path, {}, callback);
+    new HttpRequest(std::move(socket), path, {}, std::move(callback));
   }
 
   static void HttpUpgradeRequest(const std::string& path,
@@ -133,9 +133,9 @@ class HttpRequest {
   HttpRequest(std::unique_ptr<net::StreamSocket> socket,
               const std::string& path,
               const std::map<std::string, std::string>& headers,
-              const CommandCallback& callback)
+              CommandCallback callback)
       : socket_(std::move(socket)),
-        command_callback_(callback),
+        command_callback_(std::move(callback)),
         expected_total_size_(0),
         header_size_(std::string::npos) {
     SendRequest(path, headers);
@@ -260,7 +260,7 @@ class HttpRequest {
         const std::string& body = response_.substr(header_size_);
 
         if (!command_callback_.is_null()) {
-          command_callback_.Run(net::OK, body);
+          std::move(command_callback_).Run(net::OK, body);
         } else {
           http_upgrade_callback_.Run(net::OK,
                                      ExtractHeader("Sec-WebSocket-Extensions:"),
@@ -296,7 +296,7 @@ class HttpRequest {
     if (result >= 0)
       return true;
     if (!command_callback_.is_null()) {
-      command_callback_.Run(result, std::string());
+      std::move(command_callback_).Run(result, std::string());
     } else {
       http_upgrade_callback_.Run(result, std::string(), std::string(),
                                  base::WrapUnique<net::StreamSocket>(nullptr));
@@ -416,9 +416,10 @@ void AndroidDeviceManager::DeviceProvider::SendJsonRequest(
     const std::string& serial,
     const std::string& socket_name,
     const std::string& request,
-    const CommandCallback& callback) {
+    CommandCallback callback) {
   OpenSocket(serial, socket_name,
-             base::Bind(&HttpRequest::CommandRequest, request, callback));
+             base::BindOnce(&HttpRequest::CommandRequest, request,
+                            std::move(callback)));
 }
 
 void AndroidDeviceManager::DeviceProvider::HttpUpgrade(
@@ -462,13 +463,14 @@ void AndroidDeviceManager::Device::OpenSocket(const std::string& socket_name,
 void AndroidDeviceManager::Device::SendJsonRequest(
     const std::string& socket_name,
     const std::string& request,
-    const CommandCallback& callback) {
+    CommandCallback callback) {
   task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&DeviceProvider::SendJsonRequest, provider_,
-                                serial_, socket_name, request,
-                                base::Bind(&PostCommandCallback,
-                                           base::ThreadTaskRunnerHandle::Get(),
-                                           callback)));
+      FROM_HERE,
+      base::BindOnce(&DeviceProvider::SendJsonRequest, provider_, serial_,
+                     socket_name, request,
+                     base::BindOnce(&PostCommandCallback,
+                                    base::ThreadTaskRunnerHandle::Get(),
+                                    std::move(callback))));
 }
 
 void AndroidDeviceManager::Device::HttpUpgrade(

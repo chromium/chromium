@@ -19,10 +19,10 @@ const int kAdbPort = 5037;
 
 static void RunCommand(const std::string& serial,
                        const std::string& command,
-                       const AdbDeviceProvider::CommandCallback& callback) {
+                       AdbDeviceProvider::CommandCallback callback) {
   std::string query = base::StringPrintf(
       kHostTransportCommand, serial.c_str(), command.c_str());
-  AdbClientSocket::AdbQuery(kAdbPort, query, callback);
+  AdbClientSocket::AdbQuery(kAdbPort, query, std::move(callback));
 }
 
 static void ReceivedAdbDevices(AdbDeviceProvider::SerialsCallback callback,
@@ -54,7 +54,7 @@ void AdbDeviceProvider::QueryDevices(SerialsCallback callback) {
 
 void AdbDeviceProvider::QueryDeviceInfo(const std::string& serial,
                                         const DeviceInfoCallback& callback) {
-  AndroidDeviceManager::QueryDeviceInfo(base::Bind(&RunCommand, serial),
+  AndroidDeviceManager::QueryDeviceInfo(base::BindOnce(&RunCommand, serial),
                                         callback);
 }
 

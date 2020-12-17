@@ -356,10 +356,8 @@ std::string AndroidDeviceManager::GetBrowserName(const std::string& socket,
 }
 
 // static
-void AndroidDeviceManager::QueryDeviceInfo(
-    const RunCommandCallback& command_callback,
-    const DeviceInfoCallback& callback) {
-  command_callback.Run(
-      kAllCommands,
-      base::Bind(&ReceivedResponse, callback));
+void AndroidDeviceManager::QueryDeviceInfo(RunCommandCallback command_callback,
+                                           const DeviceInfoCallback& callback) {
+  std::move(command_callback)
+      .Run(kAllCommands, base::BindOnce(&ReceivedResponse, callback));
 }

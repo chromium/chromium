@@ -28,8 +28,7 @@ class StreamSocket;
 
 class AndroidDeviceManager {
  public:
-  using CommandCallback =
-      base::Callback<void(int, const std::string&)>;
+  using CommandCallback = base::OnceCallback<void(int, const std::string&)>;
   using SocketCallback =
       base::OnceCallback<void(int result, std::unique_ptr<net::StreamSocket>)>;
   // |body_head| should contain the body (WebSocket frame data) part that has
@@ -120,7 +119,7 @@ class AndroidDeviceManager {
 
     void SendJsonRequest(const std::string& socket_name,
                          const std::string& request,
-                         const CommandCallback& callback);
+                         CommandCallback callback);
 
     void HttpUpgrade(const std::string& socket_name,
                      const std::string& path,
@@ -172,10 +171,10 @@ class AndroidDeviceManager {
                             const std::string& socket_name,
                             SocketCallback callback) = 0;
 
-    virtual void SendJsonRequest(const std::string& serial,
-                                 const std::string& socket_name,
-                                 const std::string& request,
-                                 const CommandCallback& callback);
+    void SendJsonRequest(const std::string& serial,
+                         const std::string& socket_name,
+                         const std::string& request,
+                         CommandCallback callback);
 
     virtual void HttpUpgrade(const std::string& serial,
                              const std::string& socket_name,
@@ -208,9 +207,9 @@ class AndroidDeviceManager {
   static std::string GetBrowserName(const std::string& socket,
                                     const std::string& package);
   using RunCommandCallback =
-      base::Callback<void(const std::string&, const CommandCallback&)>;
+      base::OnceCallback<void(const std::string&, CommandCallback)>;
 
-  static void QueryDeviceInfo(const RunCommandCallback& command_callback,
+  static void QueryDeviceInfo(RunCommandCallback command_callback,
                               const DeviceInfoCallback& callback);
 
   struct DeviceDescriptor {

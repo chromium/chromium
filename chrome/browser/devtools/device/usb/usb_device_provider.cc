@@ -15,6 +15,7 @@
 #include "chrome/browser/devtools/device/usb/android_rsa.h"
 #include "chrome/browser/devtools/device/usb/android_usb_device.h"
 #include "crypto/rsa_private_key.h"
+#include "net/base/completion_repeating_callback.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/socket/stream_socket.h"
@@ -37,50 +38,52 @@ void OnOpenSocket(UsbDeviceProvider::SocketCallback callback,
 void OnRead(net::StreamSocket* socket,
             scoped_refptr<net::IOBuffer> buffer,
             const std::string& data,
-            const UsbDeviceProvider::CommandCallback& callback,
+            UsbDeviceProvider::CommandCallback callback,
             int result) {
   if (result <= 0) {
-    callback.Run(result, result == 0 ? data : std::string());
+    std::move(callback).Run(result, result == 0 ? data : std::string());
     delete socket;
     return;
   }
 
   std::string new_data = data + std::string(buffer->data(), result);
-  result =
-      socket->Read(buffer.get(), kBufferSize,
-                   base::BindOnce(&OnRead, socket, buffer, new_data, callback));
+  net::CompletionRepeatingCallback on_read = base::AdaptCallbackForRepeating(
+      base::BindOnce(&OnRead, socket, buffer, new_data, std::move(callback)));
+  result = socket->Read(buffer.get(), kBufferSize, on_read);
   if (result != net::ERR_IO_PENDING)
-    OnRead(socket, buffer, new_data, callback, result);
+    on_read.Run(result);
 }
 
-void OpenedForCommand(const UsbDeviceProvider::CommandCallback& callback,
+void OpenedForCommand(UsbDeviceProvider::CommandCallback callback,
                       net::StreamSocket* socket,
                       int result) {
   if (result != net::OK) {
-    callback.Run(result, std::string());
+    std::move(callback).Run(result, std::string());
     return;
   }
   scoped_refptr<net::IOBuffer> buffer =
       base::MakeRefCounted<net::IOBuffer>(kBufferSize);
-  result = socket->Read(
-      buffer.get(), kBufferSize,
-      base::BindOnce(&OnRead, socket, buffer, std::string(), callback));
+  net::CompletionRepeatingCallback on_read =
+      base::AdaptCallbackForRepeating(base::BindOnce(
+          &OnRead, socket, buffer, std::string(), std::move(callback)));
+  result = socket->Read(buffer.get(), kBufferSize, on_read);
   if (result != net::ERR_IO_PENDING)
-    OnRead(socket, buffer, std::string(), callback, result);
+    on_read.Run(result);
 }
 
 void RunCommand(scoped_refptr<AndroidUsbDevice> device,
                 const std::string& command,
-                const UsbDeviceProvider::CommandCallback& callback) {
+                UsbDeviceProvider::CommandCallback callback) {
   net::StreamSocket* socket = device->CreateSocket(command);
   if (!socket) {
-    callback.Run(net::ERR_CONNECTION_FAILED, std::string());
+    std::move(callback).Run(net::ERR_CONNECTION_FAILED, std::string());
     return;
   }
+  auto completion = base::AdaptCallbackForRepeating(std::move(callback));
   int result =
-      socket->Connect(base::BindOnce(&OpenedForCommand, callback, socket));
+      socket->Connect(base::BindOnce(&OpenedForCommand, completion, socket));
   if (result != net::ERR_IO_PENDING)
-    callback.Run(result, std::string());
+    completion.Run(result, std::string());
 }
 
 }  // namespace
@@ -103,7 +106,7 @@ void UsbDeviceProvider::QueryDeviceInfo(const std::string& serial,
     callback.Run(offline_info);
     return;
   }
-  AndroidDeviceManager::QueryDeviceInfo(base::Bind(&RunCommand, it->second),
+  AndroidDeviceManager::QueryDeviceInfo(base::BindOnce(&RunCommand, it->second),
                                         callback);
 }
 
