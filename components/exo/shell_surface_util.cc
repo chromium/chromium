@@ -78,28 +78,28 @@ aura::WindowTargeter* FindTargeter(ui::EventTarget* target) {
 
 }  // namespace
 
-void SetShellApplicationId(aura::Window* window,
+void SetShellApplicationId(ui::PropertyHandler* property_handler,
                            const base::Optional<std::string>& id) {
   TRACE_EVENT1("exo", "SetApplicationId", "application_id", id ? *id : "null");
 
   if (id)
-    window->SetProperty(kApplicationIdKey, *id);
+    property_handler->SetProperty(kApplicationIdKey, *id);
   else
-    window->ClearProperty(kApplicationIdKey);
+    property_handler->ClearProperty(kApplicationIdKey);
 }
 
-const std::string* GetShellApplicationId(const aura::Window* window) {
-  return window->GetProperty(kApplicationIdKey);
+const std::string* GetShellApplicationId(const aura::Window* property_handler) {
+  return property_handler->GetProperty(kApplicationIdKey);
 }
 
-void SetShellStartupId(aura::Window* window,
+void SetShellStartupId(ui::PropertyHandler* property_handler,
                        const base::Optional<std::string>& id) {
   TRACE_EVENT1("exo", "SetStartupId", "startup_id", id ? *id : "null");
 
   if (id)
-    window->SetProperty(kStartupIdKey, *id);
+    property_handler->SetProperty(kStartupIdKey, *id);
   else
-    window->ClearProperty(kStartupIdKey);
+    property_handler->ClearProperty(kStartupIdKey);
 }
 
 const std::string* GetShellStartupId(aura::Window* window) {
@@ -140,8 +140,9 @@ bool IsShellMainSurfaceKey(const void* key) {
   return kMainSurfaceKey == key;
 }
 
-void SetShellMainSurface(aura::Window* window, Surface* surface) {
-  window->SetProperty(kMainSurfaceKey, surface);
+void SetShellMainSurface(ui::PropertyHandler* property_handler,
+                         Surface* surface) {
+  property_handler->SetProperty(kMainSurfaceKey, surface);
 }
 
 Surface* GetShellMainSurface(const aura::Window* window) {
