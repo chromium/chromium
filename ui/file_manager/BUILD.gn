@@ -71,7 +71,7 @@ group("unit_test_data") {
     "gallery/js/image_editor:js_test_gen_html_modules",
     "image_loader:js_test_gen_html",
     "image_loader:js_test_gen_html_modules",
-    "video_player/js:js_test_gen_html",
+    "video_player/js:js_test_gen_html_modules",
   ]
 }
 

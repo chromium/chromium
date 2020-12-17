@@ -13,5 +13,5 @@ class VideoPlayerJsTest : public FileManagerJsTestBase {
 };
 
 IN_PROC_BROWSER_TEST_F(VideoPlayerJsTest, SaveResumePlaybackTest) {
-  RunTestURL("video_player_native_controls_unittest_gen.html");
+  RunTestURL("video_player_native_controls_unittest.m_gen.html");
 }

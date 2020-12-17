@@ -2,6 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertEquals} from 'chrome://test/chai_assert.js';
+
+import {MockChromeStorageAPI} from '../../base/js/mock_chrome.m.js';
+
+import {NativeControlsVideoPlayer} from './video_player_native_controls.m.js';
+
 /**
  * Helper function for creating an mock HTMLVideoElement.
  *
@@ -19,10 +25,10 @@ function mockVideoElement(src, duration, currentTime) {
  * Test case for save and resume playback position when close and reopen video
  * player app.
  */
-function testSaveResumePlayback() {
+export function testSaveResumePlayback() {
   new MockChromeStorageAPI();
 
-  let player = new NativeControlsVideoPlayer();
+  const player = new NativeControlsVideoPlayer();
 
   const testCases = [
     mockVideoElement('test_1', 305, 150), mockVideoElement('test_2', 305, 14),
