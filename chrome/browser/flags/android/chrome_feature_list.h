@@ -60,6 +60,7 @@ extern const base::Feature kContextualSearchDebug;
 extern const base::Feature kContextualSearchDefinitions;
 extern const base::Feature kContextualSearchLegacyHttpPolicy;
 extern const base::Feature kContextualSearchLiteralSearchTap;
+extern const base::Feature kContextualSearchLongpressPanelHelp;
 extern const base::Feature kContextualSearchLongpressResolve;
 extern const base::Feature kContextualSearchMlTapSuppression;
 extern const base::Feature kContextualSearchSecondTap;

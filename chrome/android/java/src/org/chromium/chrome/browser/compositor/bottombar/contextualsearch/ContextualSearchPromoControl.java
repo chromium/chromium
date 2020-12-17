@@ -96,11 +96,8 @@ public class ContextualSearchPromoControl extends OverlayPanelInflater {
      * @param container         The container View used to inflate the View.
      * @param resourceLoader    The resource loader that will handle the snapshot capturing.
      */
-    public ContextualSearchPromoControl(OverlayPanel panel,
-                                        ContextualSearchPromoHost host,
-                                        Context context,
-                                        ViewGroup container,
-                                        DynamicResourceLoader resourceLoader) {
+    ContextualSearchPromoControl(OverlayPanel panel, ContextualSearchPromoHost host,
+            Context context, ViewGroup container, DynamicResourceLoader resourceLoader) {
         super(panel, R.layout.contextual_search_promo_view,
                 R.id.contextual_search_promo, context, container, resourceLoader);
 

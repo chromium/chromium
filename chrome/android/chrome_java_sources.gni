@@ -284,6 +284,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/compositor/bottombar/contextualsearch/ContextualSearchContextControl.java",
   "java/src/org/chromium/chrome/browser/compositor/bottombar/contextualsearch/ContextualSearchImageControl.java",
   "java/src/org/chromium/chrome/browser/compositor/bottombar/contextualsearch/ContextualSearchPanel.java",
+  "java/src/org/chromium/chrome/browser/compositor/bottombar/contextualsearch/ContextualSearchPanelHelp.java",
   "java/src/org/chromium/chrome/browser/compositor/bottombar/contextualsearch/ContextualSearchPanelMetrics.java",
   "java/src/org/chromium/chrome/browser/compositor/bottombar/contextualsearch/ContextualSearchPromoControl.java",
   "java/src/org/chromium/chrome/browser/compositor/bottombar/contextualsearch/ContextualSearchQuickActionControl.java",

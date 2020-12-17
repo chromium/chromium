@@ -44742,6 +44742,7 @@ from previous Chrome versions.
   <int value="418769094" label="MixedContentSiteSetting:enabled"/>
   <int value="420160748" label="CornerShortcuts:enabled"/>
   <int value="422307097" label="PhysicalWeb:disabled"/>
+  <int value="422670720" label="ContextualSearchLongpressPanelHelp:disabled"/>
   <int value="423615350" label="enable-tab-audio-muting"/>
   <int value="423855924" label="enable-tab-switcher-theme-colors"/>
   <int value="425072496" label="GridLayoutForNtpShortcuts:enabled"/>
@@ -45478,6 +45479,7 @@ from previous Chrome versions.
   <int value="1139363314" label="disable-supervised-user-blacklist"/>
   <int value="1139756271" label="WebOTPCrossDevice:enabled"/>
   <int value="1140541604" label="WinrtGeolocationImplementation:enabled"/>
+  <int value="1141918949" label="ContextualSearchLongpressPanelHelp:enabled"/>
   <int value="1142515376" label="enable-nacl"/>
   <int value="1142788238" label="FontCacheScaling:disabled"/>
   <int value="1142970266"

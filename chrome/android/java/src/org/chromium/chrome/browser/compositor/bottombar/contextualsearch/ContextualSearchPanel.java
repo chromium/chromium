@@ -9,6 +9,7 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.RectF;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ActivityState;
@@ -45,6 +46,10 @@ public class ContextualSearchPanel extends OverlayPanel {
 
     /** The distance of the divider from the end of the bar, in dp. */
     private final float mEndButtonWidthDp;
+
+    /** The Help section of the Panel. */
+    @NonNull
+    private final ContextualSearchPanelHelp mPanelHelp;
 
     /** Whether the Panel should be promoted to a new tab after being maximized. */
     private boolean mShouldPromoteToTabAfterMaximizing;
@@ -88,6 +93,7 @@ public class ContextualSearchPanel extends OverlayPanel {
         mEndButtonWidthDp = mContext.getResources().getDimensionPixelSize(
                                     R.dimen.contextual_search_padded_button_width)
                 * mPxToDp;
+        mPanelHelp = new ContextualSearchPanelHelp(context);
     }
 
     @Override

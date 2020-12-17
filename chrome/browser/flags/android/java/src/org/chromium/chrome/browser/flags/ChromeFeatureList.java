@@ -279,6 +279,8 @@ public abstract class ChromeFeatureList {
             "ContextualSearchLiteralSearchTap";
     public static final String CONTEXTUAL_SEARCH_ML_TAP_SUPPRESSION =
             "ContextualSearchMlTapSuppression";
+    public static final String CONTEXTUAL_SEARCH_LONGPRESS_PANEL_HELP =
+            "ContextualSearchLongpressPanelHelp";
     public static final String CONTEXTUAL_SEARCH_LONGPRESS_RESOLVE =
             "ContextualSearchLongpressResolve";
     public static final String CONTEXTUAL_SEARCH_SECOND_TAP = "ContextualSearchSecondTap";

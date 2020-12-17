@@ -780,6 +780,12 @@ Touch &amp; hold any word to search. To refine your search, select more or fewer
       <message name="IDS_CONTEXTUAL_SEARCH_NO_THANKS_BUTTON" desc="A button to confirm and dismiss opt out promo">
         No thanks
       </message>
+      <message name="IDS_CONTEXTUAL_SEARCH_HELP_BODY" desc="Some help text that is shown in the body of a paragraph. The text tells the user what gesture to use instead of a previous gesture in order to search.">
+        To search for a word or phrase, touch and hold it instead of tapping it
+      </message>
+      <message name="IDS_CONTEXTUAL_SEARCH_HELP_HEADER" desc="Summary help text that is shown at the top of a paragraph. The text tells the user what gesture to use in order to search.">
+        Touch &amp; hold to search
+      </message>
       <message name="IDS_DO_NOT_TRACK_TITLE" desc="Title for 'Do Not Track' preference">
         “Do Not Track”
       </message>
