@@ -49,6 +49,9 @@ public final class ChromePreferenceKeys {
      */
     public static final String ACCESSIBILITY_TAB_SWITCHER = "accessibility_tab_switcher";
 
+    public static final String ACCOUNT_PICKER_BOTTOM_SHEET_SHOWN_COUNT =
+            "Chrome.AccountPickerBottomSheet.ShownCount";
+
     /** The language code to override application language with. */
     public static final String APPLICATION_OVERRIDE_LANGUAGE =
             "Chrome.Language.ApplicationOverrideLanguage";
@@ -813,6 +816,7 @@ public final class ChromePreferenceKeys {
     static List<String> getKeysInUse() {
         // clang-format off
         return Arrays.asList(
+                ACCOUNT_PICKER_BOTTOM_SHEET_SHOWN_COUNT,
                 ASSISTANT_LAST_VERSION,
                 ASSISTANT_VOICE_SEARCH_ENABLED,
                 ASSISTANT_VOICE_SEARCH_SUPPORTED,

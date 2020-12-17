@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.incognito.interstitial.IncognitoInterstitialCoordinator;
 import org.chromium.chrome.browser.incognito.interstitial.IncognitoInterstitialDelegate;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
+import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerDelegate;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -81,7 +82,10 @@ public class AccountPickerBottomSheetCoordinator {
             BottomSheetController bottomSheetController,
             AccountPickerDelegate accountPickerDelegate,
             IncognitoInterstitialDelegate incognitoInterstitialDelegate) {
+        SigninPreferencesManager.getInstance().incrementAccountPickerBottomSheetShownCount();
         SigninMetricsUtils.logAccountConsistencyPromoAction(AccountConsistencyPromoAction.SHOWN);
+        SigninMetricsUtils.logAccountConsistencyPromoShownCount(
+                "Signin.AccountConsistencyPromoAction.Shown.Count");
 
         mAccountPickerBottomSheetMediator = new AccountPickerBottomSheetMediator(
                 activity, accountPickerDelegate, this::dismissBottomSheet);

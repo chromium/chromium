@@ -33,6 +33,7 @@ import androidx.test.espresso.ViewInteraction;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matcher;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -54,6 +55,8 @@ import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.interstitial.IncognitoInterstitialDelegate;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.signin.account_picker.AccountPickerBottomSheetCoordinator;
 import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerDelegate;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -97,6 +100,8 @@ public class AccountPickerBottomSheetTest {
             new ProfileDataSource.ProfileData(
                     /* accountName= */ "test.account2@gmail.com", /* avatar= */ null,
                     /* fullName= */ null, /* givenName= */ null);
+
+    private final int mShowCount = 1;
 
     // Disable animations to reduce flakiness.
     @ClassRule
@@ -144,6 +149,14 @@ public class AccountPickerBottomSheetTest {
         when(mAccountPickerDelegateMock.isIncognitoModeEnabled()).thenReturn(true);
         mAccountManagerTestRule.addAccount(PROFILE_DATA1);
         mAccountManagerTestRule.addAccount(PROFILE_DATA2);
+        SharedPreferencesManager.getInstance().removeKey(
+                ChromePreferenceKeys.ACCOUNT_PICKER_BOTTOM_SHEET_SHOWN_COUNT);
+    }
+
+    @After
+    public void tearDown() {
+        SharedPreferencesManager.getInstance().removeKey(
+                ChromePreferenceKeys.ACCOUNT_PICKER_BOTTOM_SHEET_SHOWN_COUNT);
     }
 
     @Test
@@ -151,9 +164,25 @@ public class AccountPickerBottomSheetTest {
     public void testCollapsedSheetWithAccount() {
         MetricsUtils.HistogramDelta accountConsistencyHistogram = new HistogramDelta(
                 "Signin.AccountConsistencyPromoAction", AccountConsistencyPromoAction.SHOWN);
+        MetricsUtils.HistogramDelta shownCountHistogram =
+                new HistogramDelta("Signin.AccountConsistencyPromoAction.Shown.Count", mShowCount);
         buildAndShowCollapsedBottomSheet();
         checkCollapsedAccountList(PROFILE_DATA1);
         Assert.assertEquals(1, accountConsistencyHistogram.getDelta());
+        Assert.assertEquals(1, shownCountHistogram.getDelta());
+    }
+
+    @Test
+    @MediumTest
+    public void testPromoShownHistogramMaxCount() {
+        final int max = 100;
+        SharedPreferencesManager.getInstance().writeInt(
+                ChromePreferenceKeys.ACCOUNT_PICKER_BOTTOM_SHEET_SHOWN_COUNT, max + 5);
+        MetricsUtils.HistogramDelta shownCountHistogram =
+                new HistogramDelta("Signin.AccountConsistencyPromoAction.Shown.Count", max);
+        buildAndShowCollapsedBottomSheet();
+        checkCollapsedAccountList(PROFILE_DATA1);
+        Assert.assertEquals(1, shownCountHistogram.getDelta());
     }
 
     @Test
@@ -352,9 +381,12 @@ public class AccountPickerBottomSheetTest {
         MetricsUtils.HistogramDelta accountConsistencyHistogram =
                 new HistogramDelta("Signin.AccountConsistencyPromoAction",
                         AccountConsistencyPromoAction.SIGNED_IN_WITH_DEFAULT_ACCOUNT);
+        MetricsUtils.HistogramDelta signedInCountHistogram = new HistogramDelta(
+                "Signin.AccountConsistencyPromoAction.SignedIn.Count", mShowCount);
         buildAndShowCollapsedBottomSheet();
         clickContinueButtonAndCheckSignInInProgressSheet();
         Assert.assertEquals(1, accountConsistencyHistogram.getDelta());
+        Assert.assertEquals(1, signedInCountHistogram.getDelta());
     }
 
     @Test
@@ -363,12 +395,15 @@ public class AccountPickerBottomSheetTest {
         MetricsUtils.HistogramDelta accountConsistencyHistogram =
                 new HistogramDelta("Signin.AccountConsistencyPromoAction",
                         AccountConsistencyPromoAction.SIGNED_IN_WITH_NON_DEFAULT_ACCOUNT);
+        MetricsUtils.HistogramDelta signedInCountHistogram = new HistogramDelta(
+                "Signin.AccountConsistencyPromoAction.SignedIn.Count", mShowCount);
         buildAndShowExpandedBottomSheet();
         onView(withText(PROFILE_DATA2.getAccountEmail())).perform(click());
         CriteriaHelper.pollUiThread(mCoordinator.getBottomSheetViewForTesting().findViewById(
                 R.id.account_picker_selected_account)::isShown);
         clickContinueButtonAndCheckSignInInProgressSheet();
         Assert.assertEquals(1, accountConsistencyHistogram.getDelta());
+        Assert.assertEquals(1, signedInCountHistogram.getDelta());
     }
 
     @Test
@@ -383,6 +418,8 @@ public class AccountPickerBottomSheetTest {
         MetricsUtils.HistogramDelta signedInWithNonDefaultAccountHistogram =
                 new HistogramDelta("Signin.AccountConsistencyPromoAction",
                         AccountConsistencyPromoAction.SIGNED_IN_WITH_NON_DEFAULT_ACCOUNT);
+        MetricsUtils.HistogramDelta signedInCountHistogram = new HistogramDelta(
+                "Signin.AccountConsistencyPromoAction.SignedIn.Count", mShowCount);
         buildAndShowExpandedBottomSheet();
         onVisibleView(withText(R.string.signin_add_account_to_device)).perform(click());
         verify(mAccountPickerDelegateMock).addAccount(callbackArgumentCaptor.capture());
@@ -396,6 +433,7 @@ public class AccountPickerBottomSheetTest {
         Assert.assertEquals(1, addAccountHistogram.getDelta());
         Assert.assertEquals(1, signedInWithAddedAccountHistogram.getDelta());
         Assert.assertEquals(0, signedInWithNonDefaultAccountHistogram.getDelta());
+        Assert.assertEquals(1, signedInCountHistogram.getDelta());
     }
 
     @Test

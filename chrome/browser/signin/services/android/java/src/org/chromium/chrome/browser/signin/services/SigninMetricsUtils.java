@@ -33,6 +33,15 @@ public class SigninMetricsUtils {
                 promoAction, AccountConsistencyPromoAction.MAX);
     }
 
+    /**
+     * Logs AccountPickerBottomSheet shown count histograms.
+     */
+    public static void logAccountConsistencyPromoShownCount(String histogram) {
+        RecordHistogram.recordExactLinearHistogram(histogram,
+                SigninPreferencesManager.getInstance().getAccountPickerBottomSheetShownCount(),
+                100);
+    }
+
     @VisibleForTesting
     @NativeMethods
     public interface Natives {
