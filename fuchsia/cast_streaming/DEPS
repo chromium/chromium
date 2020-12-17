@@ -3,6 +3,7 @@ include_rules = [
   "+components/openscreen_platform",
   "+media/base",
   "+media/mojo",
+  "+mojo/core",
   "+mojo/public",
   "+third_party/openscreen/src",
 ]

@@ -6,30 +6,22 @@ assert(is_fuchsia)
 
 import("//testing/test.gni")
 
-source_set("cast_streaming_config_conversions") {
+source_set("cast_streaming_core") {
   deps = [
     "//base",
     "//media",
-    "//third_party/openscreen/src/cast/streaming:common",
   ]
-  visibility = [ ":*" ]
-  sources = [
-    "config_conversions.cc",
-    "config_conversions.h",
-  ]
-}
-
-source_set("cast_streaming_message_port") {
-  deps = [
-    "//base",
+  public_deps = [
+    "//components/cast/message_port",
     "//third_party/openscreen/src/cast/common:public",
     "//third_party/openscreen/src/cast/streaming:common",
   ]
   visibility = [ ":*" ]
-  public_deps = [ "//components/cast/message_port" ]
   sources = [
     "cast_message_port_impl.cc",
     "cast_message_port_impl.h",
+    "config_conversions.cc",
+    "config_conversions.h",
     "message_serialization.cc",
     "message_serialization.h",
   ]
@@ -37,8 +29,7 @@ source_set("cast_streaming_message_port") {
 
 source_set("cast_streaming_session") {
   deps = [
-    ":cast_streaming_config_conversions",
-    ":cast_streaming_message_port",
+    ":cast_streaming_core",
     "//base",
     "//components/openscreen_platform",
     "//media",
@@ -80,8 +71,7 @@ source_set("cast_streaming") {
 source_set("cast_streaming_test_sender") {
   testonly = true
   deps = [
-    ":cast_streaming_config_conversions",
-    ":cast_streaming_message_port",
+    ":cast_streaming_core",
     "//base",
     "//components/openscreen_platform",
     "//media",
@@ -124,16 +114,22 @@ source_set("cast_streaming_test_receiver") {
 }
 
 test("cast_streaming_unittests") {
-  sources = [ "cast_message_port_impl_unittest.cc" ]
   deps = [
-    ":cast_streaming_message_port",
-    "//base/test:run_all_unittests",
+    ":cast_streaming_core",
+    ":cast_streaming_session",
+    ":cast_streaming_test_receiver",
+    ":cast_streaming_test_sender",
     "//base/test:test_support",
     "//components/cast/message_port:test_message_port_receiver",
-    "//components/openscreen_platform",
-    "//components/openscreen_platform:openscreen_platform_network_service",
+    "//components/openscreen_platform:openscreen_platform_net",
     "//media",
+    "//mojo/core/embedder",
     "//testing/gtest",
     "//third_party/openscreen/src/platform:api",
+  ]
+  sources = [
+    "cast_message_port_impl_unittest.cc",
+    "cast_streaming_session_unittest.cc",
+    "test/run_all_unittests.cc",
   ]
 }
