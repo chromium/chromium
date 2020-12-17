@@ -2470,6 +2470,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="PasswordProtection.RequestReferringAppSource"
+    enum="PasswordProtectionReferringAppSource" expires_after="2021-12-15">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the referring app source of the password protection request,
+    indicating the source of the referring app name in the request. This metric
+    is only logged on Android.
+  </summary>
+</histogram>
+
 <histogram name="PasswordProtection.SampleReportSent" units="Boolean"
     expires_after="2021-04-25">
   <owner>bdea@chromium.org</owner>

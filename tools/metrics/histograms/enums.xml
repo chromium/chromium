@@ -57788,6 +57788,13 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="Warning string with org name"/>
 </enum>
 
+<enum name="PasswordProtectionReferringAppSource">
+  <int value="0" label="Source unspecified"/>
+  <int value="1" label="Known app id"/>
+  <int value="2" label="Unknown app id"/>
+  <int value="3" label="Activity referrer"/>
+</enum>
+
 <enum name="PasswordProtectionRequestOutcome">
   <int value="0" label="Unknown"/>
   <int value="1" label="Succeeded"/>
