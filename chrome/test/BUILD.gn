@@ -3567,8 +3567,8 @@ test("unit_tests") {
     "../browser/permissions/permission_context_base_feature_policy_unittest.cc",
     "../browser/permissions/prediction_based_permission_ui_selector_unittest.cc",
     "../browser/permissions/pref_notification_permission_ui_selector_unittest.cc",
-    "../browser/persisted_state_db/persisted_state_db_factory_unittest.cc",
-    "../browser/persisted_state_db/persisted_state_db_unittest.cc",
+    "../browser/persisted_state_db/profile_proto_db_factory_unittest.cc",
+    "../browser/persisted_state_db/profile_proto_db_unittest.cc",
     "../browser/plugins/pdf_iframe_navigation_throttle_unittest.cc",
     "../browser/policy/boolean_disabling_policy_handler_unittest.cc",
     "../browser/policy/chrome_browser_policy_connector_unittest.cc",
@@ -4106,6 +4106,7 @@ test("unit_tests") {
 
   deps = [
     ":messaging_test_proto",
+    ":profile_proto_db_test_proto",
     ":test_support",
     ":test_support_unit",
     "//base:base_stack_sampling_profiler_test_util",
@@ -7647,4 +7648,9 @@ if (!is_android) {
 
 proto_library("messaging_test_proto") {
   sources = [ "//chrome/browser/policy/messaging_layer/proto/test.proto" ]
+}
+
+proto_library("profile_proto_db_test_proto") {
+  sources =
+      [ "../browser/persisted_state_db/profile_proto_db_test_proto.proto" ]
 }

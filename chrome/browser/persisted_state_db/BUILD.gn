@@ -7,11 +7,17 @@ import("//third_party/protobuf/proto_library.gni")
 
 source_set("persisted_state_db") {
   sources = [
-    "persisted_state_db.cc",
-    "persisted_state_db.h",
-    "persisted_state_db_factory.cc",
-    "persisted_state_db_factory.h",
+    "profile_proto_db.h",
+    "profile_proto_db_factory.cc",
+    "profile_proto_db_factory.h",
   ]
+
+  if (is_android) {
+    sources += [
+      "persisted_state_db.cc",
+      "persisted_state_db.h",
+    ]
+  }
 
   deps = [
     ":persisted_state_db_content_proto",

@@ -51,7 +51,8 @@
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/permissions/adaptive_quiet_notification_permission_ui_enabler.h"
 #include "chrome/browser/permissions/last_tab_standing_tracker_factory.h"
-#include "chrome/browser/persisted_state_db/persisted_state_db_factory.h"
+#include "chrome/browser/persisted_state_db/persisted_state_db_content.pb.h"
+#include "chrome/browser/persisted_state_db/profile_proto_db_factory.h"
 #include "chrome/browser/plugins/plugin_prefs_factory.h"
 #include "chrome/browser/policy/cloud/user_cloud_policy_invalidator_factory.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor_factory.h"
@@ -330,7 +331,8 @@ void ChromeBrowserMainExtraPartsProfiles::
   NTPResourceCacheFactory::GetInstance();
 #endif
   PasswordStoreFactory::GetInstance();
-  PersistedStateDBFactory::GetInstance();
+  ProfileProtoDBFactory<
+      persisted_state_db::PersistedStateContentProto>::GetInstance();
 #if !defined(OS_ANDROID)
   PinnedTabServiceFactory::GetInstance();
 #endif

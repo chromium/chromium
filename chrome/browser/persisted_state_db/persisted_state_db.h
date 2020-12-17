@@ -9,27 +9,21 @@
 #include <string>
 #include <vector>
 
+#include "base/android/scoped_java_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/sequenced_task_runner.h"
+#include "build/build_config.h"
 #include "chrome/browser/persisted_state_db/persisted_state_db_content.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/leveldb_proto/public/proto_database.h"
 
-#if defined(OS_ANDROID)
+namespace content {
+class BrowserContext;
+}  // namespace content
 
-#include "base/android/scoped_java_ref.h"
-#include "build/build_config.h"
-
-#endif  // OS_ANDROID
-
-namespace leveldb_proto {
-class ProtoDatabaseProvider;
-}  // namespace leveldb_proto
-
-class PersistedStateDBFactory;
-class PersistedStateDBFactoryTest;
-class PersistedStateDBTest;
+template <typename T>
+class ProfileProtoDB;
 
 // PersistedStateDB is leveldb backend store for NonCriticalPersistedTabData.
 // NonCriticalPersistedTabData is an extension of TabState where data for
@@ -38,42 +32,12 @@ class PersistedStateDBTest;
 // <NonCriticalPersistedTabData id>_<Tab id>
 
 // NonCriticalPersistedTabData is stored in key/value pairs.
-class PersistedStateDB : public KeyedService {
+class PersistedStateDB {
  public:
-  using KeyAndValue = std::pair<std::string, std::vector<uint8_t>>;
-
-  // Callback when content is acquired
-  using LoadCallback = base::OnceCallback<void(bool, std::vector<KeyAndValue>)>;
-
-  // Used for confirming an operation was completed successfully (e.g.
-  // insert, delete). This will be invoked on a different SequenceRunner
-  // to TabStateDB.
-  using OperationCallback = base::OnceCallback<void(bool)>;
-
-  // Entry in the database
-  using ContentEntry = leveldb_proto::ProtoDatabase<
-      persisted_state_db::PersistedStateContentProto>::KeyEntryVector;
-
-  ~PersistedStateDB() override;
-
-  // Loads the content data for the key and passes them to the callback
-  void LoadContent(const std::string& key, LoadCallback callback);
-
-  // Inserts a value for a given key and passes the result (success/failure) to
-  // OperationCallback
-  void InsertContent(const std::string& key,
-                     const std::vector<uint8_t>& value,
-                     OperationCallback callback);
-
-  // Deletes content in the database, matching all keys which have a prefix
-  // that matches the key
-  void DeleteContent(const std::string& key, OperationCallback callback);
-
-  // Delete all content in the database
-  void DeleteAllContent(OperationCallback callback);
-
-#if defined(OS_ANDROID)
-  // The following are callable from LevelDBPersistedTabDataStorage over JNI.
+  explicit PersistedStateDB(content::BrowserContext* browser_context);
+  PersistedStateDB(const PersistedStateDB&) = delete;
+  PersistedStateDB& operator=(const PersistedStateDB&) = delete;
+  ~PersistedStateDB();
 
   // Save byte array for key.
   void Save(JNIEnv* env,
@@ -94,58 +58,10 @@ class PersistedStateDB : public KeyedService {
   // Destroy PersistedStateDB object.
   void Destroy(JNIEnv* env);
 
-#endif  // OS_ANDROID
-
  private:
-  friend class ::PersistedStateDBTest;
-  friend class ::PersistedStateDBFactory;
-  friend class ::PersistedStateDBFactoryTest;
-
-  // Initializes the database
-  PersistedStateDB(
-      leveldb_proto::ProtoDatabaseProvider* proto_database_provider,
-      const base::FilePath& profile_directory);
-
-  // Used for tests
-  explicit PersistedStateDB(
-      std::unique_ptr<leveldb_proto::ProtoDatabase<
-          persisted_state_db::PersistedStateContentProto>> storage_database,
-      scoped_refptr<base::SequencedTaskRunner> task_runner);
-
-  // Passes back database status following database initialization
-  void OnDatabaseInitialized(leveldb_proto::Enums::InitStatus status);
-
-  // Callback when content is loaded
-  void OnLoadContent(
-      LoadCallback callback,
-      bool success,
-      std::unique_ptr<
-          std::vector<persisted_state_db::PersistedStateContentProto>> content);
-
-  // Callback when an operation (e.g. insert or delete) is called
-  void OnOperationCommitted(OperationCallback callback, bool success);
-
-  // Returns true if initialization status of database is not yet known
-  bool InitStatusUnknown() const;
-
-  // Returns true if the database failed to initialize
-  bool FailedToInit() const;
-
-  // Status of the database initialization.
-  base::Optional<leveldb_proto::Enums::InitStatus> database_status_;
-
-  // The database for storing content storage information.
-  std::unique_ptr<leveldb_proto::ProtoDatabase<
-      persisted_state_db::PersistedStateContentProto>>
-      storage_database_;
-
-  // Store operations until the database is initialized at which point
-  // deferred_operations_ is flushed and all operations are executed.
-  std::vector<base::OnceClosure> deferred_operations_;
+  ProfileProtoDB<persisted_state_db::PersistedStateContentProto>* proto_db_;
 
   base::WeakPtrFactory<PersistedStateDB> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PersistedStateDB);
 };
 
 #endif  // CHROME_BROWSER_PERSISTED_STATE_DB_PERSISTED_STATE_DB_H_
