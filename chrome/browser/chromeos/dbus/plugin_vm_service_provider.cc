@@ -13,8 +13,8 @@
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/settings/chromeos/app_management/app_management_uma.h"
@@ -22,7 +22,6 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/dbus/plugin_vm_service/plugin_vm_service.pb.h"
 #include "components/prefs/pref_service.h"
-#include "components/user_manager/user_manager.h"
 #include "dbus/message.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
@@ -32,14 +31,6 @@ constexpr char kFakeUUID[] = "74657374-4444-4444-8888-888888888888";
 // These are the accepted inputs to the ShowSettingsPage D-Bus method.
 constexpr char kShowSettingsPageDetails[] = "pluginVm/details";
 constexpr char kShowSettingsPageSharedPaths[] = "pluginVm/sharedPaths";
-
-namespace {
-Profile* GetPrimaryProfile() {
-  const user_manager::User* primary_user =
-      user_manager::UserManager::Get()->GetPrimaryUser();
-  return chromeos::ProfileHelper::Get()->GetProfileByUser(primary_user);
-}
-}  // namespace
 
 namespace chromeos {
 
@@ -118,7 +109,7 @@ void PluginVmServiceProvider::ShowSettingsPage(
     return;
   }
 
-  Profile* primary_profile = GetPrimaryProfile();
+  Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
   if (request.subpage_path() == kShowSettingsPageDetails) {
     chrome::ShowAppManagementPage(
         primary_profile, plugin_vm::kPluginVmShelfAppId,
@@ -145,8 +136,8 @@ void PluginVmServiceProvider::GetUserId(
   std::unique_ptr<dbus::Response> response =
       dbus::Response::FromMethodCall(method_call);
   plugin_vm_service::GetAppLicenseUserIdResponse payload;
-  payload.set_user_id(
-      plugin_vm::GetPluginVmUserIdForProfile(GetPrimaryProfile()));
+  payload.set_user_id(plugin_vm::GetPluginVmUserIdForProfile(
+      ProfileManager::GetPrimaryUserProfile()));
   dbus::MessageWriter writer(response.get());
   writer.AppendProtoAsArrayOfBytes(payload);
   std::move(response_sender).Run(std::move(response));
@@ -159,7 +150,7 @@ void PluginVmServiceProvider::GetPermissions(
       dbus::Response::FromMethodCall(method_call);
   plugin_vm_service::GetPermissionsResponse payload;
   payload.set_data_collection_enabled(
-      GetPrimaryProfile()->GetPrefs()->GetBoolean(
+      ProfileManager::GetPrimaryUserProfile()->GetPrefs()->GetBoolean(
           plugin_vm::prefs::kPluginVmDataCollectionAllowed));
   dbus::MessageWriter writer(response.get());
   writer.AppendProtoAsArrayOfBytes(payload);

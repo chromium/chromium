@@ -442,26 +442,24 @@ std::vector<Profile*> ProfileManager::GetLastOpenedProfiles() {
 
 // static
 Profile* ProfileManager::GetPrimaryUserProfile() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (IsLoggedIn()) {
+    user_manager::UserManager* manager = user_manager::UserManager::Get();
+    const user_manager::User* user = manager->GetPrimaryUser();
+    if (!user)  // Can be null in unit tests.
+      return nullptr;
+
+    // Note: The ProfileHelper will take care of guest profiles.
+    return chromeos::ProfileHelper::Get()->GetProfileByUserUnsafe(user);
+  }
+#endif
+
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   if (!profile_manager)  // Can be null in unit tests.
     return nullptr;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!IsLoggedIn()) {
-    return profile_manager->GetActiveUserOrOffTheRecordProfileFromPath(
-        profile_manager->user_data_dir());
-  }
 
-  user_manager::UserManager* manager = user_manager::UserManager::Get();
-  const user_manager::User* user = manager->GetPrimaryUser();
-  if (!user)  // Can be null in unit tests.
-    return nullptr;
-
-  // Note: The ProfileHelper will take care of guest profiles.
-  return chromeos::ProfileHelper::Get()->GetProfileByUserUnsafe(user);
-#else
   return profile_manager->GetActiveUserOrOffTheRecordProfileFromPath(
       profile_manager->user_data_dir());
-#endif
 }
 
 // static

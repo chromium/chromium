@@ -32,6 +32,7 @@
 #include "chrome/browser/download/download_dir_util.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/disks/disk.h"
 #include "chromeos/disks/disk_mount_manager.h"
@@ -82,15 +83,6 @@ constexpr char kArcMyFilesContentUrlPrefix[] =
     "0000000000000000000000000000CAFEF00D2019/";
 constexpr char kArcDriveContentUrlPrefix[] =
     "content://org.chromium.arc.volumeprovider/MyDrive/";
-
-Profile* GetPrimaryProfile() {
-  if (!user_manager::UserManager::IsInitialized())
-    return nullptr;
-  const auto* primary_user = user_manager::UserManager::Get()->GetPrimaryUser();
-  if (!primary_user)
-    return nullptr;
-  return chromeos::ProfileHelper::Get()->GetProfileByUser(primary_user);
-}
 
 // Helper function for |ConvertToContentUrls|.
 void OnSingleContentUrlResolved(const base::RepeatingClosure& barrier_closure,
@@ -561,7 +553,7 @@ bool ConvertPathToArcUrl(const base::FilePath& path, GURL* arc_url_out) {
 
   // Obtain the primary profile. This information is required because currently
   // only the file systems for the primary profile is exposed to ARC.
-  Profile* primary_profile = GetPrimaryProfile();
+  Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
   if (!primary_profile)
     return false;
 
@@ -734,8 +726,8 @@ void ConvertToContentUrls(
 void ConvertToContentUrls(
     const std::vector<storage::FileSystemURL>& file_system_urls,
     ConvertToContentUrlsCallback callback) {
-  ConvertToContentUrls(GetPrimaryProfile(), file_system_urls,
-                       std::move(callback));
+  ConvertToContentUrls(ProfileManager::GetPrimaryUserProfile(),
+                       file_system_urls, std::move(callback));
 }
 
 bool ReplacePrefix(std::string* s,

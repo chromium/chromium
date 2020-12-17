@@ -27,9 +27,8 @@
 #include "chrome/browser/chromeos/guest_os/guest_os_share_path.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_files.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_util.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/user_manager/user_manager.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "content/public/common/drop_data.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -49,17 +48,6 @@ constexpr char kMimeTypeTextUriList[] = "text/uri-list";
 constexpr char kFileSchemePrefix[] = "file:";
 constexpr char kUriListSeparator[] = "\r\n";
 constexpr char kVmFileScheme[] = "vmfile";
-
-// We are using our own GetPrimaryProfile() rather than
-// ProfileManager::GetPrimaryUserProfile() to help unittest.
-Profile* GetPrimaryProfile() {
-  if (!user_manager::UserManager::IsInitialized())
-    return nullptr;
-  const auto* primary_user = user_manager::UserManager::Get()->GetPrimaryUser();
-  if (!primary_user)
-    return nullptr;
-  return chromeos::ProfileHelper::Get()->GetProfileByUser(primary_user);
-}
 
 // We implement our own URLToPath() and PathToURL() rather than use
 // net::FileUrlToFilePath() or net::FilePathToFileURL() since //net code does
@@ -114,7 +102,7 @@ std::string PathToURL(const std::string& path) {
 }
 
 storage::FileSystemContext* GetFileSystemContext() {
-  Profile* primary_profile = GetPrimaryProfile();
+  Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
   if (!primary_profile)
     return nullptr;
 
@@ -175,7 +163,7 @@ struct FileInfo {
 void ShareAndSend(aura::Window* target,
                   std::vector<FileInfo> files,
                   exo::DataExchangeDelegate::SendDataCallback callback) {
-  Profile* primary_profile = GetPrimaryProfile();
+  Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
   aura::Window* toplevel = target->GetToplevelWindow();
   bool is_crostini = crostini::IsCrostiniWindow(toplevel);
   bool is_plugin_vm = plugin_vm::IsPluginVmAppWindow(toplevel);
@@ -279,7 +267,7 @@ void ChromeDataExchangeDelegate::SetSourceOnOSExchangeData(
 std::vector<ui::FileInfo> ChromeDataExchangeDelegate::GetFilenames(
     aura::Window* source,
     const std::vector<uint8_t>& data) const {
-  Profile* primary_profile = GetPrimaryProfile();
+  Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
   aura::Window* toplevel = source->GetToplevelWindow();
   bool is_crostini = crostini::IsCrostiniWindow(toplevel);
   bool is_plugin_vm = plugin_vm::IsPluginVmAppWindow(toplevel);
