@@ -141,7 +141,7 @@ LayoutShiftTracker::LayoutShiftTracker(LocalFrameView* frame_view)
       // This eliminates noise from the private Page object created by
       // SVGImage::DataChanged.
       is_active_(
-          !frame_view_->GetFrame().GetChromeClient().IsSVGImageChromeClient()),
+          !frame_view->GetFrame().GetChromeClient().IsSVGImageChromeClient()),
       score_(0.0),
       weighted_score_(0.0),
       timer_(frame_view->GetFrame().GetTaskRunner(TaskType::kInternalDefault),
@@ -225,6 +225,11 @@ void LayoutShiftTracker::ObjectShifted(
       object.View()->FirstFragment().LocalBorderBoxProperties();
   FloatClipRect clip_rect =
       GeometryMapper::LocalToAncestorClipRect(property_tree_state, root_state);
+  if (frame_view_->GetFrame().IsMainFrame()) {
+    // Apply the visual viewport clip.
+    clip_rect.Intersect(FloatClipRect(
+        frame_view_->GetPage()->GetVisualViewport().VisibleRect()));
+  }
 
   // If the clip region is empty, then the resulting layout shift isn't visible
   // in the viewport so ignore it.

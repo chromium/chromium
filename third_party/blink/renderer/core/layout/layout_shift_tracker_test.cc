@@ -6,6 +6,7 @@
 
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
@@ -583,6 +584,43 @@ TEST_F(LayoutShiftTrackerTest, NestedFixedPos) {
   target->SetSubtreeShouldDoFullPaintInvalidation();
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
+}
+
+TEST_F(LayoutShiftTrackerTest, ClipByVisualViewport) {
+  SetHtmlInnerHTML(R"HTML(
+    <meta name="viewport" content="width=200, initial-scale=2">
+    <style>
+      #target {
+        position: absolute;
+        top: 0;
+        left: 150px;
+        width: 200px;
+        height: 200px;
+      }
+    </style>
+    <div id=target></div>
+  )HTML");
+
+  GetDocument().GetPage()->GetVisualViewport().SetSize(IntSize(200, 500));
+  GetDocument().GetPage()->GetVisualViewport().SetLocation(FloatPoint(0, 100));
+  UpdateAllLifecyclePhasesForTest();
+  // The visual viewport.
+  EXPECT_EQ(IntRect(0, 100, 200, 500),
+            GetDocument().View()->GetScrollableArea()->VisibleContentRect());
+  // The layout viewport .
+  EXPECT_EQ(IntRect(0, 0, 800, 600),
+            GetDocument().View()->LayoutViewport()->VisibleContentRect());
+  EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
+
+  GetDocument().getElementById("target")->setAttribute(html_names::kStyleAttr,
+                                                       "top: 100px");
+  UpdateAllLifecyclePhasesForTest();
+  // 50.0: visible width
+  // 100.0 + 100.0: visible height + vertical shift
+  // 200.0 * 500.0: visual viewport area
+  // 100.0 / 500.0: shift distance fraction
+  EXPECT_FLOAT_EQ(50.0 * (100.0 + 100.0) / (200.0 * 500.0) * (100.0 / 500.0),
+                  GetLayoutShiftTracker().Score());
 }
 
 }  // namespace blink
