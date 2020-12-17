@@ -5,6 +5,7 @@
 package org.chromium.components.autofill;
 
 import android.graphics.RectF;
+import android.view.autofill.AutofillId;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
@@ -67,6 +68,7 @@ public class FormFieldData {
     // after the object instantiated.
     private String mServerType;
     private String mComputedType;
+    private AutofillId mAutofillId;
 
     private FormFieldData(String name, String label, String value, String autocompleteAttr,
             boolean shouldAutocomplete, String placeholder, String type, String id,
@@ -170,6 +172,14 @@ public class FormFieldData {
     private void updateAutofillState(boolean autofilled) {
         if (mAutofilled && !autofilled) mPreviouslyAutofilled = true;
         mAutofilled = autofilled;
+    }
+
+    public void setAutofillId(AutofillId id) {
+        mAutofillId = id;
+    }
+
+    public AutofillId getAutofillId() {
+        return mAutofillId;
     }
 
     @CalledByNative

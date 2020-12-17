@@ -10,11 +10,14 @@ testonly = true
 android_library("component_autofill_provider_java_test_support") {
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   sources = [
+    "java/src/org/chromium/components/autofill/AutofillHintsServiceTestHelper.java",
     "java/src/org/chromium/components/autofill/AutofillProviderTestHelper.java",
   ]
   deps = [
     "//base:base_java",
+    "//base:base_java_test_support",
     "//base:jni_java",
+    "//components/autofill/android/provider:autofill_aidl",
     "//components/autofill/android/provider:java",
     "//content/public/android:content_java",
     "//third_party/android_deps:androidx_annotation_annotation_java",

@@ -17,6 +17,7 @@ import android.graphics.Rect;
 import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.os.LocaleList;
 import android.os.Parcel;
 import android.os.SystemClock;
@@ -54,11 +55,13 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.MetricsUtils;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
+import org.chromium.components.autofill.AutofillHintsServiceTestHelper;
 import org.chromium.components.autofill.AutofillManagerWrapper;
 import org.chromium.components.autofill.AutofillPopup;
 import org.chromium.components.autofill.AutofillProvider;
 import org.chromium.components.autofill.AutofillProviderTestHelper;
 import org.chromium.components.autofill.AutofillProviderUMA;
+import org.chromium.components.autofill_public.ViewType;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.DOMUtils;
@@ -2112,6 +2115,10 @@ public class AwAutofillTest {
                         "crowdsourcing-autofill-hints"));
         assertEquals("HTML_TYPE_EMAIL",
                 viewStructure.getChild(1).getHtmlInfo().getAttribute("computed-autofill-hints"));
+
+        // Binder will not be set if the prediction already arrives.
+        IBinder binder = viewStructure.getExtras().getBinder("AUTOFILL_HINTS_SERVICE");
+        assertNull(binder);
     }
 
     @Test
@@ -2119,6 +2126,68 @@ public class AwAutofillTest {
     @Feature({"AndroidWebView"})
     @CommandLineFlags.Add({"enable-features=AndroidAutofillQueryServerFieldTypes"})
     public void testServerPredictionArrivesAfterAutofillStart() throws Throwable {
+        final String data = "<html><head></head><body><form action='a.html' name='formname'>"
+                + "<input type='text' id='text1' name='username'>"
+                + "<input type='text' name='email' id='text2' autocomplete='email'/>"
+                + "</form></body></html>";
+        final String url = mWebServer.setResponse(FILE, data, null);
+        loadUrlSync(url);
+
+        int cnt = 0;
+        executeJavaScriptAndWaitForResult("document.getElementById('text1').select();");
+        dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
+
+        cnt += waitForCallbackAndVerifyTypes(cnt,
+                new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_SESSION_STARTED,
+                        AUTOFILL_VALUE_CHANGED});
+
+        invokeOnProvideAutoFillVirtualStructure();
+        TestViewStructure viewStructure = mTestValues.testViewStructure;
+        assertNotNull(viewStructure);
+        assertEquals(2, viewStructure.getChildCount());
+        assertEquals("NO_SERVER_DATA",
+                viewStructure.getChild(0).getHtmlInfo().getAttribute(
+                        "crowdsourcing-autofill-hints"));
+        assertEquals("UNKNOWN_TYPE",
+                viewStructure.getChild(0).getHtmlInfo().getAttribute("computed-autofill-hints"));
+        assertEquals("NO_SERVER_DATA",
+                viewStructure.getChild(1).getHtmlInfo().getAttribute(
+                        "crowdsourcing-autofill-hints"));
+        assertEquals("HTML_TYPE_EMAIL",
+                viewStructure.getChild(1).getHtmlInfo().getAttribute("computed-autofill-hints"));
+
+        IBinder binder = viewStructure.getExtras().getBinder("AUTOFILL_HINTS_SERVICE");
+        assertNotNull(binder);
+        AutofillHintsServiceTestHelper autofillHintsServiceTestHelper =
+                new AutofillHintsServiceTestHelper();
+        autofillHintsServiceTestHelper.registerViewTypeService(binder);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> AutofillProviderTestHelper
+                                   .simulateMainFrameAutofillServerResponseForTesting(
+                                           mAwContents.getWebContents(),
+                                           new String[] {"text1", "text2"},
+                                           new int[] {/*USERNAME, EMAIL_ADDRESS*/ 86, 9}));
+
+        cnt += waitForCallbackAndVerifyTypes(cnt, new Integer[] {AUTOFILL_QUERY_DONE});
+        assertTrue(mTestAutofillManagerWrapper.isQuerySucceed());
+        autofillHintsServiceTestHelper.waitForCallbackInvoked();
+        List<ViewType> viewTypes = autofillHintsServiceTestHelper.getViewTypes();
+        assertEquals(2, viewTypes.size());
+        assertEquals(viewStructure.getChild(0).getAutofillId(), viewTypes.get(0).mAutofillId);
+        assertEquals("USERNAME", viewTypes.get(0).mServerType);
+        assertEquals("USERNAME", viewTypes.get(0).mComputedType);
+        assertEquals(viewStructure.getChild(1).getAutofillId(), viewTypes.get(1).mAutofillId);
+        assertEquals("EMAIL_ADDRESS", viewTypes.get(1).mServerType);
+        assertEquals("HTML_TYPE_EMAIL", viewTypes.get(1).mComputedType);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=AndroidAutofillQueryServerFieldTypes"})
+    public void testServerPredictionArrivesBeforeCallbackRegistered() throws Throwable {
         final String data = "<html><head></head><body><form action='a.html' name='formname'>"
                 + "<input type='text' id='text1' name='username'>"
                 + "<input type='text' name='email' id='text2' autocomplete='email'/>"
@@ -2160,7 +2229,20 @@ public class AwAutofillTest {
         cnt += waitForCallbackAndVerifyTypes(cnt, new Integer[] {AUTOFILL_QUERY_DONE});
         assertTrue(mTestAutofillManagerWrapper.isQuerySucceed());
 
-        // TODO(crbug.com/1151542): Verify the field types once they are sent from service.
+        IBinder binder = viewStructure.getExtras().getBinder("AUTOFILL_HINTS_SERVICE");
+        assertNotNull(binder);
+        AutofillHintsServiceTestHelper autofillHintsServiceTestHelper =
+                new AutofillHintsServiceTestHelper();
+        autofillHintsServiceTestHelper.registerViewTypeService(binder);
+        autofillHintsServiceTestHelper.waitForCallbackInvoked();
+        List<ViewType> viewTypes = autofillHintsServiceTestHelper.getViewTypes();
+        assertEquals(2, viewTypes.size());
+        assertEquals(viewStructure.getChild(0).getAutofillId(), viewTypes.get(0).mAutofillId);
+        assertEquals("USERNAME", viewTypes.get(0).mServerType);
+        assertEquals("USERNAME", viewTypes.get(0).mComputedType);
+        assertEquals(viewStructure.getChild(1).getAutofillId(), viewTypes.get(1).mAutofillId);
+        assertEquals("EMAIL_ADDRESS", viewTypes.get(1).mServerType);
+        assertEquals("HTML_TYPE_EMAIL", viewTypes.get(1).mComputedType);
     }
 
     @Test
@@ -2193,8 +2275,8 @@ public class AwAutofillTest {
         assertNull(viewStructure.getChild(1).getHtmlInfo().getAttribute(
                 "crowdsourcing-autofill-hints"));
         assertNull(viewStructure.getChild(1).getHtmlInfo().getAttribute("computed-autofill-hints"));
-
-        // TODO(crbug.com/1151542): Complete the test once the prediction update is implemented.
+        IBinder binder = viewStructure.getExtras().getBinder("AUTOFILL_HINTS_SERVICE");
+        assertNull(binder);
     }
 
     @Test
@@ -2232,6 +2314,12 @@ public class AwAutofillTest {
         assertEquals("HTML_TYPE_EMAIL",
                 viewStructure.getChild(1).getHtmlInfo().getAttribute("computed-autofill-hints"));
 
+        IBinder binder = viewStructure.getExtras().getBinder("AUTOFILL_HINTS_SERVICE");
+        assertNotNull(binder);
+        AutofillHintsServiceTestHelper autofillHintsServiceTestHelper =
+                new AutofillHintsServiceTestHelper();
+        autofillHintsServiceTestHelper.registerViewTypeService(binder);
+
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> AutofillProviderTestHelper
@@ -2240,6 +2328,9 @@ public class AwAutofillTest {
 
         cnt += waitForCallbackAndVerifyTypes(cnt, new Integer[] {AUTOFILL_QUERY_DONE});
         assertFalse(mTestAutofillManagerWrapper.isQuerySucceed());
+
+        autofillHintsServiceTestHelper.waitForCallbackInvoked();
+        assertTrue(autofillHintsServiceTestHelper.isQueryFailed());
     }
 
     private void pollJavascriptResult(String script, String expectedResult) throws Throwable {

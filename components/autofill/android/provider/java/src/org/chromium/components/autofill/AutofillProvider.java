@@ -28,6 +28,7 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.annotations.VerifiesOnO;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
+import org.chromium.components.autofill_public.ViewType;
 import org.chromium.components.version_info.VersionConstants;
 import org.chromium.content_public.browser.RenderCoordinates;
 import org.chromium.content_public.browser.WebContents;
@@ -36,6 +37,8 @@ import org.chromium.ui.DropdownItem;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
+
+import java.util.ArrayList;
 
 /**
  * This class works with Android autofill service to fill web form, it doesn't use chrome's
@@ -58,6 +61,9 @@ import org.chromium.ui.display.DisplayAndroid;
 @JNINamespace("autofill")
 public class AutofillProvider {
     private static final String TAG = "AutofillProvider";
+
+    // This member is initialize at first use. Not access it directly, always through
+    // isQueryServerFieldTypesEnabled().
     private static Boolean sIsQueryServerFieldTypesEnabled;
 
     private static class FocusField {
@@ -83,11 +89,19 @@ public class AutofillProvider {
         public final int sessionId;
         private FormData mFormData;
         private FocusField mFocusField;
+        private AutofillHintsService mAutofillHintsService;
 
-        public AutofillRequest(FormData formData, FocusField focus) {
+        /**
+         * @param formData the form of the AutofillRequest.
+         * @param focus the current focused field.
+         * @param hasServerPrediction whether the server type of formData is valid.
+         */
+        public AutofillRequest(FormData formData, FocusField focus, boolean hasServerPrediction) {
             sessionId = getNextClientId();
             mFormData = formData;
             mFocusField = focus;
+            // Don't need to create binder object if server prediction is already available.
+            if (!hasServerPrediction) mAutofillHintsService = new AutofillHintsService();
         }
 
         public void fillViewStructure(ViewStructure structure) {
@@ -101,6 +115,7 @@ public class AutofillProvider {
                 ViewStructure child = structure.newChild(index++);
                 int virtualId = toVirtualId(sessionId, fieldIndex++);
                 child.setAutofillId(structure.getAutofillId(), virtualId);
+                field.setAutofillId(child.getAutofillId());
                 if (field.mAutocompleteAttr != null && !field.mAutocompleteAttr.isEmpty()) {
                     child.setAutofillHints(field.mAutocompleteAttr.split(" +"));
                 }
@@ -256,6 +271,24 @@ public class AutofillProvider {
         private static int toVirtualId(int clientId, short index) {
             return (clientId << 16) | index;
         }
+
+        public AutofillHintsService getAutofillHintsService() {
+            return mAutofillHintsService;
+        }
+
+        public void onQueryDone(boolean success) {
+            if (mAutofillHintsService == null) return;
+            if (success) {
+                ArrayList<ViewType> viewTypes = new ArrayList<ViewType>();
+                for (FormFieldData field : mFormData.mFields) {
+                    viewTypes.add(new ViewType(
+                            field.getAutofillId(), field.getServerType(), field.getComputedType()));
+                }
+                mAutofillHintsService.onViewTypeAvailable(viewTypes);
+            } else {
+                mAutofillHintsService.onQueryFailed();
+            }
+        }
     }
 
     private final String mProviderName;
@@ -328,6 +361,13 @@ public class AutofillProvider {
             bundle.putCharSequence("VIRTUAL_STRUCTURE_PROVIDER_NAME", mProviderName);
             bundle.putCharSequence(
                     "VIRTUAL_STRUCTURE_PROVIDER_VERSION", VersionConstants.PRODUCT_VERSION);
+
+            if (isQueryServerFieldTypesEnabled()) {
+                AutofillHintsService autofillHintsService = mRequest.getAutofillHintsService();
+                if (autofillHintsService != null) {
+                    bundle.putBinder("AUTOFILL_HINTS_SERVICE", autofillHintsService.getBinder());
+                }
+            }
         }
         mRequest.fillViewStructure(structure);
         if (AutofillManagerWrapper.isLoggable()) {
@@ -380,10 +420,11 @@ public class AutofillProvider {
      * @param y the boundary of focus field.
      * @param width the boundary of focus field.
      * @param height the boundary of focus field.
+     * @param hasServerPrediction whether the server prediction arrived.
      */
     @CalledByNative
-    public void startAutofillSession(
-            FormData formData, int focus, float x, float y, float width, float height) {
+    public void startAutofillSession(FormData formData, int focus, float x, float y, float width,
+            float height, boolean hasServerPrediction) {
         // Check focusField inside short value?
         // Autofill Manager might have session that wasn't started by AutofillProvider,
         // we just always cancel existing session here.
@@ -394,7 +435,8 @@ public class AutofillProvider {
         Rect absBound = transformToWindowBounds(new RectF(x, y, x + width, y + height));
         if (mRequest != null) notifyViewExitBeforeDestroyRequest();
         transformFormFieldToContainViewCoordinates(formData);
-        mRequest = new AutofillRequest(formData, new FocusField((short) focus, absBound));
+        mRequest = new AutofillRequest(
+                formData, new FocusField((short) focus, absBound), hasServerPrediction);
         int virtualId = mRequest.getVirtualId((short) focus);
         notifyVirtualViewEntered(mContainerView, virtualId, absBound);
         mAutofillUMA.onSessionStarted(mAutofillManager.isDisabled());
@@ -713,6 +755,7 @@ public class AutofillProvider {
 
     @CalledByNative
     private void onQueryDone(boolean success) {
+        mRequest.onQueryDone(success);
         mAutofillManager.onQueryDone(success);
     }
 

@@ -159,7 +159,7 @@ void AutofillProviderAndroid::MaybeStartNewSession(
   Java_AutofillProvider_startAutofillSession(
       env, obj, form_obj, index, transformed_bounding.x(),
       transformed_bounding.y(), transformed_bounding.width(),
-      transformed_bounding.height());
+      transformed_bounding.height(), handler->has_server_prediction());
 }
 
 void AutofillProviderAndroid::OnAutofillAvailable(JNIEnv* env,

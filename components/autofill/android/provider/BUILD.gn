@@ -29,6 +29,7 @@ android_library("java") {
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   sources = [
     "java/src/org/chromium/components/autofill/AutofillActionModeCallback.java",
+    "java/src/org/chromium/components/autofill/AutofillHintsService.java",
     "java/src/org/chromium/components/autofill/AutofillManagerWrapper.java",
     "java/src/org/chromium/components/autofill/AutofillProvider.java",
     "java/src/org/chromium/components/autofill/AutofillProviderUMA.java",
