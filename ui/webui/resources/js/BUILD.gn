@@ -70,6 +70,13 @@ preprocess_if_expr("preprocess_src") {
       "web_ui_listener_behavior.js",
     ]
   }
+
+  if (is_ios) {
+    in_files += [
+      "ios/mojo_api.js",
+      "ios/web_ui.js",
+    ]
+  }
 }
 
 preprocess_if_expr("preprocess_generated") {

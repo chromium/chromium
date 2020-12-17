@@ -44,13 +44,6 @@ without changes to the corresponding grd file. -->
                    use_base_dir="false" />
       </if>
 
-      <if expr="is_ios">
-        <structure name="IDR_WEBUI_JS_IOS_WEB_UI"
-                   file="js/ios/web_ui.js" type="chrome_html" />
-        <structure name="IDR_WEBUI_JS_IOS_MOJO_API"
-                   file="js/ios/mojo_api.js" type="chrome_html" />
-      </if>
-
       <if expr="not is_android and not is_ios">
         <structure name="IDR_LOTTIE_LOTTIE_WORKER_MIN_JS"
                    file="../../../third_party/lottie/lottie_worker.min.js"
