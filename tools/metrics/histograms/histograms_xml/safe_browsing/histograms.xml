@@ -861,6 +861,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.RT.GetCache.FallbackThreatType"
+    enum="SBThreatType" expires_after="2021-12-16">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Logs the threat type of cached verdicts. If the threat type is not safe, it
+    means the cache is a false positive. False positive verdicts are safe
+    verdicts in cache manager but turns out to be dangerous in the Safe Browsing
+    database. Logged each time a URL is checked by real time lookup and the
+    response is safe from the cache manager.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.RT.GetCache.Time" units="ms"
     expires_after="2021-04-25">
   <owner>xinghuilu@chromium.org</owner>

@@ -230,7 +230,10 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
   };
 
   struct UrlInfo {
-    UrlInfo(const GURL& url, const std::string& method, Notifier notifier);
+    UrlInfo(const GURL& url,
+            const std::string& method,
+            Notifier notifier,
+            bool is_cached_safe_url);
     UrlInfo(UrlInfo&& other);
 
     ~UrlInfo();
@@ -238,6 +241,9 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
     GURL url;
     std::string method;
     Notifier notifier;
+    // If the URL is classified as safe in cache manager during real time
+    // lookup.
+    bool is_cached_safe_url;
   };
 
   const net::HttpRequestHeaders headers_;

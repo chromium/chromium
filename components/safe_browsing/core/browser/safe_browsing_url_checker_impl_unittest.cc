@@ -7,12 +7,14 @@
 
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"
 #include "components/safe_browsing/core/common/test_task_environment.h"
 #include "components/safe_browsing/core/common/thread_utils.h"
 #include "components/safe_browsing/core/db/test_database_manager.h"
+#include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
 #include "components/safe_browsing/core/realtime/url_lookup_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -203,19 +205,24 @@ class MockRealTimeUrlLookupService : public RealTimeUrlLookupService {
     threat_info.set_threat_type(threat_type);
     threat_info.set_verdict_type(verdict_type);
     *new_threat_info = threat_info;
-    base::PostTask(
-        FROM_HERE, CreateTaskTraits(ThreadID::IO),
-        base::BindOnce(std::move(response_callback),
-                       /* is_rt_lookup_successful */ true,
-                       /* is_cached_response */ false, std::move(response)));
+    base::PostTask(FROM_HERE, CreateTaskTraits(ThreadID::IO),
+                   base::BindOnce(std::move(response_callback),
+                                  /* is_rt_lookup_successful */ true,
+                                  /* is_cached_response */ is_cached_response_,
+                                  std::move(response)));
   }
 
   void SetThreatTypeForUrl(const GURL& gurl, SBThreatType threat_type) {
     urls_threat_type_[gurl.spec()] = threat_type;
   }
 
+  void SetIsCachedResponse(bool is_cached_response) {
+    is_cached_response_ = is_cached_response;
+  }
+
  private:
   base::flat_map<std::string, SBThreatType> urls_threat_type_;
+  bool is_cached_response_ = false;
 };
 
 class SafeBrowsingUrlCheckerTest : public PlatformTest {
@@ -384,6 +391,7 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_RealTimeEnabledAllowlistMatch) {
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_RealTimeEnabledSafeUrl) {
+  base::HistogramTester histograms;
   auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
       /*real_time_lookup_enabled=*/true, /*can_check_safe_browsing_db=*/true);
 
@@ -401,6 +409,67 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_RealTimeEnabledSafeUrl) {
   safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
 
   task_environment_->RunUntilIdle();
+
+  // The false positive metric should not be logged, because the
+  // verdict is not from cache.
+  histograms.ExpectTotalCount("SafeBrowsing.RT.GetCache.FallbackThreatType",
+                              /* total_count */ 0);
+}
+
+TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_RealTimeEnabledSafeUrlFromCache) {
+  base::HistogramTester histograms;
+  auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
+      /*real_time_lookup_enabled=*/true, /*can_check_safe_browsing_db=*/true);
+
+  GURL url("https://example.test/");
+  database_manager_->SetAllowlistResultForUrl(url, AsyncMatch::NO_MATCH);
+  database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_SAFE,
+                                         /*delayed_callback=*/false);
+  url_lookup_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_SAFE);
+  url_lookup_service_->SetIsCachedResponse(true);
+
+  base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
+      callback;
+  EXPECT_CALL(callback,
+              Run(_, /*proceed=*/true, /*showed_interstitial=*/false));
+  EXPECT_CALL(*url_checker_delegate_,
+              StartDisplayingBlockingPageHelper(_, _, _, _, _))
+      .Times(0);
+  safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
+
+  task_environment_->RunUntilIdle();
+
+  histograms.ExpectUniqueSample("SafeBrowsing.RT.GetCache.FallbackThreatType",
+                                /* sample */ SB_THREAT_TYPE_SAFE,
+                                /* expected_count */ 1);
+}
+
+TEST_F(SafeBrowsingUrlCheckerTest,
+       CheckUrl_RealTimeEnabledSafeUrlFromCacheFalsePositive) {
+  base::HistogramTester histograms;
+  auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
+      /*real_time_lookup_enabled=*/true, /*can_check_safe_browsing_db=*/true);
+
+  GURL url("https://example.test/");
+  database_manager_->SetAllowlistResultForUrl(url, AsyncMatch::NO_MATCH);
+  database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
+                                         /*delayed_callback=*/false);
+  url_lookup_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_SAFE);
+  url_lookup_service_->SetIsCachedResponse(true);
+
+  base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
+      callback;
+  EXPECT_CALL(*url_checker_delegate_,
+              StartDisplayingBlockingPageHelper(
+                  IsSameThreatSource(ThreatSource::UNKNOWN), _, _, _, _))
+      .Times(1);
+  safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
+
+  task_environment_->RunUntilIdle();
+
+  histograms.ExpectUniqueSample("SafeBrowsing.RT.GetCache.FallbackThreatType",
+                                /* sample */ SB_THREAT_TYPE_URL_PHISHING,
+                                /* expected_count */ 1);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest,

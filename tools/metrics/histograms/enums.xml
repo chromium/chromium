@@ -66130,6 +66130,34 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="4" label="Phishing classifier was destructed"/>
 </enum>
 
+<enum name="SBThreatType">
+  <int value="0" label="Unused"/>
+  <int value="1" label="Safe"/>
+  <int value="2" label="URL phishing"/>
+  <int value="3" label="URL malware"/>
+  <int value="4" label="URL unwanted"/>
+  <int value="5" label="URL binary malware"/>
+  <int value="6" label="URL client side phishing"/>
+  <int value="7" label="Extension"/>
+  <int value="8" label="URL client side malware"/>
+  <int value="9" label="Blacklisted resource"/>
+  <int value="10" label="API abuse"/>
+  <int value="11" label="Subresource filter"/>
+  <int value="12" label="CSD whitelist"/>
+  <int value="13" label="URL password protection phishing"/>
+  <int value="14" label="Saved password reuse"/>
+  <int value="15" label="Signed in sync password reuse"/>
+  <int value="16" label="Signed in non sync password reuse"/>
+  <int value="17" label="Blocked ad redirect"/>
+  <int value="18" label="Ad sample"/>
+  <int value="19" label="Blocked ad popup"/>
+  <int value="20" label="Suspicious site"/>
+  <int value="21" label="Enterprise password reuse"/>
+  <int value="22" label="Billing"/>
+  <int value="23" label="Apk download"/>
+  <int value="24" label="High confidence allowlist"/>
+</enum>
+
 <enum name="ScanAppEntryPoint">
 <!-- This must be kept current with ScanAppEntryPoint in
      chromeos/components/scanning/scanning_uma.h.

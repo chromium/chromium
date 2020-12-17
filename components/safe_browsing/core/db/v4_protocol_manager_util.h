@@ -94,89 +94,93 @@ std::string GetReportUrl(
 
 // Different types of threats that SafeBrowsing protects against. This is the
 // type that's returned to the clients of SafeBrowsing in Chromium.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.safe_browsing
 // GENERATED_JAVA_PREFIX_TO_STRIP: SB_THREAT_TYPE_
 enum SBThreatType {
   // This type can be used for lists that can be checked synchronously so a
   // client callback isn't required, or for whitelists.
-  SB_THREAT_TYPE_UNUSED,
+  SB_THREAT_TYPE_UNUSED = 0,
 
   // No threat at all.
-  SB_THREAT_TYPE_SAFE,
+  SB_THREAT_TYPE_SAFE = 1,
 
   // The URL is being used for phishing.
-  SB_THREAT_TYPE_URL_PHISHING,
+  SB_THREAT_TYPE_URL_PHISHING = 2,
 
   // The URL hosts malware.
-  SB_THREAT_TYPE_URL_MALWARE,
+  SB_THREAT_TYPE_URL_MALWARE = 3,
 
   // The URL hosts unwanted programs.
-  SB_THREAT_TYPE_URL_UNWANTED,
+  SB_THREAT_TYPE_URL_UNWANTED = 4,
 
   // The download URL is malware.
-  SB_THREAT_TYPE_URL_BINARY_MALWARE,
+  SB_THREAT_TYPE_URL_BINARY_MALWARE = 5,
 
   // Url detected by the client-side phishing model.  Note that unlike the
   // above values, this does not correspond to a downloaded list.
-  SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING,
+  SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING = 6,
 
   // The Chrome extension or app (given by its ID) is malware.
-  SB_THREAT_TYPE_EXTENSION,
+  SB_THREAT_TYPE_EXTENSION = 7,
 
   // Url detected by the client-side malware IP list. This IP list is part
   // of the client side detection model.
-  SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE,
+  SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE = 8,
 
   // Url leads to a blacklisted resource script. Note that no warnings should be
   // shown on this threat type, but an incident report might be sent.
-  SB_THREAT_TYPE_BLACKLISTED_RESOURCE,
+  SB_THREAT_TYPE_BLACKLISTED_RESOURCE = 9,
 
   // Url abuses a permission API.
-  SB_THREAT_TYPE_API_ABUSE,
+  SB_THREAT_TYPE_API_ABUSE = 10,
 
   // Activation patterns for the Subresource Filter.
-  SB_THREAT_TYPE_SUBRESOURCE_FILTER,
+  SB_THREAT_TYPE_SUBRESOURCE_FILTER = 11,
 
   // CSD Phishing whitelist.  This "threat" means a URL matched the whitelist.
-  SB_THREAT_TYPE_CSD_WHITELIST,
+  SB_THREAT_TYPE_CSD_WHITELIST = 12,
 
   // DEPRECATED. Url detected by password protection service.
-  DEPRECATED_SB_THREAT_TYPE_URL_PASSWORD_PROTECTION_PHISHING,
+  DEPRECATED_SB_THREAT_TYPE_URL_PASSWORD_PROTECTION_PHISHING = 13,
 
   // Saved password reuse detected on low reputation page,
-  SB_THREAT_TYPE_SAVED_PASSWORD_REUSE,
+  SB_THREAT_TYPE_SAVED_PASSWORD_REUSE = 14,
 
   // Chrome signed in and syncing gaia password reuse detected on low reputation
   // page,
-  SB_THREAT_TYPE_SIGNED_IN_SYNC_PASSWORD_REUSE,
+  SB_THREAT_TYPE_SIGNED_IN_SYNC_PASSWORD_REUSE = 15,
 
   // Chrome signed in non syncing gaia password reuse detected on low reputation
   // page,
-  SB_THREAT_TYPE_SIGNED_IN_NON_SYNC_PASSWORD_REUSE,
+  SB_THREAT_TYPE_SIGNED_IN_NON_SYNC_PASSWORD_REUSE = 16,
 
   // A Google ad that caused a blocked autoredirect was collected
-  SB_THREAT_TYPE_BLOCKED_AD_REDIRECT,
+  SB_THREAT_TYPE_BLOCKED_AD_REDIRECT = 17,
 
   // A sample of an ad was collected
-  SB_THREAT_TYPE_AD_SAMPLE,
+  SB_THREAT_TYPE_AD_SAMPLE = 18,
 
   // A report of Google ad that caused a blocked popup was collected.
-  SB_THREAT_TYPE_BLOCKED_AD_POPUP,
+  SB_THREAT_TYPE_BLOCKED_AD_POPUP = 19,
 
   // The page loaded a resource from the Suspicious Site list.
-  SB_THREAT_TYPE_SUSPICIOUS_SITE,
+  SB_THREAT_TYPE_SUSPICIOUS_SITE = 20,
 
   // Enterprise password reuse detected on low reputation page.
-  SB_THREAT_TYPE_ENTERPRISE_PASSWORD_REUSE,
+  SB_THREAT_TYPE_ENTERPRISE_PASSWORD_REUSE = 21,
 
   // Potential billing detected.
-  SB_THREAT_TYPE_BILLING,
+  SB_THREAT_TYPE_BILLING = 22,
 
   // Off-market APK file downloaded, which could be potentially dangerous.
-  SB_THREAT_TYPE_APK_DOWNLOAD,
+  SB_THREAT_TYPE_APK_DOWNLOAD = 23,
 
   // Match found in the local high-confidence allowlist.
-  SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST,
+  SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST = 24,
+
+  SB_THREAT_TYPE_MAX = SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST,
 };
 
 using SBThreatTypeSet = base::flat_set<SBThreatType>;

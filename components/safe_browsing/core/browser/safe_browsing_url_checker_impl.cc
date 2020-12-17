@@ -13,6 +13,7 @@
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "components/safe_browsing/core/common/thread_utils.h"
+#include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/features.h"
 #include "components/safe_browsing/core/realtime/policy_engine.h"
 #include "components/safe_browsing/core/realtime/url_lookup_service_base.h"
@@ -87,8 +88,12 @@ void SafeBrowsingUrlCheckerImpl::Notifier::OnCompleteCheck(
 
 SafeBrowsingUrlCheckerImpl::UrlInfo::UrlInfo(const GURL& in_url,
                                              const std::string& in_method,
-                                             Notifier in_notifier)
-    : url(in_url), method(in_method), notifier(std::move(in_notifier)) {}
+                                             Notifier in_notifier,
+                                             bool in_is_cached_safe_url)
+    : url(in_url),
+      method(in_method),
+      notifier(std::move(in_notifier)),
+      is_cached_safe_url(in_is_cached_safe_url) {}
 
 SafeBrowsingUrlCheckerImpl::UrlInfo::UrlInfo(UrlInfo&& other) = default;
 
@@ -215,6 +220,10 @@ void SafeBrowsingUrlCheckerImpl::OnUrlResult(const GURL& url,
 
   timer_.Stop();
   RecordCheckUrlTimeout(/*timed_out=*/false);
+  if (urls_[next_index_].is_cached_safe_url) {
+    UMA_HISTOGRAM_ENUMERATION("SafeBrowsing.RT.GetCache.FallbackThreatType",
+                              threat_type, SB_THREAT_TYPE_MAX + 1);
+  }
 
   TRACE_EVENT_ASYNC_END1("safe_browsing", "CheckUrl", this, "url", url.spec());
 
@@ -304,7 +313,8 @@ void SafeBrowsingUrlCheckerImpl::CheckUrlImpl(const GURL& url,
   DCHECK(CurrentlyOnThread(ThreadID::IO));
 
   DVLOG(1) << "SafeBrowsingUrlCheckerImpl checks URL: " << url;
-  urls_.emplace_back(url, method, std::move(notifier));
+  urls_.emplace_back(url, method, std::move(notifier),
+                     /*safe_from_real_time_cache=*/false);
 
   ProcessUrls();
 }
@@ -616,14 +626,12 @@ void SafeBrowsingUrlCheckerImpl::OnRTLookupResponse(
   if (response && (response->threat_info_size() > 0) &&
       response->threat_info(0).verdict_type() ==
           RTLookupResponse::ThreatInfo::DANGEROUS) {
-    // TODO(crbug.com/1033692): Only take the first threat info into account
-    // because threat infos are returned in decreasing order of severity.
-    // Consider extend it to support multiple threat types.
     sb_threat_type =
         RealTimeUrlLookupServiceBase::GetSBThreatTypeForRTThreatType(
             response->threat_info(0).threat_type());
   }
   if (is_cached_response && sb_threat_type == SB_THREAT_TYPE_SAFE) {
+    urls_[next_index_].is_cached_safe_url = true;
     PerformHashBasedCheck(url);
   } else {
     OnUrlResult(url, sb_threat_type, ThreatMetadata(),
