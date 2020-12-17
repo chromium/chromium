@@ -355,8 +355,8 @@ void DeviceMediaAsyncFileUtil::CreateDirectory(
   auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
   delegate->CreateDirectory(
       url.path(), exclusive, recursive,
-      base::Bind(&DeviceMediaAsyncFileUtil::OnDidCreateDirectory,
-                 weak_ptr_factory_.GetWeakPtr(), copyable_callback),
+      base::BindRepeating(&DeviceMediaAsyncFileUtil::OnDidCreateDirectory,
+                          weak_ptr_factory_.GetWeakPtr(), copyable_callback),
       base::BindRepeating(&OnCreateDirectoryError, copyable_callback));
 }
 
