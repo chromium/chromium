@@ -11,6 +11,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/policy/core/common/policy_types.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -130,6 +131,8 @@ class ConnectorsServiceReportingFeatureTest
 
   const char* pref() const { return ConnectorPref(connector()); }
 
+  const char* scope_pref() const { return ConnectorScopePref(connector()); }
+
   const char* pref_value() const {
     switch (policy_value()) {
       case 1:
@@ -155,8 +158,11 @@ class ConnectorsServiceReportingFeatureTest
 };
 
 TEST_P(ConnectorsServiceReportingFeatureTest, Test) {
-  if (policy_value() != 0)
+  if (policy_value() != 0) {
     profile_->GetPrefs()->Set(pref(), *base::JSONReader::Read(pref_value()));
+    profile_->GetPrefs()->SetInteger(scope_pref(),
+                                     policy::POLICY_SCOPE_MACHINE);
+  }
 
   auto settings = ConnectorsServiceFactory::GetForBrowserContext(profile_)
                       ->GetReportingSettings(connector());

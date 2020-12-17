@@ -66,13 +66,19 @@ struct AnalysisSettings {
 
 struct ReportingSettings {
   ReportingSettings();
-  explicit ReportingSettings(GURL url, const std::string& dm_token);
+  explicit ReportingSettings(GURL url,
+                             const std::string& dm_token,
+                             bool per_profile);
   ReportingSettings(ReportingSettings&&);
   ReportingSettings& operator=(ReportingSettings&&);
   ~ReportingSettings();
 
   GURL reporting_url;
   std::string dm_token;
+
+  // Indicates if the report should be made for the profile, or the browser if
+  // false.
+  bool per_profile = false;
 };
 
 // Returns the pref path corresponding to a connector.

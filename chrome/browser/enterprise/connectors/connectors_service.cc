@@ -7,13 +7,20 @@
 
 #include "base/memory/singleton.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_manager.h"
 #include "chrome/browser/enterprise/connectors/service_provider_config.h"
+#include "chrome/browser/enterprise/util/affiliation.h"
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/policy/core/common/cloud/dm_token.h"
+#include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
+#include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
@@ -22,6 +29,9 @@ namespace enterprise_connectors {
 
 const base::Feature kEnterpriseConnectorsEnabled{
     "EnterpriseConnectorsEnabled", base::FEATURE_ENABLED_BY_DEFAULT};
+
+const base::Feature kPerProfileConnectorsEnabled{
+    "PerProfileConnectorsEnabled", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const char kServiceProviderConfig[] = R"({
   "version": "1",
@@ -117,7 +127,7 @@ base::Optional<ReportingSettings> ConnectorsService::GetReportingSettings(
   if (!ConnectorsEnabled())
     return base::nullopt;
 
-  base::Optional<DmToken> dm_token = GetDmToken(ConnectorPref(connector));
+  base::Optional<DmToken> dm_token = GetDmToken(ConnectorScopePref(connector));
   if (!dm_token.has_value())
     return base::nullopt;
 
@@ -125,6 +135,8 @@ base::Optional<ReportingSettings> ConnectorsService::GetReportingSettings(
       connectors_manager_->GetReportingSettings(connector);
   if (settings.has_value()) {
     settings.value().dm_token = dm_token.value().value;
+    settings.value().per_profile =
+        dm_token.value().scope == policy::POLICY_SCOPE_USER;
   }
 
   return settings;
@@ -136,7 +148,7 @@ base::Optional<AnalysisSettings> ConnectorsService::GetAnalysisSettings(
   if (!ConnectorsEnabled())
     return base::nullopt;
 
-  base::Optional<DmToken> dm_token = GetDmToken(ConnectorPref(connector));
+  base::Optional<DmToken> dm_token = GetDmToken(ConnectorScopePref(connector));
   if (!dm_token.has_value())
     return base::nullopt;
 
@@ -183,10 +195,20 @@ ConnectorsService::DmToken& ConnectorsService::DmToken::operator=(DmToken&&) =
 ConnectorsService::DmToken::~DmToken() = default;
 
 base::Optional<ConnectorsService::DmToken> ConnectorsService::GetDmToken(
-    const char* pref) {
-  // TODO(crbug.com/1148789): Add code to check the scope of |pref| and handle
-  // the "user" case.
+    const char* scope_pref) const {
+#if defined(OS_CHROMEOS)
+  // On CrOS, the device must be affiliated to use the DM token for
+  // scanning/reporting so we always use the browser DM token.
+  return GetBrowserDmToken();
+#else
+  return GetPolicyScope(scope_pref) == policy::POLICY_SCOPE_USER
+             ? GetProfileDmToken()
+             : GetBrowserDmToken();
+#endif
+}
 
+base::Optional<ConnectorsService::DmToken>
+ConnectorsService::GetBrowserDmToken() const {
   policy::DMToken dm_token =
       policy::GetDMToken(Profile::FromBrowserContext(context_));
 
@@ -194,6 +216,60 @@ base::Optional<ConnectorsService::DmToken> ConnectorsService::GetDmToken(
     return base::nullopt;
 
   return DmToken(dm_token.value(), policy::POLICY_SCOPE_MACHINE);
+}
+
+#if !defined(OS_CHROMEOS)
+base::Optional<ConnectorsService::DmToken>
+ConnectorsService::GetProfileDmToken() const {
+  if (!base::FeatureList::IsEnabled(kPerProfileConnectorsEnabled))
+    return base::nullopt;
+
+  if (!CanUseProfileDmToken())
+    return base::nullopt;
+
+  policy::UserCloudPolicyManager* policy_manager =
+      Profile::FromBrowserContext(context_)->GetUserCloudPolicyManager();
+  if (!policy_manager || !policy_manager->IsClientRegistered())
+    return base::nullopt;
+
+  return DmToken(policy_manager->core()->client()->dm_token(),
+                 policy::POLICY_SCOPE_USER);
+}
+
+bool ConnectorsService::CanUseProfileDmToken() const {
+  // If the browser isn't managed by CBCM, then the profile DM token can be
+  // used.
+  if (!policy::BrowserDMTokenStorage::Get()->RetrieveDMToken().is_valid())
+    return true;
+
+  policy::UserCloudPolicyManager* profile_policy_manager =
+      Profile::FromBrowserContext(context_)->GetUserCloudPolicyManager();
+  policy::MachineLevelUserCloudPolicyManager* browser_policy_manager =
+      g_browser_process->browser_policy_connector()
+          ->machine_level_user_cloud_policy_manager();
+
+  if (!profile_policy_manager || !browser_policy_manager ||
+      !profile_policy_manager->IsClientRegistered() ||
+      !browser_policy_manager->IsClientRegistered()) {
+    return false;
+  }
+
+  auto* profile_policy = profile_policy_manager->core()->store()->policy();
+  auto* browser_policy = browser_policy_manager->core()->store()->policy();
+
+  if (!profile_policy || !browser_policy)
+    return false;
+
+  return chrome::enterprise_util::IsProfileAffiliated(*profile_policy,
+                                                      *browser_policy);
+}
+#endif  // !defined(OS_CHROMEOS)
+
+policy::PolicyScope ConnectorsService::GetPolicyScope(
+    const char* scope_pref) const {
+  return static_cast<policy::PolicyScope>(
+      Profile::FromBrowserContext(context_)->GetPrefs()->GetInteger(
+          scope_pref));
 }
 
 bool ConnectorsService::ConnectorsEnabled() const {

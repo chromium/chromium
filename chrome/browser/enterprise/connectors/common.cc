@@ -15,8 +15,10 @@ AnalysisSettings& AnalysisSettings::operator=(AnalysisSettings&&) = default;
 AnalysisSettings::~AnalysisSettings() = default;
 
 ReportingSettings::ReportingSettings() = default;
-ReportingSettings::ReportingSettings(GURL url, const std::string& dm_token)
-    : reporting_url(url), dm_token(dm_token) {}
+ReportingSettings::ReportingSettings(GURL url,
+                                     const std::string& dm_token,
+                                     bool per_profile)
+    : reporting_url(url), dm_token(dm_token), per_profile(per_profile) {}
 ReportingSettings::ReportingSettings(ReportingSettings&&) = default;
 ReportingSettings& ReportingSettings::operator=(ReportingSettings&&) = default;
 ReportingSettings::~ReportingSettings() = default;
