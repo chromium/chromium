@@ -18,7 +18,6 @@ PASS The PageTransitionEvent interface object should not be exposed.
 PASS The DOMImplementation interface object should not be exposed.
 FAIL The ReadableStreamDefaultReader interface object should not be exposed. assert_false: expected false got true
 FAIL The ReadableStreamBYOBReader interface object should not be exposed. assert_false: expected false got true
-PASS The ReadableStreamDefaultController interface object should not be exposed.
 FAIL The ReadableByteStreamController interface object should not be exposed. assert_false: expected false got true
 FAIL The WritableStreamDefaultWriter interface object should not be exposed. assert_false: expected false got true
 PASS The WritableStreamDefaultController interface object should not be exposed.

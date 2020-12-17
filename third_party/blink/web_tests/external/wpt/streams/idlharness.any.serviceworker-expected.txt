@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 224 tests; 193 PASS, 31 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 224 tests; 204 PASS, 20 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS ReadableStreamDefaultReader includes ReadableStreamGenericReader: member names are unique
@@ -64,17 +64,17 @@ PASS ReadableStreamBYOBReader interface: (new ReadableStream({ type: 'bytes' }))
 PASS ReadableStreamBYOBReader interface: (new ReadableStream({ type: 'bytes' })).getReader({ mode: 'byob' }) must inherit property "closed" with the proper type
 PASS ReadableStreamBYOBReader interface: (new ReadableStream({ type: 'bytes' })).getReader({ mode: 'byob' }) must inherit property "cancel(optional any)" with the proper type
 PASS ReadableStreamBYOBReader interface: calling cancel(optional any) on (new ReadableStream({ type: 'bytes' })).getReader({ mode: 'byob' }) with too few arguments must throw TypeError
-FAIL ReadableStreamDefaultController interface: existence and properties of interface object assert_own_property: self does not have own property "ReadableStreamDefaultController" expected property "ReadableStreamDefaultController" missing
-FAIL ReadableStreamDefaultController interface object length assert_own_property: self does not have own property "ReadableStreamDefaultController" expected property "ReadableStreamDefaultController" missing
-FAIL ReadableStreamDefaultController interface object name assert_own_property: self does not have own property "ReadableStreamDefaultController" expected property "ReadableStreamDefaultController" missing
-FAIL ReadableStreamDefaultController interface: existence and properties of interface prototype object assert_own_property: self does not have own property "ReadableStreamDefaultController" expected property "ReadableStreamDefaultController" missing
-FAIL ReadableStreamDefaultController interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "ReadableStreamDefaultController" expected property "ReadableStreamDefaultController" missing
-FAIL ReadableStreamDefaultController interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "ReadableStreamDefaultController" expected property "ReadableStreamDefaultController" missing
-FAIL ReadableStreamDefaultController interface: attribute desiredSize assert_own_property: self does not have own property "ReadableStreamDefaultController" expected property "ReadableStreamDefaultController" missing
-FAIL ReadableStreamDefaultController interface: operation close() assert_own_property: self does not have own property "ReadableStreamDefaultController" expected property "ReadableStreamDefaultController" missing
-FAIL ReadableStreamDefaultController interface: operation enqueue(optional any) assert_own_property: self does not have own property "ReadableStreamDefaultController" expected property "ReadableStreamDefaultController" missing
-FAIL ReadableStreamDefaultController interface: operation error(optional any) assert_own_property: self does not have own property "ReadableStreamDefaultController" expected property "ReadableStreamDefaultController" missing
-FAIL ReadableStreamDefaultController must be primary interface of self.readableStreamDefaultController assert_own_property: self does not have own property "ReadableStreamDefaultController" expected property "ReadableStreamDefaultController" missing
+PASS ReadableStreamDefaultController interface: existence and properties of interface object
+PASS ReadableStreamDefaultController interface object length
+PASS ReadableStreamDefaultController interface object name
+PASS ReadableStreamDefaultController interface: existence and properties of interface prototype object
+PASS ReadableStreamDefaultController interface: existence and properties of interface prototype object's "constructor" property
+PASS ReadableStreamDefaultController interface: existence and properties of interface prototype object's @@unscopables property
+PASS ReadableStreamDefaultController interface: attribute desiredSize
+PASS ReadableStreamDefaultController interface: operation close()
+PASS ReadableStreamDefaultController interface: operation enqueue(optional any)
+PASS ReadableStreamDefaultController interface: operation error(optional any)
+PASS ReadableStreamDefaultController must be primary interface of self.readableStreamDefaultController
 PASS Stringification of self.readableStreamDefaultController
 PASS ReadableStreamDefaultController interface: self.readableStreamDefaultController must inherit property "desiredSize" with the proper type
 PASS ReadableStreamDefaultController interface: self.readableStreamDefaultController must inherit property "close()" with the proper type

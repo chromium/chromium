@@ -1032,6 +1032,13 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method constructor
 [Worker]     method respond
 [Worker]     method respondWithNewView
+[Worker] interface ReadableStreamDefaultController
+[Worker]     attribute @@toStringTag
+[Worker]     getter desiredSize
+[Worker]     method close
+[Worker]     method constructor
+[Worker]     method enqueue
+[Worker]     method error
 [Worker] interface ReadableStreamDefaultReader
 [Worker]     attribute @@toStringTag
 [Worker]     getter closed

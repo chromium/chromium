@@ -6638,6 +6638,13 @@ interface ReadableStreamBYOBRequest
     method constructor
     method respond
     method respondWithNewView
+interface ReadableStreamDefaultController
+    attribute @@toStringTag
+    getter desiredSize
+    method close
+    method constructor
+    method enqueue
+    method error
 interface ReadableStreamDefaultReader
     attribute @@toStringTag
     getter closed

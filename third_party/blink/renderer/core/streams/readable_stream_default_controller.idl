@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 // https://streams.spec.whatwg.org/#rs-default-controller-class-definition
+[
+    Exposed=(Window,Worker,Worklet)
+]
 interface ReadableStreamDefaultController {
     readonly attribute double? desiredSize;
     [CallWith=ScriptState, RaisesException] void close();
