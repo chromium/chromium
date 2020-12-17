@@ -1497,8 +1497,8 @@
   },
   {
     "name": "enable-desktop-pwas-app-icon-shortcuts-menu",
-    "owners": [ "rahsin@microsoft.com", "cmumford@google.com" ],
-    "expiry_milestone": 88
+    "owners": [ "johnjan@microsoft.com", "cmp@google.com" ],
+    "expiry_milestone": 93
   },
   {
     "name": "enable-desktop-pwas-attention-badging-cros",
