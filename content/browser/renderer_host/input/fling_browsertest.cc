@@ -121,6 +121,16 @@ class BrowserSideFlingBrowserTest : public ContentBrowserTest {
       deleted_observer.WaitUntilDeleted();
     }
 
+    // TODO(szager): This is a speculative fix for test flakiness caused by
+    // changes to render throttling (crbug.com/1158644). The hypothesis is that
+    // the test code might be initiating a scroll gesture before
+    // LocalFrameView::BeginLifecycleUpdates() is called in the child frame. By
+    // the time EvalJsAfterLifecycleUpdate() returns, BeginLifecycleUpdates() is
+    // guaranteed to have run.
+    ASSERT_TRUE(
+        EvalJsAfterLifecycleUpdate(iframe_node->current_frame_host(), "", "")
+            .error.empty());
+
     WaitForHitTestData(iframe_node->current_frame_host());
     ASSERT_EQ(
         " Site A ------------ proxies for B\n"
