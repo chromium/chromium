@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.autofill;
 
+import android.app.Activity;
 import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.res.Configuration;
@@ -26,6 +27,8 @@ import androidx.core.widget.TextViewCompat;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
+import org.chromium.chrome.browser.profiles.Profile;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -61,6 +64,16 @@ public class AutofillUiUtils {
         int NOT_ENOUGH_INFO = 6;
         int NONE = 7;
     }
+
+    /**
+     * Launches the Autofill help page on top of the current @{link android.app.Activity} and
+     * current @{link Profile}.
+     */
+    public static void launchAutofillHelpPage(Activity activity, Profile profile) {
+        HelpAndFeedbackLauncherImpl.getInstance().show(
+                activity, activity.getString(R.string.help_context_autofill), profile, null);
+    }
+
     /**
      * Show Tooltip UI.
      *
