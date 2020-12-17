@@ -145,20 +145,6 @@ void AwRenderViewHostExt::OnPageScaleFactorChanged(float page_scale_factor) {
   client_->OnWebLayoutPageScaleFactorChanged(page_scale_factor);
 }
 
-bool AwRenderViewHostExt::OnMessageReceived(
-    const IPC::Message& message,
-    content::RenderFrameHost* render_frame_host) {
-  bool handled = true;
-  IPC_BEGIN_MESSAGE_MAP_WITH_PARAM(AwRenderViewHostExt, message,
-                                   render_frame_host)
-    IPC_MESSAGE_HANDLER(AwViewHostMsg_OnContentsSizeChanged,
-                        OnContentsSizeChanged)
-    IPC_MESSAGE_UNHANDLED(handled = false)
-  IPC_END_MESSAGE_MAP()
-
-  return handled;
-}
-
 void AwRenderViewHostExt::UpdateHitTestData(
     mojom::HitTestDataPtr hit_test_data) {
   content::RenderFrameHost* main_frame_host =
@@ -176,9 +162,10 @@ void AwRenderViewHostExt::UpdateHitTestData(
   has_new_hit_test_data_ = true;
 }
 
-void AwRenderViewHostExt::OnContentsSizeChanged(
-    content::RenderFrameHost* render_frame_host,
-    const gfx::Size& contents_size) {
+void AwRenderViewHostExt::ContentsSizeChanged(const gfx::Size& contents_size) {
+  content::RenderFrameHost* render_frame_host =
+      frame_host_receivers_.GetCurrentTargetFrame();
+
   // Only makes sense coming from the main frame of the current frame tree.
   if (render_frame_host != web_contents()->GetMainFrame())
     return;

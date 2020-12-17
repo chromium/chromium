@@ -119,4 +119,7 @@ interface FrameHost {
 
   // Response to AwViewMsg_DoHitTest.
   UpdateHitTestData(HitTestData data);
+
+  // Calls whenever the contents size (as seen by RenderView) is changed.
+  ContentsSizeChanged(gfx.mojom.Size contents_size);
 };

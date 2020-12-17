@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 #include "android_webview/renderer/aw_render_view_ext.h"
+#include "android_webview/common/mojom/frame.mojom.h"
 #include "android_webview/common/render_view_messages.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_view.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_view.h"
 
@@ -66,8 +68,11 @@ void AwRenderViewExt::UpdateContentsSize() {
     return;
 
   last_sent_contents_size_ = contents_size;
-  main_render_frame->Send(new AwViewHostMsg_OnContentsSizeChanged(
-      main_render_frame->GetRoutingID(), contents_size));
+
+  mojo::AssociatedRemote<mojom::FrameHost> frame_host_remote;
+  main_render_frame->GetRemoteAssociatedInterfaces()->GetInterface(
+      &frame_host_remote);
+  frame_host_remote->ContentsSizeChanged(contents_size);
 }
 
 }  // namespace android_webview

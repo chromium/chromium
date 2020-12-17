@@ -24,10 +24,6 @@
 // RenderView messages
 // These are messages sent from the renderer to the browser process.
 
-// Sent whenever the contents size (as seen by RenderView) is changed.
-IPC_MESSAGE_ROUTED1(AwViewHostMsg_OnContentsSizeChanged,
-                    gfx::Size /* contents_size */)
-
 // Sent immediately before a top level navigation is initiated within Blink.
 // There are some exlusions, the most important ones are it is not sent
 // when creating a popup window, and not sent for application initiated

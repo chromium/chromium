@@ -84,15 +84,11 @@ class AwRenderViewHostExt : public content::WebContentsObserver,
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
   void OnPageScaleFactorChanged(float page_scale_factor) override;
-  bool OnMessageReceived(const IPC::Message& message,
-                         content::RenderFrameHost* render_frame_host) override;
 
   // mojom::FrameHost overrides:
   void UpdateHitTestData(
       android_webview::mojom::HitTestDataPtr hit_test_data) override;
-
-  void OnContentsSizeChanged(content::RenderFrameHost* render_frame_host,
-                             const gfx::Size& contents_size);
+  void ContentsSizeChanged(const gfx::Size& contents_size) override;
 
   bool IsRenderViewReady() const;
 
