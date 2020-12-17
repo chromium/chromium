@@ -411,12 +411,6 @@ def _CheckForMissingSymbols(r8_path,
         # TODO(crbug.com/1142530): Fix this missing reference properly.
         'org/chromium/base/library_loader/NativeLibraries',
 
-        # Currently required when enable_chrome_android_internal=true.
-        'com/google/protos/research/ink/InkEventProto',
-        'ink_sdk/com/google/protobuf/Internal$EnumVerifier',
-        'ink_sdk/com/google/protobuf/MessageLite',
-        'com/google/protobuf/GeneratedMessageLite$GeneratedExtension',
-
         # TODO(agrieve): Exclude these only when use_jacoco_coverage=true.
         'Ljava/lang/instrument/ClassFileTransformer',
         'Ljava/lang/instrument/IllegalClassFormatException',
