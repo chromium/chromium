@@ -79,13 +79,15 @@ inline bool IsValidMultiscript(const NGBlockNode& node) {
   if (!child || IsPrescriptDelimiter(child))
     return false;
   bool number_of_scripts_is_even = true;
+  bool prescript_delimiter_found = false;
   while (child) {
     child = To<NGBlockNode>(NextSiblingInFlow(child));
     if (!child)
       continue;
     if (IsPrescriptDelimiter(child)) {
-      if (!number_of_scripts_is_even)
+      if (!number_of_scripts_is_even || prescript_delimiter_found)
         return false;
+      prescript_delimiter_found = true;
       continue;
     }
     number_of_scripts_is_even = !number_of_scripts_is_even;
