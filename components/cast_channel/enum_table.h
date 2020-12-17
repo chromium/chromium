@@ -351,7 +351,7 @@ class EnumTable {
   // instance of this class for a given enum type.  Users of this class are
   // responsible for providing a suitable definition for each enum type if the
   // EnumToString() or StringToEnum() functions are used.
-  static const EnumTable<E> instance;
+  static const EnumTable& GetInstance();
 
  private:
 #ifdef ARCH_CPU_64_BITS
@@ -403,30 +403,31 @@ class EnumTable {
 // (EnumTable<E>::instance) for the given enum type.
 template <typename E>
 inline base::Optional<base::StringPiece> EnumToString(E value) {
-  return EnumTable<E>::instance.GetString(value);
+  return EnumTable<E>::GetInstance().GetString(value);
 }
 
 // Converts a literal enum value to a string at compile time using the default
-// table (EnumTable<E>::instance) for the given enum type.
+// table (EnumTable<E>::GetInstance()) for the given enum type.
 //
 // TODO(jrw): Once C++17 features are allowed, change this function to have only
 // one template parameter:
 //
 //   template <auto Value>
 //   inline base::StringPiece EnumToString() {
-//     return EnumTable<decltype(Value)>::instance.template GetString<Value>();
+//     return EnumTable<decltype(Value)
+//         >::GetInstance().template GetString<Value>();
 //   }
 //
 template <typename E, E Value>
 inline base::StringPiece EnumToString() {
-  return EnumTable<E>::instance.template GetString<Value>();
+  return EnumTable<E>::GetInstance().template GetString<Value>();
 }
 
 // Converts a string to an enum value using the default table
 // (EnumTable<E>::instance) for the given enum type.
 template <typename E>
 inline base::Optional<E> StringToEnum(base::StringPiece str) {
-  return EnumTable<E>::instance.GetEnum(str);
+  return EnumTable<E>::GetInstance().GetEnum(str);
 }
 
 }  // namespace cast_util

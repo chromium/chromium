@@ -37,11 +37,13 @@ const EnumTable<MyEnum> kUnsortedMissing({{MyEnum::kOne, "ONE"},
 }  // namespace
 
 template <>
-const EnumTable<MyEnum> EnumTable<MyEnum>::instance(
-    {{MyEnum::kZero, "ZERO_DEFAULT"},
-     {MyEnum::kOne, "ONE_DEFAULT"},
-     {MyEnum::kTwo, "TWO_DEFAULT"}},
-    MyEnum::kMaxValue);
+const EnumTable<MyEnum>& EnumTable<MyEnum>::GetInstance() {
+  static const EnumTable<MyEnum> kInstance({{MyEnum::kZero, "ZERO_DEFAULT"},
+                                            {MyEnum::kOne, "ONE_DEFAULT"},
+                                            {MyEnum::kTwo, "TWO_DEFAULT"}},
+                                           MyEnum::kMaxValue);
+  return kInstance;
+}
 
 namespace {
 

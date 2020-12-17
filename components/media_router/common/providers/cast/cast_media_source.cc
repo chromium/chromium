@@ -30,43 +30,57 @@ using media_router::AutoJoinPolicy;
 using media_router::DefaultActionPolicy;
 
 template <>
-const EnumTable<AutoJoinPolicy> EnumTable<AutoJoinPolicy>::instance(
-    {
-        {AutoJoinPolicy::kPageScoped, "page_scoped"},
-        {AutoJoinPolicy::kTabAndOriginScoped, "tab_and_origin_scoped"},
-        {AutoJoinPolicy::kOriginScoped, "origin_scoped"},
-    },
-    AutoJoinPolicy::kMaxValue);
+const EnumTable<AutoJoinPolicy>& EnumTable<AutoJoinPolicy>::GetInstance() {
+  static const EnumTable<AutoJoinPolicy> kInstance(
+      {
+          {AutoJoinPolicy::kPageScoped, "page_scoped"},
+          {AutoJoinPolicy::kTabAndOriginScoped, "tab_and_origin_scoped"},
+          {AutoJoinPolicy::kOriginScoped, "origin_scoped"},
+      },
+      AutoJoinPolicy::kMaxValue);
+  return kInstance;
+}
 
 template <>
-const EnumTable<DefaultActionPolicy> EnumTable<DefaultActionPolicy>::instance(
-    {
-        {DefaultActionPolicy::kCreateSession, "create_session"},
-        {DefaultActionPolicy::kCastThisTab, "cast_this_tab"},
-    },
-    DefaultActionPolicy::kMaxValue);
+const EnumTable<DefaultActionPolicy>&
+EnumTable<DefaultActionPolicy>::GetInstance() {
+  static const EnumTable<DefaultActionPolicy> kInstance(
+      {
+          {DefaultActionPolicy::kCreateSession, "create_session"},
+          {DefaultActionPolicy::kCastThisTab, "cast_this_tab"},
+      },
+      DefaultActionPolicy::kMaxValue);
+  return kInstance;
+}
 
 template <>
-const EnumTable<CastDeviceCapability> EnumTable<CastDeviceCapability>::instance(
-    {
-        {CastDeviceCapability::MULTIZONE_GROUP, "multizone_group"},
-        {CastDeviceCapability::DEV_MODE, "dev_mode"},
-        {CastDeviceCapability::AUDIO_IN, "audio_in"},
-        {CastDeviceCapability::AUDIO_OUT, "audio_out"},
-        {CastDeviceCapability::VIDEO_IN, "video_in"},
-        {CastDeviceCapability::VIDEO_OUT, "video_out"},
-        // NONE deliberately omitted
-    },
-    NonConsecutiveEnumTable);
+const EnumTable<CastDeviceCapability>&
+EnumTable<CastDeviceCapability>::GetInstance() {
+  static const EnumTable<CastDeviceCapability> kInstance(
+      {
+          {CastDeviceCapability::MULTIZONE_GROUP, "multizone_group"},
+          {CastDeviceCapability::DEV_MODE, "dev_mode"},
+          {CastDeviceCapability::AUDIO_IN, "audio_in"},
+          {CastDeviceCapability::AUDIO_OUT, "audio_out"},
+          {CastDeviceCapability::VIDEO_IN, "video_in"},
+          {CastDeviceCapability::VIDEO_OUT, "video_out"},
+          // NONE deliberately omitted
+      },
+      NonConsecutiveEnumTable);
+  return kInstance;
+}
 
 template <>
-const EnumTable<ReceiverAppType> EnumTable<ReceiverAppType>::instance(
-    {
-        {ReceiverAppType::kOther, "OTHER"},
-        {ReceiverAppType::kWeb, "WEB"},
-        {ReceiverAppType::kAndroidTv, "ANDROID_TV"},
-    },
-    ReceiverAppType::kMaxValue);
+const EnumTable<ReceiverAppType>& EnumTable<ReceiverAppType>::GetInstance() {
+  static const EnumTable<ReceiverAppType> kInstance(
+      {
+          {ReceiverAppType::kOther, "OTHER"},
+          {ReceiverAppType::kWeb, "WEB"},
+          {ReceiverAppType::kAndroidTv, "ANDROID_TV"},
+      },
+      ReceiverAppType::kMaxValue);
+  return kInstance;
+}
 
 }  // namespace cast_util
 

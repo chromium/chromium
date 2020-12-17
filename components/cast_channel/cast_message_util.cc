@@ -28,72 +28,81 @@ using cast_channel::CastMessageType;
 using cast_channel::GetAppAvailabilityResult;
 
 template <>
-const EnumTable<CastMessageType> EnumTable<CastMessageType>::instance(
-    {
-        {CastMessageType::kPing, "PING"},
-        {CastMessageType::kPong, "PONG"},
-        {CastMessageType::kRpc, "RPC"},
-        {CastMessageType::kGetAppAvailability, "GET_APP_AVAILABILITY"},
-        {CastMessageType::kGetStatus, "GET_STATUS"},
-        {CastMessageType::kConnect, "CONNECT"},
-        {CastMessageType::kCloseConnection, "CLOSE"},
-        {CastMessageType::kBroadcast, "APPLICATION_BROADCAST"},
-        {CastMessageType::kLaunch, "LAUNCH"},
-        {CastMessageType::kStop, "STOP"},
-        {CastMessageType::kReceiverStatus, "RECEIVER_STATUS"},
-        {CastMessageType::kMediaStatus, "MEDIA_STATUS"},
-        {CastMessageType::kLaunchError, "LAUNCH_ERROR"},
-        {CastMessageType::kOffer, "OFFER"},
-        {CastMessageType::kAnswer, "ANSWER"},
-        {CastMessageType::kCapabilitiesResponse, "CAPABILITIES_RESPONSE"},
-        {CastMessageType::kStatusResponse, "STATUS_RESPONSE"},
-        {CastMessageType::kMultizoneStatus, "MULTIZONE_STATUS"},
-        {CastMessageType::kInvalidPlayerState, "INVALID_PLAYER_STATE"},
-        {CastMessageType::kLoadFailed, "LOAD_FAILED"},
-        {CastMessageType::kLoadCancelled, "LOAD_CANCELLED"},
-        {CastMessageType::kInvalidRequest, "INVALID_REQUEST"},
-        {CastMessageType::kPresentation, "PRESENTATION"},
-        {CastMessageType::kGetCapabilities, "GET_CAPABILITIES"},
-        {CastMessageType::kOther},
-    },
-    CastMessageType::kMaxValue);
+const EnumTable<CastMessageType>& EnumTable<CastMessageType>::GetInstance() {
+  static const EnumTable<CastMessageType> kInstance(
+      {
+          {CastMessageType::kPing, "PING"},
+          {CastMessageType::kPong, "PONG"},
+          {CastMessageType::kRpc, "RPC"},
+          {CastMessageType::kGetAppAvailability, "GET_APP_AVAILABILITY"},
+          {CastMessageType::kGetStatus, "GET_STATUS"},
+          {CastMessageType::kConnect, "CONNECT"},
+          {CastMessageType::kCloseConnection, "CLOSE"},
+          {CastMessageType::kBroadcast, "APPLICATION_BROADCAST"},
+          {CastMessageType::kLaunch, "LAUNCH"},
+          {CastMessageType::kStop, "STOP"},
+          {CastMessageType::kReceiverStatus, "RECEIVER_STATUS"},
+          {CastMessageType::kMediaStatus, "MEDIA_STATUS"},
+          {CastMessageType::kLaunchError, "LAUNCH_ERROR"},
+          {CastMessageType::kOffer, "OFFER"},
+          {CastMessageType::kAnswer, "ANSWER"},
+          {CastMessageType::kCapabilitiesResponse, "CAPABILITIES_RESPONSE"},
+          {CastMessageType::kStatusResponse, "STATUS_RESPONSE"},
+          {CastMessageType::kMultizoneStatus, "MULTIZONE_STATUS"},
+          {CastMessageType::kInvalidPlayerState, "INVALID_PLAYER_STATE"},
+          {CastMessageType::kLoadFailed, "LOAD_FAILED"},
+          {CastMessageType::kLoadCancelled, "LOAD_CANCELLED"},
+          {CastMessageType::kInvalidRequest, "INVALID_REQUEST"},
+          {CastMessageType::kPresentation, "PRESENTATION"},
+          {CastMessageType::kGetCapabilities, "GET_CAPABILITIES"},
+          {CastMessageType::kOther},
+      },
+      CastMessageType::kMaxValue);
+  return kInstance;
+}
 
 template <>
-const EnumTable<cast_channel::V2MessageType>
-    EnumTable<cast_channel::V2MessageType>::instance(
-        {
-            {cast_channel::V2MessageType::kEditTracksInfo, "EDIT_TRACKS_INFO"},
-            {cast_channel::V2MessageType::kGetStatus, "GET_STATUS"},
-            {cast_channel::V2MessageType::kLoad, "LOAD"},
-            {cast_channel::V2MessageType::kMediaGetStatus, "MEDIA_GET_STATUS"},
-            {cast_channel::V2MessageType::kMediaSetVolume, "MEDIA_SET_VOLUME"},
-            {cast_channel::V2MessageType::kPause, "PAUSE"},
-            {cast_channel::V2MessageType::kPlay, "PLAY"},
-            {cast_channel::V2MessageType::kPrecache, "PRECACHE"},
-            {cast_channel::V2MessageType::kQueueInsert, "QUEUE_INSERT"},
-            {cast_channel::V2MessageType::kQueueLoad, "QUEUE_LOAD"},
-            {cast_channel::V2MessageType::kQueueRemove, "QUEUE_REMOVE"},
-            {cast_channel::V2MessageType::kQueueReorder, "QUEUE_REORDER"},
-            {cast_channel::V2MessageType::kQueueUpdate, "QUEUE_UPDATE"},
-            {cast_channel::V2MessageType::kQueueNext, "QUEUE_NEXT"},
-            {cast_channel::V2MessageType::kQueuePrev, "QUEUE_PREV"},
-            {cast_channel::V2MessageType::kSeek, "SEEK"},
-            {cast_channel::V2MessageType::kSetVolume, "SET_VOLUME"},
-            {cast_channel::V2MessageType::kStop, "STOP"},
-            {cast_channel::V2MessageType::kStopMedia, "STOP_MEDIA"},
-            {cast_channel::V2MessageType::kOther},
-        },
-        cast_channel::V2MessageType::kMaxValue);
+const EnumTable<cast_channel::V2MessageType>&
+EnumTable<cast_channel::V2MessageType>::GetInstance() {
+  static const EnumTable<cast_channel::V2MessageType> kInstance(
+      {
+          {cast_channel::V2MessageType::kEditTracksInfo, "EDIT_TRACKS_INFO"},
+          {cast_channel::V2MessageType::kGetStatus, "GET_STATUS"},
+          {cast_channel::V2MessageType::kLoad, "LOAD"},
+          {cast_channel::V2MessageType::kMediaGetStatus, "MEDIA_GET_STATUS"},
+          {cast_channel::V2MessageType::kMediaSetVolume, "MEDIA_SET_VOLUME"},
+          {cast_channel::V2MessageType::kPause, "PAUSE"},
+          {cast_channel::V2MessageType::kPlay, "PLAY"},
+          {cast_channel::V2MessageType::kPrecache, "PRECACHE"},
+          {cast_channel::V2MessageType::kQueueInsert, "QUEUE_INSERT"},
+          {cast_channel::V2MessageType::kQueueLoad, "QUEUE_LOAD"},
+          {cast_channel::V2MessageType::kQueueRemove, "QUEUE_REMOVE"},
+          {cast_channel::V2MessageType::kQueueReorder, "QUEUE_REORDER"},
+          {cast_channel::V2MessageType::kQueueUpdate, "QUEUE_UPDATE"},
+          {cast_channel::V2MessageType::kQueueNext, "QUEUE_NEXT"},
+          {cast_channel::V2MessageType::kQueuePrev, "QUEUE_PREV"},
+          {cast_channel::V2MessageType::kSeek, "SEEK"},
+          {cast_channel::V2MessageType::kSetVolume, "SET_VOLUME"},
+          {cast_channel::V2MessageType::kStop, "STOP"},
+          {cast_channel::V2MessageType::kStopMedia, "STOP_MEDIA"},
+          {cast_channel::V2MessageType::kOther},
+      },
+      cast_channel::V2MessageType::kMaxValue);
+  return kInstance;
+}
 
 template <>
-const EnumTable<GetAppAvailabilityResult>
-    EnumTable<GetAppAvailabilityResult>::instance(
-        {
-            {GetAppAvailabilityResult::kAvailable, "APP_AVAILABLE"},
-            {GetAppAvailabilityResult::kUnavailable, "APP_UNAVAILABLE"},
-            {GetAppAvailabilityResult::kUnknown},
-        },
-        GetAppAvailabilityResult::kMaxValue);
+const EnumTable<GetAppAvailabilityResult>&
+EnumTable<GetAppAvailabilityResult>::GetInstance() {
+  static const EnumTable<GetAppAvailabilityResult> kInstance(
+      {
+          {GetAppAvailabilityResult::kAvailable, "APP_AVAILABLE"},
+          {GetAppAvailabilityResult::kUnavailable, "APP_UNAVAILABLE"},
+          {GetAppAvailabilityResult::kUnknown},
+      },
+      GetAppAvailabilityResult::kMaxValue);
+  return kInstance;
+}
 
 }  // namespace cast_util
 
