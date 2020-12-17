@@ -44,6 +44,16 @@ class HeapMojoReceiverSet {
   HeapMojoReceiverSet& operator=(const HeapMojoReceiverSet&) = delete;
 
   // Methods to redirect to mojo::ReceiverSet:
+  void set_disconnect_handler(base::RepeatingClosure handler) {
+    wrapper_->receiver_set().set_disconnect_handler(std::move(handler));
+  }
+
+  void set_disconnect_with_reason_handler(
+      mojo::RepeatingConnectionErrorWithReasonCallback handler) {
+    wrapper_->receiver_set().set_disconnect_with_reason_handler(
+        std::move(handler));
+  }
+
   mojo::ReceiverId Add(mojo::PendingReceiver<Interface> receiver,
                        scoped_refptr<base::SequencedTaskRunner> task_runner) {
     DCHECK(task_runner);

@@ -4116,9 +4116,15 @@ bool HTMLMediaElement::IsInteractiveContent() const {
 
 void HTMLMediaElement::BindMediaPlayerReceiver(
     mojo::PendingReceiver<media::mojom::blink::MediaPlayer> receiver) {
-  media_player_receiver_set_.Add(
+  mojo::ReceiverId receiver_id = media_player_receiver_set_.Add(
       std::move(receiver),
       GetDocument().GetTaskRunner(TaskType::kInternalMedia));
+
+  media_player_receiver_set_.set_disconnect_handler(WTF::BindRepeating(
+      [](HTMLMediaElement* html_media_element, mojo::ReceiverId receiver_id) {
+        html_media_element->media_player_receiver_set_.Remove(receiver_id);
+      },
+      WrapWeakPersistent(this), receiver_id));
 }
 
 void HTMLMediaElement::Trace(Visitor* visitor) const {
