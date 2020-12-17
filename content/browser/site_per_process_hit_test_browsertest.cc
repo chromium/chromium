@@ -903,6 +903,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessInternalsHitTestBrowserTest,
   rwhv_root->OnScrollEvent(&scroll_event);
   ack_observer.Wait();
 
+  // Wait until renderer's main thread is synced.
+  observer.Wait();
+
   // Verify the div scrolled.
   double div_scroll_top = div_scroll_top_start;
   EXPECT_TRUE(ExecuteScriptAndExtractDouble(
