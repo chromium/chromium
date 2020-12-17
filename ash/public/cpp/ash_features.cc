@@ -154,7 +154,7 @@ const base::Feature kDragUnpinnedAppToPin{"DragUnpinnedAppToPin",
 
 const base::Feature kKeyboardBasedDisplayArrangementInSettings{
     "KeyboardBasedDisplayArrangementInSettings",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 bool IsAllowAmbientEQEnabled() {
   return base::FeatureList::IsEnabled(kAllowAmbientEQ);
