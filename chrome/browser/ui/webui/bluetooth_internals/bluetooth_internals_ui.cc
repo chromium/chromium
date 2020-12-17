@@ -25,18 +25,11 @@ BluetoothInternalsUI::BluetoothInternalsUI(content::WebUI* web_ui)
       content::WebUIDataSource::Create(chrome::kChromeUIBluetoothInternalsHost);
 
   // Add required resources.
-  html_source->AddResourcePath("adapter.mojom-lite.js",
-                               IDR_BLUETOOTH_INTERNALS_ADAPTER_MOJO_JS);
-  html_source->AddResourcePath("device.mojom-lite.js",
-                               IDR_BLUETOOTH_INTERNALS_DEVICE_MOJO_JS);
-  html_source->AddResourcePath("bluetooth_internals.mojom-lite.js",
-                               IDR_BLUETOOTH_INTERNALS_MOJO_JS);
-  html_source->AddResourcePath("uuid.mojom-lite.js",
-                               IDR_BLUETOOTH_INTERNALS_UUID_MOJO_JS);
   webui::AddResourcePathsBulk(
       html_source, base::make_span(kBluetoothInternalsResources,
                                    kBluetoothInternalsResourcesSize));
-  html_source->SetDefaultResource(IDR_BLUETOOTH_INTERNALS_HTML);
+  html_source->SetDefaultResource(
+      IDR_BLUETOOTH_INTERNALS_BLUETOOTH_INTERNALS_HTML);
 
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource::Add(profile, html_source);

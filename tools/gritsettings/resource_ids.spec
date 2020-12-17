@@ -226,7 +226,8 @@
     "META": {"sizes": {"messages": [50]}, "join": 2},  # Relies on src-internal.
     "messages": [2015],
   },
-  "chrome/browser/resources/bluetooth_internals/resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/bluetooth_internals/resources.grd": {
+    "META": {"sizes": {"includes": [30],}},
     "includes": [2020],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/bluetooth_pairing_dialog/bluetooth_pairing_dialog_resources.grd": {

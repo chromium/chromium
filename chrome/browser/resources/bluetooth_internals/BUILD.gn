@@ -4,6 +4,7 @@
 
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
 
 js_type_check("closure_compile") {
   deps = [ ":bluetooth_internals" ]
@@ -66,8 +67,83 @@ js_library("page_manager") {
   ]
 }
 
+bluetooth_grd_prefix = "bluetooth_internals"
+public_mojo_grdp_file = "$target_gen_dir/public_mojo_resources.grdp"
+internals_mojo_grdp_file = "$target_gen_dir/internals_mojo_resources.grdp"
+resources_grd_file = "$target_gen_dir/resources.grd"
+
+generate_grd("build_public_mojo_grdp") {
+  grd_prefix = bluetooth_grd_prefix
+  out_grd = public_mojo_grdp_file
+  input_files = [
+    "adapter.mojom-lite.js",
+    "uuid.mojom-lite.js",
+    "device.mojom-lite.js",
+  ]
+  input_files_base_dir =
+      rebase_path("$root_gen_dir/device/bluetooth/public/mojom/",
+                  root_build_dir)
+}
+
+generate_grd("build_internal_mojo_grdp") {
+  grd_prefix = bluetooth_grd_prefix
+  out_grd = internals_mojo_grdp_file
+  input_files = [ "bluetooth_internals.mojom-lite.js" ]
+  input_files_base_dir =
+      rebase_path("$root_gen_dir/chrome/browser/ui/webui/bluetooth_internals/",
+                  root_build_dir)
+}
+
+generate_grd("build_grd") {
+  grd_prefix = bluetooth_grd_prefix
+  out_grd = resources_grd_file
+  deps = [
+    ":build_internal_mojo_grdp",
+    ":build_public_mojo_grdp",
+  ]
+  input_files = [
+    "adapter_broker.js",
+    "adapter_page.js",
+    "debug_log_page.js",
+    "characteristic_list.js",
+    "bluetooth_internals.css",
+    "descriptor_list.js",
+    "device_broker.js",
+    "device_collection.js",
+    "device_details_page.js",
+    "device_table.js",
+    "devices_page.js",
+    "expandable_list.js",
+    "bluetooth_internals.html",
+    "bluetooth_internals.js",
+    "menu.svg",
+    "node_utils.js",
+    "object_fieldset.js",
+    "page_manager.js",
+    "page.js",
+    "service_list.js",
+    "sidebar.js",
+    "snackbar.js",
+    "value_control.js",
+  ]
+  input_files_base_dir = rebase_path("./", "//")
+
+  grdp_files = [
+    public_mojo_grdp_file,
+    internals_mojo_grdp_file,
+  ]
+}
+
 grit("resources") {
-  source = "resources.grd"
+  enable_input_discovery_for_gn_analyze = false
+  source = resources_grd_file
+
+  deps = [
+    ":build_grd",
+    "//chrome/browser/ui/webui/bluetooth_internals:mojo_bindings_js",
+    "//device/bluetooth/public/mojom:deprecated_experimental_interfaces_js",
+    "//device/bluetooth/public/mojom:mojom_js",
+  ]
 
   outputs = [
     "grit/bluetooth_internals_resources.h",
@@ -76,5 +152,4 @@ grit("resources") {
     "bluetooth_internals_resources.pak",
   ]
   output_dir = "$root_gen_dir/chrome"
-  deps = [ "//chrome/browser/ui/webui/bluetooth_internals:mojo_bindings_js" ]
 }
