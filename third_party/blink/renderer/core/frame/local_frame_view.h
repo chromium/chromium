@@ -34,6 +34,7 @@
 #include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/document_transition/document_transition.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
 #include "third_party/blink/renderer/core/frame/frame_view.h"
 #include "third_party/blink/renderer/core/frame/layout_subtree_root_list.h"
@@ -992,6 +993,10 @@ class CORE_EXPORT LocalFrameView final
   // Returns true if we should paint the color adjust background from the
   // StyleEngine instead of the base background color.
   bool ShouldUseColorAdjustBackground() const;
+
+  // Appends the document transition from this view into the given vector.
+  void AppendDocumentTransitionRequests(
+      WTF::Vector<std::unique_ptr<DocumentTransition::Request>>&);
 
   LayoutSize size_;
 

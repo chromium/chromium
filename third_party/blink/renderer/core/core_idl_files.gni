@@ -531,7 +531,7 @@ core_partial_definition_idl_files =
                     "css/cssom/element_computed_style_map.idl",
                     "css/font_face_source.idl",
                     "css/property_registration.idl",
-                    "document_transition/document_create_transition.idl",
+                    "document_transition/document_transition_supplement.idl",
                     "dom/accessibility_role.idl",
                     "dom/aria_attributes.idl",
                     "dom/aria_relationship_attributes.idl",

@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/core/css/font_face_set_document.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
+#include "third_party/blink/renderer/core/document_transition/document_transition_supplement.h"
 #include "third_party/blink/renderer/core/dom/static_node_list.h"
 #include "third_party/blink/renderer/core/editing/compute_layer_selection.h"
 #include "third_party/blink/renderer/core/editing/drag_caret.h"
@@ -3200,10 +3201,29 @@ void LocalFrameView::PushPaintArtifactToCompositor(bool repainted) {
         });
   }
 
+  WTF::Vector<std::unique_ptr<DocumentTransition::Request>>
+      document_transition_requests;
+  // TODO(vmpstr): We should make this work for subframes as well.
+  AppendDocumentTransitionRequests(document_transition_requests);
+
   paint_artifact_compositor_->Update(
-      pre_composited_layers_, viewport_properties, scroll_translation_nodes);
+      pre_composited_layers_, viewport_properties, scroll_translation_nodes,
+      std::move(document_transition_requests));
 
   probe::LayerTreePainted(&GetFrame());
+}
+
+void LocalFrameView::AppendDocumentTransitionRequests(
+    WTF::Vector<std::unique_ptr<DocumentTransition::Request>>& requests) {
+  DCHECK(frame_ && frame_->GetDocument());
+  auto* document_transition_supplement =
+      DocumentTransitionSupplement::FromIfExists(*frame_->GetDocument());
+  if (!document_transition_supplement)
+    return;
+  auto* document_transition = document_transition_supplement->GetTransition();
+  auto pending_request = document_transition->TakePendingRequest();
+  if (pending_request)
+    requests.push_back(std::move(pending_request));
 }
 
 std::unique_ptr<JSONObject> LocalFrameView::CompositedLayersAsJSON(

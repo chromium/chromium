@@ -65,25 +65,27 @@ struct PresentationFeedback;
 
 namespace cc {
 
-class RasterDarkModeFilter;
+class DocumentTransitionRequest;
 class HeadsUpDisplayLayer;
 class Layer;
 class LayerTreeHostImpl;
 class LayerTreeHostImplClient;
 class LayerTreeHostSingleThreadClient;
 class LayerTreeMutator;
-class PaintWorkletLayerPainter;
 class MutatorEvents;
 class MutatorHost;
-struct PendingPageScaleAnimation;
+class PaintWorkletLayerPainter;
+class RasterDarkModeFilter;
 class RenderFrameMetadataObserver;
 class RenderingStatsInstrumentation;
-struct OverscrollBehavior;
 class TaskGraphRunner;
 class UIResourceManager;
 class UkmRecorderFactory;
-struct RenderingStats;
+
 struct CompositorCommitData;
+struct OverscrollBehavior;
+struct PendingPageScaleAnimation;
+struct RenderingStats;
 
 // Returned from LayerTreeHost::DeferMainFrameUpdate. Automatically un-defers on
 // destruction.
@@ -733,6 +735,9 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   void DidObserveFirstScrollDelay(base::TimeDelta first_scroll_delay,
                                   base::TimeTicks first_scroll_timestamp);
+
+  void AddDocumentTransitionRequest(
+      std::unique_ptr<DocumentTransitionRequest> request);
 
  protected:
   LayerTreeHost(InitParams params, CompositorMode mode);

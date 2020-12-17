@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "cc/document_transition/document_transition_request.h"
 #include "cc/layers/scrollbar_layer_base.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/trees/effect_node.h"
@@ -1102,7 +1103,9 @@ void PaintArtifactCompositor::DecompositeTransforms() {
 void PaintArtifactCompositor::Update(
     const Vector<PreCompositedLayerInfo>& pre_composited_layers,
     const ViewportProperties& viewport_properties,
-    const Vector<const TransformPaintPropertyNode*>& scroll_translation_nodes) {
+    const Vector<const TransformPaintPropertyNode*>& scroll_translation_nodes,
+    Vector<std::unique_ptr<cc::DocumentTransitionRequest>>
+        transition_requests) {
   DCHECK(scroll_translation_nodes.IsEmpty() ||
          RuntimeEnabledFeatures::ScrollUnificationEnabled());
   DCHECK(root_layer_);
@@ -1113,6 +1116,9 @@ void PaintArtifactCompositor::Update(
   cc::LayerTreeHost* host = root_layer_->layer_tree_host();
   if (!host)
     return;
+
+  for (auto& request : transition_requests)
+    host->AddDocumentTransitionRequest(std::move(request));
 
   TRACE_EVENT0("blink", "PaintArtifactCompositor::Update");
 

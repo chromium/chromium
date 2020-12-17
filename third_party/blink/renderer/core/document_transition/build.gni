@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 blink_core_sources_document_transition = [
-  "document_create_transition.cc",
-  "document_create_transition.h",
   "document_transition.cc",
   "document_transition.h",
+  "document_transition_supplement.cc",
+  "document_transition_supplement.h",
 ]

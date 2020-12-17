@@ -37,6 +37,7 @@
 #include "cc/base/histograms.h"
 #include "cc/base/math_util.h"
 #include "cc/debug/rendering_stats_instrumentation.h"
+#include "cc/document_transition/document_transition_request.h"
 #include "cc/input/layer_selection_bound.h"
 #include "cc/input/overscroll_behavior.h"
 #include "cc/input/page_scale_animation.h"
@@ -799,6 +800,12 @@ void LayerTreeHost::DidObserveFirstScrollDelay(
     base::TimeTicks first_scroll_timestamp) {
   client_->DidObserveFirstScrollDelay(first_scroll_delay,
                                       first_scroll_timestamp);
+}
+
+void LayerTreeHost::AddDocumentTransitionRequest(
+    std::unique_ptr<DocumentTransitionRequest> request) {
+  // TODO(vmpstr): Propagate this to viz after activation.
+  request->TakeCommitCallback().Run();
 }
 
 bool LayerTreeHost::DoUpdateLayers() {

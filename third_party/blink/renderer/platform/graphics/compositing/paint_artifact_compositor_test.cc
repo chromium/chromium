@@ -10,6 +10,7 @@
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "cc/document_transition/document_transition_request.h"
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/layers/layer.h"
 #include "cc/test/fake_impl_task_runner_provider.h"
@@ -144,8 +145,9 @@ class PaintArtifactCompositorTest : public testing::Test,
     paint_artifact_compositor_->SetNeedsUpdate();
     Vector<PreCompositedLayerInfo> pre_composited_layers = {
         {PaintChunkSubset(artifact)}};
-    paint_artifact_compositor_->Update(
-        pre_composited_layers, viewport_properties, scroll_translation_nodes);
+    paint_artifact_compositor_->Update(pre_composited_layers,
+                                       viewport_properties,
+                                       scroll_translation_nodes, {});
     layer_tree_->layer_tree_host()->LayoutAndUpdateLayers();
   }
 

@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 [
-    ImplementedAs=DocumentCreateTransition,
+    ImplementedAs=DocumentTransitionSupplement,
     RuntimeEnabled=DocumentTransition
 ] partial interface Document {
-    [NewObject] DocumentTransition createTransition(optional DocumentTransitionInit init = {});
+    [SameObject] readonly attribute DocumentTransition documentTransition;
 };

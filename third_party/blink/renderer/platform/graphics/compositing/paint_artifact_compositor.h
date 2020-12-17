@@ -30,6 +30,7 @@
 
 namespace cc {
 class ScrollbarLayerBase;
+class DocumentTransitionRequest;
 }
 
 namespace blink {
@@ -155,10 +156,11 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   // noncomposited nodes, and is used for Scroll Unification to generate scroll
   // nodes for noncomposited scrollers to complete the compositor's scroll
   // property tree.
-  void Update(const Vector<PreCompositedLayerInfo>&,
-              const ViewportProperties& viewport_properties,
-              const Vector<const TransformPaintPropertyNode*>&
-                  scroll_translation_nodes);
+  void Update(
+      const Vector<PreCompositedLayerInfo>&,
+      const ViewportProperties& viewport_properties,
+      const Vector<const TransformPaintPropertyNode*>& scroll_translation_nodes,
+      Vector<std::unique_ptr<cc::DocumentTransitionRequest>> requests);
 
   void UpdateRepaintedLayerProperties() const;
 

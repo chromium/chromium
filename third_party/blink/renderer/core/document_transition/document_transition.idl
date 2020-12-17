@@ -5,14 +5,15 @@
 
 // See third_party/blink/renderer/core/document_transition/README.md.
 [
+    ActiveScriptWrappable,
     Exposed=Window,
     RuntimeEnabled=DocumentTransition
 ] interface DocumentTransition {
-  // - This can only be called if start() has not been previously called.
+  // - This should only be called after any previous start() calls have resolved.
   // - Rejects any previous unresolved prepare() promises.
   // - Returns a promise that resolves after the transition has been
   //   prepared.
-  [CallWith=ScriptState] Promise<void> prepare();
+  [CallWith=ScriptState] Promise<void> prepare(optional DocumentTransitionInit params = {});
 
   // Can only be called after prepare(), during the task during
   // which prepare() most recently resolved.
