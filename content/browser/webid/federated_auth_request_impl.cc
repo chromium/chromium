@@ -116,7 +116,11 @@ void FederatedAuthRequestImpl::OnWellKnownFetched(
       return;
     }
     case IdpNetworkRequestManager::FetchStatus::kFetchError: {
-      CompleteRequest(RequestIdTokenStatus::kError, "");
+      CompleteRequest(RequestIdTokenStatus::kErrorFetchingWellKnown, "");
+      return;
+    }
+    case IdpNetworkRequestManager::FetchStatus::kInvalidResponseError: {
+      CompleteRequest(RequestIdTokenStatus::kErrorInvalidWellKnown, "");
       return;
     }
     case IdpNetworkRequestManager::FetchStatus::kSuccess: {
@@ -187,7 +191,11 @@ void FederatedAuthRequestImpl::OnSigninResponseReceived(
       return;
     }
     case IdpNetworkRequestManager::SigninResponse::kSigninError: {
-      CompleteRequest(RequestIdTokenStatus::kError, "");
+      CompleteRequest(RequestIdTokenStatus::kErrorFetchingSignin, "");
+      return;
+    }
+    case IdpNetworkRequestManager::SigninResponse::kInvalidResponseError: {
+      CompleteRequest(RequestIdTokenStatus::kErrorInvalidSigninResponse, "");
       return;
     }
   }

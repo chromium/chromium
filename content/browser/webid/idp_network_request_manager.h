@@ -54,12 +54,14 @@ class IdpNetworkRequestManager {
     kSuccess,
     kWebIdNotSupported,
     kFetchError,
+    kInvalidResponseError,
   };
 
   enum class SigninResponse {
     kLoadIdp,
     kTokenGranted,
     kSigninError,
+    kInvalidResponseError,
   };
 
   using FetchWellKnownCallback =

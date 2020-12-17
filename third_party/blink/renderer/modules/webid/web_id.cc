@@ -21,14 +21,59 @@ namespace {
 void OnRequestIdToken(ScriptPromiseResolver* resolver,
                       mojom::blink::RequestIdTokenStatus status,
                       const WTF::String& id_token) {
-  // TODO(kenrb): Provide better messages for different error codes.
-  if (status != mojom::blink::RequestIdTokenStatus::kSuccess) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kNetworkError,
-        "Error loading the identity provider."));
-    return;
+  switch (status) {
+    case mojom::blink::RequestIdTokenStatus::kApprovalDeclined: {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kAbortError, "User declined the sign-in attempt."));
+      return;
+    }
+    case mojom::blink::RequestIdTokenStatus::kErrorTooManyRequests: {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kAbortError,
+          "Only one WebID request may be outstanding at one time."));
+      return;
+    }
+    case mojom::blink::RequestIdTokenStatus::
+        kErrorWebIdNotSupportedByProvider: {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNetworkError,
+          "The indicated provider does not support WebID."));
+      return;
+    }
+    case mojom::blink::RequestIdTokenStatus::kErrorFetchingWellKnown: {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNetworkError,
+          "Error fetching the provider's .well-known configuration."));
+      return;
+    }
+    case mojom::blink::RequestIdTokenStatus::kErrorInvalidWellKnown: {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNetworkError,
+          "Provider's .well-known configuration is invalid."));
+      return;
+    }
+    case mojom::blink::RequestIdTokenStatus::kErrorFetchingSignin: {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNetworkError,
+          "Error attempting to reach the provider's sign-in endpoint."));
+      return;
+    }
+    case mojom::blink::RequestIdTokenStatus::kErrorInvalidSigninResponse: {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNetworkError,
+          "Provider's sign-in response is invalid"));
+      return;
+    }
+    case mojom::blink::RequestIdTokenStatus::kError: {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNetworkError, "Error retrieving an id token."));
+      return;
+    }
+    case mojom::blink::RequestIdTokenStatus::kSuccess: {
+      resolver->Resolve();
+      return;
+    }
   }
-  resolver->Resolve(id_token);
 }
 
 void OnProvideIdToken(ScriptPromiseResolver* resolver,

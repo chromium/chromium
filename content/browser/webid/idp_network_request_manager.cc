@@ -230,7 +230,7 @@ void IdpNetworkRequestManager::OnWellKnownParsed(
     data_decoder::DataDecoder::ValueOrError result) {
   if (!result.value) {
     std::move(idp_well_known_callback_)
-        .Run(FetchStatus::kFetchError, std::string());
+        .Run(FetchStatus::kInvalidResponseError, std::string());
     return;
   }
 
@@ -238,7 +238,7 @@ void IdpNetworkRequestManager::OnWellKnownParsed(
 
   if (!response.is_dict()) {
     std::move(idp_well_known_callback_)
-        .Run(FetchStatus::kFetchError, std::string());
+        .Run(FetchStatus::kInvalidResponseError, std::string());
     return;
   }
 
@@ -246,7 +246,7 @@ void IdpNetworkRequestManager::OnWellKnownParsed(
 
   if (!idp_endpoint || !idp_endpoint->is_string()) {
     std::move(idp_well_known_callback_)
-        .Run(FetchStatus::kFetchError, std::string());
+        .Run(FetchStatus::kInvalidResponseError, std::string());
     return;
   }
 
@@ -278,7 +278,7 @@ void IdpNetworkRequestManager::OnSigninRequestParsed(
     data_decoder::DataDecoder::ValueOrError result) {
   if (!result.value) {
     std::move(signin_request_callback_)
-        .Run(SigninResponse::kSigninError, std::string());
+        .Run(SigninResponse::kInvalidResponseError, std::string());
     return;
   }
 
@@ -286,7 +286,7 @@ void IdpNetworkRequestManager::OnSigninRequestParsed(
 
   if (!response.is_dict()) {
     std::move(signin_request_callback_)
-        .Run(SigninResponse::kSigninError, std::string());
+        .Run(SigninResponse::kInvalidResponseError, std::string());
     return;
   }
 
@@ -302,7 +302,7 @@ void IdpNetworkRequestManager::OnSigninRequestParsed(
   bool both_present = signin_url_present && token_present;
   if (!(signin_url_present || token_present) || both_present) {
     std::move(signin_request_callback_)
-        .Run(SigninResponse::kSigninError, std::string());
+        .Run(SigninResponse::kInvalidResponseError, std::string());
     return;
   }
 
