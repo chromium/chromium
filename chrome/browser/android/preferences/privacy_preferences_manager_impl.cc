@@ -67,10 +67,3 @@ static void JNI_PrivacyPreferencesManagerImpl_SetNetworkPredictionEnabled(
       enabled ? chrome_browser_net::NETWORK_PREDICTION_WIFI_ONLY
               : chrome_browser_net::NETWORK_PREDICTION_NEVER);
 }
-
-static jboolean
-JNI_PrivacyPreferencesManagerImpl_ObsoleteNetworkPredictionOptionsHasUserSetting(
-    JNIEnv* env) {
-  return GetPrefService()->GetUserPrefValue(prefs::kNetworkPredictionOptions) !=
-         nullptr;
-}

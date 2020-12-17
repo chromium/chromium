@@ -147,15 +147,6 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
         return PrivacyPreferencesManagerImplJni.get().isMetricsReportingManaged();
     }
 
-    /**
-     * @return Whether there is a user set value for kNetworkPredictionOptions.  This should only be
-     * used for preference migration. See http://crbug.com/334602
-     */
-    private boolean obsoleteNetworkPredictionOptionsHasUserSetting() {
-        return PrivacyPreferencesManagerImplJni.get()
-                .obsoleteNetworkPredictionOptionsHasUserSetting();
-    }
-
     @Override
     public boolean getNetworkPredictionEnabled() {
         return PrivacyPreferencesManagerImplJni.get().getNetworkPredictionEnabled();
@@ -175,7 +166,6 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
     public interface Natives {
         boolean canPrefetchAndPrerender();
         boolean getNetworkPredictionManaged();
-        boolean obsoleteNetworkPredictionOptionsHasUserSetting();
         boolean getNetworkPredictionEnabled();
         void setNetworkPredictionEnabled(boolean enabled);
         boolean isMetricsReportingEnabled();
