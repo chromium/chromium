@@ -547,4 +547,19 @@ TEST_F(NameFieldTest, HispanicLastNameRegexConverage) {
   }
 }
 
+// Tests that address name is not misclassified as name.
+TEST_F(NameFieldTest, NotAddressName) {
+  FormFieldData field;
+  field.form_control_type = "text";
+
+  field.label = base::UTF8ToUTF16("Identificação do Endereço");
+  field.name = base::UTF8ToUTF16("name");
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+
+  AutofillScanner scanner(list_);
+  field_ = Parse(&scanner);
+  ASSERT_EQ(nullptr, field_.get());
+}
+
 }  // namespace autofill

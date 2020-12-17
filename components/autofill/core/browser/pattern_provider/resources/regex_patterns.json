@@ -219,6 +219,26 @@
         "match_field_attributes": 3,
         "match_field_input_types": 1
       }
+    ],
+    "tr": [
+      {
+        "pattern_identifier": "tr_address_name_ignored_preserving",
+        "positive_pattern": "adres ([İi]sim|başlığı|adı)",
+        "positive_score": 1.1,
+        "negative_pattern": null,
+        "match_field_attributes": 3,
+        "match_field_input_types": 1
+      }
+    ],
+    "pt": [
+      {
+        "pattern_identifier": "pt_address_name_ignored_preserving",
+        "positive_pattern": "identificação do endereço",
+        "positive_score": 1.1,
+        "negative_pattern": null,
+        "match_field_attributes": 3,
+        "match_field_input_types": 1
+      }
     ]
   },
   "COMPANY": {
@@ -449,7 +469,7 @@
     "tr": [
       {
         "pattern_identifier": "tr_address_line_1_preserving",
-        "positive_pattern": "(\\b|_)adres(?! (başlığı(nız)?|tarifi))(\\b|_)",
+        "positive_pattern": "(\\b|_)adres(?! tarifi)(\\b|_)",
         "positive_score": 1.1,
         "negative_pattern": null,
         "match_field_attributes": 3,
@@ -457,7 +477,7 @@
       },
       {
         "pattern_identifier": "tr_address_line_1_label_preserving",
-        "positive_pattern": "(\\b|_)adres(?! (başlığı(nız)?|tarifi))(\\b|_)",
+        "positive_pattern": "(\\b|_)adres(?! tarifi)(\\b|_)",
         "positive_score": 1.1,
         "negative_pattern": null,
         "match_field_attributes": 1,
@@ -2025,16 +2045,6 @@
       {
         "pattern_identifier": "en_name_ignored_preserving",
         "positive_pattern": "user.?name|user.?id|nickname|maiden name|title|prefix|suffix",
-        "positive_score": 0.9,
-        "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 137 
-      }
-    ],
-    "tr": [
-      {
-        "pattern_identifier": "tr_name_ignored_preserving",
-        "positive_pattern": "adres başlığınız",
         "positive_score": 0.9,
         "negative_pattern": null,
         "match_field_attributes": 3,

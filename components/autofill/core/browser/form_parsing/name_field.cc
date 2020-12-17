@@ -133,9 +133,15 @@ std::unique_ptr<FullNameField> FullNameField::Parse(
   const std::vector<MatchingPattern>& name_ignored_patterns =
       PatternProvider::GetInstance().GetMatchPatterns("NAME_IGNORED",
                                                       page_language);
+  const std::vector<MatchingPattern>& address_name_ignored_patterns =
+      PatternProvider::GetInstance().GetMatchPatterns("ADDRESS_NAME_IGNORED",
+                                                      page_language);
   bool should_ignore =
       ParseField(scanner, UTF8ToUTF16(kNameIgnoredRe), name_ignored_patterns,
-                 nullptr, {log_manager, "kNameIgnoredRe"});
+                 nullptr, {log_manager, "kNameIgnoredRe"}) ||
+      ParseField(scanner, UTF8ToUTF16(kAddressNameIgnoredRe),
+                 address_name_ignored_patterns, nullptr,
+                 {log_manager, "kAddressNameIgnoredRe"});
   scanner->Rewind();
   if (should_ignore)
     return nullptr;
@@ -186,6 +192,9 @@ FirstTwoLastNamesField::ParseComponentNames(AutofillScanner* scanner,
   const std::vector<MatchingPattern>& name_ignored_patterns =
       PatternProvider::GetInstance().GetMatchPatterns("NAME_IGNORED",
                                                       page_language);
+  const std::vector<MatchingPattern>& address_name_ignored_patterns =
+      PatternProvider::GetInstance().GetMatchPatterns("ADDRESS_NAME_IGNORED",
+                                                      page_language);
   const std::vector<MatchingPattern>& first_name_patterns =
       PatternProvider::GetInstance().GetMatchPatterns("FIRST_NAME",
                                                       page_language);
@@ -217,7 +226,10 @@ FirstTwoLastNamesField::ParseComponentNames(AutofillScanner* scanner,
     if (ParseFieldSpecifics(scanner, UTF8ToUTF16(kNameIgnoredRe),
                             MATCH_DEFAULT | MATCH_SELECT | MATCH_SEARCH,
                             name_ignored_patterns, nullptr,
-                            {log_manager, "kNameIgnoredRe"})) {
+                            {log_manager, "kNameIgnoredRe"}) ||
+        ParseFieldSpecifics(scanner, UTF8ToUTF16(kAddressNameIgnoredRe),
+                            MATCH_DEFAULT, address_name_ignored_patterns,
+                            nullptr, {log_manager, "kAddressNameIgnoredRe"})) {
       continue;
     }
 
@@ -333,6 +345,9 @@ std::unique_ptr<FirstLastNameField> FirstLastNameField::ParseComponentNames(
   const std::vector<MatchingPattern>& name_ignored_patterns =
       PatternProvider::GetInstance().GetMatchPatterns("NAME_IGNORED",
                                                       page_language);
+  const std::vector<MatchingPattern>& address_name_ignored_patterns =
+      PatternProvider::GetInstance().GetMatchPatterns("ADDRESS_NAME_IGNORED",
+                                                      page_language);
   const std::vector<MatchingPattern>& first_name_patterns =
       PatternProvider::GetInstance().GetMatchPatterns("FIRST_NAME",
                                                       page_language);
@@ -366,7 +381,10 @@ std::unique_ptr<FirstLastNameField> FirstLastNameField::ParseComponentNames(
     if (ParseFieldSpecifics(scanner, UTF8ToUTF16(kNameIgnoredRe),
                             MATCH_DEFAULT | MATCH_SELECT | MATCH_SEARCH,
                             name_ignored_patterns, nullptr,
-                            {log_manager, "kNameIgnoredRe"})) {
+                            {log_manager, "kNameIgnoredRe"}) ||
+        ParseFieldSpecifics(scanner, UTF8ToUTF16(kAddressNameIgnoredRe),
+                            MATCH_DEFAULT, address_name_ignored_patterns,
+                            nullptr, {log_manager, "kAddressNameIgnoredRe"})) {
       continue;
     }
 

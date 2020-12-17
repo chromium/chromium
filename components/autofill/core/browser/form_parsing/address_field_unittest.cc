@@ -282,4 +282,10 @@ TEST_F(AddressFieldTest, ParseTurkishCityStateWithLabelPrecedence) {
   ClassifyAndVerify(/*parsed=*/true, LanguageCode("tr"));
 }
 
+// Tests that address name is not misclassified as address.
+TEST_F(AddressFieldTest, NotParseAddressName) {
+  AddTextFormFieldData("address", "Adres Başlığı", UNKNOWN_TYPE);
+  ClassifyAndVerify(/*parsed=*/false, LanguageCode("tr"));
+}
+
 }  // namespace autofill

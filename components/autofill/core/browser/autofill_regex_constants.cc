@@ -18,7 +18,10 @@ const char kRegionIgnoredRe[] =
     "province|region|other"
     "|provincia"       // es
     "|bairro|suburb";  // pt-BR, pt-PT
-const char kAddressNameIgnoredRe[] = "address.*nickname|address.*label";
+const char kAddressNameIgnoredRe[] =
+    "address.*nickname|address.*label"
+    "|adres ([İi]sim|başlığı|adı)"  // tr
+    "|identificação do endereço";   // pt-BR, pt-PT
 const char kCompanyRe[] =
     "company|business|organization|organisation"
     "|(?<!con)firma|firmenname"  // de-DE
@@ -52,29 +55,29 @@ const char kApartmentNumberRe[] =
 const char kAddressLine1Re[] =
     "^address$|address[_-]?line(one)?|address1|addr1|street"
     "|(?:shipping|billing)address$"
-    "|strasse|straße|hausnummer|housenumber"           // de-DE
-    "|house.?name"                                     // en-GB
-    "|direccion|dirección"                             // es
-    "|adresse"                                         // fr-FR
-    "|indirizzo"                                       // it-IT
-    "|^住所$|住所1"                                    // ja-JP
-    "|morada|((?<!do |de )endereço)"                   // pt-BR, pt-PT
-    "|Адрес"                                           // ru
-    "|地址"                                            // zh-CN
-    "|(\\b|_)adres(?! (başlığı(nız)?|tarifi))(\\b|_)"  // tr
-    "|^주소.?$|주소.?1";                               // ko-KR
+    "|strasse|straße|hausnummer|housenumber"  // de-DE
+    "|house.?name"                            // en-GB
+    "|direccion|dirección"                    // es
+    "|adresse"                                // fr-FR
+    "|indirizzo"                              // it-IT
+    "|^住所$|住所1"                           // ja-JP
+    "|morada|((?<!do |de )endereço)"          // pt-BR, pt-PT
+    "|Адрес"                                  // ru
+    "|地址"                                   // zh-CN
+    "|(\\b|_)adres(?! tarifi)(\\b|_)"         // tr
+    "|^주소.?$|주소.?1";                      // ko-KR
 const char kAddressLine1LabelRe[] =
     "(^\\W*address)"
     "|(address\\W*$)"
     "|(?:shipping|billing|mailing|pick.?up|drop.?off|delivery|sender|postal|"
     "recipient|home|work|office|school|business|mail)[\\s\\-]+address"
     "|address\\s+(of|for|to|from)"
-    "|adresse"                                         // fr-FR
-    "|indirizzo"                                       // it-IT
-    "|住所"                                            // ja-JP
-    "|地址"                                            // zh-CN
-    "|(\\b|_)adres(?! (başlığı(nız)?|tarifi))(\\b|_)"  // tr
-    "|주소";                                           // ko-KR
+    "|adresse"                         // fr-FR
+    "|indirizzo"                       // it-IT
+    "|住所"                            // ja-JP
+    "|地址"                            // zh-CN
+    "|(\\b|_)adres(?! tarifi)(\\b|_)"  // tr
+    "|주소";                           // ko-KR
 const char kAddressLine2Re[] =
     "address[_-]?line(2|two)|address2|addr2|street|suite|unit"
     "|adresszusatz|ergänzende.?angaben"        // de-DE
@@ -307,7 +310,6 @@ const char kEmailRe[] =
 /////////////////////////////////////////////////////////////////////////////
 const char kNameIgnoredRe[] =
     "user.?name|user.?id|nickname|maiden name|title|prefix|suffix"
-    "|adres başlığınız"                 // tr
     "|vollständiger.?name"              // de-DE
     "|用户名"                           // zh-CN
     "|(?:사용자.?)?아이디|사용자.?ID";  // ko-KR
