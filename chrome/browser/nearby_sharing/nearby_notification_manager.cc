@@ -120,7 +120,7 @@ int GetTextAttachmentsStringId(const std::vector<TextAttachment>& texts) {
     case TextAttachment::Type::kUrl:
       return IDS_NEARBY_TEXT_ATTACHMENTS_LINKS;
     default:
-      return IDS_NEARBY_UNKNOWN_ATTACHMENTS;
+      return IDS_NEARBY_TEXT_ATTACHMENTS_UNKNOWN;
   }
 }
 
