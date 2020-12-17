@@ -195,6 +195,10 @@ void CameraAppHelperImpl::GetWindowStateController(
 
 void CameraAppHelperImpl::SendNewCaptureBroadcast(bool is_video,
                                                   const std::string& name) {
+  // This function is only supported on SWA.
+  if (camera_app_ui_ == nullptr) {
+    return;
+  }
   auto file_path = camera_app_ui_->delegate()->GetFilePathInArcByName(name);
   if (file_path.empty()) {
     LOG(ERROR) << "Drop the broadcast request due to invalid file path in ARC "
