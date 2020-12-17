@@ -206,6 +206,7 @@ body.tablet-landscape .actions-group {
     rgba(0, 0, 0, 0) 0,
     rgba(0, 0, 0, 1) var(--fade-padding) calc(100% - var(--fade-padding)),
     rgba(0, 0, 0, 0) 100%);
+  display: block;
   left: calc(var(--left-line) * 2);
   overflow: auto;
   padding: 5px 0;
