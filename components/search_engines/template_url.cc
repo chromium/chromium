@@ -1363,6 +1363,8 @@ bool TemplateURL::IsBetterThanEngineWithConflictingKeyword(
                                 : base::Time(),
         // Prefer engines that CANNOT be auto-replaced.
         !engine->safe_for_autoreplace(),
+        // Prefer engines created by Play API.
+        engine->created_from_play_api(),
         // More recently modified engines or created engines win.
         engine->last_modified(), engine->date_created(),
         // TODO(tommycli): This should be a tie-breaker than provides a total

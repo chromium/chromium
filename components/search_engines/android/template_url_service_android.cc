@@ -316,12 +316,14 @@ jboolean TemplateUrlServiceAndroid::SetPlayAPISearchEngine(
     favicon_url = base::android::ConvertJavaStringToUTF8(jfavicon_url);
   }
 
-  TemplateURL* t_url =
-      template_url_service_->CreateOrUpdateTemplateURLFromPlayAPIData(
-          name, keyword, search_url, suggest_url, favicon_url);
+  TemplateURL* t_url = template_url_service_->CreatePlayAPISearchEngine(
+      name, keyword, search_url, suggest_url, favicon_url);
 
-  if (set_as_default && template_url_service_->CanMakeDefault(t_url))
+  // CanMakeDefault() will prevent us from taking over a policy or extension
+  // defined default search engine.
+  if (set_as_default && template_url_service_->CanMakeDefault(t_url)) {
     template_url_service_->SetUserSelectedDefaultSearchProvider(t_url);
+  }
   return true;
 }
 
