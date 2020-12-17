@@ -58,7 +58,7 @@ class FileGrid extends cr.ui.Grid {
     /** @private {?VolumeManager} */
     this.volumeManager_ = null;
 
-    /** @private {?importer.HistoryLoader} */
+    /** @private {?importerHistoryInterfaces.HistoryLoader} */
     this.historyLoader_ = null;
 
     /** @private {?AsyncUtil.RateLimiter} */
@@ -104,7 +104,7 @@ class FileGrid extends cr.ui.Grid {
    * @param {!Element} element The grid to decorate.
    * @param {!MetadataModel} metadataModel File system metadata.
    * @param {!VolumeManager} volumeManager Volume manager instance.
-   * @param {!importer.HistoryLoader} historyLoader
+   * @param {!importerHistoryInterfaces.HistoryLoader} historyLoader
    * @param {!A11yAnnounce} a11y
    */
   static decorate(element, metadataModel, volumeManager, historyLoader, a11y) {
@@ -856,7 +856,7 @@ class FileGrid extends cr.ui.Grid {
    *
    * @param {!FileEntry} entry
    * @param {Element} box Box to decorate.
-   * @param {!importer.ImportHistory} history
+   * @param {!importerHistoryInterfaces.ImportHistory} history
    *
    * @private
    */

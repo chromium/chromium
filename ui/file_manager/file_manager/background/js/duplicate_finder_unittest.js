@@ -23,7 +23,7 @@ const fileUrls = {};
 /** @type {!MockFileSystem} */
 let fileSystem;
 
-/** @type {!importer.TestImportHistory} */
+/** @type {!importerTestHistory.TestImportHistory} */
 let testHistory;
 
 /** @type {importer.DispositionChecker.CheckerFunction} */
@@ -35,7 +35,7 @@ window.metrics = {
 
 function setUp() {
   window.loadTimeData.getString = id => id;
-  let mockChrome = {
+  const mockChrome = {
     fileManagerPrivate: {
       /**
        * @param {!Entry} entry
@@ -74,7 +74,7 @@ function setUp() {
 
   MockVolumeManager.installMockSingleton(volumeManager);
 
-  testHistory = new importer.TestImportHistory();
+  testHistory = new importerTestHistory.TestImportHistory();
   duplicateFinder = new importer.DriveDuplicateFinder();
   getDisposition = importer.DispositionCheckerImpl.createChecker(testHistory);
 }

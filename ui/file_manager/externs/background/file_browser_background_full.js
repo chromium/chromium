@@ -39,7 +39,7 @@ class FileBrowserBackgroundFull extends BackgroundBase {
     this.mediaScanner;
 
     /**
-     * @type {!importer.HistoryLoader}
+     * @type {!importerHistoryInterfaces.HistoryLoader}
      */
     this.historyLoader;
 

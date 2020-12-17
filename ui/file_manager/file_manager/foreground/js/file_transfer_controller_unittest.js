@@ -105,11 +105,12 @@ function setUp() {
   selectionHandler = new FakeFileSelectionHandler();
 
   // Fake HistoryLoader.
-  const historyLoader = /** @type {!importer.HistoryLoader} */ ({
-    getHistory: () => {
-      return Promise.resolve();
-    },
-  });
+  const historyLoader =
+      /** @type {!importerHistoryInterfaces.HistoryLoader} */ ({
+        getHistory: () => {
+          return Promise.resolve();
+        },
+      });
 
   // Fake A11yAnnounce.
   const a11Messages = [];

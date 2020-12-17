@@ -23,7 +23,7 @@ class FileManager extends cr.EventTarget {
      */
     this.volumeManager_;
 
-    /** @private {?importer.HistoryLoader} */
+    /** @private {?importerHistoryInterfaces.HistoryLoader} */
     this.historyLoader_ = null;
 
     /** @private {?Crostini} */
@@ -35,16 +35,18 @@ class FileManager extends cr.EventTarget {
     /**
      * ImportHistory. Non-null only once history observer is added in
      * {@code addHistoryObserver}.
-     * @private {?importer.ImportHistory}
+     * @private {?importerHistoryInterfaces.ImportHistory}
      */
     this.importHistory_ = null;
 
     /**
-     * Bound observer for use with {@code importer.ImportHistory.Observer}.
-     * The instance is bound once here as {@code ImportHistory.removeObserver}
-     * uses object equivilency to remove observers.
+     * Bound observer for use with {@code
+     * importerHistoryInterfaces.ImportHistory.Observer}. The instance is bound
+     * once here as {@code ImportHistory.removeObserver} uses object equivilency
+     * to remove observers.
      *
-     * @private @const {function(!importer.ImportHistory.ChangedEvent)}
+     * @private
+     *     @const {function(!importerHistoryInterfaces.ImportHistory.ChangedEvent)}
      */
     this.onHistoryChangedBound_ = this.onHistoryChanged_.bind(this);
 
@@ -471,7 +473,7 @@ class FileManager extends cr.EventTarget {
   }
 
   /**
-   * @return {importer.HistoryLoader}
+   * @return {importerHistoryInterfaces.HistoryLoader}
    */
   get historyLoader() {
     return this.historyLoader_;
@@ -1009,7 +1011,7 @@ class FileManager extends cr.EventTarget {
     // we want to update grid/list view when it changes.
     this.historyLoader_.addHistoryLoadedListener(
         /**
-         * @param {!importer.ImportHistory} history
+         * @param {!importerHistoryInterfaces.ImportHistory} history
          * @this {FileManager}
          */
         history => {
@@ -1021,7 +1023,7 @@ class FileManager extends cr.EventTarget {
   /**
    * Handles events when import history changed.
    *
-   * @param {!importer.ImportHistory.ChangedEvent} event
+   * @param {!importerHistoryInterfaces.ImportHistory.ChangedEvent} event
    * @private
    */
   onHistoryChanged_(event) {

@@ -46,7 +46,7 @@ importer.DriveDuplicateFinder = class DriveDuplicateFinder {
    * @private
    */
   computeHash_(entry) {
-    return importer.createMetadataHashcode(entry).then(hashcode => {
+    return importerHistory.createMetadataHashcode(entry).then(hashcode => {
       // Cache key is the concatenation of metadata hashcode and URL.
       const cacheKey = hashcode + '|' + entry.toURL();
       if (this.hashCache_.hasKey(cacheKey)) {
@@ -177,11 +177,11 @@ importer.DriveDuplicateFinder.MAX_CACHED_HASHCODES_ = 10000;
  */
 importer.DispositionCheckerImpl = class {
   /**
-   * @param {!importer.HistoryLoader} historyLoader
+   * @param {!importerHistoryInterfaces.HistoryLoader} historyLoader
    * @param {!importer.DriveDuplicateFinder} contentMatcher
    */
   constructor(historyLoader, contentMatcher) {
-    /** @private {!importer.HistoryLoader} */
+    /** @private {!importerHistoryInterfaces.HistoryLoader} */
     this.historyLoader_ = historyLoader;
 
     /** @private {!importer.DriveDuplicateFinder} */
@@ -239,7 +239,7 @@ importer.DispositionCheckerImpl = class {
   hasHistoryDuplicate_(entry, destination) {
     return this.historyLoader_.getHistory().then(
         /**
-         * @param {!importer.ImportHistory} history
+         * @param {!importerHistoryInterfaces.ImportHistory} history
          * @return {!Promise}
          */
         history => {
@@ -262,7 +262,7 @@ importer.DispositionCheckerImpl = class {
   /**
    * Factory for a function that returns an entry's disposition.
    *
-   * @param {!importer.HistoryLoader} historyLoader
+   * @param {!importerHistoryInterfaces.HistoryLoader} historyLoader
    *
    * @return {!importer.DispositionChecker.CheckerFunction}
    */

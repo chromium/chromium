@@ -18,7 +18,7 @@ importer.MediaImportHandler.ImportTask =
 importer.MediaImportHandlerImpl = class {
   /**
    * @param {!ProgressCenter} progressCenter
-   * @param {!importer.HistoryLoader} historyLoader
+   * @param {!importerHistoryInterfaces.HistoryLoader} historyLoader
    * @param {!importer.DispositionChecker.CheckerFunction} dispositionChecker
    * @param {!DriveSyncHandler} driveSyncHandler
    */
@@ -27,7 +27,7 @@ importer.MediaImportHandlerImpl = class {
     /** @private {!ProgressCenter} */
     this.progressCenter_ = progressCenter;
 
-    /** @private {!importer.HistoryLoader} */
+    /** @private {!importerHistoryInterfaces.HistoryLoader} */
     this.historyLoader_ = historyLoader;
 
     /** @private {!taskQueueInterfaces.TaskQueue} */
@@ -204,7 +204,7 @@ importer.MediaImportHandler.ImportTaskImpl =
     class extends taskQueue.BaseTaskImpl {
   /**
    * @param {string} taskId
-   * @param {!importer.HistoryLoader} historyLoader
+   * @param {!importerHistoryInterfaces.HistoryLoader} historyLoader
    * @param {!importer.ScanResult} scanResult
    * @param {!Promise<!DirectoryEntry>} directoryPromise
    * @param {!importer.Destination} destination The logical destination.
@@ -227,7 +227,7 @@ importer.MediaImportHandler.ImportTaskImpl =
     /** @private {!importer.ScanResult} */
     this.scanResult_ = scanResult;
 
-    /** @private {!importer.HistoryLoader} */
+    /** @private {!importerHistoryInterfaces.HistoryLoader} */
     this.historyLoader_ = historyLoader;
 
     /** @private {number} */
@@ -375,7 +375,7 @@ importer.MediaImportHandler.ImportTaskImpl =
     this.historyLoader_.getHistory()
         .then(
             /**
-             * @param {!importer.ImportHistory} history
+             * @param {!importerHistoryInterfaces.ImportHistory} history
              */
             history => {
               this.scanResult_.getDuplicateFileEntries().forEach(
@@ -544,7 +544,7 @@ importer.MediaImportHandler.ImportTaskImpl =
     this.remainingFilesCount_--;
     this.historyLoader_.getHistory()
         .then(
-            /** @param {!importer.ImportHistory} history */
+            /** @param {!importerHistoryInterfaces.ImportHistory} history */
             history => {
               history.markImported(entry, this.destination_);
             })

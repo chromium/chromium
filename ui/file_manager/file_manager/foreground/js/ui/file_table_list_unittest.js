@@ -13,7 +13,7 @@ let directoryModel;
 /** @type {!MetadataModel} */
 let metadataModel;
 
-/** @type {!importer.HistoryLoader} */
+/** @type {!importerHistoryInterfaces.HistoryLoader} */
 let historyLoader;
 
 /** @type {!HTMLElement} */
@@ -31,7 +31,7 @@ function setUp() {
   // Setup mock components.
   volumeManager = new MockVolumeManager();
   metadataModel = new MockMetadataModel({});
-  historyLoader = /** @type {!importer.HistoryLoader} */ ({
+  historyLoader = /** @type {!importerHistoryInterfaces.HistoryLoader} */ ({
     getHistory: () => {
       return Promise.resolve();
     },

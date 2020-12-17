@@ -2,6 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+import { assertEquals,assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
+
+import {MockChromeStorageAPI} from '../../../base/js/mock_chrome.m.js';
+import {reportPromise} from '../../../base/js/test_error_reporting.m.js';
+import {importerHistoryInterfaces} from '../../../externs/background/import_history.m.js';
+import { MockFileEntry,MockFileSystem} from '../../common/js/mock_entry.m.js';
+import {importer} from '../../common/js/test_importer_common.m.js';
+import {TestCallRecorder} from '../../common/js/unittest_util.m.js';
+
+import {importerHistory} from './import_history.m.js';
+// clang-format on
+
 /** @const {string} */
 const FILE_LAST_MODIFIED = new Date('Dec 4 1968').toString();
 
@@ -32,17 +45,17 @@ let testFileEntry;
 /** @type {!importer.TestLogger} */
 let testLogger;
 
-/** @type {!importer.RecordStorage} */
+/** @type {!importerHistory.RecordStorage} */
 let storage;
 
-/** @type {!Promise<!importer.ImportHistory>} */
+/** @type {!Promise<!importerHistoryInterfaces.ImportHistory>} */
 let historyProvider;
 
 /** @type {Promise} */
 let testPromise;
 
 // Set up the test components.
-function setUp() {
+export function setUp() {
   setupChromeApis();
   installTestLogger();
 
@@ -59,8 +72,8 @@ function setUp() {
 
   storage = new TestRecordStorage();
 
-  const history = new importer.PersistentImportHistory(
-      importer.createMetadataHashcode, storage);
+  const history = new importerHistory.PersistentImportHistory(
+      importerHistory.createMetadataHashcode, storage);
 
   historyProvider = history.whenReady();
 }
@@ -70,7 +83,7 @@ function tearDown() {
   testPromise = null;
 }
 
-function testWasCopied_FalseForUnknownEntry(callback) {
+export function testWasCopied_FalseForUnknownEntry(callback) {
   // TestRecordWriter is pre-configured with a Space Cloud entry
   // but not for this file.
   testPromise = historyProvider.then(history => {
@@ -80,7 +93,7 @@ function testWasCopied_FalseForUnknownEntry(callback) {
   reportPromise(testPromise, callback);
 }
 
-function testWasCopied_TrueForKnownEntryLoadedFromStorage(callback) {
+export function testWasCopied_TrueForKnownEntryLoadedFromStorage(callback) {
   // TestRecordWriter is pre-configured with this entry.
   testPromise = historyProvider.then(history => {
     return history.wasCopied(testFileEntry, GOOGLE_DRIVE).then(assertTrue);
@@ -90,7 +103,7 @@ function testWasCopied_TrueForKnownEntryLoadedFromStorage(callback) {
 }
 
 
-function testMarkCopied_FiresChangedEvent(callback) {
+export function testMarkCopied_FiresChangedEvent(callback) {
   testPromise = historyProvider.then(history => {
     const recorder = new TestCallRecorder();
     history.addObserver(recorder.callback);
@@ -98,7 +111,7 @@ function testMarkCopied_FiresChangedEvent(callback) {
       return Promise.resolve().then(() => {
         recorder.assertCallCount(1);
         assertEquals(
-            importer.ImportHistoryState.COPIED,
+            importerHistory.ImportHistoryState.COPIED,
             recorder.getLastArguments()[0]['state']);
       });
     });
@@ -107,7 +120,7 @@ function testMarkCopied_FiresChangedEvent(callback) {
   reportPromise(testPromise, callback);
 }
 
-function testMarkImported_ByUrl(callback) {
+export function testMarkImported_ByUrl(callback) {
   const destinationUrl =
       'filesystem:chrome-extension://abc/photos/splosion.jpg';
   testPromise = historyProvider.then(history => {
@@ -123,7 +136,7 @@ function testMarkImported_ByUrl(callback) {
   reportPromise(testPromise, callback);
 }
 
-function testWasImported_FalseForUnknownEntry(callback) {
+export function testWasImported_FalseForUnknownEntry(callback) {
   // TestRecordWriter is pre-configured with a Space Cloud entry
   // but not for this file.
   testPromise = historyProvider.then(history => {
@@ -133,7 +146,7 @@ function testWasImported_FalseForUnknownEntry(callback) {
   reportPromise(testPromise, callback);
 }
 
-function testWasImported_TrueForKnownEntryLoadedFromStorage(callback) {
+export function testWasImported_TrueForKnownEntryLoadedFromStorage(callback) {
   // TestRecordWriter is pre-configured with this entry.
   testPromise = historyProvider.then(history => {
     return history.wasImported(testFileEntry, GOOGLE_DRIVE).then(assertTrue);
@@ -142,7 +155,7 @@ function testWasImported_TrueForKnownEntryLoadedFromStorage(callback) {
   reportPromise(testPromise, callback);
 }
 
-function testWasImported_TrueForKnownEntrySetAtRuntime(callback) {
+export function testWasImported_TrueForKnownEntrySetAtRuntime(callback) {
   testPromise = historyProvider.then(history => {
     return history.markImported(testFileEntry, SPACE_CAMP).then(() => {
       return history.wasImported(testFileEntry, SPACE_CAMP).then(assertTrue);
@@ -152,7 +165,7 @@ function testWasImported_TrueForKnownEntrySetAtRuntime(callback) {
   reportPromise(testPromise, callback);
 }
 
-function testMarkImport_FiresChangedEvent(callback) {
+export function testMarkImport_FiresChangedEvent(callback) {
   testPromise = historyProvider.then(history => {
     const recorder = new TestCallRecorder();
     history.addObserver(recorder.callback);
@@ -160,7 +173,7 @@ function testMarkImport_FiresChangedEvent(callback) {
       return Promise.resolve().then(() => {
         recorder.assertCallCount(1);
         assertEquals(
-            importer.ImportHistoryState.IMPORTED,
+            importerHistory.ImportHistoryState.IMPORTED,
             recorder.getLastArguments()[0]['state']);
       });
     });
@@ -169,7 +182,7 @@ function testMarkImport_FiresChangedEvent(callback) {
   reportPromise(testPromise, callback);
 }
 
-function testHistoryObserver_Unsubscribe(callback) {
+export function testHistoryObserver_Unsubscribe(callback) {
   testPromise = historyProvider.then(history => {
     const recorder = new TestCallRecorder();
     history.addObserver(recorder.callback);
@@ -188,7 +201,7 @@ function testHistoryObserver_Unsubscribe(callback) {
   reportPromise(testPromise, callback);
 }
 
-function testRecordStorage_RemembersPreviouslyWrittenRecords(callback) {
+export function testRecordStorage_RemembersPreviouslyWrittenRecords(callback) {
   const recorder = new TestCallRecorder();
   testPromise = createRealStorage(['recordStorageTest.data']).then(storage => {
     return storage.write(['abc', '123']).then(() => {
@@ -201,7 +214,8 @@ function testRecordStorage_RemembersPreviouslyWrittenRecords(callback) {
   reportPromise(testPromise, callback);
 }
 
-function testRecordStorage_LoadsRecordsFromMultipleHistoryFiles(callback) {
+export function testRecordStorage_LoadsRecordsFromMultipleHistoryFiles(
+    callback) {
   const recorder = new TestCallRecorder();
 
   const remoteData =
@@ -235,7 +249,7 @@ function testRecordStorage_LoadsRecordsFromMultipleHistoryFiles(callback) {
   reportPromise(testPromise, callback);
 }
 
-function testRecordStorage_SerializingOperations(callback) {
+export function testRecordStorage_SerializingOperations(callback) {
   const recorder = new TestCallRecorder();
   testPromise = createRealStorage([
                   'recordStorageTestForSerializing.data'
@@ -257,9 +271,9 @@ function testRecordStorage_SerializingOperations(callback) {
   reportPromise(testPromise, callback);
 }
 
-function testCreateMetadataHashcode(callback) {
+export function testCreateMetadataHashcode(callback) {
   const promise =
-      importer.createMetadataHashcode(testFileEntry).then(hashcode => {
+      importerHistory.createMetadataHashcode(testFileEntry).then(hashcode => {
         // Note that the expression matches at least 4 numbers
         // in the last segment, since we hard code the byte
         // size in our test file to a four digit size.
@@ -291,12 +305,12 @@ function installTestLogger() {
 
 /**
  * @param {!Array<string>} fileNames
- * @return {!Promise<!importer.RecordStorage>}
+ * @return {!Promise<!importerHistory.RecordStorage>}
  */
 function createRealStorage(fileNames) {
   const filePromises = fileNames.map(createFileEntry);
   return Promise.all(filePromises).then(fileEntries => {
-    return new importer.FileBasedRecordStorage(fileEntries);
+    return new importerHistory.FileBasedRecordStorage(fileEntries);
   });
 }
 
@@ -321,7 +335,7 @@ function createFileEntry(fileName) {
 /**
  * In-memory test implementation of {@code RecordStorage}.
  *
- * @implements {importer.RecordStorage}
+ * @implements {importerHistory.RecordStorage}
  */
 class TestRecordStorage {
   constructor() {

@@ -19,7 +19,7 @@ let scanner;
  */
 const scanMode = importer.ScanMode.HISTORY;
 
-/** @type {!importer.TestImportHistory} */
+/** @type {!importerTestHistory.TestImportHistory} */
 let importHistory;
 
 /** @type {!TestDirectoryWatcher} */
@@ -33,7 +33,7 @@ let dispositionChecker;
 
 // Set up the test components.
 function setUp() {
-  importHistory = new importer.TestImportHistory();
+  importHistory = new importerTestHistory.TestImportHistory();
 
   // Setup a default disposition checker. Tests can replace it at runtime
   // if they need specialized disposition check behavior.

@@ -380,7 +380,7 @@ class FileTable extends cr.ui.Table {
     /** @private {boolean} */
     this.useModificationByMeTime_ = false;
 
-    /** @private {?importer.HistoryLoader} */
+    /** @private {?importerHistoryInterfaces.HistoryLoader} */
     this.historyLoader_ = null;
 
     /** @private {boolean} */
@@ -406,7 +406,7 @@ class FileTable extends cr.ui.Table {
    * @param {!Element} self Table to decorate.
    * @param {!MetadataModel} metadataModel To retrieve metadata.
    * @param {!VolumeManager} volumeManager To retrieve volume info.
-   * @param {!importer.HistoryLoader} historyLoader
+   * @param {!importerHistoryInterfaces.HistoryLoader} historyLoader
    * @param {!A11yAnnounce} a11y FileManagerUI to be able to announce a11y
    *     messages.
    * @param {boolean} fullPage True if it's full page File Manager, False if a
@@ -937,7 +937,7 @@ class FileTable extends cr.ui.Table {
 
     return this.historyLoader_.getHistory()
         .then(
-            /** @param {!importer.ImportHistory} history */
+            /** @param {!importerHistoryInterfaces.ImportHistory} history */
             history => {
               return Promise.all([
                 history.wasImported(fileEntry, destination),

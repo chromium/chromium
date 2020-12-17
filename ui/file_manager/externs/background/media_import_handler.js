@@ -20,7 +20,7 @@ var importer = importer || {};
 importer.MediaImportHandler = class extends importer.ImportRunner {
   /**
    * @param {!ProgressCenter} progressCenter
-   * @param {!importer.HistoryLoader} historyLoader
+   * @param {!importerHistoryInterfaces.HistoryLoader} historyLoader
    * @param {!importer.DispositionChecker.CheckerFunction} dispositionChecker
    * @param {!DriveSyncHandler} driveSyncHandler
    */
@@ -41,7 +41,7 @@ importer.MediaImportHandler = class extends importer.ImportRunner {
 importer.MediaImportHandler.ImportTask = class {
   /**
    * @param {string} taskId
-   * @param {!importer.HistoryLoader} historyLoader
+   * @param {!importerHistoryInterfaces.HistoryLoader} historyLoader
    * @param {!importer.ScanResult} scanResult
    * @param {!Promise<!DirectoryEntry>} directoryPromise
    * @param {!importer.Destination} destination The logical destination.

@@ -2,14 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/**
+ * @fileoverview
+ * @suppress {uselessCode} Temporary suppress because of the line exporting.
+ */
+
+// clang-format off
+// #import {metadataProxy} from './metadata_proxy.m.js';
+// #import {util} from '../../common/js/util.m.js';
+// #import {assertNotReached} from 'chrome://resources/js/assert.m.js';
+// #import {importerHistoryInterfaces} from '../../../externs/background/import_history.m.js';
+// #import {importer} from '../../common/js/importer_common.m.js';
+// clang-format on
+
 // Namespace
-window.importer = window.importer || {};
+/* #ignore */ window.importer = window.importer || {};
+// eslint-disable-next-line no-var
+var importerHistory = {};
 
 /**
  * @enum {string}
  * @suppress {checkTypes}
  */
-importer.ImportHistoryState = {
+importerHistory.ImportHistoryState = {
   'COPIED': 'copied',
   'IMPORTED': 'imported'
 };
@@ -17,7 +32,7 @@ importer.ImportHistoryState = {
 /**
  * @private @enum {number}
  */
-importer.RecordType_ = {
+importerHistory.RecordType_ = {
   COPY: 0,
   IMPORT: 1
 };
@@ -28,32 +43,32 @@ importer.RecordType_ = {
  *   destinationUrl: string
  * }}
  */
-importer.Urls;
+importerHistory.Urls;
 
 /**
  * An {@code ImportHistory} implementation that reads from and
  * writes to a storage object.
  *
- * @implements {importer.ImportHistory}
+ * @implements {importerHistoryInterfaces.ImportHistory}
  *
  */
-importer.PersistentImportHistory = class {
+importerHistory.PersistentImportHistory = class {
   /**
    * @param {function(!FileEntry): !Promise<string>} hashGenerator
-   * @param {!importer.RecordStorage} storage
+   * @param {!importerHistory.RecordStorage} storage
    */
   constructor(hashGenerator, storage) {
     /** @private {function(!FileEntry): !Promise<string>} */
     this.createKey_ = hashGenerator;
 
-    /** @private {!importer.RecordStorage} */
+    /** @private {!importerHistory.RecordStorage} */
     this.storage_ = storage;
 
     /**
      * An in-memory representation of local copy history.
      * The first value is the "key" (as generated internally
      * from a file entry).
-     * @private {!Object<!Object<!importer.Destination, importer.Urls>>}
+     * @private {!Object<!Object<!importer.Destination, importerHistory.Urls>>}
      */
     this.copiedEntries_ = {};
 
@@ -72,10 +87,10 @@ importer.PersistentImportHistory = class {
      */
     this.importedEntries_ = {};
 
-    /** @private {!Array<!importer.ImportHistory.Observer>} */
+    /** @private {!Array<!importerHistoryInterfaces.ImportHistory.Observer>} */
     this.observers_ = [];
 
-    /** @private {Promise<!importer.PersistentImportHistory>} */
+    /** @private {Promise<!importerHistory.PersistentImportHistory>} */
     this.whenReady_ = this.load_();
   }
 
@@ -83,7 +98,7 @@ importer.PersistentImportHistory = class {
    * Reloads history from disk. Should be called when the file
    * is changed by an external source.
    *
-   * @return {!Promise<!importer.PersistentImportHistory>} Resolves when
+   * @return {!Promise<!importerHistory.PersistentImportHistory>} Resolves when
    *     history has been refreshed.
    * @private
    */
@@ -91,7 +106,7 @@ importer.PersistentImportHistory = class {
     return this.storage_.readAll(this.updateInMemoryRecord_.bind(this))
         .then(
             /**
-             * @return {!importer.PersistentImportHistory}
+             * @return {!importerHistory.PersistentImportHistory}
              */
             () => {
               return this;
@@ -100,21 +115,22 @@ importer.PersistentImportHistory = class {
   }
 
   /**
-   * @return {!Promise<!importer.ImportHistory>}
+   * @return {!Promise<!importerHistoryInterfaces.ImportHistory>}
    */
   whenReady() {
-    return /** @type {!Promise<!importer.ImportHistory>} */ (this.whenReady_);
+    return /** @type {!Promise<!importerHistoryInterfaces.ImportHistory>} */ (
+        this.whenReady_);
   }
 
   /**
    * Detects record type and expands records to appropriate arguments.
    *
    * @param {!Array<*>} record
-   * @this {importer.PersistentImportHistory}
+   * @this {importerHistory.PersistentImportHistory}
    */
   updateInMemoryRecord_(record) {
     switch (record[0]) {
-      case importer.RecordType_.COPY:
+      case importerHistory.RecordType_.COPY:
         if (record.length !== 5) {
           importer.getLogger().error(
               'Skipping copy record with wrong number of fields: ' +
@@ -127,7 +143,7 @@ importer.PersistentImportHistory = class {
             /** @type {string } */ (record[3]),   // sourceUrl
             /** @type {string } */ (record[4]));  // destinationUrl
         return;
-      case importer.RecordType_.IMPORT:
+      case importerHistory.RecordType_.IMPORT:
         if (record.length !== 3) {
           importer.getLogger().error(
               'Skipping import record with wrong number of fields: ' +
@@ -229,13 +245,13 @@ importer.PersistentImportHistory = class {
              */
             key => {
               return this.storeRecord_([
-                importer.RecordType_.COPY, key, destination,
+                importerHistory.RecordType_.COPY, key, destination,
                 importer.deflateAppUrl(entry.toURL()),
                 importer.deflateAppUrl(destinationUrl)
               ]);
             })
         .then(this.notifyObservers_.bind(
-            this, importer.ImportHistoryState.COPIED, entry, destination,
+            this, importerHistory.ImportHistoryState.COPIED, entry, destination,
             destinationUrl))
         .catch(importer.getLogger().catcher('import-history-mark-copied'));
   }
@@ -273,10 +289,11 @@ importer.PersistentImportHistory = class {
              */
             key => {
               return this.storeRecord_(
-                  [importer.RecordType_.IMPORT, key, destination]);
+                  [importerHistory.RecordType_.IMPORT, key, destination]);
             })
         .then(this.notifyObservers_.bind(
-            this, importer.ImportHistoryState.IMPORTED, entry, destination))
+            this, importerHistory.ImportHistoryState.IMPORTED, entry,
+            destination))
         .catch(importer.getLogger().catcher('import-history-mark-imported'));
   }
 
@@ -293,7 +310,8 @@ importer.PersistentImportHistory = class {
       for (const destination in copyData) {
         if (copyData[destination].destinationUrl === deflatedUrl) {
           return this
-              .storeRecord_([importer.RecordType_.IMPORT, key, destination])
+              .storeRecord_(
+                  [importerHistory.RecordType_.IMPORT, key, destination])
               .then(() => {
                 const sourceUrl =
                     importer.inflateAppUrl(copyData[destination].sourceUrl);
@@ -308,7 +326,7 @@ importer.PersistentImportHistory = class {
                         entry => {
                           if (entry.isFile) {
                             this.notifyObservers_(
-                                importer.ImportHistoryState.IMPORTED,
+                                importerHistory.ImportHistoryState.IMPORTED,
                                 /** @type {!FileEntry} */ (entry), destination);
                           }
                         },
@@ -347,7 +365,7 @@ importer.PersistentImportHistory = class {
   }
 
   /**
-   * @param {!importer.ImportHistoryState} state
+   * @param {!importerHistory.ImportHistoryState} state
    * @param {!FileEntry} entry
    * @param {!importer.Destination} destination
    * @param {string=} opt_destinationUrl
@@ -356,15 +374,16 @@ importer.PersistentImportHistory = class {
   notifyObservers_(state, entry, destination, opt_destinationUrl) {
     this.observers_.forEach(
         /**
-         * @param {!importer.ImportHistory.Observer} observer
-         * @this {importer.PersistentImportHistory}
+         * @param {!importerHistoryInterfaces.ImportHistory.Observer} observer
+         * @this {importerHistory.PersistentImportHistory}
          */
         observer => {
           observer({
-            state: state,
+            state: /** @type {importerHistoryInterfaces.ImportHistoryState} */ (
+                state),
             entry: entry,
             destination: destination,
-            destinationUrl: opt_destinationUrl
+            destinationUrl: opt_destinationUrl,
           });
         });
   }
@@ -392,12 +411,13 @@ importer.PersistentImportHistory = class {
 };
 
 /**
- * Class responsible for lazy loading of {@code importer.ImportHistory},
- * and reloading when the underlying data is updated (via sync).
+ * Class responsible for lazy loading of {@code
+ * importerHistoryInterfaces.ImportHistory}, and reloading when the underlying
+ * data is updated (via sync).
  *
- * @implements {importer.HistoryLoader}
+ * @implements {importerHistoryInterfaces.HistoryLoader}
  */
-importer.SynchronizedHistoryLoader = class {
+importerHistory.SynchronizedHistoryLoader = class {
   /**
    *
    * @param {function(): !Promise<!Array<!FileEntry>>} filesProvider
@@ -430,10 +450,10 @@ importer.SynchronizedHistoryLoader = class {
                  */
                 fileEntries => {
                   const storage =
-                      new importer.FileBasedRecordStorage(fileEntries);
-                  const history = new importer.PersistentImportHistory(
-                      importer.createMetadataHashcode, storage);
-                  new importer.DriveSyncWatcher(history);
+                      new importerHistory.FileBasedRecordStorage(fileEntries);
+                  const history = new importerHistory.PersistentImportHistory(
+                      importerHistory.createMetadataHashcode, storage);
+                  new importerHistory.DriveSyncWatcher(history);
                   history.whenReady().then(() => {
                     this.historyResolver_.resolve(history);
                   });
@@ -455,7 +475,7 @@ importer.SynchronizedHistoryLoader = class {
  *
  * @interface
  */
-importer.RecordStorage = class {
+importerHistory.RecordStorage = class {
   /**
    * Adds a new record.
    *
@@ -476,9 +496,9 @@ importer.RecordStorage = class {
 
 /**
  * A {@code RecordStore} that persists data in a {@code FileEntry}.
- * @implements {importer.RecordStorage}
+ * @implements {importerHistory.RecordStorage}
  */
-importer.FileBasedRecordStorage = class {
+importerHistory.FileBasedRecordStorage = class {
   /**
    * @param {!Array<!FileEntry>} fileEntries The first entry is the
    *     "primary" file for read-write, all other are read-only
@@ -530,7 +550,7 @@ importer.FileBasedRecordStorage = class {
         /**
          * @param {function()} resolve
          * @param {function()} reject
-         * @this {importer.FileBasedRecordStorage}
+         * @this {importerHistory.FileBasedRecordStorage}
          */
         (resolve, reject) => {
           writer.onwriteend = resolve;
@@ -553,7 +573,7 @@ importer.FileBasedRecordStorage = class {
                          const filePromises = this.inputFiles_.map(
                              /**
                               * @param {!importer.PromisingFileEntry} entry
-                              * @this {importer.FileBasedRecordStorage}
+                              * @this {importerHistory.FileBasedRecordStorage}
                               */
                              entry => {
                                return entry.file();
@@ -658,12 +678,12 @@ importer.FileBasedRecordStorage = class {
  * This class makes the "drive" badges appear by way of marking entries as
  * imported in history when a previously imported file is fully synced to drive.
  */
-importer.DriveSyncWatcher = class {
+importerHistory.DriveSyncWatcher = class {
   /**
-   * @param {!importer.ImportHistory} history
+   * @param {!importerHistoryInterfaces.ImportHistory} history
    */
   constructor(history) {
-    /** @private {!importer.ImportHistory} */
+    /** @private {!importerHistoryInterfaces.ImportHistory} */
     this.history_ = history;
 
     this.history_.addObserver(this.onHistoryChanged_.bind(this));
@@ -697,7 +717,7 @@ importer.DriveSyncWatcher = class {
       unimportedUrls.forEach(url => {
         this.checkSyncStatus_(destination, url);
       });
-    }, importer.DriveSyncWatcher.UPDATE_DELAY_MS);
+    }, importerHistory.DriveSyncWatcher.UPDATE_DELAY_MS);
   }
 
   /**
@@ -713,11 +733,11 @@ importer.DriveSyncWatcher = class {
   }
 
   /**
-   * @param {!importer.ImportHistory.ChangedEvent} event
+   * @param {!importerHistoryInterfaces.ImportHistory.ChangedEvent} event
    * @private
    */
   onHistoryChanged_(event) {
-    if (event.state === importer.ImportHistoryState.COPIED) {
+    if (event.state === importerHistory.ImportHistoryState.COPIED) {
       // Check sync status in case the file synced *before* it was able
       // to mark be marked as copied.
       this.checkSyncStatus_(
@@ -770,7 +790,7 @@ importer.DriveSyncWatcher = class {
             return Promise.reject();
           }
           return new Promise(
-              /** @this {importer.DriveSyncWatcher} */
+              /** @this {importerHistory.DriveSyncWatcher} */
               (resolve, reject) => {
                 // TODO(smckay): User Metadata Cache...once it is available
                 // in the background.
@@ -780,7 +800,7 @@ importer.DriveSyncWatcher = class {
                      * @param
                      * {!Array<!chrome.fileManagerPrivate.EntryProperties>|undefined}
                      * propertiesList
-                     * @this {importer.DriveSyncWatcher}
+                     * @this {importerHistory.DriveSyncWatcher}
                      */
                     propertiesList => {
                       console.assert(
@@ -801,14 +821,14 @@ importer.DriveSyncWatcher = class {
 };
 
 /** @const {number} */
-importer.DriveSyncWatcher.UPDATE_DELAY_MS = 3500;
+importerHistory.DriveSyncWatcher.UPDATE_DELAY_MS = 3500;
 
 /**
  * @param {!FileEntry} fileEntry
  * @return {!Promise<string>} Resolves with a "hashcode" consisting of
  *     just the last modified time and the file size.
  */
-importer.createMetadataHashcode = function(fileEntry) {
+importerHistory.createMetadataHashcode = function(fileEntry) {
   return new Promise((resolve, reject) => {
            metadataProxy.getEntryMetadata(fileEntry).then(
                /**
@@ -828,3 +848,6 @@ importer.createMetadataHashcode = function(fileEntry) {
          })
       .catch(importer.getLogger().catcher('importer-common-create-hashcode'));
 };
+
+// eslint-disable-next-line semi,no-extra-semi
+/* #export */ {importerHistory};

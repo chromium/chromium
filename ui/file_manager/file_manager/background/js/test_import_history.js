@@ -2,17 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/**
+ * @fileoverview
+ * @suppress {uselessCode} Temporary suppress because of the line exporting.
+ */
+
+// clang-format off
+// #import {assertTrue} from 'chrome://test/chai_assert.js';
+// #import {importer} from '../../common/js/importer_common.m.js';
+// #import {importerHistoryInterfaces} from '../../../externs/background/import_history.m.js';
+// clang-format on
+
 // Namespace
-var importer = importer || {};
+// eslint-disable-next-line no-var
+var importerTestHistory = {};
 
 /**
- * importer.ImportHistory and importer.HistoryLoader test double.
- * ONE STOP SHOPPING!
+ * importerHistoryInterfaces.ImportHistory and
+ * importerHistoryInterfaces.HistoryLoader test double. ONE STOP SHOPPING!
  *
- * @implements {importer.HistoryLoader}
- * @implements {importer.ImportHistory}
+ * @implements {importerHistoryInterfaces.HistoryLoader}
+ * @implements {importerHistoryInterfaces.ImportHistory}
  */
-importer.TestImportHistory = class {
+importerTestHistory.TestImportHistory = class {
   constructor() {
     /** @type {!Object<!Object<!importer.Destination, string>>} */
     this.copiedPaths = {};
@@ -23,7 +35,7 @@ importer.TestImportHistory = class {
     /**
      * If null, history has been loaded and listeners notified.
      *
-     * @private {Array<!function(!importer.ImportHistory)>}
+     * @private {Array<!function(!importerHistoryInterfaces.ImportHistory)>}
      */
     this.loadListeners_ = [];
   }
@@ -145,3 +157,6 @@ importer.TestImportHistory = class {
   /** @override */
   removeObserver() {}
 };
+
+// eslint-disable-next-line semi,no-extra-semi
+/* #export */ {importerTestHistory};

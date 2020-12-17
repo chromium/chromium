@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 // Namespace
+// eslint-disable-next-line no-var
 var importer = importer || {};
 
 /**
@@ -13,7 +14,7 @@ importer.DispositionChecker = class {
   /**
    * Factory for a function that returns a file entry's content disposition.
    *
-   * @param {!importer.HistoryLoader} historyLoader
+   * @param {!importerHistoryInterfaces.HistoryLoader} historyLoader
    *
    * @return {!importer.DispositionChecker.CheckerFunction}
    */

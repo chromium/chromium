@@ -2,18 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/**
+ * @fileoverview
+ * @suppress {uselessCode, externsValidation} Temporary suppress because of the
+ * line exporting.
+ */
+
+// #import {importer} from '../../file_manager/common/js/importer_common.m.js';
+
 // Namespace
-var importer = importer || {};
+// eslint-disable-next-line no-var
+var importerHistoryInterfaces = {};
 
 /**
  * A persistent data store for Cloud Import history information.
  *
  * @interface
  */
-importer.ImportHistory = class {
+importerHistoryInterfaces.ImportHistory = class {
   /**
-   * @return {!Promise<!importer.ImportHistory>} Resolves when history
-   *     has been fully loaded.
+   * @return {!Promise<!importerHistoryInterfaces.ImportHistory>} Resolves when
+   *     history has been fully loaded.
    */
   whenReady() {}
 
@@ -37,6 +46,7 @@ importer.ImportHistory = class {
    * @param {!FileEntry} entry
    * @param {!importer.Destination} destination
    * @param {string} destinationUrl
+   * @return {!Promise}
    */
   markCopied(entry, destination, destinationUrl) {}
 
@@ -63,14 +73,14 @@ importer.ImportHistory = class {
   /**
    * Adds an observer, which will be notified when cloud import history changes.
    *
-   * @param {!importer.ImportHistory.Observer} observer
+   * @param {!importerHistoryInterfaces.ImportHistory.Observer} observer
    */
   addObserver(observer) {}
 
   /**
    * Remove a previously registered observer.
    *
-   * @param {!importer.ImportHistory.Observer} observer
+   * @param {!importerHistoryInterfaces.ImportHistory.Observer} observer
    */
   removeObserver(observer) {}
 };
@@ -78,7 +88,7 @@ importer.ImportHistory = class {
 /**
  * @enum {string} Import history changed event |state| values.
  */
-importer.ImportHistoryState = {
+importerHistoryInterfaces.ImportHistoryState = {
   'COPIED': 'copied',
   'IMPORTED': 'imported'
 };
@@ -87,33 +97,36 @@ importer.ImportHistoryState = {
  * Import history changed event (sent to ImportHistory.Observer's).
  *
  * @typedef {{
- *   state: !importer.ImportHistoryState,
+ *   state: !importerHistoryInterfaces.ImportHistoryState,
  *   entry: !FileEntry,
  *   destination: !importer.Destination,
  *   destinationUrl: (string|undefined)
  * }}
  */
-importer.ImportHistory.ChangedEvent;
-
-/** @typedef {function(!importer.ImportHistory.ChangedEvent)} */
-importer.ImportHistory.Observer;
+importerHistoryInterfaces.ImportHistory.ChangedEvent;
 
 /**
- * Provider of lazy loaded importer.ImportHistory. This is the main
- * access point for a fully prepared {@code importer.ImportHistory} object.
+ * @typedef {function(!importerHistoryInterfaces.ImportHistory.ChangedEvent)}
+ */
+importerHistoryInterfaces.ImportHistory.Observer;
+
+/**
+ * Provider of lazy loaded importerHistoryInterfaces.ImportHistory. This is the
+ * main access point for a fully prepared {@code
+ * importerHistoryInterfaces.ImportHistory} object.
  *
  * @interface
  */
-importer.HistoryLoader = class {
+importerHistoryInterfaces.HistoryLoader = class {
   /**
-   * Instantiates an {@code importer.ImportHistory} object and manages any
-   * necessary ongoing maintenance of the object with respect to
-   * its external dependencies.
+   * Instantiates an {@code importerHistoryInterfaces.ImportHistory} object and
+   * manages any necessary ongoing maintenance of the object with respect to its
+   * external dependencies.
    *
-   * @see importer.SynchronizedHistoryLoader for an example.
+   * @see importerHistory.SynchronizedHistoryLoader for an example.
    *
-   * @return {!Promise<!importer.ImportHistory>} Resolves when history instance
-   *     is ready.
+   * @return {!Promise<!importerHistoryInterfaces.ImportHistory>} Resolves when
+   *     history instance is ready.
    */
   getHistory() {}
 
@@ -121,7 +134,10 @@ importer.HistoryLoader = class {
    * Adds a listener to be notified when history is fully loaded for the first
    * time. If history is already loaded...will be called immediately.
    *
-   * @param {function(!importer.ImportHistory)} listener
+   * @param {function(!importerHistoryInterfaces.ImportHistory)} listener
    */
   addHistoryLoadedListener(listener) {}
 };
+
+// eslint-disable-next-line semi,no-extra-semi
+/* #export */ {importerHistoryInterfaces};

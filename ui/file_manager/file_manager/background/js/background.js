@@ -27,10 +27,10 @@ class FileBrowserBackgroundImpl extends BackgroundBaseImpl {
      * Class providing loading of import history, used in
      * cloud import.
      *
-     * @type {!importer.HistoryLoader}
+     * @type {!importerHistoryInterfaces.HistoryLoader}
      */
     this.historyLoader =
-        new importer.SynchronizedHistoryLoader(importer.getHistoryFiles);
+        new importerHistory.SynchronizedHistoryLoader(importer.getHistoryFiles);
 
     /**
      * Event handler for progress center.
@@ -66,7 +66,7 @@ class FileBrowserBackgroundImpl extends BackgroundBaseImpl {
      * @type {!importer.MediaScanner}
      */
     this.mediaScanner = new importer.DefaultMediaScanner(
-        importer.createMetadataHashcode, this.dispositionChecker_,
+        importerHistory.createMetadataHashcode, this.dispositionChecker_,
         importer.DefaultDirectoryWatcher.create);
 
     /**

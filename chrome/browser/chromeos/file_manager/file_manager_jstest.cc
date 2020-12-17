@@ -165,7 +165,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ImporterCommonTest) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ImportHistoryTest) {
-  RunTestURL("background/js/import_history_unittest_gen.html");
+  RunTestURL("background/js/import_history_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, InstallLinuxPackageDialogTest) {

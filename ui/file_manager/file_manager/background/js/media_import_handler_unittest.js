@@ -10,7 +10,7 @@ let progressCenter;
 /** @type {!importer.MediaImportHandler} */
 let mediaImporter;
 
-/** @type {!importer.TestImportHistory} */
+/** @type {!importerTestHistory.TestImportHistory} */
 let importHistory;
 
 /** @type {!importer.DispositionChecker.CheckerFunction} */
@@ -91,7 +91,7 @@ function setUp() {
 
   // Setup MediaImporter.
   progressCenter = new MockProgressCenter();
-  importHistory = new importer.TestImportHistory();
+  importHistory = new importerTestHistory.TestImportHistory();
   driveSyncHandler = new MockDriveSyncHandler();
   importer.setupTestLogger();
   mediaImporter = new importer.MediaImportHandlerImpl(
