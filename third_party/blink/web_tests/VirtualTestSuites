@@ -639,7 +639,7 @@
   {
     "prefix": "import-maps-disabled",
     "bases": ["external/wpt/import-maps/not-as-classic-script.html"],
-    "args": ["--disable-blink-features=ExperimentalProductivityFeatures"]
+    "args": ["--disable-blink-features=ImportMaps"]
   },
   {
     "prefix": "overlay-scrollbar",
