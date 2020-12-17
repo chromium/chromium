@@ -46,7 +46,7 @@
 #include "services/device/public/mojom/hid.mojom.h"
 #endif
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "services/device/media_transfer_protocol/mtp_device_manager.h"
 #include "services/device/public/mojom/bluetooth_system.mojom.h"
 #endif
@@ -166,7 +166,7 @@ class DeviceService : public mojom::DeviceService {
       mojo::PendingReceiver<mojom::HidManager> receiver) override;
 #endif
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void BindBluetoothSystemFactory(
       mojo::PendingReceiver<mojom::BluetoothSystemFactory> receiver) override;
   void BindMtpManager(
@@ -245,7 +245,7 @@ class DeviceService : public mojom::DeviceService {
   scoped_refptr<base::SequencedTaskRunner> serial_port_manager_task_runner_;
 #endif
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<MtpDeviceManager> mtp_device_manager_;
 #endif
 

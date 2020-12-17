@@ -64,7 +64,7 @@ source_set("lib") {
     ]
   }
 
-  if (is_ash && use_dbus) {
+  if (is_chromeos_ash && use_dbus) {
     deps += [
       "//services/device/bluetooth:bluetooth_system",
       "//services/device/media_transfer_protocol",
@@ -75,7 +75,7 @@ source_set("lib") {
     deps += [ "//services/device/serial" ]
   }
 
-  if (is_lacros) {
+  if (is_chromeos_lacros) {
     deps += [
       "//chromeos/crosapi/mojom",
       "//chromeos/lacros",
@@ -183,7 +183,7 @@ source_set("tests") {
     sources += [ "generic_sensor/platform_sensor_provider_unittest_android.cc" ]
   }
 
-  if (is_ash) {
+  if (is_chromeos_ash) {
     sources += [ "geolocation/wifi_data_provider_chromeos_unittest.cc" ]
   }
 
@@ -200,7 +200,7 @@ source_set("tests") {
         [ "generic_sensor/platform_sensor_and_provider_unittest_linux.cc" ]
   }
 
-  if ((is_linux || is_lacros) && use_dbus) {
+  if ((is_linux || is_chromeos_lacros) && use_dbus) {
     sources += [
       "battery/battery_status_manager_linux_unittest.cc",
       "geolocation/wifi_data_provider_linux_unittest.cc",
@@ -208,7 +208,7 @@ source_set("tests") {
     deps += [ "//dbus:test_support" ]
   }
 
-  if (is_ash) {
+  if (is_chromeos_ash) {
     sources += [
       "fingerprint/fingerprint_chromeos_unittest.cc",
       "generic_sensor/platform_sensor_chromeos_unittest.cc",

@@ -89,7 +89,7 @@ void AddDataSourceConfigs(
     }
 #endif
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     if (source_names.empty() ||
         source_names.count(tracing::mojom::kArcTraceDataSourceName) == 1) {
       AddDataSourceConfig(perfetto_config,

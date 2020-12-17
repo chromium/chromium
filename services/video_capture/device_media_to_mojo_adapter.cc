@@ -17,14 +17,14 @@
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "services/video_capture/receiver_mojo_to_media_adapter.h"
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "media/capture/video/chromeos/scoped_video_capture_jpeg_decoder.h"
 #include "media/capture/video/chromeos/video_capture_jpeg_decoder_impl.h"
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 std::unique_ptr<media::VideoCaptureJpegDecoder> CreateGpuJpegDecoder(
     scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
     media::MojoMjpegDecodeAcceleratorFactoryCB jpeg_decoder_factory_callback,
@@ -36,13 +36,13 @@ std::unique_ptr<media::VideoCaptureJpegDecoder> CreateGpuJpegDecoder(
           std::move(decode_done_cb), std::move(send_log_message_cb)),
       decoder_task_runner);
 }
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // anonymous namespace
 
 namespace video_capture {
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 DeviceMediaToMojoAdapter::DeviceMediaToMojoAdapter(
     std::unique_ptr<media::VideoCaptureDevice> device,
     media::MojoMjpegDecodeAcceleratorFactoryCB jpeg_decoder_factory_callback,
@@ -55,7 +55,7 @@ DeviceMediaToMojoAdapter::DeviceMediaToMojoAdapter(
 DeviceMediaToMojoAdapter::DeviceMediaToMojoAdapter(
     std::unique_ptr<media::VideoCaptureDevice> device)
     : device_(std::move(device)), device_started_(false) {}
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 DeviceMediaToMojoAdapter::~DeviceMediaToMojoAdapter() {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -96,7 +96,7 @@ void DeviceMediaToMojoAdapter::Start(
   scoped_refptr<media::VideoCaptureBufferPool> buffer_pool(
       new media::VideoCaptureBufferPoolImpl(requested_settings.buffer_type,
                                             max_buffer_pool_buffer_count()));
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   auto device_client = std::make_unique<media::VideoCaptureDeviceClient>(
       requested_settings.buffer_type, std::move(media_receiver), buffer_pool,
       base::BindRepeating(
@@ -110,7 +110,7 @@ void DeviceMediaToMojoAdapter::Start(
 #else
   auto device_client = std::make_unique<media::VideoCaptureDeviceClient>(
       requested_settings.buffer_type, std::move(media_receiver), buffer_pool);
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   device_->AllocateAndStart(requested_settings, std::move(device_client));
   device_started_ = true;
@@ -188,7 +188,7 @@ int DeviceMediaToMojoAdapter::max_buffer_pool_buffer_count() {
   // On macOS, we allow a few more buffers as it's routinely observed that it
   // runs out of three when just displaying 60 FPS media in a video element.
   kMaxBufferCount = 10;
-#elif BUILDFLAG(IS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
   // On Chrome OS with MIPI cameras running on HAL v3, there can be three
   // concurrent streams of camera pipeline depth ~6. We allow at most 30 buffers
   // here to take into account the delay caused by the consumer (e.g. display or

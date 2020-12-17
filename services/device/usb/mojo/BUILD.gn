@@ -24,7 +24,7 @@ source_set("mojo") {
     "//services/device/usb",
   ]
 
-  if (is_ash) {
+  if (is_chromeos_ash) {
     deps += [ "//chromeos/dbus/permission_broker" ]
   }
 }

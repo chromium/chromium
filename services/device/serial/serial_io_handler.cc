@@ -19,9 +19,9 @@
 #include "build/chromeos_buildflags.h"
 #include "components/device_event_log/device_event_log.h"
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/dbus/permission_broker/permission_broker_client.h"
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace device {
 
@@ -51,7 +51,7 @@ void SerialIoHandler::Open(const mojom::SerialConnectionOptions& options,
   DCHECK(ui_thread_task_runner_.get());
   MergeConnectionOptions(options);
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Note: dbus clients are destroyed in PostDestroyThreads so passing |client|
   // as unretained is safe.
   auto* client = chromeos::PermissionBrokerClient::Get();
@@ -73,10 +73,10 @@ void SerialIoHandler::Open(const mojom::SerialConnectionOptions& options,
       {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&SerialIoHandler::StartOpen, this,
                      base::ThreadTaskRunnerHandle::Get()));
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 void SerialIoHandler::OnPathOpened(
     scoped_refptr<base::SingleThreadTaskRunner> io_thread_task_runner,

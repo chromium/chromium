@@ -27,7 +27,7 @@ source_set("cert_verifier_creation") {
     "cert_verifier_creation.h",
   ]
 
-  if (is_ash) {
+  if (is_chromeos_ash) {
     sources += [
       "system_trust_store_provider_chromeos.cc",
       "system_trust_store_provider_chromeos.h",

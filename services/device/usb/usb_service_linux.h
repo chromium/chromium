@@ -59,11 +59,11 @@ class UsbServiceLinux final : public UsbService {
   bool helper_started_ = false;
   uint32_t first_enumeration_countdown_ = 0;
   std::list<GetDevicesCallback> enumeration_callbacks_;
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // We only need a single callback here as the device manager only supports
   // having a single VM sharing client.
   GetDevicesCallback enumeration_callback_for_vm_sharing_;
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
   std::unique_ptr<BlockingTaskRunnerHelper, base::OnTaskRunnerDeleter> helper_;

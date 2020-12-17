@@ -30,7 +30,7 @@ void MockDeviceTest::SetUp() {
   mock_device_factory_ = mock_device_factory.get();
   auto video_capture_system = std::make_unique<media::VideoCaptureSystemImpl>(
       std::move(mock_device_factory));
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   mock_device_factory_adapter_ =
       std::make_unique<DeviceFactoryMediaToMojoAdapter>(
           std::move(video_capture_system), base::DoNothing(),
@@ -39,7 +39,7 @@ void MockDeviceTest::SetUp() {
   mock_device_factory_adapter_ =
       std::make_unique<DeviceFactoryMediaToMojoAdapter>(
           std::move(video_capture_system));
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   mock_factory_receiver_ =
       std::make_unique<mojo::Receiver<mojom::DeviceFactory>>(

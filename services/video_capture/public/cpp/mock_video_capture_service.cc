@@ -23,12 +23,12 @@ void MockVideoCaptureService::ConnectToVideoSourceProvider(
   DoConnectToVideoSourceProvider(std::move(receiver));
 }
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void MockVideoCaptureService::InjectGpuDependencies(
     mojo::PendingRemote<video_capture::mojom::AcceleratorFactory>
         accelerator_factory) {
   DoInjectGpuDependencies(std::move(accelerator_factory));
 }
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace video_capture

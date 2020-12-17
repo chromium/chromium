@@ -17,7 +17,7 @@
 #elif defined(OS_MAC)
 #include "services/shape_detection/barcode_detection_provider_mac.h"
 #include "services/shape_detection/face_detection_provider_mac.h"
-#elif BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_ASH)
+#elif BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS_ASH)
 #include "services/shape_detection/barcode_detection_provider_barhopper.h"
 #include "services/shape_detection/face_detection_provider_impl.h"
 #else
@@ -48,7 +48,7 @@ void ShapeDetectionService::BindBarcodeDetectionProvider(
       receiver.PassPipe().release().value());
 #elif defined(OS_MAC)
   BarcodeDetectionProviderMac::Create(std::move(receiver));
-#elif BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_ASH)
+#elif BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS_ASH)
   BarcodeDetectionProviderBarhopper::Create(std::move(receiver));
 #else
   BarcodeDetectionProviderImpl::Create(std::move(receiver));

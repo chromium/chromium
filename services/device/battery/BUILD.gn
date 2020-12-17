@@ -30,7 +30,7 @@ if (!is_android) {
       "//mojo/public/cpp/bindings",
     ]
 
-    if (is_ash) {
+    if (is_chromeos_ash) {
       configs += [ "//build/config/linux/dbus" ]
       deps += [
         "//chromeos/dbus/power",

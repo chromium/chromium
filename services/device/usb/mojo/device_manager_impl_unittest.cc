@@ -231,7 +231,7 @@ TEST_F(USBDeviceManagerImplTest, Client) {
   }
 }
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Test that UsbService::GetDevices() is called with the correct argument for
 // |allow_restricted_devices|. The actual filtering of devices in
 // UsbServiceLinux is tested in UsbServiceLinuxTest.
@@ -320,7 +320,7 @@ TEST_F(USBDeviceManagerImplTest, RestrictedDevicesInClientCallbacks) {
     loop.Run();
   }
 }
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace usb
 }  // namespace device

@@ -80,7 +80,7 @@ DeviceFactoryMediaToMojoAdapter::ActiveDeviceEntry&
 DeviceFactoryMediaToMojoAdapter::ActiveDeviceEntry::operator=(
     DeviceFactoryMediaToMojoAdapter::ActiveDeviceEntry&& other) = default;
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 DeviceFactoryMediaToMojoAdapter::DeviceFactoryMediaToMojoAdapter(
     std::unique_ptr<media::VideoCaptureSystem> capture_system,
     media::MojoMjpegDecodeAcceleratorFactoryCB jpeg_decoder_factory_callback,
@@ -95,7 +95,7 @@ DeviceFactoryMediaToMojoAdapter::DeviceFactoryMediaToMojoAdapter(
     std::unique_ptr<media::VideoCaptureSystem> capture_system)
     : capture_system_(std::move(capture_system)),
       has_called_get_device_infos_(false) {}
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 DeviceFactoryMediaToMojoAdapter::~DeviceFactoryMediaToMojoAdapter() = default;
 
@@ -185,14 +185,14 @@ void DeviceFactoryMediaToMojoAdapter::CreateAndAddNewDevice(
   // Add entry to active_devices to keep track of it
   ActiveDeviceEntry device_entry;
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   device_entry.device = std::make_unique<DeviceMediaToMojoAdapter>(
       std::move(media_device), jpeg_decoder_factory_callback_,
       jpeg_decoder_task_runner_);
 #else
   device_entry.device =
       std::make_unique<DeviceMediaToMojoAdapter>(std::move(media_device));
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   device_entry.receiver = std::make_unique<mojo::Receiver<mojom::Device>>(
       device_entry.device.get(), std::move(device_receiver));
   device_entry.receiver->set_disconnect_handler(base::BindOnce(

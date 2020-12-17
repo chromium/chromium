@@ -45,7 +45,7 @@ source_set("hid") {
     deps += [ "//device/udev_linux" ]
   }
 
-  if (is_ash) {
+  if (is_chromeos_ash) {
     deps += [ "//chromeos/dbus/permission_broker" ]
   }
 

@@ -15,7 +15,7 @@
 #include "services/network/public/cpp/features.h"
 #if defined(OS_WIN)
 #include "net/proxy_resolution/win/dhcp_pac_file_fetcher_win.h"
-#elif BUILDFLAG(IS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
 #include "services/network/dhcp_pac_file_fetcher_mojo.h"
 #endif
 
@@ -31,20 +31,20 @@ void URLRequestContextBuilderMojo::SetMojoProxyResolverFactory(
   mojo_proxy_resolver_factory_ = std::move(mojo_proxy_resolver_factory);
 }
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void URLRequestContextBuilderMojo::SetDhcpWpadUrlClient(
     mojo::PendingRemote<network::mojom::DhcpWpadUrlClient>
         dhcp_wpad_url_client) {
   dhcp_wpad_url_client_ = std::move(dhcp_wpad_url_client);
 }
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 std::unique_ptr<net::DhcpPacFileFetcher>
 URLRequestContextBuilderMojo::CreateDhcpPacFileFetcher(
     net::URLRequestContext* context) {
 #if defined(OS_WIN)
   return std::make_unique<net::DhcpPacFileFetcherWin>(context);
-#elif BUILDFLAG(IS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
   return std::make_unique<DhcpPacFileFetcherMojo>(
       context, std::move(dhcp_wpad_url_client_));
 #else

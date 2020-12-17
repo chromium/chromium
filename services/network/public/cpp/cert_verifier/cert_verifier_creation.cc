@@ -10,7 +10,7 @@
 #include "net/cert_net/cert_net_fetcher_url_request.h"
 #include "net/net_buildflags.h"
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "crypto/nss_util_internal.h"
 #include "net/cert/cert_verify_proc.h"
 #include "net/cert/cert_verify_proc_builtin.h"
@@ -49,7 +49,7 @@ bool UsingBuiltinCertVerifier(
 }
 #endif
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 scoped_refptr<net::CertVerifyProc> CreateCertVerifyProcForUser(
     scoped_refptr<net::CertNetFetcher> net_fetcher,
     crypto::ScopedPK11Slot user_public_slot) {
@@ -65,7 +65,7 @@ scoped_refptr<net::CertVerifyProc> CreateCertVerifyProcWithoutUserSlots(
       std::move(net_fetcher),
       std::make_unique<SystemTrustStoreProviderChromeOS>());
 }
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 
@@ -98,7 +98,7 @@ std::unique_ptr<net::CertVerifier> CreateCertVerifier(
   use_builtin_cert_verifier = false;
 #endif
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   scoped_refptr<net::CertVerifyProc> verify_proc;
   if (!creation_params || creation_params->username_hash.empty()) {
     verify_proc =

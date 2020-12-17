@@ -549,11 +549,11 @@ mojom("mojom") {
 
   # This is only needed on desktop linux, but the defines make this difficult
   # because IS_CHROMECAST is not available in build/build_config.h.
-  if (is_linux || is_lacros) {
+  if (is_linux || is_chromeos_lacros) {
     enabled_features += [ "needs_crypt_config" ]
   }
 
-  if (is_android || is_ash) {
+  if (is_android || is_chromeos_ash) {
     enabled_features += [ "network_change_notifier_in_browser" ]
   }
 

@@ -16,9 +16,9 @@
 #include "services/video_capture/device_factory.h"
 #include "services/video_capture/public/mojom/devices_changed_observer.mojom.h"
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "media/capture/video/chromeos/video_capture_device_factory_chromeos.h"
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace video_capture {
 
@@ -30,7 +30,7 @@ class DeviceMediaToMojoAdapter;
 // same media::VideoCaptureDevice at the same time.
 class DeviceFactoryMediaToMojoAdapter : public DeviceFactory {
  public:
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   DeviceFactoryMediaToMojoAdapter(
       std::unique_ptr<media::VideoCaptureSystem> capture_system,
       media::MojoMjpegDecodeAcceleratorFactoryCB jpeg_decoder_factory_callback,
@@ -38,7 +38,7 @@ class DeviceFactoryMediaToMojoAdapter : public DeviceFactory {
 #else
   DeviceFactoryMediaToMojoAdapter(
       std::unique_ptr<media::VideoCaptureSystem> capture_system);
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   ~DeviceFactoryMediaToMojoAdapter() override;
 
   // DeviceFactory implementation.
@@ -87,11 +87,11 @@ class DeviceFactoryMediaToMojoAdapter : public DeviceFactory {
   const std::unique_ptr<media::VideoCaptureSystem> capture_system_;
   std::map<std::string, ActiveDeviceEntry> active_devices_by_id_;
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   const media::MojoMjpegDecodeAcceleratorFactoryCB
       jpeg_decoder_factory_callback_;
   scoped_refptr<base::SequencedTaskRunner> jpeg_decoder_task_runner_;
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   bool has_called_get_device_infos_;
   base::WeakPtrFactory<DeviceFactoryMediaToMojoAdapter> weak_factory_{this};

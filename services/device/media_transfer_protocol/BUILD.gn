@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//third_party/protobuf/proto_library.gni")
 
-assert(is_ash)
+assert(is_chromeos_ash)
 assert(use_dbus)
 
 proto_library("mtp_file_entry_proto") {

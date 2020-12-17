@@ -15,7 +15,7 @@
 #include "third_party/blink/public/web/web_image.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/gfx/codec/png_codec.h"
 #endif
 
@@ -73,7 +73,7 @@ void ImageDecoderImpl::DecodeImage(mojo_base::BigBuffer encoded_data,
   }
 
   SkBitmap decoded_image;
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (codec == mojom::ImageCodec::ROBUST_PNG) {
     // Our robust PNG decoding is using libpng.
     if (encoded_data.size()) {
@@ -84,7 +84,7 @@ void ImageDecoderImpl::DecodeImage(mojo_base::BigBuffer encoded_data,
       }
     }
   }
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   if (codec == mojom::ImageCodec::DEFAULT) {
     decoded_image = blink::WebImage::FromData(
         blink::WebData(reinterpret_cast<const char*>(encoded_data.data()),

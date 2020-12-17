@@ -56,7 +56,7 @@ mojom("mojom") {
     "//ui/latency/mojom",
   ]
 
-  if (is_ash) {
+  if (is_chromeos_ash) {
     public_deps += [ "//components/chromeos_camera/common" ]
   }
 

@@ -26,7 +26,7 @@ class MockVideoCaptureService
       mojo::PendingReceiver<video_capture::mojom::VideoSourceProvider> receiver)
       override;
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void InjectGpuDependencies(
       mojo::PendingRemote<video_capture::mojom::AcceleratorFactory>
           accelerator_factory) override;

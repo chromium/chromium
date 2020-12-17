@@ -21,9 +21,9 @@
 #include "services/data_decoder/web_bundler.h"
 #include "services/data_decoder/xml_parser.h"
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "services/data_decoder/ble_scan_parser_impl.h"
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !defined(OS_IOS)
 #include "services/data_decoder/image_decoder_impl.h"

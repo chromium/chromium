@@ -27,7 +27,7 @@ mojom("mojom") {
     "//ui/gfx/geometry/mojom",
   ]
 
-  if (is_ash) {
+  if (is_chromeos_ash) {
     deps += [
       "//components/chromeos_camera/common",
       "//media/capture/video/chromeos/mojom:cros_camera",

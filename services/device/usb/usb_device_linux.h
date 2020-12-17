@@ -29,9 +29,9 @@ struct UsbDeviceDescriptor;
 class UsbDeviceLinux : public UsbDevice {
  public:
 // UsbDevice implementation:
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void CheckUsbAccess(ResultCallback callback) override;
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   void Open(OpenCallback callback) override;
 
   const std::string& device_path() const { return device_path_; }
@@ -42,13 +42,13 @@ class UsbDeviceLinux : public UsbDevice {
     device_info_->webusb_landing_page = url;
   }
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // We allow all interfaces here except mass storage interfaces. This is used
   // to lock down devices in Open(), although the permission broker may further
   // restrict access. It is possible to bypass this restriction by using
   // UsbDeviceManager::OpenFileDescriptor() instead.
   uint32_t AllowedInterfacesMask();
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
  protected:
   friend class UsbServiceLinux;
@@ -60,7 +60,7 @@ class UsbDeviceLinux : public UsbDevice {
   ~UsbDeviceLinux() override;
 
  private:
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void OnOpenRequestComplete(OpenCallback callback,
                              base::ScopedFD fd,
                              base::ScopedFD lifeline_fd);
@@ -72,7 +72,7 @@ class UsbDeviceLinux : public UsbDevice {
       OpenCallback callback,
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       scoped_refptr<base::SequencedTaskRunner> blocking_task_runner);
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   void Opened(base::ScopedFD fd,
               base::ScopedFD lifeline_fd,
               OpenCallback callback,

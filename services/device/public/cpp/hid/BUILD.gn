@@ -32,7 +32,7 @@ source_set("hid") {
     "//services/service_manager/public/cpp",
   ]
 
-  if (is_ash) {
+  if (is_chromeos_ash) {
     sources += [
       "fake_input_service_linux.cc",
       "fake_input_service_linux.h",

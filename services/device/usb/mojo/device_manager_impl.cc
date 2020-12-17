@@ -25,10 +25,10 @@
 #include "services/device/usb/usb_device.h"
 #include "services/device/usb/usb_service.h"
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/dbus/permission_broker/permission_broker_client.h"
 #include "services/device/usb/usb_device_linux.h"
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace device {
 namespace usb {
@@ -122,7 +122,7 @@ void DeviceManagerImpl::OnPermissionGrantedToRefresh(
 }
 #endif  // defined(OS_ANDROID)
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void DeviceManagerImpl::CheckAccess(const std::string& guid,
                                     CheckAccessCallback callback) {
   scoped_refptr<UsbDevice> device = usb_service_->GetDevice(guid);
@@ -191,7 +191,7 @@ void DeviceManagerImpl::OnOpenFileDescriptorError(
              << message;
   std::move(callback).Run(base::File());
 }
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void DeviceManagerImpl::SetClient(
     mojo::PendingAssociatedRemote<mojom::UsbDeviceManagerClient> client) {
@@ -205,12 +205,12 @@ void DeviceManagerImpl::OnGetDevices(
     bool is_vm_sharing_client,
     GetDevicesCallback callback,
     const std::vector<scoped_refptr<UsbDevice>>& devices) {
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (is_vm_sharing_client && vm_sharing_client_.is_bound()) {
     LOG(ERROR) << "VM sharing client is already bound.";
     return;
   }
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   std::vector<mojom::UsbDeviceFilterPtr> filters;
   if (options)
@@ -226,36 +226,36 @@ void DeviceManagerImpl::OnGetDevices(
   std::move(callback).Run(std::move(device_infos));
 
   if (client) {
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     if (is_vm_sharing_client) {
       vm_sharing_client_.Bind(std::move(client));
       return;
     }
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     SetClient(std::move(client));
   }
 }
 
 void DeviceManagerImpl::OnDeviceAdded(scoped_refptr<UsbDevice> device,
                                       bool is_restricted_device) {
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (vm_sharing_client_)
     vm_sharing_client_->OnDeviceAdded(device->device_info().Clone());
   if (is_restricted_device)
     return;
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   for (auto& client : clients_)
     client->OnDeviceAdded(device->device_info().Clone());
 }
 
 void DeviceManagerImpl::OnDeviceRemoved(scoped_refptr<UsbDevice> device,
                                         bool is_restricted_device) {
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (vm_sharing_client_)
     vm_sharing_client_->OnDeviceRemoved(device->device_info().Clone());
   if (is_restricted_device)
     return;
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   for (auto& client : clients_)
     client->OnDeviceRemoved(device->device_info().Clone());
 }

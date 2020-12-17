@@ -24,7 +24,7 @@
 #include "services/device/media_transfer_protocol/media_transfer_protocol_daemon_client.h"
 #include "services/device/public/mojom/mtp_manager.mojom.h"
 
-#if !BUILDFLAG(IS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 #error "Only used on ChromeOS"
 #endif
 

@@ -20,7 +20,7 @@ component("fingerprint") {
     "//mojo/public/cpp/bindings",
   ]
 
-  if (is_ash) {
+  if (is_chromeos_ash) {
     sources += [
       "fingerprint_chromeos.cc",
       "fingerprint_chromeos.h",

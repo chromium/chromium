@@ -79,7 +79,7 @@ class TestNetworkContextClient : public network::mojom::NetworkContextClient {
       const std::string& spn,
       OnGenerateHttpNegotiateAuthTokenCallback callback) override {}
 #endif
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void OnTrustAnchorUsed() override {}
 #endif
 #if BUILDFLAG(IS_CT_SUPPORTED)

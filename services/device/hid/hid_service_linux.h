@@ -36,7 +36,7 @@ class HidServiceLinux : public HidService {
 // opening a device. Because this operation crosses multiple threads these
 // functions are static and the necessary parameters are passed as a single
 // struct.
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   static void OnPathOpenComplete(std::unique_ptr<ConnectParams> params,
                                  base::ScopedFD fd);
   static void OnPathOpenError(const std::string& device_path,

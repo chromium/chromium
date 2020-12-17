@@ -19,7 +19,7 @@ source_set("lib") {
     "xml_parser.h",
   ]
 
-  if (is_ash) {
+  if (is_chromeos_ash) {
     sources += [
       "ble_scan_parser_impl.cc",
       "ble_scan_parser_impl.h",
@@ -65,7 +65,7 @@ source_set("tests") {
     "xml_parser_unittest.cc",
   ]
 
-  if (is_ash) {
+  if (is_chromeos_ash) {
     sources += [ "ble_scan_parser_impl_unittest.cc" ]
   }
 
@@ -109,7 +109,7 @@ fuzzer_test("xml_parser_fuzzer") {
   seed_corpus = "//third_party/libxml/fuzz/seed_corpus"
 }
 
-if (is_ash) {
+if (is_chromeos_ash) {
   fuzzer_test("ble_scan_parser_fuzzer") {
     sources = [ "ble_scan_parser_impl_fuzzer.cc" ]
     deps = [ ":lib" ]

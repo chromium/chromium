@@ -65,11 +65,11 @@ void OnDeviceOpenedToReadDescriptors(
 }
 
 bool IsRestrictedDevice(UsbDeviceLinux* device) {
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return device->AllowedInterfacesMask() == 0;
 #else
   return false;
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace
@@ -244,12 +244,12 @@ void UsbServiceLinux::GetDevices(bool allow_restricted_devices,
     return;
   }
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (allow_restricted_devices) {
     enumeration_callback_for_vm_sharing_ = std::move(callback);
     return;
   }
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   enumeration_callbacks_.push_back(std::move(callback));
 }
 
@@ -370,12 +370,12 @@ void UsbServiceLinux::OnEnumerationReady() {
     std::move(callback).Run(result);
   enumeration_callbacks_.clear();
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (enumeration_callback_for_vm_sharing_) {
     UsbService::GetDevices(/*allow_restricted_devices=*/true,
                            std::move(enumeration_callback_for_vm_sharing_));
   }
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace device

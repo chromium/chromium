@@ -85,7 +85,7 @@ NetworkQualityEstimatorManager::NetworkQualityEstimatorManager(
           network_quality_estimator_params),
       net_log);
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Get network id asynchronously to workaround https://crbug.com/821607 where
   // AddressTrackerLinux stucks with a recv() call and blocks IO thread.
   // TODO(https://crbug.com/821607): Remove after the bug is resolved.

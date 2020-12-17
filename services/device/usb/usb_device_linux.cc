@@ -23,13 +23,13 @@
 #include "services/device/usb/usb_device_handle_usbfs.h"
 #include "services/device/usb/usb_service.h"
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/dbus/permission_broker/permission_broker_client.h"
 
 namespace {
 constexpr int kUsbClassMassStorage = 0x08;
 }  // namespace
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace device {
 
@@ -40,7 +40,7 @@ UsbDeviceLinux::UsbDeviceLinux(const std::string& device_path,
 
 UsbDeviceLinux::~UsbDeviceLinux() = default;
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 void UsbDeviceLinux::CheckUsbAccess(ResultCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -48,12 +48,12 @@ void UsbDeviceLinux::CheckUsbAccess(ResultCallback callback) {
                                                            std::move(callback));
 }
 
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void UsbDeviceLinux::Open(OpenCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   uint32_t allowed_interfaces_mask = AllowedInterfacesMask();
 
   if (allowed_interfaces_mask == 0) {
@@ -87,10 +87,10 @@ void UsbDeviceLinux::Open(OpenCallback callback) {
       base::BindOnce(&UsbDeviceLinux::OpenOnBlockingThread, this,
                      std::move(callback), base::ThreadTaskRunnerHandle::Get(),
                      blocking_task_runner));
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 uint32_t UsbDeviceLinux::AllowedInterfacesMask() {
   uint32_t result = 0;
@@ -153,7 +153,7 @@ void UsbDeviceLinux::OpenOnBlockingThread(
   }
 }
 
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void UsbDeviceLinux::Opened(
     base::ScopedFD fd,

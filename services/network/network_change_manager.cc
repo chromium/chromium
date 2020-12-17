@@ -49,7 +49,7 @@ void NetworkChangeManager::RequestNotifications(
   clients_.push_back(std::move(client_remote));
 }
 
-#if BUILDFLAG(IS_ASH) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID)
 void NetworkChangeManager::OnNetworkChanged(
     bool dns_changed,
     bool ip_address_changed,

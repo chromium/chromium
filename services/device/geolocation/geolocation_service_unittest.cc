@@ -8,7 +8,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/dbus/shill/shill_clients.h"
 #include "chromeos/network/geolocation_handler.h"
 #endif
@@ -41,7 +41,7 @@ class GeolocationServiceUnitTest : public DeviceServiceTestBase {
 
  protected:
   void SetUp() override {
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     chromeos::shill_clients::InitializeFakes();
     chromeos::NetworkHandler::Initialize();
 #endif
@@ -63,7 +63,7 @@ class GeolocationServiceUnitTest : public DeviceServiceTestBase {
   void TearDown() override {
     DeviceServiceTestBase::TearDown();
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     chromeos::NetworkHandler::Shutdown();
     chromeos::shill_clients::Shutdown();
 #endif
@@ -91,7 +91,7 @@ class GeolocationServiceUnitTest : public DeviceServiceTestBase {
   DISALLOW_COPY_AND_ASSIGN(GeolocationServiceUnitTest);
 };
 
-#if BUILDFLAG(IS_ASH) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID)
 // ChromeOS fails to perform network geolocation when zero wifi networks are
 // detected in a scan: https://crbug.com/767300.
 #else

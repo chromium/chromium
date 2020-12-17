@@ -58,7 +58,7 @@ source_set("lib") {
     "//media/capture:capture_switches",
   ]
 
-  if (is_ash) {
+  if (is_chromeos_ash) {
     public_deps += [ "//media/capture/video/chromeos/mojom:cros_camera" ]
   }
 }
