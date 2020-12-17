@@ -210,6 +210,9 @@ TEST_F(SecurityOriginTest, IsSecure) {
     bool is_secure;
     const char* url;
   } inputs[] = {
+      // TODO(crbug.com/1153336): Should SecurityOrigin::IsSecure be aligned
+      // with network::IsURLPotentiallyTrustworthy?
+      // https://w3c.github.io/webappsec-secure-contexts/#is-url-trustworthy
       {false, "blob:ftp://evil:99/578223a1-8c13-17b3-84d5-eca045ae384a"},
       {false, "blob:http://example.com/578223a1-8c13-17b3-84d5-eca045ae384a"},
       {false, "file:///etc/passwd"},
@@ -219,8 +222,25 @@ TEST_F(SecurityOriginTest, IsSecure) {
       {true, "blob:https://example.com/578223a1-8c13-17b3-84d5-eca045ae384a"},
       {true, "https://example.com/"},
       {true, "wss://example.com/"},
-
       {true, "about:blank"},
+      {true, "about:srcdoc"},
+      {true, "about:about"},
+      {true, "data:text/html,Hello"},
+      {false,
+       "filesystem:http://example.com/578223a1-8c13-17b3-84d5-eca045ae384a"},
+      {true,
+       "filesystem:https://example.com/578223a1-8c13-17b3-84d5-eca045ae384a"},
+      {true, "blob:data:text/html,Hello"},
+      {true, "blob:about:blank"},
+      {false, "filesystem:data:text/html,Hello"},
+      {false, "filesystem:about:blank"},
+      {false,
+       "blob:blob:https://example.com/578223a1-8c13-17b3-84d5-eca045ae384a"},
+      {false,
+       "filesystem:blob:https://example.com/"
+       "578223a1-8c13-17b3-84d5-eca045ae384a"},
+      {false, "custom-scheme://example.com"},
+      {true, "quic-transport://example.com/counter"},
       {false, ""},
       {false, "\0"},
   };
@@ -232,10 +252,19 @@ TEST_F(SecurityOriginTest, IsSecure) {
   EXPECT_FALSE(SecurityOrigin::IsSecure(NullURL()));
 }
 
+TEST_F(SecurityOriginTest, IsCustomSchemeSecure) {
+  url::ScopedSchemeRegistryForTests scoped_registry;
+  url::AddSecureScheme("custom-scheme");
+  EXPECT_TRUE(SecurityOrigin::IsSecure(KURL("custom-scheme://example.com")));
+}
+
 TEST_F(SecurityOriginTest, IsSecureViaTrustworthy) {
+  // TODO(crbug.com/1153336): Should SecurityOrigin::IsSecure be aligned with
+  // network::IsURLPotentiallyTrustworthy?
+  // https://w3c.github.io/webappsec-secure-contexts/#is-url-trustworthy
   const char* urls[] = {"http://localhost/", "http://localhost:8080/",
                         "http://127.0.0.1/", "http://127.0.0.1:8080/",
-                        "http://[::1]/"};
+                        "http://[::1]/",     "http://vhost.localhost/"};
 
   for (const char* test : urls) {
     KURL url(test);

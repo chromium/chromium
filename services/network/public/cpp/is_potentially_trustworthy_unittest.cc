@@ -10,6 +10,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+#include "url/url_util.h"
 
 namespace network {
 
@@ -49,6 +50,10 @@ TEST(IsPotentiallyTrustworthy, Origin) {
   EXPECT_FALSE(IsOriginPotentiallyTrustworthy("about:srcdoc"));
   EXPECT_FALSE(IsOriginPotentiallyTrustworthy("javascript:alert('blah')"));
   EXPECT_FALSE(IsOriginPotentiallyTrustworthy("data:test/plain;blah"));
+
+  EXPECT_FALSE(IsOriginPotentiallyTrustworthy("custom-scheme://example.com"));
+  EXPECT_TRUE(
+      IsOriginPotentiallyTrustworthy("quic-transport://example.com/counter"));
 }
 
 TEST(IsPotentiallyTrustworthy, Url) {
@@ -134,6 +139,31 @@ TEST(IsPotentiallyTrustworthy, Url) {
       IsUrlPotentiallyTrustworthy("blob:ftp://127.0.0.1/guid-goes-here"));
   EXPECT_TRUE(IsUrlPotentiallyTrustworthy(
       "blob:https://www.example.com/guid-goes-here"));
+
+  EXPECT_FALSE(IsUrlPotentiallyTrustworthy("blob:data:text/html,Hello"));
+  EXPECT_FALSE(IsUrlPotentiallyTrustworthy("blob:about:blank"));
+  EXPECT_FALSE(IsUrlPotentiallyTrustworthy("filesystem:data:text/html,Hello"));
+  EXPECT_FALSE(IsUrlPotentiallyTrustworthy("filesystem:about:blank"));
+  EXPECT_FALSE(IsUrlPotentiallyTrustworthy(
+      "blob:blob:https://example.com/578223a1-8c13-17b3-84d5-eca045ae384a"));
+  EXPECT_FALSE(
+      IsUrlPotentiallyTrustworthy("filesystem:blob:https://example.com/"
+                                  "578223a1-8c13-17b3-84d5-eca045ae384a"));
+
+  EXPECT_TRUE(
+      IsUrlPotentiallyTrustworthy("quic-transport://example.com/counter"));
+  EXPECT_FALSE(IsUrlPotentiallyTrustworthy("custom-scheme://example.com"));
+}
+
+TEST(IsPotentiallyTrustworthy, CustomScheme) {
+  url::ScopedSchemeRegistryForTests scoped_registry;
+  url::AddSecureScheme("custom-scheme");
+
+  // TODO(crbug.com/1159371): These tests should return true.
+  EXPECT_FALSE(IsOriginPotentiallyTrustworthy(
+      "custom-scheme://578223a1-8c13-17b3-84d5-eca045ae384a/fun.js"));
+  EXPECT_FALSE(IsUrlPotentiallyTrustworthy(
+      "custom-scheme://578223a1-8c13-17b3-84d5-eca045ae384a/fun.js"));
 }
 
 // Tests that were for the removed blink::network_utils::IsOriginSecure.
