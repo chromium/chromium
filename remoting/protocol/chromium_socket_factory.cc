@@ -28,6 +28,7 @@
 #include "remoting/protocol/stream_packet_socket.h"
 #include "third_party/webrtc/media/base/rtp_utils.h"
 #include "third_party/webrtc/rtc_base/async_packet_socket.h"
+#include "third_party/webrtc/rtc_base/async_resolver.h"
 #include "third_party/webrtc/rtc_base/net_helpers.h"
 #include "third_party/webrtc/rtc_base/socket.h"
 
