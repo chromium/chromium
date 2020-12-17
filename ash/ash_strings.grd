@@ -1012,7 +1012,10 @@ This file contains the strings for ash.
         Pinned
       </message>
       <message name="IDS_ASH_HOLDING_SPACE_PINNED_EMPTY_PROMPT" desc="Prompt shown in the pinned files area of the holding space bubble if the user has no pinned files.">
-        Quickly access your important files. Right-click or touch &amp; hold a file to pin it.
+        You can pin your important files here. Open Files app to get started.
+      </message>
+      <message name="IDS_ASH_HOLDING_SPACE_PINNED_FILES_APP_CHIP_TEXT" desc="Text for chip which opens the Files app shown in the pinned files area of the holding space bubble if the user has no pinned files.">
+        Open Files
       </message>
       <message name="IDS_ASH_HOLDING_SPACE_DOWNLOADS_TITLE" desc="Title of the downloads area in the holding space bubble.">
         Downloads

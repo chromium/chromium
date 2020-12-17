@@ -271,8 +271,7 @@ void HoldingSpaceItemViewsSection::MaybeAnimateOut() {
 void HoldingSpaceItemViewsSection::AnimateIn(
     ui::LayerAnimationObserver* observer) {
   if (views_by_item_id_.empty() && placeholder_) {
-    DCHECK(!placeholder_->GetVisible());
-    placeholder_->SetVisible(true);
+    DCHECK(placeholder_->GetVisible());
     return;
   }
   for (auto& view_by_item_id : views_by_item_id_)

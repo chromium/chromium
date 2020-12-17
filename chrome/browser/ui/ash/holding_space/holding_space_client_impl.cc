@@ -182,6 +182,23 @@ void HoldingSpaceClientImpl::OpenItems(
   }
 }
 
+void HoldingSpaceClientImpl::OpenMyFiles(SuccessCallback callback) {
+  auto file_path = file_manager::util::GetMyFilesFolderForProfile(profile_);
+  if (file_path.empty()) {
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
+  file_manager::util::OpenItem(
+      profile_, file_path, platform_util::OPEN_FOLDER,
+      base::BindOnce(
+          [](SuccessCallback callback,
+             platform_util::OpenOperationResult result) {
+            const bool success = result == platform_util::OPEN_SUCCEEDED;
+            std::move(callback).Run(success);
+          },
+          std::move(callback)));
+}
+
 void HoldingSpaceClientImpl::ShowItemInFolder(const HoldingSpaceItem& item,
                                               SuccessCallback callback) {
   holding_space_metrics::RecordItemAction(

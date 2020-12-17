@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ash/public/cpp/ash_features.h"
+#include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
@@ -21,6 +22,7 @@
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/menu/menu_controller.h"
 #include "url/gurl.h"
@@ -31,12 +33,61 @@ namespace {
 
 constexpr char kTestUser[] = "user@test";
 
+// Helpers ---------------------------------------------------------------------
+
+void Click(views::View* view) {
+  auto* root_window = view->GetWidget()->GetNativeWindow()->GetRootWindow();
+  ui::test::EventGenerator event_generator(root_window);
+  event_generator.MoveMouseTo(view->GetBoundsInScreen().CenterPoint());
+  event_generator.ClickLeftButton();
+}
+
 std::unique_ptr<HoldingSpaceImage> CreateStubHoldingSpaceImage() {
   return std::make_unique<HoldingSpaceImage>(
       gfx::ImageSkia(), /*async_bitmap_resolver=*/base::DoNothing());
 }
 
+// Mocks -----------------------------------------------------------------------
+
+class MockHoldingSpaceClient : public HoldingSpaceClient {
+ public:
+  // HoldingSpaceClient:
+  MOCK_METHOD(void,
+              AddScreenshot,
+              (const base::FilePath& file_path),
+              (override));
+  MOCK_METHOD(void,
+              AddScreenRecording,
+              (const base::FilePath& file_path),
+              (override));
+  MOCK_METHOD(void,
+              CopyImageToClipboard,
+              (const HoldingSpaceItem& item, SuccessCallback callback),
+              (override));
+  MOCK_METHOD(void, OpenDownloads, (SuccessCallback callback), (override));
+  MOCK_METHOD(void, OpenMyFiles, (SuccessCallback callback), (override));
+  MOCK_METHOD(void,
+              OpenItems,
+              (const std::vector<const HoldingSpaceItem*>& items,
+               SuccessCallback callback),
+              (override));
+  MOCK_METHOD(void,
+              ShowItemInFolder,
+              (const HoldingSpaceItem& item, SuccessCallback callback),
+              (override));
+  MOCK_METHOD(void,
+              PinItems,
+              (const std::vector<const HoldingSpaceItem*>& items),
+              (override));
+  MOCK_METHOD(void,
+              UnpinItems,
+              (const std::vector<const HoldingSpaceItem*>& items),
+              (override));
+};
+
 }  // namespace
+
+// HoldingSpaceTrayTest --------------------------------------------------------
 
 // Parameterized by whether the previews feature is enabled.
 class HoldingSpaceTrayTest : public AshTestBase,
@@ -63,7 +114,7 @@ class HoldingSpaceTrayTest : public AshTestBase,
     test_api_ = std::make_unique<HoldingSpaceTestApi>();
     AccountId user_account = AccountId::FromUserEmail(kTestUser);
     HoldingSpaceController::Get()->RegisterClientAndModelForUser(
-        user_account, /*client=*/nullptr, model());
+        user_account, client(), model());
     GetSessionControllerClient()->AddUserSession(kTestUser);
     holding_space_prefs::MarkTimeOfFirstAvailability(
         GetSessionControllerClient()->GetUserPrefService(user_account));
@@ -138,13 +189,20 @@ class HoldingSpaceTrayTest : public AshTestBase,
 
   HoldingSpaceTestApi* test_api() { return test_api_.get(); }
 
+  testing::NiceMock<MockHoldingSpaceClient>* client() {
+    return &holding_space_client_;
+  }
+
   HoldingSpaceModel* model() { return &holding_space_model_; }
 
  private:
   std::unique_ptr<HoldingSpaceTestApi> test_api_;
+  testing::NiceMock<MockHoldingSpaceClient> holding_space_client_;
   HoldingSpaceModel holding_space_model_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+// Tests -----------------------------------------------------------------------
 
 TEST_P(HoldingSpaceTrayTest, ShowTrayButtonOnFirstUse) {
   StartSession(/*pre_mark_time_of_first_add=*/false);
@@ -1341,6 +1399,38 @@ TEST_P(HoldingSpaceTrayTest, PlayIconForScreenRecordings) {
             HoldingSpaceItemView::Cast(screen_capture_chips[0])->item()->id());
   EXPECT_TRUE(screen_capture_chips[0]->GetViewByID(
       kHoldingSpaceScreenCapturePlayIconId));
+}
+
+// Until the user has pinned an item, a placeholder should exist in the pinned
+// files bubble which contains a chip to open the Files app.
+TEST_P(HoldingSpaceTrayTest, PlaceholderContainsFilesAppChip) {
+  StartSession(/*pre_mark_time_of_first_add=*/false);
+
+  // The tray button should *not* be shown for users that have never added
+  // anything to the holding space.
+  EXPECT_FALSE(test_api()->IsShowingInShelf());
+
+  // Add a download item. This should cause the tray button to show.
+  AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake"));
+  MarkTimeOfFirstAdd();
+  EXPECT_TRUE(test_api()->IsShowingInShelf());
+
+  // Show the bubble. Both the pinned files and recent files child bubbles
+  // should be shown.
+  test_api()->Show();
+  EXPECT_TRUE(test_api()->PinnedFilesBubbleShown());
+  EXPECT_TRUE(test_api()->RecentFilesBubbleShown());
+
+  // A chip to open the Files app should exist in the pinned files bubble.
+  views::View* pinned_files_bubble = test_api()->GetPinnedFilesBubble();
+  ASSERT_TRUE(pinned_files_bubble);
+  views::View* files_app_chip =
+      pinned_files_bubble->GetViewByID(kHoldingSpaceFilesAppChipId);
+  ASSERT_TRUE(files_app_chip);
+
+  // Click the chip and expect a call to open the Files app.
+  EXPECT_CALL(*client(), OpenMyFiles);
+  Click(files_app_chip);
 }
 
 INSTANTIATE_TEST_SUITE_P(All, HoldingSpaceTrayTest, testing::Bool());

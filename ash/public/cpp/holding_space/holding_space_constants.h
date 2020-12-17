@@ -55,12 +55,13 @@ enum HoldingSpaceCommandId {
 };
 
 // View IDs.
-constexpr int kHoldingSpaceItemPinButtonId = 1;
-constexpr int kHoldingSpacePinnedFilesBubbleId = 2;
-constexpr int kHoldingSpaceRecentFilesBubbleId = 3;
-constexpr int kHoldingSpaceScreenCapturePlayIconId = 4;
-constexpr int kHoldingSpaceTrayDefaultIconId = 5;
-constexpr int kHoldingSpaceTrayPreviewsIconId = 6;
+constexpr int kHoldingSpaceFilesAppChipId = 1;
+constexpr int kHoldingSpaceItemPinButtonId = 2;
+constexpr int kHoldingSpacePinnedFilesBubbleId = 3;
+constexpr int kHoldingSpaceRecentFilesBubbleId = 4;
+constexpr int kHoldingSpaceScreenCapturePlayIconId = 5;
+constexpr int kHoldingSpaceTrayDefaultIconId = 6;
+constexpr int kHoldingSpaceTrayPreviewsIconId = 7;
 
 // The maximum allowed age for files restored into the holding space model.
 // Note that this is not enforced for pinned items.

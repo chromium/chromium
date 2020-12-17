@@ -38,6 +38,11 @@ class Header : public views::Button {
     SetCallback(
         base::BindRepeating(&Header::OnPressed, base::Unretained(this)));
 
+    // Focus ring.
+    AshColorProvider* const ash_color_provider = AshColorProvider::Get();
+    focus_ring()->SetColor(ash_color_provider->GetControlsLayerColor(
+        AshColorProvider::ControlsLayerType::kFocusRingColor));
+
     auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
         kHoldingSpaceDownloadsHeaderSpacing));
@@ -45,7 +50,7 @@ class Header : public views::Button {
     // Label.
     auto* label = AddChildView(std::make_unique<views::Label>(
         l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_DOWNLOADS_TITLE)));
-    label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+    label->SetEnabledColor(ash_color_provider->GetContentLayerColor(
         AshColorProvider::ContentLayerType::kTextColorPrimary));
     label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
     layout->SetFlexForView(label, 1);
@@ -58,7 +63,7 @@ class Header : public views::Button {
     chevron->SetFlipCanvasOnPaintForRTLUI(true);
     chevron->SetImage(gfx::CreateVectorIcon(
         kChevronRightIcon, kHoldingSpaceDownloadsChevronIconSize,
-        AshColorProvider::Get()->GetContentLayerColor(
+        ash_color_provider->GetContentLayerColor(
             AshColorProvider::ContentLayerType::kIconColorPrimary)));
   }
 

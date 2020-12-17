@@ -45,6 +45,10 @@ class ASH_PUBLIC_EXPORT HoldingSpaceClient {
   virtual void OpenItems(const std::vector<const HoldingSpaceItem*>& items,
                          SuccessCallback callback) = 0;
 
+  // Attempts to open the My Files folder.
+  // Success is returned via the supplied `callback`.
+  virtual void OpenMyFiles(SuccessCallback callback) = 0;
+
   // Attempts to show the specified holding space `item` in its folder.
   // Success is returned via the supplied `callback`.
   virtual void ShowItemInFolder(const HoldingSpaceItem& item,

@@ -31,6 +31,7 @@ class HoldingSpaceClientImpl : public HoldingSpaceClient {
   void OpenDownloads(SuccessCallback callback) override;
   void OpenItems(const std::vector<const HoldingSpaceItem*>& items,
                  SuccessCallback callback) override;
+  void OpenMyFiles(SuccessCallback callback) override;
   void ShowItemInFolder(const HoldingSpaceItem&, SuccessCallback) override;
   void PinItems(const std::vector<const HoldingSpaceItem*>& items) override;
   void UnpinItems(const std::vector<const HoldingSpaceItem*>& items) override;

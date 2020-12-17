@@ -135,6 +135,23 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, DISABLED_OpenDownloads) {
   run_loop.Run();
 }
 
+// Verifies that `HoldingSpaceClient::OpenMyFiles()` works as intended.
+IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, OpenMyFiles) {
+  ASSERT_TRUE(HoldingSpaceController::Get());
+
+  auto* holding_space_client = HoldingSpaceController::Get()->client();
+  ASSERT_TRUE(holding_space_client);
+
+  // We expect `HoldingSpaceClient::OpenMyFiles()` to succeed.
+  base::RunLoop run_loop;
+  holding_space_client->OpenMyFiles(
+      base::BindLambdaForTesting([&run_loop](bool success) {
+        EXPECT_TRUE(success);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
 // Verifies that `HoldingSpaceClient::OpenItems()` works as intended when
 // attempting to open holding space items backed by both non-existing and
 // existing files.
