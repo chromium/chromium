@@ -155,10 +155,7 @@ void SearchResultTileItemView::OnResultChanged() {
     title_->SetFontList(font);
     title_->SetEnabledColor(AppListConfig::instance().grid_title_color());
   } else {
-    // Set solid color background to avoid broken text. See crbug.com/746563.
     if (rating_) {
-      rating_->SetBackground(views::CreateSolidBackground(
-          AppListColorProvider::Get()->GetSearchBoxCardBackgroundColor()));
       if (!IsSuggestedAppTile()) {
         // App search results use different fonts than AppList apps.
         rating_->SetFontList(
@@ -169,8 +166,6 @@ void SearchResultTileItemView::OnResultChanged() {
       }
     }
     if (price_) {
-      price_->SetBackground(views::CreateSolidBackground(
-          AppListColorProvider::Get()->GetSearchBoxCardBackgroundColor()));
       if (!IsSuggestedAppTile()) {
         // App search results use different fonts than AppList apps.
         price_->SetFontList(ui::ResourceBundle::GetSharedInstance().GetFontList(
@@ -179,8 +174,6 @@ void SearchResultTileItemView::OnResultChanged() {
         price_->SetFontList(font);
       }
     }
-    title_->SetBackground(views::CreateSolidBackground(
-        AppListColorProvider::Get()->GetSearchBoxCardBackgroundColor()));
     if (!IsSuggestedAppTile()) {
       // App search results use different fonts than AppList apps.
       title_->SetFontList(

@@ -265,12 +265,6 @@ void SearchResultView::PaintButtonContents(gfx::Canvas* canvas) {
   text_bounds.set_x(
       GetMirroredXWithWidthInView(text_bounds.x(), text_bounds.width()));
 
-  // Set solid color background to avoid broken text. See crbug.com/746563.
-  // This should be drawn before selected color which is semi-transparent.
-  canvas->FillRect(
-      text_bounds,
-      AppListColorProvider::Get()->GetSearchBoxCardBackgroundColor());
-
   if (title_text_ && details_text_) {
     gfx::Size title_size(text_bounds.width(), kTitleLineHeight);
     gfx::Size details_size(text_bounds.width(), kDetailsLineHeight);

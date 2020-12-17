@@ -69,9 +69,9 @@ SkColor AppListColorProviderImpl::GetSearchBoxBackgroundColor() const {
 }
 
 SkColor AppListColorProviderImpl::GetSearchBoxCardBackgroundColor() const {
-  // Set solid color background to avoid broken text. See crbug.com/746563.
-  return DeprecatedGetBaseLayerColor(AshColorProvider::BaseLayerType::kOpaque,
-                                     /*default_color*/ SK_ColorWHITE);
+  return DeprecatedGetBaseLayerColor(
+      AshColorProvider::BaseLayerType::kTransparent80,
+      /*default_color*/ SK_ColorWHITE);
 }
 
 SkColor AppListColorProviderImpl::GetSearchBoxTextColor(
