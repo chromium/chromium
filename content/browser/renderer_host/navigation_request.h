@@ -170,6 +170,7 @@ class CONTENT_EXPORT NavigationRequest
       mojom::CommonNavigationParamsPtr common_params,
       mojom::CommitNavigationParamsPtr commit_params,
       bool browser_initiated,
+      bool was_opener_suppressed,
       const base::UnguessableToken* initiator_frame_token,
       int initiator_process_id,
       const std::string& extra_headers,
@@ -801,7 +802,8 @@ class CONTENT_EXPORT NavigationRequest
       mojo::PendingRemote<blink::mojom::NavigationInitiator>
           navigation_initiator,
       RenderFrameHostImpl* rfh_restored_from_back_forward_cache,
-      int initiator_process_id);
+      int initiator_process_id,
+      bool was_opener_suppressed);
 
   // Checks if the response requests an isolated origin (using either origin
   // policy or the Origin-Isolation header), and if so opts in the origin to be
@@ -1461,6 +1463,11 @@ class CONTENT_EXPORT NavigationRequest
   // This is defined if and only if |initiator_frame_token_| above is, and it is
   // only valid in conjunction with it.
   int initiator_process_id_ = ChildProcessHost::kInvalidUniqueID;
+
+  // Whether a navigation in a new window had the opener suppressed. False if
+  // the navigation is not in a new window. Can only be true for renderer
+  // initiated navigations which use `CreateBrowserInitiated()`.
+  bool was_opener_suppressed_;
 
   // This tracks a connection between the current pending entry and this
   // request, such that the pending entry can be discarded if no requests are

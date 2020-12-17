@@ -183,6 +183,11 @@ class NavigationController {
     // important for tracking whether to display pending URLs.
     bool is_renderer_initiated;
 
+    // Whether a navigation in a new window has the opener suppressed. False if
+    // the navigation is not in a new window. Can only be true when
+    // |is_renderer_initiated| is true.
+    bool was_opener_suppressed;
+
     // User agent override for this load. See comments in
     // UserAgentOverrideOption definition.
     UserAgentOverrideOption override_user_agent = UA_OVERRIDE_INHERIT;

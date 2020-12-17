@@ -147,11 +147,13 @@ struct CORE_EXPORT FrameLoadRequest {
 
   // Impressions are set when a FrameLoadRequest is created for a click on an
   // anchor tag that has conversion measurement attributes.
-  void SetImpression(const WebImpression& impression) {
+  void SetImpression(const base::Optional<WebImpression>& impression) {
     impression_ = impression;
   }
 
-  const base::Optional<WebImpression>& Impression() { return impression_; }
+  const base::Optional<WebImpression>& Impression() const {
+    return impression_;
+  }
 
   bool CanDisplay(const KURL&) const;
 

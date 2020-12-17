@@ -22,6 +22,7 @@
 #include "content/public/renderer/render_view_visitor.h"
 #include "content/public/renderer/window_features_converter.h"
 #include "content/renderer/agent_scheduling_group.h"
+#include "content/renderer/impression_conversions.h"
 #include "content/renderer/render_frame_proxy.h"
 #include "content/renderer/render_thread_impl.h"
 #include "third_party/blink/public/common/features.h"
@@ -345,7 +346,8 @@ WebView* RenderViewImpl::CreateView(
     WebNavigationPolicy policy,
     network::mojom::WebSandboxFlags sandbox_flags,
     const blink::SessionStorageNamespaceId& session_storage_namespace_id,
-    bool& consumed_user_gesture) {
+    bool& consumed_user_gesture,
+    const base::Optional<blink::WebImpression>& impression) {
   consumed_user_gesture = false;
   RenderFrameImpl* creator_frame = RenderFrameImpl::FromWebFrame(creator);
   mojom::CreateNewWindowParamsPtr params = mojom::CreateNewWindowParams::New();
@@ -379,6 +381,10 @@ WebView* RenderViewImpl::CreateView(
         request.GetReferrerPolicy());
   }
   params->features = ConvertWebWindowFeaturesToMojoWindowFeatures(features);
+
+  if (impression) {
+    params->impression = ConvertWebImpressionToImpression(*impression);
+  }
 
   // We preserve this information before sending the message since |params| is
   // moved on send.

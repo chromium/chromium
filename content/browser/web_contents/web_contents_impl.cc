@@ -3660,6 +3660,7 @@ RenderFrameHostDelegate* WebContentsImpl::CreateNewWindow(
           std::make_unique<NavigationController::LoadURLParams>(
               params.target_url);
       load_params->initiator_origin = opener->GetLastCommittedOrigin();
+      load_params->initiator_frame_token = opener->GetFrameToken();
       // Avoiding setting |load_params->source_site_instance| when
       // |opener_suppressed| is true, because in that case we do not want to use
       // the old SiteInstance and/or BrowsingInstance.  See also the test here:
@@ -3667,7 +3668,9 @@ RenderFrameHostDelegate* WebContentsImpl::CreateNewWindow(
       load_params->referrer = params.referrer.To<Referrer>();
       load_params->transition_type = ui::PAGE_TRANSITION_LINK;
       load_params->is_renderer_initiated = true;
+      load_params->was_opener_suppressed = true;
       load_params->has_user_gesture = has_user_gesture;
+      load_params->impression = params.impression;
 
       if (delegate_ && !is_guest &&
           !delegate_->ShouldResumeRequestsForCreatedWindow()) {

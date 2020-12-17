@@ -560,6 +560,19 @@ void HTMLAnchorElement::HandleClick(Event& event) {
 
   frame->MaybeLogAdClickNavigation();
 
+  if (request.HasUserGesture() && HasImpression()) {
+    // An impression must be attached prior to the
+    // FindOrCreateFrameForNavigation() call, as that call may result in
+    // performing a navigation if the call results in creating a new window with
+    // noopener set.
+    base::Optional<WebImpression> impression = GetImpressionForNavigation();
+    if (impression)
+      frame_request.SetImpression(*impression);
+  }
+
+  // Note that we do not need to worry about impressions being attached to
+  // subframe navigations in the following call, a frame is only
+  // created/navigated if we are intending to navigate a new window/main frame.
   Frame* target_frame =
       frame->Tree().FindOrCreateFrameForNavigation(frame_request, target).frame;
 
@@ -574,16 +587,15 @@ void HTMLAnchorElement::HandleClick(Event& event) {
                       WebFeature::kHTMLAnchorElementHrefTranslateAttribute);
   }
 
-  // Only attach impressions for main frame navigations.
-  if (target_frame && target_frame->IsMainFrame() && request.HasUserGesture() &&
-      HasImpression()) {
-    base::Optional<WebImpression> impression = GetImpressionForNavigation();
-    if (impression)
-      frame_request.SetImpression(*impression);
-  }
-
-  if (target_frame)
+  if (target_frame) {
+    // We do not need to attach impressions for navigations to subframes, as the
+    // Conversion Measurement API only applies to main frame navigations. Clear
+    // out the impression in that case.
+    if (!target_frame->IsMainFrame()) {
+      frame_request.SetImpression(base::nullopt);
+    }
     target_frame->Navigate(frame_request, WebFrameLoadType::kStandard);
+  }
 }
 
 bool IsEnterKeyKeydownEvent(Event& event) {
