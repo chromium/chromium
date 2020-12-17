@@ -15,11 +15,13 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_menu_model.h"
+#include "chrome/browser/web_applications/components/app_registry_controller.h"
 #include "chrome/browser/web_applications/components/install_finalizer.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/test/web_app_install_observer.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -43,7 +45,9 @@ std::vector<std::string> test_cases = {
     "assert_install_icon_not_shown",
     "navigate_installable,install_omnibox_or_menu,launch_internal,"
     "uninstall_internal,navigate_browser_in_scope,"
-    "assert_install_icon_shown,assert_launch_icon_not_shown"};
+    "assert_install_icon_shown,assert_launch_icon_not_shown",
+    "navigate_installable, install_create_shortcut_tabbed, "
+    "set_open_in_window_internal, launch_internal, assert_window_created"};
 #else
     "navigate_installable,assert_install_icon_shown,"
     "assert_launch_icon_not_shown",
@@ -53,7 +57,9 @@ std::vector<std::string> test_cases = {
     "assert_install_icon_not_shown",
     "navigate_installable,install_omnibox_or_menu,launch_internal,"
     "uninstall_from_menu,navigate_browser_in_scope,"
-    "assert_install_icon_shown,assert_launch_icon_not_shown"};
+    "assert_install_icon_shown,assert_launch_icon_not_shown",
+    "navigate_installable, install_create_shortcut_tabbed, "
+    "set_open_in_window_internal, launch_internal, assert_window_created"};
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // anonymous namespace
@@ -128,6 +134,10 @@ class WebAppIntegrationBrowserTest
       UninstallFromMenu();
     } else if (action_string == "uninstall_internal") {
       UninstallInternal();
+    } else if (action_string == "install_create_shortcut_tabbed") {
+      InstallCreateShortcutTabbed();
+    } else if (action_string == "set_open_in_window_internal") {
+      SetOpenInWindowInternal();
     } else if (action_string == "assert_installable") {
       AssertInstallable();
     } else if (action_string == "assert_install_icon_shown") {
@@ -138,6 +148,8 @@ class WebAppIntegrationBrowserTest
       AssertLaunchIconShown();
     } else if (action_string == "assert_launch_icon_not_shown") {
       AssertLaunchIconNotShown();
+    } else if (action_string == "assert_window_created") {
+      AssertWindowCreated();
     } else {
       FAIL() << "Unimplemented action: " << action_string;
     }
@@ -246,6 +258,22 @@ class WebAppIntegrationBrowserTest
     run_loop.Run();
   }
 
+  void InstallCreateShortcutTabbed() {
+    chrome::SetAutoAcceptWebAppDialogForTesting(/*auto_accept=*/true,
+                                                /*auto_open_in_window=*/false);
+    WebAppInstallObserver observer(browser()->profile());
+    CHECK(chrome::ExecuteCommand(browser(), IDC_CREATE_SHORTCUT));
+    app_id_ = observer.AwaitNextInstall();
+    chrome::SetAutoAcceptWebAppDialogForTesting(false, false);
+  }
+
+  void SetOpenInWindowInternal() {
+    auto& app_registry_controller =
+        WebAppProvider::Get(browser()->profile())->registry_controller();
+    app_registry_controller.SetAppUserDisplayMode(
+        app_id_, blink::mojom::DisplayMode::kStandalone, true);
+  }
+
   // Assert Actions
   void AssertInstallable() { EXPECT_TRUE(last_navigation_result_.installable); }
   void AssertInstallIconShown() {
@@ -264,6 +292,8 @@ class WebAppIntegrationBrowserTest
     EXPECT_EQ(GetAppMenuCommandState(IDC_OPEN_IN_PWA_WINDOW, browser()),
               kNotPresent);
   }
+
+  void AssertWindowCreated() { EXPECT_TRUE(app_browser_); }
 
   Browser* app_browser() { return app_browser_; }
   std::vector<std::string>& testing_actions() { return testing_actions_; }
