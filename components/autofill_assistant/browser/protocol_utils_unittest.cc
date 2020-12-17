@@ -126,10 +126,14 @@ TEST_F(ProtocolUtilsTest, CreateInitialScriptActionsRequest) {
   std::map<std::string, std::string> parameters = {{"key_a", "value_a"},
                                                    {"key_b", "value_b"}};
   ScriptActionRequestProto request;
+  ScriptStoreConfig config;
+  config.set_bundle_path("bundle/path");
+  config.set_bundle_version(12);
   EXPECT_TRUE(
       request.ParseFromString(ProtocolUtils::CreateInitialScriptActionsRequest(
           "script_path", GURL("http://example.com/"), "global_payload",
-          "script_payload", client_context_proto_, parameters)));
+          "script_payload", client_context_proto_, parameters,
+          base::Optional<ScriptStoreConfig>(config))));
 
   const InitialScriptActionsRequestProto& initial = request.initial_request();
   EXPECT_THAT(initial.query().script_path(), ElementsAre("script_path"));
@@ -139,6 +143,8 @@ TEST_F(ProtocolUtilsTest, CreateInitialScriptActionsRequest) {
   AssertClientContext(request.client_context());
   EXPECT_EQ("global_payload", request.global_payload());
   EXPECT_EQ("script_payload", request.script_payload());
+  EXPECT_EQ("bundle/path", initial.script_store_config().bundle_path());
+  EXPECT_EQ(12, initial.script_store_config().bundle_version());
 }
 
 TEST_F(ProtocolUtilsTest, CreateNextScriptActionsRequest) {

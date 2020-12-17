@@ -70,6 +70,9 @@ class MockService : public ServiceImpl {
                     ResponseCallback& callback));
 
   MOCK_CONST_METHOD0(IsLiteService, bool());
+
+  MOCK_METHOD1(SetScriptStoreConfig,
+               void(const ScriptStoreConfig& script_store_config));
 };
 
 }  // namespace autofill_assistant

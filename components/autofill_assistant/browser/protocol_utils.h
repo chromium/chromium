@@ -45,7 +45,8 @@ class ProtocolUtils {
       const std::string& global_payload,
       const std::string& script_payload,
       const ClientContextProto& client_context,
-      const std::map<std::string, std::string>& script_parameters);
+      const std::map<std::string, std::string>& script_parameters,
+      const base::Optional<ScriptStoreConfig>& script_store_config);
 
   // Create request to get next sequence of actions for a script.
   static std::string CreateNextScriptActionsRequest(

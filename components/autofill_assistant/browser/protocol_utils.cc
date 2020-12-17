@@ -123,10 +123,15 @@ std::string ProtocolUtils::CreateInitialScriptActionsRequest(
     const std::string& global_payload,
     const std::string& script_payload,
     const ClientContextProto& client_context,
-    const std::map<std::string, std::string>& script_parameters) {
+    const std::map<std::string, std::string>& script_parameters,
+    const base::Optional<ScriptStoreConfig>& script_store_config) {
   ScriptActionRequestProto request_proto;
   InitialScriptActionsRequestProto* initial_request_proto =
       request_proto.mutable_initial_request();
+  if (script_store_config.has_value()) {
+    *initial_request_proto->mutable_script_store_config() =
+        *script_store_config;
+  }
   InitialScriptActionsRequestProto::QueryProto* query =
       initial_request_proto->mutable_query();
   query->add_script_path(script_path);

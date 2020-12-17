@@ -75,6 +75,9 @@ class ServiceImpl : public Service {
       const RoundtripTimingStats& timing_stats,
       ResponseCallback callback) override;
 
+  void SetScriptStoreConfig(
+      const ScriptStoreConfig& script_store_config) override;
+
  private:
   // The request sender responsible for communicating with a remote endpoint.
   std::unique_ptr<ServiceRequestSender> request_sender_;
@@ -85,6 +88,10 @@ class ServiceImpl : public Service {
 
   // The client context to send to the backend.
   std::unique_ptr<ClientContext> client_context_;
+
+  // The script store config used for GetActions request. This is set by the
+  // controller, obtained from the GetScriptsForUrl's response.
+  base::Optional<ScriptStoreConfig> script_store_config_;
 
   base::WeakPtrFactory<ServiceImpl> weak_ptr_factory_{this};
 };

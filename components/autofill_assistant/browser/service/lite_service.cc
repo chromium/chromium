@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "components/autofill_assistant/browser/service/lite_service.h"
-#include "components/autofill_assistant/browser/service/lite_service_util.h"
 
 #include <algorithm>
 #include <string>
@@ -13,6 +12,7 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/autofill_assistant/browser/protocol_utils.h"
+#include "components/autofill_assistant/browser/service/lite_service_util.h"
 #include "net/http/http_status_code.h"
 
 namespace autofill_assistant {
@@ -78,7 +78,7 @@ void LiteService::GetActions(const std::string& script_path,
       ProtocolUtils::CreateInitialScriptActionsRequest(
           trigger_script_path_, GURL(), /* global_payload = */ std::string(),
           /* script_payload = */ std::string(), EmptyClientContext().AsProto(),
-          /* script_parameters = */ {}),
+          /* script_parameters = */ {}, /* bundle_info */ base::nullopt),
       base::BindOnce(&LiteService::OnGetActions, weak_ptr_factory_.GetWeakPtr(),
                      std::move(callback)));
 }

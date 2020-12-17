@@ -1167,6 +1167,26 @@ TEST_F(ControllerTest, WaitForNavigationActionStartWithinTimeout) {
   EXPECT_EQ(ACTION_APPLIED, processed_actions_capture[1].status());
 }
 
+TEST_F(ControllerTest, SetScriptStoreConfig) {
+  // A single script, and its corresponding bundle info.
+  SupportsScriptResponseProto script_response;
+  AddRunnableScript(&script_response, "script");
+  script_response.mutable_script_store_config()->set_bundle_path("bundle/path");
+  script_response.mutable_script_store_config()->set_bundle_version(12);
+  SetupScripts(script_response);
+
+  ScriptStoreConfig script_store_config;
+  std::vector<ProcessedActionProto> processed_actions_capture;
+  EXPECT_CALL(*mock_service_, SetScriptStoreConfig(_))
+      .WillOnce(SaveArg<0>(&script_store_config));
+
+  Start("http://a.example.com/path");
+  controller_->GetUserActions();
+
+  EXPECT_THAT(script_store_config.bundle_path(), Eq("bundle/path"));
+  EXPECT_THAT(script_store_config.bundle_version(), Eq(12));
+}
+
 TEST_F(ControllerTest, InitialDataUrlDoesNotChange) {
   const std::string deeplink_url("http://initialurl.com/path");
   Start(deeplink_url);

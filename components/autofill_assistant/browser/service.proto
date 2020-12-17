@@ -123,6 +123,11 @@ message SupportsScriptResponseProto {
   optional ScriptTimeoutError script_timeout_error = 2;
 
   optional ClientSettingsProto client_settings = 3;
+
+  // The ScriptStoreConfig to use with the initial GetActions request.
+  optional ScriptStoreConfig script_store_config = 6;
+
+  reserved 4, 5;
 }
 
 // Overlay image to be drawn on top of full overlays.
@@ -375,6 +380,13 @@ message ScriptActionRequestProto {
   }
 }
 
+// Message specifying how to retrieve the scripts. If bundle_path is set, it
+// will read that bundle with the associated version.
+message ScriptStoreConfig {
+  optional string bundle_path = 2;
+  optional int64 bundle_version = 3;
+}
+
 // Initial request to get a script's actions.
 message InitialScriptActionsRequestProto {
   message QueryProto {
@@ -388,6 +400,9 @@ message InitialScriptActionsRequestProto {
   optional QueryProto query = 3;
 
   repeated ScriptParameterProto script_parameters = 2;
+
+  // Specify a bundle and version to run.
+  optional ScriptStoreConfig script_store_config = 6;
 }
 
 message RoundtripTimingStats {

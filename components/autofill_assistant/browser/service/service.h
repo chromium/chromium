@@ -51,6 +51,9 @@ class Service {
       const RoundtripTimingStats& timing_stats,
       ResponseCallback callback) = 0;
 
+  virtual void SetScriptStoreConfig(
+      const ScriptStoreConfig& script_store_config) {}
+
  protected:
   Service() = default;
 };

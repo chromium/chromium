@@ -61,6 +61,11 @@ ServiceImpl::ServiceImpl(std::unique_ptr<ServiceRequestSender> request_sender,
 
 ServiceImpl::~ServiceImpl() {}
 
+void ServiceImpl::SetScriptStoreConfig(
+    const ScriptStoreConfig& script_store_config) {
+  script_store_config_ = script_store_config;
+}
+
 void ServiceImpl::GetScriptsForUrl(const GURL& url,
                                    const TriggerContext& trigger_context,
                                    ResponseCallback callback) {
@@ -89,7 +94,8 @@ void ServiceImpl::GetActions(const std::string& script_path,
       script_action_server_url_,
       ProtocolUtils::CreateInitialScriptActionsRequest(
           script_path, url, global_payload, script_payload,
-          client_context_->AsProto(), trigger_context.GetParameters()),
+          client_context_->AsProto(), trigger_context.GetParameters(),
+          script_store_config_),
       std::move(callback));
 }
 

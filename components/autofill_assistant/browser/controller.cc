@@ -925,7 +925,9 @@ void Controller::OnGetScripts(const GURL& url,
       observer.OnClientSettingsChanged(settings_);
     }
   }
-
+  if (response_proto.has_script_store_config()) {
+    GetService()->SetScriptStoreConfig(response_proto.script_store_config());
+  }
   std::vector<std::unique_ptr<Script>> scripts;
   for (const auto& script_proto : response_proto.scripts()) {
     ProtocolUtils::AddScript(script_proto, &scripts);
