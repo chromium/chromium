@@ -1626,8 +1626,7 @@ suite('PasswordsSection', function() {
     });
 
     // Test verifies that the button linking to the 'device passwords' page is
-    // only visible when there is at least one device password, and that it has
-    // the appropriate text.
+    // only visible when there is at least one device password.
     test('verifyDevicePasswordsButtonVisibility', function() {
       // Set up user eligible to the account-scoped password storage, not
       // opted in and with no device passwords. Button should be hidden.
@@ -1646,28 +1645,13 @@ suite('PasswordsSection', function() {
       flush();
       assertTrue(passwordsSection.$.devicePasswordsLink.hidden);
 
-      // Add a device password. The button shows up, with the text in singular
-      // form.
+      // Add a device password. The button shows up.
       passwordList.unshift(
           createPasswordEntry({fromAccountStore: false, id: 20}));
       passwordManager.lastCallback.addSavedPasswordListChangedListener(
           passwordList);
       flush();
       assertFalse(passwordsSection.$.devicePasswordsLink.hidden);
-      assertEquals(
-          passwordsSection.i18n('devicePasswordsLinkLabelSingular'),
-          passwordsSection.$.devicePasswordsLinkLabel.innerText);
-
-      // Add a second device password. The text nows says '2 passwords'.
-      passwordList.unshift(
-          createPasswordEntry({fromAccountStore: false, id: 30}));
-      passwordManager.lastCallback.addSavedPasswordListChangedListener(
-          passwordList);
-      flush();
-      assertFalse(passwordsSection.$.devicePasswordsLink.hidden);
-      assertEquals(
-          passwordsSection.i18n('devicePasswordsLinkLabelPlural', 2),
-          passwordsSection.$.devicePasswordsLinkLabel.innerText);
     });
 
     // Test verifies that, for account-scoped password storage users, removing

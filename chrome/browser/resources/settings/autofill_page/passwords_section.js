@@ -229,13 +229,6 @@ Polymer({
     },
 
     /** @private */
-    devicePasswordsLinkLabel_: {
-      type: String,
-      value: '',
-      computed: 'computeDevicePasswordsLinkLabel_(numberOfDevicePasswords_)',
-    },
-
-    /** @private */
     profileEmail_: {
       type: String,
       value: '',
@@ -463,17 +456,6 @@ Polymer({
    */
   computeHasNeverCheckedPasswords_() {
     return !this.status.elapsedTimeSinceLastCheck;
-  },
-
-  /**
-   * @private
-   * @return {string}
-   */
-  computeDevicePasswordsLinkLabel_() {
-    return this.numberOfDevicePasswords_ === 1 ?
-        this.i18n('devicePasswordsLinkLabelSingular') :
-        this.i18n(
-            'devicePasswordsLinkLabelPlural', this.numberOfDevicePasswords_);
   },
 
   /**
