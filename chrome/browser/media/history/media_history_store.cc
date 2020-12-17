@@ -24,6 +24,7 @@
 #include "net/cookies/cookie_change_dispatcher.h"
 #include "services/media_session/public/cpp/media_image.h"
 #include "services/media_session/public/cpp/media_position.h"
+#include "sql/database.h"
 #include "sql/recovery.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
@@ -198,7 +199,10 @@ MediaHistoryStore::MediaHistoryStore(
     scoped_refptr<base::UpdateableSequencedTaskRunner> db_task_runner)
     : db_task_runner_(db_task_runner),
       db_path_(GetDBPath(profile)),
-      db_(std::make_unique<sql::Database>()),
+      db_(std::make_unique<sql::Database>(
+          sql::DatabaseOptions{.exclusive_locking = true,
+                               .page_size = 4096,
+                               .cache_size = 500})),
       meta_table_(std::make_unique<sql::MetaTable>()),
       origin_table_(new MediaHistoryOriginTable(db_task_runner_)),
       playback_table_(new MediaHistoryPlaybackTable(db_task_runner_)),
@@ -216,7 +220,6 @@ MediaHistoryStore::MediaHistoryStore(
           new MediaHistoryKaleidoscopeDataTable(db_task_runner_)),
       initialization_successful_(false) {
   db_->set_histogram_tag("MediaHistory");
-  db_->set_exclusive_locking();
 
   // To recover from corruption.
   db_->set_error_callback(
