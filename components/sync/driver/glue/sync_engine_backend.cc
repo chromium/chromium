@@ -196,10 +196,8 @@ bool SyncEngineBackend::ShouldIgnoreRedundantInvalidation(
              << invalidation.version() << ", last seen version was "
              << last_invalidation->second;
     redundant_invalidation = true;
-    // TODO(crbug.com/1158476): ModelTypeHistogramValue() should be used instead
-    // of |type|, this is incorrect. Deprecate and add a new correct histogram.
-    UMA_HISTOGRAM_ENUMERATION("Sync.RedundantInvalidationPerModelType", type,
-                              static_cast<int>(syncer::ModelType::NUM_ENTRIES));
+    UMA_HISTOGRAM_ENUMERATION("Sync.RedundantInvalidationPerModelType2",
+                              ModelTypeHistogramValue(type));
   }
 
   return !fcm_invalidation && redundant_invalidation;

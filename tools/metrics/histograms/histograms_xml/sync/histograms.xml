@@ -849,13 +849,28 @@ can be compared for the same population). -->
 </histogram>
 
 <histogram name="Sync.RedundantInvalidationPerModelType" enum="SyncModelTypes"
-    expires_after="2021-06-13">
+    expires_after="2020-12-16">
+  <obsolete>
+    Replaced with Sync.RedundantInvalidationPerModelType2 in M89 (12/2020).
+  </obsolete>
   <owner>melandory@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
-    WARNING: The recordings here are incorrect (crbug.com/1158476).
+    WARNING: The recordings here are incorrect (crbug.com/1158476), see
+    Sync.RedundantInvalidationPerModelType2 instead.
 
     The sync datatype of the received invalidation with not-fresh version.
+  </summary>
+</histogram>
+
+<histogram name="Sync.RedundantInvalidationPerModelType2" enum="SyncModelTypes"
+    expires_after="2021-12-16">
+  <owner>melandory@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    Recorded whenever Sync receives an invalidation with a non-fresh version,
+    i.e. a smaller version number than Sync already knew about. The recorded
+    value is the data type of the invalidation.
   </summary>
 </histogram>
 
