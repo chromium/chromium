@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+
+<select>
+  <option id=option value="hello">Hello</option>
+</select>
+
+<script>
+test(() => {
+  assert_equals(
+    window.getComputedStyle(option)['white-space'],
+    'nowrap');
+}, `<option>'s user agent 'white-space' should be 'nowrap'.`);
+</script>
