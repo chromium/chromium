@@ -36,6 +36,14 @@ class PrefService;
 
 - (instancetype)init NS_UNAVAILABLE;
 
+// Requests authentication and marks the scene as authenticated until the next
+// scene foregrounding.
+// The authentication will require user interaction. Upon completion, will
+// notify observers and call the completion block (passing authentication
+// result).
+- (void)authenticateIncognitoContentWithCompletionBlock:
+    (void (^)(BOOL success))completion;
+
 // Registers the prefs required for this agent.
 + (void)registerLocalState:(PrefRegistrySimple*)registry;
 

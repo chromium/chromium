@@ -95,6 +95,7 @@
 #import "ios/chrome/browser/ui/image_util/image_copier.h"
 #import "ios/chrome/browser/ui/image_util/image_saver.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_commands.h"
+#import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_view.h"
 #import "ios/chrome/browser/ui/infobars/infobar_container_coordinator.h"
 #import "ios/chrome/browser/ui/infobars/infobar_feature.h"
@@ -3411,6 +3412,27 @@ NSString* const kBrowserViewControllerSnackbarCategory =
           params.append_to = kCurrentTab;
           UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
         };
+
+        if (base::FeatureList::IsEnabled(kIncognitoAuthentication)) {
+          IncognitoReauthSceneAgent* reauthAgent = [IncognitoReauthSceneAgent
+              agentFromScene:SceneStateBrowserAgent::FromBrowser(self.browser)
+                                 ->GetSceneState()];
+          // Wrap the action inside of an auth check block.
+          ProceduralBlock wrappedAction = action;
+          action = ^{
+            if (reauthAgent.authenticationRequired) {
+              [reauthAgent authenticateIncognitoContentWithCompletionBlock:^(
+                               BOOL success) {
+                if (success) {
+                  wrappedAction();
+                }
+              }];
+            } else {
+              wrappedAction();
+            }
+          };
+        }
+
         [_contextMenuCoordinator addItemWithTitle:title
                                            action:action
                                             style:UIAlertActionStyleDefault];

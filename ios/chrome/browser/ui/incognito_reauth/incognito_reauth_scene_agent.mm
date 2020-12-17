@@ -69,6 +69,11 @@
 }
 
 - (void)authenticateIncognitoContent {
+  [self authenticateIncognitoContentWithCompletionBlock:nil];
+}
+
+- (void)authenticateIncognitoContentWithCompletionBlock:
+    (void (^)(BOOL success))completion {
   DCHECK(self.reauthModule);
 
   if (!self.isAuthenticationRequired) {
@@ -88,6 +93,9 @@
                                       ReauthenticationResult::kSuccess);
                                  weakSelf.authenticatedSinceLastForeground =
                                      success;
+                                 if (completion) {
+                                   completion(success);
+                                 }
                                }];
 }
 

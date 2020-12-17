@@ -7,6 +7,9 @@
 #import "base/metrics/histogram_functions.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
+#import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
+#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/pasteboard_util.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
@@ -130,6 +133,23 @@
 }
 
 - (UIAction*)actionToOpenInNewIncognitoTabWithBlock:(ProceduralBlock)block {
+  // Wrap the block with the incognito auth check, if necessary.
+  if (base::FeatureList::IsEnabled(kIncognitoAuthentication)) {
+    IncognitoReauthSceneAgent* reauthAgent = [IncognitoReauthSceneAgent
+        agentFromScene:SceneStateBrowserAgent::FromBrowser(self.browser)
+                           ->GetSceneState()];
+    if (reauthAgent.authenticationRequired) {
+      block = ^{
+        [reauthAgent
+            authenticateIncognitoContentWithCompletionBlock:^(BOOL success) {
+              if (success && block != nullptr) {
+                block();
+              }
+            }];
+      };
+    }
+  }
+
   return [self actionWithTitle:l10n_util::GetNSString(
                                    IDS_IOS_OPEN_IN_INCOGNITO_ACTION_TITLE)
                          image:[UIImage imageNamed:@"open_in_incognito"]

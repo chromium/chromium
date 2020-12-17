@@ -22,6 +22,8 @@
 #import "ios/chrome/browser/ui/activity_services/activity_params.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
+#import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
 #import "ios/chrome/browser/ui/reading_list/context_menu/reading_list_context_menu_coordinator.h"
@@ -40,6 +42,7 @@
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller_constants.h"
 #import "ios/chrome/browser/ui/table_view/table_view_presentation_controller.h"
+#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/multi_window_support.h"
 #import "ios/chrome/browser/ui/util/pasteboard_util.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
@@ -385,6 +388,30 @@ animationControllerForDismissedController:(UIViewController*)dismissed {
       withOfflineURL:(const GURL&)offlineURL
             inNewTab:(BOOL)newTab
            incognito:(BOOL)incognito {
+  // Only open a new incognito tab when incognito is authenticated. Prompt for
+  // auth otherwise.
+  if (base::FeatureList::IsEnabled(kIncognitoAuthentication) && incognito) {
+    IncognitoReauthSceneAgent* reauthAgent = [IncognitoReauthSceneAgent
+        agentFromScene:SceneStateBrowserAgent::FromBrowser(self.browser)
+                           ->GetSceneState()];
+    __weak ReadingListCoordinator* weakSelf = self;
+    if (reauthAgent.authenticationRequired) {
+      // Copy C++ args to call later from the block.
+      GURL copyEntryURL = GURL(entryURL);
+      GURL copyOfflineURL = GURL(offlineURL);
+      [reauthAgent
+          authenticateIncognitoContentWithCompletionBlock:^(BOOL success) {
+            if (success) {
+              [weakSelf loadEntryURL:copyEntryURL
+                      withOfflineURL:copyOfflineURL
+                            inNewTab:newTab
+                           incognito:incognito];
+            }
+          }];
+      return;
+    }
+  }
+
   DCHECK(entryURL.is_valid());
   base::RecordAction(base::UserMetricsAction("MobileReadingListOpen"));
   web::WebState* activeWebState =

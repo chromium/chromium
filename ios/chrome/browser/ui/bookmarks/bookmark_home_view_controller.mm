@@ -51,7 +51,9 @@
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/elements/home_waiting_view.h"
+#import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
+#import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/material_components/utils.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
@@ -713,6 +715,22 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 - (void)openAllURLs:(std::vector<GURL>)urls
         inIncognito:(BOOL)inIncognito
              newTab:(BOOL)newTab {
+  if (base::FeatureList::IsEnabled(kIncognitoAuthentication) && inIncognito) {
+    IncognitoReauthSceneAgent* reauthAgent = [IncognitoReauthSceneAgent
+        agentFromScene:SceneStateBrowserAgent::FromBrowser(self.browser)
+                           ->GetSceneState()];
+    if (reauthAgent.authenticationRequired) {
+      __weak BookmarkHomeViewController* weakSelf = self;
+      [reauthAgent
+          authenticateIncognitoContentWithCompletionBlock:^(BOOL success) {
+            if (success) {
+              [weakSelf openAllURLs:urls inIncognito:inIncognito newTab:newTab];
+            }
+          }];
+      return;
+    }
+  }
+
   [self cacheIndexPathRow];
   [self.homeDelegate bookmarkHomeViewControllerWantsDismissal:self
                                              navigationToUrls:urls

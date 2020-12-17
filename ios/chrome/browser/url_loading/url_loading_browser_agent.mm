@@ -14,7 +14,10 @@
 #import "ios/chrome/browser/prerender/prerender_service.h"
 #import "ios/chrome/browser/prerender/prerender_service_factory.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
+#import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/ntp/ntp_util.h"
+#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/url_loading/scene_url_loading_service.h"
 #import "ios/chrome/browser/url_loading/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
@@ -285,6 +288,15 @@ void UrlLoadingBrowserAgent::LoadUrlInNewTab(const UrlLoadParams& params) {
   DCHECK(scene_service_);
   DCHECK(delegate_);
   DCHECK(browser_);
+
+  if (base::FeatureList::IsEnabled(kIncognitoAuthentication) &&
+      params.in_incognito) {
+    IncognitoReauthSceneAgent* reauthAgent = [IncognitoReauthSceneAgent
+        agentFromScene:SceneStateBrowserAgent::FromBrowser(browser_)
+                           ->GetSceneState()];
+    DCHECK(!reauthAgent.authenticationRequired);
+  }
+
   ChromeBrowserState* browser_state = browser_->GetBrowserState();
   ChromeBrowserState* active_browser_state =
       scene_service_->GetCurrentBrowser()->GetBrowserState();

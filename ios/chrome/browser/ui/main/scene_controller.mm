@@ -1144,6 +1144,20 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 }
 
 - (void)openURLInNewTab:(OpenNewTabCommand*)command {
+  if (base::FeatureList::IsEnabled(kIncognitoAuthentication) &&
+      command.inIncognito) {
+    IncognitoReauthSceneAgent* reauthAgent =
+        [IncognitoReauthSceneAgent agentFromScene:self.sceneState];
+    if (reauthAgent.authenticationRequired) {
+      __weak SceneController* weakSelf = self;
+      [reauthAgent
+          authenticateIncognitoContentWithCompletionBlock:^(BOOL success) {
+            [weakSelf openURLInNewTab:command];
+          }];
+      return;
+    }
+  }
+
   UrlLoadParams params =
       UrlLoadParams::InNewTab(command.URL, command.virtualURL);
   params.SetInBackground(command.inBackground);
@@ -1717,13 +1731,33 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
                                dismissOmnibox:(BOOL)dismissOmnibox
                                    completion:(ProceduralBlock)completion {
   UrlLoadParams copyOfUrlLoadParams = urlLoadParams;
-  [self
-      dismissModalDialogsWithCompletion:^{
-        [self openSelectedTabInMode:targetMode
+
+  __weak SceneController* weakSelf = self;
+  void (^dismissModalsCompletion)() = ^{
+    [weakSelf openSelectedTabInMode:targetMode
                   withUrlLoadParams:copyOfUrlLoadParams
                          completion:completion];
-      }
-                         dismissOmnibox:dismissOmnibox];
+  };
+
+  // Wrap the post-dismiss-modals action with the incognito auth check.
+  if (base::FeatureList::IsEnabled(kIncognitoAuthentication) &&
+      targetMode == ApplicationModeForTabOpening::INCOGNITO) {
+    IncognitoReauthSceneAgent* reauthAgent =
+        [IncognitoReauthSceneAgent agentFromScene:self.sceneState];
+    if (reauthAgent.authenticationRequired) {
+      dismissModalsCompletion = ^{
+        [reauthAgent
+            authenticateIncognitoContentWithCompletionBlock:^(BOOL success) {
+              if (success) {
+                dismissModalsCompletion();
+              }
+            }];
+      };
+    }
+  }
+
+  [self dismissModalDialogsWithCompletion:dismissModalsCompletion
+                           dismissOmnibox:dismissOmnibox];
 }
 
 - (void)dismissModalsAndOpenMultipleTabsInMode:
