@@ -35,15 +35,7 @@ var CrComponentsManagedFootnoteV3Test =
     class extends CrComponentsV3BrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test?module=cr_components/managed_footnote_test.m.js';
-  }
-
-  /** @override */
-  get extraLibraries() {
-    return [
-      '//third_party/mocha/mocha.js',
-      '//chrome/test/data/webui/mocha_adapter.js',
-    ];
+    return 'chrome://test/test_loader.html?module=cr_components/managed_footnote_test.m.js';
   }
 };
 

@@ -6541,6 +6541,7 @@ if (!is_android) {
       "//third_party/pywebsocket3/src/mod_pywebsocket/",
       "//third_party/tlslite/",
       "//tools/metrics/histograms/enums.xml",
+      "//ui/webui/resources/html/test_loader.html",
       "//ui/webui/resources/js/",
       "$root_out_dir/test_case.html",
       "$root_out_dir/test_case.html.mock-http-headers",
