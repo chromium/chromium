@@ -9,6 +9,7 @@
 #include "chromeos/components/camera_app_ui/camera_app_helper.mojom.h"
 #include "chromeos/components/camera_app_ui/camera_app_ui_delegate.h"
 #include "chromeos/components/camera_app_ui/camera_app_window_manager.h"
+#include "content/public/browser/devtools_agent_host_observer.h"
 #include "content/public/browser/web_ui.h"
 #include "media/capture/video/chromeos/mojom/camera_app.mojom.h"
 #include "ui/aura/window.h"
@@ -24,7 +25,8 @@ class CameraAppDeviceProviderImpl;
 
 namespace chromeos {
 
-class CameraAppUI : public ui::MojoWebUIController {
+class CameraAppUI : public ui::MojoWebUIController,
+                    public content::DevToolsAgentHostObserver {
  public:
   CameraAppUI(content::WebUI* web_ui,
               std::unique_ptr<CameraAppUIDelegate> delegate);
@@ -62,6 +64,12 @@ class CameraAppUI : public ui::MojoWebUIController {
   CameraAppWindowManager* app_window_manager();
 
   const GURL& url();
+
+  // content::DevToolsAgentHostObserver overrides.
+  void DevToolsAgentHostAttached(
+      content::DevToolsAgentHost* agent_host) override;
+  void DevToolsAgentHostDetached(
+      content::DevToolsAgentHost* agent_host) override;
 
  private:
   std::unique_ptr<CameraAppUIDelegate> delegate_;

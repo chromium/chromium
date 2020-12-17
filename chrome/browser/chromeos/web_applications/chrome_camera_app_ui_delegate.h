@@ -74,6 +74,7 @@ class ChromeCameraAppUIDelegate : public CameraAppUIDelegate {
   void OpenFileInGallery(const std::string& name) override;
   void OpenFeedbackDialog(const std::string& placeholder) override;
   std::string GetFilePathInArcByName(const std::string& name) override;
+  void OpenDevToolsWindow(content::WebContents* web_contents) override;
 
  private:
   base::FilePath GetFilePathByName(const std::string& name);

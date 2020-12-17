@@ -14,6 +14,7 @@
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 // TODO(b/174811949): Hide behind ChromeOS build flag.
 #include "chrome/browser/chromeos/web_applications/chrome_camera_app_ui_constants.h"
+#include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile.h"
@@ -172,4 +173,9 @@ base::FilePath ChromeCameraAppUIDelegate::GetFilePathByName(
   return file_manager::util::GetMyFilesFolderForProfile(profile)
       .Append("Camera")
       .Append(name_component);
+}
+
+void ChromeCameraAppUIDelegate::OpenDevToolsWindow(
+    content::WebContents* web_contents) {
+  DevToolsWindow::OpenDevToolsWindow(web_contents);
 }

@@ -8,6 +8,7 @@
 #include <string>
 
 namespace content {
+class WebContents;
 class WebUIDataSource;
 }
 
@@ -37,6 +38,9 @@ class CameraAppUIDelegate {
 
   // Gets the file path in ARC file system by given file |name|.
   virtual std::string GetFilePathInArcByName(const std::string& name) = 0;
+
+  // Opens the dev tools window.
+  virtual void OpenDevToolsWindow(content::WebContents* web_contents) = 0;
 };
 
 #endif  // CHROMEOS_COMPONENTS_CAMERA_APP_UI_CAMERA_APP_UI_DELEGATE_H_

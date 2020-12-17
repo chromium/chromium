@@ -43,6 +43,16 @@ void CameraAppWindowManager::SetCameraUsageMonitor(
   }
 }
 
+void CameraAppWindowManager::SetDevToolsEnabled(bool enabled) {
+  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  dev_tools_enabled_ = enabled;
+}
+
+bool CameraAppWindowManager::IsDevToolsEnabled() {
+  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  return dev_tools_enabled_;
+}
+
 void CameraAppWindowManager::OnWidgetVisibilityChanged(views::Widget* widget,
                                                        bool visible) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));

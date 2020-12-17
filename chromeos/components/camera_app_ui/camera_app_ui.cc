@@ -13,6 +13,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/media_device_id.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/video_capture_service.h"
@@ -226,9 +227,17 @@ CameraAppUI::CameraAppUI(content::WebUI* web_ui,
 
   // Add ability to request chrome-untrusted: URLs
   web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);
+
+  if (app_window_manager()->IsDevToolsEnabled()) {
+    delegate_->OpenDevToolsWindow(web_ui->GetWebContents());
+  }
+
+  content::DevToolsAgentHost::AddObserver(this);
 }
 
-CameraAppUI::~CameraAppUI() = default;
+CameraAppUI::~CameraAppUI() {
+  content::DevToolsAgentHost::RemoveObserver(this);
+}
 
 void CameraAppUI::BindInterface(
     mojo::PendingReceiver<cros::mojom::CameraAppDeviceProvider> receiver) {
@@ -255,6 +264,22 @@ CameraAppWindowManager* CameraAppUI::app_window_manager() {
 
 const GURL& CameraAppUI::url() {
   return web_ui()->GetWebContents()->GetURL();
+}
+
+void CameraAppUI::DevToolsAgentHostAttached(
+    content::DevToolsAgentHost* agent_host) {
+  if (agent_host->GetWebContents() != web_ui()->GetWebContents()) {
+    return;
+  }
+  app_window_manager()->SetDevToolsEnabled(true);
+}
+
+void CameraAppUI::DevToolsAgentHostDetached(
+    content::DevToolsAgentHost* agent_host) {
+  if (agent_host->GetWebContents() != web_ui()->GetWebContents()) {
+    return;
+  }
+  app_window_manager()->SetDevToolsEnabled(false);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(CameraAppUI)
