@@ -563,8 +563,10 @@
   <message translateable="false" name="IDS_SETTINGS_PASSWORD_MOVE_PASSWORDS_TO_ACCOUNT" desc="Message displayed in the moving multiple passwords to the user Google Account banner.">
     Move them to your Google Account, and make it across-device accessible
   </message>
-  <!-- TODO(crbug.com/1139263): Make it translateable and add translation screenshots once final mocks are available. -->
-  <message translateable="false" name="IDS_SETTINGS_PASSWORD_MOVE_PASSWORDS_TO_ACCOUNT_DIALOG_TITLE" desc="Title for the dialog that asks the user to select which passwords to move to their Google Account.">
+  <message name="IDS_SETTINGS_PASSWORD_MOVE_PASSWORDS_TO_ACCOUNT_DIALOG_FOOTER" desc="Footer for the dialog that asks the user to select which passwords to move to their Google Account.">
+    Passwords will be moved from your device to your Google Account
+  </message>
+  <message name="IDS_SETTINGS_PASSWORD_MOVE_PASSWORDS_TO_ACCOUNT_DIALOG_TITLE" desc="Title for the dialog that asks the user to select which passwords to move to their Google Account.">
     Choose which passwords to move
   </message>
   <message name="IDS_SETTINGS_PASSWORD_MOVE_TO_ACCOUNT_DIALOG_TITLE" desc="Title for the dialog that confirms whether the user wishes to move a password to their Google Account.">
