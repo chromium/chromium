@@ -87874,6 +87874,19 @@
        {}
       ]
      ],
+     "multicol-fill-balance-006.html": [
+      "3dc2022a3dfcf80ff133c212237503a4b64a9fe1",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "multicol-fill-balance-nested-000.html": [
       "5e466df8077545b4d6474389d296bc26c5b28b86",
       [
@@ -173828,7 +173841,7 @@
        []
       ],
       "font.py": [
-       "706ee022ef8ce7b4c08a0fed91b9415a8e5bd0f3",
+       "6e33dbbc35a6334586a83fe0762f6b6cb8112e21",
        []
       ],
       "image.py": [
@@ -215412,18 +215425,6 @@
       "dfa29a887db747cc5f1d34aa120b8860fa39a552",
       []
      ],
-     "Event-dispatch-handlers-changed-expected.txt": [
-      "4e26515bae7fe1400cec6129422902d1268de1e2",
-      []
-     ],
-     "Event-dispatch-listener-order.window-expected.txt": [
-      "65eec9685e2e5833faf2bf174efc9ea5a346617f",
-      []
-     ],
-     "Event-dispatch-order-at-target-expected.txt": [
-      "ad4f38095d000d51984168915439f1895e159cda",
-      []
-     ],
      "EventListener-handleEvent-expected.txt": [
       "bb076e74f458f8aa89855d42ef845b55b2ccb354",
       []
@@ -215438,10 +215439,6 @@
      ],
      "EventListener-incumbent-global-subsubframe.sub.html": [
       "dd683f6f65f89f097ca70594e4a02c2027fdb66b",
-      []
-     ],
-     "EventTarget-dispatchEvent-expected.txt": [
-      "0e719cd2366ad1ca6be239b3ad70f2b2ea9dc150",
       []
      ],
      "event-global-extra.window-expected.txt": [
@@ -231491,7 +231488,7 @@
         []
        ],
        "404-response-with-actual-image-data.py": [
-        "3e2d9917d90239148371a6c43b5f5d71b193355b",
+        "e98cf03cf530d1187cf41e71a940c93a42b3a248",
         []
        ],
        "available-images-ref.html": [
@@ -245436,7 +245433,7 @@
        []
       ],
       "fetch-access-control.py": [
-       "a6cc9b12ad1fab3babd088d1edde5bf27fa51dfb",
+       "8822f32b270d4cb3d11f83576ee0a72f25e97b4d",
        []
       ],
       "fetch-canvas-tainting-double-write-worker.js": [
@@ -246519,10 +246516,6 @@
     ],
     "META.yml": [
      "8fb0a9b995d6289bb28582fa01e6bb092afa5dda",
-     []
-    ],
-    "capturing-and-bubbling-event-listeners-across-shadow-trees-expected.txt": [
-     "13b5ae9d5913bb93e3bb9e8d1bf750771330b138",
      []
     ],
     "declarative": {
@@ -258786,7 +258779,7 @@
        []
       ],
       "asserts.py": [
-       "3c3d677c90ecfc90f864042ef0628fb99a57131c",
+       "7afa22fd3fb81a3f915fe5edb4aa2a57a8b2e108",
        []
       ],
       "authentication.py": [
@@ -258832,7 +258825,7 @@
        []
       ],
       "image.py": [
-       "6149ccccbe3252e5c1c2bc37ba3dd3103ffbf9b6",
+       "705f2668ea1fd2dff062dfdf3e3f6ae138f1581a",
        []
       ],
       "inline.py": [
@@ -316954,6 +316947,13 @@
      ],
      "Event-stopImmediatePropagation.html": [
       "b75732257a89dd1174d9904239e7899ce7b85fab",
+      [
+       null,
+       {}
+      ]
+     ],
+     "Event-stopPropagation-cancel-bubbling.html": [
+      "5c2c49f33826a94418a2bcb65ca781e246adbd4b",
       [
        null,
        {}
@@ -463915,14 +463915,14 @@
      },
      "print": {
       "printcmd.py": [
-       "e043056dd12aa5a6863041e0c4c9b8f5ae0cac1c",
+       "ff3de4e0af9ccc83e5cafccccef352258b7dc803",
        [
         null,
         {}
        ]
       ],
       "user_prompts.py": [
-       "2022796774bf76b93b5f0f844991c557c79df383",
+       "dc8a32e22db25a3ed4b30a54d864f94a057adf1f",
        [
         null,
         {
