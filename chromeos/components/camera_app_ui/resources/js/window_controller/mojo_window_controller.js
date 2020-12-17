@@ -23,10 +23,10 @@ export class MojoWindowController {
     this.windowStateController_ = null;
 
     /**
-     * Current window state.
-     * @type {?chromeosCamera.mojom.WindowStateType}
+     * Current window states.
+     * @type {!Array<!chromeosCamera.mojom.WindowStateType>}
      */
-    this.windowState_ = null;
+    this.windowStates_ = [];
   }
 
   /** @override */
@@ -35,12 +35,12 @@ export class MojoWindowController {
 
     const windowMonitorCallbackRouter =
         new chromeosCamera.mojom.WindowStateMonitorCallbackRouter();
-    windowMonitorCallbackRouter.onWindowStateChanged.addListener((state) => {
-      this.windowState_ = state;
+    windowMonitorCallbackRouter.onWindowStateChanged.addListener((states) => {
+      this.windowStates_ = states;
     });
-    const {state} = await this.windowStateController_.addMonitor(
+    const {states} = await this.windowStateController_.addMonitor(
         windowMonitorCallbackRouter.$.bindNewPipeAndPassRemote());
-    this.windowState_ = state;
+    this.windowStates_ = states;
   }
 
   /** @override */
@@ -85,14 +85,16 @@ export class MojoWindowController {
 
   /** @override */
   isMinimized() {
-    return this.windowState_ === chromeosCamera.mojom.WindowStateType.MINIMIZED;
+    return this.windowStates_.includes(
+        chromeosCamera.mojom.WindowStateType.MINIMIZED);
   }
 
   /** @override */
   isFullscreenOrMaximized() {
-    return this.windowState_ ===
-        chromeosCamera.mojom.WindowStateType.FULLSCREEN ||
-        this.windowState_ === chromeosCamera.mojom.WindowStateType.MAXIMIZED;
+    return this.windowStates_.includes(
+               chromeosCamera.mojom.WindowStateType.FULLSCREEN) ||
+        this.windowStates_.includes(
+            chromeosCamera.mojom.WindowStateType.MAXIMIZED);
   }
 
   /** @override */

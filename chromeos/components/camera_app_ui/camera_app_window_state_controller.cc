@@ -8,9 +8,27 @@
 
 namespace chromeos {
 
+namespace {
+
+bool IsRestored(views::Widget* widget) {
+  if (ash::TabletMode::Get()->InTabletMode()) {
+    return !widget->IsMinimized();
+  }
+  return !widget->IsMinimized() && !widget->IsMaximized() &&
+         !widget->IsFullscreen();
+}
+
+std::vector<CameraAppWindowStateController::WindowStateType> ToVector(
+    const base::flat_set<CameraAppWindowStateController::WindowStateType>& s) {
+  return std::vector<CameraAppWindowStateController::WindowStateType>(s.begin(),
+                                                                      s.end());
+}
+
+}  // namespace
+
 CameraAppWindowStateController::CameraAppWindowStateController(
     views::Widget* widget)
-    : widget_(widget), window_state_(GetCurrentWindowState()) {
+    : widget_(widget), window_states_(GetCurrentWindowStates()) {
   widget_->AddObserver(this);
 }
 
@@ -30,16 +48,16 @@ void CameraAppWindowStateController::AddMonitor(
   auto remote = mojo::Remote<chromeos_camera::mojom::WindowStateMonitor>(
       std::move(monitor));
   monitors_.push_back(std::move(remote));
-  std::move(callback).Run(window_state_);
+  std::move(callback).Run(ToVector(window_states_));
 }
 
 void CameraAppWindowStateController::GetWindowState(
     GetWindowStateCallback callback) {
-  std::move(callback).Run(window_state_);
+  std::move(callback).Run(ToVector(window_states_));
 }
 
 void CameraAppWindowStateController::Minimize(MinimizeCallback callback) {
-  if (GetCurrentWindowState() == WindowStateType::MINIMIZED) {
+  if (widget_->IsMinimized()) {
     std::move(callback).Run();
     return;
   }
@@ -48,15 +66,7 @@ void CameraAppWindowStateController::Minimize(MinimizeCallback callback) {
 }
 
 void CameraAppWindowStateController::Restore(RestoreCallback callback) {
-  auto current_state = GetCurrentWindowState();
-
-  // In tablet mode, it won't do anything when calling restore() for windows
-  // which are already maximized. Therefore, for maximized windows, trigger the
-  // callback immediately.
-  if (current_state == WindowStateType::REGULAR ||
-      (ash::TabletMode::Get()->InTabletMode() &&
-       (current_state == WindowStateType::MAXIMIZED ||
-        current_state == WindowStateType::FULLSCREEN))) {
+  if (IsRestored(widget_)) {
     std::move(callback).Run();
     return;
   }
@@ -65,7 +75,7 @@ void CameraAppWindowStateController::Restore(RestoreCallback callback) {
 }
 
 void CameraAppWindowStateController::Maximize(MaximizeCallback callback) {
-  if (GetCurrentWindowState() == WindowStateType::MAXIMIZED) {
+  if (widget_->IsMaximized()) {
     std::move(callback).Run();
     return;
   }
@@ -74,7 +84,7 @@ void CameraAppWindowStateController::Maximize(MaximizeCallback callback) {
 }
 
 void CameraAppWindowStateController::Fullscreen(FullscreenCallback callback) {
-  if (GetCurrentWindowState() == WindowStateType::FULLSCREEN) {
+  if (widget_->IsFullscreen()) {
     std::move(callback).Run();
     return;
   }
@@ -113,47 +123,51 @@ void CameraAppWindowStateController::OnWidgetBoundsChanged(
 }
 
 void CameraAppWindowStateController::OnWindowStateChanged() {
-  auto prev_state = window_state_;
-  window_state_ = GetCurrentWindowState();
+  auto trigger_callbacks = [](std::queue<base::OnceClosure>* callbacks) {
+    while (!callbacks->empty()) {
+      std::move(callbacks->front()).Run();
+      callbacks->pop();
+    }
+  };
 
-  std::queue<base::OnceClosure>* callbacks;
-  switch (window_state_) {
-    case WindowStateType::MINIMIZED:
-      callbacks = &minimize_callbacks_;
-      break;
-    case WindowStateType::REGULAR:
-      callbacks = &restore_callbacks_;
-      break;
-    case WindowStateType::MAXIMIZED:
-      callbacks = &maximize_callbacks_;
-      break;
-    case WindowStateType::FULLSCREEN:
-      callbacks = &fullscreen_callbacks_;
-      break;
+  if (widget_->IsMinimized()) {
+    trigger_callbacks(&minimize_callbacks_);
   }
-  while (!callbacks->empty()) {
-    std::move(callbacks->front()).Run();
-    callbacks->pop();
+  if (IsRestored(widget_)) {
+    trigger_callbacks(&restore_callbacks_);
+  }
+  if (widget_->IsMaximized()) {
+    trigger_callbacks(&maximize_callbacks_);
+  }
+  if (widget_->IsFullscreen()) {
+    trigger_callbacks(&fullscreen_callbacks_);
   }
 
-  if (prev_state != window_state_) {
+  auto prev_states = window_states_;
+  window_states_ = GetCurrentWindowStates();
+  if (prev_states != window_states_) {
     for (const auto& monitor : monitors_) {
-      monitor->OnWindowStateChanged(window_state_);
+      monitor->OnWindowStateChanged(ToVector(window_states_));
     }
   }
 }
 
-CameraAppWindowStateController::WindowStateType
-CameraAppWindowStateController::GetCurrentWindowState() {
+base::flat_set<CameraAppWindowStateController::WindowStateType>
+CameraAppWindowStateController::GetCurrentWindowStates() {
+  base::flat_set<CameraAppWindowStateController::WindowStateType> states;
   if (widget_->IsMinimized()) {
-    return WindowStateType::MINIMIZED;
-  } else if (widget_->IsMaximized()) {
-    return WindowStateType::MAXIMIZED;
-  } else if (widget_->IsFullscreen()) {
-    return WindowStateType::FULLSCREEN;
-  } else {
-    return WindowStateType::REGULAR;
+    states.insert(WindowStateType::MINIMIZED);
   }
+  if (widget_->IsMaximized()) {
+    states.insert(WindowStateType::MAXIMIZED);
+  }
+  if (widget_->IsFullscreen()) {
+    states.insert(WindowStateType::FULLSCREEN);
+  }
+  if (IsRestored(widget_)) {
+    states.insert(WindowStateType::REGULAR);
+  }
+  return states;
 }
 
 }  // namespace chromeos

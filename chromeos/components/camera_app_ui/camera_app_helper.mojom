@@ -52,20 +52,20 @@ enum WindowStateType {
   REGULAR = 3,  // None of the above.
 };
 
-// Interface for monitoring window state.
+// Interface for monitoring window states.
 interface WindowStateMonitor {
-  // Updates when the window state is changed.
-  OnWindowStateChanged(WindowStateType state);
+  // Updates when any of the window states are changed.
+  OnWindowStateChanged(array<WindowStateType> states);
 };
 
 // Interface for window controlling.
 interface WindowStateController {
   // Adds |monitor| for window state changes.
   AddMonitor(pending_remote<WindowStateMonitor> monitor)
-      => (WindowStateType state);
+      => (array<WindowStateType> states);
 
-  // Gets current |state| of the window.
-  GetWindowState() => (WindowStateType state);
+  // Gets current |states| of the window.
+  GetWindowState() => (array<WindowStateType> states);
 
   // Minimize the window.
   Minimize() => ();

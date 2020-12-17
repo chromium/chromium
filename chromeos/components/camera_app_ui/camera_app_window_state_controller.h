@@ -8,6 +8,7 @@
 #include <queue>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "chromeos/components/camera_app_ui/camera_app_helper.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -55,10 +56,10 @@ class CameraAppWindowStateController
 
  private:
   void OnWindowStateChanged();
-  WindowStateType GetCurrentWindowState();
+  base::flat_set<WindowStateType> GetCurrentWindowStates();
 
   views::Widget* widget_;
-  WindowStateType window_state_;
+  base::flat_set<WindowStateType> window_states_;
   mojo::ReceiverSet<chromeos_camera::mojom::WindowStateController> receivers_;
   std::vector<mojo::Remote<WindowStateMonitor>> monitors_;
   std::queue<base::OnceClosure> minimize_callbacks_;
