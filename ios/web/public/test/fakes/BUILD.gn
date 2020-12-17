@@ -73,12 +73,7 @@ source_set("fakes") {
     "test_browser_state.h",
     "test_java_script_dialog_presenter.h",
     "test_java_script_dialog_presenter.mm",
-    "test_navigation_manager.h",
-    "test_web_client.h",
-    "test_web_state.h",
     "test_web_state_delegate.h",
     "test_web_state_delegate.mm",
-    "test_web_state_observer.h",
-    "test_web_state_observer_util.h",
   ]
 }
