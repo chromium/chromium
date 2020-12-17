@@ -476,6 +476,8 @@ static_library("browser") {
     "download/trusted_sources_manager.h",
     "endpoint_fetcher/endpoint_fetcher.cc",
     "endpoint_fetcher/endpoint_fetcher.h",
+    "engagement/history_aware_site_engagement_service.cc",
+    "engagement/history_aware_site_engagement_service.h",
     "engagement/important_sites_usage_counter.cc",
     "engagement/important_sites_usage_counter.h",
     "engagement/important_sites_util.cc",

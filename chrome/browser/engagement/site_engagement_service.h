@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ENGAGEMENT_SITE_ENGAGEMENT_SERVICE_H_
 
 #include <memory>
-#include <set>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
@@ -16,7 +15,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
-#include "components/history/core/browser/history_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/site_engagement/core/mojom/site_engagement_details.mojom.h"
 #include "third_party/blink/public/mojom/site_engagement/site_engagement.mojom.h"
@@ -31,11 +29,8 @@ FORWARD_DECLARE_TEST(AppBannerManagerBrowserTest, WebAppBannerNeedsEngagement);
 }
 
 namespace content {
+class BrowserContext;
 class WebContents;
-}
-
-namespace history {
-class HistoryService;
 }
 
 namespace web_app {
@@ -44,7 +39,6 @@ class WebAppEngagementBrowserTest;
 
 class GURL;
 class HostContentSettingsMap;
-class Profile;
 
 namespace site_engagement {
 
@@ -81,9 +75,21 @@ class SiteEngagementScoreProvider {
 // threads using SiteEngagementService::GetScoreFromSettings, but use of this
 // method is discouraged unless it is not possible to use the UI thread.
 class SiteEngagementService : public KeyedService,
-                              public history::HistoryServiceObserver,
                               public SiteEngagementScoreProvider {
  public:
+  // The provider allows code agnostic to the embedder (e.g. in
+  // //components) to retrieve the SiteEngagementService. It should be set by
+  // each embedder that uses the SiteEngagementService, via SetServiceProvider.
+  class ServiceProvider {
+   public:
+    ~ServiceProvider() = default;
+
+    // Should always return a non null value, creating the service if it does
+    // not exist.
+    virtual SiteEngagementService* GetSiteEngagementService(
+        content::BrowserContext* browser_context) = 0;
+  };
+
   // This is used to back a UMA histogram, so it should be treated as
   // append-only. Any new values should be inserted immediately prior to
   // ENGAGEMENT_LAST and added to SiteEngagementServiceEngagementType in
@@ -110,14 +116,20 @@ class SiteEngagementService : public KeyedService,
   // The name of the site engagement variation field trial.
   static const char kEngagementParams[];
 
-  // Returns the site engagement service attached to this profile. The service
-  // exists in incognito mode; scores will be initialised using the score from
-  // the profile that the incognito session was created from, and will increase
-  // and decrease as usual. Engagement earned or decayed in incognito will not
-  // be persisted or reflected in the original profile.
+  // Sets and clears the service provider. These are separate functions to
+  // enable better checking.
+  static void SetServiceProvider(ServiceProvider* provider);
+  static void ClearServiceProvider(ServiceProvider* provider);
+
+  // Returns the site engagement service attached to this Browser Context. The
+  // service exists in incognito mode; scores will be initialised using the
+  // score from the Browser Context that the incognito session was created from,
+  // and will increase and decrease as usual. Engagement earned or decayed in
+  // incognito will not be persisted or reflected in the original Browser
+  // Context.
   //
   // This method must be called on the UI thread.
-  static SiteEngagementService* Get(Profile* profile);
+  static SiteEngagementService* Get(content::BrowserContext* browser_context);
 
   // Returns the maximum possible amount of engagement that a site can accrue.
   static double GetMaxPoints();
@@ -140,11 +152,8 @@ class SiteEngagementService : public KeyedService,
       base::Time now,
       scoped_refptr<HostContentSettingsMap> map);
 
-  explicit SiteEngagementService(Profile* profile);
+  explicit SiteEngagementService(content::BrowserContext* browser_context);
   ~SiteEngagementService() override;
-
-  // KeyedService support:
-  void Shutdown() override;
 
   // Returns the engagement level of |url|.
   blink::mojom::EngagementLevel GetEngagementLevel(const GURL& url) const;
@@ -200,6 +209,16 @@ class SiteEngagementService : public KeyedService,
   // Just forwards calls AddPoints.
   void AddPointsForTesting(const GURL& url, double points);
 
+  void set_clock_for_test(base::Clock* clock) { clock_ = clock; }
+
+ protected:
+  // Retrieves the SiteEngagementScore object for |origin|.
+  SiteEngagementScore CreateEngagementScore(const GURL& origin) const;
+  void SetLastEngagementTime(base::Time last_engagement_time) const;
+
+  content::BrowserContext* browser_context() { return browser_context_; }
+  const base::Clock& clock() { return *clock_; }
+
  private:
   friend class SiteEngagementObserver;
   friend class SiteEngagementServiceTest;
@@ -242,15 +261,9 @@ class SiteEngagementService : public KeyedService,
       std::unique_ptr<SiteEngagementServiceAndroid> android_service);
 #endif
 
-  // Only used in tests.
-  SiteEngagementService(Profile* profile, base::Clock* clock);
-
   // Adds the specified number of points to the given origin, respecting the
   // maximum limits for the day and overall.
   void AddPoints(const GURL& url, double points);
-
-  // Retrieves the SiteEngagementScore object for |origin|.
-  SiteEngagementScore CreateEngagementScore(const GURL& origin) const;
 
   // Runs site engagement maintenance tasks.
   void AfterStartupTask();
@@ -278,7 +291,6 @@ class SiteEngagementService : public KeyedService,
 
   // Get and set the last engagement time from prefs.
   base::Time GetLastEngagementTime() const;
-  void SetLastEngagementTime(base::Time last_engagement_time) const;
 
   // Get the maximum decay period and the stale period for last engagement
   // times.
@@ -319,25 +331,15 @@ class SiteEngagementService : public KeyedService,
   // browser for an extended period of time do not have their engagement decay.
   bool IsLastEngagementStale() const;
 
-  // Overridden from history::HistoryServiceObserver:
-  void OnURLsDeleted(history::HistoryService* history_service,
-                     const history::DeletionInfo& deletion_info) override;
-
   // Returns the number of origins with maximum daily and total engagement
   // respectively.
   int OriginsWithMaxDailyEngagement() const;
-
-  // Update site engagement scores after a history deletion.
-  void UpdateEngagementScores(
-      const std::multiset<GURL>& deleted_url_origins,
-      bool expired,
-      const history::OriginCountAndLastVisitMap& remaining_origin_counts);
 
   // Add and remove observers of this service.
   void AddObserver(SiteEngagementObserver* observer);
   void RemoveObserver(SiteEngagementObserver* observer);
 
-  Profile* profile_;
+  content::BrowserContext* browser_context_;
 
   // The clock used to vend times.
   base::Clock* clock_;

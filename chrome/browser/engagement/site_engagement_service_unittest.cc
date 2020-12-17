@@ -21,6 +21,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/engagement/history_aware_site_engagement_service.h"
 #include "chrome/browser/engagement/site_engagement_helper.h"
 #include "chrome/browser/engagement/site_engagement_metrics.h"
 #include "chrome/browser/engagement/site_engagement_observer.h"
@@ -176,7 +177,8 @@ class SiteEngagementServiceTest : public ChromeRenderViewHostTestHarness {
     // (See KeyedServiceBaseFactory::ServiceIsCreatedWithContext).
     DCHECK(!SiteEngagementServiceFactory::GetForProfileIfExists(profile()));
 
-    service_ = base::WrapUnique(new SiteEngagementService(profile(), &clock_));
+    service_ = std::make_unique<SiteEngagementService>(profile());
+    service_->set_clock_for_test(&clock_);
   }
 
   void TearDown() override {
@@ -1109,6 +1111,10 @@ TEST_F(SiteEngagementServiceTest, IsBootstrapped) {
 }
 
 TEST_F(SiteEngagementServiceTest, CleanupOriginsOnHistoryDeletion) {
+  service_ = std::make_unique<HistoryAwareSiteEngagementService>(
+      profile(), HistoryServiceFactory::GetForProfile(
+                     profile(), ServiceAccessType::IMPLICIT_ACCESS));
+  service_->set_clock_for_test(&clock_);
   // Enable proportional decay to ensure that the undecay that happens to
   // balance out history deletion also accounts for the proportional decay.
   SetParamValue(SiteEngagementScore::DECAY_PROPORTION, 0.5);
@@ -1636,8 +1642,9 @@ TEST_F(SiteEngagementServiceTest, IncognitoEngagementService) {
   service->AddPoints(url1, 1);
   service->AddPoints(url2, 2);
 
-  auto incognito_service = base::WrapUnique(
-      new SiteEngagementService(profile()->GetPrimaryOTRProfile(), &clock_));
+  auto incognito_service = std::make_unique<SiteEngagementService>(
+      profile()->GetPrimaryOTRProfile());
+  incognito_service->set_clock_for_test(&clock_);
   EXPECT_EQ(1, incognito_service->GetScore(url1));
   EXPECT_EQ(2, incognito_service->GetScore(url2));
   EXPECT_EQ(0, incognito_service->GetScore(url3));

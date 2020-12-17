@@ -22,15 +22,13 @@
 #include "chrome/browser/engagement/site_engagement_metrics.h"
 #include "chrome/browser/engagement/site_engagement_observer.h"
 #include "chrome/browser/engagement/site_engagement_score.h"
-#include "chrome/browser/engagement/site_engagement_service_factory.h"
-#include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
-#include "components/history/core/browser/history_service.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_prefs/user_prefs.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
@@ -44,10 +42,10 @@ namespace site_engagement {
 
 namespace {
 
-const int FOUR_WEEKS_IN_DAYS = 28;
-
 // Global bool to ensure we only update the parameters from variations once.
 bool g_updated_from_variations = false;
+
+SiteEngagementService::ServiceProvider* g_service_provider = nullptr;
 
 // Length of time between metrics logging.
 const int kMetricsIntervalInMinutes = 60;
@@ -76,11 +74,11 @@ ContentSettingsForOneType GetContentSettingsFromMap(HostContentSettingsMap* map,
   return content_settings;
 }
 
-ContentSettingsForOneType GetContentSettingsFromProfile(
-    Profile* profile,
+ContentSettingsForOneType GetContentSettingsFromBrowserContext(
+    content::BrowserContext* browser_context,
     ContentSettingsType type) {
   return GetContentSettingsFromMap(
-      HostContentSettingsMapFactory::GetForProfile(profile), type);
+      HostContentSettingsMapFactory::GetForProfile(browser_context), type);
 }
 
 // Returns the combined list of origins which either have site engagement
@@ -162,8 +160,23 @@ bool IsEngagementNavigation(ui::PageTransition transition) {
 const char SiteEngagementService::kEngagementParams[] = "SiteEngagement";
 
 // static
-SiteEngagementService* SiteEngagementService::Get(Profile* profile) {
-  return SiteEngagementServiceFactory::GetForProfile(profile);
+SiteEngagementService* SiteEngagementService::Get(
+    content::BrowserContext* context) {
+  return g_service_provider->GetSiteEngagementService(context);
+}
+
+// static
+void SiteEngagementService::SetServiceProvider(ServiceProvider* provider) {
+  DCHECK(provider);
+  DCHECK(!g_service_provider);
+  g_service_provider = provider;
+}
+
+// static
+void SiteEngagementService::ClearServiceProvider(ServiceProvider* provider) {
+  DCHECK(provider);
+  DCHECK_EQ(provider, g_service_provider);
+  g_service_provider = nullptr;
 }
 
 // static
@@ -198,8 +211,8 @@ SiteEngagementService::GetAllDetailsInBackground(
                            map.get());
 }
 
-SiteEngagementService::SiteEngagementService(Profile* profile)
-    : SiteEngagementService(profile, base::DefaultClock::GetInstance()) {
+SiteEngagementService::SiteEngagementService(content::BrowserContext* context)
+    : browser_context_(context), clock_(base::DefaultClock::GetInstance()) {
   content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
       ->PostTask(FROM_HERE,
                  base::BindOnce(&SiteEngagementService::AfterStartupTask,
@@ -217,13 +230,6 @@ SiteEngagementService::~SiteEngagementService() {
     observer.Observe(nullptr);
 }
 
-void SiteEngagementService::Shutdown() {
-  history::HistoryService* history = HistoryServiceFactory::GetForProfile(
-      profile_, ServiceAccessType::IMPLICIT_ACCESS);
-  if (history)
-    history->RemoveObserver(this);
-}
-
 blink::mojom::EngagementLevel
 SiteEngagementService::GetEngagementLevel(const GURL& url) const {
   if (IsLastEngagementStale())
@@ -239,7 +245,7 @@ std::vector<mojom::SiteEngagementDetails> SiteEngagementService::GetAllDetails()
 
   return GetAllDetailsImpl(
       browsing_data::TimePeriod::ALL_TIME, clock_,
-      HostContentSettingsMapFactory::GetForProfile(profile_));
+      HostContentSettingsMapFactory::GetForProfile(browser_context_));
 }
 
 std::vector<mojom::SiteEngagementDetails>
@@ -250,7 +256,7 @@ SiteEngagementService::GetAllDetailsEngagedInTimePeriod(
 
   return GetAllDetailsImpl(
       time_period, clock_,
-      HostContentSettingsMapFactory::GetForProfile(profile_));
+      HostContentSettingsMapFactory::GetForProfile(browser_context_));
 }
 
 void SiteEngagementService::HandleNotificationInteraction(const GURL& url) {
@@ -339,8 +345,9 @@ mojom::SiteEngagementDetails SiteEngagementService::GetDetails(
   if (IsLastEngagementStale())
     CleanupEngagementScores(true);
 
-  return GetDetailsImpl(clock_, url,
-                        HostContentSettingsMapFactory::GetForProfile(profile_));
+  return GetDetailsImpl(
+      clock_, url,
+      HostContentSettingsMapFactory::GetForProfile(browser_context_));
 }
 
 double SiteEngagementService::GetTotalEngagementPoints() const {
@@ -368,16 +375,6 @@ void SiteEngagementService::SetAndroidService(
   android_service_ = std::move(android_service);
 }
 #endif
-
-SiteEngagementService::SiteEngagementService(Profile* profile,
-                                             base::Clock* clock)
-    : profile_(profile), clock_(clock) {
-  // May be null in tests.
-  history::HistoryService* history = HistoryServiceFactory::GetForProfile(
-      profile, ServiceAccessType::IMPLICIT_ACCESS);
-  if (history)
-    history->AddObserver(this);
-}
 
 void SiteEngagementService::AddPoints(const GURL& url, double points) {
   if (points == 0)
@@ -426,9 +423,9 @@ void SiteEngagementService::CleanupEngagementScores(
     last_engagement_time = now;
 
   HostContentSettingsMap* settings_map =
-      HostContentSettingsMapFactory::GetForProfile(profile_);
-  for (const auto& site : GetContentSettingsFromProfile(
-           profile_, ContentSettingsType::SITE_ENGAGEMENT)) {
+      HostContentSettingsMapFactory::GetForProfile(browser_context_);
+  for (const auto& site : GetContentSettingsFromBrowserContext(
+           browser_context_, ContentSettingsType::SITE_ENGAGEMENT)) {
     GURL origin(site.primary_pattern.ToString());
 
     if (origin.is_valid()) {
@@ -481,7 +478,7 @@ void SiteEngagementService::CleanupEngagementScores(
 
 void SiteEngagementService::MaybeRecordMetrics() {
   base::Time now = clock_->Now();
-  if (profile_->IsOffTheRecord() ||
+  if (browser_context_->IsOffTheRecord() ||
       (!last_metrics_time_.is_null() &&
        (now - last_metrics_time_).InMinutes() < kMetricsIntervalInMinutes)) {
     return;
@@ -497,11 +494,11 @@ void SiteEngagementService::MaybeRecordMetrics() {
   // with minor data inconsistency but this doesn't really matter for metrics
   // purposes.
   //
-  // The profile and its KeyedServices are normally destroyed before the
+  // The BrowserContext and its KeyedServices are normally destroyed before the
   // ThreadPool shuts down background threads, so the task needs to hold a
   // strong reference to HostContentSettingsMap (which supports outliving the
-  // profile), and needs to avoid using any members of SiteEngagementService
-  // (which does not). See https://crbug.com/900022.
+  // browser context), and needs to avoid using any members of
+  // SiteEngagementService (which does not). See https://crbug.com/900022.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::TaskPriority::BEST_EFFORT,
@@ -509,7 +506,7 @@ void SiteEngagementService::MaybeRecordMetrics() {
       base::BindOnce(
           &GetAllDetailsInBackground, now,
           base::WrapRefCounted(
-              HostContentSettingsMapFactory::GetForProfile(profile_))),
+              HostContentSettingsMapFactory::GetForProfile(browser_context_))),
       base::BindOnce(&SiteEngagementService::RecordMetrics,
                      weak_factory_.GetWeakPtr()));
 }
@@ -553,19 +550,21 @@ bool SiteEngagementService::ShouldRecordEngagement(const GURL& url) const {
 }
 
 base::Time SiteEngagementService::GetLastEngagementTime() const {
-  if (profile_->IsOffTheRecord())
+  if (browser_context_->IsOffTheRecord())
     return base::Time();
 
   return base::Time::FromInternalValue(
-      profile_->GetPrefs()->GetInt64(prefs::kSiteEngagementLastUpdateTime));
+      user_prefs::UserPrefs::Get(browser_context_)
+          ->GetInt64(prefs::kSiteEngagementLastUpdateTime));
 }
 
 void SiteEngagementService::SetLastEngagementTime(
     base::Time last_engagement_time) const {
-  if (profile_->IsOffTheRecord())
+  if (browser_context_->IsOffTheRecord())
     return;
-  profile_->GetPrefs()->SetInt64(prefs::kSiteEngagementLastUpdateTime,
-                                 last_engagement_time.ToInternalValue());
+  user_prefs::UserPrefs::Get(browser_context_)
+      ->SetInt64(prefs::kSiteEngagementLastUpdateTime,
+                 last_engagement_time.ToInternalValue());
 }
 
 base::TimeDelta SiteEngagementService::GetMaxDecayPeriod() const {
@@ -661,32 +660,22 @@ bool SiteEngagementService::IsLastEngagementStale() const {
          (now < last_engagement_time);
 }
 
-void SiteEngagementService::OnURLsDeleted(
-    history::HistoryService* history_service,
-    const history::DeletionInfo& deletion_info) {
-  std::multiset<GURL> origins;
-  for (const history::URLRow& row : deletion_info.deleted_rows())
-    origins.insert(row.url().GetOrigin());
-
-  UpdateEngagementScores(origins, deletion_info.is_from_expiration(),
-                         deletion_info.deleted_urls_origin_map());
-}
-
 SiteEngagementScore SiteEngagementService::CreateEngagementScore(
     const GURL& origin) const {
   // If we are in incognito, |settings| will automatically have the data from
   // the original profile migrated in, so all engagement scores in incognito
   // will be initialised to the values from the original profile.
   return CreateEngagementScoreImpl(
-      clock_, origin, HostContentSettingsMapFactory::GetForProfile(profile_));
+      clock_, origin,
+      HostContentSettingsMapFactory::GetForProfile(browser_context_));
 }
 
 int SiteEngagementService::OriginsWithMaxDailyEngagement() const {
   int total_origins = 0;
 
   // We cannot call GetScoreMap as we need the score objects, not raw scores.
-  for (const auto& site : GetContentSettingsFromProfile(
-           profile_, ContentSettingsType::SITE_ENGAGEMENT)) {
+  for (const auto& site : GetContentSettingsFromBrowserContext(
+           browser_context_, ContentSettingsType::SITE_ENGAGEMENT)) {
     GURL origin(site.primary_pattern.ToString());
 
     if (!origin.is_valid())
@@ -697,84 +686,6 @@ int SiteEngagementService::OriginsWithMaxDailyEngagement() const {
   }
 
   return total_origins;
-}
-
-void SiteEngagementService::UpdateEngagementScores(
-    const std::multiset<GURL>& deleted_origins,
-    bool expired,
-    const history::OriginCountAndLastVisitMap& remaining_origins) {
-  // The most in-the-past option in the Clear Browsing Dialog aside from "all
-  // time" is 4 weeks ago. Set the last updated date to 4 weeks ago for origins
-  // where we can't find a valid last visit date.
-  base::Time now = clock_->Now();
-  base::Time four_weeks_ago =
-      now - base::TimeDelta::FromDays(FOUR_WEEKS_IN_DAYS);
-
-  HostContentSettingsMap* settings_map =
-      HostContentSettingsMapFactory::GetForProfile(profile_);
-
-  for (const auto& origin_to_count : remaining_origins) {
-    GURL origin = origin_to_count.first;
-    // It appears that the history service occasionally sends bad URLs to us.
-    // See crbug.com/612881.
-    if (!origin.is_valid())
-      continue;
-
-    int remaining = origin_to_count.second.first;
-    base::Time last_visit = origin_to_count.second.second;
-    int deleted = deleted_origins.count(origin);
-
-    // Do not update engagement scores if the deletion was an expiry, but the
-    // URL still has entries in history.
-    if ((expired && remaining != 0) || deleted == 0)
-      continue;
-
-    // Remove origins that have no urls left.
-    if (remaining == 0) {
-      settings_map->SetWebsiteSettingDefaultScope(
-          origin, GURL(), ContentSettingsType::SITE_ENGAGEMENT, nullptr);
-      continue;
-    }
-
-    // Remove engagement proportional to the urls expired from the origin's
-    // entire history.
-    double proportion_remaining =
-        static_cast<double>(remaining) / (remaining + deleted);
-    if (last_visit.is_null() || last_visit > now)
-      last_visit = four_weeks_ago;
-
-    // At this point, we are going to proportionally decay the origin's
-    // engagement, and reset its last visit date to the last visit to a URL
-    // under the origin in history. If this new last visit date is long enough
-    // in the past, the next time the origin's engagement is accessed the
-    // automatic decay will kick in - i.e. a double decay will have occurred.
-    // To prevent this, compute the decay that would have taken place since the
-    // new last visit and add it to the engagement at this point. When the
-    // engagement is next accessed, it will decay back to the proportionally
-    // reduced value rather than being decayed once here, and then once again
-    // when it is next accessed.
-    // TODO(703848): Move the proportional decay logic into SiteEngagementScore,
-    // so it can decay raw_score_ directly, without the double-decay issue.
-    SiteEngagementScore engagement_score = CreateEngagementScore(origin);
-
-    double new_score = proportion_remaining * engagement_score.GetTotalScore();
-    int hours_since_engagement = (now - last_visit).InHours();
-    int periods =
-        hours_since_engagement / SiteEngagementScore::GetDecayPeriodInHours();
-    new_score += periods * SiteEngagementScore::GetDecayPoints();
-    new_score *= pow(1.0 / SiteEngagementScore::GetDecayProportion(), periods);
-
-    double score = std::min(SiteEngagementScore::kMaxPoints, new_score);
-    engagement_score.Reset(score, last_visit);
-    if (!engagement_score.last_shortcut_launch_time().is_null() &&
-        engagement_score.last_shortcut_launch_time() > last_visit) {
-      engagement_score.set_last_shortcut_launch_time(last_visit);
-    }
-
-    engagement_score.Commit();
-  }
-
-  SetLastEngagementTime(now);
 }
 
 }  // namespace site_engagement

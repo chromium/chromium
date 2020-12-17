@@ -7,13 +7,12 @@
 
 #include "base/macros.h"
 #include "base/memory/singleton.h"
+#include "chrome/browser/engagement/site_engagement_service.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 class Profile;
 
 namespace site_engagement {
-
-class SiteEngagementService;
 
 // Singleton that owns all SiteEngagementServices and associates them with
 // Profiles. Listens for the Profile's destruction notification and cleans up
@@ -22,12 +21,19 @@ class SiteEngagementService;
 // The default factory behavior is suitable for this factory as:
 // * the site engagement service should be created lazily
 // * the site engagement service is needed in tests.
-class SiteEngagementServiceFactory : public BrowserContextKeyedServiceFactory {
+class SiteEngagementServiceFactory
+    : public BrowserContextKeyedServiceFactory,
+      public SiteEngagementService::ServiceProvider {
  public:
-  static SiteEngagementService* GetForProfile(Profile* profile);
+  static SiteEngagementService* GetForProfile(
+      content::BrowserContext* browser_context);
   static SiteEngagementService* GetForProfileIfExists(Profile* profile);
 
   static SiteEngagementServiceFactory* GetInstance();
+
+  // SiteEngagementService::ServiceProvider:
+  SiteEngagementService* GetSiteEngagementService(
+      content::BrowserContext* browser_context) override;
 
  private:
   friend struct base::DefaultSingletonTraits<SiteEngagementServiceFactory>;

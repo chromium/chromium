@@ -5,7 +5,7 @@
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
 
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/engagement/site_engagement_service.h"
+#include "chrome/browser/engagement/history_aware_site_engagement_service.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
@@ -15,10 +15,10 @@ namespace site_engagement {
 
 // static
 SiteEngagementService* SiteEngagementServiceFactory::GetForProfile(
-    Profile* profile) {
+    content::BrowserContext* browser_context) {
   return static_cast<SiteEngagementService*>(
-      GetInstance()->GetServiceForBrowserContext(profile,
-                                                 /*create_service=*/true));
+      GetInstance()->GetServiceForBrowserContext(browser_context,
+                                                 /*create=*/true));
 }
 
 // static
@@ -26,7 +26,7 @@ SiteEngagementService* SiteEngagementServiceFactory::GetForProfileIfExists(
     Profile* profile) {
   return static_cast<SiteEngagementService*>(
       GetInstance()->GetServiceForBrowserContext(profile,
-                                                 /*create_service=*/false));
+                                                 /*create=*/false));
 }
 
 // static
@@ -40,19 +40,28 @@ SiteEngagementServiceFactory::SiteEngagementServiceFactory()
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(HostContentSettingsMapFactory::GetInstance());
+  SiteEngagementService::SetServiceProvider(this);
 }
 
 SiteEngagementServiceFactory::~SiteEngagementServiceFactory() {
+  SiteEngagementService::ClearServiceProvider(this);
 }
 
 KeyedService* SiteEngagementServiceFactory::BuildServiceInstanceFor(
-    content::BrowserContext* profile) const {
-  return new SiteEngagementService(static_cast<Profile*>(profile));
+    content::BrowserContext* context) const {
+  history::HistoryService* history = HistoryServiceFactory::GetForProfile(
+      Profile::FromBrowserContext(context), ServiceAccessType::IMPLICIT_ACCESS);
+  return new HistoryAwareSiteEngagementService(context, history);
 }
 
 content::BrowserContext* SiteEngagementServiceFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
   return chrome::GetBrowserContextOwnInstanceInIncognito(context);
+}
+
+SiteEngagementService* SiteEngagementServiceFactory::GetSiteEngagementService(
+    content::BrowserContext* browser_context) {
+  return GetForProfile(browser_context);
 }
 
 }  // namespace site_engagement

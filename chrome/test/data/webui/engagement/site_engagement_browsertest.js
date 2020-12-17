@@ -10,6 +10,7 @@ var EXAMPLE_URL_2 = 'http://shmlexample.com/';
 
 GEN('#include "chrome/browser/engagement/site_engagement_service.h"');
 GEN('#include "chrome/browser/engagement/site_engagement_service_factory.h"');
+GEN('#include "chrome/browser/profiles/profile.h"');
 GEN('#include "chrome/browser/ui/browser.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
