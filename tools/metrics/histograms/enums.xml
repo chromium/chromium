@@ -7210,6 +7210,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="10" label="Authentication cancelled"/>
   <int value="11" label="Authentication timeout"/>
   <int value="12" label="Unknown"/>
+  <int value="13" label="BT IO connection failed"/>
 </enum>
 
 <enum name="BlueZResultOfPerProfileConnection">
