@@ -243,6 +243,13 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
     }
 
     private void init() {
+        // Remove this Preference if it gets restored without a valid SiteSettingsClient. This
+        // can happen e.g. when it is included in PageInfo.
+        if (getSiteSettingsClient() == null) {
+            getParentFragmentManager().beginTransaction().remove(this).commit();
+            return;
+        }
+
         Object extraSite = getArguments().getSerializable(EXTRA_SITE);
         Object extraSiteAddress = getArguments().getSerializable(EXTRA_SITE_ADDRESS);
 

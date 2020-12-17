@@ -73,6 +73,7 @@ public class PageInfoCookiesController
     public View createViewForSubpage(ViewGroup parent) {
         assert mSubPage == null;
         mSubPage = new PageInfoCookiesPreference();
+        mSubPage.setSiteSettingsClient(mDelegate.getSiteSettingsClient());
         AppCompatActivity host = (AppCompatActivity) mRowView.getContext();
         host.getSupportFragmentManager().beginTransaction().add(mSubPage, null).commitNow();
 
