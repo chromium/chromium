@@ -2546,7 +2546,7 @@ void PaintLayer::UpdateFilterReferenceBox() {
   if (!HasFilterThatMovesPixels())
     return;
   PhysicalRect result = LocalBoundingBox();
-  ExpandRectForStackingChildren(
+  ExpandRectForSelfPaintingDescendants(
       *this, result, kIncludeTransforms | kIncludeCompositedChildLayers);
   FloatRect reference_box = FloatRect(result);
 
@@ -2666,6 +2666,13 @@ PhysicalRect PaintLayer::LocalBoundingBox() const {
   return rect;
 }
 
+PhysicalRect PaintLayer::ClippedLocalBoundingBox(
+    const PaintLayer& ancestor_layer) const {
+  return Intersection(LocalBoundingBox(),
+                      Clipper(GeometryMapperOption::kUseGeometryMapper)
+                          .LocalClipRect(ancestor_layer));
+}
+
 PhysicalRect PaintLayer::PhysicalBoundingBox(
     const PaintLayer* ancestor_layer) const {
   PhysicalOffset offset_from_root;
@@ -2769,7 +2776,7 @@ IntRect PaintLayer::ExpandedBoundingBoxForCompositingOverlapTest(
           // are composited or not.
           children_bounds.Unite(child_layer->BoundingBoxForCompositingInternal(
               *this, this,
-              kIncludeClips | kIncludeTransforms |
+              kIncludeAncestorClips | kIncludeTransforms |
                   kIncludeCompositedChildLayers));
         }
         if (!children_bounds.IsEmpty()) {
@@ -2792,15 +2799,37 @@ IntRect PaintLayer::ExpandedBoundingBoxForCompositingOverlapTest(
   return abs_bounds;
 }
 
-void PaintLayer::ExpandRectForStackingChildren(
+void PaintLayer::ExpandRectForSelfPaintingDescendants(
     const PaintLayer& composited_layer,
     PhysicalRect& result,
     unsigned options) const {
-  // If we're locked, th en the subtree does not contribute painted output.
+  // If we're locked, then the subtree does not contribute painted output.
   // Furthermore, we might not have up-to-date sizing and position information
   // in the subtree, so skip recursing into the subtree.
   if (GetLayoutObject().ChildPaintBlockedByDisplayLock())
     return;
+
+  DCHECK_EQ(result, (options & kIncludeAncestorClips)
+                        ? ClippedLocalBoundingBox(composited_layer)
+                        : LocalBoundingBox());
+  // The input |result| is based on LayoutObject::PhysicalVisualOverflowRect()
+  // which already includes bounds non-self-painting descendants.
+  if (!HasSelfPaintingLayerDescendant())
+    return;
+
+  if (const auto* box = GetLayoutBox()) {
+    // If the layer clips overflow and all descendants are contained, then no
+    // need to expand for children. Not checking kIncludeAncestorClips because
+    // the clip of the current layer is always applied. The doesn't check
+    // whether the non-contained descendants are actual descendants of this
+    // layer in paint order because it's not easy.
+    if (box->ShouldClipOverflowAlongBothAxis() &&
+        !HasNonContainedAbsolutePositionDescendant() &&
+        !(HasFixedPositionDescendant() &&
+          !box->CanContainFixedPositionObjects())) {
+      return;
+    }
+  }
 
   PaintLayerPaintOrderIterator iterator(*this, kAllChildren);
   while (PaintLayer* child_layer = iterator.Next()) {
@@ -2819,7 +2848,8 @@ void PaintLayer::ExpandRectForStackingChildren(
 
 PhysicalRect PaintLayer::BoundingBoxForCompositing() const {
   return BoundingBoxForCompositingInternal(
-      *this, nullptr, kIncludeClips | kMaybeIncludeTransformForAncestorLayer);
+      *this, nullptr,
+      kIncludeAncestorClips | kMaybeIncludeTransformForAncestorLayer);
 }
 
 bool PaintLayer::ShouldApplyTransformToBoundingBox(
@@ -2873,19 +2903,16 @@ PhysicalRect PaintLayer::BoundingBoxForCompositingInternal(
     return PhysicalRect();
 
   PhysicalRect result;
-  if (options & kIncludeClips) {
+  if (options & kIncludeAncestorClips) {
     // If there is a clip applied by an ancestor to this PaintLayer but below or
-    // equal to |ancestorLayer|, apply that clip. This optimizes the size
+    // equal to |composited_layer|, apply that clip. This optimizes the size
     // of the composited layer to exclude clipped-out regions of descendants.
-    result = Clipper(GeometryMapperOption::kUseGeometryMapper)
-                 .LocalClipRect(composited_layer);
-
-    result.Intersect(LocalBoundingBox());
+    result = ClippedLocalBoundingBox(composited_layer);
   } else {
     result = LocalBoundingBox();
   }
 
-  ExpandRectForStackingChildren(composited_layer, result, options);
+  ExpandRectForSelfPaintingDescendants(composited_layer, result, options);
 
   // Only enlarge by the filter outsets if we know the filter is going to be
   // rendered in software.  Accelerated filters will handle their own outsets.
