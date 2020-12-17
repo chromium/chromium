@@ -78,6 +78,11 @@ FrameSequenceTracker::FrameSequenceTracker(
                                                  throughput_ukm_reporter)) {
   DCHECK_LT(type, FrameSequenceTrackerType::kMaxType);
   DCHECK(type != FrameSequenceTrackerType::kCustom);
+  // TODO(crbug.com/1158439): remove the trace event once the validation is
+  // completed.
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
+      "cc,benchmark", "TrackerValidation", TRACE_ID_LOCAL(this),
+      base::TimeTicks::Now(), "name", GetFrameSequenceTrackerTypeName(type));
 }
 
 FrameSequenceTracker::FrameSequenceTracker(
@@ -92,6 +97,9 @@ FrameSequenceTracker::FrameSequenceTracker(
 }
 
 FrameSequenceTracker::~FrameSequenceTracker() {
+  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
+      "cc,benchmark", "TrackerValidation", TRACE_ID_LOCAL(this),
+      base::TimeTicks::Now());
   CleanUp();
 }
 

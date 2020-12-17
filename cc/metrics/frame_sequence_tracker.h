@@ -250,7 +250,6 @@ class CC_EXPORT FrameSequenceTracker {
   // only when the last impl-frame is ended (ReportFrameEnd).
   bool is_inside_frame_ = false;
 
-
 #if DCHECK_IS_ON()
   // This stringstream represents a sequence of frame reporting activities on
   // the current tracker. Each letter can be one of the following:
