@@ -138,6 +138,7 @@ void SwitchAccessHandler::HandleRefreshAssignmentsFromPrefs(
 void SwitchAccessHandler::
     HandleNotifySwitchAccessActionAssignmentDialogAttached(
         const base::ListValue* args) {
+  AllowJavascript();
   OnSwitchAccessAssignmentsUpdated();
   web_ui()->GetWebContents()->GetNativeView()->AddPreTargetHandler(this);
   ash::AccessibilityController::Get()->SuspendSwitchAccessKeyHandling(true);

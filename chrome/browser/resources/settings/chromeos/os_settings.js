@@ -61,6 +61,7 @@ export {MultiDeviceFeature, MultiDeviceFeatureState, MultiDevicePageContentData,
 export {Account, NearbyAccountManagerBrowserProxy, NearbyAccountManagerBrowserProxyImpl} from './nearby_share_page/nearby_account_manager_browser_proxy.m.js';
 export {getReceiveManager, observeReceiveManager, setReceiveManagerForTesting} from './nearby_share_page/nearby_share_receive_manager.m.js';
 export {dataUsageStringToEnum, NearbyShareDataUsage} from './nearby_share_page/types.m.js';
+export {SwitchAccessSubpageBrowserProxy, SwitchAccessSubpageBrowserProxyImpl} from './os_a11y_page/switch_access_subpage_browser_proxy.m.js';
 export {TtsSubpageBrowserProxy, TtsSubpageBrowserProxyImpl} from './os_a11y_page/tts_subpage_browser_proxy.m.js';
 export {DeviceNameBrowserProxy, DeviceNameBrowserProxyImpl} from './os_about_page/device_name_browser_proxy.m.js';
 export {KerberosAccountsBrowserProxyImpl, KerberosConfigErrorCode, KerberosErrorType} from './os_people_page/kerberos_accounts_browser_proxy.m.js';

@@ -2411,6 +2411,23 @@ TEST_F('OSSettingsSwitchAccessSubpageTest', 'AllJsTests', () => {
   mocha.run();
 });
 
+// Test fixture for the Switch Access Action Assignment dialog.
+// eslint-disable-next-line no-var
+var OSSettingsSwitchAccessActionAssignmentDialogTest = class extends OSSettingsBrowserTest {
+  /** @override */
+  get extraLibraries() {
+    return super.extraLibraries.concat([
+      BROWSER_SETTINGS_PATH + '../test_browser_proxy.js',
+      BROWSER_SETTINGS_PATH + '../test_util.js',
+      'switch_access_action_assignment_dialog_test.js',
+    ]);
+  }
+};
+
+TEST_F('OSSettingsSwitchAccessActionAssignmentDialogTest', 'AllJsTests', () => {
+  mocha.run();
+});
+
 // Tests for the Date Time timezone selector
 // eslint-disable-next-line no-var
 var OSSettingsTimezoneSelectorTest = class extends OSSettingsBrowserTest {

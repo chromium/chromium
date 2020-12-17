@@ -91,6 +91,7 @@ js_modulizer("modulize") {
     "personalization_page_test.js",
     "smart_inputs_page_test.js",
     "smb_shares_page_tests.js",
+    "switch_access_action_assignment_dialog_test.js",
     "test_about_page_browser_proxy_chromeos.js",
     "test_cups_printers_browser_proxy.js",
     "test_device_name_browser_proxy.js",

@@ -6,7 +6,7 @@
  * Available commands.
  * @enum {string}
  */
-const SwitchAccessCommand = {
+/* #export */ const SwitchAccessCommand = {
   NEXT: 'next',
   PREVIOUS: 'previous',
   SELECT: 'select'

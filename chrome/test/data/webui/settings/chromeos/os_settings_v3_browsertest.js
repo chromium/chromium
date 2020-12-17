@@ -249,6 +249,7 @@ TEST_F(
  ['ResetPage', 'os_reset_page_test.m.js'],
  ['SmartInputsPage', 'smart_inputs_page_test.m.js'],
  ['SmbPage', 'smb_shares_page_tests.m.js'],
+ ['SwitchAccessActionAssignmentDialog', 'switch_access_action_assignment_dialog_test.m.js'],
  ['TetherConnectionDialog', 'tether_connection_dialog_test.m.js'],
  ['TimezoneSelector', 'timezone_selector_test.m.js'],
  ['TimezoneSubpage', 'timezone_subpage_test.m.js'],
