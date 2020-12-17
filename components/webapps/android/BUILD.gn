@@ -52,12 +52,16 @@ android_resources("java_resources") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "shortcut_info_unittest.cc" ]
+  sources = [
+    "shortcut_info_unittest.cc",
+    "webapps_utils_unittest.cc",
+  ]
   deps = [
     "//base",
     "//components/webapps",
     "//testing/gtest",
     "//third_party/blink/public/common:common",
+    "//third_party/blink/public/mojom:mojom_platform",
     "//url",
   ]
 }

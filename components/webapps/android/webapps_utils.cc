@@ -9,9 +9,22 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "components/webapps/android/webapps_jni_headers/WebappsUtils_jni.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "url/gurl.h"
 
 namespace webapps {
+
+namespace {
+
+// Returns whether a URL in the Web Manifest is WebAPK compatible.
+bool IsUrlWebApkCompatible(const GURL& url) {
+  // WebAPK web manifests are stored on the Chrome WebAPK server. Do not
+  // generate WebAPKs for Web Manifests with URLs with a user name or password
+  // in order to avoid storing user names and passwords on the WebAPK server.
+  return !url.has_username() && !url.has_password();
+}
+
+}  // namespace
 
 // static
 bool WebappsUtils::IsWebApkInstalled(content::BrowserContext* browser_context,
@@ -28,6 +41,20 @@ bool WebappsUtils::IsWebApkInstalled(content::BrowserContext* browser_context,
         base::android::ConvertJavaStringToUTF8(env, java_webapk_package_name);
   }
   return !webapk_package_name.empty();
+}
+
+// static
+bool WebappsUtils::AreWebManifestUrlsWebApkCompatible(
+    const blink::Manifest& manifest) {
+  for (const auto& icon : manifest.icons) {
+    if (!IsUrlWebApkCompatible(icon.src))
+      return false;
+  }
+
+  // Do not check "related_applications" URLs because they are not used by
+  // WebAPKs.
+  return IsUrlWebApkCompatible(manifest.start_url) &&
+         IsUrlWebApkCompatible(manifest.scope);
 }
 
 }  // namespace webapps

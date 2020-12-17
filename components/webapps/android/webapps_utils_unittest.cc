@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/webapk/webapk_web_manifest_checker.h"
+#include "components/webapps/android/webapps_utils.h"
 
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "url/gurl.h"
+
+namespace webapps {
 
 namespace {
 
@@ -29,23 +31,25 @@ blink::Manifest GetValidManifest() {
 
 }  // anonymous namespace
 
-TEST(WebApkWebManifestCheckerTest, Compatible) {
+TEST(WebappsUtilsTest, Compatible) {
   blink::Manifest manifest = GetValidManifest();
-  EXPECT_TRUE(AreWebManifestUrlsWebApkCompatible(manifest));
+  EXPECT_TRUE(WebappsUtils::AreWebManifestUrlsWebApkCompatible(manifest));
 }
 
-TEST(WebApkWebManifestCheckerTest, CompatibleURLHasNoPassword) {
+TEST(WebappsUtilsTest, CompatibleURLHasNoPassword) {
   const GURL kUrlWithPassword("http://answer:42@life/universe/and/everything");
 
   blink::Manifest manifest = GetValidManifest();
   manifest.start_url = kUrlWithPassword;
-  EXPECT_FALSE(AreWebManifestUrlsWebApkCompatible(manifest));
+  EXPECT_FALSE(WebappsUtils::AreWebManifestUrlsWebApkCompatible(manifest));
 
   manifest = GetValidManifest();
   manifest.scope = kUrlWithPassword;
-  EXPECT_FALSE(AreWebManifestUrlsWebApkCompatible(manifest));
+  EXPECT_FALSE(WebappsUtils::AreWebManifestUrlsWebApkCompatible(manifest));
 
   manifest = GetValidManifest();
   manifest.icons[0].src = kUrlWithPassword;
-  EXPECT_FALSE(AreWebManifestUrlsWebApkCompatible(manifest));
+  EXPECT_FALSE(WebappsUtils::AreWebManifestUrlsWebApkCompatible(manifest));
 }
+
+}  // namespace webapps

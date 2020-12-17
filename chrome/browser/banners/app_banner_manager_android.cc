@@ -18,7 +18,6 @@
 #include "chrome/browser/android/tab_web_contents_delegate_android.h"
 #include "chrome/browser/android/webapk/webapk_metrics.h"
 #include "chrome/browser/android/webapk/webapk_ukm_recorder.h"
-#include "chrome/browser/android/webapk/webapk_web_manifest_checker.h"
 #include "chrome/browser/android/webapps/add_to_homescreen_coordinator.h"
 #include "chrome/browser/android/webapps/add_to_homescreen_params.h"
 #include "chrome/browser/android/webapps/pwa_bottom_sheet_controller.h"
@@ -184,7 +183,7 @@ void AppBannerManagerAndroid::PerformInstallableChecks() {
 }
 
 void AppBannerManagerAndroid::PerformInstallableWebAppCheck() {
-  if (!AreWebManifestUrlsWebApkCompatible(manifest_)) {
+  if (!webapps::WebappsUtils::AreWebManifestUrlsWebApkCompatible(manifest_)) {
     Stop(URL_NOT_SUPPORTED_FOR_WEBAPK);
     return;
   }

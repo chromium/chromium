@@ -7,6 +7,10 @@
 
 class GURL;
 
+namespace blink {
+struct Manifest;
+}
+
 namespace content {
 class BrowserContext;
 }
@@ -22,6 +26,11 @@ class WebappsUtils {
   // Returns true if there is an installed WebAPK which can handle |url|.
   static bool IsWebApkInstalled(content::BrowserContext* browser_context,
                                 const GURL& url);
+
+  // Returns whether the format of the URLs in the Web Manifest is WebAPK
+  // compatible.
+  static bool AreWebManifestUrlsWebApkCompatible(
+      const blink::Manifest& manifest);
 };
 
 }  // namespace webapps
