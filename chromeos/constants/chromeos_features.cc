@@ -507,12 +507,12 @@ const base::Feature kPinSetupForFamilyLink{"PinSetupForFamilyLink",
 // Controls whether the camera permissions should be shown in the Plugin
 // VM app settings.
 const base::Feature kPluginVmShowCameraPermissions{
-    "PluginVmShowCameraPermissions", base::FEATURE_DISABLED_BY_DEFAULT};
+    "PluginVmShowCameraPermissions", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether the microphone permissions should be shown in the Plugin
 // VM app settings.
 const base::Feature kPluginVmShowMicrophonePermissions{
-    "PluginVmShowMicrophonePermissions", base::FEATURE_DISABLED_BY_DEFAULT};
+    "PluginVmShowMicrophonePermissions", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether to show printer statuses.
 const base::Feature kPrinterStatus{"PrinterStatus",
