@@ -118,3 +118,6 @@
 
 # crbug.com/1153888
 -org.chromium.chrome.browser.autofill.AutofillUpstreamTest.testSaveCardInfoBarWithEmptyName
+
+# crbug.com/1159805
+-org.chromium.chrome.browser.customtabs.DetachedResourceRequestTest.testRepeatedIntents
