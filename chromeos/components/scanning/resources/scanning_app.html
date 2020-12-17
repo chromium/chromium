@@ -76,13 +76,34 @@
     margin-inline-start: var(--right-panel-margin-inline-start);
     padding-inline-end: var(--right-panel-padding-inline-end);
     padding-inline-start: var(--right-panel-padding-inline-start);
-    width: var(--right-panel-width);
+    width: 352px;
+  }
+
+  /* Align with Print Preview and use lighter box-shadows compared to the
+   * default styling. */
+  #cr-container-shadow-top,
+  #cr-container-shadow-bottom {
+    box-shadow: inset 0 5px 3px -3px rgba(0, 0, 0, .2);
+    margin-inline-end: 40px;
+    margin-inline-start: 32px;
+  }
+
+  #settingsSection {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - var(--panel-container-margin-top));
+  }
+
+  #container {
+    flex: 1;
+    max-height: 445px;
+    overflow: overlay;
   }
 
   .scan-button-container {
     display: flex;
     justify-content: flex-end;
-    margin-bottom: 0;
+    margin-bottom: 32px;
     margin-inline-end: 40px;
     margin-inline-start: 32px;
     margin-top: 32px;
@@ -144,47 +165,51 @@
           progress-percent="[[progressPercent_]]"></scan-preview>
     </div>
     <div class="right-panel">
-      <template is="dom-if" if="[[!showDoneSection_]]">
+      <div id="settingsSection" hidden="[[showDoneSection_]]">
         <h1 id="appTitle">[[i18n('appTitle')]]</h1>
-        <scanner-select id="scannerSelect" scanners="[[scanners_]]"
-            loaded="[[scannersLoaded_]]"
-            disabled="[[settingsDisabled_]]"
-            selected-scanner-id="{{selectedScannerId}}"></scanner-select>
-        <source-select id="sourceSelect" sources="[[capabilities_.sources]]"
-            disabled="[[settingsDisabled_]]"
-            selected-source="{{selectedSource}}"></source-select>
-        <scan-to-select id="scanToSelect"
-            disabled="[[settingsDisabled_]]"
-            selected-file-path="{{selectedFilePath}}">
-        </scan-to-select>
-        <file-type-select id="fileTypeSelect"
-            disabled="[[settingsDisabled_]]"
-            selected-file-type="{{selectedFileType}}"></file-type-select>
-        <div id="more-settings-line-separator"></div>
-        <cr-button id="moreSettingsButton" on-click="toggleClicked_"
-            aria-expanded$="[[opened]]"
-            disabled="[[settingsDisabled_]]">
-          <span>[[i18n('moreSettings')]]</span>
-          <iron-icon icon="[[getArrowIcon_(opened)]]">
-          </iron-icon>
-        </cr-button>
-        <iron-collapse id="collapse" opened="{{opened}}">
-          <color-mode-select id="colorModeSelect"
-              color-modes="[[capabilities_.colorModes]]"
-              disabled="[[settingsDisabled_]]"
-              selected-color-mode="{{selectedColorMode}}">
-          </color-mode-select>
-          <page-size-select id="pageSizeSelect"
-              page-sizes="[[selectedSourcePageSizes_]]"
-              disabled="[[settingsDisabled_]]"
-              selected-page-size="{{selectedPageSize}}">
-          </page-size-select>
-          <resolution-select id="resolutionSelect"
-              resolutions="[[capabilities_.resolutions]]"
-              disabled="[[settingsDisabled_]]"
-              selected-resolution="{{selectedResolution}}">
-          </resolution-select>
-        </iron-collapse>
+        <div id="container" show-bottom-shadow>
+          <template is="dom-if" if="[[!showDoneSection_]]">
+            <scanner-select id="scannerSelect" scanners="[[scanners_]]"
+                loaded="[[scannersLoaded_]]"
+                disabled="[[settingsDisabled_]]"
+                selected-scanner-id="{{selectedScannerId}}"></scanner-select>
+            <source-select id="sourceSelect" sources="[[capabilities_.sources]]"
+                disabled="[[settingsDisabled_]]"
+                selected-source="{{selectedSource}}"></source-select>
+            <scan-to-select id="scanToSelect"
+                disabled="[[settingsDisabled_]]"
+                selected-file-path="{{selectedFilePath}}">
+            </scan-to-select>
+            <file-type-select id="fileTypeSelect"
+                disabled="[[settingsDisabled_]]"
+                selected-file-type="{{selectedFileType}}"></file-type-select>
+            <div id="more-settings-line-separator"></div>
+            <cr-button id="moreSettingsButton" on-click="toggleClicked_"
+                aria-expanded$="[[opened]]"
+                disabled="[[settingsDisabled_]]">
+              <span>[[i18n('moreSettings')]]</span>
+              <iron-icon icon="[[getArrowIcon_(opened)]]">
+              </iron-icon>
+            </cr-button>
+            <iron-collapse id="collapse" opened="{{opened}}">
+              <color-mode-select id="colorModeSelect"
+                  color-modes="[[capabilities_.colorModes]]"
+                  disabled="[[settingsDisabled_]]"
+                  selected-color-mode="{{selectedColorMode}}">
+              </color-mode-select>
+              <page-size-select id="pageSizeSelect"
+                  page-sizes="[[selectedSourcePageSizes_]]"
+                  disabled="[[settingsDisabled_]]"
+                  selected-page-size="{{selectedPageSize}}">
+              </page-size-select>
+              <resolution-select id="resolutionSelect"
+                  resolutions="[[capabilities_.resolutions]]"
+                  disabled="[[settingsDisabled_]]"
+                  selected-resolution="{{selectedResolution}}">
+              </resolution-select>
+            </iron-collapse>
+          </template>
+        </div>
         <div class="scan-button-container">
           <cr-button id="scanButton" class="action-button" on-click="onScanClick_"
               disabled$="[[settingsDisabled_]]"
@@ -197,7 +222,7 @@
             [[i18n('cancelButtonText')]]
           </cr-button>
         </div>
-      </template>
+      </div>
       <template is="dom-if" if="[[showDoneSection_]]">
         <scan-done-section page-number="[[pageNumber_]]"
             on-done-click="onDoneClick_" on-file-not-found="onFileNotFound_"

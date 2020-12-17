@@ -25,6 +25,7 @@ import './scanning_fonts_css.js';
 import './scanning_shared_css.js';
 import './source_select.js';
 
+import {CrContainerShadowBehavior} from 'chrome://resources/cr_elements/cr_container_shadow_behavior.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {afterNextRender, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -49,7 +50,7 @@ Polymer({
 
   _template: html`{__html_template__}`,
 
-  behaviors: [I18nBehavior],
+  behaviors: [CrContainerShadowBehavior, I18nBehavior],
 
   /**
    * Receives scan job notifications.
