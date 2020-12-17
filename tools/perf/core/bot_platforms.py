@@ -350,7 +350,6 @@ _MAC_M1_MINI_2020_BENCHMARK_CONFIGS = PerfSuite([
 
 _WIN_10_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
     'blink_perf.display_locking',
-    'tab_search',
     'v8.runtime_stats.top_25',
 ])
 _WIN_10_EXECUTABLE_CONFIGS = frozenset([
@@ -363,7 +362,6 @@ _WIN_10_EXECUTABLE_CONFIGS = frozenset([
 _WIN_10_LOW_END_BENCHMARK_CONFIGS = PerfSuite(
     OFFICIAL_BENCHMARK_CONFIGS).Remove([
         'blink_perf.display_locking',
-        'tab_search',
     ])
 _WIN_10_LOW_END_HP_CANDIDATE_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('v8.browsing_desktop'),

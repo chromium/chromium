@@ -336,6 +336,9 @@
     },
     "25": {
         "benchmarks": {
+            "tab_search": {
+                "abridged": false
+            },
             "v8.runtime_stats.top_25": {
                 "begin": 92,
                 "abridged": false

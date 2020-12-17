@@ -362,6 +362,9 @@
     },
     "25": {
         "benchmarks": {
+            "tab_search": {
+                "abridged": false
+            },
             "v8.browsing_desktop-future": {
                 "begin": 5,
                 "abridged": false
