@@ -560,18 +560,16 @@ void PaintPreviewClient::OnFinished(
     // At a minimum one frame was captured successfully, it is up to the
     // caller to decide if a partial success is acceptable based on what is
     // contained in the proto.
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(document_data->callback), guid,
-                       document_data->had_error
-                           ? mojom::PaintPreviewStatus::kPartialSuccess
-                           : mojom::PaintPreviewStatus::kOk,
-                       std::move(*document_data).IntoCaptureResult()));
+    std::move(document_data->callback)
+        .Run(guid,
+             document_data->had_error
+                 ? mojom::PaintPreviewStatus::kPartialSuccess
+                 : mojom::PaintPreviewStatus::kOk,
+             std::move(*document_data).IntoCaptureResult());
   } else {
     // A proto could not be created indicating all frames failed to capture.
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(document_data->callback), guid,
-                                  mojom::PaintPreviewStatus::kFailed, nullptr));
+    std::move(document_data->callback)
+        .Run(guid, mojom::PaintPreviewStatus::kFailed, {});
   }
   all_document_data_.erase(guid);
 }

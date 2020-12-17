@@ -24,43 +24,16 @@
 #include "components/paint_preview/common/test_utils.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/notification_types.h"
-#include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
-#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/skia/include/core/SkPicture.h"
 #include "third_party/skia/include/core/SkStream.h"
 #include "url/gurl.h"
 
 namespace paint_preview {
-
-class NoOpPaintPreviewRecorder : public mojom::PaintPreviewRecorder {
- public:
-  NoOpPaintPreviewRecorder() = default;
-  ~NoOpPaintPreviewRecorder() override = default;
-
-  NoOpPaintPreviewRecorder(const NoOpPaintPreviewRecorder&) = delete;
-  NoOpPaintPreviewRecorder& operator=(const NoOpPaintPreviewRecorder&) = delete;
-
-  void CapturePaintPreview(
-      mojom::PaintPreviewCaptureParamsPtr params,
-      mojom::PaintPreviewRecorder::CapturePaintPreviewCallback callback)
-      override {
-    callback_ = std::move(callback);
-  }
-
-  void BindRequest(mojo::ScopedInterfaceEndpointHandle handle) {
-    binding_.Bind(mojo::PendingAssociatedReceiver<mojom::PaintPreviewRecorder>(
-        std::move(handle)));
-  }
-
- private:
-  mojom::PaintPreviewRecorder::CapturePaintPreviewCallback callback_;
-  mojo::AssociatedReceiver<mojom::PaintPreviewRecorder> binding_{this};
-};
 
 // Test harness for a integration test of paint previews. In this test:
 // - Each RenderFrame has an instance of PaintPreviewRecorder attached.
@@ -72,9 +45,6 @@ class PaintPreviewBrowserTest
  protected:
   PaintPreviewBrowserTest() = default;
   ~PaintPreviewBrowserTest() override = default;
-
-  PaintPreviewBrowserTest(const PaintPreviewBrowserTest&) = delete;
-  PaintPreviewBrowserTest& operator=(const PaintPreviewBrowserTest&) = delete;
 
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -122,15 +92,6 @@ class PaintPreviewBrowserTest
     return params;
   }
 
-  void OverrideInterface(NoOpPaintPreviewRecorder* service) {
-    blink::AssociatedInterfaceProvider* remote_interfaces =
-        GetWebContents()->GetMainFrame()->GetRemoteAssociatedInterfaces();
-    remote_interfaces->OverrideBinderForTesting(
-        mojom::PaintPreviewRecorder::Name_,
-        base::BindRepeating(&NoOpPaintPreviewRecorder::BindRequest,
-                            base::Unretained(service)));
-  }
-
   void WaitForLoadStopWithoutSuccessCheck() {
     // In many cases, the load may have finished before we get here.  Only wait
     // if the tab still has a pending navigation.
@@ -173,6 +134,10 @@ class PaintPreviewBrowserTest
   base::ScopedTempDir temp_dir_;
   net::EmbeddedTestServer http_server_;
   net::EmbeddedTestServer http_server_different_origin_;
+
+ private:
+  PaintPreviewBrowserTest(const PaintPreviewBrowserTest&) = delete;
+  PaintPreviewBrowserTest& operator=(const PaintPreviewBrowserTest&) = delete;
 };
 
 IN_PROC_BROWSER_TEST_P(PaintPreviewBrowserTest, CaptureFrame) {
@@ -356,57 +321,6 @@ IN_PROC_BROWSER_TEST_P(PaintPreviewBrowserTest,
             quit.Run();
           },
           loop.QuitClosure(), params));
-  loop.Run();
-}
-
-// https://crbug.com/1146573. If a renderer crashes,
-// WebContentsObserver::RenderFrameDeleted is called quite early on.
-// DecrementCapturerCount can cause the WebContents to be reloaded. This should
-// be deferred using PostTask.
-IN_PROC_BROWSER_TEST_P(PaintPreviewBrowserTest, DontReloadInRenderProcessExit) {
-  LoadPage(http_server_.GetURL("a.com", "/hello.html"));
-
-  content::WebContents* web_contents = GetWebContents();
-
-  // Override remote interfaces with a no-op.
-  NoOpPaintPreviewRecorder noop_recorder;
-  OverrideInterface(&noop_recorder);
-
-  CreateClient();
-  auto* client = PaintPreviewClient::FromWebContents(web_contents);
-  // Do this twice to simulate conditions for crash.
-  web_contents->IncrementCapturerCount(gfx::Size(), true);
-  web_contents->IncrementCapturerCount(gfx::Size(), true);
-
-  base::RunLoop loop;
-  auto params = MakeParams();
-  client->CapturePaintPreview(
-      params, web_contents->GetMainFrame(),
-      // This callback is now posted so it shouldn't cause a crash.
-      base::BindOnce(
-          [](content::WebContents* web_contents, base::UnguessableToken guid,
-             mojom::PaintPreviewStatus status,
-             std::unique_ptr<CaptureResult> result) {
-            EXPECT_EQ(status, mojom::PaintPreviewStatus::kFailed);
-            EXPECT_EQ(result, nullptr);
-            web_contents->DecrementCapturerCount(true);
-            web_contents->DecrementCapturerCount(true);
-          },
-          web_contents)
-          .Then(loop.QuitClosure()));
-  // Crash the renderer.
-  {
-    base::ScopedAllowBlockingForTesting scope;
-    content::RenderProcessHost* process =
-        GetWebContents()->GetMainFrame()->GetProcess();
-    content::RenderProcessHostWatcher crash_observer(
-        process, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
-    process->Shutdown(0);
-    crash_observer.Wait();
-  }
-
-  // The browser would have crashed before the loop exited if the callback was
-  // not posted.
   loop.Run();
 }
 
