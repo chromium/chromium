@@ -280,4 +280,16 @@ TEST_F(SelectionModifierTest, MoveCaretWithShadow) {
   }
 }
 
+// For https://crbug.com/1155342 and https://crbug.com/1155309
+TEST_F(SelectionModifierTest, PreviousParagraphOfObject) {
+  const SelectionInDOMTree selection =
+      SetSelectionTextToBody("<object>|</object>");
+  SelectionModifier modifier(GetFrame(), selection);
+  modifier.Modify(SelectionModifyAlteration::kMove,
+                  SelectionModifyDirection::kBackward,
+                  TextGranularity::kParagraph);
+  EXPECT_EQ("|<object></object>",
+            GetSelectionTextFromBody(modifier.Selection().AsSelection()));
+}
+
 }  // namespace blink
