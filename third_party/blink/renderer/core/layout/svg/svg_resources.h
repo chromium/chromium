@@ -54,8 +54,6 @@ class SVGResources {
                             const ComputedStyle* old_style,
                             const ComputedStyle&);
   static void ClearMarkers(SVGElement&, const ComputedStyle*);
-
-  static bool SupportsMarkers(const SVGElement&);
 };
 
 class SVGElementResourceClient final

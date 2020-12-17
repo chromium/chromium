@@ -33,9 +33,22 @@
 
 namespace blink {
 
+namespace {
+
+bool SupportsMarkers(const SVGGeometryElement& element) {
+  return element.HasTagName(svg_names::kLineTag) ||
+         element.HasTagName(svg_names::kPathTag) ||
+         element.HasTagName(svg_names::kPolygonTag) ||
+         element.HasTagName(svg_names::kPolylineTag);
+}
+
+}  // namespace
+
 LayoutSVGPath::LayoutSVGPath(SVGGeometryElement* node)
     // <line> elements have no joins and thus needn't care about miters.
-    : LayoutSVGShape(node, IsA<SVGLineElement>(node) ? kNoMiters : kComplex) {}
+    : LayoutSVGShape(node, IsA<SVGLineElement>(node) ? kNoMiters : kComplex) {
+  DCHECK(SupportsMarkers(*node));
+}
 
 LayoutSVGPath::~LayoutSVGPath() = default;
 
@@ -70,8 +83,7 @@ void LayoutSVGPath::UpdateMarkers() {
   marker_positions_.clear();
 
   const SVGComputedStyle& svg_style = StyleRef().SvgStyle();
-  if (!svg_style.HasMarkers() ||
-      !SVGResources::SupportsMarkers(*To<SVGGraphicsElement>(GetElement())))
+  if (!svg_style.HasMarkers())
     return;
   SVGElementResourceClient* client = SVGResources::GetClient(*this);
   if (!client)

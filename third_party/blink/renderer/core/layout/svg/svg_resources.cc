@@ -30,7 +30,6 @@
 #include "third_party/blink/renderer/core/svg/graphics/filters/svg_filter_builder.h"
 #include "third_party/blink/renderer/core/svg/svg_filter_primitive_standard_attributes.h"
 #include "third_party/blink/renderer/core/svg/svg_resource.h"
-#include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/graphics/filters/filter.h"
 #include "third_party/blink/renderer/platform/graphics/filters/filter_effect.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
@@ -61,17 +60,6 @@ FloatRect SVGResources::ReferenceBoxForEffects(
   }
   DCHECK(obb_layout_object);
   return obb_layout_object->ObjectBoundingBox();
-}
-
-bool SVGResources::SupportsMarkers(const SVGElement& element) {
-  DEFINE_STATIC_LOCAL(HashSet<AtomicString>, tag_list,
-                      ({
-                          svg_names::kLineTag.LocalName(),
-                          svg_names::kPathTag.LocalName(),
-                          svg_names::kPolygonTag.LocalName(),
-                          svg_names::kPolylineTag.LocalName(),
-                      }));
-  return tag_list.Contains(element.localName());
 }
 
 void SVGResources::UpdateClipPathFilterMask(SVGElement& element,
