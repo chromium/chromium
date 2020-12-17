@@ -5906,3 +5906,11 @@ crbug.com/1158672 [ Mac ] external/wpt/html/dom/idlharness.https.html?include=(D
 
 # Sheriff 2020-12-14
 crbug.com/1046784 http/tests/devtools/console/console-context-selector.js [ Pass Timeout ]
+
+# Sheriff 2020-12-17
+crbug.com/1043488 [ Win7 ] fast/forms/suggestion-picker/datetimelocal-suggestion-picker-appearance-with-scroll-bar.html [ Pass Failure ]
+crbug.com/1043488 [ Win7 ] fast/forms/suggestion-picker/time-suggestion-picker-appearance-with-scroll-bar.html [ Pass Failure ]
+crbug.com/1043488 [ Win7 ] fast/forms/suggestion-picker/time-suggestion-picker-appearance-locale-hebrew.html [ Pass Failure ]
+crbug.com/1043488 [ Win7 ] fast/forms/suggestion-picker/month-suggestion-picker-appearance-rtl.html [ Pass Failure ]
+crbug.com/1043488 [ Win7 ] fast/forms/suggestion-picker/week-suggestion-picker-appearance-rtl.html [ Pass Failure ]
+crbug.com/1043488 [ Win7 ] fast/forms/suggestion-picker/date-suggestion-picker-appearance-rtl.html [ Pass Failure ]
