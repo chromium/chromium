@@ -569,6 +569,9 @@
   <message name="IDS_SETTINGS_PASSWORD_MOVE_PASSWORDS_TO_ACCOUNT_DIALOG_TITLE" desc="Title for the dialog that asks the user to select which passwords to move to their Google Account.">
     Choose which passwords to move
   </message>
+  <message name="IDS_SETTINGS_PASSWORD_MOVE_PASSWORDS_TO_ACCOUNT_SNACKBAR" desc="Text in the snackbar that appears after the user successfuly moved local passwords to their Google Account.">
+    Passwords moved to your Google Account
+  </message>
   <message name="IDS_SETTINGS_PASSWORD_MOVE_TO_ACCOUNT_DIALOG_TITLE" desc="Title for the dialog that confirms whether the user wishes to move a password to their Google Account.">
     Move to Google Account?
   </message>
