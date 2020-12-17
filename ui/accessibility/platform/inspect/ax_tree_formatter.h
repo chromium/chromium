@@ -5,6 +5,8 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_TREE_FORMATTER_H_
 #define UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_TREE_FORMATTER_H_
 
+#include <memory>
+#include <string>
 #include <vector>
 
 #include "ui/accessibility/platform/inspect/ax_inspect.h"
