@@ -1452,6 +1452,8 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source) {
       {"privacySandboxPageHeading", IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_HEADING},
   };
   AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+
+  html_source->AddString("privacySandboxURL", chrome::kPrivacySandboxURL);
 }
 
 void AddSafetyCheckStrings(content::WebUIDataSource* html_source) {

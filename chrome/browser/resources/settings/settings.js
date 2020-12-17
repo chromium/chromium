@@ -15,6 +15,7 @@ export {DefaultBrowserBrowserProxyImpl} from './default_browser_page/default_bro
 // </if>
 export {ExtensionControlBrowserProxyImpl} from './extension_control_browser_proxy.m.js';
 export {HatsBrowserProxy, HatsBrowserProxyImpl} from './hats_browser_proxy.js';
+export {loadTimeData} from './i18n_setup.js';
 export {LifetimeBrowserProxy, LifetimeBrowserProxyImpl} from './lifetime_browser_proxy.m.js';
 export {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyElementInteractions, SafeBrowsingInteractions, SafetyCheckInteractions} from './metrics_browser_proxy.js';
 export {OnStartupBrowserProxy, OnStartupBrowserProxyImpl} from './on_startup_page/on_startup_browser_proxy.js';

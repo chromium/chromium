@@ -132,6 +132,7 @@ js_type_check("closure_compile") {
     #":prefs_test_cases",
     #":prefs_tests",
     ":privacy_page_test",
+    ":privacy_sandbox_test",
 
     #":protocol_handlers_tests",
     ":recent_site_permissions_test",
@@ -332,6 +333,16 @@ js_library("privacy_page_test") {
     "//chrome/browser/resources/settings:settings",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:load_time_data.m",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("privacy_sandbox_test") {
+  deps = [
+    ":test_open_window_proxy",
+    "..:chai_assert",
+    "//chrome/browser/resources/settings:settings",
+    "//chrome/browser/resources/settings/privacy_sandbox:app",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

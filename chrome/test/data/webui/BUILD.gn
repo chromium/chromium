@@ -99,6 +99,7 @@ if (include_js_tests) {
       "sandboxstatus_browsertest.js",
       "settings/a11y/v3_a11y_browsertest.js",
       "settings/cr_settings_v3_browsertest.js",
+      "settings/privacy_sandbox_browsertest.js",
       "settings/settings_idle_load_v3_browsertest.js",
       "tab_search/tab_search_browsertest.js",
       "text_defaults_browsertest.js",

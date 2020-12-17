@@ -24,6 +24,7 @@ js_type_check("closure_compile") {
 
 js_library("app") {
   deps = [
+    "..:settings",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
