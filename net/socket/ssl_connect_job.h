@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
@@ -179,6 +180,13 @@ class NET_EXPORT_PRIVATE SSLConnectJob : public ConnectJob,
   // and only if the connect job is connected *directly* to the server (not
   // through an HTTPS CONNECT request or a SOCKS proxy).
   IPEndPoint server_address_;
+
+  // Any DNS aliases for the remote endpoint. The alias chain order is
+  // preserved in reverse, from canonical name (i.e. address record name)
+  // through to query name. Stored because `nested_connect_job_` has a
+  // limited lifetime and the aliases can no longer be retrieved from there by
+  // by the time that the aliases are needed to be passed in SetSocket.
+  std::vector<std::string> dns_aliases_;
 
   DISALLOW_COPY_AND_ASSIGN(SSLConnectJob);
 };

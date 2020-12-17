@@ -797,7 +797,7 @@ void HttpProxyConnectJob::OnTimedOutInternal() {
 
 int HttpProxyConnectJob::HandleConnectResult(int result) {
   if (result == OK)
-    SetSocket(std::move(transport_socket_));
+    SetSocket(std::move(transport_socket_), base::nullopt /* dns_aliases */);
   return result;
 }
 

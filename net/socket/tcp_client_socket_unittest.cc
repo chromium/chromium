@@ -10,6 +10,9 @@
 
 #include <stddef.h>
 
+#include <string>
+#include <vector>
+
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_source.h"
 #include "base/strings/string_number_conversions.h"
@@ -253,6 +256,64 @@ TEST_F(TCPClientSocketTest, WasEverUsed) {
   TestCompletionCallback connect_callback2;
   connect_result = socket.Connect(connect_callback2.callback());
   EXPECT_FALSE(socket.WasEverUsed());
+}
+
+// Tests that DNS aliases can be stored in a socket for reuse.
+TEST_F(TCPClientSocketTest, DnsAliasesPersistForReuse) {
+  IPAddress lo_address = IPAddress::IPv4Localhost();
+  TCPServerSocket server(nullptr, NetLogSource());
+  ASSERT_THAT(server.Listen(IPEndPoint(lo_address, 0), 1), IsOk());
+  IPEndPoint server_address;
+  ASSERT_THAT(server.GetLocalAddress(&server_address), IsOk());
+
+  // Create a socket.
+  TCPClientSocket socket(AddressList(server_address), nullptr, nullptr, nullptr,
+                         NetLogSource());
+  EXPECT_FALSE(socket.WasEverUsed());
+  EXPECT_THAT(socket.Bind(IPEndPoint(lo_address, 0)), IsOk());
+
+  // The socket's DNS aliases are unset.
+  EXPECT_TRUE(socket.GetDnsAliases().empty());
+
+  // Set the aliases.
+  std::vector<std::string> dns_aliases({"alias1", "alias2", "host"});
+  socket.SetDnsAliases(dns_aliases);
+
+  // Verify that the aliases are set.
+  EXPECT_THAT(socket.GetDnsAliases(),
+              testing::ElementsAre("alias1", "alias2", "host"));
+
+  // Connect the socket.
+  TestCompletionCallback connect_callback;
+  int connect_result = socket.Connect(connect_callback.callback());
+  EXPECT_FALSE(socket.WasEverUsed());
+  TestCompletionCallback accept_callback;
+  std::unique_ptr<StreamSocket> accepted_socket;
+  int result = server.Accept(&accepted_socket, accept_callback.callback());
+  ASSERT_THAT(accept_callback.GetResult(result), IsOk());
+  EXPECT_THAT(connect_callback.GetResult(connect_result), IsOk());
+  EXPECT_FALSE(socket.WasEverUsed());
+  EXPECT_TRUE(socket.IsConnected());
+
+  // Write some data to the socket to set WasEverUsed, so that the
+  // socket can be re-used.
+  const char kRequest[] = "GET / HTTP/1.0";
+  auto write_buffer = base::MakeRefCounted<StringIOBuffer>(kRequest);
+  TestCompletionCallback write_callback;
+  socket.Write(write_buffer.get(), write_buffer->size(),
+               write_callback.callback(), TRAFFIC_ANNOTATION_FOR_TESTS);
+  EXPECT_TRUE(socket.WasEverUsed());
+  socket.Disconnect();
+  EXPECT_FALSE(socket.IsConnected());
+  EXPECT_TRUE(socket.WasEverUsed());
+
+  // Re-use the socket, and verify that the aliases are still set.
+  EXPECT_THAT(socket.Bind(IPEndPoint(lo_address, 0)), IsOk());
+  TestCompletionCallback connect_callback2;
+  connect_result = socket.Connect(connect_callback2.callback());
+  EXPECT_FALSE(socket.WasEverUsed());
+  EXPECT_THAT(socket.GetDnsAliases(),
+              testing::ElementsAre("alias1", "alias2", "host"));
 }
 
 class TestSocketPerformanceWatcher : public SocketPerformanceWatcher {

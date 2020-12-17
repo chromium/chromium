@@ -370,7 +370,8 @@ int TransportConnectJob::DoTransportConnectComplete(int result) {
       race_result = RACE_IPV6_WINS;
     HistogramDuration(connect_timing_, race_result);
 
-    SetSocket(std::move(transport_socket_));
+    DCHECK(request_);
+    SetSocket(std::move(transport_socket_), request_->GetDnsAliasResults());
   } else {
     // Failure will be returned via |GetAdditionalErrorState|, so save
     // connection attempts from both sockets for use there.
@@ -448,7 +449,9 @@ void TransportConnectJob::DoIPv6FallbackTransportConnectComplete(int result) {
 
     connect_timing_.connect_start = fallback_connect_start_time_;
     HistogramDuration(connect_timing_, RACE_IPV4_WINS);
-    SetSocket(std::move(fallback_transport_socket_));
+    DCHECK(request_);
+    SetSocket(std::move(fallback_transport_socket_),
+              request_->GetDnsAliasResults());
     next_state_ = STATE_NONE;
   } else {
     // Failure will be returned via |GetAdditionalErrorState|, so save

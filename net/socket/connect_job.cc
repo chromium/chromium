@@ -225,9 +225,14 @@ scoped_refptr<SSLCertRequestInfo> ConnectJob::GetCertRequestInfo() {
   return nullptr;
 }
 
-void ConnectJob::SetSocket(std::unique_ptr<StreamSocket> socket) {
-  if (socket)
+void ConnectJob::SetSocket(
+    std::unique_ptr<StreamSocket> socket,
+    base::Optional<std::vector<std::string>> dns_aliases) {
+  if (socket) {
     net_log().AddEvent(NetLogEventType::CONNECT_JOB_SET_SOCKET);
+    if (dns_aliases)
+      socket->SetDnsAliases(std::move(dns_aliases.value()));
+  }
   socket_ = std::move(socket);
 }
 
@@ -271,7 +276,7 @@ void ConnectJob::LogConnectCompletion(int net_error) {
 
 void ConnectJob::OnTimeout() {
   // Make sure the socket is NULL before calling into |delegate|.
-  SetSocket(nullptr);
+  SetSocket(nullptr, base::nullopt /* dns_aliases */);
 
   OnTimedOutInternal();
 

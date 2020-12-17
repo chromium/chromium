@@ -7,6 +7,9 @@
 
 #include <stdint.h>
 
+#include <string>
+#include <vector>
+
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -18,7 +21,8 @@ class IOBuffer;
 // Represents a read/write socket.
 class NET_EXPORT Socket {
  public:
-  virtual ~Socket() {}
+  Socket();
+  virtual ~Socket();
 
   // Reads data, up to |buf_len| bytes, from the socket.  The number of bytes
   // read is returned, or an error is returned upon failure.
@@ -81,6 +85,18 @@ class NET_EXPORT Socket {
   // Note: changing this value can affect the TCP window size on some platforms.
   // Returns a net error code.
   virtual int SetSendBufferSize(int32_t size) = 0;
+
+  // DNS aliases must be stored in sockets in case of socket reuse.
+  // Sets the field storing the aliases. Empty if using a proxy.
+  // The alias chain order is preserved in reverse, from canonical name (i.e.
+  // address record name) through to query name.
+  virtual void SetDnsAliases(std::vector<std::string> aliases);
+
+  // Retrieves any DNS aliases for the socket's remote endpoint.
+  virtual const std::vector<std::string>& GetDnsAliases() const;
+
+ protected:
+  std::vector<std::string> dns_aliases_;
 };
 
 }  // namespace net

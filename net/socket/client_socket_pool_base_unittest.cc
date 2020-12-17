@@ -470,7 +470,7 @@ class TestConnectJob : public ConnectJob {
         return ERR_IO_PENDING;
       default:
         NOTREACHED();
-        SetSocket(std::unique_ptr<StreamSocket>());
+        SetSocket(std::unique_ptr<StreamSocket>(), base::nullopt);
         return ERR_FAILED;
     }
   }
@@ -481,14 +481,16 @@ class TestConnectJob : public ConnectJob {
     int result = OK;
     has_established_connection_ = true;
     if (succeed) {
-      SetSocket(std::make_unique<MockClientSocket>(net_log().net_log()));
+      SetSocket(std::make_unique<MockClientSocket>(net_log().net_log()),
+                base::nullopt);
       socket()->Connect(CompletionOnceCallback());
     } else if (cert_error) {
-      SetSocket(std::make_unique<MockClientSocket>(net_log().net_log()));
+      SetSocket(std::make_unique<MockClientSocket>(net_log().net_log()),
+                base::nullopt);
       result = ERR_CERT_COMMON_NAME_INVALID;
     } else {
       result = ERR_CONNECTION_FAILED;
-      SetSocket(std::unique_ptr<StreamSocket>());
+      SetSocket(std::unique_ptr<StreamSocket>(), base::nullopt);
     }
 
     if (was_async)

@@ -792,6 +792,9 @@ TEST_F(SSLConnectJobTest, SOCKSBasic) {
     test_delegate.StartJobExpectingResult(ssl_connect_job.get(), OK,
                                           io_mode == SYNCHRONOUS);
     CheckConnectTimesExceptDnsSet(ssl_connect_job->connect_timing());
+
+    // Proxies should not set any DNS aliases.
+    EXPECT_TRUE(test_delegate.socket()->GetDnsAliases().empty());
   }
 }
 
@@ -966,6 +969,9 @@ TEST_F(SSLConnectJobTest, HttpProxyAuthChallenge) {
   test_delegate.RunAuthCallback();
 
   EXPECT_THAT(test_delegate.WaitForResult(), test::IsOk());
+
+  // Proxies should not set any DNS aliases.
+  EXPECT_TRUE(test_delegate.socket()->GetDnsAliases().empty());
 }
 
 TEST_F(SSLConnectJobTest, HttpProxyAuthWithCachedCredentials) {
@@ -995,6 +1001,7 @@ TEST_F(SSLConnectJobTest, HttpProxyAuthWithCachedCredentials) {
     test_delegate.StartJobExpectingResult(ssl_connect_job.get(), OK,
                                           io_mode == SYNCHRONOUS);
     CheckConnectTimesExceptDnsSet(ssl_connect_job->connect_timing());
+    EXPECT_TRUE(test_delegate.socket()->GetDnsAliases().empty());
   }
 }
 
@@ -1216,6 +1223,60 @@ TEST_F(SSLConnectJobTest,
   EXPECT_TRUE(ssl_connect_job->HasEstablishedConnection());
 
   EXPECT_THAT(test_delegate.WaitForResult(), test::IsOk());
+}
+
+TEST_F(SSLConnectJobTest, DnsAliases) {
+  host_resolver_.set_synchronous_mode(true);
+
+  // Resolve an AddressList with DNS aliases.
+  std::vector<std::string> aliases({"alias1", "alias2", "host"});
+  host_resolver_.rules()->AddIPLiteralRuleWithDnsAliases("host", "2.2.2.2",
+                                                         std::move(aliases));
+  StaticSocketDataProvider data;
+  data.set_connect_data(MockConnect(SYNCHRONOUS, OK));
+  socket_factory_.AddSocketDataProvider(&data);
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  socket_factory_.AddSSLSocketDataProvider(&ssl);
+  TestConnectJobDelegate test_delegate;
+
+  std::unique_ptr<ConnectJob> ssl_connect_job =
+      CreateConnectJob(&test_delegate, ProxyServer::SCHEME_DIRECT, MEDIUM);
+
+  EXPECT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
+
+  base::RunLoop().RunUntilIdle();
+
+  // Verify that the elements of the alias list are those from the
+  // parameter vector.
+  EXPECT_THAT(test_delegate.socket()->GetDnsAliases(),
+              testing::ElementsAre("alias1", "alias2", "host"));
+}
+
+TEST_F(SSLConnectJobTest, NoAdditionalDnsAliases) {
+  host_resolver_.set_synchronous_mode(true);
+
+  // Resolve an AddressList without additional DNS aliases. (The parameter
+  // is an empty vector.)
+  std::vector<std::string> aliases;
+  host_resolver_.rules()->AddIPLiteralRuleWithDnsAliases("host", "2.2.2.2",
+                                                         std::move(aliases));
+  StaticSocketDataProvider data;
+  data.set_connect_data(MockConnect(SYNCHRONOUS, OK));
+  socket_factory_.AddSocketDataProvider(&data);
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  socket_factory_.AddSSLSocketDataProvider(&ssl);
+  TestConnectJobDelegate test_delegate;
+
+  std::unique_ptr<ConnectJob> ssl_connect_job =
+      CreateConnectJob(&test_delegate, ProxyServer::SCHEME_DIRECT, MEDIUM);
+
+  EXPECT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
+
+  base::RunLoop().RunUntilIdle();
+
+  // Verify that the alias list only contains "host".
+  EXPECT_THAT(test_delegate.socket()->GetDnsAliases(),
+              testing::ElementsAre("host"));
 }
 
 }  // namespace

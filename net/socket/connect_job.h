@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
@@ -284,7 +285,8 @@ class NET_EXPORT_PRIVATE ConnectJob {
     return common_connect_job_params_;
   }
 
-  void SetSocket(std::unique_ptr<StreamSocket> socket);
+  void SetSocket(std::unique_ptr<StreamSocket> socket,
+                 base::Optional<std::vector<std::string>> dns_aliases);
   void NotifyDelegateOfCompletion(int rv);
   void NotifyDelegateOfProxyAuth(const HttpResponseInfo& response,
                                  HttpAuthController* auth_controller,

@@ -193,7 +193,8 @@ int WebSocketTransportConnectJob::DoTransportConnect() {
     result = ipv6_job_->Start();
     switch (result) {
       case OK:
-        SetSocket(ipv6_job_->PassSocket());
+        DCHECK(request_);
+        SetSocket(ipv6_job_->PassSocket(), request_->GetDnsAliasResults());
         race_result_ = had_ipv4_ ? TransportConnectJob::RACE_IPV6_WINS
                                  : TransportConnectJob::RACE_IPV6_SOLO;
         return result;
@@ -220,7 +221,8 @@ int WebSocketTransportConnectJob::DoTransportConnect() {
   if (ipv4_job_) {
     result = ipv4_job_->Start();
     if (result == OK) {
-      SetSocket(ipv4_job_->PassSocket());
+      DCHECK(request_);
+      SetSocket(ipv4_job_->PassSocket(), request_->GetDnsAliasResults());
       race_result_ = had_ipv6_ ? TransportConnectJob::RACE_IPV4_WINS
                                : TransportConnectJob::RACE_IPV4_SOLO;
     }
@@ -250,7 +252,8 @@ void WebSocketTransportConnectJob::OnSubJobComplete(
                                  : TransportConnectJob::RACE_IPV6_SOLO;
         break;
     }
-    SetSocket(job->PassSocket());
+    DCHECK(request_);
+    SetSocket(job->PassSocket(), request_->GetDnsAliasResults());
 
     // Make sure all connections are cancelled even if this object fails to be
     // deleted.

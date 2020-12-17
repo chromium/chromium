@@ -5,6 +5,8 @@
 #include "net/socket/transport_connect_job.h"
 
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
@@ -403,6 +405,54 @@ TEST_F(TransportConnectJobTest, IPv4HasNoFallback) {
   test_delegate.socket()->GetConnectionAttempts(&attempts);
   EXPECT_EQ(0u, attempts.size());
   EXPECT_EQ(1, client_socket_factory_.allocation_count());
+}
+
+TEST_F(TransportConnectJobTest, DnsAliases) {
+  host_resolver_.set_synchronous_mode(true);
+  client_socket_factory_.set_default_client_socket_type(
+      MockTransportClientSocketFactory::MOCK_CLIENT_SOCKET);
+
+  // Resolve an AddressList with DNS aliases.
+  std::vector<std::string> aliases({"alias1", "alias2", kHostName});
+  host_resolver_.rules()->AddIPLiteralRuleWithDnsAliases(kHostName, "2.2.2.2",
+                                                         std::move(aliases));
+
+  TestConnectJobDelegate test_delegate;
+  TransportConnectJob transport_connect_job(
+      DEFAULT_PRIORITY, SocketTag(), &common_connect_job_params_,
+      DefaultParams(), &test_delegate, nullptr /* net_log */);
+
+  test_delegate.StartJobExpectingResult(&transport_connect_job, OK,
+                                        true /* expect_sync_result */);
+
+  // Verify that the elements of the alias list are those from the
+  // parameter vector.
+  EXPECT_THAT(test_delegate.socket()->GetDnsAliases(),
+              testing::ElementsAre("alias1", "alias2", kHostName));
+}
+
+TEST_F(TransportConnectJobTest, NoAdditionalDnsAliases) {
+  host_resolver_.set_synchronous_mode(true);
+  client_socket_factory_.set_default_client_socket_type(
+      MockTransportClientSocketFactory::MOCK_CLIENT_SOCKET);
+
+  // Resolve an AddressList without additional DNS aliases. (The parameter
+  // is an empty vector.)
+  std::vector<std::string> aliases;
+  host_resolver_.rules()->AddIPLiteralRuleWithDnsAliases(kHostName, "2.2.2.2",
+                                                         std::move(aliases));
+
+  TestConnectJobDelegate test_delegate;
+  TransportConnectJob transport_connect_job(
+      DEFAULT_PRIORITY, SocketTag(), &common_connect_job_params_,
+      DefaultParams(), &test_delegate, nullptr /* net_log */);
+
+  test_delegate.StartJobExpectingResult(&transport_connect_job, OK,
+                                        true /* expect_sync_result */);
+
+  // Verify that the alias list only contains kHostName.
+  EXPECT_THAT(test_delegate.socket()->GetDnsAliases(),
+              testing::ElementsAre(kHostName));
 }
 
 }  // namespace

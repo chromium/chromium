@@ -190,7 +190,7 @@ int SOCKSConnectJob::DoSOCKSConnectComplete(int result) {
     return result;
   }
 
-  SetSocket(std::move(socket_));
+  SetSocket(std::move(socket_), base::nullopt /* dns_aliases */);
   return result;
 }
 

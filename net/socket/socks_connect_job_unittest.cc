@@ -196,6 +196,9 @@ TEST_F(SOCKSConnectJobTest, SOCKS4) {
       test_delegate.StartJobExpectingResult(
           &socks_connect_job, OK,
           host_resolution_synchronous && read_and_writes_synchronous);
+
+      // Proxies should not set any DNS aliases.
+      EXPECT_TRUE(test_delegate.socket()->GetDnsAliases().empty());
     }
   }
 }
@@ -233,6 +236,9 @@ TEST_F(SOCKSConnectJobTest, SOCKS5) {
       test_delegate.StartJobExpectingResult(
           &socks_connect_job, OK,
           host_resolution_synchronous && read_and_writes_synchronous);
+
+      // Proxies should not set any DNS aliases.
+      EXPECT_TRUE(test_delegate.socket()->GetDnsAliases().empty());
     }
   }
 }

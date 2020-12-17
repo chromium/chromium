@@ -280,6 +280,7 @@ int SSLConnectJob::DoTransportConnectComplete(int result) {
     next_state_ = STATE_SSL_CONNECT;
     nested_socket_ = nested_connect_job_->PassSocket();
     nested_socket_->GetPeerAddress(&server_address_);
+    dns_aliases_ = nested_socket_->GetDnsAliases();
   }
 
   return result;
@@ -497,7 +498,7 @@ int SSLConnectJob::DoSSLConnectComplete(int result) {
   }
 
   if (result == OK || IsCertificateError(result)) {
-    SetSocket(std::move(ssl_socket_));
+    SetSocket(std::move(ssl_socket_), std::move(dns_aliases_));
   } else if (result == ERR_SSL_CLIENT_AUTH_CERT_NEEDED) {
     ssl_cert_request_info_ = base::MakeRefCounted<SSLCertRequestInfo>();
     ssl_socket_->GetSSLCertRequestInfo(ssl_cert_request_info_.get());

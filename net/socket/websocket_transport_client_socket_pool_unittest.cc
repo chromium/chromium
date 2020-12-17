@@ -31,6 +31,7 @@
 #include "net/log/test_net_log.h"
 #include "net/socket/client_socket_handle.h"
 #include "net/socket/connect_job.h"
+#include "net/socket/connect_job_test_util.h"
 #include "net/socket/socket_tag.h"
 #include "net/socket/socket_test_util.h"
 #include "net/socket/ssl_client_socket.h"
@@ -38,6 +39,7 @@
 #include "net/socket/transport_client_socket_pool_test_util.h"
 #include "net/socket/transport_connect_job.h"
 #include "net/socket/websocket_endpoint_lock_manager.h"
+#include "net/socket/websocket_transport_connect_job.h"
 #include "net/test/gtest_util.h"
 #include "net/test/test_with_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -1162,6 +1164,68 @@ TEST_F(WebSocketTransportClientSocketPoolTest, NetworkIsolationKey) {
   ASSERT_EQ(1u, host_resolver_->last_id());
   EXPECT_EQ(kNetworkIsolationKey,
             host_resolver_->request_network_isolation_key(1));
+}
+
+TEST_F(WebSocketTransportClientSocketPoolTest,
+       WebSocketTransportConnectJobWithDnsAliases) {
+  host_resolver_->set_synchronous_mode(true);
+  client_socket_factory_.set_default_client_socket_type(
+      MockTransportClientSocketFactory::MOCK_CLIENT_SOCKET);
+
+  // Resolve an AddressList with DNS aliases.
+  std::string kHostName("host");
+  std::vector<std::string> aliases({"alias1", "alias2", kHostName});
+  host_resolver_->rules()->AddIPLiteralRuleWithDnsAliases(kHostName, "2.2.2.2",
+                                                          std::move(aliases));
+
+  TestConnectJobDelegate test_delegate;
+  scoped_refptr<TransportSocketParams> params =
+      base::MakeRefCounted<TransportSocketParams>(
+          HostPortPair(kHostName, 80), NetworkIsolationKey(),
+          false /* disable_secure_dns */, OnHostResolutionCallback());
+
+  WebSocketTransportConnectJob transport_connect_job(
+      DEFAULT_PRIORITY, SocketTag(), &common_connect_job_params_, params,
+      &test_delegate, nullptr /* net_log */);
+
+  test_delegate.StartJobExpectingResult(&transport_connect_job, OK,
+                                        true /* expect_sync_result */);
+
+  // Verify that the elements of the alias list are those from the
+  // parameter vector.
+  EXPECT_THAT(test_delegate.socket()->GetDnsAliases(),
+              testing::ElementsAre("alias1", "alias2", kHostName));
+}
+
+TEST_F(WebSocketTransportClientSocketPoolTest,
+       WebSocketTransportConnectJobWithNoAdditionalDnsAliases) {
+  host_resolver_->set_synchronous_mode(true);
+  client_socket_factory_.set_default_client_socket_type(
+      MockTransportClientSocketFactory::MOCK_CLIENT_SOCKET);
+
+  // Resolve an AddressList without additional DNS aliases. (The parameter
+  // is an empty vector.)
+  std::string kHostName("host");
+  std::vector<std::string> aliases;
+  host_resolver_->rules()->AddIPLiteralRuleWithDnsAliases(kHostName, "2.2.2.2",
+                                                          std::move(aliases));
+
+  TestConnectJobDelegate test_delegate;
+  scoped_refptr<TransportSocketParams> params =
+      base::MakeRefCounted<TransportSocketParams>(
+          HostPortPair(kHostName, 80), NetworkIsolationKey(),
+          false /* disable_secure_dns */, OnHostResolutionCallback());
+
+  WebSocketTransportConnectJob transport_connect_job(
+      DEFAULT_PRIORITY, SocketTag(), &common_connect_job_params_, params,
+      &test_delegate, nullptr /* net_log */);
+
+  test_delegate.StartJobExpectingResult(&transport_connect_job, OK,
+                                        true /* expect_sync_result */);
+
+  // Verify that the alias list only contains kHostName.
+  EXPECT_THAT(test_delegate.socket()->GetDnsAliases(),
+              testing::ElementsAre(kHostName));
 }
 
 }  // namespace
