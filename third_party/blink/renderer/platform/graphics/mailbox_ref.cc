@@ -31,9 +31,7 @@ MailboxRef::MailboxRef(
     : sync_token_(sync_token),
       context_thread_ref_(context_thread_ref),
       context_task_runner_(std::move(context_task_runner)),
-      release_callback_(std::move(release_callback)) {
-  DCHECK(sync_token.HasData());
-}
+      release_callback_(std::move(release_callback)) {}
 
 MailboxRef::~MailboxRef() {
   if (context_thread_ref_ == base::PlatformThread::CurrentRef()) {

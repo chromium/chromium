@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/memory/scoped_refptr.h"
+#include "build/build_config.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/single_release_callback.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
@@ -411,6 +412,59 @@ ScriptPromise VideoFrame::CreateImageBitmap(ScriptState* script_state,
         "Cannot create ImageBitmap from destroyed VideoFrame.");
     return ScriptPromise();
   }
+
+  // SharedImage optimization: create AcceleratedStaticBitmapImage directly.
+  // Disabled on Android because the hardware decode implementation may neuter
+  // frames, which would violate ImageBitmap requirements.
+  // TODO(sandersd): Handle YUV pixel formats.
+  // TODO(sandersd): Handle high bit depth formats.
+#if !defined(OS_ANDROID)
+  if (local_frame->NumTextures() == 1 &&
+      local_frame->mailbox_holder(0).mailbox.IsSharedImage() &&
+      (local_frame->format() == media::PIXEL_FORMAT_ARGB ||
+       local_frame->format() == media::PIXEL_FORMAT_XRGB ||
+       local_frame->format() == media::PIXEL_FORMAT_ABGR ||
+       local_frame->format() == media::PIXEL_FORMAT_XBGR ||
+       local_frame->format() == media::PIXEL_FORMAT_BGRA)) {
+    // TODO(sandersd): Do we need to be able to handle limited-range RGB? It
+    // may never happen, and SkColorSpace doesn't know about it.
+    auto sk_color_space =
+        local_frame->ColorSpace().GetAsFullRangeRGB().ToSkColorSpace();
+    if (!sk_color_space)
+      sk_color_space = SkColorSpace::MakeSRGB();
+
+    const SkImageInfo sk_image_info = SkImageInfo::Make(
+        local_frame->coded_size().width(), local_frame->coded_size().height(),
+        kN32_SkColorType, kUnpremul_SkAlphaType, std::move(sk_color_space));
+
+    // Hold a ref by storing it in the release callback.
+    auto release_callback = viz::SingleReleaseCallback::Create(
+        WTF::Bind([](scoped_refptr<media::VideoFrame> frame,
+                     const gpu::SyncToken& sync_token, bool is_lost) {},
+                  local_frame));
+
+    scoped_refptr<StaticBitmapImage> image =
+        AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
+            local_frame->mailbox_holder(0).mailbox,
+            local_frame->mailbox_holder(0).sync_token, 0u, sk_image_info,
+            local_frame->mailbox_holder(0).texture_target, true,
+            // Pass nullptr for |context_provider_wrapper|, because we don't
+            // know which context the mailbox came from. It is used only to
+            // detect when the mailbox is invalid due to context loss, and is
+            // ignored when |is_cross_thread|.
+            base::WeakPtr<WebGraphicsContext3DProviderWrapper>(),
+            // Pass null |context_thread_ref|, again because we don't know
+            // which context the mailbox came from. This should always trigger
+            // |is_cross_thread|.
+            base::PlatformThreadRef(),
+            // The task runner is only used for |release_callback|.
+            Thread::Current()->GetTaskRunner(), std::move(release_callback));
+    ImageBitmap* image_bitmap =
+        MakeGarbageCollected<ImageBitmap>(image, crop_rect, options);
+    return ImageBitmapSource::FulfillImageBitmap(script_state, image_bitmap,
+                                                 exception_state);
+  }
+#endif  // !defined(OS_ANDROID)
 
   if ((local_frame->IsMappable() &&
        (local_frame->format() == media::PIXEL_FORMAT_I420 ||

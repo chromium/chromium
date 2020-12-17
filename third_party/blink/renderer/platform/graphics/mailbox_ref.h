@@ -32,10 +32,7 @@ class MailboxRef : public ThreadSafeRefCounted<MailboxRef> {
   bool is_cross_thread() const {
     return base::PlatformThread::CurrentRef() != context_thread_ref_;
   }
-  void set_sync_token(gpu::SyncToken token) {
-    DCHECK(sync_token_.HasData());
-    sync_token_ = token;
-  }
+  void set_sync_token(gpu::SyncToken token) { sync_token_ = token; }
   const gpu::SyncToken& sync_token() const { return sync_token_; }
   bool verified_flush() { return sync_token_.verified_flush(); }
 
