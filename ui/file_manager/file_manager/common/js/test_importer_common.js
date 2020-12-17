@@ -2,26 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @fileoverview
- * @suppress {uselessCode} Temporary suppress because of the line exporting.
- */
-
 // #import {importer} from './importer_common.m.js';
 // #import {TestCallRecorder} from './unittest_util.m.js';
 
-// Shared cloud importer namespace
-// eslint-disable-next-line no-var
-/* #ignore */ var importer = importer || {};
+// Namespace
+/* #export */ const importerTest = {};
 
 /**
  * Sets up a logger for use in unit tests.  The test logger doesn't attempt to
  * access chrome's sync file system.  Call this during setUp.
- * @return {!importer.TestLogger}
+ * @return {!importerTest.TestLogger}
  * @suppress{accessControls} For testing.
  */
-importer.setupTestLogger = () => {
-  const logger = new importer.TestLogger();
+importerTest.setupTestLogger = () => {
+  const logger = new importerTest.TestLogger();
   importer.logger_ = logger;
   return logger;
 };
@@ -32,7 +26,7 @@ importer.setupTestLogger = () => {
  * @implements {importer.Logger}
  * @final
  */
-importer.TestLogger = class {
+importerTest.TestLogger = class {
   constructor() {
     /** @public {!TestCallRecorder} */
     this.errorRecorder = new TestCallRecorder();
@@ -77,6 +71,3 @@ importer.TestLogger = class {
     };
   }
 };
-
-// eslint-disable-next-line semi,no-extra-semi
-/* #export */ {importer};

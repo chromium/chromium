@@ -10,8 +10,9 @@ import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
 import {VolumeInfo} from '../../../externs/volume_info.m.js';
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.m.js';
 
+import {importer} from './importer_common.m.js';
 import {MockDirectoryEntry, MockFileEntry} from './mock_entry.m.js';
-import {importer} from './test_importer_common.m.js';
+import {importerTest} from './test_importer_common.m.js';
 
 /** @type {!MockVolumeManager} */
 let volumeManager;
@@ -42,7 +43,7 @@ export function setUp() {
   window.loadTimeData.getString = id => id;
   new MockCommandLinePrivate();
   new MockChromeStorageAPI();
-  importer.setupTestLogger();
+  importerTest.setupTestLogger();
 
   cameraVolume = MockVolumeManager.createMockVolumeInfo(
       VolumeManagerCommon.VolumeType.MTP, 'camera-fs', 'Some Camera');

@@ -2,12 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
+
+import {installMockChrome, MockCommandLinePrivate} from '../../../base/js/mock_chrome.m.js';
+import {reportPromise} from '../../../base/js/test_error_reporting.m.js';
+import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
+import {duplicateFinderInterfaces} from '../../../externs/background/duplicate_finder.m.js';
+import {importerHistoryInterfaces} from '../../../externs/background/import_history.m.js';
+import {mediaImportInterfaces} from '../../../externs/background/media_import_handler.m.js';
+import {VolumeInfo} from '../../../externs/volume_info.m.js';
+import {importer} from '../../common/js/importer_common.m.js';
+import {MockDirectoryEntry, MockFileSystem} from '../../common/js/mock_entry.m.js';
+import {importerTest} from '../../common/js/test_importer_common.m.js';
+
+import {fileOperationUtil} from './file_operation_util.m.js';
+import {mediaImport} from './media_import_handler.m.js';
+import {MockDriveSyncHandler} from './mock_drive_sync_handler.m.js';
+import {TestScanResult} from './mock_media_scanner.m.js';
+import {MockProgressCenter} from './mock_progress_center.m.js';
+import {MockVolumeManager} from './mock_volume_manager.m.js';
+import {importerTestHistory} from './test_import_history.m.js';
 
 /** @type {!MockProgressCenter} */
 let progressCenter;
 
-/** @type {!importer.MediaImportHandler} */
+/** @type {!mediaImportInterfaces.MediaImportHandler} */
 let mediaImporter;
 
 /** @type {!importerTestHistory.TestImportHistory} */
@@ -46,7 +65,7 @@ window.metrics = {
 let mockChrome;
 
 // Set up the test components.
-function setUp() {
+export function setUp() {
   // Mock loadTimeData strings.
   window.loadTimeData.getString = id => id;
 
@@ -93,8 +112,8 @@ function setUp() {
   progressCenter = new MockProgressCenter();
   importHistory = new importerTestHistory.TestImportHistory();
   driveSyncHandler = new MockDriveSyncHandler();
-  importer.setupTestLogger();
-  mediaImporter = new importer.MediaImportHandlerImpl(
+  importerTest.setupTestLogger();
+  mediaImporter = new mediaImport.MediaImportHandlerImpl(
       progressCenter, importHistory, dispositionChecker, driveSyncHandler);
 
   // Setup the copy destination.
@@ -105,7 +124,7 @@ function setUp() {
 /**
  * Tests media imports.
  */
-function testImportMedia(callback) {
+export function testImportMedia(callback) {
   const media = setupFileSystem([
     '/DCIM/photos0/IMG00001.jpg',
     '/DCIM/photos0/IMG00002.jpg',
@@ -152,7 +171,7 @@ function testImportMedia(callback) {
 /**
  * Tests media import duplicate detection.
  */
-function testImportMedia_skipAndMarkDuplicatedFiles(callback) {
+export function testImportMedia_skipAndMarkDuplicatedFiles(callback) {
   const DUPLICATED_FILE_PATH_1 = '/DCIM/photos0/duplicated_1.jpg';
   const DUPLICATED_FILE_PATH_2 = '/DCIM/photos0/duplicated_2.jpg';
   const ORIGINAL_FILE_NAME = 'new_image.jpg';
@@ -173,7 +192,7 @@ function testImportMedia_skipAndMarkDuplicatedFiles(callback) {
     }
     return Promise.resolve(importer.Disposition.ORIGINAL);
   };
-  mediaImporter = new importer.MediaImportHandlerImpl(
+  mediaImporter = new mediaImport.MediaImportHandlerImpl(
       progressCenter, importHistory, dispositionChecker, driveSyncHandler);
   const scanResult = new TestScanResult(media);
   const importTask = mediaImporter.importFromScanResult(
@@ -223,7 +242,7 @@ function testImportMedia_skipAndMarkDuplicatedFiles(callback) {
 /**
  * Tests media import uses encoded URLs.
  */
-function testImportMedia_EmploysEncodedUrls(callback) {
+export function testImportMedia_EmploysEncodedUrls(callback) {
   const media = setupFileSystem([
     '/DCIM/photos0/Mom and Dad.jpg',
   ]);
@@ -267,7 +286,7 @@ function testImportMedia_EmploysEncodedUrls(callback) {
  * Tests that when files with duplicate names are imported, that they don't
  * overwrite one another.
  */
-function testImportMediaWithDuplicateFilenames(callback) {
+export function testImportMediaWithDuplicateFilenames(callback) {
   const media = setupFileSystem([
     '/DCIM/photos0/IMG00001.jpg',
     '/DCIM/photos0/IMG00002.jpg',
@@ -315,7 +334,7 @@ function testImportMediaWithDuplicateFilenames(callback) {
 /**
  * Tests that active media imports keep chrome.power awake.
  */
-function testKeepAwakeDuringImport(callback) {
+export function testKeepAwakeDuringImport(callback) {
   const media = setupFileSystem([
     '/DCIM/photos0/IMG00001.jpg',
     '/DCIM/photos0/IMG00002.jpg',
@@ -366,7 +385,7 @@ function testKeepAwakeDuringImport(callback) {
 /**
  * Tests that media imports update import history.
  */
-function testUpdatesHistoryAfterImport(callback) {
+export function testUpdatesHistoryAfterImport(callback) {
   const entries = setupFileSystem([
     '/DCIM/photos0/IMG00001.jpg',
     '/DCIM/photos1/IMG00003.jpg',
@@ -422,7 +441,7 @@ function testUpdatesHistoryAfterImport(callback) {
 /**
  * Tests cancelling a media import.
  */
-function testImportCancellation(callback) {
+export function testImportCancellation(callback) {
   const media = setupFileSystem([
     '/DCIM/photos0/IMG00001.jpg',
     '/DCIM/photos0/IMG00002.jpg',
@@ -455,8 +474,7 @@ function testImportCancellation(callback) {
   // Simulate cancellation after the expected number of copies is done.
   let copyCount = 0;
   importTask.addObserver(updateType => {
-    if (updateType ===
-        importer.MediaImportHandler.ImportTask.UpdateType.ENTRY_CHANGED) {
+    if (updateType === mediaImport.UpdateType.ENTRY_CHANGED) {
       copyCount++;
       if (copyCount === EXPECTED_COPY_COUNT) {
         importTask.requestCancel();
@@ -479,10 +497,10 @@ function testImportCancellation(callback) {
 /**
  * Tests media imports with errors.
  */
-function testImportWithErrors(callback) {
+export function testImportWithErrors(callback) {
   // Quieten the logger just in this test, since we expect errors.
   // Elsewhere, it's better for errors to be seen by test authors.
-  importer.setupTestLogger().quiet();
+  importerTest.setupTestLogger().quiet();
 
   const media = setupFileSystem([
     '/DCIM/photos0/IMG00001.jpg',
@@ -516,8 +534,7 @@ function testImportWithErrors(callback) {
   // Simulate an error after 3 imports.
   let copyCount = 0;
   importTask.addObserver(updateType => {
-    if (updateType ===
-        importer.MediaImportHandler.ImportTask.UpdateType.ENTRY_CHANGED) {
+    if (updateType === mediaImport.UpdateType.ENTRY_CHANGED) {
       copyCount++;
       if (copyCount === 3) {
         mockCopier.simulateOneError();

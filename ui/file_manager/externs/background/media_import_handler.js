@@ -2,14 +2,40 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Namespace
-// eslint-disable-next-line no-var
-var importer = importer || {};
-
-/*
+/**
+ * @fileoverview
  * Externs definition for  MediaImportHandler to allow for Closure compilation
  * of its media import unittest and caller sites.
  */
+
+// #import {DriveSyncHandler} from './drive_sync_handler.m.js';
+// #import {importer} from '../../file_manager/common/js/importer_common.m.js';
+// #import {importerHistoryInterfaces} from './import_history.m.js';
+// #import {duplicateFinderInterfaces} from './duplicate_finder.m.js';
+// #import {mediaScannerInterfaces} from './media_scanner.m.js';
+// #import {taskQueueInterfaces} from './task_queue.m.js';
+// #import {ProgressCenter} from './progress_center.m.js';
+
+/* #export */ const mediaImportInterfaces = {};
+
+/**
+ * Interface providing access to information about active import processes.
+ *
+ * @interface
+ */
+mediaImportInterfaces.ImportRunner = class {
+  /**
+   * Imports all media identified by a scanResult.
+   *
+   * @param {!mediaScannerInterfaces.ScanResult} scanResult
+   * @param {!importer.Destination} destination
+   * @param {!Promise<!DirectoryEntry>} directoryPromise
+   *
+   * @return {!mediaImportInterfaces.MediaImportHandler.ImportTask} The media
+   *     import task.
+   */
+  importFromScanResult(scanResult, destination, directoryPromise) {}
+};
 
 /**
  * Define MediaImportHandler constructor: handler for importing media from
@@ -17,7 +43,8 @@ var importer = importer || {};
  *
  * @interface
  */
-importer.MediaImportHandler = class extends importer.ImportRunner {
+mediaImportInterfaces.MediaImportHandler =
+    class extends mediaImportInterfaces.ImportRunner {
   /**
    * @param {!ProgressCenter} progressCenter
    * @param {!importerHistoryInterfaces.HistoryLoader} historyLoader
@@ -26,7 +53,9 @@ importer.MediaImportHandler = class extends importer.ImportRunner {
    * @param {!DriveSyncHandler} driveSyncHandler
    */
   constructor(
-      progressCenter, historyLoader, dispositionChecker, driveSyncHandler) {}
+      progressCenter, historyLoader, dispositionChecker, driveSyncHandler) {
+    super();
+  }
 };
 
 /**
@@ -39,7 +68,7 @@ importer.MediaImportHandler = class extends importer.ImportRunner {
  * @extends {taskQueueInterfaces.BaseTask}
  * @interface
  */
-importer.MediaImportHandler.ImportTask = class {
+mediaImportInterfaces.MediaImportHandler.ImportTask = class {
   /**
    * @param {string} taskId
    * @param {!importerHistoryInterfaces.HistoryLoader} historyLoader
@@ -73,4 +102,4 @@ importer.MediaImportHandler.ImportTask = class {
  *   destination: !Entry
  * }}
  */
-importer.MediaImportHandler.ImportTask.EntryChangedInfo;
+mediaImportInterfaces.MediaImportHandler.ImportTask.EntryChangedInfo;

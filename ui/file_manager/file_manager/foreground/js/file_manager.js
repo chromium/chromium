@@ -56,7 +56,7 @@ class FileManager extends cr.EventTarget {
     /** @private {?importer.ImportController} */
     this.importController_ = null;
 
-    /** @private {?importer.ImportRunner} */
+    /** @private {?mediaImportInterfaces.ImportRunner} */
     this.mediaImportHandler_ = null;
 
     /** @private {?MetadataModel} */
@@ -487,7 +487,7 @@ class FileManager extends cr.EventTarget {
   }
 
   /**
-   * @return {importer.ImportRunner}
+   * @return {mediaImportInterfaces.ImportRunner}
    */
   get mediaImportHandler() {
     return this.mediaImportHandler_;

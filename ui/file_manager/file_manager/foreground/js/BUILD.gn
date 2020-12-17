@@ -103,7 +103,6 @@ js_library("closure_compile_externs") {
     "//ui/file_manager/externs/background/background_base.js",
     "//ui/file_manager/externs/background/file_browser_background_full.js",
     "//ui/file_manager/externs/background/file_operation_manager.js",
-    "//ui/file_manager/externs/background/import_runner.js",
     "//ui/file_manager/externs/background/media_import_handler.js",
     "//ui/file_manager/externs/background/task_queue.js",
     "//ui/file_manager/externs/background/duplicate_finder.js",
@@ -576,7 +575,6 @@ js_library("import_controller") {
     "//ui/file_manager/file_manager/common/js:importer_common",
   ]
   externs_list = [
-    "//ui/file_manager/externs/background/import_runner.js",
     "//ui/file_manager/externs/background/media_import_handler.js",
     "//ui/file_manager/externs/background/duplicate_finder.js",
     "//ui/file_manager/externs/background/task_queue.js",

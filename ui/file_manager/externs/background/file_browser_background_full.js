@@ -29,7 +29,7 @@ class FileBrowserBackgroundFull extends BackgroundBase {
     this.fileOperationManager;
 
     /**
-     * @type {!importer.ImportRunner}
+     * @type {!mediaImportInterfaces.ImportRunner}
      */
     this.mediaImportHandler;
 

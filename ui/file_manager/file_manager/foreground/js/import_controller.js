@@ -27,7 +27,7 @@ importer.ImportController = class {
    *     access to runtime environmental information, like the current
    * directory, volume lookup and so-on.
    * @param {!mediaScannerInterfaces.MediaScanner} scanner
-   * @param {!importer.ImportRunner} importRunner
+   * @param {!mediaImportInterfaces.ImportRunner} importRunner
    * @param {!importer.CommandWidget} commandWidget
    */
   constructor(environment, scanner, importRunner, commandWidget) {
@@ -37,7 +37,7 @@ importer.ImportController = class {
     /** @private @const {!importer.ChromeLocalStorage} */
     this.storage_ = importer.ChromeLocalStorage.getInstance();
 
-    /** @private @const {!importer.ImportRunner} */
+    /** @private @const {!mediaImportInterfaces.ImportRunner} */
     this.importRunner_ = importRunner;
 
     /** @private @const {!mediaScannerInterfaces.MediaScanner} */
@@ -181,7 +181,7 @@ importer.ImportController = class {
   }
 
   /**
-   * @param {!importer.MediaImportHandler.ImportTask} task
+   * @param {!mediaImportInterfaces.MediaImportHandler.ImportTask} task
    * @private
    */
   onImportFinished_(task) {
@@ -463,7 +463,7 @@ importer.ImportController = class {
  *
  * @typedef {{
  *   scan: !mediaScannerInterfaces.ScanResult,
- *   task: !importer.MediaImportHandler.ImportTask,
+ *   task: !mediaImportInterfaces.MediaImportHandler.ImportTask,
  *   started: !Date
  * }}
  *

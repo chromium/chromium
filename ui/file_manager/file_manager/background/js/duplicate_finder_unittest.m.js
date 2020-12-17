@@ -78,7 +78,6 @@ export function setUp() {
 
   installMockChrome(mockChrome);
   new MockCommandLinePrivate();
-  // importer.setupTestLogger();
   fileSystem = new MockFileSystem('fake-filesystem');
 
   const volumeManager = new MockVolumeManager();

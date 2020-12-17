@@ -407,7 +407,7 @@ class TestImportTask {
 /**
  * Test import runner.
  *
- * @implements {importer.ImportRunner}
+ * @implements {mediaImportInterfaces.ImportRunner}
  */
 class TestImportRunner {
   constructor() {
@@ -434,13 +434,14 @@ class TestImportRunner {
   }
 
   /**
-   * Returns |task| as importer.MediaImportHandler.ImportTask type.
+   * Returns |task| as mediaImportInterfaces.MediaImportHandler.ImportTask type.
    * @param {!Object} task
-   * @return {!importer.MediaImportHandler.ImportTask}
+   * @return {!mediaImportInterfaces.MediaImportHandler.ImportTask}
    * @private
    */
   toMediaImportTask_(task) {
-    return /** @type {!importer.MediaImportHandler.ImportTask} */ (task);
+    return /** @type {!mediaImportInterfaces.MediaImportHandler.ImportTask} */ (
+        task);
   }
 
   finishImportTasks() {

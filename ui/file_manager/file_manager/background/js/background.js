@@ -73,9 +73,9 @@ class FileBrowserBackgroundImpl extends BackgroundBaseImpl {
     /**
      * Handles importing of user media (e.g. photos, videos) from removable
      * devices.
-     * @type {!importer.MediaImportHandler}
+     * @type {!mediaImportInterfaces.MediaImportHandler}
      */
-    this.mediaImportHandler = new importer.MediaImportHandlerImpl(
+    this.mediaImportHandler = new mediaImport.MediaImportHandlerImpl(
         this.progressCenter, this.historyLoader, this.dispositionChecker_,
         this.driveSyncHandler);
 

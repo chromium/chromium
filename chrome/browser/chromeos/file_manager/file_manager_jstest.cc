@@ -181,7 +181,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, LRUCacheTest) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, MediaImportHandlerTest) {
-  RunTestURL("background/js/media_import_handler_unittest_gen.html");
+  RunTestURL("background/js/media_import_handler_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, MediaScannerTest) {
