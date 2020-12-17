@@ -69,7 +69,8 @@ declare_args() {
   # Chrome's clang. crbug.com/1033839
   use_thin_lto = is_cfi || (is_official_build &&
                             (target_os == "android" ||
-                             (target_os == "chromeos" && is_chromeos_device)))
+                             ((is_chromeos_ash || is_chromeos_lacros)
+                              && is_chromeos_device)))
 
   # If true, use Goma for ThinLTO code generation where applicable.
   use_goma_thin_lto = false

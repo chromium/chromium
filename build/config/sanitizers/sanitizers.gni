@@ -61,7 +61,7 @@ declare_args() {
   is_cfi =
       is_official_build &&
       (((target_os == "linux" || is_chromeos_lacros) && target_cpu == "x64") ||
-       (target_os == "chromeos" && is_chromeos_device && !is_chromeos_lacros))
+       ((is_chromeos_ash || is_chromeos_lacros) && is_chromeos_device))
 
   # Enable checks for indirect function calls via a function pointer.
   # TODO(pcc): remove this when we're ready to add these checks by default.
@@ -123,7 +123,7 @@ declare_args() {
   # Enable checks for bad casts: derived cast and unrelated cast.
   # TODO(krasin): remove this, when we're ready to add these checks by default.
   # https://crbug.com/626794
-  use_cfi_cast = is_cfi && target_os == "chromeos"
+  use_cfi_cast = is_cfi && (is_chromeos_ash || is_chromeos_lacros)
 }
 
 # Disable sanitizers for non-target toolchains.
