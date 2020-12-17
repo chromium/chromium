@@ -1068,7 +1068,7 @@ Polymer({
       chrome.send('completeAuthentication', [
         credentials.gaiaId, credentials.email, credentials.password,
         credentials.usingSAML, credentials.services,
-        credentials.passwordAttributes
+        credentials.passwordAttributes, credentials.syncTrustedVaultKeys || {}
       ]);
     }
 

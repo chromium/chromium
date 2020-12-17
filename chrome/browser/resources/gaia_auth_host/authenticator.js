@@ -29,6 +29,25 @@ cr.define('cr.login', function() {
   /* #ignore */ 'use strict';
 
   /**
+   * Individual sync trusted vault key.
+   * @typedef {{
+   *   keyMaterial: ArrayBuffer,
+   *   version: number,
+   * }}
+   */
+  /* #export */ let SyncTrustedVaultKey;
+
+  /**
+   * Sync trusted vault encryption keys optionally passed with 'authCompleted'
+   * message.
+   * @typedef {{
+   *   encryptionKeys: Array<SyncTrustedVaultKey>,
+   *   trustedPublicKeys: Array<SyncTrustedVaultKey>
+   * }}
+   */
+  /* #export */ let SyncTrustedVaultKeys;
+
+  /**
    * Credentials passed with 'authCompleted' message.
    * @typedef {{
    *   email: string,
@@ -41,7 +60,8 @@ cr.define('cr.login', function() {
    *   sessionIndex: string,
    *   trusted: boolean,
    *   services: Array,
-   *   passwordAttributes: !PasswordAttributes
+   *   passwordAttributes: !PasswordAttributes,
+   *   syncTrustedVaultKeys: !SyncTrustedVaultKeys
    * }}
    */
   /* #export */ let AuthCompletedCredentials;
@@ -67,6 +87,7 @@ cr.define('cr.login', function() {
    *   flow: string,
    *   ignoreCrOSIdpSetting: boolean,
    *   enableGaiaActionButtons: boolean,
+   *   enableSyncTrustedVaultKeys: boolean,
    *   enterpriseEnrollmentDomain: string,
    *   samlAclUrl: string,
    *   isSupervisedUser: boolean,
@@ -126,7 +147,11 @@ cr.define('cr.login', function() {
                      // If this set to |false|, |confirmPasswordCallback| is
                      // not called before dispatching |authCopleted|.
                      // Default is |true|.
-    'flow',          // One of 'default', 'enterprise', or 'theftprotection'.
+    'enableSyncTrustedVaultKeys',  // Whether the host is interested in getting
+                                   // sync trusted vault keys.
+                                   // Default is |false|.
+    'flow',                        // One of 'default', 'enterprise', or
+                                   // 'theftprotection'.
     'enterpriseDisplayDomain',     // Current domain name to be displayed.
     'enterpriseDomainManager',     // Manager of the current domain. Can be
                                    // either a domain name (foo.com) or an email
@@ -280,6 +305,12 @@ cr.define('cr.login', function() {
     },
     'exit'(msg) {
       this.dispatchEvent(new CustomEvent('exit'));
+    },
+    'syncTrustedVaultKeys'(msg) {
+      if (!this.enableSyncTrustedVaultKeys_) {
+        return;
+      }
+      this.syncTrustedVaultKeys_ = msg.value;
     }
   };
 
@@ -356,6 +387,7 @@ cr.define('cr.login', function() {
        */
       this.getIsSamlUserPasswordlessCallback = null;
       this.needPassword = true;
+      this.enableSyncTrustedVaultKeys_ = false;
       this.services_ = null;
       /**
        * Caches the result of |getIsSamlUserPasswordlessCallback| invocation for
@@ -367,6 +399,8 @@ cr.define('cr.login', function() {
       /** @private {boolean} */
       this.isConstrainedWindow_ = false;
       this.samlAclUrl_ = null;
+      /** @private {?SyncTrustedVaultKeys} */
+      this.syncTrustedVaultKeys_ = null;
 
       window.addEventListener(
           'message', this.onMessageFromWebview_.bind(this), false);
@@ -405,6 +439,7 @@ cr.define('cr.login', function() {
       this.videoEnabled = false;
       this.services_ = null;
       this.isSamlUserPasswordless_ = null;
+      this.syncTrustedVaultKeys_ = null;
     }
 
     /**
@@ -569,6 +604,7 @@ cr.define('cr.login', function() {
       this.clientId_ = data.clientId;
       this.dontResizeNonEmbeddedPages = data.dontResizeNonEmbeddedPages;
       this.enableGaiaActionButtons_ = data.enableGaiaActionButtons;
+      this.enableSyncTrustedVaultKeys_ = !!data.enableSyncTrustedVaultKeys;
 
       this.initialFrameUrl_ = this.constructInitialFrameUrl_(data);
       this.reloadUrl_ = data.frameUrl || this.initialFrameUrl_;
@@ -716,6 +752,9 @@ cr.define('cr.login', function() {
       }
       if (data.isDeviceOwner) {
         url = appendParam(url, 'is_device_owner', '1');
+      }
+      if (data.enableSyncTrustedVaultKeys) {
+        url = appendParam(url, 'szkr', '1');
       }
 
       return url;
@@ -1141,7 +1180,8 @@ cr.define('cr.login', function() {
               sessionIndex: this.sessionIndex_ || '',
               trusted: this.trusted_,
               services: this.services_ || [],
-              passwordAttributes: passwordAttributes
+              passwordAttributes: passwordAttributes,
+              syncTrustedVaultKeys: this.syncTrustedVaultKeys_ || {}
             }
           }));
       this.resetStates();

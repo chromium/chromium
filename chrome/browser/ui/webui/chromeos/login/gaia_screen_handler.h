@@ -194,7 +194,8 @@ class GaiaScreenHandler : public BaseScreenHandler,
       const std::string& password,
       bool using_saml,
       const ::login::StringList& services,
-      const base::DictionaryValue* password_attributes);
+      const base::DictionaryValue* password_attributes,
+      const base::DictionaryValue* sync_trusted_vault_keys);
   void HandleCompleteLogin(const std::string& gaia_id,
                            const std::string& typed_email,
                            const std::string& password,

@@ -80,6 +80,7 @@
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/driver/sync_driver_switches.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/version_info/version_info.h"
@@ -106,6 +107,11 @@ namespace {
 const char kAuthIframeParentName[] = "signin-frame";
 
 const char kEndpointGen[] = "1.0";
+
+bool IsSyncTrustedVaultKeysEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::switches::kSyncSupportTrustedVaultPassphraseRecovery);
+}
 
 // Must be kept consistent with ChromeOSSamlApiUsed in enums.xml
 // These values are persisted to logs. Entries should not be renumbered and
@@ -469,6 +475,8 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
   params.SetBoolean("extractSamlPasswordAttributes",
                     login::ExtractSamlPasswordAttributesEnabled());
   params.SetBoolean("enableGaiaActionButtons", true);
+  params.SetBoolean("enableSyncTrustedVaultKeys",
+                    IsSyncTrustedVaultKeysEnabled());
 
   if (public_saml_url_fetcher_) {
     params.SetBoolean("startsOnSamlPage", true);
@@ -727,7 +735,8 @@ void GaiaScreenHandler::HandleCompleteAuthentication(
     const std::string& password,
     bool using_saml,
     const ::login::StringList& services,
-    const base::DictionaryValue* password_attributes) {
+    const base::DictionaryValue* password_attributes,
+    const base::DictionaryValue* sync_trusted_vault_keys) {
   if (!LoginDisplayHost::default_host())
     return;
 
@@ -757,6 +766,8 @@ void GaiaScreenHandler::HandleCompleteAuthentication(
       base::BindOnce(&LoginDisplayHost::CompleteLogin,
                      base::Unretained(LoginDisplayHost::default_host())));
 
+  // TODO(crbug.com/1081651): Propagate |sync_trusted_vault_keys| into
+  // UserContext.
   pending_user_context_ = std::make_unique<UserContext>();
   std::string error_message;
   if (!login::BuildUserContextForGaiaSignIn(
