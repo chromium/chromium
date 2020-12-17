@@ -98,7 +98,7 @@ void BluetoothRemoteGattCharacteristic::StartNotifySession(
                              std::move(error_callback));
 }
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void BluetoothRemoteGattCharacteristic::StartNotifySession(
     NotificationType notification_type,
     NotifySessionCallback callback,
@@ -221,7 +221,7 @@ void BluetoothRemoteGattCharacteristic::ExecuteStartNotifySession(
   // do whatever else is needed to get the notifications flowing.
   SubscribeToNotifications(
       ccc_descriptor[0],
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       notification_type.value_or((GetProperties() & PROPERTY_NOTIFY)
                                      ? NotificationType::kNotification
                                      : NotificationType::kIndication),

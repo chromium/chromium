@@ -1151,7 +1151,7 @@ TEST_F(BluetoothTest, MAYBE_GetName_NullName) {
 // and is non trivial to implement. On ChromeOS, it is not essential for
 // this test to operate, and so it is simply skipped. Android at least
 // does require this step.
-#if !BUILDFLAG(IS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   StartLowEnergyDiscoverySession();
 #endif
 

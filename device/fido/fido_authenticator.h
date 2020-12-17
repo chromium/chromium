@@ -261,7 +261,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
 #if defined(OS_MAC)
   virtual bool IsTouchIdAuthenticator() const = 0;
 #endif  // defined(OS_MAC)
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   virtual bool IsChromeOSAuthenticator() const = 0;
 #endif
   virtual base::WeakPtr<FidoAuthenticator> GetWeakPtr() = 0;

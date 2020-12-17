@@ -194,7 +194,7 @@ void FakeRemoteGattCharacteristic::DeprecatedWriteRemoteCharacteristic(
                      std::move(error_callback), value, write_type));
 }
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void FakeRemoteGattCharacteristic::PrepareWriteRemoteCharacteristic(
     const std::vector<uint8_t>& value,
     base::OnceClosure callback,
@@ -205,7 +205,7 @@ void FakeRemoteGattCharacteristic::PrepareWriteRemoteCharacteristic(
 
 void FakeRemoteGattCharacteristic::SubscribeToNotifications(
     device::BluetoothRemoteGattDescriptor* ccc_descriptor,
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     NotificationType notification_type,
 #endif
     base::OnceClosure callback,

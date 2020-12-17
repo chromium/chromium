@@ -220,7 +220,7 @@ void BluetoothRemoteGattCharacteristicBlueZ::
                          std::move(error_callback)));
 }
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void BluetoothRemoteGattCharacteristicBlueZ::PrepareWriteRemoteCharacteristic(
     const std::vector<uint8_t>& value,
     base::OnceClosure callback,
@@ -242,7 +242,7 @@ void BluetoothRemoteGattCharacteristicBlueZ::PrepareWriteRemoteCharacteristic(
 
 void BluetoothRemoteGattCharacteristicBlueZ::SubscribeToNotifications(
     device::BluetoothRemoteGattDescriptor* ccc_descriptor,
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     NotificationType notification_type,
 #endif
     base::OnceClosure callback,
@@ -251,7 +251,7 @@ void BluetoothRemoteGattCharacteristicBlueZ::SubscribeToNotifications(
       ->GetBluetoothGattCharacteristicClient()
       ->StartNotify(
           object_path(),
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
           notification_type,
 #endif
           base::BindOnce(

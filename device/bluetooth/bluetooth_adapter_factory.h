@@ -13,10 +13,10 @@
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_export.h"
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/data_decoder/public/mojom/ble_scan_parser.mojom-forward.h"
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace device {
 
@@ -35,10 +35,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFactory {
   using AdapterCallback =
       base::OnceCallback<void(scoped_refptr<BluetoothAdapter> adapter)>;
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   using BleScanParserCallback = base::RepeatingCallback<
       mojo::PendingRemote<data_decoder::mojom::BleScanParser>()>;
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   BluetoothAdapterFactory();
   ~BluetoothAdapterFactory();
@@ -86,13 +86,13 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFactory {
   // adapter. Exposed for testing.
   static bool HasSharedInstanceForTesting();
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Sets the mojo::Remote<BleScanParser> callback used in Get*() below.
   static void SetBleScanParserCallback(BleScanParserCallback callback);
   // Returns a reference to a parser for BLE advertisement packets.
   // This will be an empty callback until something calls Set*() above.
   static BleScanParserCallback GetBleScanParserCallback();
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // ValuestForTesting holds the return values for BluetoothAdapterFactory's
   // functions that have been set for testing.
@@ -152,9 +152,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFactory {
   base::WeakPtr<BluetoothAdapter> classic_adapter_;
 #endif
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   BleScanParserCallback ble_scan_parser_;
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
 }  // namespace device

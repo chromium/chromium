@@ -48,7 +48,7 @@ class MockBluetoothGattCharacteristic
                      std::vector<BluetoothRemoteGattDescriptor*>());
   MOCK_CONST_METHOD1(GetDescriptor,
                      BluetoothRemoteGattDescriptor*(const std::string&));
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void StartNotifySession(NotificationType t,
                           NotifySessionCallback c,
                           ErrorCallback ec) override {
@@ -92,7 +92,7 @@ class MockBluetoothGattCharacteristic
                void(const std::vector<uint8_t>&,
                     base::OnceClosure&,
                     ErrorCallback&));
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void PrepareWriteRemoteCharacteristic(const std::vector<uint8_t>& v,
                                         base::OnceClosure c,
                                         ErrorCallback ec) override {
@@ -108,7 +108,7 @@ class MockBluetoothGattCharacteristic
       std::unique_ptr<MockBluetoothGattDescriptor> mock_descriptor);
 
  protected:
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void SubscribeToNotifications(BluetoothRemoteGattDescriptor* d,
                                 NotificationType t,
                                 base::OnceClosure c,

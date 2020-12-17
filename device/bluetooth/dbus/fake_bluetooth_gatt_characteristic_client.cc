@@ -327,7 +327,7 @@ void FakeBluetoothGattCharacteristicClient::PrepareWriteValue(
 
 void FakeBluetoothGattCharacteristicClient::StartNotify(
     const dbus::ObjectPath& object_path,
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     device::BluetoothGattCharacteristic::NotificationType notification_type,
 #endif
     base::OnceClosure callback,

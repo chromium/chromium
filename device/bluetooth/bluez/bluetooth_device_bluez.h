@@ -105,7 +105,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceBlueZ
   void Pair(device::BluetoothDevice::PairingDelegate* pairing_delegate,
             base::OnceClosure callback,
             ConnectErrorCallback error_callback) override;
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void ExecuteWrite(base::OnceClosure callback,
                     ExecuteWriteErrorCallback error_callback) override;
   void AbortWrite(base::OnceClosure callback,
@@ -225,7 +225,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceBlueZ
                                 const std::string& error_name,
                                 const std::string& error_message);
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void OnExecuteWriteError(ExecuteWriteErrorCallback error_callback,
                            const std::string& error_name,
                            const std::string& error_message);

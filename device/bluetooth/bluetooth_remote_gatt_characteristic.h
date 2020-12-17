@@ -125,7 +125,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristic
   // BluetoothGattNotifySession object that you received in |callback|.
   virtual void StartNotifySession(NotifySessionCallback callback,
                                   ErrorCallback error_callback);
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(https://crbug.com/849359): This method should also be implemented on
   // Android and Windows.
   // macOS does not support specifying a notification type. According to macOS
@@ -163,7 +163,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristic
       base::OnceClosure callback,
       ErrorCallback error_callback) = 0;
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Sends a prepare write request to a remote characteristic with the value
   // |value|. |callback| is called to signal success and |error_callback| for
   // failures. This method only applies to remote characteristics and will fail
@@ -187,7 +187,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristic
   // notifications/indications. This method is meant to be called from
   // StartNotifySession and should contain only the code necessary to start
   // listening to characteristic notifications on a particular platform.
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // |notification_type| specifies the type of notifications that will be
   // enabled: notifications or indications.
   // TODO(https://crbug.com/849359): This method should also be implemented on

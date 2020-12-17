@@ -153,7 +153,7 @@ bool BluetoothAdapterFactory::HasSharedInstanceForTesting() {
   return Get()->adapter_ != nullptr;
 }
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // static
 void BluetoothAdapterFactory::SetBleScanParserCallback(
     BleScanParserCallback callback) {
@@ -165,7 +165,7 @@ BluetoothAdapterFactory::BleScanParserCallback
 BluetoothAdapterFactory::GetBleScanParserCallback() {
   return Get()->ble_scan_parser_;
 }
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 BluetoothAdapterFactory::GlobalValuesForTesting::GlobalValuesForTesting() =
     default;

@@ -183,7 +183,7 @@ class BluetoothGattCharacteristicClientImpl
   // BluetoothGattCharacteristicClient override.
   void StartNotify(
       const dbus::ObjectPath& object_path,
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       device::BluetoothGattCharacteristic::NotificationType notification_type,
 #endif
       base::OnceClosure callback,
@@ -198,7 +198,7 @@ class BluetoothGattCharacteristicClientImpl
     dbus::MethodCall method_call(
         bluetooth_gatt_characteristic::kBluetoothGattCharacteristicInterface,
         bluetooth_gatt_characteristic::kStartNotify);
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     dbus::MessageWriter writer(&method_call);
     writer.AppendByte(static_cast<uint8_t>(notification_type));
 #endif

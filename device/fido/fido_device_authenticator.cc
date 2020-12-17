@@ -1011,11 +1011,11 @@ bool FidoDeviceAuthenticator::IsTouchIdAuthenticator() const {
 }
 #endif  // defined(OS_MAC)
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 bool FidoDeviceAuthenticator::IsChromeOSAuthenticator() const {
   return false;
 }
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void FidoDeviceAuthenticator::SetTaskForTesting(
     std::unique_ptr<FidoTask> task) {

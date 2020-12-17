@@ -38,11 +38,11 @@ const base::Feature kWebAuthCableLowLatency{"WebAuthenticationCableLowLatency",
                                             base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // defined(OS_CHROMEOS) || defined(OS_LINUX)
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 const base::Feature kWebAuthCrosPlatformAuthenticator{
     "WebAuthenticationCrosPlatformAuthenticator",
     base::FEATURE_ENABLED_BY_DEFAULT};
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 extern const base::Feature kWebAuthAttestationBlockList{
     "WebAuthentiationAttestationBlockList", base::FEATURE_DISABLED_BY_DEFAULT};

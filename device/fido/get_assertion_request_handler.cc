@@ -36,7 +36,7 @@
 #include "device/fido/win/type_conversions.h"
 #endif
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "device/fido/cros/authenticator.h"
 #endif
 
@@ -390,7 +390,7 @@ void GetAssertionRequestHandler::AuthenticatorAdded(
   }
 #endif  // defined(OS_MAC)
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(martinkr): Put this boolean in a ChromeOS equivalent of
   // "has_recognized_mac_touch_id_credential".
   if (authenticator->IsChromeOSAuthenticator()) {
@@ -398,7 +398,7 @@ void GetAssertionRequestHandler::AuthenticatorAdded(
         static_cast<ChromeOSAuthenticator*>(authenticator)
             ->HasCredentialForGetAssertionRequest(request_);
   }
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   FidoRequestHandlerBase::AuthenticatorAdded(discovery, authenticator);
 }

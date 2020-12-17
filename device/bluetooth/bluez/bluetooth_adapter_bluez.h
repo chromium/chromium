@@ -35,10 +35,10 @@
 #include "device/bluetooth/dbus/bluetooth_profile_manager_client.h"
 #include "device/bluetooth/dbus/bluetooth_profile_service_provider.h"
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/data_decoder/public/mojom/ble_scan_parser.mojom.h"
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace base {
 class TimeDelta;
@@ -93,10 +93,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
   using ServiceRecordErrorCallback =
       base::OnceCallback<void(BluetoothServiceRecordBlueZ::ErrorCode)>;
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   using ScanRecordPtr = data_decoder::mojom::ScanRecordPtr;
   using ScanRecordCallback = base::OnceCallback<void(ScanRecordPtr)>;
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   static scoped_refptr<BluetoothAdapterBlueZ> CreateAdapter();
 
@@ -192,7 +192,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
                                          int16_t rssi,
                                          const std::vector<uint8_t>& eir);
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Announce to observers advertisement received from |device|.
   void OnAdvertisementReceived(std::string device_address,
                                std::string device_name,
@@ -200,7 +200,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
                                uint16_t device_appearance,
                                const dbus::ObjectPath& device_path,
                                ScanRecordPtr scan_record);
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Announce to observers that |device| has changed its connected state.
   void NotifyDeviceConnectedStateChanged(BluetoothDeviceBlueZ* device,
@@ -361,7 +361,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
   // subsequently operate on that adapter until it is removed.
   void SetAdapter(const dbus::ObjectPath& object_path);
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Set the adapter name to one chosen from the system information.
   void SetStandardChromeOSAdapterName();
 #endif
@@ -546,7 +546,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
   // crbug.com/687396.
   std::vector<scoped_refptr<BluetoothAdvertisementBlueZ>> advertisements_;
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Timer used to schedule a second update to BlueZ's long term keys. This
   // second update is necessary in a first-time install situation, where field
   // trials might not yet have been available. By scheduling a second update

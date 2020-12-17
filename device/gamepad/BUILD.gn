@@ -156,7 +156,7 @@ component("gamepad") {
     ]
   }
 
-  if (is_ash) {
+  if (is_chromeos_ash) {
     deps += [ "//chromeos/dbus/permission_broker" ]
   }
 }

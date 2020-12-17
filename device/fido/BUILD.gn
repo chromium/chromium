@@ -257,7 +257,7 @@ component("fido") {
     ]
   }
 
-  if (is_ash) {
+  if (is_chromeos_ash) {
     sources += [
       "cros/authenticator.cc",
       "cros/authenticator.h",
@@ -316,7 +316,7 @@ static_library("cablev2_test_util") {
   ]
 }
 
-if (is_ash) {
+if (is_chromeos_ash) {
   proto_library("u2f_proto") {
     sources = [ "//third_party/cros_system_api/dbus/u2f/u2f_interface.proto" ]
 

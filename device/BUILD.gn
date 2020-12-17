@@ -233,7 +233,7 @@ test("device_unittests") {
     ]
   }
 
-  if (is_ash) {
+  if (is_chromeos_ash) {
     sources += [ "bluetooth/chromeos/bluetooth_utils_unittest.cc" ]
     deps += [ "//chromeos/constants" ]
   }
@@ -256,7 +256,7 @@ test("device_unittests") {
 
     deps += [ "//dbus" ]
 
-    if (is_ash) {
+    if (is_chromeos_ash) {
       deps += [ "//services/data_decoder/public/mojom" ]
     }
   }

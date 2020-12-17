@@ -48,11 +48,11 @@ COMPONENT_EXPORT(DEVICE_FIDO)
 extern const base::Feature kWebAuthCableLowLatency;
 #endif  // defined(OS_CHROMEOS) || defined(OS_LINUX)
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enable a ChromeOS platform authenticator
 COMPONENT_EXPORT(DEVICE_FIDO)
 extern const base::Feature kWebAuthCrosPlatformAuthenticator;
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 COMPONENT_EXPORT(DEVICE_FIDO)
 extern const base::Feature kWebAuthAttestationBlockList;
