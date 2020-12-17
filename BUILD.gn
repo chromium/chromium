@@ -162,7 +162,7 @@ group("gn_all") {
     ]
   }
 
-  if (chromeos_is_browser_only) {
+  if (is_chromeos_lacros) {
     deps += [ "//chrome/test:lacros_chrome_browsertests" ]
   }
 
@@ -429,7 +429,7 @@ group("gn_all") {
     ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [
       "//ash:ash_unittests",
       "//ash/app_list:app_list_demo",
@@ -447,7 +447,7 @@ group("gn_all") {
     ]
   }
 
-  if (is_chromeos || is_mac || is_win) {
+  if (is_chromeos_ash || is_mac || is_win) {
     deps += [
       "//rlz:rlz_id",
       "//rlz:rlz_lib",
@@ -480,7 +480,7 @@ group("gn_all") {
     }
   }
 
-  if (is_ios || is_win || (is_linux && !is_chromeos)) {
+  if (is_ios || is_win || (is_linux || is_chromeos_lacros)) {
     deps += [
       "//base:base_i18n_perftests",
       "//google_apis:google_apis_unittests",
@@ -494,7 +494,7 @@ group("gn_all") {
 
   # TODO(GYP): Figure out which of these should (and can) build
   # for chromeos/ios.
-  if (!is_chromeos && !is_ios && !is_fuchsia) {
+  if (!is_chromeos_ash && !is_ios && !is_fuchsia) {
     deps += [
       "//base:build_utf8_validator_tables",
       "//base:check_example",
@@ -543,7 +543,7 @@ group("gn_all") {
 
     if (enable_extensions) {
       deps += [ "//extensions/shell:app_shell" ]
-      if (is_linux && is_official_build) {
+      if ((is_linux || is_chromeos_lacros) && is_official_build) {
         deps += [ "//extensions/shell:app_shell_linux_symbols" ]
       }
     }
@@ -573,7 +573,7 @@ group("gn_all") {
     deps += [ "//chrome/test/chromedriver:chromedriver($host_toolchain)" ]
   }
 
-  if (is_android || (is_linux && !is_chromeos)) {
+  if (is_android || (is_linux || is_chromeos_lacros)) {
     deps += [
       "//components/network_hints/browser",
       "//content/public/app",
@@ -712,7 +712,7 @@ group("gn_all") {
     deps += [ "//third_party/sqlite:sqlite_shell" ]
   }
 
-  if (is_linux && !is_chromeos && !is_chromecast) {
+  if ((is_linux || is_chromeos_lacros) && !is_chromecast) {
     # TODO(GYP): Figure out if any of these should be in gn_all
     # and figure out how cross-platform they are
     deps += [
@@ -925,7 +925,7 @@ if (is_win) {
   }
 }
 
-if (is_chromeos) {
+if (is_chromeos_ash) {
   # This group is used to collect all targets used when verifying a new version
   # of Chrome for Chrome OS.
   group("chromiumos_preflight") {
@@ -1003,7 +1003,7 @@ if (!is_ios) {
     deps = [ ":blink_web_tests" ]
   }
 
-  if (!is_chromeos && !is_ios && !is_fuchsia && !is_android) {
+  if (!is_chromeos_ash && !is_ios && !is_fuchsia && !is_android) {
     # WPT Webdriver tests runner
     # chrome/test/chromedriver/test/run_webdriver_tests.py
     group("webdriver_wpt_tests") {
@@ -1302,10 +1302,10 @@ group("chromium_builder_perf") {
       data += [ "//third_party/android_sdk/public/platform-tools/adb" ]
     }
 
-    if (!is_chromeos) {
+    if (!is_chromeos_ash) {
       data_deps += [ "//chrome/test:performance_browser_tests" ]
     }
-    if (is_linux && !is_chromeos) {
+    if (is_linux || is_chromeos_lacros) {
       if (is_official_build) {
         # In GN builds, this is controlled by the 'linux_dump_symbols'
         # flag, which defaults to 1 for official builds. For now,
@@ -1346,7 +1346,7 @@ if (!is_ios && !is_android && !is_chromecast && !is_fuchsia) {
     if (enable_ipc_fuzzer && !is_component_build) {
       deps += [ "//tools/ipc_fuzzer:ipc_fuzzer_all" ]
     }
-    if (!is_chromeos) {
+    if (!is_chromeos_ash) {
       deps += [
         "//third_party/pdfium/samples:pdfium_test",
         "//v8:v8_shell($v8_snapshot_toolchain)",
@@ -1396,7 +1396,7 @@ if (enable_js_type_check) {
       "mojo/public/tools/bindings/generators/js_templates/lite/test:closure_compile",
       "ui/webui/resources:closure_compile",
     ]
-    if (is_chromeos) {
+    if (is_chromeos_ash) {
       data_deps += [
         "chromeos/components:closure_compile",
         "ui/file_manager:closure_compile",
