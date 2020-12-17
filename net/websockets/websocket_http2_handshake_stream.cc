@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -234,6 +235,12 @@ void WebSocketHttp2HandshakeStream::SetPriority(RequestPriority priority) {
 HttpStream* WebSocketHttp2HandshakeStream::RenewStreamForAuth() {
   // Renewing the stream is not supported.
   return nullptr;
+}
+
+const std::vector<std::string>& WebSocketHttp2HandshakeStream::GetDnsAliases()
+    const {
+  static const base::NoDestructor<std::vector<std::string>> emptyvector_result;
+  return *emptyvector_result;
 }
 
 std::unique_ptr<WebSocketStream> WebSocketHttp2HandshakeStream::Upgrade() {

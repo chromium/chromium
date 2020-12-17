@@ -91,6 +91,8 @@ class NET_EXPORT_PRIVATE HttpBasicStream : public HttpStream {
 
   void SetRequestHeadersCallback(RequestHeadersCallback callback) override;
 
+  const std::vector<std::string>& GetDnsAliases() const override;
+
  private:
   HttpStreamParser* parser() const { return state_.parser(); }
 

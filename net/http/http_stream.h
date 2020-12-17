@@ -191,6 +191,11 @@ class NET_EXPORT_PRIVATE HttpStream {
   // Set the idempotency of the request. No-op by default.
   virtual void SetRequestIdempotency(Idempotency idempotency) {}
 
+  // Retrieves any DNS aliases for the remote endpoint. The alias chain order
+  // is preserved in reverse, from canonical name (i.e. address record name)
+  // through to query name.
+  virtual const std::vector<std::string>& GetDnsAliases() const = 0;
+
  private:
   DISALLOW_COPY_AND_ASSIGN(HttpStream);
 };

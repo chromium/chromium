@@ -83,6 +83,7 @@ class NET_EXPORT_PRIVATE SpdyHttpStream : public SpdyStream::Delegate,
   bool GetRemoteEndpoint(IPEndPoint* endpoint) override;
   void PopulateNetErrorDetails(NetErrorDetails* details) override;
   void SetPriority(RequestPriority priority) override;
+  const std::vector<std::string>& GetDnsAliases() const override;
 
   // SpdyStream::Delegate implementation.
   void OnHeadersSent() override;

@@ -9,6 +9,7 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_split.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/ip_endpoint.h"
@@ -422,6 +423,11 @@ void QuicHttpStream::OnReadResponseHeadersComplete(int rv) {
   if (rv != ERR_IO_PENDING && !callback_.is_null()) {
     DoCallback(rv);
   }
+}
+
+const std::vector<std::string>& QuicHttpStream::GetDnsAliases() const {
+  static const base::NoDestructor<std::vector<std::string>> emptyvector_result;
+  return *emptyvector_result;
 }
 
 void QuicHttpStream::ReadTrailingHeaders() {

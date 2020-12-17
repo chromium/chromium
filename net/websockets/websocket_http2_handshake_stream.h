@@ -86,6 +86,7 @@ class NET_EXPORT_PRIVATE WebSocketHttp2HandshakeStream
   void SetPriority(RequestPriority priority) override;
   void PopulateNetErrorDetails(NetErrorDetails* details) override;
   HttpStream* RenewStreamForAuth() override;
+  const std::vector<std::string>& GetDnsAliases() const override;
 
   // WebSocketHandshakeStreamBase methods.
 

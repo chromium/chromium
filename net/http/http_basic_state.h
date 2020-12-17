@@ -66,6 +66,11 @@ class NET_EXPORT_PRIVATE HttpBasicState {
   // ClientSocketHandle::is_reused().
   bool IsConnectionReused() const;
 
+  // Retrieves any DNS aliases for the remote endpoint. The alias chain order
+  // is preserved in reverse, from canonical name (i.e. address record name)
+  // through to query name.
+  const std::vector<std::string>& GetDnsAliases() const;
+
  private:
   scoped_refptr<GrowableIOBuffer> read_buf_;
 

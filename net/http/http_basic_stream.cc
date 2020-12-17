@@ -196,6 +196,10 @@ void HttpBasicStream::SetRequestHeadersCallback(
   request_headers_callback_ = std::move(callback);
 }
 
+const std::vector<std::string>& HttpBasicStream::GetDnsAliases() const {
+  return state_.GetDnsAliases();
+}
+
 void HttpBasicStream::OnHandshakeConfirmed(CompletionOnceCallback callback,
                                            int rv) {
   if (rv == OK) {

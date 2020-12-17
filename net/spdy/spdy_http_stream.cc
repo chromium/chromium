@@ -13,6 +13,7 @@
 #include "base/check_op.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
@@ -709,6 +710,11 @@ void SpdyHttpStream::SetPriority(RequestPriority priority) {
   if (stream_) {
     stream_->SetPriority(priority);
   }
+}
+
+const std::vector<std::string>& SpdyHttpStream::GetDnsAliases() const {
+  static const base::NoDestructor<std::vector<std::string>> emptyvector_result;
+  return *emptyvector_result;
 }
 
 }  // namespace net
