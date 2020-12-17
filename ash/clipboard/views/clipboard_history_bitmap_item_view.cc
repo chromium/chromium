@@ -160,11 +160,15 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
     auto image_view = BuildImageView();
     image_view->SetPreferredSize(
         gfx::Size(INT_MAX, ClipboardHistoryViews::kImageViewPreferredHeight));
-    image_view->SetBorder(views::CreateRoundedRectBorder(
+    image_view_ = AddChildView(std::move(image_view));
+
+    // `border_container_view_` should be above `image_view_`.
+    border_container_view_ = AddChildView(std::make_unique<views::View>());
+
+    border_container_view_->SetBorder(views::CreateRoundedRectBorder(
         ClipboardHistoryViews::kImageBorderThickness,
         ClipboardHistoryViews::kImageRoundedCornerRadius,
         gfx::kPlaceholderColor));
-    image_view_ = AddChildView(std::move(image_view));
 
     InstallDeleteButton();
   }
@@ -208,7 +212,7 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
     ScopedLightModeAsDefault scoped_light_mode_as_default;
 
     ContentsView::OnThemeChanged();
-    image_view_->border()->set_color(
+    border_container_view_->border()->set_color(
         AshColorProvider::Get()->GetControlsLayerColor(
             AshColorProvider::ControlsLayerType::kHairlineBorderColor));
   }
@@ -282,6 +286,9 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
 
   ClipboardHistoryBitmapItemView* const container_;
   RoundedImageView* image_view_ = nullptr;
+
+  // Helps to place a border above `image_view_`.
+  views::View* border_container_view_ = nullptr;
 
   base::WeakPtrFactory<BitmapContentsView> weak_ptr_factory_{this};
 };
