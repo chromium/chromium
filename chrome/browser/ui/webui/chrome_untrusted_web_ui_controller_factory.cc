@@ -13,6 +13,10 @@
 #include "ui/webui/webui_config.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OFFICIAL_BUILD)
+#include "chromeos/components/sample_system_web_app_ui/untrusted_sample_system_web_app_ui.h"
+#endif
+
 using WebUIConfigList =
     std::vector<std::pair<std::string, std::unique_ptr<ui::WebUIConfig>>>;
 
@@ -24,18 +28,19 @@ namespace {
 // constructing from a vector is O(n log n).
 WebUIConfigList CreateConfigs() {
   WebUIConfigList config_list;
-#if BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OFFICIAL_BUILD)
   auto register_config =
       [&config_list](std::unique_ptr<ui::WebUIConfig> config) {
         DCHECK_EQ(config->scheme(), content::kChromeUIUntrustedScheme);
         const std::string& host = config->host();
         config_list.emplace_back(host, std::move(config));
       };
+  // Delete once register_config is used outside of Chrome OS.
+  ALLOW_UNUSED_LOCAL(register_config);
 
   // Register WebUIConfigs below.
-
-  // TODO(ortuno): Remove when `register_config` is used to register configs.
-  DCHECK(&register_config);
+#if BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OFFICIAL_BUILD)
+  register_config(
+      std::make_unique<chromeos::UntrustedSampleSystemWebAppUIConfig>());
 #endif
 
   return config_list;

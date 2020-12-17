@@ -17,18 +17,6 @@
 #include "ui/webui/webui_allowlist.h"
 
 namespace chromeos {
-namespace {
-content::WebUIDataSource* CreateUntrustedSampleSystemWebAppDataSource() {
-  content::WebUIDataSource* untrusted_source =
-      content::WebUIDataSource::Create(kChromeUIUntrustedSampleSystemWebAppURL);
-  untrusted_source->AddResourcePath(
-      "untrusted.html", IDR_CHROMEOS_SAMPLE_SYSTEM_WEB_APP_UNTRUSTED_HTML);
-  untrusted_source->AddResourcePath(
-      "untrusted.js", IDR_CHROMEOS_SAMPLE_SYSTEM_WEB_APP_UNTRUSTED_JS);
-  untrusted_source->AddFrameAncestor(GURL(kChromeUISampleSystemWebAppURL));
-  return untrusted_source;
-}
-}  // namespace
 
 SampleSystemWebAppUI::SampleSystemWebAppUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui) {
@@ -58,8 +46,6 @@ SampleSystemWebAppUI::SampleSystemWebAppUI(content::WebUI* web_ui)
       network::mojom::CSPDirectiveName::FrameSrc, csp);
   auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
   content::WebUIDataSource::Add(browser_context, trusted_source.release());
-  content::WebUIDataSource::Add(browser_context,
-                                CreateUntrustedSampleSystemWebAppDataSource());
 
   // Add ability to request chrome-untrusted: URLs
   web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);

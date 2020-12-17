@@ -14,6 +14,8 @@ static_library("sample_system_web_app_ui") {
   sources = [
     "sample_system_web_app_ui.cc",
     "sample_system_web_app_ui.h",
+    "untrusted_sample_system_web_app_ui.cc",
+    "untrusted_sample_system_web_app_ui.h",
     "url_constants.cc",
     "url_constants.h",
   ]
