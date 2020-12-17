@@ -15,6 +15,7 @@ import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
@@ -25,9 +26,12 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 import org.chromium.chrome.browser.bookmarks.bottomsheet.BookmarkBottomSheetCoordinator;
+import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider.CustomTabsUiType;
+import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
@@ -349,9 +353,10 @@ public class BookmarkUtils {
         BookmarkItem bookmarkItem = model.getBookmarkById(bookmarkId);
         if (bookmarkItem.getId().getType() == BookmarkType.READING_LIST) {
             model.setReadStatusForReadingList(bookmarkItem.getUrl(), true);
+            openUrlInCustomTab(context, bookmarkItem.getUrl());
+        } else {
+            openUrl(context, bookmarkItem.getUrl(), openBookmarkComponentName);
         }
-        openUrl(context, bookmarkItem.getUrl(), openBookmarkComponentName);
-
         return true;
     }
 
@@ -394,6 +399,25 @@ public class BookmarkUtils {
             intent.setClass(context.getApplicationContext(), ChromeLauncherActivity.class);
         }
 
+        IntentHandler.startActivityForTrustedIntent(intent);
+    }
+
+    private static void openUrlInCustomTab(Context context, String url) {
+        CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+        builder.setShowTitle(true);
+        builder.setShareState(CustomTabsIntent.SHARE_STATE_ON);
+        CustomTabsIntent customTabIntent = builder.build();
+        customTabIntent.intent.setData(Uri.parse(url));
+
+        Intent intent = LaunchIntentDispatcher.createCustomTabActivityIntent(
+                context, customTabIntent.intent);
+        intent.setPackage(context.getPackageName());
+        intent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_UI_TYPE, CustomTabsUiType.READ_LATER);
+        intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB,
+                Profile.getLastUsedRegularProfile().isOffTheRecord());
+        IntentHandler.addTrustedIntentExtras(intent);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         IntentHandler.startActivityForTrustedIntent(intent);
     }
 
