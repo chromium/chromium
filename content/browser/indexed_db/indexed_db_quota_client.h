@@ -52,7 +52,7 @@ class IndexedDBQuotaClient : public storage::QuotaClient {
  private:
   ~IndexedDBQuotaClient() override;
 
-  const scoped_refptr<IndexedDBContextImpl> indexed_db_context_;
+  scoped_refptr<IndexedDBContextImpl> indexed_db_context_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

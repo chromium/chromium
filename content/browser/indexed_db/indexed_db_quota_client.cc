@@ -88,6 +88,8 @@ IndexedDBQuotaClient::IndexedDBQuotaClient(
 
 IndexedDBQuotaClient::~IndexedDBQuotaClient() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  IndexedDBContextImpl::ReleaseOnIDBSequence(std::move(indexed_db_context_));
 }
 
 void IndexedDBQuotaClient::OnQuotaManagerDestroyed() {
