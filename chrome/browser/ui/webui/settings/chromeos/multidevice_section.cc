@@ -181,6 +181,32 @@ const std::vector<SearchConcept>& GetNearbyShareOnSearchConcepts() {
        {.setting = mojom::Setting::kNearbyShareOnOff},
        {IDS_OS_SETTINGS_TAG_NEARBY_SHARE_TURN_OFF_ALT1,
         SearchConcept::kAltTagEnd}},
+      {IDS_OS_SETTINGS_TAG_NEARBY_SHARE_DEVICE_NAME,
+       mojom::kNearbyShareSubpagePath,
+       mojom::SearchResultIcon::kNearbyShare,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kNearbyShareDeviceName}},
+      {IDS_OS_SETTINGS_TAG_NEARBY_SHARE_DEVICE_VISIBILITY,
+       mojom::kNearbyShareSubpagePath,
+       mojom::SearchResultIcon::kNearbyShare,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kNearbyShareDeviceVisibility},
+       {IDS_OS_SETTINGS_TAG_NEARBY_SHARE_DEVICE_VISIBILITY_ALT1,
+        SearchConcept::kAltTagEnd}},
+      {IDS_OS_SETTINGS_TAG_NEARBY_SHARE_CONTACTS,
+       mojom::kNearbyShareSubpagePath,
+       mojom::SearchResultIcon::kNearbyShare,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kNearbyShareContacts}},
+      {IDS_OS_SETTINGS_TAG_NEARBY_SHARE_DATA_USAGE,
+       mojom::kNearbyShareSubpagePath,
+       mojom::SearchResultIcon::kNearbyShare,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kNearbyShareDataUsage}},
   });
   return *tags;
 }
@@ -504,6 +530,10 @@ void MultiDeviceSection::RegisterHierarchy(
       mojom::SearchResultDefaultRank::kMedium, mojom::kNearbyShareSubpagePath);
   static constexpr mojom::Setting kNearbyShareSettings[] = {
       mojom::Setting::kNearbyShareOnOff,
+      mojom::Setting::kNearbyShareDeviceName,
+      mojom::Setting::kNearbyShareDeviceVisibility,
+      mojom::Setting::kNearbyShareContacts,
+      mojom::Setting::kNearbyShareDataUsage,
   };
   RegisterNestedSettingBulk(mojom::Subpage::kNearbyShare, kNearbyShareSettings,
                             generator);

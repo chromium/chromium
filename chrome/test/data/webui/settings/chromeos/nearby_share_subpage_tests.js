@@ -127,23 +127,38 @@ suite('NearbyShare', function() {
     assertEquals('Off', onOffText.textContent.trim());
   });
 
-  test('Deep link to nearby share on/off toggle', async () => {
-    loadTimeData.overrideValues({
-      isDeepLinkingEnabled: true,
+  suite('Deeplinking', () => {
+    const deepLinkTestData = [
+      {settingId: '208', deepLinkElement: '#featureToggleButton'},
+      {settingId: '214', deepLinkElement: '#editDeviceNameButton'},
+      {settingId: '215', deepLinkElement: '#editVisibilityButton'},
+      {settingId: '216', deepLinkElement: '#manageContactsLinkRow'},
+      {settingId: '217', deepLinkElement: '#editDataUsageButton'},
+    ];
+
+    deepLinkTestData.forEach((testData) => {
+      test(
+          'Deep link to nearby setting element ' + testData.deepLinkElement,
+          async () => {
+            loadTimeData.overrideValues({
+              isDeepLinkingEnabled: true,
+            });
+
+            const params = new URLSearchParams;
+            params.append('settingId', testData.settingId);
+            settings.Router.getInstance().navigateTo(
+                settings.routes.NEARBY_SHARE, params);
+
+            Polymer.dom.flush();
+
+            const deepLinkElement = subpage.$$(testData.deepLinkElement);
+            await test_util.waitAfterNextRender(deepLinkElement);
+            assertEquals(
+                deepLinkElement, subpage.shadowRoot.activeElement,
+                'Nearby share setting element ' + testData.deepLinkElement +
+                    ' should be focused for settingId=' + testData.settingId);
+          });
     });
-
-    const params = new URLSearchParams;
-    params.append('settingId', '208');
-    settings.Router.getInstance().navigateTo(
-        settings.routes.NEARBY_SHARE, params);
-
-    Polymer.dom.flush();
-
-    const deepLinkElement = featureToggleButton.$$('cr-toggle');
-    await test_util.waitAfterNextRender(deepLinkElement);
-    assertEquals(
-        deepLinkElement, getDeepActiveElement(),
-        'Nearby share on/off toggle should be focused for settingId=208.');
   });
 
   test('update device name preference', function() {

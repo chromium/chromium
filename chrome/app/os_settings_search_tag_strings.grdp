@@ -255,6 +255,21 @@
   <message name="IDS_OS_SETTINGS_TAG_NEARBY_SHARE_TURN_OFF_ALT1" desc="Text for search result item which, when clicked, navigates the user to Nearby Share settings. Alternate phrase for: 'Turn off Nearby Share'">
     Disable Nearby Share
   </message>
+  <message name="IDS_OS_SETTINGS_TAG_NEARBY_SHARE_DEVICE_NAME" desc="Text for search result item which, when clicked, navigates the user to Nearby Share change device name setting.">
+    Nearby Share device name
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_NEARBY_SHARE_DEVICE_VISIBILITY" desc="Text for search result item which, when clicked, navigates the user to Nearby Share change device visibility button in settings. Alternate phrase for: 'Nearby Share discoverability'">
+    Nearby Share visibility
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_NEARBY_SHARE_DEVICE_VISIBILITY_ALT1" desc="Text for search result item which, when clicked, navigates the user to Nearby Share change device visibility button in settings. Alternate phrase for: 'Nearby Share visibility'">
+    Nearby Share discoverability
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_NEARBY_SHARE_CONTACTS" desc="Text for search result item which, when clicked, navigates the user to Nearby Share manage contacts row in settings that opens Google Contacts.">
+    Nearby Share contacts
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_NEARBY_SHARE_DATA_USAGE" desc="Text for search result item which, when clicked, navigates the user to Nearby Share edit data usage button in settings.">
+    Nearby Share data usage
+  </message>
   <message name="IDS_OS_SETTINGS_TAG_MULTIDEVICE_PHONE_HUB" translateable="false" desc="Text for search result item which, when clicked, navigates the user to Phone Hub settings, with a toggle to enable/disable the feature. Phone hub provides the user with information about their Android phone and allows the user to perform phone-side actions directly in the Chrome OS UI.">
     Phone Hub
   </message>

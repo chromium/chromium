@@ -62,6 +62,10 @@ enum Setting {
   // Do not reuse.
   kPhoneHubTaskContinuationOnOff = 212,
   kWifiSyncOnOff = 213,
+  kNearbyShareDeviceName = 214,
+  kNearbyShareDeviceVisibility = 215,
+  kNearbyShareContacts = 216,
+  kNearbyShareDataUsage = 217,
 
   // People section.
   kAddAccount = 300,

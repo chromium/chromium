@@ -93,7 +93,8 @@
       </div>
       <cr-button id="editDeviceNameButton" on-click="onDeviceNameTap_"
           aria-description="[[getEditNameButtonAriaDescription_(
-              settings.deviceName)]]">
+              settings.deviceName)]]"
+          deep-link-focus-id$="[[Setting.kNearbyShareDeviceName]]">
         $i18n{nearbyShareEditDeviceName}
       </cr-button>
     </div>
@@ -112,7 +113,8 @@
         </div>
       </div>
       <cr-button id="editVisibilityButton" on-click="onVisibilityTap_"
-          aria-description="[[getVisibilityDescription_(settings.visibility)]]">
+          aria-description="[[getVisibilityDescription_(settings.visibility)]]"
+          deep-link-focus-id$="[[Setting.kNearbyShareDeviceVisibility]]">
         $i18n{nearbyShareEditVisibility}
       </cr-button>
     </div>
@@ -155,9 +157,11 @@
           id="visibilityDialog" on-close="onVisibilityDialogClose_">
       </nearby-share-contact-visibility-dialog>
     </template>
-    <cr-link-row class="hr" external on-click="onManageContactsTap_"
+    <cr-link-row id="manageContactsLinkRow" class="hr" external
+        on-click="onManageContactsTap_"
         label="$i18n{nearbyShareManageContactsRowTitle}"
-        sub-label="[[getManageContactsSubLabel_(manageContactsUrl_)]]">
+        sub-label="[[getManageContactsSubLabel_(manageContactsUrl_)]]"
+        deep-link-focus-id$="[[Setting.kNearbyShareContacts]]">
     </cr-link-row>
     <div class="settings-box two-line">
       <div class="start">
@@ -170,7 +174,8 @@
       </div>
       <cr-button id="editDataUsageButton" on-click="onDataUsageTap_"
           aria-description="[[getEditDataUsageButtonAriaDescription_(
-              prefs.nearby_sharing.data_usage.value)]]">
+              prefs.nearby_sharing.data_usage.value)]]"
+          deep-link-focus-id$="[[Setting.kNearbyShareDataUsage]]">
         $i18n{nearbyShareEditDataUsage}
       </cr-button>
     </div>

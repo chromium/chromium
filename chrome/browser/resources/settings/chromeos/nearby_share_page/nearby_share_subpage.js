@@ -85,6 +85,10 @@ Polymer({
       type: Object,
       value: () => new Set([
         chromeos.settings.mojom.Setting.kNearbyShareOnOff,
+        chromeos.settings.mojom.Setting.kNearbyShareDeviceName,
+        chromeos.settings.mojom.Setting.kNearbyShareDeviceVisibility,
+        chromeos.settings.mojom.Setting.kNearbyShareContacts,
+        chromeos.settings.mojom.Setting.kNearbyShareDataUsage,
       ]),
     },
   },
