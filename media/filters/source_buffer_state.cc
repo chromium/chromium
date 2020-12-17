@@ -16,6 +16,7 @@
 #include "media/filters/chunk_demuxer.h"
 #include "media/filters/frame_processor.h"
 #include "media/filters/source_buffer_stream.h"
+#include "media/media_buildflags.h"
 
 namespace media {
 
@@ -713,6 +714,29 @@ bool SourceBufferState::OnNewConfigs(
       DVLOG(1) << "Video track_id=" << track_id
                << " config: " << video_config.AsHumanReadableString();
       DCHECK(video_config.IsValidConfig());
+
+      if (video_config.codec() == kCodecHEVC) {
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+#if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+        // On ChromeOS, HEVC is only supported through EME, so require the
+        // config to be for an encrypted track if on ChromeOS.
+        // BIG TODO: Is there a test need for conditionally allowing clear HEVC
+        // here if kEnableClearHevcForTesting in cmdline?
+        if (video_config.encryption_scheme() ==
+            EncryptionScheme::kUnencrypted) {
+          MEDIA_LOG(ERROR, media_log_)
+              << "MSE playback of HEVC on ChromeOS is only supported via "
+                 "platform decryptor, but the provided HEVC track is not "
+                 "encrypted.";
+          return false;
+        }
+#endif  // BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+#else
+        NOTREACHED()
+            << "MSE parser must not emit HEVC tracks on build configurations "
+               "that do not support HEVC playback via platform.";
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
+      }
 
       const auto& it = std::find(expected_vcodecs.begin(),
                                  expected_vcodecs.end(), video_config.codec());

@@ -95,6 +95,17 @@ class MediaSource final : public EventTargetWithInlineData,
       LOCKS_EXCLUDED(attachment_link_lock_);
 
   static bool isTypeSupported(ExecutionContext* context, const String& type);
+
+  // Helper for isTypeSupported, addSourceBuffer and SourceBuffer changeType.
+  // Set |enforce_codec_specificity| true to require fully specified mime and
+  // codecs, false otherwise.
+  // TODO(https://crbug.com/535738): When |enforce_codec_specificity| is set to
+  // false, then fully relax requirements beyond initial special casing for HEVC
+  // on ChromeOS with EME in mp4.
+  static bool IsTypeSupportedInternal(ExecutionContext* context,
+                                      const String& type,
+                                      bool enforce_codec_specificity);
+
   static bool canConstructInDedicatedWorker();
 
   // Methods needed by a MediaSourceAttachmentSupplement to service operations

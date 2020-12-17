@@ -1041,7 +1041,9 @@ void SourceBuffer::ChangeType_Locked(
   // here. As part of that, CanChangeType in Chromium should inherit relaxation
   // of impl's StreamParserFactory (since it returns true iff a stream parser
   // can be constructed with |type|). See https://crbug.com/535738.
-  if (!MediaSource::isTypeSupported(GetExecutionContext(), type) ||
+  if (!MediaSource::IsTypeSupportedInternal(
+          GetExecutionContext(), type,
+          false /* allow underspecified codecs in |type| */) ||
       !web_source_buffer_->CanChangeType(content_type.GetType(), codecs)) {
     MediaSource::LogAndThrowDOMException(
         *exception_state, DOMExceptionCode::kNotSupportedError,
