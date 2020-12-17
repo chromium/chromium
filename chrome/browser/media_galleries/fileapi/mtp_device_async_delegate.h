@@ -54,18 +54,18 @@ class MTPDeviceAsyncDelegate {
       CreateSnapshotFileSuccessCallback;
 
   // A callback to be called when ReadBytes method call succeeds.
-  typedef base::Callback<
-      void(const base::File::Info& file_info,
-           int bytes_read)> ReadBytesSuccessCallback;
+  typedef base::OnceCallback<void(const base::File::Info& file_info,
+                                  int bytes_read)>
+      ReadBytesSuccessCallback;
 
   struct ReadBytesRequest {
     ReadBytesRequest(uint32_t file_id,
                      net::IOBuffer* buf,
                      int64_t offset,
                      int buf_len,
-                     const ReadBytesSuccessCallback& success_callback,
+                     ReadBytesSuccessCallback success_callback,
                      const ErrorCallback& error_callback);
-    ReadBytesRequest(const ReadBytesRequest& other);
+    ReadBytesRequest(ReadBytesRequest&& other);
     ~ReadBytesRequest();
 
     uint32_t file_id;
@@ -142,7 +142,7 @@ class MTPDeviceAsyncDelegate {
                          const scoped_refptr<net::IOBuffer>& buf,
                          int64_t offset,
                          int buf_len,
-                         const ReadBytesSuccessCallback& success_callback,
+                         ReadBytesSuccessCallback success_callback,
                          const ErrorCallback& error_callback) = 0;
 
   // Returns true if storage is opened for read only.

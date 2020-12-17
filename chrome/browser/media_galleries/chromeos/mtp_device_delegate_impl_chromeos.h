@@ -104,7 +104,7 @@ class MTPDeviceDelegateImplLinux : public MTPDeviceAsyncDelegate {
                  const scoped_refptr<net::IOBuffer>& buf,
                  int64_t offset,
                  int buf_len,
-                 const ReadBytesSuccessCallback& success_callback,
+                 ReadBytesSuccessCallback success_callback,
                  const ErrorCallback& error_callback) override;
   bool IsReadOnly() const override;
   void CopyFileLocal(
@@ -166,7 +166,7 @@ class MTPDeviceDelegateImplLinux : public MTPDeviceAsyncDelegate {
                          net::IOBuffer* buf,
                          int64_t offset,
                          int buf_len,
-                         const ReadBytesSuccessCallback& success_callback,
+                         ReadBytesSuccessCallback success_callback,
                          const ErrorCallback& error_callback);
   void MoveFileLocalInternal(
       const base::FilePath& source_file_path,
@@ -377,8 +377,9 @@ class MTPDeviceDelegateImplLinux : public MTPDeviceAsyncDelegate {
   //
   // |success_callback| is invoked to notify the caller about the read bytes.
   // |bytes_read| is the number of bytes read.
-  void OnDidReadBytes(const ReadBytesSuccessCallback& success_callback,
-                      const base::File::Info& file_info, int bytes_read);
+  void OnDidReadBytes(ReadBytesSuccessCallback success_callback,
+                      const base::File::Info& file_info,
+                      int bytes_read);
 
   // Called when FillFileCache() succeeds.
   void OnDidFillFileCache(const base::FilePath& path,

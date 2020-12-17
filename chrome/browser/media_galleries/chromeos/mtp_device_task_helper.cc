@@ -181,7 +181,7 @@ void MTPDeviceTaskHelper::WriteDataIntoSnapshotFile(
 }
 
 void MTPDeviceTaskHelper::ReadBytes(
-    const MTPDeviceAsyncDelegate::ReadBytesRequest& request) {
+    MTPDeviceAsyncDelegate::ReadBytesRequest request) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (device_handle_.empty()) {
     return HandleDeviceError(request.error_callback,
@@ -192,7 +192,7 @@ void MTPDeviceTaskHelper::ReadBytes(
   GetMediaTransferProtocolManager()->GetFileInfo(
       device_handle_, file_ids,
       base::BindOnce(&MTPDeviceTaskHelper::OnGetFileInfoToReadBytes,
-                     weak_ptr_factory_.GetWeakPtr(), request));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(request)));
 }
 
 void MTPDeviceTaskHelper::RenameObject(
@@ -393,7 +393,7 @@ void MTPDeviceTaskHelper::OnCheckedDirectoryEmpty(
 }
 
 void MTPDeviceTaskHelper::OnGetFileInfoToReadBytes(
-    const MTPDeviceAsyncDelegate::ReadBytesRequest& request,
+    MTPDeviceAsyncDelegate::ReadBytesRequest request,
     std::vector<device::mojom::MtpFileEntryPtr> entries,
     bool error) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -418,7 +418,8 @@ void MTPDeviceTaskHelper::OnGetFileInfoToReadBytes(
   }
   if (request.offset == file_info.size) {
     content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(request.success_callback, file_info, 0u));
+        FROM_HERE,
+        base::BindOnce(std::move(request.success_callback), file_info, 0u));
     return;
   }
 
@@ -430,11 +431,12 @@ void MTPDeviceTaskHelper::OnGetFileInfoToReadBytes(
       device_handle_, request.file_id,
       base::checked_cast<uint32_t>(request.offset), bytes_to_read,
       base::BindOnce(&MTPDeviceTaskHelper::OnDidReadBytes,
-                     weak_ptr_factory_.GetWeakPtr(), request, file_info));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(request),
+                     file_info));
 }
 
 void MTPDeviceTaskHelper::OnDidReadBytes(
-    const MTPDeviceAsyncDelegate::ReadBytesRequest& request,
+    MTPDeviceAsyncDelegate::ReadBytesRequest request,
     const base::File::Info& file_info,
     const std::string& data,
     bool error) const {
@@ -448,8 +450,8 @@ void MTPDeviceTaskHelper::OnDidReadBytes(
   std::copy(data.begin(), data.end(), request.buf->data());
 
   content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(request.success_callback, file_info, data.length()));
+      FROM_HERE, base::BindOnce(std::move(request.success_callback), file_info,
+                                data.length()));
 }
 
 void MTPDeviceTaskHelper::OnRenameObject(

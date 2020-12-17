@@ -240,16 +240,15 @@ void WriteDataIntoSnapshotFileOnUIThread(
 // |storage_name| specifies the name of the storage device.
 // |read_only| specifies the mode of the storage device.
 // |request| is a struct containing details about the byte read request.
-void ReadBytesOnUIThread(
-    const std::string& storage_name,
-    const bool read_only,
-    const MTPDeviceAsyncDelegate::ReadBytesRequest& request) {
+void ReadBytesOnUIThread(const std::string& storage_name,
+                         const bool read_only,
+                         MTPDeviceAsyncDelegate::ReadBytesRequest request) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   MTPDeviceTaskHelper* task_helper =
       GetDeviceTaskHelperForStorage(storage_name, read_only);
   if (!task_helper)
     return;
-  task_helper->ReadBytes(request);
+  task_helper->ReadBytes(std::move(request));
 }
 
 // Renames |object_id| to |new_name|.
@@ -644,14 +643,14 @@ void MTPDeviceDelegateImplLinux::ReadBytes(
     const scoped_refptr<net::IOBuffer>& buf,
     int64_t offset,
     int buf_len,
-    const ReadBytesSuccessCallback& success_callback,
+    ReadBytesSuccessCallback success_callback,
     const ErrorCallback& error_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   DCHECK(!device_file_path.empty());
   base::OnceClosure closure = base::BindOnce(
       &MTPDeviceDelegateImplLinux::ReadBytesInternal,
       weak_ptr_factory_.GetWeakPtr(), device_file_path, base::RetainedRef(buf),
-      offset, buf_len, success_callback, error_callback);
+      offset, buf_len, std::move(success_callback), error_callback);
   EnsureInitAndRunTask(PendingTaskInfo(device_file_path,
                                        content::BrowserThread::IO, FROM_HERE,
                                        std::move(closure)));
@@ -1009,7 +1008,7 @@ void MTPDeviceDelegateImplLinux::ReadBytesInternal(
     net::IOBuffer* buf,
     int64_t offset,
     int buf_len,
-    const ReadBytesSuccessCallback& success_callback,
+    ReadBytesSuccessCallback success_callback,
     const ErrorCallback& error_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
@@ -1017,14 +1016,15 @@ void MTPDeviceDelegateImplLinux::ReadBytesInternal(
   if (file_id) {
     ReadBytesRequest request(
         *file_id, buf, offset, buf_len,
-        base::Bind(&MTPDeviceDelegateImplLinux::OnDidReadBytes,
-                   weak_ptr_factory_.GetWeakPtr(), success_callback),
+        base::BindOnce(&MTPDeviceDelegateImplLinux::OnDidReadBytes,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(success_callback)),
         base::BindRepeating(&MTPDeviceDelegateImplLinux::HandleDeviceFileError,
                             weak_ptr_factory_.GetWeakPtr(), error_callback,
                             *file_id));
 
     base::OnceClosure closure = base::BindOnce(
-        &ReadBytesOnUIThread, storage_name_, read_only_, request);
+        &ReadBytesOnUIThread, storage_name_, read_only_, std::move(request));
     EnsureInitAndRunTask(PendingTaskInfo(base::FilePath(),
                                          content::BrowserThread::UI, FROM_HERE,
                                          std::move(closure)));
@@ -1635,10 +1635,11 @@ void MTPDeviceDelegateImplLinux::OnWriteDataIntoSnapshotFileError(
 }
 
 void MTPDeviceDelegateImplLinux::OnDidReadBytes(
-    const ReadBytesSuccessCallback& success_callback,
-    const base::File::Info& file_info, int bytes_read) {
+    ReadBytesSuccessCallback success_callback,
+    const base::File::Info& file_info,
+    int bytes_read) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  success_callback.Run(file_info, bytes_read);
+  std::move(success_callback).Run(file_info, bytes_read);
   PendingRequestDone();
 }
 

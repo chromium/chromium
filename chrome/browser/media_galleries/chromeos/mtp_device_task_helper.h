@@ -138,7 +138,7 @@ class MTPDeviceTaskHelper {
   // |request| contains details about the byte request including the file path,
   // byte range, and the callbacks. The callbacks specified within |request| are
   // called on the IO thread to notify the caller about success or failure.
-  void ReadBytes(const MTPDeviceAsyncDelegate::ReadBytesRequest& request);
+  void ReadBytes(MTPDeviceAsyncDelegate::ReadBytesRequest request);
 
   // Forwards RenameObject request to the MediaTransferProtocolManager.
   void RenameObject(const uint32_t object_id,
@@ -242,7 +242,7 @@ class MTPDeviceTaskHelper {
 
   // Intermediate step to finish a ReadBytes request.
   void OnGetFileInfoToReadBytes(
-      const MTPDeviceAsyncDelegate::ReadBytesRequest& request,
+      MTPDeviceAsyncDelegate::ReadBytesRequest request,
       std::vector<device::mojom::MtpFileEntryPtr> entries,
       bool error);
 
@@ -255,11 +255,10 @@ class MTPDeviceTaskHelper {
   // If there is an error, |error| is set to true, the buffer within |request|
   // is untouched, and the error callback within |request| is invoked on the
   // IO thread to notify the caller.
-  void OnDidReadBytes(
-      const MTPDeviceAsyncDelegate::ReadBytesRequest& request,
-      const base::File::Info& file_info,
-      const std::string& data,
-      bool error) const;
+  void OnDidReadBytes(MTPDeviceAsyncDelegate::ReadBytesRequest request,
+                      const base::File::Info& file_info,
+                      const std::string& data,
+                      bool error) const;
 
   // Called when RenameObject completes.
   void OnRenameObject(const RenameObjectSuccessCallback& success_callback,

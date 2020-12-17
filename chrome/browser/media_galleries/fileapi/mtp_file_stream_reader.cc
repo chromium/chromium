@@ -64,17 +64,17 @@ int MTPFileStreamReader::Read(net::IOBuffer* buf,
       header_buf_len = net::kMaxBytesToSniff;
     }
 
-    ReadBytes(
-        url_, header_buf.get(), 0, header_buf_len,
-        base::Bind(&MTPFileStreamReader::FinishValidateMediaHeader,
-                   weak_factory_.GetWeakPtr(), base::RetainedRef(header_buf),
-                   base::RetainedRef(buf), buf_len));
+    ReadBytes(url_, header_buf.get(), 0, header_buf_len,
+              base::BindOnce(&MTPFileStreamReader::FinishValidateMediaHeader,
+                             weak_factory_.GetWeakPtr(),
+                             base::RetainedRef(header_buf),
+                             base::RetainedRef(buf), buf_len));
     return net::ERR_IO_PENDING;
   }
 
-  ReadBytes(
-      url_, buf, current_offset_, buf_len,
-      base::Bind(&MTPFileStreamReader::FinishRead, weak_factory_.GetWeakPtr()));
+  ReadBytes(url_, buf, current_offset_, buf_len,
+            base::BindOnce(&MTPFileStreamReader::FinishRead,
+                           weak_factory_.GetWeakPtr()));
 
   return net::ERR_IO_PENDING;
 }
@@ -123,9 +123,9 @@ void MTPFileStreamReader::FinishValidateMediaHeader(
 
   // Header buffer isn't the same as the original read buffer. Make a separate
   // request for that.
-  ReadBytes(
-      url_, buf, current_offset_, buf_len,
-      base::Bind(&MTPFileStreamReader::FinishRead, weak_factory_.GetWeakPtr()));
+  ReadBytes(url_, buf, current_offset_, buf_len,
+            base::BindOnce(&MTPFileStreamReader::FinishRead,
+                           weak_factory_.GetWeakPtr()));
 }
 
 void MTPFileStreamReader::FinishRead(const base::File::Info& file_info,
@@ -169,7 +169,7 @@ void MTPFileStreamReader::ReadBytes(
     const scoped_refptr<net::IOBuffer>& buf,
     int64_t offset,
     int buf_len,
-    const MTPDeviceAsyncDelegate::ReadBytesSuccessCallback& success_callback) {
+    MTPDeviceAsyncDelegate::ReadBytesSuccessCallback success_callback) {
   MTPDeviceAsyncDelegate* delegate =
       MTPDeviceMapService::GetInstance()->GetMTPDeviceAsyncDelegate(url);
   if (!delegate) {
@@ -178,7 +178,7 @@ void MTPFileStreamReader::ReadBytes(
   }
 
   delegate->ReadBytes(
-      url.path(), buf, offset, buf_len, success_callback,
+      url.path(), buf, offset, buf_len, std::move(success_callback),
       base::BindRepeating(
           &MTPFileStreamReader::CallReadCallbackwithPlatformFileError,
           weak_factory_.GetWeakPtr()));

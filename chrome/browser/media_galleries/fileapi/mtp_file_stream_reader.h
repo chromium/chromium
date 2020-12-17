@@ -57,7 +57,7 @@ class MTPFileStreamReader : public storage::FileStreamReader {
       const scoped_refptr<net::IOBuffer>& buf,
       int64_t offset,
       int buf_len,
-      const MTPDeviceAsyncDelegate::ReadBytesSuccessCallback& success_callback);
+      MTPDeviceAsyncDelegate::ReadBytesSuccessCallback success_callback);
 
   scoped_refptr<storage::FileSystemContext> file_system_context_;
   storage::FileSystemURL url_;
