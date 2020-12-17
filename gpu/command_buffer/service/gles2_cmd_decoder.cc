@@ -18590,7 +18590,7 @@ void GLES2DecoderImpl::CopySubTextureHelper(const char* function_name,
       source_type, dest_binding_target, dest_level, dest_internal_format,
       unpack_flip_y == GL_TRUE, unpack_premultiply_alpha == GL_TRUE,
       unpack_unmultiply_alpha == GL_TRUE, dither == GL_TRUE);
-#if BUILDFLAG(IS_ASH) && defined(ARCH_CPU_X86_FAMILY)
+#if BUILDFLAG(IS_CHROMEOS_ASH) && defined(ARCH_CPU_X86_FAMILY)
   // glDrawArrays is faster than glCopyTexSubImage2D on IA Mesa driver,
   // although opposite in Android.
   // TODO(dshwang): After Mesa fixes this issue, remove this hack.

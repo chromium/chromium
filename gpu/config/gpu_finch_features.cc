@@ -81,7 +81,7 @@ const base::FeatureParam<std::string> kLimitAImageReaderMaxSizeToOneBlocklist{
 // Android.
 const base::Feature kDefaultEnableGpuRasterization{
   "DefaultEnableGpuRasterization",
-#if defined(OS_MAC) || defined(OS_WIN) || BUILDFLAG(IS_ASH) || \
+#if defined(OS_MAC) || defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH) || \
     defined(OS_ANDROID) || defined(OS_FUCHSIA)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
@@ -108,7 +108,7 @@ const base::Feature kDirectCompositionUseOverlayDamageList{
 // Use ThreadPriority::DISPLAY for GPU main, viz compositor and IO threads.
 const base::Feature kGpuUseDisplayThreadPriority{
   "GpuUseDisplayThreadPriority",
-#if defined(OS_ANDROID) || BUILDFLAG(IS_ASH) || defined(OS_WIN)
+#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT

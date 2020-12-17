@@ -225,7 +225,7 @@ static_library("test_support") {
   ]
 }
 
-if (!is_android && !is_fuchsia && !is_ash) {
+if (!is_android && !is_fuchsia && !is_chromeos_ash) {
   proto_library("gl_lpm_fuzzer_proto") {
     sources = [ "command_buffer/tests/lpm/gl_lpm_fuzzer.proto" ]
 
@@ -589,7 +589,7 @@ test("gpu_unittests") {
     "ipc/service/gpu_watchdog_thread_unittest.cc",
   ]
 
-  if (is_ash) {
+  if (is_chromeos_ash) {
     # Image decode acceleration with hardware is only supported in Chrome OS.
     # The intention is to run this test in the linux-chromeos build.
     sources += [ "ipc/service/image_decode_accelerator_stub_unittest.cc" ]

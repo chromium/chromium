@@ -57,7 +57,7 @@
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_image.h"
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/gfx/linux/native_pixmap_dmabuf.h"
 #include "ui/gl/gl_image_native_pixmap.h"
 #endif
@@ -65,7 +65,7 @@
 namespace gpu {
 class Buffer;
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace {
 
 struct CleanUpContext {
@@ -247,7 +247,7 @@ void ImageDecodeAcceleratorStub::ProcessCompletedDecode(
 
   std::vector<sk_sp<SkImage>> plane_sk_images;
   base::Optional<base::ScopedClosureRunner> notify_gl_state_changed;
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Right now, we only support YUV 4:2:0 for the output of the decoder (either
   // as YV12 or NV12).
   //

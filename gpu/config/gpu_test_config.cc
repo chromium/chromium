@@ -26,7 +26,7 @@ namespace gpu {
 namespace {
 
 GPUTestConfig::OS GetCurrentOS() {
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return GPUTestConfig::kOsChromeOS;
 #elif defined(OS_LINUX) || defined(OS_OPENBSD)
   return GPUTestConfig::kOsLinux;

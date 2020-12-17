@@ -41,7 +41,7 @@
 #include "gpu/vulkan/vulkan_device_queue.h"
 #elif defined(OS_MAC)
 #include "gpu/command_buffer/service/shared_image_backing_factory_iosurface.h"
-#elif BUILDFLAG(IS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
 #include "gpu/command_buffer/service/shared_image_backing_factory_ozone.h"
 #endif
 
@@ -146,7 +146,7 @@ SharedImageFactory::SharedImageFactory(
   // OSX
   DCHECK(gr_context_type_ == GrContextType::kGL ||
          gr_context_type_ == GrContextType::kMetal);
-#elif BUILDFLAG(IS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
   if (gr_context_type_ == GrContextType::kVulkan) {
     interop_backing_factory_ =
         std::make_unique<SharedImageBackingFactoryOzone>(context_state);

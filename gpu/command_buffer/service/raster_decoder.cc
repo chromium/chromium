@@ -2205,7 +2205,7 @@ void RasterDecoderImpl::DoCopySubTextureINTERNALGL(
       source_type, dest_target, dest_level, dest_internal_format, unpack_flip_y,
       NeedsUnpackPremultiplyAlpha(*source_shared_image),
       false /* unpack_unmultiply_alpha */, false /* dither */);
-#if BUILDFLAG(IS_ASH) && defined(ARCH_CPU_X86_FAMILY)
+#if BUILDFLAG(IS_CHROMEOS_ASH) && defined(ARCH_CPU_X86_FAMILY)
   // glDrawArrays is faster than glCopyTexSubImage2D on IA Mesa driver,
   // although opposite in Android.
   // TODO(dshwang): After Mesa fixes this issue, remove this hack.

@@ -274,7 +274,7 @@ bool GpuControlList::More::GLVersionInfoMismatch(
 
 // static
 GpuControlList::GLType GpuControlList::More::GetDefaultGLType() {
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return kGLTypeGL;
 #elif defined(OS_LINUX) || defined(OS_OPENBSD)
   return kGLTypeGL;
@@ -774,7 +774,7 @@ uint32_t GpuControlList::max_entry_id() const {
 
 // static
 GpuControlList::OsType GpuControlList::GetOsType() {
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return kOsChromeOS;
 #elif defined(OS_WIN)
   return kOsWin;

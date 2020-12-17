@@ -107,7 +107,8 @@ void InitializePlatformOverlaySettings(GPUInfo* gpu_info,
 #endif
 }
 
-#if BUILDFLAG(IS_LACROS) || (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMECAST))
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || \
+    (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMECAST))
 bool CanAccessNvidiaDeviceFile() {
   bool res = true;
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
@@ -118,7 +119,7 @@ bool CanAccessNvidiaDeviceFile() {
   }
   return res;
 }
-#endif  // BUILDFLAG(IS_LACROS) || (defined(OS_LINUX)  &&
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS) || (defined(OS_LINUX)  &&
         // !BUILDFLAG(IS_CHROMECAST))
 
 class GpuWatchdogInit {
@@ -205,7 +206,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     device_perf_info_ = device_perf_info;
   }
 
-#if defined(OS_LINUX) || BUILDFLAG(IS_LACROS)
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   if (gpu_info_.gpu.vendor_id == 0x10de &&  // NVIDIA
       gpu_info_.gpu.driver_vendor == "NVIDIA" && !CanAccessNvidiaDeviceFile())
     return false;
@@ -251,7 +252,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
 
   bool delayed_watchdog_enable = false;
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Don't start watchdog immediately, to allow developers to switch to VT2 on
   // startup.
   delayed_watchdog_enable = true;
@@ -319,14 +320,14 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     params.single_process = false;
     params.enable_native_gpu_memory_buffers =
         gpu_preferences.enable_native_gpu_memory_buffers;
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
     params.allow_sync_and_real_buffer_page_flip_testing =
         gpu_preferences_.enable_chromeos_direct_video_decoder;
 #else   // !BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
     params.allow_sync_and_real_buffer_page_flip_testing = true;
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     ui::OzonePlatform::InitializeForGPU(params);
     // We need to get supported formats before sandboxing to avoid an known
     // issue which breaks the camera preview. (b/166850715)
@@ -643,14 +644,14 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
   if (features::IsUsingOzonePlatform()) {
     ui::OzonePlatform::InitParams params;
     params.single_process = true;
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
     params.allow_sync_and_real_buffer_page_flip_testing =
         gpu_preferences_.enable_chromeos_direct_video_decoder;
 #else   // !BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
     params.allow_sync_and_real_buffer_page_flip_testing = true;
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     ui::OzonePlatform::InitializeForGPU(params);
   }
 #endif
