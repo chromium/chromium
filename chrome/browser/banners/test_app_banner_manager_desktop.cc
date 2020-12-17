@@ -83,13 +83,13 @@ void TestAppBannerManagerDesktop::OnDidGetManifest(
   // AppBannerManagerDesktop does not call |OnDidPerformInstallableCheck| to
   // complete the installability check in this case, instead it early exits
   // with failure.
-  if (!result.errors.empty())
+  if (!result.NoBlockingErrors())
     SetInstallable(false);
 }
 void TestAppBannerManagerDesktop::OnDidPerformInstallableWebAppCheck(
     const InstallableData& result) {
   AppBannerManagerDesktop::OnDidPerformInstallableWebAppCheck(result);
-  SetInstallable(result.errors.empty());
+  SetInstallable(result.NoBlockingErrors());
 }
 
 void TestAppBannerManagerDesktop::ResetCurrentPageData() {

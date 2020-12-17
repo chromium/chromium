@@ -33,4 +33,9 @@ InstallableData::InstallableData(std::vector<InstallableStatusCode> errors,
 
 InstallableData::~InstallableData() = default;
 
+bool InstallableData::NoBlockingErrors() const {
+  return errors.empty() ||
+         (errors.size() == 1 && errors[0] == WARN_NOT_OFFLINE_CAPABLE);
+}
+
 }  // namespace webapps

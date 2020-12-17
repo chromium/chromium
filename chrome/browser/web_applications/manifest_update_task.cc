@@ -127,7 +127,7 @@ void ManifestUpdateTask::OnDidGetInstallableData(
     const webapps::InstallableData& data) {
   DCHECK_EQ(stage_, Stage::kPendingInstallableData);
 
-  if (!data.errors.empty()) {
+  if (!data.NoBlockingErrors()) {
     DestroySelf(ManifestUpdateResult::kAppNotEligible);
     return;
   }

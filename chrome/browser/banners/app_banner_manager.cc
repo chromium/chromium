@@ -320,7 +320,7 @@ void AppBannerManager::OnDidGetManifest(const InstallableData& data) {
   if (DidRetryInstallableManagerRequest(data))
     return;
   UpdateState(State::ACTIVE);
-  if (!data.errors.empty()) {
+  if (!data.NoBlockingErrors()) {
     Stop(data.errors[0]);
     return;
   }
@@ -368,11 +368,8 @@ void AppBannerManager::OnDidPerformInstallableWebAppCheck(
   if (data.has_worker && data.valid_manifest)
     TrackDisplayEvent(DISPLAY_EVENT_WEB_APP_BANNER_REQUESTED);
 
-  auto error = data.errors.empty() ? NO_ERROR_DETECTED : data.errors[0];
-  // TODO(https://crbug.com/965802): Remove `WARN_NOT_OFFLINE_CAPABLE` once the
-  // CheckOfflineCapability feature is enabled with 'enforce' mode by default in
-  // M93.
-  if (error != NO_ERROR_DETECTED && error != WARN_NOT_OFFLINE_CAPABLE) {
+  auto error = data.NoBlockingErrors() ? NO_ERROR_DETECTED : data.errors[0];
+  if (error != NO_ERROR_DETECTED) {
     if (error == NO_MATCHING_SERVICE_WORKER)
       TrackDisplayEvent(DISPLAY_EVENT_LACKS_SERVICE_WORKER);
 

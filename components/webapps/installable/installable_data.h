@@ -35,6 +35,14 @@ struct InstallableData {
                   bool has_worker);
   ~InstallableData();
 
+  // Returns true if `errors` is empty or only has `WARN_NOT_OFFLINE_CAPABLE`.
+  // `WARN_NOT_OFFLINE_CAPABLE` only logs a warning message in DevTools and
+  // should not change the behavior.
+  // TODO(https://crbug.com/965802): Remove `WARN_NOT_OFFLINE_CAPABLE` once the
+  // CheckOfflineCapability feature is enabled with 'enforce' mode by default in
+  // M93.
+  bool NoBlockingErrors() const;
+
   // Contains all errors encountered during the InstallableManager::GetData
   // call. Empty if no errors were encountered.
   std::vector<InstallableStatusCode> errors;

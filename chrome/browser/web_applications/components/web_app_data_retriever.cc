@@ -185,7 +185,7 @@ void WebAppDataRetriever::OnDidPerformInstallableCheck(
   DCHECK(data.manifest);
   DCHECK(data.manifest_url.is_valid() || data.manifest->IsEmpty());
 
-  const bool is_installable = data.errors.empty();
+  const bool is_installable = data.NoBlockingErrors();
   DCHECK(!is_installable || data.valid_manifest);
   base::Optional<blink::Manifest> opt_manifest;
   if (!data.manifest->IsEmpty())

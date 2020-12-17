@@ -193,7 +193,7 @@ void AppBannerManagerAndroid::PerformInstallableWebAppCheck() {
 
 void AppBannerManagerAndroid::OnDidPerformInstallableWebAppCheck(
     const InstallableData& data) {
-  if (data.errors.empty())
+  if (data.NoBlockingErrors())
     WebApkUkmRecorder::RecordWebApkableVisit(data.manifest_url);
   screenshots_ = data.screenshots;
 

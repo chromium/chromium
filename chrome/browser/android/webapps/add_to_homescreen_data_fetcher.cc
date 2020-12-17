@@ -277,7 +277,7 @@ void AddToHomescreenDataFetcher::OnDidPerformInstallableCheck(
     return;
 
   bool webapk_compatible =
-      (data.errors.empty() && data.valid_manifest && data.has_worker &&
+      (data.NoBlockingErrors() && data.valid_manifest && data.has_worker &&
        AreWebManifestUrlsWebApkCompatible(*data.manifest));
   observer_->OnUserTitleAvailable(
       webapk_compatible ? shortcut_info_.name : shortcut_info_.user_title,
