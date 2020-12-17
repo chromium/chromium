@@ -145,7 +145,7 @@ class BinaryUploadServiceTest : public testing::Test {
   void UploadForDeepScanning(
       std::unique_ptr<BinaryUploadService::Request> request,
       bool authorized_for_enterprise = true) {
-    service_->SetAuthForTesting(authorized_for_enterprise);
+    service_->SetAuthForTesting("fake_device_token", authorized_for_enterprise);
     service_->MaybeUploadForDeepScanning(std::move(request));
   }
 
@@ -486,9 +486,30 @@ TEST_F(BinaryUploadServiceTest, IsAuthorizedValidTimer) {
   // The 24 hours timer should be started on the first IsAuthorized call.
   ValidateAuthorizationTimerIdle();
   service_->IsAuthorized(
-      GURL(), base::DoNothing(),
+      GURL(), base::DoNothing(), "fake_device_token",
       enterprise_connectors::AnalysisConnector::ANALYSIS_CONNECTOR_UNSPECIFIED);
   ValidateAuthorizationTimerStarted();
+}
+
+TEST_F(BinaryUploadServiceTest, IsAuthorizedMultipleDMTokens) {
+  service_->SetAuthForTesting("valid_dm_token", true);
+  service_->SetAuthForTesting("invalid_dm_token", false);
+
+  for (auto connector :
+       {enterprise_connectors::AnalysisConnector::
+            ANALYSIS_CONNECTOR_UNSPECIFIED,
+        enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY,
+        enterprise_connectors::AnalysisConnector::FILE_ATTACHED,
+        enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED}) {
+    service_->IsAuthorized(GURL(), base::BindOnce([](bool authorized) {
+                             EXPECT_TRUE(authorized);
+                           }),
+                           "valid_dm_token", connector);
+    service_->IsAuthorized(GURL(), base::BindOnce([](bool authorized) {
+                             EXPECT_FALSE(authorized);
+                           }),
+                           "invalid_dm_token", connector);
+  }
 }
 
 TEST_F(BinaryUploadServiceTest, AdvancedProtectionMalwareRequestAuthorized) {

@@ -443,6 +443,8 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDelegateBrowserTest, Texts) {
           }),
       safe_browsing::DeepScanAccessPoint::PASTE);
 
+  // 2 responses are needed: 1 for pasting and 1 for reporting.
+  FakeBinaryUploadServiceStorage()->ReturnAuthorizedResponse();
   FakeBinaryUploadServiceStorage()->ReturnAuthorizedResponse();
 
   run_loop.Run();

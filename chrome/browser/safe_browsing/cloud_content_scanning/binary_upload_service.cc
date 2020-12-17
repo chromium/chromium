@@ -213,21 +213,30 @@ void BinaryUploadService::MaybeUploadForDeepScanning(
     return;
   }
 
+  // Make copies of the connector and DM token since |request| is about to move.
   auto connector = request->analysis_connector();
+  std::string dm_token = request->device_token();
+  TokenAndConnector token_and_connector = {dm_token, connector};
 
-  if (!can_upload_enterprise_data_.contains(request->analysis_connector())) {
+  if (dm_token.empty()) {
+    MaybeUploadForDeepScanningCallback(std::move(request),
+                                       /*authorized*/ false);
+    return;
+  }
+
+  if (!can_upload_enterprise_data_.contains(token_and_connector)) {
     // Get the URL first since |request| is about to move.
     GURL url = request->GetUrlWithParams();
     IsAuthorized(
         std::move(url),
         base::BindOnce(&BinaryUploadService::MaybeUploadForDeepScanningCallback,
                        weakptr_factory_.GetWeakPtr(), std::move(request)),
-        connector);
+        dm_token, connector);
     return;
   }
 
-  MaybeUploadForDeepScanningCallback(std::move(request),
-                                     can_upload_enterprise_data_[connector]);
+  MaybeUploadForDeepScanningCallback(
+      std::move(request), can_upload_enterprise_data_[token_and_connector]);
 }
 
 void BinaryUploadService::MaybeUploadForDeepScanningCallback(
@@ -427,6 +436,7 @@ void BinaryUploadService::FinishRequest(
 
 void BinaryUploadService::FinishRequestCleanup(Request* request,
                                                const std::string& instance_id) {
+  std::string dm_token = request->device_token();
   auto connector = request->analysis_connector();
   active_requests_.erase(request);
   active_timers_.erase(request);
@@ -443,26 +453,29 @@ void BinaryUploadService::FinishRequestCleanup(Request* request,
     binary_fcm_service_->UnregisterInstanceID(
         instance_id,
         base::BindOnce(&BinaryUploadService::InstanceIDUnregisteredCallback,
-                       weakptr_factory_.GetWeakPtr(), connector));
+                       weakptr_factory_.GetWeakPtr(), dm_token, connector));
   } else {
     // |binary_fcm_service_| can be null in tests, but
     // InstanceIDUnregisteredCallback should be called anyway so the requests
     // waiting on authentication can complete.
-    InstanceIDUnregisteredCallback(connector, true);
+    InstanceIDUnregisteredCallback(dm_token, connector, true);
   }
 
   active_tokens_.erase(token_it);
 }
 
 void BinaryUploadService::InstanceIDUnregisteredCallback(
+    const std::string& dm_token,
     enterprise_connectors::AnalysisConnector connector,
     bool) {
+  TokenAndConnector token_and_connector = {dm_token, connector};
   // Calling RunAuthorizationCallbacks after the instance ID of the initial
   // authentication is unregistered avoids registration/unregistration conflicts
   // with normal requests.
-  if (!authorization_callbacks_.empty() &&
-      can_upload_enterprise_data_.contains(connector)) {
-    RunAuthorizationCallbacks(connector);
+  if (authorization_callbacks_.contains(token_and_connector) &&
+      !authorization_callbacks_[token_and_connector].empty() &&
+      can_upload_enterprise_data_.contains(token_and_connector)) {
+    RunAuthorizationCallbacks(dm_token, connector);
   }
 }
 
@@ -658,6 +671,7 @@ inline void ValidateDataUploadRequest::GetRequestData(DataCallback callback) {
 void BinaryUploadService::IsAuthorized(
     const GURL& url,
     AuthorizationCallback callback,
+    const std::string& dm_token,
     enterprise_connectors::AnalysisConnector connector) {
   // Start |timer_| on the first call to IsAuthorized. This is necessary in
   // order to invalidate the authorization every 24 hours.
@@ -668,63 +682,60 @@ void BinaryUploadService::IsAuthorized(
                             weakptr_factory_.GetWeakPtr(), url));
   }
 
-  if (!can_upload_enterprise_data_.contains(connector)) {
+  TokenAndConnector token_and_connector = {dm_token, connector};
+  if (!can_upload_enterprise_data_.contains(token_and_connector)) {
     // Send a request to check if the browser can upload data.
-    authorization_callbacks_.push_back(std::move(callback));
-    if (!pending_validate_data_upload_request_) {
-      auto dm_token = policy::GetDMToken(profile_);
-      if (!dm_token.is_valid()) {
-        can_upload_enterprise_data_[connector] = false;
-        RunAuthorizationCallbacks(connector);
-        return;
-      }
-
-      pending_validate_data_upload_request_ = true;
+    authorization_callbacks_[token_and_connector].push_back(
+        std::move(callback));
+    if (!pending_validate_data_upload_request_.contains(token_and_connector)) {
+      pending_validate_data_upload_request_.insert(token_and_connector);
       auto request = std::make_unique<ValidateDataUploadRequest>(
           base::BindOnce(
               &BinaryUploadService::ValidateDataUploadRequestConnectorCallback,
-              weakptr_factory_.GetWeakPtr(), connector),
+              weakptr_factory_.GetWeakPtr(), dm_token, connector),
           url);
-      request->set_device_token(dm_token.value());
+      request->set_device_token(dm_token);
       request->set_analysis_connector(connector);
       UploadForDeepScanning(std::move(request));
     }
     return;
   }
-  std::move(callback).Run(can_upload_enterprise_data_[connector]);
+  std::move(callback).Run(can_upload_enterprise_data_[token_and_connector]);
 }
 
 void BinaryUploadService::ValidateDataUploadRequestConnectorCallback(
+    const std::string& dm_token,
     enterprise_connectors::AnalysisConnector connector,
     BinaryUploadService::Result result,
     enterprise_connectors::ContentAnalysisResponse response) {
-  pending_validate_data_upload_request_ = false;
-  can_upload_enterprise_data_[connector] =
+  TokenAndConnector token_and_connector = {dm_token, connector};
+  pending_validate_data_upload_request_.erase(token_and_connector);
+  can_upload_enterprise_data_[token_and_connector] =
       (result == BinaryUploadService::Result::SUCCESS);
 }
 
 void BinaryUploadService::RunAuthorizationCallbacks(
+    const std::string& dm_token,
     enterprise_connectors::AnalysisConnector connector) {
-  DCHECK(can_upload_enterprise_data_.contains(connector));
-  for (auto& callback : authorization_callbacks_) {
-    std::move(callback).Run(can_upload_enterprise_data_[connector]);
+  TokenAndConnector token_and_connector = {dm_token, connector};
+  DCHECK(can_upload_enterprise_data_.contains(token_and_connector));
+
+  auto it = authorization_callbacks_[token_and_connector].begin();
+  while (it != authorization_callbacks_[token_and_connector].end()) {
+    std::move(*it).Run(can_upload_enterprise_data_[token_and_connector]);
+    it = authorization_callbacks_[token_and_connector].erase(it);
   }
-  authorization_callbacks_.clear();
 }
 
 void BinaryUploadService::ResetAuthorizationData(const GURL& url) {
   // Clearing |can_upload_enterprise_data_| will make the next
   // call to IsAuthorized send out a request to validate data uploads.
-  can_upload_enterprise_data_.clear();
-
-  // Call IsAuthorized  to update |can_upload_enterprise_data_| right away.
-  for (enterprise_connectors::AnalysisConnector connector :
-       {enterprise_connectors::AnalysisConnector::
-            ANALYSIS_CONNECTOR_UNSPECIFIED,
-        enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED,
-        enterprise_connectors::AnalysisConnector::FILE_ATTACHED,
-        enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY}) {
-    IsAuthorized(url, base::DoNothing(), connector);
+  auto it = can_upload_enterprise_data_.begin();
+  while (it != can_upload_enterprise_data_.end()) {
+    std::string dm_token = it->first.first;
+    enterprise_connectors::AnalysisConnector connector = it->first.second;
+    it = can_upload_enterprise_data_.erase(it);
+    IsAuthorized(url, base::DoNothing(), dm_token, connector);
   }
 }
 
@@ -733,14 +744,16 @@ void BinaryUploadService::Shutdown() {
     binary_fcm_service_->Shutdown();
 }
 
-void BinaryUploadService::SetAuthForTesting(bool authorized) {
+void BinaryUploadService::SetAuthForTesting(const std::string& dm_token,
+                                            bool authorized) {
   for (enterprise_connectors::AnalysisConnector connector :
        {enterprise_connectors::AnalysisConnector::
             ANALYSIS_CONNECTOR_UNSPECIFIED,
         enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED,
         enterprise_connectors::AnalysisConnector::FILE_ATTACHED,
         enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY}) {
-    can_upload_enterprise_data_[connector] = authorized;
+    TokenAndConnector token_and_connector = {dm_token, connector};
+    can_upload_enterprise_data_[token_and_connector] = authorized;
   }
 }
 

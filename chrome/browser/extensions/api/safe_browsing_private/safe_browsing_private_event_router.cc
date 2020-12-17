@@ -912,10 +912,16 @@ void SafeBrowsingPrivateEventRouter::IfAuthorized(
             Profile::FromBrowserContext(context_));
   }
 
+  auto settings =
+      enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
+          context_)
+          ->GetReportingSettings(
+              enterprise_connectors::ReportingConnector::SECURITY_EVENT);
+
   // TODO(crbug/1069049): Use reporting URL.
-  if (binary_upload_service_)
+  if (binary_upload_service_ && settings.has_value())
     binary_upload_service_->IsAuthorized(
-        GURL(), std::move(cont),
+        GURL(), std::move(cont), settings.value().dm_token,
         enterprise_connectors::AnalysisConnector::
             ANALYSIS_CONNECTOR_UNSPECIFIED);
 }

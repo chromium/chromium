@@ -285,7 +285,7 @@ class DownloadDeepScanningBrowserTest
 
   void AuthorizeForDeepScanning() {
     BinaryUploadServiceFactory::GetForProfile(browser()->profile())
-        ->SetAuthForTesting(/*authorized=*/true);
+        ->SetAuthForTesting("dm_token", /*authorized=*/true);
   }
 
  private:

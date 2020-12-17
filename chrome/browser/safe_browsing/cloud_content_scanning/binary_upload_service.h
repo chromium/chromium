@@ -9,9 +9,11 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
+#include <utility>
 
 #include "base/callback.h"
 #include "base/callback_forward.h"
+#include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -186,14 +188,17 @@ class BinaryUploadService : public KeyedService {
   // authorized to upload data, otherwise queue the request.
   virtual void MaybeUploadForDeepScanning(std::unique_ptr<Request> request);
 
-  // Indicates whether the browser is allowed to upload data.
+  // Indicates whether the DM token/Connector combination is allowed to upload
+  // data.
   using AuthorizationCallback = base::OnceCallback<void(bool)>;
   void IsAuthorized(const GURL& url,
                     AuthorizationCallback callback,
+                    const std::string& dm_token,
                     enterprise_connectors::AnalysisConnector connector);
 
-  // Run every callback in |authorization_callbacks_| and empty it.
+  // Run every matching callback in |authorization_callbacks_| and remove them.
   void RunAuthorizationCallbacks(
+      const std::string& dm_token,
       enterprise_connectors::AnalysisConnector connector);
 
   // Resets |can_upload_data_|. Called every 24 hour by |timer_|.
@@ -203,7 +208,7 @@ class BinaryUploadService : public KeyedService {
   void Shutdown() override;
 
   // Sets |can_upload_data_| for tests.
-  void SetAuthForTesting(bool authorized);
+  void SetAuthForTesting(const std::string& dm_token, bool authorized);
 
   // Returns the URL that requests are uploaded to. Scans for enterprise go to a
   // different URL than scans for Advanced Protection users.
@@ -215,6 +220,8 @@ class BinaryUploadService : public KeyedService {
                      enterprise_connectors::ContentAnalysisResponse response);
 
  private:
+  using TokenAndConnector =
+      std::pair<std::string, enterprise_connectors::AnalysisConnector>;
   friend class BinaryUploadServiceTest;
 
   // Upload the given file contents for deep scanning. The results will be
@@ -246,12 +253,14 @@ class BinaryUploadService : public KeyedService {
 
   // Callback once the response from the backend is received.
   void ValidateDataUploadRequestConnectorCallback(
+      const std::string& dm_token,
       enterprise_connectors::AnalysisConnector connector,
       BinaryUploadService::Result result,
       enterprise_connectors::ContentAnalysisResponse response);
 
   // Callback once a request's instance ID is unregistered.
   void InstanceIDUnregisteredCallback(
+      const std::string& dm_token,
       enterprise_connectors::AnalysisConnector connector,
       bool);
 
@@ -284,22 +293,19 @@ class BinaryUploadService : public KeyedService {
                      enterprise_connectors::ContentAnalysisResponse::Result>>
       received_connector_results_;
 
-  // Indicates whether this browser can upload data for enterprise requests.
-  // Advanced Protection scans are validated using the user's Advanced
-  // Protection enrollment status.
-  // base::nullopt means the response from the backend has not been received
-  // yet.
-  // true means the response indicates data can be uploaded.
-  // false means the response indicates data cannot be uploaded.
-  base::flat_map<enterprise_connectors::AnalysisConnector, bool>
-      can_upload_enterprise_data_;
+  // Indicates whether this DM token + Connector combination can be used to
+  // upload data for enterprise requests. Advanced Protection scans are
+  // validated using the user's Advanced Protection enrollment status.
+  base::flat_map<TokenAndConnector, bool> can_upload_enterprise_data_;
 
-  // Callbacks waiting on IsAuthorized request.
-  std::list<base::OnceCallback<void(bool)>> authorization_callbacks_;
+  // Callbacks waiting on IsAuthorized request. These are organized by DM token
+  // and Connector.
+  base::flat_map<TokenAndConnector, std::list<base::OnceCallback<void(bool)>>>
+      authorization_callbacks_;
 
   // Indicates if this service is waiting on the backend to validate event
   // reporting. Used to avoid spamming the backend.
-  bool pending_validate_data_upload_request_ = false;
+  base::flat_set<TokenAndConnector> pending_validate_data_upload_request_;
 
   // Ensures we validate the browser is registered with the backend every 24
   // hours.

@@ -440,7 +440,7 @@ class DeepScanningReportingTest : public DeepScanningRequestTest {
         ->SetIdentityManagerForTesting(
             identity_test_environment_.identity_manager());
     download_protection_service_.GetFakeBinaryUploadService()
-        ->SetAuthForTesting(true);
+        ->SetAuthForTesting("dm_token", true);
 
     SetOnSecurityEventReporting(profile_->GetPrefs(), true);
     EnableAllFeatures();
