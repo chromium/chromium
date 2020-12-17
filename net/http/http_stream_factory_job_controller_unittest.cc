@@ -2953,11 +2953,12 @@ void HttpStreamFactoryJobControllerTest::TestAltSvcVersionSelection(
   HttpRequestInfo request_info;
   request_info.method = "GET";
   request_info.url = GURL("https://example.com");
-  Initialize(request_info);
-  url::SchemeHostPort origin(request_info.url);
   NetworkIsolationKey network_isolation_key(
       SchemefulSite(GURL("https://example.com")),
       SchemefulSite(GURL("https://example.com")));
+  request_info.network_isolation_key = network_isolation_key;
+  Initialize(request_info);
+  url::SchemeHostPort origin(request_info.url);
   scoped_refptr<HttpResponseHeaders> headers(
       base::MakeRefCounted<HttpResponseHeaders>(""));
   headers->AddHeader("alt-svc", alt_svc_header);
