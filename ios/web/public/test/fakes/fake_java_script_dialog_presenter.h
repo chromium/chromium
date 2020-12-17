@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_WEB_PUBLIC_TEST_FAKES_TEST_JAVA_SCRIPT_DIALOG_PRESENTER_H_
-#define IOS_WEB_PUBLIC_TEST_FAKES_TEST_JAVA_SCRIPT_DIALOG_PRESENTER_H_
+#ifndef IOS_WEB_PUBLIC_TEST_FAKES_FAKE_JAVA_SCRIPT_DIALOG_PRESENTER_H_
+#define IOS_WEB_PUBLIC_TEST_FAKES_FAKE_JAVA_SCRIPT_DIALOG_PRESENTER_H_
 
 #include <memory>
 #include <vector>
@@ -12,9 +12,9 @@
 
 namespace web {
 
-struct TestJavaScriptDialog {
-  TestJavaScriptDialog();
-  ~TestJavaScriptDialog();
+struct FakeJavaScriptDialog {
+  FakeJavaScriptDialog();
+  ~FakeJavaScriptDialog();
   WebState* web_state = nullptr;
   GURL origin_url;
   JavaScriptDialogType java_script_dialog_type;
@@ -23,13 +23,13 @@ struct TestJavaScriptDialog {
   DialogClosedCallback callback;
 };
 
-// Test presenter to check that the JavaScriptDialogPresenter methods are called
+// Fake presenter to check that the JavaScriptDialogPresenter methods are called
 // as expected. |RunJavaScriptDialog| always calls |callback| with
 // |callback_success_argument| and |callback_user_input_argument| values.
-class TestJavaScriptDialogPresenter : public JavaScriptDialogPresenter {
+class FakeJavaScriptDialogPresenter : public JavaScriptDialogPresenter {
  public:
-  TestJavaScriptDialogPresenter();
-  ~TestJavaScriptDialogPresenter() override;
+  FakeJavaScriptDialogPresenter();
+  ~FakeJavaScriptDialogPresenter() override;
 
   // JavaScriptDialogPresenter overrides:
   void RunJavaScriptDialog(WebState* web_state,
@@ -55,7 +55,7 @@ class TestJavaScriptDialogPresenter : public JavaScriptDialogPresenter {
   bool cancel_dialogs_called() const { return cancel_dialogs_called_; }
 
   // Returns a vector of requested dialogs.
-  const std::vector<std::unique_ptr<TestJavaScriptDialog>>& requested_dialogs()
+  const std::vector<std::unique_ptr<FakeJavaScriptDialog>>& requested_dialogs()
       const {
     return requested_dialogs_;
   }
@@ -74,15 +74,15 @@ class TestJavaScriptDialogPresenter : public JavaScriptDialogPresenter {
   // Executes all non-executed callbacks in |requested_dialogs_|.
   void ExecuteAllDialogCallbacks();
   // Executes the callback for |dialog|.
-  void ExecuteDialogCallback(TestJavaScriptDialog* dialog);
+  void ExecuteDialogCallback(FakeJavaScriptDialog* dialog);
 
   bool callback_execution_paused_ = false;
   bool cancel_dialogs_called_ = false;
-  std::vector<std::unique_ptr<TestJavaScriptDialog>> requested_dialogs_;
+  std::vector<std::unique_ptr<FakeJavaScriptDialog>> requested_dialogs_;
   bool callback_success_argument_ = false;
   NSString* callback_user_input_argument_;
 };
 
 }  // namespace web
 
-#endif  // IOS_WEB_PUBLIC_TEST_FAKES_TEST_JAVA_SCRIPT_DIALOG_PRESENTER_H_
+#endif  // IOS_WEB_PUBLIC_TEST_FAKES_FAKE_JAVA_SCRIPT_DIALOG_PRESENTER_H_

@@ -15,7 +15,7 @@
 #include "ios/chrome/browser/infobars/confirm_infobar_metrics_recorder.h"
 #include "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/web/chrome_web_test.h"
-#import "ios/web/public/test/fakes/test_web_state_delegate.h"
+#import "ios/web/public/test/fakes/fake_web_state_delegate.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -50,7 +50,7 @@ class BlockedPopupTabHelperTest : public ChromeWebTest {
     return InfoBarManagerImpl::FromWebState(web_state());
   }
 
-  web::TestWebStateDelegate web_state_delegate_;
+  web::FakeWebStateDelegate web_state_delegate_;
 };
 
 // Tests ShouldBlockPopup method. This test changes content settings without

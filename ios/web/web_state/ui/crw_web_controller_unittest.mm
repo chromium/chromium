@@ -37,9 +37,9 @@
 #include "ios/web/public/test/fakes/fake_browser_state.h"
 #include "ios/web/public/test/fakes/fake_download_controller_delegate.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
+#import "ios/web/public/test/fakes/fake_web_state_delegate.h"
 #include "ios/web/public/test/fakes/fake_web_state_observer.h"
 #import "ios/web/public/test/fakes/fake_web_state_policy_decider.h"
-#import "ios/web/public/test/fakes/test_web_state_delegate.h"
 #import "ios/web/public/test/web_view_content_test_util.h"
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/security/wk_web_view_security_util.h"
@@ -361,23 +361,23 @@ class JavaScriptDialogPresenterTest : public WebTestWithWebController {
   void SetUp() override {
     WebTestWithWebState::SetUp();
     LoadHtml(@"<html><body></body></html>", page_url_);
-    web_state()->SetDelegate(&test_web_delegate_);
+    web_state()->SetDelegate(&web_state_delegate_);
   }
   void TearDown() override {
     web_state()->SetDelegate(nullptr);
     WebTestWithWebState::TearDown();
   }
-  TestJavaScriptDialogPresenter* js_dialog_presenter() {
-    return test_web_delegate_.GetTestJavaScriptDialogPresenter();
+  FakeJavaScriptDialogPresenter* js_dialog_presenter() {
+    return web_state_delegate_.GetFakeJavaScriptDialogPresenter();
   }
-  const std::vector<std::unique_ptr<TestJavaScriptDialog>>&
+  const std::vector<std::unique_ptr<FakeJavaScriptDialog>>&
   requested_dialogs() {
     return js_dialog_presenter()->requested_dialogs();
   }
   const GURL& page_url() { return page_url_; }
 
  private:
-  TestWebStateDelegate test_web_delegate_;
+  FakeWebStateDelegate web_state_delegate_;
   GURL page_url_;
 };
 
@@ -957,13 +957,13 @@ TEST_F(CRWWebControllerPolicyDeciderTest, BlobUrl) {
 TEST_F(CRWWebControllerPolicyDeciderTest, ClosedWebState) {
   static CRWWebControllerPolicyDeciderTest* test_fixture = nullptr;
   test_fixture = this;
-  class FakeWebStateDelegate : public TestWebStateDelegate {
+  class CloseWebStateDelegate : public FakeWebStateDelegate {
    public:
     void CloseWebState(WebState* source) override {
       test_fixture->DestroyWebState();
     }
   };
-  FakeWebStateDelegate delegate;
+  CloseWebStateDelegate delegate;
   web_state()->SetDelegate(&delegate);
 
   FakeWebStatePolicyDecider policy_decider(web_state());
@@ -1083,7 +1083,7 @@ class WindowOpenByDomTest : public WebTestWithWebController {
 
   // URL of a page which opens child windows.
   const GURL opener_url_;
-  TestWebStateDelegate delegate_;
+  FakeWebStateDelegate delegate_;
 };
 
 // Tests that absence of web state delegate is handled gracefully.

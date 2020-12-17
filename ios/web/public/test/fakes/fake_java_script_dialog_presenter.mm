@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web/public/test/fakes/test_java_script_dialog_presenter.h"
+#import "ios/web/public/test/fakes/fake_java_script_dialog_presenter.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -10,27 +10,26 @@
 
 namespace web {
 
-TestJavaScriptDialog::TestJavaScriptDialog() = default;
+FakeJavaScriptDialog::FakeJavaScriptDialog() = default;
 
-TestJavaScriptDialog::~TestJavaScriptDialog() = default;
+FakeJavaScriptDialog::~FakeJavaScriptDialog() = default;
 
-TestJavaScriptDialogPresenter::TestJavaScriptDialogPresenter() = default;
+FakeJavaScriptDialogPresenter::FakeJavaScriptDialogPresenter() = default;
 
-TestJavaScriptDialogPresenter::~TestJavaScriptDialogPresenter() {
+FakeJavaScriptDialogPresenter::~FakeJavaScriptDialogPresenter() {
   // Unpause callback execution so that all callbacks are executed before
   // deallocation.
   set_callback_execution_paused(false);
 }
 
-void TestJavaScriptDialogPresenter::RunJavaScriptDialog(
+void FakeJavaScriptDialogPresenter::RunJavaScriptDialog(
     WebState* web_state,
     const GURL& origin_url,
     JavaScriptDialogType java_script_dialog_type,
     NSString* message_text,
     NSString* default_prompt_text,
     DialogClosedCallback callback) {
-  std::unique_ptr<TestJavaScriptDialog> dialog =
-      std::make_unique<TestJavaScriptDialog>();
+  auto dialog = std::make_unique<FakeJavaScriptDialog>();
   dialog->web_state = web_state;
   dialog->origin_url = origin_url;
   dialog->java_script_dialog_type = java_script_dialog_type;
@@ -44,19 +43,19 @@ void TestJavaScriptDialogPresenter::RunJavaScriptDialog(
     ExecuteDialogCallback(requested_dialogs_.back().get());
 }
 
-void TestJavaScriptDialogPresenter::CancelDialogs(WebState* web_state) {
+void FakeJavaScriptDialogPresenter::CancelDialogs(WebState* web_state) {
   cancel_dialogs_called_ = true;
 }
 
-void TestJavaScriptDialogPresenter::ExecuteAllDialogCallbacks() {
+void FakeJavaScriptDialogPresenter::ExecuteAllDialogCallbacks() {
   DCHECK(!callback_execution_paused());
-  for (std::unique_ptr<TestJavaScriptDialog>& dialog : requested_dialogs_) {
+  for (std::unique_ptr<FakeJavaScriptDialog>& dialog : requested_dialogs_) {
     ExecuteDialogCallback(dialog.get());
   }
 }
 
-void TestJavaScriptDialogPresenter::ExecuteDialogCallback(
-    TestJavaScriptDialog* dialog) {
+void FakeJavaScriptDialogPresenter::ExecuteDialogCallback(
+    FakeJavaScriptDialog* dialog) {
   DialogClosedCallback& callback = dialog->callback;
   if (!callback.is_null()) {
     std::move(callback).Run(callback_success_argument_,

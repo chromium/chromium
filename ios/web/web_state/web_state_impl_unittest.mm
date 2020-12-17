@@ -29,11 +29,11 @@
 #import "ios/web/public/session/serializable_user_data_manager.h"
 #import "ios/web/public/test/fakes/async_web_state_policy_decider.h"
 #include "ios/web/public/test/fakes/fake_browser_state.h"
+#import "ios/web/public/test/fakes/fake_java_script_dialog_presenter.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
+#import "ios/web/public/test/fakes/fake_web_state_delegate.h"
 #import "ios/web/public/test/fakes/fake_web_state_observer.h"
-#import "ios/web/public/test/fakes/test_java_script_dialog_presenter.h"
-#import "ios/web/public/test/fakes/test_web_state_delegate.h"
 #include "ios/web/public/test/web_test.h"
 #import "ios/web/public/test/web_view_content_test_util.h"
 #import "ios/web/public/ui/context_menu_params.h"
@@ -426,7 +426,7 @@ TEST_F(WebStateImplTest, PlaceholderNavigationNotExposedToObservers) {
 
 // Tests that WebStateDelegate methods appropriately called.
 TEST_F(WebStateImplTest, DelegateTest) {
-  TestWebStateDelegate delegate;
+  FakeWebStateDelegate delegate;
   web_state_->SetDelegate(&delegate);
 
   // Test that CreateNewWebState() is called.
@@ -434,7 +434,7 @@ TEST_F(WebStateImplTest, DelegateTest) {
   GURL opener_url("https://opener.test/");
   EXPECT_FALSE(delegate.last_create_new_web_state_request());
   web_state_->CreateNewWebState(child_url, opener_url, true);
-  TestCreateNewWebStateRequest* create_new_web_state_request =
+  FakeCreateNewWebStateRequest* create_new_web_state_request =
       delegate.last_create_new_web_state_request();
   ASSERT_TRUE(create_new_web_state_request);
   EXPECT_EQ(web_state_.get(), create_new_web_state_request->web_state);
@@ -455,7 +455,7 @@ TEST_F(WebStateImplTest, DelegateTest) {
                                  ui::PAGE_TRANSITION_LINK, true);
   EXPECT_FALSE(delegate.last_open_url_request());
   web_state_->OpenURL(params);
-  TestOpenURLRequest* open_url_request = delegate.last_open_url_request();
+  FakeOpenURLRequest* open_url_request = delegate.last_open_url_request();
   ASSERT_TRUE(open_url_request);
   EXPECT_EQ(web_state_.get(), open_url_request->web_state);
   WebState::OpenURLParams actual_params = open_url_request->params;
@@ -502,8 +502,8 @@ TEST_F(WebStateImplTest, DelegateTest) {
   EXPECT_EQ(delegate.last_repost_form_request()->web_state, web_state_.get());
 
   // Test that GetJavaScriptDialogPresenter() is called.
-  TestJavaScriptDialogPresenter* presenter =
-      delegate.GetTestJavaScriptDialogPresenter();
+  FakeJavaScriptDialogPresenter* presenter =
+      delegate.GetFakeJavaScriptDialogPresenter();
   EXPECT_FALSE(delegate.get_java_script_dialog_presenter_called());
   EXPECT_TRUE(presenter->requested_dialogs().empty());
   EXPECT_FALSE(presenter->cancel_dialogs_called());
@@ -1155,14 +1155,14 @@ TEST_F(WebStateImplTest,
 // Tests that CanTakeSnapshot() is false when a JavaScript dialog is being
 // presented.
 TEST_F(WebStateImplTest, DisallowSnapshotsDuringDialogPresentation) {
-  TestWebStateDelegate delegate;
+  FakeWebStateDelegate delegate;
   web_state_->SetDelegate(&delegate);
 
   EXPECT_TRUE(web_state_->CanTakeSnapshot());
 
   // Pause the callback execution to allow testing while the dialog is
   // presented.
-  delegate.GetTestJavaScriptDialogPresenter()->set_callback_execution_paused(
+  delegate.GetFakeJavaScriptDialogPresenter()->set_callback_execution_paused(
       true);
   web_state_->RunJavaScriptDialog(GURL(), JAVASCRIPT_DIALOG_TYPE_ALERT,
                                   @"message", @"",
@@ -1173,7 +1173,7 @@ TEST_F(WebStateImplTest, DisallowSnapshotsDuringDialogPresentation) {
   EXPECT_FALSE(web_state_->CanTakeSnapshot());
 
   // Unpause the presenter and verify that snapshots are enabled again.
-  delegate.GetTestJavaScriptDialogPresenter()->set_callback_execution_paused(
+  delegate.GetFakeJavaScriptDialogPresenter()->set_callback_execution_paused(
       false);
   EXPECT_TRUE(web_state_->CanTakeSnapshot());
 }

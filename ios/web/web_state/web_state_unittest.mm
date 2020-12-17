@@ -24,7 +24,7 @@
 #import "ios/web/public/session/crw_session_storage.h"
 #import "ios/web/public/test/error_test_util.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
-#import "ios/web/public/test/fakes/test_web_state_delegate.h"
+#import "ios/web/public/test/fakes/fake_web_state_delegate.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
 #import "ios/web/public/test/web_view_content_test_util.h"
 #import "ios/web/public/web_client.h"
@@ -96,14 +96,14 @@ TEST_F(WebStateTest, ScriptExecution) {
 
 // Tests that executing user JavaScript registers user interaction.
 TEST_F(WebStateTest, UserScriptExecution) {
-  web::TestWebStateDelegate delegate;
+  web::FakeWebStateDelegate delegate;
   web_state()->SetDelegate(&delegate);
   ASSERT_TRUE(delegate.child_windows().empty());
 
   ASSERT_TRUE(LoadHtml("<html></html>"));
   web_state()->ExecuteUserJavaScript(@"window.open('', target='_blank');");
 
-  web::TestWebStateDelegate* delegate_ptr = &delegate;
+  web::FakeWebStateDelegate* delegate_ptr = &delegate;
   bool suceess = WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
     // Child window can only be open if the user interaction was registered.
     return delegate_ptr->child_windows().size() == 1;

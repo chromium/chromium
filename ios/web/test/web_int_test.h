@@ -11,7 +11,7 @@
 #import "base/ios/block_types.h"
 #include "base/macros.h"
 #import "ios/web/public/navigation/navigation_manager.h"
-#import "ios/web/public/test/fakes/test_web_state_delegate.h"
+#import "ios/web/public/test/fakes/fake_web_state_delegate.h"
 #include "ios/web/public/test/web_test.h"
 #import "ios/web/public/web_state.h"
 
@@ -66,7 +66,7 @@ class WebIntTest : public WebTest {
   // or NSNotFound if it is not present.
   NSInteger GetIndexOfNavigationItem(const web::NavigationItem* item);
 
-  web::TestWebStateDelegate web_state_delegate_;
+  web::FakeWebStateDelegate web_state_delegate_;
 
  private:
   // WebState used to load pages.

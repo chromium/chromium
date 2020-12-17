@@ -12,7 +12,7 @@
 #include "ios/chrome/browser/passwords/ios_chrome_change_password_url_service_factory.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
-#import "ios/web/public/test/fakes/test_web_state_delegate.h"
+#import "ios/web/public/test/fakes/fake_web_state_delegate.h"
 #import "ios/web/public/test/navigation_test_util.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "ios/web/public/test/web_test.h"
@@ -156,7 +156,7 @@ class WellKnownChangePasswordTabHelperTest : public web::FakeWebClient,
   std::unique_ptr<HttpResponse> HandleRequest(const HttpRequest& request);
 
   network::TestURLLoaderFactory test_url_loader_factory_;
-  web::TestWebStateDelegate delegate_;
+  web::FakeWebStateDelegate delegate_;
 };
 
 GURL WellKnownChangePasswordTabHelperTest::GetNavigatedUrl() const {
@@ -165,7 +165,7 @@ GURL WellKnownChangePasswordTabHelperTest::GetNavigatedUrl() const {
   GURL url = web_state()->GetCurrentURL(&trust_level);
   // When redirecting with WebState::OpenURL() |web_state_| is not
   // updated, we only see the registered request in
-  // TestWebStateDelegate::last_open_url_request().
+  // FakeWebStateDelegate::last_open_url_request().
   if (delegate_.last_open_url_request()) {
     url = delegate_.last_open_url_request()->params.url;
   }
