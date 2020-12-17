@@ -194,7 +194,7 @@ class WebNavigationApiTest : public ExtensionApiTest {
  public:
   WebNavigationApiTest() {
     embedded_test_server()->RegisterRequestHandler(
-        base::Bind(&HandleTestRequest));
+        base::BindRepeating(&HandleTestRequest));
   }
   ~WebNavigationApiTest() override {}
 

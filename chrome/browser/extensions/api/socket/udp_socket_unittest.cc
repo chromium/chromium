@@ -140,7 +140,7 @@ TEST_F(UDPSocketUnitTest, TestUDPMulticastLoopbackMode) {
 
 // Send a test multicast packet every second.
 // Once the target socket received the packet, the message loop will exit.
-static void SendMulticastPacket(const base::Closure& quit_run_loop,
+static void SendMulticastPacket(base::OnceClosure quit_run_loop,
                                 UDPSocket* src,
                                 int result) {
   if (result == 0) {
@@ -149,15 +149,16 @@ static void SendMulticastPacket(const base::Closure& quit_run_loop,
     src->Write(data, kTestMessageLength, base::BindOnce(&OnSendCompleted));
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(&SendMulticastPacket, quit_run_loop, src, result),
+        base::BindOnce(&SendMulticastPacket, std::move(quit_run_loop), src,
+                       result),
         base::TimeDelta::FromSeconds(1));
   } else {
-    quit_run_loop.Run();
+    std::move(quit_run_loop).Run();
     FAIL() << "Failed to connect to multicast address. Error code: " << result;
   }
 }
 
-static void OnMulticastReadCompleted(const base::Closure& quit_run_loop,
+static void OnMulticastReadCompleted(base::OnceClosure quit_run_loop,
                                      bool* packet_received,
                                      int count,
                                      scoped_refptr<net::IOBuffer> io_buffer,
@@ -167,7 +168,7 @@ static void OnMulticastReadCompleted(const base::Closure& quit_run_loop,
   EXPECT_EQ(kTestMessageLength, count);
   EXPECT_EQ(0, strncmp(io_buffer->data(), kTestMessage, kTestMessageLength));
   *packet_received = true;
-  quit_run_loop.Run();
+  std::move(quit_run_loop).Run();
 }
 
 TEST_F(UDPSocketUnitTest, TestUDPMulticastRecv) {

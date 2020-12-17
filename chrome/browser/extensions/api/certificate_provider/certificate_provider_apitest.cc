@@ -84,11 +84,11 @@ using testing::_;
 namespace {
 
 void StoreDigest(std::vector<uint8_t>* digest,
-                 const base::Closure& callback,
+                 base::OnceClosure callback,
                  base::Value value) {
   ASSERT_TRUE(value.is_blob()) << "Unexpected value in StoreDigest";
   digest->assign(value.GetBlob().begin(), value.GetBlob().end());
-  callback.Run();
+  std::move(callback).Run();
 }
 
 bool RsaSignRawData(uint16_t openssl_signature_algorithm,

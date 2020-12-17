@@ -253,8 +253,9 @@ bool ChromeRuntimeAPIDelegate::CheckForUpdates(
 
     extensions::ExtensionUpdater::CheckParams params;
     params.ids = {extension_id};
-    params.callback = base::Bind(&ChromeRuntimeAPIDelegate::UpdateCheckComplete,
-                                 base::Unretained(this), extension_id);
+    params.callback =
+        base::BindOnce(&ChromeRuntimeAPIDelegate::UpdateCheckComplete,
+                       base::Unretained(this), extension_id);
     updater->CheckNow(std::move(params));
   }
   return true;

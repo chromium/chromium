@@ -319,8 +319,8 @@ ExtensionFunction::ResponseAction PermissionsRequestFunction::Run() {
   install_ui_.reset(new ExtensionInstallPrompt(
       Profile::FromBrowserContext(browser_context()), native_window));
   install_ui_->ShowDialog(
-      base::Bind(&PermissionsRequestFunction::OnInstallPromptDone,
-                 base::RetainedRef(this)),
+      base::BindOnce(&PermissionsRequestFunction::OnInstallPromptDone,
+                     base::RetainedRef(this)),
       extension(), nullptr,
       std::make_unique<ExtensionInstallPrompt::Prompt>(
           ExtensionInstallPrompt::PERMISSIONS_PROMPT),

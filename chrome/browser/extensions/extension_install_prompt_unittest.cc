@@ -63,7 +63,7 @@ void VerifyPromptPermissionsCallback(
 }
 
 void VerifyPromptWithholdingUICallback(
-    base::Closure quit_closure,
+    base::OnceClosure quit_closure,
     const bool should_display,
     ExtensionInstallPromptShowParams* params,
     ExtensionInstallPrompt::DoneCallback done_callback,
@@ -73,10 +73,10 @@ void VerifyPromptWithholdingUICallback(
 }
 
 void SetImage(gfx::Image* image_out,
-              const base::Closure& quit_closure,
+              base::OnceClosure quit_closure,
               const gfx::Image& image_in) {
   *image_out = image_in;
-  quit_closure.Run();
+  std::move(quit_closure).Run();
 }
 
 class ExtensionInstallPromptUnitTest : public testing::Test {

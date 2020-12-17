@@ -1081,7 +1081,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, ContentScriptUrls) {
         [](const content::WebContentsConsoleObserver::Message& message) {
           return message.message == base::ASCIIToUTF16("TestMessage");
         };
-    observer.SetFilter(base::Bind(filter));
+    observer.SetFilter(base::BindRepeating(filter));
     ui_test_utils::NavigateToURL(
         browser(), embedded_test_server()->GetURL(host, "/simple.html"));
     ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
