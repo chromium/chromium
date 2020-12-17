@@ -365,7 +365,9 @@ crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
     with open(self.filename, 'w') as f:
       f.write(contents)
 
-    expectations.RemoveExpectationsFromFile(stale_expectations, self.filename)
+    removed_urls = expectations.RemoveExpectationsFromFile(
+        stale_expectations, self.filename)
+    self.assertEqual(removed_urls, set(['crbug.com/1234']))
     with open(self.filename) as f:
       self.assertEqual(f.read(), expected_contents)
 
@@ -397,23 +399,25 @@ crbug.com/1234 [ win ] foo/test [ Failure ]
     contents = validate_tag_consistency.TAG_HEADER + """
 crbug.com/1234 [ win ] foo/test [ Failure ]
 # finder:disable
-crbug.com/1234 [ win ] foo/test [ Failure ]
-crbug.com/1234 [ win ] foo/test [ Failure ]
+crbug.com/2345 [ win ] foo/test [ Failure ]
+crbug.com/3456 [ win ] foo/test [ Failure ]
 # finder:enable
-crbug.com/1234 [ win ] foo/test [ Failure ]
+crbug.com/4567 [ win ] foo/test [ Failure ]
 """
     stale_expectations = [
         data_types.Expectation('foo/test', ['win'], ['Failure'])
     ]
     expected_contents = validate_tag_consistency.TAG_HEADER + """
 # finder:disable
-crbug.com/1234 [ win ] foo/test [ Failure ]
-crbug.com/1234 [ win ] foo/test [ Failure ]
+crbug.com/2345 [ win ] foo/test [ Failure ]
+crbug.com/3456 [ win ] foo/test [ Failure ]
 # finder:enable
 """
     with open(self.filename, 'w') as f:
       f.write(contents)
-    expectations.RemoveExpectationsFromFile(stale_expectations, self.filename)
+    removed_urls = expectations.RemoveExpectationsFromFile(
+        stale_expectations, self.filename)
+    self.assertEqual(removed_urls, set(['crbug.com/1234', 'crbug.com/4567']))
     with open(self.filename) as f:
       self.assertEqual(f.read(), expected_contents)
 
@@ -421,18 +425,20 @@ crbug.com/1234 [ win ] foo/test [ Failure ]
     """Tests that expectations with inline disable comments are not removed."""
     contents = validate_tag_consistency.TAG_HEADER + """
 crbug.com/1234 [ win ] foo/test [ Failure ]
-crbug.com/1234 [ win ] foo/test [ Failure ]  # finder:disable
-crbug.com/1234 [ win ] foo/test [ Failure ]
+crbug.com/2345 [ win ] foo/test [ Failure ]  # finder:disable
+crbug.com/3456 [ win ] foo/test [ Failure ]
 """
     stale_expectations = [
         data_types.Expectation('foo/test', ['win'], ['Failure'])
     ]
     expected_contents = validate_tag_consistency.TAG_HEADER + """
-crbug.com/1234 [ win ] foo/test [ Failure ]  # finder:disable
+crbug.com/2345 [ win ] foo/test [ Failure ]  # finder:disable
 """
     with open(self.filename, 'w') as f:
       f.write(contents)
-    expectations.RemoveExpectationsFromFile(stale_expectations, self.filename)
+    removed_urls = expectations.RemoveExpectationsFromFile(
+        stale_expectations, self.filename)
+    self.assertEqual(removed_urls, set(['crbug.com/1234', 'crbug.com/3456']))
     with open(self.filename) as f:
       self.assertEqual(f.read(), expected_contents)
 

@@ -195,10 +195,11 @@ def main():
     for _, expectation_map in stale.iteritems():
       stale_expectations.extend(expectation_map.keys())
     stale_expectations.extend(unused_expectations)
-    expectations.RemoveExpectationsFromFile(stale_expectations,
-                                            args.expectation_file)
+    removed_urls = expectations.RemoveExpectationsFromFile(
+        stale_expectations, args.expectation_file)
     print('Stale expectations removed from %s. Stale comments, etc. may still '
           'need to be removed.' % args.expectation_file)
+    result_output.OutputRemovedUrls(removed_urls)
 
 
 if __name__ == '__main__':

@@ -6,6 +6,7 @@
 Also probably a good example of how to *not* write HTML.
 """
 
+import collections
 import logging
 import sys
 import tempfile
@@ -135,6 +136,9 @@ SECTION_UNMATCHED = ('Unmatched Results (An Expectation Existed When The Test '
                      'Ran, But No Matching One Currently Exists)')
 SECTION_UNUSED = ('Unused Expectations (Indicative Of The Configuration No '
                   'Longer Being Tested Or Tags Changing)')
+
+MAX_BUGS_PER_LINE = 5
+MAX_CHARACTERS_PER_CL_LINE = 72
 
 
 def OutputResults(stale_dict,
@@ -430,3 +434,81 @@ def _FormatExpectation(expectation):
 
 def _AddStatsToStr(s, stats):
   return '%s (%d/%d)' % (s, stats.passed_builds, stats.total_builds)
+
+
+def OutputRemovedUrls(removed_urls):
+  """Outputs URLs of removed expectations for easier consumption by the user.
+
+  Outputs both a string suitable for passing to Chrome via the command line to
+  open all bugs in the browser and a string suitable for copying into the CL
+  description to associate the CL with all the affected bugs.
+
+  Args:
+    removed_urls: A set or list of strings containing bug URLs.
+  """
+  removed_urls = list(removed_urls)
+  removed_urls.sort()
+  _OutputUrlsForCommandLine(removed_urls)
+  _OutputUrlsForClDescription(removed_urls)
+
+
+def _OutputUrlsForCommandLine(urls, file_handle=None):
+  """Outputs |urls| for opening in a browser.
+
+  The output string is meant to be passed to a browser via the command line in
+  order to open all URLs in that browser, e.g.
+
+  `google-chrome https://crbug.com/1234 https://crbug.com/2345`
+
+  Args:
+    urls: A list of strings containing URLs to output.
+    file_handle: A file handle to write the string to. Defaults to stdout.
+  """
+  file_handle = file_handle or sys.stdout
+
+  def _StartsWithHttp(url):
+    return url.startswith('https://') or url.startswith('http://')
+
+  urls = [u if _StartsWithHttp(u) else 'https://%s' % u for u in urls]
+  file_handle.write('Affected bugs: %s\n' % ' '.join(urls))
+
+
+def _OutputUrlsForClDescription(urls, file_handle=None):
+  """Outputs |urls| for use in a CL description.
+
+  Output adheres to the line length recommendation and max number of bugs per
+  line supported in Gerrit.
+
+  Args:
+    urls: A list of strings containing URLs to output.
+    file_handle: A file handle to write the string to. Defaults to stdout.
+  """
+  file_handle = file_handle or sys.stdout
+  urls = collections.deque(urls)
+
+  output_str = ''
+  current_line = ''
+  bugs_on_line = 0
+  while len(urls):
+    current_bug = urls.popleft()
+    current_bug = current_bug.split('crbug.com/', 1)[1]
+    # Handles cases like crbug.com/angleproject/1234.
+    current_bug = current_bug.replace('/', ':')
+
+    # First bug on the line.
+    if not current_line:
+      current_line = 'Bug: %s' % current_bug
+    # Bug or length limit hit for line.
+    elif (len(current_line) + len(current_bug) + 2 > MAX_CHARACTERS_PER_CL_LINE
+          or bugs_on_line >= MAX_BUGS_PER_LINE):
+      output_str += current_line + '\n'
+      bugs_on_line = 0
+      current_line = 'Bug: %s' % current_bug
+    # Can add to current line.
+    else:
+      current_line += ', %s' % current_bug
+
+    bugs_on_line += 1
+
+  output_str += current_line + '\n'
+  file_handle.write('Affected bugs:\n%s' % output_str)

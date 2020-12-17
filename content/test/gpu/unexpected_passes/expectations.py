@@ -201,6 +201,10 @@ def RemoveExpectationsFromFile(expectations, expectation_file):
     expectations: A list of data_types.Expectations to remove.
     expectation_file: A filepath pointing to an expectation file to remove lines
         from.
+
+  Returns:
+    A set of strings containing URLs of bugs associated with the removed
+    expectations.
   """
   header = validate_tag_consistency.TAG_HEADER
 
@@ -210,6 +214,7 @@ def RemoveExpectationsFromFile(expectations, expectation_file):
   output_contents = ''
   in_disable_block = False
   disable_block_reason = ''
+  removed_urls = set()
   for line in input_contents.splitlines(True):
     # Auto-add any comments or empty lines
     stripped_line = line.strip()
@@ -260,11 +265,17 @@ def RemoveExpectationsFromFile(expectations, expectation_file):
             'Would have removed expectation %s, but it has an inline disable '
             'comment with reason %s',
             stripped_line.split('#')[0], _GetDisableReasonFromComment(line))
+      else:
+        reason = list_parser.expectations[0].reason
+        if reason:
+          removed_urls.add(reason)
     else:
       output_contents += line
 
   with open(expectation_file, 'w') as f:
     f.write(output_contents)
+
+  return removed_urls
 
 
 def _GetDisableReasonFromComment(line):

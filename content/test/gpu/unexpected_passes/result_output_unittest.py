@@ -435,6 +435,117 @@ class OutputResultsUnittest(fake_filesystem_unittest.TestCase):
                                 self._file_handle)
 
 
+class OutputUrlsForCommandLineUnittest(fake_filesystem_unittest.TestCase):
+  def setUp(self):
+    self.setUpPyfakefs()
+    self._file_handle = tempfile.NamedTemporaryFile(delete=False)
+    self._filepath = self._file_handle.name
+
+  def testOutput(self):
+    """Tests that the output is correct."""
+    urls = [
+        'https://crbug.com/1234',
+        'https://crbug.com/angleproject/1234',
+        'http://crbug.com/2345',
+        'crbug.com/3456',
+    ]
+    result_output._OutputUrlsForCommandLine(urls, self._file_handle)
+    self._file_handle.close()
+    with open(self._filepath) as f:
+      self.assertEqual(f.read(), ('Affected bugs: '
+                                  'https://crbug.com/1234 '
+                                  'https://crbug.com/angleproject/1234 '
+                                  'http://crbug.com/2345 '
+                                  'https://crbug.com/3456\n'))
+
+
+class OutputUrlsForClDescriptionUnittest(fake_filesystem_unittest.TestCase):
+  def setUp(self):
+    self.setUpPyfakefs()
+    self._file_handle = tempfile.NamedTemporaryFile(delete=False)
+    self._filepath = self._file_handle.name
+
+  def testSingleLine(self):
+    """Tests when all bugs can fit on a single line."""
+    urls = [
+        'crbug.com/1234',
+        'https://crbug.com/angleproject/2345',
+    ]
+    result_output._OutputUrlsForClDescription(urls, self._file_handle)
+    self._file_handle.close()
+    with open(self._filepath) as f:
+      self.assertEqual(f.read(), ('Affected bugs:\n'
+                                  'Bug: 1234, angleproject:2345\n'))
+
+  def testBugLimit(self):
+    """Tests that only a certain number of bugs are allowed per line."""
+    urls = [
+        'crbug.com/1',
+        'crbug.com/2',
+        'crbug.com/3',
+        'crbug.com/4',
+        'crbug.com/5',
+        'crbug.com/6',
+    ]
+    result_output._OutputUrlsForClDescription(urls, self._file_handle)
+    self._file_handle.close()
+    with open(self._filepath) as f:
+      self.assertEqual(f.read(), ('Affected bugs:\n'
+                                  'Bug: 1, 2, 3, 4, 5\n'
+                                  'Bug: 6\n'))
+
+  def testLengthLimit(self):
+    """Tests that only a certain number of characters are allowed per line."""
+    urls = [
+        'crbug.com/averylongprojectthatwillgooverthelinelength/1',
+        'crbug.com/averylongprojectthatwillgooverthelinelength/2',
+    ]
+    result_output._OutputUrlsForClDescription(urls, self._file_handle)
+    self._file_handle.close()
+    with open(self._filepath) as f:
+      self.assertEqual(f.read(),
+                       ('Affected bugs:\n'
+                        'Bug: averylongprojectthatwillgooverthelinelength:1\n'
+                        'Bug: averylongprojectthatwillgooverthelinelength:2\n'))
+
+    project_name = (result_output.MAX_CHARACTERS_PER_CL_LINE - len('Bug: ') -
+                    len(':1, 2')) * 'a'
+    urls = [
+        'crbug.com/%s/1' % project_name,
+        'crbug.com/2',
+    ]
+    with open(self._filepath, 'w') as f:
+      result_output._OutputUrlsForClDescription(urls, f)
+    with open(self._filepath) as f:
+      self.assertEqual(f.read(), ('Affected bugs:\n'
+                                  'Bug: %s:1, 2\n' % project_name))
+
+    project_name += 'a'
+    urls = [
+        'crbug.com/%s/1' % project_name,
+        'crbug.com/2',
+    ]
+    with open(self._filepath, 'w') as f:
+      result_output._OutputUrlsForClDescription(urls, f)
+    with open(self._filepath) as f:
+      self.assertEqual(f.read(), ('Affected bugs:\n'
+                                  'Bug: %s:1\nBug: 2\n' % project_name))
+
+  def testSingleBugOverLineLimit(self):
+    """Tests the behavior when a single bug by itself is over the line limit."""
+    project_name = result_output.MAX_CHARACTERS_PER_CL_LINE * 'a'
+    urls = [
+        'crbug.com/%s/1' % project_name,
+        'crbug.com/2',
+    ]
+    result_output._OutputUrlsForClDescription(urls, self._file_handle)
+    self._file_handle.close()
+    with open(self._filepath) as f:
+      self.assertEqual(f.read(), ('Affected bugs:\n'
+                                  'Bug: %s:1\n'
+                                  'Bug: 2\n' % project_name))
+
+
 def _Dedent(s):
   output = ''
   for line in s.splitlines(True):
