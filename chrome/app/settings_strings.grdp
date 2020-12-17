@@ -559,9 +559,13 @@
   <message name="IDS_SETTINGS_PASSWORD_DELETED_PASSWORD_FROM_ACCOUNT_AND_DEVICE" desc="Label for an undo tooltip following deletion of a password from the account and the device.">
     Password deleted from this device and your Google Account
   </message>
-    <!-- TODO(crbug.com/1139263): Make it translateable and add translation screenshots once final mocks are available. -->
-  <message translateable="false" name="IDS_SETTINGS_PASSWORD_MOVE_PASSWORDS_TO_ACCOUNT" desc="Message displayed in the moving multiple passwords to the user Google Account banner.">
-    Move them to your Google Account, and make it across-device accessible
+  <message name="IDS_SETTINGS_PASSWORD_MOVE_PASSWORDS_TO_ACCOUNT" desc="Message displayed in the moving multiple passwords to the user Google Account banner.">
+    To use them on all your devices, move them to your Google Account
+  </message>
+   <message name="IDS_SETTINGS_PASSWORD_MOVE_PASSWORDS_TO_ACCOUNT_COUNT" desc="Label shown in the link that open moving multiple password dialog.">
+    {COUNT, plural,
+      =1 {{COUNT} password is accessible on this device}
+      other {{COUNT} passwords are accessible on this device}}
   </message>
   <message name="IDS_SETTINGS_PASSWORD_MOVE_PASSWORDS_TO_ACCOUNT_DIALOG_FOOTER" desc="Footer for the dialog that asks the user to select which passwords to move to their Google Account.">
     Passwords will be moved from your device to your Google Account
@@ -584,9 +588,8 @@
   <message name="IDS_SETTINGS_PASSWORD_MOVE_TO_ACCOUNT_DIALOG_CANCEL_BUTTON_TEXT" desc="Text for the button that cancels the action of moving a password to the user Google Account.">
     No thanks
   </message>
-  <!-- TODO(crbug.com/1139263): Make it translateable and add translation screenshots once final mocks are available. -->
-  <message translateable="false" name="IDS_SETTINGS_PASSWORD_OPEN_MOVE_MULTIPLE_PASSWORDS_TO_ACCOUNT_DIALOG_BUTTON_TEXT" desc="Text for the button that opens the dialog that moves multiple passwords to the user Google Account.">
-    Move Passwords ...
+  <message name="IDS_SETTINGS_PASSWORD_OPEN_MOVE_MULTIPLE_PASSWORDS_TO_ACCOUNT_DIALOG_BUTTON_TEXT" desc="Text for the button that opens the dialog that moves multiple passwords to the user Google Account.">
+    Move passwords
   </message>
   <message name="IDS_SETTINGS_PASSWORD_REMOVE_DIALOG_TITLE" desc="Title for the dialog that asks the user which versions of a password to remove (device, Google Account or both).">
     Delete password?

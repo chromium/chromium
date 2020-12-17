@@ -22,6 +22,7 @@ import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classe
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {IronA11yKeysBehavior} from 'chrome://resources/polymer/v3_0/iron-a11y-keys-behavior/iron-a11y-keys-behavior.js';
@@ -119,6 +120,7 @@ Polymer({
       type: Array,
       value: () => [],
       computed: 'computeAllDevicePasswords_(savedPasswords.splices)',
+      observer: 'onAllDevicePasswordsChanged_',
     },
 
     /** @private {!MultiStorePasswordUiEntry} */
@@ -178,7 +180,6 @@ Polymer({
     devicePasswordsLabel_: {
       type: String,
       value: '',
-      computed: 'computeDevicePasswordsLabel_(allDevicePasswords_)',
     },
 
     /** @private */
@@ -269,13 +270,11 @@ Polymer({
 
   /**
    * @private
-   * @return {string}
    */
-  computeDevicePasswordsLabel_() {
-    return this.allDevicePasswords_.length === 1 ?
-        this.i18n('devicePasswordsLinkLabelSingular') :
-        this.i18n(
-            'devicePasswordsLinkLabelPlural', this.allDevicePasswords_.length);
+  async onAllDevicePasswordsChanged_() {
+    this.devicePasswordsLabel_ =
+        await PluralStringProxyImpl.getInstance().getPluralString(
+            'movePasswordsToAccount', this.allDevicePasswords_.length);
   },
 
   /**
