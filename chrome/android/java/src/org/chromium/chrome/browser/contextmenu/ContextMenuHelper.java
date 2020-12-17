@@ -224,6 +224,8 @@ public class ContextMenuHelper {
         Log.i(TAG, "Created mCurrentContextMenu: " + mCurrentContextMenu);
         Log.i(TAG, "Activity was " + mWindow.getActivity().get() + " when the menu was created.");
 
+        // TODO(crbug/1158604): Remove leftover Lens dependencies.
+        LensUtils.startLensConnectionIfNecessary(mIsIncognito);
         if (mChipDelegate != null) {
             menuCoordinator.displayMenuWithChip(mWindow, mWebContents, mCurrentContextMenuParams,
                     items, mCallback, mOnMenuShown, mOnMenuClosed, mChipDelegate);
