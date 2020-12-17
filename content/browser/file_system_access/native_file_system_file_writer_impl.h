@@ -49,6 +49,7 @@ class CONTENT_EXPORT NativeFileSystemFileWriterImpl
       const SharedHandleState& handle_state,
       mojo::PendingReceiver<blink::mojom::NativeFileSystemFileWriter> receiver,
       bool has_transient_user_activation,
+      bool auto_close,
       download::QuarantineConnectionCallback quarantine_connection_callback);
   ~NativeFileSystemFileWriterImpl() override;
 
@@ -63,6 +64,7 @@ class CONTENT_EXPORT NativeFileSystemFileWriterImpl
 
   void Truncate(uint64_t length, TruncateCallback callback) override;
   void Close(CloseCallback callback) override;
+  void Abort(AbortCallback callback) override;
 
   using HashCallback = base::OnceCallback<
       void(base::File::Error error, const std::string& hash, int64_t size)>;
@@ -95,6 +97,7 @@ class CONTENT_EXPORT NativeFileSystemFileWriterImpl
                 bool complete);
   void TruncateImpl(uint64_t length, TruncateCallback callback);
   void CloseImpl(CloseCallback callback);
+  void AbortImpl(AbortCallback callback);
   void DoAfterWriteCheck(base::File::Error hash_result,
                          const std::string& hash,
                          int64_t size);
@@ -164,6 +167,10 @@ class CONTENT_EXPORT NativeFileSystemFileWriterImpl
   // Keeps track of user activation state at creation time for after write
   // checks.
   bool has_transient_user_activation_ = false;
+
+  // Changes will be written to the target file even if the stream isn't
+  // explicitly closed.
+  bool auto_close_ = false;
 
   base::WeakPtr<NativeFileSystemHandleBase> AsWeakPtr() override;
 

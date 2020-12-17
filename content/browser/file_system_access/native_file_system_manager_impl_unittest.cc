@@ -501,7 +501,8 @@ TEST_F(NativeFileSystemManagerImplTest,
   mojo::Remote<blink::mojom::NativeFileSystemFileWriter> writer_remote(
       manager_->CreateFileWriter(kBindingContext, test_file_url, test_swap_url,
                                  NativeFileSystemManagerImpl::SharedHandleState(
-                                     allow_grant_, allow_grant_, {})));
+                                     allow_grant_, allow_grant_, {}),
+                                 /*auto_close=*/false));
 
   ASSERT_TRUE(writer_remote.is_bound());
   ASSERT_TRUE(storage::AsyncFileTestHelper::FileExists(
@@ -533,7 +534,8 @@ TEST_F(NativeFileSystemManagerImplTest, FileWriterCloseDoesNotAbortOnDestruct) {
   mojo::Remote<blink::mojom::NativeFileSystemFileWriter> writer_remote(
       manager_->CreateFileWriter(kBindingContext, test_file_url, test_swap_url,
                                  NativeFileSystemManagerImpl::SharedHandleState(
-                                     allow_grant_, allow_grant_, {})));
+                                     allow_grant_, allow_grant_, {}),
+                                 /*auto_close=*/false));
 
   ASSERT_TRUE(writer_remote.is_bound());
   ASSERT_FALSE(storage::AsyncFileTestHelper::FileExists(
@@ -576,7 +578,8 @@ TEST_F(NativeFileSystemManagerImplTest,
   mojo::Remote<blink::mojom::NativeFileSystemFileWriter> writer_remote(
       manager_->CreateFileWriter(kBindingContext, test_file_url, test_swap_url,
                                  NativeFileSystemManagerImpl::SharedHandleState(
-                                     allow_grant_, allow_grant_, {})));
+                                     allow_grant_, allow_grant_, {}),
+                                 /*auto_close=*/false));
 
   // Severs the mojo pipe. The writer should be destroyed.
   writer_remote.reset();
@@ -589,6 +592,50 @@ TEST_F(NativeFileSystemManagerImplTest,
   ASSERT_FALSE(storage::AsyncFileTestHelper::FileExists(
       file_system_context_.get(), test_swap_url,
       storage::AsyncFileTestHelper::kDontCheckSize));
+}
+
+TEST_F(NativeFileSystemManagerImplTest,
+       FileWriterAutoCloseIfConnectionLostBeforeClose) {
+  auto test_file_url = file_system_context_->CreateCrackedFileSystemURL(
+      kTestOrigin, storage::kFileSystemTypeTest,
+      base::FilePath::FromUTF8Unsafe("test"));
+
+  auto test_swap_url = file_system_context_->CreateCrackedFileSystemURL(
+      kTestOrigin, storage::kFileSystemTypeTest,
+      base::FilePath::FromUTF8Unsafe("test.crswap"));
+
+  ASSERT_EQ(base::File::FILE_OK,
+            storage::AsyncFileTestHelper::CreateFileWithData(
+                file_system_context_.get(), test_swap_url, "foo", 3));
+
+  mojo::Remote<blink::mojom::NativeFileSystemFileWriter> writer_remote(
+      manager_->CreateFileWriter(kBindingContext, test_file_url, test_swap_url,
+                                 NativeFileSystemManagerImpl::SharedHandleState(
+                                     allow_grant_, allow_grant_, {}),
+                                 /*auto_close=*/true));
+
+  ASSERT_TRUE(writer_remote.is_bound());
+  ASSERT_FALSE(storage::AsyncFileTestHelper::FileExists(
+      file_system_context_.get(), test_file_url,
+      storage::AsyncFileTestHelper::kDontCheckSize));
+
+  EXPECT_CALL(permission_context_,
+              PerformAfterWriteChecks_(testing::_, kFrameId, testing::_))
+      .WillOnce(base::test::RunOnceCallback<2>(
+          NativeFileSystemPermissionContext::AfterWriteCheckResult::kAllow));
+
+  // Severs the mojo pipe. Since autoClose was specified, the Writer will not be
+  // destroyed until the file is written out.
+  writer_remote.reset();
+  base::RunLoop().RunUntilIdle();
+
+  // Since the close should complete, the swap file should have been destroyed
+  // and the write should be reflected in the target file.
+  EXPECT_FALSE(storage::AsyncFileTestHelper::FileExists(
+      file_system_context_.get(), test_swap_url,
+      storage::AsyncFileTestHelper::kDontCheckSize));
+  ASSERT_TRUE(storage::AsyncFileTestHelper::FileExists(
+      file_system_context_.get(), test_file_url, 3));
 }
 
 TEST_F(NativeFileSystemManagerImplTest, SerializeHandle_SandboxedFile) {

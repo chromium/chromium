@@ -45,7 +45,7 @@ ScriptPromise NativeFileSystemFileHandle::createWritable(
   ScriptPromise result = resolver->Promise();
 
   mojo_ptr_->CreateFileWriter(
-      options->keepExistingData(),
+      options->keepExistingData(), options->autoClose(),
       WTF::Bind(
           [](ScriptPromiseResolver* resolver,
              mojom::blink::NativeFileSystemErrorPtr result,

@@ -769,7 +769,8 @@ NativeFileSystemManagerImpl::CreateFileWriter(
     const BindingContext& binding_context,
     const storage::FileSystemURL& url,
     const storage::FileSystemURL& swap_url,
-    const SharedHandleState& handle_state) {
+    const SharedHandleState& handle_state,
+    bool auto_close) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   mojo::PendingRemote<blink::mojom::NativeFileSystemFileWriter> result;
@@ -779,6 +780,7 @@ NativeFileSystemManagerImpl::CreateFileWriter(
   CreateFileWriter(
       binding_context, url, swap_url, handle_state,
       result.InitWithNewPipeAndPassReceiver(), has_transient_user_activation,
+      auto_close,
       GetContentClient()->browser()->GetQuarantineConnectionCallback());
   return result;
 }
@@ -790,12 +792,13 @@ NativeFileSystemFileWriterImpl* NativeFileSystemManagerImpl::CreateFileWriter(
     const SharedHandleState& handle_state,
     mojo::PendingReceiver<blink::mojom::NativeFileSystemFileWriter> receiver,
     bool has_transient_user_activation,
+    bool auto_close,
     download::QuarantineConnectionCallback quarantine_connection_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto writer = std::make_unique<NativeFileSystemFileWriterImpl>(
       this, PassKey(), binding_context, url, swap_url, handle_state,
-      std::move(receiver), has_transient_user_activation,
+      std::move(receiver), has_transient_user_activation, auto_close,
       quarantine_connection_callback);
 
   NativeFileSystemFileWriterImpl* writer_ptr = writer.get();

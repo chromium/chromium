@@ -40,6 +40,7 @@ class CONTENT_EXPORT NativeFileSystemFileHandleImpl
                          RequestPermissionCallback callback) override;
   void AsBlob(AsBlobCallback callback) override;
   void CreateFileWriter(bool keep_existing_data,
+                        bool auto_close,
                         CreateFileWriterCallback callback) override;
   void IsSameEntry(
       mojo::PendingRemote<blink::mojom::NativeFileSystemTransferToken> token,
@@ -56,9 +57,11 @@ class CONTENT_EXPORT NativeFileSystemFileHandleImpl
                              const base::File::Info& info);
 
   void CreateFileWriterImpl(bool keep_existing_data,
+                            bool auto_close,
                             CreateFileWriterCallback callback);
   void CreateSwapFile(int count,
                       bool keep_existing_data,
+                      bool auto_close,
                       CreateFileWriterCallback callback);
   // |swap_file_system| is set to the isolated file system the swap url was
   // created in (if any) as that file system might be different than the file
@@ -68,11 +71,13 @@ class CONTENT_EXPORT NativeFileSystemFileHandleImpl
       const storage::FileSystemURL& swap_url,
       storage::IsolatedContext::ScopedFSHandle swap_file_system,
       bool keep_existing_data,
+      bool auto_close,
       CreateFileWriterCallback callback,
       base::File::Error result);
   void DidCopySwapFile(
       const storage::FileSystemURL& swap_url,
       storage::IsolatedContext::ScopedFSHandle swap_file_system,
+      bool auto_close,
       CreateFileWriterCallback callback,
       base::File::Error result);
 

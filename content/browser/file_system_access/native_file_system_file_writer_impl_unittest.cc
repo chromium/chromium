@@ -170,7 +170,8 @@ class NativeFileSystemFileWriterImplTest : public testing::Test {
         NativeFileSystemManagerImpl::SharedHandleState(
             permission_grant_, permission_grant_, std::move(fs)),
         remote_.InitWithNewPipeAndPassReceiver(),
-        /*has_transient_user_activation=*/false, quarantine_callback_);
+        /*has_transient_user_activation=*/false,
+        /*auto_close=*/false, quarantine_callback_);
   }
 
   void TearDown() override {
@@ -291,6 +292,18 @@ class NativeFileSystemFileWriterImplTest : public testing::Test {
     base::RunLoop loop;
     NativeFileSystemStatus result_out;
     handle_->Close(base::BindLambdaForTesting(
+        [&](blink::mojom::NativeFileSystemErrorPtr result) {
+          result_out = result->status;
+          loop.Quit();
+        }));
+    loop.Run();
+    return result_out;
+  }
+
+  NativeFileSystemStatus AbortSync() {
+    base::RunLoop loop;
+    NativeFileSystemStatus result_out;
+    handle_->Abort(base::BindLambdaForTesting(
         [&](blink::mojom::NativeFileSystemErrorPtr result) {
           result_out = result->status;
           loop.Quit();
@@ -574,6 +587,67 @@ TEST_P(NativeFileSystemFileWriterImplWriteTest, WriteAfterCloseNotOK) {
   EXPECT_EQ(result, NativeFileSystemStatus::kInvalidState);
 }
 
+TEST_F(NativeFileSystemFileWriterImplTest, AbortAfterCloseNotOK) {
+  uint64_t bytes_written;
+  NativeFileSystemStatus result = WriteSync(0, "abc", &bytes_written);
+  EXPECT_EQ(result, NativeFileSystemStatus::kOk);
+  EXPECT_EQ(bytes_written, 3u);
+
+  result = CloseSync();
+  EXPECT_EQ(result, NativeFileSystemStatus::kOk);
+  result = AbortSync();
+  EXPECT_EQ(result, NativeFileSystemStatus::kInvalidState);
+}
+
+TEST_F(NativeFileSystemFileWriterImplTest, AbortOK) {
+  uint64_t bytes_written;
+  NativeFileSystemStatus result = WriteSync(0, "abc", &bytes_written);
+  EXPECT_EQ(result, NativeFileSystemStatus::kOk);
+  EXPECT_EQ(bytes_written, 3u);
+
+  result = AbortSync();
+  EXPECT_EQ(result, NativeFileSystemStatus::kOk);
+  EXPECT_EQ("", ReadFile(test_file_url_));
+}
+
+TEST_F(NativeFileSystemFileWriterImplTest, TruncateAfterAbortNotOK) {
+  uint64_t bytes_written;
+  NativeFileSystemStatus result = WriteSync(0, "abc", &bytes_written);
+  EXPECT_EQ(result, NativeFileSystemStatus::kOk);
+  EXPECT_EQ(bytes_written, 3u);
+
+  result = AbortSync();
+  EXPECT_EQ(result, NativeFileSystemStatus::kOk);
+
+  result = TruncateSync(0);
+  EXPECT_EQ(result, NativeFileSystemStatus::kInvalidState);
+}
+
+TEST_P(NativeFileSystemFileWriterImplWriteTest, WriteAfterAbortNotOK) {
+  uint64_t bytes_written;
+  NativeFileSystemStatus result = WriteSync(0, "abc", &bytes_written);
+  EXPECT_EQ(result, NativeFileSystemStatus::kOk);
+  EXPECT_EQ(bytes_written, 3u);
+
+  result = AbortSync();
+  EXPECT_EQ(result, NativeFileSystemStatus::kOk);
+
+  result = WriteSync(0, "bcd", &bytes_written);
+  EXPECT_EQ(result, NativeFileSystemStatus::kInvalidState);
+}
+
+TEST_F(NativeFileSystemFileWriterImplTest, CloseAfterAbortNotOK) {
+  uint64_t bytes_written;
+  NativeFileSystemStatus result = WriteSync(0, "abc", &bytes_written);
+  EXPECT_EQ(result, NativeFileSystemStatus::kOk);
+  EXPECT_EQ(bytes_written, 3u);
+
+  result = AbortSync();
+  EXPECT_EQ(result, NativeFileSystemStatus::kOk);
+  result = CloseSync();
+  EXPECT_EQ(result, NativeFileSystemStatus::kInvalidState);
+}
+
 // TODO(mek): More tests, particularly for error conditions.
 
 class NativeFileSystemFileWriterAfterWriteChecksTest
@@ -752,14 +826,15 @@ TEST_F(NativeFileSystemFileWriterAfterWriteChecksTest,
                                                      test_swap_url_));
 
   mojo::PendingRemote<blink::mojom::NativeFileSystemFileWriter> remote;
-  handle_ = manager_->CreateFileWriter(
-      NativeFileSystemManagerImpl::BindingContext(kTestOrigin, kTestURL,
-                                                  kFrameId),
-      test_file_url_, test_swap_url_,
-      NativeFileSystemManagerImpl::SharedHandleState(permission_grant_,
-                                                     permission_grant_, {}),
-      remote.InitWithNewPipeAndPassReceiver(),
-      /*has_transient_user_activation=*/false, quarantine_callback_);
+  handle_ =
+      manager_->CreateFileWriter(NativeFileSystemManagerImpl::BindingContext(
+                                     kTestOrigin, kTestURL, kFrameId),
+                                 test_file_url_, test_swap_url_,
+                                 NativeFileSystemManagerImpl::SharedHandleState(
+                                     permission_grant_, permission_grant_, {}),
+                                 remote.InitWithNewPipeAndPassReceiver(),
+                                 /*has_transient_user_activation=*/false,
+                                 /*auto_close=*/false, quarantine_callback_);
 
   uint64_t bytes_written;
   NativeFileSystemStatus result = WriteSync(0, "foo", &bytes_written);

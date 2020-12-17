@@ -161,7 +161,8 @@ class CONTENT_EXPORT NativeFileSystemManagerImpl
   CreateFileWriter(const BindingContext& binding_context,
                    const storage::FileSystemURL& url,
                    const storage::FileSystemURL& swap_url,
-                   const SharedHandleState& handle_state);
+                   const SharedHandleState& handle_state,
+                   bool auto_close);
   // Returns a raw pointer to a newly created NativeFileSystemFileWriterImpl.
   // Useful for tests
   NativeFileSystemFileWriterImpl* CreateFileWriter(
@@ -171,6 +172,7 @@ class CONTENT_EXPORT NativeFileSystemManagerImpl
       const SharedHandleState& handle_state,
       mojo::PendingReceiver<blink::mojom::NativeFileSystemFileWriter> receiver,
       bool has_transient_user_activation,
+      bool auto_close,
       download::QuarantineConnectionCallback quarantine_connection_callback);
 
   // Create a transfer token for a specific file or directory.

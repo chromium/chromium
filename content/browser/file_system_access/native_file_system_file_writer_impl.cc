@@ -4,6 +4,7 @@
 
 #include "content/browser/file_system_access/native_file_system_file_writer_impl.h"
 
+#include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/task/post_task.h"
@@ -144,13 +145,15 @@ NativeFileSystemFileWriterImpl::NativeFileSystemFileWriterImpl(
     const SharedHandleState& handle_state,
     mojo::PendingReceiver<blink::mojom::NativeFileSystemFileWriter> receiver,
     bool has_transient_user_activation,
+    bool auto_close,
     download::QuarantineConnectionCallback quarantine_connection_callback)
     : NativeFileSystemHandleBase(manager, context, url, handle_state),
       receiver_(this, std::move(receiver)),
       swap_url_(swap_url),
       quarantine_connection_callback_(
           std::move(quarantine_connection_callback)),
-      has_transient_user_activation_(has_transient_user_activation) {
+      has_transient_user_activation_(has_transient_user_activation),
+      auto_close_(auto_close) {
   DCHECK_EQ(swap_url.type(), url.type());
   receiver_.set_disconnect_handler(base::BindOnce(
       &NativeFileSystemFileWriterImpl::OnDisconnect, base::Unretained(this)));
@@ -230,6 +233,19 @@ void NativeFileSystemFileWriterImpl::Close(CloseCallback callback) {
                      weak_factory_.GetWeakPtr()),
       base::BindOnce([](blink::mojom::NativeFileSystemErrorPtr result,
                         CloseCallback callback) {
+        std::move(callback).Run(std::move(result));
+      }),
+      std::move(callback));
+}
+
+void NativeFileSystemFileWriterImpl::Abort(AbortCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  RunWithWritePermission(
+      base::BindOnce(&NativeFileSystemFileWriterImpl::AbortImpl,
+                     weak_factory_.GetWeakPtr()),
+      base::BindOnce([](blink::mojom::NativeFileSystemErrorPtr result,
+                        AbortCallback callback) {
         std::move(callback).Run(std::move(result));
       }),
       std::move(callback));
@@ -350,11 +366,21 @@ void NativeFileSystemFileWriterImpl::CallCloseCallbackAndMaybeDeleteThis(
 }
 
 void NativeFileSystemFileWriterImpl::OnDisconnect() {
-  // TODO(https://crbug.com/1135687): Auto-close file on disconnect if flag is
-  // specified.
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   receiver_.reset();
 
   if (!close_callback_) {
+    if (!is_closed() && auto_close_) {
+      // Close the Writer. |this| is deleted via
+      // CallCloseCallbackAndMaybeDeleteThis when Close finishes.
+      Close(base::BindOnce([](blink::mojom::NativeFileSystemErrorPtr result) {
+        if (result->status != blink::mojom::NativeFileSystemStatus::kOk) {
+          DLOG(ERROR) << "AutoClose failed with result:"
+                      << base::File::ErrorToString(result->file_error);
+        }
+      }));
+      return;
+    }
     // |this| is deleted after this call.
     manager()->RemoveFileWriter(this);
   }
@@ -498,6 +524,22 @@ void NativeFileSystemFileWriterImpl::CloseImpl(CloseCallback callback) {
                      weak_factory_.GetWeakPtr()));
 }
 
+void NativeFileSystemFileWriterImpl::AbortImpl(AbortCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (is_closed()) {
+    std::move(callback).Run(native_file_system_error::FromStatus(
+        NativeFileSystemStatus::kInvalidState,
+        "An attempt was made to abort an already closed writer."));
+    return;
+  }
+
+  state_ = State::kClosed;
+  auto_close_ = false;
+
+  std::move(callback).Run(native_file_system_error::Ok());
+}
+
+// static
 void NativeFileSystemFileWriterImpl::DoAfterWriteCheck(
     base::File::Error hash_result,
     const std::string& hash,

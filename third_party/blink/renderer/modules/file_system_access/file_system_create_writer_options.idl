@@ -5,4 +5,5 @@
 // https://wicg.github.io/native-file-system/#dictdef-filesystemcreatewriteroptions
 dictionary FileSystemCreateWriterOptions {
   boolean keepExistingData = false;
+  [RuntimeEnabled=FileSystemAccessAPIExperimental] boolean autoClose = false;
 };

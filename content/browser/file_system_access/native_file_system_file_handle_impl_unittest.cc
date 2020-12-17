@@ -136,7 +136,8 @@ TEST_F(NativeFileSystemFileHandleImplTest, CreateFileWriterOverLimitNotOK) {
 
     base::RunLoop loop;
     handle_->CreateFileWriter(
-        /*keepExistingData=*/false,
+        /*keep_existing_data=*/false,
+        /*auto_close=*/false,
         base::BindLambdaForTesting(
             [&](blink::mojom::NativeFileSystemErrorPtr result,
                 mojo::PendingRemote<blink::mojom::NativeFileSystemFileWriter>
@@ -152,7 +153,8 @@ TEST_F(NativeFileSystemFileHandleImplTest, CreateFileWriterOverLimitNotOK) {
 
   base::RunLoop loop;
   handle_->CreateFileWriter(
-      /*keepExistingData=*/false,
+      /*keep_existing_data=*/false,
+      /*auto_close=*/false,
       base::BindLambdaForTesting(
           [&](blink::mojom::NativeFileSystemErrorPtr result,
               mojo::PendingRemote<blink::mojom::NativeFileSystemFileWriter>

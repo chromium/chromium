@@ -76,12 +76,14 @@ void NativeFileSystemFileHandleImpl::AsBlob(AsBlobCallback callback) {
 
 void NativeFileSystemFileHandleImpl::CreateFileWriter(
     bool keep_existing_data,
+    bool auto_close,
     CreateFileWriterCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   RunWithWritePermission(
       base::BindOnce(&NativeFileSystemFileHandleImpl::CreateFileWriterImpl,
-                     weak_factory_.GetWeakPtr(), keep_existing_data),
+                     weak_factory_.GetWeakPtr(), keep_existing_data,
+                     auto_close),
       base::BindOnce([](blink::mojom::NativeFileSystemErrorPtr result,
                         CreateFileWriterCallback callback) {
         std::move(callback).Run(std::move(result), mojo::NullRemote());
@@ -221,6 +223,7 @@ void NativeFileSystemFileHandleImpl::DidGetMetaDataForBlob(
 
 void NativeFileSystemFileHandleImpl::CreateFileWriterImpl(
     bool keep_existing_data,
+    bool auto_close,
     CreateFileWriterCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(GetWritePermissionStatus(),
@@ -233,12 +236,13 @@ void NativeFileSystemFileHandleImpl::CreateFileWriterImpl(
   // creation of the file ensures that this File Writer creation request owns
   // the file and eliminates possible race conditions.
   CreateSwapFile(
-      /*count=*/0, keep_existing_data, std::move(callback));
+      /*count=*/0, keep_existing_data, auto_close, std::move(callback));
 }
 
 void NativeFileSystemFileHandleImpl::CreateSwapFile(
     int count,
     bool keep_existing_data,
+    bool auto_close,
     CreateFileWriterCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(count >= 0);
@@ -301,7 +305,8 @@ void NativeFileSystemFileHandleImpl::CreateSwapFile(
       FROM_HERE, &FileSystemOperationRunner::CreateFile,
       base::BindOnce(&NativeFileSystemFileHandleImpl::DidCreateSwapFile,
                      weak_factory_.GetWeakPtr(), count, swap_url,
-                     swap_file_system, keep_existing_data, std::move(callback)),
+                     swap_file_system, keep_existing_data, auto_close,
+                     std::move(callback)),
       swap_url,
       /*exclusive=*/true);
 }
@@ -311,12 +316,14 @@ void NativeFileSystemFileHandleImpl::DidCreateSwapFile(
     const storage::FileSystemURL& swap_url,
     storage::IsolatedContext::ScopedFSHandle swap_file_system,
     bool keep_existing_data,
+    bool auto_close,
     CreateFileWriterCallback callback,
     base::File::Error result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (result == base::File::FILE_ERROR_EXISTS) {
     // Creation attempt failed. We need to find an unused filename.
-    CreateSwapFile(count + 1, keep_existing_data, std::move(callback));
+    CreateSwapFile(count + 1, keep_existing_data, auto_close,
+                   std::move(callback));
     return;
   }
 
@@ -337,7 +344,8 @@ void NativeFileSystemFileHandleImpl::DidCreateSwapFile(
             context(), url(), swap_url,
             NativeFileSystemManagerImpl::SharedHandleState(
                 handle_state().read_grant, handle_state().write_grant,
-                swap_file_system)));
+                swap_file_system),
+            auto_close));
     return;
   }
 
@@ -345,7 +353,7 @@ void NativeFileSystemFileHandleImpl::DidCreateSwapFile(
       FROM_HERE, &FileSystemOperationRunner::Copy,
       base::BindOnce(&NativeFileSystemFileHandleImpl::DidCopySwapFile,
                      weak_factory_.GetWeakPtr(), swap_url, swap_file_system,
-                     std::move(callback)),
+                     auto_close, std::move(callback)),
       url(), swap_url,
       storage::FileSystemOperation::OPTION_PRESERVE_LAST_MODIFIED,
       storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT,
@@ -355,6 +363,7 @@ void NativeFileSystemFileHandleImpl::DidCreateSwapFile(
 void NativeFileSystemFileHandleImpl::DidCopySwapFile(
     const storage::FileSystemURL& swap_url,
     storage::IsolatedContext::ScopedFSHandle swap_file_system,
+    bool auto_close,
     CreateFileWriterCallback callback,
     base::File::Error result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -367,13 +376,13 @@ void NativeFileSystemFileHandleImpl::DidCopySwapFile(
                             mojo::NullRemote());
     return;
   }
-  std::move(callback).Run(
-      native_file_system_error::Ok(),
-      manager()->CreateFileWriter(
-          context(), url(), swap_url,
-          NativeFileSystemManagerImpl::SharedHandleState(
-              handle_state().read_grant, handle_state().write_grant,
-              swap_file_system)));
+  std::move(callback).Run(native_file_system_error::Ok(),
+                          manager()->CreateFileWriter(
+                              context(), url(), swap_url,
+                              NativeFileSystemManagerImpl::SharedHandleState(
+                                  handle_state().read_grant,
+                                  handle_state().write_grant, swap_file_system),
+                              auto_close));
 }
 
 base::WeakPtr<NativeFileSystemHandleBase>

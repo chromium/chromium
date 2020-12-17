@@ -26,7 +26,7 @@ interface NativeFileSystemFileHandle {
   AsBlob() => (NativeFileSystemError result, mojo_base.mojom.FileInfo info, SerializedBlob? blob);
 
   // Returns a FileWriter object. The FileWriter provides write operations on a file.
-  CreateFileWriter(bool keep_existing_data) => (
+  CreateFileWriter(bool keep_existing_data, bool auto_close) => (
       NativeFileSystemError result, pending_remote<NativeFileSystemFileWriter>? writer);
 
   // Returns true if |other| represents the same file on disk as this handle.
