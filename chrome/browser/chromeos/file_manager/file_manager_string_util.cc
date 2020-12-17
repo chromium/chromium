@@ -1051,6 +1051,10 @@ void AddFileManagerFeatureStrings(const std::string& locale,
                                    chromeos::features::kFilesZipPack));
   dict->SetBoolean("ZIP_UNPACK", base::FeatureList::IsEnabled(
                                      chromeos::features::kFilesZipUnpack));
+  dict->SetBoolean(
+      "DRIVE_DSS_PIN_ENABLED",
+      base::FeatureList::IsEnabled(
+          chromeos::features::kDriveFsBidirectionalNativeMessaging));
   dict->SetBoolean("SHARESHEET_ENABLED",
                    base::FeatureList::IsEnabled(features::kSharesheet));
   dict->SetBoolean(

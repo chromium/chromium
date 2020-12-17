@@ -76,6 +76,9 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
     // TODO(crbug.com/912236) Remove once transition to new ZIP system is done.
     bool zip_no_nacl = false;
 
+    // Whether test should enable drive dss pinning.
+    bool drive_dss_pin = false;
+
     // Whether Drive should act as if offline.
     bool offline = false;
 

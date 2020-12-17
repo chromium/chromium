@@ -726,6 +726,7 @@ std::ostream& operator<<(std::ostream& out,
   PRINT_IF_NOT_DEFAULT(browser)
   PRINT_IF_NOT_DEFAULT(documents_provider)
   PRINT_IF_NOT_DEFAULT(files_ng)
+  PRINT_IF_NOT_DEFAULT(drive_dss_pin)
   PRINT_IF_NOT_DEFAULT(files_swa)
   PRINT_IF_NOT_DEFAULT(media_swa)
   PRINT_IF_NOT_DEFAULT(mount_volumes)
@@ -1689,6 +1690,11 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     disabled_features.push_back(chromeos::features::kFilesZipMount);
     disabled_features.push_back(chromeos::features::kFilesZipPack);
     disabled_features.push_back(chromeos::features::kFilesZipUnpack);
+  }
+
+  if (options.drive_dss_pin) {
+    enabled_features.push_back(
+        chromeos::features::kDriveFsBidirectionalNativeMessaging);
   }
 
   if (options.enable_sharesheet) {

@@ -1770,5 +1770,10 @@ util.isHoldingSpaceEnabled = () => {
       loadTimeData.getBoolean('HOLDING_SPACE_ENABLED');
 };
 
+util.isDriveDssPinEnabled = () => {
+  return loadTimeData.valueExists('DRIVE_DSS_PIN_ENABLED') &&
+      loadTimeData.getBoolean('DRIVE_DSS_PIN_ENABLED');
+};
+
 // eslint-disable-next-line semi,no-extra-semi
 /* #export */ {util};

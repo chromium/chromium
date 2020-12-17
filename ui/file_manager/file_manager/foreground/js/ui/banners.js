@@ -483,7 +483,7 @@ class Banners extends cr.EventTarget {
         this.maybeShowWelcomeBanner_();
       }
 
-      if (util.isFilesNg() &&
+      if (util.isFilesNg() && util.isDriveDssPinEnabled() &&
           (this.offlineInfoBannerCounter_ < OFFLINE_INFO_BANNER_COUNTER_LIMIT ||
            this.hasShownOfflineInfoBanner_)) {
         this.offlineInfoBanner_.hidden = false;
