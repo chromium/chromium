@@ -665,6 +665,31 @@ XrResult xrGetReferenceSpaceBoundsRect(
   return XR_SUCCESS;
 }
 
+XrResult xrGetViewConfigurationProperties(
+    XrInstance instance,
+    XrSystemId system_id,
+    XrViewConfigurationType view_configuration_type,
+    XrViewConfigurationProperties* configuration_properties) {
+  DVLOG(2) << __FUNCTION__;
+  RETURN_IF_XR_FAILED(g_test_helper.ValidateInstance(instance));
+  RETURN_IF_XR_FAILED(g_test_helper.ValidateSystemId(system_id));
+  RETURN_IF(
+      view_configuration_type != XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO,
+      XR_ERROR_VALIDATION_FAILURE, "viewConfigurationType must be stereo");
+  RETURN_IF(
+      configuration_properties->type == XR_TYPE_VIEW_CONFIGURATION_PROPERTIES,
+      XR_ERROR_VALIDATION_FAILURE,
+      "XrViewConfigurationProperties.type must be "
+      "XR_TYPE_VIEW_CONFIGURATION_PROPERTIES");
+  RETURN_IF(configuration_properties->next == nullptr,
+            XR_ERROR_VALIDATION_FAILURE,
+            "XrViewConfigurationProperties.next must be nullptr");
+  configuration_properties->viewConfigurationType =
+      XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
+  configuration_properties->fovMutable = XR_TRUE;
+  return XR_SUCCESS;
+}
+
 XrResult xrGetSystem(XrInstance instance,
                      const XrSystemGetInfo* get_info,
                      XrSystemId* system_id) {
@@ -982,6 +1007,9 @@ XrResult XRAPI_PTR xrGetInstanceProcAddr(XrInstance instance,
   } else if (strcmp(name, "xrGetReferenceSpaceBoundsRect") == 0) {
     *function =
         reinterpret_cast<PFN_xrVoidFunction>(xrGetReferenceSpaceBoundsRect);
+  } else if (strcmp(name, "xrGetViewConfigurationProperties") == 0) {
+    *function =
+        reinterpret_cast<PFN_xrVoidFunction>(xrGetViewConfigurationProperties);
   } else if (strcmp(name, "xrGetSystem") == 0) {
     *function = reinterpret_cast<PFN_xrVoidFunction>(xrGetSystem);
   } else if (strcmp(name, "xrLocateSpace") == 0) {
