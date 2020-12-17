@@ -75,6 +75,102 @@ constexpr const char* GetVizBreakdownName(VizBreakdown stage) {
   }
 }
 
+// Returns the name of the event dispatch breakdown of EventLatency histograms
+// between `start_stage` and `end_stage`.
+constexpr const char* GetEventLatencyDispatchBreakdownName(
+    EventMetrics::DispatchStage start_stage,
+    EventMetrics::DispatchStage end_stage) {
+  switch (start_stage) {
+    case EventMetrics::DispatchStage::kGenerated:
+      DCHECK_EQ(end_stage,
+                EventMetrics::DispatchStage::kArrivedInRendererCompositor);
+      return "GenerationToRendererCompositor";
+    case EventMetrics::DispatchStage::kArrivedInRendererCompositor:
+      switch (end_stage) {
+        case EventMetrics::DispatchStage::kRendererCompositorStarted:
+          return "RendererCompositorQueueingDelay";
+        case EventMetrics::DispatchStage::kRendererMainStarted:
+          return "RendererCompositorToMain";
+        default:
+          NOTREACHED();
+          return nullptr;
+      }
+    case EventMetrics::DispatchStage::kRendererCompositorStarted:
+      DCHECK_EQ(end_stage,
+                EventMetrics::DispatchStage::kRendererCompositorFinished);
+      return "RendererCompositorProcessing";
+    case EventMetrics::DispatchStage::kRendererCompositorFinished:
+      DCHECK_EQ(end_stage, EventMetrics::DispatchStage::kRendererMainStarted);
+      return "RendererCompositorToMain";
+    case EventMetrics::DispatchStage::kRendererMainStarted:
+      DCHECK_EQ(end_stage, EventMetrics::DispatchStage::kRendererMainFinished);
+      return "RendererMainProcessing";
+    case EventMetrics::DispatchStage::kRendererMainFinished:
+      NOTREACHED();
+      return nullptr;
+  }
+}
+
+// Returns the name of EventLatency breakdown between `dispatch_stage` and
+// `compositor_stage`.
+constexpr const char* GetEventLatencyDispatchToCompositorBreakdownName(
+    EventMetrics::DispatchStage dispatch_stage,
+    CompositorFrameReporter::StageType compositor_stage) {
+  switch (dispatch_stage) {
+    case EventMetrics::DispatchStage::kRendererCompositorFinished:
+      switch (compositor_stage) {
+        case CompositorFrameReporter::StageType::
+            kBeginImplFrameToSendBeginMainFrame:
+          return "RendererCompositorFinishedToBeginImplFrame";
+        case CompositorFrameReporter::StageType::kSendBeginMainFrameToCommit:
+          return "RendererCompositorFinishedToSendBeginMainFrame";
+        case CompositorFrameReporter::StageType::kCommit:
+          return "RendererCompositorFinishedToCommit";
+        case CompositorFrameReporter::StageType::kEndCommitToActivation:
+          return "RendererCompositorFinishedToEndCommit";
+        case CompositorFrameReporter::StageType::kActivation:
+          return "RendererCompositorFinishedToActivation";
+        case CompositorFrameReporter::StageType::
+            kEndActivateToSubmitCompositorFrame:
+          return "RendererCompositorFinishedToEndActivate";
+        case CompositorFrameReporter::StageType::
+            kSubmitCompositorFrameToPresentationCompositorFrame:
+          return "RendererCompositorFinishedToSubmitCompositorFrame";
+        default:
+          NOTREACHED();
+          return nullptr;
+      }
+      break;
+    case EventMetrics::DispatchStage::kRendererMainFinished:
+      switch (compositor_stage) {
+        case CompositorFrameReporter::StageType::
+            kBeginImplFrameToSendBeginMainFrame:
+          return "RendererMainFinishedToBeginImplFrame";
+        case CompositorFrameReporter::StageType::kSendBeginMainFrameToCommit:
+          return "RendererMainFinishedToSendBeginMainFrame";
+        case CompositorFrameReporter::StageType::kCommit:
+          return "RendererMainFinishedToCommit";
+        case CompositorFrameReporter::StageType::kEndCommitToActivation:
+          return "RendererMainFinishedToEndCommit";
+        case CompositorFrameReporter::StageType::kActivation:
+          return "RendererMainFinishedToActivation";
+        case CompositorFrameReporter::StageType::
+            kEndActivateToSubmitCompositorFrame:
+          return "RendererMainFinishedToEndActivate";
+        case CompositorFrameReporter::StageType::
+            kSubmitCompositorFrameToPresentationCompositorFrame:
+          return "RendererMainFinishedToSubmitCompositorFrame";
+        default:
+          NOTREACHED();
+          return nullptr;
+      }
+      break;
+    default:
+      NOTREACHED();
+      return nullptr;
+  }
+}
+
 // Names for CompositorFrameReporter::StageType, which should be updated in case
 // of changes to the enum.
 constexpr const char* GetStageName(int stage_type_index,
@@ -905,6 +1001,11 @@ void CompositorFrameReporter::ReportCompositorLatencyTraceEvents() const {
 }
 
 void CompositorFrameReporter::ReportEventLatencyTraceEvents() const {
+  // TODO(mohsen): This function is becoming large and there is concerns about
+  // having this in the compositor critical path. crbug.com/1072740 is
+  // considering doing the reporting off-thread, but as a short-term solution,
+  // we should investigate whether we can skip this function entirely if tracing
+  // is off and whether that has any positive impact or not.
   for (const auto& event_metrics : events_metrics_) {
     const base::TimeTicks generated_timestamp =
         event_metrics->GetDispatchStageTimestamp(
@@ -915,30 +1016,68 @@ void CompositorFrameReporter::ReportEventLatencyTraceEvents() const {
         "cc,input", "EventLatency", trace_id, generated_timestamp, "event",
         event_metrics->GetTypeName());
 
-    // Find the first stage that happens after the event's arrival in the
-    // browser.
-    auto stage_it =
-        std::find_if(stage_history_.begin(), stage_history_.end(),
-                     [generated_timestamp](const StageData& stage) {
-                       return stage.start_time > generated_timestamp;
-                     });
+    // Event dispatch stages.
+    EventMetrics::DispatchStage dispatch_stage =
+        EventMetrics::DispatchStage::kGenerated;
+    base::TimeTicks dispatch_timestamp =
+        event_metrics->GetDispatchStageTimestamp(dispatch_stage);
+    while (dispatch_stage != EventMetrics::DispatchStage::kMaxValue) {
+      DCHECK(!dispatch_timestamp.is_null());
+
+      // Find the end dispatch stage.
+      auto end_stage = static_cast<EventMetrics::DispatchStage>(
+          static_cast<int>(dispatch_stage) + 1);
+      base::TimeTicks end_timestamp =
+          event_metrics->GetDispatchStageTimestamp(end_stage);
+      while (end_timestamp.is_null() &&
+             end_stage != EventMetrics::DispatchStage::kMaxValue) {
+        end_stage = static_cast<EventMetrics::DispatchStage>(
+            static_cast<int>(end_stage) + 1);
+        end_timestamp = event_metrics->GetDispatchStageTimestamp(end_stage);
+      }
+      if (end_timestamp.is_null())
+        break;
+
+      const char* breakdown_name =
+          GetEventLatencyDispatchBreakdownName(dispatch_stage, end_stage);
+      TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
+          "cc,input", breakdown_name, trace_id, dispatch_timestamp);
+      TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0("cc,input", breakdown_name,
+                                                     trace_id, end_timestamp);
+
+      dispatch_stage = end_stage;
+      dispatch_timestamp = end_timestamp;
+    }
+
+    // Find the first compositor stage that happens after the final dispatch
+    // stage.
+    auto stage_it = std::find_if(stage_history_.begin(), stage_history_.end(),
+                                 [dispatch_timestamp](const StageData& stage) {
+                                   return stage.start_time > dispatch_timestamp;
+                                 });
     // TODO(crbug.com/1079116): Ideally, at least the start time of
     // SubmitCompositorFrameToPresentationCompositorFrame stage should be
-    // greater than the event time stamp, but apparently, this is not always the
-    // case (see crbug.com/1093698). For now, skip to the next event in such
-    // cases. Hopefully, the work to reduce discrepancies between the new
-    // EventLatency and the old Event.Latency metrics would fix this issue. If
-    // not, we need to reconsider investigating this issue.
+    // greater than the final event dispatch timestamp, but apparently, this is
+    // not always the case (see crbug.com/1093698). For now, skip to the next
+    // event in such cases. Hopefully, the work to reduce discrepancies between
+    // the new EventLatency and the old Event.Latency metrics would fix this
+    // issue. If not, we need to reconsider investigating this issue.
     if (stage_it == stage_history_.end())
       continue;
 
+    DCHECK(dispatch_stage ==
+               EventMetrics::DispatchStage::kRendererCompositorFinished ||
+           dispatch_stage ==
+               EventMetrics::DispatchStage::kRendererMainFinished);
+    const char* d2c_breakdown_name =
+        GetEventLatencyDispatchToCompositorBreakdownName(dispatch_stage,
+                                                         stage_it->stage_type);
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-        "cc,input", "BrowserToRendererCompositor", trace_id,
-        generated_timestamp);
+        "cc,input", d2c_breakdown_name, trace_id, dispatch_timestamp);
     TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-        "cc,input", "BrowserToRendererCompositor", trace_id,
-        stage_it->start_time);
+        "cc,input", d2c_breakdown_name, trace_id, stage_it->start_time);
 
+    // Compositor stages.
     for (; stage_it != stage_history_.end(); ++stage_it) {
       const int stage_type_index = static_cast<int>(stage_it->stage_type);
       CHECK_LT(stage_type_index, static_cast<int>(StageType::kStageTypeCount));
