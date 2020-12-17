@@ -50,42 +50,35 @@ constexpr size_t CharTraits<T>::length(const T* s) noexcept {
   return i;
 }
 
-// char specialization of CharTraits that can use clang's constexpr instrinsics,
-// where available.
+// char and wchar_t specialization of CharTraits that can use clang's constexpr
+// instrinsics, where available.
+#if HAS_FEATURE(cxx_constexpr_string_builtins)
 template <>
 struct CharTraits<char> {
   static constexpr int compare(const char* s1,
                                const char* s2,
-                               size_t n) noexcept;
-  static constexpr size_t length(const char* s) noexcept;
+                               size_t n) noexcept {
+    return __builtin_memcmp(s1, s2, n);
+  }
+
+  static constexpr size_t length(const char* s) noexcept {
+    return __builtin_strlen(s);
+  }
 };
 
-constexpr int CharTraits<char>::compare(const char* s1,
-                                        const char* s2,
-                                        size_t n) noexcept {
-#if HAS_FEATURE(cxx_constexpr_string_builtins)
-  return __builtin_memcmp(s1, s2, n);
-#else
-  for (; n; --n, ++s1, ++s2) {
-    if (*s1 < *s2)
-      return -1;
-    if (*s1 > *s2)
-      return 1;
+template <>
+struct CharTraits<wchar_t> {
+  static constexpr int compare(const wchar_t* s1,
+                               const wchar_t* s2,
+                               size_t n) noexcept {
+    return __builtin_wmemcmp(s1, s2, n);
   }
-  return 0;
-#endif
-}
 
-constexpr size_t CharTraits<char>::length(const char* s) noexcept {
-#if defined(__clang__)
-  return __builtin_strlen(s);
-#else
-  size_t i = 0;
-  for (; *s; ++s)
-    ++i;
-  return i;
+  static constexpr size_t length(const wchar_t* s) noexcept {
+    return __builtin_wcslen(s);
+  }
+};
 #endif
-}
 
 }  // namespace base
 
