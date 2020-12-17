@@ -73,9 +73,21 @@ class GFX_EXPORT ImageSkia {
   // Returns the maximum scale supported by this platform.
   static float GetMaxSupportedScale();
 
-  // Creates an image from the passed in bitmap.
-  // DIP width and height are based on scale factor of 1x.
-  // Adds ref to passed in bitmap.
+  // Creates an image from the passed in bitmap, which is designed for display
+  // at the device scale factor given in `scale`. The DIP width and height will
+  // be based on that scale factor. A scale factor of 0 is equivalent to
+  // calling CreateFrom1xBitmap(), which indicates the bitmap is not scaled.
+  // The `bitmap`, if present, will be made immutable. If the `bitmap` is
+  // uninitialized, empty, or null then the returned ImageSkia will be
+  // default-constructed and empty.
+  // WARNING: If the device scale factory differs from the scale given here,
+  // the resulting image will be pixelated when displayed.
+  static ImageSkia CreateFromBitmap(const SkBitmap& bitmap, float scale);
+
+  // Creates an image from the passed in bitmap. The DIP width and height will
+  // be based on scale factor of 1x. The `bitmap`, if present, will be made
+  // immutable. If the bitmap is uninitialized, empty, or null then the
+  // returned ImageSkia will be default-constructed and empty.
   // WARNING: The resulting image will be pixelated when painted on a high
   // density display.
   static ImageSkia CreateFrom1xBitmap(const SkBitmap& bitmap);

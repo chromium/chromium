@@ -164,7 +164,7 @@ const ParsedNtpIconPath ParseNtpIconPath(const std::string& path) {
 void DrawFavicon(const SkBitmap& bitmap, gfx::Canvas* canvas, int size) {
   int x_origin = (size - bitmap.width()) / 2;
   int y_origin = (size - bitmap.height()) / 2;
-  canvas->DrawImageInt(gfx::ImageSkia(gfx::ImageSkiaRep(bitmap, /*scale=*/1.0)),
+  canvas->DrawImageInt(gfx::ImageSkia::CreateFromBitmap(bitmap, /*scale=*/1.f),
                        x_origin, y_origin);
 }
 

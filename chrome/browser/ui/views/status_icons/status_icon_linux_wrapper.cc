@@ -30,7 +30,7 @@ gfx::ImageSkia GetBestImageRep(const gfx::ImageSkia& image) {
   }
   // All status icon implementations want the image in pixel coordinates, so use
   // a scale factor of 1.
-  return gfx::ImageSkia(gfx::ImageSkiaRep(best_rep, 1.0f));
+  return gfx::ImageSkia::CreateFromBitmap(best_rep, 1.0f);
 }
 
 }  // namespace

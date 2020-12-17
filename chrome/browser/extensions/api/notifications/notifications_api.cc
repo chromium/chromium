@@ -185,7 +185,7 @@ bool NotificationBitmapToGfxImage(
 
   // TODO(dewittj): Handle HiDPI images with more than one scale factor
   // representation.
-  gfx::ImageSkia skia(gfx::ImageSkiaRep(bitmap, 1.0f));
+  gfx::ImageSkia skia = gfx::ImageSkia::CreateFromBitmap(bitmap, 1.0f);
   *return_image = gfx::Image(skia);
   return true;
 }

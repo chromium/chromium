@@ -240,7 +240,7 @@ gfx::ImageSkia CreateFaviconImageSkia(
 
   if (desired_size_in_dip == 0) {
     size_t index = results[0].index;
-    return gfx::ImageSkia(gfx::ImageSkiaRep(bitmaps[index], 1.0f));
+    return gfx::ImageSkia::CreateFromBitmap(bitmaps[index], 1.0f);
   }
 
   auto image_source = std::make_unique<FaviconImageSource>();

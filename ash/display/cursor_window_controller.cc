@@ -366,8 +366,8 @@ void CursorWindowController::UpdateCursorImage() {
 
   const gfx::ImageSkiaRep& image_rep = resized.GetRepresentation(cursor_scale);
   delegate_->SetCursorImage(resized.size(),
-                            gfx::ImageSkia(gfx::ImageSkiaRep(
-                                GetAdjustedBitmap(image_rep), cursor_scale)));
+                            gfx::ImageSkia::CreateFromBitmap(
+                                GetAdjustedBitmap(image_rep), cursor_scale));
   // TODO(danakj): Should this be rounded? Or kept as a floating point?
   hot_point_ = gfx::ToFlooredPoint(
       gfx::ConvertPointToDips(hot_point_in_physical_pixels, cursor_scale));

@@ -226,7 +226,7 @@ SkBitmap DecompressToSkBitmap(const unsigned char* data, size_t size) {
 }
 
 gfx::ImageSkia SkBitmapToImageSkia(SkBitmap bitmap, float icon_scale) {
-  return gfx::ImageSkia(gfx::ImageSkiaRep(bitmap, icon_scale));
+  return gfx::ImageSkia::CreateFromBitmap(bitmap, icon_scale);
 }
 
 // Returns a callback that converts a gfx::Image to an ImageSkia.

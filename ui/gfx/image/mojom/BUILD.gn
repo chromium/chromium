@@ -20,7 +20,6 @@ mojom("mojom") {
         {
           mojom = "gfx.mojom.ImageSkiaRep"
           cpp = "::gfx::ImageSkiaRep"
-          nullable_is_same_type = true
         },
       ]
       traits_headers = [ "image_skia_mojom_traits.h" ]
@@ -61,6 +60,7 @@ source_set("unit_test") {
     "//base",
     "//base/test:test_support",
     "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/test_support:test_utils",
     "//testing/gtest",
     "//ui/gfx:test_support",
   ]

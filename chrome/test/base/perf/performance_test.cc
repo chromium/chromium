@@ -63,7 +63,8 @@ void CreateAndSetWallpaper() {
                         /*isOpaque=*/true);
   SkCanvas canvas(bitmap);
   canvas.drawColor(SK_ColorGREEN);
-  gfx::ImageSkia image(gfx::ImageSkiaRep(std::move(bitmap), 1.f));
+  gfx::ImageSkia image =
+      gfx::ImageSkia::CreateFromBitmap(std::move(bitmap), 1.f);
 
   base::RunLoop run_loop;
   TestWallpaperObserver observer(run_loop.QuitClosure());

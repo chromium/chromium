@@ -196,7 +196,8 @@ TEST_F(MessageCenterAshTest, HighDpiImage) {
 
   // Create a high DPI image.
   SkBitmap bitmap = gfx::test::CreateBitmap(2, 4);
-  gfx::ImageSkia high_dpi_image_skia(gfx::ImageSkiaRep(bitmap, 2.0f));
+  gfx::ImageSkia high_dpi_image_skia =
+      gfx::ImageSkia::CreateFromBitmap(bitmap, 2.0f);
   mojo_notification->image = high_dpi_image_skia;
 
   // Display the notification.

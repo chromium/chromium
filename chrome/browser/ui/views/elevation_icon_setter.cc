@@ -77,7 +77,7 @@ void ElevationIconSetter::SetButtonIcon(base::OnceClosure callback,
 #endif
     button_->SetImage(
         views::Button::STATE_NORMAL,
-        gfx::ImageSkia(gfx::ImageSkiaRep(icon, device_scale_factor)));
+        gfx::ImageSkia::CreateFromBitmap(icon, device_scale_factor));
     button_->SizeToPreferredSize();
     if (button_->parent())
       button_->parent()->Layout();

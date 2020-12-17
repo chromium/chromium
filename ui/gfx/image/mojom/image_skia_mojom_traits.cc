@@ -11,11 +11,20 @@
 namespace mojo {
 
 // static
+SkBitmap
+StructTraits<gfx::mojom::ImageSkiaRepDataView, gfx::ImageSkiaRep>::bitmap(
+    const gfx::ImageSkiaRep& input) {
+  SkBitmap bitmap = input.GetBitmap();
+  DCHECK(!bitmap.drawsNothing());
+  CHECK_EQ(bitmap.colorType(), kN32_SkColorType);
+  return bitmap;
+}
+
+// static
 float StructTraits<gfx::mojom::ImageSkiaRepDataView, gfx::ImageSkiaRep>::scale(
     const gfx::ImageSkiaRep& input) {
   const float scale = input.unscaled() ? 0.0f : input.scale();
   DCHECK_GE(scale, 0.0f);
-
   return scale;
 }
 
@@ -29,6 +38,14 @@ bool StructTraits<gfx::mojom::ImageSkiaRepDataView, gfx::ImageSkiaRep>::Read(
 
   SkBitmap bitmap;
   if (!data.ReadBitmap(&bitmap))
+    return false;
+  // Null/uninitialized bitmaps are not allowed, and an ImageSkiaRep is never
+  // empty-sized either.
+  if (bitmap.drawsNothing())
+    return false;
+  // Similar to BitmapN32, ImageSkiaReps are expected to have an N32 bitmap
+  // type.
+  if (bitmap.colorType() != kN32_SkColorType)
     return false;
 
   *out = gfx::ImageSkiaRep(bitmap, data.scale());

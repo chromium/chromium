@@ -48,7 +48,7 @@ gfx::ImageSkia CreateWallpaperImage(SkColor fill, SkColor rect) {
   paint.setBlendMode(SkBlendMode::kSrcOver);
   canvas.drawRoundRect(gfx::RectToSkRect(gfx::Rect(image_size)), 100.f, 100.f,
                        paint);
-  return gfx::ImageSkia(gfx::ImageSkiaRep(std::move(bitmap), 1.f));
+  return gfx::ImageSkia::CreateFromBitmap(std::move(bitmap), 1.f);
 }
 
 void HandleToggleWallpaperMode() {

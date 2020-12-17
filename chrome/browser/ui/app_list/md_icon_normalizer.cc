@@ -219,8 +219,8 @@ void MaybeResizeAndPad(const gfx::Size& required_size,
   }
 
   // Add padding.
-  gfx::Canvas canvas(required_size, 1, /* transparent */ false);
-  canvas.DrawImageInt(gfx::ImageSkia(gfx::ImageSkiaRep(resized, 1)),
+  gfx::Canvas canvas(required_size, 1, /*transparent=*/false);
+  canvas.DrawImageInt(gfx::ImageSkia::CreateFromBitmap(resized, 1),
                       padding.width(), padding.height());
   *bitmap_out = canvas.GetBitmap();
   return;

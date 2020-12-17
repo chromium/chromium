@@ -126,7 +126,7 @@ gfx::ImageSkia CreateTestIcon(int size, SkColor color) {
   SkBitmap bitmap;
   bitmap.allocN32Pixels(size, size);
   bitmap.eraseColor(color);
-  return gfx::ImageSkia(gfx::ImageSkiaRep(bitmap, 1.0f));
+  return gfx::ImageSkia::CreateFromBitmap(bitmap, 1.0f);
 }
 
 void CheckIconsEqual(const gfx::ImageSkia& expected,

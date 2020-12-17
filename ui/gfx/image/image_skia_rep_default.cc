@@ -4,7 +4,7 @@
 
 #include "ui/gfx/image/image_skia_rep_default.h"
 
-#include "base/check.h"
+#include "base/check_op.h"
 #include "base/notreached.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/record_paint_canvas.h"
@@ -33,10 +33,8 @@ ImageSkiaRep::ImageSkiaRep(const SkBitmap& src, float scale)
       pixel_size_(gfx::Size(src.width(), src.height())),
       bitmap_(src),
       scale_(scale) {
-  // If the bitmap has been initialized then it must be in N32 format.
-  if (!(bitmap_.isNull() && bitmap_.colorType() == kUnknown_SkColorType &&
-        bitmap_.alphaType() == kUnknown_SkAlphaType))
-    CHECK_EQ(bitmap_.colorType(), kN32_SkColorType);
+  CHECK_EQ(bitmap_.colorType(), kN32_SkColorType);
+  DCHECK(!bitmap_.drawsNothing());
   bitmap_.setImmutable();
   paint_image_ = cc::PaintImage::CreateFromBitmap(src);
 }
@@ -47,7 +45,9 @@ ImageSkiaRep::ImageSkiaRep(sk_sp<cc::PaintRecord> paint_record,
     : paint_record_(std::move(paint_record)),
       type_(ImageRepType::kImageTypeDrawable),
       pixel_size_(pixel_size),
-      scale_(scale) {}
+      scale_(scale) {
+  DCHECK(!pixel_size.IsEmpty());
+}
 
 ImageSkiaRep::ImageSkiaRep(const ImageSkiaRep& other)
     : paint_image_(other.paint_image_),

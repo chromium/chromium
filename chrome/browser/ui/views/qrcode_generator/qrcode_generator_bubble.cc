@@ -71,7 +71,7 @@ gfx::ImageSkia GetPlaceholderImageSkia(const SkColor color) {
   bitmap.allocN32Pixels(kQRImageSizePx, kQRImageSizePx);
   bitmap.eraseARGB(0xFF, 0xFF, 0xFF, 0xFF);
   bitmap.eraseColor(color);
-  return gfx::ImageSkia(gfx::ImageSkiaRep(bitmap, 1.0f));
+  return gfx::ImageSkia::CreateFromBitmap(bitmap, 1.0f);
 }
 
 // Adds a new small vertical padding row to the current bottom of |layout|.
