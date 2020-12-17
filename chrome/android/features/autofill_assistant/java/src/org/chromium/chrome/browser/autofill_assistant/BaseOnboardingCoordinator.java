@@ -40,6 +40,7 @@ import java.util.Map;
  * Autofill Assistant for the first time.
  */
 @JNINamespace("autofill_assistant")
+// TODO(b/174445633): Add a public interface for |show()|, |hide()| and |getOboardingShown()|
 abstract class BaseOnboardingCoordinator {
     private static final String INTENT_IDENTFIER = "INTENT";
     private static final String FETCH_TIMEOUT_IDENTIFIER = "ONBOARDING_FETCH_TIMEOUT_MS";
@@ -121,6 +122,26 @@ abstract class BaseOnboardingCoordinator {
         }
     }
 
+    /**
+     * Returns {@code true} if the onboarding has been shown at the beginning when this
+     * autofill assistant flow got triggered.
+     */
+    boolean getOnboardingShown() {
+        return mOnboardingShown;
+    }
+
+    abstract void hide();
+    // TODO(b/175598484): Move transferControls to bottom sheet subclass
+    abstract AssistantOverlayCoordinator transferControls();
+
+    /** Destroy web contents observer. */
+    void destroy() {
+        if (mWebContentsObserver != null) {
+            mWebContentsObserver.destroy();
+            mWebContentsObserver = null;
+        }
+    }
+
     private void addWebContentObserver(
             Callback<Boolean> callback, WebContents webContents, String targetUrl) {
         mWebContentsObserver = new WebContentsObserver(webContents) {
@@ -141,7 +162,7 @@ abstract class BaseOnboardingCoordinator {
     }
 
     /**
-     * Set the content of the user interface to be the Autofill Assistant onboarding.
+     * Setup the shared |mView|
      */
     private void setupSharedView(Callback<Boolean> callback) {
         // Set focusable for accessibility.
@@ -283,22 +304,6 @@ abstract class BaseOnboardingCoordinator {
         }
     }
 
-    /** Destroy web contents observer. */
-    void destroy() {
-        if (mWebContentsObserver != null) {
-            mWebContentsObserver.destroy();
-            mWebContentsObserver = null;
-        }
-    }
-
-    /**
-     * Returns {@code true} if the onboarding has been shown at the beginning when this
-     * autofill assistant flow got triggered.
-     */
-    boolean getOnboardingShown() {
-        return mOnboardingShown;
-    }
-
     /** Don't animate the user interface. */
     @VisibleForTesting
     void disableAnimationForTesting() {
@@ -307,9 +312,6 @@ abstract class BaseOnboardingCoordinator {
 
     abstract void initViewImpl(Callback<Boolean> callback);
     abstract void showViewImpl();
-    abstract void hide();
-    // TODO(b/175598484): Move transferControls to bottom sheet subclass
-    abstract AssistantOverlayCoordinator transferControls();
 
     @NativeMethods
     interface Natives {
