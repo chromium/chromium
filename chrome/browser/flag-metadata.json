@@ -847,7 +847,7 @@
   {
     "name": "desktop-version-default",
     "owners": [ "gambard", "bling-flags@google.com" ],
-    "expiry_milestone": 89
+    "expiry_milestone": 92
   },
   {
     "name": "destroy-profile-on-browser-close",
