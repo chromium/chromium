@@ -4,12 +4,15 @@
 
 var tries = 10;
 
-// Google Docs isn't compatible with non-screen reader accessibility services by
-// default because in order to provide screen reader support, most of the
-// rendered document has aria-hidden set on it, which has the side effect of
-// hiding it from non-screen reader accessibility features too. Fix it by
-// changing aria-hidden to false. Try multiple times in case the page isn't
-// fully loaded when the content script runs.
+function triggerDocsHtmlFallbackMode() {
+  const scriptContents = `
+    window['_docs_force_html_by_ext'] = "${chrome.runtime.id}";
+  `;
+  const script = document.createElement('script');
+  script.innerHTML = scriptContents;
+  document.body.appendChild(script);
+}
+
 function RemoveAriaHiddenFromGoogleDocsContent() {
   var element = document.querySelector('.kix-zoomdocumentplugin-outer');
   if (element) {
@@ -22,4 +25,15 @@ function RemoveAriaHiddenFromGoogleDocsContent() {
   }
 }
 
+// Docs will soon only render its contents in canvas. As a stop gap measure,
+// trigger Docs' fallback html rendering mode. This needs to run within the
+// page's context, so install a script to be executed.
+triggerDocsHtmlFallbackMode();
+
+// Google Docs isn't compatible with non-screen reader accessibility services by
+// default because in order to provide screen reader support, most of the
+// rendered document has aria-hidden set on it, which has the side effect of
+// hiding it from non-screen reader accessibility features too. Fix it by
+// changing aria-hidden to false. Try multiple times in case the page isn't
+// fully loaded when the content script runs.
 RemoveAriaHiddenFromGoogleDocsContent();
