@@ -112,6 +112,13 @@ DOMException* TrustTokenErrorToDOMException(
           "cache hit",
           DOMException::GetErrorName(
               DOMExceptionCode::kNoModificationAllowedError));
+    case network::mojom::blink::TrustTokenOperationStatus::
+        kOperationSuccessfullyFulfilledLocally:
+      return DOMException::Create(
+          "Trust Tokens operation satisfied locally, without needing to send "
+          "the request to its initial destination",
+          DOMException::GetErrorName(
+              DOMExceptionCode::kNoModificationAllowedError));
     case network::mojom::blink::TrustTokenOperationStatus::kFailedPrecondition:
       return DOMException::Create(
           "Precondition failed during Trust Tokens operation",
