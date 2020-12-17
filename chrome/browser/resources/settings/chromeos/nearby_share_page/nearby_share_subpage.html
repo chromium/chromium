@@ -124,10 +124,9 @@
         </div>
         <div id="highVisibilitySubtitle"
             class="secondary" aria-hidden="true">
-          <!-- TODO(vecore) add correct help link -->
           <settings-localized-link id="highVisibilityOff"
               localized-string="[[getHighVisibilityToggleText_(inHighVisibility_)]]"
-              link-url="https://google.com">
+              link-url="$i18n{nearbyShareLearnMoreLink}">
           </settings-localized-link>
         </div>
       </div>
@@ -182,10 +181,9 @@
     </template>
     <div id="help" class="settings-box">
       <iron-icon id="helpIcon" icon="nearby20:info"></iron-icon>
-      <!-- TODO(crbug.com/1157108) add correct help link -->
       <settings-localized-link id="helpText"
           localized-string="$i18n{nearbyShareSettingsHelpCaption}"
-          link-url="https://google.com">
+          link-url="$i18n{nearbyShareLearnMoreLink}">
       </settings-localized-link>
     </div>
     <template is="dom-if" if="[[showReceiveDialog_]]" restamp>

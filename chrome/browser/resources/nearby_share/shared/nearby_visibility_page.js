@@ -39,8 +39,7 @@ Polymer({
 
   /** @private */
   onManageContacts_() {
-    // TODO(crbug.com/1157108): this is not a final link
-    window.open('https://contacts.google.com', '_blank');
+    window.open(this.i18n('nearbyShareManageContactsUrl'), '_blank');
   },
 
 });

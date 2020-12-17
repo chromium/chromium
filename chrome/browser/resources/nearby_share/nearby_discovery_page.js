@@ -355,17 +355,17 @@ Polymer({
 
   /**
    * Builds the html for the help text, applying the appropriate aria labels,
-   * and setting the href of the link to |linkUrl|. This function is largely
+   * and setting the href of the link. This function is largely
    * copied from getAriaLabelledContent_ in <settings-localized-link>, which
    * can't be used directly because this isn't part of settings.
    * TODO(crbug.com/1154718): Extract this logic into a general method.
-   * @param {string} linkUrl
    * @return {string}
    * @private
    */
-  getAriaLabelledHelpText_(linkUrl) {
+  getAriaLabelledHelpText_() {
     const tempEl = document.createElement('div');
     const localizedString = this.i18nAdvanced('nearbyShareDiscoveryPageInfo');
+    const linkUrl = this.i18n('nearbyShareLearnMoreLink');
     tempEl.innerHTML = localizedString;
 
     const ariaLabelledByIds = [];
@@ -405,11 +405,8 @@ Polymer({
         'nearbyShareDiscoveryPageInfo should contain exactly one anchor tag');
     const anchorTag = anchorTags[0];
     anchorTag.setAttribute('aria-labelledby', ariaLabelledByIds.join(' '));
-
-    if (linkUrl != '') {
-      anchorTag.href = linkUrl;
-      anchorTag.target = '_blank';
-    }
+    anchorTag.href = linkUrl;
+    anchorTag.target = '_blank';
 
     return tempEl.innerHTML;
   },

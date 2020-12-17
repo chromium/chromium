@@ -419,8 +419,8 @@ const char kTabletModeGesturesLearnMoreURL[] =
 const char kWifiSyncLearnMoreURL[] =
     "https://support.google.com/chromebook/?p=wifisync";
 
-// TODO(michaelcheco): Update temporary url.
-const char kNearbyShareLearnMoreURL[] = "https://google.com/";
+const char kNearbyShareLearnMoreURL[] =
+    "https://support.google.com/chromebook?p=nearby_share";
 
 extern const char kNearbyShareManageContactsURL[] =
     "https://contacts.google.com";

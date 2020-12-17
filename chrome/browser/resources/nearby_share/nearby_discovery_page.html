@@ -182,9 +182,8 @@
     <template is="dom-if" if="[[!errorTitle_]]">
       <div id="help">
         <iron-icon id="infoIcon" icon="nearby20:info"></iron-icon>
-        <!-- TODO(crbug.com/1157108): add correct url for learn more link -->
         <div id="helpText"
-            inner-h-t-m-l="[[getAriaLabelledHelpText_('https://google.com')]]">
+            inner-h-t-m-l="[[getAriaLabelledHelpText_()]]">
         </div>
       </div>
     </template>

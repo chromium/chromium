@@ -8,7 +8,9 @@
 
 #include "base/containers/span.h"
 #include "base/logging.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/webui/webui_util.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/webui/web_ui_util.h"
 
@@ -111,4 +113,11 @@ void RegisterNearbySharedStrings(content::WebUIDataSource* data_source) {
       {"nearbyShareReceiveConfirmPageConnectionId",
        IDS_NEARBY_RECEIVE_CONFIRM_PAGE_CONNECTION_ID}};
   webui::AddLocalizedStringsBulk(data_source, kLocalizedStrings);
+
+  data_source->AddString("nearbyShareLearnMoreLink",
+                         base::ASCIIToUTF16(chrome::kNearbyShareLearnMoreURL));
+
+  data_source->AddString(
+      "nearbyShareManageContactsUrl",
+      base::ASCIIToUTF16(chrome::kNearbyShareManageContactsURL));
 }

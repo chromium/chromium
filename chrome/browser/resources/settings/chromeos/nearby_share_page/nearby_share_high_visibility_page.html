@@ -80,10 +80,9 @@
               remainingTimeInSeconds_, shutoffTimestamp)]]">
             <iron-icon id="infoIcon" icon="nearby20:info"></iron-icon>
             <div id="helpText">
-              <!-- TODO(crbug.com/1157108): add correct learn more url -->
               <settings-localized-link
                   localized-string="$i18n{nearbyShareHighVisibilityHelpText}"
-                  link-url="https://google.com">
+                  link-url="$i18n{nearbyShareLearnMoreLink}">
               </settings-localized-link>
             </div>
           </template>
@@ -97,10 +96,9 @@
               <div id="errorTitle" aria-hidden="true">
                 $i18n{nearbyShareErrorTimeOut}
               </div>
-              <!-- TODO(crbug.com/1157108): add correct learn more url -->
               <settings-localized-link
                   localized-string="$i18n{nearbyShareHighVisibilityTimeoutText}"
-                  link-url="https://google.com">
+                  link-url="$i18n{nearbyShareLearnMoreLink}">
               </settings-localized-link>
               </div>
             </div>
