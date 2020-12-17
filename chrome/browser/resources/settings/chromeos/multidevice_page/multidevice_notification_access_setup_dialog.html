@@ -15,6 +15,11 @@
 <dom-module id="settings-multidevice-notification-access-setup-dialog">
   <template>
     <style include="cr-shared-style settings-shared">
+      :host {
+        --cr-dialog-font-family: 'Google Sans';
+        --cr-dialog-title-font-size: 16px;
+      }
+
       cr-dialog::part(dialog) {
         width: 512px;
       }
@@ -30,7 +35,6 @@
         flex-direction: column;
         height: auto;
         justify-content: center;
-        margin-bottom: 16px;
         width: 464px;
       }
 
@@ -43,6 +47,16 @@
         display: flex;
         flex-direction: column;
         gap: 12px;
+      }
+
+      :host(:not([did-setup-attempt-fail_])) #description {
+        /* Larger height to account for the lack of #failureIcon */
+        height: 93px;
+      }
+
+      :host([did-setup-attempt-fail_]) #description {
+        /* Smaller height to account for the presence of #failureIcon */
+        height: 60px;
       }
 
       #illustration {

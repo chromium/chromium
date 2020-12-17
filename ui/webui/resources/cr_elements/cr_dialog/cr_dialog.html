@@ -71,7 +71,8 @@
       :host ::slotted([slot=title]) {
         color: var(--cr-primary-text-color);
         flex: 1;
-        font-size: calc(15 / 13 * 100%);
+        font-family: var(--cr-dialog-font-family, inherit);
+        font-size: var(--cr-dialog-title-font-size, calc(15 / 13 * 100%));
         line-height: 1;
         padding-bottom: var(--cr-dialog-title-slot-padding-bottom, 16px);
         padding-inline-end:  var(--cr-dialog-title-slot-padding-end, 20px);
