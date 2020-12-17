@@ -529,15 +529,18 @@ bool EventTarget::AddEventListenerInternal(
       event_type, listener, options, &registered_listener);
   if (added) {
     if (options->hasSignal()) {
+      // Instead of passing the entire |options| here, which could create a
+      // circular reference due to |options| holding a Member<AbortSignal>, just
+      // pass the |options->capture()| boolean, which is the only thing
+      // removeEventListener actually uses to find and remove the event
+      // listener.
       options->signal()->AddAlgorithm(WTF::Bind(
           [](EventTarget* event_target, const AtomicString& event_type,
-             const EventListener* listener,
-             AddEventListenerOptionsResolved* options) {
-            event_target->removeEventListener(event_type, listener, options);
+             const EventListener* listener, bool capture) {
+            event_target->removeEventListener(event_type, listener, capture);
           },
           WrapWeakPersistent(this), event_type, WrapWeakPersistent(listener),
-          WrapPersistent(
-              MakeGarbageCollected<AddEventListenerOptionsResolved>(options))));
+          options->capture()));
       if (const LocalDOMWindow* executing_window = ExecutingWindow()) {
         if (const Document* document = executing_window->document()) {
           document->CountUse(WebFeature::kAddEventListenerWithAbortSignal);
