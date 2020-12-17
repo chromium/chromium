@@ -24,6 +24,7 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "third_party/blink/renderer/core/css/counter_style.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
@@ -480,6 +481,17 @@ CounterNode* MakeCounterNodeIfNeeded(LayoutObject& object,
   return new_node.get();
 }
 
+String GenerateCounterText(const CounterStyle* counter_style,
+                           EListStyleType deprecated_list_style_type,
+                           int value) {
+  if (RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled()) {
+    if (!counter_style)
+      return g_empty_string;
+    return counter_style->GenerateRepresentation(value);
+  }
+  return list_marker_text::GetText(deprecated_list_style_type, value);
+}
+
 }  // namespace
 
 LayoutCounter::LayoutCounter(PseudoElement& pseudo,
@@ -584,8 +596,21 @@ scoped_refptr<StringImpl> LayoutCounter::OriginalText() const {
   DCHECK(child);
 
   int value = ValueForText(child);
-  EListStyleType list_style = counter_->ToDeprecatedListStyleTypeEnum();
-  String text = list_marker_text::GetText(list_style, value);
+  const CounterStyle* counter_style = nullptr;
+  EListStyleType list_style = EListStyleType::kNone;
+  if (RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled()) {
+    // Note: CSS3 spec doesn't allow 'none' but CSS2.1 allows it. We currently
+    // allow it for backward compatibility.
+    // See https://github.com/w3c/csswg-drafts/issues/5795 for details.
+    if (counter_->ListStyle() != "none") {
+      counter_style =
+          &GetDocument().GetStyleEngine().FindCounterStyleAcrossScopes(
+              counter_->ListStyle(), counter_->GetTreeScope());
+    }
+  } else {
+    list_style = counter_->ToDeprecatedListStyleTypeEnum();
+  }
+  String text = GenerateCounterText(counter_style, list_style, value);
   // If the separator exists, we need to append all of the parent values as well,
   // including the ones that cross the style containment boundary.
   if (!counter_->Separator().IsNull()) {
@@ -594,11 +619,10 @@ scoped_refptr<StringImpl> LayoutCounter::OriginalText() const {
     bool next_result_uses_parent_value = !child->Parent();
     while (CounterNode* parent =
                child->ParentCrossingStyleContainment(counter_->Identifier())) {
-      text =
-          list_marker_text::GetText(list_style, next_result_uses_parent_value
-                                                    ? ValueForText(parent)
-                                                    : child->CountInParent()) +
-          counter_->Separator() + text;
+      int next_value = next_result_uses_parent_value ? ValueForText(parent)
+                                                     : child->CountInParent();
+      text = GenerateCounterText(counter_style, list_style, next_value) +
+             counter_->Separator() + text;
       child = parent;
       next_result_uses_parent_value = !child->Parent();
     }

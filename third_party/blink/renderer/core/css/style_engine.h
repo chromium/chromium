@@ -62,6 +62,7 @@
 
 namespace blink {
 
+class CounterStyle;
 class CounterStyleMap;
 class CSSFontSelector;
 class CSSStyleSheet;
@@ -379,6 +380,8 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   StyleRuleScrollTimeline* FindScrollTimelineRule(const AtomicString& name);
 
   CounterStyleMap* GetUserCounterStyleMap() { return user_counter_style_map_; }
+  const CounterStyle& FindCounterStyleAcrossScopes(const AtomicString&,
+                                                   const TreeScope*) const;
 
   DocumentStyleEnvironmentVariables& EnsureEnvironmentVariables();
 

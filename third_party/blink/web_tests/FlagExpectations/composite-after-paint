@@ -68,3 +68,9 @@ crbug.com/1150468 virtual/composite-bgcolor-animation-hidpi/external/wpt/css/css
 
 crbug.com/1157199 external/wpt/css/css-paint-api/column-count-crash.https.html [ Crash ]
 crbug.com/1157199 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/column-count-crash.https.html [ Crash ]
+
+# [css-counter-styles]
+# Need to implement predefined counter style 'simp-chinese-informal' as a
+# custom counter style.
+crbug.com/687225 fast/css/content-counter-large-negative-cjk.html [ Failure ]
+

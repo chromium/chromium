@@ -2372,6 +2372,21 @@ CounterStyleMap& StyleEngine::EnsureUserCounterStyleMap() {
   return *user_counter_style_map_;
 }
 
+const CounterStyle& StyleEngine::FindCounterStyleAcrossScopes(
+    const AtomicString& name,
+    const TreeScope* scope) const {
+  while (scope) {
+    if (CounterStyleMap* map =
+            CounterStyleMap::GetAuthorCounterStyleMap(*scope))
+      return map->FindCounterStyleAcrossScopes(name);
+    scope = scope->ParentTreeScope();
+  }
+  if (user_counter_style_map_)
+    return user_counter_style_map_->FindCounterStyleAcrossScopes(name);
+  return CounterStyleMap::GetUACounterStyleMap()->FindCounterStyleAcrossScopes(
+      name);
+}
+
 void StyleEngine::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
   visitor->Trace(injected_user_style_sheets_);

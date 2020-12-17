@@ -810,6 +810,11 @@ crbug.com/1123457 external/wpt/css/css-lists/counter-list-item-2.html [ Failure 
 crbug.com/1066577 external/wpt/css/css-lists/li-value-reversed-005.html [ Failure ]
 crbug.com/1066577 external/wpt/css/css-lists/li-value-reversed-004.html [ Failure ]
 
+# [css-counter-styles]
+# Need to implement predefined counter style 'simp-chinese-informal' as a
+# custom counter style.
+crbug.com/687225 fast/css/content-counter-large-negative-cjk.html [ Failure ]
+
 # [css-overflow]
 # Incorrect WPT tests.
 crbug.com/993813 external/wpt/css/css-overflow/webkit-line-clamp-008.html [ Failure ]
