@@ -190,6 +190,9 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
 
   void UpdateSyncInfoContainerBackground();
 
+  const base::string16 GetAccessibleMenuName(const base::string16& title,
+                                             const base::string16& subtitle);
+
   Browser* const browser_;
 
   views::Button* const anchor_button_;

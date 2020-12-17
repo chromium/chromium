@@ -36,6 +36,7 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/native_theme/themed_vector_icon.h"
+#include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -547,6 +548,23 @@ gfx::ImageSkia ProfileMenuViewBase::GetSyncIcon() const {
   return gfx::ImageSkia();
 }
 
+const base::string16 ProfileMenuViewBase::GetAccessibleMenuName(
+    const base::string16& title,
+    const base::string16& subtitle) {
+  if (title.empty()) {
+    if (subtitle.empty())
+      return GetAccessibleWindowTitle();
+
+    return subtitle;
+  } else {
+    if (subtitle.empty())
+      return title;
+
+    return l10n_util::GetStringFUTF16(IDS_CONCAT_TWO_STRINGS_WITH_COMMA, title,
+                                      subtitle);
+  }
+}
+
 void ProfileMenuViewBase::SetProfileIdentityInfo(
     const base::string16& profile_name,
     SkColor profile_background_color,
@@ -574,10 +592,7 @@ void ProfileMenuViewBase::SetProfileIdentityInfo(
 
   // Use the profile identity info to label the entire menu, for accessibility
   // users to get the user account as context information when they open it.
-  const base::string16& accessible_menu_name =
-      title.empty() ? (subtitle.empty() ? GetAccessibleWindowTitle() : subtitle)
-                    : title;
-  GetViewAccessibility().OverrideName(accessible_menu_name);
+  GetViewAccessibility().OverrideName(GetAccessibleMenuName(title, subtitle));
 
   if (!new_design) {
     if (!profile_name.empty()) {
