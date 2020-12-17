@@ -7,9 +7,21 @@ import("//third_party/closure_compiler/js_unit_tests.gni")
 import("//ui/file_manager/base/gn/js_test_gen_html.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
 
+group("closure_compile") {
+  testonly = true
+  deps = [
+    ":closure_compile_jsmodules",
+    ":closure_compile_module",
+    ":js_test_gen_html_modules_type_check_auto",
+  ]
+}
+
 js_type_check("closure_compile_jsmodules") {
   uses_js_modules = true
   deps = [
+    ":background.m",
+    ":error_util.m",
+    ":test_util.m",
     ":video_player_metrics.m",
     ":video_player_native_controls.m",
   ]
@@ -46,7 +58,39 @@ js_library("background") {
   ]
 }
 
+js_library("background.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/video_player/js/background.m.js" ]
+  deps = [
+    "//ui/file_manager/externs/background:background_base.m",
+    "//ui/file_manager/file_manager/background/js:app_window_wrapper.m",
+    "//ui/file_manager/file_manager/background/js:background_base.m",
+    "//ui/file_manager/file_manager/common/js:util.m",
+    "//ui/webui/resources/js:assert.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("error_util") {
+}
+
+js_library("error_util.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/video_player/js/error_util.m.js" ]
+
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("test_util") {
+}
+
+js_library("test_util.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/video_player/js/test_util.m.js" ]
+  deps = [
+    ":background.m",
+    "//ui/file_manager/file_manager/background/js:test_util_base.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
 }
 
 js_library("video_player_native_controls") {
@@ -121,12 +165,12 @@ js_test_gen_html("js_test_gen_html_modules") {
       ]
 }
 
-group("closure_compile") {
-  testonly = true
+js_library("main_background.m") {
   deps = [
-    ":closure_compile_jsmodules",
-    ":closure_compile_module",
-    ":js_test_gen_html_modules_type_check_auto",
+    ":background.m",
+    ":error_util.m",
+    ":test_util.m",
+    ":video_player_metrics.m",
   ]
 }
 
@@ -134,5 +178,8 @@ js_modulizer("modulize") {
   input_files = [
     "video_player_native_controls.js",
     "video_player_metrics.js",
+    "error_util.js",
+    "test_util.js",
+    "background.js",
   ]
 }

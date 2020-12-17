@@ -2,6 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {assert} from 'chrome://resources/js/assert.m.js';
+// #import {AppWindowWrapper} from '../../file_manager/background/js/app_window_wrapper.m.js';
+// #import {util} from '../../file_manager/common/js/util.m.js';
+// #import {BackgroundBaseImpl} from '../../file_manager/background/js/background_base.m.js';
+// #import {BackgroundBase} from '../../externs/background/background_base.m.js';
+// clang-format on
+
 /**
  * Use maximum size and let ash downsample the icon.
  *
@@ -47,7 +55,7 @@ const generateWindowId = (function() {
  *     playing.
  * @return {!Promise} Promise to be fulfilled on success, or rejected on error.
  */
-function openVideoPlayerWindow(urls) {
+/* #export */ function openVideoPlayerWindow(urls) {
   let position = 0;
   const startUrl = (position < urls.length) ? urls[position] : '';
   let windowId = null;
