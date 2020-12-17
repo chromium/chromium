@@ -4,6 +4,8 @@
 
 package org.chromium.weblayer.test;
 
+import android.os.Build;
+
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -12,6 +14,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.weblayer.Browser;
 import org.chromium.weblayer.BrowserControlsOffsetCallback;
@@ -111,6 +114,8 @@ public class FullscreenCallbackTest {
 
     @Test
     @SmallTest
+    @DisableIf.
+    Build(sdk_is_less_than = Build.VERSION_CODES.M, message = "https://crbug.com/1159781")
     public void testTopViewRemainsHiddenOnFullscreenRotation() throws Exception {
         String url = mActivityTestRule.getTestDataURL("rotation2.html");
         mActivity = mActivityTestRule.launchShellWithUrl(url);
