@@ -574,14 +574,13 @@ class CONTENT_EXPORT NavigationRequest
   void SetNavigationClient(
       mojo::PendingAssociatedRemote<mojom::NavigationClient> navigation_client);
 
-  // Whether the new document loaded will be loaded from an MHTML archive.
-  // Contrary to IsForMhtmlSubframe(), this isn't scoped to subframe, but can't
-  // be called prior to receiving the final response.
-  bool IsLoadedFromMhtmlArchive();
+  // Whether the navigation loads an MHTML document or a subframe of an MHTML
+  // document.  The navigation might or might not be fullfilled from the MHTML
+  // archive (see `is_mhtml_subframe_loaded_from_achive` in the NeedsUrlLoader
+  // method).  The navigation will commit in the main frame process.
+  bool IsMhtmlOrSubframe();
 
-  // Whether the new document created by this navigation will be loaded from a
-  // MHTML document. In this case, the navigation will commit in the main frame
-  // process without needing any network requests.
+  // Whether this navigation navigates a subframe of an MHTML document.
   bool IsForMhtmlSubframe() const;
 
   std::unique_ptr<AppCacheNavigationHandle> TakeAppCacheHandle();
@@ -1530,8 +1529,11 @@ class CONTENT_EXPORT NavigationRequest
   // net::ERR_BLOCKED_BY_CLIENT.
   bool silently_ignore_blocked_by_client_ = false;
 
-  // Whether the new document will be loaded from an MHTML archive.
-  bool is_loaded_from_mhtml_archive_ = false;
+  // Whether the navigation loads an MHTML document or a subframe of an MHTML
+  // document.  The navigation might or might not be fullfilled from the MHTML
+  // archive (see `is_mhtml_subframe_loaded_from_achive` in the NeedsUrlLoader
+  // method).
+  bool is_mhtml_or_subframe_ = false;
 
   // Observers listening to cookie access notifications for the network requests
   // made by this navigation.

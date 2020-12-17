@@ -208,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest, IframeDataUrlNotFound) {
             sub_document->GetLastCommittedURL());
 
   EXPECT_TRUE(main_document->is_mhtml_document());
-  EXPECT_FALSE(sub_document->is_mhtml_document());  // Served from data-url.
+  EXPECT_TRUE(sub_document->is_mhtml_document());
 
   // Check the iframe is properly loaded. EvalJs("document.body.innerHTML")
   // can't be used, because javascript is disabled. Instead, check it was able
@@ -237,7 +237,7 @@ IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest, IframeDataUrlFound) {
             sub_document->GetLastCommittedURL());
 
   EXPECT_TRUE(main_document->is_mhtml_document());
-  EXPECT_FALSE(sub_document->is_mhtml_document());  // Served from data-url.
+  EXPECT_TRUE(sub_document->is_mhtml_document());
 
   // Check the iframe is properly loaded. EvalJs("document.body.innerHTML")
   // can't be used, because javascript is disabled. Instead, check it was able
@@ -674,6 +674,31 @@ IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest, SandboxedIframe) {
   EXPECT_EQ(default_mhtml_sandbox, rfh_main->active_sandbox_flags());
   EXPECT_EQ(default_mhtml_sandbox, rfh_unsandboxed->active_sandbox_flags());
   EXPECT_EQ(strict_sandbox, rfh_sandboxed->active_sandbox_flags());
+}
+
+// Regression test for https://crbug.com/1155862.
+IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest, DataIframe) {
+  MhtmlArchive mhtml_archive;
+  mhtml_archive.AddHtmlDocument(
+      GURL("http://127.0.0.1/starte.html"), "",
+      R"( <iframe src="http://8.8.8.8/test.html"></iframe>
+          <iframe src="data:text/html,blah1"></iframe>
+          <iframe src="about:blank?foo=123"></iframe> )");
+  mhtml_archive.AddHtmlDocument(GURL("http://8.8.8.8/test.html"), "", R"(
+          <iframe src="data:text/html,blah2"></iframe>
+          <iframe src="about:blank?foo=123"></iframe> )");
+  mhtml_archive.AddHtmlDocument(GURL("about:blank?foo=123"), "", "foo");
+  GURL mhtml_url = mhtml_archive.Write("index.mhtml");
+
+  // The main test verification is that the navigation below succeeds (without
+  // crashing in NavigationRequest::GetOriginForURLLoaderFactory).
+  EXPECT_TRUE(NavigateToURL(shell(), mhtml_url));
+
+  // All MHTML frames should have an opaque origin.
+  for (RenderFrameHost* frame : shell()->web_contents()->GetAllFrames()) {
+    EXPECT_TRUE(frame->GetLastCommittedOrigin().opaque())
+        << "frame->GetLastCommittedURL() = " << frame->GetLastCommittedURL();
+  }
 }
 
 }  // namespace content

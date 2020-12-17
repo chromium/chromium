@@ -6239,28 +6239,28 @@ void RenderFrameHostImpl::CommitNavigation(
 
   bool is_same_document =
       NavigationTypeUtils::IsSameDocument(common_params->navigation_type);
-  bool is_mhtml_iframe = navigation_request->IsForMhtmlSubframe();
+  bool is_mhtml_subframe = navigation_request->IsForMhtmlSubframe();
 
   // A |response| and a |url_loader_client_endpoints| must always be provided,
   // except for edge cases, where another way to load the document exist.
   DCHECK((response_head && url_loader_client_endpoints) ||
          common_params->url.SchemeIs(url::kDataScheme) || is_same_document ||
-         !IsURLHandledByNetworkStack(common_params->url) || is_mhtml_iframe);
+         !IsURLHandledByNetworkStack(common_params->url) || is_mhtml_subframe);
 
   // All children of MHTML documents must be MHTML documents.
   // As a defensive measure, crash the browser if something went wrong.
   if (!frame_tree_node()->IsMainFrame()) {
     RenderFrameHostImpl* root = GetMainFrame();
-    if (root->is_mhtml_document_ &&
-        !common_params->url.SchemeIs(url::kDataScheme)) {
+    if (root->is_mhtml_document_) {
       bool loaded_from_outside_the_archive =
           response_head || url_loader_client_endpoints;
-      CHECK(!loaded_from_outside_the_archive);
-      CHECK(is_mhtml_iframe);
+      CHECK(!loaded_from_outside_the_archive ||
+            common_params->url.SchemeIs(url::kDataScheme));
+      CHECK(navigation_request->IsForMhtmlSubframe());
       CHECK_EQ(GetSiteInstance(), root->GetSiteInstance());
       CHECK_EQ(GetProcess(), root->GetProcess());
     } else {
-      DCHECK(!is_mhtml_iframe);
+      DCHECK(!navigation_request->IsForMhtmlSubframe());
     }
   }
 
@@ -6288,7 +6288,7 @@ void RenderFrameHostImpl::CommitNavigation(
       common_params->url.IsStandard() &&
       !policy->CanAccessDataForOrigin(GetProcess()->GetID(),
                                       common_params->url) &&
-      !is_mhtml_iframe) {
+      !is_mhtml_subframe) {
     base::debug::SetCrashKeyString(
         base::debug::AllocateCrashKeyString("lock_url",
                                             base::debug::CrashKeySize::Size64),
@@ -8913,7 +8913,7 @@ void RenderFrameHostImpl::DidCommitNewDocument(
   // documents. Do not trust renderer data when determining that, rather use
   // the |navigation_request|, which was generated and stays browser side.
   is_mhtml_document_ = navigation_request->IsWaitingToCommit() &&
-                       navigation_request->IsLoadedFromMhtmlArchive();
+                       navigation_request->IsMhtmlOrSubframe();
 
   is_overriding_user_agent_ = navigation_request->IsOverridingUserAgent() &&
                               frame_tree_node_->IsMainFrame();

@@ -1442,6 +1442,9 @@ void NavigationRequest::BeginNavigation() {
     return;
   }
 
+  if (IsForMhtmlSubframe())
+    is_mhtml_or_subframe_ = true;
+
   if (!NeedsUrlLoader()) {
     // The types of pages that don't need a URL Loader should never get served
     // from the BackForwardCache.
@@ -1451,7 +1454,6 @@ void NavigationRequest::BeginNavigation() {
     // it immediately.
     EnterChildTraceEvent("ResponseStarted", this);
 
-    is_loaded_from_mhtml_archive_ = IsForMhtmlSubframe();
     ComputeSandboxFlagsToCommit(/*response_head=*/nullptr);
 
     // Same-document navigations occur in the currently loaded document. See
@@ -2237,8 +2239,8 @@ void NavigationRequest::OnResponseStarted(
 
   bool is_mhtml_archive = response_head_->mime_type == "multipart/related" ||
                           response_head_->mime_type == "message/rfc822";
-
-  is_loaded_from_mhtml_archive_ = is_mhtml_archive || IsForMhtmlSubframe();
+  if (is_mhtml_archive)
+    is_mhtml_or_subframe_ = true;
 
   ComputeSandboxFlagsToCommit(response_head_.get());
 
@@ -3219,7 +3221,7 @@ void NavigationRequest::CommitErrorPage(
     }
   }
 
-  is_loaded_from_mhtml_archive_ = false;
+  is_mhtml_or_subframe_ = false;
   sandbox_flags_to_commit_.reset();
   // TODO(https://crbug.com/1158370): Apparently, error pages inherit sandbox
   // flags from their parent/opener. Document loaded from the network
@@ -4092,21 +4094,18 @@ bool NavigationRequest::IsDeferredForTesting() {
   return throttle_runner_->GetDeferringThrottle() != nullptr;
 }
 
-bool NavigationRequest::IsLoadedFromMhtmlArchive() {
+bool NavigationRequest::IsMhtmlOrSubframe() {
   DCHECK(state_ >= WILL_PROCESS_RESPONSE ||
          state_ == WILL_START_REQUEST && !NeedsUrlLoader());
-  return is_loaded_from_mhtml_archive_;
+
+  return is_mhtml_or_subframe_;
 }
 
 bool NavigationRequest::IsForMhtmlSubframe() const {
-  return frame_tree_node_->parent() &&
-         frame_tree_node_->frame_tree()
-             ->root()
-             ->current_frame_host()
-             ->is_mhtml_document() &&
-         // Unlike every other MHTML subframe URLs, data-url are loaded via the
-         // URL, not from the MHTML archive. See https://crbug.com/969696.
-         !common_params_->url.SchemeIs(url::kDataScheme);
+  return frame_tree_node_->parent() && frame_tree_node_->frame_tree()
+                                           ->root()
+                                           ->current_frame_host()
+                                           ->is_mhtml_document();
 }
 
 void NavigationRequest::CancelDeferredNavigationInternal(
@@ -4414,8 +4413,14 @@ void NavigationRequest::SetNavigationClient(
 }
 
 bool NavigationRequest::NeedsUrlLoader() {
+  bool is_mhtml_subframe_loaded_from_achive =
+      IsForMhtmlSubframe() &&
+      // Unlike all other MHTML subframe URLs, data-url are loaded via the
+      // URL, not from the MHTML archive. See https://crbug.com/969696.
+      !common_params_->url.SchemeIs(url::kDataScheme);
+
   return IsURLHandledByNetworkStack(common_params_->url) && !IsSameDocument() &&
-         !IsForMhtmlSubframe();
+         !is_mhtml_subframe_loaded_from_achive;
 }
 
 bool NavigationRequest::IsWebSecureContext() const {
@@ -4588,7 +4593,7 @@ url::Origin NavigationRequest::GetOriginForURLLoaderFactory() {
 
   // MHTML documents should commit as an opaque origin. They should not be able
   // to make network request on behalf of the real origin.
-  DCHECK(!IsLoadedFromMhtmlArchive() || use_opaque_origin);
+  DCHECK(!IsMhtmlOrSubframe() || use_opaque_origin);
 
   // https://crbug.com/1041376) of the origin that will be committed because of
   // |this| NavigationRequest.
@@ -4609,7 +4614,7 @@ url::Origin NavigationRequest::GetOriginForURLLoaderFactory() {
   // policy of the process being used. This is because the content is loaded
   // from the MHTML archive within the process. There are no data loaded from
   // the network.
-  if (IsLoadedFromMhtmlArchive() && !IsInMainFrame())
+  if (IsForMhtmlSubframe())
     return origin;
 
   int process_id = target_frame->GetProcess()->GetID();
@@ -5312,7 +5317,7 @@ void NavigationRequest::ComputeSandboxFlagsToCommit(
   // potentially dangerous. For this reason we force the document to be
   // sandboxed, providing exceptions only for creating new windows. This
   // includes disallowing javascript and using an opaque origin.
-  if (IsLoadedFromMhtmlArchive()) {
+  if (IsMhtmlOrSubframe()) {
     *sandbox_flags_to_commit_ |= ~network::mojom::WebSandboxFlags::kPopups &
                                  ~network::mojom::WebSandboxFlags::
                                      kPropagatesToAuxiliaryBrowsingContexts;
