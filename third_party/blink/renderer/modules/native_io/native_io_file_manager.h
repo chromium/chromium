@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_NATIVE_IO_NATIVE_IO_MANAGER_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_NATIVE_IO_NATIVE_IO_MANAGER_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_NATIVE_IO_NATIVE_IO_FILE_MANAGER_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_NATIVE_IO_NATIVE_IO_FILE_MANAGER_H_
 
 #include "third_party/blink/public/mojom/native_io/native_io.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -21,20 +21,21 @@ class ExceptionState;
 class NativeIOFileSync;
 class ScriptState;
 
-class NativeIOManager final : public ScriptWrappable,
-                              public ExecutionContextClient {
+class NativeIOFileManager final : public ScriptWrappable,
+                                  public ExecutionContextClient {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit NativeIOManager(ExecutionContext*,
-                           HeapMojoRemote<mojom::blink::NativeIOHost> backend);
+  explicit NativeIOFileManager(
+      ExecutionContext*,
+      HeapMojoRemote<mojom::blink::NativeIOHost> backend);
 
-  NativeIOManager(const NativeIOManager&) = delete;
-  NativeIOManager& operator=(const NativeIOManager&) = delete;
+  NativeIOFileManager(const NativeIOFileManager&) = delete;
+  NativeIOFileManager& operator=(const NativeIOFileManager&) = delete;
 
   // Needed because of the
   // mojo::Remote<blink::mojom::NativeIOHost>
-  ~NativeIOManager() override;
+  ~NativeIOFileManager() override;
 
   ScriptPromise open(ScriptState*, String name, ExceptionState&);
   ScriptPromise Delete(ScriptState*, String name, ExceptionState&);
@@ -65,4 +66,4 @@ class NativeIOManager final : public ScriptWrappable,
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_NATIVE_IO_NATIVE_IO_MANAGER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_NATIVE_IO_NATIVE_IO_FILE_MANAGER_H_

@@ -4,8 +4,8 @@
 
 modules_idl_files = [
   "native_io_file.idl",
+  "native_io_file_manager.idl",
   "native_io_file_sync.idl",
-  "native_io_manager.idl",
 ]
 
 modules_dependency_idl_files = [

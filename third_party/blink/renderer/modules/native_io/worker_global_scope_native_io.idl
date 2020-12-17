@@ -9,5 +9,5 @@
   RuntimeEnabled=NativeIO,
   SecureContext
 ] partial interface WorkerGlobalScope {
-  readonly attribute NativeIOManager nativeIO;
+  readonly attribute NativeIOFileManager nativeIO;
 };

@@ -5417,7 +5417,7 @@ interface NativeIOFile
     method read
     method setLength
     method write
-interface NativeIOManager
+interface NativeIOFileManager
     attribute @@toStringTag
     method constructor
     method delete

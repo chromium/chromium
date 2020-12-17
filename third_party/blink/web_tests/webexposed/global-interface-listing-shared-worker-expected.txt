@@ -827,7 +827,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method read
 [Worker]     method setLength
 [Worker]     method write
-[Worker] interface NativeIOManager
+[Worker] interface NativeIOFileManager
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
 [Worker]     method delete

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/native_io/native_io_manager.h"
+#include "third_party/blink/renderer/modules/native_io/native_io_file_manager.h"
 
 #include <algorithm>
 #include <utility>
@@ -120,7 +120,7 @@ void OnRenameResult(ScriptPromiseResolver* resolver,
 
 }  // namespace
 
-NativeIOManager::NativeIOManager(
+NativeIOFileManager::NativeIOFileManager(
     ExecutionContext* execution_context,
     HeapMojoRemote<mojom::blink::NativeIOHost> backend)
     : ExecutionContextClient(execution_context),
@@ -129,14 +129,14 @@ NativeIOManager::NativeIOManager(
           execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI)),
       backend_(std::move(backend)) {
   backend_.set_disconnect_handler(WTF::Bind(
-      &NativeIOManager::OnBackendDisconnect, WrapWeakPersistent(this)));
+      &NativeIOFileManager::OnBackendDisconnect, WrapWeakPersistent(this)));
 }
 
-NativeIOManager::~NativeIOManager() = default;
+NativeIOFileManager::~NativeIOFileManager() = default;
 
-ScriptPromise NativeIOManager::open(ScriptState* script_state,
-                                    String name,
-                                    ExceptionState& exception_state) {
+ScriptPromise NativeIOFileManager::open(ScriptState* script_state,
+                                        String name,
+                                        ExceptionState& exception_state) {
   if (!IsValidNativeIOName(name)) {
     exception_state.ThrowTypeError("Invalid file name");
     return ScriptPromise();
@@ -166,9 +166,9 @@ ScriptPromise NativeIOManager::open(ScriptState* script_state,
   return resolver->Promise();
 }
 
-ScriptPromise NativeIOManager::Delete(ScriptState* script_state,
-                                      String name,
-                                      ExceptionState& exception_state) {
+ScriptPromise NativeIOFileManager::Delete(ScriptState* script_state,
+                                          String name,
+                                          ExceptionState& exception_state) {
   if (!IsValidNativeIOName(name)) {
     exception_state.ThrowTypeError("Invalid file name");
     return ScriptPromise();
@@ -188,8 +188,8 @@ ScriptPromise NativeIOManager::Delete(ScriptState* script_state,
   return resolver->Promise();
 }
 
-ScriptPromise NativeIOManager::getAll(ScriptState* script_state,
-                                      ExceptionState& exception_state) {
+ScriptPromise NativeIOFileManager::getAll(ScriptState* script_state,
+                                          ExceptionState& exception_state) {
   if (!backend_.is_bound()) {
     ThrowNativeIOWithError(exception_state,
                            mojom::blink::NativeIOError::New(
@@ -204,10 +204,10 @@ ScriptPromise NativeIOManager::getAll(ScriptState* script_state,
   return resolver->Promise();
 }
 
-ScriptPromise NativeIOManager::rename(ScriptState* script_state,
-                                      String old_name,
-                                      String new_name,
-                                      ExceptionState& exception_state) {
+ScriptPromise NativeIOFileManager::rename(ScriptState* script_state,
+                                          String old_name,
+                                          String new_name,
+                                          ExceptionState& exception_state) {
   if (!IsValidNativeIOName(old_name) || !IsValidNativeIOName(new_name)) {
     exception_state.ThrowTypeError("Invalid file name");
     return ScriptPromise();
@@ -227,8 +227,9 @@ ScriptPromise NativeIOManager::rename(ScriptState* script_state,
   return resolver->Promise();
 }
 
-NativeIOFileSync* NativeIOManager::openSync(String name,
-                                            ExceptionState& exception_state) {
+NativeIOFileSync* NativeIOFileManager::openSync(
+    String name,
+    ExceptionState& exception_state) {
   if (!IsValidNativeIOName(name)) {
     exception_state.ThrowTypeError("Invalid file name");
     return nullptr;
@@ -266,7 +267,8 @@ NativeIOFileSync* NativeIOManager::openSync(String name,
       std::move(backing_file), std::move(backend_file), execution_context);
 }
 
-void NativeIOManager::deleteSync(String name, ExceptionState& exception_state) {
+void NativeIOFileManager::deleteSync(String name,
+                                     ExceptionState& exception_state) {
   if (!IsValidNativeIOName(name)) {
     exception_state.ThrowTypeError("Invalid file name");
     return;
@@ -290,7 +292,8 @@ void NativeIOManager::deleteSync(String name, ExceptionState& exception_state) {
   DCHECK(call_succeeded) << "Mojo call failed";
 }
 
-Vector<String> NativeIOManager::getAllSync(ExceptionState& exception_state) {
+Vector<String> NativeIOFileManager::getAllSync(
+    ExceptionState& exception_state) {
   Vector<String> result;
   if (!backend_.is_bound()) {
     ThrowNativeIOWithError(exception_state,
@@ -311,9 +314,9 @@ Vector<String> NativeIOManager::getAllSync(ExceptionState& exception_state) {
   return result;
 }
 
-void NativeIOManager::renameSync(String old_name,
-                                 String new_name,
-                                 ExceptionState& exception_state) {
+void NativeIOFileManager::renameSync(String old_name,
+                                     String new_name,
+                                     ExceptionState& exception_state) {
   if (!IsValidNativeIOName(old_name) || !IsValidNativeIOName(new_name)) {
     exception_state.ThrowTypeError("Invalid file name");
     return;
@@ -338,13 +341,13 @@ void NativeIOManager::renameSync(String old_name,
   DCHECK(call_succeeded) << "Mojo call failed";
 }
 
-void NativeIOManager::Trace(Visitor* visitor) const {
+void NativeIOFileManager::Trace(Visitor* visitor) const {
   visitor->Trace(backend_);
   ScriptWrappable::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
 }
 
-void NativeIOManager::OnBackendDisconnect() {
+void NativeIOFileManager::OnBackendDisconnect() {
   backend_.reset();
 }
 
