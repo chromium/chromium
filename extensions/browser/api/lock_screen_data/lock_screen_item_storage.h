@@ -140,15 +140,16 @@ class LockScreenItemStorage : public ExtensionRegistryObserver {
       ValueStoreMigratorFactoryCallback* factory_callback);
 
   // Used in tests to inject fake data items implementations.
-  using ItemFactoryCallback =
-      base::Callback<std::unique_ptr<DataItem>(const std::string& id,
-                                               const std::string& extension_id,
-                                               const std::string& crypto_key)>;
-  using RegisteredItemsGetter =
-      base::Callback<void(const std::string& extension_id,
-                          const DataItem::RegisteredValuesCallback& callback)>;
-  using ItemStoreDeleter = base::Callback<void(const std::string& extension_id,
-                                               const base::Closure& callback)>;
+  using ItemFactoryCallback = base::RepeatingCallback<std::unique_ptr<DataItem>(
+      const std::string& id,
+      const std::string& extension_id,
+      const std::string& crypto_key)>;
+  using RegisteredItemsGetter = base::RepeatingCallback<void(
+      const std::string& extension_id,
+      DataItem::RegisteredValuesOnceCallback callback)>;
+  using ItemStoreDeleter =
+      base::RepeatingCallback<void(const std::string& extension_id,
+                                   base::OnceClosure callback)>;
   static void SetItemProvidersForTesting(
       RegisteredItemsGetter* item_fetch_callback,
       ItemFactoryCallback* factory_callback,

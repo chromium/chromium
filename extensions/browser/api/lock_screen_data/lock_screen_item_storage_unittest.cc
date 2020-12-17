@@ -157,22 +157,20 @@ class ItemRegistry {
   void RemoveAll() { items_.clear(); }
 
   // Gets the set of registered data items.
-  void HandleGetRequest(const DataItem::RegisteredValuesCallback& callback) {
+  void HandleGetRequest(DataItem::RegisteredValuesOnceCallback callback) {
     if (!throttle_get_) {
-      RunCallback(callback);
+      RunCallback(std::move(callback));
       return;
     }
 
     ASSERT_TRUE(pending_callback_.is_null());
-    pending_callback_ = callback;
+    pending_callback_ = std::move(callback);
   }
 
   // Completes a pending |HandleGetRequest| request.
   void RunPendingCallback() {
     ASSERT_FALSE(pending_callback_.is_null());
-    DataItem::RegisteredValuesCallback callback = pending_callback_;
-    pending_callback_.Reset();
-    RunCallback(callback);
+    RunCallback(std::move(pending_callback_));
   }
 
   bool HasPendingCallback() const { return !pending_callback_.is_null(); }
@@ -182,9 +180,10 @@ class ItemRegistry {
   void set_throttle_get(bool throttle_get) { throttle_get_ = throttle_get; }
 
  private:
-  void RunCallback(const DataItem::RegisteredValuesCallback& callback) {
-    callback.Run(fail_ ? OperationResult::kFailed : OperationResult::kSuccess,
-                 ItemsToValue());
+  void RunCallback(DataItem::RegisteredValuesOnceCallback callback) {
+    std::move(callback).Run(
+        fail_ ? OperationResult::kFailed : OperationResult::kSuccess,
+        ItemsToValue());
   }
 
   std::unique_ptr<base::DictionaryValue> ItemsToValue() {
@@ -211,7 +210,7 @@ class ItemRegistry {
   // complete the request.
   bool throttle_get_ = false;
 
-  DataItem::RegisteredValuesCallback pending_callback_;
+  DataItem::RegisteredValuesOnceCallback pending_callback_;
   // Set of registered item ids.
   std::set<std::string> items_;
 
@@ -483,12 +482,12 @@ class LockScreenItemStorageTest : public ExtensionsTest {
     LockScreenItemStorage::SetValueStoreMigratorFactoryForTesting(
         &migrator_factory_);
 
-    item_factory_ = base::Bind(&LockScreenItemStorageTest::CreateItem,
-                               base::Unretained(this));
-    registered_items_getter_ = base::Bind(
+    item_factory_ = base::BindRepeating(&LockScreenItemStorageTest::CreateItem,
+                                        base::Unretained(this));
+    registered_items_getter_ = base::BindRepeating(
         &LockScreenItemStorageTest::GetRegisteredItems, base::Unretained(this));
-    item_store_deleter_ = base::Bind(&LockScreenItemStorageTest::RemoveAllItems,
-                                     base::Unretained(this));
+    item_store_deleter_ = base::BindRepeating(
+        &LockScreenItemStorageTest::RemoveAllItems, base::Unretained(this));
     LockScreenItemStorage::SetItemProvidersForTesting(
         &registered_items_getter_, &item_factory_, &item_store_deleter_);
 
@@ -735,19 +734,19 @@ class LockScreenItemStorageTest : public ExtensionsTest {
   }
 
   void GetRegisteredItems(const std::string& extension_id,
-                          const DataItem::RegisteredValuesCallback& callback) {
+                          DataItem::RegisteredValuesOnceCallback callback) {
     if (extension()->id() != extension_id) {
-      callback.Run(OperationResult::kUnknownExtension, nullptr);
+      std::move(callback).Run(OperationResult::kUnknownExtension, nullptr);
       return;
     }
-    item_registry_->HandleGetRequest(callback);
+    item_registry_->HandleGetRequest(std::move(callback));
   }
 
   void RemoveAllItems(const std::string& extension_id,
-                      const base::Closure& callback) {
+                      base::OnceClosure callback) {
     ASSERT_EQ(extension()->id(), extension_id);
     item_registry_->RemoveAll();
-    callback.Run();
+    std::move(callback).Run();
   }
 
   std::unique_ptr<LockScreenItemStorage> lock_screen_item_storage_;

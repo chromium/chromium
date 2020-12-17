@@ -37,9 +37,15 @@ class DataItem {
   using ReadCallback =
       base::Callback<void(OperationResult result,
                           std::unique_ptr<std::vector<char>> data)>;
+  // TODO(bokan): The multiple callback versions are temporary while we remove
+  // the base::Callback version in favor of base::OnceCallback.
+  // https://crbug.com/1152268.
   using RegisteredValuesCallback =
       base::Callback<void(OperationResult result,
                           std::unique_ptr<base::DictionaryValue> values)>;
+  using RegisteredValuesOnceCallback =
+      base::OnceCallback<void(OperationResult result,
+                              std::unique_ptr<base::DictionaryValue> values)>;
 
   // Gets all registered data items for the extension with the provided
   // extension ID - the items are returned as a DictionaryValue with keys set
