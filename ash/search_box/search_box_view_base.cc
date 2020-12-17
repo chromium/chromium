@@ -338,8 +338,6 @@ void SearchBoxViewBase::SetSearchBoxActive(bool active,
 
   is_search_box_active_ = active;
   UpdateSearchIcon();
-  UpdateBackgroundColor(
-      ash::AppListColorProvider::Get()->GetSearchBoxBackgroundColor());
   search_box_->set_placeholder_text_draw_flags(
       active ? (base::i18n::IsRTL() ? gfx::Canvas::TEXT_ALIGN_RIGHT
                                     : gfx::Canvas::TEXT_ALIGN_LEFT)
