@@ -33,18 +33,18 @@ class Identity(object):
 
 def ListIdentities():
   return subprocess.check_output([
-    'xcrun',
-    'security',
-    'find-identity',
-    '-v',
-    '-p',
-    'codesigning',
-  ])
+      'xcrun',
+      'security',
+      'find-identity',
+      '-v',
+      '-p',
+      'codesigning',
+  ]).decode('utf8')
 
 
 def FindValidIdentity(pattern):
   """Find all identities matching the pattern."""
-  lines = list(map(str.strip, ListIdentities().splitlines()))
+  lines = list(l.strip() for l in ListIdentities().splitlines())
   # Look for something like "2) XYZ "iPhone Developer: Name (ABC)""
   regex = re.compile('[0-9]+\) ([A-F0-9]+) "([^"(]*) \(([^)"]*)\)"')
 
