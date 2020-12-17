@@ -22,11 +22,6 @@ var CrSettingsV3BrowserTest = class extends PolymerTest {
   }
 
   /** @override */
-  get extraLibraries() {
-    return [];
-  }
-
-  /** @override */
   get featureList() {
     if (!this.featureListInternal.enabled &&
         !this.featureListInternal.disabled) {

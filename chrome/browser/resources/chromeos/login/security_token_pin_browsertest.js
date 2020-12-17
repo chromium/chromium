@@ -12,7 +12,7 @@ GEN_INCLUDE([
 
 GEN('#include "content/public/test/browser_test.h"');
 
-var PolymerSecurityTokenPinTest = class extends PolymerTest {
+var PolymerSecurityTokenPinTest = class extends Polymer2DeprecatedTest {
   /** @override */
   get browsePreload() {
     return 'chrome://oobe/login';

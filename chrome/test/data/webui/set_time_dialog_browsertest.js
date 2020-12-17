@@ -13,11 +13,6 @@ var SetTimeDialogBrowserTest = class extends PolymerTest {
   get browsePreload() {
     return 'chrome://set-time/test_loader.html?module=set_time_dialog_test.js';
   }
-
-  /** @override */
-  get extraLibraries() {
-    return [];
-  }
 };
 
 TEST_F('SetTimeDialogBrowserTest', 'All', function() {

@@ -22,11 +22,6 @@ const CrExtensionsInteractiveUITest = class extends PolymerInteractiveUITest {
     return 'chrome://extensions/';
   }
 
-  /** @override */
-  get extraLibraries() {
-    return [];
-  }
-
   // The name of the mocha suite. Should be overridden by subclasses.
   get suiteName() {
     return null;

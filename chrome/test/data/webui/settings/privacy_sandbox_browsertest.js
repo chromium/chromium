@@ -18,11 +18,6 @@ var PrivacySandboxTest = class extends PolymerTest {
   }
 
   /** @override */
-  get extraLibraries() {
-    return [];
-  }
-
-  /** @override */
   get featureList() {
     return {enabled: ['features::kPrivacySandboxSettings']};
   }

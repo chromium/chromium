@@ -12,10 +12,6 @@ var DiscardsTest = class extends testing.Test {
   get browsePreload() {
     return 'chrome://discards/test_loader.html?module=discards/discards_test.js';
   }
-
-  get extraLibraries() {
-    return [];
-  }
 };
 
 

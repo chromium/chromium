@@ -97,7 +97,7 @@ GEN('#include "content/public/test/browser_test.h"');
 
 function registerTest(componentName, webuiHost, testName, module, deps) {
   const className = `${componentName}${testName}Test`;
-  this[className] = class extends PolymerTest {
+  this[className] = class extends Polymer2DeprecatedTest {
     /** @override */
     get browsePreload() {
       return `chrome://${webuiHost}/`;

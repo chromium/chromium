@@ -18,11 +18,6 @@ var LocalProfileCustomizationFocusTest =
   }
 
   /** @override */
-  get extraLibraries() {
-    return [];
-  }
-
-  /** @override */
   get featureList() {
     return {
       enabled: [

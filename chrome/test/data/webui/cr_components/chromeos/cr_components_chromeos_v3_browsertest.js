@@ -60,11 +60,6 @@ function registerTest(componentName, webuiHost, testName, module, caseName) {
     }
 
     /** @override */
-    get extraLibraries() {
-      return [];
-    }
-
-    /** @override */
     get featureList() {
       return {
         enabled: [

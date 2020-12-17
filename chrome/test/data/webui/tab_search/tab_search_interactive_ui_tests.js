@@ -17,10 +17,6 @@ var TabSearchInteractiveUITest = class extends PolymerInteractiveUITest {
     return 'chrome://tab-search/test_loader.html?module=tab_search/tab_search_app_focus_test.js';
   }
 
-  get extraLibraries() {
-    return [];
-  }
-
   /** @override */
   get featureList() {
     return {

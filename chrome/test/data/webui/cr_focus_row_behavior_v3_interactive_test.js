@@ -22,11 +22,6 @@ var CrFocusRowBehaviorV3Test = class extends PolymerInteractiveUITest {
   get webuiHost() {
     return 'dummyurl';
   }
-
-  /** @override */
-  get extraLibraries() {
-    return [];
-  }
 };
 
 TEST_F('CrFocusRowBehaviorV3Test', 'FocusTest', function() {

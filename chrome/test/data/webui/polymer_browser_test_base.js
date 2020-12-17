@@ -29,6 +29,19 @@ PolymerTest.prototype = {
    * @final
    */
   isAsync: true,
+};
+
+/**
+ * Test fixture for Polymer2 elements testing (deprecated).
+ * TODO(crbug.com/965770): Delete once all remaining Polymer2 UIs have been
+ * migrated.
+ * @constructor
+ * @extends PolymerTest
+ */
+function Polymer2DeprecatedTest() {}
+
+Polymer2DeprecatedTest.prototype = {
+  __proto__: PolymerTest.prototype,
 
   /**
    * Files that need not be compiled.

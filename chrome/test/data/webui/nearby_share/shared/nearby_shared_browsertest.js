@@ -10,7 +10,7 @@ GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 GEN('#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
-const NearbySharedBrowserTest = class extends PolymerTest {
+const NearbySharedBrowserTest = class extends Polymer2DeprecatedTest {
   /** @override */
   get browsePreload() {
     return 'chrome://os-settings/';

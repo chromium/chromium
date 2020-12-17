@@ -12,10 +12,6 @@ var CommanderWebUIBrowserTest = class extends PolymerTest {
   get browsePreload() {
     return 'chrome://commander/test_loader.html?module=commander/commander_app_test.js';
   }
-  /** @override */
-  get extraLibraries() {
-    return [];
-  }
 };
 
 TEST_F('CommanderWebUIBrowserTest', 'All', function() {

@@ -15,11 +15,6 @@ const PrintPreviewTest = class extends PolymerTest {
     return 'chrome://print/';
   }
 
-  /** @override */
-  get extraLibraries() {
-    return [];
-  }
-
   // The name of the mocha suite. Should be overridden by subclasses.
   get suiteName() {
     return null;

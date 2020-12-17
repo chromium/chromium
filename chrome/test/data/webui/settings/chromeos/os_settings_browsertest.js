@@ -25,7 +25,7 @@ GEN('#include "ui/display/display_features.h"');
 
 // Generic test fixture for CrOS Polymer Settings elements to be overridden by
 // individual element tests.
-const OSSettingsBrowserTest = class extends PolymerTest {
+const OSSettingsBrowserTest = class extends Polymer2DeprecatedTest {
   /** @override */
   get browsePreload() {
     return 'chrome://os-settings/';

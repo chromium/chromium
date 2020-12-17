@@ -16,11 +16,6 @@ const HistoryFocusTest = class extends PolymerInteractiveUITest {
   get browsePreload() {
     return 'chrome://history/';
   }
-
-  /** @override */
-  get extraLibraries() {
-    return [];
-  }
 };
 
 // eslint-disable-next-line no-var

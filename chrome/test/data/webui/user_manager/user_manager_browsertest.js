@@ -17,14 +17,14 @@ GEN('#include "content/public/test/browser_test.h"');
 function UserManagerBrowserTest() {}
 
 UserManagerBrowserTest.prototype = {
-  __proto__: PolymerTest.prototype,
+  __proto__: Polymer2DeprecatedTest.prototype,
 
   /** @override */
   browsePreload: 'chrome://md-user-manager/',
 
   /** @override */
   extraLibraries: [
-    ...PolymerTest.prototype.extraLibraries,
+    ...Polymer2DeprecatedTest.prototype.extraLibraries,
     '../test_browser_proxy.js',
     'control_bar_tests.js',
     'create_profile_tests.js',

@@ -12,15 +12,6 @@ GEN('#include "content/public/test/browser_test.h"');
 
 /** Test fixture for Polymer Nearby Share Shared elements. */
 const NearbySharedV3Test = class extends PolymerTest {
-  /**
-   * Override default |extraLibraries| since PolymerTest includes more than are
-   * needed in JS Module based tests.
-   * @override
-   */
-  get extraLibraries() {
-    return [];
-  }
-
   /** @override */
   get webuiHost() {
     return 'nearby';

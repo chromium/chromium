@@ -20,11 +20,6 @@ var WebUIResourcesV3BrowserTest = class extends PolymerTest {
   get webuiHost() {
     return 'dummyurl';
   }
-
-  /** @override */
-  get extraLibraries() {
-    return [];
-  }
 };
 
 // eslint-disable-next-line no-var

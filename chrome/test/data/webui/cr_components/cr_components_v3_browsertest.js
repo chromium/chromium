@@ -20,11 +20,6 @@ var CrComponentsV3BrowserTest = class extends PolymerTest {
   }
 
   /** @override */
-  get extraLibraries() {
-    return [];
-  }
-
-  /** @override */
   get webuiHost() {
     return 'dummyurl';
   }

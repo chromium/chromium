@@ -17,11 +17,6 @@ var CrElementsV3FocusTest = class extends PolymerInteractiveUITest {
   }
 
   /** @override */
-  get extraLibraries() {
-    return [];
-  }
-
-  /** @override */
   get webuiHost() {
     return 'dummyurl';
   }

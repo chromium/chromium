@@ -23,9 +23,6 @@ UsbInternalsTest.prototype = {
 
   /** @override */
   isAsync: true,
-
-  /** @override */
-  extraLibraries: [],
 };
 
 TEST_F('UsbInternalsTest', 'WebUIValueRenderTest', function() {

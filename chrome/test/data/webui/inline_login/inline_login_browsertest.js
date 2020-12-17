@@ -27,11 +27,6 @@ var InlineLoginBrowserTest = class extends PolymerTest {
     return inline_login_test.suiteName;
   }
 
-  /** @override */
-  get extraLibraries() {
-    return [];
-  }
-
   /** @param {string} testName The name of the test to run. */
   runMochaTest(testName) {
     runMochaTest(this.suiteName, testName);

@@ -16,11 +16,6 @@ var CrSettingsV3InteractiveUITest = class extends PolymerInteractiveUITest {
   get browsePreload() {
     return 'chrome://settings';
   }
-
-  /** @override */
-  get extraLibraries() {
-    return [];
-  }
 };
 
 // eslint-disable-next-line no-var

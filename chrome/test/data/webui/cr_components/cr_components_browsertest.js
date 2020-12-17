@@ -17,7 +17,7 @@ GEN('#include "content/public/test/browser_test.h"');
 function CrComponentsBrowserTest() {}
 
 CrComponentsBrowserTest.prototype = {
-  __proto__: PolymerTest.prototype,
+  __proto__: Polymer2DeprecatedTest.prototype,
 
   /** @override */
   get browsePreload() {

@@ -17,11 +17,6 @@ const BookmarksBrowserTest = class extends PolymerTest {
   }
 
   /** @override */
-  get extraLibraries() {
-    return [];
-  }
-
-  /** @override */
   get typedefCppFixture() {
     return 'BookmarksBrowserTest';
   }

@@ -13,7 +13,7 @@ GEN_INCLUDE([
 /**
  * Test fixture for Accessibility of Chrome Settings.
  * @constructor
- * @extends {PolymerTest}
+ * @extends {Polymer2DeprecatedTest}
  */
 function OSSettingsAccessibilityTest() {}
 
@@ -70,7 +70,7 @@ OSSettingsAccessibilityTest.violationFilter = {
 };
 
 OSSettingsAccessibilityTest.prototype = {
-  __proto__: PolymerTest.prototype,
+  __proto__: Polymer2DeprecatedTest.prototype,
 
   /** @override */
   browsePreload: 'chrome://os-settings/',

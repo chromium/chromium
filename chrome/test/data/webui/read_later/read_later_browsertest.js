@@ -14,10 +14,6 @@ class ReadLaterBrowserTest extends PolymerTest {
     throw 'this is abstract and should be overriden by subclasses';
   }
 
-  get extraLibraries() {
-    return [];
-  }
-
   /** @override */
   get featureList() {
     return {enabled: ['reading_list::switches::kReadLater']};

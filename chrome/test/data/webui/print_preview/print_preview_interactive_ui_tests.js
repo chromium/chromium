@@ -15,11 +15,6 @@ const PrintPreviewInteractiveUITest = class extends PolymerInteractiveUITest {
     throw 'this is abstract and should be overriden by subclasses';
   }
 
-  /** @override */
-  get extraLibraries() {
-    return [];
-  }
-
   // The name of the mocha suite. Should be overridden by subclasses.
   get suiteName() {
     return null;

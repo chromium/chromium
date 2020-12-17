@@ -15,11 +15,6 @@ var DownloadsTest = class extends PolymerTest {
   get browsePreload() {
     return 'chrome://downloads';
   }
-
-  /** @override */
-  get extraLibraries() {
-    return [];
-  }
 };
 
 // eslint-disable-next-line no-var

@@ -12,7 +12,7 @@ GEN('#include "content/public/test/browser_test.h"');
 function CrElementsFocusTest() {}
 
 CrElementsFocusTest.prototype = {
-  __proto__: PolymerInteractiveUITest.prototype,
+  __proto__: Polymer2DeprecatedInteractiveUITest.prototype,
 };
 
 function CrElementsActionMenuTest() {}
@@ -231,7 +231,7 @@ var CrElementsToolbarFocusTest = class extends CrElementsFocusTest {
   /** @override */
   get extraLibraries() {
     return [
-      ...PolymerTest.prototype.extraLibraries,
+      ...Polymer2DeprecatedTest.prototype.extraLibraries,
       '../test_util.js',
       'cr_toolbar_focus_tests.js',
     ];
@@ -252,7 +252,7 @@ var IronListFocusTest = class extends CrElementsFocusTest {
   /** @override */
   get extraLibraries() {
     return [
-      ...PolymerTest.prototype.extraLibraries,
+      ...Polymer2DeprecatedTest.prototype.extraLibraries,
       '../test_util.js',
       'iron_list_focus_test.js',
     ];

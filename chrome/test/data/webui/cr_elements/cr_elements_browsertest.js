@@ -17,11 +17,11 @@ GEN('#include "content/public/test/browser_test.h"');
 function CrElementsBrowserTest() {}
 
 CrElementsBrowserTest.prototype = {
-  __proto__: PolymerTest.prototype,
+  __proto__: Polymer2DeprecatedTest.prototype,
 
   /** @override */
   extraLibraries: [
-    ...PolymerTest.prototype.extraLibraries,
+    ...Polymer2DeprecatedTest.prototype.extraLibraries,
     '//ui/webui/resources/js/assert.js',
   ],
 

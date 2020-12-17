@@ -12,10 +12,6 @@ var TabStripBrowserTest = class extends testing.Test {
   get webuiHost() {
     return 'tab-strip';
   }
-
-  get extraLibraries() {
-    return [];
-  }
 };
 
 var TabStripTabListTest = class extends TabStripBrowserTest {

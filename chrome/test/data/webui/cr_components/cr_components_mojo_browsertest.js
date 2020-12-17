@@ -16,11 +16,6 @@ var CrComponentsMojoBrowserTest = class extends PolymerTest {
   get browsePreload() {
     throw 'this is abstract and should be overriden by subclasses';
   }
-
-  /** @override */
-  get extraLibraries() {
-    return [];
-  }
 };
 
 var CrComponentsCustomizeThemesTest =

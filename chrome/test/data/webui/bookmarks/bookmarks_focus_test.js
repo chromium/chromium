@@ -16,11 +16,6 @@ const BookmarksFocusTest = class extends PolymerInteractiveUITest {
   get browsePreload() {
     throw 'this is abstract and should be overriden by subclasses';
   }
-
-  /** @override */
-  get extraLibraries() {
-    return [];
-  }
 };
 
 // eslint-disable-next-line no-var

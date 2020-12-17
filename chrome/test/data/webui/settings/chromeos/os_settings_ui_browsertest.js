@@ -26,7 +26,7 @@ function isVisible(element) {
 
 // Test fixture for the top-level OS settings UI.
 // eslint-disable-next-line no-var
-var OSSettingsUIBrowserTest = class extends PolymerTest {
+var OSSettingsUIBrowserTest = class extends Polymer2DeprecatedTest {
   /** @override */
   get browsePreload() {
     return 'chrome://os-settings/';

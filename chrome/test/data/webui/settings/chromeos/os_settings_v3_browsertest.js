@@ -21,11 +21,6 @@ var OSSettingsV3BrowserTest = class extends PolymerTest {
   }
 
   /** @override */
-  get extraLibraries() {
-    return [];
-  }
-
-  /** @override */
   get featureList() {
     return {
       enabled: [
