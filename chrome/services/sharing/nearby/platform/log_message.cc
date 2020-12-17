@@ -47,13 +47,14 @@ std::ostream& LogMessage::Stream() {
 
 namespace api {
 
+// static
 void LogMessage::SetMinLogSeverity(Severity severity) {
   chrome::g_min_log_severity = severity;
 }
 
+// static
 bool LogMessage::ShouldCreateLogMessage(Severity severity) {
-  return severity >= chrome::g_min_log_severity &&
-         logging::ShouldCreateLogMessage(chrome::ConvertSeverity(severity));
+  return severity >= chrome::g_min_log_severity;
 }
 
 }  // namespace api
