@@ -323,8 +323,7 @@ TEST_F(
                 this.mockTts.pendingUtterances()[0], 'Paragraph 1');
             assertEquals(this.mockTts.getOptions().rate, 1.2);
 
-            // Changing speed will resume where we left off with selected speech
-            // rate.
+            // Changing speed will resume at the start of the current sentence.
             selectToSpeak.onSelectToSpeakPanelAction_(
                 chrome.accessibilityPrivate.SelectToSpeakPanelAction
                     .CHANGE_SPEED,
@@ -383,5 +382,53 @@ TEST_F(
               assertFalse(this.mockTts.currentlySpeaking());
               assertEquals(this.mockTts.pendingUtterances().length, 0);
             }, 0));
+          });
+    });
+
+TEST_F(
+    'SelectToSpeakNavigationControlTest', 'ResumeAtTheEndOfParagraph',
+    function() {
+      const bodyHtml = `
+        <p id="p1">Paragraph 1</p>
+        <p id="p2">Paragraph 2</p>
+      `;
+      this.runWithLoadedTree(
+          this.generateHtmlWithSelectedElement('p1', bodyHtml), () => {
+            this.triggerReadSelectedText();
+
+            // Finishes the current utterance.
+            this.mockTts.finishPendingUtterance();
+
+            // Hitting resume will start the next paragraph.
+            selectToSpeak.onSelectToSpeakPanelAction_(
+                chrome.accessibilityPrivate.SelectToSpeakPanelAction.RESUME);
+            assertTrue(this.mockTts.currentlySpeaking());
+            assertEquals(this.mockTts.pendingUtterances().length, 1);
+            this.assertEqualsCollapseWhitespace(
+                this.mockTts.pendingUtterances()[0], 'Paragraph 2');
+          });
+    });
+
+TEST_F(
+    'SelectToSpeakNavigationControlTest', 'ResumeAtTheEndOfUserSelection',
+    function() {
+      const bodyHtml = `
+        <p id="p1">Sentence <span id="s1">one</span>. Sentence two.</p>
+        <p id="p2">Paragraph 2</p>
+      `;
+      this.runWithLoadedTree(
+          this.generateHtmlWithSelectedElement('s1', bodyHtml), () => {
+            this.triggerReadSelectedText();
+
+            // Finishes the current utterance.
+            this.mockTts.finishPendingUtterance();
+
+            // Hitting resume will start the remaining content.
+            selectToSpeak.onSelectToSpeakPanelAction_(
+                chrome.accessibilityPrivate.SelectToSpeakPanelAction.RESUME);
+            assertTrue(this.mockTts.currentlySpeaking());
+            assertEquals(this.mockTts.pendingUtterances().length, 1);
+            this.assertEqualsCollapseWhitespace(
+                this.mockTts.pendingUtterances()[0], '. Sentence two.');
           });
     });

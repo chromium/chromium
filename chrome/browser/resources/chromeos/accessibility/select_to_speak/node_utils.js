@@ -547,6 +547,64 @@ class NodeUtils {
   }
 
   /**
+   * Gets the remaining content of a paragraph with an assigned position. The
+   * position is defined by the |charIndex| to the text of |nodeGroup|. The
+   * remaining content is returned as a list of nodes with offset.
+   * @param {!ParagraphUtils.NodeGroup} nodeGroup
+   * @param {number} charIndex The char index of the position. The index is
+   *     relative to the text content of the |nodeGroup|. This index is
+   *     inclusive: if we set |charIndex| to 0, we will get the remaining
+   *     content of the paragraph including all the content in the input
+   *     |nodeGroup|.
+   * @return {!{nodes: !Array<!AutomationNode>,
+   *          offset: number}}
+   *     nodes: the nodes that have the remaining content.
+   *     offset: the offset for the nodes. The offset is into the name of the
+   * first node, and marks the start index of the remaining content in the first
+   * node, inclusively. For example, "Hello" with an offset 3 indicates that the
+   * remaining content is "lo".
+   */
+  static getNextNodesInParagraphFromNodeGroupWithOffset(nodeGroup, charIndex) {
+    if (nodeGroup.nodes.length === 0) {
+      return {nodes: [], offset: -1};
+    }
+    let {node: startNode, offset} =
+        ParagraphUtils.findNodeFromNodeGroupByCharIndex(nodeGroup, charIndex);
+    // If we did not find a node for the charIndex, we use the last node of the
+    // current node group as the starting node and set offset to the length of
+    // the node's name. This enables us to get all the content within this
+    // paragraph but after the current node group.
+    if (!startNode) {
+      const lastNode = nodeGroup.nodes[nodeGroup.nodes.length - 1].node;
+      const lastChildOfLastNode = NodeUtils.getLastLeafChild(lastNode);
+      startNode = lastChildOfLastNode || lastNode;
+      offset = ParagraphUtils.getNodeName(startNode).length;
+    }
+
+    // Gets all the trailing nodes after the startNode. We include the start
+    // node if it is not empty. Note that this is based on the assumption that
+    // this function will still include nodes with overflow text.
+    const trailingNodes =
+        NodeUtils.getNextNodesInParagraph(startNode, constants.Dir.FORWARD);
+    const textInStartNode =
+        ParagraphUtils.getNodeName(startNode).substr(offset);
+    if (!ParagraphUtils.isWhitespace(textInStartNode)) {
+      const nodes = [startNode, ...trailingNodes];
+      return {nodes, offset};
+    }
+    if (trailingNodes.length === 0) {
+      return {nodes: [], offset: -1};
+    }
+    // Returns all the nodes once we find a valid one among them.
+    for (const node of trailingNodes) {
+      if (NodeUtils.isValidLeafNode(node)) {
+        return {nodes: trailingNodes, offset: 0};
+      }
+    }
+    return {nodes: [], offset: -1};
+  }
+
+  /**
    * @param {!AutomationNode} node
    * @return {boolean} Whether the given node is a valid leaf node that is can
    *     be ingested by Select-to-speak.

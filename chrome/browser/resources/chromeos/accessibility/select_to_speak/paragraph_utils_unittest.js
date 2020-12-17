@@ -484,3 +484,106 @@ TEST_F('SelectToSpeakParagraphUnitTest', 'BuildNodeGroupWithSvg', function() {
       [inline1, inline2], 0, {splitOnLanguage: false});
   assertEquals('Hello, world! ', result.text);
 });
+
+TEST_F(
+    'SelectToSpeakParagraphUnitTest', 'findNodeFromNodeGroupByCharIndex',
+    function() {
+      // The array has four inline text nodes and one static text node.
+      // Their starting indexes are 0, 9, 20, 30, and 51.
+      const nodeGroup = ParagraphUtils.buildNodeGroup(
+          generateNodesForParagraph(), 0, false /* do not split on language */);
+      const nodes = generateNodesForParagraph();
+      const firstInline = 'The first';
+      const secondInline = ' sentence.';
+      const thirdInline = 'The second';
+      const fourthInline = ' sentence is longer.';
+      const thirdStatic = 'No child sentence.';
+
+      let result = ParagraphUtils.findNodeFromNodeGroupByCharIndex(
+          nodeGroup, 0 /* charIndex */);
+      assertEquals(result.node.name, firstInline);
+      assertEquals(result.offset, 0);
+
+      result = ParagraphUtils.findNodeFromNodeGroupByCharIndex(
+          nodeGroup, 3 /* charIndex */);
+      assertEquals(result.node.name, firstInline);
+      assertEquals(result.offset, 3);
+
+      result = ParagraphUtils.findNodeFromNodeGroupByCharIndex(
+          nodeGroup, 10 /* charIndex */);
+      assertEquals(result.node.name, secondInline);
+      assertEquals(result.offset, 1);
+
+      result = ParagraphUtils.findNodeFromNodeGroupByCharIndex(
+          nodeGroup, 20 /* charIndex */);
+      assertEquals(result.node.name, thirdInline);
+      assertEquals(result.offset, 0);
+
+      result = ParagraphUtils.findNodeFromNodeGroupByCharIndex(
+          nodeGroup, 33 /* charIndex */);
+      assertEquals(result.node.name, fourthInline);
+      assertEquals(result.offset, 3);
+
+      result = ParagraphUtils.findNodeFromNodeGroupByCharIndex(
+          nodeGroup, 52 /* charIndex */);
+      assertEquals(result.node.name, thirdStatic);
+      assertEquals(result.offset, 1);
+
+      result = ParagraphUtils.findNodeFromNodeGroupByCharIndex(
+          nodeGroup, 100 /* charIndex */);
+      assertEquals(result.node, null);
+    });
+
+/**
+ * Creates an array of nodes that represents a paragraph.
+ * @return {Array<AutomationNode>}
+ */
+function generateNodesForParagraph() {
+  const root = {role: 'rootWebArea'};
+  const paragraph = {role: 'paragraph', display: 'block', parent: root, root};
+  const text1 = {
+    name: 'The first sentence.',
+    role: 'staticText',
+    parent: paragraph
+  };
+  const inlineText1 = {
+    role: 'inlineTextBox',
+    name: 'The first',
+    indexInParent: 0,
+    parent: text1
+  };
+  const inlineText2 = {
+    role: 'inlineTextBox',
+    name: ' sentence.',
+    indexInParent: 1,
+    parent: text1
+  };
+  text1.children = [inlineText1, inlineText2];
+
+  const text2 = {
+    name: 'The second sentence is longer.',
+    role: 'staticText',
+    parent: paragraph
+  };
+  const inlineText3 = {
+    role: 'inlineTextBox',
+    name: 'The second',
+    indexInParent: 0,
+    parent: text2
+  };
+  const inlineText4 = {
+    role: 'inlineTextBox',
+    name: ' sentence is longer.',
+    indexInParent: 1,
+    parent: text2
+  };
+  text2.children = [inlineText3, inlineText4];
+
+  const text3 = {
+    name: 'No child sentence.',
+    role: 'staticText',
+    parent: paragraph
+  };
+
+  return [inlineText1, inlineText2, inlineText3, inlineText4, text3];
+}

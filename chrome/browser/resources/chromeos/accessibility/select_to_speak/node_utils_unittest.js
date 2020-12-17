@@ -830,6 +830,90 @@ TEST_F('SelectToSpeakNodeUtilsUnitTest', 'getAllNodesInParagraph', function() {
   assertEquals(result[2], text5);
 });
 
+TEST_F(
+    'SelectToSpeakNodeUtilsUnitTest',
+    'getNextNodesInParagraphFromNodeGroupWithOffset', function() {
+      // The nodeGroup has four inline text nodes and one static text node.
+      // Their starting indexes are 0, 9, 20, 30, and 51.
+      const nodeGroup = generateTestNodeGroup();
+
+      let result = NodeUtils.getNextNodesInParagraphFromNodeGroupWithOffset(
+          nodeGroup, 0 /* charIndex */);
+      assertEquals(result.nodes.length, 5);
+      assertEquals(result.offset, 0);
+
+      result = NodeUtils.getNextNodesInParagraphFromNodeGroupWithOffset(
+          nodeGroup, 5 /* charIndex */);
+      assertEquals(result.nodes.length, 5);
+      assertEquals(result.offset, 5);
+
+      result = NodeUtils.getNextNodesInParagraphFromNodeGroupWithOffset(
+          nodeGroup, 9 /* charIndex */);
+      assertEquals(result.nodes.length, 4);
+      assertEquals(result.offset, 0);
+
+      result = NodeUtils.getNextNodesInParagraphFromNodeGroupWithOffset(
+          nodeGroup, 25 /* charIndex */);
+      assertEquals(result.nodes.length, 3);
+      assertEquals(result.offset, 5);
+
+      result = NodeUtils.getNextNodesInParagraphFromNodeGroupWithOffset(
+          nodeGroup, 51 /* charIndex */);
+      assertEquals(result.nodes.length, 1);
+      assertEquals(result.offset, 0);
+
+      result = NodeUtils.getNextNodesInParagraphFromNodeGroupWithOffset(
+          nodeGroup, 100 /* charIndex */);
+      assertEquals(result.nodes.length, 0);
+    });
+
+TEST_F(
+    'SelectToSpeakNodeUtilsUnitTest',
+    'getNextNodesInParagraphFromNodeGroupWithOffsetWithEmptyTail', function() {
+      // The nodeGroup consists of three inline text nodes: "Hello", "world ",
+      // and " ".
+      const nodeGroup = generateTestNodeGroupWithEmptyTail();
+
+      // We can find the non-empty node at this charIndex but there is actually
+      // no text content afterwards.
+      const nodeWithOffset = ParagraphUtils.findNodeFromNodeGroupByCharIndex(
+          nodeGroup, 11 /* charIndex */);
+      assertEquals(nodeWithOffset.node.name, 'world ');
+      assertEquals(nodeWithOffset.offset, 5);
+
+      let result = NodeUtils.getNextNodesInParagraphFromNodeGroupWithOffset(
+          nodeGroup, 11 /* charIndex */);
+      assertEquals(result.nodes.length, 0);
+
+      // If we decrease the charIndex, we will get the node with 'world ' but
+      // not any empty node.
+      result = NodeUtils.getNextNodesInParagraphFromNodeGroupWithOffset(
+          nodeGroup, 10 /* charIndex */);
+      assertEquals(result.nodes.length, 1);
+      assertEquals(result.nodes[0].name, 'world ');
+    });
+
+TEST_F(
+    'SelectToSpeakNodeUtilsUnitTest',
+    'getNextNodesInParagraphFromNodeGroupWithOffsetFromPartialParagraph',
+    function() {
+      // The nodeGroup consists only one static text node, which is "one". The
+      // entire paragraph has three static text nodes: "Sentence", "one",
+      // "here".
+      const nodeGroup = generateTestNodeGroupFromPartialParagraph();
+
+      // After reading "one", the TTS events will set charIndex to 3. Finding
+      // the static text node from the node group will return null.
+      const nodeWithOffset = ParagraphUtils.findNodeFromNodeGroupByCharIndex(
+          nodeGroup, 3 /* charIndex */);
+      assertEquals(nodeWithOffset.node, null);
+
+      const result = NodeUtils.getNextNodesInParagraphFromNodeGroupWithOffset(
+          nodeGroup, 3 /* charIndex */);
+      assertEquals(result.nodes.length, 1);
+      assertEquals(result.offset, 0);
+    });
+
 /**
  * Creates a AutomationNode-like object.
  * @param {!Object} properties
@@ -840,7 +924,8 @@ function createMockNode(properties) {
         htmlAttributes: [],
         state: {},
         children: [],
-        location: {},
+        unclippedLocation: {left: 20, top: 10, width: 100, height: 50},
+        location: {left: 20, top: 10, width: 100, height: 50},
       },
       properties);
 
@@ -858,4 +943,100 @@ function createMockNode(properties) {
     parent.lastChild = node;
   }
   return node;
+}
+
+/**
+ * Creates a nodeGroup for test purpose.
+ * @return {!ParagraphUtils.NodeGroup}
+ */
+function generateTestNodeGroup() {
+  const root = createMockNode({role: 'rootWebArea'});
+  const paragraph =
+      createMockNode({role: 'paragraph', display: 'block', parent: root, root});
+  const text1 = createMockNode(
+      {name: 'The first sentence.', role: 'staticText', parent: paragraph});
+  const inlineText1 = createMockNode({
+    role: 'inlineTextBox',
+    name: 'The first',
+    indexInParent: 0,
+    parent: text1
+  });
+  const inlineText2 = createMockNode({
+    role: 'inlineTextBox',
+    name: ' sentence.',
+    indexInParent: 1,
+    parent: text1
+  });
+
+  const text2 = createMockNode({
+    name: 'The second sentence is longer.',
+    role: 'staticText',
+    parent: paragraph
+  });
+  const inlineText3 = createMockNode({
+    role: 'inlineTextBox',
+    name: 'The second',
+    indexInParent: 0,
+    parent: text2
+  });
+  const inlineText4 = createMockNode({
+    role: 'inlineTextBox',
+    name: ' sentence is longer.',
+    indexInParent: 1,
+    parent: text2
+  });
+
+  const text3 = createMockNode(
+      {name: 'No child sentence.', role: 'staticText', parent: paragraph});
+
+  return ParagraphUtils.buildNodeGroup(
+      [inlineText1, inlineText2, inlineText3, inlineText4, text3], 0,
+      false /* do not split on language */);
+}
+
+/**
+ * Creates a nodeGroup that has an empty tail (i.e., "Hello world  ").
+ * @return {!ParagraphUtils.NodeGroup}
+ */
+function generateTestNodeGroupWithEmptyTail() {
+  const root = createMockNode({role: 'rootWebArea'});
+  const paragraph =
+      createMockNode({role: 'paragraph', display: 'block', parent: root, root});
+  const text1 =
+      createMockNode({name: 'Hello', role: 'staticText', parent: paragraph});
+  const inlineText1 = createMockNode(
+      {role: 'inlineTextBox', name: 'Hello', indexInParent: 0, parent: text1});
+
+  const text2 =
+      createMockNode({name: 'world  ', role: 'staticText', parent: paragraph});
+  const inlineText2 = createMockNode(
+      {role: 'inlineTextBox', name: 'world ', indexInParent: 0, parent: text2});
+  const inlineText3 = createMockNode(
+      {role: 'inlineTextBox', name: ' ', indexInParent: 1, parent: text2});
+
+  return ParagraphUtils.buildNodeGroup(
+      [inlineText1, inlineText2, inlineText3], 0,
+      false /* do not split on language */);
+}
+
+/**
+ * Creates a nodeGroup that only has a part of the paragraph (e.g., the "one" in
+ * <p>Sentence <span>one</span> here</p>).
+ * @return {!ParagraphUtils.NodeGroup}
+ */
+function generateTestNodeGroupFromPartialParagraph() {
+  const root = createMockNode({role: 'rootWebArea'});
+  const paragraph =
+      createMockNode({role: 'paragraph', display: 'block', parent: root, root});
+  const text1 =
+      createMockNode({name: 'Sentence', role: 'staticText', parent: paragraph});
+
+  const text2 =
+      createMockNode({name: 'one', role: 'staticText', parent: paragraph});
+
+  const text3 =
+      createMockNode({name: 'here', role: 'staticText', parent: paragraph});
+
+  return ParagraphUtils.buildNodeGroup(
+      [text2], 0, false /* do not split on language */);
 }

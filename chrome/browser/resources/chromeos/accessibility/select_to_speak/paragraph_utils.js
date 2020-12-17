@@ -244,6 +244,8 @@ class ParagraphUtils {
   /**
    * Determines the index into the parent name at which the inlineTextBox
    * node name begins.
+   * TODO(leileilei@google.com): Corrects the annotation of |inlineTextNode|
+   * to non-nullable.
    * @param {AutomationNode} inlineTextNode An inlineTextBox type node.
    * @return {number} The character index into the parent node at which
    *     this node begins.
@@ -417,6 +419,53 @@ class ParagraphUtils {
     result.endIndex = index;
     return result;
   }
+
+  /**
+   * Finds the AutomationNode that appears at the given character index within
+   * the |nodeGroup|.
+   * @param {!ParagraphUtils.NodeGroup} nodeGroup The nodeGroup that has the
+   *     nodeGroupItem.
+   * @param {number} charIndex The char index into the nodeGroup's text. The
+   *     index is relative to the start of the |nodeGroup|.
+   * @return {!{node: ?AutomationNode,
+   *          offset: number}}
+   *     node: the AutomationNode within the |nodeGroup| that appears at
+   * |charIndex|. For a static text node that has inline text nodes, we will
+   * return the inline text node corresponding to the |charIndex|.
+   *     offset: the offset indicating the position of the |charIndex| within
+   * the found nodeGroupItem. The offset is relative to the start of the |node|.
+   */
+  static findNodeFromNodeGroupByCharIndex(nodeGroup, charIndex) {
+    for (const currentNodeGroupItem of nodeGroup.nodes) {
+      const currentNode = currentNodeGroupItem.node;
+      const currentNodeNameLength =
+          ParagraphUtils.getNodeName(currentNode).length;
+      // We iterate over each nodeGroupItem until the |charIndex| is pointing
+      // before the current node's name.
+      if (currentNodeGroupItem.startChar + currentNodeNameLength > charIndex) {
+        // The currentNodeOffset is the position of the |charIndex| within the
+        // current nodeGroupItem.
+        const currentNodeOffset = charIndex - currentNodeGroupItem.startChar;
+        if (!currentNodeGroupItem.hasInlineText) {
+          // If the nodeGroupItem does not have inline text, we return the
+          // corresponding node and the current offset.
+          return {node: currentNode, offset: currentNodeOffset};
+        }
+
+        const inlineTextNode =
+            ParagraphUtils.findInlineTextNodeByCharacterIndex(
+                currentNode, currentNodeOffset);
+
+        return inlineTextNode ? {
+          node: inlineTextNode,
+          offset: currentNodeOffset -
+              ParagraphUtils.getStartCharIndexInParent(inlineTextNode)
+        } :
+                                {node: currentNode, offset: currentNodeOffset};
+      }
+    }
+    return {node: null, offset: 0};
+  }
 }
 
 
@@ -438,7 +487,7 @@ ParagraphUtils.NodeGroup = class {
 
     /**
      * List of nodes in this paragraph in order.
-     * @type {Array<ParagraphUtils.NodeGroupItem>}
+     * @type {!Array<ParagraphUtils.NodeGroupItem>}
      */
     this.nodes = [];
 

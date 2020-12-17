@@ -145,17 +145,15 @@ class SelectToSpeak {
     this.currentNodeWord_ = null;
 
     /**
-     * There are five navigation state variables: |currentNodes|,
-     * |currentNodeGroupStartNodeIndex|, |currentCharIndex|,
-     * |currentStartCharIndex|, |currentEndCharIndex|. These variables enable
-     * us to separate the functionalities of node enqueuing, navigation
-     * control, and TTS playing.
+     * These navigation state variables enable us to separate the
+     * functionalities of node enqueueing, navigation control, and TTS playback.
      * @private {!{currentNodes:!Array<AutomationNode>,
      *             currentNodeGroupStartNodeIndex: number,
      *             currentCharIndex: number,
      *             currentStartCharIndex: (number|undefined),
      *             currentEndCharIndex: (number|undefined),
      *             supportsNavigationPanel: boolean}}
+     *             isUserSelectedContent: boolean}}
      */
     this.navigationState_ = {
       /**
@@ -196,6 +194,14 @@ class SelectToSpeak {
        * Whether the current nodes support use of the navigation panel.
        */
       supportsNavigationPanel: true,
+
+      /**
+       * Whether we are reading user-selected content. True if the current
+       * content is from mouse or keyboard selection. False if the current
+       * content is processed by the navigation features like paragraph
+       * navigation, sentence navigation, pause and resume.
+       */
+      isUserSelectedContent: false,
     };
 
     /**
@@ -338,7 +344,8 @@ class SelectToSpeak {
         // expand to entire paragraph.
         nodes = NodeUtils.getAllNodesInParagraph(nodes[0]);
       }
-      this.startSpeechQueue_(nodes, {clearFocusRing: true});
+      this.startSpeechQueue_(
+          nodes, {clearFocusRing: true, isUserSelectedContent: true});
       MetricsUtils.recordStartEvent(
           MetricsUtils.StartSpeechMethod.MOUSE, this.prefsManager_);
     }.bind(this));
@@ -496,14 +503,17 @@ class SelectToSpeak {
         // The node at the last position was not added to the list, perhaps it
         // was whitespace or invisible. Clear the ending offset because it
         // relates to a node that doesn't exist.
-        this.startSpeechQueue_(
-            nodes,
-            {clearFocusRing: true, startCharIndex: firstPosition.offset});
+        this.startSpeechQueue_(nodes, {
+          clearFocusRing: true,
+          startCharIndex: firstPosition.offset,
+          isUserSelectedContent: true
+        });
       } else {
         this.startSpeechQueue_(nodes, {
           clearFocusRing: true,
           startCharIndex: firstPosition.offset,
-          endCharIndex: lastPosition.offset
+          endCharIndex: lastPosition.offset,
+          isUserSelectedContent: true
         });
       }
       this.initializeScrollingToOffscreenNodes_(focusedNode.root);
@@ -622,7 +632,8 @@ class SelectToSpeak {
    * Set |this.ttsPaused_| and |this.state_| according to pause status.
    * @param {boolean} shouldPause whether the TTS is on pause or speaking.
    * @private
-   * TODO(leileilei): use SelectToSpeakState.PAUSE to indicate the status.
+   * TODO(leileilei): use SelectToSpeakState.PAUSE to indicate the status and
+   * consider refactoring the name of this function.
    */
   updatePauseStatusFromTtsEvent_(shouldPause) {
     this.ttsPaused_ = shouldPause;
@@ -650,11 +661,22 @@ class SelectToSpeak {
         resolve();
       };
       chrome.tts.stop();
+      // If the user triggers pause_() or navigation features that use pause_()
+      // (e.g., sentence navigation), the following reading content will not be
+      // user-selected content. This enables us to distinguish between a user-
+      // trigger pause from the auto pause happening at the end of user-selected
+      // content.
+      this.navigationState_.isUserSelectedContent = false;
     });
   }
 
   /**
-   * Resume the TTS from the beginning of the current sentence.
+   * Resume the TTS. If there is no remaining content in this paragraph, we will
+   * navigate to the next paragraph. If there is still content in this
+   * paragraph, STS behaves differently depending on the resume status. If we
+   * resume from a user-trigger pause, we will resume from the start of the
+   * current sentence. If we resume from the end of user-selected content, we
+   * will continue reading remaining content.
    * @private
    */
   resume_() {
@@ -662,19 +684,42 @@ class SelectToSpeak {
     if (!this.isPaused_()) {
       return;
     }
-    if (!SentenceUtils.isSentenceStart(
-            this.currentNodeGroup_, this.navigationState_.currentCharIndex)) {
-      // If the current position is not a sentence start, move to the start of
-      // the current sentence.
-      const currentSentenceStart = SentenceUtils.getSentenceStart(
-          this.currentNodeGroup_, this.navigationState_.currentCharIndex,
-          constants.Dir.BACKWARD);
-      // Only navigate to the current sentence start if it exists, otherwise
-      // move to the beginning of the current nodeGroup.
-      // TODO(leileilei): check if the 0 char index would cause issues.
-      this.navigationState_.currentCharIndex =
-          currentSentenceStart === null ? 0 : currentSentenceStart;
+    // If there is no processed node group, that means the user has not selected
+    // anything. Ignore the resume command.
+    if (!this.currentNodeGroup_) {
+      return;
     }
+    const {nodes: remainingNodes, offset} =
+        NodeUtils.getNextNodesInParagraphFromNodeGroupWithOffset(
+            this.currentNodeGroup_, this.navigationState_.currentCharIndex);
+    // There is no remaining nodes in this paragraph so we navigate to the next
+    // paragraph.
+    if (remainingNodes.length === 0) {
+      this.navigateToNextParagraph_(constants.Dir.FORWARD);
+      return;
+    }
+
+    if (this.navigationState_.isUserSelectedContent ||
+        SentenceUtils.isSentenceStart(
+            this.currentNodeGroup_, this.navigationState_.currentCharIndex)) {
+      // If we are resuming from the end of user-selected content or if we are
+      // at the start of the current sentence, we should start reading the
+      // remaining content.
+      this.startSpeechQueue_(
+          remainingNodes, {clearFocusRing: false, startCharIndex: offset});
+      return;
+    }
+
+    // If the current position is not a sentence start, move to the start of the
+    // current sentence.
+    const currentSentenceStart = SentenceUtils.getSentenceStart(
+        this.currentNodeGroup_, this.navigationState_.currentCharIndex,
+        constants.Dir.BACKWARD);
+    // Only navigate to the current sentence start if it exists, otherwise move
+    // to the beginning of the current paragraph.
+    // TODO(leileilei): check if the 0 char index would cause issues.
+    this.navigationState_.currentCharIndex =
+        currentSentenceStart === null ? 0 : currentSentenceStart;
     this.startCurrentNodeGroup_();
   }
 
@@ -707,6 +752,7 @@ class SelectToSpeak {
       currentStartCharIndex: undefined,
       currentEndCharIndex: undefined,
       supportsNavigationPanel: true,
+      isUserSelectedContent: false,
     };
   }
 
@@ -1086,11 +1132,12 @@ class SelectToSpeak {
    * Enqueue nodes to TTS queue and start TTS. This function can be used for
    * adding nodes, either from user selection (e.g., mouse selection) or
    * navigation control (e.g., next paragraph). This function will overwrite
-   * |currentNodes| and start TTS according to the offsets.
-   * @param {Array<AutomationNode>} nodes The nodes to speak.
-   * @param {{clearFocusRing: (boolean|undefined),
+   * |this.navigationState_| and start TTS according to the offsets.
+   * @param {!Array<AutomationNode>} nodes The nodes to speak.
+   * @param {!{clearFocusRing: (boolean|undefined),
    *          startCharIndex: (number|undefined),
-   *          endCharIndex: (number|undefined)}=} opt_params
+   *          endCharIndex: (number|undefined),
+   *          isUserSelectedContent: (boolean|undefined)}=} opt_params
    *    clearFocusRing: Whether to clear the focus ring or not. For example, we
    * need to clear the focus ring when starting from scratch but we do not need
    * to clear the focus ring when resuming from a previous pause. If this is not
@@ -1099,6 +1146,8 @@ class SelectToSpeak {
    * speaking. If this is not passed, will start at 0.
    *    endCharIndex: The index into the last node's text at which to end
    * speech. If this is not passed, will stop at the end.
+   *    isUserSelectedContent: Whether the content is from user selection. If
+   * this is not passed, will default to false.
    * @private
    */
   startSpeechQueue_(nodes, opt_params) {
@@ -1106,6 +1155,7 @@ class SelectToSpeak {
     const clearFocusRing = params.clearFocusRing || false;
     let startCharIndex = params.startCharIndex;
     let endCharIndex = params.endCharIndex;
+    const isUserSelectedContent = params.isUserSelectedContent || false;
 
     this.prepareForSpeech_(clearFocusRing /* clear the focus ring */);
 
@@ -1136,6 +1186,7 @@ class SelectToSpeak {
       currentStartCharIndex: startCharIndex,
       currentEndCharIndex: endCharIndex,
       supportsNavigationPanel: this.isNavigationPanelSupported_(nodes),
+      isUserSelectedContent,
     };
 
     // Play TTS according to the current state variables.
@@ -1216,9 +1267,9 @@ class SelectToSpeak {
     }
 
     if (nodeGroup.nodes.length === 0 && !isLastNodeGroup) {
-      // If the current nodeGroup is empty, we start the next nodeGroup after
-      // the current start node index.
-      this.startNodeGroupAfter_(
+      // If the current nodeGroup is empty, we end this node group early, as if
+      // we have completed this node group.
+      this.onNodeGroupSpeakingCompleted_(
           currentNodeGroupStartNodeIndex /* currentNodeGroupEndIndex */);
     }
 
@@ -1287,13 +1338,8 @@ class SelectToSpeak {
           this.updatePauseStatusFromTtsEvent_(true /* shouldPause */);
         }
       } else if (event.type === 'end') {
-        const ttsStarted = this.startNodeGroupAfter_(
+        this.onNodeGroupSpeakingCompleted_(
             nodeGroup.endIndex /* currentNodeGroupEndIndex */);
-        if (!ttsStarted && this.shouldShowNavigationControls_()) {
-          // Should be in a 'paused' state once we reach the end of the node
-          // queue.
-          this.updatePauseStatusFromTtsEvent_(true /* shouldPause */);
-        }
       } else if (event.type === 'word') {
         this.onTtsWordEvent_(event, nodeGroup);
       }
@@ -1302,25 +1348,32 @@ class SelectToSpeak {
   }
 
   /**
-   * Start speaking the next node group indicated by the end index.
+   * When a node group is completed, we start speaking the next node group
+   * indicated by the end index. If we have reached the last node group, this
+   * function will update STS status depending whether the navigation feature is
+   * enabled.
    * @param {number} currentNodeGroupEndIndex the index of the last node in the
    *     current node group. The index is relative to
    *     |this.navigationState_.currentNodes|.
-   * @return {boolean} Whether TTS was started.
    */
-  startNodeGroupAfter_(currentNodeGroupEndIndex) {
+  onNodeGroupSpeakingCompleted_(currentNodeGroupEndIndex) {
+    // Update the current char index to the end of the text content in this
+    // nodeGroup.
+    const nodeGroupText =
+        (this.currentNodeGroup_ && this.currentNodeGroup_.text) || '';
+    this.navigationState_.currentCharIndex = nodeGroupText.trimEnd().length;
+
     const isLastNodeGroup =
         (currentNodeGroupEndIndex ===
          this.navigationState_.currentNodes.length - 1);
     if (isLastNodeGroup) {
-      // TODO (leileilei): If the navigation control is enabled, we need to
-      // enqueue the content between the end of the user's selection to the end
-      // of the paragraph. If there are no nodes in the current NodeGroup.
-      // navigate to the next paragraph.
       if (!this.shouldShowNavigationControls_()) {
         this.onStateChanged_(SelectToSpeakState.INACTIVE);
       }
-      return false;
+      // If navigation features are enabled, we should turn the pause status to
+      // true so that the user can hit resume to continue.
+      this.updatePauseStatusFromTtsEvent_(true /* shouldPause */);
+      return;
     }
 
     // Navigate to the next NodeGroup. Don't change |currentNodes|,
@@ -1330,7 +1383,6 @@ class SelectToSpeak {
         currentNodeGroupEndIndex + 1;
     // Play TTS.
     this.startCurrentNodeGroup_();
-    return true;
   }
 
   /**
