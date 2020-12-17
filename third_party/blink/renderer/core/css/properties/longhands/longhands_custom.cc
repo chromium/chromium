@@ -4418,7 +4418,7 @@ void ListStyleType::ApplyInherit(StyleResolverState& state) const {
 
 void ListStyleType::ApplyValue(StyleResolverState& state,
                                const CSSValue& value) const {
-  ApplyValue(state, ScopedCSSValue(value, nullptr));
+  NOTREACHED();
 }
 
 void ListStyleType::ApplyValue(StyleResolverState& state,
