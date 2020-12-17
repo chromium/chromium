@@ -486,6 +486,9 @@ class VotingChannelWrapper {
   // Returns true if the underlying VotingChannel is valid.
   bool IsValid() const;
 
+  // Checks whether or not there's a vote associated with |context|.
+  bool HasVoteForContext(const ContextType* context);
+
   VoterId<VoteImpl> voter_id() const { return voting_channel_.voter_id(); }
 
  private:
@@ -1032,6 +1035,12 @@ void VotingChannelWrapper<VoteImpl>::InvalidateVote(
 template <class VoteImpl>
 bool VotingChannelWrapper<VoteImpl>::IsValid() const {
   return voting_channel_.IsValid();
+}
+
+template <class VoteImpl>
+bool VotingChannelWrapper<VoteImpl>::HasVoteForContext(
+    const ContextType* context) {
+  return base::Contains(vote_receipts_, context);
 }
 
 }  // namespace voting

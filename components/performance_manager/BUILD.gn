@@ -46,6 +46,7 @@ static_library("performance_manager") {
     "execution_context_priority/root_vote_observer.cc",
     "execution_context_priority/root_vote_observer.h",
     "features.cc",
+    "freezing/freezing.cc",
     "freezing/freezing_vote_aggregator.cc",
     "freezing/freezing_vote_aggregator.h",
     "graph/frame_node.cc",
@@ -295,6 +296,7 @@ source_set("unit_tests") {
   if (!is_android) {
     sources += [
       "decorators/site_data_recorder_unittest.cc",
+      "freezing/freezing_unittest.cc",
       "persistence/site_data/exponential_moving_average_unittest.cc",
       "persistence/site_data/leveldb_site_data_store_unittest.cc",
       "persistence/site_data/non_recording_site_data_cache_unittest.cc",

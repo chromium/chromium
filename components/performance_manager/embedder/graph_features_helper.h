@@ -28,6 +28,7 @@ class GraphFeaturesHelper {
       bool execution_context_registry : 1;
       bool frame_node_impl_describer : 1;
       bool frame_visibility_decorator : 1;
+      bool freezing_vote_decorator : 1;
       bool page_live_state_decorator : 1;
       bool page_load_tracker_decorator : 1;
       bool page_node_impl_describer : 1;
@@ -61,6 +62,11 @@ class GraphFeaturesHelper {
 
   constexpr GraphFeaturesHelper& EnableFrameVisibilityDecorator() {
     flags_.frame_visibility_decorator = true;
+    return *this;
+  }
+
+  constexpr GraphFeaturesHelper& EnableFreezingVoteDecorator() {
+    flags_.freezing_vote_decorator = true;
     return *this;
   }
 
@@ -120,6 +126,7 @@ class GraphFeaturesHelper {
     EnableExecutionContextRegistry();
     EnableFrameNodeImplDescriber();
     EnableFrameVisibilityDecorator();
+    EnableFreezingVoteDecorator();
     EnablePageLiveStateDecorator();
     EnablePageLoadTrackerDecorator();
     EnablePageNodeImplDescriber();

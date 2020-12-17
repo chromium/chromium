@@ -8,6 +8,7 @@
 
 #include "build/build_config.h"
 #include "components/performance_manager/decorators/frame_visibility_decorator.h"
+#include "components/performance_manager/decorators/freezing_vote_decorator.h"
 #include "components/performance_manager/decorators/page_load_tracker_decorator.h"
 #include "components/performance_manager/execution_context/execution_context_registry_impl.h"
 #include "components/performance_manager/execution_context_priority/execution_context_priority_decorator.h"
@@ -42,6 +43,8 @@ void GraphFeaturesHelper::ConfigureGraph(Graph* graph) const {
     Install<FrameNodeImplDescriber>(graph);
   if (flags_.frame_visibility_decorator)
     Install<FrameVisibilityDecorator>(graph);
+  if (flags_.freezing_vote_decorator)
+    Install<FreezingVoteDecorator>(graph);
   if (flags_.page_live_state_decorator)
     Install<PageLiveStateDecorator>(graph);
   if (flags_.page_load_tracker_decorator)

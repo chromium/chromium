@@ -220,7 +220,7 @@ void PageFreezingPolicy::UpdateNegativeFreezingVote(const PageNode* page_node,
               ->GetRegisteredObjectAs<freezing::FreezingVoteAggregator>()
               ->GetVotingChannel());
     } else {
-      DCHECK(!iter->second->IsValid());
+      DCHECK(!iter->second->HasVoteForContext(page_node));
     }
     // Submit the negative freezing vote.
     iter->second->SubmitVote(page_node,

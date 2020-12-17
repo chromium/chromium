@@ -220,6 +220,8 @@ Polymer({
         return pageLifecycleStateFromVisibilityAndFocus();
       case LifecycleUnitState.THROTTLED:
         return pageLifecycleStateFromVisibilityAndFocus() + ' (throttled)';
+      case LifecycleUnitState.FROZEN:
+        return 'frozen';
       case LifecycleUnitState.DISCARDED:
         return 'discarded (' + this.discardReasonToString_(reason) + ')' +
             ((reason === LifecycleUnitDiscardReason.URGENT) ? ' at ' +

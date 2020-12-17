@@ -10,6 +10,10 @@
 
 #include "components/performance_manager/public/voting/voting.h"
 
+namespace content {
+class WebContents;
+}
+
 namespace performance_manager {
 
 class PageNode;
@@ -29,6 +33,28 @@ using FreezingVotingChannel = voting::VotingChannel<FreezingVote>;
 using FreezingVoteConsumerDefaultImpl =
     voting::VoteConsumerDefaultImpl<FreezingVote>;
 using FreezingVotingChannelWrapper = voting::VotingChannelWrapper<FreezingVote>;
+
+// A freezing vote token, instances of this are meant to be retrieved by calling
+// |EmitFreezingVoteForWebContents|.
+class FreezingVoteToken {
+ public:
+  FreezingVoteToken(const FreezingVoteToken& other) = delete;
+  FreezingVoteToken& operator=(const FreezingVoteToken&) = delete;
+  virtual ~FreezingVoteToken() = 0;
+
+ protected:
+  FreezingVoteToken();
+};
+
+// Allows emiting a freezing vote for a WebContents. The vote's lifetime will
+// follow the lifetime of this object, as soon as it's released the vote will be
+// invalidated.
+//
+// NOTE: |vote_reason| *must* be a static string.
+std::unique_ptr<FreezingVoteToken> EmitFreezingVoteForWebContents(
+    content::WebContents* content,
+    FreezingVoteValue vote_value,
+    const char* vote_reason);
 
 }  // namespace freezing
 }  // namespace performance_manager
