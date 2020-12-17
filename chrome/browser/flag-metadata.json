@@ -4597,6 +4597,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "stylus-battery-status",
+    "owners": ["amehfooz"],
+    "expiry_milestone": 91
+  },
+  {
     "name": "suggested-content-toggle",
     "owners": [ "jiameng", "wrong" ],
     "expiry_milestone": 88

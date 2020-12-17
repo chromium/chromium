@@ -42189,6 +42189,7 @@ from previous Chrome versions.
   <int value="-1972219399" label="NTPSaveToOffline:enabled"/>
   <int value="-1971086581" label="print-scaling"/>
   <int value="-1969636234" label="OmniboxRefinedFocusState:disabled"/>
+  <int value="-1966445414" label="StylusBatteryStatus:disabled"/>
   <int value="-1965587041" label="omnibox-tab-switch-suggestions"/>
   <int value="-1964261747" label="WebVrVsyncAlign:disabled"/>
   <int value="-1963838301"
@@ -42570,6 +42571,7 @@ from previous Chrome versions.
   <int value="-1621963267" label="EnableAssistantLauncherUI:enabled"/>
   <int value="-1620804800" label="NoScriptPreviews:disabled"/>
   <int value="-1620568042" label="FeaturePolicy:disabled"/>
+  <int value="-1620230777" label="StylusBatteryStatus:enabled"/>
   <int value="-1620046590" label="UseMediaHistoryStore:enabled"/>
   <int value="-1619757314" label="touch-scrolling-mode"/>
   <int value="-1619146163" label="OverrideSitePrefsForHrefTranslate:disabled"/>

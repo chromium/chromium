@@ -2283,6 +2283,12 @@ const char kSystemKeyboardLockDescription[] =
     "keyboard shortcuts and have the events routed directly to the website "
     "when in fullscreen mode.";
 
+const char kStylusBatteryStatusName[] =
+    "Show stylus battery stylus in the stylus tools menu";
+const char kStylusBatteryStatusDescription[] =
+    "Enables viewing the current stylus battery level in the stylus tools "
+    "menu.";
+
 const char kSystemTrayMicGainName[] = "Modify mic gain in the system tray";
 const char kSystemTrayMicGainDescription[] =
     "Enables mic gain settings in the system tray audio "
