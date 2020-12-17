@@ -321,6 +321,28 @@ TEST_F(VideoFrameCallbackRequesterImplTest,
   testing::Mock::VerifyAndClear(function);
 }
 
+TEST_F(VideoFrameCallbackRequesterImplTest,
+       VerifyClearedMediaPlayerCancelsPendingExecution) {
+  V8TestingScope scope;
+
+  auto* function = MockFunction::Create(scope.GetScriptState());
+
+  // Queue a request.
+  vfc_requester().requestVideoFrameCallback(GetCallback(function));
+  SimulateFramePresented();
+
+  // The callback should be scheduled for execution, but not yet run.
+  EXPECT_CALL(*function, Call(_)).Times(0);
+
+  // Simulate the HTMLVideoElement getting changing its WebMediaPlayer.
+  vfc_requester().OnWebMediaPlayerCleared();
+
+  // This should be a no-op, else we could get metadata for a null frame.
+  SimulateVideoFrameCallback(base::TimeTicks::Now());
+
+  testing::Mock::VerifyAndClear(function);
+}
+
 TEST_F(VideoFrameCallbackRequesterImplTest, VerifyParameters_WindowRaf) {
   auto timing = GetDocument().Loader()->GetTiming();
   MetadataHelper::ReinitializeFields(timing.ReferenceMonotonicTime());
