@@ -20,7 +20,13 @@ void NOINLINE PartitionExcessiveAllocationSize(size_t size) {
 NOINLINE void PartitionOutOfMemoryWithLotsOfUncommitedPages(size_t size) {
   OOM_CRASH(size);
 }
-#endif
+
+[[noreturn]] NOINLINE void PartitionOutOfMemoryWithLargeVirtualSize(
+    size_t virtual_size) {
+  OOM_CRASH(virtual_size);
+}
+
+#endif  // !defined(ARCH_CPU_64_BITS)
 
 }  // namespace internal
 }  // namespace base

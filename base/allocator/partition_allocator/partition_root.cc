@@ -310,17 +310,38 @@ void DCheckIfManagedByPartitionAllocNormalBuckets(const void* ptr) {
 }  // namespace internal
 
 template <bool thread_safe>
-NOINLINE void PartitionRoot<thread_safe>::OutOfMemory(size_t size) {
+[[noreturn]] NOINLINE void PartitionRoot<thread_safe>::OutOfMemory(
+    size_t size) {
 #if !defined(ARCH_CPU_64_BITS)
+  size_t virtual_address_space_size =
+      total_size_of_super_pages.load(std::memory_order_relaxed) +
+      total_size_of_direct_mapped_pages.load(std::memory_order_relaxed);
+  size_t uncommitted_size =
+      virtual_address_space_size -
+      total_size_of_committed_pages.load(std::memory_order_relaxed);
+
   // Check whether this OOM is due to a lot of super pages that are allocated
   // but not committed, probably due to http://crbug.com/421387.
-  //
-  if (total_size_of_super_pages.load(std::memory_order_relaxed) +
-          total_size_of_direct_mapped_pages.load(std::memory_order_relaxed) -
-          total_size_of_committed_pages.load(std::memory_order_relaxed) >
-      kReasonableSizeOfUnusedPages) {
+  if (uncommitted_size > kReasonableSizeOfUnusedPages) {
     internal::PartitionOutOfMemoryWithLotsOfUncommitedPages(size);
   }
+
+  constexpr size_t kReasonableVirtualSize =
+#if defined(OS_WIN)
+      // 1GiB on Windows, as the entire address space is typically 2GiB.
+      1024 * 1024 * 1024;
+#else
+      // 1.5GiB elsewhere, since address space is typically 3GiB.
+      (1024 + 512) * 1024 * 1024;
+#endif
+  if (virtual_address_space_size > kReasonableVirtualSize) {
+    internal::PartitionOutOfMemoryWithLargeVirtualSize(
+        virtual_address_space_size);
+  }
+
+  // Make the virtual size visible to crash reports all the time.
+  base::debug::Alias(&virtual_address_space_size);
+
 #endif
   if (internal::g_oom_handling_function)
     (*internal::g_oom_handling_function)(size);

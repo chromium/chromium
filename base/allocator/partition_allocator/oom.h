@@ -16,7 +16,7 @@
 namespace {
 // The crash is generated in a NOINLINE function so that we can classify the
 // crash as an OOM solely by analyzing the stack trace.
-NOINLINE void OnNoMemory(size_t size) {
+[[noreturn]] NOINLINE void OnNoMemory(size_t size) {
   base::internal::RunPartitionAllocOomCallback();
   base::internal::OnNoMemoryInternal(size);
   IMMEDIATE_CRASH();

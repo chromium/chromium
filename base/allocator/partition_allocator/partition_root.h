@@ -246,7 +246,7 @@ struct BASE_EXPORT PartitionRoot {
       PageAccessibilityDisposition accessibility_disposition)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  NOINLINE void OutOfMemory(size_t size);
+  [[noreturn]] NOINLINE void OutOfMemory(size_t size);
 
   // Returns a pointer aligned on |alignment|, or nullptr.
   //
