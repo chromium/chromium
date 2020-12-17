@@ -8606,12 +8606,10 @@ void WebContentsImpl::UpdateWebContentsVisibility(Visibility visibility) {
   OPTIONAL_TRACE_EVENT1("content",
                         "WebContentsImpl::UpdateWebContentsVisibility",
                         "visibility", visibility);
-  // Occlusion is disabled when |features::kWebContentsOcclusion| is disabled
-  // (for power and speed impact assessment) or when
+  // Occlusion is disabled when
   // |switches::kDisableBackgroundingOccludedWindowsForTesting| is specified on
   // the command line (to avoid flakiness in browser tests).
   const bool occlusion_is_disabled =
-      !base::FeatureList::IsEnabled(features::kWebContentsOcclusion) ||
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableBackgroundingOccludedWindowsForTesting);
   if (occlusion_is_disabled && visibility == Visibility::OCCLUDED)

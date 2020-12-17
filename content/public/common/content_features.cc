@@ -794,17 +794,6 @@ const base::Feature kWebAssemblyTrapHandler{"WebAssemblyTrapHandler",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
-// Controls whether the visibility of a WebContents can be OCCLUDED. When
-// disabled, an occluded WebContents behaves exactly like a VISIBLE WebContents.
-const base::Feature kWebContentsOcclusion {
-  "WebContentsOcclusion",
-#if defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
-      base::FEATURE_ENABLED_BY_DEFAULT
-#else
-      base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-};
-
 // Controls whether the WebAuthentication API is enabled:
 // https://w3c.github.io/webauthn
 const base::Feature kWebAuth{"WebAuthentication",

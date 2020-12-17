@@ -222,9 +222,6 @@ TEST_F(WebContentsViewAuraTest, WebContentsDestroyedDuringClick) {
 }
 
 TEST_F(WebContentsViewAuraTest, OccludeView) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kWebContentsOcclusion);
-
   EXPECT_EQ(web_contents()->GetVisibility(), Visibility::VISIBLE);
   occluding_window_->Show();
   EXPECT_EQ(web_contents()->GetVisibility(), Visibility::OCCLUDED);

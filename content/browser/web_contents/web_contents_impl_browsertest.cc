@@ -1653,7 +1653,6 @@ IN_PROC_BROWSER_TEST_F(
   // occluded (because we treat it as hidden), unless when occlusion is
   // disabled, in which case we treat it the same as being visible.
   const bool occlusion_is_disabled =
-      !base::FeatureList::IsEnabled(features::kWebContentsOcclusion) ||
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableBackgroundingOccludedWindowsForTesting);
   web_contents->UpdateWebContentsVisibility(Visibility::OCCLUDED);

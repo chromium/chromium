@@ -4980,11 +4980,6 @@
     "expiry_milestone": 90
   },
   {
-    "name": "web-contents-occlusion",
-    "owners": [ "davidbienvenu", "fdoray" ],
-    "expiry_milestone": 84
-  },
-  {
     "name": "web-feed",
     "owners": [ "//chrome/android/feed/OWNERS", "feed@chromium.org" ],
     "expiry_milestone": 99

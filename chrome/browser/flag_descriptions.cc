@@ -4820,15 +4820,6 @@ const char kDirectManipulationStylusDescription[] =
 #endif  // defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) ||
         // defined(OS_CHROMEOS)
 
-#if defined(OS_WIN) || defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
-
-const char kWebContentsOcclusionName[] = "Enable occlusion of web contents";
-const char kWebContentsOcclusionDescription[] =
-    "If enabled, web contents will behave as hidden when it is occluded by "
-    "other windows.";
-
-#endif  // defined(OS_WIN) || defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if defined(OS_CHROMEOS) || defined(OS_LINUX)
 #if BUILDFLAG(USE_TCMALLOC)
 const char kDynamicTcmallocName[] = "Dynamic Tcmalloc Tuning";

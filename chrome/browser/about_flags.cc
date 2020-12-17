@@ -5350,13 +5350,6 @@ const FeatureEntry kFeatureEntries[] = {
          autofill_assistant::features::kAutofillAssistantProactiveHelp)},
 #endif  // defined(OS_ANDROID)
 
-#if defined(OS_WIN) || defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
-    {"web-contents-occlusion", flag_descriptions::kWebContentsOcclusionName,
-     flag_descriptions::kWebContentsOcclusionDescription,
-     kOsWin | kOsMac | kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kWebContentsOcclusion)},
-#endif  // defined(OS_WIN) || defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if defined(OS_ANDROID)
     {"mobile-identity-consistency",
      flag_descriptions::kMobileIdentityConsistencyName,

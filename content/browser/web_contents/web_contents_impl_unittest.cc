@@ -1684,9 +1684,6 @@ TEST_F(WebContentsImplTest, CapturerOverridesPreferredSize) {
 }
 
 TEST_F(WebContentsImplTest, UpdateWebContentsVisibility) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kWebContentsOcclusion);
-
   TestRenderWidgetHostView* view = static_cast<TestRenderWidgetHostView*>(
       main_test_rfh()->GetRenderViewHost()->GetWidget()->GetView());
   TestWebContentsObserver observer(contents());
@@ -1793,8 +1790,6 @@ TEST_F(WebContentsImplTest, HideWithCapturer) {
 }
 
 TEST_F(WebContentsImplTest, OccludeWithCapturer) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kWebContentsOcclusion);
   HideOrOccludeWithCapturerTest(contents(), Visibility::OCCLUDED);
 }
 
