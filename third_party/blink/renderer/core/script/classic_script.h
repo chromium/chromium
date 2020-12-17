@@ -6,8 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_CLASSIC_SCRIPT_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/sanitize_script_errors.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/loader/resource/script_resource.h"
 #include "third_party/blink/renderer/core/script/script.h"
@@ -49,14 +49,14 @@ class CORE_EXPORT ClassicScript final : public Script {
   // and overloaded here to avoid modifying Script::RunScript(), because this is
   // a tentative interface. When crbug/1111134 is done, this should be gone.
   void RunScript(LocalDOMWindow*) override;
-  void RunScript(LocalDOMWindow*, ScriptController::ExecuteScriptPolicy);
+  void RunScript(LocalDOMWindow*, ExecuteScriptPolicy);
   bool RunScriptOnWorkerOrWorklet(WorkerOrWorkletGlobalScope&) override;
 
   // Unlike RunScript() and RunScriptOnWorkerOrWorklet(), callers of the
   // following methods must enter a v8::HandleScope before calling.
   v8::Local<v8::Value> RunScriptAndReturnValue(
       LocalDOMWindow*,
-      ScriptController::ExecuteScriptPolicy = ScriptController::
+      ExecuteScriptPolicy =
           ExecuteScriptPolicy::kDoNotExecuteScriptWhenScriptsDisabled);
   v8::Local<v8::Value> RunScriptInIsolatedWorldAndReturnValue(LocalDOMWindow*,
                                                               int32_t world_id);

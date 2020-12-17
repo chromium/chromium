@@ -898,7 +898,7 @@ void InspectorPageAgent::DidClearDocumentOfWindowObject(LocalFrame* frame) {
     if (world_name.IsEmpty()) {
       ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(source))
           ->RunScript(frame->DomWindow(),
-                      ScriptController::kExecuteScriptWhenScriptsDisabled);
+                      ExecuteScriptPolicy::kExecuteScriptWhenScriptsDisabled);
       continue;
     }
 
@@ -919,7 +919,7 @@ void InspectorPageAgent::DidClearDocumentOfWindowObject(LocalFrame* frame) {
     ClassicScript::CreateUnspecifiedScript(
         ScriptSourceCode(script_to_evaluate_on_load_once_))
         ->RunScript(frame->DomWindow(),
-                    ScriptController::kExecuteScriptWhenScriptsDisabled);
+                    ExecuteScriptPolicy::kExecuteScriptWhenScriptsDisabled);
   }
 }
 

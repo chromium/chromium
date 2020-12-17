@@ -393,7 +393,7 @@ createShadowRootWithin(document.body);
     ClassicScript::CreateUnspecifiedScript(
         ScriptSourceCode(script, ScriptSourceLocationType::kInternal))
         ->RunScript(web_frame_->GetFrame()->DomWindow(),
-                    ScriptController::kExecuteScriptWhenScriptsDisabled);
+                    ExecuteScriptPolicy::kExecuteScriptWhenScriptsDisabled);
   }
 
   if (web_frame_->Client()) {

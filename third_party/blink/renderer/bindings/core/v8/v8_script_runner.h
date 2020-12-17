@@ -49,6 +49,11 @@ class ScriptFetchOptions;
 class ScriptSourceCode;
 class ScriptState;
 
+enum class ExecuteScriptPolicy {
+  kExecuteScriptWhenScriptsDisabled,
+  kDoNotExecuteScriptWhenScriptsDisabled
+};
+
 class CORE_EXPORT V8ScriptRunner final {
   STATIC_ONLY(V8ScriptRunner);
 
@@ -118,15 +123,15 @@ class CORE_EXPORT V8ScriptRunner final {
       v8::ScriptCompiler::CompileOptions,
       v8::ScriptCompiler::NoCacheReason,
       const ReferrerScriptInfo&);
-  static ScriptEvaluationResult CompileAndRunScript(
-      v8::Isolate*,
-      ScriptState*,
-      ExecutionContext*,
-      const ScriptSourceCode&,
-      const KURL&,
-      SanitizeScriptErrors,
-      const ScriptFetchOptions&,
-      RethrowErrorsOption);
+  static ScriptEvaluationResult CompileAndRunScript(v8::Isolate*,
+                                                    ScriptState*,
+                                                    ExecutionContext*,
+                                                    const ScriptSourceCode&,
+                                                    const KURL&,
+                                                    SanitizeScriptErrors,
+                                                    const ScriptFetchOptions&,
+                                                    ExecuteScriptPolicy,
+                                                    RethrowErrorsOption);
   static v8::MaybeLocal<v8::Value> CompileAndRunInternalScript(
       v8::Isolate*,
       ScriptState*,

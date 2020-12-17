@@ -27,18 +27,18 @@ void ClassicScript::Trace(Visitor* visitor) const {
 
 void ClassicScript::RunScript(LocalDOMWindow* window) {
   return RunScript(window,
-                   ScriptController::kDoNotExecuteScriptWhenScriptsDisabled);
+                   ExecuteScriptPolicy::kDoNotExecuteScriptWhenScriptsDisabled);
 }
 
 void ClassicScript::RunScript(LocalDOMWindow* window,
-                              ScriptController::ExecuteScriptPolicy policy) {
+                              ExecuteScriptPolicy policy) {
   v8::HandleScope handle_scope(window->GetIsolate());
   RunScriptAndReturnValue(window, policy);
 }
 
 v8::Local<v8::Value> ClassicScript::RunScriptAndReturnValue(
     LocalDOMWindow* window,
-    ScriptController::ExecuteScriptPolicy policy) {
+    ExecuteScriptPolicy policy) {
   return window->GetScriptController().EvaluateScriptInMainWorld(
       GetScriptSourceCode(), BaseURL(), sanitize_script_errors_, FetchOptions(),
       policy);

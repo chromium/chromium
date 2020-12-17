@@ -55,17 +55,14 @@ class LocalDOMWindow;
 class ScriptSourceCode;
 class SecurityOrigin;
 
+enum class ExecuteScriptPolicy;
+
 // This class exposes methods to run script in a frame (in the main world and
 // in isolated worlds). An instance can be obtained by using
 // LocalDOMWindow::GetScriptController().
 class CORE_EXPORT ScriptController final
     : public GarbageCollected<ScriptController> {
  public:
-  enum ExecuteScriptPolicy {
-    kExecuteScriptWhenScriptsDisabled,
-    kDoNotExecuteScriptWhenScriptsDisabled
-  };
-
   ScriptController(LocalDOMWindow& window,
                    LocalWindowProxyManager& window_proxy_manager)
       : window_(&window), window_proxy_manager_(&window_proxy_manager) {}
@@ -77,20 +74,18 @@ class CORE_EXPORT ScriptController final
     return window_proxy_manager_->WindowProxy(world);
   }
 
-  v8::Local<v8::Value> ExecuteScriptAndReturnValue(
-      v8::Local<v8::Context>,
-      const ScriptSourceCode&,
-      const KURL& base_url,
-      SanitizeScriptErrors,
-      const ScriptFetchOptions& = ScriptFetchOptions());
+  v8::Local<v8::Value> ExecuteScriptAndReturnValue(v8::Local<v8::Context>,
+                                                   const ScriptSourceCode&,
+                                                   const KURL& base_url,
+                                                   SanitizeScriptErrors,
+                                                   const ScriptFetchOptions&,
+                                                   ExecuteScriptPolicy);
 
   v8::Local<v8::Value> EvaluateMethodInMainWorld(
       v8::Local<v8::Function> function,
       v8::Local<v8::Value> receiver,
       int argc,
-      v8::Local<v8::Value> argv[],
-      ScriptController::ExecuteScriptPolicy = ScriptController::
-          ExecuteScriptPolicy::kDoNotExecuteScriptWhenScriptsDisabled);
+      v8::Local<v8::Value> argv[]);
 
   // Evaluate JavaScript in the main world.
   v8::Local<v8::Value> EvaluateScriptInMainWorld(const ScriptSourceCode&,
