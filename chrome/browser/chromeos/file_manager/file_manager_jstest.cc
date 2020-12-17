@@ -234,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, TaskController) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, TaskQueueTest) {
-  RunTestURL("background/js/task_queue_unittest_gen.html");
+  RunTestURL("background/js/task_queue_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ThumbnailLoader) {

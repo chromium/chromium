@@ -718,18 +718,14 @@ js_library("task_queue") {
   externs_list = [ "//ui/file_manager/externs/background/task_queue.js" ]
 }
 
-js_unittest("task_queue_unittest") {
+js_unittest("task_queue_unittest.m") {
   deps = [
-    ":task_queue",
-    "//ui/file_manager/base/js:test_error_reporting",
-    "//ui/file_manager/base/js:volume_manager_types",
-    "//ui/file_manager/file_manager/common/js:importer_common",
-    "//ui/file_manager/file_manager/common/js:progress_center_common",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js/cr:event_target",
+    ":task_queue.m",
+    "//chrome/test/data/webui:chai_assert",
+    "//ui/file_manager/base/js:test_error_reporting.m",
+    "//ui/file_manager/externs/background:task_queue.m",
+    "//ui/file_manager/file_manager/common/js:importer_common.m",
   ]
-  externs_list = [ "//ui/file_manager/externs/background/task_queue.js" ]
 }
 
 js_library("task_queue.m") {
@@ -900,6 +896,7 @@ js_test_gen_html("js_test_gen_html_modules") {
     ":crostini_unittest.m",
     ":metadata_proxy_unittest.m",
     ":mount_metrics_unittest.m",
+    ":task_queue_unittest.m",
   ]
   js_module = true
 
@@ -922,7 +919,6 @@ js_test_gen_html("js_test_gen_html") {
     ":import_history_unittest",
     ":media_import_handler_unittest",
     ":media_scanner_unittest",
-    ":task_queue_unittest",
     ":trash_unittest",
     ":volume_manager_unittest",
   ]
