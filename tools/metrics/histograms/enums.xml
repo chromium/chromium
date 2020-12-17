@@ -10133,9 +10133,18 @@ histogram as enum -->
 
 <enum name="ChromeOSSharesheetAction">
   <summary>Defines Chrome OS sharesheet actions.</summary>
-  <int value="0" label="Cancelled by user"/>
+  <int value="0" label="Cancelled by user clicking outside bubble"/>
   <int value="1" label="Launch ARC app"/>
-  <int value="2" label="Launch share action"/>
+  <int value="2" label="Launch Nearby Share action"/>
+  <int value="3" label="Cancelled by user pressing Esc key"/>
+  <int value="4" label="Launch Web app"/>
+  <int value="5" label="Launch Drive share action"/>
+</enum>
+
+<enum name="ChromeOSSharesheetFormFactor">
+  <summary>Different form factors.</summary>
+  <int value="0" label="Tablet form factor"/>
+  <int value="1" label="Clamshell form factor"/>
 </enum>
 
 <enum name="ChromeOSUICommands">

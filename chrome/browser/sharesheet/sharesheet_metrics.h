@@ -12,10 +12,23 @@ class SharesheetMetrics {
   // The action taken by a user after the sharesheet is invoked.
   // This enum is for recording histograms and must be treated as append-only.
   enum class UserAction {
-    kCancelled = 0,  // User cancelled sharesheet.
-    kArc,            // Opened an ARC app.
-    kAction,         // User selected an action.
-    kMaxValue = kAction,
+    kCancelledThroughClickingOut =
+        0,          // User cancelled sharesheet by clicking outside the bubble.
+    kArc,           // Opened an ARC app.
+    kNearbyAction,  // User selected the nearby share action.
+    kCancelledThroughEscPress,  // User cancelled sharesheet by pressing esc on
+                                // keyboard.
+    kWeb,                       // Opened a web app.
+    kDriveAction,               // User selected the drive share action.
+    kMaxValue = kDriveAction,
+  };
+
+  // Device form factor when sharesheet is invoked.
+  // This enum is for recording histograms and must be treated as append-only.
+  enum class FormFactor {
+    kTablet = 0,
+    kClamshell,
+    kMaxValue = kClamshell,
   };
 
   SharesheetMetrics();
@@ -23,6 +36,8 @@ class SharesheetMetrics {
   static void RecordSharesheetActionMetrics(UserAction action);
 
   static void RecordSharesheetAppCount(int app_count);
+
+  static void RecordSharesheetFormFactor(FormFactor form_factor);
 };
 
 }  // namespace sharesheet

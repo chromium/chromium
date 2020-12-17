@@ -104,6 +104,8 @@ class SharesheetService : public KeyedService {
                               bool contains_hosted_document,
                               sharesheet::CloseCallback close_callback);
 
+  void RecordActionMetrics(const base::string16& target_name);
+
   Profile* profile_;
   std::unique_ptr<SharesheetActionCache> sharesheet_action_cache_;
   apps::AppServiceProxy* app_service_proxy_;

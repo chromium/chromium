@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/public/cpp/ash_typography.h"
+#include "ash/public/cpp/tablet_mode.h"
 #include "base/i18n/rtl.h"
 #include "base/strings/string16.h"
 #include "base/time/time.h"
@@ -173,6 +174,7 @@ void SharesheetBubbleView::ShowBubble(
       l10n_util::GetStringUTF16(IDS_SHARESHEET_TITLE_LABEL));
   views::BubbleDialogDelegateView::CreateBubble(this);
   GetWidget()->GetRootView()->Layout();
+  RecordFormFactorMetric();
   ShowWidgetWithAnimateFadeIn();
 
   if (expanded_view_ == nullptr || expanded_view_->children().size() > 1) {
@@ -376,6 +378,8 @@ void SharesheetBubbleView::OnKeyEvent(ui::KeyEvent* event) {
   if (!IsKeyboardCodeArrow(event->key_code()) ||
       event->type() != ui::ET_KEY_RELEASED || default_view_ == nullptr ||
       is_bubble_closing_) {
+    if (event->key_code() == ui::VKEY_ESCAPE && !is_bubble_closing_)
+      escape_pressed_ = true;
     View::OnKeyEvent(event);
     return;
   }
@@ -451,8 +455,11 @@ void SharesheetBubbleView::OnWidgetActivationChanged(views::Widget* widget,
     if (close_callback_) {
       std::move(close_callback_).Run(sharesheet::SharesheetResult::kCancel);
     }
-    sharesheet::SharesheetMetrics::RecordSharesheetActionMetrics(
-        sharesheet::SharesheetMetrics::UserAction::kCancelled);
+    auto action = escape_pressed_ ? sharesheet::SharesheetMetrics::UserAction::
+                                        kCancelledThroughEscPress
+                                  : sharesheet::SharesheetMetrics::UserAction::
+                                        kCancelledThroughClickingOut;
+    sharesheet::SharesheetMetrics::RecordSharesheetActionMetrics(action);
     CloseWidgetWithAnimateFadeOut(views::Widget::ClosedReason::kLostFocus);
   }
 }
@@ -608,6 +615,14 @@ void SharesheetBubbleView::CloseWidgetWithReason(
 
   // Bubble is deleted here.
   delegate_->OnBubbleClosed(active_target_);
+}
+
+void SharesheetBubbleView::RecordFormFactorMetric() {
+  auto form_factor =
+      ash::TabletMode::Get()->InTabletMode()
+          ? sharesheet::SharesheetMetrics::FormFactor::kTablet
+          : sharesheet::SharesheetMetrics::FormFactor::kClamshell;
+  sharesheet::SharesheetMetrics::RecordSharesheetFormFactor(form_factor);
 }
 
 BEGIN_METADATA(SharesheetBubbleView, views::BubbleDialogDelegateView)

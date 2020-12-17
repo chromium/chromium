@@ -25,4 +25,8 @@ void SharesheetMetrics::RecordSharesheetAppCount(int app_count) {
                                 kMaxAppCount);
 }
 
+void SharesheetMetrics::RecordSharesheetFormFactor(FormFactor form_factor) {
+  base::UmaHistogramEnumeration("ChromeOS.Sharesheet.FormFactor", form_factor);
+}
+
 }  // namespace sharesheet

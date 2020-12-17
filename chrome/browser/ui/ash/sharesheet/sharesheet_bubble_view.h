@@ -71,6 +71,7 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView {
   void ShowWidgetWithAnimateFadeIn();
   void CloseWidgetWithAnimateFadeOut(views::Widget::ClosedReason closed_reason);
   void CloseWidgetWithReason(views::Widget::ClosedReason closed_reason);
+  void RecordFormFactorMetric();
 
   // Owns this class.
   sharesheet::SharesheetServiceDelegate* delegate_;
@@ -83,6 +84,7 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView {
   bool show_expanded_view_ = false;
   bool is_bubble_closing_ = false;
   bool user_selection_made_ = false;
+  bool escape_pressed_ = false;
 
   size_t keyboard_highlighted_target_ = 0;
 
