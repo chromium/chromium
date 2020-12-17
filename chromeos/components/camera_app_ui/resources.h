@@ -61,6 +61,7 @@ const struct {
     {"expert_print_performance_logs", IDS_EXPERT_PRINT_PERFORMANCE_LOGS},
     {"expert_scan_barcode", IDS_EXPERT_SCAN_BARCODE},
     {"snackbar_link_copied", IDS_SNACKBAR_LINK_COPIED},
+    {"snackbar_text_copied", IDS_SNACKBAR_TEXT_COPIED},
     {"error_msg_expert_mode_not_supported",
      IDS_ERROR_MSG_EXPERT_MODE_NOT_SUPPORTED},
     {"feedback_button", IDS_FEEDBACK_BUTTON},

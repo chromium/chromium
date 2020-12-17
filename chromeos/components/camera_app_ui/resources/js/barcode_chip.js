@@ -4,7 +4,6 @@
 
 import * as dom from './dom.js';
 import * as snackbar from './snackbar.js';
-import * as toast from './toast.js';
 import * as util from './util.js';
 
 /**
@@ -26,11 +25,27 @@ function isSafeUrl(s) {
 }
 
 /**
+ * Setups the copy button.
+ * @param {!HTMLElement} container The container for the button.
+ * @param {string} content The content to be copied.
+ * @param {string} snackbarLabel The label to be displayed on snackbar when the
+ *     content is copied.
+ */
+function setupCopyButton(container, content, snackbarLabel) {
+  const copyButton =
+      dom.getFrom(container, '.barcode-copy-button', HTMLButtonElement);
+  copyButton.onclick = async () => {
+    await navigator.clipboard.writeText(content);
+    snackbar.show(snackbarLabel);
+  };
+}
+
+/**
  * Shows an actionable url chip.
  * @param {string} url
  */
 function showUrl(url) {
-  const container = dom.get('.barcode-chip-container', HTMLDivElement);
+  const container = dom.get('#barcode-chip-url-container', HTMLDivElement);
 
   const anchor = dom.getFrom(container, 'a', HTMLAnchorElement);
   Object.assign(anchor, {
@@ -38,14 +53,7 @@ function showUrl(url) {
     textContent: url,
   });
 
-  // TODO(b/172879638): Extract a common implementation for both URL and Text
-  // barcodes.
-  const copyButton =
-      dom.getFrom(container, '.barcode-copy-button', HTMLButtonElement);
-  copyButton.onclick = async () => {
-    await navigator.clipboard.writeText(url);
-    snackbar.show('snackbar_link_copied');
-  };
+  setupCopyButton(container, url, 'snackbar_link_copied');
 
   // TODO(b/172879638): Handle a11y.
   util.animateOnce(container);
@@ -56,8 +64,23 @@ function showUrl(url) {
  * @param {string} text
  */
 function showText(text) {
-  // TODO(b/172879638): Show text properly.
-  toast.showDebugMessage(text);
+  const container = dom.get('#barcode-chip-text-container', HTMLDivElement);
+  container.classList.remove('expanded');
+
+  const textEl = dom.get('#barcode-chip-text-content', HTMLDivElement);
+  textEl.textContent = text;
+  const expandable = textEl.scrollWidth > textEl.clientWidth;
+
+  const expandEl = dom.get('#barcode-chip-text-expand', HTMLButtonElement);
+  expandEl.classList.toggle('hide', !expandable);
+  expandEl.onclick = () => {
+    container.classList.toggle('expanded');
+  };
+
+  setupCopyButton(container, text, 'snackbar_text_copied');
+
+  // TODO(b/172879638): Handle a11y.
+  util.animateOnce(container);
 }
 
 /**

@@ -1515,14 +1515,15 @@ body:not(.mode-switching):not(.streaming):not(.review-result) #spinner {
   left: 50%;
   opacity: 0;
   position: absolute;
-  top: 15%;
-  transform: translate(-50%, -50%);
+  top: 10%;
+  transform: translateX(-50%);
   visibility: hidden;
   z-index: 50;
 }
 
 /* TODO(b/172879638): Tune the animation according to the final motion spec. */
 .barcode-chip-container.animate {
+  /* TODO(b/172879638): This might be too short for long text. */
   animation: 8s show-barcode-chip ease-out;
   visibility: visible;
 }
@@ -1586,6 +1587,50 @@ body:not(.mode-switching):not(.streaming):not(.review-result) #spinner {
   top: 0;
   width: var(--chip-height);
   z-index: 50;
+}
+
+.barcode-chip-text {
+  align-items: center;
+  background: var(--grey-900);
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 4px 8px rgba(0, 0, 0, 0.15);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  font: 400 15px Roboto;
+}
+
+#barcode-chip-text-content {
+  --line-height: 24px;
+  color: var(--grey-200);
+  line-height: var(--line-height);
+  margin: 8px 20px;
+  max-width: 416px;
+  overflow: hidden;
+  text-decoration: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.expanded #barcode-chip-text-content {
+  /* TODO(b/172879638): Make this responsive */
+  max-height: calc(var(--line-height) * 10);
+  white-space: normal;
+  width: 416px;
+}
+
+#barcode-chip-text-expand.hide {
+  display: none;
+}
+
+#barcode-chip-text-expand {
+  background: url(/images/barcode_chevron_down.svg) center no-repeat;
+  height: 40px;
+  width: 100%;
+}
+
+.expanded #barcode-chip-text-expand {
+  background: url(/images/barcode_chevron_up.svg) center no-repeat;
 }
 
 .snackbar {

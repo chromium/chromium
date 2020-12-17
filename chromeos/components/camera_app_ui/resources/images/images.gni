@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 in_app_assets = [
+  "barcode_chevron_down.svg",
+  "barcode_chevron_up.svg",
   "barcode_copy.svg",
   "barcode_toggle_off.svg",
   "barcode_toggle_on.svg",
