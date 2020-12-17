@@ -2,14 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Namespace
-window.importer = window.importer || {};
+/**
+ * @fileoverview
+ * @suppress {uselessCode} Temporary suppress because of the line exporting.
+ */
+
+// clang-format off
+// #import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
+
+// #import {VolumeManager} from '../../../externs/volume_manager.m.js';
+// #import {importerHistoryInterfaces} from '../../../externs/background/import_history.m.js';
+// #import {duplicateFinderInterfaces} from '../../../externs/background/duplicate_finder.m.js';
+// #import {volumeManagerFactory} from './volume_manager_factory.m.js';
+// #import {metrics} from '../../common/js/metrics.m.js';
+// #import {importerHistory} from './import_history.m.js';
+// #import {LRUCache} from '../../common/js/lru_cache.m.js';
+// #import {importer} from '../../common/js/importer_common.m.js';
+// clang-format on
+
+// eslint-disable-next-line no-var
+var duplicateFinder = {};
 
 /**
  * A duplicate finder for Google Drive.
  *
  */
-importer.DriveDuplicateFinder = class DriveDuplicateFinder {
+duplicateFinder.DriveDuplicateFinder = class {
   constructor() {
     /** @private {Promise<string>} */
     this.driveIdPromise_ = null;
@@ -18,8 +36,8 @@ importer.DriveDuplicateFinder = class DriveDuplicateFinder {
      * An bounded cache of most recently calculated file content hashcodes.
      * @private {!LRUCache<!Promise<string>>}
      */
-    this.hashCache_ =
-        new LRUCache(importer.DriveDuplicateFinder.MAX_CACHED_HASHCODES_);
+    this.hashCache_ = new LRUCache(
+        duplicateFinder.DriveDuplicateFinder.MAX_CACHED_HASHCODES_);
   }
 
   /**
@@ -54,22 +72,22 @@ importer.DriveDuplicateFinder = class DriveDuplicateFinder {
       }
 
       const hashPromise = new Promise(
-          /** @this {importer.DriveDuplicateFinder} */
+          /** @this {duplicateFinder.DriveDuplicateFinder} */
           (resolve, reject) => {
             const startTime = new Date().getTime();
             chrome.fileManagerPrivate.computeChecksum(
                 entry,
                 /**
                  * @param {string|undefined} result The content hash.
-                 * @this {importer.DriveDuplicateFinder}
+                 * @this {duplicateFinder.DriveDuplicateFinder}
                  */
                 result => {
                   const elapsedTime = new Date().getTime() - startTime;
                   // Send the timing to GA only if it is sorta exceptionally
                   // long. A one second, CPU intensive operation, is pretty
                   // long.
-                  if (elapsedTime >=
-                      importer.DriveDuplicateFinder.HASH_EVENT_THRESHOLD_) {
+                  if (elapsedTime >= duplicateFinder.DriveDuplicateFinder
+                                         .HASH_EVENT_THRESHOLD_) {
                     console.info(
                         'Content hash computation took ' + elapsedTime +
                         ' ms.');
@@ -131,7 +149,7 @@ importer.DriveDuplicateFinder = class DriveDuplicateFinder {
    */
   searchFilesByHash_(hash, volumeId) {
     return new Promise(
-        /** @this {importer.DriveDuplicateFinder} */
+        /** @this {duplicateFinder.DriveDuplicateFinder} */
         (resolve, reject) => {
           const startTime = new Date().getTime();
           chrome.fileManagerPrivate.searchFilesByHashes(
@@ -142,8 +160,8 @@ importer.DriveDuplicateFinder = class DriveDuplicateFinder {
               urls => {
                 const elapsedTime = new Date().getTime() - startTime;
                 // Send the timing to GA only if it is sorta exceptionally long.
-                if (elapsedTime >=
-                    importer.DriveDuplicateFinder.SEARCH_EVENT_THRESHOLD_) {
+                if (elapsedTime >= duplicateFinder.DriveDuplicateFinder
+                                       .SEARCH_EVENT_THRESHOLD_) {
                   metrics.recordTime(
                       'DriveDuplicateFinder.LongSearchByHash', elapsedTime);
                 }
@@ -158,13 +176,13 @@ importer.DriveDuplicateFinder = class DriveDuplicateFinder {
 };
 
 /** @private @const {number} */
-importer.DriveDuplicateFinder.HASH_EVENT_THRESHOLD_ = 5000;
+duplicateFinder.DriveDuplicateFinder.HASH_EVENT_THRESHOLD_ = 5000;
 
 /** @private @const {number} */
-importer.DriveDuplicateFinder.SEARCH_EVENT_THRESHOLD_ = 1000;
+duplicateFinder.DriveDuplicateFinder.SEARCH_EVENT_THRESHOLD_ = 1000;
 
 /** @private @const {number} */
-importer.DriveDuplicateFinder.MAX_CACHED_HASHCODES_ = 10000;
+duplicateFinder.DriveDuplicateFinder.MAX_CACHED_HASHCODES_ = 10000;
 
 
 /**
@@ -173,18 +191,18 @@ importer.DriveDuplicateFinder.MAX_CACHED_HASHCODES_ = 10000;
  * primary source for duplicate checking (with the exception
  * of in-scan deduplication, where duplicate results that
  * are within the scan are ignored).
- * @implements {importer.DispositionChecker}
+ * @implements {duplicateFinderInterfaces.DispositionChecker}
  */
-importer.DispositionCheckerImpl = class {
+duplicateFinder.DispositionCheckerImpl = class {
   /**
    * @param {!importerHistoryInterfaces.HistoryLoader} historyLoader
-   * @param {!importer.DriveDuplicateFinder} contentMatcher
+   * @param {!duplicateFinder.DriveDuplicateFinder} contentMatcher
    */
   constructor(historyLoader, contentMatcher) {
     /** @private {!importerHistoryInterfaces.HistoryLoader} */
     this.historyLoader_ = historyLoader;
 
-    /** @private {!importer.DriveDuplicateFinder} */
+    /** @private {!duplicateFinder.DriveDuplicateFinder} */
     this.contentMatcher_ = contentMatcher;
   }
 
@@ -200,7 +218,7 @@ importer.DispositionCheckerImpl = class {
     }
 
     return new Promise(
-        /** @this {importer.DispositionChecker} */
+        /** @this {duplicateFinderInterfaces.DispositionChecker} */
         (resolve, reject) => {
           this.hasHistoryDuplicate_(entry, destination)
               .then(
@@ -264,11 +282,14 @@ importer.DispositionCheckerImpl = class {
    *
    * @param {!importerHistoryInterfaces.HistoryLoader} historyLoader
    *
-   * @return {!importer.DispositionChecker.CheckerFunction}
+   * @return {!duplicateFinderInterfaces.DispositionChecker.CheckerFunction}
    */
   static createChecker(historyLoader) {
-    const checker = new importer.DispositionCheckerImpl(
-        historyLoader, new importer.DriveDuplicateFinder());
+    const checker = new duplicateFinder.DispositionCheckerImpl(
+        historyLoader, new duplicateFinder.DriveDuplicateFinder());
     return checker.getDisposition.bind(checker);
   }
 };
+
+// eslint-disable-next-line semi,no-extra-semi
+/* #export */ {duplicateFinder};

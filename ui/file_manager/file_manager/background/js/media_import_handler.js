@@ -19,7 +19,8 @@ importer.MediaImportHandlerImpl = class {
   /**
    * @param {!ProgressCenter} progressCenter
    * @param {!importerHistoryInterfaces.HistoryLoader} historyLoader
-   * @param {!importer.DispositionChecker.CheckerFunction} dispositionChecker
+   * @param {!duplicateFinderInterfaces.DispositionChecker.CheckerFunction}
+   *     dispositionChecker
    * @param {!DriveSyncHandler} driveSyncHandler
    */
   constructor(
@@ -44,7 +45,9 @@ importer.MediaImportHandlerImpl = class {
     /** @private {number} */
     this.nextTaskId_ = 0;
 
-    /** @private {!importer.DispositionChecker.CheckerFunction} */
+    /**
+     * @private {!duplicateFinderInterfaces.DispositionChecker.CheckerFunction}
+     */
     this.getDisposition_ = dispositionChecker;
 
     /**
@@ -208,7 +211,8 @@ importer.MediaImportHandler.ImportTaskImpl =
    * @param {!mediaScannerInterfaces.ScanResult} scanResult
    * @param {!Promise<!DirectoryEntry>} directoryPromise
    * @param {!importer.Destination} destination The logical destination.
-   * @param {!importer.DispositionChecker.CheckerFunction} dispositionChecker
+   * @param {!duplicateFinderInterfaces.DispositionChecker.CheckerFunction}
+   *     dispositionChecker
    */
   constructor(
       taskId, historyLoader, scanResult, directoryPromise, destination,
@@ -254,7 +258,9 @@ importer.MediaImportHandler.ImportTaskImpl =
     /** @private {number} */
     this.errorCount_ = 0;
 
-    /** @private {!importer.DispositionChecker.CheckerFunction} */
+    /**
+     * @private {!duplicateFinderInterfaces.DispositionChecker.CheckerFunction}
+     */
     this.getDisposition_ = dispositionChecker;
 
     /**

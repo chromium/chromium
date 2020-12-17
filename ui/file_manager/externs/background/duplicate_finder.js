@@ -2,21 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// #import {importer} from '../../file_manager/common/js/importer_common.m.js';
+// #import {importerHistoryInterfaces} from './import_history.m.js';
+
 // Namespace
-// eslint-disable-next-line no-var
-var importer = importer || {};
+/* #export */ const duplicateFinderInterfaces = {};
 
 /**
  * Declare DispositionChecker class.
  * @interface
  */
-importer.DispositionChecker = class {
+duplicateFinderInterfaces.DispositionChecker = class {
   /**
    * Factory for a function that returns a file entry's content disposition.
    *
    * @param {!importerHistoryInterfaces.HistoryLoader} historyLoader
    *
-   * @return {!importer.DispositionChecker.CheckerFunction}
+   * @return {!duplicateFinderInterfaces.DispositionChecker.CheckerFunction}
    */
   static createChecker(historyLoader) {}
 };
@@ -28,4 +30,4 @@ importer.DispositionChecker = class {
  * @typedef {function(!FileEntry, !importer.Destination, !importer.ScanMode):
  *     !Promise<!importer.Disposition>}
  */
-importer.DispositionChecker.CheckerFunction;
+duplicateFinderInterfaces.DispositionChecker.CheckerFunction;

@@ -13,7 +13,7 @@ let mediaImporter;
 /** @type {!importerTestHistory.TestImportHistory} */
 let importHistory;
 
-/** @type {!importer.DispositionChecker.CheckerFunction} */
+/** @type {!duplicateFinderInterfaces.DispositionChecker.CheckerFunction} */
 let dispositionChecker;
 
 /** @type {!MockCopyTo} */

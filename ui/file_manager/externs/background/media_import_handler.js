@@ -21,7 +21,8 @@ importer.MediaImportHandler = class extends importer.ImportRunner {
   /**
    * @param {!ProgressCenter} progressCenter
    * @param {!importerHistoryInterfaces.HistoryLoader} historyLoader
-   * @param {!importer.DispositionChecker.CheckerFunction} dispositionChecker
+   * @param {!duplicateFinderInterfaces.DispositionChecker.CheckerFunction}
+   *     dispositionChecker
    * @param {!DriveSyncHandler} driveSyncHandler
    */
   constructor(
@@ -45,7 +46,8 @@ importer.MediaImportHandler.ImportTask = class {
    * @param {!mediaScannerInterfaces.ScanResult} scanResult
    * @param {!Promise<!DirectoryEntry>} directoryPromise
    * @param {!importer.Destination} destination The logical destination.
-   * @param {!importer.DispositionChecker.CheckerFunction} dispositionChecker
+   * @param {!duplicateFinderInterfaces.DispositionChecker.CheckerFunction}
+   *     dispositionChecker
    */
   constructor(
       taskId, historyLoader, scanResult, directoryPromise, destination,

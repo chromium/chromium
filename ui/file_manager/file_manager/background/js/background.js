@@ -56,10 +56,11 @@ class FileBrowserBackgroundImpl extends BackgroundBaseImpl {
     this.driveSyncHandler = new DriveSyncHandlerImpl(this.progressCenter);
 
     /**
-     * @type {!importer.DispositionChecker.CheckerFunction}
+     * @type {!duplicateFinderInterfaces.DispositionChecker.CheckerFunction}
      */
     this.dispositionChecker_ =
-        importer.DispositionCheckerImpl.createChecker(this.historyLoader);
+        duplicateFinder.DispositionCheckerImpl.createChecker(
+            this.historyLoader);
 
     /**
      * Provides support for scanning media devices as part of Cloud Import.

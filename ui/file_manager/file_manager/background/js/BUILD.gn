@@ -78,6 +78,7 @@ js_type_check("closure_compile_jsmodules") {
     ":background_base.m",
     ":crostini.m",
     ":drive_sync_handler.m",
+    ":duplicate_finder.m",
     ":entry_location_impl.m",
     ":file_operation_util.m",
     ":import_history.m",
@@ -389,14 +390,36 @@ js_library("duplicate_finder") {
   externs_list = [ "//ui/file_manager/externs/background/duplicate_finder.js" ]
 }
 
-js_unittest("duplicate_finder_unittest") {
+js_library("duplicate_finder.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/background/js/duplicate_finder.m.js" ]
   deps = [
-    ":duplicate_finder",
-    ":mock_volume_manager",
-    ":test_import_history",
-    "//ui/file_manager/base/js:mock_chrome",
-    "//ui/file_manager/file_manager/common/js:mock_entry",
-    "//ui/file_manager/file_manager/common/js:test_importer_common",
+    ":import_history.m",
+    ":volume_manager_factory.m",
+    "//ui/file_manager/base/js:volume_manager_types.m",
+    "//ui/file_manager/externs:volume_manager.m",
+    "//ui/file_manager/externs/background:duplicate_finder.m",
+    "//ui/file_manager/externs/background:import_history.m",
+    "//ui/file_manager/file_manager/common/js:importer_common.m",
+    "//ui/file_manager/file_manager/common/js:lru_cache.m",
+    "//ui/file_manager/file_manager/common/js:metrics.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
+js_unittest("duplicate_finder_unittest.m") {
+  deps = [
+    ":duplicate_finder.m",
+    ":mock_volume_manager.m",
+    ":test_import_history.m",
+    "//chrome/test/data/webui:chai_assert",
+    "//ui/file_manager/base/js:mock_chrome.m",
+    "//ui/file_manager/base/js:test_error_reporting.m",
+    "//ui/file_manager/base/js:volume_manager_types.m",
+    "//ui/file_manager/externs:volume_info.m",
+    "//ui/file_manager/externs/background:duplicate_finder.m",
+    "//ui/file_manager/file_manager/common/js:importer_common.m",
+    "//ui/file_manager/file_manager/common/js:mock_entry.m",
   ]
 }
 
@@ -985,6 +1008,7 @@ js_test_gen_html("js_test_gen_html_modules") {
   deps = [
     ":crostini_unittest.m",
     ":drive_sync_handler_unittest.m",
+    ":duplicate_finder_unittest.m",
     ":import_history_unittest.m",
     ":media_scanner_unittest.m",
     ":metadata_proxy_unittest.m",
@@ -1005,7 +1029,6 @@ js_test_gen_html("js_test_gen_html_modules") {
 js_test_gen_html("js_test_gen_html") {
   deps = [
     ":device_handler_unittest",
-    ":duplicate_finder_unittest",
     ":file_operation_handler_unittest",
     ":file_operation_manager_unittest",
     ":media_import_handler_unittest",
@@ -1041,6 +1064,7 @@ js_modulizer("modulize") {
     "drive_sync_handler.js",
     "media_scanner.js",
     "mock_media_scanner.js",
+    "duplicate_finder.js",
   ]
 
   namespace_rewrites = cr_namespace_rewrites

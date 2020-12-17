@@ -58,7 +58,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, DriveSyncHandlerTest) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, DuplicateFinderTest) {
-  RunTestURL("background/js/duplicate_finder_unittest_gen.html");
+  RunTestURL("background/js/duplicate_finder_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ExifParser) {
