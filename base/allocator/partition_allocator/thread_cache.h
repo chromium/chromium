@@ -257,6 +257,8 @@ class BASE_EXPORT ThreadCache {
 
   friend class ThreadCacheRegistry;
   friend class ThreadCacheTest;
+  FRIEND_TEST_ALL_PREFIXES(ThreadCacheTest, Simple);
+  FRIEND_TEST_ALL_PREFIXES(ThreadCacheTest, MultipleObjectsCachedPerBucket);
   FRIEND_TEST_ALL_PREFIXES(ThreadCacheTest, LargeAllocationsAreNotCached);
   FRIEND_TEST_ALL_PREFIXES(ThreadCacheTest, MultipleThreadCaches);
   FRIEND_TEST_ALL_PREFIXES(ThreadCacheTest, RecordStats);

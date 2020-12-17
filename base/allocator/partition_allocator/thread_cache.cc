@@ -301,6 +301,8 @@ void ThreadCache::FillBucket(size_t bucket_index) {
   // clearing which would greatly increase calls to the central allocator. (3)
   // tries to keep memory usage low. So clearing half of the bucket, and filling
   // a quarter of it are sensible defaults.
+  INCREMENT_COUNTER(stats_.batch_fill_count);
+
   Bucket& bucket = buckets_[bucket_index];
   int count = bucket.limit / kBatchFillRatio;
 
@@ -388,6 +390,8 @@ void ThreadCache::ResetForTesting() {
   stats_.cache_fill_hits = 0;
   stats_.cache_fill_misses = 0;
 
+  stats_.batch_fill_count = 0;
+
   stats_.bucket_total_memory = 0;
   stats_.metadata_overhead = 0;
 
@@ -407,9 +411,11 @@ void ThreadCache::AccumulateStats(ThreadCacheStats* stats) const {
   stats->cache_fill_hits += stats_.cache_fill_hits;
   stats->cache_fill_misses += stats_.cache_fill_misses;
 
-  for (size_t i = 0; i < kBucketCount; i++) {
+  stats->batch_fill_count += stats_.batch_fill_count;
+
+  for (const Bucket& bucket : buckets_) {
     stats->bucket_total_memory +=
-        buckets_[i].count * static_cast<size_t>(buckets_[i].slot_size);
+        bucket.count * static_cast<size_t>(bucket.slot_size);
   }
   stats->metadata_overhead += sizeof(*this);
 }

@@ -121,12 +121,13 @@ class ThreadCacheTest : public ::testing::Test {
 };
 
 TEST_F(ThreadCacheTest, Simple) {
-  void* ptr = g_root->Alloc(kSmallSize, "");
-  ASSERT_TRUE(ptr);
-
   // There is a cache.
   auto* tcache = g_root->thread_cache_for_testing();
   EXPECT_TRUE(tcache);
+  DeltaCounter batch_fill_counter{tcache->stats_.batch_fill_count};
+
+  void* ptr = g_root->Alloc(kSmallSize, "");
+  ASSERT_TRUE(ptr);
 
   uint16_t index = PartitionRoot<ThreadSafe>::SizeToBucketIndex(kSmallSize);
   EXPECT_EQ(kFillCountForSmallBucket - 1,
@@ -141,6 +142,8 @@ TEST_F(ThreadCacheTest, Simple) {
   // Allocated from the thread cache.
   EXPECT_EQ(kFillCountForSmallBucket - 1,
             tcache->bucket_count_for_testing(index));
+
+  EXPECT_EQ(1u, batch_fill_counter.Delta());
 }
 
 TEST_F(ThreadCacheTest, InexactSizeMatch) {
@@ -167,11 +170,15 @@ TEST_F(ThreadCacheTest, InexactSizeMatch) {
 }
 
 TEST_F(ThreadCacheTest, MultipleObjectsCachedPerBucket) {
+  auto* tcache = g_root->thread_cache_for_testing();
+  DeltaCounter batch_fill_counter{tcache->stats_.batch_fill_count};
   size_t bucket_index =
       FillThreadCacheAndReturnIndex(kMediumSize, kFillCountForMediumBucket + 2);
-  auto* tcache = g_root->thread_cache_for_testing();
   EXPECT_EQ(2 * kFillCountForMediumBucket,
             tcache->bucket_count_for_testing(bucket_index));
+  // 2 batches, since there were more than |kFillCountForMediumBucket|
+  // allocations.
+  EXPECT_EQ(2u, batch_fill_counter.Delta());
 }
 
 TEST_F(ThreadCacheTest, ObjectsCachedCountIsLimited) {

@@ -30,11 +30,20 @@ TEST(PartitionAllocMemoryDumpProviderTest, Simple) {
                                     1);
   histogram_tester.ExpectTotalCount(
       "Memory.PartitionAlloc.ThreadCache.HitRate.MainThread", 1);
+
+  histogram_tester.ExpectTotalCount(
+      "Memory.PartitionAlloc.ThreadCache.BatchFillRate", 1);
+  histogram_tester.ExpectTotalCount(
+      "Memory.PartitionAlloc.ThreadCache.HitRate.MainThread", 1);
 #else
   histogram_tester.ExpectTotalCount("Memory.PartitionAlloc.ThreadCache.HitRate",
                                     0);
   histogram_tester.ExpectTotalCount(
       "Memory.PartitionAlloc.ThreadCache.HitRate.MainThread", 0);
+  histogram_tester.ExpectTotalCount(
+      "Memory.PartitionAlloc.ThreadCache.BatchFillRate", 0);
+  histogram_tester.ExpectTotalCount(
+      "Memory.PartitionAlloc.ThreadCache.BatchFillRate.MainThread", 0);
 #endif  // !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
         // defined(PA_THREAD_CACHE_SUPPORTED) &&
         // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)

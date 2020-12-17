@@ -92,6 +92,13 @@ void PartitionStatsDumperImpl::PartitionDumpTotals(
                            all_thread_caches_stats.alloc_count);
       base::UmaHistogramPercentage("Memory.PartitionAlloc.ThreadCache.HitRate",
                                    hit_rate_percent);
+
+      int batch_fill_rate_percent =
+          static_cast<int>((100 * all_thread_caches_stats.batch_fill_count) /
+                           all_thread_caches_stats.alloc_count);
+      base::UmaHistogramPercentage(
+          "Memory.PartitionAlloc.ThreadCache.BatchFillRate",
+          batch_fill_rate_percent);
     }
 
     if (thread_cache_stats.alloc_count) {
@@ -101,6 +108,13 @@ void PartitionStatsDumperImpl::PartitionDumpTotals(
       base::UmaHistogramPercentage(
           "Memory.PartitionAlloc.ThreadCache.HitRate.MainThread",
           hit_rate_percent);
+
+      int batch_fill_rate_percent =
+          static_cast<int>((100 * thread_cache_stats.batch_fill_count) /
+                           thread_cache_stats.alloc_count);
+      base::UmaHistogramPercentage(
+          "Memory.PartitionAlloc.ThreadCache.BatchFillRate.MainThread",
+          batch_fill_rate_percent);
     }
   }
 }

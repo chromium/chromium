@@ -1995,6 +1995,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Throughput of a ParkableString disk write.</summary>
 </histogram>
 
+<histogram name="Memory.PartitionAlloc.ThreadCache.BatchFillRate{ThreadType}"
+    units="%" expires_after="M92">
+  <owner>lizeb@chromium.org</owner>
+  <owner>bartekn@chromium.org</owner>
+  <summary>
+    Fraction of PartitionAlloc's thread cache allocations requests that required
+    a batch fill, that is cache hits touching the central allocator. Recorded
+    during memory dumps, at the same time as the Memory.*.PartitionAlloc.*
+    histograms. Data is collected for {ThreadType}.
+  </summary>
+  <token key="ThreadType">
+    <variant name="" summary="all threads"/>
+    <variant name=".MainThread" summary="the main thread only"/>
+  </token>
+</histogram>
+
 <histogram name="Memory.PartitionAlloc.ThreadCache.HitRate{ThreadType}"
     units="%" expires_after="M92">
   <owner>lizeb@chromium.org</owner>
