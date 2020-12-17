@@ -37,20 +37,21 @@ void DocumentModuleScriptFetcher::NotifyFinished(Resource* resource) {
 
   auto* script_resource = To<ScriptResource>(resource);
 
-  HeapVector<Member<ConsoleMessage>> error_messages;
   ModuleScriptCreationParams::ModuleType module_type;
-  if (!WasModuleLoadSuccessful(script_resource, &error_messages,
-                               &module_type)) {
-    client_->NotifyFetchFinished(base::nullopt, error_messages);
-    return;
+  {
+    HeapVector<Member<ConsoleMessage>> error_messages;
+    if (!WasModuleLoadSuccessful(script_resource, &error_messages,
+                                 &module_type)) {
+      client_->NotifyFetchFinishedError(error_messages);
+      return;
+    }
   }
   // TODO(crbug.com/1061857): Pass ScriptStreamer to the client here.
-  ModuleScriptCreationParams params(
+  client_->NotifyFetchFinishedSuccess(ModuleScriptCreationParams(
       script_resource->GetResponse().CurrentRequestUrl(), module_type,
       script_resource->SourceText(), script_resource->CacheHandler(),
       script_resource->GetResourceRequest().GetCredentialsMode(), nullptr,
-      ScriptStreamer::NotStreamingReason::kStreamingDisabled);
-  client_->NotifyFetchFinished(params, error_messages);
+      ScriptStreamer::NotStreamingReason::kStreamingDisabled));
 }
 
 void DocumentModuleScriptFetcher::Trace(Visitor* visitor) const {

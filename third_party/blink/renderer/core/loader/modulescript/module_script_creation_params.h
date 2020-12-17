@@ -74,11 +74,10 @@ class ModuleScriptCreationParams {
     return source_text_;
   }
 
-  // TODO(crbug.com/1154943): Make this non-const.
-  void ClearSourceText() const {
-    source_text_ = ParkableString();
-    isolated_source_text_ = String();
-    is_isolated_ = false;
+  ModuleScriptCreationParams CopyWithClearedSourceText() const {
+    return ModuleScriptCreationParams(
+        source_url_, module_type_, ParkableString(), cache_handler_,
+        credentials_mode_, script_streamer_, not_streaming_reason_);
   }
 
   SingleCachedMetadataHandler* CacheHandler() const { return cache_handler_; }

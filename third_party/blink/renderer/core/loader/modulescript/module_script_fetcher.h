@@ -29,13 +29,14 @@ class CORE_EXPORT ModuleScriptFetcher : public ResourceClient {
 
   class CORE_EXPORT Client : public GarbageCollectedMixin {
    public:
-    virtual void NotifyFetchFinished(
-        const base::Optional<ModuleScriptCreationParams>&,
+    virtual void NotifyFetchFinishedError(
         const HeapVector<Member<ConsoleMessage>>& error_messages) = 0;
+    virtual void NotifyFetchFinishedSuccess(
+        const ModuleScriptCreationParams&) = 0;
 
     // These helpers are used only from WorkletModuleResponsesMap.
     // TODO(nhiroki): Move these helpers to WorkletModuleResponsesMap.
-    void OnFetched(const base::Optional<ModuleScriptCreationParams>&);
+    void OnFetched(const ModuleScriptCreationParams&);
     void OnFailed();
   };
 

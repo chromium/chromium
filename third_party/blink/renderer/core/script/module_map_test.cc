@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
 
@@ -116,11 +117,7 @@ class ModuleMapTestModulator final : public DummyModulator {
                ModuleScriptFetcher::Client* client) override {
       CHECK_EQ(request.GetScriptType(), mojom::blink::ScriptType::kModule);
       TestRequest* test_request = MakeGarbageCollected<TestRequest>(
-          ModuleScriptCreationParams(
-              request.Url(),
-              ModuleScriptCreationParams::ModuleType::kJavaScriptModule,
-              ParkableString(String("").ReleaseImpl()), nullptr,
-              request.GetResourceRequest().GetCredentialsMode()),
+          request.Url(), request.GetResourceRequest().GetCredentialsMode(),
           client);
       modulator_->test_requests_.push_back(test_request);
     }
@@ -150,17 +147,20 @@ class ModuleMapTestModulator final : public DummyModulator {
   }
 
   struct TestRequest final : public GarbageCollected<TestRequest> {
-    TestRequest(const ModuleScriptCreationParams& params,
+    TestRequest(const KURL& url,
+                network::mojom::CredentialsMode credential_mode,
                 ModuleScriptFetcher::Client* client)
-        : params_(params), client_(client) {}
+        : url_(url), credential_mode_(credential_mode), client_(client) {}
     void NotifyFetchFinished() {
-      client_->NotifyFetchFinished(*params_,
-                                   HeapVector<Member<ConsoleMessage>>());
+      client_->NotifyFetchFinishedSuccess(ModuleScriptCreationParams(
+          url_, ModuleScriptCreationParams::ModuleType::kJavaScriptModule,
+          ParkableString(String("").ReleaseImpl()), nullptr, credential_mode_));
     }
     void Trace(Visitor* visitor) const { visitor->Trace(client_); }
 
    private:
-    base::Optional<ModuleScriptCreationParams> params_;
+    const KURL url_;
+    const network::mojom::CredentialsMode credential_mode_;
     Member<ModuleScriptFetcher::Client> client_;
   };
   HeapVector<Member<TestRequest>> test_requests_;

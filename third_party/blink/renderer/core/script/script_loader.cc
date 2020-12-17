@@ -464,11 +464,6 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
     SecurityPolicy::ReferrerPolicyFromString(
         referrerpolicy_attr, kDoNotSupportReferrerPolicyLegacyKeywords,
         &referrer_policy);
-    if (context_window->IsSecureContext() &&
-        referrer_policy == network::mojom::ReferrerPolicy::kAlways) {
-      UseCounter::Count(*context_window,
-                        WebFeature::kSetReferrerPolicyUnsafeUrlInSecureContext);
-    }
   }
 
   // Priority Hints is currently a non-standard feature, but we can assume the

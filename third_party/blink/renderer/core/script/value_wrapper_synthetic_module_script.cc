@@ -25,7 +25,7 @@ namespace blink {
 // https://whatpr.org/html/4898/webappapis.html#creating-a-css-module-script
 ValueWrapperSyntheticModuleScript*
 ValueWrapperSyntheticModuleScript::CreateCSSWrapperSyntheticModuleScript(
-    const base::Optional<ModuleScriptCreationParams>& params,
+    const ModuleScriptCreationParams& params,
     Modulator* settings_object) {
   DCHECK(settings_object->HasValidContext());
   ScriptState* script_state = settings_object->GetScriptState();
@@ -40,7 +40,7 @@ ValueWrapperSyntheticModuleScript::CreateCSSWrapperSyntheticModuleScript(
     v8::Local<v8::Value> error = V8ThrowException::CreateTypeError(
         isolate, "Cannot create CSS Module in non-document context");
     return ValueWrapperSyntheticModuleScript::CreateWithError(
-        v8::Local<v8::Value>(), settings_object, params->SourceURL(), KURL(),
+        v8::Local<v8::Value>(), settings_object, params.SourceURL(), KURL(),
         ScriptFetchOptions(), error);
   }
   CSSStyleSheetInit* init = CSSStyleSheetInit::Create();
@@ -50,26 +50,26 @@ ValueWrapperSyntheticModuleScript::CreateCSSWrapperSyntheticModuleScript(
     v8::Local<v8::Value> error = exception_state.GetException();
     exception_state.ClearException();
     return ValueWrapperSyntheticModuleScript::CreateWithError(
-        v8::Local<v8::Value>(), settings_object, params->SourceURL(), KURL(),
+        v8::Local<v8::Value>(), settings_object, params.SourceURL(), KURL(),
         ScriptFetchOptions(), error);
   }
-  style_sheet->replaceSync(params->GetSourceText().ToString(), exception_state);
+  style_sheet->replaceSync(params.GetSourceText().ToString(), exception_state);
   if (exception_state.HadException()) {
     v8::Local<v8::Value> error = exception_state.GetException();
     exception_state.ClearException();
     return ValueWrapperSyntheticModuleScript::CreateWithError(
-        v8::Local<v8::Value>(), settings_object, params->SourceURL(), KURL(),
+        v8::Local<v8::Value>(), settings_object, params.SourceURL(), KURL(),
         ScriptFetchOptions(), error);
   }
   v8::Local<v8::Value> v8_value_stylesheet = ToV8(style_sheet, script_state);
   return ValueWrapperSyntheticModuleScript::CreateWithDefaultExport(
-      v8_value_stylesheet, settings_object, params->SourceURL(), KURL(),
+      v8_value_stylesheet, settings_object, params.SourceURL(), KURL(),
       ScriptFetchOptions());
 }
 
 ValueWrapperSyntheticModuleScript*
 ValueWrapperSyntheticModuleScript::CreateJSONWrapperSyntheticModuleScript(
-    const base::Optional<ModuleScriptCreationParams>& params,
+    const ModuleScriptCreationParams& params,
     Modulator* settings_object) {
   DCHECK(settings_object->HasValidContext());
   ScriptState::Scope scope(settings_object->GetScriptState());
@@ -78,7 +78,7 @@ ValueWrapperSyntheticModuleScript::CreateJSONWrapperSyntheticModuleScript(
   v8::Isolate* isolate = context->GetIsolate();
   v8::TryCatch try_catch(isolate);
   v8::Local<v8::String> original_json =
-      V8String(isolate, params->GetSourceText());
+      V8String(isolate, params.GetSourceText());
   v8::Local<v8::Value> parsed_json;
   ExceptionState exception_state(isolate, ExceptionState::kExecutionContext,
                                  "ModuleScriptLoader",
@@ -102,11 +102,11 @@ ValueWrapperSyntheticModuleScript::CreateJSONWrapperSyntheticModuleScript(
     v8::Local<v8::Value> error = exception_state.GetException();
     exception_state.ClearException();
     return ValueWrapperSyntheticModuleScript::CreateWithError(
-        parsed_json, settings_object, params->SourceURL(), KURL(),
+        parsed_json, settings_object, params.SourceURL(), KURL(),
         ScriptFetchOptions(), error);
   } else {
     return ValueWrapperSyntheticModuleScript::CreateWithDefaultExport(
-        parsed_json, settings_object, params->SourceURL(), KURL(),
+        parsed_json, settings_object, params.SourceURL(), KURL(),
         ScriptFetchOptions());
   }
 }

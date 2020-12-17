@@ -224,8 +224,7 @@ void ModuleScriptLoader::FetchInternal(
 }
 
 // <specdef href="https://html.spec.whatwg.org/C/#fetch-a-single-module-script">
-void ModuleScriptLoader::NotifyFetchFinished(
-    const base::Optional<ModuleScriptCreationParams>& params,
+void ModuleScriptLoader::NotifyFetchFinishedError(
     const HeapVector<Member<ConsoleMessage>>& error_messages) {
   // [nospec] Abort the steps if the browsing context is discarded.
   if (!modulator_->HasValidContext()) {
@@ -238,11 +237,17 @@ void ModuleScriptLoader::NotifyFetchFinished(
   // <spec step="9">If any of the following conditions are met, set
   // moduleMap[url] to null, asynchronously complete this algorithm with null,
   // and abort these steps: ...</spec>
-  if (!params.has_value()) {
-    for (ConsoleMessage* error_message : error_messages) {
-      ExecutionContext::From(modulator_->GetScriptState())
-          ->AddConsoleMessage(error_message);
-    }
+  for (ConsoleMessage* error_message : error_messages) {
+    ExecutionContext::From(modulator_->GetScriptState())
+        ->AddConsoleMessage(error_message);
+  }
+  AdvanceState(State::kFinished);
+}
+
+void ModuleScriptLoader::NotifyFetchFinishedSuccess(
+    const ModuleScriptCreationParams& params) {
+  // [nospec] Abort the steps if the browsing context is discarded.
+  if (!modulator_->HasValidContext()) {
     AdvanceState(State::kFinished);
     return;
   }
@@ -253,7 +258,7 @@ void ModuleScriptLoader::NotifyFetchFinished(
   // <spec step="12.2">Set module script to the result of creating a JavaScript
   // module script given source text, module map settings object, response's
   // url, and options.</spec>
-  switch (params->GetModuleType()) {
+  switch (params.GetModuleType()) {
     case ModuleScriptCreationParams::ModuleType::kJSONModule:
       DCHECK(base::FeatureList::IsEnabled(blink::features::kJSONModules));
       module_script_ = ValueWrapperSyntheticModuleScript::
@@ -264,16 +269,17 @@ void ModuleScriptLoader::NotifyFetchFinished(
       module_script_ = ValueWrapperSyntheticModuleScript::
           CreateCSSWrapperSyntheticModuleScript(params, modulator_);
       break;
-    case ModuleScriptCreationParams::ModuleType::kJavaScriptModule:
+    case ModuleScriptCreationParams::ModuleType::kJavaScriptModule: {
       // Step 9. "Let source text be the result of UTF-8 decoding response's
       // body." [spec text]
       // Step 10. "Let module script be the result of creating
       // a module script given source text, module map settings object,
       // response's url, and options." [spec text]
       module_script_ = JSModuleScript::Create(
-          params.value(), params->SourceURL() /* base URL */,
+          params, /*base_url=*/params.SourceURL(),
           ScriptSourceLocationType::kExternalFile, modulator_, options_);
       break;
+    };
   }
 
   AdvanceState(State::kFinished);

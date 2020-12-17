@@ -21,12 +21,12 @@ ModuleScriptFetcher::ModuleScriptFetcher(
     base::PassKey<ModuleScriptLoader> pass_key) {}
 
 void ModuleScriptFetcher::Client::OnFetched(
-    const base::Optional<ModuleScriptCreationParams>& params) {
-  NotifyFetchFinished(params, HeapVector<Member<ConsoleMessage>>());
+    const ModuleScriptCreationParams& params) {
+  NotifyFetchFinishedSuccess(params);
 }
 
 void ModuleScriptFetcher::Client::OnFailed() {
-  NotifyFetchFinished(base::nullopt, HeapVector<Member<ConsoleMessage>>());
+  NotifyFetchFinishedError(HeapVector<Member<ConsoleMessage>>());
 }
 
 void ModuleScriptFetcher::Trace(Visitor* visitor) const {

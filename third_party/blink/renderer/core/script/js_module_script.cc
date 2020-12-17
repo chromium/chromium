@@ -18,7 +18,7 @@ namespace blink {
 // <specdef
 // href="https://html.spec.whatwg.org/C/#creating-a-javascript-module-script">
 JSModuleScript* JSModuleScript::Create(
-    const ModuleScriptCreationParams& params,
+    const ModuleScriptCreationParams& original_params,
     const KURL& base_url,
     ScriptSourceLocationType source_location_type,
     Modulator* modulator,
@@ -26,8 +26,10 @@ JSModuleScript* JSModuleScript::Create(
     const TextPosition& start_position) {
   // <spec step="1">If scripting is disabled for settings's responsible browsing
   // context, then set source to the empty string.</spec>
-  if (modulator->IsScriptingDisabled())
-    params.ClearSourceText();
+  const ModuleScriptCreationParams& params =
+      modulator->IsScriptingDisabled()
+          ? original_params.CopyWithClearedSourceText()
+          : original_params;
 
   // <spec step="2">Let script be a new module script that this algorithm will
   // subsequently initialize.</spec>
