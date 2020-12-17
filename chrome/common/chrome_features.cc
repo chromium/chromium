@@ -870,14 +870,6 @@ const base::Feature kTreatUnsafeDownloadsAsActive{
 // Enable uploading of a zip archive of system logs instead of individual files.
 const base::Feature kUploadZippedSystemLogs{"UploadZippedSystemLogs",
                                             base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Enable USB Bouncer for managing a device whitelist for USBGuard on Chrome OS.
-const base::Feature kUsbbouncer{"USBBouncer",
-                                base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Enable USBGuard at the lockscreen on Chrome OS.
-// TODO(crbug.com/874630): Remove this kill-switch
-const base::Feature kUsbguard{"USBGuard", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

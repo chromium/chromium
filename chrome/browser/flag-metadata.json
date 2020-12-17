@@ -2363,11 +2363,6 @@
     "expiry_milestone": 90
   },
   {
-    "name": "enable-usbguard",
-    "owners": [ "allenwebb", "mnissler", "jorgelo" ],
-    "expiry_milestone": 84
-  },
-  {
     "name": "enable-use-aaudio-driver",
     "owners": [ "tguilbert" ],
     "expiry_milestone": 88

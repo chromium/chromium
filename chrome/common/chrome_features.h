@@ -584,12 +584,6 @@ extern const base::Feature kUploadZippedSystemLogs;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-COMPONENT_EXPORT(CHROME_FEATURES) extern const base::Feature kUsbbouncer;
-
-COMPONENT_EXPORT(CHROME_FEATURES) extern const base::Feature kUsbguard;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kUserActivityEventLogging;
 #endif

@@ -4682,12 +4682,6 @@ const char kUnifiedMediaViewDescription[] =
     "Enable unified media view to browse recently-modified media files from"
     " local disk, Google Drive, and Android.";
 
-const char kUsbguardName[] = "Block new USB devices at the lock screen.";
-const char kUsbguardDescription[] =
-    "Prevents newly connected USB devices from operating at the lock screen"
-    " until Chrome OS is unlocked to protect against malicious USB devices."
-    " Already connected USB devices will continue to function.";
-
 const char kVaapiJpegImageDecodeAccelerationName[] =
     "VA-API JPEG decode acceleration for images";
 const char kVaapiJpegImageDecodeAccelerationDescription[] =

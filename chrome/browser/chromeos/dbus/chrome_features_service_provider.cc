@@ -91,13 +91,6 @@ void ChromeFeaturesServiceProvider::Start(
                      weak_ptr_factory_.GetWeakPtr()));
   exported_object->ExportMethod(
       kChromeFeaturesServiceInterface,
-      kChromeFeaturesServiceIsUsbguardEnabledMethod,
-      base::BindRepeating(&ChromeFeaturesServiceProvider::IsUsbguardEnabled,
-                          weak_ptr_factory_.GetWeakPtr()),
-      base::BindOnce(&ChromeFeaturesServiceProvider::OnExported,
-                     weak_ptr_factory_.GetWeakPtr()));
-  exported_object->ExportMethod(
-      kChromeFeaturesServiceInterface,
       kChromeFeaturesServiceIsCryptohomeDistributedModelEnabledMethod,
       base::BindRepeating(
           &ChromeFeaturesServiceProvider::IsCryptohomeDistributedModelEnabled,
@@ -143,8 +136,6 @@ void ChromeFeaturesServiceProvider::IsFeatureEnabled(
     dbus::MethodCall* method_call,
     dbus::ExportedObject::ResponseSender response_sender) {
   static const base::Feature constexpr* kFeatureLookup[] = {
-      &::features::kUsbbouncer,
-      &::features::kUsbguard,
       &arc::kBootCompletedBroadcastFeature,
       &arc::kCustomTabsExperimentFeature,
       &arc::kFilePickerExperimentFeature,
@@ -227,13 +218,6 @@ void ChromeFeaturesServiceProvider::IsPluginVmEnabled(
   SendResponse(
       method_call, std::move(response_sender),
       profile ? plugin_vm::PluginVmFeatures::Get()->IsAllowed(profile) : false);
-}
-
-void ChromeFeaturesServiceProvider::IsUsbguardEnabled(
-    dbus::MethodCall* method_call,
-    dbus::ExportedObject::ResponseSender response_sender) {
-  SendResponse(method_call, std::move(response_sender),
-               base::FeatureList::IsEnabled(::features::kUsbguard));
 }
 
 void ChromeFeaturesServiceProvider::IsVmManagementCliAllowed(
