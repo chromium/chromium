@@ -27,7 +27,7 @@
 namespace reporting {
 
 // DmServerUploadService uploads events to the DMServer. It does not manage
-// sequence information, instead reporting the highest sequence number for each
+// sequencing information, instead reporting the highest sequencing id for each
 // generation id and priority.
 //
 // DmServerUploadService relies on DmServerUploader for uploading. A

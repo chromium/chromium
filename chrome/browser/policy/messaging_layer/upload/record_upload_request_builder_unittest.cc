@@ -37,7 +37,7 @@ class RecordUploadRequestBuilderTest : public ::testing::TestWithParam<bool> {
 
     auto* const sequencing_information =
         record.mutable_sequencing_information();
-    sequencing_information->set_sequencing_id(GetNextSequenceId());
+    sequencing_information->set_sequencing_id(GetNextSequencingId());
     sequencing_information->set_generation_id(kGenerationId);
     sequencing_information->set_priority(kPriority);
 
@@ -48,7 +48,7 @@ class RecordUploadRequestBuilderTest : public ::testing::TestWithParam<bool> {
     return record;
   }
 
-  static uint64_t GetNextSequenceId() {
+  static uint64_t GetNextSequencingId() {
     static uint64_t sequencing_id = 0;
     return sequencing_id++;
   }
@@ -75,10 +75,10 @@ TEST_P(RecordUploadRequestBuilderTest, AcceptEncryptedRecordsList) {
   auto request_payload = builder.Build();
   ASSERT_TRUE(request_payload.has_value());
   ASSERT_TRUE(request_payload.value().is_dict());
-  const auto attach_ncryption_settings = request_payload.value().FindBoolKey(
+  const auto attach_encryption_settings = request_payload.value().FindBoolKey(
       UploadEncryptedReportingRequestBuilder::
           GetAttachEncryptionSettingsPath());
-  EXPECT_EQ(need_encryption_key(), attach_ncryption_settings.has_value());
+  EXPECT_EQ(need_encryption_key(), attach_encryption_settings.has_value());
   base::Value* const record_list = request_payload.value().FindListKey(
       UploadEncryptedReportingRequestBuilder::GetEncryptedRecordListPath());
   ASSERT_TRUE(record_list);

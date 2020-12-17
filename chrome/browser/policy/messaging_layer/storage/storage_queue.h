@@ -34,7 +34,7 @@ namespace reporting {
 // Storage queue represents single queue of data to be collected and stored
 // persistently. It allows to add whole data records as necessary,
 // flush previously collected records and confirm records up to certain
-// sequencing number to be eliminated.
+// sequencing id to be eliminated.
 class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
  public:
   // Interface for Upload, which must be implemented by an object returned by
@@ -86,7 +86,7 @@ class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
 
   // Wraps and serializes Record (taking ownership of it), encrypts and writes
   // the resulting blob into the StorageQueue (the last file of it) with the
-  // next sequencing number assigned. The write is a non-blocking operation -
+  // next sequencing id assigned. The write is a non-blocking operation -
   // caller can "fire and forget" it (|completion_cb| allows to verify that
   // record has been successfully enqueued). If file is going to become too
   // large, it is closed and new file is created.
@@ -94,11 +94,11 @@ class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
   // WriteMetadata, DeleteOutdatedMetadata.
   void Write(Record record, base::OnceCallback<void(Status)> completion_cb);
 
-  // Confirms acceptance of the records up to |seq_number| (inclusively).
-  // All records with sequencing numbers <= this one can be removed from
+  // Confirms acceptance of the records up to |sequencing_id| (inclusively).
+  // All records with sequencing ids <= this one can be removed from
   // the StorageQueue, and can no longer be uploaded.
   // Helper methods: RemoveConfirmedData.
-  void Confirm(uint64_t seq_number,
+  void Confirm(uint64_t sequencing_id,
                base::OnceCallback<void(Status)> completion_cb);
 
   // Initiates upload of collected records. Called periodically by timer, based
@@ -107,7 +107,7 @@ class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
   // calls can safely run in parallel.
   // Starts by calling |start_upload_cb_| that instantiates |UploaderInterface
   // uploader|. Then repeatedly reads EncryptedRecord(s) one by one from the
-  // StorageQueue starting from |first_seq_number_|, handing each one over to
+  // StorageQueue starting from |first_sequencing_id_|, handing each one over to
   // |uploader|->ProcessRecord (keeping ownership of the buffer) and resuming
   // after result callback returns 'true'. Only files that have been closed are
   // included in reading; |Upload| makes sure to close the last writeable file
@@ -124,7 +124,8 @@ class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
   void Flush();
 
   // Test only: makes specified records fail on reading.
-  void TestInjectBlockReadErrors(std::initializer_list<uint64_t> seq_numbers);
+  void TestInjectBlockReadErrors(
+      std::initializer_list<uint64_t> sequencing_ids);
 
   // Access queue options.
   const QueueOptions& options() const { return options_; }
@@ -221,23 +222,23 @@ class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
   void UpdateRecordDigest(WrappedRecord* wrapped_record);
 
   // Helper method for Init(): process single data file.
-  // Return seq_number from <prefix>.<seq_number> file name, or Status
+  // Return sequencing_id from <prefix>.<sequencing_id> file name, or Status
   // in case there is any error.
   StatusOr<uint64_t> AddDataFile(
       const base::FilePath& full_name,
       const base::FileEnumerator::FileInfo& file_info);
 
   // Helper method for Init(): enumerates all data files in the directory.
-  // Valid file names are <prefix>.<seq_number>, any other names are ignored.
+  // Valid file names are <prefix>.<sequencing_id>, any other names are ignored.
   // Adds used data files to the set.
   Status EnumerateDataFiles(base::flat_set<base::FilePath>* used_files_set);
 
   // Helper method for Init(): scans the last file in StorageQueue, if there are
-  // files at all, and learns the latest sequencing number. Otherwise (if there
+  // files at all, and learns the latest sequencing id. Otherwise (if there
   // are no files) sets it to 0.
   Status ScanLastFile();
 
-  // Helper method for Write(): increments sequencing number and assigns last
+  // Helper method for Write(): increments sequencing id and assigns last
   // file to place record in. |size| parameter indicates the size of data that
   // comprise the record expected to be appended; if appending the record will
   // make the file too large, the current last file will be closed, and a new
@@ -250,15 +251,15 @@ class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
 
   // Helper method for Write(): stores a file with metadata to match the
   // incoming new record. Synchronously composes metadata to record, then
-  // asynchronously writes it into a file with next sequencing number and then
+  // asynchronously writes it into a file with next sequencing id and then
   // notifies the Write operation that it can now complete. After that it
-  // asynchronously deletes all other files with lower sequencing number
+  // asynchronously deletes all other files with lower sequencing id
   // (multiple Writes can see the same files and attempt to delete them, and
   // that is not an error).
   Status WriteMetadata();
 
   // Helper method for Init(): locates file with metadata that matches the
-  // last sequencing number and loads metadat from it.
+  // last sequencing id and loads metadata from it.
   // Adds used metadata file to the set.
   Status RestoreMetadata(base::flat_set<base::FilePath>* used_files_set);
 
@@ -267,8 +268,8 @@ class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
       const base::flat_set<base::FilePath>& used_files_setused_files_set);
 
   // Helper method for Write(): deletes meta files up to, but not including
-  // |seq_number_to_keep|. Any errors are ignored.
-  void DeleteOutdatedMetadata(uint64_t seq_number_to_keep);
+  // |sequencing_id_to_keep|. Any errors are ignored.
+  void DeleteOutdatedMetadata(uint64_t sequencing_id_to_keep);
 
   // Helper method for Write(): composes record header and writes it to the
   // file, followed by data.
@@ -282,21 +283,21 @@ class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
 
   // Helper method for Upload: collects and sets aside |files| in the
   // StorageQueue that have data for the Upload (all files that have records
-  // with sequence numbers equal or higher than |seq_number|).
+  // with sequencing ids equal or higher than |sequencing_id|).
   std::map<uint64_t, scoped_refptr<SingleFile>> CollectFilesForUpload(
-      uint64_t seq_number) const;
+      uint64_t sequencing_id) const;
 
-  // Helper method for Confirm: Moves |first_seq_number_| to (|seq_number|+1)
-  // and removes files that only have records with seq numbers below or equal to
-  // |seq_number| (below |first_seq_number_|).
-  Status RemoveConfirmedData(uint64_t seq_number);
+  // Helper method for Confirm: Moves |first_sequencing_id_| to
+  // (|sequencing_id|+1) and removes files that only have records with seq
+  // ids below or equal to |sequencing_id| (below |first_sequencing_id_|).
+  Status RemoveConfirmedData(uint64_t sequencing_id);
 
   // Immutable options, stored at the time of creation.
   const QueueOptions options_;
 
   // Current generation id, unique per device and queue.
   // Set up once during initialization by reading from the 'gen_id.NNNN' file
-  // matching the last seq number, or generated anew as a random number if no
+  // matching the last sequencing id, or generated anew as a random number if no
   // such file found (files do not match the id).
   uint64_t generation_id_ = 0;
 
@@ -304,22 +305,22 @@ class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
   // if the new generation has just started, and no records where stored yet).
   base::Optional<std::string> last_record_digest_;
 
-  // Next sequencing number to store (not assigned yet).
-  uint64_t next_seq_number_ = 0;
+  // Next sequencing id to store (not assigned yet).
+  uint64_t next_sequencing_id_ = 0;
 
-  // First sequencing number store still has (no records with lower
-  // sequencing number exist in store).
-  uint64_t first_seq_number_ = 0;
+  // First sequencing id store still has (no records with lower
+  // sequencing id exist in store).
+  uint64_t first_sequencing_id_ = 0;
 
-  // First unconfirmed sequencing number (no records with lower
-  // sequencing number will be ever uploaded). Set by the first
+  // First unconfirmed sequencing id (no records with lower
+  // sequencing id will be ever uploaded). Set by the first
   // Confirm call.
-  // If first_unconfirmed_seq_number_ < first_seq_number_,
-  // [first_unconfirmed_seq_number_, first_seq_number_) is a gap
+  // If first_unconfirmed_sequencing_id_ < first_sequencing_id_,
+  // [first_unconfirmed_sequencing_id_, first_sequencing_id_) is a gap
   // that cannot be filled in and is uploaded as such.
-  base::Optional<uint64_t> first_unconfirmed_seq_number_;
+  base::Optional<uint64_t> first_unconfirmed_sequencing_id_;
 
-  // Ordered map of the files by ascending sequence number.
+  // Ordered map of the files by ascending sequencing id.
   std::map<uint64_t, scoped_refptr<SingleFile>> files_;
 
   // Counter of the Read operations. When not 0, none of the files_ can be
@@ -338,7 +339,7 @@ class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
   scoped_refptr<EncryptionModule> encryption_module_;
 
   // Test only: records specified to fail on reading.
-  base::flat_set<uint64_t> test_injected_fail_seq_numbers_;
+  base::flat_set<uint64_t> test_injected_fail_sequencing_ids_;
 
   // Sequential task runner for all activities in this StorageQueue.
   scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;

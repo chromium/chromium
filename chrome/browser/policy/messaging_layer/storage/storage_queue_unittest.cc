@@ -80,14 +80,13 @@ class TestEvent {
 
 class MockUploadClient : public StorageQueue::UploaderInterface {
  public:
-  // Mapping of (generation, seq number) to matching record digest. Whenever a
-  // record is uploaded and includes last record digest, this map should have
-  // that digest already recorded. Only the first record in a generation is
-  // uploaded without last record digest.
-  // "Optional" is set to no-value if there was a gap record instead of a real
-  // one.
+  // Mapping of <generation id, sequencing id> to matching record digest.
+  // Whenever a record is uploaded and includes last record digest, this map
+  // should have that digest already recorded. Only the first record in a
+  // generation is uploaded without last record digest. "Optional" is set to
+  // no-value if there was a gap record instead of a real one.
   using LastRecordDigestMap = std::map<
-      std::pair<uint64_t /*generation */, uint64_t /*sequencing number*/>,
+      std::pair<uint64_t /*generation id */, uint64_t /*sequencing id*/>,
       base::Optional<std::string /*digest*/>>;
 
   explicit MockUploadClient(LastRecordDigestMap* last_record_digest_map)
@@ -341,8 +340,8 @@ class StorageQueueTest : public ::testing::TestWithParam<size_t> {
   scoped_refptr<test::TestEncryptionModule> test_encryption_module_;
   scoped_refptr<StorageQueue> storage_queue_;
 
-  // Test-wide global mapping of seq number to record digest.
-  // Serves all MockUploadClients created by test fixture.
+  // Test-wide global mapping of <generation id, sequencing id> to record
+  // digest. Serves all MockUploadClients created by test fixture.
   MockUploadClient::LastRecordDigestMap last_record_digest_map_;
 
   ::testing::MockFunction<void(MockUploadClient*)>

@@ -47,17 +47,17 @@ class Storage : public base::RefCountedThreadSafe<Storage> {
 
   // Wraps and serializes Record (taking ownership of it), encrypts and writes
   // the resulting blob into the Storage (the last file of it) according to the
-  // priority with the next sequencing number assigned. If file is going to
+  // priority with the next sequencing id assigned. If file is going to
   // become too large, it is closed and new file is created.
   void Write(Priority priority,
              Record record,
              base::OnceCallback<void(Status)> completion_cb);
 
   // Confirms acceptance of the records according to the priority up to
-  // |seq_number| (inclusively). All records with sequeincing numbers <= this
+  // |sequencing_id| (inclusively). All records with sequeincing ids <= this
   // one can be removed from the Storage, and can no longer be uploaded.
   void Confirm(Priority priority,
-               uint64_t seq_number,
+               uint64_t sequencing_id,
                base::OnceCallback<void(Status)> completion_cb);
 
   // Initiates upload of collected records according to the priority.

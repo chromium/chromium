@@ -172,7 +172,6 @@ class Storage::KeyInStorage {
     RETURN_IF_ERROR(WriteKeyInfoFile(new_file_index, signed_encryption_key));
 
     // Enumerate data files and delete all files with lower index.
-    // numbers do we have (first and last).
     RemoveKeyFilesWithLowerIndexes(new_file_index);
     return Status::StatusOK();
   }

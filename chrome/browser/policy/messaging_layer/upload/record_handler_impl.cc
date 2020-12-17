@@ -59,12 +59,6 @@ class RecordHandlerImpl::ReportUploader
   void HandleSuccessfulUpload();
   void Complete(DmServerUploadService::CompletionResponse result);
 
-  // Populates upload request. Returns JSON request base::Value or nullopt,
-  // if an error was detected.
-  base::Optional<base::Value> PopulateRequest(
-      bool need_encryption_key,
-      const EncryptedRecord& encrypted_record);
-
   // Returns a gap record if it is necessary. Expects the contents of the
   // failedUploadedRecord field in the response:
   // {

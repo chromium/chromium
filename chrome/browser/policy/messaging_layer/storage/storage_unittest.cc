@@ -200,15 +200,14 @@ class SingleDecryptionContext {
 
 class MockUploadClient : public Storage::UploaderInterface {
  public:
-  // Mapping of (generation, seq number) to matching record digest. Whenever a
-  // record is uploaded and includes last record digest, this map should have
-  // that digest already recorded. Only the first record in a generation is
-  // uploaded without last record digest.
-  using LastRecordDigestMap =
-      std::map<std::tuple<Priority,
-                          uint64_t /*generation */,
-                          uint64_t /*sequencing number*/>,
-               std::string /*digest*/>;
+  // Mapping of <generation id, sequencing id> to matching record digest.
+  // Whenever a record is uploaded and includes last record digest, this map
+  // should have that digest already recorded. Only the first record in a
+  // generation is uploaded without last record digest.
+  using LastRecordDigestMap = std::map<std::tuple<Priority,
+                                                  uint64_t /*generation id*/,
+                                                  uint64_t /*sequencing id*/>,
+                                       std::string /*digest*/>;
 
   explicit MockUploadClient(LastRecordDigestMap* last_record_digest_map,
                             scoped_refptr<Decryptor> decryptor)
@@ -283,16 +282,16 @@ class MockUploadClient : public Storage::UploaderInterface {
           .InSequence(client_->test_upload_sequence_);
     }
 
-    SetUp& Required(uint64_t sequence_number, base::StringPiece value) {
-      EXPECT_CALL(*client_, UploadRecord(Eq(priority_), Eq(sequence_number),
+    SetUp& Required(uint64_t sequencing_id, base::StringPiece value) {
+      EXPECT_CALL(*client_, UploadRecord(Eq(priority_), Eq(sequencing_id),
                                          StrEq(std::string(value))))
           .InSequence(client_->test_upload_sequence_)
           .WillOnce(Return(true));
       return *this;
     }
 
-    SetUp& Possible(uint64_t sequence_number, base::StringPiece value) {
-      EXPECT_CALL(*client_, UploadRecord(Eq(priority_), Eq(sequence_number),
+    SetUp& Possible(uint64_t sequencing_id, base::StringPiece value) {
+      EXPECT_CALL(*client_, UploadRecord(Eq(priority_), Eq(sequencing_id),
                                          StrEq(std::string(value))))
           .Times(Between(0, 1))
           .InSequence(client_->test_upload_sequence_)
@@ -509,9 +508,9 @@ class StorageTest
     ASSERT_OK(write_result) << write_result;
   }
 
-  void ConfirmOrDie(Priority priority, std::uint64_t seq_number) {
+  void ConfirmOrDie(Priority priority, std::uint64_t sequencing_id) {
     TestEvent<Status> c;
-    storage_->Confirm(priority, seq_number, c.cb());
+    storage_->Confirm(priority, sequencing_id, c.cb());
     const Status c_result = c.result();
     ASSERT_OK(c_result) << c_result;
   }
@@ -551,8 +550,8 @@ class StorageTest
   scoped_refptr<Storage> storage_;
   bool expect_to_need_key_{false};
 
-  // Test-wide global mapping of seq number to record digest.
-  // Serves all MockUploadClients created by test fixture.
+  // Test-wide global mapping of <generation id, sequencing id> to record
+  // digest. Serves all MockUploadClients created by test fixture.
   MockUploadClient::LastRecordDigestMap last_record_digest_map_;
 
   ::testing::MockFunction<void(Priority, MockUploadClient*)>
@@ -713,7 +712,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadWithConfirmations) {
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
 
   // Confirm #0 and forward time again, removing data #0
-  ConfirmOrDie(FAST_BATCH, /*seq_number=*/0);
+  ConfirmOrDie(FAST_BATCH, /*sequencing_id=*/0);
   // Set uploader expectations.
   EXPECT_CALL(set_mock_uploader_expectations_, Call(Eq(FAST_BATCH), NotNull()))
       .WillOnce(
@@ -726,7 +725,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadWithConfirmations) {
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
 
   // Confirm #1 and forward time again, removing data #1
-  ConfirmOrDie(FAST_BATCH, /*seq_number=*/1);
+  ConfirmOrDie(FAST_BATCH, /*sequencing_id=*/1);
   // Set uploader expectations.
   EXPECT_CALL(set_mock_uploader_expectations_, Call(Eq(FAST_BATCH), NotNull()))
       .WillOnce(
@@ -755,7 +754,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadWithConfirmations) {
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
 
   // Confirm #2 and forward time again, removing data #2
-  ConfirmOrDie(FAST_BATCH, /*seq_number=*/2);
+  ConfirmOrDie(FAST_BATCH, /*sequencing_id=*/2);
 
   // Set uploader expectations.
   EXPECT_CALL(set_mock_uploader_expectations_, Call(Eq(FAST_BATCH), NotNull()))
@@ -843,7 +842,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyImmediateUploadWithConfirmations) {
   WriteStringOrDie(IMMEDIATE, data[2]);
 
   // Confirm #1, removing data #0 and #1
-  ConfirmOrDie(IMMEDIATE, /*seq_number=*/1);
+  ConfirmOrDie(IMMEDIATE, /*sequencing_id=*/1);
 
   // Add more records and verify that #2 and new records are returned.
   // Upload is initiated asynchronously, so it may happen after the next
@@ -925,10 +924,10 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadMultipleQueues) {
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(20));
 
   // Confirm #0 SLOW_BATCH, removing data #0
-  ConfirmOrDie(SLOW_BATCH, /*seq_number=*/0);
+  ConfirmOrDie(SLOW_BATCH, /*sequencing_id=*/0);
 
   // Confirm #1 IMMEDIATE, removing data #0 and #1
-  ConfirmOrDie(IMMEDIATE, /*seq_number=*/1);
+  ConfirmOrDie(IMMEDIATE, /*sequencing_id=*/1);
 
   // Add more data
   EXPECT_CALL(set_mock_uploader_expectations_, Call(Eq(IMMEDIATE), NotNull()))
