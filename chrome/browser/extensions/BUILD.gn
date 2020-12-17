@@ -835,6 +835,7 @@ static_library("extensions") {
     "//components/policy:generated",
     "//components/policy/core/browser",
     "//components/pref_registry",
+    "//components/privacy_sandbox:privacy_sandbox_prefs",
     "//components/proxy_config",
     "//components/rappor",
     "//components/resources",

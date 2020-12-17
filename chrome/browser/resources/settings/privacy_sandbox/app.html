@@ -43,6 +43,7 @@
   }
 </style>
 
+<settings-prefs prefs="{{prefs}}"></settings-prefs>
 <div id="page-container">
   <h1 id="page-heading">$i18n{privacySandboxPageHeading}</h1>
   <picture>
@@ -78,6 +79,7 @@
   </div>
   <div class="card">
     <settings-toggle-button id="toggleButton"
+        pref="{{prefs.privacy_sandbox.apis_enabled}}"
         class="hr" label="$i18n{privacySandboxPageHeading}">
     </settings-toggle-button>
     <div class="cr-row continuation">

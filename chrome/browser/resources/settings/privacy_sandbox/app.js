@@ -17,6 +17,13 @@ Polymer({
 
   _template: html`{__html_template__}`,
 
+  properties: {
+    /**
+     * Preferences state.
+     */
+    prefs: Object,
+  },
+
   /** @private */
   onLearnMoreButtonClick_: function() {
     OpenWindowProxyImpl.getInstance().openURL(
