@@ -37,7 +37,9 @@
   <div id="scanHelp" slot="error"
       hidden$="[[shouldHideScanHelpLink_(loaded, scanners)]]">
     [[i18n('noScannersHelpText')]]
-    <!-- TODO(gavinwill): Add href to the help link when available -->
-    <a id="scanHelpLink" href="#">[[i18n('noScannersHelpLinkLabel')]]</a>
+    <a id="scanHelpLink" target="_blank"
+        href="http://support.google.com/chromebook?p=chrome_scanning">
+      [[i18n('noScannersHelpLinkLabel')]]
+    </a>
   </div>
 </scan-settings-section>

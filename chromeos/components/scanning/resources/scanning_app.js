@@ -549,4 +549,11 @@ Polymer({
     this.$.scanFailedDialog.close();
     this.setAppState_(AppState.READY);
   },
+
+  /** @private */
+  onDialogGetHelpClick_() {
+    this.$.scanFailedDialog.close();
+    this.setAppState_(AppState.READY);
+    window.open('http://support.google.com/chromebook?p=chrome_scanning');
+  },
 });

@@ -211,9 +211,10 @@
       <iron-icon id="toastInfoIcon" icon="cr:info-outline"
           hidden="[[!showToastInfoIcon_]]"></iron-icon>
       <span id="toastText">[[i18n(toastMessageKey_)]]</span>
-      <!-- TODO(gavinwill): Add href to the help link when available -->
       <div id="getHelpDiv">
-        <a id="getHelpLink" href="#" hidden="[[!showToastHelpLink_]]">
+        <a id="getHelpLink" target="_blank"
+            href="http://support.google.com/chromebook?p=chrome_scanning"
+            hidden="[[!showToastHelpLink_]]">
           [[i18n('getHelpLinkText')]]</a>
       </div>
     </div>
@@ -227,8 +228,7 @@
       [[i18n('scanFailedDialogBodyText')]]
     </div>
     <div slot="button-container">
-      <!-- TODO(gavinwill): Add href to the help link when available -->
-      <cr-button class="cancel-button">
+      <cr-button class="cancel-button" on-click="onDialogGetHelpClick_">
         [[i18n('getHelpLinkText')]]
       </cr-button>
       <cr-button id="okButton" class="action-button"
