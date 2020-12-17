@@ -18,6 +18,7 @@
 #include "content/browser/conversions/conversion_manager.h"
 #include "content/browser/conversions/conversion_policy.h"
 #include "content/browser/conversions/conversion_storage_context.h"
+#include "storage/browser/quota/special_storage_policy.h"
 
 namespace base {
 
@@ -75,10 +76,13 @@ class CONTENT_EXPORT ConversionManagerImpl : public ConversionManager {
       std::unique_ptr<ConversionReporter> reporter,
       std::unique_ptr<ConversionPolicy> policy,
       const base::Clock* clock,
-      const base::FilePath& user_data_directory);
+      const base::FilePath& user_data_directory,
+      scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy);
 
-  ConversionManagerImpl(StoragePartition* storage_partition,
-                        const base::FilePath& user_data_directory);
+  ConversionManagerImpl(
+      StoragePartition* storage_partition,
+      const base::FilePath& user_data_directory,
+      scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy);
   ConversionManagerImpl(const ConversionManagerImpl& other) = delete;
   ConversionManagerImpl& operator=(const ConversionManagerImpl& other) = delete;
   ~ConversionManagerImpl() override;
@@ -100,10 +104,12 @@ class CONTENT_EXPORT ConversionManagerImpl : public ConversionManager {
                  base::OnceClosure done) override;
 
  private:
-  ConversionManagerImpl(std::unique_ptr<ConversionReporter> reporter,
-                        std::unique_ptr<ConversionPolicy> policy,
-                        const base::Clock* clock,
-                        const base::FilePath& user_data_directory);
+  ConversionManagerImpl(
+      std::unique_ptr<ConversionReporter> reporter,
+      std::unique_ptr<ConversionPolicy> policy,
+      const base::Clock* clock,
+      const base::FilePath& user_data_directory,
+      scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy);
 
   // Retrieves reports from storage whose |report_time| <= |max_report_time|,
   // and calls |handler_function| on them.
@@ -161,6 +167,9 @@ class CONTENT_EXPORT ConversionManagerImpl : public ConversionManager {
   // Policy used for controlling API configurations such as reporting and
   // attribution models. Unique ptr so it can be overridden for testing.
   std::unique_ptr<ConversionPolicy> conversion_policy_;
+
+  // Storage policy for the browser context |this| is in. May be nullptr.
+  scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy_;
 
   base::WeakPtrFactory<ConversionManagerImpl> weak_factory_;
 };

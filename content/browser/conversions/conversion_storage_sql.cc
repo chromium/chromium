@@ -12,6 +12,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/optional.h"
 #include "base/time/default_clock.h"
@@ -433,6 +434,10 @@ void ConversionStorageSql::ClearData(
     ClearAllDataInRange(delete_begin, delete_end);
     return;
   }
+
+  // Measure the time it takes to perform a clear with a filter separately from
+  // the above histogram.
+  SCOPED_UMA_HISTOGRAM_TIMER("Conversions.Storage.ClearDataWithFilterDuration");
 
   // TODO(csharrison, johnidel): This query can be split up and optimized by
   // adding indexes on the impression_time and conversion_time columns.

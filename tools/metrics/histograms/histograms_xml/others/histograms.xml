@@ -3105,6 +3105,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Conversions.Storage.ClearDataWithFilterDuration" units="ms"
+    expires_after="M95">
+  <owner>johnidel@chromium.org</owner>
+  <owner>csharrison@chromium.org</owner>
+  <summary>
+    Records the time it took to do perform a clear operation on the database
+    when supplied an origin filter. Recorded when the conversion database
+    finishes performing a clear operation. Note that filters may vary in size
+    and computation complexity, skewing this metric aribtrarily.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.TimeFromConversionToReportSend" units="hours"
     expires_after="M95">
   <owner>johnidel@chromium.org</owner>

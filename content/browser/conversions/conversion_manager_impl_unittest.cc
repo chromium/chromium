@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/callback_forward.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
 #include "base/test/bind.h"
@@ -24,6 +25,7 @@
 #include "content/browser/conversions/storable_conversion.h"
 #include "content/browser/conversions/storable_impression.h"
 #include "content/public/test/browser_task_environment.h"
+#include "storage/browser/test/mock_special_storage_policy.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
@@ -110,7 +112,9 @@ constexpr base::TimeDelta kImpressionExpiry = base::TimeDelta::FromDays(30);
 class ConversionManagerImplTest : public testing::Test {
  public:
   ConversionManagerImplTest()
-      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        mock_storage_policy_(
+            base::MakeRefCounted<storage::MockSpecialStoragePolicy>()) {
     EXPECT_TRUE(dir_.CreateUniqueTempDir());
     CreateManager();
   }
@@ -120,7 +124,32 @@ class ConversionManagerImplTest : public testing::Test {
     test_reporter_ = reporter.get();
     conversion_manager_ = ConversionManagerImpl::CreateForTesting(
         std::move(reporter), std::make_unique<ConstantStartupDelayPolicy>(),
-        task_environment_.GetMockClock(), dir_.GetPath());
+        task_environment_.GetMockClock(), dir_.GetPath(), mock_storage_policy_);
+  }
+
+  void ExpectNumStoredImpressions(size_t expected_num_impressions) {
+    // There should be one impression and one conversion.
+    base::RunLoop impression_loop;
+    auto get_impressions_callback = base::BindLambdaForTesting(
+        [&](std::vector<StorableImpression> impressions) {
+          EXPECT_EQ(expected_num_impressions, impressions.size());
+          impression_loop.Quit();
+        });
+    conversion_manager_->GetActiveImpressionsForWebUI(
+        std::move(get_impressions_callback));
+    impression_loop.Run();
+  }
+
+  void ExpectNumStoredReports(size_t expected_num_reports) {
+    base::RunLoop report_loop;
+    auto reports_callback =
+        base::BindLambdaForTesting([&](std::vector<ConversionReport> reports) {
+          EXPECT_EQ(expected_num_reports, reports.size());
+          report_loop.Quit();
+        });
+    conversion_manager_->GetReportsForWebUI(std::move(reports_callback),
+                                            base::Time::Max());
+    report_loop.Run();
   }
 
   const base::Clock& clock() { return *task_environment_.GetMockClock(); }
@@ -130,6 +159,7 @@ class ConversionManagerImplTest : public testing::Test {
   BrowserTaskEnvironment task_environment_;
   std::unique_ptr<ConversionManagerImpl> conversion_manager_;
   TestConversionReporter* test_reporter_ = nullptr;
+  scoped_refptr<storage::MockSpecialStoragePolicy> mock_storage_policy_;
 };
 
 TEST_F(ConversionManagerImplTest, ImpressionRegistered_ReturnedToWebUI) {
@@ -369,6 +399,65 @@ TEST_F(ConversionManagerImplTest, NonExpiredReportsQueuedAtStartup_NotDelayed) {
   EXPECT_EQ(1u, test_reporter_->num_reports());
   EXPECT_EQ(start_time + kFirstReportingWindow,
             test_reporter_->last_report_time());
+}
+
+TEST_F(ConversionManagerImplTest, SessionOnlyOrigins_DataDeletedAtShutdown) {
+  GURL session_only_origin("https://sessiononly.example");
+  auto impression =
+      ImpressionBuilder(clock().Now())
+          .SetImpressionOrigin(url::Origin::Create(session_only_origin))
+          .Build();
+
+  mock_storage_policy_->AddSessionOnly(session_only_origin);
+
+  conversion_manager_->HandleImpression(impression);
+  conversion_manager_->HandleConversion(DefaultConversion());
+
+  ExpectNumStoredImpressions(1u);
+  ExpectNumStoredReports(1u);
+
+  // Reset the manager to simulate shutdown.
+  conversion_manager_.reset();
+  CreateManager();
+
+  ExpectNumStoredImpressions(0u);
+  ExpectNumStoredReports(0u);
+}
+
+TEST_F(ConversionManagerImplTest,
+       SessionOnlyOrigins_DeletedIfAnyOriginMatches) {
+  url::Origin session_only_origin =
+      url::Origin::Create(GURL("https://sessiononly.example"));
+  // Create impressions which each have the session only origin as one of
+  // impression/conversion/reporting origin.
+  auto impression1 = ImpressionBuilder(clock().Now())
+                         .SetImpressionOrigin(session_only_origin)
+                         .Build();
+  auto impression2 = ImpressionBuilder(clock().Now())
+                         .SetReportingOrigin(session_only_origin)
+                         .Build();
+  auto impression3 = ImpressionBuilder(clock().Now())
+                         .SetConversionOrigin(session_only_origin)
+                         .Build();
+
+  // Create one  impression which is not session only.
+  auto impression4 = ImpressionBuilder(clock().Now()).Build();
+
+  mock_storage_policy_->AddSessionOnly(session_only_origin.GetURL());
+
+  conversion_manager_->HandleImpression(impression1);
+  conversion_manager_->HandleImpression(impression2);
+  conversion_manager_->HandleImpression(impression3);
+  conversion_manager_->HandleImpression(impression4);
+
+  ExpectNumStoredImpressions(4u);
+
+  // Reset the manager to simulate shutdown.
+  conversion_manager_.reset();
+  CreateManager();
+
+  // All session-only impressions should be deleted.
+  ExpectNumStoredImpressions(1u);
 }
 
 }  // namespace content
