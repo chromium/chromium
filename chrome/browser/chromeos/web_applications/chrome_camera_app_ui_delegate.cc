@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "ash/public/cpp/tablet_mode.h"
 #include "base/files/file_path.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -18,7 +19,9 @@
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/components/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_launch/web_launch_files_helper.h"
@@ -30,15 +33,6 @@
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
-
-// static
-void ChromeCameraAppUIDelegate::CameraAppDialog::ShowIntent(
-    const std::string& queries,
-    gfx::NativeWindow parent) {
-  std::string url = chromeos::kChromeUICameraAppMainURL + queries;
-  CameraAppDialog* dialog = new CameraAppDialog(url);
-  dialog->ShowSystemDialog(parent);
-}
 
 ChromeCameraAppUIDelegate::CameraAppDialog::CameraAppDialog(
     const std::string& url)
@@ -79,6 +73,23 @@ bool ChromeCameraAppUIDelegate::CameraAppDialog::CheckMediaAccessPermission(
 
 ChromeCameraAppUIDelegate::ChromeCameraAppUIDelegate(content::WebUI* web_ui)
     : web_ui_(web_ui) {}
+
+// static
+void ChromeCameraAppUIDelegate::ShowIntent(const std::string& queries,
+                                           gfx::NativeWindow parent) {
+  std::string url = chromeos::kChromeUICameraAppMainURL + queries;
+
+  // For tablet mode, apps should better display in fullscreen. Therefore, it is
+  // preferable to launch CCA into a browser, which will handle the tablet mode
+  // case itself, rather than a system dialog.
+  if (ash::TabletMode::Get()->InTabletMode()) {
+    web_app::LaunchSystemWebApp(ProfileManager::GetActiveUserProfile(),
+                                web_app::SystemAppType::CAMERA, GURL(url));
+  } else {
+    CameraAppDialog* dialog = new CameraAppDialog(url);
+    dialog->ShowSystemDialog(parent);
+  }
+}
 
 void ChromeCameraAppUIDelegate::SetLaunchDirectory() {
   Profile* profile = Profile::FromWebUI(web_ui_);

@@ -36,8 +36,7 @@ class ChromeCameraAppUIDelegate : public CameraAppUIDelegate {
  public:
   class CameraAppDialog : public chromeos::SystemWebDialogDelegate {
    public:
-    static void ShowIntent(const std::string& queries,
-                           gfx::NativeWindow parent);
+    explicit CameraAppDialog(const std::string& url);
 
     // SystemWebDialogDelegate
     ui::ModalType GetDialogModalType() const override;
@@ -55,7 +54,6 @@ class ChromeCameraAppUIDelegate : public CameraAppUIDelegate {
         blink::mojom::MediaStreamType type) override;
 
    private:
-    explicit CameraAppDialog(const std::string& url);
     ~CameraAppDialog() override;
 
     DISALLOW_COPY_AND_ASSIGN(CameraAppDialog);
@@ -66,6 +64,8 @@ class ChromeCameraAppUIDelegate : public CameraAppUIDelegate {
   ChromeCameraAppUIDelegate(const ChromeCameraAppUIDelegate&) = delete;
   ChromeCameraAppUIDelegate& operator=(const ChromeCameraAppUIDelegate&) =
       delete;
+
+  static void ShowIntent(const std::string& queries, gfx::NativeWindow parent);
 
   // CameraAppUIDelegate
   void SetLaunchDirectory() override;

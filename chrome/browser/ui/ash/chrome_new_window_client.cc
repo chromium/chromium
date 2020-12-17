@@ -660,8 +660,7 @@ void ChromeNewWindowClient::LaunchCameraApp(const std::string& queries,
 
   if (web_app::SystemWebAppManager::IsAppEnabled(
           web_app::SystemAppType::CAMERA)) {
-    ChromeCameraAppUIDelegate::CameraAppDialog::ShowIntent(
-        queries, arc::GetArcWindow(task_id));
+    ChromeCameraAppUIDelegate::ShowIntent(queries, arc::GetArcWindow(task_id));
     return;
   }
 
