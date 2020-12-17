@@ -407,6 +407,13 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kMetricsSettingsAndroid;
 #endif
 
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kMoveWebApp;
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<std::string> kMoveWebAppUninstallStartUrlPrefix;
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<std::string> kMoveWebAppInstallStartUrl;
+
 #if BUILDFLAG(ENABLE_NATIVE_NOTIFICATIONS)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kNativeNotifications;

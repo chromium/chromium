@@ -43,6 +43,7 @@ class OsIntegrationManager;
 // Forward declarations for new extension-independent subsystems.
 class WebAppDatabaseFactory;
 class WebAppMigrationManager;
+class WebAppMover;
 
 // Connects Web App features, such as the installation of default and
 // policy-managed web apps, with Profiles (as WebAppProvider is a
@@ -127,6 +128,7 @@ class WebAppProvider : public WebAppProviderBase {
   std::unique_ptr<WebAppDatabaseFactory> database_factory_;
   // migration_manager_ can be nullptr if no migration needed.
   std::unique_ptr<WebAppMigrationManager> migration_manager_;
+  std::unique_ptr<WebAppMover> web_app_mover_;
 
   // Generalized subsystems:
   std::unique_ptr<AppRegistrar> registrar_;

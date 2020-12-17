@@ -616,6 +616,15 @@ const base::Feature kMetricsSettingsAndroid{"MetricsSettingsAndroid",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
+const base::Feature kMoveWebApp{
+    "MoveWebApp", base::FeatureState::FEATURE_DISABLED_BY_DEFAULT};
+const base::FeatureParam<std::string> kMoveWebAppUninstallStartUrlPrefix(
+    &kMoveWebApp,
+    "uninstallStartUrlPrefix",
+    "");
+const base::FeatureParam<std::string>
+    kMoveWebAppInstallStartUrl(&kMoveWebApp, "installStartUrl", "");
+
 // Enables the use of native notification centers instead of using the Message
 // Center for displaying the toasts. The feature is hardcoded to enabled for
 // Chrome OS.
