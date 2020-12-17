@@ -43,6 +43,8 @@ class COMPONENT_EXPORT(FULL_RESTORE) RestoreData {
   RestoreData(const RestoreData&) = delete;
   RestoreData& operator=(const RestoreData&) = delete;
 
+  std::unique_ptr<RestoreData> Clone() const;
+
   // Converts |app_id_to_launch_list_| to base::Value, e.g.:
   // {
   //   "odknhmnlageboeamepcngndbggdpaobj":    // app_id

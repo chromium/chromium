@@ -138,6 +138,48 @@ AppRestoreData::AppRestoreData(base::Value&& value) {
 
 AppRestoreData::~AppRestoreData() = default;
 
+std::unique_ptr<AppRestoreData> AppRestoreData::Clone() const {
+  std::unique_ptr<AppRestoreData> data = std::make_unique<AppRestoreData>();
+
+  if (event_flag.has_value())
+    data->event_flag = event_flag.value();
+
+  if (container.has_value())
+    data->container = container.value();
+
+  if (disposition.has_value())
+    data->disposition = disposition.value();
+
+  if (display_id.has_value())
+    data->display_id = display_id.value();
+
+  if (url.has_value())
+    data->url = url.value();
+
+  if (intent.has_value() && intent.value())
+    data->intent = intent.value()->Clone();
+
+  if (file_paths.has_value())
+    data->file_paths = file_paths.value();
+
+  if (activation_index.has_value())
+    data->activation_index = activation_index.value();
+
+  if (desk_id.has_value())
+    data->desk_id = desk_id.value();
+
+  if (restored_bounds.has_value())
+    data->restored_bounds = restored_bounds.value();
+
+  if (current_bounds.has_value())
+    data->current_bounds = current_bounds.value();
+
+  if (window_state_type.has_value())
+    data->window_state_type = window_state_type.value();
+
+  return data;
+}
+
 base::Value AppRestoreData::ConvertToValue() const {
   base::Value launch_info_dict(base::Value::Type::DICTIONARY);
 

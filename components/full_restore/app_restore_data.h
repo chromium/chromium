@@ -34,6 +34,8 @@ struct COMPONENT_EXPORT(FULL_RESTORE) AppRestoreData {
   AppRestoreData(const AppRestoreData&) = delete;
   AppRestoreData& operator=(const AppRestoreData&) = delete;
 
+  std::unique_ptr<AppRestoreData> Clone() const;
+
   // Converts the struct LaunchAndWindowInfo to base::Value, e.g.:
   // {
   //    "event_flag": 0,

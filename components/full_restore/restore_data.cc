@@ -52,6 +52,17 @@ RestoreData::RestoreData(std::unique_ptr<base::Value> restore_data_value) {
 
 RestoreData::~RestoreData() = default;
 
+std::unique_ptr<RestoreData> RestoreData::Clone() const {
+  std::unique_ptr<RestoreData> restore_data = std::make_unique<RestoreData>();
+  for (const auto& it : app_id_to_launch_list_) {
+    for (const auto& data_it : it.second) {
+      restore_data->app_id_to_launch_list_[it.first][data_it.first] =
+          data_it.second->Clone();
+    }
+  }
+  return restore_data;
+}
+
 base::Value RestoreData::ConvertToValue() const {
   base::Value restore_data_dict(base::Value::Type::DICTIONARY);
   for (const auto& it : app_id_to_launch_list_) {
