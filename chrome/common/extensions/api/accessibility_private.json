@@ -51,6 +51,12 @@
         "description": "Commands that can be triggered by switch activation."
       },
       {
+        "id": "PointScanState",
+        "type": "string",
+        "enum": ["start", "stop"],
+        "description" : "Point scanning states in Switch Access."
+      },
+      {
         "id": "SwitchAccessBubble",
         "type": "string",
         "enum": [ "backButton", "menu" ],
@@ -386,10 +392,16 @@
         "platforms": ["chromeos"]
       },
       {
-        "name": "activatePointScan",
+        "name": "setPointScanState",
         "type": "function",
-        "description": "Activates point scanning in Switch Access.",
-        "parameters": [],
+        "description": "Sets point scanning state Switch Access.",
+        "parameters": [
+          {
+            "name": "state",
+            "$ref": "PointScanState",
+            "description": "The point scanning state to set."
+          }
+        ],
         "platforms": ["chromeos"]
       },
       {

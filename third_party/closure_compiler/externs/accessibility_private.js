@@ -83,6 +83,14 @@ chrome.accessibilityPrivate.SwitchAccessCommand = {
 /**
  * @enum {string}
  */
+chrome.accessibilityPrivate.PointScanState = {
+  START: 'start',
+  STOP: 'stop',
+};
+
+/**
+ * @enum {string}
+ */
 chrome.accessibilityPrivate.SwitchAccessBubble = {
   BACK_BUTTON: 'backButton',
   MENU: 'menu',
@@ -338,9 +346,11 @@ chrome.accessibilityPrivate.forwardKeyEventsToSwitchAccess = function(shouldForw
 chrome.accessibilityPrivate.updateSwitchAccessBubble = function(bubble, show, anchor, actions) {};
 
 /**
- * Activates point scanning in Switch Access.
+ * Sets point scanning state Switch Access.
+ * @param {!chrome.accessibilityPrivate.PointScanState} state The point scanning
+ *     state to set.
  */
-chrome.accessibilityPrivate.activatePointScan = function() {};
+chrome.accessibilityPrivate.setPointScanState = function(state) {};
 
 /**
  * Sets current ARC app to use native ARC support.

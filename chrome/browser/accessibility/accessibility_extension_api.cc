@@ -542,8 +542,23 @@ AccessibilityPrivateUpdateSwitchAccessBubbleFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction
-AccessibilityPrivateActivatePointScanFunction::Run() {
-  ash::AccessibilityController::Get()->ActivatePointScan();
+AccessibilityPrivateSetPointScanStateFunction::Run() {
+  std::unique_ptr<accessibility_private::SetPointScanState::Params> params =
+      accessibility_private::SetPointScanState::Params::Create(*args_);
+  EXTENSION_FUNCTION_VALIDATE(params);
+  accessibility_private::PointScanState params_state = params->state;
+
+  switch (params_state) {
+    case accessibility_private::PointScanState::POINT_SCAN_STATE_START:
+      ash::AccessibilityController::Get()->StartPointScan();
+      break;
+    case accessibility_private::PointScanState::POINT_SCAN_STATE_STOP:
+      ash::AccessibilityController::Get()->StopPointScan();
+      break;
+    case accessibility_private::PointScanState::POINT_SCAN_STATE_NONE:
+      break;
+  }
+
   return RespondNow(NoArguments());
 }
 

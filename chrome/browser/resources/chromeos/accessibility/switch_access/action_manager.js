@@ -213,7 +213,7 @@ class ActionManager {
         return true;
       case SwitchAccessMenuAction.POINT_SCAN:
         ActionManager.exitCurrentMenu();
-        chrome.accessibilityPrivate.activatePointScan();
+        chrome.accessibilityPrivate.setPointScanState(chrome.accessibilityPrivate.PointScanState.START);
         chrome.accessibilityPrivate.onPointScanSet.addListener(
             this.pointScanListener_);
         return true;
@@ -234,6 +234,7 @@ class ActionManager {
       case SwitchAccessMenuAction.LEFT_CLICK:
         EventGenerator.sendMouseClick(
             this.pointScanPoint_.x, this.pointScanPoint_.y);
+        chrome.accessibilityPrivate.setPointScanState(chrome.accessibilityPrivate.PointScanState.STOP);
         return true;
       case SwitchAccessMenuAction.RIGHT_CLICK:
         EventGenerator.sendMouseClick(
@@ -241,6 +242,7 @@ class ActionManager {
               mouseButton:
                   chrome.accessibilityPrivate.SyntheticMouseEventButton.RIGHT
             });
+        chrome.accessibilityPrivate.setPointScanState(chrome.accessibilityPrivate.PointScanState.STOP);
         return true;
       default:
         return false;

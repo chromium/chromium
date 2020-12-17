@@ -54,6 +54,7 @@ void PointScanController::StartHorizontalLineScan() {
 void PointScanController::StartVerticalRangeScan() {
   state_ = PointScanState::kVerticalRangeScanning;
   horizontal_line_layer_->PauseHorizontalScanning();
+  horizontal_range_layer_->SetOpacity(0);
   vertical_range_layer_.reset(new PointScanLayer(this));
   vertical_range_layer_info_.offset_bound =
       vertical_range_layer_->GetBounds().height() - kDefaultRangeHeightDips;
@@ -74,6 +75,7 @@ void PointScanController::StartVerticalLineScan() {
 void PointScanController::Stop() {
   state_ = PointScanState::kOff;
   vertical_line_layer_->PauseVerticalScanning();
+  vertical_range_layer_->SetOpacity(0);
 }
 
 base::Optional<gfx::PointF> PointScanController::OnPointSelect() {
