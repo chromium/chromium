@@ -116,26 +116,61 @@ base::ThreadSafePartitionRoot* AlignedAllocator() {
   return aligned_allocator.get();
 }
 
+#if defined(OS_WIN) && defined(ARCH_CPU_X86)
+bool IsRunning32bitEmulatedOnArm64() {
+  using IsWow64Process2Function = decltype(&IsWow64Process2);
+
+  IsWow64Process2Function is_wow64_process2 =
+      reinterpret_cast<IsWow64Process2Function>(::GetProcAddress(
+          ::GetModuleHandleA("kernel32.dll"), "IsWow64Process2"));
+  if (!is_wow64_process2)
+    return false;
+  USHORT process_machine;
+  USHORT native_machine;
+  bool retval = is_wow64_process2(::GetCurrentProcess(), &process_machine,
+                                  &native_machine);
+  if (!retval)
+    return false;
+  if (native_machine == IMAGE_FILE_MACHINE_ARM64)
+    return true;
+  return false;
+}
+
+// The number of bytes to add to every allocation. Ordinarily zero, but set to 8
+// when emulating an x86 on ARM64 to avoid a bug in the Windows x86 emulator.
+size_t g_extra_bytes;
+#endif  // defined(OS_WIN) && defined(ARCH_CPU_X86)
+
+// TODO(brucedawson): Remove this when https://crbug.com/1151455 is fixed.
+ALWAYS_INLINE size_t MaybeAdjustSize(size_t size) {
+#if defined(OS_WIN) && defined(ARCH_CPU_X86)
+  return base::CheckAdd(size, g_extra_bytes).ValueOrDie();
+#else   // defined(OS_WIN) && defined(ARCH_CPU_X86)
+  return size;
+#endif  // defined(OS_WIN) && defined(ARCH_CPU_X86)
+}
+
 }  // namespace
 
 namespace base {
 namespace internal {
 
 void* PartitionMalloc(const AllocatorDispatch*, size_t size, void* context) {
-  return Allocator()->AllocFlagsNoHooks(0, size);
+  return Allocator()->AllocFlagsNoHooks(0, MaybeAdjustSize(size));
 }
 
 void* PartitionMallocUnchecked(const AllocatorDispatch*,
                                size_t size,
                                void* context) {
-  return Allocator()->AllocFlagsNoHooks(base::PartitionAllocReturnNull, size);
+  return Allocator()->AllocFlagsNoHooks(base::PartitionAllocReturnNull,
+                                        MaybeAdjustSize(size));
 }
 
 void* PartitionCalloc(const AllocatorDispatch*,
                       size_t n,
                       size_t size,
                       void* context) {
-  const size_t total = base::CheckMul(n, size).ValueOrDie();
+  const size_t total = base::CheckMul(n, MaybeAdjustSize(size)).ValueOrDie();
   return Allocator()->AllocFlagsNoHooks(base::PartitionAllocZeroFill, total);
 }
 
@@ -143,16 +178,16 @@ void* PartitionMemalign(const AllocatorDispatch*,
                         size_t alignment,
                         size_t size,
                         void* context) {
-  return AlignedAllocator()->AlignedAllocFlags(base::PartitionAllocNoHooks,
-                                               alignment, size);
+  return AlignedAllocator()->AlignedAllocFlags(
+      base::PartitionAllocNoHooks, alignment, MaybeAdjustSize(size));
 }
 
 void* PartitionAlignedAlloc(const AllocatorDispatch* dispatch,
                             size_t size,
                             size_t alignment,
                             void* context) {
-  return AlignedAllocator()->AlignedAllocFlags(base::PartitionAllocNoHooks,
-                                               alignment, size);
+  return AlignedAllocator()->AlignedAllocFlags(
+      base::PartitionAllocNoHooks, alignment, MaybeAdjustSize(size));
 }
 
 // aligned_realloc documentation is
@@ -169,6 +204,7 @@ void* PartitionAlignedRealloc(const AllocatorDispatch* dispatch,
                               void* context) {
   void* new_ptr = nullptr;
   if (size > 0) {
+    size = MaybeAdjustSize(size);
     new_ptr = AlignedAllocator()->AlignedAllocFlags(base::PartitionAllocNoHooks,
                                                     alignment, size);
   } else {
@@ -195,8 +231,8 @@ void* PartitionRealloc(const AllocatorDispatch*,
                        void* address,
                        size_t size,
                        void* context) {
-  return Allocator()->ReallocFlags(base::PartitionAllocNoHooks, address, size,
-                                   "");
+  return Allocator()->ReallocFlags(base::PartitionAllocNoHooks, address,
+                                   MaybeAdjustSize(size), "");
 }
 
 void PartitionFree(const AllocatorDispatch*, void* address, void* context) {
@@ -243,6 +279,16 @@ void EnablePCScan() {
   Allocator()->EnablePCScan();
   AlignedAllocator()->EnablePCScan();
 }
+
+#if defined(OS_WIN)
+// Call this as soon as possible during startup.
+void ConfigurePartitionAlloc() {
+#if defined(ARCH_CPU_X86)
+  if (IsRunning32bitEmulatedOnArm64())
+    g_extra_bytes = 8;
+#endif  // defined(ARCH_CPU_X86)
+}
+#endif  // defined(OS_WIN)
 
 void EnablePCScanIfNeeded() {
   if (!features::IsPartitionAllocPCScanEnabled())

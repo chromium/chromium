@@ -146,6 +146,14 @@ BASE_EXPORT void InsertAllocatorDispatch(AllocatorDispatch* dispatch);
 // in malloc(), which we really don't want.
 BASE_EXPORT void RemoveAllocatorDispatchForTesting(AllocatorDispatch* dispatch);
 
+#if defined(OS_WIN)
+// Configures the allocator for the caller's allocation domain. Allocations that
+// take place prior to this configuration step will succeed, but will not
+// benefit from its one-time mitigations. As such, this function must be called
+// as early as possible during startup.
+BASE_EXPORT void ConfigurePartitionAlloc();
+#endif  // defined(OS_WIN)
+
 #if defined(OS_APPLE)
 // On macOS, the allocator shim needs to be turned on during runtime.
 BASE_EXPORT void InitializeAllocatorShim();
