@@ -1463,7 +1463,7 @@ void OutOfProcessInstance::SaveToBuffer(const std::string& token) {
       message.Set(kJSDataToSave, buffer);
     }
   } else {
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     uint32_t length = engine()->GetLoadedByteSize();
     if (IsSaveDataSizeValid(length)) {
       pp::VarArrayBuffer buffer(length);
@@ -1473,7 +1473,7 @@ void OutOfProcessInstance::SaveToBuffer(const std::string& token) {
     }
 #else
     NOTREACHED();
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
   PostMessage(message);

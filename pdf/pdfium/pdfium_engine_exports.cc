@@ -227,7 +227,7 @@ PDFiumEngineExports::PDFiumEngineExports() {}
 
 PDFiumEngineExports::~PDFiumEngineExports() {}
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 std::vector<uint8_t> PDFiumEngineExports::CreateFlattenedPdf(
     base::span<const uint8_t> input_buffer) {
   ScopedFPDFDocument doc = LoadPdfData(input_buffer);
@@ -235,7 +235,7 @@ std::vector<uint8_t> PDFiumEngineExports::CreateFlattenedPdf(
     return std::vector<uint8_t>();
   return PDFiumPrint::CreateFlattenedPdf(std::move(doc));
 }
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_WIN)
 bool PDFiumEngineExports::RenderPDFPageToDC(

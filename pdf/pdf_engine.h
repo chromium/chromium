@@ -543,11 +543,11 @@ class PDFEngineExports {
 
   static PDFEngineExports* Get();
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // See the definition of CreateFlattenedPdf in pdf.cc for details.
   virtual std::vector<uint8_t> CreateFlattenedPdf(
       base::span<const uint8_t> input_buffer) = 0;
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_WIN)
   // See the definition of RenderPDFPageToDC in pdf.cc for details.

@@ -32,12 +32,12 @@ class PDFiumPrint {
   PDFiumPrint& operator=(const PDFiumPrint&) = delete;
   ~PDFiumPrint();
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Flattens the |doc|.
   // On success, returns the flattened version of |doc| as a vector.
   // On failure, returns an empty vector.
   static std::vector<uint8_t> CreateFlattenedPdf(ScopedFPDFDocument doc);
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   static std::vector<uint32_t> GetPageNumbersFromPrintPageNumberRange(
       const PP_PrintPageNumberRange_Dev* page_ranges,

@@ -272,14 +272,14 @@ PDFiumPrint::PDFiumPrint(PDFiumEngine* engine) : engine_(engine) {}
 
 PDFiumPrint::~PDFiumPrint() = default;
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // static
 std::vector<uint8_t> PDFiumPrint::CreateFlattenedPdf(ScopedFPDFDocument doc) {
   if (!FlattenPrintData(doc.get()))
     return std::vector<uint8_t>();
   return ConvertDocToBuffer(std::move(doc));
 }
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // static
 std::vector<uint32_t> PDFiumPrint::GetPageNumbersFromPrintPageNumberRange(
