@@ -45,6 +45,8 @@
         self.browser->GetBrowserState()->IsOffTheRecord()
             ? UIUserInterfaceStyleDark
             : UIUserInterfaceStyleUnspecified;
+    self.tabStripViewController.isOffTheRecord =
+        self.browser->GetBrowserState()->IsOffTheRecord();
   }
 
   self.mediator =

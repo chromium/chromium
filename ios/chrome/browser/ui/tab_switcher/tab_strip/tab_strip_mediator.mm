@@ -251,6 +251,9 @@ int GetIndexOfTabWithId(WebStateList* web_state_list, NSString* identifier) {
   if (self.webStateList->count() > 0) {
     [self.consumer populateItems:CreateItems(self.webStateList)
                   selectedItemID:GetActiveTabId(self.webStateList)];
+    self.consumer.isOffTheRecord = self.webStateList->GetWebStateAt(0)
+                                       ->GetBrowserState()
+                                       ->IsOffTheRecord();
   }
 }
 

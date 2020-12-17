@@ -19,6 +19,9 @@
 // and a close tab button.
 @interface TabStripCell : UICollectionViewCell
 
+// The close button associated with this cell.
+@property(nonatomic, strong) UIButton* closeButton;
+// Title is displayed by this label.
 @property(nonatomic, strong) UILabel* titleLabel;
 // View for displaying the favicon.
 @property(nonatomic, strong) UIImageView* faviconView;
@@ -27,6 +30,10 @@
 @property(nonatomic, copy) NSString* itemIdentifier;
 // Delegate to inform the TabStrip on the cell.
 @property(nonatomic, weak) id<TabStripCellDelegate> delegate;
+// YES if dark mode is needed for incognito on iOS 12 and less.
+// iOS 13 there is no need to pick custom incognito assets because
+// |overrideUserInterfaceStyle| is set to dark mode when in incognito.
+@property(nonatomic) BOOL useIncognitoFallback;
 
 @end
 

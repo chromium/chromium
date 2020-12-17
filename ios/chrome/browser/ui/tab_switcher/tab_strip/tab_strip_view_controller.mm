@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_view_controller.h"
 
 #import "base/allocator/partition_allocator/partition_alloc.h"
+#import "base/ios/ios_util.h"
+#import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_view_layout.h"
@@ -46,6 +48,8 @@ const CGFloat kNewTabButtonBottomImageInset = -2.0;
 @end
 
 @implementation TabStripViewController
+
+@synthesize isOffTheRecord = _isOffTheRecord;
 
 - (instancetype)init {
   TabStripViewLayout* layout = [[TabStripViewLayout alloc] init];
@@ -110,11 +114,14 @@ const CGFloat kNewTabButtonBottomImageInset = -2.0;
     itemIndex = self.items.count - 1;
 
   TabSwitcherItem* item = self.items[itemIndex];
-  TabStripCell* cell = (TabStripCell*)[collectionView
+  TabStripCell* cell = base::mac::ObjCCastStrict<TabStripCell>([collectionView
       dequeueReusableCellWithReuseIdentifier:kReuseIdentifier
-                                forIndexPath:indexPath];
+                                forIndexPath:indexPath]);
 
   [self configureCell:cell withItem:item];
+  cell.useIncognitoFallback =
+      self.isOffTheRecord && !base::ios::IsRunningOnIOS13OrLater();
+  cell.selected = (self.selectedItemID == cell.itemIdentifier) ? YES : NO;
   return cell;
 }
 
@@ -185,11 +192,19 @@ const CGFloat kNewTabButtonBottomImageInset = -2.0;
   [self.collectionView
       deselectItemAtIndexPath:CreateIndexPath(self.selectedIndex)
                      animated:YES];
+  UICollectionViewCell* cell = [self.collectionView
+      cellForItemAtIndexPath:CreateIndexPath(self.selectedIndex)];
+  cell.selected = NO;
+
   self.selectedItemID = selectedItemID;
+
   [self.collectionView
       selectItemAtIndexPath:CreateIndexPath(self.selectedIndex)
                    animated:YES
              scrollPosition:UICollectionViewScrollPositionNone];
+  cell = [self.collectionView
+      cellForItemAtIndexPath:CreateIndexPath(self.selectedIndex)];
+  cell.selected = YES;
   [self orderBySelectedTab];
 }
 
@@ -212,6 +227,7 @@ const CGFloat kNewTabButtonBottomImageInset = -2.0;
                     if (cell.itemIdentifier == itemIdentifier)
                       cell.faviconView.image = icon;
                   }];
+    cell.selected = (cell.itemIdentifier == self.selectedItemID) ? YES : NO;
   }
 }
 

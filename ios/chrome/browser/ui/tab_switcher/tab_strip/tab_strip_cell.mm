@@ -16,6 +16,7 @@ namespace {
 const CGFloat kTabBackgroundLeftCapInset = 34.0;
 const CGFloat kFaviconInset = 28;
 const CGFloat kTitleInset = 10.0;
+const CGFloat kFontSize = 14.0;
 }  // namespace
 
 @implementation TabStripCell
@@ -26,50 +27,49 @@ const CGFloat kTitleInset = 10.0;
 
     UIImage* favicon = [[UIImage imageNamed:@"default_world_favicon"]
         imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    UIImageView* faviconView = [[UIImageView alloc] initWithImage:favicon];
-    faviconView.tintColor = [UIColor colorNamed:kGrey500Color];
-    [self.contentView addSubview:faviconView];
-    faviconView.translatesAutoresizingMaskIntoConstraints = NO;
+    _faviconView = [[UIImageView alloc] initWithImage:favicon];
+    [self.contentView addSubview:_faviconView];
+    _faviconView.translatesAutoresizingMaskIntoConstraints = NO;
     [NSLayoutConstraint activateConstraints:@[
-      [faviconView.leadingAnchor
+      [_faviconView.leadingAnchor
           constraintEqualToAnchor:self.contentView.leadingAnchor
                          constant:kFaviconInset],
-      [faviconView.centerYAnchor
+      [_faviconView.centerYAnchor
           constraintEqualToAnchor:self.contentView.centerYAnchor],
     ]];
 
     UIImage* close = [[UIImage imageNamed:@"grid_cell_close_button"]
         imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    UIButton* closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [closeButton setImage:close forState:UIControlStateNormal];
-    closeButton.tintColor = [UIColor colorNamed:kGrey500Color];
-    [self.contentView addSubview:closeButton];
-    closeButton.translatesAutoresizingMaskIntoConstraints = NO;
+    _closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [_closeButton setImage:close forState:UIControlStateNormal];
+    [self.contentView addSubview:_closeButton];
+    _closeButton.translatesAutoresizingMaskIntoConstraints = NO;
     [NSLayoutConstraint activateConstraints:@[
-      [closeButton.trailingAnchor
+      [_closeButton.trailingAnchor
           constraintEqualToAnchor:self.contentView.trailingAnchor
                          constant:-kFaviconInset],
-      [closeButton.centerYAnchor
+      [_closeButton.centerYAnchor
           constraintEqualToAnchor:self.contentView.centerYAnchor],
     ]];
-    [closeButton addTarget:self
-                    action:@selector(closeButtonTapped:)
-          forControlEvents:UIControlEventTouchUpInside];
+    [_closeButton addTarget:self
+                     action:@selector(closeButtonTapped:)
+           forControlEvents:UIControlEventTouchUpInside];
 
-    UILabel* titleLabel = [[UILabel alloc] init];
-    [self.contentView addSubview:titleLabel];
-    titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    _titleLabel = [[UILabel alloc] init];
+    _titleLabel.font = [UIFont systemFontOfSize:kFontSize
+                                         weight:UIFontWeightMedium];
+    [self.contentView addSubview:_titleLabel];
+    _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
     [NSLayoutConstraint activateConstraints:@[
-      [titleLabel.leadingAnchor
-          constraintEqualToAnchor:faviconView.trailingAnchor
+      [_titleLabel.leadingAnchor
+          constraintEqualToAnchor:_faviconView.trailingAnchor
                          constant:kTitleInset],
-      [titleLabel.trailingAnchor
-          constraintLessThanOrEqualToAnchor:closeButton.leadingAnchor
+      [_titleLabel.trailingAnchor
+          constraintLessThanOrEqualToAnchor:_closeButton.leadingAnchor
                                    constant:-kTitleInset],
-      [titleLabel.centerYAnchor
-          constraintEqualToAnchor:faviconView.centerYAnchor],
+      [_titleLabel.centerYAnchor
+          constraintEqualToAnchor:_faviconView.centerYAnchor],
     ]];
-    self.titleLabel = titleLabel;
   }
   return self;
 }
@@ -79,6 +79,7 @@ const CGFloat kTitleInset = 10.0;
   self.titleLabel.text = nil;
   self.itemIdentifier = nil;
   self.selected = NO;
+  self.faviconView = nil;
 }
 
 - (void)setupBackgroundViews {
@@ -120,6 +121,37 @@ const CGFloat kTitleInset = 10.0;
 // Selector registered to the close button.
 - (void)closeButtonTapped:(id)sender {
   [self.delegate closeButtonTappedForCell:self];
+}
+
+- (void)setSelected:(BOOL)selected {
+  [super setSelected:selected];
+  // Style the favicon tint color.
+  self.faviconView.tintColor = selected ? [UIColor colorNamed:kCloseButtonColor]
+                                        : [UIColor colorNamed:kGrey500Color];
+  // Style the close button tint color.
+  self.closeButton.tintColor = selected ? [UIColor colorNamed:kCloseButtonColor]
+                                        : [UIColor colorNamed:kGrey500Color];
+  // Style the title tint color.
+  self.titleLabel.textColor = selected ? [UIColor colorNamed:kTextPrimaryColor]
+                                       : [UIColor colorNamed:kGrey600Color];
+  // These dark-theme specific colorsets should only be used for iOS 12
+  // dark theme, as they will be removed along with iOS 12.
+  // TODO (crbug.com/981889): The following lines will be removed
+  // along with iOS 12
+  if (self.useIncognitoFallback) {
+    // Style the favicon tint color.
+    self.faviconView.tintColor =
+        selected ? [UIColor colorNamed:kCloseButtonDarkColor]
+                 : [UIColor colorNamed:kGrey500Color];
+    // Style the close button tint color.
+    self.closeButton.tintColor =
+        selected ? [UIColor colorNamed:kCloseButtonDarkColor]
+                 : [UIColor colorNamed:kGrey500Color];
+    // Style the title tint color.
+    self.titleLabel.textColor = selected
+                                    ? [UIColor colorNamed:kTextPrimaryDarkColor]
+                                    : [UIColor colorNamed:kGrey600Color];
+  }
 }
 
 @end
