@@ -4874,6 +4874,11 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   if (!self.active)
     return YES;
 
+  BOOL isShowingIncognitoBlocker = (self.blockingView.superview != nil);
+  if (isShowingIncognitoBlocker) {
+    return YES;
+  }
+
   return NO;
 }
 
