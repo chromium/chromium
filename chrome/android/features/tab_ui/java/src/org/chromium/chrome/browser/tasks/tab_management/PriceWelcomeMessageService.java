@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 
@@ -165,14 +167,21 @@ public class PriceWelcomeMessageService extends MessageService {
         sendInvalidNotification();
     }
 
-    private void review() {
+    @VisibleForTesting
+    public void review() {
         assert mPriceTabData != null;
         mPriceWelcomeMessageReviewActionProvider.scrollToBindingTab(
                 mPriceWelcomeMessageProvider.getTabIndexFromTabId(mPriceTabData.bindingTabId));
         PriceTrackingUtilities.disablePriceWelcomeMessageCard();
     }
 
-    private void dismiss() {
+    @VisibleForTesting
+    public void dismiss() {
         PriceTrackingUtilities.disablePriceWelcomeMessageCard();
+    }
+
+    @VisibleForTesting
+    PriceTabData getPriceTabDataForTesting() {
+        return mPriceTabData;
     }
 }

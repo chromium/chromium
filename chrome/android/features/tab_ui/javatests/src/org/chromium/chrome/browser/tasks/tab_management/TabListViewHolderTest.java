@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.state.LevelDBPersistedTabDataStorage;
 import org.chromium.chrome.browser.tab.state.LevelDBPersistedTabDataStorageJni;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
+import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData.PriceDrop;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
@@ -685,6 +686,8 @@ public class TabListViewHolderTest extends DummyUiActivityTestCase {
         mGridModel.set(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER, null);
         PriceCardView priceCardView = mTabGridView.findViewById(R.id.price_info_box_outer);
         Assert.assertEquals(View.GONE, priceCardView.getVisibility());
+        // TODO(crbug.com/1157578): Update the model in mediator.
+        Assert.assertNull(mGridModel.get(TabProperties.PRICE_DROP));
     }
 
     private void testPriceString(Tab tab, MockShoppingPersistedTabDataFetcher fetcher,
@@ -701,6 +704,7 @@ public class TabListViewHolderTest extends DummyUiActivityTestCase {
             Assert.assertEquals(expectedCurrentPrice, currentPrice.getText());
             Assert.assertEquals(expectedPreviousPrice, previousPrice.getText());
         }
+        Assert.assertEquals(fetcher.getPriceDrop(), mGridModel.get(TabProperties.PRICE_DROP));
     }
 
     static class MockShoppingPersistedTabData extends ShoppingPersistedTabData {
@@ -738,6 +742,11 @@ public class TabListViewHolderTest extends DummyUiActivityTestCase {
 
         public void setNullPriceDrop() {
             mShoppingPersistedTabData = new MockShoppingPersistedTabData(mTab);
+        }
+
+        public PriceDrop getPriceDrop() {
+            if (mShoppingPersistedTabData == null) return null;
+            return ((MockShoppingPersistedTabData) mShoppingPersistedTabData).getPriceDrop();
         }
 
         @Override

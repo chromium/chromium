@@ -47,6 +47,9 @@ public class MessageCardProviderMediatorUnitTest {
     private TabSuggestionMessageService.TabSuggestionMessageData mTabSuggestionMessageData;
 
     @Mock
+    private PriceWelcomeMessageService.PriceWelcomeMessageData mPriceWelcomeMessageData;
+
+    @Mock
     private Supplier<Boolean> mIsIncognitoSupplier;
 
     @Before
@@ -68,6 +71,13 @@ public class MessageCardProviderMediatorUnitTest {
                         .thenReturn((messageType) -> {});
                 when(mTabSuggestionMessageData.getReviewActionProvider()).thenReturn(() -> {});
                 mMediator.messageReady(type, mTabSuggestionMessageData);
+                break;
+            case MessageService.MessageType.PRICE_WELCOME:
+                when(mPriceWelcomeMessageData.getPriceDrop()).thenReturn(null);
+                when(mPriceWelcomeMessageData.getDismissActionProvider())
+                        .thenReturn((messageType) -> {});
+                when(mPriceWelcomeMessageData.getReviewActionProvider()).thenReturn(() -> {});
+                mMediator.messageReady(type, mPriceWelcomeMessageData);
                 break;
             default:
                 mMediator.messageReady(type, new MessageService.MessageData() {});
@@ -292,6 +302,22 @@ public class MessageCardProviderMediatorUnitTest {
                 model.get(MessageCardViewProperties.MESSAGE_TYPE));
         Assert.assertEquals(groupingTabSuggestionMessage,
                 model.get(MessageCardViewProperties.DESCRIPTION_TEXT_TEMPLATE));
+    }
+
+    @Test
+    public void buildModel_ForPriceWelcome() {
+        String titleText = "Price drop spotted";
+        doReturn(titleText).when(mContext).getString(R.string.price_drop_spotted_title);
+
+        enqueueMessageItem(MessageService.MessageType.PRICE_WELCOME, -1);
+
+        PropertyModel model = mMediator.getReadyMessageItemsForTesting()
+                                      .get(MessageService.MessageType.PRICE_WELCOME)
+                                      .get(0)
+                                      .model;
+        Assert.assertEquals(MessageService.MessageType.PRICE_WELCOME,
+                model.get(MessageCardViewProperties.MESSAGE_TYPE));
+        Assert.assertEquals(titleText, model.get(MessageCardViewProperties.TITLE_TEXT));
     }
 
     @Test

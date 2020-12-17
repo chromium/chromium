@@ -23,9 +23,11 @@ public class PriceTrackingUtilities {
     @VisibleForTesting
     public static final String TRACK_PRICES_ON_TABS =
             ChromePreferenceKeys.PRICE_TRACKING_TRACK_PRICES_ON_TABS;
-    private static final String PRICE_WELCOME_MESSAGE_CARD =
+    @VisibleForTesting
+    public static final String PRICE_WELCOME_MESSAGE_CARD =
             ChromePreferenceKeys.PRICE_TRACKING_PRICE_WELCOME_MESSAGE_CARD;
-    private static final String PRICE_WELCOME_MESSAGE_CARD_SHOW_COUNT =
+    @VisibleForTesting
+    public static final String PRICE_WELCOME_MESSAGE_CARD_SHOW_COUNT =
             ChromePreferenceKeys.PRICE_TRACKING_PRICE_WELCOME_MESSAGE_CARD_SHOW_COUNT;
 
     @VisibleForTesting

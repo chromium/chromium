@@ -39,6 +39,7 @@ import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GROUPS_AND
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.MESSAGE_TYPE;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType.FOR_TESTING;
+import static org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType.PRICE_WELCOME;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType.TAB_SUGGESTION;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.MESSAGE;
@@ -106,6 +107,7 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tab.state.PersistedTabDataConfiguration;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
+import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData.PriceDrop;
 import org.chromium.chrome.browser.tabmodel.EmptyTabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
@@ -1524,6 +1526,41 @@ public class TabListMediatorUnitTest {
 
         mMediator.removeSpecialItemFromModel(TabProperties.UiType.MESSAGE, expectedMessageType);
         assertEquals(0, mModel.size());
+    }
+
+    @Test
+    public void removeSpecialItem_Message_PriceWelcome() {
+        PropertyModel model = mock(PropertyModel.class);
+        int expectedMessageType = PRICE_WELCOME;
+        int wrongMessageType = TAB_SUGGESTION;
+        when(model.get(CARD_TYPE)).thenReturn(MESSAGE);
+        when(model.get(MESSAGE_TYPE)).thenReturn(expectedMessageType);
+        mMediator.addSpecialItemToModel(0, TabProperties.UiType.PRICE_WELCOME, model);
+        assertEquals(1, mModel.size());
+
+        mMediator.removeSpecialItemFromModel(TabProperties.UiType.MESSAGE, wrongMessageType);
+        assertEquals(1, mModel.size());
+
+        mMediator.removeSpecialItemFromModel(
+                TabProperties.UiType.PRICE_WELCOME, expectedMessageType);
+        assertEquals(0, mModel.size());
+    }
+
+    @Test
+    public void testGetFirstTabShowingPriceCard() {
+        initAndAssertAllProperties();
+        mModel.get(0).model.set(TabProperties.PRICE_DROP, null);
+        mModel.get(1).model.set(TabProperties.PRICE_DROP, null);
+        assertNull(mModel.getFirstTabShowingPriceCard());
+
+        PriceDrop priceDrop1 = new PriceDrop("$1", "$2");
+        PriceDrop priceDrop2 = new PriceDrop("$3", "$4");
+        mModel.get(1).model.set(TabProperties.PRICE_DROP, priceDrop2);
+        assertEquals(TAB2_ID, mModel.getFirstTabShowingPriceCard().bindingTabId);
+        assertEquals(priceDrop2, mModel.getFirstTabShowingPriceCard().priceDrop);
+        mModel.get(0).model.set(TabProperties.PRICE_DROP, priceDrop1);
+        assertEquals(TAB1_ID, mModel.getFirstTabShowingPriceCard().bindingTabId);
+        assertEquals(priceDrop1, mModel.getFirstTabShowingPriceCard().priceDrop);
     }
 
     @Test
