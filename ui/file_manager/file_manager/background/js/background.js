@@ -63,11 +63,11 @@ class FileBrowserBackgroundImpl extends BackgroundBaseImpl {
 
     /**
      * Provides support for scanning media devices as part of Cloud Import.
-     * @type {!importer.MediaScanner}
+     * @type {!mediaScannerInterfaces.MediaScanner}
      */
-    this.mediaScanner = new importer.DefaultMediaScanner(
+    this.mediaScanner = new mediaScanner.DefaultMediaScanner(
         importerHistory.createMetadataHashcode, this.dispositionChecker_,
-        importer.DefaultDirectoryWatcher.create);
+        mediaScanner.DefaultDirectoryWatcher.create);
 
     /**
      * Handles importing of user media (e.g. photos, videos) from removable

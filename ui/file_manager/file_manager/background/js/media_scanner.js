@@ -2,32 +2,43 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {assert} from 'chrome://resources/js/assert.m.js';
+// #import {metadataProxy} from './metadata_proxy.m.js';
+// #import {fileOperationUtil} from './file_operation_util.m.js';
+// #import {importer} from '../../common/js/importer_common.m.js';
+// #import {mediaScannerInterfaces} from '../../../externs/background/media_scanner.m.js';
+// clang-format on
+
+// Namespace
+/* #export */ const mediaScanner = {};
+
 /**
  * Recursively scans through a list of given files and directories, and creates
  * a list of media files.
  *
- * @implements {importer.MediaScanner}
+ * @implements {mediaScannerInterfaces.MediaScanner}
  */
-importer.DefaultMediaScanner = class {
+mediaScanner.DefaultMediaScanner = class {
   /**
    * @param {function(!FileEntry): !Promise<string>} hashGenerator
    * @param {function(!FileEntry, !importer.Destination,
    *                  !importer.ScanMode):
    *     !Promise<!importer.Disposition>} dispositionChecker
-   * @param {!importer.DirectoryWatcherFactory} watcherFactory
+   * @param {!mediaScanner.DirectoryWatcherFactory} watcherFactory
    */
   constructor(hashGenerator, dispositionChecker, watcherFactory) {
     /**
      * A little factory for DefaultScanResults which allows us to forgo
      * the saving it's dependencies in our fields.
      * @param {importer.ScanMode} mode Mode of the scan to find new files.
-     * @return {!importer.DefaultScanResult}
+     * @return {!mediaScanner.DefaultScanResult}
      */
     this.createScanResult_ = mode => {
-      return new importer.DefaultScanResult(mode, hashGenerator);
+      return new mediaScanner.DefaultScanResult(mode, hashGenerator);
     };
 
-    /** @private {!Array<!importer.ScanObserver>} */
+    /** @private {!Array<!mediaScannerInterfaces.ScanObserver>} */
     this.observers_ = [];
 
     /**
@@ -39,7 +50,7 @@ importer.DefaultMediaScanner = class {
     this.getDisposition_ = dispositionChecker;
 
     /**
-     * @private {!importer.DirectoryWatcherFactory}
+     * @private {!mediaScanner.DirectoryWatcherFactory}
      * @const
      */
     this.watcherFactory_ = watcherFactory;
@@ -67,7 +78,7 @@ importer.DefaultMediaScanner = class {
     console.info(scan.name + ': Scanning directory ' + directory.fullPath);
 
     const watcher = this.watcherFactory_(
-        /** @this {importer.DefaultMediaScanner} */
+        /** @this {mediaScanner.DefaultMediaScanner} */
         () => {
           scan.cancel();
           this.notify_(importer.ScanEvent.INVALIDATED, scan);
@@ -119,7 +130,7 @@ importer.DefaultMediaScanner = class {
 
 
   /**
-   * @param {!importer.DefaultScanResult} scan
+   * @param {!mediaScanner.DefaultScanResult} scan
    * @param  {!Array<!FileEntry>} entries
    * @return {!Promise} Resolves when scanning is finished normally
    *     or canceled.
@@ -143,7 +154,7 @@ importer.DefaultMediaScanner = class {
       }
 
       // the second arg to slice is an exclusive end index, so we +1 batch size.
-      const end = begin + importer.DefaultMediaScanner.SCAN_BATCH_SIZE;
+      const end = begin + mediaScanner.DefaultMediaScanner.SCAN_BATCH_SIZE;
       console.log(scan.name + ': Processing batch ' + begin + '-' + (end - 1));
       const batch = entries.slice(begin, end);
 
@@ -161,12 +172,12 @@ importer.DefaultMediaScanner = class {
    * Notifies all listeners at some point in the near future.
    *
    * @param {!importer.ScanEvent} event
-   * @param {!importer.DefaultScanResult} result
+   * @param {!mediaScanner.DefaultScanResult} result
    * @private
    */
   notify_(event, result) {
     this.observers_.forEach(
-        /** @param {!importer.ScanObserver} observer */
+        /** @param {!mediaScannerInterfaces.ScanObserver} observer */
         observer => {
           observer(event, result);
         });
@@ -177,7 +188,7 @@ importer.DefaultMediaScanner = class {
    * watchers for each encountered directory.
    *
    * @param {!DirectoryEntry} directory
-   * @param {!importer.DirectoryWatcher} watcher
+   * @param {!mediaScanner.DirectoryWatcher} watcher
    * @return {!Promise<!Array<!FileEntry>>}
    * @private
    */
@@ -210,7 +221,7 @@ importer.DefaultMediaScanner = class {
   /**
    * Finds all files beneath directory.
    *
-   * @param {!importer.DefaultScanResult} scan
+   * @param {!mediaScanner.DefaultScanResult} scan
    * @param {!FileEntry} entry
    * @return {!Promise}
    * @private
@@ -234,7 +245,7 @@ importer.DefaultMediaScanner = class {
   /**
    * Adds a newly discovered file to the given scan result.
    *
-   * @param {!importer.DefaultScanResult} scan
+   * @param {!mediaScanner.DefaultScanResult} scan
    * @param {!FileEntry} entry
    * @return {!Promise}
    * @private
@@ -261,7 +272,7 @@ importer.DefaultMediaScanner = class {
    * Adds a duplicate file to the given scan result.  This is to track the
    * number of duplicates that are being encountered.
    *
-   * @param {!importer.DefaultScanResult} scan
+   * @param {!mediaScanner.DefaultScanResult} scan
    * @param {!FileEntry} entry
    * @param {!importer.Disposition} disposition
    * @return {!Promise}
@@ -276,7 +287,7 @@ importer.DefaultMediaScanner = class {
 };
 
 /** @const {number} */
-importer.DefaultMediaScanner.SCAN_BATCH_SIZE = 1;
+mediaScanner.DefaultMediaScanner.SCAN_BATCH_SIZE = 1;
 
 /**
  * Results of a scan operation. The object is "live" in that data can and
@@ -288,9 +299,9 @@ importer.DefaultMediaScanner.SCAN_BATCH_SIZE = 1;
  * Note that classes implementing this should provide a read-only
  * {@code name} field.
  *
- * @implements {importer.ScanResult}
+ * @implements {mediaScannerInterfaces.ScanResult}
  */
-importer.DefaultScanResult = class {
+mediaScanner.DefaultScanResult = class {
   /**
    * @param {importer.ScanMode} mode The scan mode applied for finding new
    *     files.
@@ -365,7 +376,7 @@ importer.DefaultScanResult = class {
      */
     this.canceled_ = false;
 
-    /** @private {!importer.Resolver.<!importer.ScanResult>} */
+    /** @private {!importer.Resolver.<!mediaScannerInterfaces.ScanResult>} */
     this.resolver_ = new importer.Resolver();
   }
 
@@ -520,7 +531,7 @@ importer.DefaultScanResult = class {
  * Watcher for directories.
  * @interface
  */
-importer.DirectoryWatcher = class {
+mediaScanner.DirectoryWatcher = class {
   constructor() {
     /** @type {boolean} */
     this.triggered = false;
@@ -536,19 +547,19 @@ importer.DirectoryWatcher = class {
 /**
  * @typedef {function()}
  */
-importer.DirectoryWatcherFactoryCallback;
+mediaScanner.DirectoryWatcherFactoryCallback;
 
 /**
- * @typedef {function(importer.DirectoryWatcherFactoryCallback):
- *     !importer.DirectoryWatcher}
+ * @typedef {function(mediaScanner.DirectoryWatcherFactoryCallback):
+ *     !mediaScanner.DirectoryWatcher}
  */
-importer.DirectoryWatcherFactory;
+mediaScanner.DirectoryWatcherFactory;
 
 /**
  * Watcher for directories.
- * @implements {importer.DirectoryWatcher}
+ * @implements {mediaScanner.DirectoryWatcher}
  */
-importer.DefaultDirectoryWatcher = class {
+mediaScanner.DefaultDirectoryWatcher = class {
   /**
    * @param {function()} callback Callback to be invoked when one of watched
    *     directories is changed.
@@ -564,10 +575,10 @@ importer.DefaultDirectoryWatcher = class {
    * Creates new directory watcher.
    * @param {function()} callback Callback to be invoked when one of watched
    *     directories is changed.
-   * @return {!importer.DirectoryWatcher}
+   * @return {!mediaScanner.DirectoryWatcher}
    */
   static create(callback) {
-    return new importer.DefaultDirectoryWatcher(callback);
+    return new mediaScanner.DefaultDirectoryWatcher(callback);
   }
 
   /**

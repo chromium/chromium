@@ -42,7 +42,7 @@ importer.MediaImportHandler.ImportTask = class {
   /**
    * @param {string} taskId
    * @param {!importerHistoryInterfaces.HistoryLoader} historyLoader
-   * @param {!importer.ScanResult} scanResult
+   * @param {!mediaScannerInterfaces.ScanResult} scanResult
    * @param {!Promise<!DirectoryEntry>} directoryPromise
    * @param {!importer.Destination} destination The logical destination.
    * @param {!importer.DispositionChecker.CheckerFunction} dispositionChecker

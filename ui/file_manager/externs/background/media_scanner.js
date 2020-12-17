@@ -2,21 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var importer = importer || {};
+// #import {importer} from '../../file_manager/common/js/importer_common.m.js';
 
+/* #export */ const mediaScannerInterfaces = {};
 /**
  * Class representing the results of a scan operation.
  *
  * @interface
  */
-importer.MediaScanner = class {
+mediaScannerInterfaces.MediaScanner = class {
   /**
    * Initiates scanning.
    *
    * @param {!DirectoryEntry} directory
    * @param {!importer.ScanMode} mode
-   * @return {!importer.ScanResult} ScanResult object representing the scan
-   *     job both while in-progress and when completed.
+   * @return {!mediaScannerInterfaces.ScanResult} ScanResult object representing
+   *     the scan job both while in-progress and when completed.
    */
   scanDirectory(directory, mode) {}
 
@@ -27,37 +28,37 @@ importer.MediaScanner = class {
    *     must be of a supported media type. Individually supplied files
    *     are not subject to deduplication.
    * @param {!importer.ScanMode} mode The method to detect new files.
-   * @return {!importer.ScanResult} ScanResult object representing the scan
-   *     job for the explicitly supplied entries.
+   * @return {!mediaScannerInterfaces.ScanResult} ScanResult object representing
+   *     the scan job for the explicitly supplied entries.
    */
   scanFiles(entries, mode) {}
 
   /**
    * Adds an observer, which will be notified on scan events.
    *
-   * @param {!importer.ScanObserver} observer
+   * @param {!mediaScannerInterfaces.ScanObserver} observer
    */
   addObserver(observer) {}
 
   /**
    * Remove a previously registered observer.
    *
-   * @param {!importer.ScanObserver} observer
+   * @param {!mediaScannerInterfaces.ScanObserver} observer
    */
   removeObserver(observer) {}
 };
 
 /**
- * @typedef {function(!importer.ScanEvent, importer.ScanResult)}
+ * @typedef {function(!importer.ScanEvent, mediaScannerInterfaces.ScanResult)}
  */
-importer.ScanObserver;
+mediaScannerInterfaces.ScanObserver;
 
 /**
  * Class representing the results of a scan operation.
  *
  * @interface
  */
-importer.ScanResult = class {
+mediaScannerInterfaces.ScanResult = class {
   /**
    * @return {boolean} true if scanning is complete.
    */
@@ -116,12 +117,12 @@ importer.ScanResult = class {
    * Returns a promise that fires when scanning is finished
    * normally or has been canceled.
    *
-   * @return {!Promise<!importer.ScanResult>}
+   * @return {!Promise<!mediaScannerInterfaces.ScanResult>}
    */
   whenFinal() {}
 
   /**
-   * @return {!importer.ScanResult.Statistics}
+   * @return {!mediaScannerInterfaces.ScanResult.Statistics}
    */
   getStatistics() {}
 };
@@ -139,4 +140,4 @@ importer.ScanResult = class {
  *   progress: number
  * }}
  */
-importer.ScanResult.Statistics;
+mediaScannerInterfaces.ScanResult.Statistics;

@@ -9,7 +9,7 @@ const EMPTY_EVENT = new Event('directory-changed');
 let volumeManager;
 
 /** @type {!TestMediaScanner} */
-let mediaScanner;
+let mediaScannerTest;
 
 /** @type {!TestImportRunner} */
 let mediaImporter;
@@ -61,7 +61,7 @@ function setUp() {
   assert(downloads);
   destinationVolume = downloads;
 
-  mediaScanner = new TestMediaScanner();
+  mediaScannerTest = new TestMediaScanner();
   mediaImporter = new TestImportRunner();
 }
 
@@ -116,7 +116,7 @@ function testVolumeUnmount_InvalidatesScans(callback) {
                         return widget.updateResolver.promise;
                       })
                       .then(() => {
-                        mediaScanner.assertScanCount(2);
+                        mediaScannerTest.assertScanCount(2);
                       });
 
   reportPromise(promise, callback);
@@ -160,8 +160,8 @@ function testDirectoryChange_CancelsScan(callback) {
                         environment.directoryChangedListener(EMPTY_EVENT);
                       })
                       .then(() => {
-                        mediaScanner.assertScanCount(1);
-                        mediaScanner.assertLastScanCanceled();
+                        mediaScannerTest.assertScanCount(1);
+                        mediaScannerTest.assertLastScanCanceled();
                       });
 
   reportPromise(promise, callback);
@@ -190,8 +190,8 @@ function testWindowClose_CancelsScan(callback) {
                         environment.windowCloseListener();
                       })
                       .then(() => {
-                        mediaScanner.assertScanCount(1);
-                        mediaScanner.assertLastScanCanceled();
+                        mediaScannerTest.assertScanCount(1);
+                        mediaScannerTest.assertLastScanCanceled();
                       });
 
   reportPromise(promise, callback);
@@ -213,7 +213,7 @@ function testDirectoryChange_DetailsPanelVisibility_InitialChangeDir(callback) {
 
   // Ensure there is some content in the scan so the code that depends
   // on this state doesn't croak which it finds it missing.
-  mediaScanner.fileEntries.push(MockFileEntry.create(
+  mediaScannerTest.fileEntries.push(MockFileEntry.create(
       fileSystem, '/DCIM/photos0/IMG00001.jpg', getDefaultMetadata()));
 
   // Make controller enter a scanning state.
@@ -225,7 +225,7 @@ function testDirectoryChange_DetailsPanelVisibility_InitialChangeDir(callback) {
                         // "scanning..."
                         assertFalse(widget.detailsVisible);
                         widget.resetPromises();
-                        mediaScanner.finalizeScans();
+                        mediaScannerTest.finalizeScans();
                         return widget.updateResolver.promise;
                       })
                       .then(() => {
@@ -276,7 +276,7 @@ function testSelectionChange_TriggersUpdate(callback) {
       fileSystem, '/DCIM/photos0/IMG00001.jpg', getDefaultMetadata()));
 
   environment.selectionChangedListener();
-  mediaScanner.finalizeScans();
+  mediaScannerTest.finalizeScans();
   reportPromise(widget.updateResolver.promise, callback);
 }
 
@@ -294,12 +294,12 @@ function testFinalizeScans_TriggersUpdate(callback) {
 
   // Ensure there is some content in the scan so the code that depends
   // on this state doesn't croak which it finds it missing.
-  mediaScanner.fileEntries.push(MockFileEntry.create(
+  mediaScannerTest.fileEntries.push(MockFileEntry.create(
       fileSystem, '/DCIM/photos0/IMG00001.jpg', getDefaultMetadata()));
 
   environment.directoryChangedListener(EMPTY_EVENT);  // initiates a scan.
   widget.resetPromises();
-  mediaScanner.finalizeScans();
+  mediaScannerTest.finalizeScans();
 
   reportPromise(widget.updateResolver.promise, callback);
 }
@@ -345,7 +345,7 @@ function startImport(clickSource) {
 
   // Ensure there is some content in the scan so the code that depends
   // on this state doesn't croak which it finds it missing.
-  mediaScanner.fileEntries.push(MockFileEntry.create(
+  mediaScannerTest.fileEntries.push(MockFileEntry.create(
       fileSystem, '/DCIM/photos0/IMG00001.jpg', getDefaultMetadata()));
 
   // First we need to force the controller into a scanning state.
@@ -353,7 +353,7 @@ function startImport(clickSource) {
 
   return widget.updateResolver.promise.then(() => {
     widget.resetPromises();
-    mediaScanner.finalizeScans();
+    mediaScannerTest.finalizeScans();
     return widget.updateResolver.promise.then(() => {
       widget.resetPromises();
       widget.click(clickSource);
@@ -368,12 +368,12 @@ function startImport(clickSource) {
  */
 class TestImportTask {
   /**
-   * @param {!importer.ScanResult} scan
+   * @param {!mediaScannerInterfaces.ScanResult} scan
    * @param {!importer.Destination} destination
    * @param {!Promise<!DirectoryEntry>} destinationDirectory
    */
   constructor(scan, destination, destinationDirectory) {
-    /** @public {!importer.ScanResult} */
+    /** @public {!mediaScannerInterfaces.ScanResult} */
     this.scan = scan;
 
     /** @type {!importer.Destination} */
@@ -411,7 +411,7 @@ class TestImportTask {
  */
 class TestImportRunner {
   constructor() {
-    /** @public {!Array<!importer.ScanResult>} */
+    /** @public {!Array<!mediaScannerInterfaces.ScanResult>} */
     this.imported = [];
 
     /**
@@ -664,7 +664,7 @@ function createController(volumeType, volumeId, fileNames, currentDirectory) {
       sourceVolume.fileSystem.entries[currentDirectory]);
 
   return new importer.ImportController(
-      environment, mediaScanner, mediaImporter, widget);
+      environment, mediaScannerTest, mediaImporter, widget);
 }
 
 /**

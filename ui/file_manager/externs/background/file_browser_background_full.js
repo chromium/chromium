@@ -34,7 +34,7 @@ class FileBrowserBackgroundFull extends BackgroundBase {
     this.mediaImportHandler;
 
     /**
-     * @type {!importer.MediaScanner}
+     * @type {!mediaScannerInterfaces.MediaScanner}
      */
     this.mediaScanner;
 

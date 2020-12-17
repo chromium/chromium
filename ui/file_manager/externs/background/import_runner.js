@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 // Namespace
+// eslint-disable-next-line no-var
 var importer = importer || {};
 
 /**
@@ -14,7 +15,7 @@ importer.ImportRunner = class {
   /**
    * Imports all media identified by a scanResult.
    *
-   * @param {!importer.ScanResult} scanResult
+   * @param {!mediaScannerInterfaces.ScanResult} scanResult
    * @param {!importer.Destination} destination
    * @param {!Promise<!DirectoryEntry>} directoryPromise
    *

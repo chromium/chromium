@@ -205,7 +205,7 @@ importer.MediaImportHandler.ImportTaskImpl =
   /**
    * @param {string} taskId
    * @param {!importerHistoryInterfaces.HistoryLoader} historyLoader
-   * @param {!importer.ScanResult} scanResult
+   * @param {!mediaScannerInterfaces.ScanResult} scanResult
    * @param {!Promise<!DirectoryEntry>} directoryPromise
    * @param {!importer.Destination} destination The logical destination.
    * @param {!importer.DispositionChecker.CheckerFunction} dispositionChecker
@@ -224,7 +224,7 @@ importer.MediaImportHandler.ImportTaskImpl =
     /** @private {!Promise<!DirectoryEntry>} */
     this.directoryPromise_ = directoryPromise;
 
-    /** @private {!importer.ScanResult} */
+    /** @private {!mediaScannerInterfaces.ScanResult} */
     this.scanResult_ = scanResult;
 
     /** @private {!importerHistoryInterfaces.HistoryLoader} */

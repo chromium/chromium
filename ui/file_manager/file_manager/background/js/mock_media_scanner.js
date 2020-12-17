@@ -2,14 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {assertTrue, assertEquals} from 'chrome://test/chai_assert.js';
+// #import {importer} from '../../common/js/importer_common.m.js';
+// #import {mediaScannerInterfaces} from '../../../externs/background/media_scanner.m.js';
+// #import {mediaScanner} from './media_scanner.m.js';
+// clang-format on
+
 /**
- * importer.MediaScanner and importer.ScanResult test double.
+ * mediaScannerInterfaces.MediaScanner and mediaScannerInterfaces.ScanResult
+ * test double.
  *
- * @implements {importer.MediaScanner}
+ * @implements {mediaScannerInterfaces.MediaScanner}
  */
-class TestMediaScanner {
+/* #export */ class TestMediaScanner {
   constructor() {
-    /** @private {!Array<!importer.ScanResult>} */
+    /** @private {!Array<!mediaScannerInterfaces.ScanResult>} */
     this.scans_ = [];
 
     /**
@@ -26,7 +34,7 @@ class TestMediaScanner {
 
     /**
      * List of scan observers.
-     * @private {!Array<!importer.ScanObserver>}
+     * @private {!Array<!mediaScannerInterfaces.ScanObserver>}
      */
     this.observers = [];
 
@@ -90,7 +98,7 @@ class TestMediaScanner {
 
   /**
    * Notifies observers that a scan has finished.
-   * @param {!importer.ScanResult} scan
+   * @param {!mediaScannerInterfaces.ScanResult} scan
    */
   finalize(scan) {
     // Note the |scan| has {!TestScanResult} type in test, and needs a
@@ -120,11 +128,12 @@ class TestMediaScanner {
 }
 
 /**
- * importer.MediaScanner and importer.ScanResult test double.
+ * mediaScannerInterfaces.MediaScanner and mediaScannerInterfaces.ScanResult
+ * test double.
  *
- * @implements {importer.ScanResult}
+ * @implements {mediaScannerInterfaces.ScanResult}
  */
-class TestScanResult {
+/* #export */ class TestScanResult {
   /**
    * @param {!Array<!FileEntry>} fileEntries
    */
@@ -162,7 +171,7 @@ class TestScanResult {
     /** @private {boolean} */
     this.canceled_ = false;
 
-    /** @type {!Promise<!importer.ScanResult>} */
+    /** @type {!Promise<!mediaScannerInterfaces.ScanResult>} */
     this.whenFinal_ = new Promise((resolve, reject) => {
       this.resolveResult_ = result => {
         this.settled_ = true;
@@ -226,7 +235,7 @@ class TestScanResult {
     duplicates[importer.Disposition.CONTENT_DUPLICATE] = 0;
     duplicates[importer.Disposition.HISTORY_DUPLICATE] = 0;
     duplicates[importer.Disposition.SCAN_DUPLICATE] = 0;
-    return /** @type {importer.ScanResult.Statistics} */ ({
+    return /** @type {mediaScannerInterfaces.ScanResult.Statistics} */ ({
       scanDuration: this.scanDuration,
       newFileCount: this.fileEntries.length,
       duplicates: duplicates,
@@ -243,9 +252,9 @@ class TestScanResult {
 TestScanResult.lastId_ = 0;
 
 /**
- * @implements {importer.DirectoryWatcher}
+ * @implements {mediaScanner.DirectoryWatcher}
  */
-class TestDirectoryWatcher {
+/* #export */ class TestDirectoryWatcher {
   constructor(callback) {
     /**
      * @public {function()}

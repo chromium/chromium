@@ -50,7 +50,7 @@ class FileManager extends cr.EventTarget {
      */
     this.onHistoryChangedBound_ = this.onHistoryChanged_.bind(this);
 
-    /** @private {?importer.MediaScanner} */
+    /** @private {?mediaScannerInterfaces.MediaScanner} */
     this.mediaScanner_ = null;
 
     /** @private {?importer.ImportController} */
