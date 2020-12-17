@@ -14,8 +14,8 @@
     [MeasureAs=PointerEventAttributeCount]   readonly    attribute float     pressure;
     [MeasureAs=PointerEventAttributeCount]   readonly    attribute long      tiltX;
     [MeasureAs=PointerEventAttributeCount]   readonly    attribute long      tiltY;
-    [RuntimeEnabled=AzimuthAltitude, Measure] readonly    attribute double    azimuthAngle;
-    [RuntimeEnabled=AzimuthAltitude, Measure] readonly    attribute double    altitudeAngle;
+    [MeasureAs=PointerEventAttributeCount]   readonly    attribute double    azimuthAngle;
+    [MeasureAs=PointerEventAttributeCount]   readonly    attribute double    altitudeAngle;
     [MeasureAs=PointerEventAttributeCount]   readonly    attribute float     tangentialPressure;
     [MeasureAs=PointerEventAttributeCount]   readonly    attribute long      twist;
     [MeasureAs=PointerEventAttributeCount]   readonly    attribute DOMString pointerType;

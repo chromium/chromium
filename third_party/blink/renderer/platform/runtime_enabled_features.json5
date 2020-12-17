@@ -225,10 +225,6 @@
       settable_from_internals: true,
     },
     {
-      name: "AzimuthAltitude",
-      status: "stable",
-    },
-    {
       name: "BackForwardCache",
     },
     {

@@ -11,8 +11,8 @@ dictionary PointerEventInit : MouseEventInit {
     float     pressure = 0;
     long      tiltX;
     long      tiltY;
-    [RuntimeEnabled=AzimuthAltitude] double azimuthAngle;
-    [RuntimeEnabled=AzimuthAltitude] double altitudeAngle;
+    double azimuthAngle;
+    double altitudeAngle;
     float     tangentialPressure = 0;
     long      twist = 0;
     DOMString pointerType = "";

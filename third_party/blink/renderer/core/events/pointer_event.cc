@@ -93,29 +93,27 @@ PointerEvent::PointerEvent(const AtomicString& type,
     for (auto predicted_event : initializer->predictedEvents())
       predicted_events_.push_back(predicted_event);
   }
-  if (RuntimeEnabledFeatures::AzimuthAltitudeEnabled()) {
-    if (initializer->hasAzimuthAngle())
-      azimuth_angle_ = initializer->azimuthAngle();
-    if (initializer->hasAltitudeAngle())
-      altitude_angle_ = initializer->altitudeAngle();
-    if ((initializer->hasTiltX() || initializer->hasTiltY()) &&
-        !initializer->hasAzimuthAngle() && !initializer->hasAltitudeAngle()) {
-      azimuth_angle_ = PointerEventUtil::AzimuthFromTilt(
-          PointerEventUtil::TransformToTiltInValidRange(tilt_x_),
-          PointerEventUtil::TransformToTiltInValidRange(tilt_y_));
-      altitude_angle_ = PointerEventUtil::AltitudeFromTilt(
-          PointerEventUtil::TransformToTiltInValidRange(tilt_x_),
-          PointerEventUtil::TransformToTiltInValidRange(tilt_y_));
-    }
-    if ((initializer->hasAzimuthAngle() || initializer->hasAltitudeAngle()) &&
-        !initializer->hasTiltX() && !initializer->hasTiltY()) {
-      tilt_x_ = PointerEventUtil::TiltXFromSpherical(
-          PointerEventUtil::TransformToAzimuthInValidRange(azimuth_angle_),
-          PointerEventUtil::TransformToAltitudeInValidRange(altitude_angle_));
-      tilt_y_ = PointerEventUtil::TiltYFromSpherical(
-          PointerEventUtil::TransformToAzimuthInValidRange(azimuth_angle_),
-          PointerEventUtil::TransformToAltitudeInValidRange(altitude_angle_));
-    }
+  if (initializer->hasAzimuthAngle())
+    azimuth_angle_ = initializer->azimuthAngle();
+  if (initializer->hasAltitudeAngle())
+    altitude_angle_ = initializer->altitudeAngle();
+  if ((initializer->hasTiltX() || initializer->hasTiltY()) &&
+      !initializer->hasAzimuthAngle() && !initializer->hasAltitudeAngle()) {
+    azimuth_angle_ = PointerEventUtil::AzimuthFromTilt(
+        PointerEventUtil::TransformToTiltInValidRange(tilt_x_),
+        PointerEventUtil::TransformToTiltInValidRange(tilt_y_));
+    altitude_angle_ = PointerEventUtil::AltitudeFromTilt(
+        PointerEventUtil::TransformToTiltInValidRange(tilt_x_),
+        PointerEventUtil::TransformToTiltInValidRange(tilt_y_));
+  }
+  if ((initializer->hasAzimuthAngle() || initializer->hasAltitudeAngle()) &&
+      !initializer->hasTiltX() && !initializer->hasTiltY()) {
+    tilt_x_ = PointerEventUtil::TiltXFromSpherical(
+        PointerEventUtil::TransformToAzimuthInValidRange(azimuth_angle_),
+        PointerEventUtil::TransformToAltitudeInValidRange(altitude_angle_));
+    tilt_y_ = PointerEventUtil::TiltYFromSpherical(
+        PointerEventUtil::TransformToAzimuthInValidRange(azimuth_angle_),
+        PointerEventUtil::TransformToAltitudeInValidRange(altitude_angle_));
   }
 }
 
