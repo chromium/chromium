@@ -430,6 +430,19 @@ void V4L2StatefulVideoDecoderBackend::OnOutputBufferDequeued(
   EnqueueOutputBuffers();
 }
 
+bool V4L2StatefulVideoDecoderBackend::SendStopCommand() {
+  struct v4l2_decoder_cmd cmd;
+  memset(&cmd, 0, sizeof(cmd));
+  cmd.cmd = V4L2_DEC_CMD_STOP;
+  if (device_->Ioctl(VIDIOC_DECODER_CMD, &cmd) != 0) {
+    LOG(ERROR) << "Failed to issue STOP command";
+    client_->OnBackendError();
+    return false;
+  }
+
+  return true;
+}
+
 bool V4L2StatefulVideoDecoderBackend::InitiateFlush(
     VideoDecoder::DecodeCB flush_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -453,16 +466,17 @@ bool V4L2StatefulVideoDecoderBackend::InitiateFlush(
   if (!has_pending_requests_)
     return CompleteFlush();
 
-  // Send the STOP command to the V4L2 device. The device will let us know
-  // that the flush is completed by sending us a CAPTURE buffer with the LAST
-  // flag set.
-  struct v4l2_decoder_cmd cmd;
-  memset(&cmd, 0, sizeof(cmd));
-  cmd.cmd = V4L2_DEC_CMD_STOP;
-  if (device_->Ioctl(VIDIOC_DECODER_CMD, &cmd) != 0) {
-    LOG(ERROR) << "Failed to issue STOP command";
-    client_->OnBackendError();
-    return false;
+  if (output_queue_->IsStreaming()) {
+    // If the CAPTURE queue is streaming, send the STOP command to the V4L2
+    // device. The device will let us know that the flush is completed by
+    // sending us a CAPTURE buffer with the LAST flag set.
+    return SendStopCommand();
+  } else {
+    // If the CAPTURE queue is not streaming, this means we received the flush
+    // request before the initial resolution has been established. The flush
+    // request will be processed in OnChangeResolutionDone(), when the CAPTURE
+    // queue starts streaming.
+    DVLOGF(2) << "Flush request to be processed after CAPTURE queue starts";
   }
 
   return true;
@@ -594,6 +608,16 @@ void V4L2StatefulVideoDecoderBackend::OnChangeResolutionDone(bool success) {
 
   // Enqueue all available output buffers now that they are allocated.
   EnqueueOutputBuffers();
+
+  // If we had a flush request pending before the initial resolution change,
+  // process it now.
+  if (flush_cb_) {
+    DVLOGF(2) << "Processing pending flush request...";
+
+    client_->InitiateFlush();
+    if (!SendStopCommand())
+      return;
+  }
 
   // Also try to progress on our work.
   DoDecodeWork();
