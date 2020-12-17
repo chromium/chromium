@@ -29,6 +29,7 @@
 #include "ios/chrome/browser/ssl/ios_ssl_error_handler.h"
 #import "ios/chrome/browser/ui/elements/windowed_container_view.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
+#include "ios/chrome/browser/web/error_page_controller_bridge.h"
 #import "ios/chrome/browser/web/error_page_util.h"
 #include "ios/chrome/browser/web/features.h"
 #import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
@@ -378,6 +379,13 @@ void ChromeWebClient::PrepareErrorPage(
   } else {
     std::move(error_html_callback)
         .Run(GetErrorPage(url, error, is_post, is_off_the_record));
+    ErrorPageControllerBridge* error_page_controller =
+        ErrorPageControllerBridge::FromWebState(web_state);
+    if (error_page_controller) {
+      // ErrorPageControllerBridge may not be created for web_state not attached
+      // to a tab.
+      error_page_controller->StartHandlingJavascriptCommands();
+    }
   }
 }
 
