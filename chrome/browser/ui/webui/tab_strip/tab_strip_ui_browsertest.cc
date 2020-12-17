@@ -110,14 +110,28 @@ IN_PROC_BROWSER_TEST_F(TabStripUIBrowserTest, ActivatingTabClosesEmbedder) {
                               ISOLATED_WORLD_ID_CHROME_INTERNAL));
 }
 
-// Flaky.
-// TODO(https://crbug.com/1132300): Re-enable.
-IN_PROC_BROWSER_TEST_F(TabStripUIBrowserTest,
-                       DISABLED_InvokesEditDialogForGroups) {
+IN_PROC_BROWSER_TEST_F(TabStripUIBrowserTest, InvokesEditDialogForGroups) {
   using ::testing::_;
 
   tab_groups::TabGroupId group_id =
       browser()->tab_strip_model()->AddToNewGroup({0});
+
+  // Wait for the front-end to receive the new group and create the tab-group
+  // element.
+  const std::string get_group_promise_js =
+      "new Promise((resolve) => {"
+      "  const interval = setInterval(() => {"
+      "    if (document.querySelector('tabstrip-tab-list').shadowRoot"
+      "        .querySelector('tabstrip-tab-group')) {"
+      "      resolve(true);"
+      "      clearInterval(interval);"
+      "    }"
+      "  }, 100);"
+      "});";
+  ASSERT_TRUE(content::EvalJs(webui_contents_.get(), get_group_promise_js,
+                              content::EXECUTE_SCRIPT_DEFAULT_OPTIONS,
+                              ISOLATED_WORLD_ID_CHROME_INTERNAL)
+                  .ExtractBool());
 
   const std::string get_chip_js =
       "const chip = document.querySelector('tabstrip-tab-list')"
