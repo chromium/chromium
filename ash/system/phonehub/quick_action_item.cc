@@ -121,10 +121,10 @@ void QuickActionItem::SetEnabled(bool enabled) {
   icon_button_->SetEnabled(enabled);
 
   if (!enabled) {
-    label_->SetEnabledColor(
-        AshColorProvider::GetDisabledColor(label_->GetEnabledColor()));
-    sub_label_->SetEnabledColor(
-        AshColorProvider::GetDisabledColor(sub_label_->GetEnabledColor()));
+    label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorSecondary));
+    sub_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorSecondary));
 
     sub_label_->SetText(l10n_util::GetStringUTF16(
         IDS_ASH_PHONE_HUB_QUICK_ACTIONS_NOT_AVAILABLE_STATE));
