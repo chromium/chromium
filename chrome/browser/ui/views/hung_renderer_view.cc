@@ -158,6 +158,10 @@ void HungPagesTableModel::RenderProcessExited(
 
 void HungPagesTableModel::RenderWidgetHostDestroyed(
     content::RenderWidgetHost* widget_host) {
+  DCHECK(widget_observation_.IsObservingSource(render_widget_host_));
+  widget_observation_.Reset();
+  render_widget_host_ = nullptr;
+
   // Notify the delegate.
   delegate_->TabDestroyed();
   // WARNING: we've likely been deleted.

@@ -176,11 +176,11 @@ void SessionRestoreStatsCollector::RenderWidgetHostVisibilityChanged(
 
 void SessionRestoreStatsCollector::RenderWidgetHostDestroyed(
     content::RenderWidgetHost* widget_host) {
+  observer_.Remove(widget_host);
+
   auto* tab_state = GetTabState(widget_host);
-  if (tab_state) {
-    observer_.Remove(tab_state->observed_host);
+  if (tab_state)
     tab_state->observed_host = nullptr;
-  }
 }
 
 void SessionRestoreStatsCollector::RemoveTab(NavigationController* tab) {
