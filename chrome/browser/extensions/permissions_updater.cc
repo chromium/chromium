@@ -234,9 +234,9 @@ PermissionsUpdater::NetworkPermissionsUpdateHelper::
       shutdown_subscription_(
           PermissionsUpdaterShutdownNotifierFactory::GetInstance()
               ->Get(browser_context)
-              ->Subscribe(
-                  base::Bind(&NetworkPermissionsUpdateHelper::OnShutdown,
-                             base::Unretained(this)))) {}
+              ->Subscribe(base::BindRepeating(
+                  &NetworkPermissionsUpdateHelper::OnShutdown,
+                  base::Unretained(this)))) {}
 
 PermissionsUpdater::NetworkPermissionsUpdateHelper::
     ~NetworkPermissionsUpdateHelper() {}

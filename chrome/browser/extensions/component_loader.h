@@ -97,10 +97,9 @@ class ComponentLoader {
   // extension uses a different manifest file when this is a guest session
   // and that the manifest file lives in |root_directory|. Calls |done_cb|
   // on success, unless the component loader is shut down during loading.
-  void AddComponentFromDir(
-      const base::FilePath& root_directory,
-      const char* extension_id,
-      const base::Closure& done_cb);
+  void AddComponentFromDir(const base::FilePath& root_directory,
+                           const char* extension_id,
+                           base::OnceClosure done_cb);
 
   // Identical to above except allows for the caller to supply the name of the
   // manifest file.
@@ -109,7 +108,7 @@ class ComponentLoader {
       const char* extension_id,
       const base::FilePath::CharType* manifest_file_name,
       const base::FilePath::CharType* guest_manifest_file_name,
-      const base::Closure& done_cb);
+      base::OnceClosure done_cb);
 
   // Add a component extension from a specific directory. Assumes that the
   // extension's manifest file lives in |root_directory| and its name is
@@ -211,7 +210,7 @@ class ComponentLoader {
       const char* extension_id,
       const base::Optional<std::string>& name_string,
       const base::Optional<std::string>& description_string,
-      const base::Closure& done_cb,
+      base::OnceClosure done_cb,
       std::unique_ptr<base::DictionaryValue> manifest);
 
   // Finishes loading an extension tts engine.

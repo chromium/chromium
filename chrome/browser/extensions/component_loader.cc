@@ -622,10 +622,10 @@ void ComponentLoader::UnloadComponent(ComponentExtensionInfo* component) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void ComponentLoader::AddComponentFromDir(const base::FilePath& root_directory,
                                           const char* extension_id,
-                                          const base::Closure& done_cb) {
+                                          base::OnceClosure done_cb) {
   AddComponentFromDirWithManifestFilename(
       root_directory, extension_id, extensions::kManifestFilename,
-      extension_misc::kGuestManifestFilename, done_cb);
+      extension_misc::kGuestManifestFilename, std::move(done_cb));
 }
 
 void ComponentLoader::AddComponentFromDirWithManifestFilename(
@@ -633,7 +633,7 @@ void ComponentLoader::AddComponentFromDirWithManifestFilename(
     const char* extension_id,
     const base::FilePath::CharType* manifest_file_name,
     const base::FilePath::CharType* guest_manifest_file_name,
-    const base::Closure& done_cb) {
+    base::OnceClosure done_cb) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   const base::FilePath::CharType* manifest_filename =
       IsNormalSession() ? manifest_file_name : guest_manifest_file_name;
@@ -643,7 +643,7 @@ void ComponentLoader::AddComponentFromDirWithManifestFilename(
                      manifest_filename, true),
       base::BindOnce(&ComponentLoader::FinishAddComponentFromDir,
                      weak_factory_.GetWeakPtr(), root_directory, extension_id,
-                     base::nullopt, base::nullopt, done_cb));
+                     base::nullopt, base::nullopt, std::move(done_cb)));
 }
 
 void ComponentLoader::AddWithNameAndDescriptionFromDir(
@@ -658,7 +658,7 @@ void ComponentLoader::AddWithNameAndDescriptionFromDir(
                      extensions::kManifestFilename, false),
       base::BindOnce(&ComponentLoader::FinishAddComponentFromDir,
                      weak_factory_.GetWeakPtr(), root_directory, extension_id,
-                     name_string, description_string, base::Closure()));
+                     name_string, description_string, base::OnceClosure()));
 }
 
 void ComponentLoader::AddChromeOsSpeechSynthesisExtensions() {
@@ -688,7 +688,7 @@ void ComponentLoader::FinishAddComponentFromDir(
     const char* extension_id,
     const base::Optional<std::string>& name_string,
     const base::Optional<std::string>& description_string,
-    const base::Closure& done_cb,
+    base::OnceClosure done_cb,
     std::unique_ptr<base::DictionaryValue> manifest) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!manifest)
@@ -705,8 +705,8 @@ void ComponentLoader::FinishAddComponentFromDir(
   std::string actual_extension_id =
       Add(std::move(manifest), root_directory, false);
   CHECK_EQ(extension_id, actual_extension_id);
-  if (!done_cb.is_null())
-    done_cb.Run();
+  if (done_cb)
+    std::move(done_cb).Run();
 }
 
 void ComponentLoader::FinishLoadSpeechSynthesisExtension(

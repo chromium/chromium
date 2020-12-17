@@ -439,8 +439,8 @@ class ExtensionService : public ExtensionServiceInterface,
   // Set a callback to be called when all external providers are ready and their
   // extensions have been installed.
   void set_external_updates_finished_callback_for_test(
-      const base::Closure& callback) {
-    external_updates_finished_callback_ = callback;
+      base::OnceClosure callback) {
+    external_updates_finished_callback_ = std::move(callback);
   }
 
   // While disabled all calls to CheckForExternalUpdates() will bail out.
@@ -664,9 +664,7 @@ class ExtensionService : public ExtensionServiceInterface,
   // extensions have been installed. This happens on initial load and whenever
   // a new entry is found. Normally this is a null callback, but is used in
   // external provider related tests.
-  // TODO(mxnguyen): Change |external_updates_finished_callback_| to
-  // OnceClosure.
-  base::Closure external_updates_finished_callback_;
+  base::OnceClosure external_updates_finished_callback_;
 
   // Set when the browser is terminating. Prevents us from installing or
   // updating additional extensions and allows in-progress installations to

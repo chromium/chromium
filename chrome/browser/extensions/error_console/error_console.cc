@@ -59,8 +59,8 @@ ErrorConsole::ErrorConsole(Profile* profile)
       prefs_(nullptr) {
   pref_registrar_.Init(profile_->GetPrefs());
   pref_registrar_.Add(prefs::kExtensionsUIDeveloperMode,
-                      base::Bind(&ErrorConsole::OnPrefChanged,
-                                 base::Unretained(this)));
+                      base::BindRepeating(&ErrorConsole::OnPrefChanged,
+                                          base::Unretained(this)));
 
   registry_observer_.Add(ExtensionRegistry::Get(profile_));
 

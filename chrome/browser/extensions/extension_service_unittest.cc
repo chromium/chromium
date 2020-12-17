@@ -1298,10 +1298,10 @@ TEST_F(ExtensionServiceTest, UninstallExternalExtensionAndReinstallAsUser) {
   installer->set_allow_silent_install(true);
   base::RunLoop run_loop;
   installer->set_installer_callback(base::BindOnce(
-      [](base::Closure quit_closure,
+      [](base::OnceClosure quit_closure,
          const base::Optional<CrxInstallError>& result) {
         ASSERT_FALSE(result) << result->message();
-        quit_closure.Run();
+        std::move(quit_closure).Run();
       },
       run_loop.QuitWhenIdleClosure()));
   installer->InstallCrx(path);
@@ -1342,10 +1342,10 @@ TEST_F(ExtensionServiceTest,
   installer->set_allow_silent_install(true);
   base::RunLoop run_loop;
   installer->set_installer_callback(base::BindOnce(
-      [](base::Closure quit_closure,
+      [](base::OnceClosure quit_closure,
          const base::Optional<CrxInstallError>& result) {
         ASSERT_FALSE(result) << result->message();
-        quit_closure.Run();
+        std::move(quit_closure).Run();
       },
       run_loop.QuitWhenIdleClosure()));
   installer->InstallCrx(data_dir().AppendASCII("good.crx"));
@@ -4535,7 +4535,7 @@ TEST_F(ExtensionServiceTest, MAYBE_ExternalExtensionAutoAcknowledgement) {
   int count = 2;
   content::WindowedNotificationObserver observer(
       NOTIFICATION_CRX_INSTALLER_DONE,
-      base::Bind(&WaitForCountNotificationsCallback, &count));
+      base::BindRepeating(&WaitForCountNotificationsCallback, &count));
   service()->CheckForExternalUpdates();
 
   observer.Wait();
@@ -6948,7 +6948,7 @@ TEST_F(ExtensionServiceTest, MAYBE_ExternalInstallMultiple) {
   int count = 3;
   content::WindowedNotificationObserver observer(
       NOTIFICATION_CRX_INSTALLER_DONE,
-      base::Bind(&WaitForCountNotificationsCallback, &count));
+      base::BindRepeating(&WaitForCountNotificationsCallback, &count));
   service()->CheckForExternalUpdates();
   observer.Wait();
   EXPECT_TRUE(HasExternalInstallErrors(service()));

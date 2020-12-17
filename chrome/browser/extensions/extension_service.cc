@@ -422,8 +422,8 @@ ExtensionService::ExtensionService(Profile* profile,
         this, extension_prefs, profile->GetPrefs(), profile,
         kDefaultUpdateFrequencySeconds,
         ExtensionsBrowserClient::Get()->GetExtensionCache(),
-        base::Bind(ChromeExtensionDownloaderFactory::CreateForProfile,
-                   profile)));
+        base::BindRepeating(ChromeExtensionDownloaderFactory::CreateForProfile,
+                            profile)));
   }
 
   component_loader_ = std::make_unique<ComponentLoader>(system_, profile);
@@ -1280,15 +1280,12 @@ void ExtensionService::OnAllExternalProvidersReady() {
   if (update_once_all_providers_are_ready_ && updater()) {
     update_once_all_providers_are_ready_ = false;
     ExtensionUpdater::CheckParams params;
-    params.callback =
-        external_updates_finished_callback_.is_null()
-            ? base::OnceClosure()
-            : base::BindOnce(
-                  [](base::RepeatingClosure callback) { callback.Run(); },
-                  external_updates_finished_callback_);
+    params.callback = external_updates_finished_callback_
+                          ? std::move(external_updates_finished_callback_)
+                          : base::OnceClosure();
     updater()->CheckNow(std::move(params));
   } else if (external_updates_finished_callback_) {
-    external_updates_finished_callback_.Run();
+    std::move(external_updates_finished_callback_).Run();
   }
 
   // Uninstall all the unclaimed extensions.
@@ -2082,7 +2079,7 @@ void ExtensionService::MaybeFinishDelayedInstallations() {
 void ExtensionService::OnBlocklistUpdated() {
   blocklist_->GetBlocklistedIDs(
       registry_->GenerateInstalledExtensionsSet()->GetIDs(),
-      base::Bind(&ExtensionService::ManageBlocklist, AsWeakPtr()));
+      base::BindOnce(&ExtensionService::ManageBlocklist, AsWeakPtr()));
 }
 
 void ExtensionService::OnUpgradeRecommended() {
