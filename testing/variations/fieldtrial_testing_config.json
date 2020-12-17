@@ -1904,6 +1904,24 @@
             ]
         }
     ],
+    "ContextMenuGoogleLensChip": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "ShoppingChipEnabled1Percent_20201216",
+                    "params": {
+                        "disableOnIncognito": "true"
+                    },
+                    "enable_features": [
+                        "ContextMenuGoogleLensChip"
+                    ]
+                }
+            ]
+        }
+    ],
     "ContextMenuSearchWithGoogleLens": [
         {
             "platforms": [
