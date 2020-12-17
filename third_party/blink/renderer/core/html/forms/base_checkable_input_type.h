@@ -42,6 +42,8 @@ class BaseCheckableInputType : public InputType, public InputTypeView {
   void Trace(Visitor*) const override;
   using InputType::GetElement;
 
+  void HandleBlurEvent() override;
+
  protected:
   BaseCheckableInputType(HTMLInputElement& element)
       : InputType(element),

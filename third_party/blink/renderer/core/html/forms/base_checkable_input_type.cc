@@ -121,4 +121,8 @@ bool BaseCheckableInputType::IsCheckable() {
   return true;
 }
 
+void BaseCheckableInputType::HandleBlurEvent() {
+  GetElement().SetActive(false);
+}
+
 }  // namespace blink
