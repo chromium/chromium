@@ -35,13 +35,15 @@ class NearbyNotificationManager : public TransferUpdateCallback,
     kCopyText,
     kCopyImage,
     kOpenDownloads,
+    kOpenUrl,
   };
 
   // Type of content we received that determines the actions we provide.
   enum class ReceivedContentType {
-    kText,         // Arbitrary text content
-    kSingleImage,  // One image that will be shown as a preview
     kFiles,        // One or more generic files
+    kSingleImage,  // One image that will be shown as a preview
+    kSingleUrl,    // One URL that will be opened on click.
+    kText,         // Arbitrary text content
   };
 
   NearbyNotificationManager(
@@ -92,6 +94,8 @@ class NearbyNotificationManager : public TransferUpdateCallback,
   // Gets the currently registered delegate for |notification_id|.
   NearbyNotificationDelegate* GetNotificationDelegate(
       const std::string& notification_id);
+
+  void OpenURL(GURL url);
 
   // Cancels the currently in progress transfer.
   void CancelTransfer();

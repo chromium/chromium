@@ -137,6 +137,9 @@ class NearbySharingService : public KeyedService {
   virtual void Open(const ShareTarget& share_target,
                     StatusCodesCallback status_codes_callback) = 0;
 
+  // Opens an url target on a browser instance.
+  virtual void OpenURL(GURL url) = 0;
+
   // Gets a delegate to handle events for |notification_id| or nullptr.
   virtual NearbyNotificationDelegate* GetNotificationDelegate(
       const std::string& notification_id) = 0;

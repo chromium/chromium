@@ -38,6 +38,8 @@
 #include "chrome/browser/nearby_sharing/transfer_metadata_builder.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/services/sharing/public/cpp/advertisement.h"
 #include "chrome/services/sharing/public/cpp/conversions.h"
 #include "chromeos/services/nearby/public/mojom/nearby_connections_types.mojom.h"
@@ -842,6 +844,13 @@ void NearbySharingServiceImpl::DoCancel(
 void NearbySharingServiceImpl::Open(const ShareTarget& share_target,
                                     StatusCodesCallback status_codes_callback) {
   std::move(status_codes_callback).Run(StatusCodes::kOk);
+}
+
+void NearbySharingServiceImpl::OpenURL(GURL url) {
+  DCHECK(profile_);
+  chrome::ScopedTabbedBrowserDisplayer displayer(profile_);
+  chrome::AddSelectedTabWithURL(displayer.browser(), url,
+                                ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
 }
 
 NearbyNotificationDelegate* NearbySharingServiceImpl::GetNotificationDelegate(

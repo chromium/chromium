@@ -103,6 +103,7 @@ class NearbySharingServiceImpl
               StatusCodesCallback status_codes_callback) override;
   void Open(const ShareTarget& share_target,
             StatusCodesCallback status_codes_callback) override;
+  void OpenURL(GURL url) override;
   NearbyNotificationDelegate* GetNotificationDelegate(
       const std::string& notification_id) override;
   NearbyShareSettings* GetSettings() override;

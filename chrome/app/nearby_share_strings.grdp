@@ -255,6 +255,9 @@
   <message name="IDS_NEARBY_NOTIFICATION_ACTION_OPEN_FOLDER" desc="Notification action button text that opens the folder to the received files.">
     Open folder
   </message>
+  <message name="IDS_NEARBY_NOTIFICATION_ACTION_OPEN_URL" desc="Notification action button text that opens the received URL.">
+    Open
+  </message>
   <message name="IDS_NEARBY_NOTIFICATION_CONNECTION_REQUEST_MESSAGE" desc="Text shown as the message of a notfication when a nearby device requests a connection via Nearby Share.">
     {COUNT, plural,
       =1 {<ph name="DEVICE_NAME">$1<ex>Ted's Pixel 2</ex></ph> is sharing <ph name="ATTACHMENTS">$2<ex>1 item</ex></ph> with you.}

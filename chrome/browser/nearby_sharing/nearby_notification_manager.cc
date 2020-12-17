@@ -215,8 +215,15 @@ gfx::Image GetImageFromShareTarget(const ShareTarget& share_target) {
 
 NearbyNotificationManager::ReceivedContentType GetReceivedContentType(
     const ShareTarget& share_target) {
-  if (!share_target.text_attachments.empty())
+  if (!share_target.text_attachments.empty()) {
+    const TextAttachment& file = share_target.text_attachments[0];
+    if (share_target.text_attachments.size() == 1 &&
+        file.type() == sharing::mojom::TextMetadata::Type::kUrl) {
+      return NearbyNotificationManager::ReceivedContentType::kSingleUrl;
+    }
+
     return NearbyNotificationManager::ReceivedContentType::kText;
+  }
 
   if (share_target.file_attachments.size() != 1)
     return NearbyNotificationManager::ReceivedContentType::kFiles;
@@ -378,6 +385,10 @@ class SuccessNotificationDelegate : public NearbyNotificationDelegate {
         DCHECK_EQ(0, *action_index);
         CopyTextToClipboard();
         break;
+      case NearbyNotificationManager::ReceivedContentType::kSingleUrl:
+        DCHECK_EQ(0, *action_index);
+        OpenTextLink();
+        break;
       case NearbyNotificationManager::ReceivedContentType::kSingleImage:
         switch (*action_index) {
           case 0:
@@ -417,6 +428,16 @@ class SuccessNotificationDelegate : public NearbyNotificationDelegate {
       std::move(testing_callback_)
           .Run(NearbyNotificationManager::SuccessNotificationAction::
                    kOpenDownloads);
+    }
+  }
+
+  void OpenTextLink() {
+    const std::string& url = share_target_.text_attachments[0].text_body();
+    manager_->OpenURL(GURL(url));
+
+    if (testing_callback_) {
+      std::move(testing_callback_)
+          .Run(NearbyNotificationManager::SuccessNotificationAction::kOpenUrl);
     }
   }
 
@@ -725,6 +746,10 @@ void NearbyNotificationManager::ShowIncomingSuccess(
       notification_actions.emplace_back(l10n_util::GetStringUTF16(
           IDS_NEARBY_NOTIFICATION_ACTION_COPY_TO_CLIPBOARD));
       break;
+    case ReceivedContentType::kSingleUrl:
+      notification_actions.emplace_back(
+          l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_ACTION_OPEN_URL));
+      break;
     case ReceivedContentType::kSingleImage:
       notification_actions.emplace_back(l10n_util::GetStringUTF16(
           IDS_NEARBY_NOTIFICATION_ACTION_OPEN_FOLDER));
@@ -805,6 +830,10 @@ NearbyNotificationDelegate* NearbyNotificationManager::GetNotificationDelegate(
     return nullptr;
 
   return iter->second.get();
+}
+
+void NearbyNotificationManager::OpenURL(GURL url) {
+  nearby_service_->OpenURL(url);
 }
 
 void NearbyNotificationManager::CancelTransfer() {
