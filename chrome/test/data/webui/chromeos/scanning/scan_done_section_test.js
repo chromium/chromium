@@ -37,7 +37,7 @@ export function scanDoneSectionTest() {
 
   test('initializeScanDoneSection', () => {
     assertTrue(!!scanDoneSection.$.title);
-    assertTrue(!!scanDoneSection.$$('.done-button-container'));
+    assertTrue(!!scanDoneSection.$$('#doneButtonContainer'));
   });
 
   test('pageNumberUpdatesTitleText', () => {

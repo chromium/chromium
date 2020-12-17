@@ -564,8 +564,8 @@ Try tapping the mic to ask me anything.
       </message>
       <message name="IDS_SCANNING_APP_FILE_SAVED_TEXT" desc="The text displayed in the Scanning App when a scan job is completed and the file is saved.">
         {COUNT, plural,
-        =1 {Scanned file saved!}
-        other {Scanned files saved!}}
+        =1 {Scanned file saved}
+        other {Scanned files saved}}
       </message>
       <message name="IDS_SCANNING_APP_DONE_BUTTON_TEXT" desc="The text displayed for the button the user clicks to return to the intial Scanning App page after a scan job is completed.">
         Done

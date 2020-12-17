@@ -7,6 +7,12 @@
     margin-top: 0;
   }
 
+  .container,
+  #doneButtonContainer,
+  #titleContainer {
+    width: 272px;
+  }
+
   .container {
     @apply --scanning-done-section-option-font;
     align-items: center;
@@ -18,16 +24,15 @@
     margin-inline-start: 32px;
     margin-top: 0;
     padding-inline-end: 16px;
-    width: 272px;
   }
 
   #checkMarkIcon {
-    height: 20px;
     margin-inline-end: 12px;
-    width: 20px;
+    min-height: 24px;
+    min-width: 24px;
   }
 
-  .done-button-container {
+  #doneButtonContainer {
     display: flex;
     justify-content: flex-end;
     margin-bottom: 0;
@@ -35,7 +40,6 @@
     margin-inline-start: 32px;
     margin-top: 32px;
     padding-inline-end: 16px;
-    width: 272px;
   }
 
   #title {
@@ -72,7 +76,7 @@
       on-click="showFileInLocation_" aria-labelledby="showFileLocationLabel">
   </cr-icon-button>
 </div>
-<div class="done-button-container">
+<div id="doneButtonContainer">
   <cr-button id="doneButton" class="action-button"
       on-click="onDoneClick_">
     [[i18n('doneButtonText')]]
