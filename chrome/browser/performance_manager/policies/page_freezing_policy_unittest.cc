@@ -93,15 +93,6 @@ class PageFreezingPolicyTest : public GraphTestHarness {
   PageFreezingPolicy* policy_;
 };
 
-TEST_F(PageFreezingPolicyTest, VisiblePageGetsCannotFreezeVote) {
-  page_node()->SetIsVisible(true);
-  EXPECT_EQ(page_node()->freezing_vote()->value(),
-            freezing::FreezingVoteValue::kCannotFreeze);
-  EXPECT_EQ(page_node()->freezing_vote()->reason(),
-            PageFreezingPolicyAccess::CannotFreezeReasonToString(
-                PageFreezingPolicyAccess::CannotFreezeReason::kVisible));
-}
-
 TEST_F(PageFreezingPolicyTest, AudiblePageGetsCannotFreezeVote) {
   page_node()->SetIsAudible(true);
   EXPECT_EQ(page_node()->freezing_vote()->value(),

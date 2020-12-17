@@ -22,7 +22,6 @@ namespace policies {
 // freezing vote is positive.
 //
 // Tabs in one of the following states won't be frozen:
-//   - Visible;
 //   - Audible;
 //   - Capturing video;
 //   - Capturing audio;
@@ -33,6 +32,9 @@ namespace policies {
 //   - Connected to a USB device;
 //   - Holding at least one IndexedDB lock;
 //   - Holding at least one WebLock.
+//
+// Note that visible tabs can't be frozen and tabs that becomes visible are
+// automatically unfrozen, there's no need to track this feature here.
 class PageFreezingPolicy : public GraphOwned,
                            public PageNode::ObserverDefaultImpl,
                            public PageLiveStateObserver {
@@ -52,7 +54,6 @@ class PageFreezingPolicy : public GraphOwned,
  protected:
   // List of states that prevent a tab from being frozen.
   enum class CannotFreezeReason {
-    kVisible,
     kAudible,
     kHoldingIndexedDBLock,
     kHoldingWebLock,
@@ -90,7 +91,6 @@ class PageFreezingPolicy : public GraphOwned,
   // PageNodeObserver implementation:
   void OnPageNodeAdded(const PageNode* page_node) override;
   void OnBeforePageNodeRemoved(const PageNode* page_node) override;
-  void OnIsVisibleChanged(const PageNode* page_node) override;
   void OnIsAudibleChanged(const PageNode* page_node) override;
   void OnPageIsHoldingWebLockChanged(const PageNode* page_node) override;
   void OnPageIsHoldingIndexedDBLockChanged(const PageNode* page_node) override;

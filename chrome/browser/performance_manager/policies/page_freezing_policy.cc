@@ -46,9 +46,6 @@ void PageFreezingPolicy::OnPageNodeAdded(const PageNode* page_node) {
 
   if (page_node->IsAudible())
     OnIsAudibleChanged(page_node);
-
-  if (page_node->IsVisible())
-    OnIsVisibleChanged(page_node);
 }
 
 void PageFreezingPolicy::OnBeforePageNodeRemoved(const PageNode* page_node) {
@@ -57,13 +54,6 @@ void PageFreezingPolicy::OnBeforePageNodeRemoved(const PageNode* page_node) {
       ->RemoveObserver(this);
   negative_vote_for_pages_.erase(page_node);
   page_node_being_removed_ = nullptr;
-}
-
-void PageFreezingPolicy::OnIsVisibleChanged(const PageNode* page_node) {
-  UpdateNegativeFreezingVote(page_node, CannotFreezeReason::kVisible,
-                             page_node->IsVisible()
-                                 ? NegativeVoteAction::kEmit
-                                 : NegativeVoteAction::kRemove);
 }
 
 void PageFreezingPolicy::OnIsAudibleChanged(const PageNode* page_node) {
@@ -185,8 +175,6 @@ const char* PageFreezingPolicy::CannotFreezeReasonToString(
   switch (reason) {
     case CannotFreezeReason::kAudible:
       return "Page is audible";
-    case CannotFreezeReason::kVisible:
-      return "Page is visible";
     case CannotFreezeReason::kHoldingIndexedDBLock:
       return "Page is holding an IndexedDB lock";
     case CannotFreezeReason::kHoldingWebLock:
