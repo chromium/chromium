@@ -21,6 +21,7 @@
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/system_web_app_manager.h"
 #include "chrome/common/chrome_paths.h"
+#include "chromeos/components/media_app_ui/buildflags.h"
 #include "chromeos/components/media_app_ui/test/media_app_ui_browsertest.h"
 #include "chromeos/components/media_app_ui/url_constants.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -212,6 +213,53 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, LoadsPdf) {
 
   EXPECT_EQ(true, MediaAppUiBrowserTest::EvalJsInAppFrame(app, loadPdf));
 }
+
+// This test tries to load files bundled in our CIPD package. The CIPD package
+// is included in the `linux-chromeos-chrome` trybot but not in
+// `linux-chromeos-rel` trybot. Only include this test when our CIPD package is
+// present.
+#if BUILDFLAG(ENABLE_CROS_MEDIA_APP)
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, LoadsInkForImageAnnotation) {
+  WaitForTestSystemAppInstall();
+  auto params = LaunchParamsForApp(web_app::SystemAppType::MEDIA);
+  params.launch_files = {TestFile(kFileJpeg640x480)};
+  content::WebContents* app = LaunchApp(std::move(params));
+  PrepareAppForTest(app);
+
+  // Ensure test image loaded.
+  EXPECT_EQ("640x480", WaitForImageAlt(app, kFileJpeg640x480));
+
+  // TODO(b/175766054): Decipher if we can one line getting the annotate button
+  // in `waitForNode`.
+  constexpr char clickAnnotate[] = R"(
+    (async () => {
+      const appBar = await waitForNode('backlight-app-bar', ['backlight-app']);
+      const annotateButton = appBar.shadowRoot.querySelector('[label="Annotate"]');
+      annotateButton.click();
+      return true;
+    })();
+  )";
+  EXPECT_EQ(true, MediaAppUiBrowserTest::EvalJsInAppFrame(app, clickAnnotate));
+
+  // Checks ink is loaded for images by ensuring the ink engine canvas has a non
+  // zero width and height attributes (checking <canvas.width/height is
+  // insufficient since it has a default width of 300 and height of 150).
+  // Note: The loading of ink engine elements can be async.
+  constexpr char checkInkLoaded[] = R"(
+    (async () => {
+      const inkEngineCanvas = await waitForNode('canvas#ink-engine[width]', ['backlight-image-handler']);
+      return !!inkEngineCanvas &&
+        !!inkEngineCanvas.getAttribute('height') &&
+        inkEngineCanvas.getAttribute('height') !== '0' &&
+        !!inkEngineCanvas.getAttribute('width') &&
+        inkEngineCanvas.getAttribute('width') !== '0';
+    })();
+  )";
+  // TODO(b/175840855): Consider checking `inkEngineCanvas` size, it is
+  // currently different to image size.
+  EXPECT_EQ(true, MediaAppUiBrowserTest::EvalJsInAppFrame(app, checkInkLoaded));
+}
+#endif  // BUILDFLAG(ENABLE_CROS_MEDIA_APP)
 
 // Test that the MediaApp can load RAW files passed on launch params.
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, HandleRawFiles) {

@@ -462,7 +462,7 @@ const base::Feature kMediaApp{"MediaApp", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Whether image annotation is enabled in the ChromeOS media app.
 const base::Feature kMediaAppAnnotation{"MediaAppAnnotation",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
+                                        base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Whether known extensions for RAW image formats are handled by the ChromeOS
 // Media App.

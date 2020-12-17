@@ -2,7 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
 import("//chrome/test/base/js2gtest.gni")
+import("//chromeos/components/media_app_ui/media_app_ui.gni")
 import("//chromeos/components/web_applications/system_apps.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//third_party/closure_compiler/compile_js.gni")
@@ -170,4 +172,11 @@ js_library("test_media_app_guest_ui_browsertest_js") {
     "//chromeos/components/media_app_ui/resources/js:receiver",
     "//chromeos/components/system_apps/public/js:message_pipe",
   ]
+}
+
+# Used to turn off tests that only work with our CIPD package e.g. loading ink.
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+
+  flags = [ "ENABLE_CROS_MEDIA_APP=$enable_cros_media_app" ]
 }
