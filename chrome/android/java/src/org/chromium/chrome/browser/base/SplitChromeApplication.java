@@ -10,15 +10,22 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.SystemClock;
 
+import dalvik.system.DexFile;
+
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.JNIUtils;
+import org.chromium.base.Log;
+import org.chromium.base.PackageUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 
 import java.lang.reflect.Field;
 
@@ -27,8 +34,11 @@ import java.lang.reflect.Field;
  * perform any necessary initialization for non-browser processes without loading code from the
  * chrome split. In the browser process, the necessary logic is loaded from the chrome split using
  * reflection.
+ *
+ * This class will be used when isolated splits are enabled.
  */
 public class SplitChromeApplication extends SplitCompatApplication {
+    private static final String TAG = "SplitChromeApp";
     private String mChromeApplicationClassName;
     private SplitPreloader mSplitPreloader;
 
@@ -59,6 +69,7 @@ public class SplitChromeApplication extends SplitCompatApplication {
                         chromeContext, mChromeApplicationClassName);
             });
             applyActivityClassLoaderWorkaround();
+            applyDexCompileWorkaround();
         } else {
             setImplSupplier(() -> createNonBrowserApplication());
         }
@@ -162,6 +173,63 @@ public class SplitChromeApplication extends SplitCompatApplication {
                                 activity.getBaseContext(), activity.getClass().getClassLoader());
                     }
                 });
+    }
+
+    /**
+     * Android OMR1 has a bug where bg-dexopt-job will break optimized dex files for splits. This
+     * leads to *very* slow startup on those devices. To mitigate this, we attempt to force a dex
+     * compile if necessary.
+     */
+    private void applyDexCompileWorkaround() {
+        // This bug only happens in OMR1.
+        if (Build.VERSION.SDK_INT != Build.VERSION_CODES.O_MR1) {
+            return;
+        }
+
+        new Thread(() -> {
+            try {
+                // If the app has just been updated, it will be compiled with quicken. The next time
+                // bg-dexopt-job runs it will break the optimized dex for splits. If we force
+                // compile now, then bg-dexopt-job won't mess up the splits, and we save the user a
+                // slow startup.
+                if (needsDexCompileAfterUpdate()) {
+                    performDexCompile();
+                    return;
+                }
+
+                // Make sure all splits are compiled correclty, and if not force a compile.
+                for (String sourceDir : getApplicationInfo().splitSourceDirs) {
+                    if (DexFile.isDexOptNeeded(sourceDir)) {
+                        performDexCompile();
+                        return;
+                    }
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error compiling dex.", e);
+            }
+        }).start();
+    }
+
+    /** Returns whether the dex has been compiled since the last app update. */
+    private boolean needsDexCompileAfterUpdate() {
+        return SharedPreferencesManager.getInstance().readInt(
+                       ChromePreferenceKeys.ISOLATED_SPLITS_DEX_COMPILE_VERSION)
+                != PackageUtils.getPackageVersion(this, getPackageName());
+    }
+
+    /** Compiles dex for the app, and sets the pref key tracking the latest compiled version. */
+    private void performDexCompile() throws Exception {
+        Class<?> c = Class.forName("android.os.SystemProperties");
+        java.lang.reflect.Method get = c.getMethod("get", String.class, String.class);
+        // Use the shared compile mode, and if we can't find that, default to speed. The shared
+        // compile mode will be quicken on Android Go.
+        String compileMode = (String) get.invoke(null, "pm.dexopt.shared", "speed");
+
+        Runtime.getRuntime().exec(new String[] {
+                "cmd", "package", "compile", "-m", compileMode, "-f", getPackageName()});
+        SharedPreferencesManager.getInstance().writeInt(
+                ChromePreferenceKeys.ISOLATED_SPLITS_DEX_COMPILE_VERSION,
+                PackageUtils.getPackageVersion(this, getPackageName()));
     }
 
     private static void replaceClassLoader(Context baseContext, ClassLoader classLoader) {
