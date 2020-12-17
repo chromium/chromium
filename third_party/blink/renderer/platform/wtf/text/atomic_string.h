@@ -23,6 +23,7 @@
 
 #include <cstring>
 #include <iosfwd>
+#include <type_traits>
 
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -74,6 +75,10 @@ class WTF_EXPORT AtomicString {
   AtomicString(const LChar* chars, unsigned length);
   AtomicString(const UChar* chars, unsigned length);
   AtomicString(const UChar* chars);
+  // TODO(crbug.com/911896): Remove this constructor once `UChar` is `char16_t`
+  // on all platforms.
+  template <typename UCharT = UChar,
+            typename = std::enable_if_t<!std::is_same<UCharT, char16_t>::value>>
   AtomicString(const char16_t* chars)
       : AtomicString(reinterpret_cast<const UChar*>(chars)) {}
 

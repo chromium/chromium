@@ -23,7 +23,7 @@ namespace safe_browsing {
 namespace dmg {
 
 // UTF-16 character for file path seprator.
-static const uint16_t kFilePathSeparator = '/';
+static const base::char16 kFilePathSeparator = '/';
 
 static void ConvertBigEndian(HFSPlusForkData* fork) {
   ConvertBigEndian(&fork->logicalSize);

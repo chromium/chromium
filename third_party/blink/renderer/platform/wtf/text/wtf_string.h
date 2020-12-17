@@ -27,6 +27,8 @@
 // on systems without case-sensitive file systems.
 
 #include <iosfwd>
+#include <type_traits>
+
 #include "base/containers/span.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -80,6 +82,10 @@ class WTF_EXPORT String {
 
   // Construct a string with UTF-16 data, from a null-terminated source.
   String(const UChar*);
+  // TODO(crbug.com/911896): Remove this constructor once `UChar` is `char16_t`
+  // on all platforms.
+  template <typename UCharT = UChar,
+            typename = std::enable_if_t<!std::is_same<UCharT, char16_t>::value>>
   String(const char16_t* chars)
       : String(reinterpret_cast<const UChar*>(chars)) {}
 

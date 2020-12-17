@@ -69,11 +69,12 @@ NativeWebKeyboardEvent::NativeWebKeyboardEvent(
   if (unmod_text_length == 0)
     type = NSFlagsChanged;
 
-  NSString* text =
-      [[[NSString alloc] initWithCharacters:web_event.text length:text_length]
-          autorelease];
+  NSString* text = [[[NSString alloc]
+      initWithCharacters:reinterpret_cast<const UniChar*>(web_event.text)
+                  length:text_length] autorelease];
   NSString* unmodified_text =
-      [[[NSString alloc] initWithCharacters:web_event.unmodified_text
+      [[[NSString alloc] initWithCharacters:reinterpret_cast<const UniChar*>(
+                                                web_event.unmodified_text)
                                      length:unmod_text_length] autorelease];
 
   os_event = [[NSEvent keyEventWithType:type

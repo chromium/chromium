@@ -309,8 +309,9 @@ blink::WebKeyboardEvent WebKeyboardEventBuilder::Build(NSEvent* event,
 
   if ([text_str length] < blink::WebKeyboardEvent::kTextLengthCap &&
       [unmodified_str length] < blink::WebKeyboardEvent::kTextLengthCap) {
-    [text_str getCharacters:&result.text[0]];
-    [unmodified_str getCharacters:&result.unmodified_text[0]];
+    [text_str getCharacters:reinterpret_cast<UniChar*>(&result.text[0])];
+    [unmodified_str
+        getCharacters:reinterpret_cast<UniChar*>(&result.unmodified_text[0])];
   } else
     NOTIMPLEMENTED();
 

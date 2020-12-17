@@ -11,6 +11,8 @@
 #include "base/memory/scoped_refptr.h"
 #endif
 #include <cstring>
+#include <type_traits>
+
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
@@ -126,6 +128,10 @@ class WTF_EXPORT StringView {
   StringView(const UChar* chars, unsigned length)
       : impl_(StringImpl::empty16_bit_), bytes_(chars), length_(length) {}
   StringView(const UChar* chars);
+  // TODO(crbug.com/911896): Remove this constructor once `UChar` is `char16_t`
+  // on all platforms.
+  template <typename UCharT = UChar,
+            typename = std::enable_if_t<!std::is_same<UCharT, char16_t>::value>>
   StringView(const char16_t* chars)
       : StringView(reinterpret_cast<const UChar*>(chars)) {}
 

@@ -50,7 +50,9 @@ void CreateAndPostKeyEvent(int keycode,
   if (eventRef) {
     CGEventSetFlags(eventRef, static_cast<CGEventFlags>(flags));
     if (!unicode.empty())
-      CGEventKeyboardSetUnicodeString(eventRef, unicode.size(), &(unicode[0]));
+      CGEventKeyboardSetUnicodeString(
+          eventRef, unicode.size(),
+          reinterpret_cast<const UniChar*>(unicode.data()));
     CGEventPost(kCGSessionEventTap, eventRef);
   }
 }

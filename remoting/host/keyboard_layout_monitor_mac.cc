@@ -204,7 +204,9 @@ void KeyboardLayoutMonitorMac::QueryLayoutOnMainLoop(
       }
 
       key_actions[shift_level].set_character(
-          base::UTF16ToUTF8(base::StringPiece16(result_array, result_length)));
+          base::UTF16ToUTF8(base::StringPiece16(
+              reinterpret_cast<const base::char16*>(result_array),
+              result_length)));
     }
 
     if (key_actions.size() == 0) {

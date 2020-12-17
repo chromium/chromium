@@ -79,8 +79,9 @@ ScopedJavaLocalRef<jstring> SQLiteCursor::GetString(
     const JavaParamRef<jobject>& obj,
     jint column) {
   base::string16 value = statement_->statement()->ColumnString16(column);
-  return ScopedJavaLocalRef<jstring>(env,
-      env->NewString(value.data(), value.size()));
+  return ScopedJavaLocalRef<jstring>(
+      env, env->NewString(reinterpret_cast<const jchar*>(value.data()),
+                          value.size()));
 }
 
 jlong SQLiteCursor::GetLong(JNIEnv* env,

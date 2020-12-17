@@ -124,7 +124,8 @@ NSAttributedString* AttributedSubstringFromRange(const EphemeralRange& range,
     String characters = it.GetTextState().GetTextForTesting();
     characters.Ensure16Bit();
     NSString* substring =
-        [[[NSString alloc] initWithCharacters:characters.Characters16()
+        [[[NSString alloc] initWithCharacters:reinterpret_cast<const UniChar*>(
+                                                  characters.Characters16())
                                        length:characters.length()] autorelease];
     [string replaceCharactersInRange:NSMakeRange(position, 0)
                           withString:substring];

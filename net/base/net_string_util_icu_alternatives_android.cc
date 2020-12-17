@@ -121,7 +121,8 @@ bool ToUpper(base::StringPiece16 str, base::string16* output) {
   output->clear();
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jstring> java_new_str(
-      env, env->NewString(str.data(), str.length()));
+      env,
+      env->NewString(reinterpret_cast<const jchar*>(str.data()), str.length()));
   if (java_new_str.is_null())
     return false;
   ScopedJavaLocalRef<jstring> java_result =

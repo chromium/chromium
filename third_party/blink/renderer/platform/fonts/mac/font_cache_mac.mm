@@ -140,16 +140,14 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
       font_data_to_substitute->PlatformData();
   NSFont* ns_font = base::mac::CFToNSCast(platform_data.CtFont());
 
-  NSString* string =
-      [[NSString alloc] initWithCharactersNoCopy:code_units
-                                          length:code_units_length
-                                    freeWhenDone:NO];
+  NSString* string = [[[NSString alloc]
+      initWithCharacters:reinterpret_cast<UniChar*>(code_units)
+                  length:code_units_length] autorelease];
   NSFont* substitute_font =
       [NSFont findFontLike:ns_font
                  forString:string
                  withRange:NSMakeRange(0, code_units_length)
                 inLanguage:nil];
-  [string release];
 
   // FIXME: Remove this SPI usage: http://crbug.com/255122
   if (!substitute_font && code_units_length == 1)
