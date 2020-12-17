@@ -101,8 +101,8 @@ public class AutofillAssistantUiTest {
      * @see CustomTabsTestUtils#createMinimalCustomTabIntent(Context, String).
      */
     private Intent createMinimalCustomTabIntent() {
-        return CustomTabsTestUtils.createMinimalCustomTabIntent(
-                InstrumentationRegistry.getTargetContext(), mTestPage);
+        return AutofillAssistantUiTestUtil.createMinimalCustomTabIntentForAutobot(
+                mTestPage, /* startImmediately = */ true);
     }
 
     private CustomTabActivity getActivity() {

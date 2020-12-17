@@ -115,6 +115,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
         for (Map.Entry<String, Object> param : scriptParameters.entrySet()) {
             argsBuilder.addParameter(param.getKey(), param.getValue());
         }
+        argsBuilder.addParameter(AutofillAssistantArguments.PARAMETER_START_IMMEDIATELY, false);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> AutofillAssistantFacade.start(mTestRule.getActivity(), argsBuilder.build()));
     }
