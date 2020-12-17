@@ -26,6 +26,12 @@
         white-space: nowrap;
       }
 
+      @media (prefers-color-scheme: dark) {
+        table th {
+          background: var(--google-grey-800);
+        }
+      }
+
       table th[data-sort-key] {
         cursor: pointer;
       }
