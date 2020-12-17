@@ -505,6 +505,8 @@ void VideoEncoder::ResetInternal() {
     DCHECK(pending_req);
     if (pending_req->resolver)
       pending_req->resolver.Release()->Resolve();
+    if (pending_req->frame)
+      pending_req->frame.Release()->destroy();
   }
   stall_request_processing_ = false;
 }
