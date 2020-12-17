@@ -30,17 +30,19 @@ class FirstPartySetsComponentInstallerTest : public ::testing::Test {
  public:
   FirstPartySetsComponentInstallerTest() {
     CHECK(component_install_dir_.CreateUniqueTempDir());
+    scoped_feature_list_.InitAndEnableFeature(net::features::kFirstPartySets);
   }
 
  protected:
   base::test::TaskEnvironment env_;
 
   base::ScopedTempDir component_install_dir_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(FirstPartySetsComponentInstallerTest, FeatureDisabled) {
-  base::test::ScopedFeatureList scoped_list;
-  scoped_list.InitAndDisableFeature(net::features::kFirstPartySets);
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndDisableFeature(net::features::kFirstPartySets);
   auto service =
       std::make_unique<component_updater::MockComponentUpdateService>();
   EXPECT_CALL(*service, RegisterComponent(_)).Times(0);
@@ -49,10 +51,7 @@ TEST_F(FirstPartySetsComponentInstallerTest, FeatureDisabled) {
   env_.RunUntilIdle();
 }
 
-TEST_F(FirstPartySetsComponentInstallerTest, LoadsSets) {
-  base::test::ScopedFeatureList scoped_list;
-  scoped_list.InitAndEnableFeature(net::features::kFirstPartySets);
-
+TEST_F(FirstPartySetsComponentInstallerTest, LoadsSets_OnComponentReady) {
   SEQUENCE_CHECKER(sequence_checker);
   const std::string expectation = "some first party sets";
   base::RunLoop run_loop;
@@ -72,6 +71,45 @@ TEST_F(FirstPartySetsComponentInstallerTest, LoadsSets) {
                          std::make_unique<base::DictionaryValue>());
 
   run_loop.Run();
+}
+
+TEST_F(FirstPartySetsComponentInstallerTest, LoadsSets_OnNetworkRestart) {
+  SEQUENCE_CHECKER(sequence_checker);
+  const std::string expectation = "some first party sets";
+
+  // We do this in order for the static to memoize the install path.
+  {
+    base::RunLoop run_loop;
+    FirstPartySetsComponentInstallerPolicy policy(
+        base::BindLambdaForTesting([&](const std::string& got) {
+          DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
+          EXPECT_EQ(got, expectation);
+          run_loop.Quit();
+        }));
+
+    ASSERT_TRUE(base::WriteFile(
+        FirstPartySetsComponentInstallerPolicy::GetInstalledPath(
+            component_install_dir_.GetPath()),
+        expectation));
+
+    policy.ComponentReady(base::Version(), component_install_dir_.GetPath(),
+                          std::make_unique<base::DictionaryValue>());
+
+    run_loop.Run();
+  }
+
+  {
+    base::RunLoop run_loop;
+
+    FirstPartySetsComponentInstallerPolicy::ReconfigureAfterNetworkRestart(
+        base::BindLambdaForTesting([&](const std::string& got) {
+          DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
+          EXPECT_EQ(got, expectation);
+          run_loop.Quit();
+        }));
+
+    run_loop.Run();
+  }
 }
 
 }  // namespace component_updater

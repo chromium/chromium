@@ -23,6 +23,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/component_updater/crl_set_component_installer.h"
+#include "chrome/browser/component_updater/first_party_sets_component_installer.h"
 #include "chrome/browser/component_updater/tls_deprecation_config_component_installer.h"
 #include "chrome/browser/net/chrome_mojo_proxy_resolver_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
@@ -58,6 +59,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/features.h"
+#include "net/cookies/cookie_util.h"
 #include "net/net_buildflags.h"
 #include "net/third_party/uri_template/uri_template.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
@@ -543,6 +545,20 @@ void SystemNetworkContextManager::OnNetworkServiceCreated(
 
   // Configure SCT Auditing in the NetworkService.
   SCTReportingService::ReconfigureAfterNetworkRestart();
+
+  if (net::cookie_util::IsFirstPartySetsEnabled()) {
+    component_updater::FirstPartySetsComponentInstallerPolicy::
+        ReconfigureAfterNetworkRestart(
+            base::BindRepeating([](const std::string& raw_sets) {
+              // We use a fresh pointer here (instead of using `network_service`
+              // from the enclosing scope) to avoid use-after-free bugs, since
+              // `network_service` is not guaranteed to live until the
+              // invocation of this callback.
+              network::mojom::NetworkService* network_service =
+                  content::GetNetworkService();
+              network_service->SetPreloadedFirstPartySets(raw_sets);
+            }));
+  }
 }
 
 void SystemNetworkContextManager::DisableQuic() {

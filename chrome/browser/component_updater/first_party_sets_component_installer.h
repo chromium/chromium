@@ -36,8 +36,16 @@ class FirstPartySetsComponentInstallerPolicy : public ComponentInstallerPolicy {
   FirstPartySetsComponentInstallerPolicy operator=(
       const FirstPartySetsComponentInstallerPolicy&) = delete;
 
+  // Calls the callback with the current First-Party Sets data, if the data
+  // exists and can be read.
+  static void ReconfigureAfterNetworkRestart(
+      const base::RepeatingCallback<void(const std::string&)>&);
+
  private:
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest, LoadsSets);
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
+                           LoadsSets_OnComponentReady);
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
+                           LoadsSets_OnNetworkRestart);
 
   // The following methods override ComponentInstallerPolicy.
   bool SupportsGroupPolicyEnabledComponentUpdates() const override;
