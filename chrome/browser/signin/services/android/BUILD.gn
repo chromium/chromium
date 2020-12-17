@@ -20,6 +20,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/signin/services/IdentityServicesProvider.java",
     "java/src/org/chromium/chrome/browser/signin/services/ProfileDataCache.java",
     "java/src/org/chromium/chrome/browser/signin/services/ProfileDownloader.java",
+    "java/src/org/chromium/chrome/browser/signin/services/SigninHelper.java",
     "java/src/org/chromium/chrome/browser/signin/services/SigninManager.java",
     "java/src/org/chromium/chrome/browser/signin/services/SigninMetricsUtils.java",
     "java/src/org/chromium/chrome/browser/signin/services/SigninPreferencesManager.java",
@@ -28,6 +29,7 @@ android_library("java") {
   ]
   deps = [
     ":java_resources",
+    "$google_play_services_package:google_play_services_auth_base_java",
     "//base:base_java",
     "//base:jni_java",
     "//chrome/browser/preferences:java",

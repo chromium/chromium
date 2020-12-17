@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.signin;
+package org.chromium.chrome.browser.signin.services;
 
 import android.accounts.Account;
 import android.content.Context;
@@ -19,9 +19,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.task.AsyncTask;
-import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.browser.signin.services.SigninManager.SignInCallback;
-import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountTrackerService;
 import org.chromium.components.signin.AccountUtils;
@@ -56,11 +53,10 @@ public class SigninHelper implements ApplicationStatus.ApplicationStateListener 
     public static final class SystemAccountChangeEventChecker
             implements SigninHelper.AccountChangeEventChecker {
         @Override
-        public List<String> getAccountChangeEvents(
-                Context context, int index, String accountName) {
+        public List<String> getAccountChangeEvents(Context context, int index, String accountName) {
             try {
-                List<AccountChangeEvent> list = GoogleAuthUtil.getAccountChangeEvents(
-                        context, index, accountName);
+                List<AccountChangeEvent> list =
+                        GoogleAuthUtil.getAccountChangeEvents(context, index, accountName);
                 List<String> result = new ArrayList<>(list.size());
                 for (AccountChangeEvent e : list) {
                     if (e.getChangeType() == GoogleAuthUtil.CHANGE_TYPE_ACCOUNT_RENAMED_TO) {
@@ -89,7 +85,7 @@ public class SigninHelper implements ApplicationStatus.ApplicationStateListener 
      * Please use SigninHelperProvider to get SigninHelper instance instead of creating it
      * manually.
      */
-    SigninHelper(SigninManager signinManager, AccountTrackerService accountTrackerService,
+    public SigninHelper(SigninManager signinManager, AccountTrackerService accountTrackerService,
             SigninPreferencesManager signinPreferencesManager) {
         mSigninManager = signinManager;
         mAccountTrackerService = accountTrackerService;
@@ -192,7 +188,7 @@ public class SigninHelper implements ApplicationStatus.ApplicationStateListener 
         final Account account = AccountUtils.createAccountFromName(newName);
 
         mSigninManager.signinAndEnableSync(
-                SigninAccessPoint.ACCOUNT_RENAMED, account, new SignInCallback() {
+                SigninAccessPoint.ACCOUNT_RENAMED, account, new SigninManager.SignInCallback() {
                     @Override
                     public void onSignInComplete() {
                         validateAccountsInternal(true);
