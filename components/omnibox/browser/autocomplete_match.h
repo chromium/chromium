@@ -544,6 +544,16 @@ struct AutocompleteMatch {
   // The inline autocompletion to display after the user's input in the
   // omnibox, if this match becomes the default match.  It may be empty.
   base::string16 inline_autocompletion;
+  // Whether rich autocompletion triggered; i.e. this suggestion *is or could
+  // have been* rich autocompleted. This is usually redundant and checking
+  // whether either of |prefix_autocompletion| or |split_autocompletion| are
+  // non-empty should be used instead to determine if this suggestion *is* rich
+  // autocompelted. But for counterfactual variations, the latter 2 aren't
+  // copied when deduping matches to avoid showing rich autocompletion and so
+  // can't be used to trigger logging.
+  // TODO(manukh): remove |rich_autocompletion_triggered| when counterfactual
+  // experiments end.
+  bool rich_autocompletion_triggered = false;
   // The inline autocompletion to display before the user's input in the
   // omnibox, if this match becomes the default match. Always empty if
   // non-prefix autocompletion is disabled.

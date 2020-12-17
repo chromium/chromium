@@ -231,6 +231,32 @@ bool AutocompleteMatchHasCustomDescription(const AutocompleteMatch& match) {
          match.type == AutocompleteMatchType::SEARCH_SUGGEST_PROFILE;
 }
 
+// Returns if rich autocompletion had (or would have had for counterfactual
+// variations) an impact; i.e. whether the top scoring rich autocompleted
+// suggestion outscores the top scoring default suggestion.
+bool TopMatchWouldHaveBeenRichAutocompletion(const AutocompleteResult& result) {
+  // Trigger rich autocompletion logging if the highest scoring match has
+  // |rich_autocompletion_triggered| set to true indicating it is, or could have
+  // been, rich autocompleted. It's not sufficient to check the default match
+  // since counterfactual variations will not allow rich autocompleted matches
+  // to be the default match.
+  if (result.empty())
+    return false;
+
+  auto get_sort_key = [](const AutocompleteMatch& match) {
+    return std::make_tuple(match.allowed_to_be_default_match ||
+                               match.rich_autocompletion_triggered,
+                           match.relevance);
+  };
+
+  auto top_match = std::max_element(
+      result.begin(), result.end(),
+      [&](const AutocompleteMatch& match1, const AutocompleteMatch& match2) {
+        return get_sort_key(match1) < get_sort_key(match2);
+      });
+  return top_match->rich_autocompletion_triggered;
+}
+
 }  // namespace
 
 AutocompleteController::AutocompleteController(
@@ -761,9 +787,7 @@ void AutocompleteController::UpdateResult(
   if (notify_default_match)
     last_time_default_match_changed_ = base::TimeTicks::Now();
 
-  if (default_is_valid &&
-      (result_.default_match()->swapped_fill_into_edit ||
-       !result_.default_match()->prefix_autocompletion.empty())) {
+  if (TopMatchWouldHaveBeenRichAutocompletion(result_)) {
     provider_client_->GetOmniboxTriggeredFeatureService()->TriggerFeature(
         OmniboxTriggeredFeatureService::Feature::kRichAutocompletion);
   }

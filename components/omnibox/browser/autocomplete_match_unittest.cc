@@ -502,6 +502,7 @@ TEST(AutocompleteMatchTest, TryRichAutocompletion) {
                  bool input_prevent_inline_autocomplete,
                  const std::string primary_text,
                  const std::string secondary_text, bool expected_return,
+                 bool expected_rich_autocompletion_triggered,
                  const std::string expected_inline_autocompletion,
                  const std::string expected_prefix_autocompletion,
                  const std::string expected_fill_into_edit_second_line,
@@ -517,6 +518,9 @@ TEST(AutocompleteMatchTest, TryRichAutocompletion) {
         match.TryRichAutocompletion(base::UTF8ToUTF16(primary_text),
                                     base::UTF8ToUTF16(secondary_text), input),
         expected_return);
+
+    EXPECT_EQ(match.rich_autocompletion_triggered,
+              expected_rich_autocompletion_triggered);
 
     EXPECT_EQ(base::UTF16ToUTF8(match.inline_autocompletion).c_str(),
               expected_inline_autocompletion);
@@ -545,31 +549,32 @@ TEST(AutocompleteMatchTest, TryRichAutocompletion) {
             {"RichAutocompletionSplitUrlCompletion", "true"},
         });
 
-    // Prefer autocompleting primary text prefix.
+    // Prefer autocompleting primary text prefix. Should not set
+    // |rich_autocompletion_triggered|.
     {
       SCOPED_TRACE("primary prefix");
-      test("x", false, "x_mixd_x_primary", "x_mixd_x_secondary", true,
+      test("x", false, "x_mixd_x_primary", "x_mixd_x_secondary", true, false,
            "_mixd_x_primary", "", "x_mixd_x_secondary", false, true);
     }
 
     // Otherwise, prefer secondary text prefix.
     {
       SCOPED_TRACE("secondary prefix");
-      test("x", false, "y_mixd_x_primary", "x_mixd_x_secondary", true,
+      test("x", false, "y_mixd_x_primary", "x_mixd_x_secondary", true, true,
            "_mixd_x_secondary", "", "y_mixd_x_primary", true, true);
     }
 
     // Otherwise, prefer primary text non-prefix (wordbreak).
     {
       SCOPED_TRACE("primary non-prefix");
-      test("x", false, "y_mixd_x_primary", "y_mixd_x_secondary", true,
+      test("x", false, "y_mixd_x_primary", "y_mixd_x_secondary", true, true,
            "_primary", "y_mixd_", "y_mixd_x_secondary", false, true);
     }
 
     // Otherwise, prefer secondary text non-prefix (wordbreak).
     {
       SCOPED_TRACE("secondary non-prefix");
-      test("x", false, "y_mid_y_primary", "y_mixd_x_secondary", true,
+      test("x", false, "y_mid_y_primary", "y_mixd_x_secondary", true, true,
            "_secondary", "y_mixd_", "y_mid_y_primary", true, true);
     }
 
@@ -583,15 +588,15 @@ TEST(AutocompleteMatchTest, TryRichAutocompletion) {
     // Otherwise, don't autocomplete but still set |fill_into_edit_second_line|
     {
       SCOPED_TRACE("no autocompletion applicable");
-      test("x", false, "y_mid_y_primary", "y_mid_y_secondary", false, "", "",
-           "y_mid_y_secondary", false, false);
+      test("x", false, "y_mid_y_primary", "y_mid_y_secondary", false, false, "",
+           "", "y_mid_y_secondary", false, false);
     }
 
     // Don't autocomplete if |prevent_inline_autocomplete| is true.
     {
       SCOPED_TRACE("prevent inline autocomplete");
-      test("x", true, "x_mixd_x_primary", "x_mixd_x_secondary", false, "", "",
-           "x_mixd_x_secondary", false, false);
+      test("x", true, "x_mixd_x_primary", "x_mixd_x_secondary", false, false,
+           "", "", "x_mixd_x_secondary", false, false);
     }
   }
 
@@ -604,24 +609,80 @@ TEST(AutocompleteMatchTest, TryRichAutocompletion) {
             {"RichAutocompletionTwoLineOmnibox", "true"},
             {"RichAutocompletionShowTitles", "true"},
             {"RichAutocompletionAutocompleteNonPrefixAll", "true"},
-            {"RichAutocompletionAutocompleteTitlesMinChar", "2"},
+            {"RichAutocompletionAutocompleteTitlesMinChar", "3"},
             {"RichAutocompletionAutocompleteNonPrefixMinChar", "2"},
             {"RichAutocompletionSplitCompletionMinChar", "2"},
         });
 
+    // Do autocomplete title if input is greater than limits.
+    {
+      SCOPED_TRACE("min char shorter than input");
+      test("x_prim", false, "y_mixd_x_primary", "x_mixd_x_secondary", true,
+           true, "ary", "y_mixd_", "x_mixd_x_secondary", false, true);
+    }
+
+    // Usually, title autocompletion is preferred to non-prefix. Autocomplete
+    // non-prefix if title autocompletion has a limit larger than the input.
+    {
+      SCOPED_TRACE(
+          "title min char longer & non-prefix min char shorter than input");
+      test("x_", false, "y_mixd_x_primary", "x_mixd_x_secondary", true, true,
+           "primary", "y_mixd_", "x_mixd_x_secondary", false, true);
+    }
+
     // Don't autocomplete title and non-prefix if input is less than limits.
     {
-      SCOPED_TRACE("min char");
-      test("x", false, "y_mixd_x_primary", "x_mixd_x_secondary", false, "", "",
-           "x_mixd_x_secondary", false, false);
+      SCOPED_TRACE("min char longer than input");
+      test("x", false, "y_mixd_x_primary", "x_mixd_x_secondary", false, false,
+           "", "", "x_mixd_x_secondary", false, false);
     }
   }
 
   // Don't autocomplete if IsRichAutocompletionEnabled is disabled
   {
     SCOPED_TRACE("feature disabled");
-    test("x", false, "x_mixd_x_primary", "x_mixd_x_secondary", false, "", "",
-         "", false, false);
+    test("x", false, "x_mixd_x_primary", "x_mixd_x_secondary", false, false, "",
+         "", "", false, false);
+  }
+
+  // Don't autocomplete if RichAutocompletionCounterfactual param is enabled;
+  // do set rich_autocompletion_triggered if it would have autocompleted.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        omnibox::kRichAutocompletion,
+        {
+            {"RichAutocompletionAutocompleteTitles", "true"},
+            {"RichAutocompletionTwoLineOmnibox", "true"},
+            {"RichAutocompletionShowTitles", "true"},
+            {"RichAutocompletionAutocompleteNonPrefixAll", "true"},
+            {"RichAutocompletionAutocompleteTitlesMinChar", "3"},
+            {"RichAutocompletionAutocompleteNonPrefixMinChar", "2"},
+            {"RichAutocompletionSplitCompletionMinChar", "2"},
+            {"RichAutocompletionCounterfactual", "true"},
+        });
+
+    // Do trigger if input is greater than limits.
+    {
+      SCOPED_TRACE("min char shorter than input, counterfactual");
+      test("x_prim", false, "y_mixd_x_primary", "x_mixd_x_secondary", false,
+           true, "", "", "", false, false);
+    }
+
+    {
+      SCOPED_TRACE(
+          "title min char longer & non-prefix min char shorter than input, "
+          "counterfactual");
+      test("x_", false, "y_mixd_x_primary", "x_mixd_x_secondary", false, true,
+           "", "", "", false, false);
+    }
+
+    // Don't trigger if input is less than limits.
+    {
+      SCOPED_TRACE("min char longer than input, counterfactual");
+      test("x", false, "y_mixd_x_primary", "x_mixd_x_secondary", false, false,
+           "", "", "", false, false);
+    }
   }
 }
 

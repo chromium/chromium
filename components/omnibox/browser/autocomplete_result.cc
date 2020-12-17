@@ -620,7 +620,7 @@ void AutocompleteResult::DiscourageTopMatchFromBeingSearchEntity(
   if (top_match->type != ACMatchType::SEARCH_SUGGEST_ENTITY)
     return;
 
-  // Search the duplicates for a equivalent non-entity search suggestion.
+  // Search the duplicates for an equivalent non-entity search suggestion.
   for (auto it = top_match->duplicate_matches.begin();
        it != top_match->duplicate_matches.end(); ++it) {
     // Reject any ineligible duplicates.

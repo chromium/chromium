@@ -153,6 +153,7 @@ AutocompleteMatch::AutocompleteMatch(const AutocompleteMatch& match)
       fill_into_edit_additional_text(match.fill_into_edit_additional_text),
       swapped_fill_into_edit(match.swapped_fill_into_edit),
       inline_autocompletion(match.inline_autocompletion),
+      rich_autocompletion_triggered(match.rich_autocompletion_triggered),
       prefix_autocompletion(match.prefix_autocompletion),
       split_autocompletion(match.split_autocompletion),
       allowed_to_be_default_match(match.allowed_to_be_default_match),
@@ -213,6 +214,7 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   fill_into_edit_additional_text = match.fill_into_edit_additional_text;
   swapped_fill_into_edit = match.swapped_fill_into_edit;
   inline_autocompletion = match.inline_autocompletion;
+  rich_autocompletion_triggered = match.rich_autocompletion_triggered;
   prefix_autocompletion = match.prefix_autocompletion;
   split_autocompletion = match.split_autocompletion;
   allowed_to_be_default_match = match.allowed_to_be_default_match;
@@ -1176,6 +1178,13 @@ void AutocompleteMatch::UpgradeMatchWithPropertiesFrom(
     pedal = duplicate_match.pedal;
     duplicate_match.pedal = nullptr;
   }
+
+  // Copy |rich_autocompletion_triggered| for counterfactual logging. Only copy
+  // true values since a rich autocompleted would have
+  // |allowed_to_be_default_match| true and would be preferred to a non rich
+  // autocompleted duplicate in non-counterfactual variations.
+  if (duplicate_match.rich_autocompletion_triggered)
+    rich_autocompletion_triggered = true;
 }
 
 bool AutocompleteMatch::TryRichAutocompletion(
@@ -1186,11 +1195,13 @@ bool AutocompleteMatch::TryRichAutocompletion(
   if (!OmniboxFieldTrial::IsRichAutocompletionEnabled())
     return false;
 
+  bool counterfactual = OmniboxFieldTrial::RichAutocompletionCounterfactual();
+
   // If the appropriate param is enabled, titles should be shown in the omnibox
   // regardless of whether the suggestion can be the default. By default,
   // secondary text should be displayed unless we autocomplete the secondary
   // text, in which case |fill_into_edit_additional_text| will be overridden.
-  if (OmniboxFieldTrial::RichAutocompletionShowTitles())
+  if (OmniboxFieldTrial::RichAutocompletionShowTitles() && !counterfactual)
     fill_into_edit_additional_text = secondary_text;
 
   if (input.prevent_inline_autocomplete())
@@ -1205,6 +1216,11 @@ bool AutocompleteMatch::TryRichAutocompletion(
   if (base::StartsWith(primary_text_lower, input_text_lower,
                        base::CompareCase::SENSITIVE)) {
     // |fill_into_edit| should already be set to |primary_text|.
+    if (counterfactual)
+      return false;
+    // This case intentionally doesn't set |rich_autocompletion_triggered| to
+    // true since presumably non-rich autocompletion should also be able to
+    // handle this case.
     inline_autocompletion = primary_text.substr(input_text_lower.length());
     allowed_to_be_default_match = true;
     RecordAdditionalInfo("autocompletion", "primary & prefix");
@@ -1220,6 +1236,9 @@ bool AutocompleteMatch::TryRichAutocompletion(
   if (can_autocomplete_titles &&
       base::StartsWith(secondary_text_lower, input_text_lower,
                        base::CompareCase::SENSITIVE)) {
+    rich_autocompletion_triggered = true;
+    if (counterfactual)
+      return false;
     fill_into_edit = secondary_text;
     fill_into_edit_additional_text = primary_text;
     swapped_fill_into_edit = true;
@@ -1248,6 +1267,9 @@ bool AutocompleteMatch::TryRichAutocompletion(
   if (can_autocomplete_non_prefix &&
       (find_index = FindAtWordbreak(primary_text_lower, input_text_lower)) !=
           base::string16::npos) {
+    rich_autocompletion_triggered = true;
+    if (counterfactual)
+      return false;
     // |fill_into_edit| should already be set to |primary_text|.
     inline_autocompletion =
         primary_text.substr(find_index + input_text_lower.length());
@@ -1261,6 +1283,9 @@ bool AutocompleteMatch::TryRichAutocompletion(
   if (can_autocomplete_non_prefix && can_autocomplete_titles &&
       (find_index = FindAtWordbreak(secondary_text_lower, input_text_lower)) !=
           base::string16::npos) {
+    rich_autocompletion_triggered = true;
+    if (counterfactual)
+      return false;
     fill_into_edit = secondary_text;
     fill_into_edit_additional_text = primary_text;
     swapped_fill_into_edit = true;
@@ -1284,6 +1309,9 @@ bool AutocompleteMatch::TryRichAutocompletion(
       !(input_words = FindWordsSequentiallyAtWordbreak(primary_text_lower,
                                                        input_text_lower))
            .empty()) {
+    rich_autocompletion_triggered = true;
+    if (counterfactual)
+      return false;
     // |fill_into_edit| should already be set to |primary_text|.
     split_autocompletion = SplitAutocompletion(
         primary_text_lower,
@@ -1304,6 +1332,9 @@ bool AutocompleteMatch::TryRichAutocompletion(
       !(input_words = FindWordsSequentiallyAtWordbreak(secondary_text_lower,
                                                        input_text_lower))
            .empty()) {
+    rich_autocompletion_triggered = true;
+    if (counterfactual)
+      return false;
     fill_into_edit = secondary_text;
     fill_into_edit_additional_text = primary_text;
     swapped_fill_into_edit = true;
