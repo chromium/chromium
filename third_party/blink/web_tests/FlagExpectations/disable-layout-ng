@@ -13,6 +13,7 @@
 # Tests that fail in legacy but pass in NG
 
 # accessibility/
+crbug.com/1159730 accessibility/inline-text-box-next-on-line.html [ Failure ]
 crbug.com/591099 accessibility/listitem-presentation-inherited.html [ Failure ]
 crbug.com/591099 accessibility/presentation-owned-elements.html [ Failure ]
 crbug.com/591099 accessibility/role-attribute.html [ Failure ]
