@@ -42,7 +42,7 @@ class PaperCalculatorHitTest(polymer.PolymerPage):
         'window.__tapTarget != null')
 
     for _ in xrange(100):
-        self.TapButton(action_runner)
+      self.TapButton(action_runner)
 
   def TapButton(self, action_runner):
     with action_runner.CreateInteraction('Action_TapAction'):

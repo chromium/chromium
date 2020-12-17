@@ -142,4 +142,3 @@ class RepaintYahoo2018Page(RepaintDesktopPage):
   BASE_NAME = 'repaint_yahoo_homepage'
   YEAR = '2018'
   URL = 'http://vmiura.github.io/snapit-pages/snapit_yahoo_homepage.html'
-

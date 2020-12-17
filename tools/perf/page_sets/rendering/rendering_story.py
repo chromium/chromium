@@ -57,4 +57,5 @@ class RenderingStory(page.Page):
         shared_page_state_class=shared_page_state_class,
         extra_browser_args=extra_browser_args,
         make_javascript_deterministic=make_javascript_deterministic,
-        base_dir=base_dir)
+        base_dir=base_dir,
+        perform_final_navigation=True)
