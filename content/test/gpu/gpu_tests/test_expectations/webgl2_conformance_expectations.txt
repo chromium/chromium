@@ -364,6 +364,14 @@ crbug.com/1152606 [ win amd-0x7340 angle-d3d11 ] deqp/functional/gles3/fborender
 crbug.com/1152606 [ win amd-0x7340 angle-d3d11 ] deqp/functional/gles3/fragdepth.html [ Failure ]
 crbug.com/1152606 [ win amd-0x7340 angle-d3d11 ] deqp/functional/gles3/framebufferblit/depth_stencil.html [ Failure ]
 
+# D3D11 / AMD RX 5500 XT / Passthrough command decoder
+crbug.com/1159539 [ win amd-0x7340 angle-d3d11 passthrough ] deqp/functional/gles3/fbodepthbuffer.html [ RetryOnFailure ]
+crbug.com/1159539 [ win amd-0x7340 angle-d3d11 passthrough ] deqp/functional/gles3/fborender/resize_03.html [ RetryOnFailure ]
+crbug.com/1159539 [ win amd-0x7340 angle-d3d11 passthrough ] deqp/functional/gles3/fborender/recreate_color_00.html [ RetryOnFailure ]
+crbug.com/1159539 [ win amd-0x7340 angle-d3d11 passthrough ] deqp/functional/gles3/fborender/recreate_color_01.html [ RetryOnFailure ]
+crbug.com/1159539 [ win amd-0x7340 angle-d3d11 passthrough ] deqp/functional/gles3/fborender/recreate_color_04.html [ RetryOnFailure ]
+crbug.com/1159539 [ win amd-0x7340 angle-d3d11 passthrough ] deqp/functional/gles3/fborender/recreate_color_05.html [ RetryOnFailure ]
+
 # Flaky on AMD Win7
 crbug.com/989050 [ angle-d3d11 win7 amd ] conformance2/textures/misc/tex-unpack-params-imagedata.html [ RetryOnFailure ]
 
