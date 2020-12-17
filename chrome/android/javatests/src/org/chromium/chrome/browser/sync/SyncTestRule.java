@@ -142,7 +142,7 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
 
     private void ruleTearDown() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mProfileSyncService.requestStop();
+            mProfileSyncService.setSyncRequested(false);
             FakeServerHelper.deleteFakeServer();
         });
         ProfileSyncService.resetForTests();
@@ -234,7 +234,8 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
     }
 
     public void startSync() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mProfileSyncService.requestStart(); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mProfileSyncService.setSyncRequested(true); });
     }
 
     public void startSyncAndWait() {
@@ -243,7 +244,8 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
     }
 
     public void stopSync() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mProfileSyncService.requestStop(); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mProfileSyncService.setSyncRequested(false); });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 

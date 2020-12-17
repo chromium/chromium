@@ -290,14 +290,9 @@ public class ProfileSyncService {
                 mNativeProfileSyncServiceAndroid, ProfileSyncService.this);
     }
 
-    public void requestStart() {
-        ProfileSyncServiceJni.get().requestStart(
-                mNativeProfileSyncServiceAndroid, ProfileSyncService.this);
-    }
-
-    public void requestStop() {
-        ProfileSyncServiceJni.get().requestStop(
-                mNativeProfileSyncServiceAndroid, ProfileSyncService.this);
+    public void setSyncRequested(boolean requested) {
+        ProfileSyncServiceJni.get().setSyncRequested(
+                mNativeProfileSyncServiceAndroid, ProfileSyncService.this, requested);
     }
 
     /**
@@ -653,8 +648,8 @@ public class ProfileSyncService {
     interface Natives {
         long init(ProfileSyncService caller);
 
-        void requestStart(long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
-        void requestStop(long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
+        void setSyncRequested(
+                long nativeProfileSyncServiceAndroid, ProfileSyncService caller, boolean requested);
         boolean isSyncAllowedByPlatform(
                 long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
         void setSyncAllowedByPlatform(

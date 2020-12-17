@@ -39,12 +39,11 @@ class ProfileSyncServiceAndroid : public syncer::SyncServiceObserver {
   // Pure ProfileSyncService calls.
   jboolean IsSyncRequested(JNIEnv* env,
                            const base::android::JavaParamRef<jobject>& obj);
+  void SetSyncRequested(JNIEnv* env,
+                        const base::android::JavaParamRef<jobject>& obj,
+                        jboolean requested);
   jboolean CanSyncFeatureStart(JNIEnv* env,
                                const base::android::JavaParamRef<jobject>& obj);
-  void RequestStart(JNIEnv* env,
-                    const base::android::JavaParamRef<jobject>& obj);
-  void RequestStop(JNIEnv* env,
-                   const base::android::JavaParamRef<jobject>& obj);
   jboolean IsSyncAllowedByPlatform(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);

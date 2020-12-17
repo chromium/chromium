@@ -131,16 +131,11 @@ jboolean ProfileSyncServiceAndroid::CanSyncFeatureStart(
   return sync_service_->CanSyncFeatureStart();
 }
 
-void ProfileSyncServiceAndroid::RequestStart(JNIEnv* env,
-                                             const JavaParamRef<jobject>&) {
+void ProfileSyncServiceAndroid::SetSyncRequested(JNIEnv* env,
+                                                 const JavaParamRef<jobject>&,
+                                                 jboolean requested) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  sync_service_->GetUserSettings()->SetSyncRequested(true);
-}
-
-void ProfileSyncServiceAndroid::RequestStop(JNIEnv* env,
-                                            const JavaParamRef<jobject>&) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  sync_service_->GetUserSettings()->SetSyncRequested(false);
+  sync_service_->GetUserSettings()->SetSyncRequested(requested);
 }
 
 jboolean ProfileSyncServiceAndroid::IsSyncAllowedByPlatform(

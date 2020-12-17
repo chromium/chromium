@@ -324,11 +324,11 @@ public class SyncSettingsUtils {
         if (enable == profileSyncService.isSyncRequested()) return;
 
         if (enable) {
-            profileSyncService.requestStart();
+            profileSyncService.setSyncRequested(true);
         } else {
             RecordHistogram.recordEnumeratedHistogram("Sync.StopSource",
                     StopSource.CHROME_SYNC_SETTINGS, StopSource.STOP_SOURCE_LIMIT);
-            profileSyncService.requestStop();
+            profileSyncService.setSyncRequested(false);
         }
     }
 

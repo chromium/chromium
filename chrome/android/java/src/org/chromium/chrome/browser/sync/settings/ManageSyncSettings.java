@@ -396,9 +396,9 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
             boolean atLeastOneDataTypeEnabled =
                     mSyncEverything.isChecked() || selectedModelTypes.size() > 0;
             if (mProfileSyncService.isSyncRequested() && !atLeastOneDataTypeEnabled) {
-                mProfileSyncService.requestStop();
+                mProfileSyncService.setSyncRequested(false);
             } else if (!mProfileSyncService.isSyncRequested() && atLeastOneDataTypeEnabled) {
-                mProfileSyncService.requestStart();
+                mProfileSyncService.setSyncRequested(true);
             }
         }
 
@@ -713,7 +713,7 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
                         this, primaryAccountInfo, REQUEST_CODE_TRUSTED_VAULT_KEY_RETRIEVAL);
                 return;
             case SyncError.SYNC_SETUP_INCOMPLETE:
-                mProfileSyncService.requestStart();
+                mProfileSyncService.setSyncRequested(true);
                 mProfileSyncService.setFirstSetupComplete(
                         SyncFirstSetupCompleteSource.ADVANCED_FLOW_INTERRUPTED_TURN_SYNC_ON);
                 return;

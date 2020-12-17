@@ -103,7 +103,7 @@ public class SyncController
 
         if (isSyncEnabledInAndroidSyncSettings() == mProfileSyncService.isSyncRequested()) return;
         if (isSyncEnabledInAndroidSyncSettings()) {
-            mProfileSyncService.requestStart();
+            mProfileSyncService.setSyncRequested(true);
             return;
         }
 
@@ -124,7 +124,7 @@ public class SyncController
                         "Sync.StopSource", source, StopSource.STOP_SOURCE_LIMIT);
             }
 
-            mProfileSyncService.requestStop();
+            mProfileSyncService.setSyncRequested(false);
         }
     }
 
