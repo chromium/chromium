@@ -386,6 +386,18 @@ void ConvertVideoFrameToRGBPixelsTask(const VideoFrame* video_frame,
   uint8_t* pixels = static_cast<uint8_t*>(rgb_pixels) +
                     row_bytes * chunk_start * rows_per_chunk;
 
+  if (format == PIXEL_FORMAT_ARGB) {
+    DCHECK_LE(width, static_cast<int>(row_bytes));
+    const uint8_t* data = plane_meta[VideoFrame::kARGBPlane].data;
+    for (size_t i = 0; i < rows; i++) {
+      memcpy(pixels, data, width * 4);
+      pixels += row_bytes;
+      data += plane_meta[VideoFrame::kARGBPlane].stride;
+    }
+    done->Run();
+    return;
+  }
+
   // TODO(crbug.com/828599): This should default to BT.709 color space.
   SkYUVColorSpace color_space = kRec601_SkYUVColorSpace;
   video_frame->ColorSpace().ToSkYUVColorSpace(&color_space);
@@ -917,6 +929,7 @@ void PaintCanvasVideoRenderer::Paint(
   if (!video_frame.get() || video_frame->natural_size().IsEmpty() ||
       !(media::IsYuvPlanar(video_frame->format()) ||
         video_frame->format() == media::PIXEL_FORMAT_Y16 ||
+        video_frame->format() == media::PIXEL_FORMAT_ARGB ||
         video_frame->HasTextures())) {
     cc::PaintFlags black_with_alpha_flags;
     black_with_alpha_flags.setAlpha(flags.getAlpha());

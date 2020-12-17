@@ -28,6 +28,11 @@ constexpr base::TimeDelta kDefaultMinPeriod = base::TimeDelta();
 // Allow variable aspect ratio.
 const bool kDefaultUseFixedAspectRatio = false;
 
+constexpr media::VideoPixelFormat kDefaultPixelFormat =
+    media::PIXEL_FORMAT_I420;
+
+constexpr gfx::ColorSpace kDefaultColorSpace = gfx::ColorSpace::CreateREC709();
+
 // Creates a ClientFrameSinkVideoCapturer via HostFrameSinkManager.
 std::unique_ptr<viz::ClientFrameSinkVideoCapturer> CreateCapturer() {
   return GetHostFrameSinkManager()->CreateVideoCapturer();
@@ -45,7 +50,9 @@ DevToolsVideoConsumer::DevToolsVideoConsumer(OnFrameCapturedCallback callback)
     : callback_(std::move(callback)),
       min_capture_period_(kDefaultMinCapturePeriod),
       min_frame_size_(kDefaultMinFrameSize),
-      max_frame_size_(kDefaultMaxFrameSize) {}
+      max_frame_size_(kDefaultMaxFrameSize),
+      pixel_format_(kDefaultPixelFormat),
+      color_space_(kDefaultColorSpace) {}
 
 DevToolsVideoConsumer::~DevToolsVideoConsumer() = default;
 
@@ -102,6 +109,15 @@ void DevToolsVideoConsumer::SetMinAndMaxFrameSize(gfx::Size min_frame_size,
   }
 }
 
+void DevToolsVideoConsumer::SetFormat(media::VideoPixelFormat format,
+                                      gfx::ColorSpace color_space) {
+  pixel_format_ = format;
+  color_space_ = color_space;
+  if (capturer_) {
+    capturer_->SetFormat(pixel_format_, color_space_);
+  }
+}
+
 void DevToolsVideoConsumer::InnerStartCapture(
     std::unique_ptr<viz::ClientFrameSinkVideoCapturer> capturer) {
   capturer_ = std::move(capturer);
@@ -111,6 +127,7 @@ void DevToolsVideoConsumer::InnerStartCapture(
   capturer_->SetMinSizeChangePeriod(kDefaultMinPeriod);
   capturer_->SetResolutionConstraints(min_frame_size_, max_frame_size_,
                                       kDefaultUseFixedAspectRatio);
+  capturer_->SetFormat(pixel_format_, color_space_);
   if (frame_sink_id_.is_valid())
     capturer_->ChangeTarget(frame_sink_id_);
 
