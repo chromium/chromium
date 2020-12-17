@@ -33,6 +33,11 @@ Polymer({
     accountEmail: String,
   },
 
+  /** @return {boolean} Whether the user confirmed the dialog. */
+  wasConfirmed() {
+    return this.$.dialog.getNative().returnValue === 'success';
+  },
+
   /** @override */
   attached() {
     chrome.metricsPrivate.recordEnumerationValue(
@@ -60,6 +65,6 @@ Polymer({
 
   /** @private */
   onCancelButtonClick_() {
-    this.$.dialog.close();
+    this.$.dialog.cancel();
   },
 });

@@ -18,6 +18,7 @@ import './avatar_icon.js';
 import './passwords_shared_css.js';
 import './password_list_item.js';
 import './password_move_multiple_passwords_to_account_dialog.js';
+import 'chrome://resources/cr_elements/cr_toast/cr_toast.m.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 
@@ -366,6 +367,10 @@ Polymer({
 
   /** @private */
   onMoveMultiplePasswordsDialogClose_() {
+    if ((this.$$('password-move-multiple-passwords-to-account-dialog'))
+            .wasConfirmed()) {
+      this.$.toast.show();
+    }
     this.showMoveMultiplePasswordsDialog_ = false;
   },
 
