@@ -240,11 +240,11 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "weblayer_instrumentation_test_versions_apk_Client Tests For 88.0.4324.43"
+            "weblayer_instrumentation_test_versions_apk_Client Tests For 88.0.4324.52"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "weblayer_instrumentation_test_versions_apk_Client Tests For 88.0.4324.43",
+        "name": "weblayer_instrumentation_test_versions_apk_Client Tests For 88.0.4324.52",
         "resultdb": {
           "enable": true
         },
@@ -254,7 +254,7 @@
             {
               "cipd_package": "chromium/testing/weblayer-x86",
               "location": "weblayer_instrumentation_test_M88",
-              "revision": "version:88.0.4324.43"
+              "revision": "version:88.0.4324.52"
             },
             {
               "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
@@ -317,11 +317,11 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "weblayer_instrumentation_test_versions_apk_Implementation Tests For 88.0.4324.43"
+            "weblayer_instrumentation_test_versions_apk_Implementation Tests For 88.0.4324.52"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "weblayer_instrumentation_test_versions_apk_Implementation Tests For 88.0.4324.43",
+        "name": "weblayer_instrumentation_test_versions_apk_Implementation Tests For 88.0.4324.52",
         "resultdb": {
           "enable": true
         },
@@ -331,7 +331,7 @@
             {
               "cipd_package": "chromium/testing/weblayer-x86",
               "location": "weblayer_instrumentation_test_M88",
-              "revision": "version:88.0.4324.43"
+              "revision": "version:88.0.4324.52"
             },
             {
               "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
@@ -769,11 +769,11 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "weblayer_instrumentation_test_versions_apk_Client Tests For 88.0.4324.43"
+            "weblayer_instrumentation_test_versions_apk_Client Tests For 88.0.4324.52"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "weblayer_instrumentation_test_versions_apk_Client Tests For 88.0.4324.43",
+        "name": "weblayer_instrumentation_test_versions_apk_Client Tests For 88.0.4324.52",
         "resultdb": {
           "enable": true
         },
@@ -783,7 +783,7 @@
             {
               "cipd_package": "chromium/testing/weblayer-x86",
               "location": "weblayer_instrumentation_test_M88",
-              "revision": "version:88.0.4324.43"
+              "revision": "version:88.0.4324.52"
             },
             {
               "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
@@ -846,11 +846,11 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "weblayer_instrumentation_test_versions_apk_Implementation Tests For 88.0.4324.43"
+            "weblayer_instrumentation_test_versions_apk_Implementation Tests For 88.0.4324.52"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "weblayer_instrumentation_test_versions_apk_Implementation Tests For 88.0.4324.43",
+        "name": "weblayer_instrumentation_test_versions_apk_Implementation Tests For 88.0.4324.52",
         "resultdb": {
           "enable": true
         },
@@ -860,7 +860,7 @@
             {
               "cipd_package": "chromium/testing/weblayer-x86",
               "location": "weblayer_instrumentation_test_M88",
-              "revision": "version:88.0.4324.43"
+              "revision": "version:88.0.4324.52"
             },
             {
               "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
@@ -1298,11 +1298,11 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "weblayer_instrumentation_test_versions_apk_Client Tests For 88.0.4324.43"
+            "weblayer_instrumentation_test_versions_apk_Client Tests For 88.0.4324.52"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "weblayer_instrumentation_test_versions_apk_Client Tests For 88.0.4324.43",
+        "name": "weblayer_instrumentation_test_versions_apk_Client Tests For 88.0.4324.52",
         "resultdb": {
           "enable": true
         },
@@ -1312,7 +1312,7 @@
             {
               "cipd_package": "chromium/testing/weblayer-x86",
               "location": "weblayer_instrumentation_test_M88",
-              "revision": "version:88.0.4324.43"
+              "revision": "version:88.0.4324.52"
             },
             {
               "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
@@ -1375,11 +1375,11 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "weblayer_instrumentation_test_versions_apk_Implementation Tests For 88.0.4324.43"
+            "weblayer_instrumentation_test_versions_apk_Implementation Tests For 88.0.4324.52"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "weblayer_instrumentation_test_versions_apk_Implementation Tests For 88.0.4324.43",
+        "name": "weblayer_instrumentation_test_versions_apk_Implementation Tests For 88.0.4324.52",
         "resultdb": {
           "enable": true
         },
@@ -1389,7 +1389,7 @@
             {
               "cipd_package": "chromium/testing/weblayer-x86",
               "location": "weblayer_instrumentation_test_M88",
-              "revision": "version:88.0.4324.43"
+              "revision": "version:88.0.4324.52"
             },
             {
               "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
@@ -1827,11 +1827,11 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "weblayer_instrumentation_test_versions_apk_Client Tests For 88.0.4324.43"
+            "weblayer_instrumentation_test_versions_apk_Client Tests For 88.0.4324.52"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "weblayer_instrumentation_test_versions_apk_Client Tests For 88.0.4324.43",
+        "name": "weblayer_instrumentation_test_versions_apk_Client Tests For 88.0.4324.52",
         "resultdb": {
           "enable": true
         },
@@ -1841,7 +1841,7 @@
             {
               "cipd_package": "chromium/testing/weblayer-x86",
               "location": "weblayer_instrumentation_test_M88",
-              "revision": "version:88.0.4324.43"
+              "revision": "version:88.0.4324.52"
             },
             {
               "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
@@ -1904,11 +1904,11 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "weblayer_instrumentation_test_versions_apk_Implementation Tests For 88.0.4324.43"
+            "weblayer_instrumentation_test_versions_apk_Implementation Tests For 88.0.4324.52"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "weblayer_instrumentation_test_versions_apk_Implementation Tests For 88.0.4324.43",
+        "name": "weblayer_instrumentation_test_versions_apk_Implementation Tests For 88.0.4324.52",
         "resultdb": {
           "enable": true
         },
@@ -1918,7 +1918,7 @@
             {
               "cipd_package": "chromium/testing/weblayer-x86",
               "location": "weblayer_instrumentation_test_M88",
-              "revision": "version:88.0.4324.43"
+              "revision": "version:88.0.4324.52"
             },
             {
               "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
