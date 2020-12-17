@@ -115,6 +115,10 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
+  if (!base::FeatureList::IsEnabled(kSettingsRefresh)) {
+    self.styler.tableViewBackgroundColor =
+        UIColor.cr_systemGroupedBackgroundColor;
+  }
   UIBarButtonItem* flexibleSpace = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
                            target:nil
