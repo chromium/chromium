@@ -795,6 +795,16 @@ class SelectToSpeak {
    * @private
    */
   runContentScripts_() {
+    const scripts = chrome.runtime.getManifest()['content_scripts'][0]['js'];
+
+    // We only ever expect one content script.
+    if (scripts.length !== 1) {
+      throw new Error(
+          'Only expected one script; got ' + JSON.stringify(scripts));
+    }
+
+    const script = scripts[0];
+
     chrome.tabs.query(
         {
           url: [
@@ -804,8 +814,7 @@ class SelectToSpeak {
         },
         (tabs) => {
           tabs.forEach((tab) => {
-            chrome.tabs.executeScript(
-                tab.id, {file: 'select_to_speak_gdocs_script.js'});
+            chrome.tabs.executeScript(tab.id, {file: script});
           });
         });
   }
