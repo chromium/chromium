@@ -2039,6 +2039,9 @@ class SitePerProcessEmulatedTouchBrowserTest
     // depending on |test_type|.
     root_gesture_event_observer.Wait();
 
+    // Wait for all remaining input events to be processed by root_rwhv
+    RunUntilInputProcessed(root_rwhv->GetRenderWidgetHost());
+
     // Shut down.
     touch_emulator->Disable();
   }
@@ -2054,9 +2057,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessEmulatedTouchBrowserTest,
   RunTest(ScrollBubbling);
 }
 
-// TODO(crbug.com/1156243): Disabled as flaky because of crrev.com/c/2562796
 IN_PROC_BROWSER_TEST_F(SitePerProcessEmulatedTouchBrowserTest,
-                       DISABLED_EmulatedTouchPinchGoesToMainFrame) {
+                       EmulatedTouchPinchGoesToMainFrame) {
   RunTest(PinchGoesToMainFrame);
 }
 
