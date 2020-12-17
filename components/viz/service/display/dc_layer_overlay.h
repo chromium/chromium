@@ -161,7 +161,6 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor
 
   bool has_overlay_support_;
   const bool use_overlay_damage_list_;
-  // TODO(magchen@): We are going to support more than one YUV overlay.
   const int allowed_yuv_overlay_count_;
   int processed_yuv_overlay_count_ = 0;
 

@@ -132,6 +132,9 @@ SkiaOutputDeviceGL::SkiaOutputDeviceGL(
   if (feature_info->workarounds().force_rgb10a2_overlay_support_flags) {
     capabilities_.forces_rgb10a2_overlay_support_flags = true;
   }
+  if (feature_info->workarounds().supports_two_yuv_hardware_overlays) {
+    capabilities_.supports_two_yuv_hardware_overlays = true;
+  }
   capabilities_.max_frames_pending = gl_surface_->GetBufferCount() - 1;
   capabilities_.supports_commit_overlay_planes =
       gl_surface_->SupportsCommitOverlayPlanes();

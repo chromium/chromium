@@ -660,22 +660,20 @@ void DCLayerOverlayProcessor::Process(
 
     candidate_index_list.push_back(index);
   }
+
+  // We might not save power if there are more than one videos and only part of
+  // them are promoted to overlay. Skip overlays for this frame unless there are
+  // protected video or texture overlays.
+  bool reject_overlays = false;
+  if (yuv_quads_in_quad_list != processed_yuv_overlay_count_ &&
+      !has_protected_video_or_texture_overlays) {
+    reject_overlays = true;
+  }
+
   // A YUV quad might be rejected later due to not allowed as an underlay.
   // Recount the YUV overlays when they are added to the overlay list
   // successfully.
   processed_yuv_overlay_count_ = 0;
-
-  // TODO(magchen@): Revisit this code if allowed_yuv_overlay_count_ > 1.
-  // We might not save power if there are more than one videos and only one is
-  // promoted to overlay. Skip overlays for this frame unless there are
-  // protected video or texture overlays.
-  if (candidate_index_list.size() > 0 &&
-      yuv_quads_in_quad_list > allowed_yuv_overlay_count_ &&
-      !has_protected_video_or_texture_overlays) {
-    candidate_index_list.clear();
-    // In this case, there is only one candidate in the list.
-    RecordDCLayerResult(DC_LAYER_FAILED_TOO_MANY_OVERLAYS, prev_it);
-  }
 
   // Copy the overlay quad info to dc_layer_overlays and replace/delete overlay
   // quads in quad_list.
@@ -684,6 +682,10 @@ void DCLayerOverlayProcessor::Process(
     prev_it = it;
     prev_index = index;
 
+    if (reject_overlays) {
+      RecordDCLayerResult(DC_LAYER_FAILED_TOO_MANY_OVERLAYS, it);
+      continue;
+    }
     gfx::Rect quad_rectangle_in_target_space =
         gfx::ToEnclosingRect(ClippedQuadRectangle(*it));
 

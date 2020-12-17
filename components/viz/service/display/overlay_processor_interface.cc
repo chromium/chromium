@@ -98,8 +98,12 @@ OverlayProcessorInterface::CreateOverlayProcessor(
     return std::make_unique<OverlayProcessorStub>();
 
   return std::make_unique<OverlayProcessorWin>(
-      output_surface, std::make_unique<DCLayerOverlayProcessor>(
-                          debug_settings, /*allowed_yuv_overlay_count=*/1));
+      output_surface,
+      std::make_unique<DCLayerOverlayProcessor>(
+          debug_settings, /*allowed_yuv_overlay_count=*/capabilities
+                                  .supports_two_yuv_hardware_overlays
+                              ? 2
+                              : 1));
 #elif defined(USE_OZONE)
   if (!features::IsUsingOzonePlatform())
     return std::make_unique<OverlayProcessorStub>();

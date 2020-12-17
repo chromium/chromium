@@ -3644,6 +3644,21 @@
       "features": [
         "disable_accelerated_vp9_profile2_decode"
       ]
+    },
+    {
+      "id": 362,
+      "description": "Promote 2 videos to hardware overlays on Windows Intel platforms",
+      "cr_bugs": [1105618],
+      "os": {
+        "type": "win"
+      },
+      "intel_gpu_series": [
+        "icelake",
+        "tigerlake"
+      ],
+      "features": [
+        "supports_two_yuv_hardware_overlays"
+      ]
     }
   ]
 }
