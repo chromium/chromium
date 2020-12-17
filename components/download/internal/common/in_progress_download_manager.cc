@@ -476,7 +476,7 @@ void InProgressDownloadManager::StartDownload(
     if (delegate_ && delegate_->InterceptDownload(*info)) {
       if (cancel_request_callback)
         std::move(cancel_request_callback).Run(false);
-      GetDownloadTaskRunner()->DeleteSoon(FROM_HERE, stream.release());
+      GetIOTaskRunner()->DeleteSoon(FROM_HERE, std::move(stream));
       return;
     }
   }
@@ -534,7 +534,7 @@ void InProgressDownloadManager::StartDownloadWithItem(
       std::move(cancel_request_callback).Run(false);
     // The ByteStreamReader lives and dies on the download sequence.
     if (info->result == DOWNLOAD_INTERRUPT_REASON_NONE)
-      GetDownloadTaskRunner()->DeleteSoon(FROM_HERE, stream.release());
+      GetIOTaskRunner()->DeleteSoon(FROM_HERE, std::move(stream));
     return;
   }
 
