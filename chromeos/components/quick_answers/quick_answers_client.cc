@@ -83,11 +83,6 @@ void QuickAnswersClient::OnAssistantContextEnabled(bool enabled) {
   NotifyEligibilityChanged();
 }
 
-void QuickAnswersClient::OnAssistantQuickAnswersEnabled(bool enabled) {
-  quick_answers_settings_enabled_ = enabled;
-  NotifyEligibilityChanged();
-}
-
 void QuickAnswersClient::OnLocaleChanged(const std::string& locale) {
   locale_supported_ = IsQuickAnswersAllowedForLocale(
       locale, icu::Locale::getDefault().getName());

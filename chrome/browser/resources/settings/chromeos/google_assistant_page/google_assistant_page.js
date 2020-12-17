@@ -94,12 +94,6 @@ Polymer({
     /** @private {DspHotwordState} */
     dspHotwordState_: Number,
 
-    /** @private */
-    quickAnswersAvailable_: {
-      type: Boolean,
-      value: false,
-    },
-
     /**
      * Used by DeepLinkingBehavior to focus this page's deep links.
      * @type {!Set<!chromeos.settings.mojom.Setting>}
@@ -109,7 +103,6 @@ Polymer({
       value: () => new Set([
         chromeos.settings.mojom.Setting.kAssistantOnOff,
         chromeos.settings.mojom.Setting.kAssistantRelatedInfo,
-        chromeos.settings.mojom.Setting.kAssistantQuickAnswers,
         chromeos.settings.mojom.Setting.kAssistantOkGoogle,
         chromeos.settings.mojom.Setting.kAssistantNotifications,
         chromeos.settings.mojom.Setting.kAssistantVoiceInput,
@@ -124,8 +117,7 @@ Polymer({
         'prefs.settings.voice_interaction.hotword.always_on.value, ' +
         'prefs.settings.voice_interaction.activity_control.consent_status' +
         '.value, ' +
-        'prefs.settings.assistant.disabled_by_policy.value, ' +
-        'prefs.settings.voice_interaction.context.enabled.value)',
+        'prefs.settings.assistant.disabled_by_policy.value)',
   ],
 
   /** @private {?settings.GoogleAssistantBrowserProxy} */
@@ -238,10 +230,6 @@ Polymer({
 
     this.hotwordEnforced_ = hotwordEnabled.enforcement ===
         chrome.settingsPrivate.Enforcement.ENFORCED;
-
-    this.quickAnswersAvailable_ =
-        loadTimeData.getBoolean('quickAnswersAvailable') &&
-        !!this.getPref('settings.voice_interaction.context.enabled').value;
   },
 
   /** @private */

@@ -37,7 +37,6 @@ class ASH_PUBLIC_EXPORT AssistantStateObserver : public base::CheckedObserver {
   virtual void OnAssistantOnboardingModeChanged(
       chromeos::assistant::prefs::AssistantOnboardingMode onboarding_mode) {}
   virtual void OnAssistantStateDestroyed() {}
-  virtual void OnAssistantQuickAnswersEnabled(bool quick_answers_enabled) {}
   virtual void OnAssistantStatusChanged(
       chromeos::assistant::AssistantStatus status) {}
   virtual void OnAssistantFeatureAllowedChanged(
@@ -131,7 +130,6 @@ class ASH_PUBLIC_EXPORT AssistantStateBase {
   void UpdateLaunchWithMicOpen();
   void UpdateNotificationEnabled();
   void UpdateOnboardingMode();
-  void UpdateQuickAnswersEnabled();
 
   // Called when new values of the listened states are received.
   void UpdateAssistantStatus(chromeos::assistant::AssistantStatus status);
@@ -185,9 +183,6 @@ class ASH_PUBLIC_EXPORT AssistantStateBase {
   // Whether locked full screen state is enabled. nullopt if the data is not
   // available yet.
   base::Optional<bool> locked_full_screen_enabled_;
-
-  // Whether quick answers is enabled. nullopt if the data is not available yet.
-  base::Optional<bool> quick_answers_enabled_;
 
   // Observes user profile prefs for the Assistant.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;

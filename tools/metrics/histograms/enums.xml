@@ -55411,7 +55411,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="600" label="Preferred Search Engine"/>
   <int value="601" label="Assistant: On/Off"/>
   <int value="602" label="Assistant: Related Info"/>
-  <int value="603" label="Assistant: Quick Answers"/>
+  <int value="603" label="Assistant: Quick Answers (Deprecated)"/>
   <int value="604" label="Assistant: Ok Google"/>
   <int value="605" label="Assistant: Notifications"/>
   <int value="606" label="Assistant: Voice Input"/>

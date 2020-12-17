@@ -93,45 +93,4 @@ IN_PROC_BROWSER_TEST_F(AssistantPolicyTest, AssistantHotwordEnabled) {
       prefs->GetBoolean(chromeos::assistant::prefs::kAssistantHotwordEnabled));
 }
 
-IN_PROC_BROWSER_TEST_F(AssistantPolicyTest, AssistantQuickAnswersEnabled) {
-  PrefService* prefs = browser()->profile()->GetPrefs();
-  EXPECT_FALSE(prefs->IsManagedPreference(
-      chromeos::assistant::prefs::kAssistantQuickAnswersEnabled));
-  EXPECT_TRUE(prefs->GetBoolean(
-      chromeos::assistant::prefs::kAssistantQuickAnswersEnabled));
-  prefs->SetBoolean(chromeos::assistant::prefs::kAssistantQuickAnswersEnabled,
-                    false);
-  EXPECT_FALSE(prefs->GetBoolean(
-      chromeos::assistant::prefs::kAssistantQuickAnswersEnabled));
-
-  // Verifies that the Quick Answers setting can be forced to always disabled.
-  PolicyMap policies;
-  policies.Set(key::kVoiceInteractionQuickAnswersEnabled,
-               POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-               base::Value(false), nullptr);
-  UpdateProviderPolicy(policies);
-  EXPECT_TRUE(prefs->IsManagedPreference(
-      chromeos::assistant::prefs::kAssistantQuickAnswersEnabled));
-  EXPECT_FALSE(prefs->GetBoolean(
-      chromeos::assistant::prefs::kAssistantQuickAnswersEnabled));
-  prefs->SetBoolean(chromeos::assistant::prefs::kAssistantQuickAnswersEnabled,
-                    true);
-  EXPECT_FALSE(prefs->GetBoolean(
-      chromeos::assistant::prefs::kAssistantQuickAnswersEnabled));
-
-  // Verifies that the Quick Answers setting can be forced to always enabled.
-  policies.Set(key::kVoiceInteractionQuickAnswersEnabled,
-               POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-               base::Value(true), nullptr);
-  UpdateProviderPolicy(policies);
-  EXPECT_TRUE(prefs->IsManagedPreference(
-      chromeos::assistant::prefs::kAssistantQuickAnswersEnabled));
-  EXPECT_TRUE(prefs->GetBoolean(
-      chromeos::assistant::prefs::kAssistantQuickAnswersEnabled));
-  prefs->SetBoolean(chromeos::assistant::prefs::kAssistantQuickAnswersEnabled,
-                    false);
-  EXPECT_TRUE(prefs->GetBoolean(
-      chromeos::assistant::prefs::kAssistantQuickAnswersEnabled));
-}
-
 }  // namespace policy

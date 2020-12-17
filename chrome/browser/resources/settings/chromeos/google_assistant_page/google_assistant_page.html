@@ -33,14 +33,6 @@
       cr-policy-pref-indicator {
         margin-inline-end: var(--cr-controlled-by-spacing);
       }
-
-      #quick-answers-container {
-        padding-inline-end: 0;
-      }
-
-      #quick-answers-container settings-toggle-button {
-        padding-inline-start: 0;
-      }
     </style>
     <settings-toggle-button id="google-assistant-enable"
         class="primary-toggle"
@@ -59,18 +51,6 @@
           sub-label="$i18n{googleAssistantEnableContextDescription}"
           deep-link-focus-id$="[[Setting.kAssistantRelatedInfo]]">
       </settings-toggle-button>
-      <template is="dom-if" if="[[quickAnswersAvailable_]]">
-        <div class="settings-box continuation embedded"
-             id="quick-answers-container">
-          <settings-toggle-button class="start"
-              id="google-assistant-quick-answers-enable"
-              pref="{{prefs.settings.voice_interaction.quick_answers.enabled}}"
-              label="$i18n{googleAssistantEnableQuickAnswers}"
-              sub-label="$i18n{googleAssistantEnableQuickAnswersDescription}"
-              deep-link-focus-id$="[[Setting.kAssistantQuickAnswers]]">
-          </settings-toggle-button>
-        </div>
-      </template>
       <template is="dom-if" if="[[hotwordDspAvailable_]]" restamp>
         <settings-toggle-button id="google-assistant-hotword-enable"
             class="hr"

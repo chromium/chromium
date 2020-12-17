@@ -117,10 +117,6 @@ void AssistantStateBase::RegisterPrefChanges(PrefService* pref_service) {
       chromeos::assistant::prefs::kAssistantOnboardingMode,
       base::BindRepeating(&AssistantStateBase::UpdateOnboardingMode,
                           base::Unretained(this)));
-  pref_change_registrar_->Add(
-      chromeos::assistant::prefs::kAssistantQuickAnswersEnabled,
-      base::BindRepeating(&AssistantStateBase::UpdateQuickAnswersEnabled,
-                          base::Unretained(this)));
 
   UpdateConsentStatus();
   UpdateContextEnabled();
@@ -130,7 +126,6 @@ void AssistantStateBase::RegisterPrefChanges(PrefService* pref_service) {
   UpdateLaunchWithMicOpen();
   UpdateNotificationEnabled();
   UpdateOnboardingMode();
-  UpdateQuickAnswersEnabled();
 }
 
 bool AssistantStateBase::IsScreenContextAllowed() const {
@@ -157,8 +152,6 @@ void AssistantStateBase::InitializeObserver(AssistantStateObserver* observer) {
     observer->OnAssistantNotificationEnabled(notification_enabled_.value());
   if (onboarding_mode_.has_value())
     observer->OnAssistantOnboardingModeChanged(onboarding_mode_.value());
-  if (quick_answers_enabled_.has_value())
-    observer->OnAssistantQuickAnswersEnabled(quick_answers_enabled_.value());
 
   observer->OnAssistantStatusChanged(assistant_status_);
   if (allowed_state_.has_value())
@@ -299,18 +292,6 @@ void AssistantStateBase::UpdateLockedFullScreenState(bool enabled) {
     observer.OnLockedFullScreenStateChanged(
         locked_full_screen_enabled_.value());
   }
-}
-
-void AssistantStateBase::UpdateQuickAnswersEnabled() {
-  auto quick_answers_enabled = pref_change_registrar_->prefs()->GetBoolean(
-      chromeos::assistant::prefs::kAssistantQuickAnswersEnabled);
-  if (quick_answers_enabled_.has_value() &&
-      quick_answers_enabled_.value() == quick_answers_enabled) {
-    return;
-  }
-  quick_answers_enabled_ = quick_answers_enabled;
-  for (auto& observer : observers_)
-    observer.OnAssistantQuickAnswersEnabled(quick_answers_enabled_.value());
 }
 
 }  // namespace ash

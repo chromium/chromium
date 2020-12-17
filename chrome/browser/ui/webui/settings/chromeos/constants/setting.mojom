@@ -142,7 +142,8 @@ enum Setting {
   kPreferredSearchEngine = 600,
   kAssistantOnOff = 601,
   kAssistantRelatedInfo = 602,
-  kAssistantQuickAnswers = 603,
+  // Note: Value 603 was for deprecated kAssistantQuickAnswers.
+  // Do not reuse.
   kAssistantOkGoogle = 604,
   kAssistantNotifications = 605,
   kAssistantVoiceInput = 606,

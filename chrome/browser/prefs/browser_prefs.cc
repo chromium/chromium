@@ -522,6 +522,10 @@ const char kAssistantPrivacyInfoDismissedInLauncher[] =
     "ash.launcher.assistant_privacy_info_dismissed";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Deprecated 12/2020
+const char kAssistantQuickAnswersEnabled[] =
+    "settings.voice_interaction.quick_answers.enabled";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -618,6 +622,8 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(kAssistantPrivacyInfoDismissedInLauncher,
                                 false);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  registry->RegisterBooleanPref(kAssistantQuickAnswersEnabled, true);
 }
 
 }  // namespace
@@ -1270,6 +1276,9 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 
   // Added 12/2020
   profile_prefs->ClearPref(prefs::kWebAppsUserDisplayModeCleanedUp);
+
+  // Added 12/2020
+  profile_prefs->ClearPref(kAssistantQuickAnswersEnabled);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

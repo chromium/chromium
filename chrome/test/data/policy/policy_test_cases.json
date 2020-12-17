@@ -6884,19 +6884,7 @@
   },
 
   "VoiceInteractionQuickAnswersEnabled": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "VoiceInteractionQuickAnswersEnabled": true
-        },
-        "prefs": {
-          "settings.voice_interaction.quick_answers.enabled": {
-            "value": true
-          }
-        }
-      }
-    ]
+    "note": "This policy is deprecated."
   },
 
   "DeviceRebootOnUserSignout": {

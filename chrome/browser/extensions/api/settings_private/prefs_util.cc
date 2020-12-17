@@ -567,8 +567,6 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[chromeos::assistant::prefs::kAssistantNotificationEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
-  (*s_allowlist)[chromeos::assistant::prefs::kAssistantQuickAnswersEnabled] =
-      settings_api::PrefType::PREF_TYPE_BOOLEAN;
 
   // Misc.
   (*s_allowlist)[::prefs::kUse24HourClock] =

@@ -65,8 +65,6 @@ COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
 extern const char kAssistantNotificationEnabled[];
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
 extern const char kAssistantOnboardingMode[];
-COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
-extern const char kAssistantQuickAnswersEnabled[];
 
 // Registers Assistant specific profile preferences for browser prefs.
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
