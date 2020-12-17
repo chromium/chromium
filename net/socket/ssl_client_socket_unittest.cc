@@ -1003,6 +1003,17 @@ class SSLClientSocketVersionTest
     : public SSLClientSocketTest,
       public ::testing::WithParamInterface<uint16_t> {
  protected:
+  SSLClientSocketVersionTest() {
+    // If the test is using legacy TLS versions, explicitly disable warnings
+    // (e.g., to cover cases like post-interstitial or when legacy TLS is
+    // explicitly allowed via configuration).
+    if (version() < SSL_PROTOCOL_VERSION_TLS1_2) {
+      SSLContextConfig config;
+      config.version_min_warn = SSL_PROTOCOL_VERSION_TLS1;
+      ssl_config_service_->UpdateSSLConfigAndNotify(config);
+    }
+  }
+
   uint16_t version() const { return GetParam(); }
 
   SSLServerConfig GetServerConfig() {
@@ -1025,6 +1036,14 @@ class SSLClientSocketReadTest
           std::make_unique<ClientSocketFactoryWithoutReadIfReady>(
               socket_factory_);
       socket_factory_ = wrapped_socket_factory_.get();
+    }
+    // If the test is using legacy TLS versions, explicitly disable warnings
+    // (e.g., to cover cases like post-interstitial or when legacy TLS is
+    // explicitly allowed via configuration).
+    if (version() < SSL_PROTOCOL_VERSION_TLS1_2) {
+      SSLContextConfig config;
+      config.version_min_warn = SSL_PROTOCOL_VERSION_TLS1;
+      ssl_config_service_->UpdateSSLConfigAndNotify(config);
     }
   }
 
@@ -5482,6 +5501,13 @@ TEST_P(TLS13DowngradeTest, DowngradeEnforced) {
 
   SSLContextConfig config;
   config.version_max = SSL_PROTOCOL_VERSION_TLS1_3;
+  // If the test is using legacy TLS versions, explicitly disable warnings
+  // (e.g., to cover cases like post-interstitial or when legacy TLS is
+  // explicitly allowed via configuration).
+  if (tls_max_version() <
+      SpawnedTestServer::SSLOptions::TLS_MAX_VERSION_TLS1_2) {
+    config.version_min_warn = SSL_PROTOCOL_VERSION_TLS1;
+  }
   ssl_config_service_->UpdateSSLConfigAndNotify(config);
 
   CertVerifyResult verify_result;
@@ -5554,6 +5580,11 @@ TEST_P(SSLHandshakeDetailsTest, Metrics) {
   SSLContextConfig client_context_config;
   client_context_config.version_min = GetParam().version;
   client_context_config.version_max = GetParam().version;
+  // If the test is using legacy TLS versions, explicitly disable warnings
+  // (e.g., to cover cases like post-interstitial or when legacy TLS is
+  // explicitly allowed via configuration).
+  if (GetParam().version < SSL_PROTOCOL_VERSION_TLS1_2)
+    client_context_config.version_min_warn = SSL_PROTOCOL_VERSION_TLS1;
   ssl_config_service_->UpdateSSLConfigAndNotify(client_context_config);
 
   SSLConfig client_config;
@@ -5866,17 +5897,11 @@ TEST_F(SSLClientSocketZeroRTTTest, DISABLED_EarlyDataReasonReadServerHello) {
   histograms.ExpectUniqueSample(kReasonHistogram, ssl_early_data_accepted, 1);
 }
 
-TEST_F(SSLClientSocketTest, VersionOverride) {
-  // Enable all test features in the server.
+TEST_F(SSLClientSocketTest, VersionMaxOverride) {
   SSLServerConfig server_config;
-  server_config.version_max = SSL_PROTOCOL_VERSION_TLS1_2;
+  server_config.version_max = SSL_PROTOCOL_VERSION_TLS1_3;
   ASSERT_TRUE(
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
-
-  SSLContextConfig context_config;
-  context_config.version_min = SSL_PROTOCOL_VERSION_TLS1_1;
-  context_config.version_max = SSL_PROTOCOL_VERSION_TLS1_1;
-  ssl_config_service_->UpdateSSLConfigAndNotify(context_config);
 
   // Connecting normally uses the global configuration.
   SSLConfig config;
@@ -5885,13 +5910,30 @@ TEST_F(SSLClientSocketTest, VersionOverride) {
   EXPECT_THAT(rv, IsOk());
   SSLInfo info;
   ASSERT_TRUE(sock_->GetSSLInfo(&info));
-  EXPECT_EQ(SSL_CONNECTION_VERSION_TLS1_1,
+  EXPECT_EQ(SSL_CONNECTION_VERSION_TLS1_3,
             SSLConnectionStatusToVersion(info.connection_status));
 
   // Individual sockets may override the maximum version.
   config.version_max_override = SSL_PROTOCOL_VERSION_TLS1_2;
   ASSERT_TRUE(CreateAndConnectSSLClientSocket(config, &rv));
   EXPECT_THAT(rv, IsOk());
+  ASSERT_TRUE(sock_->GetSSLInfo(&info));
+  EXPECT_EQ(SSL_CONNECTION_VERSION_TLS1_2,
+            SSLConnectionStatusToVersion(info.connection_status));
+}
+
+TEST_F(SSLClientSocketTest, VersionMinOverride) {
+  SSLServerConfig server_config;
+  server_config.version_max = SSL_PROTOCOL_VERSION_TLS1_2;
+  ASSERT_TRUE(
+      StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
+
+  // Connecting normally uses the global configuration.
+  SSLConfig config;
+  int rv;
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(config, &rv));
+  EXPECT_THAT(rv, IsOk());
+  SSLInfo info;
   ASSERT_TRUE(sock_->GetSSLInfo(&info));
   EXPECT_EQ(SSL_CONNECTION_VERSION_TLS1_2,
             SSLConnectionStatusToVersion(info.connection_status));
