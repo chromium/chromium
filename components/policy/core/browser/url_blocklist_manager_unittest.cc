@@ -68,8 +68,8 @@ class URLBlocklistManagerTest : public testing::Test {
   URLBlocklistManagerTest() = default;
 
   void SetUp() override {
-    pref_service_.registry()->RegisterListPref(policy_prefs::kUrlBlacklist);
-    pref_service_.registry()->RegisterListPref(policy_prefs::kUrlWhitelist);
+    pref_service_.registry()->RegisterListPref(policy_prefs::kUrlBlocklist);
+    pref_service_.registry()->RegisterListPref(policy_prefs::kUrlAllowlist);
     blocklist_manager_ =
         std::make_unique<TestingURLBlocklistManager>(&pref_service_);
     task_environment_.RunUntilIdle();
@@ -124,7 +124,7 @@ policy::URLBlocklist::URLBlocklistState GetMatch(const std::string& pattern,
 TEST_F(URLBlocklistManagerTest, LoadBlocklistOnCreate) {
   auto list = std::make_unique<base::ListValue>();
   list->AppendString("example.com");
-  pref_service_.SetManagedPref(policy_prefs::kUrlBlacklist, std::move(list));
+  pref_service_.SetManagedPref(policy_prefs::kUrlBlocklist, std::move(list));
   auto manager = std::make_unique<URLBlocklistManager>(&pref_service_);
   task_environment_.RunUntilIdle();
   EXPECT_EQ(URLBlocklist::URL_IN_BLOCKLIST,
@@ -134,7 +134,7 @@ TEST_F(URLBlocklistManagerTest, LoadBlocklistOnCreate) {
 TEST_F(URLBlocklistManagerTest, LoadAllowlistOnCreate) {
   auto list = std::make_unique<base::ListValue>();
   list->AppendString("example.com");
-  pref_service_.SetManagedPref(policy_prefs::kUrlWhitelist, std::move(list));
+  pref_service_.SetManagedPref(policy_prefs::kUrlAllowlist, std::move(list));
   auto manager = std::make_unique<URLBlocklistManager>(&pref_service_);
   task_environment_.RunUntilIdle();
   EXPECT_EQ(URLBlocklist::URL_IN_ALLOWLIST,
@@ -146,9 +146,9 @@ TEST_F(URLBlocklistManagerTest, SingleUpdateForTwoPrefChanges) {
   blocklist->AppendString("*.google.com");
   auto allowlist = std::make_unique<base::ListValue>();
   allowlist->AppendString("mail.google.com");
-  pref_service_.SetManagedPref(policy_prefs::kUrlBlacklist,
+  pref_service_.SetManagedPref(policy_prefs::kUrlBlocklist,
                                std::move(blocklist));
-  pref_service_.SetManagedPref(policy_prefs::kUrlBlacklist,
+  pref_service_.SetManagedPref(policy_prefs::kUrlBlocklist,
                                std::move(allowlist));
   task_environment_.RunUntilIdle();
 

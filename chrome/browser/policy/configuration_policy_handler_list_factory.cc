@@ -1463,7 +1463,7 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   handlers->AddHandler(
       std::make_unique<URLBlocklistPolicyHandler>(key::kURLBlocklist));
   handlers->AddHandler(std::make_unique<SimplePolicyHandler>(
-      key::kURLAllowlist, policy_prefs::kUrlWhitelist,
+      key::kURLAllowlist, policy_prefs::kUrlAllowlist,
       base::Value::Type::LIST));
   handlers->AddHandler(std::make_unique<SimpleSchemaValidatingPolicyHandler>(
       key::kSafeBrowsingExtendedReportingEnabled,

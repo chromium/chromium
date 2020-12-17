@@ -205,16 +205,16 @@ URLBlocklistManager::URLBlocklistManager(PrefService* pref_service)
   pref_change_registrar_.Init(pref_service_);
   base::RepeatingClosure callback = base::BindRepeating(
       &URLBlocklistManager::ScheduleUpdate, base::Unretained(this));
-  pref_change_registrar_.Add(policy_prefs::kUrlBlacklist, callback);
-  pref_change_registrar_.Add(policy_prefs::kUrlWhitelist, callback);
+  pref_change_registrar_.Add(policy_prefs::kUrlBlocklist, callback);
+  pref_change_registrar_.Add(policy_prefs::kUrlAllowlist, callback);
 
   // Start enforcing the policies without a delay when they are present at
   // startup.
-  if (pref_service_->HasPrefPath(policy_prefs::kUrlBlacklist) ||
-      pref_service_->HasPrefPath(policy_prefs::kUrlWhitelist)) {
+  if (pref_service_->HasPrefPath(policy_prefs::kUrlBlocklist) ||
+      pref_service_->HasPrefPath(policy_prefs::kUrlAllowlist)) {
     SetBlocklist(
-        BuildBlocklist(pref_service_->GetList(policy_prefs::kUrlBlacklist),
-                       pref_service_->GetList(policy_prefs::kUrlWhitelist)));
+        BuildBlocklist(pref_service_->GetList(policy_prefs::kUrlBlocklist),
+                       pref_service_->GetList(policy_prefs::kUrlAllowlist)));
   }
 }
 
@@ -244,9 +244,9 @@ void URLBlocklistManager::Update() {
       base::BindOnce(
           &BuildBlocklist,
           base::Owned(
-              pref_service_->GetList(policy_prefs::kUrlBlacklist)->DeepCopy()),
+              pref_service_->GetList(policy_prefs::kUrlBlocklist)->DeepCopy()),
           base::Owned(
-              pref_service_->GetList(policy_prefs::kUrlWhitelist)->DeepCopy())),
+              pref_service_->GetList(policy_prefs::kUrlAllowlist)->DeepCopy())),
       base::BindOnce(&URLBlocklistManager::SetBlocklist,
                      ui_weak_ptr_factory_.GetWeakPtr()));
 }
@@ -274,8 +274,8 @@ URLBlocklist::URLBlocklistState URLBlocklistManager::GetURLBlocklistState(
 // static
 void URLBlocklistManager::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterListPref(policy_prefs::kUrlBlacklist);
-  registry->RegisterListPref(policy_prefs::kUrlWhitelist);
+  registry->RegisterListPref(policy_prefs::kUrlBlocklist);
+  registry->RegisterListPref(policy_prefs::kUrlAllowlist);
   registry->RegisterIntegerPref(
       policy_prefs::kSafeSitesFilterBehavior,
       static_cast<int>(SafeSitesFilterBehavior::kSafeSitesFilterDisabled));

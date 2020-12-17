@@ -89,7 +89,7 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     prefs::kOfferTranslateEnabled,
     base::Value::Type::BOOLEAN },
   { policy::key::kURLAllowlist,
-    policy::policy_prefs::kUrlWhitelist,
+    policy::policy_prefs::kUrlAllowlist,
     base::Value::Type::LIST},
 };
 // clang-format on

@@ -424,7 +424,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
                        SaveLinkAsEntryIsDisabledForBlacklistedUrls) {
   base::Value value(base::Value::Type::LIST);
   value.Append(base::Value("google.com"));
-  browser()->profile()->GetPrefs()->Set(policy::policy_prefs::kUrlBlacklist,
+  browser()->profile()->GetPrefs()->Set(policy::policy_prefs::kUrlBlocklist,
                                         std::move(value));
   base::RunLoop().RunUntilIdle();
 

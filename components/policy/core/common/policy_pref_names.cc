@@ -24,10 +24,10 @@ const char kSystemFeaturesDisableList[] = "policy.system_features_disable_list";
 const char kSystemFeaturesDisableMode[] = "policy.system_features_disable_mode";
 
 // Blocks access to the listed host patterns.
-const char kUrlBlacklist[] = "policy.url_blacklist";
+const char kUrlBlocklist[] = "policy.url_blocklist";
 
 // Allows access to the listed host patterns, as exceptions to the blacklist.
-const char kUrlWhitelist[] = "policy.url_whitelist";
+const char kUrlAllowlist[] = "policy.url_allowlist";
 
 // Integer that specifies the policy refresh rate for user-policy in
 // milliseconds. Not all values are meaningful, so it is clamped to a sane range

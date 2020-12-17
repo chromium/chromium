@@ -204,7 +204,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "DisabledSchemes": ["file"] },
-        "prefs": { "policy.url_blacklist": {} }
+        "prefs": { "policy.url_blocklist": {} }
       }
     ]
   },
@@ -2979,7 +2979,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": {"URLBlacklist": ["google.com"]},
-        "prefs": { "policy.url_blacklist": {}}
+        "prefs": { "policy.url_blocklist": {}}
       }
     ]
   },
@@ -2989,7 +2989,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": {"URLBlocklist": ["google.com"]},
-        "prefs": { "policy.url_blacklist": {}}
+        "prefs": { "policy.url_blocklist": {}}
       }
     ]
   },
@@ -3000,7 +3000,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": {"URLWhitelist": ["google.com"]},
-        "prefs": { "policy.url_whitelist": {}}
+        "prefs": { "policy.url_allowlist": {}}
       }
     ]
   },
@@ -3010,7 +3010,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": {"URLAllowlist": ["google.com"]},
-        "prefs": { "policy.url_whitelist": {}}
+        "prefs": { "policy.url_allowlist": {}}
       }
     ]
   },

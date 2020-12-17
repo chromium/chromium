@@ -43,10 +43,10 @@ std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildHandlerList(
   // URL Filtering
   handlers->AddHandler(std::make_unique<policy::SimpleDeprecatingPolicyHandler>(
       std::make_unique<policy::SimplePolicyHandler>(
-          policy::key::kURLWhitelist, policy::policy_prefs::kUrlWhitelist,
+          policy::key::kURLWhitelist, policy::policy_prefs::kUrlAllowlist,
           base::Value::Type::LIST),
       std::make_unique<policy::SimplePolicyHandler>(
-          policy::key::kURLAllowlist, policy::policy_prefs::kUrlWhitelist,
+          policy::key::kURLAllowlist, policy::policy_prefs::kUrlAllowlist,
           base::Value::Type::LIST)));
   handlers->AddHandler(std::make_unique<policy::SimpleDeprecatingPolicyHandler>(
       std::make_unique<policy::URLBlocklistPolicyHandler>(

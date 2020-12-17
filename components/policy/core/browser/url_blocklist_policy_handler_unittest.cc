@@ -89,7 +89,7 @@ TEST_F(URLBlocklistPolicyHandlerTest,
 
 TEST_F(URLBlocklistPolicyHandlerTest, ApplyPolicySettings_NothingSpecified) {
   ApplyPolicies();
-  EXPECT_FALSE(prefs_.GetValue(policy_prefs::kUrlBlacklist, nullptr));
+  EXPECT_FALSE(prefs_.GetValue(policy_prefs::kUrlBlocklist, nullptr));
 }
 
 TEST_F(URLBlocklistPolicyHandlerTest,
@@ -97,7 +97,7 @@ TEST_F(URLBlocklistPolicyHandlerTest,
   // The policy expects a list. Give it a boolean.
   SetPolicy(key::kDisabledSchemes, base::Value(false));
   ApplyPolicies();
-  EXPECT_FALSE(prefs_.GetValue(policy_prefs::kUrlBlacklist, nullptr));
+  EXPECT_FALSE(prefs_.GetValue(policy_prefs::kUrlBlocklist, nullptr));
 }
 
 TEST_F(URLBlocklistPolicyHandlerTest,
@@ -105,7 +105,7 @@ TEST_F(URLBlocklistPolicyHandlerTest,
   // The policy expects a list. Give it a boolean.
   SetPolicy(key::kURLBlocklist, base::Value(false));
   ApplyPolicies();
-  EXPECT_FALSE(prefs_.GetValue(policy_prefs::kUrlBlacklist, nullptr));
+  EXPECT_FALSE(prefs_.GetValue(policy_prefs::kUrlBlocklist, nullptr));
 }
 
 TEST_F(URLBlocklistPolicyHandlerTest,
@@ -113,7 +113,7 @@ TEST_F(URLBlocklistPolicyHandlerTest,
   SetPolicy(key::kDisabledSchemes, base::Value(base::Value::Type::LIST));
   ApplyPolicies();
   base::Value* out;
-  EXPECT_TRUE(prefs_.GetValue(policy_prefs::kUrlBlacklist, &out));
+  EXPECT_TRUE(prefs_.GetValue(policy_prefs::kUrlBlocklist, &out));
   base::ListValue* out_list;
   EXPECT_TRUE(out->GetAsList(&out_list));
   EXPECT_EQ(0U, out_list->GetSize());
@@ -123,7 +123,7 @@ TEST_F(URLBlocklistPolicyHandlerTest, ApplyPolicySettings_URLBlocklistEmpty) {
   SetPolicy(key::kURLBlocklist, base::Value(base::Value::Type::LIST));
   ApplyPolicies();
   base::Value* out;
-  EXPECT_TRUE(prefs_.GetValue(policy_prefs::kUrlBlacklist, &out));
+  EXPECT_TRUE(prefs_.GetValue(policy_prefs::kUrlBlocklist, &out));
   base::ListValue* out_list;
   EXPECT_TRUE(out->GetAsList(&out_list));
   EXPECT_EQ(0U, out_list->GetSize());
@@ -139,7 +139,7 @@ TEST_F(URLBlocklistPolicyHandlerTest,
 
   // The element should be skipped.
   base::Value* out;
-  EXPECT_TRUE(prefs_.GetValue(policy_prefs::kUrlBlacklist, &out));
+  EXPECT_TRUE(prefs_.GetValue(policy_prefs::kUrlBlocklist, &out));
   base::ListValue* out_list;
   EXPECT_TRUE(out->GetAsList(&out_list));
   EXPECT_EQ(0U, out_list->GetSize());
@@ -155,7 +155,7 @@ TEST_F(URLBlocklistPolicyHandlerTest,
 
   // The element should be skipped.
   base::Value* out;
-  EXPECT_TRUE(prefs_.GetValue(policy_prefs::kUrlBlacklist, &out));
+  EXPECT_TRUE(prefs_.GetValue(policy_prefs::kUrlBlocklist, &out));
   base::ListValue* out_list;
   EXPECT_TRUE(out->GetAsList(&out_list));
   EXPECT_EQ(0U, out_list->GetSize());
@@ -169,7 +169,7 @@ TEST_F(URLBlocklistPolicyHandlerTest,
   ApplyPolicies();
 
   base::Value* out;
-  EXPECT_TRUE(prefs_.GetValue(policy_prefs::kUrlBlacklist, &out));
+  EXPECT_TRUE(prefs_.GetValue(policy_prefs::kUrlBlocklist, &out));
   base::ListValue* out_list;
   EXPECT_TRUE(out->GetAsList(&out_list));
   EXPECT_EQ(1U, out_list->GetSize());
@@ -187,7 +187,7 @@ TEST_F(URLBlocklistPolicyHandlerTest,
   ApplyPolicies();
 
   base::Value* out;
-  EXPECT_TRUE(prefs_.GetValue(policy_prefs::kUrlBlacklist, &out));
+  EXPECT_TRUE(prefs_.GetValue(policy_prefs::kUrlBlocklist, &out));
   base::ListValue* out_list;
   EXPECT_TRUE(out->GetAsList(&out_list));
   EXPECT_EQ(1U, out_list->GetSize());
@@ -208,7 +208,7 @@ TEST_F(URLBlocklistPolicyHandlerTest, ApplyPolicySettings_MergeSuccessful) {
   ApplyPolicies();
 
   base::Value* out;
-  EXPECT_TRUE(prefs_.GetValue(policy_prefs::kUrlBlacklist, &out));
+  EXPECT_TRUE(prefs_.GetValue(policy_prefs::kUrlBlocklist, &out));
   base::ListValue* out_list;
   EXPECT_TRUE(out->GetAsList(&out_list));
   EXPECT_EQ(2U, out_list->GetSize());

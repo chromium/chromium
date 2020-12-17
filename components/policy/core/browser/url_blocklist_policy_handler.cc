@@ -80,7 +80,7 @@ void URLBlocklistPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
   }
 
   if (disabled_schemes || url_blocklist) {
-    prefs->SetValue(policy_prefs::kUrlBlacklist,
+    prefs->SetValue(policy_prefs::kUrlBlocklist,
                     base::Value(std::move(merged_url_blocklist)));
   }
 }
