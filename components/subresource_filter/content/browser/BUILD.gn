@@ -14,6 +14,8 @@ static_library("browser") {
     "content_activation_list_utils.h",
     "content_subresource_filter_throttle_manager.cc",
     "content_subresource_filter_throttle_manager.h",
+    "devtools_interaction_tracker.cc",
+    "devtools_interaction_tracker.h",
     "navigation_console_logger.cc",
     "navigation_console_logger.h",
     "page_load_statistics.cc",

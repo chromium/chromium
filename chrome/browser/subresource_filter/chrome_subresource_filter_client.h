@@ -58,11 +58,6 @@ class ChromeSubresourceFilterClient
   GetSafeBrowsingDatabaseManager() override;
   void OnReloadRequested() override;
 
-  // Should be called by devtools in response to a protocol command to enable ad
-  // blocking in this WebContents. Should only persist while devtools is
-  // attached.
-  void ToggleForceActivationInCurrentWebContents(bool force_activation);
-
  private:
   void ShowUI(const GURL& url);
 
@@ -77,11 +72,6 @@ class ChromeSubresourceFilterClient
 
   std::unique_ptr<subresource_filter::ProfileInteractionManager>
       profile_interaction_manager_;
-
-  // Corresponds to a devtools command which triggers filtering on all page
-  // loads. We must be careful to ensure this boolean does not persist after the
-  // devtools window is closed, which should be handled by the devtools system.
-  bool activated_via_devtools_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeSubresourceFilterClient);
 };

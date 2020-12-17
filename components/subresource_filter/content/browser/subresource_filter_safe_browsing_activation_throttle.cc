@@ -15,6 +15,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "components/subresource_filter/content/browser/content_activation_list_utils.h"
+#include "components/subresource_filter/content/browser/devtools_interaction_tracker.h"
 #include "components/subresource_filter/content/browser/navigation_console_logger.h"
 #include "components/subresource_filter/content/browser/subresource_filter_client.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer_manager.h"
@@ -194,8 +195,17 @@ void SubresourceFilterSafeBrowsingActivationThrottle::NotifyResult() {
     activation_level = mojom::ActivationLevel::kDisabled;
   }
 
+  auto* devtools_interaction_tracker =
+      DevtoolsInteractionTracker::FromWebContents(
+          navigation_handle()->GetWebContents());
+
+  if (devtools_interaction_tracker &&
+      devtools_interaction_tracker->activated_via_devtools()) {
+    activation_level = mojom::ActivationLevel::kEnabled;
+    activation_decision = ActivationDecision::FORCED_ACTIVATION;
+  }
+
   // Let the embedder get the last word when it comes to activation level.
-  // TODO(csharrison): Move all ActivationDecision code to the embedder.
   activation_level = client_->OnPageActivationComputed(
       navigation_handle(), activation_level, &activation_decision);
 

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/devtools/protocol/page_handler.h"
 
-#include "chrome/browser/subresource_filter/chrome_subresource_filter_client.h"
+#include "components/subresource_filter/content/browser/devtools_interaction_tracker.h"
 #include "components/webapps/installable/installable_manager.h"
 #include "ui/gfx/image/image.h"
 
@@ -22,10 +22,15 @@ PageHandler::~PageHandler() {
 void PageHandler::ToggleAdBlocking(bool enabled) {
   if (!web_contents())
     return;
-  if (auto* client =
-          ChromeSubresourceFilterClient::FromWebContents(web_contents())) {
-    client->ToggleForceActivationInCurrentWebContents(enabled);
-  }
+
+  // Create the DevtoolsInteractionTracker lazily (note that this call is a
+  // no-op if the object was already created).
+  subresource_filter::DevtoolsInteractionTracker::CreateForWebContents(
+      web_contents());
+
+  subresource_filter::DevtoolsInteractionTracker::FromWebContents(
+      web_contents())
+      ->ToggleForceActivation(enabled);
 }
 
 protocol::Response PageHandler::Enable() {

@@ -22,6 +22,7 @@
 #include "components/safe_browsing/core/db/database_manager.h"
 #include "components/safe_browsing/core/db/test_database_manager.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
+#include "components/subresource_filter/content/browser/devtools_interaction_tracker.h"
 #include "components/subresource_filter/content/browser/fake_safe_browsing_database_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_client.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer_test_utils.h"
@@ -66,6 +67,7 @@ const char kSafeBrowsingCheckTime[] =
     "SubresourceFilter.SafeBrowsing.TotalCheckTime";
 const char kActivationListHistogram[] =
     "SubresourceFilter.PageLoad.ActivationList";
+const char kSubresourceFilterActionsHistogram[] = "SubresourceFilter.Actions2";
 
 class MockSubresourceFilterClient : public SubresourceFilterClient {
  public:
@@ -87,7 +89,6 @@ class MockSubresourceFilterClient : public SubresourceFilterClient {
   }
 
   MOCK_METHOD0(ShowNotification, void());
-  MOCK_METHOD0(ForceActivationInCurrentWebContents, bool());
   MOCK_METHOD2(OnAdsViolationTriggered,
                void(content::RenderFrameHost*,
                     subresource_filter::mojom::AdsViolation));
@@ -718,6 +719,63 @@ TEST_F(SubresourceFilterSafeBrowsingActivationThrottleTest, LogsUkmDryRun) {
     test_ukm_recorder.ExpectEntryMetric(entry, SubresourceFilter::kDryRunName,
                                         true);
   }
+}
+
+TEST_F(SubresourceFilterSafeBrowsingActivationThrottleTest,
+       ToggleForceActivation) {
+  auto* web_contents = RenderViewHostTestHarness::web_contents();
+  DevtoolsInteractionTracker::CreateForWebContents(web_contents);
+  auto* devtools_interaction_tracker =
+      DevtoolsInteractionTracker::FromWebContents(web_contents);
+
+  base::HistogramTester histogram_tester;
+  const GURL url("https://example.test/");
+
+  // Navigate initially, should be no activation.
+  SimulateNavigateAndCommit({url}, main_rfh());
+  EXPECT_CALL(*client(), ShowNotification()).Times(0);
+  EXPECT_TRUE(CreateAndNavigateDisallowedSubframe(main_rfh()));
+
+  // Simulate opening devtools and forcing activation.
+  devtools_interaction_tracker->ToggleForceActivation(true);
+  histogram_tester.ExpectBucketCount(
+      kSubresourceFilterActionsHistogram,
+      subresource_filter::SubresourceFilterAction::kForcedActivationEnabled, 1);
+
+  SimulateNavigateAndCommit({url}, main_rfh());
+  EXPECT_CALL(*client(), ShowNotification()).Times(1);
+  EXPECT_FALSE(CreateAndNavigateDisallowedSubframe(main_rfh()));
+
+  histogram_tester.ExpectBucketCount(
+      "SubresourceFilter.PageLoad.ActivationDecision",
+      subresource_filter::ActivationDecision::FORCED_ACTIVATION, 1);
+
+  // Simulate closing devtools.
+  devtools_interaction_tracker->ToggleForceActivation(false);
+
+  SimulateNavigateAndCommit({url}, main_rfh());
+  EXPECT_TRUE(CreateAndNavigateDisallowedSubframe(main_rfh()));
+  histogram_tester.ExpectBucketCount(
+      kSubresourceFilterActionsHistogram,
+      subresource_filter::SubresourceFilterAction::kForcedActivationEnabled, 1);
+}
+
+TEST_F(SubresourceFilterSafeBrowsingActivationThrottleTest,
+       ToggleOffForceActivation_AfterCommit) {
+  auto* web_contents = RenderViewHostTestHarness::web_contents();
+  DevtoolsInteractionTracker::CreateForWebContents(web_contents);
+  auto* devtools_interaction_tracker =
+      DevtoolsInteractionTracker::FromWebContents(web_contents);
+
+  base::HistogramTester histogram_tester;
+  devtools_interaction_tracker->ToggleForceActivation(true);
+  const GURL url("https://example.test/");
+  SimulateNavigateAndCommit({url}, main_rfh());
+  devtools_interaction_tracker->ToggleForceActivation(false);
+
+  // Resource should be disallowed, since navigation commit had activation.
+  EXPECT_CALL(*client(), ShowNotification()).Times(1);
+  EXPECT_FALSE(CreateAndNavigateDisallowedSubframe(main_rfh()));
 }
 
 TEST_P(SubresourceFilterSafeBrowsingActivationThrottleScopeTest,

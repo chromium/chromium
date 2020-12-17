@@ -107,11 +107,6 @@ ChromeSubresourceFilterClient::OnPageActivationComputed(
 
   subresource_filter::mojom::ActivationLevel effective_activation_level =
       initial_activation_level;
-  if (activated_via_devtools_) {
-    effective_activation_level =
-        subresource_filter::mojom::ActivationLevel::kEnabled;
-    *decision = subresource_filter::ActivationDecision::FORCED_ACTIVATION;
-  }
 
   if (profile_context_->ads_intervention_manager()->ShouldActivate(
           navigation_handle)) {
@@ -159,14 +154,6 @@ ChromeSubresourceFilterClient::GetSafeBrowsingDatabaseManager() {
       g_browser_process->safe_browsing_service();
   return safe_browsing_service ? safe_browsing_service->database_manager()
                                : nullptr;
-}
-
-void ChromeSubresourceFilterClient::ToggleForceActivationInCurrentWebContents(
-    bool force_activation) {
-  if (!activated_via_devtools_ && force_activation)
-    subresource_filter::ContentSubresourceFilterThrottleManager::LogAction(
-        subresource_filter::SubresourceFilterAction::kForcedActivationEnabled);
-  activated_via_devtools_ = force_activation;
 }
 
 void ChromeSubresourceFilterClient::ShowUI(const GURL& url) {
