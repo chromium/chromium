@@ -5224,17 +5224,6 @@ crbug.com/1041993 http/tests/origin_trials/sample-api-script-added-after-css-dec
 # Sheriff 2020-01-20
 crbug.com/1043357 http/tests/credentialmanager/credentialscontainer-get-with-virtual-authenticator.html [ Pass Timeout Failure ]
 
-# Sheriff 2020-01-22
-crbug.com/1044712 [ Win ] fast/forms/suggestion-picker/datetimelocal-suggestion-picker-appearance-with-scroll-bar.html [ Pass Failure ]
-crbug.com/1044712 [ Win ] fast/forms/suggestion-picker/month-suggestion-picker-appearance-with-scroll-bar.html [ Pass Failure ]
-crbug.com/1044712 [ Win ] fast/forms/suggestion-picker/time-suggestion-picker-appearance-locale-hebrew.html [ Pass Failure ]
-crbug.com/1044712 [ Win ] fast/forms/suggestion-picker/date-suggestion-picker-appearance.html [ Pass Failure ]
-crbug.com/1044712 [ Win ] fast/forms/suggestion-picker/date-suggestion-picker-appearance-rtl.html [ Pass Failure ]
-crbug.com/1044712 [ Win ] fast/forms/suggestion-picker/week-suggestion-picker-appearance-rtl.html [ Pass Failure ]
-crbug.com/1044712 [ Win ] fast/forms/suggestion-picker/time-suggestion-picker-appearance-with-scroll-bar.html [ Pass Failure ]
-crbug.com/1044712 [ Win ] fast/forms/suggestion-picker/month-suggestion-picker-appearance-rtl.html [ Pass Failure ]
-crbug.com/1044712 [ Win ] fast/forms/color-scheme/suggestion-picker/date-suggestion-picker-appearance.html [ Pass Failure ]
-
 # Ref_Tests which fail when SkiaRenderer is enable, and which cannot be
 # rebaselined. TODO(jonross): triage these into any existing bugs or file more
 # specific bugs.
@@ -5260,7 +5249,6 @@ crbug.com/989665 [ Mac ] external/wpt/resource-timing/resource_timing_buffer_ful
 crbug.com/989665 [ Linux ] virtual/plz-dedicated-worker/external/wpt/resource-timing/resource_timing_buffer_full_eventually.html [ Crash Pass ]
 
 # Sheriff 2020-01-23
-crbug.com/1043488 fast/forms/date/date-appearance-basic.html [ Pass Failure ]
 crbug.com/1044505 http/tests/devtools/tracing-session-id.js [ Pass Failure Timeout ]
 
 crbug.com/1045472 external/wpt/WebCryptoAPI/wrapKey_unwrapKey/test_wrapKey_unwrapKey.https.html [ Pass Failure ]
