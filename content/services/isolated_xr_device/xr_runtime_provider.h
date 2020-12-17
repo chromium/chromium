@@ -12,15 +12,27 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
+#if BUILDFLAG(ENABLE_OPENXR)
+#include "components/viz/common/gpu/context_provider.h"
+#include "device/vr/openxr/context_provider_callbacks.h"
+#include "services/viz/public/cpp/gpu/gpu.h"
+#endif
+
 namespace device {
 class OpenXrDevice;
 class OpenXrStatics;
 }  // namespace device
 
+namespace viz {
+class Gpu;
+}  // namespace viz
+
 class IsolatedXRRuntimeProvider
     : public device::mojom::IsolatedXRRuntimeProvider {
  public:
-  IsolatedXRRuntimeProvider();
+  explicit IsolatedXRRuntimeProvider(
+      mojo::Remote<device::mojom::XRDeviceServiceHost> device_service_host,
+      scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
   ~IsolatedXRRuntimeProvider() final;
 
   void RequestDevices(
@@ -36,10 +48,18 @@ class IsolatedXRRuntimeProvider
 #if BUILDFLAG(ENABLE_OPENXR)
   bool IsOpenXrHardwareAvailable();
   void SetOpenXrRuntimeStatus(RuntimeStatus status);
+  void CreateContextProviderAsync(
+      VizContextProviderCallback viz_context_provider_callback,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
   bool should_check_openxr_ = false;
   std::unique_ptr<device::OpenXrDevice> openxr_device_;
   std::unique_ptr<device::OpenXrStatics> openxr_statics_;
+  std::unique_ptr<viz::Gpu> viz_gpu_;
 #endif
+
+  mojo::Remote<device::mojom::XRDeviceServiceHost> device_service_host_;
+  scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 
   mojo::Remote<device::mojom::IsolatedXRRuntimeProviderClient> client_;
   base::WeakPtrFactory<IsolatedXRRuntimeProvider> weak_ptr_factory_{this};

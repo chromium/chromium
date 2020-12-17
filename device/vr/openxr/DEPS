@@ -1,4 +1,6 @@
 include_rules = [
+  "+components/viz/common/gpu/context_lost_observer.h",
+  "+components/viz/common/gpu/context_provider.h",
   "+third_party/openxr/src/include/openxr",
   "+components/version_info",
 ]

@@ -4,6 +4,7 @@
 
 #include "device/vr/openxr/openxr_render_loop.h"
 
+#include "components/viz/common/gpu/context_provider.h"
 #include "device/vr/openxr/openxr_api_wrapper.h"
 #include "device/vr/openxr/openxr_input_helper.h"
 #include "device/vr/util/stage_utils.h"
@@ -17,12 +18,15 @@ namespace device {
 OpenXrRenderLoop::OpenXrRenderLoop(
     base::RepeatingCallback<void(mojom::VRDisplayInfoPtr)>
         on_display_info_changed,
+    VizContextProviderFactoryAsync context_provider_factory_async,
     XrInstance instance,
     const OpenXrExtensionHelper& extension_helper)
     : XRCompositorCommon(),
       instance_(instance),
       extension_helper_(extension_helper),
-      on_display_info_changed_(std::move(on_display_info_changed)) {
+      on_display_info_changed_(std::move(on_display_info_changed)),
+      context_provider_factory_async_(
+          std::move(context_provider_factory_async)) {
   DCHECK(instance_ != XR_NULL_HANDLE);
 }
 
@@ -115,6 +119,11 @@ bool OpenXrRenderLoop::StartRuntime() {
   openxr_->RegisterOnSessionEndedCallback(base::BindRepeating(
       &OpenXrRenderLoop::ExitPresent, weak_ptr_factory_.GetWeakPtr()));
   InitializeDisplayInfo();
+
+  // TODO(https://crbug.com/1131616): In a subsequent change, refactor
+  // StartContextProviderIfNeeded such that we do not start the session until
+  // the context provider has been created.
+  StartContextProviderIfNeeded();
 
   return true;
 }
@@ -267,6 +276,74 @@ void OpenXrRenderLoop::UpdateStageParameters() {
   } else {
     SetStageParameters(nullptr);
   }
+}
+
+void OpenXrRenderLoop::StartContextProviderIfNeeded() {
+  DCHECK(task_runner()->BelongsToCurrentThread());
+  // We could arrive here in scenarios where we've shutdown the render loop.
+  // In that case, there is no need to start the context provider.
+  if (!context_provider_ && !HasSessionEnded()) {
+    main_thread_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            context_provider_factory_async_,
+            base::BindOnce(&OpenXrRenderLoop::OnContextProviderCreated,
+                           weak_ptr_factory_.GetWeakPtr()),
+            task_runner()));
+  }
+}
+
+// viz::ContextLostObserver Implementation.
+// Called on the render loop thread.
+void OpenXrRenderLoop::OnContextLost() {
+  DCHECK(task_runner()->BelongsToCurrentThread());
+  DCHECK_NE(context_provider_, nullptr);
+
+  // Avoid OnContextLost getting called multiple times by removing
+  // the observer right away.
+  context_provider_->RemoveObserver(this);
+
+  // Destroying the context provider in the OpenXrRenderLoop::OnContextLost
+  // callback leads to UAF deep inside the GpuChannel callback code. To avoid
+  // UAF, post a task to ourselves which does the real context lost work. Pass
+  // the context_provider_ as a parameters to the callback to avoid the invalid
+  // one getting used on the context thread.
+  task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(&OpenXrRenderLoop::OnContextLostCallback,
+                                weak_ptr_factory_.GetWeakPtr(),
+                                std::move(context_provider_)));
+}
+
+// Called on the render loop thread as a continuation of OnContextLost
+void OpenXrRenderLoop::OnContextLostCallback(
+    scoped_refptr<viz::ContextProvider> context_provider) {
+  DCHECK(task_runner()->BelongsToCurrentThread());
+  DCHECK_EQ(context_provider_, nullptr);
+
+  // context_provider is required to be released on the context thread it was
+  // bound to.
+  context_provider.reset();
+
+  StartContextProviderIfNeeded();
+}
+
+// Called on the render loop thread by IsolatedXRRuntimeProvider when it has
+// finished creating the context provider.
+void OpenXrRenderLoop::OnContextProviderCreated(
+    scoped_refptr<viz::ContextProvider> context_provider) {
+  DCHECK(task_runner()->BelongsToCurrentThread());
+  DCHECK_EQ(context_provider_, nullptr);
+
+  const gpu::ContextResult context_result =
+      context_provider->BindToCurrentThread();
+  if (context_result != gpu::ContextResult::kSuccess) {
+    // TODO(https://crbug.com/1131616): Handle this by creating the context
+    // provider again.
+    return;
+  }
+
+  context_provider->AddObserver(this);
+  context_provider_ = std::move(context_provider);
 }
 
 }  // namespace device

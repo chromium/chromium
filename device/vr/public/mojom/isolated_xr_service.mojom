@@ -9,6 +9,7 @@ import "device/vr/public/mojom/vr_service.mojom";
 [EnableIf=is_win]
 import "gpu/ipc/common/luid.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "services/viz/public/mojom/gpu.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // The XRSessionController lives in the xr runtime service, and corresponds to
@@ -171,12 +172,23 @@ interface IsolatedXRRuntimeProvider {
   RequestDevices(pending_remote<IsolatedXRRuntimeProviderClient> client);
 };
 
-// The main interface for the XR Device Service.
+// The main interface for the XR Device Service. Called from the browser
+// process.
 interface XRDeviceService {
-  // Binds a IsolatedXRRuntimeProvider pipe in the service.
-  BindRuntimeProvider(pending_receiver<IsolatedXRRuntimeProvider> receiver);
+  // Binds a IsolatedXRRuntimeProvider pipe in the service and passes along
+  // the device service host.
+  BindRuntimeProvider(pending_receiver<IsolatedXRRuntimeProvider> receiver,
+      pending_remote<XRDeviceServiceHost> host);
 
   // Binds the main testing interface pipe in the service. Only used by
   // browser tests.
   BindTestHook(pending_receiver<device_test.mojom.XRServiceTestHook> receiver);
+};
+
+// XRDeviceServiceHost is implemented in the browser process and called from
+// the XR process.
+interface XRDeviceServiceHost {
+  // BindGpu is implemented in the browser process and allows the XR process to
+  // establish a connection to the GPU process.
+  BindGpu(pending_receiver<viz.mojom.Gpu> receiver);
 };

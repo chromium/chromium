@@ -17,6 +17,11 @@ namespace content {
 const CONTENT_EXPORT mojo::Remote<device::mojom::XRDeviceService>&
 GetXRDeviceService();
 
+// Acquires a pending remote handle to the device service host and posts
+// a message to the io thread task runner to bind the host.
+CONTENT_EXPORT mojo::PendingRemote<device::mojom::XRDeviceServiceHost>
+CreateXRDeviceServiceHost();
+
 void CONTENT_EXPORT SetXRDeviceServiceStartupCallbackForTestingInternal(
     base::RepeatingClosure callback);
 }  // namespace content

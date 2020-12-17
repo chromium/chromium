@@ -16,8 +16,10 @@
 namespace device {
 
 XrDeviceService::XrDeviceService(
-    mojo::PendingReceiver<mojom::XRDeviceService> receiver)
-    : receiver_(this, std::move(receiver)) {
+    mojo::PendingReceiver<device::mojom::XRDeviceService> receiver,
+    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
+    : receiver_(this, std::move(receiver)),
+      io_task_runner_(std::move(io_task_runner)) {
 #if defined(OS_WIN)
   base::win::ComInitCheckHook::DisableCOMChecksForProcess();
 #endif  // defined(OS_WIN)
@@ -26,8 +28,12 @@ XrDeviceService::XrDeviceService(
 XrDeviceService::~XrDeviceService() = default;
 
 void XrDeviceService::BindRuntimeProvider(
-    mojo::PendingReceiver<mojom::IsolatedXRRuntimeProvider> receiver) {
-  mojo::MakeSelfOwnedReceiver(std::make_unique<IsolatedXRRuntimeProvider>(),
+    mojo::PendingReceiver<mojom::IsolatedXRRuntimeProvider> receiver,
+    mojo::PendingRemote<mojom::XRDeviceServiceHost> device_service_host) {
+  mojo::MakeSelfOwnedReceiver(std::make_unique<IsolatedXRRuntimeProvider>(
+                                  mojo::Remote<mojom::XRDeviceServiceHost>(
+                                      std::move(device_service_host)),
+                                  io_task_runner_),
                               std::move(receiver));
 }
 

@@ -10,6 +10,8 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "components/viz/common/gpu/context_lost_observer.h"
+#include "device/vr/openxr/context_provider_callbacks.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/windows/compositor_base.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
@@ -21,12 +23,15 @@ namespace device {
 class OpenXrApiWrapper;
 class OpenXRInputHelper;
 
-class OpenXrRenderLoop : public XRCompositorCommon {
+class OpenXrRenderLoop : public XRCompositorCommon,
+                         public viz::ContextLostObserver {
  public:
-  OpenXrRenderLoop(base::RepeatingCallback<void(mojom::VRDisplayInfoPtr)>
-                       on_display_info_changed,
-                   XrInstance instance,
-                   const OpenXrExtensionHelper& extension_helper_);
+  OpenXrRenderLoop(
+      base::RepeatingCallback<void(mojom::VRDisplayInfoPtr)>
+          on_display_info_changed,
+      VizContextProviderFactoryAsync context_provider_factory_async,
+      XrInstance instance,
+      const OpenXrExtensionHelper& extension_helper_);
   ~OpenXrRenderLoop() override;
 
  private:
@@ -47,12 +52,21 @@ class OpenXrRenderLoop : public XRCompositorCommon {
       device::mojom::XRSessionMode session_mode) override;
   bool CanEnableAntiAliasing() const override;
 
+  // viz::ContextLostObserver Implementation
+  void OnContextLost() override;
+
   void InitializeDisplayInfo();
   bool UpdateEyeParameters();
   bool UpdateEye(const XrView& view_head,
                  const gfx::Size& view_size,
                  mojom::VREyeParametersPtr* eye) const;
   void UpdateStageParameters();
+
+  void StartContextProviderIfNeeded();
+  void OnContextProviderCreated(
+      scoped_refptr<viz::ContextProvider> context_provider);
+  void OnContextLostCallback(
+      scoped_refptr<viz::ContextProvider> context_provider);
 
   // Owned by OpenXrStatics
   XrInstance instance_;
@@ -64,6 +78,9 @@ class OpenXrRenderLoop : public XRCompositorCommon {
   base::RepeatingCallback<void(mojom::VRDisplayInfoPtr)>
       on_display_info_changed_;
   mojom::VRDisplayInfoPtr current_display_info_;
+
+  scoped_refptr<viz::ContextProvider> context_provider_;
+  VizContextProviderFactoryAsync context_provider_factory_async_;
 
   // This must be the last member
   base::WeakPtrFactory<OpenXrRenderLoop> weak_ptr_factory_{this};

@@ -13,8 +13,10 @@
 #include "device/vr/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_OPENXR)
+#include "content/public/common/gpu_stream_constants.h"
 #include "device/vr/openxr/openxr_device.h"
 #include "device/vr/openxr/openxr_statics.h"
+#include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
 #endif
 
 enum class IsolatedXRRuntimeProvider::RuntimeStatus {
@@ -152,20 +154,62 @@ bool IsolatedXRRuntimeProvider::IsOpenXrHardwareAvailable() {
 }
 
 void IsolatedXRRuntimeProvider::SetOpenXrRuntimeStatus(RuntimeStatus status) {
-  SetRuntimeStatus(
-      client_.get(), status,
-      base::BindOnce(
-          [](device::OpenXrStatics* openxr_statics) {
-            // This does not give any ownership of the OpenXrStatics object to
-            // OpenXrDevice. The OpenXrStatics is only used in the constructor
-            // and a reference is not kept.
-            return std::make_unique<device::OpenXrDevice>(openxr_statics);
-          },
-          openxr_statics_.get()),
-      &openxr_device_);
+  auto factory_async = base::BindRepeating(
+      &IsolatedXRRuntimeProvider::CreateContextProviderAsync,
+      weak_ptr_factory_.GetWeakPtr());
+  SetRuntimeStatus(client_.get(), status,
+                   base::BindOnce(
+                       [](device::OpenXrStatics* openxr_statics,
+                          VizContextProviderFactoryAsync factory_async) {
+                         // This does not give any ownership of the
+                         // OpenXrStatics object to OpenXrDevice. OpenXrStatics
+                         // is only used in the constructor and a reference is
+                         // not kept.
+                         return std::make_unique<device::OpenXrDevice>(
+                             openxr_statics, std::move(factory_async));
+                       },
+                       openxr_statics_.get(), std::move(factory_async)),
+                   &openxr_device_);
 }
+
+void IsolatedXRRuntimeProvider::CreateContextProviderAsync(
+    VizContextProviderCallback viz_context_provider_callback,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+  // viz_gpu_ must be kept alive so long as there are outstanding context
+  // providers attached to it, otherwise the GPU process channel gets closed out
+  // from under it.
+  if (!viz_gpu_ || !viz_gpu_->GetGpuChannel() ||
+      viz_gpu_->GetGpuChannel()->IsLost()) {
+    mojo::PendingRemote<viz::mojom::Gpu> remote_gpu;
+    device_service_host_->BindGpu(remote_gpu.InitWithNewPipeAndPassReceiver());
+
+    viz_gpu_ = viz::Gpu::Create(std::move(remote_gpu), io_task_runner_);
+
+    scoped_refptr<gpu::GpuChannelHost> gpu_channel_host =
+        viz_gpu_->EstablishGpuChannelSync();
+  }
+
+  scoped_refptr<viz::ContextProvider> context_provider =
+      base::MakeRefCounted<viz::ContextProviderCommandBuffer>(
+          viz_gpu_->GetGpuChannel(), nullptr /* gpu_memory_buffer_manager */,
+          content::kGpuStreamIdDefault, content::kGpuStreamPriorityUI,
+          gpu::kNullSurfaceHandle, GURL(std::string("chrome://gpu/XrRuntime")),
+          false /* automatic flushes */, false /* support locking */,
+          false /* support grcontext */,
+          gpu::SharedMemoryLimits::ForMailboxContext(),
+          gpu::ContextCreationAttribs(),
+          viz::command_buffer_metrics::ContextType::XR_COMPOSITING);
+  task_runner->PostTask(FROM_HERE,
+                        base::BindOnce(std::move(viz_context_provider_callback),
+                                       std::move(context_provider)));
+}
+
 #endif  // BUILDFLAG(ENABLE_OPENXR)
 
-IsolatedXRRuntimeProvider::IsolatedXRRuntimeProvider() = default;
+IsolatedXRRuntimeProvider::IsolatedXRRuntimeProvider(
+    mojo::Remote<device::mojom::XRDeviceServiceHost> device_service_host,
+    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
+    : device_service_host_(std::move(device_service_host)),
+      io_task_runner_(std::move(io_task_runner)) {}
 
 IsolatedXRRuntimeProvider::~IsolatedXRRuntimeProvider() = default;

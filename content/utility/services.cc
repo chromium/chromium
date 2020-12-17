@@ -218,7 +218,8 @@ auto RunVideoCapture(
 #if BUILDFLAG(ENABLE_VR) && !defined(OS_ANDROID)
 auto RunXrDeviceService(
     mojo::PendingReceiver<device::mojom::XRDeviceService> receiver) {
-  return std::make_unique<device::XrDeviceService>(std::move(receiver));
+  return std::make_unique<device::XrDeviceService>(
+      std::move(receiver), content::ChildProcess::current()->io_task_runner());
 }
 #endif
 

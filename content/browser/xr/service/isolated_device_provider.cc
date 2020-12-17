@@ -99,7 +99,8 @@ void IsolatedVRDeviceProvider::OnDevicesEnumerated() {
 
 void IsolatedVRDeviceProvider::SetupDeviceProvider() {
   GetXRDeviceService()->BindRuntimeProvider(
-      device_provider_.BindNewPipeAndPassReceiver());
+      device_provider_.BindNewPipeAndPassReceiver(),
+      CreateXRDeviceServiceHost());
   device_provider_.set_disconnect_handler(base::BindOnce(
       &IsolatedVRDeviceProvider::OnServerError, base::Unretained(this)));
 
