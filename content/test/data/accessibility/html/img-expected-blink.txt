@@ -7,3 +7,5 @@ rootWebArea
 ++++++staticText name=' '
 ++++++++inlineTextBox name=' '
 ++++++image name='  '
+++++++staticText name=' '
+++++++image name='SVG face'

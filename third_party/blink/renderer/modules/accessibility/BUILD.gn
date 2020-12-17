@@ -50,8 +50,6 @@ blink_modules_sources("accessibility") {
     "ax_slider.h",
     "ax_sparse_attribute_setter.cc",
     "ax_sparse_attribute_setter.h",
-    "ax_svg_root.cc",
-    "ax_svg_root.h",
     "ax_validation_message.cc",
     "ax_validation_message.h",
     "ax_virtual_object.cc",

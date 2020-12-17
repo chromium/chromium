@@ -86,7 +86,6 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_progress_indicator.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_relation_cache.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_slider.h"
-#include "third_party/blink/renderer/modules/accessibility/ax_svg_root.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_validation_message.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_virtual_object.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_elements_helper.h"
@@ -453,9 +452,6 @@ AXObject* AXObjectCacheImpl::CreateFromRenderer(LayoutObject* layout_object) {
     if (type == input_type_names::kRange)
       return MakeGarbageCollected<AXSlider>(layout_object, *this);
   }
-
-  if (layout_object->IsSVGRoot())
-    return MakeGarbageCollected<AXSVGRoot>(layout_object, *this);
 
   if (layout_object->IsBoxModelObject()) {
     auto* css_box = To<LayoutBoxModelObject>(layout_object);

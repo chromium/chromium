@@ -1183,10 +1183,6 @@ bool AXObject::IsSlider() const {
   return false;
 }
 
-bool AXObject::IsAXSVGRoot() const {
-  return false;
-}
-
 bool AXObject::IsValidationMessage() const {
   return false;
 }

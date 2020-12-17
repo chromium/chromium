@@ -4,3 +4,5 @@ AXWebArea
 ++++AXStaticText AXValue=' '
 ++++AXStaticText AXValue=' '
 ++++AXImage AXDescription='  ' AXRoleDescription='image'
+++++AXStaticText AXValue=' '
+++++AXImage AXDescription='SVG face' AXRoleDescription='image'

@@ -99,14 +99,12 @@
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
-#include "third_party/blink/renderer/core/svg/svg_svg_element.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_image_map_link.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_inline_text_box.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_layout_object.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_position.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_range.h"
-#include "third_party/blink/renderer/modules/accessibility/ax_svg_root.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_elements_helper.h"
 #include "third_party/blink/renderer/platform/graphics/image_data_buffer.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
@@ -3213,17 +3211,6 @@ void AXNodeObject::AddLayoutChildren() {
   }
 }
 
-AXSVGRoot* AXNodeObject::RemoteSVGRootElement() const {
-  // FIXME(dmazzoni): none of this code properly handled multiple references to
-  // the same remote SVG document. I'm disabling this support until it can be
-  // fixed properly.
-  return nullptr;
-}
-
-void AXNodeObject::AddRemoteSVGChildren() {
-  AddChild(RemoteSVGRootElement());
-}
-
 void AXNodeObject::AddNodeChildren() {
   if (!node_)
     return;
@@ -3262,7 +3249,6 @@ void AXNodeObject::AddChildren() {
     AddNodeChildren();
 
   AddPopupChildren();
-  AddRemoteSVGChildren();
   AddImageMapChildren();
   AddInlineTextBoxChildren(false);
   AddValidationMessageChild();

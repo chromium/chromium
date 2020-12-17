@@ -4,3 +4,5 @@
 ++++[static] name=' '
 ++++[static] name=' '
 ++++[image] name='  ' xml-roles:img
+++++[static] name=' '
+++++[image] name='SVG face' xml-roles:img

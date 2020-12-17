@@ -37,7 +37,6 @@
 namespace blink {
 
 class AXObjectCacheImpl;
-class AXSVGRoot;
 class Element;
 class HTMLLabelElement;
 class Node;
@@ -270,10 +269,6 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   // Inline text boxes.
   void LoadInlineTextBoxes() override;
 
-  // SVG.
-  bool IsSVGImage() const { return RemoteSVGRootElement(); }
-  AXSVGRoot* RemoteSVGRootElement() const;
-
   virtual LayoutBoxModelObject* GetLayoutBoxModelObject() const {
     return nullptr;
   }
@@ -313,7 +308,6 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   void AddInlineTextBoxChildren(bool force);
   void AddImageMapChildren();
   void AddPopupChildren();
-  void AddRemoteSVGChildren();
   bool IsHtmlTable() const;
   void AddTableChildren();
   void AddValidationMessageChild();

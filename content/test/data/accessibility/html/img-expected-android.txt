@@ -4,3 +4,5 @@ android.webkit.WebView focusable focused has_image scrollable
 ++++android.widget.TextView name=' '
 ++++android.widget.TextView name=' '
 ++++android.widget.Image role_description='graphic' has_image name='  '
+++++android.widget.TextView name=' '
+++++android.widget.Image role_description='graphic' has_image name='SVG face'

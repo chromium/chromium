@@ -4,3 +4,5 @@ Document
 ++++Text Name=' '
 ++++Text Name=' '
 ++++Image Name='  '
+++++Text Name=' '
+++++Image Name='SVG face'

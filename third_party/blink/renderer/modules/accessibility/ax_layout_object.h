@@ -135,7 +135,6 @@ class MODULES_EXPORT AXLayoutObject : public AXNodeObject {
 
   // Hit testing.
   AXObject* AccessibilityHitTest(const IntPoint&) const override;
-  AXObject* ElementAccessibilityHitTest(const IntPoint&) const override;
 
   // High-level accessibility tree access. Other modules should only use these
   // functions.
@@ -183,9 +182,6 @@ class MODULES_EXPORT AXLayoutObject : public AXNodeObject {
   bool IsTabItemSelected() const;
   AXObject* AccessibilityImageMapHitTest(HTMLAreaElement*,
                                          const IntPoint&) const;
-  void DetachRemoteSVGRoot();
-  AXObject* RemoteSVGElementHitTest(const IntPoint&) const;
-  void OffsetBoundingBoxForRemoteSVGElement(LayoutRect&) const;
   bool FindAllTableCellsWithRole(ax::mojom::blink::Role, AXObjectVector&) const;
 
   LayoutRect ComputeElementRect() const;

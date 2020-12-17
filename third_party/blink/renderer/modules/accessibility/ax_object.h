@@ -409,7 +409,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual bool IsProgressIndicator() const;
   virtual bool IsAXRadioInput() const;
   virtual bool IsSlider() const;
-  virtual bool IsAXSVGRoot() const;
   virtual bool IsValidationMessage() const;
   virtual bool IsVirtualObject() const;
 

@@ -91,7 +91,6 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_inline_text_box.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_mock_object.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
-#include "third_party/blink/renderer/modules/accessibility/ax_svg_root.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
@@ -199,8 +198,6 @@ ax::mojom::blink::Role AXLayoutObject::RoleFromLayoutObject(
       return ax::mojom::blink::Role::kImageMap;
     if (IsA<HTMLInputElement>(node))
       return ButtonRoleType();
-    if (IsSVGImage())
-      return ax::mojom::blink::Role::kSvgRoot;
 
     return ax::mojom::blink::Role::kImage;
   }
@@ -291,8 +288,6 @@ void AXLayoutObject::Init() {
 
 void AXLayoutObject::Detach() {
   AXNodeObject::Detach();
-
-  DetachRemoteSVGRoot();
 
 #if DCHECK_IS_ON()
   if (layout_object_)
@@ -1534,14 +1529,6 @@ AXObject* AXLayoutObject::AccessibilityHitTest(const IntPoint& point) const {
   return result;
 }
 
-AXObject* AXLayoutObject::ElementAccessibilityHitTest(
-    const IntPoint& point) const {
-  if (IsSVGImage())
-    return RemoteSVGElementHitTest(point);
-
-  return AXObject::ElementAccessibilityHitTest(point);
-}
-
 //
 // Low-level accessibility tree exploration, only for use within the
 // accessibility module.
@@ -2447,36 +2434,6 @@ AXObject* AXLayoutObject::AccessibilityImageMapHitTest(
   }
 
   return nullptr;
-}
-
-void AXLayoutObject::DetachRemoteSVGRoot() {
-  if (AXSVGRoot* root = RemoteSVGRootElement())
-    root->SetParent(nullptr);
-}
-
-AXObject* AXLayoutObject::RemoteSVGElementHitTest(const IntPoint& point) const {
-  AXObject* remote = RemoteSVGRootElement();
-  if (!remote)
-    return nullptr;
-
-  IntSize offset =
-      point - RoundedIntPoint(GetBoundsInFrameCoordinates().Location());
-  return remote->AccessibilityHitTest(IntPoint(offset));
-}
-
-// The boundingBox for elements within the remote SVG element needs to be offset
-// by its position within the parent page, otherwise they are in relative
-// coordinates only.
-void AXLayoutObject::OffsetBoundingBoxForRemoteSVGElement(
-    LayoutRect& rect) const {
-  for (AXObject* parent = ParentObject(); parent;
-       parent = parent->ParentObject()) {
-    if (parent->IsAXSVGRoot()) {
-      rect.MoveBy(
-          parent->ParentObject()->GetBoundsInFrameCoordinates().Location());
-      break;
-    }
-  }
 }
 
 }  // namespace blink
