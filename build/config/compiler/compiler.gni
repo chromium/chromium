@@ -5,6 +5,7 @@
 import("//build/config/chrome_build.gni")
 import("//build/config/chromecast_build.gni")
 import("//build/config/chromeos/args.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/pgo/pgo.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/toolchain/cc_wrapper.gni")
@@ -125,7 +126,9 @@ declare_args() {
 
 # Determine whether to enable or disable frame pointers, based on the platform
 # and build arguments.
-if (is_chromeos) {
+# TODO(crbug.com/1052397): Consider changing is_chromeos_ash to is_chromeos after
+# lacros-chrome switches to target_os="chromeos".
+if (is_chromeos_ash) {
   # ChromeOS generally prefers frame pointers, to support CWP.
   # However, Clang does not currently generate usable frame pointers in ARM
   # 32-bit builds (https://bugs.llvm.org/show_bug.cgi?id=18505) so disable them
@@ -197,14 +200,14 @@ declare_args() {
 
 declare_args() {
   # Whether to use the gold linker from binutils instead of lld or bfd.
-  use_gold =
-      !use_lld && !(is_chromecast && is_linux &&
-                    (current_cpu == "arm" || current_cpu == "mipsel")) &&
-      ((is_linux && (current_cpu == "x64" || current_cpu == "x86" ||
-                     current_cpu == "arm" || current_cpu == "arm64" ||
-                     current_cpu == "mipsel" || current_cpu == "mips64el")) ||
-       (is_android && (current_cpu == "x86" || current_cpu == "x64" ||
-                       current_cpu == "arm" || current_cpu == "arm64")))
+  use_gold = !use_lld && !(is_chromecast && is_linux &&
+                           (current_cpu == "arm" || current_cpu == "mipsel")) &&
+             (((is_linux || is_chromeos_lacros) &&
+               (current_cpu == "x64" || current_cpu == "x86" ||
+                current_cpu == "arm" || current_cpu == "arm64" ||
+                current_cpu == "mipsel" || current_cpu == "mips64el")) ||
+              (is_android && (current_cpu == "x86" || current_cpu == "x64" ||
+                              current_cpu == "arm" || current_cpu == "arm64")))
 }
 
 # Use relative paths for debug info. This is important to make the build

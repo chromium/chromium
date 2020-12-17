@@ -5,7 +5,7 @@
 import("//build/config/linux/gtk/gtk.gni")
 import("//build/config/linux/pkg_config.gni")
 
-assert(is_linux && !is_chromeos, "This file should only be referenced on Linux")
+assert(is_linux, "This file should only be referenced on Linux")
 
 # GN doesn't check visibility for configs so we give this an obviously internal
 # name to discourage random targets from accidentally depending on this and
@@ -31,12 +31,12 @@ group("gtk") {
 
     # These are all for WebRTC.
     "//examples:peerconnection_client",
-    "//remoting/host/linux",
+    "//remoting/host:common",
+    "//remoting/host:remoting_me2me_host_static",
+    "//remoting/host/file_transfer",
     "//remoting/host/it2me:common",
     "//remoting/host/it2me:remote_assistance_host",
-    "//remoting/host:common",
-    "//remoting/host/file_transfer",
-    "//remoting/host:remoting_me2me_host_static",
+    "//remoting/host/linux",
     "//remoting/test:it2me_standalone_host_main",
     "//webrtc/examples:peerconnection_client",
   ]

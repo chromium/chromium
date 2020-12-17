@@ -8,6 +8,7 @@ import("//build/config/c++/c++.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/chromecast_build.gni")
 import("//build/config/chromeos/args.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/clang/clang.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/coverage/coverage.gni")
@@ -118,7 +119,7 @@ declare_args() {
   # the space overhead is too great. We should use some mixture of profiles and
   # optimization settings to better tune the size increase.
   thin_lto_enable_optimizations =
-      (is_chromeos || is_android || is_win) && is_official_build
+      (is_chromeos_ash || is_android || is_win) && is_official_build
 
   # Initialize all local variables with a pattern. This flag will fill
   # uninitialized floating-point types (and 32-bit pointers) with 0xFF and the
@@ -147,7 +148,7 @@ declare_args() {
   enable_wmax_tokens =
       !is_official_build &&
       ((is_mac && target_cpu == "x64" && !use_system_xcode) ||
-       (is_linux && !is_chromeos && target_cpu == "x64") ||
+       ((is_linux || is_chromeos_lacros) && target_cpu == "x64") ||
        (is_win && target_cpu == "x86") || (is_win && target_cpu == "x64") ||
        (is_android && target_cpu == "arm") ||
        (is_android && target_cpu == "arm64"))
@@ -175,13 +176,14 @@ declare_args() {
   # other architectures.
   #
   # lld doesn't have the bug.
-  use_icf = (is_posix || is_fuchsia) && !is_debug && !using_sanitizer &&
-            !use_clang_coverage && !(is_android && use_order_profiling) &&
-            (use_lld || (use_gold && (is_chromeos || !(current_cpu == "x86" ||
-                                                       current_cpu == "x64"))))
+  use_icf =
+      (is_posix || is_fuchsia) && !is_debug && !using_sanitizer &&
+      !use_clang_coverage && !(is_android && use_order_profiling) &&
+      (use_lld || (use_gold && (is_chromeos_ash || !(current_cpu == "x86" ||
+                                                     current_cpu == "x64"))))
 }
 
-if (is_android || (is_chromeos && is_chromeos_device)) {
+if (is_android || (is_chromeos_ash && is_chromeos_device)) {
   # Set the path to use orderfile for linking Chrome
   # Note that this is for using only one orderfile for linking
   # the Chrome binary/library.
@@ -192,7 +194,7 @@ if (is_android || (is_chromeos && is_chromeos_device)) {
       # Allow downstream tools to set orderfile path with
       # another variable.
       chrome_orderfile_path = default_chrome_orderfile
-    } else if (is_chromeos && is_chromeos_device) {
+    } else if (is_chromeos_ash && is_chromeos_device) {
       chrome_orderfile_path = "//chromeos/profiles/chromeos.orderfile.txt"
     }
   }
@@ -240,7 +242,7 @@ config("compiler") {
     configs += [ "//build/config/android:compiler" ]
   } else if (is_linux || is_chromeos) {
     configs += [ "//build/config/linux:compiler" ]
-    if (is_chromeos) {
+    if (is_chromeos_ash) {
       configs += [ "//build/config/chromeos:compiler" ]
     }
   } else if (is_nacl) {
@@ -291,7 +293,7 @@ config("compiler") {
       } else {
         cflags += [ "-fstack-protector" ]
       }
-    } else if ((is_posix && !is_chromeos && !is_nacl) || is_fuchsia) {
+    } else if ((is_posix && !is_chromeos_ash && !is_nacl) || is_fuchsia) {
       # TODO(phajdan.jr): Use -fstack-protector-strong when our gcc supports it.
       # See also https://crbug.com/533294
       cflags += [ "--param=ssp-buffer-size=4" ]
@@ -662,7 +664,7 @@ config("compiler") {
         import_instr_limit = -1
         if (is_android) {
           import_instr_limit = 5
-        } else if (is_chromeos) {
+        } else if (is_chromeos_ash) {
           # Not much performance difference was noted between the default (100)
           # and these. ARM was originally set lower than x86 to keep the size
           # bloat of ThinLTO to <10%, but that's potentially no longer true.
@@ -1213,7 +1215,7 @@ config("compiler_arm_thumb") {
 }
 
 config("compiler_arm") {
-  if (current_cpu == "arm" && is_chromeos) {
+  if (current_cpu == "arm" && is_chromeos_ash) {
     # arm is normally the default mode for clang, but on chromeos a wrapper
     # is used to pass -mthumb, and therefor change the default.
     cflags = [ "-marm" ]
@@ -1652,7 +1654,7 @@ config("chromium_code") {
     # ChromeOS: http://crbug.com/940863
     # Chromecast: http://crbug.com/942554
     has_dchecks = is_debug || dcheck_always_on
-    if (!has_dchecks && is_chromeos && is_chrome_branded) {
+    if (!has_dchecks && is_chromeos_ash && is_chrome_branded) {
       # Temporarily disable -Wextra-semi for Chrome on Chrome OS.
     } else if (is_chromecast && chromecast_branding != "public") {
       # Temporarily disable -Wextra-semi for Chromecast.
@@ -1755,7 +1757,8 @@ config("no_rtti") {
 # (de)allocate memory on a different heap, which would spell trouble if pointers
 # to heap-allocated memory are passed over shared library boundaries.
 config("export_dynamic") {
-  if (is_linux || export_libcxxabi_from_executables) {
+  # TODO(crbug.com/1052397): Revisit after target_os flip is completed.
+  if (is_linux || is_chromeos_lacros || export_libcxxabi_from_executables) {
     ldflags = [ "-rdynamic" ]
   }
 }
@@ -1894,7 +1897,7 @@ config("no_incompatible_pointer_warnings") {
     cflags += [ "-Wno-incompatible-pointer-types" ]
   } else if (current_cpu == "mipsel" || current_cpu == "mips64el") {
     cflags += [ "-w" ]
-  } else if (is_chromeos && current_cpu == "arm") {
+  } else if (is_chromeos_ash && current_cpu == "arm") {
     cflags += [ "-w" ]
   }
 }
@@ -2037,7 +2040,7 @@ config("optimize") {
     } else {
       cflags = [ "-Os" ] + common_optimize_on_cflags
     }
-  } else if (is_chromeos) {
+  } else if (is_chromeos_ash) {
     # TODO(gbiv): This is partially favoring size over speed. CrOS exclusively
     # uses clang, and -Os in clang is more of a size-conscious -O2 than "size at
     # any cost" (AKA -Oz). It'd be nice to:
@@ -2185,9 +2188,8 @@ if (is_clang && is_a_target_toolchain) {
   } else if (clang_use_default_sample_profile) {
     assert(build_with_chromium,
            "Our default profiles currently only apply to Chromium")
-    assert(
-        is_android || chromeos_is_browser_only || is_chromeos || is_chromecast,
-        "The current platform has no default profile")
+    assert(is_android || is_chromeos_lacros || is_chromeos_ash || is_chromecast,
+           "The current platform has no default profile")
     if (is_android || is_chromecast) {
       _clang_sample_profile = "//chrome/android/profiles/afdo.prof"
     } else {
@@ -2471,7 +2473,7 @@ if (is_apple) {
   }
 }
 
-if (is_chromeos && is_chromeos_device) {
+if (is_chromeos_ash && is_chromeos_device) {
   # This config is intended to be a temporary to facilitate
   # the transition to use orderfile in Chrome OS. Once orderfile
   # use becomes a default in Chrome OS, this config should not
@@ -2483,7 +2485,7 @@ if (is_chromeos && is_chromeos_device) {
   }
 }
 
-if (is_android || (is_chromeos && is_chromeos_device)) {
+if (is_android || (is_chromeos_ash && is_chromeos_device)) {
   # Use orderfile for linking Chrome on Android and Chrome OS.
   # This config enables using an orderfile for linking in LLD.
   # TODO: Consider using call graph sort instead, at least on Android.

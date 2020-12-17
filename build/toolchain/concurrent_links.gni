@@ -8,6 +8,7 @@
 assert(current_toolchain == default_toolchain)
 
 import("//build/config/android/config.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/mac/symbols.gni")
 import("//build/config/sanitizers/sanitizers.gni")
@@ -36,7 +37,8 @@ if (concurrent_links == -1) {
     } else {
       _args += [ "--mem_per_link_gb=10" ]
     }
-  } else if (use_clang_coverage || use_sanitizer_coverage || use_fuzzing_engine) {
+  } else if (use_clang_coverage || use_sanitizer_coverage ||
+             use_fuzzing_engine) {
     # Sanitizer coverage instrumentation increases linker memory consumption
     # significantly.
     _args = [ "--mem_per_link_gb=16" ]
@@ -60,7 +62,7 @@ if (concurrent_links == -1) {
     } else {
       _args = [ "--mem_per_link_gb=4" ]
     }
-  } else if (is_linux && !is_chromeos && symbol_level == 0) {
+  } else if ((is_linux || is_chromeos_lacros) && symbol_level == 0) {
     # Memory consumption on link without debug symbols is low on linux.
     _args = [ "--mem_per_link_gb=3" ]
   } else {

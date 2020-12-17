@@ -4,10 +4,11 @@
 
 import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/args.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/gclient_args.gni")
 import("//build/config/python.gni")
 
-assert(is_chromeos)
+assert(is_chromeos_ash)
 
 # Determine the real paths for various items in the SDK, which may be used
 # in the 'generate_runner_script' template below. We do so outside the template

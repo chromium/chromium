@@ -13,7 +13,10 @@ declare_args() {
   #     2 : Used during the PGO (optimization) phase.
   chrome_pgo_phase = 0
   if (is_official_build &&
-      (is_win || is_mac || (is_linux && !chromeos_is_browser_only && !is_chromecast))) {
+      # TODO(crbug.com/1052397): Remove chromeos_is_browser_only once
+      # target_os switch for lacros-chrome is completed.
+      (is_win || is_mac ||
+       (is_linux && !chromeos_is_browser_only && !is_chromecast))) {
     chrome_pgo_phase = 2
   }
 

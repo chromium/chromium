@@ -11,8 +11,8 @@ import("//build/config/chromeos/ui_mode.gni")
 # NOTE: Because Chrome OS builds may depend on targets built with the Android
 # toolchain, this GNI file may be read and processed from within Chrome OS
 # toolchains. Checking |is_android| here would therefore be too restrictive.
-if (is_android || is_chromeos ||
-    (is_linux && chromeos_is_browser_only && also_build_ash_chrome)) {
+if (is_android || is_chromeos_ash ||
+    (is_chromeos_lacros && also_build_ash_chrome)) {
   import("//build/config/chromecast_build.gni")
   import("//build_overrides/build.gni")
   import("abi.gni")

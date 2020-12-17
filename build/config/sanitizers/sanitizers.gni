@@ -5,6 +5,7 @@
 import("//build/config/chrome_build.gni")
 import("//build/config/chromecast_build.gni")
 import("//build/config/chromeos/args.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/profiling/profiling.gni")
 import("//build/toolchain/toolchain.gni")
 
@@ -55,15 +56,20 @@ declare_args() {
   #
   # Disable this on linux-chromeos to avoid using ThinLTO there;
   # crbug.com/1033839. Similarly, don't use this on ARC builds.
-  is_cfi = is_official_build &&
-           ((target_os == "linux" && !is_chromeos && target_cpu == "x64") ||
-            (target_os == "chromeos" && is_chromeos_device))
+  #
+  # TODO(crbug.com/1159424): Reassess the validity of the next expression.
+  is_cfi =
+      is_official_build &&
+      (((target_os == "linux" || is_chromeos_lacros) && target_cpu == "x64") ||
+       (target_os == "chromeos" && is_chromeos_device && !is_chromeos_lacros))
 
   # Enable checks for indirect function calls via a function pointer.
   # TODO(pcc): remove this when we're ready to add these checks by default.
   # https://crbug.com/701919
-  use_cfi_icall = target_os == "linux" && !is_chromeos && target_cpu == "x64" &&
-                  is_official_build
+  #
+  # TODO(crbug.com/1159424): Reassess the validity of the next expression.
+  use_cfi_icall = (target_os == "linux" || is_chromeos_lacros) &&
+                  target_cpu == "x64" && is_official_build
 
   # Print detailed diagnostics when Control Flow Integrity detects a violation.
   use_cfi_diag = false

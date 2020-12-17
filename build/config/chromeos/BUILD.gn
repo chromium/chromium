@@ -3,8 +3,9 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/rules.gni")
+import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos)
+assert(is_chromeos_ash)
 
 declare_args() {
   # The location to a file used to dump symbols ordered by Call-Chain Clustering (C3)
