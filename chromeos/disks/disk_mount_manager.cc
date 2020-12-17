@@ -456,6 +456,12 @@ class DiskMountManagerImpl : public DiskMountManager,
 
   // CrosDisksClient::Observer override.
   void OnMountCompleted(const MountEntry& entry) override {
+    auto iter = deferred_mount_events_.find(entry.source_path());
+    if (iter != deferred_mount_events_.end()) {
+      iter->second.push_back(entry);
+      return;
+    }
+
     MountCondition mount_condition = MOUNT_CONDITION_NONE;
     if (entry.mount_type() == MOUNT_TYPE_DEVICE) {
       if (entry.error_code() == MOUNT_ERROR_UNKNOWN_FILESYSTEM) {
@@ -813,10 +819,24 @@ class DiskMountManagerImpl : public DiskMountManager,
                              device_label);
   }
 
+  // Fire observer mount events that were deferred due to an in-progress
+  // GetDeviceProperties() call.
+  void RunDeferredMountEvents(const std::string& device_path) {
+    auto mount_events_iter = deferred_mount_events_.find(device_path);
+    if (mount_events_iter == deferred_mount_events_.end())
+      return;
+    std::vector<MountEntry> entries = std::move(mount_events_iter->second);
+    deferred_mount_events_.erase(mount_events_iter);
+    for (const MountEntry& entry : entries)
+      OnMountCompleted(entry);
+  }
+
   // Callback for GetDeviceProperties.
   void OnGetDeviceProperties(const DiskInfo& disk_info) {
-    if (disk_info.is_virtual())
+    if (disk_info.is_virtual()) {
+      RunDeferredMountEvents(disk_info.device_path());
       return;
+    }
 
     DVLOG(1) << "Found disk " << disk_info.device_path();
     // Delete previous disk info for this path:
@@ -846,6 +866,7 @@ class DiskMountManagerImpl : public DiskMountManager,
     disks_.insert(
         std::make_pair(disk_info.device_path(), base::WrapUnique(disk)));
     NotifyDiskStatusUpdate(is_new ? DISK_ADDED : DISK_CHANGED, *disk);
+    RunDeferredMountEvents(disk_info.device_path());
   }
 
   // Part of EnsureMountInfoRefreshed(). Called after the list of devices are
@@ -915,6 +936,9 @@ class DiskMountManagerImpl : public DiskMountManager,
     std::string device_path = device_path_arg;
     switch (event) {
       case CROS_DISKS_DISK_ADDED: {
+        // Ensure we have an entry indicating we're waiting for
+        // GetDeviceProperties() to complete.
+        deferred_mount_events_[device_path];
         cros_disks_client_->GetDeviceProperties(
             device_path,
             base::BindOnce(&DiskMountManagerImpl::OnGetDeviceProperties,
@@ -1026,6 +1050,12 @@ class DiskMountManagerImpl : public DiskMountManager,
   DiskMountManager::DiskMap disks_;
 
   DiskMountManager::MountPointMap mount_points_;
+
+  // A map entry with a key of the device path will be created upon calling
+  // GetDeviceProperties(), for deferring mount events, and removed once it has
+  // completed. This prevents a race resulting in mount events being fired with
+  // the corresponding Disk entry unexpectedly missing.
+  std::map<std::string, std::vector<MountEntry>> deferred_mount_events_;
 
   bool already_refreshed_;
   std::vector<EnsureMountInfoRefreshedCallback> refresh_callbacks_;
