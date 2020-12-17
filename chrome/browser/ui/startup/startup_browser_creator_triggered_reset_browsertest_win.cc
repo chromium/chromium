@@ -98,9 +98,9 @@ class StartupBrowserCreatorTriggeredResetTest : public InProcessBrowserTest {
     create_services_subscription_ =
         BrowserContextDependencyManager::GetInstance()
             ->RegisterCreateServicesCallbackForTesting(
-                base::Bind(&StartupBrowserCreatorTriggeredResetTest::
-                               OnWillCreateBrowserContextServices,
-                           base::Unretained(this)));
+                base::BindRepeating(&StartupBrowserCreatorTriggeredResetTest::
+                                        OnWillCreateBrowserContextServices,
+                                    base::Unretained(this)));
   }
 
  private:

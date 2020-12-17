@@ -107,9 +107,10 @@ class ThumbnailTabHelper::TabStateTracker
                   content::WebContents* contents)
       : content::WebContentsObserver(contents),
         thumbnail_tab_helper_(thumbnail_tab_helper),
-        readiness_tracker_(contents,
-                           base::Bind(&TabStateTracker::PageReadinessChanged,
-                                      base::Unretained(this))) {
+        readiness_tracker_(
+            contents,
+            base::BindRepeating(&TabStateTracker::PageReadinessChanged,
+                                base::Unretained(this))) {
     visible_ =
         (web_contents()->GetVisibility() == content::Visibility::VISIBLE);
   }

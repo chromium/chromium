@@ -106,8 +106,8 @@ double ChromeZoomLevelPrefs::GetDefaultZoomLevelPref() const {
 
 base::CallbackListSubscription
 ChromeZoomLevelPrefs::RegisterDefaultZoomLevelCallback(
-    const base::Closure& callback) {
-  return default_zoom_changed_callbacks_.Add(callback);
+    base::RepeatingClosure callback) {
+  return default_zoom_changed_callbacks_.Add(std::move(callback));
 }
 
 void ChromeZoomLevelPrefs::OnZoomLevelChanged(

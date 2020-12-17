@@ -1634,7 +1634,7 @@ class BookmarkBarViewTest17 : public BookmarkBarViewEventTestBase {
     observer_ = std::make_unique<BookmarkContextMenuNotificationObserver>(
         CreateEventTask(this, &BookmarkBarViewTest17::Step4));
     MoveMouseAndPress(clickable_rect.CenterPoint(), ui_controls::RIGHT,
-        ui_controls::DOWN | ui_controls::UP, base::Closure());
+                      ui_controls::DOWN | ui_controls::UP, base::OnceClosure());
     // Step4 will be invoked by BookmarkContextMenuNotificationObserver.
   }
 

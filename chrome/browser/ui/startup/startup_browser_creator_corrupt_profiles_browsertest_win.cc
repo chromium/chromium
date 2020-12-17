@@ -32,7 +32,7 @@
 namespace {
 
 void UnblockOnProfileCreation(Profile::CreateStatus expected_final_status,
-                              const base::Closure& quit_closure,
+                              base::OnceClosure quit_closure,
                               Profile* profile,
                               Profile::CreateStatus status) {
   // If the status is CREATE_STATUS_CREATED, then the function will be called
@@ -41,19 +41,19 @@ void UnblockOnProfileCreation(Profile::CreateStatus expected_final_status,
     return;
 
   EXPECT_EQ(expected_final_status, status);
-  quit_closure.Run();
+  std::move(quit_closure).Run();
 }
 
-void UnblockOnProfileInitialized(const base::Closure& quit_closure,
+void UnblockOnProfileInitialized(base::OnceClosure quit_closure,
                                  Profile* profile,
                                  Profile::CreateStatus status) {
-  UnblockOnProfileCreation(Profile::CREATE_STATUS_INITIALIZED, quit_closure,
-                           profile, status);
+  UnblockOnProfileCreation(Profile::CREATE_STATUS_INITIALIZED,
+                           std::move(quit_closure), profile, status);
 }
 
-void OnCloseAllBrowsersSucceeded(const base::Closure& quit_closure,
+void OnCloseAllBrowsersSucceeded(base::OnceClosure quit_closure,
                                  const base::FilePath& path) {
-  quit_closure.Run();
+  std::move(quit_closure).Run();
 }
 
 void CreateAndSwitchToProfile(const std::string& basepath) {
@@ -161,7 +161,8 @@ class StartupBrowserCreatorCorruptProfileTest : public InProcessBrowserTest {
     base::RunLoop run_loop;
     BrowserList::GetInstance()->CloseAllBrowsersWithProfile(
         profile,
-        base::Bind(&OnCloseAllBrowsersSucceeded, run_loop.QuitClosure()),
+        base::BindRepeating(&OnCloseAllBrowsersSucceeded,
+                            run_loop.QuitClosure()),
         BrowserList::CloseCallback(), false);
   }
 
