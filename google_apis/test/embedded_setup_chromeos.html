@@ -61,19 +61,9 @@ gaia.chromeOSLogin.attemptLogin = function(email, password) {
               passwordBytes: password,
               keyType: 'KEY_TYPE_PASSWORD_PLAIN'}
       }, '/');
-  var services = document.getElementById("services").value;
-  if (services) {
-    services = JSON.parse(services);
-    if (!services)
-      services = "Failed to parse test services JSON.";
-  } else if (email.endsWith('@corp.example.com') ||
-             email.endsWith('@example.test')) {
-    // SAML tests.
-    services = [];
-  } else {
-    services = "Services are not set for testing.";
-  }
+};
 
+gaia.chromeOSLogin.sendUserInfo = function(services) {
   msg = {
     'method': 'userInfo',
     'services': services,
@@ -124,11 +114,24 @@ function goNext() {
   } else if (!document.getElementById("page2").hidden) {
     var email = document.getElementById("identifier").value;
     var password = document.getElementById("password").value;
+    var services = document.getElementById("services").value;
+    if (services) {
+      services = JSON.parse(services);
+      if (!services)
+        services = "Failed to parse test services JSON.";
+    } else if (email.endsWith('@corp.example.com') ||
+               email.endsWith('@example.test')) {
+      // SAML tests.
+      services = [];
+    } else {
+      services = "Services are not set for testing.";
+    }
 
     request = new XMLHttpRequest();
     request.open('POST', '/_/embedded/signin/challenge', true);
     request.onreadystatechange = function() {
       if (request.readyState == 4 && request.status == 200) {
+        gaia.chromeOSLogin.sendUserInfo(services);
         history.pushState({}, "", window.location.pathname + "#close");
       }
     };
