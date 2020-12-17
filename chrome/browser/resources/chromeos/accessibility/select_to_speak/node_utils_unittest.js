@@ -832,44 +832,86 @@ TEST_F('SelectToSpeakNodeUtilsUnitTest', 'getAllNodesInParagraph', function() {
 
 TEST_F(
     'SelectToSpeakNodeUtilsUnitTest',
-    'getNextNodesInParagraphFromNodeGroupWithOffset', function() {
+    'getNextNodesInParagraphFromNodeGroup_forward', function() {
       // The nodeGroup has four inline text nodes and one static text node.
       // Their starting indexes are 0, 9, 20, 30, and 51.
       const nodeGroup = generateTestNodeGroup();
 
-      let result = NodeUtils.getNextNodesInParagraphFromNodeGroupWithOffset(
-          nodeGroup, 0 /* charIndex */);
+      let result = NodeUtils.getNextNodesInParagraphFromNodeGroup(
+          nodeGroup, 0 /* charIndex */, constants.Dir.FORWARD /* direction */);
       assertEquals(result.nodes.length, 5);
       assertEquals(result.offset, 0);
 
-      result = NodeUtils.getNextNodesInParagraphFromNodeGroupWithOffset(
-          nodeGroup, 5 /* charIndex */);
+      result = NodeUtils.getNextNodesInParagraphFromNodeGroup(
+          nodeGroup, 5 /* charIndex */, constants.Dir.FORWARD /* direction */);
       assertEquals(result.nodes.length, 5);
       assertEquals(result.offset, 5);
 
-      result = NodeUtils.getNextNodesInParagraphFromNodeGroupWithOffset(
-          nodeGroup, 9 /* charIndex */);
+      result = NodeUtils.getNextNodesInParagraphFromNodeGroup(
+          nodeGroup, 9 /* charIndex */, constants.Dir.FORWARD /* direction */);
       assertEquals(result.nodes.length, 4);
       assertEquals(result.offset, 0);
 
-      result = NodeUtils.getNextNodesInParagraphFromNodeGroupWithOffset(
-          nodeGroup, 25 /* charIndex */);
+      result = NodeUtils.getNextNodesInParagraphFromNodeGroup(
+          nodeGroup, 25 /* charIndex */, constants.Dir.FORWARD /* direction */);
       assertEquals(result.nodes.length, 3);
       assertEquals(result.offset, 5);
 
-      result = NodeUtils.getNextNodesInParagraphFromNodeGroupWithOffset(
-          nodeGroup, 51 /* charIndex */);
+      result = NodeUtils.getNextNodesInParagraphFromNodeGroup(
+          nodeGroup, 51 /* charIndex */, constants.Dir.FORWARD /* direction */);
       assertEquals(result.nodes.length, 1);
       assertEquals(result.offset, 0);
 
-      result = NodeUtils.getNextNodesInParagraphFromNodeGroupWithOffset(
-          nodeGroup, 100 /* charIndex */);
+      result = NodeUtils.getNextNodesInParagraphFromNodeGroup(
+          nodeGroup, 100 /* charIndex */,
+          constants.Dir.FORWARD /* direction */);
       assertEquals(result.nodes.length, 0);
     });
 
 TEST_F(
     'SelectToSpeakNodeUtilsUnitTest',
-    'getNextNodesInParagraphFromNodeGroupWithOffsetWithEmptyTail', function() {
+    'getNextNodesInParagraphFromNodeGroup_backward', function() {
+      // The nodeGroup has four inline text nodes and one static text node.
+      // Their starting indexes are 0, 9, 20, 30, and 51.
+      const nodeGroup = generateTestNodeGroup();
+
+      let result = NodeUtils.getNextNodesInParagraphFromNodeGroup(
+          nodeGroup, 0 /* charIndex */, constants.Dir.BACKWARD /* direction */);
+      assertEquals(result.nodes.length, 0);
+
+      result = NodeUtils.getNextNodesInParagraphFromNodeGroup(
+          nodeGroup, 5 /* charIndex */, constants.Dir.BACKWARD /* direction */);
+      assertEquals(result.nodes.length, 1);
+      assertEquals(result.offset, 5);
+
+      result = NodeUtils.getNextNodesInParagraphFromNodeGroup(
+          nodeGroup, 9 /* charIndex */, constants.Dir.BACKWARD /* direction */);
+      assertEquals(result.nodes.length, 1);
+      assertEquals(result.offset, 9);
+
+      result = NodeUtils.getNextNodesInParagraphFromNodeGroup(
+          nodeGroup, 25 /* charIndex */,
+          constants.Dir.BACKWARD /* direction */);
+      assertEquals(result.nodes.length, 3);
+      assertEquals(result.offset, 5);
+
+      result = NodeUtils.getNextNodesInParagraphFromNodeGroup(
+          nodeGroup, 51 /* charIndex */,
+          constants.Dir.BACKWARD /* direction */);
+      assertEquals(result.nodes.length, 4);
+      assertEquals(result.offset, 20);
+
+      // The charIndex is out of the range of nodeGroup. It will try to get all
+      // the content before the nodeGroup. In this case, there is nothing.
+      result = NodeUtils.getNextNodesInParagraphFromNodeGroup(
+          nodeGroup, 100 /* charIndex */,
+          constants.Dir.BACKWARD /* direction */);
+      assertEquals(result.nodes.length, 0);
+    });
+
+TEST_F(
+    'SelectToSpeakNodeUtilsUnitTest',
+    'getNextNodesInParagraphFromNodeGroup_forwardWithEmptyTail', function() {
       // The nodeGroup consists of three inline text nodes: "Hello", "world ",
       // and " ".
       const nodeGroup = generateTestNodeGroupWithEmptyTail();
@@ -881,21 +923,47 @@ TEST_F(
       assertEquals(nodeWithOffset.node.name, 'world ');
       assertEquals(nodeWithOffset.offset, 5);
 
-      let result = NodeUtils.getNextNodesInParagraphFromNodeGroupWithOffset(
-          nodeGroup, 11 /* charIndex */);
+      let result = NodeUtils.getNextNodesInParagraphFromNodeGroup(
+          nodeGroup, 11 /* charIndex */, constants.Dir.FORWARD /* direction */);
       assertEquals(result.nodes.length, 0);
 
       // If we decrease the charIndex, we will get the node with 'world ' but
       // not any empty node.
-      result = NodeUtils.getNextNodesInParagraphFromNodeGroupWithOffset(
-          nodeGroup, 10 /* charIndex */);
+      result = NodeUtils.getNextNodesInParagraphFromNodeGroup(
+          nodeGroup, 10 /* charIndex */, constants.Dir.FORWARD /* direction */);
       assertEquals(result.nodes.length, 1);
       assertEquals(result.nodes[0].name, 'world ');
     });
 
 TEST_F(
     'SelectToSpeakNodeUtilsUnitTest',
-    'getNextNodesInParagraphFromNodeGroupWithOffsetFromPartialParagraph',
+    'getNextNodesInParagraphFromNodeGroup_backwardWithEmptyHeads', function() {
+      // The nodeGroup consists of three inline text nodes: " ", " Hello",
+      // "world".
+      const nodeGroup = generateTestNodeGroupWithEmptyHead();
+
+      // We can find the non-empty node at this charIndex but there is actually
+      // no text content before this position.
+      const nodeWithOffset = ParagraphUtils.findNodeFromNodeGroupByCharIndex(
+          nodeGroup, 2 /* charIndex */);
+      assertEquals(nodeWithOffset.node.name, ' Hello');
+      assertEquals(nodeWithOffset.offset, 1);
+
+      let result = NodeUtils.getNextNodesInParagraphFromNodeGroup(
+          nodeGroup, 2 /* charIndex */, constants.Dir.BACKWARD /* direction */);
+      assertEquals(result.nodes.length, 0);
+
+      // If we increase the charIndex, we will get the node with ' Hello' but
+      // not any empty node.
+      result = NodeUtils.getNextNodesInParagraphFromNodeGroup(
+          nodeGroup, 3 /* charIndex */, constants.Dir.BACKWARD /* direction */);
+      assertEquals(result.nodes.length, 1);
+      assertEquals(result.nodes[0].name, ' Hello');
+    });
+
+TEST_F(
+    'SelectToSpeakNodeUtilsUnitTest',
+    'getNextNodesInParagraphFromNodeGroup_forwardFromPartialParagraph',
     function() {
       // The nodeGroup consists only one static text node, which is "one". The
       // entire paragraph has three static text nodes: "Sentence", "one",
@@ -908,10 +976,32 @@ TEST_F(
           nodeGroup, 3 /* charIndex */);
       assertEquals(nodeWithOffset.node, null);
 
-      const result = NodeUtils.getNextNodesInParagraphFromNodeGroupWithOffset(
-          nodeGroup, 3 /* charIndex */);
+      const result = NodeUtils.getNextNodesInParagraphFromNodeGroup(
+          nodeGroup, 3 /* charIndex */, constants.Dir.FORWARD /* direction */);
       assertEquals(result.nodes.length, 1);
       assertEquals(result.offset, 0);
+    });
+
+TEST_F(
+    'SelectToSpeakNodeUtilsUnitTest',
+    'getNextNodesInParagraphFromNodeGroup_backwardFromPartialParagraph',
+    function() {
+      // The nodeGroup consists only one static text node, which is "one". The
+      // entire paragraph has three static text nodes: "Sentence", "one",
+      // "here".
+      const nodeGroup = generateTestNodeGroupFromPartialParagraph();
+
+      // After reading "one", the TTS events will set charIndex to 3. Finding
+      // the static text node from the node group will return null.
+      const nodeWithOffset = ParagraphUtils.findNodeFromNodeGroupByCharIndex(
+          nodeGroup, 3 /* charIndex */);
+      assertEquals(nodeWithOffset.node, null);
+
+      const result = NodeUtils.getNextNodesInParagraphFromNodeGroup(
+          nodeGroup, 3 /* charIndex */, constants.Dir.BACKWARD /* direction */);
+      assertEquals(result.nodes.length, 1);
+      assertEquals(result.nodes[0].name, 'Sentence');
+      assertEquals(result.offset, 8);
     });
 
 /**
@@ -1013,6 +1103,31 @@ function generateTestNodeGroupWithEmptyTail() {
       {role: 'inlineTextBox', name: 'world ', indexInParent: 0, parent: text2});
   const inlineText3 = createMockNode(
       {role: 'inlineTextBox', name: ' ', indexInParent: 1, parent: text2});
+
+  return ParagraphUtils.buildNodeGroup(
+      [inlineText1, inlineText2, inlineText3], 0,
+      false /* do not split on language */);
+}
+
+/**
+ * Creates a nodeGroup that has an empty head (i.e., "  Hello world").
+ * @return {!ParagraphUtils.NodeGroup}
+ */
+function generateTestNodeGroupWithEmptyHead() {
+  const root = createMockNode({role: 'rootWebArea'});
+  const paragraph =
+      createMockNode({role: 'paragraph', display: 'block', parent: root, root});
+  const text1 =
+      createMockNode({name: '  Hello', role: 'staticText', parent: paragraph});
+  const inlineText1 = createMockNode(
+      {role: 'inlineTextBox', name: ' ', indexInParent: 0, parent: text1});
+  const inlineText2 = createMockNode(
+      {role: 'inlineTextBox', name: ' Hello', indexInParent: 1, parent: text1});
+
+  const text2 =
+      createMockNode({name: 'world  ', role: 'staticText', parent: paragraph});
+  const inlineText3 = createMockNode(
+      {role: 'inlineTextBox', name: 'world', indexInParent: 1, parent: text2});
 
   return ParagraphUtils.buildNodeGroup(
       [inlineText1, inlineText2, inlineText3], 0,

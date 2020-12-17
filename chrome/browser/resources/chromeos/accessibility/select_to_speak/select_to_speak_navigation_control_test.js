@@ -276,6 +276,68 @@ TEST_F('SelectToSpeakNavigationControlTest', 'NextSentence', function() {
       });
 });
 
+TEST_F(
+    'SelectToSpeakNavigationControlTest', 'NextSentenceWithinParagraph',
+    function() {
+      const bodyHtml = `
+        <p id="p1">Sent 1. <span id="s1">Sent 2.</span> Sent 3. Sent 4.</p>
+      `;
+      this.runWithLoadedTree(
+          this.generateHtmlWithSelectedElement('s1', bodyHtml), () => {
+            this.triggerReadSelectedText();
+
+            // Speaks the first word.
+            this.mockTts.speakUntilCharIndex(5);
+            assertTrue(this.mockTts.currentlySpeaking());
+            assertEquals(this.mockTts.pendingUtterances().length, 1);
+            this.assertEqualsCollapseWhitespace(
+                this.mockTts.pendingUtterances()[0], 'Sent 2.');
+
+            // Hitting next sentence will start from the next sentence.
+            selectToSpeak.onSelectToSpeakPanelAction_(
+                chrome.accessibilityPrivate.SelectToSpeakPanelAction
+                    .NEXT_SENTENCE);
+            this.waitOneEventLoop(() => {
+              assertTrue(this.mockTts.currentlySpeaking());
+              assertEquals(this.mockTts.pendingUtterances().length, 1);
+              this.assertEqualsCollapseWhitespace(
+                  this.mockTts.pendingUtterances()[0], 'Sent 3. Sent 4.');
+            });
+          });
+    });
+
+TEST_F(
+    'SelectToSpeakNavigationControlTest', 'NextSentenceAcrossParagraph',
+    function() {
+      const bodyHtml = `
+        <p id="p1">Sent 1.</p>
+        <p id="p2">Sent 2. Sent 3.</p>'
+      `;
+      this.runWithLoadedTree(
+          this.generateHtmlWithSelectedElement('p1', bodyHtml), () => {
+            this.triggerReadSelectedText();
+
+            // Speaks the first word.
+            this.mockTts.speakUntilCharIndex(5);
+            assertTrue(this.mockTts.currentlySpeaking());
+            assertEquals(this.mockTts.pendingUtterances().length, 1);
+            this.assertEqualsCollapseWhitespace(
+                this.mockTts.pendingUtterances()[0], 'Sent 1.');
+
+            // Hitting next sentence will star from the next paragraph as there
+            // is no more sentence in the current paragraph.
+            selectToSpeak.onSelectToSpeakPanelAction_(
+                chrome.accessibilityPrivate.SelectToSpeakPanelAction
+                    .NEXT_SENTENCE);
+            this.waitOneEventLoop(() => {
+              assertTrue(this.mockTts.currentlySpeaking());
+              assertEquals(this.mockTts.pendingUtterances().length, 1);
+              this.assertEqualsCollapseWhitespace(
+                  this.mockTts.pendingUtterances()[0], 'Sent 2. Sent 3.');
+            });
+          });
+    });
+
 TEST_F('SelectToSpeakNavigationControlTest', 'PrevSentence', function() {
   const bodyHtml = `
       <p id="p1">First sentence. Second sentence. Third sentence.</p>'
@@ -304,6 +366,69 @@ TEST_F('SelectToSpeakNavigationControlTest', 'PrevSentence', function() {
       });
 });
 
+TEST_F(
+    'SelectToSpeakNavigationControlTest', 'PrevSentenceWithinParagraph',
+    function() {
+      const bodyHtml = `
+      <p id="p1">Sent 0. Sent 1. <span id="s1">Sent 2.</span> Sent 3.</p>
+    `;
+      this.runWithLoadedTree(
+          this.generateHtmlWithSelectedElement('s1', bodyHtml), () => {
+            this.triggerReadSelectedText();
+
+            // Supposing we are at the start of the sentence.
+            assertTrue(this.mockTts.currentlySpeaking());
+            assertEquals(this.mockTts.pendingUtterances().length, 1);
+            this.assertEqualsCollapseWhitespace(
+                this.mockTts.pendingUtterances()[0], 'Sent 2.');
+
+            // Hitting previous sentence will start from the previous sentence.
+            selectToSpeak.onSelectToSpeakPanelAction_(
+                chrome.accessibilityPrivate.SelectToSpeakPanelAction
+                    .PREVIOUS_SENTENCE);
+            this.waitOneEventLoop(() => {
+              assertTrue(this.mockTts.currentlySpeaking());
+              assertEquals(this.mockTts.pendingUtterances().length, 1);
+              this.assertEqualsCollapseWhitespace(
+                  this.mockTts.pendingUtterances()[0],
+                  'Sent 1. Sent 2. Sent 3.');
+            });
+          });
+    });
+
+TEST_F(
+    'SelectToSpeakNavigationControlTest', 'PrevSentenceAcrossParagraph',
+    function() {
+      const bodyHtml = `
+      <p id="p1">Sent 1. Sent 2.</p>
+      <p id="p2">Sent 3.</p>'
+    `;
+      this.runWithLoadedTree(
+          this.generateHtmlWithSelectedElement('p2', bodyHtml), () => {
+            this.triggerReadSelectedText();
+
+            // We are at the start of the sentence.
+            assertTrue(this.mockTts.currentlySpeaking());
+            assertEquals(this.mockTts.pendingUtterances().length, 1);
+            this.assertEqualsCollapseWhitespace(
+                this.mockTts.pendingUtterances()[0], 'Sent 3.');
+
+            // Hitting previous sentence will start from the last sentence in
+            // the previous paragraph as there is no more sentence in the
+            // current paragraph.
+            selectToSpeak.onSelectToSpeakPanelAction_(
+                chrome.accessibilityPrivate.SelectToSpeakPanelAction
+                    .PREVIOUS_SENTENCE);
+            this.waitOneEventLoop(() => {
+              assertTrue(this.mockTts.currentlySpeaking());
+              assertEquals(this.mockTts.pendingUtterances().length, 1);
+              this.assertEqualsCollapseWhitespace(
+                  this.mockTts.pendingUtterances()[0], 'Sent 2.');
+            });
+          });
+    });
+
+// TODO(https://crbug.com/1157817): Fix Flaky Test.
 TEST_F(
     'SelectToSpeakNavigationControlTest', 'ChangeSpeedWhilePlaying',
     function() {
