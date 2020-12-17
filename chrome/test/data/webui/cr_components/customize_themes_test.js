@@ -169,14 +169,19 @@ suite('CrComponentsCustomizeThemesTest', () => {
     await flushTasks();
 
     // Assert.
+    const tilesWrapper = customizeThemesElement.shadowRoot.querySelectorAll(
+        'div.chrome-theme-wrapper');
+    assertEquals(tilesWrapper.length, themes.length);
+    tilesWrapper.forEach(function(tileWrapper, i) {
+      assertEquals(tileWrapper.getAttribute('aria-label'), themes[i].label);
+    });
+
     const tiles =
         customizeThemesElement.shadowRoot.querySelectorAll('cr-theme-icon');
     assertEquals(tiles.length, 4);
-    assertEquals(tiles[2].getAttribute('aria-label'), 'theme_0');
     assertStyle(tiles[2], '--cr-theme-icon-frame-color', 'rgba(0, 0, 0, 1)');
     assertStyle(
         tiles[2], '--cr-theme-icon-active-tab-color', 'rgba(0, 0, 255, 1)');
-    assertEquals(tiles[3].getAttribute('aria-label'), 'theme_1');
     assertStyle(tiles[3], '--cr-theme-icon-frame-color', 'rgba(255, 0, 0, 1)');
     assertStyle(
         tiles[3], '--cr-theme-icon-active-tab-color', 'rgba(0, 255, 0, 1)');
@@ -307,7 +312,10 @@ suite('CrComponentsCustomizeThemesTest', () => {
     const selectedIcons = customizeThemesElement.shadowRoot.querySelectorAll(
         'cr-theme-icon[selected]');
     assertEquals(selectedIcons.length, 1);
-    assertEquals(selectedIcons[0].getAttribute('aria-label'), 'foo');
+    const selectedIconWrapper = customizeThemesElement.shadowRoot.querySelector(
+        'div.chrome-theme-wrapper');
+    assertTrue(!!selectedIconWrapper.querySelector('cr-theme-icon[selected]'));
+    assertEquals(selectedIconWrapper.getAttribute('aria-label'), 'foo');
   });
 
   test('setting third-party theme shows uninstall UI', async () => {

@@ -213,15 +213,6 @@ export class CustomizeThemesElement extends mixinBehaviors
   skColorToRgba_(skColor) {
     return skColorToRgba(skColor);
   }
-
-  /**
-   * @param {number} index
-   * @return {string}
-   * @private
-   */
-  getThemeIconId_(index) {
-    return 'themeIconId' + index;
-  }
 }
 
 customElements.define(CustomizeThemesElement.is, CustomizeThemesElement);
