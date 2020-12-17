@@ -71,7 +71,6 @@ class EventDispatcher {
       Node* activation_target,
       EventDispatchHandlingState*&);
   EventDispatchContinuation DispatchEventAtCapturing();
-  EventDispatchContinuation DispatchEventAtTarget();
   void DispatchEventAtBubbling();
   void DispatchEventPostProcess(Node* activation_target,
                                 EventDispatchHandlingState*);

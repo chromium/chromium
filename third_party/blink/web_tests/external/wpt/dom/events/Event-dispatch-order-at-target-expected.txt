@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Listeners are invoked in correct order (AT_TARGET phase) assert_array_equals: bubbles: true expected property 0 to be "capturing" but got "bubbling" (expected array ["capturing", "bubbling"] got ["bubbling", "capturing"])
-Harness: the test ran to completion.
-

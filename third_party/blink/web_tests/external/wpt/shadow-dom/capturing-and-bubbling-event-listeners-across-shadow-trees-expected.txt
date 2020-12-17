@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-FAIL Capturing event listeners should be invoked before bubbling event listeners on the target without shadow trees assert_object_equals: property "0" expected "capturing" got "bubbling"
-FAIL Capturing event listeners should be invoked before bubbling event listeners when an event is dispatched inside a shadow tree assert_object_equals: property "0" expected "capturing" got "bubbling"
-FAIL Capturing event listeners should be invoked before bubbling event listeners when an event is dispatched inside a doubly nested shadow tree assert_object_equals: property "0" expected "capturing" got "bubbling"
-FAIL Capturing event listeners should be invoked before bubbling event listeners when an event is dispatched via a slot assert_object_equals: property "0" expected "capturing" got "bubbling"
-FAIL Capturing event listeners should be invoked before bubbling event listeners when an event is dispatched inside a shadow tree which passes through another shadow tree assert_object_equals: property "0" expected "capturing" got "bubbling"
-Harness: the test ran to completion.
-

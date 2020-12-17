@@ -224,10 +224,8 @@ DispatchEventResult EventDispatcher::Dispatch() {
   if (DispatchEventPreProcess(activation_target,
                               pre_dispatch_event_handler_result) ==
       kContinueDispatching) {
-    if (DispatchEventAtCapturing() == kContinueDispatching) {
-      if (DispatchEventAtTarget() == kContinueDispatching)
-        DispatchEventAtBubbling();
-    }
+    if (DispatchEventAtCapturing() == kContinueDispatching)
+      DispatchEventAtBubbling();
   }
   DispatchEventPostProcess(activation_target,
                            pre_dispatch_event_handler_result);
@@ -255,7 +253,8 @@ inline EventDispatchContinuation EventDispatcher::DispatchEventPreProcess(
 
 inline EventDispatchContinuation EventDispatcher::DispatchEventAtCapturing() {
   // Trigger capturing event handlers, starting at the top and working our way
-  // down.
+  // down. When we get to the last one, the target, change the event phase to
+  // AT_TARGET and fire only the capture listeners on it.
   event_->SetEventPhase(Event::kCapturingPhase);
 
   if (event_->GetEventPath().GetWindowEventContext().HandleLocalEvents(
@@ -263,8 +262,8 @@ inline EventDispatchContinuation EventDispatcher::DispatchEventAtCapturing() {
       event_->PropagationStopped())
     return kDoneDispatching;
 
-  for (wtf_size_t i = event_->GetEventPath().size() - 1; i > 0; --i) {
-    const NodeEventContext& event_context = event_->GetEventPath()[i];
+  for (wtf_size_t i = event_->GetEventPath().size(); i > 0; --i) {
+    const NodeEventContext& event_context = event_->GetEventPath()[i - 1];
     if (event_context.CurrentTargetSameAsTarget()) {
       event_->SetEventPhase(Event::kAtTarget);
       event_->SetFireOnlyCaptureListenersAtTarget(true);
@@ -281,17 +280,12 @@ inline EventDispatchContinuation EventDispatcher::DispatchEventAtCapturing() {
   return kContinueDispatching;
 }
 
-inline EventDispatchContinuation EventDispatcher::DispatchEventAtTarget() {
-  event_->SetEventPhase(Event::kAtTarget);
-  event_->GetEventPath()[0].HandleLocalEvents(*event_);
-  return event_->PropagationStopped() ? kDoneDispatching : kContinueDispatching;
-}
-
 inline void EventDispatcher::DispatchEventAtBubbling() {
   // Trigger bubbling event handlers, starting at the bottom and working our way
-  // up.
+  // up. On the first one, the target, change the event phase to AT_TARGET and
+  // fire only the bubble listeners on it.
   wtf_size_t size = event_->GetEventPath().size();
-  for (wtf_size_t i = 1; i < size; ++i) {
+  for (wtf_size_t i = 0; i < size; ++i) {
     const NodeEventContext& event_context = event_->GetEventPath()[i];
     if (event_context.CurrentTargetSameAsTarget()) {
       // TODO(hayato): Need to check cancelBubble() also here?

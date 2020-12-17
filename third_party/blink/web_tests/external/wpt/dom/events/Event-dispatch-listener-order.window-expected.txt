@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Event-dispatch-listener-order assert_array_equals: expected property 4 to be "capturing SPAN" but got "bubbling SPAN" (expected array ["capturing SECTION", "capturing DIV", "capturing #document-fragment", "capturing P", "capturing SPAN", "bubbling SPAN", "bubbling P", "bubbling #document-fragment", "bubbling DIV", "bubbling SECTION"] got ["capturing SECTION", "capturing DIV", "capturing #document-fragment", "capturing P", "bubbling SPAN", "capturing SPAN", "bubbling P", "bubbling #document-fragment", "bubbling DIV", "bubbling SECTION"])
-Harness: the test ran to completion.
-
