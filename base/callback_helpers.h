@@ -65,20 +65,23 @@ using EnableIfIsBaseCallback =
 namespace internal {
 
 template <typename... Args>
-class AdaptCallbackForRepeatingHelper final {
+class OnceCallbackHolder final {
  public:
-  explicit AdaptCallbackForRepeatingHelper(OnceCallback<void(Args...)> callback)
-      : callback_(std::move(callback)) {
+  OnceCallbackHolder(OnceCallback<void(Args...)> callback,
+                     bool ignore_extra_runs)
+      : callback_(std::move(callback)), ignore_extra_runs_(ignore_extra_runs) {
     DCHECK(callback_);
   }
-  AdaptCallbackForRepeatingHelper(const AdaptCallbackForRepeatingHelper&) =
-      delete;
-  AdaptCallbackForRepeatingHelper& operator=(
-      const AdaptCallbackForRepeatingHelper&) = delete;
+  OnceCallbackHolder(const OnceCallbackHolder&) = delete;
+  OnceCallbackHolder& operator=(const OnceCallbackHolder&) = delete;
 
   void Run(Args... args) {
-    if (subtle::NoBarrier_AtomicExchange(&has_run_, 1))
+    if (subtle::NoBarrier_AtomicExchange(&has_run_, 1)) {
+      CHECK(ignore_extra_runs_) << "Both OnceCallbacks returned by "
+                                   "base::SplitOnceCallback() were run. "
+                                   "At most one of the pair should be run.";
       return;
+    }
     DCHECK(callback_);
     std::move(callback_).Run(std::forward<Args>(args)...);
   }
@@ -86,6 +89,7 @@ class AdaptCallbackForRepeatingHelper final {
  private:
   volatile subtle::Atomic32 has_run_ = 0;
   base::OnceCallback<void(Args...)> callback_;
+  const bool ignore_extra_runs_;
 };
 
 }  // namespace internal
@@ -100,9 +104,23 @@ class AdaptCallbackForRepeatingHelper final {
 template <typename... Args>
 RepeatingCallback<void(Args...)> AdaptCallbackForRepeating(
     OnceCallback<void(Args...)> callback) {
-  using Helper = internal::AdaptCallbackForRepeatingHelper<Args...>;
-  return base::BindRepeating(&Helper::Run,
-                             std::make_unique<Helper>(std::move(callback)));
+  using Helper = internal::OnceCallbackHolder<Args...>;
+  return base::BindRepeating(
+      &Helper::Run, std::make_unique<Helper>(std::move(callback),
+                                             /*ignore_extra_runs=*/true));
+}
+
+// Wraps the given OnceCallback and returns two OnceCallbacks with an identical
+// signature. On first invokation of either returned callbacks, the original
+// callback is invoked. Invoking the remaining callback results in a crash.
+template <typename... Args>
+std::pair<OnceCallback<void(Args...)>, OnceCallback<void(Args...)>>
+SplitOnceCallback(OnceCallback<void(Args...)> callback) {
+  using Helper = internal::OnceCallbackHolder<Args...>;
+  auto wrapped_once = base::BindRepeating(
+      &Helper::Run, std::make_unique<Helper>(std::move(callback),
+                                             /*ignore_extra_runs=*/false));
+  return std::make_pair(wrapped_once, wrapped_once);
 }
 
 // ScopedClosureRunner is akin to std::unique_ptr<> for Closures. It ensures

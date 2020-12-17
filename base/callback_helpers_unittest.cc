@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -191,6 +192,48 @@ TEST(CallbackHelpersTest, AdaptCallbackForRepeating) {
   EXPECT_EQ(1, count);
   wrapped.Run(&count);
   EXPECT_EQ(1, count);
+}
+
+TEST(CallbackHelpersTest, SplitOnceCallback_FirstCallback) {
+  int count = 0;
+  base::OnceCallback<void(int*)> cb =
+      base::BindOnce([](int* count) { ++*count; });
+
+  auto split = base::SplitOnceCallback(std::move(cb));
+
+  static_assert(std::is_same<decltype(split),
+                             std::pair<base::OnceCallback<void(int*)>,
+                                       base::OnceCallback<void(int*)>>>::value,
+                "");
+
+  EXPECT_EQ(0, count);
+  std::move(split.first).Run(&count);
+  EXPECT_EQ(1, count);
+
+#if GTEST_HAS_DEATH_TEST
+  EXPECT_CHECK_DEATH(std::move(split.second).Run(&count));
+#endif  // GTEST_HAS_DEATH_TEST
+}
+
+TEST(CallbackHelpersTest, SplitOnceCallback_SecondCallback) {
+  int count = 0;
+  base::OnceCallback<void(int*)> cb =
+      base::BindOnce([](int* count) { ++*count; });
+
+  auto split = base::SplitOnceCallback(std::move(cb));
+
+  static_assert(std::is_same<decltype(split),
+                             std::pair<base::OnceCallback<void(int*)>,
+                                       base::OnceCallback<void(int*)>>>::value,
+                "");
+
+  EXPECT_EQ(0, count);
+  std::move(split.second).Run(&count);
+  EXPECT_EQ(1, count);
+
+#if GTEST_HAS_DEATH_TEST
+  EXPECT_CHECK_DEATH(std::move(split.first).Run(&count));
+#endif  // GTEST_HAS_DEATH_TEST
 }
 
 }  // namespace

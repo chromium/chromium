@@ -232,6 +232,49 @@ OnceClosure task =
 other_task_runner->PostTask(FROM_HERE, std::move(task));
 ```
 
+### Splitting a OnceCallback in two
+
+If a callback is only run once, but two references need to be held to the
+callback, using a `base::OnceCallback` can be clearer than a
+`base::RepeatingCallback`, from an intent and semantics point of view.
+`base::SplitOnceCallback()` takes a `base::OnceCallback` and returns a pair of
+callbacks with the same signature. When either of the returned callback is run,
+the original callback is invoked. Running the leftover callback will result in a
+crash.
+This can be useful when passing a `base::OnceCallback` to a function that may or
+may not take ownership of the callback. E.g, when an object creation could fail:
+
+```cpp
+std::unique_ptr<FooTask> CreateFooTask(base::OnceClosure task) {
+  std::pair<base::OnceClosure,base::OnceClosure> split
+                                    = base::SplitOnceCallback(std::move(task));
+
+  std::unique_ptr<FooTask> foo = TryCreateFooTask(std::move(split.first));
+  if (foo)
+    return foo;
+
+  return CreateFallbackFooTask(std::move(split.second));
+}
+```
+
+While it is best to use a single callback to report success/failure, some APIs
+already take multiple callbacks. `base::SplitOnceCallback()` can be used to
+split a completion callback and help in such a case:
+
+```cpp
+using StatusCallback = base::OnceCallback<void(FooStatus)>;
+void DoOperation(StatusCallback done_cb) {
+  std::pair<StatusCallback, StatusCallback> split
+                                 = base::SplitOnceCallback(std::move(done_cb));
+
+  InnerWork(BindOnce(std::move(split.first), STATUS_OK),
+            BindOnce(std::move(split.second), STATUS_ABORTED));
+}
+
+void InnerWork(base::OnceClosure work_done_cb,
+               base::OnceClosure work_aborted_cb);
+```
+
 ## Quick reference for basic stuff
 
 ### Binding A Bare Function
