@@ -7,7 +7,7 @@
 
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_physical_text_fragment.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_text_offset.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_positioned_float.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"

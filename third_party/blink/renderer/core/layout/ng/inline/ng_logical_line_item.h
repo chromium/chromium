@@ -8,8 +8,9 @@
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item_result.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_physical_text_fragment.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_text_offset.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -120,22 +121,6 @@ struct NGLogicalLineItem {
         rect(source_item.rect),
         inline_size(this->shape_result->SnappedWidth()),
         bidi_level(source_item.bidi_level) {}
-  NGLogicalLineItem(scoped_refptr<const NGPhysicalTextFragment> fragment,
-                    LogicalOffset offset,
-                    LayoutUnit inline_size,
-                    UBiDiLevel bidi_level)
-      : text_fragment(std::move(fragment)),
-        rect(offset, LogicalSize()),
-        inline_size(inline_size),
-        bidi_level(bidi_level) {}
-  NGLogicalLineItem(scoped_refptr<const NGPhysicalTextFragment> fragment,
-                    LayoutUnit block_offset,
-                    LayoutUnit inline_size,
-                    UBiDiLevel bidi_level)
-      : text_fragment(std::move(fragment)),
-        rect(LayoutUnit(), block_offset, LayoutUnit(), LayoutUnit()),
-        inline_size(inline_size),
-        bidi_level(bidi_level) {}
   // Create an out-of-flow positioned object.
   NGLogicalLineItem(LayoutObject* out_of_flow_positioned_box,
                     UBiDiLevel bidi_level,
@@ -158,11 +143,11 @@ struct NGLogicalLineItem {
     return layout_result && layout_result->PhysicalFragment().IsInlineBox();
   }
   bool HasInFlowFragment() const {
-    return text_fragment || inline_item ||
+    return inline_item ||
            (layout_result && !layout_result->PhysicalFragment().IsFloating());
   }
   bool HasInFlowOrFloatingFragment() const {
-    return text_fragment || inline_item || layout_result || layout_object;
+    return inline_item || layout_result || layout_object;
   }
   bool HasOutOfFlowFragment() const { return out_of_flow_positioned_box; }
   bool HasFragment() const {
@@ -194,10 +179,10 @@ struct NGLogicalLineItem {
   const LogicalSize& Size() const { return rect.size; }
   LogicalSize MarginSize() const { return {inline_size, Size().block_size}; }
 
-  const NGPhysicalFragment* PhysicalFragment() const {
+  const NGPhysicalContainerFragment* PhysicalFragment() const {
     if (layout_result)
       return &layout_result->PhysicalFragment();
-    return text_fragment.get();
+    return nullptr;
   }
   const LayoutObject* GetLayoutObject() const;
   LayoutObject* GetMutableLayoutObject() const;
@@ -215,7 +200,6 @@ struct NGLogicalLineItem {
   }
 
   scoped_refptr<const NGLayoutResult> layout_result;
-  scoped_refptr<const NGPhysicalTextFragment> text_fragment;
 
   // Data to create a text fragment from.
   // |inline_item| is null only for ellipsis items.
@@ -322,10 +306,6 @@ class NGLogicalLineItems {
   void MoveInInlineDirection(LayoutUnit, unsigned start, unsigned end);
   void MoveInBlockDirection(LayoutUnit);
   void MoveInBlockDirection(LayoutUnit, unsigned start, unsigned end);
-
-  // Create |NGPhysicalTextFragment| for all text children.
-  void CreateTextFragments(WritingMode writing_mode,
-                           const String& text_content);
 
  private:
   void WillInsertChild(unsigned index);

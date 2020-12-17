@@ -26,7 +26,6 @@ const unsigned kMaxOffset = std::numeric_limits<unsigned>::max();
 bool ShouldSkipInvisibleTextAt(const Text& text,
                                unsigned offset,
                                bool ignores_visibility) {
-  // TODO(xiaochengh): Get style from NGInlineItem or NGPhysicalTextFragment.
   const LayoutObject* layout_object = AssociatedLayoutObjectOf(text, offset);
   if (!layout_object)
     return true;

@@ -49,8 +49,7 @@ class CORE_EXPORT NGPhysicalFragment
  public:
   enum NGFragmentType {
     kFragmentBox = 0,
-    kFragmentText = 1,
-    kFragmentLineBox = 2,
+    kFragmentLineBox = 1,
     // When adding new values, make sure the bit size of |type_| is large
     // enough to store.
   };
@@ -82,7 +81,6 @@ class CORE_EXPORT NGPhysicalFragment
            Type() == NGFragmentType::kFragmentLineBox;
   }
   bool IsBox() const { return Type() == NGFragmentType::kFragmentBox; }
-  bool IsText() const { return Type() == NGFragmentType::kFragmentText; }
   bool IsLineBox() const { return Type() == NGFragmentType::kFragmentLineBox; }
 
   // Returns the box type of this fragment.
@@ -110,9 +108,7 @@ class CORE_EXPORT NGPhysicalFragment
     return IsBox() && BoxType() == NGBoxType::kAtomicInline;
   }
   // True if this fragment is in-flow in an inline formatting context.
-  bool IsInline() const {
-    return IsText() || IsInlineBox() || IsAtomicInline();
-  }
+  bool IsInline() const { return IsInlineBox() || IsAtomicInline(); }
   bool IsFloating() const {
     return IsBox() && BoxType() == NGBoxType::kFloating;
   }
@@ -508,7 +504,7 @@ class CORE_EXPORT NGPhysicalFragment
   LayoutObject* layout_object_;
   const PhysicalSize size_;
 
-  const unsigned type_ : 2;           // NGFragmentType
+  const unsigned type_ : 1;           // NGFragmentType
   const unsigned sub_type_ : 3;       // NGBoxType, NGTextType, or NGLineBoxType
   const unsigned style_variant_ : 2;  // NGStyleVariant
   const unsigned is_hidden_for_paint_ : 1;
@@ -527,10 +523,6 @@ class CORE_EXPORT NGPhysicalFragment
   unsigned has_collapsed_borders_ : 1;
   unsigned has_baseline_ : 1;
   unsigned has_last_baseline_ : 1;
-
-  // The following bitfields are only to be used by NGPhysicalTextFragment
-  // (it's defined here to save memory, since that class has no bitfields).
-  mutable unsigned ink_overflow_computed_ : 1;
 
   // Note: We've used 32-bit bit field. If you need more bits, please think to
   // share bit fields, or put them before layout_object_ to fill the gap after

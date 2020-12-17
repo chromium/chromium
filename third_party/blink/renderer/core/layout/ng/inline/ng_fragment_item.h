@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_text_offset.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_text_type.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_ink_overflow.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_client.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 
@@ -20,7 +21,6 @@ namespace blink {
 
 class NGFragmentItems;
 class NGInlineBreakToken;
-class NGPhysicalTextFragment;
 struct NGTextFragmentPaintInfo;
 struct NGLogicalLineItem;
 
@@ -70,9 +70,6 @@ class CORE_EXPORT NGFragmentItem {
 
   // Create appropriate type for |line_item|.
   NGFragmentItem(NGLogicalLineItem&& line_item, WritingMode writing_mode);
-  // Create a text item.
-  // TODO(kojii): Should be able to create without once creating fragments.
-  explicit NGFragmentItem(const NGPhysicalTextFragment& text);
   // Create a box item.
   NGFragmentItem(const NGPhysicalBoxFragment& box,
                  TextDirection resolved_direction);

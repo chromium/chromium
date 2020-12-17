@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_logical_line_item.h"
 
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item_result.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_text_fragment_builder.h"
 
 namespace blink {
 
@@ -37,33 +36,6 @@ const ComputedStyle* NGLogicalLineItem::Style() const {
   if (inline_item)
     return inline_item->Style();
   return nullptr;
-}
-
-void NGLogicalLineItems::CreateTextFragments(WritingMode writing_mode,
-                                             const String& text_content) {
-  NGTextFragmentBuilder text_builder(writing_mode);
-  for (auto& child : *this) {
-    if (const NGInlineItem* inline_item = child.inline_item) {
-      if (UNLIKELY(child.text_content)) {
-        // Create a generated text fragmment.
-        text_builder.SetText(inline_item->GetLayoutObject(), child.text_content,
-                             inline_item->Style(), inline_item->StyleVariant(),
-                             std::move(child.shape_result), child.MarginSize());
-      } else {
-        // Create a regular text fragmment.
-        DCHECK((inline_item->Type() == NGInlineItem::kText &&
-                (inline_item->TextType() == NGTextType::kNormal ||
-                 inline_item->TextType() == NGTextType::kSymbolMarker)) ||
-               inline_item->Type() == NGInlineItem::kControl);
-        text_builder.SetItem(text_content, *inline_item,
-                             std::move(child.shape_result), child.text_offset,
-                             child.MarginSize());
-      }
-      text_builder.SetIsHiddenForPaint(child.is_hidden_for_paint);
-      DCHECK(!child.text_fragment);
-      child.text_fragment = text_builder.ToTextFragment();
-    }
-  }
 }
 
 NGLogicalLineItem* NGLogicalLineItems::FirstInFlowChild() {

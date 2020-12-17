@@ -201,11 +201,6 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   // descendants, propagating fragmentainer breaks, and more.
   void AddResult(const NGLayoutResult&, const LogicalOffset);
 
-  void AddChild(scoped_refptr<const NGPhysicalTextFragment> child,
-                const LogicalOffset& offset) {
-    AddChildInternal(child, offset);
-  }
-
   void AddChild(const NGPhysicalContainerFragment&,
                 const LogicalOffset&,
                 const LayoutInline* inline_container = nullptr,
@@ -536,8 +531,6 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   // Computes the geometry required for any inline containing blocks.
   // |inline_containing_block_map| is a map whose keys specify which inline
   // containing block geometry is required.
-  void ComputeInlineContainerGeometryFromFragmentTree(
-      InlineContainingBlockMap* inline_containing_block_map);
   void ComputeInlineContainerGeometry(
       InlineContainingBlockMap* inline_containing_block_map);
 

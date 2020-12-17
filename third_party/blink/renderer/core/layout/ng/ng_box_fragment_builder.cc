@@ -7,7 +7,6 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/ng/exclusions/ng_exclusion_space.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_break_token.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_fragment_traversal.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_physical_line_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
@@ -28,55 +27,6 @@ namespace {
 // std::pair.second points to the end linebox fragment.
 using LineBoxPair = std::pair<const NGPhysicalLineBoxFragment*,
                               const NGPhysicalLineBoxFragment*>;
-
-void GatherInlineContainerFragmentsFromLinebox(
-    NGBoxFragmentBuilder::InlineContainingBlockMap* inline_containing_block_map,
-    HashMap<const LayoutObject*, LineBoxPair>* containing_linebox_map,
-    const NGPhysicalLineBoxFragment& linebox,
-    const PhysicalOffset linebox_offset) {
-  for (const auto& descendant :
-       NGInlineFragmentTraversal::DescendantsOf(linebox)) {
-    if (!descendant.fragment->IsBox())
-      continue;
-    const LayoutObject* key = descendant.fragment->GetLayoutObject();
-    // Key for inline is the continuation root if it exists.
-    if (key->IsLayoutInline() && key->GetNode())
-      key = key->ContinuationRoot();
-    auto it = inline_containing_block_map->find(key);
-    if (it == inline_containing_block_map->end()) {
-      // Default case, not one of the blocks we are looking for.
-      continue;
-    }
-    base::Optional<NGBoxFragmentBuilder::InlineContainingBlockGeometry>&
-        containing_block_geometry = it->value;
-    LineBoxPair& containing_lineboxes =
-        containing_linebox_map->insert(key, LineBoxPair{nullptr, nullptr})
-            .stored_value->value;
-    DCHECK(containing_block_geometry.has_value() ||
-           !containing_lineboxes.first);
-
-    // |DescendantsOf| returns the offset from the given fragment. Since
-    // we give it the line box, need to add the |linebox_offset|.
-    PhysicalRect fragment_rect(
-        linebox_offset + descendant.offset_to_container_box,
-        descendant.fragment->Size());
-    if (containing_lineboxes.first == &linebox) {
-      containing_block_geometry->start_fragment_union_rect.Unite(fragment_rect);
-    } else if (!containing_lineboxes.first) {
-      containing_lineboxes.first = &linebox;
-      containing_block_geometry =
-          NGBoxFragmentBuilder::InlineContainingBlockGeometry{fragment_rect,
-                                                              PhysicalRect()};
-    }
-    // Skip fragments within an empty line boxes for the end fragment.
-    if (containing_lineboxes.second == &linebox) {
-      containing_block_geometry->end_fragment_union_rect.Unite(fragment_rect);
-    } else if (!containing_lineboxes.second || !linebox.IsEmptyLineBox()) {
-      containing_lineboxes.second = &linebox;
-      containing_block_geometry->end_fragment_union_rect = fragment_rect;
-    }
-  }
-}
 
 template <class Items>
 void GatherInlineContainerFragmentsFromItems(
@@ -539,62 +489,6 @@ LogicalOffset NGBoxFragmentBuilder::GetChildOffset(
   }
   NOTREACHED();
   return LogicalOffset();
-}
-
-void NGBoxFragmentBuilder::ComputeInlineContainerGeometryFromFragmentTree(
-    InlineContainingBlockMap* inline_containing_block_map) {
-  if (inline_containing_block_map->IsEmpty())
-    return;
-
-  // This function has detailed knowledge of inline fragment tree structure,
-  // and will break if this changes.
-  DCHECK_GE(InlineSize(), LayoutUnit());
-  DCHECK_GE(FragmentBlockSize(), LayoutUnit());
-#if DCHECK_IS_ON()
-  // Make sure all entries are continuation root.
-  for (const auto& entry : *inline_containing_block_map)
-    DCHECK_EQ(entry.key, entry.key->ContinuationRoot());
-#endif
-
-  HashMap<const LayoutObject*, LineBoxPair> containing_linebox_map;
-  for (const auto& child : children_) {
-    if (child.fragment->IsLineBox()) {
-      const auto& linebox = To<NGPhysicalLineBoxFragment>(*child.fragment);
-      const PhysicalOffset linebox_offset = child.offset.ConvertToPhysical(
-          GetWritingDirection(), ToPhysicalSize(Size(), GetWritingMode()),
-          linebox.Size());
-      GatherInlineContainerFragmentsFromLinebox(inline_containing_block_map,
-                                                &containing_linebox_map,
-                                                linebox, linebox_offset);
-    } else if (child.fragment->IsBox()) {
-      const auto& box_fragment = To<NGPhysicalBoxFragment>(*child.fragment);
-      bool is_anonymous_container =
-          box_fragment.GetLayoutObject() &&
-          box_fragment.GetLayoutObject()->IsAnonymousBlock();
-      if (!is_anonymous_container)
-        continue;
-      // If child is an anonymous container, this might be a special case of
-      // split inlines. The inline container fragments might be inside
-      // anonymous boxes. To find inline container fragments, traverse
-      // lineboxes inside anonymous box.
-      // For more on this special case, see "css container is an inline, with
-      // inline splitting" comment in NGOutOfFlowLayoutPart::LayoutDescendant.
-      const PhysicalOffset box_offset = child.offset.ConvertToPhysical(
-          GetWritingDirection(), ToPhysicalSize(Size(), GetWritingMode()),
-          box_fragment.Size());
-
-      // Traverse lineboxes of anonymous box.
-      for (const auto& box_child : box_fragment.Children()) {
-        if (box_child->IsLineBox()) {
-          const auto& linebox = To<NGPhysicalLineBoxFragment>(*box_child);
-          const PhysicalOffset linebox_offset = box_child.Offset() + box_offset;
-          GatherInlineContainerFragmentsFromLinebox(inline_containing_block_map,
-                                                    &containing_linebox_map,
-                                                    linebox, linebox_offset);
-        }
-      }
-    }
-  }
 }
 
 void NGBoxFragmentBuilder::ComputeInlineContainerGeometry(

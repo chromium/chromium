@@ -59,7 +59,6 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_physical_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/text_autosizer.h"
@@ -359,9 +358,9 @@ Vector<LayoutText::TextBoxInfo> LayoutText::GetTextBoxInfo() const {
     NGInlineCursor cursor;
     cursor.MoveTo(*this);
     for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
-      // TODO(yosin): We should introduce
-      // |NGPhysicalTextFragment::IsTruncated()| to skip them instead of using
-      // |IsHiddenForPaint()| with ordering of fragments.
+      // TODO(yosin): We should introduce |NGFragmentItem::IsTruncated()| to
+      // skip them instead of using |IsHiddenForPaint()| with ordering of
+      // fragments.
       if (cursor.Current().IsHiddenForPaint()) {
         in_hidden_for_paint = true;
       } else if (in_hidden_for_paint) {

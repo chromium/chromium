@@ -17,7 +17,7 @@ class NGInlineCursor;
 class CORE_EXPORT NGAbstractInlineTextBox final : public AbstractInlineTextBox {
  private:
   // Returns existing or newly created |NGAbstractInlineTextBox|.
-  // * |cursor| should be attached to |NGPhysicalTextFragment|.
+  // * |cursor| should be attached to a text item.
   static scoped_refptr<AbstractInlineTextBox> GetOrCreate(
       const NGInlineCursor& cursor);
   static void WillDestroy(const NGInlineCursor& cursor);

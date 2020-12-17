@@ -4,8 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_physical_line_box_fragment.h"
 
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_fragment_traversal.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_physical_text_fragment.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_test.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 
@@ -22,18 +21,10 @@ class NGPhysicalLineBoxFragmentTest : public NGLayoutTest {
     const LayoutObject* layout_object = container->GetLayoutObject();
     DCHECK(layout_object) << container;
     DCHECK(layout_object->IsLayoutBlockFlow()) << container;
-    const NGPhysicalBoxFragment* root_fragment =
-        To<LayoutBlockFlow>(layout_object)->GetPhysicalFragment(0);
-    DCHECK(root_fragment) << container;
-
+    NGInlineCursor cursor(*To<LayoutBlockFlow>(layout_object));
     Vector<const NGPhysicalLineBoxFragment*> lines;
-    for (const auto& child :
-         NGInlineFragmentTraversal::DescendantsOf(*root_fragment)) {
-      if (const NGPhysicalLineBoxFragment* line =
-              DynamicTo<NGPhysicalLineBoxFragment>(child.fragment.get())) {
-        lines.push_back(line);
-      }
-    }
+    for (cursor.MoveToFirstLine(); cursor; cursor.MoveToNextLine())
+      lines.push_back(cursor.Current()->LineBoxFragment());
     return lines;
   }
 
@@ -44,9 +35,6 @@ class NGPhysicalLineBoxFragmentTest : public NGLayoutTest {
     return nullptr;
   }
 };
-
-#define EXPECT_TEXT_FRAGMENT(text, fragment) \
-  { EXPECT_EQ(text, To<NGPhysicalTextFragment>(fragment)->Text().ToString()); }
 
 #define EXPECT_BOX_FRAGMENT(id, fragment)               \
   {                                                     \

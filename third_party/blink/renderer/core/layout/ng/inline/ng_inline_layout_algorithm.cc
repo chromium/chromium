@@ -18,9 +18,7 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_line_box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_line_breaker.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_line_truncator.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_physical_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_ruby_utils.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_text_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_outside_list_marker.h"
 #include "third_party/blink/renderer/core/layout/ng/list/ng_unpositioned_list_marker.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
@@ -757,9 +755,6 @@ void NGInlineLayoutAlgorithm::PlaceRelativePositionedItems(
     const auto* physical_fragment = child.PhysicalFragment();
     if (!physical_fragment)
       continue;
-    if (physical_fragment->IsText())
-      continue;
-
     child.rect.offset += ComputeRelativeOffsetForInline(
         ConstraintSpace(), physical_fragment->Style());
   }

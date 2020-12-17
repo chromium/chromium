@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_logical_line_item.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_physical_line_box_fragment.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_text_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
@@ -46,32 +45,11 @@ void NGLineBoxFragmentBuilder::AddChild(
   AddChildInternal(&child, child_offset);
 }
 
-void NGLineBoxFragmentBuilder::AddChildren(NGLogicalLineItems& children) {
-  children_.ReserveCapacity(children.size());
-
-  for (auto& child : children) {
-    if (child.layout_result) {
-      DCHECK(!child.text_fragment);
-      AddChild(child.layout_result->PhysicalFragment(), child.Offset());
-      child.layout_result.reset();
-    } else if (child.text_fragment) {
-      AddChild(std::move(child.text_fragment), child.Offset());
-      DCHECK(!child.text_fragment);
-    } else if (child.out_of_flow_positioned_box) {
-      AddOutOfFlowInlineChildCandidate(
-          NGBlockNode(To<LayoutBox>(child.out_of_flow_positioned_box)),
-          child.Offset(), child.container_direction);
-      child.out_of_flow_positioned_box = nullptr;
-    }
-  }
-}
-
 void NGLineBoxFragmentBuilder::PropagateChildrenData(
     NGLogicalLineItems& children) {
   for (unsigned index = 0; index < children.size(); ++index) {
     auto& child = children[index];
     if (child.layout_result) {
-      DCHECK(!child.text_fragment);
       PropagateChildData(child.layout_result->PhysicalFragment(),
                          child.Offset());
 

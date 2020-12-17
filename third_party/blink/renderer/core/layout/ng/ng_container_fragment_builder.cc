@@ -156,10 +156,6 @@ void NGContainerFragmentBuilder::PropagateChildData(
         last_inline_break_token_ = To<NGInlineBreakToken>(child_break_token);
         line_count_++;
         break;
-      case NGPhysicalFragment::kFragmentText:
-      default:
-        NOTREACHED();
-        break;
     }
   }
 

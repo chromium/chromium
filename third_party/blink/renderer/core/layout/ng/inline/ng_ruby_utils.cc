@@ -249,12 +249,10 @@ NGAnnotationMetrics ComputeAnnotationOverflow(
       continue;
     LayoutUnit item_over = item.BlockOffset();
     LayoutUnit item_under = item.BlockEndOffset();
-    if (item.text_fragment || item.shape_result) {
+    if (item.shape_result) {
       if (const auto* style = item.Style()) {
         std::tie(item_over, item_under) = AdjustTextOverUnderOffsetsForEmHeight(
-            item_over, item_under, *style,
-            item.text_fragment ? *item.text_fragment->TextShapeResult()
-                               : *item.shape_result);
+            item_over, item_under, *style, *item.shape_result);
       }
     } else {
       const auto* fragment = item.PhysicalFragment();

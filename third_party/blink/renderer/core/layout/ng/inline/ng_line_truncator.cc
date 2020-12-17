@@ -7,7 +7,6 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_box_state.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item_result.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_logical_line_item.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_text_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/platform/fonts/font_baseline.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_shaper.h"
@@ -128,9 +127,6 @@ wtf_size_t NGLineTruncator::AddTruncatedChild(
 LayoutUnit NGLineTruncator::TruncateLine(LayoutUnit line_width,
                                          NGLogicalLineItems* line_box,
                                          NGInlineLayoutStateStack* box_states) {
-  DCHECK(std::all_of(line_box->begin(), line_box->end(),
-                     [](const auto& item) { return !item.text_fragment; }));
-
   // Shape the ellipsis and compute its inline size.
   SetupEllipsis();
 
@@ -402,11 +398,6 @@ LayoutUnit NGLineTruncator::TruncateLineInTheMiddle(
 void NGLineTruncator::HideChild(NGLogicalLineItem* child) {
   DCHECK(child->HasInFlowFragment());
 
-  if (const NGPhysicalTextFragment* text = child->text_fragment.get()) {
-    child->text_fragment = text->CloneAsHiddenForPaint();
-    return;
-  }
-
   if (const NGLayoutResult* layout_result = child->layout_result.get()) {
     // Need to propagate OOF descendants in this inline-block child.
     const auto& fragment =
@@ -491,7 +482,6 @@ bool NGLineTruncator::TruncateChild(
     const NGLogicalLineItem& child,
     base::Optional<NGLogicalLineItem>* truncated_child) {
   DCHECK(truncated_child && !*truncated_child);
-  DCHECK(!child.text_fragment);
 
   // If the space is not enough, try the next child.
   if (space_for_child <= 0 && !is_first_child)

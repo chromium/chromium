@@ -318,7 +318,7 @@ void NGPhysicalContainerFragment::AddOutlineRectsForDescendant(
     NGOutlineType outline_type,
     const LayoutBoxModelObject* containing_block) const {
   DCHECK(!descendant->IsLayoutObjectDestroyedOrMoved());
-  if (descendant->IsText() || descendant->IsListMarker())
+  if (descendant->IsListMarker())
     return;
 
   if (const auto* descendant_box =

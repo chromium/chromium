@@ -351,13 +351,8 @@ void NGOutOfFlowLayoutPart::ComputeInlineContainingBlocks(
   }
 
   // Fetch the inline start/end fragment geometry.
-  if (RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled()) {
-    container_builder_->ComputeInlineContainerGeometry(
-        &inline_container_fragments);
-  } else {
-    container_builder_->ComputeInlineContainerGeometryFromFragmentTree(
-        &inline_container_fragments);
-  }
+  container_builder_->ComputeInlineContainerGeometry(
+      &inline_container_fragments);
 
   LogicalSize container_builder_size = container_builder_->Size();
   PhysicalSize container_builder_physical_size =
