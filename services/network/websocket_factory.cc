@@ -52,9 +52,9 @@ void WebSocketFactory::CreateWebSocket(
     // Too many websockets!
     mojo::Remote<mojom::WebSocketHandshakeClient> handshake_client_remote(
         std::move(handshake_client));
-    handshake_client_remote.ResetWithReason(
-        mojom::WebSocket::kInsufficientResources,
-        "Error in connection establishment: net::ERR_INSUFFICIENT_RESOURCES");
+    handshake_client_remote->OnFailure("Insufficient resources",
+                                       net::ERR_INSUFFICIENT_RESOURCES, -1);
+    handshake_client_remote.reset();
     return;
   }
   WebSocket::HasRawHeadersAccess has_raw_headers_access(

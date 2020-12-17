@@ -305,10 +305,10 @@ void WebSocket::WebSocketEventHandler::OnFailChannel(
   if (impl_->handshake_client_.is_bound()) {
     impl_->handshake_client_->OnFailure(message, net_error,
                                         response_code.value_or(-1));
-    impl_->handshake_client_.ResetWithReason(mojom::WebSocket::kInternalFailure,
-                                             message);
+    // Additional error information is provided via OnFailure in this case.
+    impl_->handshake_client_.reset();
   }
-  impl_->client_.ResetWithReason(mojom::WebSocket::kInternalFailure, message);
+  impl_->client_.ResetWithReason(0, message);
   impl_->Reset();
 }
 

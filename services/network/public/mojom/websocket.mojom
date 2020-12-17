@@ -127,11 +127,6 @@ interface WebSocketClient {
 // The interface for the server side of WebSocket. Implemented by the network
 // service. Used to send out data to the network service.
 interface WebSocket {
-  // The client side may observe the following disconnection reason from the
-  // service side:
-  const uint32 kInsufficientResources = 1;
-  const uint32 kInternalFailure = 2;
-
   // Sends a message via mojo datapipe to the remote server.
   // - |type| is the type of the message. It must be set to either
   //   WebSocketMessageType.TEXT or WebSocketMessageType.BINARY.

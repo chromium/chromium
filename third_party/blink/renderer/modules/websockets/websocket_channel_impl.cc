@@ -467,7 +467,11 @@ void WebSocketChannelImpl::OnOpeningHandshakeStarted(
 
 void WebSocketChannelImpl::OnFailure(const WTF::String& message,
                                      int net_error,
-                                     int response_code) {}
+                                     int response_code) {
+  NETWORK_DVLOG(1) << this << " OnFailure(" << message << ", " << net_error
+                   << ", " << response_code << ")";
+  failure_message_ = message;
+}
 
 void WebSocketChannelImpl::OnConnectionEstablished(
     mojo::PendingRemote<network::mojom::blink::WebSocket> websocket,
@@ -1078,11 +1082,13 @@ void WebSocketChannelImpl::OnConnectionError(const base::Location& set_from,
                                              const std::string& description) {
   DCHECK_NE(GetState(), State::kDisconnected);
   NETWORK_DVLOG(1) << " OnConnectionError("
-                   << " reason: " << custom_reason
                    << ", description:" << description
+                   << ", failure_message:" << failure_message_
                    << "), set_from:" << set_from.ToString();
-  String message = "Unknown reason";
-  if (custom_reason == network::mojom::blink::WebSocket::kInternalFailure) {
+  String message;
+  if (description.empty()) {
+    message = failure_message_;
+  } else {
     message = String::FromUTF8(description.c_str(), description.size());
   }
 

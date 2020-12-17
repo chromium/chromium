@@ -379,8 +379,7 @@ void DedicatedWorkerHost::CreateWebSocketConnector(
   if (!ancestor_render_frame_host) {
     // The ancestor frame may have already been closed. In that case, the worker
     // will soon be terminated too, so abort the connection.
-    receiver.ResetWithReason(network::mojom::WebSocket::kInsufficientResources,
-                             "The parent frame has already been gone.");
+    receiver.ResetWithReason(0, "The parent frame has already been gone.");
     return;
   }
   mojo::MakeSelfOwnedReceiver(

@@ -438,8 +438,7 @@ class ExpectInvalidUtf8Client : public network::mojom::WebSocketClient {
 
  private:
   void OnDisconnect(uint32_t reason, const std::string& message) {
-    if (reason == network::mojom::WebSocket::kInternalFailure &&
-        message == "Browser sent a text frame containing invalid UTF-8") {
+    if (message == "Browser sent a text frame containing invalid UTF-8") {
       std::move(success_closure_).Run();
     } else {
       ADD_FAILURE() << "Unexpected disconnect: reason=" << reason
