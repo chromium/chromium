@@ -92,13 +92,6 @@ class MODULES_EXPORT PeerConnectionDependencyFactory
   virtual std::unique_ptr<webrtc::AsyncResolverFactory>
   CreateAsyncResolverFactory();
 
-  // Creates a libjingle representation of a Session description. Used by a
-  // RTCPeerConnectionHandler instance.
-  virtual webrtc::SessionDescriptionInterface* CreateSessionDescription(
-      const String& type,
-      const String& sdp,
-      webrtc::SdpParseError* error);
-
   // Creates a libjingle representation of an ice candidate.
   virtual webrtc::IceCandidateInterface* CreateIceCandidate(
       const String& sdp_mid,

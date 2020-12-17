@@ -605,6 +605,42 @@ bool IsHostnameCandidate(const RTCIceCandidatePlatform& candidate) {
 
 }  // namespace
 
+// Implementation of ParsedSessionDescription
+ParsedSessionDescription::ParsedSessionDescription(const String& sdp_type,
+                                                   const String& sdp)
+    : type_(sdp_type), sdp_(sdp) {}
+
+// static
+ParsedSessionDescription ParsedSessionDescription::Parse(
+    const RTCSessionDescriptionInit* session_description_init) {
+  ParsedSessionDescription temp(session_description_init->type(),
+                                session_description_init->sdp());
+  temp.DoParse();
+  return temp;
+}
+
+// static
+ParsedSessionDescription ParsedSessionDescription::Parse(
+    const RTCSessionDescriptionPlatform* session_description_platform) {
+  ParsedSessionDescription temp(session_description_platform->GetType(),
+                                session_description_platform->Sdp());
+  temp.DoParse();
+  return temp;
+}
+
+// static
+ParsedSessionDescription ParsedSessionDescription::Parse(const String& sdp_type,
+                                                         const String& sdp) {
+  ParsedSessionDescription temp(sdp_type, sdp);
+  temp.DoParse();
+  return temp;
+}
+
+void ParsedSessionDescription::DoParse() {
+  description_.reset(webrtc::CreateSessionDescription(
+      type_.Utf8().c_str(), sdp_.Utf8().c_str(), &error_));
+}
+
 // Implementation of LocalRTCStatsRequest.
 LocalRTCStatsRequest::LocalRTCStatsRequest(RTCStatsRequest* impl)
     : impl_(impl) {}
@@ -1346,24 +1382,22 @@ void RTCPeerConnectionHandler::SetLocalDescription(
 
 void RTCPeerConnectionHandler::SetLocalDescription(
     blink::RTCVoidRequest* request,
-    RTCSessionDescriptionPlatform* description) {
+    ParsedSessionDescription parsed_sdp) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   TRACE_EVENT0("webrtc", "RTCPeerConnectionHandler::setLocalDescription");
 
-  String sdp = description->Sdp();
-  String type = description->GetType();
+  String sdp = parsed_sdp.sdp();
+  String type = parsed_sdp.type();
 
   if (peer_connection_tracker_) {
     peer_connection_tracker_->TrackSetSessionDescription(
         this, sdp, type, PeerConnectionTracker::SOURCE_LOCAL);
   }
 
-  webrtc::SdpParseError error;
-  // Since CreateNativeSessionDescription uses the dependency factory, we need
-  // to make this call on the current thread to be safe.
-  std::unique_ptr<webrtc::SessionDescriptionInterface> native_desc(
-      CreateNativeSessionDescription(sdp, type, &error));
+  const webrtc::SessionDescriptionInterface* native_desc =
+      parsed_sdp.description();
   if (!native_desc) {
+    webrtc::SdpParseError error(parsed_sdp.error());
     StringBuilder reason_str;
     reason_str.Append("Failed to parse SessionDescription. ");
     reason_str.Append(error.line.c_str());
@@ -1386,9 +1420,9 @@ void RTCPeerConnectionHandler::SetLocalDescription(
     return;
   }
 
-  if (!first_local_description_ && IsOfferOrAnswer(native_desc.get())) {
+  if (!first_local_description_ && IsOfferOrAnswer(native_desc)) {
     first_local_description_ =
-        std::make_unique<FirstSessionDescription>(native_desc.get());
+        std::make_unique<FirstSessionDescription>(native_desc);
     if (first_remote_description_) {
       ReportFirstSessionDescriptions(*first_local_description_,
                                      *first_remote_description_);
@@ -1420,30 +1454,28 @@ void RTCPeerConnectionHandler::SetLocalDescription(
                   rtc::scoped_refptr<
                       webrtc::SetLocalDescriptionObserverInterface>)>(
                   &webrtc::PeerConnectionInterface::SetLocalDescription),
-              native_peer_connection_, WTF::Passed(std::move(native_desc)),
+              native_peer_connection_, WTF::Passed(parsed_sdp.release()),
               webrtc_observer),
           CrossThreadUnretained("SetLocalDescription")));
 }
 
 void RTCPeerConnectionHandler::SetRemoteDescription(
     blink::RTCVoidRequest* request,
-    RTCSessionDescriptionPlatform* description) {
+    ParsedSessionDescription parsed_sdp) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   TRACE_EVENT0("webrtc", "RTCPeerConnectionHandler::setRemoteDescription");
 
-  String sdp = description->Sdp();
-  String type = description->GetType();
+  String sdp = parsed_sdp.sdp();
+  String type = parsed_sdp.type();
 
   if (peer_connection_tracker_) {
     peer_connection_tracker_->TrackSetSessionDescription(
         this, sdp, type, PeerConnectionTracker::SOURCE_REMOTE);
   }
 
-  webrtc::SdpParseError error;
-  // Since CreateNativeSessionDescription uses the dependency factory, we need
-  // to make this call on the current thread to be safe.
-  std::unique_ptr<webrtc::SessionDescriptionInterface> native_desc(
-      CreateNativeSessionDescription(sdp, type, &error));
+  webrtc::SdpParseError error(parsed_sdp.error());
+  const webrtc::SessionDescriptionInterface* native_desc =
+      parsed_sdp.description();
   if (!native_desc) {
     StringBuilder reason_str;
     reason_str.Append("Failed to parse SessionDescription. ");
@@ -1468,9 +1500,9 @@ void RTCPeerConnectionHandler::SetRemoteDescription(
     return;
   }
 
-  if (!first_remote_description_ && IsOfferOrAnswer(native_desc.get())) {
-    first_remote_description_.reset(
-        new FirstSessionDescription(native_desc.get()));
+  if (!first_remote_description_ && IsOfferOrAnswer(native_desc)) {
+    first_remote_description_ =
+        std::make_unique<FirstSessionDescription>(native_desc);
     if (first_local_description_) {
       ReportFirstSessionDescriptions(*first_local_description_,
                                      *first_remote_description_);
@@ -1502,7 +1534,7 @@ void RTCPeerConnectionHandler::SetRemoteDescription(
                   rtc::scoped_refptr<
                       webrtc::SetRemoteDescriptionObserverInterface>)>(
                   &webrtc::PeerConnectionInterface::SetRemoteDescription),
-              native_peer_connection_, WTF::Passed(std::move(native_desc)),
+              native_peer_connection_, WTF::Passed(parsed_sdp.release()),
               webrtc_observer),
           CrossThreadUnretained("SetRemoteDescription")));
 }
@@ -2567,20 +2599,6 @@ void RTCPeerConnectionHandler::OnIceCandidateError(
 void RTCPeerConnectionHandler::OnInterestingUsage(int usage_pattern) {
   if (client_)
     client_->DidNoteInterestingUsage(usage_pattern);
-}
-
-webrtc::SessionDescriptionInterface*
-RTCPeerConnectionHandler::CreateNativeSessionDescription(
-    const String& sdp,
-    const String& type,
-    webrtc::SdpParseError* error) {
-  webrtc::SessionDescriptionInterface* native_desc =
-      dependency_factory_->CreateSessionDescription(type, sdp, error);
-
-  LOG_IF(ERROR, !native_desc) << "Failed to create native session description."
-                              << " Type: " << type << " SDP: " << sdp;
-
-  return native_desc;
 }
 
 RTCPeerConnectionHandler::FirstSessionDescription::FirstSessionDescription(

@@ -14,6 +14,7 @@
 #include "base/notreached.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_data_channel_impl.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_peer_connection_dependency_factory.h"
+#include "third_party/blink/renderer/modules/peerconnection/mock_rtc_peer_connection_handler_platform.h"
 #include "third_party/blink/renderer/platform/peerconnection/webrtc_util.h"
 #include "third_party/webrtc/api/rtp_receiver_interface.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
@@ -324,8 +325,7 @@ const char MockPeerConnectionImpl::kDummyAnswer[] = "dummy answer";
 MockPeerConnectionImpl::MockPeerConnectionImpl(
     MockPeerConnectionDependencyFactory* factory,
     webrtc::PeerConnectionObserver* observer)
-    : dependency_factory_(factory),
-      remote_streams_(new rtc::RefCountedObject<MockStreamCollection>),
+    : remote_streams_(new rtc::RefCountedObject<MockStreamCollection>),
       hint_audio_(false),
       hint_video_(false),
       getstats_result_(true),
@@ -503,18 +503,16 @@ void MockPeerConnectionImpl::CreateOffer(
     CreateSessionDescriptionObserver* observer,
     const RTCOfferAnswerOptions& options) {
   DCHECK(observer);
-  created_sessiondescription_.reset(
-      dependency_factory_->CreateSessionDescription("unknown", kDummyOffer,
-                                                    nullptr));
+  created_sessiondescription_ =
+      MockParsedSessionDescription("unknown", kDummyAnswer).release();
 }
 
 void MockPeerConnectionImpl::CreateAnswer(
     CreateSessionDescriptionObserver* observer,
     const RTCOfferAnswerOptions& options) {
   DCHECK(observer);
-  created_sessiondescription_.reset(
-      dependency_factory_->CreateSessionDescription("unknown", kDummyAnswer,
-                                                    nullptr));
+  created_sessiondescription_ =
+      MockParsedSessionDescription("unknown", kDummyAnswer).release();
 }
 
 void MockPeerConnectionImpl::SetLocalDescriptionWorker(

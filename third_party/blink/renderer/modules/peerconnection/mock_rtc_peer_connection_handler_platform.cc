@@ -281,11 +281,11 @@ void MockRTCPeerConnectionHandlerPlatform::SetLocalDescription(
 
 void MockRTCPeerConnectionHandlerPlatform::SetLocalDescription(
     RTCVoidRequest*,
-    RTCSessionDescriptionPlatform*) {}
+    ParsedSessionDescription) {}
 
 void MockRTCPeerConnectionHandlerPlatform::SetRemoteDescription(
     RTCVoidRequest*,
-    RTCSessionDescriptionPlatform*) {}
+    ParsedSessionDescription) {}
 
 const webrtc::PeerConnectionInterface::RTCConfiguration&
 MockRTCPeerConnectionHandlerPlatform::GetConfiguration() const {

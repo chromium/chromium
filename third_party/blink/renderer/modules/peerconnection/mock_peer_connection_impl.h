@@ -386,9 +386,6 @@ class MockPeerConnectionImpl : public webrtc::DummyPeerConnection {
   ~MockPeerConnectionImpl() override;
 
  private:
-  // Used for creating MockSessionDescription.
-  MockPeerConnectionDependencyFactory* dependency_factory_;
-
   std::string stream_label_;
   std::vector<std::string> local_stream_ids_;
   rtc::scoped_refptr<MockStreamCollection> remote_streams_;

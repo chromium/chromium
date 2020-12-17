@@ -1,0 +1,115 @@
+<!doctype html>
+<meta charset=utf-8>
+<meta name="timeout" content="long">
+<title>RTCPeerConnection.addTrack multiple times</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../external/wpt/webrtc/RTCPeerConnection-helper.js"></script>
+<script>
+
+'use strict';
+
+const reasonableNegotiationTimeMs = 1000; // 1 second
+const reasonableTotalTestTimeMs = 2000;  // The overall time for a test of this type is 10 secs, so timeout must be small
+
+function maybeLog(arg) {
+  // Uncomment to log performance data
+  // console.log(arg);
+}
+
+async function doNegotiation(caller, callee) {
+  const startTime = performance.now();
+  const offer = await caller.createOffer();
+  await caller.setLocalDescription(offer);
+  await callee.setRemoteDescription(offer);
+  const answer = await callee.createAnswer();
+  await callee.setLocalDescription(answer);
+  await caller.setRemoteDescription(answer);
+  return performance.now() - startTime;
+}
+
+  promise_test(async t => {
+    const caller = new RTCPeerConnection();
+    t.add_cleanup(() => caller.close());
+    const callee = new RTCPeerConnection();
+    t.add_cleanup(() => callee.close());
+
+    const stream = await getNoiseStream({audio: true});
+    t.add_cleanup(() => stream.getTracks().forEach(track => track.stop()));
+    const [track] = stream.getTracks();
+    const testStartTime = performance.now();
+    let timeTakenMs = 0;
+    let count = 0;
+    while (timeTakenMs < reasonableNegotiationTimeMs &&
+           performance.now() - testStartTime < reasonableTotalTestTimeMs) {
+      count += 1;
+      const transceiver = caller.addTrack(track.clone());
+      timeTakenMs = await doNegotiation(caller, callee);
+      maybeLog('Audio: Count ' + count +  ', timeTakenMs is ' + timeTakenMs);
+      assert_equals(callee.getReceivers().length, count);
+    }
+    assert_greater_than_equal(count, 9);
+  }, 'Adding multiple audio tracks with addTrack(), one at a time');
+
+  promise_test(async t => {
+    const caller = new RTCPeerConnection();
+    t.add_cleanup(() => caller.close());
+    const callee = new RTCPeerConnection();
+    t.add_cleanup(() => callee.close());
+
+    const stream = await getNoiseStream({audio: true});
+    t.add_cleanup(() => stream.getTracks().forEach(track => track.stop()));
+    const [track] = stream.getTracks();
+    const kTrackCount = 10;
+    for (let count = 1; count <= kTrackCount; count++) {
+      const transceiver = caller.addTrack(track.clone());
+    }
+    const timeTakenMs = await doNegotiation(caller, callee);
+    assert_equals(caller.getSenders().length, kTrackCount);
+    assert_equals(callee.getReceivers().length, kTrackCount);
+    assert_less_than(timeTakenMs, reasonableNegotiationTimeMs);
+  }, 'Adding multiple audio tracks with addTrack(), all at once');
+
+  promise_test(async t => {
+    const caller = new RTCPeerConnection();
+    t.add_cleanup(() => caller.close());
+    const callee = new RTCPeerConnection();
+    t.add_cleanup(() => callee.close());
+
+    const stream = await getNoiseStream({video: true});
+    t.add_cleanup(() => stream.getTracks().forEach(track => track.stop()));
+    const [track] = stream.getTracks();
+    const testStartTime = performance.now();
+    let timeTakenMs = 0;
+    let count = 0;
+    while (timeTakenMs < reasonableNegotiationTimeMs &&
+           performance.now() - testStartTime < reasonableTotalTestTimeMs) {
+      count += 1;
+      const transceiver = caller.addTrack(track.clone());
+      timeTakenMs = await doNegotiation(caller, callee);
+      maybeLog('Video: Count ' + count +  ', timeTakenMs is ' + timeTakenMs);
+      assert_equals(callee.getReceivers().length, count);
+    }
+    assert_greater_than_equal(count, 4);
+  }, 'Adding multiple video tracks with addTrack(), one at a time');
+
+  promise_test(async t => {
+    const caller = new RTCPeerConnection();
+    t.add_cleanup(() => caller.close());
+    const callee = new RTCPeerConnection();
+    t.add_cleanup(() => callee.close());
+
+    const stream = await getNoiseStream({video: true});
+    t.add_cleanup(() => stream.getTracks().forEach(track => track.stop()));
+    const [track] = stream.getTracks();
+    const kTrackCount = 3;
+    for (let count = 1; count <= kTrackCount; count++) {
+      const transceiver = caller.addTrack(track.clone());
+    }
+    const timeTakenMs = await doNegotiation(caller, callee);
+    assert_equals(caller.getSenders().length, kTrackCount);
+    assert_equals(callee.getReceivers().length, kTrackCount);
+    assert_less_than(timeTakenMs, reasonableNegotiationTimeMs);
+  }, 'Adding multiple video tracks with addTrack(), all at once');
+
+</script>

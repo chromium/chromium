@@ -534,14 +534,6 @@ PeerConnectionDependencyFactory::CreateLocalVideoTrack(
   return GetPcFactory()->CreateVideoTrack(id.Utf8(), source).get();
 }
 
-webrtc::SessionDescriptionInterface*
-PeerConnectionDependencyFactory::CreateSessionDescription(
-    const String& type,
-    const String& sdp,
-    webrtc::SdpParseError* error) {
-  return webrtc::CreateSessionDescription(type.Utf8(), sdp.Utf8(), error);
-}
-
 webrtc::IceCandidateInterface*
 PeerConnectionDependencyFactory::CreateIceCandidate(const String& sdp_mid,
                                                     int sdp_mline_index,

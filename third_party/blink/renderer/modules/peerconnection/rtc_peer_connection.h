@@ -103,8 +103,7 @@ enum class SdpUsageCategory {
 };
 
 MODULES_EXPORT SdpUsageCategory
-DeduceSdpUsageCategory(const String& sdp_type,
-                       const String& sdp,
+DeduceSdpUsageCategory(const ParsedSessionDescription& parsed_sdp,
                        bool sdp_semantics_specified,
                        webrtc::SdpSemantics sdp_semantics);
 
@@ -319,9 +318,8 @@ class MODULES_EXPORT RTCPeerConnection final
     kSetLocalDescription,
     kSetRemoteDescription,
   };
-  void ReportSetSdpUsage(
-      SetSdpOperationType operation_type,
-      const RTCSessionDescriptionInit* session_description_init) const;
+  void ReportSetSdpUsage(SetSdpOperationType operation_type,
+                         const ParsedSessionDescription& parsed_sdp) const;
 
   // MediaStreamObserver
   void OnStreamAddTrack(MediaStream*, MediaStreamTrack*) override;
@@ -389,7 +387,7 @@ class MODULES_EXPORT RTCPeerConnection final
   // explicitly specifying the SDP format, there may be errors if the
   // application assumes a format that differs from the actual default format.
   base::Optional<ComplexSdpCategory> CheckForComplexSdp(
-      const RTCSessionDescriptionInit* session_description_init) const;
+      const ParsedSessionDescription&) const;
 
   const CallSetupStateTracker& call_setup_state_tracker() const;
   void NoteCallSetupStateEventPending(
@@ -571,10 +569,8 @@ class MODULES_EXPORT RTCPeerConnection final
   void RecordRapporMetrics();
 
   DOMException* checkSdpForStateErrors(ExecutionContext*,
-                                       const RTCSessionDescriptionInit*,
-                                       String* sdp);
-  void MaybeWarnAboutUnsafeSdp(
-      const RTCSessionDescriptionInit* session_description_init) const;
+                                       const ParsedSessionDescription&);
+  void MaybeWarnAboutUnsafeSdp(const ParsedSessionDescription&) const;
 
   HeapHashSet<Member<RTCIceTransport>> ActiveIceTransports() const;
 

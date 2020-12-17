@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/modules/peerconnection/mock_peer_connection_dependency_factory.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_peer_connection_impl.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_rtc_peer_connection_handler_client.h"
+#include "third_party/blink/renderer/modules/peerconnection/mock_rtc_peer_connection_handler_platform.h"
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_tracker.h"
 #include "third_party/blink/renderer/modules/peerconnection/testing/fake_resource_listener.h"
 #include "third_party/blink/renderer/modules/webrtc/webrtc_audio_device_impl.h"
@@ -662,8 +663,6 @@ TEST_F(RTCPeerConnectionHandlerTest, CreateAnswer) {
 }
 
 TEST_F(RTCPeerConnectionHandlerTest, setLocalDescription) {
-  auto* description = MakeGarbageCollected<RTCSessionDescriptionPlatform>(
-      kDummySdpType, kDummySdp);
   // PeerConnectionTracker::TrackSetSessionDescription is expected to be called
   // before |mock_peer_connection| is called.
   testing::InSequence sequence;
@@ -673,7 +672,9 @@ TEST_F(RTCPeerConnectionHandlerTest, setLocalDescription) {
                                          PeerConnectionTracker::SOURCE_LOCAL));
   EXPECT_CALL(*mock_peer_connection_, SetLocalDescriptionForMock(_, _));
 
-  pc_handler_->SetLocalDescription(nullptr /*RTCVoidRequest*/, description);
+  pc_handler_->SetLocalDescription(
+      nullptr /*RTCVoidRequest*/,
+      MockParsedSessionDescription(kDummySdpType, kDummySdp));
   RunMessageLoopsUntilIdle();
 
   std::string sdp_string;
@@ -706,14 +707,12 @@ TEST_F(RTCPeerConnectionHandlerTest, setLocalDescriptionParseError) {
 
   // Used to simulate a parse failure.
   mock_dependency_factory_->SetFailToCreateSessionDescription(true);
-  pc_handler_->SetLocalDescription(nullptr /*RTCVoidRequest*/, description);
+  pc_handler_->SetLocalDescription(
+      nullptr /*RTCVoidRequest*/, ParsedSessionDescription::Parse(description));
   RunMessageLoopsUntilIdle();
 }
 
 TEST_F(RTCPeerConnectionHandlerTest, setRemoteDescription) {
-  auto* description = MakeGarbageCollected<RTCSessionDescriptionPlatform>(
-      kDummySdpType, kDummySdp);
-
   // PeerConnectionTracker::TrackSetSessionDescription is expected to be called
   // before |mock_peer_connection| is called.
   testing::InSequence sequence;
@@ -723,7 +722,9 @@ TEST_F(RTCPeerConnectionHandlerTest, setRemoteDescription) {
                                          PeerConnectionTracker::SOURCE_REMOTE));
   EXPECT_CALL(*mock_peer_connection_, SetRemoteDescriptionForMock(_, _));
 
-  pc_handler_->SetRemoteDescription(nullptr /*RTCVoidRequest*/, description);
+  pc_handler_->SetRemoteDescription(
+      nullptr /*RTCVoidRequest*/,
+      MockParsedSessionDescription(kDummySdpType, kDummySdp));
   RunMessageLoopsUntilIdle();
 
   std::string sdp_string;
@@ -756,7 +757,8 @@ TEST_F(RTCPeerConnectionHandlerTest, setRemoteDescriptionParseError) {
 
   // Used to simulate a parse failure.
   mock_dependency_factory_->SetFailToCreateSessionDescription(true);
-  pc_handler_->SetRemoteDescription(nullptr /*RTCVoidRequest*/, description);
+  pc_handler_->SetRemoteDescription(
+      nullptr /*RTCVoidRequest*/, ParsedSessionDescription::Parse(description));
   RunMessageLoopsUntilIdle();
 }
 

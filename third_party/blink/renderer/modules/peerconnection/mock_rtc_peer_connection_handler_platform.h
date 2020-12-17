@@ -17,6 +17,65 @@
 
 namespace blink {
 
+class MockSessionDescription : public webrtc::SessionDescriptionInterface {
+ public:
+  MockSessionDescription(const std::string& type, const std::string& sdp)
+      : type_(type), sdp_(sdp) {}
+  ~MockSessionDescription() override = default;
+  cricket::SessionDescription* description() override {
+    NOTIMPLEMENTED();
+    return nullptr;
+  }
+  const cricket::SessionDescription* description() const override {
+    NOTIMPLEMENTED();
+    return nullptr;
+  }
+  std::string session_id() const override {
+    NOTIMPLEMENTED();
+    return std::string();
+  }
+  std::string session_version() const override {
+    NOTIMPLEMENTED();
+    return std::string();
+  }
+  std::string type() const override { return type_; }
+  bool AddCandidate(const webrtc::IceCandidateInterface* candidate) override {
+    NOTIMPLEMENTED();
+    return false;
+  }
+  size_t number_of_mediasections() const override {
+    NOTIMPLEMENTED();
+    return 0;
+  }
+  const webrtc::IceCandidateCollection* candidates(
+      size_t mediasection_index) const override {
+    NOTIMPLEMENTED();
+    return nullptr;
+  }
+
+  bool ToString(std::string* out) const override {
+    *out = sdp_;
+    return true;
+  }
+
+ private:
+  std::string type_;
+  std::string sdp_;
+};
+
+// Class for creating a ParsedSessionDescription without running the parser.
+// It returns an empty (but non-null) description object.
+class MockParsedSessionDescription : public ParsedSessionDescription {
+ public:
+  MockParsedSessionDescription(const String& type, const String& sdp)
+      : ParsedSessionDescription(type, sdp) {
+    description_ =
+        std::make_unique<MockSessionDescription>(type.Utf8(), sdp.Utf8());
+  }
+  // Constructor for creating an error-returning session description.
+  MockParsedSessionDescription() : ParsedSessionDescription("error", "error") {}
+};
+
 // TODO(https://crbug.com/908461): This is currently implemented as NO-OPs or to
 // create dummy objects whose methods return default values. Consider renaming
 // the class, changing it to be GMOCK friendly or deleting it.
@@ -45,10 +104,8 @@ class MockRTCPeerConnectionHandlerPlatform : public RTCPeerConnectionHandler {
   void CreateAnswer(RTCSessionDescriptionRequest*,
                     RTCAnswerOptionsPlatform*) override;
   void SetLocalDescription(RTCVoidRequest*) override;
-  void SetLocalDescription(RTCVoidRequest*,
-                           RTCSessionDescriptionPlatform*) override;
-  void SetRemoteDescription(RTCVoidRequest*,
-                            RTCSessionDescriptionPlatform*) override;
+  void SetLocalDescription(RTCVoidRequest*, ParsedSessionDescription) override;
+  void SetRemoteDescription(RTCVoidRequest*, ParsedSessionDescription) override;
   const webrtc::PeerConnectionInterface::RTCConfiguration& GetConfiguration()
       const override;
   webrtc::RTCErrorType SetConfiguration(

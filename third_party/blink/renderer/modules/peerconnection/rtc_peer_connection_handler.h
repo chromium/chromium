@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/modules/peerconnection/media_stream_track_metrics.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_receiver_impl.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_sender_impl.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_session_description_init.h"
 #include "third_party/blink/renderer/modules/peerconnection/thermal_resource.h"
 #include "third_party/blink/renderer/modules/peerconnection/thermal_uma_listener.h"
 #include "third_party/blink/renderer/modules/peerconnection/transceiver_state_surfacer.h"
@@ -56,6 +57,55 @@ class RTCPeerConnectionHandlerClient;
 class RTCVoidRequest;
 class SetLocalDescriptionRequest;
 class WebLocalFrame;
+
+// Helper class for passing pre-parsed session descriptions to functions.
+// Create a ParsedSessionDescription by calling one of the Parse functions.
+// The function allows you to access its input SDP string, as well as the
+// parsed form. If parse failed, description() returns null, and error()
+// returns an error description. The class can't be modified or reused,
+// but can be neutered by calling release().
+class MODULES_EXPORT ParsedSessionDescription {
+ public:
+  static ParsedSessionDescription Parse(const RTCSessionDescriptionInit*);
+  static ParsedSessionDescription Parse(const RTCSessionDescriptionPlatform*);
+  static ParsedSessionDescription Parse(const String& type, const String& sdp);
+
+  // Moveable, but not copyable.
+  ParsedSessionDescription(ParsedSessionDescription&& other) = default;
+  ParsedSessionDescription& operator=(ParsedSessionDescription&& other) =
+      default;
+  ParsedSessionDescription(const ParsedSessionDescription&) = delete;
+  ParsedSessionDescription operator=(const ParsedSessionDescription&) = delete;
+
+  const webrtc::SessionDescriptionInterface* description() const {
+    return description_.get();
+  }
+  const webrtc::SdpParseError& error() const { return error_; }
+  const String& type() const { return type_; }
+  const String& sdp() const { return sdp_; }
+
+  std::unique_ptr<webrtc::SessionDescriptionInterface> release() {
+    return std::unique_ptr<webrtc::SessionDescriptionInterface>(
+        description_.release());
+  }
+
+ protected:
+  // The constructor will not parse the SDP.
+  // It is protected, not private, in order to allow it to be used to construct
+  // mock objects.
+  ParsedSessionDescription(const String& type, const String& sdp);
+  // The mock object also needs access to the description.
+  std::unique_ptr<webrtc::SessionDescriptionInterface> description_;
+
+ private:
+  // Does the actual parsing. Only called from the static Parse methods.
+  void DoParse();
+
+  String type_;
+  String sdp_;
+
+  webrtc::SdpParseError error_;
+};
 
 // Mockable wrapper for blink::RTCStatsResponseBase
 class MODULES_EXPORT LocalRTCStatsResponse : public rtc::RefCountInterface {
@@ -152,10 +202,12 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
                             blink::RTCAnswerOptionsPlatform* options);
 
   virtual void SetLocalDescription(blink::RTCVoidRequest* request);
+  // Set local and remote description.
+  // The parsed_sdp argument must be passed in with std::move.
   virtual void SetLocalDescription(blink::RTCVoidRequest* request,
-                                   RTCSessionDescriptionPlatform* description);
+                                   ParsedSessionDescription parsed_sdp);
   virtual void SetRemoteDescription(blink::RTCVoidRequest* request,
-                                    RTCSessionDescriptionPlatform* description);
+                                    ParsedSessionDescription parsed_sdp);
 
   virtual const webrtc::PeerConnectionInterface::RTCConfiguration&
   GetConfiguration() const;
@@ -319,11 +371,6 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
     kSuccess,
     kFailure,
   };
-
-  webrtc::SessionDescriptionInterface* CreateNativeSessionDescription(
-      const String& sdp,
-      const String& type,
-      webrtc::SdpParseError* error);
 
   RTCSessionDescriptionPlatform*
   GetRTCSessionDescriptionPlatformOnSignalingThread(

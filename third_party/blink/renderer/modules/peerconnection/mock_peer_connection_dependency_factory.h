@@ -180,10 +180,6 @@ class MockPeerConnectionDependencyFactory
   scoped_refptr<webrtc::VideoTrackInterface> CreateLocalVideoTrack(
       const String& id,
       webrtc::VideoTrackSourceInterface* source) override;
-  webrtc::SessionDescriptionInterface* CreateSessionDescription(
-      const String& type,
-      const String& sdp,
-      webrtc::SdpParseError* error) override;
   webrtc::IceCandidateInterface* CreateIceCandidate(const String& sdp_mid,
                                                     int sdp_mline_index,
                                                     const String& sdp) override;
