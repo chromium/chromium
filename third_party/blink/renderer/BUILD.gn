@@ -50,7 +50,8 @@ config("inside_blink") {
       "-Wno-implicit-int-conversion",
     ]
 
-    if (!is_ash || default_toolchain != "//build/toolchain/cros:target") {
+    if (!is_chromeos_ash ||
+        default_toolchain != "//build/toolchain/cros:target") {
       cflags += [ "-Wno-enum-float-conversion" ]
     }
   }

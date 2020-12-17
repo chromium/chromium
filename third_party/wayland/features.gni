@@ -8,7 +8,7 @@ import("//build/config/chromeos/ui_mode.gni")
 declare_args() {
   # Controls whether the build should use the version of Wayland
   # library shipped with the system or Chromium third_party.
-  use_system_libwayland = is_linux && !is_chromecast && !is_lacros &&
+  use_system_libwayland = is_linux && !is_chromecast && !is_chromeos_lacros &&
                           default_toolchain != "//build/toolchain/cros:target"
 
   # Path to wayland-scanner. Has effect only when the system libwayland is used.

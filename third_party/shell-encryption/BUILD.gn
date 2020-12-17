@@ -47,7 +47,7 @@ proto_library("coefficient_polynomial_proto") {
 }
 
 # SHELL lib.
-if (is_ash) {
+if (is_chromeos_ash) {
   source_set("shell_encryption") {
     public_configs = [ ":shell_encryption_config1" ]
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -97,7 +97,7 @@ if (is_ash) {
   }
 }
 
-if (is_ash) {
+if (is_chromeos_ash) {
   source_set("shell_encryption_test_library") {
     testonly = true
     public_configs = [ ":shell_encryption_config1" ]

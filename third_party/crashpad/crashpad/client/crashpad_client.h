@@ -647,7 +647,7 @@ class CrashpadClient {
   static void UseSystemDefaultHandler();
 #endif
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   //! \brief Sets a timestamp on the signal handler to be passed on to
   //!     crashpad_handler and then eventually Chrome OS's crash_reporter.
   //!

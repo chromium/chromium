@@ -5,7 +5,7 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//tools/grit/grit_rule.gni")
 
-if (is_ash) {
+if (is_chromeos_ash) {
   grit("ink_resources") {
     source = "ink_resources.grd"
 

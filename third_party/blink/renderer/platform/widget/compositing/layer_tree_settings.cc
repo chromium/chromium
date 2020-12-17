@@ -236,7 +236,7 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
     default_tile_size += 32;
   if (default_tile_size == 384 && std::abs(portrait_width - 1200) < tolerance)
     default_tile_size += 32;
-#elif BUILDFLAG(IS_ASH) || defined(OS_MAC)
+#elif BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_MAC)
   // Use 512 for high DPI (dsf=2.0f) devices.
   if (initial_device_scale_factor >= 2.0f)
     default_tile_size = 512;

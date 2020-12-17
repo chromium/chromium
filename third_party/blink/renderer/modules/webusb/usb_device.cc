@@ -54,7 +54,7 @@ const char kInterfaceStateChangeInProgress[] =
     "An operation that changes interface state is in progress.";
 const char kOpenRequired[] = "The device must be opened first.";
 
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kExtensionProtocol[] = "chrome-extension";
 
 // These Imprivata extensions can claim the protected HID interface class (used
@@ -96,7 +96,7 @@ bool IsClassAllowedForExtension(uint8_t class_code, const KURL& url) {
       return false;
   }
 }
-#endif  // BUILDFLAG(IS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 DOMException* ConvertFatalTransferStatus(const UsbTransferStatus& status) {
   switch (status) {
@@ -669,7 +669,7 @@ bool USBDevice::IsProtectedInterfaceClass(wtf_size_t interface_index) const {
     if (std::binary_search(std::begin(kProtectedClasses),
                            std::end(kProtectedClasses),
                            alternate->class_code)) {
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       return !IsClassAllowedForExtension(alternate->class_code,
                                          GetExecutionContext()->Url());
 #else

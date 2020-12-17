@@ -965,7 +965,7 @@ void WidgetBase::ClearTextInputState() {
 }
 
 void WidgetBase::ShowVirtualKeyboardOnElementFocus() {
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // On ChromeOS, virtual keyboard is triggered only when users leave the
   // mouse button or the finger and a text input element is focused at that
   // time. Focus event itself shouldn't trigger virtual keyboard.
@@ -1465,7 +1465,7 @@ bool WidgetBase::ComputePreferCompositingToLCDText() {
       *base::CommandLine::ForCurrentProcess();
   if (command_line.HasSwitch(switches::kDisablePreferCompositingToLCDText))
     return false;
-#if defined(OS_ANDROID) || BUILDFLAG(IS_ASH)
+#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
   // On Android, we never have subpixel antialiasing. On Chrome OS we prefer to
   // composite all scrollers for better scrolling performance.
   return true;

@@ -127,7 +127,7 @@ static_library("libusb") {
     ]
   }
 
-  if (is_ash) {
+  if (is_chromeos_ash) {
     defines += [ "USBI_TIMERFD_AVAILABLE" ]
   }
 

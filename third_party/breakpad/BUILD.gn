@@ -41,7 +41,7 @@ config("client_config") {
   if (is_android) {
     include_dirs += [ "breakpad/src/common/android/include" ]
   }
-  if (is_ash) {
+  if (is_chromeos_ash) {
     defines = [ "__CHROMEOS__" ]
   }
 }
@@ -626,7 +626,7 @@ if (is_linux || is_chromeos || is_android) {
     configs += [ "//build/config/compiler:no_chromium_code" ]
     public_configs = [ ":client_config" ]
 
-    if (current_cpu == "arm" && is_ash) {
+    if (current_cpu == "arm" && is_chromeos_ash) {
       # Avoid running out of registers in
       # linux_syscall_support.h:sys_clone()'s inline assembly.
       cflags = [ "-marm" ]

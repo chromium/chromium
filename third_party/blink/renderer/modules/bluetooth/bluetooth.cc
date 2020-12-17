@@ -56,7 +56,7 @@ const char kHandleGestureForPermissionRequest[] =
 // TODO(https://crbug.com/570344): Remove this method when all platforms are
 // supported.
 void AddUnsupportedPlatformConsoleMessage(ExecutionContext* context) {
-#if !BUILDFLAG(IS_ASH) && !defined(OS_ANDROID) && !defined(OS_MAC) && \
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID) && !defined(OS_MAC) && \
     !defined(OS_WIN)
   context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
       mojom::blink::ConsoleMessageSource::kJavaScript,

@@ -15,7 +15,7 @@ declare_args() {
 }
 
 # Disable Widevine when running linux-chromeos.
-if (is_ash && !is_chromeos_device) {
+if (is_chromeos_ash && !is_chromeos_device) {
   enable_widevine = false
 }
 

@@ -51,7 +51,7 @@ static mojom::blink::EditingBehavior EditingBehaviorTypeForPlatform() {
       mojom::blink::EditingBehavior::kEditingWindowsBehavior
 #elif defined(OS_ANDROID)
       mojom::blink::EditingBehavior::kEditingAndroidBehavior
-#elif BUILDFLAG(IS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
       base::FeatureList::IsEnabled(features::kCrOSAutoSelect)
           ? mojom::blink::EditingBehavior::kEditingChromeOSBehavior
           : mojom::blink::EditingBehavior::kEditingUnixBehavior
