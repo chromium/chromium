@@ -65,7 +65,6 @@ class CORE_EXPORT ModuleRecord final {
   static v8::Local<v8::Module> Compile(
       v8::Isolate*,
       const ModuleScriptCreationParams& params,
-      const KURL& base_url,
       const ScriptFetchOptions&,
       const TextPosition&,
       ExceptionState&,

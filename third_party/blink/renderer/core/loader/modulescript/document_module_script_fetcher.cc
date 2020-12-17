@@ -47,10 +47,14 @@ void DocumentModuleScriptFetcher::NotifyFinished(Resource* resource) {
     }
   }
   // TODO(crbug.com/1061857): Pass ScriptStreamer to the client here.
+  const KURL& url = script_resource->GetResponse().CurrentRequestUrl();
+  // Create an external module script where base_url == source_url.
+  // https://html.spec.whatwg.org/multipage/webappapis.html#concept-script-base-url
   client_->NotifyFetchFinishedSuccess(ModuleScriptCreationParams(
-      script_resource->GetResponse().CurrentRequestUrl(), module_type,
+      /*source_url=*/url, /*base_url=*/url, module_type,
       script_resource->SourceText(), script_resource->CacheHandler(),
-      script_resource->GetResourceRequest().GetCredentialsMode(), nullptr,
+      script_resource->GetResourceRequest().GetCredentialsMode(),
+      /*script_streamer=*/nullptr,
       ScriptStreamer::NotStreamingReason::kStreamingDisabled));
 }
 

@@ -27,10 +27,11 @@ v8::Local<v8::Module> ModuleTestBase::CompileModule(
     const KURL& url,
     ExceptionState& exception_state) {
   ModuleScriptCreationParams params(
-      url, ModuleScriptCreationParams::ModuleType::kJavaScriptModule,
+      /*source_url=*/url, /*base_url=*/url,
+      ModuleScriptCreationParams::ModuleType::kJavaScriptModule,
       ParkableString(source.Impl()), nullptr,
       network::mojom::CredentialsMode::kOmit);
-  return ModuleRecord::Compile(isolate, params, url, ScriptFetchOptions(),
+  return ModuleRecord::Compile(isolate, params, ScriptFetchOptions(),
                                TextPosition::MinimumPosition(),
                                exception_state);
 }

@@ -103,10 +103,12 @@ void InstalledServiceWorkerModuleScriptFetcher::Fetch(
     return;
   }
 
+  // Create an external module script where base_url == source_url.
+  // https://html.spec.whatwg.org/multipage/webappapis.html#concept-script-base-url
   client->NotifyFetchFinishedSuccess(ModuleScriptCreationParams(
-      fetch_params.Url(), module_type,
-      ParkableString(script_data->TakeSourceText().Impl()),
-      nullptr /* cache_handler */,
+      /*source_url=*/fetch_params.Url(), /*base_url=*/fetch_params.Url(),
+      module_type, ParkableString(script_data->TakeSourceText().Impl()),
+      /*cache_handler=*/nullptr,
       fetch_params.GetResourceRequest().GetCredentialsMode()));
 }
 

@@ -19,7 +19,6 @@ namespace blink {
 // href="https://html.spec.whatwg.org/C/#creating-a-javascript-module-script">
 JSModuleScript* JSModuleScript::Create(
     const ModuleScriptCreationParams& original_params,
-    const KURL& base_url,
     ScriptSourceLocationType source_location_type,
     Modulator* modulator,
     const ScriptFetchOptions& options,
@@ -49,7 +48,7 @@ JSModuleScript* JSModuleScript::Create(
   ModuleRecordProduceCacheData* produce_cache_data = nullptr;
 
   v8::Local<v8::Module> result =
-      ModuleRecord::Compile(isolate, params, base_url, options, start_position,
+      ModuleRecord::Compile(isolate, params, options, start_position,
                             exception_state, modulator->GetV8CacheOptions(),
                             source_location_type, &produce_cache_data);
 
@@ -61,7 +60,7 @@ JSModuleScript* JSModuleScript::Create(
   // be used for the speced algorithms, but may be used from inspector.
   JSModuleScript* script = CreateInternal(
       params.GetSourceText().length(), modulator, result, params.SourceURL(),
-      base_url, options, start_position, produce_cache_data);
+      params.BaseURL(), options, start_position, produce_cache_data);
 
   // <spec step="8">If result is a list of errors, then:</spec>
   if (exception_state.HadException()) {

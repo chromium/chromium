@@ -181,9 +181,12 @@ void WorkerModuleScriptFetcher::NotifyClient(
 
   // <spec step="12.7">Asynchronously complete the perform the fetch steps with
   // response.</spec>
-  client_->NotifyFetchFinishedSuccess(
-      ModuleScriptCreationParams(response.CurrentRequestUrl(), module_type,
-                                 source_text, cache_handler, credentials_mode));
+  const KURL& url = response.CurrentRequestUrl();
+  // Create an external module script where base_url == source_url.
+  // https://html.spec.whatwg.org/multipage/webappapis.html#concept-script-base-url
+  client_->NotifyFetchFinishedSuccess(ModuleScriptCreationParams(
+      /*source_url=*/url, /*base_url=*/url, module_type, source_text,
+      cache_handler, credentials_mode));
 }
 
 void WorkerModuleScriptFetcher::DidReceiveData(base::span<const char> span) {

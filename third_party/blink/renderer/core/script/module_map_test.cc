@@ -153,7 +153,7 @@ class ModuleMapTestModulator final : public DummyModulator {
         : url_(url), credential_mode_(credential_mode), client_(client) {}
     void NotifyFetchFinished() {
       client_->NotifyFetchFinishedSuccess(ModuleScriptCreationParams(
-          url_, ModuleScriptCreationParams::ModuleType::kJavaScriptModule,
+          url_, url_, ModuleScriptCreationParams::ModuleType::kJavaScriptModule,
           ParkableString(String("").ReleaseImpl()), nullptr, credential_mode_));
     }
     void Trace(Visitor* visitor) const { visitor->Trace(client_); }

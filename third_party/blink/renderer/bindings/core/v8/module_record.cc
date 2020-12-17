@@ -48,7 +48,6 @@ void ModuleRecordProduceCacheData::Trace(Visitor* visitor) const {
 v8::Local<v8::Module> ModuleRecord::Compile(
     v8::Isolate* isolate,
     const ModuleScriptCreationParams& params,
-    const KURL& base_url,
     const ScriptFetchOptions& options,
     const TextPosition& text_position,
     ExceptionState& exception_state,
@@ -76,7 +75,7 @@ v8::Local<v8::Module> ModuleRecord::Compile(
 
   if (!V8ScriptRunner::CompileModule(
            isolate, params, text_position, compile_options, no_cache_reason,
-           ReferrerScriptInfo(base_url, options,
+           ReferrerScriptInfo(params.BaseURL(), options,
                               ReferrerScriptInfo::BaseUrlSource::kOther))
            .ToLocal(&module)) {
     DCHECK(try_catch.HasCaught());

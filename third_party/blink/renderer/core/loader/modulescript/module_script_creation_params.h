@@ -27,6 +27,7 @@ class ModuleScriptCreationParams {
  public:
   ModuleScriptCreationParams(
       const KURL& source_url,
+      const KURL& base_url,
       const ModuleScriptCreationParams::ModuleType module_type,
       const ParkableString& source_text,
       SingleCachedMetadataHandler* cache_handler,
@@ -35,6 +36,7 @@ class ModuleScriptCreationParams {
       ScriptStreamer::NotStreamingReason not_streaming_reason =
           ScriptStreamer::NotStreamingReason::kStreamingDisabled)
       : source_url_(source_url),
+        base_url_(base_url),
         module_type_(module_type),
         is_isolated_(false),
         source_text_(source_text),
@@ -54,8 +56,8 @@ class ModuleScriptCreationParams {
     String isolated_source_text =
         isolated_source_text_ ? isolated_source_text_.IsolatedCopy()
                               : GetSourceText().ToString().IsolatedCopy();
-    return ModuleScriptCreationParams(SourceURL().Copy(), module_type_,
-                                      isolated_source_text,
+    return ModuleScriptCreationParams(SourceURL().Copy(), BaseURL().Copy(),
+                                      module_type_, isolated_source_text,
                                       GetFetchCredentialsMode());
   }
 
@@ -64,6 +66,7 @@ class ModuleScriptCreationParams {
   }
 
   const KURL& SourceURL() const { return source_url_; }
+  const KURL& BaseURL() const { return base_url_; }
 
   const ParkableString& GetSourceText() const {
     if (is_isolated_) {
@@ -76,7 +79,7 @@ class ModuleScriptCreationParams {
 
   ModuleScriptCreationParams CopyWithClearedSourceText() const {
     return ModuleScriptCreationParams(
-        source_url_, module_type_, ParkableString(), cache_handler_,
+        source_url_, base_url_, module_type_, ParkableString(), cache_handler_,
         credentials_mode_, script_streamer_, not_streaming_reason_);
   }
 
@@ -87,17 +90,20 @@ class ModuleScriptCreationParams {
   }
 
   bool IsSafeToSendToAnotherThread() const {
-    return source_url_.IsSafeToSendToAnotherThread() && is_isolated_;
+    return source_url_.IsSafeToSendToAnotherThread() &&
+           base_url_.IsSafeToSendToAnotherThread() && is_isolated_;
   }
 
  private:
   // Creates an isolated copy.
   ModuleScriptCreationParams(
       const KURL& source_url,
+      const KURL& base_url,
       const ModuleScriptCreationParams::ModuleType& module_type,
       const String& isolated_source_text,
       network::mojom::CredentialsMode credentials_mode)
       : source_url_(source_url),
+        base_url_(base_url),
         module_type_(module_type),
         is_isolated_(true),
         source_text_(),
@@ -112,6 +118,7 @@ class ModuleScriptCreationParams {
             ScriptStreamer::NotStreamingReason::kStreamingDisabled) {}
 
   const KURL source_url_;
+  const KURL base_url_;
   const ModuleType module_type_;
 
   // Mutable because an isolated copy can become bound to a thread when
