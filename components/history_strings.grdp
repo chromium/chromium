@@ -33,7 +33,7 @@
     Bookmarked
   </message>
   <message name="IDS_HISTORY_ENTRY_SUMMARY" desc="Summary of all the fields in a history entry (time, whether the entry is bookmarked, title, and domain).">
-    <ph name="TIME"><ex>3:14</ex>$1</ph> <ph name="BOOKMARKED"><ex>bookmarked</ex>$2</ph> <ph name="TITLE"><ex>PI: The Magical Number</ex>$3</ph> <ph name="DOMAIN"><ex>pi.com</ex>$4</ph>
+    <ph name="CARD_TITLE"><ex>Found 11 search results for Pi</ex>$1</ph> <ph name="TIME"><ex>3:14</ex>$2</ph> <ph name="BOOKMARKED"><ex>bookmarked</ex>$3</ph> <ph name="TITLE"><ex>PI: The Magical Number</ex>$4</ph> <ph name="DOMAIN"><ex>pi.com</ex>$5</ph>
   </message>
   <message name="IDS_HISTORY_FOUND_SEARCH_RESULTS" desc="Message shown when zero or multiple search results are found.">
     Found <ph name="NUMBER_OF_RESULTS">$1</ph> <ph name="SEARCH_RESULTS"><ex>search results</ex>$2</ph> for '<ph name="SEARCH_STRING">$3</ph>'

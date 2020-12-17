@@ -179,7 +179,8 @@
           <a href="[[item.url]]" id="link" class="website-link"
               focus-row-control focus-type="link"
               title="[[item.title]]" on-click="onLinkClick_"
-              on-contextmenu="onLinkRightClick_">
+              on-contextmenu="onLinkRightClick_"
+              aria-describedby$="[[ariaDescribedByForHeading_]]">
             <div class="website-icon" id="icon"></div>
             <history-searched-label class="website-title" title="[[item.title]]"
                 search-term="[[searchTerm]]"></history-searched-label>
@@ -192,7 +193,8 @@
               <cr-icon-button id="bookmark-star" iron-icon="cr:star"
                   focus-row-control focus-type="star"
                   title="$i18n{removeBookmark}"
-                  on-click="onRemoveBookmarkTap_">
+                  on-click="onRemoveBookmarkTap_"
+                  aria-describedby$="[[ariaDescribedByForHeading_]]">
               </cr-icon-button>
             </div>
           </template>
@@ -201,7 +203,9 @@
           <cr-icon-button id="menu-button" iron-icon="cr:more-vert"
               focus-row-control focus-type="cr-menu-button"
               title="$i18n{actionMenuDescription}" on-click="onMenuButtonTap_"
-              aria-haspopup="menu"></cr-icon-button>
+              aria-haspopup="menu"
+              aria-describedby$="[[ariaDescribedByForHeading_]]">
+          </cr-icon-button>
         </div>
       </div>
       <div id="time-gap-separator" hidden="[[!hasTimeGap]]"></div>

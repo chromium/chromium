@@ -83,6 +83,12 @@ Polymer({
       type: Boolean,
       value: true,
     },
+
+    /** @private */
+    ariaDescribedByForHeading_: {
+      type: String,
+      computed: 'getAriaDescribedByForHeading_(isCardStart, isCardEnd)',
+    },
   },
 
   hostAttributes: {'role': 'row'},
@@ -189,9 +195,25 @@ Polymer({
   getEntrySummary_() {
     const item = this.item;
     return loadTimeData.getStringF(
-        'entrySummary', item.dateTimeOfDay,
+        'entrySummary',
+        this.isCardStart || this.isCardEnd ?
+            this.cardTitle_(
+                this.numberOfItems, item.dateRelativeDay, this.searchTerm) :
+            '',
+        item.dateTimeOfDay,
         item.starred ? loadTimeData.getString('bookmarked') : '', item.title,
         item.domain);
+  },
+
+  /**
+   * The first and last rows of a card have a described-by field pointing to
+   * the date header, to make sure users know if they have jumped between cards
+   * when navigating up or down with the keyboard.
+   * @private
+   * @return {string}
+   */
+  getAriaDescribedByForHeading_() {
+    return this.isCardStart || this.isCardEnd ? 'date-accessed' : '';
   },
 
   /**
