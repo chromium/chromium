@@ -48,17 +48,28 @@
     flex: 1;
   }
 
+  #center {
+    align-items: center;
+    display: flex;
+  }
+
   #end {
+    display: flex;
+    justify-content: flex-end;
     padding-inline-start: 20px;
     text-align: end;
     white-space: nowrap;
   }
 
+  .vertical-separator {
+    background: rgba(255, 255, 255, 0.3);
+    height: 15px;
+    width: 1px;
+  }
+
   #zoom-controls {
-    border-inline-end: 1px solid rgba(255, 255, 255, 0.3);
-    border-inline-start: 1px solid rgba(255, 255, 255, 0.3);
-    margin-inline-end: 12px;
-    margin-inline-start: 20px;
+    align-items: center;
+    display: flex;
     padding: 0 4px;
   }
 
@@ -94,6 +105,12 @@
   viewer-page-selector {
     display: inline-flex;
     height: 36px; /* Matching default --cr-icon-button-size */
+    margin-inline-end: 20px;
+  }
+
+  viewer-page-selector::part(input),
+  input {
+    max-height: var(--viewer-pdf-toolbar-height);
   }
 
   input {
@@ -108,6 +125,10 @@
     padding: 0 4px;
     text-align: center;
     width: 5ch;
+  }
+
+  #fit {
+    margin-inline-start: 12px;
   }
 
   paper-progress {
@@ -188,6 +209,7 @@
   <div id="center">
     <viewer-page-selector doc-length="[[docLength]]" page-no="[[pageNo]]">
     </viewer-page-selector>
+    <span class="vertical-separator"></span>
     <span id="zoom-controls">
       <cr-icon-button iron-icon="pdf:remove" title="$i18n{tooltipZoomOut}"
           disabled="[[isAtMinimumZoom_(zoomBounds.min, viewportZoomPercent_)]]"
@@ -203,6 +225,7 @@
           aria-label="$i18n{tooltipZoomIn}" on-click="onZoomInClick_">
       </cr-icon-button>
     </span>
+    <span class="vertical-separator"></span>
     <cr-icon-button id="fit" iron-icon="[[fitToButtonIcon_]]"
         title="[[getFitToButtonTooltip_('$i18nPolymer{tooltipFitToPage}',
                                         '$i18nPolymer{tooltipFitToWidth}',

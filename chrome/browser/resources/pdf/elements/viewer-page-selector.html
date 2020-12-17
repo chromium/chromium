@@ -37,7 +37,7 @@
         margin: 0 var(--page-selector-spacing);
       }
     </style>
-    <input type="text" id="pageselector" value="[[pageNo]]"
+    <input part="input" type="text" id="pageselector" value="[[pageNo]]"
         on-pointerup="select" on-input="onInput_" on-change="pageNoCommitted"
         aria-label="$i18n{labelPageNumber}">
     <span id="divider">/</span>
