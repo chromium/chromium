@@ -1169,7 +1169,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenImageInNewTab) {
 
 // Functionality is not present on ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenLinkInProfileEntryPresent) {
+IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, DISABLED_OpenLinkInProfileEntryPresent) {
   {
     std::unique_ptr<TestRenderViewContextMenu> menu(
         CreateContextMenuMediaTypeNone(GURL("http://www.google.com/"),
