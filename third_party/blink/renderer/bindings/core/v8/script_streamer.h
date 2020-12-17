@@ -6,11 +6,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SCRIPT_STREAMER_H_
 
 #include <memory>
+#include <tuple>
 
 #include "base/macros.h"
 #include "base/single_thread_task_runner.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/script/script_scheduling_type.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "v8/include/v8.h"
@@ -72,6 +74,12 @@ class CORE_EXPORT ScriptStreamer final
       scoped_refptr<base::SingleThreadTaskRunner> loading_task_runner);
   ~ScriptStreamer();
   void Trace(Visitor*) const;
+
+  static std::tuple<ScriptStreamer*, NotStreamingReason> TakeFrom(
+      ScriptResource*);
+  static void RecordStreamingHistogram(ScriptSchedulingType type,
+                                       bool can_use_streamer,
+                                       ScriptStreamer::NotStreamingReason);
 
   // Returns false if we cannot stream the given encoding.
   static bool ConvertEncoding(const char* encoding_name,

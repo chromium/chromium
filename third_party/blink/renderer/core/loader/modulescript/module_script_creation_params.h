@@ -94,6 +94,8 @@ class ModuleScriptCreationParams {
            base_url_.IsSafeToSendToAnotherThread() && is_isolated_;
   }
 
+  ScriptStreamer* GetScriptStreamer() const { return script_streamer_; }
+
  private:
   // Creates an isolated copy.
   ModuleScriptCreationParams(

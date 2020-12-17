@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/loader/resource/script_resource.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
+#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cached_metadata.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
@@ -266,6 +267,100 @@ class SourceStream : public v8::ScriptCompiler::ExternalSourceStream {
 
 size_t ScriptStreamer::small_script_threshold_ = 30 * 1024;
 
+std::tuple<ScriptStreamer*, ScriptStreamer::NotStreamingReason>
+ScriptStreamer::TakeFrom(ScriptResource* script_resource) {
+  ScriptStreamer::NotStreamingReason not_streamed_reason =
+      script_resource->NoStreamerReason();
+  ScriptStreamer* streamer = script_resource->TakeStreamer();
+  if (streamer) {
+    if (streamer->IsStreamingSuppressed()) {
+      not_streamed_reason = streamer->StreamingSuppressedReason();
+      streamer = nullptr;
+    } else {
+      DCHECK_EQ(not_streamed_reason,
+                ScriptStreamer::NotStreamingReason::kInvalid);
+    }
+  }
+  return std::make_tuple(streamer, not_streamed_reason);
+}
+
+namespace {
+
+enum class StreamedBoolean {
+  // Must match BooleanStreamed in enums.xml.
+  kNotStreamed = 0,
+  kStreamed = 1,
+  kMaxValue = kStreamed
+};
+
+void RecordStartedStreamingHistogram(ScriptSchedulingType type,
+                                     bool did_use_streamer) {
+  StreamedBoolean streamed = did_use_streamer ? StreamedBoolean::kStreamed
+                                              : StreamedBoolean::kNotStreamed;
+  switch (type) {
+    case ScriptSchedulingType::kParserBlocking: {
+      UMA_HISTOGRAM_ENUMERATION(
+          "WebCore.Scripts.ParsingBlocking.StartedStreaming", streamed);
+      break;
+    }
+    case ScriptSchedulingType::kDefer: {
+      UMA_HISTOGRAM_ENUMERATION("WebCore.Scripts.Deferred.StartedStreaming",
+                                streamed);
+      break;
+    }
+    case ScriptSchedulingType::kAsync: {
+      UMA_HISTOGRAM_ENUMERATION("WebCore.Scripts.Async.StartedStreaming",
+                                streamed);
+      break;
+    }
+    default: {
+      UMA_HISTOGRAM_ENUMERATION("WebCore.Scripts.Other.StartedStreaming",
+                                streamed);
+      break;
+    }
+  }
+}
+
+void RecordNotStreamingReasonHistogram(
+    ScriptSchedulingType type,
+    ScriptStreamer::NotStreamingReason reason) {
+  switch (type) {
+    case ScriptSchedulingType::kParserBlocking: {
+      UMA_HISTOGRAM_ENUMERATION(
+          "WebCore.Scripts.ParsingBlocking.NotStreamingReason", reason);
+      break;
+    }
+    case ScriptSchedulingType::kDefer: {
+      UMA_HISTOGRAM_ENUMERATION("WebCore.Scripts.Deferred.NotStreamingReason",
+                                reason);
+      break;
+    }
+    case ScriptSchedulingType::kAsync: {
+      UMA_HISTOGRAM_ENUMERATION("WebCore.Scripts.Async.NotStreamingReason",
+                                reason);
+      break;
+    }
+    default: {
+      UMA_HISTOGRAM_ENUMERATION("WebCore.Scripts.Other.NotStreamingReason",
+                                reason);
+      break;
+    }
+  }
+}
+
+}  // namespace
+
+void ScriptStreamer::RecordStreamingHistogram(
+    ScriptSchedulingType type,
+    bool can_use_streamer,
+    ScriptStreamer::NotStreamingReason reason) {
+  RecordStartedStreamingHistogram(type, can_use_streamer);
+  if (!can_use_streamer) {
+    DCHECK_NE(ScriptStreamer::NotStreamingReason::kInvalid, reason);
+    RecordNotStreamingReasonHistogram(type, reason);
+  }
+}
+
 bool ScriptStreamer::ConvertEncoding(
     const char* encoding_name,
     v8::ScriptCompiler::StreamedSource::Encoding* encoding) {
@@ -485,11 +580,15 @@ bool ScriptStreamer::TryStartStreamingTask() {
   source_ = std::make_unique<v8::ScriptCompiler::StreamedSource>(
       std::move(stream_ptr), encoding_);
 
-  // TODO(crbug.com/1061857) Pass ScriptResource::ScriptType to the streaming
-  // task.
   std::unique_ptr<v8::ScriptCompiler::ScriptStreamingTask>
-      script_streaming_task(base::WrapUnique(v8::ScriptCompiler::StartStreaming(
-          V8PerIsolateData::MainThreadIsolate(), source_.get())));
+      script_streaming_task =
+          base::WrapUnique(v8::ScriptCompiler::StartStreaming(
+              V8PerIsolateData::MainThreadIsolate(), source_.get(),
+              script_resource_->GetScriptType() ==
+                      mojom::blink::ScriptType::kClassic
+                  ? v8::ScriptType::kClassic
+                  : v8::ScriptType::kModule));
+
   if (!script_streaming_task) {
     // V8 cannot stream the script.
     stream_ = nullptr;

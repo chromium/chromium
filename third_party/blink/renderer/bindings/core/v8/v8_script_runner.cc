@@ -271,8 +271,16 @@ v8::MaybeLocal<v8::Module> V8ScriptRunner::CompileModule(
                           true,                    // is_module
                           referrer_info.ToV8HostDefinedOptions(isolate));
 
-  // TODO(crbug.com/1061857): Finalize module streaming here.
   v8::Local<v8::String> code = V8String(isolate, params.GetSourceText());
+  if (ScriptStreamer* streamer = params.GetScriptStreamer()) {
+    // Final compile call for a streamed compilation.
+    // Streaming compilation may involve use of code cache.
+    // TODO(leszeks): Add compile timer to streaming compilation.
+    DCHECK(streamer->IsFinished());
+    DCHECK(!streamer->IsStreamingSuppressed());
+    return v8::ScriptCompiler::CompileModule(isolate->GetCurrentContext(),
+                                             streamer->Source(), code, origin);
+  }
 
   v8::MaybeLocal<v8::Module> script;
   inspector_compile_script_event::V8CacheResult cache_result;
