@@ -32,5 +32,13 @@ void LibassistantServiceHostImpl::Stop() {
   libassistant_service_ = nullptr;
 }
 
+void LibassistantServiceHostImpl::SetInitializeCallback(
+    base::OnceCallback<void(assistant_client::AssistantManager*,
+                            assistant_client::AssistantManagerInternal*)>
+        callback) {
+  DCHECK_NE(libassistant_service_, nullptr);
+  libassistant_service_->SetInitializeCallback(std::move(callback));
+}
+
 }  // namespace assistant
 }  // namespace chromeos

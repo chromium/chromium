@@ -43,6 +43,10 @@ namespace libassistant {
 class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ServiceController
     : public mojom::ServiceController {
  public:
+  using InitializeCallback =
+      base::OnceCallback<void(assistant_client::AssistantManager*,
+                              assistant_client::AssistantManagerInternal*)>;
+
   ServiceController(assistant::AssistantManagerServiceDelegate* delegate,
                     assistant_client::PlatformApi* platform_api);
   ServiceController(ServiceController&) = delete;
@@ -50,6 +54,12 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ServiceController
   ~ServiceController() override;
 
   void Bind(mojo::PendingReceiver<mojom::ServiceController> receiver);
+
+  // Set a callback to initialize |AssistantManager| and
+  // |AssistantManagerInternal|. This callback will be invoked before
+  // AssistantManager::Start() is called. This is temporary until we've migrated
+  // all initialization code to this class.
+  void SetInitializeCallback(InitializeCallback callback);
 
   // mojom::ServiceController implementation:
   void Start(const std::string& libassistant_config) override;
@@ -76,6 +86,9 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ServiceController
   assistant::AssistantManagerServiceDelegate* const delegate_;
   // Owned by |AssistantManagerServiceImpl| which indirectly owns us.
   assistant_client::PlatformApi* const platform_api_;
+
+  // Callback called to initialize |AssistantManager| before it's started.
+  InitializeCallback initialize_callback_;
 
   std::unique_ptr<assistant_client::AssistantManager> assistant_manager_;
   assistant_client::AssistantManagerInternal* assistant_manager_internal_ =

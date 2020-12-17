@@ -28,8 +28,8 @@ void AssistantProxy::Initialize(LibassistantServiceHost* host) {
   libassistant_service_host_ = host;
   LaunchLibassistantService();
 
-  service_controller_proxy_ = std::make_unique<ServiceControllerProxy>(
-      background_task_runner(), BindServiceController());
+  service_controller_proxy_ =
+      std::make_unique<ServiceControllerProxy>(host, BindServiceController());
 }
 
 void AssistantProxy::LaunchLibassistantService() {

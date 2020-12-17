@@ -11,9 +11,7 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
 #include "chromeos/services/libassistant/public/mojom/service_controller.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -34,6 +32,7 @@ namespace assistant {
 
 class AssistantEventObserver;
 class CrosDisplayConnection;
+class LibassistantServiceHost;
 
 // Component managing the lifecycle of Libassistant,
 // exposing methods to start/stop and configure Libassistant.
@@ -43,7 +42,7 @@ class ServiceControllerProxy : private libassistant::mojom::StateObserver {
   using AuthTokens = std::vector<std::pair<std::string, std::string>>;
 
   ServiceControllerProxy(
-      scoped_refptr<base::SingleThreadTaskRunner> background_task_runner,
+      LibassistantServiceHost* host,
       mojo::PendingRemote<chromeos::libassistant::mojom::ServiceController>
           client);
 
@@ -52,8 +51,6 @@ class ServiceControllerProxy : private libassistant::mojom::StateObserver {
   ~ServiceControllerProxy() override;
 
   // Can not be invoked before Start() has finished.
-  // Both LibAssistant and Chrome threads may access |display_connection|.
-  // |display_connection| is thread safe.
   CrosDisplayConnection* display_connection() {
     DCHECK(display_connection_);
     return display_connection_.get();
@@ -112,25 +109,6 @@ class ServiceControllerProxy : private libassistant::mojom::StateObserver {
   // Can not be invoked before Start() has finished.
   assistant_client::AssistantManagerInternal* assistant_manager_internal();
 
-  struct StartArguments {
-    StartArguments();
-    StartArguments(StartArguments&&);
-    StartArguments& operator=(StartArguments&&);
-    ~StartArguments();
-    assistant_client::ActionModule* action_module;
-    assistant_client::FuchsiaApiDelegate* fuchsia_api_delegate;
-    assistant_client::AssistantManagerDelegate* assistant_manager_delegate;
-    assistant_client::ConversationStateListener* conversation_state_listener;
-    assistant_client::DeviceStateListener* device_state_listener;
-    AssistantEventObserver* event_observer;
-    std::string libassistant_config;
-    std::string locale;
-    std::string locale_override;
-    bool spoken_feedback_enabled;
-    AuthTokens auth_tokens;
-    base::OnceClosure done_callback;
-  };
-
   void FinishCreatingAssistant();
 
   // libassistant::mojom::StateObserver implementation:
@@ -141,20 +119,22 @@ class ServiceControllerProxy : private libassistant::mojom::StateObserver {
   // Used internally for consistency checks.
   State state_ = State::kStopped;
 
-  scoped_refptr<base::SingleThreadTaskRunner> background_task_runner_;
+  // Owned by |AssistantManagerServiceImpl| which (indirectly) also owns us.
+  LibassistantServiceHost* const host_;
 
   mojo::Remote<chromeos::libassistant::mojom::ServiceController>
       service_controller_remote_;
   mojo::Receiver<chromeos::libassistant::mojom::StateObserver>
       state_observer_receiver_;
 
-  // Arguments passed to the last Start() call.
-  // Used to finish starting Libassistant after the Libassistant mojom service
-  // signals it has created the required objects.
-  // Unset once we've finished starting.
-  base::Optional<StartArguments> pending_start_argument_;
+  // Callback passed to Start(). Will be invoked once the Libassistant service
+  // has started.
+  base::Optional<base::OnceClosure> on_start_done_callback_;
 
   std::unique_ptr<CrosDisplayConnection> display_connection_;
+  // Populated when we're starting but not started yet, so after Start() has
+  // been called but before the mojom service signalled it has started.
+  std::unique_ptr<CrosDisplayConnection> pending_display_connection_;
 
   base::WeakPtrFactory<ServiceControllerProxy> weak_factory_{this};
 };

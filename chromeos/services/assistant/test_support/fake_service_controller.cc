@@ -4,6 +4,7 @@
 
 #include "chromeos/services/assistant/test_support/fake_service_controller.h"
 
+#include "chromeos/services/assistant/public/cpp/migration/libassistant_v1_api.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -35,6 +36,10 @@ void FakeServiceController::Unbind() {
   state_observers_.Clear();
 }
 
+void FakeServiceController::SetInitializeCallback(InitializeCallback callback) {
+  initialize_callback_ = std::move(callback);
+}
+
 void FakeServiceController::BlockStartCalls() {
   // This lock will be release in |UnblockStartCalls|.
   start_mutex_.lock();
@@ -49,6 +54,12 @@ void FakeServiceController::Start(const std::string& libassistant_config) {
 
   // Will block if |BlockStartCalls| was invoked.
   std::lock_guard<std::mutex> lock(start_mutex_);
+
+  if (initialize_callback_) {
+    std::move(initialize_callback_)
+        .Run(LibassistantV1Api::Get()->assistant_manager(),
+             LibassistantV1Api::Get()->assistant_manager_internal());
+  }
 
   SetState(State::kStarted);
 }

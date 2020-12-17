@@ -14,6 +14,12 @@ class PlatformApi;
 }  // namespace assistant_client
 
 namespace chromeos {
+namespace libassistant {
+class LibassistantService;
+}  // namespace libassistant
+}  // namespace chromeos
+
+namespace chromeos {
 namespace assistant {
 
 class AssistantManagerServiceDelegate;
@@ -30,6 +36,10 @@ class LibassistantServiceHostImpl : public LibassistantServiceHost {
   void Launch(
       mojo::PendingReceiver<LibassistantServiceMojom> receiver) override;
   void Stop() override;
+  void SetInitializeCallback(
+      base::OnceCallback<void(assistant_client::AssistantManager*,
+                              assistant_client::AssistantManagerInternal*)>)
+      override;
 
  private:
   // Owned by |AssistantManagerServiceImpl| which also owns |this|.
@@ -37,7 +47,8 @@ class LibassistantServiceHostImpl : public LibassistantServiceHost {
   // Owned by |AssistantManagerServiceImpl| which also owns |this|.
   AssistantManagerServiceDelegate* const delegate_;
 
-  std::unique_ptr<LibassistantServiceMojom> libassistant_service_;
+  std::unique_ptr<chromeos::libassistant::LibassistantService>
+      libassistant_service_;
 };
 
 }  // namespace assistant
