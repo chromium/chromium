@@ -218,6 +218,10 @@ public class CachedFeatureFlags {
 
     @VisibleForTesting
     public static void setOverrideTestValue(String preferenceKey, String overrideValue) {
+        if (sOverridesTestFeatures == null) {
+            sOverridesTestFeatures = new HashMap<>();
+        }
+
         sOverridesTestFeatures.put(preferenceKey, overrideValue);
     }
 
