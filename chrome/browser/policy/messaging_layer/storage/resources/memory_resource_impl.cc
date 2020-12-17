@@ -20,8 +20,9 @@ MemoryResourceImpl::MemoryResourceImpl()
 
 MemoryResourceImpl::~MemoryResourceImpl() = default;
 
-bool MemoryResourceImpl::Reserve(uint64_t size) {
-  uint64_t old_used = used_.fetch_add(size);
+bool MemoryResourceImpl::Reserve(int64_t size) {
+  DCHECK_GE(size, 0);
+  int64_t old_used = used_.fetch_add(size);
   if (old_used + size > total_) {
     used_.fetch_sub(size);
     return false;
@@ -29,20 +30,20 @@ bool MemoryResourceImpl::Reserve(uint64_t size) {
   return true;
 }
 
-void MemoryResourceImpl::Discard(uint64_t size) {
+void MemoryResourceImpl::Discard(int64_t size) {
   DCHECK_LE(size, used_.load());
   used_.fetch_sub(size);
 }
 
-uint64_t MemoryResourceImpl::GetTotal() {
+int64_t MemoryResourceImpl::GetTotal() {
   return total_;
 }
 
-uint64_t MemoryResourceImpl::GetUsed() {
+int64_t MemoryResourceImpl::GetUsed() {
   return used_.load();
 }
 
-void MemoryResourceImpl::Test_SetTotal(uint64_t test_total) {
+void MemoryResourceImpl::Test_SetTotal(int64_t test_total) {
   total_ = test_total;
 }
 

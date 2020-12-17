@@ -8,7 +8,7 @@
 
 namespace reporting {
 
-ScopedReservation::ScopedReservation(uint64_t size,
+ScopedReservation::ScopedReservation(int64_t size,
                                      ResourceInterface* resource_interface)
     : resource_interface_(resource_interface) {
   if (!resource_interface->Reserve(size)) {

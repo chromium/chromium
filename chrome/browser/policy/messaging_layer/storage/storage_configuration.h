@@ -10,9 +10,9 @@ namespace reporting {
 // Storage options class allowing to set parameters individually, e.g.:
 // Storage::Create(Options()
 //                     .set_directory("/var/cache/reporting")
-//                     .set_max_record_size(4 * 1024u)
-//                     .set_max_total_files_size(64 * 1024u * 1024u)
-//                     .set_max_total_memory_size(256 * 1024u),
+//                     .set_max_record_size(4 * 1024)
+//                     .set_max_total_files_size(64 * 1024 * 1024)
+//                     .set_max_total_memory_size(256 * 1024),
 //                 callback);
 class StorageOptions {
  public:
@@ -27,42 +27,42 @@ class StorageOptions {
     max_record_size_ = max_record_size;
     return *this;
   }
-  StorageOptions& set_max_total_files_size(uint64_t max_total_files_size) {
+  StorageOptions& set_max_total_files_size(int64_t max_total_files_size) {
     max_total_files_size_ = max_total_files_size;
     return *this;
   }
-  StorageOptions& set_max_total_memory_size(uint64_t max_total_memory_size) {
+  StorageOptions& set_max_total_memory_size(int64_t max_total_memory_size) {
     max_total_memory_size_ = max_total_memory_size;
     return *this;
   }
-  StorageOptions& set_single_file_size(uint64_t single_file_size) {
+  StorageOptions& set_single_file_size(int64_t single_file_size) {
     single_file_size_ = single_file_size;
     return *this;
   }
   const base::FilePath& directory() const { return directory_; }
   size_t max_record_size() const { return max_record_size_; }
-  uint64_t max_total_files_size() const { return max_total_files_size_; }
-  uint64_t max_total_memory_size() const { return max_total_memory_size_; }
-  uint64_t single_file_size() const { return single_file_size_; }
+  int64_t max_total_files_size() const { return max_total_files_size_; }
+  int64_t max_total_memory_size() const { return max_total_memory_size_; }
+  int64_t single_file_size() const { return single_file_size_; }
 
  private:
   // Subdirectory of the location assigned for this Storage.
   base::FilePath directory_;
 
   // Maximum record size.
-  size_t max_record_size_ = 1 * 1024LL * 1024LL;  // 1 MiB
+  int64_t max_record_size_ = 1 * 1024LL * 1024LL;  // 1 MiB
 
   // Maximum total size of all files in all queues.
-  uint64_t max_total_files_size_ = 64 * 1024LL * 1024LL;  // 64 MiB
+  int64_t max_total_files_size_ = 64 * 1024LL * 1024LL;  // 64 MiB
 
   // Maximum memory usage (reading buffers).
-  uint64_t max_total_memory_size_ = 4 * 1024LL * 1024LL;  // 4 MiB
+  int64_t max_total_memory_size_ = 4 * 1024LL * 1024LL;  // 4 MiB
 
   // Cut-off size of an individual file in all queues.
   // When file exceeds this size, the new file is created
   // for further records. Note that each file must have at least
   // one record before it is closed, regardless of that record size.
-  uint64_t single_file_size_ = 1 * 1024LL * 1024LL;  // 1 MiB
+  int64_t single_file_size_ = 1 * 1024LL * 1024LL;  // 1 MiB
 };
 
 // Single queue options class allowing to set parameters individually, e.g.:
@@ -99,7 +99,7 @@ class QueueOptions {
   size_t max_total_memory_size() const {
     return storage_options_.max_total_memory_size();
   }
-  uint64_t single_file_size() const {
+  int64_t single_file_size() const {
     return storage_options_.single_file_size();
   }
   base::TimeDelta upload_period() const { return upload_period_; }

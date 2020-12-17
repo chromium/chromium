@@ -208,7 +208,7 @@ using TestEncryptionKeyAttached = MockFunction<void(SignedEncryptionInfo)>;
 
 TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
   const int kExpectedCallTimes = 10;
-  const uint64_t kGenerationId = 1234;
+  const int64_t kGenerationId = 1234;
 
   base::Value data{base::Value::Type::DICTIONARY};
   data.SetKey("TEST_KEY", base::Value("TEST_VALUE"));

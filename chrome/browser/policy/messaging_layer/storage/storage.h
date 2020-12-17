@@ -57,7 +57,7 @@ class Storage : public base::RefCountedThreadSafe<Storage> {
   // |sequencing_id| (inclusively). All records with sequeincing ids <= this
   // one can be removed from the Storage, and can no longer be uploaded.
   void Confirm(Priority priority,
-               uint64_t sequencing_id,
+               int64_t sequencing_id,
                base::OnceCallback<void(Status)> completion_cb);
 
   // Initiates upload of collected records according to the priority.

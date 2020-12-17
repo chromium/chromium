@@ -21,15 +21,15 @@ class MemoryResourceImpl : public ResourceInterface {
   ~MemoryResourceImpl() override;
 
   // Implementation of ResourceInterface methods.
-  bool Reserve(uint64_t size) override;
-  void Discard(uint64_t size) override;
-  uint64_t GetTotal() override;
-  uint64_t GetUsed() override;
-  void Test_SetTotal(uint64_t test_total) override;
+  bool Reserve(int64_t size) override;
+  void Discard(int64_t size) override;
+  int64_t GetTotal() override;
+  int64_t GetUsed() override;
+  void Test_SetTotal(int64_t test_total) override;
 
  private:
-  uint64_t total_;
-  std::atomic<uint64_t> used_;
+  int64_t total_;
+  std::atomic<int64_t> used_;
 };
 
 }  // namespace reporting

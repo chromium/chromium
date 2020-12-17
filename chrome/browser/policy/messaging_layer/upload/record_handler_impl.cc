@@ -347,15 +347,13 @@ RecordHandlerImpl::ReportUploader::SequencingInformationValueToProto(
   const auto priority = value.FindIntKey("priority");
 
   // If any of the previous values don't exist, or are malformed, return error.
-  // TODO(chromium:1158036) Once SequencingId starts at 1 instead of 0, we
-  // should use 0 as an error value.
-  uint64_t seq_id;
-  uint64_t gen_id;
-  if (!sequencing_id || sequencing_id->empty() ||
-      !base::StringToUint64(*sequencing_id, &seq_id) || !generation_id ||
-      generation_id->empty() ||
-      !base::StringToUint64(*generation_id, &gen_id) || gen_id == 0 ||
-      !priority.has_value() || !Priority_IsValid(priority.value())) {
+  int64_t seq_id;
+  int64_t gen_id;
+  if (!sequencing_id || sequencing_id->empty() || !generation_id ||
+      generation_id->empty() || !priority.has_value() ||
+      !Priority_IsValid(priority.value()) ||
+      !base::StringToInt64(*sequencing_id, &seq_id) ||
+      !base::StringToInt64(*generation_id, &gen_id)) {
     return Status(error::INVALID_ARGUMENT,
                   base::StrCat({"Provided value did not conform to a valid "
                                 "SequencingInformation proto: ",

@@ -20,8 +20,8 @@ DiskResourceImpl::DiskResourceImpl()
 
 DiskResourceImpl::~DiskResourceImpl() = default;
 
-bool DiskResourceImpl::Reserve(uint64_t size) {
-  uint64_t old_used = used_.fetch_add(size);
+bool DiskResourceImpl::Reserve(int64_t size) {
+  int64_t old_used = used_.fetch_add(size);
   if (old_used + size > total_) {
     used_.fetch_sub(size);
     return false;
@@ -29,20 +29,20 @@ bool DiskResourceImpl::Reserve(uint64_t size) {
   return true;
 }
 
-void DiskResourceImpl::Discard(uint64_t size) {
+void DiskResourceImpl::Discard(int64_t size) {
   DCHECK_LE(size, used_.load());
   used_.fetch_sub(size);
 }
 
-uint64_t DiskResourceImpl::GetTotal() {
+int64_t DiskResourceImpl::GetTotal() {
   return total_;
 }
 
-uint64_t DiskResourceImpl::GetUsed() {
+int64_t DiskResourceImpl::GetUsed() {
   return used_.load();
 }
 
-void DiskResourceImpl::Test_SetTotal(uint64_t test_total) {
+void DiskResourceImpl::Test_SetTotal(int64_t test_total) {
   total_ = test_total;
 }
 

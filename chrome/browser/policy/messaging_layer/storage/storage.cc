@@ -134,7 +134,7 @@ class Storage::QueueUploaderInterface : public StorageQueue::UploaderInterface {
   }
 
   void ProcessGap(SequencingInformation start,
-                  uint64_t count,
+                  int64_t count,
                   base::OnceCallback<void(bool)> processed_cb) override {
     // Update sequencing information: add Priority.
     start.set_priority(priority_);
@@ -167,7 +167,7 @@ class Storage::KeyInStorage {
   // key is updated.
   Status UploadKeyFile(const SignedEncryptionInfo& signed_encryption_key) {
     // Atomically reserve file index (none else will get the same index).
-    uint64_t new_file_index = next_key_file_index_.fetch_add(1);
+    int64_t new_file_index = next_key_file_index_.fetch_add(1);
     // Write into file.
     RETURN_IF_ERROR(WriteKeyInfoFile(new_file_index, signed_encryption_key));
 
@@ -194,7 +194,7 @@ class Storage::KeyInStorage {
     // Enumerate possible key files, collect the ones that have valid name,
     // set next_key_file_index_ to a value that is definitely not used.
     base::flat_set<base::FilePath> all_key_files;
-    base::flat_map<uint64_t, base::FilePath> found_key_files;
+    base::flat_map<int64_t, base::FilePath> found_key_files;
     EnumerateKeyFiles(&all_key_files, &found_key_files);
 
     // Try to unserialize the key from each found file (latest first).
@@ -221,7 +221,7 @@ class Storage::KeyInStorage {
 
  private:
   // Writes key into file. Called during key upload.
-  Status WriteKeyInfoFile(uint64_t new_file_index,
+  Status WriteKeyInfoFile(int64_t new_file_index,
                           const SignedEncryptionInfo& signed_encryption_key) {
     base::FilePath key_file_path =
         directory_.Append(kEncryptionKeyFilePrefix)
@@ -250,7 +250,7 @@ class Storage::KeyInStorage {
                         key_file.ErrorToString(key_file.GetLastFileError()),
                         " file=", key_file_path.MaybeAsASCII()}));
     }
-    if (static_cast<size_t>(write_result) != serialized_key.size()) {
+    if (write_result != static_cast<int32_t>(serialized_key.size())) {
       return Status(error::DATA_LOSS,
                     base::StrCat({"Failed to seralize key into file='",
                                   key_file_path.MaybeAsASCII(), "'"}));
@@ -260,7 +260,7 @@ class Storage::KeyInStorage {
 
   // Enumerates key files and deletes those with index lower than
   // |new_file_index|. Called during key upload.
-  void RemoveKeyFilesWithLowerIndexes(uint64_t new_file_index) {
+  void RemoveKeyFilesWithLowerIndexes(int64_t new_file_index) {
     base::flat_set<base::FilePath> key_files_to_remove;
     base::FileEnumerator dir_enum(
         directory_,
@@ -278,8 +278,8 @@ class Storage::KeyInStorage {
         // Should not happen, will remove this file.
         continue;
       }
-      uint64_t file_index = 0;
-      if (!base::StringToUint64(extension.substr(1), &file_index)) {
+      int64_t file_index = 0;
+      if (!base::StringToInt64(extension.substr(1), &file_index)) {
         // Bad extension - not a number. Should not happen, will remove this
         // file.
         continue;
@@ -302,7 +302,7 @@ class Storage::KeyInStorage {
   // Called once, during initialization.
   void EnumerateKeyFiles(
       base::flat_set<base::FilePath>* all_key_files,
-      base::flat_map<uint64_t, base::FilePath>* found_key_files) {
+      base::flat_map<int64_t, base::FilePath>* found_key_files) {
     base::FileEnumerator dir_enum(
         directory_,
         /*recursive=*/false, base::FileEnumerator::FILES,
@@ -318,8 +318,8 @@ class Storage::KeyInStorage {
         // Should not happen.
         continue;
       }
-      uint64_t file_index = 0;
-      bool success = base::StringToUint64(extension.substr(1), &file_index);
+      int64_t file_index = 0;
+      bool success = base::StringToInt64(extension.substr(1), &file_index);
       if (!success) {
         // Bad extension - not a number. Should not happen (file is corrupt).
         continue;
@@ -341,7 +341,7 @@ class Storage::KeyInStorage {
   // Called once, during initialization.
   base::Optional<std::pair<base::FilePath, SignedEncryptionInfo>>
   LocateValidKeyAndParse(
-      const base::flat_map<uint64_t, base::FilePath>& found_key_files) {
+      const base::flat_map<int64_t, base::FilePath>& found_key_files) {
     // Try to unserialize the key from each found file (latest first).
     for (auto key_file_it = found_key_files.rbegin();
          key_file_it != found_key_files.rend(); ++key_file_it) {
@@ -390,7 +390,7 @@ class Storage::KeyInStorage {
   // Every time a new key is received, it is stored in a file with the next
   // index; however, any file found with the matching signature can be used
   // to successfully encrypt records and for the server to then decrypt them.
-  std::atomic<uint64_t> next_key_file_index_{0};
+  std::atomic<int64_t> next_key_file_index_{0};
 
   const base::FilePath directory_;
 };
@@ -553,13 +553,13 @@ void Storage::Write(Priority priority,
 }
 
 void Storage::Confirm(Priority priority,
-                      uint64_t seq_number,
+                      int64_t sequencing_id,
                       base::OnceCallback<void(Status)> completion_cb) {
   // Note: queues_ never change after initialization is finished, so there is
   // no need to protect or serialize access to it.
   ASSIGN_OR_ONCE_CALLBACK_AND_RETURN(scoped_refptr<StorageQueue> queue,
                                      completion_cb, GetQueue(priority));
-  queue->Confirm(seq_number, std::move(completion_cb));
+  queue->Confirm(sequencing_id, std::move(completion_cb));
 }
 
 Status Storage::Flush(Priority priority) {

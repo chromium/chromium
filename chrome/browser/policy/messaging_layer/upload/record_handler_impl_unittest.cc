@@ -153,9 +153,9 @@ void FailedResponseFromRequest(const base::Value& request,
 
   // |seq_info| has been built by RetrieveFinalSequencingInforamation and is
   // guaranteed to have these keys.
-  uint64_t sequencing_id;
-  ASSERT_TRUE(base::StringToUint64(*seq_info.FindStringKey("sequencingId"),
-                                   &sequencing_id));
+  int64_t sequencing_id;
+  ASSERT_TRUE(base::StringToInt64(*seq_info.FindStringKey("sequencingId"),
+                                  &sequencing_id));
   // The lastSucceedUploadedRecord should be the record before the one
   // indicated in seq_info.
   response.SetStringPath("lastSucceedUploadedRecord.sequencingId",
@@ -197,7 +197,7 @@ class RecordHandlerImplTest : public ::testing::TestWithParam<bool> {
 
 std::unique_ptr<std::vector<EncryptedRecord>> BuildTestRecordsVector(
     size_t number_of_test_records,
-    uint64_t generation_id) {
+    int64_t generation_id) {
   std::unique_ptr<std::vector<EncryptedRecord>> test_records =
       std::make_unique<std::vector<EncryptedRecord>>();
   test_records->reserve(number_of_test_records);
@@ -217,7 +217,7 @@ std::unique_ptr<std::vector<EncryptedRecord>> BuildTestRecordsVector(
 
 TEST_P(RecordHandlerImplTest, ForwardsRecordsToCloudPolicyClient) {
   constexpr size_t kNumTestRecords = 10;
-  constexpr uint64_t kGenerationId = 1234;
+  constexpr int64_t kGenerationId = 1234;
   auto test_records = BuildTestRecordsVector(kNumTestRecords, kGenerationId);
 
   TestCallbackWaiterWithCounter client_waiter{kNumTestRecords};
@@ -263,9 +263,9 @@ TEST_P(RecordHandlerImplTest, ForwardsRecordsToCloudPolicyClient) {
 }
 
 TEST_P(RecordHandlerImplTest, ReportsEarlyFailure) {
-  uint64_t kNumSuccessfulUploads = 5;
-  uint64_t kNumTestRecords = 10;
-  uint64_t kGenerationId = 1234;
+  const int64_t kNumSuccessfulUploads = 5;
+  const int64_t kNumTestRecords = 10;
+  const int64_t kGenerationId = 1234;
   auto test_records = BuildTestRecordsVector(kNumTestRecords, kGenerationId);
 
   // Wait kNumSuccessfulUploads times + 1 for the failure.
@@ -322,11 +322,11 @@ TEST_P(RecordHandlerImplTest, ReportsEarlyFailure) {
 }
 
 TEST_P(RecordHandlerImplTest, UploadsGapRecordOnServerFailure) {
-  uint64_t kNumInitialSuccessfulUploads = 5;
-  uint64_t kNumTestRecords = 10;
-  uint64_t kNumFinalSuccessfulUploads =
+  const int64_t kNumInitialSuccessfulUploads = 5;
+  const int64_t kNumTestRecords = 10;
+  const int64_t kNumFinalSuccessfulUploads =
       kNumTestRecords - kNumInitialSuccessfulUploads;
-  uint64_t kGenerationId = 1234;
+  const int64_t kGenerationId = 1234;
   auto test_records = BuildTestRecordsVector(kNumTestRecords, kGenerationId);
 
   // Wait kNumTestRecords times + 1 for the failure.
@@ -400,7 +400,7 @@ TEST_P(RecordHandlerImplTest, UploadsGapRecordOnServerFailure) {
 // report an internal error.
 TEST_P(RecordHandlerImplTest, HandleUnknownResponseFromServer) {
   constexpr size_t kNumTestRecords = 10;
-  constexpr uint64_t kGenerationId = 1234;
+  constexpr int64_t kGenerationId = 1234;
   auto test_records = BuildTestRecordsVector(kNumTestRecords, kGenerationId);
 
   TestCallbackWaiterWithCounter client_waiter{kNumTestRecords};
