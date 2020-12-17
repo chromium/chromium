@@ -120,7 +120,12 @@ BitstreamValidator::BitstreamValidator(
   DETACH_FROM_SEQUENCE(validator_thread_sequence_checker_);
 }
 
-BitstreamValidator::~BitstreamValidator() = default;
+BitstreamValidator::~BitstreamValidator() {
+  // Since |decoder_| has to be destroyed on the sequence that executes
+  // Initialize(). Destroys it on the validator thread task runner.
+  if (validator_thread_.IsRunning())
+    validator_thread_.task_runner()->DeleteSoon(FROM_HERE, std::move(decoder_));
+}
 
 void BitstreamValidator::ProcessBitstream(scoped_refptr<BitstreamRef> bitstream,
                                           size_t frame_index) {
