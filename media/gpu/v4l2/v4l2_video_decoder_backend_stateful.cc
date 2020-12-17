@@ -415,8 +415,9 @@ void V4L2StatefulVideoDecoderBackend::OnOutputBufferDequeued(
   // change event (but not the opposite), so we must make sure both events
   // are processed in the correct order.
   if (buffer->IsLast()){
-    if (!resolution_change_cb_ && !flush_cb_)
-      ProcessEventQueue();
+    // Check that we don't have a resolution change event pending. If we do
+    // then this LAST buffer was related to it.
+    ProcessEventQueue();
 
     if (resolution_change_cb_) {
       std::move(resolution_change_cb_).Run();
