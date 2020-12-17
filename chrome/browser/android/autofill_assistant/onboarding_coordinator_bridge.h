@@ -10,7 +10,7 @@
 
 namespace autofill_assistant {
 
-static void JNI_AssistantOnboardingCoordinator_FetchOnboardingDefinition(
+static void JNI_BaseOnboardingCoordinator_FetchOnboardingDefinition(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jonboarding_coordinator,
     const base::android::JavaParamRef<jstring>& jintent,

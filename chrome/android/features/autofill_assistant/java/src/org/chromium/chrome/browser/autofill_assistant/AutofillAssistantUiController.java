@@ -104,7 +104,7 @@ public class AutofillAssistantUiController {
     @CalledByNative
     private static AutofillAssistantUiController create(ChromeActivity activity,
             boolean allowTabSwitching, long nativeUiController,
-            @Nullable AssistantOnboardingCoordinator onboardingCoordinator) {
+            @Nullable BaseOnboardingCoordinator onboardingCoordinator) {
         BottomSheetController sheetController =
                 BottomSheetControllerProvider.from(activity.getWindowAndroid());
         assert activity != null;
@@ -124,8 +124,7 @@ public class AutofillAssistantUiController {
 
     private AutofillAssistantUiController(ChromeActivity activity, BottomSheetController controller,
             TabObscuringHandler tabObscuringHandler, boolean allowTabSwitching,
-            long nativeUiController,
-            @Nullable AssistantOnboardingCoordinator onboardingCoordinator) {
+            long nativeUiController, @Nullable BaseOnboardingCoordinator onboardingCoordinator) {
         mNativeUiController = nativeUiController;
         mActivity = activity;
         mCoordinator = new AssistantCoordinator(activity, controller, tabObscuringHandler,

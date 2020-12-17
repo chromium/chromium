@@ -23,17 +23,7 @@ import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.metrics.DropOutReason;
 import org.chromium.chrome.browser.autofill_assistant.metrics.OnBoarding;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayCoordinator;
-import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayModel;
-import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayState;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
-import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
@@ -46,11 +36,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Coordinator responsible for showing the onboarding screen when the user is using the Autofill
- * Assistant for the first time.
+ * Base Coordinator class responsible for showing the onboarding screen when the user is using the
+ * Autofill Assistant for the first time.
  */
 @JNINamespace("autofill_assistant")
-class AssistantOnboardingCoordinator {
+abstract class BaseOnboardingCoordinator {
     private static final String INTENT_IDENTFIER = "INTENT";
     private static final String FETCH_TIMEOUT_IDENTIFIER = "ONBOARDING_FETCH_TIMEOUT_MS";
     private static final String BUY_MOVIE_TICKETS_INTENT = "BUY_MOVIE_TICKET";
@@ -67,40 +57,24 @@ class AssistantOnboardingCoordinator {
 
     private final String mExperimentIds;
     private final Map<String, String> mParameters;
-    private final Context mContext;
-    private final BottomSheetController mController;
-    private final BrowserControlsStateProvider mBrowserControls;
-    private final CompositorViewHolder mCompositorViewHolder;
-    private final ScrimCoordinator mScrimCoordinator;
-
-    @Nullable
-    private AssistantOverlayCoordinator mOverlayCoordinator;
+    private final Map<String, String> mStringMap = new HashMap<>();
 
     @Nullable
     private WebContentsObserver mWebContentsObserver;
-    private BottomSheetObserver mBottomSheetObserver;
-
-    @Nullable
-    private AssistantBottomSheetContent mContent;
-    private boolean mAnimate = true;
-
-    @Nullable
-    private ScrollView mView;
-    private final Map<String, String> mStringMap = new HashMap<>();
-
     private boolean mOnboardingShown;
 
-    AssistantOnboardingCoordinator(String experimentIds, Map<String, String> parameters,
-            Context context, BottomSheetController controller,
-            BrowserControlsStateProvider browserControls, CompositorViewHolder compositorViewHolder,
-            ScrimCoordinator scrim) {
+    final Context mContext;
+    boolean mAnimate = true;
+    @Nullable
+    ScrollView mView;
+
+    BaseOnboardingCoordinator(
+            String experimentIds, Map<String, String> parameters, Context context) {
         mExperimentIds = experimentIds;
         mParameters = parameters;
         mContext = context;
-        mController = controller;
-        mBrowserControls = browserControls;
-        mCompositorViewHolder = compositorViewHolder;
-        mScrimCoordinator = scrim;
+        mView = (ScrollView) LayoutUtils.createInflater(mContext).inflate(
+                R.layout.autofill_assistant_onboarding, /* root= */ null);
     }
 
     /**
@@ -113,6 +87,42 @@ class AssistantOnboardingCoordinator {
      * navigation to that URL is allowed, other navigations will hide Autofill Assistant.
      */
     void show(Callback<Boolean> callback, WebContents webContents, String targetUrl) {
+        addWebContentObserver(callback, webContents, targetUrl);
+        show(callback);
+    }
+
+    /**
+     * Shows onboarding and provides the result to the given callback.
+     *
+     * <p>The {@code callback} will be called with true or false when the user accepts or cancels
+     * the onboarding (respectively).
+     *
+     * <p>Note that the onboarding screen will be hidden after the callback returns. Call, from the
+     * callback, {@link #hide} to hide it earlier or {@link #transferControls} to take ownership of
+     * it and possibly keep it past the end of the callback.
+     */
+    void show(Callback<Boolean> callback) {
+        AutofillAssistantMetrics.recordOnBoarding(OnBoarding.OB_SHOWN);
+        mOnboardingShown = true;
+
+        initViewImpl(callback);
+        setupSharedView(callback);
+
+        int fetchTimeoutMs = 300;
+        if (mParameters.containsKey(FETCH_TIMEOUT_IDENTIFIER)) {
+            fetchTimeoutMs = Integer.parseInt(mParameters.get(FETCH_TIMEOUT_IDENTIFIER));
+        }
+        if (!mParameters.containsKey(INTENT_IDENTFIER) || fetchTimeoutMs == 0) {
+            updateAndShowView();
+        } else {
+            BaseOnboardingCoordinatorJni.get().fetchOnboardingDefinition(this,
+                    mParameters.get(INTENT_IDENTFIER), LocaleUtils.getDefaultLocaleString(),
+                    fetchTimeoutMs);
+        }
+    }
+
+    private void addWebContentObserver(
+            Callback<Boolean> callback, WebContents webContents, String targetUrl) {
         mWebContentsObserver = new WebContentsObserver(webContents) {
             @Override
             public void didStartNavigation(NavigationHandle navigationHandle) {
@@ -128,141 +138,14 @@ class AssistantOnboardingCoordinator {
             }
         };
         webContents.addObserver(mWebContentsObserver);
-
-        show(callback);
     }
 
     /**
-     * Shows onboarding and provides the result to the given callback.
-     *
-     * <p>The {@code callback} will be called with true or false when the user accepts or cancels
-     * the onboarding (respectively).
-     *
-     * <p>Note that the bottom sheet will be hidden after the callback returns. Call, from the
-     * callback, {@link #hide} to hide it earlier or {@link #transferControls} to take ownership of
-     * it and possibly keep it past the end of the callback.
+     * Set the content of the user interface to be the Autofill Assistant onboarding.
      */
-    void show(Callback<Boolean> callback) {
-        AutofillAssistantMetrics.recordOnBoarding(OnBoarding.OB_SHOWN);
-        mOnboardingShown = true;
-
-        // If there's a tab, cover it with an overlay.
-        AssistantOverlayModel overlayModel = new AssistantOverlayModel();
-        mOverlayCoordinator = new AssistantOverlayCoordinator(
-                mContext, mBrowserControls, mCompositorViewHolder, mScrimCoordinator, overlayModel);
-        overlayModel.set(AssistantOverlayModel.STATE, AssistantOverlayState.FULL);
-
-        mBottomSheetObserver = new EmptyBottomSheetObserver() {
-            @Override
-            public void onSheetStateChanged(int newState) {
-                if (mOverlayCoordinator == null) {
-                    return;
-                }
-
-                if (newState == SheetState.HIDDEN) {
-                    mOverlayCoordinator.suppress();
-                }
-                if (newState == SheetState.PEEK || newState == SheetState.HALF
-                        || newState == SheetState.FULL) {
-                    mOverlayCoordinator.restore();
-                }
-            }
-        };
-        mController.addObserver(mBottomSheetObserver);
-
-        AssistantBottomBarDelegate delegate = new AssistantBottomBarDelegate() {
-            @Override
-            public boolean onBackButtonPressed() {
-                onUserAction(
-                        /* accept= */ false, callback, OnBoarding.OB_NO_ANSWER,
-                        DropOutReason.ONBOARDING_BACK_BUTTON_CLICKED);
-                return true;
-            }
-
-            @Override
-            public void onBottomSheetClosedWithSwipe() {}
-        };
-        BottomSheetContent currentSheetContent = mController.getCurrentSheetContent();
-        if (currentSheetContent instanceof AssistantBottomSheetContent) {
-            mContent = (AssistantBottomSheetContent) currentSheetContent;
-            mContent.setDelegate(() -> delegate);
-        } else {
-            mContent = new AssistantBottomSheetContent(mContext, () -> delegate);
-        }
-        initContent(callback);
-    }
-
-    /**
-     * Transfers ownership of the controls to the caller, returns the overlay coordinator, if one
-     * was created.
-     *
-     * <p>This call is only useful when called from inside a callback provided to {@link #show}, as
-     * before that there are no controls and after that the coordinator automatically hides them.
-     * This call allows callbacks to reuse the controls setup for onboarding and provide a smooth
-     * transition.
-     */
-    @Nullable
-    AssistantOverlayCoordinator transferControls() {
-        assert isInProgress();
-
-        AssistantOverlayCoordinator coordinator = mOverlayCoordinator;
-        mOverlayCoordinator = null;
-        mContent = null;
-        return coordinator;
-    }
-
-    /** Hides the UI, if one is shown. */
-    void hide() {
-        mController.removeObserver(mBottomSheetObserver);
-
-        if (mOverlayCoordinator != null) {
-            mOverlayCoordinator.destroy();
-            mOverlayCoordinator = null;
-        }
-
-        if (mContent != null) {
-            mController.hideContent(mContent, /* animate= */ mAnimate);
-            mContent = null;
-        }
-
-        if (mWebContentsObserver != null) {
-            mWebContentsObserver.destroy();
-            mWebContentsObserver = null;
-        }
-    }
-
-    /**
-     * Returns {@code true} between the time {@link #show} is called and the time
-     * the callback has returned.
-     */
-    boolean isInProgress() {
-        return mContent != null;
-    }
-
-    /** Don't animate the bottom sheet expansion. */
-    @VisibleForTesting
-    void disableAnimationForTesting() {
-        mAnimate = false;
-    }
-
-    /**
-     * Returns {@code true} if the onboarding has been shown at the beginning when this
-     * autofill assistant flow got triggered.
-     */
-    boolean getOnboardingShown() {
-        return mOnboardingShown;
-    }
-
-    /**
-     * Set the content of the bottom sheet to be the Autofill Assistant onboarding.
-     */
-    private void initContent(Callback<Boolean> callback) {
-        mView = (ScrollView) LayoutUtils.createInflater(mContext).inflate(
-                R.layout.autofill_assistant_onboarding, /* root= */ null);
-
+    private void setupSharedView(Callback<Boolean> callback) {
         // Set focusable for accessibility.
         mView.setFocusable(true);
-
         mView.findViewById(R.id.button_init_ok)
                 .setOnClickListener(unusedView
                         -> onUserAction(
@@ -273,22 +156,10 @@ class AssistantOnboardingCoordinator {
                         -> onUserAction(
                                 /* accept= */ false, callback, OnBoarding.OB_CANCELLED,
                                 DropOutReason.DECLINED));
-
-        int fetchTimeoutMs = 300;
-        if (mParameters.containsKey(FETCH_TIMEOUT_IDENTIFIER)) {
-            fetchTimeoutMs = Integer.parseInt(mParameters.get(FETCH_TIMEOUT_IDENTIFIER));
-        }
-        if (!mParameters.containsKey(INTENT_IDENTFIER) || fetchTimeoutMs == 0) {
-            updateAndShowView();
-        } else {
-            AssistantOnboardingCoordinatorJni.get().fetchOnboardingDefinition(this,
-                    mParameters.get(INTENT_IDENTFIER), LocaleUtils.getDefaultLocaleString(),
-                    fetchTimeoutMs);
-        }
     }
 
-    private void onUserAction(boolean accept, Callback<Boolean> callback,
-            @OnBoarding int onboardingAnswer, @DropOutReason int dropoutReason) {
+    void onUserAction(boolean accept, Callback<Boolean> callback, @OnBoarding int onboardingAnswer,
+            @DropOutReason int dropoutReason) {
         AutofillAssistantPreferencesUtil.setInitialPreferences(accept);
         AutofillAssistantMetrics.recordOnBoarding(onboardingAnswer);
         if (!accept) {
@@ -297,6 +168,44 @@ class AssistantOnboardingCoordinator {
 
         callback.onResult(accept);
         hide();
+    }
+
+    @CalledByNative
+    @VisibleForTesting
+    public void addEntryToStringMap(String key, String value) {
+        mStringMap.put(key, value);
+    }
+
+    @CalledByNative
+    @VisibleForTesting
+    public void updateAndShowView() {
+        updateView();
+        showViewImpl();
+    }
+
+    private void updateView() {
+        assert mView != null;
+
+        String termsAndConditionsKey = "terms_and_conditions";
+        String termsAndConditionsUrlKey = "terms_and_conditions_url";
+        updateTermsAndConditions(mView, mStringMap.get(termsAndConditionsKey),
+                mStringMap.get(termsAndConditionsUrlKey));
+
+        if (mStringMap.isEmpty()) {
+            updateViewBasedOnIntent(mView);
+        } else {
+            String onboardingTitleKey = "onboarding_title";
+            if (mStringMap.containsKey(onboardingTitleKey)) {
+                ((TextView) mView.findViewById(R.id.onboarding_try_assistant))
+                        .setText(mStringMap.get(onboardingTitleKey));
+            }
+
+            String onboardingTextKey = "onboarding_text";
+            if (mStringMap.containsKey(onboardingTextKey)) {
+                ((TextView) mView.findViewById(R.id.onboarding_subtitle))
+                        .setText(mStringMap.get(onboardingTextKey));
+            }
+        }
     }
 
     private void updateTermsAndConditions(ScrollView initView,
@@ -374,46 +283,37 @@ class AssistantOnboardingCoordinator {
         }
     }
 
-    @CalledByNative
-    @VisibleForTesting
-    public void addEntryToStringMap(String key, String value) {
-        mStringMap.put(key, value);
-    }
-
-    @CalledByNative
-    @VisibleForTesting
-    public void updateAndShowView() {
-        assert mView != null;
-
-        String termsAndConditionsKey = "terms_and_conditions";
-        String termsAndConditionsUrlKey = "terms_and_conditions_url";
-        updateTermsAndConditions(mView, mStringMap.get(termsAndConditionsKey),
-                mStringMap.get(termsAndConditionsUrlKey));
-
-        if (mStringMap.isEmpty()) {
-            updateViewBasedOnIntent(mView);
-        } else {
-            String onboardingTitleKey = "onboarding_title";
-            if (mStringMap.containsKey(onboardingTitleKey)) {
-                ((TextView) mView.findViewById(R.id.onboarding_try_assistant))
-                        .setText(mStringMap.get(onboardingTitleKey));
-            }
-
-            String onboardingTextKey = "onboarding_text";
-            if (mStringMap.containsKey(onboardingTextKey)) {
-                ((TextView) mView.findViewById(R.id.onboarding_subtitle))
-                        .setText(mStringMap.get(onboardingTextKey));
-            }
+    /** Destroy web contents observer. */
+    void destroy() {
+        if (mWebContentsObserver != null) {
+            mWebContentsObserver.destroy();
+            mWebContentsObserver = null;
         }
-
-        mContent.setContent(mView, mView);
-        BottomSheetUtils.showContentAndMaybeExpand(
-                mController, mContent, /* shouldExpand = */ true, mAnimate);
     }
+
+    /**
+     * Returns {@code true} if the onboarding has been shown at the beginning when this
+     * autofill assistant flow got triggered.
+     */
+    boolean getOnboardingShown() {
+        return mOnboardingShown;
+    }
+
+    /** Don't animate the user interface. */
+    @VisibleForTesting
+    void disableAnimationForTesting() {
+        mAnimate = false;
+    }
+
+    abstract void initViewImpl(Callback<Boolean> callback);
+    abstract void showViewImpl();
+    abstract void hide();
+    // TODO(b/175598484): Move transferControls to bottom sheet subclass
+    abstract AssistantOverlayCoordinator transferControls();
 
     @NativeMethods
     interface Natives {
-        void fetchOnboardingDefinition(AssistantOnboardingCoordinator coordinator, String intent,
-                String locale, int timeoutMs);
+        void fetchOnboardingDefinition(
+                BaseOnboardingCoordinator coordinator, String intent, String locale, int timeoutMs);
     }
 }

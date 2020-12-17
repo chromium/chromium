@@ -167,9 +167,11 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
             return;
         }
 
-        AssistantOnboardingCoordinator onboardingCoordinator = new AssistantOnboardingCoordinator(
-                experimentIds, parameters, context, bottomSheetController, browserControls,
-                compositorViewHolder, bottomSheetController.getScrimCoordinator());
+        BottomSheetOnboardingCoordinator onboardingCoordinator =
+                new BottomSheetOnboardingCoordinator(experimentIds, parameters, context,
+                        bottomSheetController, browserControls, compositorViewHolder,
+                        bottomSheetController.getScrimCoordinator());
+
         onboardingCoordinator.show(accepted -> {
             if (parameters.containsKey(PARAMETER_TRIGGER_SCRIPT_USED)
                     || parameters.containsKey(PARAMETER_STARTED_WITH_TRIGGER_SCRIPT)) {
