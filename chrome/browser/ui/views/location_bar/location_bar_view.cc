@@ -200,6 +200,24 @@ void LocationBarView::Init() {
   // requests, LocationBarView must have a context menu controller.
   set_context_menu_controller(omnibox_view_->context_menu_controller());
 
+  RefreshBackground();
+
+  // Initialize the inline autocomplete view which is visible only when IME is
+  // turned on.  Use the same font with the omnibox and highlighted background.
+  auto ime_inline_autocomplete_view = std::make_unique<views::Label>(
+      base::string16(), views::Label::CustomFont{font_list});
+  ime_inline_autocomplete_view->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  ime_inline_autocomplete_view->SetAutoColorReadabilityEnabled(false);
+  ime_inline_autocomplete_view->SetBackground(views::CreateSolidBackground(
+      GetOmniboxColor(GetThemeProvider(), OmniboxPart::LOCATION_BAR_BACKGROUND,
+                      OmniboxPartState::SELECTED)));
+  ime_inline_autocomplete_view->SetEnabledColor(GetOmniboxColor(
+      GetThemeProvider(), OmniboxPart::LOCATION_BAR_TEXT_DEFAULT,
+      OmniboxPartState::SELECTED));
+  ime_inline_autocomplete_view->SetVisible(false);
+  ime_inline_autocomplete_view_ =
+      AddChildView(std::move(ime_inline_autocomplete_view));
+
   // Initiate the Omnibox additional-text label.
   if (OmniboxFieldTrial::RichAutocompletionShowAdditionalText()) {
     // TODO (manukh) When the titles UI is disabled,
@@ -218,24 +236,6 @@ void LocationBarView::Init() {
     omnibox_additional_text_view_ =
         AddChildView(std::move(omnibox_additional_text_view));
   }
-
-  RefreshBackground();
-
-  // Initialize the inline autocomplete view which is visible only when IME is
-  // turned on.  Use the same font with the omnibox and highlighted background.
-  auto ime_inline_autocomplete_view = std::make_unique<views::Label>(
-      base::string16(), views::Label::CustomFont{font_list});
-  ime_inline_autocomplete_view->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  ime_inline_autocomplete_view->SetAutoColorReadabilityEnabled(false);
-  ime_inline_autocomplete_view->SetBackground(views::CreateSolidBackground(
-      GetOmniboxColor(GetThemeProvider(), OmniboxPart::LOCATION_BAR_BACKGROUND,
-                      OmniboxPartState::SELECTED)));
-  ime_inline_autocomplete_view->SetEnabledColor(GetOmniboxColor(
-      GetThemeProvider(), OmniboxPart::LOCATION_BAR_TEXT_DEFAULT,
-      OmniboxPartState::SELECTED));
-  ime_inline_autocomplete_view->SetVisible(false);
-  ime_inline_autocomplete_view_ =
-      AddChildView(std::move(ime_inline_autocomplete_view));
 
   selected_keyword_view_ =
       AddChildView(std::make_unique<SelectedKeywordView>(this, font_list));
@@ -704,10 +704,11 @@ void LocationBarView::SetOmniboxAdditionalText(const base::string16& text) {
   DCHECK(OmniboxFieldTrial::IsRichAutocompletionEnabled() || text.empty());
   if (!OmniboxFieldTrial::RichAutocompletionShowAdditionalText())
     return;
-  auto wrappedText =
+  auto wrapped_text =
       text.empty() ? text
                    : base::UTF8ToUTF16("(") + text + base::UTF8ToUTF16(")");
-  omnibox_additional_text_view_->SetText(wrappedText);
+  omnibox_additional_text_view_->SetText(wrapped_text);
+  omnibox_additional_text_view_->SetVisible(!wrapped_text.empty());
 }
 
 void LocationBarView::Update(WebContents* contents) {
@@ -1230,6 +1231,8 @@ void LocationBarView::OnTouchUiChanged() {
   location_icon_view_->SetFontList(font_list);
   omnibox_view_->SetFontList(font_list);
   ime_inline_autocomplete_view_->SetFontList(font_list);
+  if (OmniboxFieldTrial::RichAutocompletionShowAdditionalText())
+    omnibox_additional_text_view_->SetFontList(font_list);
   selected_keyword_view_->SetFontList(font_list);
   for (ContentSettingImageView* view : content_setting_views_)
     view->SetFontList(font_list);

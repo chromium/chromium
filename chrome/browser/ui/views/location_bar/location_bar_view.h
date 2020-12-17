@@ -365,11 +365,6 @@ class LocationBarView : public LocationBar,
   // The omnibox view where the user types and the current page URL is displayed
   // when user input is not in progress.
   OmniboxViewViews* omnibox_view_ = nullptr;
-  // The complementary omnibox label displaying the selected suggestion's title
-  // or URL when the omnibox view is displaying the other and when user input is
-  // in progress. Will remain a nullptr if the rich autocompletion
-  // feature flag is disabled.
-  views::Label* omnibox_additional_text_view_ = nullptr;
 
   // Our delegate.
   Delegate* delegate_;
@@ -386,6 +381,12 @@ class LocationBarView : public LocationBar,
   // since this will conflict with the IME's control over the text.  So instead
   // we show any autocompletion in a separate field after the OmniboxView.
   views::Label* ime_inline_autocomplete_view_ = nullptr;
+
+  // The complementary omnibox label displaying the selected suggestion's title
+  // or URL when the omnibox view is displaying the other and when user input is
+  // in progress. Will remain a nullptr if the rich autocompletion
+  // feature flag is disabled.
+  views::Label* omnibox_additional_text_view_ = nullptr;
 
   // The following views are used to provide hints and remind the user as to
   // what is going in the edit. They are all added a children of the
