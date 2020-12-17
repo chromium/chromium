@@ -56,6 +56,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
@@ -139,6 +140,7 @@ public class BookmarkTest {
     private @Nullable BookmarkActivity mBookmarkActivity;
     @Mock
     private ProfileSyncService mProfileSyncService;
+    private UserActionTester mActionTester;
 
     @BeforeClass
     public static void setUpBeforeActivityLaunched() {
@@ -201,6 +203,7 @@ public class BookmarkTest {
     public void tearDown() throws Exception {
         if (mTestServer != null) mTestServer.stopAndDestroyServer();
         if (mBookmarkActivity != null) ApplicationTestUtils.finishActivity(mBookmarkActivity);
+        if (mActionTester != null) mActionTester.tearDown();
     }
 
     @AfterClass
@@ -1742,6 +1745,7 @@ public class BookmarkTest {
                 () -> mBookmarkModel.loadEmptyPartnerBookmarkShimForTesting());
         BookmarkTestUtil.waitForBookmarkModelLoaded();
 
+        mActionTester = new UserActionTester();
         MenuUtils.invokeCustomMenuActionSync(InstrumentationRegistry.getInstrumentation(),
                 mActivityTestRule.getActivity(), R.id.add_to_reading_list_menu_id);
         CriteriaHelper.pollUiThread(() -> mBookmarkModel.getReadingListItem(mTestPage) != null);
@@ -1759,6 +1763,8 @@ public class BookmarkTest {
                     Snackbar.UMA_READING_LIST_BOOKMARK_ADDED,
                     currentSnackbar.getIdentifierForTesting());
         });
+        Assert.assertThat(
+                mActionTester.getActions(), Matchers.hasItem("MobileMenuAddToReadingList"));
     }
 
     @Test

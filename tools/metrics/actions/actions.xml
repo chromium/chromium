@@ -13911,6 +13911,11 @@ should be able to be added at any place in this file.
   <description>User pressed 'Add to homescreen' in the app menu.</description>
 </action>
 
+<action name="MobileMenuAddToReadingList">
+  <owner>xingliu@chromium.org</owner>
+  <description>User pressed 'Add to reading list' in the app menu.</description>
+</action>
+
 <action name="MobileMenuAllBookmarks">
   <owner>ianwen@chromium.org</owner>
   <description>User pressed 'Bookmarks' in the app menu.</description>
