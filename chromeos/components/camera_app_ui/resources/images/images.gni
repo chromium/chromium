@@ -6,6 +6,7 @@ in_app_assets = [
   "barcode_chevron_down.svg",
   "barcode_chevron_up.svg",
   "barcode_copy.svg",
+  "barcode_scan_box_border_mask.svg",
   "barcode_toggle_off.svg",
   "barcode_toggle_on.svg",
   "barcode_url.svg",

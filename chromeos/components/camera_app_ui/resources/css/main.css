@@ -1508,6 +1508,52 @@ body:not(.mode-switching):not(.streaming):not(.review-result) #spinner {
   visibility: visible;
 }
 
+/* The container of scan box for layout and positioning. */
+.barcode-scan-box {
+  --border-distance: 8px;
+  --border-width: 4px;
+  --inner-border-radius: 16px;
+  /* Use padding-top instead of height to make a responsive square, since the
+   * percentage in padding-top is relative to the width of the containing
+   * block. */
+  padding-top: calc(100% / 3);
+  visibility: hidden;
+  width: calc(100% / 3);
+  z-index: 30;
+}
+
+body.photo.scan-barcode .barcode-scan-box {
+  visibility: visible;
+}
+
+/* The inner scan box with a translucent overlay. */
+.barcode-scan-box::before {
+  --offset: calc(var(--border-width) + var(--border-distance));
+  border-radius: var(--inner-border-radius);
+  bottom: var(--offset);
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.6);
+  content: '';
+  left: var(--offset);
+  position: absolute;
+  right: var(--offset);
+  top: var(--offset);
+  z-index: -1;  /* This need to be lower than the corner borders */
+}
+
+/* The corner borders of the scan box. */
+.barcode-scan-box::after {
+  -webkit-mask: url(/images/barcode_scan_box_border_mask.svg);
+  border: var(--border-width) solid white;
+  border-radius: calc(var(--inner-border-radius) + var(--border-distance));
+  box-sizing: border-box;
+  content: '';
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
 /* TODO(b/172879638): Tune the position and layout after we finalized the
  * responsive window design. */
 .barcode-chip-container {
@@ -1651,6 +1697,7 @@ body:not(.mode-switching):not(.streaming):not(.review-result) #spinner {
   position: absolute;
   visibility: hidden;
   width: 256px;
+  z-index: 50;
 }
 
 .snackbar.animate {

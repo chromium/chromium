@@ -163,6 +163,7 @@
       <include name="IDR_CAMERA_BARCODE_CHEVRON_DOWN_SVG" file="images/barcode_chevron_down.svg" type="BINDATA" />
       <include name="IDR_CAMERA_BARCODE_CHEVRON_UP_SVG" file="images/barcode_chevron_up.svg" type="BINDATA" />
       <include name="IDR_CAMERA_BARCODE_COPY_SVG" file="images/barcode_copy.svg" type="BINDATA" />
+      <include name="IDR_CAMERA_BARCODE_SCAN_BOX_BORDER_MASK_SVG" file="images/barcode_scan_box_border_mask.svg" type="BINDATA" />
       <include name="IDR_CAMERA_BARCODE_TOGGLE_OFF_SVG" file="images/barcode_toggle_off.svg" type="BINDATA" />
       <include name="IDR_CAMERA_BARCODE_TOGGLE_ON_SVG" file="images/barcode_toggle_on.svg" type="BINDATA" />
       <include name="IDR_CAMERA_BARCODE_URL_SVG" file="images/barcode_url.svg" type="BINDATA" />
