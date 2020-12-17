@@ -29,30 +29,37 @@
 
 namespace {
 
-class ThumbnailWaiter {
+class ThumbnailWaiter : public ThumbnailImage::Observer {
  public:
   ThumbnailWaiter() = default;
-  ~ThumbnailWaiter() = default;
+  ~ThumbnailWaiter() override = default;
 
   base::Optional<gfx::ImageSkia> WaitForThumbnail(ThumbnailImage* thumbnail) {
-    std::unique_ptr<ThumbnailImage::Subscription> subscription =
-        thumbnail->Subscribe();
-    subscription->SetUncompressedImageCallback(base::BindRepeating(
-        &ThumbnailWaiter::ThumbnailImageCallback, base::Unretained(this)));
-    thumbnail->RequestThumbnailImage();
+    DCHECK(!thumbnail_);
+    thumbnail_ = thumbnail;
+    scoped_observer_.Add(thumbnail);
+    thumbnail_->RequestThumbnailImage();
     run_loop_.Run();
     return image_;
   }
 
  protected:
-  void ThumbnailImageCallback(gfx::ImageSkia thumbnail_image) {
-    image_ = std::move(thumbnail_image);
-    run_loop_.Quit();
+  // ThumbnailImage::Observer:
+  void OnThumbnailImageAvailable(gfx::ImageSkia thumbnail_image) override {
+    if (thumbnail_) {
+      scoped_observer_.Remove(thumbnail_);
+      thumbnail_ = nullptr;
+      image_ = thumbnail_image;
+      run_loop_.Quit();
+    }
   }
 
  private:
   base::RunLoop run_loop_;
+  ThumbnailImage* thumbnail_ = nullptr;
   base::Optional<gfx::ImageSkia> image_;
+  ScopedObserver<ThumbnailImage, ThumbnailImage::Observer> scoped_observer_{
+      this};
 };
 
 }  // anonymous namespace
