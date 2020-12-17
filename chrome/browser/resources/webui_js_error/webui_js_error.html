@@ -21,9 +21,11 @@
     This page generates a JavaScript error on load. Other types of errors can
     be generated with the buttons: <div>
       <!-- Ids are referenced in integration tests, including tast tests -->
-      <button id="error-button">Log Error</button>
-      <button id="exception-button">Throw Uncaught Error</button>
-      <button id="promise-button">Unhandled Promise Rejection</button>
+      <button id="error-button" accesskey="l">Log Error</button>
+      <button id="exception-button" accesskey="t">Throw Uncaught Error</button>
+      <button id="promise-button" accesskey="p">
+        Unhandled Promise Rejection
+      </button>
     </div>
     <script src="chrome://resources/js/assert.js"></script>
     <script src="chrome://resources/js/util.js"></script>

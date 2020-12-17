@@ -1630,6 +1630,13 @@ if (!is_android) {
       ]
     }
 
+    if (is_linux || is_chromeos) {
+      sources += [
+        "../browser/error_reporting/webui_js_error_reporting_browsertest.cc",
+      ]
+      deps += [ "//chrome/browser/error_reporting:test_support" ]
+    }
+
     if (is_linux && !is_chromeos_lacros) {
       sources += [
         "../browser/chrome_main_browsertest.cc",

@@ -52,6 +52,7 @@ ScopedMockChromeJsErrorReportProcessor::ScopedMockChromeJsErrorReportProcessor(
     : processor_(base::MakeRefCounted<MockChromeJsErrorReportProcessor>()),
       previous_(JsErrorReportProcessor::Get()) {
   processor_->SetCrashEndpoint(endpoint.GetCrashEndpointURL());
+  processor_->SetCrashEndpointStaging(endpoint.GetCrashEndpointURL());
   processor_->SetAsDefault();
 }
 

@@ -40,6 +40,10 @@ class MockCrashEndpoint {
   // Returns the last report received, if any.
   const base::Optional<Report>& last_report() const { return last_report_; }
 
+  // Clears last report so that WaitForReport will wait for another report.
+  // Does not clear report_count()
+  void clear_last_report() { last_report_.reset(); }
+
   // Get the number of reports received since this object was created.
   int report_count() const { return report_count_; }
 
