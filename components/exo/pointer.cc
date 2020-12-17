@@ -155,7 +155,8 @@ Pointer::~Pointer() {
 }
 
 void Pointer::SetCursor(Surface* surface, const gfx::Point& hotspot) {
-  if (!focus_surface_ && !capture_window_)
+  // Early out if the pointer doesn't have a surface in focus.
+  if (!focus_surface_)
     return;
 
   // This is used to avoid unnecessary cursor changes.
@@ -241,8 +242,6 @@ bool Pointer::ConstrainPointer(PointerConstraintDelegate* delegate) {
   // lock support unless we are on chromeos.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   Surface* constrained_surface = delegate->GetConstrainedSurface();
-  if (!constrained_surface)
-    return false;
   // Pointer lock should be enabled for ARC by default. The kExoPointerLock
   // should only apply to Crostini windows.
   bool is_arc_window = ash::window_util::IsArcWindow(
@@ -273,17 +272,17 @@ bool Pointer::EnablePointerCapture(Surface* capture_surface) {
     return false;
   }
 
-  aura::Window* window = capture_surface->window();
-  aura::Window* active_window = WMHelper::GetInstance()->GetActiveWindow();
-  if (!active_window || !active_window->Contains(window)) {
-    LOG(ERROR) << "Cannot enable pointer capture on an inactive window.";
+  if (capture_surface->window() !=
+      WMHelper::GetInstance()->GetFocusedWindow()) {
+    LOG(ERROR)
+        << "Cannot enable pointer capture on a window that is not focused.";
     return false;
   }
 
   if (!capture_surface->HasSurfaceObserver(this))
     capture_surface->AddSurfaceObserver(this);
 
-  capture_window_ = window;
+  capture_window_ = capture_surface->window();
 
   // Add a pre-target handler that can consume all mouse events before it gets
   // sent to other targets.

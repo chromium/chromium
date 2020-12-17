@@ -1200,7 +1200,7 @@ TEST_F(PointerTest, ConstrainPointer) {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-TEST_F(PointerTest, ConstrainPointerFailsWhenSurfaceIsNotActive) {
+TEST_F(PointerTest, ConstrainPointerFailsWhenSurfaceIsNotFocused) {
   auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_list->InitAndEnableFeature(
       chromeos::features::kExoPointerLock);
@@ -1219,6 +1219,7 @@ TEST_F(PointerTest, ConstrainPointerFailsWhenSurfaceIsNotActive) {
   auto pointer = std::make_unique<Pointer>(&delegate, &seat);
   aura::client::FocusClient* focus_client =
       aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow());
+  focus_client->FocusWindow(nullptr);
   ui::test::EventGenerator generator(ash::Shell::GetPrimaryRootWindow());
 
   EXPECT_CALL(delegate, CanAcceptPointerEventsForSurface(surface.get()))
@@ -1226,20 +1227,24 @@ TEST_F(PointerTest, ConstrainPointerFailsWhenSurfaceIsNotActive) {
 
   EXPECT_CALL(constraint_delegate, GetConstrainedSurface())
       .WillRepeatedly(testing::Return(surface.get()));
+  EXPECT_FALSE(pointer->ConstrainPointer(&constraint_delegate));
 
-  auto second_surface = std::make_unique<Surface>();
-  auto second_shell_surface =
-      std::make_unique<ShellSurface>(second_surface.get());
-  auto second_buffer = std::make_unique<Buffer>(
-      exo_test_helper()->CreateGpuMemoryBuffer(buffer_size));
-  second_surface->Attach(second_buffer.get());
-  second_surface->Commit();
+  auto child_surface = std::make_unique<Surface>();
+  auto child_shell_surface = std::make_unique<ShellSurface>(
+      child_surface.get(), gfx::Point(), true, false,
+      ash::desks_util::GetActiveDeskContainerId());
+  child_shell_surface->DisableMovement();
+  child_shell_surface->SetParent(shell_surface.get());
+  gfx::Size child_buffer_size(15, 15);
+  auto child_buffer = std::make_unique<Buffer>(
+      exo_test_helper()->CreateGpuMemoryBuffer(child_buffer_size));
+  child_surface->Attach(child_buffer.get());
+  child_surface->Commit();
 
-  EXPECT_CALL(delegate, CanAcceptPointerEventsForSurface(second_surface.get()))
+  EXPECT_CALL(delegate, CanAcceptPointerEventsForSurface(child_surface.get()))
       .WillRepeatedly(testing::Return(true));
 
-  // Setting the focused window also makes it activated.
-  focus_client->FocusWindow(second_surface->window());
+  focus_client->FocusWindow(child_surface->window());
   EXPECT_FALSE(pointer->ConstrainPointer(&constraint_delegate));
 
   focus_client->FocusWindow(surface->window());
