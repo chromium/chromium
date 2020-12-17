@@ -108,7 +108,8 @@ CompromisedCredentials MakeCompromised(
     CompromiseType compromise_type = CompromiseType::kLeaked) {
   return CompromisedCredentials(
       std::string(signon_realm), base::ASCIIToUTF16(username),
-      base::Time::Now() - time_since_creation, compromise_type, false);
+      base::Time::Now() - time_since_creation, compromise_type,
+      password_manager::IsMuted(false));
 }
 
 PasswordForm MakeSavedPassword(

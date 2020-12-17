@@ -58,7 +58,8 @@ CompromisedCredentials MakeCompromised(base::StringPiece signon_realm,
                                        base::StringPiece username) {
   return CompromisedCredentials(std::string(signon_realm),
                                 base::ASCIIToUTF16(username), base::Time::Now(),
-                                CompromiseType::kLeaked, false);
+                                CompromiseType::kLeaked,
+                                password_manager::IsMuted(false));
 }
 }  // namespace
 

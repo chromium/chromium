@@ -78,7 +78,7 @@ class InsecureCredentialsTableTest : public testing::Test {
   std::unique_ptr<LoginDatabase> login_db_;
   CompromisedCredentials test_data_{kTestDomain, base::ASCIIToUTF16(kUsername),
                                     base::Time::FromTimeT(1),
-                                    CompromiseType::kLeaked, false};
+                                    CompromiseType::kLeaked, IsMuted(false)};
   PasswordForm test_form_ = TestForm();
 };
 

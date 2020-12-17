@@ -267,7 +267,7 @@ void InsecureCredentialsManager::SaveCompromisedCredential(
       GetStoreFor(saved_password)
           .AddCompromisedCredentials(CompromisedCredentials(
               saved_password.signon_realm, saved_password.username_value,
-              base::Time::Now(), CompromiseType::kLeaked, false));
+              base::Time::Now(), CompromiseType::kLeaked, IsMuted(false)));
     }
   }
 }

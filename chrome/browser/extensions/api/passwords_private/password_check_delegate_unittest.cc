@@ -80,6 +80,7 @@ using password_manager::CompromisedCredentials;
 using password_manager::CompromiseType;
 using password_manager::InsecureCredentialTypeFlags;
 using password_manager::IsLeaked;
+using password_manager::IsMuted;
 using password_manager::LeakCheckCredential;
 using password_manager::PasswordForm;
 using password_manager::SavedPasswordsPresenter;
@@ -143,8 +144,7 @@ CompromisedCredentials MakeCompromised(
     CompromiseType compromise_type = CompromiseType::kLeaked) {
   return CompromisedCredentials(
       std::string(signon_realm), base::ASCIIToUTF16(username),
-      base::Time::Now() - time_since_creation, compromise_type,
-      /*is_muted=*/false);
+      base::Time::Now() - time_since_creation, compromise_type, IsMuted(false));
 }
 
 PasswordForm MakeSavedPassword(base::StringPiece signon_realm,
@@ -812,11 +812,10 @@ TEST_F(PasswordCheckDelegateTest, OnLeakFoundCreatesCredential) {
       IsLeaked(true));
   RunUntilIdle();
 
-  EXPECT_THAT(
-      store().compromised_credentials(),
-      ElementsAre(CompromisedCredentials(
-          kExampleCom, base::ASCIIToUTF16(kUsername1), base::Time::Now(),
-          CompromiseType::kLeaked, /*is_muted=*/false)));
+  EXPECT_THAT(store().compromised_credentials(),
+              ElementsAre(CompromisedCredentials(
+                  kExampleCom, base::ASCIIToUTF16(kUsername1),
+                  base::Time::Now(), CompromiseType::kLeaked, IsMuted(false))));
 }
 
 // Test that a found leak creates a compromised credential in the password
@@ -848,16 +847,16 @@ TEST_F(PasswordCheckDelegateTest, OnLeakFoundCreatesMultipleCredential) {
       UnorderedElementsAre(
           CompromisedCredentials(kExampleCom, base::ASCIIToUTF16(kUsername1),
                                  base::Time::Now(), CompromiseType::kLeaked,
-                                 /*is_muted=*/false),
+                                 IsMuted(false)),
           CompromisedCredentials(kExampleOrg, base::ASCIIToUTF16(kUsername1),
                                  base::Time::Now(), CompromiseType::kLeaked,
-                                 /*is_muted=*/false),
+                                 IsMuted(false)),
           CompromisedCredentials(
               kExampleCom, base::ASCIIToUTF16(kUsername2Upper),
-              base::Time::Now(), CompromiseType::kLeaked, /*is_muted=*/false),
+              base::Time::Now(), CompromiseType::kLeaked, IsMuted(false)),
           CompromisedCredentials(
               kExampleOrg, base::ASCIIToUTF16(kUsername2Email),
-              base::Time::Now(), CompromiseType::kLeaked, /*is_muted=*/false)));
+              base::Time::Now(), CompromiseType::kLeaked, IsMuted(false))));
 }
 
 // Verifies that the case where the user has no saved passwords is reported

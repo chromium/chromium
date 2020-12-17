@@ -443,13 +443,13 @@ TEST_F(MultiStoreFormFetcherTest, CompromisedCredentials) {
   Fetch();
   CompromisedCredentials profile_store_compromised_credentials(
       form_digest_.signon_realm, base::ASCIIToUTF16("profile_username"),
-      base::Time::FromTimeT(1), CompromiseType::kLeaked, false);
+      base::Time::FromTimeT(1), CompromiseType::kLeaked, IsMuted(false));
   profile_store_compromised_credentials.in_store =
       PasswordForm::Store::kProfileStore;
 
   CompromisedCredentials account_store_compromised_credentials(
       form_digest_.signon_realm, base::ASCIIToUTF16("account_username"),
-      base::Time::FromTimeT(1), CompromiseType::kLeaked, false);
+      base::Time::FromTimeT(1), CompromiseType::kLeaked, IsMuted(false));
   account_store_compromised_credentials.in_store =
       PasswordForm::Store::kAccountStore;
 

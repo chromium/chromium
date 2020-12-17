@@ -28,7 +28,7 @@ std::vector<CompromisedCredentials> StatementToCompromisedCredentials(
     bool is_muted = !!s->ColumnInt64(4);
 
     results.emplace_back(std::move(signon_realm), std::move(username),
-                         create_time, insecurity_type, is_muted);
+                         create_time, insecurity_type, IsMuted(is_muted));
   }
   return results;
 }
@@ -41,7 +41,7 @@ CompromisedCredentials::CompromisedCredentials(std::string signon_realm,
                                                base::string16 username,
                                                base::Time create_time,
                                                CompromiseType insecurity_type,
-                                               bool is_muted)
+                                               IsMuted is_muted)
     : signon_realm(std::move(signon_realm)),
       username(std::move(username)),
       create_time(create_time),
@@ -107,7 +107,7 @@ bool InsecureCredentialsTable::AddRow(
   s.BindInt(0, static_cast<int>(compromised_credentials.compromise_type));
   s.BindInt64(1, compromised_credentials.create_time.ToDeltaSinceWindowsEpoch()
                      .InMicroseconds());
-  s.BindBool(2, compromised_credentials.is_muted);
+  s.BindBool(2, compromised_credentials.is_muted.value());
   s.BindString(3, compromised_credentials.signon_realm);
   s.BindString16(4, compromised_credentials.username);
 

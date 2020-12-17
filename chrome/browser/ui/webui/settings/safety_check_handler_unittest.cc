@@ -167,7 +167,8 @@ class TestPasswordsDelegate : public extensions::TestPasswordsPrivateDelegate {
         "test.com",
         base::ASCIIToUTF16("test" +
                            base::NumberToString(test_credential_counter_++)),
-        base::Time(), password_manager::CompromiseType::kLeaked, false));
+        base::Time(), password_manager::CompromiseType::kLeaked,
+        password_manager::IsMuted(false)));
     base::RunLoop().RunUntilIdle();
   }
 

@@ -31,7 +31,7 @@ CompromisedCredentials CreateCompromised(
     PasswordForm::Store store = PasswordForm::Store::kProfileStore) {
   CompromisedCredentials compromised(kSignonRealm, base::ASCIIToUTF16(username),
                                      base::Time(), CompromiseType::kLeaked,
-                                     false);
+                                     IsMuted(false));
   compromised.in_store = store;
   return compromised;
 }

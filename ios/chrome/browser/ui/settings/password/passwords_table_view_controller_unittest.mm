@@ -235,7 +235,8 @@ class PasswordsTableViewControllerTest : public ChromeTableViewControllerTest {
       base::StringPiece username) {
     return password_manager::CompromisedCredentials(
         std::string(signon_realm), base::ASCIIToUTF16(username),
-        base::Time::Now(), CompromiseType::kLeaked, false);
+        base::Time::Now(), CompromiseType::kLeaked,
+        password_manager::IsMuted(false));
   }
 
   void AddCompromisedCredential1() {

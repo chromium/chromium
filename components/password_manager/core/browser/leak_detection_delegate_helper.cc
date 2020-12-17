@@ -59,7 +59,7 @@ void LeakDetectionDelegateHelper::OnGetPasswordStoreResults(
             form->IsUsingAccountStore() ? *account_store_ : *profile_store_;
         store.AddCompromisedCredentials(CompromisedCredentials(
             form->signon_realm, form->username_value, base::Time::Now(),
-            CompromiseType::kLeaked, false));
+            CompromiseType::kLeaked, IsMuted(false)));
       }
     }
 

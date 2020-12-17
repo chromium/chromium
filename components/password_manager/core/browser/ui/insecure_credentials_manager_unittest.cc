@@ -63,7 +63,7 @@ CompromisedCredentials MakeCompromised(
     CompromiseType type = CompromiseType::kLeaked) {
   return CompromisedCredentials(std::move(signon_realm),
                                 base::ASCIIToUTF16(username), base::Time(),
-                                type, false);
+                                type, IsMuted(false));
 }
 
 PasswordForm MakeSavedPassword(base::StringPiece signon_realm,

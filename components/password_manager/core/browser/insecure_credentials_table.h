@@ -19,6 +19,7 @@ class Database;
 namespace password_manager {
 
 using BulkCheckDone = base::StrongAlias<class BulkCheckDoneTag, bool>;
+using IsMuted = base::StrongAlias<class IsMutedTag, bool>;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -51,7 +52,7 @@ struct CompromisedCredentials {
                          base::string16 username,
                          base::Time create_time,
                          CompromiseType compromise_type,
-                         bool is_muted);
+                         IsMuted is_muted);
   CompromisedCredentials(const CompromisedCredentials& rhs);
   CompromisedCredentials(CompromisedCredentials&& rhs);
   CompromisedCredentials& operator=(const CompromisedCredentials& rhs);
@@ -67,7 +68,7 @@ struct CompromisedCredentials {
   // The type of the credentials that was compromised.
   CompromiseType compromise_type = CompromiseType::kLeaked;
   // Whether the problem was explicitly muted by the user.
-  bool is_muted = false;
+  IsMuted is_muted{false};
   // The store in which those credentials are stored.
   PasswordForm::Store in_store = PasswordForm::Store::kNotSet;
 };
