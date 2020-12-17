@@ -330,7 +330,7 @@ void NearbyShareCertificateStorageImpl::
   }
 
   NS_LOG(VERBOSE) << __func__ << ": Inserting " << new_entries->size()
-                  << " new public certificates.";
+                  << " public certificates.";
   db_->UpdateEntries(
       std::move(new_entries),
       /*keys_to_remove=*/std::make_unique<std::vector<std::string>>(),
@@ -462,8 +462,6 @@ void NearbyShareCertificateStorageImpl::ReplacePrivateCertificates(
   for (const NearbySharePrivateCertificate& cert : private_certificates) {
     list.Append(cert.ToDictionary());
   }
-  NS_LOG(VERBOSE) << __func__ << ": Overwriting private certificates pref with "
-                  << private_certificates.size() << " certificates.";
   pref_service_->Set(prefs::kNearbySharingPrivateCertificateListPrefName, list);
 }
 
@@ -531,7 +529,7 @@ void NearbyShareCertificateStorageImpl::AddPublicCertificates(
   NS_LOG(VERBOSE)
       << __func__
       << ": Calling UpdateEntries on public certificate database with "
-      << public_certificates.size() << " new certificates.";
+      << public_certificates.size() << " certificates.";
   db_->UpdateEntries(
       std::move(new_entries), std::make_unique<std::vector<std::string>>(),
       base::BindOnce(
