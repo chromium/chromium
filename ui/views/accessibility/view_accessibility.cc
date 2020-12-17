@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_tree_manager_map.h"
@@ -62,7 +63,7 @@ ViewAccessibility::ViewAccessibility(View* view)
       focused_virtual_child_(nullptr),
       is_leaf_(false),
       is_ignored_(false) {
-#if defined(USE_AURA) && !defined(OS_CHROMEOS)
+#if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS_ASH)
   if (features::IsAccessibilityTreeForViewsEnabled()) {
     Widget* widget = view_->GetWidget();
     if (widget && widget->is_top_level() &&
@@ -158,7 +159,7 @@ bool ViewAccessibility::IsLeaf() const {
 
 ViewsAXTreeManager* ViewAccessibility::AXTreeManager() const {
   ViewsAXTreeManager* manager = nullptr;
-#if defined(USE_AURA) && !defined(OS_CHROMEOS)
+#if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS_ASH)
   Widget* widget = view_->GetWidget();
 
   // Don't return managers for closing Widgets.

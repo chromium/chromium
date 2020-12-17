@@ -4,6 +4,7 @@
 
 #include "ui/base/ime/fake_text_input_client.h"
 
+#include "build/chromeos_buildflags.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/geometry/rect.h"
 

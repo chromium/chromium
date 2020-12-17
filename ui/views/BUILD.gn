@@ -733,7 +733,7 @@ component("views") {
         "corewm/tooltip_win.cc",
       ]
     }
-    if (!is_chromeos) {
+    if (!is_chromeos_ash) {
       sources += [
         "accessibility/views_ax_tree_manager.cc",
         "accessibility/widget_ax_tree_id_map.cc",

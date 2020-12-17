@@ -8,6 +8,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/test/test_context_factories.h"
 #include "ui/gfx/geometry/rect.h"

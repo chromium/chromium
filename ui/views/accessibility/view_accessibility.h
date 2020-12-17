@@ -12,6 +12,7 @@
 #include "base/callback_forward.h"
 #include "base/strings/string16.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/platform/ax_unique_id.h"
@@ -222,7 +223,7 @@ class VIEWS_EXPORT ViewAccessibility {
   Widget* next_focus_ = nullptr;
   Widget* previous_focus_ = nullptr;
 
-#if defined(USE_AURA) && !defined(OS_CHROMEOS)
+#if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS_ASH)
   // Each instance of ViewAccessibility that's associated with a root View
   // owns an ViewsAXTreeManager. For other Views, this should be nullptr.
   std::unique_ptr<views::ViewsAXTreeManager> ax_tree_manager_;

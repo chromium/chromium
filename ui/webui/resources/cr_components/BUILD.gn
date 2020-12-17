@@ -24,7 +24,7 @@ generate_grd("build_grdp") {
     "customize_themes/colorize.svg",
     "customize_themes/brush.svg",
   ]
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     input_files += [
       "chromeos/multidevice_setup/start_setup_icon_1x.png",
       "chromeos/multidevice_setup/start_setup_icon_2x.png",

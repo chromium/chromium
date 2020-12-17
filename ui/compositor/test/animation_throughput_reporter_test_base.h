@@ -9,6 +9,7 @@
 
 #include "base/test/task_environment.h"
 #include "base/timer/timer.h"
+#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
