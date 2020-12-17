@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/policy_ui.h"
+#include "chrome/browser/ui/webui/policy/policy_ui.h"
 
 #include <memory>
 
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/policy_ui_handler.h"
+#include "chrome/browser/ui/webui/policy/policy_ui_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "components/grit/dev_ui_components_resources.h"

@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/sync_internals_ui.h"
+#include "chrome/browser/ui/webui/sync_internals/sync_internals_ui.h"
 
 #include <memory>
 
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/sync_internals_message_handler.h"
+#include "chrome/browser/ui/webui/sync_internals/sync_internals_message_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "components/grit/sync_driver_resources.h"

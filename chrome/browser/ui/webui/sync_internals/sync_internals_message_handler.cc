@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/sync_internals_message_handler.h"
+#include "chrome/browser/ui/webui/sync_internals/sync_internals_message_handler.h"
 
 #include <utility>
 #include <vector>
@@ -368,8 +368,8 @@ void SyncInternalsMessageHandler::OnInvalidationReceived(
 void SyncInternalsMessageHandler::HandleJsEvent(
     const std::string& name,
     const syncer::JsEventDetails& details) {
-  DVLOG(1) << "Handling event: " << name
-           << " with details " << details.ToString();
+  DVLOG(1) << "Handling event: " << name << " with details "
+           << details.ToString();
   DispatchEvent(name, details.Get());
 }
 

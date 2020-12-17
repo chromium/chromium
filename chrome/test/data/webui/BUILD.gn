@@ -74,7 +74,7 @@ if (include_js_tests) {
     # action so need to be separated out.
     sources = [
       "../../../browser/ui/webui/identity_internals_ui_browsertest.js",
-      "../../../browser/ui/webui/sync_internals_browsertest.js",
+      "../../../browser/ui/webui/sync_internals/sync_internals_browsertest.js",
       "about_invalidations_browsertest.js",
       "assertions.js",
       "async_gen.js",
