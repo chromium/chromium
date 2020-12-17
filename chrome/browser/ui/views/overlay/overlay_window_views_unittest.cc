@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "chrome/browser/ui/views/overlay/overlay_window_views.h"
+#include "chrome/browser/ui/views/overlay/track_image_button.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "content/public/browser/picture_in_picture_window_controller.h"
@@ -275,4 +276,41 @@ TEST_F(OverlayWindowViewsTest, IgnoreInvalidMaximumSize) {
   SetDisplayWorkArea({0, 0, 0, 0});
   overlay_window().OnNativeWidgetMove();
   EXPECT_EQ(gfx::Size(500, 500), overlay_window().GetMaximumSize());
+}
+
+// Tests that Next Track button bounds are updated right away when window
+// controls are hidden.
+TEST_F(OverlayWindowViewsTest, NextTrackButtonAddedWhenControlsHidden) {
+  ASSERT_FALSE(overlay_window().AreControlsVisible());
+  ASSERT_TRUE(overlay_window()
+                  .next_track_controls_view_for_testing()
+                  ->size()
+                  .IsEmpty());
+
+  const auto origin_before_layout =
+      overlay_window().next_track_controls_view_for_testing()->origin();
+
+  overlay_window().SetNextTrackButtonVisibility(true);
+  EXPECT_NE(overlay_window().next_track_controls_view_for_testing()->origin(),
+            origin_before_layout);
+  EXPECT_FALSE(overlay_window().IsLayoutPendingForTesting());
+}
+
+// Tests that Previous Track button bounds are updated right away when window
+// controls are hidden.
+TEST_F(OverlayWindowViewsTest, PreviousTrackButtonAddedWhenControlsHidden) {
+  ASSERT_FALSE(overlay_window().AreControlsVisible());
+  ASSERT_TRUE(overlay_window()
+                  .previous_track_controls_view_for_testing()
+                  ->size()
+                  .IsEmpty());
+
+  const auto origin_before_layout =
+      overlay_window().previous_track_controls_view_for_testing()->origin();
+
+  overlay_window().SetPreviousTrackButtonVisibility(true);
+  EXPECT_NE(
+      overlay_window().previous_track_controls_view_for_testing()->origin(),
+      origin_before_layout);
+  EXPECT_FALSE(overlay_window().IsLayoutPendingForTesting());
 }

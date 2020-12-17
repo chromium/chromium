@@ -84,11 +84,15 @@ class OverlayWindowViews : public content::OverlayWindow,
   // visible.
   bool AreControlsVisible() const;
 
+  // Determines whether a layout of the window controls has been scheduled but
+  // is not done yet.
+  bool IsLayoutPendingForTesting() const;
+
   views::PlaybackImageButton* play_pause_controls_view_for_testing() const;
   views::TrackImageButton* next_track_controls_view_for_testing() const;
   views::TrackImageButton* previous_track_controls_view_for_testing() const;
   views::SkipAdLabelButton* skip_ad_controls_view_for_testing() const;
-  gfx::Point back_to_tab_image_position_for_testing() const;
+  views::View* back_to_tab_controls_for_testing() const;
   gfx::Point close_image_position_for_testing() const;
   gfx::Point resize_handle_position_for_testing() const;
   OverlayWindowViews::PlaybackState playback_state_for_testing() const;

@@ -480,7 +480,6 @@ void OverlayWindowViews::SetUpViews() {
   resize_handle_view_ =
       AddChildView(&view_holder_, std::move(resize_handle_view));
 #endif
-  UpdateControlsVisibility(false);
 }
 
 void OverlayWindowViews::OnRootViewReady() {
@@ -496,6 +495,9 @@ void OverlayWindowViews::OnRootViewReady() {
   for (std::unique_ptr<views::View>& child : view_holder_)
     contents_view->AddChildView(std::move(child));
   view_holder_.clear();
+
+  // Don't show the controls until the mouse hovers over the window.
+  UpdateControlsVisibility(false);
 }
 
 void OverlayWindowViews::UpdateLayerBoundsWithLetterboxing(
@@ -626,7 +628,7 @@ void OverlayWindowViews::OnUpdateControlsBounds() {
       visible_controls_views[0]->SetPosition(
           gfx::Point(mid_window_x - kSecondaryControlSize.width() / 2,
                      secondary_control_y));
-      return;
+      break;
     }
     case 2: {
       /* | ----- [ ] [ ] ----- | */
@@ -638,7 +640,7 @@ void OverlayWindowViews::OnUpdateControlsBounds() {
       visible_controls_views[1]->SetSize(kSecondaryControlSize);
       visible_controls_views[1]->SetPosition(
           gfx::Point(mid_window_x + kControlMargin / 2, secondary_control_y));
-      return;
+      break;
     }
     case 3: {
       /* | --- [ ] [ ] [ ] --- | */
@@ -669,7 +671,7 @@ void OverlayWindowViews::OnUpdateControlsBounds() {
             mid_window_x + kSecondaryControlSize.width() / 2 + kControlMargin,
             secondary_control_y));
       }
-      return;
+      break;
     }
     case 4: {
       /* | - [ ] [ ] [ ] [ ] - | */
@@ -692,10 +694,15 @@ void OverlayWindowViews::OnUpdateControlsBounds() {
       visible_controls_views[3]->SetPosition(gfx::Point(
           mid_window_x + kControlMargin * 3 / 2 + kSecondaryControlSize.width(),
           secondary_control_y));
-      return;
+      break;
     }
+    default:
+      NOTREACHED();
   }
-  DCHECK(false);
+
+  // This will actually update the visibility of a control that was just added
+  // or removed, see SetPlayPauseButtonVisibility(), etc.
+  UpdateControlsVisibility(AreControlsVisible());
 }
 
 gfx::Rect OverlayWindowViews::CalculateControlsBounds(int x,
@@ -779,7 +786,11 @@ void OverlayWindowViews::SetPlayPauseButtonVisibility(bool is_visible) {
 }
 
 void OverlayWindowViews::SetSkipAdButtonVisibility(bool is_visible) {
+  if (show_skip_ad_button_ == is_visible)
+    return;
+
   show_skip_ad_button_ = is_visible;
+  UpdateControlsBounds();
 }
 
 void OverlayWindowViews::SetNextTrackButtonVisibility(bool is_visible) {
@@ -1032,6 +1043,11 @@ bool OverlayWindowViews::AreControlsVisible() const {
   return controls_scrim_view_->layer()->visible();
 }
 
+bool OverlayWindowViews::IsLayoutPendingForTesting() const {
+  return update_controls_bounds_timer_ &&
+         update_controls_bounds_timer_->IsRunning();
+}
+
 ui::Layer* OverlayWindowViews::GetControlsScrimLayer() {
   return controls_scrim_view_->layer();
 }
@@ -1108,8 +1124,8 @@ OverlayWindowViews::skip_ad_controls_view_for_testing() const {
   return skip_ad_controls_view_;
 }
 
-gfx::Point OverlayWindowViews::back_to_tab_image_position_for_testing() const {
-  return back_to_tab_controls_view_->origin();
+views::View* OverlayWindowViews::back_to_tab_controls_for_testing() const {
+  return back_to_tab_controls_view_;
 }
 
 gfx::Point OverlayWindowViews::close_image_position_for_testing() const {
