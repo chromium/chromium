@@ -10,6 +10,22 @@ source_set("incognito_reauth_commands") {
   frameworks = [ "UIKit.framework" ]
 }
 
+source_set("incognito_reauth_util") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "incognito_reauth_util.h",
+    "incognito_reauth_util.mm",
+  ]
+  deps = [
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ui/base",
+  ]
+  frameworks = [
+    "UIKit.framework",
+    "LocalAuthentication.framework",
+  ]
+}
+
 source_set("incognito_reauth_ui") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
@@ -17,11 +33,13 @@ source_set("incognito_reauth_ui") {
     "incognito_reauth_view.h",
     "incognito_reauth_view.mm",
   ]
-  deps = [ "//ios/chrome/common/ui/util" ]
-  frameworks = [
-    "UIKit.framework",
-    "LocalAuthentication.framework",
+  deps = [
+    ":incognito_reauth_util",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
   ]
+  frameworks = [ "UIKit.framework" ]
 }
 
 source_set("incognito_reauth_scene_agent") {
@@ -35,9 +53,11 @@ source_set("incognito_reauth_scene_agent") {
   deps = [
     ":incognito_reauth_commands",
     ":incognito_reauth_ui",
+    ":incognito_reauth_util",
     "//base",
     "//components/pref_registry",
     "//components/prefs",
+    "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser",
     "//ios/chrome/browser:pref_names",
     "//ios/chrome/browser/ui:feature_flags",
@@ -46,6 +66,7 @@ source_set("incognito_reauth_scene_agent") {
     "//ios/chrome/browser/ui/util:multiwindow_util",
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/common/ui/reauthentication",
+    "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
 }

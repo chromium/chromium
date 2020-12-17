@@ -4,9 +4,11 @@
 
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_view.h"
 
-#import <LocalAuthentication/LocalAuthentication.h>
-
+#include "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#include "ios/chrome/grit/ios_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -35,16 +37,21 @@ const CGFloat kButtonSpacing = 16.0f;
     blurBackgroundView.isAccessibilityElement = YES;
     AddSameConstraints(self, blurBackgroundView);
 
+    NSString* unlockButtonTitle = l10n_util::GetNSStringF(
+        IDS_IOS_INCOGNITO_REAUTH_UNLOCK_BUTTON,
+        base::SysNSStringToUTF16(biometricAuthenticationTypeString()));
     _authenticateButton =
         [IncognitoReauthView newRoundButtonWithBlurEffect:blurEffect];
-    [_authenticateButton
-        setTitle:[IncognitoReauthView authenticationActionLabel]
-        forState:UIControlStateNormal];
+    [_authenticateButton setTitle:unlockButtonTitle
+                         forState:UIControlStateNormal];
+    _authenticateButton.accessibilityLabel = l10n_util::GetNSStringF(
+        IDS_IOS_INCOGNITO_REAUTH_UNLOCK_BUTTON_VOICEOVER_LABEL,
+        base::SysNSStringToUTF16(biometricAuthenticationTypeString()));
 
     _tabSwitcherButton =
         [IncognitoReauthView newRoundButtonWithBlurEffect:blurEffect];
-    // TODO(crbug.com/1138892): add localized text.
-    [_tabSwitcherButton setTitle:@"[Test String] Go to Tab Switcher"
+    [_tabSwitcherButton setTitle:l10n_util::GetNSString(
+                                     IDS_IOS_INCOGNITO_REAUTH_GO_TO_NORMAL_TABS)
                         forState:UIControlStateNormal];
 
     UIStackView* stackView = [[UIStackView alloc]
@@ -57,22 +64,6 @@ const CGFloat kButtonSpacing = 16.0f;
   }
 
   return self;
-}
-
-+ (NSString*)authenticationActionLabel {
-  LAContext* ctx = [[LAContext alloc] init];
-  // Call canEvaluatePolicy:error: once to populate biometrics type
-  [ctx canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics
-                   error:nil];
-  switch (ctx.biometryType) {
-    case LABiometryTypeFaceID:
-      return @"Face ID";
-    case LABiometryTypeTouchID:
-      return @"Touch ID";
-    default:
-      // TODO(crbug.com/1138892): add localized text.
-      return @"[Test String] Passcode";
-  }
 }
 
 + (UIButton*)newRoundButtonWithBlurEffect:(UIBlurEffect*)blurEffect {

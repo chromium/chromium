@@ -214,8 +214,8 @@ const char kGoogleServicesSettingsURL[] = "settings://open_google_services";
   }
   _incognitoReauthItem =
       [[SettingsSwitchItem alloc] initWithType:ItemTypeIncognitoReauth];
-  // TODO(crbug.com/1138892) : add localized string.
-  _incognitoReauthItem.text = @"[Test String] Incognito Authentication";
+  _incognitoReauthItem.text =
+      l10n_util::GetNSString(IDS_IOS_INCOGNITO_REAUTH_SETTING_NAME);
   _incognitoReauthItem.on = self.incognitoReauthPref.value;
   return _incognitoReauthItem;
 }
@@ -342,10 +342,10 @@ const char kGoogleServicesSettingsURL[] = "settings://open_google_services";
       switchView.on = false;
     } else {
       __weak PrivacyTableViewController* weakSelf = self;
-      // TODO(crbug.com/1138892): add localized text
       [self.reauthModule
           attemptReauthWithLocalizedReason:
-              @"[Test String] Authenticate for incognito access"
+              l10n_util::GetNSString(
+                  IDS_IOS_INCOGNITO_REAUTH_SET_UP_SYSTEM_DIALOG_REASON)
                       canReusePreviousAuth:false
                                    handler:^(ReauthenticationResult result) {
                                      BOOL success =
