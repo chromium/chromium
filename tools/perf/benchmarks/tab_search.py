@@ -55,7 +55,7 @@ class TabSearch(perf_benchmark.PerfBenchmark):
     options.config.chrome_trace_config.EnableUMAHistograms(
         *TAB_SEARCH_BENCHMARK_UMA)
     # Add more buffer since we are opening a lot of tabs.
-    options.config.chrome_trace_config.SetTraceBufferSizeInKb(300 * 1024)
+    options.config.chrome_trace_config.SetTraceBufferSizeInKb(600 * 1024)
     options.SetTimelineBasedMetrics(['webuiMetric', 'umaMetric'])
     return options
 
