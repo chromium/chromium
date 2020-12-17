@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/webauthn/authenticator_request_sheet_model.h"
 #include "chrome/browser/ui/webauthn/transport_hover_list_model.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
+#include "device/fido/pin.h"
 
 namespace gfx {
 struct VectorIcon;
@@ -297,7 +298,8 @@ class AuthenticatorClientPinEntrySheetModel
   enum class Mode { kPinChange, kPinEntry, kPinSetup };
   AuthenticatorClientPinEntrySheetModel(
       AuthenticatorRequestDialogModel* dialog_model,
-      Mode mode);
+      Mode mode,
+      device::pin::PINEntryError error);
   ~AuthenticatorClientPinEntrySheetModel() override;
 
   using AuthenticatorSheetModelBase::AuthenticatorSheetModelBase;

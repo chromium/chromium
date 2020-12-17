@@ -644,27 +644,37 @@ ui::MenuModel* AuthenticatorPaaskV2SheetModel::GetOtherTransportsMenuModel() {
 
 AuthenticatorClientPinEntrySheetModel::AuthenticatorClientPinEntrySheetModel(
     AuthenticatorRequestDialogModel* dialog_model,
-    Mode mode)
+    Mode mode,
+    device::pin::PINEntryError error)
     : AuthenticatorSheetModelBase(dialog_model), mode_(mode) {
-  if (!dialog_model->has_attempted_pin_entry()) {
-    if (dialog_model->uv_attempts() == 0) {
+  switch (error) {
+    case device::pin::PINEntryError::kNoError:
+      break;
+    case device::pin::PINEntryError::kInternalUvLocked:
       error_ = l10n_util::GetStringUTF16(IDS_WEBAUTHN_UV_ERROR_LOCKED);
-    }
-    return;
+      break;
+    case device::pin::PINEntryError::kInvalidCharacters:
+      error_ = l10n_util::GetStringUTF16(
+          IDS_WEBAUTHN_PIN_ENTRY_ERROR_INVALID_CHARACTERS);
+      break;
+    case device::pin::PINEntryError::kSameAsCurrentPIN:
+      error_ = l10n_util::GetStringUTF16(
+          IDS_WEBAUTHN_PIN_ENTRY_ERROR_SAME_AS_CURRENT);
+      break;
+    case device::pin::PINEntryError::kTooShort:
+      error_ = l10n_util::GetPluralStringFUTF16(
+          IDS_WEBAUTHN_PIN_ENTRY_ERROR_TOO_SHORT,
+          dialog_model->min_pin_length());
+      break;
+    case device::pin::PINEntryError::kWrongPIN:
+      base::Optional<int> attempts = dialog_model->pin_attempts();
+      error_ =
+          attempts && *attempts <= 3
+              ? l10n_util::GetPluralStringFUTF16(
+                    IDS_WEBAUTHN_PIN_ENTRY_ERROR_FAILED_RETRIES, *attempts)
+              : l10n_util::GetStringUTF16(IDS_WEBAUTHN_PIN_ENTRY_ERROR_FAILED);
+      break;
   }
-
-  if (mode_ == AuthenticatorClientPinEntrySheetModel::Mode::kPinEntry) {
-    base::Optional<int> attempts = dialog_model->pin_attempts();
-    error_ =
-        attempts && *attempts <= 3
-            ? l10n_util::GetPluralStringFUTF16(
-                  IDS_WEBAUTHN_PIN_ENTRY_ERROR_FAILED_RETRIES, *attempts)
-            : l10n_util::GetStringUTF16(IDS_WEBAUTHN_PIN_ENTRY_ERROR_FAILED);
-    return;
-  }
-
-  DCHECK(mode_ == Mode::kPinSetup || mode_ == Mode::kPinChange);
-  error_ = l10n_util::GetStringUTF16(IDS_WEBAUTHN_PIN_SETUP_ERROR_FAILED);
 }
 
 AuthenticatorClientPinEntrySheetModel::
@@ -721,45 +731,16 @@ base::string16 AuthenticatorClientPinEntrySheetModel::GetAcceptButtonLabel()
   return l10n_util::GetStringUTF16(IDS_WEBAUTHN_PIN_ENTRY_NEXT);
 }
 
-static bool IsValidUTF16(const base::string16& str16) {
-  std::string unused_str8;
-  return base::UTF16ToUTF8(str16.c_str(), str16.size(), &unused_str8);
-}
-
 void AuthenticatorClientPinEntrySheetModel::OnAccept() {
-  if (mode_ == Mode::kPinSetup || mode_ == Mode::kPinChange) {
-    // Validate a new PIN.
-    base::Optional<base::string16> error;
-    if (!pin_code_.empty() && !IsValidUTF16(pin_code_)) {
-      error = l10n_util::GetStringUTF16(
-          IDS_WEBAUTHN_PIN_ENTRY_ERROR_INVALID_CHARACTERS);
-    } else if (pin_code_.size() < dialog_model()->min_pin_length()) {
-      error = l10n_util::GetPluralStringFUTF16(
-          IDS_WEBAUTHN_PIN_ENTRY_ERROR_TOO_SHORT,
-          dialog_model()->min_pin_length());
-    } else if (pin_code_ != pin_confirmation_) {
-      error = l10n_util::GetStringUTF16(IDS_WEBAUTHN_PIN_ENTRY_ERROR_MISMATCH);
-    }
-    if (error) {
-      error_ = *error;
-      dialog_model()->OnSheetModelDidChange();
-      return;
-    }
-  } else {
-    // Submit PIN to authenticator for verification.
-    DCHECK(mode_ == AuthenticatorClientPinEntrySheetModel::Mode::kPinEntry);
-    // TODO: use device::pin::IsValid instead.
-    if (pin_code_.size() < dialog_model()->min_pin_length()) {
-      error_ = l10n_util::GetPluralStringFUTF16(
-          IDS_WEBAUTHN_PIN_ENTRY_ERROR_TOO_SHORT,
-          dialog_model()->min_pin_length());
-      dialog_model()->OnSheetModelDidChange();
-      return;
-    }
+  if ((mode_ == Mode::kPinChange || mode_ == Mode::kPinSetup) &&
+      pin_code_ != pin_confirmation_) {
+    error_ = l10n_util::GetStringUTF16(IDS_WEBAUTHN_PIN_ENTRY_ERROR_MISMATCH);
+    dialog_model()->OnSheetModelDidChange();
+    return;
   }
 
   if (dialog_model()) {
-    dialog_model()->OnHavePIN(base::UTF16ToUTF8(pin_code_));
+    dialog_model()->OnHavePIN(pin_code_);
   }
 }
 

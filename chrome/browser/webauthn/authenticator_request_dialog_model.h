@@ -23,6 +23,7 @@
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
+#include "device/fido/pin.h"
 
 namespace device {
 class AuthenticatorGetAssertionResponse;
@@ -324,7 +325,7 @@ class AuthenticatorRequestDialogModel {
       base::RepeatingClosure bluetooth_adapter_power_on_callback);
 
   // OnHavePIN is called when the user enters a PIN in the UI.
-  void OnHavePIN(const std::string& pin);
+  void OnHavePIN(base::string16 pin);
 
   // Called when the user needs to retry user verification with the number of
   // |attempts| remaining.
@@ -364,15 +365,13 @@ class AuthenticatorRequestDialogModel {
 
   const std::string& cable_qr_string() const { return *cable_qr_string_; }
 
-  void CollectPIN(
-      device::FidoRequestHandlerBase::Observer::CollectPINOptions::Mode mode,
-      uint32_t min_pin_length,
-      int attempts,
-      base::OnceCallback<void(std::string)> provide_pin_cb);
-  bool has_attempted_pin_entry() const {
-    return ephemeral_state_.has_attempted_pin_entry_;
-  }
+  void CollectPIN(device::pin::PINEntryReason reason,
+                  device::pin::PINEntryError error,
+                  uint32_t min_pin_length,
+                  int attempts,
+                  base::OnceCallback<void(base::string16)> provide_pin_cb);
   uint32_t min_pin_length() const { return min_pin_length_; }
+  device::pin::PINEntryError pin_error() const { return pin_error_; }
   base::Optional<int> pin_attempts() const { return pin_attempts_; }
 
   void StartInlineBioEnrollment(base::OnceClosure next_callback);
@@ -381,18 +380,12 @@ class AuthenticatorRequestDialogModel {
   base::Optional<int> max_bio_samples() { return max_bio_samples_; }
   base::Optional<int> bio_samples_remaining() { return bio_samples_remaining_; }
 
-  // Flags the authenticator's internal user verification as locked.
-  void set_internal_uv_locked() { uv_attempts_ = 0; }
   base::Optional<int> uv_attempts() const { return uv_attempts_; }
 
   void RequestAttestationPermission(base::OnceCallback<void(bool)> callback);
 
   const std::vector<device::AuthenticatorGetAssertionResponse>& responses() {
     return ephemeral_state_.responses_;
-  }
-
-  void set_has_attempted_pin_entry_for_testing() {
-    ephemeral_state_.has_attempted_pin_entry_ = true;
   }
 
   void set_incognito_mode(bool incognito_mode) {
@@ -442,8 +435,6 @@ class AuthenticatorRequestDialogModel {
     // dispatched lazily after the user interacts with the UI element.
     ObservableAuthenticatorList saved_authenticators_;
 
-    bool has_attempted_pin_entry_ = false;
-
     // responses_ contains possible accounts to select between.
     std::vector<device::AuthenticatorGetAssertionResponse> responses_;
   };
@@ -477,8 +468,9 @@ class AuthenticatorRequestDialogModel {
   base::Optional<int> bio_samples_remaining_;
   base::OnceClosure bio_enrollment_callback_;
 
-  base::OnceCallback<void(std::string)> pin_callback_;
+  base::OnceCallback<void(base::string16)> pin_callback_;
   uint32_t min_pin_length_ = device::kMinPinLength;
+  device::pin::PINEntryError pin_error_ = device::pin::PINEntryError::kNoError;
   base::Optional<int> pin_attempts_;
   base::Optional<int> uv_attempts_;
 

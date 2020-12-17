@@ -432,7 +432,8 @@ void MakeCredentialRequestHandler::DispatchRequest(
     case PINUVDisposition::kNoTokenInternalUVPINFallback:
       break;
     case PINUVDisposition::kGetToken:
-      ObtainPINUVAuthToken(authenticator, skip_pin_touch);
+      ObtainPINUVAuthToken(authenticator, skip_pin_touch,
+                           /*internal_uv_locked=*/false);
       return;
     case PINUVDisposition::kUnsatisfiable:
       // |IsCandidateAuthenticatorPostTouch| should have handled this case.
@@ -484,24 +485,15 @@ void MakeCredentialRequestHandler::AuthenticatorSelectedForPINUVAuthToken(
   CancelActiveAuthenticators(authenticator->GetId());
 }
 
-void MakeCredentialRequestHandler::CollectNewPIN(
+void MakeCredentialRequestHandler::CollectPIN(
+    pin::PINEntryReason reason,
+    pin::PINEntryError error,
     uint32_t min_pin_length,
-    bool force_pin_change,
-    ProvidePINCallback provide_pin_cb) {
-  DCHECK_EQ(state_, State::kWaitingForToken);
-  observer()->CollectPIN(
-      {.mode = force_pin_change ? Observer::CollectPINOptions::Mode::kChange
-                                : Observer::CollectPINOptions::Mode::kSet,
-       .min_pin_length = min_pin_length},
-      std::move(provide_pin_cb));
-}
-
-void MakeCredentialRequestHandler::CollectExistingPIN(
     int attempts,
-    uint32_t min_pin_length,
     ProvidePINCallback provide_pin_cb) {
   DCHECK_EQ(state_, State::kWaitingForToken);
-  observer()->CollectPIN({.mode = Observer::CollectPINOptions::Mode::kChallenge,
+  observer()->CollectPIN({.reason = reason,
+                          .error = error,
                           .min_pin_length = min_pin_length,
                           .attempts = attempts},
                          std::move(provide_pin_cb));
@@ -511,12 +503,6 @@ void MakeCredentialRequestHandler::PromptForInternalUVRetry(int attempts) {
   DCHECK(state_ == State::kWaitingForTouch ||
          state_ == State::kWaitingForToken);
   observer()->OnRetryUserVerification(attempts);
-}
-
-void MakeCredentialRequestHandler::InternalUVLockedForAuthToken() {
-  DCHECK(state_ == State::kWaitingForTouch ||
-         state_ == State::kWaitingForToken);
-  observer()->OnInternalUserVerificationLocked();
 }
 
 void MakeCredentialRequestHandler::HavePINUVAuthTokenResultForAuthenticator(
@@ -588,12 +574,14 @@ void MakeCredentialRequestHandler::HavePINUVAuthTokenResultForAuthenticator(
 
 void MakeCredentialRequestHandler::ObtainPINUVAuthToken(
     FidoAuthenticator* authenticator,
-    bool skip_pin_touch) {
+    bool skip_pin_touch,
+    bool internal_uv_locked) {
   AuthTokenRequester::Options options;
   options.token_permissions =
       GetMakeCredentialRequestPermissions(authenticator);
   options.rp_id = request_.rp.id;
   options.skip_pin_touch = skip_pin_touch;
+  options.internal_uv_locked = internal_uv_locked;
 
   auth_token_requester_map_.insert(
       {authenticator, std::make_unique<AuthTokenRequester>(
@@ -652,14 +640,15 @@ void MakeCredentialRequestHandler::HandleResponse(
     // Authenticators without uvToken support will return this error immediately
     // without user interaction when internal UV is locked.
     const base::TimeDelta response_time = request_timer.Elapsed();
-    observer()->OnInternalUserVerificationLocked();
     if (response_time < kMinExpectedAuthenticatorResponseTime) {
       FIDO_LOG(DEBUG) << "Authenticator is probably locked, response_time="
                       << response_time;
-      ObtainPINUVAuthToken(authenticator, /*skip_pin_touch=*/false);
+      ObtainPINUVAuthToken(authenticator, /*skip_pin_touch=*/false,
+                           /*internal_uv_locked=*/true);
       return;
     }
-    ObtainPINUVAuthToken(authenticator, /*skip_pin_touch=*/true);
+    ObtainPINUVAuthToken(authenticator, /*skip_pin_touch=*/true,
+                         /*internal_uv_locked=*/true);
     return;
   }
 

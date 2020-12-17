@@ -118,19 +118,22 @@ std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
       sheet_view = std::make_unique<AuthenticatorClientPinEntrySheetView>(
           std::make_unique<AuthenticatorClientPinEntrySheetModel>(
               dialog_model,
-              AuthenticatorClientPinEntrySheetModel::Mode::kPinChange));
+              AuthenticatorClientPinEntrySheetModel::Mode::kPinChange,
+              dialog_model->pin_error()));
       break;
     case Step::kClientPinEntry:
       sheet_view = std::make_unique<AuthenticatorClientPinEntrySheetView>(
           std::make_unique<AuthenticatorClientPinEntrySheetModel>(
               dialog_model,
-              AuthenticatorClientPinEntrySheetModel::Mode::kPinEntry));
+              AuthenticatorClientPinEntrySheetModel::Mode::kPinEntry,
+              dialog_model->pin_error()));
       break;
     case Step::kClientPinSetup:
       sheet_view = std::make_unique<AuthenticatorClientPinEntrySheetView>(
           std::make_unique<AuthenticatorClientPinEntrySheetModel>(
               dialog_model,
-              AuthenticatorClientPinEntrySheetModel::Mode::kPinSetup));
+              AuthenticatorClientPinEntrySheetModel::Mode::kPinSetup,
+              dialog_model->pin_error()));
       break;
     case Step::kClientPinTapAgain:
       sheet_view = std::make_unique<AuthenticatorRequestSheetView>(

@@ -54,14 +54,17 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthTokenRequester {
     // skip_pin_touch indicates whether not to request a touch before attempting
     // to obtain a token using a PIN.
     bool skip_pin_touch = false;
+
+    // internal_uv_locked indicates that internal user verification was already
+    // locked for the authenticator when building this AuthTokenRequester.
+    bool internal_uv_locked = false;
   };
 
   class COMPONENT_EXPORT(DEVICE_FIDO) Delegate {
    public:
     // ProvidePINCallback is used to provide the AuthTokenRequester with a PIN
-    // entered by the user. Callers must use |pin::IsValid()| to validate |pin|
-    // before invoking this callback.
-    using ProvidePINCallback = base::OnceCallback<void(std::string pin)>;
+    // entered by the user.
+    using ProvidePINCallback = base::OnceCallback<void(base::string16 pin)>;
 
     virtual ~Delegate();
 
@@ -77,36 +80,20 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthTokenRequester {
     virtual void AuthenticatorSelectedForPINUVAuthToken(
         FidoAuthenticator* authenticator) = 0;
 
-    // CollectNewPIN is invoked to prompt the user to enter a new PIN for an
+    // CollectNewPIN is invoked to prompt the user to enter a PIN for an
     // authenticator. |min_pin_length| is the minimum length for a valid PIN.
-    // |force_pin_change| is true iff the user must change the PIN on their
-    // security key before using it.
+    // |attempts| is the number of attempts before the authenticator is locked.
+    // This number may be zero if the number is unlimited, e.g. when setting a
+    // new PIN.
     //
     // The callee must provide the PIN by invoking |provide_pin_cb|. The
     // callback is weakly bound and safe to invoke even after the
     // AuthTokenRequester was freed.
-    virtual void CollectNewPIN(uint32_t min_pin_length,
-                               bool force_pin_change,
-                               ProvidePINCallback provide_pin_cb) = 0;
-
-    // CollectExistingPIN is invoked to prompt the user to provide the existing
-    // PIN to an authenticator. |attempts| is the number of remaining attempts
-    // before the authenticator is locked. |min_pin_length| is the minimum
-    // length for a valid PIN.
-    //
-    // The callee must provide the PIN by invoking |provide_pin_cb|. The
-    // callback is weakly bound and safe to invoke even after the
-    // AuthTokenRequester was freed. If CollectExistingPIN() is called again
-    // after callback invocation, the provided PIN was incorrect.
-    virtual void CollectExistingPIN(int attempts,
-                                    uint32_t min_pin_length,
-                                    ProvidePINCallback provide_pin_cb) = 0;
-
-    // InternalUVLockedForAuthToken() notifies the delegate that the
-    // authenticator's internal modality was locked due to too many invalid
-    // authentication attempts. It is followed by a call to CollectExistingPIN()
-    // to prompt for a PIN as a fallback authentication mechanism.
-    virtual void InternalUVLockedForAuthToken() = 0;
+    virtual void CollectPIN(pin::PINEntryReason reason,
+                            pin::PINEntryError error,
+                            uint32_t min_pin_length,
+                            int attempts,
+                            ProvidePINCallback provide_pin_cb) = 0;
 
     // PromptForInternalUVRetry is invoked to prompt the user to retry internal
     // user verification (usually on a fingerprint sensor). |attempts| is the
@@ -151,12 +138,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthTokenRequester {
   void ObtainTokenFromPIN();
   void OnGetPINRetries(CtapDeviceResponseCode status,
                        base::Optional<pin::RetriesResponse> response);
-  void HavePIN(std::string pin);
-  void OnGetPINToken(CtapDeviceResponseCode status,
+  void HavePIN(base::string16 pin);
+  void OnGetPINToken(std::string pin,
+                     CtapDeviceResponseCode status,
                      base::Optional<pin::TokenResponse> response);
 
   void ObtainTokenFromNewPIN();
-  void HaveNewPIN(std::string pin);
+  void HaveNewPIN(base::string16 pin);
   void OnSetPIN(std::string pin,
                 CtapDeviceResponseCode status,
                 base::Optional<pin::EmptyResponse> response);
@@ -173,6 +161,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthTokenRequester {
   bool is_internal_uv_retry_ = false;
   base::Optional<std::string> current_pin_;
   bool internal_uv_locked_ = false;
+  bool pin_invalid_ = false;
+  int pin_retries_ = 0;
 
   base::WeakPtrFactory<AuthTokenRequester> weak_factory_{this};
 };

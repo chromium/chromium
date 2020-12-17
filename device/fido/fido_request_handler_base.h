@@ -25,6 +25,7 @@
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_discovery_base.h"
 #include "device/fido/fido_transport_protocol.h"
+#include "device/fido/pin.h"
 
 namespace device {
 
@@ -97,19 +98,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
   class COMPONENT_EXPORT(DEVICE_FIDO) Observer {
    public:
     struct COMPONENT_EXPORT(DEVICE_FIDO) CollectPINOptions {
-      enum class Mode {
-        // Indicates a new PIN is being set. |attempts| should be ignored.
-        kSet,
-
-        // The existing PIN must be changed before using this authenticator.
-        kChange,
-
-        // The existing PIN is being collected to prove user verification.
-        kChallenge
-      };
-
       // Why this PIN is being collected.
-      Mode mode;
+      pin::PINEntryReason reason;
+
+      // The error for which we are prompting for a PIN.
+      pin::PINEntryError error = pin::PINEntryError::kNoError;
 
       // The minimum PIN length the authenticator will accept for the PIN.
       uint32_t min_pin_length = device::kMinPinLength;
@@ -153,7 +146,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
     // hard lock.
     virtual void CollectPIN(
         CollectPINOptions options,
-        base::OnceCallback<void(std::string)> provide_pin_cb) = 0;
+        base::OnceCallback<void(base::string16)> provide_pin_cb) = 0;
 
     virtual void FinishCollectToken() = 0;
 
@@ -173,11 +166,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
     // try again. Receives the number of |attempts| before the device locks
     // internal user verification.
     virtual void OnRetryUserVerification(int attempts) = 0;
-
-    // Called when an authenticator reports internal user verification has been
-    // locked (e.g. by repeated failed attempts to recognise the user's
-    // fingerprints).
-    virtual void OnInternalUserVerificationLocked() = 0;
 
     // SetMightCreateResidentCredential indicates whether the activation of an
     // authenticator may cause a resident credential to be created. A resident

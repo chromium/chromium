@@ -790,14 +790,13 @@ class TestObserver : public FidoRequestHandlerBase::Observer {
   bool SupportsPIN() const override { return false; }
   void CollectPIN(
       CollectPINOptions options,
-      base::OnceCallback<void(std::string)> provide_pin_cb) override {
+      base::OnceCallback<void(base::string16)> provide_pin_cb) override {
     NOTREACHED();
   }
   void StartBioEnrollment(base::OnceClosure next_callback) override {}
   void OnSampleCollected(int bio_samples_remaining) override {}
   void FinishCollectToken() override { NOTREACHED(); }
   void OnRetryUserVerification(int attempts) override {}
-  void OnInternalUserVerificationLocked() override {}
   void SetMightCreateResidentCredential(bool v) override {}
 
   bool controls_dispatch_ = false;

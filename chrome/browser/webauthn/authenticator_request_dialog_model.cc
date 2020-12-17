@@ -15,11 +15,9 @@
 #include "build/build_config.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
+#include "device/fido/pin.h"
 
 namespace {
-
-using CollectPINMode =
-    device::FidoRequestHandlerBase::Observer::CollectPINOptions::Mode;
 
 // Attempts to auto-select the most likely transport that will be used to
 // service this request, or returns base::nullopt if unsure.
@@ -96,7 +94,6 @@ AuthenticatorRequestDialogModel::EphemeralState::~EphemeralState() = default;
 void AuthenticatorRequestDialogModel::EphemeralState::Reset() {
   selected_authenticator_id_ = base::nullopt;
   saved_authenticators_.RemoveAllAuthenticators();
-  has_attempted_pin_entry_ = false;
   responses_.clear();
 }
 
@@ -436,7 +433,7 @@ void AuthenticatorRequestDialogModel::SetBluetoothAdapterPowerOnCallback(
   bluetooth_adapter_power_on_callback_ = bluetooth_adapter_power_on_callback;
 }
 
-void AuthenticatorRequestDialogModel::OnHavePIN(const std::string& pin) {
+void AuthenticatorRequestDialogModel::OnHavePIN(base::string16 pin) {
   if (!pin_callback_) {
     // Protect against the view submitting a PIN more than once without
     // receiving a matching response first. |CollectPIN| is called again if
@@ -444,7 +441,6 @@ void AuthenticatorRequestDialogModel::OnHavePIN(const std::string& pin) {
     return;
   }
   std::move(pin_callback_).Run(pin);
-  ephemeral_state_.has_attempted_pin_entry_ = true;
 }
 
 void AuthenticatorRequestDialogModel::OnRetryUserVerification(int attempts) {
@@ -538,29 +534,26 @@ void AuthenticatorRequestDialogModel::SetSelectedAuthenticatorForTesting(
 }
 
 void AuthenticatorRequestDialogModel::CollectPIN(
-    CollectPINMode mode,
+    device::pin::PINEntryReason reason,
+    device::pin::PINEntryError error,
     uint32_t min_pin_length,
     int attempts,
-    base::OnceCallback<void(std::string)> provide_pin_cb) {
+    base::OnceCallback<void(base::string16)> provide_pin_cb) {
   pin_callback_ = std::move(provide_pin_cb);
   min_pin_length_ = min_pin_length;
-  Step new_step;
-  switch (mode) {
-    case CollectPINMode::kChallenge:
+  pin_error_ = error;
+  switch (reason) {
+    case device::pin::PINEntryReason::kChallenge:
       pin_attempts_ = attempts;
-      new_step = Step::kClientPinEntry;
-      break;
-    case CollectPINMode::kChange:
-      new_step = Step::kClientPinChange;
-      break;
-    case CollectPINMode::kSet:
-      new_step = Step::kClientPinSetup;
-      break;
+      SetCurrentStep(Step::kClientPinEntry);
+      return;
+    case device::pin::PINEntryReason::kChange:
+      SetCurrentStep(Step::kClientPinChange);
+      return;
+    case device::pin::PINEntryReason::kSet:
+      SetCurrentStep(Step::kClientPinSetup);
+      return;
   }
-  if (new_step != current_step_) {
-    ephemeral_state_.has_attempted_pin_entry_ = false;
-  }
-  SetCurrentStep(new_step);
 }
 
 void AuthenticatorRequestDialogModel::StartInlineBioEnrollment(

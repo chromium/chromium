@@ -577,12 +577,13 @@ bool ChromeAuthenticatorRequestDelegate::SupportsPIN() const {
 
 void ChromeAuthenticatorRequestDelegate::CollectPIN(
     CollectPINOptions options,
-    base::OnceCallback<void(std::string)> provide_pin_cb) {
+    base::OnceCallback<void(base::string16)> provide_pin_cb) {
   if (!weak_dialog_model_)
     return;
 
-  weak_dialog_model_->CollectPIN(options.mode, options.min_pin_length,
-                                 options.attempts, std::move(provide_pin_cb));
+  weak_dialog_model_->CollectPIN(options.reason, options.error,
+                                 options.min_pin_length, options.attempts,
+                                 std::move(provide_pin_cb));
 }
 
 void ChromeAuthenticatorRequestDelegate::StartBioEnrollment(
@@ -614,13 +615,6 @@ void ChromeAuthenticatorRequestDelegate::OnRetryUserVerification(int attempts) {
     return;
 
   weak_dialog_model_->OnRetryUserVerification(attempts);
-}
-
-void ChromeAuthenticatorRequestDelegate::OnInternalUserVerificationLocked() {
-  if (!weak_dialog_model_)
-    return;
-
-  weak_dialog_model_->set_internal_uv_locked();
 }
 
 void ChromeAuthenticatorRequestDelegate::SetMightCreateResidentCredential(

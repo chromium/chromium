@@ -24,6 +24,39 @@
 namespace device {
 namespace pin {
 
+// The reason we are prompting for a new PIN.
+enum class PINEntryReason {
+  // Indicates a new PIN is being set.
+  kSet,
+
+  // The existing PIN must be changed before using this authenticator.
+  kChange,
+
+  // The existing PIN is being collected to prove user verification.
+  kChallenge
+};
+
+// The errors that may prompt asking for a PIN.
+enum class PINEntryError {
+  // No error has occurred.
+  kNoError,
+
+  // Internal UV is locked, so we are falling back to PIN.
+  kInternalUvLocked,
+
+  // The PIN the user entered does not match the authenticator PIN.
+  kWrongPIN,
+
+  // The new PIN the user entered is too short.
+  kTooShort,
+
+  // The new PIN the user entered contains invalid characters.
+  kInvalidCharacters,
+
+  // The new PIN the user entered is the same as the currently set PIN.
+  kSameAsCurrentPIN,
+};
+
 // Permission list flags. See
 // https://drafts.fidoalliance.org/fido-2/stable-links-to-latest/fido-client-to-authenticator-protocol.html#permissions
 enum class Permissions : uint8_t {
@@ -41,9 +74,20 @@ constexpr std::array<uint8_t, 32> kPinUvAuthTokenSafetyPadding = {
     0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
     0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
 
-// IsValid returns true if |pin|, which must be UTF-8, is a syntactically valid
-// PIN.
-COMPONENT_EXPORT(DEVICE_FIDO) bool IsValid(const std::string& pin);
+// Validates |pin|, returning |kNoError| if valid or an appropriate error code
+// otherwise.
+COMPONENT_EXPORT(DEVICE_FIDO)
+PINEntryError ValidatePIN(
+    const std::string& pin,
+    uint32_t min_pin_length = kMinPinLength,
+    base::Optional<std::string> current_pin = base::nullopt);
+
+// Like |ValidatePIN| above but takes a wide string.
+COMPONENT_EXPORT(DEVICE_FIDO)
+PINEntryError ValidatePIN(
+    const base::string16& pin16,
+    uint32_t min_pin_length = kMinPinLength,
+    base::Optional<std::string> current_pin = base::nullopt);
 
 // kMinBytes is the minimum number of *bytes* of PIN data that a CTAP2 device
 // will accept. Since the PIN is UTF-8 encoded, this could be a single code

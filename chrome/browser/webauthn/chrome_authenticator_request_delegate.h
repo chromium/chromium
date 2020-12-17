@@ -112,12 +112,11 @@ class ChromeAuthenticatorRequestDelegate
   bool SupportsPIN() const override;
   void CollectPIN(
       CollectPINOptions options,
-      base::OnceCallback<void(std::string)> provide_pin_cb) override;
+      base::OnceCallback<void(base::string16)> provide_pin_cb) override;
   void StartBioEnrollment(base::OnceClosure next_callback) override;
   void OnSampleCollected(int bio_samples_remaining) override;
   void FinishCollectToken() override;
   void OnRetryUserVerification(int attempts) override;
-  void OnInternalUserVerificationLocked() override;
   void SetMightCreateResidentCredential(bool v) override;
 
   // AuthenticatorRequestDialogModel::Observer:

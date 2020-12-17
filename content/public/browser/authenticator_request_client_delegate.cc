@@ -134,7 +134,7 @@ bool AuthenticatorRequestClientDelegate::SupportsPIN() const {
 
 void AuthenticatorRequestClientDelegate::CollectPIN(
     CollectPINOptions options,
-    base::OnceCallback<void(std::string)> provide_pin_cb) {
+    base::OnceCallback<void(base::string16)> provide_pin_cb) {
   NOTREACHED();
 }
 
@@ -148,7 +148,5 @@ void AuthenticatorRequestClientDelegate::FinishCollectToken() {}
 
 void AuthenticatorRequestClientDelegate::OnRetryUserVerification(int attempts) {
 }
-
-void AuthenticatorRequestClientDelegate::OnInternalUserVerificationLocked() {}
 
 }  // namespace content

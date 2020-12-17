@@ -352,7 +352,8 @@ void GetAssertionRequestHandler::DispatchRequest(
     case PINUVDisposition::kGetToken:
       ObtainPINUVAuthToken(
           authenticator, GetPinTokenPermissionsFor(*authenticator, request),
-          active_authenticators().size() == 1 && allow_skipping_pin_touch_);
+          active_authenticators().size() == 1 && allow_skipping_pin_touch_,
+          /*internal_uv_locked=*/false);
       return;
     case PINUVDisposition::kUnsatisfiable:
       FIDO_LOG(DEBUG) << authenticator->GetDisplayName()
@@ -437,24 +438,14 @@ void GetAssertionRequestHandler::AuthenticatorSelectedForPINUVAuthToken(
   CancelActiveAuthenticators(authenticator->GetId());
 }
 
-void GetAssertionRequestHandler::CollectNewPIN(
-    uint32_t min_pin_length,
-    bool force_pin_change,
-    ProvidePINCallback provide_pin_cb) {
+void GetAssertionRequestHandler::CollectPIN(pin::PINEntryReason reason,
+                                            pin::PINEntryError error,
+                                            uint32_t min_pin_length,
+                                            int attempts,
+                                            ProvidePINCallback provide_pin_cb) {
   DCHECK_EQ(state_, State::kWaitingForToken);
-  observer()->CollectPIN(
-      {.mode = force_pin_change ? Observer::CollectPINOptions::Mode::kChange
-                                : Observer::CollectPINOptions::Mode::kSet,
-       .min_pin_length = min_pin_length},
-      std::move(provide_pin_cb));
-}
-
-void GetAssertionRequestHandler::CollectExistingPIN(
-    int attempts,
-    uint32_t min_pin_length,
-    ProvidePINCallback provide_pin_cb) {
-  DCHECK_EQ(state_, State::kWaitingForToken);
-  observer()->CollectPIN({.mode = Observer::CollectPINOptions::Mode::kChallenge,
+  observer()->CollectPIN({.reason = reason,
+                          .error = error,
                           .min_pin_length = min_pin_length,
                           .attempts = attempts},
                          std::move(provide_pin_cb));
@@ -464,12 +455,6 @@ void GetAssertionRequestHandler::PromptForInternalUVRetry(int attempts) {
   DCHECK(state_ == State::kWaitingForTouch ||
          state_ == State::kWaitingForToken);
   observer()->OnRetryUserVerification(attempts);
-}
-
-void GetAssertionRequestHandler::InternalUVLockedForAuthToken() {
-  DCHECK(state_ == State::kWaitingForTouch ||
-         state_ == State::kWaitingForToken);
-  observer()->OnInternalUserVerificationLocked();
 }
 
 void GetAssertionRequestHandler::HavePINUVAuthTokenResultForAuthenticator(
@@ -522,11 +507,13 @@ void GetAssertionRequestHandler::HavePINUVAuthTokenResultForAuthenticator(
 void GetAssertionRequestHandler::ObtainPINUVAuthToken(
     FidoAuthenticator* authenticator,
     std::set<pin::Permissions> permissions,
-    bool skip_pin_touch) {
+    bool skip_pin_touch,
+    bool internal_uv_locked) {
   AuthTokenRequester::Options options;
   options.token_permissions = std::move(permissions);
   options.rp_id = request_.rp_id;
   options.skip_pin_touch = skip_pin_touch;
+  options.internal_uv_locked = internal_uv_locked;
 
   auth_token_requester_map_.insert(
       {authenticator, std::make_unique<AuthTokenRequester>(
@@ -593,14 +580,14 @@ void GetAssertionRequestHandler::HandleResponse(
     if (response_time < kMinExpectedAuthenticatorResponseTime) {
       FIDO_LOG(DEBUG) << "Authenticator is probably locked, response_time="
                       << response_time;
-      ObtainPINUVAuthToken(authenticator,
-                           GetPinTokenPermissionsFor(*authenticator, request),
-                           /*skip_pin_touch=*/false);
+      ObtainPINUVAuthToken(
+          authenticator, GetPinTokenPermissionsFor(*authenticator, request),
+          /*skip_pin_touch=*/false, /*internal_uv_locked=*/true);
       return;
     }
     ObtainPINUVAuthToken(authenticator,
                          GetPinTokenPermissionsFor(*authenticator, request),
-                         /*skip_pin_touch=*/true);
+                         /*skip_pin_touch=*/true, /*internal_uv_locked=*/true);
     return;
   }
 

@@ -35,7 +35,7 @@ void SetPINRequestHandler::ProvidePIN(const std::string& old_pin,
                                       const std::string& new_pin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
   DCHECK_EQ(State::kWaitingForPIN, state_);
-  DCHECK(pin::IsValid(new_pin));
+  DCHECK_EQ(pin::ValidatePIN(new_pin), pin::PINEntryError::kNoError);
 
   if (authenticator_ == nullptr) {
     // Authenticator was detached.

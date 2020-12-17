@@ -10,6 +10,7 @@
 
 #include "base/i18n/char_iterator.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
@@ -42,10 +43,32 @@ static bool HasAtLeastFourCodepoints(const std::string& pin) {
   return it.Advance() && it.Advance() && it.Advance() && it.Advance();
 }
 
-bool IsValid(const std::string& pin) {
-  return pin.size() >= kMinBytes && pin.size() <= kMaxBytes &&
-         pin.back() != 0 && base::IsStringUTF8(pin) &&
-         HasAtLeastFourCodepoints(pin);
+PINEntryError ValidatePIN(const std::string& pin,
+                          uint32_t min_pin_length,
+                          base::Optional<std::string> current_pin) {
+  if (pin.size() < min_pin_length) {
+    return PINEntryError::kTooShort;
+  }
+  if (pin.size() > kMaxBytes || pin.back() == 0 || !base::IsStringUTF8(pin)) {
+    return PINEntryError::kInvalidCharacters;
+  }
+  if (!HasAtLeastFourCodepoints(pin)) {
+    return PINEntryError::kTooShort;
+  }
+  if (pin == current_pin) {
+    return pin::PINEntryError::kSameAsCurrentPIN;
+  }
+  return PINEntryError::kNoError;
+}
+
+PINEntryError ValidatePIN(const base::string16& pin16,
+                          uint32_t min_pin_length,
+                          base::Optional<std::string> current_pin) {
+  std::string pin;
+  if (!base::UTF16ToUTF8(pin16.c_str(), pin16.size(), &pin)) {
+    return pin::PINEntryError::kInvalidCharacters;
+  }
+  return ValidatePIN(std::move(pin), min_pin_length, std::move(current_pin));
 }
 
 // EncodePINCommand returns a CTAP2 PIN command for the operation |subcommand|.
@@ -191,7 +214,7 @@ SetRequest::SetRequest(PINUVAuthProtocol protocol,
                        const std::string& pin,
                        const KeyAgreementResponse& peer_key)
     : protocol_(protocol), peer_key_(peer_key) {
-  DCHECK(IsValid(pin));
+  DCHECK_EQ(ValidatePIN(pin), PINEntryError::kNoError);
   memset(pin_, 0, sizeof(pin_));
   memcpy(pin_, pin.data(), pin.size());
 }
@@ -219,7 +242,7 @@ ChangeRequest::ChangeRequest(PINUVAuthProtocol protocol,
          digest);
   memcpy(old_pin_hash_, digest, sizeof(old_pin_hash_));
 
-  DCHECK(IsValid(new_pin));
+  DCHECK_EQ(ValidatePIN(new_pin), PINEntryError::kNoError);
   memset(new_pin_, 0, sizeof(new_pin_));
   memcpy(new_pin_, new_pin.data(), new_pin.size());
 }

@@ -10701,6 +10701,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEBAUTHN_CLIENT_PIN_AUTHENTICATOR_REMOVED_DESCRIPTION" desc="Description in the error dialog shown after their security key (an external physical device for user authentication) was removed while the application was waiting for the security key PIN to be entered.">
         Reinsert your security key and try again
       </message>
+      <message name="IDS_WEBAUTHN_PIN_ENTRY_ERROR_SAME_AS_CURRENT" desc="Error message. Displayed when the user attempts to set a new PIN code for their security key (an external physical device for user authentication), and the new PIN is the same as the currently set PIN.">
+        Create a new PIN that's different from your current PIN
+      </message>
 
       <!-- WebAuthn authenticator internal user verification -->
       <message name="IDS_WEBAUTHN_INLINE_ENROLLMENT_CANCEL_LABEL" desc="The label on a button allowing users to skip fingerprint registration when setting up a fingerprint enabled authenticator.">

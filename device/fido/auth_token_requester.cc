@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/stl_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/authenticator_supported_options.h"
 #include "device/fido/fido_authenticator.h"
@@ -37,7 +38,8 @@ AuthTokenRequester::AuthTokenRequester(Delegate* delegate,
                                        Options options)
     : delegate_(delegate),
       authenticator_(authenticator),
-      options_(std::move(options)) {
+      options_(std::move(options)),
+      internal_uv_locked_(options_.internal_uv_locked) {
   DCHECK(delegate_);
   DCHECK(authenticator_);
   DCHECK(authenticator_->Options());
@@ -190,7 +192,7 @@ void AuthTokenRequester::OnGetUVToken(
     // Fall back to PIN if able.
     if (authenticator_->Options()->client_pin_availability ==
         ClientPinAvailability::kSupportedAndPinSet) {
-      delegate_->InternalUVLockedForAuthToken();
+      internal_uv_locked_ = true;
       ObtainTokenFromPIN();
       return;
     }
@@ -230,30 +232,49 @@ void AuthTokenRequester::OnGetPINRetries(
         base::nullopt);
     return;
   }
-  if (internal_uv_locked_) {
-    delegate_->InternalUVLockedForAuthToken();
+  pin_retries_ = response->retries;
+  pin::PINEntryError error;
+  if (pin_invalid_) {
+    pin_invalid_ = false;
+    error = pin::PINEntryError::kWrongPIN;
+  } else if (internal_uv_locked_) {
+    error = pin::PINEntryError::kInternalUvLocked;
+  } else {
+    error = pin::PINEntryError::kNoError;
   }
-  delegate_->CollectExistingPIN(
-      response->retries, authenticator_->CurrentMinPINLength(),
+  delegate_->CollectPIN(
+      pin::PINEntryReason::kChallenge, error,
+      authenticator_->CurrentMinPINLength(), pin_retries_,
       base::BindOnce(&AuthTokenRequester::HavePIN, weak_factory_.GetWeakPtr()));
 }
 
-void AuthTokenRequester::HavePIN(std::string pin) {
-  DCHECK(pin::IsValid(pin));
-  current_pin_ = pin;
-  authenticator_->GetPINToken(std::move(pin),
+void AuthTokenRequester::HavePIN(base::string16 pin16) {
+  pin::PINEntryError error = pin::ValidatePIN(
+      pin16, authenticator_->CurrentMinPINLength(), current_pin_);
+  if (error != pin::PINEntryError::kNoError) {
+    delegate_->CollectPIN(pin::PINEntryReason::kChallenge, error,
+                          authenticator_->CurrentMinPINLength(), pin_retries_,
+                          base::BindOnce(&AuthTokenRequester::HavePIN,
+                                         weak_factory_.GetWeakPtr()));
+    return;
+  }
+
+  std::string pin = base::UTF16ToUTF8(pin16);
+  authenticator_->GetPINToken(pin,
                               {std::begin(options_.token_permissions),
                                std::end(options_.token_permissions)},
                               options_.rp_id,
                               base::BindOnce(&AuthTokenRequester::OnGetPINToken,
-                                             weak_factory_.GetWeakPtr()));
+                                             weak_factory_.GetWeakPtr(), pin));
   return;
 }
 
 void AuthTokenRequester::OnGetPINToken(
+    std::string pin,
     CtapDeviceResponseCode status,
     base::Optional<pin::TokenResponse> response) {
   if (status == CtapDeviceResponseCode::kCtap2ErrPinInvalid) {
+    pin_invalid_ = true;
     ObtainTokenFromPIN();
     return;
   }
@@ -263,10 +284,13 @@ void AuthTokenRequester::OnGetPINToken(
     switch (status) {
       case CtapDeviceResponseCode::kCtap2ErrPinPolicyViolation:
         // The user needs to set a new PIN before they can use the device.
-        delegate_->CollectNewPIN(authenticator_->NewMinPINLength(),
-                                 /*force_pin_change=*/true,
-                                 base::BindOnce(&AuthTokenRequester::HaveNewPIN,
-                                                weak_factory_.GetWeakPtr()));
+        current_pin_ = pin;
+        delegate_->CollectPIN(pin::PINEntryReason::kChange,
+                              pin::PINEntryError::kNoError,
+                              authenticator_->NewMinPINLength(),
+                              /*attempts=*/0,
+                              base::BindOnce(&AuthTokenRequester::HaveNewPIN,
+                                             weak_factory_.GetWeakPtr()));
         return;
       case CtapDeviceResponseCode::kCtap2ErrPinAuthBlocked:
         ret = Result::kPostTouchAuthenticatorPINSoftLock;
@@ -289,14 +313,27 @@ void AuthTokenRequester::OnGetPINToken(
 
 void AuthTokenRequester::ObtainTokenFromNewPIN() {
   NotifyAuthenticatorSelected();
-  delegate_->CollectNewPIN(authenticator_->NewMinPINLength(),
-                           /*force_pin_change=*/false,
-                           base::BindOnce(&AuthTokenRequester::HaveNewPIN,
-                                          weak_factory_.GetWeakPtr()));
+  delegate_->CollectPIN(pin::PINEntryReason::kSet, pin::PINEntryError::kNoError,
+                        authenticator_->NewMinPINLength(),
+                        /*attempts=*/0,
+                        base::BindOnce(&AuthTokenRequester::HaveNewPIN,
+                                       weak_factory_.GetWeakPtr()));
 }
 
-void AuthTokenRequester::HaveNewPIN(const std::string pin) {
-  DCHECK(pin::IsValid(pin));
+void AuthTokenRequester::HaveNewPIN(base::string16 pin16) {
+  pin::PINEntryError error =
+      pin::ValidatePIN(pin16, authenticator_->NewMinPINLength(), current_pin_);
+  if (error != pin::PINEntryError::kNoError) {
+    delegate_->CollectPIN(
+        current_pin_ ? pin::PINEntryReason::kChange : pin::PINEntryReason::kSet,
+        error, authenticator_->NewMinPINLength(),
+        /*attempts=*/0,
+        base::BindOnce(&AuthTokenRequester::HaveNewPIN,
+                       weak_factory_.GetWeakPtr()));
+    return;
+  }
+
+  std::string pin = base::UTF16ToUTF8(pin16);
   if (current_pin_) {
     authenticator_->ChangePIN(*current_pin_, pin,
                               base::BindOnce(&AuthTokenRequester::OnSetPIN,
@@ -325,7 +362,7 @@ void AuthTokenRequester::OnSetPIN(std::string pin,
                                std::end(options_.token_permissions)},
                               options_.rp_id,
                               base::BindOnce(&AuthTokenRequester::OnGetPINToken,
-                                             weak_factory_.GetWeakPtr()));
+                                             weak_factory_.GetWeakPtr(), pin));
 }
 
 void AuthTokenRequester::NotifyAuthenticatorSelected() {

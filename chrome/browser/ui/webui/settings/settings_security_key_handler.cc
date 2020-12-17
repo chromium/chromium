@@ -169,7 +169,8 @@ void SecurityKeysPINHandler::HandleSetPIN(const base::ListValue* args) {
 
   DCHECK((state_ == State::kGatherNewPIN) == old_pin.empty());
 
-  CHECK(device::pin::IsValid(new_pin));
+  CHECK_EQ(device::pin::ValidatePIN(new_pin),
+           device::pin::PINEntryError::kNoError);
   state_ = State::kSettingPIN;
   set_pin_->ProvidePIN(old_pin, new_pin);
 }
