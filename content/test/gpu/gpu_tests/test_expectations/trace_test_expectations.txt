@@ -56,10 +56,6 @@
 # results: [ Failure RetryOnFailure Skip ]
 # END TAG HEADER
 
- # TODO(kbr): flakily timing out on this configuration.
-crbug.com/648369 [ linux debug intel ] TraceTest_* [ RetryOnFailure ]
-crbug.com/978516 [ win10 nvidia-0x1cb3 ] TraceTest_* [ RetryOnFailure ]
-
 # Require page actions - which are only supported in pixel tests.
 crbug.com/1048892 TraceTest_OffscreenCanvasIBRCWebGLMain [ Skip ]
 crbug.com/1048892 TraceTest_OffscreenCanvasIBRCWebGLWorker [ Skip ]
@@ -110,9 +106,7 @@ crbug.com/930343 [ win intel ] VideoPathTraceTest_DirectComposition_Video_VP9_Fu
 
 # TODO(crbug.com/1079393): Compress down to just "intel" instead of specific
 # GPUs once UHD 630 failures are fixed.
-crbug.com/969117 [ win10 intel-0xa2e ] OverlayModeTraceTest_DirectComposition_Video_MP4_FourColors_Aspect_4x3 [ RetryOnFailure ]
 crbug.com/969117 [ win10 intel-0x5912 ] OverlayModeTraceTest_DirectComposition_Video_MP4_FourColors_Aspect_4x3 [ RetryOnFailure ]
-crbug.com/969117 [ win10 intel-0xd26 ] OverlayModeTraceTest_DirectComposition_Video_MP4_FourColors_Aspect_4x3 [ RetryOnFailure ]
 crbug.com/978181 [ win10 nvidia ] OverlayModeTraceTest_DirectComposition_Underlay [ RetryOnFailure ]
 
 # Incorrectly reporting SCALING instead of DIRECT on Windows 10 UHD 630 GPUs.
@@ -136,19 +130,8 @@ crbug.com/1136971 [ win10 intel-0x3e92 ] OverlayModeTraceTest_DirectComposition_
 crbug.com/1136971 [ win10 intel-0x3e92 ] OverlayModeTraceTest_DirectComposition_Video_VP9_VP_SCALING [ Skip ]
 
 # Zero copy also needs scaling to work.
-crbug.com/1079393 [ win10 intel-0x3e92 ] VideoPathTraceTest_DirectComposition_Underlay [ Failure ]
-crbug.com/1079393 [ win10 intel-0x3e92 ] VideoPathTraceTest_DirectComposition_Underlay_DXVA [ Failure ]
 crbug.com/1079393 [ win10 intel-0x3e92 ] VideoPathTraceTest_DirectComposition_Underlay_Fullsize [ Failure ]
-crbug.com/1079393 [ win10 intel-0x3e92 ] VideoPathTraceTest_DirectComposition_Video_MP4 [ Failure ]
-crbug.com/1079393 [ win10 intel-0x3e92 ] VideoPathTraceTest_DirectComposition_Video_MP4_DXVA [ Failure ]
-crbug.com/1079393 [ win10 intel-0x3e92 ] VideoPathTraceTest_DirectComposition_Video_MP4_FourColors_Aspect_4x3 [ Failure ]
 crbug.com/1079393 [ win10 intel-0x3e92 ] VideoPathTraceTest_DirectComposition_Video_MP4_Fullsize [ Failure ]
-crbug.com/1079393 [ win10 intel-0x3e92 ] VideoPathTraceTest_DirectComposition_Video_MP4_NV12 [ Failure ]
-crbug.com/1079393 [ win10 intel-0x3e92 ] VideoPathTraceTest_DirectComposition_Video_MP4_VP_SCALING [ Failure ]
-crbug.com/1079393 [ win10 intel-0x3e92 ] VideoPathTraceTest_DirectComposition_Video_VP9 [ Failure ]
-crbug.com/1079393 [ win10 intel-0x3e92 ] VideoPathTraceTest_DirectComposition_Video_VP9_DXVA [ Failure ]
-crbug.com/1079393 [ win10 intel-0x3e92 ] VideoPathTraceTest_DirectComposition_Video_VP9_NV12 [ Failure ]
-crbug.com/1079393 [ win10 intel-0x3e92 ] VideoPathTraceTest_DirectComposition_Video_VP9_VP_SCALING [ Failure ]
 
 # Using YUY2 instead of NV12 on Windows 10 HD 630 GPUs due to NV12 support
 # showing up as SOFTWARE which causes zero copy to fail.
