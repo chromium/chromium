@@ -310,6 +310,9 @@ class NamedValue(object):
             and (self.parent_kind, self.mojom_name) == (rhs.parent_kind,
                                                         rhs.mojom_name))
 
+  def __hash__(self):
+    return hash((self.parent_kind, self.mojom_name))
+
 
 class BuiltinValue(object):
   def __init__(self, value):
