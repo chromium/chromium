@@ -42,7 +42,6 @@ class MockObserver : public TriggerScriptCoordinator::Observer {
 };
 
 const char kFakeDeepLink[] = "https://example.com/q?data=test";
-const char kFakeSubdomainDeepLink[] = "https://b.example.com";
 const char kFakeServerUrl[] =
     "https://www.fake.backend.com/trigger_script_server";
 
@@ -142,39 +141,6 @@ class TriggerScriptCoordinatorTest : public content::RenderViewHostTestHarness {
   NiceMock<MockStaticTriggerConditions>* mock_static_trigger_conditions_;
   NiceMock<MockDynamicTriggerConditions>* mock_dynamic_trigger_conditions_;
 };
-
-TEST_F(TriggerScriptCoordinatorTest, StartSucceedsForCorrectDomain) {
-  SimulateNavigateToUrl(GURL(kFakeDeepLink));
-  EXPECT_CALL(*mock_request_sender_, OnSendRequest).Times(1);
-  coordinator_->Start(GURL(kFakeDeepLink),
-                      std::make_unique<TriggerContextImpl>());
-}
-
-TEST_F(TriggerScriptCoordinatorTest, StartSucceedsWhileNoCommittedURL) {
-  content::WebContentsTester::For(web_contents())->SetLastCommittedURL(GURL());
-  EXPECT_CALL(*mock_request_sender_, OnSendRequest).Times(1);
-  coordinator_->Start(GURL(kFakeDeepLink),
-                      std::make_unique<TriggerContextImpl>());
-}
-
-TEST_F(TriggerScriptCoordinatorTest, StartSucceedsForSubDomain) {
-  SimulateNavigateToUrl(GURL(kFakeSubdomainDeepLink));
-  EXPECT_CALL(*mock_request_sender_, OnSendRequest).Times(1);
-  coordinator_->Start(GURL(kFakeDeepLink),
-                      std::make_unique<TriggerContextImpl>());
-}
-
-TEST_F(TriggerScriptCoordinatorTest, StartFailsForDifferentDomain) {
-  SimulateNavigateToUrl(GURL("https://different.com/example"));
-  EXPECT_CALL(*mock_request_sender_, OnSendRequest).Times(0);
-  EXPECT_CALL(mock_observer_,
-              OnTriggerScriptFinished(Metrics::LiteScriptFinishedState::
-                                          LITE_SCRIPT_PROMPT_FAILED_NAVIGATE));
-  coordinator_->Start(GURL(kFakeDeepLink),
-                      std::make_unique<TriggerContextImpl>());
-  AssertRecordedFinishedState(
-      Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_FAILED_NAVIGATE);
-}
 
 TEST_F(TriggerScriptCoordinatorTest, StartSendsOnlyApprovedFields) {
   std::map<std::string, std::string> input_script_params{
@@ -568,18 +534,21 @@ TEST_F(TriggerScriptCoordinatorTest, IgnoreNavigationEventsWhileNotStarted) {
               OnUpdate(mock_web_controller_, _))
       .Times(0);
   SimulateWebContentsVisibilityChanged(content::Visibility::HIDDEN);
+  // Note: in reality, it should be impossible to navigate on hidden tabs.
   SimulateNavigateToUrl(GURL("https://example.different.com"));
+  SimulateNavigateToUrl(GURL("https://also-not-supported.com"));
 
-  // However, when the tab becomes visible again, resuming the trigger script
-  // will fail if the last committed URL is still on a non-supported domain.
-  EXPECT_CALL(
-      mock_observer_,
-      OnTriggerScriptFinished(
-          Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_FAILED_NAVIGATE))
+  EXPECT_CALL(*mock_request_sender_, OnSendRequest(GURL(kFakeServerUrl), _, _))
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, /* response = */ ""));
+  // However, when the tab becomes visible again, the trigger script is
+  // restarted and thus fails if the tab is still on an unsupported domain.
+  EXPECT_CALL(mock_observer_, OnTriggerScriptFinished(
+                                  Metrics::LiteScriptFinishedState::
+                                      LITE_SCRIPT_NO_TRIGGER_SCRIPT_AVAILABLE))
       .Times(1);
   SimulateWebContentsVisibilityChanged(content::Visibility::VISIBLE);
-  AssertRecordedFinishedState(
-      Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_FAILED_NAVIGATE);
+  AssertRecordedFinishedState(Metrics::LiteScriptFinishedState::
+                                  LITE_SCRIPT_NO_TRIGGER_SCRIPT_AVAILABLE);
 }
 
 TEST_F(TriggerScriptCoordinatorTest, BottomSheetClosedWithSwipe) {

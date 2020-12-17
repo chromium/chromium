@@ -75,12 +75,6 @@ void TriggerScriptCoordinator::Start(
     const GURL& deeplink_url,
     std::unique_ptr<TriggerContext> trigger_context) {
   deeplink_url_ = deeplink_url;
-  if (!url_utils::IsInDomainOrSubDomain(GetCurrentURL(), deeplink_url_)) {
-    LOG(ERROR) << "Trigger script requested for domain other than the deeplink";
-    Stop(Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_FAILED_NAVIGATE);
-    return;
-  }
-
   trigger_context_ = std::make_unique<TriggerContextImpl>(
       ExtractDebugScriptParameters(*trigger_context),
       trigger_context->experiment_ids());
