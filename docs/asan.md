@@ -32,6 +32,12 @@ tests including browser\_tests and content\_browsertests).
 
 You can grab fresh Chrome binaries built with ASan
 [here](https://commondatastorage.googleapis.com/chromium-browser-asan/index.html).
+The lists of ASan binaries are _very_ long, but you can filter down to more
+specific releases by specifying a prefix like
+[linux-debug/asan-linux-debug-83](https://commondatastorage.googleapis.com/chromium-browser-asan/index.html?prefix=linux-debug/asan-linux-debug-83).
+This is useful for finding a build for a specific revision, since filenames are of
+the form `asan-<platform>-<buildtype>-<revision>` (but not every revision has an
+archived ASan build).
 
 ## Build tests with ASan
 
