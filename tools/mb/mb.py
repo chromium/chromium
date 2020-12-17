@@ -875,6 +875,11 @@ class MetaBuildWrapper(object):
 
     args_contents = ReplaceImports(args_contents)
     args_dict = gn_helpers.FromGNArgs(args_contents)
+    # Re-add the quotes around strings so they show up as they would in the
+    # args.gn file.
+    for k, v in args_dict.items():
+      if isinstance(v, str):
+        args_dict[k] = '"%s"' % v
     return ' '.join(['%s=%s' % (k, v) for (k, v) in args_dict.items()])
 
   def Lookup(self):
