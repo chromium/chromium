@@ -1208,7 +1208,16 @@ This file contains the strings for ash.
       <message name="IDS_ASH_PHONE_HUB_SILENCE_BUTTON_NOT_AVAILABLE_TOOLTIP" desc="Tooltip message that indicates to the user that the Silence Phone feature is disabled because their phone is on a work profile.">
         Silence phone is not available on work profile
       </message>
-
+      
+      <message name="IDS_ASH_STYLUS_BATTERY_LOW_LABEL">
+        Low
+      </message>
+      <message name="IDS_ASH_STYLUS_BATTERY_MED_LABEL">
+        Med
+      </message>
+      <message name="IDS_ASH_STYLUS_BATTERY_HI_LABEL">
+        Hi
+      </message>
       <message name="IDS_ASH_STYLUS_TOOLS_CAPTURE_REGION_ACTION" desc="Title of the capture region action in the stylus tools (a pop-up panel next to the status tray). This causes a partial screenshot to be taken (the user selects an area of the screen to take a screenshot of).">
         Capture region
       </message>

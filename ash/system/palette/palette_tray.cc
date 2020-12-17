@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/stylus_utils.h"
@@ -21,6 +22,7 @@
 #include "ash/system/palette/palette_tool_manager.h"
 #include "ash/system/palette/palette_utils.h"
 #include "ash/system/palette/palette_welcome_bubble.h"
+#include "ash/system/palette/stylus_battery_delegate.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
 #include "ash/system/tray/tray_container.h"
@@ -87,6 +89,26 @@ bool ShouldShowOnDisplay(PaletteTray* palette_tray) {
   return display.IsInternal();
 }
 
+class BatteryView : public views::View {
+ public:
+  explicit BatteryView(StylusBatteryDelegate* delegate) {
+    SetLayoutManager(std::make_unique<views::BoxLayout>(
+        views::BoxLayout::Orientation::kHorizontal, gfx::Insets(), 4));
+
+    icon_ = AddChildView(std::make_unique<views::ImageView>());
+    icon_->SetImage(delegate->GetBatteryImage());
+    label_ = AddChildView(std::make_unique<views::Label>(
+        l10n_util::GetStringUTF16(delegate->GetLabelIdForBatteryLevel())));
+    label_->SetEnabledColor(delegate->GetColorForBatteryLevel());
+    TrayPopupUtils::SetLabelFontList(label_,
+                                     TrayPopupUtils::FontStyle::kSmallTitle);
+  }
+
+ private:
+  views::ImageView* icon_ = nullptr;
+  views::Label* label_ = nullptr;
+};
+
 class TitleView : public views::View {
  public:
   explicit TitleView(PaletteTray* palette_tray) : palette_tray_(palette_tray) {
@@ -107,6 +129,17 @@ class TitleView : public views::View {
     TrayPopupUtils::SetLabelFontList(title_label,
                                      TrayPopupUtils::FontStyle::kPodMenuHeader);
     layout_ptr->SetFlexForView(title_label, 1);
+
+    if (ash::features::IsStylusBatteryStatusEnabled()) {
+      AddChildView(std::make_unique<BatteryView>(
+          palette_tray->stylus_battery_delegate()));
+
+      auto* separator = AddChildView(std::make_unique<views::Separator>());
+      separator->SetPreferredHeight(GetPreferredSize().height());
+      separator->SetColor(AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kSeparatorColor));
+    }
+
     help_button_ = AddChildView(std::make_unique<TopShortcutButton>(
         base::BindRepeating(
             &TitleView::ButtonPressed, base::Unretained(this),

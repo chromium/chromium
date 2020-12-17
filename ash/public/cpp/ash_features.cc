@@ -131,6 +131,9 @@ const base::Feature kReverseScrollGestures{"EnableReverseScrollGestures",
 const base::Feature kFullscreenAlertBubble{"EnableFullscreenBubble",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kStylusBatteryStatus{"StylusBatteryStatus",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kSystemTrayMicGainSetting{"SystemTrayMicGainSetting",
                                               base::FEATURE_ENABLED_BY_DEFAULT};
 
@@ -288,6 +291,10 @@ bool AreContextualNudgesEnabled() {
   if (!IsHideShelfControlsInTabletModeEnabled())
     return false;
   return base::FeatureList::IsEnabled(kContextualNudges);
+}
+
+bool IsStylusBatteryStatusEnabled() {
+  return base::FeatureList::IsEnabled(kStylusBatteryStatus);
 }
 
 bool IsSystemTrayMicGainSettingEnabled() {

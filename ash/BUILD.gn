@@ -1171,6 +1171,8 @@ component("ash") {
     "system/palette/palette_utils.h",
     "system/palette/palette_welcome_bubble.cc",
     "system/palette/palette_welcome_bubble.h",
+    "system/palette/stylus_battery_delegate.cc",
+    "system/palette/stylus_battery_delegate.h",
     "system/palette/tools/capture_region_mode.cc",
     "system/palette/tools/capture_region_mode.h",
     "system/palette/tools/capture_screen_action.cc",

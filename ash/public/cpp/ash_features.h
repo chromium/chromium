@@ -178,6 +178,9 @@ ASH_PUBLIC_EXPORT extern const base::Feature kReverseScrollGestures;
 // TODO(https://crbug.com/1107185): Remove this after the feature is launched.
 ASH_PUBLIC_EXPORT extern const base::Feature kFullscreenAlertBubble;
 
+// Enables battery indicator for styluses in the palette tray
+ASH_PUBLIC_EXPORT extern const base::Feature kStylusBatteryStatus;
+
 // Enables sliders for setting mic gain levels in the more audio settings
 // section in the system tray.
 ASH_PUBLIC_EXPORT extern const base::Feature kSystemTrayMicGainSetting;
@@ -266,6 +269,8 @@ ASH_PUBLIC_EXPORT bool IsFullscreenAlertBubbleEnabled();
 ASH_PUBLIC_EXPORT bool AreContextualNudgesEnabled();
 
 ASH_PUBLIC_EXPORT bool IsSystemTrayMicGainSettingEnabled();
+
+ASH_PUBLIC_EXPORT bool IsStylusBatteryStatusEnabled();
 
 ASH_PUBLIC_EXPORT bool IsDisplayIdentificationEnabled();
 
