@@ -1,0 +1,51 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/login_detection/login_detection_keyed_service.h"
+
+#include "chrome/browser/login_detection/login_detection_prefs.h"
+#include "chrome/browser/login_detection/login_detection_util.h"
+#include "chrome/browser/profiles/profile.h"
+#include "url/gurl.h"
+#include "url/origin.h"
+
+namespace login_detection {
+
+namespace {
+
+// Gets the set of sites to be treated as logged-in from field trial.
+std::set<std::string, OriginComparator> GetLoggedInSites() {
+  auto sites = GetLoggedInSitesFromFieldTrial();
+  return std::set<std::string, OriginComparator>(sites.begin(), sites.end());
+}
+
+}  // namespace
+
+bool OriginComparator::operator()(const std::string& a,
+                                  const std::string& b) const {
+  return url::Origin::Create(GURL(a)) < url::Origin::Create(GURL(b));
+}
+
+LoginDetectionKeyedService::LoginDetectionKeyedService(Profile* profile)
+    : profile_(profile), field_trial_logged_in_sites_(GetLoggedInSites()) {}
+
+LoginDetectionKeyedService::~LoginDetectionKeyedService() = default;
+
+LoginDetectionType LoginDetectionKeyedService::GetPersistentLoginDetection(
+    const GURL& url) const {
+  // Check if OAuth login for this site was detected earlier, and remembered
+  // in prefs.
+  if (prefs::IsSiteInOAuthSignedInList(profile_->GetPrefs(), url))
+    return LoginDetectionType::kOauthLogin;
+
+  // Check if this is common log-in site retrieved from field trial.
+  if (field_trial_logged_in_sites_.find(GetSiteNameForURL(url)) !=
+      field_trial_logged_in_sites_.end()) {
+    return LoginDetectionType::kFieldTrialLoggedInSite;
+  }
+
+  return LoginDetectionType::kNoLogin;
+}
+
+}  // namespace login_detection

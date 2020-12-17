@@ -5,7 +5,10 @@
 #include "chrome/browser/login_detection/login_detection_tab_helper.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/login_detection/login_detection_keyed_service.h"
+#include "chrome/browser/login_detection/login_detection_keyed_service_factory.h"
 #include "chrome/browser/login_detection/login_detection_prefs.h"
+#include "chrome/browser/login_detection/login_detection_type.h"
 #include "chrome/browser/login_detection/login_detection_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
@@ -27,9 +30,8 @@ PrefService* GetPrefs(content::WebContents* web_contents) {
       ->GetPrefs();
 }
 
-void RecordLoginDetectionMetrics(
-    LoginDetectionTabHelper::LoginDetectionType type,
-    ukm::SourceId ukm_source_id) {
+void RecordLoginDetectionMetrics(LoginDetectionType type,
+                                 ukm::SourceId ukm_source_id) {
   base::UmaHistogramEnumeration("Login.PageLoad.DetectionType", type);
   ukm::builders::LoginDetection builder(ukm_source_id);
   builder.SetPage_LoginType(static_cast<int64_t>(type))
@@ -85,16 +87,15 @@ void LoginDetectionTabHelper::DidFinishNavigation(
     }
   }
 
-  // Check if OAuth login for this site was detected earlier, and remembered
-  // in prefs.
-  if (prefs::IsSiteInOAuthSignedInList(GetPrefs(web_contents()), url)) {
-    RecordLoginDetectionMetrics(LoginDetectionType::kOauthLogin,
-                                navigation_handle->GetNextPageUkmSourceId());
+  LoginDetectionKeyedService* login_detection_keyed_service =
+      LoginDetectionKeyedServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
+  if (!login_detection_keyed_service)
     return;
-  }
 
-  RecordLoginDetectionMetrics(LoginDetectionType::kNoLogin,
-                              navigation_handle->GetNextPageUkmSourceId());
+  RecordLoginDetectionMetrics(
+      login_detection_keyed_service->GetPersistentLoginDetection(url),
+      navigation_handle->GetNextPageUkmSourceId());
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(LoginDetectionTabHelper)

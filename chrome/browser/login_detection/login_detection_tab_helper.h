@@ -22,24 +22,6 @@ class LoginDetectionTabHelper
     : public content::WebContentsObserver,
       public content::WebContentsUserData<LoginDetectionTabHelper> {
  public:
-  // Enumerates the different types of user log-in that can be detected on a
-  // page based on the site (effective TLD+1). This is recorded in metrics and
-  // should not be reordered or removed. Should be in sync with the same name in
-  // enums.xml
-  enum LoginDetectionType {
-    // No login was detected.
-    kNoLogin,
-
-    // OAuth login was detected for this site, and was remembered in persistent
-    // memory.
-    kOauthLogin,
-
-    // Successful OAuth login flow was detected.
-    kOauthFirstTimeLoginFlow,
-
-    kMaxValue = kOauthFirstTimeLoginFlow
-  };
-
   static void MaybeCreateForWebContents(content::WebContents* web_contents);
 
   ~LoginDetectionTabHelper() override;

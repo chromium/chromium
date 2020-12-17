@@ -5,6 +5,7 @@
 #include "chrome/browser/login_detection/login_detection_tab_helper.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/login_detection/login_detection_type.h"
 #include "chrome/browser/login_detection/login_detection_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -18,8 +19,13 @@ namespace login_detection {
 
 class LoginDetectionTabHelperTest : public ChromeRenderViewHostTestHarness {
  public:
+  explicit LoginDetectionTabHelperTest(
+      const std::string& field_trial_logged_in_sites = "")
+      : field_trial_logged_in_sites_(field_trial_logged_in_sites) {}
+
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(kLoginDetection);
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        kLoginDetection, {{"logged_in_sites", field_trial_logged_in_sites_}});
     ChromeRenderViewHostTestHarness::SetUp();
     ResetMetricsTesters();
     LoginDetectionTabHelper::MaybeCreateForWebContents(web_contents());
@@ -32,8 +38,7 @@ class LoginDetectionTabHelperTest : public ChromeRenderViewHostTestHarness {
 
   // Verifies the UMA and UKM metrics for the given login detection type to be
   // recorded.
-  void VerifyLoginDetectionTypeMetrics(
-      LoginDetectionTabHelper::LoginDetectionType type) {
+  void VerifyLoginDetectionTypeMetrics(LoginDetectionType type) {
     histogram_tester_->ExpectUniqueSample("Login.PageLoad.DetectionType", type,
                                           1);
 
@@ -49,31 +54,30 @@ class LoginDetectionTabHelperTest : public ChromeRenderViewHostTestHarness {
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
+
+  // List of sites that are treated as logged-in from field trial.
+  const std::string field_trial_logged_in_sites_;
 };
 
 TEST_F(LoginDetectionTabHelperTest, NoLogin) {
   NavigateAndCommit(GURL("https://foo.com/page.html"));
-  VerifyLoginDetectionTypeMetrics(
-      LoginDetectionTabHelper::LoginDetectionType::kNoLogin);
+  VerifyLoginDetectionTypeMetrics(LoginDetectionType::kNoLogin);
 }
 
 TEST_F(LoginDetectionTabHelperTest, SimpleOAuthLogin) {
   // OAuth login start
   NavigateAndCommit(GURL("https://oauth.com/authenticate?client_id=123"));
-  VerifyLoginDetectionTypeMetrics(
-      LoginDetectionTabHelper::LoginDetectionType::kNoLogin);
+  VerifyLoginDetectionTypeMetrics(LoginDetectionType::kNoLogin);
 
   // OAuth login complete
   ResetMetricsTesters();
   NavigateAndCommit(GURL("https://foo.com/redirect?code=secret"));
-  VerifyLoginDetectionTypeMetrics(
-      LoginDetectionTabHelper::LoginDetectionType::kOauthFirstTimeLoginFlow);
+  VerifyLoginDetectionTypeMetrics(LoginDetectionType::kOauthFirstTimeLoginFlow);
 
   // Subsequent navigations to OAuth signed-in site.
   ResetMetricsTesters();
   NavigateAndCommit(GURL("https://images.foo.com/page.html"));
-  VerifyLoginDetectionTypeMetrics(
-      LoginDetectionTabHelper::LoginDetectionType::kOauthLogin);
+  VerifyLoginDetectionTypeMetrics(LoginDetectionType::kOauthLogin);
 }
 
 TEST_F(LoginDetectionTabHelperTest, NavigationToOAuthLoggedInSite) {
@@ -84,14 +88,12 @@ TEST_F(LoginDetectionTabHelperTest, NavigationToOAuthLoggedInSite) {
   // Subsequent navigations to OAuth signed-in site.
   ResetMetricsTesters();
   NavigateAndCommit(GURL("https://images.foo.com/page.html"));
-  VerifyLoginDetectionTypeMetrics(
-      LoginDetectionTabHelper::LoginDetectionType::kOauthLogin);
+  VerifyLoginDetectionTypeMetrics(LoginDetectionType::kOauthLogin);
 
   // Navigation to a non logged-in site.
   ResetMetricsTesters();
   NavigateAndCommit(GURL("https://bar.com/page.html"));
-  VerifyLoginDetectionTypeMetrics(
-      LoginDetectionTabHelper::LoginDetectionType::kNoLogin);
+  VerifyLoginDetectionTypeMetrics(LoginDetectionType::kNoLogin);
 }
 
 TEST_F(LoginDetectionTabHelperTest, OAuthLoginViaRedirect) {
@@ -106,14 +108,12 @@ TEST_F(LoginDetectionTabHelperTest, OAuthLoginViaRedirect) {
   simulator->Redirect(GURL("https://foo.com/redirect?code=secret"));
   simulator->Commit();
 
-  VerifyLoginDetectionTypeMetrics(
-      LoginDetectionTabHelper::LoginDetectionType::kOauthFirstTimeLoginFlow);
+  VerifyLoginDetectionTypeMetrics(LoginDetectionType::kOauthFirstTimeLoginFlow);
 
   // Subsequent navigations to OAuth signed-in site.
   ResetMetricsTesters();
   NavigateAndCommit(GURL("https://images.foo.com/page.html"));
-  VerifyLoginDetectionTypeMetrics(
-      LoginDetectionTabHelper::LoginDetectionType::kOauthLogin);
+  VerifyLoginDetectionTypeMetrics(LoginDetectionType::kOauthLogin);
 }
 
 // Test that OAuth login is not detected when there are intermediate navigations
@@ -121,26 +121,22 @@ TEST_F(LoginDetectionTabHelperTest, OAuthLoginViaRedirect) {
 TEST_F(LoginDetectionTabHelperTest, InvalidOAuthLogins) {
   // OAuth login start
   NavigateAndCommit(GURL("https://oauth.com/authenticate?client_id=123"));
-  VerifyLoginDetectionTypeMetrics(
-      LoginDetectionTabHelper::LoginDetectionType::kNoLogin);
+  VerifyLoginDetectionTypeMetrics(LoginDetectionType::kNoLogin);
 
   // Invalid intermediate navigation
   ResetMetricsTesters();
   NavigateAndCommit(GURL("https://bar.com/page.html"));
-  VerifyLoginDetectionTypeMetrics(
-      LoginDetectionTabHelper::LoginDetectionType::kNoLogin);
+  VerifyLoginDetectionTypeMetrics(LoginDetectionType::kNoLogin);
 
   // OAuth login complete will not be detected
   ResetMetricsTesters();
   NavigateAndCommit(GURL("https://foo.com/redirect?code=secret"));
-  VerifyLoginDetectionTypeMetrics(
-      LoginDetectionTabHelper::LoginDetectionType::kNoLogin);
+  VerifyLoginDetectionTypeMetrics(LoginDetectionType::kNoLogin);
 
   // Subsequent navigations is also no login.
   ResetMetricsTesters();
   NavigateAndCommit(GURL("https://images.foo.com/page.html"));
-  VerifyLoginDetectionTypeMetrics(
-      LoginDetectionTabHelper::LoginDetectionType::kNoLogin);
+  VerifyLoginDetectionTypeMetrics(LoginDetectionType::kNoLogin);
 }
 
 // Test that OAuth login is not detected when there are intermediate redirect
@@ -158,8 +154,39 @@ TEST_F(LoginDetectionTabHelperTest, InvalidOAuthLoginsWithRedirect) {
   simulator->Redirect(GURL("https://foo.com/redirect?code=secret"));
   simulator->Commit();
 
-  VerifyLoginDetectionTypeMetrics(
-      LoginDetectionTabHelper::LoginDetectionType::kNoLogin);
+  VerifyLoginDetectionTypeMetrics(LoginDetectionType::kNoLogin);
+}
+
+class LoginDetectionTabHelperTestWithFieldTrialLoggedInList
+    : public LoginDetectionTabHelperTest {
+ public:
+  // Set up foo.com and bar.com as logged-in.
+  LoginDetectionTabHelperTestWithFieldTrialLoggedInList()
+      : LoginDetectionTabHelperTest("https://foo.com,https://bar.com/") {}
+};
+
+TEST_F(LoginDetectionTabHelperTestWithFieldTrialLoggedInList, FooLogin) {
+  NavigateAndCommit(GURL("https://foo.com/page.html"));
+  VerifyLoginDetectionTypeMetrics(LoginDetectionType::kFieldTrialLoggedInSite);
+
+  // Other subdomains of foo.com should be treated as logged-in too.
+  ResetMetricsTesters();
+  NavigateAndCommit(GURL("https://www.foo.com/page.html"));
+  VerifyLoginDetectionTypeMetrics(LoginDetectionType::kFieldTrialLoggedInSite);
+
+  ResetMetricsTesters();
+  NavigateAndCommit(GURL("https://m.foo.com/page.html"));
+  VerifyLoginDetectionTypeMetrics(LoginDetectionType::kFieldTrialLoggedInSite);
+}
+
+TEST_F(LoginDetectionTabHelperTestWithFieldTrialLoggedInList, BarLogin) {
+  NavigateAndCommit(GURL("https://bar.com/page.html"));
+  VerifyLoginDetectionTypeMetrics(LoginDetectionType::kFieldTrialLoggedInSite);
+}
+
+TEST_F(LoginDetectionTabHelperTestWithFieldTrialLoggedInList, NoLogin) {
+  NavigateAndCommit(GURL("https://qux.com/page.html"));
+  VerifyLoginDetectionTypeMetrics(LoginDetectionType::kNoLogin);
 }
 
 }  // namespace login_detection

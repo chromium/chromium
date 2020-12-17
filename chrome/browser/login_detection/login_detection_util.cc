@@ -7,6 +7,8 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_split.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "url/scheme_host_port.h"
+#include "url/url_canon.h"
 
 namespace login_detection {
 
@@ -18,8 +20,17 @@ bool IsLoginDetectionFeatureEnabled() {
 }
 
 std::string GetSiteNameForURL(const GURL& url) {
-  return net::registry_controlled_domains::GetDomainAndRegistry(
+  DCHECK(url.SchemeIsHTTPOrHTTPS());
+  std::string domain = net::registry_controlled_domains::GetDomainAndRegistry(
       url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+  std::string scheme = url.scheme();
+  // Use the default port for the scheme to ignore any non-standard ports for
+  // the scheme from the final string being returned. So,
+  // https://www.foo.com:1000/page.html would return just https://foo.com
+  return url::SchemeHostPort(
+             scheme, domain.empty() ? url.host() : domain,
+             url::DefaultPortForScheme(scheme.c_str(), scheme.length()))
+      .Serialize();
 }
 
 std::set<std::string> GetOAuthLoginStartQueryParams() {
@@ -53,6 +64,16 @@ size_t GetOAuthLoginFlowStartToCompleteLimit() {
 size_t GetOauthLoggedInSitesMaxSize() {
   return GetFieldTrialParamByFeatureAsInt(kLoginDetection,
                                           "oauth_loggedin_sites_max_size", 100);
+}
+
+std::vector<std::string> GetLoggedInSitesFromFieldTrial() {
+  // Get the field trial parameter which is a list of comma separated sites.
+  std::string param =
+      GetFieldTrialParamValueByFeature(kLoginDetection, "logged_in_sites");
+  if (param.empty())
+    return std::vector<std::string>();
+  return base::SplitString(param, ",", base::TRIM_WHITESPACE,
+                           base::SPLIT_WANT_NONEMPTY);
 }
 
 }  // namespace login_detection
