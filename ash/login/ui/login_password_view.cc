@@ -253,7 +253,6 @@ class LoginPasswordView::LoginTextfield : public views::Textfield {
     if (on_blur_closure_)
       on_blur_closure_.Run();
     views::Textfield::OnBlur();
-    SetPlaceholderText(prepared_placeholder_text_);
   }
 
   // views::Textfield:
@@ -261,7 +260,6 @@ class LoginPasswordView::LoginTextfield : public views::Textfield {
     if (on_focus_closure_)
       on_focus_closure_.Run();
     views::Textfield::OnFocus();
-    SetPlaceholderText(base::string16());
   }
 
   void AboutToRequestFocusFromTabTraversal(bool reverse) override {
@@ -270,10 +268,6 @@ class LoginPasswordView::LoginTextfield : public views::Textfield {
 
     if (!GetText().empty())
       SelectAll(/*reversed=*/false);
-  }
-
-  void set_prepared_placeholder_text(const base::string16& text) {
-    prepared_placeholder_text_ = text;
   }
 
   void UpdateFontListAndCursor() {
@@ -321,9 +315,6 @@ class LoginPasswordView::LoginTextfield : public views::Textfield {
   base::RepeatingClosure on_focus_closure_;
   base::RepeatingClosure on_blur_closure_;
   base::RepeatingClosure on_tab_focus_closure_;
-
-  // Placeholder text to set when focus gets lost.
-  base::string16 prepared_placeholder_text_;
 };
 
 class LoginPasswordView::EasyUnlockIcon : public views::Button {
@@ -737,7 +728,7 @@ void LoginPasswordView::Backspace() {
 
 void LoginPasswordView::SetPlaceholderText(
     const base::string16& placeholder_text) {
-  textfield_->set_prepared_placeholder_text(placeholder_text);
+  textfield_->SetPlaceholderText(placeholder_text);
 }
 
 void LoginPasswordView::SetReadOnly(bool read_only) {
