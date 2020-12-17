@@ -509,11 +509,14 @@ void CrossProcessFrameConnector::ResetScreenSpaceRect() {
 
 void CrossProcessFrameConnector::UpdateRenderThrottlingStatus(
     bool is_throttled,
-    bool subtree_throttled) {
+    bool subtree_throttled,
+    bool display_locked) {
   if (is_throttled != is_throttled_ ||
-      subtree_throttled != subtree_throttled_) {
+      subtree_throttled != subtree_throttled_ ||
+      display_locked != display_locked_) {
     is_throttled_ = is_throttled;
     subtree_throttled_ = subtree_throttled;
+    display_locked_ = display_locked;
     if (view_)
       view_->UpdateRenderThrottlingStatus();
   }
@@ -525,6 +528,10 @@ bool CrossProcessFrameConnector::IsThrottled() const {
 
 bool CrossProcessFrameConnector::IsSubtreeThrottled() const {
   return subtree_throttled_;
+}
+
+bool CrossProcessFrameConnector::IsDisplayLocked() const {
+  return display_locked_;
 }
 
 bool CrossProcessFrameConnector::MaybeLogCrash(CrashVisibility visibility) {

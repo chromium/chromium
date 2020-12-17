@@ -17,8 +17,8 @@ void FakeRemoteFrameHost::SetInheritedEffectiveTouchAction(
     cc::TouchAction touch_action) {}
 
 void FakeRemoteFrameHost::UpdateRenderThrottlingStatus(bool is_throttled,
-                                                       bool subtree_throttled) {
-}
+                                                       bool subtree_throttled,
+                                                       bool display_locked) {}
 
 void FakeRemoteFrameHost::VisibilityChanged(
     mojom::blink::FrameVisibility visibility) {}

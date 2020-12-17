@@ -233,10 +233,17 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
   // RenderWidgetHostView::Hide() is called on the current view.
   bool IsHidden() const;
 
-  // Determines whether the child frame should be render throttled, which
-  // happens when the entire rect is offscreen.
+  // IsThrottled() indicates that the frame is outside of it's parent frame's
+  // visible viewport, and should be render throttled.
   bool IsThrottled() const;
+  // IsSubtreeThrottled() indicates that IsThrottled() is true for one of this
+  // frame's ancestors, which means this frame must also be throttled.
   bool IsSubtreeThrottled() const;
+  // IsDisplayLocked() indicates that a DOM ancestor of this frame's owning
+  // <iframe> element in the parent frame is currently display locked; or that
+  // IsDisplayLocked() is true for one of this frame's ancestors; which means
+  // this frame should be render throttled.
+  bool IsDisplayLocked() const;
 
   // Called by RenderWidgetHostViewChildFrame when the child frame has updated
   // its visual properties and its viz::LocalSurfaceId has changed.
@@ -272,7 +279,9 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
     return GetRootRenderWidgetHostView();
   }
 
-  void UpdateRenderThrottlingStatus(bool is_throttled, bool subtree_throttled);
+  void UpdateRenderThrottlingStatus(bool is_throttled,
+                                    bool subtree_throttled,
+                                    bool display_locked);
   void UpdateViewportIntersection(
       const blink::mojom::ViewportIntersectionState& intersection_state);
 
@@ -379,6 +388,7 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
 
   bool is_throttled_ = false;
   bool subtree_throttled_ = false;
+  bool display_locked_ = false;
 
   // Visibility state of the corresponding frame owner element in parent process
   // which is set through CSS or scrolling.

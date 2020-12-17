@@ -463,8 +463,8 @@ void RenderWidgetHostViewChildFrame::UpdateRenderThrottlingStatus() {
   // Do not send throttling status to main frames.
   if (host() && frame_connector_ && !host()->owner_delegate()) {
     host_->GetAssociatedFrameWidget()->UpdateRenderThrottlingStatusForSubFrame(
-        frame_connector_->IsThrottled(),
-        frame_connector_->IsSubtreeThrottled());
+        frame_connector_->IsThrottled(), frame_connector_->IsSubtreeThrottled(),
+        frame_connector_->IsDisplayLocked());
   }
 }
 

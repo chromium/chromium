@@ -162,8 +162,9 @@ LayoutObject* GetTargetLayoutObject(const Element& target_element) {
   if (!target || (!target->IsBoxModelObject() && !target->IsText()))
     return nullptr;
   // If the target is inside a locked subtree, it isn't ever visible.
-  if (UNLIKELY(DisplayLockUtilities::IsInLockedSubtreeCrossingFrames(
-          target_element))) {
+  if (UNLIKELY(target->GetFrameView()->IsDisplayLocked() ||
+               DisplayLockUtilities::IsInLockedSubtreeCrossingFrames(
+                   target_element))) {
     return nullptr;
   }
 

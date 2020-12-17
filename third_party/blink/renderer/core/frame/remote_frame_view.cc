@@ -339,7 +339,7 @@ void RemoteFrameView::VisibilityForThrottlingChanged() {
   // TODO(szager,vmpstr): Send IsSubtreeThrottled() and IsDisplayLocked() as
   // separate bits.
   remote_frame_->GetRemoteFrameHostRemote().UpdateRenderThrottlingStatus(
-      IsHiddenForThrottling(), IsSubtreeThrottled() || IsDisplayLocked());
+      IsHiddenForThrottling(), IsSubtreeThrottled(), IsDisplayLocked());
 }
 
 void RemoteFrameView::VisibilityChanged(

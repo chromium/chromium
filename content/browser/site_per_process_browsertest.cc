@@ -13664,6 +13664,52 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       filter->GetIntersectionState()->main_frame_intersection.IsEmpty());
 }
 
+IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, DisplayLockThrottlesOOPIF) {
+  GURL url_a(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)"));
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  FrameTreeNode* a_frame = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* b_frame = a_frame->child_at(0);
+
+  // Force a lifecycle update in both frames to get to steady state.
+  ASSERT_TRUE(EvalJsAfterLifecycleUpdate(a_frame->current_frame_host(), "", "")
+                  .error.empty());
+  ASSERT_TRUE(EvalJsAfterLifecycleUpdate(b_frame->current_frame_host(), "", "")
+                  .error.empty());
+
+  // Display lock an ancestor of the <iframe> element in a_frame. The display
+  // lock status will be propagated to the OOPIF during lifecycle update.
+  ASSERT_TRUE(EvalJsAfterLifecycleUpdate(
+                  a_frame->current_frame_host(),
+                  "document.body.style = 'content-visibility: hidden'", "")
+                  .error.empty());
+
+  // At this point, a_frame should have already sent an IPC to b_frame causing
+  // b_frame to become throttled. Create an IntersectionObserver and observe a
+  // visible element in b_frame. The display lock status should cause the
+  // visible element to be reported as "not intersecting".
+  static const char kObserverScript[] = R"(
+      new Promise((resolve, reject) => {
+        new IntersectionObserver((entries, observer) => {
+          observer.unobserve(entries[0].target);
+          resolve(String(entries[0].isIntersecting))
+        }).observe(document.getElementById('siteNameHeading'))
+      })
+  )";
+  EvalJsResult result1 = EvalJs(b_frame->current_frame_host(), kObserverScript);
+  ASSERT_TRUE(result1.error.empty());
+  EXPECT_EQ(result1.ExtractString(), "false");
+
+  // Unlock the element in a_frame, run through the same steps, and look for an
+  // "is intersecting" notification.
+  ASSERT_TRUE(EvalJsAfterLifecycleUpdate(a_frame->current_frame_host(),
+                                         "document.body.style = ''", "")
+                  .error.empty());
+  EvalJsResult result2 = EvalJs(b_frame->current_frame_host(), kObserverScript);
+  ASSERT_EQ(result2.error, "");
+  EXPECT_EQ(result2.ExtractString(), "true");
+}
+
 namespace {
 
 // Helper class to intercept DidCommitProvisionalLoad messages and inject a

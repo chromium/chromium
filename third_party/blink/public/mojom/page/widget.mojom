@@ -100,7 +100,8 @@ interface FrameWidget {
   SetInheritedEffectiveTouchActionForSubFrame(cc.mojom.TouchAction touch_action);
 
   // Toggles render throttling for an out-of-process iframe.
-  UpdateRenderThrottlingStatusForSubFrame(bool is_throttled, bool subtree_throttled);
+  UpdateRenderThrottlingStatusForSubFrame(
+      bool is_throttled, bool subtree_throttled, bool display_locked);
 
   // When the browser receives a call to RenderFrameProxyHost::SetIsInert
   // from the parent widget's embedding renderer changing its inertness,

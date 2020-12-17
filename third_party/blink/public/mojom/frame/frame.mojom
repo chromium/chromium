@@ -675,9 +675,12 @@ interface RemoteFrameHost {
 
   // Toggles render throttling on a remote frame. |is_throttled| indicates
   // whether the current frame should be throttled based on its viewport
-  // visibility, and |subtree_throttled| indicates that an ancestor frame has
-  // been throttled, so all descendant frames also should be throttled.
-  UpdateRenderThrottlingStatus(bool is_throttled, bool subtree_throttled);
+  // visibility; |subtree_throttled| indicates that an ancestor frame has
+  // been throttled, so all descendant frames also should be throttled; and
+  // |display_locked| indicates that an iframe is display locked by an ancestor
+  // of its <iframe> element in the parent process.
+  UpdateRenderThrottlingStatus(
+      bool is_throttled, bool subtree_throttled, bool display_locked);
 
   // Notifies the browser that the associated frame has changed its visibility
   // status. Visibility status changes occur when the frame moves in/out

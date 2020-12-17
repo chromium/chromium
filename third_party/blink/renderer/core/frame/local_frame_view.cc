@@ -2651,7 +2651,10 @@ bool LocalFrameView::RunStyleAndLayoutLifecyclePhases(
   TRACE_EVENT0("blink,benchmark",
                "LocalFrameView::RunStyleAndLayoutLifecyclePhases");
   UpdateStyleAndLayoutIfNeededRecursive();
-  DCHECK(Lifecycle().GetState() >= DocumentLifecycle::kLayoutClean);
+  DCHECK(ShouldThrottleRendering() ||
+         Lifecycle().GetState() >= DocumentLifecycle::kLayoutClean);
+  if (Lifecycle().GetState() < DocumentLifecycle::kLayoutClean)
+    return false;
 
   frame_->GetDocument()
       ->GetRootScrollerController()

@@ -681,7 +681,8 @@ class CORE_EXPORT WebFrameWidgetImpl
   // have to have throttling information propagated from parent to child
   // across processes.
   void UpdateRenderThrottlingStatusForSubFrame(bool is_throttled,
-                                               bool subtree_throttled) override;
+                                               bool subtree_throttled,
+                                               bool display_locked) override;
   void EnableDeviceEmulation(const DeviceEmulationParams& parameters) override;
   void DisableDeviceEmulation() override;
   // Sets the inert bit on an out-of-process iframe, causing it to ignore

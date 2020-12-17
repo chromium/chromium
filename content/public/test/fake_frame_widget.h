@@ -63,9 +63,9 @@ class FakeFrameWidget : public blink::mojom::FrameWidget {
   void SetActive(bool active) override;
   void SetInheritedEffectiveTouchActionForSubFrame(
       const cc::TouchAction touch_action) override {}
-  void UpdateRenderThrottlingStatusForSubFrame(
-      bool is_throttled,
-      bool subtree_throttled) override {}
+  void UpdateRenderThrottlingStatusForSubFrame(bool is_throttled,
+                                               bool subtree_throttled,
+                                               bool display_locked) override {}
   void SetIsInertForSubFrame(bool inert) override {}
 #if defined(OS_MAC)
   void GetStringAtPoint(const gfx::Point& point_in_local_root,

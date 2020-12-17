@@ -373,11 +373,11 @@ void RenderFrameProxyHost::SetInheritedEffectiveTouchAction(
       touch_action);
 }
 
-void RenderFrameProxyHost::UpdateRenderThrottlingStatus(
-    bool is_throttled,
-    bool subtree_throttled) {
+void RenderFrameProxyHost::UpdateRenderThrottlingStatus(bool is_throttled,
+                                                        bool subtree_throttled,
+                                                        bool display_locked) {
   cross_process_frame_connector_->UpdateRenderThrottlingStatus(
-      is_throttled, subtree_throttled);
+      is_throttled, subtree_throttled, display_locked);
 }
 
 void RenderFrameProxyHost::VisibilityChanged(
