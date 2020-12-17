@@ -204,7 +204,7 @@ bool HTMLAnchorElement::HasActivationBehavior() const {
 }
 
 void HTMLAnchorElement::SetActive(bool active) {
-  if (HasEditableStyle(*this))
+  if (active && HasEditableStyle(*this))
     return;
 
   HTMLElement::SetActive(active);
