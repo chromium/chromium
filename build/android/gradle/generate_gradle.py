@@ -578,13 +578,6 @@ def _GenerateGradleFile(entry, generator, build_vars, jinja_processor):
       _TemplatePath(target_type.split('_')[0]), variables)
 
 
-def _IsTestDir(path):
-  return ('javatests/' in path or
-          'junit/' in path or
-          'test/' in path or
-          'testing/' in path)
-
-
 # Example: //chrome/android:monochrome
 def _GetNative(relative_func, target_names):
   """Returns an object containing native c++ sources list and its included path
@@ -638,8 +631,11 @@ def _GenerateModuleAll(gradle_output_dir, generator, build_vars,
   res_dirs = sorted(generator.processed_res_dirs)
   def Relativize(paths):
     return _RebasePath(paths, os.path.join(gradle_output_dir, _MODULE_ALL))
-  main_java_dirs = [d for d in java_dirs if not _IsTestDir(d)]
-  test_java_dirs = [d for d in java_dirs if _IsTestDir(d)]
+
+  # As after clank modularization, the java and javatests code will live side by
+  # side in the same module, we will list both of them in the main target here.
+  main_java_dirs = [d for d in java_dirs if 'junit/' not in d]
+  junit_test_java_dirs = [d for d in java_dirs if 'junit/' in d]
   variables['main'] = {
       'android_manifest': Relativize(_DEFAULT_ANDROID_MANIFEST_PATH),
       'java_dirs': Relativize(main_java_dirs),
@@ -648,7 +644,7 @@ def _GenerateModuleAll(gradle_output_dir, generator, build_vars,
       'res_dirs': Relativize(res_dirs),
   }
   variables['android_test'] = [{
-      'java_dirs': Relativize(test_java_dirs),
+      'java_dirs': Relativize(junit_test_java_dirs),
       'java_excludes': ['**/*.java'],
   }]
   if native_targets:
