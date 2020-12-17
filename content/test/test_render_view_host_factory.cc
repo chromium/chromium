@@ -4,6 +4,8 @@
 
 #include "content/test/test_render_view_host_factory.h"
 
+#include "content/browser/renderer_host/agent_scheduling_group_host.h"
+#include "content/browser/renderer_host/agent_scheduling_group_host_factory.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/public/browser/render_process_host_factory.h"
@@ -13,15 +15,20 @@
 namespace content {
 
 TestRenderViewHostFactory::TestRenderViewHostFactory(
-    RenderProcessHostFactory* rph_factory) {
+    RenderProcessHostFactory* rph_factory,
+    AgentSchedulingGroupHostFactory* asgh_factory) {
   RenderProcessHostImpl::set_render_process_host_factory_for_testing(
       rph_factory);
+  AgentSchedulingGroupHost::set_agent_scheduling_group_host_factory_for_testing(
+      asgh_factory);
   RenderViewHostFactory::RegisterFactory(this);
 }
 
 TestRenderViewHostFactory::~TestRenderViewHostFactory() {
   RenderViewHostFactory::UnregisterFactory();
   RenderProcessHostImpl::set_render_process_host_factory_for_testing(nullptr);
+  AgentSchedulingGroupHost::set_agent_scheduling_group_host_factory_for_testing(
+      nullptr);
 }
 
 void TestRenderViewHostFactory::set_render_process_host_factory(

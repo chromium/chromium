@@ -20,6 +20,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_renderer_host.h"
+#include "content/test/mock_agent_scheduling_group_host.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_render_widget_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -64,6 +65,7 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
   // RenderFrameHostImpl overrides (same values, but in Test*/Mock* types)
   TestRenderViewHost* GetRenderViewHost() override;
   MockRenderProcessHost* GetProcess() override;
+  MockAgentSchedulingGroupHost& agent_scheduling_group() override;
   TestRenderWidgetHost* GetRenderWidgetHost() override;
   void AddMessageToConsole(blink::mojom::ConsoleMessageLevel level,
                            const std::string& message) override;

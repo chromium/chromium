@@ -553,9 +553,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
                    NavigationRequest* navigation_request,
                    bool did_create_new_document);
 
-  AgentSchedulingGroupHost& agent_scheduling_group() {
-    return agent_scheduling_group_;
-  }
+  virtual AgentSchedulingGroupHost& agent_scheduling_group();
   RenderViewHostImpl* render_view_host() { return render_view_host_.get(); }
   RenderFrameHostDelegate* delegate() { return delegate_; }
   FrameTree* frame_tree() const { return frame_tree_; }

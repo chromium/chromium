@@ -280,6 +280,8 @@ static_library("test_support") {
     "gpu_browsertest_helpers.h",
     "io_thread_shared_url_loader_factory_owner.cc",
     "io_thread_shared_url_loader_factory_owner.h",
+    "mock_agent_scheduling_group_host.cc",
+    "mock_agent_scheduling_group_host.h",
     "mock_background_sync_controller.cc",
     "mock_background_sync_controller.h",
     "mock_badge_service.cc",

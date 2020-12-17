@@ -1499,6 +1499,10 @@ RenderProcessHost* RenderFrameHostImpl::GetProcess() {
   return agent_scheduling_group_.GetProcess();
 }
 
+AgentSchedulingGroupHost& RenderFrameHostImpl::agent_scheduling_group() {
+  return agent_scheduling_group_;
+}
+
 RenderFrameHostImpl* RenderFrameHostImpl::GetParent() {
   return parent_;
 }

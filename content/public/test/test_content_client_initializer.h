@@ -16,6 +16,7 @@ class TestNetworkConnectionTracker;
 namespace content {
 
 class ContentClient;
+class MockAgentSchedulingGroupHostFactory;
 class MockRenderProcessHostFactory;
 class NotificationServiceImpl;
 class TestContentBrowserClient;
@@ -41,6 +42,7 @@ class TestContentClientInitializer {
   std::unique_ptr<ContentClient> content_client_;
   std::unique_ptr<TestContentBrowserClient> content_browser_client_;
   std::unique_ptr<MockRenderProcessHostFactory> rph_factory_;
+  std::unique_ptr<MockAgentSchedulingGroupHostFactory> asgh_factory_;
   std::unique_ptr<TestRenderViewHostFactory> test_render_view_host_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(TestContentClientInitializer);

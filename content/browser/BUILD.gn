@@ -1240,6 +1240,7 @@ source_set("browser") {
     "quota/quota_manager_host.h",
     "renderer_host/agent_scheduling_group_host.cc",
     "renderer_host/agent_scheduling_group_host.h",
+    "renderer_host/agent_scheduling_group_host_factory.h",
     "renderer_host/ancestor_throttle.cc",
     "renderer_host/ancestor_throttle.h",
     "renderer_host/back_forward_cache_can_store_document_result.cc",

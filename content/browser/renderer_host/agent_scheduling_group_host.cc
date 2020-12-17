@@ -11,6 +11,7 @@
 #include "base/stl_util.h"
 #include "base/supports_user_data.h"
 #include "content/browser/bad_message.h"
+#include "content/browser/renderer_host/agent_scheduling_group_host_factory.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/common/agent_scheduling_group.mojom.h"
 #include "content/common/renderer.mojom.h"
@@ -37,6 +38,9 @@ using ::mojo::Remote;
 
 static constexpr char kAgentSchedulingGroupHostDataKey[] =
     "AgentSchedulingGroupHostUserDataKey";
+
+AgentSchedulingGroupHostFactory* g_agent_scheduling_group_host_factory_ =
+    nullptr;
 
 // This is a struct that is owned by RenderProcessHost. It carries data
 // structures that store the AgentSchedulingGroups associated with a
@@ -89,8 +93,12 @@ AgentSchedulingGroupHost* AgentSchedulingGroupHost::GetOrCreate(
 #endif
 
     if (data->owned_host_set.empty()) {
-      data->owned_host_set.insert(
-          std::make_unique<AgentSchedulingGroupHost>(process));
+      std::unique_ptr<AgentSchedulingGroupHost> host =
+          g_agent_scheduling_group_host_factory_
+              ? g_agent_scheduling_group_host_factory_
+                    ->CreateAgentSchedulingGroupHost(process)
+              : std::make_unique<AgentSchedulingGroupHost>(process);
+      data->owned_host_set.insert(std::move(host));
     }
 
     // When we are in an MBI mode that creates AgentSchedulingGroups 1:1 with
@@ -325,6 +333,20 @@ void AgentSchedulingGroupHost::CreateFrameProxy(
   mojo_remote_.get()->CreateFrameProxy(
       routing_id, render_view_routing_id, opener_frame_token, parent_routing_id,
       replicated_state, frame_token, devtools_frame_token);
+}
+
+// static
+void AgentSchedulingGroupHost::
+    set_agent_scheduling_group_host_factory_for_testing(
+        AgentSchedulingGroupHostFactory* asgh_factory) {
+  g_agent_scheduling_group_host_factory_ = asgh_factory;
+}
+
+// static
+AgentSchedulingGroupHostFactory* AgentSchedulingGroupHost::
+    get_agent_scheduling_group_host_factory_for_testing() {
+  DCHECK(g_agent_scheduling_group_host_factory_);
+  return g_agent_scheduling_group_host_factory_;
 }
 
 void AgentSchedulingGroupHost::GetRoute(

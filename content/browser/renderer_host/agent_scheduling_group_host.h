@@ -30,6 +30,7 @@ class Message;
 
 namespace content {
 
+class AgentSchedulingGroupHostFactory;
 class RenderProcessHost;
 class SiteInstance;
 
@@ -71,7 +72,8 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
   // the future they will be handled directly by the AgentSchedulingGroupHost.
   // IPC:
   IPC::ChannelProxy* GetChannel();
-  bool Send(IPC::Message* message);
+  // This is marked virtual for use in tests by `MockAgentSchedulingGroupHost`.
+  virtual bool Send(IPC::Message* message);
   void AddRoute(int32_t routing_id, IPC::Listener* listener);
   void RemoveRoute(int32_t routing_id);
 
@@ -89,6 +91,11 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
       const FrameReplicationState& replicated_state,
       const base::UnguessableToken& frame_token,
       const base::UnguessableToken& devtools_frame_token);
+
+  static void set_agent_scheduling_group_host_factory_for_testing(
+      AgentSchedulingGroupHostFactory* asgh_factory);
+  static AgentSchedulingGroupHostFactory*
+  get_agent_scheduling_group_host_factory_for_testing();
 
  private:
   enum class LifecycleState {
