@@ -311,7 +311,7 @@ public class MultiThumbnailCardProvider implements TabListMediator.ThumbnailProv
 
     public void initWithNative() {
         Profile profile = mTabModelSelector.getCurrentModel().getProfile();
-        mTabListFaviconProvider.initWithNative(Profile.getLastUsedRegularProfile());
+        mTabListFaviconProvider.initWithNative(profile);
     }
 
     /**
