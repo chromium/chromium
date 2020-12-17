@@ -112,8 +112,39 @@ const char kDiscoverFeedEngagementTypeHistogram[] =
 const char kDiscoverFeedNoticeCardFulfilled[] =
     "ContentSuggestions.Feed.NoticeCardFulfilled2";
 
-// Histogram name to measure the time it tood the Feed to fetch articles.
-const char kDiscoverFeedArticlesFetchNetworkDuration[] =
+// Histogram name to measure the time it took the Feed to fetch articles
+// successfully.
+const char kDiscoverFeedArticlesFetchNetworkDurationSuccess[] =
+    "ContentSuggestions.Feed.Network.Duration.ArticlesFetchSuccess";
+
+// Histogram name to measure the time it took the Feed to fetch articles
+// unsuccessfully.
+const char kDiscoverFeedArticlesFetchNetworkDurationFailure[] =
+    "ContentSuggestions.Feed.Network.Duration.ArticlesFetchFailure";
+
+// Histogram name to measure the time it took the Feed to fetch more articles
+// successfully.
+const char kDiscoverFeedMoreArticlesFetchNetworkDurationSuccess[] =
+    "ContentSuggestions.Feed.Network.Duration.MoreArticlesFetchSuccess";
+
+// Histogram name to measure the time it took the Feed to fetch more articles
+// unsuccessfully.
+const char kDiscoverFeedMoreArticlesFetchNetworkDurationFailure[] =
+    "ContentSuggestions.Feed.Network.Duration.MoreArticlesFetchFailure";
+
+// Histogram name to measure the time it took the Feed to upload actions
+// successfully.
+const char kDiscoverFeedUploadActionsNetworkDurationSuccess[] =
+    "ContentSuggestions.Feed.Network.Duration.ActionUploadSuccess";
+
+// Histogram name to measure the time it took the Feed to upload actions
+// unsuccessfully.
+const char kDiscoverFeedUploadActionsNetworkDurationFailure[] =
+    "ContentSuggestions.Feed.Network.Duration.ActionUploadFailure";
+
+// Histogram name to measure the time it took the Feed to perform a network
+// operation.
+const char kDiscoverFeedNetworkDuration[] =
     "ContentSuggestions.Feed.Network.Duration";
 
 // Minimum scrolling amount to record a FeedEngagementType::kFeedEngaged due to
@@ -294,9 +325,44 @@ const int kMinutesBetweenSessions = 5;
 }
 
 - (void)recordFeedArticlesFetchDurationInSeconds:
-    (NSTimeInterval)durationInSeconds {
-  UMA_HISTOGRAM_MEDIUM_TIMES(kDiscoverFeedArticlesFetchNetworkDuration,
-                             base::TimeDelta::FromSeconds(durationInSeconds));
+            (NSTimeInterval)durationInSeconds
+                                         success:(BOOL)success {
+  if (success) {
+    UMA_HISTOGRAM_MEDIUM_TIMES(kDiscoverFeedArticlesFetchNetworkDurationSuccess,
+                               base::TimeDelta::FromSeconds(durationInSeconds));
+  } else {
+    UMA_HISTOGRAM_MEDIUM_TIMES(kDiscoverFeedArticlesFetchNetworkDurationFailure,
+                               base::TimeDelta::FromSeconds(durationInSeconds));
+  }
+  [self recordNetworkRequestDurationInSeconds:durationInSeconds];
+}
+
+- (void)recordFeedMoreArticlesFetchDurationInSeconds:
+            (NSTimeInterval)durationInSeconds
+                                             success:(BOOL)success {
+  if (success) {
+    UMA_HISTOGRAM_MEDIUM_TIMES(
+        kDiscoverFeedMoreArticlesFetchNetworkDurationSuccess,
+        base::TimeDelta::FromSeconds(durationInSeconds));
+  } else {
+    UMA_HISTOGRAM_MEDIUM_TIMES(
+        kDiscoverFeedMoreArticlesFetchNetworkDurationFailure,
+        base::TimeDelta::FromSeconds(durationInSeconds));
+  }
+  [self recordNetworkRequestDurationInSeconds:durationInSeconds];
+}
+
+- (void)recordFeedUploadActionsDurationInSeconds:
+            (NSTimeInterval)durationInSeconds
+                                         success:(BOOL)success {
+  if (success) {
+    UMA_HISTOGRAM_MEDIUM_TIMES(kDiscoverFeedUploadActionsNetworkDurationSuccess,
+                               base::TimeDelta::FromSeconds(durationInSeconds));
+  } else {
+    UMA_HISTOGRAM_MEDIUM_TIMES(kDiscoverFeedUploadActionsNetworkDurationFailure,
+                               base::TimeDelta::FromSeconds(durationInSeconds));
+  }
+  [self recordNetworkRequestDurationInSeconds:durationInSeconds];
 }
 
 #pragma mark - Private
@@ -360,6 +426,14 @@ const int kMinutesBetweenSessions = 5;
   self.engagedReported = NO;
   self.engagedSimpleReported = NO;
   self.scrolledReported = NO;
+}
+
+// Records the |durationInSeconds| it took to Discover feed to perform any
+// network operation.
+- (void)recordNetworkRequestDurationInSeconds:
+    (NSTimeInterval)durationInSeconds {
+  UMA_HISTOGRAM_MEDIUM_TIMES(kDiscoverFeedNetworkDuration,
+                             base::TimeDelta::FromSeconds(durationInSeconds));
 }
 
 @end
