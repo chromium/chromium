@@ -520,18 +520,21 @@ NearbySharingServiceImpl::RegisterReceiveSurface(
   DCHECK(transfer_callback);
   DCHECK_NE(state, ReceiveSurfaceState::kUnknown);
 
-  if (is_sending_files_) {
-    UnregisterReceiveSurface(transfer_callback);
-    NS_LOG(VERBOSE)
-        << __func__
-        << ": Ignore registering (and unregistering if registered) receive "
-           "surface, because we're currently sending files.";
-    return StatusCodes::kTransferAlreadyInProgress;
-  }
+  // Only check these errors cases for foreground receivers.
+  if (state == ReceiveSurfaceState::kForeground) {
+    if (is_sending_files_) {
+      UnregisterReceiveSurface(transfer_callback);
+      NS_LOG(VERBOSE)
+          << __func__
+          << ": Ignore registering (and unregistering if registered) receive "
+             "surface, because we're currently sending files.";
+      return StatusCodes::kTransferAlreadyInProgress;
+    }
 
-  if (!HasAvailableConnectionMediums()) {
-    NS_LOG(VERBOSE) << __func__ << ": No available connection medium.";
-    return StatusCodes::kNoAvailableConnectionMedium;
+    if (!HasAvailableConnectionMediums()) {
+      NS_LOG(VERBOSE) << __func__ << ": No available connection medium.";
+      return StatusCodes::kNoAvailableConnectionMedium;
+    }
   }
 
   // We specifically allow re-registring with out error so it is clear to caller
