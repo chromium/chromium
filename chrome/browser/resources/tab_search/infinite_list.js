@@ -17,12 +17,9 @@
  * fill the view.
  */
 
-/* TODO(crbug.com/1147535): Decouple MWB style from component */
-import 'chrome://resources/cr_elements/mwb_shared_style.js';
-import 'chrome://resources/cr_elements/mwb_shared_vars.js';
 import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js';
 import {listenOnce} from 'chrome://resources/js/util.m.js';
 import {afterNextRender, DomRepeat, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -85,7 +82,12 @@ export class InfiniteList extends PolymerElement {
   /** @override */
   ready() {
     super.ready();
-    this.ensureTemplatized_();
+
+    this.domRepeat_ = assertInstanceof(
+        this.firstChild, DomRepeat,
+        'infinite-list requires a dom-repeat child to be provided in light-dom');
+
+    this.addEventListener('scroll', () => this.onScroll_());
   }
 
   /** @private */
@@ -138,34 +140,15 @@ export class InfiniteList extends PolymerElement {
   }
 
   /**
-   * Verifies a light-dom template has been provided and initializes a DomRepeat
-   * component with the given template.
-   * @private
-   */
-  ensureTemplatized_() {
-    // The user provided light-dom template to use when stamping DOM items.
-    const template =
-        /** @type {!HTMLTemplateElement} */ (this.querySelector('template'));
-
-    assert(
-        template,
-        'infinite-list requires a template to be provided in light-dom');
-
-    this.domRepeat_ = new DomRepeat();
-    this.domRepeat_.appendChild(template);
-    this.$.selector.appendChild(this.domRepeat_);
-  }
-
-  /**
    * Adds additional DOM items as needed to fill the view based on user scroll
    * interactions.
    * @private
    */
   onScroll_() {
-    if (this.$.container.scrollTop > 0 &&
+    if (this.scrollTop > 0 &&
         this.domRepeat_.items.length !== this.items.length) {
       const aboveScrollTopItemCount =
-          Math.round(this.$.container.scrollTop / this.domItemAverageHeight_());
+          Math.round(this.scrollTop / this.domItemAverageHeight_());
 
       // Ensure we have sufficient items to fill the current scroll position and
       // a full view following our current position.
@@ -225,7 +208,7 @@ export class InfiniteList extends PolymerElement {
     if (this.domRepeat_ && this.items) {
       const domItemAvgHeight = this.domItemAverageHeight_();
       const aboveScrollTopItemCount = domItemAvgHeight !== 0 ?
-          Math.round(this.$.container.scrollTop / domItemAvgHeight) :
+          Math.round(this.scrollTop / domItemAvgHeight) :
           0;
 
       this.domRepeat_.set('items', []);
@@ -274,7 +257,7 @@ export class InfiniteList extends PolymerElement {
       }
 
       const previousItem = selector.items[selector.selected - 1];
-      if (previousItem.offsetTop < this.$.container.scrollTop) {
+      if (previousItem.offsetTop < this.scrollTop) {
         /** @type {!Element} */ (previousItem)
             .scrollIntoView({behavior: 'smooth', block: 'nearest'});
         return;
@@ -283,7 +266,7 @@ export class InfiniteList extends PolymerElement {
       const nextItem =
           selector.items[/** @type {number} */ (selector.selected) + 1];
       if (nextItem.offsetTop + nextItem.offsetHeight >
-          this.$.container.scrollTop + this.offsetHeight) {
+          this.scrollTop + this.offsetHeight) {
         /** @type {!Element} */ (nextItem).scrollIntoView(
             {behavior: 'smooth', block: 'nearest'});
       }

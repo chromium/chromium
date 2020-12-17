@@ -51,19 +51,19 @@
     </defs>
   </svg>
 </iron-iconset-svg>
-<tab-search-search-field id="searchField" autofocus clear-label="$i18n{clearSearch}"
-    label="$i18n{searchTabs}" on-focus="onSearchFocus_"
-    on-keydown="onSearchKeyDown_" on-search-changed="onSearchChanged_"
+<tab-search-search-field id="searchField" autofocus
+    clear-label="$i18n{clearSearch}" label="$i18n{searchTabs}"
+    on-focus="onSearchFocus_" on-keydown="onSearchKeyDown_"
+    on-search-changed="onSearchChanged_"
     search-result-text="[[searchResultText_]]">
 </tab-search-search-field>
 <div hidden="[[!filteredOpenTabs_.length]]">
   <infinite-list id="tabsList" items="[[filteredOpenTabs_]]" >
-    <template>
+    <template is="dom-repeat">
       <tab-search-item id="[[item.tab.tabId]]" aria-label="[[ariaLabel_(item)]]"
-          class="mwb-list-item" data="[[item]]"
-          on-click="onItemClick_" on-close="onItemClose_"
-          on-focus="onItemFocus_" on-keydown="onItemKeyDown_" tabindex="0"
-          role="option">
+          class="mwb-list-item" data="[[item]]" on-click="onItemClick_"
+          on-close="onItemClose_" on-focus="onItemFocus_"
+          on-keydown="onItemKeyDown_" tabindex="0" role="option">
       </tab-search-item>
     </template>
   </infinite-list>

@@ -34,7 +34,7 @@ suite('TabSearchAppTest', () => {
    */
   function queryRows() {
     return tabSearchApp.shadowRoot.querySelector('#tabsList')
-        .shadowRoot.querySelectorAll('tab-search-item');
+        .querySelectorAll('tab-search-item');
   }
 
   /**
@@ -98,7 +98,7 @@ suite('TabSearchAppTest', () => {
 
     const tabSearchItem = /** @type {!HTMLElement} */
         (tabSearchApp.shadowRoot.querySelector('#tabsList')
-             .shadowRoot.querySelector('tab-search-item'));
+             .querySelector('tab-search-item'));
     tabSearchItem.click();
     const [tabInfo] = await testProxy.whenCalled('switchToTab');
     assertEquals(tabData.tabId, tabInfo.tabId);
@@ -229,7 +229,7 @@ suite('TabSearchAppTest', () => {
     verifyTabIds(queryRows(), [1, 5, 6, 2, 3, 4]);
     let tabSearchItem = /** @type {!HTMLElement} */
         (tabSearchApp.shadowRoot.querySelector('#tabsList')
-             .shadowRoot.querySelector('tab-search-item[id="1"]'));
+             .querySelector('tab-search-item[id="1"]'));
     assertEquals('Google', tabSearchItem.data.tab.title);
     assertEquals('https://www.google.com', tabSearchItem.data.tab.url);
     const updatedTab = /** @type {!Tab} */ ({
@@ -245,7 +245,7 @@ suite('TabSearchAppTest', () => {
     verifyTabIds(queryRows(), [1, 5, 6, 2, 3, 4]);
     tabSearchItem = /** @type {!HTMLElement} */
         (tabSearchApp.shadowRoot.querySelector('#tabsList')
-             .shadowRoot.querySelector('tab-search-item[id="1"]'));
+             .querySelector('tab-search-item[id="1"]'));
     assertEquals(updatedTab.title, tabSearchItem.data.tab.title);
     assertEquals(updatedTab.url, tabSearchItem.data.tab.url);
     assertEquals('example.com', tabSearchItem.data.hostname);
@@ -305,7 +305,7 @@ suite('TabSearchAppTest', () => {
     // Click the first element with tabId 1.
     let tabSearchItem = /** @type {!HTMLElement} */
         (tabSearchApp.shadowRoot.querySelector('#tabsList')
-             .shadowRoot.querySelector('tab-search-item[id="1"]'));
+             .querySelector('tab-search-item[id="1"]'));
     tabSearchItem.click();
 
     // Assert switchToTab() was called appropriately for an unfiltered tab list.
@@ -320,7 +320,7 @@ suite('TabSearchAppTest', () => {
     // Click the first element with tabId 6.
     tabSearchItem = /** @type {!HTMLElement} */
         (tabSearchApp.shadowRoot.querySelector('#tabsList')
-             .shadowRoot.querySelector('tab-search-item[id="6"]'));
+             .querySelector('tab-search-item[id="6"]'));
     tabSearchItem.click();
 
     // Assert switchToTab() was called appropriately for an unfiltered tab list.
@@ -343,7 +343,7 @@ suite('TabSearchAppTest', () => {
     // Click the only remaining element with tabId 2.
     tabSearchItem = /** @type {!HTMLElement} */
         (tabSearchApp.shadowRoot.querySelector('#tabsList')
-             .shadowRoot.querySelector('tab-search-item[id="2"]'));
+             .querySelector('tab-search-item[id="2"]'));
     tabSearchItem.click();
 
     // Assert switchToTab() was called appropriately for a tab list fitlered by
@@ -437,7 +437,7 @@ suite('TabSearchAppTest', () => {
       tabSearchApp.shadowRoot.querySelector('#searchField'),
       tabSearchApp.shadowRoot.querySelector('#tabsList'),
       tabSearchApp.shadowRoot.querySelector('#tabsList')
-          .shadowRoot.querySelector('tab-search-item'),
+          .querySelector('tab-search-item'),
       tabSearchApp.shadowRoot.querySelector('#feedback-footer'),
     ];
 

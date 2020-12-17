@@ -266,9 +266,9 @@ export class TabSearchAppElement extends PolymerElement {
    * @private
    */
   onItemClick_(e) {
-    const tabIndex = e.currentTarget.parentNode.indexOf(e.currentTarget);
     const tabId = Number.parseInt(e.currentTarget.id, 10);
-    this.apiProxy_.switchToTab({tabId}, !!this.searchText_, tabIndex);
+    this.apiProxy_.switchToTab(
+        {tabId}, !!this.searchText_, /** @type {number} */ (e.model.index));
   }
 
   /**
@@ -277,9 +277,9 @@ export class TabSearchAppElement extends PolymerElement {
    */
   onItemClose_(e) {
     performance.mark('close_tab:benchmark_begin');
-    const tabIndex = e.currentTarget.parentNode.indexOf(e.currentTarget);
     const tabId = Number.parseInt(e.currentTarget.id, 10);
-    this.apiProxy_.closeTab(tabId, !!this.searchText_, tabIndex);
+    this.apiProxy_.closeTab(
+        tabId, !!this.searchText_, /** @type {number} */ (e.model.index));
     this.announceA11y_(loadTimeData.getString('a11yTabClosed'));
     listenOnce(this.$.tabsList, 'iron-items-changed', () => {
       performance.mark('close_tab:benchmark_end');
@@ -328,7 +328,7 @@ export class TabSearchAppElement extends PolymerElement {
     // Ensure that when a TabSearchItem receives focus, it becomes the selected
     // item in the list.
     /** @type {!InfiniteList} */ (this.$.tabsList).selected =
-        e.currentTarget.parentNode.indexOf(e.currentTarget);
+        /** @type {number} */ (e.model.index);
   }
 
   /** @private */

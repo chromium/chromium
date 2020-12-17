@@ -1,32 +1,19 @@
 <template>
   <style>
     ::-webkit-scrollbar-thumb {
-      background: var(--google-grey-refresh-300);
-    }
-
-    /* TODO(crbug.com/1110109): Add WCAG compliant dark mode support. */
-    @media (prefers-color-scheme: dark) {
-      ::-webkit-scrollbar-thumb {
-        background: var(--google-grey-refresh-500);
-      }
+      background-color: var(--mwb-scrollbar-thumb-color);
     }
 
     ::-webkit-scrollbar-thumb:hover {
-      background: var(--google-grey-refresh-500);
-    }
-
-    @media (prefers-color-scheme: dark) {
-      ::-webkit-scrollbar-thumb:hover {
-        background: var(--google-grey-refresh-300);
-      }
+      background-color: var(--mwb-scrollbar-thumb-hover-color);
     }
 
     ::-webkit-scrollbar-track {
-      background: var(--mwb-background-color);
+      background-color: var(--mwb-scrollbar-track-color);
     }
 
     ::-webkit-scrollbar {
-      width: 4px;
+      width: var(--mwb-scrollbar-width);
     }
 
     .mwb-list-item {

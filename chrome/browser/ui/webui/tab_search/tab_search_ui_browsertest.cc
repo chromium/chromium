@@ -61,7 +61,7 @@ class TabSearchUIBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(TabSearchUIBrowserTest, InitialTabItemsListed) {
   const std::string tab_items_js =
       "const tabItems = document.querySelector('tab-search-app').shadowRoot"
-      "    .getElementById('tabsList').shadowRoot"
+      "    .getElementById('tabsList')"
       "    .querySelectorAll('tab-search-item');";
   int tab_item_count =
       content::EvalJs(webui_contents_.get(), tab_items_js + "tabItems.length",
@@ -82,7 +82,8 @@ IN_PROC_BROWSER_TEST_F(TabSearchUIBrowserTest, SwitchToTabAction) {
 
   const std::string tab_item_js = base::StringPrintf(
       "document.querySelector('tab-search-app').shadowRoot"
-      "    .getElementById('tabsList').shadowRoot.getElementById('%s')",
+      "    .getElementById('tabsList')"
+      "    .querySelector('tab-search-item[id=\"%s\"]')",
       base::NumberToString(tab_id).c_str());
   ASSERT_TRUE(content::ExecJs(webui_contents_.get(), tab_item_js + ".click()",
                               content::EXECUTE_SCRIPT_DEFAULT_OPTIONS,
@@ -98,7 +99,8 @@ IN_PROC_BROWSER_TEST_F(TabSearchUIBrowserTest, CloseTabAction) {
 
   const std::string tab_item_button_js = base::StringPrintf(
       "document.querySelector('tab-search-app').shadowRoot"
-      "    .getElementById('tabsList').shadowRoot.getElementById('%s')"
+      "    .getElementById('tabsList')"
+      "    .querySelector('tab-search-item[id=\"%s\"]')"
       "    .shadowRoot.getElementById('closeButton')",
       base::NumberToString(tab_id).c_str());
   ASSERT_TRUE(content::ExecJs(webui_contents_.get(),
