@@ -37,7 +37,7 @@ namespace updater {
 template <typename T>
 struct EnumTraits {};
 
-// Returns an optional value of an enun type T if the conversion from an
+// Returns an optional value of an enum type T if the conversion from an
 // integral type V is safe, meaning that |v| is within the bounds of the enum.
 // The enum type must be annotated with traits to specify the lower and upper
 // bounds of the enum values.

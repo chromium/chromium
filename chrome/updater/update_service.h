@@ -46,12 +46,12 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
     // such as a task failed to post, or allocation of a resource failed.
     kServiceFailed = 4,
 
+    // An error handling the update check occurred.
+    kUpdateCheckFailed = 5,
+
     // This value indicates that required metadata associated with the
     // application was not available for any reason.
-    kAppNotFound = 5,
-
-    // An error handling the update check occurred.
-    kUpdateCheckFailed = 6,
+    kAppNotFound = 6,
 
     // A function argument was invalid.
     kInvalidArgument = 7,
@@ -59,11 +59,10 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
     // This server is not the active server.
     kInactive = 8,
 
-    // Change the EnumTraits class in this file when adding new values.
     // IPC connection to the remote process failed for some reason.
     kIPCConnectionFailed = 9,
 
-    // Change the traits class in this file when adding new values.
+    // Update EnumTraits<UpdateService::Result> when adding new values.
   };
 
   // Run time errors are organized in specific categories to indicate the
@@ -76,7 +75,7 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
     kInstall = 3,
     kService = 4,
     kUpdateCheck = 5,
-    // Change the traits class in this file when adding new values.
+    // Update EnumTraits<UpdateService::ErrorCategory> when adding new values.
   };
 
   struct UpdateState {
@@ -115,7 +114,8 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
       // halted and the state will not change.
       kUpdateError = 8,
 
-      // Change the traits class in this file when adding new values.
+      // Update EnumTraits<UpdateService::UpdateState::State> when adding new
+      // values.
     };
 
     UpdateState();
@@ -222,7 +222,7 @@ template <>
 struct EnumTraits<UpdateService::Result> {
   using Result = UpdateService::Result;
   static constexpr Result first_elem = Result::kSuccess;
-  static constexpr Result last_elem = Result::kInactive;
+  static constexpr Result last_elem = Result::kIPCConnectionFailed;
 };
 
 template <>
