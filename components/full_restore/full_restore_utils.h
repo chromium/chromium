@@ -9,6 +9,8 @@
 
 #include "base/component_export.h"
 
+class AccountId;
+
 namespace aura {
 class Window;
 }
@@ -37,11 +39,7 @@ std::unique_ptr<WindowInfo> GetWindowInfo(aura::Window* window);
 
 // Returns true if we should restore apps and pages based on the restore setting
 // and the user's choice from the notification. Otherwise, returns false.
-COMPONENT_EXPORT(FULL_RESTORE) bool ShouldRestore();
-
-// Sets whether we should restore apps and pages, based on the restore setting
-// and the user's choice from the notification.
-COMPONENT_EXPORT(FULL_RESTORE) void SetRestoreFlag(bool should_restore);
+COMPONENT_EXPORT(FULL_RESTORE) bool ShouldRestore(const AccountId& account_id);
 
 }  // namespace full_restore
 

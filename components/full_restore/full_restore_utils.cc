@@ -6,17 +6,11 @@
 
 #include "ash/public/cpp/ash_features.h"
 #include "base/files/file_path.h"
+#include "components/account_id/account_id.h"
 #include "components/full_restore/app_launch_info.h"
+#include "components/full_restore/full_restore_info.h"
 #include "components/full_restore/full_restore_save_handler.h"
 #include "components/full_restore/window_info.h"
-
-namespace {
-
-// Set the default restore flag as false, and it can be reset based on the
-// restore setting and the user's choice from notifications.
-bool g_restore = false;
-
-}  // namespace
 
 namespace full_restore {
 
@@ -48,12 +42,8 @@ std::unique_ptr<WindowInfo> GetWindowInfo(aura::Window* window) {
   return window_info;
 }
 
-bool ShouldRestore() {
-  return g_restore;
-}
-
-void SetRestoreFlag(bool should_restore) {
-  g_restore = should_restore;
+bool ShouldRestore(const AccountId& account_id) {
+  return FullRestoreInfo::GetInstance()->ShouldRestore(account_id);
 }
 
 }  // namespace full_restore

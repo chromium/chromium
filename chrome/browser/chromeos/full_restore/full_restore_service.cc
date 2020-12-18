@@ -16,7 +16,8 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "components/full_restore/full_restore_utils.h"
+#include "components/account_id/account_id.h"
+#include "components/full_restore/full_restore_info.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -132,7 +133,12 @@ void FullRestoreService::HandleRestoreNotificationClicked(
 }
 
 void FullRestoreService::Restore() {
-  ::full_restore::SetRestoreFlag(true);
+  const user_manager::User* user =
+      chromeos::ProfileHelper::Get()->GetUserByProfile(profile_);
+  if (user) {
+    ::full_restore::FullRestoreInfo::GetInstance()->SetRestoreFlag(
+        user->GetAccountId(), true);
+  }
 
   // TODO(crbug.com/909794): Implement the restoration. And move the heavy load
   // out of this KeyedService class.
