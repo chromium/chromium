@@ -56,7 +56,7 @@ export class CameraIntent extends Camera {
           const ratio = Math.sqrt(
               DOWNSCALE_INTENT_MAX_PIXEL_NUM / (image.width * image.height));
           blob = await util.scalePicture(
-              image.src, false, Math.floor(image.width * ratio),
+              blob, false, Math.floor(image.width * ratio),
               Math.floor(image.height * ratio));
         }
         const buf = await blob.arrayBuffer();

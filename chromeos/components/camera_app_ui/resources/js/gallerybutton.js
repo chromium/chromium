@@ -65,11 +65,8 @@ class CoverPhoto {
    */
   static async create(file) {
     const isVideo = filesystem.hasVideoPrefix(file);
-    const fileUrl = await filesystem.pictureURL(file);
     const thumbnail =
-        await util.scalePicture(fileUrl, isVideo, THUMBNAIL_WIDTH);
-    URL.revokeObjectURL(fileUrl);
-
+        await util.scalePicture(await file.file(), isVideo, THUMBNAIL_WIDTH);
     return new CoverPhoto(file, URL.createObjectURL(thumbnail));
   }
 }
@@ -183,15 +180,7 @@ export class GalleryButton {
    * @override
    */
   async savePhoto(blob, name) {
-    const orientedPhoto = await new Promise((resolve) => {
-      // Ignore errors since it is better to save something than
-      // nothing.
-      // TODO(yuli): Support showing images by EXIF orientation
-      // instead.
-      util.orientPhoto(blob, resolve, () => resolve(blob));
-    });
-    const file = await filesystem.saveBlob(orientedPhoto, name);
-    assert(file !== null);
+    const file = await filesystem.saveBlob(blob, name);
     await this.updateCover_(file);
   }
 

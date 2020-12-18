@@ -34,153 +34,6 @@ export function newDrawingCanvas({width, height}) {
 }
 
 /**
- * Gets the clockwise rotation and flip that can orient a photo to its upright
- * position of the photo and drop its orientation information.
- * @param {!Blob} blob JPEG blob that might contain EXIF orientation field.
- * @return {!Promise<{rotation: number, flip: boolean, blob: !Blob}>} The
- * rotation, flip information of photo and the photo blob after drop those
- * information.
- */
-function dropPhotoOrientation(blob) {
-  let /** !Blob */ blobWithoutOrientation = blob;
-  const getOrientation = (async () => {
-    const buffer = await blob.arrayBuffer();
-    const view = new DataView(buffer);
-    if (view.getUint16(0, false) !== 0xFFD8) {
-      return 1;
-    }
-    const length = view.byteLength;
-    let offset = 2;
-    while (offset < length) {
-      if (view.getUint16(offset + 2, false) <= 8) {
-        break;
-      }
-      const marker = view.getUint16(offset, false);
-      offset += 2;
-      if (marker === 0xFFE1) {
-        if (view.getUint32(offset += 2, false) !== 0x45786966) {
-          break;
-        }
-
-        const little = view.getUint16(offset += 6, false) === 0x4949;
-        offset += view.getUint32(offset + 4, little);
-        const tags = view.getUint16(offset, little);
-        offset += 2;
-        for (let i = 0; i < tags; i++) {
-          if (view.getUint16(offset + (i * 12), little) === 0x0112) {
-            offset += (i * 12) + 8;
-            const orientation = view.getUint16(offset, little);
-            view.setUint16(offset, 1, little);
-            blobWithoutOrientation = new Blob([buffer]);
-            return orientation;
-          }
-        }
-      } else if ((marker & 0xFF00) !== 0xFF00) {
-        break;
-      } else {
-        offset += view.getUint16(offset, false);
-      }
-    }
-    return 1;
-  })();
-
-  return getOrientation
-      .then((orientation) => {
-        switch (orientation) {
-          case 1:
-            return {rotation: 0, flip: false};
-          case 2:
-            return {rotation: 0, flip: true};
-          case 3:
-            return {rotation: 180, flip: false};
-          case 4:
-            return {rotation: 180, flip: true};
-          case 5:
-            return {rotation: 90, flip: true};
-          case 6:
-            return {rotation: 90, flip: false};
-          case 7:
-            return {rotation: 270, flip: true};
-          case 8:
-            return {rotation: 270, flip: false};
-          default:
-            return {rotation: 0, flip: false};
-        }
-      })
-      .then((orientInfo) => {
-        return Object.assign(orientInfo, {blob: blobWithoutOrientation});
-      });
-}
-
-/**
- * Orients a photo to the upright orientation.
- * @param {!Blob} blob Photo as a blob.
- * @param {function(!Blob)} onSuccess Success callback with the result photo as
- *     a blob.
- * @param {function()} onFailure Failure callback.
- */
-export function orientPhoto(blob, onSuccess, onFailure) {
-  // TODO(shenghao): Revise or remove this function if it's no longer
-  // applicable.
-  const drawPhoto = function(original, orientation, onSuccess, onFailure) {
-    const canvasSquareLength = Math.max(original.width, original.height);
-    const {canvas, ctx} = newDrawingCanvas(
-        {width: canvasSquareLength, height: canvasSquareLength});
-
-    const [centerX, centerY] = [canvas.width / 2, canvas.height / 2];
-    ctx.translate(centerX, centerY);
-    ctx.rotate(orientation.rotation * Math.PI / 180);
-    if (orientation.flip) {
-      ctx.scale(-1, 1);
-    }
-    ctx.drawImage(
-        original, -original.width / 2, -original.height / 2, original.width,
-        original.height);
-    if (orientation.flip) {
-      ctx.scale(-1, 1);
-    }
-    ctx.rotate(-orientation.rotation * Math.PI / 180);
-    ctx.translate(-centerX, -centerY);
-
-    const outputSize = (() => {
-      if (orientation.rotation === 90 || orientation.rotation === 270) {
-        return {width: original.height, height: original.width};
-      } else {
-        return {width: original.width, height: original.height};
-      }
-    })();
-    const {canvas: outputCanvas, ctx: outputCtx} = newDrawingCanvas(outputSize);
-    const imageData = ctx.getImageData(
-        (canvasSquareLength - outputCanvas.width) / 2,
-        (canvasSquareLength - outputCanvas.height) / 2, outputCanvas.width,
-        outputCanvas.height);
-    outputCtx.putImageData(imageData, 0, 0);
-
-    outputCanvas.toBlob(function(blob) {
-      if (blob) {
-        onSuccess(blob);
-      } else {
-        onFailure();
-      }
-    }, 'image/jpeg');
-  };
-
-  dropPhotoOrientation(blob).then((orientation) => {
-    if (orientation.rotation === 0 && !orientation.flip) {
-      onSuccess(blob);
-    } else {
-      const original =
-          assertInstanceof(document.createElement('img'), HTMLImageElement);
-      original.onload = function() {
-        drawPhoto(original, orientation, onSuccess, onFailure);
-      };
-      original.onerror = onFailure;
-      original.src = URL.createObjectURL(orientation.blob);
-    }
-  });
-}
-
-/**
  * Cancels animating the element by removing 'animate' class.
  * @param {!HTMLElement} element Element for canceling animation.
  * @return {!Promise} Promise resolved when ongoing animation is canceled and
@@ -352,7 +205,7 @@ export function getDefaultFacing() {
 /**
  * Scales the input picture to target width and height with respect to original
  * aspect ratio.
- * @param {string} url Picture as an URL.
+ * @param {!Blob} blob Blob of photo or video to be scaled.
  * @param {boolean} isVideo Picture is a video.
  * @param {number} width Target width to be scaled to.
  * @param {number=} height Target height to be scaled to. In default, set to
@@ -360,62 +213,62 @@ export function getDefaultFacing() {
  *     ratio of input picture.
  * @return {!Promise<!Blob>} Promise for the result.
  */
-export async function scalePicture(url, isVideo, width, height = undefined) {
+export async function scalePicture(blob, isVideo, width, height = undefined) {
   const element =
       /** @type {(!HTMLImageElement|!HTMLVideoElement)} */ (
           document.createElement(isVideo ? 'video' : 'img'));
   if (isVideo) {
     element.preload = 'auto';
   }
-  await new Promise((resolve, reject) => {
-    element.addEventListener(isVideo ? 'canplay' : 'load', resolve);
-    element.addEventListener('error', () => {
-      if (isVideo) {
-        let msg = 'Failed to load video';
-        /**
-         * https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/error
-         * @type {?MediaError}
-         */
-        const err = element.error;
-        if (err !== null) {
-          msg += `: ${err.message}`;
+  try {
+    await new Promise((resolve, reject) => {
+      element.addEventListener(isVideo ? 'canplay' : 'load', resolve);
+      element.addEventListener('error', () => {
+        if (isVideo) {
+          let msg = 'Failed to load video';
+          /**
+           * https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/error
+           * @type {?MediaError}
+           */
+          const err = element.error;
+          if (err !== null) {
+            msg += `: ${err.message}`;
+          }
+          reject(new Error(msg));
+        } else {
+          reject(new Error('Failed to load image'));
         }
-        reject(new Error(msg));
-      } else {
-        reject(new Error('Failed to load image'));
-      }
+      });
+      element.src = URL.createObjectURL(blob);
     });
-    element.src = url;
-  });
-  if (height === undefined) {
-    const ratio = isVideo ? element.videoHeight / element.videoWidth :
-                            element.height / element.width;
-    height = Math.round(width * ratio);
-  }
-  const {canvas, ctx} = newDrawingCanvas({width, height});
-  ctx.drawImage(element, 0, 0, width, height);
+    if (height === undefined) {
+      const ratio = isVideo ? element.videoHeight / element.videoWidth :
+                              element.height / element.width;
+      height = Math.round(width * ratio);
+    }
+    const {canvas, ctx} = newDrawingCanvas({width, height});
+    ctx.drawImage(element, 0, 0, width, height);
 
-  /**
-   * @type {!Uint8ClampedArray} A one-dimensional pixels array in RGBA order.
-   */
-  const data = ctx.getImageData(0, 0, width, height).data;
-  if (data.every((byte) => byte === 0)) {
-    reportError(
-        ErrorType.BROKEN_THUMBNAIL, ErrorLevel.ERROR,
-        new Error('The thumbnail content is broken.'));
-    // Do not throw an error here. A black thumbnail is still better than no
-    // thumbnail to let user open the corresponding picutre in gallery.
-  }
+    /**
+     * @type {!Uint8ClampedArray} A one-dimensional pixels array in RGBA order.
+     */
+    const data = ctx.getImageData(0, 0, width, height).data;
+    if (data.every((byte) => byte === 0)) {
+      reportError(
+          ErrorType.BROKEN_THUMBNAIL, ErrorLevel.ERROR,
+          new Error('The thumbnail content is broken.'));
+      // Do not throw an error here. A black thumbnail is still better than no
+      // thumbnail to let user open the corresponding picutre in gallery.
+    }
 
-  return new Promise((resolve, reject) => {
-    canvas.toBlob((blob) => {
-      if (blob) {
-        resolve(blob);
-      } else {
-        reject(new Error('Failed to create thumbnail.'));
-      }
-    }, 'image/jpeg');
-  });
+    return new Promise((resolve) => {
+      // TODO(b/174190121): Patch important exif entries from input blob to
+      // result blob.
+      canvas.toBlob(resolve, 'image/jpeg');
+    });
+  } finally {
+    URL.revokeObjectURL(element.src);
+  }
 }
 
 /**

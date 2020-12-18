@@ -20,15 +20,21 @@ import {
  */
 async function cropSquare(blob) {
   const img = await util.blobToImage(blob);
-  const side = Math.min(img.width, img.height);
-  const {canvas, ctx} = util.newDrawingCanvas({width: side, height: side});
-  ctx.drawImage(
-      img, Math.floor((img.width - side) / 2),
-      Math.floor((img.height - side) / 2), side, side, 0, 0, side, side);
-  const croppedBlob = await new Promise((resolve) => {
-    canvas.toBlob(resolve, 'image/jpeg');
-  });
-  return croppedBlob;
+  try {
+    const side = Math.min(img.width, img.height);
+    const {canvas, ctx} = util.newDrawingCanvas({width: side, height: side});
+    ctx.drawImage(
+        img, Math.floor((img.width - side) / 2),
+        Math.floor((img.height - side) / 2), side, side, 0, 0, side, side);
+    const croppedBlob = await new Promise((resolve) => {
+      // TODO(b/174190121): Patch important exif entries from input blob to
+      // result blob.
+      canvas.toBlob(resolve, 'image/jpeg');
+    });
+    return croppedBlob;
+  } finally {
+    URL.revokeObjectURL(img.src);
+  }
 }
 
 /**
@@ -50,11 +56,6 @@ class SquarePhotoHandler {
    * @override
    */
   async handleResultPhoto(result, ...args) {
-    // Since the image blob after square cut will lose its EXIF including
-    // orientation information. Corrects the orientation before the square
-    // cut.
-    result.blob = await new Promise(
-        (resolve, reject) => util.orientPhoto(result.blob, resolve, reject));
     result.blob = await cropSquare(result.blob);
     await this.handler_.handleResultPhoto(result, ...args);
   }
