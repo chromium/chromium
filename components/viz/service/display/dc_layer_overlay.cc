@@ -523,7 +523,20 @@ void DCLayerOverlayProcessor::InsertDebugBorderDrawQuad(
     const gfx::RectF& display_rect,
     gfx::Rect* damage_rect) {
   auto* shared_quad_state = render_pass->CreateAndAppendSharedQuadState();
+  auto& quad_list = render_pass->quad_list;
 
+  // Add debug borders for the root damage rect after overlay promotion.
+  SkColor border_color = SK_ColorGREEN;
+  auto it = quad_list.InsertBeforeAndInvalidateAllPointers<DebugBorderDrawQuad>(
+      quad_list.begin(), 1u);
+  auto* debug_quad = static_cast<DebugBorderDrawQuad*>(*it);
+
+  gfx::Rect rect = *damage_rect;
+  rect.Inset(kDCLayerDebugBorderInsets);
+  debug_quad->SetNew(shared_quad_state, rect, rect, border_color,
+                     kDCLayerDebugBorderWidth);
+
+  // Add debug borders for overlays/underlays
   for (const auto& dc_layer : *dc_layer_overlays) {
     gfx::RectF overlay_rect(dc_layer.quad_rect);
     dc_layer.transform.TransformRect(&overlay_rect);
@@ -532,13 +545,11 @@ void DCLayerOverlayProcessor::InsertDebugBorderDrawQuad(
 
     // Overlay:red, Underlay:blue.
     SkColor border_color = dc_layer.z_order > 0 ? SK_ColorRED : SK_ColorBLUE;
-
-    auto& quad_list = render_pass->quad_list;
     auto it =
         quad_list.InsertBeforeAndInvalidateAllPointers<DebugBorderDrawQuad>(
             quad_list.begin(), 1u);
-
     auto* debug_quad = static_cast<DebugBorderDrawQuad*>(*it);
+
     gfx::Rect rect = gfx::ToEnclosingRect(overlay_rect);
     rect.Inset(kDCLayerDebugBorderInsets);
     debug_quad->SetNew(shared_quad_state, rect, rect, border_color,
@@ -760,8 +771,7 @@ void DCLayerOverlayProcessor::Process(
                             this_frame_has_occluding_damage_rect, damage_rect);
   }
 
-  if (debug_settings_->show_dc_layer_debug_borders &&
-      dc_layer_overlays->size() > 0) {
+  if (debug_settings_->show_dc_layer_debug_borders) {
     InsertDebugBorderDrawQuad(dc_layer_overlays, root_render_pass, display_rect,
                               damage_rect);
   }

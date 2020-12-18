@@ -31,6 +31,11 @@ VIZ_COMMON_EXPORT extern const char
 
 VIZ_COMMON_EXPORT extern const char kRunAllCompositorStagesBeforeDraw[];
 VIZ_COMMON_EXPORT extern const char kShowAggregatedDamage[];
+// kShowDCLayerDebugBorders shows the debug borders of the overlays and the
+// damage rect after using overlays on Windows. Do not use
+// kShowDCLayerDebugBorders and kShowAggregatedDamage together because
+// kShowAggregatedDamage sets the entire frame as damaged and this causes
+// incorrect damage rect borders after using overlays.
 VIZ_COMMON_EXPORT extern const char kShowDCLayerDebugBorders[];
 
 VIZ_COMMON_EXPORT base::Optional<uint32_t> GetDeadlineToSynchronizeSurfaces();
