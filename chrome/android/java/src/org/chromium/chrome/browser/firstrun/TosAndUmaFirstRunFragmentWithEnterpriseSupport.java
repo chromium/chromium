@@ -65,6 +65,7 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupport
     };
 
     private boolean mViewCreated;
+    private View mBottomGroup;
     private View mLoadingSpinnerContainer;
     private LoadingView mLoadingSpinner;
     private TextView mPrivacyDisclaimer;
@@ -110,6 +111,7 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupport
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        mBottomGroup = view.findViewById(R.id.fre_bottom_group);
         mLoadingSpinnerContainer = view.findViewById(R.id.loading_view_container);
         mLoadingSpinner = view.findViewById(R.id.progress_spinner_large);
         mPrivacyDisclaimer = view.findViewById(R.id.privacy_disclaimer);
@@ -119,9 +121,11 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupport
         if (mSkipTosDialogPolicyListener.get() == null) {
             mLoadingSpinner.addObserver(this);
             mLoadingSpinner.showLoadingUI();
+            mBottomGroup.setVisibility(View.GONE);
             setTosAndUmaVisible(false);
         } else if (mSkipTosDialogPolicyListener.get()) {
             // Skip the FRE if we know dialog is disabled by policy.
+            mBottomGroup.setVisibility(View.GONE);
             setTosAndUmaVisible(false);
             exitCctFirstRun(/*shiftA11yFocus*/ false);
         }
@@ -159,6 +163,7 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupport
             exitCctFirstRun(hasAccessibilityFocus);
         } else {
             // Else, show the UMA as the loading spinner is GONE.
+            mBottomGroup.setVisibility(View.VISIBLE);
             setTosAndUmaVisible(true);
 
             if (hasAccessibilityFocus) {

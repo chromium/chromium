@@ -14,7 +14,7 @@
         android:id="@+id/scroll_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="@dimen/fre_tos_button_bar_height"
+        android:layout_above="@id/fre_bottom_group"
         android:fillViewport="true">
 
         <!-- The orientation of this view is changed dynamically to give a nicer layout when in
@@ -108,29 +108,19 @@
         </LinearLayout>
     </ScrollView>
 
-    <ImageView
-        android:id="@+id/shadow"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/action_bar_shadow_height"
-        android:layout_gravity="bottom"
-        android:layout_marginBottom="@dimen/fre_tos_button_bar_height"
-        android:background="@drawable/modern_toolbar_shadow"
-        android:scaleY="-1"
-        android:visibility="gone"
-        android:importantForAccessibility="no" />
-
     <FrameLayout
         android:id="@+id/fre_bottom_group"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginVertical="@dimen/fre_button_vertical_margin"
         android:layout_marginHorizontal="@dimen/fre_content_margin">
 
         <org.chromium.ui.widget.ButtonCompat
             android:id="@+id/terms_accept"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginVertical="@dimen/fre_button_vertical_margin"
-            android:layout_gravity="bottom|center_horizontal"
+            android:layout_gravity="center"
             android:paddingStart="@dimen/fre_button_padding"
             android:paddingEnd="@dimen/fre_button_padding"
             android:text="@string/fre_accept_continue"
@@ -141,11 +131,21 @@
         <ProgressBar
             android:id="@+id/progress_spinner"
             style="@style/Widget.AppCompat.ProgressBar"
-            android:layout_marginBottom="@dimen/fre_bottom_loading_spinner_margin"
-            android:layout_gravity="bottom|center_horizontal"
+            android:layout_gravity="center"
             android:layout_width="@dimen/fre_bottom_loading_spinner_size"
             android:layout_height="@dimen/fre_bottom_loading_spinner_size"/>
     </FrameLayout>
+
+    <ImageView
+        android:id="@+id/shadow"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/action_bar_shadow_height"
+        android:layout_gravity="bottom"
+        android:layout_above="@id/fre_bottom_group"
+        android:background="@drawable/modern_toolbar_shadow"
+        android:scaleY="-1"
+        android:visibility="gone"
+        android:importantForAccessibility="no" />
 
     <!-- Empty TextView to preload fonts for following pages. See https://crbug.com/1119990#c20 -->
     <TextView
