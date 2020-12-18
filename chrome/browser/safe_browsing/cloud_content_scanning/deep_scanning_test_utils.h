@@ -148,11 +148,8 @@ class EventReportValidator {
 // Helper functions that set Connector policies for testing.
 void SetAnalysisConnector(PrefService* prefs,
                           enterprise_connectors::AnalysisConnector connector,
-                          const std::string& pref_value,
-                          bool machine_scope = true);
-void SetOnSecurityEventReporting(PrefService* prefs,
-                                 bool enabled,
-                                 bool machine_scope = true);
+                          const std::string& pref_value);
+void SetOnSecurityEventReporting(PrefService* prefs, bool enabled);
 void ClearAnalysisConnector(PrefService* prefs,
                             enterprise_connectors::AnalysisConnector connector);
 
