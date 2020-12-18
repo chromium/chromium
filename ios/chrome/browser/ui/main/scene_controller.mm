@@ -952,6 +952,12 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
     // opportunity to present the iOS system location alert.
     [[OmniboxGeolocationController sharedInstance]
         triggerSystemPromptForNewUser:YES];
+  } else if (location_permissions_field_trial::
+                 IsInRemoveFirstRunPromptGroup()) {
+    // If in RemoveFirstRunPrompt group, the system prompt will be delayed until
+    // the site requests location information.
+    [[OmniboxGeolocationController sharedInstance]
+        systemPromptSkippedForNewUser];
   }
 }
 

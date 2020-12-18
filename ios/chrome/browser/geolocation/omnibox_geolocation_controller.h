@@ -51,6 +51,10 @@ class BrowserState;
 - (void)finishPageLoadForWebState:(web::WebState*)webState
                       loadSuccess:(BOOL)loadSuccess;
 
+// Marks the user as new without triggering the iOS system prompt to authorize
+// the use of location
+- (void)systemPromptSkippedForNewUser;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_GEOLOCATION_OMNIBOX_GEOLOCATION_CONTROLLER_H_

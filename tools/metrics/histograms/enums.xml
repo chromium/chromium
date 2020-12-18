@@ -41860,6 +41860,11 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="3" label="Gaia ID mismatch"/>
 </enum>
 
+<enum name="LocationPermissionsFirstRunModalIOSEnum">
+  <int value="0" label="iOS native system location prompt shown"/>
+  <int value="1" label="No system prompt shown, modal dismissed"/>
+</enum>
+
 <enum name="LocationPermissionsIOSUI">
   <int value="0" label="First Run Location Prompt Not Shown"/>
   <int value="1" label="First Run Location Permissions Modal Shown"/>

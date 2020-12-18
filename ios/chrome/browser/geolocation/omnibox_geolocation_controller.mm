@@ -369,6 +369,10 @@ const char* const kGeolocationAuthorizationActionNewUser =
   }
 }
 
+- (void)systemPromptSkippedForNewUser {
+  _newUser = YES;
+}
+
 #pragma mark - Private
 
 - (BOOL)enabled {
