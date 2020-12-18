@@ -186,7 +186,7 @@ class LockScreenItemStorage : public ExtensionRegistryObserver {
     // When the initial data item list is being loaded, contains the callback
     // waiting for the load to finish. When the initial data item set is loaded,
     // all of the callbacks in this list will be run.
-    std::vector<base::Closure> load_callbacks;
+    std::vector<base::OnceClosure> load_callbacks;
   };
 
   // Maps an extension ID to data items associated with the extension.
@@ -226,7 +226,7 @@ class LockScreenItemStorage : public ExtensionRegistryObserver {
   // extension. If the data is already loaded, |callback| will be run
   // immediately.
   void EnsureCacheForExtensionLoaded(const std::string& extension_id,
-                                     const base::Closure& callback);
+                                     base::OnceClosure callback);
 
   // Callback for loading initial set of known data items for an extension.
   void OnGotExtensionItems(const std::string& extension_id,

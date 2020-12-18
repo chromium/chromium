@@ -236,8 +236,8 @@ void LockScreenItemStorage::CreateItem(const std::string& extension_id,
                                        const CreateCallback& callback) {
   EnsureCacheForExtensionLoaded(
       extension_id,
-      base::Bind(&LockScreenItemStorage::CreateItemImpl,
-                 weak_ptr_factory_.GetWeakPtr(), extension_id, callback));
+      base::BindOnce(&LockScreenItemStorage::CreateItemImpl,
+                     weak_ptr_factory_.GetWeakPtr(), extension_id, callback));
 }
 
 void LockScreenItemStorage::GetAllForExtension(
@@ -245,8 +245,8 @@ void LockScreenItemStorage::GetAllForExtension(
     const DataItemListCallback& callback) {
   EnsureCacheForExtensionLoaded(
       extension_id,
-      base::Bind(&LockScreenItemStorage::GetAllForExtensionImpl,
-                 weak_ptr_factory_.GetWeakPtr(), extension_id, callback));
+      base::BindOnce(&LockScreenItemStorage::GetAllForExtensionImpl,
+                     weak_ptr_factory_.GetWeakPtr(), extension_id, callback));
 }
 
 void LockScreenItemStorage::SetItemContent(
@@ -255,9 +255,9 @@ void LockScreenItemStorage::SetItemContent(
     const std::vector<char>& data,
     const LockScreenItemStorage::WriteCallback& callback) {
   EnsureCacheForExtensionLoaded(
-      extension_id, base::Bind(&LockScreenItemStorage::SetItemContentImpl,
-                               weak_ptr_factory_.GetWeakPtr(), extension_id,
-                               item_id, data, callback));
+      extension_id, base::BindOnce(&LockScreenItemStorage::SetItemContentImpl,
+                                   weak_ptr_factory_.GetWeakPtr(), extension_id,
+                                   item_id, data, callback));
 }
 
 void LockScreenItemStorage::GetItemContent(
@@ -265,18 +265,18 @@ void LockScreenItemStorage::GetItemContent(
     const std::string& item_id,
     const LockScreenItemStorage::ReadCallback& callback) {
   EnsureCacheForExtensionLoaded(
-      extension_id, base::Bind(&LockScreenItemStorage::GetItemContentImpl,
-                               weak_ptr_factory_.GetWeakPtr(), extension_id,
-                               item_id, callback));
+      extension_id, base::BindOnce(&LockScreenItemStorage::GetItemContentImpl,
+                                   weak_ptr_factory_.GetWeakPtr(), extension_id,
+                                   item_id, callback));
 }
 
 void LockScreenItemStorage::DeleteItem(const std::string& extension_id,
                                        const std::string& item_id,
                                        const WriteCallback& callback) {
   EnsureCacheForExtensionLoaded(
-      extension_id, base::Bind(&LockScreenItemStorage::DeleteItemImpl,
-                               weak_ptr_factory_.GetWeakPtr(), extension_id,
-                               item_id, callback));
+      extension_id, base::BindOnce(&LockScreenItemStorage::DeleteItemImpl,
+                                   weak_ptr_factory_.GetWeakPtr(), extension_id,
+                                   item_id, callback));
 }
 
 void LockScreenItemStorage::OnExtensionUninstalled(
@@ -480,14 +480,14 @@ void LockScreenItemStorage::OnItemDeleted(const std::string& extension_id,
 
 void LockScreenItemStorage::EnsureCacheForExtensionLoaded(
     const std::string& extension_id,
-    const base::Closure& callback) {
+    base::OnceClosure callback) {
   CachedExtensionData* data = &data_item_cache_[extension_id];
   if (data->state == CachedExtensionData::State::kLoaded) {
-    callback.Run();
+    std::move(callback).Run();
     return;
   }
 
-  data->load_callbacks.push_back(callback);
+  data->load_callbacks.push_back(std::move(callback));
 
   if (data->state == CachedExtensionData::State::kRemoving ||
       data->state == CachedExtensionData::State::kLoading) {
@@ -679,10 +679,10 @@ void LockScreenItemStorage::RemoveExtensionFromLocalState(
 
 void LockScreenItemStorage::RunExtensionDataLoadCallbacks(
     CachedExtensionData* cache_data) {
-  std::vector<base::Closure> callbacks;
+  std::vector<base::OnceClosure> callbacks;
   callbacks.swap(cache_data->load_callbacks);
   for (auto& callback : callbacks)
-    callback.Run();
+    std::move(callback).Run();
 }
 
 }  // namespace lock_screen_data
