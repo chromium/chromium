@@ -29,6 +29,7 @@ public final class BigBufferUtil {
                     region.bufferHandle.map(0, region.size, SharedBufferHandle.MapFlags.NONE);
             byte[] bytes = new byte[region.size];
             byteBuffer.get(bytes);
+            region.bufferHandle.unmap(byteBuffer);
             return bytes;
         }
     }
@@ -49,6 +50,7 @@ public final class BigBufferUtil {
         ByteBuffer mappedRegion =
                 region.bufferHandle.map(0, bytes.length, SharedBufferHandle.MapFlags.NONE);
         mappedRegion.put(bytes);
+        region.bufferHandle.unmap(mappedRegion);
         buffer.setSharedMemory(region);
         return buffer;
     }
