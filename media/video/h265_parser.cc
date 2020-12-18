@@ -583,10 +583,8 @@ H265Parser::Result H265Parser::ParseSPS(int* sps_id) {
       TRUE_OR_RETURN(sps->sps_max_num_reorder_pics[i] >=
                      sps->sps_max_num_reorder_pics[i - 1]);
     }
-    READ_UE_OR_RETURN(&sps->sps_max_latency_increase_plus1[i]);
-    sps->sps_max_latency_pictures[i] = sps->sps_max_num_reorder_pics[i] +
-                                       sps->sps_max_latency_increase_plus1[i] -
-                                       1;
+    int sps_max_latency_increase_plus1;
+    READ_UE_OR_RETURN(&sps_max_latency_increase_plus1);
   }
   if (!sps_sub_layer_ordering_info_present_flag) {
     // Fill in the default values for the other sublayers.
@@ -597,9 +595,6 @@ H265Parser::Result H265Parser::ParseSPS(int* sps_id) {
           sps->sps_max_num_reorder_pics[sps->sps_max_sub_layers_minus1];
       sps->sps_max_latency_increase_plus1[i] =
           sps->sps_max_latency_increase_plus1[sps->sps_max_sub_layers_minus1];
-      sps->sps_max_latency_pictures[i] =
-          sps->sps_max_num_reorder_pics[i] +
-          sps->sps_max_latency_increase_plus1[i] - 1;
     }
   }
   READ_UE_OR_RETURN(&sps->log2_min_luma_coding_block_size_minus3);
@@ -676,11 +671,8 @@ H265Parser::Result H265Parser::ParseSPS(int* sps_id) {
     IN_RANGE_OR_RETURN(log2_min_ipcm_cb_size_y, std::min(min_cb_log2_size_y, 5),
                        std::min(sps->ctb_log2_size_y, 5));
     READ_UE_OR_RETURN(&sps->log2_diff_max_min_pcm_luma_coding_block_size);
-    int log2_max_ipcm_cb_size_y =
-        log2_min_ipcm_cb_size_y +
-        sps->log2_diff_max_min_pcm_luma_coding_block_size;
-    TRUE_OR_RETURN(log2_max_ipcm_cb_size_y <=
-                   std::min(sps->ctb_log2_size_y, 5));
+    TRUE_OR_RETURN(sps->log2_diff_max_min_pcm_luma_coding_block_size <=
+                   std::min(sps->ctb_log2_size_y, 5) - log2_min_ipcm_cb_size_y);
     READ_BOOL_OR_RETURN(&sps->pcm_loop_filter_disabled_flag);
   }
   READ_UE_OR_RETURN(&sps->num_short_term_ref_pic_sets);

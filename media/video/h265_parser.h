@@ -250,7 +250,6 @@ struct MEDIA_EXPORT H265SPS {
   int bit_depth_y;
   int bit_depth_c;
   int max_pic_order_cnt_lsb;
-  int sps_max_latency_pictures[kMaxSubLayers];
   int ctb_log2_size_y;
   int pic_width_in_ctbs_y;
   int pic_height_in_ctbs_y;
