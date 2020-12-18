@@ -532,7 +532,7 @@ class LockScreenItemStorageTest : public ExtensionsTest {
     OperationResult write_result = OperationResult::kFailed;
     lock_screen_item_storage()->SetItemContent(
         extension()->id(), id, content,
-        base::Bind(&RecordWriteResult, &write_result));
+        base::BindOnce(&RecordWriteResult, &write_result));
     if (!item_operations->HasPendingOperations()) {
       ADD_FAILURE() << "Write not registered";
       return false;
@@ -821,7 +821,7 @@ TEST_F(LockScreenItemStorageTest, SetAndGetContent) {
   OperationResult write_result = OperationResult::kFailed;
   lock_screen_item_storage()->SetItemContent(
       extension()->id(), item->id(), content,
-      base::Bind(&RecordWriteResult, &write_result));
+      base::BindOnce(&RecordWriteResult, &write_result));
 
   item_operations->CompleteNextOperation(OperationQueue::OperationType::kWrite,
                                          OperationResult::kSuccess);
@@ -834,7 +834,7 @@ TEST_F(LockScreenItemStorageTest, SetAndGetContent) {
 
   lock_screen_item_storage()->GetItemContent(
       extension()->id(), item->id(),
-      base::Bind(&RecordReadResult, &read_result, &read_content));
+      base::BindOnce(&RecordReadResult, &read_result, &read_content));
 
   item_operations->CompleteNextOperation(OperationQueue::OperationType::kRead,
                                          OperationResult::kSuccess);
@@ -844,7 +844,7 @@ TEST_F(LockScreenItemStorageTest, SetAndGetContent) {
   OperationResult delete_result = OperationResult::kFailed;
   lock_screen_item_storage()->DeleteItem(
       extension()->id(), item->id(),
-      base::Bind(&RecordWriteResult, &delete_result));
+      base::BindOnce(&RecordWriteResult, &delete_result));
 
   item_operations->CompleteNextOperation(OperationQueue::OperationType::kDelete,
                                          OperationResult::kSuccess);
@@ -865,20 +865,20 @@ TEST_F(LockScreenItemStorageTest, FailToInitializeData) {
   OperationResult write_result = OperationResult::kFailed;
   lock_screen_item_storage()->SetItemContent(
       extension()->id(), item_id, {'x'},
-      base::Bind(&RecordWriteResult, &write_result));
+      base::BindOnce(&RecordWriteResult, &write_result));
   EXPECT_EQ(OperationResult::kNotFound, write_result);
 
   OperationResult read_result = OperationResult::kFailed;
   std::unique_ptr<std::vector<char>> read_content;
   lock_screen_item_storage()->GetItemContent(
       extension()->id(), item_id,
-      base::Bind(&RecordReadResult, &read_result, &read_content));
+      base::BindOnce(&RecordReadResult, &read_result, &read_content));
   EXPECT_EQ(OperationResult::kNotFound, read_result);
 
   OperationResult delete_result = OperationResult::kFailed;
   lock_screen_item_storage()->DeleteItem(
       extension()->id(), "non_existen",
-      base::Bind(&RecordWriteResult, &delete_result));
+      base::BindOnce(&RecordWriteResult, &delete_result));
   EXPECT_EQ(OperationResult::kNotFound, delete_result);
 
   OperationQueue* operations = GetOperations(item_id);
@@ -893,7 +893,7 @@ TEST_F(LockScreenItemStorageTest, FailToInitializeData) {
   write_result = OperationResult::kFailed;
   lock_screen_item_storage()->SetItemContent(
       extension()->id(), new_item->id(), {'y'},
-      base::Bind(&RecordWriteResult, &write_result));
+      base::BindOnce(&RecordWriteResult, &write_result));
 
   OperationQueue* new_item_operations = GetOperations(new_item->id());
   ASSERT_TRUE(new_item_operations);
@@ -922,13 +922,13 @@ TEST_F(LockScreenItemStorageTest, RequestsDuringInitialLoad) {
   OperationResult write_result = OperationResult::kFailed;
   lock_screen_item_storage()->SetItemContent(
       extension()->id(), item_id, {'x'},
-      base::Bind(&RecordWriteResult, &write_result));
+      base::BindOnce(&RecordWriteResult, &write_result));
 
   OperationResult read_result = OperationResult::kFailed;
   std::unique_ptr<std::vector<char>> read_content;
   lock_screen_item_storage()->GetItemContent(
       extension()->id(), item_id,
-      base::Bind(&RecordReadResult, &read_result, &read_content));
+      base::BindOnce(&RecordReadResult, &read_result, &read_content));
 
   std::vector<std::string> items;
   lock_screen_item_storage()->GetAllForExtension(
@@ -938,7 +938,7 @@ TEST_F(LockScreenItemStorageTest, RequestsDuringInitialLoad) {
   OperationResult delete_result = OperationResult::kFailed;
   lock_screen_item_storage()->DeleteItem(
       extension()->id(), item_id,
-      base::Bind(&RecordWriteResult, &delete_result));
+      base::BindOnce(&RecordWriteResult, &delete_result));
 
   OperationQueue* operations = GetOperations(item_id);
   ASSERT_TRUE(operations);
@@ -991,38 +991,38 @@ TEST_F(LockScreenItemStorageTest, HandleNonExistent) {
   OperationResult write_result = OperationResult::kFailed;
   lock_screen_item_storage()->SetItemContent(
       extension()->id(), "non_existent", content,
-      base::Bind(&RecordWriteResult, &write_result));
+      base::BindOnce(&RecordWriteResult, &write_result));
   EXPECT_EQ(OperationResult::kNotFound, write_result);
 
   write_result = OperationResult::kFailed;
   lock_screen_item_storage()->SetItemContent(
       "non_existent", item->id(), content,
-      base::Bind(&RecordWriteResult, &write_result));
+      base::BindOnce(&RecordWriteResult, &write_result));
   EXPECT_EQ(OperationResult::kNotFound, write_result);
 
   OperationResult read_result = OperationResult::kFailed;
   std::unique_ptr<std::vector<char>> read_content;
   lock_screen_item_storage()->GetItemContent(
       extension()->id(), "non_existent",
-      base::Bind(&RecordReadResult, &read_result, &read_content));
+      base::BindOnce(&RecordReadResult, &read_result, &read_content));
   EXPECT_EQ(OperationResult::kNotFound, read_result);
   read_result = OperationResult::kFailed;
 
   lock_screen_item_storage()->GetItemContent(
       "non_existent", item->id(),
-      base::Bind(&RecordReadResult, &read_result, &read_content));
+      base::BindOnce(&RecordReadResult, &read_result, &read_content));
   EXPECT_EQ(OperationResult::kNotFound, read_result);
 
   OperationResult delete_result = OperationResult::kFailed;
   lock_screen_item_storage()->DeleteItem(
       extension()->id(), "non_existen",
-      base::Bind(&RecordWriteResult, &delete_result));
+      base::BindOnce(&RecordWriteResult, &delete_result));
   EXPECT_EQ(OperationResult::kNotFound, delete_result);
 
   delete_result = OperationResult::kFailed;
   lock_screen_item_storage()->DeleteItem(
       "non_existent", item->id(),
-      base::Bind(&RecordWriteResult, &delete_result));
+      base::BindOnce(&RecordWriteResult, &delete_result));
   EXPECT_EQ(OperationResult::kNotFound, delete_result);
 }
 
@@ -1037,7 +1037,7 @@ TEST_F(LockScreenItemStorageTest, HandleFailure) {
   OperationResult write_result = OperationResult::kFailed;
   lock_screen_item_storage()->SetItemContent(
       extension()->id(), item->id(), {'x'},
-      base::Bind(&RecordWriteResult, &write_result));
+      base::BindOnce(&RecordWriteResult, &write_result));
   operations->CompleteNextOperation(OperationQueue::OperationType::kWrite,
                                     OperationResult::kInvalidKey);
   EXPECT_EQ(OperationResult::kInvalidKey, write_result);
@@ -1046,7 +1046,7 @@ TEST_F(LockScreenItemStorageTest, HandleFailure) {
   std::unique_ptr<std::vector<char>> read_content;
   lock_screen_item_storage()->GetItemContent(
       extension()->id(), item->id(),
-      base::Bind(&RecordReadResult, &read_result, &read_content));
+      base::BindOnce(&RecordReadResult, &read_result, &read_content));
   operations->CompleteNextOperation(OperationQueue::OperationType::kRead,
                                     OperationResult::kWrongKey);
   EXPECT_EQ(OperationResult::kWrongKey, read_result);
@@ -1103,7 +1103,7 @@ TEST_F(LockScreenItemStorageTest, DataItemsAvailableEventOnUnlock) {
   OperationResult delete_result;
   lock_screen_item_storage()->DeleteItem(
       extension()->id(), item_id,
-      base::Bind(&RecordWriteResult, &delete_result));
+      base::BindOnce(&RecordWriteResult, &delete_result));
   OperationQueue* operations = GetOperations(item_id);
   ASSERT_TRUE(operations);
   operations->CompleteNextOperation(OperationQueue::OperationType::kDelete,
@@ -1175,7 +1175,7 @@ TEST_F(LockScreenItemStorageTest, DataItemsAvailableEventOnRestart) {
   OperationResult delete_result = OperationResult::kFailed;
   lock_screen_item_storage()->DeleteItem(
       extension()->id(), item_id,
-      base::Bind(&RecordWriteResult, &delete_result));
+      base::BindOnce(&RecordWriteResult, &delete_result));
   OperationQueue* operations = GetOperations(item_id);
   ASSERT_TRUE(operations);
   operations->CompleteNextOperation(OperationQueue::OperationType::kDelete,
@@ -1263,13 +1263,13 @@ TEST_F(LockScreenItemStorageTest, OperationsBlockedOnMigration) {
   OperationResult write_result = OperationResult::kFailed;
   lock_screen_item_storage()->SetItemContent(
       extension()->id(), initial_item_id, {'x'},
-      base::Bind(&RecordWriteResult, &write_result));
+      base::BindOnce(&RecordWriteResult, &write_result));
 
   OperationResult read_result = OperationResult::kFailed;
   std::unique_ptr<std::vector<char>> read_content;
   lock_screen_item_storage()->GetItemContent(
       extension()->id(), migrated_item_id,
-      base::Bind(&RecordReadResult, &read_result, &read_content));
+      base::BindOnce(&RecordReadResult, &read_result, &read_content));
 
   std::vector<std::string> items;
   lock_screen_item_storage()->GetAllForExtension(
@@ -1279,7 +1279,7 @@ TEST_F(LockScreenItemStorageTest, OperationsBlockedOnMigration) {
   OperationResult delete_result = OperationResult::kFailed;
   lock_screen_item_storage()->DeleteItem(
       extension()->id(), initial_item_id,
-      base::Bind(&RecordWriteResult, &delete_result));
+      base::BindOnce(&RecordWriteResult, &delete_result));
 
   OperationQueue* initial_item_operations = GetOperations(initial_item_id);
   ASSERT_TRUE(initial_item_operations);

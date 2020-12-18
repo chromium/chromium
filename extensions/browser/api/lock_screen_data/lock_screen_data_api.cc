@@ -124,7 +124,7 @@ ExtensionFunction::ResponseAction LockScreenDataGetContentFunction::Run() {
 
   storage->GetItemContent(
       extension_id(), params->id,
-      base::Bind(&LockScreenDataGetContentFunction::OnDone, this));
+      base::BindOnce(&LockScreenDataGetContentFunction::OnDone, this));
   return RespondLater();
 }
 
@@ -160,7 +160,7 @@ ExtensionFunction::ResponseAction LockScreenDataSetContentFunction::Run() {
   storage->SetItemContent(
       extension_id(), params->id,
       std::vector<char>(params->data.begin(), params->data.end()),
-      base::Bind(&LockScreenDataSetContentFunction::OnDone, this));
+      base::BindOnce(&LockScreenDataSetContentFunction::OnDone, this));
   return RespondLater();
 }
 
@@ -191,8 +191,9 @@ ExtensionFunction::ResponseAction LockScreenDataDeleteFunction::Run() {
   if (!storage)
     return RespondNow(Error("Not available"));
 
-  storage->DeleteItem(extension_id(), params->id,
-                      base::Bind(&LockScreenDataDeleteFunction::OnDone, this));
+  storage->DeleteItem(
+      extension_id(), params->id,
+      base::BindOnce(&LockScreenDataDeleteFunction::OnDone, this));
   return RespondLater();
 }
 
