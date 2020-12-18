@@ -244,6 +244,9 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   // Callback entrypoint when hosted Layers are scrolled by the Compositor.
   void OnLayerScrolled(const gfx::ScrollOffset&, const cc::ElementId&);
 
+  // Updates accessory elements when |contents_| is scrolled.
+  void OnScrolled(const gfx::ScrollOffset& offset);
+
   // Horizontally scrolls the header (if any) to match the contents.
   void ScrollHeader();
 

@@ -994,18 +994,10 @@ gfx::ScrollOffset ScrollView::CurrentOffset() const {
 void ScrollView::ScrollToOffset(const gfx::ScrollOffset& offset) {
   if (ScrollsWithLayers()) {
     contents_->layer()->SetScrollOffset(offset);
-
-    // TODO(tapted): Remove this call to OnLayerScrolled(). It's unnecessary,
-    // but will only be invoked (asynchronously) when a Compositor is present
-    // and commits a frame, which isn't true in some tests.
-    // See http://crbug.com/637521.
-    OnLayerScrolled(offset, contents_->layer()->element_id());
   } else {
     contents_->SetPosition(gfx::Point(-offset.x(), -offset.y()));
-    ScrollHeader();
   }
-  UpdateOverflowIndicatorVisibility(offset);
-  UpdateScrollBarPositions();
+  OnScrolled(offset);
 }
 
 bool ScrollView::ScrollsWithLayers() const {
@@ -1051,8 +1043,13 @@ void ScrollView::EnableViewportLayer() {
   UpdateBackground();
 }
 
-void ScrollView::OnLayerScrolled(const gfx::ScrollOffset&,
+void ScrollView::OnLayerScrolled(const gfx::ScrollOffset& current_offset,
                                  const cc::ElementId&) {
+  OnScrolled(current_offset);
+}
+
+void ScrollView::OnScrolled(const gfx::ScrollOffset& offset) {
+  UpdateOverflowIndicatorVisibility(offset);
   UpdateScrollBarPositions();
   ScrollHeader();
 }

@@ -82,6 +82,7 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip) {
     tab_strip_scroll_container->SetTreatAllScrollEventsAsHorizontal(true);
     tab_strip_container_ = tab_strip_scroll_container;
     tab_strip_scroll_container->SetContents(std::move(tab_strip));
+    tab_strip_scroll_container->SetDrawOverflowIndicator(true);
     // This base::Unretained is safe because the callback is called by the
     // layout manager, which is cleaned up before view children like
     // |tab_strip_scroll_container| (which owns |tab_strip_|).
