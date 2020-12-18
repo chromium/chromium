@@ -52,7 +52,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
                              public pp::Instance,
                              public pp::Find_Private,
                              public pp::Printing_Dev,
-                             public PaintManager::Client,
                              public PreviewModeClient::Client {
  public:
   explicit OutOfProcessInstance(PP_Instance instance);
@@ -71,13 +70,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   bool StartFind(const std::string& text, bool case_sensitive) override;
   void SelectFindResult(bool forward) override;
   void StopFind() override;
-
-  // pp::PaintManager::Client:
-  std::unique_ptr<Graphics> CreatePaintGraphics(const gfx::Size& size) override;
-  bool BindPaintGraphics(Graphics& graphics) override;
-  void OnPaint(const std::vector<gfx::Rect>& paint_rects,
-               std::vector<PaintReadyRect>* ready,
-               std::vector<gfx::Rect>* pending) override;
 
   // pp::Printing_Dev:
   uint32_t QuerySupportedPrintOutputFormats() override;
@@ -166,6 +158,11 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   void SetSelectedText(const std::string& selected_text) override;
   void SetLinkUnderCursor(const std::string& link_under_cursor) override;
   bool IsValidLink(const std::string& url) override;
+  std::unique_ptr<Graphics> CreatePaintGraphics(const gfx::Size& size) override;
+  bool BindPaintGraphics(Graphics& graphics) override;
+  void OnPaint(const std::vector<gfx::Rect>& paint_rects,
+               std::vector<PaintReadyRect>* ready,
+               std::vector<gfx::Rect>* pending) override;
 
   // PreviewModeClient::Client:
   void PreviewDocumentLoadComplete() override;

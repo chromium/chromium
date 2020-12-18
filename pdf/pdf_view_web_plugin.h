@@ -21,8 +21,7 @@ namespace chrome_pdf {
 // Skeleton for a `blink::WebPlugin` to replace `OutOfProcessInstance`.
 class PdfViewWebPlugin final : public PdfViewPluginBase,
                                public blink::WebPlugin,
-                               public BlinkUrlLoader::Client,
-                               public PaintManager::Client {
+                               public BlinkUrlLoader::Client {
  public:
   explicit PdfViewWebPlugin(const blink::WebPluginParams& params);
   PdfViewWebPlugin(const PdfViewWebPlugin& other) = delete;
@@ -105,6 +104,11 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   void SetSelectedText(const std::string& selected_text) override;
   void SetLinkUnderCursor(const std::string& link_under_cursor) override;
   bool IsValidLink(const std::string& url) override;
+  std::unique_ptr<Graphics> CreatePaintGraphics(const gfx::Size& size) override;
+  bool BindPaintGraphics(Graphics& graphics) override;
+  void OnPaint(const std::vector<gfx::Rect>& paint_rects,
+               std::vector<PaintReadyRect>* ready,
+               std::vector<gfx::Rect>* pending) override;
 
   // BlinkUrlLoader::Client:
   bool IsValid() const override;
@@ -114,13 +118,6 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
                              const blink::WebURL& referrer_url) override;
   std::unique_ptr<blink::WebAssociatedURLLoader> CreateAssociatedURLLoader(
       const blink::WebAssociatedURLLoaderOptions& options) override;
-
-  // PaintManager::Client:
-  std::unique_ptr<Graphics> CreatePaintGraphics(const gfx::Size& size) override;
-  bool BindPaintGraphics(Graphics& graphics) override;
-  void OnPaint(const std::vector<gfx::Rect>& paint_rects,
-               std::vector<PaintReadyRect>* ready,
-               std::vector<gfx::Rect>* pending) override;
 
  protected:
   // PdfViewPluginBase:

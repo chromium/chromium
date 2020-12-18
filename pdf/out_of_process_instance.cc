@@ -1081,94 +1081,6 @@ void OutOfProcessInstance::StopFind() {
   SetTickmarks(tickmarks_);
 }
 
-std::unique_ptr<Graphics> OutOfProcessInstance::CreatePaintGraphics(
-    const gfx::Size& size) {
-  auto graphics = std::make_unique<PepperGraphics>(this, size);
-  DCHECK(!graphics->pepper_graphics().is_null());
-  return graphics;
-}
-
-bool OutOfProcessInstance::BindPaintGraphics(Graphics& graphics) {
-  return BindGraphics(static_cast<PepperGraphics&>(graphics).pepper_graphics());
-}
-
-void OutOfProcessInstance::OnPaint(const std::vector<gfx::Rect>& paint_rects,
-                                   std::vector<PaintReadyRect>* ready,
-                                   std::vector<gfx::Rect>* pending) {
-  base::AutoReset<bool> auto_reset_in_paint(&in_paint_, true);
-  if (image_data_.is_null()) {
-    DCHECK(plugin_size_.IsEmpty());
-    return;
-  }
-  if (first_paint_) {
-    first_paint_ = false;
-    pp::Rect rect = pp::Rect(pp::Point(), image_data_.size());
-    FillRect(rect, background_color_);
-    ready->push_back(PaintReadyRect(rect, image_data_, /*flush_now=*/true));
-  }
-
-  if (!received_viewport_message_ || !needs_reraster_)
-    return;
-
-  engine()->PrePaint();
-
-  for (const auto& paint_rect : paint_rects) {
-    // Intersect with plugin area since there could be pending invalidates from
-    // when the plugin area was larger.
-    pp::Rect rect = PPRectFromRect(paint_rect);
-    rect = rect.Intersect(pp::Rect(pp::Point(), plugin_size_));
-    if (rect.IsEmpty())
-      continue;
-
-    pp::Rect pdf_rect = available_area_.Intersect(rect);
-    if (!pdf_rect.IsEmpty()) {
-      pdf_rect.Offset(available_area_.x() * -1, 0);
-
-      std::vector<gfx::Rect> pdf_ready;
-      std::vector<gfx::Rect> pdf_pending;
-      engine()->Paint(RectFromPPRect(pdf_rect), skia_image_data_, pdf_ready,
-                      pdf_pending);
-      for (auto& ready_rect : pdf_ready) {
-        ready_rect.Offset(VectorFromPPPoint(available_area_.point()));
-        ready->push_back(
-            PaintReadyRect(PPRectFromRect(ready_rect), image_data_));
-      }
-      for (auto& pending_rect : pdf_pending) {
-        pending_rect.Offset(VectorFromPPPoint(available_area_.point()));
-        pending->push_back(pending_rect);
-      }
-    }
-
-    // Ensure the region above the first page (if any) is filled;
-    int32_t first_page_ypos = engine()->GetNumberOfPages() == 0
-                                  ? 0
-                                  : engine()->GetPageScreenRect(0).y();
-    if (rect.y() < first_page_ypos) {
-      pp::Rect region = rect.Intersect(pp::Rect(
-          pp::Point(), pp::Size(plugin_size_.width(), first_page_ypos)));
-      ready->push_back(PaintReadyRect(region, image_data_));
-      FillRect(region, background_color_);
-    }
-
-    for (const auto& background_part : background_parts_) {
-      pp::Rect intersection = background_part.location.Intersect(rect);
-      if (!intersection.IsEmpty()) {
-        FillRect(intersection, background_part.color);
-        ready->push_back(PaintReadyRect(intersection, image_data_));
-      }
-    }
-  }
-
-  engine()->PostPaint();
-
-  if (!deferred_invalidates_.empty()) {
-    pp::Module::Get()->core()->CallOnMainThread(
-        0, PPCompletionCallbackFromResultCallback(
-               base::BindOnce(&OutOfProcessInstance::InvalidateAfterPaintDone,
-                              weak_factory_.GetWeakPtr())));
-  }
-}
-
 void OutOfProcessInstance::DidOpen(std::unique_ptr<UrlLoader> loader,
                                    int32_t result) {
   if (result == PP_OK) {
@@ -2286,6 +2198,94 @@ void OutOfProcessInstance::SetLinkUnderCursor(
 
 bool OutOfProcessInstance::IsValidLink(const std::string& url) {
   return pp::Var(url).is_string();
+}
+
+std::unique_ptr<Graphics> OutOfProcessInstance::CreatePaintGraphics(
+    const gfx::Size& size) {
+  auto graphics = std::make_unique<PepperGraphics>(this, size);
+  DCHECK(!graphics->pepper_graphics().is_null());
+  return graphics;
+}
+
+bool OutOfProcessInstance::BindPaintGraphics(Graphics& graphics) {
+  return BindGraphics(static_cast<PepperGraphics&>(graphics).pepper_graphics());
+}
+
+void OutOfProcessInstance::OnPaint(const std::vector<gfx::Rect>& paint_rects,
+                                   std::vector<PaintReadyRect>* ready,
+                                   std::vector<gfx::Rect>* pending) {
+  base::AutoReset<bool> auto_reset_in_paint(&in_paint_, true);
+  if (image_data_.is_null()) {
+    DCHECK(plugin_size_.IsEmpty());
+    return;
+  }
+  if (first_paint_) {
+    first_paint_ = false;
+    pp::Rect rect = pp::Rect(pp::Point(), image_data_.size());
+    FillRect(rect, background_color_);
+    ready->push_back(PaintReadyRect(rect, image_data_, /*flush_now=*/true));
+  }
+
+  if (!received_viewport_message_ || !needs_reraster_)
+    return;
+
+  engine()->PrePaint();
+
+  for (const auto& paint_rect : paint_rects) {
+    // Intersect with plugin area since there could be pending invalidates from
+    // when the plugin area was larger.
+    pp::Rect rect = PPRectFromRect(paint_rect);
+    rect = rect.Intersect(pp::Rect(pp::Point(), plugin_size_));
+    if (rect.IsEmpty())
+      continue;
+
+    pp::Rect pdf_rect = available_area_.Intersect(rect);
+    if (!pdf_rect.IsEmpty()) {
+      pdf_rect.Offset(available_area_.x() * -1, 0);
+
+      std::vector<gfx::Rect> pdf_ready;
+      std::vector<gfx::Rect> pdf_pending;
+      engine()->Paint(RectFromPPRect(pdf_rect), skia_image_data_, pdf_ready,
+                      pdf_pending);
+      for (auto& ready_rect : pdf_ready) {
+        ready_rect.Offset(VectorFromPPPoint(available_area_.point()));
+        ready->push_back(
+            PaintReadyRect(PPRectFromRect(ready_rect), image_data_));
+      }
+      for (auto& pending_rect : pdf_pending) {
+        pending_rect.Offset(VectorFromPPPoint(available_area_.point()));
+        pending->push_back(pending_rect);
+      }
+    }
+
+    // Ensure the region above the first page (if any) is filled;
+    int32_t first_page_ypos = engine()->GetNumberOfPages() == 0
+                                  ? 0
+                                  : engine()->GetPageScreenRect(0).y();
+    if (rect.y() < first_page_ypos) {
+      pp::Rect region = rect.Intersect(pp::Rect(
+          pp::Point(), pp::Size(plugin_size_.width(), first_page_ypos)));
+      ready->push_back(PaintReadyRect(region, image_data_));
+      FillRect(region, background_color_);
+    }
+
+    for (const auto& background_part : background_parts_) {
+      pp::Rect intersection = background_part.location.Intersect(rect);
+      if (!intersection.IsEmpty()) {
+        FillRect(intersection, background_part.color);
+        ready->push_back(PaintReadyRect(intersection, image_data_));
+      }
+    }
+  }
+
+  engine()->PostPaint();
+
+  if (!deferred_invalidates_.empty()) {
+    pp::Module::Get()->core()->CallOnMainThread(
+        0, PPCompletionCallbackFromResultCallback(
+               base::BindOnce(&OutOfProcessInstance::InvalidateAfterPaintDone,
+                              weak_factory_.GetWeakPtr())));
+  }
 }
 
 void OutOfProcessInstance::ProcessPreviewPageInfo(const std::string& url,

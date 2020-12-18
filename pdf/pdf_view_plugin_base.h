@@ -13,6 +13,7 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "pdf/paint_manager.h"
 #include "pdf/pdfium/pdfium_form_filler.h"
 
 namespace chrome_pdf {
@@ -22,7 +23,8 @@ class UrlLoader;
 
 // Common base to share code between the two plugin implementations,
 // `OutOfProcessInstance` (Pepper) and `PdfViewWebPlugin` (Blink).
-class PdfViewPluginBase : public PDFEngine::Client {
+class PdfViewPluginBase : public PDFEngine::Client,
+                          public PaintManager::Client {
  public:
   PdfViewPluginBase(const PdfViewPluginBase& other) = delete;
   PdfViewPluginBase& operator=(const PdfViewPluginBase& other) = delete;

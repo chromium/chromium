@@ -309,6 +309,26 @@ bool PdfViewWebPlugin::IsValidLink(const std::string& url) {
   return base::Value(url).is_string();
 }
 
+std::unique_ptr<Graphics> PdfViewWebPlugin::CreatePaintGraphics(
+    const gfx::Size& size) {
+  auto graphics = SkiaGraphics::Create(size);
+  DCHECK(graphics);
+  return graphics;
+}
+
+bool PdfViewWebPlugin::BindPaintGraphics(Graphics& graphics) {
+  NOTIMPLEMENTED_LOG_ONCE();
+  return false;
+}
+
+// TODO(https://crbug.com/1099020): To be implemented as a Pepper-free version
+// of `OutOfProcessInstance::OnPaint()`
+void PdfViewWebPlugin::OnPaint(const std::vector<gfx::Rect>& paint_rects,
+                               std::vector<PaintReadyRect>* ready,
+                               std::vector<gfx::Rect>* pending) {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
 bool PdfViewWebPlugin::IsValid() const {
   return container_ && container_->GetDocument().GetFrame();
 }
@@ -338,26 +358,6 @@ PdfViewWebPlugin::CreateAssociatedURLLoader(
   DCHECK(IsValid());
   return container_->GetDocument().GetFrame()->CreateAssociatedURLLoader(
       options);
-}
-
-std::unique_ptr<Graphics> PdfViewWebPlugin::CreatePaintGraphics(
-    const gfx::Size& size) {
-  auto graphics = SkiaGraphics::Create(size);
-  DCHECK(graphics);
-  return graphics;
-}
-
-bool PdfViewWebPlugin::BindPaintGraphics(Graphics& graphics) {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return false;
-}
-
-// TODO(https://crbug.com/1099020): To be implemented as a Pepper-free version
-// of `OutOfProcessInstance::OnPaint()`
-void PdfViewWebPlugin::OnPaint(const std::vector<gfx::Rect>& paint_rects,
-                               std::vector<PaintReadyRect>* ready,
-                               std::vector<gfx::Rect>* pending) {
-  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 base::WeakPtr<PdfViewPluginBase> PdfViewWebPlugin::GetWeakPtr() {
