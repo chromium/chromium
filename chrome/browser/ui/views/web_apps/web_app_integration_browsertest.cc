@@ -37,37 +37,27 @@
 namespace {
 
 std::vector<std::string> test_cases = {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     "navigate_installable,assert_install_icon_shown,"
     "assert_launch_icon_not_shown",
     "navigate_not_installable,assert_install_icon_not_shown",
     "navigate_installable,assert_installable,install_omnibox_or_menu,"
     "navigate_browser_in_scope,assert_launch_icon_shown,"
     "assert_install_icon_not_shown",
+    "navigate_installable, install_create_shortcut_tabbed, "
+    "set_open_in_window_internal, launch_internal, assert_window_created",
+    "navigate_installable_site_a, assert_install_icon_shown, "
+    "install_omnibox_or_menu, assert_window_created, launch_internal_site_a, "
+    "close_pwa, assert_no_crash",
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     "navigate_installable,install_omnibox_or_menu,launch_internal,"
     "uninstall_internal,navigate_browser_in_scope,"
     "assert_install_icon_shown,assert_launch_icon_not_shown",
-    "navigate_installable, install_create_shortcut_tabbed, "
-    "set_open_in_window_internal, launch_internal, assert_window_created",
-    "navigate_installable_site_a, assert_install_icon_shown, "
-    "install_omnibox_or_menu, assert_window_created, launch_internal_site_a, "
-    "close_pwa, assert_no_crash"};
 #else
-    "navigate_installable,assert_install_icon_shown,"
-    "assert_launch_icon_not_shown",
-    "navigate_not_installable,assert_install_icon_not_shown",
-    "navigate_installable,assert_installable,install_omnibox_or_menu,"
-    "navigate_browser_in_scope,assert_launch_icon_shown,"
-    "assert_install_icon_not_shown",
     "navigate_installable,install_omnibox_or_menu,launch_internal,"
     "uninstall_from_menu,navigate_browser_in_scope,"
     "assert_install_icon_shown,assert_launch_icon_not_shown",
-    "navigate_installable, install_create_shortcut_tabbed, "
-    "set_open_in_window_internal, launch_internal, assert_window_created",
-    "navigate_installable_site_a, assert_install_icon_shown, "
-    "install_omnibox_or_menu, assert_window_created, launch_internal_site_a, "
-    "close_pwa, assert_no_crash"};
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+};
 
 }  // anonymous namespace
 
