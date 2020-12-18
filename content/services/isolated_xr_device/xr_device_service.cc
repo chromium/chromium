@@ -30,11 +30,10 @@ XrDeviceService::~XrDeviceService() = default;
 void XrDeviceService::BindRuntimeProvider(
     mojo::PendingReceiver<mojom::IsolatedXRRuntimeProvider> receiver,
     mojo::PendingRemote<mojom::XRDeviceServiceHost> device_service_host) {
-  mojo::MakeSelfOwnedReceiver(std::make_unique<IsolatedXRRuntimeProvider>(
-                                  mojo::Remote<mojom::XRDeviceServiceHost>(
-                                      std::move(device_service_host)),
-                                  io_task_runner_),
-                              std::move(receiver));
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<IsolatedXRRuntimeProvider>(
+          std::move(device_service_host), io_task_runner_),
+      std::move(receiver));
 }
 
 void XrDeviceService::BindTestHook(

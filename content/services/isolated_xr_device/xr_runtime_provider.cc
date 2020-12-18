@@ -207,7 +207,7 @@ void IsolatedXRRuntimeProvider::CreateContextProviderAsync(
 #endif  // BUILDFLAG(ENABLE_OPENXR)
 
 IsolatedXRRuntimeProvider::IsolatedXRRuntimeProvider(
-    mojo::Remote<device::mojom::XRDeviceServiceHost> device_service_host,
+    mojo::PendingRemote<device::mojom::XRDeviceServiceHost> device_service_host,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
     : device_service_host_(std::move(device_service_host)),
       io_task_runner_(std::move(io_task_runner)) {}

@@ -31,7 +31,8 @@ class IsolatedXRRuntimeProvider
     : public device::mojom::IsolatedXRRuntimeProvider {
  public:
   explicit IsolatedXRRuntimeProvider(
-      mojo::Remote<device::mojom::XRDeviceServiceHost> device_service_host,
+      mojo::PendingRemote<device::mojom::XRDeviceServiceHost>
+          device_service_host,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
   ~IsolatedXRRuntimeProvider() final;
 
