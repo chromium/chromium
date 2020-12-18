@@ -37,7 +37,7 @@
 #include "net/base/load_flags.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/resource_request.h"
-#include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "url/gurl.h"
 
 namespace android_webview {
@@ -511,8 +511,7 @@ void InterceptedRequest::OnReceiveResponse(
                        std::move(error_info)));
   }
 
-  if (request_.resource_type ==
-      static_cast<int>(blink::mojom::ResourceType::kMainFrame)) {
+  if (request_.destination == network::mojom::RequestDestination::kDocument) {
     // Check for x-auto-login-header
     HeaderData header_data;
     std::string header_string;

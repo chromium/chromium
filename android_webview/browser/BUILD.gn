@@ -246,6 +246,7 @@ source_set("browser") {
     "//content/public/browser",
     "//media/mojo:buildflags",
     "//printing",
+    "//services/network/public/mojom",
     "//services/preferences/tracked",
     "//services/proxy_resolver:lib",
     "//third_party/blink/public/common",

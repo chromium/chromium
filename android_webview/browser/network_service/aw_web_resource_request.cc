@@ -9,7 +9,7 @@
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/resource_request.h"
-#include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "ui/base/page_transition_types.h"
 
 using base::android::ConvertJavaStringToUTF16;
@@ -38,8 +38,8 @@ AwWebResourceRequest::AwWebResourceRequest(
     const network::ResourceRequest& request)
     : url(request.url.spec()),
       method(request.method),
-      is_main_frame(request.resource_type ==
-                    static_cast<int>(blink::mojom::ResourceType::kMainFrame)),
+      is_main_frame(request.destination ==
+                    network::mojom::RequestDestination::kDocument),
       has_user_gesture(request.has_user_gesture),
       is_renderer_initiated(ui::PageTransitionIsWebTriggerable(
           static_cast<ui::PageTransition>(request.transition_type))) {
