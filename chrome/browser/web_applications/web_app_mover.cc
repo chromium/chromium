@@ -4,13 +4,22 @@
 
 #include "chrome/browser/web_applications/web_app_mover.h"
 
+#include "base/barrier_closure.h"
+#include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/web_applications/components/app_registrar.h"
+#include "chrome/browser/web_applications/components/app_registry_controller.h"
+#include "chrome/browser/web_applications/components/install_finalizer.h"
+#include "chrome/browser/web_applications/components/install_manager.h"
 #include "chrome/common/chrome_features.h"
+#include "components/webapps/installable/installable_metrics.h"
+#include "content/public/browser/web_contents.h"
 
 namespace {
 
@@ -26,32 +35,36 @@ base::OnceClosure& GetCompletedCallbackForTesting() {
 
 namespace web_app {
 
-std::unique_ptr<WebAppMover> WebAppMover::CreateIfNeeded(Profile* profile) {
+std::unique_ptr<WebAppMover> WebAppMover::CreateIfNeeded(
+    Profile* profile,
+    AppRegistrar* registrar,
+    InstallFinalizer* install_finalizer,
+    InstallManager* install_manager,
+    AppRegistryController* controller) {
   DCHECK(base::FeatureList::IsEnabled(features::kDesktopPWAsWithoutExtensions));
-
   if (g_disabled_for_testing)
     return nullptr;
 
   if (!base::FeatureList::IsEnabled(features::kMoveWebApp))
     return nullptr;
 
-  std::string uninstall_url_prefix_str =
+  std::string uninstall_url_prefix =
       features::kMoveWebAppUninstallStartUrlPrefix.Get();
   std::string install_url_str = features::kMoveWebAppInstallStartUrl.Get();
-  if (uninstall_url_prefix_str.empty() || install_url_str.empty())
+  if (uninstall_url_prefix.empty() || install_url_str.empty())
     return nullptr;
 
-  GURL uninstall_url_prefix = GURL(uninstall_url_prefix_str);
   GURL install_url = GURL(install_url_str);
   // The URLs have to be valid, and the installation URL cannot be contained in
   // the uninstall prefix.
-  if (!uninstall_url_prefix.is_valid() || !install_url.is_valid() ||
-      base::StartsWith(install_url.spec(), uninstall_url_prefix.spec())) {
+  if (!install_url.is_valid() ||
+      base::StartsWith(install_url.spec(), uninstall_url_prefix)) {
     return nullptr;
   }
 
-  return std::make_unique<WebAppMover>(profile, uninstall_url_prefix,
-                                       install_url);
+  return std::make_unique<WebAppMover>(profile, registrar, install_finalizer,
+                                       install_manager, controller,
+                                       uninstall_url_prefix, install_url);
 }
 
 void WebAppMover::DisableForTesting() {
@@ -67,9 +80,17 @@ void WebAppMover::SetCompletedCallbackForTesting(base::OnceClosure callback) {
 }
 
 WebAppMover::WebAppMover(Profile* profile,
-                         const GURL& uninstall_url_prefix,
+                         AppRegistrar* registrar,
+                         InstallFinalizer* install_finalizer,
+                         InstallManager* install_manager,
+                         AppRegistryController* controller,
+                         const std::string& uninstall_url_prefix,
                          const GURL& install_url)
     : profile_(profile),
+      registrar_(registrar),
+      install_finalizer_(install_finalizer),
+      install_manager_(install_manager),
+      controller_(controller),
       uninstall_url_prefix_(uninstall_url_prefix),
       install_url_(install_url) {}
 
@@ -122,10 +143,124 @@ void WebAppMover::WaitForFirstSyncCycle(base::OnceClosure callback) {
 }
 
 void WebAppMover::OnFirstSyncCycleComplete() {
-  // TODO(dmurph): Implement migration here.
+  DCHECK(apps_to_uninstall_.empty());
 
-  if (GetCompletedCallbackForTesting())
-    std::move(GetCompletedCallbackForTesting()).Run();
+  base::ScopedClosureRunner complete_callback_runner;
+  if (GetCompletedCallbackForTesting()) {
+    complete_callback_runner.ReplaceClosure(
+        std::move(GetCompletedCallbackForTesting()));
+  }
+
+  for (const AppId& id : registrar_->GetAppIds()) {
+    // Stop if the destination app is already installed.
+    const GURL& start_url = registrar_->GetAppStartUrl(id);
+    if (start_url == install_url_)
+      return;
+    // To avoid edge cases only consider installed apps to uninstall.
+    if (!registrar_->IsInstalled(id))
+      continue;
+    if (base::StartsWith(start_url.spec(), uninstall_url_prefix_)) {
+      apps_to_uninstall_.push_back(id);
+      new_app_open_as_window_ =
+          registrar_->GetAppUserDisplayMode(id) == DisplayMode::kStandalone;
+    }
+  }
+
+  if (apps_to_uninstall_.empty())
+    return;
+
+  install_manager_->LoadWebAppAndCheckManifest(
+      install_url_, webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
+      base::BindOnce(&WebAppMover::OnInstallManifestFetched,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(complete_callback_runner)));
+}
+
+void WebAppMover::OnInstallManifestFetched(
+    base::ScopedClosureRunner complete_callback_runner,
+    std::unique_ptr<content::WebContents> web_contents,
+    InstallManager::InstallableCheckResult result,
+    base::Optional<AppId> app_id) {
+  switch (result) {
+    case InstallManager::InstallableCheckResult::kAlreadyInstalled:
+      LOG(WARNING) << "App already installed.";
+      return;
+    case InstallManager::InstallableCheckResult::kNotInstallable:
+      // If the app is not installable, then abort.
+      return;
+    case InstallManager::InstallableCheckResult::kInstallable:
+      break;
+  }
+  DCHECK(!apps_to_uninstall_.empty());
+
+  scoped_refptr<base::RefCountedData<bool>> success_accumulator =
+      base::MakeRefCounted<base::RefCountedData<bool>>(true);
+
+  auto barrier = base::BarrierClosure(
+      apps_to_uninstall_.size(),
+      base::BindOnce(&WebAppMover::OnAllUninstalled,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(complete_callback_runner),
+                     std::move(web_contents), success_accumulator));
+  for (const AppId& id : apps_to_uninstall_) {
+    install_finalizer_->UninstallExternalAppByUser(
+        id,
+        base::BindOnce(
+            [](base::OnceClosure done,
+               scoped_refptr<base::RefCountedData<bool>> success_accumulator,
+               bool success) {
+              if (!success) {
+                LOG(WARNING)
+                    << "Uninstallation unsuccesful in app move operation.";
+                success_accumulator->data = false;
+              }
+              std::move(done).Run();
+            },
+            barrier, success_accumulator));
+  }
+}
+
+void WebAppMover::OnAllUninstalled(
+    base::ScopedClosureRunner complete_callback_runner,
+    std::unique_ptr<content::WebContents> web_contents_for_install,
+    scoped_refptr<base::RefCountedData<bool>> success_accumulator) {
+  if (!success_accumulator->data)
+    return;
+  auto* web_contents = web_contents_for_install.get();
+  install_manager_->InstallWebAppFromManifest(
+      web_contents, true, webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
+      base::BindOnce([](content::WebContents* initiator_web_contents,
+                        std::unique_ptr<WebApplicationInfo> web_app_info,
+                        ForInstallableSite for_installable_site,
+                        InstallManager::WebAppInstallationAcceptanceCallback
+                            acceptance_callback) {
+        // Note: |open_as_window| is set to false here (which it should be by
+        // default), because if that is true the WebAppInstallTask will try to
+        // reparent the the web contents into an app browser. This is
+        // impossible, as this web contents is internal & not visible to the
+        // user (and we will segfault). Instead, set the user display mode after
+        // installation is complete.
+        DCHECK(web_app_info);
+        web_app_info->open_as_window = false;
+        std::move(acceptance_callback).Run(true, std::move(web_app_info));
+      }),
+      base::BindOnce(&WebAppMover::OnInstallCompleted,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(complete_callback_runner),
+                     std::move(web_contents_for_install)));
+}
+
+void WebAppMover::OnInstallCompleted(
+    base::ScopedClosureRunner complete_callback_runner,
+    std::unique_ptr<content::WebContents> web_contents_for_install,
+    const AppId& id,
+    InstallResultCode code) {
+  if (code == InstallResultCode::kSuccessNewInstall) {
+    if (new_app_open_as_window_)
+      controller_->SetAppUserDisplayMode(id, DisplayMode::kStandalone, false);
+  } else {
+    LOG(WARNING) << "Installation in app move operation failed: " << code;
+  }
 }
 
 }  // namespace web_app

@@ -238,7 +238,9 @@ void WebAppProvider::CreateWebAppsSubsystems(Profile* profile) {
   migration_manager_ = std::make_unique<WebAppMigrationManager>(
       profile, database_factory_.get(), icon_manager.get(),
       os_integration_manager_.get());
-  web_app_mover_ = WebAppMover::CreateIfNeeded(profile);
+  web_app_mover_ = WebAppMover::CreateIfNeeded(
+      profile, registrar.get(), install_finalizer_.get(),
+      install_manager_.get(), sync_bridge.get());
 
   // Upcast to unified subsystem types:
   registrar_ = std::move(registrar);

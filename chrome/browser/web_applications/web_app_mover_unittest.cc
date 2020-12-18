@@ -33,7 +33,8 @@ class WebAppMoverTestWithParams : public ::testing::Test,
 using WebAppMoverTestWithInvalidParams = WebAppMoverTestWithParams;
 
 TEST_P(WebAppMoverTestWithInvalidParams, VerifyInvalidParams) {
-  std::unique_ptr<WebAppMover> mover = WebAppMover::CreateIfNeeded(nullptr);
+  std::unique_ptr<WebAppMover> mover =
+      WebAppMover::CreateIfNeeded(nullptr, nullptr, nullptr, nullptr, nullptr);
   EXPECT_FALSE(mover);
 }
 
@@ -52,7 +53,8 @@ INSTANTIATE_TEST_SUITE_P(
 using WebAppMoverTestWithValidParams = WebAppMoverTestWithParams;
 
 TEST_P(WebAppMoverTestWithValidParams, VerifyValidParams) {
-  std::unique_ptr<WebAppMover> mover = WebAppMover::CreateIfNeeded(nullptr);
+  std::unique_ptr<WebAppMover> mover =
+      WebAppMover::CreateIfNeeded(nullptr, nullptr, nullptr, nullptr, nullptr);
   EXPECT_TRUE(mover);
 }
 

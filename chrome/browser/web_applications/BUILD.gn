@@ -265,6 +265,7 @@ source_set("web_applications_browser_tests") {
     "web_app_audio_focus_browsertest.cc",
     "web_app_icon_manager_browsertest.cc",
     "web_app_migration_manager_browsertest.cc",
+    "web_app_mover_browsertest.cc",
   ]
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
