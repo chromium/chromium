@@ -123,6 +123,10 @@ class HoldingSpaceKeyedService : public KeyedService,
   // Invoked when holding space persistence has been restored.
   void OnPersistenceRestored();
 
+  // Pin a drive file for offline access.
+  void MakeDriveItemAvailableOffline(
+      const storage::FileSystemURL& file_system_url);
+
   Profile* const profile_;
   const AccountId account_id_;
 

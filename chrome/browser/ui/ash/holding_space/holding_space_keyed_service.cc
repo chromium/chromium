@@ -11,6 +11,7 @@
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
 #include "base/files/file_path.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/chromeos/drive/drive_integration_service.h"
 #include "chrome/browser/chromeos/file_manager/app_id.h"
 #include "chrome/browser/chromeos/file_manager/fileapi_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -20,7 +21,9 @@
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "storage/common/file_system/file_system_types.h"
 
 namespace ash {
 
@@ -147,8 +150,11 @@ void HoldingSpaceKeyedService::AddPinnedFile(
 
   holding_space_metrics::RecordItemAction(
       {holding_space_item_to_record}, holding_space_metrics::ItemAction::kPin);
-
   AddItem(std::move(holding_space_item));
+
+  if (file_system_url.type() == storage::kFileSystemTypeDriveFs) {
+    MakeDriveItemAvailableOffline(file_system_url);
+  }
 }
 
 void HoldingSpaceKeyedService::RemovePinnedFile(
@@ -343,6 +349,25 @@ void HoldingSpaceKeyedService::ShutdownDelegates() {
 void HoldingSpaceKeyedService::OnPersistenceRestored() {
   for (auto& delegate : delegates_)
     delegate->NotifyPersistenceRestored();
+}
+
+void HoldingSpaceKeyedService::MakeDriveItemAvailableOffline(
+    const storage::FileSystemURL& file_system_url) {
+  auto* drive_service =
+      drive::DriveIntegrationServiceFactory::GetForProfile(profile_);
+
+  bool drive_fs_mounted = drive_service && drive_service->IsMounted();
+  if (!drive_fs_mounted)
+    return;
+
+  if (!drive_service->GetDriveFsInterface())
+    return;
+
+  base::FilePath path;
+  if (drive_service->GetRelativeDrivePath(file_system_url.path(), &path)) {
+    drive_service->GetDriveFsInterface()->SetPinned(path, true,
+                                                    base::DoNothing());
+  }
 }
 
 }  // namespace ash

@@ -25,8 +25,10 @@
 #include "chrome/browser/chromeos/drive/drive_integration_service.h"
 #include "chrome/browser/chromeos/drive/drivefs_test_support.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
+#include "chrome/browser/chromeos/file_manager/volume_manager.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/extensions/component_loader.h"
+#include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
@@ -364,6 +366,10 @@ class HoldingSpaceKeyedServiceBrowserTest
     waiter_loop.Run();
   }
 
+  drive::DriveIntegrationService* integration_service() {
+    return integration_service_;
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 
@@ -473,6 +479,47 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceKeyedServiceBrowserTest,
         return item->type() == HoldingSpaceItem::Type::kDownload &&
                item->file_path() == GetPredefinedTestFile(0);
       }));
+}
+
+// Verifies that drive files pinned to holding space are pinned for offline use.
+IN_PROC_BROWSER_TEST_P(HoldingSpaceKeyedServiceBrowserTest,
+                       PinningDriveFilesOfflineAccess) {
+  // Test only for drive file system type files.
+  if (GetParam() == FileSystemType::kDownloads)
+    return;
+
+  const base::FilePath file_path =
+      CreateTextFile(GetTestMountPoint(),
+                     /*relative_path=*/base::nullopt);
+  const GURL url =
+      holding_space_util::ResolveFileSystemUrl(browser()->profile(), file_path);
+  storage::FileSystemURL file_system_url =
+      storage::ExternalMountPoints::GetSystemInstance()->CrackURL(url);
+  ASSERT_TRUE(file_system_url.is_valid());
+  ASSERT_EQ(storage::kFileSystemTypeDriveFs, file_system_url.type());
+
+  // Add item from HoldingSpaceKeyedService to handle the pinning behaviour.
+  HoldingSpaceKeyedService* const holding_space_service =
+      HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(
+          browser()->profile());
+  holding_space_service->AddPinnedFile(file_system_url);
+
+  base::FilePath relative_path;
+  ASSERT_TRUE(integration_service()->GetRelativeDrivePath(
+      file_system_url.path(), &relative_path));
+  base::RunLoop loop;
+  bool is_pinned = false;
+  integration_service()->GetDriveFsInterface()->GetMetadata(
+      relative_path,
+      base::BindOnce(
+          [](base::RunLoop* loop, bool* is_pinned, ::drive::FileError error,
+             drivefs::mojom::FileMetadataPtr metadata) {
+            *is_pinned = metadata->pinned;
+            loop->Quit();
+          },
+          &loop, &is_pinned));
+  loop.Run();
+  EXPECT_TRUE(is_pinned);
 }
 
 }  // namespace ash
