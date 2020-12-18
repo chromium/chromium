@@ -204,7 +204,8 @@ class LockScreenValueStoreMigratorImplTest : public testing::Test {
   OperationResult RegisterDataItem(DataItem* item) {
     base::RunLoop run_loop;
     OperationResult result = OperationResult::kFailed;
-    item->Register(base::Bind(&WriteCallback, run_loop.QuitClosure(), &result));
+    item->Register(
+        base::BindOnce(&WriteCallback, run_loop.QuitClosure(), &result));
     run_loop.Run();
     return result;
   }
@@ -213,8 +214,8 @@ class LockScreenValueStoreMigratorImplTest : public testing::Test {
                                   const std::vector<char>& content) {
     base::RunLoop run_loop;
     OperationResult result = OperationResult::kFailed;
-    item->Write(content,
-                base::Bind(&WriteCallback, run_loop.QuitClosure(), &result));
+    item->Write(content, base::BindOnce(&WriteCallback, run_loop.QuitClosure(),
+                                        &result));
     run_loop.Run();
     return result;
   }

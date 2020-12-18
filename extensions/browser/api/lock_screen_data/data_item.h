@@ -92,12 +92,11 @@ class DataItem {
   virtual ~DataItem();
 
   // Registers the data item in the persistent data item storage.
-  virtual void Register(const WriteCallback& callback);
+  virtual void Register(WriteOnceCallback callback);
 
   // Sets the data item content, saving it to persistent data storage.
   // This will fail if the data item is not registered.
-  virtual void Write(const std::vector<char>& data,
-                     const WriteCallback& callback);
+  virtual void Write(const std::vector<char>& data, WriteOnceCallback callback);
 
   // Gets the data item content from the persistent data storage.
   // This will fail is the item is not registered.
@@ -105,7 +104,7 @@ class DataItem {
 
   // Unregisters the data item, and clears previously persisted data item
   // content.
-  virtual void Delete(const WriteCallback& callback);
+  virtual void Delete(WriteOnceCallback callback);
 
   const std::string& id() const { return id_; }
 
@@ -114,7 +113,7 @@ class DataItem {
  private:
   // Internal callback for write operations - wraps |callback| to ensure
   // |callback| is not run after |this| has been destroyed.
-  void OnWriteDone(const WriteCallback& callback,
+  void OnWriteDone(WriteOnceCallback callback,
                    std::unique_ptr<OperationResult> result);
 
   // Internal callback for the read operation - wraps |callback| to ensure

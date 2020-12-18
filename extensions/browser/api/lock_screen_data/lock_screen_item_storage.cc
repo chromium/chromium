@@ -315,10 +315,9 @@ void LockScreenItemStorage::CreateItemImpl(const std::string& extension_id,
       CreateDataItem(base::GenerateGUID(), extension_id, context_,
                      value_store_cache_.get(), task_runner_.get(), crypto_key_);
   DataItem* item_ptr = item.get();
-  item_ptr->Register(base::Bind(&LockScreenItemStorage::OnItemRegistered,
-                                weak_ptr_factory_.GetWeakPtr(),
-                                base::Passed(std::move(item)), extension_id,
-                                tick_clock_->NowTicks(), callback));
+  item_ptr->Register(base::BindOnce(
+      &LockScreenItemStorage::OnItemRegistered, weak_ptr_factory_.GetWeakPtr(),
+      std::move(item), extension_id, tick_clock_->NowTicks(), callback));
 }
 
 void LockScreenItemStorage::GetAllForExtensionImpl(
@@ -352,9 +351,9 @@ void LockScreenItemStorage::SetItemContentImpl(
     return;
   }
 
-  item->Write(data, base::Bind(&LockScreenItemStorage::OnItemWritten,
-                               weak_ptr_factory_.GetWeakPtr(),
-                               tick_clock_->NowTicks(), callback));
+  item->Write(data, base::BindOnce(&LockScreenItemStorage::OnItemWritten,
+                                   weak_ptr_factory_.GetWeakPtr(),
+                                   tick_clock_->NowTicks(), callback));
 }
 
 void LockScreenItemStorage::GetItemContentImpl(const std::string& extension_id,
@@ -380,9 +379,9 @@ void LockScreenItemStorage::DeleteItemImpl(const std::string& extension_id,
     return;
   }
 
-  item->Delete(base::Bind(&LockScreenItemStorage::OnItemDeleted,
-                          weak_ptr_factory_.GetWeakPtr(), extension_id, item_id,
-                          tick_clock_->NowTicks(), callback));
+  item->Delete(base::BindOnce(&LockScreenItemStorage::OnItemDeleted,
+                              weak_ptr_factory_.GetWeakPtr(), extension_id,
+                              item_id, tick_clock_->NowTicks(), callback));
 }
 
 void LockScreenItemStorage::OnItemRegistered(std::unique_ptr<DataItem> item,

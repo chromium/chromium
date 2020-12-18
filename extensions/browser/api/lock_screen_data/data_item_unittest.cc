@@ -141,7 +141,8 @@ class DataItemTest : public testing::Test {
 
     OperationResult result = OperationResult::kFailed;
     base::RunLoop run_loop;
-    item->Register(base::Bind(&WriteCallback, run_loop.QuitClosure(), &result));
+    item->Register(
+        base::BindOnce(&WriteCallback, run_loop.QuitClosure(), &result));
     run_loop.Run();
 
     EXPECT_EQ(OperationResult::kSuccess, result);
@@ -195,8 +196,8 @@ class DataItemTest : public testing::Test {
                                             const std::vector<char>& data) {
     OperationResult result = OperationResult::kFailed;
     base::RunLoop run_loop;
-    item->Write(data,
-                base::Bind(&WriteCallback, run_loop.QuitClosure(), &result));
+    item->Write(
+        data, base::BindOnce(&WriteCallback, run_loop.QuitClosure(), &result));
     run_loop.Run();
     return result;
   }
@@ -218,7 +219,8 @@ class DataItemTest : public testing::Test {
   OperationResult DeleteItemAndWaitForResult(DataItem* item) {
     OperationResult result = OperationResult::kFailed;
     base::RunLoop run_loop;
-    item->Delete(base::Bind(&WriteCallback, run_loop.QuitClosure(), &result));
+    item->Delete(
+        base::BindOnce(&WriteCallback, run_loop.QuitClosure(), &result));
     run_loop.Run();
     return result;
   }
@@ -226,7 +228,8 @@ class DataItemTest : public testing::Test {
   OperationResult RegisterItemAndWaitForResult(DataItem* item) {
     OperationResult result = OperationResult::kFailed;
     base::RunLoop run_loop;
-    item->Register(base::Bind(&WriteCallback, run_loop.QuitClosure(), &result));
+    item->Register(
+        base::BindOnce(&WriteCallback, run_loop.QuitClosure(), &result));
     run_loop.Run();
     return result;
   }
@@ -555,8 +558,8 @@ TEST_F(DataItemTest, RepeatedWrite) {
   std::vector<char> first_write = {'f', 'i', 'l', 'e', '_', '1'};
   std::vector<char> second_write = {'f', 'i', 'l', 'e', '_', '2'};
 
-  writer->Write(first_write,
-                base::Bind(&WriteCallback, base::DoNothing(), &write_result));
+  writer->Write(first_write, base::BindOnce(&WriteCallback, base::DoNothing(),
+                                            &write_result));
   EXPECT_EQ(OperationResult::kSuccess,
             WriteItemAndWaitForResult(writer.get(), second_write));
 
@@ -675,7 +678,8 @@ TEST_F(DataItemTest, ResetBeforeCallback) {
       "data_id", extension()->id(), GenerateKey("key_1"));
 
   std::vector<char> content = {'f', 'i', 'l', 'e', '_', '1'};
-  writer->Write(content, base::Bind(&WriteCallbackNotCalled, "Reset writer"));
+  writer->Write(content,
+                base::BindOnce(&WriteCallbackNotCalled, "Reset writer"));
   writer.reset();
 
   std::unique_ptr<DataItem> reader =
@@ -691,7 +695,7 @@ TEST_F(DataItemTest, ResetBeforeCallback) {
 
   std::unique_ptr<DataItem> deleter =
       CreateDataItem("data_id", extension()->id(), GenerateKey("key_1"));
-  deleter->Delete(base::Bind(&WriteCallbackNotCalled, "Reset deleter"));
+  deleter->Delete(base::BindOnce(&WriteCallbackNotCalled, "Reset deleter"));
   deleter.reset();
 
   DrainTaskRunner();

@@ -367,21 +367,21 @@ class TestDataItem : public DataItem {
 
   ~TestDataItem() override = default;
 
-  void Register(const WriteCallback& callback) override {
-    operations_->Register(callback);
+  void Register(WriteOnceCallback callback) override {
+    operations_->Register(std::move(callback));
   }
 
   void Write(const std::vector<char>& data,
-             const WriteCallback& callback) override {
-    operations_->AddWrite(data, callback);
+             WriteOnceCallback callback) override {
+    operations_->AddWrite(data, std::move(callback));
   }
 
   void Read(ReadOnceCallback callback) override {
     operations_->AddRead(std::move(callback));
   }
 
-  void Delete(const WriteCallback& callback) override {
-    operations_->AddDelete(callback);
+  void Delete(WriteOnceCallback callback) override {
+    operations_->AddDelete(std::move(callback));
   }
 
  private:

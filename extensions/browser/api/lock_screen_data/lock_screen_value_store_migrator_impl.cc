@@ -137,9 +137,9 @@ void LockScreenValueStoreMigratorImpl::OnCurrentItemRead(
   }
 
   if (result == OperationResult::kSuccess) {
-    migration_items_[extension_id].current_target->Register(base::Bind(
+    migration_items_[extension_id].current_target->Register(base::BindOnce(
         &LockScreenValueStoreMigratorImpl::OnTargetItemRegistered,
-        weak_ptr_factory_.GetWeakPtr(), extension_id, base::Passed(&data)));
+        weak_ptr_factory_.GetWeakPtr(), extension_id, std::move(data)));
   } else {
     OnTargetItemWritten(extension_id, OperationResult::kFailed);
   }
@@ -158,8 +158,8 @@ void LockScreenValueStoreMigratorImpl::OnTargetItemRegistered(
       result == OperationResult::kAlreadyRegistered) {
     migration_items_[extension_id].current_target->Write(
         *data,
-        base::Bind(&LockScreenValueStoreMigratorImpl::OnTargetItemWritten,
-                   weak_ptr_factory_.GetWeakPtr(), extension_id));
+        base::BindOnce(&LockScreenValueStoreMigratorImpl::OnTargetItemWritten,
+                       weak_ptr_factory_.GetWeakPtr(), extension_id));
   } else {
     OnTargetItemWritten(extension_id, OperationResult::kFailed);
   }
@@ -176,8 +176,8 @@ void LockScreenValueStoreMigratorImpl::OnTargetItemWritten(
     migration_items_[extension_id].current_target->Delete(base::DoNothing());
 
   migration_items_[extension_id].current_source->Delete(
-      base::Bind(&LockScreenValueStoreMigratorImpl::OnCurrentItemMigrated,
-                 weak_ptr_factory_.GetWeakPtr(), extension_id));
+      base::BindOnce(&LockScreenValueStoreMigratorImpl::OnCurrentItemMigrated,
+                     weak_ptr_factory_.GetWeakPtr(), extension_id));
 }
 
 void LockScreenValueStoreMigratorImpl::OnCurrentItemMigrated(
