@@ -7,10 +7,15 @@
 #include <utility>
 
 #include "ash/public/cpp/media_controller.h"
+#include "ash/public/cpp/notification_utils.h"
+#include "ash/public/cpp/toast_data.h"
+#include "ash/public/cpp/toast_manager.h"
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/single_thread_task_runner.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/current_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -19,6 +24,7 @@
 #include "chrome/browser/chromeos/extensions/media_player_event_router.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
+#include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
@@ -27,20 +33,46 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/grit/generated_resources.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/user_manager/user_manager.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/process_manager.h"
+#include "media/capture/video/chromeos/public/cros_features.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
+#include "ui/base/l10n/l10n_util.h"
 
 using ash::MediaCaptureState;
 
 namespace {
 
 MediaClientImpl* g_media_client = nullptr;
+
+// The ID for a notification shown when the user tries to use a camera while the
+// camera privacy switch is on.
+constexpr char kCameraPrivacySwitchOnNotificationId[] =
+    "ash.media.camera.activity_with_privacy_switch_on";
+
+// The notifier ID for a notification shown when the user tries to use a camera
+// while the camera privacy switch is on.
+constexpr char kCameraPrivacySwitchNotifierId[] = "ash.media.camera";
+
+// The ID for the toast shown when the camera privacy switch is turned on.
+constexpr char kCameraPrivacySwitchOnToastId[] =
+    "ash.media.camera.privacy_switch_on";
+
+// The ID for the toast shown when the camera privacy switch is turned off.
+constexpr char kCameraPrivacySwitchOffToastId[] =
+    "ash.media.camera.privacy_switch_off";
+
+// The amount of time for which the camera privacy switch toasts will remain
+// displayed.
+constexpr int kCameraPrivacySwitchToastDurationMs = 6 * 1000;
 
 MediaCaptureState& operator|=(MediaCaptureState& lhs, MediaCaptureState rhs) {
   lhs = static_cast<MediaCaptureState>(static_cast<int>(lhs) |
@@ -143,6 +175,18 @@ MediaClientImpl::MediaClientImpl() {
 
   chromeos::VmCameraMicManager::Get()->AddObserver(this);
 
+  // Camera service does not behave in non ChromeOS environment (e.g. testing,
+  // linux chromeos).
+  if (base::SysInfo::IsRunningOnChromeOS() &&
+      base::FeatureList::IsEnabled(
+          chromeos::features::kCameraPrivacySwitchNotifications) &&
+      media::ShouldUseCrosCameraService()) {
+    camera_privacy_switch_state_ = media::CameraHalDispatcherImpl::GetInstance()
+                                       ->AddCameraPrivacySwitchObserver(this);
+    media::CameraHalDispatcherImpl::GetInstance()->AddActiveClientObserver(
+        this);
+  }
+
   DCHECK(!g_media_client);
   g_media_client = this;
 }
@@ -157,6 +201,15 @@ MediaClientImpl::~MediaClientImpl() {
   BrowserList::RemoveObserver(this);
 
   chromeos::VmCameraMicManager::Get()->RemoveObserver(this);
+  if (base::SysInfo::IsRunningOnChromeOS() &&
+      base::FeatureList::IsEnabled(
+          chromeos::features::kCameraPrivacySwitchNotifications) &&
+      media::ShouldUseCrosCameraService()) {
+    media::CameraHalDispatcherImpl::GetInstance()
+        ->RemoveCameraPrivacySwitchObserver(this);
+    media::CameraHalDispatcherImpl::GetInstance()->RemoveActiveClientObserver(
+        this);
+  }
 }
 
 // static
@@ -262,6 +315,68 @@ void MediaClientImpl::OnVmCameraMicActiveChanged(
   media_controller_->NotifyVmMediaNotificationState(
       manager->IsNotificationActive(DeviceType::kCamera),
       manager->IsNotificationActive(DeviceType::kMic));
+}
+
+void MediaClientImpl::OnCameraPrivacySwitchStatusChanged(
+    cros::mojom::CameraPrivacySwitchState state) {
+  camera_privacy_switch_state_ = state;
+
+  // Show camera privacy switch toast.
+  switch (state) {
+    case cros::mojom::CameraPrivacySwitchState::UNKNOWN:
+      break;
+    case cros::mojom::CameraPrivacySwitchState::ON: {
+      ash::ToastData toast(
+          kCameraPrivacySwitchOnToastId,
+          l10n_util::GetStringUTF16(IDS_CAMERA_PRIVACY_SWITCH_ON_TOAST),
+          kCameraPrivacySwitchToastDurationMs,
+          /*dismiss_text=*/base::nullopt,
+          /*visible_on_lock_screen=*/true);
+      ash::ToastManager::Get()->Show(toast);
+      break;
+    }
+    case cros::mojom::CameraPrivacySwitchState::OFF: {
+      ash::ToastData toast(
+          kCameraPrivacySwitchOffToastId,
+          l10n_util::GetStringUTF16(IDS_CAMERA_PRIVACY_SWITCH_OFF_TOAST),
+          kCameraPrivacySwitchToastDurationMs,
+          /*dismiss_text=*/base::nullopt,
+          /*visible_on_lock_screen=*/true);
+      ash::ToastManager::Get()->Show(toast);
+      break;
+    }
+  }
+
+  if (camera_privacy_switch_state_ ==
+      cros::mojom::CameraPrivacySwitchState::OFF) {
+    SystemNotificationHelper::GetInstance()->Close(
+        kCameraPrivacySwitchOnNotificationId);
+  }
+}
+
+void MediaClientImpl::OnActiveClientChange(cros::mojom::CameraClientType type,
+                                           bool is_active) {
+  if (is_active && camera_privacy_switch_state_ ==
+                       cros::mojom::CameraPrivacySwitchState::ON) {
+    std::unique_ptr<message_center::Notification> notification =
+        ash::CreateSystemNotification(
+            message_center::NOTIFICATION_TYPE_SIMPLE,
+            kCameraPrivacySwitchOnNotificationId,
+            l10n_util::GetStringUTF16(
+                IDS_CAMERA_PRIVACY_SWITCH_ON_NOTIFICATION_TITLE),
+            l10n_util::GetStringUTF16(
+                IDS_CAMERA_PRIVACY_SWITCH_ON_NOTIFICATION_MESSAGE),
+            base::string16(), GURL(),
+            message_center::NotifierId(
+                message_center::NotifierType::SYSTEM_COMPONENT,
+                kCameraPrivacySwitchNotifierId),
+            message_center::RichNotificationData(),
+            new message_center::HandleNotificationClickDelegate(
+                base::DoNothing::Repeatedly()),
+            vector_icons::kVideocamOffIcon,
+            message_center::SystemNotificationWarningLevel::NORMAL);
+    SystemNotificationHelper::GetInstance()->Display(*notification);
+  }
 }
 
 void MediaClientImpl::EnableCustomMediaKeyHandler(

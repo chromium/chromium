@@ -5415,6 +5415,20 @@
     <ph name="APP_NAME">$1<ex>Parallels Desktop</ex></ph> is using your camera and microphone
   </message>
 
+  <!-- Strings for camera privacy switch toast and notification -->
+  <message name="IDS_CAMERA_PRIVACY_SWITCH_ON_TOAST" desc="Toast message shown to the user when the camera privacy switch, which disables camera feed, gets turned on.">
+    Camera is turned off
+  </message>
+  <message name="IDS_CAMERA_PRIVACY_SWITCH_OFF_TOAST" desc="Toast message shown to the user when the camera privacy switch gets turned off. The privacy switch disables the camera feed while it's on.">
+    Camera is turned on
+  </message>
+  <message name="IDS_CAMERA_PRIVACY_SWITCH_ON_NOTIFICATION_TITLE" desc="Title for a notification shown to the users when an app tries to use a camera while the camera privacy switch, which disables camera feed, is turned on">
+    Camera is off
+  </message>
+  <message name="IDS_CAMERA_PRIVACY_SWITCH_ON_NOTIFICATION_MESSAGE" desc="Message for a notification shown to the users when an app tries to use a camera while the camera privacy switch, which disables camera feed, is turned on">
+    An app is trying to access camera. Turn off the Webcam privacy switch to allow access
+  </message>
+
   <!-- Strings for Account Manager error screen -->
   <message name="IDS_ACCOUNT_MANAGER_SECONDARY_ACCOUNTS_DISABLED_TITLE" desc="Title for the Chrome OS Account Manager error screen when addition of secondary Google Accounts is disabled.">
     Addition of more Google Accounts is disabled

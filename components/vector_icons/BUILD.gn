@@ -82,6 +82,7 @@ aggregate_vector_icons("components_vector_icons") {
     "sync.icon",
     "usb.icon",
     "videocam.icon",
+    "videocam_off.icon",
     "videogame_asset.icon",
     "volume_up.icon",
     "vr_headset.icon",

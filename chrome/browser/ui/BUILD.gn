@@ -2716,6 +2716,7 @@ static_library("ui") {
       "//components/session_manager/core",
       "//components/user_manager",
       "//google_apis/drive",
+      "//media/capture:capture_lib",
       "//mojo/public/js:resources_grit",
       "//services/audio/public/mojom",
       "//services/data_decoder/public/cpp",

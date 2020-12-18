@@ -321,6 +321,8 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kImeMozcProto;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kCrostiniResetLxdDb;
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const base::Feature kCameraPrivacySwitchNotifications;
 
 // Keep alphabetized.
 

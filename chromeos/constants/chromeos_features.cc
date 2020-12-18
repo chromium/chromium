@@ -715,6 +715,11 @@ const base::Feature kImeMozcProto{"ImeMozcProto",
 const base::Feature kCrostiniResetLxdDb{"CrostiniResetLxdDb",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls whether the camera privacy switch toasts and notification should be
+// displayed.
+const base::Feature kCameraPrivacySwitchNotifications{
+    "CameraPrivacySwitchNotifications", base::FEATURE_ENABLED_BY_DEFAULT};
+
 ////////////////////////////////////////////////////////////////////////////////
 
 bool IsAccountManagementFlowsV2Enabled() {

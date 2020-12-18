@@ -13,12 +13,16 @@
 #include "chrome/browser/chromeos/camera_mic/vm_camera_mic_manager.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/ui/browser_list_observer.h"
+#include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
+#include "media/capture/video/chromeos/mojom/cros_camera_service.mojom.h"
 #include "ui/base/accelerators/media_keys_listener.h"
 
 class MediaClientImpl : public ash::MediaClient,
                         public BrowserListObserver,
                         public chromeos::VmCameraMicManager::Observer,
-                        public MediaCaptureDevicesDispatcher::Observer {
+                        public MediaCaptureDevicesDispatcher::Observer,
+                        public media::CameraPrivacySwitchObserver,
+                        public media::CameraActiveClientObserver {
  public:
   MediaClientImpl();
   ~MediaClientImpl() override;
@@ -56,6 +60,14 @@ class MediaClientImpl : public ash::MediaClient,
   // chromeos::VmCameraMicManager::Observer
   void OnVmCameraMicActiveChanged(
       chromeos::VmCameraMicManager* manager) override;
+
+  // media::CameraPrivacySwitchObserver:
+  void OnCameraPrivacySwitchStatusChanged(
+      cros::mojom::CameraPrivacySwitchState state) override;
+
+  // media::CameraActiveClientObserver:
+  void OnActiveClientChange(cros::mojom::CameraClientType type,
+                            bool is_active) override;
 
   // Enables/disables custom media key handling when |context| is the active
   // browser. Media keys will be forwarded to |delegate|.
@@ -99,6 +111,10 @@ class MediaClientImpl : public ash::MediaClient,
 
   ash::MediaCaptureState vm_media_capture_state_ =
       ash::MediaCaptureState::kNone;
+
+  // The most recent observed camera privacy switch state.
+  cros::mojom::CameraPrivacySwitchState camera_privacy_switch_state_ =
+      cros::mojom::CameraPrivacySwitchState::UNKNOWN;
 
   base::WeakPtrFactory<MediaClientImpl> weak_ptr_factory_{this};
 
