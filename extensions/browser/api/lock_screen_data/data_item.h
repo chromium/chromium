@@ -33,21 +33,11 @@ enum class OperationResult;
 // Wrapper around a per extension value store backed lock screen data item.
 class DataItem {
  public:
-  // TODO(bokan): The multiple callback versions are temporary while we remove
-  // the base::Callback version in favor of base::OnceCallback.
-  // https://crbug.com/1152268.
-  using WriteOnceCallback = base::OnceCallback<void(OperationResult result)>;
-  using WriteCallback = base::Callback<void(OperationResult result)>;
-  using ReadOnceCallback =
+  using WriteCallback = base::OnceCallback<void(OperationResult result)>;
+  using ReadCallback =
       base::OnceCallback<void(OperationResult result,
                               std::unique_ptr<std::vector<char>> data)>;
-  using ReadCallback =
-      base::Callback<void(OperationResult result,
-                          std::unique_ptr<std::vector<char>> data)>;
   using RegisteredValuesCallback =
-      base::Callback<void(OperationResult result,
-                          std::unique_ptr<base::DictionaryValue> values)>;
-  using RegisteredValuesOnceCallback =
       base::OnceCallback<void(OperationResult result,
                               std::unique_ptr<base::DictionaryValue> values)>;
 
@@ -59,7 +49,7 @@ class DataItem {
       ValueStoreCache* value_store_cache,
       base::SequencedTaskRunner* task_runner,
       const std::string& extension_id,
-      RegisteredValuesOnceCallback callback);
+      RegisteredValuesCallback callback);
 
   // Clears data item value store for the extension with the provided extension
   // ID.
@@ -92,19 +82,19 @@ class DataItem {
   virtual ~DataItem();
 
   // Registers the data item in the persistent data item storage.
-  virtual void Register(WriteOnceCallback callback);
+  virtual void Register(WriteCallback callback);
 
   // Sets the data item content, saving it to persistent data storage.
   // This will fail if the data item is not registered.
-  virtual void Write(const std::vector<char>& data, WriteOnceCallback callback);
+  virtual void Write(const std::vector<char>& data, WriteCallback callback);
 
   // Gets the data item content from the persistent data storage.
   // This will fail is the item is not registered.
-  virtual void Read(ReadOnceCallback callback);
+  virtual void Read(ReadCallback callback);
 
   // Unregisters the data item, and clears previously persisted data item
   // content.
-  virtual void Delete(WriteOnceCallback callback);
+  virtual void Delete(WriteCallback callback);
 
   const std::string& id() const { return id_; }
 
@@ -113,12 +103,12 @@ class DataItem {
  private:
   // Internal callback for write operations - wraps |callback| to ensure
   // |callback| is not run after |this| has been destroyed.
-  void OnWriteDone(WriteOnceCallback callback,
+  void OnWriteDone(WriteCallback callback,
                    std::unique_ptr<OperationResult> result);
 
   // Internal callback for the read operation - wraps |callback| to ensure
   // |callback| is not run after |this| has been destroyed.
-  void OnReadDone(ReadOnceCallback callback,
+  void OnReadDone(ReadCallback callback,
                   std::unique_ptr<OperationResult> result,
                   std::unique_ptr<std::vector<char>> data);
 

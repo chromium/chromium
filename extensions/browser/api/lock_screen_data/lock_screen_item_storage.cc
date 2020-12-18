@@ -92,7 +92,7 @@ void GetRegisteredItems(const std::string& extension_id,
                         content::BrowserContext* context,
                         ValueStoreCache* value_store_cache,
                         base::SequencedTaskRunner* task_runner,
-                        DataItem::RegisteredValuesOnceCallback callback) {
+                        DataItem::RegisteredValuesCallback callback) {
   if (g_test_registered_items_getter_callback) {
     g_test_registered_items_getter_callback->Run(extension_id,
                                                  std::move(callback));

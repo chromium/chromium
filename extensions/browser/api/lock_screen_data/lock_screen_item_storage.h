@@ -53,8 +53,8 @@ class LockScreenItemStorage : public ExtensionRegistryObserver {
       base::Callback<void(OperationResult result, const DataItem* item)>;
   using DataItemListCallback =
       base::Callback<void(const std::vector<const DataItem*>& items)>;
-  using WriteCallback = DataItem::WriteOnceCallback;
-  using ReadCallback = DataItem::ReadOnceCallback;
+  using WriteCallback = DataItem::WriteCallback;
+  using ReadCallback = DataItem::ReadCallback;
 
   static void RegisterLocalState(PrefRegistrySimple* registry);
 
@@ -146,7 +146,7 @@ class LockScreenItemStorage : public ExtensionRegistryObserver {
       const std::string& crypto_key)>;
   using RegisteredItemsGetter = base::RepeatingCallback<void(
       const std::string& extension_id,
-      DataItem::RegisteredValuesOnceCallback callback)>;
+      DataItem::RegisteredValuesCallback callback)>;
   using ItemStoreDeleter =
       base::RepeatingCallback<void(const std::string& extension_id,
                                    base::OnceClosure callback)>;
