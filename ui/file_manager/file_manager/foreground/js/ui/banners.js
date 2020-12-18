@@ -321,10 +321,16 @@ class Banners extends cr.EventTarget {
         util.createChild(message, 'holding-space-welcome-title headline2');
     title.textContent = str('HOLDING_SPACE_WELCOME_TITLE');
 
-    // TODO(crbug.com/1154347): Use different `text` string in tablet mode.
+    // NOTE: Only one of either `text` or `textInTabletMode` will be displayed
+    // at a time depending on whether or not tablet mode is enabled.
     const body = util.createChild(message, 'body2-primary');
     const text = util.createChild(body, 'holding-space-welcome-text');
+    const textInTabletMode = util.createChild(
+        body, 'holding-space-welcome-text tablet-mode-enabled');
     text.textContent = str('HOLDING_SPACE_WELCOME_TEXT');
+    textInTabletMode.innerHTML = strf(
+        'HOLDING_SPACE_WELCOME_TEXT_IN_TABLET_MODE',
+        '<span class="icon">&nbsp;</span>');
 
     const buttonGroup = util.createChild(wrapper, 'button-group', 'div');
     const dismiss = util.createChild(buttonGroup, 'text-button', 'cr-button');

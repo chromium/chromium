@@ -1274,6 +1274,9 @@
   <message name="IDS_FILE_BROWSER_HOLDING_SPACE_WELCOME_TEXT" desc="In the Holding Space welcome banner, text of the welcome message.">
     Right-click a file, and select "Pin to shelf" for quick access to your files in shelf.
   </message>
+  <message name="IDS_FILE_BROWSER_HOLDING_SPACE_WELCOME_TEXT_IN_TABLET_MODE" desc="In the Holding Space welcome banner, text of the welcome message in tablet mode.">
+    Touch &amp; hold a file and tap <ph name="ICON">$1</ph>, and select "Pin to shelf" for quick access to your files in shelf.
+  </message>
   <message name="IDS_FILE_BROWSER_HOLDING_SPACE_WELCOME_DISMISS" desc="In the Holding Space welcome banner, text on the button to dismiss the banner.">
     Got it
   </message>

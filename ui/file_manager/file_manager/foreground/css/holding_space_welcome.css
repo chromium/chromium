@@ -54,7 +54,25 @@
 }
 
 .holding-space-welcome .holding-space-welcome-text {
-  display: inline;
+  align-items: center;
+  display: inline-flex;
+}
+
+.holding-space-welcome .holding-space-welcome-text span.icon {
+  -webkit-mask-image: url(../images/files/ui/menu_ng.svg);
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 100%;
+  background-color: var(--cros-text-color-primary);
+  display: inline-block;
+  flex: 0 0 auto;
+  height: 13px;
+  width: 13px;
+}
+
+/* TODO(crbug.com/1154347): Handle tablet mode enabled. */
+.holding-space-welcome-text.tablet-mode-enabled {
+  display: none;
 }
 
 .holding-space-welcome .text-button {
