@@ -3358,12 +3358,12 @@
   {
     "name": "mixed-forms-disable-autofill",
     "owners": [ "carlosil" ],
-    "expiry_milestone": 88
+    "expiry_milestone": 92
   },
   {
     "name": "mixed-forms-interstitial",
     "owners": [ "carlosil" ],
-    "expiry_milestone": 88
+    "expiry_milestone": 92
   },
   {
     "name": "mobile-google-srp",
