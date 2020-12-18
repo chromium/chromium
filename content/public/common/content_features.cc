@@ -936,7 +936,7 @@ const base::Feature kRetryGetVideoCaptureDeviceInfos{
     "RetryGetVideoCaptureDeviceInfos", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // defined(OS_MAC)
 
-#if !defined(OS_WIN) && !defined(OS_FUCHSIA) && !defined(OS_IOS)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 // If the JavaScript on a WebUI page has an error (such as an unhandled
 // exception), report that error back the crash reporting infrastructure, same
 // as we do for program crashes.

@@ -2389,7 +2389,7 @@ constexpr char kAssistantBetterOnboardingInternalName[] =
 constexpr char kAssistantTimersV2InternalName[] = "enable-assistant-timers-v2";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if !defined(OS_WIN) && !defined(OS_FUCHSIA)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 const FeatureEntry::FeatureParam
     kSendWebUIJavaScriptErrorReportsVariationSendToStaging[] = {
         {features::kSendWebUIJavaScriptErrorReportsSendToProductionVariation,
@@ -2558,11 +2558,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebrtcPipeWireCapturerDescription, kOsLinux,
      FEATURE_VALUE_TYPE(features::kWebRtcPipeWireCapturer)},
 #endif  // defined(WEBRTC_USE_PIPEWIRE)
-#if !defined(OS_WIN) && !defined(OS_FUCHSIA)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
     {"send-webui-javascript-error-reports",
      flag_descriptions::kSendWebUIJavaScriptErrorReportsName,
      flag_descriptions::kSendWebUIJavaScriptErrorReportsDescription,
-     kOsLinux | kOsCrOS | kOsAndroid,
+     kOsLinux | kOsCrOS,
      FEATURE_WITH_PARAMS_VALUE_TYPE(
          features::kSendWebUIJavaScriptErrorReports,
          kSendWebUIJavaScriptErrorReportsVariations,
