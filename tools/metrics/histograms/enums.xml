@@ -44770,6 +44770,7 @@ from previous Chrome versions.
   <int value="564522013" label="Av1Decoder:disabled"/>
   <int value="565406673" label="EnableVirtualKeyboardMdUi:enabled"/>
   <int value="567368307" label="enable-experimental-canvas-features"/>
+  <int value="570469494" label="LoginDetection:disabled"/>
   <int value="571349694" label="AllowAllSitesToInitiateMirroring:enabled"/>
   <int value="572915501" label="FilesZipUnpack:disabled"/>
   <int value="573385109" label="SharedClipboardUI:enabled"/>
@@ -45375,6 +45376,7 @@ from previous Chrome versions.
   <int value="1158333871" label="QueryTilesEnableQueryEditing:enabled"/>
   <int value="1159760152"
       label="ContextMenuSearchAndShopWithGoogleLens:disabled"/>
+  <int value="1161822401" label="LoginDetection:enabled"/>
   <int value="1162693272" label="MacCoreLocationImplementation:disabled"/>
   <int value="1163255347" label="ash-enable-touch-view-touch-feedback"/>
   <int value="1164377197" label="SwipingFromLeftEdgeToGoBack:enabled"/>

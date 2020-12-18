@@ -951,6 +951,10 @@ const char kMemlogStackModeNative[] = "Native";
 const char kMemlogStackModeNativeWithThreadNames[] = "Native with thread names";
 const char kMemlogStackModePseudo[] = "Trace events";
 
+const char kEnableLoginDetectionName[] = "Enable login detection";
+const char kEnableLoginDetectionDescription[] =
+    "Allow user sign-in to be detected based on heuristics.";
+
 const char kEnablePixelCanvasRecordingName[] = "Enable pixel canvas recording";
 const char kEnablePixelCanvasRecordingDescription[] =
     "Pixel canvas recording allows the compositor to raster contents aligned "

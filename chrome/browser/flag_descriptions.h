@@ -535,6 +535,9 @@ extern const char kDownloadLaterDebugOnWifiNameDescription[];
 extern const char kDuetTabStripIntegrationAndroidName[];
 extern const char kDuetTabStripIntegrationAndroidDescription[];
 
+extern const char kEnableLoginDetectionName[];
+extern const char kEnableLoginDetectionDescription[];
+
 extern const char kEnableNewDownloadBackendName[];
 extern const char kEnableNewDownloadBackendDescription[];
 

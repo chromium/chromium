@@ -34,6 +34,7 @@
 #include "chrome/browser/chromeos/android_sms/android_sms_switches.h"
 #include "chrome/browser/flag_descriptions.h"
 #include "chrome/browser/lite_video/lite_video_switches.h"
+#include "chrome/browser/login_detection/login_detection_util.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_features.h"
 #include "chrome/browser/navigation_predictor/search_engine_preconnector.h"
 #include "chrome/browser/net/stub_resolver_config_reader.h"
@@ -3195,6 +3196,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableSubresourceRedirectName,
      flag_descriptions::kEnableSubresourceRedirectDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kSubresourceRedirect)},
+    {"enable-login-detection", flag_descriptions::kEnableLoginDetectionName,
+     flag_descriptions::kEnableLoginDetectionDescription, kOsAll,
+     FEATURE_VALUE_TYPE(login_detection::kLoginDetection)},
 #if defined(OS_ANDROID)
     {"enable-offline-previews", flag_descriptions::kEnableOfflinePreviewsName,
      flag_descriptions::kEnableOfflinePreviewsDescription, kOsAndroid,

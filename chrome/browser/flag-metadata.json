@@ -1785,6 +1785,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "enable-login-detection",
+    "owners": [ "rajendrant", "mcrouse", "tbansal" ],
+    "expiry_milestone": 92
+  },
+  {
     "name": "enable-magnifier-new-focus-following",
     "owners": [ "josiahk", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 88
