@@ -46406,6 +46406,16 @@ from previous Chrome versions.
   <int value="10" label="Init field info table error"/>
 </enum>
 
+<enum name="LoginDetectionType">
+  <summary>
+    Enumerates the different types of user log-in that can be detected on a page
+    based on the site (effective TLD+1).
+  </summary>
+  <int value="0" label="No login"/>
+  <int value="1" label="OAuth login"/>
+  <int value="2" label="OAuth first time login flow"/>
+</enum>
+
 <enum name="LoginFailureReason">
   <int value="0" label="None"/>
   <int value="1" label="Could not mount cryptohome"/>

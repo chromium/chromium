@@ -48,6 +48,7 @@
 #include "chrome/browser/language/url_language_histogram_factory.h"
 #include "chrome/browser/lite_video/lite_video_keyed_service.h"
 #include "chrome/browser/lite_video/lite_video_keyed_service_factory.h"
+#include "chrome/browser/login_detection/login_detection_prefs.h"
 #include "chrome/browser/media/history/media_history_keyed_service.h"
 #include "chrome/browser/media/history/media_history_keyed_service_factory.h"
 #include "chrome/browser/media/media_device_id_salt.h"
@@ -1210,6 +1211,15 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
         CreateTaskCompletionClosure(TracingDataType::kUserDataSnapshot));
   }
 #endif  // BUILDFLAG(ENABLE_DOWNGRADE_PROCESSING)
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Login detection data:
+  // Clear the origins where login has been detected, when cookies and other
+  // site data are cleared, or when history is cleared. This is because clearing
+  // cookies or history implies forgetting that the user has logged into sites.
+  if (remove_mask & (DATA_TYPE_SITE_DATA | DATA_TYPE_HISTORY)) {
+    login_detection::prefs::RemoveLoginDetectionData(prefs);
+  }
 }
 
 void ChromeBrowsingDataRemoverDelegate::OnTaskStarted(
