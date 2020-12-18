@@ -487,7 +487,9 @@ bool PrePaintTreeWalk::ObjectRequiresTreeBuilderContext(
 bool PrePaintTreeWalk::ContextRequiresTreeBuilderContext(
     const PrePaintTreeWalkContext& context) {
   return context.tree_builder_context &&
-         context.tree_builder_context->force_subtree_update_reasons;
+         (context.tree_builder_context->force_subtree_update_reasons ||
+          // PaintInvalidator forced subtree walk implies geometry update.
+          context.paint_invalidator_context.NeedsSubtreeWalk());
 }
 
 #if DCHECK_IS_ON()

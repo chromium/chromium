@@ -2695,6 +2695,10 @@ void LayoutBox::SizeChanged() {
   // object for paint invalidation.
   if (!NeedsLayout())
     SetShouldCheckForPaintInvalidation();
+  // In flipped blocks writing mode, our children can change physical location,
+  // but their flipped location remains the same.
+  if (HasFlippedBlocksWritingMode())
+    SetSubtreeShouldCheckForPaintInvalidation();
 }
 
 bool LayoutBox::IntersectsVisibleViewport() const {
@@ -3491,7 +3495,8 @@ scoped_refptr<const NGLayoutResult> LayoutBox::CachedLayoutResult(
   // dirty layout bit(s). Note that we may be here because we are display locked
   // and have cached a locked layout result. In that case, this function will
   // not clear the child dirty bits.
-  ClearNeedsLayout();
+  if (NeedsLayout())
+    ClearNeedsLayout();
 
   // Optimization: TableConstraintSpaceData can be large, and it is shared
   // between all the rows in a table. Make constraint space table data for
