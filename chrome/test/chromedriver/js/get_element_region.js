@@ -18,10 +18,10 @@ function getElementRegion(element) {
     // Given two regions, determines if any intersection occurs.
     // Overlapping edges are not considered intersections.
     function getIntersectingSubregion(region1, region2) {
-      if (!(region2.right  <= region1.left   ||
-            region2.left   >= region1.right  ||
-            region2.top    >= region1.bottom ||
-            region2.bottom <= region1.top)) {
+      if (!(Math.round(region2.right)  <= Math.round(region1.left)   ||
+            Math.round(region2.left)   >= Math.round(region1.right)  ||
+            Math.round(region2.top)    >= Math.round(region1.bottom) ||
+            Math.round(region2.bottom) <= Math.round(region1.top))) {
         // Determines region of intersection.
         // If region2 contains region1, returns region1.
         // If region1 contains region2, returns region2.
