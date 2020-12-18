@@ -122,7 +122,7 @@ async_test((t) => {
 
       // This should trigger a "value changed" notification on the slider.
       document.getElementById("slider").setAttribute("aria-valuenow", "6");
-    }, 0);
+    }, 1);
 
     window.setTimeout(t.step_func_done(() => {
       assert_unreached();

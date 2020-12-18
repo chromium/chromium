@@ -481,7 +481,7 @@ function waitForHoverEffectUpdate(func) {
 
 function hoverMuteButton(video, func) {
   // Wait for hover timer fires
-  const delayedCallback = function() { setTimeout(func); };
+  const delayedCallback = function() { setTimeout(func, 1); };
   const muteBtn = muteButton(video);
   hoverOverControl(muteBtn, delayedCallback);
 }

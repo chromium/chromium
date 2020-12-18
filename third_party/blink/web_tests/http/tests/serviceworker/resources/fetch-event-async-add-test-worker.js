@@ -4,4 +4,4 @@ var eventHandler = async function (event) {
 
 setTimeout(() => {
   self.addEventListener('fetch', eventHandler);
-}, 0);
+}, 1);

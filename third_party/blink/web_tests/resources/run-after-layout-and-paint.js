@@ -55,7 +55,7 @@ function runAfterLayoutAndPaint(callback, autoNotifyDone) {
             callback();
             if (autoNotifyDone)
                 testRunner.notifyDone();
-        }, 0);
+        }, 1);
     });
 }
 

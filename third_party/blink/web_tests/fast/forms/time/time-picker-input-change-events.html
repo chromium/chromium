@@ -41,7 +41,7 @@ promise_test(() => {
             window.setTimeout(() => {
                 assert_equals(changeEventCount, 1, 'Change event should have fired (once) asynchronously after closing popup.');
                 resolve();
-            }, 0);
+            }, 1);
         });
     });
 }, "Test input and change event firing when popup value is modified");
@@ -76,7 +76,7 @@ promise_test(() => {
             window.setTimeout(() => {
                 assert_equals(changeEventCount, 0, 'No change event should fire if popup was submitted with value still matching the original.');
                 resolve();
-            }, 0);
+            }, 1);
         });
     });
 }, "Test that change does not fire if popup value is modified and then restored to original value.");

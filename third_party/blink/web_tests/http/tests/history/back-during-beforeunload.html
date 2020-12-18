@@ -15,7 +15,7 @@ window.onbeforeunload = function() {
 setTimeout(function() {
     history.pushState("", "", "#");
     location = "we-wont-actually-go-here.html";
-}, 0);
+}, 1);
 </script>
 Ensure we ignore back/forward navigations during beforeunload.
 </body>

@@ -43,7 +43,7 @@ promise_test(() => {
       window.setTimeout(() => {
         assert_equals(changeEventCount, 1, 'Change event should have fired (once) asynchronously after closing popup.');
         resolve();
-      }, 0)
+      }, 1)
     });
   });
 }, "Color picker: Test firing change and input events");
