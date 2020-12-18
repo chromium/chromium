@@ -235,13 +235,13 @@ class OperationQueue {
     std::vector<char> data;
 
     // Callback for write operation.
-    DataItem::WriteCallback write_callback;
+    DataItem::WriteOnceCallback write_callback;
 
     // Callback for read operation.
-    DataItem::ReadCallback read_callback;
+    DataItem::ReadOnceCallback read_callback;
 
     // Callback for delete operation.
-    DataItem::WriteCallback delete_callback;
+    DataItem::WriteOnceCallback delete_callback;
   };
 
   OperationQueue(const std::string& id, ItemRegistry* item_registry)
@@ -249,31 +249,31 @@ class OperationQueue {
 
   ~OperationQueue() = default;
 
-  void Register(const DataItem::WriteCallback& callback) {
+  void Register(DataItem::WriteOnceCallback callback) {
     bool registered = item_registry_->Add(id_);
-    callback.Run(registered ? OperationResult::kSuccess
-                            : OperationResult::kFailed);
+    std::move(callback).Run(registered ? OperationResult::kSuccess
+                                       : OperationResult::kFailed);
   }
 
   void AddWrite(const std::vector<char>& data,
-                const DataItem::WriteCallback& callback) {
+                DataItem::WriteOnceCallback callback) {
     PendingOperation operation(OperationType::kWrite);
     operation.data = data;
-    operation.write_callback = callback;
+    operation.write_callback = std::move(callback);
 
     pending_operations_.emplace(std::move(operation));
   }
 
-  void AddRead(const DataItem::ReadCallback& callback) {
+  void AddRead(DataItem::ReadOnceCallback callback) {
     PendingOperation operation(OperationType::kRead);
-    operation.read_callback = callback;
+    operation.read_callback = std::move(callback);
 
     pending_operations_.emplace(std::move(operation));
   }
 
-  void AddDelete(const DataItem::WriteCallback& callback) {
+  void AddDelete(DataItem::WriteOnceCallback callback) {
     PendingOperation operation(OperationType::kDelete);
-    operation.delete_callback = callback;
+    operation.delete_callback = std::move(callback);
 
     pending_operations_.emplace(std::move(operation));
   }
@@ -287,7 +287,7 @@ class OperationQueue {
     ASSERT_FALSE(pending_operations_.empty());
     ASSERT_FALSE(deleted_);
 
-    const PendingOperation& operation = pending_operations_.front();
+    PendingOperation& operation = pending_operations_.front();
 
     ASSERT_EQ(expected_type, operation.type);
 
@@ -295,9 +295,10 @@ class OperationQueue {
       case OperationType::kWrite: {
         if (result == OperationResult::kSuccess)
           content_ = operation.data;
-        DataItem::WriteCallback callback = operation.write_callback;
+        DataItem::WriteOnceCallback callback =
+            std::move(operation.write_callback);
         pending_operations_.pop();
-        callback.Run(result);
+        std::move(callback).Run(result);
         break;
       }
       case OperationType::kDelete: {
@@ -307,9 +308,10 @@ class OperationQueue {
           content_ = std::vector<char>();
         }
 
-        DataItem::WriteCallback callback = operation.delete_callback;
+        DataItem::WriteOnceCallback callback =
+            std::move(operation.delete_callback);
         pending_operations_.pop();
-        callback.Run(result);
+        std::move(callback).Run(result);
         break;
       }
       case OperationType::kRead: {
@@ -319,9 +321,10 @@ class OperationQueue {
                                                             content_.end());
         }
 
-        DataItem::ReadCallback callback = operation.read_callback;
+        DataItem::ReadOnceCallback callback =
+            std::move(operation.read_callback);
         pending_operations_.pop();
-        callback.Run(result, std::move(result_data));
+        std::move(callback).Run(result, std::move(result_data));
         break;
       }
       default:

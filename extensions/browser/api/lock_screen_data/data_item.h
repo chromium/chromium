@@ -33,13 +33,17 @@ enum class OperationResult;
 // Wrapper around a per extension value store backed lock screen data item.
 class DataItem {
  public:
-  using WriteCallback = base::Callback<void(OperationResult result)>;
-  using ReadCallback =
-      base::Callback<void(OperationResult result,
-                          std::unique_ptr<std::vector<char>> data)>;
   // TODO(bokan): The multiple callback versions are temporary while we remove
   // the base::Callback version in favor of base::OnceCallback.
   // https://crbug.com/1152268.
+  using WriteOnceCallback = base::OnceCallback<void(OperationResult result)>;
+  using WriteCallback = base::Callback<void(OperationResult result)>;
+  using ReadOnceCallback =
+      base::OnceCallback<void(OperationResult result,
+                              std::unique_ptr<std::vector<char>> data)>;
+  using ReadCallback =
+      base::Callback<void(OperationResult result,
+                          std::unique_ptr<std::vector<char>> data)>;
   using RegisteredValuesCallback =
       base::Callback<void(OperationResult result,
                           std::unique_ptr<base::DictionaryValue> values)>;
