@@ -49,6 +49,15 @@
             sub-label="$i18n{permissionsPageDescription}"
             on-click="onPermissionsPageClick_"
             role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
+        <cr-link-row id="privacySandboxLinkRow"
+            start-icon="settings20:experiment"
+            class="hr"
+            label="$i18n{privacySandboxTitle}"
+            sub-label="$i18n{privacySandboxTitle}"
+            on-click="onPrivacySandboxClick_"
+            hidden="[[!enablePrivacySandboxSettings_]]"
+            external
+            role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
       </div>
 
 <if expr="use_nss_certs">

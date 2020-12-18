@@ -78,6 +78,7 @@ suite('PrivacyPage', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       enableContentSettingsRedesign: false,
+      privacySandboxSettingsEnabled: false,
     });
   });
 
@@ -153,8 +154,27 @@ suite('PrivacyPage', function() {
         0);
     assertFalse(isChildVisible(page, '#notficationRadioGroup'));
   });
+
+  test('privacySandboxRowNotVisible', function() {
+    assertFalse(isChildVisible(page, '#privacySandboxLinkRow'));
+  });
 });
 
+suite('PrivacySandboxSettingsEnabled', function() {
+  /** @type {!SettingsPrivacyPageElement} */
+  let page;
+
+  setup(function() {
+    document.body.innerHTML = '';
+    page = /** @type {!SettingsPrivacyPageElement} */
+        (document.createElement('settings-privacy-page'));
+    document.body.appendChild(page);
+  });
+
+  test('privacySandboxRowVisible', function() {
+    assertTrue(isChildVisible(page, '#privacySandboxLinkRow'));
+  });
+});
 
 suite('ContentSettingsRedesign', function() {
   /** @type {!SettingsPrivacyPageElement} */

@@ -165,6 +165,12 @@ Polymer({
           loadTimeData.getBoolean('enableWebBluetoothNewPermissionsBackend'),
     },
 
+    /** @private */
+    enablePrivacySandboxSettings_: {
+      type: Boolean,
+      value: () => loadTimeData.getBoolean('privacySandboxSettingsEnabled'),
+    },
+
     /** @private {!Map<string, string>} */
     focusConfig_: {
       type: Object,
@@ -326,6 +332,13 @@ Polymer({
     this.metricsBrowserProxy_.recordAction(
         'SafeBrowsing.Settings.ShowedFromParentSettings');
     Router.getInstance().navigateTo(routes.SECURITY);
+  },
+
+  /** @private */
+  onPrivacySandboxClick_() {
+    // TODO(crbug/1159942): Replace this with an ordinary OpenWindowProxy call
+    // once crbug/1159942 is fixed.
+    window.location = 'chrome://settings/privacySandbox';
   },
 
   /** @private */

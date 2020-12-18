@@ -318,6 +318,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "safetyCheckWeakPasswordsEnabled",
       base::FeatureList::IsEnabled(features::kSafetyCheckWeakPasswords));
 
+  html_source->AddBoolean(
+      "privacySandboxSettingsEnabled",
+      base::FeatureList::IsEnabled(features::kPrivacySandboxSettings));
+
   AddSettingsPageUIHandler(std::make_unique<AboutHandler>(profile));
   AddSettingsPageUIHandler(std::make_unique<ResetSettingsHandler>(profile));
 

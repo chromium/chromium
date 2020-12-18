@@ -1444,13 +1444,22 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
 }
 
 void AddPrivacySandboxStrings(content::WebUIDataSource* html_source) {
+  // Strings that need to be available in any case.
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"privacySandboxTitle", IDS_SETTINGS_PRIVACY_SANDBOX_TITLE},
-      {"privacySandboxPageHeading", IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_HEADING},
   };
   AddLocalizedStringsBulk(html_source, kLocalizedStrings);
 
-  html_source->AddString("privacySandboxURL", chrome::kPrivacySandboxURL);
+  // Strings that only need to be available when the flag is enabled.
+  if (base::FeatureList::IsEnabled(features::kPrivacySandboxSettings)) {
+    static constexpr webui::LocalizedString kLocalizedStringsBehindFlag[] = {
+        {"privacySandboxPageHeading",
+         IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_HEADING},
+    };
+    AddLocalizedStringsBulk(html_source, kLocalizedStringsBehindFlag);
+
+    html_source->AddString("privacySandboxURL", chrome::kPrivacySandboxURL);
+  }
 }
 
 void AddSafetyCheckStrings(content::WebUIDataSource* html_source) {
@@ -2434,6 +2443,7 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source,
   AddLanguagesStrings(html_source, profile);
   AddOnStartupStrings(html_source);
   AddPeopleStrings(html_source, profile);
+  AddPrivacySandboxStrings(html_source);
   AddPrivacyStrings(html_source, profile);
   AddSafetyCheckStrings(html_source);
   AddResetStrings(html_source, profile);
@@ -2441,9 +2451,6 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source,
   AddSearchInSettingsStrings(html_source);
   AddSearchStrings(html_source);
   AddSiteSettingsStrings(html_source, profile);
-
-  if (base::FeatureList::IsEnabled(features::kPrivacySandboxSettings))
-    AddPrivacySandboxStrings(html_source);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   AddChromeOSUserStrings(html_source, profile);

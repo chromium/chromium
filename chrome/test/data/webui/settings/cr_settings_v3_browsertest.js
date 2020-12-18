@@ -377,6 +377,11 @@ var CrSettingsPrivacyPageV3Test = class extends CrSettingsV3BrowserTest {
   get browsePreload() {
     return 'chrome://settings/test_loader.html?module=settings/privacy_page_test.js';
   }
+
+  /** @override */
+  get featureList() {
+    return {enabled: ['features::kPrivacySandboxSettings']};
+  }
 };
 
 TEST_F('CrSettingsPrivacyPageV3Test', 'PrivacyPageTests', function() {
