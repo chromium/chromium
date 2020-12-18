@@ -11,10 +11,9 @@ namespace blink {
 namespace {
 
 struct SameSizeAsNGInlineChildLayoutContext {
-  NGFragmentItemsBuilder items_builder_;
   NGLogicalLineItems line_items_;
   base::Optional<NGInlineLayoutStateStack> box_states_;
-  void* pointers[1];
+  void* pointers[2];
   unsigned number;
   Vector<scoped_refptr<const NGBlockBreakToken>> propagated_float_break_tokens_;
 };
@@ -27,10 +26,7 @@ static_assert(
 
 }  // namespace
 
-NGInlineChildLayoutContext::NGInlineChildLayoutContext(
-    const NGInlineNode& node,
-    WritingDirectionMode writing_direction)
-    : items_builder_(node, writing_direction) {}
+NGInlineChildLayoutContext::NGInlineChildLayoutContext() = default;
 NGInlineChildLayoutContext::~NGInlineChildLayoutContext() = default;
 
 NGInlineLayoutStateStack*

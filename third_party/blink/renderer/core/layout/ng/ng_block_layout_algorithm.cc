@@ -428,13 +428,26 @@ scoped_refptr<const NGLayoutResult> NGBlockLayoutAlgorithm::Layout() {
 NOINLINE scoped_refptr<const NGLayoutResult>
 NGBlockLayoutAlgorithm::LayoutWithInlineChildLayoutContext(
     const NGLayoutInputNode& first_child) {
-  NGInlineChildLayoutContext context(To<NGInlineNode>(first_child),
-                                     container_builder_.GetWritingDirection());
-  container_builder_.SetItemsBuilder(context.ItemsBuilder());
-  scoped_refptr<const NGLayoutResult> result = Layout(&context);
-  // |NGFragmentItemsBuilder| is owned by |NGInlineChildLayoutContext| which is
-  // on stack. Make sure it is no longer referred.
+  NGInlineChildLayoutContext context;
+  if (!RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled())
+    return Layout(&context);
+  return LayoutWithItemsBuilder(To<NGInlineNode>(first_child), &context);
+}
+
+NOINLINE scoped_refptr<const NGLayoutResult>
+NGBlockLayoutAlgorithm::LayoutWithItemsBuilder(
+    const NGInlineNode& first_child,
+    NGInlineChildLayoutContext* context) {
+  NGFragmentItemsBuilder items_builder(
+      first_child, container_builder_.GetWritingDirection());
+  container_builder_.SetItemsBuilder(&items_builder);
+  context->SetItemsBuilder(&items_builder);
+  scoped_refptr<const NGLayoutResult> result = Layout(context);
+  // Ensure stack-allocated |NGFragmentItemsBuilder| is not used anymore.
+  // TODO(kojii): Revisit when the storage of |NGFragmentItemsBuilder| is
+  // finalized.
   container_builder_.SetItemsBuilder(nullptr);
+  context->SetItemsBuilder(nullptr);
   return result;
 }
 
@@ -967,6 +980,7 @@ bool NGBlockLayoutAlgorithm::TryReuseFragmentsFromCache(
     NGInlineNode inline_node,
     NGPreviousInflowPosition* previous_inflow_position,
     scoped_refptr<const NGInlineBreakToken>* inline_break_token_out) {
+  DCHECK(RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled());
   DCHECK(previous_result_);
   DCHECK(!inline_node.IsEmptyInline());
   DCHECK(container_builder_.BfcBlockOffset());
@@ -1583,7 +1597,8 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::HandleInflow(
     is_non_empty_inline = !child_inline_node->IsEmptyInline();
 
     // Add reusable line boxes from |previous_result_| if any.
-    if (is_non_empty_inline && !child_break_token && previous_result_) {
+    if (is_non_empty_inline && !child_break_token && previous_result_ &&
+        RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled()) {
       if (!ResolveBfcBlockOffset(previous_inflow_position))
         return NGLayoutResult::kBfcBlockOffsetResolved;
       DCHECK(container_builder_.BfcBlockOffset());

@@ -227,11 +227,13 @@ scoped_refptr<const NGLayoutResult> NGSimplifiedLayoutAlgorithm::Layout() {
 
   // We add both items and line-box fragments for existing mechanisms to work.
   // We may revisit this in future. See also |NGBoxFragmentBuilder::AddResult|.
-  if (const NGFragmentItems* previous_items = previous_fragment.Items()) {
-    auto* items_builder = container_builder_.ItemsBuilder();
-    DCHECK(items_builder);
-    DCHECK_EQ(items_builder->GetWritingDirection(), writing_direction_);
-    items_builder->AddPreviousItems(previous_fragment, *previous_items);
+  if (RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled()) {
+    if (const NGFragmentItems* previous_items = previous_fragment.Items()) {
+      auto* items_builder = container_builder_.ItemsBuilder();
+      DCHECK(items_builder);
+      DCHECK_EQ(items_builder->GetWritingDirection(), writing_direction_);
+      items_builder->AddPreviousItems(previous_fragment, *previous_items);
+    }
   }
 
   NGOutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
