@@ -32,12 +32,14 @@ class FontAccessChooserController : public ChooserController {
   base::string16 GetOkButtonLabel() const override;
   size_t NumOptions() const override;
   base::string16 GetOption(size_t index) const override;
+  base::string16 GetSelectAllCheckboxLabel() const override;
 
   bool ShouldShowHelpButton() const override;
   bool ShouldShowReScanButton() const override;
   bool BothButtonsAlwaysEnabled() const override;
   bool TableViewAlwaysDisabled() const override;
   bool AllowMultipleSelection() const override;
+  bool ShouldShowSelectAllCheckbox() const override;
 
   void Select(const std::vector<size_t>& indices) override;
   void Cancel() override;

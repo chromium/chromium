@@ -71,6 +71,11 @@ base::string16 FontAccessChooserController::GetOption(size_t index) const {
   return base::UTF8ToUTF16(items_[index]);
 }
 
+base::string16 FontAccessChooserController::GetSelectAllCheckboxLabel() const {
+  return l10n_util::GetStringUTF16(
+      IDS_FONT_ACCESS_CHOOSER_SELECT_ALL_CHECKBOX_TEXT);
+}
+
 bool FontAccessChooserController::ShouldShowHelpButton() const {
   return false;
 }
@@ -85,6 +90,10 @@ bool FontAccessChooserController::BothButtonsAlwaysEnabled() const {
 }
 
 bool FontAccessChooserController::AllowMultipleSelection() const {
+  return true;
+}
+
+bool FontAccessChooserController::ShouldShowSelectAllCheckbox() const {
   return true;
 }
 

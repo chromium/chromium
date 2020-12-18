@@ -20,6 +20,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/resources/grit/ui_resources.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/button/label_button.h"
@@ -118,7 +119,22 @@ DeviceChooserContentView::DeviceChooserContentView(
   chooser_controller_->set_view(this);
 
   SetPreferredSize({402, 320});
-  SetLayoutManager(std::make_unique<views::FillLayout>());
+
+  if (chooser_controller_->ShouldShowSelectAllCheckbox()) {
+    SetLayoutManager(std::make_unique<views::BoxLayout>(
+        views::BoxLayout::Orientation::kVertical));
+    auto select_all_view = std::make_unique<views::Checkbox>(
+        chooser_controller_->GetSelectAllCheckboxLabel());
+    select_all_view->SetVisible(false);
+    select_all_subscription_ = select_all_view->AddCheckedChangedCallback(
+        base::BindRepeating(&DeviceChooserContentView::SelectAllCheckboxChanged,
+                            base::Unretained(this)));
+    select_all_view_ = AddChildView(std::move(select_all_view));
+  } else {
+    // FillLayout is the default. There will only be the ScrollView,
+    // therefore there's no point to have a BoxLayout.
+    SetLayoutManager(std::make_unique<views::FillLayout>());
+  }
 
   std::vector<ui::TableColumn> table_columns = {ui::TableColumn()};
   auto table_view = std::make_unique<views::TableView>(
@@ -134,6 +150,12 @@ DeviceChooserContentView::DeviceChooserContentView(
 
   table_parent_ = AddChildView(
       views::TableView::CreateScrollViewWithTable(std::move(table_view)));
+  if (chooser_controller_->ShouldShowSelectAllCheckbox()) {
+    // This will be using the BoxLayout manager.
+    // Set min and max height, otherwise CalculatePreferredSize() will be
+    // called, returning 0, 0 always.
+    table_parent_->ClipHeightTo(320, 320);
+  }
 
   const auto add_centering_view = [this](auto view) {
     auto* container = AddChildView(std::make_unique<views::View>());
@@ -342,6 +364,12 @@ void DeviceChooserContentView::UpdateTableView() {
       GetWidget()->GetFocusManager()->GetFocusedView()) {
     is_initialized_ = true;  // Can show no_options_view_ after initial focus.
   }
+
+  if (select_all_view_) {
+    select_all_view_->SetVisible(
+        has_options && chooser_controller_->ShouldShowSelectAllCheckbox());
+  }
+
   table_parent_->SetVisible(has_options);
   table_view_->SetEnabled(has_options &&
                           !chooser_controller_->TableViewAlwaysDisabled());
@@ -350,6 +378,11 @@ void DeviceChooserContentView::UpdateTableView() {
   no_options_view_->SetVisible(!has_options && adapter_enabled_ &&
                                is_initialized_);
   adapter_off_view_->SetVisible(!adapter_enabled_);
+}
+
+void DeviceChooserContentView::SelectAllCheckboxChanged() {
+  DCHECK(select_all_view_ && table_view_);
+  table_view_->SetSelectionAll(/*select=*/select_all_view_->GetChecked());
 }
 
 views::LabelButton* DeviceChooserContentView::ReScanButtonForTesting() {

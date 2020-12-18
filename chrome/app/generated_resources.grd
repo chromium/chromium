@@ -10251,6 +10251,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_FONT_ACCESS_CHOOSER_CANCEL_BUTTON_TEXT" desc="Label on the button that closes the chooser popup without selecting an option.">
         Cancel
       </message>
+      <message name="IDS_FONT_ACCESS_CHOOSER_SELECT_ALL_CHECKBOX_TEXT" desc="Label for the checkbox that allows the selection of all fonts.">
+        Select all fonts
+      </message>
     </if>
 
     <!-- Chrome IME API activated bubble. -->

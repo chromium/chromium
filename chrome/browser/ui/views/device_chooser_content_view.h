@@ -16,6 +16,7 @@
 
 class BluetoothStatusContainer;
 namespace views {
+class Checkbox;
 class Label;
 class LabelButton;
 class TableView;
@@ -61,6 +62,7 @@ class DeviceChooserContentView : public views::View,
   void Cancel();
   void Close();
   void UpdateTableView();
+  void SelectAllCheckboxChanged();
 
   // Test-only accessors to children.
   views::TableView* table_view_for_testing() { return table_view_; }
@@ -75,13 +77,15 @@ class DeviceChooserContentView : public views::View,
 
   bool adapter_enabled_ = true;
 
-  views::View* table_parent_ = nullptr;
+  views::ScrollView* table_parent_ = nullptr;
+  views::Checkbox* select_all_view_ = nullptr;
   views::TableView* table_view_ = nullptr;
   views::View* no_options_view_ = nullptr;
   views::View* adapter_off_view_ = nullptr;
   BluetoothStatusContainer* bluetooth_status_container_ = nullptr;
 
   bool is_initialized_ = false;
+  base::CallbackListSubscription select_all_subscription_;
 
   DISALLOW_COPY_AND_ASSIGN(DeviceChooserContentView);
 };

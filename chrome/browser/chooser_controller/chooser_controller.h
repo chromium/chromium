@@ -79,6 +79,9 @@ class ChooserController {
   // Returns whether the chooser allows multiple items to be selected.
   virtual bool AllowMultipleSelection() const;
 
+  // Returns whether the chooser needs to show a select-all checkbox.
+  virtual bool ShouldShowSelectAllCheckbox() const;
+
   // Returns the text to be displayed in the chooser when there are no options.
   virtual base::string16 GetNoOptionsText() const = 0;
 
@@ -87,6 +90,9 @@ class ChooserController {
 
   // Returns the label for Cancel button.
   virtual base::string16 GetCancelButtonLabel() const;
+
+  // Returns the label for SelectAll checkbox.
+  virtual base::string16 GetSelectAllCheckboxLabel() const;
 
   // Returns whether both OK and Cancel buttons are enabled.
   //

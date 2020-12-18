@@ -17,6 +17,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/table/table_view.h"
 #include "ui/views/controls/table/table_view_observer.h"
@@ -76,7 +77,7 @@ class DeviceChooserContentViewTest : public ChromeViewsTestBase {
   views::TableView* table_view() {
     return content_view_->table_view_for_testing();
   }
-  views::View* table_parent() { return content_view_->table_parent_; }
+  views::ScrollView* table_parent() { return content_view_->table_parent_; }
   ui::TableModel* table_model() { return table_view()->model(); }
   views::View* no_options_view() { return content_view_->no_options_view_; }
   views::View* adapter_off_view() { return content_view_->adapter_off_view_; }
