@@ -187,16 +187,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterClient : public BluezDBusClient {
                      base::OnceClosure callback,
                      ErrorCallback error_callback);
 
-  // Pauses all discovery sessions.
-  virtual void PauseDiscovery(const dbus::ObjectPath& object_path,
-                              base::OnceClosure callback,
-                              ErrorCallback error_callback) = 0;
-
-  // Unpauses all discovery sessions.
-  virtual void UnpauseDiscovery(const dbus::ObjectPath& object_path,
-                                base::OnceClosure callback,
-                                ErrorCallback error_callback) = 0;
-
   // Removes from the adapter with object path |object_path| the remote
   // device with object path |object_path| from the list of known devices
   // and discards any pairing information.

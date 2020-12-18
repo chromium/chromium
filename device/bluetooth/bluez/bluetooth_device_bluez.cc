@@ -169,14 +169,6 @@ BluetoothDeviceBlueZ::~BluetoothDeviceBlueZ() {
     adapter()->NotifyGattServiceRemoved(
         static_cast<BluetoothRemoteGattServiceBlueZ*>(iter.second.get()));
   }
-
-  // We pause discovery when trying to connect. Ensure discovery is unpaused if
-  // we get destroyed during a pending connection.
-  if (IsConnecting()) {
-    BLUETOOTH_LOG(EVENT) << object_path_.value()
-                         << ": Unpausing discovery. Device removed.";
-    UnpauseDiscovery();
-  }
 }
 
 uint32_t BluetoothDeviceBlueZ::GetBluetoothClass() const {
@@ -511,32 +503,8 @@ void BluetoothDeviceBlueZ::Connect(
       base::AdaptCallbackForRepeating(std::move(error_callback));
 
   if (IsPaired() || !pairing_delegate) {
-    BLUETOOTH_LOG(EVENT) << object_path_.value() << ": Pausing discovery";
     // No need to pair, or unable to, skip straight to connection.
-    bluez::BluezDBusManager::Get()->GetBluetoothAdapterClient()->PauseDiscovery(
-        adapter()->object_path(),
-        base::BindOnce(
-            [](base::WeakPtr<BluetoothDeviceBlueZ> weak_ptr,
-               base::OnceClosure callback,
-               ConnectErrorCallback error_callback) {
-              BLUETOOTH_LOG(EVENT) << "Successfully paused discovery";
-              if (weak_ptr)
-                weak_ptr->ConnectInternal(std::move(callback),
-                                          std::move(error_callback));
-            },
-            weak_ptr_factory_.GetWeakPtr(), dupe_callback, dupe_error_callback),
-        base::BindOnce(
-            [](base::WeakPtr<BluetoothDeviceBlueZ> weak_ptr,
-               base::OnceClosure callback, ConnectErrorCallback error_callback,
-               const std::string& error_name,
-               const std::string& error_message) {
-              BLUETOOTH_LOG(EVENT) << "Failed to pause discovery";
-              if (weak_ptr)
-                weak_ptr->ConnectInternal(std::move(callback),
-                                          std::move(error_callback));
-            },
-            weak_ptr_factory_.GetWeakPtr(), dupe_callback,
-            dupe_error_callback));
+    ConnectInternal(dupe_callback, dupe_error_callback);
   } else {
     // Initiate high-security connection with pairing.
     BeginPairing(pairing_delegate);
@@ -951,7 +919,6 @@ void BluetoothDeviceBlueZ::ConnectInternal(
 void BluetoothDeviceBlueZ::OnConnect(base::OnceClosure callback) {
   BLUETOOTH_LOG(EVENT) << object_path_.value()
                        << ": Unpausing discovery after connection";
-  UnpauseDiscovery();
   if (--num_connecting_calls_ == 0)
     adapter()->NotifyDeviceChanged(this);
 
@@ -969,7 +936,6 @@ void BluetoothDeviceBlueZ::OnConnectError(ConnectErrorCallback error_callback,
                                           const std::string& error_message) {
   BLUETOOTH_LOG(EVENT) << object_path_.value()
                        << ": Unpausing discovery after failed connection";
-  UnpauseDiscovery();
 
   if (--num_connecting_calls_ == 0)
     adapter()->NotifyDeviceChanged(this);
@@ -1092,17 +1058,6 @@ void BluetoothDeviceBlueZ::OnForgetError(ErrorCallback error_callback,
                        << ": Failed to remove device: " << error_name << ": "
                        << error_message;
   std::move(error_callback).Run();
-}
-
-void BluetoothDeviceBlueZ::UnpauseDiscovery() {
-  bluez::BluezDBusManager::Get()->GetBluetoothAdapterClient()->UnpauseDiscovery(
-      adapter()->object_path(), base::BindOnce([]() {
-        BLUETOOTH_LOG(EVENT) << "Successfully un-paused discovery";
-      }),
-      base::BindOnce(
-          [](const std::string& error_name, const std::string& error_message) {
-            BLUETOOTH_LOG(EVENT) << "Failed to un-pause discovery";
-          }));
 }
 
 }  // namespace bluez

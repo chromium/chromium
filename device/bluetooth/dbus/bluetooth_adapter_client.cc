@@ -278,56 +278,6 @@ class BluetoothAdapterClientImpl : public BluetoothAdapterClient,
   }
 
   // BluetoothAdapterClient override.
-  void PauseDiscovery(const dbus::ObjectPath& object_path,
-                      base::OnceClosure callback,
-                      ErrorCallback error_callback) override {
-    dbus::MethodCall method_call(bluetooth_adapter::kBluetoothAdapterInterface,
-                                 bluetooth_adapter::kPauseDiscovery);
-    dbus::MessageWriter writer(&method_call);
-    writer.AppendBool(false);  // Not a system suspend
-
-    dbus::ObjectProxy* object_proxy =
-        object_manager_->GetObjectProxy(object_path);
-    if (!object_proxy) {
-      std::move(error_callback).Run(kUnknownAdapterError, "");
-      return;
-    }
-
-    object_proxy->CallMethodWithErrorCallback(
-        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&BluetoothAdapterClientImpl::OnSuccess,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-        base::BindOnce(&BluetoothAdapterClientImpl::OnError,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       std::move(error_callback)));
-  }
-
-  // BluetoothAdapterClient override.
-  void UnpauseDiscovery(const dbus::ObjectPath& object_path,
-                        base::OnceClosure callback,
-                        ErrorCallback error_callback) override {
-    dbus::MethodCall method_call(bluetooth_adapter::kBluetoothAdapterInterface,
-                                 bluetooth_adapter::kUnpauseDiscovery);
-    dbus::MessageWriter writer(&method_call);
-    writer.AppendBool(false);  // Not a system suspend
-
-    dbus::ObjectProxy* object_proxy =
-        object_manager_->GetObjectProxy(object_path);
-    if (!object_proxy) {
-      std::move(error_callback).Run(kUnknownAdapterError, "");
-      return;
-    }
-
-    object_proxy->CallMethodWithErrorCallback(
-        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&BluetoothAdapterClientImpl::OnSuccess,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-        base::BindOnce(&BluetoothAdapterClientImpl::OnError,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       std::move(error_callback)));
-  }
-
-  // BluetoothAdapterClient override.
   void RemoveDevice(const dbus::ObjectPath& object_path,
                     const dbus::ObjectPath& device_path,
                     base::OnceClosure callback,
