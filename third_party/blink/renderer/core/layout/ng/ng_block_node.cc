@@ -1227,7 +1227,14 @@ void NGBlockNode::PlaceChildrenInFlowThread(
     const auto& child_fragment = To<NGPhysicalBoxFragment>(*child);
     const auto* child_box = To<LayoutBox>(child_fragment.GetLayoutObject());
     if (child_box && child_box != box_) {
-      DCHECK(child_box->IsColumnSpanAll());
+      if (!child_box->IsColumnSpanAll()) {
+        // TODO(almaher): In order for legacy tree operations to work properly,
+        // we need to CopyChildFragmentPosition(). We should probably also
+        // update the LayoutBox size at the last fragment of an OOF node.
+        // (See comments in CL:2597769).
+        DCHECK(child_box->IsOutOfFlowPositioned());
+        continue;
+      }
       CopyChildFragmentPosition(child_fragment, child.offset,
                                 physical_fragment);
       LayoutBox* placeholder = child_box->SpannerPlaceholder();
