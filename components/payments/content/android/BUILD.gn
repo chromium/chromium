@@ -72,13 +72,18 @@ generate_jni("jni_headers") {
   ]
 }
 
-# Temporarily empty target for downstream to depend on before resources move.
-java_group("minimal_java_resources") {
+android_resources("minimal_java_resources") {
+  sources = [
+    "//components/payments/content/android/google_pay_res/drawable/google_pay.xml",
+    "//components/payments/content/android/google_pay_res/values-night/colors.xml",
+    "//components/payments/content/android/google_pay_res/values/colors.xml",
+  ]
 }
 
 android_resources("java_resources") {
   sources = payments_java_resources
   deps = [
+    ":minimal_java_resources",
     "//components/browser_ui/strings/android:browser_ui_strings_grd",
     "//components/browser_ui/styles/android:java_resources",
     "//components/strings:components_strings_grd",
@@ -114,7 +119,7 @@ android_library("service_java") {
   ]
 }
 
-android_library("java") {
+android_library("full_java") {
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   sources = [
     "java/src/org/chromium/components/payments/AndroidPaymentApp.java",
@@ -127,23 +132,14 @@ android_library("java") {
     "java/src/org/chromium/components/payments/JniPaymentApp.java",
     "java/src/org/chromium/components/payments/JourneyLogger.java",
     "java/src/org/chromium/components/payments/MojoPaymentRequestGateKeeper.java",
-    "java/src/org/chromium/components/payments/MojoStructCollection.java",
     "java/src/org/chromium/components/payments/OriginSecurityChecker.java",
-    "java/src/org/chromium/components/payments/PaymentApp.java",
-    "java/src/org/chromium/components/payments/PaymentAppFactoryDelegate.java",
-    "java/src/org/chromium/components/payments/PaymentAppFactoryInterface.java",
-    "java/src/org/chromium/components/payments/PaymentAppFactoryParams.java",
-    "java/src/org/chromium/components/payments/PaymentAppService.java",
     "java/src/org/chromium/components/payments/PaymentDetailsConverter.java",
-    "java/src/org/chromium/components/payments/PaymentHandlerHost.java",
     "java/src/org/chromium/components/payments/PaymentManifestDownloader.java",
     "java/src/org/chromium/components/payments/PaymentManifestParser.java",
     "java/src/org/chromium/components/payments/PaymentNotShownError.java",
     "java/src/org/chromium/components/payments/PaymentOptionsUtils.java",
-    "java/src/org/chromium/components/payments/PaymentRequestParams.java",
     "java/src/org/chromium/components/payments/PaymentRequestService.java",
     "java/src/org/chromium/components/payments/PaymentRequestServiceUtil.java",
-    "java/src/org/chromium/components/payments/PaymentRequestSpec.java",
     "java/src/org/chromium/components/payments/PaymentResponseHelper.java",
     "java/src/org/chromium/components/payments/PaymentResponseHelperInterface.java",
     "java/src/org/chromium/components/payments/PaymentUiServiceTestInterface.java",
@@ -159,6 +155,7 @@ android_library("java") {
   resources_package = "org.chromium.components.payments"
   deps = [
     ":java_resources",
+    ":minimal_java",
     ":service_java",
     "//base:base_java",
     "//base:jni_java",
@@ -181,16 +178,51 @@ android_library("java") {
     "//url:origin_java",
   ]
   srcjar_deps = [
-    ":method_strings_generated_srcjar",
-    ":payment_app_type_generated_enum",
     ":payments_journey_logger_enum_javagen",
     ":prefs_strings_generated_srcjar",
   ]
   resources_package = "org.chromium.components.payments"
 }
 
-# Temporarily empty target for downstream to depend on before dependencies move.
-java_group("minimal_java") {
+# Minimal target that only includes what downstream code depends on.
+android_library("minimal_java") {
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  sources = [
+    "java/src/org/chromium/components/payments/MojoStructCollection.java",
+    "java/src/org/chromium/components/payments/PaymentApp.java",
+    "java/src/org/chromium/components/payments/PaymentAppFactoryDelegate.java",
+    "java/src/org/chromium/components/payments/PaymentAppFactoryInterface.java",
+    "java/src/org/chromium/components/payments/PaymentAppFactoryParams.java",
+    "java/src/org/chromium/components/payments/PaymentAppService.java",
+    "java/src/org/chromium/components/payments/PaymentHandlerHost.java",
+    "java/src/org/chromium/components/payments/PaymentRequestParams.java",
+    "java/src/org/chromium/components/payments/PaymentRequestSpec.java",
+  ]
+  deps = [
+    ":service_java",
+    "//base:base_java",
+    "//base:jni_java",
+    "//components/autofill/android:payments_autofill_java",
+    "//components/payments/mojom:mojom_java",
+    "//content/public/android:content_java",
+    "//mojo/public/java:bindings_java",
+    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/android_deps:androidx_collection_collection_java",
+    "//third_party/blink/public/mojom:android_mojo_bindings_java",
+    "//url:origin_java",
+  ]
+  srcjar_deps = [
+    ":method_strings_generated_srcjar",
+    ":payment_app_type_generated_enum",
+  ]
+  resources_package = "org.chromium.components.payments"
+}
+
+java_group("java") {
+  deps = [
+    ":full_java",
+    ":minimal_java",
+  ]
 }
 
 android_aidl("payment_details_update_service_aidl") {

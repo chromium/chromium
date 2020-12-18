@@ -36,9 +36,10 @@ java_cpp_enum("autofill_core_browser_java_enums") {
   ]
 }
 
-android_library("autofill_java") {
+android_library("full_autofill_java") {
   deps = [
     ":autofill_java_resources",
+    ":payments_autofill_java",
     "//base:base_java",
     "//content/public/android:content_java",
     "//third_party/android_deps:androidx_annotation_annotation_java",
@@ -52,9 +53,24 @@ android_library("autofill_java") {
     "java/src/org/chromium/components/autofill/AutofillDropdownFooter.java",
     "java/src/org/chromium/components/autofill/AutofillPopup.java",
     "java/src/org/chromium/components/autofill/AutofillSuggestion.java",
-    "java/src/org/chromium/components/autofill/Completable.java",
-    "java/src/org/chromium/components/autofill/EditableOption.java",
   ]
   srcjar_deps = [ ":autofill_core_browser_java_enums" ]
   resources_package = "org.chromium.components.autofill"
+}
+
+# A library containing the minimal deps for payments, so that ui_java_resources
+# doesn't have to be pulled in.
+android_library("payments_autofill_java") {
+  sources = [
+    "java/src/org/chromium/components/autofill/Completable.java",
+    "java/src/org/chromium/components/autofill/EditableOption.java",
+  ]
+  deps = [ "//third_party/android_deps:androidx_annotation_annotation_java" ]
+}
+
+java_group("autofill_java") {
+  deps = [
+    ":full_autofill_java",
+    ":payments_autofill_java",
+  ]
 }

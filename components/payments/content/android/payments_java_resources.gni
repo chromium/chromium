@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 payments_java_resources = [
-  "//components/payments/content/android/java/res/drawable/google_pay.xml",
   "//components/payments/content/android/java/res/layout/payment_handler_content.xml",
   "//components/payments/content/android/java/res/layout/payment_minimal_ui_content.xml",
   "//components/payments/content/android/java/res/layout/payment_minimal_ui_toolbar.xml",
@@ -17,7 +16,6 @@ payments_java_resources = [
   "//components/payments/content/android/java/res/layout/payment_request_header.xml",
   "//components/payments/content/android/java/res/layout/payment_request_spinny.xml",
   "//components/payments/content/android/java/res/layout/payments_request_editor_textview.xml",
-  "//components/payments/content/android/java/res/values-night/colors.xml",
   "//components/payments/content/android/java/res/values-sw600dp/dimens.xml",
   "//components/payments/content/android/java/res/values/colors.xml",
   "//components/payments/content/android/java/res/values/dimens.xml",
