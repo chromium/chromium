@@ -2916,8 +2916,9 @@ void RenderFrameImpl::EnableMojoJsBindings() {
   enable_mojo_js_bindings_ = true;
 }
 
-void RenderFrameImpl::BindWebUI(mojo::PendingReceiver<mojom::WebUI> receiver,
-                                mojo::PendingRemote<mojom::WebUIHost> remote) {
+void RenderFrameImpl::BindWebUI(
+    mojo::PendingAssociatedReceiver<mojom::WebUI> receiver,
+    mojo::PendingAssociatedRemote<mojom::WebUIHost> remote) {
   DCHECK(enabled_bindings_ & BINDINGS_POLICY_WEB_UI);
   WebUIExtensionData::Create(this, std::move(receiver), std::move(remote));
 }

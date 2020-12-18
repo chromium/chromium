@@ -16,9 +16,8 @@
 #include "base/memory/weak_ptr.h"
 #include "content/common/web_ui.mojom.h"
 #include "content/public/browser/web_ui.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 
 namespace content {
 class RenderFrameHost;
@@ -94,7 +93,9 @@ class CONTENT_EXPORT WebUIImpl : public WebUI,
   std::vector<std::unique_ptr<WebUIMessageHandler>>* GetHandlersForTesting()
       override;
 
-  const mojo::Remote<mojom::WebUI>& GetRemoteForTest() const { return remote_; }
+  const mojo::AssociatedRemote<mojom::WebUI>& GetRemoteForTest() const {
+    return remote_;
+  }
   WebUIMainFrameObserver* GetWebUIMainFrameObserverForTest() const {
     return web_contents_observer_.get();
   }
@@ -139,8 +140,8 @@ class CONTENT_EXPORT WebUIImpl : public WebUI,
 
   std::unique_ptr<WebUIController> controller_;
 
-  mojo::Remote<mojom::WebUI> remote_;
-  mojo::Receiver<mojom::WebUIHost> receiver_{this};
+  mojo::AssociatedRemote<mojom::WebUI> remote_;
+  mojo::AssociatedReceiver<mojom::WebUIHost> receiver_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WebUIImpl);
 };

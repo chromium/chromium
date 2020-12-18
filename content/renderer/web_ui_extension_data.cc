@@ -6,22 +6,23 @@
 
 #include "content/common/frame_messages.h"
 #include "content/public/renderer/render_frame.h"
-#include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 
 namespace content {
 
-void WebUIExtensionData::Create(RenderFrame* render_frame,
-                                mojo::PendingReceiver<mojom::WebUI> receiver,
-                                mojo::PendingRemote<mojom::WebUIHost> remote) {
-  mojo::MakeSelfOwnedReceiver(
+void WebUIExtensionData::Create(
+    RenderFrame* render_frame,
+    mojo::PendingAssociatedReceiver<mojom::WebUI> receiver,
+    mojo::PendingAssociatedRemote<mojom::WebUIHost> remote) {
+  mojo::MakeSelfOwnedAssociatedReceiver(
       std::make_unique<WebUIExtensionData>(render_frame, std::move(remote)),
       std::move(receiver));
 }
 
 WebUIExtensionData::WebUIExtensionData(
     RenderFrame* render_frame,
-    mojo::PendingRemote<mojom::WebUIHost> remote)
+    mojo::PendingAssociatedRemote<mojom::WebUIHost> remote)
     : RenderFrameObserver(render_frame),
       RenderFrameObserverTracker<WebUIExtensionData>(render_frame),
       remote_(std::move(remote)) {}

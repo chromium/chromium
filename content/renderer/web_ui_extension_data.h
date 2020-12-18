@@ -12,9 +12,9 @@
 #include "content/common/web_ui.mojom.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/public/renderer/render_frame_observer_tracker.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 
 namespace content {
 
@@ -24,10 +24,12 @@ class WebUIExtensionData
       public mojom::WebUI {
  public:
   static void Create(RenderFrame* render_frame,
-                     mojo::PendingReceiver<mojom::WebUI> receiver,
-                     mojo::PendingRemote<mojom::WebUIHost> remote);
-  explicit WebUIExtensionData(RenderFrame* render_frame,
-                              mojo::PendingRemote<mojom::WebUIHost> remote);
+                     mojo::PendingAssociatedReceiver<mojom::WebUI> receiver,
+                     mojo::PendingAssociatedRemote<mojom::WebUIHost> remote);
+  // TODO(dcheng): Why is this ctor public?
+  explicit WebUIExtensionData(
+      RenderFrame* render_frame,
+      mojo::PendingAssociatedRemote<mojom::WebUIHost> remote);
   ~WebUIExtensionData() override;
 
   // Returns value for a given |key|. Will return an empty string if no such key
@@ -46,7 +48,7 @@ class WebUIExtensionData
 
   std::map<std::string, std::string> variable_map_;
 
-  mojo::Remote<mojom::WebUIHost> remote_;
+  mojo::AssociatedRemote<mojom::WebUIHost> remote_;
 
   DISALLOW_IMPLICIT_CONSTRUCTORS(WebUIExtensionData);
 };

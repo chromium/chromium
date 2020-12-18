@@ -450,8 +450,9 @@ class CONTENT_EXPORT RenderFrameImpl
   // mojom::FrameBindingsControl implementation:
   void AllowBindings(int32_t enabled_bindings_flags) override;
   void EnableMojoJsBindings() override;
-  void BindWebUI(mojo::PendingReceiver<mojom::WebUI> Receiver,
-                 mojo::PendingRemote<mojom::WebUIHost> remote) override;
+  void BindWebUI(
+      mojo::PendingAssociatedReceiver<mojom::WebUI> Receiver,
+      mojo::PendingAssociatedRemote<mojom::WebUIHost> remote) override;
 
   // These mirror mojom::NavigationClient, called by NavigationClient.
   void CommitNavigation(

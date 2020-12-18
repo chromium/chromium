@@ -128,8 +128,8 @@ void WebUIImpl::SetupMojoConnection() {
     return;
 
   frame_host_->GetFrameBindingsControl()->BindWebUI(
-      remote_.BindNewPipeAndPassReceiver(),
-      receiver_.BindNewPipeAndPassRemote());
+      remote_.BindNewEndpointAndPassReceiver(),
+      receiver_.BindNewEndpointAndPassRemote());
 }
 
 void WebUIImpl::InvalidateMojoConnection() {

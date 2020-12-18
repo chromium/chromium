@@ -233,8 +233,8 @@ interface FrameBindingsControl {
   EnableMojoJsBindings();
 
   // Used to bind WebUI and WebUIHost mojo connections.
-  BindWebUI(pending_receiver<content.mojom.WebUI> receiver,
-            pending_remote<content.mojom.WebUIHost> remote);
+  BindWebUI(pending_associated_receiver<content.mojom.WebUI> receiver,
+            pending_associated_remote<content.mojom.WebUIHost> remote);
 };
 
 // Implemented by a service that provides implementations of the Frame
