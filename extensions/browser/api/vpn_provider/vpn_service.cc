@@ -163,14 +163,14 @@ class VpnService::VpnServiceProxyImpl : public content::VpnServiceProxy {
   void Bind(const std::string& extension_id,
             const std::string& configuration_id,
             const std::string& configuration_name,
-            SuccessOnceCallback success,
-            FailureOnceCallback failure,
+            SuccessCallback success,
+            FailureCallback failure,
             std::unique_ptr<content::PepperVpnProviderResourceHostProxy>
                 pepper_vpn_provider_proxy) override;
   void SendPacket(const std::string& extension_id,
                   const std::vector<char>& data,
-                  SuccessOnceCallback success,
-                  FailureOnceCallback failure) override;
+                  SuccessCallback success,
+                  FailureCallback failure) override;
 
  private:
   base::WeakPtr<VpnService> vpn_service_;
@@ -186,8 +186,8 @@ void VpnService::VpnServiceProxyImpl::Bind(
     const std::string& extension_id,
     const std::string& configuration_id,
     const std::string& configuration_name,
-    SuccessOnceCallback success,
-    FailureOnceCallback failure,
+    SuccessCallback success,
+    FailureCallback failure,
     std::unique_ptr<content::PepperVpnProviderResourceHostProxy>
         pepper_vpn_provider_proxy) {
   if (!vpn_service_) {
@@ -203,8 +203,8 @@ void VpnService::VpnServiceProxyImpl::Bind(
 void VpnService::VpnServiceProxyImpl::SendPacket(
     const std::string& extension_id,
     const std::vector<char>& data,
-    SuccessOnceCallback success,
-    FailureOnceCallback failure) {
+    SuccessCallback success,
+    FailureCallback failure) {
   if (!vpn_service_) {
     NOTREACHED();
     return;
@@ -354,8 +354,8 @@ void VpnService::NetworkListChanged() {
 void VpnService::CreateConfiguration(const std::string& extension_id,
                                      const std::string& extension_name,
                                      const std::string& configuration_name,
-                                     SuccessOnceCallback success,
-                                     FailureOnceCallback failure) {
+                                     SuccessCallback success,
+                                     FailureCallback failure) {
   if (configuration_name.empty()) {
     std::move(failure).Run(std::string(),
                            std::string("Empty name not supported."));
@@ -407,8 +407,8 @@ void VpnService::CreateConfiguration(const std::string& extension_id,
 
 void VpnService::DestroyConfiguration(const std::string& extension_id,
                                       const std::string& configuration_id,
-                                      SuccessOnceCallback success,
-                                      FailureOnceCallback failure) {
+                                      SuccessCallback success,
+                                      FailureCallback failure) {
   // The ID is the configuration name for now. This may change in the future.
   const std::string key = GetKey(extension_id, configuration_id);
   if (!base::Contains(key_to_configuration_map_, key)) {
@@ -439,7 +439,7 @@ void VpnService::DestroyConfiguration(const std::string& extension_id,
 void VpnService::SetParameters(const std::string& extension_id,
                                const base::DictionaryValue& parameters,
                                StringCallback success,
-                               FailureOnceCallback failure) {
+                               FailureCallback failure) {
   if (!DoesActiveConfigurationExistAndIsAccessAuthorized(extension_id)) {
     std::move(failure).Run(std::string(), std::string("Unauthorized access."));
     return;
@@ -451,8 +451,8 @@ void VpnService::SetParameters(const std::string& extension_id,
 
 void VpnService::SendPacket(const std::string& extension_id,
                             const std::vector<char>& data,
-                            SuccessOnceCallback success,
-                            FailureOnceCallback failure) {
+                            SuccessCallback success,
+                            FailureCallback failure) {
   if (!DoesActiveConfigurationExistAndIsAccessAuthorized(extension_id)) {
     std::move(failure).Run(std::string(), std::string("Unauthorized access."));
     return;
@@ -470,8 +470,8 @@ void VpnService::SendPacket(const std::string& extension_id,
 
 void VpnService::NotifyConnectionStateChanged(const std::string& extension_id,
                                               api_vpn::VpnConnectionState state,
-                                              SuccessOnceCallback success,
-                                              FailureOnceCallback failure) {
+                                              SuccessCallback success,
+                                              FailureCallback failure) {
   if (!DoesActiveConfigurationExistAndIsAccessAuthorized(extension_id)) {
     std::move(failure).Run(std::string(), std::string("Unauthorized access."));
     return;
@@ -546,7 +546,7 @@ void VpnService::OnExtensionUnloaded(
 }
 
 void VpnService::OnCreateConfigurationSuccess(
-    VpnService::SuccessOnceCallback callback,
+    VpnService::SuccessCallback callback,
     VpnConfiguration* configuration,
     const std::string& service_path,
     const std::string& guid) {
@@ -558,7 +558,7 @@ void VpnService::OnCreateConfigurationSuccess(
 }
 
 void VpnService::OnCreateConfigurationFailure(
-    VpnService::FailureOnceCallback callback,
+    VpnService::FailureCallback callback,
     VpnConfiguration* configuration,
     const std::string& error_name,
     std::unique_ptr<base::DictionaryValue> error_data) {
@@ -567,12 +567,12 @@ void VpnService::OnCreateConfigurationFailure(
 }
 
 void VpnService::OnRemoveConfigurationSuccess(
-    VpnService::SuccessOnceCallback callback) {
+    VpnService::SuccessCallback callback) {
   std::move(callback).Run();
 }
 
 void VpnService::OnRemoveConfigurationFailure(
-    VpnService::FailureOnceCallback callback,
+    VpnService::FailureCallback callback,
     const std::string& error_name,
     std::unique_ptr<base::DictionaryValue> error_data) {
   std::move(callback).Run(error_name, std::string());
@@ -628,8 +628,8 @@ void VpnService::Bind(
     const std::string& extension_id,
     const std::string& configuration_id,
     const std::string& configuration_name,
-    SuccessOnceCallback success,
-    FailureOnceCallback failure,
+    SuccessCallback success,
+    FailureCallback failure,
     std::unique_ptr<content::PepperVpnProviderResourceHostProxy>
         pepper_vpn_provider_proxy) {
   // The ID is the configuration name for now. This may change in the future.
