@@ -263,7 +263,7 @@ void BluezDBusManager::Initialize(dbus::Bus* system_bus) {
   CreateGlobalInstance(system_bus,
                        BluezDBusThreadManager::Get()->GetSystemBus(),
                        false /* use_dbus_stubs */);
-#elif defined(OS_LINUX)
+#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // BluetoothSystem, the client that needs the extra connection, is not
   // implemented on Linux, so no need for an extra Bus.
   CreateGlobalInstance(BluezDBusThreadManager::Get()->GetSystemBus(), nullptr,

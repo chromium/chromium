@@ -4,6 +4,7 @@
 
 import("//build/config/chrome_build.gni")
 import("//build/config/chromecast_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/gclient_args.gni")
 
 declare_args() {
@@ -23,7 +24,7 @@ declare_args() {
   # the binary size impact is small and allows many VR tests to run on Linux
   enable_vr = enable_gvr_services || enable_openxr ||
               (is_linux && (current_cpu == "x64" || current_cpu == "x86") &&
-               !is_chromecast)
+               !is_chromeos_lacros && !is_chromecast)
 
   # Whether to include VR extras like test APKs in non-VR-specific targets
   include_vr_data = false
