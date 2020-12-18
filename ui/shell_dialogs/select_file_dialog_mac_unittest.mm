@@ -501,8 +501,29 @@ TEST_F(SelectFileDialogMacTest, MultipleExtension) {
   EXPECT_FALSE([panel isExtensionHidden]);
 }
 
-// Test to ensure lifetime is sound if a reference to the panel outlives the
-// delegate.
+// Verify that the file dialog does not hide extension when the
+// `keep_extension_visible` flag is set to true.
+TEST_F(SelectFileDialogMacTest, KeepExtensionVisible) {
+  const std::string extensions_arr[][2] = {{"html", "htm"}, {"jpeg", "jpg"}};
+
+  SelectFileDialog::FileTypeInfo file_type_info;
+  file_type_info.extensions.push_back(
+      GetVectorFromArray<std::string>(extensions_arr[0]));
+  file_type_info.extensions.push_back(
+      GetVectorFromArray<std::string>(extensions_arr[1]));
+  file_type_info.keep_extension_visible = true;
+
+  FileDialogArguments args(GetDefaultArguments());
+  args.file_types = &file_type_info;
+
+  SelectFileWithParams(args);
+  NSSavePanel* panel = GetPanel();
+  EXPECT_FALSE([panel canSelectHiddenExtension]);
+  EXPECT_FALSE([panel isExtensionHidden]);
+}
+
+// Test to ensure lifetime is sound if a reference to
+// the panel outlives the delegate.
 TEST_F(SelectFileDialogMacTest, Lifetime) {
   base::scoped_nsobject<NSSavePanel> panel;
   @autoreleasepool {
