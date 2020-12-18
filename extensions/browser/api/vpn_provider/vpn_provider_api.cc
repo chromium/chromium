@@ -205,12 +205,12 @@ ExtensionFunction::ResponseAction VpnProviderCreateConfigFunction::Run() {
   // be used, requiring a mapping between the two.
   service->CreateConfiguration(
       extension_id(), extension()->name(), params->name,
-      base::Bind(
+      base::BindOnce(
           &VpnProviderCreateConfigFunction::SignalCallCompletionSuccessWithId,
           this, params->name),
-      base::Bind(&VpnProviderNotifyConnectionStateChangedFunction::
-                     SignalCallCompletionFailure,
-                 this));
+      base::BindOnce(&VpnProviderNotifyConnectionStateChangedFunction::
+                         SignalCallCompletionFailure,
+                     this));
 
   return RespondLater();
 }
@@ -233,11 +233,11 @@ ExtensionFunction::ResponseAction VpnProviderDestroyConfigFunction::Run() {
 
   service->DestroyConfiguration(
       extension_id(), params->id,
-      base::Bind(&VpnProviderDestroyConfigFunction::SignalCallCompletionSuccess,
-                 this),
-      base::Bind(&VpnProviderNotifyConnectionStateChangedFunction::
-                     SignalCallCompletionFailure,
-                 this));
+      base::BindOnce(
+          &VpnProviderDestroyConfigFunction::SignalCallCompletionSuccess, this),
+      base::BindOnce(&VpnProviderNotifyConnectionStateChangedFunction::
+                         SignalCallCompletionFailure,
+                     this));
 
   return RespondLater();
 }
@@ -267,12 +267,12 @@ ExtensionFunction::ResponseAction VpnProviderSetParametersFunction::Run() {
 
   service->SetParameters(
       extension_id(), parameter_value,
-      base::Bind(&VpnProviderSetParametersFunction::
-                     SignalCallCompletionSuccessWithWarning,
-                 this),
-      base::Bind(&VpnProviderNotifyConnectionStateChangedFunction::
-                     SignalCallCompletionFailure,
-                 this));
+      base::BindOnce(&VpnProviderSetParametersFunction::
+                         SignalCallCompletionSuccessWithWarning,
+                     this),
+      base::BindOnce(&VpnProviderNotifyConnectionStateChangedFunction::
+                         SignalCallCompletionFailure,
+                     this));
 
   return RespondLater();
 }
@@ -325,12 +325,12 @@ VpnProviderNotifyConnectionStateChangedFunction::Run() {
 
   service->NotifyConnectionStateChanged(
       extension_id(), params->state,
-      base::Bind(&VpnProviderNotifyConnectionStateChangedFunction::
-                     SignalCallCompletionSuccess,
-                 this),
-      base::Bind(&VpnProviderNotifyConnectionStateChangedFunction::
-                     SignalCallCompletionFailure,
-                 this));
+      base::BindOnce(&VpnProviderNotifyConnectionStateChangedFunction::
+                         SignalCallCompletionSuccess,
+                     this),
+      base::BindOnce(&VpnProviderNotifyConnectionStateChangedFunction::
+                         SignalCallCompletionFailure,
+                     this));
 
   return RespondLater();
 }

@@ -354,23 +354,24 @@ void VpnService::NetworkListChanged() {
 void VpnService::CreateConfiguration(const std::string& extension_id,
                                      const std::string& extension_name,
                                      const std::string& configuration_name,
-                                     const SuccessCallback& success,
-                                     const FailureCallback& failure) {
+                                     SuccessOnceCallback success,
+                                     FailureOnceCallback failure) {
   if (configuration_name.empty()) {
-    failure.Run(std::string(), std::string("Empty name not supported."));
+    std::move(failure).Run(std::string(),
+                           std::string("Empty name not supported."));
     return;
   }
 
   const std::string key = GetKey(extension_id, configuration_name);
   if (base::Contains(key_to_configuration_map_, key)) {
-    failure.Run(std::string(), std::string("Name not unique."));
+    std::move(failure).Run(std::string(), std::string("Name not unique."));
     return;
   }
 
   const NetworkProfile* profile =
       network_profile_handler_->GetProfileForUserhash(userid_hash_);
   if (!profile) {
-    failure.Run(
+    std::move(failure).Run(
         std::string(),
         std::string("No user profile for unshared network configuration."));
     return;
@@ -396,27 +397,29 @@ void VpnService::CreateConfiguration(const std::string& extension_id,
 
   network_configuration_handler_->CreateShillConfiguration(
       properties,
-      base::Bind(&VpnService::OnCreateConfigurationSuccess,
-                 weak_factory_.GetWeakPtr(), success, configuration),
-      base::Bind(&VpnService::OnCreateConfigurationFailure,
-                 weak_factory_.GetWeakPtr(), failure, configuration));
+      base::BindOnce(&VpnService::OnCreateConfigurationSuccess,
+                     weak_factory_.GetWeakPtr(), std::move(success),
+                     configuration),
+      base::BindOnce(&VpnService::OnCreateConfigurationFailure,
+                     weak_factory_.GetWeakPtr(), std::move(failure),
+                     configuration));
 }
 
 void VpnService::DestroyConfiguration(const std::string& extension_id,
                                       const std::string& configuration_id,
-                                      const SuccessCallback& success,
-                                      const FailureCallback& failure) {
+                                      SuccessOnceCallback success,
+                                      FailureOnceCallback failure) {
   // The ID is the configuration name for now. This may change in the future.
   const std::string key = GetKey(extension_id, configuration_id);
   if (!base::Contains(key_to_configuration_map_, key)) {
-    failure.Run(std::string(), std::string("Unauthorized access."));
+    std::move(failure).Run(std::string(), std::string("Unauthorized access."));
     return;
   }
 
   VpnConfiguration* configuration = key_to_configuration_map_[key].get();
   const std::string service_path = configuration->service_path();
   if (service_path.empty()) {
-    failure.Run(std::string(), std::string("Pending create."));
+    std::move(failure).Run(std::string(), std::string("Pending create."));
     return;
   }
   if (active_configuration_ == configuration) {
@@ -427,23 +430,23 @@ void VpnService::DestroyConfiguration(const std::string& extension_id,
   network_configuration_handler_->RemoveConfiguration(
       service_path,
       /*remove_confirmer=*/base::nullopt,
-      base::Bind(&VpnService::OnRemoveConfigurationSuccess,
-                 weak_factory_.GetWeakPtr(), success),
-      base::Bind(&VpnService::OnRemoveConfigurationFailure,
-                 weak_factory_.GetWeakPtr(), failure));
+      base::BindOnce(&VpnService::OnRemoveConfigurationSuccess,
+                     weak_factory_.GetWeakPtr(), std::move(success)),
+      base::BindOnce(&VpnService::OnRemoveConfigurationFailure,
+                     weak_factory_.GetWeakPtr(), std::move(failure)));
 }
 
 void VpnService::SetParameters(const std::string& extension_id,
                                const base::DictionaryValue& parameters,
-                               const StringCallback& success,
-                               const FailureCallback& failure) {
+                               StringCallback success,
+                               FailureOnceCallback failure) {
   if (!DoesActiveConfigurationExistAndIsAccessAuthorized(extension_id)) {
-    failure.Run(std::string(), std::string("Unauthorized access."));
+    std::move(failure).Run(std::string(), std::string("Unauthorized access."));
     return;
   }
 
   shill_client_->SetParameters(active_configuration_->object_path(), parameters,
-                               success, failure);
+                               std::move(success), std::move(failure));
 }
 
 void VpnService::SendPacket(const std::string& extension_id,
@@ -467,16 +470,16 @@ void VpnService::SendPacket(const std::string& extension_id,
 
 void VpnService::NotifyConnectionStateChanged(const std::string& extension_id,
                                               api_vpn::VpnConnectionState state,
-                                              const SuccessCallback& success,
-                                              const FailureCallback& failure) {
+                                              SuccessOnceCallback success,
+                                              FailureOnceCallback failure) {
   if (!DoesActiveConfigurationExistAndIsAccessAuthorized(extension_id)) {
-    failure.Run(std::string(), std::string("Unauthorized access."));
+    std::move(failure).Run(std::string(), std::string("Unauthorized access."));
     return;
   }
 
   shill_client_->UpdateConnectionState(active_configuration_->object_path(),
-                                       static_cast<uint32_t>(state), success,
-                                       failure);
+                                       static_cast<uint32_t>(state),
+                                       std::move(success), std::move(failure));
 }
 
 bool VpnService::VerifyConfigExistsForTesting(
@@ -504,7 +507,7 @@ void VpnService::DestroyConfigurationsForExtension(
     DestroyConfiguration(extension->id(),             // Extension ID
                          iter->configuration_name(),  // Configuration name
                          base::DoNothing(),
-                         base::Bind(DoNothingFailureCallback));
+                         base::BindOnce(DoNothingFailureCallback));
   }
 }
 
@@ -543,7 +546,7 @@ void VpnService::OnExtensionUnloaded(
 }
 
 void VpnService::OnCreateConfigurationSuccess(
-    const VpnService::SuccessCallback& callback,
+    VpnService::SuccessOnceCallback callback,
     VpnConfiguration* configuration,
     const std::string& service_path,
     const std::string& guid) {
@@ -551,28 +554,28 @@ void VpnService::OnCreateConfigurationSuccess(
   service_path_to_configuration_map_[service_path] = configuration;
   shill_client_->AddShillThirdPartyVpnObserver(configuration->object_path(),
                                                configuration);
-  callback.Run();
+  std::move(callback).Run();
 }
 
 void VpnService::OnCreateConfigurationFailure(
-    const VpnService::FailureCallback& callback,
+    VpnService::FailureOnceCallback callback,
     VpnConfiguration* configuration,
     const std::string& error_name,
     std::unique_ptr<base::DictionaryValue> error_data) {
   DestroyConfigurationInternal(configuration);
-  callback.Run(error_name, std::string());
+  std::move(callback).Run(error_name, std::string());
 }
 
 void VpnService::OnRemoveConfigurationSuccess(
-    const VpnService::SuccessCallback& callback) {
-  callback.Run();
+    VpnService::SuccessOnceCallback callback) {
+  std::move(callback).Run();
 }
 
 void VpnService::OnRemoveConfigurationFailure(
-    const VpnService::FailureCallback& callback,
+    VpnService::FailureOnceCallback callback,
     const std::string& error_name,
     std::unique_ptr<base::DictionaryValue> error_data) {
-  callback.Run(error_name, std::string());
+  std::move(callback).Run(error_name, std::string());
 }
 
 void VpnService::SendSignalToExtension(
