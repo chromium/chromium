@@ -118,8 +118,8 @@ void LockScreenValueStoreMigratorImpl::MigrateNextForExtension(
       context_, target_store_cache_, task_runner_, crypto_key_);
 
   migration_items_[extension_id].current_source->Read(
-      base::Bind(&LockScreenValueStoreMigratorImpl::OnCurrentItemRead,
-                 weak_ptr_factory_.GetWeakPtr(), extension_id));
+      base::BindOnce(&LockScreenValueStoreMigratorImpl::OnCurrentItemRead,
+                     weak_ptr_factory_.GetWeakPtr(), extension_id));
 }
 
 void LockScreenValueStoreMigratorImpl::OnCurrentItemRead(

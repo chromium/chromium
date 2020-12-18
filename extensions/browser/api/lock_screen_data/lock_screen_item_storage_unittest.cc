@@ -376,8 +376,8 @@ class TestDataItem : public DataItem {
     operations_->AddWrite(data, callback);
   }
 
-  void Read(const ReadCallback& callback) override {
-    operations_->AddRead(callback);
+  void Read(ReadOnceCallback callback) override {
+    operations_->AddRead(std::move(callback));
   }
 
   void Delete(const WriteCallback& callback) override {

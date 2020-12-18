@@ -101,7 +101,7 @@ class DataItem {
 
   // Gets the data item content from the persistent data storage.
   // This will fail is the item is not registered.
-  virtual void Read(const ReadCallback& callback);
+  virtual void Read(ReadOnceCallback callback);
 
   // Unregisters the data item, and clears previously persisted data item
   // content.
@@ -119,7 +119,7 @@ class DataItem {
 
   // Internal callback for the read operation - wraps |callback| to ensure
   // |callback| is not run after |this| has been destroyed.
-  void OnReadDone(const ReadCallback& callback,
+  void OnReadDone(ReadOnceCallback callback,
                   std::unique_ptr<OperationResult> result,
                   std::unique_ptr<std::vector<char>> data);
 

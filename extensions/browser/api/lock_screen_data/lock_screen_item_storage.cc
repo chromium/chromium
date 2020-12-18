@@ -366,9 +366,9 @@ void LockScreenItemStorage::GetItemContentImpl(const std::string& extension_id,
     return;
   }
 
-  item->Read(base::Bind(&LockScreenItemStorage::OnItemRead,
-                        weak_ptr_factory_.GetWeakPtr(), tick_clock_->NowTicks(),
-                        callback));
+  item->Read(base::BindOnce(&LockScreenItemStorage::OnItemRead,
+                            weak_ptr_factory_.GetWeakPtr(),
+                            tick_clock_->NowTicks(), callback));
 }
 
 void LockScreenItemStorage::DeleteItemImpl(const std::string& extension_id,

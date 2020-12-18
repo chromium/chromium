@@ -376,12 +376,12 @@ void DataItem::Write(const std::vector<char>& data,
                      callback, std::move(result)));
 }
 
-void DataItem::Read(const ReadCallback& callback) {
+void DataItem::Read(ReadOnceCallback callback) {
   scoped_refptr<const Extension> extension =
       ExtensionRegistry::Get(context_)->GetExtensionById(
           extension_id_, ExtensionRegistry::ENABLED);
   if (!extension) {
-    callback.Run(OperationResult::kUnknownExtension, nullptr);
+    std::move(callback).Run(OperationResult::kUnknownExtension, nullptr);
     return;
   }
 
@@ -401,7 +401,7 @@ void DataItem::Read(const ReadCallback& callback) {
           base::Bind(&ReadImpl, result_ptr, data_ptr, id_, crypto_key_),
           extension),
       base::BindOnce(&DataItem::OnReadDone, weak_ptr_factory_.GetWeakPtr(),
-                     callback, std::move(result), std::move(data)));
+                     std::move(callback), std::move(result), std::move(data)));
 }
 
 void DataItem::Delete(const WriteCallback& callback) {
@@ -430,10 +430,10 @@ void DataItem::OnWriteDone(const DataItem::WriteCallback& callback,
   callback.Run(*success);
 }
 
-void DataItem::OnReadDone(const DataItem::ReadCallback& callback,
+void DataItem::OnReadDone(DataItem::ReadOnceCallback callback,
                           std::unique_ptr<OperationResult> success,
                           std::unique_ptr<std::vector<char>> data) {
-  callback.Run(*success, std::move(data));
+  std::move(callback).Run(*success, std::move(data));
 }
 
 }  // namespace lock_screen_data

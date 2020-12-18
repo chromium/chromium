@@ -207,8 +207,8 @@ class DataItemTest : public testing::Test {
     OperationResult result = OperationResult::kFailed;
     std::unique_ptr<std::vector<char>> read_content;
     base::RunLoop run_loop;
-    item->Read(base::Bind(&ReadCallback, run_loop.QuitClosure(), &result,
-                          &read_content));
+    item->Read(base::BindOnce(&ReadCallback, run_loop.QuitClosure(), &result,
+                              &read_content));
     run_loop.Run();
     if (data)
       *data = std::move(read_content);
@@ -686,7 +686,7 @@ TEST_F(DataItemTest, ResetBeforeCallback) {
   ASSERT_TRUE(read_content);
   EXPECT_EQ(content, *read_content);
 
-  reader->Read(base::Bind(&ReadCallbackNotCalled, "Reset read"));
+  reader->Read(base::BindOnce(&ReadCallbackNotCalled, "Reset read"));
   reader.reset();
 
   std::unique_ptr<DataItem> deleter =
