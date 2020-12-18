@@ -109,7 +109,7 @@ void GetAllOriginsAndPaths(const base::FilePath& indexeddb_path,
 
 // static
 void IndexedDBContextImpl::ReleaseOnIDBSequence(
-    scoped_refptr<IndexedDBContextImpl> context) {
+    scoped_refptr<IndexedDBContextImpl>&& context) {
   if (!context->idb_task_runner_->RunsTasksInCurrentSequence()) {
     IndexedDBContextImpl* context_ptr = context.get();
     context_ptr->IDBTaskRunner()->ReleaseSoon(FROM_HERE, std::move(context));

@@ -57,7 +57,8 @@ class CONTENT_EXPORT IndexedDBContextImpl
   static const base::FilePath::CharType kIndexedDBDirectory[];
 
   // Release |context| on the IDBTaskRunner.
-  static void ReleaseOnIDBSequence(scoped_refptr<IndexedDBContextImpl> context);
+  static void ReleaseOnIDBSequence(
+      scoped_refptr<IndexedDBContextImpl>&& context);
 
   // If |data_path| is empty, nothing will be saved to disk.
   // |task_runner| is optional, and only set during testing.
