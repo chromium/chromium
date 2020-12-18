@@ -13,6 +13,7 @@
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "net/http/http_request_headers.h"
+#include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "url/gurl.h"
 
 namespace network {
@@ -57,6 +58,8 @@ class TrustTokenRequestHandler {
   struct Options final {
     Options();
     ~Options();
+    Options(const Options&);
+    Options& operator=(const Options&);
 
     // The number of issuance key pairs to provide via key commitment results.
     int num_keys = 1;
@@ -85,6 +88,18 @@ class TrustTokenRequestHandler {
         ServerOperationOutcome::kExecuteOperationAsNormal;
     ServerOperationOutcome redemption_outcome =
         ServerOperationOutcome::kExecuteOperationAsNormal;
+
+    // The following two fields specify operating systems on which to specify
+    // that the browser should attempt platform-provided trust token issuance
+    // instead of sending requests directly to the issuer's server, and the
+    // fallback behavior when these operations are unavailable. This information
+    // will be included in GetKeyCommitmentRecord's returned commitments.
+    std::set<mojom::TrustTokenKeyCommitmentResult::Os>
+        specify_platform_issuance_on;
+    mojom::TrustTokenKeyCommitmentResult::UnavailableLocalOperationFallback
+        unavailable_local_operation_fallback =
+            mojom::TrustTokenKeyCommitmentResult::
+                UnavailableLocalOperationFallback::kReturnWithError;
   };
 
   // Updates the handler's options, resetting its internal state.

@@ -64,10 +64,26 @@ bool HasKeyPairExpired(const IssuanceKeyPair& p) {
   return p.expiry <= base::Time::Now();
 }
 
+std::string UnavailableLocalOperationFallbackToString(
+    mojom::TrustTokenKeyCommitmentResult::UnavailableLocalOperationFallback
+        fallback) {
+  switch (fallback) {
+    case mojom::TrustTokenKeyCommitmentResult::
+        UnavailableLocalOperationFallback::kReturnWithError:
+      return "return_with_error";
+    case mojom::TrustTokenKeyCommitmentResult::
+        UnavailableLocalOperationFallback::kWebIssuance:
+      return "web_issuance";
+  };
+}
+
 }  // namespace
 
 TrustTokenRequestHandler::Options::Options() = default;
 TrustTokenRequestHandler::Options::~Options() = default;
+TrustTokenRequestHandler::Options::Options(const Options&) = default;
+TrustTokenRequestHandler::Options& TrustTokenRequestHandler::Options::operator=(
+    const Options&) = default;
 
 struct TrustTokenRequestHandler::Rep {
   // The protocol version to use.
@@ -78,6 +94,13 @@ struct TrustTokenRequestHandler::Rep {
 
   // Issue at most this many tokens per issuance.
   int batch_size;
+
+  // These values determine which Platform Provided Trust Tokens-related
+  // arguments should be included in returned key commitments:
+  std::set<mojom::TrustTokenKeyCommitmentResult::Os>
+      specify_platform_issuance_on;
+  mojom::TrustTokenKeyCommitmentResult::UnavailableLocalOperationFallback
+      unavailable_local_operation_fallback;
 
   // Expect that client-side signing operations succeeded or failed according to
   // the value of this field.
@@ -239,6 +262,22 @@ std::string TrustTokenRequestHandler::GetKeyCommitmentRecord() const {
                                                  .InMicroseconds()));
   }
 
+  if (!rep_->specify_platform_issuance_on.empty()) {
+    value.SetStringKey("unavailable_local_operation_fallback",
+                       UnavailableLocalOperationFallbackToString(
+                           rep_->unavailable_local_operation_fallback));
+
+    base::Value oses(base::Value::Type::LIST);
+    for (auto os : rep_->specify_platform_issuance_on) {
+      switch (os) {
+        case mojom::TrustTokenKeyCommitmentResult::Os::kAndroid:
+          oses.Append("android");
+          break;
+      };
+    }
+    value.SetKey("request_issuance_locally_on", std::move(oses));
+  }
+
   // It's OK to be a bit crashy in exceptional failure cases because it
   // indicates a serious coding error in this test-only code; we'd like to find
   // this out sooner rather than later.
@@ -368,6 +407,10 @@ void TrustTokenRequestHandler::UpdateOptions(Options options) {
   for (int i = 0; i < options.num_keys; ++i) {
     rep_->issuance_keys.push_back(GenerateIssuanceKeyPair(i));
   }
+
+  rep_->specify_platform_issuance_on = options.specify_platform_issuance_on;
+  rep_->unavailable_local_operation_fallback =
+      options.unavailable_local_operation_fallback;
 }
 
 }  // namespace test
