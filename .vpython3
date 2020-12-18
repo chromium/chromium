@@ -28,5 +28,5 @@ python_version: "3.8"
 # become available.
 wheel: <
   name: "infra/python/wheels/six-py2_py3"
-  version: "version:1.10.0"
+  version: "version:1.15.0"
 >
