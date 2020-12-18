@@ -21,6 +21,7 @@ import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.vr.rules.ArPlaybackFile;
@@ -65,6 +66,7 @@ public class WebXrArHitTestTest {
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1158528")
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
     @ArPlaybackFile("chrome/test/data/xr/ar_playback_datasets/floor_session_12s_30fps.mp4")
     public void testHitTestSucceedsWithPlane() {
@@ -81,6 +83,7 @@ public class WebXrArHitTestTest {
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1158528")
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
     @ArPlaybackFile("chrome/test/data/xr/ar_playback_datasets/floor_session_12s_30fps.mp4")
     public void testHitTestResultsAvailableInSubsequentFrame() {

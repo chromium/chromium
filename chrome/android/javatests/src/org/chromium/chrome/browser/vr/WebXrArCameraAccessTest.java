@@ -69,6 +69,7 @@ public class WebXrArCameraAccessTest {
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1158528")
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
             "enable-features=WebXRIncubations,LogJsConsoleMessages"})
@@ -110,6 +111,7 @@ public class WebXrArCameraAccessTest {
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1158528")
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
             "enable-features=WebXRIncubations,LogJsConsoleMessages"})
@@ -181,6 +183,7 @@ public class WebXrArCameraAccessTest {
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1158528")
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
             "enable-features=WebXRIncubations,LogJsConsoleMessages"})
