@@ -602,7 +602,7 @@
 
   <!-- Ambient Mode Page -->
   <message name="IDS_OS_SETTINGS_AMBIENT_MODE_PAGE_DESCRIPTION" desc="Description for the ambient mode settings page.">
-    When your screen is idle, show photos, time, weather, and media info. Enabling screen saver will keep your device on while charging.
+    When your screen is idle, show photos, time, weather, and media info. Enabling screen saver will keep your display on while charging.
   </message>
   <message name="IDS_OS_SETTINGS_AMBIENT_MODE_ON" desc="Label for the toggle row in ambient mode settings page when it is enabled.">
     On
