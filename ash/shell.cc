@@ -1193,7 +1193,10 @@ void Shell::Init(
   cursor_manager_->HideCursor();  // Hide the mouse cursor on startup.
   cursor_manager_->SetCursor(ui::mojom::CursorType::kPointer);
 
-  peripheral_battery_notifier_ = std::make_unique<PeripheralBatteryNotifier>();
+  peripheral_battery_listener_ = std::make_unique<PeripheralBatteryListener>();
+
+  peripheral_battery_notifier_ = std::make_unique<PeripheralBatteryNotifier>(
+      peripheral_battery_listener_.get());
   if (base::FeatureList::IsEnabled(
           chromeos::features::kShowBluetoothDeviceBattery)) {
     peripheral_battery_tracker_ = std::make_unique<PeripheralBatteryTracker>();
