@@ -734,9 +734,8 @@ android_java_prebuilt("repackage_native_java") {
   jar_path = _native_intermediate_jar_path
 
   # Since only the unprocessed jar is used, no need to complete the bytecode
-  # processing step or check desugar deps.
+  # processing step.
   enable_bytecode_checks = false
-  ignore_desugar_missing_deps = true
   deps = [ ":repackage_native_impl" ]
 }
 
