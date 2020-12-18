@@ -41,9 +41,11 @@
 
 namespace {
 
-// Whether we accept requests for launching external protocols. This is set to
-// false every time an external protocol is requested, and set back to true on
-// each user gesture. This variable should only be accessed from the UI thread.
+// Anti-flood protection controls whether we accept requests for launching
+// external protocols. Set to false each time an external protocol is requested,
+// and set back to true on each user gesture, extension API call, and navigation
+// to an external handler via bookmarks or the omnibox. This variable should
+// only be accessed from the UI thread.
 bool g_accept_requests = true;
 
 ExternalProtocolHandler::Delegate* g_external_protocol_handler_delegate =
@@ -393,6 +395,15 @@ void ExternalProtocolHandler::LaunchUrl(
     bool has_user_gesture,
     const base::Optional<url::Origin>& initiating_origin) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // Disable anti-flood protection if the user is invoking a bookmark or
+  // navigating directly using the omnibox.
+  if (!g_accept_requests &&
+      (PageTransitionCoreTypeIs(page_transition,
+                                ui::PAGE_TRANSITION_AUTO_BOOKMARK) ||
+       PageTransitionCoreTypeIs(page_transition, ui::PAGE_TRANSITION_TYPED))) {
+    g_accept_requests = true;
+  }
 
   // Escape the input scheme to be sure that the command does not
   // have parameters unexpected by the external program.

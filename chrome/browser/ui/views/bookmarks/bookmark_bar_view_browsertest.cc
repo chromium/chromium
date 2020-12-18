@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
@@ -198,5 +199,128 @@ IN_PROC_BROWSER_TEST_F(BookmarkBarNavigationTest,
     CreateBookmarkForHeader("Sec-Fetch-User");
     NavigateToBookmark();
     EXPECT_EQ("?1", GetContent());
+  }
+}
+
+// Class intercepts invocations of external protocol handlers.
+class FakeProtocolHandlerDelegate : public ExternalProtocolHandler::Delegate {
+ public:
+  FakeProtocolHandlerDelegate() = default;
+
+  // Wait until an external handler url is received by the class method
+  // |RunExternalProtocolDialog|.
+  const GURL& WaitForUrl() {
+    run_loop_.Run();
+    return url_invoked_;
+  }
+
+  FakeProtocolHandlerDelegate(const FakeProtocolHandlerDelegate& other) =
+      delete;
+  FakeProtocolHandlerDelegate& operator=(
+      const FakeProtocolHandlerDelegate& other) = delete;
+  class FakeDefaultProtocolClientWorker
+      : public shell_integration::DefaultProtocolClientWorker {
+   public:
+    explicit FakeDefaultProtocolClientWorker(const std::string& protocol)
+        : DefaultProtocolClientWorker(protocol) {}
+    FakeDefaultProtocolClientWorker(
+        const FakeDefaultProtocolClientWorker& other) = delete;
+    FakeDefaultProtocolClientWorker& operator=(
+        const FakeDefaultProtocolClientWorker& other) = delete;
+
+   private:
+    ~FakeDefaultProtocolClientWorker() override = default;
+    shell_integration::DefaultWebClientState CheckIsDefaultImpl() override {
+      return shell_integration::DefaultWebClientState::NOT_DEFAULT;
+    }
+
+    void SetAsDefaultImpl(base::OnceClosure on_finished_callback) override {
+      base::SequencedTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, std::move(on_finished_callback));
+    }
+  };
+
+ private:
+  scoped_refptr<shell_integration::DefaultProtocolClientWorker>
+  CreateShellWorker(const std::string& protocol) override {
+    return base::MakeRefCounted<FakeDefaultProtocolClientWorker>(protocol);
+  }
+
+  void BlockRequest() override { FAIL(); }
+
+  ExternalProtocolHandler::BlockState GetBlockState(const std::string& scheme,
+                                                    Profile* profile) override {
+    return ExternalProtocolHandler::GetBlockState(scheme, nullptr, profile);
+  }
+
+  void RunExternalProtocolDialog(
+      const GURL& url,
+      content::WebContents* web_contents,
+      ui::PageTransition page_transition,
+      bool has_user_gesture,
+      const base::Optional<url::Origin>& initiating_origin) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    EXPECT_TRUE(url_invoked_.is_empty());
+    url_invoked_ = url;
+    run_loop_.Quit();
+  }
+
+  void LaunchUrlWithoutSecurityCheck(
+      const GURL& url,
+      content::WebContents* web_contents) override {
+    FAIL();
+  }
+
+  void FinishedProcessingCheck() override {}
+
+  GURL url_invoked_;
+  base::RunLoop run_loop_;
+  SEQUENCE_CHECKER(sequence_checker_);
+};
+
+// Checks that opening a bookmark to a URL handled by an external handler is not
+// blocked by anti-flood protection. Regression test for
+// https://crbug.com/1156651
+IN_PROC_BROWSER_TEST_F(BookmarkBarNavigationTest, ExternalHandlerAllowed) {
+  const char external_protocol[] = "fake";
+  const GURL external_url = GURL("fake://path");
+
+  bookmarks::BookmarkModel* model =
+      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+  bookmarks::test::WaitForBookmarkModelToLoad(model);
+  model->ClearStore();
+  model->AddURL(model->bookmark_bar_node(), 0, base::ASCIIToUTF16("Example"),
+                external_url);
+
+  // First, get into a known (unblocked) state.
+  ExternalProtocolHandler::PermitLaunchUrl();
+  EXPECT_NE(ExternalProtocolHandler::BLOCK,
+            ExternalProtocolHandler::GetBlockState(external_protocol, nullptr,
+                                                   browser()->profile()));
+
+  // Next, try to launch a bookmark pointed at the url of an external handler.
+  {
+    FakeProtocolHandlerDelegate external_handler_delegate;
+    ExternalProtocolHandler::SetDelegateForTesting(&external_handler_delegate);
+    NavigateToBookmark();
+    auto launched_url = external_handler_delegate.WaitForUrl();
+    EXPECT_EQ(external_url, launched_url);
+    // Verify that the state has returned to block.
+    EXPECT_EQ(ExternalProtocolHandler::BLOCK,
+              ExternalProtocolHandler::GetBlockState(external_protocol, nullptr,
+                                                     browser()->profile()));
+  }
+  // Finally, without first calling PermitLaunchUrl, try to launch the bookmark.
+  {
+    FakeProtocolHandlerDelegate external_handler_delegate;
+    ExternalProtocolHandler::SetDelegateForTesting(&external_handler_delegate);
+    NavigateToBookmark();
+    auto launched_url = external_handler_delegate.WaitForUrl();
+    EXPECT_EQ(external_url, launched_url);
+    // Verify the launch state has changed back.
+    EXPECT_EQ(ExternalProtocolHandler::BLOCK,
+              ExternalProtocolHandler::GetBlockState(external_protocol, nullptr,
+                                                     browser()->profile()));
   }
 }
