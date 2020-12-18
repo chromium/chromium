@@ -46573,7 +46573,9 @@ from previous Chrome versions.
   <int value="0" label="No login"/>
   <int value="1" label="OAuth login"/>
   <int value="2" label="OAuth first time login flow"/>
-  <int value="3" label="Field trial logged-in site"/>
+  <int value="3" label="Password entered login"/>
+  <int value="4" label="Preloaded password sites list"/>
+  <int value="5" label="Field trial logged-in site"/>
 </enum>
 
 <enum name="LoginFailureReason">

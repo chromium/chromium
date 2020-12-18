@@ -328,6 +328,11 @@ class ChildProcessSecurityPolicy {
       base::Optional<IsolatedOriginSource> source = base::nullopt,
       BrowserContext* browser_context = nullptr) = 0;
 
+  // Returns whether the site of |origin| is isolated and was added by the
+  // |source| to be isolated.
+  virtual bool IsIsolatedSiteFromSource(const url::Origin& origin,
+                                        IsolatedOriginSource source) = 0;
+
   // Clears all isolated origins.  This is unsafe to use outside of testing.
   virtual void ClearIsolatedOriginsForTesting() = 0;
 };

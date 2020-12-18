@@ -22,6 +22,13 @@ enum class LoginDetectionType {
   // Successful OAuth login flow was detected.
   kOauthFirstTimeLoginFlow,
 
+  // The user had typed password to log-in. This includes sites where user
+  // typed password manually or used Chrome password manager to fill-in.
+  kPasswordEnteredLogin,
+
+  // The site is in one of preloaded top sites where users commonly log-in.
+  kPreloadedPasswordSiteLogin,
+
   // Treated as logged-in since as the site was retrieved from field trial as
   // commonly logged-in.
   kFieldTrialLoggedInSite,

@@ -1076,6 +1076,7 @@ if (!is_android) {
       "../browser/loader/signed_exchange_policy_browsertest.cc",
       "../browser/loadtimes_extension_bindings_browsertest.cc",
       "../browser/locale_tests_browsertest.cc",
+      "../browser/login_detection/login_detection_browsertest.cc",
       "../browser/lookalikes/lookalike_url_navigation_throttle_browsertest.cc",
       "../browser/media/autoplay_metrics_browsertest.cc",
       "../browser/media/cast_mirroring_performance_browsertest.cc",

@@ -306,6 +306,8 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   std::vector<url::Origin> GetIsolatedOrigins(
       base::Optional<IsolatedOriginSource> source = base::nullopt,
       BrowserContext* browser_context = nullptr) override;
+  bool IsIsolatedSiteFromSource(const url::Origin& origin,
+                                IsolatedOriginSource source) override;
   void ClearIsolatedOriginsForTesting() override;
 
   // Identical to the above method, but takes url::Origin as input.

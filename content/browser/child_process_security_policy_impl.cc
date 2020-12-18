@@ -2032,6 +2032,22 @@ std::vector<url::Origin> ChildProcessSecurityPolicyImpl::GetIsolatedOrigins(
   return origins;
 }
 
+bool ChildProcessSecurityPolicyImpl::IsIsolatedSiteFromSource(
+    const url::Origin& origin,
+    IsolatedOriginSource source) {
+  base::AutoLock isolated_origins_lock(isolated_origins_lock_);
+  GURL site_url = SiteInstanceImpl::GetSiteForOrigin(origin);
+  auto it = isolated_origins_.find(site_url);
+  if (it == isolated_origins_.end())
+    return false;
+  url::Origin site_origin = url::Origin::Create(site_url);
+  for (const auto& entry : it->second) {
+    if (entry.source() == source && entry.origin() == site_origin)
+      return true;
+  }
+  return false;
+}
+
 bool ChildProcessSecurityPolicyImpl::GetMatchingIsolatedOrigin(
     const IsolationContext& isolation_context,
     const url::Origin& origin,

@@ -7,6 +7,7 @@
 #include "chrome/browser/login_detection/login_detection_prefs.h"
 #include "chrome/browser/login_detection/login_detection_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "content/public/browser/child_process_security_policy.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -43,6 +44,26 @@ LoginDetectionType LoginDetectionKeyedService::GetPersistentLoginDetection(
   if (field_trial_logged_in_sites_.find(GetSiteNameForURL(url)) !=
       field_trial_logged_in_sites_.end()) {
     return LoginDetectionType::kFieldTrialLoggedInSite;
+  }
+
+  auto* child_process_security_policy =
+      content::ChildProcessSecurityPolicy::GetInstance();
+  url::Origin url_origin = url::Origin::Create(url);
+
+  // Check for password entered logins. These are saved as user triggered source
+  // in site-isolation.
+  if (child_process_security_policy->IsIsolatedSiteFromSource(
+          url_origin, content::ChildProcessSecurityPolicy::
+                          IsolatedOriginSource::USER_TRIGGERED)) {
+    return LoginDetectionType::kPasswordEnteredLogin;
+  }
+
+  // Check for sites from preloaded list. These are saved as built-in source in
+  // site-isolation.
+  if (child_process_security_policy->IsIsolatedSiteFromSource(
+          url_origin, content::ChildProcessSecurityPolicy::
+                          IsolatedOriginSource::BUILT_IN)) {
+    return LoginDetectionType::kPreloadedPasswordSiteLogin;
   }
 
   return LoginDetectionType::kNoLogin;
