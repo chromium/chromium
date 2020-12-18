@@ -96,8 +96,10 @@ PinSetupScreen::PinSetupScreen(PinSetupScreenView* view,
   DCHECK(view_);
   view_->Bind(this);
 
-  quick_unlock::PinBackend::GetInstance()->HasLoginSupport(base::BindOnce(
-      &PinSetupScreen::OnHasLoginSupport, weak_ptr_factory_.GetWeakPtr()));
+  if (features::IsPinSetupForFamilyLinkEnabled()) {
+    quick_unlock::PinBackend::GetInstance()->HasLoginSupport(base::BindOnce(
+        &PinSetupScreen::OnHasLoginSupport, weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 PinSetupScreen::~PinSetupScreen() {
