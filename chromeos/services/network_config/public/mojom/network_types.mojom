@@ -23,6 +23,8 @@ enum DeviceStateType {
   kEnabling,
   kEnabled,
   kProhibited,
+  // Cellular devices may have Inhibited set, preventing active scans.
+  kInhibited,
   // Not used in DeviceStateProperties, but useful when querying by type.
   kUnavailable,
 };

@@ -575,6 +575,7 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"internetDeviceEnabling", IDS_SETTINGS_INTERNET_DEVICE_ENABLING},
       {"internetDeviceDisabling", IDS_SETTINGS_INTERNET_DEVICE_DISABLING},
       {"internetDeviceInitializing", IDS_SETTINGS_INTERNET_DEVICE_INITIALIZING},
+      {"internetDeviceBusy", IDS_SETTINGS_INTERNET_DEVICE_BUSY},
       {"internetJoinType", IDS_SETTINGS_INTERNET_JOIN_TYPE},
       {"internetKnownNetworksPageTitle", IDS_SETTINGS_INTERNET_KNOWN_NETWORKS},
       {"internetMobileSearching", IDS_SETTINGS_INTERNET_MOBILE_SEARCH},

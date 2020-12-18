@@ -24,7 +24,6 @@
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/network/device_state.h"
 #include "chromeos/network/network_connection_handler.h"
-#include "chromeos/network/network_device_handler.h"
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_handler_callbacks.h"
 #include "chromeos/network/network_state_handler_observer.h"

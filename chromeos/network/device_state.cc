@@ -107,6 +107,8 @@ bool DeviceState::PropertyChanged(const std::string& key,
       return false;
     apn_list_ = base::ListValue(value.Clone().TakeList());
     return true;
+  } else if (key == shill::kInhibitedProperty) {
+    return GetBooleanValue(key, value, &inhibited_);
   } else if (key == shill::kEapAuthenticationCompletedProperty) {
     return GetBooleanValue(key, value, &eap_authentication_completed_);
   } else if (key == shill::kIPConfigsProperty) {

@@ -2106,6 +2106,9 @@ Press an assigned switch to remove assignment.
   <message name="IDS_SETTINGS_INTERNET_DEVICE_INITIALIZING" desc="Settings > Internet > Message when a device (e.g a Cellular modem) is initializing.">
     Initializing
   </message>
+  <message name="IDS_SETTINGS_INTERNET_DEVICE_BUSY" desc="Settings > Internet > Message when a device (e.g a Cellular modem) is busy.">
+    Busy
+  </message>
   <message name="IDS_SETTINGS_INTERNET_JOIN_TYPE" desc="Title for the network configuration dialog for a new network.">
     Join <ph name="TYPE">$1<ex>WiFi</ex></ph> network
   </message>

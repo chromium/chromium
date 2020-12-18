@@ -1848,6 +1848,10 @@ void CrosNetworkConfig::GetDeviceStateList(
       NET_LOG(ERROR) << "Device state unavailable: " << device->name();
       continue;
     }
+    if (technology_state == mojom::DeviceStateType::kEnabled &&
+        device->inhibited()) {
+      technology_state = mojom::DeviceStateType::kInhibited;
+    }
     mojom::DeviceStatePropertiesPtr mojo_device =
         DeviceStateToMojo(device, technology_state);
     if (mojo_device)

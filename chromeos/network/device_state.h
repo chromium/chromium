@@ -54,6 +54,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) DeviceState : public ManagedState {
   const std::string& mdn() const { return mdn_; }
   const base::ListValue& apn_list() const { return apn_list_; }
   const CellularScanResults& scan_results() const { return scan_results_; }
+  bool inhibited() const { return inhibited_; }
 
   // |ip_configs_| is kept up to date by NetworkStateHandler.
   const base::DictionaryValue& ip_configs() const { return ip_configs_; }
@@ -114,6 +115,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) DeviceState : public ManagedState {
   std::string iccid_;
   std::string mdn_;
   CellularScanResults scan_results_;
+  bool inhibited_ = false;
 
   // Ethernet specific properties
   bool eap_authentication_completed_ = false;
