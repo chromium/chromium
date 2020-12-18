@@ -212,7 +212,7 @@ bool ScriptLoader::IsValidScriptTypeAndLanguage(
     return true;
   }
 
-  if (type == "module") {
+  if (EqualIgnoringASCIICase(type, "module")) {
     // <spec step="7">... If the script block's type string is an ASCII
     // case-insensitive match for the string "module", the script's type is
     // "module". ...</spec>
