@@ -732,38 +732,37 @@ void CaptureModeController::HandleNotificationClicked(
     const base::FilePath& screen_capture_path,
     const CaptureModeType type,
     base::Optional<int> button_index) {
-  message_center::MessageCenter::Get()->RemoveNotification(
-      kScreenCaptureNotificationId, /*by_user=*/false);
-
   if (!button_index.has_value()) {
     // Show the item in the folder.
     delegate_->ShowScreenCaptureItemInFolder(screen_capture_path);
-    return;
-  }
-
-  const int button_index_value = button_index.value();
-
-  // Handle a button clicked for a video preview notification.
-  if (type == CaptureModeType::kVideo) {
-    DCHECK_EQ(button_index_value,
-              VideoNotificationButtonIndex::BUTTON_DELETE_VIDEO);
-    DeleteFileAsync(blocking_task_runner_, screen_capture_path);
-    return;
-  }
-
-  // Handle a button clicked for an image preview notification.
-  DCHECK_EQ(type, CaptureModeType::kImage);
-  switch (button_index_value) {
-    case ScreenshotNotificationButtonIndex::BUTTON_EDIT:
-      delegate_->OpenScreenshotInImageEditor(screen_capture_path);
-      break;
-    case ScreenshotNotificationButtonIndex::BUTTON_DELETE:
+  } else {
+    const int button_index_value = button_index.value();
+    if (type == CaptureModeType::kVideo) {
+      DCHECK_EQ(button_index_value,
+                VideoNotificationButtonIndex::BUTTON_DELETE_VIDEO);
       DeleteFileAsync(blocking_task_runner_, screen_capture_path);
-      break;
-    default:
-      NOTREACHED();
-      break;
+    } else {
+      DCHECK_EQ(type, CaptureModeType::kImage);
+      switch (button_index_value) {
+        case ScreenshotNotificationButtonIndex::BUTTON_EDIT:
+          delegate_->OpenScreenshotInImageEditor(screen_capture_path);
+          break;
+        case ScreenshotNotificationButtonIndex::BUTTON_DELETE:
+          DeleteFileAsync(blocking_task_runner_, screen_capture_path);
+          break;
+        default:
+          NOTREACHED();
+          break;
+      }
+    }
   }
+
+  // This has to be done at the end to avoid a use-after-free crash, since
+  // removing the notification will delete its delegate, which owns the callback
+  // to this function. The callback's state owns any passed-by-ref arguments,
+  // such as |screen_capture_path| which we use in this function.
+  message_center::MessageCenter::Get()->RemoveNotification(
+      kScreenCaptureNotificationId, /*by_user=*/false);
 }
 
 base::FilePath CaptureModeController::BuildImagePath(
