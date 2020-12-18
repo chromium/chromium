@@ -163,12 +163,6 @@ SPECIAL_CASES = {
         "URL": "http://code.google.com/p/angleproject/",
         "License": "BSD",
     },
-    os.path.join('third_party', 'angle', 'third_party', 'vulkan-headers'): {
-        "Name": "Vulkan-Headers",
-        "URL": "https://github.com/KhronosGroup/Vulkan-Headers",
-        "License": "Apache 2.0",
-        "License File": "src/LICENSE.txt",
-    },
     os.path.join('third_party', 'cros_system_api'): {
         "Name": "Chromium OS system API",
         "URL": "http://www.chromium.org/chromium-os",
