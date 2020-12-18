@@ -1077,7 +1077,8 @@ TEST_P(PaintPropertyTreeUpdateTest, AddRemoveSVGMask) {
   EXPECT_NE(nullptr, properties->Mask());
   const auto* mask_clip = properties->MaskClip();
   ASSERT_NE(nullptr, mask_clip);
-  EXPECT_EQ(FloatRoundedRect(0, 100, 100, 100), mask_clip->UnsnappedClipRect());
+  EXPECT_EQ(FloatRoundedRect(0, 100, 10000, 20000),
+            mask_clip->UnsnappedClipRect());
 
   GetDocument().getElementById("rect")->removeAttribute("mask");
   UpdateAllLifecyclePhasesForTest();
@@ -1104,13 +1105,15 @@ TEST_P(PaintPropertyTreeUpdateTest, SVGMaskTargetBoundsChange) {
   EXPECT_NE(nullptr, properties->Mask());
   const auto* mask_clip = properties->MaskClip();
   ASSERT_NE(nullptr, mask_clip);
-  EXPECT_EQ(FloatRoundedRect(0, 50, 100, 150), mask_clip->UnsnappedClipRect());
+  EXPECT_EQ(FloatRoundedRect(0, 50, 5000, 20000),
+            mask_clip->UnsnappedClipRect());
 
   GetDocument().getElementById("rect")->setAttribute("width", "200");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_NE(nullptr, properties->Effect());
   EXPECT_NE(nullptr, properties->Mask());
-  EXPECT_EQ(FloatRoundedRect(0, 50, 100, 150), mask_clip->UnsnappedClipRect());
+  EXPECT_EQ(FloatRoundedRect(0, 50, 20000, 20000),
+            mask_clip->UnsnappedClipRect());
 }
 
 TEST_P(PaintPropertyTreeUpdateTest, WillTransformChangeAboveFixed) {

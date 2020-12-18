@@ -385,6 +385,9 @@ crbug.com/1042783 external/wpt/css/css-backgrounds/background-size/background-si
 # Fails, at a minimum, due to lack of support for CSS mask property in html elements
 crbug.com/432153 external/wpt/svg/painting/reftests/display-none-mask.html [ Skip ]
 
+# Bug accidentally masked by using square mask geometry.
+crbug.com/1155161 svg/masking/mask-of-root.html [ Failure ]
+
 # Failures due to pointerMove building synthetic events without button information (main thread only).
 crbug.com/1056778 fast/scrolling/scrollbars/scrollbar-thumb-snapping.html [ Failure ]
 

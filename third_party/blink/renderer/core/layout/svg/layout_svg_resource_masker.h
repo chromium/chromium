@@ -59,10 +59,7 @@ class LayoutSVGResourceMasker final : public LayoutSVGResourceContainer {
                                              GraphicsContext&);
 
  private:
-  void CalculateMaskContentVisualRect();
-
   sk_sp<const PaintRecord> cached_paint_record_;
-  FloatRect mask_content_boundaries_;
 };
 
 template <>
