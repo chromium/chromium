@@ -60,5 +60,14 @@ TEST(QueryTilesStatsTest, RecordGroupPruned) {
   tester.ExpectBucketCount(stats::kPrunedGroupReasonHistogram, 1, 1);
 }
 
+TEST(QueryTilesStatsTest, RecordTrendingTileEvent) {
+  base::HistogramTester tester;
+  stats::RecordTrendingTileEvent(stats::TrendingTileEvent::kRemoved);
+  stats::RecordTrendingTileEvent(stats::TrendingTileEvent::kClicked);
+  tester.ExpectBucketCount(stats::kTrendingTileEventHistogram, 0, 0);
+  tester.ExpectBucketCount(stats::kTrendingTileEventHistogram, 1, 1);
+  tester.ExpectBucketCount(stats::kTrendingTileEventHistogram, 2, 1);
+}
+
 }  // namespace
 }  // namespace query_tiles

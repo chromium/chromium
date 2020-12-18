@@ -29,6 +29,9 @@ const char kFetcherStartHourHistogram[] = "Search.QueryTiles.Fetcher.Start";
 const char kPrunedGroupReasonHistogram[] =
     "Search.QueryTiles.Group.PruneReason";
 
+const char kTrendingTileEventHistogram[] =
+    "Search.QueryTiles.TrendingTileEvent";
+
 void RecordImageLoading(ImagePreloadingEvent event) {
   base::UmaHistogramEnumeration(kImagePreloadingHistogram, event);
 }
@@ -59,6 +62,10 @@ void RecordExplodeOnFetchStarted(int explode_hour) {
 
 void RecordGroupPruned(PrunedGroupReason reason) {
   base::UmaHistogramEnumeration(kPrunedGroupReasonHistogram, reason);
+}
+
+void RecordTrendingTileEvent(TrendingTileEvent event) {
+  base::UmaHistogramEnumeration(kTrendingTileEventHistogram, event);
 }
 
 }  // namespace stats

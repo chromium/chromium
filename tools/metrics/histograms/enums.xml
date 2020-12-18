@@ -73757,6 +73757,12 @@ Full version information for the fingerprint enum values:
   <int value="15" label="Automatic translation, by user preference"/>
 </enum>
 
+<enum name="TrendingTileEvent">
+  <int value="0" label="Tile was shown"/>
+  <int value="1" label="Tile was removed"/>
+  <int value="2" label="Tile was clicked"/>
+</enum>
+
 <enum name="TriggerHelpUIResult">
   <int value="0" label="SUCCESS"/>
   <int value="1" label="FAILURE"/>
