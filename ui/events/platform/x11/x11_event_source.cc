@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include <algorithm>
 #include <memory>
 #include <type_traits>
@@ -151,8 +150,10 @@ X11EventSource* X11EventSource::GetInstance() {
 
 void X11EventSource::DispatchXEvents() {
   continue_stream_ = true;
-  while (connection_->Dispatch() && continue_stream_) {
-  }
+  do {
+    connection_->Flush();
+    connection_->ReadResponses();
+  } while (connection_->Dispatch() && continue_stream_);
 }
 
 x11::Time X11EventSource::GetCurrentServerTime() {

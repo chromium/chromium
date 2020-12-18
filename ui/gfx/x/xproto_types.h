@@ -110,18 +110,15 @@ void ReadEvent(T* event, ReadBuffer* buf);
 
 template <typename Reply>
 struct Response {
+  Response(std::unique_ptr<Reply> reply, std::unique_ptr<Error> error)
+      : reply(std::move(reply)), error(std::move(error)) {}
+
   operator bool() const { return reply.get(); }
   const Reply* operator->() const { return reply.get(); }
   Reply* operator->() { return reply.get(); }
 
   std::unique_ptr<Reply> reply;
   std::unique_ptr<Error> error;
-
- private:
-  friend class Future<Reply>;
-
-  Response(std::unique_ptr<Reply> reply, std::unique_ptr<Error> error)
-      : reply(std::move(reply)), error(std::move(error)) {}
 };
 
 template <>

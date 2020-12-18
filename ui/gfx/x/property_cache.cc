@@ -32,7 +32,7 @@ PropertyCache::~PropertyCache() {
   connection_->RemoveEventObserver(this);
 }
 
-const GetPropertyResponse& PropertyCache::GetProperty(Atom atom) {
+const GetPropertyResponse& PropertyCache::Get(Atom atom) {
   auto it = properties_.find(atom);
   DCHECK(it != properties_.end());
 
@@ -52,7 +52,16 @@ void PropertyCache::OnEvent(const Event& xev) {
   auto it = properties_.find(prop->atom);
   if (it == properties_.end())
     return;
-  FetchProperty(it->first, &it->second);
+  if (prop->state == Property::NewValue) {
+    FetchProperty(it->first, &it->second);
+  } else {
+    DCHECK_EQ(prop->state, Property::Delete);
+    // When the property is deleted, a GetPropertyRequest will result in a
+    // zeroed GetPropertyReply, so set the reply state now to avoid making an
+    // unnecessary request.
+    it->second.response =
+        GetPropertyResponse{std::make_unique<GetPropertyReply>(), nullptr};
+  }
 }
 
 void PropertyCache::FetchProperty(Atom property, PropertyValue* value) {

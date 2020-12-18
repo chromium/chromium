@@ -125,9 +125,6 @@ struct WmHints {
 // the UI thread. Thus, they don't support multiple displays.
 
 COMPONENT_EXPORT(UI_BASE_X)
-void DeleteProperty(x11::Window window, x11::Atom name);
-
-COMPONENT_EXPORT(UI_BASE_X)
 bool GetWmNormalHints(x11::Window window, SizeHints* hints);
 
 COMPONENT_EXPORT(UI_BASE_X)

@@ -168,13 +168,6 @@ base::Value NewDescriptionValuePair(base::StringPiece desc,
 
 }  // namespace
 
-void DeleteProperty(x11::Window window, x11::Atom name) {
-  x11::Connection::Get()->DeleteProperty({
-      .window = static_cast<x11::Window>(window),
-      .property = name,
-  });
-}
-
 bool GetWmNormalHints(x11::Window window, SizeHints* hints) {
   std::vector<uint32_t> hints32;
   if (!GetArrayProperty(window, x11::GetAtom("WM_NORMAL_HINTS"), &hints32))
@@ -646,9 +639,9 @@ void SetWindowClassHint(x11::Connection* connection,
 void SetWindowRole(x11::Window window, const std::string& role) {
   x11::Atom prop = x11::GetAtom("WM_WINDOW_ROLE");
   if (role.empty())
-    DeleteProperty(window, prop);
+    x11::DeleteProperty(window, prop);
   else
-    SetStringProperty(window, prop, x11::Atom::STRING, role);
+    x11::SetStringProperty(window, prop, x11::Atom::STRING, role);
 }
 
 void SetWMSpecState(x11::Window window,

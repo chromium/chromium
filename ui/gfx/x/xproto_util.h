@@ -111,6 +111,9 @@ Future<void> SetProperty(Window window,
 }
 
 COMPONENT_EXPORT(X11)
+void DeleteProperty(x11::Window window, x11::Atom name);
+
+COMPONENT_EXPORT(X11)
 void SetStringProperty(Window window,
                        Atom property,
                        Atom type,

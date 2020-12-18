@@ -32,9 +32,25 @@ class COMPONENT_EXPORT(X11) PropertyCache : public EventObserver {
 
   ~PropertyCache() override;
 
-  const GetPropertyResponse& GetProperty(Atom atom);
+  const GetPropertyResponse& Get(Atom atom);
+
+  template <typename T>
+  const T* GetAs(Atom atom, size_t* size = nullptr) {
+    auto& response = Get(atom);
+    if (size)
+      *size = 0;
+    if (!response || response->format != CHAR_BIT * sizeof(T) ||
+        !response->value_len) {
+      return nullptr;
+    }
+    if (size)
+      *size = response->value_len;
+    return response->value->front_as<T>();
+  }
 
  private:
+  friend class PropertyCacheTest;
+
   struct PropertyValue {
     PropertyValue();
 

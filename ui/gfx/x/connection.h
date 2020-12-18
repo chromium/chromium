@@ -155,10 +155,12 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
   bool HasPendingResponses();
 
   // Dispatches one event, reply, or error from the server; or returns false
-  // if there's none available.
+  // if there's none available.  This function doesn't read or write any data on
+  // the socket.
   bool Dispatch();
 
-  // Dispatches all available events, replies, and errors.
+  // Dispatches all available events, replies, and errors.  This function
+  // ensures the read and write buffers on the socket are empty upon returning.
   void DispatchAll();
 
   // Directly dispatch an event, bypassing the event queue.

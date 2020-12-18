@@ -443,7 +443,7 @@ void XDragDropClient::OnSelectionNotify(
 
   // ICCCM requires us to delete the property passed into SelectionNotify.
   if (xselection.property != x11::Atom::None)
-    ui::DeleteProperty(xwindow_, xselection.property);
+    x11::DeleteProperty(xwindow_, xselection.property);
 }
 
 void XDragDropClient::InitDrag(int operation, const OSExchangeData* data) {
@@ -471,8 +471,8 @@ void XDragDropClient::InitDrag(int operation, const OSExchangeData* data) {
 
 void XDragDropClient::CleanupDrag() {
   source_provider_ = nullptr;
-  ui::DeleteProperty(xwindow_, x11::GetAtom(kXdndActionList));
-  ui::DeleteProperty(xwindow_, x11::GetAtom(kXdndDirectSave0));
+  x11::DeleteProperty(xwindow_, x11::GetAtom(kXdndActionList));
+  x11::DeleteProperty(xwindow_, x11::GetAtom(kXdndDirectSave0));
 }
 
 void XDragDropClient::UpdateModifierState(int flags) {

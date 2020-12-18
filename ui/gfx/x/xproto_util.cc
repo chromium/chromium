@@ -6,6 +6,13 @@
 
 namespace x11 {
 
+void DeleteProperty(x11::Window window, x11::Atom name) {
+  x11::Connection::Get()->DeleteProperty({
+      .window = static_cast<x11::Window>(window),
+      .property = name,
+  });
+}
+
 void SetStringProperty(Window window,
                        Atom property,
                        Atom type,

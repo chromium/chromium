@@ -15,6 +15,7 @@
 #include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/xproto.h"
+#include "ui/gfx/x/xproto_util.h"
 
 namespace ui {
 
@@ -126,7 +127,7 @@ void SelectionRequestor::OnSelectionNotify(
       request->target != selection.target) {
     // ICCCM requires us to delete the property passed into SelectionNotify.
     if (event_property != x11::Atom::None)
-      ui::DeleteProperty(x_window_, event_property);
+      x11::DeleteProperty(x_window_, event_property);
     return;
   }
 
@@ -141,7 +142,7 @@ void SelectionRequestor::OnSelectionNotify(
     }
   }
   if (event_property != x11::Atom::None)
-    ui::DeleteProperty(x_window_, event_property);
+    x11::DeleteProperty(x_window_, event_property);
 
   if (request->out_type == x11::GetAtom(kIncr)) {
     request->data_sent_incrementally = true;
@@ -184,7 +185,7 @@ void SelectionRequestor::OnPropertyEvent(
   request->out_type = out_type;
 
   // Delete the property to tell the selection owner to send the next chunk.
-  ui::DeleteProperty(x_window_, x_property_);
+  x11::DeleteProperty(x_window_, x_property_);
 
   request->timeout = base::TimeTicks::Now() +
                      base::TimeDelta::FromMilliseconds(kRequestTimeoutMs);
@@ -256,7 +257,7 @@ void SelectionRequestor::BlockTillSelectionNotifyForRequest(Request* request) {
     // shutdown and the X11EventSource has already been destroyed.
     auto* conn = x11::Connection::Get();
     while (!request->completed && request->timeout > base::TimeTicks::Now())
-      conn->Dispatch();
+      conn->DispatchAll();
   }
 }
 

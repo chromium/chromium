@@ -454,7 +454,7 @@ void XWindow::Map(bool inactive) {
   UpdateMinAndMaxSize();
 
   if (window_properties_.empty()) {
-    DeleteProperty(xwindow_, x11::GetAtom("_NET_WM_STATE"));
+    x11::DeleteProperty(xwindow_, x11::GetAtom("_NET_WM_STATE"));
   } else {
     SetAtomArrayProperty(xwindow_, "_NET_WM_STATE", "ATOM",
                          std::vector<x11::Atom>(std::begin(window_properties_),
@@ -763,7 +763,7 @@ void XWindow::SetXWindowOpacity(float opacity) {
   uint32_t cardinality = opacity_8bit * channel_multiplier;
 
   if (cardinality == 0xffffffff) {
-    DeleteProperty(xwindow_, x11::GetAtom("_NET_WM_WINDOW_OPACITY"));
+    x11::DeleteProperty(xwindow_, x11::GetAtom("_NET_WM_WINDOW_OPACITY"));
   } else {
     SetProperty(xwindow_, x11::GetAtom("_NET_WM_WINDOW_OPACITY"),
                 x11::Atom::CARDINAL, cardinality);

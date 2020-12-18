@@ -226,7 +226,7 @@ void X11ClipboardOzone::OnSelectionNotify(
     x11::Atom type;
     std::vector<uint8_t> data;
     x11::GetArrayProperty(x_window_, x_property_, &data, &type);
-    ui::DeleteProperty(x_window_, x_property_);
+    x11::DeleteProperty(x_window_, x_property_);
     if (type != x11::Atom::None)
       selection_state.data = scoped_refptr<base::RefCountedBytes>(
           base::RefCountedBytes::TakeVector(&data));

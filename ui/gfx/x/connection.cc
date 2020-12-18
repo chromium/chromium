@@ -405,9 +405,6 @@ void Connection::DetachFromSequence() {
 bool Connection::Dispatch() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  Flush();
-  ReadResponses();
-
   if (HasNextResponse() && !events_.empty()) {
     auto next_response_sequence = first_request_id_;
     auto next_event_sequence = events_.front().sequence();
@@ -430,8 +427,10 @@ bool Connection::Dispatch() {
 }
 
 void Connection::DispatchAll() {
-  while (Dispatch()) {
-  }
+  do {
+    Flush();
+    ReadResponses();
+  } while (Dispatch());
 }
 
 void Connection::DispatchEvent(const Event& event) {
