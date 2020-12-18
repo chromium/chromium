@@ -189,7 +189,10 @@ def run_info_extras(**kwargs):
           "verify": kwargs["verify"],
           "headless": kwargs.get("headless", False) or "MOZ_HEADLESS" in os.environ,
           "sw-e10s": True,
-          "fission": kwargs.get("enable_fission") or get_bool_pref("fission.autostart")}
+          "fission": kwargs.get("enable_fission") or get_bool_pref("fission.autostart"),
+          "sessionHistoryInParent": (kwargs.get("enable_fission") or
+                                     get_bool_pref("fission.autostart") or
+                                     get_bool_pref("fission.sessionHistoryInParent"))}
 
     # The value of `sw-e10s` defaults to whether the "parent_intercept"
     # implementation is enabled for the current build. This value, however,

@@ -6376,20 +6376,6 @@
      ]
     },
     "selectors": {
-     "focus-visible-006-manual.html": [
-      "974abc0024e3153008e944ff706156efcb9948e2",
-      [
-       null,
-       {}
-      ]
-     ],
-     "focus-visible-008-manual.html": [
-      "53306a90bbcae67ca65feefce3e4d3758d1a4ecd",
-      [
-       null,
-       {}
-      ]
-     ],
      "hover-001-manual.html": [
       "87d7af91b6994371b72ff33923ea1cacc65c8b5b",
       [
@@ -255747,7 +255733,7 @@
         []
        ],
        "firefox.py": [
-        "1fa0bceb17bd436d5463ebc5938e41d511009e38",
+        "9104fedb5f9f45b6c8e9640159315a62e93a37c7",
         []
        ],
        "firefox_android.py": [
@@ -299927,6 +299913,13 @@
        {}
       ]
      ],
+     "overflow-clip-margin-intersection-observer.html": [
+      "dcc1e6e7edd7d14a96ea4037d459d2f16a1f706b",
+      [
+       null,
+       {}
+      ]
+     ],
      "overflow-clip-scroll-size.html": [
       "1f2c2236a412251a9c02b84d3fade4c2df8d0527",
       [
@@ -314731,8 +314724,26 @@
        }
       ]
      ],
+     "focus-visible-006.html": [
+      "4b034b2e27962810bd9357ff88e5fe4587e56d25",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
      "focus-visible-007.html": [
       "95a27006e62076909f63f9946e1f2d7f8331732a",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "focus-visible-008.html": [
+      "75f676f53f3319cb672195343c77cc7ebd94eee4",
       [
        null,
        {
@@ -337866,6 +337877,57 @@
            "/common/get-host-info.sub.js"
           ]
          ]
+        }
+       ]
+      ],
+      "redirect-referrer-override.any.js": [
+       "56e55d79e141fd90124c2d5ea4cef419ee8a9cbd",
+       [
+        "fetch/api/redirect/redirect-referrer-override.any.html",
+        {
+         "script_metadata": [
+          [
+           "timeout",
+           "long"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ]
+         ],
+         "timeout": "long"
+        }
+       ],
+       [
+        "fetch/api/redirect/redirect-referrer-override.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "timeout",
+           "long"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "../resources/utils.js"
+          ],
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ]
+         ],
+         "timeout": "long"
         }
        ]
       ],
@@ -374207,6 +374269,24 @@
        ]
       },
       "the-input-element": {
+       "anchor-active-contenteditable.html": [
+        "88a9a35cc57db82323725559d8b0e2a202b3d7b7",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
+       "anchor-contenteditable-navigate.html": [
+        "e958f10df8d2624b48d1d48f4bd361abe6710edd",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
        "button.html": [
         "3c826a9754f6fddcd0ace10525a645bbe7f26805",
         [
