@@ -726,9 +726,15 @@ export class PDFViewerElement extends PDFViewerBaseElement {
 
           // Add a 'wheel' listener, only while in Presentation mode.
           scroller.addEventListener('wheel', onWheel);
+
+          // Restrict the content to read only (e.g. disable forms and links).
+          this.pluginController_.setReadOnly(true);
+
+          // Revert back to the normal state when exiting Presentation mode.
           eventToPromise('fullscreenchange', scroller).then(() => {
             assert(document.fullscreenElement === null);
             scroller.removeEventListener('wheel', onWheel);
+            this.pluginController_.setReadOnly(false);
           });
 
           // Nothing else to do here. The viewport will be updated as a result

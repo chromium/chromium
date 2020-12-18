@@ -199,6 +199,7 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   void HandleResetPrintPreviewModeMessage(const pp::VarDictionary& dict);
   void HandleSaveAttachmentMessage(const pp::VarDictionary& dict);
   void HandleSaveMessage(const pp::VarDictionary& dict);
+  void HandleSetReadOnlyMessage(const pp::VarDictionary& dict);
   void HandleSetTwoUpViewMessage(const pp::VarDictionary& dict);
   void HandleUpdateScrollMessage(const pp::VarDictionary& dict);
   void HandleViewportMessage(const pp::VarDictionary& dict);

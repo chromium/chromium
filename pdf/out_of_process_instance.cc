@@ -239,6 +239,10 @@ constexpr char kJSGetThumbnailImageData[] = "imageData";
 constexpr char kJSGetThumbnailWidth[] = "width";
 constexpr char kJSGetThumbnailHeight[] = "height";
 
+// Set read only to disable interaction with content (Page -> Plugin)
+constexpr char kJSSetReadOnlyType[] = "setReadOnly";
+constexpr char kJSEnableReadOnly[] = "enableReadOnly";
+
 constexpr int kFindResultCooldownMs = 100;
 
 // Do not save files with over 100 MB. This cap should be kept in sync with and
@@ -657,6 +661,8 @@ void OutOfProcessInstance::HandleMessage(const pp::Var& message) {
     RotateClockwise();
   } else if (type == kJSRotateCounterclockwiseType) {
     RotateCounterclockwise();
+  } else if (type == kJSSetReadOnlyType) {
+    HandleSetReadOnlyMessage(dict);
   } else if (type == kJSSetTwoUpViewType) {
     HandleSetTwoUpViewMessage(dict);
   } else if (type == kJSDisplayAnnotationsType) {
@@ -1904,6 +1910,18 @@ void OutOfProcessInstance::HandleSaveMessage(const pp::VarDictionary& dict) {
       SaveToBuffer(dict.Get(pp::Var(kJSToken)).AsString());
       break;
   }
+}
+
+void OutOfProcessInstance::HandleSetReadOnlyMessage(
+    const pp::VarDictionary& dict) {
+  if (!base::FeatureList::IsEnabled(features::kPDFViewerUpdate) ||
+      !base::FeatureList::IsEnabled(features::kPdfViewerPresentationMode) ||
+      !dict.Get(pp::Var(kJSEnableReadOnly)).is_bool()) {
+    NOTREACHED();
+    return;
+  }
+
+  engine()->SetReadOnly(dict.Get(pp::Var(kJSEnableReadOnly)).AsBool());
 }
 
 void OutOfProcessInstance::HandleSetTwoUpViewMessage(

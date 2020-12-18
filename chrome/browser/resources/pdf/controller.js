@@ -431,6 +431,14 @@ export class PluginController {
     });
   }
 
+  /** @param {boolean} enableReadOnly */
+  setReadOnly(enableReadOnly) {
+    this.postMessage_({
+      type: 'setReadOnly',
+      enableReadOnly: enableReadOnly,
+    });
+  }
+
   /** @override */
   save(requestType) {
     const resolver = new PromiseResolver();

@@ -102,6 +102,8 @@ class PDFiumEngine : public PDFEngine,
   void ZoomUpdated(double new_zoom_level) override;
   void RotateClockwise() override;
   void RotateCounterclockwise() override;
+  bool IsReadOnly() const override;
+  void SetReadOnly(bool enable) override;
   void SetTwoUpView(bool enable) override;
   void DisplayAnnotations(bool display) override;
   gfx::Size ApplyDocumentLayout(
@@ -827,6 +829,10 @@ class PDFiumEngine : public PDFEngine,
   gfx::Point range_selection_base_;
 
   bool edit_mode_ = false;
+
+  // When true, interactive portions of the content, such as forms and links,
+  // are restricted.
+  bool read_only_ = false;
 
   PDFiumPrint print_;
 

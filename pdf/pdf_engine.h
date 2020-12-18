@@ -366,6 +366,8 @@ class PDFEngine {
   virtual void ZoomUpdated(double new_zoom_level) = 0;
   virtual void RotateClockwise() = 0;
   virtual void RotateCounterclockwise() = 0;
+  virtual bool IsReadOnly() const = 0;
+  virtual void SetReadOnly(bool enable) = 0;
   virtual void SetTwoUpView(bool enable) = 0;
   virtual void DisplayAnnotations(bool display) = 0;
 

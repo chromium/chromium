@@ -2058,6 +2058,14 @@ void PDFiumEngine::RotateCounterclockwise() {
   ProposeNextDocumentLayout();
 }
 
+bool PDFiumEngine::IsReadOnly() const {
+  return read_only_;
+}
+
+void PDFiumEngine::SetReadOnly(bool enable) {
+  read_only_ = enable;
+}
+
 void PDFiumEngine::SetTwoUpView(bool enable) {
   desired_layout_options_.set_two_up_view_enabled(enable);
   ProposeNextDocumentLayout();
