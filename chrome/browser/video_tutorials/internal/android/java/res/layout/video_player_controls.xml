@@ -61,14 +61,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                style="@style/TextButton"
-                android:text="@string/video_tutorials_watch_next_video" />
+                android:text="@string/video_tutorials_watch_next_video"
+                android:textAppearance="@style/TextAppearance.TextMediumThick.Primary.Light"
+                style="@style/TextButton" />
 
             <TextView
                 android:id="@+id/change_language"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
+                android:textAppearance="@style/TextAppearance.TextMediumThick.Primary.Light"
                 style="@style/TextButton" />
         </LinearLayout>
 
