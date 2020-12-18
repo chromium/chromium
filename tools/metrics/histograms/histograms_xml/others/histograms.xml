@@ -10065,6 +10065,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="Nearby.Share.Transfer.CompletionStatus.NotCompletedReason{Direction}{ShareTargetType}"
     enum="NearbyShareTransferNotCompletedReason" expires_after="2021-08-19">
+  <obsolete>
+    Replaced 12/2020 with Nearby.Share.Transfer.FinalStatus[...].
+  </obsolete>
   <owner>nohle@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -10094,6 +10097,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="Nearby.Share.Transfer.CompletionStatus{Direction}{ShareTargetType}"
     enum="BooleanCompleted" expires_after="2021-08-19">
+  <obsolete>
+    Replaced 12/2020 with Nearby.Share.Transfer.FinalStatus[...].
+  </obsolete>
   <owner>nohle@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -10120,6 +10126,44 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       </obsolete>
     </variant>
     <variant name=".UnknownDeviceType" summary="an unknown device type"/>
+  </token>
+</histogram>
+
+<histogram name="Nearby.Share.Transfer.FinalStatus"
+    enum="NearbyShareTransferFinalStatus" expires_after="2021-08-19">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the final status of a Nearby Share transfer. Emitted when a transfer
+    completes successfully, fails, or was aborted by the user, for example, by
+    cancelling the transfer.
+  </summary>
+</histogram>
+
+<histogram
+    name="Nearby.Share.Transfer.FinalStatus.{Direction}.{ShareTargetType}.{ContactStatus}"
+    enum="NearbyShareTransferFinalStatus" expires_after="2021-08-19">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the final status of a Nearby Share {Direction} transfer with
+    {ShareTargetType} using {ContactStatus}. Emitted when a transfer completes
+    successfully, fails, or was aborted by the user, for example, by cancelling
+    the transfer.
+  </summary>
+  <token key="Direction">
+    <variant name="Receive" summary="incoming (receive)"/>
+    <variant name="Send" summary="outgoing (send)"/>
+  </token>
+  <token key="ShareTargetType">
+    <variant name="Laptop" summary="a laptop"/>
+    <variant name="Phone" summary="a phone"/>
+    <variant name="Tablet" summary="a tablet"/>
+    <variant name="UnknownDeviceType" summary="an unknown device type"/>
+  </token>
+  <token key="ContactStatus">
+    <variant name="Contact" summary="contact-based sharing"/>
+    <variant name="NonContact" summary="non-contact-based sharing"/>
   </token>
 </histogram>
 

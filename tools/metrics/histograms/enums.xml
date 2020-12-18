@@ -50780,6 +50780,19 @@ Called by update_use_counter_css.py.-->
   <int value="7" label="WiFiLAN error"/>
 </enum>
 
+<enum name="NearbyShareTransferFinalStatus">
+  <int value="0" label="Complete"/>
+  <int value="1" label="Unknown"/>
+  <int value="2" label="Awaiting remote acceptance failed"/>
+  <int value="3" label="Failed"/>
+  <int value="4" label="Rejected"/>
+  <int value="5" label="Cancelled"/>
+  <int value="6" label="Timed out"/>
+  <int value="7" label="Media unavailable"/>
+  <int value="8" label="Not enough space"/>
+  <int value="9" label="Unsupported attachment type"/>
+</enum>
+
 <enum name="NearbyShareTransferNotCompletedReason">
   <int value="0" label="Unknown"/>
   <int value="1" label="Awaiting remote acceptance failed"/>

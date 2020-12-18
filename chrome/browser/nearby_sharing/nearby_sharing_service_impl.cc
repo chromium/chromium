@@ -2464,8 +2464,9 @@ void NearbySharingServiceImpl::OnIncomingTransferUpdate(
   }
 
   if (metadata.is_final_status()) {
-    RecordNearbyShareTransferCompletionStatusMetric(
-        /*is_incoming=*/true, share_target.type, metadata.status());
+    RecordNearbyShareTransferFinalStatusMetric(
+        /*is_incoming=*/true, share_target.type, metadata.status(),
+        share_target.is_known);
     OnTransferComplete();
     if (metadata.status() != TransferMetadata::Status::kComplete) {
       // For any type of failure, lets make sure any pending files get cleaned
@@ -2500,8 +2501,9 @@ void NearbySharingServiceImpl::OnOutgoingTransferUpdate(
 
   if (metadata.is_final_status()) {
     is_connecting_ = false;
-    RecordNearbyShareTransferCompletionStatusMetric(
-        /*is_incoming=*/false, share_target.type, metadata.status());
+    RecordNearbyShareTransferFinalStatusMetric(
+        /*is_incoming=*/false, share_target.type, metadata.status(),
+        share_target.is_known);
     OnTransferComplete();
   } else if (metadata.status() == TransferMetadata::Status::kMediaDownloading ||
              metadata.status() ==

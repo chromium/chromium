@@ -30,16 +30,17 @@ enum class NearbyShareEnabledState {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. If entries are added, kMaxValue should
 // be updated.
-enum class TransferNotCompletedReason {
-  kUnknown = 0,
-  kAwaitingRemoteAcceptanceFailed = 1,
-  kFailed = 2,
-  kRejected = 3,
-  kCancelled = 4,
-  kTimedOut = 5,
-  kMediaUnavailable = 6,
-  kNotEnoughSpace = 7,
-  kUnsupportedAttachmentType = 8,
+enum class TransferFinalStatus {
+  kComplete = 0,
+  kUnknown = 1,
+  kAwaitingRemoteAcceptanceFailed = 2,
+  kFailed = 3,
+  kRejected = 4,
+  kCancelled = 5,
+  kTimedOut = 6,
+  kMediaUnavailable = 7,
+  kNotEnoughSpace = 8,
+  kUnsupportedAttachmentType = 9,
   kMaxValue = kUnsupportedAttachmentType
 };
 
@@ -68,35 +69,36 @@ enum class FinalStatus {
   kMaxValue = kCanceled
 };
 
-TransferNotCompletedReason TransferMetadataStatusToTransferNotCompletedReason(
+TransferFinalStatus TransferMetadataStatusToTransferFinalStatus(
     TransferMetadata::Status status) {
   switch (status) {
+    case TransferMetadata::Status::kComplete:
+      return TransferFinalStatus::kComplete;
     case TransferMetadata::Status::kAwaitingRemoteAcceptanceFailed:
-      return TransferNotCompletedReason::kAwaitingRemoteAcceptanceFailed;
+      return TransferFinalStatus::kAwaitingRemoteAcceptanceFailed;
     case TransferMetadata::Status::kFailed:
-      return TransferNotCompletedReason::kFailed;
+      return TransferFinalStatus::kFailed;
     case TransferMetadata::Status::kRejected:
-      return TransferNotCompletedReason::kRejected;
+      return TransferFinalStatus::kRejected;
     case TransferMetadata::Status::kCancelled:
-      return TransferNotCompletedReason::kCancelled;
+      return TransferFinalStatus::kCancelled;
     case TransferMetadata::Status::kTimedOut:
-      return TransferNotCompletedReason::kTimedOut;
+      return TransferFinalStatus::kTimedOut;
     case TransferMetadata::Status::kMediaUnavailable:
-      return TransferNotCompletedReason::kMediaUnavailable;
+      return TransferFinalStatus::kMediaUnavailable;
     case TransferMetadata::Status::kNotEnoughSpace:
-      return TransferNotCompletedReason::kNotEnoughSpace;
+      return TransferFinalStatus::kNotEnoughSpace;
     case TransferMetadata::Status::kUnsupportedAttachmentType:
-      return TransferNotCompletedReason::kUnsupportedAttachmentType;
+      return TransferFinalStatus::kUnsupportedAttachmentType;
     case TransferMetadata::Status::kUnknown:
     case TransferMetadata::Status::kConnecting:
     case TransferMetadata::Status::kAwaitingLocalConfirmation:
     case TransferMetadata::Status::kAwaitingRemoteAcceptance:
     case TransferMetadata::Status::kInProgress:
-    case TransferMetadata::Status::kComplete:
     case TransferMetadata::Status::kMediaDownloading:
     case TransferMetadata::Status::kExternalProviderLaunched:
       NOTREACHED();
-      return TransferNotCompletedReason::kUnknown;
+      return TransferFinalStatus::kUnknown;
   }
 }
 
@@ -151,6 +153,10 @@ FinalStatus PayloadStatusToFinalStatus(
 
 std::string GetDirectionSubcategoryName(bool is_incoming) {
   return is_incoming ? ".Receive" : ".Send";
+}
+
+std::string GetIsKnownSubcategoryName(bool is_known) {
+  return is_known ? ".Contact" : ".NonContact";
 }
 
 std::string GetShareTargetTypeSubcategoryName(
@@ -345,32 +351,23 @@ void RecordNearbyShareStartAdvertisingResultMetric(
   }
 }
 
-void RecordNearbyShareTransferCompletionStatusMetric(
+void RecordNearbyShareTransferFinalStatusMetric(
     bool is_incoming,
     nearby_share::mojom::ShareTargetType type,
-    TransferMetadata::Status status) {
+    TransferMetadata::Status status,
+    bool is_known) {
   DCHECK(TransferMetadata::IsFinalStatus(status));
 
-  bool is_complete = status == TransferMetadata::Status::kComplete;
   std::string send_or_receive = GetDirectionSubcategoryName(is_incoming);
   std::string share_target_type = GetShareTargetTypeSubcategoryName(type);
+  std::string contact_or_not = GetIsKnownSubcategoryName(is_known);
 
-  const std::string status_prefix = "Nearby.Share.Transfer.CompletionStatus";
-  base::UmaHistogramBoolean(status_prefix, is_complete);
-  base::UmaHistogramBoolean(status_prefix + send_or_receive, is_complete);
-  base::UmaHistogramBoolean(status_prefix + share_target_type, is_complete);
-  base::UmaHistogramBoolean(status_prefix + send_or_receive + share_target_type,
-                            is_complete);
-  if (!is_complete) {
-    TransferNotCompletedReason reason =
-        TransferMetadataStatusToTransferNotCompletedReason(status);
+  TransferFinalStatus final_status =
+      TransferMetadataStatusToTransferFinalStatus(status);
 
-    const std::string reason_prefix =
-        "Nearby.Share.Transfer.CompletionStatus.NotCompletedReason";
-    base::UmaHistogramEnumeration(reason_prefix, reason);
-    base::UmaHistogramEnumeration(reason_prefix + send_or_receive, reason);
-    base::UmaHistogramEnumeration(reason_prefix + share_target_type, reason);
-    base::UmaHistogramEnumeration(
-        reason_prefix + send_or_receive + share_target_type, reason);
-  }
+  const std::string prefix = "Nearby.Share.Transfer.FinalStatus";
+  base::UmaHistogramEnumeration(prefix, final_status);
+  base::UmaHistogramEnumeration(
+      prefix + send_or_receive + share_target_type + contact_or_not,
+      final_status);
 }

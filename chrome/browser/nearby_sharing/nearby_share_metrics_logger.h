@@ -48,9 +48,10 @@ void RecordNearbyShareStartAdvertisingResultMetric(
     bool is_high_visibility,
     location::nearby::connections::mojom::Status status);
 
-void RecordNearbyShareTransferCompletionStatusMetric(
+void RecordNearbyShareTransferFinalStatusMetric(
     bool is_incoming,
     nearby_share::mojom::ShareTargetType type,
-    TransferMetadata::Status status);
+    TransferMetadata::Status status,
+    bool is_known);
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_NEARBY_SHARE_METRICS_LOGGER_H_
