@@ -12,6 +12,9 @@
 #include "base/win/scoped_handle.h"
 #include "build/build_config.h"
 #include "components/version_info/version_info.h"
+#include "ui/gfx/geometry/angle_conversions.h"
+#include "ui/gfx/transform.h"
+#include "ui/gfx/transform_util.h"
 
 namespace device {
 
@@ -19,6 +22,21 @@ XrPosef PoseIdentity() {
   XrPosef pose{};
   pose.orientation.w = 1;
   return pose;
+}
+
+XrPosef GfxTransformToXrPose(const gfx::Transform& transform) {
+  gfx::DecomposedTransform decomposed_transform;
+  bool decomposition_result =
+      gfx::DecomposeTransform(&decomposed_transform, transform);
+  // This pose should always be a simple translation and rotation so this should
+  // always be true
+  DCHECK(decomposition_result);
+  return {
+      {decomposed_transform.quaternion.x(), decomposed_transform.quaternion.y(),
+       decomposed_transform.quaternion.z(),
+       decomposed_transform.quaternion.w()},
+      {decomposed_transform.translate[0], decomposed_transform.translate[1],
+       decomposed_transform.translate[2]}};
 }
 
 XrResult GetSystem(XrInstance instance, XrSystemId* system) {
@@ -130,6 +148,13 @@ XrResult CreateInstance(
           kMSFTHandInteractionExtensionName);
   if (handInteractionExtensionSupported) {
     extensions.push_back(kMSFTHandInteractionExtensionName);
+  }
+
+  const bool anchorsExtensionSupported =
+      extension_enumeration.ExtensionSupported(
+          XR_MSFT_SPATIAL_ANCHOR_EXTENSION_NAME);
+  if (anchorsExtensionSupported) {
+    extensions.push_back(XR_MSFT_SPATIAL_ANCHOR_EXTENSION_NAME);
   }
 
   instance_create_info.enabledExtensionCount =

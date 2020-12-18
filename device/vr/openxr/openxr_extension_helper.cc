@@ -41,6 +41,22 @@ OpenXrExtensionHelper::OpenXrExtensionHelper(
       reinterpret_cast<PFN_xrVoidFunction*>(
           const_cast<PFN_xrGetD3D11GraphicsRequirementsKHR*>(
               &extension_methods_.xrGetD3D11GraphicsRequirementsKHR)));
+
+  (void)xrGetInstanceProcAddr(
+      instance, "xrCreateSpatialAnchorMSFT",
+      reinterpret_cast<PFN_xrVoidFunction*>(
+          const_cast<PFN_xrCreateSpatialAnchorMSFT*>(
+              &extension_methods_.xrCreateSpatialAnchorMSFT)));
+  (void)xrGetInstanceProcAddr(
+      instance, "xrDestroySpatialAnchorMSFT",
+      reinterpret_cast<PFN_xrVoidFunction*>(
+          const_cast<PFN_xrDestroySpatialAnchorMSFT*>(
+              &extension_methods_.xrDestroySpatialAnchorMSFT)));
+  (void)xrGetInstanceProcAddr(
+      instance, "xrCreateSpatialAnchorSpaceMSFT",
+      reinterpret_cast<PFN_xrVoidFunction*>(
+          const_cast<PFN_xrCreateSpatialAnchorSpaceMSFT*>(
+              &extension_methods_.xrCreateSpatialAnchorSpaceMSFT)));
 }
 
 }  // namespace device

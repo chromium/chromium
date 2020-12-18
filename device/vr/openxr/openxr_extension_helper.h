@@ -14,8 +14,14 @@
 
 namespace device {
 struct OpenXrExtensionMethods {
+  // D3D
   PFN_xrGetD3D11GraphicsRequirementsKHR xrGetD3D11GraphicsRequirementsKHR{
       nullptr};
+
+  // Anchors
+  PFN_xrCreateSpatialAnchorMSFT xrCreateSpatialAnchorMSFT{nullptr};
+  PFN_xrDestroySpatialAnchorMSFT xrDestroySpatialAnchorMSFT{nullptr};
+  PFN_xrCreateSpatialAnchorSpaceMSFT xrCreateSpatialAnchorSpaceMSFT{nullptr};
 };
 
 class OpenXrExtensionEnumeration {

@@ -1436,6 +1436,7 @@ void XRSystem::OnRequestSessionSetupForDomOverlay(
 void XRSystem::OnRequestSessionReturned(
     PendingRequestSessionQuery* query,
     device::mojom::blink::RequestSessionResultPtr result) {
+  DVLOG(2) << __func__;
   // The session query has returned and we're about to resolve or reject the
   // promise, so remove it from our outstanding list.
   DCHECK(outstanding_request_queries_.Contains(query));
@@ -1473,13 +1474,8 @@ void XRSystem::OnRequestSessionReturned(
   auto session_ptr = std::move(result->get_success()->session);
   auto metrics_recorder = std::move(result->get_success()->metrics_recorder);
 
-  bool environment_integration =
-      query->mode() == device::mojom::blink::XRSessionMode::kImmersiveAr;
-
   // immersive sessions must supply display info.
   DCHECK(session_ptr->display_info);
-  DVLOG(2) << __func__
-           << ": environment_integration=" << environment_integration;
 
   XRSessionFeatureSet enabled_features;
   for (const auto& feature : session_ptr->enabled_features) {
@@ -1497,6 +1493,11 @@ void XRSystem::OnRequestSessionReturned(
 
   if (query->mode() == device::mojom::blink::XRSessionMode::kImmersiveVr ||
       query->mode() == device::mojom::blink::XRSessionMode::kImmersiveAr) {
+    const bool anchors_enabled = base::Contains(
+        enabled_features, device::mojom::XRSessionFeature::ANCHORS);
+    const bool hit_test_enabled = base::Contains(
+        enabled_features, device::mojom::XRSessionFeature::HIT_TEST);
+    const bool environment_integration = hit_test_enabled || anchors_enabled;
     if (environment_integration) {
       // See Task Sources spreadsheet for more information:
       // https://docs.google.com/spreadsheets/d/1b-dus1Ug3A8y0lX0blkmOjJILisUASdj8x9YN_XMwYc/view
@@ -1511,7 +1512,9 @@ void XRSystem::OnRequestSessionReturned(
                     WrapWeakPersistent(this)));
 
       session->OnEnvironmentProviderCreated();
+    }
 
+    if (query->mode() == device::mojom::blink::XRSessionMode::kImmersiveAr) {
       DCHECK(DomWindow());
       if (query->HasFeature(device::mojom::XRSessionFeature::DOM_OVERLAY)) {
         DCHECK(query->DOMOverlayElement());

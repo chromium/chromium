@@ -9,10 +9,16 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "base/util/type_safety/id_type.h"
 #include "device/vr/openxr/openxr_defs.h"
 #include "device/vr/openxr/openxr_extension_helper.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 #include "third_party/openxr/src/include/openxr/openxr_platform.h"
+#include "ui/gfx/transform.h"
+
+using AnchorId = util::IdTypeU64<class AnchorTag>;
+constexpr AnchorId kInvalidAnchorId =
+    AnchorId(0);  // IdTypeU64 invalid value is 0
 
 namespace device {
 // These macros aren't common in Chromium and generally discouraged, so define
@@ -48,6 +54,7 @@ namespace device {
 // Returns the identity pose, where the position is {0, 0, 0} and the
 // orientation is {0, 0, 0, 1}.
 XrPosef PoseIdentity();
+XrPosef GfxTransformToXrPose(const gfx::Transform& transform);
 
 XrResult GetSystem(XrInstance instance, XrSystemId* system);
 

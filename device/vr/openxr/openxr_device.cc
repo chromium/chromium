@@ -99,6 +99,21 @@ void OpenXrDevice::EnsureRenderLoop() {
 void OpenXrDevice::RequestSession(
     mojom::XRRuntimeSessionOptionsPtr options,
     mojom::XRRuntime::RequestSessionCallback callback) {
+  // Check feature support and reject session request if we cannot fulfil it
+  // TODO(https://crbug.com/995377): Currently OpenXR features are declared
+  // statically, but we may only know a runtime's true support for a feature
+  // dynamically
+  const bool anchorsRequired = base::Contains(
+      options->required_features, device::mojom::XRSessionFeature::ANCHORS);
+  const bool anchorsSupported =
+      extension_helper_.ExtensionEnumeration()->ExtensionSupported(
+          XR_MSFT_SPATIAL_ANCHOR_EXTENSION_NAME);
+  if (anchorsRequired && !anchorsSupported) {
+    // Reject session request
+    std::move(callback).Run(nullptr, mojo::NullRemote());
+    return;
+  }
+
   EnsureRenderLoop();
 
   if (!render_loop_->IsRunning()) {

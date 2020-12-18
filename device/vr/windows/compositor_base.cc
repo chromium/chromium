@@ -251,17 +251,11 @@ void XRCompositorCommon::RequestSession(
   session->data_provider = frame_data_receiver_.BindNewPipeAndPassRemote();
   session->submit_frame_sink = std::move(submit_frame_sink);
 
-  // Currently, the initial filtering of supported devices happens on the
-  // browser side (BrowserXRRuntimeImpl::SupportsFeature()), so if we have
-  // reached this point, it is safe to assume that all requested features are
-  // enabled.
-  // TODO(https://crbug.com/995377): revisit the approach when the bug is fixed.
+  EnableSupportedFeatures(options->required_features,
+                          options->optional_features);
   session->enabled_features.insert(session->enabled_features.end(),
-                                   options->required_features.begin(),
-                                   options->required_features.end());
-  session->enabled_features.insert(session->enabled_features.end(),
-                                   options->optional_features.begin(),
-                                   options->optional_features.end());
+                                   enabled_features_.begin(),
+                                   enabled_features_.end());
 
   session->device_config = device::mojom::XRSessionDeviceConfig::New();
   session->device_config->uses_input_eventing = UsesInputEventing();
@@ -313,6 +307,11 @@ void XRCompositorCommon::SetVisibilityState(
           base::BindOnce(on_visibility_state_changed_, visibility_state));
     }
   }
+}
+
+const mojom::VRStageParametersPtr&
+XRCompositorCommon::GetCurrentStageParameters() const {
+  return current_stage_parameters_;
 }
 
 void XRCompositorCommon::SetStageParameters(

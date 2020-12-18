@@ -156,6 +156,7 @@ constexpr device::mojom::XRSessionFeature kOpenXRFeatures[] = {
     device::mojom::XRSessionFeature::REF_SPACE_LOCAL_FLOOR,
     device::mojom::XRSessionFeature::REF_SPACE_BOUNDED_FLOOR,
     device::mojom::XRSessionFeature::REF_SPACE_UNBOUNDED,
+    device::mojom::XRSessionFeature::ANCHORS,
 };
 #endif
 }  // anonymous namespace

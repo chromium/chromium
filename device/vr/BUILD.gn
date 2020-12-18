@@ -145,6 +145,10 @@ if (enable_vr) {
 
       sources += [
         "openxr/context_provider_callbacks.h",
+        "openxr/openxr_anchor_manager.cc",
+        "openxr/openxr_anchor_manager.h",
+        "openxr/openxr_anchor_request.cc",
+        "openxr/openxr_anchor_request.h",
         "openxr/openxr_api_wrapper.cc",
         "openxr/openxr_api_wrapper.h",
         "openxr/openxr_controller.cc",
