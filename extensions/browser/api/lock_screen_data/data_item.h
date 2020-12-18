@@ -55,7 +55,7 @@ class DataItem {
       ValueStoreCache* value_store_cache,
       base::SequencedTaskRunner* task_runner,
       const std::string& extension_id,
-      const RegisteredValuesCallback& callback);
+      RegisteredValuesOnceCallback callback);
 
   // Clears data item value store for the extension with the provided extension
   // ID.

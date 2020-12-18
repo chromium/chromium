@@ -261,10 +261,10 @@ void DeleteImpl(OperationResult* result,
                                 : OperationResult::kFailed;
 }
 
-void OnGetRegisteredValues(const DataItem::RegisteredValuesCallback& callback,
+void OnGetRegisteredValues(DataItem::RegisteredValuesOnceCallback callback,
                            std::unique_ptr<OperationResult> result,
                            std::unique_ptr<base::DictionaryValue> values) {
-  callback.Run(*result, std::move(values));
+  std::move(callback).Run(*result, std::move(values));
 }
 
 }  // namespace
@@ -275,12 +275,12 @@ void DataItem::GetRegisteredValuesForExtension(
     ValueStoreCache* value_store_cache,
     base::SequencedTaskRunner* task_runner,
     const std::string& extension_id,
-    const RegisteredValuesCallback& callback) {
+    RegisteredValuesOnceCallback callback) {
   scoped_refptr<const Extension> extension =
       ExtensionRegistry::Get(context)->GetExtensionById(
           extension_id, ExtensionRegistry::ENABLED);
   if (!extension) {
-    callback.Run(OperationResult::kUnknownExtension, nullptr);
+    std::move(callback).Run(OperationResult::kUnknownExtension, nullptr);
     return;
   }
 
@@ -297,8 +297,8 @@ void DataItem::GetRegisteredValuesForExtension(
                      base::Unretained(value_store_cache),
                      base::Bind(&GetRegisteredItems, result_ptr, values_ptr),
                      extension),
-      base::BindOnce(&OnGetRegisteredValues, callback, std::move(result),
-                     std::move(values)));
+      base::BindOnce(&OnGetRegisteredValues, std::move(callback),
+                     std::move(result), std::move(values)));
 }
 
 // static

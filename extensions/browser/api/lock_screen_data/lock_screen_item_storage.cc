@@ -92,13 +92,15 @@ void GetRegisteredItems(const std::string& extension_id,
                         content::BrowserContext* context,
                         ValueStoreCache* value_store_cache,
                         base::SequencedTaskRunner* task_runner,
-                        const DataItem::RegisteredValuesCallback& callback) {
+                        DataItem::RegisteredValuesOnceCallback callback) {
   if (g_test_registered_items_getter_callback) {
-    g_test_registered_items_getter_callback->Run(extension_id, callback);
+    g_test_registered_items_getter_callback->Run(extension_id,
+                                                 std::move(callback));
     return;
   }
-  DataItem::GetRegisteredValuesForExtension(
-      context, value_store_cache, task_runner, extension_id, callback);
+  DataItem::GetRegisteredValuesForExtension(context, value_store_cache,
+                                            task_runner, extension_id,
+                                            std::move(callback));
 }
 
 void DeleteAllItems(const std::string& extension_id,
@@ -502,9 +504,9 @@ void LockScreenItemStorage::EnsureCacheForExtensionLoaded(
 
   GetRegisteredItems(extension_id, context_, value_store_cache_.get(),
                      task_runner_.get(),
-                     base::Bind(&LockScreenItemStorage::OnGotExtensionItems,
-                                weak_ptr_factory_.GetWeakPtr(), extension_id,
-                                tick_clock_->NowTicks()));
+                     base::BindOnce(&LockScreenItemStorage::OnGotExtensionItems,
+                                    weak_ptr_factory_.GetWeakPtr(),
+                                    extension_id, tick_clock_->NowTicks()));
 }
 
 void LockScreenItemStorage::OnItemsMigratedForExtension(
@@ -515,9 +517,9 @@ void LockScreenItemStorage::OnItemsMigratedForExtension(
   data_item_cache_[extension_id].state = CachedExtensionData::State::kLoading;
   GetRegisteredItems(extension_id, context_, value_store_cache_.get(),
                      task_runner_.get(),
-                     base::Bind(&LockScreenItemStorage::OnGotExtensionItems,
-                                weak_ptr_factory_.GetWeakPtr(), extension_id,
-                                tick_clock_->NowTicks()));
+                     base::BindOnce(&LockScreenItemStorage::OnGotExtensionItems,
+                                    weak_ptr_factory_.GetWeakPtr(),
+                                    extension_id, tick_clock_->NowTicks()));
 }
 
 void LockScreenItemStorage::OnGotExtensionItems(
