@@ -7,9 +7,12 @@
 #include <string>
 #include <utility>
 
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "mojo/public/c/system/data_pipe.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/web_url_loader.h"
@@ -28,6 +31,19 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
+
+const char kCnameAliasHadAliasesHistogram[] =
+    "SubresourceFilter.CnameAlias.Renderer.HadAliases";
+const char kCnameAliasIsInvalidCountHistogram[] =
+    "SubresourceFilter.CnameAlias.Renderer.InvalidCount";
+const char kCnameAliasIsRedundantCountHistogram[] =
+    "SubresourceFilter.CnameAlias.Renderer.RedundantCount";
+const char kCnameAliasListLengthHistogram[] =
+    "SubresourceFilter.CnameAlias.Renderer.ListLength";
+const char kCnameAliasWasAdTaggedHistogram[] =
+    "SubresourceFilter.CnameAlias.Renderer.WasAdTaggedBasedOnAlias";
+const char kCnameAliasWasBlockedHistogram[] =
+    "SubresourceFilter.CnameAlias.Renderer.WasBlockedBasedOnAlias";
 
 class ResourceLoaderTest : public testing::Test {
   DISALLOW_COPY_AND_ASSIGN(ResourceLoaderTest);
@@ -552,6 +568,291 @@ TEST_F(ResourceLoaderIsolatedCodeCacheTest, CacheResponseFromServiceWorker) {
   // are loaded via a different mechanism.  So the ResourceLoader code caching
   // value should be false here.
   EXPECT_EQ(false, LoadAndCheckIsolatedCodeCache(response));
+}
+
+class ResourceLoaderSubresourceFilterCnameAliasTest
+    : public ResourceLoaderTest {
+ public:
+  ResourceLoaderSubresourceFilterCnameAliasTest() = default;
+  ~ResourceLoaderSubresourceFilterCnameAliasTest() override = default;
+
+  void SetUp() override {
+    feature_list_.InitAndEnableFeature(
+        features::kSendCnameAliasesToSubresourceFilterFromRenderer);
+    ResourceLoaderTest::SetUp();
+  }
+
+  base::HistogramTester* histogram_tester() { return &histogram_tester_; }
+
+  void SetMockSubresourceFilterBlockLists(Vector<String> blocked_urls,
+                                          Vector<String> tagged_urls) {
+    blocked_urls_ = blocked_urls;
+    tagged_urls_ = tagged_urls;
+  }
+
+  Resource* CreateResource(ResourceRequest request) {
+    FetchParameters params = FetchParameters::CreateForTest(std::move(request));
+    auto* fetcher = MakeResourceFetcherWithMockSubresourceFilter();
+    return RawResource::Fetch(params, fetcher, nullptr);
+  }
+
+  void GiveResponseToLoader(ResourceResponse response, ResourceLoader* loader) {
+    CreateMojoDataPipe();
+    loader->DidReceiveResponse(WrappedResourceResponse(response));
+  }
+
+ protected:
+  FetchContext* MakeFetchContextWithMockSubresourceFilter(
+      Vector<String> blocked_urls,
+      Vector<String> tagged_urls) {
+    auto* context = MakeGarbageCollected<MockFetchContext>();
+    context->set_blocked_urls(blocked_urls);
+    context->set_tagged_urls(tagged_urls);
+    return context;
+  }
+
+  ResourceFetcher* MakeResourceFetcherWithMockSubresourceFilter() {
+    FetchContext* context =
+        MakeFetchContextWithMockSubresourceFilter(blocked_urls_, tagged_urls_);
+    auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
+    return MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
+        properties->MakeDetachable(), context, CreateTaskRunner(),
+        CreateTaskRunner(), MakeGarbageCollected<NoopLoaderFactory>(),
+        MakeGarbageCollected<MockContextLifecycleNotifier>()));
+  }
+
+  void CreateMojoDataPipe() {
+    mojo::ScopedDataPipeProducerHandle producer;
+    mojo::ScopedDataPipeConsumerHandle consumer;
+    MojoCreateDataPipeOptions options;
+    options.struct_size = sizeof(MojoCreateDataPipeOptions);
+    options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
+    options.element_num_bytes = 1;
+    options.capacity_num_bytes = 3;
+
+    MojoResult result = CreateDataPipe(&options, &producer, &consumer);
+    ASSERT_EQ(result, MOJO_RESULT_OK);
+  }
+
+  void ExpectHistogramsMatching(CnameAliasMetricInfo info) {
+    histogram_tester()->ExpectUniqueSample(kCnameAliasHadAliasesHistogram,
+                                           info.has_aliases, 1);
+
+    if (info.has_aliases) {
+      histogram_tester()->ExpectUniqueSample(kCnameAliasWasAdTaggedHistogram,
+                                             info.was_ad_tagged_based_on_alias,
+                                             1);
+      histogram_tester()->ExpectUniqueSample(
+          kCnameAliasWasBlockedHistogram, info.was_blocked_based_on_alias, 1);
+      histogram_tester()->ExpectUniqueSample(kCnameAliasListLengthHistogram,
+                                             info.list_length, 1);
+      histogram_tester()->ExpectUniqueSample(kCnameAliasIsInvalidCountHistogram,
+                                             info.invalid_count, 1);
+      histogram_tester()->ExpectUniqueSample(
+          kCnameAliasIsRedundantCountHistogram, info.redundant_count, 1);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  base::HistogramTester histogram_tester_;
+  Vector<String> blocked_urls_;
+  Vector<String> tagged_urls_;
+};
+
+TEST_F(ResourceLoaderSubresourceFilterCnameAliasTest,
+       DnsAliasesCheckedBySubresourceFilterDisallowed_TaggedAndBlocked) {
+  // Set the blocklists: the first for blocking, the second for ad-tagging.
+  Vector<String> blocked_urls = {"https://bad-ad.com/some_path.html"};
+  Vector<String> tagged_urls = {"https://ad.com/some_path.html"};
+  SetMockSubresourceFilterBlockLists(blocked_urls, tagged_urls);
+
+  // Create the request.
+  KURL url("https://www.example.com/some_path.html");
+  ResourceRequest request(url);
+  request.SetRequestContext(mojom::blink::RequestContextType::FETCH);
+
+  // Create the resource and loader.
+  Resource* resource = CreateResource(std::move(request));
+  ResourceLoader* loader = resource->Loader();
+
+  // Create the response.
+  ResourceResponse response(url);
+  response.SetHttpStatusCode(200);
+
+  // Set the CNAME aliases.
+  Vector<String> aliases({"ad.com", "bad-ad.com", "alias3.com"});
+  response.SetDnsAliases(aliases);
+
+  // Give the response to the loader.
+  GiveResponseToLoader(response, loader);
+
+  // Test the histograms to verify that the CNAME aliases were detected.
+  // Expect that the resource was tagged as a ad, due to first alias.
+  // Expect that the resource was blocked, due to second alias.
+  CnameAliasMetricInfo info = {.has_aliases = true,
+                               .was_ad_tagged_based_on_alias = true,
+                               .was_blocked_based_on_alias = true,
+                               .list_length = 3,
+                               .invalid_count = 0,
+                               .redundant_count = 0};
+
+  ExpectHistogramsMatching(info);
+}
+
+TEST_F(ResourceLoaderSubresourceFilterCnameAliasTest,
+       DnsAliasesCheckedBySubresourceFilterDisallowed_BlockedOnly) {
+  // Set the blocklists: the first for blocking, the second for ad-tagging.
+  Vector<String> blocked_urls = {"https://bad-ad.com/some_path.html"};
+  Vector<String> tagged_urls = {};
+  SetMockSubresourceFilterBlockLists(blocked_urls, tagged_urls);
+
+  // Create the request.
+  KURL url("https://www.example.com/some_path.html");
+  ResourceRequest request(url);
+  request.SetRequestContext(mojom::blink::RequestContextType::FETCH);
+
+  // Create the resource and loader.
+  Resource* resource = CreateResource(std::move(request));
+  ResourceLoader* loader = resource->Loader();
+
+  // Create the response.
+  ResourceResponse response(url);
+  response.SetHttpStatusCode(200);
+
+  // Set the CNAME aliases.
+  Vector<String> aliases({"ad.com", "bad-ad.com", "alias3.com"});
+  response.SetDnsAliases(aliases);
+
+  // Give the response to the loader.
+  GiveResponseToLoader(response, loader);
+
+  // Test the histograms to verify that the CNAME aliases were detected.
+  // Expect that the resource was blocked, due to second alias.
+  CnameAliasMetricInfo info = {.has_aliases = true,
+                               .was_ad_tagged_based_on_alias = false,
+                               .was_blocked_based_on_alias = true,
+                               .list_length = 3,
+                               .invalid_count = 0,
+                               .redundant_count = 0};
+
+  ExpectHistogramsMatching(info);
+}
+
+TEST_F(ResourceLoaderSubresourceFilterCnameAliasTest,
+       DnsAliasesCheckedBySubresourceFilterDisallowed_TaggedOnly) {
+  // Set the blocklists: the first for blocking, the second for ad-tagging.
+  Vector<String> blocked_urls = {};
+  Vector<String> tagged_urls = {"https://bad-ad.com/some_path.html"};
+  SetMockSubresourceFilterBlockLists(blocked_urls, tagged_urls);
+
+  // Create the request.
+  KURL url("https://www.example.com/some_path.html");
+  ResourceRequest request(url);
+  request.SetRequestContext(mojom::blink::RequestContextType::FETCH);
+
+  // Create the resource and loader.
+  Resource* resource = CreateResource(std::move(request));
+  ResourceLoader* loader = resource->Loader();
+
+  // Create the response.
+  ResourceResponse response(url);
+  response.SetHttpStatusCode(200);
+
+  // Set the CNAME aliases.
+  Vector<String> aliases({"ad.com", "", "alias3.com", "bad-ad.com"});
+  response.SetDnsAliases(aliases);
+
+  // Give the response to the loader.
+  GiveResponseToLoader(response, loader);
+
+  // Test the histograms to verify that the CNAME aliases were detected.
+  // Expect that the resource was tagged, due to fourth alias.
+  // Expect that the invalid empty alias is counted as such.
+  CnameAliasMetricInfo info = {.has_aliases = true,
+                               .was_ad_tagged_based_on_alias = true,
+                               .was_blocked_based_on_alias = false,
+                               .list_length = 4,
+                               .invalid_count = 1,
+                               .redundant_count = 0};
+
+  ExpectHistogramsMatching(info);
+}
+
+TEST_F(ResourceLoaderSubresourceFilterCnameAliasTest,
+       DnsAliasesCheckedBySubresourceFilterAllowed_NotBlockedOrTagged) {
+  // Set the blocklists: the first for blocking, the second for ad-tagging.
+  Vector<String> blocked_urls = {};
+  Vector<String> tagged_urls = {};
+  SetMockSubresourceFilterBlockLists(blocked_urls, tagged_urls);
+
+  // Create the request.
+  KURL url("https://www.example.com/some_path.html");
+  ResourceRequest request(url);
+  request.SetRequestContext(mojom::blink::RequestContextType::FETCH);
+
+  // Create the resource and loader.
+  Resource* resource = CreateResource(std::move(request));
+  ResourceLoader* loader = resource->Loader();
+
+  // Create the response.
+  ResourceResponse response(url);
+  response.SetHttpStatusCode(200);
+
+  // Set the CNAME aliases.
+  Vector<String> aliases(
+      {"non-ad.com", "?", "alias3.com", "not-an-ad.com", "www.example.com"});
+  response.SetDnsAliases(aliases);
+
+  // Give the response to the loader.
+  GiveResponseToLoader(response, loader);
+
+  // Test the histograms to verify that the CNAME aliases were detected.
+  // Expect that the resource was neither tagged nor blocked.
+  // Expect that the invalid alias is counted as such.
+  // Expect that the redundant (i.e. matching the request URL) fifth alias to be
+  // counted as such.
+  CnameAliasMetricInfo info = {.has_aliases = true,
+                               .was_ad_tagged_based_on_alias = false,
+                               .was_blocked_based_on_alias = false,
+                               .list_length = 5,
+                               .invalid_count = 1,
+                               .redundant_count = 1};
+
+  ExpectHistogramsMatching(info);
+}
+
+TEST_F(ResourceLoaderSubresourceFilterCnameAliasTest,
+       DnsAliasesCheckedBySubresourceFilterNoAliases_NoneDetected) {
+  // Set the blocklists: the first for blocking, the second for ad-tagging.
+  Vector<String> blocked_urls = {};
+  Vector<String> tagged_urls = {};
+  SetMockSubresourceFilterBlockLists(blocked_urls, tagged_urls);
+
+  // Create the request.
+  KURL url("https://www.example.com/some_path.html");
+  ResourceRequest request(url);
+  request.SetRequestContext(mojom::blink::RequestContextType::FETCH);
+
+  // Create the resource and loader.
+  Resource* resource = CreateResource(std::move(request));
+  ResourceLoader* loader = resource->Loader();
+
+  // Create the response.
+  ResourceResponse response(url);
+  response.SetHttpStatusCode(200);
+
+  // Set the CNAME aliases.
+  Vector<String> aliases;
+  response.SetDnsAliases(aliases);
+
+  // Give the response to the loader.
+  GiveResponseToLoader(response, loader);
+
+  // Test the histogram to verify that no aliases were detected.
+  CnameAliasMetricInfo info = {.has_aliases = false};
+
+  ExpectHistogramsMatching(info);
 }
 
 }  // namespace blink

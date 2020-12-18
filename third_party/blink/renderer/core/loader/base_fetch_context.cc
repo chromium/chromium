@@ -46,17 +46,41 @@ base::Optional<ResourceRequestBlockedReason> BaseFetchContext::CanRequest(
   return blocked_reason;
 }
 
+base::Optional<ResourceRequestBlockedReason>
+BaseFetchContext::CanRequestBasedOnSubresourceFilterOnly(
+    ResourceType type,
+    const ResourceRequest& resource_request,
+    const KURL& url,
+    const ResourceLoaderOptions& options,
+    ReportingDisposition reporting_disposition,
+    const base::Optional<ResourceRequest::RedirectInfo>& redirect_info) const {
+  auto* subresource_filter = GetSubresourceFilter();
+  if (subresource_filter && type != ResourceType::kImportResource &&
+      !subresource_filter->AllowLoad(url, resource_request.GetRequestContext(),
+                                     reporting_disposition)) {
+    if (reporting_disposition == ReportingDisposition::kReport) {
+      DispatchDidBlockRequest(resource_request, options.initiator_info,
+                              ResourceRequestBlockedReason::kSubresourceFilter,
+                              type);
+    }
+    return ResourceRequestBlockedReason::kSubresourceFilter;
+  }
+
+  return base::nullopt;
+}
+
 bool BaseFetchContext::CalculateIfAdSubresource(
-    const ResourceRequest& request,
+    const ResourceRequestHead& request,
+    const base::Optional<KURL>& alias_url,
     ResourceType type,
     const FetchInitiatorInfo& initiator_info) {
-  // A base class should override this is they have more signals than just the
-  // SubresourceFilter.
+  // A derived class should override this if they have more signals than just
+  // the SubresourceFilter.
   SubresourceFilter* filter = GetSubresourceFilter();
+  const KURL& url = alias_url ? alias_url.value() : request.Url();
 
   return request.IsAdResource() ||
-         (filter &&
-          filter->IsAdResource(request.Url(), request.GetRequestContext()));
+         (filter && filter->IsAdResource(url, request.GetRequestContext()));
 }
 
 bool BaseFetchContext::SendConversionRequestInsteadOfRedirecting(

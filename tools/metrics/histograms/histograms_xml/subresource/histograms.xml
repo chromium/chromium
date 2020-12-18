@@ -32,6 +32,86 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="SubresourceFilter.CnameAlias.Renderer.HadAliases"
+    units="BooleanHadAliases" expires_after="2021-06-18">
+  <owner>cammie@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Records whether or not a given ResourceLoader's ResourceRequest has a
+    nonempty vector of CNAME aliases. Only recorded if
+    features::kSendCnameAliasesToSubresourceFilterFromRenderer is enabled.
+    Recorded in a method called by
+    blink::ResourceLoader::DidReceiveResponseInternal.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.CnameAlias.Renderer.InvalidCount"
+    units="count" expires_after="2021-06-18">
+  <owner>cammie@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Counts the number of invalid CNAME aliases encountered by the
+    ResourceLoader, as these are not sent to the SubResourceFilter. Only
+    recorded if features::kSendCnameAliasesToSubresourceFilterFromRenderer is
+    enabled and the request has a nonempty vector of CNAME aliases. Recorded in
+    a method called by blink::ResourceLoader::DidReceiveResponseInternal.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.CnameAlias.Renderer.ListLength"
+    units="length" expires_after="2021-06-18">
+  <owner>cammie@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Records the length of the CNAME aliases vector passed to the ResourceLoader,
+    not including empty alias vectors. Only recorded if
+    features::kSendCnameAliasesToSubresourceFilterFromRenderer is enabled and
+    the request has a nonempty vector of CNAME aliases. Recorded in a method
+    called by blink::ResourceLoader::DidReceiveResponseInternal.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.CnameAlias.Renderer.RedundantCount"
+    units="count" expires_after="2021-06-18">
+  <owner>cammie@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Counts the number of CNAME aliases encountered by the ResourceLoader that
+    match the host of the requested URL (as well as the number of any that the
+    match the host of the original URL in the case of redirects), as these
+    aliases are not sent to the SubResourceFilter. Only recorded if
+    features::kSendCnameAliasesToSubresourceFilterFromRenderer is enabled and
+    the request has a nonempty vector of CNAME aliases. Recorded in a method
+    called by blink::ResourceLoader::DidReceiveResponseInternal.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.CnameAlias.Renderer.WasAdTaggedBasedOnAlias"
+    units="BooleanTagged" expires_after="2021-06-18">
+  <owner>cammie@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Records whether or not a given ResourceLoader's ResourceRequest has CNAME
+    alias for which the returned LoadPolicy was LoadPolicy::kWouldDisallow. Only
+    recorded if features::kSendCnameAliasesToSubresourceFilterFromRenderer is
+    enabled and the request has a nonempty vector of CNAME aliases. Recorded in
+    a method called by blink::ResourceLoader::DidReceiveResponseInternal.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.CnameAlias.Renderer.WasBlockedBasedOnAlias"
+    units="BooleanBlocked" expires_after="2021-06-18">
+  <owner>cammie@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Records whether or not a given ResourceLoader's ResourceRequest has CNAME
+    alias for which the returned LoadPolicy was LoadPolicy::kDisallow. Only
+    recorded if features::kSendCnameAliasesToSubresourceFilterFromRenderer is
+    enabled and the request has a nonempty vector of CNAME aliases. Recorded in
+    a method called by the destructor of blink::ResourceLoader.
+  </summary>
+</histogram>
+
 <histogram name="SubresourceFilter.DocumentLoad.Activation.CPUDuration"
     units="microseconds" expires_after="M77">
   <owner>pkalinnikov@chromium.org</owner>

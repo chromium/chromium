@@ -1200,4 +1200,8 @@ bool Resource::AppendTopFrameSiteForMetrics(const SecurityOrigin& origin) {
   return !result.second;
 }
 
+void Resource::SetIsAdResource() {
+  resource_request_.SetIsAdResource();
+}
+
 }  // namespace blink

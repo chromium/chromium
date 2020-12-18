@@ -21,7 +21,6 @@ namespace blink {
 class Document;
 class ExecutionContext;
 class LocalFrame;
-class ResourceRequest;
 enum class ResourceType : uint8_t;
 
 namespace probe {
@@ -63,7 +62,7 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
   // Virtual for testing.
   virtual bool CalculateIfAdSubresource(
       ExecutionContext* execution_context,
-      const ResourceRequest& request,
+      const KURL& request_url,
       ResourceType resource_type,
       const FetchInitiatorInfo& initiator_info,
       bool known_ad);

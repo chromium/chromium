@@ -510,6 +510,13 @@ bool WebURLResponse::FromArchive() const {
   return resource_response_->FromArchive();
 }
 
+void WebURLResponse::SetDnsAliases(const WebVector<WebString>& aliases) {
+  Vector<String> dns_aliases(aliases.size());
+  std::transform(aliases.begin(), aliases.end(), dns_aliases.begin(),
+                 [](const WebString& h) { return WTF::String(h); });
+  resource_response_->SetDnsAliases(std::move(dns_aliases));
+}
+
 WebURLResponse::WebURLResponse(ResourceResponse& r) : resource_response_(&r) {}
 
 }  // namespace blink

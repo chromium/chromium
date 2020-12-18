@@ -327,6 +327,11 @@ class WebURLResponse {
   // Whether this resource is from a MHTML archive.
   BLINK_PLATFORM_EXPORT bool FromArchive() const;
 
+  // Sets any DNS aliases for the requested URL. The alias chain order is
+  // expected to be in reverse, from canonical name (i.e. address record name)
+  // through to query name.
+  BLINK_PLATFORM_EXPORT void SetDnsAliases(const WebVector<WebString>&);
+
 #if INSIDE_BLINK
  protected:
   // Permit subclasses to set arbitrary ResourceResponse pointer as

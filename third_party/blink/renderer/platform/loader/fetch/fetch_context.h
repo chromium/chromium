@@ -120,6 +120,19 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
       const {
     return ResourceRequestBlockedReason::kOther;
   }
+  // In derived classes, performs *only* a SubresourceFilter check for whether
+  // the request can go through or should be blocked.
+  virtual base::Optional<ResourceRequestBlockedReason>
+  CanRequestBasedOnSubresourceFilterOnly(
+      ResourceType,
+      const ResourceRequest&,
+      const KURL&,
+      const ResourceLoaderOptions&,
+      ReportingDisposition,
+      const base::Optional<ResourceRequest::RedirectInfo>& redirect_info)
+      const {
+    return ResourceRequestBlockedReason::kOther;
+  }
   virtual base::Optional<ResourceRequestBlockedReason> CheckCSPForRequest(
       mojom::blink::RequestContextType,
       network::mojom::RequestDestination request_destination,
@@ -151,9 +164,11 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
   virtual const FeaturePolicy* GetFeaturePolicy() const { return nullptr; }
 
   // Determine if the request is on behalf of an advertisement. If so, return
-  // true.
+  // true. Checks `resource_request.Url()` unless `alias_url` is non-null, in
+  // which case it checks the latter.
   virtual bool CalculateIfAdSubresource(
-      const ResourceRequest& resource_request,
+      const ResourceRequestHead& resource_request,
+      const base::Optional<KURL>& alias_url,
       ResourceType type,
       const FetchInitiatorInfo& initiator_info) {
     return false;

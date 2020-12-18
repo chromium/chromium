@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
@@ -100,6 +101,17 @@ TEST(ResourceResponseTest, AddHttpHeaderFieldWithMultipleValues) {
   response.AddHttpHeaderFieldWithMultipleValues("set-cookie", values);
 
   EXPECT_EQ("a=1, b=2, c=3", response.HttpHeaderField("set-cookie"));
+}
+
+TEST(ResourceResponseTest, DnsAliasesCanBeSetAndAccessed) {
+  ResourceResponse response(CreateTestResponse());
+
+  EXPECT_TRUE(response.DnsAliases().IsEmpty());
+
+  Vector<String> aliases({"alias1", "alias2"});
+  response.SetDnsAliases(aliases);
+
+  EXPECT_THAT(response.DnsAliases(), testing::ElementsAre("alias1", "alias2"));
 }
 
 }  // namespace blink

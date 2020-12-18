@@ -38,6 +38,13 @@ class MockFetchContext : public FetchContext {
 
   uint64_t GetTransferSize() const { return transfer_size_; }
 
+  void set_blocked_urls(Vector<String> blocked_urls) {
+    blocked_urls_ = std::move(blocked_urls);
+  }
+  void set_tagged_urls(Vector<String> tagged_urls) {
+    tagged_urls_ = std::move(tagged_urls);
+  }
+
   bool AllowImage(bool images_enabled, const KURL&) const override {
     return true;
   }
@@ -49,6 +56,21 @@ class MockFetchContext : public FetchContext {
       ReportingDisposition,
       const base::Optional<ResourceRequest::RedirectInfo>& redirect_info)
       const override {
+    return base::nullopt;
+  }
+  base::Optional<ResourceRequestBlockedReason>
+  CanRequestBasedOnSubresourceFilterOnly(
+      ResourceType type,
+      const ResourceRequest& resource_request,
+      const KURL& url,
+      const ResourceLoaderOptions& options,
+      ReportingDisposition reporting_disposition,
+      const base::Optional<ResourceRequest::RedirectInfo>& redirect_info)
+      const override {
+    if (blocked_urls_.Contains(url.GetString())) {
+      return ResourceRequestBlockedReason::kSubresourceFilter;
+    }
+
     return base::nullopt;
   }
   base::Optional<ResourceRequestBlockedReason> CheckCSPForRequest(
@@ -79,6 +101,15 @@ class MockFetchContext : public FetchContext {
         weak_wrapper_resource_load_info_notifier_->AsWeakPtr());
   }
 
+  bool CalculateIfAdSubresource(
+      const ResourceRequestHead& resource_request,
+      const base::Optional<KURL>& alias_url,
+      ResourceType type,
+      const FetchInitiatorInfo& initiator_info) override {
+    const KURL url = alias_url ? alias_url.value() : resource_request.Url();
+    return tagged_urls_.Contains(url.GetString());
+  }
+
   void SetResourceLoadInfoNotifier(
       mojom::ResourceLoadInfoNotifier* resource_load_info_notifier) {
     resource_load_info_notifier_ = resource_load_info_notifier;
@@ -89,6 +120,8 @@ class MockFetchContext : public FetchContext {
   mojom::ResourceLoadInfoNotifier* resource_load_info_notifier_ = nullptr;
   std::unique_ptr<WeakWrapperResourceLoadInfoNotifier>
       weak_wrapper_resource_load_info_notifier_;
+  Vector<String> blocked_urls_;
+  Vector<String> tagged_urls_;
 };
 
 }  // namespace blink

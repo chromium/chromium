@@ -190,6 +190,28 @@ SchedulingPolicy::Feature GetFeatureFromRequestContextType(
   }
 }
 
+void LogCnameAliasMetrics(const CnameAliasMetricInfo& info) {
+  UMA_HISTOGRAM_BOOLEAN("SubresourceFilter.CnameAlias.Renderer.HadAliases",
+                        info.has_aliases);
+
+  if (info.has_aliases) {
+    UMA_HISTOGRAM_BOOLEAN(
+        "SubresourceFilter.CnameAlias.Renderer.WasAdTaggedBasedOnAlias",
+        info.was_ad_tagged_based_on_alias);
+    UMA_HISTOGRAM_BOOLEAN(
+        "SubresourceFilter.CnameAlias.Renderer.WasBlockedBasedOnAlias",
+        info.was_blocked_based_on_alias);
+    UMA_HISTOGRAM_COUNTS_1000(
+        "SubresourceFilter.CnameAlias.Renderer.ListLength", info.list_length);
+    UMA_HISTOGRAM_COUNTS_1000(
+        "SubresourceFilter.CnameAlias.Renderer.InvalidCount",
+        info.invalid_count);
+    UMA_HISTOGRAM_COUNTS_1000(
+        "SubresourceFilter.CnameAlias.Renderer.RedundantCount",
+        info.redundant_count);
+  }
+}
+
 }  // namespace
 
 // CodeCacheRequest handles the requests to fetch data from code cache.
@@ -786,8 +808,9 @@ bool ResourceLoader::WillFollowRedirect(
                              reporting_disposition,
                              new_request->GetRedirectInfo());
 
-    if (Context().CalculateIfAdSubresource(*new_request, resource_type,
-                                           options.initiator_info))
+    if (Context().CalculateIfAdSubresource(
+            *new_request, base::nullopt /* alias_url */, resource_type,
+            options.initiator_info))
       new_request->SetIsAdResource();
 
     if (blocked_reason) {
@@ -957,6 +980,15 @@ void ResourceLoader::DidReceiveResponseInternal(
     return;
   }
 
+  // Redirect information for possible post-request checks below.
+  const base::Optional<ResourceRequest::RedirectInfo>& previous_redirect_info =
+      request.GetRedirectInfo();
+  const KURL& original_url = previous_redirect_info
+                                 ? previous_redirect_info->original_url
+                                 : request.Url();
+  const ResourceRequest::RedirectInfo redirect_info(original_url,
+                                                    request.Url());
+
   if (response.WasFetchedViaServiceWorker()) {
     // Run post-request CSP checks. This is the "Should response to request be
     // blocked by Content Security Policy?" algorithm in the CSP specification:
@@ -976,16 +1008,10 @@ void ResourceLoader::DidReceiveResponseInternal(
     // checks as a first-class concept instead of just reusing the functions for
     // pre-request checks, and consider running the checks regardless of service
     // worker interception.
-    const KURL& response_url = response.ResponseUrl();
-    const base::Optional<ResourceRequest::RedirectInfo>&
-        previous_redirect_info = request.GetRedirectInfo();
-    const KURL& original_url = previous_redirect_info
-                                   ? previous_redirect_info->original_url
-                                   : request.Url();
-    const ResourceRequest::RedirectInfo redirect_info(original_url,
-                                                      request.Url());
+    //
     // CanRequest() below only checks enforced policies: check report-only
     // here to ensure violations are sent.
+    const KURL& response_url = response.ResponseUrl();
     Context().CheckCSPForRequest(
         request_context, request_destination, response_url, options,
         ReportingDisposition::kReport, original_url,
@@ -1000,6 +1026,18 @@ void ResourceLoader::DidReceiveResponseInternal(
           response_url, blocked_reason.value()));
       return;
     }
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kSendCnameAliasesToSubresourceFilterFromRenderer)) {
+    CnameAliasMetricInfo info;
+    bool should_block = ShouldBlockRequestBasedOnSubresourceFilterDnsAliasCheck(
+        response.DnsAliases(), request.Url(), original_url, resource_type,
+        initial_request, options, redirect_info, &info);
+    LogCnameAliasMetrics(info);
+
+    if (should_block)
+      return;
   }
 
   // A response should not serve partial content if it was not requested via a
@@ -1502,6 +1540,75 @@ void ResourceLoader::HandleDataUrl() {
   // end.
   DidFinishLoading(base::TimeTicks::Now(), data_size, data_size, data_size,
                    false /* should_report_corb_blocking */);
+}
+
+bool ResourceLoader::ShouldBlockRequestBasedOnSubresourceFilterDnsAliasCheck(
+    const Vector<String>& dns_aliases,
+    const KURL& request_url,
+    const KURL& original_url,
+    ResourceType resource_type,
+    const ResourceRequestHead& initial_request,
+    const ResourceLoaderOptions& options,
+    const ResourceRequest::RedirectInfo redirect_info,
+    CnameAliasMetricInfo* out_metric_info) {
+  DCHECK(out_metric_info);
+
+  // Look for CNAME aliases, and if any are found, run SubresourceFilter
+  // checks on them to perform resource-blocking and ad-tagging based on the
+  // aliases: if any one of the aliases is on the denylist, then the
+  // request will be deemed on the denylist and treated accordingly (blocked
+  // and/or tagged).
+  out_metric_info->has_aliases = !dns_aliases.IsEmpty();
+  out_metric_info->list_length = dns_aliases.size();
+
+  // If there are no aliases, we have no reason to block based on them.
+  if (!out_metric_info->has_aliases)
+    return false;
+
+  // CNAME aliases were found, and so the SubresourceFilter must be
+  // consulted for each one.
+  // Create a copy of the request URL. We will swap out the host below.
+  KURL alias_url = request_url;
+
+  for (const String& alias : dns_aliases) {
+    alias_url.SetHost(alias);
+
+    // The SubresourceFilter only performs nontrivial matches for
+    // valid URLs. Skip sending this alias if it's invalid.
+    if (!alias_url.IsValid()) {
+      out_metric_info->invalid_count++;
+      continue;
+    }
+
+    // Do not perform a SubresourceFilter check on an `alias_url` that matches
+    // the requested URL (or, inclusively, the original URL in the case of
+    // redirects).
+    if (alias_url == original_url || alias_url == request_url) {
+      out_metric_info->redundant_count++;
+      continue;
+    }
+
+    base::Optional<ResourceRequestBlockedReason> blocked_reason =
+        Context().CanRequestBasedOnSubresourceFilterOnly(
+            resource_type, ResourceRequest(initial_request), alias_url, options,
+            ReportingDisposition::kReport, redirect_info);
+    if (blocked_reason) {
+      HandleError(ResourceError::CancelledDueToAccessCheckError(
+          alias_url, blocked_reason.value()));
+      out_metric_info->was_blocked_based_on_alias = true;
+      return true;
+    }
+
+    if (!resource_->GetResourceRequest().IsAdResource() &&
+        Context().CalculateIfAdSubresource(resource_->GetResourceRequest(),
+                                           alias_url, resource_type,
+                                           options.initiator_info)) {
+      resource_->SetIsAdResource();
+      out_metric_info->was_ad_tagged_based_on_alias = true;
+    }
+  }
+
+  return false;
 }
 
 }  // namespace blink

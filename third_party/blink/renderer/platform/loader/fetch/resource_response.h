@@ -494,6 +494,12 @@ class PLATFORM_EXPORT ResourceResponse final {
     was_cookie_in_request_ = was_cookie_in_request;
   }
 
+  const Vector<String>& DnsAliases() const { return dns_aliases_; }
+
+  void SetDnsAliases(Vector<String> aliases) {
+    dns_aliases_ = std::move(aliases);
+  }
+
   network::mojom::CrossOriginEmbedderPolicyValue GetCrossOriginEmbedderPolicy()
       const;
 
@@ -666,6 +672,11 @@ class PLATFORM_EXPORT ResourceResponse final {
   // cross-origin prefetch responses. It is used to pass the token along to
   // preload header requests from these responses.
   base::Optional<base::UnguessableToken> recursive_prefetch_token_;
+
+  // Any DNS aliases for the requested URL, as read from CNAME records.
+  // The alias chain order is preserved in reverse, from canonical name (i.e.
+  // address record name) through to query name.
+  Vector<String> dns_aliases_;
 };
 
 }  // namespace blink

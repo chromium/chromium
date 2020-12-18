@@ -208,7 +208,7 @@ void AdTracker::Did(const probe::CallFunction& probe) {
 
 bool AdTracker::CalculateIfAdSubresource(
     ExecutionContext* execution_context,
-    const ResourceRequest& request,
+    const KURL& request_url,
     ResourceType resource_type,
     const FetchInitiatorInfo& initiator_info,
     bool known_ad) {
@@ -235,7 +235,7 @@ bool AdTracker::CalculateIfAdSubresource(
   // ad script by IsKnownAdScript.
   if (resource_type == ResourceType::kScript && known_ad &&
       !is_ad_execution_context) {
-    AppendToKnownAdScripts(*execution_context, request.Url().GetString());
+    AppendToKnownAdScripts(*execution_context, request_url.GetString());
   }
 
   return known_ad;

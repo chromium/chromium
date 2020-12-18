@@ -31,6 +31,7 @@
 
 #include <memory>
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/single_thread_task_runner.h"
 #include "mojo/public/cpp/base/big_buffer.h"
@@ -57,6 +58,17 @@ class FetchContext;
 class ResourceError;
 class ResourceFetcher;
 class ResponseBodyLoader;
+
+// Struct for keeping variables used in recording CNAME alias metrics bundled
+// together.
+struct CnameAliasMetricInfo {
+  bool has_aliases = false;
+  bool was_ad_tagged_based_on_alias = false;
+  bool was_blocked_based_on_alias = false;
+  int list_length = 0;
+  int invalid_count = 0;
+  int redundant_count = 0;
+};
 
 // A ResourceLoader is created for each Resource by the ResourceFetcher when it
 // needs to load the specified resource. A ResourceLoader creates a
@@ -203,6 +215,19 @@ class PLATFORM_EXPORT ResourceLoader final
 
   // Processes Data URL in ResourceLoader instead of using |loader_|.
   void HandleDataUrl();
+
+  // If enabled, performs SubresourceFilter checks for any DNS aliases found for
+  // the requested URL, which may result in ad-tagging the ResourceRequest.
+  // Returns true if the request should be blocked based on these checks.
+  bool ShouldBlockRequestBasedOnSubresourceFilterDnsAliasCheck(
+      const Vector<String>& dns_aliases,
+      const KURL& request_url,
+      const KURL& original_url,
+      ResourceType resource_type,
+      const ResourceRequestHead& initial_request,
+      const ResourceLoaderOptions& options,
+      const ResourceRequest::RedirectInfo redirect_info,
+      CnameAliasMetricInfo* out_metric_info);
 
   std::unique_ptr<WebURLLoader> loader_;
   ResourceLoadScheduler::ClientId scheduler_client_id_;

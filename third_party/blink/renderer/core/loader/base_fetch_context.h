@@ -39,6 +39,14 @@ class CORE_EXPORT BaseFetchContext : public FetchContext {
       const ResourceLoaderOptions&,
       ReportingDisposition,
       const base::Optional<ResourceRequest::RedirectInfo>&) const override;
+  base::Optional<ResourceRequestBlockedReason>
+  CanRequestBasedOnSubresourceFilterOnly(
+      ResourceType,
+      const ResourceRequest&,
+      const KURL&,
+      const ResourceLoaderOptions&,
+      ReportingDisposition,
+      const base::Optional<ResourceRequest::RedirectInfo>&) const override;
   base::Optional<ResourceRequestBlockedReason> CheckCSPForRequest(
       mojom::blink::RequestContextType,
       network::mojom::RequestDestination request_destination,
@@ -67,8 +75,12 @@ class CORE_EXPORT BaseFetchContext : public FetchContext {
   virtual std::unique_ptr<WebSocketHandshakeThrottle>
   CreateWebSocketHandshakeThrottle() = 0;
 
+  // If the optional `alias_url` is non-null, it will be used to perform the
+  // check in place of `resource_request.Url()`, e.g. in the case of DNS
+  // aliases.
   bool CalculateIfAdSubresource(
-      const ResourceRequest& resource_request,
+      const ResourceRequestHead& resource_request,
+      const base::Optional<KURL>& alias_url,
       ResourceType type,
       const FetchInitiatorInfo& initiator_info) override;
 

@@ -142,20 +142,19 @@ class TestAdTracker : public AdTracker {
   }
 
   bool CalculateIfAdSubresource(ExecutionContext* execution_context,
-                                const ResourceRequest& resource_request,
+                                const KURL& request_url,
                                 ResourceType resource_type,
                                 const FetchInitiatorInfo& initiator_info,
                                 bool ad_request) override {
-    if (!ad_suffix_.IsEmpty() &&
-        resource_request.Url().GetString().EndsWith(ad_suffix_)) {
+    if (!ad_suffix_.IsEmpty() && request_url.GetString().EndsWith(ad_suffix_)) {
       ad_request = true;
     }
 
     ad_request = AdTracker::CalculateIfAdSubresource(
-        execution_context, resource_request, resource_type, initiator_info,
+        execution_context, request_url, resource_type, initiator_info,
         ad_request);
 
-    String resource_url = resource_request.Url().GetString();
+    String resource_url = request_url.GetString();
     is_ad_.insert(resource_url, ad_request);
 
     if (quit_closure_ && url_to_wait_for_ == resource_url) {

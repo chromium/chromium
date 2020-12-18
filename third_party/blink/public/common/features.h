@@ -348,6 +348,11 @@ BLINK_COMMON_EXPORT extern const base::Feature kCloneSessionStorageForNoOpener;
 
 BLINK_COMMON_EXPORT extern const base::Feature kWebRtcDistinctWorkerThread;
 
+// Performs additional SubresourceFilter checks when CNAME aliases are found
+// for the host of a requested URL.
+BLINK_COMMON_EXPORT extern const base::Feature
+    kSendCnameAliasesToSubresourceFilterFromRenderer;
+
 }  // namespace features
 }  // namespace blink
 

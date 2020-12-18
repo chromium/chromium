@@ -212,7 +212,8 @@ class FrameFetchContextSubresourceFilterTest : public FrameFetchContextTest {
     ResourceRequest request(KURL("http://example.com/"));
     FetchInitiatorInfo initiator_info;
     EXPECT_EQ(expect_is_ad, GetFetchContext()->CalculateIfAdSubresource(
-                                request, ResourceType::kMock, initiator_info));
+                                request, base::nullopt /* alias_url */,
+                                ResourceType::kMock, initiator_info));
     return reason;
   }
 
@@ -1387,6 +1388,67 @@ TEST_F(FrameFetchContextTest, SameSiteBackForwardCache) {
     // BackForwardCacheSameSite experiment group is "enabled".
     EXPECT_EQ("enabled",
               resource_request.HttpHeaderField("Sec-bfcache-experiment"));
+  }
+}
+
+// Tests that CanRequestCanRequestBasedOnSubresourceFilterOnly will block ads
+// or not correctly, depending on the FilterPolicy.
+TEST_F(FrameFetchContextSubresourceFilterTest,
+       CanRequestBasedOnSubresourceFilterOnly) {
+  const struct {
+    WebDocumentSubresourceFilter::LoadPolicy policy;
+    base::Optional<ResourceRequestBlockedReason> expected_block_reason;
+  } kTestCases[] = {
+      {WebDocumentSubresourceFilter::kDisallow,
+       ResourceRequestBlockedReason::kSubresourceFilter},
+      {WebDocumentSubresourceFilter::kWouldDisallow, base::nullopt},
+      {WebDocumentSubresourceFilter::kAllow, base::nullopt}};
+
+  for (const auto& test : kTestCases) {
+    SetFilterPolicy(test.policy);
+
+    KURL url("http://ads.com/some_script.js");
+    ResourceRequest resource_request(url);
+    resource_request.SetRequestContext(
+        mojom::blink::RequestContextType::SCRIPT);
+    resource_request.SetRequestorOrigin(GetTopFrameOrigin());
+
+    ResourceLoaderOptions options(nullptr /* world */);
+
+    EXPECT_EQ(test.expected_block_reason,
+              GetFetchContext()->CanRequestBasedOnSubresourceFilterOnly(
+                  ResourceType::kScript, resource_request, url, options,
+                  ReportingDisposition::kReport, base::nullopt));
+  }
+}
+
+// Tests that CalculateIfAdSubresource with an alias URL will tag ads
+// correctly according to the SubresourceFilter mode.
+TEST_F(FrameFetchContextSubresourceFilterTest,
+       CalculateIfAdSubresourceWithAliasURL) {
+  const struct {
+    WebDocumentSubresourceFilter::LoadPolicy policy;
+    bool expected_to_be_tagged_ad;
+  } kTestCases[] = {{WebDocumentSubresourceFilter::kDisallow, true},
+                    {WebDocumentSubresourceFilter::kWouldDisallow, true},
+                    {WebDocumentSubresourceFilter::kAllow, false}};
+
+  for (const auto& test : kTestCases) {
+    SetFilterPolicy(test.policy);
+
+    KURL url("http://www.example.com");
+    KURL alias_url("http://ads.com/some_script.js");
+    ResourceRequest resource_request(url);
+    resource_request.SetRequestContext(
+        mojom::blink::RequestContextType::SCRIPT);
+    resource_request.SetRequestorOrigin(GetTopFrameOrigin());
+
+    ResourceLoaderOptions options(nullptr /* world */);
+
+    EXPECT_EQ(test.expected_to_be_tagged_ad,
+              GetFetchContext()->CalculateIfAdSubresource(
+                  resource_request, alias_url, ResourceType::kScript,
+                  options.initiator_info));
   }
 }
 

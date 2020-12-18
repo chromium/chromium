@@ -110,7 +110,8 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
   void Trace(Visitor*) const override;
 
   bool CalculateIfAdSubresource(
-      const ResourceRequest& resource_request,
+      const ResourceRequestHead& resource_request,
+      const base::Optional<KURL>& alias_url,
       ResourceType type,
       const FetchInitiatorInfo& initiator_info) override;
 

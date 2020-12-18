@@ -858,5 +858,12 @@ const base::Feature kCloneSessionStorageForNoOpener{
 const base::Feature kWebRtcDistinctWorkerThread{
     "WebRtcDistinctWorkerThread", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// When enabled, the SubresourceFilter receives calls from the ResourceLoader
+// to perform additional checks against any aliases found from DNS CNAME records
+// for the requested URL.
+const base::Feature kSendCnameAliasesToSubresourceFilterFromRenderer{
+    "SendCnameAliasesToSubresourceFilterFromRenderer",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink

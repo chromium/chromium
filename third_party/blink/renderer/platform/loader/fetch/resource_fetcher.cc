@@ -949,8 +949,9 @@ base::Optional<ResourceRequestBlockedReason> ResourceFetcher::PrepareRequest(
                            reporting_disposition,
                            resource_request.GetRedirectInfo());
 
-  if (Context().CalculateIfAdSubresource(resource_request, resource_type,
-                                         options.initiator_info))
+  if (Context().CalculateIfAdSubresource(resource_request,
+                                         base::nullopt /* alias_url */,
+                                         resource_type, options.initiator_info))
     resource_request.SetIsAdResource();
 
   if (blocked_reason)

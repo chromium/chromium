@@ -30,8 +30,10 @@
 
 #include "third_party/blink/public/platform/web_url_response.h"
 
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_url.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
@@ -45,6 +47,17 @@ TEST(WebURLResponseTest, NotNullAfterSetURL) {
   WebURLResponse instance;
   instance.SetCurrentRequestUrl(KURL("http://localhost/"));
   EXPECT_FALSE(instance.IsNull());
+}
+
+TEST(WebURLResponseTest, DnsAliasesCanBeAccessed) {
+  WebURLResponse instance;
+  instance.SetCurrentRequestUrl(KURL("http://localhost/"));
+  EXPECT_FALSE(instance.IsNull());
+  EXPECT_TRUE(instance.ToResourceResponse().DnsAliases().IsEmpty());
+  WebVector<WebString> aliases({"alias1", "alias2"});
+  instance.SetDnsAliases(aliases);
+  EXPECT_THAT(instance.ToResourceResponse().DnsAliases(),
+              testing::ElementsAre("alias1", "alias2"));
 }
 
 }  // namespace blink

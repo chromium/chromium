@@ -896,6 +896,11 @@ void WebURLLoaderImpl::PopulateURLResponse(
           ? blink::WebString::FromUTF8(head.cache_storage_cache_name)
           : blink::WebString());
 
+  blink::WebVector<blink::WebString> dns_aliases(head.dns_aliases.size());
+  std::transform(
+      head.dns_aliases.begin(), head.dns_aliases.end(), dns_aliases.begin(),
+      [](const std::string& h) { return blink::WebString::FromASCII(h); });
+  response->SetDnsAliases(dns_aliases);
   response->SetRemoteIPEndpoint(head.remote_endpoint);
   // This computation can only be done once SetUrlListViaServiceWorker() has
   // been called on |response|, so that ResponseUrl() returns the correct

@@ -435,5 +435,13 @@ TEST(ResourceTest, DefaultOverheadSize) {
   EXPECT_EQ(resource->CalculateOverheadSizeForTest(), resource->OverheadSize());
 }
 
+TEST(ResourceTest, SetIsAdResource) {
+  const KURL url("http://127.0.0.1:8000/foo.html");
+  auto* resource = MakeGarbageCollected<MockResource>(url);
+  EXPECT_FALSE(resource->GetResourceRequest().IsAdResource());
+  resource->SetIsAdResource();
+  EXPECT_TRUE(resource->GetResourceRequest().IsAdResource());
+}
+
 }  // namespace
 }  // namespace blink

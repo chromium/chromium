@@ -412,6 +412,9 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   // already exists.
   bool AppendTopFrameSiteForMetrics(const SecurityOrigin& origin);
 
+  // Sets the ResourceRequest to be tagged as an ad.
+  void SetIsAdResource();
+
  protected:
   Resource(const ResourceRequestHead&,
            ResourceType,
