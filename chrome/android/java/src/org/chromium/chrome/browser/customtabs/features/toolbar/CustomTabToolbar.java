@@ -153,6 +153,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     private CustomTabLocationBar mLocationBar;
     private LocationBarModel mLocationBarModel;
 
+    private boolean mIncognitoIconHidden;
+
     private Runnable mTitleAnimationStarter = new Runnable() {
         @Override
         public void run() {
@@ -337,6 +339,15 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         }
     }
 
+    /**
+     * @param value Whether the incognito icon should be hidden.
+     */
+    public void setIncognitoIconHidden(boolean value) {
+        if (mIncognitoIconHidden == value) return;
+        mIncognitoIconHidden = value;
+        requestLayout();
+    }
+
     @Override
     protected String getContentPublisher() {
         Tab tab = getToolbarDataProvider().getTab();
@@ -385,8 +396,9 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     }
 
     private void updateToolbarLayoutMargin() {
-        // We show the Incognito logo for Incognito CCT case
-        if (getToolbarDataProvider().isIncognito()) mIncognitoButton.setVisibility(VISIBLE);
+        final boolean shouldShowIncognitoIcon =
+                !mIncognitoIconHidden && getToolbarDataProvider().isIncognito();
+        mIncognitoButton.setVisibility(shouldShowIncognitoIcon ? VISIBLE : GONE);
 
         int startMargin = calculateStartMarginWhenCloseButtonVisibilityGone();
 

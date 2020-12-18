@@ -4,15 +4,11 @@
 
 package org.chromium.chrome.browser.customtabs;
 
-import static androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_LIGHT;
-import static androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_SYSTEM;
-
 import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -26,7 +22,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.browser.customtabs.CustomTabColorSchemeParams;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.browser.customtabs.TrustedWebUtils;
@@ -49,11 +44,9 @@ import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.gsa.GSAState;
 import org.chromium.chrome.browser.version.ChromeVersionInfo;
-import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.device.mojom.ScreenOrientationLockType;
-import org.chromium.ui.util.ColorUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -225,14 +218,9 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     private final String mMediaViewerUrl;
     private final boolean mEnableEmbeddedMediaExperience;
     private final boolean mIsFromMediaLauncherActivity;
-    private final int mInitialBackgroundColor;
     private final boolean mDisableStar;
     private final boolean mDisableDownload;
     private final @ActivityType int mActivityType;
-    @Nullable
-    private final Integer mNavigationBarColor;
-    @Nullable
-    private final Integer mNavigationBarDividerColor;
     @Nullable
     private final List<String> mTrustedWebActivityAdditionalOrigins;
     @Nullable
@@ -240,9 +228,6 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     @Nullable
     private String mUrlToLoad;
 
-    private boolean mHasCustomToolbarColor;
-    private int mToolbarColor;
-    private int mBottomBarColor;
     private boolean mEnableUrlBarHiding;
     private List<CustomButtonParams> mCustomButtonParams;
     private Drawable mCloseButtonIcon;
@@ -267,6 +252,9 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
     @Nullable
     private final int[] mGsaExperimentIds;
+
+    @NonNull
+    private final CustomTabColorProvider mColorProvider;
 
     /**
      * Add extras to customize menu items for opening payment request UI custom tab from Chrome.
@@ -329,15 +317,9 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                 IntentUtils.safeGetIntExtra(intent, EXTRA_UI_TYPE, CustomTabsUiType.DEFAULT);
         mUiType = verifiedUiType(requestedUiType);
 
-        CustomTabColorSchemeParams params = getColorSchemeParams(intent, colorScheme);
+        mColorProvider = new CustomTabColorProviderImpl(intent, context, colorScheme);
+
         retrieveCustomButtons(intent, context);
-        mToolbarColor = retrieveToolbarColor(params, context);
-        mBottomBarColor = retrieveBottomBarColor(params);
-        mNavigationBarColor = params.navigationBarColor == null
-                ? null
-                : ColorUtils.getOpaqueColor(params.navigationBarColor);
-        mNavigationBarDividerColor = params.navigationBarDividerColor;
-        mInitialBackgroundColor = retrieveInitialBackgroundColor(intent);
 
         mEnableUrlBarHiding = IntentUtils.safeGetBooleanExtra(
                 intent, CustomTabsIntent.EXTRA_ENABLE_URLBAR_HIDING, true);
@@ -448,22 +430,6 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         return false;
     }
 
-    @NonNull
-    private CustomTabColorSchemeParams getColorSchemeParams(Intent intent, int colorScheme) {
-        if (colorScheme == COLOR_SCHEME_SYSTEM) {
-            assert false : "Color scheme passed to IntentDataProvider should not be "
-                    + "COLOR_SCHEME_SYSTEM";
-            colorScheme = COLOR_SCHEME_LIGHT;
-        }
-        try {
-            return CustomTabsIntent.getColorSchemeParams(intent, colorScheme);
-        } catch (Throwable e) {
-            // Catch any un-parceling exceptions, like in IntentUtils#safe* methods
-            Log.e(TAG, "Failed to parse CustomTabColorSchemeParams");
-            return new CustomTabColorSchemeParams.Builder().build(); // Empty params
-        }
-    }
-
     /**
      * Get the verified UI type, according to the intent extras, and whether the intent is trusted.
      * @param requestedUiType requested UI type in the intent, unqualified
@@ -528,7 +494,8 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                         && CachedFeatureFlags.isEnabled(
                                 ChromeFeatureList.SHARE_BY_DEFAULT_IN_CCT))) {
             if (mToolbarButtons.isEmpty()) {
-                mToolbarButtons.add(CustomButtonParams.createShareButton(context, mToolbarColor));
+                mToolbarButtons.add(
+                        CustomButtonParams.createShareButton(context, getToolbarColor()));
                 logShareOptionLocation(ShareOptionLocation.TOOLBAR);
             } else if (mMenuEntries.isEmpty()) {
                 mShowShareItemInMenu = true;
@@ -551,38 +518,6 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     private static void logShareOptionLocation(@ShareOptionLocation int shareOptionLocation) {
         RecordHistogram.recordEnumeratedHistogram("CustomTabs.ShareOptionLocation",
                 shareOptionLocation, ShareOptionLocation.NUM_ENTRIES);
-    }
-
-    /**
-     * Returns the color passed from the client app.
-     */
-    private int retrieveToolbarColor(CustomTabColorSchemeParams schemeParams, Context context) {
-        int defaultColor = ChromeColors.getDefaultThemeColor(
-                context.getResources(), /*forceDarkBgColor*/ false);
-        mHasCustomToolbarColor = (schemeParams.toolbarColor != null);
-        int color = mHasCustomToolbarColor ? schemeParams.toolbarColor : defaultColor;
-        return ColorUtils.getOpaqueColor(color);
-    }
-
-    /**
-     * Must be called after calling {@link #retrieveToolbarColor}.
-     */
-    private int retrieveBottomBarColor(CustomTabColorSchemeParams schemeParams) {
-        int defaultColor = mToolbarColor;
-        int color = schemeParams.secondaryToolbarColor != null ? schemeParams.secondaryToolbarColor
-                : defaultColor;
-        return ColorUtils.getOpaqueColor(color);
-    }
-
-    /**
-     * Returns the color to initialize the background of the Custom Tab with.
-     * If no valid color is set, Color.TRANSPARENT is returned.
-     */
-    private int retrieveInitialBackgroundColor(Intent intent) {
-        int defaultColor = Color.TRANSPARENT;
-        int color =
-                IntentUtils.safeGetIntExtra(intent, EXTRA_INITIAL_BACKGROUND_COLOR, defaultColor);
-        return color == Color.TRANSPARENT ? color : ColorUtils.getOpaqueColor(color);
     }
 
     private String resolveUrlToLoad(Intent intent) {
@@ -721,24 +656,24 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
     @Override
     public int getToolbarColor() {
-        return mToolbarColor;
+        return mColorProvider.getToolbarColor();
     }
 
     @Override
     public boolean hasCustomToolbarColor() {
-        return mHasCustomToolbarColor;
+        return mColorProvider.hasCustomToolbarColor();
     }
 
     @Override
     @Nullable
     public Integer getNavigationBarColor() {
-        return mNavigationBarColor;
+        return mColorProvider.getNavigationBarColor();
     }
 
     @Override
     @Nullable
     public Integer getNavigationBarDividerColor() {
-        return mNavigationBarDividerColor;
+        return mColorProvider.getNavigationBarDividerColor();
     }
 
     @Override
@@ -769,7 +704,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
     @Override
     public int getBottomBarColor() {
-        return mBottomBarColor;
+        return mColorProvider.getBottomBarColor();
     }
 
     @Override
@@ -846,7 +781,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
     @Override
     public int getInitialBackgroundColor() {
-        return mInitialBackgroundColor;
+        return mColorProvider.getInitialBackgroundColor();
     }
 
     @Override

@@ -474,13 +474,14 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
     TabContextMenuItemDelegate createTabContextMenuItemDelegate(Tab tab) {
         TabModelSelector tabModelSelector =
                 mActivity != null ? mActivity.getTabModelSelector() : null;
+        final boolean isIncognito = tab.isIncognito();
         return new TabContextMenuItemDelegate(tab, tabModelSelector,
                 EphemeralTabCoordinator.isSupported() ? mEphemeralTabCoordinator::get : ()
                         -> null,
                 () -> {}, mActivity == null ? null : mActivity::getSnackbarManager) {
             @Override
             public boolean supportsOpenInChromeFromCct() {
-                return mShouldShowOpenInChromeMenuItemInContextMenu;
+                return mShouldShowOpenInChromeMenuItemInContextMenu && !isIncognito;
             }
         };
     }

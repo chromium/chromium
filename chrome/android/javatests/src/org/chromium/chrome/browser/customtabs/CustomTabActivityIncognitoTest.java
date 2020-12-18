@@ -78,7 +78,7 @@ public class CustomTabActivityIncognitoTest {
     private static int sIdToIncrement = 1;
 
     @Rule
-    public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
+    public IncognitoCustomTabActivityTestRule mCustomTabActivityTestRule = new IncognitoCustomTabActivityTestRule();
 
     @Rule
     public TestRule mProcessor = new Features.InstrumentationProcessor();
@@ -205,6 +205,41 @@ public class CustomTabActivityIncognitoTest {
         Intent intent = createMinimalIncognitoCustomTabIntent();
         launchIncognitoCustomTab(intent);
         Espresso.onView(withId(R.id.incognito_cct_logo_button)).check(matches(not(isDisplayed())));
+    }
+
+    @Test
+    @MediumTest
+    @Features.DisableFeatures({ChromeFeatureList.CCT_INCOGNITO})
+    public void canLaunchFirstPartyIncognitoWithExtraWhenDisabled() throws Exception {
+        Intent intent = createMinimalIncognitoCustomTabIntent();
+        intent.putExtra(
+                IncognitoCustomTabIntentDataProvider.EXTRA_FORCE_ENABLE_FOR_EXPERIMENT, true);
+        CustomTabActivity activity = launchIncognitoCustomTab(intent);
+        assertTrue(activity.getActivityTab().isIncognito());
+    }
+
+    @Test
+    @MediumTest
+    @Features.DisableFeatures({ChromeFeatureList.CCT_INCOGNITO})
+    public void canHideToolbarIncognitoLogo() throws Exception {
+        Intent intent = createMinimalIncognitoCustomTabIntent();
+        // The icon is only hidden if an extra is supplied.
+        intent.putExtra(IncognitoCustomTabIntentDataProvider.EXTRA_HIDE_INCOGNITO_ICON, true);
+        launchIncognitoCustomTab(intent);
+        Espresso.onView(withId(R.id.incognito_cct_logo_button))
+                .check(matches(not(isDisplayed())));
+    }
+
+    @Test
+    @MediumTest
+    @Features.DisableFeatures({ChromeFeatureList.CCT_INCOGNITO})
+    public void canCustomizeToolbarColor() throws Exception {
+        Intent intent = createMinimalIncognitoCustomTabIntent();
+        // The color is only allowed if an extra is supplied.
+        intent.putExtra(IncognitoCustomTabIntentDataProvider.EXTRA_USE_NORMAL_PROFILE_STYLE, true);
+        intent.putExtra(CustomTabsIntent.EXTRA_TOOLBAR_COLOR, Color.RED);
+        CustomTabActivity activity = launchIncognitoCustomTab(intent);
+        assertEquals(Color.RED, getToolbarColor(activity));
     }
 
     @Test

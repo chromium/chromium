@@ -125,6 +125,8 @@ public class CustomTabToolbarCoordinator {
             manager.setToolbarShadowVisibility(View.GONE);
         }
         showCustomButtonsOnToolbar();
+        CustomTabToolbar toolbar = mActivity.findViewById(R.id.toolbar);
+        toolbar.setIncognitoIconHidden(mIntentDataProvider.shouldHideIncognitoIconOnToolbarInCct());
     }
 
     /**

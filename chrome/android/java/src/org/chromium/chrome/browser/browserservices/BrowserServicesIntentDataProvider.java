@@ -541,4 +541,11 @@ public abstract class BrowserServicesIntentDataProvider {
     public boolean shouldShowOpenInChromeMenuItem() {
         return true;
     }
+
+    /**
+     * @return Whether the incognito icon in the toolbar should be hidden in cct-incognito mode.
+     */
+    public boolean shouldHideIncognitoIconOnToolbarInCct() {
+        return false;
+    }
 }
