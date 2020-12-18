@@ -538,7 +538,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             return true;
         }
         if (DefaultBrowserPromoUtils.prepareLaunchPromoIfNeeded(
-                    mActivity, mActivity.getLifecycleDispatcher(), mActivity.getWindowAndroid())) {
+                    mActivity, mActivity.getWindowAndroid())) {
             return true;
         }
 

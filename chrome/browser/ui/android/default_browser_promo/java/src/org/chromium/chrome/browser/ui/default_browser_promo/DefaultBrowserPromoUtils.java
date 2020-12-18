@@ -5,16 +5,12 @@
 package org.chromium.chrome.browser.ui.default_browser_promo;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.content.pm.ResolveInfo;
-import android.net.Uri;
-import android.os.Build;
 
 import androidx.annotation.IntDef;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.ui.base.WindowAndroid;
@@ -59,26 +55,19 @@ public class DefaultBrowserPromoUtils {
      * launch promo if a promo dialog has been decided to display.
      *
      * @param activity The context.
-     * @param dispatcher The {@link ActivityLifecycleDispatcher} of the current activity.
      * @param windowAndroid The {@link WindowAndroid} for sending an intent.
      * @return True if promo dialog will be displayed.
      */
-    public static boolean prepareLaunchPromoIfNeeded(Activity activity,
-            ActivityLifecycleDispatcher dispatcher, WindowAndroid windowAndroid) {
+    public static boolean prepareLaunchPromoIfNeeded(
+            Activity activity, WindowAndroid windowAndroid) {
         DefaultBrowserPromoDeps deps = DefaultBrowserPromoDeps.getInstance();
         int action = decideNextAction(deps, activity);
         if (action == DefaultBrowserPromoAction.NO_ACTION) return false;
         deps.incrementPromoCount();
         deps.recordPromoTime();
         DefaultBrowserPromoManager manager = new DefaultBrowserPromoManager(
-                activity, dispatcher, windowAndroid, deps.getCurrentDefaultBrowserState());
-        if (action == DefaultBrowserPromoAction.ROLE_MANAGER) {
-            manager.promoByRoleManager();
-        } else if (action == DefaultBrowserPromoAction.SYSTEM_SETTINGS) {
-            manager.promoBySystemSettings();
-        } else if (action == DefaultBrowserPromoAction.DISAMBIGUATION_SHEET) {
-            manager.promoByDisambiguationSheet();
-        }
+                activity, windowAndroid, deps.getCurrentDefaultBrowserState());
+        manager.promoByRoleManager();
         return true;
     }
 
@@ -97,6 +86,9 @@ public class DefaultBrowserPromoUtils {
     @DefaultBrowserPromoAction
     static int decideNextAction(DefaultBrowserPromoDeps deps, Activity activity) {
         if (!deps.isFeatureEnabled()) {
+            return DefaultBrowserPromoAction.NO_ACTION;
+        }
+        if (!deps.isRoleAvailable(activity)) {
             return DefaultBrowserPromoAction.NO_ACTION;
         }
         // Criteria 1
@@ -125,29 +117,18 @@ public class DefaultBrowserPromoUtils {
             // Criteria 4
             if (deps.isChromeStable() && deps.isChromePreStableInstalled()) {
                 action = DefaultBrowserPromoAction.NO_ACTION;
-            } else if (deps.getSDKInt() >= Build.VERSION_CODES.Q) {
-                action = DefaultBrowserPromoAction.ROLE_MANAGER;
             } else {
-                action = deps.promoActionOnP();
+                action = DefaultBrowserPromoAction.ROLE_MANAGER;
             }
         } else { // other default
             // Criteria 3
             if (deps.isCurrentDefaultBrowserChrome(info)) {
                 action = DefaultBrowserPromoAction.NO_ACTION;
             } else {
-                action = deps.getSDKInt() >= Build.VERSION_CODES.Q
-                        ? DefaultBrowserPromoAction.ROLE_MANAGER
-                        : DefaultBrowserPromoAction.SYSTEM_SETTINGS;
+                action = DefaultBrowserPromoAction.ROLE_MANAGER;
             }
         }
-        // Criteria 6
-        if (action == DefaultBrowserPromoAction.SYSTEM_SETTINGS
-                && !deps.doesManageDefaultAppsSettingsActivityExist()) {
-            action = DefaultBrowserPromoAction.NO_ACTION;
-        } else if (action == DefaultBrowserPromoAction.ROLE_MANAGER
-                && !deps.isRoleAvailable(activity)) {
-            action = DefaultBrowserPromoAction.NO_ACTION;
-        }
+
         return action;
     }
 
@@ -179,30 +160,8 @@ public class DefaultBrowserPromoUtils {
                 ChromePreferenceKeys.DEFAULT_BROWSER_PROMO_PROMOED_BY_SYSTEM_SETTINGS, false);
     }
 
-    /**
-     * Called on new intent is received on the activity so that we can record some metrics.
-     */
-    public static void onNewIntentReceived(Intent intent) {
-        boolean promoed = intent.getBooleanExtra(getDisambiguationSheetPromoedKey(), false);
-        if (promoed) {
-            DefaultBrowserPromoMetrics.recordLaunchedByDisambiguationSheet(
-                    DefaultBrowserPromoDeps.getInstance().getCurrentDefaultBrowserState());
-        }
-    }
-
     static String getDisambiguationSheetPromoedKey() {
         return DISAMBIGUATION_SHEET_PROMOED_KEY_PREFIX
                 + ContextUtils.getApplicationContext().getPackageName();
-    }
-
-    /**
-     * Remove intent data if this intent is triggered by default browser promo; Otherwise,
-     * chrome will open a new tab.
-     */
-    public static void maybeRemoveIntentData(Intent intent) {
-        if (intent.getBooleanExtra(getDisambiguationSheetPromoedKey(), false)) {
-            // Intent with Uri.EMPTY as data will be ignored by the IntentHandler.
-            intent.setData(Uri.EMPTY);
-        }
     }
 }

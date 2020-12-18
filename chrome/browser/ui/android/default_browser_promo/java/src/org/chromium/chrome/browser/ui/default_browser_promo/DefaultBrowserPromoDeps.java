@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.ui.default_browser_promo;
 
-import static org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoManager.P_NO_DEFAULT_PROMO_STRATEGY;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.role.RoleManager;
@@ -23,7 +21,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils.DefaultBrowserPromoAction;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils.DefaultBrowserState;
 
 import java.util.concurrent.TimeUnit;
@@ -162,24 +159,13 @@ public class DefaultBrowserPromoDeps {
         return Build.VERSION.SDK_INT;
     }
 
-    int promoActionOnP() {
-        String promoOnP = ChromeFeatureList.getFieldTrialParamByFeature(
-                ChromeFeatureList.ANDROID_DEFAULT_BROWSER_PROMO, P_NO_DEFAULT_PROMO_STRATEGY);
-        if (TextUtils.equals(promoOnP, "disabled")) {
-            return DefaultBrowserPromoAction.NO_ACTION;
-        } else if (TextUtils.equals(promoOnP, "system_settings")) {
-            return DefaultBrowserPromoAction.SYSTEM_SETTINGS;
-        } else {
-            return DefaultBrowserPromoAction.DISAMBIGUATION_SHEET;
-        }
-    }
-
     @SuppressLint("NewApi")
     boolean isRoleAvailable(Activity activity) {
         if (getSDKInt() < Build.VERSION_CODES.Q) {
             return false;
         }
         RoleManager roleManager = (RoleManager) activity.getSystemService(Context.ROLE_SERVICE);
+        if (roleManager == null) return false;
         boolean isRoleAvailable = roleManager.isRoleAvailable(RoleManager.ROLE_BROWSER);
         boolean isRoleHeld = roleManager.isRoleHeld(RoleManager.ROLE_BROWSER);
         return isRoleAvailable && !isRoleHeld;

@@ -764,7 +764,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             return;
         }
 
-        DefaultBrowserPromoUtils.maybeRemoveIntentData(intent);
         mIntentHandlingTimeMs = SystemClock.uptimeMillis();
         super.onNewIntent(intent);
     }
@@ -899,7 +898,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 handleDebugIntent(intent);
             }
 
-            DefaultBrowserPromoUtils.onNewIntentReceived(intent);
         } finally {
             TraceEvent.end("ChromeTabbedActivity.onNewIntentWithNative");
         }

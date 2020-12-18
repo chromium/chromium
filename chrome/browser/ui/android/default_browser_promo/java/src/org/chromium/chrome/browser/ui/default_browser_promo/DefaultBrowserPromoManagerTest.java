@@ -23,8 +23,6 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils.DefaultBrowserState;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.widget.PromoDialog;
@@ -50,23 +48,8 @@ public class DefaultBrowserPromoManagerTest extends DummyUiActivityTestCase {
         super.setUpTest();
         mActivity = getActivity();
         mWindowAndroid = TestThreadUtils.runOnUiThreadBlocking(() -> new WindowAndroid(mActivity));
-        mManager = new DefaultBrowserPromoManager(mActivity, new ActivityLifecycleDispatcher() {
-            @Override
-            public void register(LifecycleObserver observer) {}
-
-            @Override
-            public void unregister(LifecycleObserver observer) {}
-
-            @Override
-            public int getCurrentActivityState() {
-                return 0;
-            }
-
-            @Override
-            public boolean isNativeInitializationFinished() {
-                return false;
-            }
-        }, mWindowAndroid, DefaultBrowserState.NO_DEFAULT);
+        mManager = new DefaultBrowserPromoManager(
+                mActivity, mWindowAndroid, DefaultBrowserState.NO_DEFAULT);
         mAppName = BuildInfo.getInstance().hostPackageLabel;
         // Enabling feature can assign a default value to the fieldtrial param.
         FeatureList.setTestFeatures(Collections.EMPTY_MAP);
@@ -97,67 +80,6 @@ public class DefaultBrowserPromoManagerTest extends DummyUiActivityTestCase {
                 mActivity.getString(R.string.default_browser_promo_dialog_desc, mAppName) + "\n\n"
                         + mActivity.getString(
                                 R.string.default_browser_promo_dialog_role_manager_steps, mAppName),
-                params.subheaderCharSequence);
-
-        Assert.assertEquals(
-                mActivity.getString(
-                        R.string.default_browser_promo_dialog_choose_chrome_button, mAppName),
-                params.primaryButtonCharSequence);
-
-        checkDialogVisibility();
-    }
-
-    @Test
-    @MediumTest
-    public void testPromoBySystemSettingsOnP() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mManager.promoBySystemSettings(); });
-        DefaultBrowserPromoDialog dialog = mManager.getDialogForTesting();
-        Assert.assertEquals(
-                "Dialog should be of system settings style on P-, when there is another default in system",
-                dialog.getDialogStyleForTesting(),
-                DefaultBrowserPromoDialog.DialogStyle.SYSTEM_SETTINGS);
-
-        // test role manager style
-        PromoDialog.DialogParams params = dialog.getDialogParams();
-        Assert.assertEquals(
-                mActivity.getString(R.string.default_browser_promo_dialog_title, mAppName),
-                params.headerCharSequence);
-
-        Assert.assertEquals(
-                mActivity.getString(R.string.default_browser_promo_dialog_desc, mAppName) + "\n\n"
-                        + mActivity.getString(
-                                R.string.default_browser_promo_dialog_system_settings_steps,
-                                mAppName),
-                params.subheaderCharSequence);
-
-        Assert.assertEquals(
-                mActivity.getString(R.string.default_browser_promo_dialog_go_to_settings_button),
-                params.primaryButtonCharSequence);
-
-        checkDialogVisibility();
-    }
-
-    @Test
-    @MediumTest
-    public void testPromoByDisambiguationSheet() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mManager.promoByDisambiguationSheet(); });
-        DefaultBrowserPromoDialog dialog = mManager.getDialogForTesting();
-        Assert.assertEquals(
-                "Dialog should be of disambiguation sheet style on P-, when there is no default in system",
-                dialog.getDialogStyleForTesting(),
-                DefaultBrowserPromoDialog.DialogStyle.DISAMBIGUATION_SHEET);
-
-        // test role manager style
-        PromoDialog.DialogParams params = dialog.getDialogParams();
-        Assert.assertEquals(
-                mActivity.getString(R.string.default_browser_promo_dialog_title, mAppName),
-                params.headerCharSequence);
-
-        Assert.assertEquals(
-                mActivity.getString(R.string.default_browser_promo_dialog_desc, mAppName) + "\n\n"
-                        + mActivity.getString(
-                                R.string.default_browser_promo_dialog_disambiguation_sheet_steps,
-                                mAppName),
                 params.subheaderCharSequence);
 
         Assert.assertEquals(

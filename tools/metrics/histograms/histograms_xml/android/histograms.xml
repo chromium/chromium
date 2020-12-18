@@ -510,6 +510,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="Android.DefaultBrowserPromo.IntentReceivedFromDisambiguationSheet"
     enum="AndroidDefaultBrowserPromoOutcomeType" expires_after="2021-03-26">
+  <obsolete>
+    Removed Dec 2020; experiment is done and the data isn't useful.
+  </obsolete>
   <owner>lazzzis@google.com</owner>
   <owner>twellington@chromium.org</owner>
   <owner>pavely@chromium.org</owner>
