@@ -353,7 +353,7 @@ vars = {
   'ukey2_revision': '0275885d8e6038c39b8a8ca55e75d1d4d1727f47',
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'tint_revision': 'd1469c60c1ab5c96278d570aa93ef38b722b67e4',
+  'tint_revision': '9a644c7903caa792fc5f78ffe945289d802687df',
 
   # TODO(crbug.com/941824): The values below need to be kept in sync
   # between //DEPS and //buildtools/DEPS, so if you're updating one,
