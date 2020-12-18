@@ -254,8 +254,7 @@ int TabStripLayoutHelper::UpdateIdealBounds(int available_width) {
         }
         break;
       case ViewType::kGroupHeader:
-        if (!slot.view->dragging())
-          group_header_ideal_bounds_[slot.view->group().value()] = bounds[i];
+        group_header_ideal_bounds_[slot.view->group().value()] = bounds[i];
         break;
     }
   }

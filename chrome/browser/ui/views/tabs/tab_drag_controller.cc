@@ -844,7 +844,7 @@ TabDragController::Liveness TabDragController::ContinueDragging(
     if (move_only()) {
       DragActiveTabStacked(point_in_screen);
     } else {
-      MoveAttached(point_in_screen);
+      MoveAttached(point_in_screen, false);
       if (tab_strip_changed) {
         // Move the corresponding window to the front. We do this after the
         // move as on windows activate triggers a synchronous paint.
@@ -920,7 +920,7 @@ TabDragController::DragBrowserToNewTabStrip(TabDragContext* target_context,
       Attach(target_context, point_in_screen);
       current_state_ = DragState::kDraggingTabs;
       // Move the tabs into position.
-      MoveAttached(point_in_screen);
+      MoveAttached(point_in_screen, true);
       attached_context_->AsView()->GetWidget()->Activate();
     }
 
@@ -928,6 +928,7 @@ TabDragController::DragBrowserToNewTabStrip(TabDragContext* target_context,
   }
   Detach(DONT_RELEASE_CAPTURE);
   Attach(target_context, point_in_screen);
+  MoveAttached(point_in_screen, true);
   return DRAG_BROWSER_RESULT_CONTINUE;
 }
 
@@ -962,7 +963,8 @@ void TabDragController::MoveAttachedToPreviousStackedIndex(
                                    kMoveAttachedSubsequentDelay);
 }
 
-void TabDragController::MoveAttached(const gfx::Point& point_in_screen) {
+void TabDragController::MoveAttached(const gfx::Point& point_in_screen,
+                                     bool just_attached) {
   DCHECK(attached_context_);
   DCHECK_EQ(current_state_, DragState::kDraggingTabs);
 
@@ -977,14 +979,17 @@ void TabDragController::MoveAttached(const gfx::Point& point_in_screen) {
   bool did_layout = false;
   // Update the model, moving the WebContents from one index to another. Do this
   // only if we have moved a minimum distance since the last reorder (to prevent
-  // jitter) or if this the first move and the tabs are not consecutive.
-  if ((abs(point_in_screen.x() - last_move_screen_loc_) > threshold ||
-       (initial_move_ && !AreTabsConsecutive()))) {
+  // jitter), or if this the first move and the tabs are not consecutive, or if
+  // we have just attached to a new tabstrip and need to move to the correct
+  // initial position.
+  if (just_attached ||
+      (abs(point_in_screen.x() - last_move_screen_loc_) > threshold) ||
+      (initial_move_ && !AreTabsConsecutive())) {
     TabStripModel* attached_model = attached_context_->GetTabStripModel();
     int to_index = attached_context_->GetInsertionIndexForDraggedBounds(
-        GetDraggedViewTabStripBounds(dragged_view_point), false,
-        num_dragging_tabs(), mouse_has_ever_moved_left_,
-        mouse_has_ever_moved_right_, group_);
+        GetDraggedViewTabStripBounds(dragged_view_point),
+        GetViewsMatchingDraggedContents(attached_context_), num_dragging_tabs(),
+        mouse_has_ever_moved_left_, mouse_has_ever_moved_right_, group_);
     bool do_move = true;
     // While dragging within a tabstrip the expectation is the insertion index
     // is based on the left edge of the tabs being dragged. OTOH when dragging
@@ -1178,10 +1183,6 @@ void TabDragController::Attach(TabDragContext* attached_context,
     selection_model_before_attach_ =
         attached_context->GetTabStripModel()->selection_model();
 
-    // Inserting counts as a move. We don't want the tabs to jitter when the
-    // user moves the tab immediately after attaching it.
-    last_move_screen_loc_ = point_in_screen.x();
-
     // Register a new group if necessary, so that the insertion index in the
     // tab strip can be calculated based on the group membership of tabs.
     if (header_drag_) {
@@ -1190,21 +1191,17 @@ void TabDragController::Attach(TabDragContext* attached_context,
           source_view_drag_data()->tab_group_data.value().group_visual_data);
     }
 
-    // Figure out where to insert the tab based on the bounds of the dragged
-    // representation and the ideal bounds of the other Tabs already in the
-    // strip. ("ideal bounds" are stable even if the Tabs' actual bounds are
-    // changing due to animation).
+    // Insert at the beginning of the tabstrip. We'll fix up the insertion
+    // index in MoveAttached() later.
+    int index = 0;
+    attach_index_ = index;
+
     gfx::Point tab_strip_point(point_in_screen);
     views::View::ConvertPointFromScreen(attached_context_->AsView(),
                                         &tab_strip_point);
     tab_strip_point.set_x(
         attached_context_->AsView()->GetMirroredXInView(tab_strip_point.x()));
     tab_strip_point.Offset(0, -mouse_offset_.y());
-    int index = attached_context_->GetInsertionIndexForDraggedBounds(
-        GetDraggedViewTabStripBounds(tab_strip_point), true,
-        num_dragging_tabs(), mouse_has_ever_moved_left_,
-        mouse_has_ever_moved_right_, group_);
-    attach_index_ = index;
     attach_x_ = tab_strip_point.x();
 
     base::AutoReset<bool> setter(&is_mutating_, true);
@@ -1446,7 +1443,7 @@ void TabDragController::RunMoveLoop(const gfx::Vector2d& drag_offset) {
     Attach(tab_strip_to_attach_to_after_exit_, point_in_screen);
     current_state_ = DragState::kDraggingTabs;
     // Move the tabs into position.
-    MoveAttached(point_in_screen);
+    MoveAttached(point_in_screen, true);
     attached_context_->AsView()->GetWidget()->Activate();
     // Activate may trigger a focus loss, destroying us.
     if (!ref)
@@ -1461,11 +1458,11 @@ void TabDragController::RunMoveLoop(const gfx::Vector2d& drag_offset) {
 gfx::Rect TabDragController::GetDraggedViewTabStripBounds(
     const gfx::Point& tab_strip_point) {
   // attached_view is null when inserting into a new context.
-  // TODO(pkasting): This assumes there is just one tab being dragged, which is
-  // wrong when dragging multiple tabs; need to check all of |drag_data_|.
   if (source_view_drag_data()->attached_view) {
-    return gfx::Rect(tab_strip_point.x(), tab_strip_point.y(),
-                     source_view_drag_data()->attached_view->width(),
+    std::vector<gfx::Rect> all_bounds =
+        attached_context_->CalculateBoundsForDraggedViews(attached_views_);
+    int total_width = all_bounds.back().right() - all_bounds.front().x();
+    return gfx::Rect(tab_strip_point.x(), tab_strip_point.y(), total_width,
                      source_view_drag_data()->attached_view->height());
   }
 

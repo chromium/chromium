@@ -1026,6 +1026,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   // selected tabs joining the end of Tab Group 3.
   const gfx::Point left_center_fourth_tab =
       test::GetLeftCenterInScreenCoordinates(tab_strip->tab_at(3));
+
   ASSERT_TRUE(PressInput(GetCenterInScreenCoordinates(tab_strip->tab_at(3))));
   ASSERT_TRUE(DragInputTo(left_center_fourth_tab));
   ASSERT_TRUE(ReleaseInput());
@@ -1409,6 +1410,11 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   EXPECT_FALSE(GetIsDragged(browser()));
   EXPECT_TRUE(IsTabDraggingInfoCleared(tab_strip));
   EXPECT_TRUE(IsTabDraggingInfoSet(tab_strip2, tab_strip));
+
+  // Drag to the trailing end of the tabstrip to ensure we're in a predictable
+  // spot within the strip.
+  StopAnimating(tab_strip2);
+  ASSERT_TRUE(DragInputTo(GetCenterInScreenCoordinates(tab_strip2->tab_at(1))));
 
   // Release mouse or touch, stopping the drag session.
   ASSERT_TRUE(ReleaseInput());
@@ -2702,6 +2708,11 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   ASSERT_TRUE(tab_strip2->GetDragContext()->IsDragSessionActive());
   ASSERT_TRUE(TabDragController::IsActive());
   ASSERT_EQ(1u, browser_list->size());
+
+  // Drag to the trailing end of the tabstrip to ensure we're in a consistent
+  // spot within the strip.
+  StopAnimating(tab_strip2);
+  ASSERT_TRUE(DragInputTo(GetCenterInScreenCoordinates(tab_strip2->tab_at(1))));
 
   // Release the mouse, stopping the drag session.
   ASSERT_TRUE(ReleaseInput());

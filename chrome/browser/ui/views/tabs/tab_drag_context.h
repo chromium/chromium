@@ -85,15 +85,16 @@ class TabDragContext {
   // this tabstrip given the DraggedTabView's bounds |dragged_bounds| in
   // coordinates relative to |attached_tabstrip_| and has had the mirroring
   // transformation applied.
+  // |dragged_views| are the view children of |attached_tabstrip_| that are
+  // part of the drag.
   // |mouse_has_ever_moved_left| and |mouse_has_ever_moved_right| are used
   // only in stacked tabs cases.
   // |group| is set if the drag is originating from a group header, in which
   // case the entire group is dragged and should not be dropped into other
   // groups.
-  // NOTE: this is invoked from Attach() before the tabs have been inserted.
   virtual int GetInsertionIndexForDraggedBounds(
       const gfx::Rect& dragged_bounds,
-      bool attaching,
+      std::vector<TabSlotView*> dragged_views,
       int num_dragged_tabs,
       bool mouse_has_ever_moved_left,
       bool mouse_has_ever_moved_right,

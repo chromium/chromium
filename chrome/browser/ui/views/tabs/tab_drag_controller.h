@@ -323,8 +323,9 @@ class TabDragController : public views::WidgetObserver {
   void MoveAttachedToNextStackedIndex(const gfx::Point& point_in_screen);
   void MoveAttachedToPreviousStackedIndex(const gfx::Point& point_in_screen);
 
-  // Handles dragging tabs while the tabs are attached.
-  void MoveAttached(const gfx::Point& point_in_screen);
+  // Handles dragging tabs while the tabs are attached. |just_attached| should
+  // be true iff this is the first call to MoveAttached after attaching.
+  void MoveAttached(const gfx::Point& point_in_screen, bool just_attached);
 
   // If necessary starts the |move_stacked_timer_|. The timer is started if
   // close enough to an edge with stacked tabs.
