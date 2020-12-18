@@ -8,8 +8,6 @@
 
 #include <stdint.h>
 
-#include <memory>
-
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/i18n/icu_string_conversions.h"
@@ -37,33 +35,32 @@ class IllegalCharacters {
     return Singleton<IllegalCharacters>::get();
   }
 
-  bool DisallowedEverywhere(UChar32 ucs4) const {
-    return !!illegal_anywhere_->contains(ucs4);
+  bool IsDisallowedEverywhere(UChar32 ucs4) const {
+    return !!illegal_anywhere_.contains(ucs4);
   }
 
-  bool DisallowedLeadingOrTrailing(UChar32 ucs4) const {
-    return !!illegal_at_ends_->contains(ucs4);
+  bool IsDisallowedLeadingOrTrailing(UChar32 ucs4) const {
+    return !!illegal_at_ends_.contains(ucs4);
   }
 
   bool IsAllowedName(const string16& s) const {
-    return s.empty() || (!!illegal_anywhere_->containsNone(
+    return s.empty() || (!!illegal_anywhere_.containsNone(
                              icu::UnicodeString(s.c_str(), s.size())) &&
-                         !illegal_at_ends_->contains(*s.begin()) &&
-                         !illegal_at_ends_->contains(*s.rbegin()));
+                         !illegal_at_ends_.contains(*s.begin()) &&
+                         !illegal_at_ends_.contains(*s.rbegin()));
   }
 
  private:
-  friend class Singleton<IllegalCharacters>;
   friend struct DefaultSingletonTraits<IllegalCharacters>;
 
   IllegalCharacters();
   ~IllegalCharacters() = default;
 
-  // set of characters considered invalid anywhere inside a filename.
-  std::unique_ptr<icu::UnicodeSet> illegal_anywhere_;
+  // Set of characters considered invalid anywhere inside a filename.
+  icu::UnicodeSet illegal_anywhere_;
 
-  // set of characters considered invalid at either end of a filename.
-  std::unique_ptr<icu::UnicodeSet> illegal_at_ends_;
+  // Set of characters considered invalid at either end of a filename.
+  icu::UnicodeSet illegal_at_ends_;
 };
 
 IllegalCharacters::IllegalCharacters() {
@@ -71,32 +68,32 @@ IllegalCharacters::IllegalCharacters() {
   UErrorCode ends_status = U_ZERO_ERROR;
   // Control characters, formatting characters, non-characters, path separators,
   // and some printable ASCII characters regarded as dangerous ('"*/:<>?\\').
-  // See  http://blogs.msdn.com/michkap/archive/2006/11/03/941420.aspx
+  // See http://blogs.msdn.com/michkap/archive/2006/11/03/941420.aspx
   // and http://msdn2.microsoft.com/en-us/library/Aa365247.aspx
   // Note that code points in the "Other, Format" (Cf) category are ignored on
   // HFS+ despite the ZERO_WIDTH_JOINER and ZERO_WIDTH_NON-JOINER being
   // legitimate in Arabic and some S/SE Asian scripts. In addition tilde (~) is
   // also excluded due to the possibility of interacting poorly with short
   // filenames on VFAT. (Related to CVE-2014-9390)
-  illegal_anywhere_.reset(new icu::UnicodeSet(
-      UNICODE_STRING_SIMPLE("[[\"~*/:<>?\\\\|][:Cc:][:Cf:]]"),
-      everywhere_status));
-  illegal_at_ends_.reset(new icu::UnicodeSet(
-      UNICODE_STRING_SIMPLE("[[:WSpace:][.]]"), ends_status));
+  illegal_anywhere_ =
+      icu::UnicodeSet(UNICODE_STRING_SIMPLE("[[\"~*/:<>?\\\\|][:Cc:][:Cf:]]"),
+                      everywhere_status);
+  illegal_at_ends_ =
+      icu::UnicodeSet(UNICODE_STRING_SIMPLE("[[:WSpace:][.]]"), ends_status);
   DCHECK(U_SUCCESS(everywhere_status));
   DCHECK(U_SUCCESS(ends_status));
 
   // Add non-characters. If this becomes a performance bottleneck by
   // any chance, do not add these to |set| and change IsFilenameLegal()
-  // to check |ucs4 & 0xFFFEu == 0xFFFEu|, in addiition to calling
+  // to check |ucs4 & 0xFFFEu == 0xFFFEu|, in addition to calling
   // IsAllowedName().
-  illegal_anywhere_->add(0xFDD0, 0xFDEF);
+  illegal_anywhere_.add(0xFDD0, 0xFDEF);
   for (int i = 0; i <= 0x10; ++i) {
     int plane_base = 0x10000 * i;
-    illegal_anywhere_->add(plane_base + 0xFFFE, plane_base + 0xFFFF);
+    illegal_anywhere_.add(plane_base + 0xFFFE, plane_base + 0xFFFF);
   }
-  illegal_anywhere_->freeze();
-  illegal_at_ends_->freeze();
+  illegal_anywhere_.freeze();
+  illegal_at_ends_.freeze();
 }
 
 }  // namespace
@@ -109,13 +106,13 @@ void ReplaceIllegalCharactersInPath(FilePath::StringType* file_name,
                                     char replace_char) {
   IllegalCharacters* illegal = IllegalCharacters::GetInstance();
 
-  DCHECK(!(illegal->DisallowedEverywhere(replace_char)));
-  DCHECK(!(illegal->DisallowedLeadingOrTrailing(replace_char)));
+  DCHECK(!(illegal->IsDisallowedEverywhere(replace_char)));
+  DCHECK(!(illegal->IsDisallowedLeadingOrTrailing(replace_char)));
 
   int cursor = 0;  // The ICU macros expect an int.
   while (cursor < static_cast<int>(file_name->size())) {
     int char_begin = cursor;
-    uint32_t code_point;
+    UChar32 code_point;
 #if defined(OS_WIN)
     // Windows uses UTF-16 encoding for filenames.
     U16_NEXT(file_name->data(), cursor, static_cast<int>(file_name->length()),
@@ -130,9 +127,9 @@ void ReplaceIllegalCharactersInPath(FilePath::StringType* file_name,
 #error Unsupported platform
 #endif
 
-    if (illegal->DisallowedEverywhere(code_point) ||
+    if (illegal->IsDisallowedEverywhere(code_point) ||
         ((char_begin == 0 || cursor == static_cast<int>(file_name->length())) &&
-         illegal->DisallowedLeadingOrTrailing(code_point))) {
+         illegal->IsDisallowedLeadingOrTrailing(code_point))) {
       file_name->replace(char_begin, cursor - char_begin, 1, replace_char);
       // We just made the potentially multi-byte/word char into one that only
       // takes one byte/word, so need to adjust the cursor to point to the next
