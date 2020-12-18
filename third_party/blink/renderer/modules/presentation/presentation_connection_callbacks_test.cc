@@ -8,21 +8,15 @@
 
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "testing/gmock/include/gmock/gmock.h"  // MockFunctionScope
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/presentation/presentation.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_function.h"  // MockFunctionScope
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_value.h"  // MockFunctionScope
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/core/testing/mock_function_scope.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_connection.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_request.h"
-#include "third_party/blink/renderer/platform/bindings/script_state.h"  // MockFunctionScope
 #include "third_party/blink/renderer/platform/heap/heap.h"
-#include "third_party/blink/renderer/platform/heap/persistent.h"  // MockFunctionScope
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
-#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"  // MockFunctionScope
-#include "third_party/blink/renderer/platform/wtf/vector.h"  // MockFunctionScope
 
 constexpr char kPresentationUrl[] = "https://example.com";
 constexpr char kPresentationId[] = "xyzzy";
@@ -38,49 +32,6 @@ using mojom::blink::PresentationInfo;
 using mojom::blink::PresentationInfoPtr;
 
 namespace {
-
-// TODO(crbug.com/1120218): Consolidate with PaymentRequestMockFunctionScope and
-// move to shared folder
-class MockFunctionScope {
-  STACK_ALLOCATED();
-
- public:
-  explicit MockFunctionScope(ScriptState* script_state)
-      : script_state_(script_state) {}
-  ~MockFunctionScope() {
-    v8::MicrotasksScope::PerformCheckpoint(script_state_->GetIsolate());
-    for (MockFunction* mock_function : mock_functions_)
-      testing::Mock::VerifyAndClearExpectations(mock_function);
-  }
-
-  v8::Local<v8::Function> ExpectCall() {
-    mock_functions_.push_back(
-        MakeGarbageCollected<MockFunction>(script_state_));
-    EXPECT_CALL(*mock_functions_.back(), Call(testing::_));
-    return mock_functions_.back()->Bind();
-  }
-
-  v8::Local<v8::Function> ExpectNoCall() {
-    mock_functions_.push_back(
-        MakeGarbageCollected<MockFunction>(script_state_));
-    EXPECT_CALL(*mock_functions_.back(), Call(testing::_)).Times(0);
-    return mock_functions_.back()->Bind();
-  }
-
- private:
-  class MockFunction : public ScriptFunction {
-   public:
-    explicit MockFunction(ScriptState* script_state)
-        : ScriptFunction(script_state) {
-      ON_CALL(*this, Call(testing::_)).WillByDefault(testing::ReturnArg<0>());
-    }
-    v8::Local<v8::Function> Bind() { return BindToV8Function(); }
-    MOCK_METHOD1(Call, ScriptValue(ScriptValue));
-  };
-
-  ScriptState* script_state_;
-  Vector<Persistent<MockFunction>> mock_functions_;
-};
 
 static PresentationRequest* MakeRequest(V8TestingScope* scope) {
   PresentationRequest* request =

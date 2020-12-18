@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/testing/mock_function_scope.h"
 #include "third_party/blink/renderer/modules/payments/payment_test_helper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
@@ -246,7 +247,7 @@ TEST(PaymentRequestTest, PickupShippingTypeWhenShippingTypeIsPickup) {
 
 TEST(PaymentRequestTest, RejectShowPromiseOnInvalidShippingAddress) {
   PaymentRequestV8TestingScope scope;
-  PaymentRequestMockFunctionScope funcs(scope.GetScriptState());
+  MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
@@ -260,7 +261,7 @@ TEST(PaymentRequestTest, RejectShowPromiseOnInvalidShippingAddress) {
 
 TEST(PaymentRequestTest, OnShippingOptionChange) {
   PaymentRequestV8TestingScope scope;
-  PaymentRequestMockFunctionScope funcs(scope.GetScriptState());
+  MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
@@ -274,7 +275,7 @@ TEST(PaymentRequestTest, OnShippingOptionChange) {
 
 TEST(PaymentRequestTest, CannotCallShowTwice) {
   PaymentRequestV8TestingScope scope;
-  PaymentRequestMockFunctionScope funcs(scope.GetScriptState());
+  MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
@@ -287,7 +288,7 @@ TEST(PaymentRequestTest, CannotCallShowTwice) {
 
 TEST(PaymentRequestTest, CannotShowAfterAborted) {
   PaymentRequestV8TestingScope scope;
-  PaymentRequestMockFunctionScope funcs(scope.GetScriptState());
+  MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
@@ -306,7 +307,7 @@ TEST(PaymentRequestTest, CannotShowWithoutUserActivation) {
   RuntimeEnabledFeatures::SetPaymentRequestShowConsumesUserActivationEnabled(
       true);
   PaymentRequestV8TestingScope scope;
-  PaymentRequestMockFunctionScope funcs(scope.GetScriptState());
+  MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
@@ -320,7 +321,7 @@ TEST(PaymentRequestTest, ShowConsumesUserActivation) {
   RuntimeEnabledFeatures::SetPaymentRequestShowConsumesUserActivationEnabled(
       true);
   PaymentRequestV8TestingScope scope;
-  PaymentRequestMockFunctionScope funcs(scope.GetScriptState());
+  MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
@@ -333,7 +334,7 @@ TEST(PaymentRequestTest, ShowConsumesUserActivation) {
 
 TEST(PaymentRequestTest, RejectShowPromiseOnErrorPaymentMethodNotSupported) {
   PaymentRequestV8TestingScope scope;
-  PaymentRequestMockFunctionScope funcs(scope.GetScriptState());
+  MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
@@ -353,7 +354,7 @@ TEST(PaymentRequestTest, RejectShowPromiseOnErrorPaymentMethodNotSupported) {
 
 TEST(PaymentRequestTest, RejectShowPromiseOnErrorCancelled) {
   PaymentRequestV8TestingScope scope;
-  PaymentRequestMockFunctionScope funcs(scope.GetScriptState());
+  MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
@@ -372,7 +373,7 @@ TEST(PaymentRequestTest, RejectShowPromiseOnErrorCancelled) {
 
 TEST(PaymentRequestTest, RejectShowPromiseOnUpdateDetailsFailure) {
   PaymentRequestV8TestingScope scope;
-  PaymentRequestMockFunctionScope funcs(scope.GetScriptState());
+  MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
@@ -391,7 +392,7 @@ TEST(PaymentRequestTest, RejectShowPromiseOnUpdateDetailsFailure) {
 
 TEST(PaymentRequestTest, IgnoreUpdatePaymentDetailsAfterShowPromiseResolved) {
   PaymentRequestV8TestingScope scope;
-  PaymentRequestMockFunctionScope funcs(scope.GetScriptState());
+  MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
@@ -406,7 +407,7 @@ TEST(PaymentRequestTest, IgnoreUpdatePaymentDetailsAfterShowPromiseResolved) {
 
 TEST(PaymentRequestTest, RejectShowPromiseOnNonPaymentDetailsUpdate) {
   PaymentRequestV8TestingScope scope;
-  PaymentRequestMockFunctionScope funcs(scope.GetScriptState());
+  MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
@@ -422,7 +423,7 @@ TEST(PaymentRequestTest, RejectShowPromiseOnNonPaymentDetailsUpdate) {
 
 TEST(PaymentRequestTest, RejectShowPromiseOnInvalidPaymentDetailsUpdate) {
   PaymentRequestV8TestingScope scope;
-  PaymentRequestMockFunctionScope funcs(scope.GetScriptState());
+  MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
@@ -442,7 +443,7 @@ TEST(PaymentRequestTest, RejectShowPromiseOnInvalidPaymentDetailsUpdate) {
 TEST(PaymentRequestTest,
      ClearShippingOptionOnPaymentDetailsUpdateWithoutShippingOptions) {
   PaymentRequestV8TestingScope scope;
-  PaymentRequestMockFunctionScope funcs(scope.GetScriptState());
+  MockFunctionScope funcs(scope.GetScriptState());
   PaymentDetailsInit* details = PaymentDetailsInit::Create();
   details->setTotal(BuildPaymentItemForTest());
   PaymentOptions* options = PaymentOptions::Create();
@@ -486,7 +487,7 @@ TEST(
     PaymentRequestTest,
     ClearShippingOptionOnPaymentDetailsUpdateWithMultipleUnselectedShippingOptions) {
   PaymentRequestV8TestingScope scope;
-  PaymentRequestMockFunctionScope funcs(scope.GetScriptState());
+  MockFunctionScope funcs(scope.GetScriptState());
   PaymentOptions* options = PaymentOptions::Create();
   options->setRequestShipping(true);
   PaymentRequest* request = PaymentRequest::Create(
@@ -513,7 +514,7 @@ TEST(
 
 TEST(PaymentRequestTest, UseTheSelectedShippingOptionFromPaymentDetailsUpdate) {
   PaymentRequestV8TestingScope scope;
-  PaymentRequestMockFunctionScope funcs(scope.GetScriptState());
+  MockFunctionScope funcs(scope.GetScriptState());
   PaymentOptions* options = PaymentOptions::Create();
   options->setRequestShipping(true);
   PaymentRequest* request = PaymentRequest::Create(
@@ -542,7 +543,7 @@ TEST(PaymentRequestTest, UseTheSelectedShippingOptionFromPaymentDetailsUpdate) {
 
 TEST(PaymentRequestTest, NoExceptionWithErrorMessageInUpdate) {
   PaymentRequestV8TestingScope scope;
-  PaymentRequestMockFunctionScope funcs(scope.GetScriptState());
+  MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
@@ -564,7 +565,7 @@ TEST(PaymentRequestTest, NoExceptionWithErrorMessageInUpdate) {
 TEST(PaymentRequestTest,
      ShouldResolveWithExceptionIfIDsOfShippingOptionsAreDuplicated) {
   PaymentRequestV8TestingScope scope;
-  PaymentRequestMockFunctionScope funcs(scope.GetScriptState());
+  MockFunctionScope funcs(scope.GetScriptState());
   PaymentDetailsInit* details = PaymentDetailsInit::Create();
   details->setTotal(BuildPaymentItemForTest());
   HeapVector<Member<PaymentShippingOption>> shipping_options(2);

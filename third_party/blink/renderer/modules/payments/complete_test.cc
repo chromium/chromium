@@ -6,6 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/core/testing/mock_function_scope.h"
 #include "third_party/blink/renderer/modules/payments/payment_request.h"
 #include "third_party/blink/renderer/modules/payments/payment_test_helper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
@@ -34,7 +35,7 @@ TEST(CompleteTest, CannotCallCompleteTwice) {
 
 TEST(CompleteTest, ResolveCompletePromiseOnUnknownError) {
   PaymentRequestV8TestingScope scope;
-  PaymentRequestMockFunctionScope funcs(scope.GetScriptState());
+  MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
@@ -54,7 +55,7 @@ TEST(CompleteTest, ResolveCompletePromiseOnUnknownError) {
 
 TEST(CompleteTest, ResolveCompletePromiseOnUserClosingUI) {
   PaymentRequestV8TestingScope scope;
-  PaymentRequestMockFunctionScope funcs(scope.GetScriptState());
+  MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
@@ -96,7 +97,7 @@ TEST(CompleteTest, RejectCompletePromiseAfterError) {
 
 TEST(CompleteTest, ResolvePromiseOnComplete) {
   PaymentRequestV8TestingScope scope;
-  PaymentRequestMockFunctionScope funcs(scope.GetScriptState());
+  MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
@@ -116,7 +117,7 @@ TEST(CompleteTest, ResolvePromiseOnComplete) {
 
 TEST(CompleteTest, RejectCompletePromiseOnUpdateDetailsFailure) {
   PaymentRequestV8TestingScope scope;
-  PaymentRequestMockFunctionScope funcs(scope.GetScriptState());
+  MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
@@ -140,7 +141,7 @@ TEST(CompleteTest, RejectCompletePromiseOnUpdateDetailsFailure) {
 
 TEST(CompleteTest, RejectCompletePromiseAfterTimeout) {
   PaymentRequestV8TestingScope scope;
-  PaymentRequestMockFunctionScope funcs(scope.GetScriptState());
+  MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);

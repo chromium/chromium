@@ -23,8 +23,6 @@
 namespace blink {
 
 class PaymentMethodData;
-class ScriptState;
-class ScriptValue;
 class V8TestingScope;
 
 enum PaymentTestDetailToChange {
@@ -93,31 +91,6 @@ class PaymentRequestV8TestingScope : public V8TestingScope {
 
  public:
   PaymentRequestV8TestingScope();
-};
-
-class PaymentRequestMockFunctionScope {
-  STACK_ALLOCATED();
-
- public:
-  explicit PaymentRequestMockFunctionScope(ScriptState*);
-  ~PaymentRequestMockFunctionScope();
-
-  v8::Local<v8::Function> ExpectCall();
-  v8::Local<v8::Function> ExpectCall(String* captor);
-  v8::Local<v8::Function> ExpectNoCall();
-
- private:
-  class MockFunction : public ScriptFunction {
-   public:
-    explicit MockFunction(ScriptState*);
-    MockFunction(ScriptState*, String* captor);
-    v8::Local<v8::Function> Bind();
-    MOCK_METHOD1(Call, ScriptValue(ScriptValue));
-    String* value_;
-  };
-
-  ScriptState* script_state_;
-  Vector<Persistent<MockFunction>> mock_functions_;
 };
 
 }  // namespace blink

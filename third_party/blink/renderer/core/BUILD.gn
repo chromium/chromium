@@ -408,6 +408,8 @@ source_set("testing") {
     "testing/intersection_observer_test_helper.h",
     "testing/mock_clipboard_host.cc",
     "testing/mock_clipboard_host.h",
+    "testing/mock_function_scope.cc",
+    "testing/mock_function_scope.h",
     "testing/mock_hyphenation.cc",
     "testing/mock_hyphenation.h",
     "testing/mock_policy_container_host.cc",

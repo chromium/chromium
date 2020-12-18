@@ -6,6 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/core/testing/mock_function_scope.h"
 #include "third_party/blink/renderer/modules/payments/payment_request.h"
 #include "third_party/blink/renderer/modules/payments/payment_test_helper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
@@ -20,7 +21,7 @@ using payments::mojom::blink::PaymentRequestClient;
 
 TEST(HasEnrolledInstrumentTest, RejectPromiseOnUserCancel) {
   PaymentRequestV8TestingScope scope;
-  PaymentRequestMockFunctionScope funcs(scope.GetScriptState());
+  MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
@@ -34,7 +35,7 @@ TEST(HasEnrolledInstrumentTest, RejectPromiseOnUserCancel) {
 
 TEST(HasEnrolledInstrumentTest, RejectPromiseOnUnknownError) {
   PaymentRequestV8TestingScope scope;
-  PaymentRequestMockFunctionScope funcs(scope.GetScriptState());
+  MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
@@ -60,7 +61,7 @@ TEST(HasEnrolledInstrumentTest, RejectDuplicateRequest) {
 
 TEST(HasEnrolledInstrumentTest, RejectQueryQuotaExceeded) {
   PaymentRequestV8TestingScope scope;
-  PaymentRequestMockFunctionScope funcs(scope.GetScriptState());
+  MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
@@ -74,7 +75,7 @@ TEST(HasEnrolledInstrumentTest, RejectQueryQuotaExceeded) {
 
 TEST(HasEnrolledInstrumentTest, ReturnHasNoEnrolledInstrument) {
   PaymentRequestV8TestingScope scope;
-  PaymentRequestMockFunctionScope funcs(scope.GetScriptState());
+  MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
@@ -91,7 +92,7 @@ TEST(HasEnrolledInstrumentTest, ReturnHasNoEnrolledInstrument) {
 
 TEST(HasEnrolledInstrumentTest, ReturnHasEnrolledInstrument) {
   PaymentRequestV8TestingScope scope;
-  PaymentRequestMockFunctionScope funcs(scope.GetScriptState());
+  MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
@@ -108,7 +109,7 @@ TEST(HasEnrolledInstrumentTest, ReturnHasEnrolledInstrument) {
 
 TEST(CanMakePaymentTest, RejectPromiseOnUserCancel) {
   PaymentRequestV8TestingScope scope;
-  PaymentRequestMockFunctionScope funcs(scope.GetScriptState());
+  MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
@@ -123,7 +124,7 @@ TEST(CanMakePaymentTest, RejectPromiseOnUserCancel) {
 TEST(CanMakePaymentTest, RejectPromiseOnUnknownError) {
   PaymentRequestV8TestingScope scope;
 
-  PaymentRequestMockFunctionScope funcs(scope.GetScriptState());
+  MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
@@ -149,7 +150,7 @@ TEST(CanMakePaymentTest, RejectDuplicateRequest) {
 
 TEST(CanMakePaymentTest, ReturnCannotMakePayment) {
   PaymentRequestV8TestingScope scope;
-  PaymentRequestMockFunctionScope funcs(scope.GetScriptState());
+  MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
@@ -166,7 +167,7 @@ TEST(CanMakePaymentTest, ReturnCannotMakePayment) {
 
 TEST(CanMakePaymentTest, ReturnCanMakePayment) {
   PaymentRequestV8TestingScope scope;
-  PaymentRequestMockFunctionScope funcs(scope.GetScriptState());
+  MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);

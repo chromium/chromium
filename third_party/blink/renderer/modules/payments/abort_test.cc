@@ -6,6 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/core/testing/mock_function_scope.h"
 #include "third_party/blink/renderer/modules/payments/payment_request.h"
 #include "third_party/blink/renderer/modules/payments/payment_test_helper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
@@ -45,7 +46,7 @@ TEST(AbortTest, CannotAbortTwiceConcurrently) {
 // should not reject with exception.
 TEST(AbortTest, CanAbortAfterShow) {
   PaymentRequestV8TestingScope scope;
-  PaymentRequestMockFunctionScope funcs(scope.GetScriptState());
+  MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
@@ -59,7 +60,7 @@ TEST(AbortTest, CanAbortAfterShow) {
 // promise should be rejected.
 TEST(AbortTest, FailedAbortShouldRejectAbortPromise) {
   PaymentRequestV8TestingScope scope;
-  PaymentRequestMockFunctionScope funcs(scope.GetScriptState());
+  MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
@@ -76,7 +77,7 @@ TEST(AbortTest, FailedAbortShouldRejectAbortPromise) {
 // call should not be rejected, as it's not a duplicate request anymore.
 TEST(AbortTest, CanAbortAgainAfterFirstAbortRejected) {
   PaymentRequestV8TestingScope scope;
-  PaymentRequestMockFunctionScope funcs(scope.GetScriptState());
+  MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
@@ -93,7 +94,7 @@ TEST(AbortTest, CanAbortAgainAfterFirstAbortRejected) {
 // promise should be rejected, and request.abort() promise should be resolved.
 TEST(AbortTest, SuccessfulAbortShouldRejectShowPromiseAndResolveAbortPromise) {
   PaymentRequestV8TestingScope scope;
-  PaymentRequestMockFunctionScope funcs(scope.GetScriptState());
+  MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
