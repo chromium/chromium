@@ -1810,12 +1810,12 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
         filter_skipped_ = true;
     }
 
-    // TODO(mstensho): Get rid of this. It's just a temporary thing to retain
-    // old behavior in LayoutObject::container().
-    void ResetOutput() {
-      ancestor_skipped_ = false;
-      filter_skipped_ = false;
+#if DCHECK_IS_ON()
+    void AssertClean() {
+      DCHECK(!ancestor_skipped_);
+      DCHECK(!filter_skipped_);
     }
+#endif
 
     bool AncestorSkipped() const { return ancestor_skipped_; }
     bool FilterSkipped() const {

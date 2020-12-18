@@ -3447,10 +3447,11 @@ RespectImageOrientationEnum LayoutObject::ShouldRespectImageOrientation(
 
 LayoutObject* LayoutObject::Container(AncestorSkipInfo* skip_info) const {
   NOT_DESTROYED();
-  // TODO(mstensho): Get rid of this. Nobody should call this method with those
-  // flags already set.
+
+#if DCHECK_IS_ON()
   if (skip_info)
-    skip_info->ResetOutput();
+    skip_info->AssertClean();
+#endif
 
   if (IsTextOrSVGChild())
     return Parent();

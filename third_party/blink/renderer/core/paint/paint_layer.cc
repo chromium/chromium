@@ -147,8 +147,11 @@ PaintLayer* SlowContainingLayer(const PaintLayer* ancestor,
     skip_info.emplace(&ancestor->GetLayoutObject());
   while (auto* container = layout_object->Container(
              skipped_ancestor ? &*skip_info : nullptr)) {
-    if (skipped_ancestor && skip_info->AncestorSkipped())
-      *skipped_ancestor = true;
+    if (skipped_ancestor) {
+      if (skip_info->AncestorSkipped())
+        *skipped_ancestor = true;
+      skip_info.emplace(&ancestor->GetLayoutObject());
+    }
     if (container->HasLayer())
       return To<LayoutBoxModelObject>(container)->Layer();
     layout_object = container;
