@@ -866,6 +866,21 @@ void VTVideoDecodeAccelerator::DecodeTask(scoped_refptr<DecoderBuffer> buffer,
         break;
       }
 
+      case H264NALU::kSEIMessage: {
+        H264SEIMessage sei_msg;
+        result = parser_.ParseSEI(&sei_msg);
+        if (result == H264Parser::kOk &&
+            sei_msg.type == H264SEIMessage::kSEIRecoveryPoint &&
+            sei_msg.recovery_point.recovery_frame_cnt == 0) {
+          // We only support immediate recovery points. Supporting future points
+          // would require dropping |recovery_frame_cnt| frames when needed.
+          frame->has_recovery_point = true;
+        }
+        nalus.push_back(nalu);
+        data_size += kNALUHeaderLength + nalu.size;
+        break;
+      }
+
       case H264NALU::kSliceDataA:
       case H264NALU::kSliceDataB:
       case H264NALU::kSliceDataC:
@@ -941,7 +956,7 @@ void VTVideoDecodeAccelerator::DecodeTask(scoped_refptr<DecoderBuffer> buffer,
     }
   }
 
-  if (frame->is_idr)
+  if (frame->is_idr || frame->has_recovery_point)
     waiting_for_idr_ = false;
 
   // If no IDR has been seen yet, skip decoding. Note that Flash sends
