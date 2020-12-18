@@ -87,7 +87,6 @@ class ScreenCaptureNotificationUIViews : public ScreenCaptureNotificationUI,
   views::ClientView* CreateClientView(views::Widget* widget) override;
   std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
       views::Widget* widget) override;
-  bool CanActivate() const override;
 
   // views::ViewObserver:
   void OnViewBoundsChanged(View* observed_view) override;
@@ -247,13 +246,6 @@ ScreenCaptureNotificationUIViews::CreateNonClientFrameView(
       new views::BubbleBorder(views::BubbleBorder::NONE,
                               views::BubbleBorder::SMALL_SHADOW, color)));
   return frame;
-}
-
-bool ScreenCaptureNotificationUIViews::CanActivate() const {
-  // When the window is visible, it can be activated so the mouse clicks
-  // can be sent to the window; when the window is minimized, we don't want it
-  // to activate, otherwise it sometimes does not show properly on Windows.
-  return GetWidget() && GetWidget()->IsVisible();
 }
 
 void ScreenCaptureNotificationUIViews::OnViewBoundsChanged(
