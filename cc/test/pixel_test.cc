@@ -131,7 +131,8 @@ bool PixelTest::RunPixelTestWithReadbackTargetAndArea(
   renderer_->DecideRenderPassAllocationsForFrame(*pass_list);
   float device_scale_factor = 1.f;
   renderer_->DrawFrame(pass_list, device_scale_factor, device_viewport_size_,
-                       display_color_spaces_, &surface_damage_rect_list_);
+                       display_color_spaces_,
+                       std::move(surface_damage_rect_list_));
 
   // Call SwapBuffersSkipped(), so the renderer can have a chance to release
   // resources.
@@ -166,7 +167,8 @@ bool PixelTest::RunPixelTest(viz::AggregatedRenderPassList* pass_list,
   renderer_->DecideRenderPassAllocationsForFrame(*pass_list);
   float device_scale_factor = 1.f;
   renderer_->DrawFrame(pass_list, device_scale_factor, device_viewport_size_,
-                       display_color_spaces_, &surface_damage_rect_list_);
+                       display_color_spaces_,
+                       std::move(surface_damage_rect_list_));
 
   // Call SwapBuffersSkipped(), so the renderer can have a chance to release
   // resources.

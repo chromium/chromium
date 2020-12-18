@@ -74,7 +74,7 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
                  float device_scale_factor,
                  const gfx::Size& device_viewport_size,
                  const gfx::DisplayColorSpaces& display_color_spaces,
-                 SurfaceDamageRectList* surface_damage_rect_list);
+                 SurfaceDamageRectList surface_damage_rect_list);
 
   // Public interface implemented by subclasses.
   struct SwapFrameData {

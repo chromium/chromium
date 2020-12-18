@@ -209,7 +209,7 @@ void DirectRenderer::DrawFrame(
     float device_scale_factor,
     const gfx::Size& device_viewport_size,
     const gfx::DisplayColorSpaces& display_color_spaces,
-    SurfaceDamageRectList* surface_damage_rect_list) {
+    SurfaceDamageRectList surface_damage_rect_list) {
   DCHECK(visible_);
   TRACE_EVENT0("viz,benchmark", "DirectRenderer::DrawFrame");
   UMA_HISTOGRAM_COUNTS_1M(
@@ -326,8 +326,9 @@ void DirectRenderer::DrawFrame(
     overlay_processor_->ProcessForOverlays(
         resource_provider_, render_passes_in_draw_order,
         output_surface_->color_matrix(), render_pass_filters_,
-        render_pass_backdrop_filters_, surface_damage_rect_list, primary_plane,
-        &current_frame()->overlay_list, &current_frame()->root_damage_rect,
+        render_pass_backdrop_filters_, std::move(surface_damage_rect_list),
+        primary_plane, &current_frame()->overlay_list,
+        &current_frame()->root_damage_rect,
         &current_frame()->root_content_bounds);
 
     // If we promote any quad to an underlay then the main plane must support

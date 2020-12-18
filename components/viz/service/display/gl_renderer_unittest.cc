@@ -102,7 +102,8 @@ class GLRendererTest : public testing::Test {
                      gfx::DisplayColorSpaces()) {
     SurfaceDamageRectList surface_damage_rect_list;
     renderer->DrawFrame(&render_passes_in_draw_order_, 1.f, viewport_size,
-                        display_color_spaces, &surface_damage_rect_list);
+                        display_color_spaces,
+                        std::move(surface_damage_rect_list));
   }
 
   static const Program* current_program(GLRenderer* renderer) {
@@ -2576,7 +2577,7 @@ class MockOutputSurfaceTest : public GLRendererTest {
     SurfaceDamageRectList surface_damage_rect_list;
     renderer_->DrawFrame(&render_passes_in_draw_order_, device_scale_factor,
                          viewport_size, gfx::DisplayColorSpaces(),
-                         &surface_damage_rect_list);
+                         std::move(surface_damage_rect_list));
   }
 
   RendererSettings settings_;
@@ -2615,7 +2616,7 @@ class MockDCLayerOverlayProcessor : public DCLayerOverlayProcessor {
                     const FilterOperationsMap& render_pass_backdrop_filters,
                     AggregatedRenderPassList* render_passes,
                     gfx::Rect* damage_rect,
-                    SurfaceDamageRectList* surface_damage_rect_list,
+                    SurfaceDamageRectList surface_damage_rect_list,
                     DCLayerOverlayList* dc_layer_overlays));
 
  protected:

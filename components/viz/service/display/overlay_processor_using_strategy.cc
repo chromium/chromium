@@ -4,6 +4,7 @@
 
 #include "components/viz/service/display/overlay_processor_using_strategy.h"
 
+#include <utility>
 #include <vector>
 
 #include "base/feature_list.h"
@@ -74,7 +75,7 @@ void OverlayProcessorUsingStrategy::ProcessForOverlays(
     const OverlayProcessorInterface::FilterOperationsMap& render_pass_filters,
     const OverlayProcessorInterface::FilterOperationsMap&
         render_pass_backdrop_filters,
-    SurfaceDamageRectList* surface_damage_rect_list,
+    SurfaceDamageRectList surface_damage_rect_list,
     OutputSurfaceOverlayPlane* output_surface_plane,
     CandidateList* candidates,
     gfx::Rect* damage_rect,
@@ -91,19 +92,19 @@ void OverlayProcessorUsingStrategy::ProcessForOverlays(
     if (features::IsOverlayPrioritizationEnabled()) {
       success = AttemptWithStrategiesPrioritized(
           output_color_matrix, render_pass_backdrop_filters, resource_provider,
-          render_passes, surface_damage_rect_list, output_surface_plane,
+          render_passes, &surface_damage_rect_list, output_surface_plane,
           candidates, content_bounds, damage_rect);
     } else {
       success = AttemptWithStrategies(
           output_color_matrix, render_pass_backdrop_filters, resource_provider,
-          render_passes, surface_damage_rect_list, output_surface_plane,
+          render_passes, &surface_damage_rect_list, output_surface_plane,
           candidates, content_bounds);
     }
   }
 
   DCHECK(candidates->empty() || success);
 
-  UpdateDamageRect(candidates, surface_damage_rect_list,
+  UpdateDamageRect(candidates, &surface_damage_rect_list,
                    &render_pass->quad_list, damage_rect);
 
   NotifyOverlayPromotion(resource_provider, *candidates,

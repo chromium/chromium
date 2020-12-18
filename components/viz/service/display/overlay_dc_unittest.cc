@@ -313,8 +313,8 @@ TEST_F(DCLayerOverlayTest, Occluded) {
     overlay_processor_->ProcessForOverlays(
         resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
         render_pass_filters, render_pass_backdrop_filters,
-        &surface_damage_rect_list, nullptr, &dc_layer_list, &damage_rect_,
-        &content_bounds_);
+        std::move(surface_damage_rect_list), nullptr, &dc_layer_list,
+        &damage_rect_, &content_bounds_);
 
     EXPECT_EQ(2U, dc_layer_list.size());
     EXPECT_EQ(0U, output_surface_->bind_framebuffer_count());
@@ -364,8 +364,8 @@ TEST_F(DCLayerOverlayTest, Occluded) {
     overlay_processor_->ProcessForOverlays(
         resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
         render_pass_filters, render_pass_backdrop_filters,
-        &surface_damage_rect_list, nullptr, &dc_layer_list, &damage_rect_,
-        &content_bounds_);
+        std::move(surface_damage_rect_list), nullptr, &dc_layer_list,
+        &damage_rect_, &content_bounds_);
 
     EXPECT_EQ(2U, dc_layer_list.size());
     EXPECT_EQ(0U, output_surface_->bind_framebuffer_count());
@@ -426,8 +426,8 @@ TEST_F(DCLayerOverlayTest, DamageRectWithoutVideoDamage) {
     overlay_processor_->ProcessForOverlays(
         resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
         render_pass_filters, render_pass_backdrop_filters,
-        &surface_damage_rect_list, nullptr, &dc_layer_list, &damage_rect_,
-        &content_bounds_);
+        std::move(surface_damage_rect_list), nullptr, &dc_layer_list,
+        &damage_rect_, &content_bounds_);
     EXPECT_EQ(1U, dc_layer_list.size());
     EXPECT_EQ(0U, output_surface_->bind_framebuffer_count());
     EXPECT_EQ(-1, dc_layer_list.back().z_order);
@@ -470,8 +470,8 @@ TEST_F(DCLayerOverlayTest, DamageRectWithoutVideoDamage) {
     overlay_processor_->ProcessForOverlays(
         resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
         render_pass_filters, render_pass_backdrop_filters,
-        &surface_damage_rect_list, nullptr, &dc_layer_list, &damage_rect_,
-        &content_bounds_);
+        std::move(surface_damage_rect_list), nullptr, &dc_layer_list,
+        &damage_rect_, &content_bounds_);
     EXPECT_EQ(1U, dc_layer_list.size());
     EXPECT_EQ(0U, output_surface_->bind_framebuffer_count());
     EXPECT_EQ(-1, dc_layer_list.back().z_order);
@@ -500,8 +500,8 @@ TEST_F(DCLayerOverlayTest, DamageRect) {
     overlay_processor_->ProcessForOverlays(
         resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
         render_pass_filters, render_pass_backdrop_filters,
-        &surface_damage_rect_list, nullptr, &dc_layer_list, &damage_rect_,
-        &content_bounds_);
+        std::move(surface_damage_rect_list), nullptr, &dc_layer_list,
+        &damage_rect_, &content_bounds_);
     EXPECT_EQ(1U, dc_layer_list.size());
     EXPECT_EQ(0U, output_surface_->bind_framebuffer_count());
     EXPECT_EQ(1, dc_layer_list.back().z_order);
@@ -550,8 +550,8 @@ TEST_F(DCLayerOverlayTest, ClipRect) {
     overlay_processor_->ProcessForOverlays(
         resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
         render_pass_filters, render_pass_backdrop_filters,
-        &surface_damage_rect_list, nullptr, &dc_layer_list, &damage_rect_,
-        &content_bounds_);
+        std::move(surface_damage_rect_list), nullptr, &dc_layer_list,
+        &damage_rect_, &content_bounds_);
     EXPECT_EQ(1U, dc_layer_list.size());
     // Because of clip rects the overlay isn't occluded and shouldn't be an
     // underlay.
@@ -589,8 +589,8 @@ TEST_F(DCLayerOverlayTest, TransparentOnTop) {
     overlay_processor_->ProcessForOverlays(
         resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
         render_pass_filters, render_pass_backdrop_filters,
-        &surface_damage_rect_list, nullptr, &dc_layer_list, &damage_rect_,
-        &content_bounds_);
+        std::move(surface_damage_rect_list), nullptr, &dc_layer_list,
+        &damage_rect_, &content_bounds_);
     EXPECT_EQ(1U, dc_layer_list.size());
     EXPECT_EQ(1, dc_layer_list.back().z_order);
     // Quad isn't opaque, so underlying damage must remain the same.
@@ -630,8 +630,8 @@ TEST_F(DCLayerOverlayTest, UnderlayDamageRectWithQuadOnTopUnchanged) {
     overlay_processor_->ProcessForOverlays(
         resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
         render_pass_filters, render_pass_backdrop_filters,
-        &surface_damage_rect_list, nullptr, &dc_layer_list, &damage_rect_,
-        &content_bounds_);
+        std::move(surface_damage_rect_list), nullptr, &dc_layer_list,
+        &damage_rect_, &content_bounds_);
     EXPECT_EQ(1U, dc_layer_list.size());
     EXPECT_EQ(0U, output_surface_->bind_framebuffer_count());
     EXPECT_EQ(-1, dc_layer_list.back().z_order);
@@ -682,8 +682,8 @@ TEST_F(DCLayerOverlayTest, MultipleYUVOverlay) {
     overlay_processor_->ProcessForOverlays(
         resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
         render_pass_filters, render_pass_backdrop_filters,
-        &surface_damage_rect_list, nullptr, &dc_layer_list, &damage_rect_,
-        &content_bounds_);
+        std::move(surface_damage_rect_list), nullptr, &dc_layer_list,
+        &damage_rect_, &content_bounds_);
 
     // Skip overlays.
     EXPECT_EQ(0U, dc_layer_list.size());
@@ -731,8 +731,8 @@ TEST_F(DCLayerOverlayTest, SetEnableDCLayers) {
     overlay_processor_->ProcessForOverlays(
         resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
         render_pass_filters, render_pass_backdrop_filters,
-        &surface_damage_rect_list, nullptr, &dc_layer_list, &damage_rect_,
-        &content_bounds_);
+        std::move(surface_damage_rect_list), nullptr, &dc_layer_list,
+        &damage_rect_, &content_bounds_);
 
     EXPECT_EQ(1U, dc_layer_list.size());
     EXPECT_EQ(0U, output_surface_->bind_framebuffer_count());
@@ -776,8 +776,8 @@ TEST_F(DCLayerOverlayTest, SetEnableDCLayers) {
     overlay_processor_->ProcessForOverlays(
         resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
         render_pass_filters, render_pass_backdrop_filters,
-        &surface_damage_rect_list, nullptr, &dc_layer_list, &damage_rect_,
-        &content_bounds_);
+        std::move(surface_damage_rect_list), nullptr, &dc_layer_list,
+        &damage_rect_, &content_bounds_);
 
     EXPECT_EQ(0u, dc_layer_list.size());
     EXPECT_EQ(0u, output_surface_->bind_framebuffer_count());
@@ -848,8 +848,8 @@ TEST_F(DCLayerOverlayTest, PixelMovingForegroundFilter) {
   overlay_processor_->ProcessForOverlays(
       resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
       render_pass_filters, render_pass_backdrop_filters,
-      &surface_damage_rect_list, nullptr, &dc_layer_list, &damage_rect_,
-      &content_bounds_);
+      std::move(surface_damage_rect_list), nullptr, &dc_layer_list,
+      &damage_rect_, &content_bounds_);
 
   EXPECT_EQ(1U, dc_layer_list.size());
   // Make sure the video is in an underlay mode if the overlay quad intersects
@@ -920,8 +920,8 @@ TEST_F(DCLayerOverlayTest, BackdropFilter) {
   overlay_processor_->ProcessForOverlays(
       resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
       render_pass_filters, render_pass_backdrop_filters,
-      &surface_damage_rect_list, nullptr, &dc_layer_list, &damage_rect_,
-      &content_bounds_);
+      std::move(surface_damage_rect_list), nullptr, &dc_layer_list,
+      &damage_rect_, &content_bounds_);
 
   // Make sure the video is not promoted if the overlay quad intersects
   // with the backdrop filter rpdq->rect.

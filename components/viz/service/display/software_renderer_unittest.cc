@@ -111,7 +111,8 @@ class SoftwareRendererTest : public testing::Test {
 
     SurfaceDamageRectList surface_damage_rect_list;
     renderer()->DrawFrame(list, device_scale_factor, viewport_size,
-                          gfx::DisplayColorSpaces(), &surface_damage_rect_list);
+                          gfx::DisplayColorSpaces(),
+                          std::move(surface_damage_rect_list));
     loop.Run();
     return bitmap_result;
   }
@@ -542,7 +543,8 @@ TEST_F(SoftwareRendererTest, PartialSwap) {
 
     renderer()->DecideRenderPassAllocationsForFrame(list);
     renderer()->DrawFrame(&list, device_scale_factor, viewport_size,
-                          gfx::DisplayColorSpaces(), &surface_damage_rect_list);
+                          gfx::DisplayColorSpaces(),
+                          std::move(surface_damage_rect_list));
   }
   {
     AggregatedRenderPassList list;
@@ -559,7 +561,8 @@ TEST_F(SoftwareRendererTest, PartialSwap) {
 
     renderer()->DecideRenderPassAllocationsForFrame(list);
     renderer()->DrawFrame(&list, device_scale_factor, viewport_size,
-                          gfx::DisplayColorSpaces(), &surface_damage_rect_list);
+                          gfx::DisplayColorSpaces(),
+                          std::move(surface_damage_rect_list));
 
     // The damage rect should be reported to the SoftwareOutputDevice.
     EXPECT_EQ(gfx::Rect(2, 2, 3, 3), device->damage_rect_at_start());

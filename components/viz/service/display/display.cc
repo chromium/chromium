@@ -766,7 +766,7 @@ bool Display::DrawAndSwap(base::TimeTicks expected_display_time) {
     overlay_processor_->SetFrameSequenceNumber(frame_sequence_number_);
     renderer_->DrawFrame(&frame.render_pass_list, device_scale_factor_,
                          current_surface_size, display_color_spaces_,
-                         &frame.surface_damage_rect_list_);
+                         std::move(frame.surface_damage_rect_list_));
     switch (output_surface_->type()) {
       case OutputSurface::Type::kSoftware:
         UMA_HISTOGRAM_COUNTS_1M(

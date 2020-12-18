@@ -48,7 +48,7 @@ void OverlayProcessorWin::ProcessForOverlays(
     const OverlayProcessorInterface::FilterOperationsMap& render_pass_filters,
     const OverlayProcessorInterface::FilterOperationsMap&
         render_pass_backdrop_filters,
-    SurfaceDamageRectList* surface_damage_rect_list,
+    SurfaceDamageRectList surface_damage_rect_list,
     OutputSurfaceOverlayPlane* output_surface_plane,
     CandidateList* candidates,
     gfx::Rect* damage_rect,
@@ -83,7 +83,7 @@ void OverlayProcessorWin::ProcessForOverlays(
   dc_layer_overlay_processor_->Process(
       resource_provider, gfx::RectF(root_render_pass->output_rect),
       render_pass_filters, render_pass_backdrop_filters, render_passes,
-      damage_rect, surface_damage_rect_list, candidates);
+      damage_rect, std::move(surface_damage_rect_list), candidates);
 
   bool was_using_dc_layers = using_dc_layers_;
   if (!candidates->empty()) {
