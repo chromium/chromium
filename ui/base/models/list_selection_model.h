@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <set>
 #include <vector>
 
 #include "base/component_export.h"
@@ -28,6 +29,7 @@ namespace ui {
 class COMPONENT_EXPORT(UI_BASE) ListSelectionModel {
  public:
   using SelectedIndices = std::vector<int>;
+  using SelectedIndicesSet = std::set<int>;
 
   // Used to identify no selection.
   static constexpr int kUnselectedIndex = -1;
@@ -80,6 +82,10 @@ class COMPONENT_EXPORT(UI_BASE) ListSelectionModel {
   // indices.
   void AddIndexToSelection(int index);
 
+  // Adds indices between |index_start| and |index_end|, inclusive.
+  // This does not change the active or anchor indices.
+  void AddIndexRangeToSelection(int index_start, int index_end);
+
   // Removes |index| from the selection. This does not change the active or
   // anchor indices.
   void RemoveIndexFromSelection(int index);
@@ -110,7 +116,13 @@ class COMPONENT_EXPORT(UI_BASE) ListSelectionModel {
   const SelectedIndices& selected_indices() const { return selected_indices_; }
 
  private:
+  void add_index(int index);
+  void reset_index_set();
+  void clear_indices();
+  // TODO(crbug.com/1159585): Refactor to only use one backing store for
+  // selections.
   SelectedIndices selected_indices_;
+  SelectedIndicesSet selected_indices_set_;
 
   int active_ = kUnselectedIndex;
 

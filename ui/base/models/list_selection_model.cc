@@ -79,43 +79,59 @@ void ListSelectionModel::IncrementFrom(int index) {
   for (auto i = selected_indices_.begin(); i != selected_indices_.end(); ++i) {
     IncrementFromImpl(index, &(*i));
   }
+  reset_index_set();
   IncrementFromImpl(index, &anchor_);
   IncrementFromImpl(index, &active_);
 }
 
 void ListSelectionModel::DecrementFrom(int index) {
   for (auto i = selected_indices_.begin(); i != selected_indices_.end();) {
-    if (DecrementFromImpl(index, &(*i)))
+    if (DecrementFromImpl(index, &(*i))) {
       i = selected_indices_.erase(i);
-    else
+    } else {
       ++i;
+    }
   }
+  reset_index_set();
   DecrementFromImpl(index, &anchor_);
   DecrementFromImpl(index, &active_);
 }
 
 void ListSelectionModel::SetSelectedIndex(int index) {
   anchor_ = active_ = index;
-  selected_indices_.clear();
+  clear_indices();
   if (index != kUnselectedIndex)
-    selected_indices_.push_back(index);
+    add_index(index);
 }
 
 bool ListSelectionModel::IsSelected(int index) const {
-  return base::Contains(selected_indices_, index);
+  return base::Contains(selected_indices_set_, index);
 }
 
 void ListSelectionModel::AddIndexToSelection(int index) {
   if (!IsSelected(index)) {
-    selected_indices_.push_back(index);
+    add_index(index);
     std::sort(selected_indices_.begin(), selected_indices_.end());
   }
 }
 
+void ListSelectionModel::AddIndexRangeToSelection(int index_start,
+                                                  int index_end) {
+  DCHECK_LT(index_start, index_end);
+
+  for (int i = index_start; i <= index_end; ++i) {
+    if (!IsSelected(i))
+      add_index(i);
+  }
+  std::sort(selected_indices_.begin(), selected_indices_.end());
+}
+
 void ListSelectionModel::RemoveIndexFromSelection(int index) {
   auto i = std::find(selected_indices_.begin(), selected_indices_.end(), index);
-  if (i != selected_indices_.end())
+  if (i != selected_indices_.end()) {
     selected_indices_.erase(i);
+    selected_indices_set_.erase(index);
+  }
 }
 
 void ListSelectionModel::SetSelectionFromAnchorTo(int index) {
@@ -127,6 +143,7 @@ void ListSelectionModel::SetSelectionFromAnchorTo(int index) {
     for (int i = 0, min = std::min(index, anchor_); i <= delta; ++i)
       new_selection[i] = i + min;
     selected_indices_.swap(new_selection);
+    reset_index_set();
     active_ = index;
   }
 }
@@ -138,7 +155,7 @@ void ListSelectionModel::AddSelectionFromAnchorTo(int index) {
     for (int i = std::min(index, anchor_), end = std::max(index, anchor_);
          i <= end; ++i) {
       if (!IsSelected(i))
-        selected_indices_.push_back(i);
+        add_index(i);
     }
     std::sort(selected_indices_.begin(), selected_indices_.end());
     active_ = index;
@@ -156,6 +173,7 @@ void ListSelectionModel::Move(int old_index, int new_index, int length) {
   // by 2.
   if (new_index > old_index) {
     Move(old_index + length, old_index, new_index - old_index);
+    reset_index_set();
     return;
   }
 
@@ -196,12 +214,28 @@ void ListSelectionModel::Move(int old_index, int new_index, int length) {
   // [low, middle), and an upper bound for [middle, high).
   std::rotate(low, middle, high);
   DCHECK(std::is_sorted(selected_indices_.begin(), selected_indices_.end()));
+  reset_index_set();
 }
 
 void ListSelectionModel::Clear() {
   anchor_ = active_ = kUnselectedIndex;
-  SelectedIndices empty_selection;
-  selected_indices_.swap(empty_selection);
+  clear_indices();
+}
+
+void ListSelectionModel::add_index(int index) {
+  selected_indices_.push_back(index);
+  selected_indices_set_.insert(index);
+}
+
+void ListSelectionModel::reset_index_set() {
+  auto set =
+      SelectedIndicesSet(selected_indices_.begin(), selected_indices_.end());
+  selected_indices_set_.swap(set);
+}
+
+void ListSelectionModel::clear_indices() {
+  selected_indices_.clear();
+  selected_indices_set_.clear();
 }
 
 }  // namespace ui

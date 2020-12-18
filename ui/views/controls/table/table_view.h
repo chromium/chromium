@@ -138,6 +138,9 @@ class VIEWS_EXPORT TableView : public views::View,
   // Selects the specified item, making sure it's visible.
   void Select(int model_row);
 
+  // Selects all items.
+  void SetSelectionAll(bool select);
+
   // Returns the first selected row in terms of the model.
   int GetFirstSelectedRow() const;
 

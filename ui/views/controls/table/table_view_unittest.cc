@@ -1295,6 +1295,29 @@ TEST_P(TableViewTest, Selection) {
   table_->set_observer(nullptr);
 }
 
+TEST_P(TableViewTest, SelectAll) {
+  TableViewObserverImpl observer;
+  table_->set_observer(&observer);
+
+  // Initially no selection.
+  EXPECT_EQ("active=-1 anchor=-1 selection=", SelectionStateAsString());
+
+  table_->SetSelectionAll(/*select=*/true);
+  EXPECT_EQ(1, observer.GetChangedCountAndClear());
+  EXPECT_EQ("active=-1 anchor=-1 selection=0 1 2 3", SelectionStateAsString());
+
+  table_->Select(2);
+  EXPECT_EQ(1, observer.GetChangedCountAndClear());
+  EXPECT_EQ("active=2 anchor=2 selection=2", SelectionStateAsString());
+
+  table_->SetSelectionAll(/*select=*/true);
+  EXPECT_EQ(1, observer.GetChangedCountAndClear());
+  EXPECT_EQ("active=2 anchor=2 selection=0 1 2 3", SelectionStateAsString());
+
+  table_->SetSelectionAll(/*select=*/false);
+  EXPECT_EQ("active=2 anchor=2 selection=", SelectionStateAsString());
+}
+
 TEST_P(TableViewTest, RemoveUnselectedRows) {
   TableViewObserverImpl observer;
   table_->set_observer(&observer);

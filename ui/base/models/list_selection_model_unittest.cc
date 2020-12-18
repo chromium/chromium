@@ -98,6 +98,15 @@ TEST_F(ListSelectionModelTest, AddIndexToSelected) {
   EXPECT_EQ("active=-1 anchor=-1 selection=2 4", StateAsString(model));
 }
 
+TEST_F(ListSelectionModelTest, AddIndexRangeToSelected) {
+  ListSelectionModel model;
+  model.AddIndexRangeToSelection(2, 3);
+  EXPECT_EQ("active=-1 anchor=-1 selection=2 3", StateAsString(model));
+
+  model.AddIndexRangeToSelection(4, 5);
+  EXPECT_EQ("active=-1 anchor=-1 selection=2 3 4 5", StateAsString(model));
+}
+
 TEST_F(ListSelectionModelTest, RemoveIndexFromSelection) {
   ListSelectionModel model;
   model.SetSelectedIndex(2);

@@ -251,6 +251,21 @@ void TableView::Select(int model_row) {
   SelectByViewIndex(model_row == -1 ? -1 : ModelToView(model_row));
 }
 
+void TableView::SetSelectionAll(bool select) {
+  if (!GetRowCount())
+    return;
+
+  ui::ListSelectionModel selection_model;
+
+  if (select)
+    selection_model.AddIndexRangeToSelection(0, GetRowCount() - 1);
+
+  selection_model.set_anchor(selection_model_.anchor());
+  selection_model.set_active(selection_model_.active());
+
+  SetSelectionModel(std::move(selection_model));
+}
+
 int TableView::GetFirstSelectedRow() const {
   return selection_model_.empty() ? -1 : selection_model_.selected_indices()[0];
 }
@@ -470,11 +485,7 @@ bool TableView::OnKeyPressed(const ui::KeyEvent& event) {
     case ui::VKEY_A:
       // control-a selects all.
       if (IsCmdOrCtrl(event) && !single_selection_ && GetRowCount()) {
-        ui::ListSelectionModel selection_model;
-        selection_model.SetSelectedIndex(selection_model_.active());
-        for (int i = 0; i < GetRowCount(); ++i)
-          selection_model.AddIndexToSelection(i);
-        SetSelectionModel(std::move(selection_model));
+        SetSelectionAll(/*select=*/true);
         return true;
       }
       break;
