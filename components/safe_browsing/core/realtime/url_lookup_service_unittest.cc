@@ -487,7 +487,6 @@ TEST_F(RealTimeUrlLookupServiceTest, TestCanCheckUrl) {
     bool can_check;
   } can_check_url_cases[] = {{"ftp://example.test/path", false},
                              {"http://localhost/path", false},
-                             {"http://localhost.localdomain/path", false},
                              {"http://127.0.0.1/path", false},
                              {"http://127.0.0.1:2222/path", false},
                              {"http://192.168.1.1/path", false},

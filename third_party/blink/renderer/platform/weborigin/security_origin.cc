@@ -449,8 +449,6 @@ bool SecurityOrigin::IsPotentiallyTrustworthy() const {
   // 5. If origin’s host component is "localhost" or falls within ".localhost",
   //    and the user agent conforms to the name resolution rules in
   //    [let-localhost-be-localhost], return "Potentially Trustworthy".
-  // TODO(https://crbug.com/1153337): This returns true for
-  // "localhost.localdomain". Should this host be excluded?
   if (IsLocalhost())
     return true;
 

@@ -7072,16 +7072,16 @@ TEST_F(HostResolverManagerTest, ResolveLocalHostname) {
   TestBothLoopbackIPs("localhoST");
   TestBothLoopbackIPs("localhost.");
   TestBothLoopbackIPs("localhoST.");
-  TestBothLoopbackIPs("localhost.localdomain");
-  TestBothLoopbackIPs("localhost.localdomAIn");
-  TestBothLoopbackIPs("localhost.localdomain.");
-  TestBothLoopbackIPs("localhost.localdomAIn.");
   TestBothLoopbackIPs("foo.localhost");
   TestBothLoopbackIPs("foo.localhOSt");
   TestBothLoopbackIPs("foo.localhost.");
   TestBothLoopbackIPs("foo.localhOSt.");
 
   // Legacy localhost names.
+  EXPECT_FALSE(ResolveLocalHostname("localhost.localdomain", &addresses));
+  EXPECT_FALSE(ResolveLocalHostname("localhost.localdomAIn", &addresses));
+  EXPECT_FALSE(ResolveLocalHostname("localhost.localdomain.", &addresses));
+  EXPECT_FALSE(ResolveLocalHostname("localhost.localdomAIn.", &addresses));
   EXPECT_FALSE(ResolveLocalHostname("localhost6", &addresses));
   EXPECT_FALSE(ResolveLocalHostname("localhoST6", &addresses));
   EXPECT_FALSE(ResolveLocalHostname("localhost6.", &addresses));

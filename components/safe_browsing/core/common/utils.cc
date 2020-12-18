@@ -89,7 +89,7 @@ bool CanGetReputationOfUrl(const GURL& url) {
   }
 
   if (net::IsLocalhost(url)) {
-    // Includes: "//localhost/", "//localhost.localdomain/", "//127.0.0.1/"
+    // Includes: "//localhost/", "//127.0.0.1/"
     return false;
   }
 

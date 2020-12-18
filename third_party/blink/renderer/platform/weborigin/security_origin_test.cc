@@ -144,10 +144,8 @@ TEST_F(SecurityOriginTest, IsPotentiallyTrustworthy) {
       // IPv4 compatible IPv6 literal for 127.0.0.1.
       {false, false, "http://[::127.0.0.1]"},
 
-      // TODO(eroman): Not documented why these are recognized.
-      {true, true, "http://localhost.localdomain"},
-
       // Legacy localhost names.
+      {false, false, "http://localhost.localdomain"},
       {false, false, "http://localhost6"},
       {false, false, "ftp://localhost6.localdomain6"},
 

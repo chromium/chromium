@@ -115,10 +115,8 @@ TEST(IsPotentiallyTrustworthy, Url) {
 
   EXPECT_FALSE(IsUrlPotentiallyTrustworthy("http://loopback"));
 
-  // TODO(https://crbug.com/1153337): Return false?
-  EXPECT_TRUE(IsUrlPotentiallyTrustworthy("http://localhost.localdomain"));
-
   // Legacy localhost names.
+  EXPECT_FALSE(IsUrlPotentiallyTrustworthy("http://localhost.localdomain"));
   EXPECT_FALSE(IsUrlPotentiallyTrustworthy("http://localhost6"));
   EXPECT_FALSE(IsUrlPotentiallyTrustworthy("ftp://localhost6.localdomain6"));
 

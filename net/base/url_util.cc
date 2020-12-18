@@ -451,7 +451,6 @@ bool IsLocalHostname(base::StringPiece host) {
     normalized_host.resize(normalized_host.size() - 1);
 
   return normalized_host == "localhost" ||
-         normalized_host == "localhost.localdomain" ||
          IsNormalizedLocalhostTLD(normalized_host);
 }
 
