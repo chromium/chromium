@@ -67,6 +67,7 @@ class CSSProperties(object):
         # in the various generators for ComputedStyle.
         self._field_alias_expander = FieldAliasExpander(file_paths[1])
 
+        # _alias_offset must be a power of 2.
         self._alias_offset = 1024
         # 0: CSSPropertyID::kInvalid
         # 1: CSSPropertyID::kVariable
@@ -224,7 +225,7 @@ class CSSProperties(object):
             updated_alias['enum_key'] = enum_key_for_css_property_alias(
                 alias['name'])
             updated_alias['enum_value'] = aliased_property['enum_value'] + \
-                self._alias_offset
+                self._alias_offset * len(aliased_property['aliases'])
             updated_alias['superclass'] = 'CSSUnresolvedProperty'
             updated_alias['namespace_group'] = \
                 'Shorthand' if aliased_property['longhands'] else 'Longhand'

@@ -83,10 +83,10 @@ inline CSSPropertyID convertToCSSPropertyID(int value)
 
 inline CSSPropertyID resolveCSSPropertyID(CSSPropertyID id)
 {
-    return convertToCSSPropertyID(static_cast<int>(id) & ~{{alias_offset}});
+    return convertToCSSPropertyID(static_cast<int>(id) & ~{{alias_mask}});
 }
 
-inline bool isPropertyAlias(CSSPropertyID id) { return static_cast<int>(id) & {{alias_offset}}; }
+inline bool isPropertyAlias(CSSPropertyID id) { return static_cast<int>(id) & {{alias_mask}}; }
 
 CSSPropertyID CORE_EXPORT unresolvedCSSPropertyID(const ExecutionContext*, const WTF::String&);
 
