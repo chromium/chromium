@@ -89,6 +89,9 @@
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/payments/payment_request_display_manager_factory.h"
+#if !defined(OS_ANDROID)
+#include "chrome/browser/payments/payment_handler_navigation_throttle.h"
+#endif
 #include "chrome/browser/performance_manager/chrome_browser_main_extra_parts_performance_manager.h"
 #include "chrome/browser/performance_manager/chrome_content_browser_client_performance_manager_part.h"
 #include "chrome/browser/permissions/attestation_permission_request.h"
@@ -4125,6 +4128,13 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
         error_page::NetErrorAutoReloader::MaybeCreateThrottleFor(handle),
         &throttles);
   }
+
+#if !defined(OS_ANDROID)
+  MaybeAddThrottle(
+      payments::PaymentHandlerNavigationThrottle::MaybeCreateThrottleFor(
+          handle),
+      &throttles);
+#endif
 
   return throttles;
 }

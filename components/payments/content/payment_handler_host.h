@@ -54,6 +54,8 @@ class PaymentHandlerHost : public mojom::PaymentHandlerHost,
         mojom::PaymentAddressPtr shipping_address) = 0;
   };
 
+  static const char kWebContentsUserDataKey[];
+
   // The |delegate| cannot be null and must outlive this object. Typically this
   // is accomplished by the |delegate| owning this object. The |web_contents| is
   // used for developer tools logging and should be from the same browser

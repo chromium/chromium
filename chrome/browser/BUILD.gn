@@ -5299,6 +5299,8 @@ static_library("browser") {
       "payments/chrome_payment_request_delegate.h",
       "payments/payment_credential_factory.cc",
       "payments/payment_credential_factory.h",
+      "payments/payment_handler_navigation_throttle.cc",
+      "payments/payment_handler_navigation_throttle.h",
       "payments/payment_request_display_manager_factory.cc",
       "payments/payment_request_display_manager_factory.h",
       "payments/payment_request_factory.cc",

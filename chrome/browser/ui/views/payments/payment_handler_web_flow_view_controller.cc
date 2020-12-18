@@ -19,6 +19,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/omnibox/browser/location_bar_model_util.h"
 #include "components/payments/content/icon/icon_size.h"
+#include "components/payments/content/payments_userdata_key.h"
 #include "components/payments/content/ssl_validity_checker.h"
 #include "components/payments/core/features.h"
 #include "components/payments/core/native_error_strings.h"
@@ -239,6 +240,8 @@ void PaymentHandlerWebFlowViewController::FillContentView(
   auto* web_view =
       content_view->AddChildView(std::make_unique<views::WebView>(profile_));
   Observe(web_view->GetWebContents());
+  web_contents()->SetUserData(kPaymentHandlerWebContentsUserDataKey,
+                              std::make_unique<base::SupportsUserData::Data>());
   web_contents()->SetDelegate(this);
   DCHECK_NE(log_.web_contents(), web_contents());
   content::PaymentAppProvider::GetOrCreateForWebContents(

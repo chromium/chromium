@@ -38,6 +38,8 @@ static_library("content") {
     "payment_request_converter.h",
     "payment_request_spec.cc",
     "payment_request_spec.h",
+    "payments_userdata_key.cc",
+    "payments_userdata_key.h",
     "secure_payment_confirmation_app.cc",
     "secure_payment_confirmation_app.h",
     "secure_payment_confirmation_app_factory.cc",
