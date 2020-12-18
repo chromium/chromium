@@ -1158,13 +1158,13 @@ This file contains the strings for ash.
         Connecting...
       </message>
       <message name="IDS_ASH_PHONE_HUB_PHONE_CONNECTING_DIALOG_DESCRIPTION" desc="The description of the generic connecting dialog that indicates the device is trying to connect to your phone.">
-        Make sure your phone is nearby with Bluetooth and Wi-Fi is turned on.
+        Make sure your phone is nearby and has Bluetooth turned on.
       </message>
       <message name="IDS_ASH_PHONE_HUB_PHONE_DISCONNECTED_DIALOG_TITLE" desc="The title of the dialog that pops up when the Phone Hub feature is not available because there is currently no active connection to the phone.">
-        Can’t find your phone
+        Can't find your phone
       </message>
-      <message name="IDS_ASH_PHONE_HUB_PHONE_DISCONNECTED_DIALOG_DESCRIPTION" desc="The description of the dialog that pops up when the Phone Hub feature is not available because there is currently no active connection to the phone.">
-        Looks like your phone is not online and we are not able to connect to it.
+      <message name="IDS_ASH_PHONE_HUB_PHONE_DISCONNECTED_DIALOG_DESCRIPTION" desc="The description of the dialog that pops up when the Phone Hub feature is not available because there is currently no active connection to the phone. This message reminds users that Bluetooth must be enabled on the phone in order to use the feature.">
+        Looks like Bluetooth is turned off on your phone. Please turn on Bluetooth on your phone to use Phone Hub.
       </message>
       <message name="IDS_ASH_PHONE_HUB_PHONE_DISCONNECTED_DIALOG_REFRESH_BUTTON" desc="Refresh button on the disconnected dialog to retry the connection attempt to the phone.">
         Refresh
@@ -1176,7 +1176,7 @@ This file contains the strings for ash.
         Check your connection
       </message>
       <message name="IDS_ASH_PHONE_HUB_BLUETOOTH_DISABLED_DIALOG_DESCRIPTION" desc="The description of the dialog that pops up when the phone hub feature is not available because Bluetooth is disabled on this device.">
-        Looks like your Bluetooth or Wi-Fi is turned off on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>. Please check your connection to use Phone Hub.
+        Looks like Bluetooth is turned off on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>. Please turn on Bluetooth to use Phone Hub.
       </message>
       <message name="IDS_ASH_PHONE_HUB_BLUETOOTH_DISABLED_DIALOG_OK_BUTTON" desc="Confirm button on the bluetooth disabled dialog to acknowledge.">
         Ok, got it
