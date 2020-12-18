@@ -281,17 +281,10 @@ void GLContext::DestroyBackpressureFences() {
 
 void GLContext::FlushForDriverCrashWorkaround() {
   // If running on Apple silicon, regardless of the architecture, disable this
-  // workaround.
-  // https://crbug.com/1131312
-  switch (base::mac::GetCPUType()) {
-    case base::mac::CPUType::kArm:
-    case base::mac::CPUType::kTranslatedIntel:
-      return;
-    default:
-      break;
-  }
-
-  if (!IsCurrent(nullptr))
+  // workaround.  See https://crbug.com/1131312.
+  static const bool needs_flush =
+      base::mac::GetCPUType() == base::mac::CPUType::kIntel;
+  if (!needs_flush || !IsCurrent(nullptr))
     return;
   TRACE_EVENT0("gpu", "GLContext::FlushForDriverCrashWorkaround");
   glFlush();

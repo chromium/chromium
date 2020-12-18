@@ -13,6 +13,10 @@
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/progress_reporter.h"
 
+#if defined(OS_APPLE)
+#include "base/mac/mac_util.h"
+#endif
+
 namespace gl {
 namespace init {
 
@@ -159,13 +163,17 @@ GrGLFunction<R GR_GL_FUNCTION_TYPE(Args...)> bind_with_flush_on_mac(
     // Conditional may be optimized out because droppable_call is set at compile
     // time.
     if (!droppable_call || !HasInitializedNullDrawGLBindings()) {
-      {
+      // If running on Apple silicon, regardless of the architecture, disable
+      // this workaround.  See https://crbug.com/1131312.
+      static const bool needs_flush =
+          base::mac::GetCPUType() == base::mac::CPUType::kIntel;
+      if (needs_flush) {
         TRACE_EVENT0(
             "gpu", "CreateGrGLInterface - bind_with_flush_on_mac - beforefunc")
         glFlush();
       }
       func(args...);
-      {
+      if (needs_flush) {
         TRACE_EVENT0("gpu",
                      "CreateGrGLInterface - bind_with_flush_on_mac - afterfunc")
         glFlush();
