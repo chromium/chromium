@@ -14,6 +14,7 @@
 #include "ui/gfx/geometry/insets.h"
 
 namespace gfx {
+class Point;
 class Rect;
 }
 
@@ -130,9 +131,21 @@ class AURA_EXPORT WindowTargeter : public ui::EventTargeter {
   // To call OnInstalled().
   friend class Window;
 
+  enum class BoundsType {
+    kMouse,
+    kTouch,
+    kGesture,
+  };
+
   Window* FindTargetForNonKeyEvent(Window* root_window, ui::Event* event);
   Window* FindTargetForLocatedEventRecursively(Window* root_window,
                                                ui::LocatedEvent* event);
+
+  // Whether |point| is inside |window| or its descendents using |bounds_type|
+  // as a rect source. |point| should be relative to |window|.
+  bool PointInsideBounds(Window* window,
+                         BoundsType bounds_type,
+                         const gfx::Point& point) const;
 
   // The Window this WindowTargeter is installed on. Null if not attached to a
   // Window.

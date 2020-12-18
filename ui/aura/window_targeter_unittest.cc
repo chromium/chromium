@@ -288,6 +288,43 @@ TEST_F(WindowTargeterTest, Bounds) {
   EXPECT_EQ(child_r, targeter->FindTargetForEvent(root_target, &third));
 }
 
+TEST_F(WindowTargeterTest, NonFullyContainedBounds) {
+  test::TestWindowDelegate delegate;
+  std::unique_ptr<Window> parent(
+      CreateNormalWindow(1, root_window(), &delegate));
+  std::unique_ptr<Window> child(CreateNormalWindow(1, parent.get(), &delegate));
+
+  parent->SetBounds(gfx::Rect(0, 0, 30, 30));
+  child->SetBounds(gfx::Rect(15, 15, 5, 100));
+
+  auto* targeter =
+      static_cast<ui::EventTarget*>(root_window())->GetEventTargeter();
+
+  ui::MouseEvent mouse(ui::ET_MOUSE_MOVED, gfx::Point(17, 75),
+                       gfx::Point(17, 75), ui::EventTimeForNow(), ui::EF_NONE,
+                       ui::EF_NONE);
+  EXPECT_EQ(child.get(), targeter->FindTargetForEvent(root_window(), &mouse));
+}
+
+TEST_F(WindowTargeterTest, NonFullyContainedBoundsWithMasksToBounds) {
+  test::TestWindowDelegate delegate;
+  std::unique_ptr<Window> parent(
+      CreateNormalWindow(1, root_window(), &delegate));
+  std::unique_ptr<Window> child(CreateNormalWindow(1, parent.get(), &delegate));
+
+  parent->SetBounds(gfx::Rect(0, 0, 30, 30));
+  parent->layer()->SetMasksToBounds(true);
+  child->SetBounds(gfx::Rect(15, 15, 5, 100));
+
+  auto* targeter =
+      static_cast<ui::EventTarget*>(root_window())->GetEventTargeter();
+
+  ui::MouseEvent mouse(ui::ET_MOUSE_MOVED, gfx::Point(17, 75),
+                       gfx::Point(17, 75), ui::EventTimeForNow(), ui::EF_NONE,
+                       ui::EF_NONE);
+  EXPECT_EQ(root_window(), targeter->FindTargetForEvent(root_window(), &mouse));
+}
+
 class IgnoreWindowTargeter : public WindowTargeter {
  public:
   IgnoreWindowTargeter() {}
