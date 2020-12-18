@@ -61,7 +61,9 @@ IN_PROC_BROWSER_TEST_F(WebUIJSErrorReportingTest, ReportsErrors) {
   constexpr char kPageLoadMessage[] =
       "WebUI%20JS%20Error%3A%20printing%20error%20on%20page%20load";
   EXPECT_THAT(report.query, HasSubstr(kPageLoadMessage));
-  // TODO(iby): Check stack once stack tracing is working.
+  // Expect that we get a good stack trace as well
+  EXPECT_THAT(report.content, AllOf(HasSubstr("logsErrorDuringPageLoadOuter"),
+                                    HasSubstr("logsErrorDuringPageLoadInner")));
 
   endpoint.clear_last_report();
   content::WebContents* web_contents =
@@ -76,6 +78,8 @@ IN_PROC_BROWSER_TEST_F(WebUIJSErrorReportingTest, ReportsErrors) {
   constexpr char kExceptionButtonMessage[] =
       "WebUI%20JS%20Error%3A%20exception%20button%20clicked";
   EXPECT_THAT(report.query, HasSubstr(kExceptionButtonMessage));
+  EXPECT_THAT(report.content, AllOf(HasSubstr("throwExceptionHandler"),
+                                    HasSubstr("throwExceptionInner")));
 
   endpoint.clear_last_report();
   // Trigger console.error call.
@@ -87,6 +91,9 @@ IN_PROC_BROWSER_TEST_F(WebUIJSErrorReportingTest, ReportsErrors) {
   constexpr char kTriggeredErrorMessage[] =
       "WebUI%20JS%20Error%3A%20printing%20error%20on%20button%20click";
   EXPECT_THAT(report.query, HasSubstr(kTriggeredErrorMessage));
+  EXPECT_THAT(report.content,
+              AllOf(HasSubstr("logsErrorFromButtonClickHandler"),
+                    HasSubstr("logsErrorFromButtonClickInner")));
 
   endpoint.clear_last_report();
   // Trigger unhandled promise rejection.
@@ -98,4 +105,5 @@ IN_PROC_BROWSER_TEST_F(WebUIJSErrorReportingTest, ReportsErrors) {
   constexpr char kUnhandledPromiseRejectionMessage[] =
       "WebUI%20JS%20Error%3A%20The%20rejector%20always%20rejects!";
   EXPECT_THAT(report.query, HasSubstr(kUnhandledPromiseRejectionMessage));
+  // V8 doesn't produce stacks for unhandle promise rejections.
 }

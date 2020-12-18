@@ -13,13 +13,13 @@
 /**
  * Logs an error when called. This is the "during page load" error.
  */
-function logsErrorDuringPageLoad() {
+function logsErrorDuringPageLoadOuter() {
   logsErrorDuringPageLoadInner();
 }
 
 /**
  * Logs an error when called. This is a separate function from
- * logsErrorDuringPageLoad() so that we get an interesting stack.
+ * logsErrorDuringPageLoadOuter() so that we get an interesting stack.
  */
 function logsErrorDuringPageLoadInner() {
   console.error('WebUI JS Error: printing error on page load');
@@ -28,13 +28,13 @@ function logsErrorDuringPageLoadInner() {
 /**
  * Logs an error when called. This is the "from button click" error.
  */
-function logsErrorFromButtonClick() {
+function logsErrorFromButtonClickHandler() {
   logsErrorFromButtonClickInner();
 }
 
 /**
  * Logs an error when called. This is a separate function from
- * logsErrorFromButtonClick() so that we get an interesting stack.
+ * logsErrorFromButtonClickHandler() so that we get an interesting stack.
  */
 function logsErrorFromButtonClickInner() {
   console.error('WebUI JS Error: printing error on button click');
@@ -43,13 +43,13 @@ function logsErrorFromButtonClickInner() {
 /**
  * Throws an exception when called.
  */
-function throwException() {
+function throwExceptionHandler() {
   throwExceptionInner();
 }
 
 /**
  * Throws an exception when called. This is a separate function from
- * throwException() so that we get an interesting stack.
+ * throwExceptionHandler() so that we get an interesting stack.
  */
 function throwExceptionInner() {
   throw new Error('WebUI JS Error: exception button clicked');
@@ -77,7 +77,7 @@ function unhandledPromiseRejection() {
   promise.then(promiseSuccessful);
 }
 
-$('error-button').onclick = logsErrorFromButtonClick;
-$('exception-button').onclick = throwException;
+$('error-button').onclick = logsErrorFromButtonClickHandler;
+$('exception-button').onclick = throwExceptionHandler;
 $('promise-button').onclick = unhandledPromiseRejection;
-logsErrorDuringPageLoad();
+logsErrorDuringPageLoadOuter();
