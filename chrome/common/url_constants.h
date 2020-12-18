@@ -364,6 +364,9 @@ extern const char kArcPrivacyPolicyURLPath[];
 
 extern const char kOnlineEulaURLPath[];
 
+// The URL for the help center article about PhoneHub.
+extern const char kPhoneHubLearnMoreLink[];
+
 extern const char kAdditionalToSOnlineURLPath[];
 
 // The URL for the "learn more" link for TPM firmware update.

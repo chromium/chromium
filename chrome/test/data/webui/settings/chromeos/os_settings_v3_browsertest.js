@@ -224,6 +224,14 @@ TEST_F(
  ['MultideviceSmartLockSubPage', 'multidevice_smartlock_subpage_test.m.js'],
  ['MultideviceSubPage', 'multidevice_subpage_tests.m.js'],
  [
+   'MultideviceTaskContinuationItem',
+   'multidevice_task_continuation_item_tests.m.js'
+ ],
+ [
+   'MultideviceTaskContinuationDisabledLink',
+   'multidevice_task_continuation_disabled_link_tests.m.js'
+ ],
+ [
    'MultideviceWifiSyncDisabledLink',
    'multidevice_wifi_sync_disabled_link_tests.m.js'
  ],
@@ -244,7 +252,10 @@ TEST_F(
  ['ResetPage', 'os_reset_page_test.m.js'],
  ['SmartInputsPage', 'smart_inputs_page_test.m.js'],
  ['SmbPage', 'smb_shares_page_tests.m.js'],
- ['SwitchAccessActionAssignmentDialog', 'switch_access_action_assignment_dialog_test.m.js'],
+ [
+   'SwitchAccessActionAssignmentDialog',
+   'switch_access_action_assignment_dialog_test.m.js'
+ ],
  ['TetherConnectionDialog', 'tether_connection_dialog_test.m.js'],
  ['TimezoneSelector', 'timezone_selector_test.m.js'],
  ['TimezoneSubpage', 'timezone_subpage_test.m.js'],

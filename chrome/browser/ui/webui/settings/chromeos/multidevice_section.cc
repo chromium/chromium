@@ -295,12 +295,16 @@ void MultiDeviceSection::AddLoadTimeData(
       {"multideviceSmartLockItemTitle", IDS_SETTINGS_EASY_UNLOCK_SECTION_TITLE},
       {"multidevicePhoneHubItemTitle",
        IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_SECTION_TITLE},
+      {"multidevicePhoneHubLearnMoreLabel",
+       IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_LEARN_MORE_LABEL},
       {"multidevicePhoneHubNotificationsItemTitle",
        IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_NOTIFICATIONS_SECTION_TITLE},
       {"multidevicePhoneHubTaskContinuationItemTitle",
        IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_TASK_CONTINUATION_SECTION_TITLE},
       {"multidevicePhoneHubTaskContinuationItemSummary",
        IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_TASK_CONTINUATION_SUMMARY},
+      {"multidevicePhoneHubTaskContinuationSyncLabel",
+       IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_TASK_CONTINUATION_SYNC_LABEL},
       {"multideviceWifiSyncItemTitle",
        IDS_SETTINGS_MULTIDEVICE_WIFI_SYNC_SECTION_TITLE},
       {"multideviceWifiSyncChromeSyncLabel",
@@ -435,6 +439,11 @@ void MultiDeviceSection::AddLoadTimeData(
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_MULTIDEVICE_ENABLE_WIFI_SYNC_V1_SUMMARY,
           GetHelpUrlWithBoard(chrome::kWifiSyncLearnMoreURL)));
+  html_source->AddString(
+      "multidevicePhoneHubTaskContinuationDisabledSummary",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_TASK_CONTINUATION_DISABLED_SUMMARY,
+          GetHelpUrlWithBoard(chrome::kPhoneHubLearnMoreLink)));
 
   AddEasyUnlockStrings(html_source);
   ::settings::AddNearbyShareData(html_source);

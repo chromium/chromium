@@ -1395,6 +1395,7 @@ var OSSettingsMultideviceSubPageTest = class extends OSSettingsBrowserTest {
   /** @override */
   get extraLibraries() {
     return super.extraLibraries.concat([
+      '//ui/webui/resources/js/util.js',
       BROWSER_SETTINGS_PATH + '../test_browser_proxy.js',
       BROWSER_SETTINGS_PATH + '../test_util.js',
       'test_multidevice_browser_proxy.js',
@@ -1406,6 +1407,56 @@ var OSSettingsMultideviceSubPageTest = class extends OSSettingsBrowserTest {
 TEST_F('OSSettingsMultideviceSubPageTest', 'AllJsTests', () => {
   mocha.run();
 });
+
+// Test fixture for the multidevice task continuation sync disabled link.
+// eslint-disable-next-line no-var
+var OSSettingsMultideviceTaskContinuationItemTest =
+    class extends OSSettingsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return super.browsePreload +
+        'chromeos/multidevice_page/multidevice_task_continuation_item.html';
+  }
+
+  /** @override */
+  get extraLibraries() {
+    return super.extraLibraries.concat([
+      BROWSER_SETTINGS_PATH + '../test_util.js',
+      BROWSER_SETTINGS_PATH + '../test_browser_proxy.js',
+      BROWSER_SETTINGS_PATH + 'test_sync_browser_proxy.js',
+      'multidevice_task_continuation_item_tests.js',
+    ]);
+  }
+};
+
+TEST_F('OSSettingsMultideviceTaskContinuationItemTest', 'AllJsTests', () => {
+  mocha.run();
+});
+
+// Test fixture for the multidevice task continuation sync disabled link.
+// eslint-disable-next-line no-var
+var OSSettingsMultideviceTaskContinuationDisabledLinkTest =
+    class extends OSSettingsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return super.browsePreload + 'chromeos/multidevice_page/' +
+        'multidevice_task_continuation_disabled_link.html';
+  }
+
+  /** @override */
+  get extraLibraries() {
+    return super.extraLibraries.concat([
+      BROWSER_SETTINGS_PATH + '../test_util.js',
+      'multidevice_task_continuation_disabled_link_tests.js',
+    ]);
+  }
+};
+
+TEST_F(
+    'OSSettingsMultideviceTaskContinuationDisabledLinkTest', 'AllJsTests',
+    () => {
+      mocha.run();
+    });
 
 // Test fixture for the multidevice wifi sync disabled link.
 // eslint-disable-next-line no-var

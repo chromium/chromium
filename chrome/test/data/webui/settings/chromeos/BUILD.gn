@@ -65,6 +65,8 @@ js_modulizer("modulize") {
     "multidevice_page_tests.js",
     "multidevice_smartlock_subpage_test.js",
     "multidevice_subpage_tests.js",
+    "multidevice_task_continuation_item_tests.js",
+    "multidevice_task_continuation_disabled_link_tests.js",
     "multidevice_wifi_sync_disabled_link_tests.js",
     "multidevice_wifi_sync_item_tests.js",
     "nearby_share_receive_dialog_tests.js",

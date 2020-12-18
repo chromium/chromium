@@ -18,6 +18,7 @@
 <link rel="import" href="multidevice_feature_behavior.html">
 <link rel="import" href="multidevice_feature_item.html">
 <link rel="import" href="multidevice_feature_toggle.html">
+<link rel="import" href="multidevice_task_continuation_item.html">
 <link rel="import" href="multidevice_tether_item.html">
 <link rel="import" href="multidevice_wifi_sync_item.html">
 
@@ -134,11 +135,11 @@
             if="[[isFeatureSupported(
                 MultiDeviceFeature.PHONE_HUB_TASK_CONTINUATION, pageContentData)]]"
             restamp>
-          <settings-multidevice-feature-item id="phoneHubTaskContinuationItem"
-              feature="[[MultiDeviceFeature.PHONE_HUB_TASK_CONTINUATION]]"
-              page-content-data="[[pageContentData]]" is-sub-feature
+          <settings-multidevice-task-continuation-item
+              id="phoneHubTaskContinuationItem"
+              page-content-data="[[pageContentData]]"
               deep-link-focus-id$="[[Setting.kPhoneHubTaskContinuationOnOff]]">
-          </settings-multidevice-feature-item>
+          </settings-multidevice-task-continuation-item>
         </template>
         <template is="dom-if"
             if="[[isFeatureSupported(

@@ -16,6 +16,8 @@ js_type_check("closure_compile") {
     ":multidevice_page",
     ":multidevice_smartlock_subpage",
     ":multidevice_subpage",
+    ":multidevice_task_continuation_disabled_link",
+    ":multidevice_task_continuation_item",
     ":multidevice_tether_item",
     ":multidevice_wifi_sync_disabled_link",
     ":multidevice_wifi_sync_item",
@@ -117,6 +119,7 @@ js_library("multidevice_subpage") {
     ":multidevice_browser_proxy",
     ":multidevice_constants",
     ":multidevice_feature_behavior",
+    ":multidevice_task_continuation_item",
     ":multidevice_wifi_sync_item",
     "..:deep_linking_behavior",
     "..:os_route",
@@ -126,6 +129,15 @@ js_library("multidevice_subpage") {
   ]
   externs_list = [ "$externs_path/networking_private.js" ]
   extra_sources = [ "$interfaces_path/networking_private_interface.js" ]
+}
+
+js_library("multidevice_task_continuation_disabled_link") {
+  deps = [
+    "..:os_route",
+    "../..:router",
+    "//ui/webui/resources/js:i18n_behavior",
+    "//ui/webui/resources/js:load_time_data",
+  ]
 }
 
 js_library("multidevice_tether_item") {
@@ -139,6 +151,16 @@ js_library("multidevice_tether_item") {
   ]
   externs_list = [ "$externs_path/networking_private.js" ]
   extra_sources = [ "$interfaces_path/networking_private_interface.js" ]
+}
+
+js_library("multidevice_task_continuation_item") {
+  deps = [
+    ":multidevice_feature_behavior",
+    ":multidevice_feature_item",
+    ":multidevice_task_continuation_disabled_link",
+    "../../people_page:sync_browser_proxy",
+    "//ui/webui/resources/js:web_ui_listener_behavior",
+  ]
 }
 
 js_library("multidevice_wifi_sync_item") {
@@ -180,6 +202,8 @@ js_type_check("closure_compile_module") {
     ":multidevice_radio_button.m",
     ":multidevice_smartlock_subpage.m",
     ":multidevice_subpage.m",
+    ":multidevice_task_continuation_disabled_link.m",
+    ":multidevice_task_continuation_item.m",
     ":multidevice_tether_item.m",
     ":multidevice_wifi_sync_disabled_link.m",
     ":multidevice_wifi_sync_item.m",
@@ -300,6 +324,7 @@ js_library("multidevice_subpage.m") {
   deps = [
     ":multidevice_browser_proxy.m",
     ":multidevice_constants.m",
+    ":multidevice_task_continuation_item.m",
     ":multidevice_wifi_sync_item.m",
     "..:deep_linking_behavior.m",
     "..:os_route.m",
@@ -325,6 +350,20 @@ js_library("multidevice_tether_item.m") {
   extra_deps = [ ":multidevice_tether_item_module" ]
 }
 
+js_library("multidevice_task_continuation_item.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/multidevice_page/multidevice_task_continuation_item.m.js" ]
+  deps = [
+    ":multidevice_constants.m",
+    ":multidevice_feature_behavior.m",
+    ":multidevice_feature_item.m",
+    ":multidevice_task_continuation_disabled_link.m",
+    "../../people_page:sync_browser_proxy.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:web_ui_listener_behavior.m",
+  ]
+  extra_deps = [ ":multidevice_task_continuation_item_module" ]
+}
+
 js_library("multidevice_wifi_sync_item.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/multidevice_page/multidevice_wifi_sync_item.m.js" ]
   deps = [
@@ -342,6 +381,18 @@ js_library("multidevice_wifi_sync_item.m") {
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
   extra_deps = [ ":multidevice_wifi_sync_item_module" ]
+}
+
+js_library("multidevice_task_continuation_disabled_link.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/multidevice_page/multidevice_task_continuation_disabled_link.m.js" ]
+  deps = [
+    "..:os_route.m",
+    "../..:router.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+  extra_deps = [ ":multidevice_task_continuation_disabled_link_module" ]
 }
 
 js_library("multidevice_wifi_sync_disabled_link.m") {
@@ -368,6 +419,8 @@ group("polymer3_elements") {
     ":multidevice_radio_button_module",
     ":multidevice_smartlock_subpage_module",
     ":multidevice_subpage_module",
+    ":multidevice_task_continuation_disabled_link_module",
+    ":multidevice_task_continuation_item_module",
     ":multidevice_tether_item_module",
     ":multidevice_wifi_sync_disabled_link_module",
     ":multidevice_wifi_sync_item_module",
@@ -449,9 +502,27 @@ polymer_modulizer("multidevice_tether_item") {
   auto_imports = os_settings_auto_imports
 }
 
+polymer_modulizer("multidevice_task_continuation_item") {
+  js_file = "multidevice_task_continuation_item.js"
+  html_file = "multidevice_task_continuation_item.html"
+  html_type = "dom-module"
+  migrated_imports = os_settings_migrated_imports
+  namespace_rewrites = os_settings_namespace_rewrites
+  auto_imports = os_settings_auto_imports
+}
+
 polymer_modulizer("multidevice_wifi_sync_item") {
   js_file = "multidevice_wifi_sync_item.js"
   html_file = "multidevice_wifi_sync_item.html"
+  html_type = "dom-module"
+  migrated_imports = os_settings_migrated_imports
+  namespace_rewrites = os_settings_namespace_rewrites
+  auto_imports = os_settings_auto_imports
+}
+
+polymer_modulizer("multidevice_task_continuation_disabled_link") {
+  js_file = "multidevice_task_continuation_disabled_link.js"
+  html_file = "multidevice_task_continuation_disabled_link.html"
   html_type = "dom-module"
   migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
