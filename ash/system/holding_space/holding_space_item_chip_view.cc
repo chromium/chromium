@@ -9,7 +9,7 @@
 #include "ash/public/cpp/rounded_image_view.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
-#include "ash/system/tray/tray_popup_utils.h"
+#include "ash/system/holding_space/holding_space_util.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/gfx/skia_paint_util.h"
 #include "ui/views/controls/label.h"
@@ -18,6 +18,8 @@
 #include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace ash {
+
+// HoldingSpaceItemChipView::LabelMaskOwner ------------------------------------
 
 class HoldingSpaceItemChipView::LabelMaskLayerOwner : public ui::LayerDelegate {
  public:
@@ -69,6 +71,8 @@ class HoldingSpaceItemChipView::LabelMaskLayerOwner : public ui::LayerDelegate {
   ui::Layer layer_;
 };
 
+// HoldingSpaceItemChipView ----------------------------------------------------
+
 HoldingSpaceItemChipView::HoldingSpaceItemChipView(
     HoldingSpaceItemViewDelegate* delegate,
     const HoldingSpaceItem* item)
@@ -92,13 +96,10 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(
       std::make_unique<views::FillLayout>());
 
   label_ = label_and_pin_button_container_->AddChildView(
-      std::make_unique<views::Label>(item->text()));
+      holding_space_util::CreateLabel(holding_space_util::LabelStyle::kChip));
   label_->SetElideBehavior(gfx::ELIDE_MIDDLE);
   label_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
-  label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary));
-  TrayPopupUtils::SetLabelFontList(
-      label_, TrayPopupUtils::FontStyle::kDetailedViewLabel);
+  label_->SetText(item->text());
 
   label_mask_layer_owner_ = std::make_unique<LabelMaskLayerOwner>();
 

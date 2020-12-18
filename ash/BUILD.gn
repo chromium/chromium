@@ -1005,6 +1005,8 @@ component("ash") {
     "system/holding_space/holding_space_tray_icon.h",
     "system/holding_space/holding_space_tray_icon_preview.cc",
     "system/holding_space/holding_space_tray_icon_preview.h",
+    "system/holding_space/holding_space_util.cc",
+    "system/holding_space/holding_space_util.h",
     "system/holding_space/pinned_files_bubble.cc",
     "system/holding_space/pinned_files_bubble.h",
     "system/holding_space/pinned_files_section.cc",

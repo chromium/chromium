@@ -7,10 +7,8 @@
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/system/holding_space/holding_space_item_screen_capture_view.h"
-#include "ash/system/tray/tray_constants.h"
-#include "ash/system/tray/tray_popup_utils.h"
+#include "ash/system/holding_space/holding_space_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
@@ -34,17 +32,12 @@ const char* ScreenCapturesSection::GetClassName() const {
 }
 
 std::unique_ptr<views::View> ScreenCapturesSection::CreateHeader() {
-  auto header = std::make_unique<views::Label>(
+  auto header = holding_space_util::CreateLabel(
+      holding_space_util::LabelStyle::kHeader,
       l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_SCREEN_CAPTURES_TITLE));
-  header->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary));
   header->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   header->SetPaintToLayer();
   header->layer()->SetFillsBoundsOpaquely(false);
-
-  TrayPopupUtils::SetLabelFontList(header.get(),
-                                   TrayPopupUtils::FontStyle::kSubHeader);
-
   return header;
 }
 

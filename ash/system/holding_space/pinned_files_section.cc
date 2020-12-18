@@ -9,15 +9,16 @@
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/holding_space/holding_space_item_chip_view.h"
 #include "ash/system/holding_space/holding_space_item_chips_container.h"
-#include "ash/system/tray/tray_constants.h"
-#include "ash/system/tray/tray_popup_utils.h"
+#include "ash/system/holding_space/holding_space_util.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
@@ -31,9 +32,9 @@ namespace ash {
 namespace {
 
 // Appearance.
-constexpr int kFilesAppChipChildSpacing = 16;
+constexpr int kFilesAppChipChildSpacing = 8;
 constexpr int kFilesAppChipHeight = 32;
-constexpr int kFilesAppChipIconHeight = 16;
+constexpr int kFilesAppChipIconSize = 20;
 constexpr gfx::Insets kFilesAppChipInsets(0, 8, 0, 16);
 constexpr int kPlaceholderChildSpacing = 16;
 
@@ -106,24 +107,15 @@ class FilesAppChip : public views::Button {
 
     // Icon.
     auto* icon = AddChildView(std::make_unique<views::ImageView>());
-    icon->SetBackground(views::CreateRoundedRectBackground(
-        ash_color_provider->GetControlsLayerColor(
-            AshColorProvider::ControlsLayerType::
-                kControlBackgroundColorInactive),
-        kFilesAppChipIconHeight / 2));
-    icon->SetPreferredSize(
-        gfx::Size(kFilesAppChipIconHeight, kFilesAppChipIconHeight));
+    icon->SetImage(gfx::CreateVectorIcon(kFilesAppIcon, kFilesAppChipIconSize,
+                                         gfx::kPlaceholderColor));
 
     // Label.
-    auto* label = AddChildView(std::make_unique<views::Label>());
-    label->SetEnabledColor(ash_color_provider->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorPrimary));
+    auto* label = AddChildView(
+        holding_space_util::CreateLabel(holding_space_util::LabelStyle::kChip));
     label->SetText(l10n_util::GetStringUTF16(
         IDS_ASH_HOLDING_SPACE_PINNED_FILES_APP_CHIP_TEXT));
     layout->SetFlexForView(label, 1);
-
-    TrayPopupUtils::SetLabelFontList(
-        label, TrayPopupUtils::FontStyle::kDetailedViewLabel);
   }
 
   void OnPressed(const ui::Event& event) {
@@ -148,17 +140,12 @@ const char* PinnedFilesSection::GetClassName() const {
 }
 
 std::unique_ptr<views::View> PinnedFilesSection::CreateHeader() {
-  auto header = std::make_unique<views::Label>(
+  auto header = holding_space_util::CreateLabel(
+      holding_space_util::LabelStyle::kHeader,
       l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_PINNED_TITLE));
-  header->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary));
   header->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   header->SetPaintToLayer();
   header->layer()->SetFillsBoundsOpaquely(false);
-
-  TrayPopupUtils::SetLabelFontList(header.get(),
-                                   TrayPopupUtils::FontStyle::kSubHeader);
-
   return header;
 }
 
@@ -191,15 +178,11 @@ std::unique_ptr<views::View> PinnedFilesSection::CreatePlaceholder() {
       views::BoxLayout::CrossAxisAlignment::kStart);
 
   // Prompt.
-  auto* prompt = placeholder->AddChildView(std::make_unique<views::Label>(
+  auto* prompt = placeholder->AddChildView(holding_space_util::CreateLabel(
+      holding_space_util::LabelStyle::kBody,
       l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_PINNED_EMPTY_PROMPT)));
-  prompt->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary));
   prompt->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   prompt->SetMultiLine(true);
-
-  TrayPopupUtils::SetLabelFontList(
-      prompt, TrayPopupUtils::FontStyle::kDetailedViewLabel);
 
   // Files app chip.
   placeholder->AddChildView(std::make_unique<FilesAppChip>());

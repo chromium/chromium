@@ -13,8 +13,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/holding_space/holding_space_item_chip_view.h"
 #include "ash/system/holding_space/holding_space_item_chips_container.h"
-#include "ash/system/tray/tray_constants.h"
-#include "ash/system/tray/tray_popup_utils.h"
+#include "ash/system/holding_space/holding_space_util.h"
 #include "base/bind.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -48,15 +47,11 @@ class Header : public views::Button {
         kHoldingSpaceDownloadsHeaderSpacing));
 
     // Label.
-    auto* label = AddChildView(std::make_unique<views::Label>(
+    auto* label = AddChildView(holding_space_util::CreateLabel(
+        holding_space_util::LabelStyle::kHeader,
         l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_DOWNLOADS_TITLE)));
-    label->SetEnabledColor(ash_color_provider->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorPrimary));
     label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
     layout->SetFlexForView(label, 1);
-
-    TrayPopupUtils::SetLabelFontList(label,
-                                     TrayPopupUtils::FontStyle::kSubHeader);
 
     // Chevron.
     auto* chevron = AddChildView(std::make_unique<views::ImageView>());

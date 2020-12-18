@@ -54,6 +54,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "dictation_on.icon",
     "dictation_on_newui.icon",
     "dogfood.icon",
+    "files_app.icon",
     "folder.icon",
     "global_media_controls.icon",
     "holding_space.icon",
