@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
@@ -37,7 +38,7 @@ if (!is_android) {
         "//chromeos/dbus/power:power_manager_proto",
       ]
       sources += [ "battery_status_manager_chromeos.cc" ]
-    } else if (is_linux && use_dbus) {
+    } else if ((is_linux || is_chromeos_lacros) && use_dbus) {
       configs += [ "//build/config/linux/dbus" ]
       deps += [ "//dbus" ]
       sources += [

@@ -79,7 +79,11 @@ void AddDataSourceConfigs(
   // Capture system trace events if supported and enabled. The datasources will
   // only emit events if system tracing is enabled in |chrome_config|.
   if (!privacy_filtering_enabled) {
-#if defined(OS_CHROMEOS) || (BUILDFLAG(IS_CHROMECAST) && defined(OS_LINUX))
+// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
+// complete.
+#if defined(OS_CHROMEOS) ||      \
+    (BUILDFLAG(IS_CHROMECAST) && \
+     (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)))
     if (source_names.empty() ||
         source_names.count(tracing::mojom::kSystemTraceDataSourceName) == 1) {
       AddDataSourceConfig(perfetto_config,
