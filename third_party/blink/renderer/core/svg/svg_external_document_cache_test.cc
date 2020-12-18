@@ -11,13 +11,6 @@
 
 namespace blink {
 
-class DummyCacheClient : public GarbageCollected<DummyCacheClient>,
-                         public SVGExternalDocumentCache::Client {
- public:
-  DummyCacheClient() = default;
-  void NotifyFinished(Document*) override {}
-};
-
 class SVGExternalDocumentCacheTest : public SimTest {};
 
 TEST_F(SVGExternalDocumentCacheTest, GetDocumentBeforeLoadComplete) {
@@ -27,12 +20,11 @@ TEST_F(SVGExternalDocumentCacheTest, GetDocumentBeforeLoadComplete) {
 
   const char kSVGUrl[] = "https://example.com/svg.svg";
   SimSubresourceRequest svg_resource(kSVGUrl, "application/xml");
-  DummyCacheClient* client = MakeGarbageCollected<DummyCacheClient>();
 
   // Request a resource from the cache.
   auto* entry =
       SVGExternalDocumentCache::From(GetDocument())
-          ->Get(client, KURL(kSVGUrl), fetch_initiator_type_names::kCSS);
+          ->Get(nullptr, KURL(kSVGUrl), fetch_initiator_type_names::kCSS);
 
   // Write part of the response. The document should not be initialized yet,
   // because the response is not complete. The document would be invalid at this

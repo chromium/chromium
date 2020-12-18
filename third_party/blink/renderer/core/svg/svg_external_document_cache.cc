@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/loader/resource/text_resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_client.h"
 
 namespace blink {
 
@@ -42,46 +43,44 @@ bool MimeTypeAllowed(const ResourceResponse& response) {
          mime_type == "application/xml" || mime_type == "application/xhtml+xml";
 }
 
+Document* CreateDocument(const TextResource* resource,
+                         ExecutionContext* execution_context) {
+  const ResourceResponse& response = resource->GetResponse();
+  if (!MimeTypeAllowed(response))
+    return nullptr;
+  auto* document =
+      XMLDocument::CreateSVG(DocumentInit::Create()
+                                 .WithURL(response.CurrentRequestUrl())
+                                 .WithExecutionContext(execution_context));
+  document->SetContent(resource->DecodedText());
+  return document;
+}
+
 }  // namespace
 
-void SVGExternalDocumentCache::Entry::AddClient(Client* client) {
-  if (!GetResource()->IsLoaded()) {
-    clients_.insert(client);
-    return;
-  }
-  context_->GetTaskRunner(TaskType::kInternalLoading)
-      ->PostTask(
-          FROM_HERE,
-          WTF::Bind(&SVGExternalDocumentCache::Client::NotifyFinished,
-                    WrapPersistent(client), WrapPersistent(document_.Get())));
-}
-
-void SVGExternalDocumentCache::Entry::NotifyFinished(Resource* resource) {
-  DCHECK_EQ(GetResource(), resource);
-  for (auto client : clients_) {
-    if (client)
-      client->NotifyFinished(GetDocument());
-  }
-}
-
 Document* SVGExternalDocumentCache::Entry::GetDocument() {
-  const TextResource* resource = To<TextResource>(GetResource());
-  if (!document_ && resource->IsLoaded() && resource->HasData() &&
-      MimeTypeAllowed(resource->GetResponse())) {
-    document_ = XMLDocument::CreateSVG(
-        DocumentInit::Create()
-            .WithURL(resource->GetResponse().CurrentRequestUrl())
-            .WithExecutionContext(context_.Get()));
-    document_->SetContent(resource->DecodedText());
+  if (resource_->IsLoaded()) {
+    // If this entry saw a revalidation, re-parse the document.
+    // TODO(fs): This will be inefficient for successful revalidations, so we
+    // want to detect those and not re-parse the document in those cases.
+    if (was_revalidating_) {
+      document_.Clear();
+      was_revalidating_ = false;
+    }
+    if (!document_ && resource_->HasData())
+      document_ = CreateDocument(resource_, context_);
   }
-  return document_.Get();
+  return document_;
+}
+
+const KURL& SVGExternalDocumentCache::Entry::Url() const {
+  return resource_->Url();
 }
 
 void SVGExternalDocumentCache::Entry::Trace(Visitor* visitor) const {
-  ResourceClient::Trace(visitor);
+  visitor->Trace(resource_);
   visitor->Trace(document_);
   visitor->Trace(context_);
-  visitor->Trace(clients_);
 }
 
 const char SVGExternalDocumentCache::kSupplementName[] =
@@ -101,13 +100,13 @@ SVGExternalDocumentCache::SVGExternalDocumentCache(Document& document)
     : Supplement<Document>(document) {}
 
 SVGExternalDocumentCache::Entry* SVGExternalDocumentCache::Get(
-    Client* client,
+    ResourceClient* client,
     const KURL& url,
     const AtomicString& initiator_name,
     network::mojom::blink::CSPDisposition csp_disposition) {
   Document* context_document = GetSupplementable();
-  ResourceLoaderOptions options(
-      context_document->GetExecutionContext()->GetCurrentWorld());
+  ExecutionContext* execution_context = context_document->GetExecutionContext();
+  ResourceLoaderOptions options(execution_context->GetCurrentWorld());
   options.initiator_info.name = initiator_name;
   FetchParameters params(ResourceRequest(url), options);
   params.SetContentSecurityCheck(csp_disposition);
@@ -116,16 +115,15 @@ SVGExternalDocumentCache::Entry* SVGExternalDocumentCache::Get(
   params.SetRequestContext(mojom::blink::RequestContextType::IMAGE);
   params.SetRequestDestination(network::mojom::RequestDestination::kImage);
 
-  Entry* entry =
-      MakeGarbageCollected<Entry>(context_document->GetExecutionContext());
-  Resource* resource = TextResource::FetchSVGDocument(
-      params, context_document->Fetcher(), entry);
-  // TODO(fs): Handle revalidations that return a new/different resource without
-  // needing to throw away the old Entry.
-  if (resource && resource->IsCacheValidator())
-    entries_.erase(resource);
-  entry = entries_.insert(resource, entry).stored_value->value;
-  entry->AddClient(client);
+  TextResource* resource = TextResource::FetchSVGDocument(
+      params, context_document->Fetcher(), client);
+  if (!resource)
+    return nullptr;
+  auto& entry = entries_.insert(resource, nullptr).stored_value->value;
+  if (!entry)
+    entry = MakeGarbageCollected<Entry>(resource, execution_context);
+  if (resource->IsCacheValidator())
+    entry->SetWasRevalidating();
   return entry;
 }
 

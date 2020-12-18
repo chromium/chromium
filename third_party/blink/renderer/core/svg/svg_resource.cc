@@ -193,12 +193,16 @@ void ExternalSVGResource::LoadWithoutCSP(Document& document) {
   target_ = ResolveTarget();
 }
 
-void ExternalSVGResource::NotifyFinished(Document*) {
+void ExternalSVGResource::NotifyFinished(Resource*) {
   Element* new_target = ResolveTarget();
   if (new_target == target_)
     return;
   target_ = new_target;
   NotifyElementChanged();
+}
+
+String ExternalSVGResource::DebugName() const {
+  return "ExternalSVGResource";
 }
 
 Element* ExternalSVGResource::ResolveTarget() {
@@ -217,7 +221,7 @@ Element* ExternalSVGResource::ResolveTarget() {
 void ExternalSVGResource::Trace(Visitor* visitor) const {
   visitor->Trace(cache_entry_);
   SVGResource::Trace(visitor);
-  SVGExternalDocumentCache::Client::Trace(visitor);
+  ResourceClient::Trace(visitor);
 }
 
 }  // namespace blink

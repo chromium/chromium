@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/svg/svg_graphics_element.h"
 #include "third_party/blink/renderer/core/svg/svg_uri_reference.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_client.h"
 
 namespace blink {
 
@@ -36,7 +37,7 @@ class SVGAnimatedLength;
 
 class SVGUseElement final : public SVGGraphicsElement,
                             public SVGURIReference,
-                            public SVGExternalDocumentCache::Client {
+                            public ResourceClient {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -104,7 +105,8 @@ class SVGUseElement final : public SVGGraphicsElement,
   bool HasCycleUseReferencing(const ContainerNode& target_instance,
                               const SVGElement& new_target) const;
 
-  void NotifyFinished(Document*) override;
+  void NotifyFinished(Resource*) override;
+  String DebugName() const override;
   void UpdateTargetReference();
 
   Member<SVGExternalDocumentCache::Entry> cache_entry_;

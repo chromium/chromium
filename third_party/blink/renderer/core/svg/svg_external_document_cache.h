@@ -27,14 +27,16 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
-#include "third_party/blink/renderer/platform/loader/fetch/resource_client.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
+
 class Document;
 class ExecutionContext;
+class ResourceClient;
+class TextResource;
 
-class CORE_EXPORT SVGExternalDocumentCache
+class CORE_EXPORT SVGExternalDocumentCache final
     : public GarbageCollected<SVGExternalDocumentCache>,
       public Supplement<Document> {
  public:
@@ -43,41 +45,35 @@ class CORE_EXPORT SVGExternalDocumentCache
   explicit SVGExternalDocumentCache(Document&);
   void Trace(Visitor*) const override;
 
-  class Client : public GarbageCollectedMixin {
+  class CORE_EXPORT Entry final : public GarbageCollected<Entry> {
    public:
-    virtual void NotifyFinished(Document*) = 0;
-  };
+    Entry(TextResource* resource, ExecutionContext* context)
+        : resource_(resource), context_(context) {
+      DCHECK(resource_);
+      DCHECK(context_);
+    }
+    void SetWasRevalidating() { was_revalidating_ = true; }
 
-  class CORE_EXPORT Entry final : public GarbageCollected<Entry>,
-                                  public ResourceClient {
-   public:
-    explicit Entry(ExecutionContext* context) : context_(context) {}
-    ~Entry() override = default;
-    void Trace(Visitor*) const override;
     Document* GetDocument();
-    const KURL& Url() const { return GetResource()->Url(); }
+    const KURL& Url() const;
+
+    void Trace(Visitor*) const;
 
    private:
-    friend class SVGExternalDocumentCache;
-    void AddClient(Client*);
-
-    // ResourceClient overrides;
-    void NotifyFinished(Resource*) override;
-    String DebugName() const override { return "SVGExternalDocumentCache"; }
-
+    Member<TextResource> resource_;
     Member<Document> document_;
     Member<ExecutionContext> context_;
-    HeapHashSet<WeakMember<Client>> clients_;
+    bool was_revalidating_ = false;
   };
 
-  Entry* Get(Client*,
+  Entry* Get(ResourceClient*,
              const KURL&,
              const AtomicString& initiator_name,
              network::mojom::blink::CSPDisposition =
                  network::mojom::blink::CSPDisposition::CHECK);
 
  private:
-  HeapHashMap<WeakMember<Resource>, WeakMember<Entry>> entries_;
+  HeapHashMap<WeakMember<Resource>, Member<Entry>> entries_;
 };
 
 }  // namespace blink
