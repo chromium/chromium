@@ -30,6 +30,7 @@ class GtkUiDelegateWayland : public GtkUiDelegate {
                                 gfx::AcceleratedWidget parent) override;
   void ClearTransientFor(gfx::AcceleratedWidget parent) override;
   void ShowGtkWindow(GtkWindow* window) override;
+  int GetGdkKeyState() override;
 
  private:
   // Called when xdg-foreign exports a parent window passed in

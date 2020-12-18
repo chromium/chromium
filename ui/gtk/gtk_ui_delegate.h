@@ -55,6 +55,9 @@ class COMPONENT_EXPORT(GTK) GtkUiDelegate {
   // Presents |window|, doing all the necessary platform-specific operations
   // needed, if any.
   virtual void ShowGtkWindow(GtkWindow* window) = 0;
+
+  // Get the current keyboard modifier state.
+  virtual int GetGdkKeyState() = 0;
 };
 
 }  // namespace ui

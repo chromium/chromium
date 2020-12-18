@@ -83,35 +83,23 @@ GdkModifierType GetIbusFlags(const ui::KeyEvent& key_event) {
                                       << ui::kPropertyKeyboardIBusFlagOffset);
 }
 
-GdkModifierType ExtractGdkEventStateFromKeyEvent(
-    const ui::KeyEvent& key_event) {
-  auto event_flags = static_cast<ui::EventFlags>(key_event.flags());
-  static const struct {
-    ui::EventFlags event_flag;
-    GdkModifierType gdk_modifier;
-  } mapping[] = {
-      {ui::EF_SHIFT_DOWN, GDK_SHIFT_MASK},
-      {ui::EF_CAPS_LOCK_ON, GDK_LOCK_MASK},
-      {ui::EF_CONTROL_DOWN, GDK_CONTROL_MASK},
-      {ui::EF_ALT_DOWN, GDK_MOD1_MASK},
-      {ui::EF_NUM_LOCK_ON, GDK_MOD2_MASK},
-      {ui::EF_MOD3_DOWN, GDK_MOD3_MASK},
-      {ui::EF_COMMAND_DOWN, GDK_MOD4_MASK},
-      {ui::EF_ALTGR_DOWN, GDK_MOD5_MASK},
-      {ui::EF_LEFT_MOUSE_BUTTON, GDK_BUTTON1_MASK},
-      {ui::EF_MIDDLE_MOUSE_BUTTON, GDK_BUTTON2_MASK},
-      {ui::EF_RIGHT_MOUSE_BUTTON, GDK_BUTTON3_MASK},
-      {ui::EF_BACK_MOUSE_BUTTON, GDK_BUTTON4_MASK},
-      {ui::EF_FORWARD_MOUSE_BUTTON, GDK_BUTTON5_MASK},
-  };
-  unsigned int gdk_modifier_type = 0;
-  for (const auto& map : mapping) {
-    if (event_flags & map.event_flag) {
-      gdk_modifier_type = gdk_modifier_type | map.gdk_modifier;
-    }
+GdkModifierType GetGdkKeyEventState(ui::KeyEvent key_event) {
+  // ui::KeyEvent uses a normalized modifier state which is not respected by
+  // Gtk, so we need to get the state from the display backend. Gtk instead
+  // follows the X11 spec in which the state of a key event is expected to be
+  // the mask of modifier keys _prior_ to this event. Some IMEs rely on this
+  // behavior. See https://crbug.com/1086946#c11.
+
+  GdkModifierType state = GetIbusFlags(key_event);
+  if (key_event.key_code() != ui::VKEY_PROCESSKEY) {
+    // This is an synthetized event when |key_code| is VKEY_PROCESSKEY.
+    // In such a case there is no event being dispatching in the display
+    // backend.
+    state = static_cast<GdkModifierType>(
+        state | ui::GtkUiDelegate::instance()->GetGdkKeyState());
   }
-  return static_cast<GdkModifierType>(gdk_modifier_type |
-                                      GetIbusFlags(key_event));
+
+  return state;
 }
 
 int GetKeyEventProperty(const ui::KeyEvent& key_event,
@@ -590,7 +578,7 @@ GdkEvent* GdkEventFromKeyEvent(const ui::KeyEvent& key_event) {
   GdkKeymap* keymap = GtkUi::GetDelegate()->GetGdkKeymap();
 
   // Get keyval and state
-  GdkModifierType state = ExtractGdkEventStateFromKeyEvent(key_event);
+  GdkModifierType state = GetGdkKeyEventState(key_event);
   guint keyval = GDK_KEY_VoidSymbol;
   GdkModifierType consumed;
   gdk_keymap_translate_keyboard_state(keymap, hw_code, state, group, &keyval,

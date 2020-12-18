@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_manager.h"
@@ -84,6 +85,11 @@ void GtkUiDelegateWayland::ShowGtkWindow(GtkWindow* window) {
   // TODO(crbug.com/1008755): Check if gtk_window_present_with_time is needed
   // here as well, similarly to what is done in X11 impl.
   gtk_window_present(window);
+}
+
+int GtkUiDelegateWayland::GetGdkKeyState() {
+  // TODO(crbug/1159460): Test fcitx unikey IME on ozone/wayland.
+  return connection_->event_source()->keyboard_modifiers();
 }
 
 void GtkUiDelegateWayland::OnHandle(GdkWindow* window,
