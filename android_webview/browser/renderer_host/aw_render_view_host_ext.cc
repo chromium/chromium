@@ -5,12 +5,15 @@
 #include "android_webview/browser/renderer_host/aw_render_view_host_ext.h"
 
 #include "android_webview/browser/aw_browser_context.h"
+#include "android_webview/browser/aw_contents_client_bridge.h"
 #include "android_webview/common/render_view_messages.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -19,6 +22,36 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
 namespace android_webview {
+
+namespace {
+
+void ShouldOverrideUrlLoadingOnUI(
+    content::WebContents* web_contents,
+    const base::string16& url,
+    bool has_user_gesture,
+    bool is_redirect,
+    bool is_main_frame,
+    mojom::FrameHost::ShouldOverrideUrlLoadingCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  bool ignore_navigation = false;
+  AwContentsClientBridge* client =
+      AwContentsClientBridge::FromWebContents(web_contents);
+  if (client) {
+    if (!client->ShouldOverrideUrlLoading(url, has_user_gesture, is_redirect,
+                                          is_main_frame, &ignore_navigation)) {
+      // If the shouldOverrideUrlLoading call caused a java exception we should
+      // always return immediately here!
+      return;
+    }
+  } else {
+    LOG(WARNING) << "Failed to find the associated render view host for url: "
+                 << url;
+  }
+
+  std::move(callback).Run(ignore_navigation);
+}
+
+}  // namespace
 
 AwRenderViewHostExt::AwRenderViewHostExt(AwRenderViewHostExtClient* client,
                                          content::WebContents* contents)
@@ -171,6 +204,19 @@ void AwRenderViewHostExt::ContentsSizeChanged(const gfx::Size& contents_size) {
     return;
 
   client_->OnWebLayoutContentsSizeChanged(contents_size);
+}
+
+void AwRenderViewHostExt::ShouldOverrideUrlLoading(
+    const base::string16& url,
+    bool has_user_gesture,
+    bool is_redirect,
+    bool is_main_frame,
+    ShouldOverrideUrlLoadingCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&ShouldOverrideUrlLoadingOnUI, web_contents(),
+                                url, has_user_gesture, is_redirect,
+                                is_main_frame, std::move(callback)));
 }
 
 }  // namespace android_webview

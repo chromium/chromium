@@ -122,4 +122,16 @@ interface FrameHost {
 
   // Calls whenever the contents size (as seen by RenderView) is changed.
   ContentsSizeChanged(gfx.mojom.Size contents_size);
+
+  // Calls immediately before a top level navigation is initiated within Blink.
+  // There are some exlusions, the most important ones are it is not sent
+  // when creating a popup window, and not sent for application initiated
+  // navigations. See AwContentRendererClient::HandleNavigation for all
+  // cornercases. This is sent before updating the NavigationController state
+  // or creating a URLRequest for the main frame resource.
+  [Sync]
+  ShouldOverrideUrlLoading(mojo_base.mojom.String16 url,
+                           bool has_user_gesture, bool is_redirect,
+                           bool is_main_frame)
+      => (bool result);
 };

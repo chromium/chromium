@@ -35,6 +35,7 @@
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/render_view.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
@@ -137,10 +138,12 @@ bool AwContentRendererClient::HandleNavigation(
   base::string16 url = request.Url().GetString().Utf16();
   bool has_user_gesture = request.HasUserGesture();
 
-  int render_frame_id = render_frame->GetRoutingID();
-  RenderThread::Get()->Send(new AwViewHostMsg_ShouldOverrideUrlLoading(
-      render_frame_id, url, has_user_gesture, is_redirect, is_main_frame,
-      &ignore_navigation));
+  mojo::AssociatedRemote<mojom::FrameHost> frame_host_remote;
+  render_frame->GetRemoteAssociatedInterfaces()->GetInterface(
+      &frame_host_remote);
+  frame_host_remote->ShouldOverrideUrlLoading(
+      url, has_user_gesture, is_redirect, is_main_frame, &ignore_navigation);
+
   return ignore_navigation;
 }
 
