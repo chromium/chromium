@@ -117655,6 +117655,32 @@
       ]
      },
      "word-break": {
+      "break-boundary-2-chars-001.html": [
+       "e207f474c75ad1f3e0dbb726826468763af2263d",
+       [
+        null,
+        [
+         [
+          "/css/css-text/word-break/reference/break-boundary-2-chars-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "break-boundary-2-chars-002.html": [
+       "67c4cb7310599337e6f6d801b029777934a1680a",
+       [
+        null,
+        [
+         [
+          "/css/css-text/word-break/reference/break-boundary-2-chars-002-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "word-break-break-all-000.html": [
        "af21bedf4bdc3219b3c3b1225f76b55e127d3f13",
        [
@@ -204960,6 +204986,14 @@
      },
      "word-break": {
       "reference": {
+       "break-boundary-2-chars-001-ref.html": [
+        "e0702afce52b2cc3eadbdc200e91180239e8a6b1",
+        []
+       ],
+       "break-boundary-2-chars-002-ref.html": [
+        "cd3ed338f1c345a5d2903c2a9b01d280582cfd16",
+        []
+       ],
        "word-break-break-all-010-ref.html": [
         "0e0300a72dc920a5ffb54cda6fbe84a2f517d010",
         []
@@ -377850,6 +377884,13 @@
         ],
         "specifier-error.html": [
          "d07005caaa3aa8349fc9e2111723f0c310333fee",
+         [
+          null,
+          {}
+         ]
+        ],
+        "type.html": [
+         "5817ae4d435ed473b2f9cbcb798a48bc8318e12e",
          [
           null,
           {}
