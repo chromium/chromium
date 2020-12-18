@@ -36,7 +36,6 @@
 #include "third_party/blink/renderer/modules/mediarecorder/h264_encoder.h"
 #endif  // #if BUILDFLAG(RTC_USE_H264)
 
-using media::VideoFrame;
 using video_track_recorder::kVEAEncoderMinResolutionHeight;
 using video_track_recorder::kVEAEncoderMinResolutionWidth;
 
@@ -275,7 +274,7 @@ VideoTrackRecorderImpl::Encoder::~Encoder() {
 }
 
 void VideoTrackRecorderImpl::Encoder::StartFrameEncode(
-    scoped_refptr<VideoFrame> video_frame,
+    scoped_refptr<media::VideoFrame> video_frame,
     base::TimeTicks capture_timestamp) {
   // Cache the thread sending frames on first frame arrival.
   if (!origin_task_runner_.get())
@@ -335,7 +334,7 @@ void VideoTrackRecorderImpl::Encoder::StartFrameEncode(
 }
 
 void VideoTrackRecorderImpl::Encoder::RetrieveFrameOnEncodingTaskRunner(
-    scoped_refptr<VideoFrame> video_frame,
+    scoped_refptr<media::VideoFrame> video_frame,
     base::TimeTicks capture_timestamp) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoding_sequence_checker_);
 

@@ -31,8 +31,6 @@
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "ui/gfx/color_space.h"
 
-using media::VideoFrame;
-
 namespace blink {
 
 namespace {
@@ -117,7 +115,7 @@ class CanvasCaptureHandler::CanvasCaptureHandlerDelegate {
     DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
   }
 
-  void SendNewFrameOnIOThread(scoped_refptr<VideoFrame> video_frame,
+  void SendNewFrameOnIOThread(scoped_refptr<media::VideoFrame> video_frame,
                               base::TimeTicks current_time) {
     DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
     new_frame_callback_.Run(std::move(video_frame), current_time);
@@ -269,7 +267,7 @@ void CanvasCaptureHandler::ReadARGBPixelsSync(
   PaintImage paint_image = image->PaintImageForCurrentFrame();
   const base::TimeTicks timestamp = base::TimeTicks::Now();
   const gfx::Size image_size(paint_image.width(), paint_image.height());
-  scoped_refptr<VideoFrame> temp_argb_frame = frame_pool_.CreateFrame(
+  scoped_refptr<media::VideoFrame> temp_argb_frame = frame_pool_.CreateFrame(
       media::PIXEL_FORMAT_ARGB, image_size, gfx::Rect(image_size), image_size,
       base::TimeDelta());
   if (!temp_argb_frame) {
@@ -281,8 +279,9 @@ void CanvasCaptureHandler::ReadARGBPixelsSync(
       image_size.width(), image_size.height(),
       is_opaque ? kPremul_SkAlphaType : kUnpremul_SkAlphaType);
   if (!paint_image.readPixels(
-          image_info, temp_argb_frame->visible_data(VideoFrame::kARGBPlane),
-          temp_argb_frame->stride(VideoFrame::kARGBPlane), 0 /*srcX*/,
+          image_info,
+          temp_argb_frame->visible_data(media::VideoFrame::kARGBPlane),
+          temp_argb_frame->stride(media::VideoFrame::kARGBPlane), 0 /*srcX*/,
           0 /*srcY*/)) {
     DLOG(ERROR) << "Couldn't read pixels from PaintImage";
     return;
@@ -290,8 +289,9 @@ void CanvasCaptureHandler::ReadARGBPixelsSync(
   SendFrame(
       ConvertToYUVFrame(
           is_opaque, false /* flip */,
-          temp_argb_frame->visible_data(VideoFrame::kARGBPlane), image_size,
-          temp_argb_frame->stride(VideoFrame::kARGBPlane), kN32_SkColorType),
+          temp_argb_frame->visible_data(media::VideoFrame::kARGBPlane),
+          image_size, temp_argb_frame->stride(media::VideoFrame::kARGBPlane),
+          kN32_SkColorType),
       timestamp, GetImageYUVColorSpace(image));
 }
 
@@ -303,7 +303,7 @@ void CanvasCaptureHandler::ReadARGBPixelsAsync(
 
   const base::TimeTicks timestamp = base::TimeTicks::Now();
   const gfx::Size image_size(image->width(), image->height());
-  scoped_refptr<VideoFrame> temp_argb_frame = frame_pool_.CreateFrame(
+  scoped_refptr<media::VideoFrame> temp_argb_frame = frame_pool_.CreateFrame(
       media::PIXEL_FORMAT_ARGB, image_size, gfx::Rect(image_size), image_size,
       base::TimeDelta());
   if (!temp_argb_frame) {
@@ -328,7 +328,7 @@ void CanvasCaptureHandler::ReadARGBPixelsAsync(
       mailbox_holder.sync_token.GetConstData());
   context_provider->RasterInterface()->ReadbackARGBPixelsAsync(
       mailbox_holder.mailbox, mailbox_holder.texture_target, image_size,
-      temp_argb_frame->visible_data(VideoFrame::kARGBPlane), format,
+      temp_argb_frame->visible_data(media::VideoFrame::kARGBPlane), format,
       WTF::Bind(&CanvasCaptureHandler::OnARGBPixelsReadAsync,
                 weak_ptr_factory_.GetWeakPtr(), image, temp_argb_frame,
                 timestamp, !image->IsOriginTopLeft()));
@@ -343,7 +343,7 @@ void CanvasCaptureHandler::ReadYUVPixelsAsync(
 
   const base::TimeTicks timestamp = base::TimeTicks::Now();
   const gfx::Size image_size(image->width(), image->height());
-  scoped_refptr<VideoFrame> output_frame = frame_pool_.CreateFrame(
+  scoped_refptr<media::VideoFrame> output_frame = frame_pool_.CreateFrame(
       media::PIXEL_FORMAT_I420, image_size, gfx::Rect(image_size), image_size,
       base::TimeDelta());
   if (!output_frame) {
@@ -391,13 +391,13 @@ void CanvasCaptureHandler::OnARGBPixelsReadAsync(
   const bool is_opaque = image->CurrentFrameKnownToBeOpaque();
   const auto color_space = GetImageYUVColorSpace(image);
 
-  SendFrame(
-      ConvertToYUVFrame(is_opaque, flip,
-                        temp_argb_frame->visible_data(VideoFrame::kARGBPlane),
-                        temp_argb_frame->visible_rect().size(),
-                        temp_argb_frame->stride(VideoFrame::kARGBPlane),
-                        kN32_SkColorType),
-      this_frame_ticks, color_space);
+  SendFrame(ConvertToYUVFrame(
+                is_opaque, flip,
+                temp_argb_frame->visible_data(media::VideoFrame::kARGBPlane),
+                temp_argb_frame->visible_rect().size(),
+                temp_argb_frame->stride(media::VideoFrame::kARGBPlane),
+                kN32_SkColorType),
+            this_frame_ticks, color_space);
   if (num_ongoing_async_pixel_readouts_ == 0 && deferred_request_refresh_frame_)
     SendRefreshFrame();
 }
@@ -432,7 +432,7 @@ scoped_refptr<media::VideoFrame> CanvasCaptureHandler::ConvertToYUVFrame(
   DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
   TRACE_EVENT0("webrtc", "CanvasCaptureHandler::ConvertToYUVFrame");
 
-  scoped_refptr<VideoFrame> video_frame = frame_pool_.CreateFrame(
+  scoped_refptr<media::VideoFrame> video_frame = frame_pool_.CreateFrame(
       is_opaque ? media::PIXEL_FORMAT_I420 : media::PIXEL_FORMAT_I420A,
       image_size, gfx::Rect(image_size), image_size, base::TimeDelta());
   if (!video_frame) {
@@ -472,17 +472,19 @@ scoped_refptr<media::VideoFrame> CanvasCaptureHandler::ConvertToYUVFrame(
     // It is ok to use ARGB function because alpha has the same alignment for
     // both ABGR and ARGB.
     libyuv::ARGBExtractAlpha(
-        source_ptr, stride, video_frame->visible_data(VideoFrame::kAPlane),
-        video_frame->stride(VideoFrame::kAPlane), image_size.width(),
+        source_ptr, stride,
+        video_frame->visible_data(media::VideoFrame::kAPlane),
+        video_frame->stride(media::VideoFrame::kAPlane), image_size.width(),
         (flip ? -1 : 1) * image_size.height());
   }
 
   return video_frame;
 }
 
-void CanvasCaptureHandler::SendFrame(scoped_refptr<VideoFrame> video_frame,
-                                     base::TimeTicks this_frame_ticks,
-                                     const gfx::ColorSpace& color_space) {
+void CanvasCaptureHandler::SendFrame(
+    scoped_refptr<media::VideoFrame> video_frame,
+    base::TimeTicks this_frame_ticks,
+    const gfx::ColorSpace& color_space) {
   DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
 
   // If this function is called asynchronously, |delegate_| might have been
