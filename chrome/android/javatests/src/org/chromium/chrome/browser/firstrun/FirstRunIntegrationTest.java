@@ -36,7 +36,6 @@ import org.chromium.base.CollectionUtil;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -69,6 +68,7 @@ import java.util.Set;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Features.EnableFeatures(ChromeFeatureList.SHARE_BY_DEFAULT_IN_CCT)
 public class FirstRunIntegrationTest {
+    private static final long DEFERRED_START_UP_POLL_TIME = 10000L;
     @Rule
     public MultiActivityTestRule mTestRule = new MultiActivityTestRule();
 
@@ -321,10 +321,10 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "Test flaky: crbug.com/1157611")
     public void testFirstRunSkippedSharedPreferenceRefresh() {
-        // Set first run was previous skipped by policy in shared preference, then refresh shared
-        // preference value, since there's no policy set in this test case.
+        // Set that the first run was previous skipped by policy in shared preference, then
+        // refreshing shared preference should cause its value to become false, since there's no
+        // policy set in this test case.
         FirstRunStatus.setFirstRunSkippedByPolicy(true);
 
         DeferredStartupHandler.setExpectingActivityStartupForTesting();
@@ -333,10 +333,15 @@ public class FirstRunIntegrationTest {
         CustomTabActivity activity = waitForActivity(CustomTabActivity.class);
         CriteriaHelper.pollUiThread(() -> activity.didFinishNativeInitialization());
 
+        // DeferredStartupHandler could not finish with CriteriaHelper#DEFAULT_MAX_TIME_TO_POLL.
+        // Use longer timeout here to avoid flakiness. See https://crbug.com/1157611.
         Assert.assertTrue("Deferred startup never completed",
                 DeferredStartupHandler.waitForDeferredStartupCompleteForTesting(
-                        ScalableTimeout.scaleTimeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL)));
-        CriteriaHelper.pollUiThread(() -> FirstRunStatus.isFirstRunSkippedByPolicy());
+                        ScalableTimeout.scaleTimeout(DEFERRED_START_UP_POLL_TIME)));
+
+        // FirstRun status should be refreshed by TosDialogBehaviorSharedPrefInvalidator in deferred
+        // start up task.
+        CriteriaHelper.pollUiThread(() -> !FirstRunStatus.isFirstRunSkippedByPolicy());
     }
 
     @Test
