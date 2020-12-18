@@ -1067,50 +1067,6 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   }
 }
 
-// Ensure that renderer initiated navigations which have the opener suppressed
-// work.
-IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
-                       RendererInitiatedNewWindowNoOpenerNavigation) {
-  GURL url(embedded_test_server()->GetURL("/simple_links.html"));
-  EXPECT_TRUE(NavigateToURL(shell(), url));
-
-  RenderFrameHost* initial_rfh = current_frame_host();
-  url::Origin initial_origin = initial_rfh->GetLastCommittedOrigin();
-  base::UnguessableToken initiator_frame_token = initial_rfh->GetFrameToken();
-
-  // Simulate clicking on a cross-site link which has rel="noopener".
-  {
-    const char kReplacePortNumber[] =
-        "window.domAutomationController.send(setPortNumber(%d));";
-    uint16_t port_number = embedded_test_server()->port();
-    GURL url = embedded_test_server()->GetURL("foo.com", "/title2.html");
-    bool success = false;
-    EXPECT_TRUE(ExecuteScriptAndExtractBool(
-        shell(), base::StringPrintf(kReplacePortNumber, port_number),
-        &success));
-    success = false;
-
-    ShellAddedObserver new_shell_observer;
-    EXPECT_TRUE(
-        ExecuteScriptAndExtractBool(shell(),
-                                    "window.domAutomationController.send("
-                                    "clickCrossSiteNewWindowNoOpenerLink());",
-                                    &success));
-    EXPECT_TRUE(success);
-
-    TestNavigationObserver observer(
-        new_shell_observer.GetShell()->web_contents());
-    observer.Wait();
-
-    EXPECT_EQ(url, observer.last_navigation_url());
-    EXPECT_TRUE(observer.last_navigation_succeeded());
-    EXPECT_EQ(initial_origin, observer.last_initiator_origin().value());
-    EXPECT_TRUE(observer.last_initiator_frame_token().has_value());
-    EXPECT_EQ(initiator_frame_token,
-              observer.last_initiator_frame_token().value());
-  }
-}
-
 IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
                        RendererInitiatedWithSubframeInitator) {
   GURL url(embedded_test_server()->GetURL(

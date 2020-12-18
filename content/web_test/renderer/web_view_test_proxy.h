@@ -71,8 +71,7 @@ class WebViewTestProxy : public RenderViewImpl {
       blink::WebNavigationPolicy policy,
       network::mojom::WebSandboxFlags sandbox_flags,
       const blink::SessionStorageNamespaceId& session_storage_namespace_id,
-      bool& consumed_user_gesture,
-      const base::Optional<blink::WebImpression>& impression) override;
+      bool& consumed_user_gesture) override;
   void PrintPage(blink::WebLocalFrame* frame) override;
   blink::WebString AcceptLanguages() override;
 

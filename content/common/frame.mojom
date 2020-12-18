@@ -280,10 +280,6 @@ struct CreateNewWindowParams {
 
   // The window features to use for the new window.
   blink.mojom.WindowFeatures features;
-
-  // The impression associated with the navigation in the new window, if
-  // one is specified.
-  Impression? impression;
 };
 
 // Operation result when the renderer asks the browser to create a new window.
