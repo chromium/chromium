@@ -34,6 +34,12 @@ Polymer({
       // Set to null to differentiate from an empty album.
       value: null,
     },
+
+    /** @private */
+    showArtAlbumDialog_: {
+      type: Boolean,
+      value: false,
+    }
   },
 
   listeners: {
@@ -145,14 +151,36 @@ Polymer({
    */
   onSelectedAlbumsChanged_(event) {
     const albums = [];
-    this.albums.forEach(/** @param {AmbientModeAlbum} album */ (album) => {
+    let eventAlbumIndex = -1;
+    for (let i = 0; i < this.albums.length; ++i) {
+      const album = this.albums[i];
       if (album.checked) {
         albums.push({albumId: album.albumId});
       }
-    });
+
+      if (album.albumId === event.detail.albumId) {
+        eventAlbumIndex = i;
+      }
+    }
+
+    assert(eventAlbumIndex >= 0, 'Wrong album index.');
+
+    // For art gallery, cannot deselect the last album. Show a dialog to users
+    // and select the album automatically.
+    if (this.topicSource === AmbientModeTopicSource.ART_GALLERY &&
+        albums.length === 0) {
+      this.showArtAlbumDialog_ = true;
+      this.set('albums.' + eventAlbumIndex + '.checked', true);
+      return;
+    }
 
     this.browserProxy_.setSelectedAlbums(
         {topicSource: this.topicSource, albums: albums});
+  },
+
+  /** @private */
+  onArtAlbumDialogClose_() {
+    this.showArtAlbumDialog_ = false;
   },
 
   /** @private */

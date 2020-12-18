@@ -2,6 +2,7 @@
 
 <link rel="import" href="album_list.html">
 <link rel="import" href="ambient_mode_browser_proxy.html">
+<link rel="import" href="art_album_dialog.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_checkbox/cr_checkbox.html">
 <link rel="import" href="chrome://resources/html/assert.html">
 <link rel="import" href="chrome://resources/html/load_time_data.html">
@@ -31,6 +32,10 @@
           localized-string=
               $i18nPolymer{ambientModeAlbumsSubpageGooglePhotosNoAlbum}
       </settings-localized-link>
+    </template>
+
+    <template is="dom-if" if="[[showArtAlbumDialog_]]" restamp>
+      <art-album-dialog on-close="onArtAlbumDialogClose_"></art-album-dialog>
     </template>
 
     <!-- Text based album selection. -->

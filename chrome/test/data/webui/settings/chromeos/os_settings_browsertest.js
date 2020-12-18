@@ -347,6 +347,7 @@ var OSSettingsAmbientModePhotosPageTest = class extends OSSettingsBrowserTest {
   get extraLibraries() {
     return super.extraLibraries.concat([
       BROWSER_SETTINGS_PATH + '../test_browser_proxy.js',
+      BROWSER_SETTINGS_PATH + '../test_util.js',
       'ambient_mode_photos_page_test.js',
     ]);
   }

@@ -14,6 +14,7 @@ js_type_check("closure_compile") {
     ":ambient_mode_browser_proxy",
     ":ambient_mode_page",
     ":ambient_mode_photos_page",
+    ":art_album_dialog",
     ":constants",
     ":topic_source_item",
     ":topic_source_list",
@@ -90,6 +91,13 @@ js_library("album_list") {
   ]
 }
 
+js_library("art_album_dialog") {
+  deps = [
+    "//ui/webui/resources/js:cr",
+    "//ui/webui/resources/js:i18n_behavior",
+  ]
+}
+
 js_type_check("closure_compile_module") {
   is_polymer3 = true
   deps = [
@@ -98,6 +106,7 @@ js_type_check("closure_compile_module") {
     ":ambient_mode_browser_proxy.m",
     ":ambient_mode_page.m",
     ":ambient_mode_photos_page.m",
+    ":art_album_dialog.m",
     ":topic_source_item.m",
     ":topic_source_list.m",
   ]
@@ -185,12 +194,22 @@ js_library("album_list.m") {
   extra_deps = [ ":album_list_module" ]
 }
 
+js_library("art_album_dialog.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/ambient_mode_page/art_album_dialog.m.js" ]
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:i18n_behavior.m",
+  ]
+  extra_deps = [ ":art_album_dialog_module" ]
+}
+
 group("polymer3_elements") {
   public_deps = [
     ":album_item_module",
     ":album_list_module",
     ":ambient_mode_page_module",
     ":ambient_mode_photos_page_module",
+    ":art_album_dialog_module",
     ":modulize",
     ":topic_source_item_module",
     ":topic_source_list_module",
@@ -212,8 +231,9 @@ polymer_modulizer("ambient_mode_photos_page") {
   html_type = "dom-module"
   migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
-  auto_imports = os_settings_auto_imports +
-                 [ "ui/webui/resources/html/assert.html|assertNotReached" ]
+  auto_imports =
+      os_settings_auto_imports +
+      [ "ui/webui/resources/html/assert.html|assert,assertNotReached" ]
 }
 
 polymer_modulizer("topic_source_item") {
@@ -246,6 +266,15 @@ polymer_modulizer("album_item") {
 polymer_modulizer("album_list") {
   js_file = "album_list.js"
   html_file = "album_list.html"
+  html_type = "dom-module"
+  migrated_imports = os_settings_migrated_imports
+  namespace_rewrites = os_settings_namespace_rewrites
+  auto_imports = os_settings_auto_imports
+}
+
+polymer_modulizer("art_album_dialog") {
+  js_file = "art_album_dialog.js"
+  html_file = "art_album_dialog.html"
   html_type = "dom-module"
   migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites

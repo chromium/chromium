@@ -5,10 +5,11 @@
 // clang-format off
 // #import 'chrome://os-settings/chromeos/os_settings.js';
 
-// #import {AmbientModeBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {AmbientModeTopicSource, AmbientModeBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {TestBrowserProxy} from '../../test_browser_proxy.m.js';
 // #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+// #import {waitAfterNextRender} from 'chrome://test/test_util.m.js';
 // clang-format on
 
 /**
@@ -258,6 +259,41 @@ suite('AmbientModeHandler', function() {
     image1.click();
     assertFalse(album1.checked);
     assertEquals(4, selectedAlbumsChangedEventCalls);
+  });
+
+  test('notDeselectLastArtAlbum', async () => {
+    ambientModePhotosPage.albums = [
+      {albumId: 'id0', checked: true, title: 'album0', url: 'url'},
+      {albumId: 'id1', checked: true, title: 'album1', url: 'url'}
+    ];
+    ambientModePhotosPage.topicSource = AmbientModeTopicSource.ART_GALLERY;
+    Polymer.dom.flush();
+
+    const albumList = ambientModePhotosPage.$$('album-list');
+    const ironList = albumList.$$('iron-list');
+    const albumItems = ironList.querySelectorAll('album-item:not([hidden])');
+    assertEquals(2, albumItems.length);
+
+    const album0 = albumItems[0];
+    const album1 = albumItems[1];
+    assertTrue(album0.checked);
+    assertTrue(album1.checked);
+
+    // Click album item image will toggle the check.
+    const image0 = album0.$$('#image');
+    image0.click();
+    assertFalse(album0.checked);
+
+    // Click the last art album item image will not toggle the check and will
+    // show a dialog.
+    const image1 = album1.$$('#image');
+    image1.click();
+    assertTrue(album1.checked);
+    Polymer.dom.flush();
+
+    const artAlbumDialog = ambientModePhotosPage.$$('art-album-dialog');
+    await test_util.waitAfterNextRender(artAlbumDialog);
+    assertTrue(artAlbumDialog.$$('#dialog').open);
   });
 
   test('showCheckIconOnSelectedAlbum', function() {
