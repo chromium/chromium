@@ -14,6 +14,8 @@ namespace bad_message {
 namespace {
 
 void LogBadMessage(BadMessageReason reason) {
+  TRACE_EVENT_INSTANT1("ipc,security", "chrome::ReceivedBadMessage",
+                       TRACE_EVENT_SCOPE_THREAD, "reason", reason);
   LOG(ERROR) << "Terminating renderer for bad IPC message, reason " << reason;
   base::UmaHistogramSparse("Stability.BadMessageTerminated.Chrome", reason);
 }

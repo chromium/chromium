@@ -23,6 +23,8 @@ void LogBadMessage(BadMessageReason reason) {
   static auto* bad_message_reason = base::debug::AllocateCrashKeyString(
       "bad_message_reason", base::debug::CrashKeySize::Size32);
 
+  TRACE_EVENT_INSTANT1("ipc,security", "content::ReceivedBadMessage",
+                       TRACE_EVENT_SCOPE_THREAD, "reason", reason);
   LOG(ERROR) << "Terminating renderer for bad IPC message, reason " << reason;
   base::UmaHistogramSparse("Stability.BadMessageTerminated.Content", reason);
   base::debug::SetCrashKeyString(bad_message_reason,
