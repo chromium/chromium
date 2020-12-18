@@ -67,7 +67,7 @@ class DataItem {
                                          ValueStoreCache* value_store_cache,
                                          base::SequencedTaskRunner* task_runner,
                                          const std::string& extension_id,
-                                         const base::Closure& callback);
+                                         base::OnceClosure callback);
 
   // |id| - Data item ID.
   // |extension_id| - The extension that owns the item.

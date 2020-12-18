@@ -307,12 +307,12 @@ void DataItem::DeleteAllItemsForExtension(
     ValueStoreCache* value_store_cache,
     base::SequencedTaskRunner* task_runner,
     const std::string& extension_id,
-    const base::Closure& callback) {
+    base::OnceClosure callback) {
   task_runner->PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(&ValueStoreCache::DeleteStorageSoon,
                      base::Unretained(value_store_cache), extension_id),
-      callback);
+      std::move(callback));
 }
 
 DataItem::DataItem(const std::string& id,

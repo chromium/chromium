@@ -57,8 +57,9 @@ void LockScreenValueStoreMigratorImpl::ClearDataForExtension(
 
   DataItem::DeleteAllItemsForExtension(
       context_, target_store_cache_, task_runner_, extension_id,
-      base::Bind(&LockScreenValueStoreMigratorImpl::DeleteItemsFromSourceStore,
-                 weak_ptr_factory_.GetWeakPtr(), extension_id, callback));
+      base::BindOnce(
+          &LockScreenValueStoreMigratorImpl::DeleteItemsFromSourceStore,
+          weak_ptr_factory_.GetWeakPtr(), extension_id, callback));
 }
 
 LockScreenValueStoreMigratorImpl::MigrationData::MigrationData() = default;
@@ -191,7 +192,7 @@ void LockScreenValueStoreMigratorImpl::DeleteItemsFromSourceStore(
     const base::Closure& callback) {
   DataItem::DeleteAllItemsForExtension(
       context_, source_store_cache_, task_runner_, extension_id,
-      base::Bind(
+      base::BindOnce(
           &LockScreenValueStoreMigratorImpl::RunClearDataForExtensionCallback,
           weak_ptr_factory_.GetWeakPtr(), callback));
 }

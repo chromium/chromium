@@ -107,13 +107,13 @@ void DeleteAllItems(const std::string& extension_id,
                     content::BrowserContext* context,
                     ValueStoreCache* value_store_cache,
                     base::SequencedTaskRunner* task_runner,
-                    const base::Closure& callback) {
+                    base::OnceClosure callback) {
   if (g_test_delete_all_items_callback) {
-    g_test_delete_all_items_callback->Run(extension_id, callback);
+    g_test_delete_all_items_callback->Run(extension_id, std::move(callback));
     return;
   }
   DataItem::DeleteAllItemsForExtension(context, value_store_cache, task_runner,
-                                       extension_id, callback);
+                                       extension_id, std::move(callback));
 }
 
 }  // namespace
