@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
@@ -47,7 +48,10 @@ std::vector<std::string> test_cases = {
     "uninstall_internal,navigate_browser_in_scope,"
     "assert_install_icon_shown,assert_launch_icon_not_shown",
     "navigate_installable, install_create_shortcut_tabbed, "
-    "set_open_in_window_internal, launch_internal, assert_window_created"};
+    "set_open_in_window_internal, launch_internal, assert_window_created",
+    "navigate_installable_site_a, assert_install_icon_shown, "
+    "install_omnibox_or_menu, assert_window_created, launch_internal_site_a, "
+    "close_pwa, assert_no_crash"};
 #else
     "navigate_installable,assert_install_icon_shown,"
     "assert_launch_icon_not_shown",
@@ -59,7 +63,10 @@ std::vector<std::string> test_cases = {
     "uninstall_from_menu,navigate_browser_in_scope,"
     "assert_install_icon_shown,assert_launch_icon_not_shown",
     "navigate_installable, install_create_shortcut_tabbed, "
-    "set_open_in_window_internal, launch_internal, assert_window_created"};
+    "set_open_in_window_internal, launch_internal, assert_window_created",
+    "navigate_installable_site_a, assert_install_icon_shown, "
+    "install_omnibox_or_menu, assert_window_created, launch_internal_site_a, "
+    "close_pwa, assert_no_crash"};
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // anonymous namespace
@@ -120,7 +127,7 @@ class WebAppIntegrationBrowserTest
   }
 
   void ExecuteAction(const std::string& action_string) {
-    if (action_string == "navigate_installable") {
+    if (base::StartsWith(action_string, "navigate_installable")) {
       NavigateToSite(browser(), GetInstallableAppURL());
     } else if (action_string == "navigate_browser_in_scope") {
       NavigateToSite(browser(), GetInScopeURL());
@@ -128,7 +135,7 @@ class WebAppIntegrationBrowserTest
       NavigateToSite(browser(), GetOutOfScopeURL());
     } else if (action_string == "install_omnibox_or_menu") {
       ExecutePwaInstallIcon();
-    } else if (action_string == "launch_internal") {
+    } else if (base::StartsWith(action_string, "launch_internal")) {
       LaunchInternal();
     } else if (action_string == "uninstall_from_menu") {
       UninstallFromMenu();
@@ -138,6 +145,8 @@ class WebAppIntegrationBrowserTest
       InstallCreateShortcutTabbed();
     } else if (action_string == "set_open_in_window_internal") {
       SetOpenInWindowInternal();
+    } else if (action_string == "close_pwa") {
+      ClosePWA();
     } else if (action_string == "assert_installable") {
       AssertInstallable();
     } else if (action_string == "assert_install_icon_shown") {
@@ -150,6 +159,7 @@ class WebAppIntegrationBrowserTest
       AssertLaunchIconNotShown();
     } else if (action_string == "assert_window_created") {
       AssertWindowCreated();
+    } else if (action_string == "assert_no_crash") {
     } else {
       FAIL() << "Unimplemented action: " << action_string;
     }
@@ -204,6 +214,9 @@ class WebAppIntegrationBrowserTest
 
     chrome::SetAutoAcceptPWAInstallConfirmationForTesting(false);
     app_id_ = app_id;
+    auto* browser_list = BrowserList::GetInstance();
+    app_browser_ = browser_list->GetLastActive();
+    DCHECK(AppBrowserController::IsWebApp(app_browser_));
 
     return app_id;
   }
@@ -274,6 +287,12 @@ class WebAppIntegrationBrowserTest
         app_id_, blink::mojom::DisplayMode::kStandalone, true);
   }
 
+  void ClosePWA() {
+    DCHECK(app_browser_);
+    app_browser_->window()->Close();
+    ui_test_utils::WaitForBrowserToClose(app_browser_);
+  }
+
   // Assert Actions
   void AssertInstallable() { EXPECT_TRUE(last_navigation_result_.installable); }
   void AssertInstallIconShown() {
@@ -334,10 +353,19 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTest, LaunchInternal) {
+  auto* browser_list = BrowserList::GetInstance();
+  EXPECT_EQ(1U, browser_list->size());
+  EXPECT_FALSE(AppBrowserController::IsWebApp(browser_list->GetLastActive()));
   NavigateToSite(browser(), GetInstallableAppURL());
   ExecutePwaInstallIcon();
-  Browser* app_browser = LaunchInternal();
-  DCHECK(app_browser);
+  EXPECT_EQ(2U, browser_list->size());
+  EXPECT_TRUE(AppBrowserController::IsWebApp(browser_list->GetLastActive()));
+  ClosePWA();
+  EXPECT_EQ(1U, browser_list->size());
+  EXPECT_FALSE(AppBrowserController::IsWebApp(browser_list->GetLastActive()));
+  LaunchInternal();
+  EXPECT_EQ(2U, browser_list->size());
+  EXPECT_TRUE(AppBrowserController::IsWebApp(browser_list->GetLastActive()));
 }
 
 IN_PROC_BROWSER_TEST_P(WebAppIntegrationBrowserTest, Default) {
