@@ -465,13 +465,6 @@ public final class ChromePreferenceKeys {
     public static final String INCOGNITO_SHORTCUT_ADDED = "incognito-shortcut-added";
 
     /**
-     * The last version the dex compile workaround ran on. See SplitChromeApplication for more
-     * details.
-     */
-    public static final String ISOLATED_SPLITS_DEX_COMPILE_VERSION =
-            "Chrome.IsolatedSplits.DexCompileVersion";
-
-    /**
      * When the user is shown a badge that the current Android OS version is unsupported, and they
      * tap it to display the menu (which has additional information), we store the current version
      * of Chrome to this preference to ensure we only show the badge once. The value is cleared
@@ -855,7 +848,6 @@ public final class ChromePreferenceKeys {
                 HOMEPAGE_USE_CHROME_NTP,
                 IMAGE_DESCRIPTIONS_JUST_ONCE_COUNT,
                 IMAGE_DESCRIPTIONS_DONT_ASK_AGAIN,
-                ISOLATED_SPLITS_DEX_COMPILE_VERSION,
                 PERSISTENT_OFFLINE_CONTENT_AVAILABILITY_STATUS,
                 PRICE_TRACKING_PRICE_WELCOME_MESSAGE_CARD,
                 PRICE_TRACKING_PRICE_WELCOME_MESSAGE_CARD_SHOW_COUNT,

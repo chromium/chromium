@@ -44,9 +44,6 @@ import org.chromium.ui.base.ResourceBundle;
  * Application base class which will call through to the given {@link Impl}. Application classes
  * which extend this class should also extend {@link Impl}, and call {@link #setImpl(Impl)} before
  * calling {@link attachBaseContext(Context)}.
- *
- * This is the base class of all Chrome applications. Logic specific to isolated splits should go in
- * {@link SplitChromeApplication}.
  */
 public class SplitCompatApplication extends Application {
     private static final String COMMAND_LINE_FILE = "chrome-command-line";
