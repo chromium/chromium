@@ -19,41 +19,16 @@
 # ****************************************************************************
 
 #
-# Test file splits (These expectations should all be Pass, but tell
+# Test file splits. These expectations should all be Pass, but they tell
 # regenerate_internal_cts_html.sh to run them (and siblings) as separate tests.
 #
 
-wpt_internal/webgpu/cts.html?q=webgpu:api,validation,copyTextureToTexture:texture_format_equality:* [ Pass ]
+wpt_internal/webgpu/cts.html?q=webgpu:api,validation,copyTextureToTexture:texture_format_equality:srcFormat="r8unorm";* [ Pass ]
+wpt_internal/webgpu/cts.html?q=webgpu:api,validation,copyTextureToTexture:copy_ranges_with_compressed_texture_formats:format="bc1-rgba-unorm";* [ Pass ]
 
 #
 # Untriaged failures
 #
-
-wpt_internal/webgpu/cts.html?q=webgpu:api,operation,buffers,map_oom:mappedAtCreation,smaller_getMappedRange:* [ Failure ]
-wpt_internal/webgpu/cts.html?q=webgpu:api,operation,render_pass,storeOp:* [ Failure ]
-wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type,* [ Failure ]
-wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroup:texture_binding_must_have_correct_usage,* [ Failure ]
-wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroupLayout:bindingTypeSpecific_optional_members,* [ Failure ]
-wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroupLayout:visibility,* [ Failure ]
-wpt_internal/webgpu/cts.html?q=webgpu:api,validation,copyBufferToBuffer:copy_with_invalid_buffer: [ Failure ]
-wpt_internal/webgpu/cts.html?q=webgpu:api,validation,encoding,cmds,compute_pass:* [ Failure ]
-wpt_internal/webgpu/cts.html?q=webgpu:api,validation,render_pass,storeOp:* [ Failure ]
-# Crash with validation layer
-wpt_internal/webgpu/cts.html?q=webgpu:api,operation,render_pipeline,primitive_topology:* [ Failure Crash ]
-
-wpt_internal/webgpu/cts.html?q=webgpu:api,validation,buffer,mapping:mapAsync,invalidBuffer:* [ Failure ]
-wpt_internal/webgpu/cts.html?q=webgpu:api,validation,buffer,mapping:mapAsync,offsetAndSizeAlignment,* [ Failure ]
-wpt_internal/webgpu/cts.html?q=webgpu:api,validation,buffer,mapping:mapAsync,offsetAndSizeOOB,* [ Failure ]
-wpt_internal/webgpu/cts.html?q=webgpu:api,validation,buffer,mapping:mapAsync,sizeUnspecifiedOOB,* [ Failure ]
-wpt_internal/webgpu/cts.html?q=webgpu:api,validation,buffer,mapping:mapAsync,state,* [ Failure ]
-wpt_internal/webgpu/cts.html?q=webgpu:api,validation,buffer,mapping:mapAsync,usage,* [ Failure ]
-wpt_internal/webgpu/cts.html?q=webgpu:api,validation,buffer,mapping:mapAsync_,* [ Failure ]
-
-# Precision. Need a better way to compare expected values
-wpt_internal/webgpu/cts.html?q=webgpu:util,texture,texelData:unorm_texel_data_in_shader:format="rgba8unorm-srgb";* [ Failure ]
-wpt_internal/webgpu/cts.html?q=webgpu:util,texture,texelData:unorm_texel_data_in_shader:format="bgra8unorm-srgb";* [ Failure ]
-wpt_internal/webgpu/cts.html?q=webgpu:util,texture,texelData:ufloat_texel_data_in_shader:format="rg11b10ufloat";* [ Failure ]
-wpt_internal/webgpu/cts.html?q=webgpu:util,texture,texelData:ufloat_texel_data_in_shader:format="rgb9e5ufloat";* [ Failure ]
 
 # Many formats failing on Windows
 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero_init:uninitialized_texture_is_zero:readMethod="Sample";* [ Failure ]
@@ -71,7 +46,7 @@ wpt_internal/webgpu/cts.html?q=webgpu:util,texture,texelData:ufloat_texel_data_i
 # Win missing resource state D3D12_RESOURCE_STATE_DEPTH_WRITE
 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero_init:uninitialized_texture_is_zero:readMethod="DepthTest";* [ Failure ]
 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero_init:uninitialized_texture_is_zero:readMethod="DepthTest";* [ Failure ]
-[ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero_init:uninitialized_texture_is_zero:readMethod="DepthTest";* [ Slow Failure Crash ]
+[ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero_init:uninitialized_texture_is_zero:readMethod="DepthTest";* [ Failure Crash Timeout ]
 
 # Crash with validation layer. May also be slow.
 # Missing D3D12_RESOURCE_STATE_DEPTH_WRITE
@@ -123,6 +98,43 @@ crbug.com/1083478 [ Linux ] wpt_internal/webgpu/webgpu/web_platform/reftests/can
 crbug.com/1083478 [ Win ] wpt_internal/webgpu/webgpu/web_platform/reftests/canvas_clear.html [ Skip ]
 crbug.com/1083478 [ Win ] wpt_internal/webgpu/webgpu/web_platform/reftests/canvas_complex_bgra8unorm.html [ Skip ]
 
+# Spec was changed so BGLs should eagerly apply per-pipeline limits. Tests need fixing, then Dawn
+# needs to pass them. https://github.com/gpuweb/cts/issues/230
+wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroupLayout:max_resources_per_stage,in_bind_group_layout,* [ Failure ]
+
+# Precision. Need a better way to compare expected values
+wpt_internal/webgpu/cts.html?q=webgpu:util,texture,texelData:unorm_texel_data_in_shader:format="rgba8unorm-srgb";* [ Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:util,texture,texelData:unorm_texel_data_in_shader:format="bgra8unorm-srgb";* [ Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:util,texture,texelData:ufloat_texel_data_in_shader:format="rg11b10ufloat";* [ Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:util,texture,texelData:ufloat_texel_data_in_shader:format="rgb9e5ufloat";* [ Failure ]
+
+# Test is outdated relative to spec; need to fix the test first.
+wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroupLayout:bindingTypeSpecific_optional_members,* [ Skip ]
+
+#
+# Test bugs (fixed upstream)
+#
+
+# Tries to use depth32float as a color attachment.
+wpt_internal/webgpu/cts.html?q=webgpu:api,operation,render_pass,storeOp:* [ Failure ]
+
+# Missing an error scope wrapper around intentionally-error buffer.
+# Also breaks on the distinction between multisampled and non-multisampled texture bindings.
+wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type,* [ Failure ]
+
+# Tries to create a multisampled storage texture.
+wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroup:texture_binding_must_have_correct_usage,* [ Failure ]
+
+# Neglects to set storageTextureFormat for storage texture bindings.
+wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroupLayout:visibility,* [ Failure ]
+
+# Outdated WGSL code.
+wpt_internal/webgpu/cts.html?q=webgpu:api,validation,encoding,cmds,compute_pass:* [ Failure ]
+
+# "Only CopyDst is allowed with MapRead", and uncaught promise rejections.
+wpt_internal/webgpu/cts.html?q=webgpu:api,validation,buffer,mapping:* [ Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:api,validation,copyBufferToBuffer:copy_with_invalid_buffer: [ Failure ]
+
 #
 # Platform-independent failures
 #
@@ -135,16 +147,19 @@ crbug.com/dawn/375 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBi
 crbug.com/dawn/375 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroup:buffer_offset_and_size_for_bind_groups_match:offset=1024;size=0 [ Failure ]
 crbug.com/dawn/375 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroup:buffer_offset_and_size_for_bind_groups_match:offset=1024;size="_undef_" [ Failure ]
 
-# Test doesn't check for an OOM error. gpuweb/cts#199 crbug.com/1014740 crbug.com/1014740
-# Actually passes on Windows NVIDIA which may be a Dawn bug.
-wpt_internal/webgpu/cts.html?q=webgpu:api,operation,buffers,map_oom:mapAsync:* [ Failure Crash ]
+crbug.com/dawn/608 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,buffers,map_oom:mappedAtCreation,smaller_getMappedRange:* [ Failure ]
+
+crbug.com/dawn/609 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,buffers,map_oom:mapAsync:* [ Failure Crash ]
+
+# Dawn is missing several validation rules about depthReadOnly/stencilReadOnly.
+wpt_internal/webgpu/cts.html?q=webgpu:api,validation,render_pass,storeOp:* [ Failure ]
+
+# Crash with validation layer.
+wpt_internal/webgpu/cts.html?q=webgpu:api,operation,render_pipeline,primitive_topology:* [ Failure Crash ]
 
 # Timeout on Windows/NVIDIA with backend validation
 # Dawn doesn't implement these limits yet
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroupLayout:max_resources_per_stage,in_pipeline_layout:* [ Failure Timeout ]
-
-# https://github.com/gpuweb/cts/issues/230 these tests need to be updated and Dawn will fail once we implement proper limits
-wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroupLayout:max_resources_per_stage,in_bind_group_layout,* [ Failure ]
 
 # Failure in both D3D12 and Vulkan validation layers
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,encoding,cmds,index_access:* [ Skip ]
@@ -159,7 +174,6 @@ crbug.com/1083478 [ Mac ] wpt_internal/webgpu/webgpu/web_platform/reftests/canva
 # Precision. Need a better way to compare expected values
 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:util,texture,texelData:unorm_texel_data_in_shader:format="rgb10a2unorm";* [ Failure ]
 
-
 #
 # Linux (Vulkan) specific
 #
@@ -171,7 +185,8 @@ crbug.com/1087130 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation
 [ Linux ] wpt_internal/webgpu/cts.html?worker=1&q=webgpu:api,operation,command_buffer,render,storeop:* [ Failure ]
 
 # Crash with backend validation.
-[ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,memory_sync,buffer,ww:* [ Failure Crash ]
+[ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,memory_sync,buffer,ww:* [ Failure Crash Timeout ]
+
 
 #
 # Windows (D3D12) specific
@@ -179,4 +194,3 @@ crbug.com/1087130 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation
 
 # Very flaky on Windows/Linux, especially (but not exclusively!) with backend validation
 crbug.com/1087130 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createView:* [ RetryOnFailure ]
-
