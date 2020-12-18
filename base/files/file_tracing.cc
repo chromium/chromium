@@ -44,8 +44,6 @@ FileTracing::ScopedEnabler::~ScopedEnabler() {
     provider->FileTracingDisable(this);
 }
 
-FileTracing::ScopedTrace::ScopedTrace() : id_(nullptr) {}
-
 FileTracing::ScopedTrace::~ScopedTrace() {
   if (id_) {
     FileTracing::Provider* provider = GetProvider();

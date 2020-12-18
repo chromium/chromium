@@ -10,7 +10,6 @@
 #include "base/base_export.h"
 #include "base/callback.h"
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/message_loop/message_pump_for_io.h"
@@ -39,6 +38,8 @@ class BASE_EXPORT FileDescriptorWatcher {
   // readable or writable without blocking and the destructor unregisters it.
   class Controller {
    public:
+    Controller(const Controller&) = delete;
+    Controller& operator=(const Controller&) = delete;
     // Unregisters the callback registered by the constructor.
     ~Controller();
 
@@ -80,8 +81,6 @@ class BASE_EXPORT FileDescriptorWatcher {
     SequenceChecker sequence_checker_;
 
     WeakPtrFactory<Controller> weak_factory_{this};
-
-    DISALLOW_COPY_AND_ASSIGN(Controller);
   };
 
   // Registers |io_thread_task_runner| to watch file descriptors for which
@@ -92,6 +91,8 @@ class BASE_EXPORT FileDescriptorWatcher {
   // blocking I/O) since ~Controller waits for a task posted to it.
   explicit FileDescriptorWatcher(
       scoped_refptr<SingleThreadTaskRunner> io_thread_task_runner);
+  FileDescriptorWatcher(const FileDescriptorWatcher&) = delete;
+  FileDescriptorWatcher& operator=(const FileDescriptorWatcher&) = delete;
   ~FileDescriptorWatcher();
 
   // Registers |callback| to be posted on the current sequence when |fd| is
@@ -129,8 +130,6 @@ class BASE_EXPORT FileDescriptorWatcher {
   }
 
   const scoped_refptr<SingleThreadTaskRunner> io_thread_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileDescriptorWatcher);
 };
 
 }  // namespace base

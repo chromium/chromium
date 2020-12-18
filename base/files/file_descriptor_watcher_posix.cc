@@ -37,6 +37,8 @@ class FileDescriptorWatcher::Controller::Watcher
       public CurrentThread::DestructionObserver {
  public:
   Watcher(WeakPtr<Controller> controller, MessagePumpForIO::Mode mode, int fd);
+  Watcher(const Watcher&) = delete;
+  Watcher& operator=(const Watcher&) = delete;
   ~Watcher() override;
 
   void StartWatching();
@@ -78,8 +80,6 @@ class FileDescriptorWatcher::Controller::Watcher
   // Whether this Watcher was registered as a DestructionObserver on the
   // MessagePumpForIO thread.
   bool registered_as_destruction_observer_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(Watcher);
 };
 
 FileDescriptorWatcher::Controller::Watcher::Watcher(

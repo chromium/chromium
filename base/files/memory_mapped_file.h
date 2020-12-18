@@ -8,9 +8,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <utility>
+
 #include "base/base_export.h"
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 
 #if defined(OS_WIN)
@@ -56,6 +57,8 @@ class BASE_EXPORT MemoryMappedFile {
 
   // The default constructor sets all members to invalid/null values.
   MemoryMappedFile();
+  MemoryMappedFile(const MemoryMappedFile&) = delete;
+  MemoryMappedFile& operator=(const MemoryMappedFile&) = delete;
   ~MemoryMappedFile();
 
   // Used to hold information about a region [offset + size] of a file.
@@ -143,8 +146,6 @@ class BASE_EXPORT MemoryMappedFile {
 #if defined(OS_WIN)
   win::ScopedHandle file_mapping_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(MemoryMappedFile);
 };
 
 }  // namespace base

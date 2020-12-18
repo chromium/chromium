@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/posix/eintr_wrapper.h"
@@ -32,12 +31,11 @@ namespace {
 class Mock {
  public:
   Mock() = default;
+  Mock(const Mock&) = delete;
+  Mock& operator=(const Mock&) = delete;
 
   MOCK_METHOD0(ReadableCallback, void());
   MOCK_METHOD0(WritableCallback, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Mock);
 };
 
 enum class FileDescriptorWatcherTestType {
@@ -55,6 +53,9 @@ class FileDescriptorWatcherTest
                 ? test::TaskEnvironment::MainThreadType::IO
                 : test::TaskEnvironment::MainThreadType::DEFAULT)),
         other_thread_("FileDescriptorWatcherTest_OtherThread") {}
+  FileDescriptorWatcherTest(const FileDescriptorWatcherTest&) = delete;
+  FileDescriptorWatcherTest& operator=(const FileDescriptorWatcherTest&) =
+      delete;
   ~FileDescriptorWatcherTest() override = default;
 
   void SetUp() override {
@@ -159,8 +160,6 @@ class FileDescriptorWatcherTest
   // Used to verify that callbacks run on the thread on which they are
   // registered.
   ThreadCheckerImpl thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileDescriptorWatcherTest);
 };
 
 }  // namespace

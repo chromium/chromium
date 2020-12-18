@@ -14,7 +14,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_tracing.h"
 #include "base/files/platform_file.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 
@@ -167,6 +166,9 @@ class BASE_EXPORT File {
   explicit File(Error error_details);
 
   File(File&& other);
+
+  File(const File&) = delete;
+  File& operator=(const File&) = delete;
 
   ~File();
 
@@ -393,8 +395,6 @@ class BASE_EXPORT File {
   Error error_details_ = FILE_ERROR_FAILED;
   bool created_ = false;
   bool async_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(File);
 };
 
 }  // namespace base

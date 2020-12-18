@@ -28,8 +28,7 @@ bool FilePathWatcher::RecursiveWatchAvailable() {
 #endif
 }
 
-FilePathWatcher::PlatformDelegate::PlatformDelegate(): cancelled_(false) {
-}
+FilePathWatcher::PlatformDelegate::PlatformDelegate() = default;
 
 FilePathWatcher::PlatformDelegate::~PlatformDelegate() {
   DCHECK(is_cancelled());

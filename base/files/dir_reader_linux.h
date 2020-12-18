@@ -14,7 +14,6 @@
 #include <unistd.h>
 
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/posix/eintr_wrapper.h"
 
 // See the comments in dir_reader_posix.h about this.
@@ -37,6 +36,9 @@ class DirReaderLinux {
         size_(0) {
     memset(buf_, 0, sizeof(buf_));
   }
+
+  DirReaderLinux(const DirReaderLinux&) = delete;
+  DirReaderLinux& operator=(const DirReaderLinux&) = delete;
 
   ~DirReaderLinux() {
     if (fd_ >= 0) {
@@ -93,8 +95,6 @@ class DirReaderLinux {
   alignas(linux_dirent) unsigned char buf_[512];
   size_t offset_;
   size_t size_;
-
-  DISALLOW_COPY_AND_ASSIGN(DirReaderLinux);
 };
 
 }  // namespace base

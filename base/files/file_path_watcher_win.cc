@@ -4,20 +4,19 @@
 
 #include "base/files/file_path_watcher.h"
 
+#include <windows.h>
+
 #include "base/bind.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/win/object_watcher.h"
-
-#include <windows.h>
 
 namespace base {
 
@@ -26,8 +25,9 @@ namespace {
 class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate,
                             public base::win::ObjectWatcher::Delegate {
  public:
-  FilePathWatcherImpl()
-      : handle_(INVALID_HANDLE_VALUE), type_(Type::kNonRecursive) {}
+  FilePathWatcherImpl() = default;
+  FilePathWatcherImpl(const FilePathWatcherImpl&) = delete;
+  FilePathWatcherImpl& operator=(const FilePathWatcherImpl&) = delete;
   ~FilePathWatcherImpl() override;
 
   // FilePathWatcher::PlatformDelegate:
@@ -64,13 +64,13 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate,
   bool* was_deleted_ptr_ = nullptr;
 
   // Handle for FindFirstChangeNotification.
-  HANDLE handle_;
+  HANDLE handle_ = INVALID_HANDLE_VALUE;
 
   // ObjectWatcher to watch handle_ for events.
   base::win::ObjectWatcher watcher_;
 
   // The type of watch requested.
-  Type type_;
+  Type type_ = Type::kNonRecursive;
 
   // Keep track of the last modified time of the file.  We use nulltime
   // to represent the file not existing.
@@ -79,8 +79,6 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate,
   // The time at which we processed the first notification with the
   // |last_modified_| time stamp.
   Time first_notification_;
-
-  DISALLOW_COPY_AND_ASSIGN(FilePathWatcherImpl);
 };
 
 FilePathWatcherImpl::~FilePathWatcherImpl() {

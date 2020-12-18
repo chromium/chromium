@@ -12,6 +12,8 @@
 #endif
 
 #include <set>
+#include <string>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -21,7 +23,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
@@ -106,12 +107,11 @@ class NotificationCollector
 class TestDelegateBase : public SupportsWeakPtr<TestDelegateBase> {
  public:
   TestDelegateBase() = default;
+  TestDelegateBase(const TestDelegateBase&) = delete;
+  TestDelegateBase& operator=(const TestDelegateBase&) = delete;
   virtual ~TestDelegateBase() = default;
 
   virtual void OnFileChanged(const FilePath& path, bool error) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestDelegateBase);
 };
 
 // A mock class for testing. Gmock is not appropriate because it is not
@@ -125,6 +125,8 @@ class TestDelegate : public TestDelegateBase {
       : collector_(collector) {
     collector_->Register(this);
   }
+  TestDelegate(const TestDelegate&) = delete;
+  TestDelegate& operator=(const TestDelegate&) = delete;
   ~TestDelegate() override = default;
 
   void OnFileChanged(const FilePath& path, bool error) override {
@@ -136,8 +138,6 @@ class TestDelegate : public TestDelegateBase {
 
  private:
   scoped_refptr<NotificationCollector> collector_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDelegate);
 };
 
 class FilePathWatcherTest : public testing::Test {
@@ -149,6 +149,8 @@ class FilePathWatcherTest : public testing::Test {
   {
   }
 
+  FilePathWatcherTest(const FilePathWatcherTest&) = delete;
+  FilePathWatcherTest& operator=(const FilePathWatcherTest&) = delete;
   ~FilePathWatcherTest() override = default;
 
  protected:
@@ -203,9 +205,6 @@ class FilePathWatcherTest : public testing::Test {
 
   ScopedTempDir temp_dir_;
   scoped_refptr<NotificationCollector> collector_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FilePathWatcherTest);
 };
 
 bool FilePathWatcherTest::SetupWatch(const FilePath& target,
@@ -277,6 +276,8 @@ class Deleter : public TestDelegateBase {
   explicit Deleter(base::OnceClosure done_closure)
       : watcher_(std::make_unique<FilePathWatcher>()),
         done_closure_(std::move(done_closure)) {}
+  Deleter(const Deleter&) = delete;
+  Deleter& operator=(const Deleter&) = delete;
   ~Deleter() override = default;
 
   void OnFileChanged(const FilePath&, bool) override {
@@ -289,8 +290,6 @@ class Deleter : public TestDelegateBase {
  private:
   std::unique_ptr<FilePathWatcher> watcher_;
   base::OnceClosure done_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(Deleter);
 };
 
 // Verify that deleting a watcher during the callback doesn't crash.

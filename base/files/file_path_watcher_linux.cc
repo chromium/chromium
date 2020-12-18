@@ -28,7 +28,6 @@
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/posix/eintr_wrapper.h"
@@ -63,7 +62,7 @@ class InotifyReader;
 // Get the maximum number of inotify watches can be used by a FilePathWatcher
 // instance. This is based on /proc/sys/fs/inotify/max_user_watches entry.
 int GetMaxNumberOfInotifyWatches() {
-  const static int max = []() {
+  static const int max = []() {
     int max_number_of_inotify_watches = 0;
 
     std::ifstream in(kInotifyMaxUserWatchesPath);
@@ -81,14 +80,15 @@ class InotifyReaderThreadDelegate final : public PlatformThread::Delegate {
  public:
   explicit InotifyReaderThreadDelegate(int inotify_fd)
       : inotify_fd_(inotify_fd) {}
+  InotifyReaderThreadDelegate(const InotifyReaderThreadDelegate&) = delete;
+  InotifyReaderThreadDelegate& operator=(const InotifyReaderThreadDelegate&) =
+      delete;
   ~InotifyReaderThreadDelegate() override = default;
 
  private:
   void ThreadMain() override;
 
   const int inotify_fd_;
-
-  DISALLOW_COPY_AND_ASSIGN(InotifyReaderThreadDelegate);
 };
 
 // Singleton to manage all inotify watches.
@@ -99,6 +99,9 @@ class InotifyReader {
   using Watch = int;  // Watch descriptor used by AddWatch() and RemoveWatch().
   static constexpr Watch kInvalidWatch = -1;
   static constexpr Watch kWatchLimitExceeded = -2;
+
+  InotifyReader(const InotifyReader&) = delete;
+  InotifyReader& operator=(const InotifyReader&) = delete;
 
   // Watch directory |path| for changes. |watcher| will be notified on each
   // change. Returns |kInvalidWatch| on failure.
@@ -135,13 +138,13 @@ class InotifyReader {
 
   // Flag set to true when startup was successful.
   bool valid_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(InotifyReader);
 };
 
 class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
  public:
   FilePathWatcherImpl();
+  FilePathWatcherImpl(const FilePathWatcherImpl&) = delete;
+  FilePathWatcherImpl& operator=(const FilePathWatcherImpl&) = delete;
   ~FilePathWatcherImpl() override;
 
   // Called for each event coming from the watch. |fired_watch| identifies the
@@ -253,8 +256,6 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
   WeakPtr<FilePathWatcherImpl> weak_ptr_;
 
   WeakPtrFactory<FilePathWatcherImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FilePathWatcherImpl);
 };
 
 LazyInstance<InotifyReader>::Leaky g_inotify_reader = LAZY_INSTANCE_INITIALIZER;

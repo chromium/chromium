@@ -8,11 +8,11 @@
 #define BASE_FILES_FILE_PATH_WATCHER_H_
 
 #include <memory>
+#include <utility>
 
 #include "base/base_export.h"
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
@@ -64,6 +64,8 @@ class BASE_EXPORT FilePathWatcher {
     using Type = FilePathWatcher::Type;
 
     PlatformDelegate();
+    PlatformDelegate(const PlatformDelegate&) = delete;
+    PlatformDelegate& operator=(const PlatformDelegate&) = delete;
     virtual ~PlatformDelegate();
 
     // Start watching for the given |path| and notify |delegate| about changes.
@@ -97,12 +99,12 @@ class BASE_EXPORT FilePathWatcher {
 
    private:
     scoped_refptr<SequencedTaskRunner> task_runner_;
-    bool cancelled_;
-
-    DISALLOW_COPY_AND_ASSIGN(PlatformDelegate);
+    bool cancelled_ = false;
   };
 
   FilePathWatcher();
+  FilePathWatcher(const FilePathWatcher&) = delete;
+  FilePathWatcher& operator=(const FilePathWatcher&) = delete;
   ~FilePathWatcher();
 
   // Returns true if the platform and OS version support recursive watches.
@@ -122,8 +124,6 @@ class BASE_EXPORT FilePathWatcher {
   std::unique_ptr<PlatformDelegate> impl_;
 
   SequenceChecker sequence_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(FilePathWatcher);
 };
 
 }  // namespace base

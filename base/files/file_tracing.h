@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/base_export.h"
-#include "base/macros.h"
 
 #define FILE_TRACING_PREFIX "File"
 
@@ -66,7 +65,9 @@ class BASE_EXPORT FileTracing {
 
   class ScopedTrace {
    public:
-    ScopedTrace();
+    ScopedTrace() = default;
+    ScopedTrace(const ScopedTrace&) = delete;
+    ScopedTrace& operator=(const ScopedTrace&) = delete;
     ~ScopedTrace();
 
     // Called only if the tracing category is enabled. |name| is the name of the
@@ -78,16 +79,15 @@ class BASE_EXPORT FileTracing {
    private:
     // The ID of this trace. Based on the |file| passed to |Initialize()|. Must
     // outlive this class.
-    const void* id_;
+    const void* id_ = nullptr;
 
     // The name of the event to trace (e.g. "Read", "Write"). Prefixed with
     // "File".
     const char* name_;
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedTrace);
   };
 
-  DISALLOW_COPY_AND_ASSIGN(FileTracing);
+  FileTracing(const FileTracing&) = delete;
+  FileTracing& operator=(const FileTracing&) = delete;
 };
 
 }  // namespace base

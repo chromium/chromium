@@ -15,7 +15,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
 #include "base/win/scoped_handle.h"
@@ -68,6 +67,8 @@ class OpenFileTest : public OsValidationTest,
                                     std::tuple<DWORD, DWORD, DWORD>>> {
  protected:
   OpenFileTest() = default;
+  OpenFileTest(const OpenFileTest&) = delete;
+  OpenFileTest& operator=(const OpenFileTest&) = delete;
 
   // Returns a dwDesiredAccess bitmask for use with CreateFileW containing the
   // test's access right bits.
@@ -248,8 +249,6 @@ class OpenFileTest : public OsValidationTest,
   FilePath temp_file_path_;
   FilePath temp_file_dest_path_;
   win::ScopedHandle file_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(OpenFileTest);
 };
 
 // Tests that an opened but not mapped file can be deleted as expected.

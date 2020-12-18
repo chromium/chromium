@@ -14,7 +14,6 @@
 #include "base/containers/stack.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -24,8 +23,6 @@
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
 #include <unistd.h>
 #include <unordered_set>
-
-#include "base/files/file.h"
 #endif
 
 namespace base {
@@ -148,6 +145,8 @@ class BASE_EXPORT FileEnumerator {
                  const FilePath::StringType& pattern,
                  FolderSearchPolicy folder_search_policy,
                  ErrorPolicy error_policy);
+  FileEnumerator(const FileEnumerator&) = delete;
+  FileEnumerator& operator=(const FileEnumerator&) = delete;
   ~FileEnumerator();
 
   // Returns the next file or an empty string if there are no more results.
@@ -205,8 +204,6 @@ class BASE_EXPORT FileEnumerator {
   // A stack that keeps track of which subdirectories we still need to
   // enumerate in the breadth-first search.
   base::stack<FilePath> pending_paths_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileEnumerator);
 };
 
 }  // namespace base

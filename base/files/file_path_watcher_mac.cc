@@ -6,7 +6,6 @@
 
 #include "base/files/file_path_watcher.h"
 #include "base/files/file_path_watcher_kqueue.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
 
@@ -21,6 +20,8 @@ namespace {
 class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
  public:
   FilePathWatcherImpl() = default;
+  FilePathWatcherImpl(const FilePathWatcherImpl&) = delete;
+  FilePathWatcherImpl& operator=(const FilePathWatcherImpl&) = delete;
   ~FilePathWatcherImpl() override = default;
 
   bool Watch(const FilePath& path,
@@ -49,8 +50,6 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
 
  private:
   std::unique_ptr<PlatformDelegate> impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(FilePathWatcherImpl);
 };
 
 }  // namespace

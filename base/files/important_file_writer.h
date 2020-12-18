@@ -11,7 +11,6 @@
 #include "base/base_export.h"
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
@@ -72,6 +71,9 @@ class BASE_EXPORT ImportantFileWriter {
                       scoped_refptr<SequencedTaskRunner> task_runner,
                       TimeDelta interval,
                       StringPiece histogram_suffix = StringPiece());
+
+  ImportantFileWriter(const ImportantFileWriter&) = delete;
+  ImportantFileWriter& operator=(const ImportantFileWriter&) = delete;
 
   // You have to ensure that there are no pending writes at the moment
   // of destruction.
@@ -184,8 +186,6 @@ class BASE_EXPORT ImportantFileWriter {
   SEQUENCE_CHECKER(sequence_checker_);
 
   WeakPtrFactory<ImportantFileWriter> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ImportantFileWriter);
 };
 
 }  // namespace base
