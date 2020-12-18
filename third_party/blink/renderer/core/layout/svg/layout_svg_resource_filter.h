@@ -60,11 +60,6 @@ class LayoutSVGResourceFilter final : public LayoutSVGResourceContainer {
   bool FindCycleFromSelf(SVGResourcesCycleSolver&) const override;
 };
 
-// Get the LayoutSVGResourceFilter from the 'filter' property iff the 'filter'
-// is a single url(...) reference.
-LayoutSVGResourceFilter* GetFilterResourceForSVG(SVGResourceClient&,
-                                                 const ComputedStyle&);
-
 template <>
 struct DowncastTraits<LayoutSVGResourceFilter> {
   static bool AllowFrom(const LayoutSVGResourceContainer& container) {

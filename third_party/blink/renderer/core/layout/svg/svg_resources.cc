@@ -293,19 +293,35 @@ void SVGElementResourceClient::UpdateFilterData(
   if (!operations.IsEmpty() && !filter_data_dirty_ &&
       reference_box == operations.ReferenceBox())
     return;
-  if (!filter_data_ && GetFilterResourceForSVG(*this, object.StyleRef())) {
-    FilterEffectBuilder builder(reference_box, 1);
-    filter_data_ = CreateFilterDataWithNodeMap(
-        builder,
-        To<ReferenceFilterOperation>(*object.StyleRef().Filter().at(0)));
-  }
-  operations.Clear();
-  if (filter_data_) {
-    operations.AppendReferenceFilter(filter_data_->BuildPaintFilter());
+  const ComputedStyle& style = object.StyleRef();
+  FilterEffectBuilder builder(reference_box, 1);
+  builder.SetShorthandScale(1 / style.EffectiveZoom());
+  const FilterOperations& filter = style.Filter();
+  // If the filter is a single 'url(...)' reference we can optimize some
+  // mutations to the referenced filter chain by tracking the filter
+  // dependencies and only perform partial invalidations of the filter chain.
+  const bool is_single_reference_filter =
+      filter.size() == 1 && IsA<ReferenceFilterOperation>(*filter.at(0));
+  if (is_single_reference_filter) {
+    if (!filter_data_) {
+      filter_data_ = CreateFilterDataWithNodeMap(
+          builder, To<ReferenceFilterOperation>(*filter.at(0)));
+    }
+    operations.Clear();
+    if (filter_data_) {
+      operations.AppendReferenceFilter(filter_data_->BuildPaintFilter());
+    } else {
+      // Filter construction failed. Create a filter chain that yields
+      // transparent black.
+      operations.AppendOpacityFilter(0);
+    }
   } else {
-    // Filter construction failed. Create a filter chain that yields
-    // transparent black.
-    operations.AppendOpacityFilter(0);
+    // Drop any existing filter data since the filter is no longer
+    // cacheable.
+    if (FilterData* filter_data = filter_data_.Release())
+      filter_data->Dispose();
+
+    operations = builder.BuildFilterOperations(filter);
   }
   operations.SetReferenceBox(reference_box);
   filter_data_dirty_ = false;
@@ -340,7 +356,7 @@ SVGResourceInvalidator::SVGResourceInvalidator(LayoutObject& object)
 
 void SVGResourceInvalidator::InvalidateEffects() {
   const ComputedStyle& style = object_.StyleRef();
-  if (style.HasFilter() && style.Filter().HasReferenceFilter()) {
+  if (style.HasFilter()) {
     if (SVGElementResourceClient* client = SVGResources::GetClient(object_))
       client->InvalidateFilterData();
   }

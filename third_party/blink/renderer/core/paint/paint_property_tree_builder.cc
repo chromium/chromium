@@ -1332,15 +1332,6 @@ static CompositingReasons CompositingReasonsForFilterProperty() {
   return reasons;
 }
 
-static bool HasReferenceFilterOnly(const ComputedStyle& style) {
-  if (!style.HasFilter())
-    return false;
-  const FilterOperations& operations = style.Filter();
-  if (operations.size() != 1)
-    return false;
-  return operations.at(0)->GetType() == FilterOperation::REFERENCE;
-}
-
 static bool IsClipPathDescendant(const LayoutObject& object) {
   // If the object itself is a resource container (root of a resource subtree)
   // it is not considered a clipPath descendant since it is independent of its
@@ -1370,7 +1361,7 @@ static bool NeedsFilter(const LayoutObject& object,
       return true;
   } else if (object.IsSVGChild() && !object.IsText() &&
              SVGResources::GetClient(object)) {
-    if (HasReferenceFilterOnly(object.StyleRef())) {
+    if (object.StyleRef().HasFilter()) {
       // Filters don't apply to elements that are descendants of a <clipPath>.
       if (!full_context.has_svg_hidden_container_ancestor ||
           !IsClipPathDescendant(object))
@@ -1398,7 +1389,7 @@ static void UpdateFilterEffect(const LayoutObject& object,
     SVGElementResourceClient* client = SVGResources::GetClient(object);
     if (!client)
       return;
-    if (!HasReferenceFilterOnly(object.StyleRef()))
+    if (!object.StyleRef().HasFilter())
       return;
     // Try to use the cached filter.
     if (effect_node)

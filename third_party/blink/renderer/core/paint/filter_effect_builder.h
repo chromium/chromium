@@ -63,9 +63,14 @@ class CORE_EXPORT FilterEffectBuilder final {
   CompositorFilterOperations BuildFilterOperations(
       const FilterOperations&) const;
 
+  void SetShorthandScale(float shorthand_scale) {
+    shorthand_scale_ = shorthand_scale;
+  }
+
  private:
-  FloatRect reference_box_;
-  float zoom_;
+  const FloatRect reference_box_;
+  const float zoom_;
+  float shorthand_scale_;  // Scale factor for shorthand filter functions.
   const PaintFlags* fill_flags_;
   const PaintFlags* stroke_flags_;
   const SkBlurImageFilter::TileMode blur_tile_mode_;

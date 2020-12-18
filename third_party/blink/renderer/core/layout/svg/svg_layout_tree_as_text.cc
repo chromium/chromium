@@ -704,6 +704,24 @@ void Write(WTF::TextStream& ts, const LayoutSVGShape& shape, int indent) {
   WriteResources(ts, shape, indent);
 }
 
+// Get the LayoutSVGResourceFilter from the 'filter' property iff the 'filter'
+// is a single url(...) reference.
+static LayoutSVGResourceFilter* GetFilterResourceForSVG(
+    SVGResourceClient& client,
+    const ComputedStyle& style) {
+  if (!style.HasFilter())
+    return nullptr;
+  const FilterOperations& operations = style.Filter();
+  if (operations.size() != 1)
+    return nullptr;
+  const auto* reference_filter =
+      DynamicTo<ReferenceFilterOperation>(*operations.at(0));
+  if (!reference_filter)
+    return nullptr;
+  return GetSVGResourceAsType<LayoutSVGResourceFilter>(
+      client, reference_filter->Resource());
+}
+
 static void WriteSVGResourceReferencePrefix(
     WTF::TextStream& ts,
     const char* resource_name,
@@ -746,6 +764,7 @@ void WriteResources(WTF::TextStream& ts,
         ts, "clipPath", clipper, clip_path_reference.Url(), tree_scope, indent);
     ts << " " << clipper->ResourceBoundingBox(reference_box) << "\n";
   }
+  // TODO(fs): Only handles the single url(...) case. Do we care?
   if (LayoutSVGResourceFilter* filter =
           GetFilterResourceForSVG(*client, style)) {
     DCHECK(style.HasFilter());
