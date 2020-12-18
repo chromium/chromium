@@ -30,6 +30,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.concurrent.GuardedBy;
 
@@ -101,6 +102,9 @@ public class ChildProcessConnection {
 
     @GuardedBy("sBindingStateLock")
     private static final int[] sAllBindingStateCounts = new int[NUM_BINDING_STATES];
+
+    // The last zygote PID metrics were recorded for.
+    private static final AtomicInteger sLastRecordedZygotePid = new AtomicInteger();
 
     @VisibleForTesting
     static void resetBindingStateCountsForTesting() {
@@ -605,6 +609,20 @@ public class ChildProcessConnection {
                         mCleanExit = true;
                     }
                     mLauncherHandler.post(createUnbindRunnable());
+                }
+
+                @Override
+                public void sendZygoteInfo(int zygotePid, long zygoteStartupTimeMillis) {
+                    // Only record the zygote startup time for a process the first time it is sent.
+                    // The zygote may get killed and recreated, so keep track of the last PID
+                    // recorded to avoid double counting. The app may reuse a zygote process if the
+                    // app is stopped and started again quickly, so the startup time of that zygote
+                    // may be recorded multiple times. There's not much we can do about that, and it
+                    // shouldn't be a major issue.
+                    if (sLastRecordedZygotePid.getAndSet(zygotePid) != zygotePid) {
+                        RecordHistogram.recordMediumTimesHistogram(
+                                "Android.ChildProcessStartTimeV2.Zygote", zygoteStartupTimeMillis);
+                    }
                 }
 
                 private Runnable createUnbindRunnable() {

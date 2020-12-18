@@ -8,10 +8,13 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.pm.ApplicationInfo;
 import android.os.Build;
+import android.os.Process;
+import android.os.SystemClock;
 
 import org.chromium.base.JNIUtils;
 import org.chromium.base.Log;
 import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.base.process_launcher.ChildProcessService;
 
 /**
  * Class used in android:zygotePreloadName attribute of manifest.
@@ -28,6 +31,12 @@ public class ZygotePreload implements android.app.ZygotePreload {
     @Override
     public void doPreload(ApplicationInfo appInfo) {
         try {
+            // The current thread time is the best approximation we have of the zygote start time
+            // since Process.getStartUptimeMillis() is not reliable in the zygote process. This will
+            // be the total CPU time the current thread has been running, and is reset on fork so
+            // should give an accurate measurement of zygote process startup time.
+            ChildProcessService.setZygoteInfo(
+                    Process.myPid(), SystemClock.currentThreadTimeMillis());
             JNIUtils.enableSelectiveJniRegistration();
             LibraryLoader.getInstance().loadNowInZygote(appInfo);
         } catch (Throwable e) {

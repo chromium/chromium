@@ -68,6 +68,9 @@ public class ChildProcessService {
     // Only for a check that create is only called once.
     private static boolean sCreateCalled;
 
+    private static int sZygotePid;
+    private static long sZygoteStartupTimeMillis;
+
     private final ChildProcessServiceDelegate mDelegate;
     private final Service mService;
     private final Context mApplicationContext;
@@ -149,6 +152,9 @@ public class ChildProcessService {
             }
 
             parentProcess.sendPid(Process.myPid());
+            if (sZygotePid != 0) {
+                parentProcess.sendZygoteInfo(sZygotePid, sZygoteStartupTimeMillis);
+            }
             mParentProcess = parentProcess;
             processConnectionBundle(args, callbacks);
         }
@@ -334,6 +340,12 @@ public class ChildProcessService {
         new Handler(Looper.getMainLooper())
                 .post(() -> mDelegate.preloadNativeLibrary(getApplicationContext()));
         return mBinder;
+    }
+
+    /** This will be called from the zygote on startup. */
+    public static void setZygoteInfo(int zygotePid, long zygoteStartupTimeMillis) {
+        sZygotePid = zygotePid;
+        sZygoteStartupTimeMillis = zygoteStartupTimeMillis;
     }
 
     private void processConnectionBundle(Bundle bundle, List<IBinder> clientInterfaces) {

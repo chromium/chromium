@@ -18,4 +18,7 @@ interface IParentProcess {
     // Tells the parent proces the child exited cleanly. Not oneway to ensure
     // the browser receives the message before child exits.
     void reportCleanExit();
+
+    // Sends the PID and startup time of the app zygote if available.
+    oneway void sendZygoteInfo(int zygotePid, long startupTimeMillis);
 }
