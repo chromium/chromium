@@ -58,9 +58,6 @@ public class ShoppingPersistedTabDataTest {
     @Mock
     EndpointFetcher.Natives mEndpointFetcherJniMock;
 
-    // Tracks if the endpoint fetcher has been called once or not
-    private boolean mCalledOnce;
-
     private static final long PRICE_MICROS = 123456789012345L;
     private static final long UPDATED_PRICE_MICROS = 287000000L;
     private static final long HIGH_PRICE_MICROS = 141000000L;
@@ -85,6 +82,8 @@ public class ShoppingPersistedTabDataTest {
             + "{\"title\":\"foo title\",\"imageUrl\":\"https://images.com?q=1234\","
             + "\"currentPrice\":{\"currencyCode\":\"USD\",\"amountMicros\":\"287000000\"},"
             + "\"referenceType\":\"MAIN_PRODUCT\"}}]}";
+
+    private static final String EMPTY_RESPONSE = "{}";
 
     @Before
     public void setUp() {
@@ -150,7 +149,7 @@ public class ShoppingPersistedTabDataTest {
     private long shoppingPriceChange(Tab tab) {
         final Semaphore initialSemaphore = new Semaphore(0);
         final Semaphore updateSemaphore = new Semaphore(0);
-        mockEndpointResponse();
+        mockEndpointResponse(ENDPOINT_RESPONSE_INITIAL);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ShoppingPersistedTabData.from(tab, (shoppingPersistedTabData) -> {
                 verifyEndpointFetcherCalled(1);
@@ -169,6 +168,7 @@ public class ShoppingPersistedTabDataTest {
         });
         acquireSemaphore(initialSemaphore);
         long firstUpdateTime = getTimeLastUpdatedOnUiThread(tab);
+        mockEndpointResponse(ENDPOINT_RESPONSE_UPDATE);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ShoppingPersistedTabData.from(tab, (updatedShoppingPersistedTabData) -> {
                 verifyEndpointFetcherCalled(2);
@@ -191,7 +191,7 @@ public class ShoppingPersistedTabDataTest {
         final Semaphore initialSemaphore = new Semaphore(0);
         final Semaphore updateSemaphore = new Semaphore(0);
         Tab tab = createTabOnUiThread(TAB_ID, IS_INCOGNITO);
-        mockEndpointResponse();
+        mockEndpointResponse(ENDPOINT_RESPONSE_INITIAL);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ShoppingPersistedTabData.from(tab, (shoppingPersistedTabData) -> {
                 Assert.assertEquals(PRICE_MICROS, shoppingPersistedTabData.getPriceMicros());
@@ -206,6 +206,7 @@ public class ShoppingPersistedTabDataTest {
         });
         acquireSemaphore(initialSemaphore);
         verifyEndpointFetcherCalled(1);
+        mockEndpointResponse(ENDPOINT_RESPONSE_UPDATE);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ShoppingPersistedTabData.from(tab, (shoppingPersistedTabData) -> {
                 Assert.assertEquals(PRICE_MICROS, shoppingPersistedTabData.getPriceMicros());
@@ -515,6 +516,50 @@ public class ShoppingPersistedTabDataTest {
         Assert.assertNull(shoppingPersistedTabData.getPriceDrop());
     }
 
+    @UiThreadTest
+    @SmallTest
+    @Test
+    public void testNewUrl() {
+        Tab tab = createTabOnUiThread(TAB_ID, IS_INCOGNITO);
+        ShoppingPersistedTabData shoppingPersistedTabData = new ShoppingPersistedTabData(tab);
+        Assert.assertFalse(shoppingPersistedTabData.mIsTabSaveEnabledSupplier.get());
+        shoppingPersistedTabData.mIsTabSaveEnabledSupplier.set(true);
+        shoppingPersistedTabData.mUrlUpdatedObserver.onUrlUpdated(tab);
+        Assert.assertFalse(shoppingPersistedTabData.mIsTabSaveEnabledSupplier.get());
+    }
+
+    @UiThreadTest
+    @SmallTest
+    @Test
+    public void testSPTDSavingEnabledUponSuccessfulResponse() {
+        final Semaphore semaphore = new Semaphore(0);
+        Tab tab = createTabOnUiThread(TAB_ID, IS_INCOGNITO);
+        mockEndpointResponse(ENDPOINT_RESPONSE_INITIAL);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ShoppingPersistedTabData.from(tab, (shoppingPersistedTabData) -> {
+                Assert.assertTrue(shoppingPersistedTabData.mIsTabSaveEnabledSupplier.get());
+                semaphore.release();
+            });
+        });
+        acquireSemaphore(semaphore);
+    }
+
+    @UiThreadTest
+    @SmallTest
+    @Test
+    public void testSPTDNullUponUnsuccessfulResponse() {
+        final Semaphore semaphore = new Semaphore(0);
+        Tab tab = createTabOnUiThread(TAB_ID, IS_INCOGNITO);
+        mockEndpointResponse(EMPTY_RESPONSE);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ShoppingPersistedTabData.from(tab, (shoppingPersistedTabData) -> {
+                Assert.assertNull(shoppingPersistedTabData);
+                semaphore.release();
+            });
+        });
+        acquireSemaphore(semaphore);
+    }
+
     private void verifyEndpointFetcherCalled(int numTimes) {
         verify(mEndpointFetcherJniMock, times(numTimes))
                 .nativeFetchChromeAPIKey(any(Profile.class), anyString(), anyString(), anyString(),
@@ -537,14 +582,12 @@ public class ShoppingPersistedTabDataTest {
         return res.get();
     }
 
-    private void mockEndpointResponse() {
+    private void mockEndpointResponse(String response) {
         doAnswer(new Answer<Void>() {
             @Override
             public Void answer(InvocationOnMock invocation) {
                 Callback callback = (Callback) invocation.getArguments()[7];
-                String res = mCalledOnce ? ENDPOINT_RESPONSE_UPDATE : ENDPOINT_RESPONSE_INITIAL;
-                mCalledOnce = true;
-                callback.onResult(new EndpointResponse(res));
+                callback.onResult(new EndpointResponse(response));
                 return null;
             }
         })

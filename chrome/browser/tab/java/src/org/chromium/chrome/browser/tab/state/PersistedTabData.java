@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.tab.state;
 
-import android.os.SystemClock;
-
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -39,13 +37,15 @@ public abstract class PersistedTabData implements UserData {
     private static final String TAG = "PTD";
     private static final Map<String, List<Callback>> sCachedCallbacks = new HashMap<>();
     private static final long NEEDS_UPDATE_DISABLED = Long.MAX_VALUE;
+    private static final long LAST_UPDATE_UNKNOWN = 0;
     protected final Tab mTab;
     private final PersistedTabDataStorage mPersistedTabDataStorage;
     private final String mPersistedTabDataId;
-    private long mLastUpdatedMs;
+    private long mLastUpdatedMs = LAST_UPDATE_UNKNOWN;
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public ObservableSupplierImpl<Boolean> mIsTabSaveEnabledSupplier;
     private Callback<Boolean> mTabSaveEnabledToggleCallback;
+    private boolean mFirstSaveDone;
 
     /**
      * @param tab {@link Tab} {@link PersistedTabData} is being stored for
@@ -84,7 +84,9 @@ public abstract class PersistedTabData implements UserData {
         PersistedTabDataConfiguration config =
                 PersistedTabDataConfiguration.get(clazz, tab.isIncognito());
         T persistedTabData = factory.create(data, config.getStorage(), config.getId());
-        setUserData(tab, clazz, persistedTabData);
+        if (persistedTabData != null) {
+            setUserData(tab, clazz, persistedTabData);
+        }
         return persistedTabData;
     }
 
@@ -153,7 +155,7 @@ public abstract class PersistedTabData implements UserData {
 
     private static void updateLastUpdatedMs(PersistedTabData persistedTabData) {
         if (persistedTabData != null) {
-            persistedTabData.setLastUpdatedMs(SystemClock.uptimeMillis());
+            persistedTabData.setLastUpdatedMs(System.currentTimeMillis());
         }
     }
 
@@ -164,7 +166,10 @@ public abstract class PersistedTabData implements UserData {
         if (getTimeToLiveMs() == NEEDS_UPDATE_DISABLED) {
             return false;
         }
-        return mLastUpdatedMs + getTimeToLiveMs() < SystemClock.uptimeMillis();
+        if (mLastUpdatedMs == LAST_UPDATE_UNKNOWN) {
+            return true;
+        }
+        return mLastUpdatedMs + getTimeToLiveMs() < System.currentTimeMillis();
     }
 
     private static <T extends PersistedTabData> void onPersistedTabDataResult(
@@ -338,10 +343,21 @@ public abstract class PersistedTabData implements UserData {
         mTabSaveEnabledToggleCallback = (isTabSaveEnabled) -> {
             if (isTabSaveEnabled) {
                 save();
-            } else {
+                mFirstSaveDone = true;
+            } else if (mFirstSaveDone) {
                 delete();
             }
         };
         mIsTabSaveEnabledSupplier.addObserver(mTabSaveEnabledToggleCallback);
+    }
+
+    /**
+     * Delete all {@link PersistedTabData} when a {@link Tab} is closed.
+     */
+    public static void onTabClose(Tab tab) {
+        tab.setIsTabSaveEnabled(false);
+        if (ShoppingPersistedTabData.from(tab) != null) {
+            ShoppingPersistedTabData.from(tab).disableSaving();
+        }
     }
 }
