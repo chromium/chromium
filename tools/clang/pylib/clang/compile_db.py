@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2016 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -10,6 +10,7 @@ import os
 import re
 import sys
 import subprocess
+import shutil
 
 
 _RSP_RE = re.compile(r' (@(.+?\.rsp)) ')
@@ -140,8 +141,11 @@ def GenerateWithNinja(path, targets=[]):
   # TODO(dcheng): Ensure that clang is enabled somehow.
 
   # First, generate the compile database.
+  ninja_path = GetNinjaPath()
+  if not os.path.exists(ninja_path):
+    ninja_path = shutil.which("ninja")
   json_compile_db = subprocess.check_output(
-      [GetNinjaPath(), '-C', path] + targets +
+      [ninja_path, '-C', path] + targets +
       ['-t', 'compdb', 'cc', 'cxx', 'objc', 'objcxx'])
   return json.loads(json_compile_db)
 
