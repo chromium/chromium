@@ -292,8 +292,11 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
       base::TimeDelta timestamp);
 
   // Wraps a provided IOSurface with a VideoFrame. The IOSurface is retained
-  // and locked for the lifetime of the VideoFrame.
-  static scoped_refptr<VideoFrame> WrapIOSurface(
+  // and locked for the lifetime of the VideoFrame. This is for unaccelerated
+  // (CPU-only) access to the IOSurface, and is not efficient. It is the path
+  // that video capture uses when hardware acceleration is disabled.
+  // https://crbug.com/1125879
+  static scoped_refptr<VideoFrame> WrapUnacceleratedIOSurface(
       gfx::GpuMemoryBufferHandle handle,
       const gfx::Rect& visible_rect,
       base::TimeDelta timestamp);

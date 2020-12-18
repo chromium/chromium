@@ -701,7 +701,7 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalDmabufs(
 
 #if defined(OS_MAC)
 // static
-scoped_refptr<VideoFrame> VideoFrame::WrapIOSurface(
+scoped_refptr<VideoFrame> VideoFrame::WrapUnacceleratedIOSurface(
     gfx::GpuMemoryBufferHandle handle,
     const gfx::Rect& visible_rect,
     base::TimeDelta timestamp) {

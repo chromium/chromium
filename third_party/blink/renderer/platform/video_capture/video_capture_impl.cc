@@ -106,7 +106,16 @@ struct VideoCaptureImpl::BufferContext
   }
 
   gfx::GpuMemoryBufferHandle TakeGpuMemoryBufferHandle() {
+#if defined(OS_MAC)
+    // The same GpuMemoryBuffersHandles will be reused repeatedly by the
+    // unaccelerated macOS path. Each of these uses will call this function.
+    // Ensure that this function doesn't invalidate the GpuMemoryBufferHandle
+    // on macOS for this reason.
+    // https://crbug.com/1159722
+    return gmb_resources_->gpu_memory_buffer_handle.Clone();
+#else
     return std::move(gmb_resources_->gpu_memory_buffer_handle);
+#endif
   }
   void SetGpuMemoryBuffer(
       std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer) {
@@ -660,7 +669,7 @@ void VideoCaptureImpl::OnBufferReady(
       // used by both hardware and software paths.
       // https://crbug.com/1125879
       if (!gpu_factories_ || !media_task_runner_) {
-        frame = media::VideoFrame::WrapIOSurface(
+        frame = media::VideoFrame::WrapUnacceleratedIOSurface(
             buffer_context->TakeGpuMemoryBufferHandle(),
             gfx::Rect(info->visible_rect), info->timestamp);
         break;
