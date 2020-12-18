@@ -589,7 +589,18 @@ base::flat_set<device::FidoTransportProtocol> GetAvailableTransports(
 
   base::flat_set<device::FidoTransportProtocol> transports;
   transports.insert(device::FidoTransportProtocol::kUsbHumanInterfaceDevice);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // TODO(crbug.com/1157651): Work around CrOS platform authenticator being
+  // unavailable in Incognito.
+  if (!content::WebContents::FromRenderFrameHost(render_frame_host)
+           ->GetBrowserContext()
+           ->IsOffTheRecord()) {
+    transports.insert(device::FidoTransportProtocol::kInternal);
+  }
+#else
   transports.insert(device::FidoTransportProtocol::kInternal);
+#endif
 
   if (discovery_factory->IsTestOverride()) {
     // The desktop implementation does not support BLE or NFC, but we emulate
