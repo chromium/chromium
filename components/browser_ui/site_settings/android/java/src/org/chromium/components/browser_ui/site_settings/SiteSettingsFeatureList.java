@@ -17,6 +17,7 @@ import org.chromium.base.annotations.NativeMethods;
 @MainDex
 public class SiteSettingsFeatureList {
     public static final String APP_NOTIFICATION_STATUS_MESSAGING = "AppNotificationStatusMessaging";
+    public static final String ACTIONABLE_CONTENT_SETTINGS = "ActionableContentSettings";
 
     private SiteSettingsFeatureList() {}
 

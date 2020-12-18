@@ -3070,6 +3070,11 @@ const char kProcessSharingWithStrictSiteInstancesDescription[] =
     "separated like strict site isolation, but process selection puts multiple "
     "site instances in a single process.";
 
+const char kActionableContentSettingsName[] = "Improvements to site settings";
+const char kActionableContentSettingsDescription[] =
+    "Changes the site settings to use a switch instead of a dialog. "
+    " Additionally improves icons to show current blocked status.";
+
 const char kQueryTilesName[] = "Show query tiles";
 const char kQueryTilesDescription[] = "Shows query tiles in Chrome";
 const char kQueryTilesNTPName[] = "Show query tiles in NTP";

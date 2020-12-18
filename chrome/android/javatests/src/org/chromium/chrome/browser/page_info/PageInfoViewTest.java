@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.browser_ui.site_settings.SiteSettingsFeatureList;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.content_settings.ContentSettingValues;
@@ -378,6 +379,25 @@ public class PageInfoViewTest {
         onView(withId(R.id.page_info_permissions_row)).perform(click());
         onViewWaiting(allOf(withText("Control this site's access to your device"), isDisplayed()));
         mRenderTestRule.render(getPageInfoView(), "PageInfo_PermissionsSubpage");
+    }
+
+    /**
+     * Tests the permissions page of the new PageInfo UI with permissions and actionable flag
+     * enabled.
+     */
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    @Features.EnableFeatures(
+            {PageInfoFeatureList.PAGE_INFO_V2, SiteSettingsFeatureList.ACTIONABLE_CONTENT_SETTINGS})
+    public void
+    testShowPermissionsActionableSubpage() throws IOException {
+        mActivityTestRule.startMainActivityOnBlankPage();
+        addSomePermissions(mTestServerRule.getServer().getURL("/"));
+        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
+        onView(withId(R.id.page_info_permissions_row)).perform(click());
+        onViewWaiting(allOf(withText("Control this site's access to your device"), isDisplayed()));
+        mRenderTestRule.render(getPageInfoView(), "PageInfo_PermissionsSubpage_Actionable");
     }
 
     /**

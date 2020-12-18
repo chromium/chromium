@@ -12,4 +12,7 @@ namespace browser_ui {
 const base::Feature kAppNotificationStatusMessaging{
     "AppNotificationStatusMessaging", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kActionableContentSettings{
+    "ActionableContentSettings", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace browser_ui

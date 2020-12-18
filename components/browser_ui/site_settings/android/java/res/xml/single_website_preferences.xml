@@ -46,46 +46,6 @@
         android:key="site_permissions"
         android:title="@string/website_settings_permissions_category" />
 
-    <!-- The order of the following items is from: http://crbug.com/610358. -->
-    <ListPreference
-        android:key="cookies_permission_list" />
-    <ListPreference
-        android:key="location_access_list" />
-    <ListPreference
-        android:key="camera_permission_list" />
-    <ListPreference
-        android:key="microphone_permission_list" />
-    <ListPreference
-        android:key="push_notifications_list" />
-    <ListPreference
-        android:key="javascript_permission_list" />
-    <ListPreference
-        android:key="popup_permission_list" />
-    <ListPreference
-        android:key="ads_permission_list" />
-    <ListPreference
-        android:key="background_sync_permission_list" />
-    <ListPreference
-        android:key="automatic_downloads_permission_list" />
-    <ListPreference
-        android:key="protected_media_identifier_permission_list" />
-    <ListPreference
-        android:key="sound_permission_list" />
-    <ListPreference
-        android:key="midi_sysex_permission_list" />
-    <ListPreference
-        android:key="clipboard_permission_list" />
-    <ListPreference
-        android:key="nfc_permission_list" />
-    <ListPreference
-        android:key="bluetooth_scanning_permission_list" />
-    <ListPreference
-        android:key="vr_permission_list" />
-    <ListPreference
-        android:key="ar_permission_list" />
-    <ListPreference
-        android:key="idle_detection_permission_list" />
-
     <org.chromium.components.browser_ui.settings.ButtonPreference
         android:key="reset_site_button" />
 </PreferenceScreen>

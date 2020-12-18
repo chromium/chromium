@@ -19,6 +19,10 @@ import androidx.preference.SwitchPreferenceCompat;
 public class ChromeSwitchPreference extends SwitchPreferenceCompat {
     private ManagedPreferenceDelegate mManagedPrefDelegate;
 
+    public ChromeSwitchPreference(Context context) {
+        super(context);
+    }
+
     public ChromeSwitchPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
     }

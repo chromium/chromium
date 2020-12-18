@@ -6995,6 +6995,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome_pdf::features::kPdfXfaSupport)},
 #endif  // BUILDFLAG(ENABLE_PDF)
 
+#if defined(OS_ANDROID)
+    {"actionable-content-settings",
+     flag_descriptions::kActionableContentSettingsName,
+     flag_descriptions::kActionableContentSettingsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(browser_ui::kActionableContentSettings)},
+#endif
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

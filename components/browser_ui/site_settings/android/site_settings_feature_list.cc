@@ -22,6 +22,7 @@ namespace {
 // in other locations in the code base (e.g. content_features.h).
 const base::Feature* kFeaturesExposedToJava[] = {
     &kAppNotificationStatusMessaging,
+    &kActionableContentSettings,
 };
 
 // TODO(crbug.com/1060097): Remove this once a generalized FeatureList exists.

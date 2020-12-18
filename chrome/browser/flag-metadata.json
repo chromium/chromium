@@ -49,6 +49,11 @@
     "expiry_milestone": 91
   },
   {
+    "name": "actionable-content-settings",
+    "owners": ["oroshiba", "dullweber"],
+    "expiry_milestone": 93
+  },
+  {
     "name": "aggregated-ml-app-ranking",
     "owners": [ "pdyson", "jiameng" ],
     "expiry_milestone": 81
