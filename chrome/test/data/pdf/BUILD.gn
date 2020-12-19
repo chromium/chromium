@@ -133,6 +133,7 @@ js_library("fullscreen_test") {
     ":test_util",
     "../webui:test_util.m",
     "//chrome/browser/resources/pdf:constants",
+    "//chrome/browser/resources/pdf:pdf_scripting_api",
     "//chrome/browser/resources/pdf:pdf_viewer",
     "//third_party/polymer/v3_0/components-chromium/iron-test-helpers:mock-interactions",
     "//ui/webui/resources/js:cr.m",

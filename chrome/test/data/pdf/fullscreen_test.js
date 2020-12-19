@@ -4,6 +4,7 @@
 
 import {eventToPromise} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/_test_resources/webui/test_util.m.js';
 import {FittingType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/constants.js';
+import {PDFScriptingAPI} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_scripting_api.js';
 import {PDFViewerElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer.js';
 import {isMac} from 'chrome://resources/js/cr.m.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
@@ -127,6 +128,17 @@ const tests = [
     chrome.test.assertTrue(e.defaultPrevented);
 
     chrome.test.succeed();
+  },
+  async function testTextSelectionDisabled() {
+    await ensureFullscreen();
+
+    const client = new PDFScriptingAPI(window, window);
+    client.selectAll();
+    client.getSelectedText(selectedText => {
+      // No text should be selected.
+      chrome.test.assertEq(0, selectedText.length);
+      chrome.test.succeed();
+    });
   },
 ];
 

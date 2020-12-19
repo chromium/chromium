@@ -689,6 +689,12 @@ void OutOfProcessInstance::HandleMessage(const pp::Var& message) {
 }
 
 bool OutOfProcessInstance::HandleInputEvent(const pp::InputEvent& event) {
+  // Ignore user input in read-only mode.
+  // TODO(dhoss): Add a test for ignored input events. It is currently difficult
+  // to unit test certain `OutOfProcessInstance` methods.
+  if (engine()->IsReadOnly())
+    return false;
+
   // To simplify things, convert the event into device coordinates.
   pp::InputEvent event_device_res(event);
   {

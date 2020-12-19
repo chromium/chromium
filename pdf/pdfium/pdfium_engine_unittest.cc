@@ -36,6 +36,7 @@ using ::testing::InSequence;
 using ::testing::Invoke;
 using ::testing::IsEmpty;
 using ::testing::NiceMock;
+using ::testing::Not;
 using ::testing::Return;
 using ::testing::StrictMock;
 
@@ -1123,6 +1124,58 @@ TEST_F(PDFiumEngineTabbingTest, ScrollFocusedAnnotationIntoView) {
 
   // Scroll the focused annotation into view.
   ScrollFocusedAnnotationIntoView(engine.get());
+}
+
+class ReadOnlyTestClient : public TestClient {
+ public:
+  ReadOnlyTestClient() = default;
+  ~ReadOnlyTestClient() override = default;
+  ReadOnlyTestClient(const ReadOnlyTestClient&) = delete;
+  ReadOnlyTestClient& operator=(const ReadOnlyTestClient&) = delete;
+
+  // Mock PDFEngine::Client methods.
+  MOCK_METHOD(void, FormTextFieldFocusChange, (bool), (override));
+  MOCK_METHOD(void, SetSelectedText, (const std::string&), (override));
+};
+
+using PDFiumEngineReadOnlyTest = PDFiumTestBase;
+
+TEST_F(PDFiumEngineReadOnlyTest, KillFormFocus) {
+  NiceMock<ReadOnlyTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
+      &client, FILE_PATH_LITERAL("annotation_form_fields.pdf"));
+  ASSERT_TRUE(engine);
+
+  // Setting read-only mode should kill form focus.
+  EXPECT_FALSE(engine->IsReadOnly());
+  EXPECT_CALL(client, FormTextFieldFocusChange(false));
+  engine->SetReadOnly(true);
+
+  // Attempting to focus during read-only mode should once more trigger a
+  // killing of form focus.
+  EXPECT_TRUE(engine->IsReadOnly());
+  EXPECT_CALL(client, FormTextFieldFocusChange(false));
+  engine->UpdateFocus(true);
+}
+
+TEST_F(PDFiumEngineReadOnlyTest, UnselectText) {
+  NiceMock<ReadOnlyTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  // Update the plugin size so that all the text is visible by
+  // `SelectionChangeInvalidator`.
+  engine->PluginSizeUpdated({500, 500});
+
+  // Select text before going into read-only mode.
+  EXPECT_FALSE(engine->IsReadOnly());
+  EXPECT_CALL(client, SetSelectedText(Not(IsEmpty())));
+  engine->SelectAll();
+
+  // Setting read-only mode should unselect the text.
+  EXPECT_CALL(client, SetSelectedText(IsEmpty()));
+  engine->SetReadOnly(true);
 }
 
 }  // namespace chrome_pdf

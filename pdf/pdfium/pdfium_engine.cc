@@ -976,7 +976,7 @@ void PDFiumEngine::KillFormFocus() {
 
 void PDFiumEngine::UpdateFocus(bool has_focus) {
   base::AutoReset<bool> updating_focus_guard(&updating_focus_, true);
-  if (has_focus) {
+  if (has_focus && !IsReadOnly()) {
     UpdateFocusItemType(last_focused_item_type_);
     if (focus_item_type_ == FocusElementType::kPage &&
         PageIndexInBounds(last_focused_page_) &&
@@ -2064,6 +2064,20 @@ bool PDFiumEngine::IsReadOnly() const {
 
 void PDFiumEngine::SetReadOnly(bool enable) {
   read_only_ = enable;
+
+  // Restore form highlights.
+  if (!read_only_) {
+    FPDF_SetFormFieldHighlightAlpha(form(), kFormHighlightAlpha);
+    return;
+  }
+
+  // Hide form highlights.
+  FPDF_SetFormFieldHighlightAlpha(form(), /*alpha=*/0);
+  KillFormFocus();
+
+  // Unselect text.
+  SelectionChangeInvalidator selection_invalidator(this);
+  selection_.clear();
 }
 
 void PDFiumEngine::SetTwoUpView(bool enable) {
@@ -2222,7 +2236,7 @@ bool PDFiumEngine::HasPermission(DocumentPermission permission) const {
 }
 
 void PDFiumEngine::SelectAll() {
-  if (in_form_text_area_)
+  if (in_form_text_area_ || IsReadOnly())
     return;
 
   SelectionChangeInvalidator selection_invalidator(this);
