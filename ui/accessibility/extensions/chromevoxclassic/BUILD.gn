@@ -225,7 +225,6 @@ chromevox_out_dir = "$root_out_dir/chromevoxclassic"
 
 group("chromevox") {
   deps = [
-    ":accessibility_strings",
     ":chromevox_background_script",
     ":chromevox_content_script",
     ":chromevox_copied_files",

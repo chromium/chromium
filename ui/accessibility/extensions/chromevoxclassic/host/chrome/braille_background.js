@@ -63,7 +63,7 @@ cvox.BrailleBackground = function(opt_displayManagerForTest,
 
 /** @override */
 cvox.BrailleBackground.prototype.write = function(params) {
-  this.setContent_(params, null);
+  // Stubbed out.
 };
 
 

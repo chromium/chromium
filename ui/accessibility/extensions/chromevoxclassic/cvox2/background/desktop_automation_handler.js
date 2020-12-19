@@ -42,7 +42,8 @@ DesktopAutomationHandler = function(node) {
   this.lastValueChanged_ = new Date(0);
 
   var e = EventType;
-  this.addListener_(e.ACTIVEDESCENDANTCHANGED, this.onActiveDescendantChanged);
+  this.addListener_(
+      e.ACTIVE_DESCENDANT_CHANGED, this.onActiveDescendantChanged);
   this.addListener_(e.ALERT, this.onAlert);
   this.addListener_(e.ARIA_ATTRIBUTE_CHANGED, this.onEventIfInRange);
   this.addListener_(e.CHECKED_STATE_CHANGED, this.onEventIfInRange);

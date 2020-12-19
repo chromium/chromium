@@ -208,15 +208,6 @@ cvox.TabsApiHandler.prototype = {
    * @private
    */
   refreshAutomationHandler_: function(tabId) {
-    if (!cvox.ChromeVox.isMac)
-      return;
-
-    chrome.automation.getTree(tabId, function(node) {
-      if (this.handler_)
-        this.handler_.removeAllListeners();
-
-      this.handler_ = new TabsAutomationHandler(node);
-    }.bind(this));
   },
 
   /**

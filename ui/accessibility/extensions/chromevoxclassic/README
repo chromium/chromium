@@ -21,6 +21,11 @@ assets, gets placed in
 
 out/Release/chromevoxclassic.
 
+The one exception is ./_locales. You must copy this directory manually to
+out/Release/chromevoxclassic.
+
+These translations are no longer part of mainline ChromeVox.
+
 #Loading and Testing
 Go to chrome://extensions, and click "Load
 Unpacked". Select out/Release/chromevoxclassic.
@@ -46,3 +51,9 @@ paths are verbalized using entirely different code paths.
 
 Once confirmed, the entire directory can be uploaded once zipped to the Chrome
 webstore.
+
+## A final note on branding
+
+In order to further differentiate ChromeVox from ChromeVox Classic, the Classic
+extension is now simply known as "Screen Reader" and scrubbed of the ChromeVox
+brand.
