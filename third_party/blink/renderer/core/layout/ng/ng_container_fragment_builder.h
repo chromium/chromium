@@ -111,7 +111,8 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
       NGLogicalStaticPosition::InlineEdge =
           NGLogicalStaticPosition::kInlineStart,
       NGLogicalStaticPosition::BlockEdge = NGLogicalStaticPosition::kBlockStart,
-      bool needs_block_offset_adjustment = true);
+      bool needs_block_offset_adjustment = true,
+      const base::Optional<LogicalRect> containing_block_rect = base::nullopt);
 
   // This should only be used for inline-level OOF-positioned nodes.
   // |inline_container_direction| is the current text direction for determining

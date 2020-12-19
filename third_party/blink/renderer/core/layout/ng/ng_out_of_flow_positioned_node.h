@@ -73,6 +73,7 @@ struct NGLogicalOutOfFlowPositionedNode {
   bool needs_block_offset_adjustment;
   LogicalOffset containing_block_offset;
   scoped_refptr<const NGPhysicalContainerFragment> containing_block_fragment;
+  base::Optional<LogicalRect> containing_block_rect;
 
   NGLogicalOutOfFlowPositionedNode(
       NGBlockNode node,
@@ -81,13 +82,15 @@ struct NGLogicalOutOfFlowPositionedNode {
       bool needs_block_offset_adjustment = false,
       LogicalOffset containing_block_offset = LogicalOffset(),
       scoped_refptr<const NGPhysicalContainerFragment>
-          containing_block_fragment = nullptr)
+          containing_block_fragment = nullptr,
+      const base::Optional<LogicalRect> containing_block_rect = base::nullopt)
       : node(node),
         static_position(static_position),
         inline_container(inline_container),
         needs_block_offset_adjustment(needs_block_offset_adjustment),
         containing_block_offset(containing_block_offset),
-        containing_block_fragment(std::move(containing_block_fragment)) {
+        containing_block_fragment(std::move(containing_block_fragment)),
+        containing_block_rect(containing_block_rect) {
     DCHECK(!inline_container ||
            inline_container == inline_container->ContinuationRoot());
   }

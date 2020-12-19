@@ -105,6 +105,7 @@ NGOutOfFlowLayoutPart::NGOutOfFlowLayoutPart(
     base::Optional<LogicalSize> initial_containing_block_fixed_size)
     : container_builder_(container_builder),
       writing_mode_(container_style.GetWritingMode()),
+      default_writing_direction_(container_style.GetWritingDirection()),
       is_absolute_container_(is_absolute_container),
       is_fixed_container_(is_fixed_container),
       has_block_fragmentation_(container_space.HasBlockFragmentation()) {
@@ -113,20 +114,23 @@ NGOutOfFlowLayoutPart::NGOutOfFlowLayoutPart(
            ->HasPositionedObjects())
     return;
 
-  default_containing_block_.writing_direction =
-      container_style.GetWritingDirection();
+  default_containing_block_info_for_absolute_.writing_direction =
+      default_writing_direction_;
+  default_containing_block_info_for_fixed_.writing_direction =
+      default_writing_direction_;
   const NGBoxStrut border_scrollbar =
       container_builder->Borders() + container_builder->Scrollbar();
   allow_first_tier_oof_cache_ = border_scrollbar.IsEmpty();
-  default_containing_block_.content_size_for_absolute =
+  default_containing_block_info_for_absolute_.rect.size =
       ShrinkLogicalSize(container_builder_->Size(), border_scrollbar);
-  default_containing_block_.content_size_for_fixed =
+  default_containing_block_info_for_fixed_.rect.size =
       initial_containing_block_fixed_size
           ? *initial_containing_block_fixed_size
-          : default_containing_block_.content_size_for_absolute;
-
-  default_containing_block_.container_offset = LogicalOffset(
-      border_scrollbar.inline_start, border_scrollbar.block_start);
+          : default_containing_block_info_for_absolute_.rect.size;
+  LogicalOffset container_offset = {border_scrollbar.inline_start,
+                                    border_scrollbar.block_start};
+  default_containing_block_info_for_absolute_.rect.offset = container_offset;
+  default_containing_block_info_for_fixed_.rect.offset = container_offset;
 }
 
 void NGOutOfFlowLayoutPart::Run(const LayoutBox* only_layout) {
@@ -287,14 +291,16 @@ bool NGOutOfFlowLayoutPart::SweepLegacyCandidates(
 // When fragmenting, the ContainingBlockInfo is not stored ahead of time and
 // must be generated on demand. The reason being that during fragmentation, we
 // wait to place positioned nodes until they've reached the fragmentation
-// context root. In such cases, we cannot use |default_containing_block_| since
-// the fragmentation root is not the containing block of the positioned nodes.
-// Rather, we must generate their ContainingBlockInfo based on the provided
-// |containing_block_fragment|.
-const NGOutOfFlowLayoutPart::ContainingBlockInfo&
+// context root. In such cases, we cannot use default |ContainingBlockInfo|
+// since the fragmentation root is not the containing block of the positioned
+// nodes. Rather, we must generate their ContainingBlockInfo based on the
+// provided |containing_block_fragment|.
+const NGOutOfFlowLayoutPart::ContainingBlockInfo
 NGOutOfFlowLayoutPart::GetContainingBlockInfo(
     const NGLogicalOutOfFlowPositionedNode& candidate,
     const NGPhysicalContainerFragment* containing_block_fragment) {
+  if (candidate.containing_block_rect)
+    return {default_writing_direction_, *candidate.containing_block_rect};
   if (candidate.inline_container) {
     const auto it = containing_blocks_map_.find(candidate.inline_container);
     DCHECK(it != containing_blocks_map_.end());
@@ -327,14 +333,17 @@ NGOutOfFlowLayoutPart::GetContainingBlockInfo(
         LogicalOffset(border.inline_start, border.block_start);
     container_offset += candidate.containing_block_offset;
 
-    ContainingBlockInfo containing_block_info{writing_direction, content_size,
-                                              content_size, container_offset};
+    ContainingBlockInfo containing_block_info{
+        writing_direction, LogicalRect(container_offset, content_size)};
 
     return containing_blocks_map_
         .insert(containing_block, containing_block_info)
         .stored_value->value;
   }
-  return default_containing_block_;
+
+  return candidate.node.Style().GetPosition() == EPosition::kAbsolute
+             ? default_containing_block_info_for_absolute_
+             : default_containing_block_info_for_fixed_;
 }
 
 void NGOutOfFlowLayoutPart::ComputeInlineContainingBlocks(
@@ -417,7 +426,7 @@ void NGOutOfFlowLayoutPart::ComputeInlineContainingBlocks(
     DCHECK(inline_cb_style);
 
     const auto container_writing_direction =
-        default_containing_block_.writing_direction;
+        default_containing_block_info_for_absolute_.writing_direction;
     const auto inline_writing_direction =
         inline_cb_style->GetWritingDirection();
     NGBoxStrut inline_cb_borders = ComputeBordersForInline(*inline_cb_style);
@@ -475,8 +484,8 @@ void NGOutOfFlowLayoutPart::ComputeInlineContainingBlocks(
 
     containing_blocks_map_.insert(
         block_info.key,
-        ContainingBlockInfo{inline_writing_direction, inline_cb_size,
-                            inline_cb_size, container_offset});
+        ContainingBlockInfo{inline_writing_direction,
+                            LogicalRect(container_offset, inline_cb_size)});
   }
 }
 
@@ -542,15 +551,13 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::LayoutCandidate(
           node.GetLayoutBox()->ContainingBlock()) ||
          node.GetLayoutBox()->ContainingBlock()->IsTable());
 
-  const auto default_writing_direction =
-      default_containing_block_.writing_direction;
-  const ContainingBlockInfo& container_info = GetContainingBlockInfo(candidate);
+  const ContainingBlockInfo container_info = GetContainingBlockInfo(candidate);
   const ComputedStyle& candidate_style = node.Style();
   const auto candidate_writing_direction =
       candidate_style.GetWritingDirection();
 
-  LogicalSize container_content_size =
-      container_info.ContentSize(candidate_style.GetPosition());
+  LogicalSize container_content_size = container_info.rect.size;
+
   PhysicalSize container_physical_content_size =
       ToPhysicalSize(container_content_size, writing_mode_);
 
@@ -577,12 +584,12 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::LayoutCandidate(
   // container's border-box). ng_absolute_utils expects the static position to
   // be relative to the container's padding-box.
   NGLogicalStaticPosition static_position = candidate.static_position;
-  static_position.offset -= container_info.container_offset;
+  static_position.offset -= container_info.rect.offset;
 
   NGLogicalStaticPosition candidate_static_position =
       static_position
           .ConvertToPhysical(
-              {default_writing_direction, container_physical_content_size})
+              {default_writing_direction_, container_physical_content_size})
           .ConvertToLogical(
               {candidate_writing_direction, container_physical_content_size});
 
@@ -599,7 +606,7 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::LayoutCandidate(
     scoped_refptr<const NGLayoutResult> layout_result =
         Layout(node, candidate_constraint_space, candidate_static_position,
                container_physical_content_size, container_info,
-               default_writing_direction, only_layout);
+               default_writing_direction_, only_layout);
 
     if (!freeze_scrollbars.has_value()) {
       // Since out-of-flow positioning sets up a constraint space with fixed
@@ -670,7 +677,7 @@ NGOutOfFlowLayoutPart::LayoutFragmentainerDescendant(
          containing_block_fragment->GetLayoutObject() ==
              node.GetLayoutBox()->ContainingBlock());
 
-  const ContainingBlockInfo& container_info =
+  const ContainingBlockInfo container_info =
       GetContainingBlockInfo(descendant, containing_block_fragment);
   const auto default_writing_direction =
       containing_block_fragment->Style().GetWritingDirection();
@@ -678,19 +685,18 @@ NGOutOfFlowLayoutPart::LayoutFragmentainerDescendant(
   const auto descendant_writing_direction =
       descendant_style.GetWritingDirection();
 
-  LogicalSize container_content_size =
-      container_info.ContentSize(descendant_style.GetPosition());
+  LogicalSize container_content_size = container_info.rect.size;
   PhysicalSize container_physical_content_size = ToPhysicalSize(
       container_content_size, default_writing_direction.GetWritingMode());
 
   // Adjust the |static_position| (which is currently relative to the default
   // container's border-box). ng_absolute_utils expects the static position to
   // be relative to the container's padding-box. Since
-  // |container_info.container_offset| is relative to its fragmentainer in this
+  // |container_info.rect.offset| is relative to its fragmentainer in this
   // case, we also need to adjust the offset to account for this.
   NGLogicalStaticPosition static_position = descendant.static_position;
   static_position.offset -=
-      container_info.container_offset - descendant.containing_block_offset;
+      container_info.rect.offset - descendant.containing_block_offset;
 
   NGLogicalStaticPosition descendant_static_position =
       static_position
@@ -878,7 +884,7 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::Layout(
 
   // |inset| is relative to the container's padding-box. Convert this to being
   // relative to the default container's border-box.
-  LogicalOffset offset = container_info.container_offset;
+  LogicalOffset offset = container_info.rect.offset;
   offset.inline_offset += inset.inline_start;
   offset.block_offset += inset.block_start;
 
