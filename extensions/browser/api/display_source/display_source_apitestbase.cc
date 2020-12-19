@@ -45,18 +45,18 @@ class MockDisplaySourceConnectionDelegate
                : nullptr;
   }
 
-  void GetAvailableSinks(const SinkInfoListCallback& sinks_callback,
-                         const StringCallback& failure_callback) override;
+  void GetAvailableSinks(SinkInfoListCallback sinks_callback,
+                         FailureCallback failure_callback) override;
 
   void RequestAuthentication(int sink_id,
-                             const AuthInfoCallback& auth_info_callback,
-                             const StringCallback& failure_callback) override;
+                             AuthInfoCallback auth_info_callback,
+                             FailureCallback failure_callback) override;
 
   void Connect(int sink_id,
                const DisplaySourceAuthInfo& auth_info,
-               const StringCallback& failure_callback) override;
+               FailureCallback failure_callback) override;
 
-  void Disconnect(const StringCallback& failure_callback) override;
+  void Disconnect(FailureCallback failure_callback) override;
 
   void StartWatchingAvailableSinks() override;
 
@@ -71,8 +71,7 @@ class MockDisplaySourceConnectionDelegate
 
   void SendMessage(const std::string& message) override;
 
-  void SetMessageReceivedCallback(
-      const StringCallback& callback) override;
+  void SetMessageReceivedCallback(RepeatingMessageCallback callback) override;
 
  private:
   void AddSink(DisplaySourceSinkInfo sink,
@@ -97,7 +96,7 @@ class MockDisplaySourceConnectionDelegate
   DisplaySourceSinkInfoList sinks_;
   DisplaySourceSinkInfo* active_sink_;
   std::map<int, std::pair<AuthenticationMethod, std::string>> auth_infos_;
-  StringCallback message_received_cb_;
+  RepeatingMessageCallback message_received_cb_;
 
   struct Message {
     enum Direction {
@@ -298,27 +297,27 @@ MockDisplaySourceConnectionDelegate::last_found_sinks() const {
 }
 
 void MockDisplaySourceConnectionDelegate::GetAvailableSinks(
-    const SinkInfoListCallback& sinks_callback,
-    const StringCallback& failure_callback) {
-  sinks_callback.Run(sinks_);
+    SinkInfoListCallback sinks_callback,
+    FailureCallback failure_callback) {
+  std::move(sinks_callback).Run(sinks_);
 }
 
 void MockDisplaySourceConnectionDelegate::RequestAuthentication(
     int sink_id,
-    const AuthInfoCallback& auth_info_callback,
-    const StringCallback& failure_callback) {
+    AuthInfoCallback auth_info_callback,
+    FailureCallback failure_callback) {
   DisplaySourceAuthInfo info;
   auto it = auth_infos_.find(sink_id);
   ASSERT_NE(it, auth_infos_.end());
 
   info.method = it->second.first;
-  auth_info_callback.Run(info);
+  std::move(auth_info_callback).Run(info);
 }
 
 void MockDisplaySourceConnectionDelegate::Connect(
     int sink_id,
     const DisplaySourceAuthInfo& auth_info,
-    const StringCallback& failure_callback) {
+    FailureCallback failure_callback) {
   auto it = auth_infos_.find(sink_id);
   ASSERT_NE(it, auth_infos_.end());
   ASSERT_EQ(it->second.first, auth_info.method);
@@ -345,7 +344,7 @@ void MockDisplaySourceConnectionDelegate::Connect(
 }
 
 void MockDisplaySourceConnectionDelegate::Disconnect(
-    const StringCallback& failure_callback) {
+    FailureCallback failure_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(active_sink_);
   ASSERT_EQ(active_sink_->state, SINK_STATE_CONNECTED);
@@ -389,8 +388,8 @@ void MockDisplaySourceConnectionDelegate::SendMessage(
 }
 
 void MockDisplaySourceConnectionDelegate::SetMessageReceivedCallback(
-    const StringCallback& callback) {
-  message_received_cb_ = callback;
+    RepeatingMessageCallback callback) {
+  message_received_cb_ = std::move(callback);
 }
 
 void MockDisplaySourceConnectionDelegate::AddSink(
@@ -528,7 +527,7 @@ void MockDisplaySourceConnectionDelegate::OnMediaPacketReceived(
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&MockDisplaySourceConnectionDelegate::Disconnect,
-                       base::Unretained(this), StringCallback()));
+                       base::Unretained(this), FailureCallback()));
     return;
    }
 

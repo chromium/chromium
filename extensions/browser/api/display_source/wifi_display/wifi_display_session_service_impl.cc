@@ -51,8 +51,8 @@ void WiFiDisplaySessionServiceImpl::SetClient(
   DCHECK(!client_);
   client_.Bind(std::move(client));
   client_.set_disconnect_handler(
-      base::Bind(&WiFiDisplaySessionServiceImpl::OnClientConnectionError,
-                 weak_factory_.GetWeakPtr()));
+      base::BindOnce(&WiFiDisplaySessionServiceImpl::OnClientConnectionError,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void WiFiDisplaySessionServiceImpl::Connect(int32_t sink_id,
@@ -80,9 +80,10 @@ void WiFiDisplaySessionServiceImpl::Connect(int32_t sink_id,
     auth_info.method = static_cast<AuthenticationMethod>(auth_method);
     auth_info.data = std::unique_ptr<std::string>(new std::string(auth_data));
   }
-  auto on_error = base::Bind(&WiFiDisplaySessionServiceImpl::OnConnectFailed,
-                             weak_factory_.GetWeakPtr(), sink_id);
-  delegate_->Connect(sink_id, auth_info, on_error);
+  auto on_error =
+      base::BindOnce(&WiFiDisplaySessionServiceImpl::OnConnectFailed,
+                     weak_factory_.GetWeakPtr(), sink_id);
+  delegate_->Connect(sink_id, auth_info, std::move(on_error));
   sink_id_ = sink_id;
   sink_state_ = found->state;
   DCHECK(sink_state_ == SINK_STATE_CONNECTING);
@@ -105,9 +106,10 @@ void WiFiDisplaySessionServiceImpl::Disconnect() {
   DCHECK(found->state == SINK_STATE_CONNECTED ||
          found->state == SINK_STATE_CONNECTING);
 
-  auto on_error = base::Bind(&WiFiDisplaySessionServiceImpl::OnDisconnectFailed,
-                             weak_factory_.GetWeakPtr(), sink_id_);
-  delegate_->Disconnect(on_error);
+  auto on_error =
+      base::BindOnce(&WiFiDisplaySessionServiceImpl::OnDisconnectFailed,
+                     weak_factory_.GetWeakPtr(), sink_id_);
+  delegate_->Disconnect(std::move(on_error));
 }
 
 void WiFiDisplaySessionServiceImpl::SendMessage(const std::string& message) {
@@ -153,8 +155,9 @@ void WiFiDisplaySessionServiceImpl::OnSinksUpdated(
   if (actual_state == SINK_STATE_CONNECTED) {
     auto connection = delegate_->connection();
     DCHECK(connection);
-    auto on_message = base::Bind(&WiFiDisplaySessionServiceImpl::OnSinkMessage,
-                                 weak_factory_.GetWeakPtr());
+    auto on_message =
+        base::BindRepeating(&WiFiDisplaySessionServiceImpl::OnSinkMessage,
+                            weak_factory_.GetWeakPtr());
     connection->SetMessageReceivedCallback(on_message);
     client_->OnConnected(connection->GetLocalAddress(),
                          connection->GetSinkAddress());

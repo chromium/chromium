@@ -22,10 +22,13 @@ using DisplaySourceErrorType = api::display_source::ErrorType;
 // 'chrome.displaySource' API.
 class DisplaySourceConnectionDelegate : public KeyedService {
  public:
-  using AuthInfoCallback = base::Callback<void(const DisplaySourceAuthInfo&)>;
-  using StringCallback = base::Callback<void(const std::string&)>;
+  using AuthInfoCallback =
+      base::OnceCallback<void(const DisplaySourceAuthInfo&)>;
+  using RepeatingMessageCallback =
+      base::RepeatingCallback<void(const std::string&)>;
+  using FailureCallback = base::OnceCallback<void(const std::string&)>;
   using SinkInfoListCallback =
-      base::Callback<void(const DisplaySourceSinkInfoList&)>;
+      base::OnceCallback<void(const DisplaySourceSinkInfoList&)>;
 
   const static int kInvalidSinkId = -1;
 
@@ -49,7 +52,7 @@ class DisplaySourceConnectionDelegate : public KeyedService {
     // Connection object.
     // If an error occurs 'Observer::OnConnectionError' is invoked.
     virtual void SetMessageReceivedCallback(
-        const StringCallback& callback) = 0;
+        RepeatingMessageCallback callback) = 0;
 
    protected:
     Connection();
@@ -94,27 +97,26 @@ class DisplaySourceConnectionDelegate : public KeyedService {
   virtual Connection* connection() = 0;
 
   // Queries the list of currently available sinks.
-  virtual void GetAvailableSinks(const SinkInfoListCallback& sinks_callback,
-                                 const StringCallback& failure_callback) = 0;
+  virtual void GetAvailableSinks(SinkInfoListCallback sinks_callback,
+                                 FailureCallback failure_callback) = 0;
 
   // Queries the authentication method required by the sink for connection.
   // If the used authentication method requires authentication data to be
   // visible on the sink's display (e.g. PIN) the implementation should
   // request the sink to show it.
-  virtual void RequestAuthentication(
-      int sink_id,
-      const AuthInfoCallback& auth_info_callback,
-      const StringCallback& failure_callback) = 0;
+  virtual void RequestAuthentication(int sink_id,
+                                     AuthInfoCallback auth_info_callback,
+                                     FailureCallback failure_callback) = 0;
 
   // Connects to a sink by given id and auth info.
   virtual void Connect(int sink_id,
                        const DisplaySourceAuthInfo& auth_info,
-                       const StringCallback& failure_callback) = 0;
+                       FailureCallback failure_callback) = 0;
 
   // Disconnects the current connection to sink, the 'failure_callback'
   // is called if an error has occurred or if there is no established
   // connection.
-  virtual void Disconnect(const StringCallback& failure_callback) = 0;
+  virtual void Disconnect(FailureCallback failure_callback) = 0;
 
   // Implementation should start watching the available sinks updates.
   virtual void StartWatchingAvailableSinks() = 0;

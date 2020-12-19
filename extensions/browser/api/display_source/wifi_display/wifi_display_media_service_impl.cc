@@ -115,8 +115,8 @@ void WiFiDisplayMediaServiceImpl::Send() {
   DCHECK(!write_buffers_.empty());
   last_send_code_ = rtp_socket_->Write(
       write_buffers_.front().get(), write_buffers_.front()->size(),
-      base::Bind(&WiFiDisplayMediaServiceImpl::OnSent,
-                 weak_factory_.GetWeakPtr()));
+      base::BindOnce(&WiFiDisplayMediaServiceImpl::OnSent,
+                     weak_factory_.GetWeakPtr()));
   if (last_send_code_ != net::ERR_IO_PENDING)
     OnSent(last_send_code_);
 }

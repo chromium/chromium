@@ -34,11 +34,12 @@ DisplaySourceGetAvailableSinksFunction::Run() {
     return RespondNow(Error(kErrorNotSupported));
   }
 
-  auto success_callback = base::Bind(
+  auto success_callback = base::BindOnce(
       &DisplaySourceGetAvailableSinksFunction::OnGetSinksCompleted, this);
-  auto failure_callback = base::Bind(
+  auto failure_callback = base::BindOnce(
       &DisplaySourceGetAvailableSinksFunction::OnGetSinksFailed, this);
-  delegate->GetAvailableSinks(success_callback, failure_callback);
+  delegate->GetAvailableSinks(std::move(success_callback),
+                              std::move(failure_callback));
 
   return RespondLater();
 }
@@ -76,13 +77,13 @@ DisplaySourceRequestAuthenticationFunction::Run() {
     return RespondNow(Error(kErrorNotSupported));
   }
 
-  auto success_callback = base::Bind(
+  auto success_callback = base::BindOnce(
       &DisplaySourceRequestAuthenticationFunction::OnRequestAuthCompleted,
       this);
-  auto failure_callback = base::Bind(
+  auto failure_callback = base::BindOnce(
       &DisplaySourceRequestAuthenticationFunction::OnRequestAuthFailed, this);
-  delegate->RequestAuthentication(params->sink_id, success_callback,
-                                  failure_callback);
+  delegate->RequestAuthentication(params->sink_id, std::move(success_callback),
+                                  std::move(failure_callback));
   return RespondLater();
 }
 
