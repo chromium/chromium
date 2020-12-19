@@ -530,10 +530,6 @@ mojom("mojo_bindings") {
           cpp = "::ui::NativeTheme::SystemThemeColor"
         },
         {
-          mojom = "content.mojom.TriggeringEventInfo"
-          cpp = "::blink::TriggeringEventInfo"
-        },
-        {
           mojom = "content.mojom.VisualProperties"
           cpp = "::blink::VisualProperties"
         },
@@ -564,7 +560,6 @@ mojom("mojo_bindings") {
         "//third_party/blink/public/common/input/web_mouse_wheel_event.h",
         "//third_party/blink/public/common/input/web_pointer_properties.h",
         "//third_party/blink/public/common/input/web_touch_point.h",
-        "//third_party/blink/public/common/navigation/triggering_event_info.h",
         "//ui/events/blink/did_overscroll_params.h",
         "//ui/events/blink/web_input_event_traits.h",
         "//ui/latency/ipc/latency_info_param_traits.h",

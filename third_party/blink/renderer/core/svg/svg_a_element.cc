@@ -141,8 +141,9 @@ void SVGAElement::DefaultEventHandler(Event& event) {
           ResourceRequest(GetDocument().CompleteURL(url)));
       frame_request.SetNavigationPolicy(NavigationPolicyFromEvent(&event));
       frame_request.SetTriggeringEventInfo(
-          event.isTrusted() ? TriggeringEventInfo::kFromTrustedEvent
-                            : TriggeringEventInfo::kFromUntrustedEvent);
+          event.isTrusted()
+              ? mojom::blink::TriggeringEventInfo::kFromTrustedEvent
+              : mojom::blink::TriggeringEventInfo::kFromUntrustedEvent);
       frame_request.GetResourceRequest().SetHasUserGesture(
           LocalFrame::HasTransientUserActivation(GetDocument().GetFrame()));
 

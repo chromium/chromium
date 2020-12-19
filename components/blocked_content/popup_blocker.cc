@@ -58,8 +58,9 @@ PopupBlockType ShouldBlockPopup(content::WebContents* web_contents,
 
   // This is trusted user action (e.g. shift-click), so make sure it is not
   // blocked.
-  if (open_url_params && open_url_params->triggering_event_info !=
-                             blink::TriggeringEventInfo::kFromUntrustedEvent) {
+  if (open_url_params &&
+      open_url_params->triggering_event_info !=
+          blink::mojom::TriggeringEventInfo::kFromUntrustedEvent) {
     return PopupBlockType::kNotBlocked;
   }
 

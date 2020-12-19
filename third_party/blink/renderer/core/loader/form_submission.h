@@ -32,7 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_FORM_SUBMISSION_H_
 
 #include "base/macros.h"
-#include "third_party/blink/public/common/navigation/triggering_event_info.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom-blink-forward.h"
 #include "third_party/blink/public/web/web_frame_load_type.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
 #include "third_party/blink/renderer/core/loader/navigation_policy.h"
@@ -108,7 +108,7 @@ class FormSubmission final : public GarbageCollected<FormSubmission> {
                  scoped_refptr<EncodedFormData>,
                  const Event*,
                  NavigationPolicy navigation_policy,
-                 TriggeringEventInfo triggering_event_info,
+                 mojom::blink::TriggeringEventInfo triggering_event_info,
                  ClientNavigationReason reason,
                  std::unique_ptr<ResourceRequest> resource_request,
                  Frame* target_frame,
@@ -142,7 +142,7 @@ class FormSubmission final : public GarbageCollected<FormSubmission> {
   Member<HTMLFormElement> form_;
   scoped_refptr<EncodedFormData> form_data_;
   NavigationPolicy navigation_policy_;
-  TriggeringEventInfo triggering_event_info_;
+  mojom::blink::TriggeringEventInfo triggering_event_info_;
   String result_;
   ClientNavigationReason reason_;
   std::unique_ptr<ResourceRequest> resource_request_;

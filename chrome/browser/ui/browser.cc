@@ -1614,8 +1614,9 @@ WebContents* Browser::OpenURLFromTab(WebContents* source,
   if (is_popup && navigated_or_inserted_contents) {
     auto* tracker = blocked_content::PopupTracker::CreateForWebContents(
         navigated_or_inserted_contents, source, params.disposition);
-    tracker->set_is_trusted(params.triggering_event_info !=
-                            blink::TriggeringEventInfo::kFromUntrustedEvent);
+    tracker->set_is_trusted(
+        params.triggering_event_info !=
+        blink::mojom::TriggeringEventInfo::kFromUntrustedEvent);
   }
 
   return navigated_or_inserted_contents;

@@ -37,7 +37,7 @@
 #include "content/public/test/test_navigation_throttle_inserter.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/navigation/triggering_event_info.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
@@ -234,7 +234,7 @@ TEST_F(SafeBrowsingTriggeredPopupBlockerTest,
       ui::PAGE_TRANSITION_LINK, true /* is_renderer_initiated */);
   params.user_gesture = true;
   params.triggering_event_info =
-      blink::TriggeringEventInfo::kFromUntrustedEvent;
+      blink::mojom::TriggeringEventInfo::kFromUntrustedEvent;
 
   MaybeBlockPopup(web_contents(), nullptr,
                   std::make_unique<TestPopupNavigationDelegate>(
@@ -259,7 +259,8 @@ TEST_F(SafeBrowsingTriggeredPopupBlockerTest,
       popup_url, content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui::PAGE_TRANSITION_LINK, true /* is_renderer_initiated */);
   params.user_gesture = true;
-  params.triggering_event_info = blink::TriggeringEventInfo::kFromTrustedEvent;
+  params.triggering_event_info =
+      blink::mojom::TriggeringEventInfo::kFromTrustedEvent;
 
   MaybeBlockPopup(web_contents(), nullptr,
                   std::make_unique<TestPopupNavigationDelegate>(

@@ -7058,7 +7058,8 @@ TEST_F(WebFrameTest, ModifiedClickNewWindow) {
       MouseEvent::Create(nullptr, event_type_names::kClick, mouse_initializer);
   FrameLoadRequest frame_request(window, ResourceRequest(destination));
   frame_request.SetNavigationPolicy(NavigationPolicyFromEvent(event));
-  frame_request.SetTriggeringEventInfo(TriggeringEventInfo::kFromTrustedEvent);
+  frame_request.SetTriggeringEventInfo(
+      mojom::blink::TriggeringEventInfo::kFromTrustedEvent);
   LocalFrame::NotifyUserActivation(
       frame, mojom::UserActivationNotificationType::kTest);
   web_frame_client.IgnoreNavigations();

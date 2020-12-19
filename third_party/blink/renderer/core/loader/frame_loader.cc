@@ -627,7 +627,8 @@ DetermineRequestDestinationFromNavigationType(
 void FrameLoader::StartNavigation(FrameLoadRequest& request,
                                   WebFrameLoadType frame_load_type) {
   CHECK(!IsBackForwardLoadType(frame_load_type));
-  DCHECK(request.GetTriggeringEventInfo() != TriggeringEventInfo::kUnknown);
+  DCHECK(request.GetTriggeringEventInfo() !=
+         mojom::blink::TriggeringEventInfo::kUnknown);
   DCHECK(frame_->GetDocument());
   if (HTMLFrameOwnerElement* element = frame_->DeprecatedLocalOwner())
     element->CancelPendingLazyLoad();
@@ -689,7 +690,8 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
   if (same_document_navigation) {
     document_loader_->CommitSameDocumentNavigation(
         url, frame_load_type, nullptr, request.ClientRedirect(), origin_window,
-        request.GetTriggeringEventInfo() != TriggeringEventInfo::kNotFromEvent,
+        request.GetTriggeringEventInfo() !=
+            mojom::blink::TriggeringEventInfo::kNotFromEvent,
         nullptr /* extra_data */);
     return;
   }
@@ -704,7 +706,8 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
 
   WebNavigationType navigation_type = DetermineNavigationType(
       frame_load_type, resource_request.HttpBody() || request.Form(),
-      request.GetTriggeringEventInfo() != TriggeringEventInfo::kNotFromEvent);
+      request.GetTriggeringEventInfo() !=
+          mojom::blink::TriggeringEventInfo::kNotFromEvent);
   mojom::blink::RequestContextType request_context_type =
       DetermineRequestContextFromNavigationType(navigation_type);
 

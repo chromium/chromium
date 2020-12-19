@@ -152,7 +152,7 @@ inline FormSubmission::FormSubmission(
     scoped_refptr<EncodedFormData> data,
     const Event* event,
     NavigationPolicy navigation_policy,
-    TriggeringEventInfo triggering_event_info,
+    mojom::blink::TriggeringEventInfo triggering_event_info,
     ClientNavigationReason reason,
     std::unique_ptr<ResourceRequest> resource_request,
     Frame* target_frame,
@@ -293,15 +293,16 @@ FormSubmission* FormSubmission::Create(HTMLFormElement* form,
   resource_request->SetHasUserGesture(
       LocalFrame::HasTransientUserActivation(form->GetDocument().GetFrame()));
 
-  TriggeringEventInfo triggering_event_info;
+  mojom::blink::TriggeringEventInfo triggering_event_info;
   if (event) {
-    triggering_event_info = event->isTrusted()
-                                ? TriggeringEventInfo::kFromTrustedEvent
-                                : TriggeringEventInfo::kFromUntrustedEvent;
+    triggering_event_info =
+        event->isTrusted()
+            ? mojom::blink::TriggeringEventInfo::kFromTrustedEvent
+            : mojom::blink::TriggeringEventInfo::kFromUntrustedEvent;
     if (event->UnderlyingEvent())
       event = event->UnderlyingEvent();
   } else {
-    triggering_event_info = TriggeringEventInfo::kNotFromEvent;
+    triggering_event_info = mojom::blink::TriggeringEventInfo::kNotFromEvent;
   }
 
   FrameLoadRequest frame_request(form->GetDocument().domWindow(),

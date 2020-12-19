@@ -116,7 +116,7 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
       NavigationPolicy,
       WebFrameLoadType,
       bool is_client_redirect,
-      TriggeringEventInfo,
+      mojom::blink::TriggeringEventInfo,
       HTMLFormElement*,
       network::mojom::CSPDisposition should_bypass_main_world_csp,
       mojo::PendingRemote<mojom::blink::BlobURLToken>,

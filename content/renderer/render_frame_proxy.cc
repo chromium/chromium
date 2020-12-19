@@ -34,7 +34,7 @@
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "third_party/blink/public/common/feature_policy/feature_policy.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
-#include "third_party/blink/public/common/navigation/triggering_event_info.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom.h"
 #include "third_party/blink/public/platform/url_conversion.h"
 #include "third_party/blink/public/platform/web_rect.h"
@@ -618,7 +618,7 @@ void RenderFrameProxy::Navigate(
   params->disposition = WindowOpenDisposition::CURRENT_TAB;
   params->should_replace_current_entry = should_replace_current_entry;
   params->user_gesture = request.HasUserGesture();
-  params->triggering_event_info = blink::TriggeringEventInfo::kUnknown;
+  params->triggering_event_info = blink::mojom::TriggeringEventInfo::kUnknown;
   params->blob_url_token = std::move(blob_url_token);
 
   params->initiator_frame_token =

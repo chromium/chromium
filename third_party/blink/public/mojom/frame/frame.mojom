@@ -121,6 +121,19 @@ enum PluginActionType {
   kRotate90Counterclockwise,
 };
 
+enum TriggeringEventInfo {
+  kUnknown,
+
+  // The navigation was not triggered via a JS Event.
+  kNotFromEvent,
+
+  // The navigation was triggered via a JS event with isTrusted() == true.
+  kFromTrustedEvent,
+
+  // The navigation was triggered via a JS event with isTrusted() == false.
+  kFromUntrustedEvent,
+};
+
 // The maximum number of characters of the document's title that we're willing
 // to accept in the browser process.
 const uint16 kMaxTitleChars = 4096; // 4 * 1024;

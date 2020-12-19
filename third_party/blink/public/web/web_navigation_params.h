@@ -17,9 +17,9 @@
 #include "services/network/public/mojom/url_loader_factory.mojom-shared.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-shared.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
-#include "third_party/blink/public/common/navigation/triggering_event_info.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-shared.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-shared.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/navigation_initiator.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/policy_container.mojom-forward.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
@@ -115,7 +115,8 @@ struct BLINK_EXPORT WebNavigationInfo {
   bool blocking_downloads_in_sandbox_enabled = false;
 
   // Event information. See TriggeringEventInfo.
-  TriggeringEventInfo triggering_event_info = TriggeringEventInfo::kUnknown;
+  blink::mojom::TriggeringEventInfo triggering_event_info =
+      blink::mojom::TriggeringEventInfo::kUnknown;
 
   // If the navigation is a result of form submit, the form element is provided.
   WebFormElement form;
