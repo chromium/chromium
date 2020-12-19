@@ -25,8 +25,12 @@ import org.chromium.base.PackageUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.version.ChromeVersionInfo;
+import org.chromium.content_public.browser.BrowserStartupController;
 
 import java.lang.reflect.Field;
 
@@ -182,38 +186,59 @@ public class SplitChromeApplication extends SplitCompatApplication {
      * compile if necessary.
      */
     private void applyDexCompileWorkaround() {
-        // This bug only happens in OMR1.
-        if (Build.VERSION.SDK_INT != Build.VERSION_CODES.O_MR1) {
+        // This bug only happens in OMR1. Skip the workaround on local builds to avoid affecting
+        // perf bots.
+        if (Build.VERSION.SDK_INT != Build.VERSION_CODES.O_MR1
+                || ChromeVersionInfo.isLocalBuild()) {
             return;
         }
 
-        new Thread(() -> {
-            try {
-                // If the app has just been updated, it will be compiled with quicken. The next time
-                // bg-dexopt-job runs it will break the optimized dex for splits. If we force
-                // compile now, then bg-dexopt-job won't mess up the splits, and we save the user a
-                // slow startup.
-                if (needsDexCompileAfterUpdate()) {
-                    performDexCompile();
-                    return;
-                }
+        // Wait until startup completes so this doesn't slow down early startup or mess with
+        // compiled dex files before they get loaded initially.
+        // TODO(crbug.com/1159608): Determine if this works good enough, or if more needs to be done
+        // to avoid slowing startup.
+        BrowserStartupController.getInstance().addStartupCompletedObserver(
+                new BrowserStartupController.StartupCallback() {
+                    @Override
+                    public void onSuccess() {
+                        // BEST_EFFORT will only affect when the task runs, the dexopt will run with
+                        // normal priority (but in a separate process, due to using Runtime.exec()).
+                        PostTask.postTask(TaskTraits.BEST_EFFORT_MAY_BLOCK, () -> {
+                            try {
+                                // If the app has just been updated, it will be compiled with
+                                // quicken. The next time bg-dexopt-job runs it will break the
+                                // optimized dex for splits. If we force compile now, then
+                                // bg-dexopt-job won't mess up the splits, and we save the user a
+                                // slow startup.
+                                if (needsDexCompileAfterUpdate()) {
+                                    performDexCompile();
+                                    return;
+                                }
 
-                // Make sure all splits are compiled correclty, and if not force a compile.
-                String[] splitNames = ApiHelperForO.getSplitNames(getApplicationInfo());
-                for (int i = 0; i < splitNames.length; i++) {
-                    // Ignore config splits like "config.en".
-                    if (splitNames[i].contains(".")) {
-                        continue;
+                                // Make sure all splits are compiled correclty, and if not force a
+                                // compile.
+                                String[] splitNames =
+                                        ApiHelperForO.getSplitNames(getApplicationInfo());
+                                for (int i = 0; i < splitNames.length; i++) {
+                                    // Ignore config splits like "config.en".
+                                    if (splitNames[i].contains(".")) {
+                                        continue;
+                                    }
+                                    if (DexFile.isDexOptNeeded(
+                                                getApplicationInfo().splitSourceDirs[i])) {
+                                        performDexCompile();
+                                        return;
+                                    }
+                                }
+                            } catch (Exception e) {
+                                Log.e(TAG, "Error compiling dex.", e);
+                            }
+                        });
                     }
-                    if (DexFile.isDexOptNeeded(getApplicationInfo().splitSourceDirs[i])) {
-                        performDexCompile();
-                        return;
-                    }
-                }
-            } catch (Exception e) {
-                Log.e(TAG, "Error compiling dex.", e);
-            }
-        }).start();
+
+                    @Override
+                    public void onFailure() {}
+                });
     }
 
     /** Returns whether the dex has been compiled since the last app update. */

@@ -2196,6 +2196,7 @@ android_library("base_module_java") {
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/util:java",
+    "//chrome/browser/version:java",
     "//components/crash/android:java",
     "//components/embedder_support/android:application_java",
     "//components/media_router/browser/android:cast_options_provider_java",
