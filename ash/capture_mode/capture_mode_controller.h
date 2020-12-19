@@ -63,9 +63,6 @@ class ASH_EXPORT CaptureModeController
     return capture_mode_session_.get();
   }
   gfx::Rect user_capture_region() const { return user_capture_region_; }
-  void set_user_capture_region(const gfx::Rect& region) {
-    user_capture_region_ = region;
-  }
   bool is_recording_in_progress() const { return is_recording_in_progress_; }
 
   // Returns true if a capture mode session is currently active.
@@ -82,6 +79,10 @@ class ASH_EXPORT CaptureModeController
 
   // Stops an existing capture session.
   void Stop();
+
+  // Sets the user capture region. If it's non-empty and changed by the user,
+  // update |last_capture_region_update_time_|.
+  void SetUserCaptureRegion(const gfx::Rect& region, bool by_user);
 
   // Called only while a capture session is in progress to perform the actual
   // capture depending on the current selected |source_| and |type_|, and ends
@@ -296,6 +297,12 @@ class ASH_EXPORT CaptureModeController
   // started recording. It is used when video has finished recording for metrics
   // collection.
   base::TimeTicks recording_start_time_;
+
+  // The last time the user sets a non-empty capture region. It will be used to
+  // clear the user capture region from previous capture sessions if 8+ minutes
+  // has passed since the last time the user changes the capture region when the
+  // new capture session starts .
+  base::TimeTicks last_capture_region_update_time_;
 
   base::WeakPtrFactory<CaptureModeController> weak_ptr_factory_{this};
 };

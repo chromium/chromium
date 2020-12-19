@@ -2059,6 +2059,35 @@ TEST_F(CaptureModeMockTimeTest, ConsecutiveScreenshotsHistograms) {
   histogram_tester.ExpectBucketCount(kConsecutiveScreenshotsHistogram, 2, 1);
 }
 
+// Tests that the user capture region will be cleared up after a period of time.
+TEST_F(CaptureModeMockTimeTest, ClearUserCaptureRegionBetweenSessions) {
+  UpdateDisplay("800x800");
+  auto* controller = StartImageRegionCapture();
+  EXPECT_EQ(gfx::Rect(), controller->user_capture_region());
+
+  const gfx::Rect capture_region(100, 100, 600, 600);
+  SelectRegion(capture_region);
+  EXPECT_EQ(capture_region, controller->user_capture_region());
+  controller->PerformCapture();
+  EXPECT_EQ(capture_region, controller->user_capture_region());
+
+  // Start region image capture again shortly after the previous capture
+  // session, we should still be able to reuse the previous capture region.
+  task_environment()->FastForwardBy(base::TimeDelta::FromMinutes(1));
+  StartImageRegionCapture();
+  EXPECT_EQ(capture_region, controller->user_capture_region());
+  auto* event_generator = GetEventGenerator();
+  // Even if the capture is cancelled, we still remember the capture region.
+  SendKey(ui::VKEY_ESCAPE, event_generator);
+  EXPECT_EQ(capture_region, controller->user_capture_region());
+
+  // Wait for 8 second and then start region image capture again. We should have
+  // forgot the previous capture region.
+  task_environment()->FastForwardBy(base::TimeDelta::FromMinutes(8));
+  StartImageRegionCapture();
+  EXPECT_EQ(gfx::Rect(), controller->user_capture_region());
+}
+
 // Tests that in Region mode, the capture bar hides and shows itself correctly.
 TEST_F(CaptureModeTest, CaptureBarOpacity) {
   UpdateDisplay("800x800");

@@ -137,9 +137,11 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
                               bool region_intersects_capture_bar);
 
   // Updates the capture region and the capture region widgets depending on the
-  // value of |is_resizing|.
+  // value of |is_resizing|. |by_user| is true if the capture region is changed
+  // by user.
   void UpdateCaptureRegion(const gfx::Rect& new_capture_region,
-                           bool is_resizing);
+                           bool is_resizing,
+                           bool by_user);
 
   // Updates the dimensions label widget shown during a region capture session.
   // If not |is_resizing|, not a region capture session or the capture region is

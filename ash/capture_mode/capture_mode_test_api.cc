@@ -43,7 +43,7 @@ void CaptureModeTestApi::StartForRegion(bool for_video) {
 }
 
 void CaptureModeTestApi::SetUserSelectedRegion(const gfx::Rect& region) {
-  controller_->set_user_capture_region(region);
+  controller_->SetUserCaptureRegion(region, /*by_user=*/true);
 }
 
 void CaptureModeTestApi::PerformCapture() {

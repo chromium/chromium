@@ -993,7 +993,7 @@ void CaptureModeSession::OnLocatedEventPressed(
     // If the point is outside the capture region and not on the capture bar,
     // restart to the select phase.
     is_selecting_region_ = true;
-    UpdateCaptureRegion(gfx::Rect(), /*is_resizing=*/true);
+    UpdateCaptureRegion(gfx::Rect(), /*is_resizing=*/true, /*by_user=*/true);
     num_capture_region_adjusted_ = 0;
     return;
   }
@@ -1026,7 +1026,7 @@ void CaptureModeSession::OnLocatedEventDragged(
   if (is_selecting_region_) {
     UpdateCaptureRegion(
         GetRectEnclosingPoints({initial_location_in_root_, location_in_root}),
-        /*is_resizing=*/true);
+        /*is_resizing=*/true, /*by_user=*/true);
     return;
   }
 
@@ -1040,7 +1040,8 @@ void CaptureModeSession::OnLocatedEventDragged(
     gfx::Rect new_capture_region = controller_->user_capture_region();
     new_capture_region.Offset(location_in_root - previous_location_in_root);
     new_capture_region.AdjustToFit(current_root_->bounds());
-    UpdateCaptureRegion(new_capture_region, /*is_resizing=*/false);
+    UpdateCaptureRegion(new_capture_region, /*is_resizing=*/false,
+                        /*by_user=*/true);
     return;
   }
 
@@ -1064,7 +1065,8 @@ void CaptureModeSession::OnLocatedEventDragged(
     resizing_point.set_x(points.front().x());
   }
   points.push_back(resizing_point);
-  UpdateCaptureRegion(GetRectEnclosingPoints(points), /*is_resizing=*/true);
+  UpdateCaptureRegion(GetRectEnclosingPoints(points), /*is_resizing=*/true,
+                      /*by_user=*/true);
   MaybeShowMagnifierGlassAtPoint(location_in_root);
 }
 
@@ -1086,7 +1088,8 @@ void CaptureModeSession::OnLocatedEventReleased(
 
 void CaptureModeSession::UpdateCaptureRegion(
     const gfx::Rect& new_capture_region,
-    bool is_resizing) {
+    bool is_resizing,
+    bool by_user) {
   const gfx::Rect old_capture_region = controller_->user_capture_region();
   if (old_capture_region == new_capture_region)
     return;
@@ -1099,7 +1102,7 @@ void CaptureModeSession::UpdateCaptureRegion(
   damage_region.Inset(gfx::Insets(-kDamageInsetDp));
   layer()->SchedulePaint(damage_region);
 
-  controller_->set_user_capture_region(new_capture_region);
+  controller_->SetUserCaptureRegion(new_capture_region, by_user);
   UpdateDimensionsLabelWidget(is_resizing);
   UpdateCaptureLabelWidget();
 }
@@ -1406,7 +1409,7 @@ void CaptureModeSession::MaybeChangeRoot(aura::Window* new_root) {
 
   // Start with a new region when we switch displays.
   is_selecting_region_ = true;
-  UpdateCaptureRegion(gfx::Rect(), /*is_resizing=*/false);
+  UpdateCaptureRegion(gfx::Rect(), /*is_resizing=*/false, /*by_user=*/false);
 
   UpdateRootWindowDimmers();
 }
@@ -1522,7 +1525,7 @@ void CaptureModeSession::UpdateCaptureBarWidgetOpacity(float opacity,
 void CaptureModeSession::ClampCaptureRegionToRootWindowSize() {
   gfx::Rect new_capture_region = controller_->user_capture_region();
   new_capture_region.AdjustToFit(current_root_->bounds());
-  controller_->set_user_capture_region(new_capture_region);
+  controller_->SetUserCaptureRegion(new_capture_region, /*by_user=*/false);
 }
 
 void CaptureModeSession::EndSelection(bool is_event_on_capture_bar,
@@ -1558,7 +1561,8 @@ void CaptureModeSession::SelectDefaultRegion() {
   gfx::Rect default_capture_region = current_root_->bounds();
   default_capture_region.ClampToCenteredSize(gfx::ScaleToCeiledSize(
       default_capture_region.size(), kRegionDefaultRatio));
-  UpdateCaptureRegion(default_capture_region, /*is_resizing=*/false);
+  UpdateCaptureRegion(default_capture_region, /*is_resizing=*/false,
+                      /*by_user=*/true);
 }
 
 void CaptureModeSession::UpdateRegionHorizontally(bool left,
@@ -1596,7 +1600,8 @@ void CaptureModeSession::UpdateRegionHorizontally(bool left,
     ClipRectToFit(&new_capture_region, current_root_->bounds());
   }
 
-  UpdateCaptureRegion(new_capture_region, /*is_resizing=*/false);
+  UpdateCaptureRegion(new_capture_region, /*is_resizing=*/false,
+                      /*by_user=*/true);
 }
 
 void CaptureModeSession::UpdateRegionVertically(bool up, bool is_shift_down) {
@@ -1636,7 +1641,8 @@ void CaptureModeSession::UpdateRegionVertically(bool up, bool is_shift_down) {
     ClipRectToFit(&new_capture_region, current_root_->bounds());
   }
 
-  UpdateCaptureRegion(new_capture_region, /*is_resizing=*/false);
+  UpdateCaptureRegion(new_capture_region, /*is_resizing=*/false,
+                      /*by_user=*/true);
 }
 
 }  // namespace ash

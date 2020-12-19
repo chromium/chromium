@@ -74,6 +74,10 @@ constexpr char kDateFmtStr[] = "%d-%02d-%02d";
 constexpr char k24HourTimeFmtStr[] = "%02d.%02d.%02d";
 constexpr char kAmPmTimeFmtStr[] = "%d.%02d.%02d";
 
+// Duration to clear the capture region selection from the previous session.
+constexpr base::TimeDelta kResetCaptureRegionDuration =
+    base::TimeDelta::FromMinutes(8);
+
 // The screenshot notification button index.
 enum ScreenshotNotificationButtonIndex {
   BUTTON_EDIT = 0,
@@ -320,12 +324,27 @@ void CaptureModeController::Start(CaptureModeEntryType entry_type) {
   }
 
   RecordCaptureModeEntryType(entry_type);
+  // Reset the user capture region if enough time has passed as it can be
+  // annoying to still have the old capture region from the previous session
+  // long time ago.
+  if (!user_capture_region_.IsEmpty() &&
+      base::TimeTicks::Now() - last_capture_region_update_time_ >
+          kResetCaptureRegionDuration) {
+    SetUserCaptureRegion(gfx::Rect(), /*by_user=*/false);
+  }
   capture_mode_session_ = std::make_unique<CaptureModeSession>(this);
 }
 
 void CaptureModeController::Stop() {
   DCHECK(IsActive());
   capture_mode_session_.reset();
+}
+
+void CaptureModeController::SetUserCaptureRegion(const gfx::Rect& region,
+                                                 bool by_user) {
+  user_capture_region_ = region;
+  if (!user_capture_region_.IsEmpty() && by_user)
+    last_capture_region_update_time_ = base::TimeTicks::Now();
 }
 
 void CaptureModeController::PerformCapture() {
