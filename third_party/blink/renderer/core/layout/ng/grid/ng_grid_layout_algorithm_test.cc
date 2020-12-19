@@ -55,13 +55,24 @@ class NGGridLayoutAlgorithmTest
     algorithm.CacheItemSetIndices(algorithm_row_track_collection_,
                                   &grid_items_);
 
+    // Create a vector of grid item indices using |NGGridChildIterator| order.
+    Vector<wtf_size_t> reordered_item_indices(grid_items_.size());
+    for (wtf_size_t i = 0; i < grid_items_.size(); ++i)
+      reordered_item_indices[i] = i;
+
+    // Cache track span properties for grid items.
+    algorithm.CacheGridItemsTrackSpanProperties(
+        algorithm_column_track_collection_, &grid_items_,
+        &reordered_item_indices);
+    algorithm.CacheGridItemsTrackSpanProperties(
+        algorithm_row_track_collection_, &grid_items_, &reordered_item_indices);
+
     // Resolve inline size.
     algorithm.ComputeUsedTrackSizes(&algorithm_column_track_collection_,
-                                    &grid_items_);
-
+                                    &grid_items_, &reordered_item_indices);
     // Resolve block size.
     algorithm.ComputeUsedTrackSizes(&algorithm_row_track_collection_,
-                                    &grid_items_);
+                                    &grid_items_, &reordered_item_indices);
   }
 
   NGGridLayoutAlgorithmTrackCollection& TrackCollection(
@@ -111,32 +122,23 @@ class NGGridLayoutAlgorithmTest
     return results;
   }
 
-  void DetermineGridItemsSpanningIntrinsicOrFlexTracks(
+  Vector<wtf_size_t> GridItemsWithColumnSpanProperty(
       const NGGridLayoutAlgorithm& algorithm,
-      const NGGridLayoutAlgorithmTrackCollection& track_collection) {
-    Vector<wtf_size_t> reordered_item_indices;
-    reordered_item_indices.ReserveInitialCapacity(grid_items_.size());
-    for (wtf_size_t i = 0; i < grid_items_.size(); ++i)
-      reordered_item_indices.push_back(i);
-    algorithm.DetermineGridItemsSpanningIntrinsicOrFlexTracks(
-        track_collection, &grid_items_, &reordered_item_indices);
-  }
-
-  Vector<wtf_size_t> GridItemsSpanningIntrinsicTrack(
-      const NGGridLayoutAlgorithm& algorithm) {
+      TrackSpanProperties::PropertyId property) {
     Vector<wtf_size_t> results;
     for (wtf_size_t i = 0; i < grid_items_.size(); ++i) {
-      if (grid_items_[i].is_spanning_intrinsic_track)
+      if (grid_items_[i].column_span_properties.HasProperty(property))
         results.push_back(i);
     }
     return results;
   }
 
-  Vector<wtf_size_t> GridItemsSpanningFlexTrack(
-      const NGGridLayoutAlgorithm& algorithm) {
+  Vector<wtf_size_t> GridItemsWithRowSpanProperty(
+      const NGGridLayoutAlgorithm& algorithm,
+      TrackSpanProperties::PropertyId property) {
     Vector<wtf_size_t> results;
     for (wtf_size_t i = 0; i < grid_items_.size(); ++i) {
-      if (grid_items_[i].is_spanning_flex_track)
+      if (grid_items_[i].row_span_properties.HasProperty(property))
         results.push_back(i);
     }
     return results;
@@ -1191,35 +1193,37 @@ TEST_F(NGGridLayoutAlgorithmTest,
   NGGridLayoutAlgorithm algorithm({node, fragment_geometry, space});
   BuildGridItemsAndTrackCollections(algorithm);
 
-  DetermineGridItemsSpanningIntrinsicOrFlexTracks(algorithm,
-                                                  TrackCollection(kForColumns));
+  // Test grid items spanning intrinsic/flexible columns.
   Vector<wtf_size_t> expected_grid_items_spanning_intrinsic_track = {0, 1, 3};
   Vector<wtf_size_t> expected_grid_items_spanning_flex_track = {1};
 
-  Vector<wtf_size_t> actual_items = GridItemsSpanningIntrinsicTrack(algorithm);
+  Vector<wtf_size_t> actual_items = GridItemsWithColumnSpanProperty(
+      algorithm, TrackSpanProperties::kHasIntrinsicTrack);
   EXPECT_EQ(expected_grid_items_spanning_intrinsic_track.size(),
             actual_items.size());
   for (wtf_size_t i = 0; i < actual_items.size(); ++i)
     EXPECT_EQ(expected_grid_items_spanning_intrinsic_track[i], actual_items[i]);
 
-  actual_items = GridItemsSpanningFlexTrack(algorithm);
+  actual_items = GridItemsWithColumnSpanProperty(
+      algorithm, TrackSpanProperties::kHasFlexibleTrack);
   EXPECT_EQ(expected_grid_items_spanning_flex_track.size(),
             actual_items.size());
   for (wtf_size_t i = 0; i < actual_items.size(); ++i)
     EXPECT_EQ(expected_grid_items_spanning_flex_track[i], actual_items[i]);
 
-  DetermineGridItemsSpanningIntrinsicOrFlexTracks(algorithm,
-                                                  TrackCollection(kForRows));
+  // Test grid items spanning intrinsic/flexible rows.
   expected_grid_items_spanning_intrinsic_track = {1, 2, 3};
   expected_grid_items_spanning_flex_track = {2};
 
-  actual_items = GridItemsSpanningIntrinsicTrack(algorithm);
+  actual_items = GridItemsWithRowSpanProperty(
+      algorithm, TrackSpanProperties::kHasIntrinsicTrack);
   EXPECT_EQ(expected_grid_items_spanning_intrinsic_track.size(),
             actual_items.size());
   for (wtf_size_t i = 0; i < actual_items.size(); ++i)
     EXPECT_EQ(expected_grid_items_spanning_intrinsic_track[i], actual_items[i]);
 
-  actual_items = GridItemsSpanningFlexTrack(algorithm);
+  actual_items = GridItemsWithRowSpanProperty(
+      algorithm, TrackSpanProperties::kHasFlexibleTrack);
   EXPECT_EQ(expected_grid_items_spanning_flex_track.size(),
             actual_items.size());
   for (wtf_size_t i = 0; i < actual_items.size(); ++i)

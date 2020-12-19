@@ -66,17 +66,39 @@ class CORE_EXPORT NGGridTrackCollectionBase {
   virtual wtf_size_t RangeCount() const = 0;
 };
 
+struct CORE_EXPORT TrackSpanProperties {
+ public:
+  enum PropertyId : unsigned {
+    kNone = 0,
+    kHasIntrinsicTrack = 1 << 0,
+    kHasFlexibleTrack = 1 << 1,
+    kHasAutoMinimumTrack = 1 << 2,
+    kIsCollapsed = 1 << 3,
+    kIsImplicit = 1 << 4
+  };
+
+  inline bool HasProperty(PropertyId id) const { return bitmask_ & id; }
+  inline void SetProperty(PropertyId id) { bitmask_ |= id; }
+
+ private:
+  uint8_t bitmask_{kNone};
+};
+
 class CORE_EXPORT NGGridBlockTrackCollection
     : public NGGridTrackCollectionBase {
  public:
   struct Range {
+    bool IsImplicit() const;
+    bool IsCollapsed() const;
+
+    void SetIsImplicit();
+    void SetIsCollapsed();
+
     wtf_size_t starting_track_number;
     wtf_size_t track_count;
     wtf_size_t repeater_index;
     wtf_size_t repeater_offset;
-
-    bool is_implicit_range : 1;
-    bool is_collapsed : 1;
+    TrackSpanProperties properties;
   };
 
   explicit NGGridBlockTrackCollection(
@@ -89,14 +111,12 @@ class CORE_EXPORT NGGridBlockTrackCollection
   // Ensures that after FinalizeRanges is called, a range will start at the
   // |track_number|, and a range will end at |track_number| + |span_length|
   void EnsureTrackCoverage(wtf_size_t track_number, wtf_size_t span_length);
-
   // Build the collection of ranges based on information provided by
   // SetSpecifiedTracks and EnsureTrackCoverage.
   void FinalizeRanges();
-  // Returns the range at the given range index.
+
+  bool IsRangeImplicit(wtf_size_t range_index) const;
   const Range& RangeAtRangeIndex(wtf_size_t range_index) const;
-  // Returns the range at the given track.
-  const Range& RangeAtTrackNumber(wtf_size_t track_number) const;
 
   GridTrackSizingDirection Direction() const { return direction_; }
   bool IsForColumns() const { return direction_ == kForColumns; }
@@ -226,14 +246,13 @@ class CORE_EXPORT NGGridLayoutAlgorithmTrackCollection
     Range(const NGGridBlockTrackCollection::Range& block_track_range,
           wtf_size_t starting_set_index);
 
+    bool IsCollapsed() const;
+
     wtf_size_t starting_track_number;
     wtf_size_t track_count;
     wtf_size_t starting_set_index;
     wtf_size_t set_count;
-
-    bool is_spanning_intrinsic_track : 1;
-    bool is_spanning_flex_track : 1;
-    bool is_collapsed : 1;
+    TrackSpanProperties properties;
   };
 
   template <bool is_const>
@@ -306,10 +325,11 @@ class CORE_EXPORT NGGridLayoutAlgorithmTrackCollection
   wtf_size_t RangeSetCount(wtf_size_t range_index) const;
   wtf_size_t RangeStartingSetIndex(wtf_size_t range_index) const;
 
-  // Returns true if the range contains a set with an intrinsic sizing function.
-  bool IsRangeSpanningIntrinsicTrack(wtf_size_t range_index) const;
-  // Returns true if the range contains a set with a flexible sizing function.
-  bool IsRangeSpanningFlexTrack(wtf_size_t range_index) const;
+  // Returns true if the specified property has been set in the track span
+  // properties bitmask of the range at position |range_index|.
+  bool RangeHasTrackSpanProperty(
+      wtf_size_t range_index,
+      TrackSpanProperties::PropertyId property_id) const;
 
   GridTrackSizingDirection Direction() const { return direction_; }
   bool IsForColumns() const { return direction_ == kForColumns; }

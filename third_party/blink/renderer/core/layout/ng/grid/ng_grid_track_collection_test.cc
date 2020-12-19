@@ -247,22 +247,22 @@ TEST_F(NGGridTrackCollectionTest, TestNGGridBlockTrackCollectionImplicit) {
   NGGridTrackCollectionBase::RangeRepeatIterator iterator(&block_collection,
                                                           0u);
   EXPECT_RANGE(0u, 3u, iterator);
-  EXPECT_FALSE(block_collection.RangeAtTrackNumber(0u).is_implicit_range);
+  EXPECT_FALSE(block_collection.IsRangeImplicit(iterator.RangeIndex()));
 
   EXPECT_TRUE(iterator.MoveToNextRange());
   EXPECT_RANGE(3u, 5u, iterator);
-  EXPECT_FALSE(block_collection.RangeAtTrackNumber(3).is_implicit_range);
+  EXPECT_FALSE(block_collection.IsRangeImplicit(iterator.RangeIndex()));
 
   EXPECT_TRUE(iterator.MoveToNextRange());
   EXPECT_RANGE(8u, 9u, iterator);
-  EXPECT_FALSE(block_collection.RangeAtTrackNumber(11).is_implicit_range);
+  EXPECT_FALSE(block_collection.IsRangeImplicit(iterator.RangeIndex()));
 
   EXPECT_TRUE(iterator.MoveToNextRange());
-  EXPECT_FALSE(block_collection.RangeAtTrackNumber(20).is_implicit_range);
+  EXPECT_FALSE(block_collection.IsRangeImplicit(iterator.RangeIndex()));
   EXPECT_RANGE(17u, 21u, iterator);
 
   EXPECT_TRUE(iterator.MoveToNextRange());
-  EXPECT_TRUE(block_collection.RangeAtTrackNumber(40).is_implicit_range);
+  EXPECT_TRUE(block_collection.IsRangeImplicit(iterator.RangeIndex()));
   EXPECT_RANGE(38u, 5u, iterator);
 
   EXPECT_FALSE(iterator.MoveToNextRange());
@@ -599,10 +599,10 @@ TEST_F(NGGridTrackCollectionTest,
   EXPECT_SET(GridTrackSize(Length::MinContent()), 1u, set_iterator);
   EXPECT_FALSE(set_iterator.MoveToNextSet());
   wtf_size_t current_range_index = range_iterator.RangeIndex();
-  EXPECT_TRUE(
-      algorithm_collection.IsRangeSpanningIntrinsicTrack(current_range_index));
-  EXPECT_FALSE(
-      algorithm_collection.IsRangeSpanningFlexTrack(current_range_index));
+  EXPECT_FALSE(algorithm_collection.RangeHasTrackSpanProperty(
+      current_range_index, TrackSpanProperties::kHasFlexibleTrack));
+  EXPECT_TRUE(algorithm_collection.RangeHasTrackSpanProperty(
+      current_range_index, TrackSpanProperties::kHasIntrinsicTrack));
   EXPECT_TRUE(range_iterator.MoveToNextRange());
 
   EXPECT_RANGE(1u, 2u, range_iterator);
@@ -613,10 +613,10 @@ TEST_F(NGGridTrackCollectionTest,
   EXPECT_SET(GridTrackSize(Length::Fixed(2)), 1u, set_iterator);
   EXPECT_FALSE(set_iterator.MoveToNextSet());
   current_range_index = range_iterator.RangeIndex();
-  EXPECT_TRUE(
-      algorithm_collection.IsRangeSpanningIntrinsicTrack(current_range_index));
-  EXPECT_TRUE(
-      algorithm_collection.IsRangeSpanningFlexTrack(current_range_index));
+  EXPECT_TRUE(algorithm_collection.RangeHasTrackSpanProperty(
+      current_range_index, TrackSpanProperties::kHasFlexibleTrack));
+  EXPECT_TRUE(algorithm_collection.RangeHasTrackSpanProperty(
+      current_range_index, TrackSpanProperties::kHasIntrinsicTrack));
   EXPECT_TRUE(range_iterator.MoveToNextRange());
 
   EXPECT_RANGE(3u, 4u, range_iterator);
@@ -631,10 +631,10 @@ TEST_F(NGGridTrackCollectionTest,
   EXPECT_SET(GridTrackSize(Length::Fixed(2)), 1u, set_iterator);
   EXPECT_FALSE(set_iterator.MoveToNextSet());
   current_range_index = range_iterator.RangeIndex();
-  EXPECT_TRUE(
-      algorithm_collection.IsRangeSpanningIntrinsicTrack(current_range_index));
-  EXPECT_TRUE(
-      algorithm_collection.IsRangeSpanningFlexTrack(current_range_index));
+  EXPECT_TRUE(algorithm_collection.RangeHasTrackSpanProperty(
+      current_range_index, TrackSpanProperties::kHasFlexibleTrack));
+  EXPECT_TRUE(algorithm_collection.RangeHasTrackSpanProperty(
+      current_range_index, TrackSpanProperties::kHasIntrinsicTrack));
   EXPECT_TRUE(range_iterator.MoveToNextRange());
 
   EXPECT_RANGE(7u, 1u, range_iterator);
@@ -643,10 +643,10 @@ TEST_F(NGGridTrackCollectionTest,
   EXPECT_SET(GridTrackSize(Length::Fixed(3)), 1u, set_iterator);
   EXPECT_FALSE(set_iterator.MoveToNextSet());
   current_range_index = range_iterator.RangeIndex();
-  EXPECT_FALSE(
-      algorithm_collection.IsRangeSpanningIntrinsicTrack(current_range_index));
-  EXPECT_FALSE(
-      algorithm_collection.IsRangeSpanningFlexTrack(current_range_index));
+  EXPECT_FALSE(algorithm_collection.RangeHasTrackSpanProperty(
+      current_range_index, TrackSpanProperties::kHasFlexibleTrack));
+  EXPECT_FALSE(algorithm_collection.RangeHasTrackSpanProperty(
+      current_range_index, TrackSpanProperties::kHasIntrinsicTrack));
   EXPECT_TRUE(range_iterator.MoveToNextRange());
 
   EXPECT_RANGE(8u, 3u, range_iterator);
@@ -655,10 +655,10 @@ TEST_F(NGGridTrackCollectionTest,
   EXPECT_SET(GridTrackSize(Length::Auto()), 3u, set_iterator);
   EXPECT_FALSE(set_iterator.MoveToNextSet());
   current_range_index = range_iterator.RangeIndex();
-  EXPECT_TRUE(
-      algorithm_collection.IsRangeSpanningIntrinsicTrack(current_range_index));
-  EXPECT_FALSE(
-      algorithm_collection.IsRangeSpanningFlexTrack(current_range_index));
+  EXPECT_FALSE(algorithm_collection.RangeHasTrackSpanProperty(
+      current_range_index, TrackSpanProperties::kHasFlexibleTrack));
+  EXPECT_TRUE(algorithm_collection.RangeHasTrackSpanProperty(
+      current_range_index, TrackSpanProperties::kHasIntrinsicTrack));
   EXPECT_FALSE(range_iterator.MoveToNextRange());
 }
 

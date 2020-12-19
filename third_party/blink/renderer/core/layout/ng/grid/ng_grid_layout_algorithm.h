@@ -34,7 +34,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
   };
 
   struct GridItemData {
-    explicit GridItemData(const NGBlockNode node);
+    explicit GridItemData(const NGBlockNode node) : node(node) {}
 
     AutoPlacementType AutoPlacement(
         GridTrackSizingDirection flow_direction) const;
@@ -45,6 +45,16 @@ class CORE_EXPORT NGGridLayoutAlgorithm
     wtf_size_t StartLine(GridTrackSizingDirection track_direction) const;
     wtf_size_t EndLine(GridTrackSizingDirection track_direction) const;
     wtf_size_t SpanSize(GridTrackSizingDirection track_direction) const;
+
+    const TrackSpanProperties& GetTrackSpanProperties(
+        GridTrackSizingDirection track_direction) const;
+    void SetTrackSpanProperty(TrackSpanProperties::PropertyId property,
+                              GridTrackSizingDirection track_direction);
+
+    bool IsSpanningFlexibleTrack(
+        GridTrackSizingDirection track_direction) const;
+    bool IsSpanningIntrinsicTrack(
+        GridTrackSizingDirection track_direction) const;
 
     const NGBlockNode node;
     GridArea resolved_position;
@@ -66,8 +76,8 @@ class CORE_EXPORT NGGridLayoutAlgorithm
     bool is_inline_axis_stretched;
     bool is_block_axis_stretched;
 
-    bool is_spanning_flex_track : 1;
-    bool is_spanning_intrinsic_track : 1;
+    TrackSpanProperties column_span_properties;
+    TrackSpanProperties row_span_properties;
   };
 
   explicit NGGridLayoutAlgorithm(const NGLayoutAlgorithmParams& params);
@@ -164,9 +174,9 @@ class CORE_EXPORT NGGridLayoutAlgorithm
   void CacheItemSetIndices(
       const NGGridLayoutAlgorithmTrackCollection& track_collection,
       Vector<GridItemData>* grid_items) const;
-  // For every grid item, determines if it spans a track with an intrinsic or
-  // flexible sizing function and caches the answer in its |GridItemData|.
-  void DetermineGridItemsSpanningIntrinsicOrFlexTracks(
+  // For every grid item, caches properties of the track sizing functions it
+  // spans (i.e. whether an item spans intrinsic or flexible tracks).
+  void CacheGridItemsTrackSpanProperties(
       const NGGridLayoutAlgorithmTrackCollection& track_collection,
       Vector<GridItemData>* grid_items,
       Vector<wtf_size_t>* reordered_item_indices) const;
@@ -174,7 +184,8 @@ class CORE_EXPORT NGGridLayoutAlgorithm
   // Calculates from the min and max track sizing functions the used track size.
   void ComputeUsedTrackSizes(
       NGGridLayoutAlgorithmTrackCollection* track_collection,
-      Vector<GridItemData>* grid_items) const;
+      Vector<GridItemData>* grid_items,
+      Vector<wtf_size_t>* reordered_item_indices) const;
 
   // These methods implement the steps of the algorithm for intrinsic track size
   // resolution defined in https://drafts.csswg.org/css-grid-1/#algo-content.
