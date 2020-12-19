@@ -13,9 +13,7 @@ import {$} from 'chrome://resources/js/util.m.js';
 const ENABLE_BLOCKLIST_BUTTON = 'Enable Blocklist';
 const IGNORE_BLOCKLIST_BUTTON = 'Ignore Blocklist';
 const IGNORE_BLOCKLIST_MESSAGE = 'Blocklist decisions are ignored.';
-const URL_THRESHOLD = 40;  // Maximum URL length
-// Export on |window| for tests.
-window.URL_THRESHOLD = URL_THRESHOLD;
+export const URL_THRESHOLD = 40;  // Maximum URL length
 
 window.logTableMap = {};
 
@@ -38,7 +36,7 @@ function getPaddedValue(value, length) {
  * @param {number} time Time in millisecond since Unix Epoch.
  * @return The converted string format.
  */
-function getTimeFormat(time) {
+export function getTimeFormat(time) {
   const date = new Date(time);
   const options = {
     year: 'numeric',
@@ -53,8 +51,6 @@ function getTimeFormat(time) {
   const millisec = getPaddedValue(date.getMilliseconds(), 3);
   return dateString + ' ' + hour + ':' + min + ':' + sec + '.' + millisec;
 }
-// Export on |window| for tests.
-window.getTimeFormat = getTimeFormat;
 
 /**
  * Append a button to |element|, so that when the button is clicked, the
@@ -462,11 +458,9 @@ function setupLogClear() {
  * @constructor
  * @implements {mojom.InterventionsInternalsPageInterface}
  */
-const InterventionsInternalPageImpl = function() {
+export const InterventionsInternalPageImpl = function() {
   this.receiver_ = new mojom.InterventionsInternalsPageReceiver(this);
 };
-// Export on |window| for tests.
-window.InterventionsInternalPageImpl = InterventionsInternalPageImpl;
 
 InterventionsInternalPageImpl.prototype = {
   /**

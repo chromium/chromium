@@ -31,6 +31,13 @@ content::WebUIDataSource* GetSource() {
       "interventions_internals.mojom-lite.js",
       IDR_INTERVENTIONS_INTERNALS_MOJOM_LITE_JS);
   source->SetDefaultResource(IDR_INTERVENTIONS_INTERNALS_INDEX_HTML);
+
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::TrustedTypes,
+      "trusted-types interventions-internals-test-script;");
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ScriptSrc,
+      "script-src chrome://resources chrome://test 'self';");
   return source;
 }
 
