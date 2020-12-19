@@ -58,7 +58,7 @@ bool ImageData::ValidateConstructorArguments(
     const unsigned& width,
     const unsigned& height,
     const NotShared<DOMArrayBufferView> data,
-    const ImageDataSettings* color_settings,
+    const ImageDataSettings* settings,
     ExceptionState* exception_state) {
   // We accept all the combinations of colorSpace and storageFormat in an
   // ImageDataSettings to be stored in an ImageData. Therefore, we don't
@@ -78,11 +78,9 @@ bool ImageData::ValidateConstructorArguments(
 
   if (param_flags & (kParamWidth | kParamHeight)) {
     base::CheckedNumeric<unsigned> data_size =
-        ImageData::StorageFormatBytesPerPixel(
-            kUint8ClampedArrayStorageFormatName);
-    if (color_settings) {
-      data_size = ImageData::StorageFormatBytesPerPixel(
-          color_settings->storageFormat());
+        StorageFormatBytesPerPixel(kUint8ClampedArrayStorageFormatName);
+    if (settings) {
+      data_size = StorageFormatBytesPerPixel(settings->storageFormat());
     }
     data_size *= width;
     data_size *= height;
@@ -203,107 +201,75 @@ NotShared<DOMArrayBufferView> ImageData::AllocateAndValidateDataArray(
   return data_array;
 }
 
-NotShared<DOMUint8ClampedArray> ImageData::AllocateAndValidateUint8ClampedArray(
-    const unsigned& length,
-    ExceptionState* exception_state) {
-  NotShared<DOMUint8ClampedArray> buffer_view;
-  buffer_view = AllocateAndValidateDataArray(
-      length, kUint8ClampedArrayStorageFormat, exception_state);
-  return buffer_view;
-}
-
-NotShared<DOMUint16Array> ImageData::AllocateAndValidateUint16Array(
-    const unsigned& length,
-    ExceptionState* exception_state) {
-  NotShared<DOMUint16Array> buffer_view;
-  buffer_view = AllocateAndValidateDataArray(length, kUint16ArrayStorageFormat,
-                                             exception_state);
-  return buffer_view;
-}
-
-NotShared<DOMFloat32Array> ImageData::AllocateAndValidateFloat32Array(
-    const unsigned& length,
-    ExceptionState* exception_state) {
-  NotShared<DOMFloat32Array> buffer_view;
-  buffer_view = AllocateAndValidateDataArray(length, kFloat32ArrayStorageFormat,
-                                             exception_state);
-  return buffer_view;
-}
-
 ImageData* ImageData::Create(const IntSize& size,
-                             const ImageDataSettings* color_settings) {
+                             const ImageDataSettings* settings) {
   if (!ValidateConstructorArguments(kParamSize, &size, 0, 0,
-                                    NotShared<DOMArrayBufferView>(),
-                                    color_settings))
+                                    NotShared<DOMArrayBufferView>(), settings))
     return nullptr;
   ImageDataStorageFormat storage_format = kUint8ClampedArrayStorageFormat;
-  if (color_settings) {
+  if (settings) {
     storage_format =
-        ImageData::GetImageDataStorageFormat(color_settings->storageFormat());
+        ImageData::GetImageDataStorageFormat(settings->storageFormat());
   }
   NotShared<DOMArrayBufferView> data_array =
       AllocateAndValidateDataArray(4 * static_cast<unsigned>(size.Width()) *
                                        static_cast<unsigned>(size.Height()),
                                    storage_format);
   return data_array
-             ? MakeGarbageCollected<ImageData>(size, data_array, color_settings)
+             ? MakeGarbageCollected<ImageData>(size, data_array, settings)
              : nullptr;
 }
 
 ImageData* ImageData::Create(const IntSize& size,
                              CanvasColorSpace color_space,
                              ImageDataStorageFormat storage_format) {
-  ImageDataSettings* color_settings = ImageDataSettings::Create();
+  ImageDataSettings* settings = ImageDataSettings::Create();
   switch (color_space) {
     case CanvasColorSpace::kSRGB:
-      color_settings->setColorSpace(kSRGBCanvasColorSpaceName);
+      settings->setColorSpace(kSRGBCanvasColorSpaceName);
       break;
     case CanvasColorSpace::kRec2020:
-      color_settings->setColorSpace(kRec2020CanvasColorSpaceName);
+      settings->setColorSpace(kRec2020CanvasColorSpaceName);
       break;
     case CanvasColorSpace::kP3:
-      color_settings->setColorSpace(kP3CanvasColorSpaceName);
+      settings->setColorSpace(kP3CanvasColorSpaceName);
       break;
   }
 
   switch (storage_format) {
     case kUint8ClampedArrayStorageFormat:
-      color_settings->setStorageFormat(kUint8ClampedArrayStorageFormatName);
+      settings->setStorageFormat(kUint8ClampedArrayStorageFormatName);
       break;
     case kUint16ArrayStorageFormat:
-      color_settings->setStorageFormat(kUint16ArrayStorageFormatName);
+      settings->setStorageFormat(kUint16ArrayStorageFormatName);
       break;
     case kFloat32ArrayStorageFormat:
-      color_settings->setStorageFormat(kFloat32ArrayStorageFormatName);
+      settings->setStorageFormat(kFloat32ArrayStorageFormatName);
       break;
   }
 
-  return ImageData::Create(size, color_settings);
+  return ImageData::Create(size, settings);
 }
 
 ImageData* ImageData::Create(const IntSize& size,
                              NotShared<DOMArrayBufferView> data_array,
-                             const ImageDataSettings* color_settings) {
-  if (!ImageData::ValidateConstructorArguments(
-          kParamSize | kParamData, &size, 0, 0, data_array, color_settings))
+                             const ImageDataSettings* settings) {
+  if (!ValidateConstructorArguments(kParamSize | kParamData, &size, 0, 0,
+                                    data_array, settings))
     return nullptr;
-  return MakeGarbageCollected<ImageData>(size, data_array, color_settings);
+  return MakeGarbageCollected<ImageData>(size, data_array, settings);
 }
 
 ImageData* ImageData::Create(unsigned width,
                              unsigned height,
                              ExceptionState& exception_state) {
-  if (!ImageData::ValidateConstructorArguments(
-          kParamWidth | kParamHeight, nullptr, width, height,
-          NotShared<DOMArrayBufferView>(), nullptr, &exception_state))
+  if (!ValidateConstructorArguments(kParamWidth | kParamHeight, nullptr, width,
+                                    height, NotShared<DOMArrayBufferView>(),
+                                    nullptr, &exception_state))
     return nullptr;
 
-  NotShared<DOMUint8ClampedArray> byte_array =
-      AllocateAndValidateUint8ClampedArray(
-          ImageData::StorageFormatBytesPerPixel(
-              kUint8ClampedArrayStorageFormat) *
-              width * height,
-          &exception_state);
+  NotShared<DOMArrayBufferView> byte_array = AllocateAndValidateDataArray(
+      4 * width * height, kUint8ClampedArrayStorageFormat, &exception_state);
   return byte_array ? MakeGarbageCollected<ImageData>(IntSize(width, height),
                                                       byte_array)
                     : nullptr;
@@ -312,9 +278,8 @@ ImageData* ImageData::Create(unsigned width,
 ImageData* ImageData::Create(NotShared<DOMUint8ClampedArray> data,
                              unsigned width,
                              ExceptionState& exception_state) {
-  if (!ImageData::ValidateConstructorArguments(kParamData | kParamWidth,
-                                               nullptr, width, 0, data, nullptr,
-                                               &exception_state))
+  if (!ValidateConstructorArguments(kParamData | kParamWidth, nullptr, width, 0,
+                                    data, nullptr, &exception_state))
     return nullptr;
 
   unsigned height = base::checked_cast<unsigned>(data->length()) / (width * 4);
@@ -325,88 +290,25 @@ ImageData* ImageData::Create(NotShared<DOMUint8ClampedArray> data,
                              unsigned width,
                              unsigned height,
                              ExceptionState& exception_state) {
-  if (!ImageData::ValidateConstructorArguments(
-          kParamData | kParamWidth | kParamHeight, nullptr, width, height, data,
-          nullptr, &exception_state))
+  if (!ValidateConstructorArguments(kParamData | kParamWidth | kParamHeight,
+                                    nullptr, width, height, data, nullptr,
+                                    &exception_state))
     return nullptr;
 
   return MakeGarbageCollected<ImageData>(IntSize(width, height), data);
 }
 
-ImageData* ImageData::Create(NotShared<DOMUint16Array> data,
-                             unsigned width,
-                             ExceptionState& exception_state) {
-  if (!ImageData::ValidateConstructorArguments(kParamData | kParamWidth,
-                                               nullptr, width, 0, data, nullptr,
-                                               &exception_state))
-    return nullptr;
-  unsigned height = base::checked_cast<unsigned>(data->length()) /
-                    (width * ImageData::StorageFormatBytesPerPixel(
-                                 kUint16ArrayStorageFormatName));
-  ImageDataSettings* image_setting = ImageDataSettings::Create();
-  image_setting->setStorageFormat(kUint16ArrayStorageFormatName);
-  return MakeGarbageCollected<ImageData>(IntSize(width, height), data,
-                                         image_setting);
-}
-
-ImageData* ImageData::Create(NotShared<DOMUint16Array> data,
-                             unsigned width,
-                             unsigned height,
-                             ExceptionState& exception_state) {
-  if (!ImageData::ValidateConstructorArguments(
-          kParamData | kParamWidth | kParamHeight, nullptr, width, height, data,
-          nullptr, &exception_state))
-    return nullptr;
-
-  ImageDataSettings* image_setting = ImageDataSettings::Create();
-  image_setting->setStorageFormat(kUint16ArrayStorageFormatName);
-  return MakeGarbageCollected<ImageData>(IntSize(width, height), data,
-                                         image_setting);
-}
-
-ImageData* ImageData::Create(NotShared<DOMFloat32Array> data,
-                             unsigned width,
-                             ExceptionState& exception_state) {
-  if (!ImageData::ValidateConstructorArguments(kParamData | kParamWidth,
-                                               nullptr, width, 0, data, nullptr,
-                                               &exception_state))
-    return nullptr;
-
-  unsigned height = base::checked_cast<unsigned>(data->length()) /
-                    (width * ImageData::StorageFormatBytesPerPixel(
-                                 kFloat32ArrayStorageFormatName));
-  ImageDataSettings* image_setting = ImageDataSettings::Create();
-  image_setting->setStorageFormat(kFloat32ArrayStorageFormatName);
-  return MakeGarbageCollected<ImageData>(IntSize(width, height), data,
-                                         image_setting);
-}
-
-ImageData* ImageData::Create(NotShared<DOMFloat32Array> data,
-                             unsigned width,
-                             unsigned height,
-                             ExceptionState& exception_state) {
-  if (!ImageData::ValidateConstructorArguments(
-          kParamData | kParamWidth | kParamHeight, nullptr, width, height, data,
-          nullptr, &exception_state))
-    return nullptr;
-
-  ImageDataSettings* image_setting = ImageDataSettings::Create();
-  image_setting->setStorageFormat(kFloat32ArrayStorageFormatName);
-  return MakeGarbageCollected<ImageData>(IntSize(width, height), data,
-                                         image_setting);
-}
-
 ImageData* ImageData::CreateImageData(unsigned width,
                                       unsigned height,
-                                      const ImageDataSettings* color_settings,
+                                      const ImageDataSettings* settings,
                                       ExceptionState& exception_state) {
-  if (!ImageData::ValidateConstructorArguments(
-          kParamWidth | kParamHeight, nullptr, width, height,
-          NotShared<DOMArrayBufferView>(), color_settings, &exception_state))
+  if (!ValidateConstructorArguments(kParamWidth | kParamHeight, nullptr, width,
+                                    height, NotShared<DOMArrayBufferView>(),
+                                    settings, &exception_state))
     return nullptr;
 
   ImageDataStorageFormat storage_format =
-      ImageData::GetImageDataStorageFormat(color_settings->storageFormat());
+      GetImageDataStorageFormat(settings->storageFormat());
   NotShared<DOMArrayBufferView> buffer_view = AllocateAndValidateDataArray(
       4 * width * height, storage_format, &exception_state);
 
@@ -414,13 +316,13 @@ ImageData* ImageData::CreateImageData(unsigned width,
     return nullptr;
 
   return MakeGarbageCollected<ImageData>(IntSize(width, height), buffer_view,
-                                         color_settings);
+                                         settings);
 }
 
 ImageData* ImageData::CreateImageData(ImageDataArray& data,
                                       unsigned width,
                                       unsigned height,
-                                      ImageDataSettings* color_settings,
+                                      ImageDataSettings* settings,
                                       ExceptionState& exception_state) {
   NotShared<DOMArrayBufferView> buffer_view;
 
@@ -442,23 +344,23 @@ ImageData* ImageData::CreateImageData(ImageDataArray& data,
     NOTREACHED();
   }
 
-  if (color_settings->storageFormat() != storage_format_name)
-    color_settings->setStorageFormat(storage_format_name);
+  if (settings->storageFormat() != storage_format_name)
+    settings->setStorageFormat(storage_format_name);
 
-  if (!ImageData::ValidateConstructorArguments(
-          kParamData | kParamWidth | kParamHeight, nullptr, width, height,
-          buffer_view, color_settings, &exception_state))
+  if (!ValidateConstructorArguments(kParamData | kParamWidth | kParamHeight,
+                                    nullptr, width, height, buffer_view,
+                                    settings, &exception_state))
     return nullptr;
 
   return MakeGarbageCollected<ImageData>(IntSize(width, height), buffer_view,
-                                         color_settings);
+                                         settings);
 }
 
 // This function accepts size (0, 0) and always returns the ImageData in
 // "srgb" color space and "uint8" storage format.
 ImageData* ImageData::CreateForTest(const IntSize& size) {
   base::CheckedNumeric<unsigned> data_size =
-      ImageData::StorageFormatBytesPerPixel(kUint8ClampedArrayStorageFormat);
+      StorageFormatBytesPerPixel(kUint8ClampedArrayStorageFormat);
   data_size *= size.Width();
   data_size *= size.Height();
   if (!data_size.IsValid() ||
@@ -477,8 +379,8 @@ ImageData* ImageData::CreateForTest(const IntSize& size) {
 // to be validated on the call site.
 ImageData* ImageData::CreateForTest(const IntSize& size,
                                     NotShared<DOMArrayBufferView> buffer_view,
-                                    const ImageDataSettings* color_settings) {
-  return MakeGarbageCollected<ImageData>(size, buffer_view, color_settings);
+                                    const ImageDataSettings* settings) {
+  return MakeGarbageCollected<ImageData>(size, buffer_view, settings);
 }
 
 // Crops ImageData to the intersect of its size and the given rectangle. If the
@@ -497,8 +399,7 @@ ImageData* ImageData::CropRect(const IntRect& crop_rect, bool flip_y) {
 
   unsigned data_size = 4 * dst_rect.Width() * dst_rect.Height();
   NotShared<DOMArrayBufferView> buffer_view = AllocateAndValidateDataArray(
-      data_size,
-      ImageData::GetImageDataStorageFormat(color_settings_->storageFormat()));
+      data_size, GetImageDataStorageFormat(settings_->storageFormat()));
   if (!buffer_view)
     return nullptr;
 
@@ -507,7 +408,7 @@ ImageData* ImageData::CropRect(const IntRect& crop_rect, bool flip_y) {
                 data_size * buffer_view->TypeSize());
   } else {
     unsigned data_type_size =
-        ImageData::StorageFormatBytesPerPixel(color_settings_->storageFormat());
+        StorageFormatBytesPerPixel(settings_->storageFormat());
     int src_index = (dst_rect.X() + dst_rect.Y() * src_rect.Width()) * 4;
     int dst_index = 0;
     if (flip_y)
@@ -525,7 +426,7 @@ ImageData* ImageData::CropRect(const IntRect& crop_rect, bool flip_y) {
     }
   }
   return MakeGarbageCollected<ImageData>(dst_rect.Size(), buffer_view,
-                                         color_settings_);
+                                         settings_);
 }
 
 ScriptPromise ImageData::CreateImageBitmap(ScriptState* script_state,
@@ -597,7 +498,7 @@ ImageDataStorageFormat ImageData::GetImageDataStorageFormat(
 CanvasColorSpace ImageData::GetCanvasColorSpace() const {
   if (!RuntimeEnabledFeatures::CanvasColorManagementEnabled())
     return CanvasColorSpace::kSRGB;
-  return CanvasColorSpaceFromName(color_settings_->colorSpace());
+  return CanvasColorSpaceFromName(settings_->colorSpace());
 }
 
 ImageDataStorageFormat ImageData::GetImageDataStorageFormat() const {
@@ -658,7 +559,7 @@ SkPixmap ImageData::GetSkPixmap() const {
 }
 
 void ImageData::Trace(Visitor* visitor) const {
-  visitor->Trace(color_settings_);
+  visitor->Trace(settings_);
   visitor->Trace(data_);
   visitor->Trace(data_u8_);
   visitor->Trace(data_u16_);
@@ -668,8 +569,8 @@ void ImageData::Trace(Visitor* visitor) const {
 
 ImageData::ImageData(const IntSize& size,
                      NotShared<DOMArrayBufferView> data,
-                     const ImageDataSettings* color_settings)
-    : size_(size), color_settings_(ImageDataSettings::Create()) {
+                     const ImageDataSettings* settings)
+    : size_(size), settings_(ImageDataSettings::Create()) {
   DCHECK_GE(size.Width(), 0);
   DCHECK_GE(size.Height(), 0);
   DCHECK(data);
@@ -678,19 +579,13 @@ ImageData::ImageData(const IntSize& size,
   data_u16_.Clear();
   data_f32_.Clear();
 
-  if (color_settings) {
-    color_settings_->setColorSpace(color_settings->colorSpace());
-    color_settings_->setStorageFormat(color_settings->storageFormat());
+  if (settings) {
+    settings_->setColorSpace(settings->colorSpace());
+    settings_->setStorageFormat(settings->storageFormat());
   }
 
   ImageDataStorageFormat storage_format =
-      GetImageDataStorageFormat(color_settings_->storageFormat());
-
-  // TODO (zakerinasab): crbug.com/779570
-  // The default color space for ImageData with U16/F32 data should be
-  // extended-srgb color space. It is temporarily set to linear-rgb, which is
-  // not correct, but fixes crbug.com/779419.
-
+      GetImageDataStorageFormat(settings_->storageFormat());
   switch (storage_format) {
     case kUint8ClampedArrayStorageFormat:
       DCHECK(data->GetType() ==

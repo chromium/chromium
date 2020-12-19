@@ -85,20 +85,6 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
                            unsigned width,
                            unsigned height,
                            ExceptionState&);
-  static ImageData* Create(NotShared<DOMUint16Array>,
-                           unsigned width,
-                           ExceptionState&);
-  static ImageData* Create(NotShared<DOMUint16Array>,
-                           unsigned width,
-                           unsigned height,
-                           ExceptionState&);
-  static ImageData* Create(NotShared<DOMFloat32Array>,
-                           unsigned width,
-                           ExceptionState&);
-  static ImageData* Create(NotShared<DOMFloat32Array>,
-                           unsigned width,
-                           unsigned height,
-                           ExceptionState&);
 
   static ImageData* CreateImageData(unsigned width,
                                     unsigned height,
@@ -110,7 +96,7 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
                                     ImageDataSettings*,
                                     ExceptionState&);
 
-  ImageDataSettings* getSettings() { return color_settings_; }
+  ImageDataSettings* getSettings() { return settings_; }
 
   static ImageData* CreateForTest(const IntSize&);
   static ImageData* CreateForTest(const IntSize&,
@@ -168,7 +154,7 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
 
  private:
   IntSize size_;
-  Member<ImageDataSettings> color_settings_;
+  Member<ImageDataSettings> settings_;
   ImageDataArray data_;
   NotShared<DOMUint8ClampedArray> data_u8_;
   NotShared<DOMUint16Array> data_u16_;
@@ -177,18 +163,6 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
   static NotShared<DOMArrayBufferView> AllocateAndValidateDataArray(
       const unsigned&,
       ImageDataStorageFormat,
-      ExceptionState* = nullptr);
-
-  static NotShared<DOMUint8ClampedArray> AllocateAndValidateUint8ClampedArray(
-      const unsigned&,
-      ExceptionState* = nullptr);
-
-  static NotShared<DOMUint16Array> AllocateAndValidateUint16Array(
-      const unsigned&,
-      ExceptionState* = nullptr);
-
-  static NotShared<DOMFloat32Array> AllocateAndValidateFloat32Array(
-      const unsigned&,
       ExceptionState* = nullptr);
 };
 

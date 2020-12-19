@@ -101,10 +101,10 @@ TEST_F(ImageDataTest, TestCropRect) {
     else
       data_array = data_f32;
 
-    ImageDataSettings* color_settings = ImageDataSettings::Create();
-    color_settings->setStorageFormat(image_data_storage_format_names[i]);
+    ImageDataSettings* image_data_settings = ImageDataSettings::Create();
+    image_data_settings->setStorageFormat(image_data_storage_format_names[i]);
     image_data = ImageData::CreateForTest(IntSize(width, height), data_array,
-                                          color_settings);
+                                          image_data_settings);
     for (int j = 0; j < num_test_cases; j++) {
       // Test the size of the cropped image data
       IntRect src_rect(IntPoint(), image_data->Size());

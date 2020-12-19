@@ -1569,8 +1569,8 @@ ImageData* BaseRenderingContext2D::createImageData(
     ImageData* image_data,
     ExceptionState& exception_state) const {
   ImageData* result = nullptr;
-  ImageDataSettings* color_settings = image_data->getSettings();
-  result = ImageData::Create(image_data->Size(), color_settings);
+  ImageDataSettings* image_data_settings = image_data->getSettings();
+  result = ImageData::Create(image_data->Size(), image_data_settings);
   if (!result)
     exception_state.ThrowRangeError("Out of memory at ImageData creation");
   return result;
@@ -1589,10 +1589,10 @@ ImageData* BaseRenderingContext2D::createImageData(
 
   IntSize size(abs(sw), abs(sh));
   ImageData* result = nullptr;
-  ImageDataSettings* color_settings = ImageDataSettings::Create();
-  color_settings->setColorSpace(kSRGBCanvasColorSpaceName);
-  color_settings->setStorageFormat(kUint8ClampedArrayStorageFormatName);
-  result = ImageData::Create(size, color_settings);
+  ImageDataSettings* image_data_settings = ImageDataSettings::Create();
+  image_data_settings->setColorSpace(kSRGBCanvasColorSpaceName);
+  image_data_settings->setStorageFormat(kUint8ClampedArrayStorageFormatName);
+  result = ImageData::Create(size, image_data_settings);
 
   if (!result)
     exception_state.ThrowRangeError("Out of memory at ImageData creation");
@@ -1602,9 +1602,9 @@ ImageData* BaseRenderingContext2D::createImageData(
 ImageData* BaseRenderingContext2D::createImageData(
     unsigned width,
     unsigned height,
-    ImageDataSettings* color_settings,
+    ImageDataSettings* image_data_settings,
     ExceptionState& exception_state) const {
-  return ImageData::CreateImageData(width, height, color_settings,
+  return ImageData::CreateImageData(width, height, image_data_settings,
                                     exception_state);
 }
 
@@ -1622,9 +1622,10 @@ ImageData* BaseRenderingContext2D::getImageData(
     int sy,
     int sw,
     int sh,
-    ImageDataSettings* color_settings,
+    ImageDataSettings* image_data_settings,
     ExceptionState& exception_state) {
-  return getImageDataInternal(sx, sy, sw, sh, color_settings, exception_state);
+  return getImageDataInternal(sx, sy, sw, sh, image_data_settings,
+                              exception_state);
 }
 
 ImageData* BaseRenderingContext2D::getImageDataInternal(
@@ -1632,7 +1633,7 @@ ImageData* BaseRenderingContext2D::getImageDataInternal(
     int sy,
     int sw,
     int sh,
-    ImageDataSettings* color_settings,
+    ImageDataSettings* image_data_settings,
     ExceptionState& exception_state) {
   if (!base::CheckMul(sw, sh).IsValid<int>()) {
     exception_state.ThrowRangeError("Out of memory at ImageData creation");
@@ -1678,17 +1679,18 @@ ImageData* BaseRenderingContext2D::getImageDataInternal(
 
   const IntRect image_data_rect(sx, sy, sw, sh);
 
-  if (!color_settings) {
-    color_settings = ImageDataSettings::Create();
-    color_settings->setColorSpace(kSRGBCanvasColorSpaceName);
-    color_settings->setStorageFormat(kUint8ClampedArrayStorageFormatName);
+  if (!image_data_settings) {
+    image_data_settings = ImageDataSettings::Create();
+    image_data_settings->setColorSpace(kSRGBCanvasColorSpaceName);
+    image_data_settings->setStorageFormat(kUint8ClampedArrayStorageFormatName);
   }
 
   const ImageDataStorageFormat storage_format =
-      ImageData::GetImageDataStorageFormat(color_settings->storageFormat());
+      ImageData::GetImageDataStorageFormat(
+          image_data_settings->storageFormat());
   if (!CanCreateCanvas2dResourceProvider() || isContextLost()) {
     ImageData* result =
-        ImageData::Create(image_data_rect.Size(), color_settings);
+        ImageData::Create(image_data_rect.Size(), image_data_settings);
     if (!result)
       exception_state.ThrowRangeError("Out of memory at ImageData creation");
     return result;
@@ -1733,7 +1735,7 @@ ImageData* BaseRenderingContext2D::getImageDataInternal(
         NOTREACHED();
     }
     sk_sp<SkColorSpace> color_space = CanvasColorSpaceToSkColorSpace(
-        CanvasColorSpaceFromName(color_settings->colorSpace()));
+        CanvasColorSpaceFromName(image_data_settings->colorSpace()));
     image_info = SkImageInfo::Make(sw, sh, color_type, kUnpremul_SkAlphaType,
                                    color_space);
   }
@@ -1812,7 +1814,7 @@ ImageData* BaseRenderingContext2D::getImageDataInternal(
       NOTREACHED();
   }
   ImageData* image_data = ImageData::Create(
-      image_data_rect.Size(), std::move(data_array), color_settings);
+      image_data_rect.Size(), std::move(data_array), image_data_settings);
 
   if (!IsPaint2D()) {
     int scaled_time = getScaledElapsedTime(

@@ -943,7 +943,7 @@ void TestPutImageDataOnCanvasWithColorSpaceSettings(
   EXPECT_EQ(data_length, data_f32->length());
 
   ImageData* image_data = nullptr;
-  ImageDataSettings* color_settings = ImageDataSettings::Create();
+  ImageDataSettings* image_data_settings = ImageDataSettings::Create();
   int num_pixels = data_length / 4;
 
   // At most four bytes are needed for Float32 output per color component.
@@ -953,7 +953,7 @@ void TestPutImageDataOnCanvasWithColorSpaceSettings(
   // Loop through different possible combinations of image data color space and
   // storage formats and create the respective test image data objects.
   for (unsigned i = 0; i < num_image_data_color_spaces; i++) {
-    color_settings->setColorSpace(
+    image_data_settings->setColorSpace(
         ImageData::CanvasColorSpaceName(image_data_color_spaces[i]));
 
     for (unsigned j = 0; j < num_image_data_storage_formats; j++) {
@@ -961,22 +961,23 @@ void TestPutImageDataOnCanvasWithColorSpaceSettings(
       switch (image_data_storage_formats[j]) {
         case kUint8ClampedArrayStorageFormat:
           data_array = data_u8;
-          color_settings->setStorageFormat(kUint8ClampedArrayStorageFormatName);
+          image_data_settings->setStorageFormat(
+              kUint8ClampedArrayStorageFormatName);
           break;
         case kUint16ArrayStorageFormat:
           data_array = data_u16;
-          color_settings->setStorageFormat(kUint16ArrayStorageFormatName);
+          image_data_settings->setStorageFormat(kUint16ArrayStorageFormatName);
           break;
         case kFloat32ArrayStorageFormat:
           data_array = data_f32;
-          color_settings->setStorageFormat(kFloat32ArrayStorageFormatName);
+          image_data_settings->setStorageFormat(kFloat32ArrayStorageFormatName);
           break;
         default:
           NOTREACHED();
       }
 
-      image_data =
-          ImageData::CreateForTest(IntSize(2, 2), data_array, color_settings);
+      image_data = ImageData::CreateForTest(IntSize(2, 2), data_array,
+                                            image_data_settings);
       unsigned k = static_cast<unsigned>(canvas_colorspace_setting);
       ImageDataSettings* canvas_color_setting = ImageDataSettings::Create();
       canvas_color_setting->setColorSpace(

@@ -777,11 +777,11 @@ TEST(V8ScriptValueSerializerTest, RoundTripImageDataWithColorSpaceInfo) {
   // ImageData objects with color space information should serialize and
   // deserialize correctly.
   V8TestingScope scope;
-  ImageDataSettings* color_settings = ImageDataSettings::Create();
-  color_settings->setColorSpace("display-p3");
-  color_settings->setStorageFormat("float32");
-  ImageData* image_data =
-      ImageData::CreateImageData(2, 1, color_settings, ASSERT_NO_EXCEPTION);
+  ImageDataSettings* image_data_settings = ImageDataSettings::Create();
+  image_data_settings->setColorSpace("display-p3");
+  image_data_settings->setStorageFormat("float32");
+  ImageData* image_data = ImageData::CreateImageData(2, 1, image_data_settings,
+                                                     ASSERT_NO_EXCEPTION);
   static_cast<unsigned char*>(image_data->BufferBase()->Data())[0] = 200;
   v8::Local<v8::Value> wrapper =
       ToV8(image_data, scope.GetContext()->Global(), scope.GetIsolate());
@@ -790,9 +790,9 @@ TEST(V8ScriptValueSerializerTest, RoundTripImageDataWithColorSpaceInfo) {
   ImageData* new_image_data = V8ImageData::ToImpl(result.As<v8::Object>());
   EXPECT_NE(image_data, new_image_data);
   EXPECT_EQ(image_data->Size(), new_image_data->Size());
-  ImageDataSettings* new_color_settings = new_image_data->getSettings();
-  EXPECT_EQ("display-p3", new_color_settings->colorSpace());
-  EXPECT_EQ("float32", new_color_settings->storageFormat());
+  ImageDataSettings* new_image_data_settings = new_image_data->getSettings();
+  EXPECT_EQ("display-p3", new_image_data_settings->colorSpace());
+  EXPECT_EQ("float32", new_image_data_settings->storageFormat());
   EXPECT_EQ(image_data->BufferBase()->ByteLength(),
             new_image_data->BufferBase()->ByteLength());
   EXPECT_EQ(200, static_cast<unsigned char*>(
@@ -845,9 +845,9 @@ TEST(V8ScriptValueSerializerTest, DecodeImageDataV18) {
   ASSERT_TRUE(V8ImageData::HasInstance(result, scope.GetIsolate()));
   ImageData* new_image_data = V8ImageData::ToImpl(result.As<v8::Object>());
   EXPECT_EQ(IntSize(2, 1), new_image_data->Size());
-  ImageDataSettings* new_color_settings = new_image_data->getSettings();
-  EXPECT_EQ("display-p3", new_color_settings->colorSpace());
-  EXPECT_EQ("float32", new_color_settings->storageFormat());
+  ImageDataSettings* new_image_data_settings = new_image_data->getSettings();
+  EXPECT_EQ("display-p3", new_image_data_settings->colorSpace());
+  EXPECT_EQ("float32", new_image_data_settings->storageFormat());
   EXPECT_EQ(32u, new_image_data->BufferBase()->ByteLength());
   EXPECT_EQ(200, static_cast<unsigned char*>(
                      new_image_data->BufferBase()->Data())[0]);
