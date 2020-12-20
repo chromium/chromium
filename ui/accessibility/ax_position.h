@@ -670,12 +670,12 @@ class AXPosition {
         AXPositionInstance previous_text_position = text_position->Clone();
         do {
           previous_text_position =
-              previous_text_position->CreatePreviousTextAnchorPosition(
+              previous_text_position->CreatePreviousLeafTextPosition(
                   abort_move_predicate);
           // If the previous position is whitespace, then continue searching
           // until a non-whitespace leaf text position is found within the
           // current paragraph because whitespace is supposed to be collapsed.
-          // There's a chance that |CreatePreviousTextAnchorPosition| will
+          // There's a chance that |CreatePreviousLeafTextPosition| will
           // return whitespace that should be appended to a previous paragraph
           // rather than separating two pieces of the current paragraph.
         } while (previous_text_position->IsInWhiteSpace() ||
@@ -728,7 +728,7 @@ class AXPosition {
         // using the paragraph boundary abort predicate.
         // If a null position was found, then this position must be the end of
         // a paragraph.
-        // |CreateNextTextAnchorPosition| + |AbortMoveAtParagraphBoundary|
+        // |CreateNextLeafTextPosition| + |AbortMoveAtParagraphBoundary|
         // will return a null position when an anchor movement would
         // cross a paragraph boundary and there is no doubt that it is the end
         // of a paragraph, or the end of content was reached.
@@ -741,7 +741,7 @@ class AXPosition {
 
         AXPositionInstance next_text_position = text_position->Clone();
         do {
-          next_text_position = next_text_position->CreateNextTextAnchorPosition(
+          next_text_position = next_text_position->CreateNextLeafTextPosition(
               abort_move_predicate);
         } while (next_text_position->IsIgnored());
         if (next_text_position->IsNullPosition())
@@ -793,7 +793,7 @@ class AXPosition {
         // This will return a null position when an anchor movement would
         // cross a page boundary, or the start of content was reached.
         AXPositionInstance previous_text_position =
-            text_position->CreatePreviousTextAnchorPosition(
+            text_position->CreatePreviousLeafTextPosition(
                 base::BindRepeating(&AbortMoveAtPageBoundary));
         return previous_text_position->IsNullPosition();
       }
@@ -821,7 +821,7 @@ class AXPosition {
         // This will return a null position when an anchor movement would
         // cross a page boundary, or the end of content was reached.
         AXPositionInstance next_text_position =
-            text_position->CreateNextTextAnchorPosition(
+            text_position->CreateNextLeafTextPosition(
                 base::BindRepeating(&AbortMoveAtPageBoundary));
         return next_text_position->IsNullPosition();
       }
@@ -2117,7 +2117,7 @@ class AXPosition {
   // Creates a text position using the previous text-only node as its anchor.
   // Assumes that text-only nodes are leaf nodes.
   AXPositionInstance CreatePreviousLeafTextPosition() const {
-    return CreatePreviousTextAnchorPosition(
+    return CreatePreviousLeafTextPosition(
         base::BindRepeating(&DefaultAbortMovePredicate));
   }
 
@@ -3835,9 +3835,9 @@ class AXPosition {
     return rightmost_leaf;
   }
 
-  // Creates a position using the next text-only node as its anchor.
-  // Assumes that text-only nodes are leaf nodes.
-  AXPositionInstance CreateNextTextAnchorPosition(
+  // Creates a text position using the next leaf node as its anchor.
+  // Leaf nodes often make up the trees text representation.
+  AXPositionInstance CreateNextLeafTextPosition(
       const AbortMovePredicate& abort_predicate) const {
     // If this is an ancestor text position, resolve to its leaf text position.
     if (IsTextPosition() && !IsLeaf())
@@ -3851,9 +3851,9 @@ class AXPosition {
     return next_leaf->AsLeafTextPosition();
   }
 
-  // Creates a position using the previous text-only node as its anchor.
-  // Assumes that text-only nodes are leaf nodes.
-  AXPositionInstance CreatePreviousTextAnchorPosition(
+  // Creates a text position using the previous leaf node as its anchor.
+  // Leaf nodes often make up the trees text representation.
+  AXPositionInstance CreatePreviousLeafTextPosition(
       const AbortMovePredicate& abort_predicate) const {
     // If this is an ancestor text position, resolve to its leaf text position.
     if (IsTextPosition() && !IsLeaf())
