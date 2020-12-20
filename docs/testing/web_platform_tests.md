@@ -139,8 +139,9 @@ Please see the `wpt_internal`
 **Note**: A significant downside of `wpt_internal` is that your tests may be
 broken by upstream changes to the resources scripts (e.g. `testharness.js`), as
 `wpt_internal` does not use the forked version of `testharness.js` used by all
-other non-`external/wpt` tests. Use of [WPT-NOTIFY](#wpt_notify) is recommended
-to ensure you are notified of breakages.
+other non-`external/wpt` tests. Use of [new failure
+notifications](#new-failure-notifications) is recommended to ensure you are
+notified of breakages.
 
 ## Running tests
 
@@ -200,19 +201,24 @@ For maintainers:
 -   If the importer starts misbehaving, it can be disabled by landing a
     [CL to skip the update step](https://crrev.com/c/1961906/).
 
-### WPT-NOTIFY
+### New failure notifications
 
 Test owners can elect to have the importer automatically file bugs against a
 component when imported changes introduce failures. This includes new tests that
 fail in Chromium, as well as new failures introduced to an existing test. To
-opt-in to this functionality, create an `OWNERS` file in the appropriate
-`external/wpt/` subdirectory that contains the `WPT-NOTIFY` tag. For example,
-`external/wpt/css/css-grid/OWNERS` looks like:
+opt-in to this functionality, create an `DIR_METADATA` file in the appropriate
+`external/wpt/` subdirectory that contains at least `wpt.notify` and
+`monorail.component` fields. For example, `external/wpt/css/css-grid/DIR_METADATA`
+looks like:
 
 ```
-# TEAM: layout-dev@chromium.org
-# COMPONENT: Blink>Layout>Grid
-# WPT-NOTIFY: true
+monorail {
+  component: "Blink>Layout>Grid"
+}
+team_email: "layout-dev@chromium.org"
+wpt {
+  notify: YES
+}
 ```
 
 When a test under `external/wpt/css/css-grid/` newly fails in a WPT import, the
@@ -220,8 +226,8 @@ importer will automatically file a bug against the Blink>Layout>Grid component
 in [crbug.com][https://crbug.com], with details of which test failed and the
 output.
 
-Note that we are considering making WPT-NOTIFY opt-out instead of opt-in: see
-https://crbug.com/845232
+Note that we are considering making the notifications opt-out instead of
+opt-in: see https://crbug.com/845232
 
 ### Skipped tests (and how to re-enable them)
 
