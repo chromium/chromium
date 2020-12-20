@@ -221,6 +221,10 @@ SK_API void SkDebugf_FileLine(const char* file,
 #define SK_SUPPORT_LEGACY_AAA_CHOICE
 #endif
 
+#ifndef SK_SUPPORT_LEGACY_SPRITE_IGNORE_HQ
+#define SK_SUPPORT_LEGACY_SPRITE_IGNORE_HQ
+#endif
+
 #ifndef GR_OP_ALLOCATE_USE_NEW
 #define GR_OP_ALLOCATE_USE_NEW
 #endif
