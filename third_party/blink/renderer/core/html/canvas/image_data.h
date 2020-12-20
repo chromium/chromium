@@ -143,15 +143,6 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
       const WrapperTypeInfo*,
       v8::Local<v8::Object> wrapper) override;
 
-  static bool ValidateConstructorArguments(
-      const unsigned&,
-      const IntSize* = nullptr,
-      const unsigned& = 0,
-      const unsigned& = 0,
-      const NotShared<DOMArrayBufferView> = NotShared<DOMArrayBufferView>(),
-      const ImageDataSettings* = nullptr,
-      ExceptionState* = nullptr);
-
  private:
   IntSize size_;
   Member<ImageDataSettings> settings_;
@@ -159,6 +150,14 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
   NotShared<DOMUint8ClampedArray> data_u8_;
   NotShared<DOMUint16Array> data_u16_;
   NotShared<DOMFloat32Array> data_f32_;
+
+  static bool ValidateConstructorArguments(
+      const IntSize* size,
+      const unsigned* width,
+      const unsigned* height,
+      const NotShared<DOMArrayBufferView>* data,
+      const ImageDataSettings* settings,
+      ExceptionState* = nullptr);
 
   static NotShared<DOMArrayBufferView> AllocateAndValidateDataArray(
       const unsigned&,

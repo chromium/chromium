@@ -53,37 +53,36 @@ bool RaiseDOMExceptionAndReturnFalse(ExceptionState* exception_state,
 }  // namespace
 
 bool ImageData::ValidateConstructorArguments(
-    const unsigned& param_flags,
     const IntSize* size,
-    const unsigned& width,
-    const unsigned& height,
-    const NotShared<DOMArrayBufferView> data,
+    const unsigned* width,
+    const unsigned* height,
+    const NotShared<DOMArrayBufferView>* data,
     const ImageDataSettings* settings,
     ExceptionState* exception_state) {
   // We accept all the combinations of colorSpace and storageFormat in an
   // ImageDataSettings to be stored in an ImageData. Therefore, we don't
   // check the color settings in this function.
 
-  if ((param_flags & kParamWidth) && !width) {
+  if (width && !*width) {
     return RaiseDOMExceptionAndReturnFalse(
         exception_state, DOMExceptionCode::kIndexSizeError,
         "The source width is zero or not a number.");
   }
 
-  if ((param_flags & kParamHeight) && !height) {
+  if (height && !*height) {
     return RaiseDOMExceptionAndReturnFalse(
         exception_state, DOMExceptionCode::kIndexSizeError,
         "The source height is zero or not a number.");
   }
 
-  if (param_flags & (kParamWidth | kParamHeight)) {
+  if (width || height) {
     base::CheckedNumeric<unsigned> data_size =
         StorageFormatBytesPerPixel(kUint8ClampedArrayStorageFormatName);
     if (settings) {
       data_size = StorageFormatBytesPerPixel(settings->storageFormat());
     }
-    data_size *= width;
-    data_size *= height;
+    data_size *= width ? *width : 0;
+    data_size *= height ? *height : 0;
     if (!data_size.IsValid()) {
       return RaiseDOMExceptionAndReturnFalse(
           exception_state, DOMExceptionCode::kIndexSizeError,
@@ -100,11 +99,11 @@ bool ImageData::ValidateConstructorArguments(
   }
 
   unsigned data_length = 0;
-  if (param_flags & kParamData) {
+  if (data) {
     DCHECK(data);
-    if (data->GetType() != DOMArrayBufferView::ViewType::kTypeUint8Clamped &&
-        data->GetType() != DOMArrayBufferView::ViewType::kTypeUint16 &&
-        data->GetType() != DOMArrayBufferView::ViewType::kTypeFloat32) {
+    if ((*data)->GetType() != DOMArrayBufferView::ViewType::kTypeUint8Clamped &&
+        (*data)->GetType() != DOMArrayBufferView::ViewType::kTypeUint16 &&
+        (*data)->GetType() != DOMArrayBufferView::ViewType::kTypeFloat32) {
       return RaiseDOMExceptionAndReturnFalse(
           exception_state, DOMExceptionCode::kNotSupportedError,
           "The input data type is not supported.");
@@ -115,7 +114,7 @@ bool ImageData::ValidateConstructorArguments(
             std::numeric_limits<uint32_t>::max(),
         "We use UINT32_MAX as the upper bound of the input size and expect "
         "that the result fits into an `unsigned`.");
-    if (!base::CheckedNumeric<uint32_t>(data->byteLength())
+    if (!base::CheckedNumeric<uint32_t>((*data)->byteLength())
              .AssignIfValid(&data_length)) {
       return RaiseDOMExceptionAndReturnFalse(
           exception_state, DOMExceptionCode::kNotSupportedError,
@@ -126,27 +125,26 @@ bool ImageData::ValidateConstructorArguments(
           exception_state, DOMExceptionCode::kInvalidStateError,
           "The input data has zero elements.");
     }
-    data_length /= data->TypeSize();
+    data_length /= (*data)->TypeSize();
     if (data_length % 4) {
       return RaiseDOMExceptionAndReturnFalse(
           exception_state, DOMExceptionCode::kInvalidStateError,
           "The input data length is not a multiple of 4.");
     }
 
-    if ((param_flags & kParamWidth) && (data_length / 4) % width) {
+    if (width && (data_length / 4) % *width) {
       return RaiseDOMExceptionAndReturnFalse(
           exception_state, DOMExceptionCode::kIndexSizeError,
           "The input data length is not a multiple of (4 * width).");
     }
 
-    if ((param_flags & kParamWidth) && (param_flags & kParamHeight) &&
-        height != data_length / (4 * width))
+    if (width && height && *height != data_length / (4 * *width))
       return RaiseDOMExceptionAndReturnFalse(
           exception_state, DOMExceptionCode::kIndexSizeError,
           "The input data length is not equal to (4 * width * height).");
   }
 
-  if (param_flags & kParamSize) {
+  if (size) {
     if (size->Width() <= 0 || size->Height() <= 0)
       return false;
     base::CheckedNumeric<unsigned> data_size = 4;
@@ -155,7 +153,7 @@ bool ImageData::ValidateConstructorArguments(
     if (!data_size.IsValid() ||
         data_size.ValueOrDie() > v8::TypedArray::kMaxLength)
       return false;
-    if (param_flags & kParamData) {
+    if (data) {
       if (data_size.ValueOrDie() > data_length)
         return false;
     }
@@ -203,8 +201,7 @@ NotShared<DOMArrayBufferView> ImageData::AllocateAndValidateDataArray(
 
 ImageData* ImageData::Create(const IntSize& size,
                              const ImageDataSettings* settings) {
-  if (!ValidateConstructorArguments(kParamSize, &size, 0, 0,
-                                    NotShared<DOMArrayBufferView>(), settings))
+  if (!ValidateConstructorArguments(&size, nullptr, nullptr, nullptr, settings))
     return nullptr;
   ImageDataStorageFormat storage_format = kUint8ClampedArrayStorageFormat;
   if (settings) {
@@ -254,8 +251,9 @@ ImageData* ImageData::Create(const IntSize& size,
 ImageData* ImageData::Create(const IntSize& size,
                              NotShared<DOMArrayBufferView> data_array,
                              const ImageDataSettings* settings) {
-  if (!ValidateConstructorArguments(kParamSize | kParamData, &size, 0, 0,
-                                    data_array, settings))
+  NotShared<DOMArrayBufferView> buffer_view = data_array;
+  if (!ValidateConstructorArguments(&size, nullptr, nullptr, &buffer_view,
+                                    settings))
     return nullptr;
   return MakeGarbageCollected<ImageData>(size, data_array, settings);
 }
@@ -263,9 +261,8 @@ ImageData* ImageData::Create(const IntSize& size,
 ImageData* ImageData::Create(unsigned width,
                              unsigned height,
                              ExceptionState& exception_state) {
-  if (!ValidateConstructorArguments(kParamWidth | kParamHeight, nullptr, width,
-                                    height, NotShared<DOMArrayBufferView>(),
-                                    nullptr, &exception_state))
+  if (!ValidateConstructorArguments(nullptr, &width, &height, nullptr, nullptr,
+                                    &exception_state))
     return nullptr;
 
   NotShared<DOMArrayBufferView> byte_array = AllocateAndValidateDataArray(
@@ -278,8 +275,9 @@ ImageData* ImageData::Create(unsigned width,
 ImageData* ImageData::Create(NotShared<DOMUint8ClampedArray> data,
                              unsigned width,
                              ExceptionState& exception_state) {
-  if (!ValidateConstructorArguments(kParamData | kParamWidth, nullptr, width, 0,
-                                    data, nullptr, &exception_state))
+  NotShared<DOMArrayBufferView> buffer_view = data;
+  if (!ValidateConstructorArguments(nullptr, &width, nullptr, &buffer_view,
+                                    nullptr, &exception_state))
     return nullptr;
 
   unsigned height = base::checked_cast<unsigned>(data->length()) / (width * 4);
@@ -290,9 +288,9 @@ ImageData* ImageData::Create(NotShared<DOMUint8ClampedArray> data,
                              unsigned width,
                              unsigned height,
                              ExceptionState& exception_state) {
-  if (!ValidateConstructorArguments(kParamData | kParamWidth | kParamHeight,
-                                    nullptr, width, height, data, nullptr,
-                                    &exception_state))
+  NotShared<DOMArrayBufferView> buffer_view = data;
+  if (!ValidateConstructorArguments(nullptr, &width, &height, &buffer_view,
+                                    nullptr, &exception_state))
     return nullptr;
 
   return MakeGarbageCollected<ImageData>(IntSize(width, height), data);
@@ -302,9 +300,8 @@ ImageData* ImageData::CreateImageData(unsigned width,
                                       unsigned height,
                                       const ImageDataSettings* settings,
                                       ExceptionState& exception_state) {
-  if (!ValidateConstructorArguments(kParamWidth | kParamHeight, nullptr, width,
-                                    height, NotShared<DOMArrayBufferView>(),
-                                    settings, &exception_state))
+  if (!ValidateConstructorArguments(nullptr, &width, &height, nullptr, settings,
+                                    &exception_state))
     return nullptr;
 
   ImageDataStorageFormat storage_format =
@@ -347,8 +344,7 @@ ImageData* ImageData::CreateImageData(ImageDataArray& data,
   if (settings->storageFormat() != storage_format_name)
     settings->setStorageFormat(storage_format_name);
 
-  if (!ValidateConstructorArguments(kParamData | kParamWidth | kParamHeight,
-                                    nullptr, width, height, buffer_view,
+  if (!ValidateConstructorArguments(nullptr, &width, &height, &buffer_view,
                                     settings, &exception_state))
     return nullptr;
 
