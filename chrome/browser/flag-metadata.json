@@ -2591,7 +2591,7 @@
   {
     "name": "exo-pointer-lock",
     "owners": [ "hollingum@google.com" ],
-    "expiry_milestone": 88
+    "expiry_milestone": 95
   },
   {
     "name": "expanded-tab-strip",
