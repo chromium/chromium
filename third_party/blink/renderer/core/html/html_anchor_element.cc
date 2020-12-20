@@ -505,11 +505,6 @@ void HTMLAnchorElement::HandleClick(Event& event) {
       !HasRel(kRelationNoReferrer)) {
     UseCounter::Count(GetDocument(),
                       WebFeature::kHTMLAnchorElementReferrerPolicyAttribute);
-    if (GetDocument().GetExecutionContext()->IsSecureContext() &&
-        policy == network::mojom::ReferrerPolicy::kAlways) {
-      UseCounter::Count(GetDocument(),
-                        WebFeature::kSetReferrerPolicyUnsafeUrlInSecureContext);
-    }
     request.SetReferrerPolicy(policy);
   }
 

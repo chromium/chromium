@@ -30695,7 +30695,6 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3742" label="CrossOriginSubframeWithoutEmbeddingControl"/>
   <int value="3743" label="ReadableStreamWithByteSource"/>
   <int value="3744" label="ReadableStreamBYOBReader"/>
-  <int value="3745" label="SetReferrerPolicyUnsafeUrlInSecureContext"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
