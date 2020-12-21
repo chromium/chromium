@@ -13,6 +13,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chromeos/dbus/cros_healthd/fake_cros_healthd_client.h"
+#include "chromeos/dbus/cros_healthd/fake_cros_healthd_service.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "mojo/public/cpp/system/platform_handle.h"
@@ -462,6 +463,76 @@ TEST_F(SystemRoutineControllerTest, AvailableRoutines) {
         run_loop.Quit();
       }));
   run_loop.Run();
+}
+
+TEST_F(SystemRoutineControllerTest, CancelRoutine) {
+  const int32_t expected_id = 1;
+  SetRunRoutineResponse(expected_id,
+                        healthd::DiagnosticRoutineStatusEnum::kRunning);
+
+  std::unique_ptr<FakeRoutineRunner> routine_runner =
+      std::make_unique<FakeRoutineRunner>();
+  system_routine_controller_->RunRoutine(
+      mojom::RoutineType::kCpuStress,
+      routine_runner->receiver.BindNewPipeAndPassRemote());
+  base::RunLoop().RunUntilIdle();
+
+  // Assert that the first routine is not complete.
+  EXPECT_TRUE(routine_runner->result.is_null());
+
+  // Update the status on cros_healthd.
+  SetNonInteractiveRoutineUpdateResponse(
+      /*percent_complete=*/0, healthd::DiagnosticRoutineStatusEnum::kCancelled,
+      mojo::ScopedHandle());
+
+  // Close the routine_runner
+  routine_runner.reset();
+  base::RunLoop().RunUntilIdle();
+
+  // Verify that CrosHealthd is called with the correct parameters.
+  base::Optional<cros_healthd::FakeCrosHealthdService::RoutineUpdateParams>
+      update_params =
+          cros_healthd::FakeCrosHealthdClient::Get()->GetRoutineUpdateParams();
+
+  ASSERT_TRUE(update_params.has_value());
+  EXPECT_EQ(expected_id, update_params->id);
+  EXPECT_EQ(healthd::DiagnosticRoutineCommandEnum::kCancel,
+            update_params->command);
+}
+
+TEST_F(SystemRoutineControllerTest, CancelRoutineDtor) {
+  const int32_t expected_id = 2;
+  SetRunRoutineResponse(expected_id,
+                        healthd::DiagnosticRoutineStatusEnum::kRunning);
+
+  std::unique_ptr<FakeRoutineRunner> routine_runner =
+      std::make_unique<FakeRoutineRunner>();
+  system_routine_controller_->RunRoutine(
+      mojom::RoutineType::kCpuStress,
+      routine_runner->receiver.BindNewPipeAndPassRemote());
+  base::RunLoop().RunUntilIdle();
+
+  // Assert that the first routine is not complete.
+  EXPECT_TRUE(routine_runner->result.is_null());
+
+  // Update the status on cros_healthd.
+  SetNonInteractiveRoutineUpdateResponse(
+      /*percent_complete=*/0, healthd::DiagnosticRoutineStatusEnum::kCancelled,
+      mojo::ScopedHandle());
+
+  // Destroy the SystemRoutineController
+  system_routine_controller_.reset();
+  base::RunLoop().RunUntilIdle();
+
+  // Verify that CrosHealthd is called with the correct parameters.
+  base::Optional<cros_healthd::FakeCrosHealthdService::RoutineUpdateParams>
+      update_params =
+          cros_healthd::FakeCrosHealthdClient::Get()->GetRoutineUpdateParams();
+
+  ASSERT_TRUE(update_params.has_value());
+  EXPECT_EQ(expected_id, update_params->id);
+  EXPECT_EQ(healthd::DiagnosticRoutineCommandEnum::kCancel,
+            update_params->command);
 }
 
 }  // namespace diagnostics

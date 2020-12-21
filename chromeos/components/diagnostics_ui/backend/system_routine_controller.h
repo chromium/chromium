@@ -112,6 +112,9 @@ class SystemRoutineController : public mojom::SystemRoutineController {
 
   void OnInflightRoutineRunnerDisconnected();
 
+  void OnRoutineCancelAttempted(
+      cros_healthd::mojom::RoutineUpdatePtr update_ptr);
+
   // Keeps track of the id created by CrosHealthd for the currently running
   // routine.
   int32_t inflight_routine_id_ = kInvalidRoutineId;
