@@ -111,8 +111,13 @@ public class ReadLaterIphTest {
         RevampedContextMenuUtils.selectContextMenuItem(InstrumentationRegistry.getInstrumentation(),
                 activity, tab, CONTEXT_MENU_LINK_DOM_ID, R.id.contextmenu_copy_link_address);
 
-        onView(withId(R.id.menu_button_wrapper)).check(matches(withHighlight(true)));
-        waitForHelpBubble(withText(R.string.reading_list_save_pages_for_later));
+        boolean threeButtonActionBarEnabled = ChromeFeatureList.isEnabled(
+                ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_THREE_BUTTON_ACTIONBAR);
+        onView(withId(R.id.menu_button_wrapper))
+                .check(matches(withHighlight(!threeButtonActionBarEnabled)));
+        if (!threeButtonActionBarEnabled) {
+            waitForHelpBubble(withText(R.string.reading_list_save_pages_for_later));
+        }
     }
 
     @Test
