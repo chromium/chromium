@@ -1074,14 +1074,8 @@ static std::unique_ptr<DragImage> DragImageForImage(
   const LayoutImageResource& image_resource = *layout_image->ImageResource();
   scoped_refptr<Image> image =
       image_resource.GetImage(image_element_size_in_pixels);
-
-  // Always respect the orientation of opaque origin images to avoid leaking
-  // image data. Otherwise pull orientation from the layout object's style.
-  const ImageResourceContent* image_content = image_resource.CachedImage();
   RespectImageOrientationEnum respect_orientation =
-      LayoutObject::ShouldRespectImageOrientation(layout_image);
-  respect_orientation =
-      image_content->ForceOrientationIfNecessary(respect_orientation);
+      image_resource.ImageOrientation();
 
   IntSize image_size = image->Size(respect_orientation);
   if (image_size.Area() > kMaxOriginalImageArea)

@@ -69,6 +69,7 @@ class CORE_EXPORT LayoutImageResource
   // Default size is effective when this is LayoutImageResourceStyleImage.
   virtual FloatSize ImageSizeWithDefaultSize(float multiplier,
                                              const FloatSize&) const;
+  virtual RespectImageOrientationEnum ImageOrientation() const;
   virtual WrappedImagePtr ImagePtr() const { return cached_image_.Get(); }
 
   virtual void Trace(Visitor* visitor) const { visitor->Trace(cached_image_); }

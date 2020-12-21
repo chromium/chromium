@@ -86,6 +86,16 @@ FloatSize LayoutImageResourceStyleImage::ImageSizeWithDefaultSize(
       layout_object_->GetDocument(), multiplier, default_size,
       LayoutObject::ShouldRespectImageOrientation(layout_object_));
 }
+
+RespectImageOrientationEnum LayoutImageResourceStyleImage::ImageOrientation()
+    const {
+  // Always respect the orientation of opaque origin images to avoid leaking
+  // image data. Otherwise pull orientation from the layout object's style.
+  RespectImageOrientationEnum respect_orientation =
+      LayoutObject::ShouldRespectImageOrientation(layout_object_);
+  return style_image_->ForceOrientationIfNecessary(respect_orientation);
+}
+
 void LayoutImageResourceStyleImage::Trace(Visitor* visitor) const {
   visitor->Trace(style_image_);
   LayoutImageResource::Trace(visitor);

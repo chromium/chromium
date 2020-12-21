@@ -95,6 +95,15 @@ bool LayoutImageResource::HasIntrinsicSize() const {
   return !cached_image_ || cached_image_->GetImage()->HasIntrinsicSize();
 }
 
+RespectImageOrientationEnum LayoutImageResource::ImageOrientation() const {
+  DCHECK(cached_image_);
+  // Always respect the orientation of opaque origin images to avoid leaking
+  // image data. Otherwise pull orientation from the layout object's style.
+  RespectImageOrientationEnum respect_orientation =
+      LayoutObject::ShouldRespectImageOrientation(layout_object_);
+  return cached_image_->ForceOrientationIfNecessary(respect_orientation);
+}
+
 FloatSize LayoutImageResource::ImageSize(float multiplier) const {
   if (!cached_image_)
     return FloatSize();
