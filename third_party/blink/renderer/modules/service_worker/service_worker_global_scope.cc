@@ -1006,7 +1006,10 @@ void ServiceWorkerGlobalScope::RespondToFetchEventWithNoResponse(
       TRACE_ID_WITH_SCOPE(kServiceWorkerGlobalScopeTraceScope,
                           TRACE_ID_LOCAL(fetch_event_id)),
       TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
-  DCHECK(fetch_response_callbacks_.Contains(fetch_event_id));
+  // `fetch_response_callbacks_` does not have the entry when the event timed
+  // out.
+  if (!fetch_response_callbacks_.Contains(fetch_event_id))
+    return;
   mojom::blink::ServiceWorkerFetchResponseCallback* response_callback =
       fetch_response_callbacks_.Take(fetch_event_id)->Value().get();
 
@@ -1031,7 +1034,10 @@ void ServiceWorkerGlobalScope::RespondToFetchEvent(
       TRACE_ID_WITH_SCOPE(kServiceWorkerGlobalScopeTraceScope,
                           TRACE_ID_LOCAL(fetch_event_id)),
       TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
-  DCHECK(fetch_response_callbacks_.Contains(fetch_event_id));
+  // `fetch_response_callbacks_` does not have the entry when the event timed
+  // out.
+  if (!fetch_response_callbacks_.Contains(fetch_event_id))
+    return;
 
   mojom::blink::ServiceWorkerFetchResponseCallback* response_callback =
       fetch_response_callbacks_.Take(fetch_event_id)->Value().get();
@@ -1059,7 +1065,10 @@ void ServiceWorkerGlobalScope::RespondToFetchEventWithResponseStream(
       TRACE_ID_WITH_SCOPE(kServiceWorkerGlobalScopeTraceScope,
                           TRACE_ID_LOCAL(fetch_event_id)),
       TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
-  DCHECK(fetch_response_callbacks_.Contains(fetch_event_id));
+  // `fetch_response_callbacks_` does not have the entry when the event timed
+  // out.
+  if (!fetch_response_callbacks_.Contains(fetch_event_id))
+    return;
   mojom::blink::ServiceWorkerFetchResponseCallback* response_callback =
       fetch_response_callbacks_.Take(fetch_event_id)->Value().get();
 
@@ -1472,24 +1481,31 @@ void ServiceWorkerGlobalScope::DispatchExtendableMessageEventInternal(
   DispatchExtendableEvent(event_to_dispatch, observer);
 }
 
+void ServiceWorkerGlobalScope::AbortCallbackForFetchEvent(
+    int event_id,
+    mojom::blink::ServiceWorkerEventStatus status) {
+  // Discard a callback for an inflight respondWith() if it still exists.
+  auto response_callback_iter = fetch_response_callbacks_.find(event_id);
+  if (response_callback_iter != fetch_response_callbacks_.end()) {
+    response_callback_iter->value->TakeValue().reset();
+    fetch_response_callbacks_.erase(response_callback_iter);
+  }
+
+  // Run the event callback with the error code.
+  auto event_callback_iter = fetch_event_callbacks_.find(event_id);
+  std::move(event_callback_iter->value).Run(status);
+  fetch_event_callbacks_.erase(event_callback_iter);
+}
+
 void ServiceWorkerGlobalScope::StartFetchEvent(
     mojom::blink::DispatchFetchEventParamsPtr params,
     base::WeakPtr<CrossOriginResourcePolicyChecker> corp_checker,
-    mojo::PendingRemote<mojom::blink::ServiceWorkerFetchResponseCallback>
-        response_callback,
     base::Optional<base::TimeTicks> created_time,
     int event_id) {
   DCHECK(IsContextThread());
   if (created_time.has_value()) {
     RecordQueuingTime(created_time.value());
   }
-
-  HeapMojoRemote<mojom::blink::ServiceWorkerFetchResponseCallback,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
-      remote(this);
-  remote.Bind(std::move(response_callback),
-              GetThread()->GetTaskRunner(TaskType::kNetworking));
-  fetch_response_callbacks_.Set(event_id, WrapDisallowNew(std::move(remote)));
 
   // This TRACE_EVENT is used for perf benchmark to confirm if all of fetch
   // events have completed. (crbug.com/736697)
@@ -1574,23 +1590,31 @@ void ServiceWorkerGlobalScope::DispatchFetchEventForSubresource(
 
   const int event_id = event_queue_->NextEventId();
   fetch_event_callbacks_.Set(event_id, std::move(callback));
+  HeapMojoRemote<mojom::blink::ServiceWorkerFetchResponseCallback,
+                 HeapMojoWrapperMode::kWithoutContextObserver>
+      remote(this);
+  remote.Bind(std::move(response_callback),
+              GetThread()->GetTaskRunner(TaskType::kNetworking));
+  fetch_response_callbacks_.Set(event_id, WrapDisallowNew(std::move(remote)));
 
   if (RequestedTermination()) {
     event_queue_->EnqueuePending(
         event_id,
         WTF::Bind(&ServiceWorkerGlobalScope::StartFetchEvent,
                   WrapWeakPersistent(this), std::move(params),
-                  std::move(corp_checker), std::move(response_callback),
-                  base::TimeTicks::Now()),
-        CreateAbortCallback(&fetch_event_callbacks_), base::nullopt);
+                  std::move(corp_checker), base::TimeTicks::Now()),
+        WTF::Bind(&ServiceWorkerGlobalScope::AbortCallbackForFetchEvent,
+                  WrapWeakPersistent(this)),
+        base::nullopt);
   } else {
     event_queue_->EnqueueNormal(
         event_id,
         WTF::Bind(&ServiceWorkerGlobalScope::StartFetchEvent,
                   WrapWeakPersistent(this), std::move(params),
-                  std::move(corp_checker), std::move(response_callback),
-                  base::TimeTicks::Now()),
-        CreateAbortCallback(&fetch_event_callbacks_), base::nullopt);
+                  std::move(corp_checker), base::TimeTicks::Now()),
+        WTF::Bind(&ServiceWorkerGlobalScope::AbortCallbackForFetchEvent,
+                  WrapWeakPersistent(this)),
+        base::nullopt);
   }
 }
 
@@ -1960,6 +1984,13 @@ void ServiceWorkerGlobalScope::DispatchFetchEventForMainResource(
   const int event_id = event_queue_->NextEventId();
   fetch_event_callbacks_.Set(event_id, std::move(callback));
 
+  HeapMojoRemote<mojom::blink::ServiceWorkerFetchResponseCallback,
+                 HeapMojoWrapperMode::kWithoutContextObserver>
+      remote(this);
+  remote.Bind(std::move(response_callback),
+              GetThread()->GetTaskRunner(TaskType::kNetworking));
+  fetch_response_callbacks_.Set(event_id, WrapDisallowNew(std::move(remote)));
+
   // We can use nullptr as a |corp_checker| for the main resource because it
   // must be the same origin.
   if (params->is_offline_capability_check) {
@@ -1967,18 +1998,19 @@ void ServiceWorkerGlobalScope::DispatchFetchEventForMainResource(
         event_id,
         WTF::Bind(&ServiceWorkerGlobalScope::StartFetchEvent,
                   WrapWeakPersistent(this), std::move(params),
-                  /*corp_checker=*/nullptr, std::move(response_callback),
-                  base::nullopt),
-        CreateAbortCallback(&fetch_event_callbacks_),
+                  /*corp_checker=*/nullptr, base::nullopt),
+        WTF::Bind(&ServiceWorkerGlobalScope::AbortCallbackForFetchEvent,
+                  WrapWeakPersistent(this)),
         base::TimeDelta::FromSeconds(kCustomTimeoutForOfflineEvent.Get()));
   } else {
     event_queue_->EnqueueNormal(
         event_id,
         WTF::Bind(&ServiceWorkerGlobalScope::StartFetchEvent,
                   WrapWeakPersistent(this), std::move(params),
-                  /*corp_checker=*/nullptr, std::move(response_callback),
-                  base::TimeTicks::Now()),
-        CreateAbortCallback(&fetch_event_callbacks_), base::nullopt);
+                  /*corp_checker=*/nullptr, base::TimeTicks::Now()),
+        WTF::Bind(&ServiceWorkerGlobalScope::AbortCallbackForFetchEvent,
+                  WrapWeakPersistent(this)),
+        base::nullopt);
   }
 }
 

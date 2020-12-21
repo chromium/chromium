@@ -483,12 +483,6 @@ void ServiceWorkerVersion::StopWorker(base::OnceClosure callback) {
   switch (running_status()) {
     case EmbeddedWorkerStatus::STARTING:
     case EmbeddedWorkerStatus::RUNNING: {
-      // Endpoint isn't available after calling StopWorker(). This needs to be
-      // set here without waiting until the worker is actually stopped because
-      // subsequent StartWorker() may read the flag to decide whether an event
-      // can be dispatched or not.
-      is_endpoint_ready_ = false;
-
       // EmbeddedWorkerInstance::Stop() may synchronously call
       // ServiceWorkerVersion::OnStopped() and destroy |this|. This protection
       // avoids it.
@@ -1222,6 +1216,12 @@ void ServiceWorkerVersion::OnStopping() {
                            stop_time_.since_origin().InMicroseconds(), "Script",
                            script_url_.spec(), "Version Status",
                            VersionStatusToString(status_));
+
+  // Endpoint isn't available after calling EmbeddedWorkerInstance::Stop().
+  // This needs to be set here without waiting until the worker is actually
+  // stopped because subsequent StartWorker() may read the flag to decide
+  // whether an event can be dispatched or not.
+  is_endpoint_ready_ = false;
 
   // Shorten the interval so stalling in stopped can be fixed quickly. Once the
   // worker stops, the timer is disabled. The interval will be reset to normal
