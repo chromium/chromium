@@ -75,6 +75,7 @@ const char* kFinalStatusNames[] = {
     "Unknown",
     "Navigation Predictor Holdback",
     "Single Process Mode",
+    "Link Rel Next Not Allowed",
     "Max",
 };
 static_assert(base::size(kFinalStatusNames) == FINAL_STATUS_MAX + 1,
