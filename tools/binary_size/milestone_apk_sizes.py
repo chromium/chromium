@@ -96,7 +96,7 @@ class _Artifact(object):
 
   def AddDfmSizes(self, metrics):
     for k, v in sorted(self._resource_sizes_json['charts'].items()):
-      if k.startswith('DFM_'):
+      if k.startswith('DFM_') and k != 'DFM_base':
         metrics['DFM: ' + k[4:]] = v['Size with hindi']['value']
 
   def PrintLibraryCompression(self):
