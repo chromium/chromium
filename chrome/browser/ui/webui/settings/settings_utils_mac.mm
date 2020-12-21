@@ -4,7 +4,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include "chrome/browser/ui/webui/settings_utils.h"
+#include "chrome/browser/ui/webui/settings/settings_utils.h"
 
 #include "base/logging.h"
 #include "base/mac/mac_logging.h"
@@ -35,19 +35,19 @@ void ValidateFontFamily(PrefService* prefs, const char* family_pref_name) {
 namespace settings_utils {
 
 void ShowNetworkProxySettings(content::WebContents* web_contents) {
-  NSArray* itemsToOpen = [NSArray arrayWithObject:[NSURL fileURLWithPath:
-      @"/System/Library/PreferencePanes/Network.prefPane"]];
+  NSArray* itemsToOpen = [NSArray
+      arrayWithObject:[NSURL fileURLWithPath:@"/System/Library/PreferencePanes/"
+                                             @"Network.prefPane"]];
 
   const char* proxyPrefCommand = "Proxies";
   base::mac::ScopedAEDesc<> openParams;
-  OSStatus status = AECreateDesc('ptru',
-                                 proxyPrefCommand,
-                                 strlen(proxyPrefCommand),
-                                 openParams.OutPointer());
+  OSStatus status =
+      AECreateDesc('ptru', proxyPrefCommand, strlen(proxyPrefCommand),
+                   openParams.OutPointer());
   OSSTATUS_LOG_IF(ERROR, status != noErr, status)
       << "Failed to create open params";
 
-  LSLaunchURLSpec launchSpec = { 0 };
+  LSLaunchURLSpec launchSpec = {0};
   launchSpec.itemURLs = (CFArrayRef)itemsToOpen;
   launchSpec.passThruParams = openParams;
   launchSpec.launchFlags = kLSLaunchAsync | kLSLaunchDontAddToRecents;
@@ -56,11 +56,10 @@ void ShowNetworkProxySettings(content::WebContents* web_contents) {
 
 void ShowManageSSLCertificates(content::WebContents* web_contents) {
   NSString* const kKeychainBundleId = @"com.apple.keychainaccess";
-  [[NSWorkspace sharedWorkspace]
-   launchAppWithBundleIdentifier:kKeychainBundleId
-   options:0L
-   additionalEventParamDescriptor:nil
-   launchIdentifier:nil];
+  [[NSWorkspace sharedWorkspace] launchAppWithBundleIdentifier:kKeychainBundleId
+                                                       options:0L
+                                additionalEventParamDescriptor:nil
+                                              launchIdentifier:nil];
 }
 
 void ValidateSavedFonts(PrefService* prefs) {

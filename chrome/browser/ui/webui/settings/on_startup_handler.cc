@@ -11,7 +11,7 @@
 #include "base/check_op.h"
 #include "chrome/browser/extensions/settings_api_helpers.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/settings_utils.h"
+#include "chrome/browser/ui/webui/settings/settings_utils.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_ui.h"
 #include "extensions/browser/extension_system.h"

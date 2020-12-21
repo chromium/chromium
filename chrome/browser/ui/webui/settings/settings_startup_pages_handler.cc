@@ -12,7 +12,7 @@
 #include "base/bind.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/settings_utils.h"
+#include "chrome/browser/ui/webui/settings/settings_utils.h"
 #include "chrome/common/pref_names.h"
 #include "content/public/browser/web_ui.h"
 #include "url/gurl.h"

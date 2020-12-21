@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings_utils.h"
+#include "chrome/browser/ui/webui/settings/settings_utils.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"

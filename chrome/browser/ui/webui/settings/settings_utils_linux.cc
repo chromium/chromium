@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings_utils.h"
+#include "chrome/browser/ui/webui/settings/settings_utils.h"
 
 #include <stddef.h>
 
@@ -89,8 +89,7 @@ bool StartProxyConfigUtil(const char* const command[]) {
 
 // Detect, and if possible, start the appropriate proxy config utility. On
 // failure to do so, show the Linux proxy config URL in a new tab instead.
-void DetectAndStartProxyConfigUtil(int render_process_id,
-                                   int render_view_id) {
+void DetectAndStartProxyConfigUtil(int render_process_id, int render_view_id) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   std::unique_ptr<base::Environment> env(base::Environment::Create());

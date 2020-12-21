@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_UTILS_H_
-#define CHROME_BROWSER_UI_WEBUI_SETTINGS_UTILS_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_SETTINGS_UTILS_H_
+#define CHROME_BROWSER_UI_WEBUI_SETTINGS_SETTINGS_UTILS_H_
 
 #include <string>
 
 #include "base/macros.h"
+#include "build/build_config.h"
 #include "ui/base/resource/scale_factor.h"
 
 class GURL;
@@ -50,4 +51,4 @@ std::string ResolveFontList(const std::string& font_name_or_list);
 
 }  // namespace settings_utils
 
-#endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_UTILS_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_SETTINGS_UTILS_H_

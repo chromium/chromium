@@ -26,7 +26,6 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/font_pref_change_notifier_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/settings_utils.h"
 #include "chrome/common/extensions/api/font_settings.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/pref_names_util.h"

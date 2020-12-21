@@ -21,7 +21,7 @@
 #include "content/public/browser/web_ui.h"
 
 #if defined(OS_MAC)
-#include "chrome/browser/ui/webui/settings_utils.h"
+#include "chrome/browser/ui/webui/settings/settings_utils.h"
 #endif
 
 namespace settings {

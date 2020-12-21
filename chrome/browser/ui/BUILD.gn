@@ -1478,14 +1478,14 @@ static_library("ui") {
       "webui/settings/settings_startup_pages_handler.h",
       "webui/settings/settings_ui.cc",
       "webui/settings/settings_ui.h",
+      "webui/settings/settings_utils.cc",
+      "webui/settings/settings_utils.h",
       "webui/settings/shared_settings_localized_strings_provider.cc",
       "webui/settings/shared_settings_localized_strings_provider.h",
       "webui/settings/site_settings_handler.cc",
       "webui/settings/site_settings_handler.h",
       "webui/settings/site_settings_helper.cc",
       "webui/settings/site_settings_helper.h",
-      "webui/settings_utils.cc",
-      "webui/settings_utils.h",
       "webui/signin/login_ui_service.cc",
       "webui/signin/login_ui_service.h",
       "webui/signin/login_ui_service_factory.cc",
@@ -3130,7 +3130,7 @@ static_library("ui") {
       "views/tab_contents/chrome_web_contents_view_delegate_views_mac.mm",
       "webui/help/version_updater_mac.h",
       "webui/help/version_updater_mac.mm",
-      "webui/settings_utils_mac.mm",
+      "webui/settings/settings_utils_mac.mm",
       "window_sizer/window_sizer_mac.mm",
     ]
 
@@ -3232,7 +3232,7 @@ static_library("ui") {
       "webui/conflicts/conflicts_ui.h",
       "webui/settings/chrome_cleanup_handler_win.cc",
       "webui/settings/chrome_cleanup_handler_win.h",
-      "webui/settings_utils_win.cc",
+      "webui/settings/settings_utils_win.cc",
       "webui/version/version_handler_win.cc",
       "webui/version/version_handler_win.h",
       "webui/version/version_util_win.cc",
@@ -3301,7 +3301,7 @@ static_library("ui") {
       "views/status_icons/status_icon_linux_wrapper.h",
       "webui/help/version_updater_basic.cc",
       "webui/help/version_updater_basic.h",
-      "webui/settings_utils_linux.cc",
+      "webui/settings/settings_utils_linux.cc",
     ]
     deps += [
       "//ui/base:wm_role_names",
