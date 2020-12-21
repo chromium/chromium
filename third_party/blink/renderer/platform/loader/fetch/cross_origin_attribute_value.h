@@ -7,6 +7,8 @@
 
 namespace blink {
 
+// This corresponds to the CORS settings attributes defined in the HTML spec:
+// https://html.spec.whatwg.org/C/#cors-settings-attributes
 enum CrossOriginAttributeValue {
   kCrossOriginAttributeNotSet,
   kCrossOriginAttributeAnonymous,
