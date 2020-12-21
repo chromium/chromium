@@ -1438,7 +1438,8 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
             [self.tableViewModel itemAtIndexPath:googleServicesCellIndexPath]);
     DCHECK(googleServicesItem);
     [self updateSyncAndGoogleServicesItem:googleServicesItem];
-    [self reconfigureCellsForItems:@[ googleServicesItem ]];
+    [self reloadCellsForItems:@[ googleServicesItem ]
+             withRowAnimation:UITableViewRowAnimationNone];
     return;
   }
 
