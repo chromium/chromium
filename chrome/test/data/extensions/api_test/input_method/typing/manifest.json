@@ -12,9 +12,7 @@
     "name": "Test IME",
     "type": "ime",
     "id": "test",
-    "description": "Test",
     "language": "en",
     "layouts": ["us::eng"]
   }]
 }
-

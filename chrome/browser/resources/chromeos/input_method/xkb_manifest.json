@@ -21,7 +21,6 @@
       "name": "__MSG_keyboard_us__",
       "type": "ime",
       "id": "xkb:us::eng",
-      "description": "",
       "language": [
         "en",
         "en-US",
@@ -37,7 +36,6 @@
       "name": "__MSG_keyboard_us__",
       "type": "ime",
       "id": "xkb:us::ind",
-      "description": "",
       "language": [
         "id"
       ],
@@ -50,7 +48,6 @@
       "name": "__MSG_keyboard_us__",
       "type": "ime",
       "id": "xkb:us::fil",
-      "description": "",
       "language": [
         "fil"
       ],
@@ -63,7 +60,6 @@
       "name": "__MSG_keyboard_us__",
       "type": "ime",
       "id": "xkb:us::msa",
-      "description": "",
       "language": [
         "ms"
       ],
@@ -77,7 +73,6 @@
       "type": "ime",
       "id": "xkb:us:intl:eng",
       "indicator": "INTL",
-      "description": "",
       "language": [
         "en",
         "en-US"
@@ -92,7 +87,6 @@
       "type": "ime",
       "id": "xkb:us:intl:nld",
       "indicator": "NLD",
-      "description": "",
       "language": [
         "nl"
       ],
@@ -106,7 +100,6 @@
       "type": "ime",
       "id": "xkb:us:altgr-intl:eng",
       "indicator": "EXTD",
-      "description": "",
       "language": [
         "en",
         "en-US"
@@ -121,7 +114,6 @@
       "type": "ime",
       "id": "xkb:us:dvorak:eng",
       "indicator": "DV",
-      "description": "",
       "language": [
         "en",
         "en-US"
@@ -136,7 +128,6 @@
       "type": "ime",
       "id": "xkb:us:dvp:eng",
       "indicator": "DVP",
-      "description": "",
       "language": [
         "en",
         "en-US"
@@ -151,7 +142,6 @@
       "type": "ime",
       "id": "xkb:us:colemak:eng",
       "indicator": "CO",
-      "description": "",
       "language": [
         "en",
         "en-US"
@@ -166,7 +156,6 @@
       "type": "ime",
       "id": "xkb:us:workman:eng",
       "indicator": "WM",
-      "description": "",
       "language": [
         "en",
         "en-US"
@@ -181,7 +170,6 @@
       "type": "ime",
       "id": "xkb:us:workman-intl:eng",
       "indicator": "WMI",
-      "description": "",
       "language": [
         "en",
         "en-US"
@@ -195,7 +183,6 @@
       "name": "__MSG_keyboard_belgian__",
       "type": "ime",
       "id": "xkb:be::nld",
-      "description": "",
       "language": [
         "nl"
       ],
@@ -208,7 +195,6 @@
       "name": "__MSG_keyboard_french__",
       "type": "ime",
       "id": "xkb:fr::fra",
-      "description": "",
       "language": [
         "fr",
         "fr-FR"
@@ -222,7 +208,6 @@
       "name": "__MSG_keyboard_belgian__",
       "type": "ime",
       "id": "xkb:be::fra",
-      "description": "",
       "language": [
         "fr"
       ],
@@ -235,7 +220,6 @@
       "name": "__MSG_keyboard_canadian_french__",
       "type": "ime",
       "id": "xkb:ca::fra",
-      "description": "",
       "language": [
         "fr",
         "fr-CA"
@@ -249,7 +233,6 @@
       "name": "__MSG_keyboard_swiss_french__",
       "type": "ime",
       "id": "xkb:ch:fr:fra",
-      "description": "",
       "language": [
         "fr",
         "fr-CH"
@@ -263,7 +246,6 @@
       "name": "__MSG_keyboard_canadian_multilingual__",
       "type": "ime",
       "id": "xkb:ca:multix:fra",
-      "description": "",
       "language": [
         "fr",
         "fr-CA"
@@ -277,7 +259,6 @@
       "name": "__MSG_keyboard_german__",
       "type": "ime",
       "id": "xkb:de::ger",
-      "description": "",
       "language": [
         "de",
         "de-DE"
@@ -292,7 +273,6 @@
       "type": "ime",
       "id": "xkb:de:neo:ger",
       "indicator": "NEO",
-      "description": "",
       "language": [
         "de",
         "de-DE"
@@ -306,7 +286,6 @@
       "name": "__MSG_keyboard_belgian__",
       "type": "ime",
       "id": "xkb:be::ger",
-      "description": "",
       "language": [
         "de"
       ],
@@ -319,7 +298,6 @@
       "name": "__MSG_keyboard_swiss__",
       "type": "ime",
       "id": "xkb:ch::ger",
-      "description": "",
       "language": [
         "de",
         "de-CH"
@@ -334,7 +312,6 @@
       "type": "ime",
       "id": "xkb:jp::jpn",
       "indicator": "JA",
-      "description": "",
       "language": [
         "ja"
       ],
@@ -347,7 +324,6 @@
       "name": "__MSG_keyboard_russian__",
       "type": "ime",
       "id": "xkb:ru::rus",
-      "description": "",
       "language": [
         "ru"
       ],
@@ -360,7 +336,6 @@
       "name": "__MSG_keyboard_russian_phonetic__",
       "type": "ime",
       "id": "xkb:ru:phonetic:rus",
-      "description": "",
       "language": [
         "ru"
       ],
@@ -373,7 +348,6 @@
       "name": "__MSG_keyboard_brazilian__",
       "type": "ime",
       "id": "xkb:br::por",
-      "description": "",
       "language": [
         "pt-BR",
         "pt"
@@ -388,7 +362,6 @@
       "type": "ime",
       "id": "xkb:us:intl:por",
       "indicator": "INTL",
-      "description": "",
       "language": [
         "pt-BR"
       ],
@@ -401,7 +374,6 @@
       "name": "__MSG_keyboard_bulgarian__",
       "type": "ime",
       "id": "xkb:bg::bul",
-      "description": "",
       "language": [
         "bg"
       ],
@@ -414,7 +386,6 @@
       "name": "__MSG_keyboard_bulgarian_phonetic__",
       "type": "ime",
       "id": "xkb:bg:phonetic:bul",
-      "description": "",
       "language": [
         "bg"
       ],
@@ -427,7 +398,6 @@
       "name": "__MSG_keyboard_canadian_english__",
       "type": "ime",
       "id": "xkb:ca:eng:eng",
-      "description": "",
       "language": [
         "en",
         "en-CA"
@@ -441,7 +411,6 @@
       "name": "__MSG_keyboard_czech__",
       "type": "ime",
       "id": "xkb:cz::cze",
-      "description": "",
       "language": [
         "cs"
       ],
@@ -455,7 +424,6 @@
       "type": "ime",
       "id": "xkb:cz:qwerty:cze",
       "indicator": "CS",
-      "description": "",
       "language": [
         "cs"
       ],
@@ -468,7 +436,6 @@
       "name": "__MSG_keyboard_estonian__",
       "type": "ime",
       "id": "xkb:ee::est",
-      "description": "",
       "language": [
         "et"
       ],
@@ -481,7 +448,6 @@
       "name": "__MSG_keyboard_spanish__",
       "type": "ime",
       "id": "xkb:es::spa",
-      "description": "",
       "language": [
         "es",
         "es-ES"
@@ -496,7 +462,6 @@
       "type": "ime",
       "id": "xkb:es:cat:cat",
       "indicator": "CAT",
-      "description": "",
       "language": [
         "ca"
       ],
@@ -509,7 +474,6 @@
       "name": "__MSG_keyboard_danish__",
       "type": "ime",
       "id": "xkb:dk::dan",
-      "description": "",
       "language": [
         "da"
       ],
@@ -522,7 +486,6 @@
       "name": "__MSG_keyboard_greek__",
       "type": "ime",
       "id": "xkb:gr::gre",
-      "description": "",
       "language": [
         "el"
       ],
@@ -535,7 +498,6 @@
       "name": "__MSG_keyboard_hebrew__",
       "type": "ime",
       "id": "xkb:il::heb",
-      "description": "",
       "language": [
         "he"
       ],
@@ -549,7 +511,6 @@
       "type": "ime",
       "id": "xkb:latam::spa",
       "indicator": "LA",
-      "description": "",
       "language": [
         "es",
         "es-419"
@@ -563,7 +524,6 @@
       "name": "__MSG_keyboard_lithuanian__",
       "type": "ime",
       "id": "xkb:lt::lit",
-      "description": "",
       "language": [
         "lt"
       ],
@@ -576,7 +536,6 @@
       "name": "__MSG_keyboard_latvian__",
       "type": "ime",
       "id": "xkb:lv:apostrophe:lav",
-      "description": "",
       "language": [
         "lv"
       ],
@@ -589,7 +548,6 @@
       "name": "__MSG_keyboard_croatian__",
       "type": "ime",
       "id": "xkb:hr::scr",
-      "description": "",
       "language": [
         "hr"
       ],
@@ -602,7 +560,6 @@
       "name": "__MSG_keyboard_uk__",
       "type": "ime",
       "id": "xkb:gb:extd:eng",
-      "description": "",
       "language": [
         "en",
         "en-GB"
@@ -617,7 +574,6 @@
       "type": "ime",
       "id": "xkb:gb:dvorak:eng",
       "indicator": "DV",
-      "description": "",
       "language": [
         "en",
         "en-GB"
@@ -631,7 +587,6 @@
       "name": "__MSG_keyboard_finnish__",
       "type": "ime",
       "id": "xkb:fi::fin",
-      "description": "",
       "language": [
         "fi"
       ],
@@ -644,7 +599,6 @@
       "name": "__MSG_keyboard_hungarian__",
       "type": "ime",
       "id": "xkb:hu::hun",
-      "description": "",
       "language": [
         "hu"
       ],
@@ -657,7 +611,6 @@
       "name": "__MSG_keyboard_italian__",
       "type": "ime",
       "id": "xkb:it::ita",
-      "description": "",
       "language": [
         "it",
         "it-IT"
@@ -671,7 +624,6 @@
       "name": "__MSG_keyboard_icelandic__",
       "type": "ime",
       "id": "xkb:is::ice",
-      "description": "",
       "language": [
         "is"
       ],
@@ -684,7 +636,6 @@
       "name": "__MSG_keyboard_norwegian__",
       "type": "ime",
       "id": "xkb:no::nob",
-      "description": "",
       "language": [
         "nb",
         "nn",
@@ -699,7 +650,6 @@
       "name": "__MSG_keyboard_polish__",
       "type": "ime",
       "id": "xkb:pl::pol",
-      "description": "",
       "language": [
         "pl"
       ],
@@ -712,7 +662,6 @@
       "name": "__MSG_keyboard_portuguese__",
       "type": "ime",
       "id": "xkb:pt::por",
-      "description": "",
       "language": [
         "pt-PT",
         "pt"
@@ -726,7 +675,6 @@
       "name": "__MSG_keyboard_romanian__",
       "type": "ime",
       "id": "xkb:ro::rum",
-      "description": "",
       "language": [
         "ro"
       ],
@@ -739,7 +687,6 @@
       "name": "__MSG_keyboard_swedish__",
       "type": "ime",
       "id": "xkb:se::swe",
-      "description": "",
       "language": [
         "sv"
       ],
@@ -752,7 +699,6 @@
       "name": "__MSG_keyboard_slovak__",
       "type": "ime",
       "id": "xkb:sk::slo",
-      "description": "",
       "language": [
         "sk"
       ],
@@ -765,7 +711,6 @@
       "name": "__MSG_keyboard_slovenian__",
       "type": "ime",
       "id": "xkb:si::slv",
-      "description": "",
       "language": [
         "sl"
       ],
@@ -778,7 +723,6 @@
       "name": "__MSG_keyboard_serbian__",
       "type": "ime",
       "id": "xkb:rs::srp",
-      "description": "",
       "language": [
         "sr"
       ],
@@ -791,7 +735,6 @@
       "name": "__MSG_keyboard_turkish__",
       "type": "ime",
       "id": "xkb:tr::tur",
-      "description": "",
       "language": [
         "tr"
       ],
@@ -804,7 +747,6 @@
       "name": "__MSG_keyboard_ukrainian__",
       "type": "ime",
       "id": "xkb:ua::ukr",
-      "description": "",
       "language": [
         "uk"
       ],
@@ -817,7 +759,6 @@
       "name": "__MSG_keyboard_belarusian__",
       "type": "ime",
       "id": "xkb:by::bel",
-      "description": "",
       "language": [
         "be"
       ],
@@ -830,7 +771,6 @@
       "name": "__MSG_keyboard_armenian_phonetic__",
       "type": "ime",
       "id": "xkb:am:phonetic:arm",
-      "description": "",
       "language": [
         "hy"
       ],
@@ -843,7 +783,6 @@
       "name": "__MSG_keyboard_georgian__",
       "type": "ime",
       "id": "xkb:ge::geo",
-      "description": "",
       "language": [
         "ka"
       ],
@@ -856,7 +795,6 @@
       "name": "__MSG_keyboard_mongolian__",
       "type": "ime",
       "id": "xkb:mn::mon",
-      "description": "",
       "language": [
         "mn"
       ],
@@ -869,7 +807,6 @@
       "name": "__MSG_keyboard_irish__",
       "type": "ime",
       "id": "xkb:ie::ga",
-      "description": "",
       "language": [
         "ga"
       ],

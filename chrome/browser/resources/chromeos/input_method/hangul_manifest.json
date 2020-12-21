@@ -24,7 +24,6 @@
       "type": "ime",
       "id": "hangul_2set",
       "indicator": "\ud55c",
-      "description": "",
       "language": "ko",
       "layouts": [
         "us"
@@ -36,7 +35,6 @@
       "type": "ime",
       "id": "hangul_3set390",
       "indicator": "\ud55c",
-      "description": "",
       "language": "ko",
       "layouts": [
         "us"
@@ -48,7 +46,6 @@
       "type": "ime",
       "id": "hangul_3setfinal",
       "indicator": "\ud55c",
-      "description": "",
       "language": "ko",
       "layouts": [
         "us"
@@ -60,7 +57,6 @@
       "type": "ime",
       "id": "hangul_3setnoshift",
       "indicator": "\ud55c",
-      "description": "",
       "language": "ko",
       "layouts": [
         "us"
@@ -72,7 +68,6 @@
       "type": "ime",
       "id": "hangul_romaja",
       "indicator": "\ud55c",
-      "description": "",
       "language": "ko",
       "layouts": [
         "us"
@@ -84,7 +79,6 @@
       "type": "ime",
       "id": "hangul_ahnmatae",
       "indicator": "\ud55c",
-      "description": "",
       "language": "ko",
       "layouts": [
         "us"

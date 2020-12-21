@@ -18,7 +18,6 @@
       "type": "ime",
       "id": "zh-t-i0-pinyin",
       "indicator": "\u62fc",
-      "description": "Pinyin",
       "language": [
         "zh-CN",
         "zh"

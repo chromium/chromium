@@ -33,13 +33,8 @@ struct InputComponentInfo {
   std::string name;
   InputComponentType type;
   std::string id;
-  std::string description;
   std::set<std::string> languages;
   std::set<std::string> layouts;
-  std::string shortcut_keycode;
-  bool shortcut_alt;
-  bool shortcut_ctrl;
-  bool shortcut_shift;
   GURL options_page_url;
   GURL input_view_url;
 };

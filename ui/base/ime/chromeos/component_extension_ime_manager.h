@@ -29,7 +29,6 @@ struct COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) ComponentExtensionEngine {
   std::string display_name;
   std::string indicator;
   std::vector<std::string> language_codes;  // e.g. "en".
-  std::string description;
   std::string layout;
   GURL options_page_url;
   GURL input_view_url;

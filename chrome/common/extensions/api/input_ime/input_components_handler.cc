@@ -23,12 +23,7 @@ namespace extensions {
 namespace keys = manifest_keys;
 namespace errors = manifest_errors;
 
-InputComponentInfo::InputComponentInfo()
-    : type(INPUT_COMPONENT_TYPE_NONE),
-      shortcut_alt(false),
-      shortcut_ctrl(false),
-      shortcut_shift(false) {
-}
+InputComponentInfo::InputComponentInfo() : type(INPUT_COMPONENT_TYPE_NONE) {}
 
 InputComponentInfo::InputComponentInfo(const InputComponentInfo& other) =
     default;
@@ -65,15 +60,10 @@ bool InputComponentsHandler::Parse(Extension* extension,
     std::string name_str;
     InputComponentType type;
     std::string id_str;
-    std::string description_str;
     std::set<std::string> languages;
     std::set<std::string> layouts;
-    std::string shortcut_keycode_str;
     GURL input_view_url;
     GURL options_page_url;
-    bool shortcut_alt = false;
-    bool shortcut_ctrl = false;
-    bool shortcut_shift = false;
 
     if (!list_value->GetDictionary(i, &module_value)) {
       *error = base::ASCIIToUTF16(errors::kInvalidInputComponents);
@@ -106,13 +96,6 @@ bool InputComponentsHandler::Parse(Extension* extension,
     // Get input_components[i].id.
     if (!module_value->GetString(keys::kId, &id_str)) {
       id_str = "";
-    }
-
-    // Get input_components[i].description.
-    if (!module_value->GetString(keys::kDescription, &description_str)) {
-      *error = ErrorUtils::FormatErrorMessageUTF16(
-          errors::kInvalidInputComponentDescription, base::NumberToString(i));
-      return false;
     }
 
     // Get input_components[i].language.
@@ -150,39 +133,6 @@ bool InputComponentsHandler::Parse(Extension* extension,
       }
     }
 
-    if (module_value->HasKey(keys::kShortcutKey)) {
-      const base::DictionaryValue* shortcut_value = NULL;
-      if (!module_value->GetDictionary(keys::kShortcutKey,
-          &shortcut_value)) {
-        *error = ErrorUtils::FormatErrorMessageUTF16(
-            errors::kInvalidInputComponentShortcutKey, base::NumberToString(i));
-        return false;
-      }
-
-      // Get input_components[i].shortcut_keycode.
-      if (!shortcut_value->GetString(keys::kKeycode, &shortcut_keycode_str)) {
-        *error = ErrorUtils::FormatErrorMessageUTF16(
-            errors::kInvalidInputComponentShortcutKeycode,
-            base::NumberToString(i));
-        return false;
-      }
-
-      // Get input_components[i].shortcut_alt.
-      if (!shortcut_value->GetBoolean(keys::kAltKey, &shortcut_alt)) {
-        shortcut_alt = false;
-      }
-
-      // Get input_components[i].shortcut_ctrl.
-      if (!shortcut_value->GetBoolean(keys::kCtrlKey, &shortcut_ctrl)) {
-        shortcut_ctrl = false;
-      }
-
-      // Get input_components[i].shortcut_shift.
-      if (!shortcut_value->GetBoolean(keys::kShiftKey, &shortcut_shift)) {
-        shortcut_shift = false;
-      }
-    }
-
     // Get input_components[i].input_view_url.
     // Note: 'input_view' is optional in manifest.
     std::string input_view_str;
@@ -214,14 +164,9 @@ bool InputComponentsHandler::Parse(Extension* extension,
     info->input_components.back().name = name_str;
     info->input_components.back().type = type;
     info->input_components.back().id = id_str;
-    info->input_components.back().description = description_str;
     info->input_components.back().languages = languages;
     info->input_components.back().layouts.insert(layouts.begin(),
         layouts.end());
-    info->input_components.back().shortcut_keycode = shortcut_keycode_str;
-    info->input_components.back().shortcut_alt = shortcut_alt;
-    info->input_components.back().shortcut_ctrl = shortcut_ctrl;
-    info->input_components.back().shortcut_shift = shortcut_shift;
     info->input_components.back().options_page_url = options_page_url;
     info->input_components.back().input_view_url = input_view_url;
   }

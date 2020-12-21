@@ -17,7 +17,6 @@ const char kActionDefaultIcon[] = "default_icon";
 const char kActionDefaultPopup[] = "default_popup";
 const char kActionDefaultState[] = "default_state";
 const char kActionDefaultTitle[] = "default_title";
-const char kAltKey[] = "altKey";
 const char kApp[] = "app";
 const char kAppDisplayMode[] = "app.display_mode";
 const char kAppIconColor[] = "app.icon_color";
@@ -41,7 +40,6 @@ const char kContentSecurityPolicy_ExtensionPagesPath[] =
 const char kContentSecurityPolicy_SandboxedPagesPath[] =
     "content_security_policy.sandbox";
 const char kConvertedFromUserScript[] = "converted_from_user_script";
-const char kCtrlKey[] = "ctrlKey";
 const char kCurrentLocale[] = "current_locale";
 const char kDefaultLocale[] = "default_locale";
 const char kDescription[] = "description";
@@ -75,7 +73,6 @@ const char kInputComponents[] = "input_components";
 const char kInputView[] = "input_view";
 const char kIsolation[] = "app.isolation";
 const char kKey[] = "key";
-const char kKeycode[] = "keyCode";
 const char kKiosk[] = "kiosk";
 const char kKioskAlwaysUpdate[] = "kiosk.always_update";
 const char kKioskEnabled[] = "kiosk_enabled";
@@ -137,8 +134,6 @@ const char kSettingsOverrideAlternateUrls[] =
     "chrome_settings_overrides.search_provider.alternate_urls";
 const char kSharedModuleAllowlist[] = "allowlist";
 const char kSharedModuleLegacyAllowlist[] = "whitelist";
-const char kShiftKey[] = "shiftKey";
-const char kShortcutKey[] = "shortcutKey";
 const char kShortName[] = "short_name";
 const char kSignature[] = "signature";
 const char kSockets[] = "sockets";
@@ -454,16 +449,10 @@ const char kInvalidImportVersion[] =
     "Invalid value for 'import[*].minimum_version'.";
 const char kInvalidInputComponents[] =
     "Invalid value for 'input_components'";
-const char kInvalidInputComponentDescription[] =
-    "Invalid value for 'input_components[*].description";
 const char kInvalidInputComponentLayoutName[] =
     "Invalid value for 'input_components[*].layouts[*]";
 const char kInvalidInputComponentName[] =
     "Invalid value for 'input_components[*].name";
-const char kInvalidInputComponentShortcutKey[] =
-    "Invalid value for 'input_components[*].shortcutKey";
-const char kInvalidInputComponentShortcutKeycode[] =
-    "Invalid value for 'input_components[*].shortcutKey.keyCode";
 const char kInvalidInputComponentType[] =
     "Invalid value for 'input_components[*].type";
 const char kInvalidInputView[] =
