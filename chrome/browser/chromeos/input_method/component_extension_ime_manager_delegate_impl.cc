@@ -231,11 +231,6 @@ bool ComponentExtensionIMEManagerDelegateImpl::ReadEngineComponent(
     const base::DictionaryValue& dict,
     ComponentExtensionEngine* out) {
   DCHECK(out);
-  std::string type;
-  if (!dict.GetString(extensions::manifest_keys::kType, &type))
-    return false;
-  if (type != "ime")
-    return false;
   if (!dict.GetString(extensions::manifest_keys::kId, &out->engine_id))
     return false;
   if (!dict.GetString(extensions::manifest_keys::kName, &out->display_name))

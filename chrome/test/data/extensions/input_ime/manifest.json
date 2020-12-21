@@ -10,19 +10,16 @@
   },
   "input_components": [{
     "name": "IdentityIME",
-    "type": "ime",
     "id": "IdentityIME",
     "language": "en",
     "layouts": ["us::eng"]
   },{
     "name": "ToUpperIME",
-    "type": "ime",
     "id": "ToUpperIME",
     "language": "en",
     "layouts": ["us::eng"]
   },{
     "name": "APIArgumentIME",
-    "type": "ime",
     "id": "APIArgumentIME",
     "language": "en",
     "layouts": ["us::eng"]

@@ -544,8 +544,6 @@ bool InputImeEventRouter::RegisterImeExtension(
   // descriptors for component IME extensions are managed by InputMethodUtil.
   if (!comp_ext_ime_manager->IsAllowlistedExtension(extension_id)) {
     for (const auto& component : input_components) {
-      DCHECK(component.type == INPUT_COMPONENT_TYPE_IME);
-
       // For legacy reasons, multiple physical keyboard XKB layouts can be
       // specified in the IME extension manifest for each input method. However,
       // CrOS only supports one layout per input method. Thus use the "first"

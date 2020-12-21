@@ -17,7 +17,6 @@
   "input_components": [
     {
       "name": "__MSG_inputmethod_mozc_us__",
-      "type": "ime",
       "id": "nacl_mozc_us",
       "indicator": "\u3042",
       "language": "ja",
@@ -27,7 +26,6 @@
     },
     {
       "name": "__MSG_inputmethod_mozc_jp__",
-      "type": "ime",
       "id": "nacl_mozc_jp",
       "indicator": "\u3042",
       "language": "ja",

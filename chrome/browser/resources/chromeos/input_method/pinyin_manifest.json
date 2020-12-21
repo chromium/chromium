@@ -15,7 +15,6 @@
   "input_components": [
     {
       "name": "__MSG_inputmethod_pinyin__",
-      "type": "ime",
       "id": "zh-t-i0-pinyin",
       "indicator": "\u62fc",
       "language": [

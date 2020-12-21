@@ -12,7 +12,6 @@
   "input_components": [
     {
       "name": "Test IME",
-      "type": "ime",
       "id": "test",
       "language": "en-US",  // The primary language this IME is used for
       "layouts": ["us::eng"]  // The supported keyboard layouts for this IME

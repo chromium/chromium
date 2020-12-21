@@ -18,12 +18,6 @@ namespace extensions {
 
 class Extension;
 
-enum InputComponentType {
-  INPUT_COMPONENT_TYPE_NONE = -1,
-  INPUT_COMPONENT_TYPE_IME,
-  INPUT_COMPONENT_TYPE_COUNT
-};
-
 struct InputComponentInfo {
   // Define out of line constructor/destructor to please Clang.
   InputComponentInfo();
@@ -31,7 +25,6 @@ struct InputComponentInfo {
   ~InputComponentInfo();
 
   std::string name;
-  InputComponentType type;
   std::string id;
   std::set<std::string> languages;
   std::set<std::string> layouts;

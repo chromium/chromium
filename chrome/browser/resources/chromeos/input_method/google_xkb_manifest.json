@@ -43,7 +43,6 @@
   "input_components": [
     {
       "name": "__MSG_keyboard_us__",
-      "type": "ime",
       "id": "xkb:us::eng",
       "language": [
         "en",
@@ -58,7 +57,6 @@
     },
     {
       "name": "__MSG_keyboard_indonesian__",
-      "type": "ime",
       "id": "xkb:us::ind",
       "indicator": "ID",
       "language": [
@@ -71,7 +69,6 @@
     },
     {
       "name": "__MSG_keyboard_filipino__",
-      "type": "ime",
       "id": "xkb:us::fil",
       "indicator": "FIL",
       "language": [
@@ -84,7 +81,6 @@
     },
     {
       "name": "__MSG_keyboard_malay__",
-      "type": "ime",
       "id": "xkb:us::msa",
       "indicator": "MS",
       "language": [
@@ -97,7 +93,6 @@
     },
     {
       "name": "__MSG_keyboard_us_international__",
-      "type": "ime",
       "id": "xkb:us:intl:eng",
       "indicator": "INTL",
       "language": [
@@ -111,7 +106,6 @@
     },
     {
       "name": "__MSG_keyboard_us_international_pc__",
-      "type": "ime",
       "id": "xkb:us:intl_pc:eng",
       "indicator": "INTL",
       "language": [
@@ -125,7 +119,6 @@
     },
     {
       "name": "__MSG_keyboard_netherlands__",
-      "type": "ime",
       "id": "xkb:us:intl:nld",
       "indicator": "NLD",
       "language": [
@@ -138,7 +131,6 @@
     },
     {
       "name": "__MSG_keyboard_netherlands_us_international_pc__",
-      "type": "ime",
       "id": "xkb:us:intl_pc:nld",
       "indicator": "NLD",
       "language": [
@@ -151,7 +143,6 @@
     },
     {
       "name": "__MSG_keyboard_us_extended__",
-      "type": "ime",
       "id": "xkb:us:altgr-intl:eng",
       "indicator": "EXTD",
       "language": [
@@ -165,7 +156,6 @@
     },
     {
       "name": "__MSG_keyboard_us_dvorak__",
-      "type": "ime",
       "id": "xkb:us:dvorak:eng",
       "indicator": "DV",
       "language": [
@@ -179,7 +169,6 @@
     },
     {
       "name": "__MSG_keyboard_us_dvp__",
-      "type": "ime",
       "id": "xkb:us:dvp:eng",
       "indicator": "DVP",
       "language": [
@@ -193,7 +182,6 @@
     },
     {
       "name": "__MSG_keyboard_us_colemak__",
-      "type": "ime",
       "id": "xkb:us:colemak:eng",
       "indicator": "CO",
       "language": [
@@ -207,7 +195,6 @@
     },
     {
       "name": "__MSG_keyboard_us_workman__",
-      "type": "ime",
       "id": "xkb:us:workman:eng",
       "indicator": "WM",
       "language": [
@@ -221,7 +208,6 @@
     },
     {
       "name": "__MSG_keyboard_us_workman_international__",
-      "type": "ime",
       "id": "xkb:us:workman-intl:eng",
       "indicator": "WMI",
       "language": [
@@ -235,7 +221,6 @@
     },
     {
       "name": "__MSG_keyboard_belgian_dutch__",
-      "type": "ime",
       "id": "xkb:be::nld",
       "language": [
         "nl"
@@ -247,7 +232,6 @@
     },
     {
       "name": "__MSG_keyboard_french__",
-      "type": "ime",
       "id": "xkb:fr::fra",
       "language": [
         "fr",
@@ -260,7 +244,6 @@
     },
     {
       "name": "__MSG_keyboard_french_bepo__",
-      "type": "ime",
       "id": "xkb:fr:bepo:fra",
       "language": [
         "fr",
@@ -273,7 +256,6 @@
     },
     {
       "name": "__MSG_keyboard_belgian_french__",
-      "type": "ime",
       "id": "xkb:be::fra",
       "language": [
         "fr"
@@ -285,7 +267,6 @@
     },
     {
       "name": "__MSG_keyboard_faroese__",
-      "type": "ime",
       "id": "xkb:fo::fao",
       "language": [
         "fo"
@@ -297,7 +278,6 @@
     },
     {
       "name": "__MSG_keyboard_canadian_french__",
-      "type": "ime",
       "id": "xkb:ca::fra",
       "language": [
         "fr",
@@ -310,7 +290,6 @@
     },
     {
       "name": "__MSG_keyboard_swiss_french__",
-      "type": "ime",
       "id": "xkb:ch:fr:fra",
       "language": [
         "fr",
@@ -323,7 +302,6 @@
     },
     {
       "name": "__MSG_keyboard_canadian_multilingual__",
-      "type": "ime",
       "id": "xkb:ca:multix:fra",
       "language": [
         "fr",
@@ -336,7 +314,6 @@
     },
     {
       "name": "__MSG_keyboard_german__",
-      "type": "ime",
       "id": "xkb:de::ger",
       "language": [
         "de",
@@ -351,7 +328,6 @@
     },
     {
       "name": "__MSG_keyboard_german_neo_2__",
-      "type": "ime",
       "id": "xkb:de:neo:ger",
       "indicator": "NEO",
       "language": [
@@ -367,7 +343,6 @@
     },
     {
       "name": "__MSG_keyboard_belgian_german__",
-      "type": "ime",
       "id": "xkb:be::ger",
       "language": [
         "de"
@@ -379,7 +354,6 @@
     },
     {
       "name": "__MSG_keyboard_swiss__",
-      "type": "ime",
       "id": "xkb:ch::ger",
       "language": [
         "de",
@@ -392,7 +366,6 @@
     },
     {
       "name": "__MSG_keyboard_japanese__",
-      "type": "ime",
       "id": "xkb:jp::jpn",
       "indicator": "JA",
       "language": [
@@ -405,7 +378,6 @@
     },
     {
       "name": "__MSG_keyboard_russian__",
-      "type": "ime",
       "id": "xkb:ru::rus",
       "language": [
         "ru"
@@ -417,7 +389,6 @@
     },
     {
       "name": "__MSG_keyboard_russian_phonetic__",
-      "type": "ime",
       "id": "xkb:ru:phonetic:rus",
       "language": [
         "ru"
@@ -429,7 +400,6 @@
     },
     {
       "name": "__MSG_keyboard_brazilian__",
-      "type": "ime",
       "id": "xkb:br::por",
       "language": [
         "pt-BR",
@@ -442,7 +412,6 @@
     },
     {
       "name": "__MSG_keyboard_portuguese_us_international__",
-      "type": "ime",
       "id": "xkb:us:intl:por",
       "indicator": "INTL",
       "language": [
@@ -455,7 +424,6 @@
     },
     {
       "name": "__MSG_keyboard_portuguese_us_international_pc__",
-      "type": "ime",
       "id": "xkb:us:intl_pc:por",
       "indicator": "INTL",
       "language": [
@@ -468,7 +436,6 @@
     },
     {
       "name": "__MSG_keyboard_bulgarian__",
-      "type": "ime",
       "id": "xkb:bg::bul",
       "language": [
         "bg"
@@ -480,7 +447,6 @@
     },
     {
       "name": "__MSG_keyboard_bulgarian_phonetic__",
-      "type": "ime",
       "id": "xkb:bg:phonetic:bul",
       "language": [
         "bg"
@@ -492,7 +458,6 @@
     },
     {
       "name": "__MSG_keyboard_canadian_english__",
-      "type": "ime",
       "id": "xkb:ca:eng:eng",
       "language": [
         "en",
@@ -505,7 +470,6 @@
     },
     {
       "name": "__MSG_keyboard_czech__",
-      "type": "ime",
       "id": "xkb:cz::cze",
       "language": [
         "cs"
@@ -517,7 +481,6 @@
     },
     {
       "name": "__MSG_keyboard_czech_qwerty__",
-      "type": "ime",
       "id": "xkb:cz:qwerty:cze",
       "indicator": "CS",
       "language": [
@@ -530,7 +493,6 @@
     },
     {
       "name": "__MSG_keyboard_estonian__",
-      "type": "ime",
       "id": "xkb:ee::est",
       "language": [
         "et"
@@ -542,7 +504,6 @@
     },
     {
       "name": "__MSG_keyboard_spanish__",
-      "type": "ime",
       "id": "xkb:es::spa",
       "language": [
         "es",
@@ -555,7 +516,6 @@
     },
     {
       "name": "__MSG_keyboard_catalan__",
-      "type": "ime",
       "id": "xkb:es:cat:cat",
       "indicator": "CAT",
       "language": [
@@ -568,7 +528,6 @@
     },
     {
       "name": "__MSG_keyboard_danish__",
-      "type": "ime",
       "id": "xkb:dk::dan",
       "language": [
         "da"
@@ -580,7 +539,6 @@
     },
     {
       "name": "__MSG_keyboard_greek__",
-      "type": "ime",
       "id": "xkb:gr::gre",
       "language": [
         "el"
@@ -592,7 +550,6 @@
     },
     {
       "name": "__MSG_keyboard_hebrew__",
-      "type": "ime",
       "id": "xkb:il::heb",
       "language": [
         "he"
@@ -604,7 +561,6 @@
     },
     {
       "name": "__MSG_keyboard_latin_american__",
-      "type": "ime",
       "id": "xkb:latam::spa",
       "indicator": "LA",
       "language": [
@@ -618,7 +574,6 @@
     },
     {
       "name": "__MSG_keyboard_lithuanian__",
-      "type": "ime",
       "id": "xkb:lt::lit",
       "language": [
         "lt"
@@ -630,7 +585,6 @@
     },
     {
       "name": "__MSG_keyboard_latvian__",
-      "type": "ime",
       "id": "xkb:lv:apostrophe:lav",
       "language": [
         "lv"
@@ -642,7 +596,6 @@
     },
     {
       "name": "__MSG_keyboard_croatian__",
-      "type": "ime",
       "id": "xkb:hr::scr",
       "language": [
         "hr"
@@ -654,7 +607,6 @@
     },
     {
       "name": "__MSG_keyboard_uk__",
-      "type": "ime",
       "id": "xkb:gb:extd:eng",
       "language": [
         "en",
@@ -667,7 +619,6 @@
     },
     {
       "name": "__MSG_keyboard_uk_dvorak__",
-      "type": "ime",
       "id": "xkb:gb:dvorak:eng",
       "indicator": "DV",
       "language": [
@@ -681,7 +632,6 @@
     },
     {
       "name": "__MSG_keyboard_finnish__",
-      "type": "ime",
       "id": "xkb:fi::fin",
       "language": [
         "fi"
@@ -693,7 +643,6 @@
     },
     {
       "name": "__MSG_keyboard_hungarian__",
-      "type": "ime",
       "id": "xkb:hu::hun",
       "language": [
         "hu"
@@ -705,7 +654,6 @@
     },
     {
       "name": "__MSG_keyboard_hungarian_qwerty__",
-      "type": "ime",
       "id": "xkb:hu:qwerty:hun",
       "language": [
         "hu"
@@ -717,7 +665,6 @@
     },
     {
       "name": "__MSG_keyboard_italian__",
-      "type": "ime",
       "id": "xkb:it::ita",
       "language": [
         "it",
@@ -730,7 +677,6 @@
     },
     {
       "name": "__MSG_keyboard_icelandic__",
-      "type": "ime",
       "id": "xkb:is::ice",
       "language": [
         "is"
@@ -742,7 +688,6 @@
     },
     {
       "name": "__MSG_keyboard_norwegian__",
-      "type": "ime",
       "id": "xkb:no::nob",
       "language": [
         "nb",
@@ -756,7 +701,6 @@
     },
     {
       "name": "__MSG_keyboard_polish__",
-      "type": "ime",
       "id": "xkb:pl::pol",
       "language": [
         "pl"
@@ -768,7 +712,6 @@
     },
     {
       "name": "__MSG_keyboard_portuguese__",
-      "type": "ime",
       "id": "xkb:pt::por",
       "language": [
         "pt-PT",
@@ -781,7 +724,6 @@
     },
     {
       "name": "__MSG_keyboard_romanian__",
-      "type": "ime",
       "id": "xkb:ro::rum",
       "language": [
         "ro"
@@ -793,7 +735,6 @@
     },
     {
       "name": "__MSG_keyboard_romanian_standard__",
-      "type": "ime",
       "id": "xkb:ro:std:rum",
       "language": [
         "ro"
@@ -805,7 +746,6 @@
     },
     {
       "name": "__MSG_keyboard_swedish__",
-      "type": "ime",
       "id": "xkb:se::swe",
       "language": [
         "sv"
@@ -817,7 +757,6 @@
     },
     {
       "name": "__MSG_keyboard_slovak__",
-      "type": "ime",
       "id": "xkb:sk::slo",
       "language": [
         "sk"
@@ -829,7 +768,6 @@
     },
     {
       "name": "__MSG_keyboard_slovenian__",
-      "type": "ime",
       "id": "xkb:si::slv",
       "language": [
         "sl"
@@ -841,7 +779,6 @@
     },
     {
       "name": "__MSG_keyboard_serbian__",
-      "type": "ime",
       "id": "xkb:rs::srp",
       "language": [
         "sr"
@@ -853,7 +790,6 @@
     },
     {
       "name": "__MSG_keyboard_turkish__",
-      "type": "ime",
       "id": "xkb:tr::tur",
       "language": [
         "tr"
@@ -865,7 +801,6 @@
     },
     {
       "name": "__MSG_keyboard_turkish_f__",
-      "type": "ime",
       "id": "xkb:tr:f:tur",
       "language": [
         "tr"
@@ -877,7 +812,6 @@
     },
     {
       "name": "__MSG_keyboard_ukrainian__",
-      "type": "ime",
       "id": "xkb:ua::ukr",
       "language": [
         "uk"
@@ -889,7 +823,6 @@
     },
     {
       "name": "__MSG_keyboard_belarusian__",
-      "type": "ime",
       "id": "xkb:by::bel",
       "language": [
         "be"
@@ -901,7 +834,6 @@
     },
     {
       "name": "__MSG_keyboard_armenian_phonetic__",
-      "type": "ime",
       "id": "xkb:am:phonetic:arm",
       "language": [
         "hy"
@@ -913,7 +845,6 @@
     },
     {
       "name": "__MSG_keyboard_georgian__",
-      "type": "ime",
       "id": "xkb:ge::geo",
       "language": [
         "ka"
@@ -925,7 +856,6 @@
     },
     {
       "name": "__MSG_keyboard_mongolian__",
-      "type": "ime",
       "id": "xkb:mn::mon",
       "language": [
         "mn"
@@ -937,7 +867,6 @@
     },
     {
       "name": "__MSG_keyboard_irish__",
-      "type": "ime",
       "id": "xkb:ie::ga",
       "language": [
         "ga"
@@ -949,7 +878,6 @@
     },
     {
       "name": "__MSG_keyboard_maltese__",
-      "type": "ime",
       "id": "xkb:mt::mlt",
       "language": [
         "mt"
@@ -961,7 +889,6 @@
     },
     {
       "name": "__MSG_keyboard_macedonian__",
-      "type": "ime",
       "id": "xkb:mk::mkd",
       "language": [
         "mk"
@@ -973,7 +900,6 @@
     },
     {
       "name": "__MSG_keyboard_kazakh__",
-      "type": "ime",
       "id": "xkb:kz::kaz",
       "language": [
         "kk"
@@ -985,7 +911,6 @@
     },
     {
       "name": "__MSG_inputmethod_pinyin__",
-      "type": "ime",
       "id": "zh-t-i0-pinyin",
       "indicator": "\u62fc",
       "language": [
@@ -999,7 +924,6 @@
     },
     {
       "name": "__MSG_inputmethod_traditional_pinyin__",
-      "type": "ime",
       "id": "zh-hant-t-i0-pinyin",
       "indicator": "\u62fc",
       "language": [
@@ -1013,7 +937,6 @@
     },
     {
       "name": "__MSG_inputmethod_cangjie__",
-      "type": "ime",
       "id": "zh-hant-t-i0-cangjie-1987",
       "indicator": "\u5009",
       "language": [
@@ -1026,7 +949,6 @@
     },
     {
       "name": "__MSG_inputmethod_quick__",
-      "type": "ime",
       "id": "zh-hant-t-i0-cangjie-1987-x-m0-simplified",
       "indicator": "\u901f",
       "language": [
@@ -1039,7 +961,6 @@
     },
     {
       "name": "__MSG_inputmethod_cantonese__",
-      "type": "ime",
       "id": "yue-hant-t-i0-und",
       "indicator": "\u7CA4",
       "language": [
@@ -1051,7 +972,6 @@
     },
     {
       "name": "__MSG_inputmethod_wubi__",
-      "type": "ime",
       "id": "zh-t-i0-wubi-1986",
       "indicator": "\u4e94",
       "language": [
@@ -1064,7 +984,6 @@
     },
     {
       "name": "__MSG_inputmethod_array__",
-      "type": "ime",
       "id": "zh-hant-t-i0-array-1992",
       "indicator": "\u884c\u5217",
       "language": [
@@ -1077,7 +996,6 @@
     },
     {
       "name": "__MSG_inputmethod_dayi__",
-      "type": "ime",
       "id": "zh-hant-t-i0-dayi-1988",
       "indicator": "\u5927\u6613",
       "language": [
@@ -1090,7 +1008,6 @@
     },
     {
       "name": "__MSG_inputmethod_zhuyin__",
-      "type": "ime",
       "id": "zh-hant-t-i0-und",
       "indicator": "\u6CE8",
       "language": [
@@ -1104,7 +1021,6 @@
     },
     {
       "name": "__MSG_transliteration_am__",
-      "type": "ime",
       "id": "am-t-i0-und",
       "language": "am",
       "layouts": [
@@ -1113,7 +1029,6 @@
     },
     {
       "name": "__MSG_transliteration_ar__",
-      "type": "ime",
       "id": "ar-t-i0-und",
       "language": "ar",
       "layouts": [
@@ -1122,7 +1037,6 @@
     },
     {
       "name": "__MSG_transliteration_bn__",
-      "type": "ime",
       "id": "bn-t-i0-und",
       "language": "bn",
       "layouts": [
@@ -1131,7 +1045,6 @@
     },
     {
       "name": "__MSG_transliteration_el__",
-      "type": "ime",
       "id": "el-t-i0-und",
       "language": "el",
       "layouts": [
@@ -1140,7 +1053,6 @@
     },
     {
       "name": "__MSG_transliteration_fa__",
-      "type": "ime",
       "id": "fa-t-i0-und",
       "language": "fa",
       "layouts": [
@@ -1149,7 +1061,6 @@
     },
     {
       "name": "__MSG_transliteration_gu__",
-      "type": "ime",
       "id": "gu-t-i0-und",
       "language": "gu",
       "layouts": [
@@ -1158,7 +1069,6 @@
     },
     {
       "name": "__MSG_transliteration_he__",
-      "type": "ime",
       "id": "he-t-i0-und",
       "language": "he",
       "layouts": [
@@ -1167,7 +1077,6 @@
     },
     {
       "name": "__MSG_transliteration_hi__",
-      "type": "ime",
       "id": "hi-t-i0-und",
       "language": "hi",
       "layouts": [
@@ -1176,7 +1085,6 @@
     },
     {
       "name": "__MSG_transliteration_kn__",
-      "type": "ime",
       "id": "kn-t-i0-und",
       "language": "kn",
       "layouts": [
@@ -1185,7 +1093,6 @@
     },
     {
       "name": "__MSG_transliteration_ml__",
-      "type": "ime",
       "id": "ml-t-i0-und",
       "language": "ml",
       "layouts": [
@@ -1194,7 +1101,6 @@
     },
     {
       "name": "__MSG_transliteration_mr__",
-      "type": "ime",
       "id": "mr-t-i0-und",
       "language": "mr",
       "layouts": [
@@ -1203,7 +1109,6 @@
     },
     {
       "name": "__MSG_transliteration_ne__",
-      "type": "ime",
       "id": "ne-t-i0-und",
       "language": "ne",
       "layouts": [
@@ -1212,7 +1117,6 @@
     },
     {
       "name": "__MSG_transliteration_or__",
-      "type": "ime",
       "id": "or-t-i0-und",
       "language": "or",
       "layouts": [
@@ -1221,7 +1125,6 @@
     },
     {
       "name": "__MSG_transliteration_pa__",
-      "type": "ime",
       "id": "pa-t-i0-und",
       "language": "pa",
       "layouts": [
@@ -1230,7 +1133,6 @@
     },
     {
       "name": "__MSG_transliteration_sa__",
-      "type": "ime",
       "id": "sa-t-i0-und",
       "language": "sa",
       "layouts": [
@@ -1239,7 +1141,6 @@
     },
     {
       "name": "__MSG_transliteration_sr__",
-      "type": "ime",
       "id": "sr-t-i0-und",
       "language": "sr",
       "layouts": [
@@ -1248,7 +1149,6 @@
     },
     {
       "name": "__MSG_transliteration_ta__",
-      "type": "ime",
       "id": "ta-t-i0-und",
       "language": "ta",
       "layouts": [
@@ -1257,7 +1157,6 @@
     },
     {
       "name": "__MSG_transliteration_te__",
-      "type": "ime",
       "id": "te-t-i0-und",
       "language": "te",
       "layouts": [
@@ -1266,7 +1165,6 @@
     },
     {
       "name": "__MSG_transliteration_ti__",
-      "type": "ime",
       "id": "ti-t-i0-und",
       "language": "ti",
       "layouts": [
@@ -1275,7 +1173,6 @@
     },
     {
       "name": "__MSG_transliteration_ur__",
-      "type": "ime",
       "id": "ur-t-i0-und",
       "language": "ur",
       "layouts": [
@@ -1284,7 +1181,6 @@
     },
     {
       "name": "__MSG_inputmethod_hangul__",
-      "type": "ime",
       "id": "ko-t-i0-und",
       "indicator": "\ud55c",
       "language": "ko",
@@ -1295,7 +1191,6 @@
     },
     {
       "name": "__MSG_inputmethod_mozc_us__",
-      "type": "ime",
       "id": "nacl_mozc_us",
       "indicator": "\u3042",
       "language": "ja",
@@ -1306,7 +1201,6 @@
     },
     {
       "name": "__MSG_inputmethod_mozc_jp__",
-      "type": "ime",
       "id": "nacl_mozc_jp",
       "indicator": "\u3042",
       "language": "ja",
@@ -1317,7 +1211,6 @@
     },
     {
       "name": "__MSG_keyboard_bengali_phonetic__",
-      "type": "ime",
       "id": "vkd_bn_phone",
       "language": [
         "bn"
@@ -1328,7 +1221,6 @@
     },
     {
       "name": "__MSG_keyboard_gujarati_phonetic__",
-      "type": "ime",
       "id": "vkd_gu_phone",
       "language": [
         "gu"
@@ -1339,7 +1231,6 @@
     },
     {
       "name": "__MSG_keyboard_devanagari_phonetic__",
-      "type": "ime",
       "id": "vkd_deva_phone",
       "language": [
         "hi",
@@ -1351,7 +1242,6 @@
     },
     {
       "name": "__MSG_keyboard_kannada_phonetic__",
-      "type": "ime",
       "id": "vkd_kn_phone",
       "language": [
         "kn"
@@ -1362,7 +1252,6 @@
     },
     {
       "name": "__MSG_keyboard_malayalam_phonetic__",
-      "type": "ime",
       "id": "vkd_ml_phone",
       "language": [
         "ml"
@@ -1373,7 +1262,6 @@
     },
     {
       "name": "__MSG_keyboard_tamil_inscript__",
-      "type": "ime",
       "id": "vkd_ta_inscript",
       "language": [
         "ta"
@@ -1384,7 +1272,6 @@
     },
     {
       "name": "__MSG_keyboard_tamil_phonetic__",
-      "type": "ime",
       "id": "vkd_ta_phone",
       "language": [
         "ta"
@@ -1395,7 +1282,6 @@
     },
     {
       "name": "__MSG_keyboard_tamil_tamil99__",
-      "type": "ime",
       "id": "vkd_ta_tamil99",
       "language": [
         "ta"
@@ -1406,7 +1292,6 @@
     },
     {
       "name": "__MSG_keyboard_tamil_typewriter__",
-      "type": "ime",
       "id": "vkd_ta_typewriter",
       "language": [
         "ta"
@@ -1417,7 +1302,6 @@
     },
     {
       "name": "__MSG_keyboard_tamil_itrans__",
-      "type": "ime",
       "id": "vkd_ta_itrans",
       "language": [
         "ta"
@@ -1428,7 +1312,6 @@
     },
     {
       "name": "__MSG_keyboard_telugu_phonetic__",
-      "type": "ime",
       "id": "vkd_te_phone",
       "language": [
         "te"
@@ -1439,7 +1322,6 @@
     },
     {
       "name": "__MSG_keyboard_ethiopic__",
-      "type": "ime",
       "id": "vkd_ethi",
       "language": [
         "am"
@@ -1450,7 +1332,6 @@
     },
     {
       "name": "__MSG_keyboard_thai_kedmanee__",
-      "type": "ime",
       "id": "vkd_th",
       "language": [
         "th"
@@ -1461,7 +1342,6 @@
     },
     {
       "name": "__MSG_keyboard_thai_pattachote__",
-      "type": "ime",
       "id": "vkd_th_pattajoti",
       "language": [
         "th"
@@ -1472,7 +1352,6 @@
     },
     {
       "name": "__MSG_keyboard_thai_tis__",
-      "type": "ime",
       "id": "vkd_th_tis",
       "language": [
         "th"
@@ -1483,7 +1362,6 @@
     },
     {
       "name": "__MSG_keyboard_persian__",
-      "type": "ime",
       "id": "vkd_fa",
       "language": [
         "fa"
@@ -1494,7 +1372,6 @@
     },
     {
       "name": "__MSG_keyboard_vietnamese_tcvn__",
-      "type": "ime",
       "id": "vkd_vi_tcvn",
       "language": [
         "vi"
@@ -1505,7 +1382,6 @@
     },
     {
       "name": "__MSG_keyboard_vietnamese_telex__",
-      "type": "ime",
       "id": "vkd_vi_telex",
       "language": [
         "vi"
@@ -1516,7 +1392,6 @@
     },
     {
       "name": "__MSG_keyboard_vietnamese_viqr__",
-      "type": "ime",
       "id": "vkd_vi_viqr",
       "language": [
         "vi"
@@ -1527,7 +1402,6 @@
     },
     {
       "name": "__MSG_keyboard_vietnamese_vni__",
-      "type": "ime",
       "id": "vkd_vi_vni",
       "language": [
         "vi"
@@ -1538,7 +1412,6 @@
     },
     {
       "name": "__MSG_keyboard_arabic__",
-      "type": "ime",
       "id": "vkd_ar",
       "language": [
         "ar"
@@ -1549,7 +1422,6 @@
     },
     {
       "name": "__MSG_keyboard_lao__",
-      "type": "ime",
       "id": "vkd_lo",
       "language": [
         "lo"
@@ -1560,7 +1432,6 @@
     },
     {
       "name": "__MSG_keyboard_nepali_inscript__",
-      "type": "ime",
       "id": "vkd_ne_inscript",
       "language": [
         "ne"
@@ -1571,7 +1442,6 @@
     },
     {
       "name": "__MSG_keyboard_nepali_phonetic__",
-      "type": "ime",
       "id": "vkd_ne_phone",
       "language": [
         "ne"
@@ -1582,7 +1452,6 @@
     },
     {
       "name": "__MSG_keyboard_khmer__",
-      "type": "ime",
       "id": "vkd_km",
       "language": [
         "km"
@@ -1593,7 +1462,6 @@
     },
     {
       "name": "__MSG_keyboard_myanmar__",
-      "type": "ime",
       "id": "vkd_my",
       "language": [
         "my"
@@ -1604,7 +1472,6 @@
     },
     {
       "name": "__MSG_keyboard_sinhala__",
-      "type": "ime",
       "id": "vkd_si",
       "language": [
         "si"
@@ -1615,7 +1482,6 @@
     },
     {
       "name": "__MSG_keyboard_soranikurdish_en__",
-      "type": "ime",
       "id": "vkd_ckb_en",
       "language": [
         "ckb"
@@ -1626,7 +1492,6 @@
     },
     {
       "name": "__MSG_keyboard_soranikurdish_ar__",
-      "type": "ime",
       "id": "vkd_ckb_ar",
       "language": [
         "ckb"
@@ -1637,7 +1502,6 @@
     },
     {
       "name": "__MSG_keyboard_myanmar_myansan__",
-      "type": "ime",
       "id": "vkd_my_myansan",
       "language": [
         "my"
@@ -1648,7 +1512,6 @@
     },
     {
       "name": "__MSG_keyboard_russian_phonetic_aatseel__",
-      "type": "ime",
       "id": "vkd_ru_phone_aatseel",
       "language": [
         "ru"
@@ -1659,7 +1522,6 @@
     },
     {
       "name": "__MSG_keyboard_russian_phonetic_yazhert__",
-      "type": "ime",
       "id": "vkd_ru_phone_yazhert",
       "language": [
         "ru"

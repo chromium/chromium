@@ -23,7 +23,7 @@ namespace extensions {
 namespace keys = manifest_keys;
 namespace errors = manifest_errors;
 
-InputComponentInfo::InputComponentInfo() : type(INPUT_COMPONENT_TYPE_NONE) {}
+InputComponentInfo::InputComponentInfo() = default;
 
 InputComponentInfo::InputComponentInfo(const InputComponentInfo& other) =
     default;
@@ -58,7 +58,6 @@ bool InputComponentsHandler::Parse(Extension* extension,
   for (size_t i = 0; i < list_value->GetSize(); ++i) {
     const base::DictionaryValue* module_value = NULL;
     std::string name_str;
-    InputComponentType type;
     std::string id_str;
     std::set<std::string> languages;
     std::set<std::string> layouts;
@@ -74,22 +73,6 @@ bool InputComponentsHandler::Parse(Extension* extension,
     if (!module_value->GetString(keys::kName, &name_str)) {
       *error = ErrorUtils::FormatErrorMessageUTF16(
           errors::kInvalidInputComponentName, base::NumberToString(i));
-      return false;
-    }
-
-    // Get input_components[i].type.
-    std::string type_str;
-    if (module_value->GetString(keys::kType, &type_str)) {
-      if (type_str == "ime") {
-        type = INPUT_COMPONENT_TYPE_IME;
-      } else {
-        *error = ErrorUtils::FormatErrorMessageUTF16(
-            errors::kInvalidInputComponentType, base::NumberToString(i));
-        return false;
-      }
-    } else {
-      *error = ErrorUtils::FormatErrorMessageUTF16(
-          errors::kInvalidInputComponentType, base::NumberToString(i));
       return false;
     }
 
@@ -162,7 +145,6 @@ bool InputComponentsHandler::Parse(Extension* extension,
 
     info->input_components.push_back(InputComponentInfo());
     info->input_components.back().name = name_str;
-    info->input_components.back().type = type;
     info->input_components.back().id = id_str;
     info->input_components.back().languages = languages;
     info->input_components.back().layouts.insert(layouts.begin(),

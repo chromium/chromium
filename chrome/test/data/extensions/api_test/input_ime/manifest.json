@@ -10,7 +10,6 @@
   "permissions": [ "input" ],
   "input_components": [{
     "name": "Test IME",
-    "type": "ime",
     "id": "test",
     "language": "en",  // The primary language this IME is used for
     "layouts": ["us::eng"]

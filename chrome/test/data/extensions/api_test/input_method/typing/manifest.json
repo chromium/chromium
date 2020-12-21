@@ -10,7 +10,6 @@
   "permissions": [ "input", "inputMethodPrivate" ],
   "input_components": [{
     "name": "Test IME",
-    "type": "ime",
     "id": "test",
     "language": "en",
     "layouts": ["us::eng"]

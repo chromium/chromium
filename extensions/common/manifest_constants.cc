@@ -163,7 +163,6 @@ const char kTtsVoicesGender[] = "gender";
 const char kTtsVoicesLang[] = "lang";
 const char kTtsVoicesRemote[] = "remote";
 const char kTtsVoicesVoiceName[] = "voice_name";
-const char kType[] = "type";
 const char kUpdateURL[] = "update_url";
 const char kUrlHandlers[] = "url_handlers";
 const char kUrlHandlerTitle[] = "title";
@@ -453,8 +452,6 @@ const char kInvalidInputComponentLayoutName[] =
     "Invalid value for 'input_components[*].layouts[*]";
 const char kInvalidInputComponentName[] =
     "Invalid value for 'input_components[*].name";
-const char kInvalidInputComponentType[] =
-    "Invalid value for 'input_components[*].type";
 const char kInvalidInputView[] =
     "Invalid value for 'input_view'.";
 const char kInvalidIsolation[] =
