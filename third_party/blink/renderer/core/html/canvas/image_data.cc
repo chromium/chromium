@@ -42,69 +42,76 @@ namespace blink {
 // required to describe a pixel, namely, red, green, blue and alpha.
 namespace {
 
-bool RaiseDOMExceptionAndReturnFalse(ExceptionState* exception_state,
-                                     DOMExceptionCode exception_code,
-                                     const char* message) {
+ImageData* RaiseDOMExceptionAndReturnNull(ExceptionState* exception_state,
+                                          DOMExceptionCode exception_code,
+                                          const char* message) {
   if (exception_state)
     exception_state->ThrowDOMException(exception_code, message);
-  return false;
+  return nullptr;
 }
 
 }  // namespace
 
-bool ImageData::ValidateConstructorArguments(
-    const IntSize* size,
-    const unsigned* width,
-    const unsigned* height,
-    const NotShared<DOMArrayBufferView>* data,
-    const ImageDataSettings* settings,
-    ExceptionState* exception_state) {
-  // We accept all the combinations of colorSpace and storageFormat in an
-  // ImageDataSettings to be stored in an ImageData. Therefore, we don't
-  // check the color settings in this function.
-
-  if (width && !*width) {
-    return RaiseDOMExceptionAndReturnFalse(
-        exception_state, DOMExceptionCode::kIndexSizeError,
-        "The source width is zero or not a number.");
-  }
-
-  if (height && !*height) {
-    return RaiseDOMExceptionAndReturnFalse(
-        exception_state, DOMExceptionCode::kIndexSizeError,
-        "The source height is zero or not a number.");
-  }
-
-  if (width || height) {
-    base::CheckedNumeric<unsigned> data_size =
-        StorageFormatBytesPerPixel(kUint8ClampedArrayStorageFormatName);
-    if (settings) {
-      data_size = StorageFormatBytesPerPixel(settings->storageFormat());
+ImageData* ImageData::ValidateAndCreate(const IntSize* input_size,
+                                        const unsigned* width,
+                                        const unsigned* height,
+                                        NotShared<DOMArrayBufferView>* data,
+                                        const ImageDataSettings* settings,
+                                        ExceptionState* exception_state) {
+  IntSize size;
+  if (width) {
+    DCHECK(!input_size);
+    if (!*width) {
+      return RaiseDOMExceptionAndReturnNull(
+          exception_state, DOMExceptionCode::kIndexSizeError,
+          "The source width is zero or not a number.");
     }
-    data_size *= width ? *width : 0;
-    data_size *= height ? *height : 0;
-    if (!data_size.IsValid()) {
-      return RaiseDOMExceptionAndReturnFalse(
+    size.SetWidth(*width);
+  }
+  if (height) {
+    DCHECK(width);
+    if (!*height) {
+      return RaiseDOMExceptionAndReturnNull(
+          exception_state, DOMExceptionCode::kIndexSizeError,
+          "The source height is zero or not a number.");
+    }
+    size.SetHeight(*height);
+  }
+
+  // TODO(https://crbug.com/1160105): An |input_size| of 0x0 is accepted, but
+  // |width| of 0 or |height| of 0 is not. Is this intentional?
+  if (input_size)
+    size = *input_size;
+
+  // Ensure the size does not overflow.
+  unsigned size_in_elements = 0;
+  {
+    base::CheckedNumeric<unsigned> size_in_elements_checked = 4;
+    size_in_elements_checked *= size.Width();
+    size_in_elements_checked *= size.Height();
+    if (!size_in_elements_checked.IsValid()) {
+      return RaiseDOMExceptionAndReturnNull(
           exception_state, DOMExceptionCode::kIndexSizeError,
           "The requested image size exceeds the supported range.");
     }
-
-    if (data_size.ValueOrDie() > v8::TypedArray::kMaxLength) {
+    if (size_in_elements_checked.ValueOrDie() > v8::TypedArray::kMaxLength) {
       if (exception_state) {
         exception_state->ThrowRangeError(
             "Out of memory at ImageData creation.");
       }
-      return false;
+      return nullptr;
     }
+    size_in_elements = size_in_elements_checked.ValueOrDie();
   }
 
-  unsigned data_length = 0;
+  // If |data| is provided, ensure it is a reasonable format, and that it can
+  // work with |size|.
   if (data) {
     DCHECK(data);
     if ((*data)->GetType() != DOMArrayBufferView::ViewType::kTypeUint8Clamped &&
         (*data)->GetType() != DOMArrayBufferView::ViewType::kTypeUint16 &&
         (*data)->GetType() != DOMArrayBufferView::ViewType::kTypeFloat32) {
-      return RaiseDOMExceptionAndReturnFalse(
+      return RaiseDOMExceptionAndReturnNull(
           exception_state, DOMExceptionCode::kNotSupportedError,
           "The input data type is not supported.");
     }
@@ -114,52 +121,71 @@ bool ImageData::ValidateConstructorArguments(
             std::numeric_limits<uint32_t>::max(),
         "We use UINT32_MAX as the upper bound of the input size and expect "
         "that the result fits into an `unsigned`.");
+
+    unsigned data_length_in_bytes = 0;
     if (!base::CheckedNumeric<uint32_t>((*data)->byteLength())
-             .AssignIfValid(&data_length)) {
-      return RaiseDOMExceptionAndReturnFalse(
+             .AssignIfValid(&data_length_in_bytes)) {
+      return RaiseDOMExceptionAndReturnNull(
           exception_state, DOMExceptionCode::kNotSupportedError,
           "The input data is too large. The maximum size is 4294967295.");
     }
-    if (!data_length) {
-      return RaiseDOMExceptionAndReturnFalse(
+    if (!data_length_in_bytes) {
+      return RaiseDOMExceptionAndReturnNull(
           exception_state, DOMExceptionCode::kInvalidStateError,
           "The input data has zero elements.");
     }
-    data_length /= (*data)->TypeSize();
-    if (data_length % 4) {
-      return RaiseDOMExceptionAndReturnFalse(
+
+    const unsigned data_length_in_elements =
+        data_length_in_bytes / (*data)->TypeSize();
+    if (data_length_in_elements % 4) {
+      return RaiseDOMExceptionAndReturnNull(
           exception_state, DOMExceptionCode::kInvalidStateError,
           "The input data length is not a multiple of 4.");
     }
 
-    if (width && (data_length / 4) % *width) {
-      return RaiseDOMExceptionAndReturnFalse(
-          exception_state, DOMExceptionCode::kIndexSizeError,
-          "The input data length is not a multiple of (4 * width).");
-    }
+    const unsigned data_length_in_pixels = data_length_in_elements / 4;
+    // TODO(https://crbug.com/1160105): This code historically does not ensure
+    // that |size| satisfy the same requirements when specified by |input_size|
+    // as compared when when it is specified by |width| and |height|.
+    if (width) {
+      if (data_length_in_pixels % *width) {
+        return RaiseDOMExceptionAndReturnNull(
+            exception_state, DOMExceptionCode::kIndexSizeError,
+            "The input data length is not a multiple of (4 * width).");
+      }
 
-    if (width && height && *height != data_length / (4 * *width))
-      return RaiseDOMExceptionAndReturnFalse(
-          exception_state, DOMExceptionCode::kIndexSizeError,
-          "The input data length is not equal to (4 * width * height).");
+      unsigned expected_height = data_length_in_pixels / *width;
+      if (height) {
+        if (*height != expected_height) {
+          return RaiseDOMExceptionAndReturnNull(
+              exception_state, DOMExceptionCode::kIndexSizeError,
+              "The input data length is not equal to (4 * width * height).");
+        }
+      } else {
+        size.SetHeight(expected_height);
+      }
+    }
+    // As referenced above, this is is the only check that has been made when
+    // size is specified by |input_size|.
+    if (input_size) {
+      if (size_in_elements > data_length_in_elements)
+        return nullptr;
+    }
   }
 
-  if (size) {
-    if (size->Width() <= 0 || size->Height() <= 0)
-      return false;
-    base::CheckedNumeric<unsigned> data_size = 4;
-    data_size *= size->Width();
-    data_size *= size->Height();
-    if (!data_size.IsValid() ||
-        data_size.ValueOrDie() > v8::TypedArray::kMaxLength)
-      return false;
-    if (data) {
-      if (data_size.ValueOrDie() > data_length)
-        return false;
-    }
+  NotShared<DOMArrayBufferView> allocated_data;
+  if (!data) {
+    ImageDataStorageFormat storage_format =
+        settings ? GetImageDataStorageFormat(settings->storageFormat())
+                 : kUint8ClampedArrayStorageFormat;
+    allocated_data = AllocateAndValidateDataArray(
+        size_in_elements, storage_format, exception_state);
+    if (!allocated_data)
+      return nullptr;
   }
 
-  return true;
+  return MakeGarbageCollected<ImageData>(size, data ? *data : allocated_data,
+                                         settings);
 }
 
 NotShared<DOMArrayBufferView> ImageData::AllocateAndValidateDataArray(
@@ -201,20 +227,7 @@ NotShared<DOMArrayBufferView> ImageData::AllocateAndValidateDataArray(
 
 ImageData* ImageData::Create(const IntSize& size,
                              const ImageDataSettings* settings) {
-  if (!ValidateConstructorArguments(&size, nullptr, nullptr, nullptr, settings))
-    return nullptr;
-  ImageDataStorageFormat storage_format = kUint8ClampedArrayStorageFormat;
-  if (settings) {
-    storage_format =
-        ImageData::GetImageDataStorageFormat(settings->storageFormat());
-  }
-  NotShared<DOMArrayBufferView> data_array =
-      AllocateAndValidateDataArray(4 * static_cast<unsigned>(size.Width()) *
-                                       static_cast<unsigned>(size.Height()),
-                                   storage_format);
-  return data_array
-             ? MakeGarbageCollected<ImageData>(size, data_array, settings)
-             : nullptr;
+  return ValidateAndCreate(&size, nullptr, nullptr, nullptr, settings, nullptr);
 }
 
 ImageData* ImageData::Create(const IntSize& size,
@@ -252,36 +265,23 @@ ImageData* ImageData::Create(const IntSize& size,
                              NotShared<DOMArrayBufferView> data_array,
                              const ImageDataSettings* settings) {
   NotShared<DOMArrayBufferView> buffer_view = data_array;
-  if (!ValidateConstructorArguments(&size, nullptr, nullptr, &buffer_view,
-                                    settings))
-    return nullptr;
-  return MakeGarbageCollected<ImageData>(size, data_array, settings);
+  return ValidateAndCreate(&size, nullptr, nullptr, &buffer_view, settings,
+                           nullptr);
 }
 
 ImageData* ImageData::Create(unsigned width,
                              unsigned height,
                              ExceptionState& exception_state) {
-  if (!ValidateConstructorArguments(nullptr, &width, &height, nullptr, nullptr,
-                                    &exception_state))
-    return nullptr;
-
-  NotShared<DOMArrayBufferView> byte_array = AllocateAndValidateDataArray(
-      4 * width * height, kUint8ClampedArrayStorageFormat, &exception_state);
-  return byte_array ? MakeGarbageCollected<ImageData>(IntSize(width, height),
-                                                      byte_array)
-                    : nullptr;
+  return ValidateAndCreate(nullptr, &width, &height, nullptr, nullptr,
+                           &exception_state);
 }
 
 ImageData* ImageData::Create(NotShared<DOMUint8ClampedArray> data,
                              unsigned width,
                              ExceptionState& exception_state) {
   NotShared<DOMArrayBufferView> buffer_view = data;
-  if (!ValidateConstructorArguments(nullptr, &width, nullptr, &buffer_view,
-                                    nullptr, &exception_state))
-    return nullptr;
-
-  unsigned height = base::checked_cast<unsigned>(data->length()) / (width * 4);
-  return MakeGarbageCollected<ImageData>(IntSize(width, height), data);
+  return ValidateAndCreate(nullptr, &width, nullptr, &buffer_view, nullptr,
+                           &exception_state);
 }
 
 ImageData* ImageData::Create(NotShared<DOMUint8ClampedArray> data,
@@ -289,31 +289,16 @@ ImageData* ImageData::Create(NotShared<DOMUint8ClampedArray> data,
                              unsigned height,
                              ExceptionState& exception_state) {
   NotShared<DOMArrayBufferView> buffer_view = data;
-  if (!ValidateConstructorArguments(nullptr, &width, &height, &buffer_view,
-                                    nullptr, &exception_state))
-    return nullptr;
-
-  return MakeGarbageCollected<ImageData>(IntSize(width, height), data);
+  return ValidateAndCreate(nullptr, &width, &height, &buffer_view, nullptr,
+                           &exception_state);
 }
 
 ImageData* ImageData::CreateImageData(unsigned width,
                                       unsigned height,
                                       const ImageDataSettings* settings,
                                       ExceptionState& exception_state) {
-  if (!ValidateConstructorArguments(nullptr, &width, &height, nullptr, settings,
-                                    &exception_state))
-    return nullptr;
-
-  ImageDataStorageFormat storage_format =
-      GetImageDataStorageFormat(settings->storageFormat());
-  NotShared<DOMArrayBufferView> buffer_view = AllocateAndValidateDataArray(
-      4 * width * height, storage_format, &exception_state);
-
-  if (!buffer_view)
-    return nullptr;
-
-  return MakeGarbageCollected<ImageData>(IntSize(width, height), buffer_view,
-                                         settings);
+  return ValidateAndCreate(nullptr, &width, &height, nullptr, settings,
+                           &exception_state);
 }
 
 ImageData* ImageData::CreateImageData(ImageDataArray& data,
@@ -344,12 +329,8 @@ ImageData* ImageData::CreateImageData(ImageDataArray& data,
   if (settings->storageFormat() != storage_format_name)
     settings->setStorageFormat(storage_format_name);
 
-  if (!ValidateConstructorArguments(nullptr, &width, &height, &buffer_view,
-                                    settings, &exception_state))
-    return nullptr;
-
-  return MakeGarbageCollected<ImageData>(IntSize(width, height), buffer_view,
-                                         settings);
+  return ValidateAndCreate(nullptr, &width, &height, &buffer_view, settings,
+                           &exception_state);
 }
 
 // This function accepts size (0, 0) and always returns the ImageData in

@@ -151,13 +151,12 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
   NotShared<DOMUint16Array> data_u16_;
   NotShared<DOMFloat32Array> data_f32_;
 
-  static bool ValidateConstructorArguments(
-      const IntSize* size,
-      const unsigned* width,
-      const unsigned* height,
-      const NotShared<DOMArrayBufferView>* data,
-      const ImageDataSettings* settings,
-      ExceptionState* = nullptr);
+  static ImageData* ValidateAndCreate(const IntSize* size,
+                                      const unsigned* width,
+                                      const unsigned* height,
+                                      NotShared<DOMArrayBufferView>* data,
+                                      const ImageDataSettings* settings,
+                                      ExceptionState*);
 
   static NotShared<DOMArrayBufferView> AllocateAndValidateDataArray(
       const unsigned&,
