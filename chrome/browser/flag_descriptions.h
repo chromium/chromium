@@ -2214,6 +2214,9 @@ extern const char kChromeOSDirectVideoDecoderDescription[];
 extern const char kCdmFactoryDaemonName[];
 extern const char kCdmFactoryDaemonDescription[];
 
+extern const char kCellularUseAttachApnName[];
+extern const char kCellularUseAttachApnDescription[];
+
 extern const char kConnectivityDiagnosticsWebUiName[];
 extern const char kConnectivityDiagnosticsWebUiDescription[];
 

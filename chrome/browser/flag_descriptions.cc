@@ -3829,6 +3829,12 @@ const char kCdmFactoryDaemonName[] = "CDM Factory Daemon";
 const char kCdmFactoryDaemonDescription[] =
     "Use the CDM daemon instead of the library CDM";
 
+const char kCellularUseAttachApnName[] = "Cellular use Attach APN";
+const char kCellularUseAttachApnDescription[] =
+    "Use the mobile operator database to set explicitly an Attach APN "
+    "for the LTE connections rather than letting the modem decide which "
+    "attach APN to use or retrieve it from the network";
+
 const char kConnectivityDiagnosticsWebUiName[] =
     "Connectivity Diagnostics WebUI";
 const char kConnectivityDiagnosticsWebUiDescription[] =

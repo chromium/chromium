@@ -44487,6 +44487,7 @@ from previous Chrome versions.
       label="SafeBrowsingEnhancedProtectionMessageInInterstitials:enabled"/>
   <int value="151022756" label="ArcAvailableForChildAccount:disabled"/>
   <int value="151101719" label="HtmlBaseUsernameDetector:enabled"/>
+  <int value="151173516" label="CellularUseAttachApn:enabled"/>
   <int value="151630887" label="WebUIA11yEnhancements:disabled"/>
   <int value="153347646" label="SmartDimModelV3:disabled"/>
   <int value="155977192" label="EnableFileManagerFormatDialog:disabled"/>
@@ -45497,6 +45498,7 @@ from previous Chrome versions.
   <int value="1140541604" label="WinrtGeolocationImplementation:enabled"/>
   <int value="1141918949" label="ContextualSearchLongpressPanelHelp:enabled"/>
   <int value="1142515376" label="enable-nacl"/>
+  <int value="1142752111" label="CellularUseAttachApn:disabled"/>
   <int value="1142788238" label="FontCacheScaling:disabled"/>
   <int value="1142970266"
       label="SignedExchangePrefetchCacheForNavigations:disabled"/>

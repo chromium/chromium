@@ -138,6 +138,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkDeviceHandlerImpl
   // specified yet.
   void ApplyUsbEthernetMacAddressSourceToShill();
 
+  // Applies the current value of the |cellular-use-attach-apn| flag to all
+  // existing cellular devices of Shill.
+  void ApplyUseAttachApnToShill();
+
   // Callback to be called on MAC address source change request failure.
   // The request was called on device with |device_path| path and
   // |device_mac_address| MAC address to change MAC address source to the new

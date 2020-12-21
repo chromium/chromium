@@ -168,6 +168,10 @@ const base::Feature kCameraSystemWebApp{"CameraSystemWebApp",
 const base::Feature kCdmFactoryDaemon{"CdmFactoryDaemon",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, send the LTE attach APN configuration to the modem.
+const base::Feature kCellularUseAttachApn{"CellularUseAttachApn",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or disables entry point for child account sign in or creation.
 const base::Feature kChildSpecificSignin{"ChildSpecificSignin",
                                          base::FEATURE_ENABLED_BY_DEFAULT};

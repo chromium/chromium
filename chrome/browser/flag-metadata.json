@@ -478,6 +478,11 @@
     "expiry_milestone": 91
   },
   {
+    "name": "cellular-use-attach-apn",
+    "owners": [ "vpalatin", "ejcaruso", "chromeos-cellular-platform@google.com" ],
+    "expiry_milestone": 95
+  },
+  {
     "name": "change-password-affiliation",
     "owners": [ "vsemeniuk", "vasilii"],
     "expiry_milestone": 90
