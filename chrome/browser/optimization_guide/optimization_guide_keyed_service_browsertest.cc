@@ -483,7 +483,6 @@ IN_PROC_BROWSER_TEST_F(
   PushHintsComponentAndWaitForCompletion();
   RegisterWithKeyedService();
 
-  ukm::TestAutoSetUkmRecorder ukm_recorder;
   base::HistogramTester histogram_tester;
 
   ui_test_utils::NavigateToURL(browser(), url_that_redirects_to_hints());
@@ -505,7 +504,6 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
   PushHintsComponentAndWaitForCompletion();
   RegisterWithKeyedService();
 
-  ukm::TestAutoSetUkmRecorder ukm_recorder;
   base::HistogramTester histogram_tester;
 
   ui_test_utils::NavigateToURL(browser(), GURL("https://nohints.com/"));
@@ -524,6 +522,49 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
       static_cast<int>(
           optimization_guide::OptimizationTypeDecision::kNoHintAvailable),
       1);
+}
+
+IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
+                       CheckForBlocklistFilter) {
+  PushHintsComponentAndWaitForCompletion();
+
+  OptimizationGuideKeyedService* ogks =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile());
+
+  // Register an optimization type with an optimization filter.
+  ogks->RegisterOptimizationTypes({optimization_guide::proto::FAST_HOST_HINTS});
+  // Wait until filter is loaded.
+  base::RunLoop().RunUntilIdle();
+
+  base::HistogramTester histogram_tester;
+
+  EXPECT_EQ(optimization_guide::OptimizationGuideDecision::kFalse,
+            ogks->CanApplyOptimization(
+                GURL("https://blockedhost.com/whatever"),
+                optimization_guide::proto::FAST_HOST_HINTS, nullptr));
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ApplyDecision.FastHostHints",
+      static_cast<int>(optimization_guide::OptimizationTypeDecision::
+                           kNotAllowedByOptimizationFilter),
+      1);
+
+  // Register another type with optimization filter.
+  ogks->RegisterOptimizationTypes(
+      {optimization_guide::proto::LITE_PAGE_REDIRECT});
+  // Wait until filter is loaded.
+  base::RunLoop().RunUntilIdle();
+
+  // The previously loaded filter should still be loaded and give the same
+  // result.
+  EXPECT_EQ(optimization_guide::OptimizationGuideDecision::kFalse,
+            ogks->CanApplyOptimization(
+                GURL("https://blockedhost.com/whatever"),
+                optimization_guide::proto::FAST_HOST_HINTS, nullptr));
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ApplyDecision.FastHostHints",
+      static_cast<int>(optimization_guide::OptimizationTypeDecision::
+                           kNotAllowedByOptimizationFilter),
+      2);
 }
 
 class OptimizationGuideKeyedServiceDataSaverUserWithInfobarShownTest
