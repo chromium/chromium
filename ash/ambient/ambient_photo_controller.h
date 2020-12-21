@@ -78,6 +78,8 @@ class ASH_EXPORT AmbientPhotoController : public AmbientBackendModelObserver {
   // Clear cache when Settings changes.
   void ClearCache();
 
+  void InitCache();
+
  private:
   friend class AmbientAshTestBase;
 
@@ -89,13 +91,10 @@ class ASH_EXPORT AmbientPhotoController : public AmbientBackendModelObserver {
 
   void ScheduleRefreshImage();
 
-  // Create the backup cache directory and start downloading images.
-  void PrepareFetchBackupImages();
-
   // Download backup cache images.
   void FetchBackupImages();
 
-  void OnBackupImageFetched(base::FilePath file_path);
+  void OnBackupImageFetched(bool success);
 
   void GetScreenUpdateInfo();
 
@@ -114,13 +113,17 @@ class ASH_EXPORT AmbientPhotoController : public AmbientBackendModelObserver {
   // Try to read photo raw data from cache.
   void TryReadPhotoRawData();
 
-  void OnPhotoRawDataAvailable(bool from_downloading,
-                               bool is_related_image,
-                               base::RepeatingClosure on_done,
-                               std::unique_ptr<std::string> details,
-                               std::unique_ptr<std::string> data);
+  void OnPhotoRawDataDownloaded(bool is_related_image,
+                                base::RepeatingClosure on_done,
+                                std::unique_ptr<std::string> details,
+                                std::unique_ptr<std::string> data);
 
-  void OnAllPhotoRawDataAvailable(bool from_downloading);
+  void OnAllPhotoRawDataDownloaded();
+
+  void OnAllPhotoRawDataAvailable(bool from_downloading,
+                                  PhotoCacheEntry cache_entry);
+
+  void OnPhotoRawDataSaved(bool from_downloading, PhotoCacheEntry cache_entry);
 
   void DecodePhotoRawData(bool from_downloading,
                           bool is_related_image,
@@ -150,6 +153,15 @@ class ASH_EXPORT AmbientPhotoController : public AmbientBackendModelObserver {
 
   AmbientPhotoCache* get_photo_cache_for_testing() {
     return photo_cache_.get();
+  }
+
+  void set_backup_photo_cache_for_testing(
+      std::unique_ptr<AmbientPhotoCache> photo_cache) {
+    backup_photo_cache_ = std::move(photo_cache);
+  }
+
+  AmbientPhotoCache* get_backup_photo_cache_for_testing() {
+    return backup_photo_cache_.get();
   }
 
   void FetchTopicsForTesting();
@@ -206,13 +218,12 @@ class ASH_EXPORT AmbientPhotoController : public AmbientBackendModelObserver {
       ambient_backend_model_observer_{this};
 
   std::unique_ptr<AmbientPhotoCache> photo_cache_;
+  std::unique_ptr<AmbientPhotoCache> backup_photo_cache_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   // Temporary data store when fetching images and details.
-  std::unique_ptr<std::string> image_data_;
-  std::unique_ptr<std::string> related_image_data_;
-  std::unique_ptr<std::string> image_details_;
+  PhotoCacheEntry cache_entry_;
   gfx::ImageSkia image_;
   gfx::ImageSkia related_image_;
 

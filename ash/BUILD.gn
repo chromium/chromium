@@ -1969,6 +1969,7 @@ test("ash_unittests") {
     "accessibility/touch_exploration_controller_unittest.cc",
     "accessibility/touch_exploration_manager_unittest.cc",
     "ambient/ambient_controller_unittest.cc",
+    "ambient/ambient_photo_cache_unittest.cc",
     "ambient/ambient_photo_controller_unittest.cc",
     "ambient/autotest_ambient_api_unittest.cc",
     "ambient/model/ambient_backend_model_unittest.cc",

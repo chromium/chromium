@@ -4,12 +4,14 @@
 
 #include "ash/ambient/test/ambient_ash_test_base.h"
 
+#include <map>
 #include <memory>
 #include <utility>
 #include <vector>
 
 #include "ash/ambient/ambient_access_token_controller.h"
 #include "ash/ambient/ambient_constants.h"
+#include "ash/ambient/ambient_photo_cache.h"
 #include "ash/ambient/ambient_photo_controller.h"
 #include "ash/ambient/test/ambient_ash_test_helper.h"
 #include "ash/ambient/ui/ambient_background_image_view.h"
@@ -24,9 +26,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/callback.h"
-#include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
-#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -35,7 +35,6 @@
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
-#include "ui/display/screen.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/controls/label.h"
@@ -66,26 +65,30 @@ class TestAmbientPhotoCacheImpl : public AmbientPhotoCache {
         FROM_HERE, base::BindOnce(std::move(callback), std::move(data)),
         base::TimeDelta::FromMilliseconds(1));
   }
+
   void DownloadPhotoToFile(const std::string& url,
-                           base::OnceCallback<void(base::FilePath)> callback,
-                           const base::FilePath& file_path) override {
+                           int cache_index,
+                           bool is_related,
+                           base::OnceCallback<void(bool)> callback) override {
     if (!download_data_) {
       base::SequencedTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback), base::FilePath()));
+          FROM_HERE, base::BindOnce(std::move(callback), /*success=*/false));
       return;
     }
 
-    if (!WriteFile(file_path, *download_data_)) {
-      LOG(WARNING) << "error writing file to file_path: " << file_path;
-
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback), base::FilePath()));
-      return;
-    }
+    files_.insert(std::pair<int, PhotoCacheEntry>(
+        cache_index,
+        PhotoCacheEntry(
+            is_related ? nullptr
+                       : std::make_unique<std::string>(*download_data_),
+            /*details=*/nullptr,
+            is_related ? std::make_unique<std::string>(*download_data_)
+                       : nullptr)));
 
     base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), file_path));
+        FROM_HERE, base::BindOnce(std::move(callback), /*success=*/true));
   }
+
   void DecodePhoto(
       std::unique_ptr<std::string> data,
       base::OnceCallback<void(const gfx::ImageSkia&)> callback) override {
@@ -101,6 +104,47 @@ class TestAmbientPhotoCacheImpl : public AmbientPhotoCache {
         FROM_HERE, base::BindOnce(std::move(callback), image));
   }
 
+  void WriteFiles(int cache_index,
+                  const std::string* const image,
+                  const std::string* const details,
+                  const std::string* const related_image,
+                  base::OnceClosure callback) override {
+    files_.insert(std::pair<int, PhotoCacheEntry>(
+        cache_index,
+        PhotoCacheEntry(
+            image ? std::make_unique<std::string>(*image) : nullptr,
+            details ? std::make_unique<std::string>(*details) : nullptr,
+            related_image ? std::make_unique<std::string>(*related_image)
+                          : nullptr)));
+    std::move(callback).Run();
+  }
+
+  void ReadFiles(int cache_index,
+                 base::OnceCallback<void(PhotoCacheEntry)> callback) override {
+    auto it = files_.find(cache_index);
+    if (it == files_.end()) {
+      std::move(callback).Run(PhotoCacheEntry());
+      return;
+    }
+
+    std::move(callback).Run(PhotoCacheEntry(
+        it->second.image ? std::make_unique<std::string>(*(it->second.image))
+                         : nullptr,
+        it->second.details
+            ? std::make_unique<std::string>(*(it->second.details))
+            : nullptr,
+        it->second.related_image
+            ? std::make_unique<std::string>(*(it->second.related_image))
+            : nullptr));
+  }
+  void Clear() override {
+    download_count_ = 0;
+    download_data_.reset();
+    decoded_size_ = gfx::Size(10, 20);
+    decoded_image_.reset();
+    files_.clear();
+  }
+
   void SetDownloadData(std::unique_ptr<std::string> download_data) {
     download_data_ = std::move(download_data);
   }
@@ -112,6 +156,8 @@ class TestAmbientPhotoCacheImpl : public AmbientPhotoCache {
 
   void SetDecodedPhoto(const gfx::ImageSkia& image) { decoded_image_ = image; }
 
+  const std::map<int, PhotoCacheEntry>& get_files() { return files_; }
+
  private:
   int download_count_ = 0;
 
@@ -122,6 +168,8 @@ class TestAmbientPhotoCacheImpl : public AmbientPhotoCache {
   gfx::Size decoded_size_{10, 20};
   // If set, will replay this image.
   base::Optional<gfx::ImageSkia> decoded_image_;
+
+  std::map<int, PhotoCacheEntry> files_;
 };
 
 AmbientAshTestBase::AmbientAshTestBase()
@@ -138,6 +186,8 @@ void AmbientAshTestBase::SetUp() {
   ambient_controller()->set_backend_controller_for_testing(
       std::make_unique<FakeAmbientBackendControllerImpl>());
   photo_controller()->set_photo_cache_for_testing(
+      std::make_unique<TestAmbientPhotoCacheImpl>());
+  photo_controller()->set_backup_photo_cache_for_testing(
       std::make_unique<TestAmbientPhotoCacheImpl>());
   token_controller()->SetTokenUsageBufferForTesting(
       base::TimeDelta::FromSeconds(30));
@@ -380,12 +430,31 @@ base::TimeDelta AmbientAshTestBase::GetRefreshTokenDelay() {
   return token_controller()->GetTimeUntilReleaseForTesting();
 }
 
+const std::map<int, PhotoCacheEntry>& AmbientAshTestBase::GetCachedFiles() {
+  auto* photo_cache = static_cast<TestAmbientPhotoCacheImpl*>(
+      photo_controller()->get_photo_cache_for_testing());
+
+  return photo_cache->get_files();
+}
+
+const std::map<int, PhotoCacheEntry>&
+AmbientAshTestBase::GetBackupCachedFiles() {
+  auto* photo_cache = static_cast<TestAmbientPhotoCacheImpl*>(
+      photo_controller()->get_backup_photo_cache_for_testing());
+
+  return photo_cache->get_files();
+}
+
 AmbientController* AmbientAshTestBase::ambient_controller() {
   return Shell::Get()->ambient_controller();
 }
 
 AmbientPhotoController* AmbientAshTestBase::photo_controller() {
   return ambient_controller()->ambient_photo_controller();
+}
+
+AmbientPhotoCache* AmbientAshTestBase::photo_cache() {
+  return photo_controller()->get_photo_cache_for_testing();
 }
 
 std::vector<AmbientContainerView*> AmbientAshTestBase::GetContainerViews() {
@@ -447,6 +516,20 @@ void AmbientAshTestBase::ClearDownloadPhotoData() {
       photo_controller()->get_photo_cache_for_testing());
 
   photo_cache->SetDownloadData(nullptr);
+}
+
+void AmbientAshTestBase::SetBackupDownloadPhotoData(std::string data) {
+  auto* backup_cache = static_cast<TestAmbientPhotoCacheImpl*>(
+      photo_controller()->get_backup_photo_cache_for_testing());
+
+  backup_cache->SetDownloadData(std::make_unique<std::string>(std::move(data)));
+}
+
+void AmbientAshTestBase::ClearBackupDownloadPhotoData() {
+  auto* backup_cache = static_cast<TestAmbientPhotoCacheImpl*>(
+      photo_controller()->get_backup_photo_cache_for_testing());
+
+  backup_cache->SetDownloadData(nullptr);
 }
 
 void AmbientAshTestBase::SetDecodePhotoImage(const gfx::ImageSkia& image) {

@@ -85,69 +85,6 @@ base::TaskTraits GetTaskTraits() {
           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN};
 }
 
-// Get the root path for ambient mode.
-base::FilePath GetRootPath() {
-  base::FilePath home_dir;
-  CHECK(base::PathService::Get(base::DIR_HOME, &home_dir));
-  return home_dir.Append(FILE_PATH_LITERAL(kAmbientModeDirectoryName));
-}
-
-base::FilePath GetCachePath() {
-  return GetRootPath().Append(
-      FILE_PATH_LITERAL(kAmbientModeCacheDirectoryName));
-}
-
-base::FilePath GetBackupCachePath() {
-  return GetRootPath().Append(
-      FILE_PATH_LITERAL(kAmbientModeBackupCacheDirectoryName));
-}
-
-base::FilePath GetBackupFilePath(size_t index) {
-  return GetBackupCachePath().Append(base::NumberToString(index) +
-                                     kPhotoFileExt);
-}
-
-base::FilePath GetRelatedFilePath(const std::string& file_name) {
-  return GetCachePath().Append(file_name + kRelatedPhotoSuffix + kPhotoFileExt);
-}
-
-bool CreateDirIfNotExists(const base::FilePath& path) {
-  return base::DirectoryExists(path) || base::CreateDirectory(path);
-}
-
-void WriteFile(const base::FilePath& path, const std::string& data) {
-  if (!CreateDirIfNotExists(GetCachePath())) {
-    LOG(ERROR) << "Cannot create ambient mode directory.";
-    return;
-  }
-
-  if (base::SysInfo::AmountOfFreeDiskSpace(GetRootPath()) <
-      kMaxReservedAvailableDiskSpaceByte) {
-    LOG(WARNING) << "Not enough disk space left.";
-    return;
-  }
-
-  // Create a temp file.
-  base::FilePath temp_file;
-  if (!base::CreateTemporaryFileInDir(path.DirName(), &temp_file)) {
-    LOG(ERROR) << "Cannot create a temporary file.";
-    return;
-  }
-
-  // Write to the tmp file.
-  const int size = data.size();
-  int written_size = base::WriteFile(temp_file, data.data(), size);
-  if (written_size != size) {
-    LOG(ERROR) << "Cannot write the temporary file.";
-    base::DeleteFile(temp_file);
-    return;
-  }
-
-  // Replace the current file with the temp file.
-  if (!base::ReplaceFile(temp_file, path, /*error=*/nullptr))
-    LOG(ERROR) << "Cannot replace the temporary file.";
-}
-
 const std::array<const char*, 2>& GetBackupPhotoUrls() {
   return Shell::Get()
       ->ambient_controller()
@@ -155,12 +92,18 @@ const std::array<const char*, 2>& GetBackupPhotoUrls() {
       ->GetBackupPhotoUrls();
 }
 
+// Get the cache root path for ambient mode.
+base::FilePath GetCacheRootPath() {
+  base::FilePath home_dir;
+  CHECK(base::PathService::Get(base::DIR_HOME, &home_dir));
+  return home_dir.Append(FILE_PATH_LITERAL(kAmbientModeDirectoryName));
+}
+
 }  // namespace
 
 AmbientPhotoController::AmbientPhotoController()
     : fetch_topic_retry_backoff_(&kFetchTopicRetryBackoffPolicy),
       resume_fetch_image_backoff_(&kResumeFetchImageBackoffPolicy),
-      photo_cache_(AmbientPhotoCache::Create()),
       task_runner_(
           base::ThreadPool::CreateSequencedTaskRunner(GetTaskTraits())) {
   ambient_backend_model_observer_.Add(&ambient_backend_model_);
@@ -179,7 +122,7 @@ void AmbientPhotoController::StartScreenUpdate() {
     // Would use |timer_.FireNow()| but this does not execute if screen is
     // locked. Manually call the expected callback instead.
     backup_photo_refresh_timer_.Stop();
-    PrepareFetchBackupImages();
+    FetchBackupImages();
   }
 }
 
@@ -204,7 +147,7 @@ void AmbientPhotoController::ScheduleFetchBackupImages() {
       FROM_HERE,
       std::max(kBackupPhotoRefreshDelay,
                resume_fetch_image_backoff_.GetTimeUntilRelease()),
-      base::BindOnce(&AmbientPhotoController::PrepareFetchBackupImages,
+      base::BindOnce(&AmbientPhotoController::FetchBackupImages,
                      weak_factory_.GetWeakPtr()));
 }
 
@@ -238,12 +181,21 @@ void AmbientPhotoController::FetchWeather() {
 }
 
 void AmbientPhotoController::ClearCache() {
-  task_runner_->PostTask(FROM_HERE,
-                         base::BindOnce(
-                             [](const base::FilePath& file_path) {
-                               base::DeletePathRecursively(file_path);
-                             },
-                             GetCachePath()));
+  DCHECK(photo_cache_);
+  DCHECK(backup_photo_cache_);
+  photo_cache_->Clear();
+  backup_photo_cache_->Clear();
+}
+
+void AmbientPhotoController::InitCache() {
+  if (!photo_cache_) {
+    photo_cache_ = AmbientPhotoCache::Create(GetCacheRootPath().Append(
+        FILE_PATH_LITERAL(kAmbientModeCacheDirectoryName)));
+  }
+  if (!backup_photo_cache_) {
+    backup_photo_cache_ = AmbientPhotoCache::Create(GetCacheRootPath().Append(
+        FILE_PATH_LITERAL(kAmbientModeBackupCacheDirectoryName)));
+  }
 }
 
 void AmbientPhotoController::ScheduleFetchTopics(bool backoff) {
@@ -265,28 +217,21 @@ void AmbientPhotoController::ScheduleRefreshImage() {
                      weak_factory_.GetWeakPtr()));
 }
 
-void AmbientPhotoController::PrepareFetchBackupImages() {
-  task_runner_->PostTaskAndReply(
-      FROM_HERE,
-      base::BindOnce([]() { CreateDirIfNotExists(GetBackupCachePath()); }),
-      base::BindOnce(&AmbientPhotoController::FetchBackupImages,
-                     weak_factory_.GetWeakPtr()));
-}
-
 void AmbientPhotoController::FetchBackupImages() {
   const auto& backup_photo_urls = GetBackupPhotoUrls();
   backup_retries_to_read_from_cache_ = backup_photo_urls.size();
   for (size_t i = 0; i < backup_photo_urls.size(); i++) {
-    photo_cache_->DownloadPhotoToFile(
+    backup_photo_cache_->DownloadPhotoToFile(
         backup_photo_urls.at(i),
+        /*cache_index=*/i,
+        /*is_related=*/false,
         base::BindOnce(&AmbientPhotoController::OnBackupImageFetched,
-                       weak_factory_.GetWeakPtr()),
-        GetBackupFilePath(i));
+                       weak_factory_.GetWeakPtr()));
   }
 }
 
-void AmbientPhotoController::OnBackupImageFetched(base::FilePath file_path) {
-  if (file_path.empty()) {
+void AmbientPhotoController::OnBackupImageFetched(bool success) {
+  if (!success) {
     // TODO(b/169807068) Change to retry individual failed images.
     resume_fetch_image_backoff_.InformOfRequest(/*succeeded=*/false);
     LOG(WARNING) << "Downloading backup image failed.";
@@ -299,10 +244,8 @@ void AmbientPhotoController::OnBackupImageFetched(base::FilePath file_path) {
 const AmbientModeTopic* AmbientPhotoController::GetNextTopic() {
   const auto& topics = ambient_backend_model_.topics();
   // If no more topics, will read from cache.
-  if (topic_index_ == topics.size()) {
-    DVLOG(3) << "No more topics";
+  if (topic_index_ == topics.size())
     return nullptr;
-  }
 
   return &topics[topic_index_++];
 }
@@ -328,9 +271,7 @@ void AmbientPhotoController::OnScreenUpdateInfoFetched(
 }
 
 void AmbientPhotoController::ResetImageData() {
-  image_data_.reset();
-  related_image_data_.reset();
-  image_details_.reset();
+  cache_entry_.reset();
 
   image_ = gfx::ImageSkia();
   related_image_ = gfx::ImageSkia();
@@ -344,24 +285,21 @@ void AmbientPhotoController::FetchPhotoRawData() {
     const int num_callbacks = (topic->related_image_url) ? 2 : 1;
     auto on_done = base::BarrierClosure(
         num_callbacks,
-        base::BindOnce(&AmbientPhotoController::OnAllPhotoRawDataAvailable,
-                       weak_factory_.GetWeakPtr(),
-                       /*from_downloading=*/true));
+        base::BindOnce(&AmbientPhotoController::OnAllPhotoRawDataDownloaded,
+                       weak_factory_.GetWeakPtr()));
 
     photo_cache_->DownloadPhoto(
         topic->url,
-        base::BindOnce(&AmbientPhotoController::OnPhotoRawDataAvailable,
+        base::BindOnce(&AmbientPhotoController::OnPhotoRawDataDownloaded,
                        weak_factory_.GetWeakPtr(),
-                       /*from_downloading=*/true,
                        /*is_related_image=*/false, on_done,
                        std::make_unique<std::string>(topic->details)));
 
     if (topic->related_image_url) {
       photo_cache_->DownloadPhoto(
           *(topic->related_image_url),
-          base::BindOnce(&AmbientPhotoController::OnPhotoRawDataAvailable,
+          base::BindOnce(&AmbientPhotoController::OnPhotoRawDataDownloaded,
                          weak_factory_.GetWeakPtr(),
-                         /*from_downloading=*/true,
                          /*is_related_image=*/true, on_done,
                          std::make_unique<std::string>(topic->details)));
     }
@@ -400,28 +338,14 @@ void AmbientPhotoController::TryReadPhotoRawData() {
     }
 
     --backup_retries_to_read_from_cache_;
-    // Try to read a backup image.
-    auto photo_data = std::make_unique<std::string>();
-    auto* photo_data_ptr = photo_data.get();
-    auto on_done = base::BindRepeating(
-        &AmbientPhotoController::OnAllPhotoRawDataAvailable,
-        weak_factory_.GetWeakPtr(), /*from_downloading=*/false);
 
-    task_runner_->PostTaskAndReply(
-        FROM_HERE,
-        base::BindOnce(
-            [](size_t index, std::string* data) {
-              if (!base::ReadFileToString(GetBackupFilePath(index), data)) {
-                LOG(ERROR) << "Unable to read from backup cache.";
-                data->clear();
-              }
-            },
-            backup_cache_index_for_display_, photo_data_ptr),
-        base::BindOnce(&AmbientPhotoController::OnPhotoRawDataAvailable,
-                       weak_factory_.GetWeakPtr(), /*from_downloading=*/false,
-                       /*is_related_image=*/false, std::move(on_done),
-                       /*details=*/std::make_unique<std::string>(),
-                       std::move(photo_data)));
+    DVLOG(3) << "Read from backup cache index: "
+             << backup_cache_index_for_display_;
+    // Try to read a backup image.
+    backup_photo_cache_->ReadFiles(
+        /*cache_index=*/backup_cache_index_for_display_,
+        base::BindOnce(&AmbientPhotoController::OnAllPhotoRawDataAvailable,
+                       weak_factory_.GetWeakPtr(), /*from_downloading=*/false));
 
     backup_cache_index_for_display_++;
     if (backup_cache_index_for_display_ == GetBackupPhotoUrls().size())
@@ -430,82 +354,43 @@ void AmbientPhotoController::TryReadPhotoRawData() {
   }
 
   --retries_to_read_from_cache_;
-  std::string file_name = base::NumberToString(cache_index_for_display_);
+  int current_cache_index = cache_index_for_display_;
 
   ++cache_index_for_display_;
   if (cache_index_for_display_ == kMaxNumberOfCachedImages)
     cache_index_for_display_ = 0;
 
-  auto photo_data = std::make_unique<std::string>();
-  auto photo_details = std::make_unique<std::string>();
-  auto* photo_data_ptr = photo_data.get();
-  auto* photo_details_ptr = photo_details.get();
-
-  auto on_done = base::BarrierClosure(
-      /*num_closures=*/2,
+  DVLOG(3) << "Read from cache index: " << current_cache_index;
+  photo_cache_->ReadFiles(
+      current_cache_index,
       base::BindOnce(&AmbientPhotoController::OnAllPhotoRawDataAvailable,
-                     weak_factory_.GetWeakPtr(),
-                     /*from_downloading=*/false));
-
-  task_runner_->PostTaskAndReply(
-      FROM_HERE,
-      base::BindOnce(
-          [](const std::string& file_name, std::string* photo_data,
-             std::string* photo_details) {
-            if (!base::ReadFileToString(
-                    GetCachePath().Append(file_name + kPhotoFileExt),
-                    photo_data)) {
-              photo_data->clear();
-            }
-            if (!base::ReadFileToString(
-                    GetCachePath().Append(file_name + kPhotoDetailsFileExt),
-                    photo_details)) {
-              photo_details->clear();
-            }
-          },
-          file_name, photo_data_ptr, photo_details_ptr),
-      base::BindOnce(&AmbientPhotoController::OnPhotoRawDataAvailable,
-                     weak_factory_.GetWeakPtr(), /*from_downloading=*/false,
-                     /*is_related_image=*/false, on_done,
-                     std::move(photo_details), std::move(photo_data)));
-
-  auto related_photo_data = std::make_unique<std::string>();
-  auto* related_photo_data_ptr = related_photo_data.get();
-  task_runner_->PostTaskAndReply(
-      FROM_HERE,
-      base::BindOnce(
-          [](const std::string& file_name, std::string* related_photo_data) {
-            const base::FilePath& file = GetRelatedFilePath(file_name);
-            if (!base::PathExists(file) ||
-                !base::ReadFileToString(file, related_photo_data)) {
-              related_photo_data->clear();
-            }
-          },
-          file_name, related_photo_data_ptr),
-      base::BindOnce(&AmbientPhotoController::OnPhotoRawDataAvailable,
-                     weak_factory_.GetWeakPtr(), /*from_downloading=*/false,
-                     /*is_related_image=*/true, on_done,
-                     /*details=*/std::make_unique<std::string>(),
-                     std::move(related_photo_data)));
+                     weak_factory_.GetWeakPtr(), /*from_downloading=*/false));
 }
 
-void AmbientPhotoController::OnPhotoRawDataAvailable(
-    bool from_downloading,
+void AmbientPhotoController::OnPhotoRawDataDownloaded(
     bool is_related_image,
     base::RepeatingClosure on_done,
     std::unique_ptr<std::string> details,
     std::unique_ptr<std::string> data) {
-  if (is_related_image) {
-    related_image_data_ = std::move(data);
-  } else {
-    image_data_ = std::move(data);
-    image_details_ = std::move(details);
-  }
+  cache_entry_.details = std::move(details);
+
+  if (is_related_image)
+    cache_entry_.related_image = std::move(data);
+  else
+    cache_entry_.image = std::move(data);
+
   std::move(on_done).Run();
 }
 
-void AmbientPhotoController::OnAllPhotoRawDataAvailable(bool from_downloading) {
-  if (!image_data_ || image_data_->empty()) {
+void AmbientPhotoController::OnAllPhotoRawDataDownloaded() {
+  OnAllPhotoRawDataAvailable(/*from_downloading=*/true,
+                             std::move(cache_entry_));
+}
+
+void AmbientPhotoController::OnAllPhotoRawDataAvailable(
+    bool from_downloading,
+    PhotoCacheEntry cache_entry) {
+  if (!cache_entry.image || cache_entry.image->empty()) {
     if (from_downloading) {
       LOG(ERROR) << "Failed to download image";
       resume_fetch_image_backoff_.InformOfRequest(/*succeeded=*/false);
@@ -514,57 +399,49 @@ void AmbientPhotoController::OnAllPhotoRawDataAvailable(bool from_downloading) {
     TryReadPhotoRawData();
     return;
   }
-  DVLOG_IF(3, from_downloading)
-      << "Save photo to cache index: " << cache_index_for_store_;
-  const std::string file_name = base::NumberToString(cache_index_for_store_);
-  // If the data is fetched from downloading, write to disk.
-  // Note: WriteFile() could fail. The saved file name may not be continuous.
-  if (from_downloading)
-    ++cache_index_for_store_;
-  if (cache_index_for_store_ == kMaxNumberOfCachedImages)
-    cache_index_for_store_ = 0;
 
-  const int num_callbacks = related_image_data_ ? 2 : 1;
+  if (from_downloading) {
+    // If the data is fetched from downloading, write to disk.
+    // Note: WriteFiles could fail. The saved file name may not be continuous.
+    DVLOG(3) << "Save photo to cache index: " << cache_index_for_store_;
+    auto current_cache_index = cache_index_for_store_;
+    ++cache_index_for_store_;
+    if (cache_index_for_store_ == kMaxNumberOfCachedImages)
+      cache_index_for_store_ = 0;
+
+    auto* image = cache_entry.image.get();
+    auto* details = cache_entry.details.get();
+    auto* related_image = cache_entry.related_image.get();
+
+    photo_cache_->WriteFiles(
+        /*cache_index=*/current_cache_index, image, details, related_image,
+        base::BindOnce(&AmbientPhotoController::OnPhotoRawDataSaved,
+                       weak_factory_.GetWeakPtr(), from_downloading,
+                       std::move(cache_entry)));
+  } else {
+    OnPhotoRawDataSaved(from_downloading, std::move(cache_entry));
+  }
+}
+
+void AmbientPhotoController::OnPhotoRawDataSaved(bool from_downloading,
+                                                 PhotoCacheEntry cache_entry) {
+  bool has_related =
+      cache_entry.related_image && !cache_entry.related_image->empty();
+  const int num_callbacks = has_related ? 2 : 1;
+
   auto on_done = base::BarrierClosure(
       num_callbacks,
       base::BindOnce(&AmbientPhotoController::OnAllPhotoDecoded,
                      weak_factory_.GetWeakPtr(), from_downloading,
-                     /*hash=*/base::SHA1HashString(*image_data_)));
+                     /*hash=*/base::SHA1HashString(*cache_entry.image)));
 
-  base::Optional<std::string> related_image_data;
-  if (related_image_data_)
-    related_image_data = *related_image_data_;
-
-  task_runner_->PostTaskAndReply(
-      FROM_HERE,
-      base::BindOnce(
-          [](const std::string& file_name, bool need_to_save,
-             const std::string& data, const std::string& details,
-             const base::Optional<std::string>& related_data) {
-            if (need_to_save) {
-              WriteFile(GetCachePath().Append(file_name + kPhotoFileExt), data);
-              WriteFile(GetCachePath().Append(file_name + kPhotoDetailsFileExt),
-                        details);
-              const base::FilePath& related_data_file =
-                  GetRelatedFilePath(file_name);
-              if (related_data) {
-                WriteFile(related_data_file, *related_data);
-              } else {
-                if (base::PathExists(related_data_file))
-                  base::DeleteFile(related_data_file);
-              }
-            }
-          },
-          file_name, from_downloading, *image_data_, *image_details_,
-          std::move(related_image_data)),
-      base::BindOnce(&AmbientPhotoController::DecodePhotoRawData,
-                     weak_factory_.GetWeakPtr(), from_downloading,
+  DecodePhotoRawData(from_downloading,
                      /*is_related_image=*/false, on_done,
-                     std::move(image_data_)));
+                     std::move(cache_entry.image));
 
-  if (related_image_data_) {
+  if (has_related) {
     DecodePhotoRawData(from_downloading, /*is_related_image=*/true, on_done,
-                       std::move(related_image_data_));
+                       std::move(cache_entry.related_image));
   }
 }
 
@@ -617,7 +494,8 @@ void AmbientPhotoController::OnAllPhotoDecoded(bool from_downloading,
   PhotoWithDetails detailed_photo;
   detailed_photo.photo = image_;
   detailed_photo.related_photo = related_image_;
-  detailed_photo.details = *image_details_;
+  if (cache_entry_.details)
+    detailed_photo.details = *cache_entry_.details;
   detailed_photo.hash = hash;
 
   ResetImageData();
@@ -678,7 +556,7 @@ void AmbientPhotoController::FetchImageForTesting() {
 }
 
 void AmbientPhotoController::FetchBackupImagesForTesting() {
-  PrepareFetchBackupImages();
+  FetchBackupImages();
 }
 
 }  // namespace ash

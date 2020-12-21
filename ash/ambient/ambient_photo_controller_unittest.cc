@@ -26,6 +26,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/scoped_observer.h"
+#include "base/stl_util.h"
 #include "base/system/sys_info.h"
 #include "base/test/bind.h"
 #include "base/timer/timer.h"
@@ -49,44 +50,35 @@ class MockAmbientBackendModelObserver : public AmbientBackendModelObserver {
 
 class AmbientPhotoControllerTest : public AmbientAshTestBase {
  public:
-  // AmbientAshTestBase:
-  void SetUp() override {
-    AmbientAshTestBase::SetUp();
-    CleanupAmbientDir();
-  }
-  void TearDown() override {
-    AmbientAshTestBase::TearDown();
-    CleanupAmbientDir();
-  }
-
-  void CleanupAmbientDir() { base::DeletePathRecursively(GetRootDir()); }
-
-  std::vector<base::FilePath> GetFilePathsInDir(const base::FilePath& dir) {
-    std::vector<base::FilePath> result;
-    base::FileEnumerator files(
-        dir, /*recursive=*/false,
-        base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES);
-    for (base::FilePath current = files.Next(); !current.empty();
-         current = files.Next()) {
-      result.emplace_back(current);
+  std::vector<int> GetSavedCacheIndices(bool backup = false) {
+    std::vector<int> result;
+    const auto& map = backup ? GetBackupCachedFiles() : GetCachedFiles();
+    for (auto& it : map) {
+      result.push_back(it.first);
     }
     return result;
   }
 
-  base::FilePath GetRootDir() {
-    base::FilePath home_dir;
-    base::PathService::Get(base::DIR_HOME, &home_dir);
-    return home_dir.Append(FILE_PATH_LITERAL(kAmbientModeDirectoryName));
+  const PhotoCacheEntry* GetCacheEntryAtIndex(int cache_index,
+                                              bool backup = false) {
+    const auto& files = backup ? GetBackupCachedFiles() : GetCachedFiles();
+    auto it = files.find(cache_index);
+    if (it == files.end())
+      return nullptr;
+    else
+      return &(it->second);
   }
 
-  base::FilePath GetCacheDir() {
-    return GetRootDir().Append(
-        FILE_PATH_LITERAL(kAmbientModeCacheDirectoryName));
-  }
-
-  base::FilePath GetBackupCacheDir() {
-    return GetRootDir().Append(
-        FILE_PATH_LITERAL(kAmbientModeBackupCacheDirectoryName));
+  void WriteCacheDataBlocking(int cache_index,
+                              const std::string* image = nullptr,
+                              const std::string* details = nullptr,
+                              const std::string* related_image = nullptr) {
+    base::RunLoop loop;
+    photo_cache()->WriteFiles(/*cache_index=*/cache_index, /*image=*/image,
+                              /*details=*/details,
+                              /*related_image=*/related_image,
+                              loop.QuitClosure());
+    loop.Run();
   }
 };
 
@@ -158,38 +150,27 @@ TEST_F(AmbientPhotoControllerTest, ShouldUpdatePhotoPeriodically) {
 
 // Test that image is saved.
 TEST_F(AmbientPhotoControllerTest, ShouldSaveImagesOnDisk) {
-  base::FilePath ambient_image_path = GetCacheDir();
-
   // Start to refresh images. It will download two images immediately and write
   // them in |ambient_image_path|. It will also download one more image after
   // fast forward. It will also download the related images and not cache them.
   photo_controller()->StartScreenUpdate();
   FastForwardToNextImage();
 
-  // Count files and directories in ambient_image_path. There should be six
-  // files that were just created to save image files for this ambient mode
-  // session.
-  EXPECT_TRUE(base::PathExists(ambient_image_path));
-  auto file_paths = GetFilePathsInDir(ambient_image_path);
-  // Three image files, three related image files, and three attribution files.
-  EXPECT_EQ(file_paths.size(), 9u);
-  for (auto& path : file_paths) {
-    // No sub directories.
-    EXPECT_FALSE(base::DirectoryExists(path));
-  }
+  // Count number of writes to cache. There should be three cache writes during
+  // this ambient mode session.
+  auto file_paths = GetSavedCacheIndices();
+  EXPECT_EQ(file_paths.size(), 3u);
 }
 
 // Test that image is save and will not be deleted when stopping ambient mode.
 TEST_F(AmbientPhotoControllerTest, ShouldNotDeleteImagesOnDisk) {
-  base::FilePath ambient_image_path = GetCacheDir();
-
   // Start to refresh images. It will download two images immediately and write
   // them in |ambient_image_path|. It will also download one more image after
   // fast forward. It will also download the related images and not cache them.
   photo_controller()->StartScreenUpdate();
   FastForwardToNextImage();
 
-  EXPECT_TRUE(base::PathExists(ambient_image_path));
+  EXPECT_EQ(GetSavedCacheIndices().size(), 3u);
 
   auto image = photo_controller()->ambient_backend_model()->GetNextImage();
   EXPECT_FALSE(image.IsNull());
@@ -198,29 +179,14 @@ TEST_F(AmbientPhotoControllerTest, ShouldNotDeleteImagesOnDisk) {
   photo_controller()->StopScreenUpdate();
   FastForwardToNextImage();
 
-  EXPECT_TRUE(base::PathExists(ambient_image_path));
-  EXPECT_FALSE(base::IsDirectoryEmpty(ambient_image_path));
+  EXPECT_EQ(GetSavedCacheIndices().size(), 3u);
 
   image = photo_controller()->ambient_backend_model()->GetNextImage();
   EXPECT_TRUE(image.IsNull());
-
-  // Count files and directories in ambient_image_path. There should be six
-  // files that were just created to save image files for the prior ambient mode
-  // session.
-  EXPECT_TRUE(base::PathExists(ambient_image_path));
-  auto file_paths = GetFilePathsInDir(ambient_image_path);
-  // Three image files, three related image files, and three attribution files.
-  EXPECT_EQ(file_paths.size(), 9u);
-  for (auto& path : file_paths) {
-    // No sub directories.
-    EXPECT_FALSE(base::DirectoryExists(path));
-  }
 }
 
 // Test that image is read from disk when no more topics.
 TEST_F(AmbientPhotoControllerTest, ShouldReadCacheWhenNoMoreTopics) {
-  base::FilePath ambient_image_path = GetCacheDir();
-
   FetchImage();
   FastForwardToNextImage();
   // Topics is empty. Will read from cache, which is empty.
@@ -228,9 +194,8 @@ TEST_F(AmbientPhotoControllerTest, ShouldReadCacheWhenNoMoreTopics) {
   EXPECT_TRUE(image.IsNull());
 
   // Save a file to check if it gets read for display.
-  auto cached_image = ambient_image_path.Append("0.img");
-  base::CreateDirectory(ambient_image_path);
-  base::WriteFile(cached_image, "cached image");
+  std::string data("cached image");
+  WriteCacheDataBlocking(/*cache_index=*/0, &data);
 
   // Reset variables in photo controller.
   photo_controller()->StopScreenUpdate();
@@ -238,27 +203,21 @@ TEST_F(AmbientPhotoControllerTest, ShouldReadCacheWhenNoMoreTopics) {
   FastForwardToNextImage();
   image = photo_controller()->ambient_backend_model()->GetCurrentImage();
   EXPECT_FALSE(image.IsNull());
-
-  // Clean up.
-  base::DeletePathRecursively(ambient_image_path);
 }
 
 // Test that will try 100 times to read image from disk when no more topics.
 TEST_F(AmbientPhotoControllerTest,
        ShouldTry100TimesToReadCacheWhenNoMoreTopics) {
-  base::FilePath ambient_image_path = GetCacheDir();
-
   FetchImage();
   FastForwardToNextImage();
   // Topics is empty. Will read from cache, which is empty.
   auto image = photo_controller()->ambient_backend_model()->GetCurrentImage();
   EXPECT_TRUE(image.IsNull());
 
-  // The initial file name to be read is 0. Save a file with 99.img to check if
-  // it gets read for display.
-  auto cached_image = ambient_image_path.Append("99.img");
-  base::CreateDirectory(ambient_image_path);
-  base::WriteFile(cached_image, "cached image");
+  // The initial file name to be read is 0. Save a file with 99.img to check
+  // if it gets read for display.
+  std::string data("cached image");
+  WriteCacheDataBlocking(/*cache_index=*/99, &data);
 
   // Reset variables in photo controller.
   photo_controller()->StopScreenUpdate();
@@ -270,8 +229,6 @@ TEST_F(AmbientPhotoControllerTest,
 
 // Test that image is read from disk when image downloading failed.
 TEST_F(AmbientPhotoControllerTest, ShouldReadCacheWhenImageDownloadingFailed) {
-  base::FilePath ambient_image_path = GetCacheDir();
-
   SetDownloadPhotoData("");
   FetchTopics();
   // Forward a little bit time. FetchTopics() will succeed. Downloading should
@@ -281,9 +238,8 @@ TEST_F(AmbientPhotoControllerTest, ShouldReadCacheWhenImageDownloadingFailed) {
   EXPECT_TRUE(image.IsNull());
 
   // Save a file to check if it gets read for display.
-  auto cached_image = ambient_image_path.Append("0.img");
-  base::CreateDirectory(ambient_image_path);
-  base::WriteFile(cached_image, "cached image");
+  std::string data("cached image");
+  WriteCacheDataBlocking(/*cache_index=*/0, &data);
 
   // Reset variables in photo controller.
   photo_controller()->StopScreenUpdate();
@@ -297,8 +253,6 @@ TEST_F(AmbientPhotoControllerTest, ShouldReadCacheWhenImageDownloadingFailed) {
 
 // Test that image is read from disk when image decoding failed.
 TEST_F(AmbientPhotoControllerTest, ShouldReadCacheWhenImageDecodingFailed) {
-  base::FilePath ambient_image_path = GetCacheDir();
-
   SetDecodePhotoImage(gfx::ImageSkia());
   FetchTopics();
   // Forward a little bit time. FetchTopics() will succeed.
@@ -311,8 +265,6 @@ TEST_F(AmbientPhotoControllerTest, ShouldReadCacheWhenImageDecodingFailed) {
 
 // Test that image will refresh when have more topics.
 TEST_F(AmbientPhotoControllerTest, ShouldResumWhenHaveMoreTopics) {
-  base::FilePath ambient_image_path = GetCacheDir();
-
   FetchImage();
   FastForwardToNextImage();
   // Topics is empty. Will read from cache, which is empty.
@@ -327,37 +279,31 @@ TEST_F(AmbientPhotoControllerTest, ShouldResumWhenHaveMoreTopics) {
 }
 
 TEST_F(AmbientPhotoControllerTest, ShouldDownloadBackupImagesWhenScheduled) {
-  base::FilePath backup_image_path = GetBackupCacheDir();
-
   std::string expected_data = "backup data";
-  SetDownloadPhotoData(expected_data);
+  SetBackupDownloadPhotoData(expected_data);
 
   photo_controller()->ScheduleFetchBackupImages();
 
   EXPECT_TRUE(
       photo_controller()->backup_photo_refresh_timer_for_testing().IsRunning());
 
-  // TImer is running but download has not started yet.
-  EXPECT_FALSE(base::DirectoryExists(GetBackupCacheDir()));
+  // Timer is running but download has not started yet.
+  EXPECT_TRUE(GetSavedCacheIndices(/*backup=*/true).empty());
   task_environment()->FastForwardBy(kBackupPhotoRefreshDelay);
 
   // Timer should have stopped.
   EXPECT_FALSE(
       photo_controller()->backup_photo_refresh_timer_for_testing().IsRunning());
 
-  // Download has triggered and backup cache directory is created.
-  EXPECT_TRUE(base::DirectoryExists(backup_image_path));
-
-  // Should be two files in backup cache directory.
-  auto paths = GetFilePathsInDir(backup_image_path);
-  std::sort(paths.begin(), paths.end());
-  EXPECT_EQ(paths.size(), 2u);
-  EXPECT_EQ(paths[0].BaseName().value(), "0.img");
-  EXPECT_EQ(paths[1].BaseName().value(), "1.img");
-  for (const auto& path : paths) {
-    std::string data;
-    base::ReadFileToString(path, &data);
-    EXPECT_EQ(data, expected_data);
+  // Should have been two cache writes to backup data.
+  const auto& backup_data = GetBackupCachedFiles();
+  EXPECT_EQ(backup_data.size(), 2u);
+  EXPECT_TRUE(base::Contains(backup_data, 0));
+  EXPECT_TRUE(base::Contains(backup_data, 1));
+  for (const auto& i : backup_data) {
+    EXPECT_EQ(*(i.second.image), expected_data);
+    EXPECT_FALSE(i.second.details);
+    EXPECT_FALSE(i.second.related_image);
   }
 }
 
@@ -371,11 +317,7 @@ TEST_F(AmbientPhotoControllerTest, ShouldResetTimerWhenBackupImagesFail) {
   ClearDownloadPhotoData();
   task_environment()->FastForwardBy(kBackupPhotoRefreshDelay);
 
-  // Directory should have been created, but with no files in it.
-  EXPECT_TRUE(base::DirectoryExists(GetBackupCacheDir()));
-
-  auto paths = GetFilePathsInDir(GetBackupCacheDir());
-  EXPECT_EQ(paths.size(), 0u);
+  EXPECT_TRUE(GetBackupCachedFiles().empty());
 
   // Timer should have restarted.
   EXPECT_TRUE(
@@ -389,7 +331,7 @@ TEST_F(AmbientPhotoControllerTest,
   EXPECT_TRUE(
       photo_controller()->backup_photo_refresh_timer_for_testing().IsRunning());
 
-  SetDownloadPhotoData("image data");
+  SetBackupDownloadPhotoData("image data");
 
   photo_controller()->StartScreenUpdate();
 
@@ -399,19 +341,16 @@ TEST_F(AmbientPhotoControllerTest,
 
   task_environment()->RunUntilIdle();
 
-  // Download has triggered and backup cache directory is created.
-  EXPECT_TRUE(base::DirectoryExists(GetBackupCacheDir()));
-
-  // Should be two files in backup cache directory.
-  auto paths = GetFilePathsInDir(GetBackupCacheDir());
-  std::sort(paths.begin(), paths.end());
-  EXPECT_EQ(paths.size(), 2u);
-  EXPECT_EQ(paths[0].BaseName().value(), "0.img");
-  EXPECT_EQ(paths[1].BaseName().value(), "1.img");
-  for (const auto& path : paths) {
-    std::string data;
-    base::ReadFileToString(path, &data);
-    EXPECT_EQ(data, "image data");
+  // Download has triggered and backup cache directory is created. Should be
+  // two cache writes to backup cache.
+  const auto& backup_data = GetBackupCachedFiles();
+  EXPECT_EQ(backup_data.size(), 2u);
+  EXPECT_TRUE(base::Contains(backup_data, 0));
+  EXPECT_TRUE(base::Contains(backup_data, 1));
+  for (const auto& i : backup_data) {
+    EXPECT_EQ(*(i.second.image), "image data");
+    EXPECT_FALSE(i.second.details);
+    EXPECT_FALSE(i.second.related_image);
   }
 }
 

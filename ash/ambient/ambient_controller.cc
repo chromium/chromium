@@ -509,6 +509,10 @@ void AmbientController::CloseAllWidgets(bool immediately) {
 }
 
 void AmbientController::OnEnabledPrefChanged() {
+  // TODO(b/176094707) conditionally create/destroy photo_controller and cache
+  // if Ambient is enabled
+  ambient_photo_controller_.InitCache();
+
   if (IsAmbientModeEnabled()) {
     DVLOG(1) << "Ambient mode enabled";
 

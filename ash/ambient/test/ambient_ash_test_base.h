@@ -137,9 +137,14 @@ class AmbientAshTestBase : public AshTestBase {
   // Returns the media string view for the default display.
   MediaStringView* GetMediaStringView();
 
+  const std::map<int, PhotoCacheEntry>& GetCachedFiles();
+  const std::map<int, PhotoCacheEntry>& GetBackupCachedFiles();
+
   AmbientController* ambient_controller();
 
   AmbientPhotoController* photo_controller();
+
+  AmbientPhotoCache* photo_cache();
 
   // Returns the top-level views which contains all the ambient components.
   std::vector<AmbientContainerView*> GetContainerViews();
@@ -159,6 +164,10 @@ class AmbientAshTestBase : public AshTestBase {
   void SetDownloadPhotoData(std::string data);
 
   void ClearDownloadPhotoData();
+
+  void SetBackupDownloadPhotoData(std::string data);
+
+  void ClearBackupDownloadPhotoData();
 
   void SetDecodePhotoImage(const gfx::ImageSkia& image);
 
