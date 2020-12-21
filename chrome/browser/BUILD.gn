@@ -4425,8 +4425,6 @@ static_library("browser") {
       "nearby_sharing/share_target_info.h",
       "nearby_sharing/sharesheet/nearby_share_action.cc",
       "nearby_sharing/sharesheet/nearby_share_action.h",
-      "nearby_sharing/sharesheet/nearby_share_web_view.cc",
-      "nearby_sharing/sharesheet/nearby_share_web_view.h",
       "nearby_sharing/transfer_metadata.cc",
       "nearby_sharing/transfer_metadata.h",
       "nearby_sharing/transfer_metadata_builder.cc",

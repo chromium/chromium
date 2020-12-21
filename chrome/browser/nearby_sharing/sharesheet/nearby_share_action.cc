@@ -16,9 +16,11 @@
 #include "chrome/browser/nearby_sharing/file_attachment.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
-#include "chrome/browser/nearby_sharing/sharesheet/nearby_share_web_view.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
+#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share_dialog_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -96,21 +98,22 @@ void NearbyShareAction::LaunchAction(
   controller->SetSharesheetSize(size.width(), size.height());
 
   auto* profile = controller->GetProfile();
-  auto view = std::make_unique<NearbyShareWebView>(profile);
+  auto view = std::make_unique<views::WebView>(profile);
   // If this is not done, we don't see anything in our view.
   view->SetPreferredSize(size);
-  views::WebView* web_view = root_view->AddChildView(std::move(view));
+  web_view_ = root_view->AddChildView(std::move(view));
+  web_view_->GetWebContents()->SetDelegate(this);
   // TODO(vecore): Query this from the container view
-  web_view->holder()->SetCornerRadii(gfx::RoundedCornersF(kCornerRadius));
+  web_view_->holder()->SetCornerRadii(gfx::RoundedCornersF(kCornerRadius));
 
   // load chrome://nearby into the webview
-  web_view->LoadInitialURL(GURL(chrome::kChromeUINearbyShareURL));
+  web_view_->LoadInitialURL(GURL(chrome::kChromeUINearbyShareURL));
 
   // Without requesting focus, the sharesheet will launch in an unfocused state
   // which raises accessibility issues with the "Device name" input.
-  web_view->RequestFocus();
+  web_view_->RequestFocus();
 
-  auto* webui = web_view->GetWebContents()->GetWebUI();
+  auto* webui = web_view_->GetWebContents()->GetWebUI();
   DCHECK(webui != nullptr);
 
   nearby_ui_ =
@@ -153,4 +156,25 @@ void NearbyShareAction::OnClosing(
     nearby_ui_->RemoveObserver(this);
     nearby_ui_ = nullptr;
   }
+}
+
+bool NearbyShareAction::HandleKeyboardEvent(
+    content::WebContents* source,
+    const content::NativeWebKeyboardEvent& event) {
+  return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
+      event, web_view_->GetFocusManager());
+}
+
+void NearbyShareAction::WebContentsCreated(
+    content::WebContents* source_contents,
+    int opener_render_process_id,
+    int opener_render_frame_id,
+    const std::string& frame_name,
+    const GURL& target_url,
+    content::WebContents* new_contents) {
+  chrome::ScopedTabbedBrowserDisplayer displayer(
+      Profile::FromBrowserContext(web_view_->GetBrowserContext()));
+  NavigateParams nav_params(displayer.browser(), target_url,
+                            ui::PageTransition::PAGE_TRANSITION_LINK);
+  Navigate(&nav_params);
 }
