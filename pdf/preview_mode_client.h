@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/location.h"
 #include "pdf/pdf_engine.h"
 
 namespace gfx {
@@ -78,6 +79,11 @@ class PreviewModeClient : public PDFEngine::Client {
   void SetSelectedText(const std::string& selected_text) override;
   void SetLinkUnderCursor(const std::string& link_under_cursor) override;
   bool IsValidLink(const std::string& url) override;
+  void ScheduleTaskOnMainThread(
+      base::TimeDelta delay,
+      ResultCallback callback,
+      int32_t result,
+      const base::Location& from_here = base::Location::Current()) override;
 
  private:
   Client* const client_;

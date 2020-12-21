@@ -13,6 +13,7 @@
 
 #include "base/callback.h"
 #include "base/containers/span.h"
+#include "base/location.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "base/time/time.h"
@@ -20,6 +21,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "pdf/document_layout.h"
+#include "pdf/ppapi_migration/callback.h"
 #include "ppapi/c/dev/pp_cursor_type_dev.h"
 #include "ppapi/c/dev/ppp_printing_dev.h"
 #include "ppapi/cpp/completion_callback.h"
@@ -286,6 +288,18 @@ class PDFEngine {
     // viewers.
     // See https://crbug.com/312882 for an example.
     virtual bool IsValidLink(const std::string& url) = 0;
+
+    // Schedules work to be executed on a main thread after a specific delay.
+    // The `result` parameter will be passed as the argument to the `callback`.
+    // `result` is needed sometimes to emulate calls of some callbacks, but it's
+    // not always needed. `delay` should be no longer than `INT32_MAX`
+    // milliseconds for the Pepper plugin implementation to prevent integer
+    // overflow.
+    virtual void ScheduleTaskOnMainThread(
+        base::TimeDelta delay,
+        ResultCallback callback,
+        int32_t result,
+        const base::Location& from_here = base::Location::Current()) = 0;
   };
 
   struct AccessibilityLinkInfo {

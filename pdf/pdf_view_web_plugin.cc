@@ -12,9 +12,11 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/location.h"
 #include "base/notreached.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "cc/paint/paint_canvas.h"
 #include "net/cookies/site_for_cookies.h"
 #include "pdf/pdf_engine.h"
@@ -327,6 +329,15 @@ void PdfViewWebPlugin::OnPaint(const std::vector<gfx::Rect>& paint_rects,
                                std::vector<PaintReadyRect>* ready,
                                std::vector<gfx::Rect>* pending) {
   NOTIMPLEMENTED_LOG_ONCE();
+}
+
+void PdfViewWebPlugin::ScheduleTaskOnMainThread(
+    base::TimeDelta delay,
+    ResultCallback callback,
+    int32_t result,
+    const base::Location& from_here) {
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      from_here, base::BindOnce(std::move(callback), result), delay);
 }
 
 bool PdfViewWebPlugin::IsValid() const {

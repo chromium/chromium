@@ -11,7 +11,9 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "base/location.h"
 #include "base/notreached.h"
+#include "base/time/time.h"
 #include "pdf/document_layout.h"
 #include "pdf/ppapi_migration/url_loader.h"
 
@@ -176,6 +178,14 @@ void PreviewModeClient::SetLinkUnderCursor(
 bool PreviewModeClient::IsValidLink(const std::string& url) {
   NOTREACHED();
   return false;
+}
+
+void PreviewModeClient::ScheduleTaskOnMainThread(
+    base::TimeDelta delay,
+    ResultCallback callback,
+    int32_t result,
+    const base::Location& from_here) {
+  NOTREACHED();
 }
 
 }  // namespace chrome_pdf

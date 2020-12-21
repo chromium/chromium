@@ -10,9 +10,15 @@
 #include <memory>
 #include <vector>
 
+#include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "pdf/paint_aggregator.h"
+#include "pdf/ppapi_migration/callback.h"
 #include "ui/gfx/geometry/size.h"
+
+namespace base {
+class TimeDelta;
+}  // namespace base
 
 namespace gfx {
 class Point;
@@ -65,6 +71,18 @@ class PaintManager {
     virtual void OnPaint(const std::vector<gfx::Rect>& paint_rects,
                          std::vector<PaintReadyRect>* ready,
                          std::vector<gfx::Rect>* pending) = 0;
+
+    // Schedules work to be executed on a main thread after a specific delay.
+    // The `result` parameter will be passed as the argument to the `callback`.
+    // `result` is needed sometimes to emulate calls of some callbacks, but it's
+    // not always needed. `delay` should be no longer than `INT32_MAX`
+    // milliseconds for the Pepper plugin implementation to prevent integer
+    // overflow.
+    virtual void ScheduleTaskOnMainThread(
+        base::TimeDelta delay,
+        ResultCallback callback,
+        int32_t result,
+        const base::Location& from_here = base::Location::Current()) = 0;
 
    protected:
     // You shouldn't be doing deleting through this interface.

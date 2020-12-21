@@ -16,6 +16,7 @@
 
 #include "base/callback.h"
 #include "base/containers/queue.h"
+#include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "pdf/pdf_view_plugin_base.h"
 #include "pdf/preview_mode_client.h"
@@ -162,6 +163,11 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   void OnPaint(const std::vector<gfx::Rect>& paint_rects,
                std::vector<PaintReadyRect>* ready,
                std::vector<gfx::Rect>* pending) override;
+  void ScheduleTaskOnMainThread(
+      base::TimeDelta delay,
+      ResultCallback callback,
+      int32_t result,
+      const base::Location& from_here = base::Location::Current()) override;
 
   // PreviewModeClient::Client:
   void PreviewDocumentLoadComplete() override;

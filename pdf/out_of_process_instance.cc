@@ -18,6 +18,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/feature_list.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -27,6 +28,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "net/base/escape.h"
@@ -243,7 +245,8 @@ constexpr char kJSGetThumbnailHeight[] = "height";
 constexpr char kJSSetReadOnlyType[] = "setReadOnly";
 constexpr char kJSEnableReadOnly[] = "enableReadOnly";
 
-constexpr int kFindResultCooldownMs = 100;
+constexpr base::TimeDelta kFindResultCooldown =
+    base::TimeDelta::FromMilliseconds(100);
 
 // Do not save files with over 100 MB. This cap should be kept in sync with and
 // is also enforced in chrome/browser/resources/pdf/pdf_viewer.js.
@@ -256,7 +259,8 @@ constexpr int kInvalidPDFIndex = -2;
 
 // A delay to wait between each accessibility page to keep the system
 // responsive.
-constexpr int kAccessibilityPageDelayMs = 100;
+constexpr base::TimeDelta kAccessibilityPageDelay =
+    base::TimeDelta::FromMilliseconds(100);
 
 constexpr double kMinZoom = 0.01;
 
@@ -864,11 +868,10 @@ void OutOfProcessInstance::LoadAccessibility() {
   SendAccessibilityViewportInfo();
 
   // Schedule loading the first page.
-  pp::Module::Get()->core()->CallOnMainThread(
-      kAccessibilityPageDelayMs,
-      PPCompletionCallbackFromResultCallback(
-          base::BindOnce(&OutOfProcessInstance::SendNextAccessibilityPage,
-                         weak_factory_.GetWeakPtr())),
+  ScheduleTaskOnMainThread(
+      kAccessibilityPageDelay,
+      base::BindOnce(&OutOfProcessInstance::SendNextAccessibilityPage,
+                     weak_factory_.GetWeakPtr()),
       0);
 }
 
@@ -898,11 +901,10 @@ void OutOfProcessInstance::SendNextAccessibilityPage(int32_t page_index) {
                                     pp_text_runs, pp_chars, page_objects);
 
   // Schedule loading the next page.
-  pp::Module::Get()->core()->CallOnMainThread(
-      kAccessibilityPageDelayMs,
-      PPCompletionCallbackFromResultCallback(
-          base::BindOnce(&OutOfProcessInstance::SendNextAccessibilityPage,
-                         weak_factory_.GetWeakPtr())),
+  ScheduleTaskOnMainThread(
+      kAccessibilityPageDelay,
+      base::BindOnce(&OutOfProcessInstance::SendNextAccessibilityPage,
+                     weak_factory_.GetWeakPtr()),
       page_index + 1);
 }
 
@@ -1324,11 +1326,10 @@ void OutOfProcessInstance::NotifyNumberOfFindResultsChanged(int total,
   NumberOfFindResultsChanged(total, final_result);
   SetTickmarks(tickmarks_);
   recently_sent_find_update_ = true;
-  pp::Module::Get()->core()->CallOnMainThread(
-      kFindResultCooldownMs,
-      PPCompletionCallbackFromResultCallback(
-          base::BindOnce(&OutOfProcessInstance::ResetRecentlySentFindUpdate,
-                         weak_factory_.GetWeakPtr())),
+  ScheduleTaskOnMainThread(
+      kFindResultCooldown,
+      base::BindOnce(&OutOfProcessInstance::ResetRecentlySentFindUpdate,
+                     weak_factory_.GetWeakPtr()),
       0);
 }
 
@@ -1465,9 +1466,10 @@ void OutOfProcessInstance::Print() {
     return;
   }
 
-  pp::Module::Get()->core()->CallOnMainThread(
-      0, PPCompletionCallbackFromResultCallback(base::BindOnce(
-             &OutOfProcessInstance::OnPrint, weak_factory_.GetWeakPtr())));
+  ScheduleTaskOnMainThread(base::TimeDelta(),
+                           base::BindOnce(&OutOfProcessInstance::OnPrint,
+                                          weak_factory_.GetWeakPtr()),
+                           0);
 }
 
 void OutOfProcessInstance::SubmitForm(const std::string& url,
@@ -2284,11 +2286,24 @@ void OutOfProcessInstance::OnPaint(const std::vector<gfx::Rect>& paint_rects,
   engine()->PostPaint();
 
   if (!deferred_invalidates_.empty()) {
-    pp::Module::Get()->core()->CallOnMainThread(
-        0, PPCompletionCallbackFromResultCallback(
-               base::BindOnce(&OutOfProcessInstance::InvalidateAfterPaintDone,
-                              weak_factory_.GetWeakPtr())));
+    ScheduleTaskOnMainThread(
+        base::TimeDelta(),
+        base::BindOnce(&OutOfProcessInstance::InvalidateAfterPaintDone,
+                       weak_factory_.GetWeakPtr()),
+        0);
   }
+}
+
+void OutOfProcessInstance::ScheduleTaskOnMainThread(
+    base::TimeDelta delay,
+    ResultCallback callback,
+    int32_t result,
+    const base::Location& from_here) {
+  int64_t delay_in_msec = delay.InMilliseconds();
+  DCHECK(delay_in_msec <= INT32_MAX);
+  pp::Module::Get()->core()->CallOnMainThread(
+      static_cast<int32_t>(delay_in_msec),
+      PPCompletionCallbackFromResultCallback(std::move(callback)), result);
 }
 
 void OutOfProcessInstance::ProcessPreviewPageInfo(const std::string& url,

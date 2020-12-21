@@ -26,6 +26,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "gin/array_buffer.h"
 #include "gin/public/gin_embedders.h"
@@ -1745,10 +1746,10 @@ void PDFiumEngine::StartFind(const std::string& text, bool case_sensitive) {
   if (doc_loader_set_for_testing_) {
     ContinueFind(case_sensitive ? 1 : 0);
   } else {
-    pp::Module::Get()->core()->CallOnMainThread(
-        0,
-        PPCompletionCallbackFromResultCallback(base::BindOnce(
-            &PDFiumEngine::ContinueFind, find_weak_factory_.GetWeakPtr())),
+    client_->ScheduleTaskOnMainThread(
+        base::TimeDelta(),
+        base::BindOnce(&PDFiumEngine::ContinueFind,
+                       find_weak_factory_.GetWeakPtr()),
         case_sensitive ? 1 : 0);
   }
 }
