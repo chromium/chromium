@@ -93,7 +93,6 @@ using signin_metrics::PromoAction;
 }
 
 - (void)start {
-  self.authService->WaitUntilCacheIsPopulated();
   GoogleServicesSettingsViewController* viewController =
       [[GoogleServicesSettingsViewController alloc]
           initWithStyle:ChromeTableViewStyle()];

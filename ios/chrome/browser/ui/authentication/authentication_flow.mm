@@ -333,11 +333,9 @@ NSError* IdentityMissingError() {
 }
 
 - (void)checkSigninSteps {
-  AuthenticationService* authentication_service =
-      AuthenticationServiceFactory::GetForBrowserState(
-          _browser->GetBrowserState());
-  authentication_service->WaitUntilCacheIsPopulated();
-  _browserStateIdentity = authentication_service->GetAuthenticatedIdentity();
+  _browserStateIdentity = AuthenticationServiceFactory::GetForBrowserState(
+                              _browser->GetBrowserState())
+                              ->GetAuthenticatedIdentity();
   if (_browserStateIdentity)
     _shouldSignOut = YES;
 

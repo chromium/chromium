@@ -671,15 +671,14 @@ const char kNTPHelpURL[] =
 - (void)updateAccountImage {
   UIImage* image;
   // Fetches user's identity from Authentication Service.
-  ios::ChromeIdentityService* identityService =
-      ios::GetChromeBrowserProvider()->GetChromeIdentityService();
-  identityService->WaitUntilCacheIsPopulated();
   ChromeIdentity* identity = self.authService->GetAuthenticatedIdentity();
   if (identity) {
     // Fetches user's avatar from Authentication Service. Use cached version if
     // one is available. If not, use the default avatar and initiate a fetch
     // in the background. When background fetch completes, all observers will
     // be notified to refresh the user's avatar.
+    ios::ChromeIdentityService* identityService =
+        ios::GetChromeBrowserProvider()->GetChromeIdentityService();
     image = identityService->GetCachedAvatarForIdentity(identity);
     if (!image) {
       image = [self defaultAvatar];

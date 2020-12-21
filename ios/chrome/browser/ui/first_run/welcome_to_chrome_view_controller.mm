@@ -190,7 +190,6 @@ const BOOL kDefaultStatsCheckboxValue = YES;
       first_run::SignInAttemptStatus::NOT_ATTEMPTED;
   ios::ChromeIdentityService* identityService =
       ios::GetChromeBrowserProvider()->GetChromeIdentityService();
-  identityService->WaitUntilCacheIsPopulated();
   self.firstRunConfig.hasSSOAccount = identityService->HasIdentities();
 
   if (!signin::IsSigninAllowed(_browser->GetBrowserState()->GetPrefs())) {

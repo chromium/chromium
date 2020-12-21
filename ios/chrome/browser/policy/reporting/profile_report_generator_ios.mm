@@ -39,10 +39,8 @@ bool ProfileReportGeneratorIOS::Init(const base::FilePath& path) {
 
 void ProfileReportGeneratorIOS::GetSigninUserInfo(
     enterprise_management::ChromeUserProfileInfo* report) {
-  AuthenticationService* authentication_service =
-      AuthenticationServiceFactory::GetForBrowserState(browser_state_);
-  authentication_service->WaitUntilCacheIsPopulated();
-  if (!authentication_service->IsAuthenticated()) {
+  if (!AuthenticationServiceFactory::GetForBrowserState(browser_state_)
+           ->IsAuthenticated()) {
     return;
   }
 

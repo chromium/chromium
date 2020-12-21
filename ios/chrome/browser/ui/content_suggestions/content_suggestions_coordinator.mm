@@ -151,7 +151,6 @@
 
   self.authService = AuthenticationServiceFactory::GetForBrowserState(
       self.browser->GetBrowserState());
-  self.authService->WaitUntilCacheIsPopulated();
 
   ntp_snippets::ContentSuggestionsService* contentSuggestionsService =
       IOSChromeContentSuggestionsServiceFactory::GetForBrowserState(

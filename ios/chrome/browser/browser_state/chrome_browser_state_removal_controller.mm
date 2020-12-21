@@ -64,10 +64,9 @@ std::string GetGaiaIdForBrowserState(const std::string& browser_state_path,
 
 // Returns the email's domain of the identity associated with |gaia_id|.
 std::string GetDomainForGaiaId(const std::string& gaia_id) {
-  ios::ChromeIdentityService* identity_service =
-      ios::GetChromeBrowserProvider()->GetChromeIdentityService();
-  identity_service->WaitUntilCacheIsPopulated();
-  ChromeIdentity* identity = identity_service->GetIdentityWithGaiaID(gaia_id);
+  ChromeIdentity* identity = ios::GetChromeBrowserProvider()
+                                 ->GetChromeIdentityService()
+                                 ->GetIdentityWithGaiaID(gaia_id);
   if (![identity userEmail])
     return std::string();
   return gaia::ExtractDomainName(

@@ -73,8 +73,6 @@ class AuthenticationService : public KeyedService,
   // Returns true if the user is signed in.
   // While the AuthenticationService is in background, this will reload the
   // credentials to ensure the value is up to date.
-  // This methods needs the identity cache to be populated.
-  // WaitUntilCacheIsPopulated() needs to be called before.
   virtual bool IsAuthenticated() const;
 
   // Returns true if the user is signed in and the identity is considered
@@ -84,14 +82,8 @@ class AuthenticationService : public KeyedService,
   // Retrieves the identity of the currently authenticated user or |nil| if
   // either the user is not authenticated, or is authenticated through
   // ClientLogin.
-  // This methods needs the identity cache to be populated.
-  // WaitUntilCacheIsPopulated() needs to be called before.
   // Virtual for testing.
   virtual ChromeIdentity* GetAuthenticatedIdentity() const;
-
-  // Blocks until the identity cache is populated. This method is an helper for
-  // ChromeIdentityService::WaitUntilCacheIsPopulated().
-  virtual void WaitUntilCacheIsPopulated() const;
 
   // Signs |identity| in to Chrome with |hosted_domain| as its hosted domain,
   // pauses sync and logs |identity| in to http://google.com.

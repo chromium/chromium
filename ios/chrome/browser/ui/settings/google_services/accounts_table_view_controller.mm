@@ -133,7 +133,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   if (self) {
     _browser = browser;
     _closeSettingsOnAddAccount = closeSettingsOnAddAccount;
-    [self authService]->WaitUntilCacheIsPopulated();
     _identityManagerObserver =
         std::make_unique<signin::IdentityManagerObserverBridge>(
             IdentityManagerFactory::GetForBrowserState(

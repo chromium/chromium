@@ -26,14 +26,13 @@ std::string GetManagedBookmarksDomain(ChromeBrowserState* browser_state) {
   if (!auth_service)
     return std::string();
 
+  ChromeIdentity* identity = auth_service->GetAuthenticatedIdentity();
+  if (!identity)
+    return std::string();
+
   ios::ChromeIdentityService* identity_service =
       ios::GetChromeBrowserProvider()->GetChromeIdentityService();
   if (!identity_service)
-    return std::string();
-
-  identity_service->WaitUntilCacheIsPopulated();
-  ChromeIdentity* identity = auth_service->GetAuthenticatedIdentity();
-  if (!identity)
     return std::string();
 
   return base::SysNSStringToUTF8(

@@ -93,11 +93,9 @@ const CGFloat kSpinnerButtonPadding = 18;
     ChromeBrowserState* browserState = self.browser->GetBrowserState();
     self.title = l10n_util::GetNSString(IDS_IOS_SYNC_ENTER_PASSPHRASE_TITLE);
     self.shouldHideDoneButton = YES;
-    AuthenticationService* authenticationService =
-        AuthenticationServiceFactory::GetForBrowserState(browserState);
-    authenticationService->WaitUntilCacheIsPopulated();
     NSString* userEmail =
-        authenticationService->GetAuthenticatedIdentity().userEmail;
+        [AuthenticationServiceFactory::GetForBrowserState(browserState)
+                ->GetAuthenticatedIdentity() userEmail];
     DCHECK(userEmail);
     syncer::SyncService* service =
         ProfileSyncServiceFactory::GetForBrowserState(browserState);

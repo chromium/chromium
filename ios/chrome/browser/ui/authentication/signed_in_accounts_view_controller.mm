@@ -206,9 +206,6 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
   if (!browserState || browserState->IsOffTheRecord()) {
     return NO;
   }
-  ios::ChromeIdentityService* identityService =
-      ios::GetChromeBrowserProvider()->GetChromeIdentityService();
-  identityService->WaitUntilCacheIsPopulated();
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForBrowserState(browserState);
   return !gSignedInAccountsViewControllerIsShown &&

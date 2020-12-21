@@ -314,7 +314,6 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 
     AuthenticationService* authService =
         AuthenticationServiceFactory::GetForBrowserState(_browserState);
-    authService->WaitUntilCacheIsPopulated();
     _identity = authService->GetAuthenticatedIdentity();
     _identityServiceObserver.reset(
         new ChromeIdentityServiceObserverBridge(self));

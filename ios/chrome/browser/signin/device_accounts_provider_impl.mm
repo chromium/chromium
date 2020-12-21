@@ -61,7 +61,6 @@ void DeviceAccountsProviderImpl::GetAccessToken(
   // copy). This is required to have correct interaction between move-only
   // types and Objective-C blocks.
   __block AccessTokenCallback scopedCallback = std::move(callback);
-  identity_service->WaitUntilCacheIsPopulated();
   identity_service->GetAccessToken(
       identity_service->GetIdentityWithGaiaID(gaia_id), client_id, scopes,
       ^(NSString* token, NSDate* expiration, NSError* error) {
@@ -74,7 +73,6 @@ DeviceAccountsProviderImpl::GetAllAccounts() const {
   std::vector<AccountInfo> accounts;
   ios::ChromeIdentityService* identity_service =
       ios::GetChromeBrowserProvider()->GetChromeIdentityService();
-  identity_service->WaitUntilCacheIsPopulated();
   NSArray* identities = identity_service->GetAllIdentities();
   for (ChromeIdentity* identity in identities) {
     accounts.push_back(GetAccountInfo(identity, identity_service));
@@ -94,7 +92,6 @@ DeviceAccountsProviderImpl::GetAuthenticationErrorCategory(
 
   ios::ChromeIdentityService* identity_service =
       ios::GetChromeBrowserProvider()->GetChromeIdentityService();
-  identity_service->WaitUntilCacheIsPopulated();
   if (identity_service->IsMDMError(
           identity_service->GetIdentityWithGaiaID(gaia_id), error)) {
     return kAuthenticationErrorCategoryAuthorizationErrors;

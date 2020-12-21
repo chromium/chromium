@@ -45,7 +45,6 @@ void IOSTrustedVaultClient::FetchKeys(
       ios::GetChromeBrowserProvider();
   ios::ChromeIdentityService* identity_service =
       browser_provider->GetChromeIdentityService();
-  identity_service->WaitUntilCacheIsPopulated();
   ChromeIdentity* identity =
       identity_service->GetIdentityWithGaiaID(account_info.gaia);
   ios::ChromeTrustedVaultService* trusted_vault_service =

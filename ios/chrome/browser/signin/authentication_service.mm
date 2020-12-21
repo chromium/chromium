@@ -108,16 +108,10 @@ void AuthenticationService::Initialize(
 
   HandleForgottenIdentity(nil, true /* should_prompt */);
 
-  ios::ChromeIdentityService* identity_service =
-      ios::GetChromeBrowserProvider()->GetChromeIdentityService();
-  identity_service->RunAfterCacheIsPopulated(base::BindOnce(
-      [](AuthenticationService* authentication_service) {
-        bool is_authenticated = authentication_service->IsAuthenticated();
-        crash_keys::SetCurrentlySignedIn(is_authenticated);
-      },
-      this));
+  crash_keys::SetCurrentlySignedIn(IsAuthenticated());
 
-  identity_service_observer_.Add(identity_service);
+  identity_service_observer_.Add(
+      ios::GetChromeBrowserProvider()->GetChromeIdentityService());
 
   OnApplicationWillEnterForeground();
 }
@@ -140,9 +134,6 @@ void AuthenticationService::OnApplicationWillEnterForeground() {
   UpdateHaveAccountsChangedWhileInBackground();
   StoreKnownAccountsWhileInForeground();
 
-  ios::ChromeIdentityService* identity_service =
-      ios::GetChromeBrowserProvider()->GetChromeIdentityService();
-  identity_service->WaitUntilCacheIsPopulated();
   if (IsAuthenticated()) {
     bool sync_enabled = sync_setup_service_->IsSyncEnabled();
     LoginMethodAndSyncState loginMethodAndSyncState =
@@ -153,7 +144,9 @@ void AuthenticationService::OnApplicationWillEnterForeground() {
                               LOGIN_METHOD_AND_SYNC_STATE_COUNT);
   }
   UMA_HISTOGRAM_COUNTS_100("Signin.IOSNumberOfDeviceAccounts",
-                           identity_service->GetAllIdentities().count);
+                           [ios::GetChromeBrowserProvider()
+                                   ->GetChromeIdentityService()
+                                   ->GetAllIdentities() count]);
 
   // Clear signin errors on the accounts that had a specific MDM device status.
   // This will trigger services to fetch data for these accounts again.
@@ -303,12 +296,6 @@ ChromeIdentity* AuthenticationService::GetAuthenticatedIdentity() const {
   return ios::GetChromeBrowserProvider()
       ->GetChromeIdentityService()
       ->GetIdentityWithGaiaID(authenticated_gaia_id);
-}
-
-void AuthenticationService::WaitUntilCacheIsPopulated() const {
-  ios::ChromeIdentityService* identity_service =
-      ios::GetChromeBrowserProvider()->GetChromeIdentityService();
-  identity_service->WaitUntilCacheIsPopulated();
 }
 
 void AuthenticationService::SignIn(ChromeIdentity* identity) {
@@ -477,7 +464,6 @@ bool AuthenticationService::HandleMDMNotification(ChromeIdentity* identity,
     if (is_blocked && weak_ptr.get()) {
       // If the identity is blocked, sign out of the account. As only managed
       // account can be blocked, this will clear the associated browsing data.
-      weak_ptr->WaitUntilCacheIsPopulated();
       if (identity == weak_ptr->GetAuthenticatedIdentity()) {
         weak_ptr->SignOut(signin_metrics::ABORT_SIGNIN,
                           /*force_clear_browsing_data=*/false, nil);
@@ -542,9 +528,6 @@ void AuthenticationService::HandleForgottenIdentity(
     return;
   }
 
-  ios::ChromeIdentityService* identity_service =
-      ios::GetChromeBrowserProvider()->GetChromeIdentityService();
-  identity_service->WaitUntilCacheIsPopulated();
   ChromeIdentity* authenticated_identity = GetAuthenticatedIdentity();
   if (authenticated_identity && authenticated_identity != invalid_identity) {
     // |authenticated_identity| exists and is a valid identity. Nothing to do
@@ -567,7 +550,6 @@ void AuthenticationService::ReloadCredentialsFromIdentities(
 
   base::AutoReset<bool> auto_reset(&is_reloading_credentials_, true);
 
-  WaitUntilCacheIsPopulated();
   HandleForgottenIdentity(nil, should_prompt);
   if (IsAuthenticated()) {
     identity_manager_->GetDeviceAccountsSynchronizer()

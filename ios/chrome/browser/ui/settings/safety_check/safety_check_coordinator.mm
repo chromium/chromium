@@ -16,7 +16,6 @@
 #include "ios/chrome/browser/passwords/ios_chrome_password_check_manager.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_check_manager_factory.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #include "ios/chrome/browser/sync/profile_sync_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service.h"
@@ -91,10 +90,6 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
-  authenticationService->WaitUntilCacheIsPopulated();
   SafetyCheckTableViewController* viewController =
       [[SafetyCheckTableViewController alloc]
           initWithStyle:UITableViewStyleGrouped];
@@ -106,7 +101,8 @@
   self.mediator = [[SafetyCheckMediator alloc]
       initWithUserPrefService:self.browser->GetBrowserState()->GetPrefs()
          passwordCheckManager:passwordCheckManager
-                  authService:authenticationService
+                  authService:AuthenticationServiceFactory::GetForBrowserState(
+                                  self.browser->GetBrowserState())
                   syncService:SyncSetupServiceFactory::GetForBrowserState(
                                   self.browser->GetBrowserState())];
 

@@ -72,7 +72,6 @@ bool ShouldPresentUserSigninUpgrade(ChromeBrowserState* browserState) {
 
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForBrowserState(browserState);
-  authService->WaitUntilCacheIsPopulated();
   // Do not show the SSO promo if the user is already logged in.
   if (authService->IsAuthenticated())
     return false;

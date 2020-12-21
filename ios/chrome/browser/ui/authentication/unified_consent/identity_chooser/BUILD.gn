@@ -19,7 +19,6 @@ source_set("identity_chooser") {
     "//ios/chrome/browser",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
-    "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/signin",
   ]
 }
