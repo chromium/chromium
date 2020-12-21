@@ -680,6 +680,7 @@ void InProgressDownloadManager::NotifyDownloadsInitialized() {
 void InProgressDownloadManager::AddInProgressDownloadForTest(
     std::unique_ptr<download::DownloadItemImpl> download) {
   in_progress_downloads_.push_back(std::move(download));
+  NotifyDownloadsInitialized();
 }
 
 void InProgressDownloadManager::CancelUrlDownload(

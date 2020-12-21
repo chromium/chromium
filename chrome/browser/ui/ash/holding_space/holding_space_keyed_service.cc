@@ -90,9 +90,12 @@ HoldingSpaceKeyedService::HoldingSpaceKeyedService(Profile* profile,
   // the first time that holding space became available, this will no-op.
   holding_space_prefs::MarkTimeOfFirstAvailability(profile_->GetPrefs());
 
+  ProfileManager* const profile_manager = GetProfileManager();
+  if (!profile_manager)  // May be `nullptr` in tests.
+    return;
+
   // The associated profile may not be ready yet. If it is, we can immediately
   // proceed with profile dependent initialization.
-  ProfileManager* const profile_manager = GetProfileManager();
   if (profile_manager->IsValidProfile(profile)) {
     OnProfileReady();
     return;
@@ -103,9 +106,10 @@ HoldingSpaceKeyedService::HoldingSpaceKeyedService(Profile* profile,
 }
 
 HoldingSpaceKeyedService::~HoldingSpaceKeyedService() {
-  if (HoldingSpaceController::Get()) {
-    // For BrowserWithTestWindowTest that releases profile and its keyed
-    // services before ash Shell.
+  if (chromeos::PowerManagerClient::Get())
+    chromeos::PowerManagerClient::Get()->RemoveObserver(this);
+
+  if (HoldingSpaceController::Get()) {  // May be `nullptr` in tests.
     HoldingSpaceController::Get()->RegisterClientAndModelForUser(
         account_id_, /*client=*/nullptr, /*model=*/nullptr);
   }
@@ -286,12 +290,14 @@ void HoldingSpaceKeyedService::OnProfileAdded(Profile* profile) {
 void HoldingSpaceKeyedService::OnProfileReady() {
   // Observe suspend status - the delegates will be shutdown during suspend.
   if (chromeos::PowerManagerClient::Get())
-    power_manager_observer_.Observe(chromeos::PowerManagerClient::Get());
+    chromeos::PowerManagerClient::Get()->AddObserver(this);
 
   InitializeDelegates();
 
-  HoldingSpaceController::Get()->RegisterClientAndModelForUser(
-      account_id_, &holding_space_client_, &holding_space_model_);
+  if (HoldingSpaceController::Get()) {  // May be `nullptr` in tests.
+    HoldingSpaceController::Get()->RegisterClientAndModelForUser(
+        account_id_, &holding_space_client_, &holding_space_model_);
+  }
 }
 
 void HoldingSpaceKeyedService::SuspendImminent(

@@ -54,11 +54,6 @@ KeyedService* HoldingSpaceKeyedServiceFactory::BuildServiceInstanceFor(
   return new HoldingSpaceKeyedService(profile, user->GetAccountId());
 }
 
-bool HoldingSpaceKeyedServiceFactory::ServiceIsCreatedWithBrowserContext()
-    const {
-  return true;
-}
-
 void HoldingSpaceKeyedServiceFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   HoldingSpaceKeyedService::RegisterProfilePrefs(registry);

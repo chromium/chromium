@@ -703,8 +703,11 @@ void CaptureModeController::OnImageFileSaved(
   CopyImageToClipboard(image);
   ShowPreviewNotification(path, image, CaptureModeType::kImage);
 
-  if (features::IsTemporaryHoldingSpaceEnabled())
-    HoldingSpaceController::Get()->client()->AddScreenshot(path);
+  if (features::IsTemporaryHoldingSpaceEnabled()) {
+    HoldingSpaceClient* client = HoldingSpaceController::Get()->client();
+    if (client)  // May be `nullptr` in tests.
+      client->AddScreenshot(path);
+  }
 }
 
 void CaptureModeController::OnVideoFileStatus(bool success) {
@@ -729,8 +732,9 @@ void CaptureModeController::OnVideoFileSaved(bool success) {
         (base::TimeTicks::Now() - recording_start_time_).InSeconds());
 
     if (features::IsTemporaryHoldingSpaceEnabled()) {
-      HoldingSpaceController::Get()->client()->AddScreenRecording(
-          current_video_file_path_);
+      HoldingSpaceClient* client = HoldingSpaceController::Get()->client();
+      if (client)  // May be `nullptr` in tests.
+        client->AddScreenRecording(current_video_file_path_);
     }
   }
 

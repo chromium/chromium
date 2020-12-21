@@ -30,7 +30,9 @@
 #include "chrome/browser/component_updater/sth_set_component_remover.h"
 #include "chrome/browser/google/google_brand_chromeos.h"
 #include "chrome/browser/net/nss_context.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/clipboard_image_model_factory_impl.h"
+#include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/media_client_impl.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -205,8 +207,14 @@ void UserSessionInitializer::InitializePrimaryProfileServices(
 }
 
 void UserSessionInitializer::OnUserSessionStarted(bool is_primary_user) {
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  DCHECK(profile);
+
+  // Ensure that the `HoldingSpaceKeyedService` for `profile` is created.
+  ash::HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(profile);
+
   if (is_primary_user) {
-    DCHECK_NE(primary_profile_, nullptr);
+    DCHECK_EQ(primary_profile_, profile);
 
     plugin_vm::PluginVmManager* plugin_vm_manager =
         plugin_vm::PluginVmManagerFactory::GetForProfile(primary_profile_);

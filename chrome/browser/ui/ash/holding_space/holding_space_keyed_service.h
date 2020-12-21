@@ -143,10 +143,6 @@ class HoldingSpaceKeyedService : public KeyedService,
   base::ScopedObservation<ProfileManager, ProfileManagerObserver>
       profile_manager_observer_{this};
 
-  base::ScopedObservation<chromeos::PowerManagerClient,
-                          chromeos::PowerManagerClient::Observer>
-      power_manager_observer_{this};
-
   base::WeakPtrFactory<HoldingSpaceKeyedService> weak_factory_{this};
 };
 

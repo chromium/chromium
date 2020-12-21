@@ -43,6 +43,17 @@ InProgressManagerMap& GetInProgressManagerMap() {
   return *map;
 }
 
+// Returns a callback to be invoked during `RetrieveInProgressDownloadManager()`
+// to provide an opportunity to cache a pointer to the in progress download
+// manager being released.
+base::RepeatingCallback<void(download::InProgressDownloadManager*)>&
+GetRetrieveInProgressDownloadManagerCallback() {
+  static base::NoDestructor<
+      base::RepeatingCallback<void(download::InProgressDownloadManager*)>>
+      callback;
+  return *callback;
+}
+
 // Ignores origin security check. DownloadManagerImpl will provide its own
 // implementation when InProgressDownloadManager object is passed to it.
 bool IgnoreOriginSecurityCheck(const GURL& url) {
@@ -71,6 +82,8 @@ DownloadManagerUtils::RetrieveInProgressDownloadManager(Profile* profile) {
   ProfileKey* key = profile->GetProfileKey();
   GetInProgressDownloadManager(key);
   auto& map = GetInProgressManagerMap();
+  if (GetRetrieveInProgressDownloadManagerCallback())
+    GetRetrieveInProgressDownloadManagerCallback().Run(map[key].get());
   return map[key].release();
 }
 
@@ -128,4 +141,12 @@ DownloadManagerUtils::GetInProgressDownloadManager(ProfileKey* key) {
     map[key] = std::move(in_progress_manager);
   }
   return map[key].get();
+}
+
+// static
+void DownloadManagerUtils::
+    SetRetrieveInProgressDownloadManagerCallbackForTesting(
+        base::RepeatingCallback<void(download::InProgressDownloadManager*)>
+            callback) {
+  GetRetrieveInProgressDownloadManagerCallback() = callback;
 }

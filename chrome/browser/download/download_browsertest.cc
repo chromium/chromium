@@ -4268,7 +4268,50 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DISABLED_DownloadLargeDataURL) {
 // Testing the behavior of resuming with only in-progress download manager.
 class InProgressDownloadTest : public DownloadTest {
  public:
-  void SetUpOnMainThread() override { EXPECT_TRUE(CheckTestDir()); }
+  InProgressDownloadTest() {
+    // The in progress download manager will be released from
+    // `DownloadManagerUtils` during creation of the `DownloadManagerImpl`. As
+    // the `DownloadManagerImpl` may be created before test bodies can run,
+    // register a callback to cache a pointer before release occurs.
+    DownloadManagerUtils::
+        SetRetrieveInProgressDownloadManagerCallbackForTesting(
+            base::BindRepeating(
+                &InProgressDownloadTest::set_in_progress_manager,
+                base::Unretained(this)));
+  }
+
+  // DownloadTest:
+  void SetUpOnMainThread() override {
+    EXPECT_TRUE(CheckTestDir());
+
+    if (!in_progress_manager_) {
+      // This will only occur if `DownloadManagerImpl` has not already been
+      // created in which case the in progress download manager has not yet been
+      // released from `DownloadManagerUtils`.
+      set_in_progress_manager(
+          DownloadManagerUtils::GetInProgressDownloadManager(
+              browser()->profile()->GetProfileKey()));
+    }
+
+    // As a pointer to the in progress download manager has now been cached,
+    // watching for release from `DownloadManagerUtils` (if it has not already
+    // occurred) is no longer necessary.
+    DownloadManagerUtils::
+        SetRetrieveInProgressDownloadManagerCallbackForTesting(
+            base::NullCallback());
+  }
+
+  download::InProgressDownloadManager* in_progress_manager() {
+    return in_progress_manager_;
+  }
+
+  void set_in_progress_manager(
+      download::InProgressDownloadManager* in_progress_manager) {
+    in_progress_manager_ = in_progress_manager;
+  }
+
+ private:
+  download::InProgressDownloadManager* in_progress_manager_ = nullptr;
 };
 
 // Check that if a download exists in both in-progress and history DB,
@@ -4290,9 +4333,6 @@ IN_PROC_BROWSER_TEST_F(InProgressDownloadTest,
   std::string guid = base::GenerateGUID();
 
   // Wait for in-progress download manager to initialize.
-  download::InProgressDownloadManager* in_progress_manager =
-      DownloadManagerUtils::GetInProgressDownloadManager(
-          browser()->profile()->GetProfileKey());
   download::SimpleDownloadManagerCoordinator* coordinator =
       SimpleDownloadManagerCoordinatorFactory::GetForKey(
           browser()->profile()->GetProfileKey());
@@ -4307,9 +4347,9 @@ IN_PROC_BROWSER_TEST_F(InProgressDownloadTest,
   std::vector<GURL> url_chain;
   url_chain.emplace_back(url);
   base::Time current_time = base::Time::Now();
-  in_progress_manager->AddInProgressDownloadForTest(
+  in_progress_manager()->AddInProgressDownloadForTest(
       std::make_unique<download::DownloadItemImpl>(
-          in_progress_manager, guid, 1 /* id */,
+          in_progress_manager(), guid, 1 /* id */,
           target_path.AddExtensionASCII("crdownload"), target_path, url_chain,
           GURL() /* referrer_url */, GURL() /* site_url */,
           GURL() /* tab_url */, GURL() /* tab_referrer_url */,
@@ -4359,9 +4399,6 @@ IN_PROC_BROWSER_TEST_F(InProgressDownloadTest,
   std::string guid = base::GenerateGUID();
 
   // Wait for in-progress download manager to initialize.
-  download::InProgressDownloadManager* in_progress_manager =
-      DownloadManagerUtils::GetInProgressDownloadManager(
-          browser()->profile()->GetProfileKey());
   download::SimpleDownloadManagerCoordinator* coordinator =
       SimpleDownloadManagerCoordinatorFactory::GetForKey(
           browser()->profile()->GetProfileKey());
@@ -4382,14 +4419,14 @@ IN_PROC_BROWSER_TEST_F(InProgressDownloadTest,
   params->set_file_path(target_path);
   params->set_transient(true);
   params->set_require_safety_checks(false);
-  in_progress_manager->DownloadUrl(std::move(params));
+  in_progress_manager()->DownloadUrl(std::move(params));
   auto params2 = std::make_unique<DownloadUrlParameters>(
       url, TRAFFIC_ANNOTATION_FOR_TESTS);
   params2->set_guid(guid);
   params2->set_file_path(target_path);
   params2->set_transient(true);
   params2->set_require_safety_checks(false);
-  in_progress_manager->DownloadUrl(std::move(params2));
+  in_progress_manager()->DownloadUrl(std::move(params2));
   coordinator_waiter.WaitForDownloadCreation(1);
   download::DownloadItem* download = coordinator->GetDownloadByGuid(guid);
   ASSERT_TRUE(download);
