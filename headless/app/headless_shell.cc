@@ -51,6 +51,7 @@
 #include "ui/gfx/geometry/size.h"
 
 #if defined(OS_WIN)
+#include <base/win/windows_types.h>
 #include "components/crash/core/app/crash_switches.h"
 #include "components/crash/core/app/run_as_crashpad_handler_win.h"
 #include "sandbox/win/src/sandbox_types.h"
@@ -836,8 +837,15 @@ void RunChildProcessIfNeeded(int argc, const char** argv) {
       builder.SetUserAgent(ua);
   }
 
-  exit(RunContentMain(builder.Build(),
-                      base::OnceCallback<void(HeadlessBrowser*)>()));
+  int rc = RunContentMain(builder.Build(),
+                          base::OnceCallback<void(HeadlessBrowser*)>());
+#if defined(OS_WIN)
+  // Use TerminateProcess instead of exit to avoid shutdown crashes and
+  // slowdowns on shutdown.
+  ::TerminateProcess(::GetCurrentProcess(), rc);
+#else   // defined(OS_WIN)
+  exit(rc);
+#endif  // defined(OS_WIN)
 }
 
 int HeadlessBrowserMain(

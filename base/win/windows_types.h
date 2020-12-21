@@ -236,6 +236,9 @@ WINBASEAPI _Check_return_ _Post_equals_last_error_ DWORD WINAPI
 
 WINBASEAPI VOID WINAPI SetLastError(_In_ DWORD dwErrCode);
 
+WINBASEAPI BOOL WINAPI TerminateProcess(_In_ HANDLE hProcess,
+                                        _In_ UINT uExitCode);
+
 #ifdef __cplusplus
 }
 #endif
