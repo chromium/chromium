@@ -157,9 +157,9 @@
       [[i18n('colorPickerLabel')]]
     </paper-tooltip>
   </div>
-  <div aria-label="[[i18n('defaultThemeLabel')]]" tabindex="0">
+  <div aria-label="[[i18n('defaultThemeLabel')]]"
+      tabindex="0" on-click="onDefaultThemeClick_">
     <cr-theme-icon id="defaultTheme"
-        on-click="onDefaultThemeClick_"
         selected$="[[isThemeIconSelected_('default', selectedTheme)]]">
     </cr-theme-icon>
     <paper-tooltip offset="0" fit-to-visible-bounds>
@@ -167,8 +167,9 @@
     </paper-tooltip>
   </div>
   <template is="dom-repeat" id="themes" items="[[chromeThemes_]]">
-    <div aria-label="[[item.label]]" tabindex="0" class="chrome-theme-wrapper">
-      <cr-theme-icon on-click="onChromeThemeClick_"
+    <div aria-label="[[item.label]]" tabindex="0"
+        on-click="onChromeThemeClick_" class="chrome-theme-wrapper">
+      <cr-theme-icon
           style="--cr-theme-icon-frame-color:
               [[skColorToRgba_(item.colors.frame)]];
               --cr-theme-icon-active-tab-color:
