@@ -6376,6 +6376,20 @@
      ]
     },
     "selectors": {
+     "focus-visible-006-manual.html": [
+      "974abc0024e3153008e944ff706156efcb9948e2",
+      [
+       null,
+       {}
+      ]
+     ],
+     "focus-visible-008-manual.html": [
+      "53306a90bbcae67ca65feefce3e4d3758d1a4ecd",
+      [
+       null,
+       {}
+      ]
+     ],
      "hover-001-manual.html": [
       "87d7af91b6994371b72ff33923ea1cacc65c8b5b",
       [
@@ -222363,6 +222377,10 @@
         "a3ffdd005afadb784b1b64a12caa190a66271018",
         []
        ],
+       "location-prevent-extensions-expected.txt": [
+        "9f79369fbc41bf564547199727d8a4b8256b7247",
+        []
+       ],
        "location-protocol-setter-non-broken-expected.txt": [
         "4d1f8a9abd4d46f445ceb66ec1f65fe65425aabd",
         []
@@ -315023,26 +315041,8 @@
        }
       ]
      ],
-     "focus-visible-006.html": [
-      "4b034b2e27962810bd9357ff88e5fe4587e56d25",
-      [
-       null,
-       {
-        "testdriver": true
-       }
-      ]
-     ],
      "focus-visible-007.html": [
       "95a27006e62076909f63f9946e1f2d7f8331732a",
-      [
-       null,
-       {
-        "testdriver": true
-       }
-      ]
-     ],
-     "focus-visible-008.html": [
-      "75f676f53f3319cb672195343c77cc7ebd94eee4",
       [
        null,
        {
@@ -346200,6 +346200,13 @@
          {}
         ]
        ],
+       "location-non-configurable-toString-valueOf.html": [
+        "80760ac9e44e2513017b583329e1a9cddeccdb60",
+        [
+         null,
+         {}
+        ]
+       ],
        "location-origin-idna.sub.window.js": [
         "83b030f88651aeb66998b724ffcec31ad72801bc",
         [
@@ -346209,6 +346216,13 @@
        ],
        "location-pathname-setter-question-mark.html": [
         "09546020f75be91ce3e1897f3f00fe5260c46c84",
+        [
+         null,
+         {}
+        ]
+       ],
+       "location-prevent-extensions.html": [
+        "a8c777aded82c384e8106db824b2b175bfe15774",
         [
          null,
          {}
@@ -346237,6 +346251,13 @@
        ],
        "location-protocol-setter.html": [
         "1afef4628d43829fa617ddefed5ebfcb9355ef4d",
+        [
+         null,
+         {}
+        ]
+       ],
+       "location-prototype-no-toString-valueOf.html": [
+        "56316320af59dd1531c661fb854643736cf3ef6e",
         [
          null,
          {}
@@ -346622,7 +346643,7 @@
         ]
        ],
        "cross-origin-objects.html": [
-        "3b7c7832d7e7f215ccc810ae583f8cfdf925d497",
+        "577129502426989888a1791f78df46b6ed23c55e",
         [
          null,
          {
@@ -347302,6 +347323,13 @@
       ]
      },
      "the-windowproxy-exotic-object": {
+      "windowproxy-prevent-extensions.html": [
+       "97a156290a1c5ad15a36f24b0009d9f599c8be3e",
+       [
+        null,
+        {}
+       ]
+      ],
       "windowproxy-prototype-setting-cross-origin-domain.sub.html": [
        "a5ae78cc87dc8698e819b5132fb1514ac4f25860",
        [
