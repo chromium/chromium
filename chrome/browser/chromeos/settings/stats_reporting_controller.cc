@@ -85,9 +85,12 @@ void StatsReportingController::SetEnabled(Profile* profile, bool enabled) {
 bool StatsReportingController::IsEnabled() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool value = false;
-  if (GetOwnershipStatus() == DeviceSettingsService::OWNERSHIP_NONE &&
+  if ((GetOwnershipStatus() == DeviceSettingsService::OWNERSHIP_NONE ||
+       GetOwnershipStatus() == DeviceSettingsService::OWNERSHIP_UNKNOWN ||
+       is_value_being_set_with_service_) &&
       GetPendingValue(&value)) {
-    // Return the pending value if it exists and we are sure there is no owner:
+    // Return the pending value if it exists and we are sure there is no owner
+    // or the value has not been stored correctly in signed store:
     return value;
   }
   // Otherwise, always return the value from the signed store.
@@ -113,6 +116,20 @@ void StatsReportingController::OnOwnershipTaken(
     // At the time ownership is taken, there is a value waiting to be written.
     // Use the OwnerSettingsService of the new owner to write the setting.
     SetWithServiceAsync(service, pending_value);
+  }
+}
+
+void StatsReportingController::OnSignedPolicyStored(bool success) {
+  if (!success)
+    return;
+  bool pending_value;
+  bool signed_value;
+  if (GetPendingValue(&pending_value) && GetSignedStoredValue(&signed_value) &&
+      pending_value == signed_value) {
+    is_value_being_set_with_service_ = false;
+    owner_settings_service_observation_.Reset();
+    ClearPendingValue();
+    NotifyObservers();
   }
 }
 
@@ -162,9 +179,11 @@ void StatsReportingController::SetWithService(
     bool enabled) {
   VLOG(1) << "SetWithService(" << std::boolalpha << enabled << ")";
   if (service && service->IsOwner()) {
+    if (!owner_settings_service_observation_.IsObserving())
+      owner_settings_service_observation_.Observe(service);
+    is_value_being_set_with_service_ = true;
     service->SetBoolean(kStatsReportingPref, enabled);
-    ClearPendingValue();
-    NotifyObservers();
+    local_state_->SetBoolean(kPendingPref, enabled);
   } else {
     // Do nothing since we are not the owner.
     LOG(WARNING) << "Changing settings from non-owner, setting="
