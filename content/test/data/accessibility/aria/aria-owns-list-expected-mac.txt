@@ -1,6 +1,6 @@
 AXWebArea
-++AXList size=(400, 400)
-++++AXGroup size=(400, 200)
+++AXList AXSize={h: 400, w: 400}
+++++AXGroup AXSize={h: 200, w: 400}
 ++++++AXStaticText AXValue='One'
-++++AXGroup size=(400, 200)
+++++AXGroup AXSize={h: 200, w: 400}
 ++++++AXStaticText AXValue='Two'

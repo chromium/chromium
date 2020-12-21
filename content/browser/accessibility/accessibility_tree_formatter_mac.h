@@ -54,7 +54,6 @@ class CONTENT_EXPORT AccessibilityTreeFormatterMac
       const ui::AXPropertyNode& property_node,
       const a11y::LineIndexer* line_indexer) const;
 
-  base::Value PopulateSize(const BrowserAccessibilityCocoa*) const;
   base::Value PopulatePosition(const BrowserAccessibilityCocoa*) const;
   base::Value PopulatePoint(NSPoint) const;
   base::Value PopulateSize(NSSize) const;

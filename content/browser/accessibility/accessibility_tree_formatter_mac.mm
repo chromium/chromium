@@ -45,9 +45,6 @@ namespace {
 const char kPositionDictAttr[] = "position";
 const char kXCoordDictAttr[] = "x";
 const char kYCoordDictAttr[] = "y";
-const char kSizeDictAttr[] = "size";
-const char kWidthDictAttr[] = "width";
-const char kHeightDictAttr[] = "height";
 const char kRangeLocDictAttr[] = "loc";
 const char kRangeLenDictAttr[] = "len";
 
@@ -171,9 +168,8 @@ void AccessibilityTreeFormatterMac::AddProperties(
     dict->SetKey("id",
                  base::Value(base::NumberToString16(owner_node->GetId())));
 
-    // Position and size
+    // Position (no size since it's exposed as standard AXSize attribute)
     dict->SetPath(kPositionDictAttr, PopulatePosition(cocoa_node));
-    dict->SetPath(kSizeDictAttr, PopulateSize(cocoa_node));
   }
 
   // Dump all attributes if match-all filter is specified.
@@ -204,15 +200,6 @@ void AccessibilityTreeFormatterMac::AddProperties(
     dict->SetPath(property_node.original_property,
                   PopulateObject(*value, line_indexer));
   }
-}
-
-base::Value AccessibilityTreeFormatterMac::PopulateSize(
-    const BrowserAccessibilityCocoa* cocoa_node) const {
-  base::Value size(base::Value::Type::DICTIONARY);
-  NSSize node_size = [[cocoa_node size] sizeValue];
-  size.SetIntPath(kHeightDictAttr, static_cast<int>(node_size.height));
-  size.SetIntPath(kWidthDictAttr, static_cast<int>(node_size.width));
-  return size;
 }
 
 base::Value AccessibilityTreeFormatterMac::PopulatePosition(
@@ -261,10 +248,14 @@ base::Value AccessibilityTreeFormatterMac::PopulateObject(
     return base::Value([value intValue]);
   }
 
-  // NSRange
-  if ([value isKindOfClass:[NSValue class]] &&
-      0 == strcmp([value objCType], @encode(NSRange))) {
-    return PopulateRange([value rangeValue]);
+  // NSRange, NSSize
+  if ([value isKindOfClass:[NSValue class]]) {
+    if (0 == strcmp([value objCType], @encode(NSRange))) {
+      return PopulateRange([value rangeValue]);
+    }
+    if (0 == strcmp([value objCType], @encode(NSSize))) {
+      return PopulateSize([value sizeValue]);
+    }
   }
 
   // AXTextMarker
@@ -462,14 +453,6 @@ std::string AccessibilityTreeFormatterMac::ProcessTreeForOutput(
       WriteAttribute(false,
                      FormatCoordinates(item.second, kPositionDictAttr,
                                        kXCoordDictAttr, kYCoordDictAttr),
-                     &line);
-      continue;
-    }
-    // Special case: size.
-    if (item.first == kSizeDictAttr) {
-      WriteAttribute(false,
-                     FormatCoordinates(item.second, kSizeDictAttr,
-                                       kWidthDictAttr, kHeightDictAttr),
                      &line);
       continue;
     }

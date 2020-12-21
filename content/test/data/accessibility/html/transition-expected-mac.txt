@@ -1,4 +1,4 @@
 AXWebArea
 ++AXGroup
-++++AXButton AXTitle='GrowButton' size=(600, 300)
+++++AXButton AXTitle='GrowButton' AXSize={h: 300, w: 600}
 ++++AXStaticText AXValue='Done'

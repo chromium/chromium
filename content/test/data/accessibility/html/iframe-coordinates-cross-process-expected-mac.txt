@@ -1,15 +1,15 @@
-AXWebArea position=(0, 0) size=(800, 600)
-++AXGroup position=(0, 0) size=(300, 150)
-++++AXButton position=(25, 25) size=(250, 50)
-++AXGroup position=(0, 150) size=(300, 150)
-++++AXButton position=(25, 175) size=(250, 50)
-++AXGroup position=(0, 300) size=(300, 150)
-++++AXGroup position=(0, 300) size=(300, 100)
-++++++AXWebArea position=(0, 300) size=(300, 100)
-++++++++AXGroup position=(0, 300) size=(300, 100)
-++++++++++AXButton position=(25, 325) size=(250, 50)
-++AXGroup position=(0, 450) size=(300, 150)
-++++AXGroup position=(0, 450) size=(150, 50)
-++++++AXWebArea position=(0, 450) size=(150, 50)
-++++++++AXGroup position=(0, 450) size=(150, 50)
-++++++++++AXButton position=(0, 450) size=(125, 25)
+AXWebArea position=(0, 0) AXSize={h: 600, w: 800}
+++AXGroup position=(0, 0) AXSize={h: 150, w: 300}
+++++AXButton position=(25, 25) AXSize={h: 50, w: 250}
+++AXGroup position=(0, 150) AXSize={h: 150, w: 300}
+++++AXButton position=(25, 175) AXSize={h: 50, w: 250}
+++AXGroup position=(0, 300) AXSize={h: 150, w: 300}
+++++AXGroup position=(0, 300) AXSize={h: 100, w: 300}
+++++++AXWebArea position=(0, 300) AXSize={h: 100, w: 300}
+++++++++AXGroup position=(0, 300) AXSize={h: 100, w: 300}
+++++++++++AXButton position=(25, 325) AXSize={h: 50, w: 250}
+++AXGroup position=(0, 450) AXSize={h: 150, w: 300}
+++++AXGroup position=(0, 450) AXSize={h: 50, w: 150}
+++++++AXWebArea position=(0, 450) AXSize={h: 50, w: 150}
+++++++++AXGroup position=(0, 450) AXSize={h: 50, w: 150}
+++++++++++AXButton position=(0, 450) AXSize={h: 25, w: 125}
