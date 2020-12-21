@@ -744,7 +744,7 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderWidgetHostViewMacHistorySwiperTest,
 // Initial movements are vertical, and scroll the iframe. Subsequent movements
 // are horizontal, and should not trigger history swiping.
 IN_PROC_BROWSER_TEST_F(ChromeRenderWidgetHostViewMacHistorySwiperTest,
-                       TestIframeHistorySwiping) {
+                       DISABLED_TestIframeHistorySwiping) {
   if (!IsHistorySwipingSupported())
     return;
 
