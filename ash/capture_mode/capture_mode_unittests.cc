@@ -19,6 +19,7 @@
 #include "ash/display/cursor_window_controller.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/display/window_tree_host_manager.h"
+#include "ash/home_screen/home_screen_controller.h"
 #include "ash/magnifier/magnifier_glass.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/root_window_controller.h"
@@ -1925,9 +1926,10 @@ TEST_F(CaptureModeTest, TabletTouchCaptureLabelWidgetWindowMode) {
   event_generator->PressTouch();
   event_generator->ReleaseTouch();
 
-  // There are no windows so the window finder algorithm will find the app list
-  // window and take a picture of that, ending capture mode.
-  EXPECT_FALSE(controller->IsActive());
+  // There are no windows and home screen window is excluded from window capture
+  // mode, so capture mode will still remain active.
+  EXPECT_TRUE(Shell::Get()->home_screen_controller()->IsHomeScreenVisible());
+  EXPECT_TRUE(controller->IsActive());
 }
 
 // Tests that after rotating a display, the capture session widgets are updated

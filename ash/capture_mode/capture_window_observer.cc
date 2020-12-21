@@ -5,6 +5,8 @@
 #include "ash/capture_mode/capture_window_observer.h"
 
 #include "ash/capture_mode/capture_mode_session.h"
+#include "ash/home_screen/home_screen_controller.h"
+#include "ash/home_screen/home_screen_delegate.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_finder.h"
 #include "ash/shell.h"
@@ -37,6 +39,14 @@ void CaptureWindowObserver::UpdateSelectedWindowAtPosition(
   // Don't capture wallpaper window.
   if (window && window->parent() &&
       window->parent()->id() == kShellWindowId_WallpaperContainer) {
+    window = nullptr;
+  }
+
+  // Don't capture home screen window.
+  if (window && window == Shell::Get()
+                              ->home_screen_controller()
+                              ->delegate()
+                              ->GetHomeScreenWindow()) {
     window = nullptr;
   }
 
