@@ -157,8 +157,11 @@ ShapingLineBreaker::PreviousBreakOpportunity(unsigned offset,
     for (;; offset--) {
       offset = break_iterator_->PreviousBreakOpportunity(offset, start);
       if (offset <= start || offset >= text.length() ||
-          text[offset - 1] != kSoftHyphenCharacter)
+          text[offset - 1] != kSoftHyphenCharacter) {
+        if (IsBreakableSpace(text[offset - 1]))
+          return {offset, FindNonHangableEnd(text, offset - 1), false};
         return {offset, false};
+      }
     }
   }
 
@@ -183,8 +186,11 @@ ShapingLineBreaker::BreakOpportunity ShapingLineBreaker::NextBreakOpportunity(
   if (UNLIKELY(!IsSoftHyphenEnabled())) {
     for (;; offset++) {
       offset = break_iterator_->NextBreakOpportunity(offset);
-      if (offset >= text.length() || text[offset - 1] != kSoftHyphenCharacter)
+      if (offset >= text.length() || text[offset - 1] != kSoftHyphenCharacter) {
+        if (IsBreakableSpace(text[offset - 1]))
+          return {offset, FindNonHangableEnd(text, offset - 1), false};
         return {offset, false};
+      }
     }
   }
 
