@@ -6,7 +6,17 @@ module chromeos.local_search_service.mojom;
 
 import "chromeos/components/local_search_service/public/mojom/index.mojom";
 import "chromeos/components/local_search_service/public/mojom/types.mojom";
-import "chromeos/components/local_search_service/public/mojom/local_search_service_proxy.mojom";
+
+enum IndexId {
+  kCrosSettings = 0,
+  kHelpApp = 1
+  // Add new client IDs here.
+};
+
+enum Backend {
+  kLinearMap = 0,
+  kInvertedIndex = 1
+};
 
 // Interface that helps to log daily search requests to UMA.
 interface SearchMetricsReporter {

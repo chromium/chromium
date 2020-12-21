@@ -10,8 +10,6 @@ source_set("local_search_service") {
     "content_extraction_utils.h",
     "index.cc",
     "index.h",
-    "index_sync.cc",
-    "index_sync.h",
     "inverted_index.cc",
     "inverted_index.h",
     "inverted_index_search.cc",
@@ -24,8 +22,6 @@ source_set("local_search_service") {
     "pref_names.h",
     "search_metrics_reporter.cc",
     "search_metrics_reporter.h",
-    "search_metrics_reporter_sync.cc",
-    "search_metrics_reporter_sync.h",
     "search_utils.cc",
     "search_utils.h",
     "shared_structs.cc",
@@ -47,19 +43,6 @@ source_set("local_search_service") {
   ]
 }
 
-source_set("local_search_service_sync") {
-  sources = [
-    "local_search_service_sync.cc",
-    "local_search_service_sync.h",
-    "local_search_service_sync_factory.cc",
-    "local_search_service_sync_factory.h",
-  ]
-  deps = [
-    ":local_search_service",
-    "//components/keyed_service/content:content",
-  ]
-}
-
 source_set("local_search_service_provider") {
   sources = [
     "local_search_service_provider_for_testing.cc",
@@ -72,31 +55,6 @@ source_set("local_search_service_provider") {
     "//chromeos/components/local_search_service:local_search_service",
     "//chromeos/components/local_search_service/public/cpp:local_search_service_provider",
     "//content/public/browser:browser",
-  ]
-}
-
-source_set("local_search_service_proxy") {
-  sources = [
-    "index_sync_proxy.cc",
-    "index_sync_proxy.h",
-    "local_search_service_sync_proxy.cc",
-    "local_search_service_sync_proxy.h",
-    "local_search_service_sync_proxy_factory.cc",
-    "local_search_service_sync_proxy_factory.h",
-  ]
-
-  deps = [
-    "//base:i18n",
-    "//cc",
-  ]
-
-  public_deps = [
-    ":local_search_service",
-    ":local_search_service_sync",
-    "//base",
-    "//chromeos/components/local_search_service/public/mojom",
-    "//components/keyed_service/content:content",
-    "//components/prefs",
   ]
 }
 
@@ -124,10 +82,7 @@ source_set("unit_tests") {
     "linear_map_search_unittest.cc",
     "local_search_service_provider_unittest.cc",
     "local_search_service_proxy_unittest.cc",
-    "local_search_service_sync_proxy_unittest.cc",
-    "local_search_service_sync_unittest.cc",
     "local_search_service_unittest.cc",
-    "search_metrics_reporter_sync_unittest.cc",
     "search_metrics_reporter_unittest.cc",
     "search_utils_unittest.cc",
   ]
@@ -135,7 +90,6 @@ source_set("unit_tests") {
   deps = [
     ":local_search_service",
     ":local_search_service_provider",
-    ":local_search_service_proxy",
     ":test_support",
     "//base/test:test_support",
     "//chromeos/components/local_search_service/public/cpp:cpp",

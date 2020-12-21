@@ -15,7 +15,6 @@
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string16.h"
 #include "chromeos/components/local_search_service/index.h"
-#include "chromeos/components/local_search_service/index_sync.h"
 #include "chromeos/components/local_search_service/shared_structs.h"
 
 namespace chromeos {
@@ -25,33 +24,13 @@ class InvertedIndex;
 
 // An implementation of Index.
 // A search via the inverted index backend with TF-IDF based document ranking.
-class InvertedIndexSearch : public IndexSync, public Index {
+class InvertedIndexSearch : public Index {
  public:
-  InvertedIndexSearch(IndexId index_id, PrefService* local_state);
+  explicit InvertedIndexSearch(IndexId index_id);
   ~InvertedIndexSearch() override;
 
   InvertedIndexSearch(const InvertedIndexSearch&) = delete;
   InvertedIndexSearch& operator=(const InvertedIndexSearch&) = delete;
-
-  // IndexSync overrides:
-  uint64_t GetSizeSync() override;
-  // TODO(jiameng): we always build the index after documents are updated. May
-  // revise this strategy if there is a different use case.
-  void AddOrUpdateSync(const std::vector<Data>& data) override;
-  // TODO(jiameng): we always build the index after documents are deleted. May
-  // revise this strategy if there is a different use case.
-  // TODO(jiameng): for inverted index, the Delete function returns |ids| size,
-  // and not actual number of documents deleted. This would change in the next
-  // cl when these operations become async.
-  uint32_t DeleteSync(const std::vector<std::string>& ids) override;
-  void ClearIndexSync() override;
-  // Returns matching results for a given query by approximately matching the
-  // query with terms in the documents. Documents are ranked by TF-IDF scores.
-  // Scores in results are positive but not guaranteed to be in any particular
-  // range.
-  ResponseStatus FindSync(const base::string16& query,
-                          uint32_t max_results,
-                          std::vector<Result>* results) override;
 
   // Index overrides:
   // GetSize is only accurate if the index has done updating.
@@ -73,14 +52,6 @@ class InvertedIndexSearch : public IndexSync, public Index {
       const base::string16& term) const;
 
  private:
-  void FinalizeAddOrUpdateSync(
-      const std::vector<std::pair<std::string, std::vector<Token>>>& documents);
-
-  // FinalizeDeleteSync is called if Delete cannot be immediately done because
-  // there's another index updating operation before it, i.e.
-  // |num_queued_index_updates_| is not zero.
-  void FinalizeDeleteSync(const std::vector<std::string>& ids);
-
   void FinalizeAddOrUpdate(
       AddOrUpdateCallback callback,
       const std::vector<std::pair<std::string, std::vector<Token>>>& documents);

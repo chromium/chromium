@@ -6,7 +6,7 @@
 #define CHROMEOS_COMPONENTS_LOCAL_SEARCH_SERVICE_PUBLIC_MOJOM_TYPES_MOJOM_TRAITS_H_
 
 #include "base/strings/string16.h"
-#include "chromeos/components/local_search_service/public/mojom/local_search_service_proxy.mojom-shared.h"
+#include "chromeos/components/local_search_service/public/mojom/local_search_service.mojom-shared.h"
 #include "chromeos/components/local_search_service/public/mojom/types.mojom-shared.h"
 #include "chromeos/components/local_search_service/shared_structs.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"

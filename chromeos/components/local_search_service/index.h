@@ -27,6 +27,12 @@ class Index : public mojom::Index {
   void SetReporterRemote(
       mojo::PendingRemote<mojom::SearchMetricsReporter> reporter_remote);
 
+  void SetSearchParams(const SearchParams& search_params) {
+    search_params_ = search_params;
+  }
+
+  SearchParams GetSearchParamsForTesting() const { return search_params_; }
+
  protected:
   // Logs daily search metrics if |reporter_remote_| is bound. Also logs
   // other UMA metrics (number results and search latency).
@@ -37,6 +43,7 @@ class Index : public mojom::Index {
   // Logs number of documents in the index.
   void MaybeLogIndexSize(uint64_t index_size);
 
+  SearchParams search_params_;
   IndexId index_id_;
 
  private:

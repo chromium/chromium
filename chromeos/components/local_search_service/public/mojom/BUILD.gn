@@ -8,7 +8,6 @@ mojom("mojom") {
   sources = [
     "index.mojom",
     "local_search_service.mojom",
-    "local_search_service_proxy.mojom",
     "types.mojom",
   ]
 

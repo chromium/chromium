@@ -23,17 +23,15 @@ void LocalSearchService::BindIndex(
   auto it = indices_.find(index_id);
   if (it == indices_.end()) {
     switch (backend) {
-      // TODO(thanhdng): Remove |local_state| when IndexSync is removed.
       case Backend::kLinearMap:
         it = indices_
-                 .emplace(index_id, std::make_unique<LinearMapSearch>(
-                                        index_id, /*local_state*/ nullptr))
+                 .emplace(index_id, std::make_unique<LinearMapSearch>(index_id))
                  .first;
         break;
       case Backend::kInvertedIndex:
         it = indices_
-                 .emplace(index_id, std::make_unique<InvertedIndexSearch>(
-                                        index_id, /*local_state*/ nullptr))
+                 .emplace(index_id,
+                          std::make_unique<InvertedIndexSearch>(index_id))
                  .first;
     }
     if (!it->second) {

@@ -343,7 +343,6 @@
 #include "chromeos/audio/audio_devices_pref_handler_impl.h"
 #include "chromeos/components/account_manager/account_manager.h"
 #include "chromeos/components/local_search_service/search_metrics_reporter.h"
-#include "chromeos/components/local_search_service/search_metrics_reporter_sync.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/network/fast_transition_observer.h"
@@ -423,6 +422,15 @@ const char kDataReductionNetworkProperties[] =
 // Deprecated 10/2019
 const char kDisplayRotationAcceleratorDialogHasBeenAccepted[] =
     "settings.a11y.display_rotation_accelerator_dialog_has_been_accepted";
+
+// Deprecated 12/2020
+const char kLocalSearchServiceSyncMetricsDailySample[] =
+    "local_search_service_sync.metrics.daily_sample";
+const char kLocalSearchServiceSyncMetricsCrosSettingsCount[] =
+    "local_search_service_sync.metrics.cros_settings_count";
+const char kLocalSearchServiceSyncMetricsHelpAppCount[] =
+    "local_search_service_sync.metrics.help_app_count";
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Deprecated 11/2019
@@ -540,6 +548,11 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kRegisteredSupervisedUserAllowlists);
   registry->RegisterIntegerPref(kSupervisedUsersNextId, 0);
   registry->RegisterStringPref(kFirstRunTrialGroup, std::string());
+
+  registry->RegisterInt64Pref(kLocalSearchServiceSyncMetricsDailySample, 0);
+  registry->RegisterIntegerPref(kLocalSearchServiceSyncMetricsHelpAppCount, 0);
+  registry->RegisterIntegerPref(kLocalSearchServiceSyncMetricsCrosSettingsCount,
+                                0);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !defined(OS_ANDROID)
@@ -739,9 +752,6 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   chromeos::KioskCryptohomeRemover::RegisterPrefs(registry);
   chromeos::language_prefs::RegisterPrefs(registry);
   chromeos::local_search_service::SearchMetricsReporter::
-      RegisterLocalStatePrefs(registry);
-  // TODO(crbug/1137560): Remove the Sync version later after LSS is sandboxed.
-  chromeos::local_search_service::SearchMetricsReporterSync::
       RegisterLocalStatePrefs(registry);
   chromeos::login::SecurityTokenSessionController::RegisterLocalStatePrefs(
       registry);
@@ -1155,6 +1165,9 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 
   // Added 12/2020.
   local_state->ClearPref(kFirstRunTrialGroup);
+  local_state->ClearPref(kLocalSearchServiceSyncMetricsDailySample);
+  local_state->ClearPref(kLocalSearchServiceSyncMetricsCrosSettingsCount);
+  local_state->ClearPref(kLocalSearchServiceSyncMetricsHelpAppCount);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !defined(OS_ANDROID)
