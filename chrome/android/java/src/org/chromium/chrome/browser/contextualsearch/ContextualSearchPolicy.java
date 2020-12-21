@@ -142,10 +142,7 @@ class ContextualSearchPolicy {
 
         // We never preload unless we have sent page context (done through a Resolve request).
         // Only some gestures can resolve, and only when resolve privacy rules are met.
-        return (mSelectionController.getSelectionType() == SelectionType.TAP
-                       || mSelectionController.getSelectionType()
-                               == SelectionType.RESOLVING_LONG_PRESS)
-                && shouldPreviousGestureResolve();
+        return isResolvingGesture() && shouldPreviousGestureResolve();
     }
 
     /**
