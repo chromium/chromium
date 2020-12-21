@@ -334,9 +334,12 @@ void RenderAccessibilityImpl::AccessibilityModeChanged(const ui::AXMode& mode) {
 
     // If there are any events in flight, |HandleAXEvent| will refuse to process
     // our new event.
-    needs_initial_ax_tree_root_ = true;
-    event_schedule_mode_ = EventScheduleMode::kProcessEventsImmediately;
-    ScheduleSendPendingAccessibilityEvents();
+    pending_events_.clear();
+    auto root_object = WebAXObject::FromWebDocument(document, false);
+    ax::mojom::Event event = root_object.IsLoaded()
+                                 ? ax::mojom::Event::kLoadComplete
+                                 : ax::mojom::Event::kLayoutComplete;
+    HandleAXEvent(ui::AXEvent(root_object.AxID(), event));
   }
 }
 
@@ -540,11 +543,11 @@ void RenderAccessibilityImpl::Reset(int32_t reset_token) {
   if (!document.IsNull()) {
     // Tree-only mode gets used by the automation extension API which requires a
     // load complete event to invoke listener callbacks.
-    // SendPendingAccessibilityEvents() will fire the load complete event
-    // if the page is loaded.
-    needs_initial_ax_tree_root_ = true;
-    event_schedule_mode_ = EventScheduleMode::kProcessEventsImmediately;
-    ScheduleSendPendingAccessibilityEvents();
+    auto root_object = WebAXObject::FromWebDocument(document, false);
+    ax::mojom::Event event = root_object.IsLoaded()
+                                 ? ax::mojom::Event::kLoadComplete
+                                 : ax::mojom::Event::kLayoutComplete;
+    HandleAXEvent(ui::AXEvent(root_object.AxID(), event));
   }
 }
 
@@ -861,18 +864,10 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
     // complete for the entire document, in order to initialize the browser's
     // cached accessibility tree.
     needs_initial_ax_tree_root_ = false;
-    auto root_obj = WebAXObject::FromWebDocument(document);
-    // Always fire layout complete for a new root object.
+    auto obj = WebAXObject::FromWebDocument(document);
     pending_events_.insert(
         pending_events_.begin(),
-        ui::AXEvent(root_obj.AxID(), ax::mojom::Event::kLayoutComplete));
-
-    // If loaded, insert load complete at the top.
-    if (root_obj.IsLoaded()) {
-      pending_events_.insert(
-          pending_events_.begin(),
-          ui::AXEvent(root_obj.AxID(), ax::mojom::Event::kLoadComplete));
-    }
+        ui::AXEvent(obj.AxID(), ax::mojom::Event::kLayoutComplete));
   }
 
   if (pending_events_.empty() && dirty_objects_.empty()) {
@@ -906,8 +901,8 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
   // location changes.
   bool need_to_send_location_changes = false;
 
-  // Keep track of load complete messages. When a load completes, it's a good
-  // time to inject a stylesheet for image annotation debugging.
+  // If there's a load complete message, we need to change the event schedule
+  // mode.
   bool had_load_complete_messages = false;
 
   ScopedFreezeBlinkAXTreeSource freeze(tree_source_.get());
