@@ -579,7 +579,7 @@ TEST_F(MenuManagerTest, ExecuteCommand) {
           &profile, base::BindRepeating(&MockEventRouterFactoryFunction)));
 
   content::ContextMenuParams params;
-  params.media_type = blink::ContextMenuDataMediaType::kImage;
+  params.media_type = blink::mojom::ContextMenuDataMediaType::kImage;
   params.src_url = GURL("http://foo.bar/image.png");
   params.page_url = GURL("http://foo.bar");
   params.selection_text = base::ASCIIToUTF16("Hello World");

@@ -88,8 +88,8 @@ IPC_ENUM_TRAITS_MAX_VALUE(blink::mojom::FrameOwnerElementType,
                           blink::mojom::FrameOwnerElementType::kMaxValue)
 IPC_ENUM_TRAITS_MAX_VALUE(blink::mojom::AdFrameType,
                           blink::mojom::AdFrameType::kMaxValue)
-IPC_ENUM_TRAITS_MAX_VALUE(blink::ContextMenuDataMediaType,
-                          blink::ContextMenuDataMediaType::kLast)
+IPC_ENUM_TRAITS_MAX_VALUE(blink::mojom::ContextMenuDataMediaType,
+                          blink::mojom::ContextMenuDataMediaType::kMaxValue)
 IPC_ENUM_TRAITS_MAX_VALUE(blink::ContextMenuDataInputFieldType,
                           blink::ContextMenuDataInputFieldType::kMaxValue)
 IPC_ENUM_TRAITS_MAX_VALUE(blink::mojom::ScrollbarMode,

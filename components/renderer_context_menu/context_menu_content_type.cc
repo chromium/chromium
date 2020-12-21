@@ -10,7 +10,7 @@
 #include "printing/buildflags/buildflags.h"
 #include "third_party/blink/public/common/context_menu_data/input_field_type.h"
 
-using blink::ContextMenuDataMediaType;
+using blink::mojom::ContextMenuDataMediaType;
 using content::WebContents;
 
 namespace {

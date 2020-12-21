@@ -858,9 +858,9 @@ void TabImpl::Download(JNIEnv* env, jlong native_context_menu_params) {
       reinterpret_cast<content::ContextMenuParams*>(native_context_menu_params);
 
   bool is_link = context_menu_params->media_type !=
-                     blink::ContextMenuDataMediaType::kImage &&
+                     blink::mojom::ContextMenuDataMediaType::kImage &&
                  context_menu_params->media_type !=
-                     blink::ContextMenuDataMediaType::kVideo;
+                     blink::mojom::ContextMenuDataMediaType::kVideo;
 
   download::CreateContextMenuDownload(web_contents_.get(), *context_menu_params,
                                       std::string(), is_link);

@@ -93,7 +93,7 @@
 #include "pdf/pdf_features.h"
 #include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/blink/public/common/context_menu_data/media_type.h"
+#include "third_party/blink/public/mojom/context_menu/context_menu_data.mojom.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -1681,7 +1681,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithParam,
       context_menu_filter->get_params();
 
   // Validate the context menu params for selection.
-  EXPECT_EQ(blink::ContextMenuDataMediaType::kPlugin, params.media_type);
+  EXPECT_EQ(blink::mojom::ContextMenuDataMediaType::kPlugin, params.media_type);
   std::string selected_text = base::UTF16ToUTF8(params.selection_text);
   base::ReplaceChars(selected_text, "\r", "", &selected_text);
   EXPECT_EQ(kExepectedPDFSelection, selected_text);

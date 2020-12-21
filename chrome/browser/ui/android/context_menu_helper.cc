@@ -21,7 +21,7 @@
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
-#include "third_party/blink/public/common/context_menu_data/media_type.h"
+#include "third_party/blink/public/mojom/context_menu/context_menu_data.mojom.h"
 #include "ui/android/view_android.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"

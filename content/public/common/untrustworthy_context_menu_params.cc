@@ -14,7 +14,7 @@ CustomContextMenuContext::CustomContextMenuContext()
       render_widget_id(kCurrentRenderWidget) {}
 
 UntrustworthyContextMenuParams::UntrustworthyContextMenuParams()
-    : media_type(blink::ContextMenuDataMediaType::kNone),
+    : media_type(blink::mojom::ContextMenuDataMediaType::kNone),
       x(0),
       y(0),
       has_image_contents(false),

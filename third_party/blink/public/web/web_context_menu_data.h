@@ -33,8 +33,8 @@
 
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "third_party/blink/public/common/context_menu_data/input_field_type.h"
-#include "third_party/blink/public/common/context_menu_data/media_type.h"
 #include "third_party/blink/public/common/input/web_menu_source_type.h"
+#include "third_party/blink/public/mojom/context_menu/context_menu_data.mojom-shared.h"
 #include "third_party/blink/public/platform/web_impression.h"
 #include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -48,8 +48,8 @@ namespace blink {
 // This struct is passed to WebViewClient::ShowContextMenu.
 struct WebContextMenuData {
   // The type of media the context menu is being invoked on.
-  // using MediaType = ContextMenuDataMediaType;
-  ContextMenuDataMediaType media_type;
+  // using MediaType = blink::mojom::ContextMenuDataMediaType;
+  blink::mojom::ContextMenuDataMediaType media_type;
 
   // The x and y position of the mouse pointer (relative to the webview).
   gfx::Point mouse_position;
@@ -155,7 +155,7 @@ struct WebContextMenuData {
   WebMenuSourceType source_type;
 
   WebContextMenuData()
-      : media_type(ContextMenuDataMediaType::kNone),
+      : media_type(blink::mojom::ContextMenuDataMediaType::kNone),
         has_image_contents(false),
         media_flags(kMediaNone),
         is_spell_checking_enabled(false),

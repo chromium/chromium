@@ -32,6 +32,7 @@
 
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
 #include "third_party/blink/public/common/input/web_menu_source_type.h"
+#include "third_party/blink/public/mojom/context_menu/context_menu_data.mojom-blink.h"
 #include "third_party/blink/public/web/web_context_menu_data.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_plugin.h"
@@ -208,8 +209,8 @@ bool ContextMenuController::ShouldShowContextMenuFromTouch(
     const WebContextMenuData& data) {
   return page_->GetSettings().GetAlwaysShowContextMenuOnTouch() ||
          !data.link_url.IsEmpty() ||
-         data.media_type == ContextMenuDataMediaType::kImage ||
-         data.media_type == ContextMenuDataMediaType::kVideo ||
+         data.media_type == mojom::blink::ContextMenuDataMediaType::kImage ||
+         data.media_type == mojom::blink::ContextMenuDataMediaType::kVideo ||
          data.is_editable || !data.selected_text.IsEmpty();
 }
 
@@ -283,11 +284,11 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
   // Links, Images, Media tags, and Image/Media-Links take preference over
   // all else.
   if (IsA<HTMLCanvasElement>(result.InnerNode())) {
-    data.media_type = ContextMenuDataMediaType::kCanvas;
+    data.media_type = mojom::blink::ContextMenuDataMediaType::kCanvas;
     data.has_image_contents = true;
   } else if (!result.AbsoluteImageURL().IsEmpty()) {
     data.src_url = result.AbsoluteImageURL();
-    data.media_type = ContextMenuDataMediaType::kImage;
+    data.media_type = mojom::blink::ContextMenuDataMediaType::kImage;
     data.media_flags |= WebContextMenuData::kMediaCanPrint;
 
     // An image can be null for many reasons, like being blocked, no image
@@ -305,9 +306,9 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
       // A video element should be presented as an audio element when it has an
       // audio track but no video track.
       if (media_element->HasAudio() && !media_element->HasVideo())
-        data.media_type = ContextMenuDataMediaType::kAudio;
+        data.media_type = mojom::blink::ContextMenuDataMediaType::kAudio;
       else
-        data.media_type = ContextMenuDataMediaType::kVideo;
+        data.media_type = mojom::blink::ContextMenuDataMediaType::kVideo;
       if (media_element->SupportsPictureInPicture()) {
         data.media_flags |= WebContextMenuData::kMediaCanPictureInPicture;
         if (PictureInPictureController::IsElementInPictureInPicture(
@@ -315,7 +316,7 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
           data.media_flags |= WebContextMenuData::kMediaPictureInPicture;
       }
     } else if (IsA<HTMLAudioElement>(*media_element)) {
-      data.media_type = ContextMenuDataMediaType::kAudio;
+      data.media_type = mojom::blink::ContextMenuDataMediaType::kAudio;
     }
 
     data.suggested_filename = media_element->title();
@@ -348,7 +349,7 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
             result.InnerNode()->GetLayoutObject())) {
       WebPluginContainerImpl* plugin_view = embedded->Plugin();
       if (plugin_view) {
-        data.media_type = ContextMenuDataMediaType::kPlugin;
+        data.media_type = mojom::blink::ContextMenuDataMediaType::kPlugin;
 
         WebPlugin* plugin = plugin_view->Plugin();
         data.link_url = plugin->LinkAtPosition(data.mouse_position);
