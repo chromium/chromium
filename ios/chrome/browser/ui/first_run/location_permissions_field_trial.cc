@@ -28,10 +28,10 @@ const char kLocationRemoveFirstRunPromptGroup[] =
 const char kDisabledGroup[] = "Disabled";
 const char kDefaultGroup[] = "Default";
 // Experiment IDs defined for the above field trial groups.
-const variations::VariationID kDefaultTrialID = 3329331;
-const variations::VariationID kDisabledTrialID = 3329332;
-const variations::VariationID kLocationRemoveFirstRunPromptTrialID = 3329333;
-const variations::VariationID kLocationFirstRunModalTrialID = 3329334;
+const variations::VariationID kDefaultTrialID = 3329335;
+const variations::VariationID kDisabledTrialID = 3329336;
+const variations::VariationID kLocationRemoveFirstRunPromptTrialID = 3329337;
+const variations::VariationID kLocationFirstRunModalTrialID = 3329338;
 
 // Default local state pref value.
 const int kDefaultPrefValue = -1;
