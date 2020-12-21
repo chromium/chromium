@@ -39,12 +39,11 @@ class PendingCastComponent {
     virtual void CancelPendingComponent(PendingCastComponent* component) = 0;
   };
 
-  PendingCastComponent(
-      Delegate* delegate,
-      std::unique_ptr<base::fuchsia::StartupContext> startup_context,
-      fidl::InterfaceRequest<fuchsia::sys::ComponentController>
-          controller_request,
-      base::StringPiece app_id);
+  PendingCastComponent(Delegate* delegate,
+                       std::unique_ptr<base::StartupContext> startup_context,
+                       fidl::InterfaceRequest<fuchsia::sys::ComponentController>
+                           controller_request,
+                       base::StringPiece app_id);
   ~PendingCastComponent();
 
   PendingCastComponent(const PendingCastComponent&) = delete;

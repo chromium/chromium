@@ -182,7 +182,7 @@ class FrameHostComponent : public fuchsia::sys::ComponentController {
   // it to connect to the MetricsRecorder.
   static base::WeakPtr<const sys::ServiceDirectory>
   StartAndReturnIncomingServiceDirectory(
-      std::unique_ptr<base::fuchsia::StartupContext> startup_context,
+      std::unique_ptr<base::StartupContext> startup_context,
       fidl::InterfaceRequest<fuchsia::sys::ComponentController>
           controller_request,
       fuchsia::web::FrameHost* const frame_host_impl) {
@@ -194,11 +194,10 @@ class FrameHostComponent : public fuchsia::sys::ComponentController {
   }
 
  private:
-  FrameHostComponent(
-      std::unique_ptr<base::fuchsia::StartupContext> startup_context,
-      fidl::InterfaceRequest<fuchsia::sys::ComponentController>
-          controller_request,
-      fuchsia::web::FrameHost* const frame_host_impl)
+  FrameHostComponent(std::unique_ptr<base::StartupContext> startup_context,
+                     fidl::InterfaceRequest<fuchsia::sys::ComponentController>
+                         controller_request,
+                     fuchsia::web::FrameHost* const frame_host_impl)
       : startup_context_(std::move(startup_context)),
         frame_host_binding_(startup_context_->outgoing(), frame_host_impl),
         weak_incoming_services_(startup_context_->svc()) {
@@ -215,7 +214,7 @@ class FrameHostComponent : public fuchsia::sys::ComponentController {
     delete this;
   }
 
-  const std::unique_ptr<base::fuchsia::StartupContext> startup_context_;
+  const std::unique_ptr<base::StartupContext> startup_context_;
   const base::fuchsia::ScopedServiceBinding<fuchsia::web::FrameHost>
       frame_host_binding_;
   fidl::Binding<fuchsia::sys::ComponentController> binding_{this};
@@ -229,22 +228,20 @@ class DataResetComponent : public fuchsia::sys::ComponentController,
                            public chromium::cast::DataReset {
  public:
   // Creates a DataResetComponent with lifetime managed by |controller_request|.
-  static void Start(
-      base::OnceCallback<bool()> delete_persistent_data,
-      std::unique_ptr<base::fuchsia::StartupContext> startup_context,
-      fidl::InterfaceRequest<fuchsia::sys::ComponentController>
-          controller_request) {
+  static void Start(base::OnceCallback<bool()> delete_persistent_data,
+                    std::unique_ptr<base::StartupContext> startup_context,
+                    fidl::InterfaceRequest<fuchsia::sys::ComponentController>
+                        controller_request) {
     new DataResetComponent(std::move(delete_persistent_data),
                            std::move(startup_context),
                            std::move(controller_request));
   }
 
  private:
-  DataResetComponent(
-      base::OnceCallback<bool()> delete_persistent_data,
-      std::unique_ptr<base::fuchsia::StartupContext> startup_context,
-      fidl::InterfaceRequest<fuchsia::sys::ComponentController>
-          controller_request)
+  DataResetComponent(base::OnceCallback<bool()> delete_persistent_data,
+                     std::unique_ptr<base::StartupContext> startup_context,
+                     fidl::InterfaceRequest<fuchsia::sys::ComponentController>
+                         controller_request)
       : delete_persistent_data_(std::move(delete_persistent_data)),
         startup_context_(std::move(startup_context)),
         data_reset_handler_binding_(startup_context_->outgoing(), this) {
@@ -273,7 +270,7 @@ class DataResetComponent : public fuchsia::sys::ComponentController,
   }
 
   base::OnceCallback<bool()> delete_persistent_data_;
-  std::unique_ptr<base::fuchsia::StartupContext> startup_context_;
+  std::unique_ptr<base::StartupContext> startup_context_;
   const base::fuchsia::ScopedServiceBinding<chromium::cast::DataReset>
       data_reset_handler_binding_;
   fidl::Binding<fuchsia::sys::ComponentController> binding_{this};
@@ -336,7 +333,7 @@ void CastRunner::StartComponent(
   }
 
   auto startup_context =
-      std::make_unique<base::fuchsia::StartupContext>(std::move(startup_info));
+      std::make_unique<base::StartupContext>(std::move(startup_info));
 
   if (cors_exempt_headers_) {
     StartComponentInternal(cast_url, std::move(startup_context),
@@ -675,7 +672,7 @@ void CastRunner::OnMetricsRecorderServiceRequest(
 
 void CastRunner::StartComponentInternal(
     const GURL& url,
-    std::unique_ptr<base::fuchsia::StartupContext> startup_context,
+    std::unique_ptr<base::StartupContext> startup_context,
     fidl::InterfaceRequest<fuchsia::sys::ComponentController>
         controller_request) {
   // TODO(crbug.com/1120914): Remove this once Component Framework v2 can be

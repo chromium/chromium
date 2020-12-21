@@ -40,7 +40,7 @@ class CastComponent : public WebComponent,
     bool AreComplete() const;
 
     // Parameters populated directly from the StartComponent() arguments.
-    std::unique_ptr<base::fuchsia::StartupContext> startup_context;
+    std::unique_ptr<base::StartupContext> startup_context;
     fidl::InterfaceRequest<fuchsia::sys::ComponentController>
         controller_request;
 

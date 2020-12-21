@@ -19,7 +19,6 @@ class OutgoingDirectory;
 }  // namespace sys
 
 namespace base {
-namespace fuchsia {
 
 // Helper for unpacking a fuchsia.sys.StartupInfo and creating convenience
 // wrappers for the various fields (e.g. the incoming & outgoing service
@@ -68,7 +67,6 @@ class BASE_EXPORT StartupContext {
   zx::channel outgoing_directory_request_;
 };
 
-}  // namespace fuchsia
 }  // namespace base
 
 #endif  // BASE_FUCHSIA_STARTUP_CONTEXT_H_

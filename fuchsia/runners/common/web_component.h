@@ -43,7 +43,7 @@ class WebComponent : public fuchsia::sys::ComponentController,
   //   lifetime of this component instance.
   WebComponent(base::StringPiece debug_name,
                WebContentRunner* runner,
-               std::unique_ptr<base::fuchsia::StartupContext> context,
+               std::unique_ptr<base::StartupContext> context,
                fidl::InterfaceRequest<fuchsia::sys::ComponentController>
                    controller_request);
 
@@ -67,7 +67,7 @@ class WebComponent : public fuchsia::sys::ComponentController,
 
   // Returns the component's startup context (e.g. incoming services, public
   // service directory, etc).
-  base::fuchsia::StartupContext* startup_context() const {
+  base::StartupContext* startup_context() const {
     return startup_context_.get();
   }
 
@@ -108,7 +108,7 @@ class WebComponent : public fuchsia::sys::ComponentController,
   WebContentRunner* const runner_ = nullptr;
 
   // Component context for this instance, including incoming services.
-  const std::unique_ptr<base::fuchsia::StartupContext> startup_context_;
+  const std::unique_ptr<base::StartupContext> startup_context_;
 
   fuchsia::web::FramePtr frame_;
 

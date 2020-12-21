@@ -107,7 +107,7 @@ class CastRunner : public fuchsia::sys::Runner,
   // component URL and ensuring that CORS-exempt headers have been fetched.
   void StartComponentInternal(
       const GURL& url,
-      std::unique_ptr<base::fuchsia::StartupContext> startup_context,
+      std::unique_ptr<base::StartupContext> startup_context,
       fidl::InterfaceRequest<fuchsia::sys::ComponentController>
           controller_request);
 

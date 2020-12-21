@@ -21,7 +21,7 @@
 WebComponent::WebComponent(
     base::StringPiece debug_name,
     WebContentRunner* runner,
-    std::unique_ptr<base::fuchsia::StartupContext> context,
+    std::unique_ptr<base::StartupContext> context,
     fidl::InterfaceRequest<fuchsia::sys::ComponentController>
         controller_request)
     : debug_name_(debug_name.as_string()),
