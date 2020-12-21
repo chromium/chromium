@@ -49,8 +49,9 @@ void ProfilePickerViewSyncDelegate::ShowLoginError(
   // switch or to start sign-in once again.
   std::move(open_browser_callback_)
       .Run(base::BindOnce(
-          &DiceTurnSyncOnHelper::Delegate::ShowLoginErrorForBrowser, email,
-          error_message));
+               &DiceTurnSyncOnHelper::Delegate::ShowLoginErrorForBrowser, email,
+               error_message),
+           /*enterprise_sync_consent_needed=*/false);
 }
 
 void ProfilePickerViewSyncDelegate::ShowMergeSyncDataConfirmation(
@@ -69,7 +70,8 @@ void ProfilePickerViewSyncDelegate::ShowEnterpriseAccountConfirmation(
   std::move(open_browser_callback_)
       .Run(base::BindOnce(&DiceTurnSyncOnHelper::Delegate::
                               ShowEnterpriseAccountConfirmationForBrowser,
-                          email, std::move(callback)));
+                          email, std::move(callback)),
+           /*enterprise_sync_consent_needed=*/true);
 }
 
 void ProfilePickerViewSyncDelegate::ShowSyncConfirmation(
@@ -101,7 +103,8 @@ void ProfilePickerViewSyncDelegate::ShowSyncDisabledConfirmation(
 
   // Open the browser and when it's done, show the confirmation dialog.
   std::move(open_browser_callback_)
-      .Run(base::BindOnce(&OpenSyncConfirmationDialogInBrowser));
+      .Run(base::BindOnce(&OpenSyncConfirmationDialogInBrowser),
+           /*enterprise_sync_consent_needed=*/false);
 }
 
 void ProfilePickerViewSyncDelegate::ShowSyncSettings() {
@@ -114,7 +117,9 @@ void ProfilePickerViewSyncDelegate::ShowSyncSettings() {
   }
 
   // Open the browser and when it's done, open settings in the browser.
-  std::move(open_browser_callback_).Run(base::BindOnce(&OpenSettingsInBrowser));
+  std::move(open_browser_callback_)
+      .Run(base::BindOnce(&OpenSettingsInBrowser),
+           /*enterprise_sync_consent_needed=*/false);
 }
 
 void ProfilePickerViewSyncDelegate::SwitchToProfile(Profile* new_profile) {

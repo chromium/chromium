@@ -9,6 +9,8 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/threading/thread_checker.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_data.h"
@@ -26,14 +28,26 @@ class ThemeSpecifics;
 
 class ThemeSyncableService : public syncer::SyncableService {
  public:
-  ThemeSyncableService(Profile* profile,  // Same profile used by theme_service.
-                       ThemeService* theme_service);
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when theme sync gets started. Observers that register after theme
+    // sync gets started are called right away when they register.
+    virtual void OnThemeSyncStarted() = 0;
+  };
+
+  // `profile` may be nullptr in tests (and is the one used by theme_service,
+  // otherwise).
+  ThemeSyncableService(Profile* profile, ThemeService* theme_service);
   ~ThemeSyncableService() override;
 
   static syncer::ModelType model_type() { return syncer::THEMES; }
 
   // Called by ThemeService when user changes theme.
   void OnThemeChange();
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+  void NotifyOnSyncStartedForTesting();
 
   // syncer::SyncableService implementation.
   void WaitUntilReadyToSync(base::OnceClosure done) override;
@@ -81,8 +95,12 @@ class ThemeSyncableService : public syncer::SyncableService {
       syncer::SyncChange::SyncChangeType change_type,
       const sync_pb::ThemeSpecifics& theme_specifics);
 
+  void NotifyOnSyncStarted();
+
   Profile* const profile_;
   ThemeService* const theme_service_;
+
+  base::ObserverList<Observer> observer_list_;
 
   std::unique_ptr<syncer::SyncChangeProcessor> sync_processor_;
   std::unique_ptr<syncer::SyncErrorFactory> sync_error_handler_;

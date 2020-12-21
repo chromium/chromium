@@ -68,8 +68,7 @@ class ProfilePickerView : public views::DialogDelegateView,
   void SwitchToSignIn(SkColor profile_color,
                       base::OnceCallback<void(bool)> switch_finished_callback);
   // On creation success for the sign-in profile, it rebuilds the view.
-  void OnProfileForSigninCreated(SkColor profile_color,
-                                 Profile* new_profile,
+  void OnProfileForSigninCreated(Profile* new_profile,
                                  Profile::CreateStatus status);
   // Switches the layout to the sync confirmation screen.
   void SwitchToSyncConfirmation();
@@ -116,8 +115,10 @@ class ProfilePickerView : public views::DialogDelegateView,
 
   // Finishes the creation flow by marking `profile_being_created_` as fully
   // created, opening a browser window for this profile and calling `callback`.
-  void FinishSignedInCreationFlow(BrowserOpenedCallback callback);
-  void FinishSignedInCreationFlowImpl(BrowserOpenedCallback callback);
+  void FinishSignedInCreationFlow(BrowserOpenedCallback callback,
+                                  bool enterprise_sync_consent_needed);
+  void FinishSignedInCreationFlowImpl(BrowserOpenedCallback callback,
+                                      bool enterprise_sync_consent_needed);
 
   // Internal callback to finish the last steps of the signed-in creation flow.
   void OnBrowserOpened(BrowserOpenedCallback finish_flow_callback,
@@ -170,6 +171,11 @@ class ProfilePickerView : public views::DialogDelegateView,
   // The web contents backed by `signed_in_profile_being_created_`, with the
   // same lifetime. This is used for displaying the sign-in flow.
   std::unique_ptr<content::WebContents> new_profile_contents_;
+
+  // Assigned a value at the beginning of a signed-in profile creation, set for
+  // the profile at the very end to avoid coloring the simple toolbar for GAIA
+  // sign-in (that uses the ThemeProvider of the current profile).
+  SkColor profile_color_;
 
   base::string16 name_for_signed_in_profile_;
   base::OnceClosure on_profile_name_available_;

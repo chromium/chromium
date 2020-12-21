@@ -18,7 +18,8 @@ class ProfilePickerViewSyncDelegate : public DiceTurnSyncOnHelper::Delegate,
                                       public LoginUIService::Observer {
  public:
   using OpenBrowserCallback =
-      base::OnceCallback<void(ProfilePickerView::BrowserOpenedCallback)>;
+      base::OnceCallback<void(ProfilePickerView::BrowserOpenedCallback,
+                              bool enterprise_sync_consent_needed)>;
 
   ProfilePickerViewSyncDelegate(Profile* profile,
                                 OpenBrowserCallback open_browser_callback);
