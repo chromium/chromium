@@ -106,6 +106,11 @@ void ChromeOSAuthenticator::MakeCredential(CtapMakeCredentialRequest request,
   current_request_id_ = generate_request_id_callback_.Run();
   req.set_request_id(current_request_id_);
 
+  for (const PublicKeyCredentialDescriptor& descriptor : request.exclude_list) {
+    const std::vector<uint8_t>& id = descriptor.id();
+    req.add_excluded_credential_id(std::string(id.begin(), id.end()));
+  }
+
   dbus::MethodCall method_call(u2f::kU2FInterface, u2f::kU2FMakeCredential);
   dbus::MessageWriter writer(&method_call);
   writer.AppendProtoAsArrayOfBytes(req);
