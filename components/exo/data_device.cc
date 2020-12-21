@@ -124,13 +124,17 @@ int DataDevice::OnPerformDrop(const ui::DropTargetEvent& event) {
 
   delegate_->OnDrop();
 
-  // TODO(tetsui): Avoid using nested loop by adding asynchronous callback to
-  // aura::client::DragDropDelegate.
+  // TODO(crbug.com/1160925): Avoid using nested loop by adding asynchronous
+  // callback to aura::client::DragDropDelegate.
+  base::WeakPtr<DataDevice> alive(weak_factory_.GetWeakPtr());
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), kDataOfferDestructionTimeout);
   quit_closure_ = run_loop.QuitClosure();
   run_loop.Run();
+
+  if (!alive)
+    return ui::DragDropTypes::DRAG_NONE;
 
   if (quit_closure_) {
     // DataOffer not destroyed by the client until the timeout.

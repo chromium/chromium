@@ -11,6 +11,7 @@
 #include "ash/shell.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "components/exo/data_device_delegate.h"
 #include "components/exo/data_exchange_delegate.h"
 #include "components/exo/data_offer.h"
@@ -197,6 +198,17 @@ TEST_F(DataDeviceTest, DataEventsExit) {
   device_->OnDragExited();
   ASSERT_EQ(1u, delegate_.PopEvents(&events));
   EXPECT_EQ(DataEvent::kLeave, events[0]);
+}
+
+TEST_F(DataDeviceTest, DeleteDataDeviceDuringDrop) {
+  ui::DropTargetEvent event(data_, gfx::PointF(), gfx::PointF(),
+                            ui::DragDropTypes::DRAG_MOVE);
+  ui::Event::DispatcherApi(&event).set_target(surface_->window());
+  device_->OnDragEntered(event);
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() { device_.reset(); }));
+  int result = device_->OnPerformDrop(event);
+  EXPECT_EQ(ui::DragDropTypes::DRAG_NONE, result);
 }
 
 TEST_F(DataDeviceTest, DeleteDataOfferDuringDrag) {
