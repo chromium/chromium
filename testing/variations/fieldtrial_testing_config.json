@@ -1932,6 +1932,21 @@
             ]
         }
     ],
+    "CriticalPersistedTabData": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CriticalPersistedTabData"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrosSchedulerCore": [
         {
             "platforms": [

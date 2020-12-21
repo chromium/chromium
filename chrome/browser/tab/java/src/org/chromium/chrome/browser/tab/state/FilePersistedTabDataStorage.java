@@ -29,6 +29,8 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Locale;
 
+import android.os.StrictMode;
+
 /**
  * {@link PersistedTabDataStorage} which uses a file for the storage
  */
@@ -45,8 +47,13 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
         private static File sDirectory;
 
         static {
-            sDirectory =
-                    ContextUtils.getApplicationContext().getDir(sBaseDirName, Context.MODE_PRIVATE);
+            StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskWrites();
+            try {
+                sDirectory =
+                ContextUtils.getApplicationContext().getDir(sBaseDirName, Context.MODE_PRIVATE);
+            } finally {
+                StrictMode.setThreadPolicy(oldPolicy);
+            }
         }
     }
     private SequencedTaskRunner mSequencedTaskRunner;
