@@ -4,6 +4,8 @@
 
 static_library("federated_learning") {
   sources = [
+    "features/features.cc",
+    "features/features.h",
     "floc_constants.cc",
     "floc_constants.h",
     "floc_id.cc",

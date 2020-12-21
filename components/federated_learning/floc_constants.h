@@ -17,6 +17,7 @@ extern const uint8_t kMaxNumberOfBitsInFloc;
 extern const char kFlocIdValuePrefKey[];
 extern const char kFlocIdHistoryBeginTimePrefKey[];
 extern const char kFlocIdHistoryEndTimePrefKey[];
+extern const char kFlocIdFinchConfigVersionPrefKey[];
 extern const char kFlocIdSortingLshVersionPrefKey[];
 extern const char kFlocIdComputeTimePrefKey[];
 extern const char kManifestFlocComponentFormatKey[];

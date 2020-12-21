@@ -17,7 +17,7 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/user_events_helper.h"
 #include "chrome/browser/sync/user_event_service_factory.h"
-#include "chrome/common/chrome_features.h"
+#include "components/federated_learning/features/features.h"
 #include "components/sync/protocol/user_event_specifics.pb.h"
 #include "components/sync_user_events/user_event_service.h"
 #include "content/public/test/browser_test.h"
@@ -42,7 +42,8 @@ class SingleClientUserEventsSyncTest : public SyncTest {
     // logged right after sync gets enabled, and could mess up with the test
     // expectations. The scenario when the floc-event-logging is enabled is
     // tested separately.
-    feature_list_.InitAndDisableFeature(features::kFlocIdComputedEventLogging);
+    feature_list_.InitAndDisableFeature(
+        federated_learning::kFlocIdComputedEventLogging);
   }
 
   ~SingleClientUserEventsSyncTest() override = default;
@@ -243,7 +244,8 @@ class SingleClientUserEventsSyncTestFlocEventLoggingEnabled
  public:
   SingleClientUserEventsSyncTestFlocEventLoggingEnabled() {
     feature_list_.Reset();
-    feature_list_.InitAndEnableFeature(features::kFlocIdComputedEventLogging);
+    feature_list_.InitAndEnableFeature(
+        federated_learning::kFlocIdComputedEventLogging);
   }
 };
 

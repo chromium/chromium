@@ -19,16 +19,19 @@ static_assert(kMaxNumberOfBitsInFloc > 0 &&
 const char kFlocIdValuePrefKey[] = "federated_learning.floc_id.value";
 
 const char kFlocIdHistoryBeginTimePrefKey[] =
-    "federated_learning.floc_id_.history_begin_time";
+    "federated_learning.floc_id.history_begin_time";
 
 const char kFlocIdHistoryEndTimePrefKey[] =
-    "federated_learning.floc_id_.history_end_time";
+    "federated_learning.floc_id.history_end_time";
+
+const char kFlocIdFinchConfigVersionPrefKey[] =
+    "federated_learning.floc_id.finch_config_version";
 
 const char kFlocIdSortingLshVersionPrefKey[] =
-    "federated_learning.floc_id_.sorting_lsh_version";
+    "federated_learning.floc_id.sorting_lsh_version";
 
 const char kFlocIdComputeTimePrefKey[] =
-    "federated_learning.floc_id_.compute_time";
+    "federated_learning.floc_id.compute_time";
 
 const char kManifestFlocComponentFormatKey[] = "floc_component_format";
 

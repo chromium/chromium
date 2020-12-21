@@ -6,6 +6,7 @@
 
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "components/federated_learning/features/features.h"
 #include "components/federated_learning/floc_constants.h"
 #include "components/federated_learning/sim_hash.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -13,20 +14,15 @@
 
 namespace federated_learning {
 
-namespace {
-
-// Domain one-hot + sim hash + sorting-lsh (behind a feature flag)
-const uint32_t kChromeFlocIdVersion = 1;
-
-}  // namespace
-
 // static
 uint64_t FlocId::SimHashHistory(
     const std::unordered_set<std::string>& domains) {
   return SimHashStrings(domains, kMaxNumberOfBitsInFloc);
 }
 
-FlocId::FlocId() = default;
+FlocId::FlocId()
+    : finch_config_version_(kFlocIdFinchConfigVersion.Get()),
+      compute_time_(base::Time::Now()) {}
 
 FlocId::FlocId(uint64_t id,
                base::Time history_begin_time,
@@ -35,7 +31,9 @@ FlocId::FlocId(uint64_t id,
     : id_(id),
       history_begin_time_(history_begin_time),
       history_end_time_(history_end_time),
-      sorting_lsh_version_(sorting_lsh_version) {}
+      finch_config_version_(kFlocIdFinchConfigVersion.Get()),
+      sorting_lsh_version_(sorting_lsh_version),
+      compute_time_(base::Time::Now()) {}
 
 FlocId::FlocId(const FlocId& id) = default;
 
@@ -52,7 +50,9 @@ bool FlocId::IsValid() const {
 bool FlocId::operator==(const FlocId& other) const {
   return id_ == other.id_ && history_begin_time_ == other.history_begin_time_ &&
          history_end_time_ == other.history_end_time_ &&
-         sorting_lsh_version_ == other.sorting_lsh_version_;
+         finch_config_version_ == other.finch_config_version_ &&
+         sorting_lsh_version_ == other.sorting_lsh_version_ &&
+         compute_time_ == other.compute_time_;
 }
 
 bool FlocId::operator!=(const FlocId& other) const {
@@ -62,8 +62,10 @@ bool FlocId::operator!=(const FlocId& other) const {
 std::string FlocId::ToStringForJsApi() const {
   DCHECK(id_.has_value());
 
+  // TODO(yaoxia): consider returning the version part even when floc is
+  // invalid.
   return base::StrCat({base::NumberToString(id_.value()), ".",
-                       base::NumberToString(kChromeFlocIdVersion), ".",
+                       base::NumberToString(finch_config_version_), ".",
                        base::NumberToString(sorting_lsh_version_)});
 }
 
@@ -72,6 +74,7 @@ void FlocId::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterUint64Pref(kFlocIdValuePrefKey, 0);
   registry->RegisterTimePref(kFlocIdHistoryBeginTimePrefKey, base::Time());
   registry->RegisterTimePref(kFlocIdHistoryEndTimePrefKey, base::Time());
+  registry->RegisterUint64Pref(kFlocIdFinchConfigVersionPrefKey, 0);
   registry->RegisterUint64Pref(kFlocIdSortingLshVersionPrefKey, 0);
   registry->RegisterTimePref(kFlocIdComputeTimePrefKey, base::Time());
 }
@@ -79,35 +82,49 @@ void FlocId::RegisterPrefs(PrefRegistrySimple* registry) {
 void FlocId::SaveToPrefs(PrefService* prefs) {
   if (!id_.has_value()) {
     prefs->ClearPref(kFlocIdValuePrefKey);
-    return;
+  } else {
+    prefs->SetUint64(kFlocIdValuePrefKey, id_.value());
   }
 
-  prefs->SetUint64(kFlocIdValuePrefKey, id_.value());
   prefs->SetTime(kFlocIdHistoryBeginTimePrefKey, history_begin_time_);
   prefs->SetTime(kFlocIdHistoryEndTimePrefKey, history_end_time_);
+  prefs->SetUint64(kFlocIdFinchConfigVersionPrefKey, finch_config_version_);
   prefs->SetUint64(kFlocIdSortingLshVersionPrefKey, sorting_lsh_version_);
+  prefs->SetTime(kFlocIdComputeTimePrefKey, compute_time_);
+}
+
+void FlocId::InvalidateIdAndSaveToPrefs(PrefService* prefs) {
+  id_.reset();
+  prefs->ClearPref(kFlocIdValuePrefKey);
 }
 
 // static
 FlocId FlocId::ReadFromPrefs(PrefService* prefs) {
-  if (!prefs->HasPrefPath(kFlocIdValuePrefKey))
-    return FlocId();
+  base::Optional<uint64_t> id;
+  if (prefs->HasPrefPath(kFlocIdValuePrefKey))
+    id = prefs->GetUint64(kFlocIdValuePrefKey);
 
-  return FlocId(prefs->GetUint64(kFlocIdValuePrefKey),
-                prefs->GetTime(kFlocIdHistoryBeginTimePrefKey),
+  return FlocId(id, prefs->GetTime(kFlocIdHistoryBeginTimePrefKey),
                 prefs->GetTime(kFlocIdHistoryEndTimePrefKey),
-                prefs->GetUint64(kFlocIdSortingLshVersionPrefKey));
+                prefs->GetUint64(kFlocIdFinchConfigVersionPrefKey),
+                prefs->GetUint64(kFlocIdSortingLshVersionPrefKey),
+                prefs->GetTime(kFlocIdComputeTimePrefKey));
 }
 
-// static
-void FlocId::SaveComputeTimeToPrefs(base::Time compute_time,
-                                    PrefService* prefs) {
-  prefs->SetTime(kFlocIdComputeTimePrefKey, compute_time);
-}
-
-// static
-base::Time FlocId::ReadComputeTimeFromPrefs(PrefService* prefs) {
-  return prefs->GetTime(kFlocIdComputeTimePrefKey);
+FlocId::FlocId(base::Optional<uint64_t> id,
+               base::Time history_begin_time,
+               base::Time history_end_time,
+               uint32_t finch_config_version,
+               uint32_t sorting_lsh_version,
+               base::Time compute_time)
+    : id_(id),
+      history_begin_time_(history_begin_time),
+      history_end_time_(history_end_time),
+      finch_config_version_(finch_config_version),
+      sorting_lsh_version_(sorting_lsh_version),
+      compute_time_(compute_time) {
+  // If the floc is never computed, the id should be invalid.
+  DCHECK(!compute_time.is_null() || !id.has_value());
 }
 
 }  // namespace federated_learning

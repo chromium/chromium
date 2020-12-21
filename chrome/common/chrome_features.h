@@ -269,19 +269,6 @@ extern const base::Feature kFlashDeprecationWarning;
 #endif
 
 COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::Feature kFlocIdComputedEventLogging;
-
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::Feature kFlocIdSortingLshBasedComputation;
-
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::Feature kFederatedLearningOfCohorts;
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<base::TimeDelta> kFlocIdScheduledUpdateInterval;
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<int> kFlocIdMinimumHistoryDomainSizeRequired;
-
-COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kFocusMode;
 
 #if defined(OS_WIN)

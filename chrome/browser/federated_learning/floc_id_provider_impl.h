@@ -168,7 +168,22 @@ class FlocIdProviderImpl : public FlocIdProvider,
   // |delay|.
   void ScheduleFlocComputation(base::TimeDelta delay);
 
-  // The id to be exposed to the JS API.
+  // The following raw pointer references are guaranteed to outlive this object.
+  // |prefs_| is owned by Profile, and it won't be destroyed until the
+  // destructor of Profile is called, where all the profile-keyed services
+  // including this object will be destroyed. Other services are all created by
+  // profile-keyed service factories, and the dependency declared in
+  // FlocIdProviderFactory::FlocIdProviderFactory() guarantees that this object
+  // will be destroyed first among those services.
+  PrefService* prefs_;
+  syncer::SyncService* sync_service_;
+  scoped_refptr<content_settings::CookieSettings> cookie_settings_;
+  FlocRemotePermissionService* floc_remote_permission_service_;
+  history::HistoryService* history_service_;
+  syncer::UserEventService* user_event_service_;
+
+  // The id to be exposed to the JS API. It will always be in sync with the one
+  // stored in prefs.
   FlocId floc_id_;
 
   bool floc_computation_in_progress_ = false;
@@ -183,20 +198,6 @@ class FlocIdProviderImpl : public FlocIdProvider,
 
   bool first_sorting_lsh_file_ready_seen_ = false;
   bool first_sync_history_enabled_seen_ = false;
-
-  // The following raw pointer references are guaranteed to outlive this object.
-  // |prefs_| is owned by Profile, and it won't be destroyed until the
-  // destructor of Profile is called, where all the profile-keyed services
-  // including this object will be destroyed. Other services are all created by
-  // profile-keyed service factories, and the dependency declared in
-  // FlocIdProviderFactory::FlocIdProviderFactory() guarantees that this object
-  // will be destroyed first among those services.
-  PrefService* prefs_;
-  syncer::SyncService* sync_service_;
-  scoped_refptr<content_settings::CookieSettings> cookie_settings_;
-  FlocRemotePermissionService* floc_remote_permission_service_;
-  history::HistoryService* history_service_;
-  syncer::UserEventService* user_event_service_;
 
   // Used for the async tasks querying the HistoryService.
   base::CancelableTaskTracker history_task_tracker_;

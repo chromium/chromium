@@ -11,12 +11,12 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/federated_learning/floc_remote_permission_service.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/federated_learning/features/features.h"
 #include "components/history/core/browser/history_database_params.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/test_history_database.h"
@@ -178,6 +178,21 @@ class MockFlocIdProvider : public FlocIdProviderImpl {
 };
 
 }  // namespace
+
+// Used to create a floc id with non-current finch_config_version or
+// compute_time.
+class FlocIdTester {
+ public:
+  static FlocId Create(base::Optional<uint64_t> id,
+                       base::Time history_begin_time,
+                       base::Time history_end_time,
+                       uint32_t finch_config_version,
+                       uint32_t sorting_lsh_version,
+                       base::Time compute_time) {
+    return FlocId(id, history_begin_time, history_end_time,
+                  finch_config_version, sorting_lsh_version, compute_time);
+  }
+};
 
 class FlocIdProviderUnitTest : public testing::Test {
  public:
@@ -454,7 +469,7 @@ class FlocIdProviderSimpleFeatureParamUnitTest : public FlocIdProviderUnitTest {
   FlocIdProviderSimpleFeatureParamUnitTest() {
     feature_list_.Reset();
     feature_list_.InitAndEnableFeatureWithParameters(
-        features::kFederatedLearningOfCohorts,
+        kFederatedLearningOfCohorts,
         {{"update_interval", "24h"},
          {"minimum_history_domain_size_required", "1"}});
   }
@@ -985,10 +1000,10 @@ class FlocIdProviderUnitTestSortingLshEnabled
   FlocIdProviderUnitTestSortingLshEnabled() {
     feature_list_.Reset();
     feature_list_.InitWithFeaturesAndParameters(
-        {{features::kFederatedLearningOfCohorts,
+        {{kFederatedLearningOfCohorts,
           {{"update_interval", "24h"},
            {"minimum_history_domain_size_required", "1"}}},
-         {features::kFlocIdSortingLshBasedComputation, {}}},
+         {kFlocIdSortingLshBasedComputation, {}}},
         {});
   }
 };
@@ -1031,6 +1046,8 @@ TEST_F(FlocIdProviderUnitTestSortingLshEnabled,
   EXPECT_EQ(FlocId(123, kSevenDaysBeforeStart, kFiveDaysBeforeStart, 999),
             floc_id());
 
+  base::Time time_before_advancing = base::Time::Now();
+
   // Advance the clock by 1 day. The "foo.com" should expire. However, we pause
   // before the computation completes.
   floc_id_provider_->set_should_pause_before_compute_floc_completed(true);
@@ -1038,8 +1055,10 @@ TEST_F(FlocIdProviderUnitTestSortingLshEnabled,
 
   EXPECT_TRUE(floc_computation_in_progress());
   EXPECT_FALSE(need_recompute());
-  EXPECT_EQ(FlocId(123, kSevenDaysBeforeStart, kFiveDaysBeforeStart, 999),
-            floc_id());
+  EXPECT_EQ(
+      FlocIdTester::Create(123, kSevenDaysBeforeStart, kFiveDaysBeforeStart, 1,
+                           999, time_before_advancing),
+      floc_id());
   EXPECT_EQ(FlocId(456, kSixDaysBeforeStart, kFiveDaysBeforeStart, 999),
             floc_id_provider_->paused_result().floc_id);
 
@@ -1241,14 +1260,13 @@ class FlocIdProviderUnitTestLastFlocUnexpired
         base::Time::Now() - base::TimeDelta::FromDays(4);
     const base::Time kThreeDaysBeforeStart =
         base::Time::Now() - base::TimeDelta::FromDays(3);
-
-    FlocId floc_id =
-        FlocId(123, kFourDaysBeforeStart, kThreeDaysBeforeStart, 999);
-    base::Time last_compute_time =
+    const base::Time kLastComputeTime =
         base::Time::Now() - base::TimeDelta::FromHours(12);
 
+    FlocId floc_id =
+        FlocIdTester::Create(123, kFourDaysBeforeStart, kThreeDaysBeforeStart,
+                             1, 999, kLastComputeTime);
     floc_id.SaveToPrefs(&prefs_);
-    FlocId::SaveComputeTimeToPrefs(last_compute_time, &prefs_);
   }
 
   void InitializeHistory() override {
@@ -1269,11 +1287,16 @@ TEST_F(FlocIdProviderUnitTestLastFlocUnexpired, NextScheduledUpdate) {
       base::Time::Now() - base::TimeDelta::FromDays(3);
   const base::Time kTwoDaysBeforeStart =
       base::Time::Now() - base::TimeDelta::FromDays(2);
+  const base::Time kLastComputeTime =
+      base::Time::Now() - base::TimeDelta::FromHours(12);
+
+  FlocId initial_floc_id =
+      FlocIdTester::Create(123, kFourDaysBeforeStart, kThreeDaysBeforeStart, 1,
+                           999, kLastComputeTime);
 
   // Initially the floc is set to the entry from the prefs. No computation has
   // occurred for this session.
-  EXPECT_EQ(floc_id(),
-            FlocId(123, kFourDaysBeforeStart, kThreeDaysBeforeStart, 999));
+  EXPECT_EQ(floc_id(), initial_floc_id);
   EXPECT_FALSE(floc_computation_in_progress());
   EXPECT_TRUE(floc_computation_scheduled());
   EXPECT_EQ(0u, floc_id_provider_->compute_floc_completed_count());
@@ -1293,8 +1316,7 @@ TEST_F(FlocIdProviderUnitTestLastFlocUnexpired, NextScheduledUpdate) {
   // Fast forward by 12 hours. This should trigger a scheduled update.
   task_environment_.FastForwardBy(base::TimeDelta::FromHours(12));
 
-  // Expect a compute, an event logging with trigger FlocIdComputed::REFRESHED,
-  // and an update to the local prefs.
+  // Expect a compute, an event logging and an update to the local prefs.
   EXPECT_EQ(1u, floc_id_provider_->compute_floc_completed_count());
   EXPECT_EQ(
       floc_id(),
@@ -1309,7 +1331,6 @@ TEST_F(FlocIdProviderUnitTestLastFlocUnexpired, NextScheduledUpdate) {
             event.floc_id());
 
   EXPECT_EQ(floc_id(), FlocId::ReadFromPrefs(&prefs_));
-  EXPECT_EQ(base::Time::Now(), FlocId::ReadComputeTimeFromPrefs(&prefs_));
 }
 
 TEST_F(FlocIdProviderUnitTestLastFlocUnexpired, HistoryDelete) {
@@ -1317,11 +1338,16 @@ TEST_F(FlocIdProviderUnitTestLastFlocUnexpired, HistoryDelete) {
       base::Time::Now() - base::TimeDelta::FromDays(4);
   const base::Time kThreeDaysBeforeStart =
       base::Time::Now() - base::TimeDelta::FromDays(3);
+  const base::Time kLastComputeTime =
+      base::Time::Now() - base::TimeDelta::FromHours(12);
+
+  FlocId initial_floc_id =
+      FlocIdTester::Create(123, kFourDaysBeforeStart, kThreeDaysBeforeStart, 1,
+                           999, kLastComputeTime);
 
   // Initially the floc is set to the entry from the prefs. No computation has
   // occurred for this session.
-  EXPECT_EQ(floc_id(),
-            FlocId(123, kFourDaysBeforeStart, kThreeDaysBeforeStart, 999));
+  EXPECT_EQ(floc_id(), initial_floc_id);
   EXPECT_FALSE(floc_computation_in_progress());
   EXPECT_TRUE(floc_computation_scheduled());
   EXPECT_EQ(0u, floc_id_provider_->compute_floc_completed_count());
@@ -1334,9 +1360,10 @@ TEST_F(FlocIdProviderUnitTestLastFlocUnexpired, HistoryDelete) {
   // changed.
   EXPECT_EQ(0u, floc_id_provider_->compute_floc_completed_count());
   EXPECT_FALSE(floc_id().IsValid());
-  EXPECT_FALSE(FlocId::ReadFromPrefs(&prefs_).IsValid());
-  EXPECT_EQ(base::Time::Now() - base::TimeDelta::FromHours(12),
-            FlocId::ReadComputeTimeFromPrefs(&prefs_));
+
+  FlocId floc_id_in_prefs = FlocId::ReadFromPrefs(&prefs_);
+  EXPECT_FALSE(floc_id_in_prefs.IsValid());
+  EXPECT_EQ(kLastComputeTime, floc_id_in_prefs.compute_time());
 }
 
 class FlocIdProviderUnitTestLastFlocExpired
@@ -1347,14 +1374,14 @@ class FlocIdProviderUnitTestLastFlocExpired
         base::Time::Now() - base::TimeDelta::FromDays(20);
     const base::Time kNineteenDaysBeforeStart =
         base::Time::Now() - base::TimeDelta::FromDays(19);
-
-    FlocId floc_id =
-        FlocId(123, kTwentyDaysBeforeStart, kNineteenDaysBeforeStart, 888);
-    base::Time last_compute_time =
+    const base::Time kLastComputeTime =
         base::Time::Now() - base::TimeDelta::FromHours(25);
 
+    FlocId floc_id = FlocIdTester::Create(123, kTwentyDaysBeforeStart,
+                                          kNineteenDaysBeforeStart, 1, 888,
+                                          kLastComputeTime);
+
     floc_id.SaveToPrefs(&prefs_);
-    FlocId::SaveComputeTimeToPrefs(last_compute_time, &prefs_);
   }
 
   void InitializeHistory() override {
@@ -1368,10 +1395,24 @@ class FlocIdProviderUnitTestLastFlocExpired
   }
 };
 
-TEST_F(FlocIdProviderUnitTestLastFlocExpired, ComputeOnInitialSetupReady) {
-  // Initially the floc is invalid as the last floc has expired. No computation
-  // has occurred for this session.
-  EXPECT_FALSE(floc_id().IsValid());
+TEST_F(FlocIdProviderUnitTestLastFlocExpired,
+       ImmediateComputeOnInitialSetupReady) {
+  const base::Time kTwentyDaysBeforeStart =
+      base::Time::Now() - base::TimeDelta::FromDays(20);
+  const base::Time kNineteenDaysBeforeStart =
+      base::Time::Now() - base::TimeDelta::FromDays(19);
+  const base::Time kLastComputeTime =
+      base::Time::Now() - base::TimeDelta::FromHours(25);
+
+  FlocId initial_invalid_floc_id =
+      FlocIdTester::Create(base::nullopt, kTwentyDaysBeforeStart,
+                           kNineteenDaysBeforeStart, 1, 888, kLastComputeTime);
+
+  // Initially the floc is invalidated as the last floc has expired, but other
+  // fields remains unchanged. The invalidation is also written to the prefs. No
+  // computation has occurred for this session.
+  EXPECT_EQ(floc_id(), initial_invalid_floc_id);
+  EXPECT_EQ(FlocId::ReadFromPrefs(&prefs_), initial_invalid_floc_id);
   EXPECT_FALSE(floc_computation_in_progress());
   EXPECT_FALSE(floc_computation_scheduled());
   EXPECT_EQ(0u, floc_id_provider_->compute_floc_completed_count());
@@ -1394,8 +1435,7 @@ TEST_F(FlocIdProviderUnitTestLastFlocExpired, ComputeOnInitialSetupReady) {
   EXPECT_FALSE(floc_computation_in_progress());
   EXPECT_TRUE(floc_computation_scheduled());
 
-  // Expect a compute, an event logging with trigger FlocIdComputed::REFRESHED,
-  // and an update to the local prefs.
+  // Expect a compute, an event logging and an update to the local prefs.
   EXPECT_EQ(1u, floc_id_provider_->compute_floc_completed_count());
   EXPECT_EQ(floc_id(), FlocId(FlocId::SimHashHistory({"foo.com"}),
                               kTwoDaysBeforeStart, kTwoDaysBeforeStart, 0));
@@ -1407,7 +1447,155 @@ TEST_F(FlocIdProviderUnitTestLastFlocExpired, ComputeOnInitialSetupReady) {
   EXPECT_EQ(FlocId::SimHashHistory({"foo.com"}), event.floc_id());
 
   EXPECT_EQ(floc_id(), FlocId::ReadFromPrefs(&prefs_));
-  EXPECT_EQ(base::Time::Now(), FlocId::ReadComputeTimeFromPrefs(&prefs_));
+}
+
+class FlocIdProviderUnitTestPresumedNextComputeDelayTooBig
+    : public FlocIdProviderSimpleFeatureParamUnitTest {
+ public:
+  void InitializeFlocPrefs() override {
+    const base::Time kFourDaysBeforeStart =
+        base::Time::Now() - base::TimeDelta::FromDays(4);
+    const base::Time kThreeDaysBeforeStart =
+        base::Time::Now() - base::TimeDelta::FromDays(3);
+    const base::Time kLastComputeTime =
+        base::Time::Now() + base::TimeDelta::FromDays(1);
+
+    // Configure the last compute time to be 1 day after the start time, that
+    // emulates the situation when the machine time has changed.
+    FlocId floc_id =
+        FlocIdTester::Create(123, kFourDaysBeforeStart, kThreeDaysBeforeStart,
+                             1, 999, kLastComputeTime);
+    floc_id.SaveToPrefs(&prefs_);
+  }
+};
+
+TEST_F(FlocIdProviderUnitTestPresumedNextComputeDelayTooBig,
+       ImmediateComputeOnInitialSetupReady) {
+  const base::Time kFourDaysBeforeStart =
+      base::Time::Now() - base::TimeDelta::FromDays(4);
+  const base::Time kThreeDaysBeforeStart =
+      base::Time::Now() - base::TimeDelta::FromDays(3);
+  const base::Time kLastComputeTime =
+      base::Time::Now() + base::TimeDelta::FromDays(1);
+
+  FlocId initial_invalid_floc_id =
+      FlocIdTester::Create(base::nullopt, kFourDaysBeforeStart,
+                           kThreeDaysBeforeStart, 1, 999, kLastComputeTime);
+
+  // Initially the floc is invalidated as the "presumed next computation delay"
+  // >= "2 x the scheduled update interval", implying the machine time has
+  // changed. Other fields should remain unchanged. The invalidation is also
+  // written to the prefs. No computation has occurred for this session.
+  EXPECT_EQ(floc_id(), initial_invalid_floc_id);
+  EXPECT_EQ(FlocId::ReadFromPrefs(&prefs_), initial_invalid_floc_id);
+  EXPECT_FALSE(floc_computation_in_progress());
+  EXPECT_FALSE(floc_computation_scheduled());
+  EXPECT_EQ(0u, floc_id_provider_->compute_floc_completed_count());
+
+  const base::Time kTwoDaysBeforeStart =
+      base::Time::Now() - base::TimeDelta::FromDays(2);
+
+  AddHistoryEntriesForDomains({"foo.com"}, kTwoDaysBeforeStart);
+
+  // Turn on sync-history. This should trigger the computation.
+  test_sync_service_->SetTransportState(
+      syncer::SyncService::TransportState::ACTIVE);
+  test_sync_service_->FireStateChanged();
+
+  EXPECT_TRUE(floc_computation_in_progress());
+  EXPECT_FALSE(floc_computation_scheduled());
+
+  task_environment_.RunUntilIdle();
+
+  EXPECT_FALSE(floc_computation_in_progress());
+  EXPECT_TRUE(floc_computation_scheduled());
+
+  // Expect a compute, an event logging and an update to the local prefs.
+  EXPECT_EQ(1u, floc_id_provider_->compute_floc_completed_count());
+  EXPECT_EQ(floc_id(), FlocId(FlocId::SimHashHistory({"foo.com"}),
+                              kTwoDaysBeforeStart, kTwoDaysBeforeStart, 0));
+
+  EXPECT_EQ(1u, fake_user_event_service_->GetRecordedUserEvents().size());
+  const sync_pb::UserEventSpecifics_FlocIdComputed& event =
+      fake_user_event_service_->GetRecordedUserEvents()[0]
+          .floc_id_computed_event();
+  EXPECT_EQ(FlocId::SimHashHistory({"foo.com"}), event.floc_id());
+
+  EXPECT_EQ(floc_id(), FlocId::ReadFromPrefs(&prefs_));
+}
+
+class FlocIdProviderUnitTestLastFlocVersionMismatch
+    : public FlocIdProviderSimpleFeatureParamUnitTest {
+ public:
+  void InitializeFlocPrefs() override {
+    const base::Time kFourDaysBeforeStart =
+        base::Time::Now() - base::TimeDelta::FromDays(4);
+    const base::Time kThreeDaysBeforeStart =
+        base::Time::Now() - base::TimeDelta::FromDays(3);
+    const base::Time kLastComputeTime =
+        base::Time::Now() - base::TimeDelta::FromHours(12);
+
+    // Create a floc with version finch_config_version 0, that is different
+    // from the current version 1.
+    FlocId floc_id =
+        FlocIdTester::Create(123, kFourDaysBeforeStart, kThreeDaysBeforeStart,
+                             0, 999, kLastComputeTime);
+    floc_id.SaveToPrefs(&prefs_);
+  }
+};
+
+TEST_F(FlocIdProviderUnitTestLastFlocVersionMismatch,
+       ImmediateComputeOnInitialSetupReady) {
+  const base::Time kFourDaysBeforeStart =
+      base::Time::Now() - base::TimeDelta::FromDays(4);
+  const base::Time kThreeDaysBeforeStart =
+      base::Time::Now() - base::TimeDelta::FromDays(3);
+  const base::Time kLastComputeTime =
+      base::Time::Now() - base::TimeDelta::FromHours(12);
+
+  FlocId initial_invalid_floc_id =
+      FlocIdTester::Create(base::nullopt, kFourDaysBeforeStart,
+                           kThreeDaysBeforeStart, 0, 999, kLastComputeTime);
+
+  // Initially the floc is invalidated as the version mismatches, but other
+  // fields remains unchanged. The invalidation is also written to the prefs. No
+  // computation has occurred for this session.
+  EXPECT_EQ(floc_id(), initial_invalid_floc_id);
+  EXPECT_EQ(FlocId::ReadFromPrefs(&prefs_), initial_invalid_floc_id);
+  EXPECT_FALSE(floc_computation_in_progress());
+  EXPECT_FALSE(floc_computation_scheduled());
+  EXPECT_EQ(0u, floc_id_provider_->compute_floc_completed_count());
+
+  const base::Time kTwoDaysBeforeStart =
+      base::Time::Now() - base::TimeDelta::FromDays(2);
+
+  AddHistoryEntriesForDomains({"foo.com"}, kTwoDaysBeforeStart);
+
+  // Turn on sync-history. This should trigger the computation.
+  test_sync_service_->SetTransportState(
+      syncer::SyncService::TransportState::ACTIVE);
+  test_sync_service_->FireStateChanged();
+
+  EXPECT_TRUE(floc_computation_in_progress());
+  EXPECT_FALSE(floc_computation_scheduled());
+
+  task_environment_.RunUntilIdle();
+
+  EXPECT_FALSE(floc_computation_in_progress());
+  EXPECT_TRUE(floc_computation_scheduled());
+
+  // Expect a compute, an event logging and an update to the local prefs.
+  EXPECT_EQ(1u, floc_id_provider_->compute_floc_completed_count());
+  EXPECT_EQ(floc_id(), FlocId(FlocId::SimHashHistory({"foo.com"}),
+                              kTwoDaysBeforeStart, kTwoDaysBeforeStart, 0));
+
+  EXPECT_EQ(1u, fake_user_event_service_->GetRecordedUserEvents().size());
+  const sync_pb::UserEventSpecifics_FlocIdComputed& event =
+      fake_user_event_service_->GetRecordedUserEvents()[0]
+          .floc_id_computed_event();
+  EXPECT_EQ(FlocId::SimHashHistory({"foo.com"}), event.floc_id());
+
+  EXPECT_EQ(floc_id(), FlocId::ReadFromPrefs(&prefs_));
 }
 
 }  // namespace federated_learning

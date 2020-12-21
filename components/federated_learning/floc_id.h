@@ -28,8 +28,13 @@ class FlocId {
   static uint64_t SimHashHistory(
       const std::unordered_set<std::string>& domains);
 
+  // Create a newly computed but invalid floc (which implies permission errors,
+  // insufficient eligible history, or blocked floc). The
+  // |finch_config_version_| and the |compute_time_| will be set to the current.
   FlocId();
 
+  // Create a newly computed and valid floc. The |finch_config_version_| and
+  // the |compute_time_| will be set to the current.
   explicit FlocId(uint64_t id,
                   base::Time history_begin_time,
                   base::Time history_end_time,
@@ -43,27 +48,49 @@ class FlocId {
   bool operator==(const FlocId& other) const;
   bool operator!=(const FlocId& other) const;
 
+  // True if the |id_| is successfully computed and hasn't been invalidated
+  // since the last computation. Note that an invalid FlocId still often has a
+  // legitimate compute time and finch config version, unless it's read from a
+  // fresh profile prefs.
   bool IsValid() const;
 
-  // The id, followed by the chrome floc version, followed by the async floc
-  // component versions (i.e. model and sorting-lsh). This is the format to be
-  // exposed to the JS API. Precondition: |id_| must be valid.
+  // Dot-separated string of floc, finch config version, and sorting-lsh
+  // version. This is the format to be exposed to the JS API. Precondition:
+  // |id_| must be valid.
   std::string ToStringForJsApi() const;
 
   base::Time history_begin_time() const { return history_begin_time_; }
 
   base::Time history_end_time() const { return history_end_time_; }
 
+  uint32_t finch_config_version() const { return finch_config_version_; }
+
+  uint32_t sorting_lsh_version() const { return sorting_lsh_version_; }
+
+  base::Time compute_time() const { return compute_time_; }
+
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
   void SaveToPrefs(PrefService* prefs);
   static FlocId ReadFromPrefs(PrefService* prefs);
 
-  static void SaveComputeTimeToPrefs(base::Time compute_time,
-                                     PrefService* prefs);
-  static base::Time ReadComputeTimeFromPrefs(PrefService* prefs);
+  // Reset |id_| and clear the prefs corresponding to the id. This assumes the
+  // current floc is already in sync with the prefs and we don't need to save
+  // other unaffected field.
+  void InvalidateIdAndSaveToPrefs(PrefService* prefs);
 
  private:
+  friend class FlocIdTester;
+
+  // Create a floc with stated params. This will only be used to create a floc
+  // read from prefs.
+  explicit FlocId(base::Optional<uint64_t> id,
+                  base::Time history_begin_time,
+                  base::Time history_end_time,
+                  uint32_t finch_config_version,
+                  uint32_t sorting_lsh_version,
+                  base::Time compute_time);
+
   base::Optional<uint64_t> id_;
 
   // The time range of the actual history used to compute the floc. This should
@@ -71,8 +98,16 @@ class FlocId {
   base::Time history_begin_time_;
   base::Time history_end_time_;
 
+  // The kFlocIdFinchConfigVersion feature param. When floc is loaded from
+  // prefs, this could be different from the current feature param state.
+  uint32_t finch_config_version_ = 0;
+
   // The main version (i.e. 1st int) of the sorting lsh component version.
   uint32_t sorting_lsh_version_ = 0;
+
+  // The time when the floc was computed. compute_time_.is_null() means the
+  // floc has never been computed before, and implies |id_| is also invalid.
+  base::Time compute_time_;
 };
 
 }  // namespace federated_learning

@@ -14,8 +14,8 @@
 #include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/browser/sync/user_event_service_factory.h"
-#include "chrome/common/chrome_features.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/federated_learning/features/features.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/driver/profile_sync_service.h"
@@ -31,8 +31,48 @@ constexpr int kQueryHistoryWindowInDays = 7;
 // The placeholder sorting-lsh version when the sorting-lsh feature is disabled.
 constexpr uint32_t kSortingLshVersionPlaceholder = 0;
 
-base::TimeDelta GetFlocIdScheduledUpdateInterval() {
-  return features::kFlocIdScheduledUpdateInterval.Get();
+// Checks whether we can keep using the previous floc. If so, write to
+// |next_compute_delay| the time period we should wait until the floc needs to
+// be recomputed.
+bool ShouldKeepUsingPreviousFloc(const FlocId& last_floc,
+                                 base::TimeDelta* next_compute_delay) {
+  // The floc has never been computed. This could happen with a fresh profile,
+  // or some early trigger conditions were never met (e.g. sync has been
+  // disabled).
+  if (last_floc.compute_time().is_null())
+    return false;
+
+  // The browser started with a kFlocIdFinchConfigVersion param different from
+  // the param when floc was computed last time.
+  //
+  // TODO(yaoxia): Ideally we want to compare the entire version that also
+  // includes the sorting-lsh version. We'll need to postpone those checks to
+  // a point where an existing sorting-lsh file would have been loaded, i.e. not
+  // too soon when the file is not ready yet, but not too late if the file
+  // wouldn't arrive due to e.g. component updater issue.
+  if (last_floc.finch_config_version() !=
+      static_cast<uint32_t>(kFlocIdFinchConfigVersion.Get())) {
+    return false;
+  }
+
+  base::TimeDelta presumed_next_compute_delay =
+      kFlocIdScheduledUpdateInterval.Get() + last_floc.compute_time() -
+      base::Time::Now();
+
+  // The last floc has expired.
+  if (presumed_next_compute_delay <= base::TimeDelta())
+    return false;
+
+  // This could happen if the machine time has changed since the last
+  // computation. Return false in order to keep computing the floc at the
+  // anticipated schedule rather than potentially stop computing for a very long
+  // time.
+  if (presumed_next_compute_delay >= 2 * kFlocIdScheduledUpdateInterval.Get())
+    return false;
+
+  *next_compute_delay = presumed_next_compute_delay;
+
+  return true;
 }
 
 }  // namespace
@@ -49,23 +89,22 @@ FlocIdProviderImpl::FlocIdProviderImpl(
       cookie_settings_(std::move(cookie_settings)),
       floc_remote_permission_service_(floc_remote_permission_service),
       history_service_(history_service),
-      user_event_service_(user_event_service) {
+      user_event_service_(user_event_service),
+      floc_id_(FlocId::ReadFromPrefs(prefs_)) {
   history_service->AddObserver(this);
   sync_service_->AddObserver(this);
   g_browser_process->floc_sorting_lsh_clusters_service()->AddObserver(this);
 
-  base::Time last_compute_time = FlocId::ReadComputeTimeFromPrefs(prefs_);
-
-  if (!last_compute_time.is_null()) {
-    base::TimeDelta time_since_last_compute =
-        base::Time::Now() - last_compute_time;
-    if (time_since_last_compute < GetFlocIdScheduledUpdateInterval()) {
-      // Keep using the last floc. Schedule a recompute event when it's
-      // |GetFlocIdScheduledUpdateInterval()| from the last compute time.
-      floc_id_ = FlocId::ReadFromPrefs(prefs_);
-      ScheduleFlocComputation(GetFlocIdScheduledUpdateInterval() -
-                              time_since_last_compute);
-    }
+  // If the previous floc has expired, invalidate it. The next computation will
+  // be "immediate", i.e. will occur after we first observe that sync &
+  // sync-history is enabled and the SortingLSH file is loaded; otherwise, keep
+  // using the last floc (which may still have be invalid), and schedule a
+  // recompute event with the desired delay.
+  base::TimeDelta next_compute_delay;
+  if (ShouldKeepUsingPreviousFloc(floc_id_, &next_compute_delay)) {
+    ScheduleFlocComputation(next_compute_delay);
+  } else {
+    floc_id_.InvalidateIdAndSaveToPrefs(prefs_);
   }
 
   OnStateChanged(sync_service);
@@ -113,16 +152,15 @@ void FlocIdProviderImpl::OnComputeFlocCompleted(ComputeFlocResult result) {
   }
 
   LogFlocComputedEvent(result);
+
   floc_id_ = result.floc_id;
-
   floc_id_.SaveToPrefs(prefs_);
-  FlocId::SaveComputeTimeToPrefs(base::Time::Now(), prefs_);
 
-  ScheduleFlocComputation(GetFlocIdScheduledUpdateInterval());
+  ScheduleFlocComputation(kFlocIdScheduledUpdateInterval.Get());
 }
 
 void FlocIdProviderImpl::LogFlocComputedEvent(const ComputeFlocResult& result) {
-  if (!base::FeatureList::IsEnabled(features::kFlocIdComputedEventLogging))
+  if (!base::FeatureList::IsEnabled(kFlocIdComputedEventLogging))
     return;
 
   auto specifics = std::make_unique<sync_pb::UserEventSpecifics>();
@@ -179,8 +217,8 @@ void FlocIdProviderImpl::OnURLsDeleted(
   // It'd give us a better idea how often the floc is invalidated due to
   // history-delete.
   LogFlocComputedEvent(ComputeFlocResult());
-  floc_id_ = FlocId();
-  floc_id_.SaveToPrefs(prefs_);
+
+  floc_id_.InvalidateIdAndSaveToPrefs(prefs_);
 }
 
 void FlocIdProviderImpl::OnSortingLshClustersFileReady() {
@@ -212,8 +250,7 @@ void FlocIdProviderImpl::MaybeTriggerImmediateComputation() {
     return;
 
   bool sorting_lsh_ready_or_not_required =
-      !base::FeatureList::IsEnabled(
-          features::kFlocIdSortingLshBasedComputation) ||
+      !base::FeatureList::IsEnabled(kFlocIdSortingLshBasedComputation) ||
       first_sorting_lsh_file_ready_seen_;
 
   if (!first_sync_history_enabled_seen_ || !sorting_lsh_ready_or_not_required)
@@ -341,8 +378,7 @@ void FlocIdProviderImpl::OnGetRecentlyVisitedURLsCompleted(
   }
 
   if (domains.size() <
-      static_cast<size_t>(
-          features::kFlocIdMinimumHistoryDomainSizeRequired.Get())) {
+      static_cast<size_t>(kFlocIdMinimumHistoryDomainSizeRequired.Get())) {
     std::move(callback).Run(ComputeFlocResult());
     return;
   }
@@ -357,8 +393,7 @@ void FlocIdProviderImpl::ApplySortingLshPostProcessing(
     uint64_t sim_hash,
     base::Time history_begin_time,
     base::Time history_end_time) {
-  if (!base::FeatureList::IsEnabled(
-          features::kFlocIdSortingLshBasedComputation)) {
+  if (!base::FeatureList::IsEnabled(kFlocIdSortingLshBasedComputation)) {
     std::move(callback).Run(ComputeFlocResult(
         sim_hash, FlocId(sim_hash, history_begin_time, history_end_time,
                          kSortingLshVersionPlaceholder)));

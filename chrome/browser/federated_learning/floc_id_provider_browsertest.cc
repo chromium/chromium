@@ -21,10 +21,10 @@
 #include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/browser/sync/user_event_service_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/federated_learning/features/features.h"
 #include "components/federated_learning/floc_constants.h"
 #include "components/history/core/test/fake_web_history_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -152,7 +152,7 @@ class FlocIdProviderWithCustomizedServicesBrowserTest
  public:
   FlocIdProviderWithCustomizedServicesBrowserTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kFederatedLearningOfCohorts,
+        kFederatedLearningOfCohorts,
         {{"minimum_history_domain_size_required", "1"}});
   }
 
@@ -222,38 +222,6 @@ class FlocIdProviderWithCustomizedServicesBrowserTest
   std::vector<GURL> GetHistoryUrls() {
     ui_test_utils::HistoryEnumerator enumerator(browser()->profile());
     return enumerator.urls();
-  }
-
-  std::pair<base::Time, base::Time> GetHistoryTimeRange() {
-    history::QueryOptions options;
-    options.duplicate_policy = history::QueryOptions::KEEP_ALL_DUPLICATES;
-
-    base::Time history_begin_time = base::Time::Max();
-    base::Time history_end_time = base::Time::Min();
-
-    base::RunLoop run_loop;
-    base::CancelableTaskTracker tracker;
-    HistoryServiceFactory::GetForProfile(browser()->profile(),
-                                         ServiceAccessType::EXPLICIT_ACCESS)
-        ->QueryHistory(
-            base::string16(), options,
-            base::BindLambdaForTesting([&](history::QueryResults results) {
-              for (const history::URLResult& url_result : results) {
-                if (!url_result.floc_allowed())
-                  continue;
-
-                if (url_result.visit_time() < history_begin_time)
-                  history_begin_time = url_result.visit_time();
-
-                if (url_result.visit_time() > history_end_time)
-                  history_end_time = url_result.visit_time();
-              }
-              run_loop.Quit();
-            }),
-            &tracker);
-    run_loop.Run();
-
-    return {history_begin_time, history_end_time};
   }
 
   void FinishOutstandingRemotePermissionQueries() {
@@ -341,10 +309,8 @@ class FlocIdProviderWithCustomizedServicesBrowserTest
     FinishOutstandingRemotePermissionQueries();
     FinishOutstandingHistoryQueries();
 
-    if (base::FeatureList::IsEnabled(
-            features::kFlocIdSortingLshBasedComputation)) {
+    if (base::FeatureList::IsEnabled(kFlocIdSortingLshBasedComputation))
       FinishOutstandingSortingLshQueries();
-    }
   }
 
   // Turn on sync-history.
@@ -575,10 +541,10 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
   InitializeHistorySync();
 
   // Promise resolved with the expected string.
-  EXPECT_EQ(FlocId(FlocId::SimHashHistory({test_host()}), base::Time(),
-                   base::Time(), 0)
-                .ToStringForJsApi(),
-            InvokeInterestCohortJsApi(web_contents()));
+  EXPECT_EQ(
+      base::StrCat({base::NumberToString(FlocId::SimHashHistory({test_host()})),
+                    ".1.0"}),
+      InvokeInterestCohortJsApi(web_contents()));
 }
 
 IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
@@ -604,10 +570,10 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
       content::ChildFrameAt(web_contents()->GetMainFrame(), 0);
 
   // Promise resolved with the expected string.
-  EXPECT_EQ(FlocId(FlocId::SimHashHistory({test_host()}), base::Time(),
-                   base::Time(), 0)
-                .ToStringForJsApi(),
-            InvokeInterestCohortJsApi(child));
+  EXPECT_EQ(
+      base::StrCat({base::NumberToString(FlocId::SimHashHistory({test_host()})),
+                    ".1.0"}),
+      InvokeInterestCohortJsApi(child));
 }
 
 IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
@@ -633,10 +599,10 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
       content::ChildFrameAt(web_contents()->GetMainFrame(), 0);
 
   // Promise resolved with the expected string.
-  EXPECT_EQ(FlocId(FlocId::SimHashHistory({test_host()}), base::Time(),
-                   base::Time(), 0)
-                .ToStringForJsApi(),
-            InvokeInterestCohortJsApi(child));
+  EXPECT_EQ(
+      base::StrCat({base::NumberToString(FlocId::SimHashHistory({test_host()})),
+                    ".1.0"}),
+      InvokeInterestCohortJsApi(child));
 }
 
 IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
@@ -671,10 +637,10 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
   EXPECT_EQ("rejected", InvokeInterestCohortJsApi(child));
 
   // Promise resolved with the expected string.
-  EXPECT_EQ(FlocId(FlocId::SimHashHistory({test_host()}), base::Time(),
-                   base::Time(), 0)
-                .ToStringForJsApi(),
-            InvokeInterestCohortJsApi(web_contents()));
+  EXPECT_EQ(
+      base::StrCat({base::NumberToString(FlocId::SimHashHistory({test_host()})),
+                    ".1.0"}),
+      InvokeInterestCohortJsApi(web_contents()));
 }
 
 class FlocIdProviderSortingLshEnabledBrowserTest
@@ -683,9 +649,9 @@ class FlocIdProviderSortingLshEnabledBrowserTest
   FlocIdProviderSortingLshEnabledBrowserTest() {
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kFederatedLearningOfCohorts,
+        {{kFederatedLearningOfCohorts,
           {{"minimum_history_domain_size_required", "1"}}},
-         {features::kFlocIdSortingLshBasedComputation, {}}},
+         {kFlocIdSortingLshBasedComputation, {}}},
         {});
   }
 };
@@ -701,9 +667,6 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderSortingLshEnabledBrowserTest,
       browser(), https_server_.GetURL(test_host(), cookies_to_set));
 
   EXPECT_EQ(1u, GetHistoryUrls().size());
-  auto p = GetHistoryTimeRange();
-  base::Time history_begin_time = p.first;
-  base::Time history_end_time = p.second;
 
   EXPECT_FALSE(GetFlocId().IsValid());
 
@@ -717,7 +680,7 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderSortingLshEnabledBrowserTest,
   EXPECT_NE(0u, FlocId::SimHashHistory({test_host()}));
 
   // Expect that the final id is 0 because the sorting-lsh was applied.
-  EXPECT_EQ(FlocId(0, history_begin_time, history_end_time, 9), GetFlocId());
+  EXPECT_EQ("0.1.9", InvokeInterestCohortJsApi(web_contents()));
 }
 
 IN_PROC_BROWSER_TEST_F(FlocIdProviderSortingLshEnabledBrowserTest,
