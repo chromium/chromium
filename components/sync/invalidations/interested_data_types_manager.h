@@ -24,14 +24,23 @@ class InterestedDataTypesManager {
   // unregister any existing handler. There can be at most one handler.
   void SetInterestedDataTypesHandler(InterestedDataTypesHandler* handler);
 
-  // Get or set the interested data types.
+  // Get the interested data types.
   const ModelTypeSet& GetInterestedDataTypes() const;
+
+  // Set interested data types. The first call of the method initializes this
+  // object.
   void SetInterestedDataTypes(
       const ModelTypeSet& data_types,
       SyncInvalidationsService::InterestedDataTypesAppliedCallback callback);
 
+  // Returns true if SetInterestedDataTypes() has been called at least once.
+  // Before that this object is considered to be uninitialized.
+  bool IsInitialized() const;
+
  private:
   InterestedDataTypesHandler* interested_data_types_handler_ = nullptr;
+
+  bool initialized_ = false;
 
   ModelTypeSet data_types_;
 };

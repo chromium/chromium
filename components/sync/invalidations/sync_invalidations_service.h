@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/optional.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/base/model_type.h"
 
@@ -41,9 +42,10 @@ class SyncInvalidationsService : public KeyedService {
   virtual void AddTokenObserver(FCMRegistrationTokenObserver* observer) = 0;
   virtual void RemoveTokenObserver(FCMRegistrationTokenObserver* observer) = 0;
 
-  // Used to get an obtained FCM token. Returns empty string if it hasn't been
-  // received yet, or if the device has stopped listening to invalidations.
-  virtual const std::string& GetFCMRegistrationToken() const = 0;
+  // Used to get an obtained FCM token. base::nullopt is returned if the token
+  // has been requested but hasn't been received yet. Returns an empty string if
+  // the device is not listening to invalidations.
+  virtual base::Optional<std::string> GetFCMRegistrationToken() const = 0;
 
   // Set the interested data types change handler. |handler| can be nullptr to
   // unregister any existing handler. There can be at most one handler.
@@ -51,7 +53,9 @@ class SyncInvalidationsService : public KeyedService {
       InterestedDataTypesHandler* handler) = 0;
 
   // Get or set for which data types should the device receive invalidations.
-  virtual const ModelTypeSet& GetInterestedDataTypes() const = 0;
+  // GetInterestedDataTypes() will return base::nullptr until
+  // SetInterestedDataTypes() has been called at least once.
+  virtual base::Optional<ModelTypeSet> GetInterestedDataTypes() const = 0;
   virtual void SetInterestedDataTypes(
       const ModelTypeSet& data_types,
       InterestedDataTypesAppliedCallback callback) = 0;

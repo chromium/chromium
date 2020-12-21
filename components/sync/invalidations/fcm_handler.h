@@ -71,6 +71,10 @@ class FCMHandler : public gcm::GCMAppHandler {
   // been received yet, or if the handler has stopped listening permanently.
   const std::string& GetFCMRegistrationToken() const;
 
+  // Returns true if an FCM registration token has never been retreived after
+  // the last StartListening() call.
+  bool IsWaitingForToken() const;
+
   // GCMAppHandler overrides.
   void ShutdownHandler() override;
   void OnStoreReset() override;
@@ -104,6 +108,8 @@ class FCMHandler : public gcm::GCMAppHandler {
   std::string fcm_registration_token_;
 
   base::OneShotTimer token_validation_timer_;
+
+  bool waiting_for_token_ = false;
 
   // Contains all listeners to notify about each incoming message in OnMessage
   // method.

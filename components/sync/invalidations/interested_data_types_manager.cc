@@ -37,6 +37,11 @@ void InterestedDataTypesManager::SetInterestedDataTypes(
     interested_data_types_handler_->OnInterestedDataTypesChanged(
         base::BindOnce(std::move(callback), new_data_types));
   }
+  initialized_ = true;
+}
+
+bool InterestedDataTypesManager::IsInitialized() const {
+  return initialized_;
 }
 
 }  // namespace syncer

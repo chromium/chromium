@@ -47,5 +47,16 @@ TEST_F(InterestedDataTypesManagerTest, ShouldNotifyOnChange) {
   manager_.SetInterestedDataTypesHandler(nullptr);
 }
 
+TEST_F(InterestedDataTypesManagerTest,
+       ShouldInitializeOnFirstSetInterestedDataTypes) {
+  EXPECT_FALSE(manager_.IsInitialized());
+  manager_.SetInterestedDataTypes(ModelTypeSet(BOOKMARKS, PREFERENCES),
+                                  base::DoNothing());
+  EXPECT_TRUE(manager_.IsInitialized());
+  manager_.SetInterestedDataTypes(ModelTypeSet(BOOKMARKS, PREFERENCES, NIGORI),
+                                  base::DoNothing());
+  EXPECT_TRUE(manager_.IsInitialized());
+}
+
 }  // namespace
 }  // namespace syncer

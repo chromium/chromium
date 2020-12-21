@@ -37,13 +37,25 @@ const DeviceInfo* LocalDeviceInfoProviderImpl::GetLocalDeviceInfo() const {
     return nullptr;
   }
 
+  // Pull new values for settings that aren't automatically updated.
   local_device_info_->set_send_tab_to_self_receiving_enabled(
       sync_client_->GetSendTabToSelfReceivingEnabled());
   local_device_info_->set_sharing_info(sync_client_->GetLocalSharingInfo());
-  local_device_info_->set_fcm_registration_token(
-      sync_client_->GetFCMRegistrationToken());
-  local_device_info_->set_interested_data_types(
-      sync_client_->GetInterestedDataTypes());
+
+  // Do not update previous values if the service is not fully initialized.
+  // base::nullopt means that the value is unknown yet and the previous value
+  // should be kept.
+  const base::Optional<std::string> fcm_token =
+      sync_client_->GetFCMRegistrationToken();
+  if (fcm_token) {
+    local_device_info_->set_fcm_registration_token(*fcm_token);
+  }
+
+  const base::Optional<ModelTypeSet> interested_data_types =
+      sync_client_->GetInterestedDataTypes();
+  if (interested_data_types) {
+    local_device_info_->set_interested_data_types(*interested_data_types);
+  }
 
   return local_device_info_.get();
 }
@@ -60,7 +72,9 @@ void LocalDeviceInfoProviderImpl::Initialize(
     const std::string& cache_guid,
     const std::string& client_name,
     const std::string& manufacturer_name,
-    const std::string& model_name) {
+    const std::string& model_name,
+    const std::string& last_fcm_registration_token,
+    const ModelTypeSet& last_interested_data_types) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!cache_guid.empty());
 
@@ -73,9 +87,8 @@ void LocalDeviceInfoProviderImpl::Initialize(
       /*last_updated_timestamp=*/base::Time(),
       DeviceInfoUtil::GetPulseInterval(),
       sync_client_->GetSendTabToSelfReceivingEnabled(),
-      sync_client_->GetLocalSharingInfo(),
-      sync_client_->GetFCMRegistrationToken(),
-      sync_client_->GetInterestedDataTypes());
+      sync_client_->GetLocalSharingInfo(), last_fcm_registration_token,
+      last_interested_data_types);
 
   // Notify observers.
   callback_list_.Notify();

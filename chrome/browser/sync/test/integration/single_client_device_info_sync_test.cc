@@ -5,6 +5,7 @@
 #include <string>
 
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/sync/test/integration/device_info_helper.h"
@@ -15,6 +16,7 @@
 #include "components/sync/base/sync_prefs.h"
 #include "components/sync/base/time.h"
 #include "components/sync/driver/sync_driver_switches.h"
+#include "components/sync/invalidations/switches.h"
 #include "components/sync/protocol/proto_value_conversions.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/test/fake_server/fake_server.h"
@@ -199,6 +201,48 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
   GetFakeServer()->GetLastCommitMessage(&message);
 
   EXPECT_FALSE(message.commit().config_params().single_client());
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
+                       PRE_ShouldNotSendDeviceInfoAfterBrowserRestart) {
+  ASSERT_TRUE(SetupSync());
+  EXPECT_TRUE(
+      ServerDeviceInfoMatchChecker(
+          GetFakeServer(), ElementsAre(HasCacheGuid(GetLocalCacheGuid())))
+          .Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
+                       ShouldNotSendDeviceInfoAfterBrowserRestart) {
+  const std::vector<sync_pb::SyncEntity> entities_before =
+      fake_server_->GetSyncEntitiesByModelType(syncer::DEVICE_INFO);
+  ASSERT_TRUE(SetupClients());
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // signin::SetRefreshTokenForPrimaryAccount() is needed on ChromeOS in order
+  // to get a non-empty refresh token on startup.
+  GetClient(0)->SignInPrimaryAccount();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  ASSERT_TRUE(GetClient(0)->AwaitEngineInitialization());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
+
+  bool has_local_changes = false;
+  base::RunLoop run_loop;
+  GetSyncService(0)->HasUnsyncedItemsForTest(
+      base::BindLambdaForTesting([&has_local_changes, &run_loop](bool result) {
+        has_local_changes = result;
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+
+  const std::vector<sync_pb::SyncEntity> entities_after =
+      fake_server_->GetSyncEntitiesByModelType(syncer::DEVICE_INFO);
+  ASSERT_EQ(1U, entities_before.size());
+  ASSERT_EQ(1U, entities_after.size());
+
+  // Check that there are no local changes and nothing has been committed to the
+  // server.
+  EXPECT_FALSE(has_local_changes);
+  EXPECT_EQ(entities_before.front().mtime(), entities_after.front().mtime());
 }
 
 }  // namespace

@@ -44,6 +44,7 @@ using testing::AllOf;
 using testing::IsEmpty;
 using testing::IsNull;
 using testing::Matcher;
+using testing::NiceMock;
 using testing::NotNull;
 using testing::Pair;
 using testing::Return;
@@ -338,7 +339,9 @@ class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
   void Initialize(const std::string& cache_guid,
                   const std::string& session_name,
                   const std::string& manufacturer_name,
-                  const std::string& model_name) override {
+                  const std::string& model_name,
+                  const std::string& last_fcm_registration_token,
+                  const ModelTypeSet& last_interested_data_types) override {
     std::set<sync_pb::SharingSpecificFields::EnabledFeatures>
         sharing_enabled_features{SharingEnabledFeaturesForSuffix(kLocalSuffix)};
     local_device_info_ = std::make_unique<DeviceInfo>(
@@ -356,8 +359,7 @@ class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
              SharingSenderIdP256dhForSuffix(kLocalSuffix),
              SharingSenderIdAuthSecretForSuffix(kLocalSuffix)},
             sharing_enabled_features),
-        SyncInvalidationsInstanceIdTokenForSuffix(kLocalSuffix),
-        SyncInvalidationsInterestedDataTypes());
+        last_fcm_registration_token, last_interested_data_types);
   }
 
   void Clear() override { local_device_info_.reset(); }
@@ -372,6 +374,15 @@ class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
   }
 
   const DeviceInfo* GetLocalDeviceInfo() const override {
+    if (local_device_info_) {
+      if (fcm_registration_token_) {
+        local_device_info_->set_fcm_registration_token(
+            *fcm_registration_token_);
+      }
+      if (interested_data_types_) {
+        local_device_info_->set_interested_data_types(*interested_data_types_);
+      }
+    }
     return local_device_info_.get();
   }
 
@@ -381,8 +392,18 @@ class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
     return {};
   }
 
+  void UpdateFCMRegistrationToken(const std::string& fcm_registration_token) {
+    fcm_registration_token_ = fcm_registration_token;
+  }
+
+  void UpdateInterestedDataTypes(const ModelTypeSet& data_types) {
+    interested_data_types_ = data_types;
+  }
+
  private:
   std::unique_ptr<DeviceInfo> local_device_info_;
+  base::Optional<std::string> fcm_registration_token_;
+  base::Optional<ModelTypeSet> interested_data_types_;
 
   DISALLOW_COPY_AND_ASSIGN(TestLocalDeviceInfoProvider);
 };  // namespace
@@ -425,8 +446,12 @@ class DeviceInfoSyncBridgeTest : public testing::Test,
 
   // Initialized the bridge based on the current local device and store.
   void InitializeBridge() {
+    auto local_device_info_provider =
+        std::make_unique<TestLocalDeviceInfoProvider>();
+    // Store a pointer to be able to update the local device info fields.
+    local_device_info_provider_ = local_device_info_provider.get();
     bridge_ = std::make_unique<DeviceInfoSyncBridge>(
-        std::make_unique<TestLocalDeviceInfoProvider>(),
+        std::move(local_device_info_provider),
         ModelTypeStoreTestUtil::FactoryForForwardingStore(store_.get()),
         mock_processor_.CreateForwardingProcessor(),
         std::make_unique<DeviceInfoPrefs>(&pref_service_, &clock_));
@@ -440,10 +465,10 @@ class DeviceInfoSyncBridgeTest : public testing::Test,
     task_environment_.RunUntilIdle();
   }
 
-  // Creates the bridge with no prior data on the store, and mimics sync being
-  // enabled by the user with no remote data.
-  void InitializeAndMergeInitialData(SyncMode sync_mode) {
-    InitializeAndPump();
+  // Mimics sync being enabled by the user with no remote data. Must be called
+  // when the bridge is initialized.
+  void EnableSyncAndMergeInitialData(SyncMode sync_mode) {
+    DCHECK(bridge_);
     bridge()->OnSyncStarting(TestDataTypeActivationRequest(sync_mode));
 
     std::unique_ptr<MetadataChangeList> metadata_change_list =
@@ -453,6 +478,13 @@ class DeviceInfoSyncBridgeTest : public testing::Test,
     ON_CALL(*processor(), IsTrackingMetadata()).WillByDefault(Return(true));
     bridge()->MergeSyncData(std::move(metadata_change_list),
                             EntityChangeList());
+  }
+
+  // Creates the bridge with no prior data on the store, and mimics sync being
+  // enabled by the user with no remote data.
+  void InitializeAndMergeInitialData(SyncMode sync_mode) {
+    InitializeAndPump();
+    EnableSyncAndMergeInitialData(sync_mode);
   }
 
   // Allows access to the store before that will ultimately be used to
@@ -465,8 +497,8 @@ class DeviceInfoSyncBridgeTest : public testing::Test,
   // Get the number of times the bridge notifies observers of changes.
   int change_count() { return change_count_; }
 
-  LocalDeviceInfoProvider* local_device() {
-    return bridge_->GetLocalDeviceInfoProvider();
+  TestLocalDeviceInfoProvider* local_device() {
+    return local_device_info_provider_;
   }
 
   // Allows access to the bridge after InitializeBridge() is called.
@@ -493,7 +525,7 @@ class DeviceInfoSyncBridgeTest : public testing::Test,
   void ForcePulse() { bridge()->ForcePulseForTest(); }
 
   void RefreshLocalDeviceInfo() {
-    bridge()->RefreshLocalDeviceInfo(base::DoNothing());
+    bridge()->RefreshLocalDeviceInfoIfNeeded(base::DoNothing());
   }
 
   void CommitToStoreAndWait(std::unique_ptr<WriteBatch> batch) {
@@ -602,7 +634,7 @@ class DeviceInfoSyncBridgeTest : public testing::Test,
   // In memory model type store needs to be able to post tasks.
   base::test::TaskEnvironment task_environment_;
 
-  testing::NiceMock<MockModelTypeChangeProcessor> mock_processor_;
+  NiceMock<MockModelTypeChangeProcessor> mock_processor_;
 
   // Holds the store.
   const std::unique_ptr<ModelTypeStore> store_;
@@ -611,9 +643,12 @@ class DeviceInfoSyncBridgeTest : public testing::Test,
   const LocalDeviceNameInfo local_device_name_info_;
 
   TestingPrefServiceSimple pref_service_;
+
   // Not initialized immediately (upon test's constructor). This allows each
   // test case to modify the dependencies the bridge will be constructed with.
   std::unique_ptr<DeviceInfoSyncBridge> bridge_;
+
+  TestLocalDeviceInfoProvider* local_device_info_provider_ = nullptr;
 };
 
 TEST_F(DeviceInfoSyncBridgeTest, BeforeSyncEnabled) {
@@ -1193,8 +1228,16 @@ TEST_F(DeviceInfoSyncBridgeTest, RefreshLocalDeviceInfo) {
   EXPECT_EQ(1, change_count());
   testing::Mock::VerifyAndClearExpectations(processor());
 
+  // Check that the device is not updated if nothing has been changed.
+  RefreshLocalDeviceInfo();
+  EXPECT_EQ(1, change_count());
+
   // Ensure |last_updated| is about now, plus or minus a little bit.
   EXPECT_CALL(*processor(), Put(_, HasSpecifics(HasLastUpdatedAboutNow()), _));
+  ASSERT_THAT(local_device()->GetLocalDeviceInfo()->fcm_registration_token(),
+              IsEmpty());
+  local_device()->UpdateFCMRegistrationToken(
+      SyncInvalidationsInstanceIdTokenForSuffix(kLocalSuffix));
   RefreshLocalDeviceInfo();
   EXPECT_EQ(2, change_count());
 }
@@ -1292,14 +1335,23 @@ TEST_F(DeviceInfoSyncBridgeTest, ShouldSendInvalidationFields) {
                   HasSpecifics(
                       AllOf(HasInstanceIdToken(), HasAnyInterestedDataTypes())),
                   _));
-  InitializeAndMergeInitialData(SyncMode::kFull);
+  InitializeAndPump();
+  local_device()->UpdateFCMRegistrationToken(
+      SyncInvalidationsInstanceIdTokenForSuffix(kLocalSuffix));
+  local_device()->UpdateInterestedDataTypes(
+      SyncInvalidationsInterestedDataTypes());
+  EnableSyncAndMergeInitialData(SyncMode::kFull);
 }
 
 TEST_F(DeviceInfoSyncBridgeTest, ShouldNotifyWhenDeviceInfoIsSynced) {
   InitializeAndMergeInitialData(SyncMode::kFull);
 
   base::MockOnceClosure callback;
-  bridge()->RefreshLocalDeviceInfo(callback.Get());
+  ASSERT_THAT(local_device()->GetLocalDeviceInfo()->fcm_registration_token(),
+              IsEmpty());
+  local_device()->UpdateFCMRegistrationToken(
+      SyncInvalidationsInstanceIdTokenForSuffix(kLocalSuffix));
+  bridge()->RefreshLocalDeviceInfoIfNeeded(callback.Get());
 
   std::string guid = local_device()->GetLocalDeviceInfo()->guid();
   EXPECT_CALL(*processor(), IsEntityUnsynced(guid)).WillOnce(Return(true));
@@ -1309,6 +1361,19 @@ TEST_F(DeviceInfoSyncBridgeTest, ShouldNotifyWhenDeviceInfoIsSynced) {
 
   EXPECT_CALL(*processor(), IsEntityUnsynced(guid)).WillOnce(Return(false));
   EXPECT_CALL(callback, Run());
+  bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
+                             EntityChangeList());
+}
+
+TEST_F(DeviceInfoSyncBridgeTest, ShouldNotNotifyWhenDeviceInfoIsUnchanged) {
+  InitializeAndMergeInitialData(SyncMode::kFull);
+
+  base::MockOnceClosure callback;
+  bridge()->RefreshLocalDeviceInfoIfNeeded(callback.Get());
+
+  std::string guid = local_device()->GetLocalDeviceInfo()->guid();
+  EXPECT_CALL(*processor(), IsEntityUnsynced(guid)).WillOnce(Return(false));
+  EXPECT_CALL(callback, Run()).Times(0);
   bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
                              EntityChangeList());
 }

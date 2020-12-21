@@ -52,10 +52,12 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
   }
 
   // syncer::DeviceInfoSyncClient:
-  std::string GetFCMRegistrationToken() const override { return std::string(); }
+  base::Optional<std::string> GetFCMRegistrationToken() const override {
+    return std::string();
+  }
 
   // syncer::DeviceInfoSyncClient:
-  syncer::ModelTypeSet GetInterestedDataTypes() const override {
+  base::Optional<syncer::ModelTypeSet> GetInterestedDataTypes() const override {
     return syncer::ModelTypeSet();
   }
 

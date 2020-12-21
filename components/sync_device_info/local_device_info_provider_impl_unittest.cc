@@ -47,8 +47,14 @@ class MockDeviceInfoSyncClient : public DeviceInfoSyncClient {
               GetLocalSharingInfo,
               (),
               (const override));
-  MOCK_METHOD(std::string, GetFCMRegistrationToken, (), (const override));
-  MOCK_METHOD(ModelTypeSet, GetInterestedDataTypes, (), (const override));
+  MOCK_METHOD(base::Optional<std::string>,
+              GetFCMRegistrationToken,
+              (),
+              (const override));
+  MOCK_METHOD(base::Optional<ModelTypeSet>,
+              GetInterestedDataTypes,
+              (),
+              (const override));
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockDeviceInfoSyncClient);
@@ -73,7 +79,9 @@ class LocalDeviceInfoProviderImplTest : public testing::Test {
 
   void InitializeProvider(const std::string& guid) {
     provider_->Initialize(guid, kLocalDeviceClientName,
-                          kLocalDeviceManufacturerName, kLocalDeviceModelName);
+                          kLocalDeviceManufacturerName, kLocalDeviceModelName,
+                          /*last_fcm_registration_token=*/std::string(),
+                          ModelTypeSet());
   }
 
   testing::NiceMock<MockDeviceInfoSyncClient> device_info_sync_client_;
@@ -179,7 +187,7 @@ TEST_F(LocalDeviceInfoProviderImplTest, ShouldPopulateFCMRegistrationToken) {
 
   const std::string kFCMRegistrationToken = "token";
   EXPECT_CALL(device_info_sync_client_, GetFCMRegistrationToken())
-      .WillOnce(Return(kFCMRegistrationToken));
+      .WillRepeatedly(Return(kFCMRegistrationToken));
 
   EXPECT_EQ(provider_->GetLocalDeviceInfo()->fcm_registration_token(),
             kFCMRegistrationToken);
@@ -192,9 +200,26 @@ TEST_F(LocalDeviceInfoProviderImplTest, ShouldPopulateInterestedDataTypes) {
 
   const ModelTypeSet kTypes = ModelTypeSet(BOOKMARKS);
   EXPECT_CALL(device_info_sync_client_, GetInterestedDataTypes())
-      .WillOnce(Return(kTypes));
+      .WillRepeatedly(Return(kTypes));
 
   EXPECT_EQ(provider_->GetLocalDeviceInfo()->interested_data_types(), kTypes);
+}
+
+TEST_F(LocalDeviceInfoProviderImplTest, ShouldKeepStoredInvalidationFields) {
+  const std::string kFCMRegistrationToken = "fcm_token";
+  const ModelTypeSet kInterestedDataTypes(BOOKMARKS);
+  provider_->Initialize(kLocalDeviceGuid, kLocalDeviceClientName,
+                        kLocalDeviceManufacturerName, kLocalDeviceModelName,
+                        kFCMRegistrationToken, kInterestedDataTypes);
+
+  EXPECT_CALL(device_info_sync_client_, GetFCMRegistrationToken())
+      .WillOnce(Return(base::nullopt));
+  EXPECT_CALL(device_info_sync_client_, GetInterestedDataTypes())
+      .WillOnce(Return(base::nullopt));
+
+  const DeviceInfo* local_device_info = provider_->GetLocalDeviceInfo();
+  EXPECT_EQ(local_device_info->interested_data_types(), kInterestedDataTypes);
+  EXPECT_EQ(local_device_info->fcm_registration_token(), kFCMRegistrationToken);
 }
 
 }  // namespace

@@ -52,8 +52,10 @@ class DeviceInfoSyncBridge : public ModelTypeSyncBridge,
   // change. Used when the caller knows a property of local device info has
   // changed (e.g. SharingInfo), and must be sync-ed to other devices as soon as
   // possible, without waiting for the periodic commits. |callback| will be
-  // called when device info is synced.
-  void RefreshLocalDeviceInfo(base::OnceClosure callback);
+  // called when device info is synced. The device info will be compared with
+  // the local copy. If the data has been updated, then it will be committed.
+  // Otherwise nothing happens and the |callback| will be never called.
+  void RefreshLocalDeviceInfoIfNeeded(base::OnceClosure callback);
 
   // ModelTypeSyncBridge implementation.
   void OnSyncStarting(const DataTypeActivationRequest& request) override;
@@ -113,14 +115,16 @@ class DeviceInfoSyncBridge : public ModelTypeSyncBridge,
       LocalDeviceNameInfo local_device_name_info);
   void OnReadAllData(std::unique_ptr<ClientIdToSpecifics> all_data,
                      const base::Optional<syncer::ModelError>& error);
+  void OnSyncInvalidationsInitialized();
   void OnReadAllMetadata(const base::Optional<syncer::ModelError>& error,
                          std::unique_ptr<MetadataBatch> metadata_batch);
   void OnCommit(const base::Optional<syncer::ModelError>& error);
 
   // Performs reconciliation between the locally provided device info and the
   // stored device info data. If the sets of data differ, then we consider this
-  // a local change and we send it to the processor.
-  void ReconcileLocalAndStored();
+  // a local change and we send it to the processor. Returns true if the local
+  // data has been changed and sent to the processor.
+  bool ReconcileLocalAndStored();
 
   // Stores the updated version of the local copy of device info in durable
   // storage, in memory, and informs sync of the change. Must not be called

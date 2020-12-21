@@ -100,8 +100,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientWithSyncSendInterestedDataTypesTest,
   syncer::SyncInvalidationsService* sync_invalidations_service =
       SyncInvalidationsServiceFactory::GetForProfile(GetProfile(0));
   ASSERT_THAT(sync_invalidations_service, NotNull());
-  syncer::ModelTypeSet interested_data_types =
-      sync_invalidations_service->GetInterestedDataTypes();
+  ASSERT_TRUE(sync_invalidations_service->GetInterestedDataTypes());
+  const syncer::ModelTypeSet interested_data_types =
+      *sync_invalidations_service->GetInterestedDataTypes();
 
   // Check that some "standard" data types are included.
   EXPECT_TRUE(
@@ -146,9 +147,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
   syncer::SyncInvalidationsService* sync_invalidations_service =
       SyncInvalidationsServiceFactory::GetForProfile(GetProfile(0));
   ASSERT_THAT(sync_invalidations_service, NotNull());
-  syncer::ModelTypeSet interested_data_types =
-      sync_invalidations_service->GetInterestedDataTypes();
-  std::string fcm_token = sync_invalidations_service->GetFCMRegistrationToken();
+  ASSERT_TRUE(sync_invalidations_service->GetInterestedDataTypes());
+  ASSERT_TRUE(sync_invalidations_service->GetFCMRegistrationToken());
+  const syncer::ModelTypeSet interested_data_types =
+      *sync_invalidations_service->GetInterestedDataTypes();
+  const std::string fcm_token =
+      *sync_invalidations_service->GetFCMRegistrationToken();
 
   // Check that some "standard" data types are included.
   EXPECT_TRUE(
@@ -205,9 +209,12 @@ IN_PROC_BROWSER_TEST_F(
   syncer::SyncInvalidationsService* sync_invalidations_service =
       SyncInvalidationsServiceFactory::GetForProfile(GetProfile(0));
   ASSERT_THAT(sync_invalidations_service, NotNull());
-  syncer::ModelTypeSet interested_data_types =
-      sync_invalidations_service->GetInterestedDataTypes();
-  std::string fcm_token = sync_invalidations_service->GetFCMRegistrationToken();
+  ASSERT_TRUE(sync_invalidations_service->GetInterestedDataTypes());
+  ASSERT_TRUE(sync_invalidations_service->GetFCMRegistrationToken());
+  const syncer::ModelTypeSet interested_data_types =
+      *sync_invalidations_service->GetInterestedDataTypes();
+  const std::string fcm_token =
+      *sync_invalidations_service->GetFCMRegistrationToken();
 
   // Check that some "standard" data types are included.
   EXPECT_TRUE(
@@ -274,24 +281,30 @@ IN_PROC_BROWSER_TEST_F(
 
   // The local device should eventually be committed to the server. The FCM
   // token should be present in device info.
-  std::string old_token =
-      SyncInvalidationsServiceFactory::GetForProfile(GetProfile(0))
-          ->GetFCMRegistrationToken();
+  ASSERT_TRUE(SyncInvalidationsServiceFactory::GetForProfile(GetProfile(0))
+                  ->GetFCMRegistrationToken());
+  const std::string old_token =
+      *SyncInvalidationsServiceFactory::GetForProfile(GetProfile(0))
+           ->GetFCMRegistrationToken();
   EXPECT_TRUE(ServerDeviceInfoMatchChecker(
                   GetFakeServer(), ElementsAre(HasInstanceIdToken(old_token)))
                   .Wait());
 
   // Sign out. The FCM token should be cleared.
   GetClient(0)->SignOutPrimaryAccount();
+  ASSERT_TRUE(SyncInvalidationsServiceFactory::GetForProfile(GetProfile(0))
+                  ->GetFCMRegistrationToken());
   EXPECT_TRUE(SyncInvalidationsServiceFactory::GetForProfile(GetProfile(0))
                   ->GetFCMRegistrationToken()
-                  .empty());
+                  ->empty());
 
   // Sign in again.
   ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  std::string new_token =
-      SyncInvalidationsServiceFactory::GetForProfile(GetProfile(0))
-          ->GetFCMRegistrationToken();
+  ASSERT_TRUE(SyncInvalidationsServiceFactory::GetForProfile(GetProfile(0))
+                  ->GetFCMRegistrationToken());
+  const std::string new_token =
+      *SyncInvalidationsServiceFactory::GetForProfile(GetProfile(0))
+           ->GetFCMRegistrationToken();
   EXPECT_NE(new_token, old_token);
   EXPECT_FALSE(new_token.empty());
   // New device info should eventually be committed to the server (but the old

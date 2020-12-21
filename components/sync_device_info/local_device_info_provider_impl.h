@@ -32,7 +32,9 @@ class LocalDeviceInfoProviderImpl : public MutableLocalDeviceInfoProvider {
   void Initialize(const std::string& cache_guid,
                   const std::string& client_name,
                   const std::string& manufacturer_name,
-                  const std::string& model_name) override;
+                  const std::string& model_name,
+                  const std::string& last_fcm_registration_token,
+                  const ModelTypeSet& last_interested_data_types) override;
   void Clear() override;
   void UpdateClientName(const std::string& client_name) override;
   version_info::Channel GetChannel() const override;

@@ -72,22 +72,28 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
   }
 
   // syncer::DeviceInfoSyncClient:
-  std::string GetFCMRegistrationToken() const override {
+  base::Optional<std::string> GetFCMRegistrationToken() const override {
     syncer::SyncInvalidationsService* service =
         SyncInvalidationsServiceFactory::GetForProfile(profile_);
     if (service) {
       return service->GetFCMRegistrationToken();
     }
+    // If the service is not enabled, then the registration token must be empty,
+    // not unknown (base::nullopt). This is needed to reset previous token if
+    // the invalidations have been turned off.
     return std::string();
   }
 
   // syncer::DeviceInfoSyncClient:
-  syncer::ModelTypeSet GetInterestedDataTypes() const override {
+  base::Optional<syncer::ModelTypeSet> GetInterestedDataTypes() const override {
     syncer::SyncInvalidationsService* service =
         SyncInvalidationsServiceFactory::GetForProfile(profile_);
     if (service) {
       return service->GetInterestedDataTypes();
     }
+    // If the service is not enabled, then the list of types must be empty, not
+    // unknown (base::nullopt). This is needed to reset previous types if the
+    // invalidations have been turned off.
     return syncer::ModelTypeSet();
   }
 

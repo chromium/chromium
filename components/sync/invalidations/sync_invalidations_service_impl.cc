@@ -61,8 +61,11 @@ void SyncInvalidationsServiceImpl::RemoveTokenObserver(
   fcm_handler_->RemoveTokenObserver(observer);
 }
 
-const std::string& SyncInvalidationsServiceImpl::GetFCMRegistrationToken()
-    const {
+base::Optional<std::string>
+SyncInvalidationsServiceImpl::GetFCMRegistrationToken() const {
+  if (fcm_handler_->IsWaitingForToken()) {
+    return base::nullopt;
+  }
   return fcm_handler_->GetFCMRegistrationToken();
 }
 
@@ -71,9 +74,12 @@ void SyncInvalidationsServiceImpl::SetInterestedDataTypesHandler(
   data_types_manager_.SetInterestedDataTypesHandler(handler);
 }
 
-const ModelTypeSet& SyncInvalidationsServiceImpl::GetInterestedDataTypes()
-    const {
-  return data_types_manager_.GetInterestedDataTypes();
+base::Optional<ModelTypeSet>
+SyncInvalidationsServiceImpl::GetInterestedDataTypes() const {
+  if (data_types_manager_.IsInitialized()) {
+    return data_types_manager_.GetInterestedDataTypes();
+  }
+  return base::nullopt;
 }
 
 void SyncInvalidationsServiceImpl::SetInterestedDataTypes(

@@ -68,7 +68,7 @@ DeviceInfoSyncServiceImpl::GetControllerDelegate() {
 
 void DeviceInfoSyncServiceImpl::RefreshLocalDeviceInfo(
     base::OnceClosure callback) {
-  bridge_->RefreshLocalDeviceInfo(std::move(callback));
+  bridge_->RefreshLocalDeviceInfoIfNeeded(std::move(callback));
 }
 
 void DeviceInfoSyncServiceImpl::OnFCMRegistrationTokenChanged() {
