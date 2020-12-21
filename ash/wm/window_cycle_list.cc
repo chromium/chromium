@@ -17,7 +17,11 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/default_colors.h"
+#include "ash/wm/window_cycle_tab_slider.h"
+#include "ash/wm/window_cycle_tab_slider_button.h"
 #include "ash/wm/window_mini_view.h"
 #include "ash/wm/window_preview_view.h"
 #include "ash/wm/window_state.h"
@@ -29,12 +33,15 @@
 #include "ui/aura/scoped_window_targeter.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_targeter.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/animation/bounds_animator.h"
+#include "ui/views/background.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -70,8 +77,18 @@ constexpr int kMaxPreviewWidthDp = kFixedPreviewHeightDp * 2;
 constexpr int kInsideBorderHorizontalPaddingDp = 64;
 constexpr int kInsideBorderVerticalPaddingDp = 60;
 
+// Padding between the alt-tab bandshield and the tab slider container.
+constexpr int kMirrorContainerVerticalPaddingDp = 24;
+
 // Padding between the window previews within the alt-tab bandshield.
 constexpr int kBetweenChildPaddingDp = 10;
+
+// Padding between the tab slider button and the tab slider container.
+constexpr int kTabSliderContainerVerticalPaddingDp = 32;
+
+// The font size of "No recent items" string when there's no window in the
+// window cycle list.
+constexpr int kNoRecentItemsLabelFontSizeDp = 14;
 
 // The UMA histogram that logs smoothness of the fade-in animation.
 constexpr char kShowAnimationSmoothness[] =
@@ -262,6 +279,30 @@ class WindowCycleView : public views::WidgetDelegateView,
     layer->SetBackdropFilterQuality(kBackgroundBlurQuality);
     layer->SetName("WindowCycleView");
 
+    if (features::IsBentoEnabled()) {
+      tab_slider_container_ =
+          AddChildView(std::make_unique<WindowCycleTabSlider>());
+
+      no_recent_items_label_ = AddChildView(std::make_unique<views::Label>(
+          l10n_util::GetStringUTF16(IDS_ASH_OVERVIEW_NO_RECENT_ITEMS)));
+
+      no_recent_items_label_->SetPaintToLayer();
+      no_recent_items_label_->layer()->SetFillsBoundsOpaquely(false);
+      no_recent_items_label_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
+      no_recent_items_label_->SetVerticalAlignment(gfx::ALIGN_MIDDLE);
+
+      no_recent_items_label_->SetEnabledColor(
+          AshColorProvider::Get()->GetContentLayerColor(
+              AshColorProvider::ContentLayerType::kIconColorSecondary));
+      no_recent_items_label_->SetFontList(
+          no_recent_items_label_->font_list()
+              .DeriveWithSizeDelta(
+                  kNoRecentItemsLabelFontSizeDp -
+                  no_recent_items_label_->font_list().GetFontSize())
+              .DeriveWithWeight(gfx::Font::Weight::NORMAL));
+      no_recent_items_label_->SetVisible(false);
+    }
+
     // |mirror_container_| may be larger than |this|. In this case, it will be
     // shifted along the x-axis when the user tabs through. It is a container
     // for the previews and has no rendered content.
@@ -271,7 +312,11 @@ class WindowCycleView : public views::WidgetDelegateView,
     views::BoxLayout* layout =
         mirror_container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
             views::BoxLayout::Orientation::kHorizontal,
-            gfx::Insets(kInsideBorderVerticalPaddingDp,
+            gfx::Insets(features::IsBentoEnabled()
+                            ? kMirrorContainerVerticalPaddingDp
+                            : kInsideBorderVerticalPaddingDp,
+                        kInsideBorderHorizontalPaddingDp,
+                        kInsideBorderVerticalPaddingDp,
                         kInsideBorderHorizontalPaddingDp),
             kBetweenChildPaddingDp));
     layout->set_cross_axis_alignment(
@@ -301,6 +346,15 @@ class WindowCycleView : public views::WidgetDelegateView,
   ~WindowCycleView() override = default;
 
   void UpdateWindows(const WindowCycleList::WindowList& windows) {
+    const bool no_windows = windows.empty();
+    if (features::IsBentoEnabled()) {
+      no_recent_items_label_->SetVisible(no_windows);
+    }
+    if (no_windows)
+      return;
+
+    if (features::IsBentoEnabled())
+      no_recent_items_label_->SetVisible(false);
     for (auto* window : windows) {
       auto* view = mirror_container_->AddChildView(
           std::make_unique<WindowCycleItemView>(window));
@@ -394,7 +448,12 @@ class WindowCycleView : public views::WidgetDelegateView,
 
   // views::WidgetDelegateView:
   gfx::Size CalculatePreferredSize() const override {
-    return mirror_container_->GetPreferredSize();
+    gfx::Size size = mirror_container_->GetPreferredSize();
+    if (features::IsBentoEnabled()) {
+      size.Enlarge(0, tab_slider_container_->GetPreferredSize().height() +
+                          kTabSliderContainerVerticalPaddingDp);
+    }
+    return size;
   }
 
   void Layout() override {
@@ -435,6 +494,32 @@ class WindowCycleView : public views::WidgetDelegateView,
       x_offset = std::max(x_offset, width() - container_bounds.width());
     }
     container_bounds.set_x(x_offset);
+
+    // Layout a tab slider if Bento is enabled.
+    if (features::IsBentoEnabled()) {
+      // Layout the tab slider.
+      const gfx::Size tab_slider_size =
+          tab_slider_container_->GetPreferredSize();
+      const gfx::Rect tab_slider_container_bounds(
+          (width() - tab_slider_size.width()) / 2,
+          kTabSliderContainerVerticalPaddingDp, tab_slider_size.width(),
+          tab_slider_size.height());
+      tab_slider_container_->SetBoundsRect(tab_slider_container_bounds);
+
+      // Move window cycle container down.
+      container_bounds.set_y(tab_slider_container_->y() +
+                             tab_slider_container_->height());
+
+      // Unlike the bounds of scrollable mirror container, the bounds of label
+      // should not overflow out of the screen.
+      if (no_previews_set_.empty()) {
+        const gfx::Rect no_recent_item_bounds_(
+            std::max(0, container_bounds.x()), container_bounds.y(),
+            std::min(width(), container_bounds.width()),
+            container_bounds.height());
+        no_recent_items_label_->SetBoundsRect(no_recent_item_bounds_);
+      }
+    }
 
     // Enable animations only after the first Layout() pass.
     std::unique_ptr<ui::ScopedLayerAnimationSettings> settings;
@@ -478,6 +563,13 @@ class WindowCycleView : public views::WidgetDelegateView,
     return mirror_container_->children();
   }
 
+  const views::View::Views& GetTabSliderViewsForTesting() const {
+    return tab_slider_container_->children();
+  }
+
+  const views::Label* GetNoRecentItemsLabelForTesting() const {
+    return no_recent_items_label_;
+  }
   const aura::Window* GetTargetWindowForTesting() const {
     return target_window_;
   }
@@ -490,6 +582,10 @@ class WindowCycleView : public views::WidgetDelegateView,
  private:
   std::map<aura::Window*, WindowCycleItemView*> window_view_map_;
   views::View* mirror_container_ = nullptr;
+
+  // Tab slider and no recent items are only used when Bento is enabled.
+  views::View* tab_slider_container_ = nullptr;
+  views::Label* no_recent_items_label_ = nullptr;
 
   // The |target_window_| is the window that has the focus ring. When the user
   // completes cycling the |target_window_| is activated.
@@ -572,8 +668,6 @@ WindowCycleList::~WindowCycleList() {
 }
 
 void WindowCycleList::ReplaceWindows(const WindowList& windows) {
-  if (windows.empty())
-    return;
 
   RemoveAllWindows();
   windows_ = windows;
@@ -581,7 +675,7 @@ void WindowCycleList::ReplaceWindows(const WindowList& windows) {
   for (auto* new_window : windows_)
     new_window->AddObserver(this);
 
-  if (ShouldShowUi() && cycle_view_)
+  if (cycle_view_)
     cycle_view_->UpdateWindows(windows_);
 }
 
@@ -819,11 +913,21 @@ int WindowCycleList::GetOffsettedWindowIndex(int offset) const {
 
 const views::View::Views& WindowCycleList::GetWindowCycleItemViewsForTesting()
     const {
-  return cycle_view_->GetPreviewViewsForTesting();
+  return cycle_view_->GetPreviewViewsForTesting();  // IN-TEST
+}
+
+const views::View::Views&
+WindowCycleList::GetWindowCycleTabSliderViewsForTesting() const {
+  return cycle_view_->GetTabSliderViewsForTesting();  // IN-TEST
+}
+
+const views::Label*
+WindowCycleList::GetWindowCycleNoRecentItemsLabelForTesting() const {
+  return cycle_view_->GetNoRecentItemsLabelForTesting();  // IN-TEST
 }
 
 const aura::Window* WindowCycleList::GetTargetWindowForTesting() const {
-  return cycle_view_->GetTargetWindowForTesting();
+  return cycle_view_->GetTargetWindowForTesting();  // IN-TEST
 }
 
 }  // namespace ash

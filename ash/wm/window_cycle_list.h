@@ -15,6 +15,7 @@
 #include "ui/aura/window_observer.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/screen.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/view.h"
 
 namespace aura {
@@ -114,6 +115,12 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
 
   // Returns the views for the window cycle list.
   const views::View::Views& GetWindowCycleItemViewsForTesting() const;
+
+  // Returns the views for the window cycle tab slider buttons.
+  const views::View::Views& GetWindowCycleTabSliderViewsForTesting() const;
+
+  // Returns no recent items label.
+  const views::Label* GetWindowCycleNoRecentItemsLabelForTesting() const;
 
   // Returns the window cycle list's target window.
   const aura::Window* GetTargetWindowForTesting() const;

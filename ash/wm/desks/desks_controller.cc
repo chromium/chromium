@@ -697,10 +697,9 @@ void DesksController::ActivateDeskInternal(const Desk* desk,
   // If in the middle of a window cycle gesture, reset the window cycle list
   // contents so it contains the new active desk's windows.
   auto* shell = Shell::Get();
-  if (features::IsAltTabLimitedToActiveDesk()) {
-    auto* window_cycle_controller = shell->window_cycle_controller();
+  auto* window_cycle_controller = shell->window_cycle_controller();
+  if (window_cycle_controller->IsAltTabPerActiveDesk())
     window_cycle_controller->MaybeResetCycleList();
-  }
 
   for (auto& observer : observers_)
     observer.OnDeskActivationChanged(active_desk_, old_active);
