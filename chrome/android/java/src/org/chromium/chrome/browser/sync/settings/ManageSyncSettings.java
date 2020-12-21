@@ -205,9 +205,11 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
         mTurnOffSync.setOnPreferenceClickListener(
                 SyncSettingsUtils.toOnClickListener(this, this::onTurnOffSyncClicked));
 
+        Profile profile = Profile.getLastUsedRegularProfile();
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
                 && !mIsFromSigninScreen) {
-            mTurnOffSync.setVisible(true);
+            // Child profiles should not be able to sign out.
+            mTurnOffSync.setVisible(!profile.isChild());
             findPreference(PREF_ADVANCED_CATEGORY).setVisible(true);
 
             /**
@@ -239,7 +241,6 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
             type.setOnPreferenceChangeListener(this);
         }
 
-        Profile profile = Profile.getLastUsedRegularProfile();
         if (profile.isChild()) {
             mGoogleActivityControls.setSummary(
                     R.string.sign_in_google_activity_controls_summary_child_account);
@@ -392,7 +393,9 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
         PersonalDataManager.setPaymentsIntegrationEnabled(mSyncEverything.isChecked()
                 || (mSyncPaymentsIntegration.isChecked() && mSyncAutofill.isChecked()));
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)) {
+        // For child profiles sync should always be on.
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
+                && !Profile.getLastUsedRegularProfile().isChild()) {
             boolean atLeastOneDataTypeEnabled =
                     mSyncEverything.isChecked() || selectedModelTypes.size() > 0;
             if (mProfileSyncService.isSyncRequested() && !atLeastOneDataTypeEnabled) {
