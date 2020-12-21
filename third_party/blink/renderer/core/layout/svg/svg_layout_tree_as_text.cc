@@ -685,7 +685,6 @@ void WriteSVGInlineText(WTF::TextStream& ts,
   WriteStandardPrefix(ts, text, indent);
   WritePositionAndStyle(ts, text);
   ts << "\n";
-  WriteResources(ts, text, indent);
   WriteSVGInlineTextBoxes(ts, text, indent);
 }
 
