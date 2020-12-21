@@ -5881,6 +5881,10 @@ crbug.com/1045510 [ Win7 ] fast/forms/suggestion-picker/week-suggestion-picker-a
 crbug.com/681468 fast/forms/suggestion-picker/date-suggestion-picker-appearance-zoom125.html [ Failure Pass ]
 crbug.com/681468 fast/forms/suggestion-picker/date-suggestion-picker-appearance-zoom200.html [ Failure Pass ]
 
+# Other fast/forms/suggestion-picker/time-suggestion-picker-appearance.html
+# failures on Win7 caused by focus appearing on the wrong element.
+crbug.com/1160594 [ Win7 ] fast/forms/suggestion-picker/time-suggestion-picker-appearance.html [ Failure ]
+
 # These tests will only run in the virtual test suite where the frequency
 # capping for overlay popup detection is disabled. This eliminates the need
 # for waitings in web tests to trigger a detection event.
