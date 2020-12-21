@@ -15,6 +15,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "components/password_manager/core/browser/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -53,6 +54,13 @@ std::string ComputeClientTag(
          net::EscapePath(password_data.username_value()) + "|" +
          net::EscapePath(password_data.password_element()) + "|" +
          net::EscapePath(password_data.signon_realm());
+}
+
+base::Time ConvertToBaseTime(uint64_t time) {
+  return base::Time::FromDeltaSinceWindowsEpoch(
+      // Use FromDeltaSinceWindowsEpoch because create_time_us has
+      // always used the Windows epoch.
+      base::TimeDelta::FromMicroseconds(time));
 }
 
 sync_pb::PasswordSpecifics SpecificsFromPassword(
@@ -107,18 +115,14 @@ PasswordForm PasswordFromEntityChange(const syncer::EntityChange& entity_change,
   password.username_value = base::UTF8ToUTF16(password_data.username_value());
   password.password_value = base::UTF8ToUTF16(password_data.password_value());
   if (password_data.has_date_last_used()) {
-    password.date_last_used = base::Time::FromDeltaSinceWindowsEpoch(
-        base::TimeDelta::FromMicroseconds(password_data.date_last_used()));
+    password.date_last_used = ConvertToBaseTime(password_data.date_last_used());
   } else if (password_data.preferred()) {
     // For legacy passwords that don't have the |date_last_used| field set, we
     // should it similar to the logic in login database migration.
     password.date_last_used =
         base::Time::FromDeltaSinceWindowsEpoch(base::TimeDelta::FromDays(1));
   }
-  password.date_created = base::Time::FromDeltaSinceWindowsEpoch(
-      // Use FromDeltaSinceWindowsEpoch because create_time_us has
-      // always used the Windows epoch.
-      base::TimeDelta::FromMicroseconds(password_data.date_created()));
+  password.date_created = ConvertToBaseTime(password_data.date_created());
   password.blocked_by_user = password_data.blacklisted();
   password.type = static_cast<PasswordForm::Type>(password_data.type());
   password.times_used = password_data.times_used();
@@ -128,6 +132,58 @@ PasswordForm PasswordFromEntityChange(const syncer::EntityChange& entity_change,
       url::Origin::Create(GURL(password_data.federation_url()));
   password.date_synced = sync_time;
   return password;
+}
+
+CompromisedCredentials CreateCompromisedCredentials(
+    const std::string& signon_realm,
+    const base::string16& username,
+    CompromiseType compromise_type,
+    const sync_pb::PasswordSpecificsData::PasswordIssues::PasswordIssue&
+        issue) {
+  return CompromisedCredentials(
+      signon_realm, username,
+      ConvertToBaseTime(issue.date_first_detection_microseconds()),
+      compromise_type, IsMuted(issue.is_muted()));
+}
+
+std::vector<CompromisedCredentials> CompromisedCredentialsFromEntityChange(
+    const syncer::EntityChange& entity_change) {
+  DCHECK(entity_change.data().specifics.has_password());
+
+  const sync_pb::PasswordSpecificsData& password_data =
+      entity_change.data().specifics.password().client_only_encrypted_data();
+
+  std::vector<CompromisedCredentials> issues;
+
+  if (!password_data.has_password_issues())
+    return issues;
+
+  const std::string& signon_realm = password_data.signon_realm();
+  const base::string16& username =
+      base::UTF8ToUTF16(password_data.username_value());
+
+  const auto& password_issues = password_data.password_issues();
+  if (password_issues.has_leaked_password_issue()) {
+    issues.emplace_back(CreateCompromisedCredentials(
+        signon_realm, username, CompromiseType::kLeaked,
+        password_issues.leaked_password_issue()));
+  }
+  if (password_issues.has_reused_password_issue()) {
+    issues.emplace_back(CreateCompromisedCredentials(
+        signon_realm, username, CompromiseType::kReused,
+        password_issues.reused_password_issue()));
+  }
+  if (password_issues.has_weak_password_issue()) {
+    issues.emplace_back(CreateCompromisedCredentials(
+        signon_realm, username, CompromiseType::kWeak,
+        password_issues.weak_password_issue()));
+  }
+  if (password_issues.has_phished_password_issue()) {
+    issues.emplace_back(CreateCompromisedCredentials(
+        signon_realm, username, CompromiseType::kPhished,
+        password_issues.phished_password_issue()));
+  }
+  return issues;
 }
 
 std::unique_ptr<syncer::EntityData> CreateEntityData(const PasswordForm& form) {
@@ -165,13 +221,9 @@ bool AreLocalAndRemotePasswordsEqual(
           base::UTF16ToUTF8(password_form.password_value) ==
               password_specifics.password_value() &&
           password_form.date_last_used ==
-              base::Time::FromDeltaSinceWindowsEpoch(
-                  base::TimeDelta::FromMicroseconds(
-                      password_specifics.date_last_used())) &&
+              ConvertToBaseTime(password_specifics.date_last_used()) &&
           password_form.date_created ==
-              base::Time::FromDeltaSinceWindowsEpoch(
-                  base::TimeDelta::FromMicroseconds(
-                      password_specifics.date_created())) &&
+              ConvertToBaseTime(password_specifics.date_created()) &&
           password_form.blocked_by_user == password_specifics.blacklisted() &&
           static_cast<int>(password_form.type) == password_specifics.type() &&
           password_form.times_used == password_specifics.times_used() &&
@@ -422,9 +474,7 @@ base::Optional<syncer::ModelError> PasswordSyncBridge::MergeSyncData(
       }
 
       // Passwords aren't identical, pick the most recently created one.
-      if (base::Time::FromDeltaSinceWindowsEpoch(
-              base::TimeDelta::FromMicroseconds(
-                  remote_password_specifics.date_created())) <
+      if (ConvertToBaseTime(remote_password_specifics.date_created()) <
           local_password_form.date_created) {
         // The local password is more recent, update the processor.
         change_processor()->Put(
@@ -476,6 +526,8 @@ base::Optional<syncer::ModelError> PasswordSyncBridge::MergeSyncData(
       PasswordStoreChangeList changes = password_store_sync_->AddLoginSync(
           PasswordFromEntityChange(*entity_change, /*sync_time=*/time_now),
           &add_login_error);
+      password_store_sync_->AddCompromisedCredentialsSync(
+          CompromisedCredentialsFromEntityChange(*entity_change));
       base::UmaHistogramEnumeration(
           "PasswordManager.MergeSyncData.AddLoginSyncError", add_login_error);
 
@@ -590,6 +642,8 @@ base::Optional<syncer::ModelError> PasswordSyncBridge::ApplySyncChanges(
           changes = password_store_sync_->AddLoginSync(
               PasswordFromEntityChange(*entity_change, /*sync_time=*/time_now),
               &add_login_error);
+          password_store_sync_->AddCompromisedCredentialsSync(
+              CompromisedCredentialsFromEntityChange(*entity_change));
           base::UmaHistogramEnumeration(
               "PasswordManager.ApplySyncChanges.AddLoginSyncError",
               add_login_error);

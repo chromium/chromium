@@ -39,6 +39,7 @@ using testing::Invoke;
 using testing::NotNull;
 using testing::Return;
 using testing::UnorderedElementsAre;
+using testing::UnorderedElementsAreArray;
 
 constexpr char kSignonRealm1[] = "abc";
 constexpr char kSignonRealm2[] = "def";
@@ -67,11 +68,39 @@ MATCHER_P(IsSyncMetadataStoreChangeListWithStore, expected_metadata_store, "") {
              ->GetMetadataStoreForTesting() == expected_metadata_store;
 }
 
-sync_pb::PasswordSpecifics CreateSpecifics(const std::string& origin,
-                                           const std::string& username_element,
-                                           const std::string& username_value,
-                                           const std::string& password_element,
-                                           const std::string& signon_realm) {
+sync_pb::PasswordSpecificsData_PasswordIssues CreateSpecificsIssues(
+    const std::vector<CompromiseType>& issue_types) {
+  sync_pb::PasswordSpecificsData_PasswordIssues remote_issues;
+  for (auto type : issue_types) {
+    sync_pb::PasswordSpecificsData_PasswordIssues_PasswordIssue remote_issue;
+    remote_issue.set_date_first_detection_microseconds(
+        base::Time().ToDeltaSinceWindowsEpoch().InMicroseconds());
+    remote_issue.set_is_muted(false);
+    switch (type) {
+      case CompromiseType::kLeaked:
+        *remote_issues.mutable_leaked_password_issue() = remote_issue;
+        break;
+      case CompromiseType::kPhished:
+        *remote_issues.mutable_phished_password_issue() = remote_issue;
+        break;
+      case CompromiseType::kWeak:
+        *remote_issues.mutable_weak_password_issue() = remote_issue;
+        break;
+      case CompromiseType::kReused:
+        *remote_issues.mutable_reused_password_issue() = remote_issue;
+        break;
+    }
+  }
+  return remote_issues;
+}
+
+sync_pb::PasswordSpecifics CreateSpecifics(
+    const std::string& origin,
+    const std::string& username_element,
+    const std::string& username_value,
+    const std::string& password_element,
+    const std::string& signon_realm,
+    const std::vector<CompromiseType>& issue_types) {
   sync_pb::EntitySpecifics password_specifics;
   sync_pb::PasswordSpecificsData* password_data =
       password_specifics.mutable_password()
@@ -81,13 +110,25 @@ sync_pb::PasswordSpecifics CreateSpecifics(const std::string& origin,
   password_data->set_username_value(username_value);
   password_data->set_password_element(password_element);
   password_data->set_signon_realm(signon_realm);
+  if (!issue_types.empty())
+    *password_data->mutable_password_issues() =
+        CreateSpecificsIssues(issue_types);
   return password_specifics.password();
 }
 
 sync_pb::PasswordSpecifics CreateSpecificsWithSignonRealm(
     const std::string& signon_realm) {
   return CreateSpecifics("http://www.origin.com", "username_element",
-                         "username_value", "password_element", signon_realm);
+                         "username_value", "password_element", signon_realm,
+                         {});
+}
+
+sync_pb::PasswordSpecifics CreateSpecificsWithSignonRealmAndIssues(
+    const std::string& signon_realm,
+    const std::vector<CompromiseType>& issue_types) {
+  return CreateSpecifics("http://www.origin.com", "username_element",
+                         "username_value", "password_element", signon_realm,
+                         issue_types);
 }
 
 PasswordForm MakePasswordForm(const std::string& signon_realm) {
@@ -106,6 +147,19 @@ PasswordForm MakeBlocklistedForm(const std::string& signon_realm) {
   form.signon_realm = signon_realm;
   form.blocked_by_user = true;
   return form;
+}
+
+std::vector<CompromisedCredentials> MakeCompromisedCredentials(
+    const PasswordForm& form,
+    const std::vector<CompromiseType>& types) {
+  std::vector<CompromisedCredentials> issues;
+
+  for (auto type : types) {
+    issues.emplace_back(
+        CompromisedCredentials(form.signon_realm, form.username_value,
+                               base::Time(), type, IsMuted(false)));
+  }
+  return issues;
 }
 
 // A mini database class the supports Add/Update/Remove functionality. It also
@@ -358,9 +412,9 @@ class PasswordSyncBridgeTest : public testing::Test {
 
 TEST_F(PasswordSyncBridgeTest, ShouldComputeClientTagHash) {
   syncer::EntityData data;
-  *data.specifics.mutable_password() =
-      CreateSpecifics("http://www.origin.com", "username_element",
-                      "username_value", "password_element", "signon_realm");
+  *data.specifics.mutable_password() = CreateSpecifics(
+      "http://www.origin.com", "username_element", "username_value",
+      "password_element", "signon_realm", /*issue_types=*/{});
 
   EXPECT_THAT(
       bridge()->GetClientTag(data),
@@ -1076,6 +1130,71 @@ TEST_F(PasswordSyncBridgeTest, ShouldReportDownloadedPasswordsIfAccountStore) {
       "PasswordManager.AccountStoreCredentialsAfterOptIn", 2, 1);
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.AccountStoreBlocklistedEntriesAfterOptIn", 1, 1);
+}
+
+TEST_F(PasswordSyncBridgeTest,
+       ShouldAddRemoteCompromisedCredentilasUponRemoteCreation) {
+  ON_CALL(mock_processor(), IsTrackingMetadata()).WillByDefault(Return(true));
+  const std::vector<CompromiseType> kIssuesTypes = {CompromiseType::kLeaked,
+                                                    CompromiseType::kWeak};
+  const std::vector<CompromisedCredentials> kExpectedIssues =
+      MakeCompromisedCredentials(MakePasswordForm(kSignonRealm1), kIssuesTypes);
+
+  sync_pb::PasswordSpecifics specifics =
+      CreateSpecificsWithSignonRealmAndIssues(kSignonRealm1, kIssuesTypes);
+
+  testing::InSequence in_sequence;
+  EXPECT_CALL(*mock_password_store_sync(), BeginTransaction());
+  EXPECT_CALL(*mock_password_store_sync(),
+              AddLoginSync(FormHasSignonRealm(kSignonRealm1), _));
+
+  EXPECT_CALL(*mock_password_store_sync(),
+              AddCompromisedCredentialsSync(
+                  UnorderedElementsAreArray(kExpectedIssues)));
+
+  EXPECT_CALL(*mock_password_store_sync(), CommitTransaction());
+
+  syncer::EntityChangeList entity_change_list;
+  entity_change_list.push_back(syncer::EntityChange::CreateAdd(
+      /*storage_key=*/"", SpecificsToEntity(specifics)));
+  base::Optional<syncer::ModelError> error = bridge()->ApplySyncChanges(
+      bridge()->CreateMetadataChangeList(), std::move(entity_change_list));
+  EXPECT_FALSE(error);
+}
+
+TEST_F(PasswordSyncBridgeTest,
+       ShouldAddRemoteCompromisedCredentilasDuringInitialMerge) {
+  ON_CALL(mock_processor(), IsTrackingMetadata()).WillByDefault(Return(true));
+  const std::vector<CompromiseType> kIssuesTypes = {CompromiseType::kLeaked,
+                                                    CompromiseType::kReused};
+  const std::vector<CompromisedCredentials> kIssues =
+      MakeCompromisedCredentials(MakePasswordForm(kSignonRealm1), kIssuesTypes);
+  sync_pb::PasswordSpecifics specifics =
+      CreateSpecificsWithSignonRealmAndIssues(kSignonRealm1, kIssuesTypes);
+
+  // Form will be added to the password store sync. We use sequence since the
+  // order is important. The form itself should be added before we add the
+  // compromised credentials.
+
+  testing::Sequence in_sequence;
+  EXPECT_CALL(*mock_password_store_sync(), BeginTransaction());
+
+  EXPECT_CALL(*mock_password_store_sync(),
+              AddLoginSync(FormHasSignonRealm(kSignonRealm1), _));
+
+  EXPECT_CALL(
+      *mock_password_store_sync(),
+      AddCompromisedCredentialsSync(UnorderedElementsAreArray(kIssues)));
+
+  EXPECT_CALL(*mock_password_store_sync(), CommitTransaction());
+
+  syncer::EntityChangeList entity_change_list;
+  entity_change_list.push_back(syncer::EntityChange::CreateAdd(
+      /*storage_key=*/"", SpecificsToEntity(specifics)));
+
+  base::Optional<syncer::ModelError> error = bridge()->MergeSyncData(
+      bridge()->CreateMetadataChangeList(), std::move(entity_change_list));
+  EXPECT_EQ(error, base::nullopt);
 }
 
 }  // namespace password_manager
