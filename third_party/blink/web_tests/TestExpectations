@@ -2471,11 +2471,7 @@ crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-20
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/626703 external/wpt/html/interaction/focus/document-level-focus-apis/document-has-system-focus.html [ Timeout ]
-crbug.com/626703 external/wpt/css/css-backgrounds/box-shadow-radius-000.html [ Failure ]
-crbug.com/626703 virtual/composite-bgcolor-animation/external/wpt/css/css-backgrounds/box-shadow-radius-000.html [ Failure ]
-crbug.com/626703 virtual/composite-bgcolor-animation/external/wpt/css/css-backgrounds/box-shadow-radius-001.html [ Failure ]
 crbug.com/626703 [ Mac11.0 ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-set-keyframes.https.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-backgrounds/box-shadow-radius-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-images/image-orientation/image-orientation-exif-png.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-conditional/css-supports-040.xht [ Failure ]
 crbug.com/626703 external/wpt/css/css-conditional/css-supports-042.xht [ Failure ]
@@ -3233,13 +3229,22 @@ crbug.com/435547 http/tests/cachestorage/serviceworker/ignore-search-with-creden
 crbug.com/697971 [ Mac10.12 ] virtual/text-antialias/selection/flexbox-selection-nested.html [ Skip ]
 crbug.com/697971 [ Mac10.12 ] virtual/text-antialias/selection/flexbox-selection.html [ Skip ]
 
-# [composite-bgcolor-animation]
-crbug.com/1148369 virtual/composite-bgcolor-animation/external/wpt/css/css-backgrounds/border-bottom-left-radius-010.xht [ Failure Pass ]
-crbug.com/1148369 virtual/composite-bgcolor-animation/external/wpt/css/css-backgrounds/border-bottom-right-radius-010.xht [ Failure Pass ]
-crbug.com/1148369 virtual/composite-bgcolor-animation/external/wpt/css/css-backgrounds/border-radius-clip-001.html [ Failure Pass ]
-crbug.com/1148369 virtual/composite-bgcolor-animation/external/wpt/css/css-backgrounds/border-radius-clip-002.htm [ Failure Pass ]
-crbug.com/1148369 virtual/composite-bgcolor-animation/external/wpt/css/css-backgrounds/border-top-left-radius-010.xht [ Failure Pass ]
-crbug.com/1148369 virtual/composite-bgcolor-animation/external/wpt/css/css-backgrounds/border-top-right-radius-010.xht [ Failure Pass ]
+crbug.com/1160916 virtual/composite-bgcolor-animation/external/wpt/css/css-backgrounds/border-bottom-left-radius-010.xht [ Failure Pass ]
+crbug.com/1160916 external/wpt/css/css-backgrounds/border-bottom-left-radius-010.xht [ Failure Pass ]
+crbug.com/1160916 virtual/composite-bgcolor-animation/external/wpt/css/css-backgrounds/border-bottom-right-radius-010.xht [ Failure Pass ]
+crbug.com/1160916 external/wpt/css/css-backgrounds/border-bottom-right-radius-010.xht [ Failure Pass ]
+crbug.com/1160916 virtual/composite-bgcolor-animation/external/wpt/css/css-backgrounds/border-radius-clip-001.html [ Failure Pass ]
+crbug.com/1160916 external/wpt/css/css-backgrounds/border-radius-clip-001.html [ Failure Pass ]
+crbug.com/1160916 virtual/composite-bgcolor-animation/external/wpt/css/css-backgrounds/border-radius-clip-002.htm [ Failure Pass ]
+crbug.com/1160916 external/wpt/css/css-backgrounds/border-radius-clip-002.htm [ Failure Pass ]
+crbug.com/1160916 virtual/composite-bgcolor-animation/external/wpt/css/css-backgrounds/border-top-left-radius-010.xht [ Failure Pass ]
+crbug.com/1160916 external/wpt/css/css-backgrounds/border-top-left-radius-010.xht [ Failure Pass ]
+crbug.com/1160916 virtual/composite-bgcolor-animation/external/wpt/css/css-backgrounds/border-top-right-radius-010.xht [ Failure Pass ]
+crbug.com/1160916 external/wpt/css/css-backgrounds/border-top-right-radius-010.xht [ Failure Pass ]
+crbug.com/1160916 virtual/composite-bgcolor-animation/external/wpt/css/css-backgrounds/box-shadow-radius-000.html [ Failure ]
+crbug.com/1160916 external/wpt/css/css-backgrounds/box-shadow-radius-000.html [ Failure ]
+crbug.com/1160916 virtual/composite-bgcolor-animation/external/wpt/css/css-backgrounds/box-shadow-radius-001.html [ Failure ]
+crbug.com/1160916 external/wpt/css/css-backgrounds/box-shadow-radius-001.html [ Failure ]
 
 # [css-grid]
 crbug.com/921722 external/wpt/css/css-grid/abspos/descendant-static-position-001.html [ Failure ]
@@ -5920,5 +5925,3 @@ crbug.com/626703 [ Mac ] external/wpt/mediacapture-image/MediaStreamTrack-getCon
 
 # Sheriff 2020-12-14
 crbug.com/1046784 http/tests/devtools/console/console-context-selector.js [ Pass Timeout ]
-
-
