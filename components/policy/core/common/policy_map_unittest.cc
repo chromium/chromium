@@ -143,8 +143,9 @@ TEST_F(PolicyMapTest, AddError) {
   map.AddError(
       kTestPolicyName1, IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_COPY_VM,
       {base::UTF8ToUTF16("SomeSource"), base::UTF8ToUTF16("SomeDestination")});
-  EXPECT_EQ(base::UTF8ToUTF16("1234\n5678\nYour administrator has blocked "
-                              "sharing from SomeSource to SomeDestination"),
+  EXPECT_EQ(base::UTF8ToUTF16(
+                "1234\n5678\nSharing from SomeSource to SomeDestination has "
+                "been blocked by administrator policy"),
             entry1->GetLocalizedErrors(lookup));
   EXPECT_EQ(base::UTF8ToUTF16("1357\nThis policy is deprecated. You should use "
                               "the SomeNewPolicy policy instead."),
@@ -185,8 +186,9 @@ TEST_F(PolicyMapTest, AddWarning) {
   entry1->AddWarning(
       IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_COPY_VM,
       {base::UTF8ToUTF16("SomeSource"), base::UTF8ToUTF16("SomeDestination")});
-  EXPECT_EQ(base::UTF8ToUTF16("1234\n5678\nYour administrator has blocked "
-                              "sharing from SomeSource to SomeDestination"),
+  EXPECT_EQ(base::UTF8ToUTF16(
+                "1234\n5678\nSharing from SomeSource to SomeDestination has "
+                "been blocked by administrator policy"),
             entry1->GetLocalizedWarnings(lookup));
   EXPECT_EQ(base::UTF8ToUTF16("1357\nThis policy is deprecated. You should use "
                               "the SomeNewPolicy policy instead."),
