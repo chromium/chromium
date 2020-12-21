@@ -181,6 +181,7 @@ bool BrowserAccessibilityAndroid::IsCollection() const {
   return (ui::IsTableLike(GetRole()) || GetRole() == ax::mojom::Role::kList ||
           GetRole() == ax::mojom::Role::kListBox ||
           GetRole() == ax::mojom::Role::kDescriptionList ||
+          GetRole() == ax::mojom::Role::kDirectory ||
           GetRole() == ax::mojom::Role::kTree);
 }
 

@@ -367,6 +367,9 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
           ax::mojom::blink::Role::kContentDeletion,
           ax::mojom::blink::Role::kContentInsertion,
           ax::mojom::blink::Role::kDetails,
+          ax::mojom::blink::Role::kDescriptionList,
+          ax::mojom::blink::Role::kDescriptionListDetail,
+          ax::mojom::blink::Role::kDescriptionListTerm,
           ax::mojom::blink::Role::kDialog,
           ax::mojom::blink::Role::kFigcaption,
           ax::mojom::blink::Role::kFigure,
@@ -856,7 +859,8 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
   if (IsA<HTMLDivElement>(*GetNode()))
     return RoleFromLayoutObject(ax::mojom::blink::Role::kGenericContainer);
 
-  if (IsA<HTMLMenuElement>(*GetNode())) {
+  if (IsA<HTMLMenuElement>(*GetNode()) || IsA<HTMLUListElement>(*GetNode()) ||
+      IsA<HTMLOListElement>(*GetNode())) {
     // <menu> is a deprecated feature of HTML 5, but is included for semantic
     // compatibility with HTML3, and may contain list items. Exposing it as an
     // unordered list works better than the current HTML-AAM recommendaton of

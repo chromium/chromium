@@ -729,6 +729,7 @@ bool ShouldHaveReadonlyStateByDefault(const ax::mojom::Role role) {
     case ax::mojom::Role::kDefinition:
     case ax::mojom::Role::kDescriptionList:
     case ax::mojom::Role::kDescriptionListTerm:
+    case ax::mojom::Role::kDirectory:
     case ax::mojom::Role::kDocument:
     case ax::mojom::Role::kGraphicsDocument:
     case ax::mojom::Role::kImage:

@@ -16,7 +16,7 @@ rootWebArea
 ++++++definition
 ++++++contentDeletion
 ++++++dialog
-++++++list
+++++++directory
 ++++++document
 ++++++emphasis
 ++++++feed

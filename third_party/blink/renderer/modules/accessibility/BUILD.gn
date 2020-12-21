@@ -14,8 +14,6 @@ blink_modules_sources("accessibility") {
     "ax_inline_text_box.h",
     "ax_layout_object.cc",
     "ax_layout_object.h",
-    "ax_list.cc",
-    "ax_list.h",
     "ax_list_box.cc",
     "ax_list_box.h",
     "ax_list_box_option.cc",

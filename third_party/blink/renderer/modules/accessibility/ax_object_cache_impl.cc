@@ -76,7 +76,6 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_image_map_link.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_inline_text_box.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_layout_object.h"
-#include "third_party/blink/renderer/modules/accessibility/ax_list.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_list_box.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_list_box_option.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_media_element.h"
@@ -416,29 +415,9 @@ AXObject* AXObjectCacheImpl::Get(AccessibleNode* accessible_node) {
   return objects_.at(ax_id);
 }
 
-// FIXME: This probably belongs on Node.
-// FIXME: This should take a const char*, but one caller passes g_null_atom.
-static bool NodeHasRole(Node* node, const String& role) {
-  auto* element = DynamicTo<Element>(node);
-  if (!element)
-    return false;
-
-  // TODO(accessibility) support role strings with multiple roles.
-  return EqualIgnoringASCIICase(
-      element->FastGetAttribute(html_names::kRoleAttr), role);
-}
-
 AXObject* AXObjectCacheImpl::CreateFromRenderer(LayoutObject* layout_object) {
   // FIXME: How could layoutObject->node() ever not be an Element?
   Node* node = layout_object->GetNode();
-
-  // If the node is aria role="list" or the aria role is empty and its a
-  // ul/ol/dl type (it shouldn't be a list if aria says otherwise).
-  if (NodeHasRole(node, "list") || NodeHasRole(node, "directory") ||
-      (NodeHasRole(node, g_null_atom) &&
-       (IsA<HTMLUListElement>(node) || IsA<HTMLOListElement>(node) ||
-        IsA<HTMLDListElement>(node))))
-    return MakeGarbageCollected<AXList>(layout_object, *this);
 
   // media element
   if (node && node->IsMediaElement())
