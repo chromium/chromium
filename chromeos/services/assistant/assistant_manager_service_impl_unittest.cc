@@ -196,13 +196,6 @@ class FakeLibassistantServiceHost : public LibassistantServiceHost {
   }
   void Stop() override { service_->Unbind(); }
 
-  void SetInitializeCallback(
-      base::OnceCallback<void(assistant_client::AssistantManager*,
-                              assistant_client::AssistantManagerInternal*)>
-          callback) override {
-    service_->service_controller().SetInitializeCallback(std::move(callback));
-  }
-
  private:
   FakeLibassistantService* service_;
 };

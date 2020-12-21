@@ -124,6 +124,7 @@ component("lib") {
       "//chromeos/resources",
       "//chromeos/services/assistant/proxy",
       "//chromeos/services/assistant/public/cpp/migration",
+      "//chromeos/services/assistant/public/cpp/migration",
       "//chromeos/services/libassistant",
       "//chromeos/services/network_config/public/mojom",
       "//chromeos/strings",
@@ -234,10 +235,6 @@ static_library("test_support") {
     "//testing/gmock",
     "//testing/gtest",
   ]
-
-  if (enable_cros_libassistant) {
-    deps += [ "//chromeos/services/assistant/public/cpp/migration" ]
-  }
 }
 
 buildflag_header("buildflags") {

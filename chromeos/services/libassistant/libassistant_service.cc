@@ -29,9 +29,5 @@ void LibassistantService::BindServiceController(
   service_controller_->Bind(std::move(receiver));
 }
 
-void LibassistantService::SetInitializeCallback(InitializeCallback callback) {
-  service_controller().SetInitializeCallback(std::move(callback));
-}
-
 }  // namespace libassistant
 }  // namespace chromeos
