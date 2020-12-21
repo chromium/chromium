@@ -58,7 +58,6 @@
 #include "chrome/browser/chromeos/web_applications/os_settings_web_app_info.h"
 #include "chrome/browser/chromeos/web_applications/print_management_web_app_info.h"
 #include "chrome/browser/chromeos/web_applications/scanning_system_web_app_info.h"
-#include "chrome/browser/chromeos/web_applications/terminal_source.h"
 #include "chrome/browser/chromeos/web_applications/terminal_system_web_app_info.h"
 #include "chrome/browser/web_applications/components/web_app_id_constants.h"
 #include "chromeos/components/camera_app_ui/url_constants.h"
@@ -457,15 +456,6 @@ void SystemWebAppManager::Start() {
   // TODO(https://crbug.com/1043843): Find some ways to validate supplied origin
   // trial names. Ideally, construct them from some static const char*.
 #endif  // DCHECK_IS_ON()
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Set up terminal data source. Terminal source is needed for install.
-  // TODO(crbug.com/1080384): Move once chrome-untrusted has WebUIControllers.
-  if (SystemWebAppManager::IsAppEnabled(SystemAppType::TERMINAL)) {
-    content::URLDataSource::Add(profile_,
-                                TerminalSource::ForTerminal(profile_));
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   std::vector<ExternalInstallOptions> install_options_list;
   const bool should_force_install_apps = ShouldForceInstallApps();

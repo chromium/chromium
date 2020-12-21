@@ -13,9 +13,12 @@
 #include "ui/webui/webui_config.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OFFICIAL_BUILD)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/chromeos/web_applications/terminal_ui.h"
+#if !defined(OFFICIAL_BUILD)
 #include "chromeos/components/sample_system_web_app_ui/untrusted_sample_system_web_app_ui.h"
-#endif
+#endif  // !defined(OFFICIAL_BUILD)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using WebUIConfigList =
     std::vector<std::pair<std::string, std::unique_ptr<ui::WebUIConfig>>>;
@@ -38,10 +41,13 @@ WebUIConfigList CreateConfigs() {
   ALLOW_UNUSED_LOCAL(register_config);
 
   // Register WebUIConfigs below.
-#if BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OFFICIAL_BUILD)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  register_config(std::make_unique<TerminalUIConfig>());
+#if !defined(OFFICIAL_BUILD)
   register_config(
       std::make_unique<chromeos::UntrustedSampleSystemWebAppUIConfig>());
-#endif
+#endif  // !defined(OFFICIAL_BUILD)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return config_list;
 }
