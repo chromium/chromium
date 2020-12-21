@@ -107,7 +107,7 @@ class CloudPrintConnector
       const base::Value& json_data,
       bool succeeded) override;
   CloudPrintURLFetcher::ResponseAction OnRequestAuthError() override;
-  std::string GetAuthHeader() override;
+  std::string GetAuthHeaderValue() override;
 
   // Begin response handlers
   CloudPrintURLFetcher::ResponseAction HandlePrinterListResponse(
@@ -212,4 +212,3 @@ class CloudPrintConnector
 }  // namespace cloud_print
 
 #endif  // CHROME_SERVICE_CLOUD_PRINT_CLOUD_PRINT_CONNECTOR_H_
-

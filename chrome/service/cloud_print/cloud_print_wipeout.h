@@ -42,7 +42,7 @@ class CloudPrintWipeout : public CloudPrintURLFetcher::Delegate {
       bool succeeded) override;
   void OnRequestGiveUp() override;
   CloudPrintURLFetcher::ResponseAction OnRequestAuthError() override;
-  std::string GetAuthHeader() override;
+  std::string GetAuthHeaderValue() override;
 
  private:
   void UnregisterNextPrinter();
@@ -66,4 +66,3 @@ class CloudPrintWipeout : public CloudPrintURLFetcher::Delegate {
 }  // namespace cloud_print
 
 #endif  // CHROME_SERVICE_CLOUD_PRINT_CLOUD_PRINT_WIPEOUT_H_
-

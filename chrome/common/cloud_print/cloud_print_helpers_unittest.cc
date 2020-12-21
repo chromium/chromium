@@ -122,10 +122,9 @@ TEST(CloudPrintHelpersTest, GetPostDataForPrinterTags) {
       std::string("__test__tagshash")));
 }
 
-TEST(CloudPrintHelpersTest, GetCloudPrintAuthHeader) {
+TEST(CloudPrintHelpersTest, GetCloudPrintAuthHeaderValue) {
   std::string test_auth("testauth");
-  EXPECT_EQ("Authorization: OAuth testauth",
-            GetCloudPrintAuthHeader(test_auth));
+  EXPECT_EQ("OAuth testauth", GetCloudPrintAuthHeaderValue(test_auth));
 }
 
 }  // namespace cloud_print

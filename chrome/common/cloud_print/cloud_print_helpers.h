@@ -78,8 +78,8 @@ std::string GetPostDataForPrinterTags(
     const std::string& proxy_tag_prefix,
     const std::string& tags_hash_tag_name);
 
-// Get the cloud print auth header from |auth_token|.
-std::string GetCloudPrintAuthHeader(const std::string& auth_token);
+// Get the cloud print auth header value from |auth_token|.
+std::string GetCloudPrintAuthHeaderValue(const std::string& auth_token);
 
 }  // namespace cloud_print
 

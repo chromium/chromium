@@ -66,8 +66,8 @@ CloudPrintURLFetcher::ResponseAction CloudPrintWipeout::OnRequestAuthError() {
   return CloudPrintURLFetcher::STOP_PROCESSING;
 }
 
-std::string CloudPrintWipeout::GetAuthHeader() {
-  return GetCloudPrintAuthHeader(auth_token_);
+std::string CloudPrintWipeout::GetAuthHeaderValue() {
+  return GetCloudPrintAuthHeaderValue(auth_token_);
 }
 
 }  // namespace cloud_print

@@ -52,7 +52,7 @@ class JobStatusUpdater : public base::RefCountedThreadSafe<JobStatusUpdater>,
       const base::Value& json_data,
       bool succeeded) override;
   CloudPrintURLFetcher::ResponseAction OnRequestAuthError() override;
-  std::string GetAuthHeader() override;
+  std::string GetAuthHeaderValue() override;
 
   base::Time start_time() const {
     return start_time_;

@@ -106,7 +106,7 @@ class CloudPrintURLFetcher
 
     // Authentication information may change between retries.
     // CloudPrintURLFetcher will request auth info before sending any request.
-    virtual std::string GetAuthHeader() = 0;
+    virtual std::string GetAuthHeaderValue() = 0;
 
    protected:
     virtual ~Delegate() {}

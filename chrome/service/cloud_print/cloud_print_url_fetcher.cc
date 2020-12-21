@@ -296,7 +296,10 @@ void CloudPrintURLFetcher::StartRequestHelper(
 
 void CloudPrintURLFetcher::SetupRequestHeaders() {
   request_->ClearExtraRequestHeaders();
-  std::string headers = delegate_->GetAuthHeader();
+  std::string auth_header_value = delegate_->GetAuthHeaderValue();
+  if (!auth_header_value.empty()) {
+    request_->AddExtraRequestHeader("Authorization", auth_header_value);
+  }
   request_->AddExtraRequestHeader(kChromeCloudPrintProxyHeaderName,
                                   kChromeCloudPrintProxyHeaderValue);
   if (!additional_accept_header_.empty()) {

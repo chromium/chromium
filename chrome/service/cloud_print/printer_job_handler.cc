@@ -204,7 +204,7 @@ CloudPrintURLFetcher::ResponseAction PrinterJobHandler::OnRequestAuthError() {
   return CloudPrintURLFetcher::STOP_PROCESSING;
 }
 
-std::string PrinterJobHandler::GetAuthHeader() {
+std::string PrinterJobHandler::GetAuthHeaderValue() {
   return GetCloudPrintAuthHeaderFromStore();
 }
 

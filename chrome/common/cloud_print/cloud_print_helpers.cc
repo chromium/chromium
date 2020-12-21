@@ -234,8 +234,8 @@ std::string GetPostDataForPrinterTags(
   return post_data;
 }
 
-std::string GetCloudPrintAuthHeader(const std::string& auth_token) {
-  return base::StringPrintf("Authorization: OAuth %s", auth_token.c_str());
+std::string GetCloudPrintAuthHeaderValue(const std::string& auth_token) {
+  return base::StringPrintf("OAuth %s", auth_token.c_str());
 }
 
 }  // namespace cloud_print

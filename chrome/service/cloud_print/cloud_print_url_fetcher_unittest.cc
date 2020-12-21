@@ -114,7 +114,9 @@ class CloudPrintURLFetcherTest : public testing::Test,
     return CloudPrintURLFetcher::STOP_PROCESSING;
   }
 
-  std::string GetAuthHeader() override { return std::string(); }
+  std::string GetAuthHeaderValue() override { return auth_header_; }
+
+  void SetAuthHeaderValue(const std::string& value) { auth_header_ = value; }
 
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner() {
     return io_task_runner_;
@@ -143,6 +145,7 @@ class CloudPrintURLFetcherTest : public testing::Test,
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
+  std::string auth_header_;
   int max_retries_;
   Time start_time_;
   scoped_refptr<TestCloudPrintURLFetcher> fetcher_;
@@ -182,10 +185,12 @@ class CloudPrintURLFetcherBasicTest : public CloudPrintURLFetcherTest {
   void SetHandleRawData(bool handle_raw_data) {
     handle_raw_data_ = handle_raw_data;
   }
+  void SetExpectedData(const std::string& data) { expected_data_ = data; }
 
  private:
   bool handle_raw_response_;
   bool handle_raw_data_;
+  std::string expected_data_;
 };
 
 // Version of CloudPrintURLFetcherTest that tests overload protection.
@@ -278,6 +283,9 @@ CloudPrintURLFetcherBasicTest::HandleRawData(
   // We should never get here if we returned true in HandleRawResponse
   EXPECT_FALSE(handle_raw_response_);
   if (handle_raw_data_) {
+    if (!expected_data_.empty()) {
+      EXPECT_EQ(expected_data_, data);
+    }
     std::move(quit_run_loop_).Run();
     return CloudPrintURLFetcher::STOP_PROCESSING;
   }
@@ -349,6 +357,19 @@ TEST_F(CloudPrintURLFetcherBasicTest, HandleRawData) {
 
   SetHandleRawData(true);
   CreateFetcher(test_server.GetURL("/echo"), 0);
+  run_loop_.Run();
+}
+
+TEST_F(CloudPrintURLFetcherBasicTest, AuthorizationHeader) {
+  const char kAuthHeaderValue[] = "OAuth abcdefg";
+  net::EmbeddedTestServer test_server;
+  SetAuthHeaderValue(kAuthHeaderValue);
+  test_server.AddDefaultHandlers(base::FilePath(kDocRoot));
+  ASSERT_TRUE(test_server.Start());
+
+  SetHandleRawData(true);
+  SetExpectedData(kAuthHeaderValue);
+  CreateFetcher(test_server.GetURL("/echoheader?Authorization"), 0);
   run_loop_.Run();
 }
 

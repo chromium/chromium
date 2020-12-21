@@ -93,7 +93,7 @@ std::string GetCloudPrintAuthHeaderFromStore() {
     LOG(ERROR) << "CP_PROXY: Missing OAuth token for request";
     return std::string();
   }
-  return GetCloudPrintAuthHeader(token_store->token());
+  return GetCloudPrintAuthHeaderValue(token_store->token());
 }
 
 }  // namespace cloud_print

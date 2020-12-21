@@ -131,7 +131,7 @@ class PrinterJobHandler : public base::RefCountedThreadSafe<PrinterJobHandler>,
       bool succeeded) override;
   void OnRequestGiveUp() override;
   CloudPrintURLFetcher::ResponseAction OnRequestAuthError() override;
-  std::string GetAuthHeader() override;
+  std::string GetAuthHeaderValue() override;
 
   // JobStatusUpdater::Delegate implementation
   bool OnJobCompleted(JobStatusUpdater* updater) override;
