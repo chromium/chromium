@@ -67,6 +67,12 @@ class TerminaInstaller {
                           bool is_update_checked,
                           component_updater::CrOSComponentManager::Error error,
                           const base::FilePath& path);
+  void ReinstallComponent(base::OnceCallback<void(InstallResult)> callback);
+  void OnReinstallComponent(
+      base::OnceCallback<void(InstallResult)> callback,
+      bool is_update_checked,
+      component_updater::CrOSComponentManager::Error error,
+      const base::FilePath& path);
 
   void RemoveComponentIfPresent(base::OnceCallback<void()> callback,
                                 UninstallResult* result);

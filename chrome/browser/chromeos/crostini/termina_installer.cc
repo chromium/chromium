@@ -137,6 +137,12 @@ void TerminaInstaller::OnInstallComponent(
     LOG(ERROR)
         << "Failed to install the cros-termina component with error code: "
         << static_cast<int>(error);
+
+    if (error ==
+        component_updater::CrOSComponentManager::Error::MOUNT_FAILURE) {
+      ReinstallComponent(std::move(callback));
+      return;
+    }
     if (is_update_checked) {
       scoped_refptr<component_updater::CrOSComponentManager> component_manager =
           g_browser_process->platform_part()->cros_component_manager();
@@ -186,6 +192,38 @@ void TerminaInstaller::OnInstallComponent(
   }
 
   std::move(callback).Run(result);
+}
+
+void TerminaInstaller::ReinstallComponent(
+    base::OnceCallback<void(InstallResult)> callback) {
+  scoped_refptr<component_updater::CrOSComponentManager> component_manager =
+      g_browser_process->platform_part()->cros_component_manager();
+  if (component_manager->Unload(imageloader::kTerminaComponentName)) {
+    component_manager->Load(
+        imageloader::kTerminaComponentName,
+        component_updater::CrOSComponentManager::MountPolicy::kMount,
+        UpdatePolicy::kDontForce,
+        base::BindOnce(&TerminaInstaller::OnReinstallComponent,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                       false));
+  } else {
+    std::move(callback).Run(InstallResult::Failure);
+  }
+}
+
+void TerminaInstaller::OnReinstallComponent(
+    base::OnceCallback<void(InstallResult)> callback,
+    bool is_update_checked,
+    component_updater::CrOSComponentManager::Error error,
+    const base::FilePath& path) {
+  LOG(ERROR) << "Attempting to re-install cros-termina component.";
+  if (error != component_updater::CrOSComponentManager::Error::MOUNT_FAILURE) {
+    OnInstallComponent(std::move(callback), is_update_checked, error, path);
+    return;
+  }
+  // Give up with a permanent failure. The newly downloaded component failed to
+  // mount.
+  std::move(callback).Run(InstallResult::Failure);
 }
 
 void TerminaInstaller::Uninstall(base::OnceCallback<void(bool)> callback) {
