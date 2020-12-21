@@ -122,10 +122,6 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
       RenderFrameHost* host,
       mojo::PendingReceiver<media::mojom::MediaPlayerHost> player_receiver);
 
-  // Establishes a MediaPlayerObserver for |player_id|, allowing the MediaPlayer
-  // element in the renderer process to communicate back with the browser.
-  void SetMediaPlayerObserverForMediaPlayer(const MediaPlayerId& player_id);
-
   // Communicates with the MediaSessionControllerManager to find or create (if
   // needed) a MediaSessionController identified by |player_id|, in order to
   // bind its mojo remote for media::mojom::MediaPlayer.

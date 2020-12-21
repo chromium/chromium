@@ -259,10 +259,10 @@ void HTMLVideoElement::UpdatePictureInPictureAvailability() {
   if (!web_media_player_)
     return;
 
-  auto* media_player_observer_remote = GetMediaPlayerObserverRemote();
-  if (media_player_observer_remote) {
-    media_player_observer_remote->OnPictureInPictureAvailabilityChanged(
-        SupportsPictureInPicture());
+  for (auto& observer : GetMediaPlayerObserverRemoteSet()) {
+    if (!observer.is_bound())
+      continue;
+    observer->OnPictureInPictureAvailabilityChanged(SupportsPictureInPicture());
   }
 }
 

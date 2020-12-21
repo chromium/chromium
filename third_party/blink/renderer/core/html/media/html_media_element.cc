@@ -536,7 +536,7 @@ HTMLMediaElement::HTMLMediaElement(const QualifiedName& tag_name,
       controls_list_(MakeGarbageCollected<HTMLMediaElementControlsList>(this)),
       lazy_load_intersection_observer_(nullptr),
       media_player_host_remote_(GetExecutionContext()),
-      media_player_observer_remote_(GetExecutionContext()),
+      media_player_observer_remote_set_(GetExecutionContext()),
       media_player_receiver_set_(this, GetExecutionContext()) {
   DVLOG(1) << "HTMLMediaElement(" << *this << ")";
 
@@ -633,13 +633,6 @@ bool HTMLMediaElement::SupportsFocus() const {
 
 bool HTMLMediaElement::IsMouseFocusable() const {
   return !IsFullscreen() && SupportsFocus();
-}
-
-media::mojom::blink::MediaPlayerObserver*
-HTMLMediaElement::GetMediaPlayerObserverRemote() {
-  if (!media_player_observer_remote_.is_bound())
-    return nullptr;
-  return media_player_observer_remote_.get();
 }
 
 void HTMLMediaElement::ParseAttribute(
@@ -1469,9 +1462,9 @@ bool HTMLMediaElement::PausedWhenVisible() const {
          !GetWebMediaPlayer()->PausedWhenHidden();
 }
 
-void HTMLMediaElement::SetMediaPlayerObserverForTesting(
+void HTMLMediaElement::AddMediaPlayerObserverForTesting(
     mojo::PendingRemote<media::mojom::blink::MediaPlayerObserver> observer) {
-  SetMediaPlayerObserver(std::move(observer));
+  AddMediaPlayerObserver(std::move(observer));
 }
 
 bool HTMLMediaElement::TextTracksAreReady() const {
@@ -3674,7 +3667,7 @@ void HTMLMediaElement::
     // The lifetime of the mojo endpoints are tied to the WebMediaPlayer's, so
     // we need to reset those as well.
     media_player_receiver_set_.Clear();
-    media_player_observer_remote_.reset();
+    media_player_observer_remote_set_.Clear();
   }
   OnWebMediaPlayerCleared();
 }
@@ -4150,7 +4143,7 @@ void HTMLMediaElement::Trace(Visitor* visitor) const {
   visitor->Trace(controls_list_);
   visitor->Trace(lazy_load_intersection_observer_);
   visitor->Trace(media_player_host_remote_);
-  visitor->Trace(media_player_observer_remote_);
+  visitor->Trace(media_player_observer_remote_set_);
   visitor->Trace(media_player_receiver_set_);
   Supplementable<HTMLMediaElement>::Trace(visitor);
   HTMLElement::Trace(visitor);
@@ -4392,61 +4385,61 @@ void HTMLMediaElement::PausePlayback() {
 }
 
 void HTMLMediaElement::DidPlayerMutedStatusChange(bool muted) {
-  // The remote to the MediaPlayerObserver could be not set yet.
-  if (!media_player_observer_remote_.is_bound())
-    return;
-
-  media_player_observer_remote_->OnMutedStatusChanged(muted);
+  for (auto& observer : media_player_observer_remote_set_) {
+    if (!observer.is_bound())
+      continue;
+    observer->OnMutedStatusChanged(muted);
+  }
 }
 
 void HTMLMediaElement::DidPlayerMediaPositionStateChange(
     double playback_rate,
     base::TimeDelta duration,
     base::TimeDelta position) {
-  // The remote to the MediaPlayerObserver could be not set yet.
-  if (!media_player_observer_remote_.is_bound())
-    return;
-
-  media_player_observer_remote_->OnMediaPositionStateChanged(
-      media_session::mojom::blink::MediaPosition::New(
-          playback_rate, duration, position, base::TimeTicks::Now()));
+  for (auto& observer : media_player_observer_remote_set_) {
+    if (!observer.is_bound())
+      continue;
+    observer->OnMediaPositionStateChanged(
+        media_session::mojom::blink::MediaPosition::New(
+            playback_rate, duration, position, base::TimeTicks::Now()));
+  }
 }
 
 void HTMLMediaElement::DidDisableAudioOutputSinkChanges() {
-  // The remote to the MediaPlayerObserver could be not set yet.
-  if (!media_player_observer_remote_.is_bound())
-    return;
-
-  media_player_observer_remote_->OnAudioOutputSinkChangingDisabled();
+  for (auto& observer : media_player_observer_remote_set_) {
+    if (!observer.is_bound())
+      continue;
+    observer->OnAudioOutputSinkChangingDisabled();
+  }
 }
 
 void HTMLMediaElement::DidPlayerSizeChange(const gfx::Size& size) {
-  // The remote to the MediaPlayerObserver could be not set yet.
-  if (!media_player_observer_remote_.is_bound())
-    return;
-
-  media_player_observer_remote_->OnMediaSizeChanged(size);
+  for (auto& observer : media_player_observer_remote_set_) {
+    if (!observer.is_bound())
+      continue;
+    observer->OnMediaSizeChanged(size);
+  }
 }
 
 void HTMLMediaElement::DidBufferUnderflow() {
-  // The remote to the MediaPlayerObserver could be not set yet.
-  if (!media_player_observer_remote_.is_bound())
-    return;
-
-  media_player_observer_remote_->OnBufferUnderflow();
+  for (auto& observer : media_player_observer_remote_set_) {
+    if (!observer.is_bound())
+      continue;
+    observer->OnBufferUnderflow();
+  }
 }
 
 void HTMLMediaElement::DidSeek() {
-  // The remote to the MediaPlayerObserver could be not set yet.
-  if (!media_player_observer_remote_.is_bound())
-    return;
-
   // Send the seek updates to the browser process only once per second.
   if (last_seek_update_time_.is_null() ||
       (base::TimeTicks::Now() - last_seek_update_time_ >=
        base::TimeDelta::FromSeconds(1))) {
     last_seek_update_time_ = base::TimeTicks::Now();
-    media_player_observer_remote_->OnSeek();
+    for (auto& observer : media_player_observer_remote_set_) {
+      if (!observer.is_bound())
+        continue;
+      observer->OnSeek();
+    }
   }
 }
 
@@ -4462,12 +4455,18 @@ HTMLMediaElement::GetMediaPlayerHostRemote() {
   return *media_player_host_remote_.get();
 }
 
-void HTMLMediaElement::SetMediaPlayerObserver(
+void HTMLMediaElement::AddMediaPlayerObserver(
     mojo::PendingRemote<media::mojom::blink::MediaPlayerObserver> observer) {
-  DCHECK(!media_player_observer_remote_.is_bound());
-  media_player_observer_remote_.Bind(
+  media_player_observer_remote_set_.Add(
       std::move(observer),
       GetDocument().GetTaskRunner(TaskType::kInternalMedia));
+
+  media_player_observer_remote_set_.set_disconnect_handler(WTF::BindRepeating(
+      [](HTMLMediaElement* html_media_element,
+         mojo::RemoteSetElementId remote_id) {
+        html_media_element->media_player_observer_remote_set_.Remove(remote_id);
+      },
+      WrapWeakPersistent(this)));
 }
 
 void HTMLMediaElement::RequestPlay() {

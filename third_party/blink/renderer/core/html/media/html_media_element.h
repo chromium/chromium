@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/platform/media/web_audio_source_provider_client.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver_set.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote_set.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
@@ -349,7 +350,7 @@ class CORE_EXPORT HTMLMediaElement
   void SetCcLayerForTesting(cc::Layer* layer) { SetCcLayer(layer); }
 
   // Required by tests set mock receivers to check that messages are delivered.
-  void SetMediaPlayerObserverForTesting(
+  void AddMediaPlayerObserverForTesting(
       mojo::PendingRemote<media::mojom::blink::MediaPlayerObserver> observer);
 
   bool IsShowPosterFlagSet() const { return show_poster_flag_; }
@@ -362,9 +363,13 @@ class CORE_EXPORT HTMLMediaElement
   ~HTMLMediaElement() override;
   void Dispose();
 
-  // Returns a pointer to the media::mojom::blink::MediaPlayerObserver remote if
-  // already bound, or nullptr otherwise. Used from subclasses as well.
-  media::mojom::blink::MediaPlayerObserver* GetMediaPlayerObserverRemote();
+  // Returns a constant reference to the HeapMojoRemoteSet holding all the bound
+  // remotes for the media::mojom::blink::MediaPlayerObserver interface. Needed
+  // to allow sending messages directly from HTMLMediaElement's subclasses.
+  const HeapMojoRemoteSet<media::mojom::blink::MediaPlayerObserver>&
+  GetMediaPlayerObserverRemoteSet() {
+    return media_player_observer_remote_set_;
+  }
 
   void ParseAttribute(const AttributeModificationParams&) override;
   void FinishParsingChildren() final;
@@ -486,7 +491,7 @@ class CORE_EXPORT HTMLMediaElement
   media::mojom::blink::MediaPlayerHost& GetMediaPlayerHostRemote();
 
   // media::mojom::MediaPlayer  implementation.
-  void SetMediaPlayerObserver(
+  void AddMediaPlayerObserver(
       mojo::PendingRemote<media::mojom::blink::MediaPlayerObserver> observer)
       override;
   void RequestPlay() override;
@@ -817,8 +822,11 @@ class CORE_EXPORT HTMLMediaElement
 
   HeapMojoRemote<media::mojom::blink::MediaPlayerHost>
       media_player_host_remote_;
-  HeapMojoRemote<media::mojom::blink::MediaPlayerObserver>
-      media_player_observer_remote_;
+
+  // Multiple objects outside of the renderer process can register as observers,
+  // so we need to store the remotes in a set here.
+  HeapMojoRemoteSet<media::mojom::blink::MediaPlayerObserver>
+      media_player_observer_remote_set_;
 
   // A receiver set is needed here as there will be different objects in the
   // browser communicating with this object. This is done this way to avoid

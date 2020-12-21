@@ -599,19 +599,6 @@ void MediaWebContentsObserver::BindMediaPlayerHost(
       std::move(player_receiver));
 }
 
-void MediaWebContentsObserver::SetMediaPlayerObserverForMediaPlayer(
-    const MediaPlayerId& player_id) {
-  if (!media_player_observer_hosts_.contains(player_id)) {
-    media_player_observer_hosts_[player_id] =
-        std::make_unique<MediaPlayerObserverHostImpl>(player_id, this);
-  }
-
-  DCHECK(media_player_remotes_[player_id]);
-  media_player_remotes_[player_id]->SetMediaPlayerObserver(
-      media_player_observer_hosts_[player_id]
-          ->BindMediaPlayerObserverReceiverAndPassRemote());
-}
-
 void MediaWebContentsObserver::OnMediaPlayerAdded(
     mojo::PendingRemote<media::mojom::MediaPlayer> player_remote,
     MediaPlayerId player_id) {
@@ -628,9 +615,16 @@ void MediaWebContentsObserver::OnMediaPlayerAdded(
       },
       base::Unretained(this), player_id));
 
-  // Create a new MediaPlayerObserverHostImpl to be able to receive messages
-  // from the renderer process via the MediaPlayerObserver mojo interface.
-  SetMediaPlayerObserverForMediaPlayer(player_id);
+  // Create a new MediaPlayerObserverHostImpl for |player_id|, implementing the
+  // media::mojom::MediaPlayerObserver mojo interface, to handle messages sent
+  // from the MediaPlayer element in the renderer process.
+  if (!media_player_observer_hosts_.contains(player_id)) {
+    media_player_observer_hosts_[player_id] =
+        std::make_unique<MediaPlayerObserverHostImpl>(player_id, this);
+  }
+  media_player_remotes_[player_id]->AddMediaPlayerObserver(
+      media_player_observer_hosts_[player_id]
+          ->BindMediaPlayerObserverReceiverAndPassRemote());
 }
 
 #if defined(OS_ANDROID)

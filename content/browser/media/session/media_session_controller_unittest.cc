@@ -82,7 +82,7 @@ class MockMediaPlayerReceiverForTesting : public media::mojom::MediaPlayer {
   }
 
   // media::mojom::MediaPlayer implementation.
-  void SetMediaPlayerObserver(
+  void AddMediaPlayerObserver(
       mojo::PendingRemote<media::mojom::MediaPlayerObserver>) override {}
 
   void RequestPlay() override {

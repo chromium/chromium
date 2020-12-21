@@ -85,7 +85,7 @@ class WebMediaStubLocalFrameClient : public EmptyLocalFrameClient {
 // interface to allow checking that messages sent over mojo are received with
 // the right values in the other end.
 //
-// Note this relies on HTMLMediaElement::SetMediaPlayerObserverForTesting() to
+// Note this relies on HTMLMediaElement::AddMediaPlayerObserverForTesting() to
 // provide the HTMLMediaElement instance owned by the test with a valid mojo
 // remote, that will be bound to the mojo receiver provided by this class
 // instead of the real one used in production that would be owned by
@@ -97,7 +97,7 @@ class MockMediaPlayerObserverReceiverForTesting
       HTMLMediaElement* html_media_element) {
     // Bind the remote to the receiver, so that we can intercept incoming
     // messages sent via the different methods that use the remote.
-    html_media_element->SetMediaPlayerObserverForTesting(
+    html_media_element->AddMediaPlayerObserverForTesting(
         receiver_.BindNewPipeAndPassRemote());
   }
 

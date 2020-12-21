@@ -12,9 +12,7 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 interface MediaPlayer {
   // Sends |observer| to the renderer process so that it can be established a
   // communication channel with the implementor of MediaPlayerObserver.
-  // TODO(crbug.com/1039252): Make this an AddMediaPlayerObserver method as soon
-  // as there is a HeapMojoRemoteSet class available for its use in Blink.
-  SetMediaPlayerObserver(pending_remote<MediaPlayerObserver> observer);
+  AddMediaPlayerObserver(pending_remote<MediaPlayerObserver> observer);
 
   // Requests the media player to start or resume media playback.
   RequestPlay();
