@@ -121,8 +121,12 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE) DataElement {
   mojo::PendingRemote<mojom::DataPipeGetter> ReleaseDataPipeGetter();
   mojo::PendingRemote<mojom::DataPipeGetter> CloneDataPipeGetter() const;
 
+  // Can be called only when this is of type kChunkedDataPipe or
+  // kReadOnceStream.
+  const mojo::PendingRemote<mojom::ChunkedDataPipeGetter>&
+  chunked_data_pipe_getter() const;
   // Takes ownership of the DataPipeGetter, if this is of
-  // TYPE_CHUNKED_DATA_PIPE.
+  // kChunkedDataPipe or kReadOnceStream.
   mojo::PendingRemote<mojom::ChunkedDataPipeGetter>
   ReleaseChunkedDataPipeGetter();
 

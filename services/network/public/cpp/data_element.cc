@@ -81,6 +81,13 @@ mojo::PendingRemote<mojom::DataPipeGetter> DataElement::CloneDataPipeGetter()
   return clone;
 }
 
+const mojo::PendingRemote<mojom::ChunkedDataPipeGetter>&
+DataElement::chunked_data_pipe_getter() const {
+  DCHECK(type_ == mojom::DataElementType::kChunkedDataPipe ||
+         type_ == mojom::DataElementType::kReadOnceStream);
+  return chunked_data_pipe_getter_;
+}
+
 mojo::PendingRemote<mojom::ChunkedDataPipeGetter>
 DataElement::ReleaseChunkedDataPipeGetter() {
   DCHECK(type_ == mojom::DataElementType::kChunkedDataPipe ||
