@@ -2052,8 +2052,10 @@ void DragAllToSeparateWindowStep2(DetachToBrowserTabDragControllerTest* test,
 
 }  // namespace
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+#if defined(OS_MAC) /* && defined(ARCH_CPU_ARM64) */
 // Bulk-disabled for arm64 bot stabilization: https://crbug.com/1154345
+// These were flaking on all macs, so commented out ARCH_ above for
+// crbug.com/1160917 too.
 #define MAYBE_DragAllToSeparateWindow DISABLED_DragAllToSeparateWindow
 #else
 #define MAYBE_DragAllToSeparateWindow DragAllToSeparateWindow
@@ -2561,8 +2563,10 @@ void DragAllToSeparateWindowAndCancelStep2(
 
 }  // namespace
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+#if defined(OS_MAC) /* && defined(ARCH_CPU_ARM64) */
 // Bulk-disabled for arm64 bot stabilization: https://crbug.com/1154345
+// These were flaking on all macs, so commented out ARCH_ above for
+// crbug.com/1160917 too.
 #define MAYBE_DragAllToSeparateWindowAndCancel \
   DISABLED_DragAllToSeparateWindowAndCancel
 #else
