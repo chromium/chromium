@@ -16,6 +16,9 @@ class NavigationItemImpl;
 // Class that can serialize and deserialize NavigationItems.
 class NavigationItemStorageBuilder {
  public:
+  // Returns approximate sizes of the given |navigation_item| without building
+  // storage. Only string sizes are added.
+  int ItemStoredSize(NavigationItemImpl* navigation_item) const;
   // Creates a serialized NavigationItem from |navigation_Item|.
   CRWNavigationItemStorage* BuildStorage(
       NavigationItemImpl* navigation_item) const;

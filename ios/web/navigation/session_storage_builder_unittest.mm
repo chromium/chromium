@@ -5,6 +5,8 @@
 #import "ios/web/navigation/session_storage_builder.h"
 
 #include "base/strings/sys_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
+#include "ios/web/common/features.h"
 #import "ios/web/navigation/wk_navigation_util.h"
 #import "ios/web/public/session/crw_navigation_item_storage.h"
 #import "ios/web/public/session/crw_session_storage.h"
@@ -46,6 +48,51 @@ class WebStateWithMockProxy : public WebStateImpl {
 };
 
 using SessionStorageBuilderTest = WebTest;
+
+void SetNavigationItemSizedStrings(WebStateWithMockProxy& web_state,
+                                   int index,
+                                   int url_length,
+                                   int virtual_url_length,
+                                   int title_length,
+                                   int referrer_url_length) {
+  NavigationItemImpl* item =
+      web_state.GetNavigationManagerImpl().GetNavigationItemImplAtIndex(index);
+  if (url_length) {
+    NSString* url = [@"https://" stringByPaddingToLength:url_length
+                                              withString:@"a"
+                                         startingAtIndex:0];
+    item->SetURL(GURL(base::SysNSStringToUTF8(url)));
+  } else {
+    item->SetURL(GURL());
+  }
+  if (virtual_url_length) {
+    NSString* virtual_url =
+        [@"https://" stringByPaddingToLength:virtual_url_length
+                                  withString:@"b"
+                             startingAtIndex:0];
+    item->SetVirtualURL(GURL(base::SysNSStringToUTF8(virtual_url)));
+  } else {
+    item->SetVirtualURL(GURL());
+  }
+  if (title_length) {
+    NSString* title = [@"" stringByPaddingToLength:title_length
+                                        withString:@"c"
+                                   startingAtIndex:0];
+    item->SetTitle(base::SysNSStringToUTF16(title));
+  } else {
+    item->SetTitle(base::SysNSStringToUTF16(@""));
+  }
+
+  Referrer referrer;
+  if (referrer_url_length) {
+    NSString* referrer_url =
+        [@"https://" stringByPaddingToLength:referrer_url_length
+                                  withString:@"d"
+                             startingAtIndex:0];
+    referrer.url = GURL(base::SysNSStringToUTF8(referrer_url));
+  }
+  item->SetReferrer(referrer);
+}
 
 // Tests building storage for session that is longer than kMaxSessionSize with
 // last committed item at the end of the session.
@@ -168,6 +215,89 @@ TEST_F(SessionStorageBuilderTest, SkipLongUrls) {
   ASSERT_EQ(1U, storage.itemStorages.count);
 
   EXPECT_EQ(GURL::EmptyGURL(), [storage.itemStorages.firstObject referrer].url);
+}
+
+// Tests building storage for session that has items longer than
+// web::kMaxNavigationItemSize.
+TEST_F(SessionStorageBuilderTest, SkipItemOverMaxSize) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kReduceSessionSize);
+
+  // Create WebState with navigation item count that are below maximum size.
+  WebState::CreateParams params(GetBrowserState());
+  WebStateWithMockProxy web_state(params);
+
+  NSString* normal_url = @"https://foo.test";
+  NSString* const current_url = normal_url;
+  [web_state.fake_wk_list() setCurrentURL:normal_url
+                             backListURLs:@[ normal_url ]
+                          forwardListURLs:nil];
+  OCMStub([web_state.mock_web_view() URL])
+      .andReturn([NSURL URLWithString:current_url]);
+  NavigationManager* navigation_manager = web_state.GetNavigationManager();
+  ASSERT_EQ(2, navigation_manager->GetItemCount());
+
+  SessionStorageBuilder builder;
+  CRWSessionStorage* storage = builder.BuildStorage(&web_state);
+  ASSERT_TRUE(storage);
+  ASSERT_EQ(2U, storage.itemStorages.count);
+
+  SetNavigationItemSizedStrings(web_state, 0, web::kMaxNavigationItemSize - 1,
+                                0, 0, 0);
+  storage = builder.BuildStorage(&web_state);
+  ASSERT_TRUE(storage);
+  ASSERT_EQ(2U, storage.itemStorages.count);
+
+  SetNavigationItemSizedStrings(web_state, 0, web::kMaxNavigationItemSize, 0, 0,
+                                0);
+
+  storage = builder.BuildStorage(&web_state);
+  ASSERT_TRUE(storage);
+  ASSERT_EQ(1U, storage.itemStorages.count);
+
+  SetNavigationItemSizedStrings(
+      web_state, 0, web::kMaxNavigationItemSize - 1000 - 1, 1000 - 1, 0, 0);
+
+  storage = builder.BuildStorage(&web_state);
+  ASSERT_TRUE(storage);
+  ASSERT_EQ(2U, storage.itemStorages.count);
+
+  SetNavigationItemSizedStrings(web_state, 0,
+                                web::kMaxNavigationItemSize - 1000, 1000, 0, 0);
+
+  storage = builder.BuildStorage(&web_state);
+  ASSERT_TRUE(storage);
+  ASSERT_EQ(1U, storage.itemStorages.count);
+
+  SetNavigationItemSizedStrings(web_state, 0,
+                                web::kMaxNavigationItemSize - 1040 - 1,
+                                1000 - 1, 40 - 1, 0);
+
+  storage = builder.BuildStorage(&web_state);
+  ASSERT_TRUE(storage);
+  ASSERT_EQ(2U, storage.itemStorages.count);
+
+  SetNavigationItemSizedStrings(
+      web_state, 0, web::kMaxNavigationItemSize - 1040, 1000, 40, 0);
+
+  storage = builder.BuildStorage(&web_state);
+  ASSERT_TRUE(storage);
+  ASSERT_EQ(1U, storage.itemStorages.count);
+
+  SetNavigationItemSizedStrings(web_state, 0,
+                                web::kMaxNavigationItemSize - 2040 - 1,
+                                1000 - 1, 40 - 1, 1000 - 1);
+
+  storage = builder.BuildStorage(&web_state);
+  ASSERT_TRUE(storage);
+  ASSERT_EQ(2U, storage.itemStorages.count);
+
+  SetNavigationItemSizedStrings(
+      web_state, 0, web::kMaxNavigationItemSize - 2040, 1000, 40, 1000);
+
+  storage = builder.BuildStorage(&web_state);
+  ASSERT_TRUE(storage);
+  ASSERT_EQ(1U, storage.itemStorages.count);
 }
 
 }  // namespace web

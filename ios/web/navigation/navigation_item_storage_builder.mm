@@ -15,6 +15,21 @@
 
 namespace web {
 
+int NavigationItemStorageBuilder::ItemStoredSize(
+    NavigationItemImpl* navigation_item) const {
+  DCHECK(navigation_item);
+  int size = 0;
+  size += navigation_item->virtual_url_.spec().size();
+  size += navigation_item->url_.spec().size();
+  size += navigation_item->referrer_.url.spec().size();
+  size += navigation_item->title_.size();
+  for (NSString* key in navigation_item->http_request_headers_) {
+    NSString* value = navigation_item->http_request_headers_[key];
+    size += key.length + value.length;
+  }
+  return size;
+}
+
 CRWNavigationItemStorage* NavigationItemStorageBuilder::BuildStorage(
     NavigationItemImpl* navigation_item) const {
   DCHECK(navigation_item);
