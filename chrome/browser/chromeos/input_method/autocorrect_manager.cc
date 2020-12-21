@@ -8,6 +8,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/chromeos/input_method/assistive_window_properties.h"
+#include "chrome/browser/chromeos/input_method/suggestion_enums.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/ime/chromeos/ime_bridge.h"
 #include "ui/base/ime/chromeos/ime_input_context_handler_interface.h"
@@ -32,6 +33,14 @@ void LogAssistiveAutocorrectAction(AutocorrectActions action) {
                                 action);
 }
 
+void RecordAssistiveCoverage(AssistiveType type) {
+  base::UmaHistogramEnumeration("InputMethod.Assistive.Coverage", type);
+}
+
+void RecordAssistiveSuccess(AssistiveType type) {
+  base::UmaHistogramEnumeration("InputMethod.Assistive.Success", type);
+}
+
 constexpr int kKeysUntilAutocorrectWindowHides = 4;
 
 }  // namespace
@@ -54,6 +63,8 @@ void AutocorrectManager::HandleAutocorrect(gfx::Range autocorrect_range,
   ClearUnderline();
 
   input_context->SetAutocorrectRange(autocorrect_range);
+  LogAssistiveAutocorrectAction(AutocorrectActions::kUnderlined);
+  RecordAssistiveCoverage(AssistiveType::kAutocorrectUnderlined);
   autocorrect_time_ = base::TimeTicks::Now();
 }
 
@@ -120,6 +131,7 @@ void AutocorrectManager::OnSurroundingTextChanged(const base::string16& text,
       suggestion_handler_->SetAssistiveWindowProperties(context_id_, properties,
                                                         &error);
       LogAssistiveAutocorrectAction(AutocorrectActions::kWindowShown);
+      RecordAssistiveCoverage(AssistiveType::kAutocorrectWindowShown);
     }
     key_presses_until_underline_hide_ = kKeysUntilAutocorrectWindowHides;
   } else if (window_visible) {
@@ -179,6 +191,8 @@ void AutocorrectManager::UndoAutocorrect() {
            surrounding_text.surrounding_text.substr(0, range.start())) +
        original_text_));
   LogAssistiveAutocorrectAction(AutocorrectActions::kReverted);
+  RecordAssistiveCoverage(AssistiveType::kAutocorrectReverted);
+  RecordAssistiveSuccess(AssistiveType::kAutocorrectReverted);
   base::UmaHistogramMediumTimes("InputMethod.Assistive.Autocorrect.Delay",
                                 (base::TimeTicks::Now() - autocorrect_time_));
 }

@@ -815,6 +815,55 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
   SetFocus(nullptr);
 }
 
+IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
+                       SendsAutocorrectMetricsforUnderline) {
+  base::HistogramTester histogram_tester;
+  engine_->Enable(kEngineIdUs);
+
+  TextInputTestHelper helper(GetBrowserInputMethod());
+  SetUpTextInput(helper);
+  const base::string16 corrected_text = base::UTF8ToUTF16("corrected");
+  const base::string16 typed_text = base::UTF8ToUTF16("typed");
+  helper.GetTextInputClient()->InsertText(
+      corrected_text,
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+  helper.WaitForSurroundingTextChanged(corrected_text);
+  EXPECT_EQ(ui::IMEBridge::Get()
+                ->GetInputContextHandler()
+                ->GetSurroundingTextInfo()
+                .surrounding_text,
+            corrected_text);
+
+  histogram_tester.ExpectBucketCount("InputMethod.Assistive.Coverage",
+                                     AssistiveType::kAutocorrectWindowShown, 0);
+  engine_->OnAutocorrect("typed", "corrected", 0);
+  histogram_tester.ExpectBucketCount("InputMethod.Assistive.Coverage",
+                                     AssistiveType::kAutocorrectUnderlined, 1);
+
+  histogram_tester.ExpectBucketCount("InputMethod.Assistive.Coverage",
+                                     AssistiveType::kAutocorrectWindowShown, 0);
+  // Move cursor into the corrected word, sending VKEY_LEFT fails, so use JS.
+  content::WebContents* tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(content::ExecuteScript(
+      tab, "document.getElementById('text_id').setSelectionRange(2,2)"));
+  helper.WaitForSurroundingTextChanged(corrected_text, gfx::Range(2, 2));
+  histogram_tester.ExpectBucketCount("InputMethod.Assistive.Coverage",
+                                     AssistiveType::kAutocorrectWindowShown, 1);
+
+  histogram_tester.ExpectBucketCount("InputMethod.Assistive.Coverage",
+                                     AssistiveType::kAutocorrectReverted, 0);
+  DispatchKeyPress(ui::VKEY_UP, false);
+  DispatchKeyPress(ui::VKEY_RETURN, false);
+
+  helper.WaitForSurroundingTextChanged(typed_text);
+
+  histogram_tester.ExpectBucketCount("InputMethod.Assistive.Coverage",
+                                     AssistiveType::kAutocorrectReverted, 1);
+
+  SetFocus(nullptr);
+}
+
 class NativeInputMethodEngineAssistiveOff : public InProcessBrowserTest {
  public:
   NativeInputMethodEngineAssistiveOff() {

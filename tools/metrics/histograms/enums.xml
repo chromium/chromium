@@ -37833,6 +37833,9 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="7" label="PERSONAL_NUMBER"/>
   <int value="8" label="PERSONAL_FIRST_NAME"/>
   <int value="9" label="PERSONAL_LAST_NAME"/>
+  <int value="10" label="AUTOCORRECT_SHOWN"/>
+  <int value="11" label="AUTOCORRECT_UNDERLINED"/>
+  <int value="12" label="AUTOCORRECT_REVERTED"/>
 </enum>
 
 <enum name="IMEAssistiveDisabledReason">
