@@ -19,12 +19,8 @@ import org.gradle.maven.MavenPomArtifact
  */
 class ChromiumDepGraph {
     final def dependencies = new HashMap<String, DependencyDescription>()
+    final def lowerVersionOverride = new HashSet<String>()
 
-    // Override to use the lower version of the library when
-    // resolving which library version to use.
-    final def LOWER_VERSION_OVERRIDE = [
-         'com_google_guava_listenablefuture',
-    ]
     // Some libraries don't properly fill their POM with the appropriate licensing information.
     // It is provided here from manual lookups. Note that licenseUrl must provide textual content
     // rather than be an html page.
@@ -290,6 +286,8 @@ class ChromiumDepGraph {
 
     void collectDependencies() {
         def compileConfig = project.configurations.getByName('compile').resolvedConfiguration
+        def compileListenableFutureConfig = project.configurations.getByName(
+            'compileListenableFuture').resolvedConfiguration
         def buildCompileConfig = project.configurations.getByName('buildCompile').resolvedConfiguration
         def testCompileConfig = project.configurations.getByName('testCompile').resolvedConfiguration
         def androidTestCompileConfig = project.configurations.getByName(
@@ -297,9 +295,14 @@ class ChromiumDepGraph {
         List<String> topLevelIds = []
         Set<ResolvedConfiguration> deps = []
         deps += compileConfig.firstLevelModuleDependencies
+        deps += compileListenableFutureConfig.firstLevelModuleDependencies
         deps += buildCompileConfig.firstLevelModuleDependencies
         deps += testCompileConfig.firstLevelModuleDependencies
         deps += androidTestCompileConfig.firstLevelModuleDependencies
+
+        compileListenableFutureConfig.firstLevelModuleDependencies.each { dependency ->
+            lowerVersionOverride.add(makeModuleId(dependency.module))
+        }
 
         deps.each { dependency ->
             topLevelIds.add(makeModuleId(dependency.module))
@@ -329,7 +332,9 @@ class ChromiumDepGraph {
             dep.testOnly = false
         }
 
-        compileConfig.resolvedArtifacts.each { artifact ->
+        def compileResolvedArtifacts = compileConfig.resolvedArtifacts
+        compileResolvedArtifacts += compileListenableFutureConfig.resolvedArtifacts
+        compileResolvedArtifacts.each { artifact ->
             def id = makeModuleId(artifact)
             def dep = dependencies.get(id)
             assert dep != null : "No dependency collected for artifact ${artifact.name}"
@@ -362,13 +367,16 @@ class ChromiumDepGraph {
     private void collectDependenciesInternal(ResolvedDependency dependency) {
         def id = makeModuleId(dependency.module)
         if (dependencies.containsKey(id)) {
-            if (id in LOWER_VERSION_OVERRIDE &&
-                   dependencies.get(id).version <= dependency.module.id.version) {
+            if (dependencies.get(id).version == dependency.module.id.version) return
+
+            // Default to using largest version for version conflict resolution. See
+            // crbug.com/1040958
+            // https://docs.gradle.org/current/userguide/dependency_resolution.html#sec:version-conflict
+            def useLowerVersion = (id in lowerVersionOverride)
+            def versionIsLower = dependency.module.id.version < dependencies.get(id).version 
+            if (useLowerVersion != versionIsLower) {
                 return
             }
-            // Use largest version for version conflict resolution. See crbug.com/1040958
-            // https://docs.gradle.org/current/userguide/dependency_resolution.html#sec:version-conflict
-            if (dependencies.get(id).version >= dependency.module.id.version) return
         }
 
         def childModules = []

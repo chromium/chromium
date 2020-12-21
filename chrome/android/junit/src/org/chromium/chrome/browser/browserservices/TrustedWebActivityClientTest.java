@@ -8,7 +8,6 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -23,7 +22,7 @@ import androidx.browser.trusted.Token;
 import androidx.browser.trusted.TrustedWebActivityServiceConnection;
 import androidx.browser.trusted.TrustedWebActivityServiceConnectionPool;
 
-import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.SettableFuture;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -31,7 +30,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.stubbing.Answer;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
@@ -55,9 +53,12 @@ public class TrustedWebActivityClientTest {
     private static final int SERVICE_SMALL_ICON_ID = 1;
     private static final String CLIENT_PACKAGE_NAME = "com.example.app";
 
-    @Mock private TrustedWebActivityServiceConnectionPool mConnectionPool;
+    private SettableFuture<TrustedWebActivityServiceConnection> mServiceFuture =
+            SettableFuture.create();
+
+    @Mock
+    private TrustedWebActivityServiceConnectionPool mConnectionPool;
     @Mock private TrustedWebActivityServiceConnection mService;
-    @Mock private ListenableFuture<TrustedWebActivityServiceConnection> mServiceFuture;
     @Mock private NotificationBuilderBase mNotificationBuilder;
     @Mock private TrustedWebActivityUmaRecorder mRecorder;
     @Mock private NotificationUmaTracker mNotificationUmaTracker;
@@ -73,12 +74,7 @@ public class TrustedWebActivityClientTest {
     public void setUp() throws ExecutionException, InterruptedException, RemoteException {
         MockitoAnnotations.initMocks(this);
 
-        when(mServiceFuture.get()).thenReturn(mService);
-        doAnswer((Answer<Void>) invocation -> {
-            Runnable runnable = invocation.getArgument(0);
-            runnable.run();
-            return null;
-        }).when(mServiceFuture).addListener(any(), any());
+        mServiceFuture.set(mService);
         when(mConnectionPool.connect(any(), any(), any())).thenReturn(mServiceFuture);
 
         when(mService.getSmallIconId()).thenReturn(SERVICE_SMALL_ICON_ID);

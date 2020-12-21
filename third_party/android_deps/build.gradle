@@ -156,7 +156,6 @@ dependencies {
 
     compile "com.google.code.findbugs:jsr305:3.0.2"
     compile "com.google.guava:failureaccess:1.0.1"
-    compile "com.google.guava:listenablefuture:1.0"
     compile "com.google.j2objc:j2objc-annotations:1.1"
     compile "com.google.protobuf:protobuf-javalite:3.13.0"
     compile "javax.annotation:javax.annotation-api:1.3.2"
@@ -174,10 +173,10 @@ dependencies {
     // Upstream guava introduced versions with -android suffix starting with version
     // 22 to remove incompatible code with android. Thus we keep two jars, one for
     // the full guava and one that supports android.
-    compile "com.google.guava:guava:25.1-android"
+    compile "com.google.guava:guava:30.1-android"
 
     // buildCompile targets have supports_android = false.
-    buildCompile "com.google.guava:guava:27.0.1-jre"
+    buildCompile "com.google.guava:guava:30.1-jre"
 
     def daggerVersion = '2.30'
     compile "com.google.dagger:dagger:${daggerVersion}"
@@ -191,6 +190,9 @@ dependencies {
     compile "com.google.errorprone:error_prone_annotations:${errorproneVersion}"
     compile "org.checkerframework:checker-compat-qual:2.5.3"
     compile "org.codehaus.mojo:animal-sniffer-annotations:1.17"
+
+    // Dedicated configuration to avoid using higher version number. The 9999 version is empty.
+    compileListenableFuture "com.google.guava:listenablefuture:1.0"
 
     buildCompile "com.google.errorprone:error_prone_core:${errorproneVersion}"
     buildCompile "com.google.errorprone:error_prone_check_api:${errorproneVersion}"

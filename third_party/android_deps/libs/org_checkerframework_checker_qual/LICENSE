@@ -16,8 +16,9 @@ the parts that you might want to include with your own program.
    I18nFormatUtil.java, NullnessUtil.java, Opt.java, PurityUnqualified.java,
    RegexUtil.java, SignednessUtil.java, SignednessUtilExtra.java, and
    UnitsTools.java.  It also applies to the cleanroom implementations of
-   third-party annotations (in checker/src/testannotations/ and in
-   framework/src/main/java/org/jmlspecs/).
+   third-party annotations (in checker/src/testannotations/,
+   framework/src/main/java/org/jmlspecs/, and
+   framework/src/main/java/com/google/).
 
 The Checker Framework includes annotations for some libraries.  Those in
 .astub files use the MIT License.  Those in https://github.com/typetools/jdk

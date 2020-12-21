@@ -3361,7 +3361,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/android_deps/libs/com_google_guava_guava',
-              'version': 'version:27.1-jre-cr0',
+              'version': 'version:30.1-jre-cr0',
           },
       ],
       'condition': 'checkout_android',
@@ -3372,7 +3372,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/android_deps/libs/com_google_guava_guava_android',
-              'version': 'version:25.1-android-cr0',
+              'version': 'version:30.1-android-cr0',
           },
       ],
       'condition': 'checkout_android',
@@ -3394,7 +3394,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/android_deps/libs/com_google_j2objc_j2objc_annotations',
-              'version': 'version:1.1-cr0',
+              'version': 'version:1.3-cr0',
           },
       ],
       'condition': 'checkout_android',
@@ -3735,7 +3735,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/android_deps/libs/org_checkerframework_checker_compat_qual',
-              'version': 'version:2.5.3-cr0',
+              'version': 'version:2.5.5-cr0',
           },
       ],
       'condition': 'checkout_android',
@@ -3746,7 +3746,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/android_deps/libs/org_checkerframework_checker_qual',
-              'version': 'version:2.10.0-cr0',
+              'version': 'version:3.5.0-cr0',
           },
       ],
       'condition': 'checkout_android',

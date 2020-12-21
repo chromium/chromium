@@ -1568,7 +1568,7 @@ java_prebuilt("com_google_guava_failureaccess_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("com_google_guava_guava_java") {
-  jar_path = "libs/com_google_guava_guava/guava-27.1-jre.jar"
+  jar_path = "libs/com_google_guava_guava/guava-30.1-jre.jar"
   output_name = "com_google_guava_guava"
   enable_bytecode_checks = false
   deps = [
@@ -1578,7 +1578,6 @@ java_prebuilt("com_google_guava_guava_java") {
     ":com_google_guava_listenablefuture_java",
     ":com_google_j2objc_j2objc_annotations_java",
     ":org_checkerframework_checker_qual_java",
-    ":org_codehaus_mojo_animal_sniffer_annotations_java",
   ]
 
   # Need to exclude class and replace it with class library as
@@ -1589,15 +1588,16 @@ java_prebuilt("com_google_guava_guava_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("com_google_guava_guava_android_java") {
-  jar_path = "libs/com_google_guava_guava_android/guava-25.1-android.jar"
+  jar_path = "libs/com_google_guava_guava_android/guava-30.1-android.jar"
   output_name = "com_google_guava_guava_android"
   supports_android = true
   deps = [
     ":com_google_code_findbugs_jsr305_java",
     ":com_google_errorprone_error_prone_annotations_java",
+    ":com_google_guava_failureaccess_java",
+    ":com_google_guava_listenablefuture_java",
     ":com_google_j2objc_j2objc_annotations_java",
     ":org_checkerframework_checker_compat_qual_java",
-    ":org_codehaus_mojo_animal_sniffer_annotations_java",
   ]
 
   # Add a dep to com_google_guava_listenablefuture_java
@@ -1620,7 +1620,7 @@ java_prebuilt("com_google_guava_listenablefuture_java") {
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("com_google_j2objc_j2objc_annotations_java") {
   jar_path =
-      "libs/com_google_j2objc_j2objc_annotations/j2objc-annotations-1.1.jar"
+      "libs/com_google_j2objc_j2objc_annotations/j2objc-annotations-1.3.jar"
   output_name = "com_google_j2objc_j2objc_annotations"
   supports_android = true
 
@@ -1715,7 +1715,7 @@ java_prebuilt("org_ccil_cowan_tagsoup_tagsoup_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("org_checkerframework_checker_compat_qual_java") {
-  jar_path = "libs/org_checkerframework_checker_compat_qual/checker-compat-qual-2.5.3.jar"
+  jar_path = "libs/org_checkerframework_checker_compat_qual/checker-compat-qual-2.5.5.jar"
   output_name = "org_checkerframework_checker_compat_qual"
   supports_android = true
 }
@@ -2896,7 +2896,7 @@ java_prebuilt("org_apache_maven_wagon_wagon_provider_api_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("org_checkerframework_checker_qual_java") {
-  jar_path = "libs/org_checkerframework_checker_qual/checker-qual-2.10.0.jar"
+  jar_path = "libs/org_checkerframework_checker_qual/checker-qual-3.5.0.jar"
   output_name = "org_checkerframework_checker_qual"
   enable_bytecode_checks = false
 
