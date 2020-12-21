@@ -105,6 +105,9 @@ const char kWasOnboardingFeatureCheckedBefore[] =
     "profile.was_pwm_onboarding_feature_checked_before";
 }
 
+// Deprecated 12/2020
+const char kDomainsWithCookiePref[] = "signin.domains_with_cookie";
+
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   BrowserStateInfoCache::RegisterPrefs(registry);
   flags_ui::PrefServiceFlagsStorage::RegisterPrefs(registry);
@@ -244,6 +247,7 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   registry->RegisterIntegerPref(kPasswordManagerOnboardingState, 0);
   registry->RegisterBooleanPref(kWasOnboardingFeatureCheckedBefore, false);
+  registry->RegisterDictionaryPref(kDomainsWithCookiePref);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -293,4 +297,7 @@ void MigrateObsoleteBrowserStatePrefs(PrefService* prefs) {
   prefs->ClearPref(kPasswordManagerOnboardingState);
   prefs->ClearPref(kWasOnboardingFeatureCheckedBefore);
   prerender_prefs::MigrateNetworkPredictionPrefs(prefs);
+
+  // Added 12/2020.
+  prefs->ClearPref(kDomainsWithCookiePref);
 }

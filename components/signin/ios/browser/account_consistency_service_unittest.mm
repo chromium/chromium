@@ -142,7 +142,7 @@ class AccountConsistencyServiceTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
-    AccountConsistencyService::RegisterPrefs(prefs_.registry());
+
     content_settings::CookieSettings::RegisterProfilePrefs(prefs_.registry());
     HostContentSettingsMap::RegisterProfilePrefs(prefs_.registry());
 
@@ -178,7 +178,7 @@ class AccountConsistencyServiceTest : public PlatformTest {
       account_consistency_service_->Shutdown();
     }
     account_consistency_service_.reset(new AccountConsistencyService(
-        &browser_state_, &prefs_, account_reconcilor_.get(), cookie_settings_,
+        &browser_state_, account_reconcilor_.get(), cookie_settings_,
         identity_test_env_->identity_manager()));
   }
 
@@ -214,14 +214,6 @@ class AccountConsistencyServiceTest : public PlatformTest {
         ContainsCookie(GetCookiesInCookieJar(),
                        AccountConsistencyService::kChromeConnectedCookieName,
                        /*domain=*/std::string()));
-  }
-
-  void CheckDomainHasChromeConnectedCookieWithUpdateTime(
-      const std::string& domain,
-      base::Time time) {
-    CheckDomainHasChromeConnectedCookie(domain);
-    EXPECT_EQ(time,
-              account_consistency_service_->last_cookie_update_map_[domain]);
   }
 
   // Verifies the time that the Gaia cookie was last updated for google.com.
@@ -349,12 +341,6 @@ TEST_F(AccountConsistencyServiceTest, SigninAddCookieOnMainDomains) {
   SignIn();
   CheckDomainHasChromeConnectedCookie(kGoogleDomain);
   CheckDomainHasChromeConnectedCookie(kYoutubeDomain);
-
-  const base::DictionaryValue* dict =
-      prefs_.GetDictionary(AccountConsistencyService::kDomainsWithCookiePref);
-  EXPECT_EQ(2u, dict->size());
-  EXPECT_TRUE(dict->GetBooleanWithoutPathExpansion(kGoogleDomain, nullptr));
-  EXPECT_TRUE(dict->GetBooleanWithoutPathExpansion(kYoutubeDomain, nullptr));
 }
 
 // Tests that cookies that are added during SignIn and subsequent navigations
@@ -612,10 +598,6 @@ TEST_F(AccountConsistencyServiceTest, DomainsClearedOnBrowsingDataRemoved) {
   SignIn();
   CheckDomainHasChromeConnectedCookie(kGoogleDomain);
   CheckDomainHasChromeConnectedCookie(kYoutubeDomain);
-  EXPECT_EQ(
-      2u,
-      prefs_.GetDictionary(AccountConsistencyService::kDomainsWithCookiePref)
-          ->size());
 
   // Sets Response to get IdentityManager::Observer::OnAccountsInCookieUpdated
   // through GaiaCookieManagerService::OnCookieChange.
@@ -628,57 +610,34 @@ TEST_F(AccountConsistencyServiceTest, DomainsClearedOnBrowsingDataRemoved) {
   // AccountsCookieMutator::ForceTriggerOnCookieChange and finally
   // IdentityManager::Observer::OnAccountsInCookieUpdated is called.
   account_consistency_service_->OnBrowsingDataRemoved();
-  EXPECT_EQ(
-      0u,
-      prefs_.GetDictionary(AccountConsistencyService::kDomainsWithCookiePref)
-          ->size());
+
   run_loop.Run();
 
   // AccountConsistency service is supposed to rebuild the CHROME_CONNECTED
   // cookies when browsing data is removed.
   CheckDomainHasChromeConnectedCookie(kGoogleDomain);
   CheckDomainHasChromeConnectedCookie(kYoutubeDomain);
-  EXPECT_EQ(
-      2u,
-      prefs_.GetDictionary(AccountConsistencyService::kDomainsWithCookiePref)
-          ->size());
 }
 
-// Tests that the CHROME_CONNECTED cookie is set on Google-associated domains,
-// but not on Google domains if the account consistency service runs before the
-// scheduled cookie update time.
+// Tests that google.com domain cookies can be regenerated after an external
+// source removes these cookies.
 TEST_F(AccountConsistencyServiceTest,
-       SetChromeConnectedCookieBeforeUpdateTime) {
+       AddChromeConnectedCookiesOnCookiesRemoved) {
   SignIn();
+  CheckDomainHasChromeConnectedCookie(kGoogleDomain);
 
-  id delegate =
-      [OCMockObject mockForProtocol:@protocol(ManageAccountsDelegate)];
-  NSDictionary* headers = [NSDictionary dictionary];
-
-  // HTTP response URL is eligible for Mirror (the test does not use google.com
-  // since the CHROME_CONNECTED cookie is generated for it by default.
-  NSHTTPURLResponse* response = [[NSHTTPURLResponse alloc]
-       initWithURL:[NSURL URLWithString:@"https://youtube.com"]
-        statusCode:200
-       HTTPVersion:@"HTTP/1.1"
-      headerFields:headers];
-
-  SimulateNavigateToURL(response, delegate);
   SimulateExternalSourceRemovesAllGoogleDomainCookies();
-
-  // Advance clock before 24-hour CHROME_CONNECTED update time.
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(2));
-  SimulateNavigateToURL(response, delegate);
-
-  CheckDomainHasChromeConnectedCookieWithUpdateTime(
-      kYoutubeDomain, base::Time::Now() - base::TimeDelta::FromHours(2));
   CheckNoChromeConnectedCookieForDomain(kGoogleDomain);
+
+  // Forcibly rebuild the CHROME_CONNECTED cookies.
+  account_consistency_service_->AddChromeConnectedCookies();
+
+  CheckDomainHasChromeConnectedCookie(kGoogleDomain);
 }
 
 // Tests that the CHROME_CONNECTED cookie is set on Google and Google-associated
-// domains when the
-// account consistency service runs at the scheduled cookie update time.
-TEST_F(AccountConsistencyServiceTest, SetChromeConnectedCookieAtUpdateTime) {
+// domains when the account consistency service runs.
+TEST_F(AccountConsistencyServiceTest, SetChromeConnectedCookie) {
   SignIn();
 
   id delegate =
@@ -696,14 +655,10 @@ TEST_F(AccountConsistencyServiceTest, SetChromeConnectedCookieAtUpdateTime) {
   SimulateNavigateToURL(response, delegate);
   SimulateExternalSourceRemovesAllGoogleDomainCookies();
 
-  // Advance clock past 24-hour CHROME_CONNECTED update time.
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(2));
   SimulateNavigateToURL(response, delegate);
 
-  CheckDomainHasChromeConnectedCookieWithUpdateTime(kGoogleDomain,
-                                                    base::Time::Now());
-  CheckDomainHasChromeConnectedCookieWithUpdateTime(kYoutubeDomain,
-                                                    base::Time::Now());
+  CheckDomainHasChromeConnectedCookie(kGoogleDomain);
+  CheckDomainHasChromeConnectedCookie(kYoutubeDomain);
 }
 
 // Tests that the GAIA cookie update time is not updated before the scheduled

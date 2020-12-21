@@ -37,8 +37,6 @@ class AccountConsistencyServiceFactory
   ~AccountConsistencyServiceFactory() override;
 
   // BrowserStateKeyedServiceFactory:
-  void RegisterBrowserStatePrefs(
-      user_prefs::PrefRegistrySyncable* registry) override;
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
 

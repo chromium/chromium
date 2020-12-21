@@ -30,7 +30,6 @@ class WebStatePolicyDecider;
 }
 
 class AccountReconcilor;
-class PrefService;
 
 // Handles actions necessary for keeping the list of Google accounts available
 // on the web and those available on the iOS device from first-party Google apps
@@ -48,20 +47,12 @@ class AccountConsistencyService : public KeyedService,
   // Name of the Google authentication cookie.
   static const char kGaiaCookieName[];
 
-  // Name of the preference property that persists the domains that have a
-  // CHROME_CONNECTED cookie set by this service.
-  static const char kDomainsWithCookiePref[];
-
   AccountConsistencyService(
       web::BrowserState* browser_state,
-      PrefService* prefs,
       AccountReconcilor* account_reconcilor,
       scoped_refptr<content_settings::CookieSettings> cookie_settings,
       signin::IdentityManager* identity_manager);
   ~AccountConsistencyService() override;
-
-  // Registers the preferences used by AccountConsistencyService.
-  static void RegisterPrefs(PrefRegistrySimple* registry);
 
   // Sets the handler for |web_state| that reacts on Gaia responses with the
   // X-Chrome-Manage-Accounts header and notifies |delegate|.
@@ -99,9 +90,6 @@ class AccountConsistencyService : public KeyedService,
  private:
   friend class AccountConsistencyServiceTest;
 
-  // Loads the domains with a CHROME_CONNECTED cookie from the prefs.
-  void LoadFromPrefs();
-
   // KeyedService implementation.
   void Shutdown() override;
 
@@ -110,28 +98,12 @@ class AccountConsistencyService : public KeyedService,
 
   // Called when the request to set CHROME_CONNECTED cookie is done.
   void OnChromeConnectedCookieFinished(
-      const std::string& domain,
       net::CookieAccessResult cookie_access_result);
 
   // Called when cookie deletion is completed with the number of cookies that
   // were removed from the cookie store.
   void OnDeleteCookiesFinished(base::OnceClosure callback,
                                uint32_t num_cookies_deleted);
-
-  // Returns whether the CHROME_CONNECTED cookie should be added to |domain|.
-  // If the cookie is not already on |domain|, it will return true. If the
-  // cookie is time constrained, |cookie_refresh_interval| is present, then a
-  // cookie older than |cookie_refresh_interval| returns true.
-  bool ShouldSetChromeConnectedCookieToDomain(
-      const std::string& domain,
-      const base::TimeDelta& cookie_refresh_interval);
-
-  // Enqueues a request to set the CHROME_CONNECTED cookie for the |url|'s
-  // domain. The cookie is set if it is not already on domain or if it is too
-  // old compared to the given |cookie_refresh_interval|.
-  void SetChromeConnectedCookieWithUrls(
-      const std::vector<const GURL>& urls,
-      const base::TimeDelta& cookie_refresh_interval);
 
   // Triggers a Gaia cookie update on the Google domain. Calls
   // |cookies_restored_callback| if the Gaia cookies were restored.
@@ -153,8 +125,6 @@ class AccountConsistencyService : public KeyedService,
 
   // Browser state associated with the service.
   web::BrowserState* browser_state_;
-  // Used to update kDomainsWithCookiePref.
-  PrefService* prefs_;
   // Service managing accounts reconciliation, notified of GAIA responses with
   // the X-Chrome-Manage-Accounts header
   AccountReconcilor* account_reconcilor_;
@@ -168,9 +138,6 @@ class AccountConsistencyService : public KeyedService,
   // The number of cookie manager requests that are being processed.
   // Used for testing purposes only.
   int64_t active_cookie_manager_requests_for_testing_;
-  // The map between domains where a CHROME_CONNECTED cookie is present and
-  // the time when the cookie was last updated.
-  std::map<std::string, base::Time> last_cookie_update_map_;
 
   // Last time Gaia cookie was updated for the Google domain.
   base::Time last_gaia_cookie_verification_time_;

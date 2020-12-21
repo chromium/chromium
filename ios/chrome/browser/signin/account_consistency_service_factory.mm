@@ -7,7 +7,6 @@
 #include "base/no_destructor.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
-#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/signin/ios/browser/account_consistency_service.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/content_settings/cookie_settings_factory.h"
@@ -45,18 +44,13 @@ AccountConsistencyServiceFactory::GetInstance() {
   return instance.get();
 }
 
-void AccountConsistencyServiceFactory::RegisterBrowserStatePrefs(
-    user_prefs::PrefRegistrySyncable* registry) {
-  AccountConsistencyService::RegisterPrefs(registry);
-}
-
 std::unique_ptr<KeyedService>
 AccountConsistencyServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   ChromeBrowserState* chrome_browser_state =
       ChromeBrowserState::FromBrowserState(context);
   return std::make_unique<AccountConsistencyService>(
-      chrome_browser_state, chrome_browser_state->GetPrefs(),
+      chrome_browser_state,
       ios::AccountReconcilorFactory::GetForBrowserState(chrome_browser_state),
       ios::CookieSettingsFactory::GetForBrowserState(chrome_browser_state),
       IdentityManagerFactory::GetForBrowserState(chrome_browser_state));

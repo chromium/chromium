@@ -16,9 +16,6 @@
 #include "base/strings/sys_string_conversions.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/google/core/common/google_util.h"
-#include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/pref_service.h"
-#include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/core/browser/signin_header_helper.h"
 #include "components/signin/ios/browser/features.h"
@@ -42,11 +39,6 @@
 
 namespace {
 
-// The validity of CHROME_CONNECTED cookies is one day maximum as a
-// precaution to ensure that the cookie is regenerated in the case that it
-// is removed or invalidated.
-constexpr base::TimeDelta kDelayThresholdToUpdateChromeConnectedCookie =
-    base::TimeDelta::FromHours(24);
 // The validity of the Gaia cookie on the Google domain is one hour to
 // ensure that Mirror account consistency is respected in light of the more
 // restrictive Intelligent Tracking Prevention (ITP) guidelines in iOS 14
@@ -364,23 +356,17 @@ const char AccountConsistencyService::kChromeConnectedCookieName[] =
 
 const char AccountConsistencyService::kGaiaCookieName[] = "SAPISID";
 
-const char AccountConsistencyService::kDomainsWithCookiePref[] =
-    "signin.domains_with_cookie";
-
 AccountConsistencyService::AccountConsistencyService(
     web::BrowserState* browser_state,
-    PrefService* prefs,
     AccountReconcilor* account_reconcilor,
     scoped_refptr<content_settings::CookieSettings> cookie_settings,
     signin::IdentityManager* identity_manager)
     : browser_state_(browser_state),
-      prefs_(prefs),
       account_reconcilor_(account_reconcilor),
       cookie_settings_(cookie_settings),
       identity_manager_(identity_manager),
       active_cookie_manager_requests_for_testing_(0) {
   identity_manager_->AddObserver(this);
-  LoadFromPrefs();
   if (identity_manager_->HasPrimaryAccount()) {
     AddChromeConnectedCookies();
   } else {
@@ -389,12 +375,6 @@ AccountConsistencyService::AccountConsistencyService(
 }
 
 AccountConsistencyService::~AccountConsistencyService() {
-}
-
-// static
-void AccountConsistencyService::RegisterPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterDictionaryPref(
-      AccountConsistencyService::kDomainsWithCookiePref);
 }
 
 void AccountConsistencyService::SetWebStateHandler(
@@ -470,11 +450,6 @@ void AccountConsistencyService::TriggerGaiaCookieChangeIfDeleted(
 void AccountConsistencyService::RemoveAllChromeConnectedCookies(
     base::OnceClosure callback) {
   DCHECK(!browser_state_->IsOffTheRecord());
-  if (last_cookie_update_map_.empty()) {
-    if (!callback.is_null())
-      std::move(callback).Run();
-    return;
-  }
 
   network::mojom::CookieManager* cookie_manager =
       browser_state_->GetCookieManager();
@@ -488,7 +463,7 @@ void AccountConsistencyService::RemoveAllChromeConnectedCookies(
       std::move(filter),
       base::BindOnce(&AccountConsistencyService::OnDeleteCookiesFinished,
                      base::Unretained(this), std::move(callback)));
-  ResetInternalState();
+  last_gaia_cookie_verification_time_ = base::Time();
 }
 
 void AccountConsistencyService::OnDeleteCookiesFinished(
@@ -502,38 +477,8 @@ void AccountConsistencyService::OnDeleteCookiesFinished(
 
 void AccountConsistencyService::SetChromeConnectedCookieWithUrls(
     const std::vector<const GURL>& urls) {
-  SetChromeConnectedCookieWithUrls(
-      urls, kDelayThresholdToUpdateChromeConnectedCookie);
-}
-
-void AccountConsistencyService::SetChromeConnectedCookieWithUrls(
-    const std::vector<const GURL>& urls,
-    const base::TimeDelta& cookie_refresh_interval) {
   for (const GURL& url : urls) {
-    const std::string domain = GetDomainFromUrl(url);
-    if (!ShouldSetChromeConnectedCookieToDomain(domain,
-                                                cookie_refresh_interval)) {
-      continue;
-    }
-    last_cookie_update_map_[domain] = base::Time::Now();
     SetChromeConnectedCookieWithUrl(url);
-  }
-}
-
-bool AccountConsistencyService::ShouldSetChromeConnectedCookieToDomain(
-    const std::string& domain,
-    const base::TimeDelta& cookie_refresh_interval) {
-  auto domain_iterator = last_cookie_update_map_.find(domain);
-  bool domain_not_found = domain_iterator == last_cookie_update_map_.end();
-  return domain_not_found || ((base::Time::Now() - domain_iterator->second) >
-                              cookie_refresh_interval);
-}
-
-void AccountConsistencyService::LoadFromPrefs() {
-  const base::DictionaryValue* dict =
-      prefs_->GetDictionary(kDomainsWithCookiePref);
-  for (base::DictionaryValue::Iterator it(*dict); !it.IsAtEnd(); it.Advance()) {
-    last_cookie_update_map_[it.key()] = base::Time();
   }
 }
 
@@ -550,7 +495,6 @@ void AccountConsistencyService::SetChromeConnectedCookieWithUrl(
       signin::AccountConsistencyMethod::kMirror, cookie_settings_.get(),
       signin::PROFILE_MODE_DEFAULT);
   if (cookie_value.empty()) {
-    last_cookie_update_map_.erase(domain);
     return;
   }
 
@@ -582,40 +526,27 @@ void AccountConsistencyService::SetChromeConnectedCookieWithUrl(
       *cookie, url, options,
       base::BindOnce(
           &AccountConsistencyService::OnChromeConnectedCookieFinished,
-          base::Unretained(this), domain));
+          base::Unretained(this)));
 }
 
 void AccountConsistencyService::OnChromeConnectedCookieFinished(
-    const std::string& domain,
     net::CookieAccessResult cookie_access_result) {
   DCHECK(cookie_access_result.status.IsInclude());
-  DictionaryPrefUpdate update(
-      prefs_, AccountConsistencyService::kDomainsWithCookiePref);
-  // Add request.domain to prefs, use |true| as a dummy value (that is
-  // never used), as the dictionary is used as a set.
-  update->SetKey(domain, base::Value(true));
   --active_cookie_manager_requests_for_testing_;
 }
 
 void AccountConsistencyService::AddChromeConnectedCookies() {
   DCHECK(!browser_state_->IsOffTheRecord());
-  // These cookie requests are preventive and not a strong signal (unlike
-  // navigation to a domain). Don't force update the old cookies in this case.
-  SetChromeConnectedCookieWithUrls({GURL(kGoogleUrl), GURL(kYoutubeUrl)},
-                                   base::TimeDelta::Max());
-}
-
-void AccountConsistencyService::ResetInternalState() {
-  last_cookie_update_map_.clear();
-  last_gaia_cookie_verification_time_ = base::Time();
-  base::DictionaryValue dict;
-  prefs_->Set(kDomainsWithCookiePref, dict);
+  // These cookie requests are preventive. Chrome cannot be sure that
+  // CHROME_CONNECTED cookies are set on google.com and youtube.com domains due
+  // to ITP restrictions.
+  SetChromeConnectedCookieWithUrls({GURL(kGoogleUrl), GURL(kYoutubeUrl)});
 }
 
 void AccountConsistencyService::OnBrowsingDataRemoved() {
   // CHROME_CONNECTED cookies have been removed, update internal state
   // accordingly.
-  ResetInternalState();
+  last_gaia_cookie_verification_time_ = base::Time();
 
   // SAPISID cookie has been removed, notify the GCMS.
   // TODO(https://crbug.com/930582) : Remove the need to expose this method
