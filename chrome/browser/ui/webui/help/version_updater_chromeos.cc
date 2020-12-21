@@ -136,11 +136,11 @@ VersionUpdater* VersionUpdater::Create(content::WebContents* web_contents) {
   return new VersionUpdaterCros(web_contents);
 }
 
-void VersionUpdaterCros::GetUpdateStatus(const StatusCallback& callback) {
-  callback_ = callback;
+void VersionUpdaterCros::GetUpdateStatus(StatusCallback callback) {
+  callback_ = std::move(callback);
 
   // User is not actively checking for updates.
-  if (!EnsureCanUpdate(false /* interactive */, callback))
+  if (!EnsureCanUpdate(false /* interactive */, callback_))
     return;
 
   UpdateEngineClient* update_engine_client =
@@ -152,12 +152,12 @@ void VersionUpdaterCros::GetUpdateStatus(const StatusCallback& callback) {
       DBusThreadManager::Get()->GetUpdateEngineClient()->GetLastStatus());
 }
 
-void VersionUpdaterCros::CheckForUpdate(const StatusCallback& callback,
+void VersionUpdaterCros::CheckForUpdate(StatusCallback callback,
                                         const PromoteCallback&) {
-  callback_ = callback;
+  callback_ = std::move(callback);
 
   // User is actively checking for updates.
-  if (!EnsureCanUpdate(true /* interactive */, callback))
+  if (!EnsureCanUpdate(true /* interactive */, callback_))
     return;
 
   UpdateEngineClient* update_engine_client =
@@ -195,10 +195,10 @@ void VersionUpdaterCros::SetChannel(const std::string& channel,
 }
 
 void VersionUpdaterCros::SetUpdateOverCellularOneTimePermission(
-    const StatusCallback& callback,
+    StatusCallback callback,
     const std::string& update_version,
     int64_t update_size) {
-  callback_ = callback;
+  callback_ = std::move(callback);
   DBusThreadManager::Get()
       ->GetUpdateEngineClient()
       ->SetUpdateOverCellularOneTimePermission(

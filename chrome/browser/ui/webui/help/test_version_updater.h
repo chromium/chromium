@@ -19,8 +19,7 @@ class TestVersionUpdater : public VersionUpdater {
   TestVersionUpdater();
   ~TestVersionUpdater() override;
 
-  void CheckForUpdate(const StatusCallback& callback,
-                      const PromoteCallback&) override;
+  void CheckForUpdate(StatusCallback callback, const PromoteCallback&) override;
 
   void SetReturnedStatus(Status status) { status_ = status; }
 
@@ -34,7 +33,7 @@ class TestVersionUpdater : public VersionUpdater {
   void GetChannel(bool get_current_channel,
                   const ChannelCallback& callback) override {}
   void GetEolInfo(EolInfoCallback callback) override {}
-  void SetUpdateOverCellularOneTimePermission(const StatusCallback& callback,
+  void SetUpdateOverCellularOneTimePermission(StatusCallback callback,
                                               const std::string& update_version,
                                               int64_t update_size) override {}
 #endif

@@ -26,10 +26,10 @@ VersionUpdaterWin::VersionUpdaterWin(gfx::AcceleratedWidget owner_widget)
 VersionUpdaterWin::~VersionUpdaterWin() {
 }
 
-void VersionUpdaterWin::CheckForUpdate(const StatusCallback& callback,
+void VersionUpdaterWin::CheckForUpdate(StatusCallback callback,
                                        const PromoteCallback&) {
   // There is no supported integration with Google Update for Chromium.
-  callback_ = callback;
+  callback_ = std::move(callback);
 
   callback_.Run(CHECKING, 0, false, false, std::string(), 0, base::string16());
   DoBeginUpdateCheck(false /* !install_update_if_possible */);

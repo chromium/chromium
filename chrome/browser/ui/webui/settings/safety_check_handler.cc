@@ -388,8 +388,8 @@ void SafetyCheckHandler::HandleGetParentRanDisplayString(
 void SafetyCheckHandler::CheckUpdates() {
   // Usage of base::Unretained(this) is safe, because we own `version_updater_`.
   version_updater_->CheckForUpdate(
-      base::Bind(&SafetyCheckHandler::OnVersionUpdaterResult,
-                 base::Unretained(this)),
+      base::BindRepeating(&SafetyCheckHandler::OnVersionUpdaterResult,
+                          base::Unretained(this)),
       VersionUpdater::PromoteCallback());
 }
 

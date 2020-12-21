@@ -99,7 +99,7 @@ class TestDestructionVersionUpdater : public TestVersionUpdater {
  public:
   ~TestDestructionVersionUpdater() override { destructor_invoked_ = true; }
 
-  void CheckForUpdate(const StatusCallback& callback,
+  void CheckForUpdate(StatusCallback callback,
                       const PromoteCallback&) override {}
 
   static bool GetDestructorInvoked() { return destructor_invoked_; }

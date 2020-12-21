@@ -27,7 +27,7 @@ class BrowserUpdaterClient;
 class VersionUpdaterMac : public VersionUpdater {
  public:
   // VersionUpdater implementation.
-  void CheckForUpdate(const StatusCallback& status_callback,
+  void CheckForUpdate(StatusCallback status_callback,
                       const PromoteCallback& promote_callback) override;
   void PromoteUpdater() const override;
 

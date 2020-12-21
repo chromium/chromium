@@ -65,13 +65,13 @@ class VersionUpdater {
   // |update_size| is the size of the available update in bytes and should be 0
   //     when update is not available.
   // |message| is a message explaining a failure.
-  typedef base::Callback<void(Status status,
-                              int progress,
-                              bool rollback,
-                              bool powerwash,
-                              const std::string& version,
-                              int64_t update_size,
-                              const base::string16& message)>
+  typedef base::RepeatingCallback<void(Status status,
+                                       int progress,
+                                       bool rollback,
+                                       bool powerwash,
+                                       const std::string& version,
+                                       int64_t update_size,
+                                       const base::string16& message)>
       StatusCallback;
 
   // Used to show or hide the promote UI elements. Mac-only.
@@ -89,7 +89,7 @@ class VersionUpdater {
   // |status_callback| is called for each status update. |promote_callback|
   // (which is only used on the Mac) can be used to show or hide the promote UI
   // elements.
-  virtual void CheckForUpdate(const StatusCallback& status_callback,
+  virtual void CheckForUpdate(StatusCallback status_callback,
                               const PromoteCallback& promote_callback) = 0;
 
 #if defined(OS_MAC)
@@ -115,7 +115,7 @@ class VersionUpdater {
   // there's a new update available or a delta update becomes a full update with
   // a larger size.
   virtual void SetUpdateOverCellularOneTimePermission(
-      const StatusCallback& callback,
+      StatusCallback callback,
       const std::string& update_version,
       int64_t update_size) = 0;
 #endif

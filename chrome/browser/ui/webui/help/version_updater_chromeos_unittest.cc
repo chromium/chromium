@@ -126,7 +126,7 @@ TEST_F(VersionUpdaterCrosTest, TwoOverlappingSetChannelRequests) {
   EXPECT_EQ(0, fake_update_engine_client_->request_update_check_call_count());
 
   // IDLE -> DOWNLOADING transition after update check.
-  version_updater_->CheckForUpdate(base::Bind(&CheckNotification),
+  version_updater_->CheckForUpdate(base::BindRepeating(&CheckNotification),
                                    VersionUpdater::PromoteCallback());
   EXPECT_EQ(1, fake_update_engine_client_->request_update_check_call_count());
 
@@ -150,7 +150,7 @@ TEST_F(VersionUpdaterCrosTest, TwoOverlappingSetChannelRequests) {
     fake_update_engine_client_->NotifyObserversThatStatusChanged(status);
   }
 
-  version_updater_->CheckForUpdate(base::Bind(&CheckNotification),
+  version_updater_->CheckForUpdate(base::BindRepeating(&CheckNotification),
                                    VersionUpdater::PromoteCallback());
   EXPECT_EQ(1, fake_update_engine_client_->request_update_check_call_count());
 
@@ -172,7 +172,7 @@ TEST_F(VersionUpdaterCrosTest, TwoOverlappingSetChannelRequests) {
 TEST_F(VersionUpdaterCrosTest, InteractiveCellularUpdateAllowed) {
   SetCellularService();
   EXPECT_EQ(0, fake_update_engine_client_->request_update_check_call_count());
-  version_updater_->CheckForUpdate(base::Bind(&CheckNotification),
+  version_updater_->CheckForUpdate(base::BindRepeating(&CheckNotification),
                                    VersionUpdater::PromoteCallback());
   EXPECT_EQ(1, fake_update_engine_client_->request_update_check_call_count());
 }
@@ -185,7 +185,7 @@ TEST_F(VersionUpdaterCrosTest, CellularUpdateOneTimePermission) {
   const std::string& update_version = "9999.0.0";
   const int64_t update_size = 99999;
   version_updater_->SetUpdateOverCellularOneTimePermission(
-      base::Bind(&CheckNotification), update_version, update_size);
+      base::BindRepeating(&CheckNotification), update_version, update_size);
   EXPECT_EQ(1, fake_update_engine_client_->request_update_check_call_count());
 }
 

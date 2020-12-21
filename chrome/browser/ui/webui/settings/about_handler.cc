@@ -470,7 +470,8 @@ void AboutHandler::HandleSetChannel(const base::ListValue* args) {
   if (user_manager::UserManager::Get()->IsCurrentUserOwner()) {
     // Check for update after switching release channel.
     version_updater_->CheckForUpdate(
-        base::Bind(&AboutHandler::SetUpdateStatus, base::Unretained(this)),
+        base::BindRepeating(&AboutHandler::SetUpdateStatus,
+                            base::Unretained(this)),
         VersionUpdater::PromoteCallback());
   }
 }
@@ -570,7 +571,8 @@ void AboutHandler::HandleRequestUpdateOverCellular(
 void AboutHandler::RequestUpdateOverCellular(const std::string& update_version,
                                              int64_t update_size) {
   version_updater_->SetUpdateOverCellularOneTimePermission(
-      base::Bind(&AboutHandler::SetUpdateStatus, base::Unretained(this)),
+      base::BindRepeating(&AboutHandler::SetUpdateStatus,
+                          base::Unretained(this)),
       update_version, update_size);
 }
 
@@ -625,9 +627,11 @@ void AboutHandler::OnGetEndOfLifeInfo(
 
 void AboutHandler::RequestUpdate() {
   version_updater_->CheckForUpdate(
-      base::Bind(&AboutHandler::SetUpdateStatus, base::Unretained(this)),
+      base::BindRepeating(&AboutHandler::SetUpdateStatus,
+                          base::Unretained(this)),
 #if defined(OS_MAC)
-      base::Bind(&AboutHandler::SetPromotionState, base::Unretained(this)));
+      base::BindRepeating(&AboutHandler::SetPromotionState,
+                          base::Unretained(this)));
 #else
       VersionUpdater::PromoteCallback());
 #endif  // OS_MAC
