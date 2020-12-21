@@ -571,8 +571,6 @@ def main():
         '-DLIBCXX_INCLUDE_TESTS=OFF',
         '-DLIBCXX_ENABLE_EXPERIMENTAL_LIBRARY=OFF',
     ])
-    # Prefer Python 2. TODO(crbug.com/1076834): Remove this.
-    base_cmake_args.append('-DPython3_EXECUTABLE=/nonexistent')
 
   if args.gcc_toolchain:
     # Force compiler-rt tests to use our gcc toolchain (including libstdc++.so)
