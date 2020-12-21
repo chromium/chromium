@@ -3485,6 +3485,17 @@ enum HashingAlgorithm {
 
   SHA1 = 1;
   SHA256 = 2;
+
+  // Do not hash the input data - assume it is input to the signature algorithm.
+  // The client supports this starting with M-89.
+  //
+  // For SigningAlgorithm RSA_PKCS1_V1_5, the client will perform PKCS#1 v1.5
+  // padding on |data_to_sign|. |data_to_sign| is expected to already contain a
+  // PKCS#1 DigestInfo prefix - the client will not attempt to add such a
+  // prefix. Also |data_to_sign| must be shorter than (key_size-11) bytes. If no
+  // other key size was specified in the
+  // RequiredClientCertificateFor{User,Device} policy, 2048 bytes is assumed.
+  NO_HASH = 3;
 }
 
 // Signing Algorithm for Client Certificate Provisioning Flow.

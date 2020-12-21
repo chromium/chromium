@@ -70,6 +70,10 @@ bool ConvertHashingAlgorithm(
       *output_algo =
           chromeos::platform_keys::HashAlgorithm::HASH_ALGORITHM_SHA256;
       return true;
+    case em::HashingAlgorithm::NO_HASH:
+      *output_algo =
+          chromeos::platform_keys::HashAlgorithm::HASH_ALGORITHM_NONE;
+      return true;
     case em::HashingAlgorithm::HASHING_ALGORITHM_UNSPECIFIED:
       return false;
   }
@@ -566,6 +570,15 @@ void CertProvisioningWorkerImpl::SignCsr() {
     return;
   }
 
+  if (hashing_algorithm_ ==
+      chromeos::platform_keys::HashAlgorithm::HASH_ALGORITHM_NONE) {
+    platform_keys_service_->SignRSAPKCS1Raw(
+        GetPlatformKeysTokenId(cert_scope_), csr_, public_key_,
+        base::BindRepeating(&CertProvisioningWorkerImpl::OnSignCsrDone,
+                            weak_factory_.GetWeakPtr(),
+                            base::TimeTicks::Now()));
+    return;
+  }
   platform_keys_service_->SignRSAPKCS1Digest(
       GetPlatformKeysTokenId(cert_scope_), csr_, public_key_,
       hashing_algorithm_.value(),

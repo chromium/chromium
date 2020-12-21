@@ -99,9 +99,6 @@ constexpr char kCertScopeStrUser[] = "google/chromeos/user";
 constexpr char kCertScopeStrDevice[] = "google/chromeos/device";
 constexpr char kInvalidationTopic[] = "fake_invalidation_topic_1";
 constexpr char kDataToSign[] = "fake_data_to_sign_1";
-constexpr em::HashingAlgorithm kProtoHashAlgo = em::HashingAlgorithm::SHA256;
-constexpr platform_keys::HashAlgorithm kPkHashAlgo =
-    platform_keys::HashAlgorithm::HASH_ALGORITHM_SHA256;
 constexpr char kChallenge[] = "fake_va_challenge_1";
 constexpr char kChallengeResponse[] = "fake_va_challenge_response_1";
 constexpr char kSignature[] = "fake_signature_1";
@@ -162,7 +159,7 @@ void VerifyDeleteKeyCalledOnce(CertScope cert_scope) {
         .WillOnce(RunOnceCallback<0>(register_key_result));               \
   }
 
-#define EXPECT_START_CSR_OK(START_CSR_FUNC)                           \
+#define EXPECT_START_CSR_OK(START_CSR_FUNC, HASHING_ALGO)             \
   {                                                                   \
     EXPECT_CALL(cloud_policy_client_, START_CSR_FUNC)                 \
         .Times(1)                                                     \
@@ -170,10 +167,10 @@ void VerifyDeleteKeyCalledOnce(CertScope cert_scope) {
             policy::DeviceManagementStatus::DM_STATUS_SUCCESS,        \
             /*response_error=*/base::nullopt,                         \
             /*try_again_later_ms=*/base::nullopt, kInvalidationTopic, \
-            kChallenge, kProtoHashAlgo, kDataToSign));                \
+            kChallenge, HASHING_ALGO, kDataToSign));                  \
   }
 
-#define EXPECT_START_CSR_OK_WITHOUT_VA(START_CSR_FUNC)                \
+#define EXPECT_START_CSR_OK_WITHOUT_VA(START_CSR_FUNC, HASHING_ALGO)  \
   {                                                                   \
     EXPECT_CALL(cloud_policy_client_, START_CSR_FUNC)                 \
         .Times(1)                                                     \
@@ -181,7 +178,7 @@ void VerifyDeleteKeyCalledOnce(CertScope cert_scope) {
             policy::DeviceManagementStatus::DM_STATUS_SUCCESS,        \
             /*response_error=*/base::nullopt,                         \
             /*try_again_later_ms=*/base::nullopt, kInvalidationTopic, \
-            /*va_challenge=*/"", kProtoHashAlgo, kDataToSign));       \
+            /*va_challenge=*/"", HASHING_ALGO, kDataToSign));         \
   }
 
 #define EXPECT_START_CSR_TRY_LATER(START_CSR_FUNC, DELAY_MS)       \
@@ -316,6 +313,14 @@ void VerifyDeleteKeyCalledOnce(CertScope cert_scope) {
         .Times(1)                                                             \
         .WillOnce(                                                            \
             RunOnceCallback<4>(kSignature, platform_keys::Status::kSuccess)); \
+  }
+
+#define EXPECT_SIGN_RSAPKC1_RAW_OK(SIGN_FUNC)                                 \
+  {                                                                           \
+    EXPECT_CALL(*platform_keys_service_, SIGN_FUNC)                           \
+        .Times(1)                                                             \
+        .WillOnce(                                                            \
+            RunOnceCallback<3>(kSignature, platform_keys::Status::kSuccess)); \
   }
 
 #define EXPECT_SIGN_RSAPKC1_DIGEST_FAIL(SIGN_FUNC)                            \
@@ -492,9 +497,11 @@ TEST_F(CertProvisioningWorkerTest, Success) {
                             /*callback=*/_));
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback());
 
-    EXPECT_START_CSR_OK(ClientCertProvisioningStartCsr(
-        kCertScopeStrUser, kCertProfileId, kCertProfileVersion, GetPublicKey(),
-        /*callback=*/_));
+    EXPECT_START_CSR_OK(
+        ClientCertProvisioningStartCsr(kCertScopeStrUser, kCertProfileId,
+                                       kCertProfileVersion, GetPublicKey(),
+                                       /*callback=*/_),
+        em::HashingAlgorithm::SHA256);
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback());
 
     EXPECT_CALL(*mock_invalidator, Register(kInvalidationTopic, _)).Times(1);
@@ -520,7 +527,8 @@ TEST_F(CertProvisioningWorkerTest, Success) {
 
     EXPECT_SIGN_RSAPKC1_DIGEST_OK(SignRSAPKCS1Digest(
         ::testing::Optional(platform_keys::TokenId::kUser), kDataToSign,
-        GetPublicKey(), kPkHashAlgo, /*callback=*/_));
+        GetPublicKey(), platform_keys::HashAlgorithm::HASH_ALGORITHM_SHA256,
+        /*callback=*/_));
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback());
 
     EXPECT_FINISH_CSR_OK(ClientCertProvisioningFinishCsr(
@@ -582,9 +590,11 @@ TEST_F(CertProvisioningWorkerTest, NoVaSuccess) {
         .WillOnce(RunOnceCallback<2>(GetPublicKey(),
                                      platform_keys::Status::kSuccess));
 
-    EXPECT_START_CSR_OK_WITHOUT_VA(ClientCertProvisioningStartCsr(
-        kCertScopeStrUser, kCertProfileId, kCertProfileVersion, GetPublicKey(),
-        /*callback=*/_));
+    EXPECT_START_CSR_OK_WITHOUT_VA(
+        ClientCertProvisioningStartCsr(kCertScopeStrUser, kCertProfileId,
+                                       kCertProfileVersion, GetPublicKey(),
+                                       /*callback=*/_),
+        em::HashingAlgorithm::SHA256);
 
     EXPECT_CALL(
         *key_permissions_manager_,
@@ -598,7 +608,8 @@ TEST_F(CertProvisioningWorkerTest, NoVaSuccess) {
 
     EXPECT_SIGN_RSAPKC1_DIGEST_OK(SignRSAPKCS1Digest(
         ::testing::Optional(platform_keys::TokenId::kUser), kDataToSign,
-        GetPublicKey(), kPkHashAlgo, /*callback=*/_));
+        GetPublicKey(), platform_keys::HashAlgorithm::HASH_ALGORITHM_SHA256,
+        /*callback=*/_));
 
     EXPECT_FINISH_CSR_OK(ClientCertProvisioningFinishCsr(
         kCertScopeStrUser, kCertProfileId, kCertProfileVersion, GetPublicKey(),
@@ -610,6 +621,88 @@ TEST_F(CertProvisioningWorkerTest, NoVaSuccess) {
 
     EXPECT_IMPORT_CERTIFICATE_OK(ImportCertificate(
         platform_keys::TokenId::kUser, /*certificate=*/_, /*callback=*/_));
+
+    EXPECT_CALL(callback_observer_,
+                Callback(cert_profile, CertProvisioningWorkerState::kSucceeded))
+        .Times(1);
+  }
+
+  worker.DoStep();
+}
+
+// Checks that the worker correctly forwards a request with
+// hashing_algorithm=NO_HASH to platform_keys.
+TEST_F(CertProvisioningWorkerTest, NoHashInStartCsr) {
+  CertProfile cert_profile(kCertProfileId, kCertProfileName,
+                           kCertProfileVersion,
+                           /*is_va_enabled=*/true, kCertProfileRenewalPeriod);
+
+  MockTpmChallengeKeySubtle* mock_tpm_challenge_key = PrepareTpmChallengeKey();
+  MockCertProvisioningInvalidator* mock_invalidator = nullptr;
+  CertProvisioningWorkerImpl worker(
+      CertScope::kUser, GetProfile(), &testing_pref_service_, cert_profile,
+      &cloud_policy_client_, MakeInvalidator(&mock_invalidator),
+      GetStateChangeCallback(), GetResultCallback());
+
+  {
+    testing::InSequence seq;
+
+    EXPECT_PREPARE_KEY_OK(
+        *mock_tpm_challenge_key,
+        StartPrepareKeyStep(attestation::AttestationKeyType::KEY_USER,
+                            /*will_register_key=*/true,
+                            GetKeyName(kCertProfileId),
+                            /*profile=*/_,
+                            /*callback=*/_));
+    EXPECT_CALL(state_change_callback_observer_, StateChangeCallback());
+
+    EXPECT_START_CSR_OK(
+        ClientCertProvisioningStartCsr(kCertScopeStrUser, kCertProfileId,
+                                       kCertProfileVersion, GetPublicKey(),
+                                       /*callback=*/_),
+        em::HashingAlgorithm::NO_HASH);
+    EXPECT_CALL(state_change_callback_observer_, StateChangeCallback());
+
+    EXPECT_CALL(*mock_invalidator, Register(kInvalidationTopic, _)).Times(1);
+
+    EXPECT_SIGN_CHALLENGE_OK(*mock_tpm_challenge_key,
+                             StartSignChallengeStep(kChallenge,
+                                                    /*callback=*/_));
+    EXPECT_CALL(state_change_callback_observer_, StateChangeCallback());
+
+    EXPECT_REGISTER_KEY_OK(*mock_tpm_challenge_key, StartRegisterKeyStep);
+    EXPECT_CALL(state_change_callback_observer_, StateChangeCallback());
+
+    EXPECT_CALL(
+        *key_permissions_manager_,
+        AllowKeyForUsage(/*callback=*/_, platform_keys::KeyUsage::kCorporate,
+                         GetPublicKey()));
+
+    EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(SetAttributeForKey(
+        platform_keys::TokenId::kUser, GetPublicKey(),
+        platform_keys::KeyAttributeType::kCertificateProvisioningId,
+        kCertProfileId, _));
+    EXPECT_CALL(state_change_callback_observer_, StateChangeCallback());
+
+    EXPECT_SIGN_RSAPKC1_RAW_OK(
+        SignRSAPKCS1Raw(::testing::Optional(platform_keys::TokenId::kUser),
+                        kDataToSign, GetPublicKey(), /*callback=*/_));
+    EXPECT_CALL(state_change_callback_observer_, StateChangeCallback());
+
+    EXPECT_FINISH_CSR_OK(ClientCertProvisioningFinishCsr(
+        kCertScopeStrUser, kCertProfileId, kCertProfileVersion, GetPublicKey(),
+        kChallengeResponse, kSignature, /*callback=*/_));
+    EXPECT_CALL(state_change_callback_observer_, StateChangeCallback());
+
+    EXPECT_DOWNLOAD_CERT_OK(ClientCertProvisioningDownloadCert(
+        kCertScopeStrUser, kCertProfileId, kCertProfileVersion, GetPublicKey(),
+        /*callback=*/_));
+
+    EXPECT_IMPORT_CERTIFICATE_OK(ImportCertificate(
+        platform_keys::TokenId::kUser, /*certificate=*/_, /*callback=*/_));
+    EXPECT_CALL(state_change_callback_observer_, StateChangeCallback());
+
+    EXPECT_CALL(*mock_invalidator, Unregister()).Times(1);
 
     EXPECT_CALL(callback_observer_,
                 Callback(cert_profile, CertProvisioningWorkerState::kSucceeded))
@@ -663,7 +756,8 @@ TEST_F(CertProvisioningWorkerTest, TryLaterManualRetry) {
     EXPECT_START_CSR_OK(
         ClientCertProvisioningStartCsr(kCertScopeStrDevice, kCertProfileId,
                                        kCertProfileVersion, GetPublicKey(),
-                                       /*callback=*/_));
+                                       /*callback=*/_),
+        em::HashingAlgorithm::SHA256);
 
     EXPECT_SIGN_CHALLENGE_OK(*mock_tpm_challenge_key,
                              StartSignChallengeStep(kChallenge,
@@ -777,9 +871,11 @@ TEST_F(CertProvisioningWorkerTest, TryLaterWait) {
   {
     testing::InSequence seq;
 
-    EXPECT_START_CSR_OK(ClientCertProvisioningStartCsr(
-        kCertScopeStrUser, kCertProfileId, kCertProfileVersion, GetPublicKey(),
-        /*callback=*/_));
+    EXPECT_START_CSR_OK(
+        ClientCertProvisioningStartCsr(kCertScopeStrUser, kCertProfileId,
+                                       kCertProfileVersion, GetPublicKey(),
+                                       /*callback=*/_),
+        em::HashingAlgorithm::SHA256);
 
     EXPECT_SIGN_CHALLENGE_OK(*mock_tpm_challenge_key,
                              StartSignChallengeStep(kChallenge,
@@ -799,7 +895,8 @@ TEST_F(CertProvisioningWorkerTest, TryLaterWait) {
 
     EXPECT_SIGN_RSAPKC1_DIGEST_OK(SignRSAPKCS1Digest(
         ::testing::Optional(platform_keys::TokenId::kUser), kDataToSign,
-        GetPublicKey(), kPkHashAlgo, /*callback=*/_));
+        GetPublicKey(), platform_keys::HashAlgorithm::HASH_ALGORITHM_SHA256,
+        /*callback=*/_));
 
     EXPECT_FINISH_CSR_TRY_LATER(
         ClientCertProvisioningFinishCsr(
@@ -898,9 +995,11 @@ TEST_F(CertProvisioningWorkerTest, InvalidationRespected) {
   {
     testing::InSequence seq;
 
-    EXPECT_START_CSR_OK(ClientCertProvisioningStartCsr(
-        kCertScopeStrUser, kCertProfileId, kCertProfileVersion, GetPublicKey(),
-        /*callback=*/_));
+    EXPECT_START_CSR_OK(
+        ClientCertProvisioningStartCsr(kCertScopeStrUser, kCertProfileId,
+                                       kCertProfileVersion, GetPublicKey(),
+                                       /*callback=*/_),
+        em::HashingAlgorithm::SHA256);
     EXPECT_CALL(*mock_invalidator, Register(kInvalidationTopic, _))
         .WillOnce(SaveArg<1>(&on_invalidation_callback));
 
@@ -922,7 +1021,8 @@ TEST_F(CertProvisioningWorkerTest, InvalidationRespected) {
 
     EXPECT_SIGN_RSAPKC1_DIGEST_OK(SignRSAPKCS1Digest(
         ::testing::Optional(platform_keys::TokenId::kUser), kDataToSign,
-        GetPublicKey(), kPkHashAlgo, /*callback=*/_));
+        GetPublicKey(), platform_keys::HashAlgorithm::HASH_ALGORITHM_SHA256,
+        /*callback=*/_));
 
     EXPECT_FINISH_CSR_TRY_LATER(
         ClientCertProvisioningFinishCsr(
@@ -1198,9 +1298,11 @@ TEST_F(CertProvisioningWorkerTest, RemoveRegisteredKey) {
                             /*profile=*/_,
                             /*callback=*/_));
 
-    EXPECT_START_CSR_OK(ClientCertProvisioningStartCsr(
-        kCertScopeStrUser, kCertProfileId, kCertProfileVersion, GetPublicKey(),
-        /*callback=*/_));
+    EXPECT_START_CSR_OK(
+        ClientCertProvisioningStartCsr(kCertScopeStrUser, kCertProfileId,
+                                       kCertProfileVersion, GetPublicKey(),
+                                       /*callback=*/_),
+        em::HashingAlgorithm::SHA256);
 
     EXPECT_CALL(*mock_invalidator, Register(kInvalidationTopic, _)).Times(1);
 
@@ -1357,9 +1459,11 @@ TEST_F(CertProvisioningWorkerTest, SerializationSuccess) {
   {
     testing::InSequence seq;
 
-    EXPECT_START_CSR_OK(ClientCertProvisioningStartCsr(
-        kCertScopeStrUser, kCertProfileId, kCertProfileVersion, GetPublicKey(),
-        /*callback=*/_));
+    EXPECT_START_CSR_OK(
+        ClientCertProvisioningStartCsr(kCertScopeStrUser, kCertProfileId,
+                                       kCertProfileVersion, GetPublicKey(),
+                                       /*callback=*/_),
+        em::HashingAlgorithm::SHA256);
 
     pref_val = ParseJson("{}");
     EXPECT_CALL(pref_observer, OnPrefValueUpdated(IsJson(pref_val))).Times(1);
@@ -1384,7 +1488,8 @@ TEST_F(CertProvisioningWorkerTest, SerializationSuccess) {
 
     EXPECT_SIGN_RSAPKC1_DIGEST_OK(SignRSAPKCS1Digest(
         ::testing::Optional(platform_keys::TokenId::kUser), kDataToSign,
-        GetPublicKey(), kPkHashAlgo, /*callback=*/_));
+        GetPublicKey(), platform_keys::HashAlgorithm::HASH_ALGORITHM_SHA256,
+        /*callback=*/_));
 
     EXPECT_FINISH_CSR_OK(ClientCertProvisioningFinishCsr(
         kCertScopeStrUser, kCertProfileId, kCertProfileVersion, GetPublicKey(),
