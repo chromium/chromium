@@ -86,8 +86,8 @@ using TestEncryptionKeyAttached = MockFunction<void(SignedEncryptionInfo)>;
 
 // Helper function for retrieving and processing the SequencingInformation from
 // a request.
-void RetrieveFinalSequencingInforamation(const base::Value& request,
-                                         base::Value& sequencing_info) {
+void RetrieveFinalSequencingInformation(const base::Value& request,
+                                        base::Value& sequencing_info) {
   ASSERT_TRUE(request.is_dict());
 
   // Retrieve and process sequencing information
@@ -98,10 +98,22 @@ void RetrieveFinalSequencingInforamation(const base::Value& request,
   const auto* seq_info = encrypted_record_list->GetList().rbegin()->FindDictKey(
       "sequencingInformation");
   ASSERT_TRUE(seq_info != nullptr);
-  ASSERT_TRUE(seq_info->FindStringKey("sequencingId"));
-  ASSERT_TRUE(seq_info->FindStringKey("generationId"));
+  ASSERT_TRUE(!seq_info->FindStringKey("sequencingId")->empty());
+  ASSERT_TRUE(!seq_info->FindStringKey("generationId")->empty());
   ASSERT_TRUE(seq_info->FindIntKey("priority"));
+
   sequencing_info.MergeDictionary(seq_info);
+  // Set half of sequencing information to return a string instead of an int for
+  // priority.
+  int64_t sequencing_id;
+  ASSERT_TRUE(base::StringToInt64(
+      *sequencing_info.FindStringKey("sequencingId"), &sequencing_id));
+  if (sequencing_id % 2) {
+    const auto int_result = sequencing_info.FindIntKey("priority");
+    ASSERT_TRUE(int_result.has_value());
+    sequencing_info.RemoveKey("priority");
+    sequencing_info.SetStringKey("priority", Priority_Name(int_result.value()));
+  }
 }
 
 base::Optional<base::Value> BuildEncryptionSettingsFromRequest(
@@ -132,7 +144,7 @@ base::Optional<base::Value> BuildEncryptionSettingsFromRequest(
 void SucceedResponseFromRequest(const base::Value& request,
                                 base::Value& response) {
   base::Value seq_info{base::Value::Type::DICTIONARY};
-  RetrieveFinalSequencingInforamation(request, seq_info);
+  RetrieveFinalSequencingInformation(request, seq_info);
   response.SetPath("lastSucceedUploadedRecord", std::move(seq_info));
 
   // If attach_encryption_settings it true, process that.
@@ -149,21 +161,17 @@ void SucceedResponseFromRequest(const base::Value& request,
 void FailedResponseFromRequest(const base::Value& request,
                                base::Value& response) {
   base::Value seq_info{base::Value::Type::DICTIONARY};
-  RetrieveFinalSequencingInforamation(request, seq_info);
+  RetrieveFinalSequencingInformation(request, seq_info);
 
-  // |seq_info| has been built by RetrieveFinalSequencingInforamation and is
-  // guaranteed to have these keys.
+  response.SetPath("lastSucceedUploadedRecord", seq_info.Clone());
+  // The lastSucceedUploadedRecord should be the record before the one indicated
+  // in seq_info. |seq_info| has been built by
+  // RetrieveFinalSequencingInforamation and is guaranteed to have this key.
   int64_t sequencing_id;
   ASSERT_TRUE(base::StringToInt64(*seq_info.FindStringKey("sequencingId"),
                                   &sequencing_id));
-  // The lastSucceedUploadedRecord should be the record before the one
-  // indicated in seq_info.
   response.SetStringPath("lastSucceedUploadedRecord.sequencingId",
                          base::NumberToString(sequencing_id - 1));
-  response.SetStringPath("lastSucceedUploadedRecord.generationId",
-                         *seq_info.FindStringKey("generationId"));
-  response.SetIntPath("lastSucceedUploadedRecord.priority",
-                      seq_info.FindIntKey("priority").value());
 
   // The firstFailedUploadedRecord.failedUploadedRecord should be the one
   // indicated in seq_info.

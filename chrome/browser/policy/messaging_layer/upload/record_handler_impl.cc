@@ -33,6 +33,27 @@
 #include "content/public/browser/browser_thread.h"
 
 namespace reporting {
+namespace {
+
+// Priority could come back as an int or as a std::string, this function handles
+// both situations.
+base::Optional<Priority> GetPriorityProtoFromSequencingInformationValue(
+    const base::Value& sequencing_information) {
+  const base::Optional<int> int_priority_result =
+      sequencing_information.FindIntKey("priority");
+  if (int_priority_result.has_value()) {
+    return Priority(int_priority_result.value());
+  }
+
+  const std::string* str_priority_result =
+      sequencing_information.FindStringKey("priority");
+  Priority priority;
+  if (!Priority_Parse(*str_priority_result, &priority)) {
+    return base::nullopt;
+  }
+  return priority;
+}
+}  // namespace
 
 // ReportUploader handles enqueuing events on the |report_queue_|,
 // and uploading those events with the |client_|.
@@ -344,14 +365,15 @@ RecordHandlerImpl::ReportUploader::SequencingInformationValueToProto(
     const base::Value& value) {
   const std::string* sequencing_id = value.FindStringKey("sequencingId");
   const std::string* generation_id = value.FindStringKey("generationId");
-  const auto priority = value.FindIntKey("priority");
+  const auto priority_result =
+      GetPriorityProtoFromSequencingInformationValue(value);
 
   // If any of the previous values don't exist, or are malformed, return error.
   int64_t seq_id;
   int64_t gen_id;
   if (!sequencing_id || sequencing_id->empty() || !generation_id ||
-      generation_id->empty() || !priority.has_value() ||
-      !Priority_IsValid(priority.value()) ||
+      generation_id->empty() || !priority_result.has_value() ||
+      !Priority_IsValid(priority_result.value()) ||
       !base::StringToInt64(*sequencing_id, &seq_id) ||
       !base::StringToInt64(*generation_id, &gen_id)) {
     return Status(error::INVALID_ARGUMENT,
@@ -363,7 +385,7 @@ RecordHandlerImpl::ReportUploader::SequencingInformationValueToProto(
   SequencingInformation proto;
   proto.set_sequencing_id(seq_id);
   proto.set_generation_id(gen_id);
-  proto.set_priority(Priority(priority.value()));
+  proto.set_priority(Priority(priority_result.value()));
   return proto;
 }
 
