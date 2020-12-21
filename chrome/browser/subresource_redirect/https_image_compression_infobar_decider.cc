@@ -31,9 +31,9 @@ constexpr char kHasSeenInfoBar[] =
 
 // The time used to compare and identify recent LiteMode users. Users who
 // enabled LiteMode before this time are treated as non-recent and the one-time
-// https image compression InfoBar is shown for them. Set approximate as M85
-// release date, which is the target for https image compression feature.
-constexpr char kRecentLiteModeUserEnableTime[] = "2020-08-25T00:00:01Z";
+// https image compression InfoBar is shown for them. Set approximate as M88
+// release date, which is the target for https image compression V2 feature.
+constexpr char kRecentLiteModeUserEnableTime[] = "2021-01-19T00:00:01Z";
 
 }  // namespace
 

@@ -130,7 +130,7 @@ TEST_F(HttpsImageCompressionInfoBarDeciderPrefTest, TestDRPEnabledThenNotify) {
 }
 
 TEST_F(HttpsImageCompressionInfoBarDeciderPrefTest, TestRecentLiteModeUser) {
-  SetLiteModeLastEnableDate("2020-12-01T00:00:01Z");
+  SetLiteModeLastEnableDate("2021-12-01T00:00:01Z");
   HttpsImageCompressionInfoBarDecider* decider = GetDeciderWithDRPEnabled(true);
   EXPECT_FALSE(decider->NeedToShowInfoBar());
 
@@ -143,7 +143,7 @@ TEST_F(HttpsImageCompressionInfoBarDeciderPrefTest, TestRecentLiteModeUser) {
 
 TEST_F(HttpsImageCompressionInfoBarDeciderPrefTest, TestNonRecentLiteModeUser) {
   HttpsImageCompressionInfoBarDecider* decider = GetDeciderWithDRPEnabled(true);
-  SetLiteModeLastEnableDate("2020-01-01T00:00:01Z");
+  SetLiteModeLastEnableDate("2021-01-01T00:00:01Z");
   EXPECT_TRUE(decider->NeedToShowInfoBar());
   decider->SetUserHasSeenInfoBar();
   EXPECT_FALSE(decider->NeedToShowInfoBar());
