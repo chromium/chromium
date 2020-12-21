@@ -12,6 +12,8 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/sequenced_task_runner.h"
 #include "base/stl_util.h"
 #include "base/util/type_safety/id_type.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -99,9 +101,14 @@ class RemoteSetImpl {
     return id;
   }
 
-  // Same as above but for the equivalent pending remote type, for convenience.
-  RemoteSetElementId Add(PendingRemoteType<Interface> remote) {
-    return Add(RemoteType<Interface>(std::move(remote)));
+  // Same as above but for the equivalent pending remote type. If |task_runner|
+  // is null, the value of |base::SequencedTaskRunnerHandle::Get()| at the time
+  // of the |Add()| call will be used to run scheduled tasks for the remote.
+  RemoteSetElementId Add(
+      PendingRemoteType<Interface> remote,
+      scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr) {
+    return Add(
+        RemoteType<Interface>(std::move(remote), std::move(task_runner)));
   }
 
   // Removes a remote from the set given |id|, if present.
