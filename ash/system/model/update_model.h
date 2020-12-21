@@ -75,7 +75,9 @@ class UpdateModel {
   bool rollback_ = false;
   UpdateType update_type_ = UpdateType::kSystem;
   NotificationStyle notification_style_ = NotificationStyle::kDefault;
+  // Custom title for an OS update, usually due to RelaunchNotification policy.
   base::string16 notification_title_;
+  // Custom body for an OS update, usually due to RelaunchNotification policy.
   base::string16 notification_body_;
   bool update_over_cellular_available_ = false;
 

@@ -31,6 +31,8 @@ namespace {
 
 const char kNotifierId[] = "ash.update";
 
+const char kNotificationId[] = "chrome://update";
+
 bool CheckForSlowBoot(const base::FilePath& slow_boot_file_path) {
   if (base::PathExists(slow_boot_file_path)) {
     return true;
@@ -39,9 +41,6 @@ bool CheckForSlowBoot(const base::FilePath& slow_boot_file_path) {
 }
 
 }  // namespace
-
-// static
-const char UpdateNotificationController::kNotificationId[] = "chrome://update";
 
 UpdateNotificationController::UpdateNotificationController()
     : model_(Shell::Get()->system_tray_model()->update_model()),
@@ -123,6 +122,9 @@ bool UpdateNotificationController::ShouldShowUpdate() const {
 }
 
 base::string16 UpdateNotificationController::GetNotificationMessage() const {
+  if (model_->update_type() == UpdateType::kLacros)
+    return l10n_util::GetStringUTF16(IDS_UPDATE_NOTIFICATION_MESSAGE_LACROS);
+
   base::string16 system_app_name =
       l10n_util::GetStringUTF16(IDS_ASH_MESSAGE_CENTER_SYSTEM_APP_NAME);
   if (model_->rollback()) {
@@ -151,6 +153,9 @@ base::string16 UpdateNotificationController::GetNotificationMessage() const {
 }
 
 base::string16 UpdateNotificationController::GetNotificationTitle() const {
+  if (model_->update_type() == UpdateType::kLacros)
+    return l10n_util::GetStringUTF16(IDS_UPDATE_NOTIFICATION_TITLE_LACROS);
+
   const base::string16 notification_title = model_->notification_title();
   if (!notification_title.empty())
     return notification_title;

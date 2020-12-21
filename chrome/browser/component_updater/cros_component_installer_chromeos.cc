@@ -48,6 +48,8 @@ const ComponentConfig kConfigs[] = {
      "5714811c04f0a63aac96b39096faa759ace4c04e9b68291e7c9716128f5a2722"},
     {"demo-mode-resources", "1.0",
      "93c093ebac788581389015e9c59c5af111d2fa5174d206eb795042e6376cbd10"},
+    // NOTE: If you change the lacros component names, you must also update
+    // chrome/browser/chromeos/crosapi/browser_loader.cc.
     {"lacros-fishfood", "",
      "7a85ffb4b316a3b89135a3f43660ef3049950a61a2f8df4237e1ec213852b848"},
     {"lacros-dogfood-dev", "",

@@ -48,6 +48,8 @@ namespace crosapi {
 namespace browser_util {
 namespace {
 
+bool g_lacros_enabled_for_test = false;
+
 // Some account types require features that aren't yet supported by lacros.
 // See https://crbug.com/1080693
 bool IsUserTypeAllowed(const User* user) {
@@ -135,6 +137,11 @@ bool IsLacrosEnabled() {
 }
 
 bool IsLacrosEnabled(Channel channel) {
+  // Allows tests to avoid enabling the flag, constructing a fake user manager,
+  // creating g_browser_process->local_state(), etc.
+  if (g_lacros_enabled_for_test)
+    return true;
+
   if (!base::FeatureList::IsEnabled(chromeos::features::kLacrosSupport)) {
     LOG(WARNING) << "Lacros-chrome is not supported";
     return false;
@@ -173,6 +180,10 @@ bool IsLacrosEnabled(Channel channel) {
     case Channel::STABLE:
       return base::FeatureList::IsEnabled(kLacrosAllowOnStableChannel);
   }
+}
+
+void SetLacrosEnabledForTest(bool force_enabled) {
+  g_lacros_enabled_for_test = force_enabled;
 }
 
 bool IsLacrosWindow(const aura::Window* window) {

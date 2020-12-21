@@ -8,15 +8,19 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/crosapi/browser_util.h"
+#include "chrome/browser/ui/ash/system_tray_client.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/cryptohome/system_salt_getter.h"
+#include "components/component_updater/component_updater_service.h"
 
 namespace crosapi {
 
@@ -31,22 +35,52 @@ namespace {
 const base::Feature kLacrosPreferDogfoodOverFishfood{
     "LacrosPreferDogfoodOverFishfood", base::FEATURE_DISABLED_BY_DEFAULT};
 
-std::string GetLacrosComponentName() {
+// Emergency kill switch in case the notification code doesn't work properly.
+const base::Feature kLacrosShowUpdateNotifications{
+    "LacrosShowUpdateNotifications", base::FEATURE_ENABLED_BY_DEFAULT};
+
+struct ComponentInfo {
+  // The client-side component name.
+  const char* const name;
+  // The CRX "extension" ID for component updater.
+  // Must match the Omaha console.
+  const char* const crx_id;
+};
+
+// NOTE: If you change the lacros component names, you must also update
+// chrome/browser/component_updater/cros_component_installer_chromeos.cc
+constexpr ComponentInfo kLacrosFishfoodInfo = {
+    "lacros-fishfood", "hkifppleldbgkdlijbdfkdpedggaopda"};
+constexpr ComponentInfo kLacrosDogfoodDevInfo = {
+    "lacros-dogfood-dev", "ldobopbhiamakmncndpkeelenhdmgfhk"};
+constexpr ComponentInfo kLacrosDogfoodStableInfo = {
+    "lacros-dogfood-stable", "hnfmbeciphpghlfgpjfbcdifbknombnk"};
+
+ComponentInfo GetLacrosComponentInfo() {
   if (!base::FeatureList::IsEnabled(kLacrosPreferDogfoodOverFishfood))
-    return "lacros-fishfood";
+    return kLacrosFishfoodInfo;
 
   const base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
   if (cmdline->HasSwitch(browser_util::kLacrosStabilitySwitch)) {
     std::string value =
         cmdline->GetSwitchValueASCII(browser_util::kLacrosStabilitySwitch);
     if (value == browser_util::kLacrosStabilityLessStable) {
-      return "lacros-dogfood-dev";
+      return kLacrosDogfoodDevInfo;
     } else if (value == browser_util::kLacrosStabilityMoreStable) {
-      return "lacros-dogfood-stable";
+      return kLacrosDogfoodStableInfo;
     }
   }
   // Use more frequent updates by default.
-  return "lacros-dogfood-dev";
+  return kLacrosDogfoodDevInfo;
+}
+
+std::string GetLacrosComponentName() {
+  return GetLacrosComponentInfo().name;
+}
+
+// Returns the CRX "extension" ID for a lacros component.
+std::string GetLacrosComponentCrxId() {
+  return GetLacrosComponentInfo().crx_id;
 }
 
 // Returns whether lacros-fishfood component is already installed.
@@ -67,15 +101,46 @@ bool CheckInstalledAndMaybeRemoveUserDirectory(
   return true;
 }
 
+// Production delegate implementation.
+class DelegateImpl : public BrowserLoader::Delegate {
+ public:
+  DelegateImpl() = default;
+  DelegateImpl(const DelegateImpl&) = delete;
+  DelegateImpl& operator=(const DelegateImpl&) = delete;
+  ~DelegateImpl() override = default;
+
+  // BrowserLoader::Delegate:
+  void SetLacrosUpdateAvailable() override {
+    if (base::FeatureList::IsEnabled(kLacrosShowUpdateNotifications)) {
+      // Show the update notification in ash.
+      SystemTrayClient::Get()->SetLacrosUpdateAvailable();
+    }
+  }
+};
+
 }  // namespace
 
 BrowserLoader::BrowserLoader(
     scoped_refptr<component_updater::CrOSComponentManager> manager)
-    : component_manager_(manager) {
+    : BrowserLoader(std::make_unique<DelegateImpl>(), manager) {}
+
+BrowserLoader::BrowserLoader(
+    std::unique_ptr<Delegate> delegate,
+    scoped_refptr<component_updater::CrOSComponentManager> manager)
+    : delegate_(std::move(delegate)),
+      component_manager_(manager),
+      component_update_service_(g_browser_process->component_updater()) {
+  DCHECK(delegate_);
   DCHECK(component_manager_);
 }
 
-BrowserLoader::~BrowserLoader() = default;
+BrowserLoader::~BrowserLoader() {
+  // May be null in tests.
+  if (component_update_service_) {
+    // Removing an observer is a no-op if the observer wasn't added.
+    component_update_service_->RemoveObserver(this);
+  }
+}
 
 void BrowserLoader::Load(LoadCompletionCallback callback) {
   DCHECK(browser_util::IsLacrosEnabled());
@@ -113,19 +178,35 @@ void BrowserLoader::Unload() {
                      weak_factory_.GetWeakPtr()));
 }
 
+void BrowserLoader::OnEvent(Events event, const std::string& id) {
+  // Check for the Lacros component being updated.
+  if (event == Events::COMPONENT_UPDATED && id == GetLacrosComponentCrxId()) {
+    delegate_->SetLacrosUpdateAvailable();
+  }
+}
+
 void BrowserLoader::OnLoadComplete(
     LoadCompletionCallback callback,
     component_updater::CrOSComponentManager::Error error,
     const base::FilePath& path) {
-  bool success =
-      (error == component_updater::CrOSComponentManager::Error::NONE);
-  if (success) {
-    LOG(WARNING) << "Loaded lacros image at " << path.MaybeAsASCII();
-  } else {
+  // Bail out on error.
+  if (error != component_updater::CrOSComponentManager::Error::NONE) {
     LOG(WARNING) << "Error loading lacros component image: "
                  << static_cast<int>(error);
+    std::move(callback).Run(base::FilePath());
+    return;
   }
-  std::move(callback).Run(success ? path : base::FilePath());
+  // Log the path on success.
+  LOG(WARNING) << "Loaded lacros image at " << path.MaybeAsASCII();
+  std::move(callback).Run(path);
+
+  // May be null in tests.
+  if (component_update_service_) {
+    // Now that we have the initial component download, start observing for
+    // future updates. We don't do this in the constructor because we don't want
+    // to show the "update available" notification for the initial load.
+    component_update_service_->AddObserver(this);
+  }
 }
 
 void BrowserLoader::OnCheckInstalled(bool was_installed) {

@@ -75,8 +75,14 @@ void ShowSettingsSubPageForActiveUser(const std::string& sub_page) {
       ProfileManager::GetActiveUserProfile(), sub_page);
 }
 
-// Returns the severity of a pending Chrome / Chrome OS update.
-ash::UpdateSeverity GetUpdateSeverity(UpgradeDetector* detector) {
+// Returns the severity of a pending update.
+ash::UpdateSeverity GetUpdateSeverity(ash::UpdateType update_type,
+                                      UpgradeDetector* detector) {
+  // Lacros is always "low", which is the same severity OS updates start with.
+  if (update_type == ash::UpdateType::kLacros)
+    return ash::UpdateSeverity::kLow;
+
+  // OS updates use UpgradeDetector's severity mapping.
   switch (detector->upgrade_notification_stage()) {
     case UpgradeDetector::UPGRADE_ANNOYANCE_NONE:
       return ash::UpdateSeverity::kNone;
@@ -89,11 +95,8 @@ ash::UpdateSeverity GetUpdateSeverity(UpgradeDetector* detector) {
     case UpgradeDetector::UPGRADE_ANNOYANCE_HIGH:
       return ash::UpdateSeverity::kHigh;
     case UpgradeDetector::UPGRADE_ANNOYANCE_CRITICAL:
-      break;
+      return ash::UpdateSeverity::kCritical;
   }
-  DCHECK_EQ(detector->upgrade_notification_stage(),
-            UpgradeDetector::UPGRADE_ANNOYANCE_CRITICAL);
-  return ash::UpdateSeverity::kCritical;
 }
 
 const chromeos::NetworkState* GetNetworkState(const std::string& network_id) {
@@ -124,7 +127,7 @@ SystemTrayClient::SystemTrayClient()
 
   // If an upgrade is available at startup then tell ash about it.
   if (UpgradeDetector::GetInstance()->notify_upgrade())
-    HandleUpdateAvailable();
+    HandleUpdateAvailable(ash::UpdateType::kSystem);
 
   // If the device is enterprise managed then send ash the enterprise domain.
   policy::BrowserPolicyConnectorChromeOS* policy_connector =
@@ -171,7 +174,11 @@ void SystemTrayClient::SetUpdateNotificationState(
   update_notification_style_ = style;
   update_notification_title_ = notification_title;
   update_notification_body_ = notification_body;
-  HandleUpdateAvailable();
+  HandleUpdateAvailable(ash::UpdateType::kSystem);
+}
+
+void SystemTrayClient::SetLacrosUpdateAvailable() {
+  HandleUpdateAvailable(ash::UpdateType::kLacros);
 }
 
 void SystemTrayClient::SetPrimaryTrayEnabled(bool enabled) {
@@ -460,20 +467,15 @@ void SystemTrayClient::SetLocaleAndExit(const std::string& locale_iso_code) {
   chrome::AttemptUserExit();
 }
 
-void SystemTrayClient::HandleUpdateAvailable() {
-  // Show an update icon for Chrome OS updates.
+void SystemTrayClient::HandleUpdateAvailable(ash::UpdateType update_type) {
   UpgradeDetector* detector = UpgradeDetector::GetInstance();
-  bool update_available = detector->notify_upgrade();
-  DCHECK(update_available);
-  if (!update_available)
+  if (update_type == ash::UpdateType::kSystem && !detector->notify_upgrade()) {
+    LOG(ERROR) << "Tried to show update notification when no update available";
     return;
+  }
 
-  // Get the Chrome update severity.
-  ash::UpdateSeverity severity = GetUpdateSeverity(detector);
-
-  // TODO(https://crbug.com/1154427): Add Lacros update type.
-  ash::UpdateType update_type = ash::UpdateType::kSystem;
-
+  // Show the system tray icon.
+  ash::UpdateSeverity severity = GetUpdateSeverity(update_type, detector);
   system_tray_->ShowUpdateIcon(severity, detector->is_factory_reset_required(),
                                detector->is_rollback(), update_type);
 
@@ -506,7 +508,7 @@ void SystemTrayClient::OnUpdateOverCellularOneTimePermissionGranted() {
 }
 
 void SystemTrayClient::OnUpgradeRecommended() {
-  HandleUpdateAvailable();
+  HandleUpdateAvailable(ash::UpdateType::kSystem);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

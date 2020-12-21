@@ -60,6 +60,9 @@ bool IsLacrosEnabled();
 // As above, but takes a channel. Exposed for testing.
 bool IsLacrosEnabled(version_info::Channel channel);
 
+// Forces IsLacrosEnabled() to return true for testing.
+void SetLacrosEnabledForTest(bool force_enabled);
+
 // Returns true if |window| is an exo ShellSurface window representing a Lacros
 // browser.
 bool IsLacrosWindow(const aura::Window* window);

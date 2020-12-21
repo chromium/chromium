@@ -10,20 +10,34 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/component_updater/cros_component_manager.h"
+#include "components/component_updater/component_updater_service.h"
 
 namespace crosapi {
 
-// Manages download of the lacros-chrome binary. This class is a part of
-// ash-chrome.
-class BrowserLoader {
+// Manages download of the lacros-chrome binary. After the initial component is
+// downloaded and mounted, observes the component updater for future updates.
+// If it detects a new update, triggers a user-visible notification.
+// This class is a part of ash-chrome.
+class BrowserLoader
+    : public component_updater::ComponentUpdateService::Observer {
  public:
+  // Delete for testing.
+  class Delegate {
+   public:
+    virtual void SetLacrosUpdateAvailable() = 0;
+    virtual ~Delegate() = default;
+  };
+  // Contructor for production.
   explicit BrowserLoader(
       scoped_refptr<component_updater::CrOSComponentManager> manager);
+  // Constructor for testing.
+  BrowserLoader(std::unique_ptr<Delegate> delegate,
+                scoped_refptr<component_updater::CrOSComponentManager> manager);
 
   BrowserLoader(const BrowserLoader&) = delete;
   BrowserLoader& operator=(const BrowserLoader&) = delete;
 
-  ~BrowserLoader();
+  ~BrowserLoader() override;
 
   // Starts to load lacros-chrome binary.
   // |callback| is called on completion with the path to the lacros-chrome on
@@ -35,6 +49,9 @@ class BrowserLoader {
   // Starts to unload lacros-chrome binary.
   // Note that this triggers to remove the user directory for lacros-chrome.
   void Unload();
+
+  // component_updater::ComponentUpdateService::Observer:
+  void OnEvent(Events event, const std::string& id) override;
 
  private:
   // Called on the completion of loading.
@@ -49,8 +66,13 @@ class BrowserLoader {
   // Unloads the component. Called after system salt is available.
   void UnloadAfterCleanUp(const std::string& ignored_salt);
 
-  // May be null in tests.
+  // Allows stubbing out some methods for testing.
+  std::unique_ptr<Delegate> delegate_;
+
   scoped_refptr<component_updater::CrOSComponentManager> component_manager_;
+
+  // May be null in tests.
+  component_updater::ComponentUpdateService* const component_update_service_;
 
   base::WeakPtrFactory<BrowserLoader> weak_factory_{this};
 };

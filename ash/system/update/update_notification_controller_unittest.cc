@@ -13,9 +13,11 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "ui/message_center/message_center.h"
+#include "ui/message_center/message_center_observer.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #define SYSTEM_APP_NAME "Chrome OS"
@@ -24,6 +26,33 @@
 #endif
 
 namespace ash {
+namespace {
+
+const char kNotificationId[] = "chrome://update";
+
+// Waits for the notification to be added. Needed because the controller posts a
+// task to check for slow boot request before showing the notification.
+class AddNotificationWaiter : public message_center::MessageCenterObserver {
+ public:
+  AddNotificationWaiter() {
+    message_center::MessageCenter::Get()->AddObserver(this);
+  }
+  ~AddNotificationWaiter() override {
+    message_center::MessageCenter::Get()->RemoveObserver(this);
+  }
+
+  void Wait() { run_loop_.Run(); }
+
+  // message_center::MessageCenterObserver:
+  void OnNotificationAdded(const std::string& notification_id) override {
+    if (notification_id == kNotificationId)
+      run_loop_.Quit();
+  }
+
+  base::RunLoop run_loop_;
+};
+
+}  // namespace
 
 class UpdateNotificationControllerTest : public AshTestBase {
  public:
@@ -33,47 +62,39 @@ class UpdateNotificationControllerTest : public AshTestBase {
  protected:
   bool HasNotification() {
     return message_center::MessageCenter::Get()->FindVisibleNotificationById(
-        UpdateNotificationController::kNotificationId);
+        kNotificationId);
   }
 
   std::string GetNotificationTitle() {
-    return base::UTF16ToUTF8(
-        message_center::MessageCenter::Get()
-            ->FindVisibleNotificationById(
-                UpdateNotificationController::kNotificationId)
-            ->title());
+    return base::UTF16ToUTF8(message_center::MessageCenter::Get()
+                                 ->FindVisibleNotificationById(kNotificationId)
+                                 ->title());
   }
 
   std::string GetNotificationMessage() {
-    return base::UTF16ToUTF8(
-        message_center::MessageCenter::Get()
-            ->FindVisibleNotificationById(
-                UpdateNotificationController::kNotificationId)
-            ->message());
+    return base::UTF16ToUTF8(message_center::MessageCenter::Get()
+                                 ->FindVisibleNotificationById(kNotificationId)
+                                 ->message());
   }
 
   std::string GetNotificationButton(int index) {
-    return base::UTF16ToUTF8(
-        message_center::MessageCenter::Get()
-            ->FindVisibleNotificationById(
-                UpdateNotificationController::kNotificationId)
-            ->buttons()
-            .at(index)
-            .title);
+    return base::UTF16ToUTF8(message_center::MessageCenter::Get()
+                                 ->FindVisibleNotificationById(kNotificationId)
+                                 ->buttons()
+                                 .at(index)
+                                 .title);
   }
 
   int GetNotificationButtonCount() {
     return message_center::MessageCenter::Get()
-        ->FindVisibleNotificationById(
-            UpdateNotificationController::kNotificationId)
+        ->FindVisibleNotificationById(kNotificationId)
         ->buttons()
         .size();
   }
 
   int GetNotificationPriority() {
     return message_center::MessageCenter::Get()
-        ->FindVisibleNotificationById(
-            UpdateNotificationController::kNotificationId)
+        ->FindVisibleNotificationById(kNotificationId)
         ->priority();
   }
 
@@ -83,10 +104,6 @@ class UpdateNotificationControllerTest : public AshTestBase {
     Shell::Get()
         ->system_notification_controller()
         ->update_->slow_boot_file_path_ = file_path;
-  }
-
-  const char* GetUpdateNotificationId() {
-    return UpdateNotificationController::kNotificationId;
   }
 
   ShutdownConfirmationDialog* GetSlowBootConfirmationDialog() {
@@ -158,7 +175,7 @@ TEST_F(UpdateNotificationControllerTest, VisibilityAfterUpdateWithSlowReboot) {
 
   // Trigger Click on "Restart to Update" button in Notification.
   message_center::MessageCenter::Get()->ClickOnNotificationButton(
-      GetUpdateNotificationId(), 0);
+      kNotificationId, 0);
 
   // Ensure Slow Boot Dialog is open and notification is removed.
   ASSERT_TRUE(GetSlowBootConfirmationDialog());
@@ -348,6 +365,25 @@ TEST_F(UpdateNotificationControllerTest, SetUpdateNotificationStateTest) {
   EXPECT_EQ("Restart to update", GetNotificationButton(0));
   EXPECT_NE(message_center::NotificationPriority::SYSTEM_PRIORITY,
             GetNotificationPriority());
+}
+
+TEST_F(UpdateNotificationControllerTest, VisibilityAfterLacrosUpdate) {
+  // The system starts with no update pending, so the notification isn't
+  // visible.
+  EXPECT_FALSE(HasNotification());
+
+  // Simulate an update.
+  AddNotificationWaiter waiter;
+  Shell::Get()->system_tray_model()->ShowUpdateIcon(UpdateSeverity::kLow, false,
+                                                    false, UpdateType::kLacros);
+  waiter.Wait();
+
+  // The notification is now visible.
+  ASSERT_TRUE(HasNotification());
+  EXPECT_EQ("Lacros update available", GetNotificationTitle());
+  EXPECT_EQ("Device restart is required to apply the update.",
+            GetNotificationMessage());
+  EXPECT_EQ("Restart to update", GetNotificationButton(0));
 }
 
 }  // namespace ash

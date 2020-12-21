@@ -39,8 +39,6 @@ class ASH_EXPORT UpdateNotificationController : public UpdateObserver {
   void GenerateUpdateNotification(
       base::Optional<bool> slow_boot_file_path_exists);
 
-  static const char kNotificationId[];
-
   UpdateModel* const model_;
 
   base::FilePath slow_boot_file_path_;
