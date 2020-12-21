@@ -17,7 +17,6 @@
 #include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
-#include "pdf/paint_manager.h"
 #include "pdf/pdf_view_plugin_base.h"
 #include "pdf/preview_mode_client.h"
 #include "ppapi/c/private/ppp_pdf.h"
@@ -389,8 +388,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   float device_scale_ = 1.0f;
   // True if the plugin is full-page.
   bool full_ = false;
-
-  PaintManager paint_manager_;
 
   // True if we haven't painted the plugin viewport yet.
   bool first_paint_ = true;

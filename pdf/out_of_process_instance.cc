@@ -528,10 +528,7 @@ PrivateAccessibilityCharInfoFromAccessibilityTextRunInfo(
 }  // namespace
 
 OutOfProcessInstance::OutOfProcessInstance(PP_Instance instance)
-    : pp::Instance(instance),
-      pp::Find_Private(this),
-      pp::Printing_Dev(this),
-      paint_manager_(this) {
+    : pp::Instance(instance), pp::Find_Private(this), pp::Printing_Dev(this) {
   pp::Module::Get()->AddPluginInterface(kPPPPdfInterface, &ppp_private);
   AddPerInstanceObject(kPPPPdfInterface, this);
 
@@ -767,7 +764,7 @@ void OutOfProcessInstance::DidChangeView(const pp::View& view) {
     plugin_size_ = view_device_size;
     plugin_offset_ = view_rect.point();
 
-    paint_manager_.SetSize(SizeFromPPSize(view_device_size), device_scale_);
+    paint_manager().SetSize(SizeFromPPSize(view_device_size), device_scale_);
 
     const gfx::Size old_image_data_size = SizeFromPPSize(image_data_.size());
     gfx::Size new_image_data_size = PaintManager::GetNewContextSize(
@@ -1210,12 +1207,12 @@ void OutOfProcessInstance::Invalidate(const gfx::Rect& rect) {
 
   gfx::Rect offset_rect(rect);
   offset_rect.Offset(VectorFromPPPoint(available_area_.point()));
-  paint_manager_.InvalidateRect(offset_rect);
+  paint_manager().InvalidateRect(offset_rect);
 }
 
 void OutOfProcessInstance::DidScroll(const gfx::Vector2d& offset) {
   if (!image_data_.is_null())
-    paint_manager_.ScrollRect(RectFromPPRect(available_area_), offset);
+    paint_manager().ScrollRect(RectFromPPRect(available_area_), offset);
 }
 
 void OutOfProcessInstance::ScrollToX(int x_in_screen_coords) {
@@ -1763,7 +1760,7 @@ void OutOfProcessInstance::HandleResetPrintPreviewModeMessage(
   engine()->SetGrayscale(dict.Get(pp::Var(kJSPrintPreviewGrayscale)).AsBool());
   engine()->New(url_.c_str(), /*headers=*/nullptr);
 
-  paint_manager_.InvalidateRect(gfx::Rect(SizeFromPPSize(plugin_size_)));
+  paint_manager().InvalidateRect(gfx::Rect(SizeFromPPSize(plugin_size_)));
 }
 
 void OutOfProcessInstance::HandleSaveAttachmentMessage(
@@ -1961,9 +1958,9 @@ void OutOfProcessInstance::HandleViewportMessage(
           (scroll_offset.y() - scroll_offset_at_last_raster_.y() * zoom_ratio));
     }
 
-    paint_manager_.SetTransform(zoom_ratio, PointFromPPPoint(pinch_center),
-                                pinch_vector + paint_offset + scroll_delta,
-                                true);
+    paint_manager().SetTransform(zoom_ratio, PointFromPPPoint(pinch_center),
+                                 pinch_vector + paint_offset + scroll_delta,
+                                 true);
     needs_reraster_ = false;
     return;
   }
@@ -1973,7 +1970,7 @@ void OutOfProcessInstance::HandleViewportMessage(
     // that appear after zooming out.
     // On pinch end the scale is again 1.f and we request a reraster
     // in the new position.
-    paint_manager_.ClearTransform();
+    paint_manager().ClearTransform();
     last_bitmap_smaller_ = false;
     needs_reraster_ = true;
 
@@ -2021,7 +2018,7 @@ void OutOfProcessInstance::DocumentLoadFailed() {
   }
 
   document_load_state_ = LOAD_STATE_FAILED;
-  paint_manager_.InvalidateRect(gfx::Rect(SizeFromPPSize(plugin_size_)));
+  paint_manager().InvalidateRect(gfx::Rect(SizeFromPPSize(plugin_size_)));
 
   // Send a progress value of -1 to indicate a failure.
   SendLoadingProgress(-1);
@@ -2130,7 +2127,7 @@ void OutOfProcessInstance::OnGeometryChanged(double old_zoom,
 
   if (document_size_.IsEmpty())
     return;
-  paint_manager_.InvalidateRect(gfx::Rect(SizeFromPPSize(plugin_size_)));
+  paint_manager().InvalidateRect(gfx::Rect(SizeFromPPSize(plugin_size_)));
 
   if (accessibility_state_ == ACCESSIBILITY_STATE_LOADED)
     SendAccessibilityViewportInfo();

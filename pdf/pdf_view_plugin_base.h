@@ -42,6 +42,8 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   PDFiumEngine* engine() { return engine_.get(); }
 
+  PaintManager& paint_manager() { return paint_manager_; }
+
   // Starts loading `url`. If `is_print_preview` is `true`, load for print
   // preview instead of normal PDF viewing.
   void LoadUrl(const std::string& url, bool is_print_preview);
@@ -62,6 +64,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
  private:
   std::unique_ptr<PDFiumEngine> engine_;
+  PaintManager paint_manager_{this};
 };
 
 }  // namespace chrome_pdf
