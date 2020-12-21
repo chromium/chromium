@@ -16,7 +16,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
+#include "base/stl_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/post_task.h"
 #include "base/threading/thread_restrictions.h"
@@ -47,6 +50,7 @@
 #include "content/public/test/browser_test.h"
 #include "crypto/nss_key_util.h"
 #include "crypto/scoped_nss_types.h"
+#include "crypto/sha2.h"
 #include "crypto/signature_verifier.h"
 #include "net/cert/nss_cert_database.h"
 #include "net/cert/x509_certificate.h"
@@ -94,6 +98,24 @@ struct TestConfigPerToken {
   // The token ID to perform the tests on.
   TokenId token_id;
 };
+
+// Returns |hash| prefixed with DER-encoded PKCS#1 DigestInfo with
+// AlgorithmIdentifier=id-sha256.
+// This is useful for testing PlatformKeysService::SignRSAPKCS1Raw which only
+// appends PKCS#1 v1.5 padding before signing.
+std::string PrependSHA256DigestInfo(base::StringPiece hash) {
+  // DER-encoded PKCS#1 DigestInfo "prefix" with
+  // AlgorithmIdentifier=id-sha256.
+  // The encoding is taken from https://tools.ietf.org/html/rfc3447#page-43
+  const uint8_t kDigestInfoSha256DerData[] = {
+      0x30, 0x31, 0x30, 0x0d, 0x06, 0x09, 0x60, 0x86, 0x48, 0x01,
+      0x65, 0x03, 0x04, 0x02, 0x01, 0x05, 0x00, 0x04, 0x20};
+  const base::StringPiece kDigestInfoSha256Der(
+      reinterpret_cast<const char*>(kDigestInfoSha256DerData),
+      base::size(kDigestInfoSha256DerData));
+
+  return base::StrCat({kDigestInfoSha256Der, hash});
+}
 
 }  // namespace
 
@@ -171,15 +193,21 @@ class PlatformKeysServiceBrowserTestBase
 
   // Generates a key pair in the given |token_id| using platform keys service
   // and returns the SubjectPublicKeyInfo string encoded in DER format.
-  std::string GenerateKeyPair(TokenId token_id) {
-    const unsigned int kKeySize = 2048;
-
+  std::string GenerateKeyPair(TokenId token_id, unsigned int key_size) {
     test_util::GenerateKeyExecutionWaiter generate_key_waiter;
-    platform_keys_service()->GenerateRSAKey(token_id, kKeySize,
+    platform_keys_service()->GenerateRSAKey(token_id, key_size,
                                             generate_key_waiter.GetCallback());
     generate_key_waiter.Wait();
 
     return generate_key_waiter.public_key_spki_der();
+  }
+
+  // Generates a key pair with a default size in the given |token_id| using
+  // platform keys service and returns the SubjectPublicKeyInfo string encoded
+  // in DER format.
+  std::string GenerateKeyPair(TokenId token_id) {
+    const unsigned int kDefaultKeySize = 2048;
+    return GenerateKeyPair(token_id, kDefaultKeySize);
   }
 
   // Imports the certificate and key described by the |cert_filename| and
@@ -424,6 +452,79 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
       base::as_bytes(base::make_span(public_key_spki_der))));
   signature_verifier.VerifyUpdate(base::as_bytes(base::make_span(kDataToSign)));
   EXPECT_TRUE(signature_verifier.VerifyFinal());
+}
+
+// Generates a Rsa key pair and tests signing using the SignRSAPKCS1Raw
+// function.
+IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
+                       GenerateRsaAndSignRaw) {
+  const unsigned int kKeySize = 2048;
+  const TokenId token_id = GetParam().token_id;
+
+  // SignRSAPKCS1Raw only performs PKCS#1.5 padding. To get a correct PKCS#1
+  // signature of |kDataToSign|, it is necessary to pass
+  // (DigestInfo + hash(kDataToSign)) to SignRSAPKCS1Raw, where DigestInfo
+  // describes the hash function.
+  const std::string kDataToSign = "test";
+  const std::string kDataToSignHash = crypto::SHA256HashString(kDataToSign);
+  const std::string kDigestInfoAndDataToSignHash =
+      PrependSHA256DigestInfo(kDataToSignHash);
+
+  const crypto::SignatureVerifier::SignatureAlgorithm kSignatureAlgorithm =
+      crypto::SignatureVerifier::RSA_PKCS1_SHA256;
+
+  const std::string public_key_spki_der = GenerateKeyPair(token_id, kKeySize);
+
+  test_util::SignExecutionWaiter sign_waiter;
+  platform_keys_service()->SignRSAPKCS1Raw(
+      token_id, kDigestInfoAndDataToSignHash, public_key_spki_der,
+      sign_waiter.GetCallback());
+  sign_waiter.Wait();
+  EXPECT_EQ(sign_waiter.status(), Status::kSuccess);
+
+  crypto::SignatureVerifier signature_verifier;
+  ASSERT_TRUE(signature_verifier.VerifyInit(
+      kSignatureAlgorithm,
+      base::as_bytes(base::make_span(sign_waiter.signature())),
+      base::as_bytes(base::make_span(public_key_spki_der))));
+  signature_verifier.VerifyUpdate(base::as_bytes(base::make_span(kDataToSign)));
+  EXPECT_TRUE(signature_verifier.VerifyFinal());
+}
+
+// Generates a Rsa key pair and tests expected limits of the input length of the
+// SignRSAPKCS1Raw function.
+IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
+                       SignRawInputTooLong) {
+  const unsigned int kKeySize = 2048;
+  const TokenId token_id = GetParam().token_id;
+
+  const std::string public_key_spki_der = GenerateKeyPair(token_id, kKeySize);
+
+  // SignRSAPKCS1Raw performs PKCS#11 padding which adds at least 11 bytes.
+  {
+    // An input of |kKeySize in bytes - 11| should be fine.
+    std::string data_to_sign;
+    data_to_sign.resize(kKeySize / 8 - 11);
+
+    test_util::SignExecutionWaiter sign_waiter;
+    platform_keys_service()->SignRSAPKCS1Raw(
+        token_id, data_to_sign, public_key_spki_der, sign_waiter.GetCallback());
+    sign_waiter.Wait();
+    EXPECT_EQ(sign_waiter.status(), Status::kSuccess);
+  }
+
+  {
+    // An input of |kKeySize in bytes - 10| should be too long.
+    std::string data_to_sign_too_long;
+    data_to_sign_too_long.resize(kKeySize / 8 - 10);
+
+    test_util::SignExecutionWaiter sign_waiter;
+    platform_keys_service()->SignRSAPKCS1Raw(token_id, data_to_sign_too_long,
+                                             public_key_spki_der,
+                                             sign_waiter.GetCallback());
+    sign_waiter.Wait();
+    EXPECT_EQ(sign_waiter.status(), Status::kErrorInputTooLong);
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,

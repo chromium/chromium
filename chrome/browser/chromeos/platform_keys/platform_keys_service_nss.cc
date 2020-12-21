@@ -826,6 +826,29 @@ void GenerateECKeyWithDB(std::unique_ptr<GenerateECKeyState> state,
       base::BindOnce(&GenerateECKeyOnWorkerThread, std::move(state)));
 }
 
+// Checks whether |input_length| is lower or equal to the maximum input length
+// for a RSA PKCS#1 v1.5 signature generated using |private_key| with PK11_Sign.
+// Returns false if |input_length| is too large.
+// If the maximum input length can not be determined (which is possible because
+// it queries the PKCS#11 module), returns true and logs a warning.
+bool CheckRSAPKCS1SignRawInputLength(SECKEYPrivateKey* private_key,
+                                     size_t input_length) {
+  // For RSA keys, PK11_Sign will perform PKCS#1 v1.5 padding, which needs at
+  // least 11 bytes. RSA Sign can process an input of max. modulus length.
+  // Thus the maximum input length for the sign operation is
+  // |modulus_length - 11|.
+  int modulus_length_bytes = PK11_GetPrivateModulusLen(private_key);
+  if (modulus_length_bytes <= 0) {
+    LOG(WARNING) << "Could not determine modulus length";
+    return true;
+  }
+  size_t max_input_length_after_padding =
+      static_cast<size_t>(modulus_length_bytes);
+  // PKCS#1 v1.5 Padding needs at least this many bytes.
+  size_t kMinPaddingLength = 11u;
+  return input_length + kMinPaddingLength <= max_input_length_after_padding;
+}
+
 // Performs "raw" PKCS1 v1.5 padding + signing by calling PK11_Sign on
 // |rsa_key|.
 void SignRSAPKCS1RawOnWorkerThread(std::unique_ptr<SignState> state,
@@ -848,6 +871,17 @@ void SignRSAPKCS1RawOnWorkerThread(std::unique_ptr<SignState> state,
   std::vector<unsigned char> signature(signature_len);
   SECItem signature_output = {siBuffer, signature.data(), signature.size()};
   if (PK11_Sign(rsa_key.get(), &signature_output, &input) != SECSuccess) {
+    // Input size is checked after a failure - obtaining max input size
+    // involves extracting key modulus length which is not a free operation, so
+    // don't bother if signing succeeded.
+    // Note: It would be better if this could be determined from some library
+    // return code (e.g. PORT_GetError), but this was not possible with
+    // NSS+chaps at this point.
+    if (!CheckRSAPKCS1SignRawInputLength(rsa_key.get(), state->data_.size())) {
+      LOG(ERROR) << "Couldn't sign - input too long.";
+      state->OnError(FROM_HERE, Status::kErrorInputTooLong);
+      return;
+    }
     LOG(ERROR) << "Couldn't sign.";
     state->OnError(FROM_HERE, Status::kErrorInternal);
     return;

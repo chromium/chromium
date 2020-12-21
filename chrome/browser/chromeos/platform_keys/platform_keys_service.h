@@ -156,11 +156,12 @@ class PlatformKeysService : public KeyedService {
                                   SignCallback callback) = 0;
 
   // Applies PKCS1 padding and afterwards signs the data with the private key
-  // matching |public_key_spki_der|. |data| is not digested. If the key is not
-  // found in that |token_id| (or in none of the available tokens if |token_id|
-  // is not specified), the operation aborts. The size of |data| (number of
-  // octets) must be smaller than k - 11, where k is the key size in octets.
-  // |callback| will be invoked with the signature or an error status.
+  // matching |public_key_spki_der|. |data| is not digested, PKCS1 DigestInfo is
+  // not prepended. If the key is not found in that |token_id| (or in none of
+  // the available tokens if |token_id| is not specified), the operation aborts.
+  // The size of |data| (number of octets) must be smaller than k - 11, where k
+  // is the key size in octets. |callback| will be invoked with the signature or
+  // an error status.
   virtual void SignRSAPKCS1Raw(base::Optional<TokenId> token_id,
                                const std::string& data,
                                const std::string& public_key_spki_der,

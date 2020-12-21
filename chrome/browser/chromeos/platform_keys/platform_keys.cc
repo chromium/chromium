@@ -55,6 +55,8 @@ std::string StatusToString(Status status) {
       return "Algorithm not supported.";
     case Status::kErrorCertificateNotFound:
       return "Certificate could not be found.";
+    case Status::kErrorInputTooLong:
+      return "Input too long.";
     case Status::kErrorGrantKeyPermissionForExtension:
       return "Tried to grant permission for a key although prohibited (either "
              "key is a corporate key or this account is managed).";
