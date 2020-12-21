@@ -101,6 +101,7 @@ HOME_DIR = os.environ["HOME"]
 CONFIG_DIR = os.path.join(HOME_DIR, ".config/chrome-remote-desktop")
 SESSION_FILE_PATH = os.path.join(HOME_DIR, ".chrome-remote-desktop-session")
 SYSTEM_SESSION_FILE_PATH = "/etc/chrome-remote-desktop-session"
+SYSTEM_PRE_SESSION_FILE_PATH = "/etc/chrome-remote-desktop-pre-session"
 
 DEBIAN_XSESSION_PATH = "/etc/X11/Xsession"
 
@@ -388,13 +389,16 @@ class Host:
 
 
 class SessionOutputFilterThread(threading.Thread):
-  """Reads session log from a pipe and logs the output for amount of time
-  defined by SESSION_OUTPUT_TIME_LIMIT_SECONDS."""
+  """Reads session log from a pipe and logs the output with the provided prefix
+  for amount of time defined by time_limit, or indefinitely if time_limit is
+  None."""
 
-  def __init__(self, stream):
+  def __init__(self, stream, prefix, time_limit):
     threading.Thread.__init__(self)
     self.stream = stream
     self.daemon = True
+    self.prefix = prefix
+    self.time_limit = time_limit
 
   def run(self):
     started_time = time.time()
@@ -413,13 +417,12 @@ class SessionOutputFilterThread(threading.Thread):
       if not is_logging:
         continue
 
-      if time.time() - started_time >= SESSION_OUTPUT_TIME_LIMIT_SECONDS:
+      if self.time_limit and time.time() - started_time >= self.time_limit:
         is_logging = False
         print("Suppressing rest of the session output.", flush=True)
       else:
         # Pass stream bytes through as is instead of decoding and encoding.
-        sys.stdout.buffer.write(
-            "Session output: ".encode(sys.stdout.encoding) + line);
+        sys.stdout.buffer.write(self.prefix.encode(sys.stdout.encoding) + line);
         sys.stdout.flush()
 
 
@@ -428,6 +431,7 @@ class Desktop:
 
   def __init__(self, sizes):
     self.x_proc = None
+    self.pre_session_proc = None
     self.session_proc = None
     self.host_proc = None
     self.child_env = None
@@ -719,7 +723,32 @@ class Desktop:
     subprocess.Popen(args, env=self.child_env, stdout=subprocess.DEVNULL,
                      stderr=subprocess.DEVNULL)
 
-  def _launch_x_session(self):
+  def _launch_pre_session(self):
+    # Launch the pre-session script, if it exists. Returns true if the script
+    # was launched, false if it didn't exist.
+    if os.path.exists(SYSTEM_PRE_SESSION_FILE_PATH):
+      pre_session_command = bash_invocation_for_script(
+          SYSTEM_PRE_SESSION_FILE_PATH)
+
+      logging.info("Launching pre-session: %s" % pre_session_command)
+      self.pre_session_proc = subprocess.Popen(pre_session_command,
+                                               stdin=subprocess.DEVNULL,
+                                               stdout=subprocess.PIPE,
+                                               stderr=subprocess.STDOUT,
+                                               cwd=HOME_DIR,
+                                               env=self.child_env)
+
+      if not self.pre_session_proc.pid:
+        raise Exception("Could not start pre-session")
+
+      output_filter_thread = SessionOutputFilterThread(
+          self.pre_session_proc.stdout, "Pre-session output: ", None)
+      output_filter_thread.start()
+
+      return True
+    return False
+
+  def launch_x_session(self):
     # Start desktop session.
     # The /dev/null input redirection is necessary to prevent the X session
     # reading from stdin.  If this code runs as a shell background job in a
@@ -738,18 +767,21 @@ class Desktop:
                                          cwd=HOME_DIR,
                                          env=self.child_env)
 
-    output_filter_thread = SessionOutputFilterThread(self.session_proc.stdout)
-    output_filter_thread.start()
-
     if not self.session_proc.pid:
       raise Exception("Could not start X session")
+
+    output_filter_thread = SessionOutputFilterThread(self.session_proc.stdout,
+        "Session output: ", SESSION_OUTPUT_TIME_LIMIT_SECONDS)
+    output_filter_thread.start()
 
   def launch_session(self, x_args):
     self._init_child_env()
     self._setup_pulseaudio()
     self._setup_gnubby()
     self._launch_x_server(x_args)
-    self._launch_x_session()
+    if not self._launch_pre_session():
+      # If there was no pre-session script, launch the session immediately.
+      self.launch_x_session()
 
   def launch_host(self, host_config, extra_start_host_args):
     # Start remoting host
@@ -797,6 +829,7 @@ class Desktop:
     SIGKILL if a process doesn't exit within 10 seconds.
     """
     for proc, name in [(self.x_proc, "X server"),
+                       (self.pre_session_proc, "pre-session"),
                        (self.session_proc, "session"),
                        (self.host_proc, "host")]:
       if proc is not None:
@@ -814,6 +847,7 @@ class Desktop:
         except psutil.Error:
           logging.error("Error terminating process")
     self.x_proc = None
+    self.pre_session_proc = None
     self.session_proc = None
     self.host_proc = None
 
@@ -926,6 +960,20 @@ def get_daemon_proc(config_file, require_child_process=False):
   return non_child_process if not require_child_process else None
 
 
+def bash_invocation_for_script(script):
+  """Chooses the appropriate bash command to run the provided script."""
+  if os.path.exists(script):
+    if os.access(script, os.X_OK):
+      # "/bin/sh -c" is smart about how to execute the session script and
+      # works in cases where plain exec() fails (for example, if the file is
+      # marked executable, but is a plain script with no shebang line).
+      return ["/bin/sh", "-c", pipes.quote(script)]
+    else:
+      # If this is a system-wide session script, it should be run using the
+      # system shell, ignoring any login shell that might be set for the
+      # current user.
+      return ["/bin/sh", script]
+
 def choose_x_session():
   """Chooses the most appropriate X session command for this system.
 
@@ -941,16 +989,7 @@ def choose_x_session():
   for startup_file in XSESSION_FILES:
     startup_file = os.path.expanduser(startup_file)
     if os.path.exists(startup_file):
-      if os.access(startup_file, os.X_OK):
-        # "/bin/sh -c" is smart about how to execute the session script and
-        # works in cases where plain exec() fails (for example, if the file is
-        # marked executable, but is a plain script with no shebang line).
-        return ["/bin/sh", "-c", pipes.quote(startup_file)]
-      else:
-        # If this is a system-wide session script, it should be run using the
-        # system shell, ignoring any login shell that might be set for the
-        # current user.
-        return ["/bin/sh", startup_file]
+      return bash_invocation_for_script(startup_file)
 
   # If there's no configuration, show the user a session chooser.
   return [HOST_BINARY_PATH, "--type=xsession_chooser"]
@@ -1708,7 +1747,8 @@ Web Store: https://chrome.google.com/remotedesktop"""
       # launching things in the wrong order due to differing relaunch times.
       logging.info("Waiting before relaunching")
     else:
-      if desktop.x_proc is None and desktop.session_proc is None:
+      if (desktop.x_proc is None and desktop.pre_session_proc is None and
+          desktop.session_proc is None):
         logging.info("Launching X server and X session.")
         desktop.launch_session(options.args)
         x_server_inhibitor.record_started(MINIMUM_PROCESS_LIFETIME,
@@ -1741,6 +1781,25 @@ Web Store: https://chrome.google.com/remotedesktop"""
       desktop.x_proc = None
       x_server_inhibitor.record_stopped(False)
       tear_down = True
+
+    if (desktop.pre_session_proc is not None and
+        pid == desktop.pre_session_proc.pid):
+      desktop.pre_session_proc = None
+      if status == 0:
+        logging.info("Pre-session terminated successfully. Starting session.")
+        desktop.launch_x_session()
+      else:
+        logging.info("Pre-session failed. Tearing down.")
+        # The pre-session may have exited on its own or been brought down by the
+        # X server dying. Check if the X server is still running so we know whom
+        # to penalize.
+        if desktop.check_x_responding():
+          # Pre-session and session use the same inhibitor.
+          session_inhibitor.record_stopped(False)
+        else:
+          x_server_inhibitor.record_stopped(False)
+        # Either way, we want to tear down the session.
+        tear_down = True
 
     if desktop.session_proc is not None and pid == desktop.session_proc.pid:
       logging.info("Session process terminated")
