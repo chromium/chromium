@@ -232,15 +232,25 @@ public class SelectableListLayout<E>
      * @return The {@link TextView} displayed when the list is empty.
      */
     public TextView initializeEmptyView(int emptyStringResId, int searchEmptyStringResId) {
-        mEmptyStringResId = emptyStringResId;
-        mSearchEmptyStringResId = searchEmptyStringResId;
-
-        mEmptyView.setText(mEmptyStringResId);
+        setEmptyViewText(emptyStringResId, searchEmptyStringResId);
 
         // Dummy listener to have the touch events dispatched to this view tree for navigation UI.
         mEmptyViewWrapper.setOnTouchListener((v, event) -> true);
 
         return mEmptyView;
+    }
+
+    /**
+     * Sets the view text when the selectable list is empty.
+     * @param emptyStringResId The string to show when the selectable list is empty.
+     * @param searchEmptyStringResId The string to show when the selectable list is empty during
+     *                               a search.
+     */
+    public void setEmptyViewText(int emptyStringResId, int searchEmptyStringResId) {
+        mEmptyStringResId = emptyStringResId;
+        mSearchEmptyStringResId = searchEmptyStringResId;
+
+        mEmptyView.setText(mEmptyStringResId);
     }
 
     /**
