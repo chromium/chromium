@@ -5,12 +5,7 @@
 </head>
 <body>
     <p>
-        This test checks that loading a subresource with "Cache-Control: no-store" is
-        cached and reused in back navigation when the page is not in the page cache.
-    </p>
-    <p>
-        We then test that loading the same subresource is refetched when used in
-        non-stale loads such as refreshes or normal navigation.
+        This test checks that a subresource with "Cache-Control: no-store" is not cached.
     </p>
     <pre id="console"></pre>
     <script>
@@ -46,9 +41,9 @@
             backLoadRandomNumber = event.data;
             var wasCached = (backLoadRandomNumber === originalRandomNumber);
             if (wasCached)
-                pre.appendChild(document.createTextNode('PASS - no-store subresource was cached and used for a back navigation\n'));
+                pre.appendChild(document.createTextNode('FAIL - no-store subresource should have been refetched for a back navigation\n'));
             else
-                pre.appendChild(document.createTextNode('FAIL - no-store subresource should have been cached and used in a back navigation\n'));
+                pre.appendChild(document.createTextNode('PASS - no-store subresource was refetched for a back navigation\n'));
             target.postMessage('reload', '*');
             return;
         }

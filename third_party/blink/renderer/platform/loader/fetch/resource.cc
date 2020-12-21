@@ -661,11 +661,9 @@ void Resource::DidRemoveClientOrObserver() {
     // from volatile storage as promptly as possible"
     // "... History buffers MAY store such responses as part of their normal
     // operation."
-    // We allow non-secure content to be reused in history, but we do not allow
-    // secure content to be reused.
-    if (HasCacheControlNoStoreHeader() && Url().ProtocolIs("https") &&
-        IsMainThread())
+    if (HasCacheControlNoStoreHeader() && IsMainThread()) {
       GetMemoryCache()->Remove(this);
+    }
   }
 }
 
