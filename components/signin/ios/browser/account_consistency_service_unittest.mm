@@ -168,6 +168,7 @@ class AccountConsistencyServiceTest : public PlatformTest {
 
     account_consistency_service_->Shutdown();
     settings_map_->ShutdownOnUIThread();
+    account_reconcilor_->Shutdown();
     identity_test_env_.reset();
     PlatformTest::TearDown();
   }

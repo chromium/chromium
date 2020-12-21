@@ -236,6 +236,7 @@ AccountReconcilor::AccountReconcilor(
 AccountReconcilor::~AccountReconcilor() {
   VLOG(1) << "AccountReconcilor::~AccountReconcilor";
   // Make sure shutdown was called first.
+  DCHECK(WasShutDown());
   DCHECK(!registered_with_identity_manager_);
 }
 
@@ -280,8 +281,10 @@ void AccountReconcilor::DisableReconcile(bool logout_all_accounts) {
 
 void AccountReconcilor::Shutdown() {
   VLOG(1) << "AccountReconcilor::Shutdown";
+  was_shut_down_ = true;
   DisableReconcile(false /* logout_all_accounts */);
   delegate_.reset();
+  DCHECK(WasShutDown());
 }
 
 void AccountReconcilor::RegisterWithContentSettings() {
@@ -434,6 +437,9 @@ void AccountReconcilor::PerformLogoutAllAccountsAction() {
 }
 
 void AccountReconcilor::StartReconcile() {
+  if (WasShutDown())
+    return;
+
   if (is_reconcile_started_)
     return;
 
@@ -1082,4 +1088,8 @@ void AccountReconcilor::SetState(AccountReconcilorState state) {
   state_ = state;
   for (auto& observer : observer_list_)
     observer.OnStateChanged(state_);
+}
+
+bool AccountReconcilor::WasShutDown() const {
+  return was_shut_down_;
 }

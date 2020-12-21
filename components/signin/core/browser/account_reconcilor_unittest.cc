@@ -245,7 +245,7 @@ class AccountReconcilorTest : public ::testing::Test {
   base::HistogramTester* histogram_tester() { return &histogram_tester_; }
 
   MockAccountReconcilor* GetMockReconcilor();
-  MockAccountReconcilor* GetMockReconcilor(
+  MockAccountReconcilor* CreateMockReconcilor(
       std::unique_ptr<signin::AccountReconcilorDelegate> delegate);
 
   AccountInfo ConnectProfileToAccount(const std::string& email);
@@ -275,7 +275,11 @@ class AccountReconcilorTest : public ::testing::Test {
 
   PrefService* pref_service() { return &pref_service_; }
 
-  void DeleteReconcilor() { mock_reconcilor_.reset(); }
+  void DeleteReconcilor() {
+    if (mock_reconcilor_)
+      mock_reconcilor_->Shutdown();
+    mock_reconcilor_.reset();
+  }
 
   network::TestURLLoaderFactory test_url_loader_factory_;
 
@@ -347,12 +351,12 @@ MockAccountReconcilor* AccountReconcilorTest::GetMockReconcilor() {
   return mock_reconcilor_.get();
 }
 
-MockAccountReconcilor* AccountReconcilorTest::GetMockReconcilor(
+MockAccountReconcilor* AccountReconcilorTest::CreateMockReconcilor(
     std::unique_ptr<signin::AccountReconcilorDelegate> delegate) {
+  DCHECK(!mock_reconcilor_);
   mock_reconcilor_ = std::make_unique<MockAccountReconcilor>(
       identity_test_env_.identity_manager(), &test_signin_client_,
       std::move(delegate));
-
   return mock_reconcilor_.get();
 }
 
@@ -1809,7 +1813,8 @@ TEST_P(AccountReconcilorTestActiveDirectory, TableRowTestMultilogin) {
   SetupTokens(GetParam().tokens);
 
   testing::InSequence mock_sequence;
-  MockAccountReconcilor* reconcilor = GetMockReconcilor(
+  DeleteReconcilor();
+  MockAccountReconcilor* reconcilor = CreateMockReconcilor(
       std::make_unique<signin::ActiveDirectoryAccountReconcilorDelegate>());
 
   // Setup expectations.
@@ -2716,7 +2721,8 @@ TEST_F(AccountReconcilorTest, DelegateTimeoutIsCalled) {
   AccountInfo account_info = ConnectProfileToAccount("user@gmail.com");
   auto spy_delegate0 = std::make_unique<SpyReconcilorDelegate>();
   SpyReconcilorDelegate* spy_delegate = spy_delegate0.get();
-  AccountReconcilor* reconcilor = GetMockReconcilor(std::move(spy_delegate0));
+  AccountReconcilor* reconcilor =
+      CreateMockReconcilor(std::move(spy_delegate0));
   ASSERT_TRUE(reconcilor);
   auto timer0 = std::make_unique<base::MockOneShotTimer>();
   base::MockOneShotTimer* timer = timer0.get();
@@ -2756,7 +2762,8 @@ TEST_F(AccountReconcilorTest, DelegateTimeoutIsNotCalledIfTimeoutIsNotReached) {
       account_info.email, account_info.gaia, &test_url_loader_factory_);
   auto spy_delegate0 = std::make_unique<SpyReconcilorDelegate>();
   SpyReconcilorDelegate* spy_delegate = spy_delegate0.get();
-  AccountReconcilor* reconcilor = GetMockReconcilor(std::move(spy_delegate0));
+  AccountReconcilor* reconcilor =
+      CreateMockReconcilor(std::move(spy_delegate0));
   ASSERT_TRUE(reconcilor);
   auto timer0 = std::make_unique<base::MockOneShotTimer>();
   base::MockOneShotTimer* timer = timer0.get();
@@ -2815,7 +2822,7 @@ TEST_F(AccountReconcilorTest, MultiloginLogout) {
   };
 
   MockAccountReconcilor* reconcilor =
-      GetMockReconcilor(std::make_unique<MultiloginLogoutDelegate>());
+      CreateMockReconcilor(std::make_unique<MultiloginLogoutDelegate>());
   signin::SetListAccountsResponseOneAccount("user@gmail.com", "123456",
                                             &test_url_loader_factory_);
 
@@ -2829,4 +2836,34 @@ TEST_F(AccountReconcilorTest, MultiloginLogout) {
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(reconcilor->is_reconcile_started_);
   ASSERT_EQ(signin_metrics::ACCOUNT_RECONCILOR_OK, reconcilor->GetState());
+}
+
+// Reconcilor does not start after being shutdown. Regression test for
+// https://crbug.com/923094
+TEST_F(AccountReconcilorTest, ReconcileAfterShutdown) {
+  AccountReconcilor* reconcilor = GetMockReconcilor();
+  ASSERT_TRUE(reconcilor);
+  EXPECT_FALSE(reconcilor->WasShutDown());
+  reconcilor->Shutdown();
+  EXPECT_TRUE(reconcilor->WasShutDown());
+  reconcilor->StartReconcile();  // This should not crash.
+  EXPECT_FALSE(reconcilor->is_reconcile_started_);
+}
+
+// Reconcilor does not unlock after being shutdown. Regression test for
+// https://crbug.com/923094
+TEST_F(AccountReconcilorTest, UnlockAfterShutdown) {
+  AccountReconcilor* reconcilor = GetMockReconcilor();
+  ASSERT_TRUE(reconcilor);
+  std::unique_ptr<AccountReconcilor::Lock> lock =
+      std::make_unique<AccountReconcilor::Lock>(reconcilor);
+
+  // Reconcile does not start now because of the Lock, but is scheduled to start
+  // when the lock is released.
+  reconcilor->StartReconcile();
+  EXPECT_FALSE(reconcilor->is_reconcile_started_);
+
+  reconcilor->Shutdown();
+  lock.reset();  // This should not crash.
+  EXPECT_FALSE(reconcilor->is_reconcile_started_);
 }
