@@ -22,7 +22,6 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
-#include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gfx/ipc/geometry/gfx_param_traits.h"
@@ -45,9 +44,6 @@ IPC_ENUM_TRAITS_MAX_VALUE(
     network::mojom::ContentSecurityPolicySource::kMaxValue)
 IPC_ENUM_TRAITS_MAX_VALUE(network::mojom::ContentSecurityPolicyType,
                           network::mojom::ContentSecurityPolicyType::kMaxValue)
-IPC_ENUM_TRAITS_MIN_MAX_VALUE(ui::mojom::CursorType,
-                              ui::mojom::CursorType::kNull,
-                              ui::mojom::CursorType::kMaxValue)
 IPC_ENUM_TRAITS_MAX_VALUE(content::PageVisibilityState,
                           content::PageVisibilityState::kMaxValue)
 

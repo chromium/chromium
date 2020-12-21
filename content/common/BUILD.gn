@@ -179,7 +179,6 @@ source_set("common") {
     "//ui/accessibility",
     "//ui/accessibility/mojom",
     "//ui/base/cursor:cursor_base",
-    "//ui/base/cursor/mojom:cursor_type",
     "//ui/events/ipc",
   ]
   deps = [
@@ -234,6 +233,7 @@ source_set("common") {
     "//third_party/boringssl",
     "//third_party/icu",
     "//ui/base",
+    "//ui/base/cursor/mojom:cursor_type",
     "//ui/base/ime",
     "//ui/display",
     "//ui/events/blink",
@@ -534,10 +534,6 @@ mojom("mojo_bindings") {
           cpp = "::blink::VisualProperties"
         },
         {
-          mojom = "content.mojom.WebCursor"
-          cpp = "::content::WebCursor"
-        },
-        {
           mojom = "content.mojom.WebPopupType"
           cpp = "::blink::WebPopupType"
         },
@@ -545,7 +541,6 @@ mojom("mojo_bindings") {
 
       traits_headers = [
         "//cc/input/touch_action.h",
-        "//content/common/cursors/webcursor.h",
         "//content/common/frame_replication_state.h",
         "//content/common/input/synthetic_pinch_gesture_params.h",
         "//content/common/input/synthetic_pointer_action_list_params.h",
@@ -588,7 +583,6 @@ mojom("mojo_bindings") {
         "//services/network/public/cpp",
         "//third_party/blink/public/common",
         "//ui/accessibility",
-        "//ui/base/cursor:cursor_base",
         "//ui/base/ime:text_input_types",
         "//ui/events/blink",
         "//ui/gfx/ipc",
