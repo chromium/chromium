@@ -519,6 +519,8 @@ ui::EventDispatchDetails WindowEventDispatcher::PreDispatchEvent(
         event->time_stamp());
   }
 
+  WindowTracker target_window_tracker;
+  target_window_tracker.Add(target_window);
   if (!dispatching_held_event_) {
     bool can_be_held = IsEventCandidateForHold(*event);
     if (!move_hold_count_ || !can_be_held) {
@@ -528,6 +530,12 @@ ui::EventDispatchDetails WindowEventDispatcher::PreDispatchEvent(
       if (details.dispatcher_destroyed || details.target_destroyed)
         return details;
     }
+  }
+  if (target_window_tracker.windows().empty()) {
+    // The event target is destroyed while processing the held event.
+    DispatchDetails details;
+    details.target_destroyed = true;
+    return details;
   }
 
   DispatchDetails details;

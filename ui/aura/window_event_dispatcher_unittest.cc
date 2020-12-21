@@ -3108,4 +3108,84 @@ TEST_F(WindowEventDispatcherTest, TouchEventWithScaledWindow) {
   root_window()->RemovePreTargetHandler(&root_recorder);
 }
 
+// A test case for crbug.com/1099985
+TEST_F(WindowEventDispatcherTest, TargetIsDestroyedByHeldEvent) {
+  EventFilterRecorder recorder;
+  root_window()->AddPreTargetHandler(&recorder);
+
+  // Create a window which should be a target of all MouseEvent in this tests.
+  test::TestWindowDelegate delegate;
+  std::unique_ptr<aura::Window> mouse_target(CreateTestWindowWithDelegate(
+      &delegate, 1, gfx::Rect(0, 0, 100, 100), root_window()));
+
+  // Create a window which has a focus, so should receive all KeyEvents.
+  ConsumeKeyHandler key_handler;
+  // Not using std::unique_ptr<> intentionally
+  aura::Window* focused(test::CreateTestWindowWithBounds(
+      gfx::Rect(200, 200, 100, 100), root_window()));
+  focused->SetProperty(client::kSkipImeProcessing, true);
+  focused->AddPostTargetHandler(&key_handler);
+  focused->Show();
+  focused->Focus();
+
+  // Make sure that the key event goes to the |focused| window.
+  ui::KeyEvent key_press(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_NONE);
+  DispatchEventUsingWindowDispatcher(&key_press);
+  EXPECT_EQ(1, key_handler.num_key_events());
+  key_handler.Reset();
+
+  ui::MouseEvent mouse_move_event(ui::ET_MOUSE_MOVED, gfx::Point(1, 1),
+                                  gfx::Point(1, 1), ui::EventTimeForNow(), 0,
+                                  0);
+  DispatchEventUsingWindowDispatcher(&mouse_move_event);
+  // Discard MOUSE_ENTER.
+  recorder.Reset();
+
+  host()->dispatcher()->HoldPointerMoves();
+
+  // The dragged event should not be sent to the |target| window because
+  // WindowEventDispatcher is holding it now.
+  ui::MouseEvent mouse_dragged_event(ui::ET_MOUSE_DRAGGED, gfx::Point(0, 0),
+                                     gfx::Point(0, 0), ui::EventTimeForNow(), 0,
+                                     0);
+  DispatchEventUsingWindowDispatcher(&mouse_dragged_event);
+  EXPECT_TRUE(recorder.events().empty());
+
+  // Create a event handler which destroys the |focused| window when it sees any
+  // mouse event.
+  class Handler : public ui::test::TestEventHandler {
+   public:
+    explicit Handler(aura::Window* focused) : focused_(focused) {}
+    ~Handler() override = default;
+
+    Handler(const Handler&) = delete;
+    Handler& operator=(const Handler&) = delete;
+
+    // Overridden from ui::EventHandler:
+    void OnMouseEvent(ui::MouseEvent* event) override {
+      ui::test::TestEventHandler::OnMouseEvent(event);
+      LOG(ERROR) << "|focused_| is being deleted";
+      // !!!
+      delete focused_;
+    }
+
+   private:
+    aura::Window* focused_;
+  };
+  Handler mouse_handler(focused);
+  mouse_target->AddPostTargetHandler(&mouse_handler);
+
+  // Sending a key event should stop the hold and the mouse event goes to the
+  // |target| window.
+  // The key event should not be sent to the handler because the focused window
+  // is destroyed before the event is dispatched.
+  ui::KeyEvent key_press2(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_NONE);
+  DispatchEventUsingWindowDispatcher(&key_press2);
+  EXPECT_EQ(1u, recorder.events().size());
+  EXPECT_EQ(0, key_handler.num_key_events());
+  EXPECT_EQ(1, mouse_handler.num_mouse_events());
+
+  root_window()->RemovePreTargetHandler(&recorder);
+}
+
 }  // namespace aura
