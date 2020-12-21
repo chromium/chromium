@@ -95,10 +95,6 @@ class ApplicationContextImpl : public ApplicationContext {
   // Logger which observers and logs application wide events to
   // |breadcrumb_manager_|. Will be null if breadcrumbs feature is not enabled.
   std::unique_ptr<ApplicationBreadcrumbsLogger> application_breadcrumbs_logger_;
-  // Persistent storage manager to write breadcrumbs to disk for storage
-  // between sessions. Will be null if breadcrumbs feature is not enabled.
-  std::unique_ptr<BreadcrumbPersistentStorageManager>
-      breadcrumb_persistent_storage_manager_;
 
   // Must be destroyed after |local_state_|. BrowserStatePolicyConnector isn't a
   // keyed service because the pref service, which isn't a keyed service, has a

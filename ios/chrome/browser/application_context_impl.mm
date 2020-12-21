@@ -165,11 +165,12 @@ void ApplicationContextImpl::PreMainMessageLoopRun() {
     base::FilePath storage_dir;
     bool result = base::PathService::Get(ios::DIR_USER_DATA, &storage_dir);
     DCHECK(result);
-    breadcrumb_persistent_storage_manager_ =
+
+    auto breadcrumb_persistent_storage_manager =
         std::make_unique<BreadcrumbPersistentStorageManager>(storage_dir);
 
     application_breadcrumbs_logger_->SetPersistentStorageManager(
-        breadcrumb_persistent_storage_manager_.get());
+        std::move(breadcrumb_persistent_storage_manager));
   }
 }
 
@@ -206,6 +207,12 @@ void ApplicationContextImpl::StartTearDown() {
     local_state_->CommitPendingWrite();
     sessions::SessionIdGenerator::GetInstance()->Shutdown();
   }
+
+  // The ApplicationBreadcrumbsLogger tries to log event via a task when it
+  // is destroyed, so it needs to be notified of the app tear down now when
+  // the task tracker is still valid (will be destroyed after StartTearDown
+  // returns).
+  application_breadcrumbs_logger_.reset();
 
   ios_chrome_io_thread_->NetworkTearDown();
 }
@@ -466,7 +473,9 @@ BrowserPolicyConnectorIOS* ApplicationContextImpl::GetBrowserPolicyConnector() {
 BreadcrumbPersistentStorageManager*
 ApplicationContextImpl::GetBreadcrumbPersistentStorageManager() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  return breadcrumb_persistent_storage_manager_.get();
+  return application_breadcrumbs_logger_
+             ? application_breadcrumbs_logger_->GetPersistentStorageManager()
+             : nullptr;
 }
 
 void ApplicationContextImpl::SetApplicationLocale(const std::string& locale) {
