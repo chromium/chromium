@@ -826,6 +826,36 @@ void GenerateECKeyWithDB(std::unique_ptr<GenerateECKeyState> state,
       base::BindOnce(&GenerateECKeyOnWorkerThread, std::move(state)));
 }
 
+// Performs "raw" PKCS1 v1.5 padding + signing by calling PK11_Sign on
+// |rsa_key|.
+void SignRSAPKCS1RawOnWorkerThread(std::unique_ptr<SignState> state,
+                                   crypto::ScopedSECKEYPrivateKey rsa_key) {
+  static_assert(
+      sizeof(*state->data_.data()) == sizeof(char),
+      "Can't reinterpret data if it's characters are not 8 bit large.");
+  SECItem input = {
+      siBuffer,
+      reinterpret_cast<unsigned char*>(const_cast<char*>(state->data_.data())),
+      state->data_.size()};
+
+  // Compute signature of hash.
+  int signature_len = PK11_SignatureLen(rsa_key.get());
+  if (signature_len <= 0) {
+    state->OnError(FROM_HERE, Status::kErrorInternal);
+    return;
+  }
+
+  std::vector<unsigned char> signature(signature_len);
+  SECItem signature_output = {siBuffer, signature.data(), signature.size()};
+  if (PK11_Sign(rsa_key.get(), &signature_output, &input) != SECSuccess) {
+    LOG(ERROR) << "Couldn't sign.";
+    state->OnError(FROM_HERE, Status::kErrorInternal);
+    return;
+  }
+  std::string signature_str(signature.begin(), signature.end());
+  state->OnSuccess(FROM_HERE, signature_str);
+}
+
 // Does the actual RSA signing on a worker thread.
 void SignRSAOnWorkerThread(std::unique_ptr<SignState> state) {
   crypto::ScopedSECKEYPrivateKey rsa_key =
@@ -837,63 +867,42 @@ void SignRSAOnWorkerThread(std::unique_ptr<SignState> state) {
     return;
   }
 
-  std::string signature_str;
   if (state->raw_pkcs1_) {
-    static_assert(
-        sizeof(*state->data_.data()) == sizeof(char),
-        "Can't reinterpret data if it's characters are not 8 bit large.");
-    SECItem input = {siBuffer,
-                     reinterpret_cast<unsigned char*>(
-                         const_cast<char*>(state->data_.data())),
-                     state->data_.size()};
-
-    // Compute signature of hash.
-    int signature_len = PK11_SignatureLen(rsa_key.get());
-    if (signature_len <= 0) {
-      state->OnError(FROM_HERE, Status::kErrorInternal);
-      return;
-    }
-
-    std::vector<unsigned char> signature(signature_len);
-    SECItem signature_output = {siBuffer, signature.data(), signature.size()};
-    if (PK11_Sign(rsa_key.get(), &signature_output, &input) == SECSuccess)
-      signature_str.assign(signature.begin(), signature.end());
-  } else {
-    SECOidTag sign_alg_tag = SEC_OID_UNKNOWN;
-    switch (state->hash_algorithm_) {
-      case HASH_ALGORITHM_SHA1:
-        sign_alg_tag = SEC_OID_PKCS1_SHA1_WITH_RSA_ENCRYPTION;
-        break;
-      case HASH_ALGORITHM_SHA256:
-        sign_alg_tag = SEC_OID_PKCS1_SHA256_WITH_RSA_ENCRYPTION;
-        break;
-      case HASH_ALGORITHM_SHA384:
-        sign_alg_tag = SEC_OID_PKCS1_SHA384_WITH_RSA_ENCRYPTION;
-        break;
-      case HASH_ALGORITHM_SHA512:
-        sign_alg_tag = SEC_OID_PKCS1_SHA512_WITH_RSA_ENCRYPTION;
-        break;
-      case HASH_ALGORITHM_NONE:
-        NOTREACHED();
-        break;
-    }
-
-    crypto::ScopedSECItem sign_result(SECITEM_AllocItem(nullptr, nullptr, 0));
-    if (SEC_SignData(
-            sign_result.get(),
-            reinterpret_cast<const unsigned char*>(state->data_.data()),
-            state->data_.size(), rsa_key.get(), sign_alg_tag) == SECSuccess) {
-      signature_str.assign(sign_result->data,
-                           sign_result->data + sign_result->len);
-    }
+    SignRSAPKCS1RawOnWorkerThread(std::move(state), std::move(rsa_key));
+    return;
   }
 
-  if (signature_str.empty()) {
+  SECOidTag sign_alg_tag = SEC_OID_UNKNOWN;
+  switch (state->hash_algorithm_) {
+    case HASH_ALGORITHM_SHA1:
+      sign_alg_tag = SEC_OID_PKCS1_SHA1_WITH_RSA_ENCRYPTION;
+      break;
+    case HASH_ALGORITHM_SHA256:
+      sign_alg_tag = SEC_OID_PKCS1_SHA256_WITH_RSA_ENCRYPTION;
+      break;
+    case HASH_ALGORITHM_SHA384:
+      sign_alg_tag = SEC_OID_PKCS1_SHA384_WITH_RSA_ENCRYPTION;
+      break;
+    case HASH_ALGORITHM_SHA512:
+      sign_alg_tag = SEC_OID_PKCS1_SHA512_WITH_RSA_ENCRYPTION;
+      break;
+    case HASH_ALGORITHM_NONE:
+      NOTREACHED();
+      break;
+  }
+
+  crypto::ScopedSECItem sign_result(SECITEM_AllocItem(nullptr, nullptr, 0));
+  if (SEC_SignData(sign_result.get(),
+                   reinterpret_cast<const unsigned char*>(state->data_.data()),
+                   state->data_.size(), rsa_key.get(),
+                   sign_alg_tag) != SECSuccess) {
     LOG(ERROR) << "Couldn't sign.";
     state->OnError(FROM_HERE, Status::kErrorInternal);
     return;
   }
 
+  std::string signature_str(sign_result->data,
+                            sign_result->data + sign_result->len);
   state->OnSuccess(FROM_HERE, signature_str);
 }
 
