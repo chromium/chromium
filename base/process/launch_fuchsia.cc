@@ -21,8 +21,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/process/environment_internal.h"
 #include "base/scoped_generic.h"
-#include "base/threading/scoped_blocking_call.h"
-#include "base/trace_event/base_tracing.h"
 
 namespace base {
 
@@ -33,7 +31,6 @@ bool GetAppOutputInternal(const CommandLine& cmd_line,
                           std::string* output,
                           int* exit_code) {
   DCHECK(exit_code);
-  TRACE_EVENT0("base", "GetAppOutput");
 
   LaunchOptions options;
 
@@ -63,10 +60,6 @@ bool GetAppOutputInternal(const CommandLine& cmd_line,
   }
   close(pipe_fd[0]);
 
-  // It is okay to allow this process to wait on the launched process as a
-  // process launched with GetAppOutput*() shouldn't wait back on the process
-  // that launched it.
-  internal::GetAppOutputScopedAllowBaseSyncPrimitives allow_wait;
   return process.WaitForExit(exit_code);
 }
 

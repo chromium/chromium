@@ -20,7 +20,6 @@
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_piece.h"
-#include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
@@ -429,17 +428,6 @@ BASE_EXPORT LaunchOptions LaunchOptionsForTest();
 // However, performing an exec() will lift this restriction.
 BASE_EXPORT pid_t ForkWithFlags(unsigned long flags, pid_t* ptid, pid_t* ctid);
 #endif
-
-namespace internal {
-
-// Friend and derived class of ScopedAllowBaseSyncPrimitives which allows
-// GetAppOutputInternal() to join a process. GetAppOutputInternal() can't itself
-// be a friend of ScopedAllowBaseSyncPrimitives because it is in the anonymous
-// namespace.
-class GetAppOutputScopedAllowBaseSyncPrimitives
-    : public base::ScopedAllowBaseSyncPrimitives {};
-
-}  // namespace internal
 
 }  // namespace base
 

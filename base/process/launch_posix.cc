@@ -43,6 +43,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/threading/platform_thread_internal_posix.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
@@ -68,6 +69,13 @@
 extern char** environ;
 
 namespace base {
+
+// Friend and derived class of ScopedAllowBaseSyncPrimitives which allows
+// GetAppOutputInternal() to join a process. GetAppOutputInternal() can't itself
+// be a friend of ScopedAllowBaseSyncPrimitives because it is in the anonymous
+// namespace.
+class GetAppOutputScopedAllowBaseSyncPrimitives
+    : public base::ScopedAllowBaseSyncPrimitives {};
 
 #if !defined(OS_NACL_NONSFI)
 
@@ -516,6 +524,7 @@ static bool GetAppOutputInternal(
     std::string* output,
     bool do_search_path,
     int* exit_code) {
+  ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   // exit_code must be supplied so calling function can determine success.
   DCHECK(exit_code);
   *exit_code = EXIT_FAILURE;
@@ -597,8 +606,6 @@ static bool GetAppOutputInternal(
       // write to the pipe).
       close(pipe_fd[1]);
 
-      TRACE_EVENT0("base", "GetAppOutput");
-
       output->clear();
 
       while (true) {
@@ -614,10 +621,9 @@ static bool GetAppOutputInternal(
       // Always wait for exit code (even if we know we'll declare
       // GOT_MAX_OUTPUT).
       Process process(pid);
-      // It is okay to allow this process to wait on the launched process as a
-      // process launched with GetAppOutput*() shouldn't wait back on the
-      // process that launched it.
-      internal::GetAppOutputScopedAllowBaseSyncPrimitives allow_wait;
+      // A process launched with GetAppOutput*() usually doesn't wait on the
+      // process that launched it and thus chances of deadlock are low.
+      GetAppOutputScopedAllowBaseSyncPrimitives allow_base_sync_primitives;
       return process.WaitForExit(exit_code);
     }
   }
