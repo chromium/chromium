@@ -26,7 +26,6 @@ import("//media/gpu/args.gni")
 import("//media/media_options.gni")
 import("//remoting/remoting_enable.gni")
 import("//third_party/closure_compiler/compile_js.gni")
-import("//third_party/openh264/openh264_args.gni")
 import("//tools/ipc_fuzzer/ipc_fuzzer.gni")
 import("//ui/base/ui_features.gni")
 import("//ui/gl/features.gni")
@@ -681,14 +680,6 @@ group("gn_all") {
       "//third_party/crashpad/crashpad:crashpad_tests",
       "//third_party/crashpad/crashpad/handler:crashpad_handler",
       "//third_party/crashpad/crashpad/tools:crashpad_database_util",
-    ]
-  }
-
-  if (use_openh264) {
-    deps += [
-      "//third_party/openh264:common",
-      "//third_party/openh264:encoder",
-      "//third_party/openh264:processing",
     ]
   }
 
