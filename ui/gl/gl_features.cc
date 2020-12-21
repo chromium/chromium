@@ -4,9 +4,17 @@
 
 #include "ui/gl/gl_features.h"
 
+#include "base/command_line.h"
+#include "base/feature_list.h"
 #include "build/chromeos_buildflags.h"
+#include "ui/gl/gl_switches.h"
 
 namespace features {
+namespace {
+
+const base::Feature kGpuVsync{"GpuVsync", base::FEATURE_ENABLED_BY_DEFAULT};
+
+}  // namespace
 
 // Use the passthrough command decoder by default.  This can be overridden with
 // the --use-cmd-decoder=passthrough or --use-cmd-decoder=validating flags.
@@ -23,5 +31,11 @@ const base::Feature kDefaultPassthroughCommandDecoder{
       base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 };
+
+bool UseGpuVsync() {
+  return !base::CommandLine::ForCurrentProcess()->HasSwitch(
+             switches::kDisableGpuVsync) &&
+         base::FeatureList::IsEnabled(kGpuVsync);
+}
 
 }  // namespace features

@@ -20,6 +20,7 @@
 #include "ui/gl/dc_layer_tree.h"
 #include "ui/gl/direct_composition_child_surface_win.h"
 #include "ui/gl/gl_angle_util_win.h"
+#include "ui/gl/gl_features.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/gpu_switching_manager.h"
@@ -652,8 +653,7 @@ bool DirectCompositionSurfaceWin::IsSwapChainTearingSupported() {
 // static
 bool DirectCompositionSurfaceWin::AllowTearing() {
   // Swap chain tearing is used only if vsync is disabled explicitly.
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-             switches::kDisableGpuVsync) &&
+  return features::UseGpuVsync() &&
          DirectCompositionSurfaceWin::IsSwapChainTearingSupported();
 }
 

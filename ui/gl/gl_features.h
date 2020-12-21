@@ -11,6 +11,9 @@
 
 namespace features {
 
+// Controls if GPU should synchronize presentation with vsync.
+GL_EXPORT bool UseGpuVsync();
+
 // All features in alphabetical order. The features should be documented
 // alongside the definition of their values in the .cc file.
 GL_EXPORT extern const base::Feature kDefaultPassthroughCommandDecoder;
