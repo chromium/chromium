@@ -423,7 +423,7 @@ void OutputPresenterX11::OnX11::Initialize() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   auto* connection = x11::Connection::Get();
   event_source_ = std::make_unique<ui::X11EventSource>(connection);
-  connection->RemoveEventObserver(this);
+  connection->AddEventObserver(this);
 
   auto* present = &connection->present();
   event_id_ = connection->GenerateId<uint32_t>();
