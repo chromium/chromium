@@ -2143,7 +2143,9 @@ void RenderWidgetHostViewAura::Shutdown() {
 }
 
 bool RenderWidgetHostViewAura::ShouldVirtualKeyboardOverlayContent() const {
-  RenderFrameHostImpl* frame = GetFocusedFrame();
+  // overlaycontent flag can only be set from main frame.
+  RenderFrameHostImpl* frame =
+      host()->delegate()->GetFrameTree()->GetMainFrame();
   if (!frame)
     return false;
 
@@ -2152,13 +2154,18 @@ bool RenderWidgetHostViewAura::ShouldVirtualKeyboardOverlayContent() const {
 
 void RenderWidgetHostViewAura::NotifyVirtualKeyboardOverlayRect(
     const gfx::Rect& keyboard_rect) {
-  RenderFrameHostImpl* frame = GetFocusedFrame();
+  // geometrychange event can only be fired on main frame and not focused frame
+  // which could be an iframe.
+  RenderFrameHostImpl* frame =
+      host()->delegate()->GetFrameTree()->GetMainFrame();
   if (!frame)
     return;
   frame->NotifyVirtualKeyboardOverlayRect(keyboard_rect);
 }
 
 bool RenderWidgetHostViewAura::FocusedFrameHasStickyActivation() const {
+  // Unless user has interacted with the iframe, we shouldn't be displaying VK
+  // or fire geometrychange event.
   RenderFrameHostImpl* frame = GetFocusedFrame();
   if (!frame)
     return false;
