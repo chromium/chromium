@@ -4,8 +4,12 @@
 
 #include "chrome/browser/media/router/media_router_feature.h"
 
+#include <utility>
+
 #include "base/base64.h"
+#include "base/containers/flat_map.h"
 #include "base/feature_list.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -66,11 +70,22 @@ bool MediaRouterEnabled(content::BrowserContext* context) {
 #endif  // !defined(OFFICIAL_BUILD) && !defined(OS_ANDROID)
 
 #if defined(OS_ANDROID) || BUILDFLAG(ENABLE_EXTENSIONS)
+  static base::NoDestructor<base::flat_map<content::BrowserContext*, bool>>
+      stored_pref_values;
+
+  // If the Media Router was already enabled or disabled for |context|, then it
+  // must remain so.  The Media Router does not support dynamic
+  // enabling/disabling.
+  auto const it = stored_pref_values->find(context);
+  if (it != stored_pref_values->end())
+    return it->second;
+
+  // Check the enterprise policy.
   const PrefService::Preference* pref = GetMediaRouterPref(context);
-  // Only use the pref value if it set from a mandatory policy.
   if (pref->IsManaged() && !pref->IsDefaultValue()) {
-    bool allowed = false;
+    bool allowed;
     CHECK(pref->GetValue()->GetAsBoolean(&allowed));
+    stored_pref_values->insert(std::make_pair(context, allowed));
     return allowed;
   }
 

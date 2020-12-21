@@ -250,7 +250,12 @@ source_set("unittests") {
       "providers/extension/extension_media_route_provider_proxy_unittest.cc",
       "providers/wired_display/wired_display_media_route_provider_unittest.cc",
     ]
-    deps += [ ":test_support" ]
+    deps += [
+      ":test_support",
+      "//chrome/test:test_support",
+      "//components/sync_preferences:test_support",
+      "//content/test:test_support",
+    ]
   }
 
   if (enable_openscreen) {
