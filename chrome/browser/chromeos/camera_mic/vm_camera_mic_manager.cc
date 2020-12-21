@@ -256,24 +256,18 @@ void VmCameraMicManager::OpenNotification(VmType vm, NotificationType type) {
     return;
   }
 
-  const char* notifier_id = ash::kVmCameraMicNotifierId;
-
   const gfx::VectorIcon* source_icon = nullptr;
-  int source_id;
   int message_id;
   if (type[static_cast<size_t>(DeviceType::kCamera)]) {
     source_icon = &::vector_icons::kVideocamIcon;
     if (type[static_cast<size_t>(DeviceType::kMic)]) {
-      source_id = IDS_CAMERA_MIC_NOTIFICATION_SOURCE;
       message_id = IDS_APP_USING_CAMERA_MIC_NOTIFICATION_MESSAGE;
     } else {
-      source_id = IDS_CAMERA_NOTIFICATION_SOURCE;
       message_id = IDS_APP_USING_CAMERA_NOTIFICATION_MESSAGE;
     }
   } else {
     DCHECK_EQ(type, kMicNotification);
     source_icon = &::vector_icons::kMicIcon;
-    source_id = IDS_MIC_NOTIFICATION_SOURCE;
     message_id = IDS_APP_USING_MIC_NOTIFICATION_MESSAGE;
   }
 
@@ -303,10 +297,11 @@ void VmCameraMicManager::OpenNotification(VmType vm, NotificationType type) {
                                  l10n_util::GetStringUTF16(app_name_id)),
       /*message=*/base::string16(),
       /*icon=*/gfx::Image(),
-      /*display_source=*/l10n_util::GetStringUTF16(source_id),
+      /*display_source=*/
+      l10n_util::GetStringUTF16(IDS_CHROME_OS_NOTIFICATION_SOURCE),
       /*origin_url=*/GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                                 notifier_id),
+                                 ash::kVmCameraMicNotifierId),
       rich_notification_data,
       base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
           std::move(notification_observer_)));

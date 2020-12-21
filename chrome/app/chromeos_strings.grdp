@@ -5405,6 +5405,9 @@
   <message name="IDS_CAMERA_MIC_NOTIFICATION_SOURCE" desc="The name of the source of a 'camera and mic' notification">
     Camera &amp; microphone
   </message>
+  <message name="IDS_CHROME_OS_NOTIFICATION_SOURCE" desc="The name of the source of a Chrome OS notificatoin">
+    Chrome OS
+  </message>
   <message name="IDS_APP_USING_CAMERA_NOTIFICATION_MESSAGE" desc="Message shown in notification when an app is using the camera">
     <ph name="APP_NAME">$1<ex>Parallels Desktop</ex></ph> is using your camera
   </message>
