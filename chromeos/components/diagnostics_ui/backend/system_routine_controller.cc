@@ -34,6 +34,7 @@ constexpr uint32_t kExpectedMemoryDurationInSeconds = 1000;
 constexpr uint32_t kRoutineResultRefreshIntervalInSeconds = 1;
 
 constexpr char kChargePercentKey[] = "chargePercent";
+constexpr char kDischargePercentKey[] = "dischargePercent";
 constexpr char kResultDetailsKey[] = "resultDetails";
 
 mojom::RoutineResultInfoPtr ConstructStandardRoutineResultInfoPtr(
@@ -581,7 +582,9 @@ void SystemRoutineController::OnPowerRoutineJsonParsed(
   }
 
   base::Optional<double> charge_percent_opt =
-      result_details_dict->FindDoubleKey(kChargePercentKey);
+      routine_type == mojom::RoutineType::kBatteryCharge
+          ? result_details_dict->FindDoubleKey(kChargePercentKey)
+          : result_details_dict->FindDoubleKey(kDischargePercentKey);
   if (!charge_percent_opt.has_value()) {
     OnPowerRoutineResult(routine_type,
                          mojom::StandardRoutineResult::kExecutionError,
