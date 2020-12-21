@@ -100,13 +100,14 @@ void SkipWaitingWorkerOnCoreThread(
   registration->ActivateWaitingVersionWhenReady();
 }
 
-void DidStartWorker(scoped_refptr<ServiceWorkerVersion> version,
-                    ServiceWorkerContext::StartWorkerCallback info_callback,
-                    base::OnceClosure error_callback,
-                    blink::ServiceWorkerStatusCode start_worker_status) {
+void DidStartWorker(
+    scoped_refptr<ServiceWorkerVersion> version,
+    ServiceWorkerContext::StartWorkerCallback info_callback,
+    ServiceWorkerContext::StartWorkerFailureCallback error_callback,
+    blink::ServiceWorkerStatusCode start_worker_status) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   if (start_worker_status != blink::ServiceWorkerStatusCode::kOk) {
-    std::move(error_callback).Run();
+    std::move(error_callback).Run(start_worker_status);
     return;
   }
   EmbeddedWorkerInstance* instance = version->embedded_worker();
@@ -117,12 +118,12 @@ void DidStartWorker(scoped_refptr<ServiceWorkerVersion> version,
 
 void FoundRegistrationForStartWorker(
     ServiceWorkerContext::StartWorkerCallback info_callback,
-    base::OnceClosure failure_callback,
+    ServiceWorkerContext::StartWorkerFailureCallback failure_callback,
     blink::ServiceWorkerStatusCode service_worker_status,
     scoped_refptr<ServiceWorkerRegistration> registration) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   if (service_worker_status != blink::ServiceWorkerStatusCode::kOk) {
-    std::move(failure_callback).Run();
+    std::move(failure_callback).Run(service_worker_status);
     return;
   }
 
@@ -138,7 +139,7 @@ void FoundRegistrationForStartWorker(
   // However, if the installation is rejected, the installing version can go
   // away by the time we reach here from DidFindRegistrationForFindImpl.
   if (!version_ptr) {
-    std::move(failure_callback).Run();
+    std::move(failure_callback).Run(service_worker_status);
     return;
   }
 
@@ -744,7 +745,7 @@ void ServiceWorkerContextWrapper::ClearAllServiceWorkersForTest(
 void ServiceWorkerContextWrapper::StartWorkerForScope(
     const GURL& scope,
     StartWorkerCallback info_callback,
-    base::OnceClosure failure_callback) {
+    StartWorkerFailureCallback failure_callback) {
   DCHECK_CURRENTLY_ON(GetCoreThreadId());
   FindRegistrationForScopeImpl(
       scope, /*include_installing_version=*/true,

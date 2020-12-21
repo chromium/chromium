@@ -93,7 +93,7 @@ void FakeServiceWorkerContext::ClearAllServiceWorkersForTest(
 void FakeServiceWorkerContext::StartWorkerForScope(
     const GURL& scope,
     ServiceWorkerContext::StartWorkerCallback info_callback,
-    base::OnceClosure failure_callback) {
+    ServiceWorkerContext::StartWorkerFailureCallback failure_callback) {
   NOTREACHED();
 }
 void FakeServiceWorkerContext::StartServiceWorkerForNavigationHint(

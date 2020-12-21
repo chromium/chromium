@@ -174,7 +174,8 @@ void ServiceWorkerTaskQueue::DidStartWorkerForScope(
 }
 
 void ServiceWorkerTaskQueue::DidStartWorkerFail(
-    const SequencedContextId& context_id) {
+    const SequencedContextId& context_id,
+    blink::ServiceWorkerStatusCode status_code) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!IsCurrentSequence(context_id.first.extension_id(), context_id.second)) {
     // This can happen is when the registration got unregistered right before we
@@ -190,7 +191,8 @@ void ServiceWorkerTaskQueue::DidStartWorkerFail(
   DCHECK(worker_state);
   if (g_test_observer) {
     g_test_observer->DidStartWorkerFail(context_id.first.extension_id(),
-                                        worker_state->pending_tasks_.size());
+                                        worker_state->pending_tasks_.size(),
+                                        status_code);
   }
   worker_state->pending_tasks_.clear();
   // TODO(https://crbug/1062936): Needs more thought: extension would be in

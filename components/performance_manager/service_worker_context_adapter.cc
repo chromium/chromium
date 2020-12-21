@@ -184,7 +184,7 @@ void ServiceWorkerContextAdapter::ClearAllServiceWorkersForTest(
 void ServiceWorkerContextAdapter::StartWorkerForScope(
     const GURL& scope,
     StartWorkerCallback info_callback,
-    base::OnceClosure failure_callback) {
+    StartWorkerFailureCallback failure_callback) {
   NOTIMPLEMENTED();
 }
 

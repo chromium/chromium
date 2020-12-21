@@ -637,11 +637,17 @@ class ServiceWorkerStartFailureObserver
 
   // ServiceWorkerTaskQueue::TestObserver:
   void DidStartWorkerFail(const ExtensionId& extension_id,
-                          size_t num_pending_tasks) override {
+                          size_t num_pending_tasks,
+                          blink::ServiceWorkerStatusCode status_code) override {
     if (extension_id == extension_id_) {
       pending_tasks_count_at_worker_failure_ = num_pending_tasks;
+      status_code_ = status_code;
       run_loop_.Quit();
     }
+  }
+
+  base::Optional<blink::ServiceWorkerStatusCode> status_code() {
+    return status_code_;
   }
 
  private:
@@ -651,6 +657,7 @@ class ServiceWorkerStartFailureObserver
 
   ExtensionId extension_id_;
   base::RunLoop run_loop_;
+  base::Optional<blink::ServiceWorkerStatusCode> status_code_;
 };
 
 // Test extension id at
@@ -2078,6 +2085,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
   // And the task count will be reset to zero afterwards.
   EXPECT_EQ(0u,
             service_worker_task_queue->GetNumPendingTasksForTest(context_id));
+  EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorNotFound,
+            worker_start_failure_observer.status_code());
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,

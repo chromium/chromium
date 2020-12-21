@@ -14,6 +14,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/service_worker_external_request_result.h"
 #include "content/public/browser/service_worker_running_info.h"
+#include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom-forward.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom-forward.h"
 #include "url/gurl.h"
@@ -88,6 +89,9 @@ class CONTENT_EXPORT ServiceWorkerContext {
 
   using StartWorkerCallback = base::OnceCallback<
       void(int64_t version_id, int process_id, int thread_id)>;
+
+  using StartWorkerFailureCallback =
+      base::OnceCallback<void(blink::ServiceWorkerStatusCode status_code)>;
 
   static content::BrowserThread::ID GetCoreThreadId();
 
@@ -230,14 +234,16 @@ class CONTENT_EXPORT ServiceWorkerContext {
   // Starts the active worker of the registration for the given |scope|. If
   // there is no active worker, starts the installing worker.
   // |info_callback| is passed information about the started worker if
-  // successful, otherwise |failure_callback| is called.
+  // successful, otherwise |failure_callback| is passed information about the
+  // error.
   //
   // Must be called on the core thread, and the callback is called on that
   // thread. There is no guarantee about whether the callback is called
   // synchronously or asynchronously.
-  virtual void StartWorkerForScope(const GURL& scope,
-                                   StartWorkerCallback info_callback,
-                                   base::OnceClosure failure_callback) = 0;
+  virtual void StartWorkerForScope(
+      const GURL& scope,
+      StartWorkerCallback info_callback,
+      StartWorkerFailureCallback failure_callback) = 0;
 
   // Starts the active worker of the registration for the given |scope| and
   // dispatches the given |message| to the service worker. |result_callback|
