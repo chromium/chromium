@@ -60,18 +60,18 @@ different platforms.
   ([bug](https://llvm.org/PR48395), fixed upstream)
 - LLD-linked `protoc` crashes when it runs as part of the build
   ([bug](https://llvm.org/PR48491), fixed upstream)
+- LLD cannot yet link swiftshader binaries
+  ([bug](https://llvm.org/PR48332), fixed upstream)
 - LLD-linked `v8_context_snapshot_generator` crashes when it runs as part of
-  the build ([bug](https://llvm.org/PR48511),
-  [in-progress patch](https://reviews.llvm.org/D93369))
-- verify\_framework\_order fails in LLD builds (FIXME: file bug)
+  the build ([bug](https://llvm.org/PR48511), fixed upstream)
+- verify\_framework\_order fails in LLD builds
+  ([bug](https://llvm.org/PR48536),
+  [in-progress patch](https://reviews.llvm.org/D93609))
 - LLD-built Chromium.app crashes with `malloc: *** error for object
   0x7fa46941f20a: pointer being freed was not allocated` at starutp (FIXME:
   file bug)
 - LLD does not yet have any ARM support
   ([in-progress patch](https://reviews.llvm.org/D88629))
-- LLD cannot yet link swiftshader binaries ([bug](https://llvm.org/PR48332),
-  [in-progress patch](https://reviews.llvm.org/D93267)) --
-  need to locally hack up LLD to warn instead of error on this for now
 - LLD likely produces bad debug info, and LLD-linked binaries likely don't
   yet work in a debugger
 - LLD-linked base\_unittests fails some unwind-related tests
