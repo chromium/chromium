@@ -784,6 +784,14 @@ void PageLoadMetricsUpdateDispatcher::OnSubFrameRenderDataChanged(
   client_->OnSubFrameRenderDataChanged(render_frame_host, render_data);
 }
 
+void PageLoadMetricsUpdateDispatcher::FlushPendingTimingUpdates() {
+  // If there's a pending update, dispatch the update now.
+  if (timer_->IsRunning()) {
+    timer_->Stop();
+    DispatchTimingUpdates();
+  }
+}
+
 void PageLoadMetricsUpdateDispatcher::MaybeDispatchTimingUpdates(
     bool should_buffer_timing_update_callback) {
   // If we merged a new timing value, then we should buffer updates for

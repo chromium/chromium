@@ -398,6 +398,9 @@ class BLINK_EXPORT WebLocalFrameClient {
                                                WebHistoryCommitType,
                                                bool content_initiated) {}
 
+  // Called when a RenderFrame's page lifecycle state gets updated.
+  virtual void DidSetPageLifecycleState() {}
+
   // Called upon update to scroll position, document state, and other
   // non-navigational events related to the data held by WebHistoryItem.
   // WARNING: This method may be called very frequently.

@@ -636,6 +636,9 @@ void MetricsWebContentsObserver::FinalizeCurrentlyCommittedLoad(
     if (is_non_user_initiated_client_redirect) {
       committed_load_->NotifyClientRedirectTo(newly_committed_navigation);
     }
+
+    // Ensure that any pending update gets dispatched.
+    committed_load_->metrics_update_dispatcher()->FlushPendingTimingUpdates();
   }
 }
 

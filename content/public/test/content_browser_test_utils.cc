@@ -92,36 +92,6 @@ bool NavigateToURL(Shell* window,
   return NavigateToURL(window->web_contents(), url, expected_commit_url);
 }
 
-bool NavigateToURLFromRenderer(const ToRenderFrameHost& adapter,
-                               const GURL& url) {
-  return NavigateToURLFromRenderer(adapter, url, url);
-}
-
-bool NavigateToURLFromRenderer(const ToRenderFrameHost& adapter,
-                               const GURL& url,
-                               const GURL& expected_commit_url) {
-  RenderFrameHost* rfh = adapter.render_frame_host();
-  TestFrameNavigationObserver nav_observer(rfh);
-  if (!ExecJs(rfh, JsReplace("location = $1", url)))
-    return false;
-  nav_observer.Wait();
-  return nav_observer.last_committed_url() == expected_commit_url &&
-         nav_observer.last_navigation_succeeded();
-}
-
-bool NavigateToURLFromRendererWithoutUserGesture(
-    const ToRenderFrameHost& adapter,
-    const GURL& url) {
-  RenderFrameHost* rfh = adapter.render_frame_host();
-  TestFrameNavigationObserver nav_observer(rfh);
-  if (!ExecJs(rfh, JsReplace("location = $1", url),
-              EXECUTE_SCRIPT_NO_USER_GESTURE)) {
-    return false;
-  }
-  nav_observer.Wait();
-  return nav_observer.last_committed_url() == url;
-}
-
 bool NavigateToURLAndExpectNoCommit(Shell* window, const GURL& url) {
   NavigationEntry* old_entry =
       window->web_contents()->GetController().GetLastCommittedEntry();

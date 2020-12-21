@@ -198,6 +198,9 @@ class PageLoadMetricsUpdateDispatcher {
     return mobile_friendliness_;
   }
 
+  // Ensures all pending updates will get dispatched.
+  void FlushPendingTimingUpdates();
+
  private:
   using FrameTreeNodeId = int;
 

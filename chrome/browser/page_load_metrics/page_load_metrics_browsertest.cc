@@ -60,6 +60,7 @@
 #include "components/page_load_metrics/browser/observers/use_counter_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
+#include "components/page_load_metrics/common/page_load_metrics_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/content/content_test_helper.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
@@ -72,6 +73,7 @@
 #include "content/public/common/referrer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/download_test_observer.h"
 #include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -509,10 +511,13 @@ class PageLoadMetricsBrowserTest : public InProcessBrowserTest {
     return observer.navigation_handle_timing();
   }
 
-  content::RenderFrameHost* RenderFrameHost() const {
-    return browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
+  content::WebContents* web_contents() const {
+    return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
+  content::RenderFrameHost* RenderFrameHost() const {
+    return web_contents()->GetMainFrame();
+  }
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
@@ -3400,3 +3405,93 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
         kv.second.get(), NavigationTiming::kEarlyHintsForFinalRequestName));
   }
 }
+
+class NavigationPageLoadMetricsBrowserTest
+    : public PageLoadMetricsBrowserTest,
+      public ::testing::WithParamInterface<std::string> {
+ public:
+  NavigationPageLoadMetricsBrowserTest() = default;
+  ~NavigationPageLoadMetricsBrowserTest() override = default;
+
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        page_load_metrics::kPageLoadMetricsTimerDelayFeature,
+        {
+            // Set a very long TTL before expiration (longer than the test
+            // timeout) so tests that are expecting deletion don't pass when
+            // they shouldn't.
+            {"BufferTimerDelayMillis", "100000"},
+        });
+    PageLoadMetricsBrowserTest::SetUpCommandLine(command_line);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(NavigationPageLoadMetricsBrowserTest, FirstInputDelay) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url1(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url2(embedded_test_server()->GetURL(
+      (GetParam() == "SameSite") ? "a.com" : "b.com", "/title2.html"));
+
+  EXPECT_THAT(histogram_tester_->GetAllSamples(
+                  internal::kHistogramFirstContentfulPaint),
+              testing::IsEmpty());
+
+  // 1) Navigate to url1.
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), url1));
+  content::RenderFrameHost* rfh_a = RenderFrameHost();
+  content::RenderProcessHost* rfh_a_process = rfh_a->GetProcess();
+
+  // Simulate mouse click. FirstInputDelay won't get updated immediately.
+  content::SimulateMouseClickAt(web_contents(), 0,
+                                blink::WebMouseEvent::Button::kLeft,
+                                gfx::Point(100, 100));
+  // Run arbitrary script and run tasks in the brwoser to ensure the input is
+  // processed in the renderer.
+  EXPECT_TRUE(content::ExecJs(rfh_a, "var foo = 42;"));
+  base::RunLoop().RunUntilIdle();
+  content::FetchHistogramsFromChildProcesses();
+  histogram_tester_->ExpectTotalCount(internal::kHistogramFirstInputDelay, 0);
+
+  // 2) Immediately navigate to url2.
+  if (GetParam() == "CrossSiteRendererInitiated") {
+    EXPECT_TRUE(content::NavigateToURLFromRenderer(web_contents(), url2));
+  } else {
+    EXPECT_TRUE(content::NavigateToURL(web_contents(), url2));
+  }
+
+  content::FetchHistogramsFromChildProcesses();
+  if (GetParam() != "CrossSiteBrowserInitiated" ||
+      rfh_a_process == RenderFrameHost()->GetProcess()) {
+    // - For "SameSite" case, since the old and new RenderFrame either share a
+    // process (with RenderDocument/back-forward cache) or the RenderFrame is
+    // reused the metrics update will be sent to the browser during commit and
+    // won't get ignored, successfully updating the FirstInputDelay histogram.
+    // - For "CrossSiteRendererInitiated" case, FirstInputDelay was sent when
+    // the renderer-initiated navigation started on the old frame.
+    // - For "CrossSiteBrowserInitiated" case, if the old and new RenderFrame
+    // share a process, the metrics update will be sent to the browser during
+    // commit and won't get ignored, successfully updating the histogram.
+    histogram_tester_->ExpectTotalCount(internal::kHistogramFirstInputDelay, 1);
+  } else {
+    // Note that in some cases the metrics might flakily get updated in time,
+    // before the browser changed the current RFH. So, we can neither expect it
+    // to be 0 all the time or 1 all the time.
+    // TODO(crbug.com/1150242): Support updating metrics consistently on
+    // cross-RFH cross-process navigations.
+  }
+}
+
+std::vector<std::string> NavigationPageLoadMetricsBrowserTestTestValues() {
+  return {"SameSite", "CrossSiteRendererInitiated",
+          "CrossSiteBrowserInitiated"};
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    NavigationPageLoadMetricsBrowserTest,
+    testing::ValuesIn(NavigationPageLoadMetricsBrowserTestTestValues()));
