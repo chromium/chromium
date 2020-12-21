@@ -495,7 +495,8 @@ TEST_F(WebrtcTransportTest,
 }
 
 TEST_F(WebrtcTransportTest,
-       ThreadJoinNotBlockedDuringConnectionTeardown_WatchdogNotFired) {
+       DISABLED_ThreadJoinNotBlockedDuringConnectionTeardown_WatchdogNotFired) {
+  // Test disabled for crbug.com/1160702
   InitializeConnection();
 
   int counter = 2;
