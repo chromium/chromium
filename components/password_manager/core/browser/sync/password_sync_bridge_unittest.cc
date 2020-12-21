@@ -15,6 +15,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "build/build_config.h"
+#include "components/password_manager/core/browser/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store_sync.h"
 #include "components/sync/base/client_tag_hash.h"
@@ -224,6 +225,10 @@ class MockPasswordStoreSync : public PasswordStoreSync {
   MOCK_METHOD(PasswordStoreChangeList,
               AddLoginSync,
               (const PasswordForm&, AddLoginError*),
+              (override));
+  MOCK_METHOD(bool,
+              AddCompromisedCredentialsSync,
+              (base::span<const CompromisedCredentials>),
               (override));
   MOCK_METHOD(PasswordStoreChangeList,
               UpdateLoginSync,

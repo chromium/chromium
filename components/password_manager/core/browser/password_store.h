@@ -582,6 +582,8 @@ class PasswordStore : protected PasswordStoreSync,
   // PasswordStoreSync:
   PasswordStoreChangeList AddLoginSync(const PasswordForm& form,
                                        AddLoginError* error) override;
+  bool AddCompromisedCredentialsSync(
+      base::span<const CompromisedCredentials> issues) override;
   PasswordStoreChangeList UpdateLoginSync(const PasswordForm& form,
                                           UpdateLoginError* error) override;
   PasswordStoreChangeList RemoveLoginSync(const PasswordForm& form) override;
@@ -655,6 +657,7 @@ class PasswordStore : protected PasswordStoreSync,
  private:
   FRIEND_TEST_ALL_PREFIXES(PasswordStoreTest,
                            UpdatePasswordsStoredForAffiliatedWebsites);
+  FRIEND_TEST_ALL_PREFIXES(PasswordStoreTest, AddCompromisedCredentialsSync);
 
   using LoginsResult = std::vector<std::unique_ptr<PasswordForm>>;
   using LoginsTask = base::OnceCallback<LoginsResult()>;

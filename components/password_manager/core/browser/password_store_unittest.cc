@@ -1797,4 +1797,53 @@ TEST_F(PasswordStoreTest, RemoveFieldInfo) {
 }
 #endif  // !defined(OS_ANDROID)
 
+TEST_F(PasswordStoreTest, AddCompromisedCredentialsSync) {
+  scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
+  store->Init(/*prefs=*/nullptr);
+
+  constexpr PasswordFormData kTestCredential = {
+      PasswordForm::Scheme::kHtml,
+      kTestWebRealm1,
+      kTestWebOrigin1,
+      "",
+      L"",
+      L"username_element_1",
+      L"password_element_1",
+      L"username",
+      L"",
+      kTestLastUsageTime,
+      1,
+  };
+
+  std::unique_ptr<PasswordForm> test_form =
+      FillPasswordFormWithData(kTestCredential);
+
+  const std::vector<CompromisedCredentials> compromised_credentials = {
+      CompromisedCredentials(test_form->signon_realm, test_form->username_value,
+                             base::Time(), CompromiseType::kLeaked,
+                             IsMuted(false)),
+      CompromisedCredentials(test_form->signon_realm, test_form->username_value,
+                             base::Time(), CompromiseType::kReused,
+                             IsMuted(false))};
+
+  AddLoginError add_login_error = AddLoginError::kDbError;
+  store->ScheduleTask(base::BindOnce(IgnoreResult(&PasswordStore::AddLoginSync),
+                                     store, *test_form, &add_login_error));
+  store->ScheduleTask(base::BindOnce(
+      IgnoreResult(&PasswordStore::AddCompromisedCredentialsSync), store,
+      compromised_credentials));
+
+  WaitForPasswordStore();
+  EXPECT_EQ(add_login_error, AddLoginError::kNone);
+
+  MockCompromisedCredentialsConsumer consumer;
+  EXPECT_CALL(consumer,
+              OnGetCompromisedCredentials(UnorderedElementsAre(
+                  compromised_credentials[0], compromised_credentials[1])));
+  store->GetAllCompromisedCredentials(&consumer);
+  WaitForPasswordStore();
+
+  store->ShutdownOnUIThread();
+}
+
 }  // namespace password_manager

@@ -18,6 +18,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/strings/string16.h"
 #include "base/task/post_task.h"
@@ -698,6 +699,13 @@ PasswordStoreChangeList PasswordStore::AddLoginSync(const PasswordForm& form,
           PasswordStore::FormDigest(form)))
     ScheduleFindAndUpdateAffiliatedWebLogins(form);
   return AddLoginImpl(form, error);
+}
+
+bool PasswordStore::AddCompromisedCredentialsSync(
+    base::span<const CompromisedCredentials> issues) {
+  return base::ranges::all_of(issues, [this](const auto& issue) {
+    return AddCompromisedCredentialsImpl(issue);
+  });
 }
 
 PasswordStoreChangeList PasswordStore::UpdateLoginSync(

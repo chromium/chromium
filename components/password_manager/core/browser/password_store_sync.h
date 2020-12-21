@@ -20,6 +20,7 @@ class MetadataBatch;
 
 namespace password_manager {
 
+struct CompromisedCredentials;
 struct PasswordForm;
 
 using PrimaryKeyToFormMap = std::map<int, std::unique_ptr<PasswordForm>>;
@@ -129,6 +130,12 @@ class PasswordStoreSync {
   virtual PasswordStoreChangeList AddLoginSync(
       const PasswordForm& form,
       AddLoginError* error = nullptr) = 0;
+
+  // Synchronous implementation to add compromised credentials. Operation will
+  // be terminated if any insertion into the database fails. Returns whether
+  // operation was successful.
+  virtual bool AddCompromisedCredentialsSync(
+      base::span<const CompromisedCredentials> issues) = 0;
 
   // Synchronous implementation to update the given login.
   virtual PasswordStoreChangeList UpdateLoginSync(
