@@ -1561,6 +1561,9 @@ crbug.com/829740 fast/history/history-back-twice-with-subframes-assert.html [ Pa
 crbug.com/836783 fast/peerconnection/RTCRtpSender-setParameters.html [ Pass Timeout ]
 crbug.com/846981 fast/webgl/texImage-imageBitmap-from-imageData-resize.html [ Pass Timeout ]
 
+# Test failing on "Linux Tests (dbg)(1)" since it was introduced.
+crbug.com/1160616 [ Linux ] fast/peerconnection/RTCPeerConnection-addMultipleTracks.html [ Failure ]
+
 # crbug.com/1095379: These fail with a timeout, even when they're given extra time (via SlowTests)
 crbug.com/846656 external/wpt/css/selectors/focus-visible-002.html [ Pass Timeout ]
 crbug.com/1135405 http/tests/devtools/sources/debugger-pause/debugger-pause-infinite-loop.js [ Pass Timeout ]
