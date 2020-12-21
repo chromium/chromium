@@ -60,7 +60,8 @@
                                   RecentTabsContextMenuDelegate,
                                   RecentTabsPresentationDelegate,
                                   TabGridMediatorDelegate,
-                                  TabPresentationDelegate> {
+                                  TabPresentationDelegate,
+                                  TabGridViewControllerDelegate> {
   // Use an explicit ivar instead of synthesizing as the setter isn't using the
   // ivar.
   Browser* _incognitoBrowser;
@@ -252,7 +253,6 @@
     if (shouldCloseTabGrid) {
       [self.thumbStripCoordinator.panHandler setState:ViewRevealState::Hidden
                                              animated:YES];
-      [self.delegate tabGridDismissTransitionDidEnd:self];
 
       // Record when the tab switcher is dismissed.
       base::RecordAction(base::UserMetricsAction("MobileTabGridExited"));
@@ -334,6 +334,7 @@
   baseViewController.reauthHandler =
       HandlerForProtocol(self.dispatcher, IncognitoReauthCommands);
   baseViewController.tabPresentationDelegate = self;
+  baseViewController.delegate = self;
   _baseViewController = baseViewController;
 
   self.regularTabsMediator = [[TabGridMediator alloc]
@@ -557,6 +558,18 @@
                 }
                  style:UIAlertActionStyleCancel];
   [self.actionSheetCoordinator start];
+}
+
+#pragma mark - TabGridViewControllerDelegate
+
+- (TabGridPage)activePageForTabGridViewController:
+    (TabGridViewController*)tabGridViewController {
+  return [self.delegate activePageForTabGrid:self];
+}
+
+- (void)tabGridViewControllerDidDismiss:
+    (TabGridViewController*)tabGridViewController {
+  [self.delegate tabGridDismissTransitionDidEnd:self];
 }
 
 #pragma mark - RecentTabsPresentationDelegate

@@ -1582,6 +1582,10 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   [self finishActivatingBrowserDismissingTabSwitcher:YES];
 }
 
+- (TabGridPage)activePageForTabGrid:(TabGridCoordinator*)tabGrid {
+  return self.activePage;
+}
+
 // Begins the process of activating the given current model, switching which BVC
 // is suspended if necessary. If |dismissTabSwitcher| is set, the tab switcher
 // will also be dismissed. Note that this means that a browser can be activated

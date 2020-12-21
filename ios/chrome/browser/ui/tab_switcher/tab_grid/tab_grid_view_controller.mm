@@ -501,10 +501,20 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 #pragma mark - ViewRevealingAnimatee
 
 - (void)willAnimateViewReveal:(ViewRevealState)currentViewRevealState {
-  DCHECK_NE(TabGridPageRemoteTabs, self.currentPage);
   self.scrollView.scrollEnabled = NO;
   switch (currentViewRevealState) {
     case ViewRevealState::Hidden: {
+      // If the tab grid is just showing up, make sure that the active page is
+      // current. This can happen when the user closes the tab grid using the
+      // done button on RecentTabs. The current page would stay RecentTabs, but
+      // the active page comes from the currently displayed BVC.
+      if (self.delegate) {
+        self.activePage =
+            [self.delegate activePageForTabGridViewController:self];
+      }
+      if (self.currentPage != self.activePage) {
+        [self scrollToPage:self.activePage animated:NO];
+      }
       self.topToolbar.transform = CGAffineTransformMakeTranslation(
           0, [self hiddenTopToolbarYTranslation]);
       GridViewController* regularViewController =
@@ -580,9 +590,17 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (void)didAnimateViewReveal:(ViewRevealState)viewRevealState {
-  if (viewRevealState == ViewRevealState::Revealed) {
-    self.scrollView.scrollEnabled = YES;
-    [self setInsetForRemoteTabs];
+  switch (viewRevealState) {
+    case ViewRevealState::Hidden:
+      [self.delegate tabGridViewControllerDidDismiss:self];
+      break;
+    case ViewRevealState::Peeked:
+      // No-op.
+      break;
+    case ViewRevealState::Revealed:
+      self.scrollView.scrollEnabled = YES;
+      [self setInsetForRemoteTabs];
+      break;
   }
 }
 

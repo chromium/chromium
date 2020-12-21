@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
+
 class Browser;
 @class TabGridCoordinator;
 
@@ -25,6 +27,9 @@ class Browser;
 
 // Informs the delegate that the tab switcher is done and should be dismissed.
 - (void)tabGridDismissTransitionDidEnd:(TabGridCoordinator*)tabGrid;
+
+// Asks the delegate for the page that should currently be active.
+- (TabGridPage)activePageForTabGrid:(TabGridCoordinator*)tabGrid;
 
 @end
 

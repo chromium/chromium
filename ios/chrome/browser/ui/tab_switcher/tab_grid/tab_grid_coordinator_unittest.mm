@@ -55,6 +55,10 @@
 - (void)tabGridDismissTransitionDidEnd:(TabGridCoordinator*)tabGrid {
   self.didEndCalled = YES;
 }
+
+- (TabGridPage)activePageForTabGrid:(TabGridCoordinator*)tabGrid {
+  return TabGridPageRegularTabs;
+}
 @end
 
 namespace {

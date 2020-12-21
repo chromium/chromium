@@ -21,6 +21,7 @@
 @protocol GridImageDataSource;
 @protocol RecentTabsConsumer;
 @class RecentTabsTableViewController;
+@class TabGridViewController;
 
 // Delegate protocol for an object that can handle presenting ("opening") tabs
 // from the tab grid.
@@ -36,6 +37,19 @@
                closeTabGrid:(BOOL)closeTabGrid;
 @end
 
+@protocol TabGridViewControllerDelegate <NSObject>
+
+// Asks the delegate for the page that should currently be active.
+- (TabGridPage)activePageForTabGridViewController:
+    (TabGridViewController*)tabGridViewController;
+
+// Notifies the delegate that the tab grid was dismissed via the
+// ViewRevealingAnimatee.
+- (void)tabGridViewControllerDidDismiss:
+    (TabGridViewController*)tabGridViewController;
+
+@end
+
 // View controller representing a tab switcher. The tab switcher has an
 // incognito tab grid, regular tab grid, and remote tabs.
 @interface TabGridViewController
@@ -49,6 +63,8 @@
 
 // Delegate for this view controller to handle presenting tab UI.
 @property(nonatomic, weak) id<TabPresentationDelegate> tabPresentationDelegate;
+
+@property(nonatomic, weak) id<TabGridViewControllerDelegate> delegate;
 
 // Consumers send updates from the model layer to the UI layer.
 @property(nonatomic, readonly) id<GridConsumer> regularTabsConsumer;
