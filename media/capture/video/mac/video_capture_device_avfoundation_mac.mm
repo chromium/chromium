@@ -693,11 +693,22 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
 
   const base::TimeDelta timestamp = GetCMSampleBufferTimestamp(sampleBuffer);
 
+  // The SampleBufferTransformer CHECK-crashes if the sample buffer is not MJPEG
+  // and does not have a pixel buffer (https://crbug.com/1160647) so we fall
+  // back on the M87 code path if this is the case.
+  // TODO(https://crbug.com/1160315): When the SampleBufferTransformer is
+  // patched to support non-MJPEG-and-non-pixel-buffer sample buffers, remove
+  // this workaround.
+  bool sampleBufferLacksPixelBufferAndIsNotMjpeg =
+      !CMSampleBufferGetImageBuffer(sampleBuffer) &&
+      CMFormatDescriptionGetMediaSubType(CMSampleBufferGetFormatDescription(
+          sampleBuffer)) != kCMVideoCodecType_JPEG_OpenDML;
+
   // If the SampleBufferTransformer is enabled, convert all possible capture
   // formats to an IOSurface-backed NV12 pixel buffer.
   // TODO(hbos): If |_sampleBufferTransformer| gets shipped 100%, delete the
   // other code paths.
-  if (_sampleBufferTransformer) {
+  if (_sampleBufferTransformer && !sampleBufferLacksPixelBufferAndIsNotMjpeg) {
     base::ScopedCFTypeRef<CVPixelBufferRef> pixelBuffer =
         _sampleBufferTransformer->AutoReconfigureAndTransform(sampleBuffer);
     if (!pixelBuffer) {
