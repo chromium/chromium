@@ -79,8 +79,10 @@ class ModuleScriptCreationParams {
 
   ModuleScriptCreationParams CopyWithClearedSourceText() const {
     return ModuleScriptCreationParams(
-        source_url_, base_url_, module_type_, ParkableString(), cache_handler_,
-        credentials_mode_, script_streamer_, not_streaming_reason_);
+        source_url_, base_url_, module_type_, ParkableString(),
+        /*cache_handler=*/nullptr, credentials_mode_,
+        /*script_streamer=*/nullptr,
+        ScriptStreamer::NotStreamingReason::kStreamingDisabled);
   }
 
   SingleCachedMetadataHandler* CacheHandler() const { return cache_handler_; }
