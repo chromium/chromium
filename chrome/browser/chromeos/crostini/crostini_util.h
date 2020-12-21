@@ -209,7 +209,7 @@ void UpdateContainerPref(Profile* profile,
 
 const ContainerId& DefaultContainerId();
 
-bool IsCrostiniWindow(aura::Window* window);
+bool IsCrostiniWindow(const aura::Window* window);
 
 }  // namespace crostini
 

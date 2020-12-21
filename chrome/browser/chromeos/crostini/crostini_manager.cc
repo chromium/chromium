@@ -29,6 +29,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/crostini/ansible/ansible_management_service.h"
+#include "chrome/browser/chromeos/crostini/crostini_engagement_metrics_service.h"
 #include "chrome/browser/chromeos/crostini/crostini_features.h"
 #include "chrome/browser/chromeos/crostini/crostini_manager_factory.h"
 #include "chrome/browser/chromeos/crostini/crostini_port_forwarder.h"
@@ -2569,6 +2570,13 @@ void CrostiniManager::OnContainerStarted(
     return;
   ContainerId container_id(signal.vm_name(), signal.container_name());
 
+  auto* engagement_metrics_service =
+      CrostiniEngagementMetricsService::Factory::GetForProfile(profile_);
+  // This is null in unit tests.
+  if (engagement_metrics_service) {
+    engagement_metrics_service->SetBackgroundActive(true);
+  }
+
   running_containers_.emplace(
       signal.vm_name(),
       ContainerInfo(signal.container_name(), signal.container_username(),
@@ -2665,6 +2673,14 @@ void CrostiniManager::OnContainerShutdown(
     if (it->second.name == signal.container_name()) {
       running_containers_.erase(it);
       break;
+    }
+  }
+  if (running_containers_.empty()) {
+    auto* engagement_metrics_service =
+        CrostiniEngagementMetricsService::Factory::GetForProfile(profile_);
+    // This is null in unit tests.
+    if (engagement_metrics_service) {
+      engagement_metrics_service->SetBackgroundActive(false);
     }
   }
 }

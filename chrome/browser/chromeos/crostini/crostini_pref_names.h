@@ -42,6 +42,8 @@ extern const char kCrostiniLastLaunchTimeWindowStart[];
 extern const char kCrostiniLastDiskSize[];
 extern const char kCrostiniPortForwarding[];
 
+extern const char kEngagementPrefsPrefix[];
+
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 }  // namespace prefs

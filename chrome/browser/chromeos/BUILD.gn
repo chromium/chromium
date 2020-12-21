@@ -1086,6 +1086,8 @@ source_set("chromeos") {
     "crostini/ansible/ansible_management_service_factory.h",
     "crostini/crostini_disk.cc",
     "crostini/crostini_disk.h",
+    "crostini/crostini_engagement_metrics_service.cc",
+    "crostini/crostini_engagement_metrics_service.h",
     "crostini/crostini_export_import.cc",
     "crostini/crostini_export_import.h",
     "crostini/crostini_export_import_notification_controller.cc",

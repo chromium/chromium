@@ -572,7 +572,12 @@ const ContainerId& DefaultContainerId() {
   return *container_id;
 }
 
-bool IsCrostiniWindow(aura::Window* window) {
+bool IsCrostiniWindow(const aura::Window* window) {
+  // TODO(crbug/1158644): Non-Crostini apps (borealis, ...) have also been
+  // identifying as Crostini. For now they're less common, and as they become
+  // more productionised they get their own app type (e.g. lacros), but at some
+  // point we'll want to untangle these different types to e.g. avoid double
+  // counting in usage metrics.
   return window->GetProperty(aura::client::kAppType) ==
          static_cast<int>(ash::AppType::CROSTINI_APP);
 }

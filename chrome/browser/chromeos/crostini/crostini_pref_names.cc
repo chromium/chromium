@@ -10,6 +10,7 @@
 #include "base/values.h"
 #include "chrome/browser/chromeos/crostini/crostini_simple_types.h"
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
+#include "components/guest_os/guest_os_prefs.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 
@@ -85,6 +86,9 @@ const char kCrostiniPortForwarding[] = "crostini.port_forwarding.ports";
 const char kCrostiniArcAdbSideloadingUserPref[] =
     "crostini.arc_adb_sideloading.user_pref";
 
+// Prefix for storing engagement time data, per GuestOSEngagementMetrics.
+const char kEngagementPrefsPrefix[] = "crostini.metrics";
+
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kCrostiniEnabled, false);
   registry->RegisterDictionaryPref(kCrostiniMimeTypes);
@@ -129,6 +133,9 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       kCrostiniArcAdbSideloadingUserPref,
       static_cast<int>(CrostiniArcAdbSideloadingUserAllowanceMode::kDisallow));
+
+  guest_os::prefs::RegisterEngagementProfilePrefs(registry,
+                                                  kEngagementPrefsPrefix);
 }
 
 }  // namespace prefs

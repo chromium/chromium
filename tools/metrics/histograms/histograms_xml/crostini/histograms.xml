@@ -241,6 +241,38 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Crostini.EngagementTime.{Variant}" units="ms"
+    expires_after="2021-04-18">
+  <owner>davidmunro@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>
+    {Variant} Engagement time metrics, along with foreground and background
+    time, are only collected on users with Crostini enabled. All four metrics
+    are accumulated and recorded to UMA once a day.
+  </summary>
+  <token key="Variant">
+    <variant name="Background"
+        summary="Times when a user is engaged and Crostini apps are running
+                 in the background, but the user isn't focusing on an
+                 Crostini app window."/>
+    <variant name="CrostiniTotal"
+        summary="Total of Crostini.EngagementTime.Background and .Foreground,
+                 which is the time the user is engaged and Crostini is
+                 running either in the foreground or background."/>
+    <variant name="Foreground"
+        summary="Times when a user is engaged and focuses on a Crostini GUI
+                 window. As of 2020-12-15 this may count some
+                 similar-but-not-quite-Crostini windows e.g. Bruschetta, see
+                 crbug/1158644 for more details."/>
+    <variant name="Total"
+        summary="Total CrOS user session time (from login to logout)
+                 excluding times when a user &quot;disengages&quot;. A user
+                 is disengaged when the screen is locked or dimmed due to
+                 user inactivity. For Total Crostini engagement time, see
+                 Crostini.EngagementTime.CrostiniTotal."/>
+  </token>
+</histogram>
+
 <histogram name="Crostini.FilesystemCorruption" enum="CorruptionStates"
     expires_after="2021-06-13">
   <owner>clumptini@google.com</owner>
