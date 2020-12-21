@@ -12,6 +12,8 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 
 namespace assistant_client {
+class AssistantManager;
+class AssistantManagerInternal;
 class PlatformApi;
 }  // namespace assistant_client
 
@@ -29,6 +31,10 @@ class ServiceController;
 class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) LibassistantService
     : public mojom::LibassistantService {
  public:
+  using InitializeCallback =
+      base::OnceCallback<void(assistant_client::AssistantManager*,
+                              assistant_client::AssistantManagerInternal*)>;
+
   explicit LibassistantService(
       mojo::PendingReceiver<mojom::LibassistantService> receiver,
       assistant_client::PlatformApi* platform_api,
@@ -37,7 +43,11 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) LibassistantService
   LibassistantService& operator=(LibassistantService&) = delete;
   ~LibassistantService() override;
 
+  void SetInitializeCallback(InitializeCallback callback);
+
  private:
+  ServiceController& service_controller() { return *service_controller_; }
+
   // mojom::LibassistantService implementation:
   void BindServiceController(
       mojo::PendingReceiver<mojom::ServiceController> receiver) override;

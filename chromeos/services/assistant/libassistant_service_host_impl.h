@@ -7,11 +7,18 @@
 
 #include <memory>
 
+#include "base/synchronization/lock.h"
 #include "chromeos/services/assistant/proxy/libassistant_service_host.h"
 
 namespace assistant_client {
 class PlatformApi;
 }  // namespace assistant_client
+
+namespace chromeos {
+namespace libassistant {
+class LibassistantService;
+}  // namespace libassistant
+}  // namespace chromeos
 
 namespace chromeos {
 namespace assistant {
@@ -20,6 +27,10 @@ class AssistantManagerServiceDelegate;
 
 class LibassistantServiceHostImpl : public LibassistantServiceHost {
  public:
+  using InitializeCallback =
+      base::OnceCallback<void(assistant_client::AssistantManager*,
+                              assistant_client::AssistantManagerInternal*)>;
+
   LibassistantServiceHostImpl(assistant_client::PlatformApi* platform_api,
                               AssistantManagerServiceDelegate* delegate);
   LibassistantServiceHostImpl(LibassistantServiceHostImpl&) = delete;
@@ -30,6 +41,7 @@ class LibassistantServiceHostImpl : public LibassistantServiceHost {
   void Launch(
       mojo::PendingReceiver<LibassistantServiceMojom> receiver) override;
   void Stop() override;
+  void SetInitializeCallback(InitializeCallback) override;
 
  private:
   // Owned by |AssistantManagerServiceImpl| which also owns |this|.
@@ -37,7 +49,14 @@ class LibassistantServiceHostImpl : public LibassistantServiceHost {
   // Owned by |AssistantManagerServiceImpl| which also owns |this|.
   AssistantManagerServiceDelegate* const delegate_;
 
-  std::unique_ptr<LibassistantServiceMojom> libassistant_service_;
+  // Protects access to |libassistant_service_|. This is required because the
+  // service will be launched/stopped on a background thread, where the other
+  // methods will be called from the main thread.
+  base::Lock libassistant_service_lock_;
+  std::unique_ptr<chromeos::libassistant::LibassistantService>
+      libassistant_service_;
+  // Used when SetInitializeCallback() is called before Launch().
+  InitializeCallback pending_initialize_callback_;
 };
 
 }  // namespace assistant

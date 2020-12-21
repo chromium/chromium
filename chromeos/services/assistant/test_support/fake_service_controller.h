@@ -12,6 +12,11 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
+namespace assistant_client {
+class AssistantManager;
+class AssistantManagerInternal;
+}  // namespace assistant_client
+
 namespace chromeos {
 namespace assistant {
 
@@ -21,6 +26,9 @@ namespace assistant {
 class FakeServiceController : public libassistant::mojom::ServiceController {
  public:
   using State = libassistant::mojom::ServiceState;
+  using InitializeCallback =
+      base::OnceCallback<void(assistant_client::AssistantManager*,
+                              assistant_client::AssistantManagerInternal*)>;
 
   FakeServiceController();
   FakeServiceController(FakeServiceController&) = delete;
@@ -38,6 +46,8 @@ class FakeServiceController : public libassistant::mojom::ServiceController {
   void Bind(mojo::PendingReceiver<libassistant::mojom::ServiceController>
                 pending_receiver);
   void Unbind();
+
+  void SetInitializeCallback(InitializeCallback callback);
 
   // Call this to block any call to |Start|. The observers will not be invoked
   // as long as the start call is blocked. Unblock these calls using
@@ -60,6 +70,8 @@ class FakeServiceController : public libassistant::mojom::ServiceController {
 
   // Config passed to LibAssistant when it was started.
   std::string libassistant_config_;
+
+  InitializeCallback initialize_callback_;
 
   State state_ = State::kStopped;
   mojo::Receiver<libassistant::mojom::ServiceController> receiver_;

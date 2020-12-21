@@ -32,6 +32,10 @@ void ServiceController::Bind(
   receiver_.Bind(std::move(receiver));
 }
 
+void ServiceController::SetInitializeCallback(InitializeCallback callback) {
+  initialize_callback_ = std::move(callback);
+}
+
 void ServiceController::Start(const std::string& libassistant_config) {
   if (state_ != ServiceState::kStopped)
     return;
@@ -42,6 +46,13 @@ void ServiceController::Start(const std::string& libassistant_config) {
       delegate_->UnwrapAssistantManagerInternal(assistant_manager_.get());
   libassistant_v1_api_ = std::make_unique<assistant::LibassistantV1Api>(
       assistant_manager_.get(), assistant_manager_internal_);
+
+  if (initialize_callback_) {
+    std::move(initialize_callback_)
+        .Run(assistant_manager(), assistant_manager_internal());
+  }
+
+  assistant_manager()->Start();
 
   SetStateAndInformObservers(ServiceState::kStarted);
 
