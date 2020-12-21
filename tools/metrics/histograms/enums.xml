@@ -9416,6 +9416,12 @@ Called by update_bad_message_reasons.py.-->
   <int value="9" label="TEXTURE"/>
 </enum>
 
+<enum name="CaptureQuickAction">
+  <int value="0" label="Edit file in backlight"/>
+  <int value="1" label="Go to file location"/>
+  <int value="2" label="Delete file"/>
+</enum>
+
 <enum name="CaptureStartupResult">
   <obsolete>
     Deprecated as of 02/2017.

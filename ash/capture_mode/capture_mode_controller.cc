@@ -757,6 +757,7 @@ void CaptureModeController::HandleNotificationClicked(
   if (!button_index.has_value()) {
     // Show the item in the folder.
     delegate_->ShowScreenCaptureItemInFolder(screen_capture_path);
+    RecordScreenshotNotificationQuickAction(CaptureQuickAction::kFiles);
   } else {
     const int button_index_value = button_index.value();
     if (type == CaptureModeType::kVideo) {
@@ -768,9 +769,12 @@ void CaptureModeController::HandleNotificationClicked(
       switch (button_index_value) {
         case ScreenshotNotificationButtonIndex::BUTTON_EDIT:
           delegate_->OpenScreenshotInImageEditor(screen_capture_path);
+          RecordScreenshotNotificationQuickAction(
+              CaptureQuickAction::kBacklight);
           break;
         case ScreenshotNotificationButtonIndex::BUTTON_DELETE:
           DeleteFileAsync(blocking_task_runner_, screen_capture_path);
+          RecordScreenshotNotificationQuickAction(CaptureQuickAction::kDelete);
           break;
         default:
           NOTREACHED();

@@ -66,6 +66,16 @@ enum class CaptureModeEntryType {
   kMaxValue = kPowerMenu,
 };
 
+// Enumeration of quick actions on screenshot notification. Note that these
+// values are persisted to histograms so existing values should remain
+// unchanged and new values should be added to the end.
+enum class CaptureQuickAction {
+  kBacklight,
+  kFiles,
+  kDelete,
+  kMaxValue = kDelete,
+};
+
 // Records the |reason| for which screen recording was ended.
 void RecordEndRecordingReason(EndRecordingReason reason);
 
@@ -103,6 +113,9 @@ void RecordNumberOfScreenshotsTakenInLastDay(
     int num_screenshots_taken_in_last_day);
 void RecordNumberOfScreenshotsTakenInLastWeek(
     int num_screenshots_taken_in_last_week);
+
+// Records the action taken on screen notification.
+void RecordScreenshotNotificationQuickAction(CaptureQuickAction action);
 
 }  // namespace ash
 

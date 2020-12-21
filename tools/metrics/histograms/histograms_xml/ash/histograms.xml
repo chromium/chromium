@@ -279,6 +279,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
+<histogram name="Ash.CaptureModeController.QuickAction"
+    enum="CaptureQuickAction" expires_after="2021-11-19">
+  <owner>shidi@chromium.org</owner>
+  <owner>chinsenj@chromium.org</owner>
+  <summary>
+    Track all quick actions on screenshot notification. Including: Edit in
+    backlight, Go to Files, Delete File.
+  </summary>
+</histogram>
+
 <histogram name="Ash.CaptureModeController.ScreenRecordingLength"
     units="seconds" expires_after="2021-11-04">
   <owner>afakhry@chromium.org</owner>
