@@ -33,6 +33,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
+        android:focusable="true"
         android:gravity="center_vertical"
         android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
         android:text="@string/incognito_interstitial_message"
