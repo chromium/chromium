@@ -14,7 +14,27 @@ TestAXTreeManager::TestAXTreeManager() = default;
 
 TestAXTreeManager::TestAXTreeManager(std::unique_ptr<AXTree> tree)
     : tree_(std::move(tree)) {
-  AXTreeManagerMap::GetInstance().AddTreeManager(GetTreeID(), this);
+  if (tree_)
+    AXTreeManagerMap::GetInstance().AddTreeManager(GetTreeID(), this);
+}
+
+TestAXTreeManager::TestAXTreeManager(TestAXTreeManager&& manager)
+    : tree_(std::move(manager.tree_)) {
+  if (tree_) {
+    AXTreeManagerMap::GetInstance().RemoveTreeManager(GetTreeID());
+    AXTreeManagerMap::GetInstance().AddTreeManager(GetTreeID(), this);
+  }
+}
+
+TestAXTreeManager& TestAXTreeManager::operator=(TestAXTreeManager&& manager) {
+  if (this == &manager)
+    return *this;
+  if (manager.tree_)
+    AXTreeManagerMap::GetInstance().RemoveTreeManager(manager.GetTreeID());
+  // std::move(nullptr) == nullptr, so no need to check if `manager.tree_` is
+  // assigned.
+  SetTree(std::move(manager.tree_));
+  return *this;
 }
 
 TestAXTreeManager::~TestAXTreeManager() {
@@ -40,7 +60,8 @@ void TestAXTreeManager::SetTree(std::unique_ptr<AXTree> tree) {
     AXTreeManagerMap::GetInstance().RemoveTreeManager(GetTreeID());
 
   tree_ = std::move(tree);
-  AXTreeManagerMap::GetInstance().AddTreeManager(GetTreeID(), this);
+  if (tree_)
+    AXTreeManagerMap::GetInstance().AddTreeManager(GetTreeID(), this);
 }
 
 AXNode* TestAXTreeManager::GetNodeFromTree(const AXTreeID tree_id,

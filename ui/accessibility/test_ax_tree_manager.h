@@ -34,6 +34,9 @@ class TestAXTreeManager : public AXTreeManager {
   TestAXTreeManager(const TestAXTreeManager& manager) = delete;
   TestAXTreeManager& operator=(const TestAXTreeManager& manager) = delete;
 
+  TestAXTreeManager(TestAXTreeManager&& manager);
+  TestAXTreeManager& operator=(TestAXTreeManager&& manager);
+
   void DestroyTree();
   AXTree* GetTree() const;
   // Takes ownership of |tree|.
