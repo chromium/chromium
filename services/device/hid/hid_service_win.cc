@@ -353,6 +353,7 @@ HidServiceWin::HidServiceWin()
 HidServiceWin::~HidServiceWin() = default;
 
 void HidServiceWin::Connect(const std::string& device_guid,
+                            bool allow_protected_reports,
                             ConnectCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const auto& map_entry = devices().find(device_guid);
@@ -374,7 +375,8 @@ void HidServiceWin::Connect(const std::string& device_guid,
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback),
-                     HidConnectionWin::Create(device_info, std::move(file))));
+                     HidConnectionWin::Create(device_info, std::move(file),
+                                              allow_protected_reports)));
 }
 
 base::WeakPtr<HidService> HidServiceWin::GetWeakPtr() {

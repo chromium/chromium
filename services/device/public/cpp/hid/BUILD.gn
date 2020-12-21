@@ -11,6 +11,8 @@ source_set("hid") {
   assert(!is_android)
 
   sources = [
+    "hid_blocklist.cc",
+    "hid_blocklist.h",
     "hid_collection.cc",
     "hid_collection.h",
     "hid_device_filter.cc",
@@ -23,11 +25,14 @@ source_set("hid") {
     "hid_report_descriptor_item.h",
     "hid_report_item.cc",
     "hid_report_item.h",
+    "hid_switches.cc",
+    "hid_switches.h",
     "hid_usage_and_page.cc",
     "hid_usage_and_page.h",
   ]
 
   deps = [
+    "//components/variations",
     "//services/device/public/mojom",
     "//services/service_manager/public/cpp",
   ]
@@ -50,6 +55,7 @@ static_library("test_support") {
 
   public_deps = [
     "//base",
+    "//services/device/public/cpp/hid",
     "//services/device/public/mojom",
   ]
 }

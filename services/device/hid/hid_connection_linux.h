@@ -25,7 +25,8 @@ class HidConnectionLinux : public HidConnection {
   HidConnectionLinux(
       scoped_refptr<HidDeviceInfo> device_info,
       base::ScopedFD fd,
-      scoped_refptr<base::SequencedTaskRunner> blocking_task_runner);
+      scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
+      bool allow_protected_reports);
 
  private:
   friend class base::RefCountedThreadSafe<HidConnectionLinux>;

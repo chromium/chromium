@@ -422,6 +422,7 @@ source_set("test_support") {
       "hid/fake_hid_impl_for_testing.cc",
       "hid/fake_hid_impl_for_testing.h",
     ]
+    deps += [ "//services/device/public/cpp/hid" ]
   }
 
   if (!is_android) {

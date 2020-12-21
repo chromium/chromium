@@ -110,6 +110,7 @@ class FakeFidoHidManager : public device::mojom::HidManager {
       const std::string& device_guid,
       mojo::PendingRemote<mojom::HidConnectionClient> connection_client,
       mojo::PendingRemote<mojom::HidConnectionWatcher> watcher,
+      bool allow_protected_reports,
       ConnectCallback callback) override;
   void AddReceiver(
       mojo::PendingReceiver<device::mojom::HidManager> receiver) override;

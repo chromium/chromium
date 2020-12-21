@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/hid/hid_chooser.h"
 #include "chrome/browser/ui/hid/hid_chooser_controller.h"
-#include "chrome/browser/usb/usb_blocklist.h"
 #include "content/public/browser/web_contents.h"
 
 namespace {

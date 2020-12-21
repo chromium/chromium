@@ -38,6 +38,7 @@
 #include "media/base/media_switches.h"
 #include "media/media_buildflags.h"
 #include "sandbox/policy/switches.h"
+#include "services/device/public/cpp/hid/hid_switches.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -143,6 +144,9 @@ static const char* kBadFlags[] = {
     // A flag to support local file based WebBundle loading, only for testing
     // purpose.
     switches::kTrustableWebBundleFileUrl,
+
+    // A flag to bypass the WebHID blocklist for testing purposes.
+    switches::kDisableHidBlocklist,
 };
 #endif  // OS_ANDROID
 

@@ -11,10 +11,10 @@
 #include "base/values.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/usb/usb_blocklist.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/browser/device_service.h"
+#include "services/device/public/cpp/hid/hid_blocklist.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -215,10 +215,8 @@ bool HidChooserContext::HasDevicePermission(
     const url::Origin& requesting_origin,
     const url::Origin& embedding_origin,
     const device::mojom::HidDeviceInfo& device) {
-  if (UsbBlocklist::Get().IsExcluded(
-          {device.vendor_id, device.product_id, 0})) {
+  if (device::HidBlocklist::IsDeviceExcluded(device))
     return false;
-  }
 
   if (!CanRequestObjectPermission(requesting_origin, embedding_origin))
     return false;

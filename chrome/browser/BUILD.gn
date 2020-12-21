@@ -4191,6 +4191,7 @@ static_library("browser") {
       "//components/web_modal",
       "//components/zoom",
       "//courgette:courgette_lib",
+      "//services/device/public/cpp/hid",
       "//third_party/sqlite",
     ]
     if (is_chromeos_ash) {

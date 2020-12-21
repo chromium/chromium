@@ -25,7 +25,9 @@ class HidServiceLinux : public HidService {
   ~HidServiceLinux() override;
 
   // HidService:
-  void Connect(const std::string& device_id, ConnectCallback callback) override;
+  void Connect(const std::string& device_id,
+               bool allow_protected_reports,
+               ConnectCallback callback) override;
   base::WeakPtr<HidService> GetWeakPtr() override;
 
  private:

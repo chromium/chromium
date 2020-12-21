@@ -10,7 +10,7 @@
 namespace device {
 
 MockHidConnection::MockHidConnection(scoped_refptr<HidDeviceInfo> device)
-    : HidConnection(device) {}
+    : HidConnection(device, /*allow_protected_reports=*/false) {}
 
 MockHidConnection::~MockHidConnection() {}
 

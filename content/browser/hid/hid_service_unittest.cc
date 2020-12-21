@@ -128,8 +128,13 @@ TEST_F(HidServiceTest, GetDevicesWithPermission) {
   contents()->GetMainFrame()->GetHidService(
       service.BindNewPipeAndPassReceiver());
 
+  auto collection = device::mojom::HidCollectionInfo::New();
+  collection->usage = device::mojom::HidUsageAndPage::New(0xff00, 0x0001);
+  collection->input_reports.push_back(
+      device::mojom::HidReportDescription::New());
   auto device_info = device::mojom::HidDeviceInfo::New();
   device_info->guid = kTestGuid;
+  device_info->collections.push_back(std::move(collection));
   ConnectDevice(*device_info);
 
   EXPECT_CALL(hid_delegate(), HasDevicePermission).WillOnce(Return(true));
@@ -152,8 +157,13 @@ TEST_F(HidServiceTest, GetDevicesWithoutPermission) {
   contents()->GetMainFrame()->GetHidService(
       service.BindNewPipeAndPassReceiver());
 
+  auto collection = device::mojom::HidCollectionInfo::New();
+  collection->usage = device::mojom::HidUsageAndPage::New(0xff00, 0x0001);
+  collection->input_reports.push_back(
+      device::mojom::HidReportDescription::New());
   auto device_info = device::mojom::HidDeviceInfo::New();
   device_info->guid = kTestGuid;
+  device_info->collections.push_back(std::move(collection));
   ConnectDevice(*device_info);
 
   EXPECT_CALL(hid_delegate(), HasDevicePermission).WillOnce(Return(false));
@@ -326,8 +336,13 @@ TEST_F(HidServiceTest, RegisterClient) {
   EXPECT_TRUE(devices.empty());
 
   // 2. Connect a device and wait for DeviceAdded.
+  auto collection = device::mojom::HidCollectionInfo::New();
+  collection->usage = device::mojom::HidUsageAndPage::New(0xff00, 0x0001);
+  collection->input_reports.push_back(
+      device::mojom::HidReportDescription::New());
   auto device_info = device::mojom::HidDeviceInfo::New();
   device_info->guid = kTestGuid;
+  device_info->collections.push_back(std::move(collection));
   ConnectDevice(*device_info);
   device_added_loop.Run();
 

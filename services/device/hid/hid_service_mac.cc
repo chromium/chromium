@@ -131,6 +131,7 @@ HidServiceMac::HidServiceMac() : weak_factory_(this) {
 HidServiceMac::~HidServiceMac() {}
 
 void HidServiceMac::Connect(const std::string& device_guid,
+                            bool allow_protected_reports,
                             ConnectCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -145,7 +146,8 @@ void HidServiceMac::Connect(const std::string& device_guid,
       FROM_HERE, kBlockingTaskTraits,
       base::BindOnce(&HidServiceMac::OpenOnBlockingThread, map_entry->second),
       base::BindOnce(&HidServiceMac::DeviceOpened, weak_factory_.GetWeakPtr(),
-                     map_entry->second, std::move(callback)));
+                     map_entry->second, allow_protected_reports,
+                     std::move(callback)));
 }
 
 base::WeakPtr<HidService> HidServiceMac::GetWeakPtr() {
@@ -191,11 +193,13 @@ base::ScopedCFTypeRef<IOHIDDeviceRef> HidServiceMac::OpenOnBlockingThread(
 
 void HidServiceMac::DeviceOpened(
     scoped_refptr<HidDeviceInfo> device_info,
+    bool allow_protected_reports,
     ConnectCallback callback,
     base::ScopedCFTypeRef<IOHIDDeviceRef> hid_device) {
   if (hid_device) {
     std::move(callback).Run(base::MakeRefCounted<HidConnectionMac>(
-        std::move(hid_device), std::move(device_info)));
+        std::move(hid_device), std::move(device_info),
+        allow_protected_reports));
   } else {
     std::move(callback).Run(nullptr);
   }

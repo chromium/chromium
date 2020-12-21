@@ -21,6 +21,52 @@
 
 namespace content {
 
+namespace {
+
+// Removes reports from |device| if the report IDs match the IDs in the
+// protected report ID lists. If all of the reports are removed from a
+// collection, the collection is also removed.
+void RemoveProtectedReports(device::mojom::HidDeviceInfo& device) {
+  std::vector<device::mojom::HidCollectionInfoPtr> collections;
+  for (auto& collection : device.collections) {
+    std::vector<device::mojom::HidReportDescriptionPtr> input_reports;
+    for (auto& report : collection->input_reports) {
+      if (!device.protected_input_report_ids.has_value() ||
+          !base::Contains(*device.protected_input_report_ids,
+                          report->report_id)) {
+        input_reports.push_back(std::move(report));
+      }
+    }
+    std::vector<device::mojom::HidReportDescriptionPtr> output_reports;
+    for (auto& report : collection->output_reports) {
+      if (!device.protected_output_report_ids.has_value() ||
+          !base::Contains(*device.protected_output_report_ids,
+                          report->report_id)) {
+        output_reports.push_back(std::move(report));
+      }
+    }
+    std::vector<device::mojom::HidReportDescriptionPtr> feature_reports;
+    for (auto& report : collection->feature_reports) {
+      if (!device.protected_feature_report_ids.has_value() ||
+          !base::Contains(*device.protected_feature_report_ids,
+                          report->report_id)) {
+        feature_reports.push_back(std::move(report));
+      }
+    }
+    // Only keep the collection if it has at least one report.
+    if (!input_reports.empty() || !output_reports.empty() ||
+        !feature_reports.empty()) {
+      collection->input_reports = std::move(input_reports);
+      collection->output_reports = std::move(output_reports);
+      collection->feature_reports = std::move(feature_reports);
+      collections.push_back(std::move(collection));
+    }
+  }
+  device.collections = std::move(collections);
+}
+
+}  // namespace
+
 HidService::HidService(RenderFrameHost* render_frame_host,
                        mojo::PendingReceiver<blink::mojom::HidService> receiver)
     : FrameServiceBase(render_frame_host, std::move(receiver)),
@@ -121,6 +167,7 @@ void HidService::Connect(
       ->GetHidManager(WebContents::FromRenderFrameHost(render_frame_host()))
       ->Connect(
           device_guid, std::move(client), std::move(watcher),
+          /*allow_protected_reports=*/false,
           base::BindOnce(&HidService::FinishConnect, weak_factory_.GetWeakPtr(),
                          std::move(callback)));
 }
@@ -151,8 +198,13 @@ void HidService::OnDeviceAdded(
     return;
   }
 
+  auto filtered_device_info = device_info.Clone();
+  RemoveProtectedReports(*filtered_device_info);
+  if (filtered_device_info->collections.empty())
+    return;
+
   for (auto& client : clients_)
-    client->DeviceAdded(device_info.Clone());
+    client->DeviceAdded(filtered_device_info->Clone());
 }
 
 void HidService::OnDeviceRemoved(
@@ -163,8 +215,13 @@ void HidService::OnDeviceRemoved(
     return;
   }
 
+  auto filtered_device_info = device_info.Clone();
+  RemoveProtectedReports(*filtered_device_info);
+  if (filtered_device_info->collections.empty())
+    return;
+
   for (auto& client : clients_)
-    client->DeviceRemoved(device_info.Clone());
+    client->DeviceRemoved(filtered_device_info->Clone());
 }
 
 void HidService::OnHidManagerConnectionError() {
@@ -210,6 +267,10 @@ void HidService::FinishGetDevices(
   std::vector<device::mojom::HidDeviceInfoPtr> result;
   HidDelegate* delegate = GetContentClient()->browser()->GetHidDelegate();
   for (auto& device : devices) {
+    RemoveProtectedReports(*device);
+    if (device->collections.empty())
+      continue;
+
     if (delegate->HasDevicePermission(
             WebContents::FromRenderFrameHost(render_frame_host()), origin(),
             *device))

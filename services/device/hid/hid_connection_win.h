@@ -23,14 +23,16 @@ class HidConnectionWin : public HidConnection {
  public:
   static scoped_refptr<HidConnection> Create(
       scoped_refptr<HidDeviceInfo> device_info,
-      base::win::ScopedHandle file);
+      base::win::ScopedHandle file,
+      bool allow_protected_reports);
 
  private:
   friend class HidServiceWin;
   friend class PendingHidTransfer;
 
   HidConnectionWin(scoped_refptr<HidDeviceInfo> device_info,
-                   base::win::ScopedHandle file);
+                   base::win::ScopedHandle file,
+                   bool allow_protected_reports);
   ~HidConnectionWin() override;
 
   // HidConnection implementation.

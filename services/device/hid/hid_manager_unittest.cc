@@ -264,6 +264,7 @@ TEST_F(HidManagerTest, TestHidConnectionInterface) {
         device->device_guid(),
         /*connection_client=*/mojo::NullRemote(),
         /*watcher=*/mojo::NullRemote(),
+        /*allow_protected_reports=*/false,
         base::BindOnce(&OnConnect, run_loop.QuitClosure(), client.get()));
     run_loop.Run();
   }

@@ -162,6 +162,7 @@ source_set("tests") {
     "//base/test:test_support",
     "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
+    "//components/variations",
     "//device/base/synchronization",
     "//mojo/public/cpp/bindings",
     "//net",
@@ -245,8 +246,10 @@ source_set("tests") {
     sources += [
       "battery/battery_monitor_impl_unittest.cc",
       "hid/hid_manager_unittest.cc",
+      "public/cpp/hid/hid_blocklist_unittest.cc",
     ]
     deps += [
+      "//components/variations:test_support",
       "//services/device/battery",
       "//services/device/hid:mocks",
       "//services/device/public/cpp/hid",

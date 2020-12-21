@@ -164,7 +164,10 @@ class HidApiTest : public ShellApiTest {
         serial_number, device::mojom::HidBusType::kHIDBusTypeUSB,
         report_descriptor, std::move(collections), has_report_id,
         max_input_report_size, max_output_report_size, max_feature_report_size,
-        "");
+        /*device_path=*/"",
+        /*protected_input_report_ids=*/std::vector<uint8_t>{},
+        /*protected_output_report_ids=*/std::vector<uint8_t>{},
+        /*protected_feature_report_ids=*/std::vector<uint8_t>{});
 
     fake_hid_manager_->AddDevice(std::move(device));
   }

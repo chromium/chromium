@@ -129,7 +129,9 @@ class HidServiceWin : public HidService, public DeviceMonitorWin::Observer {
   HidServiceWin& operator=(const HidServiceWin&) = delete;
   ~HidServiceWin() override;
 
-  void Connect(const std::string& device_id, ConnectCallback callback) override;
+  void Connect(const std::string& device_id,
+               bool allow_protected_reports,
+               ConnectCallback callback) override;
   base::WeakPtr<HidService> GetWeakPtr() override;
 
  private:

@@ -185,7 +185,8 @@ TEST_F(HidConnectionTest, ReadWrite) {
     return;
 
   TestConnectCallback connect_callback;
-  service_->Connect(device_guid_, connect_callback.GetCallback());
+  service_->Connect(device_guid_, /*allow_protected_reports=*/false,
+                    connect_callback.GetCallback());
   scoped_refptr<HidConnection> conn = connect_callback.WaitForConnection();
   ASSERT_TRUE(conn.get());
 

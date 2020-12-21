@@ -37,8 +37,8 @@ const uint64_t kMaxReportSizeBytes = 10;
 // input report.
 class FakeHidConnection : public HidConnection {
  public:
-  FakeHidConnection(scoped_refptr<HidDeviceInfo> device)
-      : HidConnection(device) {}
+  explicit FakeHidConnection(scoped_refptr<HidDeviceInfo> device)
+      : HidConnection(device, /*allow_protected_reports=*/false) {}
 
   // HidConnection implementation.
   void PlatformClose() override {}

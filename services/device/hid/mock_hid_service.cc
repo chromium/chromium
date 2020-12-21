@@ -32,6 +32,7 @@ void MockHidService::FirstEnumerationComplete() {
 }
 
 void MockHidService::Connect(const std::string& device_id,
+                             bool allow_protected_reports,
                              ConnectCallback callback) {
   const auto& map_entry = devices().find(device_id);
   if (map_entry == devices().end()) {

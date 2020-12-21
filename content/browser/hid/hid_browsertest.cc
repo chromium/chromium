@@ -23,7 +23,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/hid/hid.mojom.h"
 
-using testing::_;
 using testing::ByMove;
 using testing::Exactly;
 using testing::Return;
@@ -31,6 +30,22 @@ using testing::Return;
 namespace content {
 
 namespace {
+
+// Create a device with a single collection containing an input report and an
+// output report. Both reports have report ID 0.
+device::mojom::HidDeviceInfoPtr CreateTestDeviceWithInputAndOutputReports() {
+  auto collection = device::mojom::HidCollectionInfo::New();
+  collection->usage = device::mojom::HidUsageAndPage::New(0x0001, 0xff00);
+  collection->input_reports.push_back(
+      device::mojom::HidReportDescription::New());
+  collection->output_reports.push_back(
+      device::mojom::HidReportDescription::New());
+
+  auto device = device::mojom::HidDeviceInfo::New();
+  device->guid = "test-guid";
+  device->collections.push_back(std::move(collection));
+  return device;
+}
 
 class HidTest : public ContentBrowserTest {
  public:
@@ -71,12 +86,12 @@ IN_PROC_BROWSER_TEST_F(HidTest, GetDevices) {
 
   // Three devices are added but only two will have permission granted.
   for (int i = 0; i < 3; i++) {
-    auto device = device::mojom::HidDeviceInfo::New();
+    auto device = CreateTestDeviceWithInputAndOutputReports();
     device->guid = base::StringPrintf("test-guid-%02d", i);
     hid_manager()->AddDevice(std::move(device));
   }
 
-  EXPECT_CALL(delegate(), HasDevicePermission(_, _, _))
+  EXPECT_CALL(delegate(), HasDevicePermission)
       .WillOnce(Return(true))
       .WillOnce(Return(false))
       .WillOnce(Return(true));
@@ -90,13 +105,10 @@ IN_PROC_BROWSER_TEST_F(HidTest, GetDevices) {
 IN_PROC_BROWSER_TEST_F(HidTest, RequestDevice) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl(nullptr, "simple_page.html")));
 
-  EXPECT_CALL(delegate(), CanRequestDevicePermission(_, _))
-      .WillOnce(Return(true));
+  EXPECT_CALL(delegate(), CanRequestDevicePermission).WillOnce(Return(true));
 
-  auto device = device::mojom::HidDeviceInfo::New();
-  device->guid = "test-guid";
   std::vector<device::mojom::HidDeviceInfoPtr> devices;
-  devices.push_back(std::move(device));
+  devices.push_back(CreateTestDeviceWithInputAndOutputReports());
   EXPECT_CALL(delegate(), RunChooserInternal)
       .WillOnce(Return(ByMove(std::move(devices))));
 
@@ -112,14 +124,59 @@ IN_PROC_BROWSER_TEST_F(HidTest, RequestDevice) {
 IN_PROC_BROWSER_TEST_F(HidTest, DisallowRequestDevice) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl(nullptr, "simple_page.html")));
 
-  EXPECT_CALL(delegate(), CanRequestDevicePermission(_, _))
-      .WillOnce(Return(false));
+  EXPECT_CALL(delegate(), CanRequestDevicePermission).WillOnce(Return(false));
   EXPECT_CALL(delegate(), RunChooserInternal).Times(Exactly(0));
 
   EXPECT_EQ(0, EvalJs(shell(),
                       R"((async () => {
                let devices = await navigator.hid.requestDevice({filters:[]});
                return devices.length;
+             })())"));
+}
+
+IN_PROC_BROWSER_TEST_F(HidTest, ProtectedReportsAreFiltered) {
+  LOG(ERROR) << "HidTest.ProtectedReportsAreFiltered";
+  EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl(nullptr, "simple_page.html")));
+
+  auto device = CreateTestDeviceWithInputAndOutputReports();
+
+  // Mark the input report as protected.
+  device->protected_input_report_ids = std::vector<uint8_t>{0};
+
+  hid_manager()->AddDevice(std::move(device));
+
+  EXPECT_CALL(delegate(), HasDevicePermission).WillOnce(Return(true));
+
+  EXPECT_EQ(true, EvalJs(shell(),
+                         R"((async () => {
+             let devices = await navigator.hid.getDevices();
+             return devices instanceof Array
+                    && devices.length == 1
+                    && devices[0] instanceof HIDDevice
+                    && devices[0].collections instanceof Array
+                    && devices[0].collections.length == 1
+                    && devices[0].collections[0].inputReports instanceof Array
+                    && devices[0].collections[0].inputReports.length == 0
+                    && devices[0].collections[0].outputReports instanceof Array
+                    && devices[0].collections[0].outputReports.length == 1;
+           })())"));
+}
+
+IN_PROC_BROWSER_TEST_F(HidTest, DeviceWithAllProtectedReportsIsExcluded) {
+  EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl(nullptr, "simple_page.html")));
+
+  auto device = CreateTestDeviceWithInputAndOutputReports();
+
+  // Mark both the input and output reports as protected.
+  device->protected_input_report_ids = std::vector<uint8_t>{0};
+  device->protected_output_report_ids = std::vector<uint8_t>{0};
+
+  hid_manager()->AddDevice(std::move(device));
+
+  EXPECT_EQ(true, EvalJs(shell(),
+                         R"((async () => {
+               let devices = await navigator.hid.getDevices();
+               return devices instanceof Array && devices.length == 0;
              })())"));
 }
 

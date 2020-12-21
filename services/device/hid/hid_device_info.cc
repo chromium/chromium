@@ -6,6 +6,7 @@
 
 #include "base/guid.h"
 #include "build/build_config.h"
+#include "services/device/public/cpp/hid/hid_blocklist.h"
 #include "services/device/public/cpp/hid/hid_report_descriptor.h"
 
 namespace device {
@@ -31,11 +32,20 @@ HidDeviceInfo::HidDeviceInfo(const HidPlatformDeviceId& platform_device_id,
                                &max_input_report_size, &max_output_report_size,
                                &max_feature_report_size);
 
+  auto protected_input_report_ids = HidBlocklist::Get().GetProtectedReportIds(
+      HidBlocklist::kReportTypeInput, vendor_id, product_id, collections);
+  auto protected_output_report_ids = HidBlocklist::Get().GetProtectedReportIds(
+      HidBlocklist::kReportTypeOutput, vendor_id, product_id, collections);
+  auto protected_feature_report_ids = HidBlocklist::Get().GetProtectedReportIds(
+      HidBlocklist::kReportTypeFeature, vendor_id, product_id, collections);
+
   device_ = mojom::HidDeviceInfo::New(
       base::GenerateGUID(), physical_device_id, vendor_id, product_id,
       product_name, serial_number, bus_type, report_descriptor,
       std::move(collections), has_report_id, max_input_report_size,
-      max_output_report_size, max_feature_report_size, device_node);
+      max_output_report_size, max_feature_report_size, device_node,
+      protected_input_report_ids, protected_output_report_ids,
+      protected_feature_report_ids);
 }
 
 HidDeviceInfo::HidDeviceInfo(const HidPlatformDeviceId& platform_device_id,
@@ -54,14 +64,23 @@ HidDeviceInfo::HidDeviceInfo(const HidPlatformDeviceId& platform_device_id,
   bool has_report_id = !collection->report_ids.empty();
   collections.push_back(std::move(collection));
 
+  auto protected_input_report_ids = HidBlocklist::Get().GetProtectedReportIds(
+      HidBlocklist::kReportTypeInput, vendor_id, product_id, collections);
+  auto protected_output_report_ids = HidBlocklist::Get().GetProtectedReportIds(
+      HidBlocklist::kReportTypeOutput, vendor_id, product_id, collections);
+  auto protected_feature_report_ids = HidBlocklist::Get().GetProtectedReportIds(
+      HidBlocklist::kReportTypeFeature, vendor_id, product_id, collections);
+
   std::vector<uint8_t> report_descriptor;
   device_ = mojom::HidDeviceInfo::New(
       base::GenerateGUID(), physical_device_id, vendor_id, product_id,
       product_name, serial_number, bus_type, report_descriptor,
       std::move(collections), has_report_id, max_input_report_size,
-      max_output_report_size, max_feature_report_size, "");
+      max_output_report_size, max_feature_report_size, "",
+      protected_input_report_ids, protected_output_report_ids,
+      protected_feature_report_ids);
 }
 
-HidDeviceInfo::~HidDeviceInfo() {}
+HidDeviceInfo::~HidDeviceInfo() = default;
 
 }  // namespace device

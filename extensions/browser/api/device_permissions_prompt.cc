@@ -290,7 +290,7 @@ class HidDevicePermissionsPrompt : public DevicePermissionsPrompt::Prompt,
 
   bool HasUnprotectedCollections(const device::mojom::HidDeviceInfo& device) {
     for (const auto& collection : device.collections) {
-      if (!device::IsProtected(*collection->usage)) {
+      if (!device::IsAlwaysProtected(*collection->usage)) {
         return true;
       }
     }

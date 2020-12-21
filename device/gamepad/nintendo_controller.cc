@@ -1188,7 +1188,8 @@ void NintendoController::Connect(mojom::HidManager::ConnectCallback callback) {
   DCHECK(hid_manager_);
   hid_manager_->Connect(device_info_->guid,
                         /*connection_client=*/mojo::NullRemote(),
-                        /*watcher=*/mojo::NullRemote(), std::move(callback));
+                        /*watcher=*/mojo::NullRemote(),
+                        /*allow_protected_reports=*/false, std::move(callback));
 }
 
 void NintendoController::OnConnect(

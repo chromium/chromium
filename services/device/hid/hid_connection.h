@@ -49,7 +49,9 @@ class HidConnection : public base::RefCountedThreadSafe<HidConnection> {
   void SetClient(Client* client);
 
   scoped_refptr<HidDeviceInfo> device_info() const { return device_info_; }
-  bool has_protected_collection() const { return has_protected_collection_; }
+  bool has_always_protected_collection() const {
+    return has_always_protected_collection_;
+  }
   bool closed() const { return closed_; }
 
   // Closes the connection. This must be called before the object is freed.
@@ -75,9 +77,16 @@ class HidConnection : public base::RefCountedThreadSafe<HidConnection> {
                          WriteCallback callback);
 
  protected:
+  enum HidReportType {
+    kInput,
+    kOutput,
+    kFeature,
+  };
+
   friend class base::RefCountedThreadSafe<HidConnection>;
 
-  explicit HidConnection(scoped_refptr<HidDeviceInfo> device_info);
+  HidConnection(scoped_refptr<HidDeviceInfo> device_info,
+                bool allow_protected_reports);
   virtual ~HidConnection();
 
   virtual void PlatformClose() = 0;
@@ -89,15 +98,16 @@ class HidConnection : public base::RefCountedThreadSafe<HidConnection> {
       scoped_refptr<base::RefCountedBytes> buffer,
       WriteCallback callback) = 0;
 
-  bool IsReportIdProtected(uint8_t report_id);
+  bool IsReportIdProtected(uint8_t report_id, HidReportType report_type);
   void ProcessInputReport(scoped_refptr<base::RefCountedBytes> buffer,
                           size_t size);
   void ProcessReadQueue();
 
  private:
   scoped_refptr<HidDeviceInfo> device_info_;
+  bool allow_protected_reports_;
   Client* client_ = nullptr;
-  bool has_protected_collection_;
+  bool has_always_protected_collection_;
   bool closed_;
 
   base::queue<std::tuple<scoped_refptr<base::RefCountedBytes>, size_t>>

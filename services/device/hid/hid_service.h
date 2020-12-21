@@ -68,6 +68,7 @@ class HidService {
   // Opens a connection to a device. The callback will be run with null on
   // failure.
   virtual void Connect(const std::string& device_guid,
+                       bool allow_protected_reports,
                        ConnectCallback callback) = 0;
 
  protected:

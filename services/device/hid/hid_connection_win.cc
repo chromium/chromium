@@ -89,16 +89,19 @@ void PendingHidTransfer::OnObjectSignaled(HANDLE event_handle) {
 // static
 scoped_refptr<HidConnection> HidConnectionWin::Create(
     scoped_refptr<HidDeviceInfo> device_info,
-    base::win::ScopedHandle file) {
-  scoped_refptr<HidConnectionWin> connection(
-      new HidConnectionWin(std::move(device_info), std::move(file)));
+    base::win::ScopedHandle file,
+    bool allow_protected_reports) {
+  scoped_refptr<HidConnectionWin> connection(new HidConnectionWin(
+      std::move(device_info), std::move(file), allow_protected_reports));
   connection->ReadNextInputReport();
   return std::move(connection);
 }
 
 HidConnectionWin::HidConnectionWin(scoped_refptr<HidDeviceInfo> device_info,
-                                   base::win::ScopedHandle file)
-    : HidConnection(std::move(device_info)), file_(std::move(file)) {}
+                                   base::win::ScopedHandle file,
+                                   bool allow_protected_reports)
+    : HidConnection(std::move(device_info), allow_protected_reports),
+      file_(std::move(file)) {}
 
 HidConnectionWin::~HidConnectionWin() {
   DCHECK(!file_.IsValid());
@@ -194,7 +197,7 @@ void HidConnectionWin::OnReadInputReport(
   }
 
   uint8_t report_id = buffer->data()[0];
-  if (IsReportIdProtected(report_id)) {
+  if (IsReportIdProtected(report_id, HidReportType::kInput)) {
     ReadNextInputReport();
     return;
   }

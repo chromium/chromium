@@ -176,8 +176,10 @@ const char* GetPhysicalDeviceId(udev_device* hidraw_device) {
 
 struct HidServiceLinux::ConnectParams {
   ConnectParams(scoped_refptr<HidDeviceInfo> device_info,
+                bool allow_protected_reports,
                 ConnectCallback callback)
       : device_info(std::move(device_info)),
+        allow_protected_reports(allow_protected_reports),
         callback(std::move(callback)),
         task_runner(base::SequencedTaskRunnerHandle::Get()),
         blocking_task_runner(
@@ -185,6 +187,7 @@ struct HidServiceLinux::ConnectParams {
   ~ConnectParams() {}
 
   scoped_refptr<HidDeviceInfo> device_info;
+  bool allow_protected_reports;
   ConnectCallback callback;
   scoped_refptr<base::SequencedTaskRunner> task_runner;
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner;
@@ -344,6 +347,7 @@ base::WeakPtr<HidService> HidServiceLinux::GetWeakPtr() {
 }
 
 void HidServiceLinux::Connect(const std::string& device_guid,
+                              bool allow_protected_reports,
                               ConnectCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -363,12 +367,13 @@ void HidServiceLinux::Connect(const std::string& device_guid,
       device_info->device_node(),
       base::BindOnce(
           &HidServiceLinux::OnPathOpenComplete,
-          std::make_unique<ConnectParams>(device_info, copyable_callback)),
+          std::make_unique<ConnectParams>(device_info, allow_protected_reports,
+                                          copyable_callback)),
       base::BindOnce(&HidServiceLinux::OnPathOpenError,
                      device_info->device_node(), copyable_callback));
 #else
-  auto params =
-      std::make_unique<ConnectParams>(device_info, std::move(callback));
+  auto params = std::make_unique<ConnectParams>(
+      device_info, allow_protected_reports, std::move(callback));
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner =
       params->blocking_task_runner;
   blocking_task_runner->PostTask(
@@ -449,7 +454,8 @@ void HidServiceLinux::FinishOpen(std::unique_ptr<ConnectParams> params) {
   std::move(params->callback)
       .Run(base::MakeRefCounted<HidConnectionLinux>(
           std::move(params->device_info), std::move(params->fd),
-          std::move(params->blocking_task_runner)));
+          std::move(params->blocking_task_runner),
+          params->allow_protected_reports));
 }
 
 }  // namespace device

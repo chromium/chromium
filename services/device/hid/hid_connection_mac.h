@@ -24,7 +24,8 @@ namespace device {
 class HidConnectionMac : public HidConnection {
  public:
   HidConnectionMac(base::ScopedCFTypeRef<IOHIDDeviceRef> device,
-                   scoped_refptr<HidDeviceInfo> device_info);
+                   scoped_refptr<HidDeviceInfo> device_info,
+                   bool allow_protected_reports);
 
  private:
   ~HidConnectionMac() override;

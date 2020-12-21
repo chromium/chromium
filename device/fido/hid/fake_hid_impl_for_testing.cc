@@ -11,6 +11,7 @@
 #include "device/fido/hid/fido_hid_discovery.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "services/device/public/cpp/hid/hid_blocklist.h"
 #include "services/device/public/mojom/hid.mojom.h"
 
 namespace device {
@@ -136,6 +137,7 @@ void FakeFidoHidManager::AddReceiver(
 void FakeFidoHidManager::AddFidoHidDevice(std::string guid) {
   auto c_info = device::mojom::HidCollectionInfo::New();
   c_info->usage = device::mojom::HidUsageAndPage::New(1, 0xf1d0);
+  c_info->input_reports.push_back(device::mojom::HidReportDescription::New());
   auto device = device::mojom::HidDeviceInfo::New();
   device->guid = std::move(guid);
   device->product_name = "Test Fido Device";
@@ -144,6 +146,18 @@ void FakeFidoHidManager::AddFidoHidDevice(std::string guid) {
   device->collections.push_back(std::move(c_info));
   device->max_input_report_size = 64;
   device->max_output_report_size = 64;
+  device->protected_input_report_ids =
+      HidBlocklist::Get().GetProtectedReportIds(
+          HidBlocklist::kReportTypeInput, device->vendor_id, device->product_id,
+          device->collections);
+  device->protected_output_report_ids =
+      HidBlocklist::Get().GetProtectedReportIds(
+          HidBlocklist::kReportTypeOutput, device->vendor_id,
+          device->product_id, device->collections);
+  device->protected_feature_report_ids =
+      HidBlocklist::Get().GetProtectedReportIds(
+          HidBlocklist::kReportTypeFeature, device->vendor_id,
+          device->product_id, device->collections);
   AddDevice(std::move(device));
 }
 
@@ -167,6 +181,7 @@ void FakeFidoHidManager::Connect(
     const std::string& device_guid,
     mojo::PendingRemote<mojom::HidConnectionClient> connection_client,
     mojo::PendingRemote<mojom::HidConnectionWatcher> watcher,
+    bool allow_protected_reports,
     ConnectCallback callback) {
   auto device_it = devices_.find(device_guid);
   auto connection_it = connections_.find(device_guid);

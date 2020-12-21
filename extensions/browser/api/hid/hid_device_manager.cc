@@ -49,7 +49,7 @@ void PopulateHidDeviceInfo(hid::HidDeviceInfo* output,
 
   for (const auto& collection : input.collections) {
     // Don't expose sensitive data.
-    if (device::IsProtected(*collection->usage)) {
+    if (device::IsAlwaysProtected(*collection->usage)) {
       continue;
     }
 
@@ -178,6 +178,7 @@ void HidDeviceManager::Connect(const std::string& device_guid,
 
   hid_manager_->Connect(device_guid, /*connection_client=*/mojo::NullRemote(),
                         /*watcher=*/mojo::NullRemote(),
+                        /*allow_protected_reports=*/true,
                         mojo::WrapCallbackWithDefaultInvokeIfNotRun(
                             std::move(callback), mojo::NullRemote()));
 }
