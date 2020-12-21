@@ -16,6 +16,7 @@
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -68,8 +69,8 @@ constexpr char kScreenCaptureNotifierId[] = "ash.capture_mode_controller";
 // The format strings of the file names of captured images.
 // TODO(afakhry): Discuss with UX localizing "Screenshot" and "Screen
 // recording".
-constexpr char kScreenshotFileNameFmtStr[] = "Screenshot %s %s.png";
-constexpr char kVideoFileNameFmtStr[] = "Screen recording %s %s.webm";
+constexpr char kScreenshotFileNameFmtStr[] = "Screenshot %s %s";
+constexpr char kVideoFileNameFmtStr[] = "Screen recording %s %s";
 constexpr char kDateFmtStr[] = "%d-%02d-%02d";
 constexpr char k24HourTimeFmtStr[] = "%02d.%02d.%02d";
 constexpr char kAmPmTimeFmtStr[] = "%d.%02d.%02d";
@@ -347,6 +348,29 @@ void CaptureModeController::SetUserCaptureRegion(const gfx::Rect& region,
     last_capture_region_update_time_ = base::TimeTicks::Now();
 }
 
+void CaptureModeController::CaptureScreenshotsOfAllDisplays() {
+  if (delegate_->IsCaptureModeInitRestricted()) {
+    ShowDisabledNotification();
+    return;
+  }
+  // Get a vector of RootWindowControllers with primary root window at first.
+  const std::vector<RootWindowController*> controllers =
+      RootWindowController::root_window_controllers();
+  // Capture screenshot for each individual display.
+  int display_index = 1;
+  for (RootWindowController* controller : controllers) {
+    // TODO(shidi): Check with UX what notification should show if
+    // some (but not all) of the displays have restricted content and
+    // whether we should localize the display name.
+    const CaptureParams capture_params{controller->GetRootWindow(),
+                                       controller->GetRootWindow()->bounds()};
+    CaptureImage(capture_params, controllers.size() == 1
+                                     ? BuildImagePath()
+                                     : BuildImagePathForDisplay(display_index));
+    ++display_index;
+  }
+}
+
 void CaptureModeController::PerformCapture() {
   DCHECK(IsActive());
   const base::Optional<CaptureParams> capture_params = GetCaptureParams();
@@ -362,8 +386,10 @@ void CaptureModeController::PerformCapture() {
   DCHECK(capture_mode_session_);
   capture_mode_session_->ReportSessionHistograms();
 
-  if (type_ == CaptureModeType::kImage)
-    CaptureImage(*capture_params);
+  if (type_ == CaptureModeType::kImage) {
+    CaptureImage(*capture_params, BuildImagePath());
+  }
+
   else
     CaptureVideo(*capture_params);
 }
@@ -608,20 +634,21 @@ void CaptureModeController::TerminateRecordingUiElements() {
   video_recording_watcher_.reset();
 }
 
-void CaptureModeController::CaptureImage(const CaptureParams& capture_params) {
+void CaptureModeController::CaptureImage(const CaptureParams& capture_params,
+                                         const base::FilePath& path) {
   DCHECK_EQ(CaptureModeType::kImage, type_);
   DCHECK(IsCaptureAllowed(capture_params));
 
   // Stop the capture session now, so as not to take a screenshot of the capture
   // bar.
-  Stop();
+  if (IsActive())
+    Stop();
 
   DCHECK(!capture_params.bounds.IsEmpty());
-
   ui::GrabWindowSnapshotAsyncPNG(
       capture_params.window, capture_params.bounds,
       base::BindOnce(&CaptureModeController::OnImageCaptured,
-                     weak_ptr_factory_.GetWeakPtr(), base::Time::Now()));
+                     weak_ptr_factory_.GetWeakPtr(), path));
 
   ++num_screenshots_taken_in_last_day_;
   ++num_screenshots_taken_in_last_week_;
@@ -645,7 +672,7 @@ void CaptureModeController::CaptureVideo(const CaptureParams& capture_params) {
 }
 
 void CaptureModeController::OnImageCaptured(
-    base::Time timestamp,
+    const base::FilePath& path,
     scoped_refptr<base::RefCountedMemory> png_bytes) {
   if (!png_bytes || !png_bytes->size()) {
     LOG(ERROR) << "Failed to capture image.";
@@ -653,7 +680,6 @@ void CaptureModeController::OnImageCaptured(
     return;
   }
 
-  const base::FilePath path = BuildImagePath(timestamp);
   blocking_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&SaveFile, png_bytes, path),
       base::BindOnce(&CaptureModeController::OnImageFileSaved,
@@ -791,18 +817,29 @@ void CaptureModeController::HandleNotificationClicked(
       kScreenCaptureNotificationId, /*by_user=*/false);
 }
 
-base::FilePath CaptureModeController::BuildImagePath(
-    base::Time timestamp) const {
-  return BuildPath(kScreenshotFileNameFmtStr, timestamp);
+base::FilePath CaptureModeController::BuildImagePath() const {
+  return BuildPathNoExtension(kScreenshotFileNameFmtStr, base::Time::Now())
+      .AddExtension("png");
 }
 
-base::FilePath CaptureModeController::BuildVideoPath(
-    base::Time timestamp) const {
-  return BuildPath(kVideoFileNameFmtStr, timestamp);
+base::FilePath CaptureModeController::BuildVideoPath() const {
+  return BuildPathNoExtension(kVideoFileNameFmtStr, base::Time::Now())
+      .AddExtension("webm");
 }
 
-base::FilePath CaptureModeController::BuildPath(const char* const format_string,
-                                                base::Time timestamp) const {
+base::FilePath CaptureModeController::BuildImagePathForDisplay(
+    int display_index) const {
+  auto path_str =
+      BuildPathNoExtension(kScreenshotFileNameFmtStr, base::Time::Now())
+          .value();
+  auto full_path = base::StringPrintf("%s - Display %d.png", path_str.c_str(),
+                                      display_index);
+  return base::FilePath(full_path);
+}
+
+base::FilePath CaptureModeController::BuildPathNoExtension(
+    const char* const format_string,
+    base::Time timestamp) const {
   const base::FilePath path = delegate_->GetActiveUserDownloadsDir();
   base::Time::Exploded exploded_time;
   timestamp.LocalExplode(&exploded_time);
@@ -865,7 +902,7 @@ void CaptureModeController::OnVideoRecordCountDownFinished() {
 
   DCHECK(current_video_file_path_.empty());
   recording_start_time_ = base::TimeTicks::Now();
-  current_video_file_path_ = BuildVideoPath(base::Time::Now());
+  current_video_file_path_ = BuildVideoPath();
   video_file_handler_ = VideoFileHandler::Create(
       blocking_task_runner_, current_video_file_path_,
       kVideoBufferCapacityBytes, kLowDiskSpaceThresholdInBytes,
