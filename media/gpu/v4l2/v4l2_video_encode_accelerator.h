@@ -29,10 +29,6 @@
 #include "media/video/video_encode_accelerator.h"
 #include "ui/gfx/geometry/size.h"
 
-namespace gpu {
-class GpuMemoryBufferFactory;
-}  // namespace gpu
-
 namespace media {
 class BitstreamBuffer;
 
@@ -326,9 +322,6 @@ class MEDIA_GPU_EXPORT V4L2VideoEncodeAccelerator
 
   // Image processor, if one is in use.
   std::unique_ptr<ImageProcessor> image_processor_;
-  // GpuMemoryBufferFactory to create GMB-based VideoFrame. This is needed only
-  // if image processor is used and its output buffer is GMB-based VideoFrame.
-  std::unique_ptr<gpu::GpuMemoryBufferFactory> image_processor_gmb_factory_;
   // Video frames for image processor output / VideoEncodeAccelerator input.
   // Only accessed on child thread.
   std::vector<scoped_refptr<VideoFrame>> image_processor_output_buffers_;
