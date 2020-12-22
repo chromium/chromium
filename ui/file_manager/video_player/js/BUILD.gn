@@ -214,6 +214,22 @@ preprocess_folder =
     rebase_path("$target_gen_dir/../../preprocessed/video_player/js",
                 root_build_dir)
 
+optimize_webui("build") {
+  host = "video_player"
+
+  input = preprocess_folder
+  js_module_in_files = [ "main.m.js" ]
+
+  js_out_files = [ "main.m.rollup.js" ]
+
+  deps = [
+    ":main.m",
+    "//ui/file_manager:preprocess_generated",
+    "//ui/file_manager:preprocess_static",
+    "//ui/webui/resources:preprocess",
+  ]
+}
+
 optimize_webui("build_background") {
   host = "video_player"
 

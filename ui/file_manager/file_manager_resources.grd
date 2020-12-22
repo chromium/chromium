@@ -107,6 +107,7 @@
       <!-- The VideoPlayer app pages and scripts. -->
       <include name="IDR_VIDEO_PLAYER_MANIFEST" file="video_player/manifest.json" type="BINDATA" />
       <include name="IDR_VIDEO_PLAYER" file="video_player/video_player.html" allowexternalscript="true" flattenhtml="true" type="BINDATA" />
+      <include name="IDR_VIDEO_PLAYER_MODULE" file="video_player/video_player_module.html" allowexternalscript="true" flattenhtml="true" type="BINDATA" />
       <include name="IDR_VIDEO_PLAYER_JS" file="video_player/js/video_player_scripts.js" flattenhtml="true" type="BINDATA" />
       <include name="IDR_VIDEO_PLAYER_BACKGROUND_JS" file="video_player/js/background_scripts.js" flattenhtml="true" type="BINDATA" />
       <include name="IDR_VIDEO_PLAYER_BACKGROUND_HTML" file="video_player/background.html" type="BINDATA" />

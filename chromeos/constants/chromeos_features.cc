@@ -323,7 +323,7 @@ const base::Feature kAudioPlayerJsModules{"AudioPlayerJsModules",
 
 // Enables JS modules for Video Player.
 const base::Feature kVideoPlayerJsModules{"VideoPlayerJsModules",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables partitioning of removable disks in file manager.
 const base::Feature kFilesSinglePartitionFormat{

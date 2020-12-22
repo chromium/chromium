@@ -87,10 +87,14 @@ preprocess_if_expr("preprocess_static") {
   in_files = [
     "audio_player/js/main.m.js",
     "audio_player/js/main_background.m.js",
+    "video_player/js/main.m.js",
     "video_player/js/main_background.m.js",
   ]
 
-  deps = [ "//ui/file_manager/audio_player/js:main.m" ]
+  deps = [
+    "//ui/file_manager/audio_player/js:main.m",
+    "//ui/file_manager/video_player/js:main.m",
+  ]
 }
 
 # This is for files that are generated in "gen/": input_folder=target_gen_dir.
@@ -184,6 +188,8 @@ preprocess_if_expr("preprocess_generated") {
     "video_player/js/error_util.m.js",
     "video_player/js/test_util.m.js",
     "video_player/js/background.m.js",
+    "video_player/js/video_player.m.js",
+    "video_player/js/video_player_native_controls.m.js",
     "video_player/js/video_player_metrics.m.js",
   ]
 
@@ -219,6 +225,7 @@ generate_grd("build_grd") {
     "file_manager/foreground/elements/files_toggle_ripple.m.js",
     "file_manager/foreground/elements/files_ripple.m.js",
 
+    "video_player/js/main.m.rollup.js",
     "video_player/js/main_background.m.rollup.js",
   ]
 
@@ -226,6 +233,7 @@ generate_grd("build_grd") {
     "audio_player/js/main.m.rollup.js|audio_player/js/main.m.js",
     "audio_player/js/main_background.m.rollup.js|audio_player/js/main_background.m.js",
     "audio_player/js/metadata_worker.m.rollup.js|audio_player/js/metadata_worker.m.js",
+    "video_player/js/main.m.rollup.js|video_player/js/main.m.js",
     "video_player/js/main_background.m.rollup.js|video_player/js/main_background.m.js",
   ]
 
@@ -241,6 +249,7 @@ generate_grd("build_grd") {
     "//ui/file_manager/audio_player/js:build_background",
     "//ui/file_manager/audio_player/js:build_worker",
     "//ui/file_manager/file_manager/foreground/elements:elements",
+    "//ui/file_manager/video_player/js:build",
     "//ui/file_manager/video_player/js:build_background",
   ]
 }
