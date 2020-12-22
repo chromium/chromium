@@ -230,6 +230,9 @@ class ProtoField(object):
   def CppValueType(self):
     return types.GetCppValueType(self.CppPrimitiveType())
 
+  def CppValuePredicate(self, variable_name):
+    return types.GetCppValuePredicate(self.CppPrimitiveType(), variable_name)
+
   def CheckSupported(self):
     if self.Extendee():
       return 'Unsupported field extension: ' + self.DebugString()

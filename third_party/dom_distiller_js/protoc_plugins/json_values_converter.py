@@ -65,9 +65,8 @@ class CppConverterWriter(writer.CodeWriter):
       # Nothing to write for enums.
 
       self.Output(
-          'static bool ReadFromValue(const base::Value* json, {generated_class_name}* message) {{\n'
-          '  const base::DictionaryValue* dict;\n'
-          '  if (!json->GetAsDictionary(&dict)) goto error;\n'
+          'static bool ReadFromValue(const base::Value& dict, {generated_class_name}* message) {{\n'
+          '  if (!dict.is_dict()) goto error;\n'
           '',
           generated_class_name=generated_class_name)
 
@@ -82,8 +81,8 @@ class CppConverterWriter(writer.CodeWriter):
           '  return false;\n'
           '}}\n'
           '\n'
-          'static std::unique_ptr<base::DictionaryValue> WriteToValue(const {generated_class_name}& message) {{\n'
-          '  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());\n'
+          'static base::Value WriteToValue(const {generated_class_name}& message) {{\n'
+          '  base::Value dict(base::Value::Type::DICTIONARY);\n'
           '',
           generated_class_name=generated_class_name)
 
@@ -115,56 +114,52 @@ class CppConverterWriter(writer.CodeWriter):
     self.Output('}}')
 
   def RepeatedMemberFieldWriteToValue(self, field):
-    prologue = (
-        'auto field_list = std::make_unique<base::ListValue>();\n'
-        'for (int i = 0; i < message.{field_name}_size(); ++i) {{\n'
-    )
-
     if field.IsClassType():
-      middle = (
-          'std::unique_ptr<base::Value> inner_message_value = \n'
-          '    {inner_class_converter}::WriteToValue(message.{field_name}(i));\n'
-          'field_list->Append(std::move(inner_message_value));\n'
+      self.Output(
+          'const auto& repeated_field = message.{field_name}();\n'
+          'base::Value::ListStorage field_list;\n'
+          'field_list.reserve(repeated_field.size());\n'
+          'for (const auto& element : repeated_field) {{\n'
+          '  field_list.push_back(\n'
+          '      {inner_class_converter}::WriteToValue(element));\n'
+          '}}\n'
+          'dict.SetKey("{field_number}",\n'
+          '            base::Value(std::move(field_list)));\n',
+          field_number=field.JavascriptIndex(),
+          field_name=field.name,
+          inner_class_converter=field.CppConverterType()
       )
     else:
-      middle = (
-          'field_list->Append{value_type}(message.{field_name}(i));\n'
+      self.Output(
+          'const auto& repeated_field = message.{field_name}();\n'
+          'base::Value::ListStorage field_list(\n'
+          '    repeated_field.begin(), repeated_field.end());\n'
+          'dict.SetKey("{field_number}",\n'
+          '            base::Value(std::move(field_list)));\n',
+          field_number=field.JavascriptIndex(),
+          field_name=field.name
       )
-
-    epilogue = (
-        '\n}}\n'
-        'dict->Set("{field_number}", std::move(field_list));'
-    )
-    self.Output(
-        prologue + Indented(middle) + epilogue,
-        field_number=field.JavascriptIndex(),
-        field_name=field.name,
-        value_type=field.CppValueType() if not field.IsClassType() else None,
-        inner_class_converter=field.CppConverterType()
-    )
 
   def OptionalMemberFieldWriteToValue(self, field):
     if field.IsClassType():
-      body = (
-          'std::unique_ptr<base::Value> inner_message_value = \n'
-          '    {inner_class_converter}::WriteToValue(message.{field_name}());\n'
-          'dict->Set("{field_number}", std::move(inner_message_value));\n'
+      self.Output(
+          'dict.SetKey("{field_number}",\n'
+          '            {inner_class_converter}::WriteToValue(\n'
+          '                message.{field_name}()));\n',
+          field_number=field.JavascriptIndex(),
+          field_name=field.name,
+          inner_class_converter=field.CppConverterType()
       )
     else:
-      body = (
-          'dict->Set{value_type}("{field_number}", message.{field_name}());\n'
+      self.Output(
+          'dict.Set{value_type}Key("{field_number}", message.{field_name}());\n',
+          field_number=field.JavascriptIndex(),
+          field_name=field.name,
+          value_type=field.CppValueType()
       )
 
-    self.Output(
-        body,
-        field_number=field.JavascriptIndex(),
-        field_name=field.name,
-        value_type=field.CppValueType() if not field.IsClassType() else None,
-        inner_class_converter=field.CppConverterType(),
-    )
-
   def WriteFieldRead(self, field):
-    self.Output('if (dict->HasKey("{field_number}")) {{',
+    self.Output('if (const auto* value = dict.FindKey("{field_number}")) {{',
                 field_number=field.JavascriptIndex())
 
     with self.AddIndent():
@@ -176,69 +171,54 @@ class CppConverterWriter(writer.CodeWriter):
     self.Output('}}')
 
   def RepeatedMemberFieldRead(self, field):
-    prologue = (
-        'const base::ListValue* field_list;\n'
-        'if (!dict->GetList("{field_number}", &field_list)) {{\n'
+    self.Output(
+        'if (!value->is_list()) {{\n'
         '  goto error;\n'
         '}}\n'
-        'for (size_t i = 0; i < field_list->GetSize(); ++i) {{\n'
+        'for (const auto& element : value->GetList()) {{\n'
     )
 
-    if field.IsClassType():
-      middle = (
-          'const base::Value* inner_message_value;\n'
-          'if (!field_list->Get(i, &inner_message_value)) {{\n'
-          '  goto error;\n'
-          '}}\n'
-          'if (!{inner_class_parser}::ReadFromValue(inner_message_value, message->add_{field_name}())) {{\n'
-          '  goto error;\n'
-          '}}\n'
-      )
-    else:
-      middle = (
-          '{cpp_type} field_value;\n'
-          'if (!field_list->Get{value_type}(i, &field_value)) {{\n'
-          '  goto error;\n'
-          '}}\n'
-          'message->add_{field_name}(field_value);\n'
-      )
+    with self.AddIndent():
+      if field.IsClassType():
+        self.Output(
+            'if (!{inner_class_parser}::ReadFromValue(element, message->add_{field_name}())) {{\n'
+            '  goto error;\n'
+            '}}\n',
+            field_name=field.name,
+            inner_class_parser=field.CppConverterType()
+        )
+      else:
+        self.Output(
+            'if (!{predicate}) {{\n'
+            '  goto error;\n'
+            '}}\n'
+            'message->add_{field_name}(element.Get{value_type}());\n',
+            field_name=field.name,
+            value_type=field.CppValueType(),
+            predicate=field.CppValuePredicate('element')
+        )
 
-    self.Output(
-        prologue + Indented(middle) + '\n}}',
-        field_number=field.JavascriptIndex(),
-        field_name=field.name,
-        cpp_type=field.CppPrimitiveType() if not field.IsClassType() else None,
-        value_type=field.CppValueType() if not field.IsClassType() else None,
-        inner_class_parser=field.CppConverterType()
-    )
+    self.Output('}}\n')
 
   def OptionalMemberFieldRead(self, field):
     if field.IsClassType():
       self.Output(
-          'const base::Value* inner_message_value;\n'
-          'if (!dict->Get("{field_number}", &inner_message_value)) {{\n'
+          'if (!{inner_class_parser}::ReadFromValue(*value, message->mutable_{field_name}())) {{\n'
           '  goto error;\n'
-          '}}\n'
-          'if (!{inner_class_parser}::ReadFromValue(inner_message_value, message->mutable_{field_name}())) {{\n'
-          '  goto error;\n'
-          '}}\n'
-          '',
+          '}}\n',
           field_number=field.JavascriptIndex(),
           field_name=field.name,
           inner_class_parser=field.CppConverterType()
       )
     else:
       self.Output(
-          '{cpp_type} field_value;\n'
-          'if (!dict->Get{value_type}("{field_number}", &field_value)) {{\n'
+          'if (!{predicate}) {{\n'
           '  goto error;\n'
           '}}\n'
-          'message->set_{field_name}(field_value);\n'
-          '',
-          field_number=field.JavascriptIndex(),
+          'message->set_{field_name}(value->Get{value_type}());\n',
           field_name=field.name,
-          cpp_type=field.CppPrimitiveType(),
-          value_type=field.CppValueType()
+          value_type=field.CppValueType(),
+          predicate=field.CppValuePredicate('(*value)')
       )
 
 

@@ -31,8 +31,8 @@ _cpp_base_type_map = {
 _cpp_type_to_value_type_map = {
     'double': 'Double',
     'float': 'Double',
-    'int': 'Integer',
-    'bool': 'Boolean',
+    'int': 'Int',
+    'bool': 'Bool',
     'std::string': 'String',
 }
 
@@ -57,6 +57,14 @@ def GetCppPrimitiveType(type_name):
 
 def GetCppValueType(primitive_type):
   return _cpp_type_to_value_type_map[primitive_type]
+
+
+def GetCppValuePredicate(primitive_type, variable_name):
+  if primitive_type == 'double' or primitive_type == 'float':
+    return '({var}.is_int() || {var}.is_double())'.format(var=variable_name)
+  else:
+    return '{var}.is_{value_type}()'.format(
+        var=variable_name, value_type=GetCppValueType(primitive_type).lower())
 
 
 # TYPE_ENUM and TYPE_MESSAGE are supported, but their types depend on type_name.

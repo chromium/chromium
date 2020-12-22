@@ -41,10 +41,10 @@ std::string GetDistillerScriptWithOptions(
     return "";
   }
 
-  std::unique_ptr<base::Value> options_value(
-      dom_distiller::proto::json::DomDistillerOptions::WriteToValue(options));
+  base::Value options_value =
+      dom_distiller::proto::json::DomDistillerOptions::WriteToValue(options);
   std::string options_json;
-  if (!base::JSONWriter::Write(*options_value, &options_json)) {
+  if (!base::JSONWriter::Write(options_value, &options_json)) {
     NOTREACHED();
   }
   size_t options_offset = script.find(kOptionsPlaceholder);
@@ -100,7 +100,7 @@ void DistillerPage::OnDistillationDone(const GURL& page_url,
   } else {
     found_content =
         dom_distiller::proto::json::DomDistillerResult::ReadFromValue(
-            value, distiller_result.get());
+            *value, distiller_result.get());
     if (!found_content) {
       DVLOG(1) << "Unable to parse DomDistillerResult.";
     } else {
