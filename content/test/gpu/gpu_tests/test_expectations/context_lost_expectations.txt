@@ -128,3 +128,8 @@ crbug.com/1105308 [ fuchsia ] GpuNormalTermination_NewWebGLNotBlocked [ Skip ]
 
 # Flakily not getting WebGL blocked on context loss
 crbug.com/1143774 [ chromeos chromeos-board-kevin ] ContextLost_WebGLUnblockedAfterUserInitiatedReload [ RetryOnFailure ]
+
+# GPU process fallback isn't supported on certain platforms.
+crbug.com/1154047 [ chromeos ] GpuCrash_InfoForHardwareGpu [ Skip ]
+crbug.com/1154047 [ android ] GpuCrash_InfoForHardwareGpu [ Skip ]
+crbug.com/1154047 [ fuchsia ] GpuCrash_InfoForHardwareGpu [ Skip ]

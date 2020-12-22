@@ -350,6 +350,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
             << "on Linux";
     return false;
 #else
+    SaveHardwareGpuInfoAndGpuFeatureInfo();
     gl::init::ShutdownGL(true);
     gl_initialized = false;
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
@@ -437,6 +438,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
                 << "on Linux";
         return false;
 #else
+        SaveHardwareGpuInfoAndGpuFeatureInfo();
         gl::init::ShutdownGL(true);
         watchdog_thread_ = nullptr;
         watchdog_init.SetGpuWatchdogPtr(nullptr);
@@ -693,6 +695,7 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
         command_line, gpu_feature_info_,
         gpu_preferences_.disable_software_rasterizer, false);
     if (gl_use_swiftshader_) {
+      SaveHardwareGpuInfoAndGpuFeatureInfo();
       gl::init::ShutdownGL(true);
       if (!gl::init::InitializeGLNoExtensionsOneOff(/*init_bindings*/ true)) {
         VLOG(1) << "gl::init::InitializeGLNoExtensionsOneOff failed "
@@ -731,6 +734,7 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
         command_line, gpu_feature_info_,
         gpu_preferences_.disable_software_rasterizer, false);
     if (gl_use_swiftshader_) {
+      SaveHardwareGpuInfoAndGpuFeatureInfo();
       gl::init::ShutdownGL(true);
       if (!gl::init::InitializeGLNoExtensionsOneOff(/*init_bindings*/ true)) {
         VLOG(1) << "gl::init::InitializeGLNoExtensionsOneOff failed "
@@ -768,10 +772,13 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
 }
 #endif  // OS_ANDROID
 
-void GpuInit::AdjustInfoToSwiftShader() {
+void GpuInit::SaveHardwareGpuInfoAndGpuFeatureInfo() {
   gpu_info_for_hardware_gpu_ = gpu_info_;
-  gpu_info_.passthrough_cmd_decoder = false;
   gpu_feature_info_for_hardware_gpu_ = gpu_feature_info_;
+}
+
+void GpuInit::AdjustInfoToSwiftShader() {
+  gpu_info_.passthrough_cmd_decoder = false;
   gpu_feature_info_ = ComputeGpuFeatureInfoForSwiftShader();
   CollectContextGraphicsInfo(&gpu_info_);
 

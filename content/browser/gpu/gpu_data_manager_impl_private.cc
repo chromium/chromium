@@ -616,6 +616,13 @@ bool GpuDataManagerImplPrivate::GpuAccessAllowed(std::string* reason) const {
   }
 }
 
+bool GpuDataManagerImplPrivate::GpuAccessAllowedForHardwareGpu(
+    std::string* reason) const {
+  if (reason)
+    *reason = gpu_access_blocked_reason_for_hardware_gpu_;
+  return gpu_access_allowed_for_hardware_gpu_;
+}
+
 bool GpuDataManagerImplPrivate::GpuProcessStartAllowed() const {
   return gpu_mode_ != gpu::GpuMode::DISABLED;
 }
@@ -1072,6 +1079,9 @@ void GpuDataManagerImplPrivate::UpdateGpuFeatureInfo(
     } else {
       gpu_feature_info_for_hardware_gpu_ = gpu_feature_info_;
     }
+    is_gpu_compositing_disabled_for_hardware_gpu_ = IsGpuCompositingDisabled();
+    gpu_access_allowed_for_hardware_gpu_ =
+        GpuAccessAllowed(&gpu_access_blocked_reason_for_hardware_gpu_);
   }
   if (update_histograms_) {
     UpdateFeatureStats(gpu_feature_info_);
@@ -1101,6 +1111,10 @@ gfx::GpuExtraInfo GpuDataManagerImplPrivate::GetGpuExtraInfo() const {
 
 bool GpuDataManagerImplPrivate::IsGpuCompositingDisabled() const {
   return disable_gpu_compositing_ || !HardwareAccelerationEnabled();
+}
+
+bool GpuDataManagerImplPrivate::IsGpuCompositingDisabledForHardwareGpu() const {
+  return is_gpu_compositing_disabled_for_hardware_gpu_;
 }
 
 void GpuDataManagerImplPrivate::SetGpuCompositingDisabled() {

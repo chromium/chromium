@@ -43,6 +43,7 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
   gpu::GPUInfo GetGPUInfo() const;
   gpu::GPUInfo GetGPUInfoForHardwareGpu() const;
   bool GpuAccessAllowed(std::string* reason) const;
+  bool GpuAccessAllowedForHardwareGpu(std::string* reason) const;
   bool GpuProcessStartAllowed() const;
   void RequestDxdiagDx12VulkanGpuInfoIfNeeded(GpuInfoRequest request,
                                               bool delayed);
@@ -87,6 +88,7 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
   gfx::GpuExtraInfo GetGpuExtraInfo() const;
 
   bool IsGpuCompositingDisabled() const;
+  bool IsGpuCompositingDisabledForHardwareGpu() const;
 
   void SetGpuCompositingDisabled();
 
@@ -223,6 +225,9 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
   // pure software (in the viz case).
   gpu::GpuFeatureInfo gpu_feature_info_for_hardware_gpu_;
   gpu::GPUInfo gpu_info_for_hardware_gpu_;
+  bool is_gpu_compositing_disabled_for_hardware_gpu_ = false;
+  bool gpu_access_allowed_for_hardware_gpu_ = true;
+  std::string gpu_access_blocked_reason_for_hardware_gpu_;
 
   gfx::GpuExtraInfo gpu_extra_info_;
 

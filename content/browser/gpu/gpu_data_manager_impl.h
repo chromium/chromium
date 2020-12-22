@@ -113,8 +113,13 @@ class CONTENT_EXPORT GpuDataManagerImpl : public GpuDataManager,
 
   gpu::GpuFeatureInfo GetGpuFeatureInfo() const;
 
+  // The following functions for cached GPUInfo and GpuFeatureInfo from the
+  // hardware GPU even if currently Chrome has fallen back to SwiftShader.
+  // Such info are displayed in about:gpu for diagostic purpose.
   gpu::GPUInfo GetGPUInfoForHardwareGpu() const;
   gpu::GpuFeatureInfo GetGpuFeatureInfoForHardwareGpu() const;
+  bool GpuAccessAllowedForHardwareGpu(std::string* reason);
+  bool IsGpuCompositingDisabledForHardwareGpu() const;
 
   gfx::GpuExtraInfo GetGpuExtraInfo() const;
 

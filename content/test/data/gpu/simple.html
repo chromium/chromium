@@ -1,0 +1,22 @@
+<html>
+<head>
+<script type="text/javascript">
+function onLoad() {
+  window.domAutomationController.reset = function() {
+    window.domAutomationController._loaded = false;
+    window.domAutomationController._succeeded = false;
+    window.domAutomationController._finished = false;
+    window.requestAnimationFrame(succeed);
+  };
+  window.domAutomationController.send("LOADED");
+}
+
+function succeed() {
+  window.domAutomationController.send("SUCCESS");
+}
+</script>
+</head>
+<body onload="onLoad()">
+Simple page.
+</body>
+</html>

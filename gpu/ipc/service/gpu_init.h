@@ -108,6 +108,7 @@ class GPU_IPC_SERVICE_EXPORT GpuInit {
   std::unique_ptr<VulkanImplementation> vulkan_implementation_;
 #endif
 
+  void SaveHardwareGpuInfoAndGpuFeatureInfo();
   void AdjustInfoToSwiftShader();
 
   DISALLOW_COPY_AND_ASSIGN(GpuInit);

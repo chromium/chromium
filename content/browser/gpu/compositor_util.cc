@@ -90,6 +90,7 @@ gpu::GpuFeatureStatus SafeGetFeatureStatus(
 const GpuFeatureData GetGpuFeatureData(
     const gpu::GpuFeatureInfo& gpu_feature_info,
     size_t index,
+    bool is_gpu_compositing_disabled,
     bool* eof) {
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
@@ -110,7 +111,7 @@ const GpuFeatureData GetGpuFeatureData(
      // if GPU compositing is disabled.
      SafeGetFeatureStatus(gpu_feature_info,
                           gpu::GPU_FEATURE_TYPE_ACCELERATED_GL),
-     GpuDataManagerImpl::GetInstance()->IsGpuCompositingDisabled(),
+     is_gpu_compositing_disabled,
      DisableInfo::Problem(
          "Gpu compositing has been disabled, either via blocklist, about:flags "
          "or the command line. The browser will fall back to software "
@@ -206,19 +207,27 @@ std::unique_ptr<base::DictionaryValue> GetFeatureStatusImpl(
     GpuFeatureInfoType type) {
   GpuDataManagerImpl* manager = GpuDataManagerImpl::GetInstance();
   std::string gpu_access_blocked_reason;
-  bool gpu_access_blocked =
-      !manager->GpuAccessAllowed(&gpu_access_blocked_reason);
-  const gpu::GpuFeatureInfo gpu_feature_info =
-      type == GpuFeatureInfoType::kCurrent
-          ? manager->GetGpuFeatureInfo()
-          : manager->GetGpuFeatureInfoForHardwareGpu();
+  bool gpu_access_blocked;
+  gpu::GpuFeatureInfo gpu_feature_info;
+  bool is_gpu_compositing_disabled;
+  if (type == GpuFeatureInfoType::kCurrent) {
+    gpu_access_blocked = !manager->GpuAccessAllowed(&gpu_access_blocked_reason);
+    gpu_feature_info = manager->GetGpuFeatureInfo();
+    is_gpu_compositing_disabled = manager->IsGpuCompositingDisabled();
+  } else {
+    gpu_access_blocked =
+        !manager->GpuAccessAllowedForHardwareGpu(&gpu_access_blocked_reason);
+    gpu_feature_info = manager->GetGpuFeatureInfoForHardwareGpu();
+    is_gpu_compositing_disabled =
+        manager->IsGpuCompositingDisabledForHardwareGpu();
+  }
 
   auto feature_status_dict = std::make_unique<base::DictionaryValue>();
 
   bool eof = false;
   for (size_t i = 0; !eof; ++i) {
-    const GpuFeatureData gpu_feature_data =
-        GetGpuFeatureData(gpu_feature_info, i, &eof);
+    const GpuFeatureData gpu_feature_data = GetGpuFeatureData(
+        gpu_feature_info, i, is_gpu_compositing_disabled, &eof);
     std::string status;
     // Features undergoing a finch controlled roll out.
     if (gpu_feature_data.name == "skia_renderer" ||
@@ -239,7 +248,7 @@ std::unique_ptr<base::DictionaryValue> GetFeatureStatusImpl(
       status = "enabled";
       if ((gpu_feature_data.name == "webgl" ||
            gpu_feature_data.name == "webgl2") &&
-          manager->IsGpuCompositingDisabled())
+          is_gpu_compositing_disabled)
         status += "_readback";
       if (gpu_feature_data.name == "rasterization") {
         const base::CommandLine& command_line =
@@ -269,12 +278,20 @@ std::unique_ptr<base::DictionaryValue> GetFeatureStatusImpl(
 std::unique_ptr<base::ListValue> GetProblemsImpl(GpuFeatureInfoType type) {
   GpuDataManagerImpl* manager = GpuDataManagerImpl::GetInstance();
   std::string gpu_access_blocked_reason;
-  bool gpu_access_blocked =
-      !manager->GpuAccessAllowed(&gpu_access_blocked_reason);
-  const gpu::GpuFeatureInfo gpu_feature_info =
-      type == GpuFeatureInfoType::kCurrent
-          ? manager->GetGpuFeatureInfo()
-          : manager->GetGpuFeatureInfoForHardwareGpu();
+  bool gpu_access_blocked;
+  gpu::GpuFeatureInfo gpu_feature_info;
+  bool is_gpu_compositing_disabled;
+  if (type == GpuFeatureInfoType::kCurrent) {
+    gpu_access_blocked = !manager->GpuAccessAllowed(&gpu_access_blocked_reason);
+    gpu_feature_info = manager->GetGpuFeatureInfo();
+    is_gpu_compositing_disabled = manager->IsGpuCompositingDisabled();
+  } else {
+    gpu_access_blocked =
+        !manager->GpuAccessAllowedForHardwareGpu(&gpu_access_blocked_reason);
+    gpu_feature_info = manager->GetGpuFeatureInfoForHardwareGpu();
+    is_gpu_compositing_disabled =
+        manager->IsGpuCompositingDisabledForHardwareGpu();
+  }
 
   auto problem_list = std::make_unique<base::ListValue>();
   if (!gpu_feature_info.applied_gpu_blocklist_entries.empty()) {
@@ -303,8 +320,8 @@ std::unique_ptr<base::ListValue> GetProblemsImpl(GpuFeatureInfoType type) {
 
   bool eof = false;
   for (size_t i = 0; !eof; ++i) {
-    const GpuFeatureData gpu_feature_data =
-        GetGpuFeatureData(gpu_feature_info, i, &eof);
+    const GpuFeatureData gpu_feature_data = GetGpuFeatureData(
+        gpu_feature_info, i, is_gpu_compositing_disabled, &eof);
     if (gpu_feature_data.disabled &&
         gpu_feature_data.disabled_info.is_problem) {
       auto problem = std::make_unique<base::DictionaryValue>();
