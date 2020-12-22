@@ -566,7 +566,15 @@ void LocalFrame::Navigate(FrameLoadRequest& request,
     probe::FrameClearedScheduledNavigation(this);
 }
 
-void LocalFrame::DetachImpl(FrameDetachType type) {
+bool LocalFrame::DetachImpl(FrameDetachType type) {
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // BEGIN REENTRANCY SAFE BLOCK
+  // Starting here, the code must be safe against reentrancy. Dispatching
+  // events, et cetera can run Javascript, which can reenter Detach().
+  //
+  // Most cleanup code should *not* be in inside the reentrancy safe block.
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
   if (IsProvisional()) {
     Frame* provisional_owner = nullptr;
     if (Owner()) {
@@ -580,11 +588,59 @@ void LocalFrame::DetachImpl(FrameDetachType type) {
     provisional_owner->SetProvisionalFrame(nullptr);
   }
 
+  PluginScriptForbiddenScope forbid_plugin_destructor_scripting;
+  // In a kSwap detach, if we have a navigation going, its moved to the frame
+  // being swapped in, so we don't need to notify the client about the
+  // navigation stopping here. That will be up to the provisional frame being
+  // swapped in, which knows the actual state of the navigation.
+  loader_.StopAllLoaders(/*abort_client=*/type == FrameDetachType::kRemove);
+  // Don't allow any new child frames to load in this frame: attaching a new
+  // child frame during or after detaching children results in an attached
+  // frame on a detached DOM tree, which is bad.
+  SubframeLoadingDisabler disabler(*GetDocument());
+  // https://html.spec.whatwg.org/C/browsing-the-web.html#unload-a-document
+  // The ignore-opens-during-unload counter of a Document must be incremented
+  // both when unloading itself and when unloading its descendants.
+  IgnoreOpensDuringUnloadCountIncrementer ignore_opens_during_unload(
+      GetDocument());
+
+  loader_.DispatchUnloadEvent(nullptr, nullptr);
+  if (!Client())
+    return false;
+
+  if (!DetachChildren())
+    return false;
+
+  // Detach() needs to be called after detachChildren(), because
+  // detachChildren() will trigger the unload event handlers of any child
+  // frames, and those event handlers might start a new subresource load in this
+  // frame which should be stopped by Detach.
+  loader_.Detach();
+  DomWindow()->FrameDestroyed();
+
+  // Verify here that any LocalFrameView has been detached by now.
+  if (view_ && view_->IsAttached()) {
+    DCHECK(DeprecatedLocalOwner());
+    DCHECK(DeprecatedLocalOwner()->OwnedEmbeddedContentView());
+    DCHECK_EQ(view_, DeprecatedLocalOwner()->OwnedEmbeddedContentView());
+  }
+  DCHECK(!view_ || !view_->IsAttached());
+
+  // This is the earliest that scripting can be disabled:
+  // - FrameLoader::Detach() can fire XHR abort events
+  // - Document::Shutdown() can dispose plugins which can run script.
+  ScriptForbiddenScope forbid_script;
+  if (!Client())
+    return false;
+
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  // BEGIN RE-ENTRANCY SAFE BLOCK
-  // Starting here, the code must be safe against re-entrancy. Dispatching
-  // events, et cetera can run Javascript, which can reenter Detach().
+  // END REENTRANCY SAFE BLOCK
+  // Past this point, no script should be executed. If this method was
+  // reentered, then a check for a null Client() above should have already
+  // returned false.
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  DCHECK(!IsDetached());
+
   frame_color_overlay_.reset();
 
   if (IsLocalRoot()) {
@@ -603,63 +659,10 @@ void LocalFrame::DetachImpl(FrameDetachType type) {
     probe_sink_->RemoveInspectorTraceEvents(inspector_trace_events_);
   inspector_task_runner_->Dispose();
 
-  PluginScriptForbiddenScope forbid_plugin_destructor_scripting;
-  // In a kSwap detach, if we have a navigation going, its moved to the frame
-  // being swapped in, so we don't need to notify the client about the
-  // navigation stopping here. That will be up to the provisional frame being
-  // swapped in, which knows the actual state of the navigation.
-  loader_.StopAllLoaders(/*abort_client=*/type == FrameDetachType::kRemove);
-  // Don't allow any new child frames to load in this frame: attaching a new
-  // child frame during or after detaching children results in an attached
-  // frame on a detached DOM tree, which is bad.
-  SubframeLoadingDisabler disabler(*GetDocument());
-  // https://html.spec.whatwg.org/C/browsing-the-web.html#unload-a-document
-  // The ignore-opens-during-unload counter of a Document must be incremented
-  // both when unloading itself and when unloading its descendants.
-  IgnoreOpensDuringUnloadCountIncrementer ignore_opens_during_unload(
-      GetDocument());
-  loader_.DispatchUnloadEvent(nullptr, nullptr);
-  DetachChildren();
-
-  // All done if detaching the subframes brought about a detach of this frame
-  // also.
-  if (!Client())
-    return;
-
-  // Detach() needs to be called after detachChildren(), because
-  // detachChildren() will trigger the unload event handlers of any child
-  // frames, and those event handlers might start a new subresource load in this
-  // frame which should be stopped by Detach.
-  loader_.Detach();
-  DomWindow()->FrameDestroyed();
-
   if (content_capture_manager_) {
     content_capture_manager_->Shutdown();
     content_capture_manager_ = nullptr;
   }
-
-  // Verify here that any LocalFrameView has been detached by now.
-  if (view_ && view_->IsAttached()) {
-    DCHECK(DeprecatedLocalOwner());
-    DCHECK(DeprecatedLocalOwner()->OwnedEmbeddedContentView());
-    DCHECK_EQ(view_, DeprecatedLocalOwner()->OwnedEmbeddedContentView());
-  }
-  DCHECK(!view_ || !view_->IsAttached());
-
-  // This is the earliest that scripting can be disabled:
-  // - FrameLoader::Detach() can fire XHR abort events
-  // - Document::Shutdown() can dispose plugins which can run script.
-  ScriptForbiddenScope forbid_script;
-  if (!Client())
-    return;
-
-  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  // END RE-ENTRANCY SAFE BLOCK
-  // Past this point, no script should be executed. If this method was
-  // re-entered, then check for a non-null Client() above should have already
-  // returned.
-  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  DCHECK(!IsDetached());
 
   DCHECK(!view_->IsAttached());
   Client()->WillBeDetached();
@@ -681,6 +684,8 @@ void LocalFrame::DetachImpl(FrameDetachType type) {
   main_frame_receiver_.reset();
   high_priority_frame_receiver_.reset();
   WeakIdentifierMap<LocalFrame>::NotifyObjectDestroyed(this);
+
+  return true;
 }
 
 bool LocalFrame::DetachDocument() {
@@ -739,9 +744,10 @@ bool LocalFrame::ShouldClose() {
   return loader_.ShouldClose();
 }
 
-void LocalFrame::DetachChildren() {
+bool LocalFrame::DetachChildren() {
   DCHECK(GetDocument());
   ChildFrameDisconnector(*GetDocument()).Disconnect();
+  return !!Client();
 }
 
 void LocalFrame::DidAttachDocument() {
@@ -1767,6 +1773,8 @@ ContentCaptureManager* LocalFrame::GetContentCaptureManager() {
   if (!IsLocalRoot())
     return nullptr;
 
+  // TODO(dcheng): Why does this function also Shutdown()? It seems rather
+  // surprising...
   if (auto* content_capture_client = Client()->GetWebContentCaptureClient()) {
     if (!content_capture_manager_) {
       content_capture_manager_ =

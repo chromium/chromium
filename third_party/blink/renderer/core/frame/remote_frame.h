@@ -197,14 +197,15 @@ class CORE_EXPORT RemoteFrame final : public Frame,
 
  private:
   // Frame protected overrides:
-  void DetachImpl(FrameDetachType) override;
+  bool DetachImpl(FrameDetachType) override;
 
   // Intentionally private to prevent redundant checks when the type is
   // already RemoteFrame.
   bool IsLocalFrame() const override { return false; }
   bool IsRemoteFrame() const override { return true; }
 
-  void DetachChildren();
+  // Returns false if detaching child frames reentrantly detached `this`.
+  bool DetachChildren();
   void ApplyReplicatedFeaturePolicyHeader();
 
   static void BindToReceiver(

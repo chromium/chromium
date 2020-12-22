@@ -224,11 +224,11 @@ void RemoteFrame::Navigate(FrameLoadRequest& frame_request,
                      frame_request.Impression());
 }
 
-void RemoteFrame::DetachImpl(FrameDetachType type) {
+bool RemoteFrame::DetachImpl(FrameDetachType type) {
   PluginScriptForbiddenScope forbid_plugin_destructor_scripting;
-  DetachChildren();
-  if (!Client())
-    return;
+
+  if (!DetachChildren())
+    return false;
 
   // Clean up the frame's view if needed. A remote frame only has a view if
   // the parent is a local frame.
@@ -246,11 +246,12 @@ void RemoteFrame::DetachImpl(FrameDetachType type) {
     SetCcLayer(nullptr, false, false);
   receiver_.reset();
   main_frame_receiver_.reset();
+
+  return true;
 }
 
 bool RemoteFrame::DetachDocument() {
-  DetachChildren();
-  return !!GetPage();
+  return DetachChildren();
 }
 
 void RemoteFrame::CheckCompleted() {
@@ -808,7 +809,7 @@ void RemoteFrame::AdvanceFocus(mojom::blink::FocusType type,
   GetRemoteFrameHostRemote().AdvanceFocus(type, source->GetFrameToken());
 }
 
-void RemoteFrame::DetachChildren() {
+bool RemoteFrame::DetachChildren() {
   using FrameVector = HeapVector<Member<Frame>>;
   FrameVector children_to_detach;
   children_to_detach.ReserveCapacity(Tree().ChildCount());
@@ -817,6 +818,8 @@ void RemoteFrame::DetachChildren() {
     children_to_detach.push_back(child);
   for (const auto& child : children_to_detach)
     child->Detach(FrameDetachType::kRemove);
+
+  return !!Client();
 }
 
 void RemoteFrame::ApplyReplicatedFeaturePolicyHeader() {

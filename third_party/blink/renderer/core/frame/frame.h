@@ -107,7 +107,20 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
 
   virtual void Navigate(FrameLoadRequest&, WebFrameLoadType) = 0;
 
-  void Detach(FrameDetachType);
+  // Releases the resources associated with a frame. Used for:
+  // - closing a `WebView`, which detaches the main frame
+  // - removing a `FrameOwner` from the DOM, which detaches the `FrameOwner`'s
+  //   content frame
+  // - preparing a frame to be replaced in `Frame::Swap()`.
+  //
+  // Since `Detach()` fires JS events and detaches all child frames, and JS can
+  // modify the DOM in ways that trigger frame removal, it is possible to
+  // reentrantly call `Detach() with `FrameDetachType::kRemove` before the
+  // original invocation of `Detach()` has completed. In that case, the
+  // interrupted invocation returns false to signal the interruption; otherwise,
+  // on successful completion (e.g. `Detach()` runs all the way through to the
+  // end), returns true.
+  bool Detach(FrameDetachType);
   void DisconnectOwnerElement();
   virtual bool ShouldClose() = 0;
   virtual void HookBackForwardCacheEviction() = 0;
@@ -157,10 +170,15 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
 
   Frame* FindUnsafeParentScrollPropagationBoundary();
 
-  // This prepares the Frame for the next commit. It will detach children,
-  // dispatch unload events, abort XHR requests and detach the document.
-  // Returns true if the frame is ready to receive the next commit, or false
-  // otherwise.
+  // Similar to `Detach()`, except that it does not completely detach `this`:
+  // instead, on successful completion (i.e. returns true), `this` will be ready
+  // to be swapped out (if necessary) and to commit the next navigation.
+  //
+  // Note that the caveats about `Detach()` being interrupted by reentrant
+  // removal also apply to this method; this method also returns false if
+  // interrupted by reentrant removal of `this`. A return value of false
+  // indicates that the caller should early return and skip any further work, as
+  // there is no longer a frame to commit a navigation into.
   virtual bool DetachDocument() = 0;
 
   // LayoutObject for the element that contains this frame.
@@ -375,9 +393,11 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
   // that vtables are initialized.
   void Initialize();
 
-  // DetachImpl() may be re-entered multiple times, if a frame is detached while
-  // already being detached.
-  virtual void DetachImpl(FrameDetachType) = 0;
+  // DetachImpl() may be reentered if a frame is reentrantly removed whilst in
+  // the process of detaching (for removal or swap). Overrides should return
+  // false if interrupted by reentrant removal of `this`, and true otherwise.
+  // See `Detach()` for more information.
+  virtual bool DetachImpl(FrameDetachType) = 0;
 
   // Note that IsAttached() and IsDetached() are not strict opposites: frames
   // that are detaching are considered to be in neither state.

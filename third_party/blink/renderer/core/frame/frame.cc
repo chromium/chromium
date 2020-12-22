@@ -114,23 +114,26 @@ void Frame::Trace(Visitor* visitor) const {
   visitor->Trace(opened_frame_tracker_);
 }
 
-void Frame::Detach(FrameDetachType type) {
+bool Frame::Detach(FrameDetachType type) {
   DCHECK(client_);
   // Detach() can be re-entered, so this can't simply DCHECK(IsAttached()).
   DCHECK(!IsDetached());
   lifecycle_.AdvanceTo(FrameLifecycle::kDetaching);
   PageDismissalScope in_page_dismissal;
 
-  DetachImpl(type);
+  if (!DetachImpl(type))
+    return false;
 
-  if (GetPage())
-    GetPage()->GetFocusController().FrameDetached(this);
-  
-  // Due to re-entrancy, |this| could have completed detaching already.
-  // TODO(dcheng): This DCHECK is not always true. See https://crbug.com/838348.
-  DCHECK(IsDetached() == !client_);
+  DCHECK(!IsDetached());
+  DCHECK(client_);
+
+  GetPage()->GetFocusController().FrameDetached(this);
+  // FrameDetached() can fire JS event listeners, so `this` might have been
+  // reentrantly detached.
   if (!client_)
-    return;
+    return false;
+
+  DCHECK(!IsDetached());
 
   // TODO(dcheng): FocusController::FrameDetached() *should* fire JS events,
   // hence the above check for `client_` being null. However, when this was
@@ -175,6 +178,8 @@ void Frame::Detach(FrameDetachType type) {
   DisconnectOwnerElement();
   page_ = nullptr;
   embedding_token_ = base::nullopt;
+
+  return true;
 }
 
 void Frame::DisconnectOwnerElement() {
@@ -556,7 +561,7 @@ bool Frame::Swap(WebFrame* frame) {
     // already. Otherwise the caller will not detach the frame when we return
     // false, and the browser and renderer will disagree about the destruction
     // of |this|.
-    CHECK(!IsAttached());
+    CHECK(IsDetached());
     return false;
   }
 

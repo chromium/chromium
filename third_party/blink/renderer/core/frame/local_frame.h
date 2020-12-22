@@ -211,7 +211,8 @@ class CORE_EXPORT LocalFrame final
   void DidChangeThemeColor();
   void DidChangeBackgroundColor(SkColor background_color, bool color_adjust);
 
-  void DetachChildren();
+  // Returns false if detaching child frames reentrantly detached `this`.
+  bool DetachChildren();
   // After Document is attached, resets state related to document, and sets
   // context to the current document.
   void DidAttachDocument();
@@ -740,7 +741,7 @@ class CORE_EXPORT LocalFrame final
   FRIEND_TEST_ALL_PREFIXES(LocalFrameTest, CharacterIndexAtPointWithPinchZoom);
 
   // Frame protected overrides:
-  void DetachImpl(FrameDetachType) override;
+  bool DetachImpl(FrameDetachType) override;
 
   // Intentionally private to prevent redundant checks when the type is
   // already LocalFrame.
