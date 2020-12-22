@@ -8,7 +8,13 @@
 
 namespace extensions {
 
-IN_PROC_BROWSER_TEST_F(ExtensionApiTest, Storage) {
+// Flaky for Mac: crbug.com/1141100
+#if defined(OS_MAC)
+#define MAYBE_Storage DISABLED_Storage
+#else
+#define MAYBE_Storage Storage
+#endif
+IN_PROC_BROWSER_TEST_F(ExtensionApiTest, MAYBE_Storage) {
   ASSERT_TRUE(RunExtensionTest("storage")) << message_;
 }
 
