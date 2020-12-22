@@ -356,7 +356,7 @@ void DWriteFontLookupTableBuilder::
   scoped_refptr<base::SequencedTaskRunner> results_collection_task_runner =
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
 
   results_collection_task_runner->PostTask(
       FROM_HERE,
