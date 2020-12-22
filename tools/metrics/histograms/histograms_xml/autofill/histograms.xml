@@ -380,7 +380,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.CardholderNameFixFlowPrompt.Events"
-    enum="AutofillCardholderNameFixFlowPromptEvent" expires_after="2021-01-31">
+    enum="AutofillCardholderNameFixFlowPromptEvent" expires_after="2021-11-30">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
@@ -902,7 +902,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.HadUserOptedIn_To_WalletSyncTransportServerCards"
-    enum="BooleanOptedIn" expires_after="2021-01-31">
+    enum="BooleanOptedIn" expires_after="2021-11-30">
   <owner>jsaul@google.com</owner>
   <owner>battre@chromium.org</owner>
   <summary>
