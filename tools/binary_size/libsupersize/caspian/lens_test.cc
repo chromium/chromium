@@ -59,11 +59,19 @@ TEST(LensTest, TestGeneratedLensCppProto) {
   EXPECT_EQ("C++ Protocol Buffers", GeneratedLens().ParentName(sym));
 }
 
-TEST(LensTest, TestGeneratedLensMojo) {
+TEST(LensTest, TestGeneratedLensMojo1) {
   Symbol sym;
   sym.section_id_ = SectionId::kText;
-  sym.object_path_ = "a.mojom";
+  sym.source_path_ = "a.mojom";
   sym.flags_ |= SymbolFlag::kGeneratedSource;
+  EXPECT_EQ("Mojo", GeneratedLens().ParentName(sym));
+}
+
+TEST(LensTest, TestGeneratedLensMojo2) {
+  Symbol sym;
+  sym.section_id_ = SectionId::kText;
+  sym.flags_ |= SymbolFlag::kGeneratedSource;
+  sym.full_name_ = "mojom::foo()";
   EXPECT_EQ("Mojo", GeneratedLens().ParentName(sym));
 }
 
