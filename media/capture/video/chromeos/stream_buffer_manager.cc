@@ -27,10 +27,12 @@ namespace media {
 StreamBufferManager::StreamBufferManager(
     CameraDeviceContext* device_context,
     bool video_capture_use_gmb,
-    std::unique_ptr<CameraBufferFactory> camera_buffer_factory)
+    std::unique_ptr<CameraBufferFactory> camera_buffer_factory,
+    ClientType client_type)
     : device_context_(device_context),
       video_capture_use_gmb_(video_capture_use_gmb),
-      camera_buffer_factory_(std::move(camera_buffer_factory)) {
+      camera_buffer_factory_(std::move(camera_buffer_factory)),
+      client_type_(client_type) {
   if (video_capture_use_gmb_) {
     gmb_support_ = std::make_unique<gpu::GpuMemoryBufferSupport>();
   }
@@ -153,9 +155,8 @@ StreamBufferManager::AcquireBufferForClientById(StreamType stream_type,
   } else {
     // We have to reserve a new buffer because the size is different.
     Buffer rotated_buffer;
-    auto client_type = kStreamClientTypeMap[static_cast<int>(stream_type)];
     if (!device_context_->ReserveVideoCaptureBufferFromPool(
-            client_type, format->frame_size, format->pixel_format,
+            client_type_, format->frame_size, format->pixel_format,
             &rotated_buffer)) {
       DLOG(WARNING) << "Failed to reserve video capture buffer";
       original_gmb->Unmap();
@@ -220,7 +221,7 @@ bool StreamBufferManager::HasStreamsConfigured(
 }
 
 void StreamBufferManager::SetUpStreamsAndBuffers(
-    base::flat_map<ClientType, VideoCaptureParams> capture_params,
+    VideoCaptureFormat capture_format,
     const cros::mojom::CameraMetadataPtr& static_metadata,
     std::vector<cros::mojom::Camera3StreamPtr> streams) {
   DestroyCurrentStreamsAndBuffers();
@@ -248,14 +249,11 @@ void StreamBufferManager::SetUpStreamsAndBuffers(
     // flags of the stream.
     StreamType stream_type = StreamIdToStreamType(stream->id);
     auto stream_context = std::make_unique<StreamContext>();
-    auto client_type = kStreamClientTypeMap[static_cast<int>(stream_type)];
-    stream_context->capture_format =
-        capture_params[client_type].requested_format;
+    stream_context->capture_format = capture_format;
     stream_context->stream = std::move(stream);
 
     switch (stream_type) {
       case StreamType::kPreviewOutput:
-      case StreamType::kRecordingOutput:
         stream_context->buffer_dimension = gfx::Size(
             stream_context->stream->width, stream_context->stream->height);
         stream_context->buffer_usage =
@@ -380,11 +378,6 @@ bool StreamBufferManager::IsReprocessSupported() {
   return stream_context_.find(StreamType::kYUVOutput) != stream_context_.end();
 }
 
-bool StreamBufferManager::IsRecordingSupported() {
-  return stream_context_.find(StreamType::kRecordingOutput) !=
-         stream_context_.end();
-}
-
 // static
 uint64_t StreamBufferManager::GetBufferIpcId(StreamType stream_type, int key) {
   uint64_t id = 0;
@@ -448,9 +441,8 @@ void StreamBufferManager::ReserveBufferFromPool(StreamType stream_type) {
     return;
   }
   Buffer vcd_buffer;
-  auto client_type = kStreamClientTypeMap[static_cast<int>(stream_type)];
   if (!device_context_->ReserveVideoCaptureBufferFromPool(
-          client_type, stream_context->buffer_dimension,
+          client_type_, stream_context->buffer_dimension,
           stream_context->capture_format.pixel_format, &vcd_buffer)) {
     DLOG(WARNING) << "Failed to reserve video capture buffer";
     return;

@@ -14,7 +14,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
@@ -52,7 +51,8 @@ class CAPTURE_EXPORT StreamBufferManager final {
   StreamBufferManager(
       CameraDeviceContext* device_context,
       bool video_capture_use_gmb,
-      std::unique_ptr<CameraBufferFactory> camera_buffer_factory);
+      std::unique_ptr<CameraBufferFactory> camera_buffer_factory,
+      ClientType client_type);
   ~StreamBufferManager();
 
   void ReserveBuffer(StreamType stream_type);
@@ -84,7 +84,7 @@ class CAPTURE_EXPORT StreamBufferManager final {
   // Sets up the stream context and allocate buffers according to the
   // configuration specified in |stream|.
   void SetUpStreamsAndBuffers(
-      base::flat_map<ClientType, VideoCaptureParams> capture_params,
+      VideoCaptureFormat capture_format,
       const cros::mojom::CameraMetadataPtr& static_metadata,
       std::vector<cros::mojom::Camera3StreamPtr> streams);
 
@@ -104,8 +104,6 @@ class CAPTURE_EXPORT StreamBufferManager final {
   gfx::Size GetBufferDimension(StreamType stream_type);
 
   bool IsReprocessSupported();
-
-  bool IsRecordingSupported();
 
  private:
   friend class RequestManagerTest;
@@ -165,6 +163,8 @@ class CAPTURE_EXPORT StreamBufferManager final {
   std::unique_ptr<gpu::GpuMemoryBufferSupport> gmb_support_;
 
   std::unique_ptr<CameraBufferFactory> camera_buffer_factory_;
+
+  ClientType client_type_;
 
   base::WeakPtrFactory<StreamBufferManager> weak_ptr_factory_{this};
 

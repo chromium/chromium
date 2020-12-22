@@ -153,9 +153,4 @@ bool CameraDeviceContext::ReserveVideoCaptureBufferFromPool(
   return result == VideoCaptureDevice::Client::ReserveResult::kSucceeded;
 }
 
-bool CameraDeviceContext::HasClient() {
-  base::AutoLock lock(client_lock_);
-  return !clients_.empty();
-}
-
 }  // namespace media

@@ -9,22 +9,21 @@
 namespace media {
 
 VideoCaptureDeviceChromeOSHalv3::VideoCaptureDeviceChromeOSHalv3(
-    VideoCaptureDeviceChromeOSDelegate* delegate)
-    : vcd_delegate_(delegate), client_type_(ClientType::kPreviewClient) {}
+    std::unique_ptr<VideoCaptureDeviceChromeOSDelegate> delegate)
+    : vcd_delegate_(std::move(delegate)) {}
 
 VideoCaptureDeviceChromeOSHalv3::~VideoCaptureDeviceChromeOSHalv3() {
-  vcd_delegate_->Shutdown();
 }
 
 // VideoCaptureDevice implementation.
 void VideoCaptureDeviceChromeOSHalv3::AllocateAndStart(
     const VideoCaptureParams& params,
     std::unique_ptr<Client> client) {
-  vcd_delegate_->AllocateAndStart(params, std::move(client), client_type_);
+  vcd_delegate_->AllocateAndStart(params, std::move(client));
 }
 
 void VideoCaptureDeviceChromeOSHalv3::StopAndDeAllocate() {
-  vcd_delegate_->StopAndDeAllocate(client_type_);
+  vcd_delegate_->StopAndDeAllocate();
 }
 
 void VideoCaptureDeviceChromeOSHalv3::TakePhoto(TakePhotoCallback callback) {

@@ -123,76 +123,60 @@ VideoCaptureDeviceChromeOSDelegate::VideoCaptureDeviceChromeOSDelegate(
       camera_app_device_(camera_app_device),
       cleanup_callback_(std::move(cleanup_callback)),
       power_manager_client_proxy_(
-          base::MakeRefCounted<PowerManagerClientProxy>()) {
+          base::MakeRefCounted<PowerManagerClientProxy>()),
+      client_type_(ClientType::kPreviewClient) {
   power_manager_client_proxy_->Init(weak_ptr_factory_.GetWeakPtr(),
                                     capture_task_runner_,
                                     std::move(ui_task_runner));
 }
 
-VideoCaptureDeviceChromeOSDelegate::~VideoCaptureDeviceChromeOSDelegate() {}
-
-void VideoCaptureDeviceChromeOSDelegate::Shutdown() {
+VideoCaptureDeviceChromeOSDelegate::~VideoCaptureDeviceChromeOSDelegate() {
   DCHECK(capture_task_runner_->BelongsToCurrentThread());
-  if (!HasDeviceClient()) {
-    DCHECK(!camera_device_ipc_thread_.IsRunning());
-    screen_observer_delegate_->RemoveObserver();
-    power_manager_client_proxy_->Shutdown();
-    std::move(cleanup_callback_).Run();
-  }
+  DCHECK(!camera_device_ipc_thread_.IsRunning());
+  screen_observer_delegate_->RemoveObserver();
+  power_manager_client_proxy_->Shutdown();
+  std::move(cleanup_callback_).Run();
 }
 
-bool VideoCaptureDeviceChromeOSDelegate::HasDeviceClient() {
-  return device_context_ && device_context_->HasClient();
-}
-
+// VideoCaptureDevice implementation.
 void VideoCaptureDeviceChromeOSDelegate::AllocateAndStart(
     const VideoCaptureParams& params,
-    std::unique_ptr<VideoCaptureDevice::Client> client,
-    ClientType client_type) {
+    std::unique_ptr<Client> client) {
   DCHECK(capture_task_runner_->BelongsToCurrentThread());
   DCHECK(!camera_device_delegate_);
-  if (!HasDeviceClient()) {
-    TRACE_EVENT0("camera", "Start Device");
-    if (!camera_device_ipc_thread_.Start()) {
-      std::string error_msg = "Failed to start device thread";
-      LOG(ERROR) << error_msg;
-      client->OnError(
-          media::VideoCaptureError::kCrosHalV3FailedToStartDeviceThread,
-          FROM_HERE, error_msg);
-      return;
-    }
-
-    device_context_ = std::make_unique<CameraDeviceContext>();
-    if (device_context_->AddClient(client_type, std::move(client))) {
-      capture_params_[client_type] = params;
-      camera_device_delegate_ = std::make_unique<CameraDeviceDelegate>(
-          device_descriptor_, camera_hal_delegate_,
-          camera_device_ipc_thread_.task_runner(), camera_app_device_);
-      OpenDevice();
-    }
-  } else {
-    if (device_context_->AddClient(client_type, std::move(client))) {
-      capture_params_[client_type] = params;
-      ReconfigureStreams();
-    }
+  TRACE_EVENT0("camera", "Start Device");
+  if (!camera_device_ipc_thread_.Start()) {
+    std::string error_msg = "Failed to start device thread";
+    LOG(ERROR) << error_msg;
+    client->OnError(
+        media::VideoCaptureError::kCrosHalV3FailedToStartDeviceThread,
+        FROM_HERE, error_msg);
+    return;
+  }
+  capture_params_ = params;
+  device_context_ = std::make_unique<CameraDeviceContext>();
+  if (device_context_->AddClient(client_type_, std::move(client))) {
+    camera_device_delegate_ = std::make_unique<CameraDeviceDelegate>(
+        device_descriptor_, camera_hal_delegate_,
+        camera_device_ipc_thread_.task_runner(), camera_app_device_,
+        client_type_);
+    OpenDevice();
   }
 }
 
-void VideoCaptureDeviceChromeOSDelegate::StopAndDeAllocate(
-    ClientType client_type) {
+void VideoCaptureDeviceChromeOSDelegate::StopAndDeAllocate() {
   DCHECK(capture_task_runner_->BelongsToCurrentThread());
-  DCHECK(camera_device_delegate_);
-  device_context_->RemoveClient(client_type);
-  if (!HasDeviceClient()) {
-    CloseDevice(base::UnguessableToken());
-    camera_device_ipc_thread_.Stop();
-    camera_device_delegate_.reset();
-    device_context_.reset();
+  if (!camera_device_delegate_) {
+    return;
   }
+  CloseDevice(base::UnguessableToken());
+  camera_device_ipc_thread_.Stop();
+  camera_device_delegate_.reset();
+  device_context_->RemoveClient(client_type_);
+  device_context_.reset();
 }
 
-void VideoCaptureDeviceChromeOSDelegate::TakePhoto(
-    VideoCaptureDevice::TakePhotoCallback callback) {
+void VideoCaptureDeviceChromeOSDelegate::TakePhoto(TakePhotoCallback callback) {
   DCHECK(capture_task_runner_->BelongsToCurrentThread());
   DCHECK(camera_device_delegate_);
   camera_device_ipc_thread_.task_runner()->PostTask(
@@ -202,7 +186,7 @@ void VideoCaptureDeviceChromeOSDelegate::TakePhoto(
 }
 
 void VideoCaptureDeviceChromeOSDelegate::GetPhotoState(
-    VideoCaptureDevice::GetPhotoStateCallback callback) {
+    GetPhotoStateCallback callback) {
   DCHECK(capture_task_runner_->BelongsToCurrentThread());
   camera_device_ipc_thread_.task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&CameraDeviceDelegate::GetPhotoState,
@@ -212,7 +196,7 @@ void VideoCaptureDeviceChromeOSDelegate::GetPhotoState(
 
 void VideoCaptureDeviceChromeOSDelegate::SetPhotoOptions(
     mojom::PhotoSettingsPtr settings,
-    VideoCaptureDevice::SetPhotoOptionsCallback callback) {
+    SetPhotoOptionsCallback callback) {
   DCHECK(capture_task_runner_->BelongsToCurrentThread());
   camera_device_ipc_thread_.task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&CameraDeviceDelegate::SetPhotoOptions,
@@ -234,20 +218,6 @@ void VideoCaptureDeviceChromeOSDelegate::OpenDevice() {
       base::BindOnce(&CameraDeviceDelegate::AllocateAndStart,
                      camera_device_delegate_->GetWeakPtr(), capture_params_,
                      base::Unretained(device_context_.get())));
-  camera_device_ipc_thread_.task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&CameraDeviceDelegate::SetRotation,
-                     camera_device_delegate_->GetWeakPtr(), rotation_));
-}
-
-void VideoCaptureDeviceChromeOSDelegate::ReconfigureStreams() {
-  DCHECK(capture_task_runner_->BelongsToCurrentThread());
-  DCHECK(camera_device_delegate_);
-
-  camera_device_ipc_thread_.task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&CameraDeviceDelegate::ReconfigureStreams,
-                     camera_device_delegate_->GetWeakPtr(), capture_params_));
   camera_device_ipc_thread_.task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&CameraDeviceDelegate::SetRotation,
