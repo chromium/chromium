@@ -69,6 +69,15 @@ Polymer({
       assert(
           isForceSigninEnabled(),
           'Force signin policy must be enabled to start the force signin flow');
+      // The force sign-in flow is displayed in a dialog on top of the main
+      // view. Load the main view if it isn't already shown.
+      // Do not call `navigateTo(Routes.MAIN)` to not update the history.
+      // It's fine to skip `initializeModules()` for the main view since the
+      // main view will never be lazy loaded.
+      if (this.currentRoute_ !== Routes.MAIN) {
+        this.currentRoute_ = Routes.MAIN;
+        this.$.viewManager.switchView('mainView', 'fade-in', 'no-animation');
+      }
       this.manageProfilesBrowserProxy_.loadSignInProfileCreationFlow(null);
       return;
     }

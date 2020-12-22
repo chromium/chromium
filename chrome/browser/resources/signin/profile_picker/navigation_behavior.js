@@ -99,8 +99,10 @@ function recordNavigation() {
       break;
     case ProfileCreationSteps.LOAD_SIGNIN:
       page = Pages.LOAD_SIGNIN;
+      break;
     case ProfileCreationSteps.LOAD_FORCE_SIGNIN:
       page = Pages.LOAD_FORCE_SIGNIN;
+      break;
     default:
       assertNotReached();
   }

@@ -164,4 +164,18 @@ suite('ProfilePickerAppTest', function() {
         testElement.$$('profile-picker-main-view'));
     await whenCheck(mainView, () => mainView.classList.contains('active'));
   });
+
+  test('ForceSignInEnabled', async function() {
+    loadTimeData.overrideValues({
+      isProfileCreationAllowed: true,
+      isForceSigninEnabled: true,
+    });
+    await resetTestElement(Routes.NEW_PROFILE);
+    assertEquals(
+        testElement.shadowRoot.querySelectorAll('[slot=view]').length, 1);
+    const mainView = /** @type {!ProfilePickerMainViewElement} */ (
+        testElement.$$('profile-picker-main-view'));
+    await whenCheck(mainView, () => mainView.classList.contains('active'));
+    await browserProxy.whenCalled('loadSignInProfileCreationFlow');
+  });
 });
