@@ -177,6 +177,7 @@ component("cookies_mojom_support") {
   ]
   deps = [
     ":crash_keys",
+    ":schemeful_site_mojom_support",
     "//net",
     "//services/network/public/mojom:cookies_mojom_shared",
   ]

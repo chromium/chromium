@@ -247,6 +247,28 @@ TEST(SchemefulSiteTest, OpaqueSerialization) {
   }
 }
 
+TEST(SchemefulSiteTest, FromWire) {
+  SchemefulSite out;
+
+  // Opaque origin.
+  EXPECT_TRUE(SchemefulSite::FromWire(url::Origin(), &out));
+  EXPECT_TRUE(out.opaque());
+
+  // Valid origin.
+  EXPECT_TRUE(SchemefulSite::FromWire(
+      url::Origin::Create(GURL("https://example.test")), &out));
+  EXPECT_EQ(SchemefulSite(url::Origin::Create(GURL("https://example.test"))),
+            out);
+
+  // Invalid origin (not a registrable domain).
+  EXPECT_FALSE(SchemefulSite::FromWire(
+      url::Origin::Create(GURL("https://sub.example.test")), &out));
+
+  // Invalid origin (non-default port).
+  EXPECT_FALSE(SchemefulSite::FromWire(
+      url::Origin::Create(GURL("https://example.test:1337")), &out));
+}
+
 TEST(SchemefulSiteTest, CreateIfHasRegisterableDomain) {
   for (const auto& site : std::initializer_list<std::string>{
            "http://a.bar.test",
@@ -274,6 +296,38 @@ TEST(SchemefulSiteTest, CreateIfHasRegisterableDomain) {
               base::nullopt)
         << "site = \"" << site << "\"";
   }
+}
+
+TEST(SchemefulSiteTest, ConvertWebSocketToHttp) {
+  SchemefulSite ws_site(url::Origin::Create(GURL("ws://site.example.test")));
+  SchemefulSite http_site(
+      url::Origin::Create(GURL("http://site.example.test")));
+  SchemefulSite wss_site(url::Origin::Create(GURL("wss://site.example.test")));
+  SchemefulSite https_site(
+      url::Origin::Create(GURL("https://site.example.test")));
+
+  ASSERT_NE(ws_site, wss_site);
+  ASSERT_NE(ws_site, http_site);
+  ASSERT_NE(ws_site, https_site);
+  ASSERT_NE(wss_site, http_site);
+  ASSERT_NE(wss_site, https_site);
+
+  ws_site.ConvertWebSocketToHttp();
+  wss_site.ConvertWebSocketToHttp();
+
+  EXPECT_EQ(ws_site, http_site);
+  EXPECT_EQ(wss_site, https_site);
+
+  // Does not change non-WebSocket sites.
+  SchemefulSite http_site_copy(http_site);
+  http_site_copy.ConvertWebSocketToHttp();
+  EXPECT_EQ(http_site, http_site_copy);
+  EXPECT_EQ(url::kHttpScheme,
+            http_site_copy.GetInternalOriginForTesting().scheme());
+
+  SchemefulSite file_site(url::Origin::Create(GURL("file:///")));
+  file_site.ConvertWebSocketToHttp();
+  EXPECT_EQ(url::kFileScheme, file_site.GetInternalOriginForTesting().scheme());
 }
 
 }  // namespace net

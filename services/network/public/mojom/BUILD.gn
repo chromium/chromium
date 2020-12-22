@@ -345,6 +345,7 @@ mojom("cookies_mojom") {
   ]
 
   public_deps = [
+    ":mojom_schemeful_site",
     "//components/content_settings/core/common:mojo_bindings",
     "//mojo/public/mojom/base",
     "//url/mojom:url_mojom_gurl",

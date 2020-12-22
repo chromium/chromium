@@ -78,12 +78,36 @@ SchemefulSite::SchemefulSite(SchemefulSite&& other) = default;
 SchemefulSite& SchemefulSite::operator=(const SchemefulSite& other) = default;
 SchemefulSite& SchemefulSite::operator=(SchemefulSite&& other) = default;
 
+// static
+bool SchemefulSite::FromWire(const url::Origin& site_as_origin,
+                             SchemefulSite* out) {
+  // The origin passed into this constructor may not match the
+  // `site_as_origin_` used as the internal representation of the schemeful
+  // site. However, a valid SchemefulSite's internal origin should result in a
+  // match if used to construct another SchemefulSite. Thus, if there is a
+  // mismatch here, we must indicate a failure.
+  SchemefulSite candidate(site_as_origin);
+  if (candidate.site_as_origin_ != site_as_origin)
+    return false;
+
+  *out = std::move(candidate);
+  return true;
+}
+
 base::Optional<SchemefulSite> SchemefulSite::CreateIfHasRegisterableDomain(
     const url::Origin& origin) {
   ObtainASiteResult result = ObtainASite(origin);
   if (!result.used_registerable_domain)
     return base::nullopt;
   return SchemefulSite(std::move(result));
+}
+
+void SchemefulSite::ConvertWebSocketToHttp() {
+  if (site_as_origin_.scheme() == url::kWsScheme ||
+      site_as_origin_.scheme() == url::kWssScheme) {
+    site_as_origin_ = url::Origin::Create(
+        ChangeWebSocketSchemeToHttpScheme(site_as_origin_.GetURL()));
+  }
 }
 
 // static
@@ -128,6 +152,10 @@ base::Optional<SchemefulSite> SchemefulSite::DeserializeWithNonce(
 
 base::Optional<std::string> SchemefulSite::SerializeWithNonce() {
   return site_as_origin_.SerializeWithNonceAndInitIfNeeded();
+}
+
+bool SchemefulSite::SchemelesslyEqual(const SchemefulSite& other) const {
+  return site_as_origin_.host() == other.site_as_origin_.host();
 }
 
 }  // namespace net

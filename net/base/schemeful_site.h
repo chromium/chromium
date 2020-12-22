@@ -15,6 +15,11 @@
 
 class GURL;
 
+namespace IPC {
+template <class P>
+struct ParamTraits;
+}  // namespace IPC
+
 namespace network {
 namespace mojom {
 class SchemefulSiteDataView;
@@ -62,9 +67,24 @@ class NET_EXPORT SchemefulSite {
   SchemefulSite& operator=(const SchemefulSite& other);
   SchemefulSite& operator=(SchemefulSite&& other);
 
+  // Tries to construct an instance from a (potentially untrusted) value of the
+  // internal `site_as_origin_` that got received over an RPC.
+  //
+  // Returns whether successful or not. Doesn't touch |*out| if false is
+  // returned.  This returning |true| does not mean that whoever sent the values
+  // did not lie, merely that they are well-formed.
+  static bool FromWire(const url::Origin& site_as_origin, SchemefulSite* out);
+
   // Creates a SchemefulSite iff the passed-in origin has a registerable domain.
   static base::Optional<SchemefulSite> CreateIfHasRegisterableDomain(
       const url::Origin&);
+
+  // If the scheme is ws or wss, it is converted to http or https, respectively.
+  // Has no effect on SchemefulSites with any other schemes.
+  //
+  // See Step 1 of algorithm "establish a WebSocket connection" in
+  // https://fetch.spec.whatwg.org/#websocket-opening-handshake.
+  void ConvertWebSocketToHttp();
 
   // Deserializes a string obtained from `Serialize()` to a `SchemefulSite`.
   // Returns an opaque `SchemefulSite` if the value was invalid in any way.
@@ -79,6 +99,10 @@ class NET_EXPORT SchemefulSite {
 
   bool opaque() const { return site_as_origin_.opaque(); }
 
+  bool has_registrable_domain_or_host() const {
+    return !site_as_origin_.host().empty();
+  }
+
   // Testing only function which allows tests to access the underlying
   // `site_as_origin_` in order to verify behavior.
   const url::Origin& GetInternalOriginForTesting() const;
@@ -90,11 +114,13 @@ class NET_EXPORT SchemefulSite {
   bool operator<(const SchemefulSite& other) const;
 
  private:
-  // Mojo serialization code needs to access internal origin.
+  // IPC serialization code needs to access internal origin.
   friend struct mojo::StructTraits<network::mojom::SchemefulSiteDataView,
                                    SchemefulSite>;
+  friend struct IPC::ParamTraits<net::SchemefulSite>;
 
-  // Create SiteForCookies from SchemefulSite needs to access internal origin.
+  // Create SiteForCookies from SchemefulSite needs to access internal origin,
+  // and SiteForCookies needs to access private method SchemelesslyEqual.
   friend class SiteForCookies;
 
   // Needed to serialize opaque and non-transient NetworkIsolationKeys, which
@@ -126,6 +152,12 @@ class NET_EXPORT SchemefulSite {
   // `site_as_origin_`, this serializes with the nonce.  See
   // `url::origin::SerializeWithNonce()` for usage information.
   base::Optional<std::string> SerializeWithNonce();
+
+  // Returns whether `this` and `other` share a host or registrable domain.
+  // Should NOT be used to check equality or equivalence. This is only used
+  // for legacy same-site cookie logic that does not check schemes. Private to
+  // restrict usage.
+  bool SchemelesslyEqual(const SchemefulSite& other) const;
 
   // Origin which stores the result of running the steps documented at
   // https://html.spec.whatwg.org/multipage/origin.html#obtain-a-site.

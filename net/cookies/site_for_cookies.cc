@@ -11,17 +11,12 @@
 
 namespace net {
 
-namespace {
+SiteForCookies::SiteForCookies() = default;
 
-std::string RegistrableDomainOrHost(const std::string& host) {
-  std::string domain = registry_controlled_domains::GetDomainAndRegistry(
-      host, registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-  return domain.empty() ? host : domain;
+SiteForCookies::SiteForCookies(const SchemefulSite& site)
+    : site_(site), schemefully_same_(!site.opaque()) {
+  site_.ConvertWebSocketToHttp();
 }
-
-}  // namespace
-
-SiteForCookies::SiteForCookies() : schemefully_same_(false) {}
 
 SiteForCookies::SiteForCookies(const SiteForCookies& other) = default;
 SiteForCookies::SiteForCookies(SiteForCookies&& other) = default;
@@ -34,18 +29,11 @@ SiteForCookies& SiteForCookies::operator=(SiteForCookies&& site_for_cookies) =
     default;
 
 // static
-bool SiteForCookies::FromWire(const std::string& scheme,
-                              const std::string& registrable_domain,
+bool SiteForCookies::FromWire(const SchemefulSite& site,
                               bool schemefully_same,
                               SiteForCookies* out) {
-  // Make sure scheme meets precondition of methods like
-  // GURL::SchemeIsCryptographic.
-  if (!base::IsStringASCII(scheme) || base::ToLowerASCII(scheme) != scheme)
-    return false;
-
-  // registrable_domain_ should also be canonicalized.
-  SiteForCookies candidate(scheme, registrable_domain);
-  if (registrable_domain != candidate.registrable_domain_)
+  SiteForCookies candidate(site);
+  if (site != candidate.site_)
     return false;
 
   candidate.schemefully_same_ = schemefully_same;
@@ -56,11 +44,7 @@ bool SiteForCookies::FromWire(const std::string& scheme,
 
 // static
 SiteForCookies SiteForCookies::FromOrigin(const url::Origin& origin) {
-  // Opaque origins are not first-party to anything.
-  if (origin.opaque())
-    return SiteForCookies();
-
-  return SiteForCookies(origin.scheme(), origin.host());
+  return SiteForCookies(SchemefulSite(origin));
 }
 
 // static
@@ -70,8 +54,7 @@ SiteForCookies SiteForCookies::FromUrl(const GURL& url) {
 
 std::string SiteForCookies::ToDebugString() const {
   std::string same_scheme_string = schemefully_same_ ? "true" : "false";
-  return base::StrCat({"SiteForCookies: {scheme=", scheme_,
-                       "; registrable_domain=", registrable_domain_,
+  return base::StrCat({"SiteForCookies: {site=", site_.Serialize(),
                        "; schemefully_same=", same_scheme_string, "}"});
 }
 
@@ -93,15 +76,15 @@ bool SiteForCookies::IsEquivalent(const SiteForCookies& other) const {
   if (IsNull())
     return other.IsNull();
 
-  if (cookie_util::IsSchemefulSameSiteEnabled() &&
-      !CompatibleScheme(other.scheme())) {
-    return false;
+  // In the case where the site has no registrable domain or host, the scheme
+  // cannot be ws(s) or http(s), so equality of sites implies actual equality of
+  // schemes (not just modulo ws-http and wss-https compatibility).
+  if (cookie_util::IsSchemefulSameSiteEnabled() ||
+      !site_.has_registrable_domain_or_host()) {
+    return site_ == other.site_;
   }
 
-  if (registrable_domain_.empty())
-    return other.registrable_domain_.empty() && (scheme_ == other.scheme_);
-
-  return registrable_domain_ == other.registrable_domain_;
+  return site_.SchemelesslyEqual(other.site_);
 }
 
 void SiteForCookies::MarkIfCrossScheme(const url::Origin& other) {
@@ -117,83 +100,63 @@ void SiteForCookies::MarkIfCrossScheme(const url::Origin& other) {
     return;
   }
 
-  if (CompatibleScheme(other.scheme()))
-    return;
+  // Conversion to http/https should have occurred during construction.
+  DCHECK_NE(url::kWsScheme, scheme());
+  DCHECK_NE(url::kWssScheme, scheme());
 
-  // The two are cross-scheme to each other.
+  // If the schemes are equal, modulo ws-http and wss-https, don't mark.
+  if (scheme() == other.scheme() ||
+      (scheme() == url::kHttpsScheme && other.scheme() == url::kWssScheme) ||
+      (scheme() == url::kHttpScheme && other.scheme() == url::kWsScheme)) {
+    return;
+  }
+
+  // Mark that the two are cross-scheme to each other.
   schemefully_same_ = false;
 }
 
 GURL SiteForCookies::RepresentativeUrl() const {
   if (IsNull())
     return GURL();
-  GURL result(base::StrCat({scheme_, "://", registrable_domain_, "/"}));
+  // Cannot use url::Origin::GetURL() because it loses the hostname for file:
+  // scheme origins.
+  GURL result(base::StrCat({scheme(), "://", registrable_domain(), "/"}));
   DCHECK(result.is_valid());
   return result;
 }
 
 bool SiteForCookies::IsNull() const {
   if (cookie_util::IsSchemefulSameSiteEnabled())
-    return scheme_.empty() || !schemefully_same_;
+    return site_.opaque() || !schemefully_same_;
 
-  return scheme_.empty();
-}
-
-SiteForCookies::SiteForCookies(const net::SchemefulSite& schemeful_site)
-    : scheme_(schemeful_site.site_as_origin_.scheme()),
-      registrable_domain_(schemeful_site.site_as_origin_.host()),
-      schemefully_same_(!scheme_.empty()) {}
-
-SiteForCookies::SiteForCookies(const std::string& scheme,
-                               const std::string& host)
-    : scheme_(scheme),
-      registrable_domain_(RegistrableDomainOrHost(host)),
-      schemefully_same_(!scheme.empty()) {}
-
-bool SiteForCookies::CompatibleScheme(const std::string& other_scheme) const {
-  DCHECK(base::IsStringASCII(other_scheme));
-  DCHECK(base::ToLowerASCII(other_scheme) == other_scheme);
-
-  // Exact match case.
-  if (scheme_ == other_scheme)
-    return true;
-
-  // ["https", "wss"] case.
-  if ((scheme_ == url::kHttpsScheme || scheme_ == url::kWssScheme) &&
-      (other_scheme == url::kHttpsScheme || other_scheme == url::kWssScheme)) {
-    return true;
-  }
-
-  // ["http", "ws"] case.
-  if ((scheme_ == url::kHttpScheme || scheme_ == url::kWsScheme) &&
-      (other_scheme == url::kHttpScheme || other_scheme == url::kWsScheme)) {
-    return true;
-  }
-
-  return false;
+  return site_.opaque();
 }
 
 bool SiteForCookies::IsSchemefullyFirstParty(const GURL& url) const {
   // Can't use IsNull() as we want the same behavior regardless of
   // SchemefulSameSite feature status.
-  if (scheme_.empty() || !schemefully_same_ || !url.is_valid())
+  if (site_.opaque() || !schemefully_same_ || !url.is_valid())
     return false;
 
-  return CompatibleScheme(url.scheme()) && IsSchemelesslyFirstParty(url);
+  SchemefulSite other_site(url);
+  other_site.ConvertWebSocketToHttp();
+  return site_ == other_site;
 }
 
 bool SiteForCookies::IsSchemelesslyFirstParty(const GURL& url) const {
   // Can't use IsNull() as we want the same behavior regardless of
   // SchemefulSameSite feature status.
-  if (scheme_.empty() || !url.is_valid())
+  if (site_.opaque() || !url.is_valid())
     return false;
 
-  std::string other_registrable_domain = RegistrableDomainOrHost(url.host());
+  // We don't need to bother changing WebSocket schemes to http, because if
+  // there is no registrable domain or host, the scheme cannot be ws(s) or
+  // http(s), and the latter comparison is schemeless anyway.
+  SchemefulSite other_site(url);
+  if (!site_.has_registrable_domain_or_host())
+    return site_ == other_site;
 
-  if (registrable_domain_.empty())
-    return other_registrable_domain.empty() && (scheme_ == url.scheme());
-
-  return registrable_domain_ == other_registrable_domain;
+  return site_.SchemelesslyEqual(other_site);
 }
 
 }  // namespace net

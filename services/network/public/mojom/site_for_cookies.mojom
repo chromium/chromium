@@ -4,11 +4,12 @@
 
 module network.mojom;
 
+import "services/network/public/mojom/schemeful_site.mojom";
+
 // Mapped to net::SiteForCookies.
 struct SiteForCookies {
   // These fields should not be used directly, but rather through the mapped
   // net::SiteForCookies.
-  string scheme;
-  string registrable_domain;
+  SchemefulSite site;
   bool schemefully_same;
 };
