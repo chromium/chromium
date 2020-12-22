@@ -2595,10 +2595,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
                                      const ukm::SourceId document_ukm_source_id,
                                      ukm::UkmRecorder* ukm_recorder);
 
-  // TODO(https://crbug.com/1146573): Remove this when the bug is closed.
-  void ValidateStateForBug1146573();
-  void DumpWithoutCrashingIfRenderFrameCreatedBug1146573();
-
   // The RenderViewHost that this RenderFrameHost is associated with.
   //
   // It is kept alive as long as any RenderFrameHosts or RenderFrameProxyHosts
@@ -3295,11 +3291,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // explicitly cancels prerendering or the document gets destroyed.
   mojo::UniqueReceiverSet<blink::mojom::PrerenderProcessor>
       prerender_processor_receivers_;
-
-  // TODO(https://crbug.com/1146573): Remove this when the bug is closed.
-  // If >0, then we will DWOC if there is an attempt to mark the RenderFrame as
-  // created again.
-  int dump_on_render_frame_created_for_bug_1146573_ = 0;
 
   // NOTE: This must be the last member.
   base::WeakPtrFactory<RenderFrameHostImpl> weak_ptr_factory_{this};

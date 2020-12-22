@@ -2094,30 +2094,6 @@ RenderFrameHostImpl::AccessibilityGetWebContentsAccessibility() {
   return view->GetWebContentsAccessibility();
 }
 
-void RenderFrameHostImpl::ValidateStateForBug1146573() {
-  // This implies that a crashed frame has been reinitialized instead of
-  // replaced. The only time this should happen is
-  // InitializeMainRenderFrameForImmediateUse and it resets must_be_replaced_ so
-  // should not trigger this.
-  if (must_be_replaced_ && render_frame_created_) {
-    SCOPED_CRASH_KEY_BOOL("ValidateStateForBug1146573", "IsMainFrame",
-                          is_main_frame());
-    SCOPED_CRASH_KEY_NUMBER("ValidateStateForBug1146573", "ProcessID",
-                            GetProcess()->GetID());
-    SCOPED_CRASH_KEY_NUMBER("ValidateStateForBug1146573", "RoutingID",
-                            GetRoutingID());
-    NOTREACHED();
-    base::debug::DumpWithoutCrashing();
-  }
-}
-
-void RenderFrameHostImpl::DumpWithoutCrashingIfRenderFrameCreatedBug1146573() {
-  if (render_frame_created_) {
-    base::debug::DumpWithoutCrashing();
-    NOTREACHED();
-  }
-}
-
 void RenderFrameHostImpl::RenderProcessExited(
     RenderProcessHost* host,
     const ChildProcessTerminationInfo& info) {
@@ -2128,22 +2104,15 @@ void RenderFrameHostImpl::RenderProcessExited(
   // that its child frames must be cleaned up as well.
   ResetChildren();
 
-  // In https://crbug.com/1146573 we see render_frame_created_ being true
-  // immediately after RenderFrameDeleted. This should tell us how it is being
-  // created.
-  ++dump_on_render_frame_created_for_bug_1146573_;
   // Reset state for the current RenderFrameHost once the FrameTreeNode has been
   // reset.
   RenderFrameDeleted();
-  DumpWithoutCrashingIfRenderFrameCreatedBug1146573();
   InvalidateMojoConnection();
   broker_receiver_.reset();
   SetLastCommittedUrl(GURL());
   web_bundle_handle_.reset();
 
   must_be_replaced_ = true;
-  ValidateStateForBug1146573();
-  --dump_on_render_frame_created_for_bug_1146573_;
   has_committed_any_navigation_ = false;
 
 #if defined(OS_ANDROID)
@@ -2463,19 +2432,8 @@ void RenderFrameHostImpl::RenderFrameCreated() {
   // to have caused crashes in https://crbug.com/717650.
   CHECK(!delegate_->IsBeingDestroyed());
 
-  // TODO(https://crbug.com/1146573): Remove this when the bug is closed.
-  if (dump_on_render_frame_created_for_bug_1146573_) {
-    SCOPED_CRASH_KEY_NUMBER("Bug1146573", "DumpNestCount",
-                            dump_on_render_frame_created_for_bug_1146573_);
-    SCOPED_CRASH_KEY_BOOL("Bug1146573", "RenderFrameCreated",
-                          render_frame_created_);
-    base::debug::DumpWithoutCrashing();
-    NOTREACHED();
-  }
-
   bool was_created = render_frame_created_;
   render_frame_created_ = true;
-  ValidateStateForBug1146573();
 
   // Clear all the user data associated with this RenderFrameHost when its
   // RenderFrame is recreated after a crash. Checking
@@ -2517,18 +2475,15 @@ void RenderFrameHostImpl::RenderFrameCreated() {
 void RenderFrameHostImpl::RenderFrameDeleted() {
   bool was_created = render_frame_created_;
   render_frame_created_ = false;
-  DumpWithoutCrashingIfRenderFrameCreatedBug1146573();
 
   // If the current status is different than the new status, the delegate
   // needs to be notified.
   if (was_created) {
     delegate_->RenderFrameDeleted(this);
   }
-  DumpWithoutCrashingIfRenderFrameCreatedBug1146573();
   if (web_ui_) {
     web_ui_->InvalidateMojoConnection();
   }
-  DumpWithoutCrashingIfRenderFrameCreatedBug1146573();
 }
 
 void RenderFrameHostImpl::SwapIn() {
@@ -3305,12 +3260,6 @@ void RenderFrameHostImpl::Unload(RenderFrameProxyHost* proxy, bool is_loading) {
   } else {
     // RenderDocument: After a local<->local swap, this function is called with
     // a null |proxy|.
-    // TODO(https://crbug.com/1146573): Delete this.
-    SCOPED_CRASH_KEY_BOOL("Bug1146573", "Live", IsRenderFrameLive());
-    SCOPED_CRASH_KEY_BOOL("Bug1146573", "MustBeReplaced", must_be_replaced());
-    SCOPED_CRASH_KEY_BOOL("Bug1146573", "IsMainFrame", is_main_frame());
-    SCOPED_CRASH_KEY_NUMBER("Bug1146573", "ProcessID", GetProcess()->GetID());
-    SCOPED_CRASH_KEY_NUMBER("Bug1146573", "RoutingID", GetRoutingID());
     CHECK(ShouldCreateNewHostForSameSiteSubframe());
 
     // The unload handlers already ran for this document during the

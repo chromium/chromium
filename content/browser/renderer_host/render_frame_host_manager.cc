@@ -586,13 +586,6 @@ void RenderFrameHostManager::UnloadOldFrame(
         CreateRenderFrameProxyHost(old_render_frame_host->GetSiteInstance(),
                                    old_render_frame_host->render_view_host());
   }
-  // TODO(https://crbug.com/1146573): Delete this.
-  SCOPED_CRASH_KEY_STRING256(
-      "Bug1146573", "OldSiteInstance",
-      old_render_frame_host->GetSiteInstance()->GetSiteURL().spec());
-  SCOPED_CRASH_KEY_STRING256(
-      "Bug1146573", "NewSiteInstance",
-      render_frame_host_->GetSiteInstance()->GetSiteURL().spec());
 
   // |old_render_frame_host| will be deleted when its unload ACK is received,
   // or when the timer times out, or when the RFHM itself is deleted (whichever
@@ -661,7 +654,6 @@ void RenderFrameHostManager::RestoreFromBackForwardCache(
   // in the long run. For now, and to avoid complex edge cases, we simply reuse
   // it to preserve the understood logic in CommitPending.
   speculative_render_frame_host_ = std::move(entry->render_frame_host);
-  ValidateSpeculativeRenderFrameHostForBug1146573();
   bfcache_entry_to_restore_ = std::move(entry);
 }
 
@@ -735,49 +727,6 @@ void RenderFrameHostManager::DidCreateNavigationRequest(
         dest_rfh == render_frame_host_.get()
             ? NavigationRequest::AssociatedSiteInstanceType::CURRENT
             : NavigationRequest::AssociatedSiteInstanceType::SPECULATIVE);
-  }
-}
-
-void RenderFrameHostManager::ValidateSpeculativeRenderFrameHostForBug1146573() {
-  ValidateSpeculativeRenderFrameHostForBug1146573(
-      render_frame_host_.get(), speculative_render_frame_host_.get());
-}
-
-// Static
-void RenderFrameHostManager::ValidateSpeculativeRenderFrameHostForBug1146573(
-    RenderFrameHostImpl* current,
-    RenderFrameHostImpl* pending) {
-  // TODO(https://crbug.com/1146573): Remove this when the bug is closed.
-  if (ShouldCreateNewHostForSameSiteSubframe())
-    return;
-  // This can happen during destruction after the RFH has been cleared.
-  if (!current)
-    return;
-  if (!pending)
-    return;
-  if (pending->GetSiteInstance() == current->GetSiteInstance()) {
-    // This should never be true.
-    SCOPED_CRASH_KEY_BOOL("ValidateSpeculative", "HostsEqual",
-                          pending == current);
-    DCHECK_NE(pending, current);
-    SCOPED_CRASH_KEY_BOOL("ValidateSpeculative", "Live",
-                          current->IsRenderFrameLive());
-    SCOPED_CRASH_KEY_STRING256("ValidateSpeculative", "OldSiteInstance",
-                               current->GetSiteInstance()->GetSiteURL().spec());
-    SCOPED_CRASH_KEY_STRING256("ValidateSpeculative", "NewSiteInstance",
-                               pending->GetSiteInstance()->GetSiteURL().spec());
-    SCOPED_CRASH_KEY_BOOL("ValidateSpeculative", "MustBeReplaced",
-                          current->must_be_replaced());
-    SCOPED_CRASH_KEY_NUMBER("ValidateSpeculative", "OldProcessID",
-                            current->GetProcess()->GetID());
-    SCOPED_CRASH_KEY_NUMBER("ValidateSpeculative", "OldRoutingID",
-                            current->GetRoutingID());
-    SCOPED_CRASH_KEY_NUMBER("ValidateSpeculative", "NewProcessID",
-                            pending->GetProcess()->GetID());
-    SCOPED_CRASH_KEY_NUMBER("ValidateSpeculative", "NewRoutingID",
-                            pending->GetRoutingID());
-    NOTREACHED();
-    base::debug::DumpWithoutCrashing();
   }
 }
 
@@ -3220,18 +3169,10 @@ void RenderFrameHostManager::CommitPending(
 
 std::unique_ptr<RenderFrameHostImpl> RenderFrameHostManager::SetRenderFrameHost(
     std::unique_ptr<RenderFrameHostImpl> render_frame_host) {
-  // It's expected that a same-site swap will occur via here when
-  // ShouldSkipEarlyCommitPendingForCrashedFrame is true, so only check when
-  // that's not the case.
-  if (!(render_frame_host_ && render_frame_host_->must_be_replaced())) {
-    RenderFrameHostManager::ValidateSpeculativeRenderFrameHostForBug1146573(
-        render_frame_host_.get(), render_frame_host.get());
-  }
   // Swap the two.
   std::unique_ptr<RenderFrameHostImpl> old_render_frame_host =
       std::move(render_frame_host_);
   render_frame_host_ = std::move(render_frame_host);
-  ValidateSpeculativeRenderFrameHostForBug1146573();
 
   if (render_frame_host_ && render_frame_host_->lifecycle_state() !=
                                 RenderFrameHostImpl::LifecycleState::kActive) {
