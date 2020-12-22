@@ -392,11 +392,11 @@ class TestLockScreenValueStoreMigrator : public LockScreenValueStoreMigrator {
   ~TestLockScreenValueStoreMigrator() override = default;
 
   void Run(const std::set<ExtensionId>& extensions_to_migrate,
-           const ExtensionMigratedCallback& callback) override {
+           ExtensionMigratedCallback callback) override {
     ASSERT_TRUE(migration_callback_.is_null());
     ASSERT_TRUE(extensions_to_migrate_.empty());
 
-    migration_callback_ = callback;
+    migration_callback_ = std::move(callback);
     extensions_to_migrate_ = extensions_to_migrate;
   }
 
@@ -406,12 +406,12 @@ class TestLockScreenValueStoreMigrator : public LockScreenValueStoreMigrator {
   }
 
   void ClearDataForExtension(const ExtensionId& extension_id,
-                             const base::Closure& callback) override {
+                             base::OnceClosure callback) override {
     EXPECT_EQ(clear_data_callbacks_.count(extension_id), 0u);
     EXPECT_GT(extensions_to_migrate_.count(extension_id), 0u);
 
     extensions_to_migrate_.erase(extension_id);
-    clear_data_callbacks_[extension_id] = callback;
+    clear_data_callbacks_[extension_id] = std::move(callback);
   }
 
   bool ClearingDataForExtension(const ExtensionId& extension_id) const {
@@ -429,9 +429,9 @@ class TestLockScreenValueStoreMigrator : public LockScreenValueStoreMigrator {
     if (clear_data_callbacks_.count(extension_id) == 0)
       return false;
 
-    base::Closure callback = clear_data_callbacks_[extension_id];
+    base::OnceClosure callback = std::move(clear_data_callbacks_[extension_id]);
     clear_data_callbacks_.erase(extension_id);
-    callback.Run();
+    std::move(callback).Run();
     return true;
   }
 
@@ -442,7 +442,7 @@ class TestLockScreenValueStoreMigrator : public LockScreenValueStoreMigrator {
  private:
   ExtensionMigratedCallback migration_callback_;
   std::set<ExtensionId> extensions_to_migrate_;
-  std::map<ExtensionId, base::Closure> clear_data_callbacks_;
+  std::map<ExtensionId, base::OnceClosure> clear_data_callbacks_;
 
   DISALLOW_COPY_AND_ASSIGN(TestLockScreenValueStoreMigrator);
 };
@@ -471,13 +471,13 @@ class LockScreenItemStorageTest : public ExtensionsTest {
     // Inject custom data item factory to be used with LockScreenItemStorage
     // instances.
     value_store_cache_factory_ =
-        base::Bind(&LockScreenItemStorageTest::CreateValueStoreCache,
-                   base::Unretained(this));
+        base::BindRepeating(&LockScreenItemStorageTest::CreateValueStoreCache,
+                            base::Unretained(this));
     LockScreenItemStorage::SetValueStoreCacheFactoryForTesting(
         &value_store_cache_factory_);
 
-    migrator_factory_ = base::Bind(&LockScreenItemStorageTest::CreateMigrator,
-                                   base::Unretained(this));
+    migrator_factory_ = base::BindRepeating(
+        &LockScreenItemStorageTest::CreateMigrator, base::Unretained(this));
     LockScreenItemStorage::SetValueStoreMigratorFactoryForTesting(
         &migrator_factory_);
 

@@ -34,11 +34,11 @@ LockScreenValueStoreMigratorImpl::~LockScreenValueStoreMigratorImpl() = default;
 
 void LockScreenValueStoreMigratorImpl::Run(
     const std::set<ExtensionId>& extensions_to_migrate,
-    const ExtensionMigratedCallback& callback) {
+    ExtensionMigratedCallback callback) {
   DCHECK(extensions_to_migrate_.empty());
   DCHECK(callback_.is_null());
 
-  callback_ = callback;
+  callback_ = std::move(callback);
   extensions_to_migrate_ = extensions_to_migrate;
 
   for (const auto& extension_id : extensions_to_migrate_)
@@ -52,14 +52,14 @@ bool LockScreenValueStoreMigratorImpl::IsMigratingExtensionData(
 
 void LockScreenValueStoreMigratorImpl::ClearDataForExtension(
     const ExtensionId& extension_id,
-    const base::Closure& callback) {
+    base::OnceClosure callback) {
   ClearMigrationData(extension_id);
 
   DataItem::DeleteAllItemsForExtension(
       context_, target_store_cache_, task_runner_, extension_id,
       base::BindOnce(
           &LockScreenValueStoreMigratorImpl::DeleteItemsFromSourceStore,
-          weak_ptr_factory_.GetWeakPtr(), extension_id, callback));
+          weak_ptr_factory_.GetWeakPtr(), extension_id, std::move(callback)));
 }
 
 LockScreenValueStoreMigratorImpl::MigrationData::MigrationData() = default;
@@ -189,17 +189,17 @@ void LockScreenValueStoreMigratorImpl::OnCurrentItemMigrated(
 
 void LockScreenValueStoreMigratorImpl::DeleteItemsFromSourceStore(
     const ExtensionId& extension_id,
-    const base::Closure& callback) {
+    base::OnceClosure callback) {
   DataItem::DeleteAllItemsForExtension(
       context_, source_store_cache_, task_runner_, extension_id,
       base::BindOnce(
           &LockScreenValueStoreMigratorImpl::RunClearDataForExtensionCallback,
-          weak_ptr_factory_.GetWeakPtr(), callback));
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void LockScreenValueStoreMigratorImpl::RunClearDataForExtensionCallback(
-    const base::Closure& callback) {
-  callback.Run();
+    base::OnceClosure callback) {
+  std::move(callback).Run();
 }
 
 void LockScreenValueStoreMigratorImpl::ClearMigrationData(

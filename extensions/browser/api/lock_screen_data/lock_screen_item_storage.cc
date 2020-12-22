@@ -160,8 +160,8 @@ LockScreenItemStorage::LockScreenItemStorage(
         task_runner_.get(), crypto_key_);
     storage_migrator_->Run(
         extensions_to_migrate,
-        base::Bind(&LockScreenItemStorage::OnItemsMigratedForExtension,
-                   weak_ptr_factory_.GetWeakPtr()));
+        base::BindRepeating(&LockScreenItemStorage::OnItemsMigratedForExtension,
+                            weak_ptr_factory_.GetWeakPtr()));
   }
 
   ClearUninstalledAppData();
@@ -652,15 +652,15 @@ void LockScreenItemStorage::ClearExtensionData(const std::string& id) {
   data->data_items.clear();
   RunExtensionDataLoadCallbacks(data);
 
-  base::Closure callback =
-      base::Bind(&LockScreenItemStorage::RemoveExtensionFromLocalState,
-                 weak_ptr_factory_.GetWeakPtr(), id);
+  base::OnceClosure callback =
+      base::BindOnce(&LockScreenItemStorage::RemoveExtensionFromLocalState,
+                     weak_ptr_factory_.GetWeakPtr(), id);
 
   if (storage_migrator_ && storage_migrator_->IsMigratingExtensionData(id)) {
-    storage_migrator_->ClearDataForExtension(id, callback);
+    storage_migrator_->ClearDataForExtension(id, std::move(callback));
   } else {
     DeleteAllItems(id, context_, value_store_cache_.get(), task_runner_.get(),
-                   callback);
+                   std::move(callback));
   }
 }
 

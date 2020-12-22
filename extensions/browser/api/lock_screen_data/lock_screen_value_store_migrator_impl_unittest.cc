@@ -133,8 +133,9 @@ class LockScreenValueStoreMigratorImplTest : public testing::Test {
   void RunMigrator(const std::set<ExtensionId>& extensions_to_migrate) {
     migrator_->Run(
         extensions_to_migrate,
-        base::Bind(&LockScreenValueStoreMigratorImplTest::OnExtensionMigrated,
-                   base::Unretained(this)));
+        base::BindRepeating(
+            &LockScreenValueStoreMigratorImplTest::OnExtensionMigrated,
+            base::Unretained(this)));
   }
 
   std::string GenerateKey(const std::string& password) {

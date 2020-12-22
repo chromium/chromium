@@ -21,12 +21,12 @@ class LockScreenValueStoreMigrator {
   virtual ~LockScreenValueStoreMigrator() = default;
 
   using ExtensionMigratedCallback =
-      base::Callback<void(const ExtensionId& extension_id)>;
+      base::RepeatingCallback<void(const ExtensionId& extension_id)>;
   // Migrates lock screen item storage data items for extensions in the
   // |extensions_to_migrate| set. |callback| is called on migration completion
   // for each of the extensions.
   virtual void Run(const std::set<ExtensionId>& extensions_to_migrate,
-                   const ExtensionMigratedCallback& callback) = 0;
+                   ExtensionMigratedCallback callback) = 0;
 
   // Returns whether data migration is in progress for an extension.
   virtual bool IsMigratingExtensionData(
@@ -38,7 +38,7 @@ class LockScreenValueStoreMigrator {
   // Note that callback passed to |Run| is not expected to be run for the
   // extension after this method is called.
   virtual void ClearDataForExtension(const ExtensionId& extension_id,
-                                     const base::Closure& callback) = 0;
+                                     base::OnceClosure callback) = 0;
 };
 
 }  // namespace lock_screen_data

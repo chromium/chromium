@@ -47,10 +47,10 @@ class LockScreenValueStoreMigratorImpl : public LockScreenValueStoreMigrator {
 
   // LockScreenValueStorageMigrator:
   void Run(const std::set<ExtensionId>& extensions_to_migrate,
-           const ExtensionMigratedCallback& callback) override;
+           ExtensionMigratedCallback callback) override;
   bool IsMigratingExtensionData(const ExtensionId& extension_id) const override;
   void ClearDataForExtension(const ExtensionId& extension_id,
-                             const base::Closure& callback) override;
+                             base::OnceClosure callback) override;
 
  private:
   // Per-extension migration status data.
@@ -111,12 +111,12 @@ class LockScreenValueStoreMigratorImpl : public LockScreenValueStoreMigrator {
 
   // Deletes all extension's data items from the migration source value store.
   void DeleteItemsFromSourceStore(const ExtensionId& extension_id,
-                                  const base::Closure& callback);
+                                  base::OnceClosure callback);
 
   // Runs the extension data deletion callback - |callback|. The main purpose
   // is to wrap |callback| to ensure it's not called after |this| has been
   // deleted.
-  void RunClearDataForExtensionCallback(const base::Closure& callback);
+  void RunClearDataForExtensionCallback(base::OnceClosure callback);
 
   // Clears data for the extension from |extensions_to_migrate_| and
   // |migration_items_|.
