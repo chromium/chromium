@@ -102,7 +102,6 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.FullscreenTestUtils;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.navigation_interception.NavigationParams;
 import org.chromium.content_public.browser.SelectionClient;
@@ -190,9 +189,11 @@ public class ContextualSearchManagerTest {
                     ChromeFeatureList.CONTEXTUAL_SEARCH_TRANSLATIONS, false);
     private static final ImmutableMap<String, Boolean> ENABLE_LONGPRESS =
             ImmutableMap.of(ChromeFeatureList.CONTEXTUAL_SEARCH_LONGPRESS_RESOLVE, true,
+                    ChromeFeatureList.CONTEXTUAL_SEARCH_LITERAL_SEARCH_TAP, true,
                     ChromeFeatureList.CONTEXTUAL_SEARCH_TRANSLATIONS, false);
     private static final ImmutableMap<String, Boolean> ENABLE_TRANSLATIONS =
             ImmutableMap.of(ChromeFeatureList.CONTEXTUAL_SEARCH_LONGPRESS_RESOLVE, false,
+                    ChromeFeatureList.CONTEXTUAL_SEARCH_LITERAL_SEARCH_TAP, true,
                     ChromeFeatureList.CONTEXTUAL_SEARCH_TRANSLATIONS, true);
 
     private ActivityMonitor mActivityMonitor;
@@ -436,9 +437,13 @@ public class ContextualSearchManagerTest {
      * @param nodeId A string containing the node ID.
      */
     public void triggerNonResolve(String nodeId) throws TimeoutException {
-        // When Long-press is our trigger we have no non-resolving gesture.
-        assert !mPolicy.canResolveLongpress();
-        longPressNode(nodeId);
+        if (mPolicy.isLiteralSearchTapEnabled()) {
+            clickWordNode(nodeId);
+        } else if (!mPolicy.canResolveLongpress()) {
+            longPressNode(nodeId);
+        } else {
+            Assert.fail("Cannot trigger a non-resolving gesture with literal tap or non-resolve!");
+        }
     }
 
     /**
@@ -1438,10 +1443,8 @@ public class ContextualSearchManagerTest {
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    // Non-resolve Long-press is only used when Tap is the primary gesture.
-    public void testNonResolveTrigger() throws Exception {
-        FeatureList.setTestFeatures(ENABLE_NONE);
-
+    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
+    public void testNonResolveTrigger(@EnabledFeature int enabledFeature) throws Exception {
         triggerNonResolve("states");
 
         Assert.assertNull(mFakeServer.getSearchTermRequested());
@@ -1490,10 +1493,8 @@ public class ContextualSearchManagerTest {
     @SmallTest
     @Feature({"ContextualSearch"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    // Non-resolve Long-press is only used when Tap is the primary gesture.
-    public void testNonResolveSwipeExpand() throws Exception {
-        FeatureList.setTestFeatures(ENABLE_NONE);
-
+    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
+    public void testNonResolveSwipeExpand(@EnabledFeature int enabledFeature) throws Exception {
         simulateNonResolveSearch("search");
         assertNoWebContents();
         assertLoadedNoUrl();
@@ -2296,10 +2297,9 @@ public class ContextualSearchManagerTest {
     @SmallTest
     @Feature({"ContextualSearch"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    // Non-resolve gesture only applies when Tap is the primary gesture.
-    public void testNotifyObserversAfterNonResolve() throws Exception {
-        FeatureList.setTestFeatures(ENABLE_NONE);
-
+    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
+    public void testNotifyObserversAfterNonResolve(@EnabledFeature int enabledFeature)
+            throws Exception {
         TestContextualSearchObserver observer = new TestContextualSearchObserver();
         mManager.addObserver(observer);
         triggerNonResolve("states");
@@ -2319,10 +2319,10 @@ public class ContextualSearchManagerTest {
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
+    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    public void testNotifyObserversAfterLongPressWithoutSurroundings() throws Exception {
-        FeatureList.setTestFeatures(ENABLE_NONE);
-
+    public void testNotifyObserversAfterLongPressWithoutSurroundings(
+            @EnabledFeature int enabledFeature) throws Exception {
         // Mark the user undecided so we won't allow sending surroundings.
         mPolicy.overrideDecidedStateForTesting(false);
         TestContextualSearchObserver observer = new TestContextualSearchObserver();
@@ -2599,17 +2599,16 @@ public class ContextualSearchManagerTest {
     }
 
     /**
-     * Tests that a non-resolving trigger followed by expand creates Content and makes it visible.
-     *
+     * Tests that a non-resolving trigger followed by panel-expand creates Content and makes it
+     * visible.
      */
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    // Non-resolve gesture only applies when Tap is the primary gesture.
-    public void testNonResolveContentVisibility() throws Exception {
-        FeatureList.setTestFeatures(ENABLE_NONE);
-
+    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
+    public void testNonResolveContentVisibility(@EnabledFeature int enabledFeature)
+            throws Exception {
         // Simulate a non-resolve search and make sure no Content is created.
         simulateNonResolveSearch("search");
         assertNoWebContents();
@@ -2664,16 +2663,17 @@ public class ContextualSearchManagerTest {
     }
 
     /**
-     * Tests swiping panel up and down after a long press search will only load the Content once.
+     * Tests swiping panel up and down after a non-resolving search will only load the Content
+     * once.
      */
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.P, message = "crbug.com/1032760")
-    public void testNonResolveMultipleSwipeOnlyLoadsContentOnce() throws Exception {
-        FeatureList.setTestFeatures(ENABLE_NONE);
-
+    public void testNonResolveMultipleSwipeOnlyLoadsContentOnce(@EnabledFeature int enabledFeature)
+            throws Exception {
         // Simulate a non-resolve search and make sure no Content is created.
         simulateNonResolveSearch("search");
         assertNoWebContents();
@@ -2711,9 +2711,12 @@ public class ContextualSearchManagerTest {
     @SmallTest
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    @DisabledTest(message = "crbug.com/1161002")
     public void testChainedSearchCreatesNewContent(@EnabledFeature int enabledFeature)
             throws Exception {
+        // This test depends on preloading the content - which is loaded and not made visible.
+        // We only preload when the user has decided to accept the privacy opt-in.
+        mPolicy.overrideDecidedStateForTesting(true);
+
         // Simulate a resolving search and make sure Content is not visible.
         simulateResolveSearch("search");
         assertWebContentsCreatedButNeverMadeVisible();
@@ -2799,6 +2802,7 @@ public class ContextualSearchManagerTest {
     @SmallTest
     @Feature({"ContextualSearch"})
     public void testChainedSearchContentVisibility() throws Exception {
+        // Chained searches are tap-triggered very close to existing tap-triggered searches.
         FeatureList.setTestFeatures(ENABLE_NONE);
 
         // Simulate a resolving search and make sure Content is not visible.
@@ -2880,10 +2884,10 @@ public class ContextualSearchManagerTest {
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    @FlakyTest(message = "crbug.com/1103496")
-    public void testChainedTapsRemovedFromHistory(@EnabledFeature int enabledFeature)
-            throws Exception {
+    public void testChainedTapsRemovedFromHistory() throws Exception {
+        // Make sure we use tap for the simulateResolveSearch since only tap chains.
+        FeatureList.setTestFeatures(ENABLE_NONE);
+
         // Simulate a resolving search and make sure a URL was loaded.
         simulateResolveSearch("search");
         String url1 = mFakeServer.getLoadedUrl();
@@ -2959,10 +2963,9 @@ public class ContextualSearchManagerTest {
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    public void testNonResolveTranslates() throws Exception {
-        FeatureList.setTestFeatures(ENABLE_NONE);
-
-        // LongPress on any word should trigger translation.
+    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
+    public void testNonResolveTranslates(@EnabledFeature int enabledFeature) throws Exception {
+        // A non-resolving gesture on any word should trigger a forced translation.
         simulateNonResolveSearch("search");
         // Make sure we did try to trigger translate.
         Assert.assertTrue(mManager.getRequest().isTranslationForced());
@@ -3676,18 +3679,5 @@ public class ContextualSearchManagerTest {
         // Check UMA metrics recorded.
         Assert.assertEquals(2, userActionMonitor.get("ContextualSearch.ManualRefine"));
         Assert.assertEquals(2, userActionMonitor.get("ContextualSearch.SelectionEstablished"));
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"ContextualSearch"})
-    // Enable the literal-tap gesture Feature.
-    @Features.EnableFeatures(ChromeFeatureList.CONTEXTUAL_SEARCH_LITERAL_SEARCH_TAP)
-    @DisabledTest(message = "crbug.com/1161002")
-    public void testTapNotIgnoredWithLongpressResolveEnabledAndLiteralSearchTap() throws Exception {
-        FeatureList.setTestFeatures(ENABLE_LONGPRESS);
-        clickWordNode("states");
-        Assert.assertEquals("States", getSelectedText());
-        waitForPanelToPeek();
     }
 }
