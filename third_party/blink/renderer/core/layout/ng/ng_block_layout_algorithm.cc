@@ -429,8 +429,6 @@ NOINLINE scoped_refptr<const NGLayoutResult>
 NGBlockLayoutAlgorithm::LayoutWithInlineChildLayoutContext(
     const NGLayoutInputNode& first_child) {
   NGInlineChildLayoutContext context;
-  if (!RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled())
-    return Layout(&context);
   return LayoutWithItemsBuilder(To<NGInlineNode>(first_child), &context);
 }
 
@@ -980,7 +978,6 @@ bool NGBlockLayoutAlgorithm::TryReuseFragmentsFromCache(
     NGInlineNode inline_node,
     NGPreviousInflowPosition* previous_inflow_position,
     scoped_refptr<const NGInlineBreakToken>* inline_break_token_out) {
-  DCHECK(RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled());
   DCHECK(previous_result_);
   DCHECK(!inline_node.IsEmptyInline());
   DCHECK(container_builder_.BfcBlockOffset());
@@ -1597,8 +1594,7 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::HandleInflow(
     is_non_empty_inline = !child_inline_node->IsEmptyInline();
 
     // Add reusable line boxes from |previous_result_| if any.
-    if (is_non_empty_inline && !child_break_token && previous_result_ &&
-        RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled()) {
+    if (is_non_empty_inline && !child_break_token && previous_result_) {
       if (!ResolveBfcBlockOffset(previous_inflow_position))
         return NGLayoutResult::kBfcBlockOffsetResolved;
       DCHECK(container_builder_.BfcBlockOffset());
