@@ -14,7 +14,7 @@ import * as util from './util.js';
 export function show(label, ...substitutions) {
   const message = browserProxy.getI18nMessage(label, ...substitutions);
   const el = dom.get('.snackbar', HTMLElement);
+  el.textContent = '';  // Force reiterate the same message for a11y.
   el.textContent = message;
   util.animateOnce(el);
-  // TODO(b/172879638): Handle a11y.
 }

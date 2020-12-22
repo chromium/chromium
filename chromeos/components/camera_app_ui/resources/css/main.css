@@ -1696,14 +1696,12 @@ body.photo.scan-barcode .barcode-scan-box {
   opacity: 0;
   padding: 14px 16px;
   position: absolute;
-  visibility: hidden;
   width: 256px;
   z-index: 50;
 }
 
 .snackbar.animate {
   animation: 3s show-snackbar linear;
-  visibility: visible;
 }
 
 @keyframes show-snackbar {
