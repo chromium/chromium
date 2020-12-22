@@ -427,6 +427,36 @@ void Camera3AController::SetExposureTime(bool enable_auto,
   DVLOG(1) << "Setting AE mode to: " << ae_mode_;
 }
 
+void Camera3AController::SetFocusDistance(bool enable_auto,
+                                          float focus_distance_diopters) {
+  DCHECK(task_runner_->BelongsToCurrentThread());
+
+  if (enable_auto) {
+    if (!available_af_modes_.count(
+            cros::mojom::AndroidControlAfMode::ANDROID_CONTROL_AF_MODE_AUTO)) {
+      LOG(WARNING) << "Don't support ANDROID_CONTROL_AF_MODE_AUTO";
+      return;
+    }
+    af_mode_ = cros::mojom::AndroidControlAfMode::ANDROID_CONTROL_AF_MODE_AUTO;
+    capture_metadata_dispatcher_->UnsetRepeatingCaptureMetadata(
+        cros::mojom::CameraMetadataTag::ANDROID_LENS_FOCUS_DISTANCE);
+  } else {
+    if (!available_af_modes_.count(
+            cros::mojom::AndroidControlAfMode::ANDROID_CONTROL_AF_MODE_OFF)) {
+      LOG(WARNING) << "Don't support ANDROID_CONTROL_AE_MODE_OFF";
+      return;
+    }
+    af_mode_ = cros::mojom::AndroidControlAfMode::ANDROID_CONTROL_AF_MODE_OFF;
+    SetRepeatingCaptureMetadata(
+        cros::mojom::CameraMetadataTag::ANDROID_LENS_FOCUS_DISTANCE,
+        focus_distance_diopters);
+  }
+
+  Set3AMode(cros::mojom::CameraMetadataTag::ANDROID_CONTROL_AF_MODE,
+            base::checked_cast<uint8_t>(af_mode_));
+  DVLOG(1) << "Setting AF mode to: " << af_mode_;
+}
+
 bool Camera3AController::IsPointOfInterestSupported() {
   return point_of_interest_supported_;
 }

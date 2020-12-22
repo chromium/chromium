@@ -293,6 +293,7 @@ void CameraDeviceDelegate::AllocateAndStart(
   is_set_brightness_ = false;
   is_set_contrast_ = false;
   is_set_exposure_time_ = false;
+  is_set_focus_distance_ = false;
   is_set_pan_ = false;
   is_set_saturation_ = false;
   is_set_sharpness_ = false;
@@ -523,6 +524,18 @@ void CameraDeviceDelegate::SetPhotoOptions(
   } else if (is_set_exposure_time_) {
     camera_3a_controller_->SetExposureTime(true, 0);
     is_set_exposure_time_ = false;
+  }
+
+  if (settings->has_focus_mode &&
+      settings->focus_mode == mojom::MeteringMode::MANUAL &&
+      settings->has_focus_distance) {
+    // The unit of settings is meter but it is diopter of android metadata.
+    float focus_distance_diopters_ = 1.0 / settings->focus_distance;
+    camera_3a_controller_->SetFocusDistance(false, focus_distance_diopters_);
+    is_set_focus_distance_ = true;
+  } else if (is_set_focus_distance_) {
+    camera_3a_controller_->SetFocusDistance(true, 0);
+    is_set_focus_distance_ = false;
   }
 
   // If there is callback of SetPhotoOptions(), the streams might being
@@ -1302,6 +1315,19 @@ void CameraDeviceDelegate::OnResultMetadataAvailable(
   if (awb_mode.size() == 1)
     result_metadata_.awb_mode = awb_mode[0];
 
+  result_metadata_.af_mode.reset();
+  auto af_mode = GetMetadataEntryAsSpan<uint8_t>(
+      result_metadata, cros::mojom::CameraMetadataTag::ANDROID_CONTROL_AF_MODE);
+  if (af_mode.size() == 1)
+    result_metadata_.af_mode = af_mode[0];
+
+  result_metadata_.focus_distance.reset();
+  auto focus_distance = GetMetadataEntryAsSpan<float>(
+      result_metadata,
+      cros::mojom::CameraMetadataTag::ANDROID_LENS_FOCUS_DISTANCE);
+  if (focus_distance.size() == 1)
+    result_metadata_.focus_distance = focus_distance[0];
+
   result_metadata_frame_number_ = frame_number;
   // We need to wait the new result metadata for new settings.
   if (result_metadata_frame_number_ >
@@ -1471,6 +1497,51 @@ void CameraDeviceDelegate::DoGetPhotoState(
     photo_state->exposure_time->step = 1;  // 100 microseconds
     photo_state->exposure_time->current =
         result_metadata_.exposure_time.value() / (100 * kMicroToNano);
+  }
+
+  auto af_available_modes = GetMetadataEntryAsSpan<uint8_t>(
+      static_metadata_,
+      cros::mojom::CameraMetadataTag::ANDROID_CONTROL_AF_AVAILABLE_MODES);
+  bool support_manual_focus_distance = false;
+  if (af_available_modes.size() > 1 && result_metadata_.af_mode) {
+    support_manual_focus_distance = base::Contains(
+        af_available_modes,
+        static_cast<uint8_t>(
+            cros::mojom::AndroidControlAfMode::ANDROID_CONTROL_AF_MODE_OFF));
+  }
+
+  auto minimum_focus_distance = GetMetadataEntryAsSpan<float>(
+      static_metadata_,
+      cros::mojom::CameraMetadataTag::ANDROID_LENS_INFO_MINIMUM_FOCUS_DISTANCE);
+  // If the lens is fixed-focus, minimum_focus_distance will be 0.
+  if (support_manual_focus_distance && minimum_focus_distance.size() == 1 &&
+      minimum_focus_distance[0] != 0 && result_metadata_.focus_distance) {
+    photo_state->supported_focus_modes.push_back(mojom::MeteringMode::MANUAL);
+    photo_state->supported_focus_modes.push_back(
+        mojom::MeteringMode::CONTINUOUS);
+    if (result_metadata_.af_mode ==
+        static_cast<uint8_t>(
+            cros::mojom::AndroidControlAfMode::ANDROID_CONTROL_AF_MODE_OFF))
+      photo_state->current_focus_mode = mojom::MeteringMode::MANUAL;
+    else
+      photo_state->current_focus_mode = mojom::MeteringMode::CONTINUOUS;
+
+    // The unit of photo_state->focus_distance is meter and from metadata is
+    // diopter.
+    photo_state->focus_distance->min =
+        std::roundf(100.0 / minimum_focus_distance[0]) / 100.0;
+    photo_state->focus_distance->max = std::numeric_limits<double>::infinity();
+    photo_state->focus_distance->step = 0.01;
+    if (result_metadata_.focus_distance.value() == 0) {
+      photo_state->focus_distance->current =
+          std::numeric_limits<double>::infinity();
+    } else {
+      // We want to make sure |current| is a possible value of
+      // |min| + |steps(0.01)|*X.  The minimum can be divided by step(0.01). So
+      // we only need to round the value less than 0.01.
+      double meters = 1.0 / result_metadata_.focus_distance.value();
+      photo_state->focus_distance->current = std::roundf(meters * 100) / 100.0;
+    }
   }
 
   std::move(callback).Run(std::move(photo_state));
