@@ -511,8 +511,8 @@ void AboutHandler::HandleGetChannelInfo(const base::ListValue* args) {
   CHECK(args->GetString(0, &callback_id));
   version_updater_->GetChannel(
       true /* get current channel */,
-      base::Bind(&AboutHandler::OnGetCurrentChannel, weak_factory_.GetWeakPtr(),
-                 callback_id));
+      base::BindOnce(&AboutHandler::OnGetCurrentChannel,
+                     weak_factory_.GetWeakPtr(), callback_id));
 }
 
 void AboutHandler::HandleCanChangeChannel(const base::ListValue* args) {
@@ -527,8 +527,8 @@ void AboutHandler::OnGetCurrentChannel(std::string callback_id,
                                        const std::string& current_channel) {
   version_updater_->GetChannel(
       false /* get target channel */,
-      base::Bind(&AboutHandler::OnGetTargetChannel, weak_factory_.GetWeakPtr(),
-                 callback_id, current_channel));
+      base::BindOnce(&AboutHandler::OnGetTargetChannel,
+                     weak_factory_.GetWeakPtr(), callback_id, current_channel));
 }
 
 void AboutHandler::OnGetTargetChannel(std::string callback_id,

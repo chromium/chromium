@@ -30,8 +30,8 @@ class TestVersionUpdater : public VersionUpdater {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void SetChannel(const std::string& channel,
                   bool is_powerwash_allowed) override {}
-  void GetChannel(bool get_current_channel,
-                  const ChannelCallback& callback) override {}
+  void GetChannel(bool get_current_channel, ChannelCallback callback) override {
+  }
   void GetEolInfo(EolInfoCallback callback) override {}
   void SetUpdateOverCellularOneTimePermission(StatusCallback callback,
                                               const std::string& update_version,

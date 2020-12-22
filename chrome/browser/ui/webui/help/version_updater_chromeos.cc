@@ -223,20 +223,21 @@ void VersionUpdaterCros::OnSetUpdateOverCellularOneTimePermission(
 }
 
 void VersionUpdaterCros::GetChannel(bool get_current_channel,
-                                    const ChannelCallback& cb) {
+                                    ChannelCallback cb) {
   UpdateEngineClient* update_engine_client =
       DBusThreadManager::Get()->GetUpdateEngineClient();
 
   // Request the channel information. Bind to a weak_ptr bound method rather
   // than passing |cb| directly so that |cb| does not outlive |this|.
   update_engine_client->GetChannel(
-      get_current_channel, base::BindOnce(&VersionUpdaterCros::OnGetChannel,
-                                          weak_ptr_factory_.GetWeakPtr(), cb));
+      get_current_channel,
+      base::BindOnce(&VersionUpdaterCros::OnGetChannel,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(cb)));
 }
 
-void VersionUpdaterCros::OnGetChannel(const ChannelCallback& cb,
+void VersionUpdaterCros::OnGetChannel(ChannelCallback cb,
                                       const std::string& current_channel) {
-  cb.Run(current_channel);
+  std::move(cb).Run(current_channel);
 }
 
 void VersionUpdaterCros::GetEolInfo(EolInfoCallback cb) {

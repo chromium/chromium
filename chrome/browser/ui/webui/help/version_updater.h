@@ -49,7 +49,7 @@ class VersionUpdater {
   // TODO(jhawkins): Use a delegate interface instead of multiple callback
   // types.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  typedef base::Callback<void(const std::string&)> ChannelCallback;
+  typedef base::OnceCallback<void(const std::string&)> ChannelCallback;
   using EolInfoCallback =
       base::OnceCallback<void(chromeos::UpdateEngineClient::EolInfo eol_info)>;
 #endif
@@ -101,7 +101,7 @@ class VersionUpdater {
   virtual void SetChannel(const std::string& channel,
                           bool is_powerwash_allowed) = 0;
   virtual void GetChannel(bool get_current_channel,
-                          const ChannelCallback& callback) = 0;
+                          ChannelCallback callback) = 0;
   // Get the End of Life (Auto Update Expiration) Date.
   virtual void GetEolInfo(EolInfoCallback callback) = 0;
 

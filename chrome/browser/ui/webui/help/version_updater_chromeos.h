@@ -22,8 +22,7 @@ class VersionUpdaterCros : public VersionUpdater,
   void CheckForUpdate(StatusCallback callback, const PromoteCallback&) override;
   void SetChannel(const std::string& channel,
                   bool is_powerwash_allowed) override;
-  void GetChannel(bool get_current_channel,
-                  const ChannelCallback& callback) override;
+  void GetChannel(bool get_current_channel, ChannelCallback callback) override;
   void GetEolInfo(EolInfoCallback callback) override;
   void SetUpdateOverCellularOneTimePermission(StatusCallback callback,
                                               const std::string& update_version,
@@ -50,8 +49,7 @@ class VersionUpdaterCros : public VersionUpdater,
   void OnSetUpdateOverCellularOneTimePermission(bool success);
 
   // Callback from UpdateEngineClient::GetChannel().
-  void OnGetChannel(const ChannelCallback& cb,
-                    const std::string& current_channel);
+  void OnGetChannel(ChannelCallback cb, const std::string& current_channel);
 
   // Callback from UpdateEngineClient::GetEolInfo().
   void OnGetEolInfo(EolInfoCallback cb,
