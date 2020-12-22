@@ -298,7 +298,9 @@ bool TranslateManager::CanManuallyTranslate(bool menuLogging) {
     can_translate = false;
   }
 
-  UMA_HISTOGRAM_BOOLEAN("Translate.MenuTranslation.IsAvailable", can_translate);
+  if (menuLogging)
+    UMA_HISTOGRAM_BOOLEAN("Translate.MenuTranslation.IsAvailable",
+                          can_translate);
 
   return can_translate;
 }
