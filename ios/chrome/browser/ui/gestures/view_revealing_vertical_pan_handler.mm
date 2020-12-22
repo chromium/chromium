@@ -107,6 +107,10 @@ const CGFloat kAnimationDuration = 0.25f;
 
 - (void)addAnimatee:(id<ViewRevealingAnimatee>)animatee {
   [self.animatees addObject:animatee];
+  // Make sure the newly added animatee is in the correct state.
+  [animatee willAnimateViewReveal:self.currentState];
+  [animatee animateViewReveal:self.currentState];
+  [animatee didAnimateViewReveal:self.currentState];
 }
 
 - (void)setBaseViewHeight:(CGFloat)baseViewHeight {
