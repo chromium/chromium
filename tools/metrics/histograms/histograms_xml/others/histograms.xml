@@ -7943,6 +7943,32 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Lens.ImageClassification.ClassificationTime" units="ms"
     expires_after="M90">
+  <obsolete>
+    Replaced with
+    Lens.ImageClassification.ClassificationTime.SuccessOnQueryResultMs as of
+    12/2020.
+  </obsolete>
+  <owner>yusuyoutube@google.com</owner>
+  <owner>benwgold@google.com</owner>
+  <summary>
+    Logged the end to end latency of the Lens image classifcation call when the
+    user completes a long press on an image. Only logged on Android.
+  </summary>
+</histogram>
+
+<histogram name="Lens.ImageClassification.ClassificationTime.EarlyTerminatedMs"
+    units="ms" expires_after="M90">
+  <owner>yusuyoutube@google.com</owner>
+  <owner>benwgold@google.com</owner>
+  <summary>
+    Logged the time between the start of the Lens image classifcation call to
+    the early termination before the call completes. Only logged on Android.
+  </summary>
+</histogram>
+
+<histogram
+    name="Lens.ImageClassification.ClassificationTime.SuccessOnQueryResultMs"
+    units="ms" expires_after="M90">
   <owner>yusuyoutube@google.com</owner>
   <owner>benwgold@google.com</owner>
   <summary>

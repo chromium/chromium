@@ -41088,14 +41088,15 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
 
 <enum name="LensClassifyResultState">
   <int value="0" label="Unknown"/>
-  <int value="1" label="Success: the image is a shoppy image"/>
-  <int value="2" label="Success: the image is not a shoppy image"/>
-  <int value="3" label="Success: the Lens result is empty"/>
-  <int value="4" label="Success: the intent type is empty"/>
+  <int value="1" label="Success: shoppy image"/>
+  <int value="2" label="Success: not shoppy image - other intent type"/>
+  <int value="3" label="Success: not shoppy image - empty Lens result"/>
+  <int value="4" label="Success: not shoppy image - empty intent type"/>
   <int value="5" label="Error: invalid callback"/>
   <int value="6" label="Error: invalid package signature"/>
   <int value="7" label="Error: invalid image uri"/>
   <int value="8" label="Error: early terminated"/>
+  <int value="9" label="Disabled"/>
 </enum>
 
 <enum name="LensSdkError">

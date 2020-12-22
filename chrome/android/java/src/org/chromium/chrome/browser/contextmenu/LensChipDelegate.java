@@ -52,9 +52,12 @@ public class LensChipDelegate implements ChipDelegate {
             mLensQueryParams.setImageUri(uri);
             mLensController.getChipRenderParams(mLensQueryParams, (chipParams) -> {
                 if (isValidChipRenderParams(chipParams)) {
+                    // A new variable to avoid infinite loop inside the merged
+                    // onClick callback.
+                    Runnable originalOnClickCallback = chipParams.onClickCallback;
                     Runnable mergedOnClickCallback = () -> {
                         // The onClickCallback defined in LensController.
-                        chipParams.onClickCallback.run();
+                        originalOnClickCallback.run();
                         // The onClickCallback defined when initialize the LensChipDelegate.
                         mOnChipClickedCallback.run();
                     };

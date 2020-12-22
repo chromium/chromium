@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.lens;
 import android.net.Uri;
 
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.ui.base.WindowAndroid;
 
 /**
  * A wrapper class for the Lens image query params (e.g. used in LensController.queryImage)
@@ -21,7 +20,6 @@ public class LensQueryParams {
     private WebContents mWebContents;
     private String mSrcUrl;
     private boolean mIsIncognito;
-    private WindowAndroid mWindow;
 
     /**
      * Builder class for LensQueryParams.
