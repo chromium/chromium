@@ -930,9 +930,6 @@ static void FillStaticResponseIfNeeded(WebNavigationParams* params,
       "<html><body>"
       "<!-- no enabled plugin supports this MIME type -->"
       "</body></html>");
-  // Since the request actually succeeded (we just can't render it), set the
-  // HTTP status code to 200 to match the HTTP status code saved in the browser.
-  params->response.SetHttpStatusCode(200);
 }
 
 // The browser navigation code should never send a `CommitNavigation()` request

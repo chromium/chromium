@@ -234,6 +234,8 @@ struct BLINK_EXPORT WebNavigationParams {
   // The http content type of the request used to load the main resource, if
   // any.
   WebString http_content_type;
+  // The http status code of the request used to load the main resource, if any.
+  int http_status_code = 0;
   // The origin of the request used to load the main resource, specified at
   // https://fetch.spec.whatwg.org/#concept-request-origin. Can be null.
   // TODO(dgozman,nasko): we shouldn't need both this and |origin_to_commit|.

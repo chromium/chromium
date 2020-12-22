@@ -199,6 +199,9 @@ class NavigationControllerBrowserTest
   void RunLoadDataWithBlockedURL(bool use_load_data_as_string_with_base_url);
   void RunLoadDataWithBlockedURLAndInvalidBaseURL(
       bool use_load_data_as_string_with_base_url);
+  void RunLoadDataWithBaseURL(bool use_load_data_as_string_with_base_url,
+                              bool base_url_empty,
+                              bool history_url_empty);
 
  private:
   base::test::ScopedFeatureList feature_list_for_render_document_;
@@ -257,7 +260,12 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, LoadCrossSiteSubframe) {
 // Verifies that the base, history, and data URLs for LoadDataWithBaseURL end up
 // in the expected parts of the NavigationEntry in each stage of navigation, and
 // that we don't kill the renderer on reload.  See https://crbug.com/522567.
-IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, LoadDataWithBaseURL) {
+// Having the base/history URLs as empty might affect things like which URLs are
+// used in the NavigationEntries.
+void NavigationControllerBrowserTest::RunLoadDataWithBaseURL(
+    bool use_load_data_as_string_with_base_url,
+    bool base_url_empty,
+    bool history_url_empty) {
   // LoadDataWithBaseURL is never subject to --site-per-process policy today
   // (this API is only used by Android WebView [where OOPIFs have not shipped
   // yet] and GuestView cases [which always hosts guests inside a renderer
@@ -270,53 +278,130 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, LoadDataWithBaseURL) {
   if (AreAllSitesIsolatedForTesting())
     return;
 
-  const GURL base_url("http://baseurl");
-  const GURL history_url("http://historyurl");
+  const std::string data_header = "data:text/html;charset=utf-8,";
   const std::string data = "<html><body>foo</body></html>";
-  const GURL data_url = GURL("data:text/html;charset=utf-8," + data);
-
+  const GURL data_url = GURL(data_header + data);
+  const GURL base_url = base_url_empty ? GURL() : GURL("http://baseurl");
+  const GURL history_url =
+      history_url_empty ? GURL() : GURL("http://historyurl");
+  const GURL commit_url =
+      use_load_data_as_string_with_base_url ? GURL(data_header) : data_url;
   NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
       shell()->web_contents()->GetController());
 
-  // Load data, but don't commit yet.
+  // 1) Load data, but don't commit yet.
   TestNavigationObserver same_tab_observer(shell()->web_contents(), 1);
-  shell()->LoadDataWithBaseURL(history_url, data, base_url);
+  if (use_load_data_as_string_with_base_url) {
+#if defined(OS_ANDROID)
+    shell()->LoadDataAsStringWithBaseURL(history_url, data, base_url);
+#else
+    NOTREACHED();
+#endif
+  } else {
+    shell()->LoadDataWithBaseURL(history_url, data, base_url);
+  }
 
   // Verify the pending NavigationEntry.
   NavigationEntryImpl* pending_entry = controller.GetPendingEntry();
-  EXPECT_EQ(base_url, pending_entry->GetBaseURLForDataURL());
-  EXPECT_EQ(history_url, pending_entry->GetVirtualURL());
-  EXPECT_EQ(history_url, pending_entry->GetHistoryURLForDataURL());
-  EXPECT_EQ(data_url, pending_entry->GetURL());
+  // The URL of the entry will always be set to the URL used for commit.
+  EXPECT_EQ(commit_url, pending_entry->GetURL());
+  // base_url_for_data_url_ will always be set to |base_url|.
+  // The virtual URL will be |history_url|, unless it's empty, in which case
+  // we'll fall back to the URL used for the commit.
+  GURL virtual_url = history_url_empty ? commit_url : history_url;
+  EXPECT_EQ(virtual_url, pending_entry->GetVirtualURL());
+  // The history URL in the NavigationEntry will always be set to the virtual
+  // URL, unless the base URL is empty.
+  GURL history_url_for_data_url = base_url_empty ? GURL() : virtual_url;
+  EXPECT_EQ(history_url_for_data_url, pending_entry->GetHistoryURLForDataURL());
 
-  // Let the navigation commit.
+  // 2) Let the navigation commit.
   same_tab_observer.Wait();
 
-  // Verify the last committed NavigationEntry.
+  // Verify the last committed NavigationEntry has correct HTTP status code
+  // and URLs.
   NavigationEntryImpl* entry = controller.GetLastCommittedEntry();
+  EXPECT_EQ(commit_url, entry->GetURL());
   EXPECT_EQ(base_url, entry->GetBaseURLForDataURL());
-  EXPECT_EQ(history_url, entry->GetVirtualURL());
-  EXPECT_EQ(history_url, entry->GetHistoryURLForDataURL());
-  EXPECT_EQ(data_url, entry->GetURL());
-
-  // We should use data_url instead of the base_url as the original url of
+  EXPECT_EQ(virtual_url, entry->GetVirtualURL());
+  EXPECT_EQ(history_url_for_data_url, entry->GetHistoryURLForDataURL());
+  // We should use commit_url instead of the base_url as the original url of
   // this navigation entry, because base_url is only used for resolving relative
   // paths in the data, or enforcing same origin policy.
-  EXPECT_EQ(data_url, entry->GetOriginalRequestURL());
+  EXPECT_EQ(commit_url, entry->GetOriginalRequestURL());
+  // data: URL loads always have HTTP status code 200.
+  EXPECT_EQ(200, contents()->GetMainFrame()->last_http_status_code());
 
-  // Now reload and make sure the renderer isn't killed.
+  // 3) Now reload and make sure the renderer isn't killed.
   ReloadBlockUntilNavigationsComplete(shell(), 1);
   EXPECT_TRUE(shell()->web_contents()->GetMainFrame()->IsRenderFrameLive());
 
   // Verify the last committed NavigationEntry hasn't changed.
   NavigationEntryImpl* reload_entry = controller.GetLastCommittedEntry();
   EXPECT_EQ(entry, reload_entry);
+  EXPECT_EQ(commit_url, reload_entry->GetURL());
   EXPECT_EQ(base_url, reload_entry->GetBaseURLForDataURL());
-  EXPECT_EQ(history_url, reload_entry->GetVirtualURL());
-  EXPECT_EQ(history_url, reload_entry->GetHistoryURLForDataURL());
-  EXPECT_EQ(data_url, reload_entry->GetOriginalRequestURL());
-  EXPECT_EQ(data_url, reload_entry->GetURL());
+  EXPECT_EQ(virtual_url, reload_entry->GetVirtualURL());
+  EXPECT_EQ(history_url_for_data_url, reload_entry->GetHistoryURLForDataURL());
+  EXPECT_EQ(commit_url, reload_entry->GetOriginalRequestURL());
 }
+
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, LoadDataWithBaseURL) {
+  RunLoadDataWithBaseURL(false /* use_load_data_as_string_with_base_url */,
+                         false /* base_url_empty */,
+                         false /* history_url_empty */);
+}
+
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       LoadDataWithEmptyBaseURL) {
+  RunLoadDataWithBaseURL(false /* use_load_data_as_string_with_base_url */,
+                         true /* base_url_empty */,
+                         false /* history_url_empty */);
+}
+
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       LoadDataWithEmptyHistoryURL) {
+  RunLoadDataWithBaseURL(false /* use_load_data_as_string_with_base_url */,
+                         false /* base_url_empty */,
+                         true /* history_url_empty */);
+}
+
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       LoadDataWithEmptyBaseAndHistoryURL) {
+  RunLoadDataWithBaseURL(false /* use_load_data_as_string_with_base_url */,
+                         true /* base_url_empty */,
+                         true /* history_url_empty */);
+}
+
+#if defined(OS_ANDROID)
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       LoadDataAsStringWithBaseURL) {
+  RunLoadDataWithBaseURL(true /* use_load_data_as_string_with_base_url */,
+                         false /* base_url_empty */,
+                         false /* history_url_empty */);
+}
+
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       LoadDataAsStringWithEmptyBaseURL) {
+  RunLoadDataWithBaseURL(true /* use_load_data_as_string_with_base_url */,
+                         true /* base_url_empty */,
+                         false /* history_url_empty */);
+}
+
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       LoadDataAsStringWithEmptyHistoryRL) {
+  RunLoadDataWithBaseURL(true /* use_load_data_as_string_with_base_url */,
+                         false /* base_url_empty */,
+                         true /* history_url_empty */);
+}
+
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       LoadDataAsStringWithEmptyBaseAndHistoryURL) {
+  RunLoadDataWithBaseURL(true /* use_load_data_as_string_with_base_url */,
+                         true /* base_url_empty */,
+                         true /* history_url_empty */);
+}
+#endif
 
 // Verify which page loads when going back to a LoadDataWithBaseURL entry.
 // See https://crbug.com/612196.

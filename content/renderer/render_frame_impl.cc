@@ -1034,6 +1034,9 @@ void FillMiscNavigationParams(
       commit_params.enabled_client_hints.size());
   for (auto enabled_hint : commit_params.enabled_client_hints)
     navigation_params->enabled_client_hints.emplace_back(enabled_hint);
+
+  if (commit_params.http_response_code != -1)
+    navigation_params->http_status_code = commit_params.http_response_code;
 }
 
 // Fills in the origin policy associated with this response, if any is present.

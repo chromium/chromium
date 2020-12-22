@@ -9542,8 +9542,7 @@ bool CalculateURLIsUnreachable(
 }
 
 int CalculateHTTPStatusCode(NavigationRequest* request,
-                            int last_http_status_code,
-                            bool url_is_unreachable) {
+                            int last_http_status_code) {
   // Same-document navigations should retain the HTTP status code from the last
   // committed navigation.
   if (request->IsSameDocument())
@@ -9552,10 +9551,10 @@ int CalculateHTTPStatusCode(NavigationRequest* request,
   // the HTTP status code set to 200.
   if (request->IsServedFromBackForwardCache())
     return 200;
-  // The HTTP status code is not set if this is for an error page, or if we
-  // never received any HTTP response for the navigation.
+  // The HTTP status code is not set if we never received any HTTP response for
+  // the navigation.
   const int request_response_code = request->commit_params().http_response_code;
-  if (url_is_unreachable || request_response_code == -1)
+  if (request_response_code == -1)
     return 0;
   // Otherwise, return the status code from |request|.
   return request_response_code;
@@ -9620,8 +9619,8 @@ void RenderFrameHostImpl::
           : (request->commit_params().is_overriding_user_agent &&
              frame_tree_node_->IsMainFrame());
 
-  const int browser_http_status_code = CalculateHTTPStatusCode(
-      request, last_http_status_code_, browser_url_is_unreachable);
+  const int browser_http_status_code =
+      CalculateHTTPStatusCode(request, last_http_status_code_);
 
   // Note that this follows the calculation of should_update_history in
   // RenderFrameImpl::MakeDidCommitProvisionalLoadParams().

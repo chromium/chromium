@@ -102,6 +102,7 @@ void WebNavigationParams::FillStaticResponse(WebNavigationParams* params,
   params->response = WebURLResponse(params->url);
   params->response.SetMimeType(mime_type);
   params->response.SetTextEncodingName(text_encoding);
+  params->response.SetHttpStatusCode(params->http_status_code);
   FillBodyLoader(params, data);
 }
 
