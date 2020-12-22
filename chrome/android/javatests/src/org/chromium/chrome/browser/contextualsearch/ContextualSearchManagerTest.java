@@ -2711,6 +2711,7 @@ public class ContextualSearchManagerTest {
     @SmallTest
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
+    @DisabledTest(message = "crbug.com/1161002")
     public void testChainedSearchCreatesNewContent(@EnabledFeature int enabledFeature)
             throws Exception {
         // Simulate a resolving search and make sure Content is not visible.
@@ -3682,6 +3683,7 @@ public class ContextualSearchManagerTest {
     @Feature({"ContextualSearch"})
     // Enable the literal-tap gesture Feature.
     @Features.EnableFeatures(ChromeFeatureList.CONTEXTUAL_SEARCH_LITERAL_SEARCH_TAP)
+    @DisabledTest(message = "crbug.com/1161002")
     public void testTapNotIgnoredWithLongpressResolveEnabledAndLiteralSearchTap() throws Exception {
         FeatureList.setTestFeatures(ENABLE_LONGPRESS);
         clickWordNode("states");
