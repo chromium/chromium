@@ -988,7 +988,16 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
   // of the new root.
   bool root_updated = false;
   if (update.node_id_to_clear != AXNode::kInvalidAXID) {
-    if (AXNode* cleared_node = GetFromId(update.node_id_to_clear)) {
+    // If the incoming tree was initialized with a root with an id != 1, the
+    // update won't match the tree created by CreateEmptyDocument In this
+    // case, the update won't be able to set the right node_id_to_clear.
+    // If node_id_to_clear was set and the update's root_id doesn't match the
+    // old_root_id, we assume that the update meant to replace the root.
+    int node_id_to_clear = update.node_id_to_clear;
+    if (!GetFromId(node_id_to_clear) && update.root_id == node_id_to_clear &&
+        update.root_id != old_root_id && root_)
+      node_id_to_clear = old_root_id;
+    if (AXNode* cleared_node = GetFromId(node_id_to_clear)) {
       DCHECK(root_);
       if (cleared_node == root_) {
         // Only destroy the root if the root was replaced and not if it's simply
