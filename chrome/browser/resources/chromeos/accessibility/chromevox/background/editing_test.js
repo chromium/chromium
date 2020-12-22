@@ -267,8 +267,7 @@ TEST_F(
           `
     <div role="textbox" contenteditable>
       <p style="font-size:20px; font-family:times">
-        <b style="color:#ff0000">Move</b>
-        <i>through</i> <u style="font-family:georgia">text</u>
+        <b style="color:#ff0000">Move</b> <i>through</i> <u style="font-family:georgia">text</u>
         by <strike style="font-size:12px; color:#0000ff">character</strike>
         <a href="#">test</a>!
       </p>
