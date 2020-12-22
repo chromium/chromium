@@ -79,6 +79,8 @@ VmCameraMicManager::VmCameraMicManager()
                               base::Unretained(this))) {}
 
 void VmCameraMicManager::OnPrimaryUserSessionStarted(Profile* primary_profile) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
   primary_profile_ = primary_profile;
   crostini_vm_notification_observer_.Initialize(
       primary_profile_, base::BindRepeating(OpenCrostiniSettings));
@@ -90,14 +92,12 @@ void VmCameraMicManager::OnPrimaryUserSessionStarted(Profile* primary_profile) {
   }
 
   // Only do the subscription in real ChromeOS environment.
-  if (base::SysInfo::IsRunningOnChromeOS() &&
-      media::ShouldUseCrosCameraService()) {
-    auto* camera = media::CameraHalDispatcherImpl::GetInstance();
-    // OnActiveClientChange() will be called automatically after the
-    // subscription, so there is no need to get the current status here.
-    camera->AddActiveClientObserver(this);
-    OnCameraPrivacySwitchStatusChanged(
-        camera->AddCameraPrivacySwitchObserver(this));
+  if (base::SysInfo::IsRunningOnChromeOS()) {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock()},
+        base::BindOnce(media::ShouldUseCrosCameraService),
+        base::BindOnce(&VmCameraMicManager::MaybeSubscribeToCameraService,
+                       base::Unretained(this)));
 
     CrasAudioHandler::Get()->AddAudioObserver(this);
     // Fetch the current value.
@@ -112,6 +112,22 @@ void VmCameraMicManager::OnPrimaryUserSessionStarted(Profile* primary_profile) {
 // The class is supposed to be used as a singleton with `base::NoDestructor`, so
 // we do not do clean up (e.g. deregister as observers) here.
 VmCameraMicManager::~VmCameraMicManager() = default;
+
+void VmCameraMicManager::MaybeSubscribeToCameraService(
+    bool should_use_cros_camera_service) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (!should_use_cros_camera_service) {
+    return;
+  }
+
+  auto* camera = media::CameraHalDispatcherImpl::GetInstance();
+  // OnActiveClientChange() will be called automatically after the
+  // subscription, so there is no need to get the current status here.
+  camera->AddActiveClientObserver(this);
+  OnCameraPrivacySwitchStatusChanged(
+      camera->AddCameraPrivacySwitchObserver(this));
+}
 
 void VmCameraMicManager::UpdateVmInfoAndNotifications(
     VmType vm,

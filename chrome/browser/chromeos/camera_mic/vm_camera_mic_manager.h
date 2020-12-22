@@ -130,6 +130,8 @@ class VmCameraMicManager : public media::CameraActiveClientObserver,
     base::WeakPtrFactory<VmNotificationObserver> weak_ptr_factory_{this};
   };
 
+  void MaybeSubscribeToCameraService(bool should_use_cros_camera_service);
+
   // media::CameraActiveClientObserver
   void OnActiveClientChange(cros::mojom::CameraClientType type,
                             bool is_active) override;
