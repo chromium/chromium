@@ -11,6 +11,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/version.h"
+#include "components/optimization_guide/bloom_filter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -58,7 +59,6 @@ TestHintsComponentCreator::CreateHintsComponentInfoWithPageHints(
     optimization_guide::proto::Optimization* optimization =
         page_hint->add_whitelisted_optimizations();
     optimization->set_optimization_type(optimization_type);
-
   }
 
   // Always stick something with no hint version in here.
@@ -72,6 +72,37 @@ TestHintsComponentCreator::CreateHintsComponentInfoWithPageHints(
   bad_version_hint->set_key_representation(optimization_guide::proto::HOST);
   bad_version_hint->set_version("notaversion");
   bad_version_hint->add_page_hints()->set_page_pattern("*");
+
+  // Always stick an allowlist optimization filter in here.
+  optimization_guide::BloomFilter allowlist_bloom_filter(7, 511);
+  allowlist_bloom_filter.Add("allowedhost.com");
+  std::string allowlist_bloom_filter_data(
+      reinterpret_cast<const char*>(&allowlist_bloom_filter.bytes()[0]),
+      allowlist_bloom_filter.bytes().size());
+  optimization_guide::proto::OptimizationFilter* allowlist_optimization_filter =
+      config.add_optimization_allowlists();
+  allowlist_optimization_filter->set_optimization_type(
+      optimization_guide::proto::LITE_PAGE_REDIRECT);
+  allowlist_optimization_filter->mutable_bloom_filter()->set_num_hash_functions(
+      7);
+  allowlist_optimization_filter->mutable_bloom_filter()->set_num_bits(511);
+  allowlist_optimization_filter->mutable_bloom_filter()->set_data(
+      allowlist_bloom_filter_data);
+  // Always stick a blocklist optimization filter in here.
+  optimization_guide::BloomFilter blocklist_bloom_filter(7, 511);
+  blocklist_bloom_filter.Add("blockedhost.com");
+  std::string blocklist_bloom_filter_data(
+      reinterpret_cast<const char*>(&blocklist_bloom_filter.bytes()[0]),
+      blocklist_bloom_filter.bytes().size());
+  optimization_guide::proto::OptimizationFilter* blocklist_optimization_filter =
+      config.add_optimization_blacklists();
+  blocklist_optimization_filter->set_optimization_type(
+      optimization_guide::proto::FAST_HOST_HINTS);
+  blocklist_optimization_filter->mutable_bloom_filter()->set_num_hash_functions(
+      7);
+  blocklist_optimization_filter->mutable_bloom_filter()->set_num_bits(511);
+  blocklist_optimization_filter->mutable_bloom_filter()->set_data(
+      blocklist_bloom_filter_data);
 
   return WriteConfigToFileAndReturnHintsComponentInfo(config);
 }
