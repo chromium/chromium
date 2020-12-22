@@ -36,7 +36,7 @@ EmojiPicker::EmojiPicker(content::WebUI* web_ui)
   webui::SetupWebUIDataSource(
       html_source.get(),
       base::make_span(kEmojiPickerResources, kEmojiPickerResourcesSize),
-      IDR_EMOJI_PICKER_INDEX_HTML);
+      IDR_EMOJI_PICKER_EMOJI_PICKER_HTML);
 
   content::BrowserContext* browser_context =
       web_ui->GetWebContents()->GetBrowserContext();
