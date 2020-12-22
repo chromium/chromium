@@ -214,14 +214,13 @@ export class EduCoexistenceController extends PostMessageAPIServer {
     this.userInfo_ = e.detail;
     this.browserProxy_.completeLogin(e.detail);
 
-    // GAIA pages don't allow localhost as a "continue" URL, so we have to
-    // manually update the src when doing development against a localhost-hosted
-    // test server.
-    if (this.flowURL_.hostname === 'localhost') {
-      let finishURL = this.flowURL_;
-      finishURL.pathname = '/supervision/coexistence/finish';
-      this.webview_.src = finishURL.toString();
-    }
+    // The EDU Signin page doesn't appear to use the "continue" URL, so we have
+    // to manually update the src to continue to the last page of the flow.
+    // TODO(crbug.com/1160166): Investigate why the "continue" parameter doesn't
+    // work for EDU signin on accounts.google.com.
+    let finishURL = this.flowURL_;
+    finishURL.pathname = '/supervision/coexistence/finish';
+    this.webview_.src = finishURL.toString();
   }
 
   /**
