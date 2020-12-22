@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_FONT_ACCESS_FONT_ACCESS_CHOOSER_CONTROLLER_H_
 #define CHROME_BROWSER_UI_FONT_ACCESS_FONT_ACCESS_CHOOSER_CONTROLLER_H_
 
+#include "base/callback.h"
 #include "chrome/browser/chooser_controller/chooser_controller.h"
 #include "content/public/browser/font_access_chooser.h"
 #include "content/public/browser/render_frame_host.h"
@@ -46,15 +47,15 @@ class FontAccessChooserController : public ChooserController {
   void Close() override;
   void OpenHelpCenterUrl() const override;
 
-  void SetReadyCallbackForTesting(base::Callback<void()> callback) {
-    ready_callback_for_testing_ = callback;
+  void SetReadyCallbackForTesting(base::OnceClosure callback) {
+    ready_callback_for_testing_ = std::move(callback);
   }
 
  private:
   void DidFindAllFonts(blink::mojom::FontEnumerationStatus status,
                        std::vector<blink::mojom::FontMetadata> fonts);
   content::FontAccessChooser::Callback callback_;
-  base::Callback<void()> ready_callback_for_testing_;
+  base::OnceClosure ready_callback_for_testing_;
 
   std::map<std::string, blink::mojom::FontMetadata> font_metadata_map_;
   // An ordered list of font names that determines the order of items in the

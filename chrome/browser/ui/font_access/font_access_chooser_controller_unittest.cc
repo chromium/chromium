@@ -41,8 +41,7 @@ TEST_F(FontAccessChooserControllerTest, MultiSelectTest) {
                       }));
 
   base::RunLoop readiness_loop;
-  controller.SetReadyCallbackForTesting(
-      base::BindLambdaForTesting([&]() { readiness_loop.Quit(); }));
+  controller.SetReadyCallbackForTesting(readiness_loop.QuitClosure());
   readiness_loop.Run();
 
   controller.set_view(mock_font_chooser_view_.get());
@@ -65,8 +64,7 @@ TEST_F(FontAccessChooserControllerTest, CancelTest) {
           }));
 
   base::RunLoop readiness_loop;
-  controller.SetReadyCallbackForTesting(
-      base::BindLambdaForTesting([&]() { readiness_loop.Quit(); }));
+  controller.SetReadyCallbackForTesting(readiness_loop.QuitClosure());
   readiness_loop.Run();
 
   controller.set_view(mock_font_chooser_view_.get());
@@ -87,8 +85,7 @@ TEST_F(FontAccessChooserControllerTest, CloseTest) {
           }));
 
   base::RunLoop readiness_loop;
-  controller.SetReadyCallbackForTesting(
-      base::BindLambdaForTesting([&]() { readiness_loop.Quit(); }));
+  controller.SetReadyCallbackForTesting(readiness_loop.QuitClosure());
   readiness_loop.Run();
 
   controller.set_view(mock_font_chooser_view_.get());
@@ -112,8 +109,7 @@ TEST_F(FontAccessChooserControllerTest, DestructorTest) {
               }));
 
   base::RunLoop readiness_loop;
-  controller->SetReadyCallbackForTesting(
-      base::BindLambdaForTesting([&]() { readiness_loop.Quit(); }));
+  controller->SetReadyCallbackForTesting(readiness_loop.QuitClosure());
   readiness_loop.Run();
 
   controller.reset();
