@@ -68,9 +68,27 @@
 
 # Allows Proguard freedom in removing these log related calls.
 -assumenosideeffects class android.util.Log {
-  static *** d(...);
-  static *** v(...);
+  static int d(...);
+  static int v(...);
   static boolean isLoggable(...);
+}
+
+-assumenosideeffects class java.util.logging.Logger {
+    void finest(...);
+    void finer(...);
+    void fine(...);
+    void info(...);
+    void warning(...);
+    void severe(...);
+    void throwing(...);
+    void log(...);
+    void logp(...);
+    static java.util.logging.Logger getLogger(...) return null;
+    boolean isLoggable(...) return false;
+}
+
+-assumenosideeffects class java.util.logging.Level {
+  int intValue() return 0;
 }
 
 # Workaround for crbug/1002847. Methods of BaseGmsClient are incorrectly
