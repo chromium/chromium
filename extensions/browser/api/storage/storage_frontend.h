@@ -49,7 +49,7 @@ class StorageFrontend : public BrowserContextKeyedAPI {
   // for the |extension|.
   void RunWithStorage(scoped_refptr<const Extension> extension,
                       settings_namespace::Namespace settings_namespace,
-                      const ValueStoreCache::StorageCallback& callback);
+                      ValueStoreCache::StorageCallback callback);
 
   // Deletes the settings for the given |extension_id|.
   void DeleteStorageSoon(const std::string& extension_id);

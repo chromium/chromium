@@ -45,9 +45,9 @@ static void AssignStorage(ValueStore** dst, ValueStore* src) {
 ValueStore* GetStorage(scoped_refptr<const Extension> extension,
                        settings_namespace::Namespace settings_namespace,
                        StorageFrontend* frontend) {
-  ValueStore* storage = NULL;
-  frontend->RunWithStorage(
-      extension, settings_namespace, base::Bind(&AssignStorage, &storage));
+  ValueStore* storage = nullptr;
+  frontend->RunWithStorage(extension, settings_namespace,
+                           base::BindOnce(&AssignStorage, &storage));
   content::RunAllTasksUntilIdle();
   return storage;
 }

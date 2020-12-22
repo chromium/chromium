@@ -293,10 +293,11 @@ void DataItem::GetRegisteredValuesForExtension(
 
   task_runner->PostTaskAndReply(
       FROM_HERE,
-      base::BindOnce(&ValueStoreCache::RunWithValueStoreForExtension,
-                     base::Unretained(value_store_cache),
-                     base::Bind(&GetRegisteredItems, result_ptr, values_ptr),
-                     extension),
+      base::BindOnce(
+          &ValueStoreCache::RunWithValueStoreForExtension,
+          base::Unretained(value_store_cache),
+          base::BindOnce(&GetRegisteredItems, result_ptr, values_ptr),
+          extension),
       base::BindOnce(&OnGetRegisteredValues, std::move(callback),
                      std::move(result), std::move(values)));
 }
@@ -347,7 +348,8 @@ void DataItem::Register(WriteCallback callback) {
       FROM_HERE,
       base::BindOnce(&ValueStoreCache::RunWithValueStoreForExtension,
                      base::Unretained(value_store_cache_),
-                     base::Bind(&RegisterItem, result_ptr, id()), extension),
+                     base::BindOnce(&RegisterItem, result_ptr, id()),
+                     extension),
       base::BindOnce(&DataItem::OnWriteDone, weak_ptr_factory_.GetWeakPtr(),
                      std::move(callback), std::move(result)));
 }
@@ -367,10 +369,11 @@ void DataItem::Write(const std::vector<char>& data, WriteCallback callback) {
 
   task_runner_->PostTaskAndReply(
       FROM_HERE,
-      base::BindOnce(&ValueStoreCache::RunWithValueStoreForExtension,
-                     base::Unretained(value_store_cache_),
-                     base::Bind(&WriteImpl, result_ptr, id_, data, crypto_key_),
-                     extension),
+      base::BindOnce(
+          &ValueStoreCache::RunWithValueStoreForExtension,
+          base::Unretained(value_store_cache_),
+          base::BindOnce(&WriteImpl, result_ptr, id_, data, crypto_key_),
+          extension),
       base::BindOnce(&DataItem::OnWriteDone, weak_ptr_factory_.GetWeakPtr(),
                      std::move(callback), std::move(result)));
 }
@@ -397,7 +400,7 @@ void DataItem::Read(ReadCallback callback) {
       base::BindOnce(
           &ValueStoreCache::RunWithValueStoreForExtension,
           base::Unretained(value_store_cache_),
-          base::Bind(&ReadImpl, result_ptr, data_ptr, id_, crypto_key_),
+          base::BindOnce(&ReadImpl, result_ptr, data_ptr, id_, crypto_key_),
           extension),
       base::BindOnce(&DataItem::OnReadDone, weak_ptr_factory_.GetWeakPtr(),
                      std::move(callback), std::move(result), std::move(data)));
@@ -419,7 +422,7 @@ void DataItem::Delete(WriteCallback callback) {
       FROM_HERE,
       base::BindOnce(&ValueStoreCache::RunWithValueStoreForExtension,
                      base::Unretained(value_store_cache_),
-                     base::Bind(&DeleteImpl, result_ptr, id_), extension),
+                     base::BindOnce(&DeleteImpl, result_ptr, id_), extension),
       base::BindOnce(&DataItem::OnWriteDone, weak_ptr_factory_.GetWeakPtr(),
                      std::move(callback), std::move(result)));
 }

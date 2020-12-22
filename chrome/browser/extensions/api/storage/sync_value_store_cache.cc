@@ -76,13 +76,13 @@ syncer::SyncableService* SyncValueStoreCache::GetSyncableService(
 }
 
 void SyncValueStoreCache::RunWithValueStoreForExtension(
-    const StorageCallback& callback,
+    StorageCallback callback,
     scoped_refptr<const Extension> extension) {
   DCHECK(IsOnBackendSequence());
   DCHECK(initialized_);
   SyncStorageBackend* backend =
       extension->is_app() ? app_backend_.get() : extension_backend_.get();
-  callback.Run(backend->GetStorage(extension->id()));
+  std::move(callback).Run(backend->GetStorage(extension->id()));
 }
 
 void SyncValueStoreCache::DeleteStorageSoon(const std::string& extension_id) {

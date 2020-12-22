@@ -258,10 +258,10 @@ void ManagedValueStoreCache::ShutdownOnUI() {
 }
 
 void ManagedValueStoreCache::RunWithValueStoreForExtension(
-    const StorageCallback& callback,
+    StorageCallback callback,
     scoped_refptr<const Extension> extension) {
   DCHECK(IsOnBackendSequence());
-  callback.Run(GetStoreFor(extension->id()));
+  std::move(callback).Run(GetStoreFor(extension->id()));
 }
 
 void ManagedValueStoreCache::DeleteStorageSoon(

@@ -51,8 +51,8 @@ std::unique_ptr<base::DictionaryValue> GetAllSettings(Profile* profile,
   extensions::StorageFrontend::Get(profile)->RunWithStorage(
       ExtensionRegistry::Get(profile)->enabled_extensions().GetByID(id),
       extensions::settings_namespace::SYNC,
-      base::BindRepeating(&GetAllSettingsOnBackendSequence, settings.get(),
-                          &signal));
+      base::BindOnce(&GetAllSettingsOnBackendSequence, settings.get(),
+                     &signal));
   signal.Wait();
   return settings;
 }
@@ -103,7 +103,7 @@ void SetExtensionSettings(
   extensions::StorageFrontend::Get(profile)->RunWithStorage(
       ExtensionRegistry::Get(profile)->enabled_extensions().GetByID(id),
       extensions::settings_namespace::SYNC,
-      base::BindRepeating(&SetSettingsOnBackendSequence, &settings, &signal));
+      base::BindOnce(&SetSettingsOnBackendSequence, &settings, &signal));
   signal.Wait();
 }
 

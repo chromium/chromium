@@ -26,7 +26,7 @@ class LocalValueStoreCache : public ValueStoreCache {
 
   // ValueStoreCache implementation:
   void RunWithValueStoreForExtension(
-      const StorageCallback& callback,
+      StorageCallback callback,
       scoped_refptr<const Extension> extension) override;
   void DeleteStorageSoon(const std::string& extension_id) override;
 

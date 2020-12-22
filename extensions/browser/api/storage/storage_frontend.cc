@@ -174,7 +174,7 @@ bool StorageFrontend::IsStorageEnabled(
 void StorageFrontend::RunWithStorage(
     scoped_refptr<const Extension> extension,
     settings_namespace::Namespace settings_namespace,
-    const ValueStoreCache::StorageCallback& callback) {
+    ValueStoreCache::StorageCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(extension.get());
 
@@ -182,8 +182,9 @@ void StorageFrontend::RunWithStorage(
   CHECK(cache);
 
   GetBackendTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&ValueStoreCache::RunWithValueStoreForExtension,
-                                base::Unretained(cache), callback, extension));
+      FROM_HERE,
+      base::BindOnce(&ValueStoreCache::RunWithValueStoreForExtension,
+                     base::Unretained(cache), std::move(callback), extension));
 }
 
 void StorageFrontend::DeleteStorageSoon(const std::string& extension_id) {

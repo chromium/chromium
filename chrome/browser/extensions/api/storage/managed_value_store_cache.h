@@ -54,7 +54,7 @@ class ManagedValueStoreCache : public ValueStoreCache,
   // ValueStoreCache implementation:
   void ShutdownOnUI() override;
   void RunWithValueStoreForExtension(
-      const StorageCallback& callback,
+      StorageCallback callback,
       scoped_refptr<const Extension> extension) override;
   void DeleteStorageSoon(const std::string& extension_id) override;
 
