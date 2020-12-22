@@ -19,9 +19,8 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabState;
+import org.chromium.chrome.browser.theme.ThemeColorProvider.ThemeColorObserver;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -51,7 +50,7 @@ public class TabThemeTest {
     /**
      * A WebContentsObserver for watching changes in the theme color.
      */
-    private static class ThemeColorWebContentsObserver extends EmptyTabObserver {
+    private static class ThemeColorWebContentsObserver implements ThemeColorObserver {
         private CallbackHelper mCallbackHelper;
         private int mColor;
 
@@ -60,7 +59,7 @@ public class TabThemeTest {
         }
 
         @Override
-        public void onDidChangeThemeColor(Tab tab, int color) {
+        public void onThemeColorChanged(int color, boolean shouldAnimate) {
             mColor = color;
             mCallbackHelper.notifyCalled();
         }
@@ -115,7 +114,10 @@ public class TabThemeTest {
 
         ThemeColorWebContentsObserver colorObserver = new ThemeColorWebContentsObserver();
         CallbackHelper themeColorHelper = colorObserver.getCallbackHelper();
-        tab.addObserver(colorObserver);
+        mActivityTestRule.getActivity()
+                .getRootUiCoordinatorForTesting()
+                .getTopUiThemeColorProvider()
+                .addThemeColorObserver(colorObserver);
 
         // Navigate to a themed page.
         int curCallCount = themeColorHelper.getCallCount();
@@ -139,7 +141,7 @@ public class TabThemeTest {
         curCallCount = themeColorHelper.getCallCount();
         mActivityTestRule.loadUrl(testServer.getURL(TEST_PAGE));
         themeColorHelper.waitForCallback(curCallCount, 1);
-        assertColorsEqual(TabState.UNSPECIFIED_THEME_COLOR, colorObserver.getColor());
+        assertColorsEqual(getDefaultThemeColor(tab), colorObserver.getColor());
         assertColorsEqual(getDefaultThemeColor(tab), getThemeColor());
 
         // Navigate to a themed page from a non-native page.

@@ -1582,8 +1582,10 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         if (previousTab != tab || wasIncognito != isIncognito) {
             int defaultPrimaryColor =
                     ChromeColors.getDefaultThemeColor(mActivity.getResources(), isIncognito);
-            int primaryColor =
-                    tab != null ? mTopUiThemeColorProvider.getThemeColor() : defaultPrimaryColor;
+            int primaryColor = tab != null
+                    ? mTopUiThemeColorProvider.calculateColor(tab, tab.getThemeColor())
+                    : defaultPrimaryColor;
+            // TODO(jinsukkim): Let TopUiThemeColorProvider handle this by updating the theme color.
             onThemeColorChanged(primaryColor, false);
 
             onTabOrModelChanged();

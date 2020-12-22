@@ -249,8 +249,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
             }
         };
         mTabViewManager = new TabViewManagerImpl(this);
-        mThemeColorHelper = new TabThemeColorHelper(
-                this, () -> updateThemeColor(getWebContents().getThemeColor()));
+        mThemeColorHelper = new TabThemeColorHelper(this, this::updateThemeColor);
         mThemeColor = TabState.UNSPECIFIED_THEME_COLOR;
     }
 
@@ -1158,7 +1157,6 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
     }
 
     void updateThemeColor(int themeColor) {
-        if (mThemeColor == themeColor) return;
         mThemeColor = themeColor;
         RewindableIterator<TabObserver> observers = getTabObservers();
         while (observers.hasNext()) observers.next().onDidChangeThemeColor(this, themeColor);

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tab;
 
+import org.chromium.base.Callback;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.net.NetError;
 import org.chromium.url.GURL;
@@ -13,41 +14,43 @@ import org.chromium.url.GURL;
  */
 public class TabThemeColorHelper extends EmptyTabObserver {
     private final Tab mTab;
-    private final Runnable mUpdateRunnable;
+    private final Callback mUpdateCallback;
 
-    TabThemeColorHelper(Tab tab, Runnable updateRunnable) {
+    TabThemeColorHelper(Tab tab, Callback<Integer> updateCallback) {
         mTab = tab;
-        mUpdateRunnable = updateRunnable;
+        mUpdateCallback = updateCallback;
         tab.addObserver(this);
     }
 
     /**
      * Notifies the listeners of the tab theme color change.
      */
-    void updateIfNeeded() {
-        mUpdateRunnable.run();
+    private void updateIfNeeded(Tab tab, boolean didWebContentsThemeColorChange) {
+        int themeColor = tab.getThemeColor();
+        if (didWebContentsThemeColorChange) themeColor = tab.getWebContents().getThemeColor();
+        mUpdateCallback.onResult(themeColor);
     }
 
     // TabObserver
 
     @Override
     public void onSSLStateUpdated(Tab tab) {
-        updateIfNeeded();
+        updateIfNeeded(tab, false);
     }
 
     @Override
     public void onUrlUpdated(Tab tab) {
-        updateIfNeeded();
+        updateIfNeeded(tab, false);
     }
 
     @Override
     public void onDidFailLoad(Tab tab, boolean isMainFrame, int errorCode, GURL failingUrl) {
-        updateIfNeeded();
+        updateIfNeeded(tab, true);
     }
 
     @Override
     public void onDidFinishNavigation(Tab tab, NavigationHandle navigation) {
-        if (navigation.errorCode() != NetError.OK) updateIfNeeded();
+        if (navigation.errorCode() != NetError.OK) updateIfNeeded(tab, true);
     }
 
     @Override
