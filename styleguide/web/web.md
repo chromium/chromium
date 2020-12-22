@@ -415,7 +415,7 @@ https://www.polymer-project.org/2.0/docs/devguide/templates#dom-if):
   * Alternatives:
     * Include the SVG in a WebUI page-specific icon file. e.g. `chrome/browser/resources/settings/icons.html`.
     * If reused across multiple WebUI pages, include the SVG in `ui/webui/resources/cr_elements/icons.html` .
-  * You may copy the SVG code from [iron-icons files](https://github.com/PolymerElements/iron-icons/blob/master/iron-icons.html).
+  * You may copy the SVG code from [iron-icons files](https://github.com/PolymerElements/iron-icons/blob/master/iron-icons.js).
 
 ## Grit processing
 
