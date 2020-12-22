@@ -369,13 +369,14 @@ RecordHandlerImpl::ReportUploader::SequencingInformationValueToProto(
       GetPriorityProtoFromSequencingInformationValue(value);
 
   // If any of the previous values don't exist, or are malformed, return error.
-  int64_t seq_id;
-  int64_t gen_id;
-  if (!sequencing_id || sequencing_id->empty() || !generation_id ||
-      generation_id->empty() || !priority_result.has_value() ||
-      !Priority_IsValid(priority_result.value()) ||
-      !base::StringToInt64(*sequencing_id, &seq_id) ||
-      !base::StringToInt64(*generation_id, &gen_id)) {
+  uint64_t seq_id;
+  uint64_t gen_id;
+  if (!sequencing_id || sequencing_id->empty() ||
+      !base::StringToUint64(*sequencing_id, &seq_id) || !generation_id ||
+      generation_id->empty() ||
+      !base::StringToUint64(*generation_id, &gen_id) || gen_id == 0 ||
+      !priority_result.has_value() ||
+      !Priority_IsValid(priority_result.value())) {
     return Status(error::INVALID_ARGUMENT,
                   base::StrCat({"Provided value did not conform to a valid "
                                 "SequencingInformation proto: ",

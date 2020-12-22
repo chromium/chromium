@@ -118,7 +118,7 @@ class ReportingClient::Uploader : public Storage::UploaderInterface {
   void ProcessRecord(EncryptedRecord data,
                      base::OnceCallback<void(bool)> processed_cb) override;
   void ProcessGap(SequencingInformation start,
-                  int64_t count,
+                  uint64_t count,
                   base::OnceCallback<void(bool)> processed_cb) override;
 
   void Completed(bool need_encryption_key, Status final_status) override;
@@ -172,7 +172,7 @@ void ReportingClient::Uploader::ProcessRecord(
 
 void ReportingClient::Uploader::ProcessGap(
     SequencingInformation start,
-    int64_t count,
+    uint64_t count,
     base::OnceCallback<void(bool)> processed_cb) {
   if (completed_) {
     std::move(processed_cb).Run(false);
@@ -183,10 +183,10 @@ void ReportingClient::Uploader::ProcessGap(
       FROM_HERE,
       base::BindOnce(
           [](std::vector<EncryptedRecord>* records, SequencingInformation start,
-             int64_t count, base::OnceCallback<void(bool)> processed_cb) {
+             uint64_t count, base::OnceCallback<void(bool)> processed_cb) {
             EncryptedRecord record;
             *record.mutable_sequencing_information() = std::move(start);
-            for (int64_t i = 0; i < count; ++i) {
+            for (uint64_t i = 0; i < count; ++i) {
               records->emplace_back(record);
               record.mutable_sequencing_information()->set_sequencing_id(
                   record.sequencing_information().sequencing_id() + 1);

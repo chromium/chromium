@@ -122,8 +122,8 @@ class DmServerUploadService {
 
     // Helper function for determining if an EncryptedRecord is valid.
     Status IsRecordValid(const EncryptedRecord& encrypted_record,
-                         const int64_t expected_generation_id,
-                         const int64_t expected_sequencing_id) const;
+                         const uint64_t expected_generation_id,
+                         const uint64_t expected_sequencing_id) const;
 
     // Helper function for tracking the highest sequencing information per
     // generation id. Schedules ProcessSuccessfulUploadAddition.

@@ -66,7 +66,7 @@ message EncryptionInfo {
   // Hash of the public key used to do encryption. Used to identity the
   // private key for decryption. If no key_id is present, it is assumed that
   // |key| has been transferred in plaintext.
-  optional int64 public_key_id = 2;
+  optional uint64 public_key_id = 2;
 }
 
 // Tracking information for what order a record appears in.
@@ -78,11 +78,11 @@ message SequencingInformation {
   // certain number is absent when higher are encountered, it indicates that
   // some records have been lost and there is a gap in the records stream
   // (what to do with that is a decision that the caller needs to make).
-  optional int64 sequencing_id = 1;
+  optional uint64 sequencing_id = 1;
 
   // Generation ID (required). Unique per device and priority. Generated anew
   // when previous record digest is not found at startup (e.g. after powerwash).
-  optional int64 generation_id = 2;
+  optional uint64 generation_id = 2;
 
   // Priority (required).
   optional Priority priority = 3;
@@ -116,7 +116,7 @@ message SignedEncryptionInfo {
 
   // Public key id (required).
   // Identifies private key matching |public_asymmetric_key| for the server.
-  optional int64 public_key_id = 2;
+  optional uint64 public_key_id = 2;
 
   // Signature of |public_asymmetric_key| (required).
   // Verified by client against a well-known signature.

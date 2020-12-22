@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <limits>
 #include <string>
 
 #include "base/containers/span.h"
@@ -155,8 +154,8 @@ void Decryptor::RecordKeyPair(
               // Assign a random number to be public key id for testing purposes
               // only (in production it will be Java Fingerprint2011 which is
               // 'long').
-              const Encryptor::PublicKeyId public_key_id = base::RandGenerator(
-                  std::numeric_limits<Encryptor::PublicKeyId>::max());
+              Encryptor::PublicKeyId public_key_id;
+              base::RandBytes(&public_key_id, sizeof(public_key_id));
               if (!decryptor->keys_.emplace(public_key_id, key_info).second) {
                 result = Status(error::ALREADY_EXISTS,
                                 base::StrCat({"Public key='", public_key,

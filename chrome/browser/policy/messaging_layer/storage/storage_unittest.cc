@@ -205,8 +205,8 @@ class MockUploadClient : public Storage::UploaderInterface {
   // should have that digest already recorded. Only the first record in a
   // generation is uploaded without last record digest.
   using LastRecordDigestMap = std::map<std::tuple<Priority,
-                                                  int64_t /*generation id*/,
-                                                  int64_t /*sequencing id*/>,
+                                                  uint64_t /*generation id*/,
+                                                  uint64_t /*sequencing id*/>,
                                        std::string /*digest*/>;
 
   explicit MockUploadClient(LastRecordDigestMap* last_record_digest_map,
@@ -249,7 +249,7 @@ class MockUploadClient : public Storage::UploaderInterface {
   }
 
   void ProcessGap(SequencingInformation start,
-                  int64_t count,
+                  uint64_t count,
                   base::OnceCallback<void(bool)> processed_cb) override {
     LOG(FATAL) << "Gap not implemented yet";
   }
@@ -260,7 +260,7 @@ class MockUploadClient : public Storage::UploaderInterface {
 
   MOCK_METHOD(bool,
               UploadRecord,
-              (Priority, int64_t, base::StringPiece),
+              (Priority, uint64_t, base::StringPiece),
               (const));
   MOCK_METHOD(bool, UploadRecordFailure, (Status), (const));
   MOCK_METHOD(void, UploadComplete, (bool, Status), (const));
@@ -282,7 +282,7 @@ class MockUploadClient : public Storage::UploaderInterface {
           .InSequence(client_->test_upload_sequence_);
     }
 
-    SetUp& Required(int64_t sequencing_id, base::StringPiece value) {
+    SetUp& Required(uint64_t sequencing_id, base::StringPiece value) {
       EXPECT_CALL(*client_, UploadRecord(Eq(priority_), Eq(sequencing_id),
                                          StrEq(std::string(value))))
           .InSequence(client_->test_upload_sequence_)
@@ -290,7 +290,7 @@ class MockUploadClient : public Storage::UploaderInterface {
       return *this;
     }
 
-    SetUp& Possible(int64_t sequencing_id, base::StringPiece value) {
+    SetUp& Possible(uint64_t sequencing_id, base::StringPiece value) {
       EXPECT_CALL(*client_, UploadRecord(Eq(priority_), Eq(sequencing_id),
                                          StrEq(std::string(value))))
           .Times(Between(0, 1))
@@ -404,7 +404,7 @@ class MockUploadClient : public Storage::UploaderInterface {
                           wrapped_record.record().data()));
   }
 
-  base::Optional<int64_t> generation_id_;
+  base::Optional<uint64_t> generation_id_;
   LastRecordDigestMap* const last_record_digest_map_;
   const scoped_refptr<Decryptor> decryptor_;
 
@@ -508,7 +508,7 @@ class StorageTest
     ASSERT_OK(write_result) << write_result;
   }
 
-  void ConfirmOrDie(Priority priority, int64_t sequencing_id) {
+  void ConfirmOrDie(Priority priority, std::uint64_t sequencing_id) {
     TestEvent<Status> c;
     storage_->Confirm(priority, sequencing_id, c.cb());
     const Status c_result = c.result();

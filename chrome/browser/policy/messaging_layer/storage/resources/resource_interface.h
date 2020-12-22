@@ -22,20 +22,20 @@ class ResourceInterface {
   // Returns true if requested amount can be allocated.
   // After that the caller can actually allocate it or must call
   // |Discard| if decided not to allocate.
-  virtual bool Reserve(int64_t size) = 0;
+  virtual bool Reserve(uint64_t size) = 0;
 
   // Reverts reservation.
   // Must be called after the specified amount is released.
-  virtual void Discard(int64_t size) = 0;
+  virtual void Discard(uint64_t size) = 0;
 
   // Returns total amount.
-  virtual int64_t GetTotal() = 0;
+  virtual uint64_t GetTotal() = 0;
 
   // Returns current used amount.
-  virtual int64_t GetUsed() = 0;
+  virtual uint64_t GetUsed() = 0;
 
   // Test only: Sets non-default usage limit.
-  virtual void Test_SetTotal(int64_t test_total) = 0;
+  virtual void Test_SetTotal(uint64_t test_total) = 0;
 
  protected:
   ResourceInterface() = default;
@@ -57,7 +57,7 @@ class ResourceInterface {
 // Can be handed over to another owner.
 class ScopedReservation {
  public:
-  ScopedReservation(int64_t size, ResourceInterface* resource_interface);
+  ScopedReservation(uint64_t size, ResourceInterface* resource_interface);
   ScopedReservation(ScopedReservation&& other);
   ScopedReservation(const ScopedReservation& other) = delete;
   ScopedReservation& operator=(const ScopedReservation& other) = delete;
@@ -67,7 +67,7 @@ class ScopedReservation {
 
  private:
   ResourceInterface* const resource_interface_;
-  base::Optional<int64_t> size_;
+  base::Optional<uint64_t> size_;
 };
 
 ResourceInterface* GetMemoryResource();
