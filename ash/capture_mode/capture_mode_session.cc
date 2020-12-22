@@ -199,10 +199,19 @@ views::Widget::InitParams CreateWidgetParams(aura::Window* parent,
   return params;
 }
 
-aura::Window* GetPreferredRootWindow() {
+// Gets the root window associated |location_in_screen| if given, otherwise gets
+// the root window associated with the CursorManager.
+aura::Window* GetPreferredRootWindow(
+    base::Optional<gfx::Point> location_in_screen = base::nullopt) {
+  int64_t display_id =
+      (location_in_screen
+           ? display::Screen::GetScreen()->GetDisplayNearestPoint(
+                 *location_in_screen)
+           : Shell::Get()->cursor_manager()->GetDisplay())
+          .id();
+
   // The Display object returned by CursorManager::GetDisplay may be stale, but
   // will have the correct id.
-  int64_t display_id = Shell::Get()->cursor_manager()->GetDisplay().id();
   DCHECK_NE(display::kInvalidDisplayId, display_id);
   return Shell::GetRootWindowForDisplayId(display_id);
 }
@@ -626,31 +635,6 @@ void CaptureModeSession::OnKeyEvent(ui::KeyEvent* event) {
 }
 
 void CaptureModeSession::OnMouseEvent(ui::MouseEvent* event) {
-  // For fullscreen/window mode, change the root window as soon as we detect the
-  // cursor on a new display. For region mode, wait until the user clicks to try
-  // to select a new region on the new display.
-  const CaptureModeSource source = controller_->source();
-  const bool can_change_root = source != CaptureModeSource::kRegion ||
-                               (source == CaptureModeSource::kRegion &&
-                                event->type() == ui::ET_MOUSE_PRESSED);
-  if (can_change_root)
-    MaybeChangeRoot(GetPreferredRootWindow());
-
-  // The root may have switched while pressing the mouse down. Move the capture
-  // bar to the current display if that is the case and make sure it is stacked
-  // at the top. The dimensions label and capture button have been moved and
-  // stacked on mouse press so manually stack at top instead of calling
-  // RefreshStackingOrder.
-  if (event->type() == ui::ET_MOUSE_RELEASED &&
-      source == CaptureModeSource::kRegion &&
-      current_root_ !=
-          capture_mode_bar_widget_->GetNativeWindow()->GetRootWindow()) {
-    capture_mode_bar_widget_->SetBounds(
-        CaptureModeBarView::GetBounds(current_root_));
-    auto* parent = GetParentContainer(current_root_);
-    parent->StackChildAtTop(capture_mode_bar_widget_->GetNativeWindow());
-  }
-
   OnLocatedEvent(event, /*is_touch=*/false);
 }
 
@@ -831,11 +815,38 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
     return;
   }
 
-  gfx::Point location = event->location();
   gfx::Point screen_location = event->location();
   aura::Window* event_target = static_cast<aura::Window*>(event->target());
-  aura::Window::ConvertPointToTarget(event_target, current_root_, &location);
   wm::ConvertPointToScreen(event_target, &screen_location);
+
+  // For fullscreen/window mode, change the root window as soon as we detect the
+  // cursor on a new display. For region mode, wait until the user taps down to
+  // try to select a new region on the new display.
+  const CaptureModeSource source = controller_->source();
+  const bool is_press_event = event->type() == ui::ET_MOUSE_PRESSED ||
+                              event->type() == ui::ET_TOUCH_PRESSED;
+
+  const bool can_change_root =
+      source != CaptureModeSource::kRegion ||
+      (source == CaptureModeSource::kRegion && is_press_event);
+  if (can_change_root)
+    MaybeChangeRoot(GetPreferredRootWindow(screen_location));
+
+  // The root may have switched while pressing the mouse down. Move the capture
+  // bar to the current display if that is the case and make sure it is stacked
+  // at the top. The dimensions label and capture button have been moved and
+  // stacked on tap down so manually stack at top instead of calling
+  // RefreshStackingOrder.
+  const bool is_release_event = event->type() == ui::ET_MOUSE_RELEASED ||
+                                event->type() == ui::ET_TOUCH_RELEASED;
+  if (is_release_event && source == CaptureModeSource::kRegion &&
+      current_root_ !=
+          capture_mode_bar_widget_->GetNativeWindow()->GetRootWindow()) {
+    capture_mode_bar_widget_->SetBounds(
+        CaptureModeBarView::GetBounds(current_root_));
+    auto* parent = GetParentContainer(current_root_);
+    parent->StackChildAtTop(capture_mode_bar_widget_->GetNativeWindow());
+  }
 
   // Let the capture button handle any events it can handle first.
   if (ShouldCaptureLabelHandleEvent(event_target)) {
@@ -899,6 +910,15 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
     event->StopPropagation();
   }
 
+  // OnLocatedEventPressed() and OnLocatedEventDragged used root locations since
+  // CaptureModeController::user_capture_region() is stored in root
+  // coordinates..
+  // TODO(sammiequon): Update CaptureModeController::user_capture_region() to
+  // store screen coordinates.
+  gfx::Point location_in_root = event->location();
+  aura::Window::ConvertPointToTarget(event_target, current_root_,
+                                     &location_in_root);
+
   const bool region_intersects_capture_bar =
       capture_mode_bar_widget_->GetWindowBoundsInScreen().Intersects(
           controller_->user_capture_region());
@@ -907,11 +927,12 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
     case ui::ET_MOUSE_PRESSED:
     case ui::ET_TOUCH_PRESSED:
       old_mouse_warp_status_ = SetMouseWarpEnabled(false);
-      OnLocatedEventPressed(location, is_touch, is_event_on_capture_bar);
+      OnLocatedEventPressed(location_in_root, is_touch,
+                            is_event_on_capture_bar);
       break;
     case ui::ET_MOUSE_DRAGGED:
     case ui::ET_TOUCH_MOVED:
-      OnLocatedEventDragged(location);
+      OnLocatedEventDragged(location_in_root);
       break;
     case ui::ET_MOUSE_RELEASED:
     case ui::ET_TOUCH_RELEASED:

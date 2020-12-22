@@ -1013,6 +1013,26 @@ TEST_F(CaptureModeTest, MultiDisplayRegionSourceRootWindow) {
                   .Contains(GetCaptureModeBarView()->GetBoundsInScreen()));
 }
 
+// Tests that using touch on multi display setups works as intended. Regression
+// test for https://crbug.com/1159512.
+TEST_F(CaptureModeTest, MultiDisplayTouch) {
+  UpdateDisplay("800x800,801+0-800x800");
+  ASSERT_EQ(2u, Shell::GetAllRootWindows().size());
+
+  auto* controller = StartImageRegionCapture();
+  auto* session = controller->capture_mode_session();
+  ASSERT_EQ(Shell::GetAllRootWindows()[0], session->current_root());
+
+  // Touch and move your finger on the secondary display. We should switch roots
+  // and the region size should be as expected.
+  auto* event_generator = GetEventGenerator();
+  event_generator->PressTouch(gfx::Point(1000, 200));
+  event_generator->MoveTouch(gfx::Point(1200, 400));
+  event_generator->ReleaseTouch();
+  EXPECT_EQ(Shell::GetAllRootWindows()[1], session->current_root());
+  EXPECT_EQ(gfx::Size(200, 200), controller->user_capture_region().size());
+}
+
 TEST_F(CaptureModeTest, RegionCursorStates) {
   using ui::mojom::CursorType;
 
