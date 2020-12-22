@@ -6,6 +6,7 @@ module media.mojom;
 
 import "media/mojo/mojom/media_types.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
+import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
 
 // The main interface a client uses to interact with a speech recognition
@@ -58,6 +59,15 @@ interface SpeechRecognitionRecognizer {
   // will return the recognition events containing the transcribed audio back
   // to the originating media.
   SendAudioToSpeechRecognitionService(AudioDataS16 buffer);
+
+  // Notify the speech recognition recognizer that the caption bubble was
+  // closed. Used to determine whether the caption bubble was visible when
+  // recording watch time.
+  OnCaptionBubbleClosed();
+
+  // Notify the speech recognition recognizer that audio was received by the
+  // renderer after the caption bubble was closed.
+  AudioReceivedAfterBubbleClosed(mojo_base.mojom.TimeDelta duration);
 };
 
 // The interface used to return speech recognition events from the speech

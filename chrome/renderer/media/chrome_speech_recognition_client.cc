@@ -11,6 +11,7 @@
 #include "content/public/renderer/render_frame.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
+#include "media/base/audio_timestamp_helper.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/channel_mixer.h"
 #include "media/base/media_switches.h"
@@ -126,6 +127,10 @@ void ChromeSpeechRecognitionClient::SpeechRecognitionAvailabilityChanged(
 }
 
 void ChromeSpeechRecognitionClient::OnTranscriptionCallback(bool success) {
+  if (!success && is_browser_requesting_transcription_) {
+    speech_recognition_recognizer_->OnCaptionBubbleClosed();
+  }
+
   is_browser_requesting_transcription_ = success;
 }
 
@@ -210,6 +215,10 @@ void ChromeSpeechRecognitionClient::SendAudioToSpeechRecognitionService(
   if (IsSpeechRecognitionAvailable()) {
     speech_recognition_recognizer_->SendAudioToSpeechRecognitionService(
         std::move(audio_data));
+  } else {
+    speech_recognition_recognizer_->AudioReceivedAfterBubbleClosed(
+        media::AudioTimestampHelper::FramesToTime(audio_data->frame_count,
+                                                  audio_data->sample_rate));
   }
 }
 

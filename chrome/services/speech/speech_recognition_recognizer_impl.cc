@@ -10,10 +10,12 @@
 #include "base/bind.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/services/speech/soda/soda_client.h"
 #include "google_apis/google_api_keys.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_sample_types.h"
+#include "media/base/audio_timestamp_helper.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/limits.h"
 #include "media/base/media_switches.h"
@@ -23,6 +25,16 @@
 namespace speech {
 
 constexpr char kInvalidAudioDataError[] = "Invalid audio data received.";
+
+// static
+const char
+    SpeechRecognitionRecognizerImpl::kCaptionBubbleVisibleHistogramName[] =
+        "Accessibility.LiveCaption.Duration.CaptionBubbleVisible";
+
+// static
+const char
+    SpeechRecognitionRecognizerImpl::kCaptionBubbleHiddenHistogramName[] =
+        "Accessibility.LiveCaption.Duration.CaptionBubbleHidden";
 
 namespace {
 
@@ -43,7 +55,9 @@ void RecognitionCallback(const char* result,
 
 }  // namespace
 
-SpeechRecognitionRecognizerImpl::~SpeechRecognitionRecognizerImpl() = default;
+SpeechRecognitionRecognizerImpl::~SpeechRecognitionRecognizerImpl() {
+  RecordDuration();
+}
 
 void SpeechRecognitionRecognizerImpl::Create(
     mojo::PendingReceiver<media::mojom::SpeechRecognitionRecognizer> receiver,
@@ -101,6 +115,15 @@ void SpeechRecognitionRecognizerImpl::SendAudioToSpeechRecognitionService(
   size_t num_samples = 0;
   size_t buffer_size = 0;
 
+  // Update watch time durations.
+  base::TimeDelta duration =
+      media::AudioTimestampHelper::FramesToTime(frame_count, sample_rate);
+  if (!caption_bubble_closed_) {
+    caption_bubble_visible_duration_ += duration;
+  } else {
+    caption_bubble_hidden_duration_ += duration;
+  }
+
   // Verify the channel count.
   if (channel_count <= 0 || channel_count > media::limits::kMaxChannels) {
     mojo::ReportBadMessage(kInvalidAudioDataError);
@@ -156,6 +179,27 @@ void SpeechRecognitionRecognizerImpl::SendAudioToSpeechRecognitionService(
 
     cloud_client_->AddAudio(base::span<const char>(
         reinterpret_cast<char*>(buffer->data.data()), buffer_size));
+  }
+}
+
+void SpeechRecognitionRecognizerImpl::OnCaptionBubbleClosed() {
+  caption_bubble_closed_ = true;
+}
+
+void SpeechRecognitionRecognizerImpl::AudioReceivedAfterBubbleClosed(
+    base::TimeDelta duration) {
+  caption_bubble_hidden_duration_ += duration;
+}
+
+void SpeechRecognitionRecognizerImpl::RecordDuration() {
+  if (caption_bubble_visible_duration_ > base::TimeDelta()) {
+    base::UmaHistogramMediumTimes(kCaptionBubbleVisibleHistogramName,
+                                  caption_bubble_visible_duration_);
+  }
+
+  if (caption_bubble_hidden_duration_ > base::TimeDelta()) {
+    base::UmaHistogramMediumTimes(kCaptionBubbleHiddenHistogramName,
+                                  caption_bubble_hidden_duration_);
   }
 }
 
