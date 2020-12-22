@@ -228,6 +228,10 @@ union NonRemovableBlockDeviceResult {
 struct CachedVpdInfo {
   // Contents of /sys/firmware/vpd/ro/sku_number, if the device supports it.
   string? sku_number;
+  // Contents of /sys/firmware/vpd/ro/serial_number, if the device supports it.
+  string? serial_number;
+  // Contents of /sys/firmware/vpd/ro/model_name, if the device supports it.
+  string? model_name;
 };
 
 // Cached VPD probe result. Can either be populated with the CachedVpdInfo or an

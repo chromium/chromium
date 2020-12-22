@@ -475,6 +475,8 @@ struct SystemInfo {
   string? product_sku_number;
   // The product serial number.
   string? product_serial_number;
+  // The product model name.
+  string? product_model_name;
   // Contents of CrosConfig in /arc/build-properties/marketing-name.
   string marketing_name;
   // The BIOS version.

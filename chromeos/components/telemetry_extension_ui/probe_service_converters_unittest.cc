@@ -242,12 +242,17 @@ TEST(ProbeServiceConvertors, NonRemovableBlockDeviceResultPtrError) {
 
 TEST(ProbeServiceConvertors, CachedVpdInfoPtr) {
   constexpr char kSkuNumber[] = "sku-1";
+  constexpr char kSerialNumber[] = "5CD9132880";
+  constexpr char kModelName[] = "XX ModelName 007 XY";
 
   auto input = cros_healthd::mojom::SystemInfo::New();
   input->product_sku_number = kSkuNumber;
+  input->product_serial_number = kSerialNumber;
+  input->product_model_name = kModelName;
 
-  EXPECT_EQ(ConvertPtr(std::move(input)),
-            health::mojom::CachedVpdInfo::New(kSkuNumber));
+  EXPECT_EQ(
+      ConvertPtr(std::move(input)),
+      health::mojom::CachedVpdInfo::New(kSkuNumber, kSerialNumber, kModelName));
 }
 
 TEST(ProbeServiceConvertors, CachedVpdResultPtrInfo) {

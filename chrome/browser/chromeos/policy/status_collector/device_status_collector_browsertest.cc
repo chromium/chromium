@@ -149,6 +149,7 @@ const char kFakeFirstPowerDate[] = "2020-40";
 const char kFakeManufactureDate[] = "2019-01-01";
 const char kFakeSkuNumber[] = "ABCD&^A";
 const char kFakeSerialNumber[] = "8607G03EDF";
+constexpr char kFakeSystemModelName[] = "XX ModelName 007 XY";
 constexpr char kFakeMarketingName[] = "Latitude 1234 Chromebook Enterprise";
 constexpr char kFakeBiosVersion[] = "Google_BoardName.12200.68.0";
 constexpr char kFakeBoardName[] = "BoardName";
@@ -517,8 +518,8 @@ cros_healthd::SystemResultPtr CreateSystemResult() {
   return cros_healthd::SystemResult::NewSystemInfo(
       cros_healthd::SystemInfo::New(
           kFakeFirstPowerDate, kFakeManufactureDate, kFakeSkuNumber,
-          kFakeSerialNumber, kFakeMarketingName, kFakeBiosVersion,
-          kFakeBoardName, kFakeBoardVersion,
+          kFakeSerialNumber, kFakeSystemModelName, kFakeMarketingName,
+          kFakeBiosVersion, kFakeBoardName, kFakeBoardVersion,
           cros_healthd::NullableUint64::New(kFakeChassisType), kFakeProductName,
           cros_healthd::OsVersion::New(
               kFakeVersionMilestone, kFakeVersionBuildNumber,

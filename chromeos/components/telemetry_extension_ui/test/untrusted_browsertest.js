@@ -586,7 +586,13 @@ UNTRUSTED_TEST('UntrustedRequestTelemetryInfo', async () => {
         discardTimeSecondsSinceLastBoot: BigInt(77777777777777)
       }]
     },
-    vpdResult: {vpdInfo: {skuNumber: 'sku-18'}},
+    vpdResult: {
+      vpdInfo: {
+        skuNumber: 'sku-18',
+        serialNumber: '5CD9132880',
+        modelName: 'XX ModelName 007 XY'
+      }
+    },
     cpuResult: {
       cpuInfo: {
         numTotalThreads: 2147483759,

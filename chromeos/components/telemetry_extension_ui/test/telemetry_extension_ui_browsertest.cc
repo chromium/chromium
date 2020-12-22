@@ -168,6 +168,8 @@ void TelemetryExtensionUiBrowserTest::SetUpOnMainThread() {
 
     auto system_info = chromeos::cros_healthd::mojom::SystemInfo::New();
     system_info->product_sku_number = "sku-18";
+    system_info->product_serial_number = "5CD9132880";
+    system_info->product_model_name = "XX ModelName 007 XY";
     system_info->os_version = std::move(os_version);
 
     telemetry_info->system_result =
