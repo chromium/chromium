@@ -198,6 +198,15 @@ export class CustomizeThemesElement extends mixinBehaviors
   }
 
   /**
+   * @param {string|number} id
+   * @return {string}
+   * @private
+   */
+  getThemeIconCheckedStatus_(id) {
+    return this.isThemeIconSelected_(id) ? 'true' : 'false';
+  }
+
+  /**
    * @return {boolean}
    * @private
    */

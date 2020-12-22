@@ -10,7 +10,7 @@ import {CustomizeThemesElement} from 'chrome://resources/cr_components/customize
 import {ChromeTheme, CustomizeThemesClientCallbackRouter, CustomizeThemesHandlerInterface, ThemeType} from 'chrome://resources/cr_components/customize_themes/customize_themes.mojom-webui.js';
 import {ThemeIconElement} from 'chrome://resources/cr_components/customize_themes/theme_icon.js';
 
-import {assertEquals, assertTrue} from '../chai_assert.js';
+import {assertDeepEquals, assertEquals, assertTrue} from '../chai_assert.js';
 import {TestBrowserProxy} from '../test_browser_proxy.m.js';
 import {flushTasks} from '../test_util.m.js';
 
@@ -263,6 +263,10 @@ suite('CrComponentsCustomizeThemesTest', () => {
     assertStyle(
         selectedIcons[0], '--cr-theme-icon-active-tab-color',
         'rgba(0, 0, 255, 1)');
+    assertDeepEquals(
+        selectedIcons,
+        customizeThemesElement.shadowRoot.querySelectorAll(
+            'div[aria-checked="true"] cr-theme-icon'));
   });
 
   test('setting default theme selects and updates icon', async () => {
@@ -283,6 +287,10 @@ suite('CrComponentsCustomizeThemesTest', () => {
     assertEquals(
         selectedIcons[0],
         customizeThemesElement.shadowRoot.querySelector('#defaultTheme'));
+    assertDeepEquals(
+        selectedIcons,
+        customizeThemesElement.shadowRoot.querySelectorAll(
+            'div[aria-checked="true"] cr-theme-icon'));
   });
 
   test('setting Chrome theme selects and updates icon', async () => {
@@ -316,6 +324,10 @@ suite('CrComponentsCustomizeThemesTest', () => {
         'div.chrome-theme-wrapper');
     assertTrue(!!selectedIconWrapper.querySelector('cr-theme-icon[selected]'));
     assertEquals(selectedIconWrapper.getAttribute('aria-label'), 'foo');
+    assertDeepEquals(
+        selectedIcons,
+        customizeThemesElement.shadowRoot.querySelectorAll(
+            'div[aria-checked="true"] cr-theme-icon'));
   });
 
   test('setting third-party theme shows uninstall UI', async () => {
