@@ -143,7 +143,11 @@ typedef NS_ENUM(NSInteger, IdentityChooserCoordinatorState) {
   DCHECK_EQ(self.identityChooserViewController, viewController);
   DCHECK_EQ(IdentityChooserCoordinatorStateStarted, self.state);
   [self.identityChooserMediator selectIdentityWithGaiaID:gaiaID];
-  self.state = IdentityChooserCoordinatorStateClosedBySelectingIdentity;
+  // If the account refresh token is invalidated during this
+  // operation then |identity| will be nil.
+  if (self.selectedIdentity) {
+    self.state = IdentityChooserCoordinatorStateClosedBySelectingIdentity;
+  }
   [self.identityChooserViewController dismissViewControllerAnimated:YES
                                                          completion:nil];
 }

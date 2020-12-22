@@ -62,10 +62,8 @@
 }
 
 - (void)selectIdentityWithGaiaID:(NSString*)gaiaID {
-  ChromeIdentity* identity = self.chromeIdentityService->GetIdentityWithGaiaID(
+  self.selectedIdentity = self.chromeIdentityService->GetIdentityWithGaiaID(
       base::SysNSStringToUTF8(gaiaID));
-  DCHECK(identity);
-  self.selectedIdentity = identity;
 }
 
 #pragma mark - Private
