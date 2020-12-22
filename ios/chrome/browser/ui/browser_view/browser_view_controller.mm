@@ -1409,6 +1409,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   if (_voiceSearchController && _voiceSearchController->IsVisible())
     return NO;
 
+  if (self.bottomPosition)
+    return NO;
+
   return YES;
 }
 
