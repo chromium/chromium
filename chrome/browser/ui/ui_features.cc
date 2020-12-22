@@ -105,8 +105,16 @@ const base::Feature kTabHoverCardImages{"TabHoverCardImages",
 const base::Feature kTabOutlinesInLowContrastThemes{
     "TabOutlinesInLowContrastThemes", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables searching tabs across multiple windows.
+// Enables searching tabs across multiple windows. This feature launch is
+// staggered to release to ChromeOS first and other platforms later. Tab Search
+// is enabled by default on ChromeOS following its launch on the platform.
+// TODO(crbug.com/1137558): Remove this after launch to the remaining desktop
+// platforms.
+#if defined(OS_CHROMEOS)
+const base::Feature kTabSearch{"TabSearch", base::FEATURE_ENABLED_BY_DEFAULT};
+#else
 const base::Feature kTabSearch{"TabSearch", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif  // defined(OS_CHROMEOS)
 
 // Enables the tab search submit feedback button.
 const base::Feature kTabSearchFeedback{"TabSearchFeedback",
