@@ -15,12 +15,6 @@
 
 namespace content {
 
-namespace {
-// The maximum number of TYPE_WINDOW_CONTENT_CHANGED events to fire in one
-// atomic update before we give up and fire it on the root node instead.
-constexpr int kMaxContentChangedEventsToFire = 5;
-}  // namespace
-
 // static
 BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
     const ui::AXTreeUpdate& initial_tree,
@@ -201,27 +195,9 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
 
   // Always send AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED to notify
   // the Android system that the accessibility hierarchy rooted at this
-  // node has changed. However, if there are a large number of changes
-  // it's too expensive to fire all of them, so we just fire one
-  // on the root instead.
-  if (event_type != ui::AXEventGenerator::Event::SUBTREE_CREATED) {
-    content_changed_events_++;
-    if (content_changed_events_ < kMaxContentChangedEventsToFire) {
-      // If it's less than the max event count, fire the event on the specific
-      // node that changed.
-      wcax->HandleContentChanged(android_node->unique_id());
-    } else if (content_changed_events_ == kMaxContentChangedEventsToFire) {
-      // If it's equal to the max event count, fire the event on the
-      // root instead.
-      BrowserAccessibilityManager* root_manager = GetRootManager();
-      if (root_manager) {
-        auto* root_node =
-            static_cast<BrowserAccessibilityAndroid*>(root_manager->GetRoot());
-        if (root_node)
-          wcax->HandleContentChanged(root_node->unique_id());
-      }
-    }
-  }
+  // node has changed.
+  if (event_type != ui::AXEventGenerator::Event::SUBTREE_CREATED)
+    wcax->HandleContentChanged(android_node->unique_id());
 
   switch (event_type) {
     case ui::AXEventGenerator::Event::ALERT: {
@@ -529,16 +505,17 @@ void BrowserAccessibilityManagerAndroid::OnAtomicUpdateFinished(
     ui::AXTree* tree,
     bool root_changed,
     const std::vector<ui::AXTreeObserver::Change>& changes) {
-  // Reset this every time we get an atomic update.
-  content_changed_events_ = 0;
-
   BrowserAccessibilityManager::OnAtomicUpdateFinished(tree, root_changed,
                                                       changes);
 
+  WebContentsAccessibilityAndroid* wcax = GetWebContentsAXFromRootManager();
+  if (!wcax)
+    return;
+
+  // Reset content changed events counter every time we finish an atomic update.
+  wcax->ResetContentChangedEventsCounter();
+
   if (root_changed) {
-    WebContentsAccessibilityAndroid* wcax = GetWebContentsAXFromRootManager();
-    if (!wcax)
-      return;
     wcax->HandleNavigate();
   }
 }

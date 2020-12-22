@@ -27,6 +27,7 @@ import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -50,12 +51,20 @@ import java.util.concurrent.ExecutionException;
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class WebContentsAccessibilityTest {
+    // The lower limit on number of expected unsuppressed content changed events.
+    private static final int UNSUPPRESSED_EXPECTED_COUNT = 25;
+
     // Test output error messages
     private static final String TIMEOUT_ERROR =
             "TYPE_ANNOUNCEMENT event not received before timeout.";
     private static final String COMBOBOX_ERROR = "expanded combobox announcement was incorrect.";
     private static final String LONG_CLICK_ERROR =
             "node should not have the ACTION_LONG_CLICK action as an available action";
+    private static final String THRESHOLD_ERROR =
+            "Too many TYPE_WINDOW_CONTENT_CHANGED events received in an atomic update.";
+    private static final String THRESHOLD_LOW_EVENT_COUNT_ERROR =
+            "Expected more TYPE_WINDOW_CONTENT_CHANGED events"
+            + "in an atomic update, is throttling still necessary?";
 
     private interface AccessibilityNodeInfoMatcher {
         public boolean matches(AccessibilityNodeInfo node);
@@ -92,6 +101,10 @@ public class WebContentsAccessibilityTest {
 
     // Member variables used during unit tests involving comboboxes
     private MutableString mComboboxText = new MutableString("");
+
+    // Member variables used during unit tests involving event tracking
+    private MutableInt mTypeWindowContentChangedCount = new MutableInt(0);
+    private int mMaxEventsToFire;
 
     @Rule
     public ContentShellActivityTestRule mActivityTestRule = new ContentShellActivityTestRule();
@@ -172,6 +185,19 @@ public class WebContentsAccessibilityTest {
                 () -> findNodeMatching(provider, View.NO_ID, matcher));
         Assert.assertNotEquals(View.NO_ID, virtualViewId);
         return virtualViewId;
+    }
+
+    /**
+     * Block until the tree of virtual views under |mNodeProvider| has a node whose
+     * text equals |text|, and is visible to the user.
+     */
+    private int waitForNodeWithTextVisible(AccessibilityNodeProvider provider, String text) {
+        return waitForNodeMatching(provider, new AccessibilityNodeInfoMatcher() {
+            @Override
+            public boolean matches(AccessibilityNodeInfo node) {
+                return text.equals(node.getText()) && node.isVisibleToUser();
+            }
+        });
     }
 
     /**
@@ -411,6 +437,22 @@ public class WebContentsAccessibilityTest {
         }
     }
 
+    private void setContentChangedCounterDelegate() throws Throwable {
+        ((ViewGroup) mActivityTestRule.getContainerView().getParent())
+                .setAccessibilityDelegate(new View.AccessibilityDelegate() {
+                    @Override
+                    public boolean onRequestSendAccessibilityEvent(
+                            ViewGroup host, View child, AccessibilityEvent event) {
+                        if (event.getEventType()
+                                == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {
+                            mTypeWindowContentChangedCount.value++;
+                        }
+                        // Return false so that an accessibility event is not actually sent.
+                        return false;
+                    }
+                });
+    }
+
     /**
      * Helper method to refresh the |mNodeInfo| object by recycling, waiting 1 sec, then refresh.
      */
@@ -423,7 +465,8 @@ public class WebContentsAccessibilityTest {
     /**
      * Helper method to tear down the setup of our tests so we can start the next test clean
      */
-    private void tearDown() {
+    @After
+    public void tearDown() {
         mNodeProvider = null;
         mNodeInfo = null;
 
@@ -433,6 +476,12 @@ public class WebContentsAccessibilityTest {
         mSelectionToIndex.value = -1;
 
         mComboboxText.value = "";
+
+        mTypeWindowContentChangedCount.value = 0;
+
+        // Always reset our max events for good measure.
+        WebContentsAccessibilityImpl wcax = mActivityTestRule.getWebContentsAccessibility();
+        wcax.setMaxContentChangedEventsToFireForTesting(-1);
     }
 
     /**
@@ -466,6 +515,90 @@ public class WebContentsAccessibilityTest {
         Assert.assertFalse(LONG_CLICK_ERROR,
                 mNodeInfo.getActionList().contains(
                         new AccessibilityAction(AccessibilityNodeInfo.ACTION_LONG_CLICK, null)));
+    }
+
+    /**
+     * Helper method to make a nice error message for failing threshold unit test.
+     * @param count int     count - number of events received
+     * @return  String      error message
+     */
+    private String thresholdError(int count) {
+        return THRESHOLD_ERROR + " Received " + count
+                + ", but expected no more than: " + mMaxEventsToFire;
+    }
+
+    /**
+     * Helper method to make a nice error message for failing threshold unit test.
+     * @param count int     count - number of events received
+     * @return  String      error message
+     */
+    private String lowThresholdError(int count) {
+        return THRESHOLD_LOW_EVENT_COUNT_ERROR + " Received " + count
+                + ", but expected at least: " + UNSUPPRESSED_EXPECTED_COUNT;
+    }
+
+    /**
+     * Ensure we throttle TYPE_WINDOW_CONTENT_CHANGED events for large tree updates.
+     */
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
+    @TargetApi(Build.VERSION_CODES.M)
+    public void testMaxContentChangedEventsFired_default() throws Throwable {
+        // Build a simple web page with complex visibility change.
+        mActivityTestRule.launchContentShellWithUrl(UrlUtils.getIsolatedTestFileUrl(
+                "content/test/data/android/type_window_content_changed_events.html"));
+        mActivityTestRule.waitForActiveShellToBeDoneLoading();
+        mNodeProvider = enableAccessibilityAndWaitForNodeProvider();
+
+        // Determine the current max events to fire
+        WebContentsAccessibilityImpl wcax = mActivityTestRule.getWebContentsAccessibility();
+        mMaxEventsToFire = wcax.getMaxContentChangedEventsToFireForTesting();
+
+        // Track the number of TYPE_WINDOW_CONTENT_CHANGED events
+        setContentChangedCounterDelegate();
+
+        // Run JS code to expand comboboxes
+        executeJS("expandComboboxes()");
+
+        // Wait for text to be visible
+        int paragraphID = waitForNodeWithTextVisible(mNodeProvider, "Example Text");
+
+        // Verify number of events processed
+        int eventCount = mTypeWindowContentChangedCount.value;
+        Assert.assertTrue(thresholdError(eventCount), eventCount <= mMaxEventsToFire);
+    }
+
+    /**
+     * Ensure we need to throttle TYPE_WINDOW_CONTENT_CHANGED events for some large tree updates.
+     */
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
+    @TargetApi(Build.VERSION_CODES.M)
+    public void testMaxContentChangedEventsFired_largeLimit() throws Throwable {
+        // Build a simple web page with complex visibility change.
+        mActivityTestRule.launchContentShellWithUrl(UrlUtils.getIsolatedTestFileUrl(
+                "content/test/data/android/type_window_content_changed_events.html"));
+        mActivityTestRule.waitForActiveShellToBeDoneLoading();
+        mNodeProvider = enableAccessibilityAndWaitForNodeProvider();
+
+        // "Disable" event suppression by setting an arbitrarily high max events value.
+        WebContentsAccessibilityImpl wcax = mActivityTestRule.getWebContentsAccessibility();
+        wcax.setMaxContentChangedEventsToFireForTesting(Integer.MAX_VALUE);
+
+        // Track the number of TYPE_WINDOW_CONTENT_CHANGED events
+        setContentChangedCounterDelegate();
+
+        // Run JS code to expand comboboxes
+        executeJS("expandComboboxes()");
+
+        // Wait for text to be visible
+        int paragraphID = waitForNodeWithTextVisible(mNodeProvider, "Example Text");
+
+        // Verify number of events processed
+        int eventCount = mTypeWindowContentChangedCount.value;
+        Assert.assertTrue(lowThresholdError(eventCount), eventCount > UNSUPPRESSED_EXPECTED_COUNT);
     }
 
     /**
@@ -573,8 +706,6 @@ public class WebContentsAccessibilityTest {
             Assert.assertEquals(i + 1, mSelectionFromIndex.value);
             Assert.assertEquals(i + 1, mSelectionToIndex.value);
         }
-
-        tearDown();
     }
 
     /**
@@ -674,8 +805,6 @@ public class WebContentsAccessibilityTest {
             Assert.assertEquals(0, mNodeInfo.getTextSelectionStart());
             Assert.assertEquals(i - 1, mNodeInfo.getTextSelectionEnd());
         }
-
-        tearDown();
     }
 
     /**
@@ -722,8 +851,6 @@ public class WebContentsAccessibilityTest {
             Assert.assertEquals(wordEnds[i], mSelectionFromIndex.value);
             Assert.assertEquals(wordEnds[i], mSelectionToIndex.value);
         }
-
-        tearDown();
     }
 
     /**
@@ -827,8 +954,6 @@ public class WebContentsAccessibilityTest {
             Assert.assertEquals(0, mNodeInfo.getTextSelectionStart());
             Assert.assertEquals(wordStarts[i], mNodeInfo.getTextSelectionEnd());
         }
-
-        tearDown();
     }
 
     /**
@@ -937,8 +1062,6 @@ public class WebContentsAccessibilityTest {
             Assert.assertEquals(0, mNodeInfo.getTextSelectionStart());
             Assert.assertEquals(i - 1, mNodeInfo.getTextSelectionEnd());
         }
-
-        tearDown();
     }
 
     /**
@@ -1263,8 +1386,6 @@ public class WebContentsAccessibilityTest {
         assertActionsContainNoScrolls(nodeInfoDiv);
         assertActionsContainNoScrolls(nodeInfoP1);
         assertActionsContainNoScrolls(nodeInfoP2);
-
-        tearDown();
     }
 
     /**
@@ -1335,8 +1456,6 @@ public class WebContentsAccessibilityTest {
                 AccessibilityNodeInfo.AccessibilityAction.ACTION_SCROLL_DOWN));
         assertActionsContainNoScrolls(nodeInfoP1);
         assertActionsContainNoScrolls(nodeInfoP2);
-
-        tearDown();
     }
 
     @MinAndroidSdkLevel(Build.VERSION_CODES.M)

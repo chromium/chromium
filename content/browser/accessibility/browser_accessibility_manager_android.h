@@ -134,10 +134,6 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
   // See docs for set_prune_tree_for_screen_reader, above.
   bool prune_tree_for_screen_reader_;
 
-  // A count of the number of TYPE_WINDOW_CONTENT_CHANGED events we've
-  // fired during a single atomic update.
-  int content_changed_events_ = 0;
-
   DISALLOW_COPY_AND_ASSIGN(BrowserAccessibilityManagerAndroid);
 };
 

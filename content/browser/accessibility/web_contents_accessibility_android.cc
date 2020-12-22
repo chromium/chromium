@@ -446,7 +446,27 @@ void WebContentsAccessibilityAndroid::HandleContentChanged(int32_t unique_id) {
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
   if (obj.is_null())
     return;
-  Java_WebContentsAccessibilityImpl_handleContentChanged(env, obj, unique_id);
+
+  // If there are a large number of changes it's too expensive to fire all of
+  // them, so we just fire one on the root instead.
+  content_changed_events_++;
+  if (content_changed_events_ < max_content_changed_events_to_fire_) {
+    // If it's less than the max event count, fire the event on the specific
+    // node that changed.
+    Java_WebContentsAccessibilityImpl_handleContentChanged(env, obj, unique_id);
+  } else if (content_changed_events_ == max_content_changed_events_to_fire_) {
+    // If it's equal to the max event count, fire the event on the
+    // root instead.
+    auto* root_manager = GetRootBrowserAccessibilityManager();
+    if (root_manager) {
+      auto* root_node =
+          static_cast<BrowserAccessibilityAndroid*>(root_manager->GetRoot());
+      if (root_node) {
+        Java_WebContentsAccessibilityImpl_handleContentChanged(
+            env, obj, root_node->unique_id());
+      }
+    }
+  }
 }
 
 void WebContentsAccessibilityAndroid::HandleFocusChanged(int32_t unique_id) {

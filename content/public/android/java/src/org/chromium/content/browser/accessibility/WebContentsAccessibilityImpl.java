@@ -338,6 +338,18 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
                 WebContentsAccessibilityImpl.this, virtualViewId, startOffset, endOffset);
     }
 
+    @VisibleForTesting
+    public void setMaxContentChangedEventsToFireForTesting(int maxEvents) {
+        WebContentsAccessibilityImplJni.get().setMaxContentChangedEventsToFireForTesting(
+                mNativeObj, WebContentsAccessibilityImpl.this, maxEvents);
+    }
+
+    @VisibleForTesting
+    public int getMaxContentChangedEventsToFireForTesting() {
+        return WebContentsAccessibilityImplJni.get().getMaxContentChangedEventsToFireForTesting(
+                mNativeObj);
+    }
+
     // WindowEventObserver
 
     @Override
@@ -2010,5 +2022,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
                 WebContentsAccessibilityImpl caller, int id);
         void addSpellingErrorForTesting(long nativeWebContentsAccessibilityAndroid,
                 WebContentsAccessibilityImpl caller, int id, int startOffset, int endOffset);
+        void setMaxContentChangedEventsToFireForTesting(long nativeWebContentsAccessibilityAndroid,
+                WebContentsAccessibilityImpl caller, int maxEvents);
+        int getMaxContentChangedEventsToFireForTesting(long nativeWebContentsAccessibilityAndroid);
     }
 }

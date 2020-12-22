@@ -17,6 +17,12 @@ class MotionEventAndroid;
 
 namespace content {
 
+namespace {
+// The maximum number of TYPE_WINDOW_CONTENT_CHANGED events to fire in one
+// atomic update before we give up and fire it on the root node instead.
+constexpr int kMaxContentChangedEventsToFire = 5;
+}  // namespace
+
 class BrowserAccessibilityAndroid;
 class BrowserAccessibilityManagerAndroid;
 class WebContents;
@@ -248,6 +254,27 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
 
   void UpdateFrameInfo(float page_scale);
 
+  // Set a new max for TYPE_WINDOW_CONTENT_CHANGED events to fire.
+  void SetMaxContentChangedEventsToFireForTesting(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj,
+      jint maxEvents) {
+    // Consider a new |maxEvents| value of -1 to mean to reset to the default.
+    if (maxEvents == -1) {
+      max_content_changed_events_to_fire_ = kMaxContentChangedEventsToFire;
+    } else {
+      max_content_changed_events_to_fire_ = maxEvents;
+    }
+  }
+
+  // Get the current max for TYPE_WINDOW_CONTENT_CHANGED events to fire.
+  jint GetMaxContentChangedEventsToFireForTesting(JNIEnv* env) {
+    return max_content_changed_events_to_fire_;
+  }
+
+  // Reset count of content changed events fired this atomic update.
+  void ResetContentChangedEventsCounter() { content_changed_events_ = 0; }
+
   // --------------------------------------------------------------------------
   // Methods called from the BrowserAccessibilityManager
   // --------------------------------------------------------------------------
@@ -296,6 +323,13 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   float page_scale_ = 1.f;
 
   bool use_zoom_for_dsf_enabled_;
+
+  // Current max number of events to fire, mockable for unit tests
+  int max_content_changed_events_to_fire_ = kMaxContentChangedEventsToFire;
+
+  // A count of the number of TYPE_WINDOW_CONTENT_CHANGED events we've
+  // fired during a single atomic update.
+  int content_changed_events_ = 0;
 
   // Manages the connection between web contents and the RenderFrameHost that
   // receives accessibility events.
