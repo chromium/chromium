@@ -27,9 +27,6 @@ class ChromeCartModuleElement extends PolymerElement {
 
   static get properties() {
     return {
-      /** @type {string} */
-      id: String,
-
       /** @type {!Array<!chromeCart.mojom.MerchantCart>} */
       cartItems: Array,
     };
@@ -61,18 +58,14 @@ class ChromeCartModuleElement extends PolymerElement {
 
 customElements.define(ChromeCartModuleElement.is, ChromeCartModuleElement);
 
-/**
- * @param {!string} id
- * @return {!Promise<?HTMLElement>}
- */
-async function createCartElement(id) {
+/** @return {!Promise<?HTMLElement>} */
+async function createCartElement() {
   const {carts} =
       await ChromeCartProxy.getInstance().handler.getMerchantCarts();
   if (carts.length === 0) {
     return null;
   }
   const element = new ChromeCartModuleElement();
-  element.id = id;
   element.cartItems = carts;
   return element;
 }
@@ -80,4 +73,4 @@ async function createCartElement(id) {
 /** @type {!ModuleDescriptor} */
 export const chromeCartDescriptor = new ModuleDescriptor(
     /*id=*/ 'chrome_cart',
-    /*heightPx=*/ 230, createCartElement.bind(null, 'chrome_cart'));
+    /*heightPx=*/ 230, createCartElement);

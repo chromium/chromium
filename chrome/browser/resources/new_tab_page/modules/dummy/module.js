@@ -30,9 +30,6 @@ class DummyModuleElement extends PolymerElement {
 
   static get properties() {
     return {
-      /** @type {!string} */
-      id: String,
-
       /** @type {!Array<!foo.mojom.FooDataItem>} */
       tiles: Array,
 
@@ -56,13 +53,11 @@ class DummyModuleElement extends PolymerElement {
 customElements.define(DummyModuleElement.is, DummyModuleElement);
 
 /**
- * @param {!string} id
  * @param {!string} titleId
  * @return {!DummyModuleElement}
  */
-function createDummyElement(id, titleId) {
+function createDummyElement(titleId) {
   const element = new DummyModuleElement();
-  element.id = id;
   element.title = loadTimeData.getString(titleId);
   return element;
 }
@@ -71,10 +66,10 @@ function createDummyElement(id, titleId) {
 export const dummyDescriptor = new ModuleDescriptor(
     /*id=*/ 'dummy',
     /*heightPx=*/ 314,
-    () => Promise.resolve(createDummyElement('dummy', 'modulesDummyTitle')));
+    () => Promise.resolve(createDummyElement('modulesDummyTitle')));
 
 /** @type {!ModuleDescriptor} */
 export const dummyDescriptor2 = new ModuleDescriptor(
     /*id=*/ 'dummy2',
     /*heightPx=*/ 314,
-    () => Promise.resolve(createDummyElement('dummy2', 'modulesDummy2Title')));
+    () => Promise.resolve(createDummyElement('modulesDummy2Title')));

@@ -27,9 +27,6 @@ class TaskModuleElement extends PolymerElement {
 
   static get properties() {
     return {
-      /** @type {string} */
-      id: String,
-
       /** @type {!taskModule.mojom.TaskModuleType} */
       taskModuleType: {
         type: Number,
@@ -135,7 +132,7 @@ class TaskModuleElement extends PolymerElement {
 customElements.define(TaskModuleElement.is, TaskModuleElement);
 
 /** @return {!Promise<?HTMLElement>} */
-async function createModule(id, taskModuleType) {
+async function createModule(taskModuleType) {
   const {task} =
       await TaskModuleHandlerProxy.getInstance().handler.getPrimaryTask(
           taskModuleType);
@@ -145,7 +142,6 @@ async function createModule(id, taskModuleType) {
   const element = new TaskModuleElement();
   element.taskModuleType = taskModuleType;
   element.task = task;
-  element.id = id;
   return element;
 }
 
@@ -153,12 +149,10 @@ async function createModule(id, taskModuleType) {
 export const recipeTasksDescriptor = new ModuleDescriptor(
     /*id=*/ 'recipe_tasks',
     /*heightPx=*/ 260,
-    createModule.bind(
-        null, 'recipe_tasks', taskModule.mojom.TaskModuleType.kRecipe));
+    createModule.bind(null, taskModule.mojom.TaskModuleType.kRecipe));
 
 /** @type {!ModuleDescriptor} */
 export const shoppingTasksDescriptor = new ModuleDescriptor(
     /*id=*/ 'shopping_tasks',
     /*heightPx=*/ 324,
-    createModule.bind(
-        null, 'shopping_tasks', taskModule.mojom.TaskModuleType.kShopping));
+    createModule.bind(null, taskModule.mojom.TaskModuleType.kShopping));
