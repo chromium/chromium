@@ -32,8 +32,8 @@ void HintCache::Initialize(bool purge_existing_data,
   if (optimization_guide_store_) {
     optimization_guide_store_->Initialize(
         purge_existing_data,
-        base::BindOnce(&HintCache::OnStoreInitialized, base::Unretained(this),
-                       std::move(callback)));
+        base::BindOnce(&HintCache::OnStoreInitialized,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
     return;
   }
   std::move(callback).Run();
@@ -174,9 +174,9 @@ void HintCache::LoadHint(const std::string& host, HintLoadedCallback callback) {
       return;
     }
     optimization_guide_store_->LoadHint(
-        hint_entry_key,
-        base::BindOnce(&HintCache::OnLoadStoreHint, base::Unretained(this),
-                       host, std::move(callback)));
+        hint_entry_key, base::BindOnce(&HintCache::OnLoadStoreHint,
+                                       weak_ptr_factory_.GetWeakPtr(), host,
+                                       std::move(callback)));
     return;
   }
 

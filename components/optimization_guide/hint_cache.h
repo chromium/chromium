@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/containers/mru_cache.h"
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/time/clock.h"
@@ -184,6 +185,9 @@ class HintCache {
   const base::Clock* clock_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  // Weak ptr factory to get weak pointer of |this|.
+  base::WeakPtrFactory<HintCache> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(HintCache);
 };

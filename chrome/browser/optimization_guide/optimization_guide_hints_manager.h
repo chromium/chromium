@@ -18,6 +18,7 @@
 #include "base/optional.h"
 #include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/cancelable_task_tracker.h"
 #include "base/time/clock.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
@@ -424,6 +425,9 @@ class OptimizationGuideHintsManager
 
   // Background thread where hints processing should be performed.
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
+
+  // Task tracker used to track hints component processing tasks.
+  base::CancelableTaskTracker hints_component_processing_task_tracker_;
 
   // A reference to the profile. Not owned.
   Profile* profile_ = nullptr;

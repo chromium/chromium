@@ -315,11 +315,19 @@ void OptimizationGuideHintsManager::Shutdown() {
       NavigationPredictorKeyedServiceFactory::GetForProfile(profile_);
   if (navigation_predictor_service)
     navigation_predictor_service->RemoveObserver(this);
+
+  // Try to cancel all tasks if we've been shutdown so it doesn't call back to
+  // us.
+  hints_component_processing_task_tracker_.TryCancelAll();
 }
 
 void OptimizationGuideHintsManager::OnHintsComponentAvailable(
     const optimization_guide::HintsComponentInfo& info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // We received a new component, so cancel any previous attempts that may not
+  // have finished yet.
+  hints_component_processing_task_tracker_.TryCancelAll();
 
   // Check for if hint component is disabled. This check is needed because the
   // optimization guide still registers with the service as an observer for
@@ -345,9 +353,11 @@ void OptimizationGuideHintsManager::OnHintsComponentAvailable(
   // cache, so that each hint within the component can be moved into it. In the
   // case where the component's version is not newer than the optimization guide
   // store's component version, StoreUpdateData will be a nullptr and hint
-  // processing will be skipped. After PreviewsHints::Create() returns the newly
-  // created PreviewsHints, it is initialized in UpdateHints() on the UI thread.
-  base::PostTaskAndReplyWithResult(
+  // processing will be skipped.
+  // base::Unretained(this) is safe since |this| owns
+  // |hints_component_processing_task_tracker| and the callback will be canceled
+  // if destroyed.
+  hints_component_processing_task_tracker_.PostTaskAndReplyWithResult(
       background_task_runner_.get(), FROM_HERE,
       base::BindOnce(&OptimizationGuideHintsManager::ProcessHintsComponent,
                      base::Unretained(this), info,
@@ -506,8 +516,8 @@ void OptimizationGuideHintsManager::OnHintCacheInitialized() {
     // background thread.
     if (manual_config->optimization_allowlists_size() > 0 ||
         manual_config->optimization_blacklists_size() > 0) {
-      background_task_runner_->PostTask(
-          FROM_HERE,
+      hints_component_processing_task_tracker_.PostTask(
+          background_task_runner_.get(), FROM_HERE,
           base::BindOnce(
               &OptimizationGuideHintsManager::ProcessOptimizationFilters,
               base::Unretained(this), manual_config->optimization_allowlists(),
