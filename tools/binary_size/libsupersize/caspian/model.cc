@@ -101,8 +101,8 @@ SectionId Symbol::Section() const {
   return section_id_;
 }
 
-const char* Symbol::ContainerName() const {
-  return container_->name.c_str();
+std::string_view Symbol::ContainerName() const {
+  return container_ ? container_->name : std::string_view();
 }
 const char* Symbol::ObjectPath() const {
   return object_path_;
@@ -206,7 +206,7 @@ SectionId DeltaSymbol::Section() const {
   return (after_ ? after_ : before_)->Section();
 }
 
-const char* DeltaSymbol::ContainerName() const {
+std::string_view DeltaSymbol::ContainerName() const {
   return (after_ ? after_ : before_)->ContainerName();
 }
 

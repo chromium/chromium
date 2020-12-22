@@ -100,7 +100,7 @@ class BaseSymbol {
   virtual const std::vector<Symbol*>* Aliases() const = 0;
   virtual SectionId Section() const = 0;
 
-  virtual const char* ContainerName() const = 0;
+  virtual std::string_view ContainerName() const = 0;
   virtual const char* ObjectPath() const = 0;
   virtual const char* SourcePath() const = 0;
   virtual const char* SectionName() const = 0;
@@ -188,7 +188,7 @@ class Symbol : public BaseSymbol {
   const std::vector<Symbol*>* Aliases() const override;
   SectionId Section() const override;
 
-  const char* ContainerName() const override;
+  std::string_view ContainerName() const override;
   const char* ObjectPath() const override;
   const char* SourcePath() const override;
   const char* SectionName() const override;
@@ -245,7 +245,7 @@ class DeltaSymbol : public BaseSymbol {
   const std::vector<Symbol*>* Aliases() const override;
   SectionId Section() const override;
 
-  const char* ContainerName() const override;
+  std::string_view ContainerName() const override;
   const char* ObjectPath() const override;
   const char* SourcePath() const override;
   const char* SectionName() const override;
