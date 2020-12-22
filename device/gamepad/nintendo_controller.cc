@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/numerics/ranges.h"
-#include "base/strings/stringprintf.h"
 #include "device/gamepad/gamepad_data_fetcher.h"
 #include "device/gamepad/gamepad_id_list.h"
 
@@ -364,13 +363,22 @@ void UnpackSwitchAnalogStickCalibration(
   UnpackShorts(data[12], data[13], data[14], &cal.rx_min, &cal.ry_min);
   UnpackShorts(data[15], data[16], data[17], &cal.rx_max, &cal.ry_max);
   if (cal.lx_min == kCalBogusValue && cal.ly_max == kCalBogusValue) {
-    // If the controller reports bogus values, default to something reasonable.
+    // No valid data for the left stick, use reasonable defaults.
     cal.lx_min = kCalDefaultMin;
     cal.lx_center = kCalDefaultCenter;
     cal.lx_max = kCalDefaultMax;
     cal.ly_min = kCalDefaultMin;
     cal.ly_center = kCalDefaultCenter;
     cal.ly_max = kCalDefaultMax;
+  } else {
+    cal.lx_min = cal.lx_center - cal.lx_min;
+    cal.lx_max = cal.lx_center + cal.lx_max;
+    cal.ly_min = cal.ly_center - cal.ly_min;
+    cal.ly_max = cal.ly_center + cal.ly_max;
+  }
+
+  if (cal.rx_min == kCalBogusValue && cal.ry_max == kCalBogusValue) {
+    // No valid data for the right stick, use reasonable defaults.
     cal.rx_min = kCalDefaultMin;
     cal.rx_center = kCalDefaultCenter;
     cal.rx_max = kCalDefaultMax;
@@ -378,10 +386,6 @@ void UnpackSwitchAnalogStickCalibration(
     cal.ry_center = kCalDefaultCenter;
     cal.ry_max = kCalDefaultMax;
   } else {
-    cal.lx_min = cal.lx_center - cal.lx_min;
-    cal.lx_max = cal.lx_center + cal.lx_max;
-    cal.ly_min = cal.ly_center - cal.ly_min;
-    cal.ly_max = cal.ly_center + cal.ly_max;
     cal.rx_min = cal.rx_center - cal.rx_min;
     cal.rx_max = cal.rx_center + cal.rx_max;
     cal.ry_min = cal.ry_center - cal.ry_min;
