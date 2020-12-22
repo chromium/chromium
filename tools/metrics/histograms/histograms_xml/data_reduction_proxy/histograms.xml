@@ -256,7 +256,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DataReductionProxy.LastWeekAggregateKB.Services"
-    enum="DataUseServicesHash" expires_after="M90">
+    enum="DataUseServicesHash" expires_after="2021-06-20">
   <owner>rajendrant@chromium.org</owner>
   <owner>bengr@chromium.org</owner>
   <summary>
@@ -271,7 +271,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="DataReductionProxy.LastWeekAggregateKB.UserTraffic.Downstream.ContentType"
-    enum="DataUseContentType" expires_after="M90">
+    enum="DataUseContentType" expires_after="2021-06-20">
   <owner>rajendrant@chromium.org</owner>
   <owner>bengr@chromium.org</owner>
   <summary>
@@ -373,7 +373,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DataReductionProxy.ThisWeekAggregateKB.Services"
-    enum="DataUseServicesHash" expires_after="M90">
+    enum="DataUseServicesHash" expires_after="2021-06-20">
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -388,7 +388,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="DataReductionProxy.ThisWeekAggregateKB.UserTraffic.Downstream.ContentType"
-    enum="DataUseContentType" expires_after="M90">
+    enum="DataUseContentType" expires_after="2021-06-20">
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>

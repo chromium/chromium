@@ -323,7 +323,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ServiceWorker.FetchEvent.MainResource.Status"
-    enum="ServiceWorkerStatusCode" expires_after="2021-04-19">
+    enum="ServiceWorkerStatusCode" expires_after="2021-06-20">
   <owner>falken@chromium.org</owner>
   <owner>shimazu@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
@@ -347,7 +347,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ServiceWorker.FetchEvent.Subresource.Status"
-    enum="ServiceWorkerStatusCode" expires_after="2021-04-19">
+    enum="ServiceWorkerStatusCode" expires_after="2021-06-20">
   <owner>falken@chromium.org</owner>
   <owner>shimazu@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
