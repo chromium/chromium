@@ -138,6 +138,9 @@ inline Element* TreeOrderedMap::Get(const AtomicString& key,
 #if DCHECK_IS_ON()
   DCHECK(g_remove_scope_level);
 #endif
+  // Since we didn't find any elements for this key, remove the key from the
+  // map here.
+  map_.erase(key);
   return nullptr;
 }
 

@@ -77,7 +77,6 @@ void SlotAssignment::DidRemoveSlot(HTMLSlotElement& slot) {
     return;
   }
 
-  DCHECK(GetCachedFirstSlotWithoutAccessingNodeTree(slot.GetName()));
   DidRemoveSlotInternal(slot, slot.GetName(), SlotMutationType::kRemoved);
   // Ensures that TreeOrderedMap has a cache if there is a slot for the name.
   DCHECK(!slot_map_->Contains(slot.GetName()) ||
@@ -97,7 +96,7 @@ void SlotAssignment::DidAddSlotInternal(HTMLSlotElement& slot) {
 
   // At this timing, we can't use FindSlotByName because what we are interested
   // in is the first slot *before* |slot| was inserted. Here, |slot| was already
-  // disconnected from the tree. Thus, we can't use on FindBySlotName because
+  // connected to the tree. Thus, we can't use on FindBySlotName because
   // it might scan the current tree and return a wrong result.
   HTMLSlotElement* old_active =
       GetCachedFirstSlotWithoutAccessingNodeTree(slot_name);
@@ -146,11 +145,18 @@ void SlotAssignment::DidRemoveSlotInternal(
 
   // At this timing, we can't use FindSlotByName because what we are interested
   // in is the first slot *before* |slot| was removed. Here, |slot| was already
-  // connected to the tree. Thus, we can't use FindBySlotName because
+  // disconnected from the tree. Thus, we can't use FindBySlotName because
   // it might scan the current tree and return a wrong result.
   HTMLSlotElement* old_active =
       GetCachedFirstSlotWithoutAccessingNodeTree(slot_name);
-  DCHECK(old_active);
+
+  // If we don't have a cached slot for this slot name, then we're
+  // likely removing a nested identically named slot, e.g.
+  // <slot id=removed><slot></slot</slot>, and this is the inner
+  // slot. It has already been removed from the map, so return.
+  if (!old_active)
+    return;
+
   slot_map_->Remove(slot_name, slot);
   // This also ensures that TreeOrderedMap has a cache for the first element.
   HTMLSlotElement* new_active = FindSlotByName(slot_name);

@@ -419,13 +419,14 @@ void HTMLSlotElement::RemovedFrom(ContainerNode& insertion_point) {
   // `removedFrom` is called after the node is removed from the tree.
   // That means:
   // 1. If this slot is still in a tree scope, it means the slot has been in a
-  // shadow tree. An inclusive shadow-including ancestor of the shadow host was
-  // originally removed from its parent.
+  //    shadow tree. An inclusive shadow-including ancestor of the shadow host
+  //    was originally removed from its parent. See slot s2 below.
   // 2. Or (this slot is not in a tree scope), this slot's inclusive
-  // ancestor was orginally removed from its parent (== insertion point). This
-  // slot and the originally removed node was in the same tree before removal.
+  //    ancestor was orginally removed from its parent (== insertion point).
+  //    This slot and the originally removed node was in the same tree before
+  //    removal. See slot s1 below.
 
-  // For exmaple, given the following trees, (srN: = shadow root, sN: = slot)
+  // For example, given the following trees, (srN: = shadow root, sN: = slot)
   // a
   // |- b --sr1
   // |- c   |--d
@@ -699,7 +700,7 @@ void HTMLSlotElement::CheckFallbackAfterInsertedIntoShadowTree() {
   DCHECK(SupportsAssignment());
   if (HasSlotableChild()) {
     // We use kSuppress here because a slotchange event shouldn't be
-    // dispatched if a slot being inserted don't get any assigned
+    // dispatched if a slot being inserted doesn't get any assigned
     // node, but has a slotable child, according to DOM Standard.
     DidSlotChange(SlotChangeType::kSuppressSlotChangeEvent);
   }
@@ -738,10 +739,7 @@ void HTMLSlotElement::EnqueueSlotChangeEvent() {
 
 bool HTMLSlotElement::HasAssignedNodesSlow() const {
   ShadowRoot* root = ContainingShadowRoot();
-  if (!root) {
-    NOTREACHED() << "We shouldn't get here - see crbug.com/1159328";
-    return false;
-  }
+  DCHECK(root) << "This should only be called on slots inside a shadow tree";
   SlotAssignment& assignment = root->GetSlotAssignment();
   if (assignment.FindSlotByName(GetName()) != this)
     return false;

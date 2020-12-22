@@ -1572,7 +1572,7 @@ source_set("unit_tests") {
     "xml/xpath_functions_test.cc",
   ]
 
-  # If you create a new subdirectory 'foo' that contains unit tets, list them in
+  # If you create a new subdirectory 'foo' that contains unit tests, list them in
   # 'foo/build.gni' to define blink_core_tests_foo, and add any dependencies in
   # the deps section below.
   sources += rebase_path(blink_core_tests_accessibility, "", "accessibility")
