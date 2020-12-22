@@ -66,8 +66,6 @@ const RebootReasonParam kRebootReasonParams[] = {
     // Graceful reboot reasons.
     {RebootReason::USER_REQUEST, RebootShlib::RebootSource::API, true,
      StateControlRebootReason::USER_REQUEST},
-    {RebootReason::SYSTEM_UPDATE, RebootShlib::RebootSource::OTA, true,
-     StateControlRebootReason::SYSTEM_UPDATE},
     {RebootReason::HIGH_TEMPERATURE, RebootShlib::RebootSource::OVERHEAT, true,
      StateControlRebootReason::HIGH_TEMPERATURE},
     {RebootReason::SESSION_FAILURE, RebootShlib::RebootSource::SW_OTHER, true},
@@ -236,6 +234,33 @@ TEST_F(RebootFuchsiaTest, GetLastRebootSourceWithoutGranularReason) {
               Eq(RebootShlib::RebootSource::SW_OTHER));
 }
 
+TEST_F(RebootFuchsiaTest, RebootSourceOtaNotSupported) {
+  EXPECT_DEATH(RebootShlib::RebootNow(RebootShlib::RebootSource::OTA), "");
+}
+
+fuchsia::feedback::LastReboot GenerateLastReboot(bool graceful,
+                                                 RebootReason reason) {
+  fuchsia::feedback::LastReboot last_reboot;
+  last_reboot.set_graceful(graceful);
+  last_reboot.set_reason(reason);
+  return last_reboot;
+}
+
+// SystemUpdate-related reasons must be handled separately. Otherwise, they will
+// fail RebootNowSendsFidlRebootReason because RebootNow panics when given
+// RebootShlib::RebootSource::OTA.
+TEST_F(RebootFuchsiaTest, RebootReasonSystemUpdate) {
+  SetLastReboot(GenerateLastReboot(true, RebootReason::SYSTEM_UPDATE));
+  EXPECT_THAT(RebootUtil::GetLastRebootSource(),
+              Eq(RebootShlib::RebootSource::OTA));
+}
+
+TEST_F(RebootFuchsiaTest, RebootReasonRetrySystemUpdate) {
+  SetLastReboot(GenerateLastReboot(true, RebootReason::RETRY_SYSTEM_UPDATE));
+  EXPECT_THAT(RebootUtil::GetLastRebootSource(),
+              Eq(RebootShlib::RebootSource::OTA));
+}
+
 class RebootFuchsiaParamTest : public RebootFuchsiaTest,
                                public ::testing::WithParamInterface<RebootReasonParam> {
  public:
@@ -249,12 +274,7 @@ TEST_P(RebootFuchsiaParamTest, RebootNowSendsFidlRebootReason) {
 }
 
 TEST_P(RebootFuchsiaParamTest, GetLastRebootSourceTranslatesReasonFromFuchsia) {
-  fuchsia::feedback::LastReboot last_reboot;
-  last_reboot.set_graceful(GetParam().graceful);
-  last_reboot.set_reason(GetParam().reason);
-  EXPECT_TRUE(last_reboot.has_graceful());
-  EXPECT_TRUE(last_reboot.has_reason());
-  SetLastReboot(std::move(last_reboot));
+  SetLastReboot(GenerateLastReboot(GetParam().graceful, GetParam().reason));
   EXPECT_THAT(RebootUtil::GetLastRebootSource(), Eq(GetParam().source));
 }
 
