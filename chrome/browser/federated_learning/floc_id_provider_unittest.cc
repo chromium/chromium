@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/federated_learning/floc_remote_permission_service.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_settings.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
@@ -237,8 +238,11 @@ class FlocIdProviderUnitTest : public testing::Test {
     fake_cookie_settings_ = base::MakeRefCounted<FakeCookieSettings>(
         settings_map_.get(), &prefs_, false, "chrome-extension");
 
+    privacy_sandbox_settings_ = std::make_unique<PrivacySandboxSettings>(
+        settings_map_.get(), fake_cookie_settings_.get(), &prefs_);
+
     floc_id_provider_ = std::make_unique<MockFlocIdProvider>(
-        &prefs_, test_sync_service_.get(), fake_cookie_settings_,
+        &prefs_, test_sync_service_.get(), privacy_sandbox_settings_.get(),
         fake_floc_remote_permission_service_.get(), history_service_.get(),
         fake_user_event_service_.get());
 
@@ -348,6 +352,7 @@ class FlocIdProviderUnitTest : public testing::Test {
   std::unique_ptr<FakeFlocRemotePermissionService>
       fake_floc_remote_permission_service_;
   scoped_refptr<FakeCookieSettings> fake_cookie_settings_;
+  std::unique_ptr<PrivacySandboxSettings> privacy_sandbox_settings_;
   std::unique_ptr<MockFlocIdProvider> floc_id_provider_;
 
   MockFlocSortingLshService* sorting_lsh_service_;

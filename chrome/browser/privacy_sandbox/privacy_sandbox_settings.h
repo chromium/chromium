@@ -48,11 +48,11 @@ class PrivacySandboxSettings : public KeyedService {
   bool IsFlocAllowed(const GURL& url,
                      const base::Optional<url::Origin>& top_frame_origin) const;
 
-  // Returns the point in time from which history is elligible to be used when
+  // Returns the point in time from which history is eligible to be used when
   // calculating a user's FLoC ID. Reset when a user clears all cookies, or
   // when the browser restarts with "Clear on exit" enabled. The returned time
   // will have been fuzzed for local privacy, and so may be in the future, in
-  // which case no history is elligible.
+  // which case no history is eligible.
   base::Time FlocDataAccessibleSince() const;
 
   // Determines whether Conversion Measurement is allowable in a particular
@@ -70,6 +70,13 @@ class PrivacySandboxSettings : public KeyedService {
                                   const url::Origin& conversion_origin,
                                   const url::Origin& reporting_origin) const;
 
+  // Used by FLoC to determine whether the FLoC calculation can start in general
+  // and whether the FLoC ID can be queried. If the sandbox experiment is
+  // disabled, this check is equivalent to
+  // |!cookie_settings_->ShouldBlockThirdPartyCookies()|; but if the experiment
+  // is enabled, this will check prefs::kPrivacySandboxApisEnabled instead.
+  bool IsPrivacySandboxAllowed();
+
   // Called when there's a broad cookies clearing action. For example, this
   // should be called on "Clear browsing data", but shouldn't be called on the
   // Clear-Site-Data header, as it's restricted to a specific site.
@@ -84,7 +91,7 @@ class PrivacySandboxSettings : public KeyedService {
   // |url| on |top_frame_origin|. Individual APIs may perform additional checks
   // for allowability (such as incognito) ontop of this. |cookie_settings| is
   // provided as a parameter to allow callers to cache it between calls.
-  bool IsPrivacySandboxAllowed(
+  bool IsPrivacySandboxAllowedForContext(
       const GURL& url,
       const base::Optional<url::Origin>& top_frame_origin,
       const ContentSettingsForOneType& cookie_settings) const;

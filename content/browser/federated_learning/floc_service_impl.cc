@@ -38,9 +38,9 @@ void FlocServiceImpl::GetInterestCohort(GetInterestCohortCallback callback) {
 
   std::string interest_cohort =
       GetContentClient()->browser()->GetInterestCohortForJsApi(
-          browser_context, render_frame_host_->GetLastCommittedOrigin(),
+          browser_context, render_frame_host_->GetLastCommittedURL(),
           render_frame_host_->GetIsolationInfoForSubresources()
-              .site_for_cookies());
+              .top_frame_origin());
 
   std::move(callback).Run(interest_cohort);
 }

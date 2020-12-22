@@ -56,10 +56,19 @@ class PrivacySandboxSettingsTest : public testing::Test {
   void SetupTestState(
       bool privacy_sandbox_available,
       bool privacy_sandbox_enabled,
+      bool block_third_party_cookies,
       ContentSetting default_cookie_setting,
       std::vector<CookieContentSettingException> user_cookie_exceptions,
       ContentSetting managed_cookie_setting,
       std::vector<CookieContentSettingException> managed_cookie_exceptions) {
+    // Setup block-third-party-cookies settings.
+    if (block_third_party_cookies) {
+      profile()->GetTestingPrefService()->SetUserPref(
+          prefs::kCookieControlsMode,
+          std::make_unique<base::Value>(static_cast<int>(
+              content_settings::CookieControlsMode::kBlockThirdParty)));
+    }
+
     // Setup cookie content settings.
     auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
     auto user_provider = std::make_unique<content_settings::MockProvider>();
@@ -135,6 +144,7 @@ TEST_F(PrivacySandboxSettingsTest, CookieSettingAppliesWhenUiDisabled) {
   SetupTestState(
       /*privacy_sandbox_available=*/false,
       /*privacy_sandbox_enabled=*/false,
+      /*block_third_party_cookies=*/false,
       /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
       /*user_cookie_exceptions=*/{},
       /*managed_cookie_setting=*/kNoSetting,
@@ -154,6 +164,7 @@ TEST_F(PrivacySandboxSettingsTest, CookieSettingAppliesWhenUiDisabled) {
   SetupTestState(
       /*privacy_sandbox_available=*/false,
       /*privacy_sandbox_enabled=*/false,
+      /*block_third_party_cookies=*/false,
       /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_BLOCK,
       /*user_cookie_exceptions=*/
       {{"https://embedded.com", "https://test.com",
@@ -180,6 +191,7 @@ TEST_F(PrivacySandboxSettingsTest, CookieSettingAppliesWhenUiDisabled) {
   SetupTestState(
       /*privacy_sandbox_available=*/false,
       /*privacy_sandbox_enabled=*/true,
+      /*block_third_party_cookies=*/false,
       /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
       /*user_cookie_exceptions=*/
       {{"https://embedded.com", "https://test.com",
@@ -209,6 +221,7 @@ TEST_F(PrivacySandboxSettingsTest, PreferenceOverridesDefaultContentSetting) {
   SetupTestState(
       /*privacy_sandbox_available=*/true,
       /*privacy_sandbox_enabled=*/true,
+      /*block_third_party_cookies=*/false,
       /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_BLOCK,
       /*user_cookie_exceptions=*/{},
       /*managed_cookie_setting=*/kNoSetting,
@@ -230,6 +243,7 @@ TEST_F(PrivacySandboxSettingsTest, PreferenceOverridesDefaultContentSetting) {
   SetupTestState(
       /*privacy_sandbox_available=*/true,
       /*privacy_sandbox_enabled=*/false,
+      /*block_third_party_cookies=*/false,
       /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
       /*user_cookie_exceptions=*/
       {{"https://embedded.com", "https://test.com",
@@ -258,6 +272,7 @@ TEST_F(PrivacySandboxSettingsTest, CookieBlockExceptionsApply) {
   SetupTestState(
       /*privacy_sandbox_available=*/true,
       /*privacy_sandbox_enabled=*/true,
+      /*block_third_party_cookies=*/false,
       /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
       /*user_cookie_exceptions=*/
       {{"https://embedded.com", "https://test.com",
@@ -284,6 +299,7 @@ TEST_F(PrivacySandboxSettingsTest, CookieBlockExceptionsApply) {
   SetupTestState(
       /*privacy_sandbox_available=*/true,
       /*privacy_sandbox_enabled=*/true,
+      /*block_third_party_cookies=*/false,
       /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
       /*user_cookie_exceptions=*/
       {{"https://embedded.com", "https://test.com",
@@ -309,6 +325,7 @@ TEST_F(PrivacySandboxSettingsTest, CookieBlockExceptionsApply) {
   SetupTestState(
       /*privacy_sandbox_available=*/true,
       /*privacy_sandbox_enabled=*/true,
+      /*block_third_party_cookies=*/false,
       /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
       /*user_cookie_exceptions=*/
       {{"https://embedded.com", "https://test.com",
@@ -347,6 +364,7 @@ TEST_F(PrivacySandboxSettingsTest, CookieBlockExceptionsApply) {
   SetupTestState(
       /*privacy_sandbox_available=*/true,
       /*privacy_sandbox_enabled=*/true,
+      /*block_third_party_cookies=*/false,
       /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
       /*user_cookie_exceptions=*/
       {{"https://embedded.com", "https://test.com",
@@ -368,6 +386,7 @@ TEST_F(PrivacySandboxSettingsTest, CookieBlockExceptionsApply) {
   SetupTestState(
       /*privacy_sandbox_available=*/true,
       /*privacy_sandbox_enabled=*/true,
+      /*block_third_party_cookies=*/false,
       /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_BLOCK,
       /*user_cookie_exceptions=*/
       {{"https://embedded.com", "https://test.com",
@@ -393,6 +412,7 @@ TEST_F(PrivacySandboxSettingsTest, CookieBlockExceptionsApply) {
   SetupTestState(
       /*privacy_sandbox_available=*/true,
       /*privacy_sandbox_enabled=*/true,
+      /*block_third_party_cookies=*/false,
       /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
       /*user_cookie_exceptions=*/
       {{"https://embedded.com", "*", ContentSetting::CONTENT_SETTING_BLOCK}},
@@ -417,13 +437,10 @@ TEST_F(PrivacySandboxSettingsTest, CookieBlockExceptionsApply) {
 TEST_F(PrivacySandboxSettingsTest, ThirdPartyByDefault) {
   // Check that when the UI is not enabled, all requests are considered
   // as third party requests.
-  profile()->GetTestingPrefService()->SetUserPref(
-      prefs::kCookieControlsMode,
-      std::make_unique<base::Value>(static_cast<int>(
-          content_settings::CookieControlsMode::kBlockThirdParty)));
   SetupTestState(
       /*privacy_sandbox_available=*/false,
       /*privacy_sandbox_enabled=*/false,
+      /*block_third_party_cookies=*/true,
       /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
       /*user_cookie_exceptions=*/{},
       /*managed_cookie_setting=*/kNoSetting,
@@ -442,6 +459,58 @@ TEST_F(PrivacySandboxSettingsTest, ThirdPartyByDefault) {
       url::Origin::Create(GURL("https://embedded.com")),
       url::Origin::Create(GURL("https://embedded.com")),
       url::Origin::Create(GURL("https://embedded.com"))));
+}
+
+TEST_F(PrivacySandboxSettingsTest, IsPrivacySandboxAllowed) {
+  SetupTestState(
+      /*privacy_sandbox_available=*/false,
+      /*privacy_sandbox_enabled=*/false,
+      /*block_third_party_cookies=*/false,
+      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
+      /*user_cookie_exceptions=*/{},
+      /*managed_cookie_setting=*/kNoSetting,
+      /*managed_cookie_exceptions=*/{});
+  EXPECT_TRUE(privacy_sandbox_settings()->IsPrivacySandboxAllowed());
+
+  SetupTestState(
+      /*privacy_sandbox_available=*/false,
+      /*privacy_sandbox_enabled=*/false,
+      /*block_third_party_cookies=*/true,
+      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
+      /*user_cookie_exceptions=*/{},
+      /*managed_cookie_setting=*/kNoSetting,
+      /*managed_cookie_exceptions=*/{});
+  EXPECT_FALSE(privacy_sandbox_settings()->IsPrivacySandboxAllowed());
+
+  SetupTestState(
+      /*privacy_sandbox_available=*/true,
+      /*privacy_sandbox_enabled=*/false,
+      /*block_third_party_cookies=*/false,
+      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
+      /*user_cookie_exceptions=*/{},
+      /*managed_cookie_setting=*/kNoSetting,
+      /*managed_cookie_exceptions=*/{});
+  EXPECT_FALSE(privacy_sandbox_settings()->IsPrivacySandboxAllowed());
+
+  SetupTestState(
+      /*privacy_sandbox_available=*/true,
+      /*privacy_sandbox_enabled=*/false,
+      /*block_third_party_cookies=*/true,
+      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
+      /*user_cookie_exceptions=*/{},
+      /*managed_cookie_setting=*/kNoSetting,
+      /*managed_cookie_exceptions=*/{});
+  EXPECT_FALSE(privacy_sandbox_settings()->IsPrivacySandboxAllowed());
+
+  SetupTestState(
+      /*privacy_sandbox_available=*/true,
+      /*privacy_sandbox_enabled=*/true,
+      /*block_third_party_cookies=*/false,
+      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
+      /*user_cookie_exceptions=*/{},
+      /*managed_cookie_setting=*/kNoSetting,
+      /*managed_cookie_exceptions=*/{});
+  EXPECT_TRUE(privacy_sandbox_settings()->IsPrivacySandboxAllowed());
 }
 
 TEST_F(PrivacySandboxSettingsTest, FlocDataAccessibleSince) {

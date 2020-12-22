@@ -7,14 +7,9 @@
 #include <unordered_set>
 
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/federated_learning/floc_remote_permission_service.h"
-#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/net/profile_network_context_service.h"
-#include "chrome/browser/net/profile_network_context_service_factory.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
-#include "chrome/browser/sync/user_event_service_factory.h"
-#include "components/content_settings/core/browser/cookie_settings.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/federated_learning/features/features.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/prefs/pref_service.h"
@@ -80,13 +75,13 @@ bool ShouldKeepUsingPreviousFloc(const FlocId& last_floc,
 FlocIdProviderImpl::FlocIdProviderImpl(
     PrefService* prefs,
     syncer::SyncService* sync_service,
-    scoped_refptr<content_settings::CookieSettings> cookie_settings,
+    PrivacySandboxSettings* privacy_sandbox_settings,
     FlocRemotePermissionService* floc_remote_permission_service,
     history::HistoryService* history_service,
     syncer::UserEventService* user_event_service)
     : prefs_(prefs),
       sync_service_(sync_service),
-      cookie_settings_(std::move(cookie_settings)),
+      privacy_sandbox_settings_(privacy_sandbox_settings),
       floc_remote_permission_service_(floc_remote_permission_service),
       history_service_(history_service),
       user_event_service_(user_event_service),
@@ -118,20 +113,17 @@ FlocIdProviderImpl::FlocIdProviderImpl(
 FlocIdProviderImpl::~FlocIdProviderImpl() = default;
 
 std::string FlocIdProviderImpl::GetInterestCohortForJsApi(
-    const url::Origin& requesting_origin,
-    const net::SiteForCookies& site_for_cookies) const {
+    const GURL& url,
+    const base::Optional<url::Origin>& top_frame_origin) const {
   // These checks could be / become unnecessary, as we are planning on
   // invalidating the |floc_id_| whenever a setting is disabled. Check them
   // anyway to be safe.
-  if (!IsSyncHistoryEnabled() || !AreThirdPartyCookiesAllowed())
+  if (!IsSyncHistoryEnabled() || !IsPrivacySandboxAllowed())
     return std::string();
 
-  // Only allow floc access if cookie access is allowed.
-  if (!cookie_settings_->IsCookieAccessAllowed(
-          requesting_origin.GetURL(), site_for_cookies.RepresentativeUrl(),
-          base::nullopt)) {
+  // Check the Privacy Sandbox context specific settings.
+  if (!privacy_sandbox_settings_->IsFlocAllowed(url, top_frame_origin))
     return std::string();
-  }
 
   if (!floc_id_.IsValid())
     return std::string();
@@ -275,7 +267,7 @@ void FlocIdProviderImpl::ComputeFloc() {
 }
 
 void FlocIdProviderImpl::CheckCanComputeFloc(CanComputeFlocCallback callback) {
-  if (!IsSyncHistoryEnabled() || !AreThirdPartyCookiesAllowed()) {
+  if (!IsSyncHistoryEnabled() || !IsPrivacySandboxAllowed()) {
     std::move(callback).Run(false);
     return;
   }
@@ -305,8 +297,8 @@ bool FlocIdProviderImpl::IsSyncHistoryEnabled() const {
              syncer::HISTORY_DELETE_DIRECTIVES);
 }
 
-bool FlocIdProviderImpl::AreThirdPartyCookiesAllowed() const {
-  return !cookie_settings_->ShouldBlockThirdPartyCookies();
+bool FlocIdProviderImpl::IsPrivacySandboxAllowed() const {
+  return privacy_sandbox_settings_->IsPrivacySandboxAllowed();
 }
 
 void FlocIdProviderImpl::IsSwaaNacAccountEnabled(

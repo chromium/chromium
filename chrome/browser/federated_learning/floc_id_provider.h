@@ -18,11 +18,12 @@ namespace federated_learning {
 // https://github.com/jkarlin/floc/blob/master/README.md.
 class FlocIdProvider : public KeyedService {
  public:
-  // Get the interest cohort. Use |requesting_origin| and first-party
-  // context |site_for_cookies| for access permission check.
+  // Get the interest cohort in a particular context. Use the requesting
+  // context's |url| and the first-party context |top_frame_origin| for the
+  // access permission check.
   virtual std::string GetInterestCohortForJsApi(
-      const url::Origin& requesting_origin,
-      const net::SiteForCookies& site_for_cookies) const = 0;
+      const GURL& url,
+      const base::Optional<url::Origin>& top_frame_origin) const = 0;
 
   ~FlocIdProvider() override = default;
 };

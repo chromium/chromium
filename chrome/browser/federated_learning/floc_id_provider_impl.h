@@ -14,9 +14,7 @@
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/sync/driver/sync_service_observer.h"
 
-namespace content_settings {
-class CookieSettings;
-}
+class PrivacySandboxSettings;
 
 namespace syncer {
 class UserEventService;
@@ -90,7 +88,7 @@ class FlocIdProviderImpl : public FlocIdProvider,
   FlocIdProviderImpl(
       PrefService* prefs,
       syncer::SyncService* sync_service,
-      scoped_refptr<content_settings::CookieSettings> cookie_settings,
+      PrivacySandboxSettings* privacy_sandbox_settings,
       FlocRemotePermissionService* floc_remote_permission_service,
       history::HistoryService* history_service,
       syncer::UserEventService* user_event_service);
@@ -99,8 +97,8 @@ class FlocIdProviderImpl : public FlocIdProvider,
   FlocIdProviderImpl& operator=(const FlocIdProviderImpl&) = delete;
 
   std::string GetInterestCohortForJsApi(
-      const url::Origin& requesting_origin,
-      const net::SiteForCookies& site_for_cookies) const override;
+      const GURL& url,
+      const base::Optional<url::Origin>& top_frame_origin) const override;
 
  protected:
   // protected virtual for testing.
@@ -142,7 +140,7 @@ class FlocIdProviderImpl : public FlocIdProvider,
                                       bool can_compute_floc);
 
   bool IsSyncHistoryEnabled() const;
-  bool AreThirdPartyCookiesAllowed() const;
+  bool IsPrivacySandboxAllowed() const;
 
   void IsSwaaNacAccountEnabled(CanComputeFlocCallback callback);
 
@@ -177,7 +175,7 @@ class FlocIdProviderImpl : public FlocIdProvider,
   // will be destroyed first among those services.
   PrefService* prefs_;
   syncer::SyncService* sync_service_;
-  scoped_refptr<content_settings::CookieSettings> cookie_settings_;
+  PrivacySandboxSettings* privacy_sandbox_settings_;
   FlocRemotePermissionService* floc_remote_permission_service_;
   history::HistoryService* history_service_;
   syncer::UserEventService* user_event_service_;

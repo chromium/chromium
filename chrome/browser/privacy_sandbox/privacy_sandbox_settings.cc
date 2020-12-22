@@ -84,7 +84,8 @@ bool PrivacySandboxSettings::IsFlocAllowed(
   ContentSettingsForOneType cookie_settings;
   cookie_settings_->GetCookieSettings(&cookie_settings);
 
-  return IsPrivacySandboxAllowed(url, top_frame_origin, cookie_settings);
+  return IsPrivacySandboxAllowedForContext(url, top_frame_origin,
+                                           cookie_settings);
 }
 
 base::Time PrivacySandboxSettings::FlocDataAccessibleSince() const {
@@ -97,8 +98,8 @@ bool PrivacySandboxSettings::IsConversionMeasurementAllowed(
   ContentSettingsForOneType cookie_settings;
   cookie_settings_->GetCookieSettings(&cookie_settings);
 
-  return IsPrivacySandboxAllowed(reporting_origin.GetURL(), top_frame_origin,
-                                 cookie_settings);
+  return IsPrivacySandboxAllowedForContext(reporting_origin.GetURL(),
+                                           top_frame_origin, cookie_settings);
 }
 
 bool PrivacySandboxSettings::ShouldSendConversionReport(
@@ -114,10 +115,20 @@ bool PrivacySandboxSettings::ShouldSendConversionReport(
   // and conversion contexts. These are both checked when they occur, but
   // user settings may have changed between then and when the conversion report
   // is sent.
-  return IsPrivacySandboxAllowed(reporting_origin.GetURL(), impression_origin,
-                                 cookie_settings) &&
-         IsPrivacySandboxAllowed(reporting_origin.GetURL(), reporting_origin,
-                                 cookie_settings);
+  return IsPrivacySandboxAllowedForContext(
+             reporting_origin.GetURL(), impression_origin, cookie_settings) &&
+         IsPrivacySandboxAllowedForContext(reporting_origin.GetURL(),
+                                           reporting_origin, cookie_settings);
+}
+
+bool PrivacySandboxSettings::IsPrivacySandboxAllowed() {
+  if (!base::FeatureList::IsEnabled(features::kPrivacySandboxSettings)) {
+    // Simply respect 3rd-party cookies blocking settings if the UI is not
+    // available.
+    return !cookie_settings_->ShouldBlockThirdPartyCookies();
+  }
+
+  return pref_service_->GetBoolean(prefs::kPrivacySandboxApisEnabled);
 }
 
 void PrivacySandboxSettings::OnCookiesCleared() {
@@ -137,7 +148,7 @@ void PrivacySandboxSettings::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-bool PrivacySandboxSettings::IsPrivacySandboxAllowed(
+bool PrivacySandboxSettings::IsPrivacySandboxAllowedForContext(
     const GURL& url,
     const base::Optional<url::Origin>& top_frame_origin,
     const ContentSettingsForOneType& cookie_settings) const {

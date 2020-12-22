@@ -1810,8 +1810,8 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Returns the interest cohort associated with the |browser_context|.
   virtual std::string GetInterestCohortForJsApi(
       content::BrowserContext* browser_context,
-      const url::Origin& requesting_origin,
-      const net::SiteForCookies& site_for_cookies);
+      const GURL& url,
+      const base::Optional<url::Origin>& top_frame_origin);
 
   // Returns whether a site is blocked to use Bluetooth scanning API.
   virtual bool IsBluetoothScanningBlocked(

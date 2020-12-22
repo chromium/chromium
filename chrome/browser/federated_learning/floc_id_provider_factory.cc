@@ -5,15 +5,15 @@
 #include "chrome/browser/federated_learning/floc_id_provider_factory.h"
 
 #include "base/memory/singleton.h"
-#include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/federated_learning/floc_id_provider_impl.h"
 #include "chrome/browser/federated_learning/floc_remote_permission_service.h"
 #include "chrome/browser/federated_learning/floc_remote_permission_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_settings.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/browser/sync/user_event_service_factory.h"
-#include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/sync/driver/sync_service.h"
@@ -37,7 +37,7 @@ FlocIdProviderFactory::FlocIdProviderFactory()
           "FlocIdProvider",
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(ProfileSyncServiceFactory::GetInstance());
-  DependsOn(CookieSettingsFactory::GetInstance());
+  DependsOn(PrivacySandboxSettingsFactory::GetInstance());
   DependsOn(FlocRemotePermissionServiceFactory::GetInstance());
   DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(browser_sync::UserEventServiceFactory::GetInstance());
@@ -54,9 +54,9 @@ KeyedService* FlocIdProviderFactory::BuildServiceInstanceFor(
   if (!sync_service)
     return nullptr;
 
-  scoped_refptr<content_settings::CookieSettings> cookie_settings =
-      CookieSettingsFactory::GetForProfile(profile);
-  if (!cookie_settings)
+  PrivacySandboxSettings* privacy_sandbox_settings =
+      PrivacySandboxSettingsFactory::GetForProfile(profile);
+  if (!privacy_sandbox_settings)
     return nullptr;
 
   FlocRemotePermissionService* floc_remote_permission_service =
@@ -76,7 +76,7 @@ KeyedService* FlocIdProviderFactory::BuildServiceInstanceFor(
     return nullptr;
 
   return new FlocIdProviderImpl(
-      profile->GetPrefs(), sync_service, std::move(cookie_settings),
+      profile->GetPrefs(), sync_service, privacy_sandbox_settings,
       floc_remote_permission_service, history_service, user_event_service);
 }
 

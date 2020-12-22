@@ -5717,8 +5717,8 @@ void ChromeContentBrowserClient::AugmentNavigationDownloadPolicy(
 
 std::string ChromeContentBrowserClient::GetInterestCohortForJsApi(
     content::BrowserContext* browser_context,
-    const url::Origin& requesting_origin,
-    const net::SiteForCookies& site_for_cookies) {
+    const GURL& url,
+    const base::Optional<url::Origin>& top_frame_origin) {
   federated_learning::FlocIdProvider* floc_id_provider =
       federated_learning::FlocIdProviderFactory::GetForProfile(
           Profile::FromBrowserContext(browser_context));
@@ -5726,8 +5726,7 @@ std::string ChromeContentBrowserClient::GetInterestCohortForJsApi(
   if (!floc_id_provider)
     return std::string();
 
-  return floc_id_provider->GetInterestCohortForJsApi(requesting_origin,
-                                                     site_for_cookies);
+  return floc_id_provider->GetInterestCohortForJsApi(url, top_frame_origin);
 }
 
 bool ChromeContentBrowserClient::IsBluetoothScanningBlocked(
