@@ -1678,9 +1678,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       }
       completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
         BrowserViewController* strongSelf = weakSelf;
-        // Resize horizontal viewport if Smooth Scrolling is on for multiwindow.
-        if (fullscreen::features::ShouldUseSmoothScrolling() &&
-            ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+        // Resize horizontal viewport if Smooth Scrolling is on.
+        if (fullscreen::features::ShouldUseSmoothScrolling()) {
           strongSelf.fullscreenController->ResizeHorizontalViewport();
         }
         if (!base::FeatureList::IsEnabled(kModernTabStrip)) {
@@ -2440,9 +2439,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       self.browserContainerViewController.contentView =
           [self viewForWebState:webState];
     }
-    // Resize horizontal viewport if Smooth Scrolling is on for multiwindow.
-    if (fullscreen::features::ShouldUseSmoothScrolling() &&
-        ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    // Resize horizontal viewport if Smooth Scrolling is on.
+    if (fullscreen::features::ShouldUseSmoothScrolling()) {
       self.fullscreenController->ResizeHorizontalViewport();
     }
   }
