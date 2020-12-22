@@ -116,5 +116,12 @@
       default_value: "false",
       depends_on: ["ExperimentalJSProfiler"],
     },
+    {
+      name: "SyncXHR",
+      document_policy_name: "sync-xhr",
+      value_type: "Bool",
+      default_value: "true",
+      depends_on: ["DocumentPolicySyncXHR"],
+    },
   ],
 }

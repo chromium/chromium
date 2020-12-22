@@ -1876,6 +1876,8 @@ crbug.com/1050754 external/wpt/feature-policy/reporting/serial-report-only.https
 crbug.com/1050754 external/wpt/feature-policy/reporting/serial-reporting.https.html [ Failure ]
 crbug.com/1050754 external/wpt/feature-policy/reporting/sync-xhr-report-only.html [ Timeout ]
 crbug.com/1050754 external/wpt/feature-policy/reporting/sync-xhr-reporting.html [ Timeout ]
+crbug.com/1050754 external/wpt/document-policy/reporting/sync-xhr-report-only.html [ Timeout ]
+crbug.com/1050754 external/wpt/document-policy/reporting/sync-xhr-reporting.html [ Timeout ]
 crbug.com/1050754 external/wpt/feature-policy/reporting/usb-report-only.https.html [ Timeout ]
 crbug.com/1050754 external/wpt/feature-policy/reporting/usb-reporting.https.html [ Timeout ]
 crbug.com/1050754 external/wpt/feature-policy/reporting/xr-report-only.https.html [ Failure ]

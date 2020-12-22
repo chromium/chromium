@@ -18003,6 +18003,7 @@ Called by update_document_policy_enum.py.-->
   <int value="9" label="DocumentWrite"/>
   <int value="10" label="SyncScript"/>
   <int value="11" label="JSProfiling"/>
+  <int value="12" label="SyncXHR"/>
 </enum>
 
 <enum name="DocumentScanSaneBackend">

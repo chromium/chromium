@@ -731,14 +731,27 @@ bool XMLHttpRequest::InitSend(ExceptionState& exception_state) {
   }
 
   if (!async_) {
-    if (GetExecutionContext()->IsWindow() &&
-        !GetExecutionContext()->IsFeatureEnabled(
-            mojom::blink::FeaturePolicyFeature::kSyncXHR,
-            ReportOptions::kReportOnFailure,
-            "Synchronous requests are disabled by permissions policy.")) {
-      HandleNetworkError();
-      ThrowForLoadFailureIfNeeded(exception_state, String());
-      return false;
+    if (GetExecutionContext()->IsWindow()) {
+      bool sync_xhr_disabled_by_feature_policy =
+          !GetExecutionContext()->IsFeatureEnabled(
+              mojom::blink::FeaturePolicyFeature::kSyncXHR,
+              ReportOptions::kReportOnFailure,
+              "Synchronous requests are disabled by permissions policy.");
+
+      bool sync_xhr_disabled_by_document_policy =
+          !GetExecutionContext()->IsFeatureEnabled(
+              mojom::blink::DocumentPolicyFeature::kSyncXHR,
+              ReportOptions::kReportOnFailure,
+              "Synchronous requests are disabled by document policy.");
+
+      // SyncXHR can be controlled by either feature policy or document policy
+      // during the migration period. See crbug.com/1146505.
+      if (sync_xhr_disabled_by_feature_policy ||
+          sync_xhr_disabled_by_document_policy) {
+        HandleNetworkError();
+        ThrowForLoadFailureIfNeeded(exception_state, String());
+        return false;
+      }
     }
     v8::Isolate* isolate = v8::Isolate::GetCurrent();
     if (isolate && v8::MicrotasksScope::IsRunningMicrotasks(isolate)) {

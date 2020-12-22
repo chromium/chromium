@@ -765,6 +765,13 @@
       status: "experimental",
       depends_on: ['DocumentPolicy']
     },
+    // Enables the ability to use Document Policy header to control feature
+    // SyncXHR.
+    {
+      name: "DocumentPolicySyncXHR",
+      status: "experimental",
+      depends_on: ["DocumentPolicy"],
+    },
     {
       // Document transitions, including shared element transitions.
       // See https://github.com/WICG/proposals/issues/12.
