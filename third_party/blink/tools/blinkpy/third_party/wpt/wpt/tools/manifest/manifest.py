@@ -1,6 +1,7 @@
 import io
 import itertools
 import os
+import sys
 from atomicwrites import atomic_write
 from copy import deepcopy
 from multiprocessing import Pool, cpu_count
@@ -224,10 +225,21 @@ class Manifest(object):
             changed = True
 
         if parallel and len(to_update) > 25 and cpu_count() > 1:
+            # On Windows desktops with high cpu count, we are seeing issues
+            # with high CPU counts and multiprocessing. This is a temporary
+            # workaround until we add logic to WPT to select a max number of
+            # processes. See https://crbug.com/1160108
+            #
+            # 25 was experimentally determined to work in
+            # https://crbug.com/1160108#c22
+            processes = cpu_count()
+            if sys.platform == "win32" and processes > 25:
+              processes = 25
+
             # 25 derived experimentally (2020-01) to be approximately
             # the point at which it is quicker to create Pool and
             # parallelize this
-            pool = Pool()
+            pool = Pool(processes)
 
             # chunksize set > 1 when more than 10000 tests, because
             # chunking is a net-gain once we get to very large numbers
