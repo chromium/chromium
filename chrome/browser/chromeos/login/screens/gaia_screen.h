@@ -51,6 +51,8 @@ class GaiaScreen : public BaseScreen {
   void OnUserAction(const std::string& action_id) override;
   bool HandleAccelerator(ash::LoginAcceleratorAction action) override;
 
+  void HandleCancel();
+
   GaiaView* view_ = nullptr;
 
   ScreenExitCallback exit_callback_;

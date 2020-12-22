@@ -467,7 +467,7 @@ Polymer({
    */
   onBackButtonClicked_() {
     if (!this.canGoBack_()) {
-      this.cancel();
+      this.cancel(true /* isBackClicked */);
     } else {
       this.getActiveFrame_().back();
     }
@@ -1180,7 +1180,7 @@ Polymer({
   /**
    * Called when user canceled signin.
    */
-  cancel() {
+  cancel(isBackClicked = false) {
     this.clearVideoTimer_();
 
     // TODO(crbug.com/470893): Figure out whether/which of these exit conditions
@@ -1189,7 +1189,7 @@ Polymer({
       return;
     }
 
-    this.userActed('cancel');
+    this.userActed(isBackClicked ? 'back' : 'cancel');
   },
 
   /**

@@ -13,6 +13,7 @@
 #include "components/user_manager/user_manager.h"
 
 namespace {
+constexpr char kUserActionBack[] = "back";
 constexpr char kUserActionCancel[] = "cancel";
 constexpr char kUserActionStartEnrollment[] = "startEnrollment";
 }  // namespace
@@ -82,13 +83,13 @@ void GaiaScreen::HideImpl() {
 }
 
 void GaiaScreen::OnUserAction(const std::string& action_id) {
-  if (action_id == kUserActionCancel) {
-    if (context()->is_user_creation_enabled) {
+  if (action_id == kUserActionBack || action_id == kUserActionCancel) {
+    // `kUserActionBack` will go back to user creation screen if possible.
+    // `kUserActionCancel` will stay at the gaia screen and reload the screen.
+    if (action_id == kUserActionBack && context()->is_user_creation_enabled) {
       exit_callback_.Run(Result::BACK);
-    } else if (LoginDisplayHost::default_host()->HasUserPods()) {
-      exit_callback_.Run(Result::CLOSE_DIALOG);
     } else {
-      LoadOnline(EmptyAccountId());
+      HandleCancel();
     }
     return;
   }
@@ -109,6 +110,17 @@ bool GaiaScreen::HandleAccelerator(ash::LoginAcceleratorAction action) {
     return true;
   }
   return false;
+}
+
+void GaiaScreen::HandleCancel() {
+  // Close the user pod if it exists and gaia is the first screen, or reload
+  // the page.
+  if (LoginDisplayHost::default_host()->HasUserPods() &&
+      !context()->is_user_creation_enabled) {
+    exit_callback_.Run(Result::CLOSE_DIALOG);
+  } else {
+    LoadOnline(EmptyAccountId());
+  }
 }
 
 }  // namespace chromeos
