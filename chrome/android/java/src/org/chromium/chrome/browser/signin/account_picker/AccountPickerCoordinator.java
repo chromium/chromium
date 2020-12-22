@@ -13,6 +13,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.signin.account_picker.AccountPickerProperties.AddAccountRowProperties;
 import org.chromium.chrome.browser.signin.account_picker.AccountPickerProperties.IncognitoAccountRowProperties;
 import org.chromium.chrome.browser.signin.account_picker.AccountPickerProperties.ItemType;
+import org.chromium.chrome.browser.signin.ui.account_picker.OnClickListenerViewBinder;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;

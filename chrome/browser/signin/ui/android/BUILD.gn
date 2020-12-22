@@ -38,6 +38,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/signin/ui/SigninView.java",
     "java/src/org/chromium/chrome/browser/signin/ui/account_picker/AccountPickerDelegate.java",
     "java/src/org/chromium/chrome/browser/signin/ui/account_picker/AccountPickerFeatureUtils.java",
+    "java/src/org/chromium/chrome/browser/signin/ui/account_picker/OnClickListenerViewBinder.java",
   ]
   resources_package = "org.chromium.chrome.browser.signin.ui"
 }
