@@ -41,11 +41,9 @@ typedef NS_ENUM(NSInteger, BookmarkHomeBackgroundStyle) {
 - (void)showSignin:(ShowSigninCommand*)command;
 
 // Reconfigures the cell at the given |indexPath| with the given |configurator|.
-// If |forceReloadCell| is YES, reloads the section when complete.
 - (void)configureSigninPromoWithConfigurator:
             (SigninPromoViewConfigurator*)configurator
-                                 atIndexPath:(NSIndexPath*)indexPath
-                             forceReloadCell:(BOOL)forceReloadCell;
+                                 atIndexPath:(NSIndexPath*)indexPath;
 
 @end
 

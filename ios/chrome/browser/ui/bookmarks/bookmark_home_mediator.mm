@@ -18,19 +18,21 @@
 #import "ios/chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/policy/policy_features.h"
+#import "ios/chrome/browser/ui/authentication/cells/table_view_signin_promo_item.h"
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_home_consumer.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_home_shared_state.h"
 #include "ios/chrome/browser/ui/bookmarks/bookmark_model_bridge_observer.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_promo_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_home_node_item.h"
-#import "ios/chrome/browser/ui/bookmarks/cells/bookmark_home_promo_item.h"
 #import "ios/chrome/browser/ui/bookmarks/synced_bookmarks_bridge.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
+#include "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/signin/signin_presenter.h"
+#include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -43,8 +45,7 @@ namespace {
 const int kMaxBookmarksSearchResults = 50;
 }  // namespace
 
-@interface BookmarkHomeMediator () <BookmarkHomePromoItemDelegate,
-                                    BookmarkModelBridgeObserver,
+@interface BookmarkHomeMediator () <BookmarkModelBridgeObserver,
                                     BookmarkPromoControllerDelegate,
                                     PrefObserverDelegate,
                                     SigninPresenter,
@@ -319,26 +320,33 @@ const int kMaxBookmarksSearchResults = 50;
   }
   self.sharedState.promoVisible = promoVisible;
 
-  SigninPromoViewMediator* mediator = self.signinPromoViewMediator;
+  SigninPromoViewMediator* signinPromoViewMediator =
+      self.bookmarkPromoController.signinPromoViewMediator;
   if (self.sharedState.promoVisible) {
     DCHECK(![self.sharedState.tableViewModel
         hasSectionForSectionIdentifier:BookmarkHomeSectionIdentifierPromo]);
     [self.sharedState.tableViewModel
         insertSectionWithIdentifier:BookmarkHomeSectionIdentifierPromo
                             atIndex:0];
-    BookmarkHomePromoItem* item =
-        [[BookmarkHomePromoItem alloc] initWithType:BookmarkHomeItemTypePromo];
-    item.delegate = self;
+
+    TableViewSigninPromoItem* signinPromoItem =
+        [[TableViewSigninPromoItem alloc]
+            initWithType:BookmarkHomeItemTypePromo];
+    signinPromoItem.configurator = [signinPromoViewMediator createConfigurator];
+    signinPromoItem.text =
+        l10n_util::GetNSString(IDS_IOS_SIGNIN_PROMO_BOOKMARKS_WITH_UNITY);
+    signinPromoItem.delegate = signinPromoViewMediator;
+    [signinPromoViewMediator signinPromoViewIsVisible];
+
     [self.sharedState.tableViewModel
-                        addItem:item
+                        addItem:signinPromoItem
         toSectionWithIdentifier:BookmarkHomeSectionIdentifierPromo];
-    [mediator signinPromoViewIsVisible];
   } else {
-    if (!mediator.invalidClosedOrNeverVisible) {
+    if (!signinPromoViewMediator.invalidClosedOrNeverVisible) {
       // When the sign-in view is closed, the promo state changes, but
       // -[SigninPromoViewMediator signinPromoViewIsHidden] should not be
       // called.
-      [mediator signinPromoViewIsHidden];
+      [signinPromoViewMediator signinPromoViewIsHidden];
     }
 
     DCHECK([self.sharedState.tableViewModel
@@ -458,12 +466,6 @@ const int kMaxBookmarksSearchResults = 50;
   return nil;
 }
 
-#pragma mark - BookmarkHomePromoItemDelegate
-
-- (SigninPromoViewMediator*)signinPromoViewMediator {
-  return self.bookmarkPromoController.signinPromoViewMediator;
-}
-
 #pragma mark - BookmarkPromoControllerDelegate
 
 - (void)promoStateChanged:(BOOL)promoEnabled {
@@ -474,7 +476,8 @@ const int kMaxBookmarksSearchResults = 50;
             (SigninPromoViewConfigurator*)configurator
                              identityChanged:(BOOL)identityChanged {
   if (![self.sharedState.tableViewModel
-          hasSectionForSectionIdentifier:BookmarkHomeSectionIdentifierPromo]) {
+          hasSectionForSectionIdentifier:BookmarkHomeSectionIdentifierPromo] ||
+      !identityChanged) {
     return;
   }
 
@@ -482,8 +485,7 @@ const int kMaxBookmarksSearchResults = 50;
       indexPathForItemType:BookmarkHomeItemTypePromo
          sectionIdentifier:BookmarkHomeSectionIdentifierPromo];
   [self.consumer configureSigninPromoWithConfigurator:configurator
-                                          atIndexPath:indexPath
-                                      forceReloadCell:identityChanged];
+                                          atIndexPath:indexPath];
 }
 
 #pragma mark - SigninPresenter

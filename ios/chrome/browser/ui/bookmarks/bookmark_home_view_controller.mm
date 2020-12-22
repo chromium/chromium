@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_configurator.h"
+#import "ios/chrome/browser/ui/authentication/cells/table_view_signin_promo_item.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_edit_view_controller.h"
 #include "ios/chrome/browser/ui/bookmarks/bookmark_empty_background.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_folder_editor_view_controller.h"
@@ -46,7 +47,6 @@
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_folder_item.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_home_node_item.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_table_cell_title_edit_delegate.h"
-#import "ios/chrome/browser/ui/bookmarks/cells/bookmark_table_signin_promo_cell.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
@@ -650,23 +650,17 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
 - (void)configureSigninPromoWithConfigurator:
             (SigninPromoViewConfigurator*)configurator
-                                 atIndexPath:(NSIndexPath*)indexPath
-                             forceReloadCell:(BOOL)forceReloadCell {
-  BookmarkTableSigninPromoCell* signinPromoCell =
-      base::mac::ObjCCast<BookmarkTableSigninPromoCell>(
-          [self.sharedState.tableView cellForRowAtIndexPath:indexPath]);
-  if (!signinPromoCell) {
+                                 atIndexPath:(NSIndexPath*)indexPath {
+  TableViewSigninPromoItem* signinPromoItem =
+      base::mac::ObjCCast<TableViewSigninPromoItem>(
+          [self.sharedState.tableViewModel itemAtIndexPath:indexPath]);
+  if (!signinPromoItem) {
     return;
   }
-  // Should always reconfigure the cell size even if it has to be reloaded,
-  // to make sure it has the right size to compute the cell size.
-  [configurator configureSigninPromoView:signinPromoCell.signinPromoView];
-  if (forceReloadCell) {
-    // The section should be reload to update the cell height.
-    NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:indexPath.section];
-    [self.sharedState.tableView reloadSections:indexSet
-                              withRowAnimation:UITableViewRowAnimationNone];
-  }
+
+  signinPromoItem.configurator = configurator;
+  [self reloadCellsForItems:@[ signinPromoItem ]
+           withRowAnimation:UITableViewRowAnimationNone];
 }
 
 #pragma mark - Action sheet callbacks
