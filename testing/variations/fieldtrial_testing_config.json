@@ -6831,27 +6831,6 @@
             ]
         }
     ],
-    "ServiceWorkerOnUI": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled1",
-                    "enable_features": [
-                        "ServiceWorkerOnUI"
-                    ]
-                }
-            ]
-        }
-    ],
     "SettingsResetPrompt": [
         {
             "platforms": [
