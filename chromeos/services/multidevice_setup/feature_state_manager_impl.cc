@@ -164,6 +164,16 @@ void ProcessSuiteEdgeCases(
       }
     }
   }
+
+  // If the top level Phone Hub feature is not supported by the phone, the
+  // sub-features should also be not supported by the phone.
+  if (feature_states_map[mojom::Feature::kPhoneHub] ==
+      mojom::FeatureState::kNotSupportedByPhone) {
+    for (const auto& phone_hub_sub_feature : kPhoneHubSubFeatures) {
+      feature_states_map[phone_hub_sub_feature] =
+          mojom::FeatureState::kNotSupportedByPhone;
+    }
+  }
 }
 
 bool HasFeatureStateChanged(
@@ -511,6 +521,13 @@ bool FeatureStateManagerImpl::HasBeenActivatedByPhone(
   for (const auto& pair : kFeatureAndHostSoftwareFeaturePairs) {
     if (pair.first != feature)
       continue;
+
+    // The bluetooth public address is required in order to use PhoneHub and its
+    // sub-features.
+    if (pair.second == multidevice::SoftwareFeature::kPhoneHubHost &&
+        host_device.bluetooth_public_address().empty()) {
+      return false;
+    }
 
     multidevice::SoftwareFeatureState feature_state =
         host_device.GetSoftwareFeatureState(pair.second);
