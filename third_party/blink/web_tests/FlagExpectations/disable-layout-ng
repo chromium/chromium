@@ -456,8 +456,11 @@ crbug.com/591099 virtual/text-antialias/hyphens/hyphens-auto-nowrap.html [ Failu
 crbug.com/639223 virtual/text-antialias/line-break-between-text-nodes-latin1.html [ Failure ]
 
 ### http/tests/
-crbug.com/1139949 http/tests/devtools/elements/highlight/highlight-css-flex-multiline.js [ Failure ]
-crbug.com/1139949 http/tests/devtools/elements/highlight/highlight-css-flex.js [ Failure ]
+crbug.com/1159760 http/tests/devtools/elements/highlight/highlight-css-flex-alignment.js [ Skip ]
+crbug.com/1159760 http/tests/devtools/elements/highlight/highlight-css-flex-gap.js [ Skip ]
+crbug.com/1159760 http/tests/devtools/elements/highlight/highlight-css-flex-multiline.js [ Skip ]
+crbug.com/1159760 http/tests/devtools/elements/highlight/highlight-css-flex-reverse.js [ Skip ]
+crbug.com/1159760 http/tests/devtools/elements/highlight/highlight-css-flex.js [ Skip ]
 crbug.com/591099 http/tests/devtools/elements/highlight/highlight-node-vertical-rl.js [ Failure ]
 
 ### http/tests/images/

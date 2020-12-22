@@ -691,6 +691,11 @@ std::unique_ptr<protocol::ListValue> BuildGridNegativeLineNumberPositions(
   return number_positions;
 }
 
+bool IsLayoutNGFlexibleBox(const LayoutObject& layout_object) {
+  return layout_object.StyleRef().IsDisplayFlexibleBox() &&
+         layout_object.IsLayoutNGFlexibleBox();
+}
+
 std::unique_ptr<protocol::DictionaryValue> BuildAreaNamePaths(Node* node,
                                                               float scale) {
   LayoutObject* layout_object = node->GetLayoutObject();
@@ -1679,8 +1684,7 @@ void InspectorHighlight::AppendNodeHighlight(
     flex_info_ = protocol::ListValue::create();
     // Some objects are flexible boxes even though display:flex is not set, we
     // need to avoid those.
-    if (layout_object->StyleRef().IsDisplayFlexibleBox() &&
-        layout_object->IsFlexibleBoxIncludingNG()) {
+    if (IsLayoutNGFlexibleBox(*layout_object)) {
       flex_info_->pushValue(BuildFlexInfo(
           node, *(highlight_config.flex_container_highlight_config), scale_));
     }
@@ -1891,8 +1895,7 @@ std::unique_ptr<protocol::DictionaryValue> InspectorFlexContainerHighlight(
   float scale = 1.f / frame_view->GetChromeClient()->WindowToViewportScalar(
                           &frame_view->GetFrame(), 1.f);
   LayoutObject* layout_object = node->GetLayoutObject();
-  if (!layout_object || !(layout_object->StyleRef().IsDisplayFlexibleBox() &&
-                          layout_object->IsFlexibleBoxIncludingNG())) {
+  if (!layout_object || !IsLayoutNGFlexibleBox(*layout_object)) {
     return nullptr;
   }
 
