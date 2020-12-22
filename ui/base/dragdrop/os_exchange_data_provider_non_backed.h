@@ -112,6 +112,7 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderNonBacked
   GURL base_url_;
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
+  // For marking data originating from the renderer.
   bool originated_from_renderer_ = false;
 #endif
 

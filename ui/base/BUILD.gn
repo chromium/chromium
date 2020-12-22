@@ -1029,6 +1029,7 @@ test("ui_base_unittests") {
     }
     if (is_chromeos_ash) {
       sources += [
+        "dragdrop/os_exchange_data_provider_non_backed_unittest.cc",
         "ime/chromeos/extension_ime_util_unittest.cc",
         "ime/chromeos/ime_keyboard_unittest.cc",
         "ime/chromeos/input_method_chromeos_unittest.cc",
@@ -1037,6 +1038,8 @@ test("ui_base_unittests") {
       deps += [ "//ui/base/ime/chromeos" ]
     }
     if ((is_linux || is_chromeos_lacros) && use_aura) {
+      sources += [ "dragdrop/os_exchange_data_provider_non_backed_unittest.cc" ]
+
       if (use_x11 || use_ozone) {
         sources += [ "ime/linux/input_method_auralinux_unittest.cc" ]
         deps += [

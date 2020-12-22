@@ -40,6 +40,9 @@ std::unique_ptr<OSExchangeDataProvider> OSExchangeDataProviderNonBacked::Clone()
   clone->source_ =
       source_ ? std::make_unique<ui::DataTransferEndpoint>(*source_.get())
               : nullptr;
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  clone->originated_from_renderer_ = originated_from_renderer_;
+#endif
 
   return clone;
 }
