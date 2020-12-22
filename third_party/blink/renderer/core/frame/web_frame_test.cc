@@ -8940,6 +8940,34 @@ TEST_F(WebFrameTest, SwapMainFrameWhileLoading) {
                                     &frame_client);
 }
 
+TEST_F(WebFrameTest, SwapChildAddFrameInUnload) {
+  frame_test_helpers::WebViewHelper web_view_helper;
+
+  // This sets up a main frame with one child frame. When the document in the
+  // child frame is unloaded (e.g. due to the `Frame::Swap()` call below), the
+  // unload handler will insert a new <iframe> into the main frame's document.
+  RegisterMockedHttpURLLoad("add-frame-in-unload-main.html");
+  RegisterMockedHttpURLLoad("add-frame-in-unload-subframe.html");
+  web_view_helper.InitializeAndLoad(base_url_ +
+                                    "add-frame-in-unload-main.html");
+
+  WebLocalFrame* new_frame = web_view_helper.CreateProvisional(
+      *web_view_helper.LocalMainFrame()->FirstChild());
+
+  // This triggers the unload handler in the child frame's Document, mutating
+  // the frame tree during the `Frame::Swap()` call.
+  web_view_helper.LocalMainFrame()->FirstChild()->Swap(new_frame);
+
+  // TODO(dcheng): This is currently required to trigger a crash when the bug is
+  // not fixed. Removing a frame from the frame tree will fail one of the
+  // consistency checks in `Frame::RemoveChild()` if the frame tree is
+  // corrupted.  This should be replaced with a test helper that comprehensively
+  // validates that a frame tree is not corrupted: this helper could also be
+  // used to simplify the various SwapAndVerify* helpers below.
+  web_view_helper.LocalMainFrame()->ExecuteScript(
+      WebScriptSource("document.querySelector('iframe').remove()"));
+}
+
 void WebFrameTest::SwapAndVerifyFirstChildConsistency(const char* const message,
                                                       WebFrame* parent,
                                                       WebFrame* new_child) {
