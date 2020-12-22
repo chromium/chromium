@@ -382,7 +382,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Printing.PrintServers.ServersToQuery" units="servers"
-    expires_after="M90">
+    expires_after="2021-06-20">
   <owner>pawliczek@chromium.org</owner>
   <owner>skau@chromium.org</owner>
   <summary>

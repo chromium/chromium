@@ -584,7 +584,7 @@ the browser and content area. -->
 </histogram>
 
 <histogram name="Signin.LoadedIdentities.Count" units="identities"
-    expires_after="2021-04-19">
+    expires_after="2021-06-20">
   <owner>jlebel@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <summary>
@@ -596,7 +596,7 @@ the browser and content area. -->
 </histogram>
 
 <histogram name="Signin.LoadedIdentities.Duration" units="ms"
-    expires_after="2021-04-19">
+    expires_after="2021-06-20">
   <owner>jlebel@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <summary>
@@ -608,7 +608,7 @@ the browser and content area. -->
 </histogram>
 
 <histogram name="Signin.LoadedIdentities.DurationPerIdentity" units="ms"
-    expires_after="2021-04-19">
+    expires_after="2021-06-20">
   <owner>jlebel@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <summary>
@@ -897,7 +897,7 @@ OAuth Multilogin call. -->
 </histogram>
 
 <histogram name="Signin.SignedInAccountsViewImpression" enum="BooleanShown"
-    expires_after="2021-04-20">
+    expires_after="2021-06-20">
   <owner>fernandex@chromium.org</owner>
   <owner>jlebel@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
@@ -978,7 +978,7 @@ kept as long as profile signout is possible -->
 </histogram>
 
 <histogram name="Signin.SSOAuth.GetIdentities.ErrorCode"
-    enum="SigninSSOAuthGetIdentitiesErrorCode" expires_after="2021-04-19">
+    enum="SigninSSOAuthGetIdentitiesErrorCode" expires_after="2021-06-20">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -988,7 +988,7 @@ kept as long as profile signout is possible -->
 </histogram>
 
 <histogram base="true" name="Signin.SSOIdentityListRequest.CacheState"
-    enum="SigninSSOIdentityListRequestCacheState" expires_after="2021-04-19">
+    enum="SigninSSOIdentityListRequestCacheState" expires_after="2021-06-20">
 <!-- Name completed by histogram_suffixes name="SigninSSOIdentityListRequestCacheRequestState" -->
 
   <owner>jlebel@chromium.org</owner>
@@ -1002,7 +1002,7 @@ kept as long as profile signout is possible -->
 </histogram>
 
 <histogram base="true" name="Signin.SSOIdentityListRequest.Duration" units="ms"
-    expires_after="2021-04-19">
+    expires_after="2021-06-20">
 <!-- Name completed by histogram_suffixes name="SigninSSOIdentityListRequestDurationCacheState" -->
 
   <owner>jlebel@chromium.org</owner>
@@ -1054,7 +1054,7 @@ kept as long as profile signout is possible -->
 
 <histogram
     name="Signin.SSOIdentityListRequest.WaitUntilCacheIsPopulated.CacheState"
-    enum="SigninSSOIdentityListRequestCacheState" expires_after="2021-04-19">
+    enum="SigninSSOIdentityListRequestCacheState" expires_after="2021-06-20">
   <owner>jlebel@chromium.org</owner>
   <owner>fernandex@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -1067,7 +1067,7 @@ kept as long as profile signout is possible -->
 
 <histogram
     name="Signin.SSOIdentityListRequest.WaitUntilCacheIsPopulated.Duration"
-    units="ms" expires_after="2021-04-19">
+    units="ms" expires_after="2021-06-20">
   <owner>jlebel@chromium.org</owner>
   <owner>fernandex@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>

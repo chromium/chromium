@@ -618,7 +618,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.PageLoadCount.LoadingStarted" units="units"
-    expires_after="2021-04-18">
+    expires_after="2021-06-20">
   <owner>danyao@chromium.org</owner>
   <summary>
     The &quot;true&quot; value of this boolean histogram counts the number of
@@ -648,7 +648,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.Reauth.Password.Autofill" enum="ReauthenticationEvent"
-    expires_after="2021-04-18">
+    expires_after="2021-06-20">
   <owner>javierrobles@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -658,7 +658,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.Reauth.Password.ManualFallback"
-    enum="ReauthenticationEvent" expires_after="2021-04-18">
+    enum="ReauthenticationEvent" expires_after="2021-06-20">
   <owner>javierrobles@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>

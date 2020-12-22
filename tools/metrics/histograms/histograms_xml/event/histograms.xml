@@ -325,7 +325,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Event.Latency.EndToEnd.TouchpadPinch2" units="microseconds"
-    expires_after="2021-04-18">
+    expires_after="2021-06-20">
   <owner>nzolghadr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
@@ -599,7 +599,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Event.Latency.ScrollBegin.Touch.AverageLag" units="pixels"
-    expires_after="M90">
+    expires_after="2021-06-20">
   <owner>flackr@chromium.org</owner>
   <owner>joalmei@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
@@ -617,7 +617,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Event.Latency.ScrollBegin.Touch.AverageLagPresentation"
-    units="pixels" expires_after="M90">
+    units="pixels" expires_after="2021-06-20">
   <owner>flackr@chromium.org</owner>
   <owner>joalmei@microsoft.org</owner>
   <owner>input-dev@chromium.org</owner>
@@ -704,7 +704,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Event.Latency.ScrollBegin.Touch.TimeToHandled2"
-    units="microseconds" expires_after="2021-04-19">
+    units="microseconds" expires_after="2021-06-20">
   <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
@@ -1071,7 +1071,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Event.Latency.ScrollUpdate.Touch.AverageLag" units="pixels"
-    expires_after="M90">
+    expires_after="2021-06-20">
   <owner>flackr@chromium.org</owner>
   <owner>joalmei@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
@@ -1132,7 +1132,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Event.Latency.ScrollUpdate.Touch.AverageLagPresentation"
-    units="pixels" expires_after="M90">
+    units="pixels" expires_after="2021-06-20">
   <owner>flackr@chromium.org</owner>
   <owner>joalmei@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
@@ -1253,7 +1253,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Event.Latency.ScrollUpdate.Touch.RendererSwapToBrowserNotified2"
-    units="microseconds" expires_after="2021-04-19">
+    units="microseconds" expires_after="2021-06-20">
   <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>

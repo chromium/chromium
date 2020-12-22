@@ -257,7 +257,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Search.ContextualSearch.TranslationNeeded"
-    enum="ContextualSearchGestureIsTap" expires_after="M91">
+    enum="ContextualSearchGestureIsTap" expires_after="2021-06-20">
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -270,7 +270,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Search.ContextualSearch.TranslationsOptInIPHShown"
-    enum="BooleanPreviouslyShown" expires_after="M91">
+    enum="BooleanPreviouslyShown" expires_after="2021-06-20">
   <owner>donnd@chromium.org</owner>
   <owner>contextual-search-eng@google.com</owner>
   <summary>
@@ -281,7 +281,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Search.ContextualSearch.TranslationsOptInIPHWorked"
-    enum="BooleanOptedIn" expires_after="M91">
+    enum="BooleanOptedIn" expires_after="2021-06-20">
   <owner>donnd@chromium.org</owner>
   <owner>contextual-search-eng@google.com</owner>
   <summary>
@@ -1278,7 +1278,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Search.QueryTiles.FetcherHttpResponseCode"
-    enum="HttpResponseCode" expires_after="M91">
+    enum="HttpResponseCode" expires_after="2021-06-20">
   <owner>hesen@chromium.org</owner>
   <owner>chrome-upboarding-eng@google.com</owner>
   <summary>Records the HTTP response code get from TileFetcher.</summary>
@@ -1301,7 +1301,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Search.QueryTiles.GroupStatus" enum="QueryTilesGroupStatus"
-    expires_after="M91">
+    expires_after="2021-06-20">
   <owner>hesen@chromium.org</owner>
   <owner>chrome-upboarding-eng@google.com</owner>
   <summary>
@@ -1333,7 +1333,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Search.QueryTiles.NTP.Chip.SearchClicked" units="index"
-    expires_after="M91">
+    expires_after="2021-06-20">
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-upboarding-eng@google.com</owner>
   <summary>

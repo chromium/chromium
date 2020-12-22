@@ -116,7 +116,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Geolocation.PositionCache.CacheHit" units="BooleanCacheHit"
-    expires_after="2021-03-10">
+    expires_after="2021-06-20">
   <owner>mattreynolds@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>

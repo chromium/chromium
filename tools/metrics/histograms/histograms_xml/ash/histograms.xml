@@ -850,7 +850,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.DragWindowFromShelf.PresentationTime.MaxLatency"
-    units="ms" expires_after="2021-04-18">
+    units="ms" expires_after="2021-06-20">
   <owner>tbarzic@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <summary>
@@ -1503,7 +1503,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.Shelf.NumberOfItems" units="Icons"
-    expires_after="2021-04-18">
+    expires_after="2021-06-20">
   <owner>anasalazar@google.com</owner>
   <owner>mmourgos@google.com</owner>
   <summary>
@@ -1787,7 +1787,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Ash.SplitViewResize.PresentationTime" units="ms"
-    expires_after="2021-04-18">
+    expires_after="2021-06-20">
 <!-- Name completed by histogram_suffixes name="SplitViewResizeModes" -->
 
   <owner>amusbach@chromium.org</owner>
@@ -1902,7 +1902,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.TabletMode.AnimationSmoothness.Exit" units="%"
-    expires_after="2021-04-18">
+    expires_after="2021-06-20">
   <owner>oshima@chromium.org</owner>
   <owner>sammiequon@chromium.org</owner>
   <summary>
@@ -1981,7 +1981,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.TouchView.TouchViewInactiveTotal" units="minutes"
-    expires_after="2021-04-18">
+    expires_after="2021-06-20">
   <owner>girard@chromium.org</owner>
   <summary>
     The total time that TouchView is not active during a session.

@@ -81,7 +81,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Assistant.ExitPoint" enum="AssistantExitPoint"
-    expires_after="2021-04-18">
+    expires_after="2021-06-20">
   <owner>xiaohuic@chromium.org</owner>
   <owner>meilinw@chromium.org</owner>
   <summary>
@@ -140,7 +140,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Assistant.QueryCountPerEntryPoint" enum="AssistantEntryPoint"
-    expires_after="2021-04-18">
+    expires_after="2021-06-20">
   <owner>xiaohuic@chromium.org</owner>
   <owner>meilinw@chromium.org</owner>
   <summary>Number of queries fired for each entry point.</summary>
@@ -202,7 +202,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Assistant.VoiceSearch.UserEligibility" enum="BooleanEligible"
-    expires_after="2021-04-18">
+    expires_after="2021-06-20">
   <owner>wylieb@chromium.org</owner>
   <owner>fgorski@chromium.org</owner>
   <summary>
@@ -213,7 +213,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Assistant.VoiceSearch.UserEligibility.FailureReason"
-    enum="EligibilityFailureReason" expires_after="2021-04-18">
+    enum="EligibilityFailureReason" expires_after="2021-06-20">
   <owner>wylieb@chromium.org</owner>
   <owner>fgorski@chromium.org</owner>
   <summary>

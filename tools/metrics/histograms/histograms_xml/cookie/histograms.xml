@@ -64,7 +64,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cookie.CookieSchemeRequestScheme" enum="CookieRequestScheme"
-    expires_after="M90">
+    expires_after="2021-06-20">
   <owner>bingler@chromium.org</owner>
   <owner>chlily@chromium.org</owner>
   <summary>
@@ -153,7 +153,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cookie.IncludedRequestEffectiveSameSite"
-    enum="CookieEffectiveSameSite" expires_after="M90">
+    enum="CookieEffectiveSameSite" expires_after="2021-06-20">
   <owner>bingler@chromium.org</owner>
   <owner>chlily@chromium.org</owner>
   <summary>
@@ -163,7 +163,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cookie.IncludedResponseEffectiveSameSite"
-    enum="CookieEffectiveSameSite" expires_after="M90">
+    enum="CookieEffectiveSameSite" expires_after="2021-06-20">
   <owner>bingler@chromium.org</owner>
   <owner>chlily@chromium.org</owner>
   <summary>
@@ -366,7 +366,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cookie.RequestSameSiteContext" enum="SameSiteCookieContext"
-    expires_after="M90">
+    expires_after="2021-06-20">
   <owner>chlily@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <summary>
@@ -432,7 +432,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cookie.SameSiteNoneIsSecure" enum="Boolean"
-    expires_after="M90">
+    expires_after="2021-06-20">
   <owner>chlily@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <summary>

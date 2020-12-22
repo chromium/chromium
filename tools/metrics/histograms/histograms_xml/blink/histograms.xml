@@ -52,7 +52,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.Animation.CompositedAnimationFailureReason"
-    enum="CompositorAnimationsFailureReason" expires_after="2021-04-18">
+    enum="CompositorAnimationsFailureReason" expires_after="2021-06-20">
   <owner>smcgruer@chromium.org</owner>
   <owner>animations-dev@chromium.org</owner>
   <summary>
@@ -1165,7 +1165,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.Layout.NGRatio.Blocks" units="%"
-    expires_after="2021-04-15">
+    expires_after="2021-06-20">
   <owner>tkent@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
@@ -1180,7 +1180,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.Layout.NGRatio.Calls" units="%"
-    expires_after="2021-04-15">
+    expires_after="2021-06-20">
   <owner>tkent@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
@@ -1514,7 +1514,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.MainFrame.UpdateTime" units="microseconds"
-    expires_after="2021-04-18">
+    expires_after="2021-06-20">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
@@ -1577,7 +1577,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.MemoryCache.RevalidationPolicy.AsyncScript"
-    enum="RevalidationPolicy" expires_after="2021-04-21">
+    enum="RevalidationPolicy" expires_after="2021-06-20">
   <owner>hiroshige@chromium.org</owner>
   <owner>lizeb@chromium.org</owner>
   <owner>loading-dev@chromium.org</owner>
@@ -1600,7 +1600,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.MemoryCache.RevalidationPolicy.PerDocument"
-    enum="RevalidationPolicy" expires_after="2021-04-21">
+    enum="RevalidationPolicy" expires_after="2021-06-20">
   <owner>shivanisha@chromium.org</owner>
   <owner>privacy-sandbox-dev@chromium.org</owner>
   <summary>
@@ -1611,7 +1611,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.MemoryCache.RevalidationPolicy.PerTopFrameSite"
-    enum="RevalidationPolicy" expires_after="2021-04-21">
+    enum="RevalidationPolicy" expires_after="2021-06-20">
   <owner>shivanisha@chromium.org</owner>
   <owner>privacy-sandbox-dev@chromium.org</owner>
   <summary>

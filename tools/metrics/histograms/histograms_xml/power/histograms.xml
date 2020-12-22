@@ -127,7 +127,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.BatteryRemainingAtEndOfSessionOnBattery" units="%"
-    expires_after="2021-04-04">
+    expires_after="2021-06-20">
   <owner>tbroch@chromium.org</owner>
   <summary>
     Chrome OS remaining battery charge as percent of the maximum battery charge,
@@ -136,7 +136,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.BatteryRemainingAtStartOfSessionOnAC" units="%"
-    expires_after="2021-04-11">
+    expires_after="2021-06-20">
   <owner>tbroch@chromium.org</owner>
   <summary>
     Chrome OS remaining battery charge as percent of the maximum battery charge,
@@ -692,7 +692,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.KernelSuspendTimeOnBattery" units="ms"
-    expires_after="2021-04-18">
+    expires_after="2021-06-20">
   <owner>tbroch@chromium.org</owner>
   <summary>
     The time that the kernel took to suspend-to-RAM the Chrome OS device when
@@ -860,7 +860,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.PowerButtonPressInLaptopMode"
-    enum="PowerButtonPressType" expires_after="2021-04-18">
+    enum="PowerButtonPressType" expires_after="2021-06-20">
   <owner>minch@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <summary>
@@ -998,7 +998,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.UserBrightnessAdjustmentsPerSessionOnBattery"
-    units="units" expires_after="2021-04-18">
+    units="units" expires_after="2021-06-20">
   <owner>tbroch@chromium.org</owner>
   <owner>napper@chromium.org</owner>
   <summary>
@@ -1029,7 +1029,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PowerML.ModelNoDim.Result" enum="PowerMLFinalResult"
-    expires_after="2021-04-18">
+    expires_after="2021-06-20">
   <owner>napper@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -1105,7 +1105,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PowerML.SmartDimModel.RequestCompleteDuration" units="ms"
-    expires_after="2021-04-18">
+    expires_after="2021-06-20">
   <owner>amoylan@chromium.org</owner>
   <owner>napper@chromium.org</owner>
   <owner>napper@chromium.org</owner>

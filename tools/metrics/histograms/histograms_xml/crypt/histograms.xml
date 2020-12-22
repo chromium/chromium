@@ -216,7 +216,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="CryptAuth.DeviceSyncV2.DeviceSyncer.AsyncTaskResult.GroupPrivateKeyDecryption"
-    enum="CryptAuthAsyncTaskResult" expires_after="2021-04-04">
+    enum="CryptAuthAsyncTaskResult" expires_after="2021-06-20">
   <owner>nohle@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -422,7 +422,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="CryptAuth.DeviceSyncV2.GroupPrivateKeySharer.AsyncTaskResult.GroupPrivateKeyEncryption"
-    enum="CryptAuthAsyncTaskResult" expires_after="2021-04-04">
+    enum="CryptAuthAsyncTaskResult" expires_after="2021-06-20">
   <owner>nohle@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>

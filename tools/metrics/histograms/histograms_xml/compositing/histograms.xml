@@ -342,7 +342,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Compositing.Display.VizScheduledDrawToGpuStartedDrawUs"
-    units="microseconds" expires_after="2021-04-18">
+    units="microseconds" expires_after="2021-06-20">
   <owner>vasilyt@chromium.org</owner>
   <owner>backer@chromium.org</owner>
   <summary>
@@ -439,7 +439,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Compositing.Renderer.LayerUpdateSkippedDueToBackface"
-    units="boolean" expires_after="M90">
+    units="boolean" expires_after="2021-06-20">
   <owner>chrishtr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>

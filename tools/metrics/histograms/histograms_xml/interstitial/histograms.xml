@@ -79,7 +79,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="interstitial.ssl.cause.nonoverridable" enum="SSLErrorCauses"
-    expires_after="M90">
+    expires_after="2021-06-20">
   <owner>estark@chromium.org</owner>
   <owner>carlosil@chromium.org</owner>
   <summary>

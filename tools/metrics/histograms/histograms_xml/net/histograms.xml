@@ -1013,7 +1013,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.DNS.JobQueueTime.Failure" units="ms"
-    expires_after="2021-04-20">
+    expires_after="2021-06-20">
   <owner>dmcardle@chromium.org</owner>
   <owner>ericorth@chromium.org</owner>
   <summary>
@@ -1024,7 +1024,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.DNS.JobQueueTime.PerTransaction" units="ms"
-    expires_after="2021-04-20">
+    expires_after="2021-06-20">
   <owner>dmcardle@chromium.org</owner>
   <owner>ericorth@chromium.org</owner>
   <summary>
@@ -1037,7 +1037,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.DNS.JobQueueTime.Success" units="ms"
-    expires_after="2021-04-20">
+    expires_after="2021-06-20">
   <owner>dmcardle@chromium.org</owner>
   <owner>ericorth@chromium.org</owner>
   <summary>
@@ -1587,7 +1587,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.HttpAuthPromptType" enum="HttpAuthPromptType"
-    expires_after="M90">
+    expires_after="2021-06-20">
   <owner>meacer@chromium.org</owner>
   <owner>src/chrome/browser/ui/login/OWNERS</owner>
   <summary>Type of the HTTP auth prompt displayed.</summary>
@@ -1946,7 +1946,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.Ntlm.HashDependsOnLocale" enum="Boolean"
-    expires_after="M90">
+    expires_after="2021-06-20">
   <owner>eroman@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -4783,7 +4783,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.TcpConnectAttempt.Latency.Error" units="ms"
-    expires_after="M90">
+    expires_after="2021-06-20">
   <owner>eroman@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -4794,7 +4794,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.TcpConnectAttempt.Latency.Success" units="ms"
-    expires_after="M90">
+    expires_after="2021-06-20">
   <owner>eroman@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -4804,7 +4804,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.TcpConnectAttempt.LatencyPercentRTT.Error" units="%"
-    expires_after="M90">
+    expires_after="2021-06-20">
   <owner>eroman@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -4817,7 +4817,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.TcpConnectAttempt.LatencyPercentRTT.Success" units="%"
-    expires_after="M90">
+    expires_after="2021-06-20">
   <owner>eroman@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>

@@ -31,7 +31,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.AutofillAssistant.DropOutReason"
-    enum="AutofillAssistantDropOutReason" expires_after="M90">
+    enum="AutofillAssistantDropOutReason" expires_after="2021-06-20">
   <owner>mcarlen@chromium.org</owner>
   <summary>
     Reports the drop out reason of an Autofill Assistant script. It is recorded
@@ -43,7 +43,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.AutofillAssistant.FeatureModuleInstallation"
-    enum="AutofillAssistantFeatureModuleInstallation" expires_after="M90">
+    enum="AutofillAssistantFeatureModuleInstallation"
+    expires_after="2021-06-20">
   <owner>mcarlen@chromium.org</owner>
   <owner>autofill_assistant+watch@google.com</owner>
   <summary>
@@ -54,7 +55,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.AutofillAssistant.OnBoarding"
-    enum="AutofillAssistantOnBoarding" expires_after="M90">
+    enum="AutofillAssistantOnBoarding" expires_after="2021-06-20">
   <owner>lsuder@chromium.org</owner>
   <owner>mcarlen@chromium.org</owner>
   <summary>
@@ -194,7 +195,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.BackgroundTaskScheduler.TaskLoadedNative"
-    enum="BackgroundTaskId" expires_after="2021-04-18">
+    enum="BackgroundTaskId" expires_after="2021-06-20">
   <owner>fgorski@chromium.org</owner>
   <owner>nyquist@chromium.org</owner>
   <summary>Records that a specific background task has loaded native.</summary>
@@ -467,7 +468,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.DarkTheme.EnabledReason" enum="DarkThemeEnabledReason"
-    expires_after="M90">
+    expires_after="2021-06-20">
   <owner>twellington@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
@@ -477,7 +478,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.DarkTheme.EnabledState" enum="BooleanEnabled"
-    expires_after="M90">
+    expires_after="2021-06-20">
   <owner>twellington@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
@@ -487,7 +488,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.DarkTheme.Preference.State"
-    enum="DarkThemePreferences" expires_after="M90">
+    enum="DarkThemePreferences" expires_after="2021-06-20">
   <owner>twellington@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
@@ -906,7 +907,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Android.FeatureModules.InstallingStatus"
-    enum="FeatureModuleInstallingStatus" expires_after="2021-04-18">
+    enum="FeatureModuleInstallingStatus" expires_after="2021-06-20">
 <!-- Name completed by histogram_suffixes
        name="AndroidFeatureModuleName" -->
 

@@ -151,7 +151,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Settings.PrivacyElementInteractions"
-    enum="SettingsPrivacyElementInteractions" expires_after="M90">
+    enum="SettingsPrivacyElementInteractions" expires_after="2021-06-20">
   <owner>harrisonsean@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
   <owner>sauski@chromium.org</owner>
@@ -179,7 +179,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Settings.SafetyCheck.Interactions"
-    enum="SettingsSafetyCheckInteractions" expires_after="M90">
+    enum="SettingsSafetyCheckInteractions" expires_after="2021-06-20">
   <owner>rainhard@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
   <owner>anaudrey@chromium.org</owner>
@@ -191,21 +191,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Settings.SafetyCheck.PasswordsResult"
-    enum="SafetyCheckPasswordsStatus" expires_after="M90">
+    enum="SafetyCheckPasswordsStatus" expires_after="2021-06-20">
   <owner>andzaytsev@google.com</owner>
   <owner>msramek@chromium.org</owner>
   <summary>Resulting state of the safety check password check.</summary>
 </histogram>
 
 <histogram name="Settings.SafetyCheck.SafeBrowsingResult"
-    enum="SafetyCheckSafeBrowsingStatus" expires_after="M90">
+    enum="SafetyCheckSafeBrowsingStatus" expires_after="2021-06-20">
   <owner>andzaytsev@google.com</owner>
   <owner>msramek@chromium.org</owner>
   <summary>Resulting state of the safety check Safe Browsing check.</summary>
 </histogram>
 
 <histogram name="Settings.SafetyCheck.UpdatesResult"
-    enum="SafetyCheckUpdateStatus" expires_after="M90">
+    enum="SafetyCheckUpdateStatus" expires_after="2021-06-20">
   <owner>andzaytsev@google.com</owner>
   <owner>msramek@chromium.org</owner>
   <summary>Resulting state of the safety check updates check.</summary>
@@ -360,7 +360,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Settings.TimeUntilInteractive" units="ms" expires_after="M90">
+<histogram name="Settings.TimeUntilInteractive" units="ms"
+    expires_after="2021-06-20">
   <owner>dbeam@chromium.org</owner>
   <owner>dpapad@chromium.org</owner>
   <summary>
@@ -452,7 +453,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Settings.TrackedPreferenceUnchanged" enum="TrackedPreference"
-    expires_after="M90">
+    expires_after="2021-06-20">
   <owner>proberge@chromium.org</owner>
   <summary>
     The id of a tracked preference whose value has not changed since the last

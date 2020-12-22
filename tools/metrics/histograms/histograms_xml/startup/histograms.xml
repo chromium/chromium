@@ -176,7 +176,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Startup.Android.StartupTabPreloader.TabLoaded" units="Boolean"
-    expires_after="2021-04-18">
+    expires_after="2021-06-20">
   <owner>skyostil@chromium.org</owner>
   <summary>
     Android: Whether or not creation of a profile lead to the
@@ -211,7 +211,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Startup.Android.TimeToGTSFirstMeaningfulPaint" units="ms"
-    expires_after="2021-04-18">
+    expires_after="2021-06-20">
   <owner>yusufo@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
@@ -237,7 +237,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Startup.Android.TimeToGTSFirstMeaningfulPaint.Warm" units="ms"
-    expires_after="2021-04-18">
+    expires_after="2021-06-20">
   <owner>yusufo@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
@@ -407,7 +407,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Startup.ColdStartFromProcessCreationTime" units="ms"
-    expires_after="2021-04-18">
+    expires_after="2021-06-20">
   <owner>djean@chromium.org</owner>
   <owner>eugenebut@chromium.org</owner>
   <summary>
@@ -631,7 +631,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Startup.PreMainMessageLoopRunImplLongTime" units="ms"
-    expires_after="M90">
+    expires_after="2021-06-20">
   <owner>rkaplow@chromium.org</owner>
   <summary>
     The amount of time that elapsed during

@@ -80,7 +80,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.CompileDeserializeMicroSeconds" units="microseconds"
-    expires_after="2021-04-18">
+    expires_after="2021-06-20">
   <owner>vogelheim@chromium.org</owner>
   <summary>
     Time spent deseriailzing code, used by V8 code caching.
