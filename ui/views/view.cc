@@ -55,7 +55,6 @@
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/drag_controller.h"
-#include "ui/views/layout/layout_manager.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/view_tracker.h"
@@ -80,6 +79,13 @@ constexpr bool kContextMenuOnMousePress = false;
 #else
 constexpr bool kContextMenuOnMousePress = true;
 #endif
+
+// Having UseDefaultFillLayout true by default wreaks a bit of havoc right now,
+// so it is false for the time being. Once the various sites which currently use
+// FillLayout are converted to using this and the other places that either
+// override Layout() or do nothing are also validated, this can be switched to
+// true.
+constexpr bool kUseDefaultFillLayout = false;
 
 // Default horizontal drag threshold in pixels.
 // Same as what gtk uses.
@@ -189,6 +195,8 @@ void ViewMaskLayer::OnViewBoundsChanged(View* observed_view) {
 
 View::View() {
   SetTargetHandler(this);
+  if (kUseDefaultFillLayout)
+    default_fill_layout_.emplace(DefaultFillLayout());
 }
 
 View::~View() {
@@ -485,8 +493,8 @@ void View::SizeToPreferredSize() {
 }
 
 gfx::Size View::GetMinimumSize() const {
-  if (layout_manager_)
-    return layout_manager_->GetMinimumSize(this);
+  if (HasLayoutManager())
+    return GetLayoutManager()->GetMinimumSize(this);
 
   return GetPreferredSize();
 }
@@ -496,14 +504,14 @@ gfx::Size View::GetMaximumSize() const {
 }
 
 int View::GetHeightForWidth(int w) const {
-  if (layout_manager_)
-    return layout_manager_->GetPreferredHeightForWidth(this, w);
+  if (HasLayoutManager())
+    return GetLayoutManager()->GetPreferredHeightForWidth(this, w);
   return GetPreferredSize().height();
 }
 
 SizeBounds View::GetAvailableSize(const View* child) const {
-  if (layout_manager_)
-    return layout_manager_->GetAvailableSize(this, child);
+  if (HasLayoutManager())
+    return GetLayoutManager()->GetAvailableSize(this, child);
   return SizeBounds();
 }
 
@@ -575,8 +583,8 @@ base::CallbackListSubscription View::AddEnabledChangedCallback(
 }
 
 View::Views View::GetChildrenInZOrder() {
-  if (layout_manager_) {
-    const auto result = layout_manager_->GetChildViewsInPaintOrder(this);
+  if (HasLayoutManager()) {
+    const auto result = GetLayoutManager()->GetChildViewsInPaintOrder(this);
     DCHECK_EQ(children_.size(), result.size());
     return result;
   }
@@ -771,8 +779,8 @@ void View::Layout() {
   needs_layout_ = false;
 
   // If we have a layout manager, let it handle the layout for us.
-  if (layout_manager_)
-    layout_manager_->Layout(this);
+  if (HasLayoutManager())
+    GetLayoutManager()->Layout(this);
 
   // Make sure to propagate the Layout() call to any children that haven't
   // received it yet through the layout manager and need to be laid out. This
@@ -782,8 +790,9 @@ void View::Layout() {
   // the call can take appropriate action.
   internal::ScopedChildrenLock lock(this);
   for (auto* child : children_) {
-    if (child->needs_layout_ || !layout_manager_) {
-      TRACE_EVENT1("views", "View::Layout", "class", child->GetClassName());
+    if (child->needs_layout_ || !HasLayoutManager()) {
+      TRACE_EVENT1("views", "View::LayoutChildren", "class",
+                   child->GetClassName());
       child->needs_layout_ = false;
       child->Layout();
     }
@@ -794,8 +803,8 @@ void View::InvalidateLayout() {
   // Always invalidate up. This is needed to handle the case of us already being
   // valid, but not our parent.
   needs_layout_ = true;
-  if (layout_manager_)
-    layout_manager_->InvalidateLayout();
+  if (HasLayoutManager())
+    GetLayoutManager()->InvalidateLayout();
 
   if (parent_) {
     parent_->InvalidateLayout();
@@ -807,11 +816,35 @@ void View::InvalidateLayout() {
 }
 
 LayoutManager* View::GetLayoutManager() const {
-  return layout_manager_.get();
+  if (layout_manager_)
+    return layout_manager_.get();
+  if (default_fill_layout_.has_value())
+    return &const_cast<View*>(this)->default_fill_layout_.value();
+  return nullptr;
 }
 
 void View::SetLayoutManager(std::nullptr_t) {
   SetLayoutManagerImpl(nullptr);
+}
+
+bool View::GetUseDefaultFillLayout() const {
+  if (layout_manager_)
+    return false;
+  return default_fill_layout_.has_value();
+}
+
+void View::SetUseDefaultFillLayout(bool value) {
+  if (value == default_fill_layout_.has_value())
+    return;
+
+  if (value) {
+    default_fill_layout_.emplace(DefaultFillLayout());
+    // Kill the currently assigned layout manager if one had been assigned.
+    layout_manager_.reset();
+  } else {
+    default_fill_layout_.reset();
+  }
+  OnPropertyChanged(&default_fill_layout_, kPropertyEffectsLayout);
 }
 
 // Attributes ------------------------------------------------------------------
@@ -1771,8 +1804,8 @@ bool View::HasObserver(const ViewObserver* observer) const {
 // Size and disposition --------------------------------------------------------
 
 gfx::Size View::CalculatePreferredSize() const {
-  if (layout_manager_)
-    return layout_manager_->GetPreferredSize(this);
+  if (HasLayoutManager())
+    return GetLayoutManager()->GetPreferredSize(this);
   return gfx::Size();
 }
 
@@ -2401,8 +2434,8 @@ void View::AddChildViewAtImpl(View* view, int index) {
 
   // Need to notify the layout manager because one of the callbacks below might
   // want to know the view's new preferred size, minimum size, etc.
-  if (layout_manager_)
-    layout_manager_->ViewAdded(this, view);
+  if (HasLayoutManager())
+    GetLayoutManager()->ViewAdded(this, view);
 
   ViewHierarchyChangedDetails details(true, this, view, parent);
 
@@ -2457,8 +2490,8 @@ void View::DoRemoveChildView(View* view,
 
   // Need to notify the layout manager because one of the callbacks below might
   // want to know the view's new preferred size, minimum size, etc.
-  if (layout_manager_)
-    layout_manager_->ViewRemoved(this, view);
+  if (HasLayoutManager())
+    GetLayoutManager()->ViewRemoved(this, view);
 
   view->PropagateRemoveNotifications(this, new_parent, is_removed_from_widget);
   view->parent_ = nullptr;
@@ -2646,6 +2679,12 @@ void View::SetLayoutManagerImpl(std::unique_ptr<LayoutManager> layout_manager) {
   layout_manager_ = std::move(layout_manager);
   if (layout_manager_)
     layout_manager_->Installed(this);
+  // Only reset |default_fill_layout_| if it's already been set and there is a
+  // layout manager.
+  if (default_fill_layout_.has_value() && layout_manager_)
+    default_fill_layout_.reset();
+  else if (kUseDefaultFillLayout)
+    default_fill_layout_.emplace(DefaultFillLayout());
 }
 
 void View::SetLayerBounds(const gfx::Size& size,
@@ -2821,6 +2860,13 @@ void View::CreateMaskLayer() {
   DCHECK(layer());
   mask_layer_ = std::make_unique<views::ViewMaskLayer>(clip_path_, this);
   layer()->SetMaskLayer(mask_layer_->layer());
+}
+
+// Layout ----------------------------------------------------------------------
+
+bool View::HasLayoutManager() const {
+  return ((default_fill_layout_.has_value() && !children_.empty()) ||
+          layout_manager_);
 }
 
 // Input -----------------------------------------------------------------------
@@ -3073,6 +3119,34 @@ bool View::DoDrag(const ui::LocatedEvent& event,
   return true;
 }
 
+View::DefaultFillLayout::DefaultFillLayout() = default;
+
+View::DefaultFillLayout::~DefaultFillLayout() = default;
+
+void View::DefaultFillLayout::Layout(View* host) {
+  const gfx::Rect contents_bounds = host->GetContentsBounds();
+  for (auto* child : host->children())
+    child->SetBoundsRect(contents_bounds);
+}
+
+gfx::Size View::DefaultFillLayout::GetPreferredSize(const View* host) const {
+  gfx::Size preferred_size;
+  for (auto* child : host->children())
+    preferred_size.SetToMax(child->GetPreferredSize());
+  return preferred_size;
+}
+
+int View::DefaultFillLayout::GetPreferredHeightForWidth(const View* host,
+                                                        int width) const {
+  const gfx::Insets insets = host->GetInsets();
+  int preferred_height = 0;
+  for (auto* child : host->children())
+    preferred_height = std::max(
+        preferred_height,
+        child->GetHeightForWidth(width - insets.width()) + insets.height());
+  return preferred_height;
+}
+
 DEFINE_ENUM_CONVERTERS(View::FocusBehavior,
                        {View::FocusBehavior::ACCESSIBLE_ONLY,
                         base::ASCIIToUTF16("ACCESSIBLE_ONLY")},
@@ -3096,6 +3170,7 @@ ADD_PROPERTY_METADATA(bool, Mirrored)
 ADD_PROPERTY_METADATA(bool, NotifyEnterExitOnChild)
 ADD_PROPERTY_METADATA(bool, Visible)
 ADD_PROPERTY_METADATA(bool, CanProcessEventsWithinSubtree)
+ADD_PROPERTY_METADATA(bool, UseDefaultFillLayout)
 END_METADATA
 
 }  // namespace views

@@ -47,6 +47,7 @@
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/views/layout/layout_manager.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/view_factory.h"
@@ -82,7 +83,6 @@ class ContextMenuController;
 class DragController;
 class FocusManager;
 class FocusTraversable;
-class LayoutManager;
 class ScrollView;
 class ViewAccessibility;
 class ViewMaskLayer;
@@ -733,8 +733,13 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // parent views do not change.
   void InvalidateLayout();
 
+  // TODO(kylixrd): Update comment once UseDefaultFillLayout is true by default.
+  // UseDefaultFillLayout will be set to true by default once the codebase is
+  // audited and refactored.
+  //
   // Gets/Sets the Layout Manager used by this view to size and place its
-  // children.
+  // children. NOTE: This will force UseDefaultFillLayout to false if it had
+  // been set to true.
   //
   // The LayoutManager is owned by the View and is deleted when the view is
   // deleted, or when a new LayoutManager is installed. Call
@@ -756,6 +761,11 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
     return lm;
   }
   void SetLayoutManager(std::nullptr_t);
+
+  // Sets whether or not the default layout manager should be used for this
+  // view. NOTE: this can only be set if |layout_manager_| isn't assigned.
+  bool GetUseDefaultFillLayout() const;
+  void SetUseDefaultFillLayout(bool value);
 
   // Attributes ----------------------------------------------------------------
 
@@ -1603,6 +1613,21 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   FRIEND_TEST_ALL_PREFIXES(ViewTest, PaintWithMovedViewUsesCacheInRTL);
   FRIEND_TEST_ALL_PREFIXES(ViewTest, PaintWithUnknownInvalidation);
 
+  // This is the default view layout. It is a very simple version of FillLayout,
+  // which merely sets the bounds of the children to the content bounds. The
+  // actual FillLayout isn't used here because it supports a couple of features
+  // not used in the vast majority of instances. It also descends from
+  // LayoutManagerBase which adds some extra overhead not needed here.
+
+  class DefaultFillLayout : public LayoutManager {
+   public:
+    DefaultFillLayout();
+    ~DefaultFillLayout() override;
+    void Layout(View* host) override;
+    gfx::Size GetPreferredSize(const View* host) const override;
+    int GetPreferredHeightForWidth(const View* host, int width) const override;
+  };
+
   using PropertyChangedVectors =
       std::map<PropertyKey, std::unique_ptr<PropertyChangedCallbacks>>;
 
@@ -1807,6 +1832,12 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Creates a mask layer for the current view using |clip_path_|.
   void CreateMaskLayer();
 
+  // Layout --------------------------------------------------------------------
+
+  // Returns whether a layout is deferred to a layout manager, either the
+  // default fill layout or the assigned layout manager.
+  bool HasLayoutManager() const;
+
   // Input ---------------------------------------------------------------------
 
   bool ProcessMousePressed(const ui::MouseEvent& event);
@@ -1954,6 +1985,11 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Views. The default is absolute positioning according to bounds_.
   std::unique_ptr<LayoutManager> layout_manager_;
 
+  // The default "fill" layout manager. This is set only if |layout_manager_|
+  // isn't set and SetUseDefaultFillLayout(true) is called or
+  // |kUseDefaultFillLayout| is true.
+  base::Optional<DefaultFillLayout> default_fill_layout_;
+
   // Whether this View's layer should be snapped to the pixel boundary.
   bool snap_layer_to_pixel_boundary_ = false;
 
@@ -2086,6 +2122,7 @@ VIEW_BUILDER_PROPERTY(bool, NotifyEnterExitOnChild)
 VIEW_BUILDER_PROPERTY(gfx::Transform, Transform)
 VIEW_BUILDER_PROPERTY(bool, Visible)
 VIEW_BUILDER_PROPERTY(bool, CanProcessEventsWithinSubtree)
+VIEW_BUILDER_PROPERTY(bool, UseDefaultFillLayout)
 END_VIEW_BUILDER
 
 }  // namespace views
