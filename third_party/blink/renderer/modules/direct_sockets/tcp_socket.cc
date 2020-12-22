@@ -75,10 +75,38 @@ void TCPSocket::Init(int32_t result,
   resolver_ = nullptr;
 }
 
-ScriptPromise TCPSocket::close(ScriptState*, ExceptionState&) {
-  // TODO(crbug.com/905818): Implement close.
-  NOTIMPLEMENTED();
-  return ScriptPromise();
+ScriptPromise TCPSocket::close(ScriptState* script_state, ExceptionState&) {
+  local_addr_ = base::nullopt;
+  peer_addr_ = base::nullopt;
+  tcp_socket_.reset();
+  socket_observer_receiver_.reset();
+  feature_handle_for_scheduler_.reset();
+  if (resolver_) {
+    resolver_->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kAbortError, "The request was aborted locally"));
+    resolver_ = nullptr;
+
+    DCHECK(!tcp_readable_stream_wrapper_);
+    DCHECK(!tcp_writable_stream_wrapper_);
+
+    return ScriptPromise::CastUndefined(script_state);
+  }
+
+  if (tcp_readable_stream_wrapper_ &&
+      tcp_readable_stream_wrapper_->GetState() ==
+          TCPReadableStreamWrapper::State::kOpen) {
+    tcp_readable_stream_wrapper_->Reset();
+  }
+  tcp_readable_stream_wrapper_ = nullptr;
+
+  if (tcp_writable_stream_wrapper_ &&
+      tcp_writable_stream_wrapper_->GetState() ==
+          TCPWritableStreamWrapper::State::kOpen) {
+    tcp_writable_stream_wrapper_->Reset();
+  }
+  tcp_writable_stream_wrapper_ = nullptr;
+
+  return ScriptPromise::CastUndefined(script_state);
 }
 
 ReadableStream* TCPSocket::readable() const {

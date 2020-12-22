@@ -24,6 +24,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "tcp_readable_stream_wrapper_unittest.cc",
+    "tcp_socket_unittest.cc",
     "tcp_writable_stream_wrapper_unittest.cc",
   ]
 
