@@ -23,6 +23,7 @@
 #include "url/url_canon.h"
 #include "url/url_canon_ip.h"
 #include "url/url_constants.h"
+#include "url/url_util.h"
 
 namespace net {
 
@@ -401,6 +402,20 @@ GURL ChangeWebSocketSchemeToHttpScheme(const GURL& url) {
   replace_scheme.SetSchemeStr(url.SchemeIs(url::kWssScheme) ? url::kHttpsScheme
                                                             : url::kHttpScheme);
   return url.ReplaceComponents(replace_scheme);
+}
+
+bool IsStandardSchemeWithNetworkHost(base::StringPiece scheme) {
+  // file scheme is special. Windows file share origins can have network hosts.
+  if (scheme == url::kFileScheme)
+    return true;
+
+  url::SchemeType scheme_type;
+  if (!url::GetStandardSchemeType(
+          scheme.data(), url::Component(0, scheme.length()), &scheme_type)) {
+    return false;
+  }
+  return scheme_type == url::SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION ||
+         scheme_type == url::SCHEME_WITH_HOST_AND_PORT;
 }
 
 void GetIdentityFromURL(const GURL& url,

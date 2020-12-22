@@ -35,10 +35,11 @@ class SiteForCookies;
 //
 // A SchemefulSite is obtained from an input origin by normalizing, such that:
 // 1. Opaque origins have distinct SchemefulSites.
-// 2. http(s) origins have the same SchemefulSite iff they share a scheme, and
-//    share a hostname or registrable domain.
-// 3. Non-http(s) origins have the same SchemefulSite iff they share a scheme
-//    and host.
+// 2. Origins whose schemes have network hosts have the same SchemefulSite iff
+//    they share a scheme, and share a hostname or registrable domain. Origins
+//    whose schemes have network hosts include http, https, ws, wss, file, etc.
+// 3. Origins whose schemes do not have a network host have the same
+//    SchemefulSite iff they share a scheme and host.
 // 4. Origins which differ only by port have the same SchemefulSite.
 // 5. Websocket origins cannot have a SchemefulSite (they trigger a DCHECK).
 class NET_EXPORT SchemefulSite {

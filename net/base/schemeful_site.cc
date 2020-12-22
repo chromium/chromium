@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "net/base/url_util.h"
 #include "url/gurl.h"
 #include "url/url_canon.h"
 #include "url/url_constants.h"
@@ -29,12 +30,11 @@ SchemefulSite::ObtainASiteResult SchemefulSite::ObtainASite(
   std::string registerable_domain;
 
   // Non-normative step.
-  // We only lookup the registerable domain for HTTP/HTTPS schemes, this is
-  // non-normative. Other schemes for non-opaque origins like "file" do not
+  // We only lookup the registerable domain for schemes with network hosts, this
+  // is non-normative. Other schemes for non-opaque origins do not
   // meaningfully have a registerable domain for their host, so they are
   // skipped.
-  if (origin.scheme() == url::kHttpsScheme ||
-      origin.scheme() == url::kHttpScheme) {
+  if (IsStandardSchemeWithNetworkHost(origin.scheme())) {
     registerable_domain = GetDomainAndRegistry(
         origin, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
   }

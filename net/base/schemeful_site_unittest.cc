@@ -4,6 +4,7 @@
 
 #include "net/base/schemeful_site.h"
 
+#include "net/base/url_util.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -148,6 +149,65 @@ TEST(SchemefulSiteTest, FileOriginWithoutHostname) {
 
   EXPECT_EQ(site1, site2);
   EXPECT_TRUE(site1.GetInternalOriginForTesting().host().empty());
+}
+
+TEST(SchemefulSiteTest, SchemeWithNetworkHost) {
+  url::ScopedSchemeRegistryForTests scheme_registry;
+  AddStandardScheme("network", url::SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION);
+  AddStandardScheme("non-network", url::SCHEME_WITH_HOST);
+
+  ASSERT_TRUE(IsStandardSchemeWithNetworkHost("network"));
+  ASSERT_FALSE(IsStandardSchemeWithNetworkHost("non-network"));
+
+  base::Optional<SchemefulSite> network_host_site =
+      SchemefulSite::CreateIfHasRegisterableDomain(
+          url::Origin::Create(GURL("network://site.example.test:1337")));
+  EXPECT_TRUE(network_host_site.has_value());
+  EXPECT_EQ("network",
+            network_host_site->GetInternalOriginForTesting().scheme());
+  EXPECT_EQ("example.test",
+            network_host_site->GetInternalOriginForTesting().host());
+
+  base::Optional<SchemefulSite> non_network_host_site_null =
+      SchemefulSite::CreateIfHasRegisterableDomain(
+          url::Origin::Create(GURL("non-network://site.example.test")));
+  EXPECT_FALSE(non_network_host_site_null.has_value());
+  SchemefulSite non_network_host_site(GURL("non-network://site.example.test"));
+  EXPECT_EQ("non-network",
+            non_network_host_site.GetInternalOriginForTesting().scheme());
+  // The host is used as-is, without attempting to get a registrable domain.
+  EXPECT_EQ("site.example.test",
+            non_network_host_site.GetInternalOriginForTesting().host());
+}
+
+TEST(SchemefulSiteTest, FileSchemeHasRegistrableDomain) {
+  // Test file origin without host.
+  url::Origin origin_file =
+      url::Origin::Create(GURL("file:///dir1/dir2/file.txt"));
+  EXPECT_TRUE(origin_file.host().empty());
+  SchemefulSite site_file(origin_file);
+  EXPECT_EQ(url::Origin::Create(GURL("file:///")),
+            site_file.GetInternalOriginForTesting());
+
+  // Test file origin with host (with registrable domain).
+  url::Origin origin_file_with_host =
+      url::Origin::Create(GURL("file://host.example.test/file"));
+  ASSERT_EQ("host.example.test", origin_file_with_host.host());
+  SchemefulSite site_file_with_host(origin_file_with_host);
+  EXPECT_EQ(url::Origin::Create(GURL("file://example.test")),
+            site_file_with_host.GetInternalOriginForTesting());
+
+  // Test file origin with host same as registrable domain.
+  url::Origin origin_file_registrable_domain =
+      url::Origin::Create(GURL("file://example.test/file"));
+  ASSERT_EQ("example.test", origin_file_registrable_domain.host());
+  SchemefulSite site_file_registrable_domain(origin_file_registrable_domain);
+  EXPECT_EQ(url::Origin::Create(GURL("file://example.test")),
+            site_file_registrable_domain.GetInternalOriginForTesting());
+
+  EXPECT_NE(site_file, site_file_with_host);
+  EXPECT_NE(site_file, site_file_registrable_domain);
+  EXPECT_EQ(site_file_with_host, site_file_registrable_domain);
 }
 
 TEST(SchemefulSiteTest, SerializationConsistent) {

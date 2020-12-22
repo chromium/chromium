@@ -184,6 +184,11 @@ NET_EXPORT GURL SimplifyUrlForRequest(const GURL& url);
 // than "ws" or "wss".
 NET_EXPORT GURL ChangeWebSocketSchemeToHttpScheme(const GURL& url);
 
+// Returns whether the given url scheme is of a standard scheme type that can
+// have hostnames representing domains (i.e. network hosts).
+// See url::SchemeType.
+NET_EXPORT bool IsStandardSchemeWithNetworkHost(base::StringPiece scheme);
+
 // Extracts the unescaped username/password from |url|, saving the results
 // into |*username| and |*password|.
 NET_EXPORT_PRIVATE void GetIdentityFromURL(const GURL& url,
