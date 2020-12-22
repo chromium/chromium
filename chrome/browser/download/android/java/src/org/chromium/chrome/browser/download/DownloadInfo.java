@@ -298,6 +298,7 @@ public final class DownloadInfo {
                 .setUrl(item.pageUrl)
                 .setOriginalUrl(item.originalUrl)
                 .setIsOffTheRecord(item.isOffTheRecord)
+                .setOTRProfileId(OTRProfileID.deserialize(item.otrProfileId))
                 .setState(state)
                 .setIsPaused(item.state == OfflineItemState.PAUSED)
                 .setIsResumable(item.isResumable)

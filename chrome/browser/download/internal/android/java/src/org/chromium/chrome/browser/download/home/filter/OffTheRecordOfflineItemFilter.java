@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.download.home.filter;
 
+import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.components.offline_items_collection.OfflineItem;
 
 /**
@@ -23,6 +24,11 @@ public class OffTheRecordOfflineItemFilter extends OfflineItemFilter {
     // OfflineItemFilter implementation.
     @Override
     protected boolean isFilteredOut(OfflineItem item) {
-        return mIncludeOffTheRecordItems ? false : item.isOffTheRecord;
+        // Always show downloads from regular mode.
+        if (!item.isOffTheRecord) return false;
+
+        // Only show downloads from primary OTR profile if mIncludeOffTheRecordItems is true.
+        boolean isPrimaryOTR = OTRProfileID.deserialize(item.otrProfileId).isPrimaryOTRId();
+        return !(mIncludeOffTheRecordItems && isPrimaryOTR);
     }
 }

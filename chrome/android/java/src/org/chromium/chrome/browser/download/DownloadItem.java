@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.download;
 
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.components.download.DownloadState;
 import org.chromium.components.download.ResumeMode;
 import org.chromium.components.offline_items_collection.ContentId;
@@ -166,6 +167,7 @@ public class DownloadItem {
         offlineItem.pageUrl = downloadInfo.getUrl();
         offlineItem.originalUrl = downloadInfo.getOriginalUrl();
         offlineItem.isOffTheRecord = downloadInfo.isOffTheRecord();
+        offlineItem.otrProfileId = OTRProfileID.serialize(downloadInfo.getOTRProfileId());
         offlineItem.mimeType = downloadInfo.getMimeType();
         offlineItem.progress = downloadInfo.getProgress();
         offlineItem.timeRemainingMs = downloadInfo.getTimeRemainingInMillis();

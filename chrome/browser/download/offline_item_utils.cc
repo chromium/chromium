@@ -5,6 +5,7 @@
 #include "chrome/browser/download/offline_item_utils.h"
 
 #include "build/build_config.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/download/public/common/auto_resumption_handler.h"
 #include "components/download/public/common/download_schedule.h"
@@ -115,6 +116,10 @@ OfflineItem OfflineItemUtils::CreateOfflineItem(const std::string& name_space,
   item.mime_type = DownloadUtils::RemapGenericMimeType(
       item.mime_type, download_item->GetOriginalUrl(),
       download_item->GetTargetFilePath().value());
+  if (off_the_record) {
+    Profile* profile = Profile::FromBrowserContext(browser_context);
+    item.otr_profile_id = profile->GetOTRProfileID().Serialize();
+  }
 #endif
 
   item.page_url = download_item->GetTabUrl();

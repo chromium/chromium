@@ -147,6 +147,12 @@ class Profile : public content::BrowserContext {
     static OTRProfileID ConvertFromJavaOTRProfileID(
         JNIEnv* env,
         const base::android::JavaRef<jobject>& j_otr_profile_id);
+
+    // Constructs a string that represents OTRProfileID from the provided
+    // OTRProfileID.
+    // TODO(crbug.com/1161104): Use one serialize function for both java and
+    // native side instead of having duplicate code.
+    std::string Serialize() const;
 #endif
 
    private:

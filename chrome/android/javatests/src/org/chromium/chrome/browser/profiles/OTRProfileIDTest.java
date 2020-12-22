@@ -139,4 +139,17 @@ public class OTRProfileIDTest {
             assert !deserializedIdOne.equals(deserializedIdTwo);
         });
     }
+
+    @Test
+    @MediumTest
+    public void testSerializationForRegularProfile() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            // Deserialize the profile ids from serialized version.
+            OTRProfileID deserializedNullValue = OTRProfileID.deserialize(null);
+            assert deserializedNullValue == null;
+
+            OTRProfileID deserializedEmptyValue = OTRProfileID.deserialize("");
+            assert deserializedEmptyValue == null;
+        });
+    }
 }

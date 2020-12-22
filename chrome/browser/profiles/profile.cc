@@ -164,6 +164,12 @@ base::android::ScopedJavaLocalRef<jobject> JNI_OTRProfileID_GetPrimaryID(
     JNIEnv* env) {
   return Profile::OTRProfileID::PrimaryID().ConvertToJavaOTRProfileID(env);
 }
+
+std::string Profile::OTRProfileID::Serialize() const {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return ConvertJavaStringToUTF8(
+      env, Java_OTRProfileID_serialize(env, ConvertToJavaOTRProfileID(env)));
+}
 #endif
 
 Profile::Profile() {

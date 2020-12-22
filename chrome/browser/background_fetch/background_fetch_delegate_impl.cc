@@ -22,7 +22,6 @@
 #include "chrome/browser/download/download_service_factory.h"
 #include "chrome/browser/metrics/ukm_background_recorder_service.h"
 #include "chrome/browser/offline_items_collection/offline_content_aggregator_factory.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -99,7 +98,7 @@ BackgroundFetchDelegateImpl::JobDetails::JobDetails(
     base::WeakPtr<Client> client,
     std::unique_ptr<content::BackgroundFetchDescription> fetch_description,
     const std::string& provider_namespace,
-    bool is_off_the_record)
+    const Profile* profile)
     : client(std::move(client)),
       offline_item(offline_items_collection::ContentId(
           provider_namespace,
@@ -108,7 +107,11 @@ BackgroundFetchDelegateImpl::JobDetails::JobDetails(
                     ? State::kPendingWillStartPaused
                     : State::kPendingWillStartDownloading),
       fetch_description(std::move(fetch_description)) {
-  offline_item.is_off_the_record = is_off_the_record;
+  offline_item.is_off_the_record = profile->IsOffTheRecord();
+#if defined(OS_ANDROID)
+  if (profile->IsOffTheRecord())
+    offline_item.otr_profile_id = profile->GetOTRProfileID().Serialize();
+#endif
   offline_item.original_url = this->fetch_description->origin.GetURL();
   UpdateOfflineItem();
 }
@@ -323,9 +326,8 @@ void BackgroundFetchDelegateImpl::CreateDownloadJob(
   std::string job_unique_id = fetch_description->job_unique_id;
   DCHECK(!job_details_map_.count(job_unique_id));
   job_details_map_.emplace(
-      job_unique_id,
-      JobDetails(std::move(client), std::move(fetch_description),
-                 provider_namespace_, profile_->IsOffTheRecord()));
+      job_unique_id, JobDetails(std::move(client), std::move(fetch_description),
+                                provider_namespace_, profile_));
 }
 
 void BackgroundFetchDelegateImpl::DownloadUrl(

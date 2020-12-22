@@ -36,6 +36,7 @@ public class OTRProfileID {
      * @param otrProfileID An OTRProfileId instance.
      * @return A string that represents the given otrProfileID.
      */
+    @CalledByNative
     public static String serialize(OTRProfileID otrProfileID) {
         // The OTRProfileID might be null, if it represents the regular profile.
         if (otrProfileID == null) return null;
@@ -54,7 +55,7 @@ public class OTRProfileID {
      */
     public static OTRProfileID deserialize(String value) {
         // The value might be null, if it represents the regular profile.
-        if (value == null) return null;
+        if (value == null || value.isEmpty()) return null;
 
         // Check if the format is align with |OTRProfileID#toString| function.
         assert value.startsWith("OTRProfileID{") && value.endsWith("}");

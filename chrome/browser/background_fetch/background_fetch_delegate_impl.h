@@ -13,6 +13,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/download/public/background_service/download_params.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/offline_items_collection/core/offline_content_provider.h"
@@ -169,7 +170,7 @@ class BackgroundFetchDelegateImpl
         base::WeakPtr<Client> client,
         std::unique_ptr<content::BackgroundFetchDescription> fetch_description,
         const std::string& provider_namespace,
-        bool is_off_the_record);
+        const Profile* profile);
     ~JobDetails();
 
     void UpdateOfflineItem();

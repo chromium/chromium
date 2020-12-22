@@ -194,6 +194,9 @@ struct OfflineItem {
   // Whether or not this item is off the record.
   bool is_off_the_record;
 
+  // The OTRProfileID of the profile, null if the profile is regular.
+  std::string otr_profile_id;
+
   // Identifies the item's publisher.
   std::string attribution;
 

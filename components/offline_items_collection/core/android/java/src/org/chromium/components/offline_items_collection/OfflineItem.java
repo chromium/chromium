@@ -93,6 +93,7 @@ public class OfflineItem implements Cloneable {
     public String pageUrl;
     public String originalUrl;
     public boolean isOffTheRecord;
+    public String otrProfileId;
 
     // In Progress Metadata.
     @OfflineItemState
@@ -140,6 +141,7 @@ public class OfflineItem implements Cloneable {
         clone.pageUrl = pageUrl;
         clone.originalUrl = originalUrl;
         clone.isOffTheRecord = isOffTheRecord;
+        clone.otrProfileId = otrProfileId;
         clone.state = state;
         clone.isResumable = isResumable;
         clone.allowMetered = allowMetered;
