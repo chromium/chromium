@@ -35,24 +35,28 @@ class TestNavigationObserver {
   TestNavigationObserver(WebContents* web_contents,
                          int number_of_navigations,
                          MessageLoopRunner::QuitMode quit_mode =
-                             MessageLoopRunner::QuitMode::IMMEDIATE);
+                             MessageLoopRunner::QuitMode::IMMEDIATE,
+                         bool ignore_uncommitted_navigations = true);
   // Like above but waits for one navigation.
   explicit TestNavigationObserver(WebContents* web_contents,
                                   MessageLoopRunner::QuitMode quit_mode =
-                                      MessageLoopRunner::QuitMode::IMMEDIATE);
+                                      MessageLoopRunner::QuitMode::IMMEDIATE,
+                                  bool ignore_uncommitted_navigations = true);
   // Create and register a new TestNavigationObserver that will wait for
-  // |target_url| to complete loading or for a committed navigation to
+  // |target_url| to complete loading or for a finished navigation to
   // |target_url|.
   explicit TestNavigationObserver(const GURL& target_url,
                                   MessageLoopRunner::QuitMode quit_mode =
-                                      MessageLoopRunner::QuitMode::IMMEDIATE);
+                                      MessageLoopRunner::QuitMode::IMMEDIATE,
+                                  bool ignore_uncommitted_navigations = true);
 
   // Create and register a new TestNavigationObserver that will wait for
   // a navigation with |target_error|.
   explicit TestNavigationObserver(WebContents* web_contents,
                                   net::Error target_error,
                                   MessageLoopRunner::QuitMode quit_mode =
-                                      MessageLoopRunner::QuitMode::IMMEDIATE);
+                                      MessageLoopRunner::QuitMode::IMMEDIATE,
+                                  bool ignore_uncommitted_navigations = true);
 
   virtual ~TestNavigationObserver();
 
@@ -150,7 +154,8 @@ class TestNavigationObserver {
                          const base::Optional<GURL>& target_url,
                          base::Optional<net::Error> target_error,
                          MessageLoopRunner::QuitMode quit_mode =
-                             MessageLoopRunner::QuitMode::IMMEDIATE);
+                             MessageLoopRunner::QuitMode::IMMEDIATE,
+                         bool ignore_uncommitted_navigations = true);
 
   // Callbacks for WebContents-related events.
   void OnWebContentsCreated(WebContents* web_contents);
@@ -192,6 +197,9 @@ class TestNavigationObserver {
   // The net error of the finished navigation to wait for.
   // If this is nullopt, any net::Error counts.
   const base::Optional<net::Error> target_error_;
+
+  // Whether to ignore navigations that finish but don't commit.
+  bool ignore_uncommitted_navigations_;
 
   // The url of the navigation that last committed.
   GURL last_navigation_url_;

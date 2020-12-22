@@ -47,9 +47,6 @@ class TestNavigationObserver::TestWebContentsObserver
   }
 
   void DidFinishNavigation(NavigationHandle* navigation_handle) override {
-    if (!navigation_handle->HasCommitted())
-      return;
-
     parent_->OnDidFinishNavigation(navigation_handle);
   }
 
@@ -69,36 +66,46 @@ TestNavigationObserver::WebContentsState::~WebContentsState() = default;
 TestNavigationObserver::TestNavigationObserver(
     WebContents* web_contents,
     int number_of_navigations,
-    MessageLoopRunner::QuitMode quit_mode)
+    MessageLoopRunner::QuitMode quit_mode,
+    bool ignore_uncommitted_navigations)
     : TestNavigationObserver(web_contents,
                              number_of_navigations,
                              base::nullopt /* target_url */,
                              base::nullopt /* target_error */,
-                             quit_mode) {}
+                             quit_mode,
+                             ignore_uncommitted_navigations) {}
 
 TestNavigationObserver::TestNavigationObserver(
     WebContents* web_contents,
-    MessageLoopRunner::QuitMode quit_mode)
-    : TestNavigationObserver(web_contents, 1, quit_mode) {}
+    MessageLoopRunner::QuitMode quit_mode,
+    bool ignore_uncommitted_navigations)
+    : TestNavigationObserver(web_contents,
+                             1,
+                             quit_mode,
+                             ignore_uncommitted_navigations) {}
 
 TestNavigationObserver::TestNavigationObserver(
     const GURL& target_url,
-    MessageLoopRunner::QuitMode quit_mode)
+    MessageLoopRunner::QuitMode quit_mode,
+    bool ignore_uncommitted_navigations)
     : TestNavigationObserver(nullptr,
                              1 /* num_of_navigations */,
                              target_url,
                              base::nullopt /* target_error */,
-                             quit_mode) {}
+                             quit_mode,
+                             ignore_uncommitted_navigations) {}
 
 TestNavigationObserver::TestNavigationObserver(
     WebContents* web_contents,
     net::Error target_error,
-    MessageLoopRunner::QuitMode quit_mode)
+    MessageLoopRunner::QuitMode quit_mode,
+    bool ignore_uncommitted_navigations)
     : TestNavigationObserver(web_contents,
                              1 /* num_of_navigations */,
                              base::nullopt,
                              target_error,
-                             quit_mode) {}
+                             quit_mode,
+                             ignore_uncommitted_navigations) {}
 
 TestNavigationObserver::~TestNavigationObserver() {
   StopWatchingNewWebContents();
@@ -138,12 +145,14 @@ TestNavigationObserver::TestNavigationObserver(
     int number_of_navigations,
     const base::Optional<GURL>& target_url,
     base::Optional<net::Error> target_error,
-    MessageLoopRunner::QuitMode quit_mode)
+    MessageLoopRunner::QuitMode quit_mode,
+    bool ignore_uncommitted_navigations)
     : wait_event_(WaitEvent::kLoadStopped),
       navigations_completed_(0),
       number_of_navigations_(number_of_navigations),
       target_url_(target_url),
       target_error_(target_error),
+      ignore_uncommitted_navigations_(ignore_uncommitted_navigations),
       last_navigation_succeeded_(false),
       last_net_error_code_(net::OK),
       last_navigation_type_(NAVIGATION_TYPE_UNKNOWN),
@@ -210,6 +219,9 @@ void TestNavigationObserver::OnDidStartNavigation(
 
 void TestNavigationObserver::OnDidFinishNavigation(
     NavigationHandle* navigation_handle) {
+  if (ignore_uncommitted_navigations_ && !navigation_handle->HasCommitted())
+    return;
+
   if (target_url_.has_value() &&
       target_url_.value() != navigation_handle->GetURL()) {
     return;
@@ -232,9 +244,12 @@ void TestNavigationObserver::OnDidFinishNavigation(
   last_navigation_initiator_origin_ = request->common_params().initiator_origin;
   last_initiator_frame_token_ = navigation_handle->GetInitiatorFrameToken();
   last_initiator_process_id_ = navigation_handle->GetInitiatorProcessID();
-  last_navigation_succeeded_ = !navigation_handle->IsErrorPage();
+  last_navigation_succeeded_ =
+      navigation_handle->HasCommitted() && !navigation_handle->IsErrorPage();
   last_net_error_code_ = navigation_handle->GetNetErrorCode();
-  last_navigation_type_ = request->navigation_type();
+  last_navigation_type_ = navigation_handle->HasCommitted()
+                              ? request->navigation_type()
+                              : NAVIGATION_TYPE_UNKNOWN;
 
   if (wait_event_ == WaitEvent::kNavigationFinished)
     EventTriggered(web_contents_state);
