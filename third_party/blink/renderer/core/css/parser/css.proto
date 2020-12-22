@@ -1594,7 +1594,8 @@ message Selector {
     NTH_LAST_OF_TYPE = 87;
     NTH_OF_TYPE = 88;
     SLOTTED = 89;
-    INVALID_PSEUDO_VALUE = 90;
+    XR_OVERLAY = 90;
+    INVALID_PSEUDO_VALUE = 91;
   }
   optional PseudoValueId pseudo_value_id = 4;
   required Combinator combinator = 5;
