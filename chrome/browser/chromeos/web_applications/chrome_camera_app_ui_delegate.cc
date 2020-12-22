@@ -188,5 +188,6 @@ base::FilePath ChromeCameraAppUIDelegate::GetFilePathByName(
 
 void ChromeCameraAppUIDelegate::OpenDevToolsWindow(
     content::WebContents* web_contents) {
-  DevToolsWindow::OpenDevToolsWindow(web_contents);
+  DevToolsWindow::OpenDevToolsWindow(web_contents,
+                                     DevToolsToggleAction::NoOp());
 }
