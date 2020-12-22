@@ -6,11 +6,3 @@ exception is listed below. See
 
 _Note: We likely want to converge with [Chromium style](python.md), so this
 style recommendation is likely to change._
-
-## Differences from PEP-8
-
-* Line length limit is 132
-
-## Differences from Chromium style
-
-* Line length limit is 132
