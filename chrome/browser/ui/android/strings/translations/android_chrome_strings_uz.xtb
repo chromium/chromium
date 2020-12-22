@@ -331,14 +331,14 @@ Qidiruvni boshlash uchun istalgan soʻzni bosib turing. Qidruvni aniqlashtirish 
 <translation id="3315103659806849044">Siz hozir Sync va Google xizmati sozlamalaridasiz. Sinxronizatsiyani yoqish uchun ekranning quyi qismidagi Tasdiqlash tugmasini bosing. Tepaga</translation>
 <translation id="3334729583274622784">Fayl kengaytmasi oʻzgartirilsinmi?</translation>
 <translation id="3341058695485821946">Qancha trafik tejalganini biling</translation>
-<translation id="3350687908700087792">Barcha inkognito ichki oynalarini yopish</translation>
+<translation id="3350687908700087792">Barcha inkognito varaqlarnini yopish</translation>
 <translation id="3353615205017136254">Sahifaning Lite versiyasi Google tomonidan taqdim etildi. Uning aslini yuklash uchun “To‘liq versiya” tugmasini bosing.</translation>
 <translation id="3359667936385849800">Joriy xizmat provayderingiz orqali</translation>
 <translation id="3367813778245106622">Yana sinxronlashni boshlash uchun hisobingizga kiring</translation>
 <translation id="337236281855091893">Qidirish uchun soʻzni teginish oʻrniga bosib turing</translation>
 <translation id="3373979091428520308">Bu sahifani boshqa qurilmaga ulashish uchun oʻsha qurilmadagi Chrome sozlamalarida sinxronizatsiyani yoqing</translation>
 <translation id="3374023511497244703">Bukmarklar, tarix, parollar va boshqa Chrome maʼlumotlaringiz bilan Google hisobingiz sinxronizatsiyasi uziladi</translation>
-<translation id="3384347053049321195">Tasvirni ulashish</translation>
+<translation id="3384347053049321195">Rasmni ulashish</translation>
 <translation id="3387650086002190359">Fayllar tizimi xatoliklari tufayli “<ph name="FILE_NAME" />” fayli yuklab olinmadi.</translation>
 <translation id="3389286852084373014">Matn juda katta</translation>
 <translation id="3398320232533725830">Xatcho‘plar menejerini ochish</translation>
@@ -383,7 +383,7 @@ Qidiruvni boshlash uchun istalgan soʻzni bosib turing. Qidruvni aniqlashtirish 
 <translation id="3739899004075612870"><ph name="PRODUCT_NAME" /> xatcho‘plariga saqlandi</translation>
 <translation id="3749259744154402564">Mos kelmaydi</translation>
 <translation id="3771001275138982843">Yangilanish yuklab olinmadi</translation>
-<translation id="3771033907050503522">Inkognito tab‘lar</translation>
+<translation id="3771033907050503522">Inkognito varaqlar</translation>
 <translation id="3771290962915251154">Bu sozlama ota-ona nazorati tufayli yoqilmagan</translation>
 <translation id="3771694256347217732">Google xizmat shartlari</translation>
 <translation id="3773755127849930740">Ulanishga ruxsat berish uchun <ph name="BEGIN_LINK" />Bluetooth’ni yoqing<ph name="END_LINK" /></translation>
@@ -654,7 +654,7 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="5696597120588531049">Chrome maʼlumotlaringizni axborotlar sizib chiqishi va xavfsizlikka oid boshqa muammolardan himoyalaydi</translation>
 <translation id="5697688514913266141">Fayl <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" /> jildiga saqlanadi. <ph name="BEGIN_LINK2" />Tahrirlash<ph name="END_LINK2" />.</translation>
 <translation id="570347048394355941">Varaqqa oʻtish</translation>
-<translation id="572328651809341494">Yaqinda ochilgan varaqlar</translation>
+<translation id="572328651809341494">Oxirgi varaqlar</translation>
 <translation id="5723735397759933332">Lite rejimi HTTPS sahifalardagi rasmlarni arxivlash hisobiga endi koʻproq trafikni tejaydi</translation>
 <translation id="5726692708398506830">Sahifadagi hamma narsani kattalashtirish</translation>
 <translation id="5732819098735351888">Yuklab olish Wi-Fi orqali ishga tushadi.</translation>

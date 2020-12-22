@@ -5,7 +5,7 @@
 <translation id="1003088604756913841">Otvoriť odkaz v novom okne aplikácie <ph name="APP" /></translation>
 <translation id="1003363546227723021">Zobrazte fotky, čas, počasie a informácie o médiách, keď je obrazovka nečinná</translation>
 <translation id="1004218526896219317">Prístup k webom</translation>
-<translation id="1005274289863221750">Používať mikrofón a fotoaparát</translation>
+<translation id="1005274289863221750">Používať mikrofón a kameru</translation>
 <translation id="1005333234656240382">Chcete aktivovať ladenie ADB?</translation>
 <translation id="1006873397406093306">Toto rozšírenie môže čítať a upravovať údaje na vašom webe. Môžete určiť, ku ktorým webom bude mať rozšírenie prístup.</translation>
 <translation id="1008186147501209563">Exportovať záložky</translation>
@@ -1998,7 +1998,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3280243678470289153">Zostať v Chrome</translation>
 <translation id="3281892622610078515">Súbory a programy, ktoré sa pridajú do karantény:</translation>
 <translation id="3282210178675490297">Zdieľa sa karta v aplikácii <ph name="APP_NAME" /></translation>
-<translation id="3282568296779691940">Prihlásenie do prehliadača Chrome</translation>
+<translation id="3282568296779691940">Prihlásiť sa do Chromu</translation>
 <translation id="3285322247471302225">Nová &amp;karta</translation>
 <translation id="328571385944182268">Chcete ukladať heslá?</translation>
 <translation id="3286538390144397061">Reštartovať</translation>
@@ -3986,7 +3986,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="5632566673632479864">Účet <ph name="EMAIL" /> už nemôžete použiť ako hlavný účet. Keďže tento účet spravuje doména <ph name="DOMAIN" />, budú z tohto zariadenia vymazané vaše záložky, história, heslá a ďalšie nastavenia.</translation>
 <translation id="5632592977009207922">Sťahuje sa, zostáva <ph name="PERCENT_REMAINING" /> %</translation>
 <translation id="563371367637259496">Mobilná</translation>
-<translation id="563535393368633106">Spýtať sa pred pristupovaním (odporúčané)</translation>
+<translation id="563535393368633106">Pred prístupom sa spýtať (odporúčané)</translation>
 <translation id="5636996382092289526">Pred použitím siete <ph name="NETWORK_ID" /> bude možno potrebné najprv <ph name="LINK_START" />prejsť na prihlasovaciu stránku siete<ph name="LINK_END" />, ktorá sa otvorí automaticky v priebehu niekoľkých sekúnd. Ak k tomu nedôjde, daná sieť sa nedá použiť.</translation>
 <translation id="5637476008227280525">Povoliť mobilné dáta</translation>
 <translation id="5638309510554459422">Nájdite rozšírenia a motívy v <ph name="BEGIN_LINK" />Internetovom obchode Chrome<ph name="END_LINK" /></translation>

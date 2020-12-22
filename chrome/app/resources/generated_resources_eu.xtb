@@ -2489,7 +2489,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3827306204503227641">Jarraitu baimentzen proben eremuan sartu gabeko pluginak</translation>
 <translation id="3827774300009121996">&amp;Pantaila osoa</translation>
 <translation id="3828029223314399057">Bilatu laster-markak</translation>
-<translation id="3829765597456725595">Enpresa txiki eta ertainen fitxategiak partekatzeko biltegia</translation>
+<translation id="3829765597456725595">SMB bidez fitxategiak partekatzeko biltegia</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{Luzapen kaltegarri bat berriro aktibatu du administratzaileak}other{{NUM_EXTENSIONS} luzapen kaltegarri berriro aktibatu ditu administratzaileak}}</translation>
 <translation id="3831436149286513437">Google Drive-ko bilaketa-iradokizunak</translation>
 <translation id="383161972796689579">Gailuaren jabeak erabiltzaile berriak gehitzeko aukera desgaitu du</translation>
@@ -3009,7 +3009,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="447252321002412580">Lagundu Chrome-ren eginbideak eta errendimendua hobetzen</translation>
 <translation id="4472575034687746823">Hasi erabiltzen</translation>
 <translation id="4474155171896946103">Egin laster-markak fitxa guztiei…</translation>
-<translation id="4474461121892222090">15 minutura arte behar izan daitezke datu-konexioa aktibatzeko.</translation>
+<translation id="4474461121892222090">Baliteke 15 minutu behar izatea datu-konexioa aktibatzeko.</translation>
 <translation id="4475552974751346499">Bilatu deskargak</translation>
 <translation id="4476590490540813026">Atleta</translation>
 <translation id="4476659815936224889">Kode hau eskaneatzeko, QR kodeak eskaneatzeko berariazko aplikazio bat edo kamera-aplikazio batzuk erabil ditzakezu.</translation>
@@ -3973,7 +3973,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="5620568081365989559">Garatzaileen tresnek sarbide osoa eskatzen dute <ph name="FOLDER_PATH" /> biderako. Ziurtatu ez duzula informazio garrantzitsurik agerian uzten.</translation>
 <translation id="5620612546311710611">erabilera-estatistikak</translation>
 <translation id="5620655347161642930">Esportatu pasahitzak…</translation>
-<translation id="5621137386706841383">Baliteke 30 minuturaino behar izatea.</translation>
+<translation id="5621137386706841383">Baliteke 30 minutu behar izatea.</translation>
 <translation id="5623282979409330487">Mugimendu-sentsoreak atzitzen ari da webgunea.</translation>
 <translation id="5623842676595125836">Erregistroa</translation>
 <translation id="5624120631404540903">Kudeatu pasahitzak</translation>
@@ -4377,7 +4377,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="6095984072944024315">−</translation>
 <translation id="6096047740730590436">Ireki maximizatuta</translation>
 <translation id="6096326118418049043">X.500 izena</translation>
-<translation id="609662062217584106">UPI sistemaren IDa</translation>
+<translation id="609662062217584106">UPIko IDa</translation>
 <translation id="6097480669505687979">Tokirik egiten ez baduzu, baliteke erabiltzaileak eta datuak automatikoki kentzea.</translation>
 <translation id="6097600385983390082">Itxi da ahozko bilaketa</translation>
 <translation id="6098793583803863900">Fitxategi ezezagun bat aztertzen ari gara, eduki arriskutsurik duen ikusteko.</translation>

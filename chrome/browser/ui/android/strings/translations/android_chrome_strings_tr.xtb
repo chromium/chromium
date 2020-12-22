@@ -1072,7 +1072,7 @@ Gizli oturumunuzdaki veriler yalnızca <ph name="BEGIN_BOLD2" />tüm Gizli sekme
 <translation id="8442258441309440798">Kullanılabilir hikaye yok</translation>
 <translation id="8443209985646068659">Chrome güncellenemiyor</translation>
 <translation id="8445448999790540984">Şifreler dışa aktarılamıyor</translation>
-<translation id="8461694314515752532">Senkronize edilen verileri senkronizasyon parolanızı kullanarak şifrele</translation>
+<translation id="8461694314515752532">Senkronize edilen verileri kendi senkronizasyon parolanızla şifreleyin</translation>
 <translation id="8466613982764129868"><ph name="TARGET_DEVICE_NAME" /> cihazının internete bağlı olduğundan emin olun</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8487700953926739672">Çevrimdışı kullanılabilir</translation>

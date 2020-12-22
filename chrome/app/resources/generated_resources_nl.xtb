@@ -162,7 +162,7 @@
 <translation id="1173894706177603556">Naam wijzigen</translation>
 <translation id="1173916544412572294">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, telefoonbatterij <ph name="BATTERY_STATUS" />%, details</translation>
 <translation id="1174073918202301297">Snelkoppeling toegevoegd</translation>
-<translation id="117445914942805388">Als je browsergegevens wilt wissen van al je gesynchroniseerde apparaten en je Google-account, <ph name="BEGIN_LINK" />ga je naar synchronisatie-instellingen<ph name="END_LINK" />.</translation>
+<translation id="117445914942805388">Als je browsegegevens wilt wissen van al je gesynchroniseerde apparaten en je Google-account, <ph name="BEGIN_LINK" />ga je naar synchronisatie-instellingen<ph name="END_LINK" />.</translation>
 <translation id="1175364870820465910">&amp;Afdrukken...</translation>
 <translation id="1177138678118607465">Google kan je browsegeschiedenis gebruiken om Google Zoeken, advertenties en andere Google-services te personaliseren. Je kunt dit op elk gewenst moment wijzigen via myaccount.google.com/activitycontrols/search</translation>
 <translation id="1177863135347784049">Aangepast</translation>
@@ -175,7 +175,7 @@
 <translation id="1187722533808055681">Activeringen vanuit inactief</translation>
 <translation id="1188807932851744811">Logbestand niet geüpload.</translation>
 <translation id="11901918071949011">{NUM_FILES,plural, =1{Toegang tot een bestand dat op je computer is opgeslagen}other{Toegang tot # bestanden die op je computer zijn opgeslagen}}</translation>
-<translation id="119092896208640858">Als je browsergegevens alleen van dit apparaat wilt wissen, maar ze wilt behouden in je Google-account, <ph name="BEGIN_LINK" />log je uit<ph name="END_LINK" />.</translation>
+<translation id="119092896208640858">Als je browsegegevens alleen van dit apparaat wilt wissen, maar ze wilt behouden in je Google-account, <ph name="BEGIN_LINK" />log je uit<ph name="END_LINK" />.</translation>
 <translation id="1192706927100816598">{0,plural, =1{Over # seconde word je automatisch uitgelogd.
 <ph name="DOMAIN" /> vereist dat je smartcard geplaatst blijft.}other{Over # seconden word je automatisch uitgelogd.
 <ph name="DOMAIN" /> vereist dat je smartcard geplaatst blijft.}}</translation>
@@ -1317,7 +1317,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2480868415629598489">Gegevens aanpassen die je kopieert en plakt</translation>
 <translation id="2482878487686419369">Meldingen</translation>
 <translation id="2482895651873876648">Tabblad verplaatst naar groep <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
-<translation id="2484959914739448251">Als je browsergegevens wilt wissen van al je gesynchroniseerde apparaten en je Google-account, <ph name="BEGIN_LINK" />geef je je wachtwoordzin op<ph name="END_LINK" />.</translation>
+<translation id="2484959914739448251">Als je browsegegevens wilt wissen van al je gesynchroniseerde apparaten en je Google-account, <ph name="BEGIN_LINK" />geef je je wachtwoordzin op<ph name="END_LINK" />.</translation>
 <translation id="2485005079599453134">Wachtwoord opgeslagen op dit apparaat</translation>
 <translation id="2485394160472549611">De beste keuzes voor jou</translation>
 <translation id="2485422356828889247">Installatie ongedaan maken</translation>
@@ -1532,7 +1532,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2725200716980197196">Netwerkverbinding hersteld</translation>
 <translation id="2727633948226935816">Niet opnieuw herinneren</translation>
 <translation id="2727712005121231835">Normaal</translation>
-<translation id="2729314457178420145">Ook browsergegevens wissen (<ph name="URL" />). Als je dit doet, kun je worden uitgelogd bij Google.com. <ph name="LEARN_MORE" /></translation>
+<translation id="2729314457178420145">Ook browsegegevens wissen (<ph name="URL" />). Als je dit doet, kun je worden uitgelogd bij Google.com. <ph name="LEARN_MORE" /></translation>
 <translation id="2730029791981212295">Een back-up maken van Linux-apps en -bestanden</translation>
 <translation id="2730901670247399077">Emoji-suggesties</translation>
 <translation id="273093730430620027">Deze pagina gebruikt je camera.</translation>
@@ -1854,7 +1854,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="3090819949319990166">Kan extern crx-bestand niet kopiëren naar <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">'<ph name="DEVICE_NAME" />' gekoppeld</translation>
 <translation id="3092699946856346803">Plaats je simkaart en probeer het opnieuw</translation>
-<translation id="3095871294753148861">Bookmarks, wachtwoorden en andere browsergegevens worden gesynchroniseerd met het primaire account.</translation>
+<translation id="3095871294753148861">Bookmarks, wachtwoorden en andere browsegegevens worden gesynchroniseerd met het primaire account.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 potentieel schadelijke extensie is uitgeschakeld. Je kunt deze ook verwijderen.}other{{NUM_EXTENSIONS} potentieel schadelijke extensies zijn uitgeschakeld. Je kunt ze ook verwijderen.}}</translation>
 <translation id="3101126716313987672">Licht dimmen</translation>
 <translation id="3101709781009526431">Datum en tijd</translation>
@@ -3435,7 +3435,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="4976009197147810135">Verticaal splitsen</translation>
 <translation id="4977942889532008999">Toegang bevestigen</translation>
 <translation id="4980805016576257426">Deze extensie bevat malware.</translation>
-<translation id="4981449534399733132">Als je browsergegevens wilt wissen van al je gesynchroniseerde apparaten en je Google-account, <ph name="BEGIN_LINK" />log je in<ph name="END_LINK" />.</translation>
+<translation id="4981449534399733132">Als je browsegegevens wilt wissen van al je gesynchroniseerde apparaten en je Google-account, <ph name="BEGIN_LINK" />log je in<ph name="END_LINK" />.</translation>
 <translation id="4982236238228587209">Apparaatsoftware</translation>
 <translation id="4986728572522335985">Hierdoor worden alle gegevens op de beveiligingssleutel, waaronder de pincode, verwijderd.</translation>
 <translation id="4988526792673242964">Pagina's</translation>
@@ -6712,7 +6712,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8809147117840417135">Lichtblauwgroen</translation>
 <translation id="8811862054141704416">Microfoontoegang voor Crostini</translation>
 <translation id="8812552797690463522">Dit netwerk is met jou gedeeld.</translation>
-<translation id="8812593354822910461">Ook browsergegevens wissen (<ph name="URL" />). Als je dit doet, word je uitgelogd bij <ph name="DOMAIN" />. <ph name="LEARN_MORE" /></translation>
+<translation id="8812593354822910461">Ook browsegegevens wissen (<ph name="URL" />). Als je dit doet, word je uitgelogd bij <ph name="DOMAIN" />. <ph name="LEARN_MORE" /></translation>
 <translation id="8813277370772331957">Later herinneren</translation>
 <translation id="8813698869395535039">Kan niet inloggen bij <ph name="USERNAME" /></translation>
 <translation id="8813872945700551674">Vraag een ouder om <ph name="EXTENSION_NAME" /> goed te keuren</translation>

@@ -3197,7 +3197,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4677772697204437347">GPU xotirasi</translation>
 <translation id="4680105648806843642">Bu sahifada ovoz bloklangan</translation>
 <translation id="4681453295291708042">Yaqin-atrofga yuborishni faolsizlashtirish</translation>
-<translation id="4681930562518940301">&amp;Asl rasmni yangi ichki oynada ochish</translation>
+<translation id="4681930562518940301">Asl rasmni yangi varaqda ochish</translation>
 <translation id="4682551433947286597">Orqa fon rasmi kirish ekranida paydo bo‘ladi.</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (standart)</translation>
 <translation id="4684427112815847243">Hamma narsa sinxronlansin</translation>
@@ -4053,7 +4053,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="5722086096420375088">Yashil va oq</translation>
 <translation id="5722930212736070253">Ana xolos! Zip formatda arxivlashda xatolik yuz berdi.</translation>
 <translation id="5723034813131030312">Saytlarga seriyali qurilmalarga ulanishni taqiqlash</translation>
-<translation id="572328651809341494">Yaqinda ochilgan varaqlar</translation>
+<translation id="572328651809341494">Oxirgi varaqlar</translation>
 <translation id="5723508132121499792">Orqa fonda ishlayotgan ilovalar yo‘q</translation>
 <translation id="5723967018671998714">Inkognito rejimida tashqi cookie fayllariga ruxsat berilmaydi</translation>
 <translation id="5727728807527375859">Kengaytma, ilova va mavzular kompyuterngizga zararli bo‘lishi mumkin. Davom ettirilsinmi?</translation>
@@ -5145,7 +5145,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="7003723821785740825">Barmoq izi orqali qulfdan yechish imkoniyatini sozlash</translation>
 <translation id="7003844668372540529"><ph name="VENDOR_NAME" /> tomonidan ishlab chiqarilgan noma’lum mahsulot: <ph name="PRODUCT_ID" /></translation>
 <translation id="7004402701596653846">Sayt MIDI ishlatishi mumkin</translation>
-<translation id="7004499039102548441">Yaqinda ochilgan varaqlar</translation>
+<translation id="7004499039102548441">Oxirgi varaqlar</translation>
 <translation id="7005496624875927304">Qoʻshimcha ruxsatlar.</translation>
 <translation id="7005812687360380971">Xatolik</translation>
 <translation id="7005848115657603926">Sahifalar diapazoni noto‘g‘ri kiritildi. <ph name="EXAMPLE_PAGE_RANGE" /> ko‘rinishida kiriting.</translation>

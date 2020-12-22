@@ -251,7 +251,7 @@
 <translation id="2841013758207633010">Time</translation>
 <translation id="2843432675592278677">No previous ARIA landmark</translation>
 <translation id="2843814945404750166">Dark Olive Green</translation>
-<translation id="2843837985843789981">Previous Group</translation>
+<translation id="2843837985843789981">Previous group</translation>
 <translation id="2864481629947106776">Previous link</translation>
 <translation id="2867808975387772810">Bibliography</translation>
 <translation id="2873259058405069099">Go to beginning of table</translation>
@@ -279,7 +279,7 @@
 <translation id="3030432017085518523">Menu item radio button</translation>
 <translation id="3037392361165431467">{COUNT,plural, =1{apostrophe}other{# apostrophes}}</translation>
 <translation id="3040901448410802366">Progress indicator</translation>
-<translation id="3046838483509668188">ChromeVox Options</translation>
+<translation id="3046838483509668188">ChromeVox options</translation>
 <translation id="3060756054951570867"><ph name="TITLE" /> menu opened</translation>
 <translation id="3060880924447482063">Swipe left or right to move by item</translation>
 <translation id="3070245424257836917">Swipe three fingers up</translation>
@@ -442,7 +442,7 @@
 <translation id="4161663686871496107">ChromeVox spoken feedback is ready</translation>
 <translation id="4176463684765177261">Disabled</translation>
 <translation id="4187322598335821254">Swipe up or down to move by line</translation>
-<translation id="4188530942454211480">Previous Sentence</translation>
+<translation id="4188530942454211480">Previous sentence</translation>
 <translation id="4191918948604314587">A button</translation>
 <translation id="419265409837491189">Go to the previous column</translation>
 <translation id="4202186506458631436">Move right</translation>

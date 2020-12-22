@@ -3345,7 +3345,7 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
       Ist die Richtlinie deaktiviert, können Nutzer kein Feedback an Google senden.</translation>
 <translation id="5997543603646547632">Standardmäßig 24-Stunden-Uhr verwenden</translation>
 <translation id="5997846976342452720">Angeben, ob Plug-in-Suchfunktion deaktiviert werden soll (eingestellt)</translation>
-<translation id="5998198091336830580">Diese Richtlinie ist Teil der folgenden Atomic-Gruppe (nur Richtlinien aus der Quelle mit der höchsten Priorität in der Gruppe werden angewendet):</translation>
+<translation id="5998198091336830580">Diese Richtlinie ist Teil der folgenden atomischen Gruppe (nur Richtlinien aus der Quelle mit der höchsten Priorität in der Gruppe werden angewendet):</translation>
 <translation id="6009062900206392980">Wenn Sie die Richtlinie auf "None" setzen, wird die Lupe auf dem Anmeldebildschirm deaktiviert.
 
        Wenn Sie diese Richtlinie konfigurieren, können Nutzer vorübergehend die Lupe aktivieren oder deaktivieren. Wenn der Anmeldebildschirm neu geladen wird oder eine Minute lang inaktiv bleibt, wird sie in den Originalzustand zurückversetzt.
@@ -4432,7 +4432,7 @@ Wenn die Richtlinie "<ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" />" k
 
       Wenn diese Richtlinie nicht konfiguriert oder auf „Wahr“ gesetzt ist, wird das Dialogfeld für das Anmeldungsabfangen geöffnet, wenn im Internet ein Google-Konto hinzugefügt wird. Möglicherweise lohnt es sich für den Nutzer, das Konto in ein anderes neues oder bestehendes Profil zu verschieben.
 
-      Ist die Richtlinie auf „Falsch“ gesetzt ist, wird das Dialogfeld für das Anmeldungsabfangen nicht geöffnet.</translation>
+      Ist die Richtlinie auf „Falsch“ gesetzt, wird das Dialogfeld für das Anmeldungsabfangen nicht geöffnet.</translation>
 <translation id="7375785904116479354">Wenn die Richtlinie aktiviert ist, wird die Standardsuchmaschine bei der ersten Ausführung aus dem vorherigen Standardbrowser importiert. Ist die Richtlinie deaktiviert oder nicht konfiguriert, wird die Standardsuchmaschine bei der ersten Ausführung nicht importiert.
 
       Nutzer können einen Importdialog öffnen. Das Kästchen für die Standardsuchmaschine wird je nach Konfiguration dieser Richtlinie aktiviert oder deaktiviert.</translation>

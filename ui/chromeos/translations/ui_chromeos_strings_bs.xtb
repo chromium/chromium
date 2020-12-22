@@ -2,8 +2,8 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="bs">
 <translation id="1000498691615767391">Odaberite koji folder želite otvoriti</translation>
-<translation id="1016731229041675999">arapski - transliteracija</translation>
-<translation id="102325055885714714">tamilski - transliteracija</translation>
+<translation id="1016731229041675999">arapski (transliteracija)</translation>
+<translation id="102325055885714714">tamilski (transliteracija)</translation>
 <translation id="1035094536595558507">Prikaz slajda</translation>
 <translation id="1047956942837015229">Brisanje stavki (<ph name="COUNT" />)…</translation>
 <translation id="1049926623896334335">Word dokument</translation>
@@ -20,7 +20,7 @@
 <translation id="1150565364351027703">Sunčane naočale</translation>
 <translation id="115443833402798225">Hangul ahnmatae</translation>
 <translation id="1155759005174418845">Katalonska</translation>
-<translation id="1169885125071442573">gudžarati - transliteracija</translation>
+<translation id="1169885125071442573">gudžarati (transliteracija)</translation>
 <translation id="1170149495446063094">engleski (SAD) s međunarodnom tastaturom</translation>
 <translation id="1172970565351728681">Preostalo je oko <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Promijeni naziv</translation>
@@ -52,7 +52,7 @@
 <translation id="1464724975715666883">1 greška.</translation>
 <translation id="1466220122465387403">centralnokurdski s engleskom tastaturom</translation>
 <translation id="1467432559032391204">Lijevo</translation>
-<translation id="1472351751615457820">grčki - transliteracija</translation>
+<translation id="1472351751615457820">grčki (transliteracija)</translation>
 <translation id="1474339897586437869">Fajl "<ph name="FILENAME" />" nije otpremljen. Nemate dovoljno slobodnog prostora na Google Disku.</translation>
 <translation id="148466539719134488">švicarska</translation>
 <translation id="1497522201463361063">Nije moguće promijeniti naziv fajla "<ph name="FILE_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
@@ -101,7 +101,7 @@
 <translation id="2046702855113914483">Ramen</translation>
 <translation id="2060251957438343874">njemački (Njemačka)</translation>
 <translation id="2060392775416297569">kineski cangjie</translation>
-<translation id="2066433303065022982">hebrejski - transliteracija</translation>
+<translation id="2066433303065022982">hebrejski (transliteracija)</translation>
 <translation id="2070909990982335904">Nazivi koji počinju tačkom rezervirani su za sistem. Odaberite drugi naziv.</translation>
 <translation id="2079545284768500474">Vrati</translation>
 <translation id="2084108471225856927">Postavke uređaja</translation>
@@ -218,7 +218,7 @@
 <translation id="3473378059788601120">Kopirano u folder <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Google tabela</translation>
 <translation id="3495304270784461826">Broj grešaka: <ph name="COUNT" /></translation>
-<translation id="349603508045926994">perzijski - transliteracija</translation>
+<translation id="349603508045926994">perzijski (transliteracija)</translation>
 <translation id="3522708245912499433">portugalski</translation>
 <translation id="3524311639100184459">Oprez: Ovi fajlovi su privremeni i moguće je da će se automatski izbrisati radi oslobađanja prostora na disku.  <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Folder</translation>
@@ -264,7 +264,7 @@
 <translation id="3958548648197196644">Kivi</translation>
 <translation id="3966388904776714213">Reprodukcija zvuka</translation>
 <translation id="4002066346123236978">Naslov</translation>
-<translation id="4097397818890482665">kannada jezik - transliteracija</translation>
+<translation id="4097397818890482665">kannada jezik (transliteracija)</translation>
 <translation id="4124935795427217608">Jednorog</translation>
 <translation id="4158739975813877944">Otvori plejlistu</translation>
 <translation id="4159731583141908892">Fajl <ph name="FILE_NAME" /> je premješten.</translation>
@@ -307,7 +307,7 @@
 <translation id="463813589602055304">kineski wubi</translation>
 <translation id="4656293982926141856">Ovaj računar</translation>
 <translation id="4669606053856530811">Članovi tima „<ph name="SOURCE_NAME" />“ će izgubiti pristup osim ako se ove stavke ne dijele s njima.</translation>
-<translation id="4669979276126590335">srpski - transliteracija</translation>
+<translation id="4669979276126590335">srpski (transliteracija)</translation>
 <translation id="4690246192099372265">Švedska</translation>
 <translation id="4693155481716051732">Suši</translation>
 <translation id="4694604912444486114">Majmun</translation>
@@ -333,7 +333,7 @@
 <translation id="4804827417948292437">Avokado</translation>
 <translation id="4823651846660089135">Uređaj je samo za čitanje</translation>
 <translation id="4839847978919684242">Broj odabranih stavki: <ph name="SELCTED_FILES_COUNT" /></translation>
-<translation id="4842306555839940112">telugu - transliteracija</translation>
+<translation id="4842306555839940112">telugu (transliteracija)</translation>
 <translation id="4843566743023903107">Uređaji Chromebase</translation>
 <translation id="4849981557599196363">njemački (Belgija)</translation>
 <translation id="4850886885716139402">Prikaz</translation>
@@ -520,7 +520,7 @@
 <translation id="6710213216561001401">Nazad</translation>
 <translation id="6718273304615422081">Kreiranje zip fajla...</translation>
 <translation id="6751256176799620176">Odabran je 1 folder</translation>
-<translation id="6767296108234383966">malajalamski - transliteracija</translation>
+<translation id="6767296108234383966">malajalamski (transliteracija)</translation>
 <translation id="6790428901817661496">Pokreni</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6806699711453372963">Upravljajte Linux dijeljenjem</translation>
@@ -681,7 +681,7 @@
 <translation id="8329978297633540474">Obični tekst</translation>
 <translation id="8335587457941836791">Otkači s police</translation>
 <translation id="8336153091935557858">Jučer, u <ph name="YESTERDAY_DAYTIME" /></translation>
-<translation id="8336524887811696057">nepalski - transliteracija</translation>
+<translation id="8336524887811696057">nepalski (transliteracija)</translation>
 <translation id="8342318071240498787">Fajl ili direktorij s istim nazivom već postoji.</translation>
 <translation id="8362125533493859258">engleski (Kanada)</translation>
 <translation id="8382450452152102026">U folder <ph name="FOLDER_NAME" /></translation>

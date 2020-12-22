@@ -57,7 +57,7 @@
 <translation id="2434158240863470628">Yuklab olindi: <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2482878487686419369">Bildirishnomalar</translation>
 <translation id="2490684707762498678"><ph name="APP_NAME" /> tomonidan boshqariladi</translation>
-<translation id="2498359688066513246">Yordam va fikr-mulohaza</translation>
+<translation id="2498359688066513246">Yordam/fikr-mulohaza</translation>
 <translation id="2501278716633472235">Ortga qaytish</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 ta cookie fayl bloklandi}other{# ta cookie fayl bloklandi}}</translation>
 <translation id="2570922361219980984">Bu qurilmada joylashuv xizmati yoqilmagan, uni <ph name="BEGIN_LINK" />Android sozlamalari<ph name="END_LINK" /> orqali yoqing.</translation>

@@ -1379,7 +1379,7 @@
 <translation id="2540651571961486573">發生錯誤。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="2541002089857695151">要讓全螢幕投放最佳化嗎？</translation>
 <translation id="2541706104884128042">已設定新的就寢時間</translation>
-<translation id="2542050502251273923">使用 ff_debug 設定網路連線管理員和其他服務的除錯等級。</translation>
+<translation id="2542050502251273923">使用 ff_debug 設定網路連線管理員和其他服務的偵錯等級。</translation>
 <translation id="2544853746127077729">網路已拒絕驗證憑證</translation>
 <translation id="2546229857744484369">你已在這部裝置上儲存 1 組密碼</translation>
 <translation id="2546283357679194313">Cookie 和網站資料</translation>
@@ -4995,7 +4995,7 @@
 <translation id="6840155290835956714">傳送前詢問我</translation>
 <translation id="6840184929775541289">這不是憑證授權單位</translation>
 <translation id="6841186874966388268">錯誤</translation>
-<translation id="6843264316370513305">網路除錯</translation>
+<translation id="6843264316370513305">網路偵錯</translation>
 <translation id="6843423766595476978">Ok Google 設定完成</translation>
 <translation id="6845038076637626672">最大化開啟</translation>
 <translation id="6845325883481699275">協助改善 Chrome 安全性</translation>

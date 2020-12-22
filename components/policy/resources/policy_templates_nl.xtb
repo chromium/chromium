@@ -335,8 +335,8 @@ Als je dit beleid uitschakelt, wordt op de webpagina naar specifieke tekstfragme
 
           Als je dit beleid instelt, kunnen gebruikers dit niet wijzigen of overschrijven.</translation>
 <translation id="1502843533062797703">Blokkering van injectie van software van derden inschakelen</translation>
-<translation id="1503863096120373385">Hiermee configureer je de instellingen voor de levensduur van browsergegevens voor <ph name="PRODUCT_NAME" />.
-      Dit beleid beheert de levensduur van geselecteerde browsergegevens. Dit beleid is niet van kracht als synchronisatie is ingeschakeld.
+<translation id="1503863096120373385">Hiermee configureer je de instellingen voor de levensduur van browsegegevens voor <ph name="PRODUCT_NAME" />.
+      Dit beleid beheert de levensduur van geselecteerde browsegegevens. Dit beleid is niet van kracht als synchronisatie is ingeschakeld.
       De beschikbare gegevenstypen zijn <ph name="DATA_TYPE_BROWSING_HISTORY" />, <ph name="DATA_TYPE_DOWNLOAD_HISTORY" />, <ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />, <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, <ph name="DATA_TYPE_PASSWORD" />, <ph name="DATA_TYPE_AUTOFILL" />, <ph name="DATA_TYPE_SITE_SETTINGS" /> en <ph name="DATA_TYPE_HOSTED_APP_DATA" />.
       Chrome verwijdert regelmatig gegevens van geselecteerde typen die ouder zijn dan <ph name="TIME_TO_LIVE_IN_HOURS" />. Aangezien deze verwijdering alleen met bepaalde intervallen plaatsvindt, kan de levensduur van bepaalde gegevens iets langer zijn, maar nooit langer dan twee keer de verwachte <ph name="TIME_TO_LIVE_IN_HOURS" />.
       </translation>
@@ -1320,7 +1320,7 @@ Als dit beleid niet is ingesteld, is het privacyscherm in eerste instantie uitge
 
         WAARSCHUWING: Experimentele beleidsregels worden niet ondersteund en kunnen zonder kennisgeving worden gewijzigd of verwijderd uit toekomstige versies van de browser.
 
-        Een experimentele beleidsregel is mogelijk niet compleet of kan bekende of onbekende fouten bevatten. De beleidsregel kan zonder kennisgeving worden gewijzigd of zelfs worden verwijderd. Door experimentele beleidsregels in te schakelen, kun je browsergegevens kwijtraken of je veiligheid of privacy in gevaar brengen.
+        Een experimentele beleidsregel is mogelijk niet compleet of kan bekende of onbekende fouten bevatten. De beleidsregel kan zonder kennisgeving worden gewijzigd of zelfs worden verwijderd. Door experimentele beleidsregels in te schakelen, kun je browsegegevens kwijtraken of je veiligheid of privacy in gevaar brengen.
 
         Als een beleidsregel niet in de lijst wordt vermeld en niet officieel is uitgebracht, wordt de waarde hiervan genegeerd in het bètakanaal en het stabiele kanaal.
 
@@ -3046,7 +3046,7 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
 
       Als je het beleid instelt, kunnen gebruikers dit niet wijzigen in <ph name="PRODUCT_NAME" />. Als je het beleid niet instelt, kunnen gebruikers dit wijzigen.
 
-      Als je dit beleid instelt op <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSION" />, worden sommige instellingen uitgeschakeld die afhankelijk zijn van sessies of waarmee bij het afsluiten bepaalde acties worden uitgevoerd (zoals browsergegevens wissen bij afsluiten of sessiecookies).
+      Als je dit beleid instelt op <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSION" />, worden sommige instellingen uitgeschakeld die afhankelijk zijn van sessies of waarmee bij het afsluiten bepaalde acties worden uitgevoerd (zoals browsegegevens wissen bij afsluiten of sessiecookies).
 
       In <ph name="MS_WIN_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, worden uitgevoerd in Windows 10 Pro of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. In <ph name="MAC_OS_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die via MDM worden beheerd of via MCX aan een domein zijn gekoppeld.</translation>
 <translation id="554903022911579950">Kerberos</translation>
@@ -4111,7 +4111,7 @@ Als je ervoor kiest het volgende te gebruiken:
       Als het beleid wordt ingesteld op <ph name="BR_UNDER_USER_CONTROL" />, zien gebruikers prompts om de back-up- en herstelfunctie te gebruiken. Als een gebruiker de back-up- en herstelfunctie inschakelt, worden gegevens van Android-apps geüpload naar Android-back-upservers. De gegevens worden hersteld als geschikte apps opnieuw worden geïnstalleerd.
 
       Na de eerste configuratie kunnen gebruikers de back-up- en herstelfunctie uitschakelen.</translation>
-<translation id="6986172482189158664">Instellingen voor levensduur van browsergegevens</translation>
+<translation id="6986172482189158664">Instellingen voor levensduur van browsegegevens</translation>
 <translation id="6994082778848658360">Geeft aan hoe de ingebouwde Secure Element-hardware kan worden gebruikt voor authenticatie met meerdere factoren, indien de hardware geschikt is voor deze functie. De aan/uit-knop van de machine wordt gebruikt om de fysieke aanwezigheid van de gebruiker te detecteren.
 
       Als Uitgeschakeld is geselecteerd, wordt er geen tweede factor verstrekt.
@@ -5178,7 +5178,7 @@ De aanbevolen manier om beleidsregels te configureren op Windows, is via GPO, ma
       Als je het beleid niet instelt, geeft <ph name="PRODUCT_NAME" /> gebruikers de controle over of het de standaardbrowser is en als dit niet zo is, of er gebruikersmeldingen moeten worden weergegeven.
 
       Opmerking: Als <ph name="MS_WIN_NAME" />-beheerders deze instelling inschakelen, werkt dit alleen op systemen met Windows 7. Voor latere versies moet je een bestand voor standaard app-koppelingen implementeren, waarmee <ph name="PRODUCT_NAME" /> de verwerker wordt voor het <ph name="HTTPS_PROTOCOL" />- en <ph name="HTTP_PROTOCOL" />-protocol (en eventueel het <ph name="FTP_PROTOCOL" />-protocol en andere bestandsindelingen). Raadpleeg de Help-pagina van Chrome voor meer informatie (https://support.google.com/chrome?p=make_chrome_default_win).</translation>
-<translation id="8445576299806775661">Na elke grote versie-update maakt Chrome een momentopname van bepaalde gedeelten van de browsergegevens van de gebruiker. Deze momentopname kan worden gebruikt voor een latere noodrollback van de versie. Als er een noodrollback wordt uitgevoerd naar een versie waarvoor een gebruiker een bijbehorende momentopname heeft, worden de gegevens in de momentopname hersteld. Zo kunnen gebruikers instellingen als bookmarks en gegevens voor automatisch invullen behouden.
+<translation id="8445576299806775661">Na elke grote versie-update maakt Chrome een momentopname van bepaalde gedeelten van de browsegegevens van de gebruiker. Deze momentopname kan worden gebruikt voor een latere noodrollback van de versie. Als er een noodrollback wordt uitgevoerd naar een versie waarvoor een gebruiker een bijbehorende momentopname heeft, worden de gegevens in de momentopname hersteld. Zo kunnen gebruikers instellingen als bookmarks en gegevens voor automatisch invullen behouden.
 
       Als dit beleid niet is ingesteld, wordt de standaardwaarde 3 gebruikt.
 

@@ -1654,6 +1654,7 @@
 
       请注意，先前我们误在 Android 设备上启用了这项政策，但我们从未在 Android 设备上为这项功能提供完整支持。</translation>
 <translation id="348495353354674884">启用虚拟键盘</translation>
+<translation id="3485200437120267231">停用登录拦截功能</translation>
 <translation id="3492834335089638487">此政策用于控制设备对来源不受信任（不是来自 Google Play 商店）的 Android 应用的使用。
 
       不设置此政策的值等同于禁止使用此功能。
@@ -2994,6 +2995,7 @@
 
       用户可以触发导入对话框，系统将会根据此政策的值选中或不选中“已保存的密码”复选框。</translation>
 <translation id="5457924070961220141">可让您在安装 <ph name="PRODUCT_FRAME_NAME" />时配置默认 HTML 呈现器。如果未设置此政策，则使用默认设置，即允许托管浏览器进行呈现。不过您可以视情况替换此设置，让 <ph name="PRODUCT_FRAME_NAME" />默认呈现 HTML 网页。</translation>
+<translation id="545817252640069915">启用登录拦截功能</translation>
 <translation id="5460797984317417682">启用全屏提醒</translation>
 <translation id="5464816904705580310">为托管用户配置设置。</translation>
 <translation id="5466596281866046569">报告应用信息</translation>
@@ -4405,6 +4407,11 @@
       如果您未设置此政策，默认情况下，受企业管理的用户和不受管理的用户都能选择启用 Phone Hub 功能。</translation>
 <translation id="7372831798009983116">启用“自动点击”无障碍功能</translation>
 <translation id="7373200034079131670">在用户退出后重新启动（如果 Android 或虚拟机已启动）。</translation>
+<translation id="7373680616478819439">此设置会启用或停用登录拦截功能。
+
+      如果此政策未设置或设为 True，当用户在网络上添加了 Google 帐号时，系统会触发登录拦截对话框，因而用户可以将此帐号移至另一份（新的或现有的）个人资料中，这样做可能对用户更有好处。
+
+      如果此政策设为 False，系统将不会触发登录拦截对话框。</translation>
 <translation id="7375785904116479354">如果此政策已启用，当首次运行浏览器时，系统将会从先前的默认浏览器导入默认搜索引擎。如果此政策已停用或未设置，当首次运行浏览器时，系统不会导入默认搜索引擎。
 
       用户可以触发导入对话框，系统将会根据此政策的值选中或不选中“默认搜索引擎”复选框。</translation>

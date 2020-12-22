@@ -1696,7 +1696,7 @@ Jika ditetapkan ke False, <ph name="PRODUCT_NAME" /> tidak akan menggunakan noti
 
       Perlu diperhatikan bahwa sebelumnya kebijakan ini diaktifkan secara keliru di Android, tetapi fungsi ini belum pernah sepenuhnya didukung di Android.</translation>
 <translation id="348495353354674884">Aktifkan keyboard virtual</translation>
-<translation id="3485200437120267231">Nonaktifkan login intersepsi</translation>
+<translation id="3485200437120267231">Nonaktifkan intersepsi login</translation>
 <translation id="3492834335089638487">Kebijakan ini mengontrol penggunaan aplikasi Android dari sumber yang tidak tepercaya (selain Google Play Store) untuk perangkat.
 
       Jika nilai kebijakan ini tidak ditetapkan, fungsinya dianggap tidak diizinkan.
@@ -3043,7 +3043,7 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 
       Pengguna dapat memicu dialog impor dan kotak centang sandi yang tersimpan akan dicentang atau dihapus centangnya agar cocok dengan nilai kebijakan ini.</translation>
 <translation id="5457924070961220141">Memungkinkan Anda mengonfigurasi perender HTML default saat <ph name="PRODUCT_FRAME_NAME" /> dipasang. Setelan default yang digunakan ketika kebijakan ini tidak disetel adalah mengizinkan browser host melakukan rendering, tetapi Anda dapat menimpanya secara opsional dan membiarkan <ph name="PRODUCT_FRAME_NAME" /> merender halaman HTML secara default.</translation>
-<translation id="545817252640069915">Aktifkan login intersepsi</translation>
+<translation id="545817252640069915">Aktifkan intersepsi login</translation>
 <translation id="5460797984317417682">Aktifkan peringatan layar penuh</translation>
 <translation id="5464816904705580310">Mengonfigurasi setelan untuk pengguna yang dikelola.</translation>
 <translation id="5466596281866046569">Melaporkan informasi aplikasi</translation>
@@ -4461,11 +4461,11 @@ Jika kebijakan ini tidak disetel atau kosong, pengguna dapat menyetel akun Googl
       Jika kebijakan ini tidak disetel, baik pengguna yang dikelola maupun tidak dikelola perusahaan akan diizinkan secara default.</translation>
 <translation id="7372831798009983116">Mengaktifkan fitur aksesibilitas klik otomatis</translation>
 <translation id="7373200034079131670">Reboot saat pengguna logout jika Android atau VM telah dimulai.</translation>
-<translation id="7373680616478819439">Setelan ini mengaktifkan atau menonaktifkan login intersepsi.
+<translation id="7373680616478819439">Setelan ini mengaktifkan atau menonaktifkan intersepsi login.
 
-      Jika kebijakan ini tidak disetel atau disetel ke Benar, dialog login intersepsi dipicu saat akun Google ditambahkan di web, dan pengguna bisa mendapatkan keuntungan dengan memindahkan akun ini ke profil lain (profil baru atau yang sudah ada).
+      Jika kebijakan ini tidak disetel atau disetel ke Benar, dialog intersepsi login dipicu saat akun Google ditambahkan di web, dan pengguna mungkin sebaiknya memindahkan akun ini ke profil lain (profil baru atau yang sudah ada).
 
-      Jika disetel ke Salah, dialog login intersepsi masuk tidak akan dipicu.</translation>
+      Jika disetel ke Salah, dialog intersepsi login tidak akan dipicu.</translation>
 <translation id="7375785904116479354">Jika kebijakan disetel ke Aktif, mesin telusur default akan diimpor dari browser default sebelumnya saat pertama kali dijalankan. Jika kebijakan disetel ke Nonaktif atau tidak disetel, tidak ada mesin telusur default yang akan diimpor saat pertama kali dijalankan.
 
       Pengguna dapat memicu dialog impor dan kotak centang mesin telusur default akan dicentang atau dihapus centangnya agar cocok dengan nilai kebijakan ini.</translation>

@@ -1673,7 +1673,7 @@ Se esta política for definida como falsa, o <ph name="PRODUCT_NAME" /> não usa
 
       Esta política já foi ativada no Android por engano, mas a funcionalidade nunca foi totalmente compatível com ele.</translation>
 <translation id="348495353354674884">Ativar teclado virtual</translation>
-<translation id="3485200437120267231">Desativar intercepção de login</translation>
+<translation id="3485200437120267231">Desativar interceptação de login</translation>
 <translation id="3492834335089638487">Essa política controla, no lugar do dispositivo, o uso de apps Android de fontes não confiáveis (diferentes da Google Play Store).
 
       Se o valor da política não for definido, a funcionalidade será tratada como não permitida.
@@ -3009,7 +3009,7 @@ Quando a |IdleAction| não for definida, a ação padrão de suspensão será re
 
       O usuário pode acionar uma caixa de diálogo de importação em que a caixa de seleção de senhas salvas estará marcada ou desmarcada de acordo com o valor da política.</translation>
 <translation id="5457924070961220141">Permite configurar o processador HTML padrão quando <ph name="PRODUCT_FRAME_NAME" /> estiver instalado. A configuração padrão utilizada quando esta política é deixada sem definição é permitir que o navegador host faça o processamento, mas você pode, opcionalmente, substituí-la para que <ph name="PRODUCT_FRAME_NAME" /> processe as páginas HTML por padrão.</translation>
-<translation id="545817252640069915">Ativar intercepção de login</translation>
+<translation id="545817252640069915">Ativar interceptação de login</translation>
 <translation id="5460797984317417682">Permitir alertas de tela cheia</translation>
 <translation id="5464816904705580310">Definir configurações para usuários gerenciados.</translation>
 <translation id="5466596281866046569">Relatar informações sobre aplicativos</translation>
@@ -4421,7 +4421,7 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
       Se esta política não for definida, o padrão será permitido tanto para usuários gerenciados por empresas quanto para usuários não gerenciados.</translation>
 <translation id="7372831798009983116">Ativar o recurso de acessibilidade de clique automático</translation>
 <translation id="7373200034079131670">Reinicializar quando o usuário sair se o Android ou uma VM tiver sido iniciada.</translation>
-<translation id="7373680616478819439">Esta configuração ativa ou desativa a intercepção de login.
+<translation id="7373680616478819439">Esta configuração ativa ou desativa a interceptação de login.
 
       Se esta política não é configurada ou é definida como "Verdadeira", a caixa de diálogo de interceptação de login é acionada quando uma Conta do Google é adicionada na Web, e o usuário pode se beneficiar da transferência dessa conta para outro perfil (novo ou existente).
 

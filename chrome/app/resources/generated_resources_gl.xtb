@@ -1302,7 +1302,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2468402215065996499">Tamagotchi</translation>
 <translation id="2469259292033957819">Non tes impresoras gardadas.</translation>
 <translation id="2469375675106140201">Personalizar corrector ortográfico</translation>
-<translation id="247051149076336810">URL do ficheiro compartido</translation>
+<translation id="247051149076336810">URL do sistema de ficheiros compartido</translation>
 <translation id="2470702053775288986">Extensións non compatibles desactivadas</translation>
 <translation id="2471469610750100598">Negro (predeterminado)</translation>
 <translation id="2471506181342525583">Permitiuse o acceso á localización</translation>
@@ -2488,7 +2488,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="3827306204503227641">Continuar permitindo os plugins non incluídos no illamento de procesos</translation>
 <translation id="3827774300009121996">&amp;Pantalla completa</translation>
 <translation id="3828029223314399057">Buscar marcadores</translation>
-<translation id="3829765597456725595">Sistema de ficheiros compartidos mediante SMB</translation>
+<translation id="3829765597456725595">Sistema de ficheiros compartido SMB</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{O teu administrador activou de novo 1 extensión potencialmente daniña}other{O teu administrador activou de novo {NUM_EXTENSIONS} extensións potencialmente daniñas}}</translation>
 <translation id="3831436149286513437">Suxestións de busca de Google Drive</translation>
 <translation id="383161972796689579">O propietario deste dispositivo desactivou a incorporación de usuarios novos</translation>
@@ -4063,7 +4063,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="5731247495086897348">Pe&amp;gar e acceder</translation>
 <translation id="5732392974455271431">Os teus pais poden desbloquealo por ti</translation>
 <translation id="5734362860645681824">Comunicacións</translation>
-<translation id="5734697361979786483">Engadir un ficheiro compartido</translation>
+<translation id="5734697361979786483">Engadir un sistema de ficheiros compartido</translation>
 <translation id="5736544606961847675">{COUNT,plural, =1{1 vídeo}other{# vídeos}}</translation>
 <translation id="5736796278325406685">Introduce un nome de usuario válido</translation>
 <translation id="5739017626473506901">Inicia sesión para axudarlle a <ph name="USER_NAME" /> a engadir unha conta de centro educativo</translation>
@@ -6909,7 +6909,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="9023015617655685412">Engadir esta pestana aos marcadores…</translation>
 <translation id="9023909777842748145">A desactivación desta función non afecta á capacidade do dispositivo de enviar a información necesaria para servizos esenciais, como as actualizacións do sistema e a seguranza.</translation>
 <translation id="9024127637873500333">&amp;Abrir nunha pestana nova</translation>
-<translation id="9024158959543687197">Produciuse un erro ao montar a localización compartida. Comproba o URL dos ficheiros compartidos e téntao outra vez.</translation>
+<translation id="9024158959543687197">Produciuse un erro ao montar a localización compartida. Comproba o URL do sistema de ficheiros compartido e téntao outra vez.</translation>
 <translation id="9026731007018893674">descarga</translation>
 <translation id="9026852570893462412">Este proceso pode tardar uns minutos. Descargando a máquina virtual.</translation>
 <translation id="9027459031423301635">Abrir ligazón nunha pes&amp;tana nova</translation>

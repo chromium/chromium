@@ -71,7 +71,7 @@
 
       このポリシーを false に設定するか未設定のままにした場合、この情報は報告されません。
       このポリシーを true に設定した場合、デバイスのバックライトに関する情報が報告されます。</translation>
-<translation id="1076751984131277498">USB 分離可能デバイスの許可リスト</translation>
+<translation id="1076751984131277498">取り外し可能な USB デバイスの許可リスト</translation>
 <translation id="1079801999187584280">デベロッパー ツールの使用を禁止する</translation>
 <translation id="1082802595100075771">匿名の Google サービスを使用して、ラベル付けがない画像の説明を自動的に取得するかどうかをユーザーが選択できる</translation>
 <translation id="1087437665304381368">このポリシーでは、<ph name="PRODUCT_OS_NAME" /> のデベロッパー モードのみを管理します。Android 開発者向けオプションへのアクセスを禁止するには、<ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" /> ポリシーを設定する必要があります。</translation>
@@ -570,7 +570,7 @@
 
       このポリシーを未設定のままにした場合、Android で <ph name="HTTP_NEGOTIATE" /> 認証は無効になります。</translation>
 <translation id="1930127294345368978">1 回の印刷ジョブで使用できる用紙の最大数</translation>
-<translation id="193259052151668190">USB 分離可能デバイスのホワイトリスト</translation>
+<translation id="193259052151668190">取り外し可能な USB デバイスの許可リスト</translation>
 <translation id="1933378685401357864">壁紙の画像</translation>
 <translation id="1945994447126139909">この企業向けのポリシーは一時的な適用を想定しており、<ph name="PRODUCT_NAME" /> バージョン 88 で削除される予定です。Chrome のデフォルトのリファラー ポリシーは、Chrome 85 安定版の公開に向けた段階的措置として、現在の「no-referrer-when-downgrade」からさらに安全な「strict-origin-when-cross-origin」に変更され、セキュリティが強化されます。
 
