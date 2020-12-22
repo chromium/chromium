@@ -880,11 +880,12 @@
   <message name="IDS_FILE_BROWSER_RESTORE_FROM_TRASH_ERROR" desc="Message informing about error while restoring an item or items from the trash / recycle bin.">
     An error occurred. Some items may not have been restored.
   </message>
-
+  <message name="IDS_FILE_BROWSER_ERROR_PROGRESS_SUMMARY_PLURAL" desc="Summary message for multiple errors above the progress bar. This message may be placed at the next to ohter *_PROGERSS_SUMMARY messages.">
+    <ph name="COUNT">$1<ex>10</ex></ph> errors.
+  </message>
   <message name="IDS_FILE_BROWSER_PERCENT_COMPLETE" desc="Percentage of file operation that is complete in a progress message.">
     <ph name="PERCENT">$1<ex>10</ex></ph>% complete.
   </message>
-
   <message name="IDS_FILE_BROWSER_CANCEL_ACTIVITY_LABEL" desc="Text spoken by ChromeVox/screen reader describing what will be cancelled.">
     Cancel <ph name="ACTIVITY_DESCRIPTION">$1<ex>Copying file.txt</ex></ph>.
   </message>
