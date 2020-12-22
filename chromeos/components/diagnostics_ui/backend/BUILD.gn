@@ -21,6 +21,7 @@ static_library("backend") {
   ]
 
   deps = [
+    "//ash/public/cpp",
     "//base",
     "//chromeos/components/diagnostics_ui/mojom",
     "//chromeos/dbus/power",
@@ -28,6 +29,7 @@ static_library("backend") {
     "//chromeos/services/cros_healthd/public/cpp",
     "//chromeos/services/cros_healthd/public/mojom",
     "//services/data_decoder/public/cpp",
+    "//ui/base",
   ]
 }
 

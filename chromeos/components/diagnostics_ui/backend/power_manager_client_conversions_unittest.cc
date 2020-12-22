@@ -91,12 +91,12 @@ TEST_F(PowerManagerClientConversionsTest, PowerTime) {
 
   // Battery charging with 11220 seconds (3h 7m) remaining.
   props = ConstructPowerSupplyProperties(false, 11220, 0);
-  EXPECT_EQ(base::UTF8ToUTF16("3h 7m"),
+  EXPECT_EQ(base::UTF8ToUTF16("3 hours and 7 minutes"),
             ConstructPowerTime(mojom::BatteryState::kCharging, props));
 
   // Battery discharging with 10380 seconds (2h 53m) remaining.
   props = ConstructPowerSupplyProperties(false, 0, 10380);
-  EXPECT_EQ(base::UTF8ToUTF16("2h 53m"),
+  EXPECT_EQ(base::UTF8ToUTF16("2 hours and 53 minutes"),
             ConstructPowerTime(mojom::BatteryState::kDischarging, props));
 }
 

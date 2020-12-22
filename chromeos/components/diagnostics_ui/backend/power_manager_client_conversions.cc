@@ -4,8 +4,9 @@
 
 #include "chromeos/components/diagnostics_ui/backend/power_manager_client_conversions.h"
 
-#include "base/i18n/time_formatting.h"
+#include "ash/public/cpp/power_utils.h"
 #include "base/time/time.h"
+#include "ui/base/l10n/time_format.h"
 
 namespace chromeos {
 namespace diagnostics {
@@ -72,14 +73,21 @@ base::string16 ConstructPowerTime(
 
   const base::TimeDelta as_time_delta =
       base::TimeDelta::FromSeconds(time_in_seconds);
-  base::string16 time_duration;
-  if (!base::TimeDurationFormat(as_time_delta, base::DURATION_WIDTH_NARROW,
-                                &time_duration)) {
-    LOG(ERROR) << "Failed to format time duration " << as_time_delta;
-    return base::string16();
+
+  int hour = 0;
+  int min = 0;
+  ash::power_utils::SplitTimeIntoHoursAndMinutes(as_time_delta, &hour, &min);
+
+  if (hour == 0 || min == 0) {
+    // Display only one unit ("2 hours" or "10 minutes").
+    return ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_DURATION,
+                                  ui::TimeFormat::LENGTH_LONG, as_time_delta);
   }
 
-  return time_duration;
+  return ui::TimeFormat::Detailed(ui::TimeFormat::FORMAT_DURATION,
+                                  ui::TimeFormat::LENGTH_LONG,
+                                  -1,  // force hour and minute output
+                                  as_time_delta);
 }
 
 }  // namespace diagnostics
