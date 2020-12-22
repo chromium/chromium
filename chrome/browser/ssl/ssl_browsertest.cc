@@ -98,6 +98,7 @@
 #include "components/security_interstitials/content/cert_report_helper.h"
 #include "components/security_interstitials/content/common_name_mismatch_handler.h"
 #include "components/security_interstitials/content/insecure_form_blocking_page.h"
+#include "components/security_interstitials/content/insecure_form_navigation_throttle.h"
 #include "components/security_interstitials/content/mitm_software_blocking_page.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
@@ -169,6 +170,7 @@
 #include "net/cert/x509_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_response_headers.h"
+#include "net/http/http_status_code.h"
 #include "net/http/transport_security_state_test_util.h"
 #include "net/ssl/client_cert_identity_test_util.h"
 #include "net/ssl/client_cert_store.h"
@@ -6180,10 +6182,15 @@ class SSLUITestWithInsecureFormsWarningEnabled : public SSLUITest {
   base::test::ScopedFeatureList feature_list_;
 };
 
+using security_interstitials::InsecureFormNavigationThrottle;
+
 // Visits a page that displays an insecure form, submits the form, and checks an
 // interstitial is shown.
 IN_PROC_BROWSER_TEST_F(SSLUITestWithInsecureFormsWarningEnabled,
                        TestDisplaysInsecureFormSubmissionWarning) {
+  base::HistogramTester histograms;
+  const std::string interstitial_histogram =
+      "Security.MixedForm.InterstitialTriggerState";
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(https_server_.Start());
 
@@ -6204,6 +6211,48 @@ IN_PROC_BROWSER_TEST_F(SSLUITestWithInsecureFormsWarningEnabled,
   EXPECT_EQ(helper->GetBlockingPageForCurrentlyCommittedNavigationForTesting()
                 ->GetTypeForTesting(),
             security_interstitials::InsecureFormBlockingPage::kTypeForTesting);
+
+  // Check this was logged correctly as a non-redirect interstitial.
+  histograms.ExpectTotalCount(interstitial_histogram, 1);
+  histograms.ExpectBucketCount(interstitial_histogram,
+                               InsecureFormNavigationThrottle::
+                                   InterstitialTriggeredState::kMixedFormDirect,
+                               1);
+}
+
+// Check warning is not displayed for redirects if redirects mode is not
+// enabled, but metrics are logged.
+IN_PROC_BROWSER_TEST_F(SSLUITestWithInsecureFormsWarningEnabled,
+                       TestDisplaysInsecureFormSubmissionWarningRedirect) {
+  base::HistogramTester histograms;
+  const std::string interstitial_histogram =
+      "Security.MixedForm.InterstitialTriggerState";
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(https_server_.Start());
+
+  std::string replacement_path = GetFilePathWithHostAndPortReplacement(
+      "/ssl/page_displays_form_redirects_insecure.html",
+      embedded_test_server()->host_port_pair());
+
+  ui_test_utils::NavigateToURL(browser(),
+                               https_server_.GetURL(replacement_path));
+  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  content::TestNavigationObserver nav_observer(tab, 1);
+  ASSERT_TRUE(content::ExecuteScript(tab, "submitForm();"));
+  nav_observer.Wait();
+  security_interstitials::SecurityInterstitialTabHelper* helper =
+      security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
+          tab);
+  // There should have been no interstitial triggered.
+  EXPECT_FALSE(helper);
+
+  // Check this was logged correctly as a redirect mixed form.
+  histograms.ExpectTotalCount(interstitial_histogram, 1);
+  histograms.ExpectBucketCount(
+      interstitial_histogram,
+      InsecureFormNavigationThrottle::InterstitialTriggeredState::
+          kMixedFormRedirectWithFormData,
+      1);
 }
 
 // Visits a page that displays an insecure form inside an iframe, attempts to
@@ -6377,6 +6426,514 @@ IN_PROC_BROWSER_TEST_F(SSLUITestWithInsecureFormsWarningEnabled,
   DontProceedThroughInterstitial(tab);
   EXPECT_FALSE(helper->IsDisplayingInterstitial());
   EXPECT_EQ(tab->GetVisibleURL(), form_site_url);
+}
+
+class SSLUITestWithInsecureFormsWarningEnabledWithAllRedirects
+    : public SSLUITest {
+ public:
+  SSLUITestWithInsecureFormsWarningEnabledWithAllRedirects() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        security_interstitials::kInsecureFormSubmissionInterstitial,
+        {{"mode", "include-redirects"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Checks mixed form warnings work correctly for non-redirects when redirect
+// enforcement is enabled.
+IN_PROC_BROWSER_TEST_F(SSLUITestWithInsecureFormsWarningEnabledWithAllRedirects,
+                       TestDisplaysInsecureFormSubmissionWarning) {
+  base::HistogramTester histograms;
+  const std::string interstitial_histogram =
+      "Security.MixedForm.InterstitialTriggerState";
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(https_server_.Start());
+
+  std::string replacement_path = GetFilePathWithHostAndPortReplacement(
+      "/ssl/page_displays_insecure_form.html",
+      embedded_test_server()->host_port_pair());
+
+  ui_test_utils::NavigateToURL(browser(),
+                               https_server_.GetURL(replacement_path));
+  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  content::TestNavigationObserver nav_observer(tab, 1);
+  ASSERT_TRUE(content::ExecuteScript(tab, "submitForm();"));
+  nav_observer.Wait();
+  security_interstitials::SecurityInterstitialTabHelper* helper =
+      security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
+          tab);
+  EXPECT_TRUE(helper->IsDisplayingInterstitial());
+  EXPECT_EQ(helper->GetBlockingPageForCurrentlyCommittedNavigationForTesting()
+                ->GetTypeForTesting(),
+            security_interstitials::InsecureFormBlockingPage::kTypeForTesting);
+
+  // Check this was logged correctly as a non-redirect interstitial.
+  histograms.ExpectTotalCount(interstitial_histogram, 1);
+  histograms.ExpectBucketCount(interstitial_histogram,
+                               InsecureFormNavigationThrottle::
+                                   InterstitialTriggeredState::kMixedFormDirect,
+                               1);
+}
+
+// Checks interstitial is shown for mixed forms caused by a 307 POST http
+// redirect, and that metrics are logged.
+IN_PROC_BROWSER_TEST_F(SSLUITestWithInsecureFormsWarningEnabledWithAllRedirects,
+                       TestDisplaysInsecureFormSubmissionWarningRedirect) {
+  base::HistogramTester histograms;
+  const std::string interstitial_histogram =
+      "Security.MixedForm.InterstitialTriggerState";
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(https_server_.Start());
+
+  std::string replacement_path = GetFilePathWithHostAndPortReplacement(
+      "/ssl/page_displays_form_redirects_insecure.html",
+      embedded_test_server()->host_port_pair());
+
+  ui_test_utils::NavigateToURL(browser(),
+                               https_server_.GetURL(replacement_path));
+  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  content::TestNavigationObserver nav_observer(tab, 1);
+  ASSERT_TRUE(content::ExecuteScript(tab, "submitForm();"));
+  nav_observer.Wait();
+  security_interstitials::SecurityInterstitialTabHelper* helper =
+      security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
+          tab);
+  EXPECT_TRUE(helper->IsDisplayingInterstitial());
+  EXPECT_EQ(helper->GetBlockingPageForCurrentlyCommittedNavigationForTesting()
+                ->GetTypeForTesting(),
+            security_interstitials::InsecureFormBlockingPage::kTypeForTesting);
+
+  // Check this was logged correctly as a redirect mixed form that may expose
+  // form data.
+  histograms.ExpectTotalCount(interstitial_histogram, 1);
+  histograms.ExpectBucketCount(
+      interstitial_histogram,
+      InsecureFormNavigationThrottle::InterstitialTriggeredState::
+          kMixedFormRedirectWithFormData,
+      1);
+}
+
+// Checks interstitial is shown for mixed forms caused by a 308 POST http
+// redirect, and that metrics are logged.
+IN_PROC_BROWSER_TEST_F(SSLUITestWithInsecureFormsWarningEnabledWithAllRedirects,
+                       TestDisplaysInsecureFormSubmissionWarningRedirect308) {
+  base::HistogramTester histograms;
+  const std::string interstitial_histogram =
+      "Security.MixedForm.InterstitialTriggerState";
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(https_server_.Start());
+
+  std::string replacement_path = GetFilePathWithHostAndPortReplacement(
+      "/ssl/page_displays_form_redirects_308_insecure.html",
+      embedded_test_server()->host_port_pair());
+
+  ui_test_utils::NavigateToURL(browser(),
+                               https_server_.GetURL(replacement_path));
+  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  content::TestNavigationObserver nav_observer(tab, 1);
+  ASSERT_TRUE(content::ExecuteScript(tab, "submitForm();"));
+  nav_observer.Wait();
+  security_interstitials::SecurityInterstitialTabHelper* helper =
+      security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
+          tab);
+  EXPECT_TRUE(helper->IsDisplayingInterstitial());
+  EXPECT_EQ(helper->GetBlockingPageForCurrentlyCommittedNavigationForTesting()
+                ->GetTypeForTesting(),
+            security_interstitials::InsecureFormBlockingPage::kTypeForTesting);
+
+  // Check this was logged correctly as a redirect mixed form that may expose
+  // form data.
+  histograms.ExpectTotalCount(interstitial_histogram, 1);
+  histograms.ExpectBucketCount(
+      interstitial_histogram,
+      InsecureFormNavigationThrottle::InterstitialTriggeredState::
+          kMixedFormRedirectWithFormData,
+      1);
+}
+
+// Checks interstitial is shown for mixed forms caused for a POST form with a
+// 301 redirect, and that metrics are logged correctly.
+IN_PROC_BROWSER_TEST_F(SSLUITestWithInsecureFormsWarningEnabledWithAllRedirects,
+                       TestDisplaysInsecureFormSubmissionWarningRedirect301) {
+  base::HistogramTester histograms;
+  const std::string interstitial_histogram =
+      "Security.MixedForm.InterstitialTriggerState";
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(https_server_.Start());
+
+  std::string replacement_path = GetFilePathWithHostAndPortReplacement(
+      "/ssl/page_displays_form_redirects_301_insecure.html",
+      embedded_test_server()->host_port_pair());
+
+  ui_test_utils::NavigateToURL(browser(),
+                               https_server_.GetURL(replacement_path));
+  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  content::TestNavigationObserver nav_observer(tab, 1);
+  ASSERT_TRUE(content::ExecuteScript(tab, "submitForm();"));
+  nav_observer.Wait();
+  security_interstitials::SecurityInterstitialTabHelper* helper =
+      security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
+          tab);
+  EXPECT_TRUE(helper->IsDisplayingInterstitial());
+  EXPECT_EQ(helper->GetBlockingPageForCurrentlyCommittedNavigationForTesting()
+                ->GetTypeForTesting(),
+            security_interstitials::InsecureFormBlockingPage::kTypeForTesting);
+
+  // Check this was logged correctly as a redirect mixed form that would not
+  // expose form data.
+  histograms.ExpectTotalCount(interstitial_histogram, 1);
+  histograms.ExpectBucketCount(
+      interstitial_histogram,
+      InsecureFormNavigationThrottle::InterstitialTriggeredState::
+          kMixedFormRedirectNoFormData,
+      1);
+}
+
+// Checks interstitial is shown for mixed forms caused for a POST form with a
+// 302 redirect, and that metrics are logged correctly.
+IN_PROC_BROWSER_TEST_F(SSLUITestWithInsecureFormsWarningEnabledWithAllRedirects,
+                       TestDisplaysInsecureFormSubmissionWarningRedirect302) {
+  base::HistogramTester histograms;
+  const std::string interstitial_histogram =
+      "Security.MixedForm.InterstitialTriggerState";
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(https_server_.Start());
+
+  std::string replacement_path = GetFilePathWithHostAndPortReplacement(
+      "/ssl/page_displays_form_redirects_302_insecure.html",
+      embedded_test_server()->host_port_pair());
+
+  ui_test_utils::NavigateToURL(browser(),
+                               https_server_.GetURL(replacement_path));
+  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  content::TestNavigationObserver nav_observer(tab, 1);
+  ASSERT_TRUE(content::ExecuteScript(tab, "submitForm();"));
+  nav_observer.Wait();
+  security_interstitials::SecurityInterstitialTabHelper* helper =
+      security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
+          tab);
+  EXPECT_TRUE(helper->IsDisplayingInterstitial());
+  EXPECT_EQ(helper->GetBlockingPageForCurrentlyCommittedNavigationForTesting()
+                ->GetTypeForTesting(),
+            security_interstitials::InsecureFormBlockingPage::kTypeForTesting);
+
+  // Check this was logged correctly as a redirect mixed form that would not
+  // expose form data.
+  histograms.ExpectTotalCount(interstitial_histogram, 1);
+  histograms.ExpectBucketCount(
+      interstitial_histogram,
+      InsecureFormNavigationThrottle::InterstitialTriggeredState::
+          kMixedFormRedirectNoFormData,
+      1);
+}
+
+namespace {
+// Redirects (with 307 code) requests with a redirect_to_http path to
+// http://example.org. This custom handler is required for tests that include
+// GET method forms to the redirect URL, since the built in /server-redirect-307
+// handler takes the redirect-to URL as a query parameter, so it is not usable
+// for GET method forms.
+std::unique_ptr<net::test_server::HttpResponse> FormActionHTTPRedirectHandler(
+    const net::EmbeddedTestServer* test_server,
+    const net::test_server::HttpRequest& request) {
+  GURL absolute_url = test_server->GetURL(request.relative_url);
+  if (absolute_url.path() != "/redirect_to_http")
+    return nullptr;
+  GURL::Replacements replacements;
+  replacements.SetHostStr("example.org");
+  replacements.SetSchemeStr("http");
+  const GURL redirect_url =
+      test_server->base_url().ReplaceComponents(replacements);
+
+  std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
+      new net::test_server::BasicHttpResponse);
+  http_response->set_code(net::HTTP_TEMPORARY_REDIRECT);
+  http_response->AddCustomHeader("Location", redirect_url.spec());
+  return std::move(http_response);
+}
+}  // namespace
+
+// Checks interstitial is shown for mixed forms caused for a GET form with a
+// 307 redirect to http, and that metrics are logged correctly.
+IN_PROC_BROWSER_TEST_F(SSLUITestWithInsecureFormsWarningEnabledWithAllRedirects,
+                       TestDisplaysInsecureFormSubmissionWarningRedirectGet) {
+  base::HistogramTester histograms;
+  const std::string interstitial_histogram =
+      "Security.MixedForm.InterstitialTriggerState";
+  ASSERT_TRUE(embedded_test_server()->Start());
+  https_server_.RegisterRequestHandler(
+      base::BindRepeating(&FormActionHTTPRedirectHandler, &https_server_));
+  ASSERT_TRUE(https_server_.Start());
+
+  std::string replacement_path = GetFilePathWithHostAndPortReplacement(
+      "/ssl/page_displays_form_redirects_insecure_get.html",
+      embedded_test_server()->host_port_pair());
+
+  ui_test_utils::NavigateToURL(browser(),
+                               https_server_.GetURL(replacement_path));
+  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  content::TestNavigationObserver nav_observer(tab, 1);
+  ASSERT_TRUE(content::ExecuteScript(tab, "submitForm();"));
+  nav_observer.Wait();
+  security_interstitials::SecurityInterstitialTabHelper* helper =
+      security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
+          tab);
+  EXPECT_TRUE(helper->IsDisplayingInterstitial());
+  EXPECT_EQ(helper->GetBlockingPageForCurrentlyCommittedNavigationForTesting()
+                ->GetTypeForTesting(),
+            security_interstitials::InsecureFormBlockingPage::kTypeForTesting);
+
+  // Check this was logged correctly as a redirect mixed form that would not
+  // expose form data.
+  histograms.ExpectTotalCount(interstitial_histogram, 1);
+  histograms.ExpectBucketCount(
+      interstitial_histogram,
+      InsecureFormNavigationThrottle::InterstitialTriggeredState::
+          kMixedFormRedirectNoFormData,
+      1);
+}
+
+class SSLUITestWithInsecureFormsWarningEnabledForRedirectsWithFormData
+    : public SSLUITest {
+ public:
+  SSLUITestWithInsecureFormsWarningEnabledForRedirectsWithFormData() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        security_interstitials::kInsecureFormSubmissionInterstitial,
+        {{"mode", "include-redirects-with-form-data"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Checks mixed form warnings work correctly for non-redirects when redirect
+// enforcement is enabled.
+IN_PROC_BROWSER_TEST_F(
+    SSLUITestWithInsecureFormsWarningEnabledForRedirectsWithFormData,
+    TestDisplaysInsecureFormSubmissionWarning) {
+  base::HistogramTester histograms;
+  const std::string interstitial_histogram =
+      "Security.MixedForm.InterstitialTriggerState";
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(https_server_.Start());
+
+  std::string replacement_path = GetFilePathWithHostAndPortReplacement(
+      "/ssl/page_displays_insecure_form.html",
+      embedded_test_server()->host_port_pair());
+
+  ui_test_utils::NavigateToURL(browser(),
+                               https_server_.GetURL(replacement_path));
+  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  content::TestNavigationObserver nav_observer(tab, 1);
+  ASSERT_TRUE(content::ExecuteScript(tab, "submitForm();"));
+  nav_observer.Wait();
+  security_interstitials::SecurityInterstitialTabHelper* helper =
+      security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
+          tab);
+  EXPECT_TRUE(helper->IsDisplayingInterstitial());
+  EXPECT_EQ(helper->GetBlockingPageForCurrentlyCommittedNavigationForTesting()
+                ->GetTypeForTesting(),
+            security_interstitials::InsecureFormBlockingPage::kTypeForTesting);
+
+  // Check this was logged correctly as a non-redirect interstitial.
+  histograms.ExpectTotalCount(interstitial_histogram, 1);
+  histograms.ExpectBucketCount(interstitial_histogram,
+                               InsecureFormNavigationThrottle::
+                                   InterstitialTriggeredState::kMixedFormDirect,
+                               1);
+}
+
+// Checks interstitial is shown for mixed forms caused by a 307 POST http
+// redirect, and that metrics are logged.
+IN_PROC_BROWSER_TEST_F(
+    SSLUITestWithInsecureFormsWarningEnabledForRedirectsWithFormData,
+    TestDisplaysInsecureFormSubmissionWarningRedirect) {
+  base::HistogramTester histograms;
+  const std::string interstitial_histogram =
+      "Security.MixedForm.InterstitialTriggerState";
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(https_server_.Start());
+
+  std::string replacement_path = GetFilePathWithHostAndPortReplacement(
+      "/ssl/page_displays_form_redirects_insecure.html",
+      embedded_test_server()->host_port_pair());
+
+  ui_test_utils::NavigateToURL(browser(),
+                               https_server_.GetURL(replacement_path));
+  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  content::TestNavigationObserver nav_observer(tab, 1);
+  ASSERT_TRUE(content::ExecuteScript(tab, "submitForm();"));
+  nav_observer.Wait();
+  security_interstitials::SecurityInterstitialTabHelper* helper =
+      security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
+          tab);
+  EXPECT_TRUE(helper->IsDisplayingInterstitial());
+  EXPECT_EQ(helper->GetBlockingPageForCurrentlyCommittedNavigationForTesting()
+                ->GetTypeForTesting(),
+            security_interstitials::InsecureFormBlockingPage::kTypeForTesting);
+
+  // Check this was logged correctly as a redirect mixed form that may expose
+  // form data.
+  histograms.ExpectTotalCount(interstitial_histogram, 1);
+  histograms.ExpectBucketCount(
+      interstitial_histogram,
+      InsecureFormNavigationThrottle::InterstitialTriggeredState::
+          kMixedFormRedirectWithFormData,
+      1);
+}
+
+// Checks interstitial is shown for mixed forms caused by a 308 POST http
+// redirect, and that metrics are logged.
+IN_PROC_BROWSER_TEST_F(
+    SSLUITestWithInsecureFormsWarningEnabledForRedirectsWithFormData,
+    TestDisplaysInsecureFormSubmissionWarningRedirect308) {
+  base::HistogramTester histograms;
+  const std::string interstitial_histogram =
+      "Security.MixedForm.InterstitialTriggerState";
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(https_server_.Start());
+
+  std::string replacement_path = GetFilePathWithHostAndPortReplacement(
+      "/ssl/page_displays_form_redirects_308_insecure.html",
+      embedded_test_server()->host_port_pair());
+
+  ui_test_utils::NavigateToURL(browser(),
+                               https_server_.GetURL(replacement_path));
+  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  content::TestNavigationObserver nav_observer(tab, 1);
+  ASSERT_TRUE(content::ExecuteScript(tab, "submitForm();"));
+  nav_observer.Wait();
+  security_interstitials::SecurityInterstitialTabHelper* helper =
+      security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
+          tab);
+  EXPECT_TRUE(helper->IsDisplayingInterstitial());
+  EXPECT_EQ(helper->GetBlockingPageForCurrentlyCommittedNavigationForTesting()
+                ->GetTypeForTesting(),
+            security_interstitials::InsecureFormBlockingPage::kTypeForTesting);
+
+  // Check this was logged correctly as a redirect mixed form that may expose
+  // form data.
+  histograms.ExpectTotalCount(interstitial_histogram, 1);
+  histograms.ExpectBucketCount(
+      interstitial_histogram,
+      InsecureFormNavigationThrottle::InterstitialTriggeredState::
+          kMixedFormRedirectWithFormData,
+      1);
+}
+
+// Checks no interstitial is shown for mixed forms caused for a POST form with a
+// 301 redirect, and that metrics are logged correctly.
+IN_PROC_BROWSER_TEST_F(
+    SSLUITestWithInsecureFormsWarningEnabledForRedirectsWithFormData,
+    TestDisplaysInsecureFormSubmissionWarningRedirect301) {
+  base::HistogramTester histograms;
+  const std::string interstitial_histogram =
+      "Security.MixedForm.InterstitialTriggerState";
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(https_server_.Start());
+
+  std::string replacement_path = GetFilePathWithHostAndPortReplacement(
+      "/ssl/page_displays_form_redirects_301_insecure.html",
+      embedded_test_server()->host_port_pair());
+
+  ui_test_utils::NavigateToURL(browser(),
+                               https_server_.GetURL(replacement_path));
+  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  content::TestNavigationObserver nav_observer(tab, 1);
+  ASSERT_TRUE(content::ExecuteScript(tab, "submitForm();"));
+  nav_observer.Wait();
+  security_interstitials::SecurityInterstitialTabHelper* helper =
+      security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
+          tab);
+  // There should have been no interstitial triggered.
+  EXPECT_FALSE(helper);
+
+  // Check this was logged correctly as a redirect mixed form that would not
+  // expose form data.
+  histograms.ExpectTotalCount(interstitial_histogram, 1);
+  histograms.ExpectBucketCount(
+      interstitial_histogram,
+      InsecureFormNavigationThrottle::InterstitialTriggeredState::
+          kMixedFormRedirectNoFormData,
+      1);
+}
+
+// Checks no interstitial is shown for mixed forms caused for a POST form with a
+// 302 redirect, and that metrics are logged correctly.
+IN_PROC_BROWSER_TEST_F(
+    SSLUITestWithInsecureFormsWarningEnabledForRedirectsWithFormData,
+    TestDisplaysInsecureFormSubmissionWarningRedirect302) {
+  base::HistogramTester histograms;
+  const std::string interstitial_histogram =
+      "Security.MixedForm.InterstitialTriggerState";
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(https_server_.Start());
+
+  std::string replacement_path = GetFilePathWithHostAndPortReplacement(
+      "/ssl/page_displays_form_redirects_302_insecure.html",
+      embedded_test_server()->host_port_pair());
+
+  ui_test_utils::NavigateToURL(browser(),
+                               https_server_.GetURL(replacement_path));
+  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  content::TestNavigationObserver nav_observer(tab, 1);
+  ASSERT_TRUE(content::ExecuteScript(tab, "submitForm();"));
+  nav_observer.Wait();
+  security_interstitials::SecurityInterstitialTabHelper* helper =
+      security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
+          tab);
+  // There should have been no interstitial triggered.
+  EXPECT_FALSE(helper);
+
+  // Check this was logged correctly as a redirect mixed form that would not
+  // expose form data.
+  histograms.ExpectTotalCount(interstitial_histogram, 1);
+  histograms.ExpectBucketCount(
+      interstitial_histogram,
+      InsecureFormNavigationThrottle::InterstitialTriggeredState::
+          kMixedFormRedirectNoFormData,
+      1);
+}
+
+// Checks no interstitial is shown for mixed forms caused for a GET form with
+// a 307 redirect to http, and that metrics are logged correctly.
+IN_PROC_BROWSER_TEST_F(
+    SSLUITestWithInsecureFormsWarningEnabledForRedirectsWithFormData,
+    TestDisplaysInsecureFormSubmissionWarningRedirectGet) {
+  base::HistogramTester histograms;
+  const std::string interstitial_histogram =
+      "Security.MixedForm.InterstitialTriggerState";
+  ASSERT_TRUE(embedded_test_server()->Start());
+  https_server_.RegisterRequestHandler(
+      base::BindRepeating(&FormActionHTTPRedirectHandler, &https_server_));
+  ASSERT_TRUE(https_server_.Start());
+
+  std::string replacement_path = GetFilePathWithHostAndPortReplacement(
+      "/ssl/page_displays_form_redirects_insecure_get.html",
+      embedded_test_server()->host_port_pair());
+
+  ui_test_utils::NavigateToURL(browser(),
+                               https_server_.GetURL(replacement_path));
+  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  content::TestNavigationObserver nav_observer(tab, 1);
+  ASSERT_TRUE(content::ExecuteScript(tab, "submitForm();"));
+  nav_observer.Wait();
+  security_interstitials::SecurityInterstitialTabHelper* helper =
+      security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
+          tab);
+  // There should have been no interstitial triggered.
+  EXPECT_FALSE(helper);
+
+  // Check this was logged correctly as a redirect mixed form that would not
+  // expose form data.
+  histograms.ExpectTotalCount(interstitial_histogram, 1);
+  histograms.ExpectBucketCount(
+      interstitial_histogram,
+      InsecureFormNavigationThrottle::InterstitialTriggeredState::
+          kMixedFormRedirectNoFormData,
+      1);
 }
 
 class MixedFormsPolicyTest : public policy::PolicyTest {

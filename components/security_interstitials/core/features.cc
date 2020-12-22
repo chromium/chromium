@@ -9,4 +9,11 @@ namespace security_interstitials {
 const base::Feature kInsecureFormSubmissionInterstitial{
     "InsecureFormSubmissionInterstitial", base::FEATURE_ENABLED_BY_DEFAULT};
 
+const char kInsecureFormSubmissionInterstitialMode[] = "mode";
+const char kInsecureFormSubmissionInterstitialModeIncludeRedirects[] =
+    "include-redirects";
+const char
+    kInsecureFormSubmissionInterstitialModeIncludeRedirectsWithFormData[] =
+        "include-redirects-with-form-data";
+
 }  // namespace security_interstitials

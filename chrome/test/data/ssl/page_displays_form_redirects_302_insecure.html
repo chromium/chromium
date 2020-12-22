@@ -1,0 +1,22 @@
+<html>
+
+<head>
+  <title>Page that displays an form whose action URL redirects to http</title>
+  <script>
+    function submitForm() {
+      form = document.getElementById("insecureForm");
+      form.submit();
+    }
+  </script>
+</head>
+
+<body>
+  This page contains an form which targets URL that redirects to http,
+  causing insecure content (when this page is loaded over https).<br>
+  <form id="insecureForm" action="/server-redirect-302?http://does-not-exist.test" method="post">
+    <input type="submit" />
+  </form>
+
+</body>
+
+</html>
