@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.share;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 
@@ -865,6 +866,38 @@ public class LensUtilsTest {
     }
 
     /**
+     * Test {@link LensUtils#shouldLogUkm(isIncognito)} method for enable UKM logging for Lens chip
+     * integration.
+     */
+    @CommandLineFlags.
+    Add({"enable-features=" + ChromeFeatureList.CONTEXT_MENU_GOOGLE_LENS_CHIP + "<FakeStudyName",
+            "force-fieldtrials=FakeStudyName/Enabled",
+            "force-fieldtrial-params=FakeStudyName.Enabled:disableOnIncognito/true/"
+                    + "logUkm/true"})
+    @Test
+    @SmallTest
+    public void
+    shouldLogUkm_shoppingChipUkmLoggingEnabled() {
+        assertTrue(shouldLogUkmOnUiThread(/* isIncognito=*/false));
+    }
+
+    /**
+     * Test {@link LensUtils#shouldLogUkm(isIncognito)} method for enable UKM logging for Lens chip
+     * integration.
+     */
+    @CommandLineFlags.
+    Add({"enable-features=" + ChromeFeatureList.CONTEXT_MENU_GOOGLE_LENS_CHIP + "<FakeStudyName",
+            "force-fieldtrials=FakeStudyName/Enabled",
+            "force-fieldtrial-params=FakeStudyName.Enabled:disableOnIncognito/true/"
+                    + "logUkm/false"})
+    @Test
+    @SmallTest
+    public void
+    shouldLogUkm_shoppingChipUkmLoggingDisabled() {
+        assertFalse(shouldLogUkmOnUiThread(/* isIncognito=*/false));
+    }
+
+    /**
      * Test {@link LensUtils#isInShoppingAllowlist(url)} method for url with default shopping url
      * patterns.
      */
@@ -896,5 +929,10 @@ public class LensUtilsTest {
     private boolean enableImageChipOnUiThread(boolean isIncognito) {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> LensUtils.enableImageChip(isIncognito));
+    }
+
+    private boolean shouldLogUkmOnUiThread(boolean isIncognito) {
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> LensUtils.shouldLogUkm(isIncognito));
     }
 }

@@ -7961,6 +7961,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Lens.ImageClassification.SdkError" enum="LensSdkError"
+    expires_after="M90">
+  <owner>yusuyoutube@google.com</owner>
+  <owner>benwgold@google.com</owner>
+  <summary>
+    Logged the error code when there is a Lens SDK error occurred within the
+    classification session. The error code is an integer constant defined by the
+    SDK. Only logged on Android. See http://b/170422682 for more details.
+  </summary>
+</histogram>
+
 <histogram name="LevelDB.ApproximateMemTableMemoryUse" units="bytes"
     expires_after="2021-01-03">
   <owner>nyquist@chromium.org</owner>

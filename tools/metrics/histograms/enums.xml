@@ -12482,6 +12482,7 @@ Called by update_net_error_codes.py.-->
   <int value="31" label="Shop image with Google Lens"/>
   <int value="32" label="Search Similar Products"/>
   <int value="33" label="Read later"/>
+  <int value="34" label="Shop with Google Lens Chip"/>
 </enum>
 
 <enum name="ContextMenuOptionDesktop">
@@ -41095,6 +41096,16 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="6" label="Error: invalid package signature"/>
   <int value="7" label="Error: invalid image uri"/>
   <int value="8" label="Error: early terminated"/>
+</enum>
+
+<enum name="LensSdkError">
+  <int value="1" label="Internal Error"/>
+  <int value="2" label="Session already started"/>
+  <int value="3" label="Session not started"/>
+  <int value="4" label="Query missing payload"/>
+  <int value="5" label="Query payload missing image"/>
+  <int value="6" label="Query image failed to resolve"/>
+  <int value="7" label="Classification error"/>
 </enum>
 
 <enum name="LevelDBCorruptionRestoreValue">

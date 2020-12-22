@@ -18,6 +18,7 @@ include_rules = [
   "+chrome/android/java/src/org/chromium/chrome/browser/ssl/SecurityStateModel.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/tab",
   "+chrome/browser/tab/java/src/org/chromium/chrome/browser/tab/Tab.java",
+  "+chrome/browser/contextmenu/java/src/org/chromium/chrome/browser/contextmenu/ChipDelegate.java",
   "+chrome/browser/contextmenu/java/src/org/chromium/chrome/browser/contextmenu/ContextMenuNativeDelegate.java",
   "+chrome/browser/contextmenu/java/src/org/chromium/chrome/browser/contextmenu/ContextMenuPopulator.java",
   "+chrome/browser/contextmenu/java/src/org/chromium/chrome/browser/contextmenu/ContextMenuPopulatorFactory.java",

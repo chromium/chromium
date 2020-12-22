@@ -354,8 +354,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/contacts_picker/ChromePickerAdapter.java",
   "java/src/org/chromium/chrome/browser/content/ContentUtils.java",
   "java/src/org/chromium/chrome/browser/content_capture/ContentCaptureHistoryDeletionObserver.java",
-  "java/src/org/chromium/chrome/browser/contextmenu/ChipDelegate.java",
-  "java/src/org/chromium/chrome/browser/contextmenu/ChipRenderParams.java",
   "java/src/org/chromium/chrome/browser/contextmenu/ChromeContextMenuItem.java",
   "java/src/org/chromium/chrome/browser/contextmenu/ChromeContextMenuPopulator.java",
   "java/src/org/chromium/chrome/browser/contextmenu/ChromeContextMenuPopulatorFactory.java",

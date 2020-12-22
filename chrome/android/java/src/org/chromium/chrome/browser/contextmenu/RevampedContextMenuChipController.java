@@ -169,6 +169,9 @@ class RevampedContextMenuChipController implements View.OnClickListener {
 
         mPopupWindow.show();
         recordChipEvent(ChipEvent.SHOWN);
+        if (mChipRenderParams.onShowCallback != null) {
+            mChipRenderParams.onShowCallback.run();
+        }
     }
 
     // This method should only be used in test files.  It is not marked

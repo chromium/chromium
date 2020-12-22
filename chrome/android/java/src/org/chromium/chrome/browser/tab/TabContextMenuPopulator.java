@@ -9,6 +9,7 @@ import android.util.Pair;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ObserverList.RewindableIterator;
+import org.chromium.chrome.browser.contextmenu.ChipDelegate;
 import org.chromium.chrome.browser.contextmenu.ContextMenuPopulator;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
@@ -61,5 +62,10 @@ public class TabContextMenuPopulator implements ContextMenuPopulator {
     @Override
     public String getPageTitle() {
         return mPopulator.getPageTitle();
+    }
+
+    @Override
+    public @Nullable ChipDelegate getChipDelegate() {
+        return mPopulator.getChipDelegate();
     }
 }

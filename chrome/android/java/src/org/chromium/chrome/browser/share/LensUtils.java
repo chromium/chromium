@@ -508,10 +508,16 @@ public class LensUtils {
      */
     public static boolean shouldLogUkm(boolean isIncognito) {
         // Lens shopping feature takes the priority over the "Search image with Google Lens".
+        if (enableImageChip(isIncognito)) {
+            return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                    ChromeFeatureList.CONTEXT_MENU_GOOGLE_LENS_CHIP, LOG_UKM_PARAM_NAME, true);
+        }
+
         if (isGoogleLensShoppingFeatureEnabled(isIncognito)) {
             return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                     ChromeFeatureList.CONTEXT_MENU_SHOP_WITH_GOOGLE_LENS, LOG_UKM_PARAM_NAME, true);
         }
+
         if (isGoogleLensFeatureEnabled(isIncognito)) {
             return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                     ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS, LOG_UKM_PARAM_NAME,
