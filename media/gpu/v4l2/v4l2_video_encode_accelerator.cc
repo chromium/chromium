@@ -30,7 +30,6 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
-#include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/color_plane_layout.h"
 #include "media/base/scopedfd_helper.h"
@@ -181,7 +180,7 @@ V4L2VideoEncodeAccelerator::V4L2VideoEncodeAccelerator(
       // TODO(akahuang): Remove WithBaseSyncPrimitives() after replacing poll
       // thread by V4L2DevicePoller.
       encoder_task_runner_(base::ThreadPool::CreateSingleThreadTaskRunner(
-          {base::WithBaseSyncPrimitives()},
+          {base::WithBaseSyncPrimitives(), base::MayBlock()},
           base::SingleThreadTaskRunnerThreadMode::DEDICATED)),
       device_poll_thread_("V4L2EncoderDevicePollThread") {
   DCHECK_CALLED_ON_VALID_SEQUENCE(child_sequence_checker_);
@@ -401,17 +400,8 @@ bool V4L2VideoEncodeAccelerator::CreateImageProcessor(
     return false;
   }
 
-  if (!image_processor_gmb_factory_) {
-    image_processor_gmb_factory_ =
-        gpu::GpuMemoryBufferFactory::CreateNativeType(nullptr);
-    if (!image_processor_gmb_factory_) {
-      VLOGF(1) << "Failed to create GpuMemoryBufferFactory";
-      return false;
-    }
-  }
-
   auto platform_layout = GetPlatformVideoFrameLayout(
-      image_processor_gmb_factory_.get(), output_format, output_size,
+      /*gpu_memory_buffer_factory=*/nullptr, output_format, output_size,
       gfx::BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE);
   if (!platform_layout) {
     VLOGF(1) << "Failed to get Platform VideoFrameLayout";
@@ -466,7 +456,6 @@ bool V4L2VideoEncodeAccelerator::CreateImageProcessor(
 bool V4L2VideoEncodeAccelerator::AllocateImageProcessorOutputBuffers(
     size_t count) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
-  DCHECK(image_processor_gmb_factory_);
   DCHECK(image_processor_);
   DCHECK_EQ(image_processor_->output_mode(),
             ImageProcessor::OutputMode::IMPORT);
@@ -482,7 +471,7 @@ bool V4L2VideoEncodeAccelerator::AllocateImageProcessorOutputBuffers(
     switch (output_config.storage_type()) {
       case VideoFrame::STORAGE_GPU_MEMORY_BUFFER:
         image_processor_output_buffers_[i] = CreateGpuMemoryBufferVideoFrame(
-            image_processor_gmb_factory_.get(),
+            /*gpu_memory_buffer_factory=*/nullptr,
             output_config.fourcc.ToVideoPixelFormat(), output_config.size,
             output_config.visible_rect, output_config.visible_rect.size(),
             base::TimeDelta(),
@@ -1643,16 +1632,8 @@ bool V4L2VideoEncodeAccelerator::SetFormats(VideoPixelFormat input_format,
 
   gfx::Size input_size = encoder_input_visible_rect_.size();
   if (native_input_mode_) {
-    DCHECK(!image_processor_gmb_factory_);
-    image_processor_gmb_factory_ =
-        gpu::GpuMemoryBufferFactory::CreateNativeType(nullptr);
-    if (!image_processor_gmb_factory_) {
-      VLOGF(1) << "Failed to create GpuMemoryBufferFactory";
-      return false;
-    }
-
     auto input_layout = GetPlatformVideoFrameLayout(
-        image_processor_gmb_factory_.get(), input_format,
+        /*gpu_memory_buffer_factory=*/nullptr, input_format,
         encoder_input_visible_rect_.size(),
         gfx::BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE);
     if (!input_layout)
