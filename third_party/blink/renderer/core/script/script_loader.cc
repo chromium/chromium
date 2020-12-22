@@ -190,53 +190,56 @@ enum class ShouldFireErrorEvent {
   kShouldFire,
 };
 
+bool IsImportMapEnabled(LocalDOMWindow* context_window) {
+  // When window/modulator is null, `true` is returned here, because
+  // PrepareScript() should fail at "scripting is disabled" checks, not here.
+
+  if (!context_window)
+    return true;
+
+  Modulator* modulator =
+      Modulator::From(ToScriptStateForMainWorld(context_window->GetFrame()));
+  if (!modulator)
+    return true;
+
+  return modulator->ImportMapsEnabled();
+}
+
 }  // namespace
 
 // <specdef href="https://html.spec.whatwg.org/C/#prepare-a-script">
-bool ScriptLoader::IsValidScriptTypeAndLanguage(
+ScriptLoader::ScriptTypeAtPrepare ScriptLoader::GetScriptTypeAtPrepare(
     const String& type,
     const String& language,
-    LegacyTypeSupport support_legacy_types,
-    mojom::blink::ScriptType* out_script_type,
-    bool* out_is_import_map) {
+    LegacyTypeSupport support_legacy_types) {
   if (IsValidClassicScriptTypeAndLanguage(type, language,
                                           support_legacy_types)) {
     // <spec step="7">... If the script block's type string is a JavaScript MIME
     // type essence match, the script's type is "classic". ...</spec>
     //
     // TODO(hiroshige): Annotate and/or cleanup this step.
-    if (out_script_type)
-      *out_script_type = mojom::blink::ScriptType::kClassic;
-    if (out_is_import_map)
-      *out_is_import_map = false;
-    return true;
+    return ScriptTypeAtPrepare::kClassic;
   }
 
   if (EqualIgnoringASCIICase(type, "module")) {
     // <spec step="7">... If the script block's type string is an ASCII
     // case-insensitive match for the string "module", the script's type is
     // "module". ...</spec>
-    if (out_script_type)
-      *out_script_type = mojom::blink::ScriptType::kModule;
-    if (out_is_import_map)
-      *out_is_import_map = false;
-    return true;
+    return ScriptTypeAtPrepare::kModule;
   }
 
   if (type == "importmap") {
-    if (out_is_import_map)
-      *out_is_import_map = true;
-    return true;
+    return ScriptTypeAtPrepare::kImportMap;
   }
 
   // <spec step="7">... If neither of the above conditions are true, then
   // return. No script is executed.</spec>
-  return false;
+  return ScriptTypeAtPrepare::kInvalid;
 }
 
-bool ScriptLoader::BlockForNoModule(mojom::blink::ScriptType script_type,
+bool ScriptLoader::BlockForNoModule(ScriptTypeAtPrepare script_type,
                                     bool nomodule) {
-  return nomodule && script_type == mojom::blink::ScriptType::kClassic;
+  return nomodule && script_type == ScriptTypeAtPrepare::kClassic;
 }
 
 // Corresponds to
@@ -263,15 +266,17 @@ network::mojom::CredentialsMode ScriptLoader::ModuleScriptCredentialsMode(
 // https://github.com/w3c/webappsec-permissions-policy/issues/135
 bool ShouldBlockSyncScriptForDocumentPolicy(
     const ScriptElementBase* element,
-    mojom::blink::ScriptType script_type,
+    ScriptLoader::ScriptTypeAtPrepare script_type,
     bool parser_inserted) {
   if (element->GetExecutionContext()->IsFeatureEnabled(
           mojom::blink::DocumentPolicyFeature::kSyncScript)) {
     return false;
   }
 
-  // Module scripts never block parsing.
-  if (script_type == mojom::blink::ScriptType::kModule || !parser_inserted)
+  // Module scripts and import maps never block parsing.
+  if (script_type == ScriptLoader::ScriptTypeAtPrepare::kModule ||
+      script_type == ScriptLoader::ScriptTypeAtPrepare::kImportMap ||
+      !parser_inserted)
     return false;
 
   if (!element->HasSourceAttribute())
@@ -325,15 +330,26 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
   if (!element_->IsConnected())
     return false;
 
-  bool is_import_map = false;
+  Document& element_document = element_->GetDocument();
+  LocalDOMWindow* context_window = element_document.ExecutingWindow();
 
   // <spec step="7">... Determine the script's type as follows: ...</spec>
-  //
-  // |script_type_| is set here.
-  if (!IsValidScriptTypeAndLanguage(
-          element_->TypeAttributeValue(), element_->LanguageAttributeValue(),
-          support_legacy_types, &script_type_, &is_import_map)) {
-    return false;
+  script_type_ = GetScriptTypeAtPrepare(element_->TypeAttributeValue(),
+                                        element_->LanguageAttributeValue(),
+                                        support_legacy_types);
+
+  switch (GetScriptType()) {
+    case ScriptTypeAtPrepare::kInvalid:
+      return false;
+
+    case ScriptTypeAtPrepare::kImportMap:
+      if (!IsImportMapEnabled(context_window))
+        return false;
+      break;
+
+    case ScriptTypeAtPrepare::kClassic:
+    case ScriptTypeAtPrepare::kModule:
+      break;
   }
 
   // <spec step="8">If was-parser-inserted is true, then flag the element as
@@ -360,29 +376,15 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
   // <spec href="https://html.spec.whatwg.org/C/#concept-n-noscript">Scripting
   // is disabled for a node if there is no such browsing context, or if
   // scripting is disabled in that browsing context.</spec>
-  Document& element_document = element_->GetDocument();
-  LocalDOMWindow* context_window = element_document.ExecutingWindow();
   if (!context_window)
     return false;
   if (!context_window->CanExecuteScripts(kAboutToExecuteScript))
     return false;
 
-  // Accept import maps only if ImportMapsEnabled().
-  if (is_import_map) {
-    Modulator* modulator =
-        Modulator::From(ToScriptStateForMainWorld(context_window->GetFrame()));
-    if (!modulator->ImportMapsEnabled()) {
-      // Import maps should have been rejected in spec Step 7 above.
-      // TODO(hiroshige): Returning here (i.e. after spec Step 11) is not spec
-      // conformant. Fix this.
-      return false;
-    }
-  }
-
   // <spec step="12">If the script element has a nomodule content attribute and
   // the script's type is "classic", then return. The script is not
   // executed.</spec>
-  if (BlockForNoModule(script_type_, element_->NomoduleAttributeValue()))
+  if (BlockForNoModule(GetScriptType(), element_->NomoduleAttributeValue()))
     return false;
 
   // TODO(csharrison): This logic only works if the tokenizer/parser was not
@@ -480,7 +482,7 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
   ParserDisposition parser_state =
       IsParserInserted() ? kParserInserted : kNotParserInserted;
 
-  if (GetScriptType() == mojom::blink::ScriptType::kModule)
+  if (GetScriptType() == ScriptLoader::ScriptTypeAtPrepare::kModule)
     UseCounter::Count(*context_window, WebFeature::kPrepareModuleScript);
 
   DCHECK(!prepared_pending_script_);
@@ -506,7 +508,7 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
   // If the script’s type is "importmap" and the element’s node document’s
   // acquiring import maps is false, then queue a task to fire an event named
   // error at the element, and return. [spec text]
-  if (is_import_map) {
+  if (GetScriptType() == ScriptTypeAtPrepare::kImportMap) {
     Modulator* modulator =
         Modulator::From(ToScriptStateForMainWorld(context_window->GetFrame()));
     if (!modulator->IsAcquiringImportMaps()) {
@@ -558,70 +560,80 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
     }
 
     // <spec step="24.6">Switch on the script's type:</spec>
-    if (is_import_map) {
-      // TODO(crbug.com/922212): Implement external import maps.
-      element_document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-          mojom::ConsoleMessageSource::kJavaScript,
-          mojom::ConsoleMessageLevel::kError,
-          "External import maps are not yet supported."));
-      element_document.GetTaskRunner(TaskType::kDOMManipulation)
-          ->PostTask(FROM_HERE,
-                     WTF::Bind(&ScriptElementBase::DispatchErrorEvent,
-                               WrapPersistent(element_.Get())));
-      return false;
-    }
+    switch (GetScriptType()) {
+      case ScriptTypeAtPrepare::kInvalid:
+        NOTREACHED();
+        return false;
 
-    if (GetScriptType() == mojom::blink::ScriptType::kClassic) {
-      // - "classic":
+      case ScriptTypeAtPrepare::kImportMap:
+        // TODO(crbug.com/922212): Implement external import maps.
+        element_document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+            mojom::ConsoleMessageSource::kJavaScript,
+            mojom::ConsoleMessageLevel::kError,
+            "External import maps are not yet supported."));
+        element_document.GetTaskRunner(TaskType::kDOMManipulation)
+            ->PostTask(FROM_HERE,
+                       WTF::Bind(&ScriptElementBase::DispatchErrorEvent,
+                                 WrapPersistent(element_.Get())));
+        return false;
 
-      // <spec step="15">If the script element has a charset attribute, then let
-      // encoding be the result of getting an encoding from the value of the
-      // charset attribute. If the script element does not have a charset
-      // attribute, or if getting an encoding failed, let encoding be the same
-      // as the encoding of the script element's node document.</spec>
-      //
-      // TODO(hiroshige): Should we handle failure in getting an encoding?
-      WTF::TextEncoding encoding;
-      if (!element_->CharsetAttributeValue().IsEmpty())
-        encoding = WTF::TextEncoding(element_->CharsetAttributeValue());
-      else
-        encoding = element_document.Encoding();
+      case ScriptTypeAtPrepare::kClassic: {
+        // - "classic":
 
-      // <spec step="24.6.A">"classic"
-      //
-      // Fetch a classic script given url, settings object, options, classic
-      // script CORS setting, and encoding.</spec>
-      Document* document_for_origin = &element_document;
-      if (element_document.ImportsController()) {
-        document_for_origin = context_window->document();
+        // <spec step="15">If the script element has a charset attribute, then
+        // let encoding be the result of getting an encoding from the value of
+        // the charset attribute. If the script element does not have a charset
+        // attribute, or if getting an encoding failed, let encoding be the same
+        // as the encoding of the script element's node document.</spec>
+        //
+        // TODO(hiroshige): Should we handle failure in getting an encoding?
+        WTF::TextEncoding encoding;
+        if (!element_->CharsetAttributeValue().IsEmpty())
+          encoding = WTF::TextEncoding(element_->CharsetAttributeValue());
+        else
+          encoding = element_document.Encoding();
+
+        // <spec step="24.6.A">"classic"
+        //
+        // Fetch a classic script given url, settings object, options, classic
+        // script CORS setting, and encoding.</spec>
+        Document* document_for_origin = &element_document;
+        if (element_document.ImportsController()) {
+          document_for_origin = context_window->document();
+        }
+        FetchClassicScript(url, *document_for_origin, options, cross_origin,
+                           encoding);
+        break;
       }
-      FetchClassicScript(url, *document_for_origin, options, cross_origin,
-                         encoding);
-    } else {
-      // - "module":
+      case ScriptTypeAtPrepare::kModule: {
+        // - "module":
 
-      // Step 15 is skipped because they are not used in module
-      // scripts.
+        // Step 15 is skipped because they are not used in module
+        // scripts.
 
-      // <spec step="24.6.B">"module"
+        // <spec step="24.6.B">"module"
+        //
+        // Fetch an external module script graph given url, settings object, and
+        // options.</spec>
+        Modulator* modulator = Modulator::From(
+            ToScriptStateForMainWorld(context_window->GetFrame()));
+        FetchModuleScriptTree(url, fetch_client_settings_object_fetcher,
+                              modulator, options);
+      }
+      // <spec step="24.6">When the chosen algorithm asynchronously completes,
+      // set the script's script to the result. At that time, the script is
+      // ready.
+      // ...</spec>
       //
-      // Fetch an external module script graph given url, settings object, and
-      // options.</spec>
-      Modulator* modulator = Modulator::From(
-          ToScriptStateForMainWorld(context_window->GetFrame()));
-      FetchModuleScriptTree(url, fetch_client_settings_object_fetcher,
-                            modulator, options);
+      // When the script is ready,
+      // PendingScriptClient::pendingScriptFinished() is used as the
+      // notification, and the action to take when the script is ready is
+      // specified later, in
+      // - ScriptLoader::PrepareScript(), or
+      // - HTMLParserScriptRunner,
+      // depending on the conditions in Step 25 of "prepare a script".
+      break;
     }
-    // <spec step="24.6">When the chosen algorithm asynchronously completes, set
-    // the script's script to the result. At that time, the script is ready.
-    // ...</spec>
-    //
-    // When the script is ready, PendingScriptClient::pendingScriptFinished()
-    // is used as the notification, and the action to take when
-    // the script is ready is specified later, in
-    // - ScriptLoader::PrepareScript(), or
-    // - HTMLParserScriptRunner,
-    // depending on the conditions in Step 25 of "prepare a script".
   }
 
   // <spec step="25">If the element does not have a src content attribute, run
@@ -645,27 +657,31 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
 
     // <spec step="25.2">Switch on the script's type:</spec>
 
-    if (is_import_map) {
-      UseCounter::Count(*context_window, WebFeature::kImportMap);
-
-      // https://wicg.github.io/import-maps/#integration-prepare-a-script
-      // 1. Let import map parse result be the result of create an import map
-      // parse result, given source text, base URL and settings object. [spec
-      // text]
-      PendingImportMap* pending_import_map =
-          PendingImportMap::CreateInline(*element_, source_text, base_url);
-
-      // Because we currently support inline import maps only, the pending
-      // import map is ready immediately and thus we call `register an import
-      // map` synchronously here.
-      pending_import_map->RegisterImportMap();
-
-      return false;
-    }
-
     switch (GetScriptType()) {
+      case ScriptTypeAtPrepare::kInvalid:
+        NOTREACHED();
+        return false;
+
+      case ScriptTypeAtPrepare::kImportMap: {
+        UseCounter::Count(*context_window, WebFeature::kImportMap);
+
+        // https://wicg.github.io/import-maps/#integration-prepare-a-script
+        // 1. Let import map parse result be the result of create an import map
+        // parse result, given source text, base URL and settings object. [spec
+        // text]
+        PendingImportMap* pending_import_map =
+            PendingImportMap::CreateInline(*element_, source_text, base_url);
+
+        // Because we currently support inline import maps only, the pending
+        // import map is ready immediately and thus we call `register an import
+        // map` synchronously here.
+        pending_import_map->RegisterImportMap();
+
+        return false;
+      }
+
         // <spec step="25.2.A">"classic"</spec>
-      case mojom::blink::ScriptType::kClassic: {
+      case ScriptTypeAtPrepare::kClassic: {
         // <spec step="25.2.A.1">Let script be the result of creating a classic
         // script using source text, settings object, base URL, and
         // options.</spec>
@@ -693,7 +709,7 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
       }
 
         // <spec step="25.2.B">"module"</spec>
-      case mojom::blink::ScriptType::kModule: {
+      case ScriptTypeAtPrepare::kModule: {
         // <spec step="25.2.B.1">Fetch an inline module script graph, given
         // source text, base URL, settings object, and options. When this
         // asynchronously completes, set the script's script to the result. At
@@ -741,6 +757,8 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
     }
   }
 
+  DCHECK_NE(GetScriptType(), ScriptLoader::ScriptTypeAtPrepare::kImportMap);
+
   DCHECK(prepared_pending_script_);
 
   // <spec step="26">Then, follow the first of the following options that
@@ -761,11 +779,11 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
   // If the script's type is "module", and the element has been flagged as
   // "parser-inserted", and the element does not have an async attribute
   // ...</spec>
-  if ((GetScriptType() == mojom::blink::ScriptType::kClassic &&
+  if ((GetScriptType() == ScriptTypeAtPrepare::kClassic &&
        element_->HasSourceAttribute() && element_->DeferAttributeValue() &&
        parser_inserted_ && !element_->AsyncAttributeValue()) ||
-      (GetScriptType() == mojom::blink::ScriptType::kModule &&
-       parser_inserted_ && !element_->AsyncAttributeValue())) {
+      (GetScriptType() == ScriptTypeAtPrepare::kModule && parser_inserted_ &&
+       !element_->AsyncAttributeValue())) {
     // This clause is implemented by the caller-side of prepareScript():
     // - HTMLParserScriptRunner::requestDeferredScript(), and
     // - TODO(hiroshige): Investigate XMLDocumentParser::endElementNs()
@@ -776,7 +794,7 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
   }
 
   // Check for external script that should be force deferred.
-  if (GetScriptType() == mojom::blink::ScriptType::kClassic &&
+  if (GetScriptType() == ScriptTypeAtPrepare::kClassic &&
       element_->HasSourceAttribute() &&
       context_window->GetFrame()->ShouldForceDeferScript() &&
       IsA<HTMLDocument>(context_window->document()) && parser_inserted_ &&
@@ -797,7 +815,7 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
   // <spec step="26.B">If the script's type is "classic", and the element has a
   // src attribute, and the element has been flagged as "parser-inserted", and
   // the element does not have an async attribute ...</spec>
-  if (GetScriptType() == mojom::blink::ScriptType::kClassic &&
+  if (GetScriptType() == ScriptTypeAtPrepare::kClassic &&
       element_->HasSourceAttribute() && parser_inserted_ &&
       !element_->AsyncAttributeValue()) {
     // This clause is implemented by the caller-side of prepareScript():
@@ -815,10 +833,10 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
   // If the script's type is "module", and the element does not have an async
   // attribute, and the element does not have the "non-blocking" flag set
   // ...</spec>
-  if ((GetScriptType() == mojom::blink::ScriptType::kClassic &&
+  if ((GetScriptType() == ScriptTypeAtPrepare::kClassic &&
        element_->HasSourceAttribute() && !element_->AsyncAttributeValue() &&
        !non_blocking_) ||
-      (GetScriptType() == mojom::blink::ScriptType::kModule &&
+      (GetScriptType() == ScriptTypeAtPrepare::kModule &&
        !element_->AsyncAttributeValue() && !non_blocking_)) {
     // <spec step="26.C">... Add the element to the end of the list of scripts
     // that will execute in order as soon as possible associated with the node
@@ -842,9 +860,9 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
   // src attribute
   //
   // If the script's type is "module" ...</spec>
-  if ((GetScriptType() == mojom::blink::ScriptType::kClassic &&
+  if ((GetScriptType() == ScriptTypeAtPrepare::kClassic &&
        element_->HasSourceAttribute()) ||
-      GetScriptType() == mojom::blink::ScriptType::kModule) {
+      GetScriptType() == ScriptTypeAtPrepare::kModule) {
     // <spec step="26.D">... The element must be added to the set of scripts
     // that will execute as soon as possible of the node document of the script
     // element at the time the prepare a script algorithm started. When the
@@ -868,7 +886,7 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
 
   // The following clauses are executed only if the script's type is "classic"
   // and the element doesn't have a src attribute.
-  DCHECK_EQ(GetScriptType(), mojom::blink::ScriptType::kClassic);
+  DCHECK_EQ(GetScriptType(), ScriptTypeAtPrepare::kClassic);
   DCHECK(!is_external_script_);
 
   // Check for inline script that should be force deferred.
@@ -973,7 +991,6 @@ PendingScript* ScriptLoader::TakePendingScript(
 void ScriptLoader::PendingScriptFinished(PendingScript* pending_script) {
   DCHECK(!will_be_parser_executed_);
   DCHECK_EQ(pending_script_, pending_script);
-  DCHECK_EQ(pending_script_->GetScriptType(), GetScriptType());
   DCHECK(pending_script->IsControlledByScriptRunner());
   DCHECK(pending_script_->GetSchedulingType() == ScriptSchedulingType::kAsync ||
          pending_script_->GetSchedulingType() ==
@@ -1018,7 +1035,7 @@ bool ScriptLoader::IsScriptForEventSupported() const {
 
   // <spec step="14">If the script element has an event attribute and a for
   // attribute, and the script's type is "classic", then:</spec>
-  if (GetScriptType() != mojom::blink::ScriptType::kClassic ||
+  if (GetScriptType() != ScriptTypeAtPrepare::kClassic ||
       event_attribute.IsNull() || for_attribute.IsNull())
     return true;
 

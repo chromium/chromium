@@ -669,21 +669,24 @@ class TokenPreloadScanner::StartTagScanner {
     if (Match(tag_impl_, html_names::kInputTag) && !input_is_image_)
       return false;
     if (Match(tag_impl_, html_names::kScriptTag)) {
-      mojom::blink::ScriptType script_type = mojom::blink::ScriptType::kClassic;
-      bool is_import_map = false;
-      if (!ScriptLoader::IsValidScriptTypeAndLanguage(
+      ScriptLoader::ScriptTypeAtPrepare script_type =
+          ScriptLoader::GetScriptTypeAtPrepare(
               type_attribute_value_, language_attribute_value_,
-              ScriptLoader::kAllowLegacyTypeInTypeAttribute, &script_type,
-              &is_import_map)) {
-        return false;
-      }
-      if (is_import_map) {
-        // External import maps are not yet supported. https://crbug.com/922212
-        return false;
-      }
-      if (ScriptLoader::BlockForNoModule(script_type,
-                                         nomodule_attribute_value_)) {
-        return false;
+              ScriptLoader::kAllowLegacyTypeInTypeAttribute);
+      switch (script_type) {
+        case ScriptLoader::ScriptTypeAtPrepare::kInvalid:
+          return false;
+
+        case ScriptLoader::ScriptTypeAtPrepare::kImportMap:
+          // TODO(crbug.com/922212): External import maps are not yet supported.
+          return false;
+
+        case ScriptLoader::ScriptTypeAtPrepare::kClassic:
+        case ScriptLoader::ScriptTypeAtPrepare::kModule:
+          if (ScriptLoader::BlockForNoModule(script_type,
+                                             nomodule_attribute_value_)) {
+            return false;
+          }
       }
     }
     return true;

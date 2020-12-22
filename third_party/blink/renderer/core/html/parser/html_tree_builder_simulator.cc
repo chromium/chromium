@@ -171,9 +171,10 @@ HTMLTreeBuilderSimulator::SimulatedToken HTMLTreeBuilderSimulator::Simulate(
           language_attribute_value = item->Value();
         }
 
-        if (ScriptLoader::IsValidScriptTypeAndLanguage(
+        if (ScriptLoader::GetScriptTypeAtPrepare(
                 type_attribute_value, language_attribute_value,
-                ScriptLoader::kAllowLegacyTypeInTypeAttribute)) {
+                ScriptLoader::kAllowLegacyTypeInTypeAttribute) !=
+            ScriptLoader::ScriptTypeAtPrepare::kInvalid) {
           simulated_token = kValidScriptStart;
         }
       } else if (ThreadSafeMatch(tag_name, html_names::kLinkTag)) {

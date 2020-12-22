@@ -77,7 +77,8 @@ void XMLParserScriptRunner::ProcessScriptElement(
   bool success = script_loader->PrepareScript(
       script_start_position, ScriptLoader::kAllowLegacyTypeInTypeAttribute);
 
-  if (script_loader->GetScriptType() != mojom::blink::ScriptType::kClassic) {
+  if (script_loader->GetScriptType() ==
+      ScriptLoader::ScriptTypeAtPrepare::kModule) {
     // XMLDocumentParser does not support a module script, and thus ignores it.
     success = false;
     document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
