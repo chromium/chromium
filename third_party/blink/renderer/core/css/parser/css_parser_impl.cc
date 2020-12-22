@@ -124,7 +124,7 @@ static inline void FilterProperties(
     const HeapVector<CSSPropertyValue, 256>& input,
     HeapVector<CSSPropertyValue, 256>& output,
     wtf_size_t& unused_entries,
-    std::bitset<numCSSProperties>& seen_properties,
+    std::bitset<kNumCSSProperties>& seen_properties,
     HashSet<AtomicString>& seen_custom_properties) {
   // Add properties in reverse order so that highest priority definitions are
   // reached first. Duplicate definitions can then be ignored when found.
@@ -151,7 +151,7 @@ static inline void FilterProperties(
 static ImmutableCSSPropertyValueSet* CreateCSSPropertyValueSet(
     HeapVector<CSSPropertyValue, 256>& parsed_properties,
     CSSParserMode mode) {
-  std::bitset<numCSSProperties> seen_properties;
+  std::bitset<kNumCSSProperties> seen_properties;
   wtf_size_t unused_entries = parsed_properties.size();
   HeapVector<CSSPropertyValue, 256> results(unused_entries);
   HashSet<AtomicString> seen_custom_properties;
@@ -211,7 +211,7 @@ bool CSSParserImpl::ParseDeclarationList(
   if (parser.parsed_properties_.IsEmpty())
     return false;
 
-  std::bitset<numCSSProperties> seen_properties;
+  std::bitset<kNumCSSProperties> seen_properties;
   wtf_size_t unused_entries = parser.parsed_properties_.size();
   HeapVector<CSSPropertyValue, 256> results(unused_entries);
   HashSet<AtomicString> seen_custom_properties;

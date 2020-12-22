@@ -181,7 +181,7 @@ void SVGAnimateElement::ResolveTargetProperty() {
     type_ = SVGElement::AnimatedPropertyTypeForCSSAttribute(AttributeName());
     css_property_id_ =
         type_ != kAnimatedUnknown
-            ? cssPropertyID(targetElement()->GetExecutionContext(),
+            ? CssPropertyID(targetElement()->GetExecutionContext(),
                             AttributeName().LocalName())
             : CSSPropertyID::kInvalid;
   }

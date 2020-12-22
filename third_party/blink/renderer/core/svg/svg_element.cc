@@ -452,7 +452,7 @@ CSSPropertyID SVGElement::CssPropertyIdForSVGAttributeName(
     };
     for (size_t i = 0; i < base::size(attr_names); i++) {
       CSSPropertyID property_id =
-          cssPropertyID(execution_context, attr_names[i]->LocalName());
+          CssPropertyID(execution_context, attr_names[i]->LocalName());
       DCHECK_GT(property_id, CSSPropertyID::kInvalid);
       property_name_to_id_map->Set(attr_names[i]->LocalName().Impl(),
                                    property_id);

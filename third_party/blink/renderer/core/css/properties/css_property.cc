@@ -20,7 +20,7 @@ const CSSProperty& GetCSSPropertyVariable() {
 
 const CSSProperty& CSSProperty::Get(CSSPropertyID id) {
   DCHECK_NE(id, CSSPropertyID::kInvalid);
-  DCHECK_LE(id, lastCSSProperty);  // last property id
+  DCHECK_LE(id, kLastCSSProperty);  // last property id
   return To<CSSProperty>(CSSUnresolvedProperty::GetNonAliasProperty(id));
 }
 

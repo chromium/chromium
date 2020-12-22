@@ -161,7 +161,7 @@ TEST(CSSBitsetTest, BaseBitCount129) {
 
 TEST(CSSBitsetTest, AllBits) {
   std::vector<size_t> all_bits;
-  for (size_t i = 0; i < numCSSProperties; ++i)
+  for (size_t i = 0; i < kNumCSSProperties; ++i)
     all_bits.push_back(i);
 
   AssertBitset<1>(all_bits.data(), all_bits.data() + 1);
@@ -265,7 +265,7 @@ TEST(CSSBitsetTest, Iterator) {
   actual.Set(CSSPropertyID::kWidth);
   actual.Set(CSSPropertyID::kVariable);
 
-  std::bitset<numCSSProperties> expected;
+  std::bitset<kNumCSSProperties> expected;
   expected.set(static_cast<size_t>(CSSPropertyID::kHeight));
   expected.set(static_cast<size_t>(CSSPropertyID::kWidth));
   expected.set(static_cast<size_t>(CSSPropertyID::kVariable));

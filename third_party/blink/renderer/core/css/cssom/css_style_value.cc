@@ -25,7 +25,7 @@ CSSStyleValueVector ParseCSSStyleValue(
     const String& value,
     ExceptionState& exception_state) {
   const CSSPropertyID property_id =
-      cssPropertyID(execution_context, property_name);
+      CssPropertyID(execution_context, property_name);
 
   if (property_id == CSSPropertyID::kInvalid) {
     exception_state.ThrowTypeError("Invalid property name");

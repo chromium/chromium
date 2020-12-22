@@ -10,7 +10,7 @@ namespace blink {
 
 CSSPropertyRef::CSSPropertyRef(const String& name, const Document& document)
     : property_id_(
-          unresolvedCSSPropertyID(document.GetExecutionContext(), name)) {
+          UnresolvedCSSPropertyID(document.GetExecutionContext(), name)) {
   if (property_id_ == CSSPropertyID::kVariable)
     custom_property_ = CustomProperty(AtomicString(name), document);
 }

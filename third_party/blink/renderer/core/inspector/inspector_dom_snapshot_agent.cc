@@ -297,10 +297,10 @@ protocol::Response InspectorDOMSnapshotAgent::captureSnapshot(
   // Resolve all property names to CSSProperty references.
   for (String& property_name : *computed_styles) {
     const CSSPropertyID id =
-        unresolvedCSSPropertyID(main_window, property_name);
+        UnresolvedCSSPropertyID(main_window, property_name);
     if (id == CSSPropertyID::kInvalid || id == CSSPropertyID::kVariable)
       return Response::InvalidParams("invalid CSS property");
-    const auto& property = CSSProperty::Get(resolveCSSPropertyID(id));
+    const auto& property = CSSProperty::Get(ResolveCSSPropertyID(id));
     css_property_filter_->push_back(&property);
   }
 

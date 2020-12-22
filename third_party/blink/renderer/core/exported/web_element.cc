@@ -190,7 +190,7 @@ WebString WebElement::GetComputedValue(const WebString& property_name) {
     return WebString();
 
   Element* element = Unwrap<Element>();
-  CSSPropertyID property_id = cssPropertyID(
+  CSSPropertyID property_id = CssPropertyID(
       element->GetDocument().GetExecutionContext(), property_name);
   if (property_id == CSSPropertyID::kInvalid)
     return WebString();

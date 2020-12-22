@@ -113,7 +113,7 @@ MutableCSSPropertyValueSet::SetResult CSSParser::ParseValue(
     return MutableCSSPropertyValueSet::SetResult{did_parse, did_change};
   }
 
-  CSSPropertyID resolved_property = resolveCSSPropertyID(unresolved_property);
+  CSSPropertyID resolved_property = ResolveCSSPropertyID(unresolved_property);
   CSSParserMode parser_mode = declaration->CssParserMode();
   CSSValue* value = CSSParserFastPaths::MaybeParseValue(resolved_property,
                                                         string, parser_mode);

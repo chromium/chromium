@@ -68,8 +68,8 @@ void AbstractPropertySetCSSStyleDeclaration::setCSSText(
 String AbstractPropertySetCSSStyleDeclaration::getPropertyValue(
     const String& property_name) {
   CSSPropertyID property_id =
-      cssPropertyID(GetExecutionContext(), property_name);
-  if (!isValidCSSPropertyID(property_id))
+      CssPropertyID(GetExecutionContext(), property_name);
+  if (!IsValidCSSPropertyID(property_id))
     return String();
   if (property_id == CSSPropertyID::kVariable)
     return PropertySet().GetPropertyValue(AtomicString(property_name));
@@ -79,8 +79,8 @@ String AbstractPropertySetCSSStyleDeclaration::getPropertyValue(
 String AbstractPropertySetCSSStyleDeclaration::getPropertyPriority(
     const String& property_name) {
   CSSPropertyID property_id =
-      cssPropertyID(GetExecutionContext(), property_name);
-  if (!isValidCSSPropertyID(property_id))
+      CssPropertyID(GetExecutionContext(), property_name);
+  if (!IsValidCSSPropertyID(property_id))
     return String();
 
   bool important = false;
@@ -94,14 +94,14 @@ String AbstractPropertySetCSSStyleDeclaration::getPropertyPriority(
 String AbstractPropertySetCSSStyleDeclaration::GetPropertyShorthand(
     const String& property_name) {
   CSSPropertyID property_id =
-      cssPropertyID(GetExecutionContext(), property_name);
+      CssPropertyID(GetExecutionContext(), property_name);
 
   // Custom properties don't have shorthands, so we can ignore them here.
-  if (!isValidCSSPropertyID(property_id) ||
+  if (!IsValidCSSPropertyID(property_id) ||
       !CSSProperty::Get(property_id).IsLonghand())
     return String();
   CSSPropertyID shorthand_id = PropertySet().GetPropertyShorthand(property_id);
-  if (!isValidCSSPropertyID(shorthand_id))
+  if (!IsValidCSSPropertyID(shorthand_id))
     return String();
   return CSSProperty::Get(shorthand_id).GetPropertyNameString();
 }
@@ -109,10 +109,10 @@ String AbstractPropertySetCSSStyleDeclaration::GetPropertyShorthand(
 bool AbstractPropertySetCSSStyleDeclaration::IsPropertyImplicit(
     const String& property_name) {
   CSSPropertyID property_id =
-      cssPropertyID(GetExecutionContext(), property_name);
+      CssPropertyID(GetExecutionContext(), property_name);
 
   // Custom properties don't have shorthands, so we can ignore them here.
-  if (property_id < firstCSSProperty)
+  if (property_id < kFirstCSSProperty)
     return false;
   return PropertySet().IsPropertyImplicit(property_id);
 }
@@ -124,8 +124,8 @@ void AbstractPropertySetCSSStyleDeclaration::setProperty(
     const String& priority,
     ExceptionState& exception_state) {
   CSSPropertyID property_id =
-      unresolvedCSSPropertyID(execution_context, property_name);
-  if (!isValidCSSPropertyID(property_id))
+      UnresolvedCSSPropertyID(execution_context, property_name);
+  if (!IsValidCSSPropertyID(property_id))
     return;
 
   bool important = EqualIgnoringASCIICase(priority, "important");
@@ -143,8 +143,8 @@ String AbstractPropertySetCSSStyleDeclaration::removeProperty(
     const String& property_name,
     ExceptionState& exception_state) {
   CSSPropertyID property_id =
-      cssPropertyID(GetExecutionContext(), property_name);
-  if (!isValidCSSPropertyID(property_id))
+      CssPropertyID(GetExecutionContext(), property_name);
+  if (!IsValidCSSPropertyID(property_id))
     return String();
 
   StyleAttributeMutationScope mutation_scope(this);
@@ -176,7 +176,7 @@ const CSSValue*
 AbstractPropertySetCSSStyleDeclaration::GetPropertyCSSValueInternal(
     AtomicString custom_property_name) {
   DCHECK_EQ(CSSPropertyID::kVariable,
-            cssPropertyID(GetExecutionContext(), custom_property_name));
+            CssPropertyID(GetExecutionContext(), custom_property_name));
   return PropertySet().GetPropertyCSSValue(custom_property_name);
 }
 

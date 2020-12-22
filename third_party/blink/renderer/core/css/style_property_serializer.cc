@@ -66,7 +66,7 @@ StylePropertySerializer::CSSPropertyValueSetForSerializer::
         continue;
       need_to_expand_all_ = true;
     }
-    if (!isCSSPropertyIDWithName(property.Id()))
+    if (!IsCSSPropertyIDWithName(property.Id()))
       continue;
     longhand_property_used_.set(GetCSSPropertyIDIndex(property.Id()));
   }
@@ -94,7 +94,7 @@ StylePropertySerializer::CSSPropertyValueSetForSerializer::PropertyAt(
 
   CSSPropertyID property_id =
       static_cast<CSSPropertyID>(index + kIntFirstCSSProperty);
-  DCHECK(isCSSPropertyIDWithName(property_id));
+  DCHECK(IsCSSPropertyIDWithName(property_id));
   if (longhand_property_used_.test(index)) {
     int real_index = property_set_->FindPropertyIndex(property_id);
     DCHECK_NE(real_index, -1);
@@ -121,16 +121,16 @@ bool StylePropertySerializer::CSSPropertyValueSetForSerializer::
         property_set_->PropertyAt(index);
     if (property.Id() == CSSPropertyID::kAll || !property.IsAffectedByAll())
       return true;
-    if (!isCSSPropertyIDWithName(property.Id()))
+    if (!IsCSSPropertyIDWithName(property.Id()))
       return false;
     return longhand_property_used_.test(GetCSSPropertyIDIndex(property.Id()));
   }
 
   CSSPropertyID property_id =
       static_cast<CSSPropertyID>(index + kIntFirstCSSProperty);
-  DCHECK(isCSSPropertyIDWithName(property_id));
+  DCHECK(IsCSSPropertyIDWithName(property_id));
   const CSSProperty& property_class =
-      CSSProperty::Get(resolveCSSPropertyID(property_id));
+      CSSProperty::Get(ResolveCSSPropertyID(property_id));
 
   // Since "all" is expanded, we don't need to process "all".
   // We should not process expanded shorthands (e.g. font, background,
@@ -214,8 +214,8 @@ String StylePropertySerializer::GetPropertyText(const CSSProperty& property,
 String StylePropertySerializer::AsText() const {
   StringBuilder result;
 
-  std::bitset<numCSSProperties> longhand_serialized;
-  std::bitset<numCSSProperties> shorthand_appeared;
+  std::bitset<kNumCSSProperties> longhand_serialized;
+  std::bitset<kNumCSSProperties> shorthand_appeared;
 
   unsigned size = property_set_.PropertyCount();
   unsigned num_decls = 0;

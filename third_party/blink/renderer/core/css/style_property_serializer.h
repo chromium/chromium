@@ -135,7 +135,7 @@ class StylePropertySerializer {
 
     Member<const CSSPropertyValueSet> property_set_;
     int all_index_;
-    std::bitset<numCSSProperties> longhand_property_used_;
+    std::bitset<kNumCSSProperties> longhand_property_used_;
     bool need_to_expand_all_;
   };
 

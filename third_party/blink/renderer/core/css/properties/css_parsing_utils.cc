@@ -2251,14 +2251,14 @@ void AddProperty(CSSPropertyID resolved_property,
                  bool important,
                  IsImplicitProperty implicit,
                  HeapVector<CSSPropertyValue, 256>& properties) {
-  DCHECK(!isPropertyAlias(resolved_property));
+  DCHECK(!IsPropertyAlias(resolved_property));
   DCHECK(implicit == IsImplicitProperty::kNotImplicit ||
          implicit == IsImplicitProperty::kImplicit);
 
   int shorthand_index = 0;
   bool set_from_shorthand = false;
 
-  if (isValidCSSPropertyID(current_shorthand)) {
+  if (IsValidCSSPropertyID(current_shorthand)) {
     Vector<StylePropertyShorthand, 4> shorthands;
     getMatchingShorthandsForLonghand(resolved_property, &shorthands);
     set_from_shorthand = true;
@@ -2408,7 +2408,7 @@ const CSSValue* ParseLonghand(CSSPropertyID unresolved_property,
                               CSSPropertyID current_shorthand,
                               const CSSParserContext& context,
                               CSSParserTokenRange& range) {
-  CSSPropertyID property_id = resolveCSSPropertyID(unresolved_property);
+  CSSPropertyID property_id = ResolveCSSPropertyID(unresolved_property);
   DCHECK(!CSSProperty::Get(property_id).IsShorthand());
   if (CSSParserFastPaths::IsKeywordPropertyID(property_id)) {
     if (CSSParserFastPaths::IsValidKeywordPropertyAndValue(
@@ -2422,7 +2422,7 @@ const CSSValue* ParseLonghand(CSSPropertyID unresolved_property,
 
   const auto local_context =
       CSSParserLocalContext()
-          .WithAliasParsing(isPropertyAlias(unresolved_property))
+          .WithAliasParsing(IsPropertyAlias(unresolved_property))
           .WithCurrentShorthand(current_shorthand);
 
   const CSSValue* result = To<Longhand>(CSSProperty::Get(property_id))
@@ -4801,7 +4801,7 @@ CSSValue* ConsumeTransitionProperty(CSSParserTokenRange& range,
   if (unresolved_property != CSSPropertyID::kInvalid &&
       unresolved_property != CSSPropertyID::kVariable) {
 #if DCHECK_IS_ON()
-    DCHECK(CSSProperty::Get(resolveCSSPropertyID(unresolved_property))
+    DCHECK(CSSProperty::Get(ResolveCSSPropertyID(unresolved_property))
                .IsWebExposed(execution_context));
 #endif
     range.ConsumeIncludingWhitespace();

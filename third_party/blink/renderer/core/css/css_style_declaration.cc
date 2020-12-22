@@ -118,7 +118,7 @@ CSSPropertyID ParseCSSPropertyID(const ExecutionContext* execution_context,
     return CSSPropertyID::kInvalid;
 
   String prop_name = builder.ToString();
-  return unresolvedCSSPropertyID(execution_context, prop_name);
+  return UnresolvedCSSPropertyID(execution_context, prop_name);
 }
 
 // When getting properties on CSSStyleDeclarations, the name used from
@@ -143,8 +143,8 @@ CSSPropertyID CssPropertyInfo(const ExecutionContext* execution_context,
   if (unresolved_property == CSSPropertyID::kVariable)
     unresolved_property = CSSPropertyID::kInvalid;
   map.insert(name, unresolved_property);
-  DCHECK(!isValidCSSPropertyID(unresolved_property) ||
-         CSSProperty::Get(resolveCSSPropertyID(unresolved_property))
+  DCHECK(!IsValidCSSPropertyID(unresolved_property) ||
+         CSSProperty::Get(ResolveCSSPropertyID(unresolved_property))
              .IsWebExposed(execution_context));
   return unresolved_property;
 }
@@ -162,10 +162,10 @@ String CSSStyleDeclaration::AnonymousNamedGetter(const AtomicString& name) {
       CssPropertyInfo(GetExecutionContext(), name);
 
   // Do not handle non-property names.
-  if (!isValidCSSPropertyID(unresolved_property))
+  if (!IsValidCSSPropertyID(unresolved_property))
     return String();
 
-  return GetPropertyValueInternal(resolveCSSPropertyID(unresolved_property));
+  return GetPropertyValueInternal(ResolveCSSPropertyID(unresolved_property));
 }
 
 NamedPropertySetterResult CSSStyleDeclaration::AnonymousNamedSetter(
@@ -177,7 +177,7 @@ NamedPropertySetterResult CSSStyleDeclaration::AnonymousNamedSetter(
   if (!execution_context)
     return NamedPropertySetterResult::kDidNotIntercept;
   CSSPropertyID unresolved_property = CssPropertyInfo(execution_context, name);
-  if (!isValidCSSPropertyID(unresolved_property))
+  if (!IsValidCSSPropertyID(unresolved_property))
     return NamedPropertySetterResult::kDidNotIntercept;
   // We create the ExceptionState manually due to performance issues: adding
   // [RaisesException] to the IDL causes the bindings layer to expensively
@@ -186,7 +186,7 @@ NamedPropertySetterResult CSSStyleDeclaration::AnonymousNamedSetter(
   ExceptionState exception_state(
       script_state->GetIsolate(), ExceptionState::kSetterContext,
       "CSSStyleDeclaration",
-      CSSProperty::Get(resolveCSSPropertyID(unresolved_property))
+      CSSProperty::Get(ResolveCSSPropertyID(unresolved_property))
           .GetPropertyName());
   SetPropertyInternal(unresolved_property, String(), value, false,
                       execution_context->GetSecureContextMode(),
@@ -205,7 +205,7 @@ NamedPropertyDeleterResult CSSStyleDeclaration::AnonymousNamedDeleter(
 
 void CSSStyleDeclaration::NamedPropertyEnumerator(Vector<String>& names,
                                                   ExceptionState&) {
-  typedef Vector<String, numCSSProperties - 1> PreAllocatedPropertyVector;
+  typedef Vector<String, kNumCSSProperties - 1> PreAllocatedPropertyVector;
   DEFINE_STATIC_LOCAL(PreAllocatedPropertyVector, property_names, ());
 
   const ExecutionContext* execution_context = GetExecutionContext();
@@ -213,7 +213,7 @@ void CSSStyleDeclaration::NamedPropertyEnumerator(Vector<String>& names,
   if (property_names.IsEmpty()) {
     for (CSSPropertyID property_id : CSSPropertyIDList()) {
       const CSSProperty& property_class =
-          CSSProperty::Get(resolveCSSPropertyID(property_id));
+          CSSProperty::Get(ResolveCSSPropertyID(property_id));
       if (property_class.IsWebExposed(execution_context))
         property_names.push_back(property_class.GetJSPropertyName());
     }
@@ -231,7 +231,7 @@ void CSSStyleDeclaration::NamedPropertyEnumerator(Vector<String>& names,
 
 bool CSSStyleDeclaration::NamedPropertyQuery(const AtomicString& name,
                                              ExceptionState&) {
-  return isValidCSSPropertyID(CssPropertyInfo(GetExecutionContext(), name));
+  return IsValidCSSPropertyID(CssPropertyInfo(GetExecutionContext(), name));
 }
 
 }  // namespace blink

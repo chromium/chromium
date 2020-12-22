@@ -34,7 +34,7 @@ class CORE_EXPORT CSSPropertyName {
   static base::Optional<CSSPropertyName> From(
       const ExecutionContext* execution_context,
       const String& value) {
-    const CSSPropertyID property_id = cssPropertyID(execution_context, value);
+    const CSSPropertyID property_id = CssPropertyID(execution_context, value);
     if (property_id == CSSPropertyID::kInvalid)
       return base::nullopt;
     if (property_id == CSSPropertyID::kVariable)

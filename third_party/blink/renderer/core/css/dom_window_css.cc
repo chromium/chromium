@@ -44,7 +44,7 @@ bool DOMWindowCSS::supports(const ExecutionContext* execution_context,
                             const String& property,
                             const String& value) {
   CSSPropertyID unresolved_property =
-      unresolvedCSSPropertyID(execution_context, property);
+      UnresolvedCSSPropertyID(execution_context, property);
   if (unresolved_property == CSSPropertyID::kInvalid)
     return false;
   if (unresolved_property == CSSPropertyID::kVariable) {
@@ -59,7 +59,7 @@ bool DOMWindowCSS::supports(const ExecutionContext* execution_context,
   }
 
 #if DCHECK_IS_ON()
-  DCHECK(CSSProperty::Get(resolveCSSPropertyID(unresolved_property))
+  DCHECK(CSSProperty::Get(ResolveCSSPropertyID(unresolved_property))
              .IsWebExposed(execution_context));
 #endif
 

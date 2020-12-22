@@ -25,14 +25,14 @@ inline uint32_t EncodeInterpolationPosition(CSSPropertyID id,
   static_assert(kIntLastCSSProperty < std::numeric_limits<uint16_t>::max(),
                 "Enough bits for CSSPropertyID");
   DCHECK_NE(id, CSSPropertyID::kInvalid);
-  DCHECK_LE(id, lastCSSProperty);
+  DCHECK_LE(id, kLastCSSProperty);
   return (static_cast<uint32_t>(!is_presentation_attribute) << 24) |
          (static_cast<uint32_t>(index & 0xFF) << 16) |
          (static_cast<uint32_t>(id) & 0xFFFF);
 }
 
 inline CSSPropertyID DecodeInterpolationPropertyID(uint32_t position) {
-  return convertToCSSPropertyID(position & 0xFFFF);
+  return ConvertToCSSPropertyID(position & 0xFFFF);
 }
 
 inline uint8_t DecodeInterpolationIndex(uint32_t position) {

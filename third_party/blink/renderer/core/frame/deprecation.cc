@@ -600,12 +600,12 @@ void Deprecation::UnmuteForInspector() {
 }
 
 void Deprecation::Suppress(CSSPropertyID unresolved_property) {
-  DCHECK(isCSSPropertyIDWithName(unresolved_property));
+  DCHECK(IsCSSPropertyIDWithName(unresolved_property));
   css_property_deprecation_bits_.set(static_cast<size_t>(unresolved_property));
 }
 
 bool Deprecation::IsSuppressed(CSSPropertyID unresolved_property) {
-  DCHECK(isCSSPropertyIDWithName(unresolved_property));
+  DCHECK(IsCSSPropertyIDWithName(unresolved_property));
   return css_property_deprecation_bits_[static_cast<size_t>(
       unresolved_property)];
 }

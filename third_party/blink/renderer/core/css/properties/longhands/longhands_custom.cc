@@ -8727,7 +8727,7 @@ const CSSValue* WillChange::ParseSingleValue(
     if (unresolved_property != CSSPropertyID::kInvalid &&
         unresolved_property != CSSPropertyID::kVariable) {
 #if DCHECK_IS_ON()
-      DCHECK(CSSProperty::Get(resolveCSSPropertyID(unresolved_property))
+      DCHECK(CSSProperty::Get(ResolveCSSPropertyID(unresolved_property))
                  .IsWebExposed(context.GetExecutionContext()));
 #endif
       // Now "all" is used by both CSSValue and CSSPropertyValue.

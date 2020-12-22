@@ -68,7 +68,7 @@ class CORE_EXPORT CascadeMap {
     // CascadePriority objects. A companion bitset keeps track of which
     // properties are initialized.
     CSSBitset bits_;
-    alignas(CascadePriority) char properties_[numCSSProperties *
+    alignas(CascadePriority) char properties_[kNumCSSProperties *
                                               sizeof(CascadePriority)];
   };
 

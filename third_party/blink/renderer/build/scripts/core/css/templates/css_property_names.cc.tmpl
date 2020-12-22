@@ -41,9 +41,11 @@ const Property* FindProperty(const char* str, unsigned int len) {
   return {{class_name}}Hash::findPropertyImpl(str, len);
 }
 
-CSSPropertyID cssPropertyID(const ExecutionContext* execution_context, const String& string)
+CSSPropertyID CssPropertyID(const ExecutionContext* execution_context,
+                            const String& string)
 {
-    return resolveCSSPropertyID(unresolvedCSSPropertyID(execution_context, string));
+    return ResolveCSSPropertyID(UnresolvedCSSPropertyID(execution_context,
+                                                        string));
 }
 
 mojom::blink::CSSSampleId GetCSSSampleId(CSSPropertyID id) {

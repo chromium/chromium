@@ -193,7 +193,7 @@ void UseCounterHelper::ReportAndTraceMeasurementByCSSSampleId(
 void UseCounterHelper::Count(CSSPropertyID property,
                              CSSPropertyType type,
                              const LocalFrame* source_frame) {
-  DCHECK(isCSSPropertyIDWithName(property) ||
+  DCHECK(IsCSSPropertyIDWithName(property) ||
          property == CSSPropertyID::kVariable);
 
   if (mute_count_)

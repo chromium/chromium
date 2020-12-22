@@ -13,7 +13,7 @@
 namespace WTF {
 class AtomicString;
 class String;
-}
+}  // namespace WTF
 
 namespace blink {
 
@@ -29,20 +29,34 @@ const CSSPropertyID kCSSPropertyAliasList[] = {
 {{property_aliases}}
 };
 
+// The lowest CSSPropertyID excluding kInvalid and kVariable.
 const int kIntFirstCSSProperty = {{first_property_id}};
-const CSSPropertyID firstCSSProperty = static_cast<CSSPropertyID>(kIntFirstCSSProperty);
-const int numCSSProperties = {{properties_count}};
+const CSSPropertyID kFirstCSSProperty =
+    static_cast<CSSPropertyID>(kIntFirstCSSProperty);
+
+// The number of unresolved CSS properties excluding kInvalid and kVariable.
+const int kNumCSSProperties = {{properties_count}};
+
+// The highest resolved CSSPropertyID.
 const int kIntLastCSSProperty = {{last_property_id}};
-const CSSPropertyID lastCSSProperty = static_cast<CSSPropertyID>(kIntLastCSSProperty);
-const CSSPropertyID lastUnresolvedCSSProperty = static_cast<CSSPropertyID>({{last_unresolved_property_id}});
-const CSSPropertyID kFirstHighPriorityCSSProperty = firstCSSProperty;
+const CSSPropertyID kLastCSSProperty =
+    static_cast<CSSPropertyID>(kIntLastCSSProperty);
+
+// The highest unresolved CSSPropertyID.
+const CSSPropertyID kLastUnresolvedCSSProperty =
+    static_cast<CSSPropertyID>({{last_unresolved_property_id}});
+
+const CSSPropertyID kFirstHighPriorityCSSProperty = kFirstCSSProperty;
 const CSSPropertyID kLastHighPriorityCSSProperty = CSSPropertyID::{{last_high_priority_property_id}};
-const int numCSSPropertyIDs = static_cast<int>(lastUnresolvedCSSProperty) + 1;
-const size_t maxCSSPropertyNameLength = {{max_name_length}};
+
+// 1 + <The highest unresolved CSSPropertyID>.
+const int kNumCSSPropertyIDs = static_cast<int>(kLastUnresolvedCSSProperty) + 1;
+
+const size_t kMaxCSSPropertyNameLength = {{max_name_length}};
 constexpr size_t kCSSPropertyIDBitLength = {{property_id_bit_length}};
 
 static_assert((static_cast<size_t>(1) << kCSSPropertyIDBitLength) >
-                  static_cast<size_t>(lastUnresolvedCSSProperty),
+                  static_cast<size_t>(kLastUnresolvedCSSProperty),
               "kCSSPropertyIDBitLength has enough bits");
 
 static_assert(CSSPropertyID::kColor == kFirstHighPriorityCSSProperty,
@@ -54,8 +68,8 @@ static_assert((static_cast<int>(kLastHighPriorityCSSProperty) -
               "There should a low number of high-priority properties");
 
 inline int GetCSSPropertyIDIndex(CSSPropertyID id) {
-    DCHECK_GE(id, firstCSSProperty);
-    DCHECK_LE(id, lastCSSProperty);
+    DCHECK_GE(id, kFirstCSSProperty);
+    DCHECK_LE(id, kLastCSSProperty);
     return static_cast<int>(id) - kIntFirstCSSProperty;
 }
 
@@ -64,47 +78,56 @@ constexpr bool IsHighPriority(CSSPropertyID id) {
       id <= kLastHighPriorityCSSProperty;
 }
 
-inline bool isCSSPropertyIDWithName(CSSPropertyID id)
+inline bool IsCSSPropertyIDWithName(CSSPropertyID id)
 {
-    return id >= firstCSSProperty && id <= lastUnresolvedCSSProperty;
+    return id >= kFirstCSSProperty && id <= kLastUnresolvedCSSProperty;
 }
 
-inline bool isValidCSSPropertyID(CSSPropertyID id)
+inline bool IsValidCSSPropertyID(CSSPropertyID id)
 {
     return id != CSSPropertyID::kInvalid;
 }
 
-inline CSSPropertyID convertToCSSPropertyID(int value)
+inline CSSPropertyID ConvertToCSSPropertyID(int value)
 {
     DCHECK_GE(value, static_cast<int>(CSSPropertyID::kInvalid));
     DCHECK_LE(value, kIntLastCSSProperty);
     return static_cast<CSSPropertyID>(value);
 }
 
-inline CSSPropertyID resolveCSSPropertyID(CSSPropertyID id)
+inline CSSPropertyID ResolveCSSPropertyID(CSSPropertyID id)
 {
-    return convertToCSSPropertyID(static_cast<int>(id) & ~{{alias_mask}});
+    return ConvertToCSSPropertyID(static_cast<int>(id) & ~{{alias_mask}});
 }
 
-inline bool isPropertyAlias(CSSPropertyID id) { return static_cast<int>(id) & {{alias_mask}}; }
+inline bool IsPropertyAlias(CSSPropertyID id) {
+  return static_cast<int>(id) & {{alias_mask}};
+}
 
-CSSPropertyID CORE_EXPORT unresolvedCSSPropertyID(const ExecutionContext*, const WTF::String&);
+CSSPropertyID CORE_EXPORT UnresolvedCSSPropertyID(const ExecutionContext*,
+                                                  const WTF::String&);
 
-CSSPropertyID CORE_EXPORT cssPropertyID(const ExecutionContext*, const WTF::String&);
+CSSPropertyID CORE_EXPORT CssPropertyID(const ExecutionContext*,
+                                        const WTF::String&);
 
 class CSSPropertyIDList {
   STACK_ALLOCATED();
+
  public:
-    class Iterator {
-      STACK_ALLOCATED();
-     public:
-      Iterator(int id) : id_(id) {}
-      CSSPropertyID operator*() const { return convertToCSSPropertyID(id_); }
-      Iterator& operator++() { id_++; return *this; }
-      bool operator!=(const Iterator& i) const { return id_ != i.id_; }
-     private:
-      int id_;
-    };
+  class Iterator {
+    STACK_ALLOCATED();
+   public:
+    Iterator(int id) : id_(id) {}
+    CSSPropertyID operator*() const { return ConvertToCSSPropertyID(id_); }
+    Iterator& operator++() {
+      id_++;
+      return *this;
+    }
+    bool operator!=(const Iterator& i) const { return id_ != i.id_; }
+
+   private:
+    int id_;
+  };
   Iterator begin() const { return Iterator(kIntFirstCSSProperty); }
   Iterator end() const { return Iterator(kIntLastCSSProperty + 1); }
 };

@@ -63,7 +63,7 @@ class CORE_EXPORT Deprecation final {
   // each deprecation at most once per page load per renderer process.
   std::bitset<static_cast<size_t>(WebFeature::kNumberOfFeatures)>
       features_deprecation_bits_;
-  std::bitset<numCSSPropertyIDs> css_property_deprecation_bits_;
+  std::bitset<kNumCSSPropertyIDs> css_property_deprecation_bits_;
   unsigned mute_count_;
 
   DISALLOW_COPY_AND_ASSIGN(Deprecation);

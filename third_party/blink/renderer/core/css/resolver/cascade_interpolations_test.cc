@@ -55,7 +55,7 @@ TEST(CascadeInterpolationsTest, EncodeDecodeInterpolationPropertyID) {
 }
 
 TEST(CascadeInterpolationsTest, EncodeDecodeInterpolationIndex) {
-  CSSPropertyID id = lastCSSProperty;
+  CSSPropertyID id = kLastCSSProperty;
   for (uint8_t index : Vector<uint8_t>({0u, 1u, 15u, 51u, 254u, 255u})) {
     EXPECT_EQ(index, DecodeInterpolationIndex(
                          EncodeInterpolationPosition(id, index, false)));
@@ -63,7 +63,7 @@ TEST(CascadeInterpolationsTest, EncodeDecodeInterpolationIndex) {
 }
 
 TEST(CascadeInterpolationsTest, EncodeDecodeIsPresentationAttribute) {
-  CSSPropertyID id = lastCSSProperty;
+  CSSPropertyID id = kLastCSSProperty;
   EXPECT_FALSE(DecodeIsPresentationAttribute(
       EncodeInterpolationPosition(id, 0u, false)));
   EXPECT_FALSE(DecodeIsPresentationAttribute(

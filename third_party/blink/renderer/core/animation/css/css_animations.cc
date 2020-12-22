@@ -1288,7 +1288,7 @@ void CSSAnimations::CalculateTransitionUpdateForStandardProperty(
   }
 
   CSSPropertyID resolved_id =
-      resolveCSSPropertyID(transition_property.unresolved_property);
+      ResolveCSSPropertyID(transition_property.unresolved_property);
   bool animate_all = resolved_id == CSSPropertyID::kAll;
   const StylePropertyShorthand& property_list =
       animate_all ? PropertiesForTransitionAll()
@@ -1299,7 +1299,7 @@ void CSSAnimations::CalculateTransitionUpdateForStandardProperty(
     CSSPropertyID longhand_id =
         property_list.length() ? property_list.properties()[i]->PropertyID()
                                : resolved_id;
-    DCHECK_GE(longhand_id, firstCSSProperty);
+    DCHECK_GE(longhand_id, kFirstCSSProperty);
     const CSSProperty& property =
         CSSProperty::Get(longhand_id)
             .ResolveDirectionAwareProperty(style.Direction(),

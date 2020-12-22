@@ -24,7 +24,7 @@ template <size_t kBits>
 class CORE_EXPORT CSSBitsetBase {
  public:
   static_assert(
-      kBits <= numCSSProperties,
+      kBits <= kNumCSSProperties,
       "Bit count must not exceed numCSSProperties, as each bit position must "
       "be representable as a CSSPropertyID");
 
@@ -98,7 +98,7 @@ class CORE_EXPORT CSSBitsetBase {
     }
 
     inline CSSPropertyID operator*() const {
-      DCHECK_LT(index_, static_cast<size_t>(numCSSProperties));
+      DCHECK_LT(index_, static_cast<size_t>(kNumCSSProperties));
       return static_cast<CSSPropertyID>(index_);
     }
 
@@ -158,7 +158,7 @@ class CORE_EXPORT CSSBitsetBase {
   uint64_t chunks_[kChunks];
 };
 
-using CSSBitset = CSSBitsetBase<numCSSProperties>;
+using CSSBitset = CSSBitsetBase<kNumCSSProperties>;
 
 }  // namespace blink
 

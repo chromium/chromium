@@ -1524,7 +1524,7 @@ void InspectorHighlight::AppendDistanceInfo(Node* node) {
   for (size_t i = 0; i < style->length(); ++i) {
     AtomicString name(style->item(i));
     const CSSValue* value = style->GetPropertyCSSValue(
-        cssPropertyID(node->GetExecutionContext(), name));
+        CssPropertyID(node->GetExecutionContext(), name));
     if (!value)
       continue;
     if (value->IsColorValue()) {

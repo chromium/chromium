@@ -356,7 +356,7 @@ void StyleCascade::ApplyHighPriority(CascadeResolver& resolver) {
     int last = static_cast<int>(kLastHighPriorityCSSProperty);
     for (int i = first; i <= last; ++i) {
       if (bits & (static_cast<uint64_t>(1) << i))
-        LookupAndApply(CSSProperty::Get(convertToCSSPropertyID(i)), resolver);
+        LookupAndApply(CSSProperty::Get(ConvertToCSSPropertyID(i)), resolver);
     }
   }
 

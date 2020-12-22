@@ -3327,13 +3327,13 @@ bool Internals::isUseCounted(Document* document, uint32_t feature) {
 bool Internals::isCSSPropertyUseCounted(Document* document,
                                         const String& property_name) {
   return document->IsPropertyCounted(
-      unresolvedCSSPropertyID(document->GetExecutionContext(), property_name));
+      UnresolvedCSSPropertyID(document->GetExecutionContext(), property_name));
 }
 
 bool Internals::isAnimatedCSSPropertyUseCounted(Document* document,
                                                 const String& property_name) {
   return document->IsAnimatedPropertyCounted(
-      unresolvedCSSPropertyID(document->GetExecutionContext(), property_name));
+      UnresolvedCSSPropertyID(document->GetExecutionContext(), property_name));
 }
 
 void Internals::clearUseCounter(Document* document, uint32_t feature) {
@@ -3367,7 +3367,7 @@ Vector<String> Internals::getCSSPropertyShorthands() const {
 Vector<String> Internals::getCSSPropertyAliases() const {
   Vector<String> result;
   for (CSSPropertyID alias : kCSSPropertyAliasList) {
-    DCHECK(isPropertyAlias(alias));
+    DCHECK(IsPropertyAlias(alias));
     result.push_back(CSSUnresolvedProperty::GetAliasProperty(alias)
                          ->GetPropertyNameString());
   }

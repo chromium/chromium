@@ -1207,7 +1207,7 @@ Response InspectorCSSAgent::getComputedStyleForNode(
       protocol::Array<protocol::CSS::CSSComputedStyleProperty>>();
   for (CSSPropertyID property_id : CSSPropertyIDList()) {
     const CSSProperty& property_class =
-        CSSProperty::Get(resolveCSSPropertyID(property_id));
+        CSSProperty::Get(ResolveCSSPropertyID(property_id));
     if (!property_class.IsWebExposed(node->GetExecutionContext()) ||
         property_class.IsShorthand() || !property_class.IsProperty())
       continue;

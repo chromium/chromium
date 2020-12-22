@@ -42,7 +42,7 @@ inline CascadePriority* FindCustom(const CSSPropertyName& name,
 inline CascadePriority* FindNative(const CSSPropertyName& name,
                                    CascadeMap::NativeMap& map) {
   size_t index = static_cast<size_t>(name.Id());
-  DCHECK_LT(index, static_cast<size_t>(numCSSProperties));
+  DCHECK_LT(index, static_cast<size_t>(kNumCSSProperties));
   return map.Bits().Has(name.Id()) ? (map.Buffer() + index) : nullptr;
 }
 
@@ -54,7 +54,7 @@ inline CascadePriority AtCustom(const CSSPropertyName& name,
 inline CascadePriority AtNative(const CSSPropertyName& name,
                                 const CascadeMap::NativeMap& map) {
   size_t index = static_cast<size_t>(name.Id());
-  DCHECK_LT(index, static_cast<size_t>(numCSSProperties));
+  DCHECK_LT(index, static_cast<size_t>(kNumCSSProperties));
   return map.Bits().Has(name.Id()) ? map.Buffer()[index] : CascadePriority();
 }
 
@@ -121,7 +121,7 @@ void CascadeMap::Add(const CSSPropertyName& name, CascadePriority priority) {
 
   CSSPropertyID id = name.Id();
   size_t index = static_cast<size_t>(id);
-  DCHECK_LT(index, static_cast<size_t>(numCSSProperties));
+  DCHECK_LT(index, static_cast<size_t>(kNumCSSProperties));
 
   // Set bit in high_priority_, if appropriate.
   static_assert(static_cast<int>(kLastHighPriorityCSSProperty) < 64,

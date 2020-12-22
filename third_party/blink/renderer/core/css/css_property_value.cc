@@ -64,7 +64,7 @@ CSSPropertyID CSSPropertyValueMetadata::ShorthandID() const {
 }
 
 CSSPropertyID CSSPropertyValueMetadata::PropertyID() const {
-  return convertToCSSPropertyID(property_id_);
+  return ConvertToCSSPropertyID(property_id_);
 }
 
 CSSPropertyName CSSPropertyValueMetadata::Name() const {

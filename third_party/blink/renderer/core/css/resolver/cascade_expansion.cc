@@ -137,7 +137,7 @@ void CascadeExpansion::AdvanceNormal() {
       break;
     case CSSPropertyID::kAll:
       state_ = State::kAll;
-      id_ = firstCSSProperty;
+      id_ = kFirstCSSProperty;
       property_ = &CSSProperty::Get(id_);
       // If this DCHECK is triggered, it means firstCSSProperty is not affected
       // by 'all', and we need a function for figuring out the first property
@@ -171,7 +171,7 @@ void CascadeExpansion::AdvanceAll() {
   int end = kIntLastCSSProperty + 1;
 
   for (; i < end; ++i) {
-    id_ = convertToCSSPropertyID(i);
+    id_ = ConvertToCSSPropertyID(i);
     if (IsAffectedByAll(id_))
       break;
   }

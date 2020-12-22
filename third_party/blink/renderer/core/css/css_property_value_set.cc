@@ -126,7 +126,7 @@ static bool IsPropertyMatch(const CSSPropertyValueMetadata& metadata,
 // TODO(hjkim3323@gmail.com): Remove kInternalFontSizeDelta bypassing hack
 #if DCHECK_IS_ON()
   DCHECK(!result || property_id == CSSPropertyID::kInternalFontSizeDelta ||
-         CSSProperty::Get(resolveCSSPropertyID(property_id)).IsWebExposed());
+         CSSProperty::Get(ResolveCSSPropertyID(property_id)).IsWebExposed());
 #endif
   return result;
 }
@@ -356,14 +356,14 @@ MutableCSSPropertyValueSet::SetResult MutableCSSPropertyValueSet::SetProperty(
     bool important,
     SecureContextMode secure_context_mode,
     StyleSheetContents* context_style_sheet) {
-  DCHECK_GE(unresolved_property, firstCSSProperty);
+  DCHECK_GE(unresolved_property, kFirstCSSProperty);
 
   // Setting the value to an empty string just removes the property in both IE
   // and Gecko. Setting it to null seems to produce less consistent results, but
   // we treat it just the same.
   if (value.IsEmpty()) {
     bool did_parse = true;
-    bool did_change = RemoveProperty(resolveCSSPropertyID(unresolved_property));
+    bool did_change = RemoveProperty(ResolveCSSPropertyID(unresolved_property));
     return SetResult{did_parse, did_change};
   }
 
