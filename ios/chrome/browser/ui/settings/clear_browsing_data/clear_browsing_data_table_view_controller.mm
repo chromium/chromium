@@ -31,6 +31,8 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_button_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_link_item.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
+#import "ios/chrome/browser/ui/table_view/table_view_utils.h"
+#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
@@ -42,7 +44,7 @@
 #endif
 
 @interface ClearBrowsingDataTableViewController () <
-    TableViewTextLinkCellDelegate,
+    TableViewLinkHeaderFooterItemDelegate,
     ClearBrowsingDataConsumer,
     UIGestureRecognizerDelegate>
 
@@ -91,7 +93,10 @@
 #pragma mark - ViewController Lifecycle.
 
 - (instancetype)initWithBrowser:(Browser*)browser {
-  self = [super initWithStyle:UITableViewStylePlain];
+  UITableViewStyle style = base::FeatureList::IsEnabled(kSettingsRefresh)
+                               ? ChromeTableViewStyle()
+                               : UITableViewStylePlain;
+  self = [super initWithStyle:style];
   if (self) {
     _browser = browser;
     _browserState = browser->GetBrowserState();
@@ -132,16 +137,20 @@
   ]
                animated:YES];
 
-  self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-  self.styler.cellBackgroundColor = UIColor.cr_systemBackgroundColor;
-  self.styler.tableViewBackgroundColor = UIColor.cr_systemBackgroundColor;
-  self.tableView.accessibilityIdentifier =
-      kClearBrowsingDataViewAccessibilityIdentifier;
-  self.tableView.backgroundColor = self.styler.tableViewBackgroundColor;
-  // TableView configuration
-  self.tableView.estimatedRowHeight = 56;
-  self.tableView.rowHeight = UITableViewAutomaticDimension;
-  self.tableView.estimatedSectionHeaderHeight = 0;
+  if (!base::FeatureList::IsEnabled(kSettingsRefresh)) {
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    self.styler.cellBackgroundColor = UIColor.cr_systemBackgroundColor;
+    self.styler.tableViewBackgroundColor = UIColor.cr_systemBackgroundColor;
+    self.tableView.accessibilityIdentifier =
+        kClearBrowsingDataViewAccessibilityIdentifier;
+    self.tableView.backgroundColor = self.styler.tableViewBackgroundColor;
+
+    // TableView configuration
+    self.tableView.estimatedRowHeight = 56;
+    self.tableView.rowHeight = UITableViewAutomaticDimension;
+    self.tableView.estimatedSectionHeaderHeight = 0;
+  }
+
   // Navigation controller configuration.
   self.title = l10n_util::GetNSString(IDS_IOS_CLEAR_BROWSING_DATA_TITLE);
   // Adds the "Done" button and hooks it up to |dismiss|.
@@ -220,18 +229,6 @@
                              cellForRowAtIndexPath:indexPath];
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
   switch (item.type) {
-    case ItemTypeFooterSavedSiteData:
-    case ItemTypeFooterClearSyncAndSavedSiteData:
-    case ItemTypeFooterGoogleAccountAndMyActivity: {
-      TableViewTextLinkCell* tableViewTextLinkCell =
-          base::mac::ObjCCastStrict<TableViewTextLinkCell>(cellToReturn);
-      [tableViewTextLinkCell setDelegate:self];
-      tableViewTextLinkCell.selectionStyle = UITableViewCellSelectionStyleNone;
-      // Hide the cell separator inset for footnotes.
-      tableViewTextLinkCell.separatorInset =
-          UIEdgeInsetsMake(0, tableViewTextLinkCell.bounds.size.width, 0, 0);
-      break;
-    }
     case ItemTypeDataTypeBrowsingHistory:
     case ItemTypeDataTypeCookiesSiteData:
     case ItemTypeDataTypeCache:
@@ -249,13 +246,30 @@
 
 #pragma mark - UITableViewDelegate
 
+- (UIView*)tableView:(UITableView*)tableView
+    viewForFooterInSection:(NSInteger)section {
+  UIView* view = [super tableView:tableView viewForFooterInSection:section];
+  NSInteger sectionIdentifier =
+      [self.tableViewModel sectionIdentifierForSection:section];
+  switch (sectionIdentifier) {
+    case SectionIdentifierSavedSiteData:
+    case SectionIdentifierGoogleAccount: {
+      TableViewLinkHeaderFooterView* linkView =
+          base::mac::ObjCCastStrict<TableViewLinkHeaderFooterView>(view);
+      linkView.delegate = self;
+    } break;
+    default:
+      break;
+  }
+  return view;
+}
+
 - (CGFloat)tableView:(UITableView*)tableView
     heightForHeaderInSection:(NSInteger)section {
   NSInteger sectionIdentifier =
       [self.tableViewModel sectionIdentifierForSection:section];
   switch (sectionIdentifier) {
     case SectionIdentifierGoogleAccount:
-    case SectionIdentifierClearSyncAndSavedSiteData:
     case SectionIdentifierSavedSiteData:
       return 5;
     default:
@@ -296,10 +310,10 @@
   [self updateToolbarButtons];
 }
 
-#pragma mark - TableViewTextLinkCellDelegate
+#pragma mark - TableViewLinkHeaderFooterItemDelegate
 
-- (void)tableViewTextLinkCell:(TableViewTextLinkCell*)cell
-            didRequestOpenURL:(const GURL&)URL {
+- (void)TableViewLinkHeaderFooterView:(TableViewLinkHeaderFooterView*)cell
+                    didRequestOpenURL:(const GURL&)URL {
   GURL copiedURL(URL);
   [self.delegate openURL:copiedURL];
 }
@@ -317,8 +331,8 @@
     [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
   } else {
     // Reload the item instead of reconfiguring it. This might update
-    // TableViewTextLinkItems which which can have different number of lines,
-    // thus the cell height needs to adapt accordingly.
+    // TableViewLinkHeaderFooterView which which can have different number of
+    // lines, thus the cell height needs to adapt accordingly.
     [self reloadCellsForItems:@[ item ]
              withRowAnimation:UITableViewRowAnimationAutomatic];
   }

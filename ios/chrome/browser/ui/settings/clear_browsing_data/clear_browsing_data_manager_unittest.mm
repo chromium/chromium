@@ -110,7 +110,7 @@ TEST_F(ClearBrowsingDataManagerTest, TestModel) {
   EXPECT_EQ(3, [model_ numberOfSections]);
   EXPECT_EQ(1, [model_ numberOfItemsInSection:0]);
   EXPECT_EQ(5, [model_ numberOfItemsInSection:1]);
-  EXPECT_EQ(1, [model_ numberOfItemsInSection:2]);
+  EXPECT_EQ(0, [model_ numberOfItemsInSection:2]);
 }
 
 // Tests model is set up with correct number of items and sections if signed in
@@ -128,8 +128,8 @@ TEST_F(ClearBrowsingDataManagerTest, TestModelSignedInSyncOff) {
   EXPECT_EQ(4, [model_ numberOfSections]);
   EXPECT_EQ(1, [model_ numberOfItemsInSection:0]);
   EXPECT_EQ(5, [model_ numberOfItemsInSection:1]);
-  EXPECT_EQ(1, [model_ numberOfItemsInSection:2]);
-  EXPECT_EQ(1, [model_ numberOfItemsInSection:3]);
+  EXPECT_EQ(0, [model_ numberOfItemsInSection:2]);
+  EXPECT_EQ(0, [model_ numberOfItemsInSection:3]);
 }
 
 TEST_F(ClearBrowsingDataManagerTest, TestCacheCounterFormattingForAllTime) {

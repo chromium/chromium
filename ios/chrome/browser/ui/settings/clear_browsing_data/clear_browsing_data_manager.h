@@ -24,9 +24,8 @@ enum ClearBrowsingDataSectionIdentifier {
   SectionIdentifierDataTypes = kSectionIdentifierEnumZero,
   // Section for informational footnote about user's Google Account data.
   SectionIdentifierGoogleAccount,
-  // Section for footnote about synced data being cleared.
-  SectionIdentifierClearSyncAndSavedSiteData,
-  // Section for informational footnote about site settings remaining.
+  // Section for footnote about synced data being cleared & site settings
+  // remaining.
   SectionIdentifierSavedSiteData,
   // Section containing cell displaying time range to remove data.
   SectionIdentifierTimeRange,
