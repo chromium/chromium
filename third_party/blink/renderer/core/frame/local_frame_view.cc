@@ -1138,7 +1138,7 @@ void LocalFrameView::ForceUpdateViewportIntersections() {
   // update; but we can't wait for a lifecycle update to run them, because a
   // hidden frame won't run lifecycle updates. Force layout and run them now.
   DisallowThrottlingScope disallow_throttling(*this);
-  UpdateLifecycleToCompositingCleanPlusScrolling(
+  UpdateLifecycleToPrePaintClean(
       DocumentUpdateReason::kIntersectionObservation);
   UpdateViewportIntersectionsForSubtree(
       IntersectionObservation::kImplicitRootObserversNeedUpdate |
@@ -2542,7 +2542,7 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
       run_more_lifecycle_phases = RunPrePaintLifecyclePhase(target_state);
       DCHECK(ShouldThrottleRendering() ||
              Lifecycle().GetState() >= DocumentLifecycle::kPrePaintClean);
-      if (!run_more_lifecycle_phases)
+      if (ShouldThrottleRendering() || !run_more_lifecycle_phases)
         return;
 
       run_more_lifecycle_phases =
@@ -4544,20 +4544,10 @@ bool LocalFrameView::ShouldThrottleRendering() const {
   auto* local_frame_root_view = GetFrame().LocalFrameRoot().View();
   if (local_frame_root_view->IsUpdatingLifecycle() &&
       intersection_observation_state_ == kRequired && !IsDisplayLocked()) {
-    // IntersectionObserver may rely on sticky positioning, which is not
-    // resolved until compositing assignments are done. If the resolution of
-    // sticky positioning is refactored to occur during layout, then the
-    // required minimum lifecycle state will depend on whether this frame
-    // requires occlusion tracking, since determining occlusion state requires a
-    // hit test, which requires the document to be pre-paint clean.  So the code
-    // here would change to something like:
-    //
-    //   auto min_state = GetFrame().NeedsOcclusionTracking() ?
-    //       DocumentLifecycle::kPrePaintClean :
-    //       DocumentLifecycle::kLayoutClean;
-    //   return Lifecycle().GetState() >= min_state;
-    return Lifecycle().GetState() >=
-           DocumentLifecycle::kCompositingAssignmentsClean;
+    // Pre-paint guarantees that sticky positioning is finalized and hit testing
+    // is available (needed for HitTestForOcclusion, called from
+    // IntersectionGeometry).
+    return Lifecycle().GetState() >= DocumentLifecycle::kPrePaintClean;
   }
 
   return true;

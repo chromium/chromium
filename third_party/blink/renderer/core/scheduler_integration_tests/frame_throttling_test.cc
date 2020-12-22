@@ -239,8 +239,8 @@ TEST_P(FrameThrottlingTest, IntersectionObservationOverridesThrottling) {
             DocumentLifecycle::kPaintClean);
   if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
     // If IntersectionObserver is required to run, lifecycle will be updated
-    // through compositing.
-    EXPECT_EQ(kCompositingUpdateNone,
+    // through pre-paint, but not compositing assignment.
+    EXPECT_EQ(kCompositingUpdateRebuildTree,
               inner_view->Compositor()->pending_update_type_);
   }
   EXPECT_TRUE(inner_view->Layer()->SelfNeedsRepaint());
@@ -374,7 +374,7 @@ TEST_P(FrameThrottlingTest,
   frame_document->View()->ScheduleAnimation();
   frame_document->View()->GetLayoutView()->Layer()->SetNeedsRepaint();
   CompositeFrame();
-  EXPECT_EQ(DocumentLifecycle::kCompositingAssignmentsClean,
+  EXPECT_EQ(DocumentLifecycle::kPrePaintClean,
             frame_document->Lifecycle().GetState());
   EXPECT_TRUE(frame_document->View()->ShouldThrottleRenderingForTest());
 }
