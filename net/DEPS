@@ -1,6 +1,5 @@
 include_rules = [
   "+crypto",
-  "+mojo/public",
   "+net/net_jni_headers",
   "+third_party/apple_apsl",
   "+third_party/boringssl/src/include",
@@ -49,10 +48,6 @@ specific_include_rules = {
   ],
   "ftp_directory_listing_parser\.cc": [
     "+base/i18n",
-  ],
-
-  "run_all_unittests\.cc": [
-    "+mojo/core/embedder",
   ],
 
   "brotli_source_stream\.cc": [
