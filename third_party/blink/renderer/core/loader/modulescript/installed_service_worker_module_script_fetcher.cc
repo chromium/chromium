@@ -6,6 +6,7 @@
 
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/appcache/appcache.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_source_location_type.h"
 #include "third_party/blink/renderer/core/dom/dom_implementation.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/workers/installed_scripts_manager.h"
@@ -107,7 +108,8 @@ void InstalledServiceWorkerModuleScriptFetcher::Fetch(
   // https://html.spec.whatwg.org/multipage/webappapis.html#concept-script-base-url
   client->NotifyFetchFinishedSuccess(ModuleScriptCreationParams(
       /*source_url=*/fetch_params.Url(), /*base_url=*/fetch_params.Url(),
-      module_type, ParkableString(script_data->TakeSourceText().Impl()),
+      ScriptSourceLocationType::kExternalFile, module_type,
+      ParkableString(script_data->TakeSourceText().Impl()),
       /*cache_handler=*/nullptr,
       fetch_params.GetResourceRequest().GetCredentialsMode()));
 }

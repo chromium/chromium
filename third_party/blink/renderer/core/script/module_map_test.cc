@@ -6,6 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_source_location_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_fetch_request.h"
@@ -153,7 +154,8 @@ class ModuleMapTestModulator final : public DummyModulator {
         : url_(url), credential_mode_(credential_mode), client_(client) {}
     void NotifyFetchFinished() {
       client_->NotifyFetchFinishedSuccess(ModuleScriptCreationParams(
-          url_, url_, ModuleScriptCreationParams::ModuleType::kJavaScriptModule,
+          url_, url_, ScriptSourceLocationType::kExternalFile,
+          ModuleScriptCreationParams::ModuleType::kJavaScriptModule,
           ParkableString(String("").ReleaseImpl()), nullptr, credential_mode_));
     }
     void Trace(Visitor* visitor) const { visitor->Trace(client_); }

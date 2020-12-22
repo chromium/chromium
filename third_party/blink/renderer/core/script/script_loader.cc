@@ -710,13 +710,12 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
         // text, settings object, base URL, and options.</spec>
 
         ModuleScriptCreationParams params(
-            source_url, base_url,
+            source_url, base_url, ScriptSourceLocationType::kInline,
             ModuleScriptCreationParams::ModuleType::kJavaScriptModule,
             ParkableString(source_text.Impl()), nullptr,
             options.CredentialsMode());
         ModuleScript* module_script =
-            JSModuleScript::Create(params, ScriptSourceLocationType::kInline,
-                                   modulator, options, position);
+            JSModuleScript::Create(params, modulator, options, position);
 
         // <spec label="fetch-an-inline-module-script-graph" step="2">If script
         // is null, asynchronously complete this algorithm with null, and abort

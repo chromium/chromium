@@ -65,7 +65,8 @@ void DocumentModuleScriptFetcher::NotifyFinished(Resource* resource) {
   // Create an external module script where base_url == source_url.
   // https://html.spec.whatwg.org/multipage/webappapis.html#concept-script-base-url
   client_->NotifyFetchFinishedSuccess(ModuleScriptCreationParams(
-      /*source_url=*/url, /*base_url=*/url, module_type,
+      /*source_url=*/url, /*base_url=*/url,
+      ScriptSourceLocationType::kExternalFile, module_type,
       script_resource->SourceText(), script_resource->CacheHandler(),
       script_resource->GetResourceRequest().GetCredentialsMode(), streamer,
       not_streamed_reason));

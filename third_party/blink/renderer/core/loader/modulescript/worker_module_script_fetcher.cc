@@ -10,6 +10,7 @@
 #include "services/network/public/mojom/referrer_policy.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/network_utils.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_source_location_type.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
@@ -185,7 +186,8 @@ void WorkerModuleScriptFetcher::NotifyClient(
   // Create an external module script where base_url == source_url.
   // https://html.spec.whatwg.org/multipage/webappapis.html#concept-script-base-url
   client_->NotifyFetchFinishedSuccess(ModuleScriptCreationParams(
-      /*source_url=*/url, /*base_url=*/url, module_type, source_text,
+      /*source_url=*/url, /*base_url=*/url,
+      ScriptSourceLocationType::kExternalFile, module_type, source_text,
       cache_handler, credentials_mode));
 }
 

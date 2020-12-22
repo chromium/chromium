@@ -6,6 +6,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/module_record.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_source_location_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_creation_params.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -28,6 +29,7 @@ v8::Local<v8::Module> ModuleTestBase::CompileModule(
     ExceptionState& exception_state) {
   ModuleScriptCreationParams params(
       /*source_url=*/url, /*base_url=*/url,
+      ScriptSourceLocationType::kExternalFile,
       ModuleScriptCreationParams::ModuleType::kJavaScriptModule,
       ParkableString(source.Impl()), nullptr,
       network::mojom::CredentialsMode::kOmit);

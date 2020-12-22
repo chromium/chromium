@@ -52,7 +52,6 @@ v8::Local<v8::Module> ModuleRecord::Compile(
     const TextPosition& text_position,
     ExceptionState& exception_state,
     mojom::blink::V8CacheOptions v8_cache_options,
-    ScriptSourceLocationType source_location_type,
     ModuleRecordProduceCacheData** out_produce_cache_data) {
   v8::TryCatch try_catch(isolate);
   v8::Local<v8::Module> module;
@@ -71,7 +70,7 @@ v8::Local<v8::Module> ModuleRecord::Compile(
   std::tie(compile_options, produce_cache_options, no_cache_reason) =
       V8CodeCache::GetCompileOptions(v8_cache_options, params.CacheHandler(),
                                      params.GetSourceText().length(),
-                                     source_location_type);
+                                     params.SourceLocationType());
 
   if (!V8ScriptRunner::CompileModule(
            isolate, params, text_position, compile_options, no_cache_reason,

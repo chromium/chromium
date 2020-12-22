@@ -69,8 +69,6 @@ class CORE_EXPORT ModuleRecord final {
       const TextPosition&,
       ExceptionState&,
       mojom::blink::V8CacheOptions = mojom::blink::V8CacheOptions::kDefault,
-      ScriptSourceLocationType source_location_type =
-          ScriptSourceLocationType::kInternal,
       ModuleRecordProduceCacheData** out_produce_cache_data = nullptr);
 
   // Returns exception, if any.

@@ -26,7 +26,6 @@ class CORE_EXPORT JSModuleScript final : public ModuleScript,
   // https://html.spec.whatwg.org/C/#creating-a-javascript-module-script
   static JSModuleScript* Create(
       const ModuleScriptCreationParams& params,
-      ScriptSourceLocationType,
       Modulator*,
       const ScriptFetchOptions&,
       const TextPosition& start_position = TextPosition::MinimumPosition());

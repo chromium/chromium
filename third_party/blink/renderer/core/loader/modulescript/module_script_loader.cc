@@ -275,9 +275,7 @@ void ModuleScriptLoader::NotifyFetchFinishedSuccess(
       // Step 10. "Let module script be the result of creating
       // a module script given source text, module map settings object,
       // response's url, and options." [spec text]
-      module_script_ = JSModuleScript::Create(
-          params, ScriptSourceLocationType::kExternalFile, modulator_,
-          options_);
+      module_script_ = JSModuleScript::Create(params, modulator_, options_);
       break;
     };
   }

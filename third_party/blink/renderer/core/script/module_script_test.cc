@@ -83,12 +83,11 @@ class ModuleScriptTest : public ::testing::Test, public ParametrizedModuleTest {
       SingleCachedMetadataHandler* cache_handler) {
     ModuleScriptCreationParams params(
         KURL("https://fox.url/script.js"), KURL("https://fox.url/"),
+        ScriptSourceLocationType::kInline,
         ModuleScriptCreationParams::ModuleType::kJavaScriptModule,
         ParkableString(source_text.IsolatedCopy().ReleaseImpl()), cache_handler,
         network::mojom::CredentialsMode::kOmit);
-    return JSModuleScript::Create(params,
-                                  ScriptSourceLocationType::kExternalFile,
-                                  modulator, ScriptFetchOptions());
+    return JSModuleScript::Create(params, modulator, ScriptFetchOptions());
   }
 
   static ValueWrapperSyntheticModuleScript*

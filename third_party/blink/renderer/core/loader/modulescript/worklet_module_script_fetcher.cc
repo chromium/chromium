@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/loader/modulescript/worklet_module_script_fetcher.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/script_source_location_type.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 
 namespace blink {
@@ -52,7 +53,8 @@ void WorkletModuleScriptFetcher::NotifyFinished(Resource* resource) {
     const KURL& url = script_resource->GetResponse().CurrentRequestUrl();
     // Create an external module script where base_url == source_url.
     // https://html.spec.whatwg.org/multipage/webappapis.html#concept-script-base-url
-    params.emplace(/*source_url=*/url, /*base_url=*/url, module_type,
+    params.emplace(/*source_url=*/url, /*base_url=*/url,
+                   ScriptSourceLocationType::kExternalFile, module_type,
                    script_resource->SourceText(),
                    script_resource->CacheHandler(),
                    script_resource->GetResourceRequest().GetCredentialsMode());
