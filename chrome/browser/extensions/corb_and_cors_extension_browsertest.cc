@@ -21,6 +21,7 @@
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/extensions/api/tabs/tabs_api.h"
 #include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
+#include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chrome/browser/extensions/extension_management_test_util.h"
@@ -31,6 +32,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/embedder_support/switches.h"
@@ -39,6 +42,7 @@
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/console_message.h"
+#include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/service_worker_context_observer.h"
@@ -472,11 +476,17 @@ class CorbAndCorsExtensionBrowserTest
 
   // Performs a fetch of |url| from the background page of the test extension.
   // Returns the body of the response.
+  std::string FetchViaBackgroundPage(const GURL& url,
+                                     const Extension* extension,
+                                     Profile* profile) {
+    content::WebContents* background_web_contents =
+        ProcessManager::Get(profile)
+            ->GetBackgroundHostForExtension(extension->id())
+            ->host_contents();
+    return FetchViaWebContents(url, background_web_contents);
+  }
   std::string FetchViaBackgroundPage(const GURL& url) {
-    return FetchHelper(
-        url, base::BindOnce(
-                 &browsertest_util::ExecuteScriptInBackgroundPageNoWait,
-                 base::Unretained(browser()->profile()), extension_->id()));
+    return FetchViaBackgroundPage(url, extension_, browser()->profile());
   }
 
   // Performs a fetch of |url| from |web_contents| (directly, without going
@@ -2270,6 +2280,314 @@ IN_PROC_BROWSER_TEST_P(CorbAndCorsExtensionBrowserTest, CorsFromContentScript) {
   // test responds with "*" which matches all origins.
   std::string fetch_result = PopString(&message_queue);
   EXPECT_EQ("cors-allowed-body", fetch_result);
+}
+
+IN_PROC_BROWSER_TEST_P(CorbAndCorsExtensionBrowserTest,
+                       FromBackgroundPage_ActiveTabPermission) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  TestExtensionDir extension_dir;
+  constexpr char kManifest[] = R"(
+      {
+        "name": "ActiveTab permissions vs CORS from extension background page",
+        "version": "1.0",
+        "manifest_version": 2,
+        "browser_action": {
+          "default_title": "activeTab"
+        },
+        "permissions": ["activeTab"],
+        "background": {
+          "scripts": ["bg_script.js"]
+        }
+      } )";
+  extension_dir.WriteManifest(kManifest);
+  extension_dir.WriteFile(FILE_PATH_LITERAL("bg_script.js"), "");
+  const Extension* extension = LoadExtension(extension_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  // Set up a test scenario:
+  // - top-level frame: kActiveTabHost
+  constexpr char kActiveTabHost[] = "active-tab.example";
+  GURL original_document_url =
+      embedded_test_server()->GetURL(kActiveTabHost, "/title1.html");
+  GURL cross_site_resource(
+      embedded_test_server()->GetURL(kActiveTabHost, "/nosniff.xml"));
+  ui_test_utils::NavigateToURL(browser(), original_document_url);
+
+  // CORS exception shouldn't be initially granted based on ActiveTab.
+  {
+    SCOPED_TRACE("TEST STEP 1: Initial fetch.");
+    std::string fetch_result = FetchViaBackgroundPage(
+        cross_site_resource, extension, browser()->profile());
+    EXPECT_EQ(kCorsErrorWhenFetching, fetch_result);
+  }
+
+  // Do one pass of BrowserAction without granting ActiveTab permission,
+  // extension still shouldn't have ability to bypass CORS.
+  ExtensionActionRunner::GetForWebContents(active_web_contents())
+      ->RunAction(extension, false);
+  {
+    SCOPED_TRACE("TEST STEP 2: After BrowserAction without granting access.");
+    std::string fetch_result = FetchViaBackgroundPage(
+        cross_site_resource, extension, browser()->profile());
+    EXPECT_EQ(kCorsErrorWhenFetching, fetch_result);
+  }
+
+  // Granting ActiveTab permission to the extension should give it the ability
+  // to bypass CORS.
+  ExtensionActionRunner::GetForWebContents(active_web_contents())
+      ->RunAction(extension, true);
+  {
+    // ActiveTab access (just like OOR-CORS access) extends to the background
+    // page.  This is desirable, because
+    // 1) there is no security boundary between A) extension background pages
+    //    and B) extension frames in the tab
+    // 2) it seems best to highlight #1 by simplistically granting extra
+    //    capabilities to the whole extension (rather than forcing the extension
+    //    authors to jump through extra hurdles to utilize the new capability).
+    SCOPED_TRACE("TEST STEP 3: After granting ActiveTab access.");
+    std::string fetch_result = FetchViaBackgroundPage(
+        cross_site_resource, extension, browser()->profile());
+    EXPECT_EQ("nosniff.xml - body\n", fetch_result);
+  }
+
+  // Navigating the tab to a different, same-origin document should retain
+  // extension's access to the origin.
+  GURL another_document_url =
+      embedded_test_server()->GetURL(kActiveTabHost, "/title2.html");
+  EXPECT_NE(another_document_url, original_document_url);
+  EXPECT_EQ(url::Origin::Create(another_document_url),
+            url::Origin::Create(original_document_url));
+  ui_test_utils::NavigateToURL(browser(), another_document_url);
+  {
+    SCOPED_TRACE(
+        "TEST STEP 4: After navigating the tab cross-document, "
+        "but still same-origin.");
+    std::string fetch_result = FetchViaBackgroundPage(
+        cross_site_resource, extension, browser()->profile());
+    EXPECT_EQ("nosniff.xml - body\n", fetch_result);
+  }
+
+  // Navigating the tab to a different origin should revoke extension's access
+  // to the tab.
+  GURL cross_origin_url =
+      embedded_test_server()->GetURL("other.com", "/title1.html");
+  EXPECT_NE(url::Origin::Create(cross_origin_url),
+            url::Origin::Create(original_document_url));
+  ui_test_utils::NavigateToURL(browser(), cross_origin_url);
+  {
+    SCOPED_TRACE("TEST STEP 5: After navigating the tab cross-origin.");
+    std::string fetch_result = FetchViaBackgroundPage(
+        cross_site_resource, extension, browser()->profile());
+    EXPECT_EQ(kCorsErrorWhenFetching, fetch_result);
+  }
+}
+
+// Similar to FromBackgroundPage_ActiveTabPermission, but focues on interaction
+// between the regular background page and the separate incognito background
+// page in "split" mode.
+IN_PROC_BROWSER_TEST_P(CorbAndCorsExtensionBrowserTest,
+                       FromBackgroundPage_ActiveTabPermission_SplitMode) {
+  TestExtensionDir extension_dir;
+  constexpr char kManifest[] = R"(
+      {
+        "name": "ActiveTab permissions vs CORS from extension background page",
+        "version": "1.0",
+        "manifest_version": 2,
+        "browser_action": {
+          "default_title": "activeTab"
+        },
+        "incognito": "split",
+        "permissions": ["activeTab"],
+        "background": {
+          "scripts": ["bg_script.js"]
+        }
+      } )";
+  extension_dir.WriteManifest(kManifest);
+  extension_dir.WriteFile(FILE_PATH_LITERAL("bg_script.js"), "");
+  const Extension* extension =
+      LoadExtensionIncognito(extension_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  // Set up a test scenario:
+  // - regular window: empty initial tab
+  // - incognito window: top-level frame: kActiveTabHost
+  ASSERT_TRUE(embedded_test_server()->Start());
+  constexpr char kActiveTabHost[] = "active-tab.example";
+  GURL original_document_url =
+      embedded_test_server()->GetURL(kActiveTabHost, "/title1.html");
+  Profile* regular_profile = browser()->profile();
+  Profile* incognito_profile = regular_profile->GetPrimaryOTRProfile();
+  Browser* incognito_browser =
+      Browser::Create(Browser::CreateParams(incognito_profile, true));
+  {
+    content::WindowedNotificationObserver observer(
+        content::NOTIFICATION_LOAD_STOP,
+        content::NotificationService::AllSources());
+    chrome::AddSelectedTabWithURL(incognito_browser, original_document_url,
+                                  ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
+    observer.Wait();
+    incognito_browser->window()->Show();
+  }
+
+  // CORS exception shouldn't be initially granted based on ActiveTab.
+  GURL cross_site_resource(
+      embedded_test_server()->GetURL(kActiveTabHost, "/nosniff.xml"));
+  {
+    SCOPED_TRACE("TEST STEP 1: Initial fetch.");
+    {
+      SCOPED_TRACE("Regular profile's background page");
+      std::string fetch_result = FetchViaBackgroundPage(
+          cross_site_resource, extension, regular_profile);
+      EXPECT_EQ(kCorsErrorWhenFetching, fetch_result);
+    }
+    {
+      SCOPED_TRACE("Incognito profile's background page");
+      std::string fetch_result = FetchViaBackgroundPage(
+          cross_site_resource, extension, incognito_profile);
+      EXPECT_EQ(kCorsErrorWhenFetching, fetch_result);
+    }
+  }
+
+  // Granting ActiveTab permission in the incognito window should give the
+  // extension access to the tab's origin, but only in the incognito profile
+  // (since the extension uses "split" mode).
+  ExtensionActionRunner::GetForWebContents(
+      incognito_browser->tab_strip_model()->GetActiveWebContents())
+      ->RunAction(extension, true);
+  {
+    SCOPED_TRACE("TEST STEP 2: After granting ActiveTab access.");
+    {
+      SCOPED_TRACE("Regular profile's background page");
+      std::string fetch_result = FetchViaBackgroundPage(
+          cross_site_resource, extension, regular_profile);
+      EXPECT_EQ(kCorsErrorWhenFetching, fetch_result);
+    }
+    {
+      SCOPED_TRACE("Incognito profile's background page");
+      std::string fetch_result = FetchViaBackgroundPage(
+          cross_site_resource, extension, incognito_profile);
+      EXPECT_EQ("nosniff.xml - body\n", fetch_result);
+    }
+  }
+
+  // Navigating the tab to a different origin should revoke extension's access
+  // to the tab.
+  GURL cross_origin_url =
+      embedded_test_server()->GetURL("other.com", "/title1.html");
+  EXPECT_NE(url::Origin::Create(cross_origin_url),
+            url::Origin::Create(original_document_url));
+  ui_test_utils::NavigateToURL(incognito_browser, cross_origin_url);
+  {
+    SCOPED_TRACE("TEST STEP 3: After navigating the tab cross-origin.");
+    {
+      SCOPED_TRACE("Regular profile's background page");
+      std::string fetch_result = FetchViaBackgroundPage(
+          cross_site_resource, extension, regular_profile);
+      EXPECT_EQ(kCorsErrorWhenFetching, fetch_result);
+    }
+    {
+      SCOPED_TRACE("Incognito profile's background page");
+      std::string fetch_result = FetchViaBackgroundPage(
+          cross_site_resource, extension, incognito_profile);
+      EXPECT_EQ(kCorsErrorWhenFetching, fetch_result);
+    }
+  }
+}
+
+// Similar to FromBackgroundPage_ActiveTabPermission, but focues on behavior
+// of the background page when it is shared between the regular and the
+// incognito profiles in "spanning" mode.
+IN_PROC_BROWSER_TEST_P(CorbAndCorsExtensionBrowserTest,
+                       FromBackgroundPage_ActiveTabPermission_SpanningMode) {
+  TestExtensionDir extension_dir;
+  constexpr char kManifest[] = R"(
+      {
+        "name": "ActiveTab permissions vs CORS from extension background page",
+        "version": "1.0",
+        "manifest_version": 2,
+        "browser_action": {
+          "default_title": "activeTab"
+        },
+        "incognito": "spanning",
+        "permissions": ["activeTab"],
+        "background": {
+          "scripts": ["bg_script.js"]
+        }
+      } )";
+  extension_dir.WriteManifest(kManifest);
+  extension_dir.WriteFile(FILE_PATH_LITERAL("bg_script.js"), "");
+  const Extension* extension =
+      LoadExtensionIncognito(extension_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  // Set up a test scenario:
+  // - regular window: empty initial tab
+  // - incognito window: top-level frame: kActiveTabHost
+  ASSERT_TRUE(embedded_test_server()->Start());
+  constexpr char kActiveTabHost[] = "active-tab.example";
+  GURL original_document_url =
+      embedded_test_server()->GetURL(kActiveTabHost, "/title1.html");
+  Profile* regular_profile = browser()->profile();
+  Profile* incognito_profile = regular_profile->GetPrimaryOTRProfile();
+  Browser* incognito_browser =
+      Browser::Create(Browser::CreateParams(incognito_profile, true));
+  {
+    content::WindowedNotificationObserver observer(
+        content::NOTIFICATION_LOAD_STOP,
+        content::NotificationService::AllSources());
+    chrome::AddSelectedTabWithURL(incognito_browser, original_document_url,
+                                  ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
+    observer.Wait();
+    incognito_browser->window()->Show();
+  }
+
+  // CORS exception shouldn't be initially granted based on ActiveTab.
+  GURL cross_site_resource(
+      embedded_test_server()->GetURL(kActiveTabHost, "/nosniff.xml"));
+  {
+    SCOPED_TRACE("TEST STEP 1: Initial fetch.");
+    SCOPED_TRACE("Regular profile's background page");
+    std::string fetch_result =
+        FetchViaBackgroundPage(cross_site_resource, extension, regular_profile);
+    EXPECT_EQ(kCorsErrorWhenFetching, fetch_result);
+
+    // There is no separate incognito background page in "spanning" mode.
+  }
+
+  // Granting ActiveTab permission in the incognito window should give the
+  // extension access to the tab's origin.
+  ExtensionActionRunner::GetForWebContents(
+      incognito_browser->tab_strip_model()->GetActiveWebContents())
+      ->RunAction(extension, true);
+  {
+    SCOPED_TRACE("TEST STEP 2: After granting ActiveTab access.");
+    std::string fetch_result =
+        FetchViaBackgroundPage(cross_site_resource, extension, regular_profile);
+
+    // TODO(lukasza): https://crbug.com/1159207: Unexpectedly the background
+    // page is not granted access.  Once this is fixed, change EXPECT_NE to
+    // EXPECT_EQ below.
+    EXPECT_NE("nosniff.xml - body\n", fetch_result);
+
+    // There is no separate incognito background page in "spanning" mode.
+  }
+
+  // Navigating the tab to a different origin should revoke extension's access
+  // to the tab.
+  GURL cross_origin_url =
+      embedded_test_server()->GetURL("other.com", "/title1.html");
+  EXPECT_NE(url::Origin::Create(cross_origin_url),
+            url::Origin::Create(original_document_url));
+  ui_test_utils::NavigateToURL(incognito_browser, cross_origin_url);
+  {
+    SCOPED_TRACE("TEST STEP 3: After navigating the tab cross-origin.");
+    std::string fetch_result =
+        FetchViaBackgroundPage(cross_site_resource, extension, regular_profile);
+    EXPECT_EQ(kCorsErrorWhenFetching, fetch_result);
+
+    // There is no separate incognito background page in "spanning" mode.
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(Allowlisted,
