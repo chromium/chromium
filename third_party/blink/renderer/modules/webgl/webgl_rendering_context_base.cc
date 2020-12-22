@@ -5421,7 +5421,7 @@ void WebGLRenderingContextBase::TexImageHelperImageData(
     return;
   DCHECK(pixels);
   DCHECK(!pixels->data().IsNull());
-  if (pixels->BufferBase()->IsDetached()) {
+  if (pixels->IsBufferBaseDetached()) {
     SynthesizeGLError(GL_INVALID_VALUE, func_name,
                       "The source data has been detached.");
     return;

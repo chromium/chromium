@@ -1017,11 +1017,11 @@ void TestPutImageDataOnCanvasWithColorSpaceSettings(
       NonThrowableExceptionState exception_state;
       context->putImageData(image_data, 0, 0, exception_state);
 
-      void* pixels_from_get_image_data =
+      const void* pixels_from_get_image_data =
           context
               ->getImageData(0, 0, 2, 2, canvas_color_setting, exception_state)
-              ->BufferBase()
-              ->Data();
+              ->GetSkPixmap()
+              .addr();
       ColorCorrectionTestUtils::CompareColorCorrectedPixels(
           pixels_from_get_image_data, pixels_converted_manually.get(),
           num_pixels,

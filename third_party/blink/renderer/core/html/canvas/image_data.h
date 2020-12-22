@@ -107,8 +107,6 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
             NotShared<DOMArrayBufferView>,
             const ImageDataSettings* = nullptr);
 
-  ImageData* CropRect(const IntRect&, bool flip_y = false);
-
   static String CanvasColorSpaceName(CanvasColorSpace);
   static ImageDataStorageFormat GetImageDataStorageFormat(const String&);
   static unsigned StorageFormatBytesPerPixel(const String&);
@@ -122,7 +120,7 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
   const ImageDataArray& data() const { return data_; }
   void data(ImageDataArray& result) { result = data_; }
 
-  DOMArrayBufferBase* BufferBase() const;
+  bool IsBufferBaseDetached() const;
   CanvasColorSpace GetCanvasColorSpace() const;
   ImageDataStorageFormat GetImageDataStorageFormat() const;
 

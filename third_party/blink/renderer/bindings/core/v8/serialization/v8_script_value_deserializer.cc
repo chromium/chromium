@@ -442,9 +442,9 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
           IntSize(width, height), settings.GetColorSpace(), storage_format);
       if (!image_data)
         return nullptr;
-      DOMArrayBufferBase* pixel_buffer = image_data->BufferBase();
-      DCHECK_EQ(pixel_buffer->ByteLength(), byte_length);
-      memcpy(pixel_buffer->Data(), pixels, byte_length);
+      SkPixmap image_data_pixmap = image_data->GetSkPixmap();
+      DCHECK_EQ(image_data_pixmap.computeByteSize(), byte_length);
+      memcpy(image_data_pixmap.writable_addr(), pixels, byte_length);
       return image_data;
     }
     case kDOMPointTag: {

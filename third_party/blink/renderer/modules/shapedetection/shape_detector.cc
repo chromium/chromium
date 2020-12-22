@@ -115,7 +115,7 @@ ScriptPromise ShapeDetector::DetectShapesOnImageData(
     return promise;
   }
 
-  if (image_data->BufferBase()->IsDetached()) {
+  if (image_data->IsBufferBaseDetached()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError,
         "The image data has been detached."));

@@ -1865,7 +1865,7 @@ void BaseRenderingContext2D::putImageData(ImageData* data,
   }
   base::TimeTicks start_time = base::TimeTicks::Now();
 
-  if (data->BufferBase()->IsDetached()) {
+  if (data->IsBufferBaseDetached()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "The source data has been detached.");
     return;

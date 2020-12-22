@@ -360,57 +360,11 @@ ImageData* ImageData::CreateForTest(const IntSize& size,
   return MakeGarbageCollected<ImageData>(size, buffer_view, settings);
 }
 
-// Crops ImageData to the intersect of its size and the given rectangle. If the
-// intersection is empty or it cannot create the cropped ImageData it returns
-// nullptr. This function leaves the source ImageData intact. When crop_rect
-// covers all the ImageData, a copy of the ImageData is returned.
-// TODO (zakerinasab): crbug.com/774484: As a rule of thumb ImageData belongs to
-// the user and its state should not change unless directly modified by the
-// user. Therefore, we should be able to remove the extra copy and return a
-// "cropped view" on the source ImageData object.
-ImageData* ImageData::CropRect(const IntRect& crop_rect, bool flip_y) {
-  IntRect src_rect(IntPoint(), size_);
-  const IntRect dst_rect = Intersection(src_rect, crop_rect);
-  if (dst_rect.IsEmpty())
-    return nullptr;
-
-  unsigned data_size = 4 * dst_rect.Width() * dst_rect.Height();
-  NotShared<DOMArrayBufferView> buffer_view = AllocateAndValidateDataArray(
-      data_size, GetImageDataStorageFormat(settings_->storageFormat()));
-  if (!buffer_view)
-    return nullptr;
-
-  if (src_rect == dst_rect && !flip_y) {
-    std::memcpy(buffer_view->BufferBase()->Data(), BufferBase()->Data(),
-                data_size * buffer_view->TypeSize());
-  } else {
-    unsigned data_type_size =
-        StorageFormatBytesPerPixel(settings_->storageFormat());
-    int src_index = (dst_rect.X() + dst_rect.Y() * src_rect.Width()) * 4;
-    int dst_index = 0;
-    if (flip_y)
-      dst_index = (dst_rect.Height() - 1) * dst_rect.Width() * 4;
-    int src_row_stride = src_rect.Width() * 4;
-    int dst_row_stride = flip_y ? -dst_rect.Width() * 4 : dst_rect.Width() * 4;
-    for (int i = 0; i < dst_rect.Height(); i++) {
-      std::memcpy(static_cast<char*>(buffer_view->BufferBase()->Data()) +
-                      dst_index / 4 * data_type_size,
-                  static_cast<char*>(BufferBase()->Data()) +
-                      src_index / 4 * data_type_size,
-                  dst_rect.Width() * data_type_size);
-      src_index += src_row_stride;
-      dst_index += dst_row_stride;
-    }
-  }
-  return MakeGarbageCollected<ImageData>(dst_rect.Size(), buffer_view,
-                                         settings_);
-}
-
 ScriptPromise ImageData::CreateImageBitmap(ScriptState* script_state,
                                            base::Optional<IntRect> crop_rect,
                                            const ImageBitmapOptions* options,
                                            ExceptionState& exception_state) {
-  if (BufferBase()->IsDetached()) {
+  if (IsBufferBaseDetached()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "The source data has been detached.");
     return ScriptPromise();
@@ -512,27 +466,33 @@ unsigned ImageData::StorageFormatBytesPerPixel(
   return 1;
 }
 
-DOMArrayBufferBase* ImageData::BufferBase() const {
+bool ImageData::IsBufferBaseDetached() const {
   if (data_.IsUint8ClampedArray())
-    return data_.GetAsUint8ClampedArray()->BufferBase();
+    return data_.GetAsUint8ClampedArray()->BufferBase()->IsDetached();
   if (data_.IsUint16Array())
-    return data_.GetAsUint16Array()->BufferBase();
+    return data_.GetAsUint16Array()->BufferBase()->IsDetached();
   if (data_.IsFloat32Array())
-    return data_.GetAsFloat32Array()->BufferBase();
-  return nullptr;
+    return data_.GetAsFloat32Array()->BufferBase()->IsDetached();
+  return false;
 }
 
 SkPixmap ImageData::GetSkPixmap() const {
   SkColorType color_type = kRGBA_8888_SkColorType;
-  if (data_u16_) {
+  const void* data = nullptr;
+  if (data_.IsUint8ClampedArray()) {
+    color_type = kRGBA_8888_SkColorType;
+    data = data_.GetAsUint8ClampedArray()->Data();
+  } else if (data_.IsUint16Array()) {
     color_type = kR16G16B16A16_unorm_SkColorType;
-  } else if (data_f32_) {
+    data = data_.GetAsUint16Array()->Data();
+  } else if (data_.IsFloat32Array()) {
     color_type = kRGBA_F32_SkColorType;
+    data = data_.GetAsFloat32Array()->Data();
   }
   SkImageInfo info =
       SkImageInfo::Make(width(), height(), color_type, kUnpremul_SkAlphaType,
                         CanvasColorSpaceToSkColorSpace(GetCanvasColorSpace()));
-  return SkPixmap(info, BufferBase()->Data(), info.minRowBytes());
+  return SkPixmap(info, data, info.minRowBytes());
 }
 
 void ImageData::Trace(Visitor* visitor) const {
