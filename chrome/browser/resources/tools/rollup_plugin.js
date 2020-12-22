@@ -7,11 +7,6 @@
  */
 const path = require('path');
 
-const chromeResourcesUrl = 'chrome://resources/';
-const polymerUrl = 'chrome://resources/polymer/v3_0/';
-const schemeRelativeResourcesUrl = '//resources/';
-const schemeRelativePolymerUrl = '//resources/polymer/v3_0/';
-
 function normalizeSlashes(filepath) {
   return filepath.replace(/\\/gi, '/');
 }
@@ -37,12 +32,46 @@ function combinePaths(origin, source) {
   return normalizeSlashes(path.normalize(path.join(originDir, source)));
 }
 
-export default function plugin(srcPath, genPath, rootPath, host, excludes) {
-  const polymerSrcPath =
-      joinPaths(srcPath, 'third_party/polymer/v3_0/components-chromium/');
-  const resourcesPreprocessedPath =
-      joinPaths(genPath, 'ui/webui/resources/preprocessed/');
-  const rootUrl = 'chrome://' + host + '/';
+/**
+ * @param {string} source Requested resource
+ * @param {string} origin The origin of the request
+ * @param {string} urlPrefix The URL prefix to check |source| for.
+ * @param {string} urlSrcPath The path that corresponds to the URL prefix.
+ * @param {!Array<string>} excludes List of paths that should be excluded from
+ *     bundling.
+ * @return {string} The path to |source|. If |source| does not map to
+ *     |urlSrcPath|, returns an empty string. If |source| maps to a location
+ *     in |urlSrcPath| but is listed in |excludes|, returns the URL
+ *     corresponding to |source|. Otherwise, returns the full path for |source|.
+ */
+function getPathForUrl(source, origin, urlPrefix, urlSrcPath, excludes) {
+  const url = new URL(urlPrefix);
+  const schemeRelativeUrl = '//' + url.host + url.pathname;
+  let pathFromUrl = '';
+  if (source.startsWith(urlPrefix)) {
+    pathFromUrl = source.slice(urlPrefix.length);
+  } else if (source.startsWith(schemeRelativeUrl)) {
+    pathFromUrl = source.slice(schemeRelativeUrl.length);
+  } else if (!!origin && origin.startsWith(urlSrcPath)) {
+    pathFromUrl = combinePaths(relativePath(urlSrcPath, origin), source);
+  }
+  if (!pathFromUrl) {
+    return '';
+  }
+
+  const fullUrl = new URL(pathFromUrl, urlPrefix);
+  if (excludes.includes(fullUrl.href)) {
+    return fullUrl.href;
+  }
+  return joinPaths(urlSrcPath, pathFromUrl);
+}
+
+export default function plugin(rootPath, hostUrl, excludes, externalPaths) {
+  const urlsToPaths = new Map();
+  for (const externalPath of externalPaths) {
+    const [url, path] = externalPath.split('|', 2);
+    urlsToPaths.set(url, path);
+  }
 
   return {
     name: 'webui-path-resolver-plugin',
@@ -53,52 +82,23 @@ export default function plugin(srcPath, genPath, rootPath, host, excludes) {
         origin = normalizeSlashes(origin);
       }
 
-      // Handle polymer resources
-      let pathFromPolymer = '';
-      if (source.startsWith(polymerUrl)) {
-        pathFromPolymer = source.slice(polymerUrl.length);
-      } else if (source.startsWith(schemeRelativePolymerUrl)) {
-        pathFromPolymer = source.slice(schemeRelativePolymerUrl.length);
-      } else if (!!origin && origin.startsWith(polymerSrcPath)) {
-        pathFromPolymer =
-            combinePaths(relativePath(polymerSrcPath, origin), source);
-      }
-      if (pathFromPolymer) {
-        const fullPath = polymerUrl + pathFromPolymer;
-        if (excludes.includes(fullPath)) {
-          return {id: fullPath, external: true};
+      for (const [url, path] of urlsToPaths) {
+        const resultPath = getPathForUrl(source, origin, url, path, excludes);
+        if (resultPath.includes('://')) {
+          return {id: resultPath, external: true};
+        } else if (resultPath) {
+          return resultPath;
         }
-        return joinPaths(polymerSrcPath, pathFromPolymer);
       }
 
-      // Get path from ui/webui/resources
-      let pathFromResources = '';
-      if (source.startsWith(chromeResourcesUrl)) {
-        pathFromResources = source.slice(chromeResourcesUrl.length);
-      } else if (source.startsWith(schemeRelativeResourcesUrl)) {
-        pathFromResources = source.slice(schemeRelativeResourcesUrl.length);
-      } else if (!!origin && origin.startsWith(resourcesPreprocessedPath)) {
-        pathFromResources = combinePaths(
-            relativePath(resourcesPreprocessedPath, origin), source);
-      }
-
-      // Add prefix
-      if (pathFromResources) {
-        const fullPath = chromeResourcesUrl + pathFromResources;
-        if (excludes.includes(fullPath)) {
-          return {id: fullPath, external: true};
-        }
-        const filename = path.basename(source);
-        return joinPaths(resourcesPreprocessedPath, pathFromResources);
-      }
-
-      // Not a resources or polymer path -> should be in the root directory.
+      // Not in the URL path map -> should be in the root directory.
       // Check if it should be excluded from the bundle.
       const fullSourcePath = combinePaths(origin, source);
       if (fullSourcePath.startsWith(rootPath)) {
         const pathFromRoot = relativePath(rootPath, fullSourcePath);
         if (excludes.includes(pathFromRoot)) {
-          return {id: rootUrl + pathFromRoot, external: true};
+          const url = new URL(pathFromRoot, hostUrl);
+          return {id: url.href, external: true};
         }
       }
 

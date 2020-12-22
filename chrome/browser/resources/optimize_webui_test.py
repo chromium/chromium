@@ -25,16 +25,19 @@ class OptimizeWebUiTest(unittest.TestCase):
     for tmp_dir in self._tmp_dirs:
       shutil.rmtree(tmp_dir)
 
+  def _write_file_to_dir(self, file_path, file_contents):
+    file_dir = os.path.dirname(file_path)
+    if not os.path.exists(file_dir):
+      os.makedirs(file_dir)
+    with open(file_path, 'w') as tmp_file:
+      tmp_file.write(file_contents)
+
   def _write_file_to_src_dir(self, file_path, file_contents):
     if not self._tmp_src_dir:
       self._tmp_src_dir = self._create_tmp_dir()
     file_path_normalized = os.path.normpath(os.path.join(self._tmp_src_dir,
                                                          file_path))
-    file_dir = os.path.dirname(file_path_normalized)
-    if not os.path.exists(file_dir):
-      os.makedirs(file_dir)
-    with open(file_path_normalized, 'w') as tmp_file:
-      tmp_file.write(file_contents)
+    self._write_file_to_dir(file_path_normalized, file_contents)
 
   def _create_tmp_dir(self):
     # TODO(dbeam): support cross-drive paths (i.e. d:\ vs c:\).
@@ -81,15 +84,35 @@ import './element_in_dir/element_in_dir.js';
 <script type="module" src="ui.js"></script>
 ''')
 
-  def _write_v3_files_with_resources_to_src_dir(self, gen_dir='gen'):
+  def _write_v3_files_with_custom_path_to_src_dir(self, custom_path):
+    self._write_file_to_dir(os.path.join(
+        custom_path, 'external_dir', 'external_element.js'), '''
+import './sub_dir/external_element_dep.js';
+alert('hello from external_element');
+''')
+
+    self._write_file_to_dir(os.path.join(
+        custom_path, 'external_dir', 'sub_dir', 'external_element_dep.js'),
+        "alert('hello from external_element_dep');")
+
+    self._write_file_to_src_dir('element.js', "alert('yay');")
+    self._write_file_to_src_dir('ui.js', '''
+import './element.js';
+import 'some-fake-scheme://bar/external_dir/external_element.js';
+''')
+    self._write_file_to_src_dir('ui.html', '''
+<script type="module" src="ui.js"></script>
+''')
+
+  def _write_v3_files_with_resources_to_src_dir(self):
     resources_path = os.path.join(
-        _HERE_DIR.replace('\\', '/'), gen_dir, 'ui', 'webui', 'resources',
+        _HERE_DIR.replace('\\', '/'), 'gen', 'ui', 'webui', 'resources',
         'preprocessed', 'js', 'fake_resource.js')
     os.makedirs(os.path.dirname(resources_path))
 
-    self._tmp_dirs.append(gen_dir)
-    with open(resources_path, 'w') as tmp_file:
-      tmp_file.write("alert('hello from shared resource');")
+    self._tmp_dirs.append('gen')
+    self._write_file_to_dir(resources_path,
+                            "alert('hello from shared resource');")
 
     self._write_file_to_src_dir('element.js', '''
 import 'chrome://resources/js/fake_resource.js';
@@ -159,9 +182,12 @@ import './element_in_dir/element_in_dir.js';
 
   def testV3OptimizeWithResources(self):
     self._write_v3_files_with_resources_to_src_dir()
+    resources_path = os.path.join(
+        'gen', 'ui', 'webui', 'resources', 'preprocessed')
     args = [
       '--js_module_in_files', 'ui.js',
       '--js_out_files', 'ui.rollup.js',
+      '--external_paths', 'chrome://resources|%s' % resources_path,
     ]
     self._run_optimize(args)
 
@@ -178,24 +204,6 @@ import './element_in_dir/element_in_dir.js';
         os.path.normpath(
             '../gen/ui/webui/resources/preprocessed/js/fake_resource.js'),
         depfile_d)
-
-  def testV3OptimizeWithResourcesInNonDefaultToolchain(self):
-    self._write_v3_files_with_resources_to_src_dir(gen_dir='ash_clang_64/gen')
-    args = [
-      '--js_module_in_files', 'ui.js',
-      '--js_out_files', 'ui.rollup.js',
-      '--gen_dir_relpath', 'ash_clang_64/gen',
-    ]
-    self._run_optimize(args)
-
-    ui_rollup_js = self._read_out_file('ui.rollup.js')
-    self.assertIn('hello from shared resource', ui_rollup_js)
-
-    depfile_d = self._read_out_file('depfile.d')
-    self.assertIn(
-        os.path.normpath(
-            '../ash_clang_64/gen/ui/webui/resources/preprocessed/js/'
-            'fake_resource.js'), depfile_d)
 
   def testV3MultiBundleOptimize(self):
     self._write_v3_files_to_src_dir()
@@ -244,6 +252,37 @@ import './element_in_dir/element_in_dir.js';
     self.assertEquals(
         os.path.relpath(self._out_folder, _CWD).replace('\\', '/'),
         os.path.relpath(manifest['base_dir'], _CWD).replace('\\', '/'))
+
+  def testV3OptimizeWithCustomPaths(self):
+    custom_dir = os.path.join(self._create_tmp_dir(), 'bar_root')
+    self._write_v3_files_with_custom_path_to_src_dir(custom_dir)
+    resources_path = os.path.join(
+        'gen', 'ui', 'webui', 'resources', 'preprocessed')
+    args = [
+      '--js_module_in_files', 'ui.js',
+      '--js_out_files', 'ui.rollup.js',
+      '--external_paths',
+      'chrome://resources|%s' % resources_path,
+      'some-fake-scheme://bar|%s' % custom_dir,
+    ]
+    self._run_optimize(args)
+
+    ui_rollup_js = self._read_out_file('ui.rollup.js')
+    self.assertIn('yay', ui_rollup_js)
+    self.assertIn('hello from external_element', ui_rollup_js)
+    self.assertIn('hello from external_element_dep', ui_rollup_js)
+
+    depfile_d = self._read_out_file('depfile.d')
+    self.assertIn('element.js', depfile_d)
+    # Relative path from the src of the root module to the external root dir
+    relpath = os.path.relpath(custom_dir, self._tmp_src_dir)
+    self.assertIn(os.path.normpath(
+        os.path.join(relpath, 'external_dir', 'external_element.js')),
+        depfile_d)
+    self.assertIn(os.path.normpath(
+        os.path.join(relpath, 'external_dir', 'sub_dir',
+                     'external_element_dep.js')),
+        depfile_d)
 
 if __name__ == '__main__':
   unittest.main()

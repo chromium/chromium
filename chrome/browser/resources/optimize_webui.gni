@@ -59,8 +59,6 @@ template("optimize_webui") {
       rebase_path(target_gen_dir, root_build_dir),
       "--depfile",
       rebase_path(depfile, root_build_dir),
-      "--gen_dir_relpath",
-      rebase_path(root_gen_dir, root_build_dir),
     ]
 
     args += [ "--js_out_files" ] + invoker.js_out_files
@@ -68,6 +66,21 @@ template("optimize_webui") {
     if (defined(invoker.excludes)) {
       args += [ "--exclude" ] + invoker.excludes
     }
+
+    polymer_path =
+        rebase_path("//third_party/polymer/v3_0/components-chromium/",
+                    root_build_dir)
+    resources_path =
+        rebase_path("$root_gen_dir/ui/webui/resources/preprocessed/",
+                    root_build_dir)
+    external_paths = [
+      "chrome://resources/polymer/v3_0/|$polymer_path",
+      "chrome://resources/|$resources_path",
+    ]
+    if (defined(invoker.external_paths)) {
+      external_paths += invoker.external_paths
+    }
+    args += [ "--external_paths" ] + external_paths
 
     if (defined(invoker.html_in_files)) {
       args += [ "--html_in_files" ] + invoker.html_in_files
