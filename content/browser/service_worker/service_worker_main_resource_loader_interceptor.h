@@ -32,8 +32,10 @@ struct NavigationRequestInfo;
 // Lives on the UI thread.
 //
 // The corresponding legacy class is ServiceWorkerControlleeRequestHandler which
-// lives on the service worker context core thread. Currently, this class just
-// delegates to the legacy class by posting tasks to it on the core thread.
+// used to live on a different thread. Currently, this class just delegates to
+// the legacy class.
+// TODO(crbug.com/1138155): Merge the classes together now that they are on
+// the same thread.
 class CONTENT_EXPORT ServiceWorkerMainResourceLoaderInterceptor final
     : public NavigationLoaderInterceptor {
  public:
@@ -70,13 +72,9 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoaderInterceptor final
   base::Optional<SubresourceLoaderParams> MaybeCreateSubresourceLoaderParams()
       override;
 
-  // These are called back from the core thread helper functions:
   void LoaderCallbackWrapper(
-      base::Optional<SubresourceLoaderParams> subresource_loader_params,
       LoaderCallback loader_callback,
-      SingleRequestURLLoaderFactory::RequestHandler handler_on_core_thread);
-  void FallbackCallbackWrapper(FallbackCallback fallback_callback,
-                               bool reset_subresource_loader_params);
+      SingleRequestURLLoaderFactory::RequestHandler handler);
 
   base::WeakPtr<ServiceWorkerMainResourceLoaderInterceptor> GetWeakPtr();
 
@@ -101,7 +99,7 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoaderInterceptor final
 
   // Given as a callback to NavigationURLLoaderImpl.
   void RequestHandlerWrapper(
-      SingleRequestURLLoaderFactory::RequestHandler handler_on_core_thread,
+      SingleRequestURLLoaderFactory::RequestHandler handler,
       const network::ResourceRequest& resource_request,
       mojo::PendingReceiver<network::mojom::URLLoader> receiver,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client);

@@ -34,8 +34,9 @@ class ServiceWorkerVersion;
 // Handles main resource requests for service worker clients (documents and
 // shared workers).
 //
-// TODO(crbug.com/824858): Merge into ServiceWorkerMainResourceLoaderInterceptor
-// after the service worker core thread changes to the UI thread.
+// TODO(crbug.com/1138155): Merge into
+// ServiceWorkerMainResourceLoaderInterceptor now that they are on the same
+// thread.
 class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
  public:
   // If |skip_service_worker| is true, service workers are bypassed for
