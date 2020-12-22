@@ -33,9 +33,9 @@ LLD does have a few advantages unrelated to speed, however:
   has to be built as a plugin that's loaded by the linker.
 
 - LLD/Mach-O supports "LLVM-y" features that the ELF and COFF LLDs support as
-  well, such as thin archives and response files (ld64 supports this too as of
-  Xcode 12, but we had to wait many years for it, and it's currently
-  [too crashy](https://crbug.com/1147968) to be usable).
+  well, such as thin archives, colored diagnostics, and response files
+  (ld64 supports this too as of Xcode 12, but we had to wait many years for it,
+  and it's currently [too crashy](https://crbug.com/1147968) to be usable).
 
 For that reason, it's possible to opt in to LLD for macOS builds (not for
 iOS builds, and that's intentionally not in scope).
@@ -65,8 +65,7 @@ different platforms.
 - LLD-linked `v8_context_snapshot_generator` crashes when it runs as part of
   the build ([bug](https://llvm.org/PR48511), fixed upstream)
 - verify\_framework\_order fails in LLD builds
-  ([bug](https://llvm.org/PR48536),
-  [in-progress patch](https://reviews.llvm.org/D93609))
+  ([bug](https://llvm.org/PR48536), fixed upstream)
 - LLD-built Chromium.app crashes with `malloc: *** error for object
   0x7fa46941f20a: pointer being freed was not allocated` at starutp (FIXME:
   file bug)
