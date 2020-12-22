@@ -754,6 +754,7 @@ public class TabPersistentStore extends TabPersister {
             return;
         }
         mTabsToSave.addLast(tab);
+        tab.setIsTabSaveEnabled(isCriticalPersistedTabDataEnabled());
     }
 
     public void removeTabFromQueues(Tab tab) {
@@ -771,8 +772,6 @@ public class TabPersistentStore extends TabPersister {
             mSaveTabTask = null;
             saveNextTab();
         }
-        // TODO(crbug.com/1119454) hook delete() into Tab#destroy()
-        CriticalPersistedTabData.from(tab).delete();
         cleanupPersistentData(tab.getId(), tab.isIncognito());
     }
 

@@ -662,6 +662,7 @@ public class TabModelImpl extends TabModelJniBridge {
     private void finalizeTabClosure(Tab tab, boolean notifyTabClosureCommitted) {
         if (mTabContentManager != null) mTabContentManager.removeTabThumbnail(tab.getId());
         mTabSaver.removeTabFromQueues(tab);
+        tab.setIsTabSaveEnabled(false);
 
         if (!isIncognito()) HistoricalTabSaver.createHistoricalTab(tab);
 

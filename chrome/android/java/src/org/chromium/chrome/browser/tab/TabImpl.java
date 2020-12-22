@@ -24,6 +24,7 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.WebContentsFactory;
@@ -186,6 +187,10 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
 
     private final UserDataHost mUserDataHost = new UserDataHost();
 
+    private boolean mIsDestroyed;
+    private ObservableSupplierImpl<Boolean> mIsTabSaveEnabledSupplier =
+            new ObservableSupplierImpl<>();
+
     /**
      * Creates an instance of a {@link TabImpl}.
      *
@@ -201,6 +206,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
      */
     @SuppressLint("HandlerLeak")
     TabImpl(int id, Tab parent, boolean incognito, @Nullable @TabLaunchType Integer launchType) {
+        mIsTabSaveEnabledSupplier.set(false);
         mId = TabIdManager.getInstance().generateValidId(id);
         mIncognito = incognito;
         if (parent == null) {
@@ -742,6 +748,11 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
                 && TabImplJni.get().getHideFutureNavigations(mNativeTabAndroid);
     }
 
+    @Override
+    public void setIsTabSaveEnabled(boolean isTabSaveEnabled) {
+        mIsTabSaveEnabledSupplier.set(isTabSaveEnabled);
+    }
+
     // TabObscuringHandler.Observer
 
     @Override
@@ -835,6 +846,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
             if (CriticalPersistedTabData.from(this).getTimestampMillis() == INVALID_TIMESTAMP) {
                 CriticalPersistedTabData.from(this).setTimestampMillis(System.currentTimeMillis());
             }
+            registerTabSaving();
             String appId;
             Boolean hasThemeColor;
             int themeColor;
@@ -853,6 +865,12 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
             }
             TraceEvent.end("Tab.initialize");
         }
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public void registerTabSaving() {
+        CriticalPersistedTabData.from(this).registerIsTabSaveEnabledSupplier(
+                mIsTabSaveEnabledSupplier);
     }
 
     private boolean useCriticalPersistedTabData() {

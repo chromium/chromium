@@ -24,6 +24,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.JniMocker;
@@ -98,6 +99,9 @@ public class ShoppingPersistedTabDataTest {
     public void testShoppingProto() {
         Tab tab = new MockTab(TAB_ID, IS_INCOGNITO);
         ShoppingPersistedTabData shoppingPersistedTabData = new ShoppingPersistedTabData(tab);
+        ObservableSupplierImpl<Boolean> supplier = new ObservableSupplierImpl<>();
+        supplier.set(true);
+        shoppingPersistedTabData.registerIsTabSaveEnabledSupplier(supplier);
         shoppingPersistedTabData.setPriceMicros(PRICE_MICROS, null);
         byte[] serialized = shoppingPersistedTabData.serialize();
         ShoppingPersistedTabData deserialized = new ShoppingPersistedTabData(tab);

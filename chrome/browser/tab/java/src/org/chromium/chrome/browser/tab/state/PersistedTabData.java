@@ -15,6 +15,7 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.UserData;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.tab.Tab;
@@ -42,6 +43,9 @@ public abstract class PersistedTabData implements UserData {
     private final PersistedTabDataStorage mPersistedTabDataStorage;
     private final String mPersistedTabDataId;
     private long mLastUpdatedMs;
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public ObservableSupplierImpl<Boolean> mIsTabSaveEnabledSupplier;
+    private Callback<Boolean> mTabSaveEnabledToggleCallback;
 
     /**
      * @param tab {@link Tab} {@link PersistedTabData} is being stored for
@@ -236,7 +240,9 @@ public abstract class PersistedTabData implements UserData {
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     protected void save() {
-        mPersistedTabDataStorage.save(mTab.getId(), mPersistedTabDataId, serializeAndLog());
+        if (mIsTabSaveEnabledSupplier != null && mIsTabSaveEnabledSupplier.get()) {
+            mPersistedTabDataStorage.save(mTab.getId(), mPersistedTabDataId, serializeAndLog());
+        }
     }
 
     /**
@@ -284,7 +290,12 @@ public abstract class PersistedTabData implements UserData {
      * in memory. It will not delete the stored data on a file or database.
      */
     @Override
-    public abstract void destroy();
+    public void destroy() {
+        if (mIsTabSaveEnabledSupplier != null) {
+            mIsTabSaveEnabledSupplier.removeObserver(mTabSaveEnabledToggleCallback);
+            mTabSaveEnabledToggleCallback = null;
+        }
+    }
 
     /**
      * @return unique tag for logging in Uma
@@ -314,5 +325,23 @@ public abstract class PersistedTabData implements UserData {
      */
     protected long getLastUpdatedMs() {
         return mLastUpdatedMs;
+    }
+
+    /**
+     * @param isTabSaveEnabledSupplier {@link ObservableSupplierImpl} which provides
+     * access to the flag indicating if the {@link Tab} metadata will be saved and
+     * forward changes to the flag's value.
+     */
+    public void registerIsTabSaveEnabledSupplier(
+            ObservableSupplierImpl<Boolean> isTabSaveEnabledSupplier) {
+        mIsTabSaveEnabledSupplier = isTabSaveEnabledSupplier;
+        mTabSaveEnabledToggleCallback = (isTabSaveEnabled) -> {
+            if (isTabSaveEnabled) {
+                save();
+            } else {
+                delete();
+            }
+        };
+        mIsTabSaveEnabledSupplier.addObserver(mTabSaveEnabledToggleCallback);
     }
 }
