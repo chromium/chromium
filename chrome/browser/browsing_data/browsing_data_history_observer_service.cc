@@ -55,9 +55,9 @@ void DeleteTemplateUrlsForTimeRange(TemplateURLService* keywords_model,
                                     base::Time delete_begin,
                                     base::Time delete_end) {
   if (!keywords_model->loaded()) {
-    keywords_model->RegisterOnLoadedCallback(base::AdaptCallbackForRepeating(
+    keywords_model->RegisterOnLoadedCallback(
         base::BindOnce(&DeleteTemplateUrlsForTimeRange, keywords_model,
-                       delete_begin, delete_end)));
+                       delete_begin, delete_end));
     keywords_model->Load();
     return;
   }
@@ -68,9 +68,9 @@ void DeleteTemplateUrlsForTimeRange(TemplateURLService* keywords_model,
 void DeleteTemplateUrlsForDeletedOrigins(TemplateURLService* keywords_model,
                                          base::flat_set<GURL> deleted_origins) {
   if (!keywords_model->loaded()) {
-    keywords_model->RegisterOnLoadedCallback(base::AdaptCallbackForRepeating(
+    keywords_model->RegisterOnLoadedCallback(
         base::BindOnce(&DeleteTemplateUrlsForDeletedOrigins, keywords_model,
-                       std::move(deleted_origins))));
+                       std::move(deleted_origins)));
     keywords_model->Load();
     return;
   }

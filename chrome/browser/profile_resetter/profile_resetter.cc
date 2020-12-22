@@ -192,8 +192,8 @@ void ProfileResetter::ResetDefaultSearchEngine() {
   } else {
     template_url_service_subscription_ =
         template_url_service_->RegisterOnLoadedCallback(
-            base::BindRepeating(&ProfileResetter::OnTemplateURLServiceLoaded,
-                                weak_ptr_factory_.GetWeakPtr()));
+            base::BindOnce(&ProfileResetter::OnTemplateURLServiceLoaded,
+                           weak_ptr_factory_.GetWeakPtr()));
     template_url_service_->Load();
   }
 }

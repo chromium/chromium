@@ -339,7 +339,7 @@ class TemplateURLService : public WebDataServiceConsumer,
   //
   // If the service has already loaded, this function does nothing.
   base::CallbackListSubscription RegisterOnLoadedCallback(
-      const base::RepeatingClosure& callback);
+      base::OnceClosure callback);
 
 #if defined(UNIT_TEST)
   void set_loaded(bool value) { loaded_ = value; }
@@ -779,7 +779,7 @@ class TemplateURLService : public WebDataServiceConsumer,
   DefaultSearchChangeOrigin dsp_change_origin_ = DSP_CHANGE_OTHER;
 
   // Stores a list of callbacks to be run after TemplateURLService has loaded.
-  base::CallbackList<void(void)> on_loaded_callbacks_;
+  base::OnceClosureList on_loaded_callbacks_;
 
   // Similar to |on_loaded_callbacks_| but used for WaitUntilReadyToSync().
   base::OnceClosure on_loaded_callback_for_sync_;

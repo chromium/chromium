@@ -33,8 +33,9 @@ class TemplateURLServiceObserver {
   TemplateURLServiceObserver(TemplateURLService* service, base::RunLoop* loop)
       : runner_(loop) {
     DCHECK(loop);
-    template_url_subscription_ = service->RegisterOnLoadedCallback(base::Bind(
-        &TemplateURLServiceObserver::StopLoop, base::Unretained(this)));
+    template_url_subscription_ =
+        service->RegisterOnLoadedCallback(base::BindOnce(
+            &TemplateURLServiceObserver::StopLoop, base::Unretained(this)));
     service->Load();
   }
   ~TemplateURLServiceObserver() {}

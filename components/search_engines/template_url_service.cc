@@ -845,9 +845,9 @@ void TemplateURLService::Load() {
 }
 
 base::CallbackListSubscription TemplateURLService::RegisterOnLoadedCallback(
-    const base::RepeatingClosure& callback) {
+    base::OnceClosure callback) {
   return loaded_ ? base::CallbackListSubscription()
-                 : on_loaded_callbacks_.Add(callback);
+                 : on_loaded_callbacks_.Add(std::move(callback));
 }
 
 void TemplateURLService::OnWebDataServiceRequestDone(

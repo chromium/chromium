@@ -117,8 +117,8 @@ TemplateURLFetcher::RequestDelegate::RequestDelegate(
   if (!model->loaded()) {
     // Start the model load and set-up waiting for it.
     template_url_subscription_ = model->RegisterOnLoadedCallback(
-        base::Bind(&TemplateURLFetcher::RequestDelegate::OnLoaded,
-                   base::Unretained(this)));
+        base::BindOnce(&TemplateURLFetcher::RequestDelegate::OnLoaded,
+                       base::Unretained(this)));
     model->Load();
   }
 

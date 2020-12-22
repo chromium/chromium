@@ -189,8 +189,9 @@ OmniboxAPI::OmniboxAPI(content::BrowserContext* context)
       url_service_(TemplateURLServiceFactory::GetForProfile(profile_)) {
   extension_registry_observer_.Add(ExtensionRegistry::Get(profile_));
   if (url_service_) {
-    template_url_subscription_ = url_service_->RegisterOnLoadedCallback(
-        base::Bind(&OmniboxAPI::OnTemplateURLsLoaded, base::Unretained(this)));
+    template_url_subscription_ =
+        url_service_->RegisterOnLoadedCallback(base::BindOnce(
+            &OmniboxAPI::OnTemplateURLsLoaded, base::Unretained(this)));
   }
 
   // Use monochrome icons for Omnibox icons.

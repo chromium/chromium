@@ -36,8 +36,8 @@ TemplateUrlServiceAndroid::TemplateUrlServiceAndroid(
     TemplateURLService* template_url_service)
     : template_url_service_(template_url_service) {
   template_url_subscription_ = template_url_service_->RegisterOnLoadedCallback(
-      base::Bind(&TemplateUrlServiceAndroid::OnTemplateURLServiceLoaded,
-                 base::Unretained(this)));
+      base::BindOnce(&TemplateUrlServiceAndroid::OnTemplateURLServiceLoaded,
+                     base::Unretained(this)));
   template_url_service_->AddObserver(this);
 }
 
