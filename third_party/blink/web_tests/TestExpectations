@@ -376,6 +376,8 @@ crbug.com/997202 external/wpt/css/css-images/image-orientation/image-orientation
 crbug.com/997202 external/wpt/css/css-images/image-orientation/image-orientation-background-properties-border-radius.html [ Failure ]
 crbug.com/997202 external/wpt/density-size-correction/density-corrected-image-svg-aspect-ratio.html [ Failure ]
 
+crbug.com/1159433 external/wpt/css/css-images/image-orientation/image-orientation-exif-png.html [ Failure ]
+
 # Ref results are wrong on the background and list case, not sure on border result
 crbug.com/1076121 external/wpt/css/css-images/image-orientation/image-orientation-border-image.html [ Failure ]
 
@@ -1263,6 +1265,11 @@ crbug.com/1068610 external/wpt/css/css-color/predefined-004.html [ Failure ]
 crbug.com/1068610 external/wpt/css/css-color/predefined-009.html [ Failure ]
 crbug.com/1068610 external/wpt/css/css-color/predefined-010.html [ Failure ]
 crbug.com/1068610 external/wpt/css/css-color/predefined-003.html [ Failure ]
+
+# @supports
+crbug.com/1158554 external/wpt/css/css-conditional/css-supports-040.xht [ Failure ]
+crbug.com/1158554 external/wpt/css/css-conditional/css-supports-041.xht [ Failure ]
+crbug.com/1158554 external/wpt/css/css-conditional/css-supports-042.xht [ Failure ]
 
 # ====== Style team owned tests to here ======
 
@@ -2472,10 +2479,6 @@ crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-20
 # ====== New tests from wpt-importer added here ======
 crbug.com/626703 external/wpt/html/interaction/focus/document-level-focus-apis/document-has-system-focus.html [ Timeout ]
 crbug.com/626703 [ Mac11.0 ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-set-keyframes.https.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-images/image-orientation/image-orientation-exif-png.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-conditional/css-supports-040.xht [ Failure ]
-crbug.com/626703 external/wpt/css/css-conditional/css-supports-042.xht [ Failure ]
-crbug.com/626703 external/wpt/css/css-conditional/css-supports-041.xht [ Failure ]
 crbug.com/626703 external/wpt/websockets/cookies/004.html [ Timeout ]
 crbug.com/626703 external/wpt/websockets/cookies/004.html?wss [ Timeout ]
 crbug.com/626703 external/wpt/infrastructure/server/http2-websocket.sub.h2.any.html [ Timeout ]
