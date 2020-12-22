@@ -623,6 +623,8 @@ cr.define('settings', function() {
           return 'os-settings:chrome';
         case Icon.kClock:
           return 'os-settings:access-time';
+        case Icon.kDeveloperTags:
+          return 'os-settings:developer-tags';
         case Icon.kDisplay:
           return 'os-settings:display';
         case Icon.kDrive:

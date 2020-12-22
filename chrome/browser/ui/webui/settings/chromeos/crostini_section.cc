@@ -37,7 +37,7 @@ const std::vector<SearchConcept>& GetCrostiniOptedInSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_CROSTINI,
        mojom::kCrostiniDetailsSubpagePath,
-       mojom::SearchResultIcon::kPenguin,
+       mojom::SearchResultIcon::kDeveloperTags,
        mojom::SearchResultDefaultRank::kHigh,
        mojom::SearchResultType::kSubpage,
        {.subpage = mojom::Subpage::kCrostiniDetails},
@@ -53,7 +53,7 @@ const std::vector<SearchConcept>& GetCrostiniOptedInSearchConcepts() {
         SearchConcept::kAltTagEnd}},
       {IDS_OS_SETTINGS_TAG_CROSTINI_REMOVE,
        mojom::kCrostiniDetailsSubpagePath,
-       mojom::SearchResultIcon::kPenguin,
+       mojom::SearchResultIcon::kDeveloperTags,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kUninstallCrostini},
@@ -90,7 +90,7 @@ const std::vector<SearchConcept>& GetCrostiniOptedOutSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_CROSTINI,
        mojom::kCrostiniSectionPath,
-       mojom::SearchResultIcon::kPenguin,
+       mojom::SearchResultIcon::kDeveloperTags,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSection,
        {.section = mojom::Section::kCrostini},
@@ -98,7 +98,7 @@ const std::vector<SearchConcept>& GetCrostiniOptedOutSearchConcepts() {
         SearchConcept::kAltTagEnd}},
       {IDS_OS_SETTINGS_TAG_CROSTINI_SETUP,
        mojom::kCrostiniSectionPath,
-       mojom::SearchResultIcon::kPenguin,
+       mojom::SearchResultIcon::kDeveloperTags,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kSetUpCrostini},
@@ -125,7 +125,7 @@ const std::vector<SearchConcept>& GetCrostiniAdbSideloadingSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_CROSTINI_ANDROID_APPS_ADB,
        mojom::kCrostiniDevelopAndroidAppsSubpagePath,
-       mojom::SearchResultIcon::kPenguin,
+       mojom::SearchResultIcon::kDeveloperTags,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kCrostiniAdbDebugging},
@@ -133,7 +133,7 @@ const std::vector<SearchConcept>& GetCrostiniAdbSideloadingSearchConcepts() {
         SearchConcept::kAltTagEnd}},
       {IDS_OS_SETTINGS_TAG_CROSTINI_ANDROID_APPS,
        mojom::kCrostiniDevelopAndroidAppsSubpagePath,
-       mojom::SearchResultIcon::kPenguin,
+       mojom::SearchResultIcon::kDeveloperTags,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSubpage,
        {.subpage = mojom::Subpage::kCrostiniDevelopAndroidApps},
@@ -448,7 +448,7 @@ mojom::Section CrostiniSection::GetSection() const {
 }
 
 mojom::SearchResultIcon CrostiniSection::GetSectionIcon() const {
-  return mojom::SearchResultIcon::kPenguin;
+  return mojom::SearchResultIcon::kDeveloperTags;
 }
 
 std::string CrostiniSection::GetSectionPath() const {
@@ -467,7 +467,7 @@ void CrostiniSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   // Crostini details.
   generator->RegisterTopLevelSubpage(IDS_SETTINGS_CROSTINI_LABEL,
                                      mojom::Subpage::kCrostiniDetails,
-                                     mojom::SearchResultIcon::kPenguin,
+                                     mojom::SearchResultIcon::kDeveloperTags,
                                      mojom::SearchResultDefaultRank::kMedium,
                                      mojom::kCrostiniDetailsSubpagePath);
   static constexpr mojom::Setting kCrostiniDetailsSettings[] = {
@@ -513,7 +513,7 @@ void CrostiniSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   generator->RegisterNestedSubpage(
       IDS_SETTINGS_CROSTINI_ARC_ADB_TITLE,
       mojom::Subpage::kCrostiniDevelopAndroidApps,
-      mojom::Subpage::kCrostiniDetails, mojom::SearchResultIcon::kPenguin,
+      mojom::Subpage::kCrostiniDetails, mojom::SearchResultIcon::kDeveloperTags,
       mojom::SearchResultDefaultRank::kMedium,
       mojom::kCrostiniDevelopAndroidAppsSubpagePath);
   generator->RegisterNestedSetting(mojom::Setting::kCrostiniAdbDebugging,
