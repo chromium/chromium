@@ -343,6 +343,10 @@ executable("decode_test") {
   sources = [
     "test/decode.cc",
     "test/macros.h",
+    "test/scoped_va_config.cc",
+    "test/scoped_va_config.h",
+    "test/scoped_va_context.cc",
+    "test/scoped_va_context.h",
     "test/shared_va_surface.cc",
     "test/shared_va_surface.h",
     "test/vaapi_device.cc",

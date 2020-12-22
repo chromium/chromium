@@ -25,27 +25,32 @@ using media::vaapi_test::Vp9Decoder;
 using media_gpu_vaapi::InitializeStubs;
 using media_gpu_vaapi::kModuleVa;
 using media_gpu_vaapi::kModuleVa_drm;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+using media_gpu_vaapi::kModuleVa_prot;
+#endif
 using media_gpu_vaapi::StubPathMap;
+
+#define fourcc(a, b, c, d)                                             \
+  ((static_cast<uint32_t>(a) << 0) | (static_cast<uint32_t>(b) << 8) | \
+   (static_cast<uint32_t>(c) << 16) | (static_cast<uint32_t>(d) << 24))
 
 namespace {
 
 constexpr char kUsageMsg[] =
     "usage: decode_test\n"
     "           --video=<video path>\n"
-    "           --profile=<profile of input video>\n"
     "           [--frames=<number of frames to decode>]\n"
     "           [--out-prefix=<path prefix of decoded frame PNGs>]\n"
-    "           [--v=<log verbosity>]"
-    "           [--help]";
+    "           [--v=<log verbosity>]\n"
+    "           [--help]\n";
 
 constexpr char kHelpMsg[] =
     "This binary decodes the IVF video in <video> path with specified video\n"
     "<profile> via thinly wrapped libva calls.\n"
+    "Supported codecs: VP9 (profiles 0, 2)\n"
     "\nThe following arguments are supported:\n"
     "    --video=<path>\n"
     "        Required. Path to IVF-formatted video to decode.\n"
-    "    --profile=<VP9Profile0|VP9Profile2>\n"
-    "        Required (case insensitive). Profile of given video.\n"
     "    --frames=<int>\n"
     "        Optional. Number of frames to decode, defaults to all.\n"
     "        Override with a positive integer to decode at most that many.\n"
@@ -58,28 +63,25 @@ constexpr char kHelpMsg[] =
     "    --help\n"
     "        Display this help message and exit.\n";
 
-// Converts the provided string to a VAProfile, returning VAProfileNone if not
-// supported by the test binary.
-VAProfile GetProfile(const std::string& profile_str) {
-  if (base::EqualsCaseInsensitiveASCII(profile_str, "vp9profile0"))
-    return VAProfileVP9Profile0;
-  if (base::EqualsCaseInsensitiveASCII(profile_str, "vp9profile2"))
-    return VAProfileVP9Profile2;
-  return VAProfileNone;
+// Creates the appropriate decoder for the given |fourcc|.
+std::unique_ptr<VideoDecoder> CreateDecoder(
+    uint32_t fourcc,
+    std::unique_ptr<media::IvfParser> ivf_parser,
+    const VaapiDevice& va_device) {
+  if (fourcc == fourcc('V', 'P', '9', '0'))
+    return std::make_unique<Vp9Decoder>(std::move(ivf_parser), va_device);
+
+  return nullptr;
 }
 
-// Gets the appropriate decoder for the given |va_profile|.
-std::unique_ptr<VideoDecoder> GetDecoder(
-    VAProfile va_profile,
-    std::unique_ptr<media::IvfParser> ivf_parser,
-    const VaapiDevice& va) {
-  switch (va_profile) {
-    case VAProfileVP9Profile0:
-    case VAProfileVP9Profile2:
-      return std::make_unique<Vp9Decoder>(std::move(ivf_parser), va);
-    default:
-      return nullptr;
-  }
+// Returns string representation of |fourcc|.
+std::string FourccStr(uint32_t fourcc) {
+  std::stringstream s;
+  s << static_cast<char>(fourcc & 0xFF)
+    << static_cast<char>((fourcc >> 8) & 0xFF)
+    << static_cast<char>((fourcc >> 16) & 0xFF)
+    << static_cast<char>((fourcc >> 24) & 0xFF);
+  return s.str();
 }
 
 }  // namespace
@@ -102,17 +104,6 @@ int main(int argc, char** argv) {
   const base::FilePath video_path = cmd->GetSwitchValuePath("video");
   if (video_path.empty()) {
     std::cout << "No input video path provided to decode.\n" << kUsageMsg;
-    return EXIT_FAILURE;
-  }
-
-  const std::string profile_str = cmd->GetSwitchValueASCII("profile");
-  if (profile_str.empty()) {
-    std::cout << "No profile provided with which to decode.\n" << kUsageMsg;
-    return EXIT_FAILURE;
-  }
-  const VAProfile profile = GetProfile(profile_str);
-  if (profile == VAProfileNone) {
-    std::cout << "Profile " << profile_str << " not supported.\n" << kUsageMsg;
     return EXIT_FAILURE;
   }
 
@@ -141,28 +132,34 @@ int main(int argc, char** argv) {
     LOG(ERROR) << "Couldn't initialize IVF parser for file: " << video_path;
     return EXIT_FAILURE;
   }
-  const gfx::Size size(file_header.width, file_header.height);
-  VLOG(1) << "video size: " << size.ToString();
 
   // Initialize VA stubs.
   StubPathMap paths;
   const std::string va_suffix(base::NumberToString(VA_MAJOR_VERSION + 1));
   paths[kModuleVa].push_back(std::string("libva.so.") + va_suffix);
   paths[kModuleVa_drm].push_back(std::string("libva-drm.so.") + va_suffix);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  paths[kModuleVa_prot].push_back(std::string("libva.so.") + va_suffix);
+#endif
   if (!InitializeStubs(paths)) {
     LOG(ERROR) << "Failed to initialize VA stubs";
     return EXIT_FAILURE;
   }
 
-  // Initialize VA with profile as provided in cmdline args.
-  VLOG(1) << "Creating VaapiDevice with profile " << profile;
-  const VaapiDevice va(profile);
-
+  const VaapiDevice va_device;
   std::unique_ptr<VideoDecoder> dec =
-      GetDecoder(profile, std::move(ivf_parser), va);
-  CHECK(dec);
+      CreateDecoder(file_header.fourcc, std::move(ivf_parser), va_device);
+  if (!dec) {
+    LOG(ERROR) << "Codec " << FourccStr(file_header.fourcc)
+               << " not supported.\n"
+               << kUsageMsg;
+    return EXIT_FAILURE;
+  }
+  VLOG(1) << "Created decoder for codec " << FourccStr(file_header.fourcc);
+
   VideoDecoder::Result res;
   int i = 0;
+  bool errored = false;
   while (true) {
     LOG(INFO) << "Frame " << i << "...";
     res = dec->DecodeNextFrame();
@@ -174,6 +171,7 @@ int main(int argc, char** argv) {
 
     if (res == VideoDecoder::kFailed) {
       LOG(ERROR) << "Failed to decode.";
+      errored = true;
       continue;
     }
 
@@ -188,5 +186,7 @@ int main(int argc, char** argv) {
 
   LOG(INFO) << "Done reading.";
 
+  if (errored)
+    return EXIT_FAILURE;
   return EXIT_SUCCESS;
 }

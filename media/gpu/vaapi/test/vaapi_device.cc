@@ -14,37 +14,7 @@
 namespace media {
 namespace vaapi_test {
 
-// Returns the preferred VA_RT_FORMAT for the given |profile|.
-unsigned int GetFormatForProfile(VAProfile profile) {
-  if (profile == VAProfileVP9Profile2)
-    return VA_RT_FORMAT_YUV420_10BPP;
-  return VA_RT_FORMAT_YUV420;
-}
-
-VaapiDevice::VaapiDevice(VAProfile profile)
-    : display_(nullptr),
-      config_id_(VA_INVALID_ID),
-      profile_(profile),
-      internal_va_format_(GetFormatForProfile(profile_)) {
-  Initialize();
-}
-
-VaapiDevice::~VaapiDevice() {
-  VLOG(1) << "Tearing down...";
-  VAStatus res;
-  if (config_id_ != VA_INVALID_ID) {
-    res = vaDestroyConfig(display_, config_id_);
-    VA_LOG_ASSERT(res, "vaDestroyConfig");
-  }
-  if (display_ != nullptr) {
-    res = vaTerminate(display_);
-    VA_LOG_ASSERT(res, "vaTerminate");
-  }
-
-  VLOG(1) << "Teardown done.";
-}
-
-void VaapiDevice::Initialize() {
+VaapiDevice::VaapiDevice() : display_(nullptr) {
   constexpr char kDriRenderNode0Path[] = "/dev/dri/renderD128";
   display_file_ = base::File(
       base::FilePath::FromUTF8Unsafe(kDriRenderNode0Path),
@@ -56,21 +26,17 @@ void VaapiDevice::Initialize() {
   LOG_ASSERT(display_ != nullptr) << "vaGetDisplayDRM failed";
 
   int major, minor;
-  VAStatus res = vaInitialize(display_, &major, &minor);
+  const VAStatus res = vaInitialize(display_, &major, &minor);
   VA_LOG_ASSERT(res, "vaInitialize");
   VLOG(1) << "VA major version: " << major << ", minor version: " << minor;
+}
 
-  // Create config.
-  // We rely on vaCreateConfig to specify the error mode if decode is not
-  // supported for the given profile.
-  // TODO(jchinlee): Refactor configuration management to be owned by decoders
-  // (this will also allow decoders to adjust the VAConfig as needed, e.g. if
-  // the profile changes part-way).
-  std::vector<VAConfigAttrib> attribs;
-  attribs.push_back({VAConfigAttribRTFormat, internal_va_format_});
-  res = vaCreateConfig(display_, profile_, VAEntrypointVLD, attribs.data(),
-                       attribs.size(), &config_id_);
-  VA_LOG_ASSERT(res, "vaCreateConfig");
+VaapiDevice::~VaapiDevice() {
+  VLOG(1) << "Tearing down...";
+  const VAStatus res = vaTerminate(display_);
+  VA_LOG_ASSERT(res, "vaTerminate");
+
+  VLOG(1) << "Teardown done.";
 }
 
 }  // namespace vaapi_test

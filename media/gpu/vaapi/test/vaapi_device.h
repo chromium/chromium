@@ -10,35 +10,23 @@
 namespace media {
 namespace vaapi_test {
 
-// This class holds shared VA handles used by the various test decoders.
-// The decoders themselves may still make direct libva calls.
+// This class manages the lifetime of a VADisplay in a RAII fashion from
+// vaGetDisplayDRM() to vaTerminate(). Decoders may use the display() method to
+// access the VADisplay and issue direct libva calls.
 class VaapiDevice {
  public:
-  // Initializes a VaapiDevice for |profile|. Success is ASSERTed.
-  explicit VaapiDevice(VAProfile profile);
+  // Initializes the VADisplay. Success is ASSERTed.
+  VaapiDevice();
 
   VaapiDevice(const VaapiDevice&) = delete;
   VaapiDevice& operator=(const VaapiDevice&) = delete;
   ~VaapiDevice();
 
   VADisplay display() const { return display_; }
-  VAConfigID config_id() const { return config_id_; }
-  VAProfile profile() const { return profile_; }
-  unsigned int internal_va_format() const { return internal_va_format_; }
 
  private:
-  // Initializes VA handles and display descriptors, checking that HW decode
-  // with the expected profile is supported. Success is ASSERTed.
-  void Initialize();
-
   base::File display_file_;
-
-  // VA info and handles
-  // Populated on Initialize().
   VADisplay display_;
-  VAConfigID config_id_;
-  const VAProfile profile_;
-  const unsigned int internal_va_format_;
 };
 
 }  // namespace vaapi_test
