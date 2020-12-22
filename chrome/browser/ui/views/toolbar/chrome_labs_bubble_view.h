@@ -18,16 +18,14 @@
 // TODO(elainechien): Formatting for items in child views.
 class ChromeLabsBubbleView : public views::BubbleDialogDelegateView {
  public:
-  static void Show(views::View* anchor_view);
+  static void Show(views::View* anchor_view,
+                   std::unique_ptr<ChromeLabsBubbleViewModel> model);
 
   static bool IsShowing();
 
   static void Hide();
 
   ~ChromeLabsBubbleView() override;
-
-  // This function is exposed for testing.
-  static bool IsFeatureSupportedOnPlatform(const flags_ui::FeatureEntry* entry);
 
   // Getter functions for testing.
   static ChromeLabsBubbleView* GetChromeLabsBubbleViewForTesting();
@@ -46,6 +44,8 @@ class ChromeLabsBubbleView : public views::BubbleDialogDelegateView {
       const flags_ui::FeatureEntry* entry);
 
   int GetIndexOfEnabledLabState(const flags_ui::FeatureEntry* entry);
+
+  bool IsFeatureSupportedOnPlatform(const flags_ui::FeatureEntry* entry);
 
   void ShowRelaunchPrompt();
 

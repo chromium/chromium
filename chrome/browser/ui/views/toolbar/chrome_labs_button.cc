@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/toolbar/chrome_labs_button.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view.h"
+#include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view_model.h"
 #include "ui/views/controls/button/button_controller.h"
 
 ChromeLabsButton::ChromeLabsButton()
@@ -27,5 +28,6 @@ void ChromeLabsButton::ButtonPressed() {
     ChromeLabsBubbleView::Hide();
     return;
   }
-  ChromeLabsBubbleView::Show(this);
+  ChromeLabsBubbleView::Show(this,
+                             std::make_unique<ChromeLabsBubbleViewModel>());
 }

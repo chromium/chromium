@@ -106,12 +106,30 @@ class ChromeLabsFooter : public views::View {
 }  // namespace
 
 // static
-void ChromeLabsBubbleView::Show(views::View* anchor_view) {
-  g_chrome_labs_bubble = new ChromeLabsBubbleView(
-      anchor_view, std::make_unique<ChromeLabsBubbleViewModel>());
+void ChromeLabsBubbleView::Show(
+    views::View* anchor_view,
+    std::unique_ptr<ChromeLabsBubbleViewModel> model) {
+  g_chrome_labs_bubble =
+      new ChromeLabsBubbleView(anchor_view, std::move(model));
   views::Widget* const widget =
       BubbleDialogDelegateView::CreateBubble(g_chrome_labs_bubble);
   widget->Show();
+}
+
+// static
+bool ChromeLabsBubbleView::IsShowing() {
+  return g_chrome_labs_bubble != nullptr &&
+         g_chrome_labs_bubble->GetWidget() != nullptr;
+}
+
+// static
+void ChromeLabsBubbleView::Hide() {
+  if (IsShowing())
+    g_chrome_labs_bubble->GetWidget()->Close();
+}
+
+ChromeLabsBubbleView::~ChromeLabsBubbleView() {
+  g_chrome_labs_bubble = nullptr;
 }
 
 ChromeLabsBubbleView::ChromeLabsBubbleView(
@@ -206,34 +224,17 @@ int ChromeLabsBubbleView::GetIndexOfEnabledLabState(
   return 0;
 }
 
-void ChromeLabsBubbleView::ShowRelaunchPrompt() {
-  restart_prompt_->SetVisible(about_flags::IsRestartNeededToCommitChanges());
-  DCHECK_EQ(g_chrome_labs_bubble, this);
-  g_chrome_labs_bubble->SizeToContents();
-}
-
 // TODO(elainechien): ChromeOS specific logic for owner access only flags.
-// static
 bool ChromeLabsBubbleView::IsFeatureSupportedOnPlatform(
     const flags_ui::FeatureEntry* entry) {
   return (entry && (entry->supported_platforms &
                     flags_ui::FlagsState::GetCurrentPlatform()) != 0);
 }
 
-ChromeLabsBubbleView::~ChromeLabsBubbleView() {
-  g_chrome_labs_bubble = nullptr;
-}
-
-// static
-bool ChromeLabsBubbleView::IsShowing() {
-  return g_chrome_labs_bubble != nullptr &&
-         g_chrome_labs_bubble->GetWidget() != nullptr;
-}
-
-// static
-void ChromeLabsBubbleView::Hide() {
-  if (IsShowing())
-    g_chrome_labs_bubble->GetWidget()->Close();
+void ChromeLabsBubbleView::ShowRelaunchPrompt() {
+  restart_prompt_->SetVisible(about_flags::IsRestartNeededToCommitChanges());
+  DCHECK_EQ(g_chrome_labs_bubble, this);
+  g_chrome_labs_bubble->SizeToContents();
 }
 
 // static

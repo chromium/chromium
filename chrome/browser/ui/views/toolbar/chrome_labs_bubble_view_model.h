@@ -31,6 +31,8 @@ class ChromeLabsBubbleViewModel {
 
   const std::vector<LabInfo>& GetLabInfo() const;
 
+  void SetLabInfoForTesting(const std::vector<LabInfo>& test_feature_info);
+
  private:
   void SetUpLabs();
 

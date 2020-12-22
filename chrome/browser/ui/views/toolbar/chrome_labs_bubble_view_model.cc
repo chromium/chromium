@@ -10,6 +10,8 @@ ChromeLabsBubbleViewModel::ChromeLabsBubbleViewModel() {
   SetUpLabs();
 }
 
+ChromeLabsBubbleViewModel::~ChromeLabsBubbleViewModel() = default;
+
 const std::vector<LabInfo>& ChromeLabsBubbleViewModel::GetLabInfo() const {
   return lab_info_;
 }
@@ -35,4 +37,7 @@ void ChromeLabsBubbleViewModel::SetUpLabs() {
                                  "search over currently open tabs.")));
 }
 
-ChromeLabsBubbleViewModel::~ChromeLabsBubbleViewModel() = default;
+void ChromeLabsBubbleViewModel::SetLabInfoForTesting(
+    const std::vector<LabInfo>& test_feature_info) {
+  lab_info_ = test_feature_info;
+}
