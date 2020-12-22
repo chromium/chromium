@@ -57,6 +57,16 @@ class OmniboxFocusInteractiveTest : public ExtensionBrowserTest {
     return extension;
   }
 
+  void OpenNewTab() {
+    chrome::NewTab(browser());
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+
+    // Wait until chrome://newtab navigation finished.
+    content::TestNavigationObserver nav_observer(web_contents);
+    nav_observer.Wait();
+  }
+
  private:
   TestExtensionDir test_dir_;
 };
@@ -71,9 +81,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest,
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Open the new tab, focus should be on the location bar.
-  chrome::NewTab(browser());
-  ASSERT_NO_FATAL_FAILURE(EXPECT_TRUE(content::WaitForLoadStop(
-      browser()->tab_strip_model()->GetActiveWebContents())));
+  OpenNewTab();
   EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
   EXPECT_FALSE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_TAB_CONTAINER));
 
@@ -90,10 +98,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest,
 
   // Open the new tab, because of the NTP extension behavior, the focus should
   // move to the tab contents.
-  chrome::NewTab(browser());
+  OpenNewTab();
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_NO_FATAL_FAILURE(EXPECT_TRUE(content::WaitForLoadStop(web_contents)));
   EXPECT_EQ(final_ntp_url, web_contents->GetLastCommittedURL());
   EXPECT_FALSE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
   EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_TAB_CONTAINER));
@@ -128,9 +135,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest,
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Open the new tab, focus should be on the location bar.
-  chrome::NewTab(browser());
-  ASSERT_NO_FATAL_FAILURE(EXPECT_TRUE(content::WaitForLoadStop(
-      browser()->tab_strip_model()->GetActiveWebContents())));
+  OpenNewTab();
   EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
   EXPECT_FALSE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_TAB_CONTAINER));
 
@@ -141,13 +146,12 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest,
   ASSERT_TRUE(extension);
 
   // Open the new tab.
-  chrome::NewTab(browser());
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_NO_FATAL_FAILURE(EXPECT_TRUE(content::WaitForLoadStop(web_contents)));
+  OpenNewTab();
 
   // Verify that ext_ntp.html is loaded in place of the NTP and that the omnibox
   // is focused.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
   std::string document_body;
   ASSERT_TRUE(content::ExecuteScriptAndExtractString(
       web_contents, "domAutomationController.send(document.body.innerText)",
@@ -189,9 +193,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest,
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Open the new tab, focus should be on the location bar.
-  chrome::NewTab(browser());
-  ASSERT_NO_FATAL_FAILURE(EXPECT_TRUE(content::WaitForLoadStop(
-      browser()->tab_strip_model()->GetActiveWebContents())));
+  OpenNewTab();
   EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
   EXPECT_FALSE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_TAB_CONTAINER));
 
@@ -208,10 +210,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest,
 
   // Open the new tab, because of the NTP extension behavior, the focus should
   // move to the tab contents.
-  chrome::NewTab(browser());
+  OpenNewTab();
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_NO_FATAL_FAILURE(EXPECT_TRUE(content::WaitForLoadStop(web_contents)));
   EXPECT_EQ(final_ntp_url, web_contents->GetLastCommittedURL());
   EXPECT_FALSE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
   EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_TAB_CONTAINER));
@@ -227,9 +228,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest,
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Open the new tab, focus should be on the location bar.
-  chrome::NewTab(browser());
-  ASSERT_NO_FATAL_FAILURE(EXPECT_TRUE(content::WaitForLoadStop(
-      browser()->tab_strip_model()->GetActiveWebContents())));
+  OpenNewTab();
   EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
   EXPECT_FALSE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_TAB_CONTAINER));
 
@@ -240,13 +239,12 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest,
   ASSERT_TRUE(extension);
 
   // Open the new tab.
-  chrome::NewTab(browser());
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_NO_FATAL_FAILURE(EXPECT_TRUE(content::WaitForLoadStop(web_contents)));
+  OpenNewTab();
 
   // Verify that ext_ntp.html is loaded in place of the NTP and that the omnibox
   // is focused.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
   std::string document_body;
   ASSERT_TRUE(content::ExecuteScriptAndExtractString(
       web_contents, "domAutomationController.send(document.body.innerText)",
@@ -277,9 +275,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest,
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Open the new tab, focus should be on the location bar.
-  chrome::NewTab(browser());
-  ASSERT_NO_FATAL_FAILURE(EXPECT_TRUE(content::WaitForLoadStop(
-      browser()->tab_strip_model()->GetActiveWebContents())));
+  OpenNewTab();
   EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
   EXPECT_FALSE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_TAB_CONTAINER));
 
@@ -290,13 +286,12 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest,
   ASSERT_TRUE(extension);
 
   // Open the new tab.
-  chrome::NewTab(browser());
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_NO_FATAL_FAILURE(EXPECT_TRUE(content::WaitForLoadStop(web_contents)));
+  OpenNewTab();
 
   // Verify that ext_ntp.html is loaded in place of the NTP and that the omnibox
   // is focused.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
   std::string document_body;
   ASSERT_TRUE(content::ExecuteScriptAndExtractString(
       web_contents, "domAutomationController.send(document.body.innerText)",
@@ -376,9 +371,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest, TabFocusStealingFromOopif) {
   ASSERT_TRUE(https_server.Start());
 
   // Open the new tab, focus should be on the location bar.
-  chrome::NewTab(browser());
-  ASSERT_NO_FATAL_FAILURE(EXPECT_TRUE(content::WaitForLoadStop(
-      browser()->tab_strip_model()->GetActiveWebContents())));
+  OpenNewTab();
   EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
   EXPECT_FALSE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_TAB_CONTAINER));
 
@@ -459,16 +452,13 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest, TabFocusStealingFromOopif) {
   EXPECT_FALSE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_TAB_CONTAINER));
 }
 
-// Flaky: crbug.com/1155831.
 // Tab focus should not be stolen by the omnibox - https://crbug.com/1127220.
 IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest,
-                       DISABLED_TabFocusStealingFromMainFrame) {
+                       TabFocusStealingFromMainFrame) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Open the new tab, focus should be on the location bar.
-  chrome::NewTab(browser());
-  ASSERT_NO_FATAL_FAILURE(EXPECT_TRUE(content::WaitForLoadStop(
-      browser()->tab_strip_model()->GetActiveWebContents())));
+  OpenNewTab();
   EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
   EXPECT_FALSE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_TAB_CONTAINER));
 
