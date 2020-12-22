@@ -67,14 +67,6 @@ void IterateTextContentByOffsets(const PaintOpBuffer& buffer,
     ++index;
   }
 }
-
-bool RotationEquivalentToAxisFlip(const SkMatrix& matrix) {
-  float skew_x = matrix.getSkewX();
-  float skew_y = matrix.getSkewY();
-  return ((skew_x == 1.f || skew_x == -1.f) &&
-          (skew_y == 1.f || skew_y == -1.f));
-}
-
 }  // namespace
 
 DisplayItemList::DisplayItemList(UsageHint usage_hint)
@@ -386,7 +378,7 @@ DisplayItemList::GetDirectlyCompositedImageResult(
     // Images that respect orientation will have 5 paint operations:
     //  (1) Save
     //  (2) Translate
-    //  (3) Concat (rotation matrix)
+    //  (3) Concat (with a transformation that preserves axis alignment)
     //  (4) DrawImageRect
     //  (5) Restore
     // Detect these the paint op buffer and disqualify the layer as a directly
@@ -403,8 +395,8 @@ DisplayItemList::GetDirectlyCompositedImageResult(
           break;
         }
         case PaintOpType::Concat: {
-          // We only expect a single rotation. If we see another one, then this
-          // image won't be eligible for directly compositing.
+          // We only expect a single transformation. If we see another one, then
+          // this image won't be eligible for directly compositing.
           if (transpose_image_size)
             return base::nullopt;
 
@@ -413,11 +405,27 @@ DisplayItemList::GetDirectlyCompositedImageResult(
               !concat_op->matrix.preservesAxisAlignment())
             return base::nullopt;
 
-          // If the rotation is not an axis flip, we'll need to transpose the
-          // width and height dimensions to account for the same transform
-          // applying when the layer bounds were calculated.
-          transpose_image_size =
-              RotationEquivalentToAxisFlip(concat_op->matrix);
+          // If the image has been rotated +/-90 degrees we'll need to transpose
+          // the width and height dimensions to account for the same transform
+          // applying when the layer bounds were calculated. Since we already
+          // know that the transformation preserves axis alignment, we only
+          // need to test the main diagonal
+          transpose_image_size = (concat_op->matrix.getScaleX() == 0 &&
+                                  concat_op->matrix.getScaleY() == 0);
+          break;
+        }
+        case PaintOpType::Concat44: {
+          // TODO(aaronhk) this replace Concact with Concat44 everywhere
+          // This function only needs to exist temporarily
+          if (transpose_image_size)
+            return base::nullopt;
+
+          const Concat44Op* concat_op = static_cast<const Concat44Op*>(op);
+          if (!MathUtil::SkM44Preserves2DAxisAlignment(concat_op->matrix))
+            return base::nullopt;
+
+          transpose_image_size = (concat_op->matrix.rc(0, 0) == 0 &&
+                                  concat_op->matrix.rc(1, 1) == 0);
           break;
         }
         case PaintOpType::DrawImageRect:

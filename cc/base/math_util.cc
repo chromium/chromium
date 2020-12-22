@@ -868,4 +868,39 @@ bool MathUtil::IsNearlyTheSameForTesting(const gfx::Point3F& left,
   return IsNearlyTheSame(left, right);
 }
 
+// Equivalent to SkMatrix::HasPerspective
+bool MathUtil::SkM44HasPerspective(const SkM44& m) {
+  return (m.rc(3, 0) != 0 || m.rc(3, 1) != 0 || m.rc(3, 2) != 0 ||
+          m.rc(3, 3) != 1);
+}
+
+// Since some operations assume a 2d transformation, check to make sure that
+// is the case by seeing that the z-axis is identity
+bool MathUtil::SkM44Is2D(const SkM44& m) {
+  return (m.rc(0, 2) == 0 && m.rc(1, 2) == 0 && m.rc(2, 2) == 1 &&
+          m.rc(2, 0) == 0 && m.rc(2, 1) == 0 && m.rc(2, 3) == 0 &&
+          m.rc(3, 2) == 0);
+}
+
+// Equivalent to SkMatrix::PreservesAxisAlignment
+// Checks if the transformation is a 90 degree rotation or scaling
+// See SkMatrix::computeTypeMask
+bool MathUtil::SkM44Preserves2DAxisAlignment(const SkM44& m) {
+  // Conservatively assume that perspective transforms would not preserve
+  // axis-alignment
+  if (!SkM44Is2D(m) || SkM44HasPerspective(m))
+    return false;
+
+  // Does the matrix have skew components
+  if (m.rc(0, 1) != 0 || m.rc(1, 0) != 0) {
+    // Rects only map to rects if both skews are non-zero and both scale
+    // components are zero (i.e. it's a +/-90-degree rotation)
+    return (m.rc(0, 0) == 0 && m.rc(1, 1) == 0 && m.rc(0, 1) != 0 &&
+            m.rc(1, 0) != 0);
+  }
+  // Since the matrix has no skewing, it maps to a rectangle so long as the
+  // scale components are non-zero
+  return (m.rc(0, 0) != 0 && m.rc(1, 1) != 0);
+}
+
 }  // namespace cc

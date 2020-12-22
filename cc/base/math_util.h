@@ -13,6 +13,7 @@
 #include "base/numerics/ranges.h"
 #include "build/build_config.h"
 #include "cc/base/base_export.h"
+#include "third_party/skia/include/core/SkM44.h"
 #include "ui/gfx/geometry/box_f.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -324,6 +325,12 @@ class CC_BASE_EXPORT MathUtil {
                                         const gfx::PointF& r);
   static bool IsNearlyTheSameForTesting(const gfx::Point3F& l,
                                         const gfx::Point3F& r);
+
+  // Helper functions for migration from SkMatrix->SkM44. It may make sense to
+  // move these to skia itself at some point.
+  static bool SkM44HasPerspective(const SkM44& m);
+  static bool SkM44Is2D(const SkM44& m);
+  static bool SkM44Preserves2DAxisAlignment(const SkM44& m);
 
  private:
   template <typename T>
