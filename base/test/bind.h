@@ -55,7 +55,7 @@ decltype(auto) BindLambdaForTesting(Lambda&& lambda) {
                        std::forward<Lambda>(lambda));
 }
 
-// A variant of BindRepeating() that can bind mutable capturing lambdas for
+// A variant of BindOnce() that can bind mutable capturing lambdas for
 // testing. This doesn't support extra arguments binding as the lambda itself
 // can do. Since a mutable lambda potentially can invalidate its state after
 // being run once, this method returns a OnceCallback instead of a
