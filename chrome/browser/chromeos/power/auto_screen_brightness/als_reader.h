@@ -7,8 +7,10 @@
 
 #include <memory>
 
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
+#include "base/sequenced_task_runner.h"
 
 namespace chromeos {
 namespace power {
@@ -62,22 +64,30 @@ class AlsReader {
   friend AlsReaderTest;
   friend FakeLightProvider;
 
+  // Called when we've retrieved the number of ALS present.
+  void OnNumAlsRetrieved(int num_als);
+
   void SetLux(int lux);
   void SetAlsInitStatus(AlsInitStatus status);
   void SetAlsInitStatusForTesting(AlsInitStatus status);
+
+  // Background task runner for checking ALS status and reading ALS values.
+  scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
 
   base::ObserverList<Observer> observers_;
   AlsInitStatus status_ = AlsInitStatus::kInProgress;
   std::unique_ptr<LightProviderInterface> provider_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<AlsReader> weak_ptr_factory_{this};
 };
 
 class LightProviderInterface {
  public:
   LightProviderInterface(const LightProviderInterface&) = delete;
   LightProviderInterface& operator=(const LightProviderInterface&) = delete;
-  virtual ~LightProviderInterface() {}
+  virtual ~LightProviderInterface();
 
  protected:
   explicit LightProviderInterface(AlsReader* als_reader);

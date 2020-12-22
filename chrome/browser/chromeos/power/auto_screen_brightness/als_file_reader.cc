@@ -14,7 +14,6 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"
-#include "base/task/thread_pool.h"
 #include "chrome/browser/chromeos/power/auto_screen_brightness/utils.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -23,25 +22,6 @@ namespace power {
 namespace auto_screen_brightness {
 
 namespace {
-// Returns whether the device has an ALS that we can use. This should run in
-// another thread to be non-blocking to the main thread.
-bool IsAlsEnabled() {
-  DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-  base::CommandLine command_line{
-      base::FilePath(FILE_PATH_LITERAL("check_powerd_config"))};
-  command_line.AppendArg("--ambient_light_sensor");
-  int exit_code = 0;
-  std::string output;  // Not used.
-  const bool result =
-      base::GetAppOutputWithExitCode(command_line, &output, &exit_code);
-
-  if (!result) {
-    LOG(ERROR) << "Cannot run check_powerd_config --ambient_light_sensor";
-    return false;
-  }
-  return exit_code == 0;
-}
-
 // Returns ALS path. This should run in another thread to be non-blocking to the
 // main thread.
 std::string GetAlsPath() {
@@ -86,21 +66,18 @@ constexpr int AlsFileReader::kMaxInitialAttempts;
 constexpr base::TimeDelta AlsFileReader::kAlsPollInterval;
 
 AlsFileReader::AlsFileReader(AlsReader* als_reader)
-    : LightProviderInterface(als_reader),
-      blocking_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
-          {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
-           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})) {}
+    : LightProviderInterface(als_reader) {}
 
 AlsFileReader::~AlsFileReader() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void AlsFileReader::Init() {
+void AlsFileReader::Init(
+    scoped_refptr<base::SequencedTaskRunner> blocking_task_runner) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::PostTaskAndReplyWithResult(
-      blocking_task_runner_.get(), FROM_HERE, base::BindOnce(&IsAlsEnabled),
-      base::BindOnce(&AlsFileReader::OnAlsEnableCheckDone,
-                     weak_ptr_factory_.GetWeakPtr()));
+  DCHECK(als_reader_);
+  blocking_task_runner_ = blocking_task_runner;
+  RetryAlsPath();
 }
 
 void AlsFileReader::SetTaskRunnerForTesting(
@@ -119,20 +96,9 @@ void AlsFileReader::InitForTesting(const base::FilePath& ambient_light_path) {
 }
 
 void AlsFileReader::FailForTesting() {
-  OnAlsEnableCheckDone(false);
+  als_reader_->SetAlsInitStatus(AlsReader::AlsInitStatus::kDisabled);
   for (int i = 0; i <= kMaxInitialAttempts; i++)
     OnAlsPathReadAttempted("");
-}
-
-void AlsFileReader::OnAlsEnableCheckDone(const bool is_enabled) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(als_reader_);
-  if (!is_enabled) {
-    als_reader_->SetAlsInitStatus(AlsReader::AlsInitStatus::kDisabled);
-    return;
-  }
-
-  RetryAlsPath();
 }
 
 void AlsFileReader::OnAlsPathReadAttempted(const std::string& path) {

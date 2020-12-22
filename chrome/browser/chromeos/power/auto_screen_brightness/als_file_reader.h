@@ -40,7 +40,7 @@ class AlsFileReader : public LightProviderInterface {
 
   // Checks if an ALS is enabled, and if the config is valid . Also
   // reads ambient light file path.
-  void Init();
+  void Init(scoped_refptr<base::SequencedTaskRunner> blocking_task_runner);
 
   // Sets the |blocking_task_runner_| for testing purpose.
   void SetTaskRunnerForTesting(
@@ -56,9 +56,6 @@ class AlsFileReader : public LightProviderInterface {
 
  private:
   friend class AlsFileReaderTest;
-
-  // Called when we've checked whether ALS is enabled.
-  void OnAlsEnableCheckDone(bool is_enabled);
 
   // Called when we've tried to read ALS path. If |path| is empty, it would
   // reschedule another attempt up to |kMaxInitialAttempts|.
