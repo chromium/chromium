@@ -18,8 +18,10 @@ import org.chromium.base.Callback;
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.endpoint_fetcher.EndpointFetcher;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.proto.ShoppingPersistedTabData.ShoppingPersistedTabDataProto;
 import org.chromium.components.payments.CurrencyFormatter;
@@ -78,6 +80,13 @@ public class ShoppingPersistedTabData extends PersistedTabData {
 
     private String mCurrencyCode;
 
+    @VisibleForTesting
+    protected ObservableSupplierImpl<Boolean> mIsTabSaveEnabledSupplier =
+            new ObservableSupplierImpl<>();
+
+    @VisibleForTesting
+    protected EmptyTabObserver mUrlUpdatedObserver;
+
     /**
      * A price drop for the offer {@link ShoppingPersistedTabData}
      * refers to
@@ -119,11 +128,32 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                         .getStorage(),
                 PersistedTabDataConfiguration.get(ShoppingPersistedTabData.class, tab.isIncognito())
                         .getId());
+        setupPersistence(tab);
     }
 
     private ShoppingPersistedTabData(
             Tab tab, byte[] data, PersistedTabDataStorage storage, String persistedTabDataId) {
         super(tab, data, storage, persistedTabDataId);
+        setupPersistence(tab);
+    }
+
+    private void setupPersistence(Tab tab) {
+        // ShoppingPersistedTabData is not saved by default - only when its fields are populated
+        // (after a successful endpoint repsonse)
+        disableSaving();
+        registerIsTabSaveEnabledSupplier(mIsTabSaveEnabledSupplier);
+        mUrlUpdatedObserver = new EmptyTabObserver() {
+            // When the URL is updated, the ShoppingPersistedTabData is redundant and should be
+            // cleaned up.
+            @Override
+            public void onUrlUpdated(Tab tab) {
+                disableSaving();
+                if (tab.getUserDataHost().getUserData(ShoppingPersistedTabData.class) != null) {
+                    tab.getUserDataHost().removeUserData(ShoppingPersistedTabData.class);
+                }
+            }
+        };
+        tab.addObserver(mUrlUpdatedObserver);
     }
 
     /**
@@ -156,6 +186,13 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     }
 
     /**
+     * @return {@link ShoppingPersistedTabData} from {@link UserDataHost}
+     */
+    public static ShoppingPersistedTabData from(Tab tab) {
+        return from(tab, USER_DATA_KEY);
+    }
+
+    /**
      * Whether a BuyableProductAnnotation was found or not
      */
     @IntDef({FoundBuyableProductAnnotation.NOT_FOUND, FoundBuyableProductAnnotation.FOUND})
@@ -164,6 +201,21 @@ public class ShoppingPersistedTabData extends PersistedTabData {
         int NOT_FOUND = 0;
         int FOUND = 1;
         int NUM_ENTRIES = 2;
+    }
+
+    /**
+     * Enable saving of {@link ShoppingPersistedTabData}
+     */
+    protected void enableSaving() {
+        mIsTabSaveEnabledSupplier.set(true);
+    }
+
+    /**
+     * Disable saving of {@link ShoppingPersistedTabData}. Deletes previously saved {@link
+     * ShoppingPersistedTabData} as well.
+     */
+    public void disableSaving() {
+        mIsTabSaveEnabledSupplier.set(false);
     }
 
     private static ShoppingPersistedTabData build(Tab tab, String responseString,
@@ -182,6 +234,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                     res.setPriceMicros(Long.parseLong(priceMetadata.getString(AMOUNT_MICROS_KEY)),
                             previousShoppingPersistedTabData);
                     res.setCurrencyCode(priceMetadata.getString(CURRENCY_CODE_KEY));
+                    res.setLastUpdatedMs(System.currentTimeMillis());
                     foundBuyableProductAnnotation = FoundBuyableProductAnnotation.FOUND;
                     break;
                 }
@@ -197,7 +250,13 @@ public class ShoppingPersistedTabData extends PersistedTabData {
         RecordHistogram.recordEnumeratedHistogram(
                 "Tabs.ShoppingPersistedTabData.FoundBuyableProductAnnotation",
                 foundBuyableProductAnnotation, FoundBuyableProductAnnotation.NUM_ENTRIES);
-        return res;
+        // Only persist this ShoppingPersistedTabData if it was correctly populated from the
+        // response
+        if (foundBuyableProductAnnotation == FoundBuyableProductAnnotation.FOUND) {
+            res.enableSaving();
+            return res;
+        }
+        return null;
     }
 
     /**
@@ -224,6 +283,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
 
     protected void setCurrencyCode(String currencyCode) {
         mCurrencyCode = currencyCode;
+        save();
     }
 
     @VisibleForTesting
@@ -234,6 +294,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     @VisibleForTesting
     protected void setPreviousPriceMicros(long previousPriceMicros) {
         mPreviousPriceMicros = previousPriceMicros;
+        save();
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
@@ -333,6 +394,10 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     @Override
     public boolean deserialize(@Nullable byte[] bytes) {
         // TODO(crbug.com/1135573) add in metrics for serialize and deserialize
+        // Do not attempt to deserialize if the bytes are null
+        if (bytes == null) {
+            return false;
+        }
         try {
             ShoppingPersistedTabDataProto shoppingPersistedTabDataProto =
                     ShoppingPersistedTabDataProto.parseFrom(bytes);
@@ -374,5 +439,11 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     @VisibleForTesting
     public void setLastPriceChangeTimeMsForTesting(long lastPriceChangeTimeMs) {
         mLastPriceChangeTimeMs = lastPriceChangeTimeMs;
+    }
+
+    @Override
+    public void destroy() {
+        mTab.removeObserver(mUrlUpdatedObserver);
+        super.destroy();
     }
 }
