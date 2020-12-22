@@ -445,8 +445,13 @@ class PasswordProtectionServiceBaseTest
   }
 
   std::unique_ptr<content::WebContents> GetWebContents() {
-    return base::WrapUnique(content::WebContentsTester::CreateTestWebContents(
-        content::WebContents::CreateParams(&browser_context_)));
+    std::unique_ptr<content::WebContents> contents =
+        base::WrapUnique(content::WebContentsTester::CreateTestWebContents(
+            content::WebContents::CreateParams(&browser_context_)));
+    // Initiate the connection to a (pretend) renderer process.
+    content::WebContentsTester::For(contents.get())
+        ->NavigateAndCommit(GURL("about:blank"));
+    return contents;
   }
 
 // Visual features are not supported on Android.

@@ -2860,31 +2860,20 @@ class MockAppBannerService : public blink::mojom::AppBannerService {
   DISALLOW_COPY_AND_ASSIGN(MockAppBannerService);
 };
 
-class BackForwardCacheBrowserTestWithAppBanner
-    : public BackForwardCacheBrowserTest {
- protected:
-  void SetUpOnMainThread() override {
-    web_contents()->GetMainFrame()->GetRemoteInterfaces()->GetInterface(
-        mock_app_banner_service_.controller().BindNewPipeAndPassReceiver());
-    BackForwardCacheBrowserTest::SetUpOnMainThread();
-  }
-
-  void SendBannerPromptRequest() {
-    mock_app_banner_service_.SendBannerPromptRequest();
-  }
-
- private:
-  MockAppBannerService mock_app_banner_service_;
-};
-
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithAppBanner,
-                       DoesNotCacheIfAppBanner) {
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, DoesNotCacheIfAppBanner) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // 1) Navigate to A and request a PWA app banner.
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
-  SendBannerPromptRequest();
+
+  // Connect the MockAppBannerService mojom to the renderer's frame.
+  MockAppBannerService mock_app_banner_service;
+  web_contents()->GetMainFrame()->GetRemoteInterfaces()->GetInterface(
+      mock_app_banner_service.controller().BindNewPipeAndPassReceiver());
+  // Send the request to the renderer's frame.
+  mock_app_banner_service.SendBannerPromptRequest();
+
   RenderFrameDeletedObserver delete_observer_rfh(current_frame_host());
 
   // 2) Navigate away. Page A requested a PWA app banner, and thus not cached.

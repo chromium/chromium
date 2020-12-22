@@ -264,6 +264,9 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
       SetContents(std::move(incognito_web_contents));
     }
 
+    // Initiate the connection to a (pretend) renderer process.
+    NavigateAndCommit(GURL("about:blank"));
+
     InitTestApi();
 
     // Inject service classes.

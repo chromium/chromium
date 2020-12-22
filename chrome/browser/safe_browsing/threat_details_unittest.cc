@@ -1533,6 +1533,9 @@ TEST_F(ThreatDetailsTest, ThreatOnFreshTab) {
   EXPECT_EQ(nullptr, controller().GetLastCommittedEntry());
   EXPECT_EQ(nullptr, controller().GetPendingEntry());
 
+  // Initiate the connection to a (pretend) renderer process.
+  NavigateAndCommit(GURL("about:blank"));
+
   // Simulate a subresource malware hit (this could happen if the WebContents
   // was created with window.open, and had content injected into it).
   UnsafeResource resource;
