@@ -32,6 +32,8 @@
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_navigation_commands.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
+#import "ios/chrome/browser/ui/table_view/table_view_utils.h"
+#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/common/ui/elements/popover_label_view_controller.h"
 #import "net/base/mac/url_conversions.h"
 #include "url/gurl.h"
@@ -90,9 +92,12 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
+  UITableViewStyle style = base::FeatureList::IsEnabled(kSettingsRefresh)
+                               ? ChromeTableViewStyle()
+                               : UITableViewStyleGrouped;
+
   SafetyCheckTableViewController* viewController =
-      [[SafetyCheckTableViewController alloc]
-          initWithStyle:UITableViewStyleGrouped];
+      [[SafetyCheckTableViewController alloc] initWithStyle:style];
   self.viewController = viewController;
 
   scoped_refptr<IOSChromePasswordCheckManager> passwordCheckManager =
