@@ -817,7 +817,6 @@ crbug.com/1145830 [ chromeos chromeos-board-amd64-generic ] conformance/textures
 # ChromeOS: AMD
 crbug.com/995652 [ chromeos amd ] conformance/uniforms/out-of-bounds-uniform-array-access.html [ Skip ]
 crbug.com/1042897 [ chromeos amd ] conformance/textures/webgl_canvas/tex-2d-rgba-rgba-unsigned_byte.html [ RetryOnFailure ]
-crbug.com/1161258 [ chromeos amd ] conformance/textures/webgl_canvas/tex-2d-rgb-rgb-unsigned_byte.html [ RetryOnFailure ]
 
 # Texture compression is only expected to be available on desktop GPUs.
 crbug.com/1080360 [ chromeos chromeos-board-kevin ] WebglExtension_EXT_texture_compression_bptc [ Skip ]
