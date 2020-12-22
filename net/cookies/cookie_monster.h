@@ -422,9 +422,8 @@ class NET_EXPORT CookieMonster : public CookieStore {
 
   void SetDefaultCookieableSchemes();
 
-  void FindCookiesForRegistryControlledHost(
-      const GURL& url,
-      std::vector<CanonicalCookie*>* cookies);
+  std::vector<CanonicalCookie*> FindCookiesForRegistryControlledHost(
+      const GURL& url);
 
   void FilterCookiesWithOptions(const GURL url,
                                 const CookieOptions options,

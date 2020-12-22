@@ -574,8 +574,8 @@ void CookieMonster::GetCookieListWithOptions(const GURL& url,
   CookieAccessResultList included_cookies;
   CookieAccessResultList excluded_cookies;
   if (HasCookieableScheme(url)) {
-    std::vector<CanonicalCookie*> cookie_ptrs;
-    FindCookiesForRegistryControlledHost(url, &cookie_ptrs);
+    std::vector<CanonicalCookie*> cookie_ptrs =
+        FindCookiesForRegistryControlledHost(url);
     std::sort(cookie_ptrs.begin(), cookie_ptrs.end(), CookieSorter);
 
     included_cookies.reserve(cookie_ptrs.size());
@@ -925,9 +925,8 @@ void CookieMonster::TrimDuplicateCookiesForKey(const std::string& key,
   DCHECK_EQ(num_duplicates, num_duplicates_found);
 }
 
-void CookieMonster::FindCookiesForRegistryControlledHost(
-    const GURL& url,
-    std::vector<CanonicalCookie*>* cookies) {
+std::vector<CanonicalCookie*>
+CookieMonster::FindCookiesForRegistryControlledHost(const GURL& url) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   Time current_time = Time::Now();
@@ -935,6 +934,7 @@ void CookieMonster::FindCookiesForRegistryControlledHost(
   // Retrieve all cookies for a given key
   const std::string key(GetKey(url.host_piece()));
 
+  std::vector<CanonicalCookie*> cookies;
   for (CookieMapItPair its = cookies_.equal_range(key);
        its.first != its.second;) {
     auto curit = its.first;
@@ -946,8 +946,9 @@ void CookieMonster::FindCookiesForRegistryControlledHost(
       InternalDeleteCookie(curit, true, DELETE_COOKIE_EXPIRED);
       continue;
     }
-    cookies->push_back(cc);
+    cookies.push_back(cc);
   }
+  return cookies;
 }
 
 void CookieMonster::FilterCookiesWithOptions(
