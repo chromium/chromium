@@ -13,6 +13,7 @@
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/trace_event/memory_usage_estimator.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
@@ -67,17 +68,11 @@ void OmniboxPedalProvider::ResetSession() {
 }
 
 size_t OmniboxPedalProvider::EstimateMemoryUsage() const {
-  size_t total = sizeof(*this);
-  total += std::accumulate(dictionary_.begin(), dictionary_.end(), 0,
-                           [](size_t sum, auto& s) {
-                             return sum + s.first.size() * sizeof(s.first[0]);
-                           });
-  total += dictionary_.size() * (sizeof(int) + sizeof(base::string16));
-  total += ignore_group_.EstimateMemoryUsage();
-  total += std::accumulate(pedals_.begin(), pedals_.end(), 0,
-                           [](size_t sum, auto& s) {
-                             return sum + s.second->EstimateMemoryUsage();
-                           });
+  size_t total = 0;
+  total += base::trace_event::EstimateMemoryUsage(dictionary_);
+  total += base::trace_event::EstimateMemoryUsage(ignore_group_);
+  total += base::trace_event::EstimateMemoryUsage(pedals_);
+  total += base::trace_event::EstimateMemoryUsage(tokenize_characters_);
   return total;
 }
 

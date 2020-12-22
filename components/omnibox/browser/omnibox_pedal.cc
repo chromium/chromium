@@ -9,6 +9,7 @@
 #include <numeric>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/trace_event/memory_usage_estimator.h"
 #include "components/omnibox/browser/omnibox_client.h"
 #include "components/omnibox/browser/omnibox_edit_controller.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
@@ -98,13 +99,23 @@ void OmniboxPedal::SynonymGroup::AddSynonym(OmniboxPedal::Tokens&& synonym) {
 }
 
 size_t OmniboxPedal::SynonymGroup::EstimateMemoryUsage() const {
-  size_t total = sizeof(*this);
-  total += std::accumulate(synonyms_.begin(), synonyms_.end(), 0,
-                           [](size_t sum, auto& tokens) {
-                             return sum + tokens.capacity() * sizeof(tokens[0]);
-                           });
+  return base::trace_event::EstimateMemoryUsage(synonyms_);
+}
+
+// =============================================================================
+
+namespace base {
+namespace trace_event {
+size_t EstimateMemoryUsage(const OmniboxPedal::LabelStrings& self) {
+  size_t total = 0;
+  total += base::trace_event::EstimateMemoryUsage(self.hint);
+  total += base::trace_event::EstimateMemoryUsage(self.hint_short);
+  total += base::trace_event::EstimateMemoryUsage(self.suggestion_contents);
+  total += base::trace_event::EstimateMemoryUsage(self.accessibility_hint);
   return total;
 }
+}  // namespace trace_event
+}  // namespace base
 
 // =============================================================================
 
@@ -151,19 +162,10 @@ void OmniboxPedal::AddSynonymGroup(SynonymGroup&& group) {
 }
 
 size_t OmniboxPedal::EstimateMemoryUsage() const {
-  size_t total = sizeof(*this);
-  total += url_.EstimateMemoryUsage();
-  total += std::accumulate(
-      synonym_groups_.begin(), synonym_groups_.end(), 0,
-      [](size_t sum, auto& s) { return sum + s.EstimateMemoryUsage(); });
-  total += (synonym_groups_.capacity() - synonym_groups_.size()) *
-           sizeof(synonym_groups_[0]);
-  total += strings_.hint.size() * sizeof(strings_.hint[0]);
-  total += strings_.hint_short.size() * sizeof(strings_.hint_short[0]);
-  total += strings_.suggestion_contents.size() *
-           sizeof(strings_.suggestion_contents[0]);
-  total += strings_.accessibility_hint.size() *
-           sizeof(strings_.accessibility_hint[0]);
+  size_t total = 0;
+  total += base::trace_event::EstimateMemoryUsage(url_);
+  total += base::trace_event::EstimateMemoryUsage(strings_);
+  total += base::trace_event::EstimateMemoryUsage(synonym_groups_);
   return total;
 }
 
