@@ -1198,6 +1198,12 @@ chrome.fileManagerPrivate.toggleAddedToHoldingSpace = function(entries, added, c
  */
 chrome.fileManagerPrivate.getHoldingSpaceState = function(callback) {};
 
+/**
+ * Returns true via `callback` if tablet mode is enabled, false otherwise.
+ * @param {function(boolean): void} callback
+ */
+chrome.fileManagerPrivate.isTabletModeEnabled = function(callback) {};
+
 /** @type {!ChromeEvent} */
 chrome.fileManagerPrivate.onMountCompleted;
 
@@ -1230,3 +1236,6 @@ chrome.fileManagerPrivate.onAppsUpdated;
 
 /** @type {!ChromeEvent} */
 chrome.fileManagerPrivate.onCrostiniChanged;
+
+/** @type {!ChromeEvent} */
+chrome.fileManagerPrivate.onTabletModeChanged;

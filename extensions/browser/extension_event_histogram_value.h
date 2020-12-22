@@ -487,6 +487,7 @@ enum HistogramValue {
   FILE_MANAGER_PRIVATE_ON_PIN_TRANSFERS_UPDATED = 465,
   ACCESSIBILITY_PRIVATE_ON_POINT_SCAN_SET = 466,
   ACCESSIBILITY_PRIVATE_ON_SELECT_TO_SPEAK_PANEL_ACTION = 467,
+  FILE_MANAGER_PRIVATE_ON_TABLET_MODE_CHANGED = 468,
   // Last entry: Add new entries above, then run:
   // python tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

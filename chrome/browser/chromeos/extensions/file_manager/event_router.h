@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/public/cpp/tablet_mode_observer.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/optional.h"
@@ -50,7 +51,8 @@ class EventRouter
       public VolumeManagerObserver,
       public arc::ArcIntentHelperObserver,
       public drive::DriveIntegrationServiceObserver,
-      public guest_os::GuestOsSharePath::Observer {
+      public guest_os::GuestOsSharePath::Observer,
+      public ash::TabletModeObserver {
  public:
   typedef base::Callback<void(const base::FilePath& virtual_path,
                               bool got_error,
@@ -154,9 +156,13 @@ class EventRouter
   // DriveIntegrationServiceObserver override.
   void OnFileSystemMountFailed() override;
 
-  // guest_os::GuestOsSharePath::Observer overrides
+  // guest_os::GuestOsSharePath::Observer overrides.
   void OnUnshare(const std::string& vm_name,
                  const base::FilePath& path) override;
+
+  // ash:TabletModeObserver overrides.
+  void OnTabletModeStarted() override;
+  void OnTabletModeEnded() override;
 
   // Notifies FilesApp that file drop to Plugin VM was not in a shared directory
   // and failed FilesApp will show the "Move to Windows files" dialog.

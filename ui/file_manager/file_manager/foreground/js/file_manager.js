@@ -795,6 +795,11 @@ class FileManager extends cr.EventTarget {
     this.dialogDom_.classList.toggle(
         'camera-folder-enabled', util.isFilesCameraFolderEnabled());
 
+    chrome.fileManagerPrivate.isTabletModeEnabled(
+        this.onTabletModeChanged_.bind(this));
+    chrome.fileManagerPrivate.onTabletModeChanged.addListener(
+        this.onTabletModeChanged_.bind(this));
+
     this.initEssentialUI_();
     this.initAdditionalUI_();
     await this.initSettingsPromise_;
@@ -1588,5 +1593,14 @@ class FileManager extends cr.EventTarget {
           }
           this.directoryTree.redraw(false);
         });
+  }
+
+  /**
+   * Updates the DOM to reflect the specified tablet mode `enabled` state.
+   * @param {boolean} enabled
+   * @private
+   */
+  onTabletModeChanged_(enabled) {
+    this.dialogDom_.classList.toggle('tablet-mode-enabled', enabled);
   }
 }

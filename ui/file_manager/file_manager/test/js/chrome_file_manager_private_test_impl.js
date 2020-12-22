@@ -229,6 +229,7 @@ chrome.fileManagerPrivate = {
   onPinTransfersUpdated: new test.Event(),
   onMountCompleted: new test.Event(),
   onPreferencesChanged: new test.Event(),
+  onTabletModeChanged: new test.Event(),
   openInspector: (type) => {},
   openSettingsSubpage: (sub_page) => {},
   removeFileWatch: (entry, callback) => {
@@ -297,6 +298,9 @@ chrome.fileManagerPrivate = {
   },
   validatePathNameLength: (parentEntry, name, callback) => {
     setTimeout(callback, 0, true);
+  },
+  isTabletModeEnabled: (callback) => {
+    setTimeout(callback, 0, false);
   },
 };
 

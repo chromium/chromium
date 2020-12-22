@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "ash/public/cpp/multi_user_window_manager.h"
+#include "ash/public/cpp/tablet_mode.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -1105,6 +1106,13 @@ FileManagerPrivateDetectCharacterEncodingFunction::Run() {
   bool success = base::DetectEncoding(input, &encoding);
   return RespondNow(
       OneArgument(base::Value(success ? std::move(encoding) : std::string())));
+}
+
+ExtensionFunction::ResponseAction
+FileManagerPrivateIsTabletModeEnabledFunction::Run() {
+  ash::TabletMode* tablet_mode = ash::TabletMode::Get();
+  return RespondNow(OneArgument(
+      base::Value(tablet_mode ? tablet_mode->InTabletMode() : false)));
 }
 
 }  // namespace extensions

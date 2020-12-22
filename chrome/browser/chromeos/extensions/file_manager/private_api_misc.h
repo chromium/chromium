@@ -508,6 +508,19 @@ class FileManagerPrivateDetectCharacterEncodingFunction
   ResponseAction Run() override;
 };
 
+// Implements the chrome.fileManagerPrivate.isTabletModeEnabled method.
+class FileManagerPrivateIsTabletModeEnabledFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.isTabletModeEnabled",
+                             FILEMANAGERPRIVATE_ISTABLETMODEENABLED)
+
+ protected:
+  ~FileManagerPrivateIsTabletModeEnabledFunction() override = default;
+
+ private:
+  ResponseAction Run() override;
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_FILE_MANAGER_PRIVATE_API_MISC_H_

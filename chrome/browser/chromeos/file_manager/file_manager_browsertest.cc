@@ -666,6 +666,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("holdingSpaceWelcomeBannerWontShowAfterReachingLimit")
             .EnableHoldingSpace(true),
         TestCase("holdingSpaceWelcomeBannerWontShowOnDrive")
+            .EnableHoldingSpace(true),
+        TestCase("holdingSpaceWelcomeBannerOnTabletModeChanged")
             .EnableHoldingSpace(true)));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(

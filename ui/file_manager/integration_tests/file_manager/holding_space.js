@@ -103,3 +103,55 @@ testcase.holdingSpaceWelcomeBannerWontShowOnDrive = async () => {
   // Check: the holding space welcome banner should be hidden.
   await remoteCall.waitForElement(appId, '.holding-space-welcome[hidden]');
 };
+
+/**
+ * Tests that the holding space welcome banner will update its text depending on
+ * whether or not tablet mode is enabled.
+ */
+testcase.holdingSpaceWelcomeBannerOnTabletModeChanged = async () => {
+  // Open Files app on Downloads.
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+
+  // Check: `document.body` should indicate that tablet mode is disabled.
+  chrome.test.assertFalse(
+      document.body.classList.contains('tablet-mode-enabled'));
+
+  // Async function which repeats until the element matching the specified
+  // `query` has a calculated display matching the specified `displayValue`.
+  async function waitForElementWithDisplay(query, displayValue) {
+    repeatUntil(() => {
+      const el = awaitRemoteCall.waitForElementStyles(appId, query, 'display');
+      if (el && el.display === displayValue) {
+        return el;
+      }
+      return test.pending(
+          'Element `%s` with display `%s` is not found.', query, displayValue);
+    });
+  }
+
+  // Cache queries for `text` and `textInTabletMode`.
+  const text = '.holding-space-welcome-text:not(.tablet-mode-enabled)';
+  const textInTabletMode = '.holding-space-welcome-text.tablet-mode-enabled';
+
+  // Check: `text` should be displayed but `textInTabletMode` should not.
+  await waitForElementWithDisplay(text, 'inline');
+  await waitForElementWithDisplay(textInTabletMode, 'none');
+
+  // Perform and check: enable tablet mode.
+  await sendTestMessage({name: 'enableTabletMode'}).then((result) => {
+    chrome.test.assertEq(result, 'tabletModeEnabled');
+  });
+
+  // Check: `textInTabletMode` should be displayed but `text` should not.
+  await waitForElementWithDisplay(text, 'none');
+  await waitForElementWithDisplay(textInTabletMode, 'inline');
+
+  // Perform and check: disable tablet mode.
+  await sendTestMessage({name: 'disableTabletMode'}).then((result) => {
+    chrome.test.assertEq(result, 'tabletModeDisabled');
+  });
+
+  // Check: `text` should be displayed but `textInTabletMode` should not.
+  await waitForElementWithDisplay(text, 'inline');
+  await waitForElementWithDisplay(textInTabletMode, 'none');
+};

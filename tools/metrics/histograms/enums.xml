@@ -24170,6 +24170,7 @@ Called by update_extension_histograms.py.-->
   <int value="466" label="ACCESSIBILITY_PRIVATE_ON_POINT_SCAN_SET"/>
   <int value="467"
       label="ACCESSIBILITY_PRIVATE_ON_SELECT_TO_SPEAK_PANEL_ACTION"/>
+  <int value="468" label="FILE_MANAGER_PRIVATE_ON_TABLET_MODE_CHANGED"/>
 </enum>
 
 <enum name="ExtensionFileWriteResult">
@@ -25782,6 +25783,7 @@ Called by update_extension_histograms.py.-->
   <int value="1536" label="VIRTUALKEYBOARDPRIVATE_PASTECLIPBOARDITEM"/>
   <int value="1537" label="VIRTUALKEYBOARDPRIVATE_GETCLIPBOARDHISTORY"/>
   <int value="1538" label="VIRTUALKEYBOARDPRIVATE_DELETECLIPBOARDITEM"/>
+  <int value="1539" label="FILEMANAGERPRIVATE_ISTABLETMODEENABLED"/>
 </enum>
 
 <enum name="ExtensionIconState">

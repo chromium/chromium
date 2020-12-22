@@ -10,6 +10,7 @@
 #include <set>
 #include <utility>
 
+#include "ash/public/cpp/tablet_mode.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -434,6 +435,10 @@ void EventRouter::OnIntentFiltersUpdated(
 void EventRouter::Shutdown() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  ash::TabletMode* tablet_mode = ash::TabletMode::Get();
+  if (tablet_mode)
+    tablet_mode->RemoveObserver(this);
+
   auto* intent_helper =
       arc::ArcIntentHelperBridge::GetForBrowserContext(profile_);
   if (intent_helper)
@@ -541,6 +546,10 @@ void EventRouter::ObserveEvents() {
       guest_os::GuestOsSharePath::GetForProfile(profile_);
   if (guest_os_share_path)
     guest_os_share_path->AddObserver(this);
+
+  ash::TabletMode* tablet_mode = ash::TabletMode::Get();
+  if (tablet_mode)
+    tablet_mode->AddObserver(this);
 }
 
 // File watch setup routines.
@@ -920,6 +929,28 @@ void EventRouter::OnUnshare(const std::string& vm_name,
         extensions::events::FILE_MANAGER_PRIVATE_ON_CROSTINI_CHANGED,
         file_manager_private::OnCrostiniChanged::kEventName,
         file_manager_private::OnCrostiniChanged::Create(event));
+  }
+}
+
+void EventRouter::OnTabletModeStarted() {
+  for (const auto& extension_id : GetEventListenerExtensionIds(
+           profile_, file_manager_private::OnTabletModeChanged::kEventName)) {
+    DispatchEventToExtension(
+        profile_, extension_id,
+        extensions::events::FILE_MANAGER_PRIVATE_ON_TABLET_MODE_CHANGED,
+        file_manager_private::OnTabletModeChanged::kEventName,
+        file_manager_private::OnTabletModeChanged::Create(/*enabled=*/true));
+  }
+}
+
+void EventRouter::OnTabletModeEnded() {
+  for (const auto& extension_id : GetEventListenerExtensionIds(
+           profile_, file_manager_private::OnTabletModeChanged::kEventName)) {
+    DispatchEventToExtension(
+        profile_, extension_id,
+        extensions::events::FILE_MANAGER_PRIVATE_ON_TABLET_MODE_CHANGED,
+        file_manager_private::OnTabletModeChanged::kEventName,
+        file_manager_private::OnTabletModeChanged::Create(/*enabled=*/false));
   }
 }
 

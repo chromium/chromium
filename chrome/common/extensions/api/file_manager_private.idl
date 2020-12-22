@@ -1386,6 +1386,9 @@ interface Functions {
   // the holding space currently contains.
   // |callback| The result callback.
   static void getHoldingSpaceState(HoldingSpaceStateCallback callback);
+
+  // Returns true via `callback` if tablet mode is enabled, false otherwise.
+  static void isTabletModeEnabled(BooleanCallback callback);
 };
 
 interface Events {
@@ -1410,5 +1413,7 @@ interface Events {
   static void onAppsUpdated();
 
   static void onCrostiniChanged(CrostiniEvent event);
+
+  static void onTabletModeChanged(boolean enabled);
 };
 };

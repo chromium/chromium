@@ -2573,6 +2573,12 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     return;
   }
 
+  if (name == "disableTabletMode") {
+    ash::ShellTestApi().SetTabletModeEnabledForTest(false);
+    *output = "tabletModeDisabled";
+    return;
+  }
+
   if (name == "enableTabletMode") {
     ash::ShellTestApi().SetTabletModeEnabledForTest(true);
     *output = "tabletModeEnabled";

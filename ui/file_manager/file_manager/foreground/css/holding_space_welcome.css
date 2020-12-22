@@ -70,8 +70,10 @@
   width: 13px;
 }
 
-/* TODO(crbug.com/1154347): Handle tablet mode enabled. */
-.holding-space-welcome-text.tablet-mode-enabled {
+body.tablet-mode-enabled .holding-space-welcome
+    .holding-space-welcome-text:not(.tablet-mode-enabled),
+body:not(.tablet-mode-enabled) .holding-space-welcome
+    .holding-space-welcome-text.tablet-mode-enabled {
   display: none;
 }
 
