@@ -142,16 +142,16 @@ TEST_F(NavigatorTest, SimpleRendererInitiatedSameSiteNavigation) {
   contents()->NavigateAndCommit(kUrl1);
   EXPECT_TRUE(main_test_rfh()->IsRenderFrameLive());
   static_cast<mojom::FrameHost*>(main_test_rfh())->DidStopLoading();
+  FrameTreeNode* node = main_test_rfh()->frame_tree_node();
 
   // Start a renderer-initiated non-user-initiated navigation.
-  EXPECT_FALSE(main_test_rfh()->navigation_request());
+  EXPECT_FALSE(node->navigation_request());
   auto navigation =
       NavigationSimulator::CreateRendererInitiated(kUrl2, main_test_rfh());
   navigation->SetTransition(ui::PageTransitionFromInt(
       ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_CLIENT_REDIRECT));
   navigation->SetHasUserGesture(false);
   navigation->Start();
-  FrameTreeNode* node = main_test_rfh()->frame_tree_node();
   NavigationRequest* request = node->navigation_request();
   ASSERT_TRUE(request);
 
@@ -207,13 +207,13 @@ TEST_F(NavigatorTest, SimpleRendererInitiatedCrossSiteNavigation) {
       main_test_rfh()->GetSiteInstance();
   bool expect_site_instance_change =
       ExpectSiteInstanceChange(site_instance_1.get());
+  FrameTreeNode* node = main_test_rfh()->frame_tree_node();
 
   // Start a renderer-initiated navigation.
-  EXPECT_FALSE(main_test_rfh()->navigation_request());
+  EXPECT_FALSE(node->navigation_request());
   auto navigation =
       NavigationSimulator::CreateRendererInitiated(kUrl2, main_test_rfh());
   navigation->Start();
-  FrameTreeNode* node = main_test_rfh()->frame_tree_node();
   NavigationRequest* request = node->navigation_request();
   ASSERT_TRUE(request);
 
@@ -395,7 +395,7 @@ TEST_F(NavigatorTest, NoContent) {
   FrameTreeNode* node = main_test_rfh()->frame_tree_node();
 
   // Navigate to a different site.
-  EXPECT_FALSE(main_test_rfh()->navigation_request());
+  EXPECT_FALSE(node->navigation_request());
   auto navigation =
       NavigationSimulator::CreateBrowserInitiated(kUrl2, contents());
   navigation->Start();
@@ -416,14 +416,12 @@ TEST_F(NavigatorTest, NoContent) {
 
   // There should be no pending nor speculative RenderFrameHost; the navigation
   // was aborted.
-  EXPECT_FALSE(main_test_rfh()->navigation_request());
   EXPECT_FALSE(node->navigation_request());
   EXPECT_FALSE(GetSpeculativeRenderFrameHost(node));
 
   // Now, repeat the test with 205 Reset Content.
 
   // Navigate to a different site again.
-  EXPECT_FALSE(main_test_rfh()->navigation_request());
   auto navigation2 =
       NavigationSimulator::CreateBrowserInitiated(kUrl2, contents());
   navigation2->Start();
@@ -442,7 +440,6 @@ TEST_F(NavigatorTest, NoContent) {
 
   // There should be no pending nor speculative RenderFrameHost; the navigation
   // was aborted.
-  EXPECT_FALSE(main_test_rfh()->navigation_request());
   EXPECT_FALSE(node->navigation_request());
   EXPECT_FALSE(GetSpeculativeRenderFrameHost(node));
 }
@@ -539,7 +536,7 @@ TEST_F(NavigatorTest, BrowserInitiatedNavigationCancel) {
   FrameTreeNode* node = main_test_rfh()->frame_tree_node();
 
   // Request navigation to the 1st URL.
-  EXPECT_FALSE(main_test_rfh()->navigation_request());
+  EXPECT_FALSE(node->navigation_request());
   auto navigation1 =
       NavigationSimulator::CreateBrowserInitiated(kUrl1, contents());
   navigation1->Start();
@@ -621,7 +618,7 @@ TEST_F(NavigatorTest, RendererUserInitiatedNavigationCancel) {
 
   // Start a browser-initiated navigation to the 1st URL and invoke its
   // beforeUnload completion callback.
-  EXPECT_FALSE(main_test_rfh()->navigation_request());
+  EXPECT_FALSE(node->navigation_request());
   auto navigation2 =
       NavigationSimulator::CreateBrowserInitiated(kUrl1, contents());
   navigation2->Start();
@@ -684,7 +681,7 @@ TEST_F(NavigatorTest,
       ExpectSiteInstanceChange(main_test_rfh()->GetSiteInstance());
 
   // Start a renderer-initiated user-initiated navigation to the 1st URL.
-  EXPECT_FALSE(main_test_rfh()->navigation_request());
+  EXPECT_FALSE(node->navigation_request());
   auto user_initiated_navigation =
       NavigationSimulator::CreateRendererInitiated(kUrl1, main_test_rfh());
   user_initiated_navigation->SetTransition(ui::PAGE_TRANSITION_LINK);
@@ -739,7 +736,7 @@ TEST_F(NavigatorTest,
   FrameTreeNode* node = main_test_rfh()->frame_tree_node();
 
   // Start a browser-initiated navigation to the 1st URL.
-  EXPECT_FALSE(main_test_rfh()->navigation_request());
+  EXPECT_FALSE(node->navigation_request());
   auto navigation =
       NavigationSimulator::CreateBrowserInitiated(kUrl1, contents());
   navigation->Start();
@@ -785,7 +782,7 @@ TEST_F(NavigatorTest,
       ExpectSiteInstanceChange(main_test_rfh()->GetSiteInstance());
 
   // Start a renderer-initiated non-user-initiated navigation to the 1st URL.
-  EXPECT_FALSE(main_test_rfh()->navigation_request());
+  EXPECT_FALSE(node->navigation_request());
   auto navigation1 =
       NavigationSimulator::CreateRendererInitiated(kUrl1, main_test_rfh());
   navigation1->SetTransition(ui::PageTransitionFromInt(
@@ -880,7 +877,7 @@ TEST_F(NavigatorTest, SpeculativeRendererWorksBaseCase) {
 
   // Begin navigating to another site.
   const GURL kUrl("http://google.com/");
-  EXPECT_FALSE(main_test_rfh()->navigation_request());
+  EXPECT_FALSE(node->navigation_request());
   auto navigation =
       NavigationSimulator::CreateBrowserInitiated(kUrl, contents());
   navigation->Start();
@@ -915,7 +912,7 @@ TEST_F(NavigatorTest, SpeculativeRendererDiscardedAfterRedirectToAnotherSite) {
 
   // Begin navigating to another site.
   const GURL kUrl("http://google.com/");
-  EXPECT_FALSE(main_test_rfh()->navigation_request());
+  EXPECT_FALSE(node->navigation_request());
   auto navigation =
       NavigationSimulator::CreateBrowserInitiated(kUrl, contents());
   navigation->Start();

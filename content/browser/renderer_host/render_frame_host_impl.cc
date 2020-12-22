@@ -1153,7 +1153,7 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
   // them.
   ResetChildren();
 
-  // Destroying |navigation_request_| may call into delegates/observers,
+  // Destroying NavigationRequests may call into delegates/observers,
   // so we do it early while |this| object is still in a sane state.
   ResetNavigationRequests();
 
@@ -2175,8 +2175,6 @@ void RenderFrameHostImpl::RenderProcessGone(
     owned_render_widget_host_->RendererExited();
 
   // The renderer process is gone, so this frame can no longer be loading.
-  if (navigation_request())
-    navigation_request()->set_net_error(net::ERR_ABORTED);
   ResetNavigationRequests();
   ResetLoadingState();
 
@@ -3078,7 +3076,7 @@ void RenderFrameHostImpl::DidCommitProvisionalLoad(
     mojom::DidCommitProvisionalLoadInterfaceParamsPtr interface_params) {
   if (MaybeInterceptCommitCallback(nullptr, &params, &interface_params)) {
     DCHECK(params);
-    DidCommitNavigation(std::move(navigation_request_), std::move(params),
+    DidCommitNavigation(nullptr, std::move(params),
                         std::move(interface_params));
   }
 }
@@ -3203,11 +3201,10 @@ bool RenderFrameHostImpl::HasPendingCommitNavigation() const {
 }
 
 bool RenderFrameHostImpl::HasPendingCommitForCrossDocumentNavigation() const {
-  return navigation_request_ || !navigation_requests_.empty();
+  return !navigation_requests_.empty();
 }
 
 void RenderFrameHostImpl::ResetNavigationRequests() {
-  navigation_request_.reset();
   same_document_navigation_request_.reset();
   navigation_requests_.clear();
 }
@@ -3886,12 +3883,6 @@ void RenderFrameHostImpl::RequestTextSurroundingSelection(
 bool RenderFrameHostImpl::HasCommittingNavigationRequestForOrigin(
     const url::Origin& origin,
     NavigationRequest* navigation_request_to_exclude) {
-  if (navigation_request_ &&
-      navigation_request_.get() != navigation_request_to_exclude &&
-      navigation_request_->HasCommittingOrigin(origin)) {
-    return true;
-  }
-
   for (const auto& it : navigation_requests_) {
     NavigationRequest* request = it.first;
     if (request != navigation_request_to_exclude &&
@@ -8925,11 +8916,8 @@ void RenderFrameHostImpl::OnSameDocumentCommitProcessed(
         std::move(same_document_navigation_request_));
   }
 
-  if (result == blink::mojom::CommitResult::Aborted) {
-    // Note: if the commit was successful, navigation_request_ is reset in
-    // DidCommitProvisionalLoad.
+  if (result == blink::mojom::CommitResult::Aborted)
     same_document_navigation_request_.reset();
-  }
 }
 
 std::unique_ptr<base::trace_event::TracedValue>

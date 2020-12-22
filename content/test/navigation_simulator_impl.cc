@@ -1122,11 +1122,6 @@ bool NavigationSimulatorImpl::SimulateBrowserInitiatedStart() {
       StopLoading();
       state_ = FAILED;
       return false;
-    } else if (request_ &&
-               web_contents_->GetMainFrame()->navigation_request() ==
-                   request_) {
-      CHECK(!IsURLHandledByNetworkStack(request_->common_params().url));
-      return true;
     } else if (web_contents_->GetMainFrame()
                    ->same_document_navigation_request() &&
                web_contents_->GetMainFrame()

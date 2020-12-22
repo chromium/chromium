@@ -712,10 +712,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // RenderFrameHost is ready to be deleted (LifecycleState::kReadyToBeDeleted).
   bool IsPendingDeletion();
 
-  // A NavigationRequest for a pending cross-document navigation in this frame,
-  // if any. This is cleared when the navigation commits.
-  NavigationRequest* navigation_request() { return navigation_request_.get(); }
-
   // A NavigationRequest for a pending same-document navigation in this frame,
   // if any. This is cleared when the navigation commits.
   NavigationRequest* same_document_navigation_request() {
@@ -2838,12 +2834,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Holder of Mojo connection with the HighPriorityLocalFrame in blink.
   mojo::Remote<blink::mojom::HighPriorityLocalFrame> high_priority_local_frame_;
 
-  // Holds a NavigationRequest when it's about to commit, ie. after
-  // OnCrossDocumentCommitProcessed has returned a positive answer for this
-  // NavigationRequest but before receiving DidCommitProvisionalLoad. This
-  // NavigationRequest is for a cross-document navigation.
-  std::unique_ptr<NavigationRequest> navigation_request_;
-
   // Holds AppCacheNavigationHandle after navigation request has been committed,
   // which keeps corresponding AppCacheHost alive while renderer asks for it.
   // See AppCacheNavigationHandle comment for more details.
@@ -2851,8 +2841,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Holds the cross-document NavigationRequests that are waiting to commit,
   // indexed by IDs. These are navigations that have passed ReadyToCommit stage
-  // and are waiting for the renderer to send back a matching
-  // OnCrossDocumentCommitProcessed.
+  // and are waiting for a matching commit IPC.
 
   // TODO(ahemery): We have this storage as a map because we actually want to
   // find navigations by id with PerNavigationMojoInterface disabled.
