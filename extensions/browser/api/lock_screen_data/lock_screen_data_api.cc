@@ -55,8 +55,9 @@ ExtensionFunction::ResponseAction LockScreenDataCreateFunction::Run() {
     return RespondNow(Error("Not available"));
   }
 
-  storage->CreateItem(extension_id(),
-                      base::Bind(&LockScreenDataCreateFunction::OnDone, this));
+  storage->CreateItem(
+      extension_id(),
+      base::BindOnce(&LockScreenDataCreateFunction::OnDone, this));
   return RespondLater();
 }
 
@@ -89,7 +90,8 @@ ExtensionFunction::ResponseAction LockScreenDataGetAllFunction::Run() {
     return RespondNow(Error("Not available"));
 
   storage->GetAllForExtension(
-      extension_id(), base::Bind(&LockScreenDataGetAllFunction::OnDone, this));
+      extension_id(),
+      base::BindOnce(&LockScreenDataGetAllFunction::OnDone, this));
   return RespondLater();
 }
 

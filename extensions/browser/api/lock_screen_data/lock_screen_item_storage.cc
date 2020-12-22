@@ -233,20 +233,20 @@ void LockScreenItemStorage::SetSessionLocked(bool session_locked) {
 }
 
 void LockScreenItemStorage::CreateItem(const std::string& extension_id,
-                                       const CreateCallback& callback) {
+                                       CreateCallback callback) {
   EnsureCacheForExtensionLoaded(
-      extension_id,
-      base::BindOnce(&LockScreenItemStorage::CreateItemImpl,
-                     weak_ptr_factory_.GetWeakPtr(), extension_id, callback));
+      extension_id, base::BindOnce(&LockScreenItemStorage::CreateItemImpl,
+                                   weak_ptr_factory_.GetWeakPtr(), extension_id,
+                                   std::move(callback)));
 }
 
-void LockScreenItemStorage::GetAllForExtension(
-    const std::string& extension_id,
-    const DataItemListCallback& callback) {
+void LockScreenItemStorage::GetAllForExtension(const std::string& extension_id,
+                                               DataItemListCallback callback) {
   EnsureCacheForExtensionLoaded(
       extension_id,
       base::BindOnce(&LockScreenItemStorage::GetAllForExtensionImpl,
-                     weak_ptr_factory_.GetWeakPtr(), extension_id, callback));
+                     weak_ptr_factory_.GetWeakPtr(), extension_id,
+                     std::move(callback)));
 }
 
 void LockScreenItemStorage::SetItemContent(const std::string& extension_id,
@@ -302,7 +302,7 @@ bool LockScreenItemStorage::IsContextAllowed(content::BrowserContext* context) {
 }
 
 void LockScreenItemStorage::CreateItemImpl(const std::string& extension_id,
-                                           const CreateCallback& callback) {
+                                           CreateCallback callback) {
   ExtensionDataMap::iterator data = data_item_cache_.find(extension_id);
   if (data == data_item_cache_.end() ||
       data->second.state != CachedExtensionData::State::kLoaded) {
@@ -315,17 +315,18 @@ void LockScreenItemStorage::CreateItemImpl(const std::string& extension_id,
   DataItem* item_ptr = item.get();
   item_ptr->Register(base::BindOnce(
       &LockScreenItemStorage::OnItemRegistered, weak_ptr_factory_.GetWeakPtr(),
-      std::move(item), extension_id, tick_clock_->NowTicks(), callback));
+      std::move(item), extension_id, tick_clock_->NowTicks(),
+      std::move(callback)));
 }
 
 void LockScreenItemStorage::GetAllForExtensionImpl(
     const std::string& extension_id,
-    const DataItemListCallback& callback) {
+    DataItemListCallback callback) {
   std::vector<const DataItem*> items;
   ExtensionDataMap::iterator extension_data =
       data_item_cache_.find(extension_id);
   if (extension_data == data_item_cache_.end()) {
-    callback.Run(items);
+    std::move(callback).Run(items);
     return;
   }
 
@@ -335,7 +336,7 @@ void LockScreenItemStorage::GetAllForExtensionImpl(
     items.push_back(item.second.get());
   }
 
-  callback.Run(items);
+  std::move(callback).Run(items);
 }
 
 void LockScreenItemStorage::SetItemContentImpl(const std::string& extension_id,
@@ -385,7 +386,7 @@ void LockScreenItemStorage::DeleteItemImpl(const std::string& extension_id,
 void LockScreenItemStorage::OnItemRegistered(std::unique_ptr<DataItem> item,
                                              const std::string& extension_id,
                                              const base::TimeTicks& start_time,
-                                             const CreateCallback& callback,
+                                             CreateCallback callback,
                                              OperationResult result) {
   if (result == OperationResult::kSuccess) {
     UMA_HISTOGRAM_TIMES(
@@ -398,7 +399,7 @@ void LockScreenItemStorage::OnItemRegistered(std::unique_ptr<DataItem> item,
   }
 
   if (result != OperationResult::kSuccess) {
-    callback.Run(result, nullptr);
+    std::move(callback).Run(result, nullptr);
     return;
   }
 
@@ -413,7 +414,7 @@ void LockScreenItemStorage::OnItemRegistered(std::unique_ptr<DataItem> item,
                         data_item_cache_[extension_id].data_items.size())));
   }
 
-  callback.Run(OperationResult::kSuccess, item_ptr);
+  std::move(callback).Run(OperationResult::kSuccess, item_ptr);
 }
 
 void LockScreenItemStorage::OnItemWritten(const base::TimeTicks& start_time,

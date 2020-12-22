@@ -50,9 +50,9 @@ enum class OperationResult;
 class LockScreenItemStorage : public ExtensionRegistryObserver {
  public:
   using CreateCallback =
-      base::Callback<void(OperationResult result, const DataItem* item)>;
+      base::OnceCallback<void(OperationResult result, const DataItem* item)>;
   using DataItemListCallback =
-      base::Callback<void(const std::vector<const DataItem*>& items)>;
+      base::OnceCallback<void(const std::vector<const DataItem*>& items)>;
   using WriteCallback = DataItem::WriteCallback;
   using ReadCallback = DataItem::ReadCallback;
 
@@ -96,12 +96,11 @@ class LockScreenItemStorage : public ExtensionRegistryObserver {
   void SetSessionLocked(bool session_locked);
 
   // Creates a new data item for the extension.
-  void CreateItem(const std::string& extension_id,
-                  const CreateCallback& callback);
+  void CreateItem(const std::string& extension_id, CreateCallback callback);
 
   // Returns all existing data items associated with the extension.
   void GetAllForExtension(const std::string& extension_id,
-                          const DataItemListCallback& callback);
+                          DataItemListCallback callback);
 
   // Updates the content of the item identified by |item_id| that is associated
   // with the provided extension.
@@ -128,14 +127,14 @@ class LockScreenItemStorage : public ExtensionRegistryObserver {
 
   // Used in tests to inject fake/stub data value store.
   using ValueStoreCacheFactoryCallback =
-      base::Callback<std::unique_ptr<LocalValueStoreCache>(
+      base::RepeatingCallback<std::unique_ptr<LocalValueStoreCache>(
           const base::FilePath& root)>;
   static void SetValueStoreCacheFactoryForTesting(
       ValueStoreCacheFactoryCallback* factory_callback);
 
   // Used in tests to inject fake value store migrator implementation.
   using ValueStoreMigratorFactoryCallback =
-      base::Callback<std::unique_ptr<LockScreenValueStoreMigrator>()>;
+      base::RepeatingCallback<std::unique_ptr<LockScreenValueStoreMigrator>()>;
   static void SetValueStoreMigratorFactoryForTesting(
       ValueStoreMigratorFactoryCallback* factory_callback);
 
@@ -207,10 +206,9 @@ class LockScreenItemStorage : public ExtensionRegistryObserver {
 
   // Implementations for data item management methods - called when the data
   // cache for the associated extension was initialized:
-  void CreateItemImpl(const std::string& extension_id,
-                      const CreateCallback& callback);
+  void CreateItemImpl(const std::string& extension_id, CreateCallback callback);
   void GetAllForExtensionImpl(const std::string& extension_id,
-                              const DataItemListCallback& callback);
+                              DataItemListCallback callback);
   void SetItemContentImpl(const std::string& extension_id,
                           const std::string& item_id,
                           const std::vector<char>& data,
@@ -239,7 +237,7 @@ class LockScreenItemStorage : public ExtensionRegistryObserver {
   void OnItemRegistered(std::unique_ptr<DataItem> item,
                         const std::string& extension_id,
                         const base::TimeTicks& start_time,
-                        const CreateCallback& callback,
+                        CreateCallback callback,
                         OperationResult result);
 
   // Callback for data item write operation - it invokes the callback with the

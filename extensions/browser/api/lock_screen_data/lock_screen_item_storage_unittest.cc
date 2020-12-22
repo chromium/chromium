@@ -544,7 +544,7 @@ class LockScreenItemStorageTest : public ExtensionsTest {
     const DataItem* item = nullptr;
     lock_screen_item_storage()->CreateItem(
         extension()->id(),
-        base::Bind(&RecordCreateResult, &create_result, &item));
+        base::BindOnce(&RecordCreateResult, &create_result, &item));
     EXPECT_EQ(OperationResult::kSuccess, create_result);
 
     return item;
@@ -567,7 +567,7 @@ class LockScreenItemStorageTest : public ExtensionsTest {
 
   void GetAllItems(std::vector<std::string>* all_items) {
     lock_screen_item_storage()->GetAllForExtension(
-        extension()->id(), base::Bind(&RecordGetAllItemsResult, all_items));
+        extension()->id(), base::BindOnce(&RecordGetAllItemsResult, all_items));
   }
 
   // Finds an item with the ID |id| in list of items |items|.
@@ -928,7 +928,7 @@ TEST_F(LockScreenItemStorageTest, RequestsDuringInitialLoad) {
 
   std::vector<std::string> items;
   lock_screen_item_storage()->GetAllForExtension(
-      extension()->id(), base::Bind(&RecordGetAllItemsResult, &items));
+      extension()->id(), base::BindOnce(&RecordGetAllItemsResult, &items));
   EXPECT_TRUE(items.empty());
 
   OperationResult delete_result = OperationResult::kFailed;
@@ -944,7 +944,7 @@ TEST_F(LockScreenItemStorageTest, RequestsDuringInitialLoad) {
   const DataItem* new_item = nullptr;
   lock_screen_item_storage()->CreateItem(
       extension()->id(),
-      base::Bind(&RecordCreateResult, &create_result, &new_item));
+      base::BindOnce(&RecordCreateResult, &create_result, &new_item));
   EXPECT_FALSE(new_item);
 
   EXPECT_TRUE(item_registry()->HasPendingCallback());
@@ -1126,7 +1126,7 @@ TEST_F(LockScreenItemStorageTest,
   const DataItem* item = nullptr;
   lock_screen_item_storage()->CreateItem(
       extension()->id(),
-      base::Bind(&RecordCreateResult, &create_result, &item));
+      base::BindOnce(&RecordCreateResult, &create_result, &item));
   EXPECT_EQ(OperationResult::kFailed, create_result);
 
   lock_screen_item_storage()->SetSessionLocked(false);
@@ -1269,7 +1269,7 @@ TEST_F(LockScreenItemStorageTest, OperationsBlockedOnMigration) {
 
   std::vector<std::string> items;
   lock_screen_item_storage()->GetAllForExtension(
-      extension()->id(), base::Bind(&RecordGetAllItemsResult, &items));
+      extension()->id(), base::BindOnce(&RecordGetAllItemsResult, &items));
   EXPECT_TRUE(items.empty());
 
   OperationResult delete_result = OperationResult::kFailed;
@@ -1296,7 +1296,7 @@ TEST_F(LockScreenItemStorageTest, OperationsBlockedOnMigration) {
   const DataItem* new_item = nullptr;
   lock_screen_item_storage()->CreateItem(
       extension()->id(),
-      base::Bind(&RecordCreateResult, &create_result, &new_item));
+      base::BindOnce(&RecordCreateResult, &create_result, &new_item));
   EXPECT_FALSE(new_item);
 
   // Finish item migration - all queued operations should be now run.
