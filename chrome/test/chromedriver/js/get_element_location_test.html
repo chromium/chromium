@@ -83,6 +83,17 @@ function testElementChildCenterTopLeftLocation() {
   assertEquals(Math.floor(y), Math.floor(location.y));
 }
 
+function testElementDetached() {
+  var newChild = document.createElement('div');
+  try {
+    getElementLocation(newChild, false);
+    assert(false);
+  } catch (e) {
+    assertEquals('element is not attached to the page document', e.message);
+    assertEquals(10, e.code);
+  }
+}
+
 </script>
 <body>
 <h2>position: absolute;</h2>
