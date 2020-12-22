@@ -45,6 +45,7 @@ _TEST_APK_PAK_PATH = os.path.join(_TEST_APK_ROOT_DIR, 'assets/resources.pak')
 _TEST_ELF_PATH = os.path.join(_TEST_OUTPUT_DIR, 'elf')
 _TEST_APK_PATH = os.path.join(_TEST_OUTPUT_DIR, 'test.apk')
 _TEST_MINIMAL_APKS_PATH = os.path.join(_TEST_OUTPUT_DIR, 'Bundle.minimal.apks')
+_TEST_SSARGS_PATH = os.path.join(_TEST_OUTPUT_DIR, 'test.ssargs')
 
 # Generated file paths relative to apk
 _TEST_APK_SO_PATH = 'test.so'
@@ -243,23 +244,30 @@ class IntegrationTest(unittest.TestCase):
                  use_output_directory=True,
                  use_elf=False,
                  use_apk=False,
+                 use_ssargs=False,
                  use_minimal_apks=False,
                  use_pak=False,
                  use_aux_elf=None,
                  debug_measures=False,
                  include_padding=False):
     args = [
-      archive_path,
-      '--map-file', _TEST_MAP_PATH,
-      '--source-directory', _TEST_SOURCE_DIR,
+        archive_path,
+        '--source-directory',
+        _TEST_SOURCE_DIR,
+        #  --map-file ignored for use_ssargs.
+        '--map-file',
+        _TEST_MAP_PATH,
     ]
+
     if use_output_directory:
       # Let autodetection find output_directory when --elf-file is used.
       if not use_elf:
         args += ['--output-directory', _TEST_OUTPUT_DIR]
     else:
       args += ['--no-output-directory']
-    if use_apk:
+    if use_ssargs:
+      args += ['-f', _TEST_SSARGS_PATH]
+    elif use_apk:
       args += ['-f', _TEST_APK_PATH]
     elif use_minimal_apks:
       args += ['-f', _TEST_MINIMAL_APKS_PATH]
@@ -313,15 +321,10 @@ class IntegrationTest(unittest.TestCase):
 
     sym_strs = (repr(sym) for sym in size_info.symbols)
     stats = describe.DescribeSizeInfoCoverage(size_info)
-    if len(size_info.containers) == 1:
-      # If there's only one container, merge the its metadata into build_config.
-      merged_data_desc = describe.DescribeDict(size_info.metadata_legacy)
-      return itertools.chain(merged_data_desc, stats, sym_strs)
-    else:
-      build_config = describe.DescribeDict(size_info.build_config)
-      metadata = itertools.chain.from_iterable(
-          describe.DescribeDict(c.metadata) for c in size_info.containers)
-      return itertools.chain(build_config, metadata, stats, sym_strs)
+    assert len(size_info.containers) == 1
+    # If there's only one container, merge the its metadata into build_config.
+    merged_data_desc = describe.DescribeDict(size_info.metadata_legacy)
+    return itertools.chain(merged_data_desc, stats, sym_strs)
 
   @_CompareWithGolden()
   def test_Archive(self):
@@ -509,6 +512,30 @@ class IntegrationTest(unittest.TestCase):
         describe.GenerateLines(all_syms.GroupedByName(depth=-1)),
         ['GroupedByName(depth=1, min_count=2)'],
         describe.GenerateLines(all_syms.GroupedByName(depth=1, min_count=2)),
+    )
+
+  @_CompareWithGolden()
+  def test_ArchiveContainers(self):
+    with tempfile.NamedTemporaryFile(suffix='.size') as temp_file:
+      self._DoArchive(temp_file.name,
+                      use_output_directory=True,
+                      use_ssargs=True)
+      size_info = archive.LoadAndPostProcessSizeInfo(temp_file.name)
+
+    # Don't cluster.
+    size_info.symbols = size_info.raw_symbols
+    sym_strs = (repr(sym) for sym in size_info.symbols)
+    build_config = describe.DescribeDict(size_info.build_config)
+    metadata = itertools.chain.from_iterable(
+        itertools.chain([c.name], describe.DescribeDict(c.metadata))
+        for c in size_info.containers)
+    return itertools.chain(
+        ['BuildConfig:'],
+        build_config,
+        ['Metadata:'],
+        metadata,
+        ['Symbols:'],
+        sym_strs,
     )
 
 
