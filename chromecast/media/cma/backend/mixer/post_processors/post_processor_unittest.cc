@@ -46,9 +46,9 @@ AlignedBuffer<float> LinearChirp(int frames,
   for (size_t ch = 0; ch < start_frequencies.size(); ++ch) {
     double angle = 0.0;
     for (int f = 0; f < frames; ++f) {
-      angle +=
-          start_frequencies[ch] +
-          (end_frequencies[ch] - start_frequencies[ch]) * f * M_PI / frames;
+      angle += (start_frequencies[ch] +
+                (end_frequencies[ch] - start_frequencies[ch]) * f / frames) *
+               M_PI;
       chirp[ch + f * start_frequencies.size()] = sin(angle);
     }
   }
