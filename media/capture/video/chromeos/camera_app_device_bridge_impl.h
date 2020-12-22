@@ -21,8 +21,6 @@ class CAPTURE_EXPORT CameraAppDeviceBridgeImpl
  public:
   using CameraInfoGetter =
       base::RepeatingCallback<cros::mojom::CameraInfoPtr(const std::string&)>;
-  using VirtualDeviceController =
-      base::RepeatingCallback<void(const std::string&, bool)>;
 
   CameraAppDeviceBridgeImpl();
 
@@ -39,9 +37,6 @@ class CAPTURE_EXPORT CameraAppDeviceBridgeImpl
 
   void UnsetCameraInfoGetter();
 
-  void SetVirtualDeviceController(
-      VirtualDeviceController virtual_device_controller);
-
   CameraAppDeviceImpl* GetCameraAppDevice(const std::string& device_id);
 
   // cros::mojom::CameraAppDeviceBridge implementations.
@@ -50,19 +45,12 @@ class CAPTURE_EXPORT CameraAppDeviceBridgeImpl
 
   void IsSupported(IsSupportedCallback callback) override;
 
-  void SetMultipleStreamsEnabled(
-      const std::string& device_id,
-      bool enabled,
-      SetMultipleStreamsEnabledCallback callback) override;
-
  private:
   CameraAppDeviceImpl* CreateCameraAppDevice(const std::string& device_id);
 
   bool is_supported_;
 
   CameraInfoGetter camera_info_getter_;
-
-  VirtualDeviceController virtual_device_controller_;
 
   mojo::ReceiverSet<cros::mojom::CameraAppDeviceBridge> receivers_;
 

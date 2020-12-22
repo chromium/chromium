@@ -92,8 +92,6 @@ class CAPTURE_EXPORT CameraHalDelegate final
 
   const VendorTagInfo* GetVendorTagInfoByName(const std::string& full_name);
 
-  void EnableVirtualDevice(const std::string& device_id, bool enable);
-
  private:
   friend class base::RefCountedThreadSafe<CameraHalDelegate>;
 
@@ -192,10 +190,6 @@ class CAPTURE_EXPORT CameraHalDelegate final
   // GetCameraIdFromDeviceId().
   base::Lock device_id_to_camera_id_lock_;
   std::map<std::string, int> device_id_to_camera_id_;
-  // A virtual device is enabled/disabled for camera id.
-  base::Lock enable_virtual_device_lock_;
-  base::flat_map<int, bool> enable_virtual_device_
-      GUARDED_BY(enable_virtual_device_lock_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -216,7 +210,6 @@ class CAPTURE_EXPORT CameraHalDelegate final
   // information of vendor tags.  Bound to |ipc_task_runner_|.
   VendorTagOpsDelegate vendor_tag_ops_delegate_;
 
-  // A map from camera id to corresponding delegate instance.
   base::flat_map<int, std::unique_ptr<VideoCaptureDeviceChromeOSDelegate>>
       vcd_delegate_map_;
 

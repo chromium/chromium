@@ -95,9 +95,6 @@ bool VideoCaptureDeviceFactoryChromeOS::Init() {
     camera_app_device_bridge_->SetCameraInfoGetter(
         base::BindRepeating(&CameraHalDelegate::GetCameraInfoFromDeviceId,
                             base::Unretained(camera_hal_delegate_.get())));
-    camera_app_device_bridge_->SetVirtualDeviceController(
-        base::BindRepeating(&CameraHalDelegate::EnableVirtualDevice,
-                            base::Unretained(camera_hal_delegate_.get())));
   }
   return true;
 }
