@@ -2303,6 +2303,7 @@ TEST_P(WebMediaPlayerImplBackgroundBehaviorTest, VideoOnly) {
 
 TEST_P(WebMediaPlayerImplBackgroundBehaviorTest, AudioVideo) {
   SetMetadata(true, true);
+  BackgroundPlayer();
 
   // Optimization requirements are the same for all platforms.
   bool matches_requirements =
@@ -2328,22 +2329,23 @@ TEST_P(WebMediaPlayerImplBackgroundBehaviorTest, AudioVideo) {
 
   // These tests start in background mode prior to having metadata, so put the
   // test back into a normal state.
-  EXPECT_TRUE(IsDisableVideoTrackPending());
+  EXPECT_TRUE(IsDisableVideoTrackPending() || IsVideoTrackDisabled());
 
   ForegroundPlayer();
-  EXPECT_FALSE(IsVideoTrackDisabled());
+
+  // Testing IsVideoTrackDisabled() here is flaky as EnableVideoTrackIfNeeded()
+  // does not reenable the video track because IsPipelineRunning() is false.
   EXPECT_FALSE(IsDisableVideoTrackPending());
 
   // Should start background disable timer, but not disable immediately.
   BackgroundPlayer();
   if (ShouldPausePlaybackWhenHidden()) {
-    EXPECT_FALSE(IsVideoTrackDisabled());
     EXPECT_FALSE(IsDisableVideoTrackPending());
   } else {
-    // Testing IsVideoTrackDisabled() leads to flakyness even though there
+    // Testing IsVideoTrackDisabled() alone leads to flakyness even though there
     // should be a 10 minutes delay until it happens. Given that it doesn't
-    // provides much of a benefit at the moment, this is being ignored.
-    EXPECT_TRUE(IsDisableVideoTrackPending());
+    // provide much of a benefit at the moment, this is being ignored.
+    EXPECT_TRUE(IsDisableVideoTrackPending() || IsVideoTrackDisabled());
   }
 }
 

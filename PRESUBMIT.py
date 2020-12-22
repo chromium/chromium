@@ -383,8 +383,6 @@ _NOT_CONVERTED_TO_MODERN_BIND_AND_CALLBACK = '|'.join((
   '^components/webcrypto/',
   '^extensions/browser/',
   '^extensions/renderer/',
-   '^media/blink/',
-  '^media/cdm/',
   '^net/http/',
   '^net/url_request/',
   '^ppapi/proxy/',

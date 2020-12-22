@@ -2891,8 +2891,9 @@ void WebMediaPlayerImpl::StartPipeline() {
       // base::Unretained is safe because |this| owns memory_pressure_listener_.
       memory_pressure_listener_ =
           std::make_unique<base::MemoryPressureListener>(
-              FROM_HERE, base::Bind(&WebMediaPlayerImpl::OnMemoryPressure,
-                                    base::Unretained(this)));
+              FROM_HERE,
+              base::BindRepeating(&WebMediaPlayerImpl::OnMemoryPressure,
+                                  base::Unretained(this)));
     }
   }
 
@@ -3608,11 +3609,15 @@ void WebMediaPlayerImpl::UpdateBackgroundVideoOptimizationState() {
   if (IsHidden()) {
     if (ShouldPausePlaybackWhenHidden()) {
       PauseVideoIfNeeded();
-    } else if (update_background_status_cb_.IsCancelled()) {
+    } else if (update_background_status_cb_.IsCancelled() &&
+               !video_track_disabled_) {
+      // Note: `IsCancelled()` can means the callback is now null, which can be
+      // either because it already ran, or because it was cancelled.
+
       // Only trigger updates when we don't have one already scheduled.
       update_background_status_cb_.Reset(
-          base::Bind(&WebMediaPlayerImpl::DisableVideoTrackIfNeeded,
-                     base::Unretained(this)));
+          base::BindOnce(&WebMediaPlayerImpl::DisableVideoTrackIfNeeded,
+                         base::Unretained(this)));
 
       // Defer disable track until we're sure the clip will be backgrounded for
       // some time. Resuming may take half a second, so frequent tab switches
