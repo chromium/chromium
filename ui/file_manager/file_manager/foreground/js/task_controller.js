@@ -469,6 +469,7 @@ class TaskController {
   updateContextMenuTaskItems_(openTasks, nonOpenTasks) {
     const defaultTask = FileTasks.getDefaultTask(openTasks, this.taskHistory_);
     if (defaultTask) {
+      this.ui_.defaultTaskMenuItem.removeAttribute('file-type-icon');
       if (defaultTask.iconType) {
         this.ui_.defaultTaskMenuItem.style.backgroundImage = '';
         this.ui_.defaultTaskMenuItem.setAttribute(

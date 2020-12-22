@@ -8,7 +8,7 @@
  noting that file-type-icon is also used in lists and menus ;) */
 
 /* Small icons for file types, used in lists and menus. */
-body.files-ng [file-type-icon] {
+[file-type-icon] {
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
   background-image: url(../images/filetype/filetype_generic.svg);
