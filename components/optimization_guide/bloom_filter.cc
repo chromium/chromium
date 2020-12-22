@@ -51,7 +51,9 @@ BloomFilter::BloomFilter(uint32_t num_hash_functions,
   memcpy(&bytes_[0], filter_data.data(), filter_data.size());
 }
 
-BloomFilter::~BloomFilter() = default;
+BloomFilter::~BloomFilter() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
 
 bool BloomFilter::Contains(const std::string& str) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

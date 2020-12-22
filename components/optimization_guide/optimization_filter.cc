@@ -28,10 +28,11 @@ OptimizationFilter::OptimizationFilter(
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
-OptimizationFilter::~OptimizationFilter() = default;
+OptimizationFilter::~OptimizationFilter() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
 
 bool OptimizationFilter::Matches(const GURL& url) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return ContainsHostSuffix(url) || MatchesRegexp(url);
 }
 
