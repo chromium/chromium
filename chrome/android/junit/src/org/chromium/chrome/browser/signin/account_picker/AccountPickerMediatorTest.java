@@ -130,7 +130,7 @@ public class AccountPickerMediatorTest {
                 RuntimeEnvironment.application, mModelList, mListenerMock, ACCOUNT_NAME1, false);
         String fullName2 = "Full Name2";
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mFakeProfileDataSource.setProfileData(ACCOUNT_NAME2,
+            mFakeProfileDataSource.addProfileData(
                     new ProfileDataSource.ProfileData(ACCOUNT_NAME2, null, fullName2, null));
         });
         // ACCOUNT_NAME1, ACCOUNT_NAME2, ADD_ACCOUNT

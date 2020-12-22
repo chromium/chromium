@@ -142,9 +142,8 @@ public class ProfileDataCacheRenderTest extends DummyUiActivityTestCase {
                         new CoreAccountId("gaia-id-test"), accountEmail, "gaia-id-test", null));
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mProfileDataSource.setProfileData(accountEmail,
-                    new ProfileDataSource.ProfileData(
-                            accountEmail, null, "Full Name", "Given Name"));
+            mProfileDataSource.addProfileData(new ProfileDataSource.ProfileData(
+                    accountEmail, null, "Full Name", "Given Name"));
         });
         mIdentityManager.onExtendedAccountInfoUpdated(new AccountInfo(
                 new CoreAccountId("gaia-id-test"), accountEmail, "gaia-id-test", createAvatar()));
@@ -170,7 +169,7 @@ public class ProfileDataCacheRenderTest extends DummyUiActivityTestCase {
             String accountName = "test@example.com";
             ProfileDataSource.ProfileData profileData = new ProfileDataSource.ProfileData(
                     accountName, createAvatar(), "Full Name", "Given Name");
-            mProfileDataSource.setProfileData(accountName, profileData);
+            mProfileDataSource.addProfileData(profileData);
             checkImageIsScaled(accountName);
         });
 

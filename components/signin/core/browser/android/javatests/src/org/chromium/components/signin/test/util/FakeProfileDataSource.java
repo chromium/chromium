@@ -4,6 +4,7 @@
 
 package org.chromium.components.signin.test.util;
 
+import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ObserverList;
@@ -15,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * ProfileDataSource used for testing. Use {@link #setProfileData} to specify the data to be
+ * ProfileDataSource used for testing. Use {@link #addProfileData} to specify the data to be
  * returned by {@link #getProfileDataForAccount}.
  */
 public class FakeProfileDataSource implements ProfileDataSource {
@@ -50,23 +51,16 @@ public class FakeProfileDataSource implements ProfileDataSource {
     }
 
     /**
-     * Sets or removes ProfileData for a single account. Will notify the observers.
-     * @param profileData ProfileData to set or null to remove ProfileData from the account.
+     * Adds a {@link ProfileData} to the FakeProfileDataSource.
+     * If the account email of the {@link ProfileData} already exists, replace the old
+     * {@link ProfileData} with the given one.
      */
-    public void setProfileData(String accountId, @Nullable ProfileData profileData) {
+    @MainThread
+    public void addProfileData(ProfileData profileData) {
         ThreadUtils.assertOnUiThread();
-        if (profileData == null) {
-            mProfileDataMap.remove(accountId);
-        } else {
-            assert accountId.equals(profileData.getAccountEmail());
-            mProfileDataMap.put(accountId, profileData);
-        }
-        fireOnProfileDataUpdatedNotification(accountId);
-    }
-
-    private void fireOnProfileDataUpdatedNotification(String accountId) {
+        mProfileDataMap.put(profileData.getAccountEmail(), profileData);
         for (Observer observer : mObservers) {
-            observer.onProfileDataUpdated(accountId);
+            observer.onProfileDataUpdated(profileData);
         }
     }
 }

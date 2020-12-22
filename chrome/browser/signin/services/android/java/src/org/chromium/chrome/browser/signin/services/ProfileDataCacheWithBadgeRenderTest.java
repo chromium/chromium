@@ -131,7 +131,7 @@ public class ProfileDataCacheWithBadgeRenderTest extends DummyUiActivityTestCase
 
             ProfileDataSource.ProfileData profileData = new ProfileDataSource.ProfileData(
                     TEST_ACCOUNT_NAME, createAvatar(), "Full Name", "Given Name");
-            mProfileDataSource.setProfileData(TEST_ACCOUNT_NAME, profileData);
+            mProfileDataSource.addProfileData(profileData);
             mImageView.setImageDrawable(
                     mProfileDataCache.getProfileDataOrDefault(TEST_ACCOUNT_NAME).getImage());
         });
