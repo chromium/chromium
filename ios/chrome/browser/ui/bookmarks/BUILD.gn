@@ -183,6 +183,7 @@ source_set("bookmarks_ui") {
     "//ios/chrome/browser/ui/table_view:feature_flags",
     "//ios/chrome/browser/ui/table_view:presentation",
     "//ios/chrome/browser/ui/table_view:styler",
+    "//ios/chrome/browser/ui/table_view:utils",
     "//ios/chrome/browser/ui/table_view:views",
     "//ios/chrome/common/ui/util",
     "//ios/public/provider/chrome/browser",
