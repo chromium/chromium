@@ -9,11 +9,13 @@
 #include <list>
 #include <vector>
 
+#include "base/atomic_sequence_num.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "build/build_config.h"
@@ -32,6 +34,8 @@
 #include "media/base/media_content_type.h"
 #include "net/base/filename_util.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
 #include "services/media_session/public/cpp/test/mock_media_session.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -131,6 +135,11 @@ class MediaSessionImplBrowserTest : public ContentBrowserTest {
     host_resolver()->AddRule("*", "127.0.0.1");
     EXPECT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL(
                                            "example.com", "/title1.html")));
+
+    // Setup the favicon server.
+    favicon_server().RegisterRequestHandler(base::BindRepeating(
+        &MediaSessionImplBrowserTest::HandleRequest, base::Unretained(this)));
+    ASSERT_TRUE(favicon_server().Start());
 
     media_session_ = MediaSessionImpl::Get(shell()->web_contents());
     mock_audio_focus_delegate_ = new NiceMock<MockAudioFocusDelegate>(
@@ -278,10 +287,22 @@ class MediaSessionImplBrowserTest : public ContentBrowserTest {
     return expected_title.substr(strlen("http://"));
   }
 
+  net::EmbeddedTestServer& favicon_server() { return favicon_server_; }
+
+  int get_favicon_calls() { return favicon_calls_.GetNext(); }
+
  protected:
+  std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
+      const net::test_server::HttpRequest& request) {
+    get_favicon_calls();
+    return std::make_unique<net::test_server::BasicHttpResponse>();
+  }
+
   MediaSessionImpl* media_session_;
   MockAudioFocusDelegate* mock_audio_focus_delegate_;
   std::unique_ptr<MockMediaSessionServiceImpl> mock_media_session_service_;
+  net::EmbeddedTestServer favicon_server_;
+  base::AtomicSequenceNumber favicon_calls_;
 
   DISALLOW_COPY_AND_ASSIGN(MediaSessionImplBrowserTest);
 };
@@ -2935,4 +2956,45 @@ IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest,
             media::MediaContentType::Persistent);
   EXPECT_NE(player_observer->GetAudioOutputSinkId(player_1), "speaker1");
 }
+
+IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest, CacheFaviconImages) {
+  std::vector<gfx::Size> valid_sizes;
+  valid_sizes.push_back(gfx::Size(100, 100));
+  valid_sizes.push_back(gfx::Size(200, 200));
+
+  std::vector<blink::mojom::FaviconURLPtr> favicons;
+  favicons.push_back(blink::mojom::FaviconURL::New(
+      favicon_server().GetURL("/favicon.ico"),
+      blink::mojom::FaviconIconType::kFavicon, valid_sizes));
+
+  media_session_->DidUpdateFaviconURL(shell()->web_contents()->GetMainFrame(),
+                                      favicons);
+
+  media_session::MediaImage test_image;
+  test_image.src = favicon_server().GetURL("/favicon.ico");
+  test_image.sizes = valid_sizes;
+
+  {
+    EXPECT_EQ(0, get_favicon_calls());
+
+    base::RunLoop run_loop;
+    media_session_->GetMediaImageBitmap(
+        test_image, 100, 100,
+        base::BindLambdaForTesting([&](const SkBitmap&) { run_loop.Quit(); }));
+    run_loop.Run();
+
+    EXPECT_EQ(2, get_favicon_calls());
+  }
+
+  {
+    base::RunLoop run_loop;
+    media_session_->GetMediaImageBitmap(
+        test_image, 100, 100,
+        base::BindLambdaForTesting([&](const SkBitmap&) { run_loop.Quit(); }));
+    run_loop.Run();
+
+    EXPECT_EQ(3, get_favicon_calls());
+  }
+}
+
 }  // namespace content

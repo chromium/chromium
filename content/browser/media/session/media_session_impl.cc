@@ -264,6 +264,8 @@ void MediaSessionImpl::DidFinishNavigation(
     return;
   }
 
+  image_cache_.clear();
+
   auto new_origin = url::Origin::Create(navigation_handle->GetURL());
   if (navigation_handle->IsInMainFrame() &&
       !new_origin.IsSameOriginWith(origin_)) {
@@ -725,6 +727,7 @@ void MediaSessionImpl::OnImageDownloadComplete(
     GetMediaImageBitmapCallback callback,
     int minimum_size_px,
     int desired_size_px,
+    bool source_icon,
     int id,
     int http_status_code,
     const GURL& image_url,
@@ -754,6 +757,9 @@ void MediaSessionImpl::OnImageDownloadComplete(
         image.readPixels(info, bitmap.getPixels(), bitmap.rowBytes(), 0, 0);
     }
   }
+
+  if (source_icon)
+    image_cache_.emplace(image_url, bitmap);
 
   std::move(callback).Run(bitmap);
 }
@@ -1090,8 +1096,17 @@ void MediaSessionImpl::GetMediaImageBitmap(
     GetMediaImageBitmapCallback callback) {
   // We should make sure |image| is in |images_|.
   bool found = false;
-  for (auto& image_type : images_)
-    found = found || base::Contains(image_type.second, image);
+  bool source_icon = false;
+  for (auto& image_type : images_) {
+    if (base::Contains(image_type.second, image)) {
+      found = true;
+
+      if (image_type.first ==
+          media_session::mojom::MediaSessionImageType::kSourceIcon) {
+        source_icon = true;
+      }
+    }
+  }
 
   // Check that |image.sizes| contains a size that is above the minimum size.
   bool check_size = false;
@@ -1103,6 +1118,12 @@ void MediaSessionImpl::GetMediaImageBitmap(
     return;
   }
 
+  // Check the cache.
+  if (source_icon && base::Contains(image_cache_, image.src)) {
+    std::move(callback).Run(image_cache_.at(image.src));
+    return;
+  }
+
   web_contents()->DownloadImage(
       image.src, false /* is_favicon */, desired_size_px /* preferred_size */,
       desired_size_px /* max_bitmap_size */, false /* bypass_cache */,
@@ -1110,7 +1131,7 @@ void MediaSessionImpl::GetMediaImageBitmap(
                      base::Unretained(this),
                      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
                          std::move(callback), SkBitmap()),
-                     minimum_size_px, desired_size_px));
+                     minimum_size_px, desired_size_px, source_icon));
 }
 
 void MediaSessionImpl::AbandonSystemAudioFocusIfNeeded() {
