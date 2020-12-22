@@ -54,6 +54,7 @@ import org.chromium.ui.test.util.UiRestriction;
 @Features.DisableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION})
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         "force-fieldtrials=Study/Group"})
+@FlakyTest(message = "https://crbug.com/1161272")
 public class TabSuggestionMessageCardTest {
     // clang-format on
     private static final String BASE_PARAMS = "force-fieldtrial-params="
