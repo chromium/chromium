@@ -147,8 +147,6 @@ bool ContentMainDelegateImpl::BasicStartupComplete(int* exit_code) {
 
   std::vector<base::Feature> enabled_features = {};
   std::vector<base::Feature> disabled_features = {
-    // TODO(crbug.com/1025619): make web-payments work with WebLayer.
-    ::features::kWebPayments,
     // TODO(crbug.com/1025627): make webauth work with WebLayer.
     ::features::kWebAuth,
     // TODO(crbug.com/1057106): make web-xr work with WebLayer.
