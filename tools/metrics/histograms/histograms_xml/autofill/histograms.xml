@@ -1570,7 +1570,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Autofill.StrikeDatabase.CreditCardSaveNotOfferedDueToMaxStrikes"
-    enum="AutofillSaveType" expires_after="2021-01-31">
+    enum="AutofillSaveType" expires_after="2021-12-20">
   <owner>jsaul@google.com</owner>
   <owner>annelim@google.com</owner>
   <summary>
@@ -1582,7 +1582,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Autofill.StrikeDatabase.LocalCardMigrationNotOfferedDueToMaxStrikes"
-    enum="AutofillSaveType" expires_after="2021-01-31">
+    enum="AutofillSaveType" expires_after="2021-12-20">
   <owner>jsaul@google.com</owner>
   <owner>annelim@google.com</owner>
   <summary>
@@ -1592,7 +1592,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.StrikeDatabase.NthStrikeAdded" units="strikes"
-    expires_after="2021-06-06">
+    expires_after="2021-12-20">
 <!-- Name completed by histogram_suffixes name="AutofillStrikeDatabaseProjectType" -->
 
   <owner>jsaul@google.com</owner>
@@ -1604,7 +1604,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.StrikeDatabase.StrikeDatabaseInitFailed"
-    units="attempts" expires_after="2021-06-06">
+    units="attempts" expires_after="2021-12-20">
   <owner>jsaul@google.com</owner>
   <owner>annelim@google.com</owner>
   <summary>
@@ -1615,7 +1615,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Autofill.StrikeDatabase.StrikesPresentWhenLocalCardMigrationAccepted"
-    units="strikes" expires_after="2021-01-31">
+    units="strikes" expires_after="2021-12-20">
   <owner>jsaul@google.com</owner>
   <owner>annelim@google.com</owner>
   <summary>
@@ -1625,7 +1625,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.StrikeDatabase.StrikesPresentWhenLocalCardSaved"
-    units="strikes" expires_after="2021-01-31">
+    units="strikes" expires_after="2021-12-20">
   <owner>jsaul@google.com</owner>
   <owner>annelim@google.com</owner>
   <summary>
@@ -1635,7 +1635,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.StrikeDatabase.StrikesPresentWhenServerCardSaved"
-    units="strikes" expires_after="2021-05-23">
+    units="strikes" expires_after="2021-12-20">
   <owner>jsaul@google.com</owner>
   <owner>annelim@google.com</owner>
   <summary>
@@ -1645,7 +1645,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.StrikeDatabase.StrikesPresentWhenStrikeExpired"
-    units="strikes" expires_after="2021-01-31">
+    units="strikes" expires_after="2021-12-20">
 <!-- Name completed by histogram_suffixes name="AutofillStrikeDatabaseProjectType" -->
 
   <owner>jsaul@google.com</owner>
