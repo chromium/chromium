@@ -105,16 +105,28 @@ public class ChromeStrictMode {
     private static void turnOnDetection(StrictMode.ThreadPolicy.Builder threadPolicy,
             StrictMode.VmPolicy.Builder vmPolicy) {
         threadPolicy.detectAll();
+        // Do not enable detectUntaggedSockets(). It does not support native (the vast majority
+        // of our sockets), and we have not bothered to tag our Java uses.
+        // https://crbug.com/770792
+        // Also: Do not enable detectCleartextNetwork(). We can't prevent websites from using
+        // non-https.
+        vmPolicy.detectActivityLeaks()
+                .detectLeakedClosableObjects()
+                .detectLeakedRegistrationObjects()
+                .detectLeakedSqlLiteObjects();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // Introduced in O.
+            vmPolicy.detectContentUriWithoutPermission();
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            // Introduced in Q.
+            vmPolicy.detectCredentialProtectedWhileLocked().detectImplicitDirectBoot();
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            vmPolicy.detectAll();
-        } else {
-            // Explicitly enable detection of all violations except file URI leaks, as that
-            // results in false positives when file URI intents are passed between Chrome
-            // activities in separate processes. See http://crbug.com/508282#c11.
-            vmPolicy.detectActivityLeaks()
-                    .detectLeakedClosableObjects()
-                    .detectLeakedRegistrationObjects()
-                    .detectLeakedSqlLiteObjects();
+            // File URI leak detection, has false positives when file URI intents are passed between
+            // Chrome activities in separate processes. See http://crbug.com/508282#c11.
+            vmPolicy.detectFileUriExposure();
         }
     }
 
