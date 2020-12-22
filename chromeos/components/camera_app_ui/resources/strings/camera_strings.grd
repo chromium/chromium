@@ -327,6 +327,12 @@
       <message desc="Label for the checkbox to toggle barcode (QR code) scanning in photo mode." name="IDS_TOGGLE_BARCODE_BUTTON">
         QR code
       </message>
+      <message desc="Label for the copy button of the barcode url chip." name="IDS_BARCODE_COPY_LINK_BUTTON">
+        Copy link address
+      </message>
+      <message desc="Label for the copy button of the barcode text chip." name="IDS_BARCODE_COPY_TEXT_BUTTON">
+        Copy text
+      </message>
       <message desc="Label for the button of expert mode options." name="IDS_EXPERT_MODE_BUTTON">
         Expert mode
       </message>
