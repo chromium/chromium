@@ -201,6 +201,7 @@ class ServiceWorkerRegistry::StoragePolicyObserver
       base::WeakPtr<ServiceWorkerRegistry> owner,
       scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy)
       : owner_(owner), special_storage_policy_(special_storage_policy) {
+    DCHECK_CURRENTLY_ON(BrowserThread::IO);
     DCHECK(special_storage_policy_);
     special_storage_policy_->AddObserver(this);
   }
@@ -209,13 +210,15 @@ class ServiceWorkerRegistry::StoragePolicyObserver
   StoragePolicyObserver& operator=(const StoragePolicyObserver&) = delete;
 
   ~StoragePolicyObserver() override {
+    DCHECK_CURRENTLY_ON(BrowserThread::IO);
     special_storage_policy_->RemoveObserver(this);
   }
 
  private:
   // storage::SpecialStoragePolicy::Observer:
   void OnPolicyChanged() override {
-    ServiceWorkerContextWrapper::RunOrPostTaskOnCoreThread(
+    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+    GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&ServiceWorkerRegistry::OnStoragePolicyChanged, owner_));
   }

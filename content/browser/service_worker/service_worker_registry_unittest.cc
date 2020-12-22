@@ -1818,14 +1818,13 @@ TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls_ApplyPolicyUpdates) {
   EXPECT_FALSE(registry()->ShouldPurgeOnShutdown(kOrigin));
 
   // Update storage policy to mark the origin should be purged on shutdown.
-  EXPECT_EQ(inflight_call_count(), 0U);
   special_storage_policy()->AddSessionOnly(kOrigin.GetURL());
   special_storage_policy()->NotifyPolicyChanged();
-  EXPECT_EQ(inflight_call_count(), 1U);
 
   registry()->SimulateStorageRestartForTesting();
 
   EnsureRemoteCallsAreExecuted();
+  // All Mojo calls must be done at this point.
   EXPECT_EQ(inflight_call_count(), 0U);
 
   EXPECT_TRUE(registry()->ShouldPurgeOnShutdown(kOrigin));
