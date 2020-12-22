@@ -806,7 +806,9 @@ TEST_P(StorageTest, WriteAndRepeatedlyImmediateUpload) {
                    data[2]);  // Immediately uploads and verifies.
 }
 
-TEST_P(StorageTest, WriteAndRepeatedlyImmediateUploadWithConfirmations) {
+// TODO(crbug.com/1161038): Re-enable flaky test.
+TEST_P(StorageTest,
+       DISABLED_WriteAndRepeatedlyImmediateUploadWithConfirmations) {
   CreateTestStorageOrDie(BuildTestStorageOptions());
 
   // Upload is initiated asynchronously, so it may happen after the next
