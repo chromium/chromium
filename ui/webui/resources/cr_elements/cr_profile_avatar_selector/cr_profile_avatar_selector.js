@@ -66,6 +66,15 @@ Polymer({
   },
 
   /**
+   * @param {boolean} isSelected
+   * @return {string}
+   * @private
+   */
+  getCheckedAttribute_(isSelected) {
+    return isSelected ? 'true' : 'false';
+  },
+
+  /**
    * @param {string} iconUrl
    * @return {string} A CSS image-set for multiple scale factors.
    * @private
