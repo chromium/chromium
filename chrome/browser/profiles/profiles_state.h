@@ -18,6 +18,7 @@
 #endif
 
 struct AccountInfo;
+struct CoreAccountInfo;
 class Browser;
 class PrefRegistrySimple;
 class PrefService;
@@ -127,6 +128,10 @@ bool ArePublicSessionRestrictionsEnabled();
 // `account_info`.
 base::string16 GetDefaultNameForNewSignedInProfile(
     const AccountInfo& account_info);
+
+// The same as above but using incomplete account info.
+base::string16 GetDefaultNameForNewSignedInProfileWithIncompleteInfo(
+    const CoreAccountInfo& account_info);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 #endif  // !defined(OS_ANDROID)

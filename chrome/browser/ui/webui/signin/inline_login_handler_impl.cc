@@ -12,12 +12,14 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/single_thread_task_runner.h"
+#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -30,6 +32,7 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_window.h"
+#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/about_signin_internals_factory.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/chrome_device_id_helper.h"
@@ -45,6 +48,7 @@
 #include "chrome/browser/ui/tab_modal_confirm_dialog.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_manager.h"
 #include "chrome/browser/ui/webui/signin/dice_turn_sync_on_helper.h"
 #include "chrome/browser/ui/webui/signin/dice_turn_sync_on_helper_delegate_impl.h"
@@ -60,6 +64,7 @@
 #include "components/signin/core/browser/about_signin_internals.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -226,6 +231,19 @@ void SetProfileLocked(const base::FilePath profile_path, bool locked) {
   }
 }
 
+void SetProfileName(const base::FilePath& profile_path,
+                    const base::string16 name) {
+  ProfileAttributesEntry* entry = nullptr;
+  if (!g_browser_process->profile_manager()
+           ->GetProfileAttributesStorage()
+           .GetProfileAttributesWithPath(profile_path, &entry)) {
+    NOTREACHED();
+    return;
+  }
+
+  entry->SetLocalProfileName(name);
+}
+
 void UnlockProfileAndHideLoginUI(const base::FilePath profile_path,
                                  InlineLoginHandlerImpl* handler) {
   SetProfileLocked(profile_path, false);
@@ -242,7 +260,8 @@ void LockProfileAndShowUserManager(const base::FilePath& profile_path) {
 // Callback for DiceTurnOnSyncHelper.
 void OnSyncSetupComplete(Profile* profile,
                          const std::string& username,
-                         const std::string& password) {
+                         const std::string& password,
+                         bool is_force_sign_in_with_usermanager) {
   DCHECK(signin_util::IsForceSigninEnabled());
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
@@ -259,6 +278,25 @@ void OnSyncSetupComplete(Profile* profile,
 
     if (profiles::IsLockAvailable(profile))
       LocalAuth::SetLocalAuthCredentials(profile, password);
+  }
+
+  if (has_primary_account && is_force_sign_in_with_usermanager &&
+      base::FeatureList::IsEnabled(features::kNewProfilePicker)) {
+    CoreAccountInfo primary_account = identity_manager->GetPrimaryAccountInfo();
+    base::Optional<AccountInfo> primary_account_info =
+        identity_manager->FindExtendedAccountInfoForAccountWithRefreshToken(
+            primary_account);
+    base::string16 profile_name;
+    if (primary_account_info.has_value()) {
+      profile_name =
+          profiles::GetDefaultNameForNewSignedInProfile(*primary_account_info);
+    } else {
+      profile_name =
+          profiles::GetDefaultNameForNewSignedInProfileWithIncompleteInfo(
+              primary_account);
+    }
+    SetProfileName(profile->GetPath(), profile_name);
+    // TODO(https://crbug.com/1156096): show the profile customization bubble.
   }
 
   if (!has_primary_account) {
@@ -459,7 +497,8 @@ void InlineSigninHelper::CreateSyncStarter(const std::string& refresh_token) {
       signin::GetSigninReasonForEmbeddedPromoURL(current_url_), account_id,
       DiceTurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT,
       std::move(delegate),
-      base::BindOnce(&OnSyncSetupComplete, profile_, email_, password_));
+      base::BindOnce(&OnSyncSetupComplete, profile_, email_, password_,
+                     is_force_sign_in_with_usermanager_));
 }
 
 void InlineSigninHelper::OnClientOAuthFailure(

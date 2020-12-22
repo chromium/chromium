@@ -9,7 +9,6 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
@@ -579,7 +578,7 @@ void ProfilePickerView::OnRefreshTokenUpdatedForAccount(
   // timeout closure).
   extended_account_info_timeout_closure_.Reset(
       base::BindOnce(&ProfilePickerView::OnExtendedAccountInfoTimeout,
-                     weak_ptr_factory_.GetWeakPtr(), account_info.email));
+                     weak_ptr_factory_.GetWeakPtr(), account_info));
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, extended_account_info_timeout_closure_.callback(),
       extended_account_info_timeout_);
@@ -615,10 +614,10 @@ void ProfilePickerView::SetExtendedAccountInfoTimeoutForTesting(
   extended_account_info_timeout_ = timeout;
 }
 
-void ProfilePickerView::OnExtendedAccountInfoTimeout(const std::string& email) {
-  // As a fallback, use the email of the user as the profile name when extended
-  // account info is not available.
-  name_for_signed_in_profile_ = base::UTF8ToUTF16(email);
+void ProfilePickerView::OnExtendedAccountInfoTimeout(
+    const CoreAccountInfo& account) {
+  name_for_signed_in_profile_ =
+      profiles::GetDefaultNameForNewSignedInProfileWithIncompleteInfo(account);
   OnProfileNameAvailable();
 }
 

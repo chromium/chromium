@@ -325,6 +325,13 @@ base::string16 GetDefaultNameForNewSignedInProfile(
   return l10n_util::GetStringUTF16(
       IDS_SIGNIN_DICE_WEB_INTERCEPT_ENTERPRISE_PROFILE_NAME);
 }
+
+base::string16 GetDefaultNameForNewSignedInProfileWithIncompleteInfo(
+    const CoreAccountInfo& account_info) {
+  // As a fallback, use the email of the user as the profile name when extended
+  // account info is not available.
+  return base::UTF8ToUTF16(account_info.email);
+}
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 #endif  // !defined(OS_ANDROID)

@@ -110,7 +110,7 @@ class ProfilePickerView : public views::DialogDelegateView,
 
   // Helper functions to deal with the lack of extended account info.
   void SetExtendedAccountInfoTimeoutForTesting(base::TimeDelta timeout);
-  void OnExtendedAccountInfoTimeout(const std::string& email);
+  void OnExtendedAccountInfoTimeout(const CoreAccountInfo& account);
   void OnProfileNameAvailable();
 
   // Finishes the creation flow by marking `profile_being_created_` as fully
