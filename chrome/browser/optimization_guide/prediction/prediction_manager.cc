@@ -28,7 +28,6 @@
 #include "chrome/browser/optimization_guide/prediction/prediction_model_fetcher.h"
 #include "chrome/browser/optimization_guide/prediction/prediction_model_file.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/optimization_guide/optimization_guide_constants.h"
 #include "components/optimization_guide/optimization_guide_decider.h"
 #include "components/optimization_guide/optimization_guide_enums.h"
@@ -222,27 +221,7 @@ struct PredictionDecisionParams {
 };
 
 PredictionManager::PredictionManager(
-    const base::FilePath& profile_path,
-    leveldb_proto::ProtoDatabaseProvider* database_provider,
-    TopHostProvider* top_host_provider,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    PrefService* pref_service,
-    Profile* profile)
-    : PredictionManager(
-          std::make_unique<OptimizationGuideStore>(
-              database_provider,
-              profile_path.AddExtensionASCII(
-                  optimization_guide::
-                      kOptimizationGuidePredictionModelAndFeaturesStore),
-              base::ThreadPool::CreateSequencedTaskRunner(
-                  {base::MayBlock(), base::TaskPriority::BEST_EFFORT})),
-          top_host_provider,
-          url_loader_factory,
-          pref_service,
-          profile) {}
-
-PredictionManager::PredictionManager(
-    std::unique_ptr<OptimizationGuideStore> model_and_features_store,
+    OptimizationGuideStore* model_and_features_store,
     TopHostProvider* top_host_provider,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     PrefService* pref_service,
@@ -257,11 +236,12 @@ PredictionManager::PredictionManager(
                         {base::MayBlock(), base::TaskPriority::BEST_EFFORT}))
               : nullptr),
       top_host_provider_(top_host_provider),
-      model_and_features_store_(std::move(model_and_features_store)),
+      model_and_features_store_(model_and_features_store),
       url_loader_factory_(url_loader_factory),
       pref_service_(pref_service),
       profile_(profile),
       clock_(base::DefaultClock::GetInstance()) {
+  DCHECK(model_and_features_store_);
   if (prediction_model_download_manager_)
     prediction_model_download_manager_->AddObserver(this);
   Initialize();
@@ -862,7 +842,7 @@ void PredictionManager::OnStoreInitialized() {
   store_is_ready_ = true;
 
   // Only load host model features if there are optimization targets registered.
-  if (registered_optimization_targets_.size() == 0)
+  if (registered_optimization_targets_.empty())
     return;
 
   // The store is ready so start loading host model features and the models for

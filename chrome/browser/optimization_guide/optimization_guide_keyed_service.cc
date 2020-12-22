@@ -10,9 +10,12 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/optional.h"
+#include "base/sequenced_task_runner.h"
+#include "base/task/task_traits.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/optimization_guide/optimization_guide_hints_manager.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_navigation_data.h"
 #include "chrome/browser/optimization_guide/optimization_guide_session_statistic.h"
 #include "chrome/browser/optimization_guide/optimization_guide_top_host_provider.h"
@@ -21,9 +24,11 @@
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/optimization_guide/command_line_top_host_provider.h"
 #include "components/optimization_guide/hints_processing_util.h"
+#include "components/optimization_guide/optimization_guide_constants.h"
 #include "components/optimization_guide/optimization_guide_decider.h"
 #include "components/optimization_guide/optimization_guide_features.h"
 #include "components/optimization_guide/optimization_guide_service.h"
+#include "components/optimization_guide/optimization_guide_store.h"
 #include "components/optimization_guide/optimization_guide_util.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/optimization_guide/top_host_provider.h"
@@ -117,11 +122,20 @@ void OptimizationGuideKeyedService::Initialize() {
                                 ->GetProtoDatabaseProvider();
   base::FilePath profile_path = profile->GetOriginalProfile()->GetPath();
 
-  // We should not be fetching anything from the remote Optimization Guide
-  // Service, only instantiate a URLLoaderFactory and TopHostProvider if the
-  // profile is a regular profile.
+  // We have different behavior if |this| is created for an incognito profile.
+  // For incognito profiles, we act in "read-only" mode of the original
+  // profile's store and do not fetch any new hints or models.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
-  if (!profile->IsOffTheRecord()) {
+  optimization_guide::OptimizationGuideStore*
+      prediction_model_and_features_store;
+  if (profile->IsOffTheRecord()) {
+    OptimizationGuideKeyedService* original_ogks =
+        OptimizationGuideKeyedServiceFactory::GetForProfile(
+            profile->GetOriginalProfile());
+    DCHECK(original_ogks);
+    prediction_model_and_features_store =
+        original_ogks->GetPredictionManager()->model_and_features_store();
+  } else {
     url_loader_factory =
         content::BrowserContext::GetDefaultStoragePartition(profile)
             ->GetURLLoaderFactoryForBrowserProcess();
@@ -133,6 +147,16 @@ void OptimizationGuideKeyedService::Initialize() {
     ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
         "SyntheticOptimizationGuideRemoteFetching",
         optimization_guide_fetching_enabled ? "Enabled" : "Disabled");
+    prediction_model_and_features_store_ =
+        std::make_unique<optimization_guide::OptimizationGuideStore>(
+            proto_db_provider,
+            profile_path.AddExtensionASCII(
+                optimization_guide::
+                    kOptimizationGuidePredictionModelAndFeaturesStore),
+            base::ThreadPool::CreateSequencedTaskRunner(
+                {base::MayBlock(), base::TaskPriority::BEST_EFFORT}));
+    prediction_model_and_features_store =
+        prediction_model_and_features_store_.get();
   }
 
   hints_manager_ = std::make_unique<OptimizationGuideHintsManager>(
@@ -140,7 +164,7 @@ void OptimizationGuideKeyedService::Initialize() {
       profile->GetPrefs(), proto_db_provider, top_host_provider_.get(),
       url_loader_factory);
   prediction_manager_ = std::make_unique<optimization_guide::PredictionManager>(
-      profile_path, proto_db_provider, top_host_provider_.get(),
+      prediction_model_and_features_store, top_host_provider_.get(),
       url_loader_factory, profile->GetPrefs(), profile);
 }
 

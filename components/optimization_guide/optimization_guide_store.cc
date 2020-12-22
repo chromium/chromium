@@ -124,6 +124,16 @@ OptimizationGuideStore::~OptimizationGuideStore() {
 void OptimizationGuideStore::Initialize(bool purge_existing_data,
                                         base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (status_ >= Status::kInitializing) {
+    // Already initializing - just run callback. There is an edge case where it
+    // is still initializing and new callbacks will be run prematurely, but any
+    // operations that need to deal with store require the background thread and
+    // are guaranteed to happen after the first initialization has completed.
+    std::move(callback).Run();
+    return;
+  }
+
   UpdateStatus(Status::kInitializing);
 
   // Asynchronously initialize the store and run the callback once

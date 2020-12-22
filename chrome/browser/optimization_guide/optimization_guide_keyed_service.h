@@ -29,6 +29,7 @@ namespace optimization_guide {
 namespace android {
 class OptimizationGuideBridge;
 }  // namespace android
+class OptimizationGuideStore;
 class PredictionManager;
 class PredictionManagerBrowserTestBase;
 class PredictionModelDownloadClient;
@@ -153,6 +154,10 @@ class OptimizationGuideKeyedService
   // Manages the storing, loading, and evaluating of optimization target
   // prediction models.
   std::unique_ptr<optimization_guide::PredictionManager> prediction_manager_;
+
+  // The store of optimization target prediction models and features.
+  std::unique_ptr<optimization_guide::OptimizationGuideStore>
+      prediction_model_and_features_store_;
 
   // The top host provider to use for fetching information for the user's top
   // hosts. Will be null if the user has not consented to this type of browser

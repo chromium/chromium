@@ -404,17 +404,13 @@ class TestOptimizationGuideStore : public OptimizationGuideStore {
 
 class TestPredictionManager : public PredictionManager {
  public:
-  using StoreEntry = proto::StoreEntry;
-  using StoreEntryMap = std::map<OptimizationGuideStore::EntryKey, StoreEntry>;
   TestPredictionManager(
-      const base::FilePath& profile_path,
-      leveldb_proto::ProtoDatabaseProvider* database_provider,
+      OptimizationGuideStore* model_and_features_store,
       TopHostProvider* top_host_provider,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       PrefService* pref_service,
-      Profile* profile,
-      scoped_refptr<base::SequencedTaskRunner> task_runner)
-      : PredictionManager(CreateModelAndHostModelFeaturesStore(task_runner),
+      Profile* profile)
+      : PredictionManager(model_and_features_store,
                           top_host_provider,
                           url_loader_factory,
                           pref_service,
@@ -440,17 +436,6 @@ class TestPredictionManager : public PredictionManager {
   using PredictionManager::GetHostModelFeaturesForTesting;
   using PredictionManager::GetPredictionModelForTesting;
 
-  std::unique_ptr<OptimizationGuideStore> CreateModelAndHostModelFeaturesStore(
-      scoped_refptr<base::SequencedTaskRunner> task_runner) {
-    // Setup the fake db and the class under test.
-    auto db = std::make_unique<FakeDB<StoreEntry>>(&db_store_);
-
-    std::unique_ptr<OptimizationGuideStore> model_and_features_store =
-        std::make_unique<TestOptimizationGuideStore>(std::move(db),
-                                                     task_runner);
-    return model_and_features_store;
-  }
-
   void UpdateHostModelFeaturesForTesting(
       proto::GetModelsResponse* get_models_response) {
     UpdateHostModelFeatures(get_models_response->host_model_features());
@@ -462,13 +447,14 @@ class TestPredictionManager : public PredictionManager {
   }
 
  private:
-  StoreEntryMap db_store_;
   bool create_valid_prediction_model_ = true;
 };
 
 class PredictionManagerTest
     : public optimization_guide::ProtoDatabaseProviderTestBase {
  public:
+  using StoreEntry = proto::StoreEntry;
+  using StoreEntryMap = std::map<OptimizationGuideStore::EntryKey, StoreEntry>;
   PredictionManagerTest() = default;
   ~PredictionManagerTest() override = default;
 
@@ -495,25 +481,40 @@ class PredictionManagerTest
   }
 
   void CreatePredictionManager() {
-    if (prediction_manager_)
+    if (prediction_manager_) {
+      db_store_.clear();
+      model_and_features_store_.reset();
       prediction_manager_.reset();
+    }
 
+    model_and_features_store_ = CreateModelAndHostModelFeaturesStore();
     prediction_manager_ = std::make_unique<TestPredictionManager>(
-        temp_dir(), db_provider_.get(), top_host_provider_.get(),
-        url_loader_factory_, pref_service_.get(), &testing_profile_,
-        task_environment_.GetMainThreadTaskRunner());
+        model_and_features_store_.get(), top_host_provider_.get(),
+        url_loader_factory_, pref_service_.get(), &testing_profile_);
     prediction_manager_->SetClockForTesting(task_environment_.GetMockClock());
   }
 
   void CreatePredictionManagerWithoutTopHostProvider() {
-    if (prediction_manager_)
+    if (prediction_manager_) {
+      db_store_.clear();
+      model_and_features_store_.reset();
       prediction_manager_.reset();
+    }
 
+    model_and_features_store_ = CreateModelAndHostModelFeaturesStore();
     prediction_manager_ = std::make_unique<TestPredictionManager>(
-        temp_dir(), db_provider_.get(), nullptr, url_loader_factory_,
-        pref_service_.get(), &testing_profile_,
-        task_environment_.GetMainThreadTaskRunner());
+        model_and_features_store_.get(), nullptr, url_loader_factory_,
+        pref_service_.get(), &testing_profile_);
     prediction_manager_->SetClockForTesting(task_environment_.GetMockClock());
+  }
+
+  std::unique_ptr<TestOptimizationGuideStore>
+  CreateModelAndHostModelFeaturesStore() {
+    // Setup the fake db and the class under test.
+    auto db = std::make_unique<FakeDB<StoreEntry>>(&db_store_);
+
+    return std::make_unique<TestOptimizationGuideStore>(
+        std::move(db), task_environment_.GetMainThreadTaskRunner());
   }
 
   TestPredictionManager* prediction_manager() const {
@@ -600,6 +601,8 @@ class PredictionManagerTest
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  StoreEntryMap db_store_;
+  std::unique_ptr<TestOptimizationGuideStore> model_and_features_store_;
   std::unique_ptr<TestPredictionManager> prediction_manager_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   network::TestURLLoaderFactory test_url_loader_factory_;

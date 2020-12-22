@@ -645,9 +645,7 @@ IN_PROC_BROWSER_TEST_F(
       1);
 }
 
-// TODO(crbug/1158777): Re-enable when flake is fixed.
-IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserTest,
-                       DISABLED_IncognitoCanStillRead) {
+IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserTest, IncognitoCanStillRead) {
   SetResponseType(PredictionModelsFetcherRemoteResponseType::
                       kSuccessfulWithModelsAndFeatures);
   base::HistogramTester histogram_tester;

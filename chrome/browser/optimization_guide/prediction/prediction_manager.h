@@ -33,10 +33,6 @@ namespace content {
 class NavigationHandle;
 }  // namespace content
 
-namespace leveldb_proto {
-class ProtoDatabaseProvider;
-}  // namespace leveldb_proto
-
 namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
@@ -72,15 +68,7 @@ class PredictionManager
       public PredictionModelDownloadObserver {
  public:
   PredictionManager(
-      const base::FilePath& profile_path,
-      leveldb_proto::ProtoDatabaseProvider* database_provider,
-      TopHostProvider* top_host_provider,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      PrefService* pref_service,
-      Profile* profile);
-
-  PredictionManager(
-      std::unique_ptr<OptimizationGuideStore> model_and_features_store,
+      OptimizationGuideStore* model_and_features_store,
       TopHostProvider* top_host_provider,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       PrefService* pref_service,
@@ -157,7 +145,7 @@ class PredictionManager
   }
 
   OptimizationGuideStore* model_and_features_store() const {
-    return model_and_features_store_.get();
+    return model_and_features_store_;
   }
 
   // Return the optimization targets that are registered.
@@ -408,8 +396,9 @@ class PredictionManager
   TopHostProvider* top_host_provider_ = nullptr;
 
   // The optimization guide store that contains prediction models and host
-  // model features from the remote Optimization Guide Service.
-  std::unique_ptr<OptimizationGuideStore> model_and_features_store_;
+  // model features from the remote Optimization Guide Service. Not owned and
+  // guaranteed to outlive |this|.
+  OptimizationGuideStore* model_and_features_store_ = nullptr;
 
   // A stored response from a model and host model features fetch used to hold
   // models to be stored once host model features are processed and stored.
