@@ -19,7 +19,6 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_fence.h"
-#include "ui/gfx/linux/drm_util_linux.h"
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/gfx/swap_result.h"
@@ -201,16 +200,17 @@ bool HardwareDisplayController::ScheduleOrTestPageFlip(
 }
 
 std::vector<uint64_t> HardwareDisplayController::GetFormatModifiers(
-    uint32_t fourcc_format) const {
-  if (crtc_controllers_.empty())
-    return std::vector<uint64_t>();
+    uint32_t format) const {
+  std::vector<uint64_t> modifiers;
 
-  std::vector<uint64_t> modifiers =
-      crtc_controllers_[0]->GetFormatModifiers(fourcc_format);
+  if (crtc_controllers_.empty())
+    return modifiers;
+
+  modifiers = crtc_controllers_[0]->GetFormatModifiers(format);
 
   for (size_t i = 1; i < crtc_controllers_.size(); ++i) {
     std::vector<uint64_t> other =
-        crtc_controllers_[i]->GetFormatModifiers(fourcc_format);
+        crtc_controllers_[i]->GetFormatModifiers(format);
     std::vector<uint64_t> intersection;
 
     std::set_intersection(modifiers.begin(), modifiers.end(), other.begin(),
@@ -221,27 +221,11 @@ std::vector<uint64_t> HardwareDisplayController::GetFormatModifiers(
   return modifiers;
 }
 
-std::vector<uint64_t> HardwareDisplayController::GetSupportedModifiers(
-    uint32_t fourcc_format) const {
-  if (preferred_format_modifier_.empty())
-    return std::vector<uint64_t>();
-
-  auto it = preferred_format_modifier_.find(fourcc_format);
-  if (it != preferred_format_modifier_.end()) {
-    return std::vector<uint64_t>{it->second};
-  }
-
-  return GetFormatModifiers(fourcc_format);
-}
-
 std::vector<uint64_t>
-HardwareDisplayController::GetFormatModifiersForTestModeset(
-    uint32_t fourcc_format) {
-  // If we're about to test, clear the current preferred modifier.
-  preferred_format_modifier_.clear();
-
-  std::vector<uint64_t> filtered_modifiers;
+HardwareDisplayController::GetFormatModifiersForModesetting(
+    uint32_t fourcc_format) const {
   const auto& modifiers = GetFormatModifiers(fourcc_format);
+  std::vector<uint64_t> filtered_modifiers;
   for (auto modifier : modifiers) {
     // AFBC for modeset buffers doesn't work correctly, as we can't fill it with
     // a valid AFBC buffer. For now, don't use AFBC for modeset buffers.
@@ -252,31 +236,6 @@ HardwareDisplayController::GetFormatModifiersForTestModeset(
     }
   }
   return filtered_modifiers;
-}
-
-void HardwareDisplayController::UpdatePreferredModiferForFormat(
-    gfx::BufferFormat buffer_format,
-    uint64_t modifier) {
-  uint32_t fourcc_format = GetFourCCFormatFromBufferFormat(buffer_format);
-  base::InsertOrAssign(preferred_format_modifier_, fourcc_format, modifier);
-
-  uint32_t opaque_fourcc_format =
-      GetFourCCFormatForOpaqueFramebuffer(buffer_format);
-  base::InsertOrAssign(preferred_format_modifier_, opaque_fourcc_format,
-                       modifier);
-}
-
-bool HardwareDisplayController::IsModifierBad(uint32_t pixel_format,
-                                              uint64_t modifier) const {
-  if (preferred_format_modifier_.empty())
-    return false;
-
-  // If we don't have a format saved, we can't tell if it's bad.
-  auto it = preferred_format_modifier_.find(pixel_format);
-  if (it == preferred_format_modifier_.end())
-    return false;
-
-  return it->second != modifier;
 }
 
 void HardwareDisplayController::MoveCursor(const gfx::Point& location) {
