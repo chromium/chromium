@@ -970,7 +970,8 @@ class SelectToSpeak {
         this.navigateToNextSentence_(constants.Dir.FORWARD);
         break;
       case SelectToSpeakPanelAction.PREVIOUS_SENTENCE:
-        this.navigateToNextSentence_(constants.Dir.BACKWARD);
+        this.navigateToNextSentence_(
+            constants.Dir.BACKWARD, true /* skipCurrentSentence */);
         break;
       case SelectToSpeakPanelAction.EXIT:
         // User manually requested, so log cancel metric.
@@ -1017,13 +1018,25 @@ class SelectToSpeak {
    * current node group. If we do not find one, we will search within the
    * remaining content in the current paragraph (i.e., text block). If this
    * still fails, we will search the next paragraph.
+   * TODO(leileilei@google.com): Handle the edge case where the user navigates
+   * to next sentence from the end of a document, see http://crbug.com/1160962.
    * @param {constants.Dir} direction Direction to search for the next sentence.
    *     If set to forward, we look for the sentence start after the current
    *     position. Otherwise, we look for the sentence start before the current
    *     position.
+   * @param {boolean} skipCurrentSentence Whether to skip the current sentence.
+   *     This only affects backward navigation. When set to false, navigating
+   *     backward will find the closest sentence start. When set to true,
+   *     navigating backward will ignore the sentence start in the current
+   *     sentence. For example, when navigating backward from the middle of a
+   *     sentence. A true |skipCurrentSentence| will take us to the start of the
+   *     previous sentence while a false one will take us to the start of the
+   *     current sentence. Regardless of this parameter, navigating backward
+   *     from a sentence start will take us to the start of the previous
+   *     sentence.
    * @private
    */
-  async navigateToNextSentence_(direction) {
+  async navigateToNextSentence_(direction, skipCurrentSentence = false) {
     // An empty node group is not expected and means that the user has not
     // enqueued any text.
     if (!this.currentNodeGroup_) {
@@ -1034,14 +1047,15 @@ class SelectToSpeak {
       await this.pause_();
     }
 
-    // Check the next sentence start within this node group.
-    if (this.navigateToNextSentenceWithinNodeGroup_(
+    // Checks the next sentence within this node group. If we have enqueued the
+    // next sentence that fulfilled the requirements, return.
+    if (this.enqueueNextSentenceWithinNodeGroup_(
             this.currentNodeGroup_, this.navigationState_.currentCharIndex,
-            direction)) {
+            direction, skipCurrentSentence)) {
       return;
     }
 
-    // If there is no sentence start at the current node group, look for the
+    // If there is no next sentence at the current node group, look for the
     // content within this paragraph. First, we get the remaining content in
     // the paragraph. The returned offset marks the char index of the current
     // position in the paragraph. When searching forward, the offset is the
@@ -1051,10 +1065,10 @@ class SelectToSpeak {
     const {nodes, offset} = NodeUtils.getNextNodesInParagraphFromNodeGroup(
         this.currentNodeGroup_, this.navigationState_.currentCharIndex,
         direction);
-    // If we have reached to the end of a paragraph, navigate to the next
-    // paragraph.
+    // If we have reached to the end of a paragraph, enqueue the sentence from
+    // the next paragraph.
     if (nodes.length === 0) {
-      this.navigateToNextSentenceInNextParagraph_(direction);
+      this.enqueueNextSentenceInNextParagraph_(direction);
       return;
     }
     // Get the node group for the remaining content in the paragraph. If we are
@@ -1074,18 +1088,30 @@ class SelectToSpeak {
       console.warn('Navigate sentence with an invalid char index', charIndex);
       return;
     }
-    if (this.navigateToNextSentenceWithinNodeGroup_(
-            nodeGroup, charIndex, direction)) {
+    // When searching backward, we need to adjust |skipCurrentSentence| if it
+    // is true. The remaining content we get excludes the char at
+    // |this.navigationState_.currentCharIndex|. If this char is a sentence
+    // start, we have already skipped the current sentence so we need to change
+    // |skipCurrentSentence| to false for the next search.
+    if (direction === constants.Dir.BACKWARD && skipCurrentSentence) {
+      const currentPositionIsSentenceStart = SentenceUtils.isSentenceStart(
+          this.currentNodeGroup_, this.navigationState_.currentCharIndex);
+      if (currentPositionIsSentenceStart) {
+        skipCurrentSentence = false;
+      }
+    }
+    if (this.enqueueNextSentenceWithinNodeGroup_(
+            nodeGroup, charIndex, direction, skipCurrentSentence)) {
       return;
     }
 
-    // If there is no sentence start within this paragraph, navigate to the next
-    // one.
-    this.navigateToNextSentenceInNextParagraph_(direction);
+    // If there is no next sentence within this paragraph, enqueue the sentence
+    // from the next paragraph.
+    this.enqueueNextSentenceInNextParagraph_(direction);
   }
 
   /**
-   * Navigates to the next sentence within the |nodeGroup|. If the |direction|
+   * Enqueues the next sentence within the |nodeGroup|. If the |direction|
    * is set to forward, it will navigate to the sentence start after the
    * |startCharIndex|. Otherwise, it will look for the sentence start before the
    * |startCharIndex|.
@@ -1096,16 +1122,36 @@ class SelectToSpeak {
    *     |startCharIndex|, this function will return the next sentence start
    *     after 0 if we search forward.
    * @param {constants.Dir} direction
-   * @return {boolean} Whether we have found a sentence start in the given node
-   *     group. If we found the sentence start, we will start TTS.
+   * @param {boolean} skipCurrentSentence Whether to skip the current sentence
+   *     when navigating backward. See navigateToNextSentence_.
+   * @return {boolean} Whether we have enqueued content to the speech queue.
+   *     When |skipCurrentSentence| is true, we will not enqueue content to
+   *     speech queue if we only find a sentence start in the current sentence.
    * @private
    */
-  navigateToNextSentenceWithinNodeGroup_(nodeGroup, startCharIndex, direction) {
+  enqueueNextSentenceWithinNodeGroup_(
+      nodeGroup, startCharIndex, direction, skipCurrentSentence) {
     if (!nodeGroup) {
       return false;
     }
-    const nextSentenceStart =
+    let nextSentenceStart =
         SentenceUtils.getSentenceStart(nodeGroup, startCharIndex, direction);
+    if (nextSentenceStart === null) {
+      return false;
+    }
+    // When we search backward, if we want to skip the current sentence, we
+    // need to search the sentence start in the previous sentence. If the
+    // position of |startCharIndex| is a sentence start, the current
+    // |nextSentenceStart| is already in the previous sentence because
+    // getSentenceStart excludes the search index. Otherwise, the
+    // |nextSentenceStart| we found is the start of current sentence, and we
+    // need to search backward again.
+    if (direction === constants.Dir.BACKWARD && skipCurrentSentence &&
+        !SentenceUtils.isSentenceStart(nodeGroup, startCharIndex)) {
+      nextSentenceStart = SentenceUtils.getSentenceStart(
+          nodeGroup, nextSentenceStart, direction);
+    }
+    // If the second sentence start is not valid, we do not enqueue text,
     if (nextSentenceStart === null) {
       return false;
     }
@@ -1117,7 +1163,7 @@ class SelectToSpeak {
       // There is no remaining content. Move to the next paragraph. This is
       // unexpected since we already found a sentence start, which indicates
       // there should be some content to read.
-      this.navigateToNextSentenceInNextParagraph_(direction);
+      this.enqueueNextSentenceInNextParagraph_(direction);
     } else {
       this.startSpeechQueue_(
           nodes, {clearFocusRing: false, startCharIndex: offset});
@@ -1126,15 +1172,16 @@ class SelectToSpeak {
   }
 
   /**
-   * Navigates to the next sentence in the next text block in the given
+   * Enqueues the next sentence in the next text block in the given
    * direction. If the |direction| is set to forward, it will navigate to the
    * start of the following text block. Otherwise, it will look for the last
-   * sentence in the previous text block. This function will also start TTS
-   * regardless of whether we have found a sentence start in the text block.
+   * sentence in the previous text block. This function will enqueue content to
+   * the speech queue regardless of whether we have found a sentence start in
+   * the text block.
    * @param {constants.Dir} direction
    * @private
    */
-  navigateToNextSentenceInNextParagraph_(direction) {
+  enqueueNextSentenceInNextParagraph_(direction) {
     const paragraphNodes = this.locateNodesForNextParagraph_(direction);
     if (paragraphNodes.length === 0) {
       return;
@@ -1166,9 +1213,9 @@ class SelectToSpeak {
       this.startSpeechQueue_(paragraphNodes);
       return;
     }
-    // Gets the remaining content between the sentence start till the end of the
-    // text block. The offset is the start char index for the first node in the
-    // remaining content.
+    // Gets the remaining content between the sentence start until the end of
+    // the text block. The offset is the start char index for the first node in
+    // the remaining content.
     const {nodes, offset} = NodeUtils.getNextNodesInParagraphFromNodeGroup(
         nodeGroup, sentenceStartIndex, constants.Dir.FORWARD);
     if (nodes.length === 0) {
@@ -1178,7 +1225,7 @@ class SelectToSpeak {
       this.startSpeechQueue_(paragraphNodes);
       return;
     }
-    // Reads the remaining content from the sentence start till the end of the
+    // Reads the remaining content from the sentence start until the end of the
     // block.
     this.startSpeechQueue_(
         nodes, {clearFocusRing: false, startCharIndex: offset});

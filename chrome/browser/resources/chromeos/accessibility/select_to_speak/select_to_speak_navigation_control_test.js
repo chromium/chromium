@@ -346,7 +346,7 @@ TEST_F('SelectToSpeakNavigationControlTest', 'PrevSentence', function() {
       this.generateHtmlWithSelectedElement('p1', bodyHtml), async function() {
         this.triggerReadSelectedText();
 
-        // Speaks till the end of the second sentence.
+        // Speaks util the start of the second sentence.
         this.mockTts.speakUntilCharIndex(33);
         assertTrue(this.mockTts.currentlySpeaking());
         assertEquals(this.mockTts.pendingUtterances().length, 1);
@@ -365,6 +365,37 @@ TEST_F('SelectToSpeakNavigationControlTest', 'PrevSentence', function() {
             'Second sentence. Third sentence.');
       });
 });
+
+TEST_F(
+    'SelectToSpeakNavigationControlTest', 'PrevSentenceFromMiddleOfSentence',
+    function() {
+      const bodyHtml = `
+      <p id="p1">First sentence. Second sentence. Third sentence.</p>'
+    `;
+      this.runWithLoadedTree(
+          this.generateHtmlWithSelectedElement('p1', bodyHtml),
+          async function() {
+            this.triggerReadSelectedText();
+
+            // Speaks util the start of "sentence" in "Second sentence".
+            this.mockTts.speakUntilCharIndex(23);
+            assertTrue(this.mockTts.currentlySpeaking());
+            assertEquals(this.mockTts.pendingUtterances().length, 1);
+            this.assertEqualsCollapseWhitespace(
+                this.mockTts.pendingUtterances()[0],
+                'First sentence. Second sentence. Third sentence.');
+
+            // Hitting prev sentence will start another TTS.
+            await selectToSpeak.onSelectToSpeakPanelAction_(
+                chrome.accessibilityPrivate.SelectToSpeakPanelAction
+                    .PREVIOUS_SENTENCE);
+            assertTrue(this.mockTts.currentlySpeaking());
+            assertEquals(this.mockTts.pendingUtterances().length, 1);
+            this.assertEqualsCollapseWhitespace(
+                this.mockTts.pendingUtterances()[0],
+                'First sentence. Second sentence. Third sentence.');
+          });
+    });
 
 TEST_F(
     'SelectToSpeakNavigationControlTest', 'PrevSentenceWithinParagraph',
