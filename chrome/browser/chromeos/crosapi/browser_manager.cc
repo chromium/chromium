@@ -30,6 +30,7 @@
 #include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/crosapi/ash_chrome_service_impl.h"
 #include "chrome/browser/chromeos/crosapi/browser_loader.h"
 #include "chrome/browser/chromeos/crosapi/browser_util.h"
@@ -313,6 +314,10 @@ void BrowserManager::StartWithLogFile(base::ScopedFD logfd) {
   std::string crash_dir =
       browser_util::GetUserDataDir().Append("crash_dumps").AsUTF8Unsafe();
 
+  // Pass the locale via command line instead of via LacrosInitParams because
+  // the Lacros browser process needs it early in startup, before zygote fork.
+  std::string locale = g_browser_process->GetApplicationLocale();
+
   // Static configuration should be enabled from Lacros rather than Ash. This
   // vector should only be used for dynamic configuration.
   // TODO(https://crbug.com/1145713): Remove existing static configuration.
@@ -321,7 +326,7 @@ void BrowserManager::StartWithLogFile(base::ScopedFD logfd) {
                                    "--user-data-dir=" + user_data_dir,
                                    "--enable-gpu-rasterization",
                                    "--enable-oop-rasterization",
-                                   "--lang=en-US",
+                                   "--lang=" + locale,
                                    "--enable-crashpad",
                                    "--enable-webgl-image-chromium",
                                    "--breakpad-dump-location=" + crash_dir};
