@@ -133,8 +133,8 @@ IN_PROC_BROWSER_TEST_F(LoadTimingBrowserTest, HTTP) {
   EXPECT_EQ(navigation_deltas.ssl_start, -1);
 }
 
-// TODO(crbug.com/1128033): Flaky on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+// TODO(crbug.com/1128033): Flaky on ChromeOS and Mac.
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_MAC)
 #define MAYBE_HTTPS DISABLED_HTTPS
 #else
 #define MAYBE_HTTPS HTTPS
