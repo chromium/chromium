@@ -16,5 +16,9 @@ ScopedProfileKeepAlive::ScopedProfileKeepAlive(const Profile* profile,
 }
 
 ScopedProfileKeepAlive::~ScopedProfileKeepAlive() {
-  g_browser_process->profile_manager()->RemoveKeepAlive(profile_, origin_);
+  // |profile_manager| could be nullptr if this is called during shutdown, e.g.
+  // for system/guest profiles.
+  auto* profile_manager = g_browser_process->profile_manager();
+  if (profile_manager)
+    profile_manager->RemoveKeepAlive(profile_, origin_);
 }

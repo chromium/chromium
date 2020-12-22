@@ -1855,14 +1855,19 @@ TEST_F(ProfileManagerTest, ScopedProfileKeepAlive) {
   base::FilePath dest_path = temp_dir_.GetPath().AppendASCII("New Profile");
   Profile* profile = profile_manager->GetProfile(dest_path);
 
+  // Starts with a kWaitingForFirstBrowserWindow ref.
   EXPECT_THAT(profile_manager->GetProfileInfoByPath(dest_path)->keep_alives,
               ::testing::ElementsAre(std::pair<ProfileKeepAliveOrigin, int>(
                   ProfileKeepAliveOrigin::kWaitingForFirstBrowserWindow, 1)));
+
   {
     // Set |profile| refcount to 1. This will cause the profile to get deleted
     // at the end of this block.
     ScopedProfileKeepAlive keep_alive(profile,
                                       ProfileKeepAliveOrigin::kBrowserWindow);
+
+    // We added the first browser window. There should be no more
+    // kWaitingForFirstBrowserWindow ref.
     EXPECT_THAT(
         profile_manager->GetProfileInfoByPath(dest_path)->keep_alives,
         ::testing::UnorderedElementsAre(
@@ -1871,14 +1876,11 @@ TEST_F(ProfileManagerTest, ScopedProfileKeepAlive) {
             std::pair<ProfileKeepAliveOrigin, int>(
                 ProfileKeepAliveOrigin::kBrowserWindow, 1)));
   }
-  EXPECT_THAT(profile_manager->GetProfileInfoByPath(dest_path)->keep_alives,
-              ::testing::UnorderedElementsAre(
-                  std::pair<ProfileKeepAliveOrigin, int>(
-                      ProfileKeepAliveOrigin::kWaitingForFirstBrowserWindow, 0),
-                  std::pair<ProfileKeepAliveOrigin, int>(
-                      ProfileKeepAliveOrigin::kBrowserWindow, 0)));
-  // TODO(crbug.com/88586): EXPECT() that |profile1| was destroyed here, once
-  // the TODO in ProfileManager::RemoveKeepAlive() is implemented.
+
+#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+  // Profile* should've been destroyed by now.
+  EXPECT_EQ(nullptr, profile_manager->GetProfileByPath(dest_path));
+#endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
   content::RunAllTasksUntilIdle();
 }

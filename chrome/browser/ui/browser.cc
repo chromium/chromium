@@ -593,11 +593,9 @@ Browser::~Browser() {
   // is destroyed to make sure the chrome.windows.onRemoved event is sent.
   extension_window_controller_.reset();
 
-  // Destroy BrowserInstantController and ScopedProfileKeepAlive before the
-  // incognito profile is destroyed, because their destructors depend on this
-  // profile.
+  // Destroy BrowserInstantController before the incognito profile is destroyed,
+  // because its destructor depends on this profile.
   instant_controller_.reset();
-  profile_keep_alive_.reset();
 
   // The system incognito profile should not try be destroyed using
   // ProfileDestroyer::DestroyProfileWhenAppropriate(). This profile can be

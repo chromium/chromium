@@ -1299,9 +1299,12 @@ void ProfileManager::RemoveKeepAlive(const Profile* profile,
   info->keep_alives[origin]--;
   DCHECK_LE(0, info->keep_alives[origin]);
 
-  // TODO(crbug.com/88586): Delete the Profile here instead of in
-  // OnBrowserClosed(), if DestroyProfileOnBrowserClose is enabled. Don't
-  // destroy the original guest profile and system profile.
+#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+  bool is_zero_refcount = base::ranges::all_of(
+      info->keep_alives, [](const auto& entry) { return entry.second == 0; });
+  if (is_zero_refcount)
+    RemoveProfile(profile->GetPath());
+#endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void ProfileManager::DoFinalInit(ProfileInfo* profile_info,
@@ -1554,23 +1557,6 @@ void ProfileManager::RemoveProfile(const base::FilePath& profile_dir) {
     return;
 
   // If the profile is ephemeral, also do some cleanup.
-
-  // Set a new active profile.
-  base::Optional<base::FilePath> new_active_profile_dir =
-      FindLastActiveProfile(base::BindRepeating(
-          [](const base::FilePath& profile_dir, ProfileAttributesEntry* entry) {
-            return entry->GetPath() != profile_dir;
-          },
-          profile_dir));
-  if (!new_active_profile_dir.has_value())
-    new_active_profile_dir = GenerateNextProfileDirectoryPath();
-  DCHECK(!new_active_profile_dir->empty());
-  RemoveFromLastActiveProfilesPrefList(profile_dir);
-  profiles::SetLastUsedProfile(
-      new_active_profile_dir->BaseName().MaybeAsASCII());
-
-  ProfileAttributesStorage& storage = GetProfileAttributesStorage();
-  storage.RemoveProfile(profile_dir);
 
   // TODO(crbug.com/88586): There could still be pending tasks that write to
   // disk, and don't need the Profile. If they run after
@@ -2033,24 +2019,6 @@ void ProfileManager::OnBrowserClosed(Browser* browser) {
 
     CleanUpGuestProfile();
   }
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  ProfileAttributesEntry* entry;
-  bool background_mode =
-      GetProfileAttributesStorage().GetProfileAttributesWithPath(
-          profile->GetPath(), &entry) &&
-      entry->GetBackgroundStatus();
-  if (base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose) &&
-      !profile->IsOffTheRecord() &&
-      !background_mode) {
-    // Post this to a task, so other OnBrowserClosed() hooks and the destructor
-    // for Browser have time to run before we destroy the Profile.
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&ProfileManager::RemoveProfile,
-                                  base::Unretained(this), profile->GetPath()));
-    return;
-  }
-#endif
 
   base::FilePath path = profile->GetPath();
   if (IsProfileDirectoryMarkedForDeletion(path)) {
