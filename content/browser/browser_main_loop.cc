@@ -783,6 +783,9 @@ int BrowserMainLoop::PreCreateThreads() {
   // CommandLine::ForCurrentProcess object after threads are created.
   GpuDataManagerImpl::GetInstance();
   DCHECK(GpuDataManagerImpl::Initialized());
+  // We report Uma metrics on a periodic basis when running the full browser,
+  // while avoiding doing so in unit tests by making it explicitly enabled here.
+  GpuDataManagerImpl::GetInstance()->StartUmaTimer();
 
 // Temporarily used by both Ozone/Linux and X11/Linux. Once X11/Linux goes
 // away, will be used only by Ozone/Linux.

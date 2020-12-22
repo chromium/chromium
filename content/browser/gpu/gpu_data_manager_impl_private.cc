@@ -494,13 +494,6 @@ GpuDataManagerImplPrivate::GpuDataManagerImplPrivate(GpuDataManagerImpl* owner)
   // For testing only.
   if (command_line->HasSwitch(switches::kDisableDomainBlockingFor3DAPIs))
     domain_blocking_enabled_ = false;
-
-  // Do not change kTimerInterval without also changing the UMA histogram name,
-  // as histogram data from before/after the change will not be comparable.
-  constexpr base::TimeDelta kTimerInterval = base::TimeDelta::FromMinutes(5);
-  compositing_mode_timer_.Start(
-      FROM_HERE, kTimerInterval, this,
-      &GpuDataManagerImplPrivate::RecordCompositingMode);
 }
 
 GpuDataManagerImplPrivate::~GpuDataManagerImplPrivate() {
@@ -512,6 +505,15 @@ GpuDataManagerImplPrivate::~GpuDataManagerImplPrivate() {
   if (display::Screen::GetScreen())
     display::Screen::GetScreen()->RemoveObserver(owner_);
 #endif
+}
+
+void GpuDataManagerImplPrivate::StartUmaTimer() {
+  // Do not change kTimerInterval without also changing the UMA histogram name,
+  // as histogram data from before/after the change will not be comparable.
+  constexpr base::TimeDelta kTimerInterval = base::TimeDelta::FromMinutes(5);
+  compositing_mode_timer_.Start(
+      FROM_HERE, kTimerInterval, this,
+      &GpuDataManagerImplPrivate::RecordCompositingMode);
 }
 
 void GpuDataManagerImplPrivate::InitializeGpuModes() {

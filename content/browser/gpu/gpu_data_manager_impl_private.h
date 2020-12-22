@@ -38,6 +38,7 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
   explicit GpuDataManagerImplPrivate(GpuDataManagerImpl* owner);
   virtual ~GpuDataManagerImplPrivate();
 
+  void StartUmaTimer();
   void BlocklistWebGLForTesting();
   gpu::GPUInfo GetGPUInfo() const;
   gpu::GPUInfo GetGPUInfoForHardwareGpu() const;

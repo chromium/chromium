@@ -150,6 +150,11 @@ void GpuDataManagerImpl::AppendGpuCommandLine(base::CommandLine* command_line,
   private_->AppendGpuCommandLine(command_line, kind);
 }
 
+void GpuDataManagerImpl::StartUmaTimer() {
+  base::AutoLock auto_lock(lock_);
+  private_->StartUmaTimer();
+}
+
 bool GpuDataManagerImpl::GpuProcessStartAllowed() const {
   base::AutoLock auto_lock(lock_);
   return private_->GpuProcessStartAllowed();

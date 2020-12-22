@@ -74,6 +74,12 @@ class CONTENT_EXPORT GpuDataManagerImpl : public GpuDataManager,
   void AppendGpuCommandLine(base::CommandLine* command_line,
                             GpuProcessKind kind) override;
 
+  // Start a timer that occasionally reports UMA metrics. This is explicitly
+  // started because unit tests may create and use a GpuDataManager but they do
+  // not want surprise tasks being posted which can interfere with their ability
+  // to measure what tasks are in the queue or to move mock time forward.
+  void StartUmaTimer();
+
   bool GpuProcessStartAllowed() const;
 
   bool IsDx12VulkanVersionAvailable() const;
