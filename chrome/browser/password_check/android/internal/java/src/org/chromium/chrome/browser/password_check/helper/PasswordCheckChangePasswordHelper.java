@@ -32,6 +32,7 @@ public class PasswordCheckChangePasswordHelper {
     private static final String PASSWORD_CHANGE_USERNAME_PARAMETER = "PASSWORD_CHANGE_USERNAME";
     private static final String INTENT_PARAMETER = "INTENT";
     private static final String INTENT = "PASSWORD_CHANGE";
+    private static final String START_IMMEDIATELY_PARAMETER = "START_IMMEDIATELY";
 
     private final Context mContext;
     private final SettingsLauncher mSettingsLauncher;
@@ -129,6 +130,7 @@ public class PasswordCheckChangePasswordHelper {
         intent.putExtra(AUTOFILL_ASSISTANT_ENABLED_KEY, true);
         intent.putExtra(AUTOFILL_ASSISTANT_PACKAGE + PASSWORD_CHANGE_USERNAME_PARAMETER, username);
         intent.putExtra(AUTOFILL_ASSISTANT_PACKAGE + INTENT_PARAMETER, INTENT);
+        intent.putExtra(AUTOFILL_ASSISTANT_PACKAGE + START_IMMEDIATELY_PARAMETER, true);
         // TODO(crbug.com/1086114): Also add the following parameters when server side changes is
         // ready: CALLER, SOURCE. That would be useful for metrics.
     }
