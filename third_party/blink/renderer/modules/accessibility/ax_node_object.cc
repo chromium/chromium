@@ -3218,15 +3218,19 @@ void AXNodeObject::AddLayoutChildren() {
 void AXNodeObject::AddNodeChildren() {
   if (!node_)
     return;
+
   for (Node* child = LayoutTreeBuilderTraversal::FirstChild(*node_); child;
        child = LayoutTreeBuilderTraversal::NextSibling(*child)) {
     AXObject* child_obj = AXObjectCache().GetOrCreate(child);
-
     if (RuntimeEnabledFeatures::AccessibilityExposeIgnoredNodesEnabled() &&
         child_obj &&
         child_obj->RoleValue() == ax::mojom::blink::Role::kStaticText &&
         child_obj->CanIgnoreTextAsEmpty())
       continue;
+
+    // TODO(crbug.com/1158511) This shouldn't be needed!
+    if (IsDetached())
+      return;
 
     AddChild(child_obj);
   }
@@ -3251,6 +3255,10 @@ void AXNodeObject::AddChildren() {
     AddLayoutChildren();
   else
     AddNodeChildren();
+
+  // TODO(crbug.com/1158511) This shouldn't be needed!
+  if (IsDetached())
+    return;
 
   AddPopupChildren();
   AddImageMapChildren();
