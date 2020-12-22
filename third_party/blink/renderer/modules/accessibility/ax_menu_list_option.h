@@ -48,7 +48,6 @@ class AXMenuListOption final : public AXNodeObject {
   void Detach() override;
   bool IsDetached() const override { return !element_; }
   LocalFrameView* DocumentFrameView() const override;
-  ax::mojom::Role RoleValue() const override;
   bool CanHaveChildren() const override { return false; }
   AXObject* ComputeParent() const override;
 

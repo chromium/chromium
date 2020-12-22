@@ -42,7 +42,7 @@ class AXValidationMessage final : public AXMockObject {
                          ax::mojom::NameFrom&,
                          AXRelatedObjectVector*,
                          NameSources*) const override;
-  ax::mojom::Role RoleValue() const override;
+  ax::mojom::blink::Role DetermineAccessibilityRole() override;
 
   ListedElement* RelatedFormControlIfVisible() const;
 

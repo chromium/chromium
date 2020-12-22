@@ -51,10 +51,6 @@ AXInlineTextBox::AXInlineTextBox(
     AXObjectCacheImpl& ax_object_cache)
     : AXObject(ax_object_cache), inline_text_box_(std::move(inline_text_box)) {}
 
-ax::mojom::blink::Role AXInlineTextBox::RoleValue() const {
-  return ax::mojom::blink::Role::kInlineTextBox;
-}
-
 void AXInlineTextBox::GetRelativeBounds(AXObject** out_container,
                                         FloatRect& out_bounds_in_container,
                                         SkMatrix44& out_container_transform,
@@ -325,7 +321,9 @@ void AXInlineTextBox::GetDocumentMarkers(
   }
 }
 
-void AXInlineTextBox::Init() {}
+void AXInlineTextBox::Init() {
+  role_ = ax::mojom::blink::Role::kInlineTextBox;
+}
 
 void AXInlineTextBox::Detach() {
   inline_text_box_ = nullptr;

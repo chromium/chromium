@@ -413,7 +413,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual bool IsVirtualObject() const;
 
   // Check object role or purpose.
-  virtual ax::mojom::blink::Role RoleValue() const;
+  ax::mojom::blink::Role RoleValue() const;
   bool IsARIATextControl() const;
   bool IsAnchor() const;
   bool IsButton() const;

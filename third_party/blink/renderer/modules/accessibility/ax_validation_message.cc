@@ -76,8 +76,8 @@ const AtomicString& AXValidationMessage::LiveRegionRelevant() const {
   return live_region_relevant_additions;
 }
 
-ax::mojom::Role AXValidationMessage::RoleValue() const {
-  return ax::mojom::Role::kAlert;
+ax::mojom::blink::Role AXValidationMessage::DetermineAccessibilityRole() {
+  return ax::mojom::blink::Role::kAlert;
 }
 
 ListedElement* AXValidationMessage::RelatedFormControlIfVisible() const {

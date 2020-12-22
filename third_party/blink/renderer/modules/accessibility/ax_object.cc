@@ -592,6 +592,8 @@ AXObject::~AXObject() {
 
 void AXObject::Init() {
   role_ = DetermineAccessibilityRole();
+  DCHECK(role_ != ax::mojom::blink::Role::kUnknown)
+      << "Illegal Role::kUnknown for " << GetNode();
 }
 
 void AXObject::Detach() {
@@ -4566,8 +4568,7 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
     }
 
     case ax::mojom::blink::Role::kUnknown:
-      LOG(ERROR) << "ax::mojom::blink::Role::kUnknown for " << GetNode();
-      NOTREACHED();
+      NOTREACHED() << "Illegal Role::kUnknown for " << GetNode();
       break;
   }
 

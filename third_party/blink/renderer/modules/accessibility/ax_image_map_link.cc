@@ -61,19 +61,17 @@ AXObject* AXImageMapLink::ComputeParent() const {
   return AXObjectCache().GetOrCreate(MapElement()->GetLayoutObject());
 }
 
-ax::mojom::Role AXImageMapLink::RoleValue() const {
-  const AtomicString& aria_role =
-      GetAOMPropertyOrARIAAttribute(AOMStringProperty::kRole);
-  if (!aria_role.IsEmpty())
-    return AXObject::AriaRoleToWebCoreRole(aria_role);
-
+ax::mojom::blink::Role AXImageMapLink::DetermineAccessibilityRole() {
   // https://www.w3.org/TR/html-aam-1.0/#html-element-role-mappings
   // <area> tags without an href should be treated as static text.
   KURL url = Url();
-  if (url.IsNull() || url.IsEmpty())
-    return ax::mojom::Role::kStaticText;
+  native_role_ = url.IsNull() || url.IsEmpty()
+                     ? ax::mojom::blink::Role::kStaticText
+                     : ax::mojom::blink::Role::kLink;
 
-  return ax::mojom::Role::kLink;
+  aria_role_ = DetermineAriaRoleAttribute();
+  return aria_role_ == ax::mojom::blink::Role::kUnknown ? native_role_
+                                                        : aria_role_;
 }
 
 bool AXImageMapLink::ComputeAccessibilityIsIgnored(

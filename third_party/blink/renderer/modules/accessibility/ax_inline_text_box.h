@@ -46,7 +46,6 @@ class AXInlineTextBox final : public AXObject {
   AXInlineTextBox(scoped_refptr<AbstractInlineTextBox>, AXObjectCacheImpl&);
 
   // AXObject overrides.
-  ax::mojom::blink::Role RoleValue() const override;
   String GetName(ax::mojom::blink::NameFrom&,
                  AXObject::AXObjectVector* name_objects) const override;
   void TextCharacterOffsets(Vector<int>&) const override;
