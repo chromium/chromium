@@ -153,7 +153,9 @@ void PhoneHubTray::ShowBubble(bool show_by_click) {
   TrayBubbleView::InitParams init_params;
   init_params.delegate = this;
   init_params.parent_window = GetBubbleWindowContainer();
-  init_params.anchor_view = GetBubbleAnchor();
+  init_params.anchor_mode = TrayBubbleView::AnchorMode::kRect;
+  init_params.anchor_rect = shelf()->GetSystemTrayAnchorRect();
+  init_params.insets = GetTrayBubbleInsets();
   init_params.shelf_alignment = shelf()->alignment();
   init_params.preferred_width = kTrayMenuWidth;
   init_params.close_on_deactivate = true;
@@ -163,8 +165,6 @@ void PhoneHubTray::ShowBubble(bool show_by_click) {
   init_params.show_by_click = show_by_click;
 
   TrayBubbleView* bubble_view = new TrayBubbleView(init_params);
-  bubble_view->set_anchor_view_insets(GetBubbleAnchorInsets());
-  bubble_view->set_margins(GetSecondaryBubbleInsets());
   bubble_view->SetBorder(views::CreateEmptyBorder(kBubblePadding));
 
   // Creates header view on top for displaying phone status and settings icon.
