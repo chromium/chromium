@@ -62,8 +62,8 @@ void DownloadsHandler::OnJavascriptAllowed() {
   pref_registrar_.Init(profile_->GetPrefs());
   pref_registrar_.Add(
       prefs::kDownloadExtensionsToOpen,
-      base::Bind(&DownloadsHandler::SendAutoOpenDownloadsToJavascript,
-                 base::Unretained(this)));
+      base::BindRepeating(&DownloadsHandler::SendAutoOpenDownloadsToJavascript,
+                          base::Unretained(this)));
 }
 
 void DownloadsHandler::OnJavascriptDisallowed() {

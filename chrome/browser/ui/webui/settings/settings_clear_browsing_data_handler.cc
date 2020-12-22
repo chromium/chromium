@@ -474,9 +474,10 @@ void ClearBrowsingDataHandler::AddCounter(
     std::unique_ptr<browsing_data::BrowsingDataCounter> counter,
     browsing_data::ClearBrowsingDataTab tab) {
   DCHECK(counter);
-  counter->Init(profile_->GetPrefs(), tab,
-                base::Bind(&ClearBrowsingDataHandler::UpdateCounterText,
-                           base::Unretained(this)));
+  counter->Init(
+      profile_->GetPrefs(), tab,
+      base::BindRepeating(&ClearBrowsingDataHandler::UpdateCounterText,
+                          base::Unretained(this)));
   counters_.push_back(std::move(counter));
 }
 

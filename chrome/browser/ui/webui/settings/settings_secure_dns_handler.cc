@@ -96,12 +96,14 @@ void SecureDnsHandler::OnJavascriptAllowed() {
   pref_registrar_.Init(g_browser_process->local_state());
   pref_registrar_.Add(
       prefs::kDnsOverHttpsMode,
-      base::Bind(&SecureDnsHandler::SendSecureDnsSettingUpdatesToJavascript,
-                 base::Unretained(this)));
+      base::BindRepeating(
+          &SecureDnsHandler::SendSecureDnsSettingUpdatesToJavascript,
+          base::Unretained(this)));
   pref_registrar_.Add(
       prefs::kDnsOverHttpsTemplates,
-      base::Bind(&SecureDnsHandler::SendSecureDnsSettingUpdatesToJavascript,
-                 base::Unretained(this)));
+      base::BindRepeating(
+          &SecureDnsHandler::SendSecureDnsSettingUpdatesToJavascript,
+          base::Unretained(this)));
 }
 
 void SecureDnsHandler::OnJavascriptDisallowed() {

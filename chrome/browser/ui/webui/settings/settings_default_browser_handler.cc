@@ -50,8 +50,8 @@ void DefaultBrowserHandler::OnJavascriptAllowed() {
   local_state_pref_registrar_.Init(prefs);
   local_state_pref_registrar_.Add(
       prefs::kDefaultBrowserSettingEnabled,
-      base::Bind(&DefaultBrowserHandler::RequestDefaultBrowserState,
-                 base::Unretained(this), nullptr));
+      base::BindRepeating(&DefaultBrowserHandler::RequestDefaultBrowserState,
+                          base::Unretained(this), nullptr));
   default_browser_worker_ = new shell_integration::DefaultBrowserWorker();
 }
 

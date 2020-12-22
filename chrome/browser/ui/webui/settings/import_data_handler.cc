@@ -152,8 +152,8 @@ void ImportDataHandler::HandleInitializeImportDialog(
   importer_list_->DetectSourceProfiles(
       g_browser_process->GetApplicationLocale(),
       true,  // include_interactive_profiles
-      base::Bind(&ImportDataHandler::SendBrowserProfileData,
-                 base::Unretained(this), callback_id));
+      base::BindOnce(&ImportDataHandler::SendBrowserProfileData,
+                     base::Unretained(this), callback_id));
 }
 
 void ImportDataHandler::HandleImportFromBookmarksFile(

@@ -43,17 +43,19 @@ void MetricsReportingHandler::RegisterMessages() {
 
 void MetricsReportingHandler::OnJavascriptAllowed() {
   pref_member_ = std::make_unique<BooleanPrefMember>();
-  pref_member_->Init(metrics::prefs::kMetricsReportingEnabled,
-                     g_browser_process->local_state(),
-                     base::Bind(&MetricsReportingHandler::OnPrefChanged,
-                                base::Unretained(this)));
+  pref_member_->Init(
+      metrics::prefs::kMetricsReportingEnabled,
+      g_browser_process->local_state(),
+      base::BindRepeating(&MetricsReportingHandler::OnPrefChanged,
+                          base::Unretained(this)));
 
   policy_registrar_ = std::make_unique<policy::PolicyChangeRegistrar>(
       g_browser_process->policy_service(),
       policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME, std::string()));
-  policy_registrar_->Observe(policy::key::kMetricsReportingEnabled,
-      base::Bind(&MetricsReportingHandler::OnPolicyChanged,
-                 base::Unretained(this)));
+  policy_registrar_->Observe(
+      policy::key::kMetricsReportingEnabled,
+      base::BindRepeating(&MetricsReportingHandler::OnPolicyChanged,
+                          base::Unretained(this)));
 }
 
 void MetricsReportingHandler::OnJavascriptDisallowed() {

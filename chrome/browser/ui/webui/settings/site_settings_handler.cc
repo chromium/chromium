@@ -521,20 +521,20 @@ void SiteSettingsHandler::OnJavascriptAllowed() {
   // If the block autoplay pref changes send the new status.
   pref_change_registrar_->Add(
       prefs::kBlockAutoplayEnabled,
-      base::Bind(&SiteSettingsHandler::SendBlockAutoplayStatus,
-                 base::Unretained(this)));
+      base::BindRepeating(&SiteSettingsHandler::SendBlockAutoplayStatus,
+                          base::Unretained(this)));
 
   // Listen for prefs that impact the effective cookie setting
   pref_change_registrar_->Add(
       prefs::kCookieControlsMode,
-      base::Bind(&SiteSettingsHandler::SendCookieSettingDescription,
-                 base::Unretained(this)));
+      base::BindRepeating(&SiteSettingsHandler::SendCookieSettingDescription,
+                          base::Unretained(this)));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   pref_change_registrar_->Add(
       prefs::kEnableDRM,
-      base::Bind(&SiteSettingsHandler::OnPrefEnableDrmChanged,
-                 base::Unretained(this)));
+      base::BindRepeating(&SiteSettingsHandler::OnPrefEnableDrmChanged,
+                          base::Unretained(this)));
 #endif
 }
 

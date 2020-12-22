@@ -38,9 +38,10 @@ class ManageCertificatesDialog : public ui::BaseShellDialogImpl {
 
   // Shows the dialog and calls |callback| when the dialog closes. The caller
   // must ensure the ManageCertificatesDialog remains valid until then.
-  void Show(HWND parent, const base::Closure& callback) {
+  void Show(HWND parent, base::OnceClosure callback) {
     if (IsRunningDialogForOwner(parent)) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, callback);
+      base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                    std::move(callback));
       return;
     }
 
@@ -53,7 +54,8 @@ class ManageCertificatesDialog : public ui::BaseShellDialogImpl {
         base::BindOnce(&ManageCertificatesDialog::ShowOnDialogThread,
                        base::Unretained(this), parent),
         base::BindOnce(&ManageCertificatesDialog::OnDialogClosed,
-                       base::Unretained(this), std::move(run_state), callback));
+                       base::Unretained(this), std::move(run_state),
+                       std::move(callback)));
   }
 
  private:
@@ -65,10 +67,10 @@ class ManageCertificatesDialog : public ui::BaseShellDialogImpl {
   }
 
   void OnDialogClosed(std::unique_ptr<RunState> run_state,
-                      const base::Closure& callback) {
+                      base::OnceClosure callback) {
     EndRun(std::move(run_state));
     // May delete |this|.
-    callback.Run();
+    std::move(callback).Run();
   }
 
   DISALLOW_COPY_AND_ASSIGN(ManageCertificatesDialog);
@@ -123,7 +125,7 @@ void ShowManageSSLCertificates(content::WebContents* web_contents) {
   ManageCertificatesDialog* dialog = new ManageCertificatesDialog;
   dialog->Show(
       parent,
-      base::Bind(&base::DeletePointer<ManageCertificatesDialog>, dialog));
+      base::BindOnce(&base::DeletePointer<ManageCertificatesDialog>, dialog));
 }
 
 }  // namespace settings_utils

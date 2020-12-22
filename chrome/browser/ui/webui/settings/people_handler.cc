@@ -326,7 +326,8 @@ void PeopleHandler::OnJavascriptAllowed() {
   profile_pref_registrar_.Init(prefs);
   profile_pref_registrar_.Add(
       prefs::kSigninAllowed,
-      base::Bind(&PeopleHandler::UpdateSyncStatus, base::Unretained(this)));
+      base::BindRepeating(&PeopleHandler::UpdateSyncStatus,
+                          base::Unretained(this)));
 
   signin::IdentityManager* identity_manager(
       IdentityManagerFactory::GetInstance()->GetForProfile(profile_));

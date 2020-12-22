@@ -344,8 +344,8 @@ void AboutHandler::OnJavascriptAllowed() {
       policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME, std::string()));
   policy_registrar_->Observe(
       policy::key::kDeviceAutoUpdateDisabled,
-      base::Bind(&AboutHandler::OnDeviceAutoUpdatePolicyChanged,
-                 base::Unretained(this)));
+      base::BindRepeating(&AboutHandler::OnDeviceAutoUpdatePolicyChanged,
+                          base::Unretained(this)));
 }
 
 void AboutHandler::OnJavascriptDisallowed() {
@@ -391,8 +391,8 @@ void AboutHandler::RefreshUpdateStatus() {
 // On Chrome OS, do not check for an update automatically.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   static_cast<VersionUpdaterCros*>(version_updater_.get())
-      ->GetUpdateStatus(
-          base::Bind(&AboutHandler::SetUpdateStatus, base::Unretained(this)));
+      ->GetUpdateStatus(base::BindRepeating(&AboutHandler::SetUpdateStatus,
+                                            base::Unretained(this)));
 #else
   RequestUpdate();
 #endif

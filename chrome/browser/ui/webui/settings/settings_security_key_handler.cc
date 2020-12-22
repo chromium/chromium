@@ -35,7 +35,8 @@ base::flat_set<device::FidoTransportProtocol> supported_transports() {
   return {device::FidoTransportProtocol::kUsbHumanInterfaceDevice};
 }
 
-void HandleClose(base::Closure close_callback, const base::ListValue* args) {
+void HandleClose(base::RepeatingClosure close_callback,
+                 const base::ListValue* args) {
   DCHECK_EQ(0u, args->GetSize());
   close_callback.Run();
 }

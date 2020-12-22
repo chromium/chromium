@@ -148,9 +148,9 @@ void ResetSettingsHandler::HandleResetProfileSettings(
   DCHECK(brandcode_.empty() || config_fetcher_);
   if (config_fetcher_ && config_fetcher_->IsActive()) {
     // Reset once the prefs are fetched.
-    config_fetcher_->SetCallback(base::Bind(&ResetSettingsHandler::ResetProfile,
-                                            base::Unretained(this), callback_id,
-                                            send_settings, request_origin));
+    config_fetcher_->SetCallback(base::BindOnce(
+        &ResetSettingsHandler::ResetProfile, base::Unretained(this),
+        callback_id, send_settings, request_origin));
   } else {
     ResetProfile(callback_id, send_settings, request_origin);
   }
@@ -186,8 +186,8 @@ void ResetSettingsHandler::HandleGetReportedSettings(
   CHECK(args->GetString(0, &callback_id));
 
   setting_snapshot_->RequestShortcuts(
-      base::Bind(&ResetSettingsHandler::OnGetReportedSettingsDone,
-                 callback_weak_ptr_factory_.GetWeakPtr(), callback_id));
+      base::BindOnce(&ResetSettingsHandler::OnGetReportedSettingsDone,
+                     callback_weak_ptr_factory_.GetWeakPtr(), callback_id));
 }
 
 void ResetSettingsHandler::OnGetReportedSettingsDone(std::string callback_id) {
@@ -207,8 +207,8 @@ void ResetSettingsHandler::OnShowResetProfileDialog(
   config_fetcher_ = std::make_unique<BrandcodeConfigFetcher>(
       g_browser_process->system_network_context_manager()
           ->GetURLLoaderFactory(),
-      base::Bind(&ResetSettingsHandler::OnSettingsFetched,
-                 base::Unretained(this)),
+      base::BindOnce(&ResetSettingsHandler::OnSettingsFetched,
+                     base::Unretained(this)),
       GURL("https://tools.google.com/service/update2"), brandcode_);
 }
 
@@ -251,9 +251,9 @@ void ResetSettingsHandler::ResetProfile(
 
   GetResetter()->Reset(
       ProfileResetter::ALL, std::move(default_settings),
-      base::Bind(&ResetSettingsHandler::OnResetProfileSettingsDone,
-                 callback_weak_ptr_factory_.GetWeakPtr(), callback_id,
-                 send_settings, request_origin));
+      base::BindOnce(&ResetSettingsHandler::OnResetProfileSettingsDone,
+                     callback_weak_ptr_factory_.GetWeakPtr(), callback_id,
+                     send_settings, request_origin));
   base::RecordAction(base::UserMetricsAction("ResetProfile"));
   UMA_HISTOGRAM_ENUMERATION(
       "ProfileReset.ResetRequestOrigin", request_origin,

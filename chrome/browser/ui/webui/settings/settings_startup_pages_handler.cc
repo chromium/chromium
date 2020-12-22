@@ -66,8 +66,8 @@ void StartupPagesHandler::OnJavascriptAllowed() {
   pref_change_registrar_.Init(prefService);
   pref_change_registrar_.Add(
       prefs::kURLsToRestoreOnStartup,
-      base::Bind(&StartupPagesHandler::UpdateStartupPages,
-                 base::Unretained(this)));
+      base::BindRepeating(&StartupPagesHandler::UpdateStartupPages,
+                          base::Unretained(this)));
 }
 
 void StartupPagesHandler::OnJavascriptDisallowed() {

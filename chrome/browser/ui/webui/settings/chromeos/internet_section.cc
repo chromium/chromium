@@ -993,7 +993,7 @@ void InternetSection::FetchNetworkList() {
           network_config::mojom::FilterType::kVisible,
           network_config::mojom::NetworkType::kAll,
           network_config::mojom::kNoLimit),
-      base::Bind(&InternetSection::OnNetworkList, base::Unretained(this)));
+      base::BindOnce(&InternetSection::OnNetworkList, base::Unretained(this)));
 }
 
 void InternetSection::OnNetworkList(

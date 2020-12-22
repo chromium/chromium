@@ -617,8 +617,8 @@ void CrostiniHandler::HandleRemoveCrostiniPortForward(
       crostini::ContainerId(std::move(vm_name), std::move(container_name)),
       port_number,
       static_cast<crostini::CrostiniPortForwarder::Protocol>(protocol_type),
-      base::Bind(&CrostiniHandler::OnPortForwardComplete,
-                 weak_ptr_factory_.GetWeakPtr(), std::move(callback_id)));
+      base::BindOnce(&CrostiniHandler::OnPortForwardComplete,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback_id)));
 }
 
 void CrostiniHandler::HandleRemoveAllCrostiniPortForwards(
@@ -660,8 +660,8 @@ void CrostiniHandler::HandleActivateCrostiniPortForward(
       crostini::ContainerId(std::move(vm_name), std::move(container_name)),
       port_number,
       static_cast<crostini::CrostiniPortForwarder::Protocol>(protocol_type),
-      base::Bind(&CrostiniHandler::OnPortForwardComplete,
-                 weak_ptr_factory_.GetWeakPtr(), std::move(callback_id)));
+      base::BindOnce(&CrostiniHandler::OnPortForwardComplete,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback_id)));
 }
 
 void CrostiniHandler::HandleDeactivateCrostiniPortForward(
@@ -688,8 +688,8 @@ void CrostiniHandler::HandleDeactivateCrostiniPortForward(
       crostini::ContainerId(std::move(vm_name), std::move(container_name)),
       port_number,
       static_cast<crostini::CrostiniPortForwarder::Protocol>(protocol_type),
-      base::Bind(&CrostiniHandler::OnPortForwardComplete,
-                 weak_ptr_factory_.GetWeakPtr(), std::move(callback_id)));
+      base::BindOnce(&CrostiniHandler::OnPortForwardComplete,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback_id)));
 }
 
 void CrostiniHandler::OnPortForwardComplete(std::string callback_id,

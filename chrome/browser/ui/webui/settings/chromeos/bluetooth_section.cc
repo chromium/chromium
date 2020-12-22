@@ -125,8 +125,8 @@ BluetoothSection::BluetoothSection(Profile* profile,
   // Note: May be uninitialized in tests.
   if (bluez::BluezDBusManager::IsInitialized()) {
     device::BluetoothAdapterFactory::Get()->GetAdapter(
-        base::Bind(&BluetoothSection::OnFetchBluetoothAdapter,
-                   weak_ptr_factory_.GetWeakPtr()));
+        base::BindOnce(&BluetoothSection::OnFetchBluetoothAdapter,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
