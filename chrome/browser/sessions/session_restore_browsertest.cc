@@ -1410,8 +1410,11 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, CloseSingleTabRestoresNothing) {
 // Verifies that launching with no previous session to a url which closes itself
 // results in no session being restored on the next launch.
 // Regression test for http://crbug.com/1052096
+// Flaky:
+//  - Bulk-disabled for arm64 bot stabilization: https://crbug.com/1154345
+//  - Disabled for all platforms: https://crbug.com/1158715
 IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
-                       AutoClosedSingleTabDoesNotGetRestored) {
+                       DISABLED_AutoClosedSingleTabDoesNotGetRestored) {
   Profile* profile = browser()->profile();
   std::unique_ptr<ScopedKeepAlive> keep_alive(new ScopedKeepAlive(
       KeepAliveOrigin::SESSION_RESTORE, KeepAliveRestartOption::DISABLED));
@@ -1962,7 +1965,10 @@ class MultiBrowserObserver : public BrowserListObserver {
 
 // Test that when closing a profile with multiple browsers, all browsers are
 // restored when the profile is reopened.
-IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreAllBrowsers) {
+// Flaky:
+//  - Bulk-disabled for arm64 bot stabilization: https://crbug.com/1154345
+//  - Disabled for all platforms: https://crbug.com/1158715
+IN_PROC_BROWSER_TEST_F(SessionRestoreTest, DISABLED_RestoreAllBrowsers) {
   // Create two profiles with two browsers each.
   Browser* first_profile_browser_one = browser();
   chrome::NewWindow(first_profile_browser_one);
