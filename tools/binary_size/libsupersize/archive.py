@@ -742,7 +742,7 @@ def LoadAndPostProcessDeltaSizeInfo(path, file_obj=None):
       path, file_obj=file_obj)
   logging.info('Normalizing symbol names')
   _NormalizeNames(before_size_info.raw_symbols)
-  _NormalizeNames(after_size_info.symbols)
+  _NormalizeNames(after_size_info.raw_symbols)
   logging.info('Loaded %d + %d symbols', len(before_size_info.raw_symbols),
                len(after_size_info.raw_symbols))
   return before_size_info, after_size_info

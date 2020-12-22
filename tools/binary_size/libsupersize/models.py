@@ -1229,7 +1229,7 @@ class SymbolGroup(BaseSymbol):
     # A full second faster to cluster per-section. Plus, don't need create
     # (section_name, name) tuples in cluster_func.
     ret = []
-    for section in self.GroupedBySectionName():
+    for section in self.GroupedByContainerAndSectionName():
       ret.extend(section.GroupedBy(
           cluster_func, min_count=2, group_factory=group_factory))
 
