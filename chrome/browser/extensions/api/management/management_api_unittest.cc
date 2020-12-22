@@ -774,7 +774,7 @@ class TestManagementAPIDelegate : public ManagementAPIDelegate {
       content::WebContents* web_contents,
       content::BrowserContext* browser_context,
       const Extension* extension,
-      const base::Callback<void(bool)>& callback) const override {
+      base::OnceCallback<void(bool)> callback) const override {
     return nullptr;
   }
   void EnableExtension(content::BrowserContext* context,

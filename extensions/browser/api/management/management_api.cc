@@ -484,7 +484,8 @@ ExtensionFunction::ResponseAction ManagementSetEnabledFunction::Run() {
       AddRef();  // Matched in OnInstallPromptDone().
       install_prompt_ = delegate->SetEnabledFunctionDelegate(
           GetSenderWebContents(), browser_context(), target_extension,
-          base::Bind(&ManagementSetEnabledFunction::OnInstallPromptDone, this));
+          base::BindOnce(&ManagementSetEnabledFunction::OnInstallPromptDone,
+                         this));
       return RespondLater();
     }
     if (HasUnsupportedRequirements(extension_id_)) {

@@ -89,7 +89,7 @@ class ManagementAPIDelegate {
       content::WebContents* web_contents,
       content::BrowserContext* browser_context,
       const Extension* extension,
-      const base::Callback<void(bool)>& callback) const = 0;
+      base::OnceCallback<void(bool)> callback) const = 0;
 
   // Enables the extension identified by |extension_id|.
   virtual void EnableExtension(content::BrowserContext* context,

@@ -126,16 +126,16 @@ class ManagementSetEnabledFunctionInstallPromptDelegate
       content::WebContents* web_contents,
       content::BrowserContext* browser_context,
       const extensions::Extension* extension,
-      const base::Callback<void(bool)>& callback)
+      base::OnceCallback<void(bool)> callback)
       : install_prompt_(new ExtensionInstallPrompt(web_contents)),
-        callback_(callback) {
+        callback_(std::move(callback)) {
     ExtensionInstallPrompt::PromptType type =
         ExtensionInstallPrompt::GetReEnablePromptTypeForExtension(
             browser_context, extension);
     install_prompt_->ShowDialog(
-        base::Bind(&ManagementSetEnabledFunctionInstallPromptDelegate::
-                       OnInstallPromptDone,
-                   weak_factory_.GetWeakPtr()),
+        base::BindOnce(&ManagementSetEnabledFunctionInstallPromptDelegate::
+                           OnInstallPromptDone,
+                       weak_factory_.GetWeakPtr()),
         extension, nullptr,
         std::make_unique<ExtensionInstallPrompt::Prompt>(type),
         ExtensionInstallPrompt::GetDefaultShowDialogCallback());
@@ -151,7 +151,7 @@ class ManagementSetEnabledFunctionInstallPromptDelegate
   // Used for prompting to re-enable items with permissions escalation updates.
   std::unique_ptr<ExtensionInstallPrompt> install_prompt_;
 
-  base::Callback<void(bool)> callback_;
+  base::OnceCallback<void(bool)> callback_;
 
   base::WeakPtrFactory<ManagementSetEnabledFunctionInstallPromptDelegate>
       weak_factory_{this};
@@ -442,10 +442,9 @@ ChromeManagementAPIDelegate::SetEnabledFunctionDelegate(
     content::WebContents* web_contents,
     content::BrowserContext* browser_context,
     const extensions::Extension* extension,
-    const base::Callback<void(bool)>& callback) const {
-  return std::unique_ptr<ManagementSetEnabledFunctionInstallPromptDelegate>(
-      new ManagementSetEnabledFunctionInstallPromptDelegate(
-          web_contents, browser_context, extension, callback));
+    base::OnceCallback<void(bool)> callback) const {
+  return std::make_unique<ManagementSetEnabledFunctionInstallPromptDelegate>(
+      web_contents, browser_context, extension, std::move(callback));
 }
 
 std::unique_ptr<extensions::UninstallDialogDelegate>
