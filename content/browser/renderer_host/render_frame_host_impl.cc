@@ -9615,9 +9615,10 @@ void RenderFrameHostImpl::
       is_same_document_navigation, is_same_document_history_api_navigation);
 
   const bool browser_is_overriding_user_agent =
-      is_same_document_navigation ? is_overriding_user_agent_
-                                  : (request->IsOverridingUserAgent() &&
-                                     frame_tree_node_->IsMainFrame());
+      is_same_document_navigation
+          ? is_overriding_user_agent_
+          : (request->commit_params().is_overriding_user_agent &&
+             frame_tree_node_->IsMainFrame());
 
   const int browser_http_status_code = CalculateHTTPStatusCode(
       request, last_http_status_code_, browser_url_is_unreachable);
