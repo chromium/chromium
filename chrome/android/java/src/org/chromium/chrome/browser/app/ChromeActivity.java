@@ -2033,6 +2033,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 BookmarkUtils.addToReadingList(currentTab.getOriginalUrl(), currentTab.getTitle(),
                         this.getSnackbarManager(), mBookmarkBridgeSupplier.get(), this);
             });
+            RecordUserAction.record("MobileMenuAddToReadingList");
         } else if (id == R.id.offline_page_id || id == R.id.offline_page_chip_id
                 || id == R.id.add_to_downloads_menu_id) {
             DownloadUtils.downloadOfflinePage(this, currentTab);

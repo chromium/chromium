@@ -64,6 +64,9 @@ public class ReadingListSectionHeaderTest {
         assertEquals("Incorrect histogram value for read items", 1,
                 ShadowRecordHistogram.getHistogramValueCountForTesting(
                         "Bookmarks.ReadingList.NumberOfReadItems", 2));
+        assertEquals("Incorrect histogram value for read list items", 1,
+                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                        "Bookmarks.ReadingList.NumberOfItems", 3));
     }
 
     @Test

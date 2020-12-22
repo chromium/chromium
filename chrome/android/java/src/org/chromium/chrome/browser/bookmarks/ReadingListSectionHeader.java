@@ -103,5 +103,7 @@ class ReadingListSectionHeader {
                 "Bookmarks.ReadingList.NumberOfReadItems", numReadItems);
         RecordHistogram.recordCountHistogram(
                 "Bookmarks.ReadingList.NumberOfUnreadItems", numUnreadItems);
+        RecordHistogram.recordCountHistogram(
+                "Bookmarks.ReadingList.NumberOfItems", numReadItems + numUnreadItems);
     }
 }
