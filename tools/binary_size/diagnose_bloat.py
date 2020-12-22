@@ -228,33 +228,49 @@ class _BuildHelper(object):
     self._SetDefaults()
     self.is_bundle = 'minimal' in self.target
 
-  @property
-  def abs_apk_path(self):
-    return os.path.join(self.output_directory, self.apk_path)
+  def _MaybeAddGoogleSuffix(self, path):
+    if self.IsTrichrome() and '_google' in self.target:
+      return path.replace('.', 'Google.', 1)
+    return path
 
   @property
-  def abs_mapping_path(self):
-    return os.path.join(self.output_directory, self.mapping_path)
+  def abs_apk_paths(self):
+    return [os.path.join(self.output_directory, x) for x in self.apk_paths]
+
+  @property
+  def abs_mapping_paths(self):
+    def to_mapping_path(p):
+      return p.replace('.minimal.apks', '.aab') + '.mapping'
+
+    return [to_mapping_path(x) for x in self.abs_apk_paths]
 
   @property
   def apk_name(self):
     # my_great_apk -> MyGreat.apk
     apk_name = ''.join(s.title() for s in self.target.split('_')[:-1]) + '.apk'
     if self.is_bundle:
-      # my_great_minimal_apks -> MyGreatMinimal.apk -> MyGreat.minimal.apks
+      # trichrome_minimal_apks->TrichromeMinimal.apk->Trichrome.minimal.apks
       apk_name = apk_name.replace('Minimal.apk', '.minimal.apks')
     return apk_name.replace('Webview', 'WebView')
 
   @property
-  def apk_path(self):
-    return os.path.join('apks', self.apk_name)
+  def supersize_input(self):
+    if self.IsTrichrome():
+      return self._MaybeAddGoogleSuffix(
+          os.path.join(self.output_directory, 'apks', 'Trichrome.ssargs'))
+    return self.abs_apk_paths[0]
 
   @property
-  def mapping_path(self):
-    if self.is_bundle:
-      return self.apk_path.replace('.minimal.apks', '.aab') + '.mapping'
-    else:
-      return self.apk_path + '.mapping'
+  def apk_paths(self):
+    if self.IsTrichrome():
+      ret = [
+          os.path.join('apks', 'TrichromeChrome.minimal.apks'),
+          os.path.join('apks', 'TrichromeWebView.minimal.apks'),
+          os.path.join('apks', 'TrichromeLibrary.apk'),
+      ]
+      return [self._MaybeAddGoogleSuffix(x) for x in ret]
+
+    return [os.path.join('apks', self.apk_name)]
 
   @property
   def main_lib_path(self):
@@ -315,9 +331,9 @@ class _BuildHelper(object):
       if self.IsLinux():
         self.target = 'chrome'
       elif self.enable_chrome_android_internal:
-        self.target = 'monochrome_minimal_apks'
+        self.target = 'trichrome_google_minimal_apks'
       else:
-        self.target = 'monochrome_public_minimal_apks'
+        self.target = 'trichrome_minimal_apks'
 
   def _GenGnCmd(self):
     gn_args = 'is_official_build=true'
@@ -360,6 +376,9 @@ class _BuildHelper(object):
   def IsAndroid(self):
     return self.target_os == 'android'
 
+  def IsTrichrome(self):
+    return 'trichrome' in self.target
+
   def IsLinux(self):
     return self.target_os == 'linux'
 
@@ -380,8 +399,10 @@ class _BuildArchive(object):
     logging.info('Saving build results to: %s', self.dir)
     _EnsureDirsExist(self.dir)
     if self.build.IsAndroid():
-      self._ArchiveFile(self.build.abs_apk_path)
-      self._ArchiveFile(self.build.abs_mapping_path)
+      for path in self.build.abs_apk_paths:
+        self._ArchiveFile(path)
+      for path in self.build.abs_mapping_paths:
+        self._ArchiveFile(path)
       self._ArchiveResourceSizes()
     self._ArchiveSizeFile(supersize_path, tool_prefix)
     if self._save_unstripped:
@@ -405,9 +426,17 @@ class _BuildArchive(object):
 
   def _ArchiveResourceSizes(self):
     cmd = [
-        _RESOURCE_SIZES_PATH, self.build.abs_apk_path, '--output-dir', self.dir,
-        '--chartjson', '--chromium-output-dir', self.build.output_directory
+        _RESOURCE_SIZES_PATH, '--output-dir', self.dir, '--chartjson',
+        '--chromium-output-dir', self.build.output_directory
     ]
+    if self.build.IsTrichrome():
+      get_apk = lambda t: next(x for x in self.build.abs_apk_paths if t in x)
+      cmd += ['--trichrome-chrome', get_apk('Chrome')]
+      cmd += ['--trichrome-webview', get_apk('WebView')]
+      cmd += ['--trichrome-library', get_apk('Library')]
+      cmd += [self.build.apk_name]
+    else:
+      cmd += [self.build.abs_apk_paths[0]]
     _RunCmd(cmd)
 
   def _ArchiveFile(self, filename):
@@ -416,24 +445,19 @@ class _BuildArchive(object):
     shutil.copy(filename, self.dir)
 
   def _ArchiveSizeFile(self, supersize_path, tool_prefix):
-    existing_size_file = self.build.abs_apk_path + '.size'
-    if os.path.exists(existing_size_file):
-      logging.info('Found existing .size file')
-      shutil.copy(existing_size_file, self.archived_size_path)
+    supersize_cmd = [supersize_path, 'archive', self.archived_size_path]
+    if self.build.IsAndroid():
+      supersize_cmd += [
+          '-f', self.build.supersize_input, '--aux-elf-file',
+          self.build.abs_main_lib_path
+      ]
     else:
-      supersize_cmd = [supersize_path, 'archive', self.archived_size_path]
-      if self.build.IsAndroid():
-        supersize_cmd += [
-            '-f', self.build.abs_apk_path, '--aux-elf-file',
-            self.build.abs_main_lib_path
-        ]
-      else:
-        supersize_cmd += ['--elf-file', self.build.abs_main_lib_path]
-      supersize_cmd += ['--output-directory', self.build.output_directory]
-      if tool_prefix:
-        supersize_cmd += ['--tool-prefix', tool_prefix]
-      logging.info('Creating .size file')
-      _RunCmd(supersize_cmd)
+      supersize_cmd += ['--elf-file', self.build.abs_main_lib_path]
+    supersize_cmd += ['--output-directory', self.build.output_directory]
+    if tool_prefix:
+      supersize_cmd += ['--tool-prefix', tool_prefix]
+    logging.info('Creating .size file')
+    _RunCmd(supersize_cmd)
 
 
 class _DiffArchiveManager(object):
@@ -875,8 +899,8 @@ def main():
                            help='Allow downstream targets to be built.')
   build_group.add_argument('--target',
                            help='GN target to build. Linux default: chrome. '
-                           'Android default: monochrome_public_minimal_apks or '
-                           'monochrome_minimal_apks (depending on '
+                           'Android default: trichrome_minimal_apks or '
+                           'trichrome_google_minimal_apks (depending on '
                            '--enable-chrome-android-internal).')
   if len(sys.argv) == 1:
     parser.print_help()
