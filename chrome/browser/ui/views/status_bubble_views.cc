@@ -229,7 +229,7 @@ StatusBubbleViews::StatusView::StatusView(StatusBubbleViews* status_bubble)
     : status_bubble_(status_bubble) {
   animation_ = std::make_unique<StatusViewAnimation>(this, 0, 0);
 
-  SetLayoutManager(std::make_unique<views::FillLayout>());
+  SetUseDefaultFillLayout(true);
 
   std::unique_ptr<views::Label> text = std::make_unique<views::Label>();
   // Don't move this after AddChildView() since this function would trigger

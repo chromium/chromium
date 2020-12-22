@@ -528,7 +528,7 @@ std::unique_ptr<views::View> CollectedCookiesViews::CreateBlockedPane() {
 
 std::unique_ptr<views::View> CollectedCookiesViews::CreateButtonsPane() {
   auto view = std::make_unique<views::View>();
-  view->SetLayoutManager(std::make_unique<views::FillLayout>());
+  view->SetUseDefaultFillLayout(true);
 
   {
     auto allowed = std::make_unique<views::View>();

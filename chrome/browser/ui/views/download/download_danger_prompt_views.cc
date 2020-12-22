@@ -106,14 +106,14 @@ DownloadDangerPromptViews::DownloadDangerPromptViews(
 
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::TEXT, views::TEXT));
-  SetLayoutManager(std::make_unique<views::FillLayout>());
+  SetUseDefaultFillLayout(true);
 
-  views::Label* message_body_label = new views::Label(GetMessageBody());
+  auto message_body_label = std::make_unique<views::Label>(GetMessageBody());
   message_body_label->SetMultiLine(true);
   message_body_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   message_body_label->SetAllowCharacterBreak(true);
 
-  AddChildView(message_body_label);
+  AddChildView(std::move(message_body_label));
 
   RecordOpenedDangerousConfirmDialog(download_->GetDangerType());
 

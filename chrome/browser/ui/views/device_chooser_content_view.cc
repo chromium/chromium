@@ -52,7 +52,7 @@ class BluetoothStatusContainer : public views::View {
 
 BluetoothStatusContainer::BluetoothStatusContainer(
     ChooserController* chooser_controller) {
-  SetLayoutManager(std::make_unique<views::FillLayout>());
+  SetUseDefaultFillLayout(true);
 
   auto* rescan_container = AddChildView(std::make_unique<views::View>());
   rescan_container
@@ -133,7 +133,7 @@ DeviceChooserContentView::DeviceChooserContentView(
   } else {
     // FillLayout is the default. There will only be the ScrollView,
     // therefore there's no point to have a BoxLayout.
-    SetLayoutManager(std::make_unique<views::FillLayout>());
+    SetUseDefaultFillLayout(true);
   }
 
   std::vector<ui::TableColumn> table_columns = {ui::TableColumn()};

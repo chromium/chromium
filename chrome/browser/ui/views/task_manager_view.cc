@@ -320,7 +320,7 @@ void TaskManagerView::Init() {
   tab_table_parent_ = AddChildView(
       views::TableView::CreateScrollViewWithTable(std::move(tab_table)));
 
-  SetLayoutManager(std::make_unique<views::FillLayout>());
+  SetUseDefaultFillLayout(true);
 
   const ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
   const gfx::Insets dialog_insets =

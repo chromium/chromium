@@ -84,8 +84,8 @@ FlyingIndicator::FlyingIndicator(const gfx::VectorIcon& icon,
       gfx::CreateVectorIcon(kWebIcon, kIconSize, foreground_color));
   link_image->SetPreferredSize(gfx::Size(kBubbleSize, kBubbleSize));
 
-  // Use a fill layout because there's only one child view.
-  bubble_view->SetLayoutManager(std::make_unique<views::FillLayout>());
+  // Use the default fill layout because there's only one child view.
+  bubble_view->SetUseDefaultFillLayout(true);
 
   // Create the bubble.
   views::BubbleDialogDelegateView* const bubble_view_ptr = bubble_view.get();
