@@ -5917,3 +5917,6 @@ crbug.com/626703 [ Mac ] external/wpt/mediacapture-image/MediaStreamTrack-getCon
 
 # Sheriff 2020-12-14
 crbug.com/1046784 http/tests/devtools/console/console-context-selector.js [ Pass Timeout ]
+
+#Sheriff 2020-12-22
+crbug.com/1161244 [ Mac ] external/wpt/html/cross-origin-opener-policy/popup-coop-by-sw-from-coop.https.html [ Pass Timeout ]
