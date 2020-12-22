@@ -28,6 +28,7 @@ class WebContents;
 
 namespace web_app {
 
+class WebAppUrlLoader;
 class OsIntegrationManager;
 class InstallFinalizer;
 class InstallManager;
@@ -50,6 +51,7 @@ class PendingAppInstallTask {
   // properties of the installed app e.g. open in a tab vs. window, installed by
   // policy, etc.
   explicit PendingAppInstallTask(Profile* profile,
+                                 WebAppUrlLoader* url_loader,
                                  AppRegistrar* registrar,
                                  OsIntegrationManager* os_integration_manager,
                                  WebAppUiManager* ui_manager,
@@ -66,7 +68,6 @@ class PendingAppInstallTask {
   // be installed.
   // TODO(ortuno): Remove once loading is done inside the task.
   virtual void Install(content::WebContents* web_contents,
-                       WebAppUrlLoader::Result load_url_result,
                        ResultCallback result_callback);
 
   // Install directly from a fully specified WebApplicationInfo struct. Used
@@ -76,6 +77,13 @@ class PendingAppInstallTask {
   const ExternalInstallOptions& install_options() { return install_options_; }
 
  private:
+  void OnWebContentsReady(content::WebContents* web_contents,
+                          ResultCallback result_callback,
+                          WebAppUrlLoader::Result prepare_for_load_result);
+  void OnUrlLoaded(content::WebContents* web_contents,
+                   ResultCallback result_callback,
+                   WebAppUrlLoader::Result load_url_result);
+
   void InstallPlaceholder(ResultCallback result_callback);
 
   void UninstallPlaceholderApp(content::WebContents* web_contents,
@@ -98,6 +106,7 @@ class PendingAppInstallTask {
                         const OsHooksResults os_hooks_results);
 
   Profile* const profile_;
+  WebAppUrlLoader* const url_loader_;
   AppRegistrar* const registrar_;
   OsIntegrationManager* const os_integration_manager_;
   InstallFinalizer* const install_finalizer_;

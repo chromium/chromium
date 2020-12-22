@@ -78,10 +78,6 @@ class PendingAppManagerImpl : public PendingAppManager {
 
   void CreateWebContentsIfNecessary();
 
-  void OnWebContentsReady(WebAppUrlLoader::Result result);
-
-  void OnUrlLoaded(WebAppUrlLoader::Result result);
-
   void OnInstalled(base::Optional<AppId> app_id,
                    PendingAppManager::InstallResult result);
 

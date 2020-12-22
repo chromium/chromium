@@ -78,6 +78,8 @@ void PendingAppManagerImpl::Shutdown() {
   pending_registrations_.clear();
   current_registration_.reset();
   pending_installs_.clear();
+  // `current_install_` keeps a pointer to `web_contents_` so destroy it before
+  // releasing the WebContents.
   current_install_.reset();
   ReleaseWebContents();
 }
@@ -100,8 +102,8 @@ std::unique_ptr<PendingAppInstallTask>
 PendingAppManagerImpl::CreateInstallationTask(
     ExternalInstallOptions install_options) {
   return std::make_unique<PendingAppInstallTask>(
-      profile_, registrar(), os_integration_manager(), ui_manager(),
-      finalizer(), install_manager(), std::move(install_options));
+      profile_, url_loader_.get(), registrar(), os_integration_manager(),
+      ui_manager(), finalizer(), install_manager(), std::move(install_options));
 }
 
 std::unique_ptr<PendingAppRegistrationTaskBase>
@@ -228,21 +230,9 @@ void PendingAppManagerImpl::StartInstallationTask(
   }
 
   CreateWebContentsIfNecessary();
-
-  url_loader_->PrepareForLoad(
-      web_contents_.get(),
-      base::BindOnce(&PendingAppManagerImpl::OnWebContentsReady,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void PendingAppManagerImpl::OnWebContentsReady(WebAppUrlLoader::Result) {
-  // TODO(crbug.com/1098139): Handle the scenario where WebAppUrlLoader fails to
-  // load about:blank and flush WebContents states.
-  url_loader_->LoadUrl(current_install_->task->install_options().install_url,
-                       web_contents_.get(),
-                       WebAppUrlLoader::UrlComparison::kSameOrigin,
-                       base::BindOnce(&PendingAppManagerImpl::OnUrlLoaded,
-                                      weak_ptr_factory_.GetWeakPtr()));
+  current_install_->task->Install(
+      web_contents_.get(), base::BindOnce(&PendingAppManagerImpl::OnInstalled,
+                                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 bool PendingAppManagerImpl::RunNextRegistration() {
@@ -265,13 +255,6 @@ void PendingAppManagerImpl::CreateWebContentsIfNecessary() {
   web_contents_ = content::WebContents::Create(
       content::WebContents::CreateParams(profile_));
   PendingAppInstallTask::CreateTabHelpers(web_contents_.get());
-}
-
-void PendingAppManagerImpl::OnUrlLoaded(WebAppUrlLoader::Result result) {
-  current_install_->task->Install(
-      web_contents_.get(), result,
-      base::BindOnce(&PendingAppManagerImpl::OnInstalled,
-                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void PendingAppManagerImpl::OnInstalled(

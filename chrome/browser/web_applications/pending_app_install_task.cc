@@ -37,6 +37,7 @@ void PendingAppInstallTask::CreateTabHelpers(
 
 PendingAppInstallTask::PendingAppInstallTask(
     Profile* profile,
+    WebAppUrlLoader* url_loader,
     AppRegistrar* registrar,
     OsIntegrationManager* os_integration_manager,
     WebAppUiManager* ui_manager,
@@ -44,6 +45,7 @@ PendingAppInstallTask::PendingAppInstallTask(
     InstallManager* install_manager,
     ExternalInstallOptions install_options)
     : profile_(profile),
+      url_loader_(url_loader),
       registrar_(registrar),
       os_integration_manager_(os_integration_manager),
       install_finalizer_(install_finalizer),
@@ -55,8 +57,31 @@ PendingAppInstallTask::PendingAppInstallTask(
 PendingAppInstallTask::~PendingAppInstallTask() = default;
 
 void PendingAppInstallTask::Install(content::WebContents* web_contents,
-                                    WebAppUrlLoader::Result load_url_result,
                                     ResultCallback result_callback) {
+  url_loader_->PrepareForLoad(
+      web_contents, base::BindOnce(&PendingAppInstallTask::OnWebContentsReady,
+                                   weak_ptr_factory_.GetWeakPtr(), web_contents,
+                                   std::move(result_callback)));
+}
+
+void PendingAppInstallTask::OnWebContentsReady(
+    content::WebContents* web_contents,
+    ResultCallback result_callback,
+    WebAppUrlLoader::Result prepare_for_load_result) {
+  // TODO(crbug.com/1098139): Handle the scenario where WebAppUrlLoader fails to
+  // load about:blank and flush WebContents states.
+  url_loader_->LoadUrl(
+      install_options_.install_url, web_contents,
+      WebAppUrlLoader::UrlComparison::kSameOrigin,
+      base::BindOnce(&PendingAppInstallTask::OnUrlLoaded,
+                     weak_ptr_factory_.GetWeakPtr(), web_contents,
+                     std::move(result_callback)));
+}
+
+void PendingAppInstallTask::OnUrlLoaded(
+    content::WebContents* web_contents,
+    ResultCallback result_callback,
+    WebAppUrlLoader::Result load_url_result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK_EQ(web_contents->GetBrowserContext(), profile_);
 
