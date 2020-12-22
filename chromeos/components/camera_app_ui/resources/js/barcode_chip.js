@@ -7,6 +7,26 @@ import * as snackbar from './snackbar.js';
 import * as util from './util.js';
 
 /**
+ * The detected string that is being shown currently.
+ * @type {?string}
+ */
+let currentCode = null;
+
+/**
+ * The barcode chip container that is being shown currently.
+ * @type {?HTMLElement}
+ */
+let currentChip = null;
+
+/**
+ * Resets the variables of the current state.
+ */
+function resetCurrentState() {
+  currentCode = null;
+  currentChip = null;
+}
+
+/**
  * Checks whether a string is a regular url link with http or https protocol.
  * @param {string} s
  * @return {boolean}
@@ -56,7 +76,8 @@ function showUrl(url) {
   setupCopyButton(container, url, 'snackbar_link_copied');
 
   // TODO(b/172879638): Handle a11y.
-  util.animateOnce(container);
+  currentChip = container;
+  util.animateOnce(container, resetCurrentState);
 }
 
 /**
@@ -80,17 +101,28 @@ function showText(text) {
   setupCopyButton(container, text, 'snackbar_text_copied');
 
   // TODO(b/172879638): Handle a11y.
-  util.animateOnce(container);
+  currentChip = container;
+  util.animateOnce(container, resetCurrentState);
 }
 
 /**
  * Shows an actionable chip for the string detected from a barcode.
- * @param {string} s
+ * @param {string} code
  */
-export function show(s) {
-  if (isSafeUrl(s)) {
-    showUrl(s);
+export async function show(code) {
+  if (code === currentCode) {
+    return;
+  }
+
+  if (currentChip !== null) {
+    await util.animateCancel(currentChip);
+  }
+
+  currentCode = code;
+
+  if (isSafeUrl(code)) {
+    showUrl(code);
   } else {
-    showText(s);
+    showText(code);
   }
 }
