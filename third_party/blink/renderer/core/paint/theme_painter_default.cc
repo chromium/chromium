@@ -39,6 +39,8 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/gfx/color_utils.h"
+#include "ui/native_theme/native_theme.h"
 
 namespace blink {
 
@@ -532,14 +534,40 @@ bool ThemePainterDefault::PaintSearchFieldCancelButton(
   DEFINE_STATIC_REF(
       Image, cancel_pressed_image_dark_mode,
       (Image::LoadPlatformResource(IDR_SEARCH_CANCEL_PRESSED_DARK_MODE)));
-  Image* color_scheme_adjusted_cancel_image =
-      color_scheme == mojom::blink::ColorScheme::kLight
-          ? cancel_image
-          : cancel_image_dark_mode;
-  Image* color_scheme_adjusted_cancel_pressed_image =
-      color_scheme == mojom::blink::ColorScheme::kLight
-          ? cancel_pressed_image
-          : cancel_pressed_image_dark_mode;
+  DEFINE_STATIC_REF(
+      Image, cancel_image_hc_light_mode,
+      (Image::LoadPlatformResource(IDR_SEARCH_CANCEL_HC_LIGHT_MODE)));
+  DEFINE_STATIC_REF(
+      Image, cancel_pressed_image_hc_light_mode,
+      (Image::LoadPlatformResource(IDR_SEARCH_CANCEL_PRESSED_HC_LIGHT_MODE)));
+  Image* color_scheme_adjusted_cancel_image;
+  Image* color_scheme_adjusted_cancel_pressed_image;
+  if (ui::NativeTheme::GetInstanceForWeb()->UsesHighContrastColors()) {
+    // TODO(crbug.com/1159597): Ideally we want the cancel button to be the same
+    // color as search field text. Since the cancel button is currently painted
+    // with a .png, it can't be colored dynamically so currently our only
+    // choices are black and white.
+    Color search_field_text_color =
+        cancel_button_object.StyleRef().VisitedDependentColor(
+            GetCSSPropertyColor());
+    bool text_is_dark = color_utils::GetRelativeLuminance(
+                            SkColor(search_field_text_color)) < 0.5;
+    color_scheme_adjusted_cancel_image =
+        text_is_dark ? cancel_image_hc_light_mode : cancel_image_dark_mode;
+    color_scheme_adjusted_cancel_pressed_image =
+        color_scheme_adjusted_cancel_image =
+            text_is_dark ? cancel_pressed_image_hc_light_mode
+                         : cancel_pressed_image_dark_mode;
+  } else {
+    color_scheme_adjusted_cancel_image =
+        color_scheme == mojom::blink::ColorScheme::kLight
+            ? cancel_image
+            : cancel_image_dark_mode;
+    color_scheme_adjusted_cancel_pressed_image =
+        color_scheme == mojom::blink::ColorScheme::kLight
+            ? cancel_pressed_image
+            : cancel_pressed_image_dark_mode;
+  }
   paint_info.context.DrawImage(
       To<Element>(cancel_button_object.GetNode())->IsActive()
           ? color_scheme_adjusted_cancel_pressed_image

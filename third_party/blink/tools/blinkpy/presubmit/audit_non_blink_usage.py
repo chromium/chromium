@@ -1129,8 +1129,9 @@ _CONFIG = [
             'third_party/blink/renderer/core/layout/layout_theme_mac.mm',
             'third_party/blink/renderer/core/paint/object_painter_base.cc',
             'third_party/blink/renderer/core/paint/theme_painter.cc',
+            'third_party/blink/renderer/core/paint/theme_painter_default.cc',
         ],
-        'allowed': ['ui::NativeTheme.*'],
+        'allowed': ['ui::NativeTheme.*', 'ui::color_utils.*'],
     },
     {
         'paths': [

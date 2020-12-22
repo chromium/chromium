@@ -7,9 +7,10 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "(theme_painter|object_painter_base)\.cc": [
+  "(theme_painter|theme_painter_default|object_painter_base)\.cc": [
     "+ui/native_theme/native_theme.h",
     "+ui/native_theme/native_theme_base.h",
+    "+ui/gfx/color_utils.h"
   ],
   ".*test\.cc": [
     "+base/test/trace_event_analyzer.h",
