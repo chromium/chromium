@@ -215,7 +215,6 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
   // PlayerInfo exists.
   PlayerInfo* GetPlayerInfo(const MediaPlayerId& id) const;
 
-  void OnMediaDestroyed(RenderFrameHost* render_frame_host, int delegate_id);
   void OnMediaPaused(RenderFrameHost* render_frame_host,
                      int delegate_id,
                      bool reached_end_of_stream);

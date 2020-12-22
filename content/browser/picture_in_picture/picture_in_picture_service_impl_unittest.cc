@@ -112,6 +112,8 @@ class PictureInPictureMediaPlayerReceiver : public media::mojom::MediaPlayer {
     return receiver_.BindNewPipeAndPassRemote();
   }
 
+  mojo::Receiver<media::mojom::MediaPlayer>& receiver() { return receiver_; }
+
   // media::mojom::MediaPlayer implementation.
   void AddMediaPlayerObserver(
       mojo::PendingRemote<media::mojom::MediaPlayerObserver>) override {}
@@ -155,6 +157,8 @@ class PictureInPictureServiceImplTest : public RenderViewHostImplTestHarness {
   BindMediaPlayerReceiverAndPassRemote() {
     return media_player_receiver_.BindMediaPlayerReceiverAndPassRemote();
   }
+
+  void ResetMediaPlayerReceiver() { media_player_receiver_.receiver().reset(); }
 
  private:
   PictureInPictureTestBrowserClient browser_client_;
@@ -221,9 +225,7 @@ TEST_F(PictureInPictureServiceImplTest, MAYBE_EnterPictureInPicture) {
   // Picture-in-Picture media player id should not be reset when the media is
   // destroyed (e.g. video stops playing). This allows the Picture-in-Picture
   // window to continue to control the media.
-  contents()->GetMainFrame()->OnMessageReceived(
-      MediaPlayerDelegateHostMsg_OnMediaDestroyed(
-          contents()->GetMainFrame()->GetRoutingID(), kPlayerVideoOnlyId));
+  ResetMediaPlayerReceiver();
   EXPECT_TRUE(controller->active_session_for_testing());
 }
 

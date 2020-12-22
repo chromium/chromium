@@ -255,8 +255,6 @@ bool MediaWebContentsObserver::OnMessageReceived(
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP_WITH_PARAM(MediaWebContentsObserver, msg,
                                    render_frame_host)
-    IPC_MESSAGE_HANDLER(MediaPlayerDelegateHostMsg_OnMediaDestroyed,
-                        OnMediaDestroyed)
     IPC_MESSAGE_HANDLER(MediaPlayerDelegateHostMsg_OnMediaPaused, OnMediaPaused)
     IPC_MESSAGE_HANDLER(MediaPlayerDelegateHostMsg_OnMediaMetadataChanged,
                         OnMediaMetadataChanged)
@@ -404,16 +402,6 @@ MediaWebContentsObserver::PlayerInfo* MediaWebContentsObserver::GetPlayerInfo(
   return it != player_info_map_.end() ? it->second.get() : nullptr;
 }
 
-void MediaWebContentsObserver::OnMediaDestroyed(
-    RenderFrameHost* render_frame_host,
-    int delegate_id) {
-  // TODO(liberato): Should we skip power manager notifications in this case?
-  const MediaPlayerId player_id(render_frame_host, delegate_id);
-  player_info_map_.erase(player_id);
-  session_controllers_manager_.OnEnd(player_id);
-  web_contents_impl()->MediaDestroyed(player_id);
-}
-
 void MediaWebContentsObserver::OnMediaPaused(RenderFrameHost* render_frame_host,
                                              int delegate_id,
                                              bool reached_end_of_stream) {
@@ -541,7 +529,7 @@ mojo::Remote<media::mojom::MediaPlayer>&
 MediaWebContentsObserver::GetMediaPlayerRemote(const MediaPlayerId& player_id) {
   DCHECK(media_player_remotes_.contains(player_id));
   DCHECK(media_player_remotes_[player_id].is_bound());
-  return media_player_remotes_[player_id];
+  return media_player_remotes_.at(player_id);
 }
 
 void MediaWebContentsObserver::OnMediaPlayerHostDisconnected(
@@ -611,7 +599,10 @@ void MediaWebContentsObserver::OnMediaPlayerAdded(
   media_player_remotes_[player_id].Bind(std::move(player_remote));
   media_player_remotes_[player_id].set_disconnect_handler(base::BindOnce(
       [](MediaWebContentsObserver* observer, const MediaPlayerId& player_id) {
+        observer->player_info_map_.erase(player_id);
         observer->media_player_remotes_.erase(player_id);
+        observer->session_controllers_manager_.OnEnd(player_id);
+        observer->web_contents_impl()->MediaDestroyed(player_id);
       },
       base::Unretained(this), player_id));
 

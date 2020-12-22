@@ -152,20 +152,6 @@ TEST_F(RendererWebMediaPlayerDelegateTest, SendsMessagesCorrectly) {
     EXPECT_EQ(delegate_id, std::get<0>(result));
     EXPECT_EQ(kReachedEndOfStream, std::get<1>(result));
   }
-
-  // Verify the destruction message.
-  {
-    test_sink().ClearMessages();
-    delegate_manager_->PlayerGone(delegate_id);
-    const IPC::Message* msg = test_sink().GetUniqueMessageMatching(
-        MediaPlayerDelegateHostMsg_OnMediaDestroyed::ID);
-    ASSERT_TRUE(msg);
-
-    std::tuple<int> result;
-    ASSERT_TRUE(
-        MediaPlayerDelegateHostMsg_OnMediaDestroyed::Read(msg, &result));
-    EXPECT_EQ(delegate_id, std::get<0>(result));
-  }
 }
 
 TEST_F(RendererWebMediaPlayerDelegateTest, DeliversObserverNotifications) {

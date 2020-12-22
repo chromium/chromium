@@ -53,9 +53,6 @@ IPC_MESSAGE_ROUTED2(MediaPlayerDelegateMsg_NotifyPowerExperimentState,
 // Messages from the renderer notifying the browser of playback state changes.
 // ----------------------------------------------------------------------------
 
-IPC_MESSAGE_ROUTED1(MediaPlayerDelegateHostMsg_OnMediaDestroyed,
-                    int /* delegate_id, distinguishes instances */)
-
 IPC_MESSAGE_ROUTED2(MediaPlayerDelegateHostMsg_OnMediaPaused,
                     int /* delegate_id, distinguishes instances */,
                     bool /* reached end of stream */)

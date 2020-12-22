@@ -85,9 +85,6 @@ void RendererWebMediaPlayerDelegate::RemoveObserver(int player_id) {
   players_with_video_.erase(player_id);
   playing_videos_.erase(player_id);
 
-  Send(
-      new MediaPlayerDelegateHostMsg_OnMediaDestroyed(routing_id(), player_id));
-
   ScheduleUpdateTask();
 }
 
@@ -145,8 +142,6 @@ void RendererWebMediaPlayerDelegate::PlayerGone(int player_id) {
   DCHECK(id_map_.Lookup(player_id));
   players_with_video_.erase(player_id);
   playing_videos_.erase(player_id);
-  Send(
-      new MediaPlayerDelegateHostMsg_OnMediaDestroyed(routing_id(), player_id));
 
   // Required to keep background playback statistics up to date.
   ScheduleUpdateTask();
