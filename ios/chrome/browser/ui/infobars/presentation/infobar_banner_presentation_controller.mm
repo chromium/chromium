@@ -108,15 +108,17 @@ const CGFloat kMinimumSizeChange = 0.01;
   UIView* containerView = self.containerView;
   UIWindow* window = containerView.window;
 
-  CGRect newFrame = [containerView.superview convertRect:bannerFrame
-                                                fromView:window];
-  // Make sure new calculate frame has changed enough to warrant a rerender.
-  // Otherwise, an infinite loop is possible.
-  if (std::fabs(newFrame.size.height - containerView.frame.size.height) >
-          kMinimumSizeChange ||
-      std::fabs(newFrame.size.width - containerView.frame.size.width) >
-          kMinimumSizeChange) {
-    containerView.frame = newFrame;
+  if (!base::FeatureList::IsEnabled(kInfobarOverlayUI)) {
+    CGRect newFrame = [containerView.superview convertRect:bannerFrame
+                                                  fromView:window];
+    // Make sure new calculate frame has changed enough to warrant a rerender.
+    // Otherwise, an infinite loop is possible.
+    if (std::fabs(newFrame.size.height - containerView.frame.size.height) >
+            kMinimumSizeChange ||
+        std::fabs(newFrame.size.width - containerView.frame.size.width) >
+            kMinimumSizeChange) {
+      containerView.frame = newFrame;
+    }
   }
 
   UIView* bannerView = self.presentedView;
