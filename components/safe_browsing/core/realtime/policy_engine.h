@@ -73,14 +73,6 @@ class RealTimePolicyEngine {
   // Is the feature to perform real-time URL lookup enabled?
   static bool IsUrlLookupEnabled();
 
-  // Is the feature to perform real-time URL lookup enabled for enhanced
-  // protection users?
-  static bool IsUrlLookupEnabledForEp();
-
-  // Is the feature to include OAuth tokens with real-time URL lookup enabled
-  // for Enhanced Protection users?
-  static bool IsUrlLookupEnabledForEpWithToken();
-
   // Whether the user has opted-in to MBB.
   static bool IsUserMbbOptedIn(PrefService* pref_service);
 

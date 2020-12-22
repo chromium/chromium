@@ -93,20 +93,8 @@ extern const base::Feature kRealTimeUrlLookupEnabled;
 // disabled.
 extern const base::Feature kRealTimeUrlLookupEnabledForEnterprise;
 
-// Controls whether the real time URL lookup is enabled for Enhanced Protection
-// users.
-extern const base::Feature kRealTimeUrlLookupEnabledForEP;
-
-// Controls whether the GAIA-keyed real time URL lookup is enabled for Enhanced
-// Protection users.
-extern const base::Feature kRealTimeUrlLookupEnabledForEPWithToken;
-
 // Controls whether the GAIA-keyed real time URL lookup is enabled.
 extern const base::Feature kRealTimeUrlLookupEnabledWithToken;
-
-// Controls whether the real time URL lookup is enabled for non mainframe URLs
-// for Enhanced Protection users.
-extern const base::Feature kRealTimeUrlLookupNonMainframeEnabledForEP;
 
 // Specifies which non-resource HTML Elements to collect based on their tag and
 // attributes. It's a single param containing a comma-separated list of pairs.

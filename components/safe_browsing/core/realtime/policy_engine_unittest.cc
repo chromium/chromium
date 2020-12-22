@@ -105,16 +105,6 @@ TEST_F(RealTimePolicyEngineTest,
 }
 
 TEST_F(RealTimePolicyEngineTest,
-       TestCanPerformFullURLLookup_RTLookupForEpDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  pref_service_.SetBoolean(prefs::kSafeBrowsingEnhanced, true);
-  feature_list.InitWithFeatures(
-      /* enabled_features */ {kEnhancedProtection},
-      /* disabled_features */ {kRealTimeUrlLookupEnabledForEP});
-  EXPECT_FALSE(CanPerformFullURLLookup(/* is_off_the_record */ false));
-}
-
-TEST_F(RealTimePolicyEngineTest,
        TestCanPerformFullURLLookup_RTLookupForEpEnabled_WithTokenDisabled) {
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env =
       std::make_unique<signin::IdentityTestEnvironment>();
@@ -127,40 +117,11 @@ TEST_F(RealTimePolicyEngineTest,
   pref_service_.SetBoolean(prefs::kSafeBrowsingEnhanced, true);
   {
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(
-        /* enabled_features */ {kEnhancedProtection,
-                                kRealTimeUrlLookupEnabledForEP},
-        /* disabled_features */ {});
+    feature_list.InitAndEnableFeature(kEnhancedProtection);
     EXPECT_TRUE(CanPerformFullURLLookup(/* is_off_the_record */ false));
     EXPECT_TRUE(CanPerformFullURLLookupWithToken(
         /* is_off_the_record */ false, &sync_service, identity_manager));
   }
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(
-        /* enabled_features */ {kEnhancedProtection,
-                                kRealTimeUrlLookupEnabledForEP},
-        /* disabled_features */ {kRealTimeUrlLookupEnabledForEPWithToken,
-                                 kRealTimeUrlLookupEnabledWithToken});
-    EXPECT_TRUE(CanPerformFullURLLookup(/* is_off_the_record */ false));
-    EXPECT_FALSE(CanPerformFullURLLookupWithToken(
-        /* is_off_the_record */ false, &sync_service, identity_manager));
-  }
-}
-
-TEST_F(RealTimePolicyEngineTest,
-       TestCanPerformFullURLLookup_NonEpUsersEnabledWhenRTLookupForEpDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /* enabled_features */ {kRealTimeUrlLookupEnabled,
-                              kRealTimeUrlLookupEnabledWithToken},
-      /* disabled_features */ {kRealTimeUrlLookupEnabledForEP});
-  pref_service_.SetUserPref(
-      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
-      std::make_unique<base::Value>(true));
-
-  // kRealTimeUrlLookupEnabledForEP should only control EP users.
-  EXPECT_TRUE(CanPerformFullURLLookup(/* is_off_the_record */ false));
 }
 
 TEST_F(RealTimePolicyEngineTest,

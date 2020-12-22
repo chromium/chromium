@@ -42,16 +42,6 @@ bool RealTimePolicyEngine::IsUrlLookupEnabled() {
 }
 
 // static
-bool RealTimePolicyEngine::IsUrlLookupEnabledForEp() {
-  return base::FeatureList::IsEnabled(kRealTimeUrlLookupEnabledForEP);
-}
-
-// static
-bool RealTimePolicyEngine::IsUrlLookupEnabledForEpWithToken() {
-  return base::FeatureList::IsEnabled(kRealTimeUrlLookupEnabledForEPWithToken);
-}
-
-// static
 bool RealTimePolicyEngine::IsUserMbbOptedIn(PrefService* pref_service) {
   return pref_service->GetBoolean(
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled);
@@ -84,7 +74,7 @@ bool RealTimePolicyEngine::CanPerformFullURLLookup(
       IsInExcludedCountry(variations_service->GetStoredPermanentCountry()))
     return false;
 
-  if (IsUrlLookupEnabledForEp() && IsUserEpOptedIn(pref_service))
+  if (IsUserEpOptedIn(pref_service))
     return true;
 
   return IsUrlLookupEnabled() && IsUserMbbOptedIn(pref_service);
@@ -102,8 +92,7 @@ bool RealTimePolicyEngine::CanPerformFullURLLookupWithToken(
     return false;
   }
 
-  if (IsUrlLookupEnabledForEp() && IsUserEpOptedIn(pref_service) &&
-      IsUrlLookupEnabledForEpWithToken() &&
+  if (IsUserEpOptedIn(pref_service) &&
       IsPrimaryAccountSignedIn(identity_manager)) {
     return true;
   }
@@ -158,9 +147,7 @@ bool RealTimePolicyEngine::CanPerformFullURLLookupForResourceType(
     return true;
   }
   if (resource_type == ResourceType::kSubFrame &&
-      can_rt_check_subresource_url &&
-      base::FeatureList::IsEnabled(
-          kRealTimeUrlLookupNonMainframeEnabledForEP)) {
+      can_rt_check_subresource_url) {
     return true;
   }
   return false;

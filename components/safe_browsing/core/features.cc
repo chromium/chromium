@@ -92,20 +92,8 @@ const base::Feature kRealTimeUrlLookupEnabledForEnterprise{
     "SafeBrowsingRealTimeUrlLookupEnabledForEnterprise",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kRealTimeUrlLookupEnabledForEP{
-    "SafeBrowsingRealTimeUrlLookupEnabledForEP",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
-const base::Feature kRealTimeUrlLookupEnabledForEPWithToken{
-    "SafeBrowsingRealTimeUrlLookupEnabledForEPWithToken",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kRealTimeUrlLookupEnabledWithToken{
     "SafeBrowsingRealTimeUrlLookupEnabledWithToken",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
-const base::Feature kRealTimeUrlLookupNonMainframeEnabledForEP{
-    "SafeBrowsingRealTimeUrlLookupNonMainframeEnabledForEP",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kSafeBrowsingSeparateNetworkContexts{
@@ -156,11 +144,8 @@ constexpr struct {
     {&kPasswordProtectionForSignedInUsers, true},
     {&kPromptAppForDeepScanning, true},
     {&kRealTimeUrlLookupEnabled, true},
-    {&kRealTimeUrlLookupEnabledForEP, true},
     {&kRealTimeUrlLookupEnabledForEnterprise, true},
-    {&kRealTimeUrlLookupEnabledForEPWithToken, true},
     {&kRealTimeUrlLookupEnabledWithToken, true},
-    {&kRealTimeUrlLookupNonMainframeEnabledForEP, true},
     {&kSafeBrowsingSeparateNetworkContexts, true},
     {&kSafeBrowsingSectionUIAndroid, true},
     {&kSuspiciousSiteTriggerQuotaFeature, true},
