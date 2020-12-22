@@ -1265,7 +1265,7 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForVulkan() {
           GetDidSwapBuffersCompleteCallback());
     }
     if (!output_device_) {
-      output_device_ = std::make_unique<SkiaOutputDeviceX11>(
+      output_device_ = SkiaOutputDeviceX11::Create(
           context_state_, dependency_->GetSurfaceHandle(),
           shared_gpu_deps_->memory_tracker(),
           GetDidSwapBuffersCompleteCallback());
@@ -1310,12 +1310,10 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForDawn() {
     // TODO(sgilhuly): Set up a Vulkan swapchain so that Linux can also use
     // SkiaOutputDeviceDawn.
     if (!features::IsUsingOzonePlatform()) {
-      output_device_ = std::make_unique<SkiaOutputDeviceX11>(
+      output_device_ = SkiaOutputDeviceX11::Create(
           context_state_, dependency_->GetSurfaceHandle(),
           shared_gpu_deps_->memory_tracker(),
           GetDidSwapBuffersCompleteCallback());
-    } else {
-      return false;
     }
 #elif defined(OS_WIN)
     std::unique_ptr<SkiaOutputDeviceDawn> output_device =
@@ -1334,7 +1332,7 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForDawn() {
 #endif
   }
 #endif
-  return true;
+  return !!output_device_;
 }
 
 bool SkiaOutputSurfaceImplOnGpu::MakeCurrent(bool need_framebuffer) {

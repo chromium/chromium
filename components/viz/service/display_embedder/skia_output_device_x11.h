@@ -5,9 +5,11 @@
 #ifndef COMPONENTS_VIZ_SERVICE_DISPLAY_EMBEDDER_SKIA_OUTPUT_DEVICE_X11_H_
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_EMBEDDER_SKIA_OUTPUT_DEVICE_X11_H_
 
+#include <memory>
 #include <vector>
 
 #include "base/macros.h"
+#include "base/types/pass_key.h"
 #include "components/viz/service/display_embedder/skia_output_device_offscreen.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/x/connection.h"
@@ -18,11 +20,19 @@ namespace viz {
 class SkiaOutputDeviceX11 final : public SkiaOutputDeviceOffscreen {
  public:
   SkiaOutputDeviceX11(
+      base::PassKey<SkiaOutputDeviceX11> pass_key,
+      scoped_refptr<gpu::SharedContextState> context_state,
+      x11::Window window,
+      x11::VisualId visual,
+      gpu::MemoryTracker* memory_tracker,
+      DidSwapBufferCompleteCallback did_swap_buffer_complete_callback);
+  ~SkiaOutputDeviceX11() override;
+
+  static std::unique_ptr<SkiaOutputDeviceX11> Create(
       scoped_refptr<gpu::SharedContextState> context_state,
       gfx::AcceleratedWidget widget,
       gpu::MemoryTracker* memory_tracker,
       DidSwapBufferCompleteCallback did_swap_buffer_complete_callback);
-  ~SkiaOutputDeviceX11() override;
 
   bool Reshape(const gfx::Size& size,
                float device_scale_factor,
@@ -36,10 +46,10 @@ class SkiaOutputDeviceX11 final : public SkiaOutputDeviceOffscreen {
                      std::vector<ui::LatencyInfo> latency_info) override;
 
  private:
-  x11::Connection* connection_ = nullptr;
-  x11::Window window_ = x11::Window::None;
-  x11::GraphicsContext gc_{};
-  x11::VisualId visual_{};
+  x11::Connection* const connection_;
+  const x11::Window window_;
+  const x11::VisualId visual_;
+  const x11::GraphicsContext gc_;
   scoped_refptr<base::RefCountedMemory> pixels_;
 
   DISALLOW_COPY_AND_ASSIGN(SkiaOutputDeviceX11);
