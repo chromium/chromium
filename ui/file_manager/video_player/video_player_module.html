@@ -1,0 +1,48 @@
+<!--
+  -- Copyright 2020 The Chromium Authors. All rights reserved.
+  -- Use of this source code is governed by a BSD-style license that can be
+  -- found in the LICENSE file.
+  -->
+<html>
+<head>
+  <title>#xFEFF;</title>
+  <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
+
+  <link rel="stylesheet" type="text/css" href="css/video_player.css">
+  <link rel="stylesheet" type="text/css" href="css/arrow_box.css">
+
+  <link rel="import" href="chrome://resources/cr_elements/cr_toast/cr_toast.html">
+
+  <script type="module" src="js/main.m.js"></script>
+</head>
+<body>
+  <custom-style>
+    <style>
+
+      /* Let cr-toast appear at top left corner */
+      cr-toast {
+          bottom: auto;
+          top: 0;
+          transform: translateY(-100px);
+      }
+
+      cr-toast[open] {
+          transform: translateY(0);
+      }
+
+    </style>
+  </custom-style>
+  <div id="video-player">
+    <cr-toast id="toast" duration="3000">
+      <div id="toast-content"></div>
+    </cr-toast>
+    <div id="video-container">
+    </div>
+    <div class="arrow-box">
+      <div class="arrow left tool"><div></div></div>
+      <div class="arrow-spacer"></div>
+      <div class="arrow right tool"><div></div></div>
+    </div>
+  </div>
+</body>
+</html>

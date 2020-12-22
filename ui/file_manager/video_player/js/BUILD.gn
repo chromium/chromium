@@ -22,6 +22,7 @@ js_type_check("closure_compile_jsmodules") {
   deps = [
     ":background.m",
     ":error_util.m",
+    ":main.m",
     ":test_util.m",
     ":video_player.m",
     ":video_player_metrics.m",
@@ -145,6 +146,7 @@ js_library("video_player.m") {
   sources =
       [ "$root_gen_dir/ui/file_manager/video_player/js/video_player.m.js" ]
   deps = [
+    ":error_util.m",
     ":video_player_metrics.m",
     ":video_player_native_controls.m",
     "//ui/file_manager/base/js:app_util.m",
@@ -182,6 +184,10 @@ js_test_gen_html("js_test_gen_html_modules") {
         "browser_resolver_prefix_replacements=\"chrome://test/=./\"",
         "hide_warnings_for=third_party/",
       ]
+}
+
+js_library("main.m") {
+  deps = [ ":video_player.m" ]
 }
 
 js_library("main_background.m") {
