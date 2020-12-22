@@ -251,7 +251,7 @@
 
       Ist die Richtlinie deaktiviert, können Nutzer im <ph name="PRODUCT_NAME" />-Druckdialogfeld nicht über <ph name="CLOUD_PRINT_NAME" /> drucken.
 
-      Damit <ph name="CLOUD_PRINT_NAME" />-Ziele sichtbar sind, muss diese Richtlinie auf „Aktiviert“ gesetzt sein und „<ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD" />“ darf nicht in der Richtlinie „<ph name="PRINTER_TYPE_DENY_LIST_POLICY_NAME" />“ stehen.</translation>
+      Damit <ph name="CLOUD_PRINT_NAME" />-Ziele sichtbar sind, muss diese Richtlinie auf „Aktiviert“ gesetzt sein und „<ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD" />“ darf nicht in der Richtlinie <ph name="PRINTER_TYPE_DENY_LIST_POLICY_NAME" /> stehen.</translation>
 <translation id="1390901586107713894">Mit dieser Richtlinie können Sie festlegen, welche Erweiterungen Nutzer NICHT installieren dürfen. Bereits installierte Erweiterungen, die gesperrt sind, werden deaktiviert und Nutzer haben keine Möglichkeit, sie zu aktivieren. Sollte eine aufgrund der Sperrliste deaktivierte Erweiterung aus der Liste entfernt werden, wird sie automatisch wieder aktiviert.
 
           Der Wert "*" in der Sperrliste gibt an, dass alle Erweiterungen gesperrt sind, sofern sie nicht ausdrücklich auf die Zulassungsliste gesetzt wurden.
@@ -346,7 +346,7 @@ Wenn Sie diese Richtlinie deaktivieren, wird das Scrollen zu bestimmten Textfrag
           Wenn Sie diese Richtlinie konfigurieren, kann sie vom Nutzer nicht geändert oder überschrieben werden.</translation>
 <translation id="1502843533062797703">Blockieren von Codeeinschleusungen durch Drittanbieter-Software aktivieren</translation>
 <translation id="1506017854924185821">Profil-Picker beim Start verfügbar</translation>
-<translation id="1509377996969000672">Wenn die Richtlinie festgelegt ist, werden Konfigurationen für gerätegebundene Unternehmensdrucker bereitgestellt. Das Format entspricht dem <ph name="NATIVE_PRINTERS_POLICY_NAME" />-Wörterbuch, erfordert jedoch zusätzlich ein „id“- oder „guid“-Feld pro Drucker für die Zulassungs- oder Sperrliste. Die Datei darf nicht größer als 5 MB sein und muss im JSON-Format vorliegen. Eine Datei mit ungefähr 21.000 Druckern ergibt nach dem Codieren eine Datei mit 5 MB. Die Integrität des Downloads wird anhand des kryptografischen Hashs verifiziert. Die Datei wird heruntergeladen, im Cache gespeichert und noch einmal heruntergeladen, sobald sich URL oder Hash ändern. <ph name="PRODUCT_OS_NAME" /> lädt die Datei für Druckerkonfigurationen herunter und sorgt dafür, dass die Drucker mit <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> und <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> verfügbar gemacht werden.
+<translation id="1509377996969000672">Wenn die Richtlinie festgelegt ist, werden Konfigurationen für gerätegebundene Unternehmensdrucker bereitgestellt. Das Format entspricht dem <ph name="NATIVE_PRINTERS_POLICY_NAME" />-Wörterbuch, erfordert jedoch zusätzlich ein „id“- oder „guid“-Feld pro Drucker für die Zulassungs- oder Sperrliste. Die Datei darf nicht größer als 5 MB sein und muss im JSON-Format vorliegen. Eine Datei mit ungefähr 21.000 Druckern ergibt nach dem Codieren eine Datei mit 5 MB. Die Integrität des Downloads wird anhand des kryptografischen Hashs verifiziert. Die Datei wird heruntergeladen, im Cache gespeichert und noch einmal heruntergeladen, sobald sich URL oder Hash ändern. <ph name="PRODUCT_OS_NAME" /> lädt die Datei für Druckerkonfigurationen herunter und sorgt dafür, dass die Drucker gemäß <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> und <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> verfügbar gemacht werden.
 
       Diese Richtlinie:
 
@@ -356,7 +356,7 @@ Wenn Sie diese Richtlinie deaktivieren, wird das Scrollen zu bestimmten Textfrag
 
       Wenn sie nicht konfiguriert ist, stehen keine Gerätedrucker zur Verfügung und die anderen <ph name="DEVICE_NATIVE_PRINTERS_POLICY_PATTERN" />-Richtlinien werden ignoriert.
 
-      Diese Richtlinie wurde eingestellt. Bitte verwenden Sie stattdessen die Richtlinie „<ph name="DEVICE_PRINTERS_POLICY_NAME" />“.</translation>
+      Diese Richtlinie wurde eingestellt. Bitte verwenden Sie stattdessen die Richtlinie <ph name="DEVICE_PRINTERS_POLICY_NAME" />.</translation>
 <translation id="1509692106376861764">Diese Richtlinie wird ab <ph name="PRODUCT_NAME" />-Version 29 nicht mehr verwendet.</translation>
 <translation id="1514888685242892912"><ph name="PRODUCT_NAME" /> aktivieren</translation>
 <translation id="1515230621229117540">Aktiviert das unverankerte Menü für Bedienungshilfen</translation>
@@ -668,7 +668,7 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
 
       Wenn die Richtlinie nicht konfiguriert ist oder auf Attribute eingestellt wird, für die keine Übereinstimmungen vorliegen, wird als Standardeinstellung der integrierte PDF-Drucker verwendet. Sollte kein PDF-Drucker vorhanden sein, wählt <ph name="PRODUCT_NAME" /> gar keinen Drucker aus.
 
-      Mit <ph name="CLOUD_PRINT_NAME" /> verbundene Drucker werden als „<ph name="PRINTER_TYPE_CLOUD" />“ klassifiziert, alle anderen als „<ph name="PRINTER_TYPE_LOCAL" />“.
+      Mit <ph name="CLOUD_PRINT_NAME" /> verbundene Drucker werden als <ph name="PRINTER_TYPE_CLOUD" /> klassifiziert, alle anderen als <ph name="PRINTER_TYPE_LOCAL" />.
 
       Hinweis: Wenn Sie ein Feld auslassen, gelten alle Werte als übereinstimmend. Wenn Sie z. B. keinen Wert für die Konnektivität angeben, wird die Erkennung sämtlicher Druckertypen, <ph name="PRINTER_TYPE_LOCAL" /> und <ph name="PRINTER_TYPE_CLOUD" />, über die Druckvorschau gestartet. Reguläre Ausdrücke müssen in der RegExp-Syntax von JavaScript angegeben werden und es wird zwischen Groß- und Kleinschreibung unterschieden.</translation>
 <translation id="2006530844219044261">Energieverwaltung</translation>
@@ -1067,11 +1067,11 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="257788512393330403">Passworteingabe alle sechs Stunden erforderlich</translation>
 <translation id="2580757713966614760">Durch die Richtlinie wird angegeben, welche Zugriffsrichtlinie für die Massenkonfiguration von Druckern verwendet wird. Dadurch wird festgelegt, welche Drucker von <ph name="DEVICE_PRINTERS_POLICY_NAME" /> für Nutzer verfügbar sind.
 
-      * <ph name="POLICY_ENUM_DEVICEPRINTERSACCESSMODE_BLOCKLISTRESTRICTIONS" /> (Wert 0), <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> kann den Zugriff auf die angegebenen Drucker einschränken
+      * <ph name="POLICY_ENUM_DEVICEPRINTERSACCESSMODE_BLOCKLISTRESTRICTIONS" /> (Wert 0): <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> kann den Zugriff auf die angegebenen Drucker einschränken
 
-      * <ph name="POLICY_ENUM_DEVICEPRINTERSACCESSMODE_ALLOWLISTPRINTERSONLY" /> (Wert 1), <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> kennzeichnet nur die Drucker, die ausgewählt werden können
+      * <ph name="POLICY_ENUM_DEVICEPRINTERSACCESSMODE_ALLOWLISTPRINTERSONLY" /> (Wert 1): <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> kennzeichnet nur die Drucker, die ausgewählt werden können
 
-      * <ph name="POLICY_ENUM_DEVICEPRINTERSACCESSMODE_ALLOWALL" /> (Wert 2), alle Drucker können genutzt werden.
+      * <ph name="POLICY_ENUM_DEVICEPRINTERSACCESSMODE_ALLOWALL" /> (Wert 2): alle Drucker können genutzt werden.
 
       Wenn die Richtlinie nicht konfiguriert ist, wird <ph name="PRINTERS_ALLOW_ALL" /> verwendet.</translation>
 <translation id="2586117300379904732">Wakelocks für die Energieverwaltung zulassen</translation>
@@ -1188,19 +1188,12 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
       Ist diese Einstellung aktiviert oder nicht definiert, können Webseiten JavaScript verwenden, wobei der Nutzer diese Einstellung jedoch ändern kann.</translation>
 <translation id="274769314493317695">Wenn <ph name="PRINTERS_WHITELIST" /> für <ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME" /> ausgewählt ist, wird durch Festlegen von <ph name="NATIVE_PRINTERS_BULK_WHITELIST_POLICY_NAME" /> angegeben, welche Drucker die Nutzer verwenden können. Den Nutzern stehen nur die Drucker zur Verfügung, deren IDs mit den Werten in dieser Richtlinie übereinstimmen. Die IDs müssen dem Feld <ph name="ID_FIELD" /> oder dem Feld <ph name="GUID_FIELD" /> in der Datei entsprechen, die in <ph name="NATIVE_PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> angegeben ist.
 
-      Diese Richtlinie wurde eingestellt. Bitte verwenden Sie stattdessen die Richtlinie „<ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" />“.</translation>
+      Diese Richtlinie wurde eingestellt. Bitte verwenden Sie stattdessen die Richtlinie <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" />.</translation>
 <translation id="2752046642026416564">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, kann <ph name="PRODUCT_NAME" /> auf Nutzerebene installierte native Nachrichtenhosts verwenden.
 
       Ist die Richtlinie deaktiviert, kann <ph name="PRODUCT_NAME" /> diese Hosts nur verwenden, wenn sie auf Systemebene installiert wurden.</translation>
 <translation id="2753637905605932878">Den von WebRTC verwendeten Bereich lokaler UDP-Ports einschränken</translation>
 <translation id="2757054304033424106">Typen von Erweiterungen bzw. Apps, die installiert werden können</translation>
-<translation id="2758689548159678032">Wenn aktiviert, sendet die Funktion "<ph name="PRODUCT_NAME" />" detaillierte Anfrageheader mit Informationen über den Browser und die Umgebung des Nutzers.
-
-      Dies ist eine Zusatzfunktion, doch die neuen Header funktionieren auf manchen Websites nicht, die einschränken, wie viele Zeichen eine Anfrage enthalten darf.
-
-      Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, ist die Funktion "<ph name="PRODUCT_NAME" />" aktiviert. Wenn sie deaktiviert ist, ist die Funktion nicht verfügbar.
-
-      Diese Unternehmensrichtlinie kann nur übergangsweise verwendet werden und wird in Chrome 88 entfernt.</translation>
 <translation id="2759224876420453487">Nutzerverhalten in Mehrfachprofil-Sitzung steuern</translation>
 <translation id="2761483219396643566">Inaktivitätsspanne bis zur Warnung im Akkubetrieb</translation>
 <translation id="2769952903507981510">Erforderlichen Domainnamen für Remotezugriff-Hosts konfigurieren</translation>
@@ -1316,13 +1309,13 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
       Wenn die Richtlinie nicht konfiguriert oder keine gültige URL angegeben ist, wird sie von <ph name="PRODUCT_NAME" /> nicht als Regelquelle für den Browserwechsel verwendet.
 
       Hinweis: Diese Richtlinie verweist auf eine XML-Datei im selben Format wie die Richtlinie "<ph name="IEEM_SITELIST_POLICY" />" von <ph name="IE_PRODUCT_NAME" />. Sie lädt Regeln aus einer XML-Datei, ohne diese Regeln mit <ph name="IE_PRODUCT_NAME" /> zu teilen. Weitere Informationen zur Richtlinie "<ph name="IEEM_SITELIST_POLICY" />" von <ph name="IE_PRODUCT_NAME" /> (https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode)</translation>
-<translation id="2947111924404450461">Durch diese Richtlinie werden Unternehmensdrucker konfiguriert. Das Format entspricht dem <ph name="NATIVE_PRINTERS_POLICY_NAME" />-Wörterbuch, erfordert jedoch zusätzlich ein <ph name="ID_FIELD" />- oder <ph name="GUID_FIELD" />-Feld pro Drucker für die Zulassungs- oder Sperrliste. Die Datei darf nicht größer als 5 MB sein und muss im JSON-Format vorliegen. Eine Datei mit ungefähr 21.000 Druckern ergibt nach dem Codieren eine Datei mit 5 MB. Die Integrität des Downloads wird anhand des kryptografischen Hashs verifiziert. Die Datei wird heruntergeladen, im Cache gespeichert und noch einmal heruntergeladen, sobald sich URL oder Hash ändern. <ph name="PRODUCT_OS_NAME" /> lädt die Datei für Druckerkonfigurationen herunter und sorgt dafür, dass die Drucker mit <ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="BULK_PRINTERS_WHITELIST" /> und <ph name="BULK_PRINTERS_BLACKLIST" /> verfügbar gemacht werden.
+<translation id="2947111924404450461">Durch diese Richtlinie werden Unternehmensdrucker konfiguriert. Das Format entspricht dem <ph name="NATIVE_PRINTERS_POLICY_NAME" />-Wörterbuch, erfordert jedoch zusätzlich ein <ph name="ID_FIELD" />- oder <ph name="GUID_FIELD" />-Feld pro Drucker für die Zulassungs- oder Sperrliste. Die Datei darf nicht größer als 5 MB sein und muss im JSON-Format vorliegen. Eine Datei mit ungefähr 21.000 Druckern ergibt nach dem Codieren eine Datei mit 5 MB. Die Integrität des Downloads wird anhand des kryptografischen Hashs verifiziert. Die Datei wird heruntergeladen, im Cache gespeichert und noch einmal heruntergeladen, sobald sich URL oder Hash ändern. <ph name="PRODUCT_OS_NAME" /> lädt die Datei für Druckerkonfigurationen herunter und sorgt dafür, dass die Drucker gemäß <ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="BULK_PRINTERS_WHITELIST" /> und <ph name="BULK_PRINTERS_BLACKLIST" /> verfügbar gemacht werden.
 
       Diese Richtlinie hat keinen Einfluss darauf, ob Nutzer auf einzelnen Geräten Drucker konfigurieren können. Sie ist als Ergänzung zu den Druckerkonfigurationen der einzelnen Nutzer gedacht.
 
       Wenn Sie diese Richtlinie konfigurieren, kann sie von Nutzern nicht geändert werden.
 
-      Diese Richtlinie wurde eingestellt. Bitte verwenden Sie stattdessen die Richtlinie „<ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />“.</translation>
+      Diese Richtlinie wurde eingestellt. Bitte verwenden Sie stattdessen die Richtlinie <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
 <translation id="2949765875529121431">Wenn die Richtlinie konfiguriert ist, wird eine Liste mit Hostnamen angegeben, die vom HSTS-Richtliniencheck ausgenommen sind. Dieser Richtliniencheck kann Anfragen von http auf https upgraden. Für diese Richtlinie sind nur Single-Label-Hostnamen zulässig. Hostnamen müssen kanonisiert werden: Alle IDNs müssen in ihr A-Label-Format konvertiert und alle ASCII-Buchstaben kleingeschrieben werden. Diese Richtlinie gilt nur für die angegebenen Hostnamen, aber nicht für Subdomains der angegebenen Namen.</translation>
 <translation id="2952347049958405264">Einschränkungen:</translation>
 <translation id="2957047180944828740">Gibt an, ob unsichere Websites Anfragen an eher private Netzwerk-Endpunkte senden dürfen</translation>
@@ -1416,7 +1409,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
           Wird sie nicht konfiguriert, ist der große Cursor auf dem Anmeldebildschirm anfangs deaktiviert, kann jedoch vom Nutzer jederzeit aktiviert werden.</translation>
 <translation id="3028296787914825213">Durch die Richtlinie wird angegeben, welche Zugriffsrichtlinie für die Massenkonfiguration von Druckern verwendet wird. Dadurch wird festgelegt, welche Drucker von <ph name="NATIVE_PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> für Nutzer verfügbar sind.
 
-      * Wenn <ph name="PRINTERS_BLACKLIST" /> (Wert 0) ausgewählt ist, kann <ph name="BULK_PRINTERS_BLACKLIST" /> den Zugriff auf die angegebenen Drucker einschränken
+      * Wenn <ph name="PRINTERS_BLACKLIST" /> (Wert 0) ausgewählt ist, schränkt <ph name="BULK_PRINTERS_BLACKLIST" /> den Zugriff auf die angegebenen Drucker ein
 
       * Wenn <ph name="PRINTERS_WHITELIST" /> ausgewählt ist, kennzeichnet <ph name="BULK_PRINTERS_WHITELIST" /> (Wert 1) nur die Drucker, die ausgewählt werden können
 
@@ -1424,7 +1417,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 
       Wenn die Richtlinie nicht konfiguriert ist, wird <ph name="PRINTERS_ALLOW_ALL" /> verwendet.
 
-      Diese Richtlinie wurde eingestellt. Bitte verwenden Sie stattdessen „<ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" />“.</translation>
+      Diese Richtlinie wurde eingestellt. Bitte verwenden Sie stattdessen die Richtlinie <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" />.</translation>
 <translation id="3030000825273123558">Messdatenberichte aktivieren</translation>
 <translation id="3038323923255997294">Apps weiter im Hintergrund ausführen, wenn <ph name="PRODUCT_NAME" /> geschlossen ist</translation>
 <translation id="3041887182529293512">Wenn die Richtlinie auf "True" gesetzt oder nicht konfiguriert ist, werden auf der Seite "Neuer Tab" automatisch generierte Inhaltsvorschläge auf Basis des Browserverlaufs, der Interessen oder des Standorts des Nutzers angezeigt.
@@ -1620,17 +1613,17 @@ Unter <ph name="MS_WIN_NAME" /> ist diese Funktion nur in Instanzen verfügbar, 
 
       * Mit der Angabe von <ph name="PRINTER_MANUFACTURER" /> und <ph name="PRINTER_MODEL" /> können Nutzer die Drucker leichter zuordnen.
 
-      Bei „<ph name="PRINTER_URI" />“ sollte es sich um eine Adresse einschließlich <ph name="URI_SCHEME" />, <ph name="URI_PORT" /> und <ph name="URI_QUEUE" /> handeln, auf die über einen Client-Computer zugegriffen werden kann.
+      * Bei „<ph name="PRINTER_URI" />“ sollte es sich um eine Adresse einschließlich <ph name="URI_SCHEME" />, <ph name="URI_PORT" /> und <ph name="URI_QUEUE" /> handeln, auf die über einen Client-Computer zugegriffen werden kann.
 
       * Optional können Sie die <ph name="PRINTER_UUID" /> angeben, um das Entfernen von Duplikaten bei <ph name="ZEROCONF_DISCOVERY" />-Druckern zu erleichtern.
 
-      * Geben Sie für „<ph name="PRINTER_EFFECTIVE_MODEL" />“ entweder den Modellnamen an oder setzen Sie „<ph name="PRINTER_AUTOCONF" />“ auf „Wahr“. Drucker mit beiden oder keiner der Eigenschaften werden ignoriert.
+      * Geben Sie entweder für „<ph name="PRINTER_EFFECTIVE_MODEL" />“ den Modellnamen an oder setzen Sie „<ph name="PRINTER_AUTOCONF" />“ auf „Wahr“. Drucker mit beiden oder keiner der Eigenschaften werden ignoriert.
 
       PPDs werden heruntergeladen, wenn der Drucker genutzt wird, und häufig genutzte PPDs werden im Cache gespeichert. Diese Richtlinie hat keinen Einfluss darauf, ob Nutzer auf einzelnen Geräten Drucker konfigurieren können.
 
-      Hinweis: Bei Geräten, die über <ph name="MS_AD_NAME" /> verwaltet werden, unterstützt diese Richtlinie die Erweiterung von <ph name="MACHINE_NAME_VARIABLE" /> auf den <ph name="MS_AD_NAME" />-Computernamen oder einen Teilstring davon. Wenn der Computername beispielsweise „<ph name="MACHINE_NAME_EXAMPLE" />“ lautet, wird „<ph name="MACHINE_NAME_VARIABLE_EXAMPLE" />“ durch die vier Zeichen nach der sechsten Stelle ersetzt, z. B. „<ph name="MACHINE_NAME_PART_EXAMPLE" />“. Die Position basiert auf Null.
+      Hinweis: Bei Geräten, die über <ph name="MS_AD_NAME" /> verwaltet werden, unterstützt diese Richtlinie die Erweiterung von <ph name="MACHINE_NAME_VARIABLE" /> auf den <ph name="MS_AD_NAME" />-Computernamen oder einen Teilstring davon. Wenn der Computername beispielsweise „<ph name="MACHINE_NAME_EXAMPLE" />“ lautet, wird „<ph name="MACHINE_NAME_VARIABLE_EXAMPLE" />“ durch die vier Zeichen nach der sechsten Stelle ersetzt, z. B. „<ph name="MACHINE_NAME_PART_EXAMPLE" />“. Die Position basiert auf null.
 
-      Diese Richtlinie wurde eingestellt. Bitte verwenden Sie stattdessen die Richtlinie „<ph name="PRINTERS_POLICY_NAME" />“.</translation>
+      Diese Richtlinie wurde eingestellt. Bitte verwenden Sie stattdessen die Richtlinie <ph name="PRINTERS_POLICY_NAME" />.</translation>
 <translation id="3295118731207421797">Mit dieser Richtlinie kann ein Administrator festlegen, ob eine Seite beim Schließen eine synchrone XHR-Anfrage senden darf.
 
       Wenn die Richtlinie aktiviert ist, dürfen Seiten beim Schließen synchrone XHR-Anfragen senden.
@@ -1757,15 +1750,22 @@ Wird die Richtlinie auf "False" gesetzt , verwendet <ph name="PRODUCT_NAME" /> k
       Die experimentelle Einstellung wird in Zukunft entfernt, sobald die Inline-Anmeldung alle SSO-Anmeldeprozesse vollständig unterstützt.</translation>
 <translation id="3435796032110614169">Zulassen, dass der Druckauftragsverlauf gelöscht wird</translation>
 <translation id="3437924696598384725">Zulassen, dass der Nutzer VPN-Verbindungen verwaltet</translation>
-<translation id="3442269905344976871">Wenn die Richtlinie aktiviert und <ph name="WILCO_NAME" /> Diagnostics and Telemetry Controller (DTC) auf dem Gerät verfügbar ist, wird die Erfassung, Verarbeitung und Meldung von Telemetrie- und Diagnosedaten aktiviert.
+<translation id="3442269905344976871">Wenn die Richtlinie aktiviert und <ph name="WILCO_NAME" /> Diagnostics and Telemetry Controller (DTC) auf dem Gerät verfügbar ist, wird die Erhebung, Verarbeitung und Meldung von Telemetrie- und Diagnosedaten aktiviert.
 
-      Ist die Richtlinie deaktiviert oder nicht konfiguriert, wird DTC ausgeschaltet und kann keine Telemetrie- und Diagnosedaten von dem Gerät erfassen, verarbeiten oder melden.</translation>
+      Ist die Richtlinie deaktiviert oder nicht konfiguriert, wird DTC ausgeschaltet und kann keine Telemetrie- und Diagnosedaten von dem Gerät erheben, verarbeiten oder melden.</translation>
 <translation id="3450649825886735618">Rechtschreibfehler nicht mithilfe von Google-Webdiensten korrigieren</translation>
 <translation id="3451951038162074887">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, kann Drittanbieter-Software keinen ausführbaren Code in die Prozesse von <ph name="PRODUCT_NAME" /> einfügen.
 
       Ist sie deaktiviert, kann diese Software ausführbaren Code in die Prozesse von <ph name="PRODUCT_NAME" /> einfügen.
 
       Unabhängig davon, wie diese Richtlinie festgelegt wird, verhindert der Browser nicht, dass Drittanbieter-Software ausführbaren Code in seine Prozesse auf Computern einfügt, die sich in einer <ph name="MS_AD_NAME" />-Domain befinden.</translation>
+<translation id="3456292544936505775">Über diese Richtlinie wird der Zeitraum festgelegt, in dem das <ph name="PRODUCT_OS_NAME" />-Gerät nicht automatisch nach Updates suchen darf.
+      Folgendes passiert, wenn diese Richtlinie auf eine nicht leere Liste von Zeiträumen festgelegt wird:
+      Geräte können während der festgelegten Zeiträume nicht automatisch nach Updates suchen. Auf Geräten, für die ein Rollback erforderlich ist oder die eine Version von <ph name="PRODUCT_OS_NAME" /> ausführen, die unter der Mindestversion liegt, hat diese Richtlinie aufgrund potenzieller Sicherheitsprobleme keine Auswirkungen. Außerdem blockiert diese Richtlinie keine Prüfungen auf Updates, die von Nutzern oder Administratoren angefordert werden.
+      Ab M88 bricht diese Richtlinie ein laufendes Update ab, wenn ein beschränkter Zeitraum erreicht ist. Beim nächsten automatischen Update nach Ende des beschränkten Zeitraums wird das Update automatisch fortgesetzt. Auf Geräten, die ein Update auf ein Quick-Fix-Build ausführen, hat diese Richtlinie keine Auswirkungen.
+      Folgendes passiert, wenn die Richtlinie nicht konfiguriert ist oder keine Zeiträume enthält:
+      Automatische Prüfungen auf Updates werden zwar nicht durch diese Richtlinie blockiert, können jedoch durch andere Richtlinien blockiert werden.
+      Bis M88 ist diese Funktion nur auf <ph name="PRODUCT_OS_NAME" />-Geräten aktiviert, die als automatisch startende Kioske konfiguriert sind. Andere Geräte werden durch diese Richtlinie nicht eingeschränkt. Ab M89 ist diese Richtlinie jedoch auf allen <ph name="PRODUCT_OS_NAME" />-Geräten aktiviert.</translation>
 <translation id="3459509316159669723">Drucken</translation>
 <translation id="3461279434465463233">Status der Stromversorgung melden</translation>
 <translation id="3478024346823118645">Nutzerdaten bei Abmeldung löschen</translation>
@@ -1956,15 +1956,15 @@ Wird die Richtlinie auf "False" gesetzt , verwendet <ph name="PRODUCT_NAME" /> k
 
       * Mit der Angabe von <ph name="PRINTER_MANUFACTURER" /> und <ph name="PRINTER_MODEL" /> können Nutzer die Drucker leichter zuordnen.
 
-      Bei „<ph name="PRINTER_URI" />“ sollte es sich um eine Adresse einschließlich <ph name="URI_SCHEME" />, <ph name="URI_PORT" /> und <ph name="URI_QUEUE" /> handeln, auf die über einen Client-Computer zugegriffen werden kann.
+      * Bei „<ph name="PRINTER_URI" />“ sollte es sich um eine Adresse einschließlich <ph name="URI_SCHEME" />, <ph name="URI_PORT" /> und <ph name="URI_QUEUE" /> handeln, auf die über einen Client-Computer zugegriffen werden kann.
 
       * Optional können Sie die <ph name="PRINTER_UUID" /> angeben, um das Entfernen von Duplikaten bei <ph name="ZEROCONF_DISCOVERY" />-Druckern zu erleichtern.
 
-      * Geben Sie für „<ph name="PRINTER_EFFECTIVE_MODEL" />“ entweder den Modellnamen an oder setzen Sie „<ph name="PRINTER_AUTOCONF" />“ auf „Wahr“. Drucker mit beiden oder keiner der Eigenschaften werden ignoriert.
+      * Geben Sie entweder für „<ph name="PRINTER_EFFECTIVE_MODEL" />“ den Modellnamen an oder setzen Sie „<ph name="PRINTER_AUTOCONF" />“ auf „Wahr“. Drucker mit beiden oder keiner der Eigenschaften werden ignoriert.
 
       PPDs werden heruntergeladen, wenn der Drucker genutzt wird, und häufig genutzte PPDs werden im Cache gespeichert. Diese Richtlinie hat keinen Einfluss darauf, ob Nutzer auf einzelnen Geräten Drucker konfigurieren können.
 
-      Hinweis: Bei Geräten, die über <ph name="MS_AD_NAME" /> verwaltet werden, unterstützt diese Richtlinie die Erweiterung von <ph name="MACHINE_NAME_VARIABLE" /> auf den <ph name="MS_AD_NAME" />-Computernamen oder einen Teilstring davon. Wenn der Computername beispielsweise „<ph name="MACHINE_NAME_EXAMPLE" />“ lautet, wird „<ph name="MACHINE_NAME_VARIABLE_EXAMPLE" />“ durch die vier Zeichen nach der sechsten Stelle ersetzt, z. B. „<ph name="MACHINE_NAME_PART_EXAMPLE" />“. Die Position basiert auf Null.</translation>
+      Hinweis: Bei Geräten, die über <ph name="MS_AD_NAME" /> verwaltet werden, unterstützt diese Richtlinie die Erweiterung von <ph name="MACHINE_NAME_VARIABLE" /> auf den <ph name="MS_AD_NAME" />-Computernamen oder einen Teilstring davon. Wenn der Computername beispielsweise „<ph name="MACHINE_NAME_EXAMPLE" />“ lautet, wird „<ph name="MACHINE_NAME_VARIABLE_EXAMPLE" />“ durch die vier Zeichen nach der sechsten Stelle ersetzt, z. B. „<ph name="MACHINE_NAME_PART_EXAMPLE" />“. Die Position basiert auf null.</translation>
 <translation id="377044054160169374">Zwingende Maßnahmen bei irreführenden Inhalten</translation>
 <translation id="3778689139323007309">Widerrufsprüfung für Serverzertifikate durchführen, die erfolgreich bestätigt und von lokal installierten CA-Zertifikaten signiert wurden</translation>
 <translation id="3780152581321609624">Nicht-Standard-Port in Kerberos-SPN einschließen</translation>
@@ -1974,7 +1974,7 @@ Wird die Richtlinie auf "False" gesetzt , verwendet <ph name="PRODUCT_NAME" /> k
 Wenn diese Einstellung deaktiviert ist, können Nutzer sich nicht mit Smart Lock anmelden.
 Wenn diese Richtlinie nicht festgelegt ist, gilt die Standardeinstellung: Vom Unternehmen verwaltete Nutzer können sich nicht mit Smart Lock anmelden, nicht verwaltete Nutzer können sich mit Smart Lock anmelden.</translation>
 <translation id="3796527892245558832">Profil-Picker beim Start verfügbar</translation>
-<translation id="3798922329287609568">Durch diese Richtlinie wird der Duplexdruck eingeschränkt.
+<translation id="3798922329287609568">Durch diese Richtlinie kann der Duplexdruck eingeschränkt werden.
 
       Wenn die Richtlinie nicht konfiguriert oder leer gelassen wird, wird keine Einschränkung angewendet.</translation>
 <translation id="3803171355925844705">Keiner Website das Laden von gemischten Inhalten erlauben</translation>
@@ -2658,15 +2658,15 @@ Ist die Richtlinie deaktiviert oder nicht konfiguriert, werden Nutzer durch den 
 <translation id="4919122295221518724">Strengere Handhabung gemischter Inhalte aktivieren</translation>
 <translation id="4920367374739265095">Durch die Richtlinie wird angegeben, welche Zugriffsrichtlinie für die Massenkonfiguration von Druckern verwendet wird. Dadurch wird festgelegt, welche Drucker von <ph name="DEVICE_PRINTERS_POLICY_NAME" /> für Nutzer verfügbar sind.
 
-      * <ph name="PRINTERS_BLACKLIST" /> (Wert 0), <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> kann den Zugriff auf die angegebenen Drucker einschränken
+      * <ph name="PRINTERS_BLACKLIST" /> (Wert 0): <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> kann den Zugriff auf die angegebenen Drucker einschränken
 
-      * <ph name="PRINTERS_WHITELIST" /> (Wert 1), <ph name="DEVICE_PRINTERS_ALLOWLIST_POLCY_NAME" /> kennzeichnet nur die Drucker, die ausgewählt werden können
+      * <ph name="PRINTERS_WHITELIST" /> (Wert 1): <ph name="DEVICE_PRINTERS_ALLOWLIST_POLCY_NAME" /> kennzeichnet nur die Drucker, die ausgewählt werden können
 
-      * <ph name="PRINTERS_ALLOW_ALL" /> (Wert 2), alle Drucker werden angezeigt.
+      * <ph name="PRINTERS_ALLOW_ALL" /> (Wert 2): alle Drucker werden angezeigt.
 
       Wenn die Richtlinie nicht konfiguriert ist, wird <ph name="PRINTERS_ALLOW_ALL" /> verwendet.
 
-      Diese Richtlinie wurde eingestellt. Bitte verwenden Sie stattdessen die Richtlinie „<ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />“.</translation>
+      Diese Richtlinie wurde eingestellt. Bitte verwenden Sie stattdessen die Richtlinie <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />.</translation>
 <translation id="4923806312383904642">WebDriver erlauben, nicht kompatible Richtlinien zu überschreiben</translation>
 <translation id="4927214690104703256">Wenn die Richtlinie konfiguriert ist, wird festgelegt, welche Erweiterungen die <ph name="ENTERPRISE_PLATFORM_KEYS_API" />-Funktionen für die Remote-Attestierung nutzen können. Damit eine Erweiterung die API verwenden darf, muss sie in dieser Liste enthalten sein.
 
@@ -3200,7 +3200,7 @@ Wenn die Richtlinie auf "True" gesetzt oder nicht konfiguriert ist, können Nutz
 <translation id="5646234199535103501">Konfigurationsrichtlinie für den Chrome Enterprise Connector "OnBulkDataEntry"</translation>
 <translation id="5649046890958064703">Wenn <ph name="PRINTERS_BLACKLIST" /> für <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> ausgewählt ist, wird durch Festlegen von <ph name="DEVICE_NATIVE_PRINTERS_BLACKLIST_POLICY_NAME" /> angegeben, welche Drucker die Nutzer nicht verwenden können. Mit Ausnahme der in dieser Richtlinie aufgeführten IDs können die Nutzer auf alle Drucker zugreifen. Die IDs müssen dem Feld <ph name="ID_FIELD" /> oder dem Feld <ph name="GUID_FIELD" /> in der Datei entsprechen, die in <ph name="DEVICE_PRINTERS_POLICY_NAME" /> angegeben ist.
 
-      Diese Richtlinie wurde eingestellt. Bitte verwenden Sie stattdessen die Richtlinie „<ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />“.</translation>
+      Diese Richtlinie wurde eingestellt. Bitte verwenden Sie stattdessen die Richtlinie <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />.</translation>
 <translation id="5652250453612826983">Legt die Richtlinien für die Elternaufsicht fest. Diese werden nur auf Kinderkonten angewendet.
       Diese Richtlinien werden nicht in der Admin-Konsole, sondern direkt von Kids API Server konfiguriert.</translation>
 <translation id="5656177735561364047">Mit dieser Richtlinie wird die Funktion "Geteilte Zwischenablage" aktiviert.</translation>
@@ -3391,7 +3391,7 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
       Nach der Ersteinrichtung können Nutzer die Standortdienste von Google flexibel aktivieren oder deaktivieren.</translation>
 <translation id="5910810837616572201">Wenn <ph name="PRINTERS_BLACKLIST" /> für <ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME" /> ausgewählt ist, wird durch Festlegen von <ph name="NATIVE_PRINTERS_BULK_BLACKLIST_POLICY_NAME" /> angegeben, welche Drucker die Nutzer nicht verwenden können. Mit Ausnahme der in dieser Richtlinie aufgeführten IDs können die Nutzer auf alle Drucker zugreifen. Die IDs müssen dem Feld <ph name="ID_FIELD" /> oder dem Feld <ph name="GUID_FIELD" /> in der Datei entsprechen, die in <ph name="BULK_PRINTERS_POLICY_NAME" /> angegeben ist.
 
-      Diese Richtlinie wurde eingestellt. Bitte verwenden Sie stattdessen die Richtlinie „<ph name="PRINTERS_BULK_BLOCKLIST" />“.</translation>
+      Diese Richtlinie wurde eingestellt. Bitte verwenden Sie stattdessen die Richtlinie <ph name="PRINTERS_BULK_BLOCKLIST" />.</translation>
 <translation id="591088232153082363">Lädt den Akku basierend auf der Akkunutzung intelligent auf.</translation>
 <translation id="5915023683182228340">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, ermöglicht sie die Nutzung des QUIC-Protokolls in <ph name="PRODUCT_NAME" />.
 
@@ -3419,7 +3419,7 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
 <translation id="5984237109586500246">Webinhalte akzeptieren, die als Signed HTTP Exchanges implementiert sind</translation>
 <translation id="5997543603646547632">Standardmäßig 24-Stunden-Uhr verwenden</translation>
 <translation id="5997846976342452720">Angeben, ob Plug-in-Suchfunktion deaktiviert werden soll (eingestellt)</translation>
-<translation id="5998198091336830580">Diese Richtlinie ist Teil der folgenden Atomic-Gruppe (nur Richtlinien aus der Quelle mit der höchsten Priorität in der Gruppe werden angewendet):</translation>
+<translation id="5998198091336830580">Diese Richtlinie ist Teil der folgenden atomischen Gruppe (nur Richtlinien aus der Quelle mit der höchsten Priorität in der Gruppe werden angewendet):</translation>
 <translation id="6009062900206392980">Wenn Sie die Richtlinie auf "None" setzen, wird die Lupe auf dem Anmeldebildschirm deaktiviert.
 
        Wenn Sie diese Richtlinie konfigurieren, können Nutzer vorübergehend die Lupe aktivieren oder deaktivieren. Wenn der Anmeldebildschirm neu geladen wird oder eine Minute lang inaktiv bleibt, wird sie in den Originalzustand zurückversetzt.
@@ -4095,7 +4095,7 @@ Hinweis: Nutzer können Cookies blockieren und so auf Google-Dienste zugreifen, 
       Wenn die Richtlinie aktiviert ist, wird für jeden der benannten Ursprünge in einer durch Kommas getrennten Liste ein eigener Prozess ausgeführt. Dabei werden auch durch Subdomains benannte Ursprünge isoliert. Wenn Sie z. B. https://example.com/ angeben, wird auch https://foo.example.com/ als Teil der Website https://example.com/ isoliert.
       Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, werden für die Anmeldeseite die standardmäßigen Plattformeinstellungen für die Website-Isolierung verwendet.
       </translation>
-<translation id="6949867264289339206">Wenn die Richtlinie festgelegt ist, werden Konfigurationen für gerätegebundene Unternehmensdrucker bereitgestellt. Das Format entspricht dem <ph name="PRINTERS_POLICY_NAME" />-Wörterbuch, erfordert jedoch zusätzlich ein „id“- oder „guid“-Feld pro Drucker für die Zulassungs- oder Sperrliste. Die Datei darf nicht größer als 5 MB sein und muss im JSON-Format vorliegen. Eine Datei mit ungefähr 21.000 Druckern ergibt nach dem Codieren eine Datei mit 5 MB. Die Integrität des Downloads wird anhand des kryptografischen Hashs verifiziert. Die Datei wird heruntergeladen, im Cache gespeichert und noch einmal heruntergeladen, sobald sich URL oder Hash ändern. <ph name="PRODUCT_OS_NAME" /> lädt die Datei für Druckerkonfigurationen herunter und sorgt dafür, dass die Drucker mit <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> und <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> verfügbar gemacht werden.
+<translation id="6949867264289339206">Wenn die Richtlinie festgelegt ist, werden Konfigurationen für gerätegebundene Unternehmensdrucker bereitgestellt. Das Format entspricht dem <ph name="PRINTERS_POLICY_NAME" />-Wörterbuch, erfordert jedoch zusätzlich ein „id“- oder „guid“-Feld pro Drucker für die Zulassungs- oder Sperrliste. Die Datei darf nicht größer als 5 MB sein und muss im JSON-Format vorliegen. Eine Datei mit ungefähr 21.000 Druckern ergibt nach dem Codieren eine Datei mit 5 MB. Die Integrität des Downloads wird anhand des kryptografischen Hashs verifiziert. Die Datei wird heruntergeladen, im Cache gespeichert und noch einmal heruntergeladen, sobald sich URL oder Hash ändern. <ph name="PRODUCT_OS_NAME" /> lädt die Datei für Druckerkonfigurationen herunter und sorgt dafür, dass die Drucker gemäß <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> und <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> verfügbar gemacht werden.
 
       Diese Richtlinie:
 
@@ -4414,7 +4414,7 @@ Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, 
 
       Wenn diese Richtlinie nicht konfiguriert oder auf „Wahr“ gesetzt ist, wird das Dialogfeld für das Anmeldungsabfangen geöffnet, wenn im Internet ein Google-Konto hinzugefügt wird. Möglicherweise lohnt es sich für den Nutzer, das Konto in ein anderes neues oder bestehendes Profil zu verschieben.
 
-      Ist die Richtlinie auf „Falsch“ gesetzt ist, wird das Dialogfeld für das Anmeldungsabfangen nicht geöffnet.</translation>
+      Ist die Richtlinie auf „Falsch“ gesetzt, wird das Dialogfeld für das Anmeldungsabfangen nicht geöffnet.</translation>
 <translation id="7375785904116479354">Wenn die Richtlinie aktiviert ist, wird die Standardsuchmaschine bei der ersten Ausführung aus dem vorherigen Standardbrowser importiert. Ist die Richtlinie deaktiviert oder nicht konfiguriert, wird die Standardsuchmaschine bei der ersten Ausführung nicht importiert.
 
       Nutzer können einen Importdialog öffnen. Das Kästchen für die Standardsuchmaschine wird je nach Konfiguration dieser Richtlinie aktiviert oder deaktiviert.</translation>
@@ -4726,7 +4726,7 @@ Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, 
 
           Wird sie nicht konfiguriert, ist der hohe Kontrast auf dem Anmeldebildschirm anfangs deaktiviert, kann jedoch vom Nutzer jederzeit aktiviert werden.</translation>
 <translation id="7869986671709030417">Standarddruckmodus mit Hintergrundgrafiken</translation>
-<translation id="7881421274383404138">Durch diese Richtlinie werden Unternehmensdrucker konfiguriert. Das Format entspricht dem <ph name="PRINTERS_POLICY_NAME" />-Wörterbuch, erfordert jedoch zusätzlich ein <ph name="ID_FIELD" />- oder <ph name="GUID_FIELD" />-Feld pro Drucker für die Zulassungs- oder Sperrliste. Die Datei darf nicht größer als 5 MB sein und muss im JSON-Format vorliegen. Eine Datei mit ungefähr 21.000 Druckern ergibt nach dem Codieren eine Datei mit 5 MB. Die Integrität des Downloads wird anhand des kryptografischen Hashs verifiziert. Die Datei wird heruntergeladen, im Cache gespeichert und noch einmal heruntergeladen, sobald sich URL oder Hash ändern. <ph name="PRODUCT_OS_NAME" /> lädt die Datei für Druckerkonfigurationen herunter und sorgt dafür, dass die Drucker mit <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> und <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" /> verfügbar gemacht werden.
+<translation id="7881421274383404138">Durch diese Richtlinie werden Unternehmensdrucker konfiguriert. Das Format entspricht dem <ph name="PRINTERS_POLICY_NAME" />-Wörterbuch, erfordert jedoch zusätzlich ein <ph name="ID_FIELD" />- oder <ph name="GUID_FIELD" />-Feld pro Drucker für die Zulassungs- oder Sperrliste. Die Datei darf nicht größer als 5 MB sein und muss im JSON-Format vorliegen. Eine Datei mit ungefähr 21.000 Druckern ergibt nach dem Codieren eine Datei mit 5 MB. Die Integrität des Downloads wird anhand des kryptografischen Hashs verifiziert. Die Datei wird heruntergeladen, im Cache gespeichert und noch einmal heruntergeladen, sobald sich URL oder Hash ändern. <ph name="PRODUCT_OS_NAME" /> lädt die Datei für Druckerkonfigurationen herunter und sorgt dafür, dass die Drucker gemäß <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> und <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" /> verfügbar gemacht werden.
 
       Diese Richtlinie hat keinen Einfluss darauf, ob Nutzer auf einzelnen Geräten Drucker konfigurieren können. Sie ist als Ergänzung zu den Druckerkonfigurationen der einzelnen Nutzer gedacht.
 
@@ -4923,6 +4923,10 @@ Wenn diese Richtlinie auf "False" gesetzt ist, wird der Datenschutzbildschirm be
 Wird sie konfiguriert, kann der Nutzer den Wert nicht überschreiben, wenn der Anmeldebildschirm angezeigt wird.
 
 Wird diese Richtlinie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert. Der Nutzer kann ihn aber steuern, wenn der Anmeldebildschirm angezeigt wird.</translation>
+<translation id="8147427717998252789">Wenn diese Richtlinie konfiguriert ist, können Sie den Rückgabewert der Managed Configuration API für einen bestimmten Ursprung definieren.
+
+      Die Managed Configuration API ist eine Schlüssel/Wert-Konfiguration, die sich über den JavaScript-Aufruf „navigator.device.getManagedConfiguration()“ abrufen lässt. Diese API ist nur für Ursprünge verfügbar, die zu Webanwendung gehören, deren Installation über <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> erzwungen wurden.
+     </translation>
 <translation id="815061180603915310">Bei Aktivierung erzwingt diese Richtlinie die Nutzung des flüchtigen Modus. Falls diese Richtlinie als BS-Richtlinie angegeben wird (wie GPO unter Windows), gilt sie für jedes Profil im System. Wird sie hingegen als Cloud-Richtlinie festgelegt, gilt sie nur für ein bei einem verwalteten Konto angemeldetes Profil.
 
       In diesem Modus werden die Profildaten nur für die Dauer der Nutzersitzung auf der Festplatte behalten. Elemente wie der Browserverlauf, Erweiterungen und ihre Daten, Webdaten wie Cookies und Webdatenbanken werden nach dem Schließen des Browsers nicht beibehalten. Dies hindert den Nutzer jedoch nicht daran, Daten manuell auf die Festplatte herunterzuladen, Seiten zu speichern oder zu drucken.
@@ -5070,9 +5074,7 @@ Unter Windows ist es empfehlenswert, Richtlinien über Gruppenrichtlinienobjekte
 
       Wenn "<ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" />" nicht konfiguriert ist, wird die Bildsuchanfrage mithilfe der GET-Methode gesendet.</translation>
 <translation id="8314214821702356835">Erlaubt es Nutzern, Medien wiederzugeben, während das Gerät gesperrt ist</translation>
-<translation id="8316913402499361923">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können die Nutzer in <ph name="PRODUCT_NAME" /> drucken. Nutzer können diese Einstellung nicht ändern.
-
-      Ist die Richtlinie deaktiviert, können die Nutzer in <ph name="PRODUCT_NAME" /> nicht drucken. Im Schraubenschlüssel-Menü, in den Erweiterungen und in JavaScript-Anwendungen ist die Option zum Drucken deaktiviert. Die Druckfunktion kann nur mithilfe von Plug-ins genutzt werden, die <ph name="PRODUCT_NAME" /> beim Drucken umgehen.</translation>
+<translation id="8319678975002906774">Mit dieser Richtlinie legen Sie für bestimmte Ursprünge die Werte für die verwaltete Konfiguration fest</translation>
 <translation id="8320149248919453401">Akkulademodus</translation>
 <translation id="8329984337216493753">Diese Richtlinie ist nur im Händlermodus aktiv.
 
@@ -5284,11 +5286,6 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
 <translation id="8676959842615154675">Wenn diese Richtlinie aktiviert ist, vergleicht der Host für den Remotezugriff den Namen des mit dem Host verknüpften lokalen Nutzers mit dem Namen des Google-Kontos, das als Hosteigentümer registriert ist (z. B. „maxmustermann“, wenn der Hosteigentümer das Google-Konto „maxmustermann@beispiel.de“ ist). Dieser Host wird nicht gestartet, wenn der Name des Hosteigentümers vom Namen des mit dem Host verknüpften lokalen Nutzers abweicht. Wenn Sie erzwingen möchten, dass das Google-Konto des Eigentümers mit einer bestimmten Domain verknüpft ist, verwenden Sie die Richtlinie mit <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />.
 
       Ist diese Richtlinie deaktiviert oder nicht konfiguriert, kann der Host für den Remotezugriff mit jedem lokalen Nutzer verknüpft sein.</translation>
-<translation id="8680488165461049026">Mit dieser Richtlinie erhält die Funktion "Schnelle Antworten" die Berechtigung, auf ausgewählte Inhalte zuzugreifen und die Informationen an den Server zu senden.
-
-      Wenn die Richtlinie aktiviert ist, kann die Funktion "Schnelle Antworten" auf ausgewählte Inhalte zugreifen.
-      Wenn die Richtlinie deaktiviert ist, kann sie es nicht.
-      Ist die Richtlinie nicht festgelegt, können Nutzer entscheiden, ob die Funktion "Schnelle Antworten" auf ausgewählte Inhalte zugreifen darf oder nicht.</translation>
 <translation id="8685024486845674965">Die Passwortschutzwarnung wird durch die Wiederverwendung eines Passworts ausgelöst</translation>
 <translation id="8685680544554917389">Wenn die Richtlinie auf "True" gesetzt ist, kann <ph name="PRODUCT_NAME" /> Medien automatisch abspielen. Wenn die Richtlinie auf "False" gesetzt ist, kann <ph name="PRODUCT_NAME" /> Medien nicht mehr automatisch abspielen.
 

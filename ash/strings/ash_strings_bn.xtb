@@ -47,6 +47,7 @@
 <translation id="1302880136325416935">ব্লুটুথ সেটিংস দেখান। <ph name="STATE_TEXT" /></translation>
 <translation id="1312604459020188865">সিগন্যাল: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">সবসময় শেল্ফ দেখান</translation>
+<translation id="1316811122439383437">টোট: সাম্প্রতিক স্ক্রিন ক্যাপচার, ডাউনলোড ও পিন করা ফাইল</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> কানেক্ট করা হয়েছে</translation>
 <translation id="1341651618736211726">ওভারফ্লো</translation>
 <translation id="1346748346194534595">ডানে</translation>
@@ -181,6 +182,7 @@
 <translation id="2596078834055697711">উইন্ডো স্ক্রিনশট নিন</translation>
 <translation id="2617342710774726426">সিম কার্ড লক করা আছে</translation>
 <translation id="2621713457727696555">সুরক্ষিত</translation>
+<translation id="2633643784040308254">মাঝারি</translation>
 <translation id="2653659639078652383">জমা দিন</translation>
 <translation id="2658778018866295321">ক্লিক করে ড্র্যাগ করুন</translation>
 <translation id="2678852583403169292">"বাছুন ও শুনুন" মেনু</translation>
@@ -205,6 +207,7 @@
 <translation id="2878884018241093801">কোনও সাম্প্রতিক আইটেম নেই</translation>
 <translation id="2903844815300039659"><ph name="NAME" /> এর সাথে সংযুক্ত আছে, <ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">স্ক্রিন ক্যাপচার</translation>
+<translation id="2941112035454246133">নিম্ন</translation>
 <translation id="2942350706960889382">ডক করা ম্যাগনিফায়ার</translation>
 <translation id="2942516765047364088">তাকের লোকেশন</translation>
 <translation id="2946119680249604491">সংযোগ জুড়ুন</translation>
@@ -217,6 +220,7 @@
 <translation id="3000461861112256445">মোনো অডিও</translation>
 <translation id="3009178788565917040">আউটপুট</translation>
 <translation id="3033545621352269033">চালু করা আছে</translation>
+<translation id="3036649622769666520">ফাইল খুলুন</translation>
 <translation id="3038571455154067151">সাইন-ইন করতে, আপনার Family Link-এর অভিভাবকীয় অ্যাক্সেস কোডটি লিখুন</translation>
 <translation id="3045488863354895414">শুভ অপরাহ্ন,</translation>
 <translation id="3051128274746680507">আপনার তত্ত্বাবধানে থাকা ব্যবহারকারীর প্রোফাইল শীঘ্রই সরিয়ে দেওয়া হবে। আরও জানতে সাইন-ইন করুন।</translation>
@@ -367,7 +371,6 @@
 <translation id="4321776623976362024">উচ্চ কনট্রাস্টের জন্য আপনি কীবোর্ড শর্টকাট টিপেছেন। আপনি কি এটি চালু করতে চান?</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4338109981321384717">আতস কাচ</translation>
-<translation id="4350065043422286972">পিন করা হয়েছে</translation>
 <translation id="4351433414020964307">সহায়ক লোড হচ্ছে...</translation>
 <translation id="4356930093361201197">উচ্চ-কনট্রাস্ট মোড</translation>
 <translation id="4371348193907997655">কাস্ট সেটিংস</translation>
@@ -387,7 +390,6 @@
 <translation id="4479639480957787382">ইথারনেট</translation>
 <translation id="4481530544597605423">বিযুক্ত করা ডিভাইসগুলি</translation>
 <translation id="4485060137115666462">রাইট-ক্লিক করলে বা বেশিক্ষণ টিপে ধরে রাখলে, Assistant আপনার বেছে নেওয়া আইটেমের সংজ্ঞা, অনুবাদ বা ইউনিট রূপান্তরের মতো বিভিন্ন তথ্য দেখায়।</translation>
-<translation id="4488735711456074171">মনে হচ্ছে আপনার ফোন অনলাইনে নেই এবং আমরা এটিকে কানেক্ট করতে পারছি না।</translation>
 <translation id="4505050298327493054">অ্যাক্টিভ ডেস্কটপ।</translation>
 <translation id="4513946894732546136">প্রতিক্রিয়া</translation>
 <translation id="4527045527269911712">ব্লুটুথ ডিভাইস "<ph name="DEVICE_NAME" />" যুক্ত করার অনুমতি চাইছে।</translation>
@@ -410,6 +412,7 @@
 <translation id="4696813013609194136">অভিভাবকীয় কোড দিয়ে ডিভাইস আনলক করুন</translation>
 <translation id="4702647871202761252">গোপনীয়তা স্ক্রিন বন্ধ করা আছে</translation>
 <translation id="4705716602320768426">ফাইলের ব্যাপারে নিজের মতামত জানান</translation>
+<translation id="4730232680256276456">হ্যালো</translation>
 <translation id="4731797938093519117">অভিভাবকীয় অ্যাক্সেস</translation>
 <translation id="4734965478015604180">অনুভূমিক</translation>
 <translation id="4744944742468440486">আপনার বেছে নেওয়া কন্টেন্টের ব্যাপারে তথ্য</translation>
@@ -426,6 +429,7 @@
 <translation id="4868492592575313542">চালু আছে</translation>
 <translation id="4872237917498892622">Alt+Search অথবা Shift</translation>
 <translation id="4890187583552566966">আপনার প্রশাসকের দ্বারা Google অ্যাসিস্ট্যান্ট অক্ষম করা হয়েছে।</translation>
+<translation id="4890408602550914571">আপনার ফোন কাছাকাছি রয়েছে কিনা এবং তাতে ব্লুটুথ চালু আছে কিনা দেখে নিন।</translation>
 <translation id="4895488851634969361">ব্যাটারি পূর্ণ৷</translation>
 <translation id="490375751687810070">উল্লম্ব</translation>
 <translation id="4905614135390995787">উচ্চ কনট্রাস্ট মোড টগল করার শর্টকাটটি পরিবর্তিত হয়েছে। <ph name="OLD_SHORTCUT" />-এর পরিবর্তে অনুগ্রহ করে <ph name="NEW_SHORTCUT" /> ব্যবহার করুন।</translation>
@@ -448,7 +452,6 @@
 <translation id="4969092041573468113"><ph name="HOURS" />ঘঃ <ph name="MINUTES" />মিঃ <ph name="SECONDS" />সেঃ</translation>
 <translation id="4975771730019223894">অ্যাপ ব্যাজিং</translation>
 <translation id="5003993274120026347">পরের বাক্য</translation>
-<translation id="5019169674188023236">মনে হচ্ছে আপনার <ph name="DEVICE_TYPE" />-এ ব্লুটুথ বা ওয়াই-ফাই বন্ধ করা আছে। Phone Hub ব্যবহার করার জন্য আপনার ইন্টারনেট কানেকশন চেক করুন।</translation>
 <translation id="5030687792513154421">সময় শেষ</translation>
 <translation id="5033299697334913360">সম্পূর্ণ স্ক্রিন ক্যাপচার করতে যেকোনও জায়গায় ক্লিক করুন</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" />টি নতুন ফোনে কানেক্ট করা হয়েছে</translation>
@@ -474,6 +477,7 @@
 <translation id="5302048478445481009">ভাষা</translation>
 <translation id="5313326810920013265">ব্লুটুথ সেটিংস</translation>
 <translation id="5314219114274263156">স্ক্রিন রেকর্ডিং করা হয়েছে</translation>
+<translation id="5322611492012084517">আপনার ফোন খুঁজে পাওয়া যায়নি</translation>
 <translation id="5329548388331921293">কানেক্ট করা হচ্ছে...</translation>
 <translation id="5331975486040154427">USB-C ডিভাইস (বাঁ দিকের পিছনের পোর্ট)</translation>
 <translation id="5352250171825660495">ডার্ক থিম চালু আছে</translation>
@@ -520,6 +524,7 @@
 <translation id="576453121877257266">নাইট লাইট ফিচার চালু করা আছে।</translation>
 <translation id="5769373120130404283">গোপনীয়তা স্ক্রিন</translation>
 <translation id="5777841717266010279">স্ক্রিন শেয়ার করা থামাবেন?</translation>
+<translation id="5779721926447984944">পিন করা ফাইল</translation>
 <translation id="5790085346892983794">সফল</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5825969630400862129">কানেক্ট করা ডিভাইসের সেটিংস</translation>
@@ -565,6 +570,7 @@
 <translation id="6164005077879661055">একবার এই তত্ত্বাবধানে থাকা ব্যবহারকারী সরানো হলে এর সঙ্গে সংশ্লিষ্ট সমস্ত ফাইল এবং
 স্থানীয় ডেটা স্থায়ীভাবে মুছে ফেলা হবে৷ এই তত্ত্বাবধানে থাকা ব্যবহারকারীর জন্য পরিদর্শিত এবং সেটিংস <ph name="MANAGEMENT_URL" />-এ পরিচালকের কাছে এখনো দৃশ্যমান হতে পারে৷</translation>
 <translation id="6165508094623778733">আরও জানুন</translation>
+<translation id="6179832488876878285">গুরুত্বপূর্ণ ফাইলগুলি আপনি এখানে পিন করে রাখতে পারবেন। শুরু করার জন্য, Files অ্যাপ খুলুন।</translation>
 <translation id="622484624075952240">নিচের</translation>
 <translation id="6236290670123303279">সেটিংস ম্যানেজ করুন</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -582,7 +588,6 @@
 <translation id="6376931439017688372">ব্লুটুথ চালু আছে</translation>
 <translation id="6381109794406942707">ডিভাইস আনলক করতে, আপনার পিন এন্টার করুন।</translation>
 <translation id="639644700271529076">CAPS LOCK বন্ধ আছে</translation>
-<translation id="6398771186477608158">আপনার ফোন ডিভাইসের কাছাকাছি আছে এবং ব্লুটুথ ও ওয়াই-ফাই চালু করা হয়েছে কিনা তা ভাল করে দেখে নিন।</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, সিগন্যাল: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">সমস্ত বিজ্ঞপ্তি মুছে ফেলুন</translation>
@@ -723,6 +728,7 @@
 <translation id="7654687942625752712">পড়ে শোনানো বিকল্প চালু করতে পাঁচ সেকেন্ডের জন্য ভলিউম কীগুলি প্রেস করে ধরে রাখুন।</translation>
 <translation id="7658239707568436148">বাতিল</translation>
 <translation id="7662283695561029522">কনফিগার করতে ট্যাপ করুন</translation>
+<translation id="7683326293741220026">মনে হচ্ছে যে আপনার ফোনে ব্লুটুথ বন্ধ রয়েছে। 'ফোন হাব' ফিচার ব্যবহার করতে, আপনার ফোনে ব্লুটুথ চালু করুন।</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{১টি বিজ্ঞপ্তি}one{#টি বিজ্ঞপ্তি}other{#টি বিজ্ঞপ্তি}}</translation>
 <translation id="7724603315864178912">কাটুন</translation>
@@ -732,7 +738,6 @@
 <translation id="7780159184141939021">স্ক্রিন ঘোরান</translation>
 <translation id="7796353162336583443">একটি নোট, স্ক্রিনশট নিতে, Google অ্যাসিস্ট্যান্ট, লেজার পয়েন্টার বা ম্যাগনিফিকেশনের কাচ ব্যবহার করার জন্য শেলফের স্টাইলাস বোতামটি ট্যাপ করুন।</translation>
 <translation id="7798302898096527229">Search টিপুন বা বাতিল করতে Shift টিপুন</translation>
-<translation id="781126011916719498">আপনার গুরুত্বপূর্ণ ফাইলগুলি চটপট অ্যাক্সেস করুন। কোনও ফাইল পিন করতে রাইট-ক্লিক করুন বা স্পর্শ করে ধরে থাকুন।</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> এবং <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">জোরালো সিগন্যাল</translation>
 <translation id="7837740436429729974">সময় শেষ</translation>
@@ -741,9 +746,11 @@
 <translation id="7860671499921112077">'এক নজরে' মোডে প্রবেশ করতে, তিনটি আঙুল দিয়ে উপরের দিকে সোয়াইপ করুন</translation>
 <translation id="7868900307798234037">আঙ্গুলের ছাপ দিয়ে আনলক করা হচ্ছে</translation>
 <translation id="7872786842639831132">বন্ধ আছে</translation>
+<translation id="7875575368831396199">মনে হচ্ছে যে আপনার <ph name="DEVICE_TYPE" /> ডিভাইসে ব্লুটুথ বন্ধ রয়েছে। 'ফোন হাব' ফিচারটি ব্যবহার করতে, ব্লুটুথ চালু করুন।</translation>
 <translation id="7886169021410746335">গোপনীয়তা সেটিংস অ্যাডজাস্ট করুন</translation>
 <translation id="7886277072580235377">আপনি সাইন-আউট করলে আপনার ইন্টারনেট সেশন মুছে ফেলা হবে। <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">একটি ইমেল পাঠান</translation>
+<translation id="7895348134893321514">টোট</translation>
 <translation id="7897375687985782769">স্ক্রিন ঘোরানোর জন্য আপনি কীবোর্ড শর্টকাট টিপেছেন। আপনি কি স্ক্রিন ঘোরাতে চান?</translation>
 <translation id="7901405293566323524">ফোন হাব</translation>
 <translation id="7902625623987030061">আঙুলের ছাপের সেন্সর টাচ করুন</translation>
@@ -811,6 +818,7 @@
 <translation id="8444246603146515890">ডেস্ক <ph name="DESK_TITILE" /> অ্যাক্টিভেট করা হয়েছে</translation>
 <translation id="8452135315243592079">সিম কার্ড পাওয়া যাচ্ছে না</translation>
 <translation id="8454013096329229812">ওয়াই-ফাই চালু আছে৷</translation>
+<translation id="8462305545768648477">'বাছুন ও শুনুন' ফিচারটি বন্ধ করুন</translation>
 <translation id="847056008324733326">স্কেলের সেটিংস দেখান</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />-এর <ph name="FEATURE_NAME" /> <ph name="FEATURE_STATE" />।</translation>
 <translation id="8477270416194247200">Alt+Search টিপুন বা বাতিল করতে Shift টিপুন</translation>
@@ -863,7 +871,6 @@
 <translation id="8877788021141246043">রিমাইন্ডার সেট করুন</translation>
 <translation id="8878886163241303700">স্ক্রিন সম্প্রসারণ করা হচ্ছে</translation>
 <translation id="8883473964424809116">Google Assistant-এর সেটিংস খুলতে ক্লিক করুন।</translation>
-<translation id="8894122120026866664">আপনার ফোন খুঁজে পাওয়া যায়নি</translation>
 <translation id="890616557918890486">সোর্স পরিবর্তন করুন</translation>
 <translation id="8909138438987180327">ব্যাটারিতে <ph name="PERCENTAGE" /> শতাংশ চার্জ আছে।</translation>
 <translation id="8913384980486163186">থিমযুক্ত (ডিফল্ট)</translation>
@@ -890,7 +897,6 @@
 <translation id="9084606467167974638">মেনুর অবস্থান টগল করুন</translation>
 <translation id="9089416786594320554">ইনপুট পদ্ধতিগুলি</translation>
 <translation id="9091626656156419976"><ph name="DISPLAY_NAME" /> প্রদর্শন সরানো হয়েছে</translation>
-<translation id="9092749890156285613">সম্প্রতি করা স্ক্রিন ক্যাপচার ও ডাউনলোড</translation>
 <translation id="9098969848082897657">সাইলেন্স ফোন</translation>
 <translation id="9151726767154816831">আপডেট করার জন্য আবার শুরু করুন এবং পাওয়ারওয়াশ করুন</translation>
 <translation id="9166331175924255663">'নিয়ারবাই শেয়ার হাই ভিজিবিলিটি' মোড টগল করুন।</translation>

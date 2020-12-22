@@ -1231,13 +1231,6 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
       Menyetel kebijakan ke Nonaktif berarti <ph name="PRODUCT_NAME" /> hanya dapat menggunakan host ini jika diinstal di tingkat sistem.</translation>
 <translation id="2753637905605932878">Membatasi rentang port UDP lokal yang digunakan oleh WebRTC</translation>
 <translation id="2757054304033424106">Ketik ekstensi/aplikasi yang diizinkan untuk dipasang</translation>
-<translation id="2758689548159678032">Jika diaktifkan, fitur <ph name="PRODUCT_NAME" /> akan mengirimkan header permintaan terperinci yang memberikan informasi tentang browser dan lingkungan pengguna.
-
-      Ini adalah fitur tambahan, tetapi header baru dapat menyebabkan error di situs yang membatasi karakter yang mungkin ada di dalam permintaan.
-
-      Jika kebijakan ini diaktifkan atau tidak disetel, fitur <ph name="PRODUCT_NAME" /> akan diaktifkan. Jika kebijakan dinonaktifkan, fitur tidak akan tersedia.
-
-      Kebijakan perusahaan ini berlaku untuk adaptasi jangka pendek dan akan dihapus di Chrome 88.</translation>
 <translation id="2759224876420453487">Mengontrol perilaku pengguna pada sesi multiprofil</translation>
 <translation id="2761483219396643566">Menunda peringatan waktu menganggur saat menggunakan daya baterai</translation>
 <translation id="2769952903507981510">Mengonfigurasi nama domain yang dibutuhkan untuk hosting akses jarak jauh</translation>
@@ -1805,7 +1798,7 @@ Jika ditetapkan ke False, <ph name="PRODUCT_NAME" /> tidak akan menggunakan noti
       Apa pun nilai kebijakan ini, browser tidak akan memblokir software pihak ketiga memasukkan kode yang dapat dieksekusi ke dalam prosesnya di perangkat yang dihubungkan ke domain <ph name="MS_AD_NAME" />.</translation>
 <translation id="3456292544936505775">Kebijakan ini mengontrol rentang waktu saat perangkat <ph name="PRODUCT_OS_NAME" /> tidak diizinkan untuk otomatis memeriksa update.
       Jika kebijakan ini disetel ke daftar interval waktu yang tidak kosong:
-      Perangkat tidak akan dapat otomatis memeriksa update selama interval waktu yang ditentukan. Perangkat yang memerlukan rollback perusahaan atau menjalankan <ph name="PRODUCT_OS_NAME" /> versi di bawah minimum tidak akan terpengaruh oleh kebijakan ini karena potensi masalah keamanan. Selain itu, kebijakan ini tidak akan memblokir pemeriksaan update yang diminta oleh pengguna atau administrator.
+      Perangkat tidak akan dapat otomatis memeriksa update selama interval waktu yang ditentukan. Perangkat yang memerlukan rollback perusahaan atau menjalankan versi <ph name="PRODUCT_OS_NAME" /> di bawah minimum tidak akan terpengaruh oleh kebijakan ini karena potensi masalah keamanan. Selain itu, kebijakan ini tidak akan memblokir pemeriksaan update yang diminta oleh pengguna atau administrator.
       Mulai dari M88, kebijakan ini akan membatalkan update yang sedang berlangsung saat interval waktu yang dibatasi tercapai. Update otomatis berikutnya setelah interval waktu yang dibatasi berakhir akan otomatis melanjutkan update. Perangkat yang mengupdate ke Quick Fix Build tidak akan terpengaruh oleh kebijakan ini.
       Jika kebijakan ini tidak disetel atau tidak berisi interval waktu:
       Tidak ada pemeriksaan update otomatis yang akan diblokir oleh kebijakan ini, tetapi pemeriksaan tersebut dapat diblokir oleh kebijakan lain.
@@ -4945,7 +4938,7 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
 
       Catatan:
       - Batasan PRIVACY_SCREEN tidak memblokir kemampuan untuk mengaktifkan layar privasi, tetapi menerapkannya saat class batasan disetel ke BLOCK.
-      - Tujuan tidak boleh kosong jika salah satu batasannya adalah CLIPBOARD, tetapi hal ini tidak membuat perbedaan apa pun untuk batasan lainnya.
+      - Tujuan tidak boleh kosong jika salah satu batasannya adalah CLIPBOARD, tetapi tujuan tidak berpengaruh pada batasan lainnya.
       - Format pola URL sesuai dengan format ini (https://www.chromium.org/administrators/url-blacklist-filter-format).
 
       Jika kebijakan tidak disetel, tidak akan ada batasan yang diterapkan.</translation>
@@ -4968,6 +4961,10 @@ Jika kebijakan ini ditetapkan ke False, layar privasi akan dinonaktifkan saat la
 Jika kebijakan ini ditetapkan, pengguna tidak dapat mengganti nilai saat layar login ditampilkan.
 
 Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan, tetapi masih dapat dikontrol oleh pengguna saat layar login ditampilkan.</translation>
+<translation id="8147427717998252789">Menyetel kebijakan akan menentukan nilai Managed Configuration API yang ditampilkan untuk sumber tertentu.
+
+      Managed Configuration API adalah konfigurasi nilai kunci yang dapat diakses melalui panggilan JavaScript navigator.device.getManagedConfiguration(). API ini hanya tersedia untuk sumber yang sesuai dengan aplikasi web yang diinstal otomatis melalui <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />.
+     </translation>
 <translation id="815061180603915310">Jika disetel ke aktif, kebijakan ini akan memaksa profil dialihkan ke mode singkat. Jika ditetapkan sebagai kebijakan OS (misalnya, GPO di Windows), kebijakan ini akan berlaku untuk setiap profil di sistem; jika disetel sebagai kebijakan Awan, kebijakan ini hanya akan berlaku untuk profil tempat masuk dengan akun terkelola.
 
       Dalam mode ini, data profil hanya akan dipertahankan di disk selama durasi sesi pengguna. Beberapa fitur seperti histori browser, ekstensi dan datanya, data web seperti cookie dan basis data web, tidak akan dipertahankan setelah browser ditutup. Namun, hal ini tidak mencegah pengguna mendownload data apa pun ke disk secara manual, menyimpan halaman, atau mencetak halaman
@@ -5115,9 +5112,7 @@ Cara yang disarankan untuk mengonfigurasi kebijakan di Windows adalah melalui GP
 
       Jika <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" /> tidak disetel, permintaan penelusuran gambar akan dikirimkan menggunakan metode GET.</translation>
 <translation id="8314214821702356835">Memungkinkan pengguna memutar media saat perangkat terkunci</translation>
-<translation id="8316913402499361923">Jika kebijakan disetel ke Aktif atau tidak disetel, pengguna akan dapat mencetak dalam <ph name="PRODUCT_NAME" />, tetapi pengguna tidak dapat mengganti setelan ini.
-
-      Jika kebijakan disetel ke Nonaktif, pengguna tidak akan dapat mencetak dari <ph name="PRODUCT_NAME" />. Pencetakan nonaktif di menu kunci inggris, ekstensi, dan aplikasi JavaScript. Hanya dimungkinkan untuk mencetak dari plugin yang mengabaikan <ph name="PRODUCT_NAME" /> saat mencetak.</translation>
+<translation id="8319678975002906774">Menyetel nilai konfigurasi terkelola bagi situs untuk sumber tertentu</translation>
 <translation id="8320149248919453401">Mode pengisian daya baterai</translation>
 <translation id="8329984337216493753">Kebijakan ini aktif dalam mode eceran saja.
 
@@ -5329,11 +5324,6 @@ Kebijakan akan dihapus pada M75.</translation>
 <translation id="8676959842615154675">Jika kebijakan disetel ke Aktif, host akses jarak jauh akan membandingkan nama pengguna lokal yang dikaitkan dengan host dan nama Akun Google yang terdaftar sebagai pemilik host (misalnya, "johan" jika host dimiliki oleh "johan@example.com"). Host ini tidak akan dimulai jika nama pemilik host berbeda dengan nama pengguna lokal yang dikaitkan dengan host. Gunakan kebijakan dengan <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" /> untuk menegaskan bahwa Akun Google pemilik dikaitkan dengan domain tertentu.
 
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, host akses jarak jauh akan dapat dikaitkan dengan pengguna lokal mana pun.</translation>
-<translation id="8680488165461049026">Kebijakan ini memberikan izin kepada fitur Jawaban Cepat untuk mengakses konten yang dipilih dan mengirimkan info ke server.
-
-      Jika kebijakan ini diaktifkan, Jawaban Cepat akan diizinkan mengakses konten yang dipilih.
-      Jika kebijakan ini dinonaktifkan, Jawaban Cepat tidak akan diizinkan mengakses konten yang dipilih.
-      Jika kebijakan ini tidak ditetapkan, pengguna dapat memutuskan untuk mengizinkan Jawaban Cepat mengakses konten yang dipilih atau tidak.</translation>
 <translation id="8685024486845674965">Peringatan perlindungan sandi dipicu oleh penggunaan ulang sandi</translation>
 <translation id="8685680544554917389">Jika kebijakan disetel ke Benar (True), <ph name="PRODUCT_NAME" /> akan dapat memutar otomatis media. Jika kebijakan disetel ke Salah (False), <ph name="PRODUCT_NAME" /> akan berhenti memutar otomatis media.
 

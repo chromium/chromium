@@ -83,7 +83,7 @@
 <translation id="1099282607296956954">Attiva isolamento sito per ogni sito</translation>
 <translation id="1117535567637097036">I gestori di protocollo impostati tramite questa norma non sono utilizzati durante la gestione degli intent di Android.</translation>
 <translation id="1118093128235245168">Consenti ai siti di chiedere all'utente di concedere l'accesso a un dispositivo USB collegato</translation>
-<translation id="1122089575901325963">L'impostazione di questo criterio consente di configurare il controller DTC (Diagnostics and Telemetry Controller) <ph name="WILCO_NAME" />, se disponibile sul dispositivo. Le dimensioni della configurazione non possono superare 1 MB (1.000.000 di byte) e il formato deve essere JSON. Il controller DTC <ph name="WILCO_NAME" /> è responsabile della gestione. L'hash di crittografia consente di verificare l'integrità del download. La configurazione viene scaricata e memorizzata nella cache. Viene scaricata nuovamente ogni volta che l'URL o l'hash cambiano.
+<translation id="1122089575901325963">L'impostazione di questo criterio consente di configurare il controller DTC (Diagnostics and Telemetry Controller) <ph name="WILCO_NAME" />, se disponibile sul dispositivo. Le dimensioni della configurazione non possono superare 1 MB (1.000.000 di byte) e il formato deve essere JSON. Il controller DTC <ph name="WILCO_NAME" /> è responsabile della gestione della configurazione. L'hash di crittografia consente di verificare l'integrità del download. La configurazione viene scaricata e memorizzata nella cache. Viene scaricata nuovamente ogni volta che l'URL o l'hash cambiano.
 
       Se il criterio viene configurato, gli utenti non possono modificarlo.</translation>
 <translation id="1133814529606590009">Se il criterio viene impostato su Attivato, la raccolta di dati anonimizzati con chiave URL, che invia gli URL delle pagine visitate dagli utenti a Google per migliorare le esperienze di ricerca e navigazione, è sempre attiva.
@@ -351,7 +351,7 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
           Se imposti questo criterio, gli utenti non potranno modificarlo o eseguirne l'override.</translation>
 <translation id="1502843533062797703">Attiva blocco inserimento da software di terze parti</translation>
 <translation id="1506017854924185821">Disponibilità selettore profilo all'avvio</translation>
-<translation id="1509377996969000672">La configurazione del criterio consente di specificare le configurazioni delle stampanti aziendali associate ai dispositivi. Il formato corrisponde a quello del dizionario <ph name="NATIVE_PRINTERS_POLICY_NAME" />, con un campo "id" o "guid" aggiuntivo obbligatorio per ogni stampante della lista consentita o della lista bloccata. Le dimensioni del file non possono superare i 5 MB e il formato deve essere JSON. Un file con circa 21.000 stampanti viene codificato come file di 5 MB. L'hash di crittografia consente di verificare l'integrità del download. Il file viene scaricato, memorizzato nella cache e riscaricato ogni volta che l'URL o l'hash cambiano. <ph name="PRODUCT_OS_NAME" /> scarica il file per le configurazioni delle stampanti e rende disponibili le stampanti in base ai criteri <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> e <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />.
+<translation id="1509377996969000672">La configurazione del criterio consente di specificare le configurazioni delle stampanti aziendali associate ai dispositivi. Il formato corrisponde a quello del dizionario <ph name="NATIVE_PRINTERS_POLICY_NAME" />, con un campo "id" o "guid" aggiuntivo obbligatorio per ogni stampante ai fini dell'inserimento in una lista consentita o in una lista bloccata. Le dimensioni del file non possono superare i 5 MB e il formato deve essere JSON. Un file con circa 21.000 stampanti viene codificato come file di 5 MB. L'hash di crittografia consente di verificare l'integrità del download. Il file viene scaricato, memorizzato nella cache e riscaricato ogni volta che l'URL o l'hash cambiano. <ph name="PRODUCT_OS_NAME" /> scarica il file per le configurazioni delle stampanti e rende disponibili le stampanti in base ai criteri <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> e <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />.
 
       Questo criterio:
 
@@ -1089,9 +1089,9 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
 
       * Con <ph name="POLICY_ENUM_DEVICEPRINTERSACCESSMODE_ALLOWLISTPRINTERSONLY" /> (valore 1), <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> consente di stabilire soltanto le stampanti selezionabili.
 
-      * <ph name="POLICY_ENUM_DEVICEPRINTERSACCESSMODE_ALLOWALL" /> (valore 2) permette di consentire tutte le stampanti.
+      * Con <ph name="POLICY_ENUM_DEVICEPRINTERSACCESSMODE_ALLOWALL" /> (valore 2), tutte le stampanti sono consentite.
 
-      Se il criterio non viene configurato viene applicato il valore <ph name="PRINTERS_ALLOW_ALL" />.</translation>
+      Se il criterio non viene configurato, viene applicato il valore <ph name="PRINTERS_ALLOW_ALL" />.</translation>
 <translation id="2586117300379904732">Consenti wakelock per la gestione dell'alimentazione</translation>
 <translation id="2587719089023392205">Imposta <ph name="PRODUCT_NAME" /> come browser predefinito</translation>
 <translation id="2588252329503406673">La configurazione del criterio consente di impostare il comportamento di <ph name="PRODUCT_OS_NAME" /> quando non viene rilevata alcuna attività utente per un determinato periodo di tempo durante la visualizzazione della schermata di accesso. Il criterio consente di controllare diverse impostazioni. Per conoscere la semantica e gli intervalli di valori di ognuna di esse, consulta i relativi criteri che controllano la gestione dell'alimentazione all'interno di una sessione.
@@ -1212,13 +1212,6 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
       Se viene impostato su Disattivato, <ph name="PRODUCT_NAME" /> può utilizzare questi host solo se sono installati a livello di sistema.</translation>
 <translation id="2753637905605932878">Limita l'intervallo di porte UDP locali utilizzato da WebRTC</translation>
 <translation id="2757054304033424106">Tipi di estensioni/app che possono essere installati</translation>
-<translation id="2758689548159678032">Se attivata, la funzionalità <ph name="PRODUCT_NAME" /> invierà intestazioni della richiesta granulari che forniscono informazioni sul browser e sull'ambiente degli utenti.
-
-      Si tratta di una funzionalità aggiuntiva, ma le nuove intestazioni potrebbero causare interruzioni su alcuni siti web che limitano il numero di caratteri della richiesta.
-
-      Se il criterio è attivato o non viene configurato, la funzionalità <ph name="PRODUCT_NAME" /> verrà attivata. Se il criterio è disattivato, la funzionalità non sarà disponibile.
-
-      Questo criterio aziendale è finalizzato al periodo di transizione e verrà rimosso in Chrome 88.</translation>
 <translation id="2759224876420453487">Controlla il comportamento dell'utente in una sessione profilo multiplo</translation>
 <translation id="2761483219396643566">Ritardo avviso inattività in caso di utilizzo della batteria</translation>
 <translation id="2769952903507981510">Configura il nome di dominio richiesto per gli host di accesso remoto</translation>
@@ -1334,7 +1327,7 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
       Se il criterio non viene impostato (o se viene impostato un URL non valido), <ph name="PRODUCT_NAME" /> non usa il criterio come fonte di regole per il cambio di browser.
 
       Nota: questo criterio rimanda a un file XML nello stesso formato del criterio <ph name="IEEM_SITELIST_POLICY" /> di <ph name="IE_PRODUCT_NAME" />. Se viene impostato, le regole vengono caricate da un file XML senza essere condivise con <ph name="IE_PRODUCT_NAME" />. Leggi ulteriori informazioni sul criterio <ph name="IEEM_SITELIST_POLICY" /> di <ph name="IE_PRODUCT_NAME" /> (https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode)</translation>
-<translation id="2947111924404450461">L'impostazione di questo criterio consente di configurare le stampanti aziendali. Il formato corrisponde a quello del dizionario <ph name="NATIVE_PRINTERS_POLICY_NAME" />, con un campo <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> aggiuntivo obbligatorio per ogni stampante della lista consentita o della lista bloccata. Le dimensioni del file non possono superare i 5 MB e il formato deve essere JSON. Un file con circa 21.000 stampanti viene codificato come file di 5 MB. L'hash di crittografia consente di verificare l'integrità del download. Il file viene scaricato, memorizzato nella cache e riscaricato ogni volta che l'URL o l'hash cambiano. <ph name="PRODUCT_OS_NAME" /> scarica il file per le configurazioni delle stampanti e rende disponibili le stampanti in base ai criteri <ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="BULK_PRINTERS_WHITELIST" /> e <ph name="BULK_PRINTERS_BLACKLIST" />.
+<translation id="2947111924404450461">L'impostazione di questo criterio consente di configurare le stampanti aziendali. Il formato corrisponde a quello del dizionario <ph name="NATIVE_PRINTERS_POLICY_NAME" />, con un campo <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> aggiuntivo obbligatorio per ogni stampante ai fini dell'inserimento in una lista consentita o in una lista bloccata. Le dimensioni del file non possono superare i 5 MB e il formato deve essere JSON. Un file con circa 21.000 stampanti viene codificato come file di 5 MB. L'hash di crittografia consente di verificare l'integrità del download. Il file viene scaricato, memorizzato nella cache e riscaricato ogni volta che l'URL o l'hash cambiano. <ph name="PRODUCT_OS_NAME" /> scarica il file per le configurazioni delle stampanti e rende disponibili le stampanti in base ai criteri <ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="BULK_PRINTERS_WHITELIST" /> e <ph name="BULK_PRINTERS_BLACKLIST" />.
 
       Questo criterio non influisce sulla possibilità per gli utenti di configurare le stampanti su singoli dispositivi. È inteso come integrativo alla configurazione delle stampanti da parte dei singoli utenti.
 
@@ -1640,11 +1633,11 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 
       * Il valore <ph name="PRINTER_URI" /> dovrebbe essere un indirizzo raggiungibile da un computer client che includa <ph name="URI_SCHEME" />, <ph name="URI_PORT" /> e <ph name="URI_QUEUE" />.
 
-      * Puoi specificare, se vuoi, un valore <ph name="PRINTER_UUID" /> per facilitare la deduplicazione delle stampanti <ph name="ZEROCONF_DISCOVERY" />.
+      * In via facoltativa, è possibile specificare un valore <ph name="PRINTER_UUID" /> per facilitare la deduplicazione delle stampanti <ph name="ZEROCONF_DISCOVERY" />.
 
-      * Puoi usare il nome del modello di <ph name="PRINTER_EFFECTIVE_MODEL" /> o impostare <ph name="PRINTER_AUTOCONF" /> su Vero. Le stampanti con entrambe le proprietà o prive di proprietà vengono ignorate.
+      * E' possibile usare il nome del modello di <ph name="PRINTER_EFFECTIVE_MODEL" /> o impostare <ph name="PRINTER_AUTOCONF" /> su Vero. Le stampanti con entrambe le proprietà o prive di proprietà vengono ignorate.
 
-      I file PPD vengono scaricati dopo l'utilizzo della stampante e i file PPD usati spesso vengono memorizzati nella cache. Questo criterio non influisce sulla possibilità per gli utenti di configurare le stampanti su singoli dispositivi.
+      I file PPD vengono scaricati dopo l'utilizzo della stampante e i file PPD usati più spesso vengono memorizzati nella cache. Questo criterio non influisce sulla possibilità per gli utenti di configurare le stampanti su singoli dispositivi.
 
       Nota: per i dispositivi <ph name="MS_AD_NAME" /> gestiti, questo criterio supporta l'espansione di <ph name="MACHINE_NAME_VARIABLE" /> al nome della macchina <ph name="MS_AD_NAME" /> oppure a una sua sottostringa. Ad esempio, se il nome della macchina è <ph name="MACHINE_NAME_EXAMPLE" />, la variabile <ph name="MACHINE_NAME_VARIABLE_EXAMPLE" /> viene sostituita dai quattro caratteri che iniziano dopo la sesta posizione, ad esempio <ph name="MACHINE_NAME_PART_EXAMPLE" />. La posizione è in base zero.
 
@@ -1784,7 +1777,7 @@ Se questo criterio viene impostato su False, <ph name="PRODUCT_NAME" /> non util
 <translation id="3456292544936505775">Questa norma consente di regolare gli intervalli di tempo durante i quali al dispositivo <ph name="PRODUCT_OS_NAME" /> non è consentito verificare automaticamente la disponibilità di aggiornamenti.
       Quando questa norma è impostata su un elenco non vuoto di intervalli di tempo:
       Ai dispositivi non sarà consentito verificare automaticamente la disponibilità di aggiornamenti durante gli intervalli di tempo specificati. A causa di possibili problemi di sicurezza, questa norma non avrà conseguenze sui dispositivi che richiedono il rollback aziendale o dispongono di una versione inferiore alla versione minima di <ph name="PRODUCT_OS_NAME" />. Inoltre, questa norma non impedirà le verifiche degli aggiornamenti richieste dagli utenti o dagli amministratori.
-      A partire da M88, questa norma annulla un aggiornamento in corso quando viene raggiunto un intervallo di tempo limitato. L'aggiornamento automatico successivo dopo il termine dell'intervallo di tempo limitato riprenderà automaticamente l'aggiornamento. I dispositivi che eseguono l'aggiornamento a Quick Fix Build non saranno interessati da questa norma.
+      A partire da M88, questa norma annulla un aggiornamento in corso quando viene raggiunto un intervallo di tempo limitato. L'aggiornamento automatico successivo dopo il termine dell'intervallo di tempo limitato riprenderà automaticamente l'aggiornamento. I dispositivi che eseguono l'aggiornamento a una build di correzione rapida non saranno interessati da questa norma.
       Quando la norma non viene impostata o non contiene intervalli di tempo:
       Le verifiche automatiche degli aggiornamenti non verranno bloccate da questa norma, ma potrebbero essere bloccate da altre norme.
       Fino a M88, questa funzionalità è attiva solo sui dispositivi <ph name="PRODUCT_OS_NAME" /> configurati come kiosk ad avvio automatico. Gli altri dispositivi non risulteranno limitati da questa norma. Tuttavia, a partire da M89, questa norma è attiva su tutti i dispositivi <ph name="PRODUCT_OS_NAME" />.</translation>
@@ -1980,11 +1973,11 @@ Se questo criterio viene impostato su False, <ph name="PRODUCT_NAME" /> non util
 
       * Il valore <ph name="PRINTER_URI" /> dovrebbe essere un indirizzo raggiungibile da un computer client che includa <ph name="URI_SCHEME" />, <ph name="URI_PORT" /> e <ph name="URI_QUEUE" />.
 
-      * Puoi specificare, se vuoi, un valore <ph name="PRINTER_UUID" /> per facilitare la deduplicazione delle stampanti <ph name="ZEROCONF_DISCOVERY" />.
+      * In via facoltativa, è possibile specificare un valore <ph name="PRINTER_UUID" /> per facilitare la deduplicazione delle stampanti <ph name="ZEROCONF_DISCOVERY" />.
 
-      * Puoi usare il nome del modello di <ph name="PRINTER_EFFECTIVE_MODEL" /> o impostare <ph name="PRINTER_AUTOCONF" /> su Vero. Le stampanti con entrambe le proprietà o prive di proprietà vengono ignorate.
+      * E' possibile usare il nome del modello di <ph name="PRINTER_EFFECTIVE_MODEL" /> o impostare <ph name="PRINTER_AUTOCONF" /> su Vero. Le stampanti con entrambe le proprietà o prive di proprietà vengono ignorate.
 
-      I file PPD vengono scaricati dopo l'utilizzo della stampante e i file PPD usati spesso vengono memorizzati nella cache. Questo criterio non influisce sulla possibilità per gli utenti di configurare le stampanti su singoli dispositivi.
+      I file PPD vengono scaricati dopo l'utilizzo della stampante e i file PPD usati più spesso vengono memorizzati nella cache. Questo criterio non influisce sulla possibilità per gli utenti di configurare le stampanti su singoli dispositivi.
 
       Nota: per i dispositivi <ph name="MS_AD_NAME" /> gestiti, questo criterio supporta l'espansione di <ph name="MACHINE_NAME_VARIABLE" /> al nome della macchina <ph name="MS_AD_NAME" /> oppure a una sua sottostringa. Ad esempio, se il nome della macchina è <ph name="MACHINE_NAME_EXAMPLE" />, la variabile <ph name="MACHINE_NAME_VARIABLE_EXAMPLE" /> viene sostituita dai quattro caratteri che iniziano dopo la sesta posizione, ad esempio <ph name="MACHINE_NAME_PART_EXAMPLE" />. La posizione è in base zero.</translation>
 <translation id="377044054160169374">Applicazione dell'intervento in caso di esperienza intrusiva</translation>
@@ -2689,7 +2682,7 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
 
       * Se viene selezionata l'opzione <ph name="PRINTERS_ALLOW_ALL" /> (valore 2), vengono mostrate tutte le stampanti.
 
-      Se il criterio non viene configurato viene applicato il valore <ph name="PRINTERS_ALLOW_ALL" />.
+      Se il criterio non viene configurato, viene applicato il valore <ph name="PRINTERS_ALLOW_ALL" />.
 
       Questo criterio è deprecato. Usa il criterio <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />.</translation>
 <translation id="4923806312383904642">Consenti a WebDriver di eseguire l'override delle norme non compatibili</translation>
@@ -3993,7 +3986,7 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
 <translation id="6821268164692776674">Destinazioni <ph name="CLOUD_PRINT_NAME" /> e "Salva su Google Drive"</translation>
 <translation id="6823273740874361732">La configurazione del criterio permette di controllare le impostazioni di gestione delle estensioni per <ph name="PRODUCT_NAME" />, incluse quelle controllate da criteri relativi alle estensioni esistenti. Il criterio prevale su tutti i criteri precedenti che potrebbero essere stati impostati.
 
-      Questo criterio consente di mappare un ID estensione o un URL di aggiornamento soltanto alla relativa impostazione specifica. È possibile impostare una configurazione predefinita per l'ID speciale <ph name="DEFAULT_SCOPE" />, che verrà applicata a tutte le estensioni senza una configurazione personalizzata in questo criterio. Con un URL di aggiornamento, la configurazione verrà applicata alle estensioni con l'esatto URL di aggiornamento indicato nel file manifest dell'estensione (http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy). Se il flag "override_update_url" viene impostato su vero, l'estensione verrà installata e aggiornata usando l'URL di aggiornamento ("update") specificato nel criterio <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> o nel campo "update_url" di questo criterio. Il flag "override_update_url" viene ignorato se il valore "update_url" è un URL del Chrome Web Store.
+      Questo criterio consente di mappare un ID estensione o un URL di aggiornamento soltanto alla relativa impostazione specifica. È possibile impostare una configurazione predefinita per l'ID speciale <ph name="DEFAULT_SCOPE" />, che verrà applicata a tutte le estensioni senza una configurazione personalizzata in questo criterio. Con un URL di aggiornamento, la configurazione verrà applicata alle estensioni con l'esatto URL di aggiornamento indicato nel file manifest dell'estensione ( http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy ). Se il flag "override_update_url" viene impostato su vero, l'estensione verrà installata e aggiornata usando l'URL di aggiornamento ("update") specificato nel criterio <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> o nel campo "update_url" di questo criterio. Il flag "override_update_url" viene ignorato se il valore "update_url" è un URL del Chrome Web Store.
 
       Nota: per le istanze di Windows® che non fanno parte di un dominio <ph name="MS_AD_NAME" />, l'installazione forzata è limitata alle app e alle estensioni elencate nel Chrome Web Store.</translation>
 <translation id="6823711520976094072">La mancata configurazione o l'impostazione del criterio su valori inferiori a 1 MB implica l'utilizzo da parte di <ph name="PRODUCT_OS_NAME" /> della dimensione predefinita, corrispondente a 256 MiB, per le estensioni e le app di memorizzazione nella cache per l'installazione da parte di più utenti di un singolo dispositivo. In questo modo, non è necessario scaricare nuovamente tutte le app o estensioni per ogni utente.</translation>
@@ -4117,7 +4110,7 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
       Se il criterio è attivato, ciascuna delle origini denominate all'interno di un elenco separato da virgole viene eseguita nel proprio processo. In questo modo, si isolano anche le origini indicate dai sottodomini; ad esempio specificando https://example.com/ si isola anche https://foo.example.com/, perché fa parte del sito https://example.com/.
       Se il criterio non è configurato o è disattivato, per la schermata di accesso vengono utilizzate le impostazioni di isolamento dei siti predefinite della piattaforma.
       </translation>
-<translation id="6949867264289339206">La configurazione del criterio consente di specificare le configurazioni delle stampanti aziendali associate ai dispositivi. Il formato corrisponde a quello del dizionario <ph name="PRINTERS_POLICY_NAME" />, con un campo "id" o "guid" aggiuntivo obbligatorio per ogni stampante della lista consentita o della lista bloccata. Le dimensioni del file non possono superare i 5 MB e il formato deve essere JSON. Un file con circa 21.000 stampanti viene codificato come file di 5 MB. L'hash di crittografia consente di verificare l'integrità del download. Il file viene scaricato, memorizzato nella cache e riscaricato ogni volta che l'URL o l'hash cambiano. <ph name="PRODUCT_OS_NAME" /> scarica il file per le configurazioni delle stampanti e rende disponibili le stampanti in base ai criteri <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> e <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />.
+<translation id="6949867264289339206">La configurazione del criterio consente di specificare le configurazioni delle stampanti aziendali associate ai dispositivi. Il formato corrisponde a quello del dizionario <ph name="PRINTERS_POLICY_NAME" />, con un campo "id" o "guid" aggiuntivo obbligatorio per ogni stampante ai fini dell'inserimento in una lista consentita o in una lista bloccata. Le dimensioni del file non possono superare i 5 MB e il formato deve essere JSON. Un file con circa 21.000 stampanti viene codificato come file di 5 MB. L'hash di crittografia consente di verificare l'integrità del download. Il file viene scaricato, memorizzato nella cache e riscaricato ogni volta che l'URL o l'hash cambiano. <ph name="PRODUCT_OS_NAME" /> scarica il file per le configurazioni delle stampanti e rende disponibili le stampanti in base ai criteri <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> e <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />.
 
       Questo criterio:
 
@@ -4753,7 +4746,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 
           Se questo criterio non viene impostato, inizialmente l'alto contrasto è disattivato nella schermata di accesso, ma l'utente può attivarlo in qualsiasi momento.</translation>
 <translation id="7869986671709030417">Modalità di stampa predefinita delle immagini di sfondo</translation>
-<translation id="7881421274383404138">L'impostazione di questo criterio consente di configurare le stampanti aziendali. Il formato corrisponde a quello del dizionario <ph name="PRINTERS_POLICY_NAME" />, con un campo <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> aggiuntivo obbligatorio per ogni stampante della lista consentita o della lista bloccata. Le dimensioni del file non possono superare i 5 MB e il formato deve essere JSON. Un file con circa 21.000 stampanti viene codificato come file di 5 MB. L'hash di crittografia consente di verificare l'integrità del download. Il file viene scaricato, memorizzato nella cache e riscaricato ogni volta che l'URL o l'hash cambiano. <ph name="PRODUCT_OS_NAME" /> scarica il file per le configurazioni delle stampanti e rende disponibili le stampanti in base ai criteri <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> e <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" />.
+<translation id="7881421274383404138">L'impostazione di questo criterio consente di configurare le stampanti aziendali. Il formato corrisponde a quello del dizionario <ph name="PRINTERS_POLICY_NAME" />, con un campo <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> aggiuntivo obbligatorio per ogni stampante ai fini dell'inserimento in una lista consentita o in una lista bloccata. Le dimensioni del file non possono superare i 5 MB e il formato deve essere JSON. Un file con circa 21.000 stampanti viene codificato come file di 5 MB. L'hash di crittografia consente di verificare l'integrità del download. Il file viene scaricato, memorizzato nella cache e riscaricato ogni volta che l'URL o l'hash cambiano. <ph name="PRODUCT_OS_NAME" /> scarica il file per le configurazioni delle stampanti e rende disponibili le stampanti in base ai criteri <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> e <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" />.
 
       Questo criterio non influisce sulla possibilità per gli utenti di configurare le stampanti su singoli dispositivi. È inteso come integrativo alla configurazione delle stampanti da parte dei singoli utenti.
 
@@ -4907,7 +4900,7 @@ Se attivi questa impostazione o non imposti un valore, la funzione Compilazione 
 
       Se il criterio viene impostato su False, la funzionalità Tocca per cercare verrà disattivata completamente.</translation>
 <translation id="8135271712389620651">Consente di configurare un elenco di regole per prevenire la fuga di dati su <ph name="PRODUCT_OS_NAME" />.
-      La fuga di dati può verificarsi tramite le operazioni di copia e incolla dei dati, il trasferimento di file, la stampa, la condivisione schermo o l'acquisizione di screenshot.
+      La fuga di dati può verificarsi tramite le operazioni di copia e incolla dei dati, il trasferimento di file, la stampa, la condivisione schermo, l'acquisizione di screenshot, ecc.
 
       Ciascuna regola prevede quanto segue:
       - Un elenco di origini definite come URL. Tutti i dati delle origini saranno considerati dati riservati, a cui verranno applicate limitazioni.
@@ -4950,6 +4943,10 @@ Se questo criterio è impostato su False, la Schermata sulla privacy verrà disa
 Se questo criterio viene impostato, l'utente non potrà sostituire il valore quando la schermata di accesso viene visualizzata.
 
 Se questo criterio non viene impostato, la Schermata sulla privacy viene inizialmente disattivata, ma potrà essere controllata dall'utente quando la schermata di accesso viene visualizzata.</translation>
+<translation id="8147427717998252789">La configurazione del criterio consente di definire il valore restituito dell'API Managed Configuration per una determinata origine.
+
+      L'API Managed Configuration è una configurazione di coppie chiave-valore accessibile tramite chiamata JavaScript navigator.device.getManagedConfiguration(). Questa API è disponibile soltanto per le origini che corrispondono ad applicazioni web con installazione forzata tramite <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />.
+     </translation>
 <translation id="815061180603915310">Se viene attivata, questa norma forza l'attivazione della modalità temporanea per il profilo. Se viene specificata come norma del sistema operativo (ad esempio GPO su Windows), la norma viene applicata a ogni profilo nel sistema; se la norma viene impostata come norma Cloud, viene applicata soltanto a un profilo a cui viene eseguito l'accesso con un account gestito.
 
       In questa modalità, i dati del profilo rimangono memorizzati su disco soltanto per la durata della sessione utente. Funzionalità quali cronologia del browser, estensioni e relativi dati, dati web quali cookie e database web non rimangono memorizzati alla chiusura del browser. L'utente può comunque scaricare i dati su disco manualmente, salvare pagine o stamparle.
@@ -5097,9 +5094,7 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
 
       Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" /> non viene configurato, la richiesta di ricerca di immagini viene inviata utilizzando il metodo Get.</translation>
 <translation id="8314214821702356835">Permette di consentire agli utenti di riprodurre contenuti multimediali con il dispositivo bloccato</translation>
-<translation id="8316913402499361923">Se il criterio viene impostato su Attivato o se non viene configurato, gli utenti possono stampare in <ph name="PRODUCT_NAME" /> e non possono modificare questa impostazione.
-
-      Se il criterio viene impostato su Disattivato, gli utenti non possono stampare da <ph name="PRODUCT_NAME" />. L'opzione di stampa è disattivata nel menu Strumenti, nelle estensioni e nelle applicazioni JavaScript. È possibile stampare soltanto da plug-in che aggirano <ph name="PRODUCT_NAME" /> durante la stampa.</translation>
+<translation id="8319678975002906774">Imposta valori Managed Configuration per siti web corrispondenti a origini specifiche</translation>
 <translation id="8320149248919453401">Modalità di carica della batteria</translation>
 <translation id="8329984337216493753">Questa norma è attiva soltanto in modalità retail.
 
@@ -5311,11 +5306,6 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
 <translation id="8676959842615154675">Se il criterio viene impostato su Attivato, l'host di accesso remoto confronta il nome dell'utente locale a cui è associato l'host con il nome dell'Account Google registrato come proprietario dell'host ("mariorossi" se l'host è di proprietà dell'Account Google "mariorossi@example.com"). Questo host non viene avviato se il nome del proprietario dell'host non coincide con quello dell'utente locale a cui è associato l'host. Per forzare l'associazione dell'Account Google del proprietario con un dominio specifico, usa il criterio insieme a <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />.
 
       Se il criterio viene impostato su Disattivato o se non viene configurato, l'host di accesso remoto può essere associato a qualsiasi utente locale.</translation>
-<translation id="8680488165461049026">Questo criterio consente di autorizzare Risposte rapide ad accedere ai contenuti selezionati e a inviare le informazioni al server.
-
-      Se il criterio è attivato, Risposte rapide potrà accedere ai contenuti selezionati.
-      Se il criterio è disattivato, Risposte rapide non potrà accedere ai contenuti selezionati.
-      Se il criterio non viene impostato, gli utenti possono decidere se autorizzare Risposte rapide ad accedere ai contenuti selezionati.</translation>
 <translation id="8685024486845674965">L'avviso di protezione tramite password viene attivato se vengono riutilizzate password</translation>
 <translation id="8685680544554917389">Se il criterio viene configurato su true, <ph name="PRODUCT_NAME" /> può utilizzare la riproduzione automatica per i contenuti multimediali. Se il criterio viene configurato su false, <ph name="PRODUCT_NAME" /> non può più utilizzare la riproduzione automatica per i contenuti multimediali.
 

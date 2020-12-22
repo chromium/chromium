@@ -3,7 +3,6 @@
 <translationbundle lang="de">
 <translation id="1001307489511021749">Ihre Apps, Einstellungen und anderen Anpassungen werden auf allen Chrome OS-Geräten synchronisiert, auf denen Sie mit Ihrem Google-Konto angemeldet sind.</translation>
 <translation id="1003088604756913841">Link in neuem <ph name="APP" />-Fenster öffnen</translation>
-<translation id="1003363546227723021">Wenn der Bildschirm inaktiv ist, können Sie sich Fotos, die Zeit sowie Wetter- und Medieninformationen anzeigen lassen</translation>
 <translation id="1004218526896219317">Websitezugriff</translation>
 <translation id="1005274289863221750">Ihr Mikrofon und Ihre Kamera verwenden</translation>
 <translation id="1005333234656240382">ADB-Fehlerbehebung aktivieren?</translation>
@@ -50,7 +49,7 @@
 <translation id="1049324577536766607">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> wird von <ph name="DEVICE_NAME" /> empfangen}other{<ph name="ATTACHMENTS" /> werden von <ph name="DEVICE_NAME" /> empfangen}}</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1049795001945932310">&amp;Spracheinstellungen</translation>
-<translation id="1054048317165655285">Einrichtung auf dem Smartphone durchführen</translation>
+<translation id="1054048317165655285">Einrichtung auf dem Smartphone abschließen</translation>
 <translation id="1054153489933238809">&amp;Original in neuem Tab öffnen</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{<ph name="DEVICE_TYPE" /> innerhalb von 1 Woche aktualisieren}other{<ph name="DEVICE_TYPE" /> innerhalb von {NUM_WEEKS} Wochen aktualisieren}}</translation>
 <translation id="1055806300943943258">Suche nach Bluetooth- und USB-Geräten...</translation>
@@ -106,7 +105,7 @@
 <translation id="1116639326869298217">Ihre Identität konnte nicht bestätigt werden</translation>
 <translation id="1116694919640316211">Über</translation>
 <translation id="1116779635164066733">Diese Einstellung wird durch die Erweiterung "<ph name="NAME" />" erzwungen.</translation>
-<translation id="1118549423835582252"><ph name="MANAGER" /> empfiehlt, dieses <ph name="DEVICE_TYPE" /> zu aktualisieren.</translation>
+<translation id="1118549423835582252"><ph name="MANAGER" /> empfiehlt, dieses Gerät (<ph name="DEVICE_TYPE" />) zu aktualisieren.</translation>
 <translation id="1118738876271697201">Das System konnte das Gerätemodell oder die Seriennummer nicht ermitteln.</translation>
 <translation id="1119447706177454957">Interner Fehler</translation>
 <translation id="1122068467107743258">Arbeit</translation>
@@ -225,7 +224,6 @@
 <translation id="1238191093934674082">OpenVPN</translation>
 <translation id="1239594683407221485">Sie können die Inhalte in der App "Dateien" ansehen.</translation>
 <translation id="124116460088058876">Weitere Sprachen</translation>
-<translation id="1241639418100230264">Es können Gebühren anfallen</translation>
 <translation id="1241753985463165747">Beim Aufrufen alle Ihre Daten auf der aktuellen Website lesen und ändern</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> möchte Ihre Einstellungen zurücksetzen.</translation>
 <translation id="1243314992276662751">Hochladen</translation>
@@ -1391,7 +1389,6 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2541706104884128042">Neue Schlafenszeit festgelegt</translation>
 <translation id="2542050502251273923">Hiermit wird das Fehlerbehebungslevel des Netzwerkverbindungsmanagers und anderer Services mithilfe von ff_debug festgelegt.</translation>
 <translation id="2544853746127077729">Ablehnung des Authentifizierungszertifikats durch das Netzwerk</translation>
-<translation id="2546229857744484369">Auf diesem Gerät ist 1 Passwort gespeichert</translation>
 <translation id="2546283357679194313">Cookies und Websitedaten</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" /> zugelassen</translation>
 <translation id="2549985041256363841">Aufnahme starten</translation>
@@ -1879,7 +1876,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3103941660000130485">Fehler beim Aktualisieren von Linux</translation>
 <translation id="3105796011181310544">Wieder zu Google wechseln?</translation>
 <translation id="310671807099593501">Die Website verwendet Bluetooth</translation>
-<translation id="3108931485517391283">Kann/können nicht empfangen werden</translation>
+<translation id="3108931485517391283">Empfang nicht möglich</translation>
 <translation id="3109724472072898302">Minimiert</translation>
 <translation id="3115147772012638511">Warten auf den Cache...</translation>
 <translation id="3115580024857770654">Alle ausblenden</translation>
@@ -2014,7 +2011,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3275778913554317645">In neuem Fenster öffnen</translation>
 <translation id="3277691515294482687">Meine Apps und Dateien vor dem Upgrade von Linux im Ordner "Meine Dateien" sichern.</translation>
 <translation id="3278001907972365362">Ihre Google-Konten erfordern Aufmerksamkeit</translation>
-<translation id="3279092821516760512">Ausgewählte Kontakte können Daten mit Ihnen teilen, wenn Sie in der Nähe sind. Die Übertragung beginnt erst nach Ihrer Zustimmung.</translation>
+<translation id="3279092821516760512">Ausgewählte Kontakte können Daten mit Ihnen teilen, wenn Sie in der Nähe sind. Die Übertragung beginnt erst, nachdem Sie die Einladung angenommen haben.</translation>
 <translation id="3279230909244266691">Der Vorgang kann einige Minuten dauern. Virtuelle Maschine wird gestartet.</translation>
 <translation id="3280237271814976245">Speichern &amp;unter...</translation>
 <translation id="3280243678470289153">In Chrome bleiben</translation>
@@ -2280,7 +2277,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3576324189521867626">Installation war erfolgreich</translation>
 <translation id="3578594933904494462">Der Inhalt dieses Tabs wird geteilt.</translation>
 <translation id="357886715122934472">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt; möchte den Drucker &lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt; für eine Gruppe freigeben, deren Inhaber Sie sind: &lt;strong&gt;<ph name="GROUP_NAME" />&lt;/strong&gt;. Falls Sie zustimmen, können alle Gruppenmitglieder diesen Drucker nutzen.</translation>
-<translation id="357889014807611375">Kostenpflichtiges WLAN</translation>
 <translation id="3581605050355435601">IP-Adresse automatisch konfigurieren</translation>
 <translation id="3582057310199111521">Auf einer betrügerischen Website eingegeben und durch eine Datenpanne preisgegeben</translation>
 <translation id="3584169441612580296">Fotos, Musik und andere Medien auf Ihrem Computer lesen und ändern</translation>
@@ -2481,7 +2477,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3792890930871100565">Druckerverbindungen trennen</translation>
 <translation id="3793395331556663376">Es sind zu viele Dateisysteme geöffnet.</translation>
 <translation id="3793588272211751505">{NUM_DAYS,plural, =1{Chrome hat auf Ihrem Computer keine schädliche Software gefunden • Vor 1 Tag geprüft}other{Chrome hat auf Ihrem Computer keine schädliche Software gefunden • Vor {NUM_DAYS} Tagen geprüft}}</translation>
-<translation id="379500251094592809">Zur Verwendung von „Nearby Share“ müssen beide Geräte entsperrt sein und sich nah beieinander befinden. Außerdem muss Bluetooth aktiviert sein. Wenn Sie Inhalte mit einem Chromebook teilen möchten, das sich nicht in Ihren Kontakten befindet, muss die Nearby-Sichtbarkeit aktiviert sein. Wählen Sie dazu die Uhrzeit aus, öffnen Sie den Statusbereich und aktivieren Sie die Nearby-Sichtbarkeit. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
+<translation id="379500251094592809">Zur Verwendung von „Nearby Share“ müssen beide Geräte entsperrt sein und sich nah beieinander befinden. Außerdem muss Bluetooth aktiviert sein. Wenn du Inhalte mit einem Chromebook teilen möchtest, das sich nicht in deinen Kontakten befindet, muss die Nearby-Sichtbarkeit aktiviert sein. Wähle dazu die Uhrzeit aus, öffne den Statusbereich und aktiviere die Nearby-Sichtbarkeit. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="379509625511193653">Aus</translation>
 <translation id="3796648294839530037">Bevorzugte Netzwerke:</translation>
 <translation id="3797739167230984533"><ph name="BEGIN_LINK" />Ihr <ph name="DEVICE_TYPE" /> wird von Ihrer Organisation verwaltet<ph name="END_LINK" /></translation>
@@ -2708,7 +2704,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4031527940632463547">Sensoren blockiert</translation>
 <translation id="4033471457476425443">Neuen Ordner hinzufügen</translation>
 <translation id="4034824040120875894">Drucker</translation>
-<translation id="4035321506998192527">Möchten Sie ChromeVox, den integrierten Screenreader für Chrome OS, aktivieren? Falls ja, drücken Sie die Leertaste.</translation>
+<translation id="4035321506998192527">Möchtest du ChromeVox, den integrierten Screenreader für Chrome OS, aktivieren? Falls ja, drücke die Leertaste.</translation>
 <translation id="4035758313003622889">&amp;Taskmanager</translation>
 <translation id="4036778507053569103">Die vom Server heruntergeladene Richtlinie ist ungültig.</translation>
 <translation id="4037084878352560732">Pferd</translation>
@@ -2929,6 +2925,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4325237902968425115">"<ph name="LINUX_APP_NAME" />" wird deinstalliert...</translation>
 <translation id="4330191372652740264">Wasser mit Eis</translation>
 <translation id="4330387663455830245"><ph name="LANGUAGE" /> nie übersetzen</translation>
+<translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4332976768901252016">Jugendschutzeinstellungen einrichten</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1 mit RSA-Verschlüsselung</translation>
 <translation id="4336434711095810371">Alle Daten löschen</translation>
@@ -2949,7 +2946,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4358313196493694334">Klickposition stabilisieren</translation>
 <translation id="4359408040881008151">Wurde aufgrund der abhängigen Erweiterungen installiert</translation>
 <translation id="4359717112757026264">Stadtlandschaft</translation>
-<translation id="4360237979279036412"><ph name="MANAGER" /> verlangt, dass Sie dieses <ph name="DEVICE_TYPE" /> vor Ablauf der Frist aktualisieren.</translation>
+<translation id="4360237979279036412"><ph name="MANAGER" /> verlangt, dass dieses Gerät (<ph name="DEVICE_TYPE" />) vor Ablauf der Frist aktualisiert wird.</translation>
 <translation id="4361142739114356624">Der private Schlüssel für dieses Clientzertifikat fehlt oder ist ungültig</translation>
 <translation id="4361745360460842907">Als Tab öffnen</translation>
 <translation id="4363771538994847871">Kein Cast-Empfänger gefunden. Benötigen Sie Hilfe?</translation>
@@ -3079,7 +3076,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4508765956121923607">Q&amp;uelle anzeigen</translation>
 <translation id="4510479820467554003">Liste der Elternkonten</translation>
 <translation id="4510614391273086606">Linux-Dateien und ‑Apps werden auf den Stand des letzten Back-ups zurückgesetzt.</translation>
-<translation id="4511264077854731334">Portal</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="451407183922382411">Powered by <ph name="COMPANY_NAME" /></translation>
 <translation id="4514610446763173167">Video wiedergeben oder pausieren</translation>
@@ -3493,7 +3489,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4998430619171209993">An</translation>
 <translation id="5000922062037820727">Blockiert (empfohlen)</translation>
 <translation id="5005498671520578047">Passwort kopieren</translation>
-<translation id="5005970596776813007">Möchten Sie ChromeVox, den integrierten Screenreader für Chrome OS, aktivieren?</translation>
+<translation id="5005970596776813007">Möchtest du ChromeVox, den integrierten Screenreader für Chrome OS, aktivieren?</translation>
 <translation id="5006218871145547804">Android-App-ADB für Crostini</translation>
 <translation id="5007392906805964215">Ansehen</translation>
 <translation id="5008936837313706385">Aktivitätsname</translation>
@@ -3560,7 +3556,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5087926280563932024">Ihr Konto konnte nicht bestätigt werden. Bitte versuchen Sie es noch einmal oder starten Sie Ihr Chromebook neu.</translation>
 <translation id="5088172560898466307">Hostname des Servers</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 mit RSA-Verschlüsselung</translation>
-<translation id="5089810972385038852">Bundesstaat</translation>
 <translation id="5090637338841444533">Dürfen meine Kameraposition nicht erfassen</translation>
 <translation id="5094721898978802975">Mit zusammenarbeitenden nativen Anwendungen kommunizieren</translation>
 <translation id="5097002363526479830">Verbinden mit dem Netzwerk "<ph name="NAME" />" fehlgeschlagen: <ph name="DETAILS" /></translation>
@@ -3844,7 +3839,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="542948651837270806">Für das Trusted Platform Module muss ein Firmwareupdate installiert werden. Weitere Informationen: <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5430931332414098647">Instant Tethering</translation>
 <translation id="5431318178759467895">Farbe</translation>
-<translation id="5431825016875453137">OpenVPN/L2TP</translation>
 <translation id="543338862236136125">Passwort ändern</translation>
 <translation id="5434065355175441495">PKCS #1 RSA-Verschlüsselung</translation>
 <translation id="5435779377906857208"><ph name="HOST" /> immer Zugriff auf Ihren Standort erlauben</translation>
@@ -3916,7 +3910,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Fehler beim Empfangen von <ph name="ATTACHMENTS" /> von <ph name="DEVICE_NAME" />}other{Fehler beim Empfangen von <ph name="ATTACHMENTS" /> von <ph name="DEVICE_NAME" />}}</translation>
 <translation id="5502500733115278303">Aus Firefox importiert</translation>
 <translation id="5502915260472117187">Ein Kind</translation>
-<translation id="5503858713116291452">Ihr Smartphone muss sich in der Nähe befinden, entsperrt sein und Bluetooth und WLAN müssen aktiviert sein. Führen Sie die Schritte auf Ihrem Smartphone aus, um die Einrichtung abzuschließen.</translation>
+<translation id="5503858713116291452">Dein Smartphone muss sich in der Nähe befinden, entsperrt sein und Bluetooth und WLAN müssen aktiviert sein. Führe die Schritte auf deinem Smartphone aus, um die Einrichtung abzuschließen.</translation>
 <translation id="5503982651688210506"><ph name="HOST" /> weiterhin erlauben, meine Kamera zu verwenden und zu bewegen sowie mein Mikrofon zu benutzen</translation>
 <translation id="5505264765875738116">Websites können nicht fragen, ob Sie Benachrichtigungen erhalten möchten</translation>
 <translation id="5505307013568720083">Patrone leer</translation>
@@ -3993,7 +3987,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
     <ph name="BEGIN_PARAGRAPH2" />Wenn Sie diese Funktion deaktivieren, kann Ihr Gerät weiterhin die für wichtige Dienste erforderlichen Informationen senden, beispielsweise für Systemupdates und -sicherheit.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Der Eigentümer kann diese Funktion unter "Einstellungen" &gt; "Erweitert" &gt; "Diagnose- und Nutzungsdaten automatisch an Google senden" steuern.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Wenn zusätzlich die Einstellung "Web- &amp; App-Aktivitäten" aktiviert ist, werden diese Daten möglicherweise in Ihrem Google-Konto gespeichert. In den Kontoeinstellungen unter account.google.com können Sie die Daten ansehen, löschen und ändern.<ph name="END_PARAGRAPH4" /></translation>
-<translation id="5584936575630273819">Möchten Sie ChromeVox, den integrierten Screenreader für Chrome OS, aktivieren? Falls ja, halten Sie beide Lautstärketasten fünf Sekunden gedrückt.</translation>
+<translation id="5584936575630273819">Möchtest du ChromeVox, den integrierten Screenreader für Chrome OS, aktivieren? Falls ja, halte beide Lautstärketasten fünf Sekunden gedrückt.</translation>
 <translation id="5585019845078534178">Karten</translation>
 <translation id="5585118885427931890">Lesezeichenordner konnte nicht erstellt werden.</translation>
 <translation id="558563010977877295">Bestimmte Seite oder Seiten öffnen</translation>
@@ -4134,6 +4128,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5747809636523347288">Einfügen und <ph name="URL" /> aufrufen</translation>
 <translation id="5754152670305761216">Dürfen geschützte Inhalte abspielen</translation>
 <translation id="5756163054456765343">H&amp;ilfe</translation>
+<translation id="5758631781033351321">Hier wird Ihre Leseliste angezeigt</translation>
 <translation id="5759728514498647443">Dokumente, die Sie über <ph name="APP_NAME" /> zum Druck senden, können von <ph name="APP_NAME" /> gelesen werden.</translation>
 <translation id="5760715441271661976">Portal-Status</translation>
 <translation id="5763751966069581670">Keine USB-Geräte gefunden</translation>
@@ -4270,7 +4265,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 
   Öffentlicher Exponent (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> Bits):
   <ph name="EXPONENT_HEX_DUMP" /></translation>
-<translation id="5916084858004523819">Unzulässig</translation>
 <translation id="5916664084637901428">An</translation>
 <translation id="59174027418879706">Aktiviert</translation>
 <translation id="5920543303088087579">Die Möglichkeit einer Verbindung zu diesem Netzwerk wurde von Ihrem Administrator deaktiviert</translation>
@@ -4289,7 +4283,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="59324397759951282">USB-Gerät von <ph name="MANUFACTURER_NAME" /></translation>
 <translation id="5932881020239635062">Seriennummer</translation>
 <translation id="5933376509899483611">Zeitzone</translation>
-<translation id="5933522550144185133"><ph name="APP_NAME" /> verwendet Ihre Kamera und Ihr Mikrofon</translation>
+<translation id="5933522550144185133"><ph name="APP_NAME" /> verwendet deine Kamera und dein Mikrofon</translation>
 <translation id="5935158534896975820">Zertifikatssignaturanfrage wird vorbereitet (Warten auf Server)</translation>
 <translation id="5935656526031444304">Safe Browsing verwalten</translation>
 <translation id="5938002010494270685">Sicherheitsupdate verfügbar</translation>
@@ -4455,7 +4449,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6120205520491252677">Diese Seite an Startbildschirm anpinnen...</translation>
 <translation id="6122081475643980456">Internetverbindung wird kontrolliert</translation>
 <translation id="6122095009389448667">Weiterhin verhindern, dass diese Website die Zwischenablage aufrufen kann</translation>
-<translation id="6122191549521593678">Online</translation>
 <translation id="6122600716821516697">Mit diesem Gerät teilen?</translation>
 <translation id="6122831415929794347">Safe Browsing deaktivieren?</translation>
 <translation id="6122875415561139701">Der Schreibvorgang ist auf folgendem Gerät nicht erlaubt: "<ph name="DEVICE_NAME" />".</translation>
@@ -4644,7 +4637,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6326175484149238433">Aus Chrome entfernen</translation>
 <translation id="6326855256003666642">Keepalive-Zahl</translation>
 <translation id="6327785803543103246">Web-Proxy Autodiscovery</translation>
-<translation id="6328378651911184878"><ph name="MANAGER" /> verlangt, dass Sie dieses <ph name="DEVICE_TYPE" /> sofort aktualisieren.</translation>
+<translation id="6328378651911184878"><ph name="MANAGER" /> verlangt, dass dieses Gerät (<ph name="DEVICE_TYPE" />) sofort aktualisiert wird.</translation>
 <translation id="6331566915566907158">Helfen, die Funktionen und die Leistung von Chrome OS zu verbessern</translation>
 <translation id="6331818708794917058">Websites dürfen nachfragen, wenn sie eine Verbindung mit MIDI-Geräten herstellen möchten</translation>
 <translation id="6333064448949140209">Datei wird zur Fehlerbehebung an Google gesendet</translation>
@@ -4675,7 +4668,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6367985768157257101">Über Nearby Share empfangen?</translation>
 <translation id="636850387210749493">Enterprise-Registrierung</translation>
 <translation id="6370021412472292592">Manifest konnte nicht geladen werden.</translation>
-<translation id="6370863890073808080">Beide Geräte müssen entsperrt sein und sich nah beieinander befinden. Außerdem muss Bluetooth aktiviert sein. Wenn Sie Inhalte mit einem Chromebook teilen möchten, das sich nicht in Ihren Kontakten befindet, muss die Nearby-Sichtbarkeit aktiviert sein. Wählen Sie dazu die Uhrzeit aus, öffnen Sie den Statusbereich und aktivieren Sie die Nearby-Sichtbarkeit. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
+<translation id="6370863890073808080">Beide Geräte müssen entsperrt sein und sich nah beieinander befinden. Außerdem muss Bluetooth aktiviert sein. Wenn du Inhalte mit einem Chromebook teilen möchtest, das sich nicht in deinen Kontakten befindet, muss die Nearby-Sichtbarkeit aktiviert sein. Wähle dazu die Uhrzeit aus, öffne den Statusbereich und aktiviere die Nearby-Sichtbarkeit. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Erneut versuchen</translation>
 <translation id="6377268785556383139">1 Ergebnis für "<ph name="SEARCH_TEXT" />"</translation>
@@ -4817,7 +4810,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="653659894138286600">Dokumente und Bilder scannen</translation>
 <translation id="6537613839935722475">Der Name darf aus Buchstaben, Ziffern und Bindestrichen (-) bestehen</translation>
 <translation id="6537880577641744343">Commander</translation>
-<translation id="6538635548667167211">Aktuelle Einstellung für Datennutzung ist "Mobile Daten"</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Hinweis:<ph name="END_BOLD" /> Aktivieren Sie diese Option nur dann, wenn Sie dazu aufgefordert wurden und sich sicher sind, dass es unbedenklich ist. Die Datenerfassung kann die Leistung verringern.</translation>
 <translation id="6541638731489116978">Diese Website darf nicht auf Ihre Bewegungssensoren zugreifen.</translation>
 <translation id="6545665334409411530">Wiederholungsrate</translation>
@@ -5163,7 +5155,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6955446738988643816">Pop-up prüfen</translation>
 <translation id="6955535239952325894">Diese Einstellung ist bei verwalteten Browsern deaktiviert</translation>
 <translation id="6957044667612803194">Der Sicherheitsschlüssel unterstützt keine PINs</translation>
-<translation id="6957231940976260713">Name des Dienstes</translation>
 <translation id="6960507406838246615">Linux-Update erforderlich</translation>
 <translation id="696103774840402661">Alle Dateien und lokalen Daten für alle Nutzer auf diesem <ph name="DEVICE_TYPE" /> wurden dauerhaft gelöscht.</translation>
 <translation id="6964390816189577014">Held</translation>
@@ -5502,7 +5493,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7347943691222276892">Klicken, um <ph name="SUBPAGE_TITLE" /> zu verlassen.</translation>
 <translation id="7348093485538360975">Bildschirmtastatur</translation>
 <translation id="7352651011704765696">Ein Problem ist aufgetreten.</translation>
-<translation id="7353261921908507769">Ihre Kontakte können Daten mit Ihnen teilen, wenn sie in der Nähe sind. Die Übertragung beginnt erst nach Ihrer Zustimmung.</translation>
+<translation id="7353261921908507769">Ihre Kontakte können Daten mit Ihnen teilen, wenn sie in der Nähe sind. Die Übertragung beginnt erst, nachdem Sie die Einladung angenommen haben.</translation>
 <translation id="735361434055555355">Linux wird installiert…</translation>
 <translation id="7354341762311560488">Der Fingerabdrucksensor ist die Taste links unten auf der Tastatur. Berühren Sie ihn leicht mit dem Finger.</translation>
 <translation id="7356908624372060336">Netzwerkprotokolle</translation>
@@ -5626,7 +5617,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7488682689406685343">Diese Website verleitet Sie möglicherweise dazu, aufdringliche Benachrichtigungen zuzulassen.</translation>
 <translation id="7489761397368794366">Über mein Gerät anrufen</translation>
 <translation id="749028671485790643">Profil <ph name="VALUE" /></translation>
-<translation id="7490813197707563893">MAC-Adresse</translation>
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 Cookie}other{{NUM_COOKIES} Cookies}}</translation>
 <translation id="7493386493263658176">Die Erweiterung <ph name="EXTENSION_NAME" /> erfasst unter Umständen alle von Ihnen eingegebenen Textinhalte, einschließlich personenbezogener Daten wie Passwörter und Kreditkartennummern. Möchten Sie diese Erweiterung verwenden?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
@@ -5703,6 +5693,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7580671184200851182">Dieselben Audioinhalte über alle Lautsprecher wiedergeben (Mono-Audio)</translation>
 <translation id="7581462281756524039">Ein Bereinigungstool</translation>
 <translation id="7582582252461552277">Dieses Netzwerk bevorzugen</translation>
+<translation id="7582844466922312471">Mobilfunk</translation>
 <translation id="7583948862126372804">Anzahl</translation>
 <translation id="7586498138629385861">Chrome wird weiter ausgeführt, solange die Chrome-Apps geöffnet sind.</translation>
 <translation id="7589461650300748890">Vorsicht!</translation>
@@ -6087,7 +6078,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7987814697832569482">Immer über dieses VPN verbinden</translation>
 <translation id="7988355189918024273">Bedienungshilfen aktivieren</translation>
 <translation id="7991296728590311172">Einstellungen für Schalterzugriff</translation>
-<translation id="7993750787380199093">Wenn Sie alle Passwörter in Ihrem Google-Konto speichern, können Sie sie auf all Ihren Geräten verwenden</translation>
 <translation id="7994702968232966508">EAP-Methode</translation>
 <translation id="7997826902155442747">Prozesspriorität</translation>
 <translation id="7999229196265990314">Folgende Dateien wurden erstellt:
@@ -6359,7 +6349,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8293206222192510085">Lesezeichen hinzufügen</translation>
 <translation id="8294431847097064396">Quelle</translation>
 <translation id="8297006494302853456">Schwach</translation>
-<translation id="8298429963694909221">Sie können jetzt Benachrichtigungen von Ihrem Smartphone auf Ihrem <ph name="DEVICE_TYPE" /> erhalten. Wenn Sie auf Ihrem <ph name="DEVICE_TYPE" /> Benachrichtigungen ablehnen, werden diese auch auf Ihrem Smartphone abgelehnt. Ihr Smartphone muss sich in der Nähe befinden und Bluetooth und WLAN müssen aktiviert sein.</translation>
+<translation id="8298429963694909221">Du kannst jetzt Benachrichtigungen von deinem Smartphone auf deinem Gerät (<ph name="DEVICE_TYPE" />) erhalten. Wenn du auf <ph name="DEVICE_TYPE" /> Benachrichtigungen schließt, werden diese auch auf deinem Smartphone geschlossen. Achte darauf, dass dein Smartphone sich in der Nähe befindet und Bluetooth und WLAN aktiviert sind.</translation>
 <translation id="8299319456683969623">Sie sind momentan offline.</translation>
 <translation id="8300011035382349091">Lesezeichen für diesen Tab bearbeiten</translation>
 <translation id="8300374739238450534">Mitternachtsblau</translation>
@@ -6491,7 +6481,6 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8465252176946159372">Ungültig</translation>
 <translation id="8465444703385715657">Zum Ausführen von <ph name="PLUGIN_NAME" /> ist Ihre Genehmigung erforderlich</translation>
 <translation id="8466417995783206254">Auf diesem Tab wird ein Video im Bild-im-Bild-Modus abgespielt.</translation>
-<translation id="8467103604871441980">Auf diesem Gerät sind <ph name="NUMBER_OF_DEVICE_PASSWORDS" /> Passwörter gespeichert</translation>
 <translation id="8467326454809944210">Andere Sprache auswählen</translation>
 <translation id="8470214316007448308">Andere Personen</translation>
 <translation id="8470513973197838199">Gespeicherte Passwörter für <ph name="ORIGIN" /></translation>
@@ -6517,7 +6506,6 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8502536196501630039">Wenn Sie Apps von Google Play verwenden möchten, müssen Sie zuerst Ihre Apps wiederherstellen. Einige Daten sind möglicherweise verloren gegangen.</translation>
 <translation id="850314194061055138">Wieder Kamera verwenden</translation>
 <translation id="8503813439785031346">Nutzername</translation>
-<translation id="8504640708321980506">Mobile Daten</translation>
 <translation id="8507227974644337342">Bildschirmauflösung</translation>
 <translation id="850875081535031620">Keine schädliche Software gefunden</translation>
 <translation id="8509177919508253835">Sicherheitsschlüssel zurücksetzen und PINs erstellen</translation>
@@ -6571,7 +6559,6 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8571814292654854151">Profil benennen</translation>
 <translation id="8574990355410201600">Ton auf <ph name="HOST" /> immer zulassen</translation>
 <translation id="8575286410928791436">Zum Beenden <ph name="KEY_EQUIVALENT" /> gedrückt halten</translation>
-<translation id="8576249514688522074">Noch nicht initialisiert</translation>
 <translation id="8576785408880814823">Drücken Sie eine neue Schaltertaste, um mit der Zuweisung zu beginnen.
 Drücken Sie zum Entfernen der Zuweisung eine bereits zugewiesene Schaltertaste.</translation>
 <translation id="8576885347118332789">{NUM_TABS,plural, =1{Tab zur Leseliste hinzufügen}other{Tabs zur Leseliste hinzufügen}}</translation>
@@ -6599,7 +6586,6 @@ Drücken Sie zum Entfernen der Zuweisung eine bereits zugewiesene Schaltertaste.
 <translation id="8602851771975208551">Ein anderes Programm auf Ihrem Computer hat eine App hinzugefügt, die sich möglicherweise auf die Funktionsweise von Chrome auswirkt.</translation>
 <translation id="8605428685123651449">SQLite-Speicher</translation>
 <translation id="8608618451198398104">Kerberos-Ticket hinzufügen</translation>
-<translation id="860909219589324847">Nie mobile Daten zum Übertragen verwenden</translation>
 <translation id="8609465669617005112">Nach oben</translation>
 <translation id="8610103157987623234">Fehlerhaftes Format. Bitte versuchen Sie es noch einmal.</translation>
 <translation id="8611682088849615761">Weiterhin zulassen, dass diese Website vollständige Kontrolle über MIDI-Geräte hat</translation>
@@ -7033,7 +7019,7 @@ Drücken Sie zum Entfernen der Zuweisung eine bereits zugewiesene Schaltertaste.
 <translation id="9063208415146866933">Fehler von Zeile <ph name="ERROR_LINE_START" /> bis <ph name="ERROR_LINE_END" /></translation>
 <translation id="9064275926664971810">"Automatisches Ausfüllen" aktivieren, um Webformulare mit nur einem Klick auszufüllen</translation>
 <translation id="9065203028668620118">Bearbeiten</translation>
-<translation id="9065512565307033593">Ohne diese Bestätigung wird Ihr Netzwerkzugriff deaktiviert.</translation>
+<translation id="9065512565307033593">Ohne diese Bestätigung wird der Netzwerkzugriff deaktiviert.</translation>
 <translation id="9066773882585798925">Text vorlesen lassen</translation>
 <translation id="9066782832737749352">Sprachausgabe</translation>
 <translation id="9068849894565669697">Farbe auswählen</translation>

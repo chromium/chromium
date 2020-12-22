@@ -205,6 +205,7 @@
 <translation id="2878884018241093801">Недавних окон нет.</translation>
 <translation id="2903844815300039659">Подключено к сети <ph name="NAME" />, <ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">Снимки экрана</translation>
+<translation id="2941112035454246133">Низкий</translation>
 <translation id="2942350706960889382">Закрепленная лупа</translation>
 <translation id="2942516765047364088">Положение панели запуска</translation>
 <translation id="2946119680249604491">Добавить подключение</translation>
@@ -217,6 +218,7 @@
 <translation id="3000461861112256445">Монофонический звук</translation>
 <translation id="3009178788565917040">Выход</translation>
 <translation id="3033545621352269033">Включено</translation>
+<translation id="3036649622769666520">Открытие файлов</translation>
 <translation id="3038571455154067151">Чтобы войти, введите родительский код доступа Family Link.</translation>
 <translation id="3045488863354895414">Добрый день!</translation>
 <translation id="3051128274746680507">Скоро будет удален ваш контролируемый профиль. Войдите в аккаунт, чтобы получить подробную информацию.</translation>
@@ -367,7 +369,6 @@
 <translation id="4321776623976362024">Вы нажали сочетание клавиш для включения режима высокой контрастности. Выполнить это действие?</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4338109981321384717">Лупа</translation>
-<translation id="4350065043422286972">Закрепленные</translation>
 <translation id="4351433414020964307">Загрузка Ассистента…</translation>
 <translation id="4356930093361201197">Режим высокой контрастности</translation>
 <translation id="4371348193907997655">Настройки трансляции</translation>
@@ -387,7 +388,6 @@
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Отключенные устройства</translation>
 <translation id="4485060137115666462">Чтобы, например, посмотреть определение и перевод слова или конвертировать одни единицы измерения в другие, выберите нужный элемент с помощью правого клика или долгого нажатия.</translation>
-<translation id="4488735711456074171">Чтобы функция стала доступна, подключите телефон к Интернету.</translation>
 <translation id="4505050298327493054">Активный рабочий стол.</translation>
 <translation id="4513946894732546136">Отзыв</translation>
 <translation id="4527045527269911712">Устройству <ph name="DEVICE_NAME" /> требуется разрешение на подключение через Bluetooth.</translation>
@@ -448,7 +448,6 @@
 <translation id="4969092041573468113"><ph name="HOURS" /> ч. <ph name="MINUTES" /> мин. <ph name="SECONDS" /> сек.</translation>
 <translation id="4975771730019223894">Число уведомлений на значке приложения</translation>
 <translation id="5003993274120026347">К следующему предложению</translation>
-<translation id="5019169674188023236">Включите Bluetooth и Wi-Fi на устройстве <ph name="DEVICE_TYPE" />. Это нужно для работы функции "Управление телефоном".</translation>
 <translation id="5030687792513154421">Время вышло</translation>
 <translation id="5033299697334913360">Чтобы снять экран полностью, нажмите в любом его месте</translation>
 <translation id="5035236842988137213">Устройство <ph name="DEVICE_NAME" /> подключено к новому телефону</translation>
@@ -581,7 +580,6 @@
 <translation id="6376931439017688372">Bluetooth включен</translation>
 <translation id="6381109794406942707">Чтобы разблокировать устройство, введите PIN-код.</translation>
 <translation id="639644700271529076">CAPS LOCK отключен</translation>
-<translation id="6398771186477608158">Убедитесь, что ваш телефон находится рядом и на нем включены Bluetooth и Wi-Fi.</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6424520630891723617">Статус защиты – "<ph name="SECURITY_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Удалить все уведомления</translation>
@@ -731,7 +729,6 @@
 <translation id="7780159184141939021">Поворот экрана</translation>
 <translation id="7796353162336583443">Нажмите кнопку стилуса на панели запуска, чтобы создать заметку, запустить Ассистента либо использовать стилус в качестве лупы или лазерной указки.</translation>
 <translation id="7798302898096527229">Для отмены нажмите SEARCH или SHIFT.</translation>
-<translation id="781126011916719498">Быстро получайте доступ к важным файлам. Щелкните файл правой кнопкой мыши или нажмите на него и удерживайте, чтобы закрепить.</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">хороший сигнал</translation>
 <translation id="7837740436429729974">Время истекло</translation>
@@ -862,7 +859,6 @@
 <translation id="8877788021141246043">Создать напоминание</translation>
 <translation id="8878886163241303700">Раскрытый экран</translation>
 <translation id="8883473964424809116">Нажмите, чтобы открыть настройки Google Ассистента.</translation>
-<translation id="8894122120026866664">Не удается найти телефон</translation>
 <translation id="890616557918890486">Изменить источник</translation>
 <translation id="8909138438987180327">Уровень заряда батареи: <ph name="PERCENTAGE" />.</translation>
 <translation id="8913384980486163186">Из обоев</translation>
@@ -889,7 +885,6 @@
 <translation id="9084606467167974638">Переместить меню</translation>
 <translation id="9089416786594320554">Методы ввода</translation>
 <translation id="9091626656156419976">Удален экран "<ph name="DISPLAY_NAME" />"</translation>
-<translation id="9092749890156285613">Недавние снимки экрана и скачанные файлы</translation>
 <translation id="9098969848082897657">Отключить звук на телефоне</translation>
 <translation id="9151726767154816831">Чтобы обновить систему, перезапустите ее и выполните Powerwash</translation>
 <translation id="9166331175924255663">Включить или отключить широкий доступ для Обмена с окружением</translation>

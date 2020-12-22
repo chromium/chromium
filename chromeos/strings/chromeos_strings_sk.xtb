@@ -49,12 +49,13 @@
 <translation id="2375079107209812402">Zostávajúce pokusy: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="2391082728065870591">Odoslať správu so spätnou väzbou</translation>
 <translation id="2446553403094072641">Presnosť pohyblivej rádovej čiarky</translation>
+<translation id="2448312741937722512">Typ</translation>
 <translation id="2461822463642141190">Aktuálna</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Vyhľadať</translation>
 <translation id="2570743873672969996">Prebieha test <ph name="TEST_NAME" />...</translation>
+<translation id="2585245331261708204">Chrome OS – čo je nové</translation>
 <translation id="2620436844016719705">Systém</translation>
-<translation id="2658845327196595460">{COUNT,plural, =1{Naskenovaný súbor bol uložený.}few{Naskenované súbory boli uložené.}many{Naskenované súbory boli uložené.}other{Naskenované súbory boli uložené.}}</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2805756323405976993">Aplikácie</translation>
 <translation id="2872961005593481000">Vypnúť</translation>
@@ -67,19 +68,23 @@
 <translation id="3091839911843451378">Nepodarilo sa – zastavené</translation>
 <translation id="3102119246920354026">Vyrovnávacia pamäť</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="315116470104423982">Mobilné dátové prenosy</translation>
 <translation id="3188257591659621405">Moje súbory</translation>
 <translation id="3199982728237701504">Podávač dokumentov (obojstranný)</translation>
 <translation id="3246869037381808805">Tlačové úlohy staršie ako deň budú odstránené</translation>
 <translation id="3268178239013324452">Nepodarilo sa – dvierka sú otvorené</translation>
 <translation id="3310640316857623290">Latencia servera DNS výrazne prekračuje povolenú úroveň</translation>
 <translation id="3328783797891415197">Test prebieha</translation>
+<translation id="3368922792935385530">Pripojené</translation>
 <translation id="3369013195428705271">Naozaj chcete vymazať celú históriu tlače? Prebiehajúce tlačové úlohy nebudú vymazané.</translation>
 <translation id="3456078764689556234">Bola vytlačená <ph name="PRINTED_PAGES" />. strana z <ph name="TOTAL_PAGES" />.</translation>
 <translation id="3459509316159669723">Tlač</translation>
 <translation id="3515615323037921860">Tlačové úlohy</translation>
 <translation id="3527036260304016759">Nepodarilo sa – neznáma chyba</translation>
+<translation id="357889014807611375">Wi‑Fi s meraním dát</translation>
 <translation id="360565022852130722">Sieť Wi‑Fi je zabezpečená slabým protokolom WEP 802.1x</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (počet recenzií: <ph name="AGGREGATED_COUNT" />)</translation>
+<translation id="3748026146096797577">Nepripojené</translation>
 <translation id="3749289110408117711">Názov súboru</translation>
 <translation id="38114475217616659">Vymazať celú históriu</translation>
 <translation id="3820172043799983114">Neplatný kód PIN.</translation>
@@ -93,6 +98,7 @@
 <translation id="4131410914670010031">Čiernobielo</translation>
 <translation id="4145784616224233563">Firewall HTTP</translation>
 <translation id="4170700058716978431">NEPODARILO SA</translation>
+<translation id="4176463684765177261">Deaktivované</translation>
 <translation id="4227825898293920515">Platnosť hesla vyprší o <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Neprebiehajú žiadne tlačové úlohy</translation>
 <translation id="4297501883039923494">Zastavené – neznáma chyba</translation>
@@ -102,7 +108,9 @@
 <translation id="4429881212383817840">Platnosť tiketu Kerberos čoskoro uplynie</translation>
 <translation id="445059817448385655">Staré heslo</translation>
 <translation id="4454245904991689773">Adresár na skenovanie</translation>
+<translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Nepredvolenú bránu siete sa nepodarilo otestovať</translation>
+<translation id="4511264077854731334">Portál</translation>
 <translation id="4548483925627140043">Signál sa nenašiel</translation>
 <translation id="455835558791489930">Batéria s kapacitou <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="458794348635939462">Nepodarilo sa vybrať všetkých hostiteľov</translation>
@@ -127,6 +135,7 @@
 <translation id="498186245079027698">Skontrolujte skener a skúste to znova. Uistite sa, že na uloženie naskenovaných súborov je v zariadení dostatok priestoru.</translation>
 <translation id="4985509611418653372">Spustiť</translation>
 <translation id="500920857929044050">Zastaviť test</translation>
+<translation id="5089810972385038852">Štát</translation>
 <translation id="5154917547274118687">Pamäť</translation>
 <translation id="5168185087976003268">Stav batérie</translation>
 <translation id="520299634122159966">K dispozícii nie sú žiadne skenery</translation>
@@ -142,7 +151,9 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="5333530671332546086">Neznámy stav portálu</translation>
 <translation id="5372659122375744710">Sieť Wi‑Fi nie je zabezpečená</translation>
 <translation id="5401938042319910061">Spustiť všetky postupy</translation>
+<translation id="5430931332414098647">Dynamický tethering</translation>
 <translation id="5431318178759467895">Farebne</translation>
+<translation id="5431825016875453137">OpenVPN / L2TP</translation>
 <translation id="5457599981699367932">Prehliadať ako hosť</translation>
 <translation id="54609108002486618">Spravovaný</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
@@ -153,6 +164,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="5797428682393400134">PODARILO SA</translation>
 <translation id="5832805196449965646">Pridať osobu</translation>
 <translation id="5895138241574237353">Reštartovať</translation>
+<translation id="5916084858004523819">Zakázané</translation>
 <translation id="5931523347251946569">Súbor nebol nájdený</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, verzia <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Zavrieť</translation>
@@ -164,6 +176,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="6106186594183574873">Ak chcete zmenu dokončiť, zadajte staré heslo</translation>
 <translation id="6108689792487843350">Brána je nedostupná</translation>
 <translation id="6114428539405324828"><ph name="CURRENT" /> GHz / <ph name="MAX" /> GHz</translation>
+<translation id="6122191549521593678">Online</translation>
 <translation id="6146993107019042706">Ak chcete zmenu dokončiť, zadajte nové heslo</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Ďalšie informácie</translation>
@@ -171,6 +184,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="6232017090690406397">Batéria</translation>
 <translation id="6325525973963619867">Zlyhanie</translation>
 <translation id="636850387210749493">Registrácia podniku</translation>
+<translation id="6426373337268369892">{COUNT,plural, =1{Naskenovaný súbor bol uložený}few{Naskenované súbory boli uložené}many{Naskenované súbory boli uložené}other{Naskenované súbory boli uložené}}</translation>
 <translation id="649050271426829538">Zastavené – zaseknutý papier</translation>
 <translation id="6517239166834772319">Preskúmať</translation>
 <translation id="6527081081771465939">Neznámy protokol zabezpečenia siete Wi‑Fi</translation>
@@ -188,7 +202,9 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="6839141349259399400">Nemôžete sa pripojiť k skenerom?</translation>
 <translation id="6853312040151791195">Rýchlosť vybíjania</translation>
 <translation id="6898743098396957679">Skenovanie sa nepodarilo dokončiť</translation>
+<translation id="6957231940976260713">Názov služby</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> spravuje toto zariadenie a má prístup k všetkým aktivitám používateľa vrátane navštívených webových stránok, hesiel a pošty.</translation>
+<translation id="7143207342074048698">Pripája sa</translation>
 <translation id="714876143603641390">Pripojenie cez miestnu sieť</translation>
 <translation id="7162487448488904999">Galéria</translation>
 <translation id="7177485034254901881">Toto zariadenie <ph name="DEVICE_TYPE" /> spravuje <ph name="MANAGER" />. Správcovia ho môžu vzdialene konfigurovať.</translation>
@@ -197,11 +213,13 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skenovanie je dokončené. Bola naskenovaná 1 strana.}few{Skenovanie je dokončené. Boli naskenované {NUMBER_OF_PAGES} strany.}many{Skenovanie je dokončené. {NUMBER_OF_PAGES} pages scanned}other{Skenovanie je dokončené. Bolo naskenovaných {NUMBER_OF_PAGES} strán.}}</translation>
 <translation id="7441459999606975924">Kapacita batérií sa znižuje používaním</translation>
 <translation id="7469648432129124067">Bol rozpoznaný portál</translation>
+<translation id="7490813197707563893">Adresa MAC</translation>
 <translation id="7561454561030345039">Túto akciu ovláda váš správca</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Vysoká latencia protokolu HTTPS</translation>
 <translation id="7658239707568436148">Zrušiť</translation>
 <translation id="7690294790491645610">Potvrďte nové heslo</translation>
+<translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Počet cyklov</translation>
 <translation id="7732651821766520760">Test <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Stav</translation>
@@ -213,6 +231,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="808894953321890993">Zmeniť heslo</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8160445423316272678">Položte dokument na skener a začnite výberom možnosti <ph name="SPAN_BEGIN" />Skenovať<ph name="SPAN_END" /></translation>
+<translation id="8206859287963243715">Mobilné</translation>
 <translation id="8208861521865154048">Výhody</translation>
 <translation id="8230672074305416752">Predvolenú bránu siete sa nepodarilo otestovať</translation>
 <translation id="8294431847097064396">Zdroj</translation>
@@ -224,6 +243,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="8398927464629426868">Rýchlosť, akou sa zariadenie momentálne nabíja či vybíja</translation>
 <translation id="8475690821716466388">Sieť Wi‑Fi je zabezpečená slabým protokolom WEP PSK</translation>
 <translation id="8477551185774834963">Latencia servera DNS mierne prekračuje povolenú úroveň</translation>
+<translation id="8576249514688522074">Nespustené</translation>
 <translation id="871560550817059752">Nepodarilo sa – minul sa atrament</translation>
 <translation id="8723108084122415655">Nepredvolená sieť prekračuje úroveň latencie</translation>
 <translation id="8726019395068607495">Zastavené – dvierka sú otvorené</translation>
@@ -231,14 +251,18 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="8747900814994928677">Potvrdenie zmeny</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Predvolené</translation>
+<translation id="8814190375133053267">Wi‑Fi</translation>
 <translation id="8845001906332463065">Získať pomoc</translation>
 <translation id="8881098542468797602">Test bol úspešný</translation>
+<translation id="8898840733695078011">Sila signálu</translation>
 <translation id="8910721771319628100">Predvolená sieť prekračuje prah latencie</translation>
 <translation id="8919837981463578619">Nepodarilo sa – chýba zásobník</translation>
 <translation id="8928727111548978589">Nepodarilo sa – minul sa papier</translation>
+<translation id="8930622219860340959">Bezdrôtové pripojenie</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" />. Počet zostávajúcich pokusov: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="8968751544471797276">Rýchlosť nabíjania</translation>
 <translation id="8970109610781093811">Spustiť znova</translation>
+<translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Aktuálne využitie</translation>
 <translation id="910415269708673980">Obnoviť tiket pre <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skenuje sa <ph name="PAGE_NUMBER" />. strana</translation>

@@ -20,6 +20,7 @@
 <translation id="1145536944570833626">Առկա տվյալների ջնջում։</translation>
 <translation id="1147031633655575115">Դուք մուտք եք գործել որպես <ph name="USER" /></translation>
 <translation id="1154690515305205900">Չհաջողվեց ստեղծել նշված տեքստի հղումը։</translation>
+<translation id="1154984953698510061">Տեսնել մյուս ներդիրները</translation>
 <translation id="1157749421655780457">Թույլատրել տեղորոշումը…</translation>
 <translation id="1165039591588034296">Սխալ</translation>
 <translation id="1172898394251786223">Հաջորդ դաշտը</translation>
@@ -38,6 +39,7 @@
 <translation id="1283524564873030414">Վերջին 24 ժամվա</translation>
 <translation id="1285320974508926690">Երբեք չթարգմանել այս կայքը</translation>
 <translation id="1321993286294231467">Չհաջողվեց պահել պատկերը։</translation>
+<translation id="1322735045095424339">Կազմակերպության կանոնի համաձայն՝ դուք պետք է օգտագործեք ինկոգնիտո ռեժիմ</translation>
 <translation id="1323735185997015385">Ջնջել</translation>
 <translation id="132683371494960526">Կրկնակի հպեք՝ վերադաս պանակը փոխելու համար:</translation>
 <translation id="1340643665687018190">Փակել ընտրացանկը</translation>
@@ -91,6 +93,7 @@
 <translation id="1803264062614276815">Քարտատիրոջ անունը</translation>
 <translation id="1809939268435598390">Ջնջել պանակը</translation>
 <translation id="1813414402673211292">Ջնջել դիտարկման տվյալները</translation>
+<translation id="1815941218935345331">Անցակոդ</translation>
 <translation id="1820259098641718022">Ավելացվել է ընթերցանության ցանկում</translation>
 <translation id="1870148520156231997">Ցուցադրել գաղտնաբառը</translation>
 <translation id="1872096359983322073">Լապտեր</translation>
@@ -103,6 +106,7 @@
 <translation id="1974060860693918893">Լրացուցիչ</translation>
 <translation id="1989112275319619282">Ընտրել</translation>
 <translation id="2015722694326466240">Գաղտնաբառերը տեսնելու համար ձեր սարքում նախ պետք է անցակոդ սահմանեք:</translation>
+<translation id="2047933465321076474">Ձեր կազմակերպությունն անջատել է ինկոգնիտո ռեժիմը։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="2073572773299281212">Ակտիվ է եղել <ph name="DAYS" /> օր առաջ</translation>
 <translation id="2074131957428911366">Ցանկացած ժամանակ կարող եք անցնել <ph name="BEGIN_LINK" />կարգավորումներ<ph name="END_LINK" /> և ընտրել, թե ինչն եք ուզում համաժամացնել:</translation>
 <translation id="2079545284768500474">Հետարկել</translation>
@@ -120,6 +124,7 @@
 <translation id="2239626343334228536">Այցելությունների պատմությունը ջնջվում է…</translation>
 <translation id="2257567812274161158">Համաժամացումը չի աշխատում։</translation>
 <translation id="225943865679747347">Սխալի կոդ` <ph name="ERROR_CODE" /></translation>
+<translation id="2262397157440718954">Ձեր կազմակերպության կանոնների համաձայն՝ դուք պետք է օգտագործեք ինկոգնիտո ռեժիմ։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="2267753748892043616">Ավելացնել հաշիվ</translation>
 <translation id="2268044343513325586">Թարմացնել</translation>
 <translation id="2273327106802955778">Այլ ընտրանքներ</translation>
@@ -136,6 +141,7 @@
 Կայքերը չեն կարող օգտագործել քուքիներ՝ դիտարկիչում ձեր գործողությունները տեսնելու համար, օրինակ՝ գովազդի անհատականացման նպատակով։</translation>
 <translation id="2381405137052800939">Հիմնական</translation>
 <translation id="2386793615875593361">Ընտրվել է 1 էջանիշ</translation>
+<translation id="2419661687355878017">Ձեր կազմակերպությունն անջատել է ինկոգնիտո ռեժիմը</translation>
 <translation id="2421004566762153674">Երրորդ կողմի քուքիների արգելափակում</translation>
 <translation id="2421044535038393232">Շարունակել խմբագրումը</translation>
 <translation id="2435457462613246316">Ցույց տալ գաղտնաբառը</translation>
@@ -185,11 +191,13 @@
 <translation id="291754862089661335">Դիրքավորեք QR-կոդը կամ գծակոդը այս շրջանակի մեջ</translation>
 <translation id="2921219216347069551">Չհաջողվեց համօգտագործել էջը</translation>
 <translation id="2923448633003185837">Տեղադրել և անցնել</translation>
+<translation id="2923827943290349720">Կողպեք ինկոգնիտո ներդիրները, երբ փակում եք Chrome-ը</translation>
 <translation id="292639812446257861">Նշել որպես չկարդացված</translation>
 <translation id="2952581218264071393">1. Բացեք Chrome-ի կարգավորումները։</translation>
 <translation id="2958718410589002129">Գաղտնաբառեր</translation>
 <translation id="2964349545761222050">Երրորդ կողմի քուքիների արգելափակում</translation>
 <translation id="2969979262385602596">Չհաջողվեց մուտք գործել: Փորձեք մի փոքր ուշ:</translation>
+<translation id="2975121486251958312">Հասանելի է միայն ինկոգնիտո ռեժիմը</translation>
 <translation id="298306318844797842">Ավելացնել վճարման եղանակ...</translation>
 <translation id="2989805286512600854">Բացել նոր ներդիրում</translation>
 <translation id="3037605927509011580">Վա՛յ</translation>
@@ -204,6 +212,7 @@
 <translation id="3175081911749765310">Համացանցի ծառայություններ</translation>
 <translation id="3178650076442119961">Այսօր ակտիվ է եղել</translation>
 <translation id="3181954750937456830">Անվտանգ դիտարկում (պաշտպանում է ձեզ և ձեր սարքը վտանգավոր կայքերից)</translation>
+<translation id="3184767182050912705">Ապակողպել <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />-ով</translation>
 <translation id="3196681740617426482">Կայքերը կարող են օգտագործել քուքիներ՝ ձեր աշխատանքն ավելի հարմարավետ դարձնելու, օրինակ, ձեր մուտքը հաշիվ հիշելու կամ ձեր ընտրած ապրանքները զամբյուղում պահելու համար։
 
 Ինկոգնիտո ռեժիմում կայքերը չեն կարող օգտագործել քուքիներ՝ դիտարկիչում ձեր գործողությունները տեսնելու համար, օրինակ՝ գովազդի անհատականացման նպատակով։</translation>
@@ -355,6 +364,7 @@
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} ու ևս 1}one{{domain} ու ևս {count}}other{{domain} ու ևս {count}}}</translation>
 <translation id="4826218269716039351">Կողմնակի քուքիներն արգելափակված են</translation>
 <translation id="48274138579728272">Նշել որպես կարդացված</translation>
+<translation id="4833686396768033263">Վերջին բացված ներդիրները հասանելի չեն</translation>
 <translation id="4833786495304741580">Ավտոմատ ուղարկում է Google-ին օգտագործման վիճակագրությունը և խափանումների մասին հաշվետվությունները:</translation>
 <translation id="4840495572919996524">Ձեր էջանիշները, պատմությունը, գաղտնաբառերն ու այլ կարգավորումներ կհամաժամացվեն ձեր Google հաշվի հետ:</translation>
 <translation id="4854345657858711387">Սահմանեք անցակոդ</translation>
@@ -418,6 +428,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="5551897871312988470">Առաջարկել թարգմանություն</translation>
 <translation id="5556459405103347317">Վերաբեռնել</translation>
 <translation id="5592679540098330836">Միացնել համաժամացումը <ph name="NAME" /> օգտատիրոջ համար</translation>
+<translation id="5597169624050330492">Ձեր կազմակերպության կանոնների համաձայն՝ դուք պետք է օգտագործեք ինկոգնիտո ռեժիմ։ Ներդիրները չեն պահվում ինկոգնիտո ռեժիմում։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="5614553682702429503">Պահե՞լ գաղտնաբառը</translation>
 <translation id="5626245204502895507">Այս պահին հնարավոր չէ ներբեռնել ֆայլը:</translation>
 <translation id="5631164295104953411">Ավելացրեք վճարման եղանակը</translation>
@@ -522,6 +533,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 
 Փորձեք յուրաքանչյուր կայքի համար օգտագործել եզակի գաղտնաբառ։</translation>
 <translation id="651505212789431520">Չեղարկե՞լ համաժամացումը Համաժամացումը կարող եք ցանկացած ժամանակ միացնել կարգավորումներում։</translation>
+<translation id="6524918542306337007">Ինկոգնիտո ռեժիմը հասանելի չէ</translation>
 <translation id="6561262006871132942">Մեծացնել</translation>
 <translation id="6585618849026997638">Էջանշեք կարևոր էջերը, որպեսզի կարողանաք վերադառնալ դրանց</translation>
 <translation id="6610002944194042868">Թարգմանության կարգավորումներ</translation>
@@ -580,6 +592,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7133798577887235672">Անուն, ազգանուն</translation>
 <translation id="7136892417564438900">Ֆոտոխցիկն անհասանելի է</translation>
 <translation id="7159472599653637159">Բջջային տարբերակ</translation>
+<translation id="7162168282402939716">Ապակողպեք ինկոգնիտո ներդիրները <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />-ի օգնությամբ</translation>
 <translation id="7172852049901402487">Պաշտպանեք ձեր գաղտնաբառերը անվտանգության հետ կապված խնդիրներից</translation>
 <translation id="7173114856073700355">Բացել կարգավորումները</translation>
 <translation id="7189598951263744875">Կիսվել…</translation>
@@ -617,6 +630,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7537586195939242955">Ներեցեք, այս պահին հնարավոր չէ տեղադրել ձեր Անցագիրը Անցագրերի մատյանում:</translation>
 <translation id="7554791636758816595">Նոր ներդիր</translation>
 <translation id="7561196759112975576">Միշտ</translation>
+<translation id="7583004045319035904">Ապակողպեք ձեր ինկոգնիտո ներդիրները <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />-ի օգնությամբ։</translation>
 <translation id="7600965453749440009">Երբեք չթարգմանել <ph name="LANGUAGE" /> էջերը</translation>
 <translation id="7603852183842204213">Ելնող պատուհաններն արգելափակվել են (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Ջնջել գաղտնաբառը</translation>
@@ -709,6 +723,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8591976964826315682">Արգելափակել կողմնակի կայքերի քուքիները ինկոգնիտո ռեժիմում</translation>
 <translation id="8605219856220328675">Փակել ներդիրը:</translation>
 <translation id="8620640915598389714">Փոփոխել</translation>
+<translation id="863090005774946393">Ձեր դիտարկիչը կառավարվում է ձեր կազմակերպության կողմից։ Որոշ գործառույթներ կարող են անջատված լինել։</translation>
 <translation id="8636825310635137004">Ձեր մյուս սարքերում եղած ներդիրներն օգտագործելու համար միացրեք համաժամացումը:</translation>
 <translation id="8654802032646794042">Չեղարկել</translation>
 <translation id="8668210798914567634">Այս էջը պահվեց ձեր ընթերցանության ցանկում:</translation>

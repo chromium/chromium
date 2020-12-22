@@ -965,7 +965,7 @@ Als dit beleid niet is ingesteld, is het privacyscherm in eerste instantie uitge
 <translation id="2448315169529769573">Als je het beleid inschakelt, rapporteert <ph name="PRODUCT_OS_NAME" /> gebruiksstatistieken en diagnostische gegevens, waaronder crashrapporten, aan Google. Als je het beleid uitschakelt, worden er geen statistieken en diagnostische gegevens gerapporteerd.
 
        Als je het beleid niet instelt, worden er geen statistieken en diagnostische gegevens gerapporteerd voor onbeheerde apparaten, maar wel voor beheerde apparaten.</translation>
-<translation id="2449263772062368618">Hiermee configureer je een lijst met typen browsergegevens die moeten worden verwijderd wanneer de browser wordt gesloten.
+<translation id="2449263772062368618">Hiermee configureer je een lijst met typen browsegegevens die moeten worden verwijderd wanneer de browser wordt gesloten.
       De beschikbare gegevenstypen zijn browsegeschiedenis (<ph name="DATA_TYPE_BROWSING_HISTORY" />), downloadgeschiedenis (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), cookies (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), cachegeheugen (<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />), automatisch invullen (<ph name="DATA_TYPE_AUTOFILL" />), wachtwoorden (<ph name="DATA_TYPE_PASSWORD" />), site-instellingen (<ph name="DATA_TYPE_SITE_SETTINGS" />) en gegevens van gehoste apps (<ph name="DATA_TYPE_HOSTED_APP_DATA" />).
       Dit beleid krijgt geen voorrang op <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />.
       Dit beleid vereist dat het beleid <ph name="SYNC_DISABLED_POLICY_NAME" /> is ingesteld op True, anders wordt dit beleid genegeerd.
@@ -1204,13 +1204,6 @@ Als dit beleid niet is ingesteld, is het privacyscherm in eerste instantie uitge
       Als je het beleid uitschakelt, kan <ph name="PRODUCT_NAME" /> deze hosts alleen gebruiken als ze zijn geïnstalleerd op systeemniveau.</translation>
 <translation id="2753637905605932878">Het bereik beperken van lokale UDP-poorten die door WebRTC worden gebruikt</translation>
 <translation id="2757054304033424106">Typen extensies/apps die mogen worden geïnstalleerd</translation>
-<translation id="2758689548159678032">Als dit beleid is ingeschakeld, stuurt de <ph name="PRODUCT_NAME" />-functie gedetailleerde verzoekheaders met informatie over de browser en omgeving van de gebruiker.
-
-      Dit is een aanvullende functie, maar de nieuwe headers kunnen de juiste weergave verhinderen van sommige websites die de tekens in deze verzoeken beperken.
-
-      Als dit beleid is ingeschakeld of niet is ingesteld, wordt de <ph name="PRODUCT_NAME" />-functie uitgeschakeld. Als het beleid is uitgeschakeld, is de functie niet beschikbaar.
-
-      Dit bedrijfsbeleid is voor kortdurende aanpassing en wordt verwijderd in Chrome 88.</translation>
 <translation id="2759224876420453487">Het gebruikersgedrag beheren in een multiprofielsessie</translation>
 <translation id="2761483219396643566">Inactieve waarschuwingsvertraging wanneer op de batterij wordt gewerkt</translation>
 <translation id="2769952903507981510">De vereiste domeinnaam configureren voor hosts voor externe toegang</translation>
@@ -1219,7 +1212,7 @@ Als dit beleid niet is ingesteld, is het privacyscherm in eerste instantie uitge
       Als je het beleid uitschakelt, blijft stroom voor piekuren uit.
 
 Als je het beleid niet instelt, is stroom voor piekuren aanvankelijk uitgeschakeld. Gebruikers kunnen deze instelling niet wijzigen.</translation>
-<translation id="2784880732336446591">Browsergegevens wissen bij afsluiten</translation>
+<translation id="2784880732336446591">Browsegegevens wissen bij afsluiten</translation>
 <translation id="2787173078141616821">Informatie over de status van Android rapporteren</translation>
 <translation id="2787774054174244402">Als je het beleid instelt op 'True', kunnen gebruikers niets naar externe opslagapparaten schrijven.
 
@@ -1378,7 +1371,7 @@ Als je het beleid niet instelt, is stroom voor piekuren aanvankelijk uitgeschake
 
         WAARSCHUWING: Experimentele beleidsregels worden niet ondersteund en kunnen zonder kennisgeving worden gewijzigd of verwijderd uit toekomstige versies van de browser.
 
-        Een experimentele beleidsregel is mogelijk niet compleet of kan bekende of onbekende fouten bevatten. De beleidsregel kan zonder kennisgeving worden gewijzigd of zelfs worden verwijderd. Door experimentele beleidsregels in te schakelen, kun je browsergegevens kwijtraken of je veiligheid of privacy in gevaar brengen.
+        Een experimentele beleidsregel is mogelijk niet compleet of kan bekende of onbekende fouten bevatten. De beleidsregel kan zonder kennisgeving worden gewijzigd of zelfs worden verwijderd. Door experimentele beleidsregels in te schakelen, kun je browsegegevens kwijtraken of je veiligheid of privacy in gevaar brengen.
 
         Als een beleidsregel niet in de lijst wordt vermeld en niet officieel is uitgebracht, wordt de waarde hiervan genegeerd in het bètakanaal en het stabiele kanaal.
 
@@ -1930,7 +1923,7 @@ Als je dit beleid instelt, kunnen gebruikers het niet wijzigen. Als je het belei
 
       Als je het beleid instelt, kunnen gebruikers dit niet wijzigen in <ph name="PRODUCT_NAME" />. Als je het beleid niet instelt, kunnen gebruikers dit wijzigen.
 
-      Als je dit beleid instelt op <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSION" />, worden sommige instellingen uitgeschakeld die afhankelijk zijn van sessies of waarmee bij het afsluiten bepaalde acties worden uitgevoerd (zoals browsergegevens wissen bij afsluiten of sessiecookies).
+      Als je dit beleid instelt op <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSION" />, worden sommige instellingen uitgeschakeld die afhankelijk zijn van sessies of waarmee bij het afsluiten bepaalde acties worden uitgevoerd (zoals browsegegevens wissen bij afsluiten of sessiecookies).
 
       In <ph name="MS_WIN_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, worden uitgevoerd in Windows 10 Pro of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. In <ph name="MAC_OS_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die via MDM worden beheerd of via MCX aan een domein zijn gekoppeld.</translation>
 <translation id="3736879847913515635">'Persoon toevoegen' inschakelen in gebruikersbeheer</translation>
@@ -3754,8 +3747,8 @@ Als je het beleid instelt, kunnen gebruikers dit niet aanpassen in de browserins
 <translation id="6506486086262398387">Als je het beleid inschakelt, gebruikt de functie Network File Shares voor <ph name="PRODUCT_OS_NAME" /> waar nodig NTLM om SMB-fileshares te verifiëren. Als je het beleid uitschakelt, wordt NTLM-verificatie voor SMB-fileshares uitgeschakeld.
 
       Als je dit beleid niet instelt, wordt dit gedrag standaard uitgeschakeld voor beheerde gebruikers en ingeschakeld voor andere gebruikers.</translation>
-<translation id="6513080278353546913">Hiermee configureer je de instellingen voor de levensduur van browsergegevens voor <ph name="PRODUCT_NAME" />.
-      Dit beleid beheert de levensduur van geselecteerde browsergegevens.
+<translation id="6513080278353546913">Hiermee configureer je de instellingen voor de levensduur van browsegegevens voor <ph name="PRODUCT_NAME" />.
+      Dit beleid beheert de levensduur van geselecteerde browsegegevens.
       De beschikbare gegevenstypen zijn <ph name="DATA_TYPE_BROWSING_HISTORY" />, <ph name="DATA_TYPE_DOWNLOAD_HISTORY" />, <ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />, <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, <ph name="DATA_TYPE_PASSWORD" />, <ph name="DATA_TYPE_AUTOFILL" />, <ph name="DATA_TYPE_SITE_SETTINGS" /> en <ph name="DATA_TYPE_HOSTED_APP_DATA" />.
       Chrome verwijdert regelmatig gegevens van geselecteerde typen die ouder zijn dan <ph name="TIME_TO_LIVE_IN_HOURS" />. Aangezien deze verwijdering alleen met bepaalde intervallen plaatsvindt, kan de levensduur van bepaalde gegevens iets langer zijn, maar nooit langer dan 2 keer de verwachte <ph name="TIME_TO_LIVE_IN_HOURS" />.
       Dit beleid vereist dat het beleid <ph name="SYNC_DISABLED_POLICY_NAME" /> is ingesteld op True, anders wordt dit beleid genegeerd.
@@ -4141,7 +4134,7 @@ Als je ervoor kiest het volgende te gebruiken:
       Als het beleid wordt ingesteld op <ph name="BR_UNDER_USER_CONTROL" />, zien gebruikers prompts om de back-up- en herstelfunctie te gebruiken. Als een gebruiker de back-up- en herstelfunctie inschakelt, worden gegevens van Android-apps geüpload naar Android-back-upservers. De gegevens worden hersteld als geschikte apps opnieuw worden geïnstalleerd.
 
       Na de eerste configuratie kunnen gebruikers de back-up- en herstelfunctie uitschakelen.</translation>
-<translation id="6986172482189158664">Instellingen voor levensduur van browsergegevens</translation>
+<translation id="6986172482189158664">Instellingen voor levensduur van browsegegevens</translation>
 <translation id="6986838929449128437">Dit beleid is verouderd. Gebruik in plaats daarvan <ph name="SAFE_BROWSING_ALLOWLIST_DOMAINS_POLICY_NAME" />.
 
       Als je dit beleid inschakelt, vertrouwt Safe Browsing de domeinen die je aangeeft. De functie checkt deze niet op gevaarlijke bronnen zoals phishing, malware of ongewenste software. De service voor downloadbeveiliging van Safe Browsing checkt downloads die worden gehost op deze domeinen niet. De service voor wachtwoordbeveiliging checkt niet of wachtwoorden opnieuw worden gebruikt.
@@ -4939,6 +4932,10 @@ Als dit beleid is ingesteld op False, wordt het privacyscherm uitgeschakeld als 
 Als dit beleid is ingesteld, kan de gebruiker de waarde niet overschrijven als het inlogscherm wordt weergegeven.
 
 Als dit beleid niet is ingesteld, wordt het privacyscherm in eerste instantie uitgeschakeld. De gebruiker kan het privacyscherm inschakelen als het inlogscherm wordt weergegeven.</translation>
+<translation id="8147427717998252789">Als je dit beleid instelt, wordt de waarde gedefinieerd die de Managed Configuration API voor een bepaalde herkomst retourneert.
+
+      De Managed Configuration API is een sleutel/waarde-configuratie waartoe je toegang hebt via de JavaScript-aanroep navigator.device.getManagedConfiguration(). Deze API is alleen beschikbaar voor herkomsten die overeenkomen met afgedwongen geïnstalleerde web-apps via <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />.
+     </translation>
 <translation id="815061180603915310">Als dit beleid is ingeschakeld, schakelt het profiel gedwongen over naar de kort geldige modus. Als dit beleid als OS-beleid wordt ingesteld (bijv. GPO in Windows), is het van toepassing op elk profiel in het systeem. Als het beleid als cloudbeleid is ingesteld, is het alleen van toepassing op een profiel waarop met een beheerd account is ingelogd.
 
       In deze modus worden de profielgegevens alleen voor de duur van de gebruikerssessie opgeslagen op de schijf. Functies als browsergeschiedenis, extensies en de bijbehorende gegevens, webgegevens (zoals cookies) en webdatabases blijven niet behouden nadat de browser is gesloten. Hierdoor wordt echter niet voorkomen dat de gebruiker handmatig gegevens naar de schijf kan downloaden of pagina's kan opslaan of afdrukken.
@@ -5086,9 +5083,7 @@ De aanbevolen manier om beleidsregels te configureren op Windows, is via GPO, ma
 
       Als je <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" /> niet instelt, worden afbeeldingszoekopdrachten gestuurd met de GET-methode.</translation>
 <translation id="8314214821702356835">Hiermee kunnen gebruikers media afspelen wanneer het apparaat vergrendeld is</translation>
-<translation id="8316913402499361923">Als je dit beleid inschakelt of niet instelt, kunnen gebruikers afdrukken in <ph name="PRODUCT_NAME" /> en kunnen ze deze instelling niet wijzigen.
-
-      Als je het beleid uitschakelt, kunnen gebruikers niet afdrukken vanaf <ph name="PRODUCT_NAME" />. Afdrukken is niet mogelijk vanuit het gereedschapsmenu, extensies en JavaScript-apps. Je kunt alleen afdrukken vanuit plug-ins die <ph name="PRODUCT_NAME" /> omzeilen om af te drukken.</translation>
+<translation id="8319678975002906774">Stelt waarden voor beheerde configuraties voor websites in voor specifieke herkomsten</translation>
 <translation id="8320149248919453401">Batterijoplaadmodus</translation>
 <translation id="8329984337216493753">Dit beleid is alleen ingeschakeld in de winkelmodus.
 
@@ -5164,7 +5159,7 @@ De aanbevolen manier om beleidsregels te configureren op Windows, is via GPO, ma
       Als je het beleid niet instelt, geeft <ph name="PRODUCT_NAME" /> gebruikers de controle over of het de standaardbrowser is en als dit niet zo is, of er gebruikersmeldingen moeten worden weergegeven.
 
       Opmerking: Als <ph name="MS_WIN_NAME" />-beheerders deze instelling inschakelen, werkt dit alleen op systemen met Windows 7. Voor latere versies moet je een bestand voor standaard app-koppelingen implementeren, waarmee <ph name="PRODUCT_NAME" /> de verwerker wordt voor het <ph name="HTTPS_PROTOCOL" />- en <ph name="HTTP_PROTOCOL" />-protocol (en eventueel het <ph name="FTP_PROTOCOL" />-protocol en andere bestandsindelingen). Raadpleeg de Help-pagina van Chrome voor meer informatie (https://support.google.com/chrome?p=make_chrome_default_win).</translation>
-<translation id="8445576299806775661">Na elke grote versie-update maakt Chrome een momentopname van bepaalde gedeelten van de browsergegevens van de gebruiker. Deze momentopname kan worden gebruikt voor een latere noodrollback van de versie. Als er een noodrollback wordt uitgevoerd naar een versie waarvoor een gebruiker een bijbehorende momentopname heeft, worden de gegevens in de momentopname hersteld. Zo kunnen gebruikers instellingen als bookmarks en gegevens voor automatisch invullen behouden.
+<translation id="8445576299806775661">Na elke grote versie-update maakt Chrome een momentopname van bepaalde gedeelten van de browsegegevens van de gebruiker. Deze momentopname kan worden gebruikt voor een latere noodrollback van de versie. Als er een noodrollback wordt uitgevoerd naar een versie waarvoor een gebruiker een bijbehorende momentopname heeft, worden de gegevens in de momentopname hersteld. Zo kunnen gebruikers instellingen als bookmarks en gegevens voor automatisch invullen behouden.
 
       Als dit beleid niet is ingesteld, wordt de standaardwaarde 3 gebruikt.
 
@@ -5300,11 +5295,6 @@ Dit beleid wordt verwijderd in M75.</translation>
 <translation id="8676959842615154675">Als je dit beleid inschakelt, vergelijkt de host voor externe toegang de naam van de lokale gebruiker waaraan de host is gekoppeld, met de naam van het Google-account dat is geregistreerd als eigenaar van de host (bijvoorbeeld 'jansmits' als de host eigendom is van het Google-account jansmits@example.com). Deze host wordt niet gestart als de naam van de hosteigenaar anders is dan de naam van de lokale gebruiker waaraan de host is gekoppeld. Als je wilt afdwingen dat het Google-account van de eigenaar wordt gekoppeld aan een specifiek domein, gebruik je het beleid met <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />.
 
       Als je het beleid uitschakelt of niet instelt, kan de host voor externe toegang aan elke lokale gebruiker worden gekoppeld.</translation>
-<translation id="8680488165461049026">Dit beleid geeft 'Snelle antwoorden' toegang tot geselecteerde content en rechten om de informatie naar de server te sturen.
-
-      Als het beleid is ingeschakeld, heeft 'Snelle antwoorden' toegang tot geselecteerde content.
-      Als het beleid is uitgeschakeld, heeft 'Snelle antwoorden' geen toegang tot geselecteerde content.
-      Als het beleid niet is ingesteld, kunnen gebruikers bepalen of 'Snelle antwoorden' toegang tot geselecteerde content heeft.</translation>
 <translation id="8685024486845674965">Waarschuwing voor wachtwoordbeveiliging wordt geactiveerd bij hergebruik van een wachtwoord</translation>
 <translation id="8685680544554917389">Als je het beleid instelt op True, wordt media automatisch afgespeeld door <ph name="PRODUCT_NAME" />. Als je het beleid instelt op False, wordt media niet automatisch afgespeeld door <ph name="PRODUCT_NAME" />.
 

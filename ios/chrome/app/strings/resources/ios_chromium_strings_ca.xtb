@@ -75,7 +75,7 @@
 <translation id="8776843108004031667">Aquest compte i totes les dades que no s'hagin desat se suprimiran de Chromium.</translation>
 <translation id="9022552996538154597">Inicia la sessió a Chromium</translation>
 <translation id="9089354809943900324">Chromium no està actualitzat</translation>
-<translation id="912386518501777532">Quan tenies la sessió de Chromium tancada, les teves adreces d'interès, es van esborrar d'aquest dispositiu l'historial, les contrasenyes i altres opcions de configuració. Les teves dades sincronitzades es continuen desant al teu compte.</translation>
+<translation id="912386518501777532">Quan se t'ha tancat la sessió de Chromium, les teves adreces d'interès, l'historial, les contrasenyes i altres opcions de configuració s'han esborrat d'aquest dispositiu.</translation>
 <translation id="921174536258924340">Chromium no ha pogut comprovar totes les contrasenyes. Torna-ho a provar demà o <ph name="BEGIN_LINK" />comprova les contrasenyes desades al teu Compte de Google<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">Els autors de Chromium</translation>
 </translationbundle>

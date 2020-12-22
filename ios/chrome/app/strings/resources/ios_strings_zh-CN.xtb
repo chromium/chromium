@@ -295,6 +295,7 @@
 <translation id="4121993058175073134">要发送净导出数据，请在“设置”应用中指定您的电子邮件帐号。</translation>
 <translation id="4124987746317609294">时间范围</translation>
 <translation id="4152011295694446843">您的书签会显示在此处</translation>
+<translation id="4152093603141133546">贵组织已将您退出登录。</translation>
 <translation id="4172051516777682613">一律显示</translation>
 <translation id="418156467088430727">在新标签页中查看离线版本</translation>
 <translation id="4181841719683918333">语言</translation>
@@ -537,6 +538,7 @@
 <translation id="6668619169535738264">修改书签</translation>
 <translation id="667999046851023355">文档</translation>
 <translation id="6691331417640343772">通过 Google 信息中心管理已同步的数据</translation>
+<translation id="6710079714193676716">由贵组织管理。未必能使用所有功能。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">无法导出密码</translation>
 <translation id="6748108480210050150">发件人</translation>
@@ -564,7 +566,7 @@
 <translation id="6973630695168034713">文件夹</translation>
 <translation id="6979158407327259162">Google 云端硬盘</translation>
 <translation id="6988572888918530647">管理 Google 帐号</translation>
-<translation id="6995899638241819463">在密码遭遇数据泄露时，向您发出警告</translation>
+<translation id="6995899638241819463">当密码遭遇数据泄露时，发送警告</translation>
 <translation id="6998989275928107238">至</translation>
 <translation id="7004499039102548441">最近打开的标签页</translation>
 <translation id="7006788746334555276">内容设置</translation>
@@ -690,6 +692,7 @@
 <translation id="8487667956631253959">已开启</translation>
 <translation id="8487700953926739672">可离线使用</translation>
 <translation id="8490978609246021741">保存更改</translation>
+<translation id="8495097701594799854">已被贵组织关闭。</translation>
 <translation id="8503813439785031346">用户名</translation>
 <translation id="850600235656508448">在无痕模式下打开</translation>
 <translation id="8510057420705599706">执行此操作会使您退出帐号并关闭同步功能，但您的书签、历史记录、密码及其他 Chrome 数据仍会保留在此设备上。</translation>

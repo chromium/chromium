@@ -12,6 +12,7 @@
 <translation id="10614374240317010">कधीही सेव्ह न केलेले</translation>
 <translation id="1067922213147265141">इतर Google सेवा</translation>
 <translation id="107147699690128016">तुम्ही फाइल एक्स्टेंशन बदलल्यास, फाइल कदाचित दुसऱ्या ॲप्लिकेशनमध्ये उघडू शकते आणि यामुळे तुमच्या डिव्हाइसला संभाव्य धोका असू शकतो.</translation>
+<translation id="1094515529340404628">वेबवरील जनसमुदाय आणि जाहिरातीचे मूल्यमापन</translation>
 <translation id="1100066534610197918">गटामधील नवीन टॅबमध्ये उघडा</translation>
 <translation id="1105960400813249514">स्‍क्रीन कॅप्‍चर</translation>
 <translation id="1111673857033749125">आपल्या इतर डिव्हाइसेेसवर सेव्ह केलेले बुकमार्क येथे दिसतील.</translation>
@@ -227,6 +228,7 @@
 <translation id="2536728043171574184">या पेजची ऑफलाइन प्रत पाहत आहे</translation>
 <translation id="2537178555904266562">पासवर्ड सिंक करताना एरर</translation>
 <translation id="2546283357679194313">कुकीज आणि साइट डेटा</translation>
+<translation id="2562889244313180139">वेबसाइट आणि अ‍ॅप्सना ओळखण्यायोग्य नसलेली माहिती वापरून तुम्हाला आणखी सुसंगत अनुभव देण्याची अनुमती द्या.</translation>
 <translation id="2567385386134582609">इमेज</translation>
 <translation id="2571711316400087311">Google Translate ला इतर भाषांमध्ये पेज पाठवण्याची ऑफर</translation>
 <translation id="2581165646603367611">हे सर्व कुकी, कॅशे  आणि साइटचा अन्य डेटा साफ करेल जो Chrome ला महत्त्वाचा वाटत नाही.</translation>
@@ -714,6 +716,7 @@
 <translation id="6005538289190791541">सुचवलेला पासवर्ड</translation>
 <translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{तुमच्याकडे <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> पेज आहे}other{तुमच्याकडे <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> पेज आहेत}}</translation>
 <translation id="6014293228235665243">न वाचलेले</translation>
+<translation id="6018309500671889594">ओळखण्यायोग्य नसलेली माहिती वापरून जाहिरातदारांना जाहिरात मोहिमांचा अभ्यास करण्याची अनुमती द्या.</translation>
 <translation id="6036057147555329831">अतिरिक्त ICU</translation>
 <translation id="6039379616847168523">पुढील टॅबवर जा</translation>
 <translation id="6040143037577758943">बंद करा</translation>
@@ -922,6 +925,7 @@
 <translation id="7403691278183511381">Chrome फर्स्ट रन अनुभव</translation>
 <translation id="741204030948306876">होय, मला मान्य आहे</translation>
 <translation id="7413229368719586778">सुरू होण्याची तारीख <ph name="DATE" /></translation>
+<translation id="7416941666639889592">वेबवरील जनसमुदाय यामध्ये सामील झाल्याने, तुम्ही वेबसाइटना वैयक्तिकरीत्या ओळखण्यायोग्य माहिती न वापरता तुमचा वेबवरील अनुभव सुसंगत करण्याची अनुमती देता. एखाद्या कॉन्सर्टमधील जनसमुदायाप्रमाणे, वेबसाइट आणि जाहिरातदारांना फक्त ही माहिती मिळू शकते की, हजारो लोकांना समानप्रकारच्या गोष्टींमध्ये स्वारस्य आहे.</translation>
 <translation id="7431991332293347422">शोध पर्सनलाइझ करण्यासाठी तुमचा ब्राउझिंग इतिहास कसा वापरला जातो ते आणि बरेच काही नियंत्रित करा</translation>
 <translation id="7435356471928173109">तुमच्या अ‍ॅडमिनिस्ट्रेटरने बंद केले</translation>
 <translation id="7437998757836447326">Chrome मधून साइन आउट करा</translation>
@@ -1123,6 +1127,7 @@
 <translation id="8748850008226585750">आशय लपविली</translation>
 <translation id="8788265440806329501">नेव्हिगेशन इतिहास बंद आहे</translation>
 <translation id="8788968922598763114">अखेरीस बंद केलेला टॅब पुन्हा उघडा</translation>
+<translation id="8795672590390389447">गोपनीयता सॅंडबॉक्स</translation>
 <translation id="8798449543960971550">वाचलेले</translation>
 <translation id="8812260976093120287">काही वेबसाइटवर, तुम्ही आपल्या डिव्हाइसवर वरील समर्थित पेमेंट ॲप्ससह पेमेंट देऊ शकता.</translation>
 <translation id="881688628773363275">पूर्वावलोकन टॅब आशय पाहण्यायोग्य नाही.</translation>

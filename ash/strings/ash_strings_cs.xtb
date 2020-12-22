@@ -205,6 +205,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2878884018241093801">Žádné nedávné položky</translation>
 <translation id="2903844815300039659">Jste připojeni k síti <ph name="NAME" />, <ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">Snímky obrazovky</translation>
+<translation id="2941112035454246133">Nízká</translation>
 <translation id="2942350706960889382">Zabudovaná lupa</translation>
 <translation id="2942516765047364088">Pozice poličky</translation>
 <translation id="2946119680249604491">Přidat připojení</translation>
@@ -217,6 +218,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="3000461861112256445">Zvuk mono</translation>
 <translation id="3009178788565917040">Výstup</translation>
 <translation id="3033545621352269033">Zapnuto</translation>
+<translation id="3036649622769666520">Otevřít soubory</translation>
 <translation id="3038571455154067151">Pokud se chcete přihlásit, zadejte rodičovský přístupový kód Family Link</translation>
 <translation id="3045488863354895414">Dobré odpoledne,</translation>
 <translation id="3051128274746680507">Váš dozorovaný uživatelský profil bude brzy odstraněn. Chcete-li se dozvědět více, přihlaste se.</translation>
@@ -367,7 +369,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4321776623976362024">Stiskli jste klávesovou zkratku pro vysoký kontrast. Chcete ho zapnout?</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4338109981321384717">Lupa</translation>
-<translation id="4350065043422286972">Připnuto</translation>
 <translation id="4351433414020964307">Asistent se načítá...</translation>
 <translation id="4356930093361201197">režim vysokého kontrastu</translation>
 <translation id="4371348193907997655">Nastavení odesílání</translation>
@@ -387,7 +388,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Nespárovaná zařízení</translation>
 <translation id="4485060137115666462">Po kliknutí pravým tlačítkem nebo dlouhém stisknutí vám Asistent zobrazí informace, jako je definice, překlad nebo převod jednotky související s vybraným obsahem.</translation>
-<translation id="4488735711456074171">Váš telefon zřejmě není online a nemůžeme se k němu připojit.</translation>
 <translation id="4505050298327493054">Aktivní plocha.</translation>
 <translation id="4513946894732546136">Zpětná vazba</translation>
 <translation id="4527045527269911712">Zařízení Bluetooth „<ph name="DEVICE_NAME" />“ žádá o povolení ke spárování.</translation>
@@ -448,7 +448,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">Označování aplikací odznakem</translation>
 <translation id="5003993274120026347">Další věta</translation>
-<translation id="5019169674188023236">Zdá se, že je připojení Bluetooth nebo Wi-Fi v zařízení <ph name="DEVICE_TYPE" /> vypnuté. Pokud chcete používat Telefonní centurm, zkontrolujte připojení.</translation>
 <translation id="5030687792513154421">Čas vypršel</translation>
 <translation id="5033299697334913360">Snímek celé obrazovky pořídíte klepnutím kamkoliv</translation>
 <translation id="5035236842988137213">Zařízení <ph name="DEVICE_NAME" /> je připojeno k novému telefonu</translation>
@@ -581,7 +580,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="6376931439017688372">Rozhraní Bluetooth je zapnuté</translation>
 <translation id="6381109794406942707">Chcete-li zařízení odemknout, zadejte PIN.</translation>
 <translation id="639644700271529076">CAPS LOCK je vypnutý</translation>
-<translation id="6398771186477608158">Zkontrolujte, zda je váš telefon poblíž a má zapnutý Bluetooth i Wi-Fi.</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, síla signálu: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Vymazat všechna oznámení</translation>
@@ -731,7 +729,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="7780159184141939021">Otočit obrazovku</translation>
 <translation id="7796353162336583443">Klepnutím na tlačítko dotykového pera na poličce můžete pořídit poznámku nebo snímek obrazovky, případně použít Asistenta Google, laserové ukazovátko nebo lupu.</translation>
 <translation id="7798302898096527229">Vypnete jej stisknutím klávesy Hledat nebo Shift.</translation>
-<translation id="781126011916719498">Důležité soubory můžete mít rychle při ruce. Kliknutím pravým tlačítkem nebo podržením lze soubor připnout.</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> a <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Silný signál</translation>
 <translation id="7837740436429729974">Čas vypršel</translation>
@@ -862,7 +859,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="8877788021141246043">Nastavit připomenutí</translation>
 <translation id="8878886163241303700">Rozšíření obrazovky</translation>
 <translation id="8883473964424809116">Kliknutím otevřete nastavení Asistenta Google.</translation>
-<translation id="8894122120026866664">Telefon nebyl nalezen</translation>
 <translation id="890616557918890486">Změnit zdroj</translation>
 <translation id="8909138438987180327">Baterie je nabitá na <ph name="PERCENTAGE" /> %.</translation>
 <translation id="8913384980486163186">Podle motivu (výchozí)</translation>
@@ -889,7 +885,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="9084606467167974638">Přepnout pozici nabídky</translation>
 <translation id="9089416786594320554">Metody zadávání</translation>
 <translation id="9091626656156419976">Obrazovka <ph name="DISPLAY_NAME" /> byla odebrána</translation>
-<translation id="9092749890156285613">Nedávné záznamy a snímky obrazovky</translation>
 <translation id="9098969848082897657">Ztlumit telefon</translation>
 <translation id="9151726767154816831">Chcete-li zařízení aktualizovat, restartujte je a resetujte pomocí funkce Powerwash</translation>
 <translation id="9166331175924255663">Přepnout vysokou viditelnost pro sdílení nablízko.</translation>

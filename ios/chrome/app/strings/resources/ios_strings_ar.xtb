@@ -20,6 +20,7 @@
 <translation id="1145536944570833626">يمكنك حذف البيانات الحالية.</translation>
 <translation id="1147031633655575115">تم تسجيل الدخول بحساب <ph name="USER" />.</translation>
 <translation id="1154690515305205900">لا يمكن إنشاء رابط للنص المحدَّد.</translation>
+<translation id="1154984953698510061">الانتقال إلى علامات التبويب الأخرى</translation>
 <translation id="1157749421655780457">السماح بتحديد الموقع الجغرافي</translation>
 <translation id="1165039591588034296">خطأ</translation>
 <translation id="1172898394251786223">الحقل التالي</translation>
@@ -38,6 +39,7 @@
 <translation id="1283524564873030414">آخر 24 ساعة</translation>
 <translation id="1285320974508926690">عدم ترجمة هذا الموقع مطلقًا</translation>
 <translation id="1321993286294231467">حدث خطأ أثناء حفظ الصورة.</translation>
+<translation id="1322735045095424339">تفرض مؤسستك استخدام "وضع التصفُّح المتخفي".</translation>
 <translation id="1323735185997015385">حذف</translation>
 <translation id="132683371494960526">انقر مرّتين لتغيير المجلد الرئيسي.</translation>
 <translation id="1340643665687018190">إغلاق القائمة</translation>
@@ -91,6 +93,7 @@
 <translation id="1803264062614276815">اسم حامل البطاقة</translation>
 <translation id="1809939268435598390">حذف مجلد</translation>
 <translation id="1813414402673211292">محو بيانات التصفّح</translation>
+<translation id="1815941218935345331">رمز المرور</translation>
 <translation id="1820259098641718022">تمت الإضافة إلى قائمة القراءة</translation>
 <translation id="1870148520156231997">الكشف عن كلمة المرور</translation>
 <translation id="1872096359983322073">الكشاف</translation>
@@ -103,6 +106,7 @@
 <translation id="1974060860693918893">الإعدادات المتقدّمة</translation>
 <translation id="1989112275319619282">تصفّح</translation>
 <translation id="2015722694326466240">للاطلاع على كلمات المرور، يجب عليك أولاً تعيين رمز مرور على جهازك.</translation>
+<translation id="2047933465321076474">أوقفت مؤسستك وضع "التصفّح بخصوصيّة تامّة". <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="2073572773299281212">نشط قبل <ph name="DAYS" /> من الأيام</translation>
 <translation id="2074131957428911366">يمكنك دائمًا اختيار ما تريد مزامنته في <ph name="BEGIN_LINK" />الإعدادات<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">تراجع</translation>
@@ -120,6 +124,7 @@
 <translation id="2239626343334228536">جارٍ محو بيانات التصفُّح...</translation>
 <translation id="2257567812274161158">المزامنة لا تعمل على نحو سليم</translation>
 <translation id="225943865679747347">رمز الخطأ: <ph name="ERROR_CODE" /></translation>
+<translation id="2262397157440718954">تطلُب مؤسستك منك التصفُّح بخصوصية تامّة. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="2267753748892043616">إضافة حساب</translation>
 <translation id="2268044343513325586">تحسين</translation>
 <translation id="2273327106802955778">قائمة "المزيد"</translation>
@@ -136,6 +141,7 @@
 لن يسمح هذا الإجراء للمواقع الإلكترونية باستخدام ملفات تعريف الارتباط للاطّلاع على نشاط التصفّح على المواقع الإلكترونية المختلفة، بهدف تقديم إعلانات مخصّصة لك مثلاً.</translation>
 <translation id="2381405137052800939">الإعدادات الأساسية</translation>
 <translation id="2386793615875593361">تم اختيار عنصر واحد</translation>
+<translation id="2419661687355878017">أوقفت مؤسستك "وضع التصفُّح المتخفي".</translation>
 <translation id="2421004566762153674">حظر ملفات تعريف الارتباط التابعة لجهات خارجية</translation>
 <translation id="2421044535038393232">متابعة التعديل</translation>
 <translation id="2435457462613246316">عرض كلمة المرور</translation>
@@ -185,11 +191,13 @@
 <translation id="291754862089661335">ضَع رمز الاستجابة السريعة أو الرمز الشريطي في هذا الإطار</translation>
 <translation id="2921219216347069551">تتعذر مشاركة الصفحة</translation>
 <translation id="2923448633003185837">لصق وانتقال</translation>
+<translation id="2923827943290349720">‏قفل علامات التبويب في وضع التصفّح المتخفي عند إغلاق Chrome</translation>
 <translation id="292639812446257861">وضع علامة كغير مقروءة</translation>
 <translation id="2952581218264071393">‏1- افتَح إعدادات Chrome.</translation>
 <translation id="2958718410589002129">كلمات المرور</translation>
 <translation id="2964349545761222050">حظر ملفات تعريف الارتباط التابعة لجهات خارجية</translation>
 <translation id="2969979262385602596">تعذّر تسجيل الدخول. يُرجى إعادة المحاولة لاحقًا.</translation>
+<translation id="2975121486251958312">لا يتوفّر سوى "وضع التصفُّح المتخفي"</translation>
 <translation id="298306318844797842">إضافة طريقة الدفع...</translation>
 <translation id="2989805286512600854">فتح في علامة تبويب جديدة</translation>
 <translation id="3037605927509011580">عذرًا!</translation>
@@ -204,6 +212,7 @@
 <translation id="3175081911749765310">خدمات الويب</translation>
 <translation id="3178650076442119961">نشط اليوم</translation>
 <translation id="3181954750937456830">التصفُّح الآمن (يحميك ويحمي جهازك من المواقع الإلكترونية الضارة)</translation>
+<translation id="3184767182050912705">الفتح باستخدام <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3196681740617426482">يسمح هذا الإجراء للمواقع الإلكترونية باستخدام ملفات تعريف الارتباط لتحسين تجربة التصفُّح، مثل إبقائك مُسجِّلاً الدخول أو تذكُّر عناصر في سلة التسوق.
 
 في وضع التصفُّح المتخفي، لا يُسمح للمواقع الإلكترونية باستخدام ملفات تعريف الارتباط للاطّلاع على نشاط التصفّح على المواقع الإلكترونية المختلفة لتقديم إعلانات مخصّصة لك مثلاً.</translation>
@@ -342,7 +351,7 @@
 <translation id="4689564913179979534">جارٍ إدارة طُرق الدفع...</translation>
 <translation id="473775607612524610">تحديث</translation>
 <translation id="4747097190499141774">‏لا يتضمّن التشفير باستخدام عبارة المرور طرق الدفع والعناوين من Google Pay. ولن يتمكّن أي شخص من الاطّلاع على بياناتك المشفرة إلا من يعرف عبارة مرورك. لا تُرسَل عبارة المرور إلى شركة Google ولا تُخزّن لديها. في حال نسيان عبارة المرور أو الرغبة في تغيير هذا الإعداد، ستحتاج إلى إعادة ضبط المزامنة. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
-<translation id="4751645464639803239">علامة تبويب جديدة للتصفُّح المتخفي</translation>
+<translation id="4751645464639803239">علامة تبويب جديدة في وضع التصفّح المتخفي</translation>
 <translation id="4775879719735953715">المتصفح التلقائي</translation>
 <translation id="4778644898150334464">استخدام كلمة مرور أخرى</translation>
 <translation id="4802417911091824046">‏لا يتضمّن التشفير باستخدام عبارة المرور طرق الدفع والعناوين من Google Pay.
@@ -355,6 +364,7 @@
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} وعلامة تبويب واحدة إضافية}two{{domain} وعلامتا تبويب ({count}) إضافيتان}few{{domain} و{count} علامات تبويب إضافية}many{{domain} و{count} علامة تبويب إضافية}other{{domain} و{count} علامة تبويب إضافية}}</translation>
 <translation id="4826218269716039351">حظر ملفات تعريف الارتباط التابعة لجهات خارجية</translation>
 <translation id="48274138579728272">وضع علامة "مقروءة"</translation>
+<translation id="4833686396768033263">علامات التبويب الأخيرة غير متاحة</translation>
 <translation id="4833786495304741580">‏إرسال إحصاءات الاستخدام وتقارير الأعطال إلى Google تلقائيًا</translation>
 <translation id="4840495572919996524">‏لن تتم مزامنة الإشارات المرجعية والسجلّ وكلمات المرور وغيرها مع حسابك على Google بعد الآن.</translation>
 <translation id="4854345657858711387">تعيين رمز المرور</translation>
@@ -418,6 +428,7 @@
 <translation id="5551897871312988470">اقتراح الترجمة</translation>
 <translation id="5556459405103347317">إعادة التحميل</translation>
 <translation id="5592679540098330836">تفعيل المزامنة للمستخدم <ph name="NAME" /></translation>
+<translation id="5597169624050330492">تطلُب مؤسستك منك التصفُّح بخصوصية تامّة. ولن يتم حفظ علامات التبويب في "وضع التصفُّح المتخفي". <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="5614553682702429503">هل تريد حفظ كلمة المرور؟</translation>
 <translation id="5626245204502895507">تعذر تنزيل الملف في الوقت الحالي.</translation>
 <translation id="5631164295104953411">إضافة طريقة الدفع</translation>
@@ -522,6 +533,7 @@
 
 حاوِل استخدام كلمة مرور فريدة لكل موقع إلكتروني.</translation>
 <translation id="651505212789431520">هل تريد إلغاء المزامنة؟ يمكنك تفعيل المزامنة في أي وقت في "الإعدادات".</translation>
+<translation id="6524918542306337007">"وضع التصفُّح المتخفي" غير متاح</translation>
 <translation id="6561262006871132942">تكبير</translation>
 <translation id="6585618849026997638">يمكنك الرجوع إلى أي صفحة تهمك من خلال إضافة إشارة مرجعية لها.</translation>
 <translation id="6610002944194042868">خيارات الترجمة</translation>
@@ -580,6 +592,7 @@
 <translation id="7133798577887235672">الاسم بالكامل</translation>
 <translation id="7136892417564438900">الكاميرا غير متاحة</translation>
 <translation id="7159472599653637159">طلب موقع إلكتروني متوافق مع الجوّال</translation>
+<translation id="7162168282402939716">فتح علامات التبويب في وضع التصفّح المتخفي باستخدام <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">يمكنك حماية كلمات المرور والتحقق من مشاكل الأمان.</translation>
 <translation id="7173114856073700355">فتح الإعدادات</translation>
 <translation id="7189598951263744875">مشاركة...</translation>
@@ -617,6 +630,7 @@
 <translation id="7537586195939242955">‏عذرًا، لا يمكن أن تكون بطاقتك مثبتة على Passbook في الوقت الحالي.</translation>
 <translation id="7554791636758816595">علامة تبويب جديدة</translation>
 <translation id="7561196759112975576">دومًا</translation>
+<translation id="7583004045319035904">يمكنك استخدام <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> لفتح علامات التبويب في وضع التصفّح المتخفي.</translation>
 <translation id="7600965453749440009">عدم الترجمة مطلقًا من اللغة <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">تم حظر النوافذ المنبثقة (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">حذف كلمة المرور</translation>
@@ -709,6 +723,7 @@
 <translation id="8591976964826315682">حظر ملفات تعريف الارتباط التابعة لجهات خارجية في وضع التصفُّح المتخفي</translation>
 <translation id="8605219856220328675">إغلاق علامة التبويب.</translation>
 <translation id="8620640915598389714">تعديل</translation>
+<translation id="863090005774946393">تتولّى مؤسستك إدارة متصفِّحك، لذا قد تكون بعض الميزات غير مفعَّلة.</translation>
 <translation id="8636825310635137004">للحصول على علامات التبويب من أجهزتك الأخرى، فعِّل المزامنة.</translation>
 <translation id="8654802032646794042">إلغاء</translation>
 <translation id="8668210798914567634">تم حفظ هذه الصفحة في قائمة القراءة.</translation>

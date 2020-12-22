@@ -205,6 +205,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2878884018241093801">No hay elementos recientes</translation>
 <translation id="2903844815300039659">Conectado a <ph name="NAME" />, <ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">Capturas de pantalla</translation>
+<translation id="2941112035454246133">Baja</translation>
 <translation id="2942350706960889382">Lupa con vista acoplada</translation>
 <translation id="2942516765047364088">Posición de la biblioteca</translation>
 <translation id="2946119680249604491">Agregar conexión</translation>
@@ -217,6 +218,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="3000461861112256445">Audio mono</translation>
 <translation id="3009178788565917040">Salida</translation>
 <translation id="3033545621352269033">Sí</translation>
+<translation id="3036649622769666520">Abrir archivos</translation>
 <translation id="3038571455154067151">Para acceder, ingresa el código de acceso parental de Family Link.</translation>
 <translation id="3045488863354895414">Buenas tardes:</translation>
 <translation id="3051128274746680507">Pronto se quitará el perfil de tu usuario supervisado. Accede para obtener más información.</translation>
@@ -368,7 +370,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4321776623976362024">Presionaste la combinación de teclas para activar el modo de contraste alto. ¿Quieres activarlo?</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4338109981321384717">Lupa</translation>
-<translation id="4350065043422286972">Fijada</translation>
 <translation id="4351433414020964307">El Asistente se está cargando…</translation>
 <translation id="4356930093361201197">modo de contraste alto</translation>
 <translation id="4371348193907997655">Configuración de transmisión</translation>
@@ -388,7 +389,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Dispositivos no sincronizados</translation>
 <translation id="4485060137115666462">Si haces clic con el botón derecho en la selección o la mantienes presionada, Asistente te mostrará información adicional, como su definición, la traducción o la conversión de unidades.</translation>
-<translation id="4488735711456074171">Al parecer, tu teléfono no está en línea y no podemos conectarnos a él.</translation>
 <translation id="4505050298327493054">Escritorio activo</translation>
 <translation id="4513946894732546136">Comentario</translation>
 <translation id="4527045527269911712">El dispositivo Bluetooth "<ph name="DEVICE_NAME" />" solicita permiso para sincronizarse.</translation>
@@ -449,7 +449,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">Insignias de apps</translation>
 <translation id="5003993274120026347">Oración siguiente</translation>
-<translation id="5019169674188023236">Parece que la conexión Bluetooth o Wi-Fi está desactivada en tu <ph name="DEVICE_TYPE" />. Revisa la conexión para usar Phone Hub.</translation>
 <translation id="5030687792513154421">Se acabó el tiempo</translation>
 <translation id="5033299697334913360">Haz clic en cualquier parte para capturar la pantalla completa</translation>
 <translation id="5035236842988137213">Se conectó el dispositivo <ph name="DEVICE_NAME" /> a un teléfono nuevo</translation>
@@ -582,7 +581,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="6376931439017688372">Se activó la conexión Bluetooth</translation>
 <translation id="6381109794406942707">Para desbloquear el dispositivo, ingresa el PIN.</translation>
 <translation id="639644700271529076">El bloqueo de mayúsculas está desactivado.</translation>
-<translation id="6398771186477608158">Asegúrate de que tu teléfono esté en el rango de la conexión Bluetooth y que el Wi-Fi esté activado.</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Borra todas las notificaciones</translation>
@@ -732,7 +730,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="7780159184141939021">Girar pantalla</translation>
 <translation id="7796353162336583443">Presiona el botón de la pluma stylus en la biblioteca para tomar notas o capturas de pantalla, usar el Asistente de Google y activar las funciones de puntero láser o lupa.</translation>
 <translation id="7798302898096527229">Presiona mayúscula o la tecla de búsqueda para cancelarlo.</translation>
-<translation id="781126011916719498">Accede a tus archivos importantes de forma rápida. Haz clic con el botón derecho sobre un archivo o mantenlo presionado para fijarlo.</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> y <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Señal fuerte</translation>
 <translation id="7837740436429729974">Tiempo agotado</translation>
@@ -863,7 +860,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="8877788021141246043">Establecer un recordatorio</translation>
 <translation id="8878886163241303700">Ampliando pantalla</translation>
 <translation id="8883473964424809116">Haz clic para abrir la configuración de Asistente de Google.</translation>
-<translation id="8894122120026866664">No podemos encontrar tu teléfono</translation>
 <translation id="890616557918890486">Cambiar la fuente</translation>
 <translation id="8909138438987180327">Batería al <ph name="PERCENTAGE" />%</translation>
 <translation id="8913384980486163186">Temático (predeterminado)</translation>
@@ -872,7 +868,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="8936501819958976551">desactivada</translation>
 <translation id="8938800817013097409">Dispositivo USB-C (puerto derecho en la parte posterior)</translation>
 <translation id="8940956008527784070">Batería baja (<ph name="PERCENTAGE" />%)</translation>
-<translation id="8982906748181120328">Visib. Nearby</translation>
+<translation id="8982906748181120328">Visibilidad de Nearby</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> en uso</translation>
 <translation id="899350903320462459">Desbloquea el dispositivo como <ph name="LOGIN_ID" /> para realizar la acción con las notificaciones</translation>
@@ -890,7 +886,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="9084606467167974638">Cambiar la posición del menú</translation>
 <translation id="9089416786594320554">Métodos de entrada</translation>
 <translation id="9091626656156419976">Se quitó la pantalla <ph name="DISPLAY_NAME" /></translation>
-<translation id="9092749890156285613">Descargas y capturas de pantallas recientes</translation>
 <translation id="9098969848082897657">Silenciar teléfono</translation>
 <translation id="9151726767154816831">Reiniciar y aplicar Powerwash para actualizar</translation>
 <translation id="9166331175924255663">Activar o desactivar la alta visibilidad para Compartir con Nearby</translation>

@@ -49,12 +49,12 @@
 <translation id="2375079107209812402">Intents restants: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="2391082728065870591">Envia un informe de suggeriments</translation>
 <translation id="2446553403094072641">Precisió de la coma flotant</translation>
+<translation id="2448312741937722512">Tipus</translation>
 <translation id="2461822463642141190">Actual</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> (<ph name="SOURCE_LANGUAGE_NAME" />)</translation>
 <translation id="2517472476991765520">Escaneja</translation>
 <translation id="2570743873672969996">S'està executant la prova <ph name="TEST_NAME" />...</translation>
 <translation id="2620436844016719705">Sistema</translation>
-<translation id="2658845327196595460">{COUNT,plural, =1{El fitxer escanejat s'ha desat.}other{Els fitxers escanejats s'han desat.}}</translation>
 <translation id="2740531572673183784">D'acord</translation>
 <translation id="2805756323405976993">Aplicacions</translation>
 <translation id="2872961005593481000">Apaga</translation>
@@ -67,19 +67,23 @@
 <translation id="3091839911843451378">Error: s'ha aturat</translation>
 <translation id="3102119246920354026">Memòria cau</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="315116470104423982">Dades mòbils</translation>
 <translation id="3188257591659621405">Els meus fitxers</translation>
 <translation id="3199982728237701504">Alimentador de documents (a dues cares)</translation>
 <translation id="3246869037381808805">Se suprimiran les tasques d'impressió amb una antiguitat superior a 1 dia</translation>
 <translation id="3268178239013324452">Error: porta oberta</translation>
 <translation id="3310640316857623290">La latència DNS supera significativament el llindar permès</translation>
 <translation id="3328783797891415197">La prova s'està executant</translation>
+<translation id="3368922792935385530">Connectat</translation>
 <translation id="3369013195428705271">Confirmes que vols esborrar tot l'historial d'impressions? Les tasques d'impressió en curs no s'esborraran.</translation>
 <translation id="3456078764689556234">S'ha imprès la pàgina <ph name="PRINTED_PAGES" /> de <ph name="TOTAL_PAGES" />.</translation>
 <translation id="3459509316159669723">Imprimeix</translation>
 <translation id="3515615323037921860">Tasques d'impressió</translation>
 <translation id="3527036260304016759">Error: error desconegut</translation>
+<translation id="357889014807611375">Wi‑Fi d'ús mesurat</translation>
 <translation id="360565022852130722">La xarxa Wi-Fi està protegida amb el protocol dèbil WEP 802.1x</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ressenyes)</translation>
+<translation id="3748026146096797577">Desconnectat</translation>
 <translation id="3749289110408117711">Nom del fitxer</translation>
 <translation id="38114475217616659">Esborra tot l'historial</translation>
 <translation id="3820172043799983114">El PIN no és vàlid.</translation>
@@ -93,6 +97,7 @@
 <translation id="4131410914670010031">Blanc i negre</translation>
 <translation id="4145784616224233563">Tallafoc HTTP</translation>
 <translation id="4170700058716978431">NO SUPERADA</translation>
+<translation id="4176463684765177261">Desactivat</translation>
 <translation id="4227825898293920515">La contrasenya caduca d'aquí a <ph name="TIME" /></translation>
 <translation id="4238516577297848345">No hi ha tasques d'impressió en curs</translation>
 <translation id="4297501883039923494">S'ha aturat: error desconegut</translation>
@@ -102,7 +107,9 @@
 <translation id="4429881212383817840">El tiquet de Kerberos caducarà aviat</translation>
 <translation id="445059817448385655">Contrasenya antiga</translation>
 <translation id="4454245904991689773">Desa a</translation>
+<translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">No s'ha pogut fer ping a la passarel·la de xarxa no predeterminada</translation>
+<translation id="4511264077854731334">Portal</translation>
 <translation id="4548483925627140043">No s'ha trobat el senyal</translation>
 <translation id="455835558791489930">Bateria de <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="458794348635939462">No s'han pogut resoldre tots els amfitrions</translation>
@@ -127,6 +134,7 @@
 <translation id="498186245079027698">Comprova l'escàner i torna-ho a provar. Assegura't que hi hagi prou espai local per desar els fitxers escanejats.</translation>
 <translation id="4985509611418653372">Executa</translation>
 <translation id="500920857929044050">Atura la prova</translation>
+<translation id="5089810972385038852">Estat</translation>
 <translation id="5154917547274118687">Memòria</translation>
 <translation id="5168185087976003268">Estat de la bateria</translation>
 <translation id="520299634122159966">No hi ha cap escàner disponible</translation>
@@ -142,7 +150,9 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="5333530671332546086">Estat del portal desconegut</translation>
 <translation id="5372659122375744710">La xarxa Wi-Fi no és segura</translation>
 <translation id="5401938042319910061">S'han executat totes les rutines</translation>
+<translation id="5430931332414098647">Compartició de xarxa instantània</translation>
 <translation id="5431318178759467895">Color</translation>
+<translation id="5431825016875453137">OpenVPN/L2TP</translation>
 <translation id="5457599981699367932">Navega com a convidat</translation>
 <translation id="54609108002486618">Gestionat</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
@@ -153,6 +163,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="5797428682393400134">SUPERADA</translation>
 <translation id="5832805196449965646">Afegeix una persona</translation>
 <translation id="5895138241574237353">Reinicia</translation>
+<translation id="5916084858004523819">Prohibit</translation>
 <translation id="5931523347251946569">No s'ha trobat el fitxer</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, versió <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Tanca</translation>
@@ -164,6 +175,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="6106186594183574873">Per acabar, introdueix la contrasenya antiga</translation>
 <translation id="6108689792487843350">No es pot accedir a la passarel·la</translation>
 <translation id="6114428539405324828"><ph name="CURRENT" /> GHz (de <ph name="MAX" /> GHz)</translation>
+<translation id="6122191549521593678">En línia</translation>
 <translation id="6146993107019042706">Per acabar, introdueix la contrasenya nova</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Més informació</translation>
@@ -188,7 +200,9 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="6839141349259399400">No et pots connectar als escàners?</translation>
 <translation id="6853312040151791195">Percentatge de descàrrega</translation>
 <translation id="6898743098396957679">No s'ha pogut completar l'escaneig</translation>
+<translation id="6957231940976260713">Nom del servei</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gestiona aquest dispositiu i té accés a tota l'activitat dels usuaris, com ara les pàgines web visitades, les contrasenyes i el correu electrònic.</translation>
+<translation id="7143207342074048698">Connectant</translation>
 <translation id="714876143603641390">Connectivitat de la LAN</translation>
 <translation id="7162487448488904999">Galeria</translation>
 <translation id="7177485034254901881">Aquest dispositiu <ph name="DEVICE_TYPE" /> està gestionat per <ph name="MANAGER" />. És possible que els administradors el configurin de manera remota.</translation>
@@ -197,11 +211,13 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{S'ha completat l'escaneig. S'ha escanejat 1 pàgina}other{S'ha completat l'escaneig. S'han escanejat {NUMBER_OF_PAGES} pàgines}}</translation>
 <translation id="7441459999606975924">La capacitat de les bateries es redueix amb l'ús</translation>
 <translation id="7469648432129124067">S'ha detectat un portal</translation>
+<translation id="7490813197707563893">Adreça MAC</translation>
 <translation id="7561454561030345039">El teu administrador gestiona aquesta acció</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">La latència d'HTTPS és alta</translation>
 <translation id="7658239707568436148">Cancel·la</translation>
 <translation id="7690294790491645610">Confirma la contrasenya nova</translation>
+<translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Nombre de cicles</translation>
 <translation id="7732651821766520760">Prova <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Estat</translation>
@@ -213,6 +229,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="808894953321890993">Canvia la contrasenya</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8160445423316272678">Col·loca el document a l'escàner i selecciona <ph name="SPAN_BEGIN" />Escaneja<ph name="SPAN_END" /> per començar</translation>
+<translation id="8206859287963243715">Cel·lular</translation>
 <translation id="8208861521865154048">Avantatges</translation>
 <translation id="8230672074305416752">No s'ha pogut fer ping a la passarel·la de xarxa predeterminada</translation>
 <translation id="8294431847097064396">Font</translation>
@@ -224,6 +241,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="8398927464629426868">El percentatge al qual s'està carregant o descarregant el dispositiu actualment</translation>
 <translation id="8475690821716466388">La xarxa Wi-Fi està protegida amb el protocol dèbil WEP PSK</translation>
 <translation id="8477551185774834963">La latència DNS supera lleugerament el llindar permès</translation>
+<translation id="8576249514688522074">No s'ha inicialitzat</translation>
 <translation id="871560550817059752">Error: no hi ha tinta</translation>
 <translation id="8723108084122415655">La xarxa no predeterminada supera el llindar de latència</translation>
 <translation id="8726019395068607495">S'ha aturat: porta oberta</translation>
@@ -231,14 +249,18 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="8747900814994928677">Confirma el canvi</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Predeterminat</translation>
+<translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Obteniu ajuda</translation>
 <translation id="8881098542468797602">La prova s'ha superat</translation>
+<translation id="8898840733695078011">Intensitat del senyal</translation>
 <translation id="8910721771319628100">La xarxa predeterminada supera el llindar de latència</translation>
 <translation id="8919837981463578619">Error: no es troba la safata</translation>
 <translation id="8928727111548978589">Error: no hi ha paper</translation>
+<translation id="8930622219860340959">Sense fil</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> Intents restants: <ph name="ATTEMPTS_LEFT" />.</translation>
 <translation id="8968751544471797276">Percentatge de càrrega</translation>
 <translation id="8970109610781093811">Torna a executar</translation>
+<translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Ús actual</translation>
 <translation id="910415269708673980">Actualitza el tiquet de: <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">S'està cercant la pàgina <ph name="PAGE_NUMBER" /></translation>

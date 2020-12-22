@@ -20,6 +20,7 @@
 <translation id="1145536944570833626">বিদ্যমান ডেটা মুছুন।</translation>
 <translation id="1147031633655575115"><ph name="USER" /> হিসেবে সাইন-ইন করেছেন</translation>
 <translation id="1154690515305205900">হাইলাইট করা টেক্সটের লিঙ্ক তৈরি করা যায়নি।</translation>
+<translation id="1154984953698510061">অন্যান্য ট্যাব দেখুন</translation>
 <translation id="1157749421655780457">লোকেশন অ্যাক্সেস করার অনুমতি দিন...</translation>
 <translation id="1165039591588034296">ত্রুটি</translation>
 <translation id="1172898394251786223">পরবর্তী ফিল্ড</translation>
@@ -38,6 +39,7 @@
 <translation id="1283524564873030414">গত ২৪ ঘণ্টা</translation>
 <translation id="1285320974508926690">কখনই এই সাইটটিকে অনুবাদ করবেন না</translation>
 <translation id="1321993286294231467">ছবি সেভ করার সময় কোনও সমস্যা হয়েছে।</translation>
+<translation id="1322735045095424339">আপনার সংস্থা আপনাকে 'ছদ্মবেশী' মোড ব্যবহার করতে বলছে</translation>
 <translation id="1323735185997015385">মুছুন</translation>
 <translation id="132683371494960526">মূল ফোল্ডার পরিবর্তন করতে দুবার আলতো চাপুন।</translation>
 <translation id="1340643665687018190">মেনু বন্ধ করুন</translation>
@@ -91,6 +93,7 @@
 <translation id="1803264062614276815">কার্ড হোল্ডারের নাম</translation>
 <translation id="1809939268435598390">ফোল্ডার মুছুন</translation>
 <translation id="1813414402673211292">ব্রাউজ করা ডেটা সাফ করুন</translation>
+<translation id="1815941218935345331">পাসকোড</translation>
 <translation id="1820259098641718022">পড়ার তালিকায় যোগ করা হয়েছে</translation>
 <translation id="1870148520156231997">পাসওয়ার্ড দেখুন</translation>
 <translation id="1872096359983322073">টর্চ</translation>
@@ -103,6 +106,7 @@
 <translation id="1974060860693918893">উন্নত</translation>
 <translation id="1989112275319619282">ব্রাউজ করুন</translation>
 <translation id="2015722694326466240">পাসওয়ার্ড দেখার জন্য আপনার ডিভাইসে আপনাকে অবশ্যই একটি পাসকোড সেট করতে হবে।</translation>
+<translation id="2047933465321076474">আপনার সংস্থা ব্যক্তিগত ব্রাউজিংয়ের সুবিধা বন্ধ করে দিয়েছে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> দিন আগে ব্যবহার করা হয়েছে</translation>
 <translation id="2074131957428911366"><ph name="BEGIN_LINK" />সেটিংসে<ph name="END_LINK" /> কী সিঙ্ক করা হবে তা আপনি সবসময় বেছে নিতে পারেন।</translation>
 <translation id="2079545284768500474">আগের অবস্থায় ফিরুন</translation>
@@ -120,6 +124,7 @@
 <translation id="2239626343334228536">ব্রাউজিং ডেটা মোছা হচ্ছে…</translation>
 <translation id="2257567812274161158">সিঙ্ক কাজ করছে না।</translation>
 <translation id="225943865679747347">ত্রুটি কোড: <ph name="ERROR_CODE" /></translation>
+<translation id="2262397157440718954">আপনার সংস্থা আপনাকে 'ব্যক্তিগত' মোডে ব্রাউজ করতে বলছে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="2267753748892043616">অ্যাকাউন্ট যোগ করুন</translation>
 <translation id="2268044343513325586">রিফাইন করুন</translation>
 <translation id="2273327106802955778">‘আরও’ মেনু</translation>
@@ -136,6 +141,7 @@
 আপনার জন্য পছন্দমতো বিজ্ঞাপন বেছে নেওয়ার মতো বিভিন্ন ওয়েবসাইট জুড়ে আপনার ব্রাউজিং অ্যাক্টিভিটি দেখার জন্য সাইট কুকি ব্যবহার করতে পারবে না।</translation>
 <translation id="2381405137052800939">প্রাথমিক বিষয়াদি</translation>
 <translation id="2386793615875593361">১টি নির্বাচিত</translation>
+<translation id="2419661687355878017">আপনার সংস্থা, 'ছদ্মবেশী' মোড বন্ধ করে দিয়েছে</translation>
 <translation id="2421004566762153674">থার্ড-পার্টি কুকি ব্লক করুন</translation>
 <translation id="2421044535038393232">এডিট করতে থাকুন</translation>
 <translation id="2435457462613246316">পাসওয়ার্ড দেখান</translation>
@@ -185,11 +191,13 @@
 <translation id="291754862089661335">এই ফ্রেমের মধ্যে QR কোড বা বারকোড স্থাপন করুন</translation>
 <translation id="2921219216347069551">পৃষ্ঠা শেয়ার করা যায়নি</translation>
 <translation id="2923448633003185837">পেস্ট করে শুরু করুন</translation>
+<translation id="2923827943290349720">আপনি Chrome বন্ধ করলে, ছদ্মবেশী ট্যাব লক হয়ে যায়</translation>
 <translation id="292639812446257861">অপঠিত হিসেবে চিহ্নিত করুন</translation>
 <translation id="2952581218264071393">১. Chrome সেটিংস খুলুন</translation>
 <translation id="2958718410589002129">পাসওয়ার্ড</translation>
 <translation id="2964349545761222050">থার্ড-পার্টি কুকি ব্লক করুন</translation>
 <translation id="2969979262385602596">সাইন-ইন করা যায়নি৷ অনুগ্রহ করে পরে আবার চেষ্টা করুন৷</translation>
+<translation id="2975121486251958312">শুধুমাত্র 'ছদ্মবেশী' মোড উপলভ্য রয়েছে</translation>
 <translation id="298306318844797842">পেমেন্টের পদ্ধতি যোগ করুন...</translation>
 <translation id="2989805286512600854">নতুন ট্যাবে খুলুন</translation>
 <translation id="3037605927509011580">ইস!</translation>
@@ -204,6 +212,7 @@
 <translation id="3175081911749765310">ওয়েব পরিষেবা</translation>
 <translation id="3178650076442119961">আজ ব্যবহার করা হয়েছে</translation>
 <translation id="3181954750937456830">নিরাপদ ব্রাউজিং (বিপজ্জনক সাইট থেকে আপনাকে এবং আপনার ডিভাইসকে রক্ষা করে)</translation>
+<translation id="3184767182050912705"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> দিয়ে আনলক করুন</translation>
 <translation id="3196681740617426482">আপনি যাতে সাইন-ইন হয়ে থাকতে পারেন তার ব্যবস্থা করা বা শপিং কার্টে আপনার বেছে নেওয়া আইটেমগুলি মনে রাখার মতো আপনার ব্রাউজিং অভিজ্ঞতা আরও ভাল করার জন্য সাইট কুকি ব্যবহার করতে পারবে।
 
 ছদ্মবেশী মোড চালু করা থাকলে, আপনার জন্য পছন্দমতো বিজ্ঞাপন বেছে নেওয়ার মতো বিভিন্ন ওয়েবসাইট জুড়ে আপনার ব্রাউজিং অ্যাক্টিভিটি দেখার জন্য সাইট কুকি ব্যবহার করতে পারবে না।</translation>
@@ -295,6 +304,7 @@
 <translation id="4121993058175073134">নেট-রপ্তানি ডেটা পাঠানোর জন্য, অনুগ্রহ করে সিস্টেম অ্যাপে আপনার ইমেল অ্যাকাউন্ট কনফিগার করুন৷</translation>
 <translation id="4124987746317609294">সময় সীমা</translation>
 <translation id="4152011295694446843">আপনি নিজের বুকমার্ক এখানে খুঁজে পাবেন</translation>
+<translation id="4152093603141133546">আপনার সংস্থা আপনাকে সাইন-আউট করে দিয়েছে।</translation>
 <translation id="4172051516777682613">সর্বদা দেখান</translation>
 <translation id="418156467088430727">নতুন ট্যাবে অফলাইন ভার্সন দেখুন</translation>
 <translation id="4181841719683918333">ভাষাসমূহ</translation>
@@ -354,6 +364,7 @@
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} এবং আরও ১টি}one{{domain} এবং আরও {count}টি}other{{domain} এবং আরও {count}টি}}</translation>
 <translation id="4826218269716039351">থার্ড-পার্টি ব্লক করুন</translation>
 <translation id="48274138579728272">'পড়া হয়েছে' হিসেবে চিহ্নিত করুন</translation>
+<translation id="4833686396768033263">'সাম্প্রতিক ট্যাব' উপলভ্য নেই</translation>
 <translation id="4833786495304741580">Google-কে অটোমেটিক ব্যবহারের পরিসংখ্যান ও ক্র্যাশ রিপোর্ট পাঠায়।</translation>
 <translation id="4840495572919996524">আপনার বুকমার্ক, ইতিহাস, পাসওয়ার্ড এবং আরও অনেক কিছু আপনার Google অ্যাকাউন্টের সাথে আর সিঙ্ক করা হবে না।</translation>
 <translation id="4854345657858711387">একটি পাসকোড সেট করুন</translation>
@@ -418,6 +429,7 @@
 <translation id="5551897871312988470">অনুবাদ করার প্রস্তাব দিন</translation>
 <translation id="5556459405103347317">রিলোড করুন</translation>
 <translation id="5592679540098330836"><ph name="NAME" />-এর জন্য সিঙ্ক করার সুবিধাটি চালু করুন</translation>
+<translation id="5597169624050330492">আপনার সংস্থা আপনাকে 'ব্যক্তিগত' মোডে ব্রাউজ করতে বলছে। 'ছদ্মবেশী' মোডে ট্যাব সেভ করা হয় না। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="5614553682702429503">পাসওয়ার্ড সেভ করবেন?</translation>
 <translation id="5626245204502895507">ফাইলটি এই সময়ে ডাউনলোড করা যাবে না৷</translation>
 <translation id="5631164295104953411">পেমেন্টের পদ্ধতি যোগ করুন</translation>
@@ -522,6 +534,7 @@
 
 প্রতিটি সাইটের জন্য অনন্য পাসওয়ার্ড ব্যবহার করার চেষ্টা করুন।</translation>
 <translation id="651505212789431520">সিঙ্ক বাতিল করতে চান? যেকোনও সময় সেটিংস থেকে আপনি সিঙ্ক চালু করতে পারবেন।</translation>
+<translation id="6524918542306337007">'ছদ্মবেশী' মোড উপলভ্য নেই</translation>
 <translation id="6561262006871132942">বড় করে দেখুন</translation>
 <translation id="6585618849026997638">গুরুত্বপূর্ণ পৃষ্ঠার বুকমার্ক যোগ করে সহজেই সেখানে ফিরে যেতে পারবেন</translation>
 <translation id="6610002944194042868">অনুবাদের বিকল্প</translation>
@@ -538,6 +551,7 @@
 <translation id="6668619169535738264">বুকমার্ক এডিট করুন</translation>
 <translation id="667999046851023355">দস্তাবেজ</translation>
 <translation id="6691331417640343772">Google ড্যাশবোর্ডে সিঙ্ক হওয়া ডেটা পরিচালনা করুন</translation>
+<translation id="6710079714193676716">আপনার সংস্থা এটি ম্যানেজ করে। কিছু ফিচার হয়ত উপলভ্য নয়। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google অ্যাপ্লিকেশানগুলি</translation>
 <translation id="6730682669179532099">পাসওয়ার্ড এক্সপোর্ট করা যাচ্ছে না</translation>
 <translation id="6748108480210050150">থেকে</translation>
@@ -579,6 +593,7 @@
 <translation id="7133798577887235672">সম্পূর্ণ নাম</translation>
 <translation id="7136892417564438900">ক্যামেরা অনুপলব্ধ</translation>
 <translation id="7159472599653637159">মোবাইল সাইটের জন্য অনুরোধ করুন</translation>
+<translation id="7162168282402939716"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> দিয়ে ছদ্মবেশী ট্যাব আনলক করুন</translation>
 <translation id="7172852049901402487">নিরাপত্তা সংক্রান্ত সমস্যাগুলি থেকে আপনার পাসওয়ার্ডকে সুরক্ষিত রাখুন</translation>
 <translation id="7173114856073700355">সেটিংস খুলুন</translation>
 <translation id="7189598951263744875">শেয়ার করুন...</translation>
@@ -616,6 +631,7 @@
 <translation id="7537586195939242955">দুঃখিত, এই সময়ে পাসবুকে আপনার পাস ইনস্টল করা যাবে না৷</translation>
 <translation id="7554791636758816595">নতুন ট্যাব</translation>
 <translation id="7561196759112975576">সবসময়</translation>
+<translation id="7583004045319035904">আপনার ছদ্মবেশী ট্যাব আনলক করতে, <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ব্যবহার করুন।</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> কখনও অনুবাদ করবেন না</translation>
 <translation id="7603852183842204213">পপ-আপ ব্লক (<ph name="NUMBER_OF_BLOCKED_POPUPS" />টি)</translation>
 <translation id="7607521702806708809">পাসওয়ার্ড মুছুন</translation>
@@ -691,6 +707,7 @@
 <translation id="8487667956631253959">চালু করা আছে</translation>
 <translation id="8487700953926739672">অফলাইনে উপলব্ধ</translation>
 <translation id="8490978609246021741">পরিবর্তনগুলি সেভ করুন</translation>
+<translation id="8495097701594799854">আপনার সংস্থা বন্ধ করে দিয়েছে।</translation>
 <translation id="8503813439785031346">ইউজারনেম</translation>
 <translation id="850600235656508448">ছদ্মবেশী ট্যাবে খুলুন</translation>
 <translation id="8510057420705599706">এর ফলে আপনি অ্যাকাউন্ট থেকে সাইন-আউট হয়ে যাবেন এবং সিঙ্ক করার সুবিধা বন্ধ হয়ে যাবে, কিন্তু আপনার সেভ করা বুকমার্ক, সার্চ করার ইতিহাস, পাসওয়ার্ড ও Chrome-এর অন্যান্য ডেটা এই ডিভাইসেই থেকে যাবে।</translation>
@@ -707,6 +724,7 @@
 <translation id="8591976964826315682">'ছদ্মবেশী' মোডে থার্ড-পার্টি কুকি ব্লক করুন</translation>
 <translation id="8605219856220328675">ট্যাব বন্ধ করুন।</translation>
 <translation id="8620640915598389714">সম্পাদনা করুন</translation>
+<translation id="863090005774946393">আপনার সংস্থা ব্রাউজার ম্যানেজ করছে। কিছু ফিচার বন্ধ থাকতে পারে।</translation>
 <translation id="8636825310635137004">আপনার অন্য ডিভাইসগুলি থেকে আপনার ট্যাবগুলি পেতে, সিঙ্ক চালু করুন।</translation>
 <translation id="8654802032646794042">বাতিল করুন</translation>
 <translation id="8668210798914567634">এই পৃষ্ঠাটি আপনার পড়ার তালিকায় সংরক্ষণ করা হয়েছে।</translation>

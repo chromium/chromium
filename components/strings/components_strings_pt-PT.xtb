@@ -609,7 +609,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3395827396354264108">Método de recolha</translation>
 <translation id="3399952811970034796">Endereço de entrega</translation>
 <translation id="3402261774528610252">A ligação utilizada para carregar este site utilizou as versões TLS 1.0 ou TLS 1.1, que foram descontinuadas e serão desativadas no futuro. Após a desativação, os utilizadores serão impedidos de carregar este site. O servidor deverá ativar a versão TLS 1.2 ou posterior.</translation>
-<translation id="3411120537985775570">A ação de colar a partir de <ph name="ORIGIN_NAME" /> nesta localização está bloqueada pelo seu administrador.</translation>
 <translation id="3414952576877147120">Tamanho:</translation>
 <translation id="3417660076059365994">Os ficheiros que carrega ou anexa são enviados para o Google Cloud ou para terceiros para análise. Por exemplo, podem ser analisados quanto a dados confidenciais ou software malicioso.</translation>
 <translation id="3422248202833853650">Experimente fechar outros programas para libertar memória.</translation>
@@ -686,7 +685,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3681007416295224113">Informações do certificado</translation>
 <translation id="3701427423622901115">Reposição confirmada.</translation>
 <translation id="3704162925118123524">A rede que está a utilizar pode exigir que visite a respetivapágina de início de sessão.</translation>
-<translation id="3704609568417268905"><ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">A carregar...</translation>
 <translation id="3709599264800900598">Texto que copiou</translation>
@@ -1299,7 +1297,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6051221802930200923">Não pode visitar <ph name="SITE" /> neste momento, porque o Website utiliza a afixação de certificados. Os erros de rede e os ataques são geralmente temporários, pelo que esta página deverá funcionar mais tarde.</translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="6053328359599022071">Pretende partilhar a sua presença?</translation>
-<translation id="6057359309778282021">O seu administrador bloqueou a partilha a partir de <ph name="ORIGIN_NAME" /> com a VM <ph name="VM_NAME" />.</translation>
 <translation id="6058977677006700226">Pretende utilizar os seus cartões em todos os seus dispositivos?</translation>
 <translation id="6059925163896151826">Dispositivos USB</translation>
 <translation id="6060009363608157444">Modo DnsOverHttps inválido.</translation>
@@ -1445,6 +1442,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6687335167692595844">Tamanho do tipo de letra solicitado</translation>
 <translation id="6689249931105087298">Relativa com compressão do ponto preto</translation>
 <translation id="6689271823431384964">O Chrome está a disponibilizar a opção de guardar os seus cartões na sua Conta Google porque tem sessão iniciada. Pode alterar este comportamento nas definições. O nome do titular do cartão vem da sua conta.</translation>
+<translation id="6702919718839027939">Apresentar</translation>
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="6710594484020273272">&lt;Introduzir termo de pesquisa&gt;</translation>
 <translation id="671076103358959139">Símbolo de inscrição:</translation>

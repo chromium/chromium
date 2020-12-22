@@ -9,6 +9,7 @@
 <translation id="1175697296044146566"><ph name="MANAGER" /> এই <ph name="DEVICE_TYPE" /> ম্যানেজ করে।</translation>
 <translation id="1195447618553298278">অজানা ত্রুটি৷</translation>
 <translation id="1204296502688602597">ডিএনএস লেটেন্সি</translation>
+<translation id="123124571410524056">পোর্টাল হতে পারে</translation>
 <translation id="1238612778414822719">HTTPS লেটেন্সি</translation>
 <translation id="1290331692326790741">সিগন্যালটি ভাল নয়</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -36,6 +37,7 @@
 <translation id="1947737735496445907">প্রিন্ট করা হয়েছে</translation>
 <translation id="1979103255016296513">পাসওয়ার্ড পরিবর্তন করার সময় পেরিয়ে গেছে</translation>
 <translation id="1980044825731880088">সিপিইউ স্পিড</translation>
+<translation id="1999615961760456652">ক্যাপটিভ পোর্টাল</translation>
 <translation id="2008685064673031089">প্রাইম সার্চ</translation>
 <translation id="2080070583977670716">আরও সেটিংস</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -47,12 +49,13 @@
 <translation id="2375079107209812402">আর <ph name="ATTEMPTS_LEFT" /> বার চেষ্টা করতে পারবেন</translation>
 <translation id="2391082728065870591">ফিডব্যাক রিপোর্ট পাঠান</translation>
 <translation id="2446553403094072641">ফ্লোটিং পয়েন্ট অ্যাকুরেসি</translation>
+<translation id="2448312741937722512">প্রকার</translation>
 <translation id="2461822463642141190">বর্তমান</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">স্ক্যান করুন</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> টেস্ট চলছে...</translation>
+<translation id="2585245331261708204">Chrome OS-এ নতুন কী আছে</translation>
 <translation id="2620436844016719705">সিস্টেম</translation>
-<translation id="2658845327196595460">{COUNT,plural, =1{স্ক্যান করা ফাইল সেভ হয়েছে!}one{স্ক্যান করা ফাইল সেভ হয়েছে!}other{স্ক্যান করা ফাইলগুলি সেভ হয়েছে!}}</translation>
 <translation id="2740531572673183784">ঠিক আছে</translation>
 <translation id="2805756323405976993">অ্যাপ্স</translation>
 <translation id="2872961005593481000">বন্ধ করুন</translation>
@@ -65,19 +68,23 @@
 <translation id="3091839911843451378">প্রিন্ট করা যায়নি - প্রিন্টার বন্ধ হয়ে গেছে</translation>
 <translation id="3102119246920354026">ক্যাশে</translation>
 <translation id="3122464029669770682">সিপিইউ</translation>
+<translation id="315116470104423982">মোবাইল ডেটা</translation>
 <translation id="3188257591659621405">আমার ফাইল</translation>
 <translation id="3199982728237701504">ডকুমেন্ট ফিডার (দুই পিঠের)</translation>
 <translation id="3246869037381808805">১ দিনের বেশি পুরনো প্রিন্ট জব সরিয়ে দেওয়া হবে</translation>
 <translation id="3268178239013324452">প্রিন্ট করা যায়নি - প্রিন্টারের ঢাকনা ভাল করে বন্ধ করা হয়নি</translation>
 <translation id="3310640316857623290">যতদূর পর্যন্ত লেটেন্সির ঊর্ধ্বসীমা অনুমোদন করা যায়, ডিএনএস লেটেন্সি উল্লেখযোগ্যভাবে তার চেয়ে বেশি</translation>
 <translation id="3328783797891415197">টেস্ট করা হচ্ছে</translation>
+<translation id="3368922792935385530">সংযুক্ত</translation>
 <translation id="3369013195428705271">আপনি কি সব প্রিন্ট ইতিহাস মুছে ফেলতে চান? এখন যে প্রিন্ট করার কাজগুলি চলছে সেগুলি মোছা হবে না।</translation>
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" />টি পৃষ্ঠার মধ্যে <ph name="PRINTED_PAGES" /> নম্বর পৃষ্ঠা প্রিন্ট করা হয়েছে।</translation>
 <translation id="3459509316159669723">প্রিন্ট হচ্ছে</translation>
 <translation id="3515615323037921860">প্রিন্ট করা কাজ</translation>
 <translation id="3527036260304016759">প্রিন্ট করা যায়নি - অজানা সমস্যা</translation>
+<translation id="357889014807611375">মিটার্ড ওয়াই-ফাই</translation>
 <translation id="360565022852130722">দুর্বল WEP 802.1x প্রোটোকল ব্যবহার করে ওয়াই-ফাই নেটওয়ার্ক সুরক্ষিত করা হয়েছে</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" />টি রিভিউ)</translation>
+<translation id="3748026146096797577">সংযুক্ত নয়</translation>
 <translation id="3749289110408117711">ফাইলের নাম</translation>
 <translation id="38114475217616659">সব ইতিহাস মুছে ফেলুন</translation>
 <translation id="3820172043799983114">ভুল পিন।</translation>
@@ -91,6 +98,7 @@
 <translation id="4131410914670010031">সাদা ও কালো</translation>
 <translation id="4145784616224233563">HTTP ফায়ারওয়াল</translation>
 <translation id="4170700058716978431">ব্যর্থ হয়েছে</translation>
+<translation id="4176463684765177261">অক্ষম হয়েছে</translation>
 <translation id="4227825898293920515">পাসওয়ার্ডের মেয়াদ <ph name="TIME" />-এ শেষ হবে</translation>
 <translation id="4238516577297848345">প্রিন্ট করার কোনও কাজ চালু নেই</translation>
 <translation id="4297501883039923494">বন্ধ হয়ে গেছে - অজানা সমস্যা</translation>
@@ -100,7 +108,9 @@
 <translation id="4429881212383817840">Kerberos টিকিটের মেয়াদ শীঘ্রই শেষ হয়ে যাবে</translation>
 <translation id="445059817448385655">পুরনো পাসওয়ার্ড</translation>
 <translation id="4454245904991689773">স্ক্যান করা ফাইল এখানে সেভ করুন</translation>
+<translation id="4479639480957787382">ইথারনেট</translation>
 <translation id="4483049906298469269">ডিফল্ট অবস্থায় নেই এমন নেটওয়ার্ক গেটওয়েতে পিং করা যায়নি</translation>
+<translation id="4511264077854731334">পোর্টাল</translation>
 <translation id="4548483925627140043">সিগন্যাল নেই</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh ব্যাটারি</translation>
 <translation id="458794348635939462">সব হোস্ট নেম যাচাই করা ব্যর্থ হয়েছে</translation>
@@ -115,6 +125,7 @@
 <translation id="4773299976671772492">থামানো হয়েছে</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> প্রিন্ট করার কাজ বাতিল করা হয়েছে</translation>
 <translation id="4832079907277790330">Files অ্যাপে ফোল্ডার বেছে নিন...</translation>
+<translation id="4835901797422965222">কোনও অ্যাক্টিভ নেটওয়ার্ক নেই</translation>
 <translation id="4848429997038228357">টেস্ট করা হচ্ছে</translation>
 <translation id="4890353053343094602">অবিলম্বে একটি নতুন পাসওয়ার্ড বেছে নিন</translation>
 <translation id="4891842000192098784">স্ট্রেস</translation>
@@ -124,6 +135,7 @@
 <translation id="498186245079027698">স্ক্যানার চেক করে আবার চেষ্টা করুন। স্ক্যান করা ফাইল সেভ করার জন্য পর্যাপ্ত লোকাল স্পেস আছে কিনা দেখে নিন।</translation>
 <translation id="4985509611418653372">চালান</translation>
 <translation id="500920857929044050">টেস্ট বন্ধ করুন</translation>
+<translation id="5089810972385038852">রাজ্য</translation>
 <translation id="5154917547274118687">স্মৃতি</translation>
 <translation id="5168185087976003268">ব্যাটারির স্বাস্থ্য</translation>
 <translation id="520299634122159966">স্ক্যানার উপলভ্য নেই</translation>
@@ -135,9 +147,12 @@
 <translation id="5317780077021120954">সেভ করুন</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">এবার একটি নতুন পাসওয়ার্ড বেছে নিন</translation>
+<translation id="5333530671332546086">পোর্টালে স্ট্যাটাস জানা যায়নি</translation>
 <translation id="5372659122375744710">ওয়াই-ফাই নেটওয়ার্ক সুরক্ষিত নয়</translation>
 <translation id="5401938042319910061">সমস্ত রুটিন চালান</translation>
+<translation id="5430931332414098647">ঝটপট টিথারিং</translation>
 <translation id="5431318178759467895">রঙ</translation>
+<translation id="5431825016875453137">OpenVPN / L2TP</translation>
 <translation id="5457599981699367932">অতিথি হিসাবে ব্রাউজ করুন</translation>
 <translation id="54609108002486618">পরিচালিত</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
@@ -148,6 +163,7 @@
 <translation id="5797428682393400134">সফল হয়েছে</translation>
 <translation id="5832805196449965646">একজন ব্যক্তিকে যোগ করুন</translation>
 <translation id="5895138241574237353">পুনর্সূচনা</translation>
+<translation id="5916084858004523819">নিষিদ্ধ</translation>
 <translation id="5931523347251946569">ফাইল পাওয়া যায়নি</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, ভার্সন <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">বন্ধ</translation>
@@ -159,6 +175,7 @@
 <translation id="6106186594183574873">সম্পূর্ণ করতে, আপনার পুরনো পাসওয়ার্ড লিখুন</translation>
 <translation id="6108689792487843350">নেটওয়ার্ক গেটওয়ে অ্যাক্সেস করা যাচ্ছে না</translation>
 <translation id="6114428539405324828"><ph name="CURRENT" />GHz / <ph name="MAX" />GHz</translation>
+<translation id="6122191549521593678">অনলাইন</translation>
 <translation id="6146993107019042706">সম্পূর্ণ করতে, আপনার নতুন পাসওয়ার্ড লিখুন</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">আরও জানুন</translation>
@@ -166,6 +183,7 @@
 <translation id="6232017090690406397">ব্যাটারি: %</translation>
 <translation id="6325525973963619867">ব্যর্থ</translation>
 <translation id="636850387210749493">এন্টারপ্রাইজ নথিভুক্তিকরণ</translation>
+<translation id="6426373337268369892">{COUNT,plural, =1{স্ক্যান করা ফাইল সেভ হয়েছে}one{স্ক্যান করা ফাইল সেভ হয়েছে}other{স্ক্যান করা ফাইল সেভ হয়েছে}}</translation>
 <translation id="649050271426829538">বন্ধ হয়ে গেছে - প্রিন্টারে কাগজ আটকে গেছে</translation>
 <translation id="6517239166834772319">ঘুরে দেখুন</translation>
 <translation id="6527081081771465939">অজানা ওয়াই-ফাই সিকিউরিটি প্রোটোকল</translation>
@@ -183,7 +201,9 @@
 <translation id="6839141349259399400">স্ক্যানারের সাথে কানেক্ট করা যাচ্ছে না?</translation>
 <translation id="6853312040151791195">ডিসচার্জ হওয়ার রেট</translation>
 <translation id="6898743098396957679">স্ক্যানিং সম্পূর্ণ করা যায়নি</translation>
+<translation id="6957231940976260713">পরিষেবার নাম</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> এই ডিভাইস ম্যানেজ করে এবং ব্যবহারকারী দেখেছেন এমন ওয়েবপেজ, পাসওয়ার্ড ও ইমেল আইডি সহ তার সব অ্যাক্টিভিটি সংক্রান্ত ডেটা অ্যাক্সেস করে।</translation>
+<translation id="7143207342074048698">সংযুক্ত হচ্ছে</translation>
 <translation id="714876143603641390">Lan কানেক্টিভিটি</translation>
 <translation id="7162487448488904999">গ্যালারি</translation>
 <translation id="7177485034254901881"><ph name="MANAGER" />-এর মাধ্যমে এই <ph name="DEVICE_TYPE" /> ম্যানেজ করা হয়। অ্যাডমিনিস্ট্রেটর অন্য জায়গা থেকে ডিভাইসটি কনফিগার করতে পারেন।</translation>
@@ -191,11 +211,14 @@
 <translation id="7359657277149375382">ফাইলের প্রকার</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{স্ক্যান করা সম্পূর্ণ হয়েছে। ১টি পৃষ্ঠা স্ক্যান করা হয়েছে}one{স্ক্যান করা সম্পূর্ণ হয়েছে। {NUMBER_OF_PAGES}টি পৃষ্ঠা স্ক্যান করা হয়েছে}other{স্ক্যান করা সম্পূর্ণ হয়েছে। {NUMBER_OF_PAGES}টি পৃষ্ঠা স্ক্যান করা হয়েছে}}</translation>
 <translation id="7441459999606975924">ব্যবহার করতে করতে ব্যাটারি ক্ষমতা কমে যায়</translation>
+<translation id="7469648432129124067">পোর্টাল শনাক্ত করা হয়েছে</translation>
+<translation id="7490813197707563893">MAC ঠিকানা</translation>
 <translation id="7561454561030345039">এই কাজটি আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">বেশি HTTPS লেটেন্সি</translation>
 <translation id="7658239707568436148">বাতিল</translation>
 <translation id="7690294790491645610">নতুন পাসওয়ার্ড নিশ্চিত করুন</translation>
+<translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">সাইকেল কাউন্ট</translation>
 <translation id="7732651821766520760"><ph name="TEST_NAME" /> টেস্ট</translation>
 <translation id="7805768142964895445">স্থিতি</translation>
@@ -207,6 +230,7 @@
 <translation id="808894953321890993">পাসওয়ার্ড পরিবর্তন করুন</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° সেঃ</translation>
 <translation id="8160445423316272678">শুরু করতে, স্ক্যানারে আপনার ডকুমেন্ট রেখে <ph name="SPAN_BEGIN" />স্ক্যান করুন<ph name="SPAN_END" /> বিকল্পটি বেছে নিন</translation>
+<translation id="8206859287963243715">সেলুলার</translation>
 <translation id="8208861521865154048">বিশেষ সুবিধা</translation>
 <translation id="8230672074305416752">ডিফল্ট নেটওয়ার্ক গেটওয়েতে পিং করা যায়নি</translation>
 <translation id="8294431847097064396">উৎস</translation>
@@ -218,6 +242,7 @@
 <translation id="8398927464629426868">বর্তমানে যে হারে ডিভাইসটি চার্জ হচ্ছে বা এটির চার্জ শেষ হচ্ছে</translation>
 <translation id="8475690821716466388">দুর্বল WEP PSK প্রোটোকল ব্যবহার করে ওয়াই-ফাই নেটওয়ার্ক সুরক্ষিত করা হয়েছে</translation>
 <translation id="8477551185774834963">যতদূর পর্যন্ত লেটেন্সির ঊর্ধ্বসীমা অনুমোদন করা যায়, ডিএনএস লেটেন্সি তার চেয়ে বেশি</translation>
+<translation id="8576249514688522074">যা শুরু করা হয়নি</translation>
 <translation id="871560550817059752">প্রিন্ট করা যায়নি - প্রিন্টারে কালি নেই</translation>
 <translation id="8723108084122415655">নেটওয়ার্ক লেটেন্সির যে ঊর্ধসীমা রয়েছে, তার চেয়ে ডিফল্ট অবস্থায় নেই এমন নেটওয়ার্ক গেটওয়ের লেটেন্সি বেশি</translation>
 <translation id="8726019395068607495">বন্ধ হয়ে গেছে - প্রিন্টার ডোর খোলা আছে</translation>
@@ -225,14 +250,18 @@
 <translation id="8747900814994928677">পরিবর্তন কনফার্ম করুন</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">ডিফল্ট</translation>
+<translation id="8814190375133053267">ওয়াই-ফাই</translation>
 <translation id="8845001906332463065">সাহায্য পান</translation>
 <translation id="8881098542468797602">টেস্ট সফল হয়েছে</translation>
+<translation id="8898840733695078011">সংকেতের ক্ষমতা</translation>
 <translation id="8910721771319628100">নেটওয়ার্ক লেটেন্সির যে ঊর্ধসীমা রয়েছে, তার চেয়ে ডিফল্ট নেটওয়ার্ক গেটওয়ের লেটেন্সি বেশি</translation>
 <translation id="8919837981463578619">প্রিন্ট করা যায়নি - ট্রে পাওয়া যাচ্ছে না</translation>
 <translation id="8928727111548978589">প্রিন্ট করা যায়নি - কাগজ শেষ হয়ে গেছে</translation>
+<translation id="8930622219860340959">ওয়্যারলেস</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> আর <ph name="ATTEMPTS_LEFT" /> বার চেষ্টা করতে পারবেন</translation>
 <translation id="8968751544471797276">চর্জিং রেট</translation>
 <translation id="8970109610781093811">আবার চালান</translation>
+<translation id="9074739597929991885">ব্লুটুথ</translation>
 <translation id="9088306295921699330">বর্তমান ব্যবহার</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" />-এর টিকিট রিফ্রেশ করুন</translation>
 <translation id="9106415115617144481">স্ক্যান করা পৃষ্ঠা <ph name="PAGE_NUMBER" /></translation>

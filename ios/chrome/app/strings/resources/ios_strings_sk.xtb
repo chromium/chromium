@@ -20,6 +20,7 @@
 <translation id="1145536944570833626">Odstrániť existujúce dáta.</translation>
 <translation id="1147031633655575115">Prihlásený účet: <ph name="USER" /></translation>
 <translation id="1154690515305205900">Odkaz na zvýraznený text sa nepodarilo vytvoriť.</translation>
+<translation id="1154984953698510061">Zobraziť iné karty</translation>
 <translation id="1157749421655780457">Povoliť prístup k polohe…</translation>
 <translation id="1165039591588034296">Chyba</translation>
 <translation id="1172898394251786223">Ďalšie pole</translation>
@@ -38,6 +39,7 @@
 <translation id="1283524564873030414">Posledných 24 hodín</translation>
 <translation id="1285320974508926690">Nikdy neprekladať tieto webové stránky</translation>
 <translation id="1321993286294231467">Chyba pri ukladaní obrázka.</translation>
+<translation id="1322735045095424339">Vaša organizácia vyžaduje režim inkognito</translation>
 <translation id="1323735185997015385">Odstrániť</translation>
 <translation id="132683371494960526">Dvojitým klepnutím zmeníte nadradený priečinok.</translation>
 <translation id="1340643665687018190">Zavrieť ponuku</translation>
@@ -91,6 +93,7 @@
 <translation id="1803264062614276815">Meno majiteľa karty</translation>
 <translation id="1809939268435598390">Odstrániť priečinok</translation>
 <translation id="1813414402673211292">Vymazať dáta prehliadania</translation>
+<translation id="1815941218935345331">Vstupný kód</translation>
 <translation id="1820259098641718022">Pridané do zoznamu na čítanie</translation>
 <translation id="1870148520156231997">Odhaliť heslo</translation>
 <translation id="1872096359983322073">Baterka</translation>
@@ -103,6 +106,7 @@
 <translation id="1974060860693918893">Rozšírené</translation>
 <translation id="1989112275319619282">Prehliadať</translation>
 <translation id="2015722694326466240">Ak si chcete zobraziť heslá, najprv musíte v zariadení nastaviť vstupný kód.</translation>
+<translation id="2047933465321076474">Vaša organizácia vypla anonymné prehliadanie. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="2073572773299281212">Aktívne pred <ph name="DAYS" /> dňami</translation>
 <translation id="2074131957428911366">Položky, ktoré chcete synchronizovať, môžete vybrať v <ph name="BEGIN_LINK" />nastaveniach<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Späť</translation>
@@ -120,6 +124,7 @@
 <translation id="2239626343334228536">Vymazávajú sa dáta prehliadania…</translation>
 <translation id="2257567812274161158">Synchronizácia nefunguje.</translation>
 <translation id="225943865679747347">Kód chyby: <ph name="ERROR_CODE" /></translation>
+<translation id="2262397157440718954">Vaša organizácia vyžaduje, aby ste prehliadali v režime inkognito. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="2267753748892043616">Pridať účet</translation>
 <translation id="2268044343513325586">Upraviť</translation>
 <translation id="2273327106802955778">Ponuka Viac</translation>
@@ -136,6 +141,7 @@
 Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliadania v rámci rôznych webov (napríklad na prispôsobenie reklám).</translation>
 <translation id="2381405137052800939">Základy</translation>
 <translation id="2386793615875593361">Počet vybratých fotografií: 1</translation>
+<translation id="2419661687355878017">Vaša organizácia vypla režim inkognito</translation>
 <translation id="2421004566762153674">Blokovanie súborov cookie tretích strán</translation>
 <translation id="2421044535038393232">Ďalej upravovať</translation>
 <translation id="2435457462613246316">Zobraziť heslo</translation>
@@ -185,11 +191,13 @@ Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliada
 <translation id="291754862089661335">Umiestnite QR kód alebo čiarový kód do tohto rámčeka</translation>
 <translation id="2921219216347069551">Str. sa nedá zdieľať</translation>
 <translation id="2923448633003185837">Prilepiť a prejsť</translation>
+<translation id="2923827943290349720">Uzamknúť karty inkognito pri zavretí Chromu</translation>
 <translation id="292639812446257861">Označiť ako neprečítané</translation>
 <translation id="2952581218264071393">1. Otvorte nastavenia Chromu</translation>
 <translation id="2958718410589002129">Heslá</translation>
 <translation id="2964349545761222050">Blokovať súbory cookie tretích strán</translation>
 <translation id="2969979262385602596">Prihlásenie zlyhalo. Skúste to neskôr.</translation>
+<translation id="2975121486251958312">K dispozícii je iba režim inkognito</translation>
 <translation id="298306318844797842">Pridať spôsob platby…</translation>
 <translation id="2989805286512600854">Otvoriť na novej karte</translation>
 <translation id="3037605927509011580">Aj, chyba!</translation>
@@ -204,6 +212,7 @@ Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliada
 <translation id="3175081911749765310">Web. služ.</translation>
 <translation id="3178650076442119961">Aktívne dnes</translation>
 <translation id="3181954750937456830">Bezpečné prehliadanie (chráni vás aj zariadenie pred nebezpečnými webmi)</translation>
+<translation id="3184767182050912705">Odomknúť funkciou <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3196681740617426482">Weby môžu pomocou súborov cookie zlepšovať vaše prostredie prehliadania, napríklad zabrániť odhláseniu alebo zapamätať si položky vo vašom nákupnom košíku.
 
 Weby v anonymnom režime nemôžu pomocou súborov cookie zobraziť vašu aktivitu prehliadania v rámci rôznych webov (napríklad na prispôsobenie reklám).</translation>
@@ -355,6 +364,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />resetujte synchroniz�
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} a 1 ďalšia}few{{domain} a {count} ďalšie}many{{domain} and {count} others}other{{domain} a {count} ďalších}}</translation>
 <translation id="4826218269716039351">Blokovať tretie strany</translation>
 <translation id="48274138579728272">Označiť ako prečítané</translation>
+<translation id="4833686396768033263">Nedávne karty nie sú k dispozícii</translation>
 <translation id="4833786495304741580">Automaticky odosiela Googlu štatistiky o používaní a správy o zlyhaní.</translation>
 <translation id="4840495572919996524">Záložky, história, heslá a ďalší obsah sa už nebudú synchronizovať do vášho účtu Google.</translation>
 <translation id="4854345657858711387">Nastavenie vstupného kódu</translation>
@@ -418,6 +428,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="5551897871312988470">Ponúkať preklad</translation>
 <translation id="5556459405103347317">Znova načítať</translation>
 <translation id="5592679540098330836">Zapnúť synchronizáciu pre používateľa <ph name="NAME" /></translation>
+<translation id="5597169624050330492">Vaša organizácia vyžaduje, aby ste prehliadali v režime inkognito. Karty sa v režime inkognito neukladajú. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="5614553682702429503">Uložiť heslo?</translation>
 <translation id="5626245204502895507">Súbor sa momentálne nedá stiahnuť.</translation>
 <translation id="5631164295104953411">Pridať spôsob platby</translation>
@@ -522,6 +533,7 @@ Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliada
 
 Pre každý web skúste použiť jedinečné heslo.</translation>
 <translation id="651505212789431520">Chcete zrušiť synchronizáciu? Môžete ju kedykoľvek zapnúť v Nastaveniach.</translation>
+<translation id="6524918542306337007">Režim inkognito nie je k dispozícii</translation>
 <translation id="6561262006871132942">Priblížiť</translation>
 <translation id="6585618849026997638">Na stránku, ktorá je pre vás dôležitá, sa môžete vrátiť pridaním záložky</translation>
 <translation id="6610002944194042868">Možnosti prekladu</translation>
@@ -580,6 +592,7 @@ Pre každý web skúste použiť jedinečné heslo.</translation>
 <translation id="7133798577887235672">Celé meno</translation>
 <translation id="7136892417564438900">Kamera nie je k dispozícii</translation>
 <translation id="7159472599653637159">Vyžiadať stránky pre mobil</translation>
+<translation id="7162168282402939716">Odomknúť karty inkognito funkciou <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Ochráňte svoje heslá pred bezpečnostnými problémami</translation>
 <translation id="7173114856073700355">Otvoriť Nastavenia</translation>
 <translation id="7189598951263744875">Zdieľať...</translation>
@@ -617,6 +630,7 @@ Pre každý web skúste použiť jedinečné heslo.</translation>
 <translation id="7537586195939242955">Kupón Pass sa momentálne nedá do aplikácie Passbook nainštalovať.</translation>
 <translation id="7554791636758816595">Nová karta</translation>
 <translation id="7561196759112975576">Vždy</translation>
+<translation id="7583004045319035904">Odomknite karty inkognito funkciou <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />.</translation>
 <translation id="7600965453749440009">Nikdy neprekladať jazyk <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Blokované kontextové okná (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Odstrániť heslo</translation>
@@ -709,6 +723,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8591976964826315682">Blokovať súbory cookie tretích strán v anonymnom režime</translation>
 <translation id="8605219856220328675">Zatvoriť kartu.</translation>
 <translation id="8620640915598389714">Upraviť</translation>
+<translation id="863090005774946393">Prehliadač spravuje vaša organizácia. Niektoré funkcie môžu byť deaktivované.</translation>
 <translation id="8636825310635137004">Ak chcete získať karty zo svojich ostatných zariadení, zapnite synchronizáciu.</translation>
 <translation id="8654802032646794042">Zrušiť</translation>
 <translation id="8668210798914567634">Táto stránka bola uložená do zoznamu na čítanie.</translation>

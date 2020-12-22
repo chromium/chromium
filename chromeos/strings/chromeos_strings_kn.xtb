@@ -49,12 +49,13 @@
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> ಪ್ರಯತ್ನಗಳು ಬಾಕಿ ಉಳಿದಿವೆ</translation>
 <translation id="2391082728065870591">ಪ್ರತಿಕ್ರಿಯೆ ವರದಿ ಕಳುಹಿಸಿ</translation>
 <translation id="2446553403094072641">ಫ್ಲೋಟಿಂಗ್ ಪಾಯಿಂಟ್ ನಿಖರತೆ</translation>
+<translation id="2448312741937722512">ಪ್ರಕಾರ</translation>
 <translation id="2461822463642141190">ಪ್ರಸ್ತುತ</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">ಸ್ಕ್ಯಾನ್</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> ಪರೀಕ್ಷೆ ರನ್ ಆಗುತ್ತಿದೆ...</translation>
+<translation id="2585245331261708204">Chrome OS ನಲ್ಲಿ ಹೊಸದೇನಿದೆ</translation>
 <translation id="2620436844016719705">ಸಿಸ್ಟಂ</translation>
-<translation id="2658845327196595460">{COUNT,plural, =1{ಸ್ಕ್ಯಾನ್ ಮಾಡಿದ ಫೈಲ್ ಅನ್ನು ಉಳಿಸಲಾಗಿದೆ!}one{ಸ್ಕ್ಯಾನ್ ಮಾಡಿದ ಫೈಲ್‌ಗಳನ್ನು ಉಳಿಸಲಾಗಿದೆ!}other{ಸ್ಕ್ಯಾನ್ ಮಾಡಿದ ಫೈಲ್‌ಗಳನ್ನು ಉಳಿಸಲಾಗಿದೆ!}}</translation>
 <translation id="2740531572673183784">ಸರಿ</translation>
 <translation id="2805756323405976993">ಆಪ್ಸ್‌‌</translation>
 <translation id="2872961005593481000">ಮುಚ್ಚಿಬಿಡಿ </translation>
@@ -67,19 +68,23 @@
 <translation id="3091839911843451378">ವಿಫಲವಾಗಿದೆ - ನಿಲ್ಲಿಸಲಾಗಿದೆ</translation>
 <translation id="3102119246920354026">ಸಂಗ್ರಹ</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="315116470104423982">ಮೊಬೈಲ್ ಡೇಟಾ</translation>
 <translation id="3188257591659621405">ನನ್ನ ಫೈಲ್‌ಗಳು</translation>
 <translation id="3199982728237701504">ಡಾಕ್ಯುಮೆಂಟ್ ಫೀಡರ್ (ಎರಡು-ಬದಿಯದ್ದು)</translation>
 <translation id="3246869037381808805">1 ದಿನಕ್ಕಿಂತ ಹಳೆಯದಾದ ಮುದ್ರಣ ಕಾರ್ಯಗಳನ್ನು ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ</translation>
 <translation id="3268178239013324452">ವಿಫಲವಾಗಿದೆ - ಡೋರ್ ತೆರೆದಿದೆ</translation>
 <translation id="3310640316857623290">ಅನುಮತಿಸಬಹುದಾದ ಥ್ರೆಶ್‌ಹೋಲ್ಡ್‌ಗಿಂತ DNS ವಿಳಂಬವು ಗಮನಾರ್ಹವಾಗಿ ಮೇಲಿದೆ</translation>
 <translation id="3328783797891415197">ಪರೀಕ್ಷೆ ರನ್ ಆಗುತ್ತಿದೆ</translation>
+<translation id="3368922792935385530">ಕನೆಕ್ಟ್ ಆಗಿದೆ</translation>
 <translation id="3369013195428705271">ಎಲ್ಲಾ ಪ್ರಿಂಟ್ ಇತಿಹಾಸವನ್ನು ತೆರವುಗೊಳಿಸಲು ನೀವು ಬಯಸುವಿರಾ? ಪ್ರಸ್ತುತ ಚಾಲನೆಯಲ್ಲಿರುವ ನಿಮ್ಮ ಪ್ರಿಂಟ್ ಕಾರ್ಯವನ್ನು ತೆರವುಗೊಳಿಸುವುದಿಲ್ಲ.</translation>
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" /> ರಲ್ಲಿ <ph name="PRINTED_PAGES" /> ಪುಟವನ್ನು ಮುದ್ರಿಸಲಾಗಿದೆ.</translation>
 <translation id="3459509316159669723">ಮುದ್ರಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="3515615323037921860">ಮುದ್ರಣ ಕಾರ್ಯಗಳು</translation>
 <translation id="3527036260304016759">ವಿಫಲವಾಗಿದೆ - ಅಪರಿಚಿತ ದೋಷ</translation>
+<translation id="357889014807611375">ಮಾಪನ ಮಾಡಿದ ವೈ-ಫೈ</translation>
 <translation id="360565022852130722">ದುರ್ಬಲ ಪ್ರೋಟೋಕಾಲ್ WEP 802.1x‌ ಮೂಲಕ ವೈಫೈ ನೆಟ್‌ವರ್ಕ್ ರಕ್ಷಿಸಲಾಗಿದೆ</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ಅಭಿಪ್ರಾಯಗಳು)</translation>
+<translation id="3748026146096797577">ಸಂಪರ್ಕಗೊಳಿಸಿಲ್ಲ</translation>
 <translation id="3749289110408117711">ಫೈಲ್ ಹೆಸರು</translation>
 <translation id="38114475217616659">ಎಲ್ಲಾ ಇತಿಹಾಸ ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="3820172043799983114">ಅಮಾನ್ಯ ಪಿನ್.</translation>
@@ -93,6 +98,7 @@
 <translation id="4131410914670010031">ಕಪ್ಪು ಮತ್ತು ಬಿಳುಪು</translation>
 <translation id="4145784616224233563">HTTP ಫೈರ್‌ವಾಲ್</translation>
 <translation id="4170700058716978431">ವಿಫಲವಾಗಿದೆ</translation>
+<translation id="4176463684765177261">ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="4227825898293920515"><ph name="TIME" /> ಸಮಯದಲ್ಲಿ ಪಾಸ್‌ವರ್ಡ್‌ನ ಅವಧಿ ಮುಗಿಯಲಿದೆ</translation>
 <translation id="4238516577297848345">ಯಾವುದೇ ಮುದ್ರಣ ಕಾರ್ಯಗಳು ಪ್ರಗತಿಯಲ್ಲಿಲ್ಲ</translation>
 <translation id="4297501883039923494">ನಿಲ್ಲಿಸಲಾಗಿದೆ - ಅಪರಿಚಿತ ದೋಷ</translation>
@@ -102,7 +108,9 @@
 <translation id="4429881212383817840">Kerberos ಟಿಕೆಟ್ ಶೀಘ್ರದಲ್ಲೇ ಅವಧಿ ಮೀರಲಿದೆ</translation>
 <translation id="445059817448385655">ಹಳೆಯ ಪಾಸ್‌ವರ್ಡ್‌</translation>
 <translation id="4454245904991689773">ಇದರಲ್ಲಿ ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</translation>
+<translation id="4479639480957787382">ಈಥರ್ನೆಟ್</translation>
 <translation id="4483049906298469269">ಡೀಫಾಲ್ಟ್ ಅಲ್ಲದ ನೆಟ್‌ವರ್ಕ್ ಗೇಟ್‌ವೇಗೆ ಪಿಂಗ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ</translation>
+<translation id="4511264077854731334">ಪೋರ್ಟಲ್</translation>
 <translation id="4548483925627140043">ಸಿಗ್ನಲ್ ಕಂಡುಬಂದಿಲ್ಲ</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh ಬ್ಯಾಟರಿ</translation>
 <translation id="458794348635939462">ಎಲ್ಲಾ ಹೋಸ್ಟ್‌ಗಳನ್ನು ಪರಿಹರಿಸಲು ವಿಫಲವಾಗಿದೆ</translation>
@@ -127,6 +135,7 @@
 <translation id="498186245079027698">ಸ್ಕ್ಯಾನರ್ ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ. ಸ್ಕ್ಯಾನ್ ಮಾಡಿರುವ ಫೈಲ್‌ಗಳನ್ನು ಉಳಿಸಲು ಸಾಕಷ್ಟು ಸ್ಥಳೀಯ ಸ್ಥಳವಿದೆ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.</translation>
 <translation id="4985509611418653372">ರನ್‌ ಮಾಡಿ</translation>
 <translation id="500920857929044050">ಪರೀಕ್ಷೆ ನಿಲ್ಲಿಸಿ</translation>
+<translation id="5089810972385038852">ರಾಜ್ಯ</translation>
 <translation id="5154917547274118687">ಸ್ಮರಣೆ</translation>
 <translation id="5168185087976003268">ಬ್ಯಾಟರಿ ಬಾಳಿಕೆ:</translation>
 <translation id="520299634122159966">ಯಾವುದೇ ಲಭ್ಯವಿರುವ ಸ್ಕ್ಯಾನರ್‌ಗಳಿಲ್ಲ</translation>
@@ -141,7 +150,9 @@
 <translation id="5333530671332546086">ಅಪರಿಚಿತ ಪೋರ್ಟಲ್ ಸ್ಥಿತಿ</translation>
 <translation id="5372659122375744710">ವೈಫೈ ನೆಟ್‌ವರ್ಕ್ ಸುರಕ್ಷಿತವಾಗಿಲ್ಲ</translation>
 <translation id="5401938042319910061">ಎಲ್ಲಾ ದಿನಚರಿಗಳನ್ನು ರನ್ ಮಾಡಿ</translation>
+<translation id="5430931332414098647">ತತ್‌ಕ್ಷಣದ ಟೆಥರಿಂಗ್‌</translation>
 <translation id="5431318178759467895">ಬಣ್ಣ</translation>
+<translation id="5431825016875453137">VPN / L2TP ತೆರೆಯಿರಿ</translation>
 <translation id="5457599981699367932">ಅತಿಥಿಯಾಗಿ ಬ್ರೌಸ್ ಮಾಡಿ</translation>
 <translation id="54609108002486618">ನಿರ್ವಹಿಸಲಾಗಿದೆ</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
@@ -152,6 +163,7 @@
 <translation id="5797428682393400134">ಯಶಸ್ವಿಯಾಗಿದೆ</translation>
 <translation id="5832805196449965646">ವ್ಯಕ್ತಿಯನ್ನು ಸೇರಿಸು</translation>
 <translation id="5895138241574237353">ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
+<translation id="5916084858004523819">ನಿಷೇಧಿಸಲಾಗಿದೆ</translation>
 <translation id="5931523347251946569">ಫೈಲ್ ಕಂಡುಬಂದಿಲ್ಲ</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, ಆವೃತ್ತಿ <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">ಮುಚ್ಚಿರಿ</translation>
@@ -163,6 +175,7 @@
 <translation id="6106186594183574873">ಪೂರ್ಣಗೊಳಿಸಲು, ನಿಮ್ಮ ಹಳೆಯ ಪಾಸ್‌ವರ್ಡ್ ನಮೂದಿಸಿ</translation>
 <translation id="6108689792487843350">ಗೇಟ್‌ವೇ ತಲುಪಲಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="6114428539405324828"><ph name="CURRENT" />GHz / <ph name="MAX" />GHz</translation>
+<translation id="6122191549521593678">ಆನ್‌ಲೈನ್</translation>
 <translation id="6146993107019042706">ಪೂರ್ಣಗೊಳಿಸಲು, ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ನಮೂದಿಸಿ</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
@@ -170,6 +183,7 @@
 <translation id="6232017090690406397">ಬ್ಯಾಟರಿ</translation>
 <translation id="6325525973963619867">ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="636850387210749493">ಎಂಟರ್‌ಪ್ರೈಸ್ ದಾಖಲಾತಿ</translation>
+<translation id="6426373337268369892">{COUNT,plural, =1{ಸ್ಕ್ಯಾನ್ ಮಾಡಿದ ಫೈಲ್ ಅನ್ನು ಉಳಿಸಲಾಗಿದೆ}one{ಸ್ಕ್ಯಾನ್ ಮಾಡಿದ ಫೈಲ್‌ಗಳನ್ನು ಉಳಿಸಲಾಗಿದೆ}other{ಸ್ಕ್ಯಾನ್ ಮಾಡಿದ ಫೈಲ್‌ಗಳನ್ನು ಉಳಿಸಲಾಗಿದೆ}}</translation>
 <translation id="649050271426829538">ನಿಲ್ಲಿಸಲಾಗಿದೆ - ಪೇಪರ್ ಜಾಮ್ ಆಗಿದೆ</translation>
 <translation id="6517239166834772319">ಎಕ್ಸ್‌ಪ್ಲೋರ್</translation>
 <translation id="6527081081771465939">ಅಪರಿಚಿತ ವೈಫೈ ಸುರಕ್ಷತೆ ಪ್ರೊಟೊಕಾಲ್</translation>
@@ -187,7 +201,9 @@
 <translation id="6839141349259399400">ಸ್ಕ್ಯಾನರ್‌ಗಳಿಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲವೇ?</translation>
 <translation id="6853312040151791195">ಡಿಸ್‌ಚಾರ್ಜಿಂಗ್ ರೇಟ್</translation>
 <translation id="6898743098396957679">ಸ್ಕ್ಯಾನಿಂಗ್ ಪೂರ್ಣಗೊಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
+<translation id="6957231940976260713">ಸೇವೆಯ ಹೆಸರು</translation>
 <translation id="7028979494427204405">ಈ ಸಾಧನವನ್ನು <ph name="MANAGER" /> ನಿರ್ವಹಿಸುತ್ತದೆ ಮತ್ತು ಬಳಕೆದಾರರು ಭೇಟಿ ನೀಡಿದ ವೆಬ್‌ಪುಟಗಳು, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಹಾಗೂ ಇಮೇಲ್ ಸೇರಿದಂತೆ ಅವರ ಎಲ್ಲಾ ಚಟುವಟಿಕೆಗಳಿಗೆ ಪ್ರವೇಶ ಹೊಂದಿರುತ್ತದೆ.</translation>
+<translation id="7143207342074048698">ಕನೆಕ್ಟ್...</translation>
 <translation id="714876143603641390">LAN ಸಂಪರ್ಕ ಕಲ್ಪಿಸುವಿಕೆ</translation>
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7177485034254901881">ಈ <ph name="DEVICE_TYPE" /> ಸಾಧನವನ್ನು <ph name="MANAGER" /> ನಿರ್ವಹಿಸುತ್ತದೆ ನಿರ್ವಾಹಕರು ರಿಮೋಟ್ ಆಗಿ ಸಾಧನವನ್ನು ಕಾನ್ಫಿಗರ್ ಮಾಡಬಹುದು.</translation>
@@ -196,11 +212,13 @@
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{ಸ್ಕ್ಯಾನಿಂಗ್ ಪೂರ್ಣಗೊಂಡಿದೆ. 1 ಪುಟವನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗಿದೆ}one{ಸ್ಕ್ಯಾನಿಂಗ್ ಪೂರ್ಣಗೊಂಡಿದೆ. {NUMBER_OF_PAGES} ಪುಟಗಳನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗಿದೆ}other{ಸ್ಕ್ಯಾನಿಂಗ್ ಪೂರ್ಣಗೊಂಡಿದೆ. {NUMBER_OF_PAGES} ಪುಟಗಳನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗಿದೆ}}</translation>
 <translation id="7441459999606975924">ಬಳಕೆಯಿಂದಾಗಿ ಬ್ಯಾಟರಿ ಸಾಮರ್ಥ್ಯವು ಕಡಿಮೆಯಾಗುತ್ತದೆ</translation>
 <translation id="7469648432129124067">ಪೋರ್ಟಲ್ ಅನ್ನು ಅಳಿಸಲಾಗಿದೆ</translation>
+<translation id="7490813197707563893">MAC ವಿಳಾಸ</translation>
 <translation id="7561454561030345039">ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ವಹಿಸುತ್ತಾರೆ</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">ಅಧಿಕ HTTPS ವಿಳಂಬ</translation>
 <translation id="7658239707568436148">ರದ್ದುಮಾಡಿ</translation>
 <translation id="7690294790491645610">ಹೊಸ ಪಾಸ್‌ವರ್ಡ್ ಖಚಿತಪಡಿಸಿ</translation>
+<translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">ಸೈಕಲ್ ಎಣಿಕೆ</translation>
 <translation id="7732651821766520760"><ph name="TEST_NAME" /> ಪರೀಕ್ಷೆ</translation>
 <translation id="7805768142964895445">ಸ್ಥಿತಿ</translation>
@@ -212,6 +230,7 @@
 <translation id="808894953321890993">ಪಾಸ್‌ವರ್ಡ್ ಬದಲಿಸಿ</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8160445423316272678">ನಿಮ್ಮ ಡಾಕ್ಯುಮೆಂಟ್ ಅನ್ನು ಸ್ಕ್ಯಾನರ್‌ನಲ್ಲಿ ಇರಿಸಿ ಮತ್ತು ಸ್ಕ್ಯಾನಿಂಗ್ ಪ್ರಾರಂಭಿಸಲು <ph name="SPAN_BEGIN" />ಸ್ಕ್ಯಾನ್ ಮಾಡಿ<ph name="SPAN_END" /> ಎಂಬುದನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
+<translation id="8206859287963243715">ಸೆಲ್ಯುಲಾರ್</translation>
 <translation id="8208861521865154048">ಪರ್ಕ್‌ಗಳು</translation>
 <translation id="8230672074305416752">ಡೀಫಾಲ್ಟ್ ನೆಟ್‌ವರ್ಕ್ ಗೇಟ್‌ವೇಗೆ ಪಿಂಗ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="8294431847097064396">ಮೂಲ</translation>
@@ -223,6 +242,7 @@
 <translation id="8398927464629426868">ಸಾಧನವು ಪ್ರಸ್ತುತವಾಗಿ ಚಾರ್ಜ್ ಅಥವಾ ಡಿಸ್‌ಚಾರ್ಜ್ ಆಗುತ್ತಿರುವ ದರ</translation>
 <translation id="8475690821716466388">ದುರ್ಬಲ ಪ್ರೋಟೋಕಾಲ್ WEP PSK‌ ಮೂಲಕ ವೈಫೈ ನೆಟ್‌ವರ್ಕ್ ರಕ್ಷಿಸಲಾಗಿದೆ</translation>
 <translation id="8477551185774834963">ಅನುಮತಿಸಬಹುದಾದ ಥ್ರೆಶ್‌ಹೋಲ್ಡ್‌ಗಿಂತ DNS ವಿಳಂಬವು ಸ್ವಲ್ಪ ಮೇಲಿದೆ</translation>
+<translation id="8576249514688522074">ಪ್ರಾರಂಭಿಸಲಾಗಿಲ್ಲ</translation>
 <translation id="871560550817059752">ವಿಫಲವಾಗಿದೆ - ಇಂಕ್ ಖಾಲಿಯಾಗಿದೆ</translation>
 <translation id="8723108084122415655">ವಿಳಂಬ ಥ್ರೆಶ್‌ಹೋಲ್ಡ್‌ ಮೇಲಿನ ಡೀಫಾಲ್ಟ್ ಅಲ್ಲದ ನೆಟ್‌ವರ್ಕ್</translation>
 <translation id="8726019395068607495">ನಿಲ್ಲಿಸಲಾಗಿದೆ - ಡೋರ್ ಓಪನ್ ಆಗಿದೆ</translation>
@@ -230,14 +250,18 @@
 <translation id="8747900814994928677">ಬದಲಾವಣೆಯನ್ನು ದೃಢೀಕರಿಸಿ</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">ಡಿಫಾಲ್ಟ್</translation>
+<translation id="8814190375133053267">ವೈ-ಫೈ</translation>
 <translation id="8845001906332463065">ಸಹಾಯ ಪಡೆಯಿರಿ</translation>
 <translation id="8881098542468797602">ಪರೀಕ್ಷೆ ಯಶಸ್ವಿಯಾಗಿದೆ</translation>
+<translation id="8898840733695078011">ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ</translation>
 <translation id="8910721771319628100">ವಿಳಂಬ ಥ್ರೆಶ್‌ಹೋಲ್ಡ್‌ ಮೇಲಿನ ಡೀಫಾಲ್ಟ್ ನೆಟ್‌ವರ್ಕ್</translation>
 <translation id="8919837981463578619">ವಿಫಲವಾಗಿದೆ - ಟ್ರೇ ಕಾಣೆಯಾಗಿದೆ</translation>
 <translation id="8928727111548978589">ವಿಫಲವಾಗಿದೆ - ಕಾಗದ ಖಾಲಿಯಾಗಿದೆ</translation>
+<translation id="8930622219860340959">ವೈರ್‌ಲೆಸ್</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> ಪ್ರಯತ್ನಗಳು ಬಾಕಿ ಉಳಿದಿವೆ</translation>
 <translation id="8968751544471797276">ಚಾರ್ಜಿಂಗ್ ರೇಟ್</translation>
 <translation id="8970109610781093811">ಮತ್ತೆ ಚಾಲನೆ ಮಾಡಿ</translation>
+<translation id="9074739597929991885">ಬ್ಲೂಟೂತ್‌</translation>
 <translation id="9088306295921699330">ಪ್ರಸ್ತುತ ಬಳಕೆ</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> ಗಾಗಿ ಟಿಕೆಟ್ ರಿಫ್ರೆಶ್ ಮಾಡಿ</translation>
 <translation id="9106415115617144481">ಪುಟ <ph name="PAGE_NUMBER" /> ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>

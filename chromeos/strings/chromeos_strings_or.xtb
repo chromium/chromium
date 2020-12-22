@@ -9,6 +9,7 @@
 <translation id="1175697296044146566">ଏହି <ph name="DEVICE_TYPE" />, <ph name="MANAGER" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି।</translation>
 <translation id="1195447618553298278">ଅଜ୍ଞାତ ତୃଟି ।</translation>
 <translation id="1204296502688602597">DNS ଲାଟେନ୍ସି</translation>
+<translation id="123124571410524056">ପୋର୍ଟାଲକୁ ସନ୍ଦେହ କରାଯାଇଛି</translation>
 <translation id="1238612778414822719">HTTPS ଲାଟେନ୍ସି</translation>
 <translation id="1290331692326790741">ଦୁର୍ବଳ ସିଗ୍‌‌‌‌‌‌‌ନାଲ୍</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -36,6 +37,7 @@
 <translation id="1947737735496445907">ପ୍ରିଣ୍ଟ କରାଯାଇଛି</translation>
 <translation id="1979103255016296513">ପାସ୍‌ୱାର୍ଡ ପରିବର୍ତ୍ତନର ସମୟ ବିଳମ୍ବ ହୋଇଯାଇଛି</translation>
 <translation id="1980044825731880088">CPU ସ୍ପିଡ୍</translation>
+<translation id="1999615961760456652">କ୍ୟାପ୍ଟିଭ୍ ପୋର୍ଟାଲ୍</translation>
 <translation id="2008685064673031089">ପ୍ରାଇମ୍ ସନ୍ଧାନ</translation>
 <translation id="2080070583977670716">ଅଧିକ ସେଟିଂ</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -47,12 +49,12 @@
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" />ଟି ପ୍ରଚେଷ୍ଟା ବାକି ଅଛି</translation>
 <translation id="2391082728065870591">ମତାମତ ରିପୋର୍ଟ ପଠାନ୍ତୁ</translation>
 <translation id="2446553403094072641">ଫ୍ଲୋଟିଂ ପଏଣ୍ଟର ସଠିକତା</translation>
+<translation id="2448312741937722512">ପ୍ରକାର</translation>
 <translation id="2461822463642141190">ବର୍ତ୍ତମାନର</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">ସ୍କାନ୍ କରନ୍ତୁ</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> ପରୀକ୍ଷା ଚଲାଯାଉଛି...</translation>
 <translation id="2620436844016719705">ସିଷ୍ଟମ୍‌</translation>
-<translation id="2658845327196595460">{COUNT,plural, =1{ସ୍କାନ୍ କରାଯାଇଥିବା ଫାଇଲକୁ ସେଭ୍ କରାଯାଇଛି!}other{ସ୍କାନ୍ କରାଯାଇଥିବା ଫାଇଲଗୁଡ଼ିକୁ ସେଭ୍ କରାଯାଇଛି!}}</translation>
 <translation id="2740531572673183784">ଠିକ୍ ଅଛି</translation>
 <translation id="2805756323405976993">ଆପ୍ସ</translation>
 <translation id="2872961005593481000">ବନ୍ଦ କରନ୍ତୁ</translation>
@@ -65,19 +67,23 @@
 <translation id="3091839911843451378">ବିଫଳ ହୋଇଛି - ପ୍ରିଣ୍ଟର୍ ବନ୍ଦ ହୋଇଯାଇଛି</translation>
 <translation id="3102119246920354026">କ୍ୟାଶ୍</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="315116470104423982">ମୋବାଇଲ୍ ଡାଟା</translation>
 <translation id="3188257591659621405">ମୋ ଫାଇଲ୍‌ଗୁଡ଼ିକ</translation>
 <translation id="3199982728237701504">ଡକ୍ୟୁମେଣ୍ଟ ଫିଡର୍ (ଦୁଇ-ପାର୍ଶ୍ୱ)</translation>
 <translation id="3246869037381808805">1ଦିନରୁ ଅଧିକ ପୁରୁଣା ପ୍ରିଣ୍ଟ କାର୍ଯ୍ୟଗୁଡ଼ିକୁ କାଢ଼ି ଦିଆଯିବ</translation>
 <translation id="3268178239013324452">ବିଫଳ ହୋଇଛି - ପ୍ରିଣ୍ଟରର କଭର୍ ଖୋଲା ଅଛି</translation>
 <translation id="3310640316857623290">DNS ଲାଟେନ୍ସି ଅନୁମୋଦିତ ସୀମା ଠାରୁ ଉଲ୍ଲେଖଯୋଗ୍ୟ ଭାବରେ ଉପରେ ଅଛି</translation>
 <translation id="3328783797891415197">ଟେଷ୍ଟ ଚାଲୁଛି</translation>
+<translation id="3368922792935385530">ସଂଯୁକ୍ତ ହୋଇଛି</translation>
 <translation id="3369013195428705271">ଆପଣ ସମସ୍ତ ପ୍ରିଣ୍ଟ ଇତିହାସ ଖାଲି କରିବାକୁ ଚାହୁଁଥିବା ନିଶ୍ଚିତ କି? ଆପଣଙ୍କ ଚାଲୁଥିବା ପ୍ରିଣ୍ଟ କାର୍ଯ୍ୟଗୁଡ଼ିକ ଖାଲି ହେବ ନାହିଁ।</translation>
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" />ଟି ପୃଷ୍ଠା ମଧ୍ୟରୁ <ph name="PRINTED_PAGES" /> ନମ୍ବର ପୃଷ୍ଠା ପ୍ରିଣ୍ଟ କରାଯାଇଛି।</translation>
 <translation id="3459509316159669723">ପ୍ରିଣ୍ଟିଂ</translation>
 <translation id="3515615323037921860">ପ୍ରିଣ୍ଟ ଜବ୍</translation>
 <translation id="3527036260304016759">ବିଫଳ ହୋଇଛି - ଅଜଣା ତ୍ରୁଟି</translation>
+<translation id="357889014807611375">ମିଟର୍ ହୋଇଥିବା ୱାଇ-ଫାଇ</translation>
 <translation id="360565022852130722">ଦୁର୍ବଳ ପ୍ରୋଟୋକଲ୍ WEP 802.1x ବ୍ୟବହାର କରି ୱାଇଫାଇ ନେଟୱାର୍କକୁ ସୁରକ୍ଷିତ କରାଯାଇଛି</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" />ଟି ସମୀକ୍ଷା)</translation>
+<translation id="3748026146096797577">ସଂଯୁକ୍ତ ହୋଇନାହିଁ</translation>
 <translation id="3749289110408117711">ଫାଇଲ୍ ନାମ</translation>
 <translation id="38114475217616659">ସମସ୍ତ ଇତିହାସ ଖାଲି କରନ୍ତୁ</translation>
 <translation id="3820172043799983114">ଅବୈଧ PIN।</translation>
@@ -91,6 +97,7 @@
 <translation id="4131410914670010031">କଳା ଏବଂ ଧଳା</translation>
 <translation id="4145784616224233563">HTTP ଫାୟାରୱାଲ୍</translation>
 <translation id="4170700058716978431">ବିଫଳ ହୋଇଛି</translation>
+<translation id="4176463684765177261">ଅକ୍ଷମ କରାଯାଇଛି</translation>
 <translation id="4227825898293920515"><ph name="TIME" />ରେ ପାସ୍‌ୱାର୍ଡର ମିଆଦ ଶେଷ ହେଉଛି</translation>
 <translation id="4238516577297848345">କୌଣସି ପ୍ରିଣ୍ଟ କାର୍ଯ୍ୟ ଚାଲୁ ନାହିଁ</translation>
 <translation id="4297501883039923494">ବନ୍ଦ ହୋଇଯାଇଛି - ଅଜଣା ତ୍ରୁଟି</translation>
@@ -100,7 +107,9 @@
 <translation id="4429881212383817840">Kerberos ଟିକେଟ୍‍ର ମିଆଦ ଶୀଘ୍ର ଶେଷ ହୋଇଯିବ</translation>
 <translation id="445059817448385655">ପୁରୁଣା ପାସ୍‌ୱାର୍ଡ</translation>
 <translation id="4454245904991689773">ସ୍କାନ୍ କରି ଏଠାରେ ସେଭ୍ କରନ୍ତୁ</translation>
+<translation id="4479639480957787382">ଇଥର୍‌ନେଟ୍‌</translation>
 <translation id="4483049906298469269">ଡିଫଲ୍ଟ-ନଥିବା ନେଟୱାର୍କ ଗେଟୱେକୁ ପିଙ୍ଗ୍ କରିବାରେ ବିଫଳ ହୋଇଛି</translation>
+<translation id="4511264077854731334">ପୋର୍ଟାଲ୍</translation>
 <translation id="4548483925627140043">ସିଗନାଲ୍ ମିଳିଲା ନାହିଁ</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh ବ୍ୟାଟେରୀ</translation>
 <translation id="458794348635939462">ହୋଷ୍ଟ ସମ୍ବନ୍ଧିତ ସମସ୍ତ ସମସ୍ୟାର ସମାଧାନ କରିବାରେ ବିଫଳ ହୋଇଛି</translation>
@@ -115,6 +124,7 @@
 <translation id="4773299976671772492">ବନ୍ଦ ହୋଇଯାଇଛି</translation>
 <translation id="4808449224298348341">ପ୍ରିଣ୍ଟ କାର୍ଯ୍ୟ <ph name="DOCUMENT_TITLE" /> ବାତିଲ୍ କରାଯାଇଛି</translation>
 <translation id="4832079907277790330">Files ଆପରେ ଫୋଲ୍ଡର୍ ଚୟନ କରନ୍ତୁ...</translation>
+<translation id="4835901797422965222">କୌଣସି ସକ୍ରିୟ ନେଟୱାର୍କ ନାହିଁ</translation>
 <translation id="4848429997038228357">ଚାଲୁଛି</translation>
 <translation id="4890353053343094602">ତୁରନ୍ତ ଏକ ନୂଆ ବାଛନ୍ତୁ</translation>
 <translation id="4891842000192098784">ଷ୍ଟ୍ରେସ୍</translation>
@@ -124,6 +134,7 @@
 <translation id="498186245079027698">ସ୍କାନର୍ ଯାଞ୍ଚ କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ। ସ୍କାନ୍ କରାଯାଇଥିବା ଫାଇଲଗୁଡ଼ିକୁ ସେଭ୍ କରିବାକୁ ଯଥେଷ୍ଟ ଲୋକାଲ୍ ସ୍ଥାନ ଥିବା ନିଶ୍ଚିତ କରନ୍ତୁ।</translation>
 <translation id="4985509611418653372">ଚଲାନ୍ତୁ</translation>
 <translation id="500920857929044050">ଟେଷ୍ଟ ବନ୍ଦ କରନ୍ତୁ</translation>
+<translation id="5089810972385038852">ରାଜ୍ୟ</translation>
 <translation id="5154917547274118687">ମେମୋରୀ</translation>
 <translation id="5168185087976003268">ବ୍ୟାଟେରୀ ହେଲ୍ଥ</translation>
 <translation id="520299634122159966">କୌଣସି ସ୍କାନର୍ ଉପଲବ୍ଧ ନାହିଁ</translation>
@@ -136,9 +147,12 @@
 <translation id="5317780077021120954">ସଞ୍ଚୟ</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">ବର୍ତ୍ତମାନ ଏକ ନୂଆ ବାଛନ୍ତୁ</translation>
+<translation id="5333530671332546086">ଅଜଣା ପୋର୍ଟାଲ୍ ସ୍ଥିତି</translation>
 <translation id="5372659122375744710">ୱାଇଫାଇ ନେଟୱାର୍କ ସୁରକ୍ଷିତ ନୁହେଁ</translation>
 <translation id="5401938042319910061">ସମସ୍ତ ରୁଟିନ୍ ଚଲାନ୍ତୁ</translation>
+<translation id="5430931332414098647">ଇନ୍‌ଷ୍ଟାଣ୍ଟ ଟିଥରିଂ</translation>
 <translation id="5431318178759467895">ରଙ୍ଗ</translation>
+<translation id="5431825016875453137">VPN / L2TP ଖୋଲନ୍ତୁ</translation>
 <translation id="5457599981699367932">ଅତିଥି ହିସାବରେ ବ୍ରାଉଜ୍ କରନ୍ତୁ</translation>
 <translation id="54609108002486618">ପରିଚାଳିତ ହେଉଛି</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
@@ -149,6 +163,7 @@
 <translation id="5797428682393400134">ସଫଳ</translation>
 <translation id="5832805196449965646">ଲୋକଙ୍କୁ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="5895138241574237353">ପୁନଃଆରମ୍ଭ</translation>
+<translation id="5916084858004523819">ନିଷିଦ୍ଧ</translation>
 <translation id="5931523347251946569">ଫାଇଲ୍ ମିଳିଲା ନାହିଁ</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, ସଂସ୍କରଣ <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">ବନ୍ଦ</translation>
@@ -160,6 +175,7 @@
 <translation id="6106186594183574873">ସମ୍ପୂର୍ଣ୍ଣ କରିବା ପାଇଁ, ଆପଣଙ୍କର ପୁରୁଣା ପାସ୍‍ୱାର୍ଡ ଲେଖନ୍ତୁ</translation>
 <translation id="6108689792487843350">ଗେଟୱେ ସହିତ ସଂଯୋଗ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="6114428539405324828"><ph name="CURRENT" />GHz / <ph name="MAX" />GHz</translation>
+<translation id="6122191549521593678">ଅନ୍‌ଲାଇନ୍</translation>
 <translation id="6146993107019042706">ସମ୍ପୂର୍ଣ୍ଣ କରିବା ପାଇଁ, ଆପଣଙ୍କର ନୂଆ ପାସ୍‍ୱାର୍ଡ ଲେଖନ୍ତୁ</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">ଅଧିକ ଜାଣନ୍ତୁ</translation>
@@ -184,7 +200,9 @@
 <translation id="6839141349259399400">ସ୍କାନରଗୁଡ଼ିକ ସହ ସଂଯୋଗ କରାଯାଇପାରିବ ନାହିଁ କି?</translation>
 <translation id="6853312040151791195">ଡିସଚାର୍ଜିଂ ରେଟ୍</translation>
 <translation id="6898743098396957679">ସ୍କାନିଂ ସମ୍ପୂର୍ଣ୍ଣ କରାଯାଇପାରିଲା ନାହିଁ</translation>
+<translation id="6957231940976260713">ସେବାର ନାମ</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> ଏହି ଡିଭାଇସକୁ ପରିଚାଳନା କରେ ଏବଂ ଏହା ପାଖରେ ଭିଜିଟ୍ କରାଯାଇଥିବା ୱେବପୃଷ୍ଠା, ପାସୱାର୍ଡ ଏବଂ ଇମେଲ୍ ସମେତ ସମସ୍ତ ଉପଯୋଗକର୍ତ୍ତା କାର୍ଯ୍ୟକଳାପକୁ ଆକ୍ସେସ୍ ଅଛି।</translation>
+<translation id="7143207342074048698">ସଂଯୋଗ କରୁଛି</translation>
 <translation id="714876143603641390">LAN ସଂଯୋଗ</translation>
 <translation id="7162487448488904999">ଗ୍ୟାଲେରୀ</translation>
 <translation id="7177485034254901881">ଏହି <ph name="DEVICE_TYPE" />, <ph name="MANAGER" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି। ଆଡମିନିଷ୍ଟ୍ରେଟରମାନେ ଡିଭାଇସଟିକୁ ରିମୋଟ୍ ଭାବେ କନଫିଗର୍ କରିପାରନ୍ତି।</translation>
@@ -192,11 +210,14 @@
 <translation id="7359657277149375382">ଫାଇଲର ପ୍ରକାର</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{ସ୍କାନ୍ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଯାଇଛି। 1ଟି ପୃଷ୍ଠାକୁ ସ୍କାନ୍ କରାଯାଇଛି}other{ସ୍କାନ୍ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଯାଇଛି। {NUMBER_OF_PAGES}ଟି ପୃଷ୍ଠାକୁ ସ୍କାନ୍ କରାଯାଇଛି}}</translation>
 <translation id="7441459999606975924">ବ୍ୟବହାର ସହିତ ବ୍ୟାଟେରୀଗୁଡ଼ିକର କ୍ଷମତା ହ୍ରାସ ପାଏ</translation>
+<translation id="7469648432129124067">ପୋର୍ଟାଲକୁ ଚିହ୍ନଟ କରାଯାଇଛି</translation>
+<translation id="7490813197707563893">MAC ଠିକଣା</translation>
 <translation id="7561454561030345039">ଏହି କାର୍ଯ୍ୟ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ ହୁଏ</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">HTTPSର ଅଧିକ ଲାଟେନ୍ସି</translation>
 <translation id="7658239707568436148">ବାତିଲ୍</translation>
 <translation id="7690294790491645610">ନୂଆ ପାସ୍‌ୱାର୍ଡ ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
+<translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">ସାଇକଲ୍ ଗଣନା</translation>
 <translation id="7732651821766520760"><ph name="TEST_NAME" /> ଟେଷ୍ଟ</translation>
 <translation id="7805768142964895445">ସ୍ଥିତି</translation>
@@ -208,6 +229,7 @@
 <translation id="808894953321890993">ପାସ୍‌ୱାର୍ଡ ବଦଳାନ୍ତୁ</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8160445423316272678">ଆରମ୍ଭ କରିବା ପାଇଁ ଆପଣଙ୍କ ଡକ୍ୟୁମେଣ୍ଟକୁ ସ୍କାନରରେ ରଖି <ph name="SPAN_BEGIN" />ସ୍କାନ୍ କରନ୍ତୁ<ph name="SPAN_END" />କୁ ଚୟନ କରନ୍ତୁ</translation>
+<translation id="8206859287963243715">ସେଲ୍ୟୁଲାର୍</translation>
 <translation id="8208861521865154048">ପର୍କଗୁଡ଼ିକ</translation>
 <translation id="8230672074305416752">ଡିଫଲ୍ଟ ନେଟୱାର୍କ ଗେଟୱେକୁ ପିଙ୍ଗ୍ କରିବାରେ ବିଫଳ ହୋଇଛି</translation>
 <translation id="8294431847097064396">ଉତ୍ସ</translation>
@@ -219,6 +241,7 @@
 <translation id="8398927464629426868">ଡିଭାଇସଟି ବର୍ତ୍ତମାନ ଯେଉଁ ହାରରେ ଚାର୍ଜ କିମ୍ବା ଡିସଚାର୍ଜ ହେଉଛି</translation>
 <translation id="8475690821716466388">ଦୁର୍ବଳ ପ୍ରୋଟୋକଲ୍ WEP PSK ବ୍ୟବହାର କରି ୱାଇଫାଇ ନେଟୱାର୍କକୁ ସୁରକ୍ଷିତ କରାଯାଇଛି</translation>
 <translation id="8477551185774834963">DNS ଲାଟେନ୍ସି ଅନୁମୋଦିତ ସୀମା ଠାରୁ ଅଳ୍ପ ଉପରେ ଅଛି</translation>
+<translation id="8576249514688522074">ଆରମ୍ଭ କରାଯାଇନାହିଁ</translation>
 <translation id="871560550817059752">ବିଫଳ ହୋଇଛି - ସ୍ୟାହି ଶେଷ ହୋଇଯାଇଛି</translation>
 <translation id="8723108084122415655">ଡିଫଲ୍ଟ-ନଥିବା ନେଟୱାର୍କ ଲାଟେନ୍ସି ସୀମାର ଉପରେ ଅଛି</translation>
 <translation id="8726019395068607495">ବନ୍ଦ ହୋଇଯାଇଛି - ପ୍ରିଣ୍ଟରର କଭର୍ ଖୋଲା ଅଛି</translation>
@@ -226,14 +249,18 @@
 <translation id="8747900814994928677">ପରିବର୍ତ୍ତନକୁ ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">ଡିଫଲ୍ଟ</translation>
+<translation id="8814190375133053267">ୱାଇ-ଫାଇ</translation>
 <translation id="8845001906332463065">ସାହାଯ୍ୟ ପାଆନ୍ତୁ</translation>
 <translation id="8881098542468797602">ଟେଷ୍ଟ ସଫଳ ହୋଇଛି</translation>
+<translation id="8898840733695078011">ସିଗନାଲ୍‌ ଦକ୍ଷତା</translation>
 <translation id="8910721771319628100">ଡିଫଲ୍ଟ ନେଟୱାର୍କ ଲାଟେନ୍ସି ସୀମାର ଉପରେ ଅଛି</translation>
 <translation id="8919837981463578619">ବିଫଳ ହୋଇଛି - ଟ୍ରେ ଅନୁପଲବ୍ଧ ଅଛି</translation>
 <translation id="8928727111548978589">ବିଫଳ ହୋଇଛି - କାଗଜ ଶେଷ ହୋଇଯାଇଛି</translation>
+<translation id="8930622219860340959">ୱେୟାରଲେସ୍</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /><ph name="ATTEMPTS_LEFT" />ଟି ପ୍ରଚେଷ୍ଟା ବାକି ଅଛି</translation>
 <translation id="8968751544471797276">ଚାର୍ଜିଂ ରେଟ୍</translation>
 <translation id="8970109610781093811">ପୁଣି ଚଲାନ୍ତୁ</translation>
+<translation id="9074739597929991885">ବ୍ଲୁଟୁଥ୍</translation>
 <translation id="9088306295921699330">ବର୍ତ୍ତମାନର ବ୍ୟବହାର</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> ପାଇଁ ଟିକେଟ୍ ରିଫ୍ରେଶ୍ କରନ୍ତୁ</translation>
 <translation id="9106415115617144481">ପୃଷ୍ଠା <ph name="PAGE_NUMBER" />କୁ ସ୍କାନ୍ କରାଯାଉଛି</translation>

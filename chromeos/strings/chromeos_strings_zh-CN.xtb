@@ -9,6 +9,7 @@
 <translation id="1175697296044146566">此 <ph name="DEVICE_TYPE" /> 由 <ph name="MANAGER" /> 管理。</translation>
 <translation id="1195447618553298278">未知错误。</translation>
 <translation id="1204296502688602597">DNS 延迟时间</translation>
+<translation id="123124571410524056">疑似存在门户</translation>
 <translation id="1238612778414822719">HTTPS 延迟</translation>
 <translation id="1290331692326790741">信号较弱</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -36,6 +37,7 @@
 <translation id="1947737735496445907">已打印</translation>
 <translation id="1979103255016296513">密码更改期限已过</translation>
 <translation id="1980044825731880088">CPU 速度</translation>
+<translation id="1999615961760456652">强制门户</translation>
 <translation id="2008685064673031089">高峰搜索</translation>
 <translation id="2080070583977670716">更多设置</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -47,12 +49,12 @@
 <translation id="2375079107209812402">剩余尝试次数：<ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="2391082728065870591">发送反馈报告</translation>
 <translation id="2446553403094072641">浮点准确性</translation>
+<translation id="2448312741937722512">类型</translation>
 <translation id="2461822463642141190">电流</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">扫描</translation>
 <translation id="2570743873672969996">正在运行<ph name="TEST_NAME" />测试…</translation>
 <translation id="2620436844016719705">系统</translation>
-<translation id="2658845327196595460">{COUNT,plural, =1{扫描的文件已保存！}other{扫描的文件已保存！}}</translation>
 <translation id="2740531572673183784">确定</translation>
 <translation id="2805756323405976993">应用</translation>
 <translation id="2872961005593481000">关机</translation>
@@ -65,19 +67,23 @@
 <translation id="3091839911843451378">失败 - 已停止</translation>
 <translation id="3102119246920354026">缓存</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="315116470104423982">移动数据</translation>
 <translation id="3188257591659621405">我的文件</translation>
 <translation id="3199982728237701504">文件馈送器（双面）</translation>
 <translation id="3246869037381808805">系统会自动移除存在时长已超过 1 天的打印任务</translation>
 <translation id="3268178239013324452">失败 - 机盖未关</translation>
 <translation id="3310640316857623290">DNS 延迟时间明显超出了允许的阈值</translation>
 <translation id="3328783797891415197">正在运行测试</translation>
+<translation id="3368922792935385530">已连接</translation>
 <translation id="3369013195428705271">确定要清除所有打印记录吗？您正在执行的打印任务不会被清除。</translation>
 <translation id="3456078764689556234">已打印 <ph name="PRINTED_PAGES" /> 页（共 <ph name="TOTAL_PAGES" /> 页）。</translation>
 <translation id="3459509316159669723">打印</translation>
 <translation id="3515615323037921860">打印任务</translation>
 <translation id="3527036260304016759">失败 - 不明错误</translation>
+<translation id="357889014807611375">按流量计费的 Wi-Fi</translation>
 <translation id="360565022852130722">Wi-Fi 网络采用了防护能力较弱的 WEP 802.1x 协议</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★（<ph name="AGGREGATED_COUNT" /> 条评价）</translation>
+<translation id="3748026146096797577">未建立连接</translation>
 <translation id="3749289110408117711">文件名</translation>
 <translation id="38114475217616659">清除所有打印记录</translation>
 <translation id="3820172043799983114">PIN 码无效。</translation>
@@ -91,6 +97,7 @@
 <translation id="4131410914670010031">黑白色</translation>
 <translation id="4145784616224233563">HTTP 防火墙</translation>
 <translation id="4170700058716978431">失败</translation>
+<translation id="4176463684765177261">已停用</translation>
 <translation id="4227825898293920515">密码将于 <ph name="TIME" />后到期</translation>
 <translation id="4238516577297848345">没有正在进行的打印任务</translation>
 <translation id="4297501883039923494">已停止 - 未知错误</translation>
@@ -100,7 +107,9 @@
 <translation id="4429881212383817840">Kerberos 票据即将过期</translation>
 <translation id="445059817448385655">旧密码</translation>
 <translation id="4454245904991689773">将扫描的文件保存至</translation>
+<translation id="4479639480957787382">以太网</translation>
 <translation id="4483049906298469269">未能对非默认网关执行 ping 操作</translation>
+<translation id="4511264077854731334">门户网站</translation>
 <translation id="4548483925627140043">找不到信号</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh 电池</translation>
 <translation id="458794348635939462">未能解析所有主机</translation>
@@ -115,6 +124,7 @@
 <translation id="4773299976671772492">已停止</translation>
 <translation id="4808449224298348341">已取消打印任务“<ph name="DOCUMENT_TITLE" />”</translation>
 <translation id="4832079907277790330">在“文件”应用中选择文件夹…</translation>
+<translation id="4835901797422965222">未连接到任何网络</translation>
 <translation id="4848429997038228357">正在运行</translation>
 <translation id="4890353053343094602">请立即设置一个新密码</translation>
 <translation id="4891842000192098784">压力</translation>
@@ -124,6 +134,7 @@
 <translation id="498186245079027698">请检查扫描仪，然后重试。另请确保有足够的本地空间来保存扫描版文件。</translation>
 <translation id="4985509611418653372">运行</translation>
 <translation id="500920857929044050">停止测试</translation>
+<translation id="5089810972385038852">州/省/直辖市/自治区</translation>
 <translation id="5154917547274118687">内存</translation>
 <translation id="5168185087976003268">电池寿命</translation>
 <translation id="520299634122159966">无可用的扫描器</translation>
@@ -136,9 +147,12 @@
 <translation id="5317780077021120954">保存</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />，<ph name="PRINTER_NAME" />，<ph name="CREATION_TIME" />，<ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">请立即设置一个新密码</translation>
+<translation id="5333530671332546086">门户状态不明</translation>
 <translation id="5372659122375744710">Wi-Fi 网络不安全</translation>
 <translation id="5401938042319910061">运行所有例程</translation>
+<translation id="5430931332414098647">即时网络共享</translation>
 <translation id="5431318178759467895">彩色</translation>
+<translation id="5431825016875453137">OpenVPN / L2TP</translation>
 <translation id="5457599981699367932">以访客身份浏览</translation>
 <translation id="54609108002486618">托管</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />：<ph name="PROBLEMS" /></translation>
@@ -149,6 +163,7 @@
 <translation id="5797428682393400134">成功</translation>
 <translation id="5832805196449965646">添加用户</translation>
 <translation id="5895138241574237353">重新启动</translation>
+<translation id="5916084858004523819">已禁止</translation>
 <translation id="5931523347251946569">未找到文件</translation>
 <translation id="5982592372228113572">（<ph name="BOARD_NAME" />，版本 <ph name="MILESTONE_VERSION" />）</translation>
 <translation id="6040143037577758943">关闭</translation>
@@ -160,6 +175,7 @@
 <translation id="6106186594183574873">要完成更改，请输入您的旧密码</translation>
 <translation id="6108689792487843350">无法连接至网关</translation>
 <translation id="6114428539405324828"><ph name="CURRENT" />GHz / <ph name="MAX" />GHz</translation>
+<translation id="6122191549521593678">在线</translation>
 <translation id="6146993107019042706">要完成更改，请输入您的新密码</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">了解详情</translation>
@@ -184,7 +200,9 @@
 <translation id="6839141349259399400">无法连接到扫描器？</translation>
 <translation id="6853312040151791195">放电速率</translation>
 <translation id="6898743098396957679">无法完成扫描</translation>
+<translation id="6957231940976260713">服务名称</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> 负责管理此设备，而且有权查看所有用户活动（包括访问过的网页、密码和电子邮件）。</translation>
+<translation id="7143207342074048698">正在连接</translation>
 <translation id="714876143603641390">LAN 连接性</translation>
 <translation id="7162487448488904999">媒体库</translation>
 <translation id="7177485034254901881">此 <ph name="DEVICE_TYPE" /> 由 <ph name="MANAGER" /> 管理。管理员可能会远程配置此设备。</translation>
@@ -192,11 +210,14 @@
 <translation id="7359657277149375382">文件类型</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{已完成扫描。扫描了 1 页}other{已完成扫描。扫描了 {NUMBER_OF_PAGES} 页}}</translation>
 <translation id="7441459999606975924">电池容量会随使用时长的增加而减少</translation>
+<translation id="7469648432129124067">检测到门户</translation>
+<translation id="7490813197707563893">MAC 地址</translation>
 <translation id="7561454561030345039">此操作由您的管理员管理</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">HTTPS 延迟较高</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7690294790491645610">再次输入新密码</translation>
+<translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">循环计数</translation>
 <translation id="7732651821766520760"><ph name="TEST_NAME" />测试</translation>
 <translation id="7805768142964895445">状态</translation>
@@ -208,6 +229,7 @@
 <translation id="808894953321890993">更改密码</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8160445423316272678">将您的文件放置在扫描器上，然后选择<ph name="SPAN_BEGIN" />扫描<ph name="SPAN_END" />，即可开始扫描</translation>
+<translation id="8206859287963243715">蜂窝网络设备</translation>
 <translation id="8208861521865154048">福利</translation>
 <translation id="8230672074305416752">未能对默认网关执行 ping 操作</translation>
 <translation id="8294431847097064396">来源</translation>
@@ -219,6 +241,7 @@
 <translation id="8398927464629426868">设备当前的充电或放电速度</translation>
 <translation id="8475690821716466388">Wi-Fi 网络采用了防护能力较弱的 WEP PSK 协议</translation>
 <translation id="8477551185774834963">DNS 延迟时间略微超出了允许的阈值</translation>
+<translation id="8576249514688522074">未初始化</translation>
 <translation id="871560550817059752">失败 - 墨水已用完</translation>
 <translation id="8723108084122415655">非默认网络的延迟时间超出了阈值</translation>
 <translation id="8726019395068607495">已停止 - 机盖未关</translation>
@@ -226,14 +249,18 @@
 <translation id="8747900814994928677">确认更改</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">默认</translation>
+<translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">获取帮助</translation>
 <translation id="8881098542468797602">测试成功</translation>
+<translation id="8898840733695078011">信号强度</translation>
 <translation id="8910721771319628100">默认网络的延迟时间超出了阈值</translation>
 <translation id="8919837981463578619">失败 - 缺少送纸盘</translation>
 <translation id="8928727111548978589">失败 - 纸张已用完</translation>
+<translation id="8930622219860340959">无线</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" />剩余尝试次数：<ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="8968751544471797276">充电速率</translation>
 <translation id="8970109610781093811">重新运行</translation>
+<translation id="9074739597929991885">蓝牙</translation>
 <translation id="9088306295921699330">目前用量</translation>
 <translation id="910415269708673980">刷新 <ph name="PRINCIPAL_NAME" /> 的票据</translation>
 <translation id="9106415115617144481">正在扫描第 <ph name="PAGE_NUMBER" /> 页</translation>

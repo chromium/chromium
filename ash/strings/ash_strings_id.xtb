@@ -205,6 +205,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2878884018241093801">Tidak ada item baru-baru ini</translation>
 <translation id="2903844815300039659">Terhubung ke <ph name="NAME" />, <ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">Screenshot</translation>
+<translation id="2941112035454246133">Rendah</translation>
 <translation id="2942350706960889382">Kaca Pembesar Tersemat</translation>
 <translation id="2942516765047364088">Posisi rak</translation>
 <translation id="2946119680249604491">Tambahkan koneksi</translation>
@@ -217,6 +218,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3000461861112256445">Audio mono</translation>
 <translation id="3009178788565917040">Keluaran</translation>
 <translation id="3033545621352269033">Aktif</translation>
+<translation id="3036649622769666520">Buka File</translation>
 <translation id="3038571455154067151">Untuk login, masukkan kode akses orang tua Family Link</translation>
 <translation id="3045488863354895414">Selamat siang,</translation>
 <translation id="3051128274746680507">Profil pengguna yang dilindungi akan segera dihapus. Login untuk mempelajari lebih lanjut.</translation>
@@ -367,7 +369,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="4321776623976362024">Anda menekan pintasan keyboard untuk kontras tinggi. Ingin mengaktifkannya?</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4338109981321384717">Kaca pembesar</translation>
-<translation id="4350065043422286972">Dipasangi Pin</translation>
 <translation id="4351433414020964307">Asisten sedang dimuat...</translation>
 <translation id="4356930093361201197">mode kontras tinggi</translation>
 <translation id="4371348193907997655">Setelan Transmisi</translation>
@@ -387,7 +388,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Perangkat tidak tersambung</translation>
 <translation id="4485060137115666462">Dengan klik kanan atau tekan lama, Asisten akan menampilkan info seperti definisi, terjemahan, atau konversi unit untuk teks yang Anda pilih.</translation>
-<translation id="4488735711456074171">Sepertinya ponsel Anda tidak online dan kami tidak dapat menghubungkannya.</translation>
 <translation id="4505050298327493054">Desktop aktif.</translation>
 <translation id="4513946894732546136">Masukan</translation>
 <translation id="4527045527269911712">Perangkat Bluetooth "<ph name="DEVICE_NAME" />" meminta izin untuk bersanding.</translation>
@@ -448,7 +448,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />j <ph name="MINUTES" />m <ph name="SECONDS" />d</translation>
 <translation id="4975771730019223894">Tampilkan badge aplikasi</translation>
 <translation id="5003993274120026347">Kalimat berikutnya</translation>
-<translation id="5019169674188023236">Sepertinya Bluetooth atau Wi-Fi Anda dinonaktifkan di <ph name="DEVICE_TYPE" />. Periksa koneksi Anda untuk menggunakan Phone Hub.</translation>
 <translation id="5030687792513154421">Waktu habis</translation>
 <translation id="5033299697334913360">Klik di mana saja untuk menangkap gambar dalam layar penuh</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> terhubung ke ponsel baru</translation>
@@ -581,7 +580,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="6376931439017688372">Bluetooth aktif</translation>
 <translation id="6381109794406942707">Untuk membuka kunci perangkat, masukkan PIN Anda.</translation>
 <translation id="639644700271529076">CAPS LOCK tidak aktif</translation>
-<translation id="6398771186477608158">Pastikan ponsel berada di dekat Anda dengan Bluetooth dan Wi-Fi yang telah diaktifkan.</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Hapus semua notifikasi</translation>
@@ -731,7 +729,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="7780159184141939021">Memutar Layar</translation>
 <translation id="7796353162336583443">Ketuk tombol stilus di rak untuk mencatat, mengambil screenshot, menggunakan asisten, penunjuk laser, atau kaca pembesar.</translation>
 <translation id="7798302898096527229">Tekan Search atau Shift untuk membatalkan.</translation>
-<translation id="781126011916719498">Akses file-file penting Anda dengan cepat. Klik kanan atau sentuh lama file untuk menyematkannya.</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> dan <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Sinyal kuat</translation>
 <translation id="7837740436429729974">Waktu habis</translation>
@@ -862,7 +859,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="8877788021141246043">Setel pengingat</translation>
 <translation id="8878886163241303700">Memperluas layar</translation>
 <translation id="8883473964424809116">Klik untuk membuka setelan Asisten Google.</translation>
-<translation id="8894122120026866664">Tidak dapat menemukan ponsel Anda</translation>
 <translation id="890616557918890486">Ubah sumber</translation>
 <translation id="8909138438987180327">Baterai <ph name="PERCENTAGE" /> persen.</translation>
 <translation id="8913384980486163186">Tema (default)</translation>
@@ -889,7 +885,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="9084606467167974638">Beralih posisi menu</translation>
 <translation id="9089416786594320554">Metode masukan</translation>
 <translation id="9091626656156419976">Tampilan <ph name="DISPLAY_NAME" /> dihapus</translation>
-<translation id="9092749890156285613">Tangkapan layar dan download terbaru</translation>
 <translation id="9098969848082897657">Senyapkan suara ponsel</translation>
 <translation id="9151726767154816831">Mulai ulang dan powerwash untuk memperbarui</translation>
 <translation id="9166331175924255663">Tombol visibilitas tinggi Berbagi Langsung.</translation>

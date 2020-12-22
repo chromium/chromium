@@ -261,6 +261,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="281504910091592009">View and manage saved passwords in your <ph name="BEGIN_LINK" />Google Account<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">To get your bookmarks on all your devices, sign in and turn on sync</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
+<translation id="2833452327385637152">To search for a word or phrase, touch and hold it instead of tapping it</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Checked 1 day ago}other{Checked # days ago}}</translation>
 <translation id="2842985007712546952">Parent folder</translation>
 <translation id="2860954141821109167">Make sure that a phone app is enabled on this device</translation>
@@ -1108,6 +1109,7 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
 <translation id="8571213806525832805">Last 4 weeks</translation>
 <translation id="8572344201470131220">Image copied</translation>
 <translation id="8583805026567836021">Clearing account data</translation>
+<translation id="8587585930972369234">Touch &amp; hold to search</translation>
 <translation id="860043288473659153">Cardholder name</translation>
 <translation id="8616006591992756292">Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="8617240290563765734">Open the suggested URL specified in the downloaded content?</translation>

@@ -228,7 +228,7 @@ Appuyez sur n'importe quel mot pour effectuer une recherche. Pour affiner la rec
 <translation id="2536728043171574184">Affichage d'une copie hors connexion de la page</translation>
 <translation id="2537178555904266562">Erreur lors de la synchronisation des mots de passe</translation>
 <translation id="2546283357679194313">Cookies et données de sites</translation>
-<translation id="2562889244313180139">Autorisez les sites Web et les applications à vous proposer une expérience mieux adaptée à l'aide d'un alias non identifiable.</translation>
+<translation id="2562889244313180139">Autorisez les sites Web et les applications à vous proposer une expérience mieux adaptée à l'aide d'un alias qui ne permet pas de vous identifier.</translation>
 <translation id="2567385386134582609">IMAGE</translation>
 <translation id="2571711316400087311">Proposer d'envoyer les pages dans d'autres langues vers Google Traduction</translation>
 <translation id="2581165646603367611">Cette action aura pour effet de vider le cache et de supprimer les cookies, ainsi que d'autres données de site que Chrome ne considère pas comme importantes.</translation>
@@ -716,7 +716,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="6005538289190791541">Mot de passe suggéré</translation>
 <translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Vous avez <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> page}one{Vous avez <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> page}other{Vous avez <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> pages}}</translation>
 <translation id="6014293228235665243">Non lu</translation>
-<translation id="6018309500671889594">Autorisez les annonceurs à analyser les campagnes publicitaires à l'aide d'informations non identifiables.</translation>
+<translation id="6018309500671889594">Autorisez les annonceurs à analyser les campagnes publicitaires à l'aide d'informations qui ne permettent pas de vous identifier.</translation>
 <translation id="6036057147555329831">ICU supplémentaire</translation>
 <translation id="6039379616847168523">Accéder à l'onglet suivant</translation>
 <translation id="6040143037577758943">Fermer</translation>

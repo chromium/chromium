@@ -37,7 +37,7 @@
 <translation id="1947737735496445907">ພິມແລ້ວ</translation>
 <translation id="1979103255016296513">ກາຍກຳນົດປ່ຽນລະຫັດຜ່ານແລ້ວ</translation>
 <translation id="1980044825731880088">ຄວາມໄວ CPU</translation>
-<translation id="1999615961760456652">ໜ້າເວັບທາງເຂົ້າ</translation>
+<translation id="1999615961760456652">ຊ່ອງທາງເຂົ້າຮັກສາໄວ້</translation>
 <translation id="2008685064673031089">ການຊອກຫາສຳຄັນ</translation>
 <translation id="2080070583977670716">ການຕັ້ງຄ່າເພີ່ມເຕີມ</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -49,12 +49,13 @@
 <translation id="2375079107209812402">ຍັງລອງໄດ້ອີກ <ph name="ATTEMPTS_LEFT" /> ຄັ້ງ</translation>
 <translation id="2391082728065870591">ສົ່ງລາຍງານຄຳຕິຊົມ</translation>
 <translation id="2446553403094072641">ຄວາມຖືກຕ້ອງຂອງຈຸດລອຍຕົວ</translation>
+<translation id="2448312741937722512">ປະ​ເພດ</translation>
 <translation id="2461822463642141190">ປັດຈຸບັນ</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">ສະແກນ</translation>
 <translation id="2570743873672969996">ກຳລັງເອີ້ນໃຊ້ການທົດສອບ <ph name="TEST_NAME" />...</translation>
+<translation id="2585245331261708204">ມີຫຍັງໃໝ່ກັບ Chrome OS</translation>
 <translation id="2620436844016719705">ລະ​ບົບ</translation>
-<translation id="2658845327196595460">{COUNT,plural, =1{ບັນທຶກໄຟລ໌ທີ່ສະແກນໄວ້ແລ້ວ!}other{ບັນທຶກໄຟລ໌ທີ່ສະແກນໄວ້ແລ້ວ!}}</translation>
 <translation id="2740531572673183784">ຕົກລົງ</translation>
 <translation id="2805756323405976993">ແອັບ</translation>
 <translation id="2872961005593481000">ມອດ</translation>
@@ -67,19 +68,23 @@
 <translation id="3091839911843451378">ບໍ່ສຳເລັດ, ຢຸດແລ້ວ</translation>
 <translation id="3102119246920354026">ແຄ​ຊ໌</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="315116470104423982">ຂໍ້​ມູນ​ມື​ຖື</translation>
 <translation id="3188257591659621405">ໄຟລ໌ຂອງຂ້ອຍ</translation>
 <translation id="3199982728237701504">ຕົວປ້ອນເອກະສານ (ສອງດ້ານ)</translation>
 <translation id="3246869037381808805">ວຽກພິມທີ່ເກົ່າກວ່າ 1 ມື້ຈະຖືກລຶບອອກ</translation>
 <translation id="3268178239013324452">ບໍ່ສຳເລັດ, ຝາເປີດຢູ່</translation>
 <translation id="3310640316857623290">ເວລາໃນການຕອບສະໜອງ DNS ສູງກວ່າເກນທີ່ຍອມຮັບໄດ້ຫຼາຍ</translation>
 <translation id="3328783797891415197">ກຳລັງດຳເນີນການທົດສອບຢູ່</translation>
+<translation id="3368922792935385530">ເຊື່ອມ​ຕໍ່​ແລ້ວ</translation>
 <translation id="3369013195428705271">ທ່ານແນ່ໃຈບໍ່ວ່າທ່ານຕ້ອງການລຶບປະຫວັດການພິມທັງໝົດ? ວຽກການພິມທີ່ພວມດຳເນີນຢູ່ຂອງທ່ານຈະບໍ່ຖືກລຶບລ້າງ.</translation>
 <translation id="3456078764689556234">ພິມໜ້າ <ph name="PRINTED_PAGES" /> ຈາກທັງໝົດ <ph name="TOTAL_PAGES" />.</translation>
 <translation id="3459509316159669723">ກໍາລັງພິມ</translation>
 <translation id="3515615323037921860">ວຽກການພິມ</translation>
 <translation id="3527036260304016759">ບໍ່ສຳເລັດ, ບໍ່ຮູ້ຈັກຂໍ້ຜິດພາດ</translation>
+<translation id="357889014807611375">Wi-Fi ທີ່ວັດແທກການໃຊ້ອິນເຕີເນັດ</translation>
 <translation id="360565022852130722">ເຄືອຂ່າຍ WiFi ມີການຮັກສາຄວາມປອດໄພດ້ວຍໂປຣໂຕຄໍ WEP 802.1x ທີ່ບໍ່ຮັດກຸມ</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ຄຳຕິຊົມ)</translation>
+<translation id="3748026146096797577">ບໍ່​ໄດ້​ເຊື່ອມ​ຕໍ່</translation>
 <translation id="3749289110408117711">ຊື່​ໄຟລ​໌</translation>
 <translation id="38114475217616659">ລຶບລ້າງປະຫວັດທັງໝົດ</translation>
 <translation id="3820172043799983114">PIN ບໍ່ຖືກຕ້ອງ.</translation>
@@ -93,6 +98,7 @@
 <translation id="4131410914670010031">ຂາວດໍາ</translation>
 <translation id="4145784616224233563">HTTP Firewall</translation>
 <translation id="4170700058716978431">ບໍ່ສຳເລັດ</translation>
+<translation id="4176463684765177261">ປິດໃຊ້ງານແລ້ວ</translation>
 <translation id="4227825898293920515">ລະຫັດຜ່ານໝົດອາຍຸໃນ <ph name="TIME" /></translation>
 <translation id="4238516577297848345">ບໍ່ມີວຽກການພິມທີ່ພວມດຳເນີນຢູ່</translation>
 <translation id="4297501883039923494">ຢຸດພິມ, ບໍ່ຮູ້ຈັກຂໍ້ຜິດພາດ</translation>
@@ -102,7 +108,9 @@
 <translation id="4429881212383817840">ປີ້ Kerberos ຈະໝົດອາຍຸໃນໄວໆນີ້</translation>
 <translation id="445059817448385655">ລະຫັດຜ່ານເກົ່າ</translation>
 <translation id="4454245904991689773">ສະແກນເພື່ອ</translation>
+<translation id="4479639480957787382">ອີເທີເນັດ</translation>
 <translation id="4483049906298469269">ໃຊ້ຄຳສັ່ງ ping ກັບເກດເວເຄືອຂ່າຍທີ່ບໍ່ແມ່ນຄ່າເລີ່ມຕົ້ນບໍ່ໄດ້</translation>
+<translation id="4511264077854731334">ໜ້າເວັບ</translation>
 <translation id="4548483925627140043">ບໍ່ພົບສັນຍານ</translation>
 <translation id="455835558791489930">ແບັດເຕີຣີ <ph name="CHARGE_VALUE" />mAh</translation>
 <translation id="458794348635939462">ແກ້ໄຂບັນຫາໂຮສທັງໝົດບໍ່ສຳເລັດ</translation>
@@ -127,6 +135,7 @@
 <translation id="498186245079027698">ກວດເບິ່ງເຄື່ອງສະແກນ ແລ້ວລອງໃໝ່. ກວດໃຫ້ແນ່ໃຈວ່າມີພື້ນທີ່ໃນເຄື່ອງຢ່າງພຽງພໍເພື່ອບັນທຶກໄຟລ໌ທີ່ສະແກນແລ້ວໄວ້.</translation>
 <translation id="4985509611418653372">ເອີ້ນໃຊ້</translation>
 <translation id="500920857929044050">ຢຸດການທົດສອບ</translation>
+<translation id="5089810972385038852">ລັດ</translation>
 <translation id="5154917547274118687">ຄວາມ​ຈໍາ</translation>
 <translation id="5168185087976003268">ສະຖານະແບັດເຕີຣີ</translation>
 <translation id="520299634122159966">ບໍ່ມີເຄື່ອງສະແກນພ້ອມນຳໃຊ້</translation>
@@ -142,7 +151,9 @@
 <translation id="5333530671332546086">ສະຖານະໜ້າເວັບທີ່ບໍ່ຮູ້ຈັກ</translation>
 <translation id="5372659122375744710">ເຄືອຂ່າຍ WiFi ບໍ່ປອດໄພ</translation>
 <translation id="5401938042319910061">ເອີ້ນໃຊ້ສິ່ງທີ່ເຮັດປະຈຳທັງໝົດ</translation>
+<translation id="5430931332414098647">ການປ່ອຍສັນຍານທັນທີ</translation>
 <translation id="5431318178759467895">ສີ</translation>
+<translation id="5431825016875453137">OpenVPN / L2TP</translation>
 <translation id="5457599981699367932">ທ່ອງເນັດເປັນແຂກ</translation>
 <translation id="54609108002486618">ຖືກຈັດການ</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
@@ -153,6 +164,7 @@
 <translation id="5797428682393400134">ສໍາເລັດແລ້ວ</translation>
 <translation id="5832805196449965646">ເພີ່ມບຸກຄົນ</translation>
 <translation id="5895138241574237353">ເລີ່ມຕົ້ນໃໝ່</translation>
+<translation id="5916084858004523819">ຫ້າມໃຊ້</translation>
 <translation id="5931523347251946569">ບໍ່ພົບໄຟລ໌</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, ເວີຊັນ <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">ປິດ</translation>
@@ -164,6 +176,7 @@
 <translation id="6106186594183574873">ເພື່ອສຳເລັດ, ກະລຸນາປ້ອນລະຫັດຜ່ານເກົ່າຂອງທ່ານ</translation>
 <translation id="6108689792487843350">ບໍ່ສາມາດຕິດຕໍ່ເກດເວໄດ້</translation>
 <translation id="6114428539405324828"><ph name="CURRENT" />GHz / <ph name="MAX" />GHz</translation>
+<translation id="6122191549521593678">ອອນ​ລາຍ</translation>
 <translation id="6146993107019042706">ເພື່ອດຳເນີນການໃຫ້ສຳເລັດ, ກະລຸນາປ້ອນລະຫັດຜ່ານໃໝ່ຂອງທ່ານ</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">ສຶກສາ​ເພີ່ມ​ເຕີມ</translation>
@@ -171,6 +184,7 @@
 <translation id="6232017090690406397">ແບັດເຕີຣີ</translation>
 <translation id="6325525973963619867">ບໍ່ສຳເລັດ</translation>
 <translation id="636850387210749493">ການລົງທະບຽນວິສາຫະກິດ</translation>
+<translation id="6426373337268369892">{COUNT,plural, =1{ບັນທຶກໄຟລ໌ທີ່ສະແກນໄວ້ແລ້ວ}other{ບັນທຶກໄຟລ໌ທີ່ສະແກນໄວ້ແລ້ວ}}</translation>
 <translation id="649050271426829538">ຢຸດພິມ - ເຈ້ຍຕິດ</translation>
 <translation id="6517239166834772319">ສຳຫຼວດ</translation>
 <translation id="6527081081771465939">ໂປຣໂຕຄໍຮັກສາຄວາມປອດໄພ WiFi ທີ່ບໍ່ຮູ້ຈັກ</translation>
@@ -188,7 +202,9 @@
 <translation id="6839141349259399400">ບໍ່ສາມາດເຊື່ອມຕໍ່ກັບເຄື່ອງສະແກນໄດ້ບໍ?</translation>
 <translation id="6853312040151791195">ອັດຕາການຄາຍປະຈຸ</translation>
 <translation id="6898743098396957679">ບໍ່ສາມາດເຮັດສຳເລັດການສະແກນໄດ້</translation>
+<translation id="6957231940976260713">ຊື່ການບໍລິການ</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> ຈັດການອຸປະກອນນີ້ ແລະ ເຂົ້າເຖິງການເຄື່ອນໄຫວຜູ້ໃຊ້ທັງໝົດ, ຮວມທັງໜ້າເວັບທີ່ເຂົ້າເບິ່ງ, ລະຫັດຜ່ານ ແລະ ອີເມວ.</translation>
+<translation id="7143207342074048698">ກຳ​ລັງ​ເຊື່ອມ​ຕໍ່</translation>
 <translation id="714876143603641390">ການເຊື່ອມຕໍ່ LAN</translation>
 <translation id="7162487448488904999">ຄັງຮູບ</translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> ນີ້ຈັດການໂດຍ <ph name="MANAGER" />. ຜູ້ເບິ່ງແຍງລະບົບອາດຈະຕັ້ງຄ່າອຸປະກອນຈາກທາງໄກໄດ້.</translation>
@@ -197,11 +213,13 @@
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{ສຳເລັດການສະແກນແລ້ວ. ສະແກນ 1 ໜ້າແລ້ວ}other{ສຳເລັດການສະແກນແລ້ວ. ສະແກນ {NUMBER_OF_PAGES} ໜ້າແລ້ວ}}</translation>
 <translation id="7441459999606975924">ຄວາມຈຸຂອງແບັດເຕີຣີຈະຫຼຸດລົງເມື່ອໃຊ້ໄປເລື້ອຍໆ</translation>
 <translation id="7469648432129124067">ກວດພົບໜ້າເວັບ</translation>
+<translation id="7490813197707563893">ທີ່ຢູ່ MAC</translation>
 <translation id="7561454561030345039">ການດຳເນີນການນີ້ຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">ເວລາແຝງ HTTPS ສູງ</translation>
 <translation id="7658239707568436148">ຍົກ​ເລີກ​</translation>
 <translation id="7690294790491645610">ຢືນຢັນລະຫັດຜ່ານໃໝ່</translation>
+<translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">ຈຳນວນຮອບ</translation>
 <translation id="7732651821766520760">ການທົດສອບ <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">ສະ​ຖາ​ນະ​</translation>
@@ -213,6 +231,7 @@
 <translation id="808894953321890993">ປ່ຽນລະຫັດຜ່ານ</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8160445423316272678">ວາງເອກະສານຂອງທ່ານໃສ່ເຄື່ອງສະແກນ ແລ້ວເລືອກ <ph name="SPAN_BEGIN" />ສະແກນ<ph name="SPAN_END" /> ເພື່ອເລີ່ມຕົ້ນ</translation>
+<translation id="8206859287963243715">ເຊວລູລາ</translation>
 <translation id="8208861521865154048">ສິດທິປະໂຫຍດຕ່າງໆ</translation>
 <translation id="8230672074305416752">ໃຊ້ຄຳສັ່ງ ping ກັບເກດເວເຄືອຂ່າຍຄ່າເລີ່ມຕົ້ນບໍ່ໄດ້</translation>
 <translation id="8294431847097064396">ແຫຼ່ງທີ່ມາ</translation>
@@ -224,6 +243,7 @@
 <translation id="8398927464629426868">ອັດຕາການສາກ ຫຼື ຄາຍປະຈຸຂອງອຸປະກອນໃນປັດຈຸບັນ</translation>
 <translation id="8475690821716466388">ເຄືອຂ່າຍ WiFi ມີການຮັກສາຄວາມປອດໄພດ້ວຍໂປຣໂຕຄໍ WEP PSK ທີ່ບໍ່ຮັດກຸມ</translation>
 <translation id="8477551185774834963">ເວລາໃນການຕອບສະໜອງ DNS ສູງກວ່າເກນທີ່ຍອມຮັບໄດ້ເລັກນ້ອຍ</translation>
+<translation id="8576249514688522074">ບໍ່ໄດ້ລິເລີ່ມ</translation>
 <translation id="871560550817059752">ບໍ່ສຳເລັດ, ນໍ້າໝຶກໝົດ</translation>
 <translation id="8723108084122415655">ເຄືອຂ່າຍທີ່ບໍ່ແມ່ນຄ່າເລີ່ມຕົ້ນສູງກວ່າເກນເວລາໃນການຕອບສະໜອງ</translation>
 <translation id="8726019395068607495">ຢຸດພິມ, ຝາເປີດຢູ່</translation>
@@ -231,14 +251,18 @@
 <translation id="8747900814994928677">ຢືນຢັນການປ່ຽນແປງ</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">ຄ່າ​ມາດຕະຖານ</translation>
+<translation id="8814190375133053267">Wi​-Fi</translation>
 <translation id="8845001906332463065">ຂໍການຊ່ວຍເຫຼືອ</translation>
 <translation id="8881098542468797602">ສຳເລັດການທົດສອບແລ້ວ</translation>
+<translation id="8898840733695078011">ຄວາມແຮງສັນຍານ</translation>
 <translation id="8910721771319628100">ເຄືອຂ່າຍເລີ່ມຕົ້ນສູງກວ່າເກນເວລາໃນການຕອບສະໜອງ</translation>
 <translation id="8919837981463578619">ບໍ່ສຳເລັດ, ຖາດໃສ່ເຈ້ຍຫາຍໄປ</translation>
 <translation id="8928727111548978589">ບໍ່ສຳເລັດ, ເຈ້ຍໝົດ</translation>
+<translation id="8930622219860340959">ໄຮ້ສາຍ</translation>
 <translation id="89415009803968170">ຍັງເຫຼືອຄວາມພະຍາຍາມອີກ <ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> ຄັ້ງ</translation>
 <translation id="8968751544471797276">ອັດຕາການສາກ</translation>
 <translation id="8970109610781093811">ເອີ້ນໃຊ້ອີກຄັ້ງ</translation>
+<translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">ການນຳໃຊ້ໃນປັດຈຸບັນ</translation>
 <translation id="910415269708673980">ໂຫຼດຂໍ້ມູນປີ້ສຳລັບ <ph name="PRINCIPAL_NAME" /> ໃໝ່</translation>
 <translation id="9106415115617144481">ກຳລັງສະແກນໜ້າ <ph name="PAGE_NUMBER" /></translation>

@@ -49,12 +49,12 @@
 <translation id="2375079107209812402">Na voljo imate še toliko poskusov: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="2391082728065870591">Pošiljanje poročila s povratnimi informacijami</translation>
 <translation id="2446553403094072641">Natančnost plavajoče točke</translation>
+<translation id="2448312741937722512">Vrsta</translation>
 <translation id="2461822463642141190">Trenutno</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Išči</translation>
 <translation id="2570743873672969996">Izvajanje preizkusa <ph name="TEST_NAME" /> …</translation>
 <translation id="2620436844016719705">Sistem</translation>
-<translation id="2658845327196595460">{COUNT,plural, =1{Optično prebrana datoteka je shranjena.}one{Optično prebrane datoteke so shranjene.}two{Optično prebrane datoteke so shranjene.}few{Optično prebrane datoteke so shranjene.}other{Optično prebrane datoteke so shranjene.}}</translation>
 <translation id="2740531572673183784">V redu</translation>
 <translation id="2805756323405976993">Aplikacije</translation>
 <translation id="2872961005593481000">Zaustavitev</translation>
@@ -67,19 +67,23 @@
 <translation id="3091839911843451378">Napaka – ustavljeno</translation>
 <translation id="3102119246920354026">Predpomnilnik</translation>
 <translation id="3122464029669770682">CPE</translation>
+<translation id="315116470104423982">Prenos podatkov v mobilnih omrežjih</translation>
 <translation id="3188257591659621405">Moje datoteke</translation>
 <translation id="3199982728237701504">Podajalnik dokumentov (dvostransko)</translation>
 <translation id="3246869037381808805">Izbrisana bodo tiskalna opravila, starejša od 1 dneva</translation>
 <translation id="3268178239013324452">Napaka – vrata so odprta</translation>
 <translation id="3310640316857623290">Zakasnitev DNS-ja je znatno nad dovoljenim pragom</translation>
 <translation id="3328783797891415197">Preizkus se izvaja</translation>
+<translation id="3368922792935385530">Povezano</translation>
 <translation id="3369013195428705271">Ali ste prepričani, da želite izbrisati vso zgodovino tiskanja? Tiskalna opravila, ki potekajo, ne bodo izbrisana.</translation>
 <translation id="3456078764689556234">Natisnjena <ph name="PRINTED_PAGES" />. stran od <ph name="TOTAL_PAGES" />.</translation>
 <translation id="3459509316159669723">Tiskanje</translation>
 <translation id="3515615323037921860">Tiskalni posli</translation>
 <translation id="3527036260304016759">Napaka – neznana napaka</translation>
+<translation id="357889014807611375">Wi‑Fi z omejeno količino prenosa</translation>
 <translation id="360565022852130722">Omrežje Wi-Fi je zavarovano s šibkim protokolom WEP 802.1x</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (število mnenj: <ph name="AGGREGATED_COUNT" />)</translation>
+<translation id="3748026146096797577">Povezava ni vzpostavljena</translation>
 <translation id="3749289110408117711">Ime datoteke</translation>
 <translation id="38114475217616659">Izbriši celotno zgodovino</translation>
 <translation id="3820172043799983114">Neveljavna koda PIN.</translation>
@@ -93,6 +97,7 @@
 <translation id="4131410914670010031">Črno-belo</translation>
 <translation id="4145784616224233563">Požarni zid HTTP</translation>
 <translation id="4170700058716978431">NI USPEL</translation>
+<translation id="4176463684765177261">Onemogočeno</translation>
 <translation id="4227825898293920515">Geslo poteče čez toliko časa: <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nobeno tiskalno opravilo ne poteka</translation>
 <translation id="4297501883039923494">Ustavljeno – neznana napaka</translation>
@@ -102,7 +107,9 @@
 <translation id="4429881212383817840">Kartonček za Kerberos kmalu poteče</translation>
 <translation id="445059817448385655">Staro geslo</translation>
 <translation id="4454245904991689773">Skeniraj v</translation>
+<translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Ni bilo mogoče preveriti prehoda omrežja, ki ni privzet</translation>
+<translation id="4511264077854731334">Portal</translation>
 <translation id="4548483925627140043">Signal ni bil najden</translation>
 <translation id="455835558791489930">Baterija zmogljivosti <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="458794348635939462">Ni bilo mogoče razrešiti vseh gostiteljev</translation>
@@ -127,6 +134,7 @@
 <translation id="498186245079027698">Preverite optični bralnik in poskusite znova. Poskrbite, da je na lokalnem disku dovolj prostora za shranjevanje optično prebranih datotek.</translation>
 <translation id="4985509611418653372">Izvedi</translation>
 <translation id="500920857929044050">Ustavi preizkus</translation>
+<translation id="5089810972385038852">Država:</translation>
 <translation id="5154917547274118687">Pomnilnik</translation>
 <translation id="5168185087976003268">Stanje baterije</translation>
 <translation id="520299634122159966">Ni razpoložljivih optičnih bralnikov</translation>
@@ -142,7 +150,9 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="5333530671332546086">Neznano stanje portala</translation>
 <translation id="5372659122375744710">Omrežje Wi-Fi ni varno</translation>
 <translation id="5401938042319910061">Izvedi vse rutine</translation>
+<translation id="5430931332414098647">Takojšnji internet prek mobilnega telefona</translation>
 <translation id="5431318178759467895">Barvno</translation>
+<translation id="5431825016875453137">OpenVPN/L2TP</translation>
 <translation id="5457599981699367932">Brskajte kot gost</translation>
 <translation id="54609108002486618">Upravljan</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
@@ -153,6 +163,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="5797428682393400134">USPEH</translation>
 <translation id="5832805196449965646">Dodaj osebo</translation>
 <translation id="5895138241574237353">Znova zaženi</translation>
+<translation id="5916084858004523819">Onemogočeno</translation>
 <translation id="5931523347251946569">Datoteke ni bilo mogoče najti</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, različica <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Zapri</translation>
@@ -164,6 +175,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="6106186594183574873">Za dokončanje vnesite staro geslo</translation>
 <translation id="6108689792487843350">Prehod ni dosegljiv</translation>
 <translation id="6114428539405324828"><ph name="CURRENT" /> GHz/<ph name="MAX" /> GHz</translation>
+<translation id="6122191549521593678">Dosegljiv</translation>
 <translation id="6146993107019042706">Za dokončanje vnesite novo geslo</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Več o tem</translation>
@@ -188,7 +200,9 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="6839141349259399400">Ni mogoče vzpostaviti povezave z optičnimi bralniki?</translation>
 <translation id="6853312040151791195">Hitrost praznjenja</translation>
 <translation id="6898743098396957679">Optičnega branja ni bilo mogoče dokončati</translation>
+<translation id="6957231940976260713">Ime storitve</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> upravlja to napravo in ima dostop do vse dejavnosti uporabnika, vključno z obiskanimi spletnimi mesti, gesli in e-pošto.</translation>
+<translation id="7143207342074048698">Povezovanje</translation>
 <translation id="714876143603641390">Povezava z omrežjem LAN</translation>
 <translation id="7162487448488904999">Galerija</translation>
 <translation id="7177485034254901881">To napravo <ph name="DEVICE_TYPE" /> upravlja domena <ph name="MANAGER" />. Skrbniki lahko napravo konfigurirajo na daljavo.</translation>
@@ -197,11 +211,13 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Optično branje je dokončano. Optično prebrana je bila 1 stran.}one{Optično branje je dokončano. Optično prebrana je bila {NUMBER_OF_PAGES} stran.}two{Optično branje je dokončano. Optično prebrani sta bili {NUMBER_OF_PAGES} strani.}few{Optično branje je dokončano. Optično prebrane so bile {NUMBER_OF_PAGES} strani.}other{Optično branje je dokončano. Optično prebranih je bilo {NUMBER_OF_PAGES} strani.}}</translation>
 <translation id="7441459999606975924">Zmogljivost baterij sčasoma upade.</translation>
 <translation id="7469648432129124067">Zaznan je portal</translation>
+<translation id="7490813197707563893">Naslov MAC</translation>
 <translation id="7561454561030345039">To dejanje upravlja skrbnik</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Velika zakasnitev HTTPS</translation>
 <translation id="7658239707568436148">Prekliči</translation>
 <translation id="7690294790491645610">Potrdite novo geslo</translation>
+<translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Število ciklov</translation>
 <translation id="7732651821766520760">Preizkus: <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Stanje</translation>
@@ -213,6 +229,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="808894953321890993">Sprememba gesla</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8160445423316272678">Če želite začeti, dokument postavite na optični bralnik in izberite <ph name="SPAN_BEGIN" />Optično branje<ph name="SPAN_END" />.</translation>
+<translation id="8206859287963243715">Prenosni</translation>
 <translation id="8208861521865154048">Ugodnosti</translation>
 <translation id="8230672074305416752">Ni mogoče preveriti privzetega prehoda omrežja</translation>
 <translation id="8294431847097064396">Vir</translation>
@@ -224,6 +241,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="8398927464629426868">Trenutna hitrost polnjenja ali praznjenja baterije naprave.</translation>
 <translation id="8475690821716466388">Omrežje Wi-Fi je zavarovano s šibkim protokolom WEP PSK</translation>
 <translation id="8477551185774834963">Zakasnitev DNS-ja je nekoliko nad dovoljenim pragom</translation>
+<translation id="8576249514688522074">Neinicializirano</translation>
 <translation id="871560550817059752">Napaka – zmanjkalo je črnila</translation>
 <translation id="8723108084122415655">Omrežje, ki ni privzeto, je nad pragom zakasnitve</translation>
 <translation id="8726019395068607495">Ustavljeno – vrata so odprta</translation>
@@ -231,14 +249,18 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="8747900814994928677">Potrditev spremembe</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Privzeto</translation>
+<translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Poiščite pomoč</translation>
 <translation id="8881098542468797602">Preizkus je uspel</translation>
+<translation id="8898840733695078011">Moč signala</translation>
 <translation id="8910721771319628100">Privzeto omrežje je nad pragom zakasnitve</translation>
 <translation id="8919837981463578619">Napaka – ni pladnja</translation>
 <translation id="8928727111548978589">Napaka – zmanjkalo je papirja</translation>
+<translation id="8930622219860340959">Brezžično</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> Število preostalih poskusov: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="8968751544471797276">Hitrost polnjenja</translation>
 <translation id="8970109610781093811">Znova zaženi</translation>
+<translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Trenutna poraba</translation>
 <translation id="910415269708673980">Osvežite kartonček za <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Optično branje <ph name="PAGE_NUMBER" />. strani</translation>

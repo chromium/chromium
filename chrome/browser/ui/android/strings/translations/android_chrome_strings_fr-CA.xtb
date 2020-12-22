@@ -12,6 +12,7 @@
 <translation id="10614374240317010">Jamais enregistré</translation>
 <translation id="1067922213147265141">Autres services Google</translation>
 <translation id="107147699690128016">Si vous modifiez l'extension du fichier, il peut s'ouvrir dans une application différente et poser un risque pour votre appareil.</translation>
+<translation id="1094515529340404628">Groupe Web et mesure des performances publicitaires</translation>
 <translation id="1100066534610197918">Ouv. dans nouv ongl. dans groupe</translation>
 <translation id="1105960400813249514">Capture d'écran</translation>
 <translation id="1111673857033749125">Les favoris enregistrés sur vos autres appareils s'afficheront ici.</translation>
@@ -227,6 +228,7 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="2536728043171574184">Affichage d’une copie hors ligne de cette page en cours</translation>
 <translation id="2537178555904266562">Erreur lors de la synchronisation des mots de passe</translation>
 <translation id="2546283357679194313">Témoins et données de site</translation>
+<translation id="2562889244313180139">Autorisez les sites Web et les applications à vous proposer une expérience mieux adaptée à l'aide d'un alias non identifiable.</translation>
 <translation id="2567385386134582609">IMAGE</translation>
 <translation id="2571711316400087311">Proposer d'envoyer les pages dans d'autres langues vers Google Traduction</translation>
 <translation id="2581165646603367611">Cette action entraînera la suppression de tous les témoins, caches et autres données provenant de sites que Chrome estime ne pas être importants.</translation>
@@ -714,6 +716,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="6005538289190791541">Mot de passe suggéré</translation>
 <translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Vous avez <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> page}one{Vous avez <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> page}other{Vous avez <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> pages}}</translation>
 <translation id="6014293228235665243">Non lu</translation>
+<translation id="6018309500671889594">Autorisez les annonceurs à analyser les campagnes publicitaires à l'aide de données non identifiables.</translation>
 <translation id="6036057147555329831">ICU supplémentaire</translation>
 <translation id="6039379616847168523">Accéder à l'onglet suivant</translation>
 <translation id="6040143037577758943">Fermer</translation>
@@ -922,6 +925,7 @@ Les données de votre session de navigation privée ne seront effacées de Chrom
 <translation id="7403691278183511381">Expérience de première utilisation de Chrome</translation>
 <translation id="741204030948306876">Oui, j'accepte</translation>
 <translation id="7413229368719586778">Date de début : <ph name="DATE" /></translation>
+<translation id="7416941666639889592">En vous joignant à un groupe Web, vous autorisez les sites à adapter votre expérience Web sans utiliser vos données personnelles. De cette façon, les sites Web et les annonceurs savent seulement que des milliers d'utilisateurs ont un centre d'intérêt en commun.</translation>
 <translation id="7431991332293347422">Gérez la façon dont votre historique de navigation est utilisé pour personnaliser, entre autres, la recherche</translation>
 <translation id="7435356471928173109">Désactivée par votre administrateur</translation>
 <translation id="7437998757836447326">Se déconnecter de Chrome</translation>
@@ -1123,6 +1127,7 @@ Les données de votre session de navigation privée ne seront effacées de Chrom
 <translation id="8748850008226585750">Contenus masqués</translation>
 <translation id="8788265440806329501">L'historique de navigation est fermé</translation>
 <translation id="8788968922598763114">Rouvrir le dernier onglet fermé</translation>
+<translation id="8795672590390389447">Bac à sable de confidentialité</translation>
 <translation id="8798449543960971550">Lu</translation>
 <translation id="8812260976093120287">Sur certains sites Web, vous pouvez payer avec les applications de paiement prises en charge indiquées ci-dessus sur votre appareil.</translation>
 <translation id="881688628773363275">Impossible d'afficher l'aperçu du contenu dans un onglet.</translation>

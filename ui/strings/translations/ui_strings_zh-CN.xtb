@@ -120,6 +120,7 @@
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 个月前}other{# 个月前}}</translation>
 <translation id="4289300219472526559">开始讲话</translation>
 <translation id="430191667033048642">“<ph name="MOVED_APP_NAME" />”已移至文件夹“<ph name="FOLDER_NAME" />”</translation>
+<translation id="4306392492252714209">从剪贴板中移除。</translation>
 <translation id="4316910396681052118">所有应用</translation>
 <translation id="4491109536499578614">图片</translation>
 <translation id="4588090240171750605">向右滚动</translation>
@@ -214,6 +215,7 @@
 <translation id="7430878839542012341">要将这项搜索从您的历史记录中删除吗？</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7507604095951736240">表情符号</translation>
+<translation id="7620655452534002301">已移除。</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7781829728241885113">昨天</translation>
 <translation id="7814458197256864873">复制(&amp;C)</translation>

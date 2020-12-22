@@ -20,6 +20,7 @@
 <translation id="1145536944570833626">Delete existing data.</translation>
 <translation id="1147031633655575115">Signed in as <ph name="USER" /></translation>
 <translation id="1154690515305205900">A link to the highlighted text cannot be created.</translation>
+<translation id="1154984953698510061">See other tabs</translation>
 <translation id="1157749421655780457">Allow location…</translation>
 <translation id="1165039591588034296">Error</translation>
 <translation id="1172898394251786223">Next field</translation>
@@ -38,6 +39,7 @@
 <translation id="1283524564873030414">Last 24 hours</translation>
 <translation id="1285320974508926690">Never translate this site</translation>
 <translation id="1321993286294231467">Error saving image.</translation>
+<translation id="1322735045095424339">Your organisation requires Incognito mode</translation>
 <translation id="1323735185997015385">Delete</translation>
 <translation id="132683371494960526">Double tap to change the parent folder.</translation>
 <translation id="1340643665687018190">Close menu</translation>
@@ -91,6 +93,7 @@
 <translation id="1803264062614276815">Cardholder name</translation>
 <translation id="1809939268435598390">Delete folder</translation>
 <translation id="1813414402673211292">Clear Browsing Data</translation>
+<translation id="1815941218935345331">Passcode</translation>
 <translation id="1820259098641718022">Added to Reading List</translation>
 <translation id="1870148520156231997">Reveal password</translation>
 <translation id="1872096359983322073">Torch</translation>
@@ -103,6 +106,7 @@
 <translation id="1974060860693918893">Advanced</translation>
 <translation id="1989112275319619282">Browse</translation>
 <translation id="2015722694326466240">To see passwords, you must first set a passcode on your device.</translation>
+<translation id="2047933465321076474">Your organisation turned off private browsing. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="2073572773299281212">Active <ph name="DAYS" /> days ago</translation>
 <translation id="2074131957428911366">You can always choose what to sync in <ph name="BEGIN_LINK" />settings<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Undo</translation>
@@ -120,6 +124,7 @@
 <translation id="2239626343334228536">Clearing browsing data…</translation>
 <translation id="2257567812274161158">Sync isn't working.</translation>
 <translation id="225943865679747347">Error code: <ph name="ERROR_CODE" /></translation>
+<translation id="2262397157440718954">Your organisation requires you to browse privately. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="2267753748892043616">Add Account</translation>
 <translation id="2268044343513325586">Refine</translation>
 <translation id="2273327106802955778">More menu</translation>
@@ -136,6 +141,7 @@
 Sites can't use cookies to see your browsing activity across different sites, for example, to personalise ads.</translation>
 <translation id="2381405137052800939">Basics</translation>
 <translation id="2386793615875593361">1 selected</translation>
+<translation id="2419661687355878017">Your organisation turned off Incognito mode</translation>
 <translation id="2421004566762153674">Blocking third-party cookies</translation>
 <translation id="2421044535038393232">Keep editing</translation>
 <translation id="2435457462613246316">Show password</translation>
@@ -185,11 +191,13 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="291754862089661335">Position QR code or bar code in this frame</translation>
 <translation id="2921219216347069551">Cannot Share Page</translation>
 <translation id="2923448633003185837">Paste and Go</translation>
+<translation id="2923827943290349720">Lock incognito tabs when you close Chrome</translation>
 <translation id="292639812446257861">Mark Unread</translation>
 <translation id="2952581218264071393">1. Open Chrome settings</translation>
 <translation id="2958718410589002129">Passwords</translation>
 <translation id="2964349545761222050">Block third-party cookies</translation>
 <translation id="2969979262385602596">Failed to sign in. Please try again later.</translation>
+<translation id="2975121486251958312">Only Incognito mode is available</translation>
 <translation id="298306318844797842">Add Payment Method...</translation>
 <translation id="2989805286512600854">Open in New Tab</translation>
 <translation id="3037605927509011580">Aw, Snap!</translation>
@@ -204,6 +212,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="3175081911749765310">Web Services</translation>
 <translation id="3178650076442119961">Active today</translation>
 <translation id="3181954750937456830">Safe Browsing (protects you and your device from dangerous sites)</translation>
+<translation id="3184767182050912705">Unlock with <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3196681740617426482">Sites can use cookies to improve your browsing experience, for example, to keep you signed in or to remember items in your shopping basket.
 
 While in Incognito, sites can't use cookies to see your browsing activity across different sites, for example, to personalise ads.</translation>
@@ -293,7 +302,7 @@ Follow the steps below:</translation>
 <translation id="4112644173421521737">Search</translation>
 <translation id="4113030288477039509">Managed by your administrator</translation>
 <translation id="4121993058175073134">To send net-export data, please configure your email account in the Settings app.</translation>
-<translation id="4124987746317609294">Time Range</translation>
+<translation id="4124987746317609294">Time range</translation>
 <translation id="4152011295694446843">You'll find your bookmarks here</translation>
 <translation id="4152093603141133546">Your organisation signed you out.</translation>
 <translation id="4172051516777682613">Always show</translation>
@@ -355,6 +364,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} and 1 other}other{{domain} and {count} others}}</translation>
 <translation id="4826218269716039351">Block third party</translation>
 <translation id="48274138579728272">Mark as read</translation>
+<translation id="4833686396768033263">Recent tabs are unavailable</translation>
 <translation id="4833786495304741580">Automatically sends usage statistics and crash reports to Google.</translation>
 <translation id="4840495572919996524">Your bookmarks, history, passwords and more will no longer be synced to your Google Account.</translation>
 <translation id="4854345657858711387">Set A Passcode</translation>
@@ -398,7 +408,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5317780077021120954">Save</translation>
 <translation id="5327248766486351172">Name</translation>
 <translation id="5339316356165661760">Turn on sync</translation>
-<translation id="5388358297987318779">Open Image</translation>
+<translation id="5388358297987318779">Open image</translation>
 <translation id="5407969256130905701">Discard changes</translation>
 <translation id="5409365236829784218">There are no applications installed that can open this file.</translation>
 <translation id="5416022985862681400">Last 7 days</translation>
@@ -418,6 +428,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5551897871312988470">Offer to translate</translation>
 <translation id="5556459405103347317">Reload</translation>
 <translation id="5592679540098330836">Turn on sync for <ph name="NAME" /></translation>
+<translation id="5597169624050330492">Your organisation requires you to browse privately. Tabs aren't saved in Incognito mode. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="5614553682702429503">Save password?</translation>
 <translation id="5626245204502895507">The file could not be downloaded at this time.</translation>
 <translation id="5631164295104953411">Add payment method</translation>
@@ -522,6 +533,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 
 Try to use a unique password for every site.</translation>
 <translation id="651505212789431520">Cancel sync? You can turn on sync at any time in Settings.</translation>
+<translation id="6524918542306337007">Incognito mode is unavailable</translation>
 <translation id="6561262006871132942">Zoom in</translation>
 <translation id="6585618849026997638">You can get back to a page that's important to you by adding a bookmark</translation>
 <translation id="6610002944194042868">Translate Options</translation>
@@ -580,6 +592,7 @@ Try to use a unique password for every site.</translation>
 <translation id="7133798577887235672">Full Name</translation>
 <translation id="7136892417564438900">Camera is unavailable</translation>
 <translation id="7159472599653637159">Request Mobile Site</translation>
+<translation id="7162168282402939716">Unlock incognito tabs with <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Keep your passwords safe from security issues</translation>
 <translation id="7173114856073700355">Open Settings</translation>
 <translation id="7189598951263744875">Share...</translation>
@@ -617,6 +630,7 @@ Try to use a unique password for every site.</translation>
 <translation id="7537586195939242955">Sorry, your Pass cannot be installed to Passbook at this time.</translation>
 <translation id="7554791636758816595">New Tab</translation>
 <translation id="7561196759112975576">Always</translation>
+<translation id="7583004045319035904">Use <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> to unlock your incognito tabs.</translation>
 <translation id="7600965453749440009">Never translate <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Pop-ups blocked (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Delete password</translation>
@@ -709,6 +723,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8591976964826315682">Block third-party cookies in Incognito</translation>
 <translation id="8605219856220328675">Close tab.</translation>
 <translation id="8620640915598389714">Edit</translation>
+<translation id="863090005774946393">Your browser is managed by your organisation. Some features may be disabled.</translation>
 <translation id="8636825310635137004">To get your tabs from your other devices, turn on sync.</translation>
 <translation id="8654802032646794042">Cancel</translation>
 <translation id="8668210798914567634">This page has been saved to your Reading List.</translation>

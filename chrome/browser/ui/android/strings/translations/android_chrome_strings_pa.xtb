@@ -12,6 +12,7 @@
 <translation id="10614374240317010">ਕਦੇ ਵੀ ਸੁਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤਾ</translation>
 <translation id="1067922213147265141">ਹੋਰ Google ਸੇਵਾਵਾਂ</translation>
 <translation id="107147699690128016">ਜੇ ਤੁਸੀਂ ਫ਼ਾਈਲ ਐਕਸਟੈਂਸ਼ਨ ਬਦਲਦੇ ਹੋ, ਤਾਂ ਫ਼ਾਈਲ ਸ਼ਾਇਦ ਕਿਸੇ ਵੱਖਰੀ ਐਪਲੀਕੇਸ਼ਨ ਵਿੱਚ ਖੁੱਲ੍ਹੇ ਅਤੇ ਸੰਭਾਵੀ ਤੌਰ 'ਤੇ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦਾ ਨੁਕਸਾਨ ਹੋ ਸਕਦਾ ਹੈ।</translation>
+<translation id="1094515529340404628">ਵੈੱਬ ਭੀੜ ਅਤੇ ਵਿਗਿਆਪਨ ਮੁਲਾਂਕਣ</translation>
 <translation id="1100066534610197918">ਗਰੁੱਪ 'ਚ ਨਵੀਂ ਟੈਬ ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
 <translation id="1105960400813249514">ਸਕ੍ਰੀਨ ਕੈਪਚਰ</translation>
 <translation id="1111673857033749125">ਤੁਹਾਡੀਆਂ ਹੋਰ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤੇ ਬੁੱਕਮਾਰਕ ਇੱਥੇ ਵਿਖਾਈ ਦੇਣਗੇ।</translation>
@@ -227,6 +228,7 @@
 <translation id="2536728043171574184">ਇਸ ਪੰਨੇ ਦੀ ਇੱਕ ਆਫ਼ਲਾਈਨ ਕਾਪੀ ਦੇਖ ਰਿਹਾ ਹੈ</translation>
 <translation id="2537178555904266562">ਪਾਸਵਰਡਾਂ ਦੇ ਸਮਕਾਲੀਕਰਨ ਕਰਨ ਦੌਰਾਨ ਗੜਬੜ ਹੋਈ</translation>
 <translation id="2546283357679194313">ਕੁਕੀਜ਼ ਅਤੇ ਸਾਈਟ ਡਾਟਾ</translation>
+<translation id="2562889244313180139">ਵੈੱਬਸਾਈਟਾਂ ਅਤੇ ਐਪਾਂ ਨੂੰ ਪਛਾਣ ਨਾ ਕਰਨ ਵਾਲੇ ਉਪਨਾਮ ਦੀ ਵਰਤੋਂ ਕਰਕੇ ਤੁਹਾਨੂੰ ਵਧੇਰੇ ਢੁਕਵੇਂ ਅਨੁਭਵ ਦੇਣ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ।</translation>
 <translation id="2567385386134582609">ਇਮੇਜ</translation>
 <translation id="2571711316400087311">Google Translate 'ਤੇ ਹੋਰ ਭਾਸ਼ਾਵਾਂ ਵਿੱਚ ਪੰਨੇ ਭੇਜਣ ਦੀ ਪੇਸ਼ਕਸ਼ ਕਰੋ</translation>
 <translation id="2581165646603367611">ਇਹ ਉਹਨਾਂ ਸਾਈਟਾਂ ਦੀਆਂ ਕੁਕੀਜ਼, ਕੈਸ਼ੇ, ਅਤੇ ਹੋਰ ਡਾਟੇ ਨੂੰ ਮਿਟਾ ਦੇਵੇਗਾ ਜੋ Chrome ਅਨੁਸਾਰ ਮਹੱਤਵਪੂਰਨ ਨਹੀਂ ਹਨ।</translation>
@@ -714,6 +716,7 @@
 <translation id="6005538289190791541">ਸੁਝਾਇਆ ਗਿਆ ਪਾਸਵਰਡ</translation>
 <translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{ਤੁਹਾਡੇ ਕੋਲ <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> ਪੰਨਾ ਹੈ}one{ਤੁਹਾਡੇ ਕੋਲ <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> ਪੰਨਾ ਹੈ}other{ਤੁਹਾਡੇ ਕੋਲ <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> ਪੰਨੇ ਹਨ}}</translation>
 <translation id="6014293228235665243">ਨਾ-ਪੜ੍ਹੇ</translation>
+<translation id="6018309500671889594">ਵਿਗਿਆਪਨਦਾਤਾਵਾਂ ਨੂੰ ਪਛਾਣ ਨਾ ਕਰਨ ਵਾਲੀ ਜਾਣਕਾਰੀ ਦੀ ਵਰਤੋਂ ਕਰਦਿਆਂ ਵਿਗਿਆਪਨ ਮੁਹਿੰਮਾਂ ਦਾ ਅਧਿਐਨ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ।</translation>
 <translation id="6036057147555329831">ਵਾਧੂ ICU</translation>
 <translation id="6039379616847168523">ਅਗਲੀ ਟੈਬ 'ਤੇ ਜਾਓ</translation>
 <translation id="6040143037577758943">ਬੰਦ ਕਰੋ</translation>
@@ -922,6 +925,7 @@
 <translation id="7403691278183511381">Chrome ਪਹਿਲੀ ਵਾਰ ਚਲਾਉਣ ਦਾ ਅਨੁਭਵ</translation>
 <translation id="741204030948306876">ਹਾਂ, ਸਹਿਮਤ ਹਾਂ</translation>
 <translation id="7413229368719586778">ਸ਼ੁਰੂਆਤੀ ਤਾਰੀਖ <ph name="DATE" /></translation>
+<translation id="7416941666639889592">ਵੈੱਬ ਭੀੜ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋ ਕੇ, ਤੁਸੀਂ ਵੈੱਬਸਾਈਟਾਂ ਨੂੰ ਨਿੱਜੀ ਪਛਾਣ ਕਰਨ ਵਾਲੀ ਜਾਣਕਾਰੀ ਦੀ ਵਰਤੋਂ ਕੀਤੇ ਬਿਨਾਂ ਤੁਹਾਡੇ ਵੈੱਬ ਅਨੁਭਵ ਨੂੰ ਢੁਕਵਾਂ ਬਣਾਉਣ ਦੀ ਇਜਾਜ਼ਤ ਦਿੰਦੇ ਹੋ। ਸਮਾਰੋਹ ਵਿੱਚ ਭੀੜ ਦੇ ਨਾਲ ਰਲਦੇ-ਮਿਲਦੇ, ਵੈੱਬਸਾਈਟਾਂ ਅਤੇ ਵਿਗਿਆਪਨਦਾਤਾਵਾਂ ਸਿਰਫ਼ ਹਜ਼ਾਰਾਂ ਵਰਤੋਂਕਾਰ ਹੀ ਜਾਣ ਸਕਦੇ ਹਨ ਕਿ ਇੱਕੋ ਜਿਹੀ ਦਿਲਚਸਪੀ ਸਾਂਝੀ ਕਰਦੇ ਹਨ।</translation>
 <translation id="7431991332293347422">'ਖੋਜ' ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਨੂੰ ਵਿਅਕਤੀਗਤ ਬਣਾਉਣ ਲਈ ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਦੇ ਵਰਤੇ ਜਾਣ ਦੇ ਤਰੀਕੇ ਨੂੰ ਕੰਟਰੋਲ ਕਰੋ</translation>
 <translation id="7435356471928173109">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਬੰਦ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="7437998757836447326">Chrome ਤੋਂ ਸਾਈਨ-ਆਉਟ ਕਰੋ</translation>
@@ -1123,6 +1127,7 @@
 <translation id="8748850008226585750">ਸਮੱਗਰੀਆਂ ਲੁਕੀਆਂ ਹੋਈਆਂ ਹਨ</translation>
 <translation id="8788265440806329501">ਨੈਵੀਗੇਸ਼ਨ ਇਤਿਹਾਸ ਬੰਦ ਕੀਤਾ ਹੋਇਆ ਹੈ</translation>
 <translation id="8788968922598763114">ਆਖਰੀ ਬੰਦ ਕੀਤੀ ਟੈਬ ਦੁਬਾਰਾ ਖੋਲ੍ਹੋ</translation>
+<translation id="8795672590390389447">ਪਰਦੇਦਾਰੀ ਸੈਂਡਬਾਕਸ</translation>
 <translation id="8798449543960971550">ਪੜ੍ਹ ਲਿਆ</translation>
 <translation id="8812260976093120287">ਕੁਝ ਵੈੱਬਸਾਈਟਾਂ 'ਤੇ, ਤੁਸੀਂ ਆਪਣੇ ਡੀਵਾਈਸ 'ਤੇ ਉਪਰੋਕਤ ਸਮਰਥਿਤ ਭੁਗਤਾਨ ਐਪਾਂ ਨਾਲ ਭੁਗਤਾਨ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="881688628773363275">ਪੂਰਵ-ਝਲਕ ਟੈਬ ਦੀ ਸਮੱਗਰੀ ਦੇਖਣਯੋਗ ਨਹੀਂ ਹੈ।</translation>

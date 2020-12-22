@@ -22,6 +22,7 @@
 <translation id="2650312721222849884">Pour voir vos onglets partout où vous utilisez Chromium, activez la synchronisation</translation>
 <translation id="2730884209570016437">Chromium ne peut pas utiliser votre appareil photo, car il est utilisé par une autre application</translation>
 <translation id="2915596697727466327">Chromium utilise Face ID pour assurer un accès autorisé à vos mots de passe.</translation>
+<translation id="2918709798697875261">Votre organisation vous demande de rester déconnecté de Chromium.</translation>
 <translation id="2977470724722393594">Chromium est à jour</translation>
 <translation id="3256316712990552818">Copiée dans Chromium</translation>
 <translation id="3344973607274501920">Chromium n'a pas pu vérifier vos mots de passe. Essayez de vérifier votre connexion Internet.</translation>
@@ -74,6 +75,7 @@
 <translation id="8776843108004031667">Ce compte et toutes les données non enregistrées seront supprimés de Chromium.</translation>
 <translation id="9022552996538154597">Connexion à Chromium</translation>
 <translation id="9089354809943900324">Chromium n'est pas à jour</translation>
+<translation id="912386518501777532">Lorsque vous étiez déconnecté de Chromium, vos favoris, votre historique, vos mots de passe et d'autres paramètres ont été effacés de cet appareil. Vos données synchronisées sont toujours enregistrées dans votre compte.</translation>
 <translation id="921174536258924340">Chromium n'a pas pu vérifier tous les mots de passe. Réessayez demain ou <ph name="BEGIN_LINK" />vérifiez les mots de passe dans votre compte Google<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">Les auteurs de Chrome</translation>
 </translationbundle>

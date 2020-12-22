@@ -49,12 +49,12 @@
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> forsøk igjen</translation>
 <translation id="2391082728065870591">Send tilbakemeldingsrapport</translation>
 <translation id="2446553403094072641">Nøyaktighet av flytende desimalpunkt</translation>
+<translation id="2448312741937722512">Type</translation>
 <translation id="2461822463642141190">Nåværende</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Skann</translation>
 <translation id="2570743873672969996">Kjører test av <ph name="TEST_NAME" /> …</translation>
 <translation id="2620436844016719705">System</translation>
-<translation id="2658845327196595460">{COUNT,plural, =1{Den skannede filen er lagret!}other{De skannede filene er lagret!}}</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2805756323405976993">Apper</translation>
 <translation id="2872961005593481000">Slå av</translation>
@@ -67,19 +67,23 @@
 <translation id="3091839911843451378">Mislykket – stoppet</translation>
 <translation id="3102119246920354026">Buffer</translation>
 <translation id="3122464029669770682">Prosessor</translation>
+<translation id="315116470104423982">Mobildata</translation>
 <translation id="3188257591659621405">Mine filer</translation>
 <translation id="3199982728237701504">Dokumentmater (tosidig)</translation>
 <translation id="3246869037381808805">Utskriftsjobber som er eldre enn 1 dag, blir fjernet</translation>
 <translation id="3268178239013324452">Mislykket – luken er åpen</translation>
 <translation id="3310640316857623290">DNS-forsinkelsen er betydelig høyere enn den tillatte grenseverdien</translation>
 <translation id="3328783797891415197">Testen kjøres</translation>
+<translation id="3368922792935385530">Tilkoblet</translation>
 <translation id="3369013195428705271">Er du sikker på at du vil tømme hele utskriftsloggen? Utskriftsjobber som allerede er i gang, fjernes ikke.</translation>
 <translation id="3456078764689556234">Skrev ut side <ph name="PRINTED_PAGES" /> av <ph name="TOTAL_PAGES" />.</translation>
 <translation id="3459509316159669723">Utskrift</translation>
 <translation id="3515615323037921860">Utskriftsjobber</translation>
 <translation id="3527036260304016759">Mislykket – ukjent feil</translation>
+<translation id="357889014807611375">Wi-Fi med datamåling</translation>
 <translation id="360565022852130722">Wi-Fi-nettverket er sikret med den svake protokollen WEP 802.1x</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> anmeldelser)</translation>
+<translation id="3748026146096797577">Ikke tilkoblet</translation>
 <translation id="3749289110408117711">Filnavn</translation>
 <translation id="38114475217616659">Tøm hele loggen</translation>
 <translation id="3820172043799983114">Ugyldig PIN-kode</translation>
@@ -93,6 +97,7 @@
 <translation id="4131410914670010031">Svarthvitt</translation>
 <translation id="4145784616224233563">HTTP-brannmur</translation>
 <translation id="4170700058716978431">MISLYKKET</translation>
+<translation id="4176463684765177261">Deaktivert</translation>
 <translation id="4227825898293920515">Passordet utløper om <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Ingen utskriftsjobber pågår</translation>
 <translation id="4297501883039923494">Stoppet – ukjent feil</translation>
@@ -102,7 +107,9 @@
 <translation id="4429881212383817840">Kerberos-saken utløper snart</translation>
 <translation id="445059817448385655">Gammelt passord</translation>
 <translation id="4454245904991689773">Skann til</translation>
+<translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Kunne ikke pinge gatewayen for ikke-standardnettverket</translation>
+<translation id="4511264077854731334">Portal</translation>
 <translation id="4548483925627140043">Fant ikke noe signal</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh-batteri</translation>
 <translation id="458794348635939462">Kunne ikke finne tilknytning til alle vertene</translation>
@@ -127,6 +134,7 @@
 <translation id="498186245079027698">Sjekk skanneren, og prøv på nytt. Sørg for at det er nok lokal lagringsplass til å lagre skannede filer.</translation>
 <translation id="4985509611418653372">Kjør</translation>
 <translation id="500920857929044050">Stans testen</translation>
+<translation id="5089810972385038852">Fylke/delstat</translation>
 <translation id="5154917547274118687">Minne</translation>
 <translation id="5168185087976003268">Batterihelse</translation>
 <translation id="520299634122159966">Ingen tilgjengelige skannere</translation>
@@ -142,7 +150,9 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="5333530671332546086">Ukjent portaltilstand</translation>
 <translation id="5372659122375744710">Wi-Fi-nettverket er ikke sikkert</translation>
 <translation id="5401938042319910061">Kjør alle rutinene</translation>
+<translation id="5430931332414098647">Umiddelbar internettdeling</translation>
 <translation id="5431318178759467895">Farge</translation>
+<translation id="5431825016875453137">OpenVPN/L2TP</translation>
 <translation id="5457599981699367932">Surf som gjest</translation>
 <translation id="54609108002486618">Administrert</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
@@ -153,6 +163,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="5797428682393400134">FULLFØRT</translation>
 <translation id="5832805196449965646">Legg til person</translation>
 <translation id="5895138241574237353">Start på nytt</translation>
+<translation id="5916084858004523819">Forbudt</translation>
 <translation id="5931523347251946569">Fant ikke filen</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, versjon <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Lukk</translation>
@@ -164,6 +175,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="6106186594183574873">For å fullføre passordendringen, skriv inn det gamle passordet</translation>
 <translation id="6108689792487843350">Gatewayen er utilgjengelig</translation>
 <translation id="6114428539405324828"><ph name="CURRENT" /> GHz / <ph name="MAX" /> GHz</translation>
+<translation id="6122191549521593678">Pålogget</translation>
 <translation id="6146993107019042706">For å fullføre passordendringen, skriv inn det nye passordet</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Finn ut mer</translation>
@@ -188,7 +200,9 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="6839141349259399400">Kan du ikke koble til noen skannere?</translation>
 <translation id="6853312040151791195">Utladingsfrekvens</translation>
 <translation id="6898743098396957679">Kunne ikke fullføre skanningen</translation>
+<translation id="6957231940976260713">Tjenestenavn</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> administrerer denne enheten og har tilgang til all brukeraktivitet, blant annet nettsteder som besøkes, passord og e-post.</translation>
+<translation id="7143207342074048698">Kobler til</translation>
 <translation id="714876143603641390">LAN-tilkobling</translation>
 <translation id="7162487448488904999">Galleri</translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> administreres av <ph name="MANAGER" />. Administratorer kan konfigurere enheten eksternt.</translation>
@@ -197,11 +211,13 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skanningen er fullført. 1 side er skannet}other{Skanningen er fullført. {NUMBER_OF_PAGES} sider er skannet}}</translation>
 <translation id="7441459999606975924">Batterikapasiteten avtar med bruken</translation>
 <translation id="7469648432129124067">Oppdaget en portal</translation>
+<translation id="7490813197707563893">MAC-adresse</translation>
 <translation id="7561454561030345039">Denne handlingen administreres av administratoren</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Høy HTTPS-tidsforsinkelse</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7690294790491645610">Bekreft det nye passordet</translation>
+<translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Syklusantall</translation>
 <translation id="7732651821766520760"><ph name="TEST_NAME" />test</translation>
 <translation id="7805768142964895445">Status</translation>
@@ -213,6 +229,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="808894953321890993">Endre passord</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8160445423316272678">Legg dokumentet på skanneren, og velg <ph name="SPAN_BEGIN" />Skann<ph name="SPAN_END" /> for å komme i gang</translation>
+<translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">Fordeler</translation>
 <translation id="8230672074305416752">Kunne ikke pinge gatewayen for standardnettverket</translation>
 <translation id="8294431847097064396">Kilde</translation>
@@ -224,6 +241,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="8398927464629426868">Hvor raskt enheten lades eller utlades for øyeblikket</translation>
 <translation id="8475690821716466388">Wi-Fi-nettverket er sikret med den svake protokollen WEP PSK</translation>
 <translation id="8477551185774834963">DNS-forsinkelsen er noe høyere enn den tillatte grenseverdien</translation>
+<translation id="8576249514688522074">Ikke initialisert</translation>
 <translation id="871560550817059752">Mislykket – tom for blekk</translation>
 <translation id="8723108084122415655">Tidsforsinkelsen for ikke-standardnettverket er over grenseverdien</translation>
 <translation id="8726019395068607495">Stoppet – luken er åpen</translation>
@@ -231,14 +249,18 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="8747900814994928677">Bekreft endringen</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Standard</translation>
+<translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Få hjelp</translation>
 <translation id="8881098542468797602">Testen er fullført</translation>
+<translation id="8898840733695078011">Signalstyrke</translation>
 <translation id="8910721771319628100">Tidsforsinkelsen for standardnettverket er over grenseverdien</translation>
 <translation id="8919837981463578619">Mislykket – en skuff mangler</translation>
 <translation id="8928727111548978589">Mislykket – tom for papir</translation>
+<translation id="8930622219860340959">Trådløs</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> forsøk igjen</translation>
 <translation id="8968751544471797276">Ladefrekvens</translation>
 <translation id="8970109610781093811">Kjør på nytt</translation>
+<translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Nåværende bruk</translation>
 <translation id="910415269708673980">Oppdater saken for <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skanner side <ph name="PAGE_NUMBER" /></translation>

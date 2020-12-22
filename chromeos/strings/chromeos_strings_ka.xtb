@@ -49,12 +49,12 @@
 <translation id="2375079107209812402">დარჩენილია <ph name="ATTEMPTS_LEFT" /> მცდელობა</translation>
 <translation id="2391082728065870591">გამოხმაურების ანგარიშის გაგზავნა</translation>
 <translation id="2446553403094072641">მოლივლივე წერტილის სიზუსტე</translation>
+<translation id="2448312741937722512">ტიპი</translation>
 <translation id="2461822463642141190">ამჟამინდელი</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">სკანირება</translation>
 <translation id="2570743873672969996">გაშვებულია <ph name="TEST_NAME" /> ტესტი...</translation>
 <translation id="2620436844016719705">სისტემა</translation>
-<translation id="2658845327196595460">{COUNT,plural, =1{სკანირებული ფაილი შენახულია!}other{სკანირებული ფაილები შენახულია!}}</translation>
 <translation id="2740531572673183784">კარგი</translation>
 <translation id="2805756323405976993">პროგრამები</translation>
 <translation id="2872961005593481000">გამორთვა</translation>
@@ -67,19 +67,23 @@
 <translation id="3091839911843451378">ვერ მოხერხდა — შეწყვიტა მუშაობა</translation>
 <translation id="3102119246920354026">ქეში</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="315116470104423982">მობილური მონაცემები</translation>
 <translation id="3188257591659621405">ჩემი ფაილები</translation>
 <translation id="3199982728237701504">დოკუმენტების მიმწოდი (ორმხრივი)</translation>
 <translation id="3246869037381808805">ბეჭდვის 1 დღეზე ძველი დავალებები ამოიშლება</translation>
 <translation id="3268178239013324452">ვერ მოხერხდა — პრინტერის კარი ღიაა</translation>
 <translation id="3310640316857623290">DNS-ის რეაგირების დრო მნიშვნელოვნად აღემატება დასაშვებ ზღვარს</translation>
 <translation id="3328783797891415197">ტესტი გაშვებულია</translation>
+<translation id="3368922792935385530">დაკავშირებული</translation>
 <translation id="3369013195428705271">ნამდვილად გსურთ ბეჭდვის ისტორიის მთლიანად გასუფთავება? ბეჭდვის მიმდინარე დავალებები არ წაიშლება.</translation>
 <translation id="3456078764689556234">ამობეჭდილი გვერდი <ph name="PRINTED_PAGES" /> / <ph name="TOTAL_PAGES" />-დან.</translation>
 <translation id="3459509316159669723">ბეჭდვა</translation>
 <translation id="3515615323037921860">ბეჭდვის დავალებები</translation>
 <translation id="3527036260304016759">ვერ მოხერხდა — უცნობი შეცდომა</translation>
+<translation id="357889014807611375">ლიმიტირებული Wi-Fi</translation>
 <translation id="360565022852130722">Wi-Fi ქსელი უზრუნველყოფილია სუსტი პროტოკოლით WEP 802.1x</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> მიმოხილვა)</translation>
+<translation id="3748026146096797577">არ არის დაკავშირებული</translation>
 <translation id="3749289110408117711">ფაილის სახელი</translation>
 <translation id="38114475217616659">მთელი ისტორიის გასუფთავება</translation>
 <translation id="3820172043799983114">PIN-კოდი არასწორია.</translation>
@@ -93,6 +97,7 @@
 <translation id="4131410914670010031">შავი და თეთრი</translation>
 <translation id="4145784616224233563">HTTP ქსელის დაცვა</translation>
 <translation id="4170700058716978431">ვერ შესრულდა</translation>
+<translation id="4176463684765177261">გამორთული</translation>
 <translation id="4227825898293920515">პაროლი ძალაშია <ph name="TIME" /></translation>
 <translation id="4238516577297848345">ბეჭდვის მიმდინარე დავალებები არ არის</translation>
 <translation id="4297501883039923494">გაჩერდა — უცნობი შეცდომა</translation>
@@ -102,7 +107,9 @@
 <translation id="4429881212383817840">Kerberos ბილეთის მოქმედების ვადა მალე იწურება</translation>
 <translation id="445059817448385655">ძველი პაროლი</translation>
 <translation id="4454245904991689773">შენახვის ადგილი</translation>
+<translation id="4479639480957787382">ეთერნეთი</translation>
 <translation id="4483049906298469269">არანაგულისხმევი ქსელის გეითვეისთან კავშირის შემოწმება ვერ მოხერხდა</translation>
+<translation id="4511264077854731334">პორტალი</translation>
 <translation id="4548483925627140043">სიგნალი ვერ მოიძებნა</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> მა·სთ-იანი ბატარეა</translation>
 <translation id="458794348635939462">ჰოსტების გარდაქმნა ვერ მოხერხდა</translation>
@@ -127,6 +134,7 @@
 <translation id="498186245079027698">შეამოწმეთ სკანერი და ცადეთ ხელახლა. დარწმუნდით, რომ ადგილობრივი მეხსიერება საკმარისია სკანირებული ფაილების შესანახად.</translation>
 <translation id="4985509611418653372">გაშვება</translation>
 <translation id="500920857929044050">ტესტის შეწყვეტა</translation>
+<translation id="5089810972385038852">შტატი</translation>
 <translation id="5154917547274118687">მეხსიერება</translation>
 <translation id="5168185087976003268">ბატარეის მდგომარეობა</translation>
 <translation id="520299634122159966">სკანერები მიუწვდომელია</translation>
@@ -142,7 +150,9 @@
 <translation id="5333530671332546086">პორტალის მდგომარეობა უცნობია</translation>
 <translation id="5372659122375744710">Wi-Fi ქსელი არ არის დაცული</translation>
 <translation id="5401938042319910061">ყველა რუტინის გაშვება</translation>
+<translation id="5430931332414098647">მყისიერი ტეტერინგი</translation>
 <translation id="5431318178759467895">ფერი</translation>
+<translation id="5431825016875453137">OpenVPN / L2TP</translation>
 <translation id="5457599981699367932">დათვალიერება სტუმრის სტატუსით</translation>
 <translation id="54609108002486618">მართული</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
@@ -153,6 +163,7 @@
 <translation id="5797428682393400134">წარმატებით შესრულდა</translation>
 <translation id="5832805196449965646">მომხმარებლის დამატება</translation>
 <translation id="5895138241574237353">გადატვირთვა</translation>
+<translation id="5916084858004523819">აკრძალული</translation>
 <translation id="5931523347251946569">ფაილი ვერ მოიძებნა</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, ვერსია <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">დახურვა</translation>
@@ -164,6 +175,7 @@
 <translation id="6106186594183574873">დასასრულებლად შეიყვანეთ თქვენი ძველი პაროლი</translation>
 <translation id="6108689792487843350">გეითვეი მიუწვდომელია</translation>
 <translation id="6114428539405324828"><ph name="CURRENT" /> გჰც / <ph name="MAX" /> გჰც</translation>
+<translation id="6122191549521593678">ონლაინ</translation>
 <translation id="6146993107019042706">დასასრულებლად შეიყვანეთ თქვენი ახალი პაროლი</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">შეიტყვეთ მეტი</translation>
@@ -188,7 +200,9 @@
 <translation id="6839141349259399400">ვერ უკავშირდებით სკანერებს?</translation>
 <translation id="6853312040151791195">განმუხტვის სიჩქარე</translation>
 <translation id="6898743098396957679">სკანირება ვერ დასრულდა</translation>
+<translation id="6957231940976260713">სერვისის სახელი</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> მართავს ამ მოწყობილობას და აქვს წვდომა მომხმარებლების ნებისმიერ აქტივობაზე, მათ შორის, მონახულებულ ვებგვერდებზე, პაროლებსა და ელფოსტაზე.</translation>
+<translation id="7143207342074048698">დაკავშირება</translation>
 <translation id="714876143603641390">LAN-ის კავშირი</translation>
 <translation id="7162487448488904999">გალერეა</translation>
 <translation id="7177485034254901881">ეს <ph name="DEVICE_TYPE" /> იმართება <ph name="MANAGER" />-ის მიერ. ადმინისტრატორებს შეუძლიათ ამ მოწყობილობის დისტანციურად კონფიგურაცია.</translation>
@@ -197,11 +211,13 @@
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{სკანირება დასრულდა. დასკანირდა 1 გვერდი.}other{სკანირება დასრულდა. დასკანირდა {NUMBER_OF_PAGES} გვერდი.}}</translation>
 <translation id="7441459999606975924">ბატარეების მოცულობა იკლებს მისი გამოყენების შესაბამისად</translation>
 <translation id="7469648432129124067">აღმოჩენილია პორტალი</translation>
+<translation id="7490813197707563893">MAC მისამართი</translation>
 <translation id="7561454561030345039">ამ მოქმედებას მართავს თქვენი ადმინისტრატორი</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">HTTPS რეაგირების დრო დიდია</translation>
 <translation id="7658239707568436148">გაუქმება</translation>
 <translation id="7690294790491645610">დაადასტურეთ ახალი პაროლი</translation>
+<translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">ციკლების რაოდენობა</translation>
 <translation id="7732651821766520760"><ph name="TEST_NAME" /> — ტესტი</translation>
 <translation id="7805768142964895445">სტატუსი</translation>
@@ -213,6 +229,7 @@
 <translation id="808894953321890993">პაროლის შეცვლა</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8160445423316272678">დასაწყებად მოათავსეთ დოკუმენტი სკანერზე და აირჩიეთ <ph name="SPAN_BEGIN" />სკანირება<ph name="SPAN_END" /></translation>
+<translation id="8206859287963243715">ფიჭური</translation>
 <translation id="8208861521865154048">ბონუსები</translation>
 <translation id="8230672074305416752">ნაგულისხმევი ქსელის გეითვეისთან კავშირის შემოწმება ვერ მოხერხდა</translation>
 <translation id="8294431847097064396">წყარო</translation>
@@ -224,6 +241,7 @@
 <translation id="8398927464629426868">სიხშირე, რომლითაც მოწყობილობა ამჟამად იტენება ან იცლება</translation>
 <translation id="8475690821716466388">Wi-Fi ქსელი უზრუნველყოფილია სუსტი პროტოკოლით WEP PSK</translation>
 <translation id="8477551185774834963">DNS-ის რეაგირების დრო ოდნავ აღემატება დასაშვებ ზღვარს</translation>
+<translation id="8576249514688522074">არაინიცირებული</translation>
 <translation id="871560550817059752">ვერ მოხერხდა — მელანი გაუთავდა</translation>
 <translation id="8723108084122415655">არანაგულისხმევი ქსელი აღემატება რეაგირების დროის ზღვარს</translation>
 <translation id="8726019395068607495">გაჩერდა — პრინტერის კარი ღიაა</translation>
@@ -231,14 +249,18 @@
 <translation id="8747900814994928677">დაადასტურეთ ცვლილება</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">ნაგულისხმევი</translation>
+<translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">დახმარების მიღება</translation>
 <translation id="8881098542468797602">ტესტი წარმატებით შესრულდა</translation>
+<translation id="8898840733695078011">სიგნალის სიძლიერე</translation>
 <translation id="8910721771319628100">ნაგულისხმევი ქსელი აღემატება რეაგირების დროის ზღვარს</translation>
 <translation id="8919837981463578619">ვერ მოხერხდა — პრინტერს კალათა აკლია</translation>
 <translation id="8928727111548978589">ვერ მოხერხდა — ქაღალდი გაუთავდა</translation>
+<translation id="8930622219860340959">უსადენო</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> დარჩენილია <ph name="ATTEMPTS_LEFT" /> მცდელობა</translation>
 <translation id="8968751544471797276">დატენის სიჩქარე</translation>
 <translation id="8970109610781093811">ხელახლა გაშვება</translation>
+<translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">ამჟამად გამოყენებული</translation>
 <translation id="910415269708673980">განაახლეთ ბილეთი <ph name="PRINCIPAL_NAME" />-ისთვის</translation>
 <translation id="9106415115617144481">სკანირდება გვერდი <ph name="PAGE_NUMBER" /></translation>

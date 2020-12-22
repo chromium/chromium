@@ -49,12 +49,12 @@
 <translation id="2375079107209812402">អាច​ព្យាយាម​បាន <ph name="ATTEMPTS_LEFT" /> ដង​ទៀត</translation>
 <translation id="2391082728065870591">ផ្ញើ​របាយការណ៍អំពីមតិកែលម្អ</translation>
 <translation id="2446553403094072641">ភាពត្រឹមត្រូវនៃ​ពិន្ទុអណ្ដែត</translation>
+<translation id="2448312741937722512">ប្រភេទ</translation>
 <translation id="2461822463642141190">បច្ចុប្បន្ន</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">ស្កេន</translation>
 <translation id="2570743873672969996">កំពុងដំណើរការតេស្ត <ph name="TEST_NAME" />...</translation>
 <translation id="2620436844016719705">ប្រព័ន្ធ</translation>
-<translation id="2658845327196595460">{COUNT,plural, =1{បានរក្សាទុក​ឯកសារ​ដែលបានស្កេន!}other{បានរក្សាទុក​ឯកសារ​ដែលបានស្កេន!}}</translation>
 <translation id="2740531572673183784">យល់ព្រម</translation>
 <translation id="2805756323405976993">កម្មវិធី</translation>
 <translation id="2872961005593481000">បិទ</translation>
@@ -67,19 +67,23 @@
 <translation id="3091839911843451378">មិនបានសម្រេច - ​​​ម៉ាស៊ីន​បោះពុម្ពបានឈប់</translation>
 <translation id="3102119246920354026">ឃ្លាំងសម្ងាត់</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="315116470104423982">ទិន្នន័យទូរស័ព្ទ</translation>
 <translation id="3188257591659621405">ឯកសារ​របស់ខ្ញុំ​</translation>
 <translation id="3199982728237701504">ឧបករណ៍​បញ្ចូល​ឯកសារ (សងខាង)</translation>
 <translation id="3246869037381808805">កិច្ចការបោះពុម្ពដែលចាស់ជាង 1 ថ្ងៃនឹងត្រូវលុបចេញ</translation>
 <translation id="3268178239013324452">មិនបានសម្រេច - ​​​ទ្វារចំហ</translation>
 <translation id="3310640316857623290">កម្រិតពន្យាររបស់ DNS ខ្ពស់ជាងកម្រិតអនុញ្ញាតខ្លាំង</translation>
 <translation id="3328783797891415197">កំពុងដំណើរការតេស្ត</translation>
+<translation id="3368922792935385530">បានភ្ជាប់</translation>
 <translation id="3369013195428705271">តើអ្នក​ពិតជាចង់​សម្អាត​ប្រវត្តិបោះពុម្ព​ទាំងអស់​មែនឬ? ការងារ​បោះពុម្ព​របស់អ្នកដែល​កំពុងដំណើរការ​នឹងមិនត្រូវបាន​សម្អាតទេ។</translation>
 <translation id="3456078764689556234">បានបោះពុម្ព​ទំព័រទី <ph name="PRINTED_PAGES" /> ក្នុងចំណោម <ph name="TOTAL_PAGES" />។</translation>
 <translation id="3459509316159669723">កំពុងបោះពុម្ព</translation>
 <translation id="3515615323037921860">ការងារ​បោះពុម្ព</translation>
 <translation id="3527036260304016759">មិនបានសម្រេច - មានបញ្ហា​ដែលមិនស្គាល់</translation>
+<translation id="357889014807611375">Wi-Fi តាមកម្រិត</translation>
 <translation id="360565022852130722">បណ្ដាញ WiFi មានសុវត្ថិភាពជាមួយ WEP 802.1x ប្រូតូកូលខ្សោយ</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (ការវាយតម្លៃចំនួន <ph name="AGGREGATED_COUNT" />)</translation>
+<translation id="3748026146096797577">មិនបានភ្ជាប់ទេ</translation>
 <translation id="3749289110408117711">ឈ្មោះឯកសារ</translation>
 <translation id="38114475217616659">សម្អាត​ប្រវត្តិ​ទាំងអស់</translation>
 <translation id="3820172043799983114">លេខ​កូដ PIN ​មិន​ត្រឹមត្រូវ។</translation>
@@ -93,6 +97,7 @@
 <translation id="4131410914670010031">ពណ៌ខ្មៅ និងស</translation>
 <translation id="4145784616224233563">ជញ្ជាំងភ្លើង HTTP</translation>
 <translation id="4170700058716978431">មិនបានសម្រេច</translation>
+<translation id="4176463684765177261">បានបិទដំណើរការ</translation>
 <translation id="4227825898293920515">ពាក្យសម្ងាត់ផុតកំណត់​ក្នុងរយៈពេល <ph name="TIME" /></translation>
 <translation id="4238516577297848345">មិនមានកិច្ចការបោះពុម្ពកំពុងដំណើរការទេ</translation>
 <translation id="4297501883039923494">បានឈប់ - មានបញ្ហា​ដែលមិនស្គាល់</translation>
@@ -102,7 +107,9 @@
 <translation id="4429881212383817840">សំបុត្រ Kerberos ជិតផុត​កំណត់ហើយ</translation>
 <translation id="445059817448385655">ពាក្យ​សម្ងាត់​ចាស់</translation>
 <translation id="4454245904991689773">រក្សាទុកការស្កេនទៅក្នុង</translation>
+<translation id="4479639480957787382">ខ្សែអ៊ីនធឺណិត</translation>
 <translation id="4483049906298469269">មិនអាចភីងច្រកបណ្ដាញមិនមែនលំនាំដើមបានទេ</translation>
+<translation id="4511264077854731334">ច្រក</translation>
 <translation id="4548483925627140043">រកមិនឃើញរលកសញ្ញាទេ</translation>
 <translation id="455835558791489930">ថ្ម <ph name="CHARGE_VALUE" />mAh</translation>
 <translation id="458794348635939462">មិនអាចដោះស្រាយម៉ាស៊ីនទាំងអស់បានទេ</translation>
@@ -127,6 +134,7 @@
 <translation id="498186245079027698">ពិនិត្យមើល​កម្មវិធីស្កេន រួចព្យាយាមម្ដងទៀត។ ត្រូវប្រាកដថា មានទំហំផ្ទុក​ក្នុងឧបករណ៍​គ្រប់គ្រាន់ ដើម្បីរក្សាទុក​ឯកសារដែលបានស្កេន។</translation>
 <translation id="4985509611418653372">ដំណើរការ</translation>
 <translation id="500920857929044050">បញ្ឈប់​ការធ្វើតេស្ត</translation>
+<translation id="5089810972385038852">រដ្ឋ</translation>
 <translation id="5154917547274118687">មេម៉ូរី</translation>
 <translation id="5168185087976003268">គុណភាព​ថ្ម</translation>
 <translation id="520299634122159966">មិនមាន​ឧបករណ៍ស្កេន​ទេ</translation>
@@ -141,7 +149,9 @@
 <translation id="5333530671332546086">មិនស្គាល់​ស្ថានភាព​ច្រកទេ</translation>
 <translation id="5372659122375744710">បណ្ដាញ WiFi មិនមានសុវត្ថិភាពទេ</translation>
 <translation id="5401938042319910061">ដំណើរការរាល់ការធ្វើតេស្តតាមការកំណត់</translation>
+<translation id="5430931332414098647">ការ​ភ្ជាប់​ភ្លាមៗ</translation>
 <translation id="5431318178759467895">ពណ៌</translation>
+<translation id="5431825016875453137">OpenVPN / L2TP</translation>
 <translation id="5457599981699367932">រុករកជារបៀបភ្ញៀវ</translation>
 <translation id="54609108002486618">បាន​គ្រប់គ្រង</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />៖ <ph name="PROBLEMS" /></translation>
@@ -152,6 +162,7 @@
 <translation id="5797428682393400134">ជោគជ័យ</translation>
 <translation id="5832805196449965646">បន្ថែមបុគ្គល</translation>
 <translation id="5895138241574237353">ចាប់ផ្តើមឡើងវិញ</translation>
+<translation id="5916084858004523819">ត្រូវបាន​ហាមឃាត់</translation>
 <translation id="5931523347251946569">រក​មិន​ឃើញ​ឯកសារទេ</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, កំណែ <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">បិទ</translation>
@@ -163,6 +174,7 @@
 <translation id="6106186594183574873">ដើម្បី​បញ្ចប់ សូម​បញ្ចូល​ពាក្យសម្ងាត់​ចាស់​របស់អ្នក</translation>
 <translation id="6108689792487843350">មិនអាចភ្ជាប់ជាមួយច្រកបានទេ</translation>
 <translation id="6114428539405324828"><ph name="CURRENT" />GHz / <ph name="MAX" />GHz</translation>
+<translation id="6122191549521593678">លើអ៊ីនធឺណិត</translation>
 <translation id="6146993107019042706">ដើម្បី​បញ្ចប់ សូម​បញ្ចូល​ពាក្យសម្ងាត់​ថ្មីរបស់អ្នក</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">ស្វែងយល់​បន្ថែម</translation>
@@ -187,7 +199,9 @@
 <translation id="6839141349259399400">មិនអាច​ភ្ជាប់​ម៉ាស៊ីនស្កេន​បានទេឬ​?</translation>
 <translation id="6853312040151791195">អត្រា​ឈប់សាកថ្ម</translation>
 <translation id="6898743098396957679">មិនអាច​បញ្ចប់​ការស្កេនបានទេ</translation>
+<translation id="6957231940976260713">ឈ្មោះ​សេវាកម្ម</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> គ្រប់គ្រង​ឧបករណ៍​នេះ និង​មានសិទ្ធិ​ចូលមើល​សកម្មភាព​អ្នកប្រើប្រាស់​ទាំងអស់ រួមទាំង​ទំព័របណ្ដាញ​ដែលបាន​ចូលមើល ពាក្យសម្ងាត់ និង​អ៊ីមែល​ផងដែរ។</translation>
+<translation id="7143207342074048698">កំពុងភ្ជាប់...</translation>
 <translation id="714876143603641390">ការតភ្ជាប់ Lan</translation>
 <translation id="7162487448488904999">សាល​រូបភាព</translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> នេះស្ថិតក្រោម​ការគ្រប់គ្រងរបស់ <ph name="MANAGER" />។ អ្នកគ្រប់គ្រង​អាចកំណត់រចនាសម្ព័ន្ធ​ឧបករណ៍​នេះពីចម្ងាយបាន។</translation>
@@ -196,11 +210,13 @@
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{ការស្កេន​បានបញ្ចប់។ បានស្កេន 1 ទំព័រ}other{ការស្កេន​បានបញ្ចប់។ បានស្កេន {NUMBER_OF_PAGES} ទំព័រ}}</translation>
 <translation id="7441459999606975924">កម្រិតថ្មធ្លាក់ចុះតាមរយៈការប្រើប្រាស់</translation>
 <translation id="7469648432129124067">បានរកឃើញ​ច្រក</translation>
+<translation id="7490813197707563893">អាសយដ្ឋាន MAC</translation>
 <translation id="7561454561030345039">សកម្មភាពនេះត្រូវបានគ្រប់គ្រងដោយអ្នកគ្រប់គ្រងរបស់អ្នក</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">ការពន្យារ HTTPS ខ្ពស់</translation>
 <translation id="7658239707568436148">បដិសេធ</translation>
 <translation id="7690294790491645610">បញ្ជាក់​ពាក្យ​សម្ងាត់​ថ្មី</translation>
+<translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">ចំនួនវដ្ដ</translation>
 <translation id="7732651821766520760">តេស្ត <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">ស្ថានភាព</translation>
@@ -212,6 +228,7 @@
 <translation id="808894953321890993">ប្ដូរ​ពាក្យ​សម្ងាត់</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8160445423316272678">ដាក់​ឯកសារ​របស់អ្នក​នៅលើ​ម៉ាស៊ីនស្កេន រួច​ជ្រើសរើស <ph name="SPAN_BEGIN" />ស្កេន<ph name="SPAN_END" /> ដើម្បី​ចាប់ផ្ដើម</translation>
+<translation id="8206859287963243715">ប្រព័ន្ធទូរស័ព្ទ</translation>
 <translation id="8208861521865154048">អត្ថប្រយោជន៍</translation>
 <translation id="8230672074305416752">មិនអាចភីងច្រកបណ្ដាញលំនាំដើមបានទេ</translation>
 <translation id="8294431847097064396">ប្រភព</translation>
@@ -223,6 +240,7 @@
 <translation id="8398927464629426868">អត្រាដែលឧបករណ៍កំពុងសាកថ្ម ឬបញ្ចេញថាមពលក្នុងពេលបច្ចុប្បន្ន</translation>
 <translation id="8475690821716466388">បណ្ដាញ WiFi មានសុវត្ថិភាពជាមួយ WEP PSK ប្រូតូកូលខ្សោយ</translation>
 <translation id="8477551185774834963">កម្រិត​ពន្យាររបស់ DNS ខ្ពស់ជាងកម្រិតអនុញ្ញាតបន្តិច</translation>
+<translation id="8576249514688522074">មិនបាន​ចាប់​ផ្ដើម</translation>
 <translation id="871560550817059752">មិនបានសម្រេច - ​​អស់ទឹកថ្នាំ</translation>
 <translation id="8723108084122415655">កម្រិតពន្យាររបស់បណ្ដាញមិនមែនលំនាំដើមខ្ពស់ពេក</translation>
 <translation id="8726019395068607495">បានឈប់ - ទ្វារចំហ</translation>
@@ -230,14 +248,18 @@
 <translation id="8747900814994928677">បញ្ជាក់​ការ​ផ្លាស់ប្ដូរ</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">លំនាំដើម</translation>
+<translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">ទទួលជំនួយ</translation>
 <translation id="8881098542468797602">ការធ្វើតេស្តបានជោគជ័យ</translation>
+<translation id="8898840733695078011">កម្លាំងរលកសញ្ញា</translation>
 <translation id="8910721771319628100">កម្រិត​ពន្យាររបស់បណ្ដាញលំនាំដើមខ្ពស់ពេក</translation>
 <translation id="8919837981463578619">មិនបានសម្រេច - ​​បាត់ថាសដាក់ក្រដាស</translation>
 <translation id="8928727111548978589">មិនបានសម្រេច - ​​អស់ក្រដាស</translation>
+<translation id="8930622219860340959">ឥត​ខ្សែ</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> អាច​ព្យាយាម​បាន <ph name="ATTEMPTS_LEFT" /> ដងទៀត</translation>
 <translation id="8968751544471797276">អត្រាសាកថ្ម</translation>
 <translation id="8970109610781093811">ដំណើរការម្ដងទៀត</translation>
+<translation id="9074739597929991885">ប៊្លូធូស</translation>
 <translation id="9088306295921699330">ការប្រើប្រាស់​បច្ចុប្បន្ន</translation>
 <translation id="910415269708673980">ផ្ទុកសំបុត្រ​ឡើងវិញសម្រាប់ <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">កំពុង​ស្កេន​ទំព័រ <ph name="PAGE_NUMBER" /></translation>

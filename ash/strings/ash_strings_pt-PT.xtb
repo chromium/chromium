@@ -205,6 +205,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2878884018241093801">Nenhum item recente</translation>
 <translation id="2903844815300039659">Ligado a <ph name="NAME" />, <ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">Capturas de ecrã</translation>
+<translation id="2941112035454246133">Baixa</translation>
 <translation id="2942350706960889382">Lupa ancorada</translation>
 <translation id="2942516765047364088">Posição da prateleira</translation>
 <translation id="2946119680249604491">Adicionar ligação</translation>
@@ -217,6 +218,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3000461861112256445">Áudio mono</translation>
 <translation id="3009178788565917040">Saída</translation>
 <translation id="3033545621352269033">Ativada</translation>
+<translation id="3036649622769666520">Abrir ficheiros</translation>
 <translation id="3038571455154067151">Para iniciar sessão, introduza o código de acesso parental do Family Link</translation>
 <translation id="3045488863354895414">Boa tarde,</translation>
 <translation id="3051128274746680507">O seu perfil de utilizador supervisionado será removido brevemente. Inicie sessão para saber mais.</translation>
@@ -367,7 +369,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="4321776623976362024">Premiu o atalho de teclado de alto contraste. Pretende ativá-lo?</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4338109981321384717">Lupa</translation>
-<translation id="4350065043422286972">Fixados</translation>
 <translation id="4351433414020964307">A carregar o Assistente...</translation>
 <translation id="4356930093361201197">modo de alto contraste</translation>
 <translation id="4371348193907997655">Definições de transmissão</translation>
@@ -387,7 +388,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Dispositivos dessincronizados</translation>
 <translation id="4485060137115666462">Ao clicar com o botão direito do rato ou ao manter o botão premido, o Assistente mostra-lhe informações como a definição, a tradução ou a conversão de unidades para a sua seleção.</translation>
-<translation id="4488735711456074171">O seu telemóvel não está online e não conseguimos estabelecer ligação ao mesmo.</translation>
 <translation id="4505050298327493054">Espaço de trabalho ativo.</translation>
 <translation id="4513946894732546136">Comentários</translation>
 <translation id="4527045527269911712">O dispositivo Bluetooth "<ph name="DEVICE_NAME" />" necessita de autorização para sincronizar.</translation>
@@ -448,7 +448,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">Emblemas de apps</translation>
 <translation id="5003993274120026347">Frase seguinte</translation>
-<translation id="5019169674188023236">Parece que o Bluetooth ou o Wi-Fi estão desativados no <ph name="DEVICE_TYPE" />. Verifique a sua ligação para utilizar o Phone Hub.</translation>
 <translation id="5030687792513154421">O tempo terminou</translation>
 <translation id="5033299697334913360">Clique em qualquer local para capturar o ecrã inteiro.</translation>
 <translation id="5035236842988137213">O dispositivo <ph name="DEVICE_NAME" /> estabeleceu ligação a um novo telemóvel.</translation>
@@ -581,7 +580,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="6376931439017688372">Bluetooth ativado</translation>
 <translation id="6381109794406942707">Para desbloquear este dispositivo, introduza o seu PIN.</translation>
 <translation id="639644700271529076">CAPS LOCK está desativado</translation>
-<translation id="6398771186477608158">Certifique-se de que o telemóvel está próximo com o Bluetooth e o Wi-Fi ativados.</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, intensidade do sinal: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Limpar todas as notificações</translation>
@@ -731,7 +729,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="7780159184141939021">Rodar ecrã</translation>
 <translation id="7796353162336583443">Toque no botão da caneta stylus na prateleira para tirar uma nota, criar uma captura de ecrã ou utilizar o Assistente Google, o ponteiro de laser ou a lupa.</translation>
 <translation id="7798302898096527229">Prima Pesquisar ou Shift para cancelar.</translation>
-<translation id="781126011916719498">Aceda rapidamente aos seus ficheiros importantes. Clique com o botão direito do rato ou toque sem soltar num ficheiro para o fixar.</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> e <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Sinal forte</translation>
 <translation id="7837740436429729974">Acabou o tempo</translation>
@@ -862,7 +859,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="8877788021141246043">Definir um lembrete</translation>
 <translation id="8878886163241303700">Ecrã alargado</translation>
 <translation id="8883473964424809116">Clique para abrir as definições do Assistente Google.</translation>
-<translation id="8894122120026866664">Não é possível encontrar o telemóvel</translation>
 <translation id="890616557918890486">Alterar origem</translation>
 <translation id="8909138438987180327">A bateria está a <ph name="PERCENTAGE" /> por cento.</translation>
 <translation id="8913384980486163186">Temáticas (predefinição)</translation>
@@ -889,7 +885,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="9084606467167974638">Alternar a posição do menu</translation>
 <translation id="9089416786594320554">Métodos de introd.</translation>
 <translation id="9091626656156419976">Ecrã <ph name="DISPLAY_NAME" /> removido</translation>
-<translation id="9092749890156285613">Transferências e capturas de ecrã recentes</translation>
 <translation id="9098969848082897657">Silenciar telemóvel</translation>
 <translation id="9151726767154816831">Reiniciar e efetuar um Powerwash para atualizar</translation>
 <translation id="9166331175924255663">Ative/desative a alta visibilidade da funcionalidade Partilhar na proximidade.</translation>

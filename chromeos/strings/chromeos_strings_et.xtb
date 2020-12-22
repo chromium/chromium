@@ -49,12 +49,12 @@
 <translation id="2375079107209812402">Jäänud on <ph name="ATTEMPTS_LEFT" /> katset</translation>
 <translation id="2391082728065870591">Saada tagasisidearuanne</translation>
 <translation id="2446553403094072641">Ujukoma täpsus</translation>
+<translation id="2448312741937722512">Tüüp</translation>
 <translation id="2461822463642141190">Praegune</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Kontrolli</translation>
 <translation id="2570743873672969996">Testi <ph name="TEST_NAME" /> käitamine …</translation>
 <translation id="2620436844016719705">Süsteem</translation>
-<translation id="2658845327196595460">{COUNT,plural, =1{Skannitud fail on salvestatud.}other{Skannitud failid on salvestatud.}}</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2805756323405976993">Rakendused</translation>
 <translation id="2872961005593481000">Lülita välja</translation>
@@ -67,19 +67,23 @@
 <translation id="3091839911843451378">Ebaõnnestus – peatatud</translation>
 <translation id="3102119246920354026">Vahemälu</translation>
 <translation id="3122464029669770682">Protsessor</translation>
+<translation id="315116470104423982">Mobiilne andmeside</translation>
 <translation id="3188257591659621405">Minu failid</translation>
 <translation id="3199982728237701504">Dokumendisöötur (kahepoolne)</translation>
 <translation id="3246869037381808805">Prinditööd, mis on vanemad kui 1 päev, eemaldatakse</translation>
 <translation id="3268178239013324452">Ebaõnnestus – luuk on avatud</translation>
 <translation id="3310640316857623290">DNS-i latentsusaeg ületab märkimisväärselt lubatud piiri</translation>
 <translation id="3328783797891415197">Test on pooleli</translation>
+<translation id="3368922792935385530">Ühendatud</translation>
 <translation id="3369013195428705271">Kas soovite kindlasti kogu printimise ajaloo kustutada? Teie pooleliolevaid prinditöid ei kustutata.</translation>
 <translation id="3456078764689556234">Prinditi <ph name="PRINTED_PAGES" />. leht <ph name="TOTAL_PAGES" />-st.</translation>
 <translation id="3459509316159669723">Printimine</translation>
 <translation id="3515615323037921860">Prinditööd</translation>
 <translation id="3527036260304016759">Ebaõnnestus – tundmatu viga</translation>
+<translation id="357889014807611375">mahupõhine WiFi</translation>
 <translation id="360565022852130722">WiFi-võrk on kaitstud nõrga protokolliga (WEP 802.1x)</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> arvustust)</translation>
+<translation id="3748026146096797577">Ühendus puudub</translation>
 <translation id="3749289110408117711">Faili nimi</translation>
 <translation id="38114475217616659">Kustuta kogu ajalugu</translation>
 <translation id="3820172043799983114">Vale PIN-kood.</translation>
@@ -93,6 +97,7 @@
 <translation id="4131410914670010031">Mustvalge</translation>
 <translation id="4145784616224233563">HTTP tulemüür</translation>
 <translation id="4170700058716978431">EBAÕNNESTUS</translation>
+<translation id="4176463684765177261">Keelatud</translation>
 <translation id="4227825898293920515">Parooli aegumiseni on jäänud <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Ühtegi prinditööd pole pooleli</translation>
 <translation id="4297501883039923494">Peatatud – tundmatu viga</translation>
@@ -102,7 +107,9 @@
 <translation id="4429881212383817840">Kerberose pilet aegub peagi</translation>
 <translation id="445059817448385655">Vana parool</translation>
 <translation id="4454245904991689773">Skanni asukohta</translation>
+<translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Mittevaikevõrgulüüsi pingimine ebaõnnestus</translation>
+<translation id="4511264077854731334">Portaal</translation>
 <translation id="4548483925627140043">Signaali ei leitud</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh aku</translation>
 <translation id="458794348635939462">Kõikide hostide lahendamine ebaõnnestus</translation>
@@ -127,6 +134,7 @@
 <translation id="498186245079027698">Kontrollige skannerit ja proovige uuesti. Veenduge, et skannitud failide salvestamiseks oleks piisavalt kohalikku ruumi.</translation>
 <translation id="4985509611418653372">Käitati</translation>
 <translation id="500920857929044050">Lõpeta test</translation>
+<translation id="5089810972385038852">Osariik/Maakond</translation>
 <translation id="5154917547274118687">Mälu</translation>
 <translation id="5168185087976003268">Aku seisukord</translation>
 <translation id="520299634122159966">Ühtegi skannerit pole saadaval</translation>
@@ -142,7 +150,9 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="5333530671332546086">Portaali tundmatu olek</translation>
 <translation id="5372659122375744710">WiFi-võrk pole turvaline</translation>
 <translation id="5401938042319910061">Käita kõiki rutiine</translation>
+<translation id="5430931332414098647">Automaatne jagamine</translation>
 <translation id="5431318178759467895">Värv</translation>
+<translation id="5431825016875453137">OpenVPN/L2TP</translation>
 <translation id="5457599981699367932">Sirvi külalisena</translation>
 <translation id="54609108002486618">Hallatud</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
@@ -153,6 +163,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="5797428682393400134">ÕNNESTUS</translation>
 <translation id="5832805196449965646">Lisa inimene</translation>
 <translation id="5895138241574237353">Taaskäivitamine</translation>
+<translation id="5916084858004523819">Keelatud</translation>
 <translation id="5931523347251946569">Faili ei leitud</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, versioon <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Sulge</translation>
@@ -164,6 +175,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="6106186594183574873">Toimingu lõpuleviimiseks sisestage oma vana parool</translation>
 <translation id="6108689792487843350">Lüüs on kättesaamatu</translation>
 <translation id="6114428539405324828"><ph name="CURRENT" /> GHz / <ph name="MAX" /> GHz</translation>
+<translation id="6122191549521593678">Onlain</translation>
 <translation id="6146993107019042706">Toimingu lõpuleviimiseks sisestage oma uus parool</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Lisateave</translation>
@@ -188,7 +200,9 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="6839141349259399400">Kas skanneritega ei õnnestu ühendust luua?</translation>
 <translation id="6853312040151791195">Tühjenemise kiirus</translation>
 <translation id="6898743098396957679">Skannimist ei saanud lõpule viia</translation>
+<translation id="6957231940976260713">Teenuse nimi</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> haldab seda seadet ja sellel on juurdepääs kogu kasutaja tegevusele. sealhulgas külastatud veebilehed, paroolid ja e-post.</translation>
+<translation id="7143207342074048698">Ühendamine</translation>
 <translation id="714876143603641390">LAN-i ühenduvus</translation>
 <translation id="7162487448488904999">Galerii</translation>
 <translation id="7177485034254901881">Seadet <ph name="DEVICE_TYPE" /> haldab <ph name="MANAGER" />. Administraatorid saavad seda seadet kaugühenduse teel seadistada.</translation>
@@ -197,11 +211,13 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skannimine on lõpetatud. Skanniti üks leht.}other{Skannimine on lõpetatud. Skanniti {NUMBER_OF_PAGES} lehte}}</translation>
 <translation id="7441459999606975924">Akude maht väheneb kasutuse käigus</translation>
 <translation id="7469648432129124067">Tuvastati portaal</translation>
+<translation id="7490813197707563893">MAC-aadress</translation>
 <translation id="7561454561030345039">Seda toimingut haldab administraator.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Pikk HTTPS-i latentsusaeg</translation>
 <translation id="7658239707568436148">Tühista</translation>
 <translation id="7690294790491645610">Kinnitage uus parool</translation>
+<translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Tsüklite arv</translation>
 <translation id="7732651821766520760">Test <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Olek</translation>
@@ -213,6 +229,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="808894953321890993">Muuda parooli</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8160445423316272678">Asetage dokument skannerisse ja valige alustamiseks käsk <ph name="SPAN_BEGIN" />Skanni<ph name="SPAN_END" /></translation>
+<translation id="8206859287963243715">Mobiil</translation>
 <translation id="8208861521865154048">Hüved</translation>
 <translation id="8230672074305416752">Vaikevõrgulüüsi pingimine ebaõnnestus</translation>
 <translation id="8294431847097064396">Allikas</translation>
@@ -224,6 +241,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="8398927464629426868">Praegune seadme laadimise või tühjenemise kiirus</translation>
 <translation id="8475690821716466388">WiFi-võrk on kaitstud nõrga protokolliga (WEP PSK)</translation>
 <translation id="8477551185774834963">DNS-i latentsusaeg ületab veidi lubatud piiri</translation>
+<translation id="8576249514688522074">Lähtestamata</translation>
 <translation id="871560550817059752">Ebaõnnestus – tint on otsas</translation>
 <translation id="8723108084122415655">Mittevaikevõrk ületab latentsusaja piiri</translation>
 <translation id="8726019395068607495">Peatatud – luuk on avatud</translation>
@@ -231,14 +249,18 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="8747900814994928677">Kinnita muudatus</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Vaikimisi</translation>
+<translation id="8814190375133053267">WiFi</translation>
 <translation id="8845001906332463065">Otsige abi</translation>
 <translation id="8881098542468797602">Test õnnestus</translation>
+<translation id="8898840733695078011">Signaali tugevus</translation>
 <translation id="8910721771319628100">Vaikevõrk ületab latentsusaja piiri</translation>
 <translation id="8919837981463578619">Ebaõnnestus – salv puudub</translation>
 <translation id="8928727111548978589">Ebaõnnestus – paber on otsas</translation>
+<translation id="8930622219860340959">Raadiovõrk</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" />, <ph name="ATTEMPTS_LEFT" /> katset jäänud</translation>
 <translation id="8968751544471797276">Laadimiskiirus</translation>
 <translation id="8970109610781093811">Käita uuesti</translation>
+<translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Praegune kasutus</translation>
 <translation id="910415269708673980">Kasutaja <ph name="PRINCIPAL_NAME" /> pileti värskendamine</translation>
 <translation id="9106415115617144481">Lehe <ph name="PAGE_NUMBER" /> skannimine</translation>

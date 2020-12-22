@@ -362,13 +362,13 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
           Si la estableces, los usuarios no podrán cambiarla ni anularla.</translation>
 <translation id="1502843533062797703">Habilitar el bloqueo de inserción de software de terceros</translation>
 <translation id="1506017854924185821">Disponibilidad del selector de perfiles en el inicio</translation>
-<translation id="1509377996969000672">Si estableces la política, se proporcionan configuraciones para las impresoras empresariales vinculadas a dispositivos. Su formato coincide con el diccionario de <ph name="NATIVE_PRINTERS_POLICY_NAME" />. Incluye un campo "id" o "guid" obligatorio adicional para cada impresora para la lista de impresoras permitidas o bloqueadas. El tamaño del archivo no puede superar 5 MB y está en formato JSON (un archivo de ese tamaño contiene aproximadamente 21,000 impresoras). El hash criptográfico permite verificar la integridad de la descarga. Cada vez que cambie la URL o el hash, se descargará el archivo, se almacenará en caché y se volverá a descargar. <ph name="PRODUCT_OS_NAME" /> descargará el archivo para la las configuraciones de impresoras y hará que las impresoras estén disponibles junto con <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> y <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />.
+<translation id="1509377996969000672">Si estableces la política, se proporcionan configuraciones para las impresoras empresariales vinculadas a dispositivos. Su formato coincide con el diccionario de <ph name="NATIVE_PRINTERS_POLICY_NAME" />. Incluye un campo "id" o "guid" obligatorio adicional para cada impresora para la lista de impresoras permitidas o bloqueadas. El tamaño del archivo no puede superar los 5 MB y está en formato JSON (un archivo de ese tamaño contiene aproximadamente 21,000 impresoras). El hash criptográfico permite verificar la integridad de la descarga. Cada vez que cambie la URL o el hash, se descargará el archivo, se almacenará en caché y se volverá a descargar. <ph name="PRODUCT_OS_NAME" /> descargará el archivo para las configuraciones de impresoras y hará que las impresoras estén disponibles junto con <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> y <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />.
 
       Esta política:
 
-      * no impide que los usuarios configuren impresoras en dispositivos individuales
+      * No impide que los usuarios configuren impresoras en dispositivos individuales.
 
-      * complementa <ph name="BULK_PRINTERS_POLICY_NAME" /> y las configuraciones de las impresoras de los usuarios individuales
+      * Complementa <ph name="BULK_PRINTERS_POLICY_NAME" /> y las configuraciones de las impresoras de los usuarios individuales.
 
       Si no la estableces, no habrá impresoras asociadas a dispositivos y se ignorarán las demás políticas <ph name="DEVICE_NATIVE_PRINTERS_POLICY_PATTERN" />.
 
@@ -1225,13 +1225,6 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       Si inhabilitas la política, <ph name="PRODUCT_NAME" /> solo podrá usar estos hosts cuando estén instalados a nivel del sistema.</translation>
 <translation id="2753637905605932878">Restringir el intervalo de puertos UDP locales que usa WebRTC</translation>
 <translation id="2757054304033424106">Tipos de extensiones o aplicaciones que se pueden instalar</translation>
-<translation id="2758689548159678032">Si habilitas la política, la función de <ph name="PRODUCT_NAME" /> enviará encabezados de solicitud detallados con información sobre el entorno y el navegador del usuario.
-
-      Esta es una función adicional, pero los nuevos encabezados pueden ocasionar fallos en algunos sitios web que restrinjan los caracteres que pueden contener las solicitudes.
-
-      Si habilitas esta política o no la estableces, se habilitará la función de <ph name="PRODUCT_NAME" />. Si la inhabilitas, la función no estará disponible.
-
-      Esta política empresarial es una adaptación por corto plazo y se quitará en Chrome 88.</translation>
 <translation id="2759224876420453487">Controlar el comportamiento del usuario en una sesión de varios perfiles</translation>
 <translation id="2761483219396643566">Demora para la advertencia de inactividad cuando el dispositivo está funcionando a batería</translation>
 <translation id="2769952903507981510">Configura el nombre de dominio requerido para los hosts de acceso remoto.</translation>
@@ -1347,7 +1340,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       Si no la estableces (o determinas una URL no válida), <ph name="PRODUCT_NAME" /> no utilizará la política como fuente de reglas para cambiar de navegador.
 
       Nota: Esta política redirecciona a un archivo XML en el mismo formato que la política <ph name="IEEM_SITELIST_POLICY" /> de <ph name="IE_PRODUCT_NAME" />. De esta manera, se cargan reglas de un archivo XML sin la necesidad de compartirlas con <ph name="IE_PRODUCT_NAME" />. Obtén más información sobre la política <ph name="IEEM_SITELIST_POLICY" /> de <ph name="IE_PRODUCT_NAME" /> (https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode)</translation>
-<translation id="2947111924404450461">Si estableces esta política, se configurarán las impresoras empresariales. Su formato coincide con el diccionario de <ph name="NATIVE_PRINTERS_POLICY_NAME" />, con un campo <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> obligatorio adicional para cada impresora para la lista de impresoras permitidas o bloqueadas. El tamaño del archivo no puede superar 5 MB y está en formato JSON (un archivo de ese tamaño contiene aproximadamente 21,000 impresoras). El hash criptográfico permite verificar la integridad de la descarga. Cada vez que cambie la URL o el hash, se descargará el archivo, se almacenará en caché y se volverá a descargar. <ph name="PRODUCT_OS_NAME" /> descargará el archivo para la las configuraciones de impresoras y hará que las impresoras estén disponibles junto con <ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="BULK_PRINTERS_WHITELIST" /> y <ph name="BULK_PRINTERS_BLACKLIST" />.
+<translation id="2947111924404450461">Si estableces esta política, se configurarán las impresoras empresariales. Su formato coincide con el diccionario de <ph name="NATIVE_PRINTERS_POLICY_NAME" />, con un campo <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> obligatorio adicional para cada impresora para la lista de impresoras permitidas o bloqueadas. El tamaño del archivo no puede superar los 5 MB y está en formato JSON (un archivo de ese tamaño contiene aproximadamente 21,000 impresoras). El hash criptográfico permite verificar la integridad de la descarga. Cada vez que cambie la URL o el hash, se descargará el archivo, se almacenará en caché y se volverá a descargar. <ph name="PRODUCT_OS_NAME" /> descargará el archivo para las configuraciones de impresoras y hará que las impresoras estén disponibles junto con <ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="BULK_PRINTERS_WHITELIST" /> y <ph name="BULK_PRINTERS_BLACKLIST" />.
 
       Esta política no afecta la capacidad del usuario para configurar impresoras en dispositivos individuales, y su objetivo es complementar la configuración de impresoras a cargo de los usuarios.
 
@@ -1656,7 +1649,7 @@ Esta política solo se puede establecer en la Consola del administrador de Googl
 
       * Como alternativa, puedes proporcionar <ph name="PRINTER_UUID" /> para permitir que se anulen las impresoras de <ph name="ZEROCONF_DISCOVERY" /> duplicadas
 
-      * Puedes usar el nombre del modelo para <ph name="PRINTER_EFFECTIVE_MODEL" /> o establecer <ph name="PRINTER_AUTOCONF" /> como verdadero Se ignorarán las impresoras que tengan ambas propiedades o ninguna de las dos.
+      * Puedes usar el nombre del modelo de <ph name="PRINTER_EFFECTIVE_MODEL" /> o establecer <ph name="PRINTER_AUTOCONF" /> como verdadero Se ignorarán las impresoras que tengan ambas propiedades o ninguna de las dos.
 
       Los PPD se descargan después de que se utiliza la impresora, y los PPD que se usan con mayor frecuencia se almacenan en caché. Esta política no impide que los usuarios configuren impresoras en dispositivos individuales.
 
@@ -1798,6 +1791,11 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
       Si inhabilitas la política, este software podrá insertar el código mencionado en los procesos de <ph name="PRODUCT_NAME" />.
 
       Más allá del valor de esta política, el navegador no impedirá que software de terceros inserte código ejecutable en los procesos de una máquina vinculada a un dominio de <ph name="MS_AD_NAME" />.</translation>
+<translation id="3456292544936505775">Esta política controla los períodos durante los cuales el dispositivo con <ph name="PRODUCT_OS_NAME" /> no puede comprobar automáticamente si hay actualizaciones disponibles.
+      Si estableces la política con una lista no vacía de intervalos de tiempo, los dispositivos no podrán comprobar de forma automática si hay actualizaciones disponibles durante los intervalos de tiempo especificados. Debido a posibles problemas de seguridad, esta política no afectará a los dispositivos que necesiten una reversión empresarial o tengan versiones anteriores a la mínima de <ph name="PRODUCT_OS_NAME" />. Además, esta política no bloqueará comprobaciones de actualizaciones que soliciten los usuarios o administradores.
+      A partir de la versión M88, esta política cancela la actualización en curso cuando finalice un intervalo de tiempo restringido. La siguiente actualización automática después de que finalice el intervalo de tiempo restringido reanudará automáticamente la actualización. Esta política no afectará a los dispositivos que se actualicen a una versión de corrección rápida.
+      Si no estableces esta política o esta contiene intervalos de tiempo, esta política no bloqueará comprobaciones de actualizaciones automáticas. No obstante, es posible que haya otras políticas que sí lo hagan.
+      Hasta la versión M88, esta función solo está disponible en dispositivos con <ph name="PRODUCT_OS_NAME" /> configurados como kioscos de inicio automático. Esta política no restringirá otros dispositivos. Sin embargo, a partir de la versión M89, esta política está habilitada en todos los dispositivos con <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="3459509316159669723">Impresión</translation>
 <translation id="3461279434465463233">Informar el estado de la energía</translation>
 <translation id="3478024346823118645">Eliminar los datos del usuario al salir</translation>
@@ -1990,7 +1988,7 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
 
       * Como alternativa, puedes proporcionar <ph name="PRINTER_UUID" /> para permitir que se anulen las impresoras de <ph name="ZEROCONF_DISCOVERY" /> duplicadas
 
-      * Puedes usar el nombre del modelo para <ph name="PRINTER_EFFECTIVE_MODEL" /> o establecer <ph name="PRINTER_AUTOCONF" /> como verdadero Se ignorarán las impresoras que tengan ambas propiedades o ninguna de las dos.
+      * Puedes usar el nombre del modelo de <ph name="PRINTER_EFFECTIVE_MODEL" /> o establecer <ph name="PRINTER_AUTOCONF" /> como verdadero Se ignorarán las impresoras que tengan ambas propiedades o ninguna de las dos.
 
       Los PPD se descargan después de que se utiliza la impresora, y los PPD que se usan con mayor frecuencia se almacenan en caché. Esta política no impide que los usuarios configuren impresoras en dispositivos individuales.
 
@@ -4121,13 +4119,13 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
       Esta política se aplica a la pantalla de acceso. Consulta también la política <ph name="ISOLATE_ORIGINS_POLICY_NAME" />, que se aplica a la sesión de usuario.
       Si habilitas la política, cada origen designado en una lista de elementos separados por comas se ejecutará en su propio proceso. Esta acción también aislará los orígenes designados mediante subdominios; p. ej., al especificar https://example.com/, también se aislará https://foo.example.com/ como parte del sitio https://example.com/.
       Si inhabilitas la política o no la estableces, se usará la configuración predeterminada de aislamiento de sitios de la plataforma para la pantalla de acceso.</translation>
-<translation id="6949867264289339206">Si estableces la política, se proporcionan configuraciones para las impresoras empresariales vinculadas a dispositivos. Su formato coincide con el diccionario de <ph name="PRINTERS_POLICY_NAME" />, con un campo "id" o "guid" obligatorio adicional para cada impresora para la lista de impresoras permitidas o bloqueadas. El tamaño del archivo no puede superar 5 MB y está en formato JSON (un archivo de ese tamaño contiene aproximadamente 21,000 impresoras). El hash criptográfico permite verificar la integridad de la descarga. Cada vez que cambie la URL o el hash, se descargará el archivo, se almacenará en caché y se volverá a descargar. <ph name="PRODUCT_OS_NAME" /> descargará el archivo para la las configuraciones de impresoras y hará que las impresoras estén disponibles junto con <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> y <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />.
+<translation id="6949867264289339206">Si estableces la política, se proporcionan configuraciones para las impresoras empresariales vinculadas a dispositivos. Su formato coincide con el diccionario de <ph name="PRINTERS_POLICY_NAME" />, con un campo "id" o "guid" obligatorio adicional para cada impresora para la lista de impresoras permitidas o bloqueadas. El tamaño del archivo no puede superar los 5 MB y está en formato JSON (un archivo de ese tamaño contiene aproximadamente 21,000 impresoras). El hash criptográfico permite verificar la integridad de la descarga. Cada vez que cambie la URL o el hash, se descargará el archivo, se almacenará en caché y se volverá a descargar. <ph name="PRODUCT_OS_NAME" /> descargará el archivo para las configuraciones de impresoras y hará que las impresoras estén disponibles junto con <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> y <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />.
 
       Esta política:
 
-      * no impide que los usuarios configuren impresoras en dispositivos individuales
+      * No impide que los usuarios configuren impresoras en dispositivos individuales.
 
-      * complementa <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> y las configuraciones de las impresoras de los usuarios individuales
+      * Complementa <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> y las configuraciones de las impresoras de los usuarios individuales.
 
       Si no la estableces, no habrá impresoras asociadas a dispositivos y se ignorarán las demás políticas <ph name="DEVICE_PRINTERS_POLICY_PATTERN" />.</translation>
 <translation id="69525503251220566">Parámetro que proporciona una función de búsqueda por imagen para el proveedor de búsquedas predeterminado</translation>
@@ -4754,7 +4752,7 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 
           Si no la estableces, el contraste alto estará inicialmente inhabilitado en la pantalla de acceso, pero el usuario podrá habilitarlo en cualquier momento.</translation>
 <translation id="7869986671709030417">Modo predeterminado de impresión de los gráficos de fondo</translation>
-<translation id="7881421274383404138">Si estableces esta política, se configurarán las impresoras empresariales. Su formato coincide con el diccionario de <ph name="PRINTERS_POLICY_NAME" />. Incluye un campo <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> obligatorio adicional para cada impresora para la lista de impresoras permitidas o bloqueadas. El tamaño del archivo no puede superar 5 MB y está en formato JSON (un archivo de ese tamaño contiene aproximadamente 21,000 impresoras). El hash criptográfico permite verificar la integridad de la descarga. Cada vez que cambie la URL o el hash, se descargará el archivo, se almacenará en caché y se volverá a descargar. <ph name="PRODUCT_OS_NAME" /> descargará el archivo para la las configuraciones de impresoras y hará que las impresoras estén disponibles junto con <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> y <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" />.
+<translation id="7881421274383404138">Si estableces esta política, se configurarán las impresoras empresariales. Su formato coincide con el diccionario de <ph name="PRINTERS_POLICY_NAME" />. Incluye un campo <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> obligatorio adicional para cada impresora para la lista de impresoras permitidas o bloqueadas. El tamaño del archivo no puede superar los 5 MB y está en formato JSON (un archivo de ese tamaño contiene aproximadamente 21,000 impresoras). El hash criptográfico permite verificar la integridad de la descarga. Cada vez que cambie la URL o el hash, se descargará el archivo, se almacenará en caché y se volverá a descargar. <ph name="PRODUCT_OS_NAME" /> descargará el archivo para las configuraciones de impresoras y hará que las impresoras estén disponibles junto con <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> y <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" />.
 
       Esta política no afecta la capacidad del usuario para configurar impresoras en dispositivos individuales, y su objetivo es complementar la configuración de impresoras a cargo de los usuarios.
 
@@ -4951,6 +4949,10 @@ Si se establece como falsa, se inhabilitará la pantalla de privacidad cuando se
 Si la estableces, el usuario no podrá anular el valor cuando se muestre la pantalla de acceso.
 
 Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pero el usuario podrá controlarla cuando se muestre la pantalla de acceso.</translation>
+<translation id="8147427717998252789">Si configuras la política, se definirá el valor que muestra la API de configuración administrada para un origen determinado.
+
+      La API de configuración administrada es una configuración de clave-valor a la cual se puede acceder mediante la llamada de JavaScript navigator.device.getManagedConfiguration(). Esta API solo está disponible para los orígenes que corresponden a las aplicaciones web que se instalaron de forma automática mediante <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />.
+     </translation>
 <translation id="815061180603915310">Si se habilita, esta política cambia el perfil al modo efímero. Si se especifica como política del Sistema operativo (p. ej., GPO en Windows), se aplica a todos los perfiles del sistema. Si se establece como política en la nube, solo se aplica a un perfil que haya accedido con una cuenta administrada.
 
       En este modo, los datos de perfil solo se mantienen en el disco hasta que termine la sesión del usuario. Una vez que se cierra el navegador, no se conservan ciertas funciones, como el historial web, las extensiones y su información, los datos de Internet (las cookies) o las bases de datos web. Sin embargo, esto no impide que el usuario pueda descargar datos en el disco manualmente, guardar páginas o imprimirlas.
@@ -5108,9 +5110,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 
       Si no estableces <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" />, se enviarán las solicitudes de búsqueda de imágenes con el método GET.</translation>
 <translation id="8314214821702356835">Permite que los usuarios reproduzcan contenido multimedia cuando está bloqueado el dispositivo</translation>
-<translation id="8316913402499361923">Si habilitas la política o no la estableces, los usuarios podrán realizar impresiones en <ph name="PRODUCT_NAME" />. Los usuarios no podrán cambiar esta configuración.
-
-      Si inhabilitas la política, los usuarios no podrán realizar impresiones desde <ph name="PRODUCT_NAME" />. Estará desactivada la impresión en el menú de herramientas, las extensiones y las aplicaciones de JavaScript. Solo se podrá realizar impresiones desde complementos que omitan <ph name="PRODUCT_NAME" /> en el proceso de impresión.</translation>
+<translation id="8319678975002906774">Establece los valores de la configuración administrada como los sitios web de orígenes específicos</translation>
 <translation id="8320149248919453401">Modo de carga de la batería</translation>
 <translation id="8329984337216493753">Esta política solo se encuentra activa en el modo de venta.
 
@@ -5334,11 +5334,6 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="8676959842615154675">Si habilitas la política, el host de acceso remoto comparará el nombre del usuario local con el que está asociado el host y el nombre de la Cuenta de Google registrado como el propietario del host ("juanperez" si el host le pertenece a "juanperez@ejemplo.com"). No se iniciará el host si el nombre del propietario del host es diferente del nombre del usuario local con el que está asociado el host. Para asociar de forma forzosa la Cuenta de Google del propietario con un dominio específico, utiliza la política con <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />.
 
       Si inhabilitas la política o no la estableces, el host de acceso remoto podrá asociarse a cualquier usuario local.</translation>
-<translation id="8680488165461049026">Esta política le otorga permiso a Respuestas rápidas para acceder al contenido seleccionado y enviar información al servidor.
-
-      Si se habilita esta política, Respuestas rápidas podrá acceder al contenido seleccionado.
-      Si se inhabilita, Respuestas rápidas no podrá acceder a ese contenido.
-      Si no se configura esta política, los usuarios podrán decidir si permiten que Respuestas rápidas acceda al contenido seleccionado.</translation>
 <translation id="8685024486845674965">La advertencia de la protección de la contraseña se activa cuando se vuelve a usar la contraseña</translation>
 <translation id="8685680544554917389">Si estableces la política como verdadera, <ph name="PRODUCT_NAME" /> podrá reproducir contenido multimedia de forma automática. Si estableces la política como falsa, <ph name="PRODUCT_NAME" /> dejará de reproducir contenido multimedia de forma automática.
 

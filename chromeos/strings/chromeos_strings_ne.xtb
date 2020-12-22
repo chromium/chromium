@@ -9,6 +9,7 @@
 <translation id="1175697296044146566"><ph name="MANAGER" /> ले यो <ph name="DEVICE_TYPE" /> व्यवस्थापन गर्छ।</translation>
 <translation id="1195447618553298278">अज्ञात त्रुटि:</translation>
 <translation id="1204296502688602597">DNS को विलम्बता</translation>
+<translation id="123124571410524056">पोर्टलका कारणले हुन सक्छ</translation>
 <translation id="1238612778414822719">HTTPS को विलम्बता</translation>
 <translation id="1290331692326790741">कमजोर सिग्नल</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -36,6 +37,7 @@
 <translation id="1947737735496445907">प्रिन्ट गरियो</translation>
 <translation id="1979103255016296513">पासवर्ड परिवर्तन गर्न ढिला भइसकेको छ</translation>
 <translation id="1980044825731880088">CPU को गति</translation>
+<translation id="1999615961760456652">क्याप्टिभ पोर्टल</translation>
 <translation id="2008685064673031089">प्राइम सर्च</translation>
 <translation id="2080070583977670716">थप सेटिङहरू</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -47,12 +49,12 @@
 <translation id="2375079107209812402">अब <ph name="ATTEMPTS_LEFT" /> पटक प्रयास गर्न मिल्छ</translation>
 <translation id="2391082728065870591">फिडब्याक रिपोर्ट पठाउनुहोस्</translation>
 <translation id="2446553403094072641">फ्लोटिङ पोइन्टको सटीकता</translation>
+<translation id="2448312741937722512">प्रकार</translation>
 <translation id="2461822463642141190">हालको</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">स्क्यान गर्नुहोस्</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> परीक्षण गरिँदै छ...</translation>
 <translation id="2620436844016719705">सिस्टम</translation>
-<translation id="2658845327196595460">{COUNT,plural, =1{स्क्यान गरिएको फाइल सुरक्षित गरियो!}other{स्क्यान गरिएका फाइलहरू सुरक्षित गरिए!}}</translation>
 <translation id="2740531572673183784">ठिक छ</translation>
 <translation id="2805756323405976993">एप्स</translation>
 <translation id="2872961005593481000">बन्द गर्नुहोस्</translation>
@@ -65,19 +67,23 @@
 <translation id="3091839911843451378">प्रिन्ट गर्न सकिएन - प्रिन्ट गर्दा गर्दै रोकियो</translation>
 <translation id="3102119246920354026">केस</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="315116470104423982">मोबाइल डाटा</translation>
 <translation id="3188257591659621405">मेरा फाइलहरू</translation>
 <translation id="3199982728237701504">डकुमेन्ट फिडर (दुईतर्फी)</translation>
 <translation id="3246869037381808805">१ दिनभन्दा पहिलेका प्रिन्टसम्बन्धी कार्यहरू हटाइने छन्</translation>
 <translation id="3268178239013324452">प्रिन्ट गर्न सकिएन - प्रिन्टरको कभर खुला छ</translation>
 <translation id="3310640316857623290">DNS को विलम्बता तोकिएको समयसीमाभन्दा अत्याधिक मात्रामा बढी छ</translation>
 <translation id="3328783797891415197">परीक्षण चलिरहेको छ</translation>
+<translation id="3368922792935385530">जडित</translation>
 <translation id="3369013195428705271">आफूले गरेका प्रिन्टको सबै इतिहास मेटाउन खोज्नुभएकै हो? भइरहेका प्रिन्टिङ कार्यहरू मेटाइने छैनन्।</translation>
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" /> मध्ये <ph name="PRINTED_PAGES" /> पृष्ठहरू प्रिन्ट गरिए</translation>
 <translation id="3459509316159669723">प्रिन्टिङ</translation>
 <translation id="3515615323037921860">छपाइसम्बन्धी कार्यहरू</translation>
 <translation id="3527036260304016759">प्रिन्ट गर्न सकिएन - अज्ञात त्रुटि भयो</translation>
+<translation id="357889014807611375">मिटर चढ्ने Wi-Fi</translation>
 <translation id="360565022852130722">WiFi नेटवर्क WEP 802.1x नामक कमजोर प्रोटोकोल प्रयोग गरी सुरक्षित गरिएको छ</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> वटा समीक्षा)</translation>
+<translation id="3748026146096797577">जोडिएको छैन</translation>
 <translation id="3749289110408117711">फाइल नाम</translation>
 <translation id="38114475217616659">सबै इतिहास मेटाउनुहोस्</translation>
 <translation id="3820172043799983114">अमान्य PIN।</translation>
@@ -91,6 +97,7 @@
 <translation id="4131410914670010031">कालो र सेतो</translation>
 <translation id="4145784616224233563">HTTP फायरवाल</translation>
 <translation id="4170700058716978431">असफल भयो</translation>
+<translation id="4176463684765177261">असक्षम गरिएको</translation>
 <translation id="4227825898293920515">पासवर्डको म्याद <ph name="TIME" /> मा सकिन्छ</translation>
 <translation id="4238516577297848345">प्रिन्टसम्बन्धी कुनै पनि काम भइरहेको छैन</translation>
 <translation id="4297501883039923494">रोकियो - अज्ञात त्रुटि भयो</translation>
@@ -100,7 +107,9 @@
 <translation id="4429881212383817840">Kerberos टिकटको म्याद चाँडै सकिँदै छ</translation>
 <translation id="445059817448385655">पुरानो पासवर्ड</translation>
 <translation id="4454245904991689773">स्क्यान गरेर यहाँ सुरक्षित गर्नुहोस्</translation>
+<translation id="4479639480957787382">इथरनेट</translation>
 <translation id="4483049906298469269">नेटवर्कको पूर्वनिर्धारित गेटवेका रूपमा सेट नगरिएको यस गेटवेलाई पिङ गर्न सकिएन</translation>
+<translation id="4511264077854731334">पोर्टल</translation>
 <translation id="4548483925627140043">सिग्नल फेला परेन</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh ब्याट्री</translation>
 <translation id="458794348635939462">सबै होस्टहरूको समस्या समाधान गर्न सकिएन</translation>
@@ -115,6 +124,7 @@
 <translation id="4773299976671772492">रोकियो</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> प्रिन्ट गर्ने कार्य रद्द गरियो</translation>
 <translation id="4832079907277790330">Files एप खोलेर कुनै फोल्डर चयन गर्नु...</translation>
+<translation id="4835901797422965222">कुनै पनि सक्रिय नेटवर्क छैन</translation>
 <translation id="4848429997038228357">चलिरहेको छ</translation>
 <translation id="4890353053343094602">तुरुन्तै एउटा नयाँ पासवर्ड राख्नुहोस्</translation>
 <translation id="4891842000192098784">स्ट्रेस</translation>
@@ -124,6 +134,7 @@
 <translation id="498186245079027698">स्क्यानर जाँच्नुहोस् र फेरि प्रयास गर्नुहोस्। स्क्यान गरिएका फाइलहरू सुरक्षित गर्न चाहिने पर्याप्त खाली ठाउँ छ भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
 <translation id="4985509611418653372">चलाउनुहोस्</translation>
 <translation id="500920857929044050">परीक्षण रोक्नुहोस्</translation>
+<translation id="5089810972385038852">राज्य</translation>
 <translation id="5154917547274118687">स्मरण</translation>
 <translation id="5168185087976003268">ब्याट्रीको अवस्था</translation>
 <translation id="520299634122159966">कुनै पनि स्क्यानर उपलब्ध छैन</translation>
@@ -135,9 +146,12 @@
 <translation id="5317780077021120954">बचत गर्नुहोस्</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">अहिले नै एउटा नयाँ पासवर्ड राख्नुहोस्</translation>
+<translation id="5333530671332546086">पोर्टलको स्थिति अज्ञात छ</translation>
 <translation id="5372659122375744710">WiFi नेटवर्क सुरक्षित छैन</translation>
 <translation id="5401938042319910061">सबै रुटिनहरू चलाउनुहोस्</translation>
+<translation id="5430931332414098647">तात्कालिक टेदरिङ</translation>
 <translation id="5431318178759467895">रङ्ग</translation>
+<translation id="5431825016875453137">OpenVPN/L2TP</translation>
 <translation id="5457599981699367932">पाहुनाको रूपमा ब्राउज गर्नुहोस्</translation>
 <translation id="54609108002486618">व्यवस्थापन गरिएको</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
@@ -148,6 +162,7 @@
 <translation id="5797428682393400134">सफल भयो</translation>
 <translation id="5832805196449965646">व्यक्ति थप्नुहोस्</translation>
 <translation id="5895138241574237353">पुन: शुरू गर्नुहोस्</translation>
+<translation id="5916084858004523819">प्रतिबन्धित</translation>
 <translation id="5931523347251946569">फाइल भेट्टिएन</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, <ph name="MILESTONE_VERSION" /> औँ संस्करण)</translation>
 <translation id="6040143037577758943">बन्द गर्नुहोस्</translation>
@@ -159,6 +174,7 @@
 <translation id="6106186594183574873">यो कार्य पूरा गर्न आफ्नो पुरानो पासवर्ड प्रविष्टि गर्नुहोस्</translation>
 <translation id="6108689792487843350">गेटवेमा कनेक्ट गर्न सकिएन</translation>
 <translation id="6114428539405324828"><ph name="CURRENT" />GHz / <ph name="MAX" />GHz</translation>
+<translation id="6122191549521593678">अनलाइन</translation>
 <translation id="6146993107019042706">यो कार्य पूरा गर्न आफ्नो नयाँ पासवर्ड प्रविष्टि गर्नुहोस्</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">थप जान्नुहोस्</translation>
@@ -183,7 +199,9 @@
 <translation id="6839141349259399400">स्क्यानरमा कनेक्ट गर्न सकिएन?</translation>
 <translation id="6853312040151791195">डिस्चार्ज हुने दर</translation>
 <translation id="6898743098396957679">स्क्यान गर्ने कार्य पूरा गर्न सकिएन</translation>
+<translation id="6957231940976260713">सेवाको नाम</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> ले यो यन्त्र व्यवस्थापन गर्छ र यसले हेरिएका वेबपेज, पासवर्ड र इमेललगायत प्रयोगकर्ताले गर्ने सबै क्रियाकलाप हेर्न सक्छ।</translation>
+<translation id="7143207342074048698">जडान गर्दै...</translation>
 <translation id="714876143603641390">Lan कनेक्टिभिटी</translation>
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> ले यो <ph name="DEVICE_TYPE" /> व्यवस्थापन गर्छ। एड्मिनहरू टाढैबाट यो यन्त्र कन्फिगर गर्न सक्छन्।</translation>
@@ -191,11 +209,14 @@
 <translation id="7359657277149375382">फाइलको प्रकार</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{स्क्यान गरिसकियो। एउटा पेज स्क्यान गरियो}other{स्क्यान गरिसकियो। {NUMBER_OF_PAGES} पेज स्क्यान गरिए}}</translation>
 <translation id="7441459999606975924">प्रयोग गर्दै जाँदा ब्याट्रीको क्षमता घट्दै जान्छ</translation>
+<translation id="7469648432129124067">पोर्टल पत्ता लागेको छ</translation>
+<translation id="7490813197707563893">MAC ठेगाना</translation>
 <translation id="7561454561030345039">यो कार्य तपाईंका एड्मिनले व्यवस्थापन गर्नुभएको छ</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">HTTPS को विलम्बता धेरै छ</translation>
 <translation id="7658239707568436148">रद्द गर्नुहोस्</translation>
 <translation id="7690294790491645610">नयाँ पासवर्ड पुष्टि गर्नुहोस्</translation>
+<translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">साइकल काउन्ट</translation>
 <translation id="7732651821766520760"><ph name="TEST_NAME" /> परीक्षण</translation>
 <translation id="7805768142964895445">स्थिति</translation>
@@ -207,6 +228,7 @@
 <translation id="808894953321890993">पासवर्ड परिवर्तन गर्नुहोस्‌</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° से.</translation>
 <translation id="8160445423316272678">स्क्यानरमा आफ्नो कागजात राख्नुहोस् र स्क्यान गर्न थाल्न <ph name="SPAN_BEGIN" />स्क्यान गर्नुहोस्<ph name="SPAN_END" /> विकल्प चयन गर्नुहोस्</translation>
+<translation id="8206859287963243715">सेल्युलर</translation>
 <translation id="8208861521865154048">लाभहरू</translation>
 <translation id="8230672074305416752">पूर्वनिर्धारित नेटवर्कको गेटवे पिङ गर्न सकिएन</translation>
 <translation id="8294431847097064396">स्रोत</translation>
@@ -218,6 +240,7 @@
 <translation id="8398927464629426868">यन्त्र हाल चार्ज वा डिस्चार्ज भइरहेको दर</translation>
 <translation id="8475690821716466388">WiFi नेटवर्क WEP PSK नामक कमजोर प्रोटोकोल प्रयोग गरी सुरक्षित गरिएको छ</translation>
 <translation id="8477551185774834963">DNS को विलम्बता तोकिएको समयसीमाभन्दा थोरै बढी छ</translation>
+<translation id="8576249514688522074">सुरु गरिएको छैन</translation>
 <translation id="871560550817059752">प्रिन्ट गर्न सकिएन - मसी सकियो</translation>
 <translation id="8723108084122415655">पूर्वनिर्धारित नेटवर्कका रूपमा सेट नगरिएको यस नेटवर्कको विलम्बता समयसीमाभन्दा बढी छ</translation>
 <translation id="8726019395068607495">रोकियो - प्रिन्टरको कभर खुला छ</translation>
@@ -225,14 +248,18 @@
 <translation id="8747900814994928677">परिवर्तनको पुष्टि गर्नुहोस्</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">पूर्वनिर्धारित</translation>
+<translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">मद्दत प्राप्त गर्नुहोस्</translation>
 <translation id="8881098542468797602">परीक्षण सफल भयो</translation>
+<translation id="8898840733695078011">सिग्नलको क्षमता</translation>
 <translation id="8910721771319628100">पूर्वनिर्धारित नेटवर्कको विलम्बता समयसीमाभन्दा बढी छ</translation>
 <translation id="8919837981463578619">प्रिन्ट गर्न सकिएन - ट्रे छैन</translation>
 <translation id="8928727111548978589">प्रिन्ट गर्न सकिएन - कागज सकियो</translation>
+<translation id="8930622219860340959">वायरलेस</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> अब <ph name="ATTEMPTS_LEFT" /> पटक प्रयास गर्न मिल्छ</translation>
 <translation id="8968751544471797276">चार्ज भइरहेको दर</translation>
 <translation id="8970109610781093811">फेरि गर्नुहोस्</translation>
+<translation id="9074739597929991885">ब्लुटुथ</translation>
 <translation id="9088306295921699330">हालको प्रयोग</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> को टिकट पुन: ताजा गर्नुहोस्</translation>
 <translation id="9106415115617144481">पेज <ph name="PAGE_NUMBER" /> स्क्यान गरिँदै छ</translation>

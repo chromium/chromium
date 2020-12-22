@@ -606,7 +606,6 @@
 <translation id="3395827396354264108">पिकअप का तरीका</translation>
 <translation id="3399952811970034796">डिलीवरी का पता</translation>
 <translation id="3402261774528610252">इस साइट को लोड करने में इस्तेमाल हुआ कनेक्शन TLS 1.0 या TLS 1.1 का इस्तेमाल कर रहा है. ये वर्शन रोक दिए गए हैं और आने वाले समय में इन्हें बंद कर दिया जाएगा. बंद होने के बाद, उपयोगकर्ता इस साइट को लोड नहीं कर पाएंगे. सर्वर पर TLS 1.2 या इसके बाद का वर्शन चालू होना चाहिए.</translation>
-<translation id="3411120537985775570"><ph name="ORIGIN_NAME" /> से लाकर इस जगह चिपकाने की सुविधा, आपके एडमिन ने बंद कर रखी है</translation>
 <translation id="3414952576877147120">आकार:</translation>
 <translation id="3417660076059365994">आप जो फ़ाइलें अपलोड करते हैं या अटैच करते हैं उन्हें विश्लेषण के लिए 'Google क्लाउड' या तीसरे पक्षों को भेजा जाता है. उदाहरण के लिए, इन्हें संवेदनशील डेटा या मैलवेयर की जांच के लिए स्कैन किया जा सकता है.</translation>
 <translation id="3422248202833853650">जगह खाली करने के लिए दूसरे प्रोग्राम से बाहर निकलकर देखें.</translation>
@@ -683,7 +682,6 @@
 <translation id="3681007416295224113">प्रमाणपत्र जानकारी</translation>
 <translation id="3701427423622901115">रीसेट स्वीकार किया गया.</translation>
 <translation id="3704162925118123524">आप जिस नेटवर्क का उपयोग कर रहे हैं उसके लिए आपको लॉगिन पेज पर जाने की ज़रूरत हो सकती है.</translation>
-<translation id="3704609568417268905"><ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">लोड हो रही हैं...</translation>
 <translation id="3709599264800900598">आपका कॉपी किया हुआ टेक्स्ट</translation>
@@ -1296,7 +1294,6 @@
 <translation id="6051221802930200923">आप इस समय <ph name="SITE" /> पर नहीं जा सकते क्योंकि वेबसाइट, प्रमाणपत्र पिनिंग का उपयोग करती है. नेटवर्क की गड़बड़ियां और हमले आमतौर पर कुछ समय के लिए होते हैं इसलिए यह पेज शायद बाद में ठीक से काम करेगा.</translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="6053328359599022071">क्या आप इस वेबसाइट को बताना चाहते हैं कि आप डिवाइस का इस्तेमाल कब करते हैं?</translation>
-<translation id="6057359309778282021">आपके एडमिन ने, <ph name="ORIGIN_NAME" /> से <ph name="VM_NAME" /> पर शेयर करने की सुविधा बंद कर दी है</translation>
 <translation id="6058977677006700226">क्या आप अपने कार्ड का इस्तेमाल सभी डिवाइस पर करना चाहते हैं?</translation>
 <translation id="6059925163896151826">USB डिवाइस</translation>
 <translation id="6060009363608157444">अमान्य DnsOverHttps मोड.</translation>
@@ -1442,6 +1439,7 @@
 <translation id="6687335167692595844">फ़ॉन्ट साइज़ का अनुरोध किया गया</translation>
 <translation id="6689249931105087298">ब्लैक पॉइंट कंप्रेशन से मिलता-जुलता</translation>
 <translation id="6689271823431384964">आपके साइन इन किए होने की वजह से, Chrome आपको Google खाते में कार्ड सेव करने की सुविधा देता है. आप 'सेटिंग' में जाकर इसे बदल सकते हैं. कार्डधारक का नाम आपके खाते से लिया जाता है.</translation>
+<translation id="6702919718839027939">प्रज़ेंट</translation>
 <translation id="6710213216561001401">पिछला</translation>
 <translation id="6710594484020273272">&lt;खोज शब्द लिखें&gt;</translation>
 <translation id="671076103358959139">नाम दर्ज करने का टोकन:</translation>
@@ -1763,6 +1761,7 @@
 <translation id="7977538094055660992">आउटपुट डिवाइस</translation>
 <translation id="7977894662897852582">ईडीपी</translation>
 <translation id="79859296434321399">'बढ़ी हुई वास्तविकता' की सामग्री देखने के लिए, ARCore इंस्टॉल करें</translation>
+<translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="799149739215780103">बाइंड</translation>
 <translation id="7995512525968007366">बताया नहीं गया है</translation>
 <translation id="800218591365569300">जगह खाली करने के लिए दूसरे टैब या प्रोग्राम बंद करके देखें.</translation>

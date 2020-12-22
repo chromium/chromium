@@ -228,7 +228,7 @@ Sentuh lama kata apa pun untuk menelusurinya. Untuk menyaring penelusuran, pilih
 <translation id="2536728043171574184">Melihat salinan offline halaman ini</translation>
 <translation id="2537178555904266562">Terjadi error saat menyinkronkan sandi</translation>
 <translation id="2546283357679194313">Cookie dan data situs</translation>
-<translation id="2562889244313180139">Mengizinkan situs dan aplikasi untuk memberi Anda pengalaman yang lebih relevan menggunakan alias yang bukan identitas.</translation>
+<translation id="2562889244313180139">Mengizinkan situs dan aplikasi untuk memberi Anda pengalaman yang lebih relevan menggunakan alias yang tidak dapat diidentifikasi.</translation>
 <translation id="2567385386134582609">GAMBAR</translation>
 <translation id="2571711316400087311">Menawarkan pengiriman halaman dalam bahasa lain ke Google Terjemahan</translation>
 <translation id="2581165646603367611">Tindakan ini akan mengosongkan cache dan menghapus cookie, serta data lain dari situs yang dianggap tidak penting oleh Chrome.</translation>
@@ -716,7 +716,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="6005538289190791541">Sandi yang disarankan</translation>
 <translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Anda punya <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> halaman}other{Anda punya <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> halaman}}</translation>
 <translation id="6014293228235665243">Belum dibaca</translation>
-<translation id="6018309500671889594">Mengizinkan pengiklan mempelajari kampanye iklan menggunakan informasi yang bukan identitas.</translation>
+<translation id="6018309500671889594">Mengizinkan pengiklan mempelajari kampanye iklan menggunakan informasi yang tidak dapat diidentifikasi.</translation>
 <translation id="6036057147555329831">ICU tambahan</translation>
 <translation id="6039379616847168523">Beralih ke tab berikutnya</translation>
 <translation id="6040143037577758943">Tutup</translation>

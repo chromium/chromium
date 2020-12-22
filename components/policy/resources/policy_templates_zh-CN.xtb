@@ -83,6 +83,9 @@
 <translation id="1099282607296956954">为所有网站启用网站隔离功能</translation>
 <translation id="1117535567637097036">通过此政策设置的协议处理程序不会被用于处理 Android intent。</translation>
 <translation id="1118093128235245168">允许网站请求用户授权其访问所连接的 USB 设备</translation>
+<translation id="1122089575901325963">通过设置此政策，您可以配置 <ph name="WILCO_NAME" /> 诊断和遥测控制器 (DTC)（如果它在设备上可用）。设置大小不得超过 1MB（1000000 个字节），且必须采用 JSON 格式。设置由 <ph name="WILCO_NAME" /> DTC 进行处理。加密哈希值用于验证下载内容的完整性。系统会下载并缓存相应配置。只要配置文件的网址或哈希值发生了变化，系统就会重新下载该文件。
+
+      如果您设置了此政策，用户便无法更改相关设置。</translation>
 <translation id="1133814529606590009">如果此政策已启用，系统会始终启用以网址为键的匿名化数据收集功能，从而将用户访问的网页网址发送给 Google，用于改善搜索和浏览体验。
 
       如果此政策已停用，系统将不会启用以网址为键的匿名化数据收集功能。
@@ -248,6 +251,11 @@
 <translation id="1376119291123231789">启用高级电池充电模式</translation>
 <translation id="1384459581748403878">参考页面：<ph name="REFERENCE_URL" /></translation>
 <translation id="138847842893090358">报告操作系统更新状态</translation>
+<translation id="1390529781843037070">如果此政策已启用或未设置，用户便可通过 <ph name="PRODUCT_NAME" /> 的打印对话框使用 <ph name="CLOUD_PRINT_NAME" />进行打印<ph name="PRODUCT_NAME" /> 可以将文档提交到 <ph name="CLOUD_PRINT_NAME" />进行打印。这不会妨碍用户在网站上提交打印任务。
+
+      如果此政策已停用，用户将无法通过 <ph name="PRODUCT_NAME" /> 的打印对话框使用 <ph name="CLOUD_PRINT_NAME" />进行打印。
+
+      若要使 <ph name="CLOUD_PRINT_NAME" />目的地能被用户发现，则必须确保此政策已启用且 <ph name="PRINTER_TYPE_DENY_LIST_POLICY_NAME" /> 政策中不包含“<ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD" />”。</translation>
 <translation id="1390901586107713894">让您能够指定禁止用户安装的扩展程序。系统会停用被屏蔽的已安装扩展程序，而且用户无法以任何方式启用这些扩展程序。如果某个因被列入屏蔽名单而遭停用的扩展程序被从屏蔽名单中移除了，系统会自动重新启用该扩展程序。
 
           屏蔽名单值“*”表示所有扩展程序都已被屏蔽，除非是许可名单中明确列出的扩展程序。
@@ -341,6 +349,17 @@
           如果您设置了此政策，用户将无法更改或覆盖它。</translation>
 <translation id="1502843533062797703">禁止插入第三方软件</translation>
 <translation id="1506017854924185821">在浏览器启动时是否显示个人资料选择器</translation>
+<translation id="1509377996969000672">通过设置此政策，您可为绑定到设备的企业打印机提供配置。其格式与 <ph name="NATIVE_PRINTERS_POLICY_NAME" /> 字典一样，不过每台打印机都还对应一个额外的必填字段“id”或“guid”，以用于将相应打印机加入许可名单/拒绝名单。该文件不得超过 5MB，且必须采用 JSON 格式。一个包含大约 21000 台打印机的文件在编码后的大小是 5MB。相应的加密哈希值可帮助您验证下载内容的完整性。系统会下载、缓存该文件。当相应网址或哈希值发生变化时，系统会重新下载该文件。<ph name="PRODUCT_OS_NAME" />会下载该文件以获取打印机配置，并会根据 <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />、<ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> 和 <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> 向用户提供可用的打印机。
+
+      此政策：
+
+      * 对用户能否在个别设备上配置打印机没有影响
+
+      * 旨在对 <ph name="BULK_PRINTERS_POLICY_NAME" /> 和个别用户的打印机设置进行补充
+
+      若未设置，便不存在任何设备打印机，同时其他 <ph name="DEVICE_NATIVE_PRINTERS_POLICY_PATTERN" /> 政策会被忽略。
+
+      此政策已被弃用，请改用 <ph name="DEVICE_PRINTERS_POLICY_NAME" />。</translation>
 <translation id="1509692106376861764">此政策从 <ph name="PRODUCT_NAME" /> 版本 29 起开始弃用。</translation>
 <translation id="1514888685242892912">启用 <ph name="PRODUCT_NAME" /></translation>
 <translation id="1515230621229117540">启用悬浮无障碍功能菜单</translation>
@@ -349,6 +368,9 @@
 <translation id="1523774894176285446">对于配置的网站要启动的替代浏览器。</translation>
 <translation id="152657506688053119">默认搜索服务提供商的备选网址列表</translation>
 <translation id="1530812829012954197">总是通过托管浏览器呈现以下网址格式</translation>
+<translation id="1534690481294492142">如果此政策已启用或未设置，<ph name="PRODUCT_NAME" /> 便可作为 <ph name="CLOUD_PRINT_NAME" />与连接到该计算机的传统打印机之间的代理。用户可以使用自己的 Google 帐号进行身份验证，从而开启云打印代理。
+
+      如果此政策已停用，用户将无法开启代理，该计算机也就无法与 <ph name="CLOUD_PRINT_NAME" />共享其打印机。</translation>
 <translation id="1552418937045050762">如果您启用了此设置，用户将能够选择启用“附近分享”功能，以便和附近的人互相发送文件。
 
       如果您停用了此设置，用户将无法选择启用“附近分享”功能。
@@ -641,6 +663,12 @@
       如果此政策设为 true，系统将会报告设备当前所设的时区。</translation>
 <translation id="199764499252435679">允许更新 <ph name="PRODUCT_NAME" /> 中的组件</translation>
 <translation id="1999000620918508488">强制在登录屏幕上显示或隐藏系统信息。</translation>
+<translation id="2001420846508294174">通过设置此政策，您可以配置让系统遵循什么样的规则来选择默认打印机以供用户在 <ph name="PRODUCT_NAME" /> 中使用，并覆盖默认规则。当用户首次尝试打印时需要选择打印机，<ph name="PRODUCT_NAME" /> 会寻找一台与指定属性匹配的打印机。如果没有与指定属性完全匹配的打印机，可以通过设置让 <ph name="PRODUCT_NAME" /> 选择任意一台与指定属性部分匹配的打印机，具体选择哪一台取决于这些打印机被发现的顺序。
+
+      如果此政策未设置，或没有打印机与所设属性匹配，系统会选择内置的 PDF 打印机作为默认打印机。如果没有 PDF 打印机，<ph name="PRODUCT_NAME" /> 默认不会选择任何打印机。
+
+      连接到 <ph name="CLOUD_PRINT_NAME" />的打印机会被视为<ph name="PRINTER_TYPE_CLOUD" />打印机，其余打印机则会归类为<ph name="PRINTER_TYPE_LOCAL" />打印机。
+      注意：如果您未在某个字段中输入值，则意味着所有打印机都符合此项属性。例如，如果不指定网络连接状态，那么进行打印预览时，系统将会查找所有类型的打印机（<ph name="PRINTER_TYPE_LOCAL" />和<ph name="PRINTER_TYPE_CLOUD" />）。正则表达式的格式必须遵循 JavaScript RegExp 语法，并在匹配时区分大小写。</translation>
 <translation id="2006530844219044261">电源管理</translation>
 <translation id="2014757022750736514">控制登录屏幕（用户会从这里登录帐号）的行为。设置包括：谁可以登录、允许使用什么类型的帐号、应该使用什么样的身份验证方法，以及常规的无障碍设置、输入法设置和语言区域设置。</translation>
 <translation id="201557587962247231">设备状态报告的上传频率</translation>
@@ -800,6 +828,9 @@
       如果此政策设为 false，系统将不会获取或显示这类建议。</translation>
 <translation id="225340736558643885">启用针对不安全表单的警告</translation>
 <translation id="2258126710006312594">允许远程访问用户将文件传到主机或接收从主机传出的文件</translation>
+<translation id="2261329877420573811">如果为 <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> 选择了 <ph name="PRINTERS_WHITELIST" />，您便可通过设置 <ph name="DEVICE_NATIVE_PRINTERS_WHITELIST_POLICY_NAME" /> 来指定用户可以使用哪些打印机。用户将只能使用那些符合条件（ID 与此政策中所列的值匹配）的打印机。ID 必须与 <ph name="DEVICE_PRINTERS_POLICY_NAME" /> 所指定文件内的<ph name="ID_FIELD" />或<ph name="GUID_FIELD" />字段相符。
+
+      此政策已被弃用，请改用 <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" />。</translation>
 <translation id="2266422599396179941">允许用户提交反馈</translation>
 <translation id="2269319728625047531">在登录期间允许显示同步同意声明</translation>
 <translation id="2270747976331889601">为本地信任锚启用 TLS 1.3 安全功能。</translation>
@@ -1035,6 +1066,15 @@
       如果您未设置此政策，<ph name="PRODUCT_NAME" /> 便会加载已安装的所有本地消息传递主机。</translation>
 <translation id="2568488785376704318">此政策已被弃用。请改用 <ph name="REMOTE_ACCESS_HOST_DOMAIN_LIST_POLICY_NAME" />。</translation>
 <translation id="257788512393330403">必须每 6 小时输入一次密码</translation>
+<translation id="2580757713966614760">通过设置此政策，您可以指定对批量打印机配置应用哪项访问政策，并控制用户可以使用 <ph name="DEVICE_PRINTERS_POLICY_NAME" /> 中的哪些打印机。
+
+      * 如果您选择 <ph name="POLICY_ENUM_DEVICEPRINTERSACCESSMODE_BLOCKLISTRESTRICTIONS" />（值为 0），系统会使用 <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> 来限制用户对指定打印机的访问权
+
+      * 如果您选择 <ph name="POLICY_ENUM_DEVICEPRINTERSACCESSMODE_ALLOWLISTPRINTERSONLY" />（值为 1），系统会使用 <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> 来指定可供用户选择的打印机
+
+      * 如果您选择 <ph name="POLICY_ENUM_DEVICEPRINTERSACCESSMODE_ALLOWALL" />（值为 2），系统将会允许使用所有打印机。
+
+      如果您未设置此政策，系统将会应用 <ph name="PRINTERS_ALLOW_ALL" />。</translation>
 <translation id="2586117300379904732">允许使用唤醒锁定以便进行电源管理</translation>
 <translation id="2587719089023392205">将 <ph name="PRODUCT_NAME" /> 设为默认浏览器</translation>
 <translation id="2588252329503406673">通过设置此政策，您可以指定在系统显示登录屏幕期间用户停止操作一定时间后 <ph name="PRODUCT_OS_NAME" />的行为。此政策能够控制多项设置。有关各项设置的语义和值范围，请参见用于控制会话内电源管理情况的相应政策。
@@ -1147,18 +1187,14 @@
       如果停用此设置，网页就无法使用 JavaScript，用户也无法更改该设置。
 
       如果启用或不设定此设置，网页就可以使用 JavaScript，但用户可以更改该设置。</translation>
+<translation id="274769314493317695">如果为 <ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME" /> 选择了 <ph name="PRINTERS_WHITELIST" />，您便可通过设置 <ph name="NATIVE_PRINTERS_BULK_WHITELIST_POLICY_NAME" /> 来指定用户可以使用哪些打印机。用户将只能使用那些符合条件（ID 与此政策中所列的值匹配）的打印机。ID 必须与 <ph name="NATIVE_PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> 所指定文件内的<ph name="ID_FIELD" />或<ph name="GUID_FIELD" />字段相符。
+
+      此政策已被弃用，请改用 <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" />。</translation>
 <translation id="2752046642026416564">如果此政策已启用或未设置，<ph name="PRODUCT_NAME" /> 便可使用在用户级安装的本地消息传递主机。
 
       如果此政策已停用，<ph name="PRODUCT_NAME" /> 将只能使用在系统级安装的本地消息传递主机。</translation>
 <translation id="2753637905605932878">限制 WebRTC 使用的本地 UDP 端口的范围</translation>
 <translation id="2757054304033424106">允许安装的扩展程序/应用的类型</translation>
-<translation id="2758689548159678032">启用后，<ph name="PRODUCT_NAME" /> 功能会发送精细的请求标头，在其中提供关于用户浏览器和环境的信息。
-
-      这是一项附加功能，但如果某些网站限制了请求中可包含的字符，新标头可能会导致这些网站无法正常运作。
-
-      如果您启用了或不设置此政策，<ph name="PRODUCT_NAME" /> 功能会处于启用状态。如果您停用了此政策，这项功能将不可用。
-
-      这项企业政策只是短期的适应性措施，将在 Chrome 88 中移除。</translation>
 <translation id="2759224876420453487">控制多用户配置会话中的用户行为</translation>
 <translation id="2761483219396643566">使用电池供电时的闲置警告延迟时间</translation>
 <translation id="2769952903507981510">为远程访问主机配置所需的域名</translation>
@@ -1274,6 +1310,13 @@
       如果此政策未设置（或设为一个无效网址），<ph name="PRODUCT_NAME" /> 便不会将它用作浏览器切换规则的来源。
 
       注意：此政策指向一个与 <ph name="IE_PRODUCT_NAME" /> 的 <ph name="IEEM_SITELIST_POLICY" /> 政策采用相同格式的 XML 文件。此政策会加载 XML 文件中的规则，但不会与 <ph name="IE_PRODUCT_NAME" /> 共享这些规则。如需详细了解 <ph name="IE_PRODUCT_NAME" /> 的 <ph name="IEEM_SITELIST_POLICY" /> 政策，请访问 https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode</translation>
+<translation id="2947111924404450461">通过设置此政策，您可以配置企业打印机。其格式与 <ph name="NATIVE_PRINTERS_POLICY_NAME" /> 字典一样，不过每台打印机都还对应一个额外的必填字段<ph name="ID_FIELD" />或<ph name="GUID_FIELD" />，以用于将相应打印机加入许可名单/拒绝名单。该文件不得超过 5MB，且必须采用 JSON 格式。一个包含大约 21000 台打印机的文件在编码后的大小是 5MB。相应的加密哈希值可帮助您验证下载内容的完整性。系统会下载、缓存该文件。当相应网址或哈希值发生变化时，系统会重新下载该文件。<ph name="PRODUCT_OS_NAME" />会下载该文件以获取打印机配置，并会根据 <ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME" />、<ph name="BULK_PRINTERS_WHITELIST" /> 和 <ph name="BULK_PRINTERS_BLACKLIST" /> 向用户提供可用的打印机。
+
+      此政策对用户能否在个别设备上配置打印机没有影响。它旨在对个别用户的打印机配置进行补充。
+
+      如果您设置了此政策，用户便无法更改相关设置。
+
+      此政策已被弃用，请改用 <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />。</translation>
 <translation id="2949765875529121431">通过设置此政策，您可以指定一系列免受 HSTS 政策检查的主机名，该检查可将请求从 HTTP 升级到 HTTPS。此政策只能使用单标签主机名。必须使用规范化主机名：任何 IDN 都必须转换为对应的 A 标签格式，并且所有 ASCII 字母都必须小写。此政策只适用于指定的特定主机名，不适用于这些名称的子网域。</translation>
 <translation id="2952347049958405264">限制：</translation>
 <translation id="2957047180944828740">指定是否允许不安全网站向更专用网络上的端点发送请求</translation>
@@ -1365,6 +1408,17 @@
           如果您设置了此政策，用户将无法更改或覆盖它。
 
           如果您未设置此政策，大号光标在登录屏幕上最初会处于停用状态，但用户可随时启用它。</translation>
+<translation id="3028296787914825213">通过设置此政策，您可以指定对批量打印机配置应用哪项访问政策，并控制用户可以使用 <ph name="NATIVE_PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> 中的哪些打印机。
+
+      * 如果您选择 <ph name="PRINTERS_BLACKLIST" />（值为 0），系统会使用 <ph name="BULK_PRINTERS_BLACKLIST" /> 来限制用户对指定打印机的访问权
+
+      * 如果您选择 <ph name="PRINTERS_WHITELIST" />（值为 1），系统会使用 <ph name="BULK_PRINTERS_WHITELIST" /> 来指定可供用户选择的打印机
+
+      * 如果您选择 <ph name="PRINTERS_ALLOW_ALL" />（值为 2），系统将会显示所有打印机
+
+      如果您未设置此政策，系统将会使用 <ph name="PRINTERS_ALLOW_ALL" />。
+
+      此政策已被弃用，请改用 <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" />。</translation>
 <translation id="3030000825273123558">启用指标报告</translation>
 <translation id="3038323923255997294">在<ph name="PRODUCT_NAME" />关闭后继续运行后台应用</translation>
 <translation id="3041887182529293512">如果此政策设为 True 或未设置，系统将会在“新标签页”页面上显示根据用户的浏览记录、兴趣或位置信息自动生成的内容建议。
@@ -1426,9 +1480,11 @@
 
       我们建议您让服务器改用 ECDHE 加密套件。如果这些加密套件不可用，请确保使用 RSA 密钥交换机制的加密套件处于启用状态。</translation>
 <translation id="3122082892722698079">控制对不安全内容例外情况的使用</translation>
+<translation id="3142410959002029864">通过设置此政策，您可以替换默认双面打印模式。如果这种模式不适用，系统会忽略此政策。</translation>
 <translation id="3143265893557969814">如果您设置了此政策，所有指定的数据类型都会从同步操作（无论是 Google 同步还是漫游个人资料同步）中排除。这有助于缩减漫游个人资料的大小，或者限制向 Google 同步服务器上传的数据类型。
 
       此政策当前可用的数据类型为：“bookmarks”、“preferences”、“passwords”、“autofill”、“themes”、“typedUrls”、“extensions”、“apps”、“tabs”、“wifiConfiguration”。这些名称区分大小写！</translation>
+<translation id="3144173889708944482">如果为 <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> 选择了 <ph name="PRINTERS_BLOCKLIST" />，您便可通过设置 <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> 来指定用户不能使用哪些打印机。除了与此政策中所列 ID 对应的打印机之外，其他所有打印机都可供用户使用。ID 必须与 <ph name="DEVICE_PRINTERS_POLICY_NAME" /> 所指定文件内的<ph name="ID_FIELD" />或<ph name="GUID_FIELD" />字段相符。</translation>
 <translation id="3152425128389603870">使“统一桌面”功能可供用户使用，并使其在默认情况下处于启用状态</translation>
 <translation id="3159375329008977062">允许用户通过界面导出/导入 Crostini 容器</translation>
 <translation id="3165808775394012744">将这些政策列于此处是为了方便您移除它们。</translation>
@@ -1550,6 +1606,25 @@
 <translation id="328347261792478720">默认情况下，浏览器会显示为用户量身定制的媒体推荐内容。如果此政策已停用，系统将对用户隐藏这些推荐内容。如果此政策已启用或未设置，系统则会向用户显示媒体推荐内容。</translation>
 <translation id="3284094172359247914">控制对 WebUSB API 的使用</translation>
 <translation id="3288595667065905535">发布版</translation>
+<translation id="3294430356898755483">通过设置此政策，管理员可以为用户配置打印机列表。当用户首次尝试打印时，需要选择打印机。
+
+      使用此政策可以：
+
+      * 自定义自由格式的 <ph name="PRINTER_DISPLAY_NAME" /> 和 <ph name="PRINTER_DESCRIPTION" />，以便用户选择打印机。
+
+      * 帮助用户通过 <ph name="PRINTER_MANUFACTURER" /> 和 <ph name="PRINTER_MODEL" /> 识别打印机。
+
+      * <ph name="PRINTER_URI" /> 应是可通过客户端计算机访问的地址，包括 <ph name="URI_SCHEME" />、<ph name="URI_PORT" /> 和 <ph name="URI_QUEUE" />。
+
+      * <ph name="PRINTER_UUID" /> 是可选项，如果您提供了相应值，它可帮助删除重复的 <ph name="ZEROCONF_DISCOVERY" /> 打印机。
+
+      * 您可以将 <ph name="PRINTER_EFFECTIVE_MODEL" /> 设为型号名称，或者将 <ph name="PRINTER_AUTOCONF" /> 设为 True。两种属性同时设置或均未设置的打印机将会被忽略。
+
+      在用户开始使用打印机之后，系统会下载 PPD，并且会缓存常用的 PPD。此政策对用户能否在个别设备上配置打印机没有影响。
+
+      注意：对于 <ph name="MS_AD_NAME" /> 托管的设备，此政策支持将 <ph name="MACHINE_NAME_VARIABLE" /> 扩展为 <ph name="MS_AD_NAME" /> 机器名称或其子字符串。例如，如果机器名称是“<ph name="MACHINE_NAME_EXAMPLE" />”，<ph name="MACHINE_NAME_VARIABLE_EXAMPLE" /> 便会被替换为第 6 个字符后面的 4 个字符（即 <ph name="MACHINE_NAME_PART_EXAMPLE" />）。位置序数从 0 起算。
+
+      此政策已被弃用，请改用 <ph name="PRINTERS_POLICY_NAME" />。</translation>
 <translation id="3295118731207421797">借助此政策，管理员可以指定页面能否在关闭过程中发送同步 XHR 请求。
 
       如果启用了此政策，页面便能够在关闭过程中发送同步 XHR 请求。
@@ -1669,12 +1744,22 @@
       日后，当内嵌登录全面支持所有 SSO 登录流程时，该实验性设置将会取消。</translation>
 <translation id="3435796032110614169">允许删除打印任务记录</translation>
 <translation id="3437924696598384725">允许用户管理 VPN 连接</translation>
+<translation id="3442269905344976871">如果此政策已启用且 <ph name="WILCO_NAME" /> 诊断和遥测控制器 (DTC) 在设备上可用，系统会开启对遥测与诊断数据的收集、处理和报告。
+
+      如果此政策已停用或未设置，系统会关闭 DTC。因此，DTC 无法收集、处理和报告设备的遥测与诊断数据。</translation>
 <translation id="3450649825886735618">不使用任何 Google 网络服务来帮助修正拼写错误</translation>
 <translation id="3451951038162074887">如果此政策已启用或未设置，系统会禁止第三方软件将可执行代码注入到 <ph name="PRODUCT_NAME" /> 进程中。
 
       如果此政策已停用，系统会允许第三方软件将此类代码注入到 <ph name="PRODUCT_NAME" /> 进程中。
 
       无论此政策的值是什么，在已加入 <ph name="MS_AD_NAME" /> 网域的计算机上，浏览器都不会禁止第三方软件将可执行代码注入到其进程中。</translation>
+<translation id="3456292544936505775">此政策用于控制不允许 <ph name="PRODUCT_OS_NAME" />设备在哪些时间范围内自动检查是否有更新。
+      当此政策设为非空的时间范围列表时：
+      相应设备将无法在指定的时间范围内自动检查是否有更新。由于存在潜在的安全问题，需要企业回滚的设备和低于最低 <ph name="PRODUCT_OS_NAME" />版本的设备都不会受到此政策的影响。另外，此政策不会阻止由用户或管理员请求的更新检查。
+      从 M88 开始，此政策将在达到限定的时间范围时取消正在进行的更新。待限定的时间范围结束后，系统将启动下一次自动更新，届时先前被取消的更新会自动恢复。更新至 Quick Fix Build 的设备不会受到此政策的影响。
+      当此政策不含任何时间范围或未设置时：
+      此政策不会阻止任何自动进行的更新检查，但其他政策可能会阻止这类检查。
+      截至 M88，只有那些已配置为自动启动型自助服务终端的 <ph name="PRODUCT_OS_NAME" />设备才会启用此功能。其他设备均不受此政策的限制。不过，从 M89 开始，此政策在所有 <ph name="PRODUCT_OS_NAME" />设备上都会处于启用状态。</translation>
 <translation id="3459509316159669723">打印</translation>
 <translation id="3461279434465463233">报告电源状态</translation>
 <translation id="3478024346823118645">退出时清除用户数据</translation>
@@ -1689,6 +1774,7 @@
 
           如果此政策未设置，“随选朗读”在登录屏幕上最初会处于停用状态，但用户可以随时启用它。</translation>
 <translation id="348495353354674884">启用虚拟键盘</translation>
+<translation id="3485200437120267231">停用登录拦截功能</translation>
 <translation id="3492834335089638487">此政策用于控制设备对来源不受信任（不是来自 Google Play 商店）的 Android 应用的使用。
 
       不设置此政策的值等同于禁止使用此功能。
@@ -1800,6 +1886,15 @@
 
       如果您设置了此政策，用户便无法更改相关设置。如果您未设置此政策，“接入交流电时启动”会处于关闭状态，而且用户无法开启该功能。</translation>
 <translation id="3660562134618097814">在用户登录期间转移 SAML IdP Cookie</translation>
+<translation id="3685979383016152590">通过设置此政策，您可以指定对批量打印机配置应用哪项访问政策，并控制用户可以使用 <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> 中的哪些打印机。
+
+      * 如果您选择 <ph name="PRINTERS_BLOCKLIST" />（值为 0），系统会使用 <ph name="PRINTERS_BULK_BLOCKLIST" /> 来限制用户对指定打印机的访问权
+
+      * 如果您选择 <ph name="PRINTERS_ALLOWLIST" />（值为 1），系统会使用 <ph name="PRINTERS_BULK_ALLOWLIST" /> 来指定可供用户选择的打印机
+
+      * 如果您选择 <ph name="PRINTERS_ALLOW_ALL" />（值为 2），系统会显示所有打印机
+
+      如果您未设置此政策，系统将会使用 <ph name="PRINTERS_ALLOW_ALL" />。</translation>
 <translation id="3695706037816556327">当用户从 <ph name="PRODUCT_OS_NAME" />设备上移除安全令牌（例如智能卡）时，系统会执行什么操作。</translation>
 <translation id="3701121231485832347">控制由 <ph name="MS_AD_NAME" /> 管理的 <ph name="PRODUCT_OS_NAME" />设备的专用设置。</translation>
 <translation id="3702518095257671450">远程证明</translation>
@@ -1844,6 +1939,23 @@
 
       如果此政策已停用或未设置，<ph name="PRODUCT_OS_NAME" />会允许用户将设备关机。</translation>
 <translation id="3765260570442823273">待机退出警告讯息的持续时间</translation>
+<translation id="3770407495263198786">通过设置此政策，管理员可以为用户配置打印机列表。当用户首次尝试打印时，需要选择打印机。
+
+      使用此政策可以：
+
+      * 自定义自由格式的 <ph name="PRINTER_DISPLAY_NAME" /> 和 <ph name="PRINTER_DESCRIPTION" />，以便用户选择打印机。
+
+      * 帮助用户通过 <ph name="PRINTER_MANUFACTURER" /> 和 <ph name="PRINTER_MODEL" /> 识别打印机。
+
+      * <ph name="PRINTER_URI" /> 应是可通过客户端计算机访问的地址，包括 <ph name="URI_SCHEME" />、<ph name="URI_PORT" /> 和 <ph name="URI_QUEUE" />。
+
+      * <ph name="PRINTER_UUID" /> 是可选项，如果您提供了相应值，它可帮助删除重复的 <ph name="ZEROCONF_DISCOVERY" /> 打印机。
+
+      * 您可以将 <ph name="PRINTER_EFFECTIVE_MODEL" /> 设为型号名称，或者将 <ph name="PRINTER_AUTOCONF" /> 设为 True。两种属性同时设置或均未设置的打印机将会被忽略。
+
+      在用户开始使用打印机之后，系统会下载 PPD，并且会缓存常用的 PPD。此政策对用户能否在个别设备上配置打印机没有影响。
+
+      注意：对于 <ph name="MS_AD_NAME" /> 托管的设备，此政策支持将 <ph name="MACHINE_NAME_VARIABLE" /> 扩展为 <ph name="MS_AD_NAME" /> 机器名称或其子字符串。例如，如果机器名称是“<ph name="MACHINE_NAME_EXAMPLE" />”，<ph name="MACHINE_NAME_VARIABLE_EXAMPLE" /> 便会被替换为第 6 个字符后面的 4 个字符（即 <ph name="MACHINE_NAME_PART_EXAMPLE" />）。位置序数从 0 起算。</translation>
 <translation id="377044054160169374">针对误导性体验的强制干预政策</translation>
 <translation id="3778689139323007309">对于已成功通过验证且已由安装在本地的 CA 证书签名的服务器证书，一律执行撤消检查</translation>
 <translation id="3780152581321609624">在 Kerberos SPN 中加入非标准端口</translation>
@@ -1854,6 +1966,9 @@
 
       如果此政策未设置，默认情况下，受企业管理的用户不能使用 Smart Lock，不受管理的用户则能够使用 Smart Lock。</translation>
 <translation id="3796527892245558832">在浏览器启动时显示个人资料选择器</translation>
+<translation id="3798922329287609568">通过设置此政策，您可以限制双面打印模式。
+
+      如果您未设置此政策或将其留空，则打印模式不受限制。</translation>
 <translation id="3803171355925844705">不允许任何网站加载混合内容</translation>
 <translation id="3808945828600697669">指定已停用插件的列表</translation>
 <translation id="3810642039169532482">在登录屏幕上启用“语音输入”无障碍功能。
@@ -2534,6 +2649,17 @@
       在 M76 或更早版本中，不设置此政策意味着 <ph name="PRODUCT_NAME" /> 默认无法收集和上传这些日志。从 M77 开始，<ph name="PRODUCT_NAME" /> 默认能够从受基于云的用户级企业政策影响的大多数个人资料中收集并上传这些日志。从 M77 到 M80（含），<ph name="PRODUCT_NAME" /> 还默认能从受 <ph name="PRODUCT_NAME" /> 本地管理功能影响的个人资料中收集并上传这些日志。</translation>
 <translation id="4917385247580444890">强</translation>
 <translation id="4919122295221518724">为混合内容启用更严格的处理方式</translation>
+<translation id="4920367374739265095">通过设置此政策，您可以指定对批量打印机配置应用哪项访问政策，并控制用户可以使用 <ph name="DEVICE_PRINTERS_POLICY_NAME" /> 中的哪些打印机。
+
+      * 如果设为 <ph name="PRINTERS_BLACKLIST" />（值为 0），系统会使用 <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> 来限制用户对指定打印机的访问权
+
+      * 如果设为 <ph name="PRINTERS_WHITELIST" />（值为 1），系统会使用 <ph name="DEVICE_PRINTERS_ALLOWLIST_POLCY_NAME" /> 来指定可供用户选择的打印机
+
+      * 如果设为 <ph name="PRINTERS_ALLOW_ALL" />（值为 2），系统会显示所有打印机。
+
+      如果您未设置此政策，系统将会应用 <ph name="PRINTERS_ALLOW_ALL" />。
+
+      此政策已被弃用，请改用 <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />。</translation>
 <translation id="4923806312383904642">允许 WebDriver 替换与之冲突的政策</translation>
 <translation id="4927214690104703256">通过设置此政策，您可以指定哪些扩展程序能够使用 <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> 函数进行远程认证。只有添加到此列表中的扩展程序才能使用该 API。
 
@@ -2733,6 +2859,7 @@
       *“关闭”或未设置值 - Chrome 不会强制启用 YouTube 受限模式。但是，外部政策（例如 YouTube 政策）仍有可能会强制启用受限模式。</translation>
 <translation id="519247340330463721">配置与安全浏览功能相关的政策。</translation>
 <translation id="5196520640744454600">在登录屏幕上启用粘滞键</translation>
+<translation id="5206454085187851382">如果为 <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" /> 选择了 <ph name="PRINTERS_ALLOWLIST" />，您便可通过设置 <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> 来指定用户可以使用哪些打印机。用户将只能使用那些符合条件（ID 与此政策中所列的值匹配）的打印机。ID 必须与 <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> 所指定文件内的<ph name="ID_FIELD" />或<ph name="GUID_FIELD" />字段相符。</translation>
 <translation id="5208675398826212411">借助此政策，您可以配置通过 DNS 拦截检查功能进行内网重定向的行为。该检查功能旨在尝试检测浏览器是否使用了会重定向不明主机名的代理。
 
       如果此政策未设置，浏览器会使用 DNS 拦截检查功能和内网重定向建议功能的默认行为。在 M88 中，这些功能默认处于启用状态，但在未来的版本中，它们将会默认处于停用状态。
@@ -2961,6 +3088,7 @@
 
       用户可以触发导入对话框，系统将会根据此政策的值选中或不选中“已保存的密码”复选框。</translation>
 <translation id="5457924070961220141">可让您在安装 <ph name="PRODUCT_FRAME_NAME" />时配置默认 HTML 呈现器。如果未设置此政策，则使用默认设置，即允许托管浏览器进行呈现。不过您可以视情况替换此设置，让 <ph name="PRODUCT_FRAME_NAME" />默认呈现 HTML 网页。</translation>
+<translation id="545817252640069915">启用登录拦截功能</translation>
 <translation id="5460797984317417682">启用全屏提醒</translation>
 <translation id="5464816904705580310">为托管用户配置设置。</translation>
 <translation id="5466596281866046569">报告应用信息</translation>
@@ -3059,6 +3187,9 @@
       注意：若要指定多个服务器名称，请用英文逗号分隔。允许使用通配符 <ph name="WILDCARD_VALUE" />。</translation>
 <translation id="5645779841392247734">在这些网站上允许 Cookie</translation>
 <translation id="5646234199535103501">OnBulkDataEntry Chrome Enterprise Connector 的配置政策</translation>
+<translation id="5649046890958064703">如果为 <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> 选择了 <ph name="PRINTERS_BLACKLIST" />，您便可通过设置 <ph name="DEVICE_NATIVE_PRINTERS_BLACKLIST_POLICY_NAME" /> 来指定用户不能使用哪些打印机。除了与此政策中所列 ID 对应的打印机之外，其他所有打印机都可供用户使用。ID 必须与 <ph name="DEVICE_PRINTERS_POLICY_NAME" /> 所指定文件内的<ph name="ID_FIELD" />或<ph name="GUID_FIELD" />字段相符。
+
+      此政策已被弃用，请改用 <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />。</translation>
 <translation id="5652250453612826983">控制仅应用于未成年人帐号的家长监管政策。
       这些政策不是在管理控制台中设置的，而是通过 Kids API 服务器直接配置的。</translation>
 <translation id="5656177735561364047">启用“共享剪贴板”功能</translation>
@@ -3246,6 +3377,9 @@
       如果您将此政策设为 <ph name="BR_UNDER_USER_CONTROL" />，系统会提示用户是否要使用 Google 位置信息服务。如果用户开启了该服务，Android 应用会利用该服务搜索设备位置信息，并向 Google 发送匿名位置数据。
 
       完成初始设置后，用户可以开启或关闭 Google 位置信息服务。</translation>
+<translation id="5910810837616572201">如果为 <ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME" /> 选择了 <ph name="PRINTERS_BLACKLIST" />，您便可通过设置 <ph name="NATIVE_PRINTERS_BULK_BLACKLIST_POLICY_NAME" /> 来指定用户不能使用哪些打印机。除了与此政策中所列 ID 对应的打印机之外，其他所有打印机都可供用户使用。ID 必须与 <ph name="BULK_PRINTERS_POLICY_NAME" /> 所指定文件内的<ph name="ID_FIELD" />或<ph name="GUID_FIELD" />字段相符。
+
+      此政策已被弃用，请改用 <ph name="PRINTERS_BULK_BLOCKLIST" />。</translation>
 <translation id="591088232153082363">基于电池使用模式自动调节电池充电速率。</translation>
 <translation id="5915023683182228340">如果此政策已启用或未设置，系统将允许在 <ph name="PRODUCT_NAME" /> 中使用 QUIC 协议。
 
@@ -3255,6 +3389,9 @@
 <translation id="5932767795525445337">此政策也可用于固定 Android 应用。</translation>
 <translation id="5946082169633555022">测试版</translation>
 <translation id="5946329690214660966">设置自定义时间表来指定何时检查是否有更新</translation>
+<translation id="5950069117106131681">如果此政策已启用，系统会在打印预览中开启页眉和页脚。如果此政策已停用，系统会在打印预览中关闭页眉和页脚。
+
+      如果您设置了此政策，用户便无法更改相关设置。如果您未设置此政策，用户可以决定是否显示页眉和页脚。</translation>
 <translation id="5951418260805607969">在磁盘空间不足时显示通知</translation>
 <translation id="5958746038080720143">启用网络代理自动发现 (WPAD) 优化设置</translation>
 <translation id="5959428851851090097">如果此政策已启用，当云政策与平台政策发生冲突时，系统会优先应用云政策。
@@ -3442,6 +3579,7 @@
 <translation id="6300871921951390976">如果此政策设为 True，用户只能更改设备的发布版本。如果此政策设为 False 或未设置，用户将无法更改版本。
 
       仅当 <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> 设为 False 时，设置 <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> 才会产生影响。</translation>
+<translation id="6305373713165475629">通过设置此政策，您可以替换默认打印颜色模式。如果这种模式不适用，系统会忽略此政策。</translation>
 <translation id="6310223829319187614">允许在用户登录期间自动填充域名</translation>
 <translation id="631081324835911099">当用户主帐号的身份验证令牌失效后，强制用户退出登录状态。
         此政策可避免用户访问 Google 网络媒体资源上的受限内容。
@@ -3721,6 +3859,9 @@
 
           请注意，普通用户设备和企业设备的默认行为有所不同：默认情况下，系统会在普通用户设备上启用受监管用户，而在企业设备上停用受监管用户。</translation>
 <translation id="6652197835259177259">本地托管用户设置</translation>
+<translation id="6653897159826215341">如果此政策已启用，当用户请求打印某个页面时，<ph name="PRODUCT_NAME" /> 将打开系统打印对话框而非内置打印预览。
+
+      如果此政策已停用或未设置，打印命令将触发打印预览屏幕。</translation>
 <translation id="6658245400435704251">指定一个时间（以秒为单位），即从更新首次推送到服务器起设备随机延迟更新下载的最大时间。设备的这一等待时间一部分会按照实际时间计算，而剩下的部分则取决于更新检查的次数。在任何情况下，分配的时间上限都是固定的，因此设备绝不会一直等待下载某个更新。</translation>
 <translation id="6665670272107384733">指定用户必须按什么样的频率输入密码才能使用快速解锁功能</translation>
 <translation id="6667586534922258705">在登录屏幕和锁定屏幕上启用显示密码按钮</translation>
@@ -3812,9 +3953,9 @@
 
       如果此政策已停用或未设置，系统便不会报告使用情况信息。</translation>
 <translation id="6821268164692776674"><ph name="CLOUD_PRINT_NAME" />和“保存到 Google 云端硬盘”目的地</translation>
-<translation id="6823273740874361732">通过设置此政策，您可以控制 <ph name="PRODUCT_NAME" /> 的扩展程序管理设置，其中包括由现有的扩展程序相关政策控制的设置。此政策会取代可能已设置的所有旧版政策。
+<translation id="6823273740874361732">通过设置此政策，您可以控制 <ph name="PRODUCT_NAME" /> 的扩展程序管理设置，其中包括由现有的扩展程序相关政策控制的设置。此政策会取代任何可能已设置的旧版政策。
 
-      此政策仅会将某个扩展程序 ID 或某个更新网址映射至相应设置。您可为特殊 ID<ph name="DEFAULT_SCOPE" />设定默认配置，该配置会应用于未在此政策中设定自定义配置的所有扩展程序。对于更新网址，相应配置会应用于具有在扩展程序清单 ( http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy ) 中注明的确切更新网址的扩展程序。如果“override_update_url”标记设为 true，系统会根据 <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> 政策中或此政策的“update_url”字段中指定的“更新”网址来安装并更新扩展程序。如果“update_url”是 Chrome 网上应用店网址，“override_update_url”标记会被忽略。
+      此政策仅会将某个扩展程序 ID 或某个更新网址映射至其特定的设置。您可为特殊 ID<ph name="DEFAULT_SCOPE" />设定默认配置，该配置会应用于未在此政策中设定自定义配置的所有扩展程序。对于更新网址，相应配置会应用于具有在扩展程序清单 ( http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy ) 中注明的确切更新网址的扩展程序。如果“override_update_url”标记设为 true，系统会根据 <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> 政策中或此政策的“update_url”字段中指定的“更新”网址来安装并更新扩展程序。如果“update_url”是 Chrome 网上应用店网址，“override_update_url”标记会被忽略。
 
       注意：对于未加入 <ph name="MS_AD_NAME" /> 网域的 Windows® 实例，强制安装仅限于 Chrome 网上应用店中所列的应用和扩展程序。</translation>
 <translation id="6823711520976094072">如果此政策设为小于 1 MB 或未设置，<ph name="PRODUCT_OS_NAME" />会使用默认大小 (256 MiB) 缓存应用和扩展程序，以供同一部设备上的多位用户安装，从而避免重新为每位用户下载。</translation>
@@ -3848,6 +3989,7 @@
       如果不应允许通过无痕模式切换帐号，最好使用 IncognitoModeAvailability 政策屏蔽该模式。
 
       请注意，用户只需拦截 Google 服务的 Cookie，便能在未验证身份的状态下访问 Google 服务。</translation>
+<translation id="6841254611279513739">通过设置此政策，您可以将打印模式限制为仅限彩色打印、仅限单色打印或无颜色模式。如果您未设置此政策，则打印模式不受限制。</translation>
 <translation id="6843296367238757293">此政策已被弃用。建议您改用其他政策。如需了解详情，请访问 https://support.google.com/chrome/a/answer/7643500</translation>
 <translation id="6846126863870444592">此政策旨在以列表形式指定：哪些扩展程序能够在使用 <ph name="PRINTING_API" /> 函数 <ph name="SUBMIT_JOB_FUNCTION" /> 发送打印任务时跳过打印任务确认对话框。
 
@@ -3937,6 +4079,15 @@
       如果您启用了此政策，逗号分隔列表中指定的每个来源都将在自己的进程中运行。以子网域形式指定的来源也会被隔离；例如，指定 https://example.com/ 也会导致 https://foo.example.com/ 被隔离（作为 https://example.com/ 网站的一部分）。
       如果您未配置或停用了此政策，系统将为登录屏幕使用平台默认的网站隔离设置。
       </translation>
+<translation id="6949867264289339206">通过设置此政策，您可为绑定到设备的企业打印机提供配置。其格式与 <ph name="PRINTERS_POLICY_NAME" /> 字典一样，不过每台打印机都还对应一个额外的必填字段“id”或“guid”，以用于将相应打印机加入许可名单/拒绝名单。该文件不得超过 5MB，且必须采用 JSON 格式。一个包含大约 21000 台打印机的文件在编码后的大小是 5MB。相应的加密哈希值可帮助您验证下载内容的完整性。系统会下载、缓存该文件。当相应网址或哈希值发生变化时，系统会重新下载该文件。<ph name="PRODUCT_OS_NAME" />会下载该文件以获取打印机配置，并会根据 <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />、<ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> 和 <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> 向用户提供可用的打印机。
+
+      此政策：
+
+      * 对用户能否在个别设备上配置打印机没有影响
+
+      * 旨在对 <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> 和个别用户的打印机设置进行补充
+
+      若未设置，便不存在任何设备打印机，同时其他 <ph name="DEVICE_PRINTERS_POLICY_PATTERN" /> 政策会被忽略。</translation>
 <translation id="69525503251220566">用来为默认搜索服务提供商提供图片搜索功能的参数</translation>
 <translation id="6953102253399571439">默认启用 PIN 码打印</translation>
 <translation id="6956272732789158625">不允许任何网站使用密钥生成功能</translation>
@@ -4243,6 +4394,11 @@
       如果您未设置此政策，默认情况下，受企业管理的用户和不受管理的用户都能选择启用 Phone Hub 功能。</translation>
 <translation id="7372831798009983116">启用“自动点击”无障碍功能</translation>
 <translation id="7373200034079131670">在用户退出后重新启动（如果 Android 或虚拟机已启动）。</translation>
+<translation id="7373680616478819439">此设置会启用或停用登录拦截功能。
+
+      如果此政策未设置或设为 True，当用户在网络上添加了 Google 帐号时，系统会触发登录拦截对话框，因而用户可以将此帐号移至另一份（新的或现有的）个人资料中，这样做可能对用户更有好处。
+
+      如果此政策设为 False，系统将不会触发登录拦截对话框。</translation>
 <translation id="7375785904116479354">如果此政策已启用，当首次运行浏览器时，系统将会从先前的默认浏览器导入默认搜索引擎。如果此政策已停用或未设置，当首次运行浏览器时，系统不会导入默认搜索引擎。
 
       用户可以触发导入对话框，系统将会根据此政策的值选中或不选中“默认搜索引擎”复选框。</translation>
@@ -4526,6 +4682,7 @@
       如果此政策已停用，用户无需提供密码，即可将处于睡眠状态的设备解锁。
 
       如果您未设置此政策，用户可以选择是否让系统提示输入密码以将处于睡眠状态的设备解锁。</translation>
+<translation id="7784062550705119230">如果为 <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> 选择了 <ph name="PRINTERS_ALLOWLIST" />，您便可通过设置 <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> 来指定用户可以使用哪些打印机。用户将只能使用那些符合条件（ID 与此政策中所列的值匹配）的打印机。ID 必须与 <ph name="DEVICE_PRINTERS_POLICY_NAME" /> 所指定文件内的<ph name="ID_FIELD" />或<ph name="GUID_FIELD" />字段相符。</translation>
 <translation id="7788511847830146438">根据个人资料</translation>
 <translation id="780629758750905699">允许向设备添加 Family Link 帐号</translation>
 <translation id="7807139251387225825">应从同步操作中排除的类型列表</translation>
@@ -4555,6 +4712,11 @@
 
           如果您未设置此政策，高对比度模式在登录屏幕上最初会处于停用状态，但用户可随时启用它。</translation>
 <translation id="7869986671709030417">默认背景图片打印模式</translation>
+<translation id="7881421274383404138">通过设置此政策，您可以配置企业打印机。其格式与 <ph name="PRINTERS_POLICY_NAME" /> 字典一样，不过每台打印机都还对应一个额外的必填字段<ph name="ID_FIELD" />或<ph name="GUID_FIELD" />，以用于将相应打印机加入许可名单/拒绝名单。该文件不得超过 5MB，且必须采用 JSON 格式。一个包含大约 21000 台打印机的文件在编码后的大小是 5MB。相应的加密哈希值可帮助您验证下载内容的完整性。系统会下载、缓存该文件。当相应网址或哈希值发生变化时，系统会重新下载该文件。<ph name="PRODUCT_OS_NAME" />会下载该文件以获取打印机配置，并会根据 <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />、<ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> 和 <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" /> 向用户提供可用的打印机。
+
+      此政策对用户能否在个别设备上配置打印机没有影响。它旨在对个别用户的打印机配置进行补充。
+
+      如果您设置了此政策，用户便无法更改相关设置。</translation>
 <translation id="7882585827992171421">此策略仅在零售模式下有效。
 
       确定在登录屏幕上用作屏幕保护程序的扩展程序的 ID。该扩展程序必须属于通过 DeviceAppPack 策略为此域配置的 AppPack。</translation>
@@ -4675,6 +4837,7 @@
 <translation id="8056273037819805106"><ph name="PRODUCT_OS_NAME" />登录凭据会被用于向受管理的代理进行网络身份验证。</translation>
 <translation id="8059164285174960932">远程访问客户端获取身份验证令牌的网址</translation>
 <translation id="8062485064082966327">使用匿名 Google 服务为无标签图片提供自动说明</translation>
+<translation id="8071371098891664137">如果为 <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" /> 选择了 <ph name="PRINTERS_BLOCKLIST" />，您便可通过设置 <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" /> 来指定用户不能使用哪些打印机。除了与此政策中所列 ID 对应的打印机之外，其他所有打印机都可供用户使用。ID 必须与 <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> 所指定文件内的<ph name="ID_FIELD" />或<ph name="GUID_FIELD" />字段相符。</translation>
 <translation id="8076521374016204899">如果此政策已启用或未设置，使用密码验证身份的用户便可以锁定屏幕。
 
       如果此政策已停用，用户将无法锁定屏幕（只能退出用户会话）。</translation>
@@ -4746,6 +4909,10 @@
 如果您设置了此政策，用户将无法在显示登录屏幕时覆盖相应值。
 
 如果您未设置此政策，隐私保护屏最初会处于停用状态，但用户仍然可以在显示登录屏幕时控制该功能。</translation>
+<translation id="8147427717998252789">通过设置此政策，您可以指定 Managed Configuration API 应为给定来源返回的值。
+
+      Managed configuration API 是一种键值对配置，可通过 navigator.device.getManagedConfiguration() javascript 调用来使用。该 API 仅适用于通过 <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> 强制安装的 Web 应用所对应的来源。
+     </translation>
 <translation id="815061180603915310">如果您启用了此政策，它会将个人资料强制切换到暂存模式。如果您将此政策指定为操作系统政策（例如 Windows 中的 GPO），它将应用于系统中的所有个人资料；如果您将此政策设为云政策，它将仅应用于使用受管理的帐号登录的个人资料。
 
       在这种模式下，只有在用户会话期间个人资料数据才会保留在磁盘上。关闭浏览器后，浏览器历史记录等内容、扩展程序及其数据、网络数据（例如 Cookie）和网络数据库全都不会保留下来。不过，用户仍可以手动将任何数据下载到磁盘中、保存网页或打印网页。
@@ -4893,6 +5060,7 @@
 
       如果您不设置 <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" />，系统将使用 GET 方法发送图片搜索请求。</translation>
 <translation id="8314214821702356835">允许用户在设备锁定时播放媒体</translation>
+<translation id="8319678975002906774">为特定来源的网站设定受管理配置值</translation>
 <translation id="8320149248919453401">电池充电模式</translation>
 <translation id="8329984337216493753">此政策仅在零售模式下有效。
 
@@ -5104,11 +5272,6 @@
 <translation id="8676959842615154675">如果此政策已启用，远程访问主机会对比这两个名称：与主机关联的本地用户的名称，以及注册为主机所有者的 Google 帐号的名称（如果主机归“johndoe@example.com”所有，Google 帐号的名称就是“johndoe”）。如果主机所有者的名称不同于与主机关联的本地用户的名称，该主机将不会启动。若要强制将所有者的 Google 帐号与特定网域关联，请将此政策与 <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" /> 搭配使用。
 
       如果此政策已停用或未设置，远程访问主机便能与任何本地用户关联。</translation>
-<translation id="8680488165461049026">此政策旨在授权“快速解答”功能访问所选内容并将相关信息发送给服务器。
-
-      如果您启用了此政策，“快速解答”功能将能够访问所选内容。
-      如果您停用了此政策，“快速解答”功能将无法访问所选内容。
-      如果您不设置此政策，用户可以自行决定是否允许“快速解答”功能访问所选内容。</translation>
 <translation id="8685024486845674965">重复使用密码可触发密码保护服务警告功能</translation>
 <translation id="8685680544554917389">如果此政策设为 True，<ph name="PRODUCT_NAME" /> 将会自动播放媒体。如果此政策设为 False，<ph name="PRODUCT_NAME" /> 不会自动播放媒体。
 
@@ -5257,6 +5420,9 @@
           请注意，您在此处列出的格式会被系统视为网域（而非网址），因此您不应指定协议或端口。</translation>
 <translation id="8890438048579188548">隐藏 <ph name="CLOUD_PRINT_NAME" />弃用警告</translation>
 <translation id="8892286064305622118"><ph name="PLUGIN_VM_NAME" /> 所需的可用磁盘空间</translation>
+<translation id="8903283771634816230">如果此政策已启用，<ph name="PRODUCT_NAME" /> 会在进行打印预览时将操作系统默认打印机用作默认目标。
+
+      如果此政策已停用或未设置，<ph name="PRODUCT_NAME" /> 会在进行打印预览时将上次使用的打印机用作默认目标。</translation>
 <translation id="8904721489610046109">通过设置此政策，您可以开启或关闭网络节流功能。开启节流功能意味着系统会限制网络速度，使其不超过指定的上传和下载速率（以 kb/s 为单位）。此设置适用于设备上的所有用户和所有界面。</translation>
 <translation id="8906768759089290519">启用访客模式</translation>
 <translation id="8908294717014659003">允许您设置是否允许网站访问媒体捕获设备。系统默认为允许访问媒体捕获设备，否则，每次有网站要访问媒体捕获设备时都要征询用户同意。

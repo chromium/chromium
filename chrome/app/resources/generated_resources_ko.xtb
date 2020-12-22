@@ -3,7 +3,6 @@
 <translationbundle lang="ko">
 <translation id="1001307489511021749">앱, 설정 및 기타 맞춤설정이 내 Google 계정으로 로그인된 모든 Chrome OS 기기에서 동기화됩니다.</translation>
 <translation id="1003088604756913841">새 <ph name="APP" /> 창에서 링크 열기</translation>
-<translation id="1003363546227723021">화면이 유휴 상태일 때 사진, 시간, 날씨, 미디어 정보를 표시합니다.</translation>
 <translation id="1004218526896219317">사이트 액세스</translation>
 <translation id="1005274289863221750">마이크와 카메라 사용</translation>
 <translation id="1005333234656240382">ADB 디버깅을 사용 설정하시겠습니까?</translation>
@@ -225,7 +224,6 @@
 <translation id="1238191093934674082">공개 VPN</translation>
 <translation id="1239594683407221485">파일 앱에서 기기의 콘텐츠를 탐색하세요.</translation>
 <translation id="124116460088058876">다른 언어</translation>
-<translation id="1241639418100230264">데이터 요금이 발생할 수 있음</translation>
 <translation id="1241753985463165747">호출할 경우 현재 웹사이트에 있는 모든 데이터를 읽고 변경합니다.</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" />에서 설정을 재설정하려 합니다.</translation>
 <translation id="1243314992276662751">업로드</translation>
@@ -1395,7 +1393,6 @@
 <translation id="2541706104884128042">새 취침 시간이 설정됨</translation>
 <translation id="2542050502251273923">ff_debug를 사용해 네트워크 연결 관리자와 다른 서비스의 디버깅 수준을 설정합니다.</translation>
 <translation id="2544853746127077729">인증서가 네트워크에 의해 거부됨</translation>
-<translation id="2546229857744484369">이 기기에는 1개의 비밀번호가 저장되어 있습니다.</translation>
 <translation id="2546283357679194313">쿠키 및 사이트 데이터</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" /> 권한이 허용됨</translation>
 <translation id="2549985041256363841">녹화 시작</translation>
@@ -2284,7 +2281,6 @@
 <translation id="3576324189521867626">설치되었습니다.</translation>
 <translation id="3578594933904494462">이 탭의 콘텐츠를 공유 중입니다.</translation>
 <translation id="357886715122934472">&lt;strong&gt;<ph name="SENDER" />&lt;/strong&gt;님이 내가 소유한 그룹(&lt;strong&gt;<ph name="GROUP_NAME" />&lt;/strong&gt;)과의 프린터(&lt;strong&gt;<ph name="PRINTER_NAME" />&lt;/strong&gt;) 공유를 요청했습니다. 동의하면 모든 그룹 회원이 해당 프린터로 인쇄할 수 있게 됩니다.</translation>
-<translation id="357889014807611375">전송량 제한이 있는 Wi-Fi</translation>
 <translation id="3581605050355435601">IP 주소 자동 구성</translation>
 <translation id="3582057310199111521">사기성 사이트에 입력되었으며 정보 유출이 발견됨</translation>
 <translation id="3584169441612580296">컴퓨터에서 사진, 음악, 기타 미디어 조회 및 변경</translation>
@@ -2931,6 +2927,7 @@
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" /> 제거 중...</translation>
 <translation id="4330191372652740264">얼음물</translation>
 <translation id="4330387663455830245"><ph name="LANGUAGE" /> 번역 안함</translation>
+<translation id="4331809312908958774">크롬 OS</translation>
 <translation id="4332976768901252016">자녀 보호 기능 설정하기</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1(RSA 암호화 사용)</translation>
 <translation id="4336434711095810371">모든 데이터 삭제</translation>
@@ -3081,7 +3078,6 @@
 <translation id="4508765956121923607">소스 보기(&amp;O)</translation>
 <translation id="4510479820467554003">부모 계정 목록</translation>
 <translation id="4510614391273086606">Linux 파일 및 앱이 백업된 상태로 복원되는 중입니다</translation>
-<translation id="4511264077854731334">포털</translation>
 <translation id="4513946894732546136">문제 신고</translation>
 <translation id="451407183922382411"><ph name="COMPANY_NAME" /> 제공</translation>
 <translation id="4514610446763173167">동영상 재생 또는 일시중지 전환</translation>
@@ -3562,7 +3558,6 @@
 <translation id="5087926280563932024">계정을 확인할 수 없습니다. 다시 시도하거나 Chromebook을 다시 시작하세요.</translation>
 <translation id="5088172560898466307">서버 호스트 이름</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512(RSA 암호화 사용)</translation>
-<translation id="5089810972385038852">시/도</translation>
 <translation id="5090637338841444533">카메라 위치 추적이 허용되지 않음</translation>
 <translation id="5094721898978802975">협력 중인 기본 애플리케이션과 통신</translation>
 <translation id="5097002363526479830">'<ph name="NAME" />' 네트워크에 연결하지 못했습니다: <ph name="DETAILS" /></translation>
@@ -3846,7 +3841,6 @@
 <translation id="542948651837270806">신뢰할 수 있는 플랫폼 모듈 펌웨어 업데이트를 설치해야 합니다. <ph name="TPM_FIRMWARE_UPDATE_LINK" /> 보기</translation>
 <translation id="5430931332414098647">인스턴트 테더링</translation>
 <translation id="5431318178759467895">컬러</translation>
-<translation id="5431825016875453137">OpenVPN/L2TP</translation>
 <translation id="543338862236136125">비밀번호 수정</translation>
 <translation id="5434065355175441495">PKCS #1 RSA 암호화</translation>
 <translation id="5435779377906857208"><ph name="HOST" />의 위치 액세스 항상 허용</translation>
@@ -4136,6 +4130,7 @@
 <translation id="5747809636523347288"><ph name="URL" /> 붙여넣기 및 이동(&amp;S)</translation>
 <translation id="5754152670305761216">보호된 콘텐츠 재생이 허용됨</translation>
 <translation id="5756163054456765343">고객센터(H)</translation>
+<translation id="5758631781033351321">여기에서 읽기 목록을 확인할 수 있습니다</translation>
 <translation id="5759728514498647443"><ph name="APP_NAME" />을(를) 통해 인쇄하려고 전송한 문서를 <ph name="APP_NAME" />에서 읽을 수 있습니다.</translation>
 <translation id="5760715441271661976">포털 상태</translation>
 <translation id="5763751966069581670">USB 기기를 찾을 수 없습니다.</translation>
@@ -4272,7 +4267,6 @@
 
   Public Exponent(<ph name="PUBLIC_EXPONENT_NUM_BITS" />비트):
   <ph name="EXPONENT_HEX_DUMP" /></translation>
-<translation id="5916084858004523819">금지됨</translation>
 <translation id="5916664084637901428">사용</translation>
 <translation id="59174027418879706">사용 가능</translation>
 <translation id="5920543303088087579">관리자가 이 네트워크에 연결할 수 없도록 설정했습니다.</translation>
@@ -4457,7 +4451,6 @@
 <translation id="6120205520491252677">이 페이지를 시작 화면에 고정...</translation>
 <translation id="6122081475643980456">인터넷 연결이 제어되고 있습니다.</translation>
 <translation id="6122095009389448667">이 사이트에서 클립보드를 보지 못하게 계속 차단</translation>
-<translation id="6122191549521593678">온라인</translation>
 <translation id="6122600716821516697">이 기기와 공유할까요?</translation>
 <translation id="6122831415929794347">세이프 브라우징을 사용 중지하시겠습니까?</translation>
 <translation id="6122875415561139701">기기(<ph name="DEVICE_NAME" />)에서 쓰기 작업이 허용되지 않습니다.</translation>
@@ -4819,7 +4812,6 @@
 <translation id="653659894138286600">문서 및 이미지 스캔</translation>
 <translation id="6537613839935722475">이름에는 문자, 숫자, 하이픈(-)을 사용할 수 있습니다.</translation>
 <translation id="6537880577641744343">Commander</translation>
-<translation id="6538635548667167211">현재 데이터 사용 설정은 데이터입니다</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />참고:<ph name="END_BOLD" /> 데이터 수집으로 인해 성능이 감소할 수 있으므로 확신이 있는 경우 또는 요청을 받은 경우에만 사용하도록 설정합니다.</translation>
 <translation id="6541638731489116978">움직임 감지 센서 액세스가 차단된 사이트입니다.</translation>
 <translation id="6545665334409411530">반복 속도</translation>
@@ -5165,7 +5157,6 @@
 <translation id="6955446738988643816">팝업 검사</translation>
 <translation id="6955535239952325894">관리 브라우저에서 설정이 사용 중지됨</translation>
 <translation id="6957044667612803194">PIN을 지원하지 않는 보안 키입니다.</translation>
-<translation id="6957231940976260713">서비스 이름</translation>
 <translation id="6960507406838246615">Linux 업데이트 필요</translation>
 <translation id="696103774840402661">이 <ph name="DEVICE_TYPE" /> 기기 내 모든 사용자의 파일 및 로컬 데이터가 영구적으로 삭제되었습니다.</translation>
 <translation id="6964390816189577014">영웅</translation>
@@ -5628,7 +5619,6 @@
 <translation id="7488682689406685343">이 사이트는 방해가 되는 알림을 허용하도록 사용자를 속일 수 있습니다.</translation>
 <translation id="7489761397368794366">기기에서 전화 걸기</translation>
 <translation id="749028671485790643">사용자 이름 <ph name="VALUE" /></translation>
-<translation id="7490813197707563893">MAC 주소</translation>
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{쿠키 1개}other{쿠키 {NUM_COOKIES}개}}</translation>
 <translation id="7493386493263658176"><ph name="EXTENSION_NAME" /> 확장 프로그램에서 비밀번호와 신용카드 번호 등의 개인정보를 포함해 입력하는 모든 텍스트를 수집할 수 있습니다. 이 확장 프로그램을 사용하시겠어요?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" />x<ph name="HEIGHT" /></translation>
@@ -5705,6 +5695,7 @@
 <translation id="7580671184200851182">모든 스피커에서 동일한 오디오 재생(모노 오디오)</translation>
 <translation id="7581462281756524039">정리도구</translation>
 <translation id="7582582252461552277">이 네트워크를 기본으로 사용</translation>
+<translation id="7582844466922312471">모바일 데이터</translation>
 <translation id="7583948862126372804">득표 수</translation>
 <translation id="7586498138629385861">Chrome 앱이 열려 있을 때 Chrome이 계속 실행됩니다.</translation>
 <translation id="7589461650300748890">주의하세요.</translation>
@@ -6089,7 +6080,6 @@
 <translation id="7987814697832569482">항상 이 VPN을 통해 연결</translation>
 <translation id="7988355189918024273">접근성 기능 사용</translation>
 <translation id="7991296728590311172">스위치 제어 설정</translation>
-<translation id="7993750787380199093">모든 기기에서 사용할 수 있도록 Google 계정에 모든 비밀번호를 저장합니다.</translation>
 <translation id="7994702968232966508">EAP 방식</translation>
 <translation id="7997826902155442747">프로세스 우선순위</translation>
 <translation id="7999229196265990314">생성된 파일:
@@ -6494,7 +6484,6 @@
 <translation id="8465252176946159372">잘못된 값입니다.</translation>
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" />에 실행 권한이 필요합니다.</translation>
 <translation id="8466417995783206254">이 탭에서는 PIP 모드로 동영상이 재생되고 있습니다.</translation>
-<translation id="8467103604871441980">이 기기에는 <ph name="NUMBER_OF_DEVICE_PASSWORDS" />개의 비밀번호가 저장되어 있습니다.</translation>
 <translation id="8467326454809944210">다른 언어 선택</translation>
 <translation id="8470214316007448308">다른 사용자</translation>
 <translation id="8470513973197838199"><ph name="ORIGIN" />의 저장된 비밀번호</translation>
@@ -6520,7 +6509,6 @@
 <translation id="8502536196501630039">Google Play의 앱을 사용하려면 먼저 앱을 복원해야 합니다. 일부 데이터가 삭제되었을 수 있습니다.</translation>
 <translation id="850314194061055138">다시 카메라 사용</translation>
 <translation id="8503813439785031346">사용자이름</translation>
-<translation id="8504640708321980506">데이터</translation>
 <translation id="8507227974644337342">화면 해상도</translation>
 <translation id="850875081535031620">유해한 소프트웨어가 발견되지 않음</translation>
 <translation id="8509177919508253835">보안 키를 재설정하고 PIN 생성</translation>
@@ -6574,7 +6562,6 @@
 <translation id="8571814292654854151">프로필 이름 지정</translation>
 <translation id="8574990355410201600"><ph name="HOST" />에서 소리 항상 허용</translation>
 <translation id="8575286410928791436">종료하려면 <ph name="KEY_EQUIVALENT" /> 키를 길게 누르세요.</translation>
-<translation id="8576249514688522074">초기화되지 않음</translation>
 <translation id="8576785408880814823">할당을 시작하려면 새 스위치를 누르세요.
 할당된 스위치를 눌러 할당을 삭제합니다.</translation>
 <translation id="8576885347118332789">{NUM_TABS,plural, =1{읽기 목록에 탭 추가}other{읽기 목록에 탭 추가}}</translation>
@@ -6602,7 +6589,6 @@
 <translation id="8602851771975208551">컴퓨터의 다른 프로그램에서 Chrome 작동에 영향을 줄 수 있는 앱을 추가했습니다.</translation>
 <translation id="8605428685123651449">SQLite 메모리</translation>
 <translation id="8608618451198398104">Kerberos 티켓 추가</translation>
-<translation id="860909219589324847">전송 시 데이터 사용하지 않음</translation>
 <translation id="8609465669617005112">위로 이동</translation>
 <translation id="8610103157987623234">잘못된 형식입니다. 다시 시도하세요.</translation>
 <translation id="8611682088849615761">이 사이트의 MIDI 기기 전체 제어 계속 허용</translation>

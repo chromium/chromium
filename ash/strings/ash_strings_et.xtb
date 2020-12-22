@@ -205,6 +205,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2878884018241093801">Hiljutisi üksusi pole</translation>
 <translation id="2903844815300039659">Ühendatud võrguga <ph name="NAME" />, <ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">Ekraanipildid</translation>
+<translation id="2941112035454246133">Madal</translation>
 <translation id="2942350706960889382">Dokitud luup</translation>
 <translation id="2942516765047364088">Riiuli positsioon</translation>
 <translation id="2946119680249604491">Lisa ühendus</translation>
@@ -217,6 +218,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3000461861112256445">Monoheli</translation>
 <translation id="3009178788565917040">Väljund</translation>
 <translation id="3033545621352269033">Sees</translation>
+<translation id="3036649622769666520">Failide avamine</translation>
 <translation id="3038571455154067151">Sisselogimiseks sisestage oma Family Linki vanema pääsukood</translation>
 <translation id="3045488863354895414">Tere päevast!</translation>
 <translation id="3051128274746680507">Teie jälgitava kasutaja profiil eemaldatakse peagi. Lisateabe saamiseks logige sisse.</translation>
@@ -368,7 +370,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4321776623976362024">Vajutasite suure kontrastsusega režiimi otseteed. Kas soovite režiimi sisse lülitada?</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4338109981321384717">Suurendusklaas</translation>
-<translation id="4350065043422286972">Kinnitatud</translation>
 <translation id="4351433414020964307">Assistenti laaditakse …</translation>
 <translation id="4356930093361201197">suure kontrastsusega režiim</translation>
 <translation id="4371348193907997655">Ülekandmise seaded</translation>
@@ -388,7 +389,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Sidumata seadmed</translation>
 <translation id="4485060137115666462">Paremkliki või pika vajutusega kuvab assistent teavet, näiteks teie valitud üksuse definitsiooni, tõlke või ühiku teisenduse.</translation>
-<translation id="4488735711456074171">Näib, et teie telefon pole võrguga ühendatud ja meil ei õnnestu sellega ühendust luua.</translation>
 <translation id="4505050298327493054">Aktiivne töölaud.</translation>
 <translation id="4513946894732546136">Tagasiside</translation>
 <translation id="4527045527269911712">Bluetoothi seade „<ph name="DEVICE_NAME" />” küsib luba sidumiseks.</translation>
@@ -449,7 +449,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">Rakenduse ikooni märguandetäpp</translation>
 <translation id="5003993274120026347">Järgmine lause</translation>
-<translation id="5019169674188023236">Näib, et Bluetooth või WiFi on teie seadmes <ph name="DEVICE_TYPE" /> välja lülitatud. Kontrollige oma ühendust või kasutage Phone Hubi.</translation>
 <translation id="5030687792513154421">Aeg on läbi</translation>
 <translation id="5033299697334913360">Täisekraani jäädvustamiseks klõpsake ekraanikuval kus tahes</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> ühendati uue telefoniga</translation>
@@ -582,7 +581,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="6376931439017688372">Bluetooth on sisse lülitatud</translation>
 <translation id="6381109794406942707">Seadme avamiseks sisestage oma PIN-kood.</translation>
 <translation id="639644700271529076">SUURTÄHELUKK on välja lülitatud</translation>
-<translation id="6398771186477608158">Veenduge, et teie telefon oleks läheduses ning Bluetooth ja WiFi oleks sisse lülitatud.</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, signaalitugevus <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Kõikide märguannete kustutamine</translation>
@@ -732,7 +730,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="7780159184141939021">Ekraanikuva pööramine</translation>
 <translation id="7796353162336583443">Puudutage riiulil elektronpliiatsi nuppu, et teha märkmeid, jäädvustada ekraanipilti, kasutada Google'i assistenti, laserkursorit või suurendusklaasi.</translation>
 <translation id="7798302898096527229">Tühistamiseks vajutage otsinguklahvi või tõstuklahvi.</translation>
-<translation id="781126011916719498">Kiire juurdepääs teie olulistele failidele. Faili kinnitamiseks paremklõpsake sellel või puudutage seda pikalt.</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> ja <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Tugev signaal</translation>
 <translation id="7837740436429729974">Aeg on läbi</translation>
@@ -863,7 +860,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="8877788021141246043">Määra meeldetuletus</translation>
 <translation id="8878886163241303700">Ekraani laiendamine</translation>
 <translation id="8883473964424809116">Klõpsake Google'i assistendi seadete avamiseks.</translation>
-<translation id="8894122120026866664">Teie telefoni ei õnnestu leida</translation>
 <translation id="890616557918890486">Vaheta allikat</translation>
 <translation id="8909138438987180327">Aku laetuse tase on <ph name="PERCENTAGE" /> protsenti.</translation>
 <translation id="8913384980486163186">Temaatiline (vaikimisi)</translation>
@@ -890,7 +886,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="9084606467167974638">Menüü asendi vahetamine</translation>
 <translation id="9089416786594320554">Sisestusviisid</translation>
 <translation id="9091626656156419976">Ekraan <ph name="DISPLAY_NAME" /> eemaldati</translation>
-<translation id="9092749890156285613">Hiljutised ekraanipildid ja allalaadimised</translation>
 <translation id="9098969848082897657">Telefoni vaigistamine</translation>
 <translation id="9151726767154816831">Värskendamiseks tuleb arvuti taaskäivitada ja teha Powerwash</translation>
 <translation id="9166331175924255663">Läheduses jagamise hea nähtavuse muutmine.</translation>

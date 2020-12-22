@@ -49,12 +49,12 @@
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> முயற்சிகள் மீதமுள்ளன</translation>
 <translation id="2391082728065870591">கருத்து அறிக்கையை அனுப்பு</translation>
 <translation id="2446553403094072641">ஃப்லோட்டிங் பாயிண்ட் துல்லியத்தன்மை</translation>
+<translation id="2448312741937722512">வகை</translation>
 <translation id="2461822463642141190">தற்போதைய மின் உபயோகம்</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">ஸ்கேன் செய்</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> சோதனை இயங்குகிறது...</translation>
 <translation id="2620436844016719705">அமைப்பு</translation>
-<translation id="2658845327196595460">{COUNT,plural, =1{ஸ்கேன் செய்யப்பட்ட கோப்பு சேமிக்கப்பட்டது!}other{ஸ்கேன் செய்யப்பட்ட கோப்புகள் சேமிக்கப்பட்டன!}}</translation>
 <translation id="2740531572673183784">சரி</translation>
 <translation id="2805756323405976993">ஆப்ஸ்</translation>
 <translation id="2872961005593481000">நிறுத்து</translation>
@@ -67,19 +67,23 @@
 <translation id="3091839911843451378">பிரிண்டர் நிறுத்தப்பட்டதால் அச்சிட முடியவில்லை</translation>
 <translation id="3102119246920354026">தற்காலிகச் சேமிப்பு</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="315116470104423982">மொபைல் டேட்டா</translation>
 <translation id="3188257591659621405">எனது கோப்புகள்</translation>
 <translation id="3199982728237701504">டாக்குமெண்ட் ஃபீடர் (இரண்டு பக்கமும்)</translation>
 <translation id="3246869037381808805">1 நாளுக்கும் முன்னதாக உள்ள பிரிண்ட்டிங் பணிகள் அகற்றப்படும்</translation>
 <translation id="3268178239013324452">பிரிண்டரின் மூடி திறந்துள்ளதால் அச்சிட முடியவில்லை</translation>
 <translation id="3310640316857623290">DNSஸில் ஏற்படும் தாமதம் அனுமதிக்கப்படும் வரம்பைவிடக் குறிப்பிடத்தக்க அளவு அதிகமாக உள்ளது</translation>
 <translation id="3328783797891415197">சோதனை நடைபெறுகிறது</translation>
+<translation id="3368922792935385530">இணைக்கப்பட்டது</translation>
 <translation id="3369013195428705271">இதுவரையிலான அச்சுப் பணிகள் அனைத்தையும் அழிக்கவா? செயல்பாட்டில் இருக்கும் அச்சுப் பணிகள் அழிக்கப்படாது.</translation>
 <translation id="3456078764689556234">அச்சிடப்பட்ட பக்கங்கள்: <ph name="PRINTED_PAGES" />/<ph name="TOTAL_PAGES" />.</translation>
 <translation id="3459509316159669723">அச்சிடல்</translation>
 <translation id="3515615323037921860">அச்சுப் பணிகள்</translation>
 <translation id="3527036260304016759">அறியப்படாத பிழை காரணமாக அச்சிட முடியவில்லை</translation>
+<translation id="357889014807611375">கட்டண வைஃபை</translation>
 <translation id="360565022852130722">WEP 802.1x என்னும் வலுவற்ற நெறிமுறை மூலம் WiFi நெட்வொர்க் பாதுகாக்கப்படுகிறது</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> மதிப்புரைகள்)</translation>
+<translation id="3748026146096797577">இணைக்கப்படவில்லை</translation>
 <translation id="3749289110408117711">கோப்பு பெயர்</translation>
 <translation id="38114475217616659">அனைத்து வரலாற்றையும் அழி</translation>
 <translation id="3820172043799983114">தவறான பின்.</translation>
@@ -93,6 +97,7 @@
 <translation id="4131410914670010031">கருப்பு வெள்ளை</translation>
 <translation id="4145784616224233563">HTTP ஃபயர்வால்</translation>
 <translation id="4170700058716978431">தோல்வியடைந்தது</translation>
+<translation id="4176463684765177261">முடக்கப்பட்டது</translation>
 <translation id="4227825898293920515">கடவுச்சொல் காலாவதியாக இன்னும் <ph name="TIME" /></translation>
 <translation id="4238516577297848345">அச்சுப் பணி எதுவும் செயலில் இல்லை</translation>
 <translation id="4297501883039923494">அறியப்படாத பிழை காரணமாக அச்சிட முடியவில்லை</translation>
@@ -102,7 +107,9 @@
 <translation id="4429881212383817840">Kerberos டிக்கெட் விரைவில் காலாவதியாகும்</translation>
 <translation id="445059817448385655">தற்போதைய கடவுச்சொல்</translation>
 <translation id="4454245904991689773">இதில் சேமி</translation>
+<translation id="4479639480957787382">ஈத்தர்நெட்</translation>
 <translation id="4483049906298469269">இயல்புநிலையற்ற நெட்வொர்க் கேட்வேயைப் பிங் செய்ய முடியவில்லை</translation>
+<translation id="4511264077854731334">போர்ட்டல்</translation>
 <translation id="4548483925627140043">சிக்னல் கிடைக்கவில்லை</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh பேட்டரி</translation>
 <translation id="458794348635939462">அனைத்து ஹோஸ்ட்களையும் சரிசெய்ய முடியவில்லை</translation>
@@ -127,6 +134,7 @@
 <translation id="498186245079027698">ஸ்கேனரைச் சரிபார்த்துவிட்டு மீண்டும் முயலவும். ஸ்கேன் செய்த கோப்புகளைச் சேமிக்க போதுமான இடம் இருப்பதை உறுதிப்படுத்திக்கொள்ளவும்.</translation>
 <translation id="4985509611418653372">இயக்கு</translation>
 <translation id="500920857929044050">சோதனையை நிறுத்து</translation>
+<translation id="5089810972385038852">மாநிலம்</translation>
 <translation id="5154917547274118687">நினைவகம்</translation>
 <translation id="5168185087976003268">பேட்டரி நிலை</translation>
 <translation id="520299634122159966">ஸ்கேனர்கள் எதுவும் இல்லை</translation>
@@ -142,7 +150,9 @@
 <translation id="5333530671332546086">அறியப்படாத போர்டல் நிலை</translation>
 <translation id="5372659122375744710">WiFi நெட்வொர்க் பாதுகாப்பாக இல்லை</translation>
 <translation id="5401938042319910061">எல்லாச் சோதனைகளையும் இயக்கு</translation>
+<translation id="5430931332414098647">உடனடி இணைப்பு முறை</translation>
 <translation id="5431318178759467895">வண்ணம்</translation>
+<translation id="5431825016875453137">OpenVPN / L2TP</translation>
 <translation id="5457599981699367932">கெஸ்டாக உலாவுங்கள்</translation>
 <translation id="54609108002486618">நிர்வகிக்கப்பட்டது</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
@@ -153,6 +163,7 @@
 <translation id="5797428682393400134">நிறைவடைந்தது</translation>
 <translation id="5832805196449965646">நபரைச் சேர்</translation>
 <translation id="5895138241574237353">மறுதொடக்கம்</translation>
+<translation id="5916084858004523819">தடைசெய்யப்பட்டது</translation>
 <translation id="5931523347251946569">கோப்பு இல்லை</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, பதிப்பு <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">மூடு</translation>
@@ -164,6 +175,7 @@
 <translation id="6106186594183574873">நிறைவுசெய்ய தற்போதைய கடவுச்சொல்லை உள்ளிடவும்</translation>
 <translation id="6108689792487843350">கேட்வேயை அணுக முடியவில்லை</translation>
 <translation id="6114428539405324828"><ph name="CURRENT" />GHz / <ph name="MAX" />GHz</translation>
+<translation id="6122191549521593678">ஆன்லைன்</translation>
 <translation id="6146993107019042706">நிறைவுசெய்ய புதிய கடவுச்சொல்லை உள்ளிடவும்</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">மேலும் அறிக</translation>
@@ -188,7 +200,9 @@
 <translation id="6839141349259399400">ஸ்கேனர்களுடன் இணைக்க முடியவில்லையா?</translation>
 <translation id="6853312040151791195">சார்ஜ் இறங்கும் விகிதம்</translation>
 <translation id="6898743098396957679">ஸ்கேனிங்கை நிறைவுசெய்ய முடியவில்லை</translation>
+<translation id="6957231940976260713">சேவைப் பெயர்</translation>
 <translation id="7028979494427204405">இந்தச் சாதனத்தை <ph name="MANAGER" /> நிர்வகிக்கிறது. பார்வையிட்ட இணையப்பக்கங்கள், கடவுச்சொற்கள், மின்னஞ்சல் உட்பட பயனரின் செயல்பாடு அனைத்திற்குமான அணுகலும் இதற்கு உள்ளது.</translation>
+<translation id="7143207342074048698">இணைத்தல்</translation>
 <translation id="714876143603641390">LAN இணைப்புநிலை</translation>
 <translation id="7162487448488904999">கேலரி</translation>
 <translation id="7177485034254901881">இந்த <ph name="DEVICE_TYPE" /> சாதனத்தை <ph name="MANAGER" /> நிர்வகிக்கிறது. நிர்வாகிகள் இந்தச் சாதனத்தைத் தொலைநிலையிலிருந்து உள்ளமைக்கக்கூடும்.</translation>
@@ -197,11 +211,13 @@
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{ஸ்கேன் செய்யப்பட்டது. ஒரு பக்கம் ஸ்கேன் செய்யப்பட்டது}other{ஸ்கேன் செய்யப்பட்டது. {NUMBER_OF_PAGES} பக்கங்கள் ஸ்கேன் செய்யப்பட்டன}}</translation>
 <translation id="7441459999606975924">உபயோகத்தால் பேட்டரிகளின் திறன் குறைகிறது</translation>
 <translation id="7469648432129124067">போர்டல் கண்டறியப்பட்டது</translation>
+<translation id="7490813197707563893">MAC முகவரி</translation>
 <translation id="7561454561030345039">இந்தச் செயல் உங்கள் நிர்வாகியால் நிர்வகிக்கப்படுகிறது</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">HTTPS கோரிக்கைகள் அதிக நேரம் எடுக்கின்றன</translation>
 <translation id="7658239707568436148">ரத்து செய்</translation>
 <translation id="7690294790491645610">புதிய கடவுச்சொல்லை உறுதிப்படுத்துக</translation>
+<translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">சுழற்சியின் எண்ணிக்கை</translation>
 <translation id="7732651821766520760"><ph name="TEST_NAME" /> சோதனை</translation>
 <translation id="7805768142964895445">நிலை</translation>
@@ -213,6 +229,7 @@
 <translation id="808894953321890993">கடவுச்சொல்லை மாற்று</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8160445423316272678">ஸ்கேன் செய்ய, ஸ்கேனரில் ஆவணத்தை வைத்துவிட்டு <ph name="SPAN_BEGIN" />ஸ்கேன் செய்<ph name="SPAN_END" /> என்பதைத் தேர்ந்தெடுக்கவும்</translation>
+<translation id="8206859287963243715">செல்லுலர்</translation>
 <translation id="8208861521865154048">சலுகைகள்</translation>
 <translation id="8230672074305416752">இயல்புநிலை நெட்வொர்க் கேட்வேயைப் பிங் செய்ய முடியவில்லை</translation>
 <translation id="8294431847097064396">மூலம்</translation>
@@ -224,6 +241,7 @@
 <translation id="8398927464629426868">தற்போது சாதனத்தில் சார்ஜ் ஏறும் அல்லது குறையும் வீதம்</translation>
 <translation id="8475690821716466388">WEP PSK என்னும் வலுவற்ற நெறிமுறை மூலம் WiFi நெட்வொர்க் பாதுகாக்கப்படுகிறது</translation>
 <translation id="8477551185774834963">DNSஸில் ஏற்படும் தாமதம் அனுமதிக்கப்படும் வரம்பைவிடச் சற்றே அதிகமாக உள்ளது</translation>
+<translation id="8576249514688522074">ஆரம்பிக்கப்படவில்லை</translation>
 <translation id="871560550817059752">பிரிண்டரில் மை தீர்ந்துவிட்டதால் அச்சிட முடியவில்லை</translation>
 <translation id="8723108084122415655">இயல்பு நிலையல்லாத நெட்வொர்க்கில் ஏற்படும் தாமதம் வரம்பை மீறி உள்ளது</translation>
 <translation id="8726019395068607495">மூடி திறந்துள்ளதால் அச்சிட முடியவில்லை</translation>
@@ -231,14 +249,18 @@
 <translation id="8747900814994928677">மாற்றத்தை உறுதிப்படுத்துங்கள்</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">இயல்புநிலை</translation>
+<translation id="8814190375133053267">வைஃபை</translation>
 <translation id="8845001906332463065">உதவி பெறுக</translation>
 <translation id="8881098542468797602">சோதனை நிறைவடைந்தது</translation>
+<translation id="8898840733695078011">சிக்னலின் வலிமை</translation>
 <translation id="8910721771319628100">இயல்புநிலை நெட்வொர்க்கில் ஏற்படும் தாமதம் வரம்பை மீறி உள்ளது</translation>
 <translation id="8919837981463578619">பிரிண்டரில் டிரே இல்லாததால் அச்சிட முடியவில்லை</translation>
 <translation id="8928727111548978589">காகிதம் இல்லாததால் அச்சிட முடியவில்லை</translation>
+<translation id="8930622219860340959">கம்பியில்லா</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> முயற்சிகள் மீதமுள்ளன</translation>
 <translation id="8968751544471797276">சார்ஜிங் விகிதம்</translation>
 <translation id="8970109610781093811">மீண்டும் இயக்கு</translation>
+<translation id="9074739597929991885">புளூடூத்</translation>
 <translation id="9088306295921699330">தற்போதைய உபயோகம்</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> வலைதளத்திற்கான டிக்கெட்டை ரெஃப்ரெஷ் செய்யவும்</translation>
 <translation id="9106415115617144481">ஸ்கேன் செய்யப்படும் பக்கம்: <ph name="PAGE_NUMBER" /></translation>

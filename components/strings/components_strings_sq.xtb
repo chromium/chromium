@@ -606,7 +606,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3395827396354264108">Mënyra e marrjes</translation>
 <translation id="3399952811970034796">Adresa e dorëzimit</translation>
 <translation id="3402261774528610252">Lidhja e përdorur për të ngarkuar këtë sajt ka përdorur versionin TLS 1.0 ose TLS 1.1, të cilët janë të vjetëruar dhe do të çaktivizohen në të ardhmen. Pasi të çaktivizohen, përdoruesit nuk do të lejohen ta ngarkojnë këtë sajt. Serveri duhet të aktivizojë versionin TLS 1.2 ose një version të mëvonshëm.</translation>
-<translation id="3411120537985775570">Ngjitja nga <ph name="ORIGIN_NAME" /> te kjo vendndodhje është bllokuar nga administratori yt</translation>
 <translation id="3414952576877147120">Madhësia:</translation>
 <translation id="3417660076059365994">Skedarët që ngarkon ose bashkëngjit i dërgohen Google Cloud ose palëve të treta për analizim. Për shembull, mund të skanohen për të dhëna delikate ose softuerë keqdashës.</translation>
 <translation id="3422248202833853650">Provo të dalësh nga programet e tjera për të liruar memorien.</translation>
@@ -683,7 +682,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3681007416295224113">Informacioni i certifikatës</translation>
 <translation id="3701427423622901115">Rivendosja u pranua.</translation>
 <translation id="3704162925118123524">Rrjeti që po përdor mund të kërkojë që të vizitosh faqen e tij të lidhjes.</translation>
-<translation id="3704609568417268905"><ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">Po ngarkon...</translation>
 <translation id="3709599264800900598">Teksti që kopjove</translation>
@@ -1294,7 +1292,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6051221802930200923">Nuk mund ta vizitosh <ph name="SITE" /> në këtë moment sepse sajti i uebit përdor gozhdimin e certifikatës. Gabimet dhe sulmet e rrjetit janë zakonisht të përkohshme, prandaj kjo faqe ndoshta do të funksionojë më vonë.</translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="6053328359599022071">Të ndahet prania jote?</translation>
-<translation id="6057359309778282021">Administratori yt ka bllokuar ndarjen nga <ph name="ORIGIN_NAME" /> në <ph name="VM_NAME" /></translation>
 <translation id="6058977677006700226">Dëshiron t'i përdorësh kartat në të gjitha pajisjet e tua?</translation>
 <translation id="6059925163896151826">Pajisjet USB</translation>
 <translation id="6060009363608157444">Modalitet i pavlefshëm DnsOverHttps.</translation>
@@ -1439,6 +1436,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6687335167692595844">Kërkohet madhësia e fontit</translation>
 <translation id="6689249931105087298">Relative me ngjeshjen e pikës së zezë</translation>
 <translation id="6689271823431384964">Chrome po ofron që të ruash kartat e tua në "Llogarinë tënde të Google" sepse je identifikuar. Mund ta ndryshosh këtë sjellje te cilësimet. Emri i mbajtësit të kartës vjen nga llogaria jote.</translation>
+<translation id="6702919718839027939">Prezantim</translation>
 <translation id="6710213216561001401">Prapa</translation>
 <translation id="6710594484020273272">&lt;Shkruaj termin e kërkimit&gt;</translation>
 <translation id="671076103358959139">Tokeni i regjistrimit:</translation>

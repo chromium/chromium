@@ -228,7 +228,7 @@
 <translation id="2536728043171574184">正在瀏覽此網頁的離線版本</translation>
 <translation id="2537178555904266562">同步處理密碼時發生錯誤</translation>
 <translation id="2546283357679194313">Cookie 和網站數據</translation>
-<translation id="2562889244313180139">允許網站和應用程式使用無法識別的電郵別名，為您提供更貼近需要的體驗。</translation>
+<translation id="2562889244313180139">允許網站和應用程式使用無法識別的電郵別名，為您提供較貼心的體驗。</translation>
 <translation id="2567385386134582609">圖片</translation>
 <translation id="2571711316400087311">詢問是否將其他語言的網頁傳送至「Google 翻譯」</translation>
 <translation id="2581165646603367611">這會清除 Chrome 認為不重要的網站內的 Cookie、快取和其他資料。</translation>
@@ -261,6 +261,7 @@
 <translation id="281504910091592009">查看和管理儲存在 <ph name="BEGIN_LINK" />Google 帳戶<ph name="END_LINK" />中的密碼</translation>
 <translation id="2818669890320396765">如要將書籤同步到所有裝置，請登入並開啟同步處理功能</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
+<translation id="2833452327385637152">如要搜尋特定字詞或詞組，請按住 (而非輕觸) 該字詞或詞組</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{曾在 1 天前檢查}other{曾在 # 天前檢查}}</translation>
 <translation id="2842985007712546952">上層資料夾</translation>
 <translation id="2860954141821109167">請確認此裝置已啟用手機應用程式</translation>
@@ -925,7 +926,7 @@
 <translation id="7403691278183511381">Chrome 初次使用體驗</translation>
 <translation id="741204030948306876">確認</translation>
 <translation id="7413229368719586778">開始日期：<ph name="DATE" /></translation>
-<translation id="7416941666639889592">加入「網絡群眾」，即表示您允許網站在不使用個人識別資料的情況下，為您提供貼近需要的網站體驗。這和演唱會中的群眾類似，網站和廣告客戶只會知道數千位使用者擁有類似興趣。</translation>
+<translation id="7416941666639889592">加入「網絡群眾」，即表示您允許網站在不使用個人識別資料的情況下，為您提供較貼心的網絡體驗。這和演唱會中的群眾類似，網站和廣告客戶只會知道數千位使用者擁有類似興趣。</translation>
 <translation id="7431991332293347422">控制系統如何使用您的瀏覽記錄，為您提供個人化的搜尋內容和其他服務</translation>
 <translation id="7435356471928173109">已由管理員關閉</translation>
 <translation id="7437998757836447326">登出 Chrome</translation>
@@ -1108,6 +1109,7 @@
 <translation id="8571213806525832805">過去 4 週</translation>
 <translation id="8572344201470131220">已複製圖片</translation>
 <translation id="8583805026567836021">正在清除帳戶數據</translation>
+<translation id="8587585930972369234">按住即可搜尋</translation>
 <translation id="860043288473659153">持卡人姓名</translation>
 <translation id="8616006591992756292">您的 Google 帳戶在 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 上可能有其他形式的瀏覽記錄。</translation>
 <translation id="8617240290563765734">您要開啟下載檔案中指定的建議網址嗎？</translation>

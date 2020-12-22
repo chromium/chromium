@@ -47,6 +47,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1302880136325416935">Rodyti „Bluetooth“ nustatymus. <ph name="STATE_TEXT" /></translation>
 <translation id="1312604459020188865">Signalo stiprumas <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Visada rodyti lentyną</translation>
+<translation id="1316811122439383437">Perkelti: pastarieji ekrano fiksavimai, atsisiuntimai ir prisegti failai</translation>
 <translation id="1333308631814936910">Prijungta: <ph name="DISPLAY_NAME" /></translation>
 <translation id="1341651618736211726">Perpildymas</translation>
 <translation id="1346748346194534595">Dešinė</translation>
@@ -181,6 +182,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="2596078834055697711">Sukurti lango ekrano kopiją</translation>
 <translation id="2617342710774726426">SIM kortelė užrakinta</translation>
 <translation id="2621713457727696555">Apsaugota</translation>
+<translation id="2633643784040308254">Vidutinė</translation>
 <translation id="2653659639078652383">Pateikti</translation>
 <translation id="2658778018866295321">Spustelėti ir vilkti</translation>
 <translation id="2678852583403169292">Teksto ištarimo meniu</translation>
@@ -205,6 +207,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="2878884018241093801">Nėra jokių naujausių elementų</translation>
 <translation id="2903844815300039659">Prisijungėte prie „<ph name="NAME" />“, <ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">Užfiksuoti ekrano vaizdai</translation>
+<translation id="2941112035454246133">Žema</translation>
 <translation id="2942350706960889382">Prie doko prijungtas didintuvas</translation>
 <translation id="2942516765047364088">Lentynos pozicija</translation>
 <translation id="2946119680249604491">Pridėti ryšį</translation>
@@ -217,6 +220,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="3000461861112256445">Monofoninis garsas</translation>
 <translation id="3009178788565917040">Išvestis</translation>
 <translation id="3033545621352269033">Įjungta</translation>
+<translation id="3036649622769666520">Atidaryti failus</translation>
 <translation id="3038571455154067151">Norėdami prisijungti, įveskite „Family Link“ tėvų prieigos kodą.</translation>
 <translation id="3045488863354895414">Laba diena,</translation>
 <translation id="3051128274746680507">Jūsų prižiūrimo naudotojo profilis netrukus bus pašalintas. Prisijunkite, kad sužinotumėte daugiau.</translation>
@@ -367,7 +371,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="4321776623976362024">Paspaudėte didelio kontrasto spartųjį klavišą. Ar norite jį įjungti?</translation>
 <translation id="4331809312908958774">„Chrome“ OS</translation>
 <translation id="4338109981321384717">Didinamasis stiklas</translation>
-<translation id="4350065043422286972">Prisegta</translation>
 <translation id="4351433414020964307">Padėjėjas įkeliamas...</translation>
 <translation id="4356930093361201197">didelio kontrasto režimas</translation>
 <translation id="4371348193907997655">„Cast“ nustatymai</translation>
@@ -387,7 +390,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="4479639480957787382">Eternetas</translation>
 <translation id="4481530544597605423">Atsieti įrenginiai</translation>
 <translation id="4485060137115666462">Spustelėjus dešiniuoju pelės klavišu ar ilgai paspaudus, Padėjėjas rodo informaciją, pvz., apibrėžtį, vertimą ar matavimo vienetų konvertavimą, kad galėtumėte pasirinkti.</translation>
-<translation id="4488735711456074171">Panašu, kad jūsų telefonas neprijungtas prie interneto, todėl negalime prie jo prisijungti.</translation>
 <translation id="4505050298327493054">Aktyvus darbalaukis.</translation>
 <translation id="4513946894732546136">Atsiliepimai</translation>
 <translation id="4527045527269911712">„Bluetooth“ įrenginys „<ph name="DEVICE_NAME" />“ prašo leidimo susieti.</translation>
@@ -410,6 +412,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="4696813013609194136">Atrakinkite įrenginį naudodami tėvų kodą</translation>
 <translation id="4702647871202761252">Privatumo ekranas išjungtas</translation>
 <translation id="4705716602320768426">Pateikti atsiliepimų</translation>
+<translation id="4730232680256276456">Sveiki</translation>
 <translation id="4731797938093519117">Tėvų prieiga</translation>
 <translation id="4734965478015604180">Horizontaliai</translation>
 <translation id="4744944742468440486">Informacija, susijusi su jūsų pasirinkimu</translation>
@@ -426,6 +429,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="4868492592575313542">suaktyvinta</translation>
 <translation id="4872237917498892622">„Alt“ + paieškos arba antrojo lygio klavišas</translation>
 <translation id="4890187583552566966">„Google“ padėjėją išjungė administratorius.</translation>
+<translation id="4890408602550914571">Įsitikinkite, kad telefonas netoliese ir jame įjungtas „Bluetooth“ ryšys.</translation>
 <translation id="4895488851634969361">Akumuliatorius visiškai įkrautas.</translation>
 <translation id="490375751687810070">Vertikaliai</translation>
 <translation id="4905614135390995787">Spartusis klavišas, kurį naudojant perjungiamas didelio kontrasto režimas, pakeistas. Naudokite <ph name="NEW_SHORTCUT" /> vietoj <ph name="OLD_SHORTCUT" />.</translation>
@@ -448,7 +452,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> val. <ph name="MINUTES" /> min. <ph name="SECONDS" /> sek.</translation>
 <translation id="4975771730019223894">Programos ženkleliai</translation>
 <translation id="5003993274120026347">Kitas sakinys</translation>
-<translation id="5019169674188023236">Panašu, kad jūsų „Bluetooth“ arba „Wi-Fi“ ryšys išjungtas „<ph name="DEVICE_TYPE" />“ įrenginyje. Patikrinkite ryšį, kad galėtumėte naudoti „Phone Hub“.</translation>
 <translation id="5030687792513154421">Laikas baigėsi</translation>
 <translation id="5033299697334913360">Spustelėkite bet kur, kad užfiksuotumėte visą ekraną</translation>
 <translation id="5035236842988137213">„<ph name="DEVICE_NAME" />“ įrenginys buvo susietas su telefonu</translation>
@@ -474,6 +477,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="5302048478445481009">Kalba</translation>
 <translation id="5313326810920013265">„Bluetooth“ nustatymai</translation>
 <translation id="5314219114274263156">Ekrano vaizdas įrašytas</translation>
+<translation id="5322611492012084517">Nepavyko rasti telefono</translation>
 <translation id="5329548388331921293">Jungiamasi...</translation>
 <translation id="5331975486040154427">USB-C įrenginys (prievadas kairėje, užpakalinėje dalyje)</translation>
 <translation id="5352250171825660495">Tamsioji tema įjungta</translation>
@@ -520,6 +524,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="576453121877257266">Nakties šviesa įjungta.</translation>
 <translation id="5769373120130404283">Privatumo ekranas</translation>
 <translation id="5777841717266010279">Nutraukti ekrano bendrinimą?</translation>
+<translation id="5779721926447984944">Prisegti failai</translation>
 <translation id="5790085346892983794">Atlikta</translation>
 <translation id="5820394555380036790">„Chromium“ OS</translation>
 <translation id="5825969630400862129">Susietų įrenginių nustatymai</translation>
@@ -564,6 +569,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="615957422585914272">Rodyti ekrano klaviatūrą</translation>
 <translation id="6164005077879661055">Visi failai ir su prižiūrimu naudotoju susiję duomenys bus ištrinti visam laikui, kai bus pašalintas šis prižiūrimas naudotojas. Valdytojas vis tiek gali peržiūrėti šio prižiūrimo naudotojo aplankytas svetaines ir nustatymus adresu <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Sužinokite daugiau</translation>
+<translation id="6179832488876878285">Čia galite prisegti svarbius failus. Jei norite pradėti, atidarykite Failų programą.</translation>
 <translation id="622484624075952240">Žemiau</translation>
 <translation id="6236290670123303279">Tvarkyti nustatymus</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -581,7 +587,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="6376931439017688372">„Bluetooth“ įjungtas</translation>
 <translation id="6381109794406942707">Jei norite atrakinti įrenginį, įveskite PIN kodą.</translation>
 <translation id="639644700271529076">DIDŽIŲJŲ RAIDŽIŲ RAŠYMAS išjungtas</translation>
-<translation id="6398771186477608158">Įsitikinkite, kad telefonas netoliese ir jame įjungtas „Bluetooth“ bei „Wi-Fi“ ryšys.</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6424520630891723617">„<ph name="SECURITY_STATUS" />“, signalo stiprumas <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Visų pranešimų išvalymas</translation>
@@ -722,6 +727,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="7654687942625752712">Paspauskite ir penkias sekundes palaikykite garsumo klavišus, kad išjungtumėte ekrano skaitymo balsu funkciją.</translation>
 <translation id="7658239707568436148">Atšaukti</translation>
 <translation id="7662283695561029522">Palieskite, kad konfigūruotumėte</translation>
+<translation id="7683326293741220026">Panašu, kad „Bluetooth“ išjungta jūsų telefone. Įjunkite „Bluetooth“ telefone, kad galėtumėte naudoti „Phone Hub“.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 pranešimas}one{# pranešimas}few{# pranešimai}many{# pranešimo}other{# pranešimų}}</translation>
 <translation id="7724603315864178912">Iškirpti</translation>
@@ -731,7 +737,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="7780159184141939021">Ekrano pasukimas</translation>
 <translation id="7796353162336583443">Palieskite rašiklio mygtuką lentynoje, kad galėtumėte sukurti užrašą, ekrano kopiją, naudoti „Google“ padėjėją, lazerinį žymeklį arba didinamąjį stiklą.</translation>
 <translation id="7798302898096527229">Jei norite atšaukti, paspauskite paieškos klavišą arba „Shift“.</translation>
-<translation id="781126011916719498">Sparčiai pasiekite svarbius failus. Spustelėkite dešiniuoju klavišu arba palieskite ir palaikykite failą, kad jį prisegtumėte.</translation>
 <translation id="7814236020522506259"><ph name="HOUR" />:<ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Stiprus signalas</translation>
 <translation id="7837740436429729974">Laikas baigėsi</translation>
@@ -740,9 +745,11 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="7860671499921112077">Perbraukite aukštyn trimis pirštais, kad apsilankytumėte „Apžvalgos“ skiltyje</translation>
 <translation id="7868900307798234037">Atrakinama naudojant kontrolinį kodą</translation>
 <translation id="7872786842639831132">Išjungta</translation>
+<translation id="7875575368831396199">Panašu, kad „Bluetooth“ ryšys išjungtas jūsų „<ph name="DEVICE_TYPE" />“ įrenginyje. Įjunkite „Bluetooth“, kad galėtumėte naudoti „Phone Hub“.</translation>
 <translation id="7886169021410746335">Koreguokite privatumo nustatymus</translation>
 <translation id="7886277072580235377">Interneto sesijos duomenys bus išvalyti, kai atsijungsite. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">„Send an email“ (Siųsk el. laišką)</translation>
+<translation id="7895348134893321514">Perkelti</translation>
 <translation id="7897375687985782769">Paspaudėte ekrano pasukimo spartųjį klavišą. Ar norite pasukti ekraną?</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Palieskite kontrolinio kodo jutiklį</translation>
@@ -810,6 +817,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="8444246603146515890">Darbalaukis „<ph name="DESK_TITILE" />“ suaktyvintas</translation>
 <translation id="8452135315243592079">Nėra SIM kortelės</translation>
 <translation id="8454013096329229812">„Wi-Fi“ ryšys įjungtas.</translation>
+<translation id="8462305545768648477">Uždaryti „Teksto ištarimo“ funkciją</translation>
 <translation id="847056008324733326">Ekrano mastelio nustatymai</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />: <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Jei norite atšaukti, paspauskite „Alt“ + paieškos klavišą arba „Alt“ + „Shift“.</translation>
@@ -862,7 +870,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="8877788021141246043">„Set a reminder“ (Nustatyk priminimą)</translation>
 <translation id="8878886163241303700">Išplečiamas ekranas</translation>
 <translation id="8883473964424809116">Spustelėkite, norėdami atidaryti „Google“ padėjėjo nustatymus.</translation>
-<translation id="8894122120026866664">Nepavyko rasti telefono</translation>
 <translation id="890616557918890486">Keisti šaltinį</translation>
 <translation id="8909138438987180327">Akumuliatoriaus įkrovos lygis <ph name="PERCENTAGE" /> proc.</translation>
 <translation id="8913384980486163186">Teminė (numatytoji)</translation>
@@ -889,7 +896,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="9084606467167974638">Perjunkite meniu padėtį</translation>
 <translation id="9089416786594320554">Įvesties metodai</translation>
 <translation id="9091626656156419976">Pašalintas vaizdas „<ph name="DISPLAY_NAME" />“</translation>
-<translation id="9092749890156285613">Naujausi užfiksuoti ekrano vaizdai ir atsisiuntimai</translation>
 <translation id="9098969848082897657">Telefono nutildymas</translation>
 <translation id="9151726767154816831">Kad atnaujintumėte, paleiskite iš naujo ir naudokite „Powerwash“</translation>
 <translation id="9166331175924255663">Perjungti bendrinimo netoliese didelį matomumą.</translation>

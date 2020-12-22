@@ -49,12 +49,12 @@
 <translation id="2375079107209812402">נותרו <ph name="ATTEMPTS_LEFT" /> ניסיונות</translation>
 <translation id="2391082728065870591">שליחת דוח המשוב</translation>
 <translation id="2446553403094072641">‏רמת הדיוק של נקודה צפה (floating-point)</translation>
+<translation id="2448312741937722512">סוג</translation>
 <translation id="2461822463642141190">כרגע</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">סריקה</translation>
 <translation id="2570743873672969996">הבדיקה של <ph name="TEST_NAME" /> בתהליך…</translation>
 <translation id="2620436844016719705">מערכת</translation>
-<translation id="2658845327196595460">{COUNT,plural, =1{נשמר הקובץ שנסרק!}two{הקבצים שנסרקו נשמרו!}many{הקבצים שנסרקו נשמרו!}other{הקבצים שנסרקו נשמרו!}}</translation>
 <translation id="2740531572673183784">אישור</translation>
 <translation id="2805756323405976993">אפליקציות</translation>
 <translation id="2872961005593481000">כיבוי</translation>
@@ -67,19 +67,23 @@
 <translation id="3091839911843451378">נכשלה – משימת ההדפסה הופסקה</translation>
 <translation id="3102119246920354026">מטמון</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="315116470104423982">נתוני נייד</translation>
 <translation id="3188257591659621405">הקבצים שלי</translation>
 <translation id="3199982728237701504">הכנסת מסמכים (שני צדדים)</translation>
 <translation id="3246869037381808805">משימות הדפסה בנות יותר מיום אחד יוסרו</translation>
 <translation id="3268178239013324452">נכשלה – דלת המדפסת פתוחה</translation>
 <translation id="3310640316857623290">‏זמן האחזור של ה-DNS גבוה במידה משמעותית מהסף המותר</translation>
 <translation id="3328783797891415197">הבדיקה מתבצעת</translation>
+<translation id="3368922792935385530">מחובר</translation>
 <translation id="3369013195428705271">לנקות את כל היסטוריית ההדפסות? משימות ההדפסה הנוכחיות לא יימחקו.</translation>
 <translation id="3456078764689556234">הודפס עמוד <ph name="PRINTED_PAGES" /> מתוך <ph name="TOTAL_PAGES" />.</translation>
 <translation id="3459509316159669723">הדפסה</translation>
 <translation id="3515615323037921860">משימות הדפסה</translation>
 <translation id="3527036260304016759">נכשלה – שגיאה לא ידועה</translation>
+<translation id="357889014807611375">‏Wi-Fi עם חיוב לפי שימוש בנתונים</translation>
 <translation id="360565022852130722">‏רשת ה-Wi-Fi מאובטחת בפרוטוקול WEP 802.1x חלש.</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ביקורות)</translation>
+<translation id="3748026146096797577">לא מחובר</translation>
 <translation id="3749289110408117711">שם קובץ</translation>
 <translation id="38114475217616659">ניקוי כל ההיסטוריה</translation>
 <translation id="3820172043799983114">‏PIN לא חוקי.</translation>
@@ -93,6 +97,7 @@
 <translation id="4131410914670010031">שחור ולבן</translation>
 <translation id="4145784616224233563">‏חומת אש מסוג HTTP</translation>
 <translation id="4170700058716978431">הבדיקה הסתיימה בכישלון</translation>
+<translation id="4176463684765177261">מושבת</translation>
 <translation id="4227825898293920515">תוקף הסיסמה יפוג בעוד <ph name="TIME" /></translation>
 <translation id="4238516577297848345">אין משימות הדפסה שמתבצעות כרגע</translation>
 <translation id="4297501883039923494">הפסיקה – שגיאה לא ידועה</translation>
@@ -102,7 +107,9 @@
 <translation id="4429881212383817840">‏התוקף של כרטיס Kerberos עומד לפוג בקרוב</translation>
 <translation id="445059817448385655">סיסמה ישנה</translation>
 <translation id="4454245904991689773">מיקום שמירת הסריקה</translation>
+<translation id="4479639480957787382">אתרנט</translation>
 <translation id="4483049906298469269">לא ניתן היה לבצע פינג לשער הרשת שאינה מוגדרת כברירת מחדל.</translation>
+<translation id="4511264077854731334">פורטל</translation>
 <translation id="4548483925627140043">לא אותר אות</translation>
 <translation id="455835558791489930">סוללה בהספק של <ph name="CHARGE_VALUE" /> מיליאמפר לשעה</translation>
 <translation id="458794348635939462">לא ניתן היה להתאים את הנתונים של כל המארחים</translation>
@@ -127,6 +134,7 @@
 <translation id="498186245079027698">יש לבדוק את הסורק ולנסות שוב. חשוב לוודא שיש במכשיר מספיק מקום לשמור את הקבצים הסרוקים.</translation>
 <translation id="4985509611418653372">הרצה</translation>
 <translation id="500920857929044050">הפסקת הבדיקה</translation>
+<translation id="5089810972385038852">מדינה</translation>
 <translation id="5154917547274118687">זיכרון</translation>
 <translation id="5168185087976003268">תקינות הסוללה</translation>
 <translation id="520299634122159966">אין סורקים זמינים</translation>
@@ -142,7 +150,9 @@
 <translation id="5333530671332546086">מצב הפורטל לא ידוע</translation>
 <translation id="5372659122375744710">‏רשת ה-Wi-Fi לא מאובטחת</translation>
 <translation id="5401938042319910061">הרצה של כל התרחישים</translation>
+<translation id="5430931332414098647">שיתוף אינטרנט מיידי בין ניידים</translation>
 <translation id="5431318178759467895">צבע</translation>
+<translation id="5431825016875453137">OpenVPN / L2TP</translation>
 <translation id="5457599981699367932">גלישה כאורח</translation>
 <translation id="54609108002486618">מנוהל</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
@@ -153,6 +163,7 @@
 <translation id="5797428682393400134">הבדיקה הסתיימה בהצלחה</translation>
 <translation id="5832805196449965646">הוספת משתמש</translation>
 <translation id="5895138241574237353">הפעלה מחדש</translation>
+<translation id="5916084858004523819">אסור</translation>
 <translation id="5931523347251946569">הקובץ לא נמצא</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, גרסה <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">סגירה</translation>
@@ -164,6 +175,7 @@
 <translation id="6106186594183574873">כדי לסיים יש להזין את הסיסמה הישנה</translation>
 <translation id="6108689792487843350">לא ניתן להגיע אל השער</translation>
 <translation id="6114428539405324828">‏GHz‏ <ph name="MAX" /> / GHz‏ <ph name="CURRENT" /></translation>
+<translation id="6122191549521593678">אונליין</translation>
 <translation id="6146993107019042706">כדי לסיים, יש להזין את הסיסמה החדשה</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">למידע נוסף</translation>
@@ -188,7 +200,9 @@
 <translation id="6839141349259399400">לא ניתן להתחבר לסורקים?</translation>
 <translation id="6853312040151791195">שיעור הפריקה</translation>
 <translation id="6898743098396957679">לא ניתן להשלים את הסריקה</translation>
+<translation id="6957231940976260713">שם שירות</translation>
 <translation id="7028979494427204405">הניהול של המכשיר הזה מתבצע מהדומיין <ph name="MANAGER" /> ואפשר לגשת ממנו אל כל המידע על הפעילות של המשתמשים, כולל דפי אינטרנט שנכנסת אליהם, סיסמאות ואימייל.</translation>
+<translation id="7143207342074048698">מתבצע חיבור</translation>
 <translation id="714876143603641390">‏קישוריות LAN</translation>
 <translation id="7162487448488904999">גלריה</translation>
 <translation id="7177485034254901881">מכשיר <ph name="DEVICE_TYPE" /> זה מנוהל על ידי <ph name="MANAGER" />. מנהלי מערכת עשויים להגדיר את המכשיר הזה מרחוק.</translation>
@@ -197,11 +211,13 @@
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{הסריקה הושלמה. נסרק עמוד אחד}two{הסריקה הושלמה. נסרקו {NUMBER_OF_PAGES} עמודים}many{הסריקה הושלמה. נסרקו {NUMBER_OF_PAGES} עמודים}other{הסריקה הושלמה. נסרקו {NUMBER_OF_PAGES} עמודים}}</translation>
 <translation id="7441459999606975924">קיבולת של סוללות יורדת ככל שמשתמשים בהן</translation>
 <translation id="7469648432129124067">זוהה פורטל</translation>
+<translation id="7490813197707563893">‏כתובת MAC</translation>
 <translation id="7561454561030345039">הפעולה הזו מנוהלת על-ידי מנהל המערכת</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">‏זמן רב של אחזור HTTPS</translation>
 <translation id="7658239707568436148">ביטול</translation>
 <translation id="7690294790491645610">אישור הסיסמה החדשה</translation>
+<translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">מספר המחזורים</translation>
 <translation id="7732651821766520760">בדיקת <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">סטטוס</translation>
@@ -213,6 +229,7 @@
 <translation id="808894953321890993">שינוי הסיסמה</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />‎°‎ C</translation>
 <translation id="8160445423316272678">כדי להתחיל, יש למקם את המסמך על הסורק וללחוץ על <ph name="SPAN_BEGIN" />סריקה<ph name="SPAN_END" /></translation>
+<translation id="8206859287963243715">סלולארי</translation>
 <translation id="8208861521865154048">הטבות</translation>
 <translation id="8230672074305416752">לא ניתן היה לבצע פינג לשער הרשת המוגדרת כברירת מחדל</translation>
 <translation id="8294431847097064396">מקור</translation>
@@ -224,6 +241,7 @@
 <translation id="8398927464629426868">קצב הטעינה או קצב הפריקה הנוכחיים של המכשיר</translation>
 <translation id="8475690821716466388">‏רשת ה-Wi-Fi מאובטחת בפרוטוקול WEP PSK חלש</translation>
 <translation id="8477551185774834963">‏זמן האחזור של ה-DNS חורג מעט מהסף המותר</translation>
+<translation id="8576249514688522074">לא מאותחלת</translation>
 <translation id="871560550817059752">נכשלה – הדיו נגמר</translation>
 <translation id="8723108084122415655">הרשת שאינה מוגדרת כברירת מחדל חורגת מסף זמן האחזור</translation>
 <translation id="8726019395068607495">הפסיקה – דלת המדפסת פתוחה</translation>
@@ -231,14 +249,18 @@
 <translation id="8747900814994928677">אישור השינוי</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">ברירת מחדל</translation>
+<translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">קבלת עזרה</translation>
 <translation id="8881098542468797602">הבדיקה הושלמה בהצלחה</translation>
+<translation id="8898840733695078011">עוצמת אות</translation>
 <translation id="8910721771319628100">רשת ברירת המחדל חורגת מסף זמן האחזור</translation>
 <translation id="8919837981463578619">נכשלה – המגש לא נמצא</translation>
 <translation id="8928727111548978589">נכשלה – הנייר נגמר</translation>
+<translation id="8930622219860340959">אלחוטי</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> נותרו <ph name="ATTEMPTS_LEFT" /> ניסיונות</translation>
 <translation id="8968751544471797276">שיעור הטעינה</translation>
 <translation id="8970109610781093811">הפעל שוב</translation>
+<translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">שימוש נוכחי</translation>
 <translation id="910415269708673980">רענון הכרטיס עבור <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">מתבצעת סריקה של עמוד <ph name="PAGE_NUMBER" /></translation>

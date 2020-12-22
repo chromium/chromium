@@ -1228,13 +1228,6 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
       Si elle est désactivée, <ph name="PRODUCT_NAME" /> ne peut utiliser ces hôtes que s'ils sont installés au niveau du système.</translation>
 <translation id="2753637905605932878">Restreindre la portée des ports UDP locaux utilisés par WebRTC</translation>
 <translation id="2757054304033424106">Types d'extensions ou d'applications autorisés à être installés</translation>
-<translation id="2758689548159678032">Lorsqu'elle est activée, la fonctionnalité <ph name="PRODUCT_NAME" /> envoie des en-têtes de requête précis qui fournissent des informations sur le navigateur et l'environnement de l'utilisateur.
-
-      Il s'agit d'une fonctionnalité complémentaire. Toutefois, les nouveaux en-têtes peuvent entraîner un dysfonctionnement de certains sites Web qui appliquent des restrictions en ce qui concerne les caractères que peuvent contenir les requêtes.
-
-      Si cette règle est activée ou qu'elle n'est pas configurée, la fonctionnalité <ph name="PRODUCT_NAME" /> est activée. Si cette règle est désactivée, la fonctionnalité n'est pas disponible.
-
-      Cette règle permet d'assurer la transition vers Chrome 88, après quoi elle sera supprimée.</translation>
 <translation id="2759224876420453487">Contrôler le comportement de l'utilisateur lors d'une session à plusieurs profils</translation>
 <translation id="2761483219396643566">Délai d'inactivité avant l'affichage d'un avertissement (en cas d'utilisation de la batterie)</translation>
 <translation id="2769952903507981510">Configurer le nom de domaine requis pour les hôtes d'accès à distance</translation>
@@ -1352,7 +1345,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
       Remarque : Cette règle renvoie vers un fichier XML au même format que celui de la règle <ph name="IEEM_SITELIST_POLICY" /> d'<ph name="IE_PRODUCT_NAME" />. Les instructions sont ainsi chargées à partir d'un fichier XML, sans être partagées avec <ph name="IE_PRODUCT_NAME" />. Pour en savoir plus sur la règle <ph name="IEEM_SITELIST_POLICY" /> d'<ph name="IE_PRODUCT_NAME" />, consultez la page https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode</translation>
 <translation id="2947111924404450461">La définition de cette règle permet de configurer les imprimantes d'entreprise. Son format correspond au dictionnaire <ph name="NATIVE_PRINTERS_POLICY_NAME" />, avec un champ supplémentaire <ph name="ID_FIELD" /> ou <ph name="GUID_FIELD" /> obligatoire pour chaque imprimante à ajouter à la liste d'autorisation ou à la liste de refus. Le fichier est au format JSON et sa taille ne peut pas dépasser 5 Mo. Un fichier encodé de 5 Mo peut contenir environ 21 000 imprimantes. Le hachage cryptographique permet de valider l'intégrité du téléchargement. Le fichier est téléchargé, mis en cache, puis téléchargé à nouveau à chaque modification de l'URL ou du hachage. <ph name="PRODUCT_OS_NAME" /> télécharge le fichier des configurations d'imprimante et rend les imprimantes accessibles avec <ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="BULK_PRINTERS_WHITELIST" /> et <ph name="BULK_PRINTERS_BLACKLIST" />.
 
-      Cette règle n'a aucune incidence sur la capacité des utilisateurs à configurer ou non des imprimantes sur différents appareils. Elle est destinée à compléter la configuration des imprimantes effectuée par les différents utilisateurs.
+      Cette règle n'a aucune incidence sur la capacité des utilisateurs à configurer ou non des imprimantes sur chaque appareil. Elle est destinée à compléter la configuration des imprimantes effectuée par les différents utilisateurs.
 
       Si vous définissez cette règle, les utilisateurs ne peuvent pas la modifier.
 
@@ -1796,6 +1789,13 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
       Si cette règle est désactivée, le logiciel peut injecter un tel code dans les processus de <ph name="PRODUCT_NAME" />.
 
       Quelle que soit la valeur de cette règle, le navigateur n'empêchera pas les logiciels tiers d'injecter du code exécutable dans ses processus sur une machine associée à un domaine <ph name="MS_AD_NAME" />.</translation>
+<translation id="3456292544936505775">Cette règle permet de définir les périodes durant lesquelles l'appareil <ph name="PRODUCT_OS_NAME" /> n'est pas autorisé à rechercher automatiquement des mises à jour.
+      Si des périodes sont définies lors de la configuration de cette règle :
+      Aucune recherche automatique de mises à jour n'est effectuée pendant ces périodes. Les appareils nécessitant un rollback de la version Enterprise ou équipés d'une version antérieure à <ph name="PRODUCT_OS_NAME" /> ne sont pas concernés par cette règle en raison de problèmes de sécurité potentiels. Sachez également que cette règle n'empêche pas l'utilisateur ni l'administrateur de procéder à une recherche de mises à jour.
+      À partir de la version M88, cette règle annule toute mise à jour non encore terminée au moment où une période de restriction a commencé. La mise à jour reprendra automatiquement lors de la prochaine mise à jour automatique, une fois la période de restriction écoulée. Cette règle n'a pas d'incidence sur les appareils qui installent un build Quick Fix.
+      Si cette règle n'est pas configurée ou si aucune période n'est définie :
+      La recherche automatique de mises à jour n'est pas bloquée par cette règle, mais peut l'être par d'autres.
+      Jusqu'à la version M88, cette fonctionnalité n'est activée que sur les appareils <ph name="PRODUCT_OS_NAME" /> configurés pour se lancer automatiquement en mode Kiosque. Cette règle ne limitera pas les autres appareils. Sachez toutefois qu'à partir de la version M89, cette règle est activée sur tous les appareils <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="3459509316159669723">Impression</translation>
 <translation id="3461279434465463233">Envoyer des rapports sur l'état de l'alimentation</translation>
 <translation id="3478024346823118645">Effacer les données utilisateur à la déconnexion</translation>
@@ -3998,7 +3998,7 @@ Si vous sélectionnez les options suivantes :
 <translation id="6821268164692776674">Destinations <ph name="CLOUD_PRINT_NAME" /> et "Enregistrer dans Google Drive"</translation>
 <translation id="6823273740874361732">Cette règle permet de contrôler les paramètres de gestion des extensions pour <ph name="PRODUCT_NAME" />, y compris ceux contrôlés par des règles existantes liées aux extensions. Elle remplace toutes les anciennes règles susceptibles d'être configurées.
 
-      Elle fait correspondre un ID d'extension ou une URL de mise à jour uniquement avec sa configuration spécifique. Une configuration par défaut peut être définie pour l'ID spécial <ph name="DEFAULT_SCOPE" />, lequel s'applique à toutes les extensions pour lesquelles aucune configuration personnalisée n'est définie dans cette règle. Avec une URL de mise à jour, la configuration s'applique aux extensions avec l'URL de mise à jour telle qu'elle est indiquée dans le fichier manifeste de ces extensions (pour en savoir plus, consultez la page http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy ). Si l'indicateur "override_update_url" est défini sur "True", l'extension est installée et mise à jour à l'aide de l'URL de mise à jour spécifiée dans la règle "<ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />" ou dans le champ "update_url" de cette règle. L'indicateur "override_update_url" est ignoré si le champ "update_url" contient une URL du Chrome Web Store.
+      Elle fait correspondre un ID d'extension ou une URL de mise à jour uniquement avec sa configuration spécifique. Une configuration par défaut peut être définie pour l'ID spécial <ph name="DEFAULT_SCOPE" />, lequel s'applique à toutes les extensions pour lesquelles aucune configuration personnalisée n'est définie dans cette règle. Avec une URL de mise à jour, la configuration s'applique aux extensions avec l'URL de mise à jour telle qu'elle est indiquée dans le fichier manifeste de ces extensions (pour en savoir plus, consultez la page http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy). Si l'indicateur "override_update_url" est défini sur "True", l'extension est installée et mise à jour à l'aide de l'URL spécifiée dans la règle "<ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />" ou dans le champ "update_url" de cette règle. L'indicateur "override_update_url" est ignoré si le champ "update_url" contient une URL du Chrome Web Store.
 
       Remarque : Pour les instances Windows® qui ne sont pas associées à un domaine <ph name="MS_AD_NAME" />, l'installation d'office est limitée aux applications et aux extensions répertoriées sur le Chrome Web Store.</translation>
 <translation id="6823711520976094072">Si cette règle est définie sur une valeur inférieure à 1 Mo ou qu'elle n'est pas configurée, <ph name="PRODUCT_OS_NAME" /> utilise la taille de cache par défaut (256 Mo) pour mettre en cache les applications et les extensions installées par plusieurs utilisateurs d'un même appareil, ce qui évite à chacun d'eux de les télécharger de nouveau.</translation>
@@ -4126,7 +4126,7 @@ Si vous sélectionnez les options suivantes :
 
       Cette règle :
 
-      * n'a aucune incidence sur la capacité des utilisateurs à configurer ou non des imprimantes sur différents appareils,
+      * n'a aucune incidence sur la capacité des utilisateurs à configurer ou non des imprimantes sur chaque appareil ;
 
       * complète les configurations d'imprimante de <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> et des différents utilisateurs.
 
@@ -4761,7 +4761,7 @@ au maximum si un utilisateur se sert de l'appareil.
 <translation id="7869986671709030417">Mode d'impression d'images de fond par défaut</translation>
 <translation id="7881421274383404138">La définition de cette règle permet de configurer les imprimantes d'entreprise. Son format correspond au dictionnaire <ph name="PRINTERS_POLICY_NAME" />, avec un champ supplémentaire <ph name="ID_FIELD" /> ou <ph name="GUID_FIELD" /> obligatoire pour chaque imprimante à ajouter à la liste d'autorisation ou à la liste de refus. Le fichier est au format JSON et sa taille ne peut pas dépasser 5 Mo. Un fichier encodé de 5 Mo peut contenir environ 21 000 imprimantes. Le hachage cryptographique permet de valider l'intégrité du téléchargement. Le fichier est téléchargé, mis en cache, puis téléchargé à nouveau à chaque modification de l'URL ou du hachage. <ph name="PRODUCT_OS_NAME" /> télécharge le fichier des configurations d'imprimante et rend les imprimantes accessibles avec <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> et <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" />.
 
-      Cette règle n'a aucune incidence sur la capacité des utilisateurs à configurer ou non des imprimantes sur différents appareils. Elle est destinée à compléter la configuration des imprimantes effectuée par les différents utilisateurs.
+      Cette règle n'a aucune incidence sur la capacité des utilisateurs à configurer ou non des imprimantes sur chaque appareil. Elle est destinée à compléter la configuration des imprimantes effectuée par les différents utilisateurs.
 
       Si vous définissez cette règle, les utilisateurs ne peuvent pas la modifier.</translation>
 <translation id="7882585827992171421">Cette règle n'est active qu'en mode "point de vente".
@@ -4961,6 +4961,10 @@ Si cette règle est définie sur "False", l'écran de confidentialité est désa
 Si cette règle est définie, l'utilisateur ne peut pas remplacer la valeur lorsque l'écran de connexion s'affiche.
 
 Si cette règle n'est pas définie, l'écran de confidentialité est désactivé initialement, mais l'utilisateur peut le modifier lorsque l'écran de connexion s'affiche.</translation>
+<translation id="8147427717998252789">Cette règle permet de définir la valeur de retour de l'API Managed Configuration pour l'origine donnée.
+
+      L'API Managed Configuration est une configuration clé-valeur accessible via un appel JavaScript navigator.device.getManagedConfiguration(). Cette API est uniquement disponible pour les origines qui correspondent aux applications Web installées d'office via <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />.
+     </translation>
 <translation id="815061180603915310">Si cette règle est activée, elle contraint le profil à basculer en mode éphémère. Si elle est spécifiée en tant que règle OS (par exemple, GPO sous Windows), elle s'applique à tous les profils présents sur le système. Si elle est paramétrée en tant que règle de cloud, elle s'applique uniquement aux profils connectés avec un compte géré.
 
       Dans ce mode, les données de profil ne sont stockées sur le disque que pour la durée de la session utilisateur. Certaines fonctionnalités, telles que l'historique du navigateur, les extensions et leurs données, les données Web comme les cookies et les bases de données Web, ne sont pas conservées après la fermeture du navigateur. L'utilisateur peut toutefois continuer à télécharger manuellement des données sur son disque, enregistrer des pages ou les imprimer.
@@ -5109,9 +5113,7 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 
       Si la règle <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" /> n'est pas configurée, la requête de recherche d'image est envoyée à l'aide de la méthode GET.</translation>
 <translation id="8314214821702356835">Autoriser les utilisateurs à lire des contenus multimédias lorsque l'appareil est verrouillé</translation>
-<translation id="8316913402499361923">Si vous activez la règle, ou si vous ne la configurez pas, les utilisateurs peuvent imprimer dans <ph name="PRODUCT_NAME" />, mais ils ne peuvent pas modifier ce paramètre.
-
-      Si vous la désactivez, les utilisateurs ne peuvent pas imprimer à partir de <ph name="PRODUCT_NAME" />. Les fonctionnalités d'impression sont désactivées dans le menu clé à molette, les extensions et les applications JavaScript. L'impression n'est possible qu'à partir de plug-ins qui contournent <ph name="PRODUCT_NAME" />.</translation>
+<translation id="8319678975002906774">Définit des valeurs de configuration gérée pour des sites Web aux origines spécifiques.</translation>
 <translation id="8320149248919453401">Mode de recharge de la batterie</translation>
 <translation id="8329984337216493753">Cette règle n'est active qu'en mode Point de vente.
 
@@ -5323,11 +5325,6 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 <translation id="8676959842615154675">Si cette règle est activée, l'hôte d'accès à distance compare le nom de l'utilisateur local auquel il est associé au nom du compte Google enregistré en tant que propriétaire de l'hôte (par exemple, "pierredupont" si l'hôte appartient à pierredupont@example.com). Cet hôte ne démarre pas si le nom de son propriétaire diffère de celui de l'utilisateur local auquel l'hôte est associé. Pour faire en sorte que le compte Google du propriétaire soit associé à un domaine spécifique, utilisez la règle avec "<ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />".
 
       Si la règle est désactivée ou qu'elle n'est pas configurée, l'hôte d'accès à distance peut être associé à n'importe quel utilisateur local.</translation>
-<translation id="8680488165461049026">Cette règle autorise l'option Réponses rapides à accéder au contenu sélectionné et à envoyer les informations le concernant au serveur.
-
-      Si la règle est activée, l'option Réponses rapides est autorisée à accéder au contenu sélectionné.
-      Si la règle est désactivée, cette option n'est pas autorisée à accéder à ce contenu.
-      Si la règle n'est pas définie, les utilisateurs peuvent choisir d'autoriser ou non l'option Réponses rapides à accéder au contenu sélectionné.</translation>
 <translation id="8685024486845674965">L'avertissement de protection par mot de passe est déclenché en cas de réutilisation du mot de passe</translation>
 <translation id="8685680544554917389">Si cette règle est définie sur "True", <ph name="PRODUCT_NAME" /> est autorisé à lire automatiquement du contenu multimédia. Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'est pas autorisé à lire automatiquement du contenu multimédia.
 

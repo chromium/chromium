@@ -49,12 +49,12 @@
 <translation id="2375079107209812402">ลองได้อีก <ph name="ATTEMPTS_LEFT" /> ครั้ง</translation>
 <translation id="2391082728065870591">ส่งรายงานความคิดเห็น</translation>
 <translation id="2446553403094072641">ความแม่นยำของจุดลอยตัว</translation>
+<translation id="2448312741937722512">ประเภท</translation>
 <translation id="2461822463642141190">ปัจจุบัน</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">สแกน</translation>
 <translation id="2570743873672969996">กำลังทำการทดสอบ <ph name="TEST_NAME" />...</translation>
 <translation id="2620436844016719705">ระบบ</translation>
-<translation id="2658845327196595460">{COUNT,plural, =1{บันทึกไฟล์สแกนแล้ว}other{บันทึกไฟล์สแกนแล้ว}}</translation>
 <translation id="2740531572673183784">ตกลง</translation>
 <translation id="2805756323405976993">แอป</translation>
 <translation id="2872961005593481000">ปิด</translation>
@@ -67,19 +67,23 @@
 <translation id="3091839911843451378">ไม่สำเร็จ - หยุดทำงาน</translation>
 <translation id="3102119246920354026">แคช</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="315116470104423982">เน็ตมือถือ</translation>
 <translation id="3188257591659621405">ไฟล์ของฉัน</translation>
 <translation id="3199982728237701504">ตัวป้อนเอกสาร (สองด้าน)</translation>
 <translation id="3246869037381808805">ระบบจะนำงานพิมพ์ที่เก่ากว่า 1 วันออก</translation>
 <translation id="3268178239013324452">ไม่สำเร็จ - ฝาเครื่องเปิดอยู่</translation>
 <translation id="3310640316857623290">เวลาในการตอบสนอง DNS สูงกว่าเกณฑ์ที่ยอมรับได้อย่างมีนัยสำคัญ</translation>
 <translation id="3328783797891415197">กำลังทดสอบ</translation>
+<translation id="3368922792935385530">เชื่อมต่อแล้ว</translation>
 <translation id="3369013195428705271">คุณแน่ใจไหมว่าต้องการล้างประวัติการพิมพ์ทั้งหมด ทั้งนี้ ระบบจะไม่ล้างงานพิมพ์ที่กำลังดำเนินอยู่</translation>
 <translation id="3456078764689556234">พิมพ์แล้ว <ph name="PRINTED_PAGES" /> จาก <ph name="TOTAL_PAGES" /> หน้า</translation>
 <translation id="3459509316159669723">การพิมพ์</translation>
 <translation id="3515615323037921860">งานพิมพ์</translation>
 <translation id="3527036260304016759">ไม่สำเร็จ - ข้อผิดพลาดที่ไม่รู้จัก</translation>
+<translation id="357889014807611375">Wi-Fi ที่มีการวัดปริมาณอินเทอร์เน็ต</translation>
 <translation id="360565022852130722">เครือข่าย WiFi มีการรักษาความปลอดภัยด้วยโปรโตคอล WEP 802.1x ที่ไม่รัดกุม</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> รีวิว)</translation>
+<translation id="3748026146096797577">ไม่ได้เชื่อมต่อ</translation>
 <translation id="3749289110408117711">ชื่อไฟล์</translation>
 <translation id="38114475217616659">ล้างประวัติทั้งหมด</translation>
 <translation id="3820172043799983114">PIN ไม่ถูกต้อง</translation>
@@ -93,6 +97,7 @@
 <translation id="4131410914670010031">ขาวดำ</translation>
 <translation id="4145784616224233563">ไฟร์วอลล์ HTTP</translation>
 <translation id="4170700058716978431">ไม่สำเร็จ</translation>
+<translation id="4176463684765177261">ปิดการทำงาน</translation>
 <translation id="4227825898293920515">รหัสผ่านจะหมดอายุในอีก <ph name="TIME" /></translation>
 <translation id="4238516577297848345">ไม่มีงานที่กำลังพิมพ์</translation>
 <translation id="4297501883039923494">หยุดพิมพ์ - ข้อผิดพลาดที่ไม่รู้จัก</translation>
@@ -102,7 +107,9 @@
 <translation id="4429881212383817840">ตั๋ว Kerberos กำลังจะหมดอายุ</translation>
 <translation id="445059817448385655">รหัสผ่านเดิม</translation>
 <translation id="4454245904991689773">สแกนแล้วบันทึกไว้ใน</translation>
+<translation id="4479639480957787382">อีเทอร์เน็ต</translation>
 <translation id="4483049906298469269">ใช้คำสั่ง ping กับเกตเวย์เครือข่ายที่ไม่ใช่ค่าเริ่มต้นไม่สำเร็จ</translation>
+<translation id="4511264077854731334">พอร์ทัล</translation>
 <translation id="4548483925627140043">ไม่พบสัญญาณ</translation>
 <translation id="455835558791489930">แบตเตอรี่ <ph name="CHARGE_VALUE" />mAh</translation>
 <translation id="458794348635939462">แก้ไขทุกโฮสต์ไม่สำเร็จ</translation>
@@ -127,6 +134,7 @@
 <translation id="498186245079027698">ตรวจสอบเครื่องสแกนแล้วลองอีกครั้ง ตรวจดูว่ามีพื้นที่ว่างในเครื่องเพียงพอสำหรับบันทึกไฟล์ที่สแกน</translation>
 <translation id="4985509611418653372">เรียกใช้</translation>
 <translation id="500920857929044050">หยุดการทดสอบ</translation>
+<translation id="5089810972385038852">รัฐ</translation>
 <translation id="5154917547274118687">หน่วยความจำ</translation>
 <translation id="5168185087976003268">ประสิทธิภาพของแบตเตอรี่</translation>
 <translation id="520299634122159966">ไม่มีเครื่องสแกนที่ใช้ได้</translation>
@@ -142,7 +150,9 @@
 <translation id="5333530671332546086">สถานะพอร์ทัลที่ไม่รู้จัก</translation>
 <translation id="5372659122375744710">เครือข่าย WiFi ไม่ปลอดภัย</translation>
 <translation id="5401938042319910061">เรียกใช้กิจวัตรทั้งหมด</translation>
+<translation id="5430931332414098647">การเชื่อมต่อ Wi-Fi ฮอตสปอตจากมือถือโดยอัตโนมัติ</translation>
 <translation id="5431318178759467895">สี</translation>
+<translation id="5431825016875453137">OpenVPN/L2TP</translation>
 <translation id="5457599981699367932">ท่องเว็บในฐานะผู้มาเยือน</translation>
 <translation id="54609108002486618">มีการจัดการ</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
@@ -153,6 +163,7 @@
 <translation id="5797428682393400134">สำเร็จ</translation>
 <translation id="5832805196449965646">เพิ่มบุคคล</translation>
 <translation id="5895138241574237353">ปิดแล้วเปิดอีกครั้ง</translation>
+<translation id="5916084858004523819">ห้ามใช้</translation>
 <translation id="5931523347251946569">ไม่พบไฟล์</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" /> เวอร์ชัน <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">ปิด</translation>
@@ -164,6 +175,7 @@
 <translation id="6106186594183574873">ป้อนรหัสผ่านเดิมเพื่อเปลี่ยนรหัสผ่านให้เสร็จ</translation>
 <translation id="6108689792487843350">เข้าถึงเกตเวย์ไม่ได้</translation>
 <translation id="6114428539405324828"><ph name="CURRENT" />GHz / <ph name="MAX" />GHz</translation>
+<translation id="6122191549521593678">ออนไลน์</translation>
 <translation id="6146993107019042706">ป้อนรหัสผ่านใหม่เพื่อเปลี่ยนรหัสผ่านให้เสร็จ</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">ดูข้อมูลเพิ่มเติม</translation>
@@ -188,7 +200,9 @@
 <translation id="6839141349259399400">หากเชื่อมต่อกับเครื่องสแกนไม่ได้</translation>
 <translation id="6853312040151791195">อัตราการคายประจุ</translation>
 <translation id="6898743098396957679">สแกนไม่สำเร็จ</translation>
+<translation id="6957231940976260713">ชื่อบริการ</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> จัดการอุปกรณ์นี้และมีสิทธิ์เข้าถึงกิจกรรมทั้งหมดของผู้ใช้ ซึ่งรวมถึงหน้าเว็บที่เข้าชม รหัสผ่าน และอีเมล</translation>
+<translation id="7143207342074048698">กำลังเชื่อมต่อ</translation>
 <translation id="714876143603641390">การเชื่อมต่อ LAN</translation>
 <translation id="7162487448488904999">แกลเลอรี</translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> นี้ได้รับการจัดการโดย <ph name="MANAGER" /> ผู้ดูแลระบบอาจกำหนดค่าอุปกรณ์จากระยะไกล</translation>
@@ -197,11 +211,13 @@
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{การสแกนเสร็จสมบูรณ์ สแกนแล้ว 1 หน้า}other{การสแกนเสร็จสมบูรณ์ สแกนแล้ว {NUMBER_OF_PAGES} หน้า}}</translation>
 <translation id="7441459999606975924">ความจุแบตเตอรี่จะลดลงเมื่อใช้ไปเรื่อยๆ</translation>
 <translation id="7469648432129124067">ตรวจพบพอร์ทัล</translation>
+<translation id="7490813197707563893">ที่อยู่ MAC</translation>
 <translation id="7561454561030345039">การดำเนินการนี้จัดการโดยผู้ดูแลระบบ</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">เวลาในการตอบสนองของ HTTPS สูง</translation>
 <translation id="7658239707568436148">ยกเลิก</translation>
 <translation id="7690294790491645610">ยืนยันรหัสผ่านใหม่</translation>
+<translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">จำนวนรอบ</translation>
 <translation id="7732651821766520760">การทดสอบ <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">สถานะ</translation>
@@ -213,6 +229,7 @@
 <translation id="808894953321890993">เปลี่ยนรหัสผ่าน</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8160445423316272678">วางเอกสารบนเครื่องสแกนและเลือก<ph name="SPAN_BEGIN" />สแกน<ph name="SPAN_END" />เพื่อเริ่มต้น</translation>
+<translation id="8206859287963243715">โทรศัพท์มือถือ</translation>
 <translation id="8208861521865154048">สิทธิประโยชน์</translation>
 <translation id="8230672074305416752">ใช้คำสั่ง ping กับเกตเวย์เครือข่ายเริ่มต้นไม่สำเร็จ</translation>
 <translation id="8294431847097064396">แหล่งที่มา</translation>
@@ -224,6 +241,7 @@
 <translation id="8398927464629426868">อัตราการชาร์จหรือการคายประจุของอุปกรณ์ในปัจจุบัน</translation>
 <translation id="8475690821716466388">เครือข่าย WiFi มีการรักษาความปลอดภัยด้วยโปรโตคอล WEP PSK ที่ไม่รัดกุม</translation>
 <translation id="8477551185774834963">เวลาในการตอบสนอง DNS สูงกว่าเกณฑ์ที่ยอมรับได้เล็กน้อย</translation>
+<translation id="8576249514688522074">ยังไม่ได้เริ่มต้น</translation>
 <translation id="871560550817059752">ไม่สำเร็จ - หมึกหมด</translation>
 <translation id="8723108084122415655">เครือข่ายที่ไม่ใช่ค่าเริ่มต้นสูงกว่าเกณฑ์เวลาในการตอบสนอง</translation>
 <translation id="8726019395068607495">หยุดพิมพ์ - ฝาเครื่องเปิดอยู่</translation>
@@ -231,14 +249,18 @@
 <translation id="8747900814994928677">ยืนยันการเปลี่ยนแปลง</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">ค่าเริ่มต้น</translation>
+<translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">ขอความช่วยเหลือ</translation>
 <translation id="8881098542468797602">การทดสอบสำเร็จ</translation>
+<translation id="8898840733695078011">ความแรงสัญญาณ</translation>
 <translation id="8910721771319628100">เครือข่ายเริ่มต้นสูงกว่าเกณฑ์เวลาในการตอบสนอง</translation>
 <translation id="8919837981463578619">ไม่สำเร็จ - ไม่มีถาด</translation>
 <translation id="8928727111548978589">ไม่สำเร็จ - กระดาษหมด</translation>
+<translation id="8930622219860340959">ไร้สาย</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> ลองได้อีก <ph name="ATTEMPTS_LEFT" /> ครั้ง</translation>
 <translation id="8968751544471797276">อัตราการชาร์จ</translation>
 <translation id="8970109610781093811">ทำงานอีกครั้ง</translation>
+<translation id="9074739597929991885">บลูทูธ</translation>
 <translation id="9088306295921699330">การใช้งานปัจจุบัน</translation>
 <translation id="910415269708673980">รีเฟรชตั๋วสำหรับ <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">กำลังสแกนหน้า <ph name="PAGE_NUMBER" /></translation>

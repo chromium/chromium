@@ -205,6 +205,7 @@
 <translation id="2878884018241093801">अलीकडील कोणतेही आयटम नाहीत</translation>
 <translation id="2903844815300039659"><ph name="NAME" />, <ph name="STRENGTH" /> शी कनेक्ट केलेले</translation>
 <translation id="2914580577416829331">स्क्रीन कॅप्चर</translation>
+<translation id="2941112035454246133">निम्न</translation>
 <translation id="2942350706960889382">डॉक केलेले मॅग्निफायर</translation>
 <translation id="2942516765047364088">शेल्फ स्थिती</translation>
 <translation id="2946119680249604491">कनेक्शन जोडा</translation>
@@ -217,6 +218,7 @@
 <translation id="3000461861112256445">मोनो ऑडिओ</translation>
 <translation id="3009178788565917040">आउटपुट</translation>
 <translation id="3033545621352269033">सुरू</translation>
+<translation id="3036649622769666520">फाइल उघडा</translation>
 <translation id="3038571455154067151">साइन इन करण्यासाठी, तुमचा Family Link पालक ॲक्सेस कोड एंटर करा</translation>
 <translation id="3045488863354895414">शुभ दुपार,</translation>
 <translation id="3051128274746680507">तुमचे व्यवस्थापित वापरकर्ता प्रोफाइल लवकरच काढले जाईल. अधिक जाणून घेण्यासाठी साइन इन करा.</translation>
@@ -367,7 +369,6 @@
 <translation id="4321776623976362024">तुम्ही उच्च कॉंट्रास्टसाठी कीबोर्ड शॉर्टकट दाबला आहे. तुम्हाला ते सुरू करायचे आहे का?</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4338109981321384717">भिंग</translation>
-<translation id="4350065043422286972">पिन केलेल्‍या</translation>
 <translation id="4351433414020964307">साहाय्यक लोड होत आहे...</translation>
 <translation id="4356930093361201197">हाय-काँट्रास्ट मोड</translation>
 <translation id="4371348193907997655">कास्ट करा सेटिंग्ज</translation>
@@ -387,7 +388,6 @@
 <translation id="4479639480957787382">इथरनेट</translation>
 <translation id="4481530544597605423">जोडणी वेगळी केलेली डिव्हाइस</translation>
 <translation id="4485060137115666462">राइट क्लिक केल्याने किंवा दाबून ठेवल्याने, Assistant तुमच्या निवडीसाठी तुम्हाला व्याख्या, भाषांतर किंवा एकक रूपांतर यांसारखी माहिती दाखवतो.</translation>
-<translation id="4488735711456074171">तुमचा फोन ऑनलाइन नाही असे दिसते आणि आम्ही त्याच्याशी कनेक्ट करू शकत नाही.</translation>
 <translation id="4505050298327493054">ॲक्टिव्ह डेस्क.</translation>
 <translation id="4513946894732546136">अभिप्राय</translation>
 <translation id="4527045527269911712">"<ph name="DEVICE_NAME" />" Bluetooth डिव्हाइस जोडण्यासाठी परवानगी घेऊ इच्छिते.</translation>
@@ -448,7 +448,6 @@
 <translation id="4969092041573468113"><ph name="HOURS" />ता <ph name="MINUTES" />मि <ph name="SECONDS" />से</translation>
 <translation id="4975771730019223894">अ‍ॅप बॅजिंग</translation>
 <translation id="5003993274120026347">पुढील वाक्य</translation>
-<translation id="5019169674188023236">तुमच्या <ph name="DEVICE_TYPE" /> वर तुमचे ब्लूटूथ किंवा वाय-फाय बंद आहे असे दिसते. कृपया फोन हब वापरण्यासाठी तुमचे कनेक्शन तपासा.</translation>
 <translation id="5030687792513154421">वेळ संपली</translation>
 <translation id="5033299697334913360">फुल स्क्रीन कॅप्चर करण्यासाठी कुठेही क्लिक करा</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> नवीन फोनशी कनेक्ट केले</translation>
@@ -581,7 +580,6 @@
 <translation id="6376931439017688372">ब्लूटूथ सुरू आहे</translation>
 <translation id="6381109794406942707">डिव्हाइस अनलॉक करण्यासाठी, तुमचा पिन एंटर करा.</translation>
 <translation id="639644700271529076">CAPS LOCK बंद आहे</translation>
-<translation id="6398771186477608158">तुमचा फोन जवळपास असल्‍याची आणि त्यावरील ब्लूटूथ व वाय-फाय सुरू असल्याची खात्री करा.</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">सर्व सूचना साफ करा</translation>
@@ -731,7 +729,6 @@
 <translation id="7780159184141939021">स्क्रीन फिरवा</translation>
 <translation id="7796353162336583443">नोंद करून घेण्यासाठी, स्क्रीनशॉट घेण्यासाठी, Google असिस्टंट, लेझर पॉइंटर किंवा भिंग वापरण्यासाठी शेल्फवरील स्टायलस बटणावर टॅप करा.</translation>
 <translation id="7798302898096527229">रद्द करण्यासाठी Search किंवा Shift दाबा.</translation>
-<translation id="781126011916719498">तुमच्या महत्त्वाच्या फाइल झटपट अ‍ॅक्सेस करा. फाइल पिन करण्यासाठी त्यावर राइट क्लिक करा किंवा स्पर्श करा आणि धरून ठेवा.</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> आणि <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">मजबूत सिग्नल</translation>
 <translation id="7837740436429729974">वेळ संपली</translation>
@@ -862,7 +859,6 @@
 <translation id="8877788021141246043">रिमाइंडर सेट करा</translation>
 <translation id="8878886163241303700">स्क्रीन विस्तृत करत आहे</translation>
 <translation id="8883473964424809116">Google Assistant सेटिंग्ज उघडण्‍यासाठी क्‍लिक करा.</translation>
-<translation id="8894122120026866664">तुमचा फोन आढळला नाही</translation>
 <translation id="890616557918890486">स्रोत बदला</translation>
 <translation id="8909138438987180327">बॅटरी <ph name="PERCENTAGE" /> टक्के आहे.</translation>
 <translation id="8913384980486163186">थीम असलेले (डीफॉल्ट)</translation>
@@ -889,7 +885,6 @@
 <translation id="9084606467167974638">मेनूची जागा टॉगल करा</translation>
 <translation id="9089416786594320554">इनपुट पद्धती</translation>
 <translation id="9091626656156419976"><ph name="DISPLAY_NAME" /> डिस्प्ले काढले</translation>
-<translation id="9092749890156285613">अलीकडील स्क्रीन कॅप्चर आणि डाउनलोड</translation>
 <translation id="9098969848082897657">फोन सायलंट करा</translation>
 <translation id="9151726767154816831">अपडेटासाठी रीस्टार्ट करा आणि powerwash करा</translation>
 <translation id="9166331175924255663">Nearby सह शेअरिंग चा उच्च दृश्यमानता मोड टॉगल करा.</translation>

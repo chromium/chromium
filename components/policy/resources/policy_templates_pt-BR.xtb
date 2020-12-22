@@ -348,7 +348,7 @@ Se você desativar a política, essa rolagem será desativada.</translation>
           Se você definir esta política, o usuário não poderá mudá-la ou substituí-la.</translation>
 <translation id="1502843533062797703">Ativar bloqueio de injeção de software de terceiros</translation>
 <translation id="1506017854924185821">Disponibilidade do seletor de perfil na inicialização</translation>
-<translation id="1509377996969000672">A definição da política fornece configurações para impressoras corporativas vinculadas a dispositivos. O formato corresponde ao dicionário <ph name="NATIVE_PRINTERS_POLICY_NAME" />, com campos extras "id" ou "guid" obrigatórios para cada impressora para inclusão na lista de bloqueio ou de permissão. O arquivo não pode exceder 5 MB e precisa estar no formato JSON. Um arquivo contendo 21.000 impressoras é codificado como um arquivo de 5 MB. O hash criptográfico ajuda a verificar a integridade do download. O download do arquivo é feito com armazenamento em cache e é refeito quando o URL ou o hash mudam. O <ph name="PRODUCT_OS_NAME" /> faz o download do arquivo para as configurações de impressora e disponibiliza as impressoras com <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> e <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />.
+<translation id="1509377996969000672">A definição da política fornece configurações para impressoras corporativas vinculadas a dispositivos. O formato corresponde ao dicionário <ph name="NATIVE_PRINTERS_POLICY_NAME" />, com campos extras "id" ou "guid" obrigatórios para cada impressora para inclusão na lista de bloqueio ou de permissão. O arquivo não pode exceder 5 MB e precisa estar no formato JSON. Um arquivo contendo 21.000 impressoras é codificado como um arquivo de 5 MB. O hash criptográfico ajuda a verificar a integridade do download. O download do arquivo é feito com armazenamento em cache e é refeito quando o URL ou o hash mudam. O <ph name="PRODUCT_OS_NAME" /> faz o download do arquivo para as configurações de impressora e disponibiliza as impressoras de acordo com <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> e <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />.
 
       Esta política:
 
@@ -1214,13 +1214,6 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
       Se a política for definida como "Desativada", o <ph name="PRODUCT_NAME" /> só poderá usar esses hosts se eles estiverem instalados no nível do sistema.</translation>
 <translation id="2753637905605932878">Restringir o alcance das portas UDP locais usadas por WebRTC</translation>
 <translation id="2757054304033424106">Tipos de extensões/aplicativos que podem ser instalados</translation>
-<translation id="2758689548159678032">Quando ativado, o recurso "<ph name="PRODUCT_NAME" />" enviará cabeçalhos de solicitação granulares fornecendo informações sobre o ambiente e o navegador do usuário.
-
-      Esse é um recurso complementar, mas os novos cabeçalhos podem corromper alguns sites que restringem os caracteres contidos em algumas solicitações.
-
-      Se esta política for ativada ou não for definida, o recurso "<ph name="PRODUCT_NAME" />" será ativado. Se a política for desativada, o recurso ficará indisponível.
-
-      Esta política visa a adaptação a curto prazo e será removida no Chrome 88.</translation>
 <translation id="2759224876420453487">Controla o comportamento do usuário em uma sessão de diversos perfis</translation>
 <translation id="2761483219396643566">Intervalo da advertência de inatividade no funcionamento com energia da bateria</translation>
 <translation id="2769952903507981510">Configurar o nome de domínio obrigatório para hosts de acesso remoto</translation>
@@ -1648,7 +1641,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 
       O download de PPDs é feito depois que a impressora é usada e, com frequência, os PPDs usados são armazenados em cache. Esta política não afeta a capacidade dos usuários de configurar impressoras em dispositivos individuais.
 
-      Observação: para dispositivos gerenciados <ph name="MS_AD_NAME" />, esta política é compatível com a expansão de <ph name="MACHINE_NAME_VARIABLE" /> para o nome de máquina do <ph name="MS_AD_NAME" /> ou uma substring correspondente. Por exemplo, se o nome de máquina for <ph name="MACHINE_NAME_EXAMPLE" />, <ph name="MACHINE_NAME_VARIABLE_EXAMPLE" /> será substituído pelos quatro caracteres que começam depois da sexta posição, ou seja, <ph name="MACHINE_NAME_PART_EXAMPLE" />. A posição se baseia em zero.
+      Observação: para dispositivos gerenciados com o <ph name="MS_AD_NAME" />, esta política é compatível com a expansão de <ph name="MACHINE_NAME_VARIABLE" /> para o nome de máquina do <ph name="MS_AD_NAME" /> ou uma substring correspondente. Por exemplo, se o nome de máquina for <ph name="MACHINE_NAME_EXAMPLE" />, <ph name="MACHINE_NAME_VARIABLE_EXAMPLE" /> será substituído pelos quatro caracteres que começam depois da sexta posição, ou seja, <ph name="MACHINE_NAME_PART_EXAMPLE" />. A posição se baseia em zero.
 
       Esta política foi suspensa. Use a <ph name="PRINTERS_POLICY_NAME" />.</translation>
 <translation id="3295118731207421797">Esta política permite que um administrador especifique que uma página pode enviar solicitações XHR síncronas durante a dispensa de páginas.
@@ -1801,7 +1794,7 @@ Se esta política for definida como falsa, o <ph name="PRODUCT_NAME" /> não usa
 
           Se esta política não for definida, o recurso "Selecionar para ouvir" ficará inicialmente desativado na tela de login, mas poderá ser ativado pelo usuário a qualquer momento.</translation>
 <translation id="348495353354674884">Ativar teclado virtual</translation>
-<translation id="3485200437120267231">Desativar intercepção de login</translation>
+<translation id="3485200437120267231">Desativar interceptação de login</translation>
 <translation id="3492834335089638487">Essa política controla, no lugar do dispositivo, o uso de apps Android de fontes não confiáveis (diferentes da Google Play Store).
 
       Se o valor da política não for definido, a funcionalidade será tratada como não permitida.
@@ -1915,11 +1908,11 @@ Se esta política for definida como falsa, o <ph name="PRODUCT_NAME" /> não usa
 <translation id="3660562134618097814">Transferir cookies do IDP de SAML durante o login</translation>
 <translation id="3685979383016152590">A definição da política designa qual política de acesso se aplica à configuração em massa de impressoras, controlando quais impressoras da <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> estão disponíveis para os usuários.
 
-      * <ph name="PRINTERS_BLOCKLIST" /> (valor 0) usa <ph name="PRINTERS_BULK_BLOCKLIST" /> para restringir o acesso às impressoras especificadas
+      * <ph name="PRINTERS_BLOCKLIST" /> (valor 0) usa <ph name="PRINTERS_BULK_BLOCKLIST" /> para restringir o acesso às impressoras especificadas.
 
-      * <ph name="PRINTERS_ALLOWLIST" /> (valor 1) usa <ph name="PRINTERS_BULK_ALLOWLIST" /> para designar apenas as impressoras que são selecionáveis
+      * <ph name="PRINTERS_ALLOWLIST" /> (valor 1) usa <ph name="PRINTERS_BULK_ALLOWLIST" /> para designar apenas as impressoras que são selecionáveis.
 
-      * <ph name="PRINTERS_ALLOW_ALL" /> (valor 2) exibe todas as impressoras
+      * <ph name="PRINTERS_ALLOW_ALL" /> (valor 2) exibe todas as impressoras.
 
       Se a política não é definida, <ph name="PRINTERS_ALLOW_ALL" /> é colocada em uso.</translation>
 <translation id="3695706037816556327">Ação na remoção do token de segurança (por exemplo, um cartão inteligente) do <ph name="PRODUCT_OS_NAME" />.</translation>
@@ -1983,7 +1976,7 @@ Se esta política for definida como falsa, o <ph name="PRODUCT_NAME" /> não usa
 
       O download de PPDs é feito depois que a impressora é usada e, com frequência, os PPDs usados são armazenados em cache. Esta política não afeta a capacidade dos usuários de configurar impressoras em dispositivos individuais.
 
-      Observação: para dispositivos gerenciados <ph name="MS_AD_NAME" />, esta política é compatível com a expansão de <ph name="MACHINE_NAME_VARIABLE" /> para o nome de máquina do <ph name="MS_AD_NAME" /> ou uma substring correspondente. Por exemplo, se o nome de máquina for <ph name="MACHINE_NAME_EXAMPLE" />, <ph name="MACHINE_NAME_VARIABLE_EXAMPLE" /> será substituído pelos quatro caracteres que começam depois da sexta posição, ou seja, <ph name="MACHINE_NAME_PART_EXAMPLE" />. A posição se baseia em zero.</translation>
+      Observação: para dispositivos gerenciados com o <ph name="MS_AD_NAME" />, esta política é compatível com a expansão de <ph name="MACHINE_NAME_VARIABLE" /> para o nome de máquina do <ph name="MS_AD_NAME" /> ou uma substring correspondente. Por exemplo, se o nome de máquina for <ph name="MACHINE_NAME_EXAMPLE" />, <ph name="MACHINE_NAME_VARIABLE_EXAMPLE" /> será substituído pelos quatro caracteres que começam depois da sexta posição, ou seja, <ph name="MACHINE_NAME_PART_EXAMPLE" />. A posição se baseia em zero.</translation>
 <translation id="377044054160169374">Aplicação de intervenção de experiência ofensiva</translation>
 <translation id="3778689139323007309">Realizar verificações de revogação para certificados de servidor validados com assinatura dos certificados de CA locais</translation>
 <translation id="3780152581321609624">Incluir porta não padrão no SPN Kerberos</translation>
@@ -2184,6 +2177,13 @@ Se esta política for definida como falsa, o <ph name="PRODUCT_NAME" /> não usa
       Se a política for definida como AllowMigration, a migração para criptografia ext4 será oferecida aos usuários com diretórios principais ecryptfs conforme necessário. Atualmente, isso ocorre quando o Android N fica disponível no dispositivo.
 
       Essa política não se aplica aos aplicativos de quiosque, que são migrados automaticamente. Se a política não for definida, o dispositivo agirá como se DisallowArc tivesse sido escolhida.</translation>
+<translation id="401650904918322517">Esta política está suspensa e será removida na versão 89 do <ph name="PRODUCT_OS_NAME" />.
+
+      Ela concede ao recurso "Respostas rápidas" permissão para acessar conteúdos selecionados e enviar informações ao servidor.
+
+      Se ela estiver ativada, o "Respostas rápidas" poderá acessar conteúdos selecionados.
+      Se estiver desativada, o "Respostas rápidas" não poderá acessar conteúdos selecionados.
+      Se a política não for definida, os usuários poderão decidir se concedem ou não permissão para o "Respostas rápidas" acessar conteúdos selecionados.</translation>
 <translation id="4020682745012723568">Os cookies transferidos para o perfil do usuário não podem ser acessados por apps Android.</translation>
 <translation id="4025500273782820766">Permitir que os usuários selecionem "Sempre permitir" em uma caixa de diálogo de protocolo externo para pular as solicitações de confirmação futuras</translation>
 <translation id="402759845255257575">Não permitir que nenhum site execute o JavaScript</translation>
@@ -2678,7 +2678,7 @@ Esta política afeta apenas os usuários que autenticam usando SAML.</translatio
 <translation id="4919122295221518724">Ativar tratamento mais rigoroso para conteúdo misto</translation>
 <translation id="4920367374739265095">A definição da política designa qual política de acesso se aplica à configuração em massa de impressoras, controlando quais impressoras da <ph name="DEVICE_PRINTERS_POLICY_NAME" /> estão disponíveis para os usuários.
 
-      * <ph name="PRINTERS_BLACKLIST" /> (valor 0), <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> pode restringir o acesso às impressoras especificadas
+      * <ph name="PRINTERS_BLACKLIST" /> (valor 0), <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> pode restringir o acesso às impressoras especificadas.
 
       * Se definida como <ph name="PRINTERS_WHITELIST" /> (valor 1), <ph name="DEVICE_PRINTERS_ALLOWLIST_POLCY_NAME" /> designa apenas as impressoras que são selecionáveis.
 
@@ -3114,7 +3114,7 @@ Esta política afeta apenas os usuários que autenticam usando SAML.</translatio
 
       O usuário pode acionar uma caixa de diálogo de importação em que a caixa de seleção de senhas salvas estará marcada ou desmarcada de acordo com o valor da política.</translation>
 <translation id="5457924070961220141">Permite configurar o processador HTML padrão quando <ph name="PRODUCT_FRAME_NAME" /> estiver instalado. A configuração padrão utilizada quando esta política é deixada sem definição é permitir que o navegador host faça o processamento, mas você pode, opcionalmente, substituí-la para que <ph name="PRODUCT_FRAME_NAME" /> processe as páginas HTML por padrão.</translation>
-<translation id="545817252640069915">Ativar intercepção de login</translation>
+<translation id="545817252640069915">Ativar interceptação de login</translation>
 <translation id="5460797984317417682">Permitir alertas de tela cheia</translation>
 <translation id="5464816904705580310">Definir configurações para usuários gerenciados.</translation>
 <translation id="5466596281866046569">Relatar informações sobre aplicativos</translation>
@@ -3967,6 +3967,13 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 <translation id="6789422336869764846">Se a política for definida como "Ativada" ou não for definida, o estado da chave do desenvolvedor dos dispositivos registrados durante a inicialização será informado.
 
       Se a política for definida como "Desativada", o estado da chave do desenvolvedor dos dispositivos registrados não será informado.</translation>
+<translation id="6793420507738858152">Quando ativado, o recurso "<ph name="PRODUCT_NAME" />" enviará cabeçalhos de solicitação granulares fornecendo informações sobre o ambiente e o navegador do usuário.
+
+      Esse é um recurso complementar, mas os novos cabeçalhos podem corromper alguns sites que restringem os caracteres contidos em algumas solicitações.
+
+      Se esta política for ativada ou não for definida, o recurso "<ph name="PRODUCT_NAME" />" será ativado. Se ela for desativada, o recurso ficará indisponível.
+
+      Esta política visa objetivos de adaptação a curto prazo e estará disponível pelo menos até a versão 91 do Chrome.</translation>
 <translation id="6795485990775913659">Permitir impressão apenas sem PIN</translation>
 <translation id="6800181452282128474">Não consultar servidores Quirks</translation>
 <translation id="6810445994095397827">Bloquear o JavaScript nestes sites</translation>
@@ -4103,7 +4110,7 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
       Se a política for ativada, cada origem nomeada de uma lista separada por vírgulas será executada no próprio processo. Isso também isolará as origens nomeadas por subdomínios. Por exemplo, a especificação de https://example.com/ também resultará no isolamento de https://foo.example.com/ como parte do site https://example.com/.
       Se a política não for configurada ou estiver desativada, as configurações padrão de "isolamento de sites" da plataforma serão usadas para a tela de login.
       </translation>
-<translation id="6949867264289339206">A definição da política fornece configurações para impressoras corporativas vinculadas a dispositivos. O formato corresponde ao dicionário <ph name="PRINTERS_POLICY_NAME" />, com campos extras "id" ou "guid" obrigatórios para cada impressora para inclusão na lista de bloqueio ou de permissão. O arquivo não pode exceder 5 MB e precisa estar no formato JSON. Um arquivo contendo 21.000 impressoras é codificado como um arquivo de 5 MB. O hash criptográfico ajuda a verificar a integridade do download. O download do arquivo é feito com armazenamento em cache e é refeito quando o URL ou o hash mudam. O <ph name="PRODUCT_OS_NAME" /> faz o download do arquivo para as configurações de impressora e disponibiliza as impressoras com <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> e <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />.
+<translation id="6949867264289339206">A definição da política fornece configurações para impressoras corporativas vinculadas a dispositivos. O formato corresponde ao dicionário <ph name="PRINTERS_POLICY_NAME" />, com campos extras "id" ou "guid" obrigatórios para cada impressora para inclusão na lista de bloqueio ou de permissão. O arquivo não pode exceder 5 MB e precisa estar no formato JSON. Um arquivo contendo 21.000 impressoras é codificado como um arquivo de 5 MB. O hash criptográfico ajuda a verificar a integridade do download. O download do arquivo é feito com armazenamento em cache e é refeito quando o URL ou o hash mudam. O <ph name="PRODUCT_OS_NAME" /> faz o download do arquivo para as configurações de impressora e disponibiliza as impressoras de acordo com <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> e <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />.
 
       Esta política:
 
@@ -4418,7 +4425,7 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
       Se esta política não for definida, o padrão será permitido tanto para usuários gerenciados por empresas quanto para usuários não gerenciados.</translation>
 <translation id="7372831798009983116">Ativar o recurso de acessibilidade de clique automático</translation>
 <translation id="7373200034079131670">Reinicializar quando o usuário sair se o Android ou uma VM tiver sido iniciada.</translation>
-<translation id="7373680616478819439">Esta configuração ativa ou desativa a intercepção de login.
+<translation id="7373680616478819439">Esta configuração ativa ou desativa a interceptação de login.
 
       Se esta política não é configurada ou é definida como "Verdadeira", a caixa de diálogo de interceptação de login é acionada quando uma Conta do Google é adicionada na Web, e o usuário pode se beneficiar da transferência dessa conta para outro perfil (novo ou existente).
 
@@ -4610,6 +4617,9 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
       Se você definir a política, os usuários não poderão mudá-la no <ph name="PRODUCT_NAME" />. Se ela não for definida, o provedor de pesquisa padrão ficará ativado e o usuário poderá definir a lista de provedores de pesquisa.
 
       No <ph name="MS_WIN_NAME" />, essa funcionalidade está disponível apenas em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, executado no Windows 10 Pro, ou está registrada no Gerenciamento de nuvem do navegador Chrome. No <ph name="MAC_OS_NAME" />, essa funcionalidade está disponível apenas em instâncias gerenciadas por MDM ou associadas a um domínio via MCX.</translation>
+<translation id="7669630878711068277">Se a política for definida como "Ativada" ou deixada sem definição, os usuários poderão imprimir com o <ph name="PRODUCT_NAME" /> e não poderão mudar esta configuração.
+
+      Se a política for definida como "Desativada", os usuários não poderão imprimir usando o <ph name="PRODUCT_NAME" />. A impressão ficará desativada no menu de três pontos, nas extensões e nos aplicativos JavaScript.</translation>
 <translation id="7673194325208122247">Período (milissegundos)</translation>
 <translation id="7677220829878081413">
       Esta política, quando definida como ArcSession, força o dispositivo a reinicializar depois que o usuário sai, se o Android tiver sido iniciado.
@@ -4707,7 +4717,7 @@ Se esta política não for definida, o renderizador padrão será usado para tod
       Se a política for definida como "Desativada", não será solicitada uma senha aos usuários para desbloquear o dispositivo no modo de suspensão.
 
       Se a política não for definida, os usuários poderão escolher se querem receber uma solicitação de senha para desbloquear o dispositivo do modo de suspensão.</translation>
-<translation id="7784062550705119230">Se <ph name="PRINTERS_ALLOWLIST" /> for escolhida para <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, a definição de <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> especificará quais impressoras os usuários podem usar. Apenas as impressoras com IDs correspondentes aos valores desta política estão disponíveis para os usuários. Os IDs precisam corresponder aos campos <ph name="ID_FIELD" /> ou <ph name="GUID_FIELD" /> no arquivo especificado na <ph name="DEVICE_PRINTERS_POLICY_NAME" /></translation>
+<translation id="7784062550705119230">Se <ph name="PRINTERS_ALLOWLIST" /> for escolhida para <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, a definição de <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> especificará quais impressoras os usuários podem usar. Apenas as impressoras com IDs correspondentes aos valores desta política estão disponíveis para os usuários. Os IDs precisam corresponder aos campos <ph name="ID_FIELD" /> ou <ph name="GUID_FIELD" /> no arquivo especificado na <ph name="DEVICE_PRINTERS_POLICY_NAME" />.</translation>
 <translation id="7788511847830146438">Por perfil</translation>
 <translation id="780629758750905699">Permitir adicionar contas do Family Link no dispositivo</translation>
 <translation id="7807139251387225825">Lista de tipos a serem excluídos da sincronização</translation>
@@ -4934,6 +4944,10 @@ Se esta política for definida como falsa, a tela de privacidade será desativad
 Se a política for definida, o usuário não poderá modificar o valor quando a tela de login for exibida.
 
 Se a política não for definida, a tela de privacidade ficará inicialmente desativada, mas ainda poderá ser controlada pelo usuário quando a tela de login for exibida.</translation>
+<translation id="8147427717998252789">Se a política for definida, o valor de retorno da API Managed Configuration será definido para origens específicas.
+
+      A API Managed Configuration é uma configuração de chave-valor que pode ser acessada pela chamada de JavaScript navigator.device.getManagedConfiguration(). Ela só está disponível em origens correspondentes a aplicativos da Web de instalação forçada via <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />.
+     </translation>
 <translation id="815061180603915310">Se estiver ativada, esta política forçará a alteração do perfil para o modo temporário. Se esta política for especificada como uma política de SO (por exemplo GPO no Windows) ela será aplicada a todos os perfis no sistema. Se a política for definida como uma política de nuvem, ela será aplicada apenas a um perfil acessado com uma conta gerenciada.
 
       Neste modo, os dados de perfil são mantidos no disco apenas durante a sessão do usuário. Recursos como o histórico do navegador, as extensões e as informações nelas contidas, os dados da Web, como cookies e bancos de dados não são mantidos após o navegador ser fechado. No entanto, isso não impede que o usuário faça o download de dados para o disco manualmente, salve páginas ou as imprima.
@@ -5081,9 +5095,7 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 
       Se a <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" /> não for definida, as solicitações de pesquisa de imagem serão enviadas usando o método get.</translation>
 <translation id="8314214821702356835">Permite que os usuários executem mídia enquanto o dispositivo estiver bloqueado.</translation>
-<translation id="8316913402499361923">Se a política for definida como "Ativada" ou deixada sem definição, os usuários poderão imprimir com o <ph name="PRODUCT_NAME" /> e não poderão mudar esta configuração.
-
-      Se a política for definida como "Desativada", os usuários não poderão imprimir usando o <ph name="PRODUCT_NAME" />. A impressão está desativada no menu de ferramentas, nas extensões e nos aplicativos JavaScript. Só é possível imprimir usando plug-ins que ignoram o <ph name="PRODUCT_NAME" /> enquanto imprimem.</translation>
+<translation id="8319678975002906774">Define valores de configuração gerenciada para sites de origens específicas</translation>
 <translation id="8320149248919453401">Modo de carregamento da bateria</translation>
 <translation id="8329984337216493753">Esta política é ativa somente no modo de varejo. Quando o DeviceIdleLogoutTimeout for especificado, esta política definirá a duração da caixa de aviso com contagem regressiva que será mostrada ao usuário antes da desconexão. O valor da política deve ser especificado em milésimos de segundos.</translation>
 <translation id="8331479227794770304">Ativar tecla aderente</translation>
@@ -5299,11 +5311,6 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 <translation id="8676959842615154675">Se a política for definida como "Ativada", o host de acesso remoto fará a comparação entre o nome do usuário local associado com o host e o nome da Conta do Google registrada como proprietária do host ("joaosilva", se o host for propriedade de "joaosilva@exemplo.com"). Este host não será iniciado se o nome do proprietário do host for diferente do nome do usuário local associado com o host. Use a política <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" /> para garantir que a Conta do Google do proprietário seja associada com um domínio específico.
 
       Se a política for definida como "Desativada" ou deixada sem definição, o host de acesso remoto poderá ser associado com qualquer usuário local.</translation>
-<translation id="8680488165461049026">Essa política concede ao "Respostas rápidas" permissão para acessar conteúdos selecionados e enviar informações ao servidor.
-
-      Se ela estiver ativada, o "Respostas rápidas" poderá acessar conteúdos selecionados.
-      Se estiver desativada, o "Respostas rápidas" não poderá acessar conteúdos selecionados.
-      Se a política não for definida, os usuários poderão decidir se concedem ou não permissão para o "Respostas rápidas" acessar conteúdos selecionados.</translation>
 <translation id="8685024486845674965">O aviso de proteção de senha é acionado pela reutilização da senha</translation>
 <translation id="8685680544554917389">Se a política for definida como verdadeira, o <ph name="PRODUCT_NAME" /> poderá tocar mídia automaticamente. Se a política for definida como falsa, o <ph name="PRODUCT_NAME" /> será impedido de tocar mídia automaticamente.
 

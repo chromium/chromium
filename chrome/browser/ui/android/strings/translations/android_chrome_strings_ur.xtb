@@ -12,6 +12,7 @@
 <translation id="10614374240317010">کبھی بھی محفوظ نہیں کیا ہوا</translation>
 <translation id="1067922213147265141">‏دیگر Google سروسز</translation>
 <translation id="107147699690128016">اگر آپ فائل ایکسٹینشن تبدیل کرتے ہیں تو فائل مختلف ایپلیکیشن میں کھل سکتی ہے اور ممکنہ طور پر آپ کے آلہ کے لیے نقصان دہ ہو سکتی ہے۔</translation>
+<translation id="1094515529340404628">ویب کراؤڈ اور اشتہار کی پیمائش</translation>
 <translation id="1100066534610197918">گروپ میں نئے ٹیب میں کھولیں</translation>
 <translation id="1105960400813249514">اسکرین کیپچر</translation>
 <translation id="1111673857033749125">آپ کے دیگر آلات پر محفوظ کردہ بُک مارکس یہاں ظاہر ہوں گے۔</translation>
@@ -227,6 +228,7 @@
 <translation id="2536728043171574184">اس صفحہ کی ایک آف لائن کاپی دیکھی جا رہی ہے</translation>
 <translation id="2537178555904266562">پاس ورڈز کی مطابقت پذیری کرنے میں خرابی</translation>
 <translation id="2546283357679194313">کوکیز اور سائٹ ڈیٹا</translation>
+<translation id="2562889244313180139">اپنی ویب سائٹس اور ایپس کو اجازت دیں تاکہ وہ ناقابل شناخت متبادل کا استعمال کر کے آپ کو مزید متعلقہ تجربہ فراہم کر سکیں۔</translation>
 <translation id="2567385386134582609">تصویر</translation>
 <translation id="2571711316400087311">‏دیگر زبانوں میں صفحات Google Translate کو بھیجنے کی پیشکش کریں</translation>
 <translation id="2581165646603367611">‏یہ سائٹس کی کوکیز، کیش اور اس دیگر ڈیٹا کو صاف کر دے گی جسے Chrome اہم نہیں خیال کرتا ہے۔</translation>
@@ -714,6 +716,7 @@
 <translation id="6005538289190791541">تجویز کردہ پاس ورڈ</translation>
 <translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{آپ کے پاس <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> صفحہ ہے}other{آپ کے پاس <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> صفحات ہیں}}</translation>
 <translation id="6014293228235665243">بغیر پڑھے ہوئے</translation>
+<translation id="6018309500671889594">مشتہرین کو ناقابل شناخت معلومات کا استعمال کر کے تشہیری مہمات کا مطالعہ کرنے کی اجازت دیں۔</translation>
 <translation id="6036057147555329831">‏اضافی ICU</translation>
 <translation id="6039379616847168523">اگلے ٹیب پر جائیں</translation>
 <translation id="6040143037577758943">بند کریں</translation>
@@ -922,6 +925,7 @@
 <translation id="7403691278183511381">‏Chrome کے پہلی بار چلانے کا تجربہ</translation>
 <translation id="741204030948306876">ہاں، میں شامل ہوں</translation>
 <translation id="7413229368719586778">تاریخ آغاز <ph name="DATE" /></translation>
+<translation id="7416941666639889592">ویب کراؤڈ میں شامل ہو کر آپ ویب سائٹس کو اجازت دیتے ہیں کہ وہ ذاتی طور پر قابل شناخت معلومات کا استعمال کئے بغیر آپ کے ویب تجربے کو متعلقہ بنا سکیں۔ کسی کنسرٹ میں کراؤڈ کی طرح ویب سائٹس اور مشتہرین کو صرف یہ معلوم ہو سکتا ہے کہ ہزاروں صارفین ملتی جلتی دلچسپی کا اشتراک کرتے ہیں۔</translation>
 <translation id="7431991332293347422">تلاش کو ذاتی نوعیت کا بنانے کیلئے آپ کی براؤزنگ کی سرگزشت جس طریقے سے استعمال کی جاتی ہے اسے کنٹرول کریں اور مزید بہت کچھ</translation>
 <translation id="7435356471928173109">آپ کے منتظم کے ذریعے آف کر دیا گیا</translation>
 <translation id="7437998757836447326">‏Chrome سے سائن آؤٹ کریں</translation>
@@ -1123,6 +1127,7 @@
 <translation id="8748850008226585750">مواد مخفی ہیں</translation>
 <translation id="8788265440806329501">نیویگیشن کی سرگزشت بند ہے</translation>
 <translation id="8788968922598763114">آخری بند کردہ ٹیب دوبارہ کھولیں</translation>
+<translation id="8795672590390389447">رازداری سینڈ باکس</translation>
 <translation id="8798449543960971550">پڑھا ہوا</translation>
 <translation id="8812260976093120287">کچھ ویب سائٹس پر، آپ اپنے آلہ پر اوپر موجود تعاون یافتہ ادائیگی ایپس کے ساتھ ادائیگی کر سکتے ہیں۔</translation>
 <translation id="881688628773363275">پیش منظر کے ٹیب کا مواد قابل ملاحظہ نہیں ہے۔</translation>

@@ -20,6 +20,7 @@
 <translation id="1145536944570833626">Excluir dados já existentes.</translation>
 <translation id="1147031633655575115">Conta conectada: <ph name="USER" /></translation>
 <translation id="1154690515305205900">Não é possível criar um link para o texto destacado.</translation>
+<translation id="1154984953698510061">Ver outras guias</translation>
 <translation id="1157749421655780457">Permitir localização…</translation>
 <translation id="1165039591588034296">Erro</translation>
 <translation id="1172898394251786223">Próximo campo</translation>
@@ -38,6 +39,7 @@
 <translation id="1283524564873030414">Últimas 24 horas</translation>
 <translation id="1285320974508926690">Nunca traduzir este site</translation>
 <translation id="1321993286294231467">Erro ao salvar a imagem.</translation>
+<translation id="1322735045095424339">Sua organização requer o modo de navegação anônima</translation>
 <translation id="1323735185997015385">Excluir</translation>
 <translation id="132683371494960526">Toque duas vezes para alterar a pasta pai.</translation>
 <translation id="1340643665687018190">Fechar menu</translation>
@@ -91,6 +93,7 @@
 <translation id="1803264062614276815">Nome do titular do cartão</translation>
 <translation id="1809939268435598390">Excluir pasta</translation>
 <translation id="1813414402673211292">Limpar dados de navegação</translation>
+<translation id="1815941218935345331">Senha</translation>
 <translation id="1820259098641718022">Adicionada à lista de leitura</translation>
 <translation id="1870148520156231997">Mostrar senha</translation>
 <translation id="1872096359983322073">Lanterna</translation>
@@ -103,6 +106,7 @@
 <translation id="1974060860693918893">Avançado</translation>
 <translation id="1989112275319619282">Procurar</translation>
 <translation id="2015722694326466240">Para ver as senhas, defina uma senha no dispositivo primeiro.</translation>
+<translation id="2047933465321076474">Sua organização desativou a navegação privada. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="2073572773299281212">Ativado há <ph name="DAYS" /> dias</translation>
 <translation id="2074131957428911366">Nas <ph name="BEGIN_LINK" />configurações<ph name="END_LINK" />, é possível escolher a qualquer momento o que é sincronizado.</translation>
 <translation id="2079545284768500474">Desfazer</translation>
@@ -120,6 +124,7 @@
 <translation id="2239626343334228536">Limpando dados de navegação…</translation>
 <translation id="2257567812274161158">A sincronização não está funcionando.</translation>
 <translation id="225943865679747347">Código de erro: <ph name="ERROR_CODE" /></translation>
+<translation id="2262397157440718954">Sua organização requer que você navegue no modo privado. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="2267753748892043616">Adicionar conta</translation>
 <translation id="2268044343513325586">Refinar</translation>
 <translation id="2273327106802955778">Menu "Mais"</translation>
@@ -136,6 +141,7 @@
 Eles também não podem usar cookies para ver sua atividade de navegação em diferentes sites, por exemplo, para personalizar anúncios.</translation>
 <translation id="2381405137052800939">Conceitos básicos</translation>
 <translation id="2386793615875593361">Uma selecionada</translation>
+<translation id="2419661687355878017">Sua organização desativou o modo de navegação anônima</translation>
 <translation id="2421004566762153674">Bloqueando cookies de terceiros</translation>
 <translation id="2421044535038393232">Continuar editando</translation>
 <translation id="2435457462613246316">Mostrar senha</translation>
@@ -185,11 +191,13 @@ Eles também não podem usar cookies para ver sua atividade de navegação em di
 <translation id="291754862089661335">Posicione o código QR ou o código de barras neste quadro</translation>
 <translation id="2921219216347069551">Não é possível compartilhar a página</translation>
 <translation id="2923448633003185837">Colar e ir</translation>
+<translation id="2923827943290349720">Bloquear guias anônimas ao fechar o Chrome</translation>
 <translation id="292639812446257861">Marcar como não lidas</translation>
 <translation id="2952581218264071393">1. Abrir configurações do Chrome</translation>
 <translation id="2958718410589002129">Senhas</translation>
 <translation id="2964349545761222050">Bloquear cookies de terceiros</translation>
 <translation id="2969979262385602596">Falha durante o login. Tente novamente mais tarde.</translation>
+<translation id="2975121486251958312">Apenas o modo de navegação anônima está disponível</translation>
 <translation id="298306318844797842">Adicionar forma de pagamento…</translation>
 <translation id="2989805286512600854">Abrir em uma nova guia</translation>
 <translation id="3037605927509011580">Ah, não!</translation>
@@ -204,6 +212,7 @@ Eles também não podem usar cookies para ver sua atividade de navegação em di
 <translation id="3175081911749765310">Serviços da Web</translation>
 <translation id="3178650076442119961">Ativado hoje</translation>
 <translation id="3181954750937456830">Navegação segura: protege você e seu dispositivo de sites perigosos</translation>
+<translation id="3184767182050912705">Desbloquear com o <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3196681740617426482">Os sites podem usar cookies para melhorar sua experiência de navegação, como manter sua conta conectada ou se lembrar dos itens em um carrinho de compras.
 
 Na navegação anônima, os sites não podem usar cookies para ver suas atividades de navegação em sites diferentes, por exemplo, para personalizar anúncios.</translation>
@@ -355,6 +364,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} e mais 1}one{{domain} e mais {count} outra}other{{domain} e mais {count} outras}}</translation>
 <translation id="4826218269716039351">Bloquear de terceiros</translation>
 <translation id="48274138579728272">Marcar como lido</translation>
+<translation id="4833686396768033263">As guias recentes estão indisponíveis</translation>
 <translation id="4833786495304741580">Envia automaticamente estatísticas de uso e relatórios de erros para o Google.</translation>
 <translation id="4840495572919996524">Seus favoritos, histórico, senhas e outras configurações não serão mais sincronizados com sua Conta do Google.</translation>
 <translation id="4854345657858711387">Defina uma senha</translation>
@@ -418,6 +428,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5551897871312988470">Oferecer para traduzir</translation>
 <translation id="5556459405103347317">Recarregar</translation>
 <translation id="5592679540098330836">Ativar sincronização de <ph name="NAME" /></translation>
+<translation id="5597169624050330492">Sua organização requer que você navegue no modo privado. As guias não são salvas no modo de navegação anônima. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="5614553682702429503">Salvar senha?</translation>
 <translation id="5626245204502895507">Não foi possível fazer download do arquivo neste momento.</translation>
 <translation id="5631164295104953411">Adicionar forma de pagamento.</translation>
@@ -522,6 +533,7 @@ No entanto, eles não podem usar cookies para ver sua atividade de navegação e
 
 Tente usar uma senha exclusiva para cada site.</translation>
 <translation id="651505212789431520">Cancelar sincronização? É possível ativar esse recurso a qualquer momento nas configurações.</translation>
+<translation id="6524918542306337007">O modo de navegação anônima está indisponível</translation>
 <translation id="6561262006871132942">Aumentar zoom</translation>
 <translation id="6585618849026997638">Você pode adicionar uma página importante aos favoritos para acessá-la com facilidade</translation>
 <translation id="6610002944194042868">Opções de tradução</translation>
@@ -580,6 +592,7 @@ Tente usar uma senha exclusiva para cada site.</translation>
 <translation id="7133798577887235672">Nome completo</translation>
 <translation id="7136892417564438900">A câmera não está disponível</translation>
 <translation id="7159472599653637159">Solicitar um site móvel</translation>
+<translation id="7162168282402939716">Desbloquear guias anônimas com o <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Manter suas senhas protegidas contra problemas de segurança</translation>
 <translation id="7173114856073700355">Abrir "Configurações"</translation>
 <translation id="7189598951263744875">Compartilhar...</translation>
@@ -617,6 +630,7 @@ Tente usar uma senha exclusiva para cada site.</translation>
 <translation id="7537586195939242955">Impossível instalar senha no livro de senhas no momento.</translation>
 <translation id="7554791636758816595">Nova guia</translation>
 <translation id="7561196759112975576">Sempre</translation>
+<translation id="7583004045319035904">Use o <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> para desbloquear suas guias anônimas.</translation>
 <translation id="7600965453749440009">Nunca traduzir do <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Pop-ups bloqueados (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Excluir senha</translation>
@@ -709,6 +723,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8591976964826315682">Bloquear cookies de terceiros na navegação anônima</translation>
 <translation id="8605219856220328675">Fechar guia.</translation>
 <translation id="8620640915598389714">Editar</translation>
+<translation id="863090005774946393">O navegador é gerenciado pela sua organização. Alguns recursos podem estar desativados.</translation>
 <translation id="8636825310635137004">Para ver suas guias abertas em outros dispositivos, ative a sincronização.</translation>
 <translation id="8654802032646794042">Cancelar</translation>
 <translation id="8668210798914567634">Esta página foi salva na sua lista de leitura.</translation>

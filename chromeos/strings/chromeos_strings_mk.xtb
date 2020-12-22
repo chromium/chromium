@@ -49,12 +49,12 @@
 <translation id="2375079107209812402">Преостануваат <ph name="ATTEMPTS_LEFT" /> обиди</translation>
 <translation id="2391082728065870591">Испрати извештај со повратни информации</translation>
 <translation id="2446553403094072641">Прецизност на подвижна запирка</translation>
+<translation id="2448312741937722512">Тип</translation>
 <translation id="2461822463642141190">Моментално</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Скенирај</translation>
 <translation id="2570743873672969996">Се извршува тест за <ph name="TEST_NAME" />…</translation>
 <translation id="2620436844016719705">Систем</translation>
-<translation id="2658845327196595460">{COUNT,plural, =1{Скенираната датотека е зачувана.}one{Скенираните датотеки се зачувани.}other{Скенираните датотеки се зачувани.}}</translation>
 <translation id="2740531572673183784">Во ред</translation>
 <translation id="2805756323405976993">Апликации</translation>
 <translation id="2872961005593481000">Исклучи</translation>
@@ -67,19 +67,23 @@
 <translation id="3091839911843451378">Неуспешно - запрено</translation>
 <translation id="3102119246920354026">Кеш</translation>
 <translation id="3122464029669770682">ЦПУ</translation>
+<translation id="315116470104423982">Мобилен интернет</translation>
 <translation id="3188257591659621405">Мои датотеки</translation>
 <translation id="3199982728237701504">Внесувач на документи (двостран)</translation>
 <translation id="3246869037381808805">Задачите за печатење постари од 1 ден ќе се отстранат</translation>
 <translation id="3268178239013324452">Неуспешно - вратата е отворена</translation>
 <translation id="3310640316857623290">Латенцијата на DNS е значително над дозволениот праг</translation>
 <translation id="3328783797891415197">Тестот се извршува</translation>
+<translation id="3368922792935385530">Поврзано</translation>
 <translation id="3369013195428705271">Дали сте сигурни дека сакате да ја исчистите сета историја на печатење? Тековните задачи за печатење нема да бидат избришани.</translation>
 <translation id="3456078764689556234">Отпечатена страница <ph name="PRINTED_PAGES" /> од <ph name="TOTAL_PAGES" />.</translation>
 <translation id="3459509316159669723">Се печати</translation>
 <translation id="3515615323037921860">Налози за печатење</translation>
 <translation id="3527036260304016759">Неуспешно - непозната грешка</translation>
+<translation id="357889014807611375">Wi-Fi со ограничен интернет</translation>
 <translation id="360565022852130722">Wi-Fi мрежата е обезбедена со слаб протокол WEP 802.1x</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> рецензии)</translation>
+<translation id="3748026146096797577">Не е поврзана</translation>
 <translation id="3749289110408117711">Име на датотека</translation>
 <translation id="38114475217616659">Избриши ја целата историја</translation>
 <translation id="3820172043799983114">Неважечки PIN.</translation>
@@ -93,6 +97,7 @@
 <translation id="4131410914670010031">Црно и бело</translation>
 <translation id="4145784616224233563">Заштитен ѕид со HTTP</translation>
 <translation id="4170700058716978431">НЕУСПЕШЕН</translation>
+<translation id="4176463684765177261">Оневозможено</translation>
 <translation id="4227825898293920515">Лозинката истекува за <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Нема задачи за печатење во тек</translation>
 <translation id="4297501883039923494">Запрено - непозната грешка</translation>
@@ -102,7 +107,9 @@
 <translation id="4429881212383817840">Билетот на Kerberos истекува наскоро</translation>
 <translation id="445059817448385655">Стара лозинка</translation>
 <translation id="4454245904991689773">Скенирај во</translation>
+<translation id="4479639480957787382">Етернет</translation>
 <translation id="4483049906298469269">Не успеа да се пингува нестандардниот мрежен портал</translation>
+<translation id="4511264077854731334">Портал</translation>
 <translation id="4548483925627140043">Не е најден сигнал</translation>
 <translation id="455835558791489930">Батерија од <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="458794348635939462">Неуспешно отворање на сите хостови</translation>
@@ -127,6 +134,7 @@
 <translation id="498186245079027698">Проверете го скенерот и обидете се повторно. Уверете се дека има доволно простор на уредот за да се зачуваат скенираните датотеки.</translation>
 <translation id="4985509611418653372">Изврши</translation>
 <translation id="500920857929044050">Запри го тестот</translation>
+<translation id="5089810972385038852">Држава</translation>
 <translation id="5154917547274118687">Меморија</translation>
 <translation id="5168185087976003268">Состојба на батеријата</translation>
 <translation id="520299634122159966">Нема достапни скенери</translation>
@@ -142,7 +150,9 @@
 <translation id="5333530671332546086">Непозната состојба на портал</translation>
 <translation id="5372659122375744710">WiFi мрежата не е безбедна</translation>
 <translation id="5401938042319910061">Изврши ги сите рутини</translation>
+<translation id="5430931332414098647">Инстант врзување</translation>
 <translation id="5431318178759467895">Боја</translation>
+<translation id="5431825016875453137">OpenVPN / L2TP</translation>
 <translation id="5457599981699367932">Прелистувај како гостин</translation>
 <translation id="54609108002486618">Управуван</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
@@ -153,6 +163,7 @@
 <translation id="5797428682393400134">УСПЕШЕН</translation>
 <translation id="5832805196449965646">Додај лице</translation>
 <translation id="5895138241574237353">Рестартирај</translation>
+<translation id="5916084858004523819">Забранета</translation>
 <translation id="5931523347251946569">Датотеката не е најдена</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, верзија <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Затвори</translation>
@@ -164,6 +175,7 @@
 <translation id="6106186594183574873">За да завршите, внесете ја старата лозинка</translation>
 <translation id="6108689792487843350">Порталот е недостапен</translation>
 <translation id="6114428539405324828"><ph name="CURRENT" /> GHz/<ph name="MAX" /> GHz</translation>
+<translation id="6122191549521593678">Онлајн</translation>
 <translation id="6146993107019042706">За да завршите, внесете ја новата лозинка</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Дознајте повеќе</translation>
@@ -188,7 +200,9 @@
 <translation id="6839141349259399400">Не може да се поврзете со скенерите?</translation>
 <translation id="6853312040151791195">Брзина на празнење</translation>
 <translation id="6898743098396957679">Скенирањето не можеше да се заврши</translation>
+<translation id="6957231940976260713">Име на услугата</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> управува со уредов и има пристап до целата активност на корисникот, вклучувајќи ги и посетените веб-страници, лозинките и е-поштата.</translation>
+<translation id="7143207342074048698">Се поврзува</translation>
 <translation id="714876143603641390">LAN-поврзливост</translation>
 <translation id="7162487448488904999">Галерија</translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> управува со овој <ph name="DEVICE_TYPE" />. Администраторите може да го конфигурираат уредот оддалеку.</translation>
@@ -197,11 +211,13 @@
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Скенирањето е завршено. Скенирана е 1 страница}one{Скенирањето е завршено. Скенирана е {NUMBER_OF_PAGES} страница}other{Скенирањето е завршено. Скенирани се {NUMBER_OF_PAGES} страници}}</translation>
 <translation id="7441459999606975924">Капацитетот на батеријата се намалува со користењето</translation>
 <translation id="7469648432129124067">Откриен е портал</translation>
+<translation id="7490813197707563893">MAC-адреса</translation>
 <translation id="7561454561030345039">Администраторот управува со дејствово</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Висока латенција на HTTPS</translation>
 <translation id="7658239707568436148">Откажи</translation>
 <translation id="7690294790491645610">Потврдете ја новата лозинка</translation>
+<translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Број на циклуси</translation>
 <translation id="7732651821766520760">Тест за <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Статус</translation>
@@ -213,6 +229,7 @@
 <translation id="808894953321890993">Промени лозинка</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8160445423316272678">Ставете го документот на скенерот и изберете <ph name="SPAN_BEGIN" />Скенирај<ph name="SPAN_END" /> за да започнете</translation>
+<translation id="8206859287963243715">Мобилен</translation>
 <translation id="8208861521865154048">Поволности</translation>
 <translation id="8230672074305416752">Не успеа да се пингува стандардниот мрежен портал</translation>
 <translation id="8294431847097064396">Извор</translation>
@@ -224,6 +241,7 @@
 <translation id="8398927464629426868">Брзината со која уредот се полни или празни во моментов</translation>
 <translation id="8475690821716466388">Wi-Fi мрежата е обезбедена со слаб протокол WEP PSK</translation>
 <translation id="8477551185774834963">Латенцијата на DNS е малку над дозволениот праг</translation>
+<translation id="8576249514688522074">Неиницијализирана</translation>
 <translation id="871560550817059752">Неуспешно - нема мастило</translation>
 <translation id="8723108084122415655">Нестандардната мрежа е над прагот за латенција</translation>
 <translation id="8726019395068607495">Запрено - вратата е отворена</translation>
@@ -231,14 +249,18 @@
 <translation id="8747900814994928677">Потврдете ја измената</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Стандардно</translation>
+<translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Побарајте помош</translation>
 <translation id="8881098542468797602">Тестот успеа</translation>
+<translation id="8898840733695078011">Јачина на сигнал</translation>
 <translation id="8910721771319628100">Стандардната мрежа е над прагот за латентност</translation>
 <translation id="8919837981463578619">Неуспешно - недостасува фиоката</translation>
 <translation id="8928727111548978589">Неуспешно - нема хартија</translation>
+<translation id="8930622219860340959">Безжична</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> Преостанати обиди: <ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="8968751544471797276">Брзина на полнење</translation>
 <translation id="8970109610781093811">Изврши повторно</translation>
+<translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Моментално користење</translation>
 <translation id="910415269708673980">Освежете го билетот за <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Се скенира страницата <ph name="PAGE_NUMBER" /></translation>

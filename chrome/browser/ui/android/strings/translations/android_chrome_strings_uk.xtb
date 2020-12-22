@@ -228,7 +228,7 @@
 <translation id="2536728043171574184">Перегляд копії сторінки в режимі офлайн</translation>
 <translation id="2537178555904266562">Не вдалося синхронізувати паролі</translation>
 <translation id="2546283357679194313">Файли cookie та дані із сайтів</translation>
-<translation id="2562889244313180139">Дозволити веб-сайтам і додаткам показувати релевантніший контент, використовуючи для цього знеособлені дані.</translation>
+<translation id="2562889244313180139">Дозвольте веб-сайтам і додаткам показувати релевантніший контент, використовуючи для цього знеособлені дані.</translation>
 <translation id="2567385386134582609">ЗОБРАЖЕННЯ</translation>
 <translation id="2571711316400087311">Пропонувати надсилати на переклад сторінки іншими мовами в Google Перекладач</translation>
 <translation id="2581165646603367611">Буде видалено файли cookie, кеш та інші дані сайтів, які Chrome визначив як неважливі.</translation>
@@ -565,7 +565,7 @@
 <translation id="4970824347203572753">Функція недоступна у вашій країні</translation>
 <translation id="4971735654804503942">Швидший активний захист від небезпечних веб-сайтів, завантажень і розширень. Попереджає про розкриття паролів через порушення безпеки даних.  Дані веб-перегляду потрібно надсилати в Google.</translation>
 <translation id="497421865427891073">Перейти вперед</translation>
-<translation id="4986638582553854481">Назва</translation>
+<translation id="4986638582553854481">Звертання</translation>
 <translation id="4988210275050210843">Завантажується файл (<ph name="MEGABYTES" />).</translation>
 <translation id="4988526792673242964">Сторінки</translation>
 <translation id="5004416275253351869">Керування активністю в Google</translation>
@@ -716,7 +716,7 @@
 <translation id="6005538289190791541">Запропонований пароль</translation>
 <translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{У ньому <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> сторінка}one{У ньому <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> сторінка}few{У ньому <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> сторінки}many{У ньому <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> сторінок}other{У ньому <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> сторінки}}</translation>
 <translation id="6014293228235665243">Непрочитані</translation>
-<translation id="6018309500671889594">Дозволити рекламодавцям аналізувати рекламні кампанії, використовуючи знеособлені дані.</translation>
+<translation id="6018309500671889594">Дозвольте рекламодавцям аналізувати рекламні кампанії, використовуючи знеособлені дані.</translation>
 <translation id="6036057147555329831">Зайвий модуль ICU</translation>
 <translation id="6039379616847168523">Перейти до наступної вкладки</translation>
 <translation id="6040143037577758943">Закрити</translation>
@@ -866,7 +866,7 @@
 <translation id="6955535239952325894">Цей параметр вимкнено в керованих веб-переглядачах</translation>
 <translation id="6963766334940102469">Видалити закладки</translation>
 <translation id="6979737339423435258">Увесь час</translation>
-<translation id="6981982820502123353">Доступність</translation>
+<translation id="6981982820502123353">Спеціальні можливості</translation>
 <translation id="6989267951144302301">Не вдалося завантажити</translation>
 <translation id="6990079615885386641">Завантажити додаток із магазину Google Play: <ph name="APP_ACTION" /></translation>
 <translation id="6995899638241819463">Попереджати, якщо паролі розкрито через порушення безпеки даних</translation>

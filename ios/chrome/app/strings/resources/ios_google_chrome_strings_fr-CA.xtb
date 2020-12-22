@@ -30,6 +30,7 @@
 <translation id="3706101708757577809">Vous pouvez maintenant utiliser Chrome chaque fois que vous touchez des liens dans des messages, des documents et des applications.</translation>
 <translation id="384394811301901750">Google Chrome ne peut pas utiliser votre appareil photo pour le moment</translation>
 <translation id="3980220367029651214">Vous changez de compte synchronisé pour passer de <ph name="USER_EMAIL1" /> à <ph name="USER_EMAIL2" />. Vos données Google Chrome actuelles sont gérées par <ph name="DOMAIN" />. Cette opération entraînera la suppression de vos données sur cet appareil, mais elles resteront dans le compte <ph name="USER_EMAIL1" />.</translation>
+<translation id="3984746313391923992">Votre organisation vous demande de rester déconnecté de Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome n'a pas accès à vos photos ou vidéos. Activez l'accès dans Réglages iOS &gt; Confidentialité &gt; Photos.</translation>
 <translation id="4099578267706723511">Envoyez des statistiques d'utilisation et des rapports d'erreur pour améliorer Chrome.</translation>
 <translation id="415767770115540173">Profitez d'une meilleure expérience Google dans Chrome en fonction de votre emplacement.</translation>
@@ -54,6 +55,7 @@
 <translation id="6600954340915313787">Copiée dans Chrome</translation>
 <translation id="6648150602980899529">Vous vous connectez avec un compte géré par <ph name="DOMAIN" />, et son administrateur pourra contrôler vos données Google Chrome. Celles-ci seront définitivement liées à votre compte. En vous déconnectant de Chrome, vous supprimerez vos données sur cet appareil, mais elles resteront stockées dans votre compte Google.</translation>
 <translation id="6676840375528380067">Effacer vos données Chrome de cet appareil?</translation>
+<translation id="6822363243974874813">Lorsque vous étiez déconnecté de Chrome, vos favoris, votre historique, vos mots de passe et d'autres paramètres ont été effacés de cet appareil. Vos données Chrome synchronisées sont toujours enregistrées dans votre compte Google.</translation>
 <translation id="6822673484890854830">Chrome n'a pas pu vérifier tous les mots de passe. Réessayez plus tard.</translation>
 <translation id="7124339256045485976">Pour garder Chrome à jour</translation>
 <translation id="7161390184744336561">Google Chrome n'est pas à jour</translation>

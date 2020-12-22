@@ -49,12 +49,12 @@
 <translation id="2375079107209812402">あと <ph name="ATTEMPTS_LEFT" /> 回</translation>
 <translation id="2391082728065870591">フィードバック レポートを送信</translation>
 <translation id="2446553403094072641">浮動小数点数精度</translation>
+<translation id="2448312741937722512">種類</translation>
 <translation id="2461822463642141190">電流</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">スキャン</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> のテストを実行しています...</translation>
 <translation id="2620436844016719705">システム</translation>
-<translation id="2658845327196595460">{COUNT,plural, =1{スキャンしたファイルを保存しました。}other{スキャンしたファイルを保存しました。}}</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2805756323405976993">アプリ</translation>
 <translation id="2872961005593481000">終了</translation>
@@ -67,19 +67,23 @@
 <translation id="3091839911843451378">失敗 - 停止中です</translation>
 <translation id="3102119246920354026">キャッシュ</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="315116470104423982">モバイル データ</translation>
 <translation id="3188257591659621405">マイファイル</translation>
 <translation id="3199982728237701504">ドキュメント フィーダー（両面）</translation>
 <translation id="3246869037381808805">昨日より前の印刷ジョブは削除されます</translation>
 <translation id="3268178239013324452">失敗 - 扉が開いています</translation>
 <translation id="3310640316857623290">DNS の応答時間が許容値を大幅に超えています</translation>
 <translation id="3328783797891415197">テスト実行中</translation>
+<translation id="3368922792935385530">接続済み</translation>
 <translation id="3369013195428705271">印刷履歴をすべて削除してもよろしいですか？実行中の印刷ジョブは削除されません。</translation>
 <translation id="3456078764689556234"><ph name="PRINTED_PAGES" />/<ph name="TOTAL_PAGES" /> ページを印刷しました。</translation>
 <translation id="3459509316159669723">印刷</translation>
 <translation id="3515615323037921860">印刷ジョブ</translation>
 <translation id="3527036260304016759">失敗 - 不明なエラー</translation>
+<translation id="357889014807611375">従量制 Wi-Fi</translation>
 <translation id="360565022852130722">安全性の低いプロトコル WEP 802.1x が Wi-Fi で使用されています</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★（<ph name="AGGREGATED_COUNT" /> 件のレビュー）</translation>
+<translation id="3748026146096797577">接続されていません</translation>
 <translation id="3749289110408117711">ファイル名</translation>
 <translation id="38114475217616659">履歴をすべて消去</translation>
 <translation id="3820172043799983114">無効な PIN です。</translation>
@@ -93,6 +97,7 @@
 <translation id="4131410914670010031">白黒</translation>
 <translation id="4145784616224233563">HTTP ファイアウォール</translation>
 <translation id="4170700058716978431">失敗</translation>
+<translation id="4176463684765177261">停止中</translation>
 <translation id="4227825898293920515">パスワードの有効期限はあと <ph name="TIME" />です</translation>
 <translation id="4238516577297848345">実行中の印刷ジョブはありません</translation>
 <translation id="4297501883039923494">停止 - 不明なエラー</translation>
@@ -102,7 +107,9 @@
 <translation id="4429881212383817840">Kerberos チケットはまもなく有効期限が切れます</translation>
 <translation id="445059817448385655">古いパスワード</translation>
 <translation id="4454245904991689773">スキャンの保存先</translation>
+<translation id="4479639480957787382">イーサネット</translation>
 <translation id="4483049906298469269">デフォルト以外のネットワーク ゲートウェイに向けた ping が失敗しました</translation>
+<translation id="4511264077854731334">ポータル</translation>
 <translation id="4548483925627140043">シグナルは検出されませんでした</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh 電池</translation>
 <translation id="458794348635939462">すべてのホストを解決できませんでした</translation>
@@ -127,6 +134,7 @@
 <translation id="498186245079027698">スキャナを確認して、もう一度お試しください。デバイスにスキャンしたファイルを保存するのに十分な容量があるかどうかも確認してください。</translation>
 <translation id="4985509611418653372">実行</translation>
 <translation id="500920857929044050">テストを停止</translation>
+<translation id="5089810972385038852">都道府県 / 州</translation>
 <translation id="5154917547274118687">メモリ</translation>
 <translation id="5168185087976003268">電池の状態</translation>
 <translation id="520299634122159966">使用できるスキャナはありません</translation>
@@ -142,7 +150,9 @@
 <translation id="5333530671332546086">ポータルの状態が不明です</translation>
 <translation id="5372659122375744710">Wi-Fi ネットワークが保護されていません</translation>
 <translation id="5401938042319910061">ルーティンをすべて実行</translation>
+<translation id="5430931332414098647">インスタント テザリング</translation>
 <translation id="5431318178759467895">カラー</translation>
+<translation id="5431825016875453137">OpenVPN / L2TP</translation>
 <translation id="5457599981699367932">ゲストとしてブラウジング</translation>
 <translation id="54609108002486618">管理対象</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
@@ -153,6 +163,7 @@
 <translation id="5797428682393400134">完了</translation>
 <translation id="5832805196449965646">ユーザーを追加</translation>
 <translation id="5895138241574237353">再起動</translation>
+<translation id="5916084858004523819">禁止</translation>
 <translation id="5931523347251946569">ファイルが見つかりません</translation>
 <translation id="5982592372228113572">（<ph name="BOARD_NAME" />、バージョン <ph name="MILESTONE_VERSION" />）</translation>
 <translation id="6040143037577758943">閉じる</translation>
@@ -164,6 +175,7 @@
 <translation id="6106186594183574873">終了するには、古いパスワードを入力してください</translation>
 <translation id="6108689792487843350">ゲートウェイにアクセスできません</translation>
 <translation id="6114428539405324828"><ph name="CURRENT" /> GHz / <ph name="MAX" /> GHz</translation>
+<translation id="6122191549521593678">オンライン</translation>
 <translation id="6146993107019042706">終了するには、新しいパスワードを入力してください</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">詳細</translation>
@@ -188,7 +200,9 @@
 <translation id="6839141349259399400">スキャナに接続できない場合</translation>
 <translation id="6853312040151791195">放電率</translation>
 <translation id="6898743098396957679">スキャンを完了できませんでした</translation>
+<translation id="6957231940976260713">サービス名</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> はこのデバイスを管理しており、閲覧したウェブページ、パスワード、メールなど、すべてのユーザー アクティビティにアクセスできます。</translation>
+<translation id="7143207342074048698">接続中</translation>
 <translation id="714876143603641390">LAN 接続</translation>
 <translation id="7162487448488904999">ギャラリー</translation>
 <translation id="7177485034254901881">この <ph name="DEVICE_TYPE" /> は <ph name="MANAGER" /> によって管理されています。管理者がこのデバイスをリモートで設定している可能性があります。</translation>
@@ -197,11 +211,13 @@
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{スキャンが完了しました。1 ページをスキャンしました}other{スキャンが完了しました。{NUMBER_OF_PAGES} ページをスキャンしました}}</translation>
 <translation id="7441459999606975924">バッテリー容量は使用に伴って減少します</translation>
 <translation id="7469648432129124067">ポータルが検出されました</translation>
+<translation id="7490813197707563893">MAC アドレス</translation>
 <translation id="7561454561030345039">この操作は管理者によって管理されています</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">HTTPS レイテンシが高くなっています</translation>
 <translation id="7658239707568436148">キャンセル</translation>
 <translation id="7690294790491645610">新しいパスワードの確認入力</translation>
+<translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">サイクル回数</translation>
 <translation id="7732651821766520760"><ph name="TEST_NAME" /> テスト</translation>
 <translation id="7805768142964895445">ステータス</translation>
@@ -213,6 +229,7 @@
 <translation id="808894953321890993">パスワードの変更</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> ℃</translation>
 <translation id="8160445423316272678">スキャナにドキュメントを置いて、[<ph name="SPAN_BEGIN" />スキャン<ph name="SPAN_END" />] を選択してスキャンを開始してください</translation>
+<translation id="8206859287963243715">携帯電話</translation>
 <translation id="8208861521865154048">特典</translation>
 <translation id="8230672074305416752">デフォルトのネットワーク ゲートウェイに向けた ping が失敗しました</translation>
 <translation id="8294431847097064396">ソース</translation>
@@ -224,6 +241,7 @@
 <translation id="8398927464629426868">現在デバイスが充電または放電している速度</translation>
 <translation id="8475690821716466388">Wi-Fi ネットワークで安全性の低いプロトコル WEP PSK が使用されています</translation>
 <translation id="8477551185774834963">DNS の応答時間が許容値を少し超えています</translation>
+<translation id="8576249514688522074">初期化が未完了</translation>
 <translation id="871560550817059752">失敗 - インクがありません</translation>
 <translation id="8723108084122415655">デフォルト以外のネットワークの応答時間がしきい値を超えています</translation>
 <translation id="8726019395068607495">停止 - 扉が開いています</translation>
@@ -231,14 +249,18 @@
 <translation id="8747900814994928677">変更を確認</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">既定</translation>
+<translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">ヘルプ</translation>
 <translation id="8881098542468797602">テストが完了しました</translation>
+<translation id="8898840733695078011">電波強度</translation>
 <translation id="8910721771319628100">デフォルトのネットワークの応答時間がしきい値を超えています</translation>
 <translation id="8919837981463578619">失敗 - トレイがありません</translation>
 <translation id="8928727111548978589">失敗 - 用紙がありません</translation>
+<translation id="8930622219860340959">ワイヤレス</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" />: あと <ph name="ATTEMPTS_LEFT" /> 回</translation>
 <translation id="8968751544471797276">充電率</translation>
 <translation id="8970109610781093811">再実行</translation>
+<translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">現在の使用状況</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> のチケットを更新してください</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" /> ページ目をスキャンしています</translation>

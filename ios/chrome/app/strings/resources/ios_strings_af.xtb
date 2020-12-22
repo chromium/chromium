@@ -20,6 +20,7 @@
 <translation id="1145536944570833626">Vee bestaande data uit.</translation>
 <translation id="1147031633655575115">Aangemeld as <ph name="USER" /></translation>
 <translation id="1154690515305205900">Kan nie 'n skakel na die gemerkte teks skep nie.</translation>
+<translation id="1154984953698510061">Sien ander oortjies</translation>
 <translation id="1157749421655780457">Laat ligging toe …</translation>
 <translation id="1165039591588034296">Fout</translation>
 <translation id="1172898394251786223">Volgende veld</translation>
@@ -38,6 +39,7 @@
 <translation id="1283524564873030414">Afgelope 24 uur</translation>
 <translation id="1285320974508926690">Moet nooit hierdie werf vertaal nie</translation>
 <translation id="1321993286294231467">Kon nie prent stoor nie.</translation>
+<translation id="1322735045095424339">Jou organisasie vereis Incognitomodus</translation>
 <translation id="1323735185997015385">Vee uit</translation>
 <translation id="132683371494960526">Dubbeltik om die moedervouer te verander.</translation>
 <translation id="1340643665687018190">Maak kieslys toe</translation>
@@ -91,6 +93,7 @@
 <translation id="1803264062614276815">Kaarthouer se naam</translation>
 <translation id="1809939268435598390">Vee vouer uit</translation>
 <translation id="1813414402673211292">Maak blaaidata skoon</translation>
+<translation id="1815941218935345331">Wagkode</translation>
 <translation id="1820259098641718022">By Leeslys gevoeg</translation>
 <translation id="1870148520156231997">Wys wagwoord</translation>
 <translation id="1872096359983322073">Flits</translation>
@@ -103,6 +106,7 @@
 <translation id="1974060860693918893">Gevorderd</translation>
 <translation id="1989112275319619282">Blaai deur</translation>
 <translation id="2015722694326466240">Om wagwoorde te sien, moet jy eers 'n wagkode op jou toestel stel.</translation>
+<translation id="2047933465321076474">Jou organisasie het private blaai afgeskakel. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> dae gelede aktief</translation>
 <translation id="2074131957428911366">Jy kan altyd in <ph name="BEGIN_LINK" />instellings<ph name="END_LINK" /> kies wat om te sinkroniseer.</translation>
 <translation id="2079545284768500474">Ontdoen</translation>
@@ -120,6 +124,7 @@
 <translation id="2239626343334228536">Vee blaaierdata uit …</translation>
 <translation id="2257567812274161158">Sinkronisering werk nie.</translation>
 <translation id="225943865679747347">Foutkode: <ph name="ERROR_CODE" /></translation>
+<translation id="2262397157440718954">Jou organisasie vereis dat jy privaat blaai. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="2267753748892043616">Voeg rekening by</translation>
 <translation id="2268044343513325586">Verfyn</translation>
 <translation id="2273327106802955778">Meer-kieslys</translation>
@@ -136,6 +141,7 @@
 Werwe kan nie webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te sien nie, byvoorbeeld om advertensies te personaliseer nie.</translation>
 <translation id="2381405137052800939">Basiese beginsels</translation>
 <translation id="2386793615875593361">1 gekies</translation>
+<translation id="2419661687355878017">Jou organisasie het Incognitomodus afgeskakel</translation>
 <translation id="2421004566762153674">Blokkeer tans derdeparty-webkoekies</translation>
 <translation id="2421044535038393232">Hou wysiging</translation>
 <translation id="2435457462613246316">Wys wagwoord</translation>
@@ -185,11 +191,13 @@ Werwe kan nie webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe t
 <translation id="291754862089661335">Plaas QR- of strepieskode in hierdie raam</translation>
 <translation id="2921219216347069551">Kan nie hierdie bladsy deel nie</translation>
 <translation id="2923448633003185837">Plak en gaan</translation>
+<translation id="2923827943290349720">Sluit Incognito-oortjies wanneer jy Chrome toemaak</translation>
 <translation id="292639812446257861">Merk as ongelees</translation>
 <translation id="2952581218264071393">1. Maak Chrome-instellings oop</translation>
 <translation id="2958718410589002129">Wagwoorde</translation>
 <translation id="2964349545761222050">Blokkeer derdepartywebkoekies</translation>
 <translation id="2969979262385602596">Kon nie aanmeld nie. Probeer asseblief later weer.</translation>
+<translation id="2975121486251958312">Slegs Incognitomodus is beskikbaar</translation>
 <translation id="298306318844797842">Voeg betaalmetode by …</translation>
 <translation id="2989805286512600854">Maak in 'n nuwe oortjie oop</translation>
 <translation id="3037605927509011580">O, mapstieks!</translation>
@@ -204,6 +212,7 @@ Werwe kan nie webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe t
 <translation id="3175081911749765310">Webdienste</translation>
 <translation id="3178650076442119961">Vandag aktief</translation>
 <translation id="3181954750937456830">Veiligblaai (beskerm jou en jou toestel teen gevaarlike werwe)</translation>
+<translation id="3184767182050912705">Ontsluit met <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3196681740617426482">Werwe kan webkoekies gebruik om jou blaai-ervaring beter te maak, byvoorbeeld, om jou aangemeld te hou of om items in jou inkopiemandjie te onthou.
 
 Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te sien nie, byvoorbeeld, om advertensies te personaliseer nie.</translation>
@@ -355,6 +364,7 @@ Jou data is met jou sinkroniseringwagfrase geënkripteer. Voer dit in om te begi
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} en 1 ander persoon}other{{domain} en {count} ander mense}}</translation>
 <translation id="4826218269716039351">Blokkeer derdeparty-webkoekies</translation>
 <translation id="48274138579728272">Merk as gelees</translation>
+<translation id="4833686396768033263">Onlangse oortjies is onbeskikbaar</translation>
 <translation id="4833786495304741580">Stuur gebruikstatistieke en omvalverslae outomaties na Google toe.</translation>
 <translation id="4840495572919996524">Jou boekmerke, geskiedenis, wagwoorde en meer sal nie meer met jou Google-rekening gesinkroniseer word nie.</translation>
 <translation id="4854345657858711387">Stel 'n wagkode</translation>
@@ -418,6 +428,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="5551897871312988470">Aanbieding om te vertaal</translation>
 <translation id="5556459405103347317">Herlaai</translation>
 <translation id="5592679540098330836">Skakel sinkronisering aan vir <ph name="NAME" /></translation>
+<translation id="5597169624050330492">Jou organisasie vereis dat jy privaat blaai. Oortjies word nie in Incognitomodus gestoor nie. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="5614553682702429503">Stoor wagwoord?</translation>
 <translation id="5626245204502895507">Die lêer kon nie nou afgelaai word nie.</translation>
 <translation id="5631164295104953411">Voeg betaalmetode by</translation>
@@ -522,6 +533,7 @@ Werwe kan nie webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe t
 
 Probeer 'n unieke wagwoord vir elke werf gebruik.</translation>
 <translation id="651505212789431520">Kanselleer sinkronisering? Jy kan sinkronisering enige tyd in Instellings aanskakel.</translation>
+<translation id="6524918542306337007">Incognitomodus is onbeskikbaar</translation>
 <translation id="6561262006871132942">Zoem in</translation>
 <translation id="6585618849026997638">Jy kan 'n boekmerk byvoeg om weer uit te kom by 'n bladsy wat vir jou belangrik is</translation>
 <translation id="6610002944194042868">Vertaalopsies</translation>
@@ -580,6 +592,7 @@ Probeer 'n unieke wagwoord vir elke werf gebruik.</translation>
 <translation id="7133798577887235672">Volle naam en van</translation>
 <translation id="7136892417564438900">Kamera is onbeskikbaar</translation>
 <translation id="7159472599653637159">Versoek mobiele werf</translation>
+<translation id="7162168282402939716">Ontsluit Incognito-oortjies met <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Hou jou wagwoorde veilig teen sekuriteitsprobleme</translation>
 <translation id="7173114856073700355">Maak Instellings oop</translation>
 <translation id="7189598951263744875">Deel …</translation>
@@ -617,6 +630,7 @@ Probeer 'n unieke wagwoord vir elke werf gebruik.</translation>
 <translation id="7537586195939242955">Jammer, jou Pass kan nie tans na Passbook geïnstalleer word nie.</translation>
 <translation id="7554791636758816595">Nuwe oortjie</translation>
 <translation id="7561196759112975576">Altyd</translation>
+<translation id="7583004045319035904">Gebruik <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> om jou Incognito-oortjies te ontsluit.</translation>
 <translation id="7600965453749440009">Moet nooit <ph name="LANGUAGE" /> vertaal nie</translation>
 <translation id="7603852183842204213">Opspringers geblokkeer (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Vee wagwoord uit</translation>
@@ -709,6 +723,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8591976964826315682">Blokkeer derdepartywebkoekies in incognito</translation>
 <translation id="8605219856220328675">Maak oortjie toe.</translation>
 <translation id="8620640915598389714">Redigeer</translation>
+<translation id="863090005774946393">Jou organisasie bestuur jou blaaier. Sommige kenmerke kan gedeaktiveer wees.</translation>
 <translation id="8636825310635137004">Skakel sinkronisering aan om jou oortjies van jou ander toestelle af te kry.</translation>
 <translation id="8654802032646794042">Kanselleer</translation>
 <translation id="8668210798914567634">Hierdie bladsy is na jou Leeslys gestoor.</translation>

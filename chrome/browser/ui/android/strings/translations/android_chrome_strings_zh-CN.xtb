@@ -12,6 +12,7 @@
 <translation id="10614374240317010">一律不保存</translation>
 <translation id="1067922213147265141">其他 Google 服务</translation>
 <translation id="107147699690128016">如果您更改文件扩展名，此文件可能会在另一应用中打开并对您的设备造成危害。</translation>
+<translation id="1094515529340404628">Web Crowd 和广告衡量</translation>
 <translation id="1100066534610197918">在群组内的新标签页中打开</translation>
 <translation id="1105960400813249514">屏幕截图</translation>
 <translation id="1111673857033749125">您在其他设备上保存的书签将列在此处。</translation>
@@ -227,6 +228,7 @@
 <translation id="2536728043171574184">正在查看此网页的离线副本</translation>
 <translation id="2537178555904266562">同步密码时出错</translation>
 <translation id="2546283357679194313">Cookie 和网站数据</translation>
+<translation id="2562889244313180139">允许网站和应用使用非个人身份别名为您提供更贴合您的需求的体验。</translation>
 <translation id="2567385386134582609">图片</translation>
 <translation id="2571711316400087311">询问是否要在其他语言的网页上显示 Google 翻译</translation>
 <translation id="2581165646603367611">这会清除 Chrome 认为不重要的网站的 Cookie、缓存和其他数据。</translation>
@@ -563,6 +565,7 @@
 <translation id="4970824347203572753">无法在您所在的国家/地区使用</translation>
 <translation id="4971735654804503942">为您提供更快速主动的保护措施，免受危险网站、下载内容或扩展程序的威胁。系统会在密码遭泄露时向您发出警告。您需要向 Google 发送浏览数据。</translation>
 <translation id="497421865427891073">前进</translation>
+<translation id="4986638582553854481">称谓</translation>
 <translation id="4988210275050210843">正在下载文件 (<ph name="MEGABYTES" />)。</translation>
 <translation id="4988526792673242964">网页</translation>
 <translation id="5004416275253351869">Google 活动控件</translation>
@@ -713,6 +716,7 @@
 <translation id="6005538289190791541">建议的密码</translation>
 <translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{您有 <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> 个未读页面}other{您有 <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> 个未读页面}}</translation>
 <translation id="6014293228235665243">未读</translation>
+<translation id="6018309500671889594">允许广告主使用非个人身份信息研究广告系列。</translation>
 <translation id="6036057147555329831">额外的 ICU</translation>
 <translation id="6039379616847168523">跳转到下一个标签页</translation>
 <translation id="6040143037577758943">关闭</translation>
@@ -865,7 +869,7 @@
 <translation id="6981982820502123353">无障碍</translation>
 <translation id="6989267951144302301">无法下载</translation>
 <translation id="6990079615885386641">从 Google Play 商店下载应用：<ph name="APP_ACTION" /></translation>
-<translation id="6995899638241819463">在密码遭遇数据泄露时，向您发出警告</translation>
+<translation id="6995899638241819463">当密码遭遇数据泄露时，发送警告</translation>
 <translation id="7015203776128479407">初始同步设置未完成。同步功能处于关闭状态。</translation>
 <translation id="7022756207310403729">在浏览器中打开</translation>
 <translation id="702463548815491781">建议在开启 TalkBack 或“开关控制”时使用</translation>
@@ -921,6 +925,7 @@
 <translation id="7403691278183511381">Chrome 首次运行体验</translation>
 <translation id="741204030948306876">立即启用</translation>
 <translation id="7413229368719586778">开始日期：<ph name="DATE" /></translation>
+<translation id="7416941666639889592">加入 Web Crowd 即表示，您允许网站在不使用个人身份信息的情况下为您提供贴合需求的网络体验。Web Crowd 与音乐会中的人群类似，网站和广告主只会知道数千名用户有相似的兴趣。</translation>
 <translation id="7431991332293347422">控制 Google 如何利用您的浏览记录为您提供个性化的 Google 搜索和其他 Google 服务</translation>
 <translation id="7435356471928173109">已被您的管理员关闭</translation>
 <translation id="7437998757836447326">退出 Chrome</translation>
@@ -1122,6 +1127,7 @@
 <translation id="8748850008226585750">内容已隐藏</translation>
 <translation id="8788265440806329501">导航历史记录已关闭</translation>
 <translation id="8788968922598763114">重新打开上次关闭的标签页</translation>
+<translation id="8795672590390389447">隐私沙盒</translation>
 <translation id="8798449543960971550">已读</translation>
 <translation id="8812260976093120287">在某些网站上，您可以使用自己的设备通过上述支持的付款应用付款。</translation>
 <translation id="881688628773363275">无法查看标签页的预览内容。</translation>

@@ -205,6 +205,7 @@
 <translation id="2878884018241093801">કોઈ તાજેતરની આઇટમ નથી</translation>
 <translation id="2903844815300039659"><ph name="NAME" />, <ph name="STRENGTH" /> સાથે કનેક્ટ થયેલ</translation>
 <translation id="2914580577416829331">કૅપ્ચર કરેલી સ્ક્રીન</translation>
+<translation id="2941112035454246133">નીચું</translation>
 <translation id="2942350706960889382">ડૉક કરેલ મૅગ્નિફાયર</translation>
 <translation id="2942516765047364088">શેલ્ફ સ્થિતી</translation>
 <translation id="2946119680249604491">કનેક્શન ઉમેરો</translation>
@@ -217,6 +218,7 @@
 <translation id="3000461861112256445">મૉનો ઑડિઓ</translation>
 <translation id="3009178788565917040">આઉટપુટ</translation>
 <translation id="3033545621352269033">ચાલુ</translation>
+<translation id="3036649622769666520">ફાઇલો ખોલો</translation>
 <translation id="3038571455154067151">સાઇન ઇન કરવા માટે, તમારી Family Linkનો માતાપિતા માટેનો ઍક્સેસ કોડ દાખલ કરો</translation>
 <translation id="3045488863354895414">ગુડ આફ્ટરનૂન,</translation>
 <translation id="3051128274746680507">તમારું નિરીક્ષિત વપરાશકર્તા પ્રોફાઇલ ટૂંક સમયમાં કાઢી નાખવામાં આવશે. વધુ જાણવા માટે સાઇન ઇન કરો.</translation>
@@ -367,7 +369,6 @@
 <translation id="4321776623976362024">તમે હાઇ કૉન્ટ્રાસ્ટ માટેનો કીબોર્ડ શૉર્ટકટ દબાવેલ છે. શું તમે તેને ચાલુ કરવા માગો છો?</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4338109981321384717">બૃહદદર્શક કાચ</translation>
-<translation id="4350065043422286972">પિન કરેલી</translation>
 <translation id="4351433414020964307">સહાયક લોડ થઈ રહ્યું છે…</translation>
 <translation id="4356930093361201197">ઉચ્ચ કોન્ટ્રાસ્ટ મોડ</translation>
 <translation id="4371348193907997655">કાસ્ટ સેટિંગ</translation>
@@ -387,7 +388,6 @@
 <translation id="4479639480957787382">ઇથરનેટ</translation>
 <translation id="4481530544597605423">જોડીથી અલગ કરેલા ઉપકરણો</translation>
 <translation id="4485060137115666462">બટનને રાઇટ ક્લિક કરવાથી અથવા થોડીવાર દબાવી રાખવાથી, Assistant તમારી પસંદગી માટે વ્યાખ્યા, અનુવાદ અથવા એકમના રૂપાંતરણ જેવી માહિતી બતાવે છે.</translation>
-<translation id="4488735711456074171">એવું લાગે છે કે તમારો ફોન ઑનલાઇન નથી અને અમે તેનાથી કનેક્ટ કરી શકતા નથી.</translation>
 <translation id="4505050298327493054">સક્રિય ડેસ્ક.</translation>
 <translation id="4513946894732546136">પ્રતિસાદ</translation>
 <translation id="4527045527269911712">Bluetooth ડિવાઇસ "<ph name="DEVICE_NAME" />" ને જોડી બનાવવા માટે પરવાનગી જોઈએ છે.</translation>
@@ -448,7 +448,6 @@
 <translation id="4969092041573468113"><ph name="HOURS" /> કલાક <ph name="MINUTES" /> મિનિટ <ph name="SECONDS" /> સેકન્ડ</translation>
 <translation id="4975771730019223894">ઍપ બૅજિંગ</translation>
 <translation id="5003993274120026347">આગલું વાક્ય</translation>
-<translation id="5019169674188023236">એવું લાગે છે કે તમારા <ph name="DEVICE_TYPE" />માં તમારું બ્લૂટૂથ કે વાઇ-ફાઇ બંધ કરેલું છે. ફોન હબનો ઉપયોગ કરવા માટે કૃપા કરીને તમારું કનેક્શન ચેક કરો.</translation>
 <translation id="5030687792513154421">સમય પૂરો થયો</translation>
 <translation id="5033299697334913360">પૂર્ણ સ્ક્રીન કૅપ્ચર કરવા માટે સ્ક્રીન પર ગમે ત્યાં ક્લિક કરો</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" />, નવા ફોન સાથે કનેક્ટ થયું</translation>
@@ -581,7 +580,6 @@
 <translation id="6376931439017688372">બ્લૂટૂથ ચાલુ છે</translation>
 <translation id="6381109794406942707">ડિવાઇસને અનલૉક કરવા માટે. તમારો પિન દાખલ કરો.</translation>
 <translation id="639644700271529076">CAPS LOCK બંધ છે</translation>
-<translation id="6398771186477608158">ખાતરી કરો કે તમારો ફોન નજીકમાં હોય અને તેમાં બ્લૂટૂથ અને વાઇ-ફાઇની સુવિધા ચાલુ હોય.</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">બધા નોટિફિકેશન સાફ કરો</translation>
@@ -731,7 +729,6 @@
 <translation id="7780159184141939021">સ્ક્રીનને ફેરવો</translation>
 <translation id="7796353162336583443">એક નોંધ અથવા સ્ક્રીનશૉટ લેવા, Google સહાયક, લૅઝર પૉઇન્ટર અથવા બૃહદદર્શક કાચનો ઉપયોગ કરવા માટે શેલ્ફ પરના સ્ટાઇલસ બટનને ટૅપ કરો.</translation>
 <translation id="7798302898096527229">રદ કરવા માટે શોધો અથવા Shift દબાવો.</translation>
-<translation id="781126011916719498">તમારી મહત્ત્વની ફાઇલોને ઝડપથી ઍક્સેસ કરો. ફાઇલને પિન કરવા માટે તેને રાઇટ ક્લિક કરો અથવા ટચ કરીને થોડીવાર દબાવી રાખો.</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> અને <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">પ્રબળ સિગ્નલ</translation>
 <translation id="7837740436429729974">સમય સમાપ્ત</translation>
@@ -862,7 +859,6 @@
 <translation id="8877788021141246043">રિમાઇન્ડર સેટ કરો</translation>
 <translation id="8878886163241303700">સ્ક્રીનને વિસ્તૃત કરી રહ્યું છે</translation>
 <translation id="8883473964424809116">Google Assistant સેટિંગ ખોલવા માટે ક્લિક કરો.</translation>
-<translation id="8894122120026866664">તમારો ફોન શોધી શકાતો નથી</translation>
 <translation id="890616557918890486">સ્રોત બદલો</translation>
 <translation id="8909138438987180327">બૅટરી <ph name="PERCENTAGE" /> ટકા પર છે.</translation>
 <translation id="8913384980486163186">થીમ આધારિત (ડિફૉલ્ટ)</translation>
@@ -889,7 +885,6 @@
 <translation id="9084606467167974638">મેનૂની સ્થિતિને ટૉગલ કરો</translation>
 <translation id="9089416786594320554">ઇનપુટ પદ્ધતિઓ</translation>
 <translation id="9091626656156419976"><ph name="DISPLAY_NAME" /> ડિસ્પ્લે કાઢી નાખ્યું</translation>
-<translation id="9092749890156285613">તાજેતરમાં કૅપ્ચર કરેલી સ્ક્રીન અને ડાઉનલોડ</translation>
 <translation id="9098969848082897657">ફોન સાઇલન્ટ રાખો</translation>
 <translation id="9151726767154816831">અપડેટ કરવા માટે પુનઃપ્રારંભ કરો અને પાવરવૉશ કરો</translation>
 <translation id="9166331175924255663">નજીકના શેરિંગની ઉચ્ચ દૃશ્યતા ટૉગલ કરો.</translation>

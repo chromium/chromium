@@ -205,6 +205,7 @@
 <translation id="2878884018241093801">אין פריטים אחרונים</translation>
 <translation id="2903844815300039659">מחובר אל <ph name="NAME" />, <ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">צילומי מסך</translation>
+<translation id="2941112035454246133">נמוכה</translation>
 <translation id="2942350706960889382">זכוכית מגדלת במצב עגינה</translation>
 <translation id="2942516765047364088">מיקום המדף</translation>
 <translation id="2946119680249604491">הוספת חיבור</translation>
@@ -217,6 +218,7 @@
 <translation id="3000461861112256445">אודיו במונו</translation>
 <translation id="3009178788565917040">פלט</translation>
 <translation id="3033545621352269033">מופעל</translation>
+<translation id="3036649622769666520">פתיחת קבצים</translation>
 <translation id="3038571455154067151">‏כדי להיכנס יש להזין את קוד הגישה להורים (הקוד מ-Family Link)</translation>
 <translation id="3045488863354895414">אחה"צ טובים,</translation>
 <translation id="3051128274746680507">פרופיל המשתמש בפיקוח שלך יוסר בקרוב. יש להיכנס לחשבון כדי לקבל מידע נוסף.</translation>
@@ -367,7 +369,6 @@
 <translation id="4321776623976362024">הקשת על מקש הקיצור של ניגודיות גבוהה. להפעיל אותה?</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4338109981321384717">זכוכית מגדלת</translation>
-<translation id="4350065043422286972">הצמדות</translation>
 <translation id="4351433414020964307">‏Assistant בטעינה...</translation>
 <translation id="4356930093361201197">מצב ניגודיות גבוהה</translation>
 <translation id="4371348193907997655">‏הגדרות העברה (cast)</translation>
@@ -387,7 +388,6 @@
 <translation id="4479639480957787382">אתרנט</translation>
 <translation id="4481530544597605423">מכשירים לא מותאמים</translation>
 <translation id="4485060137115666462">‏כשלוחצים לחיצה ימנית או לחיצה ארוכה, Assistant מציגה פריט מידע, למשל ההגדרה, התרגום או המרת היחידות של הטקסט שבחרת.</translation>
-<translation id="4488735711456074171">נראה שהטלפון שלך לא מחובר לאינטרנט ולכן אנחנו לא מצליחים לחבר אותך אליו.</translation>
 <translation id="4505050298327493054">שולחן עבודה וירטואלי פעיל.</translation>
 <translation id="4513946894732546136">משוב</translation>
 <translation id="4527045527269911712">‏מכשיר ה-Bluetooth ‏"<ph name="DEVICE_NAME" />" מבקש הרשאה לבצע התאמה.</translation>
@@ -448,7 +448,6 @@
 <translation id="4969092041573468113"><ph name="HOURS" /> שעות <ph name="MINUTES" /> דקות <ph name="SECONDS" /> שניות</translation>
 <translation id="4975771730019223894">תיוג אפליקציות</translation>
 <translation id="5003993274120026347">המשפט הבא</translation>
-<translation id="5019169674188023236">‏נראה שהחיבור ל-Bluetooth או ל-Wi-Fi כבוי ב-<ph name="DEVICE_TYPE" /> שלך. יש לבדוק את החיבור כדי להשתמש ב-Phone Hub.</translation>
 <translation id="5030687792513154421">נגמר הזמן</translation>
 <translation id="5033299697334913360">כדי לצלם את המסך המלא, יש ללחוץ במקום כלשהו</translation>
 <translation id="5035236842988137213">מכשיר <ph name="DEVICE_NAME" /> התחבר לטלפון חדש</translation>
@@ -581,7 +580,6 @@
 <translation id="6376931439017688372">‏Bluetooth פועל</translation>
 <translation id="6381109794406942707">כדי לבטל את הנעילה של המכשיר, יש להזין את קוד האימות.</translation>
 <translation id="639644700271529076">‏CAPS LOCK כבוי</translation>
-<translation id="6398771186477608158">‏יש לוודא שהטלפון נמצא בקרבת מקום ושה-Bluetooth וה-WiFi פועלים.</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, עוצמת האות: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">ניקוי כל ההודעות</translation>
@@ -733,7 +731,6 @@
 <translation id="7780159184141939021">סיבוב המסך</translation>
 <translation id="7796353162336583443">‏כדי לרשום הערה או לצלם צילום מסך, או כדי להשתמש ב-Google Assistant, בסמן הלייזר או בזכוכית המגדלת, צריך להקיש על לחצן הסטיילוס במדף.</translation>
 <translation id="7798302898096527229">‏יש להקיש על Search או על Shift כדי לבטל.</translation>
-<translation id="781126011916719498">גישה מהירה לקבצים החשובים שלך. יש ללחוץ לחיצה ימנית או לחיצה ארוכה על קובץ כדי להצמיד אותו.</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> ו-<ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">אות חזק</translation>
 <translation id="7837740436429729974">עבר הזמן</translation>
@@ -864,7 +861,6 @@
 <translation id="8877788021141246043">הגדרת תזכורת</translation>
 <translation id="8878886163241303700">מסך מתרחב</translation>
 <translation id="8883473964424809116">‏יש ללחוץ כדי להיכנס להגדרות של Google Assistant.</translation>
-<translation id="8894122120026866664">לא ניתן למצוא את הטלפון</translation>
 <translation id="890616557918890486">שינוי המקור</translation>
 <translation id="8909138438987180327">שיעור הטעינה של הסוללה הוא <ph name="PERCENTAGE" /> אחוזים.</translation>
 <translation id="8913384980486163186">מעוצב (ברירת מחדל)</translation>
@@ -891,7 +887,6 @@
 <translation id="9084606467167974638">שינוי מיקום התפריט</translation>
 <translation id="9089416786594320554">שיטות קלט</translation>
 <translation id="9091626656156419976">הוסרה התצוגה של <ph name="DISPLAY_NAME" /></translation>
-<translation id="9092749890156285613">הורדות וצילומי מסך אחרונים</translation>
 <translation id="9098969848082897657">השתקת הטלפון</translation>
 <translation id="9151726767154816831">‏כדי לעדכן את המערכת, יש להפעיל את המכשיר מחדש ולבצע Powerwash</translation>
 <translation id="9166331175924255663">החלפת מצב השיתוף בקרבת מקום במידת חשיפה גבוהה.</translation>

@@ -22,6 +22,7 @@
 <translation id="2650312721222849884">要查看您在其他设备上用 Chromium 打开的标签页，请开启同步功能</translation>
 <translation id="2730884209570016437">由于另一个应用正在使用您的相机，因此 Chromium 无法使用。</translation>
 <translation id="2915596697727466327">Chromium 会使用 Face ID 来确保对您密码的访问均已获授权。</translation>
+<translation id="2918709798697875261">贵组织要求您保持已退出 Chromium 的状态。</translation>
 <translation id="2977470724722393594">Chromium 已是最新版本</translation>
 <translation id="3256316712990552818">已复制到 Chromium</translation>
 <translation id="3344973607274501920">Chromium 无法检查您的密码。请尝试检查您的互联网连接。</translation>
@@ -74,6 +75,7 @@
 <translation id="8776843108004031667">系统会从 Chromium 中移除此帐号以及所有未保存的数据。</translation>
 <translation id="9022552996538154597">登录 Chromium</translation>
 <translation id="9089354809943900324">Chromium版本太旧</translation>
+<translation id="912386518501777532">当您退出 Chromium 时，系统从此设备中清除了您的书签、历史记录、密码及其他设置。您已同步的数据仍会保存在您的帐号中。</translation>
 <translation id="921174536258924340">Chromium 无法检查所有密码。请明天再试，或者<ph name="BEGIN_LINK" />检查您的 Google 帐号中的密码<ph name="END_LINK" />。</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

@@ -14,6 +14,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1142745911746664600">Can't update Chrome</translation>
 <translation id="1154147086299354128">&amp;Open in Chrome</translation>
 <translation id="123620459398936149">Chrome OS could not sync your data. Please update your Sync passphrase.</translation>
+<translation id="1293325835983155583"><ph name="MANAGER" /> requires that you read and accept the following Terms of Service before using this device. These Terms do not expand, modify or limit the Google Chrome OS Terms.</translation>
 <translation id="1302523850133262269">Please wait while Chrome installs the latest system updates.</translation>
 <translation id="1355000804395496115">Use different profiles in Chrome to separate work and personal browsing, or for different people who use this device</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
@@ -207,7 +208,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6755885556185485672">Chrome OS didn't shut down correctly.</translation>
 <translation id="677276454032249905">Exit Chrome anyway?</translation>
 <translation id="683440813066116847">Inbound rule for Google Chrome Canary to allow mDNS traffic.</translation>
-<translation id="6885412569789873916">Chrome Beta Apps</translation>
+<translation id="6885412569789873916">Chrome Beta apps</translation>
 <translation id="6943584222992551122">This person's browsing data will be deleted from this device. To recover the data, sign in to Chrome as <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Inbound rule for Google Chrome Beta to allow mDNS traffic.</translation>
 <translation id="6989339256997917931">Google Chrome has been updated, but you haven't used it for at least 30 days.</translation>

@@ -608,7 +608,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3395827396354264108">Pickup method</translation>
 <translation id="3399952811970034796">Delivery Address</translation>
 <translation id="3402261774528610252">The connection used to load this site used TLS 1.0 or TLS 1.1, which are deprecated and will be disabled in the future. Once disabled, users will be prevented from loading this site. The server should enable TLS 1.2 or later.</translation>
-<translation id="3411120537985775570">Pasting from <ph name="ORIGIN_NAME" /> to this location is blocked by your administrator</translation>
 <translation id="3414952576877147120">Size:</translation>
 <translation id="3417660076059365994">Files that you upload or attach are sent to Google Cloud or third parties for analysis. For example, they might be scanned for sensitive data or malware.</translation>
 <translation id="3422248202833853650">Try exiting other programmes to free up memory.</translation>
@@ -685,7 +684,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3681007416295224113">Certificate information</translation>
 <translation id="3701427423622901115">Reset acknowledged.</translation>
 <translation id="3704162925118123524">The network that you are using may require you to visit its log-in page.</translation>
-<translation id="3704609568417268905"><ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">Loading...</translation>
 <translation id="3709599264800900598">Text that you copied</translation>
@@ -1298,7 +1296,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6051221802930200923">You cannot visit <ph name="SITE" /> right now because the website uses certificate pinning. Network errors and attacks are usually temporary, so this page will probably work later.</translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="6053328359599022071">Share your presence?</translation>
-<translation id="6057359309778282021">Your administrator has blocked sharing from <ph name="ORIGIN_NAME" /> to <ph name="VM_NAME" /></translation>
 <translation id="6058977677006700226">Use your cards on all your devices?</translation>
 <translation id="6059925163896151826">USB devices</translation>
 <translation id="6060009363608157444">Invalid DnsOverHttps mode.</translation>
@@ -1444,6 +1441,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6687335167692595844">Font size requested</translation>
 <translation id="6689249931105087298">Relative with black point compression</translation>
 <translation id="6689271823431384964">Chrome is offering to save your cards in your Google account because you are signed in. You can change this behaviour in settings. The cardholder name comes from your account.</translation>
+<translation id="6702919718839027939">Present</translation>
 <translation id="6710213216561001401">Previous</translation>
 <translation id="6710594484020273272">&lt;Type search term&gt;</translation>
 <translation id="671076103358959139">Enrolment Token:</translation>
@@ -1765,6 +1763,7 @@ Additional details:
 <translation id="7977538094055660992">Output device</translation>
 <translation id="7977894662897852582">Edp</translation>
 <translation id="79859296434321399">To view augmented reality content, install ARCore</translation>
+<translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="799149739215780103">Bind</translation>
 <translation id="7995512525968007366">Not Specified</translation>
 <translation id="800218591365569300">Try closing other tabs or programmes to free up memory.</translation>
@@ -1991,7 +1990,7 @@ Additional details:
 <translation id="892588693504540538">Punch top right</translation>
 <translation id="8931333241327730545">Do you want to save this card to your Google Account?</translation>
 <translation id="8932102934695377596">Your clock is behind</translation>
-<translation id="893332455753468063">Add Name</translation>
+<translation id="893332455753468063">Add name</translation>
 <translation id="8942355029279167844">Your administrator has allowed <ph name="APP_NAME" /> to collect diagnostics data to improve the product experience. See <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> for more information.</translation>
 <translation id="8943282376843390568">Lime</translation>
 <translation id="8957210676456822347">Captive Portal Authorisation</translation>
