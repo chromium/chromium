@@ -15,6 +15,7 @@
 #include "ui/message_center/views/notification_background_painter.h"
 #include "ui/message_center/views/notification_control_buttons_view.h"
 #include "ui/views/controls/native/native_view_host.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace message_center {
@@ -44,15 +45,16 @@ class ArcNotificationContentView
       public ArcNotificationSurfaceManager::Observer,
       public views::WidgetObserver {
  public:
-  static const char kViewClassName[];
+  METADATA_HEADER(ArcNotificationContentView);
+
 
   ArcNotificationContentView(ArcNotificationItem* item,
                              const message_center::Notification& notification,
                              message_center::MessageView* message_view);
+  ArcNotificationContentView(const ArcNotificationContentView&) = delete;
+  ArcNotificationContentView& operator=(const ArcNotificationContentView&) = delete;
   ~ArcNotificationContentView() override;
 
-  // views::View overrides:
-  const char* GetClassName() const override;
 
   void Update(const message_center::Notification& notification);
   message_center::NotificationControlButtonsView* GetControlButtonsView();
@@ -204,7 +206,6 @@ class ArcNotificationContentView
 
   std::unique_ptr<ui::LayerTreeOwner> surface_copy_;
 
-  DISALLOW_COPY_AND_ASSIGN(ArcNotificationContentView);
 };
 
 }  // namespace ash

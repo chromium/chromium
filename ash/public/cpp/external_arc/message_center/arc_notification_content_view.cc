@@ -27,6 +27,7 @@
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/root_view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -233,9 +234,6 @@ class ArcNotificationContentView::SlideHelper {
   DISALLOW_COPY_AND_ASSIGN(SlideHelper);
 };
 
-// static, for ArcNotificationContentView::GetClassName().
-const char ArcNotificationContentView::kViewClassName[] =
-    "ArcNotificationContentView";
 
 ArcNotificationContentView::ArcNotificationContentView(
     ArcNotificationItem* item,
@@ -292,10 +290,6 @@ ArcNotificationContentView::~ArcNotificationContentView() {
     item_->DecrementWindowRefCount();
   }
   CHECK(!views::WidgetObserver::IsInObserverList());
-}
-
-const char* ArcNotificationContentView::GetClassName() const {
-  return kViewClassName;
 }
 
 void ArcNotificationContentView::Update(
@@ -870,5 +864,8 @@ void ArcNotificationContentView::OnNotificationSurfaceRemoved(
 
   SetSurface(nullptr);
 }
+
+BEGIN_METADATA(ArcNotificationContentView, views::NativeViewHost)
+END_METADATA
 
 }  // namespace ash
