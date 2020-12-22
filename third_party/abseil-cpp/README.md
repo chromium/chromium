@@ -79,6 +79,9 @@ Abseil contains the following C++ library components:
   available within C++14 and C++17 versions of the C++ `<type_traits>` library.
 * [`numeric`](absl/numeric/)
   <br /> The `numeric` library contains C++11-compatible 128-bit integers.
+* [`status`](absl/status/)
+  <br /> The `status` contains abstractions for error handling, specifically
+  `absl::Status` and `absl::StatusOr<T>`.
 * [`strings`](absl/strings/)
   <br /> The `strings` library contains a variety of strings routines and
   utilities, including a C++11-compatible version of the C++17

@@ -23,7 +23,7 @@ absl_source_set("int128") {
   ]
   public = [ "int128.h" ]
   deps = [
-    "//third_party/abseil-cpp/absl/base:bits",
+    ":bits",
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
   ]

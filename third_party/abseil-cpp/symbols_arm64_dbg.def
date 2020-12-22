@@ -504,6 +504,7 @@ EXPORTS
     ??$assign@V?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@@?$optional_data_base@V?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@@optional_internal@absl@@IEAAX$$QEAV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@@Z
     ??$bit_cast@_J_K$0A@@absl@@YA_JAEB_K@Z
     ??$bit_cast@_K_J$0A@@absl@@YA_KAEB_J@Z
+    ??$bit_width@_K@absl@@YA_K_K@Z
     ??$construct@HAEBH@?$allocator_traits@V?$allocator@H@__1@std@@@absl@@SAXAEAV?$allocator@H@__1@std@@PEAHAEBH@Z
     ??$construct@HH@?$allocator_traits@V?$allocator@H@__1@std@@@absl@@SAXAEAV?$allocator@H@__1@std@@PEAH$$QEAH@Z
     ??$construct@PEAPEBVImpl@time_zone@cctz@time_internal@absl@@AEBQEAPEBV12345@@?$allocator@PEAPEBVImpl@time_zone@cctz@time_internal@absl@@@__1@std@@QEAAXPEAPEAPEBVImpl@time_zone@cctz@time_internal@absl@@AEBQEAPEBV34567@@Z
@@ -554,6 +555,7 @@ EXPORTS
     ??$construct_impl@V?$allocator@UPayload@status_internal@absl@@@__1@std@@AEAPEAUPayload@status_internal@absl@@U456@@?$allocator_traits@V?$allocator@UPayload@status_internal@absl@@@__1@std@@@absl@@CAXHAEAV?$allocator@UPayload@status_internal@absl@@@__1@std@@AEAPEAUPayload@status_internal@1@$$QEAU561@@Z
     ??$construct_impl@V?$allocator@USubRange@absl@@@__1@std@@AEAPEAUSubRange@absl@@U45@@?$allocator_traits@V?$allocator@USubRange@absl@@@__1@std@@@absl@@CAXHAEAV?$allocator@USubRange@absl@@@__1@std@@AEAPEAUSubRange@1@$$QEAU51@@Z
     ??$copy@PEBVFormatArgImpl@str_format_internal@absl@@PEAV123@@__1@std@@YAPEAVFormatArgImpl@str_format_internal@absl@@PEBV234@0PEAV234@@Z
+    ??$countl_zero@_K@absl@@YAH_K@Z
     ??$destroy@H@?$allocator_traits@V?$allocator@H@__1@std@@@absl@@SAXAEAV?$allocator@H@__1@std@@PEAH@Z
     ??$destroy@PEAPEBVImpl@time_zone@cctz@time_internal@absl@@@?$allocator_traits@V?$allocator@PEAPEBVImpl@time_zone@cctz@time_internal@absl@@@__1@std@@@__1@std@@SAXAEAV?$allocator@PEAPEBVImpl@time_zone@cctz@time_internal@absl@@@12@PEAPEAPEBVImpl@time_zone@cctz@time_internal@absl@@@Z
     ??$destroy@PEAUCordRep@cord_internal@absl@@@?$allocator_traits@V?$allocator@PEAUCordRep@cord_internal@absl@@@__1@std@@@__1@std@@SAXAEAV?$allocator@PEAUCordRep@cord_internal@absl@@@12@PEAPEAUCordRep@cord_internal@absl@@@Z

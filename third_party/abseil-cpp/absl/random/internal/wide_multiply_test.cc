@@ -15,7 +15,6 @@
 #include "absl/random/internal/wide_multiply.h"
 
 #include "gtest/gtest.h"
-#include "absl/base/internal/bits.h"
 #include "absl/numeric/int128.h"
 
 using absl::random_internal::MultiplyU64ToU128;

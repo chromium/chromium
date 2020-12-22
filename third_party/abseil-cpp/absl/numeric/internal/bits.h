@@ -89,7 +89,8 @@ ABSL_MUST_USE_RESULT ABSL_ATTRIBUTE_ALWAYS_INLINE constexpr T RotateLeft(
          static_cast<T>(x >> ((-s) & (std::numeric_limits<T>::digits - 1)));
 }
 
-ABSL_INTERNAL_CONSTEXPR_POPCOUNT int Popcount32(uint32_t x) noexcept {
+ABSL_ATTRIBUTE_ALWAYS_INLINE ABSL_INTERNAL_CONSTEXPR_POPCOUNT inline int
+Popcount32(uint32_t x) noexcept {
 #if ABSL_HAVE_BUILTIN(__builtin_popcount)
   static_assert(sizeof(unsigned int) == sizeof(x),
                 "__builtin_popcount does not take 32-bit arg");
@@ -101,7 +102,8 @@ ABSL_INTERNAL_CONSTEXPR_POPCOUNT int Popcount32(uint32_t x) noexcept {
 #endif
 }
 
-ABSL_INTERNAL_CONSTEXPR_POPCOUNT int Popcount64(uint64_t x) noexcept {
+ABSL_ATTRIBUTE_ALWAYS_INLINE ABSL_INTERNAL_CONSTEXPR_POPCOUNT inline int
+Popcount64(uint64_t x) noexcept {
 #if ABSL_HAVE_BUILTIN(__builtin_popcountll)
   static_assert(sizeof(unsigned long long) == sizeof(x),  // NOLINT(runtime/int)
                 "__builtin_popcount does not take 64-bit arg");
@@ -231,11 +233,11 @@ CountLeadingZeroes(T x) {
                 "T must have a power-of-2 size");
   static_assert(sizeof(T) <= sizeof(uint64_t), "T too large");
   return sizeof(T) <= sizeof(uint16_t)
-             ? CountLeadingZeroes16(x) -
+             ? CountLeadingZeroes16(static_cast<uint16_t>(x)) -
                    (std::numeric_limits<uint16_t>::digits -
                     std::numeric_limits<T>::digits)
              : (sizeof(T) <= sizeof(uint32_t)
-                    ? CountLeadingZeroes32(x) -
+                    ? CountLeadingZeroes32(static_cast<uint32_t>(x)) -
                           (std::numeric_limits<uint32_t>::digits -
                            std::numeric_limits<T>::digits)
                     : CountLeadingZeroes64(x));
@@ -314,9 +316,10 @@ CountTrailingZeroes(T x) noexcept {
   static_assert(sizeof(T) <= sizeof(uint64_t), "T too large");
   return x == 0 ? std::numeric_limits<T>::digits
                 : (sizeof(T) <= sizeof(uint16_t)
-                       ? CountTrailingZeroesNonzero16(x)
+                       ? CountTrailingZeroesNonzero16(static_cast<uint16_t>(x))
                        : (sizeof(T) <= sizeof(uint32_t)
-                              ? CountTrailingZeroesNonzero32(x)
+                              ? CountTrailingZeroesNonzero32(
+                                    static_cast<uint32_t>(x))
                               : CountTrailingZeroesNonzero64(x)));
 }
 

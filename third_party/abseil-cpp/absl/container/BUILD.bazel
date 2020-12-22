@@ -599,12 +599,12 @@ cc_library(
         ":hashtablez_sampler",
         ":have_sse",
         ":layout",
-        "//absl/base:bits",
         "//absl/base:config",
         "//absl/base:core_headers",
         "//absl/base:endian",
         "//absl/memory",
         "//absl/meta:type_traits",
+        "//absl/numeric:bits",
         "//absl/utility",
     ],
 )

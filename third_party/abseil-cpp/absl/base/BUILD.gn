@@ -230,15 +230,6 @@ absl_source_set("endian") {
   ]
 }
 
-absl_source_set("bits") {
-  public = [ "internal/bits.h" ]
-  public_deps = [
-    ":config",
-    ":core_headers",
-  ]
-  visibility = [ "//third_party/abseil-cpp/absl/*" ]
-}
-
 absl_source_set("exponential_biased") {
   sources = [ "internal/exponential_biased.cc" ]
   public = [ "internal/exponential_biased.h" ]

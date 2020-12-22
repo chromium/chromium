@@ -62,12 +62,14 @@ TEST(StrErrorTest, MultipleThreads) {
       ++counter;
       errno = ERANGE;
       const std::string value = absl::base_internal::StrError(i);
+      // EXPECT_* could change errno. Stash it first.
+      int check_err = errno;
+      EXPECT_THAT(check_err, Eq(ERANGE));
       // Only the GNU implementation is guaranteed to provide the
       // string "Unknown error nnn". POSIX doesn't say anything.
       if (!absl::StartsWith(value, "Unknown error ")) {
-        EXPECT_THAT(absl::base_internal::StrError(i), Eq(expected_strings[i]));
+        EXPECT_THAT(value, Eq(expected_strings[i]));
       }
-      EXPECT_THAT(errno, Eq(ERANGE));
     }
   };
 

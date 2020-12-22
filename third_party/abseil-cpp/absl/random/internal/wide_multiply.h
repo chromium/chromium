@@ -26,7 +26,7 @@
 #endif
 
 #include "absl/base/config.h"
-#include "absl/base/internal/bits.h"
+#include "absl/numeric/bits.h"
 #include "absl/numeric/int128.h"
 #include "absl/random/internal/traits.h"
 

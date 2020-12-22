@@ -69,6 +69,7 @@ cc_library(
         "//absl/base:config",
         "//absl/base:core_headers",
         "//absl/meta:type_traits",
+        "//absl/numeric:bits",
         "//absl/random/internal:distribution_caller",
         "//absl/random/internal:fast_uniform_bits",
         "//absl/random/internal:fastmath",

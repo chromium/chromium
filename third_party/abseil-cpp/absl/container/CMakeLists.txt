@@ -665,7 +665,7 @@ absl_cc_library(
   COPTS
     ${ABSL_DEFAULT_COPTS}
   DEPS
-    absl::internal_bits
+    absl::bits
     absl::compressed_tuple
     absl::config
     absl::container_common

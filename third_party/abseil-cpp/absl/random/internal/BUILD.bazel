@@ -175,8 +175,8 @@ cc_library(
     deps = [
         ":fastmath",
         ":traits",
-        "//absl/base:bits",
         "//absl/meta:type_traits",
+        "//absl/numeric:bits",
     ],
 )
 
@@ -187,7 +187,7 @@ cc_library(
     ],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
-    deps = ["//absl/base:bits"],
+    deps = ["//absl/numeric:bits"],
 )
 
 cc_library(
@@ -197,8 +197,8 @@ cc_library(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":traits",
-        "//absl/base:bits",
         "//absl/base:config",
+        "//absl/numeric:bits",
         "//absl/numeric:int128",
     ],
 )
@@ -229,6 +229,7 @@ cc_library(
         ":iostream_state_saver",
         "//absl/base:config",
         "//absl/meta:type_traits",
+        "//absl/numeric:bits",
         "//absl/numeric:int128",
     ],
 )
@@ -400,8 +401,8 @@ cc_test(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":generate_real",
-        "//absl/base:bits",
         "//absl/flags:flag",
+        "//absl/numeric:bits",
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -634,7 +635,7 @@ cc_test(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":wide_multiply",
-        "//absl/base:bits",
+        "//absl/numeric:bits",
         "//absl/numeric:int128",
         "@com_google_googletest//:gtest_main",
     ],

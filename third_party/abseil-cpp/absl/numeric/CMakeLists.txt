@@ -55,7 +55,7 @@ absl_cc_library(
   DEPS
     absl::config
     absl::core_headers
-    absl::internal_bits
+    absl::bits
   PUBLIC
 )
 

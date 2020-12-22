@@ -55,11 +55,7 @@ namespace {
 template <typename RealType>
 class UniformRealDistributionTest : public ::testing::Test {};
 
-#if defined(__EMSCRIPTEN__)
-using RealTypes = ::testing::Types<float, double>;
-#else
 using RealTypes = ::testing::Types<float, double, long double>;
-#endif  // defined(__EMSCRIPTEN__)
 
 TYPED_TEST_SUITE(UniformRealDistributionTest, RealTypes);
 

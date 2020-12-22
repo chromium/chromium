@@ -20,8 +20,8 @@
 #include <string>
 
 #include "gtest/gtest.h"
-#include "absl/base/internal/bits.h"
 #include "absl/flags/flag.h"
+#include "absl/numeric/bits.h"
 
 ABSL_FLAG(int64_t, absl_random_test_trials, 50000,
           "Number of trials for the probability tests.");
@@ -413,7 +413,6 @@ TEST(GenerateRealTest, U64ToDoubleSignedTest) {
 }
 
 TEST(GenerateRealTest, ExhaustiveFloat) {
-  using absl::base_internal::CountLeadingZeros64;
   auto ToFloat = [](uint64_t a) {
     return GenerateRealFromBits<float, GeneratePositiveTag, true>(a);
   };
@@ -464,7 +463,7 @@ TEST(GenerateRealTest, ExhaustiveFloat) {
 
     // Adjust decrement and check value based on how many leading 0
     // bits are set in the current value.
-    const int clz = CountLeadingZeros64(x);
+    const int clz = absl::countl_zero(x);
     if (clz < kDig) {
       dec <<= (kDig - clz);
       chk = (~uint64_t(0)) >> (clz + 1);

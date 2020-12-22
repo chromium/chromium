@@ -69,7 +69,6 @@ cc_library(
     deps = [
         ":internal",
         "//absl/base",
-        "//absl/base:bits",
         "//absl/base:config",
         "//absl/base:core_headers",
         "//absl/base:endian",
@@ -77,6 +76,7 @@ cc_library(
         "//absl/base:throw_delegate",
         "//absl/memory",
         "//absl/meta:type_traits",
+        "//absl/numeric:bits",
         "//absl/numeric:int128",
     ],
 )
@@ -663,11 +663,11 @@ cc_library(
     visibility = ["//visibility:private"],
     deps = [
         ":strings",
-        "//absl/base:bits",
         "//absl/base:config",
         "//absl/base:core_headers",
         "//absl/functional:function_ref",
         "//absl/meta:type_traits",
+        "//absl/numeric:bits",
         "//absl/numeric:int128",
         "//absl/types:optional",
         "//absl/types:span",

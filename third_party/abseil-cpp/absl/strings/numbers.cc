@@ -31,8 +31,8 @@
 #include <utility>
 
 #include "absl/base/attributes.h"
-#include "absl/base/internal/bits.h"
 #include "absl/base/internal/raw_logging.h"
+#include "absl/numeric/bits.h"
 #include "absl/strings/ascii.h"
 #include "absl/strings/charconv.h"
 #include "absl/strings/escaping.h"
@@ -303,7 +303,7 @@ static std::pair<uint64_t, uint64_t> Mul32(std::pair<uint64_t, uint64_t> num,
   uint64_t bits128_up = (bits96_127 >> 32) + (bits64_127 < bits64_95);
   if (bits128_up == 0) return {bits64_127, bits0_63};
 
-  int shift = 64 - base_internal::CountLeadingZeros64(bits128_up);
+  auto shift = static_cast<unsigned>(bit_width(bits128_up));
   uint64_t lo = (bits0_63 >> shift) + (bits64_127 << (64 - shift));
   uint64_t hi = (bits64_127 >> shift) + (bits128_up << (64 - shift));
   return {hi, lo};
@@ -334,7 +334,7 @@ static std::pair<uint64_t, uint64_t> PowFive(uint64_t num, int expfive) {
       5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5,
       5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5};
   result = Mul32(result, powers_of_five[expfive & 15]);
-  int shift = base_internal::CountLeadingZeros64(result.first);
+  int shift = countl_zero(result.first);
   if (shift != 0) {
     result.first = (result.first << shift) + (result.second >> (64 - shift));
     result.second = (result.second << shift);

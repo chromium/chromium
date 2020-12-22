@@ -10,7 +10,6 @@ set(ABSL_INTERNAL_DLL_FILES
   "base/const_init.h"
   "base/dynamic_annotations.h"
   "base/internal/atomic_hook.h"
-  "base/internal/bits.h"
   "base/internal/cycleclock.cc"
   "base/internal/cycleclock.h"
   "base/internal/direct_mmap.h"

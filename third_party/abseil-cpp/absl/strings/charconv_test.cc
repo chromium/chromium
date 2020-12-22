@@ -653,7 +653,9 @@ TEST(FromChars, NaNFloats) {
                      negative_from_chars_float);
     EXPECT_TRUE(std::signbit(negative_from_chars_float));
     EXPECT_FALSE(Identical(negative_from_chars_float, from_chars_float));
-    from_chars_float = std::copysign(from_chars_float, -1.0);
+    // Use the (float, float) overload of std::copysign to prevent narrowing;
+    // see https://gcc.gnu.org/bugzilla/show_bug.cgi?id=98251.
+    from_chars_float = std::copysign(from_chars_float, -1.0f);
     EXPECT_TRUE(Identical(negative_from_chars_float, from_chars_float));
   }
 }

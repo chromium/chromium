@@ -520,30 +520,6 @@ absl_cc_test(
 
 absl_cc_library(
   NAME
-    internal_bits
-  HDRS
-    "internal/bits.h"
-  COPTS
-    ${ABSL_DEFAULT_COPTS}
-  DEPS
-    absl::config
-    absl::core_headers
-)
-
-absl_cc_test(
-  NAME
-    internal_bits_test
-  SRCS
-    "internal/bits_test.cc"
-  COPTS
-    ${ABSL_TEST_COPTS}
-  DEPS
-    absl::internal_bits
-    gtest_main
-)
-
-absl_cc_library(
-  NAME
     exponential_biased
   SRCS
     "internal/exponential_biased.cc"

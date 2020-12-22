@@ -46,6 +46,7 @@
 
 namespace {
 
+using absl::SimpleAtoi;
 using absl::numbers_internal::kSixDigitsToBufferSize;
 using absl::numbers_internal::safe_strto32_base;
 using absl::numbers_internal::safe_strto64_base;
@@ -55,7 +56,6 @@ using absl::numbers_internal::SixDigitsToBuffer;
 using absl::strings_internal::Itoa;
 using absl::strings_internal::strtouint32_test_cases;
 using absl::strings_internal::strtouint64_test_cases;
-using absl::SimpleAtoi;
 using testing::Eq;
 using testing::MatchesRegex;
 
@@ -380,7 +380,7 @@ TEST(NumbersTest, Atoi) {
   VerifySimpleAtoiGood<uint32_t>(42, 42);
   VerifySimpleAtoiGood<unsigned int>(42, 42);
   VerifySimpleAtoiGood<int64_t>(-42, -42);
-  VerifySimpleAtoiGood<long>(-42, -42);  // NOLINT(runtime/int)
+  VerifySimpleAtoiGood<long>(-42, -42);  // NOLINT: runtime-int
   VerifySimpleAtoiGood<uint64_t>(42, 42);
   VerifySimpleAtoiGood<size_t>(42, 42);
   VerifySimpleAtoiGood<std::string::size_type>(42, 42);

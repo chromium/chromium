@@ -96,22 +96,22 @@ absl_source_set("generate_real") {
   deps = [
     ":fastmath",
     ":traits",
-    "//third_party/abseil-cpp/absl/base:bits",
     "//third_party/abseil-cpp/absl/meta:type_traits",
+    "//third_party/abseil-cpp/absl/numeric:bits",
   ]
 }
 
 absl_source_set("fastmath") {
   public = [ "fastmath.h" ]
-  deps = [ "//third_party/abseil-cpp/absl/base:bits" ]
+  deps = [ "//third_party/abseil-cpp/absl/numeric:bits" ]
 }
 
 absl_source_set("wide_multiply") {
   public = [ "wide_multiply.h" ]
   deps = [
     ":traits",
-    "//third_party/abseil-cpp/absl/base:bits",
     "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/numeric:bits",
     "//third_party/abseil-cpp/absl/numeric:int128",
   ]
 }
@@ -136,6 +136,7 @@ absl_source_set("pcg_engine") {
     ":iostream_state_saver",
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/meta:type_traits",
+    "//third_party/abseil-cpp/absl/numeric:bits",
     "//third_party/abseil-cpp/absl/numeric:int128",
   ]
 }

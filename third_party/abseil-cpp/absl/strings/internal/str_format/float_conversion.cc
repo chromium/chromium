@@ -24,10 +24,10 @@
 
 #include "absl/base/attributes.h"
 #include "absl/base/config.h"
-#include "absl/base/internal/bits.h"
 #include "absl/base/optimization.h"
 #include "absl/functional/function_ref.h"
 #include "absl/meta/type_traits.h"
+#include "absl/numeric/bits.h"
 #include "absl/numeric/int128.h"
 #include "absl/strings/numbers.h"
 #include "absl/types/optional.h"
@@ -315,12 +315,11 @@ class FractionalDigitGenerator {
 };
 
 // Count the number of leading zero bits.
-int LeadingZeros(uint64_t v) { return base_internal::CountLeadingZeros64(v); }
+int LeadingZeros(uint64_t v) { return countl_zero(v); }
 int LeadingZeros(uint128 v) {
   auto high = static_cast<uint64_t>(v >> 64);
   auto low = static_cast<uint64_t>(v);
-  return high != 0 ? base_internal::CountLeadingZeros64(high)
-                   : 64 + base_internal::CountLeadingZeros64(low);
+  return high != 0 ? countl_zero(high) : 64 + countl_zero(low);
 }
 
 // Round up the text digits starting at `p`.

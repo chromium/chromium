@@ -504,6 +504,7 @@ EXPORTS
     ??$assign@V?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@@?$optional_data_base@V?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@@optional_internal@absl@@IAEX$$QAV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@@Z
     ??$bit_cast@_J_K$0A@@absl@@YA_JAB_K@Z
     ??$bit_cast@_K_J$0A@@absl@@YA_KAB_J@Z
+    ??$bit_width@_K@absl@@YA_K_K@Z
     ??$construct@HABH@?$allocator_traits@V?$allocator@H@__1@std@@@absl@@SAXAAV?$allocator@H@__1@std@@PAHABH@Z
     ??$construct@HH@?$allocator_traits@V?$allocator@H@__1@std@@@absl@@SAXAAV?$allocator@H@__1@std@@PAH$$QAH@Z
     ??$construct@PAPBVImpl@time_zone@cctz@time_internal@absl@@ABQAPBV12345@@?$allocator@PAPBVImpl@time_zone@cctz@time_internal@absl@@@__1@std@@QAEXPAPAPBVImpl@time_zone@cctz@time_internal@absl@@ABQAPBV34567@@Z
@@ -554,6 +555,7 @@ EXPORTS
     ??$construct_impl@V?$allocator@UPayload@status_internal@absl@@@__1@std@@AAPAUPayload@status_internal@absl@@U456@@?$allocator_traits@V?$allocator@UPayload@status_internal@absl@@@__1@std@@@absl@@CAXHAAV?$allocator@UPayload@status_internal@absl@@@__1@std@@AAPAUPayload@status_internal@1@$$QAU561@@Z
     ??$construct_impl@V?$allocator@USubRange@absl@@@__1@std@@AAPAUSubRange@absl@@U45@@?$allocator_traits@V?$allocator@USubRange@absl@@@__1@std@@@absl@@CAXHAAV?$allocator@USubRange@absl@@@__1@std@@AAPAUSubRange@1@$$QAU51@@Z
     ??$copy@PBVFormatArgImpl@str_format_internal@absl@@PAV123@@__1@std@@YAPAVFormatArgImpl@str_format_internal@absl@@PBV234@0PAV234@@Z
+    ??$countl_zero@_K@absl@@YAH_K@Z
     ??$destroy@H@?$allocator_traits@V?$allocator@H@__1@std@@@absl@@SAXAAV?$allocator@H@__1@std@@PAH@Z
     ??$destroy@PAPBVImpl@time_zone@cctz@time_internal@absl@@@?$allocator_traits@V?$allocator@PAPBVImpl@time_zone@cctz@time_internal@absl@@@__1@std@@@__1@std@@SAXAAV?$allocator@PAPBVImpl@time_zone@cctz@time_internal@absl@@@12@PAPAPBVImpl@time_zone@cctz@time_internal@absl@@@Z
     ??$destroy@PAUCordRep@cord_internal@absl@@@?$allocator_traits@V?$allocator@PAUCordRep@cord_internal@absl@@@__1@std@@@__1@std@@SAXAAV?$allocator@PAUCordRep@cord_internal@absl@@@12@PAPAUCordRep@cord_internal@absl@@@Z
