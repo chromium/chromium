@@ -150,7 +150,7 @@ id ExecuteJavaScript(NSString* javascript, NSError* __autoreleasing* out_error);
 
 #pragma mark - Sync Utilities (EG2)
 
-// Clears fake sync server data.
+// Clears fake sync server data if the server is running.
 - (void)clearSyncServerData;
 
 // Starts the sync server. The server should not be running when calling this.

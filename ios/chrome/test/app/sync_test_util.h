@@ -72,7 +72,8 @@ void DeleteAutofillProfileFromFakeSyncServer(std::string guid);
 // Clears the autofill profile for the given |guid|.
 void ClearAutofillProfile(std::string guid);
 
-// Clears fake sync server data.
+// Clears fake sync server data if the server is running, otherwise does
+// nothing.
 void ClearSyncServerData();
 
 // Returns true if the sync backend server is intialized.

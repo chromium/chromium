@@ -128,8 +128,10 @@ void TriggerSyncCycle(syncer::ModelType type) {
 }
 
 void ClearSyncServerData() {
-  DCHECK(gSyncFakeServer);
-  gSyncFakeServer->ClearServerData();
+  // Allow the caller to preventively clear server data.
+  if (gSyncFakeServer) {
+    gSyncFakeServer->ClearServerData();
+  }
 }
 
 int GetNumberOfSyncEntities(syncer::ModelType type) {
