@@ -10,10 +10,6 @@
 
 #include "base/optional.h"
 
-namespace ui {
-class PropertyHandler;
-}
-
 namespace aura {
 class Window;
 }
@@ -33,15 +29,21 @@ class Permission;
 class Surface;
 class ShellSurfaceBase;
 
-// Sets the application ID to the property_handler. The application ID
-// identifies the general class of applications to which the window belongs.
-void SetShellApplicationId(ui::PropertyHandler* property_handler,
+// Sets the application ID for the window. The application ID identifies the
+// general class of applications to which the window belongs.
+void SetShellApplicationId(aura::Window* window,
                            const base::Optional<std::string>& id);
 const std::string* GetShellApplicationId(const aura::Window* window);
 
-// Sets the startup ID to the property handler. The startup ID identifies the
+// Sets ARC app type for the provided |window|.
+void SetArcAppType(aura::Window* window);
+
+// Sets Lacros app type for the provided |window|.
+void SetLacrosAppType(aura::Window* window);
+
+// Sets the startup ID for the window. The startup ID identifies the
 // application using startup notification protocol.
-void SetShellStartupId(ui::PropertyHandler* property_handler,
+void SetShellStartupId(aura::Window* window,
                        const base::Optional<std::string>& id);
 const std::string* GetShellStartupId(aura::Window* window);
 
@@ -60,9 +62,8 @@ const base::Optional<int32_t> GetShellClientAccessibilityId(
 // Returns true if the given key is the shell main surface key
 bool IsShellMainSurfaceKey(const void* key);
 
-// Sets the main surface to the property handler.
-void SetShellMainSurface(ui::PropertyHandler* property_handler,
-                         Surface* surface);
+// Sets the main surface for the window.
+void SetShellMainSurface(aura::Window* window, Surface* surface);
 
 // Returns the main Surface instance or nullptr if it is not set.
 // |window| must not be nullptr.

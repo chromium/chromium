@@ -63,6 +63,9 @@ class ASH_PUBLIC_EXPORT ArcOverlayManager : public aura::EnvObserver,
 
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
+  void OnWindowPropertyChanged(aura::Window* window,
+                               const void* key,
+                               intptr_t old) override;
   void OnWindowVisibilityChanged(aura::Window* window, bool visible) override;
 
  private:
@@ -75,10 +78,16 @@ class ASH_PUBLIC_EXPORT ArcOverlayManager : public aura::EnvObserver,
 
   base::ScopedObservation<aura::Env, aura::EnvObserver> env_observer_{this};
 
-  // This tracks newly created arc windows until they're being shown, or
-  // destoryed.
+  // This tracks a single newly created window until we get a confirmation that
+  // it is an exo::ShellSurfaceBase with the right settings to be an overlay
+  // (which should happen immediately after creation), or until another new
+  // window is created.
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      unknown_window_observation_{this};
+
+  // This tracks all the overlay candidates until they are actually ready
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
-      window_observations_{this};
+      overlay_window_observations_{this};
 };
 
 }  // namespace ash
