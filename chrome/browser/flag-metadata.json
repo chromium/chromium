@@ -3963,6 +3963,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "prefer-constant-frame-rate",
+    "owners": [ "chromeos-camera-eng@google.com" ],
+    "expiry_milestone": 96
+  },
+  {
     "name": "prefetch-notification-scheduling-integration",
     "owners": [ "hesen" ],
     "expiry_milestone": 88

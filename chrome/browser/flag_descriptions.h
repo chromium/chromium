@@ -2203,6 +2203,9 @@ extern const char kBluetoothWbsDogfoodDescription[];
 extern const char kCameraSystemWebAppName[];
 extern const char kCameraSystemWebAppDescription[];
 
+extern const char kPreferConstantFrameRateName[];
+extern const char kPreferConstantFrameRateDescription[];
+
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 extern const char kChromeOSDirectVideoDecoderName[];
 extern const char kChromeOSDirectVideoDecoderDescription[];

@@ -163,6 +163,11 @@ const base::Feature kBluetoothPhoneFilter{"BluetoothPhoneFilter",
 const base::Feature kCameraSystemWebApp{"CameraSystemWebApp",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables or disables the preference of using constant frame rate for camera
+// when streaming.
+const base::Feature kPreferConstantFrameRate{"PreferConstantFrameRate",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If enabled, will use the CDM in the Chrome OS daemon rather than loading the
 // CDM using the library CDM interface.
 const base::Feature kCdmFactoryDaemon{"CdmFactoryDaemon",

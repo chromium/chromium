@@ -18,6 +18,7 @@
 #include "base/posix/safe_strerror.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/capture/mojom/image_capture_types.h"
 #include "media/capture/video/blob_utils.h"
@@ -1083,8 +1084,10 @@ void CameraDeviceDelegate::OnGotFpsRange(
     int32_t requested_frame_rate =
         std::round(chrome_capture_params_.requested_format.frame_rate);
     bool prefer_constant_frame_rate =
-        camera_app_device_ && camera_app_device_->GetCaptureIntent() ==
-                                  cros::mojom::CaptureIntent::VIDEO_RECORD;
+        base::FeatureList::IsEnabled(
+            chromeos::features::kPreferConstantFrameRate) ||
+        (camera_app_device_ && camera_app_device_->GetCaptureIntent() ==
+                                   cros::mojom::CaptureIntent::VIDEO_RECORD);
     int32_t target_min, target_max;
     std::tie(target_min, target_max) = GetTargetFrameRateRange(
         static_metadata_, requested_frame_rate, prefer_constant_frame_rate);
