@@ -2138,10 +2138,6 @@ crbug.com/582750 http/tests/security/cors-rfc1918/addressspace-document-csp-appc
 # These appcache tests fail differently in release and debug, so skip them.
 crbug.com/582750 http/tests/devtools/appcache/* [ Skip ]
 
-# Remove these from virtual tests when Network Error Logging is turned on by default
-crbug.com/748549 external/wpt/network-error-logging/* [ Skip ]
-virtual/network-error-logging/external/wpt/network-error-logging/* [ Pass ]
-
 # WeakRefs are under development and run in a virtual test suite
 crbug.com/1016767 js/weakrefs/* [ Skip ]
 virtual/weakrefs/js/weakrefs/* [ Pass ]

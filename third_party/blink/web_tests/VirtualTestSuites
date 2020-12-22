@@ -339,11 +339,6 @@
     "args": ["--enable-features=Reporting"]
   },
   {
-    "prefix": "network-error-logging",
-    "bases": ["external/wpt/network-error-logging"],
-    "args": ["--enable-features=Reporting,NetworkErrorLogging"]
-  },
-  {
     "prefix": "compositor_threaded_scrollbar_scrolling",
     "bases": ["fast/scrolling/scrollbars",
               "paint/invalidation/scroll/sticky"],
