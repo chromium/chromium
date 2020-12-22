@@ -1508,6 +1508,14 @@ util.isAudioPlayerJsModulesEnabled = () => {
 };
 
 /**
+ * Returns true if  flag is enabled.
+ * @return {boolean}
+ */
+util.isVideoPlayerJsModulesEnabled = () => {
+  return loadTimeData.getBoolean('VIDEO_PLAYER_JS_MODULES_ENABLED');
+};
+
+/**
  * Retrieves all entries inside the given |rootEntry|.
  * @param {!DirectoryEntry} rootEntry
  * @param {function(!Array<!Entry>)} entriesCallback Called when some chunk of

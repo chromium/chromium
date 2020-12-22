@@ -19,6 +19,20 @@
 const ICON_IMAGE = 'images/icon/video-player-192.png';
 
 /**
+ * HTML source of the video player.
+ * @type {!string}
+ * @const
+ */
+const VIDEO_PLAYER_APP_URL = 'video_player.html';
+
+/**
+ * HTML source of the video player as JS module.
+ * @type {!string}
+ * @const
+ */
+const VIDEO_PLAYER_MODULE_APP_URL = 'video_player_module.html';
+
+/**
  * Configuration of the video player panel.
  * @type {!Object}
  * @const
@@ -82,8 +96,11 @@ const generateWindowId = (function() {
 
         // Opens the video player window.
         const urls = util.entriesToURLs(entries);
+        const videoPlayerUrl = util.isVideoPlayerJsModulesEnabled() ?
+            VIDEO_PLAYER_MODULE_APP_URL :
+            VIDEO_PLAYER_APP_URL;
         const videoPlayer = new AppWindowWrapper(
-            'video_player.html', assert(windowId), windowCreateOptions);
+            videoPlayerUrl, assert(windowId), windowCreateOptions);
 
         return videoPlayer.launch({items: urls, position: position}, false)
             .then(() => videoPlayer);
