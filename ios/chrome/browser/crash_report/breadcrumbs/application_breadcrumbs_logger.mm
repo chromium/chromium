@@ -81,14 +81,20 @@ ApplicationBreadcrumbsLogger::~ApplicationBreadcrumbsLogger() {
 }
 
 void ApplicationBreadcrumbsLogger::SetPersistentStorageManager(
-    BreadcrumbPersistentStorageManager* persistent_storage_manager) {
+    std::unique_ptr<BreadcrumbPersistentStorageManager>
+        persistent_storage_manager) {
   if (persistent_storage_manager_) {
     persistent_storage_manager_->StopMonitoringBreadcrumbManager(
         breadcrumb_manager_);
   }
 
-  persistent_storage_manager_ = persistent_storage_manager;
-  persistent_storage_manager->MonitorBreadcrumbManager(breadcrumb_manager_);
+  persistent_storage_manager_ = std::move(persistent_storage_manager);
+  persistent_storage_manager_->MonitorBreadcrumbManager(breadcrumb_manager_);
+}
+
+BreadcrumbPersistentStorageManager*
+ApplicationBreadcrumbsLogger::GetPersistentStorageManager() const {
+  return persistent_storage_manager_.get();
 }
 
 void ApplicationBreadcrumbsLogger::OnUserAction(const std::string& action,

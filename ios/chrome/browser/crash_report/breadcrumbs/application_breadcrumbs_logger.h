@@ -32,7 +32,12 @@ class ApplicationBreadcrumbsLogger {
   // Sets a BreadcrumbPersistentStorageManager to persist application breadcrumb
   // events logged by this ApplicationBreadcrumbsLogger instance.
   void SetPersistentStorageManager(
-      BreadcrumbPersistentStorageManager* persistent_storage_manager);
+      std::unique_ptr<BreadcrumbPersistentStorageManager>
+          persistent_storage_manager);
+
+  // Returns a pointer to the BreadcrumbPersistentStorageManager owned by this
+  // instance. May be null.
+  BreadcrumbPersistentStorageManager* GetPersistentStorageManager() const;
 
  private:
   ApplicationBreadcrumbsLogger(const ApplicationBreadcrumbsLogger&) = delete;
@@ -58,9 +63,10 @@ class ApplicationBreadcrumbsLogger {
   // Observes device orientation.
   id<NSObject> orientation_observer_;
 
-  // A weak reference to the persistent breadcrumb manager listening for events
+  // A strong pointer to the persistent breadcrumb manager listening for events
   // from |breadcrumb_manager_| to store to disk.
-  BreadcrumbPersistentStorageManager* persistent_storage_manager_ = nullptr;
+  std::unique_ptr<BreadcrumbPersistentStorageManager>
+      persistent_storage_manager_;
 
   // Used to avoid logging the same orientation twice.
   base::Optional<UIDeviceOrientation> last_orientation_;
