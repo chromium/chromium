@@ -12,7 +12,11 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.mockito.Mockito.when;
+
+import android.os.Bundle;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.runner.lifecycle.Stage;
 import android.text.Spanned;
 import android.text.style.ClickableSpan;
 import android.view.View;
@@ -30,13 +34,19 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.firstrun.FirstRunPageDelegate;
+import org.chromium.chrome.browser.firstrun.SigninFirstRunFragment;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -46,10 +56,12 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ActivityUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
+import org.chromium.components.signin.ChildAccountStatus;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
+import org.chromium.ui.test.util.DummyUiActivity;
 
 import java.io.IOException;
 
@@ -59,15 +71,41 @@ import java.io.IOException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class SigninFragmentTest {
+    /**
+     * This class is used to test {@link SigninFirstRunFragment}.
+     */
+    public static class CustomSigninFirstRunFragment extends SigninFirstRunFragment {
+        private FirstRunPageDelegate mFirstRunPageDelegate;
+
+        @Override
+        public FirstRunPageDelegate getPageDelegate() {
+            return mFirstRunPageDelegate;
+        }
+
+        private void setPageDelegate(FirstRunPageDelegate delegate) {
+            mFirstRunPageDelegate = delegate;
+        }
+    }
+
     @Rule
     public final DisableAnimationsTestRule mNoAnimationsRule = new DisableAnimationsTestRule();
+
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
     public final SyncTestRule mSyncTestRule = new SyncTestRule();
 
     @Rule
+    public final BaseActivityTestRule<DummyUiActivity> mActivityTestRule =
+            new BaseActivityTestRule<>(DummyUiActivity.class);
+
+    @Rule
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus().build();
+
+    @Mock
+    private FirstRunPageDelegate mFirstRunPageDelegateMock;
 
     private SigninActivity mSigninActivity;
 
@@ -139,6 +177,33 @@ public class SigninFragmentTest {
                 });
         mRenderTestRule.render(mSigninActivity.findViewById(R.id.fragment_container),
                 "signin_fragment_default_account");
+    }
+
+    @Test
+    @LargeTest
+    @Feature("RenderTest")
+    public void testSigninFragmentForcedSigninWithRegularChild() throws IOException {
+        CoreAccountInfo accountInfo = mSyncTestRule.addTestAccount();
+        CustomSigninFirstRunFragment fragment = new CustomSigninFirstRunFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString(SigninFirstRunFragment.FORCE_SIGNIN_ACCOUNT_TO, accountInfo.getEmail());
+        bundle.putInt(
+                SigninFirstRunFragment.CHILD_ACCOUNT_STATUS, ChildAccountStatus.REGULAR_CHILD);
+        when(mFirstRunPageDelegateMock.getProperties()).thenReturn(bundle);
+        fragment.setPageDelegate(mFirstRunPageDelegateMock);
+
+        mActivityTestRule.launchActivity(null);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mActivityTestRule.getActivity()
+                    .getSupportFragmentManager()
+                    .beginTransaction()
+                    .add(android.R.id.content, fragment)
+                    .commit();
+        });
+        ApplicationTestUtils.waitForActivityState(mActivityTestRule.getActivity(), Stage.RESUMED);
+
+        mRenderTestRule.render(mActivityTestRule.getActivity().findViewById(android.R.id.content),
+                "signin_fragment_forced_signin_with_regular_child");
     }
 
     @Test
