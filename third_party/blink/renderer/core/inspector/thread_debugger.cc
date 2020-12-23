@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "base/rand_util.h"
+
 #include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -569,6 +571,12 @@ void ThreadDebugger::cancelTimer(void* data) {
       return;
     }
   }
+}
+
+int64_t ThreadDebugger::generateUniqueId() {
+  int64_t result;
+  base::RandBytes(&result, sizeof result);
+  return result;
 }
 
 void ThreadDebugger::OnTimer(TimerBase* timer) {
