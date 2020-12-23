@@ -496,7 +496,7 @@ class ExtensionWebRequestEventRouter {
 
   // Registers a |callback| that is executed when the next page load happens.
   // The callback is then deleted.
-  void AddCallbackForPageLoad(const base::Closure& callback);
+  void AddCallbackForPageLoad(base::OnceClosure callback);
 
   // Whether there is a listener matching the request that has
   // ExtraInfoSpec::EXTRA_HEADERS set.
@@ -602,7 +602,7 @@ class ExtensionWebRequestEventRouter {
   using CrossBrowserContextMap =
       std::map<content::BrowserContext*,
                std::pair<bool, content::BrowserContext*>>;
-  using CallbacksForPageLoad = std::list<base::Closure>;
+  using CallbacksForPageLoad = std::list<base::OnceClosure>;
 
   ExtensionWebRequestEventRouter();
 
