@@ -3,6 +3,9 @@
 ../../gn_helpers.py
 ../../print_python_deps.py
 ../convert_dex_profile.py
+../pylib/__init__.py
+../pylib/dex/__init__.py
+../pylib/dex/dex_parser.py
 dex.py
 dex_jdk_libs.py
 proguard.py

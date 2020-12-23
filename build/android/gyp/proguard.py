@@ -16,6 +16,7 @@ import zipfile
 
 import dex
 import dex_jdk_libs
+from pylib.dex import dex_parser
 from util import build_utils
 from util import diff_utils
 
@@ -343,6 +344,15 @@ def _OptimizeWithR8(options,
           options.desugar_jdk_libs_configuration_jar,
           options.desugared_library_keep_rule_output, jdk_dex_output,
           options.warnings_as_errors)
+      if int(options.min_api) >= 24 and base_has_imported_lib:
+        with open(jdk_dex_output, 'rb') as f:
+          dexfile = dex_parser.DexFile(bytearray(f.read()))
+          for m in dexfile.IterMethodSignatureParts():
+            print('{}#{}'.format(m[0], m[2]))
+        assert False, (
+            'Desugared JDK libs are disabled on Monochrome and newer - see '
+            'crbug.com/1159984 for details, and see above list for desugared '
+            'classes and methods.')
 
     if options.uses_split:
       _SplitChildFeatures(options, feature_contexts, base_dex_context, tmp_dir,

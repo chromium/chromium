@@ -164,7 +164,6 @@
         "java.util.Date#toInstant": "java.util.DesugarDate",
         "java.util.GregorianCalendar#from": "java.util.DesugarGregorianCalendar",
         "java.util.GregorianCalendar#toZonedDateTime": "java.util.DesugarGregorianCalendar",
-        "java.util.TimeZone#getTimeZone": "java.util.DesugarTimeZone",
         "java.util.TimeZone#toZoneId": "java.util.DesugarTimeZone"
       },
       "custom_conversion": {
