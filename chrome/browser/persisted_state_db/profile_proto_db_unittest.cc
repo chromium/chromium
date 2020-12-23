@@ -36,22 +36,32 @@ profile_proto_db::ProfileProtoDBTestProto BuildTestProto(const char* key,
   return proto;
 }
 
-const char kMockKey[] = "key";
-const char kMockKeyPrefix[] = "k";
-const std::vector<uint8_t> kMockValueArray = {0xfa, 0x5b, 0x4c, 0x12};
-const persisted_state_db::PersistedStateContentProto kMockValue =
-    BuildProto(kMockKey, kMockValueArray);
+const char kMockKeyA[] = "A_key";
+const char kMockKeyPrefixA[] = "A";
+const std::vector<uint8_t> kMockValueArrayA = {0xfa, 0x5b, 0x4c, 0x12};
+const persisted_state_db::PersistedStateContentProto kMockValueA =
+    BuildProto(kMockKeyA, kMockValueArrayA);
 const std::vector<
     ProfileProtoDB<persisted_state_db::PersistedStateContentProto>::KeyAndValue>
-    kExpected = {{kMockKey, kMockValue}};
+    kExpectedA = {{kMockKeyA, kMockValueA}};
+const char kMockKeyB[] = "B_key";
+const std::vector<uint8_t> kMockValueArrayB = {0x3c, 0x9f, 0x5e, 0x69};
+const persisted_state_db::PersistedStateContentProto kMockValueB =
+    BuildProto(kMockKeyB, kMockValueArrayB);
+const std::vector<
+    ProfileProtoDB<persisted_state_db::PersistedStateContentProto>::KeyAndValue>
+    kExpectedB = {{kMockKeyB, kMockValueB}};
+const std::vector<
+    ProfileProtoDB<persisted_state_db::PersistedStateContentProto>::KeyAndValue>
+    kExpectedAB = {{kMockKeyA, kMockValueA}, {kMockKeyB, kMockValueB}};
 const std::vector<
     ProfileProtoDB<persisted_state_db::PersistedStateContentProto>::KeyAndValue>
     kEmptyExpected = {};
 const profile_proto_db::ProfileProtoDBTestProto kTestProto =
-    BuildTestProto(kMockKey, 42);
+    BuildTestProto(kMockKeyA, 42);
 const std::vector<
     ProfileProtoDB<profile_proto_db::ProfileProtoDBTestProto>::KeyAndValue>
-    kTestProtoExpected = {{kMockKey, kTestProto}};
+    kTestProtoExpected = {{kMockKeyA, kTestProto}};
 
 }  // namespace
 
@@ -229,14 +239,14 @@ TEST_F(ProfileProtoDBTest, TestArbitraryProto) {
   RunUntilIdle();
   base::RunLoop run_loop[2];
   test_proto_db()->InsertContent(
-      kMockKey, kTestProto,
+      kMockKeyA, kTestProto,
       base::BindOnce(&ProfileProtoDBTest::OperationEvaluation,
                      base::Unretained(this), run_loop[0].QuitClosure(), true));
   test_content_db()->UpdateCallback(true);
   RunUntilIdle();
   run_loop[0].Run();
   test_proto_db()->LoadContentWithPrefix(
-      kMockKey,
+      kMockKeyA,
       base::BindOnce(&ProfileProtoDBTest::GetTestEvaluationTestProtoDB,
                      base::Unretained(this), run_loop[1].QuitClosure(),
                      kTestProtoExpected));
@@ -254,16 +264,16 @@ TEST_F(ProfileProtoDBTest, TestKeyInsertionSucceeded) {
   InitPersistedStateDB();
   base::RunLoop run_loop[2];
   persisted_state_db()->InsertContent(
-      kMockKey, kMockValue,
+      kMockKeyA, kMockValueA,
       base::BindOnce(&ProfileProtoDBTest::OperationEvaluation,
                      base::Unretained(this), run_loop[0].QuitClosure(), true));
   MockInsertCallbackPersistedStateDB(content_db(), true);
   run_loop[0].Run();
   persisted_state_db()->LoadContentWithPrefix(
-      kMockKey,
+      kMockKeyA,
       base::BindOnce(&ProfileProtoDBTest::GetEvaluationPersistedStateDB,
                      base::Unretained(this), run_loop[1].QuitClosure(),
-                     kExpected));
+                     kExpectedA));
   MockLoadCallbackPersistedStateDB(content_db(), true);
   run_loop[1].Run();
 }
@@ -272,13 +282,13 @@ TEST_F(ProfileProtoDBTest, TestKeyInsertionFailed) {
   InitPersistedStateDB();
   base::RunLoop run_loop[2];
   persisted_state_db()->InsertContent(
-      kMockKey, kMockValue,
+      kMockKeyA, kMockValueA,
       base::BindOnce(&ProfileProtoDBTest::OperationEvaluation,
                      base::Unretained(this), run_loop[0].QuitClosure(), false));
   MockInsertCallbackPersistedStateDB(content_db(), false);
   run_loop[0].Run();
   persisted_state_db()->LoadContentWithPrefix(
-      kMockKey,
+      kMockKeyA,
       base::BindOnce(&ProfileProtoDBTest::GetEvaluationPersistedStateDB,
                      base::Unretained(this), run_loop[1].QuitClosure(),
                      kEmptyExpected));
@@ -290,51 +300,148 @@ TEST_F(ProfileProtoDBTest, TestKeyInsertionPrefix) {
   InitPersistedStateDB();
   base::RunLoop run_loop[2];
   persisted_state_db()->InsertContent(
-      kMockKey, kMockValue,
+      kMockKeyA, kMockValueA,
       base::BindOnce(&ProfileProtoDBTest::OperationEvaluation,
                      base::Unretained(this), run_loop[0].QuitClosure(), true));
   MockInsertCallbackPersistedStateDB(content_db(), true);
   run_loop[0].Run();
   persisted_state_db()->LoadContentWithPrefix(
-      kMockKeyPrefix,
+      kMockKeyPrefixA,
       base::BindOnce(&ProfileProtoDBTest::GetEvaluationPersistedStateDB,
                      base::Unretained(this), run_loop[1].QuitClosure(),
-                     kExpected));
+                     kExpectedA));
   MockLoadCallbackPersistedStateDB(content_db(), true);
   run_loop[1].Run();
 }
 
-TEST_F(ProfileProtoDBTest, TestDelete) {
+TEST_F(ProfileProtoDBTest, TestLoadOneEntry) {
   InitPersistedStateDB();
   base::RunLoop run_loop[4];
   persisted_state_db()->InsertContent(
-      kMockKey, kMockValue,
+      kMockKeyA, kMockValueA,
+      base::BindOnce(&ProfileProtoDBTest::OperationEvaluation,
+                     base::Unretained(this), run_loop[0].QuitClosure(), true));
+  MockInsertCallbackPersistedStateDB(content_db(), true);
+  run_loop[0].Run();
+  persisted_state_db()->InsertContent(
+      kMockKeyB, kMockValueB,
+      base::BindOnce(&ProfileProtoDBTest::OperationEvaluation,
+                     base::Unretained(this), run_loop[1].QuitClosure(), true));
+  MockInsertCallbackPersistedStateDB(content_db(), true);
+  run_loop[1].Run();
+  persisted_state_db()->LoadOneEntry(
+      kMockKeyA,
+      base::BindOnce(&ProfileProtoDBTest::GetEvaluationPersistedStateDB,
+                     base::Unretained(this), run_loop[2].QuitClosure(),
+                     kExpectedA));
+  content_db()->GetCallback(true);
+  run_loop[2].Run();
+  persisted_state_db()->LoadOneEntry(
+      kMockKeyB,
+      base::BindOnce(&ProfileProtoDBTest::GetEvaluationPersistedStateDB,
+                     base::Unretained(this), run_loop[3].QuitClosure(),
+                     kExpectedB));
+  content_db()->GetCallback(true);
+  run_loop[3].Run();
+}
+
+TEST_F(ProfileProtoDBTest, TestLoadAllEntries) {
+  InitPersistedStateDB();
+  base::RunLoop run_loop[3];
+  persisted_state_db()->InsertContent(
+      kMockKeyA, kMockValueA,
+      base::BindOnce(&ProfileProtoDBTest::OperationEvaluation,
+                     base::Unretained(this), run_loop[0].QuitClosure(), true));
+  MockInsertCallbackPersistedStateDB(content_db(), true);
+  run_loop[0].Run();
+  persisted_state_db()->InsertContent(
+      kMockKeyB, kMockValueB,
+      base::BindOnce(&ProfileProtoDBTest::OperationEvaluation,
+                     base::Unretained(this), run_loop[1].QuitClosure(), true));
+  MockInsertCallbackPersistedStateDB(content_db(), true);
+  run_loop[1].Run();
+  persisted_state_db()->LoadAllEntries(base::BindOnce(
+      &ProfileProtoDBTest::GetEvaluationPersistedStateDB,
+      base::Unretained(this), run_loop[2].QuitClosure(), kExpectedAB));
+  MockLoadCallbackPersistedStateDB(content_db(), true);
+  run_loop[2].Run();
+}
+
+TEST_F(ProfileProtoDBTest, TestDeleteWithPrefix) {
+  InitPersistedStateDB();
+  base::RunLoop run_loop[4];
+  persisted_state_db()->InsertContent(
+      kMockKeyA, kMockValueA,
       base::BindOnce(&ProfileProtoDBTest::OperationEvaluation,
                      base::Unretained(this), run_loop[0].QuitClosure(), true));
   MockInsertCallbackPersistedStateDB(content_db(), true);
   run_loop[0].Run();
   persisted_state_db()->LoadContentWithPrefix(
-      kMockKey,
+      kMockKeyA,
       base::BindOnce(&ProfileProtoDBTest::GetEvaluationPersistedStateDB,
                      base::Unretained(this), run_loop[1].QuitClosure(),
-                     kExpected));
+                     kExpectedA));
   MockLoadCallbackPersistedStateDB(content_db(), true);
   run_loop[1].Run();
 
   persisted_state_db()->DeleteContentWithPrefix(
-      kMockKey,
+      kMockKeyPrefixA,
       base::BindOnce(&ProfileProtoDBTest::OperationEvaluation,
                      base::Unretained(this), run_loop[2].QuitClosure(), true));
   MockDeleteCallbackPersistedStateDB(content_db(), true);
   run_loop[2].Run();
 
   persisted_state_db()->LoadContentWithPrefix(
-      kMockKey,
+      kMockKeyA,
       base::BindOnce(&ProfileProtoDBTest::GetEvaluationPersistedStateDB,
                      base::Unretained(this), run_loop[3].QuitClosure(),
                      kEmptyExpected));
   MockLoadCallbackPersistedStateDB(content_db(), true);
   run_loop[3].Run();
+}
+
+TEST_F(ProfileProtoDBTest, TestDeleteOneEntry) {
+  InitPersistedStateDB();
+  base::RunLoop run_loop[6];
+  persisted_state_db()->InsertContent(
+      kMockKeyA, kMockValueA,
+      base::BindOnce(&ProfileProtoDBTest::OperationEvaluation,
+                     base::Unretained(this), run_loop[0].QuitClosure(), true));
+  MockInsertCallbackPersistedStateDB(content_db(), true);
+  run_loop[0].Run();
+  persisted_state_db()->LoadContentWithPrefix(
+      kMockKeyA,
+      base::BindOnce(&ProfileProtoDBTest::GetEvaluationPersistedStateDB,
+                     base::Unretained(this), run_loop[1].QuitClosure(),
+                     kExpectedA));
+  MockLoadCallbackPersistedStateDB(content_db(), true);
+  run_loop[1].Run();
+  persisted_state_db()->DeleteOneEntry(
+      kMockKeyPrefixA,
+      base::BindOnce(&ProfileProtoDBTest::OperationEvaluation,
+                     base::Unretained(this), run_loop[2].QuitClosure(), false));
+  MockDeleteCallbackPersistedStateDB(content_db(), false);
+  run_loop[2].Run();
+  persisted_state_db()->LoadContentWithPrefix(
+      kMockKeyA,
+      base::BindOnce(&ProfileProtoDBTest::GetEvaluationPersistedStateDB,
+                     base::Unretained(this), run_loop[3].QuitClosure(),
+                     kExpectedA));
+  MockLoadCallbackPersistedStateDB(content_db(), true);
+  run_loop[3].Run();
+  persisted_state_db()->DeleteOneEntry(
+      kMockKeyA,
+      base::BindOnce(&ProfileProtoDBTest::OperationEvaluation,
+                     base::Unretained(this), run_loop[4].QuitClosure(), true));
+  MockDeleteCallbackPersistedStateDB(content_db(), true);
+  run_loop[4].Run();
+  persisted_state_db()->LoadContentWithPrefix(
+      kMockKeyPrefixA,
+      base::BindOnce(&ProfileProtoDBTest::GetEvaluationPersistedStateDB,
+                     base::Unretained(this), run_loop[5].QuitClosure(),
+                     kEmptyExpected));
+  MockLoadCallbackPersistedStateDB(content_db(), true);
+  run_loop[5].Run();
 }
 
 TEST_F(ProfileProtoDBTest, TestDeferredOperations) {
@@ -344,14 +451,14 @@ TEST_F(ProfileProtoDBTest, TestDeferredOperations) {
   base::RunLoop run_loop[4];
 
   persisted_state_db()->InsertContent(
-      kMockKey, kMockValue,
+      kMockKeyA, kMockValueA,
       base::BindOnce(&ProfileProtoDBTest::OperationEvaluation,
                      base::Unretained(this), run_loop[0].QuitClosure(), true));
   persisted_state_db()->LoadContentWithPrefix(
-      kMockKey,
+      kMockKeyA,
       base::BindOnce(&ProfileProtoDBTest::GetEvaluationPersistedStateDB,
                      base::Unretained(this), run_loop[1].QuitClosure(),
-                     kExpected));
+                     kExpectedA));
   EXPECT_EQ(2u, deferred_operations().size());
 
   content_db()->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
@@ -364,14 +471,14 @@ TEST_F(ProfileProtoDBTest, TestDeferredOperations) {
   EXPECT_EQ(0u, deferred_operations().size());
 
   persisted_state_db()->DeleteContentWithPrefix(
-      kMockKey,
+      kMockKeyA,
       base::BindOnce(&ProfileProtoDBTest::OperationEvaluation,
                      base::Unretained(this), run_loop[2].QuitClosure(), true));
   EXPECT_EQ(0u, deferred_operations().size());
   MockDeleteCallbackPersistedStateDB(content_db(), true);
 
   persisted_state_db()->LoadContentWithPrefix(
-      kMockKey,
+      kMockKeyA,
       base::BindOnce(&ProfileProtoDBTest::GetEvaluationPersistedStateDB,
                      base::Unretained(this), run_loop[3].QuitClosure(),
                      kEmptyExpected));
@@ -388,16 +495,16 @@ TEST_F(ProfileProtoDBTest, TestInitializationFailure) {
 
   // Do some operations before database status is known
   persisted_state_db()->InsertContent(
-      kMockKey, kMockValue,
+      kMockKeyA, kMockValueA,
       base::BindOnce(&ProfileProtoDBTest::OperationEvaluation,
                      base::Unretained(this), run_loop[0].QuitClosure(), false));
   persisted_state_db()->LoadContentWithPrefix(
-      kMockKey,
+      kMockKeyA,
       base::BindOnce(&ProfileProtoDBTest::GetEvaluationPersistedStateDB,
                      base::Unretained(this), run_loop[1].QuitClosure(),
                      kEmptyExpected));
   persisted_state_db()->DeleteContentWithPrefix(
-      kMockKey,
+      kMockKeyA,
       base::BindOnce(&ProfileProtoDBTest::OperationEvaluation,
                      base::Unretained(this), run_loop[2].QuitClosure(), false));
   EXPECT_EQ(3u, deferred_operations().size());
@@ -415,16 +522,16 @@ TEST_F(ProfileProtoDBTest, TestInitializationFailure) {
   // More operations should just return false/null as the database
   // failed to initialize
   persisted_state_db()->InsertContent(
-      kMockKey, kMockValue,
+      kMockKeyA, kMockValueA,
       base::BindOnce(&ProfileProtoDBTest::OperationEvaluation,
                      base::Unretained(this), run_loop[3].QuitClosure(), false));
   persisted_state_db()->LoadContentWithPrefix(
-      kMockKey,
+      kMockKeyA,
       base::BindOnce(&ProfileProtoDBTest::GetEvaluationPersistedStateDB,
                      base::Unretained(this), run_loop[4].QuitClosure(),
                      kEmptyExpected));
   persisted_state_db()->DeleteContentWithPrefix(
-      kMockKey,
+      kMockKeyA,
       base::BindOnce(&ProfileProtoDBTest::OperationEvaluation,
                      base::Unretained(this), run_loop[5].QuitClosure(), false));
 

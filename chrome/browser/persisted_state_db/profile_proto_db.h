@@ -60,6 +60,12 @@ class ProfileProtoDB : public KeyedService {
   ProfileProtoDB& operator=(const ProfileProtoDB&) = delete;
   ~ProfileProtoDB() override;
 
+  // Loads the entry for the key and passes it to the callback.
+  void LoadOneEntry(const std::string& key, LoadCallback callback);
+
+  // Loads all entries within the databse and passes them to the callback.
+  void LoadAllEntries(LoadCallback callback);
+
   // Loads the content data matching a prefix for the key and passes them to the
   // callback.
   void LoadContentWithPrefix(const std::string& key_prefix,
@@ -70,6 +76,9 @@ class ProfileProtoDB : public KeyedService {
   void InsertContent(const std::string& key,
                      const T& value,
                      OperationCallback callback);
+
+  // Deletes the entry with certain key in the database.
+  void DeleteOneEntry(const std::string& key, OperationCallback callback);
 
   // Deletes content in the database, matching all keys which have a prefix
   // that matches the key.
@@ -101,6 +110,11 @@ class ProfileProtoDB : public KeyedService {
 
   // Passes back database status following database initialization.
   void OnDatabaseInitialized(leveldb_proto::Enums::InitStatus status);
+
+  // Callback when one entry is loaded.
+  void OnLoadOneEntry(LoadCallback callback,
+                      bool success,
+                      std::unique_ptr<T> entry);
 
   // Callback when content is loaded.
   void OnLoadContent(LoadCallback callback,
@@ -152,12 +166,48 @@ template <typename T>
 ProfileProtoDB<T>::~ProfileProtoDB() = default;
 
 template <typename T>
+void ProfileProtoDB<T>::LoadOneEntry(const std::string& key,
+                                     LoadCallback callback) {
+  if (InitStatusUnknown()) {
+    deferred_operations_.push_back(base::BindOnce(
+        &ProfileProtoDB::LoadOneEntry, weak_ptr_factory_.GetWeakPtr(), key,
+        std::move(callback)));
+  } else if (FailedToInit()) {
+    base::ThreadPool::PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), false, std::vector<KeyAndValue>()));
+  } else {
+    storage_database_->GetEntry(
+        key,
+        base::BindOnce(&ProfileProtoDB::OnLoadOneEntry,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+}
+
+template <typename T>
+void ProfileProtoDB<T>::LoadAllEntries(LoadCallback callback) {
+  if (InitStatusUnknown()) {
+    deferred_operations_.push_back(
+        base::BindOnce(&ProfileProtoDB::LoadAllEntries,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  } else if (FailedToInit()) {
+    base::ThreadPool::PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), false, std::vector<KeyAndValue>()));
+  } else {
+    storage_database_->LoadEntries(
+        base::BindOnce(&ProfileProtoDB::OnLoadContent,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+}
+
+template <typename T>
 void ProfileProtoDB<T>::LoadContentWithPrefix(const std::string& key_prefix,
                                               LoadCallback callback) {
   if (InitStatusUnknown()) {
     deferred_operations_.push_back(base::BindOnce(
         &ProfileProtoDB::LoadContentWithPrefix, weak_ptr_factory_.GetWeakPtr(),
-        std::move(key_prefix), std::move(callback)));
+        key_prefix, std::move(callback)));
   } else if (FailedToInit()) {
     base::ThreadPool::PostTask(
         FROM_HERE,
@@ -180,8 +230,8 @@ void ProfileProtoDB<T>::InsertContent(const std::string& key,
                                       OperationCallback callback) {
   if (InitStatusUnknown()) {
     deferred_operations_.push_back(base::BindOnce(
-        &ProfileProtoDB::InsertContent, weak_ptr_factory_.GetWeakPtr(),
-        std::move(key), std::move(value), std::move(callback)));
+        &ProfileProtoDB::InsertContent, weak_ptr_factory_.GetWeakPtr(), key,
+        std::move(value), std::move(callback)));
   } else if (FailedToInit()) {
     base::ThreadPool::PostTask(FROM_HERE,
                                base::BindOnce(std::move(callback), false));
@@ -196,24 +246,42 @@ void ProfileProtoDB<T>::InsertContent(const std::string& key,
   }
 }
 
+template <typename T>
+void ProfileProtoDB<T>::DeleteOneEntry(const std::string& key,
+                                       OperationCallback callback) {
+  if (InitStatusUnknown()) {
+    deferred_operations_.push_back(base::BindOnce(
+        &ProfileProtoDB::DeleteOneEntry, weak_ptr_factory_.GetWeakPtr(), key,
+        std::move(callback)));
+  } else if (FailedToInit()) {
+    base::ThreadPool::PostTask(FROM_HERE,
+                               base::BindOnce(std::move(callback), false));
+  } else {
+    auto keys = std::make_unique<std::vector<std::string>>();
+    keys->push_back(key);
+    storage_database_->UpdateEntries(
+        std::make_unique<ContentEntry>(), std::move(keys),
+        base::BindOnce(&ProfileProtoDB::OnOperationCommitted,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+}
+
 // Deletes content in the database, matching all keys which have a prefix
 // that matches the key.
 template <typename T>
 void ProfileProtoDB<T>::DeleteContentWithPrefix(const std::string& key_prefix,
                                                 OperationCallback callback) {
   if (InitStatusUnknown()) {
-    deferred_operations_.push_back(
-        base::BindOnce(&ProfileProtoDB::DeleteContentWithPrefix,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(key_prefix),
-                       std::move(callback)));
+    deferred_operations_.push_back(base::BindOnce(
+        &ProfileProtoDB::DeleteContentWithPrefix,
+        weak_ptr_factory_.GetWeakPtr(), key_prefix, std::move(callback)));
   } else if (FailedToInit()) {
     base::ThreadPool::PostTask(FROM_HERE,
                                base::BindOnce(std::move(callback), false));
   } else {
     storage_database_->UpdateEntriesWithRemoveFilter(
         std::make_unique<ContentEntry>(),
-        std::move(
-            base::BindRepeating(&DatabasePrefixFilter, std::move(key_prefix))),
+        std::move(base::BindRepeating(&DatabasePrefixFilter, key_prefix)),
         base::BindOnce(&ProfileProtoDB::OnOperationCommitted,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
@@ -281,6 +349,18 @@ void ProfileProtoDB<T>::OnDatabaseInitialized(
     std::move(deferred_operation).Run();
   }
   deferred_operations_.clear();
+}
+
+// Callback when one entry is loaded.
+template <typename T>
+void ProfileProtoDB<T>::OnLoadOneEntry(LoadCallback callback,
+                                       bool success,
+                                       std::unique_ptr<T> entry) {
+  std::vector<KeyAndValue> results;
+  if (success && entry) {
+    results.emplace_back(entry->key(), *entry);
+  }
+  std::move(callback).Run(success, std::move(results));
 }
 
 // Callback when content is loaded.
