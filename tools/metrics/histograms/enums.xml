@@ -38316,12 +38316,15 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="-1951732875" label="xkb:be::nld"/>
   <int value="-1856842164" label="xkb:ge::geo"/>
   <int value="-1793755122" label="zh-hant-t-i0-cangjie-1987-x-m0-simplified"/>
+  <int value="-1710308694" label="experimental_layout-es_lang-ca"/>
   <int value="-1710145174" label="xkb:am:phonetic:arm"/>
   <int value="-1709647399" label="xkb:mn::mon"/>
   <int value="-1668610460" label="xkb:us:dvp:eng"/>
   <int value="-1622129313" label="sr-t-i0-und"/>
   <int value="-1616253108" label="ta-t-i0-und"/>
   <int value="-1608984043" label="vkd_my_myansan"/>
+  <int value="-1595218901" label="experimental_layout-gb(extd)_lang-sv"/>
+  <int value="-1530423498" label="experimental_layout-no_lang-sv"/>
   <int value="-1520893793" label="vkd_te_phone"/>
   <int value="-1474243589" label="xkb:it::ita"/>
   <int value="-1466408010" label="hi-t-i0-und"/>
@@ -38330,11 +38333,13 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="-1386518472" label="vkd_ru_phone_aatseel"/>
   <int value="-1362493117" label="zh-hant-t-i0-dayi-1988"/>
   <int value="-1356599825" label="bn-t-i0-und"/>
+  <int value="-1346177950" label="experimental_layout-us_lang-nl"/>
   <int value="-1346114248" label="vkd_vi_vni"/>
   <int value="-1338032348" label="xkb:de:neo:ger"/>
   <int value="-1148371254" label="xkb:us:intl:por"/>
   <int value="-1093390778" label="vkd_ml_phone"/>
   <int value="-1084450354" label="gu-t-i0-und"/>
+  <int value="-1083153469" label="experimental_layout-gb(extd)_lang-nl"/>
   <int value="-1053378431" label="xkb:tr::tur"/>
   <int value="-1044696009" label="ar-t-i0-und"/>
   <int value="-1032532014" label="xkb:bg:phonetic:bul"/>
@@ -38347,6 +38352,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="-923332388" label="xkb:ua::ukr"/>
   <int value="-827208209" label="xkb:hu::hun"/>
   <int value="-769279084" label="xkb:us:intl_pc:eng"/>
+  <int value="-762849066" label="experimental_layout-us_lang-es-ES"/>
   <int value="-694112343" label="vkd_ne_phone"/>
   <int value="-666585286" label="xkb:bg::bul"/>
   <int value="-650362029" label="xkb:ie::ga"/>
@@ -38371,13 +38377,16 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="-176093583" label="vkd_bn_phone"/>
   <int value="-119597715" label="mr-t-i0-und"/>
   <int value="-70827301" label="xkb:be::fra"/>
+  <int value="-6069851" label="experimental_layout-us_lang-fr-FR"/>
   <int value="2215666" label="xkb:jp::jpn"/>
   <int value="23642603" label="yue-hant-t-i0-und"/>
   <int value="28549849" label="xkb:pt::por"/>
   <int value="60054916" label="xkb:fo::fao"/>
   <int value="68243712" label="vkd_si"/>
+  <int value="71141287" label="experimental_layout-se_lang-da"/>
   <int value="87135772" label="xkb:fr::fra"/>
   <int value="132261074" label="ti-t-i0-und"/>
+  <int value="191937478" label="experimental_layout-dk_lang-sv"/>
   <int value="193122406" label="xkb:gr::gre"/>
   <int value="197116831" label="xkb:es::spa"/>
   <int value="233227876" label="vkd_km"/>
@@ -38391,6 +38400,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="520496071" label="vkd_ckb_en"/>
   <int value="535728072" label="ne-t-i0-und"/>
   <int value="537062379" label="vkd_ru_phone_yazhert"/>
+  <int value="575092141" label="experimental_layout-gb(extd)_lang-fr-FR"/>
   <int value="602570138" label="xkb:mk::mkd"/>
   <int value="612541362" label="vkd_ar"/>
   <int value="629711326" label="xkb:il::heb"/>
@@ -38408,14 +38418,18 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="1091977227" label="vkd_my"/>
   <int value="1190741118" label="am-t-i0-und"/>
   <int value="1203226200" label="vkd_kn_phone"/>
+  <int value="1213876678" label="experimental_layout-se_lang-no"/>
   <int value="1275989482" label="xkb:ee::est"/>
   <int value="1292575742" label="el-t-i0-und"/>
+  <int value="1299470210" label="experimental_layout-gb(extd)_lang-es-ES"/>
   <int value="1321401457" label="zh-hant-t-i0-pinyin"/>
   <int value="1346294191" label="vkd_vi_tcvn"/>
   <int value="1364126694" label="vkd_vi_viqr"/>
   <int value="1409029247" label="xkb:ca::fra"/>
   <int value="1411091864" label="vkd_th"/>
   <int value="1425002521" label="vkd_ckb_ar"/>
+  <int value="1480758122" label="experimental_layout-us_lang-fr-CA"/>
+  <int value="1518946305" label="experimental_layout-us_lang-sv"/>
   <int value="1530194498" label="vkd_deva_phone"/>
   <int value="1624346366" label="zh-hant-t-i0-und"/>
   <int value="1643737979" label="xkb:fr:bepo:fra"/>
@@ -38430,7 +38444,9 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="1851658441" label="xkb:hu:qwerty:hun"/>
   <int value="1882667893" label="xkb:us:colemak:eng"/>
   <int value="1925299009" label="xkb:br::por"/>
+  <int value="1942788456" label="experimental_layout-no_lang-da"/>
   <int value="1952551273" label="vkd_ta_tamil99"/>
+  <int value="1960579818" label="experimental_layout-dk_lang-no"/>
   <int value="1960657481" label="vkd_vi_telex"/>
   <int value="1970923579" label="xkb:us:intl:nld"/>
   <int value="1983264676" label="xkb:no::nob"/>
