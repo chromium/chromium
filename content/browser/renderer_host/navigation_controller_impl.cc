@@ -3697,11 +3697,11 @@ void NavigationControllerImpl::LoadPostCommitErrorPage(
 
   mojom::CommonNavigationParamsPtr common_params =
       CreateCommonNavigationParams();
-  // |url| might be empty if LoadPostCommitErrorPage happens before the frame
-  // actually committed (e.g. iframe with "src" set to a slow-responding URL).
-  // We should rewrite the URL to about:blank in this case, as the renderer will
-  // only think a page is an error page if it has a non-empty unreachable URL.
-  DCHECK(!url.is_empty() || !rfhi->has_committed_any_navigation());
+  // |url| might be empty, such as when LoadPostCommitErrorPage happens before
+  // the frame actually committed (e.g. iframe with "src" set to a
+  // slow-responding URL). We should rewrite the URL to about:blank in this
+  // case, as the renderer will only think a page is an error page if it has a
+  // non-empty unreachable URL.
   common_params->url = url.is_empty() ? GURL("about:blank") : url;
   mojom::CommitNavigationParamsPtr commit_params =
       CreateCommitNavigationParams();
