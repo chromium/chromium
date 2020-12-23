@@ -793,12 +793,14 @@ bool DragController::TryDHTMLDrag(DragData* drag_data,
     return false;
   }
 
-  operation = data_transfer->DestinationOperation();
-  if (data_transfer->DropEffectIsUninitialized()) {
+  if (!data_transfer->DropEffectIsInitialized()) {
     operation = DefaultOperationForDrag(src_op_mask);
-  } else if (!(src_op_mask & operation)) {
-    // The element picked an operation which is not supported by the source
-    operation = kDragOperationNone;
+  } else {
+    operation = data_transfer->DestinationOperation();
+    if (!(src_op_mask & operation)) {
+      // The element picked an operation which is not supported by the source.
+      operation = kDragOperationNone;
+    }
   }
 
   data_transfer->SetAccessPolicy(

@@ -564,11 +564,11 @@ DragOperation DataTransfer::SourceOperation() const {
 }
 
 DragOperation DataTransfer::DestinationOperation() const {
+  DCHECK(DropEffectIsInitialized());
   base::Optional<DragOperation> op =
       ConvertEffectAllowedToDragOperation(drop_effect_);
   DCHECK(op == kDragOperationCopy || op == kDragOperationNone ||
-         op == kDragOperationLink || op == kDragOperationMove ||
-         op == kDragOperationEvery);
+         op == kDragOperationLink || op == kDragOperationMove);
   return *op;
 }
 
@@ -598,7 +598,6 @@ DataTransfer::DataTransfer(DataTransferType type,
                            DataTransferAccessPolicy policy,
                            DataObject* data_object)
     : policy_(policy),
-      drop_effect_("uninitialized"),
       effect_allowed_("uninitialized"),
       transfer_type_(type),
       data_object_(data_object),

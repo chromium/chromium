@@ -79,12 +79,10 @@ class CORE_EXPORT DataTransfer final : public ScriptWrappable,
   bool IsForDragAndDrop() const { return transfer_type_ == kDragAndDrop; }
 
   String dropEffect() const {
-    return DropEffectIsUninitialized() ? "none" : drop_effect_;
+    return DropEffectIsInitialized() ? drop_effect_ : "none";
   }
   void setDropEffect(const String&);
-  bool DropEffectIsUninitialized() const {
-    return drop_effect_ == "uninitialized";
-  }
+  bool DropEffectIsInitialized() const { return !drop_effect_.IsNull(); }
   String effectAllowed() const { return effect_allowed_; }
   void setEffectAllowed(const String&);
 
