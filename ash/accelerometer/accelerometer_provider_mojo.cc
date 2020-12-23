@@ -30,12 +30,10 @@ constexpr base::TimeDelta kDelayReconnect =
 }  // namespace
 
 AccelerometerProviderMojo::AccelerometerProviderMojo()
-    : sensor_hal_client_(this),
-      observers_(
-          new base::ObserverListThreadSafe<AccelerometerReader::Observer>()),
-      update_(new AccelerometerUpdate()) {}
+    : update_(new AccelerometerUpdate()) {}
 
 void AccelerometerProviderMojo::PrepareAndInitialize() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // This function should only be called once.
   DCHECK(!task_runner_);
 
@@ -49,40 +47,50 @@ void AccelerometerProviderMojo::PrepareAndInitialize() {
 
 void AccelerometerProviderMojo::AddObserver(
     AccelerometerReader::Observer* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(task_runner_);
 
-  // Do not move this into AddObserverOnThread, as the current task runner will
-  // be used in ObserverListThreadSafe::Notify.
-  observers_->AddObserver(observer);
+  observers_.AddObserver(observer);
 
-  task_runner_->PostNonNestableTask(
-      FROM_HERE, base::BindOnce(&AccelerometerProviderMojo::AddObserverOnThread,
-                                base::Unretained(this), observer));
+  one_time_read_ = true;
+
+  if (accelerometer_read_on_)
+    return;
+
+  for (auto& accelerometer : accelerometers_) {
+    if (!accelerometer.second.samples_observer.get())
+      continue;
+
+    accelerometer.second.samples_observer->SetEnabled(true);
+  }
 }
 
 void AccelerometerProviderMojo::RemoveObserver(
     AccelerometerReader::Observer* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(task_runner_);
 
-  observers_->RemoveObserver(observer);
+  observers_.RemoveObserver(observer);
 }
 
 void AccelerometerProviderMojo::StartListenToTabletModeController() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   Shell::Get()->tablet_mode_controller()->AddObserver(this);
 }
 
 void AccelerometerProviderMojo::StopListenToTabletModeController() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
 }
 
 void AccelerometerProviderMojo::SetEmitEvents(bool emit_events) {
-  task_runner_->PostNonNestableTask(
-      FROM_HERE,
-      base::BindOnce(&AccelerometerProviderMojo::SetEmitEventsOnThread, this,
-                     emit_events));
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  emit_events_ = emit_events;
 }
 
 void AccelerometerProviderMojo::OnTabletPhysicalStateChanged() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   // Wait until the existence of the driver is determined.
   if (ec_lid_angle_driver_status_ == ECLidAngleDriverStatus::UNKNOWN) {
     pending_on_tablet_physical_state_changed_ = true;
@@ -514,9 +522,9 @@ void AccelerometerProviderMojo::OnSampleUpdatedCallback(
     return;
   }
 
-  observers_->Notify(FROM_HERE,
-                     &AccelerometerReader::Observer::OnAccelerometerUpdated,
-                     update_);
+  for (auto& observer : observers_)
+    observer.OnAccelerometerUpdated(update_);
+
   update_ = new AccelerometerUpdate();
 
   one_time_read_ = false;
@@ -532,12 +540,8 @@ void AccelerometerProviderMojo::OnSampleUpdatedCallback(
   }
 }
 
-void AccelerometerProviderMojo::SetEmitEventsOnThread(bool emit_events) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  emit_events_ = emit_events;
-}
-
 void AccelerometerProviderMojo::FailedToInitialize() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(initialization_state_, State::SUCCESS);
 
   LOG(ERROR) << "Failed to initialize for accelerometer read.";
@@ -546,23 +550,6 @@ void AccelerometerProviderMojo::FailedToInitialize() {
   accelerometers_.clear();
   ResetSensorService();
   sensor_hal_client_.reset();
-}
-
-void AccelerometerProviderMojo::AddObserverOnThread(
-    AccelerometerReader::Observer* observer) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  one_time_read_ = true;
-
-  if (accelerometer_read_on_)
-    return;
-
-  for (auto& accelerometer : accelerometers_) {
-    if (!accelerometer.second.samples_observer.get())
-      continue;
-
-    accelerometer.second.samples_observer->SetEnabled(true);
-  }
 }
 
 }  // namespace ash

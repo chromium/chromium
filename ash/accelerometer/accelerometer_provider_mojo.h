@@ -17,7 +17,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "base/memory/ref_counted.h"
-#include "base/observer_list_threadsafe.h"
+#include "base/observer_list.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
@@ -121,18 +121,15 @@ class ASH_EXPORT AccelerometerProviderMojo
   // Called by |observers_|, containing a sample of the accelerometer.
   void OnSampleUpdatedCallback(int iio_device_id, std::vector<float> sample);
 
-  void SetEmitEventsOnThread(bool emit_events);
-
   // Sets FAILED to |initialization_state_| due to an error.
   void FailedToInitialize();
-
-  void AddObserverOnThread(AccelerometerReader::Observer* observer);
 
   // The task runner to use for blocking tasks.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   // The Mojo channel connecting to Sensor Hal Dispatcher.
-  mojo::Receiver<chromeos::sensors::mojom::SensorHalClient> sensor_hal_client_;
+  mojo::Receiver<chromeos::sensors::mojom::SensorHalClient> sensor_hal_client_{
+      this};
 
   // The Mojo channel to query and request for devices.
   mojo::Remote<chromeos::sensors::mojom::SensorService> sensor_service_remote_;
@@ -152,7 +149,7 @@ class ASH_EXPORT AccelerometerProviderMojo
   // |ec_lid_angle_driver_status_| is set.
   bool pending_on_tablet_physical_state_changed_ = false;
 
-  // One time read upon |AddObserverOnThread|.
+  // One time read upon |AddObserver|.
   // Some observers need to know ECLidAngleDriverStatus, and it's guaranteed to
   // be set before reading samples. When adding an observer, trigger at least
   // one sample to notify observers that ECLidAngleDriverStatus has been set.
@@ -164,8 +161,7 @@ class ASH_EXPORT AccelerometerProviderMojo
   bool emit_events_ = true;
 
   // The observers to notify of accelerometer updates.
-  scoped_refptr<base::ObserverListThreadSafe<AccelerometerReader::Observer>>
-      observers_;
+  base::ObserverList<AccelerometerReader::Observer>::Unchecked observers_;
 
   // The last seen accelerometer data.
   scoped_refptr<AccelerometerUpdate> update_;
