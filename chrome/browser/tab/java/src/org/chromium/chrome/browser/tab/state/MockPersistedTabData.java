@@ -29,7 +29,8 @@ public class MockPersistedTabData extends PersistedTabData {
     }
 
     private MockPersistedTabData(Tab tab, byte[] data, PersistedTabDataStorage storage, String id) {
-        super(tab, data, storage, id);
+        super(tab, storage, id);
+        deserializeAndLog(data);
     }
 
     /**

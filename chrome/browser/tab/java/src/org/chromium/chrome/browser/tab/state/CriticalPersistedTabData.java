@@ -124,9 +124,11 @@ public class CriticalPersistedTabData extends PersistedTabData {
      * This constructor is public because that is needed for the reflection
      * used in PersistedTabData.java
      */
-    private CriticalPersistedTabData(
+    @VisibleForTesting
+    protected CriticalPersistedTabData(
             Tab tab, byte[] data, PersistedTabDataStorage storage, String persistedTabDataId) {
-        super(tab, data, storage, persistedTabDataId);
+        super(tab, storage, persistedTabDataId);
+        deserializeAndLog(data);
     }
 
     /**

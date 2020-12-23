@@ -49,18 +49,6 @@ public abstract class PersistedTabData implements UserData {
 
     /**
      * @param tab {@link Tab} {@link PersistedTabData} is being stored for
-     * @param data serialized {@link Tab} metadata
-     * @param persistedTabDataStorage storage for {@link PersistedTabData}
-     * @param persistedTabDataId identifier for {@link PersistedTabData} in storage
-     */
-    PersistedTabData(Tab tab, byte[] data, PersistedTabDataStorage persistedTabDataStorage,
-            String persistedTabDataId) {
-        this(tab, persistedTabDataStorage, persistedTabDataId);
-        deserializeAndLog(data);
-    }
-
-    /**
-     * @param tab {@link Tab} {@link PersistedTabData} is being stored for
      * @param persistedTabDataStorage storage for {@link PersistedTabData}
      * @param persistedTabDataId identifier for {@link PersistedTabData} in storage
      */
@@ -272,7 +260,7 @@ public abstract class PersistedTabData implements UserData {
      */
     abstract boolean deserialize(@Nullable byte[] bytes);
 
-    private void deserializeAndLog(@Nullable byte[] bytes) {
+    protected void deserializeAndLog(@Nullable byte[] bytes) {
         boolean success;
         try (TraceEvent e = TraceEvent.scoped("PersistedTabData.Deserialize")) {
             success = deserialize(bytes);

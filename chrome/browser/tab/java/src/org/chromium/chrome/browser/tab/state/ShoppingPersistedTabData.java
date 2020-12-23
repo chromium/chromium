@@ -131,9 +131,11 @@ public class ShoppingPersistedTabData extends PersistedTabData {
         setupPersistence(tab);
     }
 
-    private ShoppingPersistedTabData(
+    @VisibleForTesting
+    protected ShoppingPersistedTabData(
             Tab tab, byte[] data, PersistedTabDataStorage storage, String persistedTabDataId) {
-        super(tab, data, storage, persistedTabDataId);
+        super(tab, storage, persistedTabDataId);
+        deserializeAndLog(data);
         setupPersistence(tab);
     }
 

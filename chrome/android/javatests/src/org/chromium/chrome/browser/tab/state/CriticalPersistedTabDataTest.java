@@ -217,6 +217,7 @@ public class CriticalPersistedTabDataTest {
         spyCriticalPersistedTabData.setUrl(new GURL("https://www.google.com"));
         Assert.assertTrue(spyCriticalPersistedTabData.shouldSave());
     }
+
     private CriticalPersistedTabData prepareCPTDShouldTabSave(
             boolean canGoBack, boolean canGoForward) {
         TabImpl tab = new MockTab(1, false);
@@ -224,5 +225,31 @@ public class CriticalPersistedTabDataTest {
         doReturn(canGoBack).when(spyTab).canGoBack();
         doReturn(canGoForward).when(spyTab).canGoForward();
         return spy(CriticalPersistedTabData.from(spyTab));
+    }
+
+    @UiThreadTest
+    @SmallTest
+    @Test
+    public void testSerializationBug() throws InterruptedException {
+        Tab tab = mockTab(TAB_ID, false);
+        CriticalPersistedTabData criticalPersistedTabData = new CriticalPersistedTabData(tab, "",
+                "", PARENT_ID, ROOT_ID, TIMESTAMP, WEB_CONTENTS_STATE, CONTENT_STATE_VERSION,
+                OPENER_APP_ID, THEME_COLOR, LAUNCH_TYPE_AT_CREATION);
+        byte[] serialized = criticalPersistedTabData.serialize();
+        PersistedTabDataConfiguration config = PersistedTabDataConfiguration.get(
+                ShoppingPersistedTabData.class, tab.isIncognito());
+        CriticalPersistedTabData deserialized =
+                new CriticalPersistedTabData(tab, serialized, config.getStorage(), config.getId());
+        Assert.assertNotNull(deserialized);
+        Assert.assertEquals(PARENT_ID, deserialized.getParentId());
+        Assert.assertEquals(ROOT_ID, deserialized.getRootId());
+        Assert.assertEquals(TIMESTAMP, deserialized.getTimestampMillis());
+        Assert.assertEquals(CONTENT_STATE_VERSION, deserialized.getContentStateVersion());
+        Assert.assertEquals(OPENER_APP_ID, deserialized.getOpenerAppId());
+        Assert.assertEquals(THEME_COLOR, deserialized.getThemeColor());
+        Assert.assertEquals(LAUNCH_TYPE_AT_CREATION, deserialized.getTabLaunchTypeAtCreation());
+        Assert.assertArrayEquals(WEB_CONTENTS_STATE_BYTES,
+                CriticalPersistedTabData.getContentStateByteArray(
+                        deserialized.getWebContentsState().buffer()));
     }
 }
