@@ -60,18 +60,20 @@ void FileMetadataHandler::HandleGetFileMetadata(const base::ListValue* args) {
       SyncFileSystemServiceFactory::GetForProfile(profile_);
   if (!sync_service)
     return;
-  sync_service->DumpFiles(origin,
-                          base::Bind(&FileMetadataHandler::DidGetFileMetadata,
-                                     weak_factory_.GetWeakPtr(), callback_id));
+  sync_service->DumpFiles(
+      origin, base::AdaptCallbackForRepeating(
+                  base::BindOnce(&FileMetadataHandler::DidGetFileMetadata,
+                                 weak_factory_.GetWeakPtr(), callback_id)));
 }
 
 void FileMetadataHandler::HandleGetExtensions(const base::ListValue* args) {
   AllowJavascript();
   DCHECK(args);
   ExtensionStatusesHandler::GetExtensionStatusesAsDictionary(
-      profile_, base::Bind(&FileMetadataHandler::DidGetExtensions,
-                           weak_factory_.GetWeakPtr(),
-                           args->GetList()[0].GetString() /* callback_id */));
+      profile_,
+      base::BindOnce(&FileMetadataHandler::DidGetExtensions,
+                     weak_factory_.GetWeakPtr(),
+                     args->GetList()[0].GetString() /* callback_id */));
 }
 
 void FileMetadataHandler::DidGetExtensions(std::string callback_id,

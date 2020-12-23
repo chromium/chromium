@@ -27,7 +27,7 @@ class ExtensionStatusesHandler : public content::WebUIMessageHandler {
   // extension drop down.
   static void GetExtensionStatusesAsDictionary(
       Profile* profile,
-      const base::Callback<void(const base::ListValue&)>& callback);
+      base::OnceCallback<void(const base::ListValue&)> callback);
 
   // WebUIMessageHandler implementation.
   void RegisterMessages() override;

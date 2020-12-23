@@ -52,7 +52,8 @@ class SyncFileSystemService
       public base::SupportsWeakPtr<SyncFileSystemService> {
  public:
   typedef base::Callback<void(const base::ListValue&)> DumpFilesCallback;
-  typedef base::Callback<void(const RemoteFileSyncService::OriginStatusMap&)>
+  typedef base::OnceCallback<void(
+      const RemoteFileSyncService::OriginStatusMap&)>
       ExtensionStatusMapCallback;
 
   // KeyedService implementation.
@@ -62,7 +63,7 @@ class SyncFileSystemService
                         const GURL& app_origin,
                         SyncStatusCallback callback);
 
-  void GetExtensionStatusMap(const ExtensionStatusMapCallback& callback);
+  void GetExtensionStatusMap(ExtensionStatusMapCallback callback);
   void DumpFiles(const GURL& origin, const DumpFilesCallback& callback);
   void DumpDatabase(const DumpFilesCallback& callback);
 
@@ -120,7 +121,7 @@ class SyncFileSystemService
                        std::unique_ptr<base::ListValue> list);
 
   void DidGetExtensionStatusMap(
-      const ExtensionStatusMapCallback& callback,
+      ExtensionStatusMapCallback callback,
       std::unique_ptr<RemoteFileSyncService::OriginStatusMap> status_map);
 
   // Overrides sync_enabled_ setting. This should be called only by tests.

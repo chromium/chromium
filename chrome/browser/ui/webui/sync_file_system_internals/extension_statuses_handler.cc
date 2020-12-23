@@ -35,10 +35,10 @@ namespace {
 // ExtensionStatusesHandler and FileMetadataHandler.
 void ConvertExtensionStatusToDictionary(
     const base::WeakPtr<extensions::ExtensionService>& extension_service,
-    const base::Callback<void(const base::ListValue&)>& callback,
+    base::OnceCallback<void(const base::ListValue&)> callback,
     const std::map<GURL, std::string>& status_map) {
   if (!extension_service) {
-    callback.Run(base::ListValue());
+    std::move(callback).Run(base::ListValue());
     return;
   }
 
@@ -63,7 +63,7 @@ void ConvertExtensionStatusToDictionary(
     list.Append(std::move(dict));
   }
 
-  callback.Run(list);
+  std::move(callback).Run(list);
 }
 
 }  // namespace
@@ -83,26 +83,26 @@ void ExtensionStatusesHandler::RegisterMessages() {
 // static
 void ExtensionStatusesHandler::GetExtensionStatusesAsDictionary(
     Profile* profile,
-    const base::Callback<void(const base::ListValue&)>& callback) {
+    base::OnceCallback<void(const base::ListValue&)> callback) {
   DCHECK(profile);
 
   sync_file_system::SyncFileSystemService* sync_service =
       SyncFileSystemServiceFactory::GetForProfile(profile);
   if (!sync_service) {
-    callback.Run(base::ListValue());
+    std::move(callback).Run(base::ListValue());
     return;
   }
 
   extensions::ExtensionService* extension_service =
       extensions::ExtensionSystem::Get(profile)->extension_service();
   if (!extension_service) {
-    callback.Run(base::ListValue());
+    std::move(callback).Run(base::ListValue());
     return;
   }
 
-  sync_service->GetExtensionStatusMap(base::Bind(
-      &ConvertExtensionStatusToDictionary,
-      extension_service->AsWeakPtr(), callback));
+  sync_service->GetExtensionStatusMap(
+      base::BindOnce(&ConvertExtensionStatusToDictionary,
+                     extension_service->AsWeakPtr(), std::move(callback)));
 }
 
 void ExtensionStatusesHandler::HandleGetExtensionStatuses(
@@ -110,9 +110,10 @@ void ExtensionStatusesHandler::HandleGetExtensionStatuses(
   AllowJavascript();
   DCHECK(args);
   GetExtensionStatusesAsDictionary(
-      profile_, base::Bind(&ExtensionStatusesHandler::DidGetExtensionStatuses,
-                           weak_ptr_factory_.GetWeakPtr(),
-                           args->GetList()[0].GetString() /* callback_id */));
+      profile_,
+      base::BindOnce(&ExtensionStatusesHandler::DidGetExtensionStatuses,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     args->GetList()[0].GetString() /* callback_id */));
 }
 
 void ExtensionStatusesHandler::DidGetExtensionStatuses(

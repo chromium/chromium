@@ -299,10 +299,10 @@ void SyncFileSystemService::InitializeForApp(
 }
 
 void SyncFileSystemService::GetExtensionStatusMap(
-    const ExtensionStatusMapCallback& callback) {
-  remote_service_->GetOriginStatusMap(
-      base::Bind(&SyncFileSystemService::DidGetExtensionStatusMap,
-                 AsWeakPtr(), callback));
+    ExtensionStatusMapCallback callback) {
+  remote_service_->GetOriginStatusMap(base::AdaptCallbackForRepeating(
+      base::BindOnce(&SyncFileSystemService::DidGetExtensionStatusMap,
+                     AsWeakPtr(), std::move(callback))));
 }
 
 void SyncFileSystemService::DumpFiles(const GURL& origin,
@@ -607,11 +607,11 @@ void SyncFileSystemService::DidDumpDatabase(
 }
 
 void SyncFileSystemService::DidGetExtensionStatusMap(
-    const ExtensionStatusMapCallback& callback,
+    ExtensionStatusMapCallback callback,
     std::unique_ptr<RemoteFileSyncService::OriginStatusMap> status_map) {
   if (!status_map)
     status_map = base::WrapUnique(new RemoteFileSyncService::OriginStatusMap);
-  callback.Run(*status_map);
+  std::move(callback).Run(*status_map);
 }
 
 void SyncFileSystemService::SetSyncEnabledForTesting(bool enabled) {
