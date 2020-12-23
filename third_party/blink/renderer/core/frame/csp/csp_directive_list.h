@@ -41,20 +41,18 @@ class CORE_EXPORT CSPDirectiveList final
                                   network::mojom::ContentSecurityPolicySource,
                                   bool should_parse_wasm_eval = false);
 
-  CSPDirectiveList(ContentSecurityPolicy*,
-                   network::mojom::ContentSecurityPolicyType,
-                   network::mojom::ContentSecurityPolicySource);
+  explicit CSPDirectiveList(ContentSecurityPolicy*);
 
   void Parse(const UChar* begin,
              const UChar* end,
              bool should_parse_wasm_eval = false);
 
-  const String& Header() const { return header_; }
+  const String& Header() const { return header_->header_value; }
   network::mojom::ContentSecurityPolicyType HeaderType() const {
-    return header_type_;
+    return header_->type;
   }
   network::mojom::ContentSecurityPolicySource HeaderSource() const {
-    return header_source_;
+    return header_->source;
   }
 
   bool AllowInline(ContentSecurityPolicy::InlineType,
@@ -118,7 +116,7 @@ class CORE_EXPORT CSPDirectiveList final
     return eval_disabled_error_message_;
   }
   bool IsReportOnly() const {
-    return header_type_ == network::mojom::ContentSecurityPolicyType::kReport;
+    return header_->type == network::mojom::ContentSecurityPolicyType::kReport;
   }
   bool IsActiveForConnections() const {
     return OperativeDirective(CSPDirectiveName::ConnectSrc).source_list;
@@ -286,9 +284,7 @@ class CORE_EXPORT CSPDirectiveList final
 
   Member<ContentSecurityPolicy> policy_;
 
-  String header_;
-  network::mojom::ContentSecurityPolicyType header_type_;
-  network::mojom::ContentSecurityPolicySource header_source_;
+  network::mojom::blink::ContentSecurityPolicyHeaderPtr header_;
 
   HashMap<CSPDirectiveName, String> raw_directives_;
 

@@ -153,12 +153,8 @@ CSPDirectiveName GetDirectiveTypeForAllowHashFromInlineType(
 using network::mojom::ContentSecurityPolicySource;
 using network::mojom::ContentSecurityPolicyType;
 
-CSPDirectiveList::CSPDirectiveList(ContentSecurityPolicy* policy,
-                                   ContentSecurityPolicyType type,
-                                   ContentSecurityPolicySource source)
+CSPDirectiveList::CSPDirectiveList(ContentSecurityPolicy* policy)
     : policy_(policy),
-      header_type_(type),
-      header_source_(source),
       has_sandbox_policy_(false),
       strict_mixed_content_checking_enforced_(false),
       upgrade_insecure_requests_(false),
@@ -170,8 +166,11 @@ CSPDirectiveList* CSPDirectiveList::Create(ContentSecurityPolicy* policy,
                                            ContentSecurityPolicyType type,
                                            ContentSecurityPolicySource source,
                                            bool should_parse_wasm_eval) {
-  CSPDirectiveList* directives =
-      MakeGarbageCollected<CSPDirectiveList>(policy, type, source);
+  CSPDirectiveList* directives = MakeGarbageCollected<CSPDirectiveList>(policy);
+  directives->header_ = network::mojom::blink::ContentSecurityPolicyHeader::New(
+      String(begin, static_cast<wtf_size_t>(end - begin)).StripWhiteSpace(),
+      type, source);
+
   directives->Parse(begin, end, should_parse_wasm_eval);
 
   CSPOperativeDirective directive =
@@ -210,8 +209,8 @@ void CSPDirectiveList::ReportViolation(
       mojom::ConsoleMessageSource::kSecurity,
       mojom::ConsoleMessageLevel::kError, message));
   policy_->ReportViolation(directive_text, effective_type, message, blocked_url,
-                           report_endpoints_, use_reporting_api_, header_,
-                           header_type_, violation_type,
+                           report_endpoints_, use_reporting_api_,
+                           header_->header_value, header_->type, violation_type,
                            std::unique_ptr<SourceLocation>(),
                            nullptr,  // localFrame
                            redirect_status,
@@ -236,8 +235,8 @@ void CSPDirectiveList::ReportViolationWithLocation(
       mojom::ConsoleMessageSource::kSecurity,
       mojom::ConsoleMessageLevel::kError, message, source_location->Clone()));
   policy_->ReportViolation(directive_text, effective_type, message, blocked_url,
-                           report_endpoints_, use_reporting_api_, header_,
-                           header_type_,
+                           report_endpoints_, use_reporting_api_,
+                           header_->header_value, header_->type,
                            ContentSecurityPolicy::kInlineViolation,
                            std::move(source_location), nullptr,  // localFrame
                            RedirectStatus::kNoRedirect, element, source);
@@ -262,11 +261,11 @@ void CSPDirectiveList::ReportEvalViolation(
         mojom::ConsoleMessageLevel::kError, report_message);
     policy_->LogToConsole(console_message);
   }
-  policy_->ReportViolation(directive_text, effective_type, message, blocked_url,
-                           report_endpoints_, use_reporting_api_, header_,
-                           header_type_, ContentSecurityPolicy::kEvalViolation,
-                           std::unique_ptr<SourceLocation>(), nullptr,
-                           RedirectStatus::kNoRedirect, nullptr, content);
+  policy_->ReportViolation(
+      directive_text, effective_type, message, blocked_url, report_endpoints_,
+      use_reporting_api_, header_->header_value, header_->type,
+      ContentSecurityPolicy::kEvalViolation, std::unique_ptr<SourceLocation>(),
+      nullptr, RedirectStatus::kNoRedirect, nullptr, content);
 }
 
 bool CSPDirectiveList::CheckEval(
@@ -332,14 +331,15 @@ void CSPDirectiveList::ReportMixedContent(
     const KURL& blocked_url,
     ResourceRequest::RedirectStatus redirect_status) const {
   if (StrictMixedContentChecking()) {
-    policy_->ReportViolation(
-        ContentSecurityPolicy::GetDirectiveName(
-            CSPDirectiveName::BlockAllMixedContent),
-        CSPDirectiveName::BlockAllMixedContent, String(), blocked_url,
-        report_endpoints_, use_reporting_api_, header_, header_type_,
-        ContentSecurityPolicy::kURLViolation, std::unique_ptr<SourceLocation>(),
-        nullptr,  // contextFrame,
-        redirect_status);
+    policy_->ReportViolation(ContentSecurityPolicy::GetDirectiveName(
+                                 CSPDirectiveName::BlockAllMixedContent),
+                             CSPDirectiveName::BlockAllMixedContent, String(),
+                             blocked_url, report_endpoints_, use_reporting_api_,
+                             header_->header_value, header_->type,
+                             ContentSecurityPolicy::kURLViolation,
+                             std::unique_ptr<SourceLocation>(),
+                             nullptr,  // contextFrame,
+                             redirect_status);
   }
 }
 
@@ -877,9 +877,6 @@ bool CSPDirectiveList::ShouldSendCSPHeader(ResourceType type) const {
 void CSPDirectiveList::Parse(const UChar* begin,
                              const UChar* end,
                              bool should_parse_wasm_eval) {
-  header_ =
-      String(begin, static_cast<wtf_size_t>(end - begin)).StripWhiteSpace();
-
   if (begin == end)
     return;
 
@@ -1001,7 +998,7 @@ void CSPDirectiveList::ParseReportURI(const String& name, const String& value) {
 
   // Remove report-uri in meta policies, per
   // https://html.spec.whatwg.org/C/#attr-meta-http-equiv-content-security-policy.
-  if (header_source_ == ContentSecurityPolicySource::kMeta) {
+  if (header_->source == ContentSecurityPolicySource::kMeta) {
     policy_->ReportInvalidDirectiveInMeta(name);
     return;
   }
@@ -1088,7 +1085,7 @@ void CSPDirectiveList::ApplySandboxPolicy(const String& name,
                                           const String& sandbox_policy) {
   // Remove sandbox directives in meta policies, per
   // https://www.w3.org/TR/CSP2/#delivery-html-meta-element.
-  if (header_source_ == ContentSecurityPolicySource::kMeta) {
+  if (header_->source == ContentSecurityPolicySource::kMeta) {
     policy_->ReportInvalidDirectiveInMeta(name);
     return;
   }
@@ -1120,7 +1117,7 @@ void CSPDirectiveList::ApplySandboxPolicy(const String& name,
 void CSPDirectiveList::ApplyTreatAsPublicAddress() {
   // Remove treat-as-public-address directives in meta policies, per
   // https://wicg.github.io/cors-rfc1918/#csp
-  if (header_source_ == ContentSecurityPolicySource::kMeta) {
+  if (header_->source == ContentSecurityPolicySource::kMeta) {
     policy_->ReportInvalidDirectiveInMeta("treat-as-public-address");
     return;
   }
@@ -1213,7 +1210,7 @@ void CSPDirectiveList::AddDirective(const String& name, const String& value) {
     case CSPDirectiveName::FrameAncestors:
       // Remove frame-ancestors directives in meta policies, per
       // https://www.w3.org/TR/CSP2/#delivery-html-meta-element.
-      if (header_source_ == ContentSecurityPolicySource::kMeta) {
+      if (header_->source == ContentSecurityPolicySource::kMeta) {
         policy_->ReportInvalidDirectiveInMeta(name);
       } else {
         frame_ancestors_ = CSPSourceListParse(name, value, policy_);
@@ -1452,8 +1449,7 @@ CSPDirectiveList::ExposeForNavigationalChecks() const {
       policy_->GetSelfSource() ? policy_->GetSelfSource()->Clone() : nullptr;
   policy->use_reporting_api = use_reporting_api_;
   policy->report_endpoints = report_endpoints_;
-  policy->header = network::mojom::blink::ContentSecurityPolicyHeader::New(
-      header_, header_type_, header_source_);
+  policy->header = header_.Clone();
 
   if (child_src_) {
     policy->directives.Set(CSPDirectiveName::ChildSrc, child_src_.Clone());
