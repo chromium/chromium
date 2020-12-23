@@ -565,12 +565,12 @@ class CC_EXPORT GpuImageDecodeCache
   // the |in_use_cache_|.
   struct InUseCacheKeyHash;
   struct InUseCacheKey {
-    static InUseCacheKey FromDrawImage(const DrawImage& draw_image);
+    InUseCacheKey(const DrawImage& draw_image, int mip_level);
+
     bool operator==(const InUseCacheKey& other) const;
 
    private:
     friend struct GpuImageDecodeCache::InUseCacheKeyHash;
-    explicit InUseCacheKey(const DrawImage& draw_image);
 
     PaintImage::FrameKey frame_key;
     int upload_scale_mip_level;
@@ -584,6 +584,13 @@ class CC_EXPORT GpuImageDecodeCache
   // All private functions should only be called while holding |lock_|. Some
   // functions also require the |context_| lock. These are indicated by
   // additional comments.
+
+  // Calculate the mip level to upload-scale the image to before uploading. We
+  // use mip levels rather than exact scales to increase re-use of scaled
+  // images.
+  int CalculateUploadScaleMipLevel(const DrawImage& draw_image) const;
+
+  InUseCacheKey InUseCacheKeyFromDrawImage(const DrawImage& draw_image) const;
 
   // Similar to GetTaskForImageAndRef, but gets the dependent decode task
   // rather than the upload task, if necessary.
