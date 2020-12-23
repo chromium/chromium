@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {chromeCartDescriptor, ChromeCartProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
 
 suite('NewTabPageModulesChromeCartModuleTest', () => {
@@ -120,5 +121,36 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
     assertEquals('https://image7.com', thumbnailList[1].autoSrc);
     assertEquals('https://image8.com', thumbnailList[2].autoSrc);
     assertEquals(null, cartItems[1].querySelector('.thumbnail-fallback'));
+  });
+
+  test('cart module header chip', async () => {
+    const carts = [
+      {
+        merchant: 'Amazon',
+        cartUrl: {url: 'https://amazon.com'},
+        productImageUrls: [
+          {url: 'https://image1.com'}, {url: 'https://image2.com'},
+          {url: 'https://image3.com'}
+        ],
+      },
+    ];
+    testProxy.handler.setResultFor(
+        'getMerchantCarts', Promise.resolve({carts}));
+
+    // Act.
+    await chromeCartDescriptor.initialize();
+    const moduleElement = chromeCartDescriptor.element;
+    document.body.append(moduleElement);
+    moduleElement.$.cartItemRepeat.render();
+
+    // Assert.
+    const cartItems =
+        Array.from(moduleElement.shadowRoot.querySelectorAll('.cart-item'));
+    assertEquals(1, cartItems.length);
+    const headerChip =
+        moduleElement.shadowRoot.querySelector('ntp-module-header')
+            .shadowRoot.querySelector('#chip');
+    assertEquals(
+        loadTimeData.getString('modulesCartHeaderNew'), headerChip.innerText);
   });
 });

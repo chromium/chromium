@@ -11,6 +11,15 @@
     font-size: 15px;
   }
 
+  #chip {
+    background-color: var(--ntp-chip-background-color);
+    border-radius: 4px;
+    color: var(--ntp-chip-text-color);
+    font-size: 10px;
+    margin-inline-start: 10px;
+    padding: 2px 6px;
+  }
+
   #headerSpacer {
     flex-grow: 1;
   }
@@ -24,6 +33,9 @@
   }
 </style>
 <span id="title"><slot></slot></span>
+<template is="dom-if" if="[[chipText]]">
+  <div id="chip">[[chipText]]</div>
+</template>
 <div id="headerSpacer"></div>
 <template is="dom-if" if="[[showInfoButton]]">
   <cr-icon-button id="infoButton" title="$i18n{moduleInfoButtonTitle}"

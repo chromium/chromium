@@ -24,6 +24,12 @@ class ModuleHeaderElement extends PolymerElement {
       title: String,
 
       /**
+       * The chip text showing on the header.
+       * @type {string}
+       */
+      chipText: String,
+
+      /**
        * True if the header should display an info button.
        * @type {boolean}
        */

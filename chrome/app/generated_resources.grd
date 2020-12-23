@@ -5658,6 +5658,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_SHOPPING_TASKS_INFO_CLOSE" desc="Text shown on close button of a task module.">
         Close
       </message>
+      <message name="IDS_NTP_MODULES_CART_HEADER_CHIP_NEW" desc="Text shown on the header chip of chrome cart module.">
+        New
+      </message>
       <!-- Extensions NTP Middle Slot Promo -->
       <message name="IDS_EXTENSIONS_PROMO_PERFORMANCE">
         Web browsing should be fast. Take a moment to <ph name="BEGIN_LINK">&lt;a href="chrome://extensions"&gt;</ph>check your extensions<ph name="END_LINK">&lt;/a&gt;</ph> now.
