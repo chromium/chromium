@@ -131,9 +131,10 @@ class MEDIA_EXPORT DecoderStream {
     config_change_observer_cb_ = config_change_observer;
   }
 
-  // Allows tests to keep track the currently selected decoder.
+  // Allow interested folks to keep track the currently selected decoder.  The
+  // provided decoder is valid only during the scope of the callback.
   using DecoderChangeObserverCB = base::RepeatingCallback<void(Decoder*)>;
-  void set_decoder_change_observer_for_testing(
+  void set_decoder_change_observer(
       DecoderChangeObserverCB decoder_change_observer_cb) {
     decoder_change_observer_cb_ = std::move(decoder_change_observer_cb);
   }

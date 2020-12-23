@@ -138,6 +138,9 @@ class PLATFORM_EXPORT RTCVideoDecoderStreamAdapter
   // has not completed, and also InitDecode() has not been called.
   void AttemptLogInitializationState_Locked();
 
+  // Called on the media thread when `decoder_stream_` changes the decoder.
+  void OnDecoderChanged(media::VideoDecoder* decoder);
+
   // Construction parameters.
   const scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   media::GpuVideoAcceleratorFactories* const gpu_factories_;
@@ -156,7 +159,7 @@ class PLATFORM_EXPORT RTCVideoDecoderStreamAdapter
   webrtc::DecodedImageCallback* decode_complete_callback_ = nullptr;
 
   // Shared members.
-  base::Lock lock_;
+  mutable base::Lock lock_;
   bool has_error_ GUARDED_BY(lock_) = false;
   // Current maximum number of in-flight undecoded frames.
   size_t max_pending_buffer_count_ GUARDED_BY(lock_);
@@ -169,6 +172,8 @@ class PLATFORM_EXPORT RTCVideoDecoderStreamAdapter
   bool init_decode_complete_ GUARDED_BY(lock_) = false;
   // Have we logged init status yet?
   bool logged_init_status_ GUARDED_BY(lock_) = false;
+  // Current decoder name, as reported by ImplementationName().
+  std::string decoder_name_ GUARDED_BY(lock_) = "ExternalDecoder";
 
   // Do we have an outstanding `DecoderStream::Read()`?
   // Media thread only.

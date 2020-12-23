@@ -510,7 +510,8 @@ int32_t RTCVideoDecoderStreamAdapter::Release() {
 }
 
 const char* RTCVideoDecoderStreamAdapter::ImplementationName() const {
-  return "ExternalDecoder";
+  base::AutoLock auto_lock(lock_);
+  return decoder_name_.c_str();
 }
 
 void RTCVideoDecoderStreamAdapter::InitializeOnMediaThread(
@@ -559,6 +560,8 @@ void RTCVideoDecoderStreamAdapter::InitializeOnMediaThread(
   decoder_stream_ = std::make_unique<media::VideoDecoderStream>(
       std::move(traits), media_task_runner_, std::move(create_decoders_cb),
       media_log_.get());
+  decoder_stream_->set_decoder_change_observer(base::BindRepeating(
+      &RTCVideoDecoderStreamAdapter::OnDecoderChanged, weak_this_));
   decoder_stream_->Initialize(
       demuxer_stream_.get(), ConvertToBaseOnceCallback(std::move(init_cb)),
       cdm_context, base::DoNothing() /* statistics_cb */,
@@ -762,6 +765,38 @@ void RTCVideoDecoderStreamAdapter::ShutdownOnMediaThread() {
   logged_init_status_ = false;
   pending_buffer_count_ = 0;
   // `has_error_` might or might not be set.
+}
+
+void RTCVideoDecoderStreamAdapter::OnDecoderChanged(
+    media::VideoDecoder* decoder) {
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+
+  if (!decoder)
+    return;
+
+  base::AutoLock auto_lock(lock_);
+
+  if (decoder->IsPlatformDecoder()) {
+    decoder_name_ = "ExternalDecoder";
+    return;
+  }
+
+  // Translate software decoders to look like rtc-provided ones, to make it
+  // easier for clients to detect.
+  switch (demuxer_stream_->video_decoder_config().codec()) {
+    case media::VideoCodec::kCodecVP8:
+    case media::VideoCodec::kCodecVP9:
+      decoder_name_ = "libvpx (DecoderStream)";
+      break;
+    case media::VideoCodec::kCodecAV1:
+      decoder_name_ = "libaom (DecoderStream)";
+      break;
+    case media::VideoCodec::kCodecH264:
+      decoder_name_ = "FFmpeg (DecoderStream)";
+      break;
+    default:
+      decoder_name_ = "unknown";
+  }
 }
 
 }  // namespace blink

@@ -100,9 +100,8 @@ class VideoDecoderStreamTest
         base::BindRepeating(&VideoDecoderStreamTest::CreateVideoDecodersForTest,
                             base::Unretained(this)),
         &media_log_));
-    video_decoder_stream_->set_decoder_change_observer_for_testing(
-        base::BindRepeating(&VideoDecoderStreamTest::OnDecoderChanged,
-                            base::Unretained(this)));
+    video_decoder_stream_->set_decoder_change_observer(base::BindRepeating(
+        &VideoDecoderStreamTest::OnDecoderChanged, base::Unretained(this)));
     video_decoder_stream_
         ->GetDecoderSelectorForTesting(base::PassKey<VideoDecoderStreamTest>())
         .OverrideDecoderPriorityCBForTesting(
