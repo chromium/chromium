@@ -17,6 +17,7 @@
 #include <d3d11_3.h>
 #include <d3d12.h>
 #include <dxgi.h>
+#include <vulkan/vulkan.h>
 #include <wrl/client.h>
 
 #include "base/file_version_info_win.h"
@@ -33,7 +34,6 @@
 #include "base/win/windows_version.h"
 #include "build/branding_buildflags.h"
 #include "gpu/config/gpu_util.h"
-#include "third_party/vulkan_headers/include/vulkan/vulkan.h"
 #include "ui/gl/direct_composition_surface_win.h"
 #include "ui/gl/gl_angle_util_win.h"
 #include "ui/gl/gl_surface_egl.h"

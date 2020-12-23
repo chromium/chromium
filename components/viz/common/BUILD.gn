@@ -37,7 +37,7 @@ viz_component("resource_format_utils") {
     "//ui/gfx/geometry:geometry",
   ]
   if (enable_vulkan) {
-    deps += [ "//third_party/vulkan_headers" ]
+    deps += [ "//third_party/vulkan-deps/vulkan-headers/src:vulkan_headers" ]
   }
   if (is_mac) {
     sources += [ "resources/resource_format_utils_mac.mm" ]

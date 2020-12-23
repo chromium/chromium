@@ -14,5 +14,5 @@ include_rules = [
   "+third_party/dawn/src/include",
   "+third_party/khronos/GLES2",
   "+third_party/skia",
-  "+third_party/vulkan_headers",
+  "+third_party/vulkan-deps/vulkan-headers/src",
 ]

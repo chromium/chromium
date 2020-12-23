@@ -44,7 +44,8 @@ if (enable_vulkan) {
       "//ui/gfx",
     ]
 
-    public_deps = [ "//third_party/vulkan_headers" ]
+    public_deps =
+        [ "//third_party/vulkan-deps/vulkan-headers/src:vulkan_headers" ]
 
     if (is_fuchsia) {
       sources += [ "fuchsia/vulkan_fuchsia_ext.h" ]

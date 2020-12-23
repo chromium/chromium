@@ -17,7 +17,7 @@
 #include "ui/gfx/buffer_types.h"
 
 #if BUILDFLAG(ENABLE_VULKAN)
-#include "third_party/vulkan_headers/include/vulkan/vulkan.h"  // nogncheck
+#include <vulkan/vulkan.h>
 #endif
 
 namespace viz {

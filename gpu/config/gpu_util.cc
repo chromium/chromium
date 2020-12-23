@@ -10,6 +10,7 @@
 #include <psapi.h>
 #endif  // OS_WIN
 
+#include <vulkan/vulkan.h>
 #include <memory>
 #include <set>
 #include <string>
@@ -39,7 +40,6 @@
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/config/gpu_switches.h"
 #include "gpu/vulkan/buildflags.h"
-#include "third_party/vulkan_headers/include/vulkan/vulkan.h"
 #include "ui/gfx/extension_set.h"
 #include "ui/gl/buildflags.h"
 #include "ui/gl/gl_switches.h"
