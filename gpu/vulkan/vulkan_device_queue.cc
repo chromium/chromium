@@ -80,11 +80,26 @@ bool VulkanDeviceQueue::Initialize(
     if (device_properties.apiVersion < info.used_api_version)
       continue;
 
+    // If gpu_info is provided, the device should match it.
+    if (gpu_info && (device_properties.vendorID != gpu_info->gpu.vendor_id ||
+                     device_properties.deviceID != gpu_info->gpu.device_id)) {
+      continue;
+    }
+
+    if (device_properties.deviceType < 0 ||
+        device_properties.deviceType > VK_PHYSICAL_DEVICE_TYPE_CPU) {
+      DLOG(ERROR) << "Unsupported device type: "
+                  << device_properties.deviceType;
+      continue;
+    }
+
     const VkPhysicalDevice& device = device_info.device;
+    bool found = false;
     for (size_t n = 0; n < device_info.queue_families.size(); ++n) {
       if ((device_info.queue_families[n].queueFlags & queue_flags) !=
-          queue_flags)
+          queue_flags) {
         continue;
+      }
 
       if (options & DeviceQueueOption::PRESENTATION_SUPPORT_QUEUE_FLAG &&
           !get_presentation_support.Run(device, device_info.queue_families,
@@ -92,34 +107,26 @@ bool VulkanDeviceQueue::Initialize(
         continue;
       }
 
-      // If gpu_info is provided, the device should match it.
-      if (gpu_info && (device_properties.vendorID != gpu_info->gpu.vendor_id ||
-                       device_properties.deviceID != gpu_info->gpu.device_id)) {
-        continue;
-      }
-
-      if (device_properties.deviceType < 0 ||
-          device_properties.deviceType > VK_PHYSICAL_DEVICE_TYPE_CPU) {
-        DLOG(ERROR) << "Unsupported device type: "
-                    << device_properties.deviceType;
-        continue;
-      }
-
       if (kDeviceTypeScores[device_properties.deviceType] > device_score) {
         device_index = i;
         queue_index = static_cast<int>(n);
         device_score = kDeviceTypeScores[device_properties.deviceType];
+        found = true;
+        break;
       }
-
-      // Use the device, if it matches gpu_info.
-      if (gpu_info)
-        break;
-
-      // If the device is a discrete GPU, we will use it. Otherwise go through
-      // all the devices and find the device with the highest score.
-      if (device_properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
-        break;
     }
+    
+    if (!found)
+      continue;
+
+    // Use the device, if it matches gpu_info.
+    if (gpu_info)
+      break;
+
+    // If the device is a discrete GPU, we will use it. Otherwise go through
+    // all the devices and find the device with the highest score.
+    if (device_properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
+      break;
   }
 
   if (device_index == -1) {
