@@ -150,6 +150,7 @@ constexpr char kProductLogoPath[] = "product-logo.png";
 constexpr char kRecommendAppListViewHTMLPath[] = "recommend_app_list_view.html";
 constexpr char kRecommendAppListViewJSPath[] = "recommend_app_list_view.js";
 constexpr char kTestAPIJSPath[] = "test_api.js";
+constexpr char kWebviewSamlInjectedJSPath[] = "webview_saml_injected.js";
 
 // Components
 constexpr char kCommonStylesHTML[] = "components/common_styles.html";
@@ -367,6 +368,8 @@ content::WebUIDataSource* CreateOobeUIDataSource(
   AddDebuggerResources(source);
   AddTestAPIResources(source);
 
+  source->AddResourcePath(kWebviewSamlInjectedJSPath,
+                          IDR_GAIA_AUTH_WEBVIEW_SAML_INJECTED_JS);
   source->AddResourcePath(kKeyboardUtilsJSPath, IDR_KEYBOARD_UTILS_JS);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ObjectSrc, "object-src chrome:;");

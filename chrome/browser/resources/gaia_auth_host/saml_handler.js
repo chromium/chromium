@@ -63,9 +63,7 @@ cr.define('cr.login', function() {
    * The script to inject into webview and its sub frames.
    * @type {string}
    */
-  const injectedJs = String.raw`
-      // <include src="webview_saml_injected.js">
-  `;
+  const injectedJs = 'webview_saml_injected.js';
 
   /**
    * @typedef {{
@@ -313,7 +311,7 @@ cr.define('cr.login', function() {
       this.webview_.addContentScripts([{
         name: injectedScriptName,
         matches: ['http://*/*', 'https://*/*'],
-        js: {code: injectedJs},
+        js: {files: [injectedJs]},
         all_frames: true,
         run_at: 'document_start'
       }]);

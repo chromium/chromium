@@ -58,6 +58,8 @@ LockScreenStartReauthUI::LockScreenStartReauthUI(content::WebUI* web_ui)
   source->SetDefaultResource(IDR_LOCK_SCREEN_REAUTH_HTML);
 
   source->AddResourcePath("authenticator.js", IDR_GAIA_AUTH_AUTHENTICATOR_JS);
+  source->AddResourcePath("webview_saml_injected.js",
+                          IDR_GAIA_AUTH_WEBVIEW_SAML_INJECTED_JS);
 
   source->AddResourcePath("lock_screen_reauth.js", IDR_LOCK_SCREEN_REAUTH_JS);
 

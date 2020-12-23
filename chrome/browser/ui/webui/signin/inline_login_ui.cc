@@ -128,6 +128,7 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
   static constexpr webui::ResourcePath kResources[] = {
     {"inline_login_app.js", IDR_INLINE_LOGIN_APP_JS},
     {"inline_login_browser_proxy.js", IDR_INLINE_LOGIN_BROWSER_PROXY_JS},
+    {"webview_saml_injected.js", IDR_GAIA_AUTH_WEBVIEW_SAML_INJECTED_JS},
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"welcome_page_app.js", IDR_INLINE_LOGIN_WELCOME_PAGE_APP_JS},
     {"account_manager_shared_css.js", IDR_ACCOUNT_MANAGER_SHARED_CSS_JS},
