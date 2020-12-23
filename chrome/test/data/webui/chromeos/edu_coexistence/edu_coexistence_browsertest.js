@@ -61,3 +61,21 @@ TEST_F('EduCoexistenceAppTest', 'DontSwitchViewIfDisplayingError', function() {
   this.runMochaTest(
       edu_coexistence_app_tests.TestNames.DontSwitchViewIfDisplayingError);
 });
+
+var EduCoexistenceControllerTest = class extends EduCoexistenceTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://chrome-signin/test_loader.html?module=' +
+        'chromeos/edu_coexistence/edu_coexistence_controller_test.js';
+  }
+
+  /** @override */
+  get suiteName() {
+    return edu_coexistence_controller_tests.suiteName;
+  }
+};
+
+TEST_F('EduCoexistenceControllerTest', 'GetSigninTimeDelta', function() {
+  this.runMochaTest(
+      edu_coexistence_controller_tests.TestNames.GetSigninTimeDelta);
+});

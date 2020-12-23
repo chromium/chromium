@@ -15,10 +15,12 @@
 #include "base/guid.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/system/sys_info.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/child_accounts/edu_coexistence_tos_store_utils.h"
+#include "chrome/browser/chromeos/login/login_pref_names.h"
 #include "chrome/browser/chromeos/policy/user_cloud_policy_manager_chromeos.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -83,12 +85,20 @@ std::string GetSourceUI() {
 std::string GetOrCreateEduCoexistenceUserId() {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   PrefService* pref_service = profile->GetPrefs();
-  std::string id = pref_service->GetString(chromeos::prefs::kEduCoexistenceId);
+  std::string id = pref_service->GetString(prefs::kEduCoexistenceId);
   if (id.empty()) {
     id = base::GenerateGUID();
-    pref_service->SetString(chromeos::prefs::kEduCoexistenceId, id);
+    pref_service->SetString(prefs::kEduCoexistenceId, id);
   }
   return id;
+}
+
+base::Time GetSigninTime() {
+  const Profile* profile = ProfileManager::GetActiveUserProfile();
+  const PrefService* pref_service = profile->GetPrefs();
+  base::Time signin_time = pref_service->GetTime(prefs::kOobeOnboardingTime);
+  DCHECK(!signin_time.is_min());
+  return signin_time;
 }
 
 // Tries to get the policy device id for the family link user profile if
@@ -276,6 +286,8 @@ void EduCoexistenceLoginHandler::SendInitializeEduArgs() {
                       base::SysInfo::OperatingSystemVersion());
   params.SetStringKey("releaseChannel", chrome::GetChannelName());
   params.SetStringKey("deviceId", GetDeviceIdForActiveUserProfile());
+
+  params.SetDoubleKey("signinTime", GetSigninTime().ToJsTimeIgnoringNull());
 
   // If the secondary edu account is being reauthenticated, the email address
   // will be provided via the url of the webcontent. Example

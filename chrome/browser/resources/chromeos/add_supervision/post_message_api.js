@@ -48,7 +48,7 @@ const MAX_INITIALIZATION_ATTEMPTS = 8;
 
     /**
      * Map that stores references to the methods implemented by the API.
-     * @private {!Map<string, function(!Array): (Promise|Object|undefined)>}
+     * @private {!Map<string, function(!Array):?>}
      */
     this.apiFns_ = new Map();
 
@@ -91,8 +91,8 @@ const MAX_INITIALIZATION_ATTEMPTS = 8;
    * function.
    *
    * @param {!string} methodName name of the method to register.
-   * @param {!function(!Array): (Promise|Object|undefined)} method The function
-   *     to associate with the name.
+   * @param {!function(!Array):?} method The function to associate with the
+   *     name.
    */
   registerMethod(methodName, method) {
     this.apiFns_.set(methodName, method);
