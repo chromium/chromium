@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.SigninActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.SigninPromoController;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
@@ -80,8 +81,8 @@ public abstract class SignInPromo extends OptionalLeaf {
         updateVisibility();
 
         mProfileDataCache = ProfileDataCache.createProfileDataCache(context);
-        mSigninPromoController =
-                new SigninPromoController(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS);
+        mSigninPromoController = new SigninPromoController(
+                SigninAccessPoint.NTP_CONTENT_SUGGESTIONS, SigninActivityLauncherImpl.get());
 
         mSigninObserver = new SigninObserver(signinManager);
     }

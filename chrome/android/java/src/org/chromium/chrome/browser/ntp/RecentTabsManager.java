@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.invalidation.SessionsInvalidationManager;
 import org.chromium.chrome.browser.ntp.ForeignSessionHelper.ForeignSession;
 import org.chromium.chrome.browser.ntp.ForeignSessionHelper.ForeignSessionTab;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.SigninActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.SigninPromoController;
 import org.chromium.chrome.browser.signin.SigninPromoUtil;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -109,7 +110,8 @@ public class RecentTabsManager implements ProfileSyncService.SyncStateChangedLis
         mSignInManager = IdentityServicesProvider.get().getSigninManager(mProfile);
 
         mProfileDataCache = ProfileDataCache.createProfileDataCache(context);
-        mSigninPromoController = new SigninPromoController(SigninAccessPoint.RECENT_TABS);
+        mSigninPromoController = new SigninPromoController(
+                SigninAccessPoint.RECENT_TABS, SigninActivityLauncherImpl.get());
         mProfileSyncService = ProfileSyncService.get();
 
         mRecentlyClosedTabManager.setTabsUpdatedRunnable(() -> {

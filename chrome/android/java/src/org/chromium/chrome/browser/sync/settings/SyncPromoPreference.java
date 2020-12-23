@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.firstrun.FirstRunSignInProcessor;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.SigninActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.SigninPromoController;
 import org.chromium.chrome.browser.signin.SigninPromoUtil;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -165,7 +166,8 @@ public class SyncPromoPreference
         setVisible(true);
 
         if (mSigninPromoController == null) {
-            mSigninPromoController = new SigninPromoController(SigninAccessPoint.SETTINGS);
+            mSigninPromoController = new SigninPromoController(
+                    SigninAccessPoint.SETTINGS, SigninActivityLauncherImpl.get());
         }
 
         notifyChanged();
