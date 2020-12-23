@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.signin.services;
 
 import androidx.annotation.MainThread;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
@@ -74,13 +75,15 @@ public class WebSigninBridge {
         mNativeWebSigninBridge = 0;
     }
 
+    @VisibleForTesting
     @CalledByNative
-    private static void onSigninSucceeded(Listener listener) {
+    static void onSigninSucceeded(Listener listener) {
         listener.onSigninSucceeded();
     }
 
+    @VisibleForTesting
     @CalledByNative
-    private static void onSigninFailed(Listener listener, GoogleServiceAuthError error) {
+    static void onSigninFailed(Listener listener, GoogleServiceAuthError error) {
         listener.onSigninFailed(error);
     }
 
