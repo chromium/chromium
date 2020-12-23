@@ -57,15 +57,15 @@ CloneableMessage CloneableMessage::ShallowClone() const {
           mojo::PendingRemote<mojom::NativeFileSystemTransferToken>>&>(
           native_file_system_tokens);
 
-  for (size_t i = 0; i < source_tokens.size(); ++i) {
+  for (auto& token : source_tokens) {
     mojo::Remote<mojom::NativeFileSystemTransferToken> source_token(
-        std::move(source_tokens[i]));
+        std::move(token));
 
     mojo::PendingRemote<mojom::NativeFileSystemTransferToken> cloned_token;
     source_token->Clone(cloned_token.InitWithNewPipeAndPassReceiver());
 
     clone.native_file_system_tokens.push_back(std::move(cloned_token));
-    source_tokens[i] = source_token.Unbind();
+    token = source_token.Unbind();
   }
   return clone;
 }
