@@ -5079,7 +5079,7 @@ std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
 RenderFrameHostImpl::CreateCrossOriginPrefetchLoaderFactoryBundle() {
   network::mojom::URLLoaderFactoryParamsPtr factory_params =
       URLLoaderFactoryParamsHelper::CreateForPrefetch(
-          this, mojo::Clone(last_committed_client_security_state_));
+          this, BuildClientSecurityState());
 
   mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_default_factory;
   bool bypass_redirect_checks = false;
@@ -7271,8 +7271,7 @@ void RenderFrameHostImpl::
     // Return values based on the |navigation_request|.
     *out_main_world_origin = navigation_request->GetOriginForURLLoaderFactory();
     *out_isolation_info = navigation_request->isolation_info_for_subresources();
-    *out_client_security_state =
-        mojo::Clone(navigation_request->client_security_state());
+    *out_client_security_state = navigation_request->BuildClientSecurityState();
     coep_reporter = navigation_request->coep_reporter();
     *out_trust_token_redemption_policy =
         DetermineWhetherToForbidTrustTokenRedemption(
@@ -7288,9 +7287,7 @@ void RenderFrameHostImpl::
     url::Origin error_page_origin = url::Origin();
     *out_main_world_origin = error_page_origin;
     *out_isolation_info = net::IsolationInfo::CreateTransient();
-
-    *out_client_security_state =
-        mojo::Clone(navigation_request->client_security_state());
+    *out_client_security_state = navigation_request->BuildClientSecurityState();
     coep_reporter = nullptr;
     *out_trust_token_redemption_policy =
         network::mojom::TrustTokenRedemptionPolicy::kForbid;
@@ -7298,8 +7295,7 @@ void RenderFrameHostImpl::
     // Use properties of the last committed navigation.
     *out_main_world_origin = last_committed_origin_;
     *out_isolation_info = isolation_info_;
-    *out_client_security_state =
-        mojo::Clone(last_committed_client_security_state_);
+    *out_client_security_state = BuildClientSecurityState();
     coep_reporter = coep_reporter_.get();
     *out_trust_token_redemption_policy =
         DetermineAfterCommitWhetherToForbidTrustTokenRedemption(this);
@@ -8347,6 +8343,18 @@ RenderFrameHostImpl::CreateMessageFilterForAssociatedReceiver(
       BackForwardCacheImpl::GetChannelAssociatedMessageHandlingPolicy());
 }
 
+network::mojom::ClientSecurityStatePtr
+RenderFrameHostImpl::BuildClientSecurityState() const {
+  auto client_security_state = network::mojom::ClientSecurityState::New();
+  client_security_state->is_web_secure_context = is_web_secure_context_;
+  client_security_state->cross_origin_embedder_policy =
+      cross_origin_embedder_policy_;
+  client_security_state->ip_address_space = ip_address_space_;
+  client_security_state->private_network_request_policy =
+      private_network_request_policy_;
+  return client_security_state;
+}
+
 bool RenderFrameHostImpl::IsNavigationSameSite(
     const UrlInfo& dest_url_info,
     const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info) {
@@ -8775,15 +8783,17 @@ void RenderFrameHostImpl::DidCommitNewDocument(
   renderer_reported_scheduler_tracked_features_ = 0;
   browser_reported_scheduler_tracked_features_ = 0;
 
-  last_committed_client_security_state_ =
-      navigation_request->TakeClientSecurityState();
-
   cross_origin_opener_policy_ =
       navigation_request->coop_status().current_coop();
   if (navigation_request->IsWaitingToCommit()) {
+    is_web_secure_context_ = navigation_request->is_web_secure_context();
+    ip_address_space_ = navigation_request->ip_address_space();
+    private_network_request_policy_ =
+        navigation_request->private_network_request_policy();
     cross_origin_embedder_policy_ =
-        last_committed_client_security_state_->cross_origin_embedder_policy;
+        navigation_request->cross_origin_embedder_policy();
   }
+
   coop_reporter_ = navigation_request->coop_status().TakeCoopReporter();
   virtual_browsing_context_group_ =
       navigation_request->coop_status().virtual_browsing_context_group();

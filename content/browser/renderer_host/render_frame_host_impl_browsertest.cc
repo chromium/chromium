@@ -4837,8 +4837,8 @@ IN_PROC_BROWSER_TEST_F(
     CommitsClientSecurityStateForAboutURL) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
 
-  const network::mojom::ClientSecurityStatePtr& security_state =
-      root_frame_host()->last_committed_client_security_state();
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
   EXPECT_FALSE(security_state->is_web_secure_context);
   EXPECT_EQ(network::mojom::IPAddressSpace::kUnknown,
@@ -4855,8 +4855,8 @@ IN_PROC_BROWSER_TEST_F(
     CommitsClientSecurityStateForDataURL) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL("data:text/html,foo")));
 
-  const network::mojom::ClientSecurityStatePtr& security_state =
-      root_frame_host()->last_committed_client_security_state();
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
   EXPECT_FALSE(security_state->is_web_secure_context);
   EXPECT_EQ(network::mojom::IPAddressSpace::kUnknown,
@@ -4870,8 +4870,8 @@ IN_PROC_BROWSER_TEST_F(
     CommitsClientSecurityStateForFileURL) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl("", "empty.html")));
 
-  const network::mojom::ClientSecurityStatePtr& security_state =
-      root_frame_host()->last_committed_client_security_state();
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
   EXPECT_TRUE(security_state->is_web_secure_context);
   EXPECT_EQ(network::mojom::IPAddressSpace::kLocal,
@@ -4886,8 +4886,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(
       NavigateToURL(shell(), InsecureDefaultURL(*embedded_test_server())));
 
-  const network::mojom::ClientSecurityStatePtr& security_state =
-      root_frame_host()->last_committed_client_security_state();
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
   EXPECT_FALSE(security_state->is_web_secure_context);
   EXPECT_EQ(network::mojom::IPAddressSpace::kLocal,
@@ -4902,8 +4902,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(
       NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
 
-  const network::mojom::ClientSecurityStatePtr& security_state =
-      root_frame_host()->last_committed_client_security_state();
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
   EXPECT_TRUE(security_state->is_web_secure_context);
   EXPECT_EQ(network::mojom::IPAddressSpace::kLocal,
@@ -4918,8 +4918,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(NavigateToURL(
       shell(), SecureTreatAsPublicAddressURL(*embedded_test_server())));
 
-  const network::mojom::ClientSecurityStatePtr& security_state =
-      root_frame_host()->last_committed_client_security_state();
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
   EXPECT_TRUE(security_state->is_web_secure_context);
   EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
@@ -4941,8 +4941,8 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
-  const network::mojom::ClientSecurityStatePtr& security_state =
-      root_frame_host()->last_committed_client_security_state();
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
   EXPECT_FALSE(security_state->is_web_secure_context);
   EXPECT_EQ(network::mojom::IPAddressSpace::kPrivate,
@@ -4964,8 +4964,8 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
-  const network::mojom::ClientSecurityStatePtr& security_state =
-      root_frame_host()->last_committed_client_security_state();
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
   EXPECT_FALSE(security_state->is_web_secure_context);
   EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
@@ -5103,8 +5103,8 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHostImpl* child_frame = AddChildFromAboutBlank(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
 
-  const network::mojom::ClientSecurityStatePtr& security_state =
-      child_frame->last_committed_client_security_state();
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
 
   // TODO(https://crbug.com/1136028): Expect kPublic once inheritance is fixed.
@@ -5121,8 +5121,8 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHostImpl* child_frame = AddChildFromAboutBlank(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
 
-  const network::mojom::ClientSecurityStatePtr& security_state =
-      child_frame->last_committed_client_security_state();
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
 
   // TODO(https://crbug.com/1136028): Expect kLocal once inheritance is fixed.
@@ -5139,12 +5139,13 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHostImpl* child_frame = AddChildInitialEmptyDoc(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
 
-  const network::mojom::ClientSecurityStatePtr& security_state =
-      child_frame->last_committed_client_security_state();
+  network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
 
-  // TODO(https://crbug.com/1126856): Expect that the child's address space
-  // is kPublic once inheritance is fixed.
-  EXPECT_TRUE(security_state.is_null());
+  // TODO(https://crbug.com/1126856): Expect kPublic once inheritance is fixed.
+  EXPECT_EQ(network::mojom::IPAddressSpace::kUnknown,
+            security_state->ip_address_space);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -5156,12 +5157,13 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHostImpl* child_frame = AddChildInitialEmptyDoc(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
 
-  const network::mojom::ClientSecurityStatePtr& security_state =
-      child_frame->last_committed_client_security_state();
+  network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
 
-  // TODO(https://crbug.com/1126856): Expect that the child's address space
-  // is kLocal once inheritance is fixed.
-  EXPECT_TRUE(security_state.is_null());
+  // TODO(https://crbug.com/1126856): Expect kLocal once inheritance is fixed.
+  EXPECT_EQ(network::mojom::IPAddressSpace::kUnknown,
+            security_state->ip_address_space);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -5173,8 +5175,8 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHostImpl* child_frame = AddChildFromSrcdoc(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
 
-  const network::mojom::ClientSecurityStatePtr& security_state =
-      child_frame->last_committed_client_security_state();
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
 
   // TODO(https://crbug.com/1136028): Expect kPublic once inheritance is fixed.
@@ -5191,8 +5193,8 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHostImpl* child_frame = AddChildFromSrcdoc(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
 
-  const network::mojom::ClientSecurityStatePtr& security_state =
-      child_frame->last_committed_client_security_state();
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
 
   // TODO(https://crbug.com/1136028): Expect kLocal once inheritance is fixed.
@@ -5209,8 +5211,8 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHostImpl* child_frame = AddChildFromDataURL(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
 
-  const network::mojom::ClientSecurityStatePtr& security_state =
-      child_frame->last_committed_client_security_state();
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
 
   // TODO(https://crbug.com/1136028): Expect kPublic once inheritance is fixed.
@@ -5227,8 +5229,8 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHostImpl* child_frame = AddChildFromDataURL(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
 
-  const network::mojom::ClientSecurityStatePtr& security_state =
-      child_frame->last_committed_client_security_state();
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
 
   // TODO(https://crbug.com/1136028): Expect kLocal once inheritance is fixed.
@@ -5246,12 +5248,13 @@ IN_PROC_BROWSER_TEST_F(
       AddChildFromJavascriptURL(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
 
-  const network::mojom::ClientSecurityStatePtr& security_state =
-      child_frame->last_committed_client_security_state();
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
 
-  // TODO(https://crbug.com/1126856): Expect that the child's address space
-  // is kPublic once inheritance is fixed.
-  EXPECT_TRUE(security_state.is_null());
+  // TODO(https://crbug.com/1126856): Expect kPublic once inheritance is fixed.
+  EXPECT_EQ(network::mojom::IPAddressSpace::kUnknown,
+            security_state->ip_address_space);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -5264,12 +5267,13 @@ IN_PROC_BROWSER_TEST_F(
       AddChildFromJavascriptURL(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
 
-  const network::mojom::ClientSecurityStatePtr& security_state =
-      child_frame->last_committed_client_security_state();
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
 
-  // TODO(https://crbug.com/1126856): Expect that the child's address space
-  // is kLocal once inheritance is fixed.
-  EXPECT_TRUE(security_state.is_null());
+  // TODO(https://crbug.com/1126856): Expect kLocal once inheritance is fixed.
+  EXPECT_EQ(network::mojom::IPAddressSpace::kUnknown,
+            security_state->ip_address_space);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -5281,8 +5285,8 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHostImpl* child_frame = AddChildFromBlob(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
 
-  const network::mojom::ClientSecurityStatePtr& security_state =
-      child_frame->last_committed_client_security_state();
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
 
   // TODO(https://crbug.com/1136028): Expect kPublic once inheritance is fixed.
@@ -5299,8 +5303,8 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHostImpl* child_frame = AddChildFromBlob(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
 
-  const network::mojom::ClientSecurityStatePtr& security_state =
-      child_frame->last_committed_client_security_state();
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
 
   // TODO(https://crbug.com/1136028): Expect kLocal once inheritance is fixed.
@@ -5317,8 +5321,8 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHostImpl* child_frame = AddChildFromFilesystem(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
 
-  const network::mojom::ClientSecurityStatePtr& security_state =
-      child_frame->last_committed_client_security_state();
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
 
   // TODO(https://crbug.com/1136028): Expect kPublic once inheritance is fixed.
@@ -5335,8 +5339,8 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHostImpl* child_frame = AddChildFromFilesystem(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
 
-  const network::mojom::ClientSecurityStatePtr& security_state =
-      child_frame->last_committed_client_security_state();
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
 
   // TODO(https://crbug.com/1136028): Expect kLocal once inheritance is fixed.
@@ -5353,8 +5357,8 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHostImpl* child_frame = AddChildFromAboutBlank(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
 
-  const network::mojom::ClientSecurityStatePtr& security_state =
-      child_frame->last_committed_client_security_state();
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
 
   // TODO(https://crbug.com/1126856): Expect true once inheritance is fixed.
@@ -5370,8 +5374,8 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHostImpl* child_frame = AddChildFromAboutBlank(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
 
-  const network::mojom::ClientSecurityStatePtr& security_state =
-      child_frame->last_committed_client_security_state();
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
 
   EXPECT_FALSE(security_state->is_web_secure_context);
@@ -5386,12 +5390,12 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHostImpl* child_frame = AddChildInitialEmptyDoc(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
 
-  const network::mojom::ClientSecurityStatePtr& security_state =
-      child_frame->last_committed_client_security_state();
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
 
-  // TODO(https://crbug.com/1126856): Expect that the child is a secure context
-  // once inheritance is fixed.
-  EXPECT_TRUE(security_state.is_null());
+  // TODO(https://crbug.com/1126856): Expect true once inheritance is fixed.
+  EXPECT_FALSE(security_state->is_web_secure_context);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -5403,12 +5407,11 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHostImpl* child_frame = AddChildInitialEmptyDoc(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
 
-  const network::mojom::ClientSecurityStatePtr& security_state =
-      child_frame->last_committed_client_security_state();
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
 
-  // TODO(https://crbug.com/1126856): Expect that the child is not a secure
-  // context once inheritance is fixed.
-  EXPECT_TRUE(security_state.is_null());
+  EXPECT_FALSE(security_state->is_web_secure_context);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -5420,8 +5423,8 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHostImpl* child_frame = AddChildFromSrcdoc(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
 
-  const network::mojom::ClientSecurityStatePtr& security_state =
-      child_frame->last_committed_client_security_state();
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
 
   // TODO(https://crbug.com/1126856): Expect true once inheritance is fixed.
@@ -5437,8 +5440,8 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHostImpl* child_frame = AddChildFromSrcdoc(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
 
-  const network::mojom::ClientSecurityStatePtr& security_state =
-      child_frame->last_committed_client_security_state();
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
 
   EXPECT_FALSE(security_state->is_web_secure_context);
@@ -5453,8 +5456,8 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHostImpl* child_frame = AddChildFromDataURL(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
 
-  const network::mojom::ClientSecurityStatePtr& security_state =
-      child_frame->last_committed_client_security_state();
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
 
   // TODO(https://crbug.com/1126856): Expect true once inheritance is fixed.
@@ -5470,8 +5473,8 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHostImpl* child_frame = AddChildFromDataURL(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
 
-  const network::mojom::ClientSecurityStatePtr& security_state =
-      child_frame->last_committed_client_security_state();
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
 
   EXPECT_FALSE(security_state->is_web_secure_context);
@@ -5487,12 +5490,12 @@ IN_PROC_BROWSER_TEST_F(
       AddChildFromJavascriptURL(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
 
-  const network::mojom::ClientSecurityStatePtr& security_state =
-      child_frame->last_committed_client_security_state();
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
 
-  // TODO(https://crbug.com/1126856): Expect that the child is a secure context
-  // once inheritance is fixed.
-  EXPECT_TRUE(security_state.is_null());
+  // TODO(https://crbug.com/1126856): Expect true once inheritance is fixed.
+  EXPECT_FALSE(security_state->is_web_secure_context);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -5505,12 +5508,11 @@ IN_PROC_BROWSER_TEST_F(
       AddChildFromJavascriptURL(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
 
-  const network::mojom::ClientSecurityStatePtr& security_state =
-      child_frame->last_committed_client_security_state();
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
 
-  // TODO(https://crbug.com/1126856): Expect that the child is not a secure
-  // context once inheritance is fixed.
-  EXPECT_TRUE(security_state.is_null());
+  EXPECT_FALSE(security_state->is_web_secure_context);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -5522,8 +5524,8 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHostImpl* child_frame = AddChildFromBlob(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
 
-  const network::mojom::ClientSecurityStatePtr& security_state =
-      child_frame->last_committed_client_security_state();
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
 
   EXPECT_TRUE(security_state->is_web_secure_context);
@@ -5538,8 +5540,8 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHostImpl* child_frame = AddChildFromBlob(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
 
-  const network::mojom::ClientSecurityStatePtr& security_state =
-      child_frame->last_committed_client_security_state();
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
 
   EXPECT_FALSE(security_state->is_web_secure_context);
@@ -5554,8 +5556,8 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHostImpl* child_frame = AddChildFromFilesystem(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
 
-  const network::mojom::ClientSecurityStatePtr& security_state =
-      child_frame->last_committed_client_security_state();
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
 
   EXPECT_TRUE(security_state->is_web_secure_context);
@@ -5570,8 +5572,8 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHostImpl* child_frame = AddChildFromFilesystem(root_frame_host());
   ASSERT_NE(nullptr, child_frame);
 
-  const network::mojom::ClientSecurityStatePtr& security_state =
-      child_frame->last_committed_client_security_state();
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
 
   EXPECT_FALSE(security_state->is_web_secure_context);
@@ -5761,8 +5763,8 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHostImpl* child_frame =
       root_frame_host()->child_at(0)->current_frame_host();
 
-  const network::mojom::ClientSecurityStatePtr& security_state =
-      child_frame->last_committed_client_security_state();
+  const network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
 
   // Even though the iframe document was loaded from a secure connection, the
@@ -5778,62 +5780,26 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(false, EvalJs(child_frame, FetchSubresourceScript("image.jpg")));
 }
 
-// This test verifies that when the right feature is enabled, requests:
-//  - from a secure page with the "treat-as-public-address" CSP directive
-//  - embedded in a frame with no committed navigation
-//  - to local IP addresses
-//  are blocked.
+// This test verifies the initial values of a never committed
+// RenderFrameHostImpl's ClientSecurityState.
 IN_PROC_BROWSER_TEST_F(
     RenderFrameHostImplBrowserTestWithInsecurePrivateNetworkRequestsBlocked,
-    FromSecurePublicEmbeddedInNotCommittedFrameToLocalIsBlocked) {
+    InitialNonCommittedRenderFrameHostClientSecurityState) {
   // Start a navigation. This forces the RenderFrameHost to initialize its
-  // RenderFrame (1). The navigation is then cancelled by a HTTP 204 code (2).
-  //
-  // (1) Allows Javascript to be executed in the frame, otherwise ExecJs()
-  // fails.
-  // (2) Thus the RenderFrameHost does not commit a client security state.
+  // RenderFrame. The navigation is then cancelled by a HTTP 204 code.
+  // We're left with a RenderFrameHost containing the default
+  // ClientSecurityState values.
   EXPECT_TRUE(NavigateToURLAndExpectNoCommit(
       shell(), embedded_test_server()->GetURL("/nocontent")));
 
-  // This results in the frame not having a security state.
-  EXPECT_TRUE(
-      root_frame_host()->last_committed_client_security_state().is_null());
-
-  // Then embed a secure public iframe.
-  GURL iframe_url = SecureTreatAsPublicAddressURL(*embedded_test_server());
-  std::string script = base::ReplaceStringPlaceholders(
-      R"(
-        const iframe = document.createElement("iframe");
-        iframe.src = "$1";
-        document.body.appendChild(iframe);
-      )",
-      {iframe_url.spec()}, nullptr);
-  EXPECT_TRUE(ExecJs(root_frame_host(), script));
-  EXPECT_FALSE(WaitForLoadStop(web_contents()));
-
-  ASSERT_EQ(1ul, root_frame_host()->child_count());
-  RenderFrameHostImpl* child_frame =
-      root_frame_host()->child_at(0)->current_frame_host();
-
-  const network::mojom::ClientSecurityStatePtr& security_state =
-      child_frame->last_committed_client_security_state();
-  ASSERT_FALSE(security_state.is_null());
-
-  // The context is deemed secure because the parent frame had no client
-  // security state, and the child frame loaded a secure page.
-  //
-  // TODO(crbug.com/1124346): Determine if this is correct, fix it if not.
-  EXPECT_TRUE(security_state->is_web_secure_context);
-
-  // The address space of the document, however, is not influenced by the
-  // parent's address space.
-  EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
-            security_state->ip_address_space);
-
-  // Check that the iframe can load a local resource.
-  //
-  // TODO(crbug.com/1124346): Determine if this is correct, fix it if not.
-  EXPECT_EQ(true, EvalJs(child_frame, FetchSubresourceScript("image.jpg")));
+  auto client_security_state = root_frame_host()->BuildClientSecurityState();
+  EXPECT_FALSE(client_security_state->is_web_secure_context);
+  EXPECT_EQ(network::mojom::CrossOriginEmbedderPolicyValue::kNone,
+            client_security_state->cross_origin_embedder_policy.value);
+  EXPECT_EQ(network::mojom::IPAddressSpace::kUnknown,
+            client_security_state->ip_address_space);
+  EXPECT_EQ(network::mojom::PrivateNetworkRequestPolicy::kAllow,
+            client_security_state->private_network_request_policy);
 }
 
 namespace {

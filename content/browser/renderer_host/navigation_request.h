@@ -656,10 +656,7 @@ class CONTENT_EXPORT NavigationRequest
     return response_should_be_rendered_;
   }
 
-  const network::mojom::ClientSecurityStatePtr& client_security_state() const {
-    return client_security_state_;
-  }
-  network::mojom::ClientSecurityStatePtr TakeClientSecurityState();
+  network::mojom::ClientSecurityStatePtr BuildClientSecurityState() const;
 
   bool ua_change_requires_reload() const { return ua_change_requires_reload_; }
 
@@ -781,6 +778,19 @@ class CONTENT_EXPORT NavigationRequest
   // Note #3: Navigations that do not use a URL loader also bypass
   //          NavigationThrottle.
   bool NeedsUrlLoader();
+
+  bool is_web_secure_context() const { return is_web_secure_context_; }
+  network::CrossOriginEmbedderPolicy cross_origin_embedder_policy() const {
+    return cross_origin_embedder_policy_;
+  }
+  network::mojom::IPAddressSpace ip_address_space() const {
+    return ip_address_space_;
+  }
+
+  network::mojom::PrivateNetworkRequestPolicy private_network_request_policy()
+      const {
+    return private_network_request_policy_;
+  }
 
  private:
   friend class NavigationRequestTest;
@@ -1049,17 +1059,18 @@ class CONTENT_EXPORT NavigationRequest
 
   // Returns whether the ready-to-commit navigation will yield a secure context.
   //
-  // Helper for UpdateClientSecurityState().
+  // Helper for UpdateClientSecurityStateInternals().
   //
   // Implements the following algorithm:
   // https://w3c.github.io/webappsec-secure-contexts/#is-settings-object-contextually-secure
   bool IsWebSecureContext() const;
 
-  // Updates |client_security_state_| during ReadyToCommitNavigation().
+  // Updates the internals used to construct a ClientSecurityState during
+  // ReadyToCommitNavigation().
   //
   // Must not be called for same-document navigation requests nor for requests
   // served from the back-forward cache.
-  void UpdateClientSecurityState();
+  void UpdateClientSecurityStateInternals();
 
   // Called when the navigation is ready to be committed. This will update the
   // |state_| and inform the delegate.
@@ -1472,11 +1483,6 @@ class CONTENT_EXPORT NavigationRequest
   // evicted.
   bool restarting_back_forward_cached_navigation_ = false;
 
-  // Holds a set of values needed to enforce several WebPlatform security APIs
-  // at the network request level.
-  network::mojom::ClientSecurityStatePtr client_security_state_ =
-      network::mojom::ClientSecurityState::New();
-
   // Holds the required CSP for this navigation. This will be moved into
   // the RenderFrameHost at DidCommitNavigation time.
   network::mojom::ContentSecurityPolicyPtr required_csp_;
@@ -1540,6 +1546,23 @@ class CONTENT_EXPORT NavigationRequest
   // This is valid only when this navigation will activate the prerendered
   // page.
   std::unique_ptr<PrerenderHost> prerender_host_;
+
+  // The following fields that constitute the ClientSecurityState. This
+  // state is used to take security decisions about the request, and later on
+  // when passed to the RenderFrameHostImpl, about the fetching of subresources.
+  //
+  // They have some default values and get updated via inheritance or network
+  // responses/redirects. Finally they get passed down to the
+  // RenderFrameHostImpl at commit time.
+  // TODO(ahemery, titouan): Move some elements to the policy container or
+  // rework inheritance.
+  // https://crbug.com/1154729
+  bool is_web_secure_context_ = false;
+  network::CrossOriginEmbedderPolicy cross_origin_embedder_policy_;
+  network::mojom::IPAddressSpace ip_address_space_ =
+      network::mojom::IPAddressSpace::kUnknown;
+  network::mojom::PrivateNetworkRequestPolicy private_network_request_policy_ =
+      network::mojom::PrivateNetworkRequestPolicy::kAllow;
 
   base::WeakPtrFactory<NavigationRequest> weak_factory_{this};
 

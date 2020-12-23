@@ -1122,7 +1122,7 @@ NavigationRequest::NavigationRequest(
   // is passed to the next one.
   // TODO(pmeuleman, clamy): Should we take into account the initiator COEP
   // instead?
-  client_security_state_->cross_origin_embedder_policy =
+  cross_origin_embedder_policy_ =
       frame_tree_node_->current_frame_host()->cross_origin_embedder_policy();
 
   NavigationControllerImpl* controller = GetNavigationController();
@@ -1739,11 +1739,6 @@ mojom::NavigationClient* NavigationRequest::GetCommitNavigationClient() {
   return commit_navigation_client_.get();
 }
 
-network::mojom::ClientSecurityStatePtr
-NavigationRequest::TakeClientSecurityState() {
-  return std::move(client_security_state_);
-}
-
 void NavigationRequest::SetRequiredCSP(
     network::mojom::ContentSecurityPolicyPtr csp) {
   DCHECK(!required_csp_);
@@ -1768,10 +1763,10 @@ void NavigationRequest::CreateCoepReporter(
     StoragePartition* storage_partition) {
   DCHECK(!isolation_info_for_subresources_.IsEmpty());
 
-  const auto& coep = client_security_state_->cross_origin_embedder_policy;
   coep_reporter_ = std::make_unique<CrossOriginEmbedderPolicyReporter>(
-      storage_partition, common_params_->url, coep.reporting_endpoint,
-      coep.report_only_reporting_endpoint,
+      storage_partition, common_params_->url,
+      cross_origin_embedder_policy_.reporting_endpoint,
+      cross_origin_embedder_policy_.report_only_reporting_endpoint,
       isolation_info_for_subresources_.network_isolation_key());
 }
 
@@ -2445,8 +2440,8 @@ void NavigationRequest::OnResponseStarted(
 
   if (render_frame_host_)
     DetermineOriginIsolationEndResult(IsOptInIsolationRequested(GetURL()));
-  client_security_state_->cross_origin_embedder_policy =
-      cross_origin_embedder_policy;
+
+  cross_origin_embedder_policy_ = cross_origin_embedder_policy;
 
   if (!browser_initiated_ && render_frame_host_ &&
       render_frame_host_ != frame_tree_node_->current_frame_host()) {
@@ -2945,8 +2940,7 @@ void NavigationRequest::OnStartChecksComplete(
   network::mojom::ClientSecurityStatePtr client_security_state = nullptr;
   RenderFrameHostImpl* parent = GetParentFrame();
   if (parent) {
-    client_security_state =
-        parent->last_committed_client_security_state().Clone();
+    client_security_state = parent->BuildClientSecurityState();
   }
 
   auto loader_type = NavigationURLLoader::LoaderType::kRegular;
@@ -3402,14 +3396,11 @@ void NavigationRequest::CommitNavigation() {
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
         reporter_remote;
     coep_reporter()->Clone(reporter_remote.InitWithNewPipeAndPassReceiver());
-    network::CrossOriginEmbedderPolicy navigation_coep;
-    if (client_security_state_)
-      navigation_coep = client_security_state_->cross_origin_embedder_policy;
     // Notify the service worker navigation handle that navigation commit is
     // about to go.
     service_worker_handle_->OnBeginNavigationCommit(
         render_frame_host_->GetProcess()->GetID(),
-        render_frame_host_->GetRoutingID(), navigation_coep,
+        render_frame_host_->GetRoutingID(), cross_origin_embedder_policy_,
         std::move(reporter_remote), &service_worker_container_info,
         commit_params_->document_ukm_source_id);
   }
@@ -4408,17 +4399,8 @@ bool NavigationRequest::NeedsUrlLoader() {
 bool NavigationRequest::IsWebSecureContext() const {
   // Parent document, if it exists, must also be a secure context.
   RenderFrameHostImpl* parent = frame_tree_node_->parent();
-  if (parent) {
-    const auto& parent_state = parent->last_committed_client_security_state();
-
-    // The parent frame might not have committed a navigation yet, in which case
-    // its client security state is null. In that case, we act as if there is no
-    // parent.
-    //
-    // TODO(crbug.com/1124346): Determine if this is correct, fix it if not.
-    if (parent_state && !parent_state->is_web_secure_context) {
-      return false;
-    }
+  if (parent && !parent->is_web_secure_context()) {
+    return false;
   }
 
   // For both regular and origin-sandboxed documents, the origin to use is the
@@ -4428,16 +4410,16 @@ bool NavigationRequest::IsWebSecureContext() const {
       url::Origin::Create(common_params_->url));
 }
 
-void NavigationRequest::UpdateClientSecurityState() {
+void NavigationRequest::UpdateClientSecurityStateInternals() {
   // It is useless to update this state for same-document navigations as well
   // as pages served from the back-forward cache.
   DCHECK(!IsSameDocument());
   DCHECK(!IsServedFromBackForwardCache());
 
-  client_security_state_->ip_address_space =
+  ip_address_space_ =
       CalculateClientAddressSpace(common_params_->url, response_head_.get());
 
-  client_security_state_->is_web_secure_context = IsWebSecureContext();
+  is_web_secure_context_ = IsWebSecureContext();
 
   if (!base::FeatureList::IsEnabled(
           features::kBlockInsecurePrivateNetworkRequests)) {
@@ -4455,7 +4437,7 @@ void NavigationRequest::UpdateClientSecurityState() {
     return;
   }
 
-  client_security_state_->private_network_request_policy = network::mojom::
+  private_network_request_policy_ = network::mojom::
       PrivateNetworkRequestPolicy::kBlockFromInsecureToMorePrivate;
 }
 
@@ -4467,8 +4449,8 @@ void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
   RestartCommitTimeout();
 
   if (!IsSameDocument() && !IsServedFromBackForwardCache()) {
-    UpdateClientSecurityState();
-    commit_params_->ip_address_space = client_security_state_->ip_address_space;
+    UpdateClientSecurityStateInternals();
+    commit_params_->ip_address_space = ip_address_space_;
   }
 
   if (appcache_handle_) {
@@ -5238,6 +5220,18 @@ NavigationRequest::EnforceCOEP() {
 std::unique_ptr<PeakGpuMemoryTracker>
 NavigationRequest::TakePeakGpuMemoryTracker() {
   return std::move(loading_mem_tracker_);
+}
+
+network::mojom::ClientSecurityStatePtr
+NavigationRequest::BuildClientSecurityState() const {
+  auto client_security_state = network::mojom::ClientSecurityState::New();
+  client_security_state->is_web_secure_context = is_web_secure_context_;
+  client_security_state->cross_origin_embedder_policy =
+      cross_origin_embedder_policy_;
+  client_security_state->ip_address_space = ip_address_space_;
+  client_security_state->private_network_request_policy =
+      private_network_request_policy_;
+  return client_security_state;
 }
 
 std::string NavigationRequest::GetUserAgentOverride() {

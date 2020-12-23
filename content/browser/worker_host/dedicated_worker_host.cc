@@ -330,8 +330,7 @@ DedicatedWorkerHost::CreateNetworkFactoryForSubresources(
   network::mojom::URLLoaderFactoryParamsPtr factory_params =
       URLLoaderFactoryParamsHelper::CreateForFrame(
           ancestor_render_frame_host, worker_origin_, isolation_info_,
-          mojo::Clone(ancestor_render_frame_host
-                          ->last_committed_client_security_state()),
+          ancestor_render_frame_host->BuildClientSecurityState(),
           std::move(coep_reporter), worker_process_host_,
           ancestor_render_frame_host->IsFeatureEnabled(
               blink::mojom::FeaturePolicyFeature::kTrustTokenRedemption)

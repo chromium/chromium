@@ -1508,11 +1508,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
     return virtual_browsing_context_group_;
   }
 
-  const network::mojom::ClientSecurityStatePtr&
-  last_committed_client_security_state() const {
-    return last_committed_client_security_state_;
-  }
-
   const network::mojom::ContentSecurityPolicy* required_csp() {
     return required_csp_.get();
   }
@@ -1860,6 +1855,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
   int accessibility_fatal_error_count_for_testing() const {
     return accessibility_fatal_error_count_;
   }
+
+  // Builds and return a ClientSecurityState based on the internal
+  // RenderFrameHostImpl state. This is never null.
+  network::mojom::ClientSecurityStatePtr BuildClientSecurityState() const;
+
+  // Returns true if the current document is considered to be a secure context.
+  bool is_web_secure_context() const { return is_web_secure_context_; }
 
  protected:
   friend class RenderFrameHostFactory;
@@ -3134,9 +3136,20 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Salt for generating frame-specific media device IDs.
   std::string media_device_id_salt_base_;
 
-  // Keeps track of various security properties of the last committed document
-  // that are needed by the network service.
-  network::mojom::ClientSecurityStatePtr last_committed_client_security_state_;
+  // Below are security properties of the last committed document that are
+  // needed by the network service. Until then they have default or inherited
+  // values.
+
+  // The frame might not have committed a navigation yet. In this case, we need
+  // to make sure that the is_web_secure_context bit is correctly inherited at
+  // construction time in the RenderFrameHostImpl.
+  //
+  // TODO(crbug.com/1124346): Determine if this is correct, fix it if not.
+  bool is_web_secure_context_ = false;
+  network::mojom::IPAddressSpace ip_address_space_ =
+      network::mojom::IPAddressSpace::kUnknown;
+  network::mojom::PrivateNetworkRequestPolicy private_network_request_policy_ =
+      network::mojom::PrivateNetworkRequestPolicy::kAllow;
 
   // Keep the list of ServiceWorkerContainerHosts so that they can observe when
   // the frame goes in/out of BackForwardCache.
