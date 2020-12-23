@@ -40,11 +40,11 @@
 #include "chrome/browser/search_provider_logos/logo_service_factory.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
-#include "chrome/browser/ui/search/ntp_user_data_logger.h"
 #include "chrome/browser/ui/search/omnibox_mojo_utils.h"
 #include "chrome/browser/ui/search/omnibox_utils.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/search/instant_types.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/keyed_service/core/service_access_type.h"
@@ -352,7 +352,6 @@ NewTabPageHandler::NewTabPageHandler(
     Profile* profile,
     InstantService* instant_service,
     content::WebContents* web_contents,
-    NTPUserDataLogger* logger,
     const base::Time& ntp_navigation_start_time)
     : instant_service_(instant_service),
       ntp_background_service_(
@@ -371,7 +370,7 @@ NewTabPageHandler::NewTabPageHandler(
           BitmapFetcherServiceFactory::GetForBrowserContext(profile)),
       web_contents_(web_contents),
       ntp_navigation_start_time_(ntp_navigation_start_time),
-      logger_(logger),
+      logger_(profile, GURL(chrome::kChromeUINewTabPageURL)),
       promo_service_(PromoServiceFactory::GetForProfile(profile)),
       page_{std::move(pending_page)},
       receiver_{this, std::move(pending_page_handler)} {
@@ -381,7 +380,6 @@ NewTabPageHandler::NewTabPageHandler(
   CHECK(one_google_bar_service_);
   CHECK(promo_service_);
   CHECK(web_contents_);
-  CHECK(logger_);
   instant_service_->AddObserver(this);
   ntp_background_service_->AddObserver(this);
   instant_service_->UpdateNtpTheme();
@@ -389,7 +387,7 @@ NewTabPageHandler::NewTabPageHandler(
   OmniboxTabHelper::FromWebContents(web_contents_)->AddObserver(this);
   promo_service_observer_.Add(promo_service_);
   one_google_bar_service_observer_.Add(one_google_bar_service_);
-  logger_->SetModulesVisible(
+  logger_.SetModulesVisible(
       profile_->GetPrefs()->GetBoolean(prefs::kNtpModulesVisible));
 }
 
@@ -419,16 +417,14 @@ void NewTabPageHandler::AddMostVisitedTile(
     AddMostVisitedTileCallback callback) {
   bool success = instant_service_->AddCustomLink(url, title);
   std::move(callback).Run(success);
-  NTPUserDataLogger::GetOrCreateFromWebContents(web_contents_)
-      ->LogEvent(NTP_CUSTOMIZE_SHORTCUT_ADD, base::TimeDelta() /* unused */);
+  logger_.LogEvent(NTP_CUSTOMIZE_SHORTCUT_ADD, base::TimeDelta() /* unused */);
 }
 
 void NewTabPageHandler::DeleteMostVisitedTile(const GURL& url) {
   if (instant_service_->IsCustomLinksEnabled()) {
     instant_service_->DeleteCustomLink(url);
-    NTPUserDataLogger::GetOrCreateFromWebContents(web_contents_)
-        ->LogEvent(NTP_CUSTOMIZE_SHORTCUT_REMOVE,
-                   base::TimeDelta() /* unused */);
+    logger_.LogEvent(NTP_CUSTOMIZE_SHORTCUT_REMOVE,
+                     base::TimeDelta() /* unused */);
   } else {
     instant_service_->DeleteMostVisitedItem(url);
     last_blocklisted_ = url;
@@ -438,9 +434,8 @@ void NewTabPageHandler::DeleteMostVisitedTile(const GURL& url) {
 void NewTabPageHandler::RestoreMostVisitedDefaults() {
   if (instant_service_->IsCustomLinksEnabled()) {
     instant_service_->ResetCustomLinks();
-    NTPUserDataLogger::GetOrCreateFromWebContents(web_contents_)
-        ->LogEvent(NTP_CUSTOMIZE_SHORTCUT_RESTORE_ALL,
-                   base::TimeDelta() /* unused */);
+    logger_.LogEvent(NTP_CUSTOMIZE_SHORTCUT_RESTORE_ALL,
+                     base::TimeDelta() /* unused */);
   } else {
     instant_service_->UndoAllMostVisitedDeletions();
   }
@@ -465,23 +460,21 @@ void NewTabPageHandler::SetMostVisitedSettings(bool custom_links_enabled,
   if (old_visible != visible) {
     instant_service_->ToggleShortcutsVisibility(
         /* do_notify= */ !toggleCustomLinksEnabled);
-    NTPUserDataLogger::GetOrCreateFromWebContents(web_contents_)
-        ->LogEvent(NTP_CUSTOMIZE_SHORTCUT_TOGGLE_VISIBILITY,
-                   base::TimeDelta() /* unused */);
+    logger_.LogEvent(NTP_CUSTOMIZE_SHORTCUT_TOGGLE_VISIBILITY,
+                     base::TimeDelta() /* unused */);
   }
   if (toggleCustomLinksEnabled) {
     instant_service_->ToggleMostVisitedOrCustomLinks();
-    NTPUserDataLogger::GetOrCreateFromWebContents(web_contents_)
-        ->LogEvent(NTP_CUSTOMIZE_SHORTCUT_TOGGLE_TYPE,
-                   base::TimeDelta() /* unused */);
+    logger_.LogEvent(NTP_CUSTOMIZE_SHORTCUT_TOGGLE_TYPE,
+                     base::TimeDelta() /* unused */);
   }
 }
 
 void NewTabPageHandler::UndoMostVisitedTileAction() {
   if (instant_service_->IsCustomLinksEnabled()) {
     instant_service_->UndoCustomLinkAction();
-    NTPUserDataLogger::GetOrCreateFromWebContents(web_contents_)
-        ->LogEvent(NTP_CUSTOMIZE_SHORTCUT_UNDO, base::TimeDelta() /* unused */);
+    logger_.LogEvent(NTP_CUSTOMIZE_SHORTCUT_UNDO,
+                     base::TimeDelta() /* unused */);
   } else if (last_blocklisted_.is_valid()) {
     instant_service_->UndoMostVisitedDeletion(last_blocklisted_);
     last_blocklisted_ = GURL();
@@ -532,8 +525,8 @@ void NewTabPageHandler::UpdateMostVisitedTile(
   bool success = instant_service_->UpdateCustomLink(
       url, new_url != url ? new_url : GURL(), new_title);
   std::move(callback).Run(success);
-  NTPUserDataLogger::GetOrCreateFromWebContents(web_contents_)
-      ->LogEvent(NTP_CUSTOMIZE_SHORTCUT_UPDATE, base::TimeDelta() /* unused */);
+  logger_.LogEvent(NTP_CUSTOMIZE_SHORTCUT_UPDATE,
+                   base::TimeDelta() /* unused */);
 }
 
 void NewTabPageHandler::GetBackgroundCollections(
@@ -728,31 +721,31 @@ void NewTabPageHandler::OnPromoServiceShuttingDown() {
 }
 
 void NewTabPageHandler::OnAppRendered(double time) {
-  logger_->LogEvent(NTP_APP_RENDERED,
-                    base::Time::FromJsTime(time) - ntp_navigation_start_time_);
+  logger_.LogEvent(NTP_APP_RENDERED,
+                   base::Time::FromJsTime(time) - ntp_navigation_start_time_);
 }
 
 void NewTabPageHandler::OnMostVisitedTilesRendered(
     std::vector<new_tab_page::mojom::MostVisitedTilePtr> tiles,
     double time) {
   for (size_t i = 0; i < tiles.size(); i++) {
-    logger_->LogMostVisitedImpression(MakeNTPTileImpression(*tiles[i], i));
+    logger_.LogMostVisitedImpression(MakeNTPTileImpression(*tiles[i], i));
   }
   // This call flushes all most visited impression logs to UMA histograms.
   // Therefore, it must come last.
-  logger_->LogEvent(NTP_ALL_TILES_LOADED,
-                    base::Time::FromJsTime(time) - ntp_navigation_start_time_);
+  logger_.LogEvent(NTP_ALL_TILES_LOADED,
+                   base::Time::FromJsTime(time) - ntp_navigation_start_time_);
 }
 
 void NewTabPageHandler::OnOneGoogleBarRendered(double time) {
-  logger_->LogEvent(NTP_ONE_GOOGLE_BAR_SHOWN,
-                    base::Time::FromJsTime(time) - ntp_navigation_start_time_);
+  logger_.LogEvent(NTP_ONE_GOOGLE_BAR_SHOWN,
+                   base::Time::FromJsTime(time) - ntp_navigation_start_time_);
 }
 
 void NewTabPageHandler::OnPromoRendered(double time,
                                         const base::Optional<GURL>& log_url) {
-  logger_->LogEvent(NTP_MIDDLE_SLOT_PROMO_SHOWN,
-                    base::Time::FromJsTime(time) - ntp_navigation_start_time_);
+  logger_.LogEvent(NTP_MIDDLE_SLOT_PROMO_SHOWN,
+                   base::Time::FromJsTime(time) - ntp_navigation_start_time_);
   if (log_url.has_value() && log_url->is_valid()) {
     Fetch(*log_url, base::BindOnce([](bool, std::unique_ptr<std::string>) {}));
   }
@@ -766,7 +759,7 @@ void NewTabPageHandler::OnMostVisitedTileNavigation(
     bool ctrl_key,
     bool meta_key,
     bool shift_key) {
-  logger_->LogMostVisitedNavigation(MakeNTPTileImpression(*tile, index));
+  logger_.LogMostVisitedNavigation(MakeNTPTileImpression(*tile, index));
 
   if (!base::FeatureList::IsEnabled(
           ntp_features::kNtpHandleMostVisitedNavigationExplicitly))
@@ -877,11 +870,10 @@ void NewTabPageHandler::OnDoodleImageRendered(
     OnDoodleImageRenderedCallback callback) {
   if (type == new_tab_page::mojom::DoodleImageType::kCta ||
       type == new_tab_page::mojom::DoodleImageType::kStatic) {
-    logger_->LogEvent(
-        type == new_tab_page::mojom::DoodleImageType::kCta
-            ? NTP_CTA_LOGO_SHOWN_FROM_CACHE
-            : NTP_STATIC_LOGO_SHOWN_FROM_CACHE,
-        base::Time::FromJsTime(time) - ntp_navigation_start_time_);
+    logger_.LogEvent(type == new_tab_page::mojom::DoodleImageType::kCta
+                         ? NTP_CTA_LOGO_SHOWN_FROM_CACHE
+                         : NTP_STATIC_LOGO_SHOWN_FROM_CACHE,
+                     base::Time::FromJsTime(time) - ntp_navigation_start_time_);
   }
   Fetch(log_url,
         base::BindOnce(&NewTabPageHandler::OnLogFetchResult,
@@ -997,23 +989,23 @@ void NewTabPageHandler::OnVoiceSearchError(
 
 void NewTabPageHandler::OnModuleImpression(const std::string& module_id,
                                            double time) {
-  logger_->LogModuleImpression(
+  logger_.LogModuleImpression(
       module_id, base::Time::FromJsTime(time) - ntp_navigation_start_time_);
 }
 
 void NewTabPageHandler::OnModuleLoaded(const std::string& module_id,
                                        double time) {
-  logger_->LogModuleLoaded(
+  logger_.LogModuleLoaded(
       module_id, base::Time::FromJsTime(time) - ntp_navigation_start_time_);
 }
 
 void NewTabPageHandler::OnModuleUsage(const std::string& module_id) {
-  logger_->LogModuleUsage(module_id);
+  logger_.LogModuleUsage(module_id);
 }
 
 void NewTabPageHandler::OnModulesRendered(double time) {
-  logger_->LogEvent(NTP_MODULES_SHOWN,
-                    base::Time::FromJsTime(time) - ntp_navigation_start_time_);
+  logger_.LogEvent(NTP_MODULES_SHOWN,
+                   base::Time::FromJsTime(time) - ntp_navigation_start_time_);
 }
 
 void NewTabPageHandler::QueryAutocomplete(const base::string16& input,
@@ -1521,7 +1513,7 @@ void NewTabPageHandler::OnRealboxFaviconFetched(int match_index,
 }
 
 void NewTabPageHandler::LogEvent(NTPLoggingEventType event) {
-  logger_->LogEvent(event, base::TimeDelta() /* unused */);
+  logger_.LogEvent(event, base::TimeDelta() /* unused */);
 }
 
 void NewTabPageHandler::Fetch(const GURL& url,

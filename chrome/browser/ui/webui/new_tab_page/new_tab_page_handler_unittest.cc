@@ -5,9 +5,9 @@
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/search/instant_service.h"
-#include "chrome/browser/ui/search/ntp_user_data_logger.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
 #include "chrome/common/search/omnibox.mojom.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
@@ -27,12 +27,6 @@ class MockInstantService : public InstantService {
 
   MOCK_METHOD1(AddObserver, void(InstantServiceObserver*));
   MOCK_METHOD0(UpdateNtpTheme, void());
-};
-
-class MockNTPUserDataLogger : public NTPUserDataLogger {
- public:
-  MockNTPUserDataLogger() : NTPUserDataLogger(nullptr) {}
-  ~MockNTPUserDataLogger() override = default;
 };
 
 class MockPage : public new_tab_page::mojom::Page {
@@ -76,7 +70,7 @@ class NewTabPageHandlerTest : public testing::Test {
     handler_ = std::make_unique<NewTabPageHandler>(
         mojo::PendingReceiver<new_tab_page::mojom::PageHandler>(),
         mock_page_.BindAndGetRemote(), &profile_, &mock_instant_service_,
-        web_contents_, &logger_, base::Time::Now());
+        web_contents_, base::Time::Now());
     EXPECT_EQ(handler_.get(), instant_service_observer_);
   }
 
@@ -90,7 +84,6 @@ class NewTabPageHandlerTest : public testing::Test {
   MockInstantService mock_instant_service_;
   content::TestWebContentsFactory factory_;
   content::WebContents* web_contents_;  // Weak. Owned by factory_.
-  MockNTPUserDataLogger logger_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<NewTabPageHandler> handler_;
   InstantServiceObserver* instant_service_observer_;

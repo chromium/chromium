@@ -194,16 +194,8 @@ SearchTabHelper::~SearchTabHelper() {
 void SearchTabHelper::OnTabActivated() {
   ipc_router_.OnTabActivated();
 
-  if (search::IsInstantNTP(web_contents_)) {
-    if (instant_service_)
-      instant_service_->OnNewTabPageOpened();
-
-    // Force creation of NTPUserDataLogger, if we loaded an NTP. The
-    // NTPUserDataLogger tries to detect whether the NTP is being created at
-    // startup or from the user opening a new tab, and if we wait until later,
-    // it won't correctly detect this case.
-    NTPUserDataLogger::GetOrCreateFromWebContents(web_contents_);
-  }
+  if (search::IsInstantNTP(web_contents_) && instant_service_)
+    instant_service_->OnNewTabPageOpened();
 }
 
 void SearchTabHelper::OnTabDeactivated() {
@@ -275,8 +267,23 @@ void SearchTabHelper::NavigationEntryCommitted(
   if (!load_details.is_main_frame)
     return;
 
-  if (search::IsInstantNTP(web_contents_))
+  if (search::IsInstantNTP(web_contents_)) {
+    // We (re)create the logger here because
+    // 1. The logger tries to detect whether the NTP is being created at startup
+    //    or from the user opening a new tab, and if we wait until later, it
+    //    won't correctly detect this case.
+    // 2. There can be multiple navigations to NTPs in a single web contents.
+    //    The navigations can be user-triggered or automatic, e.g. we fall back
+    //    to the local NTP if a remote NTP fails to load. Since logging should
+    //    be scoped to the life time of a single NTP we reset the logger every
+    //    time we reach a new NTP.
+    logger_ = std::make_unique<NTPUserDataLogger>(
+        Profile::FromBrowserContext(web_contents_->GetBrowserContext()),
+        // We use the NavigationController's URL since it might differ from the
+        // WebContents URL which is usually chrome://newtab/.
+        web_contents_->GetController().GetVisibleEntry()->GetURL());
     ipc_router_.SetInputInProgress(IsInputInProgress());
+  }
 
   if (InInstantProcess(instant_service_, web_contents_))
     ipc_router_.OnNavigationEntryCommitted();
@@ -365,28 +372,28 @@ void SearchTabHelper::OnToggleShortcutsVisibility(bool do_notify) {
 
 void SearchTabHelper::OnLogEvent(NTPLoggingEventType event,
                                  base::TimeDelta time) {
-  NTPUserDataLogger::GetOrCreateFromWebContents(web_contents())
-      ->LogEvent(event, time);
+  if (logger_)
+    logger_->LogEvent(event, time);
 }
 
 void SearchTabHelper::OnLogSuggestionEventWithValue(
     NTPSuggestionsLoggingEventType event,
     int data,
     base::TimeDelta time) {
-  NTPUserDataLogger::GetOrCreateFromWebContents(web_contents())
-      ->LogSuggestionEventWithValue(event, data, time);
+  if (logger_)
+    logger_->LogSuggestionEventWithValue(event, data, time);
 }
 
 void SearchTabHelper::OnLogMostVisitedImpression(
     const ntp_tiles::NTPTileImpression& impression) {
-  NTPUserDataLogger::GetOrCreateFromWebContents(web_contents())
-      ->LogMostVisitedImpression(impression);
+  if (logger_)
+    logger_->LogMostVisitedImpression(impression);
 }
 
 void SearchTabHelper::OnLogMostVisitedNavigation(
     const ntp_tiles::NTPTileImpression& impression) {
-  NTPUserDataLogger::GetOrCreateFromWebContents(web_contents())
-      ->LogMostVisitedNavigation(impression);
+  if (logger_)
+    logger_->LogMostVisitedNavigation(impression);
 }
 
 void SearchTabHelper::PasteIntoOmnibox(const base::string16& text) {
@@ -417,11 +424,12 @@ void SearchTabHelper::FileSelected(const base::FilePath& path,
   select_file_dialog_ = nullptr;
   // File selection can happen at any time after NTP load, and is not logged
   // with the event.
-  NTPUserDataLogger::GetOrCreateFromWebContents(web_contents())
-      ->LogEvent(NTP_CUSTOMIZE_LOCAL_IMAGE_DONE,
-                 base::TimeDelta::FromSeconds(0));
-  NTPUserDataLogger::GetOrCreateFromWebContents(web_contents())
-      ->LogEvent(NTP_BACKGROUND_UPLOAD_DONE, base::TimeDelta::FromSeconds(0));
+  if (logger_) {
+    logger_->LogEvent(NTP_CUSTOMIZE_LOCAL_IMAGE_DONE,
+                      base::TimeDelta::FromSeconds(0));
+    logger_->LogEvent(NTP_BACKGROUND_UPLOAD_DONE,
+                      base::TimeDelta::FromSeconds(0));
+  }
 
   ipc_router_.SendLocalBackgroundSelected();
 }
@@ -430,11 +438,12 @@ void SearchTabHelper::FileSelectionCanceled(void* params) {
   select_file_dialog_ = nullptr;
   // File selection can happen at any time after NTP load, and is not logged
   // with the event.
-  NTPUserDataLogger::GetOrCreateFromWebContents(web_contents())
-      ->LogEvent(NTP_CUSTOMIZE_LOCAL_IMAGE_CANCEL,
-                 base::TimeDelta::FromSeconds(0));
-  NTPUserDataLogger::GetOrCreateFromWebContents(web_contents())
-      ->LogEvent(NTP_BACKGROUND_UPLOAD_CANCEL, base::TimeDelta::FromSeconds(0));
+  if (logger_) {
+    logger_->LogEvent(NTP_CUSTOMIZE_LOCAL_IMAGE_CANCEL,
+                      base::TimeDelta::FromSeconds(0));
+    logger_->LogEvent(NTP_BACKGROUND_UPLOAD_CANCEL,
+                      base::TimeDelta::FromSeconds(0));
+  }
 }
 
 void SearchTabHelper::OnResultChanged(AutocompleteController* controller,

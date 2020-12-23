@@ -20,9 +20,6 @@
 #include "components/ntp_tiles/metrics.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
-#include "content/public/browser/navigation_details.h"
-#include "content/public/browser/navigation_entry.h"
-#include "content/public/browser/web_contents.h"
 
 namespace {
 
@@ -368,39 +365,15 @@ LogoClickType LoggingEventToLogoClick(NTPLoggingEventType event) {
                              base::TimeDelta::FromMilliseconds(1), \
                              base::TimeDelta::FromSeconds(60), 100)
 
-NTPUserDataLogger::~NTPUserDataLogger() {}
+NTPUserDataLogger::NTPUserDataLogger(Profile* profile, const GURL& ntp_url)
+    : has_emitted_(false),
+      should_record_doodle_load_time_(true),
+      modules_visible_(false),
+      during_startup_(!AfterStartupTaskUtils::IsBrowserStartupComplete()),
+      ntp_url_(ntp_url),
+      profile_(profile) {}
 
-// static
-NTPUserDataLogger* NTPUserDataLogger::GetOrCreateFromWebContents(
-    content::WebContents* content) {
-  DCHECK(search::IsInstantNTP(content) ||
-         content->GetMainFrame()->GetSiteInstance()->GetSiteURL() ==
-             GURL(chrome::kChromeUINewTabPageURL));
-
-  // Calling CreateForWebContents when an instance is already attached has no
-  // effect, so we can do this.
-  NTPUserDataLogger::CreateForWebContents(content);
-  NTPUserDataLogger* logger = NTPUserDataLogger::FromWebContents(content);
-
-  // We record the URL of this NTP in order to identify navigations that
-  // originate from it. We use the NavigationController's URL since it might
-  // differ from the WebContents URL which is usually chrome://newtab/.
-  //
-  // We update the NTP URL every time this function is called, because the NTP
-  // URL sometimes changes while it is open, and we care about the final one for
-  // detecting when the user leaves or returns to the NTP. In particular, if the
-  // Google URL changes (e.g. google.com -> google.de), then we fall back to the
-  // local NTP.
-  content::NavigationEntry* entry = content->GetController().GetVisibleEntry();
-  if (entry && (logger->ntp_url_ != entry->GetURL())) {
-    DVLOG(1) << "NTP URL changed from \"" << logger->ntp_url_ << "\" to \""
-             << entry->GetURL() << "\"";
-    logger->ntp_url_ = entry->GetURL();
-  }
-
-  logger->profile_ = Profile::FromBrowserContext(content->GetBrowserContext());
-  return logger;
-}
+NTPUserDataLogger::~NTPUserDataLogger() = default;
 
 // static
 void NTPUserDataLogger::LogOneGoogleBarFetchDuration(
@@ -621,31 +594,6 @@ void NTPUserDataLogger::SetModulesVisible(bool visible) {
   modules_visible_ = visible;
 }
 
-NTPUserDataLogger::NTPUserDataLogger(content::WebContents* contents)
-    : content::WebContentsObserver(contents),
-      has_emitted_(false),
-      should_record_doodle_load_time_(true),
-      modules_visible_(false),
-      during_startup_(!AfterStartupTaskUtils::IsBrowserStartupComplete()) {}
-
-// content::WebContentsObserver override
-void NTPUserDataLogger::NavigationEntryCommitted(
-    const content::LoadCommittedDetails& load_details) {
-  NavigatedFromURLToURL(load_details.previous_main_frame_url,
-                        load_details.entry->GetURL());
-}
-
-void NTPUserDataLogger::NavigatedFromURLToURL(const GURL& from,
-                                              const GURL& to) {
-  // User is returning to NTP, probably via the back button; reset stats.
-  if (from.is_valid() && to.is_valid() && (to == ntp_url_)) {
-    DVLOG(1) << "Returning to New Tab Page";
-    logged_impressions_.fill(base::nullopt);
-    has_emitted_ = false;
-    should_record_doodle_load_time_ = true;
-  }
-}
-
 bool NTPUserDataLogger::DefaultSearchProviderIsGoogle() const {
   return search::DefaultSearchProviderIsGoogle(profile_);
 }
@@ -782,5 +730,3 @@ void NTPUserDataLogger::RecordAction(const char* action) {
 
   base::RecordAction(base::UserMetricsAction(action));
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(NTPUserDataLogger)

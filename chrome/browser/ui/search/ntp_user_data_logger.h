@@ -9,7 +9,6 @@
 
 #include <array>
 
-#include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/time/time.h"
@@ -18,29 +17,17 @@
 #include "chrome/common/search/ntp_logging_events.h"
 #include "components/ntp_tiles/constants.h"
 #include "components/ntp_tiles/ntp_tile_impression.h"
-#include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
 
 #if defined(OS_ANDROID)
 #error "Instant is only used on desktop";
 #endif
 
-namespace content {
-class WebContents;
-}
-
 // Helper class for logging data from the NTP. Attached to each NTP instance.
-class NTPUserDataLogger
-    : public content::WebContentsObserver,
-      public content::WebContentsUserData<NTPUserDataLogger> {
+class NTPUserDataLogger {
  public:
-  ~NTPUserDataLogger() override;
-
-  // Gets the associated NTPUserDataLogger, creating it if necessary.
-  //
-  // MUST be called only when the NTP is active.
-  static NTPUserDataLogger* GetOrCreateFromWebContents(
-      content::WebContents* content);
+  // Creates a NTPUserDataLogger. MUST be called only when the NTP is active.
+  NTPUserDataLogger(Profile* profile, const GURL& ntp_url);
+  virtual ~NTPUserDataLogger();
 
   // Called when a One Google Bar fetch has been completed after |duration|.
   // |success| is true if the fetch was successful.
@@ -81,28 +68,7 @@ class NTPUserDataLogger
   // Sets visibility of modules to be later logged.
   void SetModulesVisible(bool visible);
 
- protected:
-  explicit NTPUserDataLogger(content::WebContents* contents);
-
-  void set_ntp_url_for_testing(const GURL& ntp_url) { ntp_url_ = ntp_url; }
-
  private:
-  friend class content::WebContentsUserData<NTPUserDataLogger>;
-
-  FRIEND_TEST_ALL_PREFIXES(NTPUserDataLoggerTest, ShouldRecordLoadTime);
-  FRIEND_TEST_ALL_PREFIXES(NTPUserDataLoggerTest, ShouldRecordNumberOfTiles);
-  FRIEND_TEST_ALL_PREFIXES(NTPUserDataLoggerTest,
-                           ShouldNotRecordImpressionsForBinsBeyondMax);
-  FRIEND_TEST_ALL_PREFIXES(NTPUserDataLoggerTest,
-                           ShouldRecordImpressionsAgainAfterNavigating);
-
-  // content::WebContentsObserver override
-  void NavigationEntryCommitted(
-      const content::LoadCommittedDetails& load_details) override;
-
-  // Implementation of NavigationEntryCommitted; separate for test.
-  void NavigatedFromURLToURL(const GURL& from, const GURL& to);
-
   // Returns whether Google is selected as the default search engine. Virtual
   // for testing.
   virtual bool DefaultSearchProviderIsGoogle() const;
@@ -158,8 +124,6 @@ class NTPUserDataLogger
 
   // The profile in which this New Tab Page was loaded.
   Profile* profile_;
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
 
   DISALLOW_COPY_AND_ASSIGN(NTPUserDataLogger);
 };

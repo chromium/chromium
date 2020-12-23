@@ -47,6 +47,7 @@ class Image;
 class AutocompleteController;
 class GURL;
 class InstantService;
+class NTPUserDataLogger;
 class Profile;
 class SearchIPCRouterTest;
 class SearchSuggestService;
@@ -225,6 +226,8 @@ class SearchTabHelper : public content::WebContentsObserver,
   base::CancelableTaskTracker cancelable_task_tracker_;
 
   FaviconCache favicon_cache_;
+
+  std::unique_ptr<NTPUserDataLogger> logger_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

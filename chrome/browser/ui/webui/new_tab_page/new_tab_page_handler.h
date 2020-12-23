@@ -21,6 +21,7 @@
 #include "chrome/browser/search/promos/promo_service.h"
 #include "chrome/browser/search/promos/promo_service_observer.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
+#include "chrome/browser/ui/search/ntp_user_data_logger.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
 #include "chrome/common/search/instant_types.h"
 #include "chrome/common/search/ntp_logging_events.h"
@@ -63,7 +64,6 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
                     Profile* profile,
                     InstantService* instant_service,
                     content::WebContents* web_contents,
-                    NTPUserDataLogger* logger,
                     const base::Time& ntp_navigation_start_time);
   ~NewTabPageHandler() override;
 
@@ -241,7 +241,7 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   base::TimeTicks time_of_first_autocomplete_query_;
   content::WebContents* web_contents_;
   base::Time ntp_navigation_start_time_;
-  NTPUserDataLogger* logger_;
+  NTPUserDataLogger logger_;
   std::unordered_map<const network::SimpleURLLoader*,
                      std::unique_ptr<network::SimpleURLLoader>>
       loader_map_;
