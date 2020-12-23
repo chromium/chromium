@@ -683,10 +683,6 @@ void SkiaOutputSurfaceImpl::ScheduleOverlays(
     OverlayList overlays,
     std::vector<gpu::SyncToken> sync_tokens,
     base::OnceClosure on_finished) {
-  auto task = base::BindOnce(
-      &SkiaOutputSurfaceImplOnGpu::ScheduleOverlays,
-      base::Unretained(impl_on_gpu_.get()), std::move(overlays),
-      std::move(images_in_current_paint_), std::move(on_finished));
 #if defined(OS_APPLE)
   DCHECK_EQ(dependency_->gr_context_type(), gpu::GrContextType::kGL);
   // If there are render pass overlays, then a gl context is needed for drawing
@@ -703,6 +699,10 @@ void SkiaOutputSurfaceImpl::ScheduleOverlays(
 #else
   bool make_current = false;
 #endif
+  auto task = base::BindOnce(
+      &SkiaOutputSurfaceImplOnGpu::ScheduleOverlays,
+      base::Unretained(impl_on_gpu_.get()), std::move(overlays),
+      std::move(images_in_current_paint_), std::move(on_finished));
   EnqueueGpuTask(std::move(task), std::move(sync_tokens), make_current,
                  /*need_framebuffer=*/false);
   images_in_current_paint_.clear();
