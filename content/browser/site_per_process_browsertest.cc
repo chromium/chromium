@@ -16181,8 +16181,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 // See https://crbug.com/968259.
 // Note: This test needs to do a browser-initiated navigation because doing
 // a renderer-initiated navigation would lead to the navigation being canceled.
-// This behavior change has been introduced with PerNavigationMojoInterface and
-// is documented here https://crbug.com/988368.
+// This behavior change has been introduced when navigation moved to use Mojo
+// IPCs and is documented here https://crbug.com/988368.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                        ProcessDiesBeforeCrossSiteNavigationCompletes) {
   GURL first_url(embedded_test_server()->GetURL("a.com", "/title1.html"));

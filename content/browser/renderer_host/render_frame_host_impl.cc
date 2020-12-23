@@ -3074,11 +3074,11 @@ bool RenderFrameHostImpl::IsFrozen() {
 void RenderFrameHostImpl::DidCommitProvisionalLoad(
     mojom::DidCommitProvisionalLoadParamsPtr params,
     mojom::DidCommitProvisionalLoadInterfaceParamsPtr interface_params) {
-  if (MaybeInterceptCommitCallback(nullptr, &params, &interface_params)) {
-    DCHECK(params);
-    DidCommitNavigation(nullptr, std::move(params),
-                        std::move(interface_params));
-  }
+  if (!MaybeInterceptCommitCallback(nullptr, &params, &interface_params))
+    return;
+
+  DCHECK(params);
+  DidCommitNavigation(nullptr, std::move(params), std::move(interface_params));
 }
 
 void RenderFrameHostImpl::DidCommitBackForwardCacheNavigation(
@@ -3106,30 +3106,6 @@ void RenderFrameHostImpl::DidCommitBackForwardCacheNavigation(
   // The page is already loaded since it came from the cache, so fire the stop
   // loading event.
   DidStopLoading();
-}
-
-void RenderFrameHostImpl::DidCommitPerNavigationMojoInterfaceNavigation(
-    NavigationRequest* committing_navigation_request,
-    mojom::DidCommitProvisionalLoadParamsPtr params,
-    mojom::DidCommitProvisionalLoadInterfaceParamsPtr interface_params) {
-  DCHECK(committing_navigation_request);
-  committing_navigation_request->IgnoreCommitInterfaceDisconnection();
-  if (!MaybeInterceptCommitCallback(committing_navigation_request, &params,
-                                    &interface_params)) {
-    return;
-  }
-  DCHECK(params);
-
-  auto request = navigation_requests_.find(committing_navigation_request);
-
-  // The committing request should be in the map of NavigationRequests for
-  // this RenderFrameHost.
-  CHECK(request != navigation_requests_.end());
-
-  std::unique_ptr<NavigationRequest> owned_request = std::move(request->second);
-  navigation_requests_.erase(committing_navigation_request);
-  DidCommitNavigation(std::move(owned_request), std::move(params),
-                      std::move(interface_params));
 }
 
 void RenderFrameHostImpl::DidCommitSameDocumentNavigation(
@@ -9074,9 +9050,11 @@ void RenderFrameHostImpl::SendCommitFailedNavigation(
 // Called when the renderer navigates. For every frame loaded, we'll get this
 // notification containing parameters identifying the navigation.
 void RenderFrameHostImpl::DidCommitNavigation(
-    std::unique_ptr<NavigationRequest> request,
+    NavigationRequest* committing_navigation_request,
     mojom::DidCommitProvisionalLoadParamsPtr params,
     mojom::DidCommitProvisionalLoadInterfaceParamsPtr interface_params) {
+  DCHECK(params);
+
   // BackForwardCacheImpl::CanStoreRenderFrameHost prevents placing the pages
   // with in-flight navigation requests in the back-forward cache and it's not
   // possible to start/commit a new one after the RenderFrameHost is in the
@@ -9086,15 +9064,34 @@ void RenderFrameHostImpl::DidCommitNavigation(
   // kInBackForwardCache state.
   DCHECK(!IsInBackForwardCache());
 
-  if (request && request->IsNavigationStarted()) {
-    main_frame_request_ids_ = {params->request_id,
-                               request->GetGlobalRequestID()};
-    if (deferred_main_frame_load_info_)
-      ResourceLoadComplete(std::move(deferred_main_frame_load_info_));
+  std::unique_ptr<NavigationRequest> request;
+  // A `committing_navigation_request` is not present only in the case of
+  // committing an initial empty document in a frame. In all other cases it
+  // should be non-null and present in the map of NavigationRequests.
+  if (committing_navigation_request) {
+    committing_navigation_request->IgnoreCommitInterfaceDisconnection();
+    if (!MaybeInterceptCommitCallback(committing_navigation_request, &params,
+                                      &interface_params)) {
+      return;
+    }
+
+    auto find_request =
+        navigation_requests_.find(committing_navigation_request);
+    CHECK(find_request != navigation_requests_.end());
+
+    request = std::move(find_request->second);
+    navigation_requests_.erase(committing_navigation_request);
+
+    if (request->IsNavigationStarted()) {
+      main_frame_request_ids_ = {params->request_id,
+                                 request->GetGlobalRequestID()};
+      if (deferred_main_frame_load_info_)
+        ResourceLoadComplete(std::move(deferred_main_frame_load_info_));
+    }
   }
-  // DidCommitProvisionalLoad IPC should be associated with the URL being
-  // committed (not with the *last* committed URL that most other IPCs are
-  // associated with).
+
+  // The commit IPC should be associated with the URL being committed (not with
+  // the *last* committed URL that most other IPCs are associated with).
   ScopedActiveURL scoped_active_url(params->url,
                                     frame_tree()->root()->current_origin());
 
@@ -9190,18 +9187,16 @@ mojom::NavigationClient::CommitNavigationCallback
 RenderFrameHostImpl::BuildCommitNavigationCallback(
     NavigationRequest* navigation_request) {
   DCHECK(navigation_request);
-  return base::BindOnce(
-      &RenderFrameHostImpl::DidCommitPerNavigationMojoInterfaceNavigation,
-      base::Unretained(this), navigation_request);
+  return base::BindOnce(&RenderFrameHostImpl::DidCommitNavigation,
+                        base::Unretained(this), navigation_request);
 }
 
 mojom::NavigationClient::CommitFailedNavigationCallback
 RenderFrameHostImpl::BuildCommitFailedNavigationCallback(
     NavigationRequest* navigation_request) {
   DCHECK(navigation_request);
-  return base::BindOnce(
-      &RenderFrameHostImpl::DidCommitPerNavigationMojoInterfaceNavigation,
-      base::Unretained(this), navigation_request);
+  return base::BindOnce(&RenderFrameHostImpl::DidCommitNavigation,
+                        base::Unretained(this), navigation_request);
 }
 
 void RenderFrameHostImpl::SendBeforeUnload(

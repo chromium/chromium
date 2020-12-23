@@ -723,7 +723,6 @@ class CONTENT_EXPORT RenderFrameImpl
       mojo::PendingAssociatedReceiver<mojom::FrameBindingsControl> receiver);
   void BindFrameNavigationControl(
       mojo::PendingAssociatedReceiver<mojom::FrameNavigationControl> receiver);
-  // Only used when PerNavigationMojoInterface is enabled.
   void BindNavigationClient(
       mojo::PendingAssociatedReceiver<mojom::NavigationClient> receiver);
 

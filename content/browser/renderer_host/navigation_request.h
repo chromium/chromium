@@ -488,7 +488,7 @@ class CONTENT_EXPORT NavigationRequest
   void ResetStateForSiteInstanceChange();
 
   // Lazily initializes and returns the mojo::NavigationClient interface used
-  // for commit. Only used with PerNavigationMojoInterface enabled.
+  // for commit.
   mojom::NavigationClient* GetCommitNavigationClient();
 
   void set_transition(ui::PageTransition transition) {
@@ -938,12 +938,10 @@ class CONTENT_EXPORT NavigationRequest
   void UpdateCommitNavigationParamsHistory();
 
   // Called when an ongoing renderer-initiated navigation is aborted.
-  // Only used with PerNavigationMojoInterface enabled.
   void OnRendererAbortedNavigation();
 
   // Binds the given error_handler to be called when an interface disconnection
   // happens on the renderer side.
-  // Only used with PerNavigationMojoInterface enabled.
   void HandleInterfaceDisconnection(
       mojo::AssociatedRemote<mojom::NavigationClient>*,
       base::OnceClosure error_handler);
@@ -952,7 +950,6 @@ class CONTENT_EXPORT NavigationRequest
   // disconnection on the renderer side as an AbortNavigation.
   // TODO(ahemery): remove this function when NavigationRequest properly handles
   // interface disconnection in all cases.
-  // Only used with PerNavigationMojoInterface enabled.
   void IgnoreInterfaceDisconnection();
 
   // Inform the RenderProcessHost to no longer expect a navigation.
@@ -1292,7 +1289,6 @@ class CONTENT_EXPORT NavigationRequest
   // The NavigationClient interface used to commit the navigation. For now, this
   // is only used for same-site renderer-initiated navigation.
   // TODO(clamy, ahemery): Extend to all types of navigation.
-  // Only valid when PerNavigationMojoInterface is enabled.
   mojo::AssociatedRemote<mojom::NavigationClient> commit_navigation_client_;
 
   // If set, any redirects to HTTP for this navigation will be upgraded to

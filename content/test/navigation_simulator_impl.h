@@ -343,7 +343,6 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   // the NavigationClient interface, as it would be interpreted as a
   // cancellation coming from the renderer process side. This member interface
   // will never be bound.
-  // Only used when PerNavigationMojoInterface is enabled.
   mojo::PendingAssociatedReceiver<mojom::NavigationClient>
       navigation_client_receiver_;
 

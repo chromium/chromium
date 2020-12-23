@@ -478,10 +478,9 @@ interface FrameHost {
   // If an invalid BlobURLToken is passed in, or if the token doesn't match the
   // url in |common_params|, the navigation will result in a network error.
   // |navigation_client| is passed to the renderer to allow for further control
-  // of the navigation. Allows for Commit and Cancels/Aborts. It is only valid
-  // when PerNavigationMojoInterface is enabled.
+  // of the navigation. Allows for Commit and Cancels/Aborts.
   // TODO(ahemery): |navigation_client| should not be optional. Make it
-  // mandatory when removing PerNavigationMojoInterface feature flag.
+  // mandatory.
   BeginNavigation(
       CommonNavigationParams common_params,
       BeginNavigationParams begin_params,

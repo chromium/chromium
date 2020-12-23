@@ -109,7 +109,6 @@ class CONTENT_EXPORT NavigationState {
 
   // The NavigationClient interface gives control over the navigation ongoing in
   // the browser process.
-  // Only used when PerNavigationMojoInterface is enabled.
   std::unique_ptr<NavigationClient> navigation_client_;
 
   // Used to notify whether a commit request from the browser process was
