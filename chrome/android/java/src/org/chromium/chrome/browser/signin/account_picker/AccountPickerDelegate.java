@@ -17,6 +17,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.SigninManager;
+import org.chromium.chrome.browser.signin.SigninPreferencesManager;
 import org.chromium.chrome.browser.signin.SigninUtils;
 import org.chromium.chrome.browser.signin.WebSigninBridge;
 import org.chromium.chrome.browser.tab.Tab;
@@ -175,6 +176,15 @@ public class AccountPickerDelegate implements WebSigninBridge.Listener {
             @AccountConsistencyPromoAction int promoAction) {
         RecordHistogram.recordEnumeratedHistogram("Signin.AccountConsistencyPromoAction",
                 promoAction, AccountConsistencyPromoAction.MAX);
+    }
+
+    /**
+     * Records AccountPickerBottomSheet shown count histograms.
+     */
+    public static void recordAccountConsistencyPromoShownCount(String histogram) {
+        RecordHistogram.recordExactLinearHistogram(histogram,
+                SigninPreferencesManager.getInstance().getAccountPickerBottomSheetShownCount(),
+                100);
     }
 
     private void destroyWebSigninBridge() {

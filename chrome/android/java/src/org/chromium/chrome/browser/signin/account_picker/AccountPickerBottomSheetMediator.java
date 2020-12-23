@@ -219,6 +219,8 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
 
     private void signIn() {
         mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, ViewState.SIGNIN_IN_PROGRESS);
+        AccountPickerDelegate.recordAccountConsistencyPromoShownCount(
+                "Signin.AccountConsistencyPromoAction.SignedIn.Count");
         if (TextUtils.equals(mSelectedAccountName, mAddedAccountName)) {
             AccountPickerDelegate.recordAccountConsistencyPromoAction(
                     AccountConsistencyPromoAction.SIGNED_IN_WITH_ADDED_ACCOUNT);

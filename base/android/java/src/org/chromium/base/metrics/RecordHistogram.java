@@ -238,7 +238,7 @@ public class RecordHistogram {
      * @param sample sample to be recorded, expected to fall in range {@code [0, max)}
      * @param max the smallest value counted in the overflow bucket, shouldn't be larger than 100
      */
-    private static void recordExactLinearHistogram(String name, int sample, int max) {
+    public static void recordExactLinearHistogram(String name, int sample, int max) {
         // Range [0, 1) is counted in the underflow bucket. The first "real" bucket starts at 1.
         final int min = 1;
         // One extra is added for the overflow bucket.

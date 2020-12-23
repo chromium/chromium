@@ -40,6 +40,27 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Signin.AccountConsistencyPromoAction.Shown.Count"
+    units="counts" expires_after="2021-08-31">
+  <owner>aliceywang@chromium.org</owner>
+  <owner>triploblastic@chromium.org</owner>
+  <summary>
+    Every time the account picker bottom sheet is shown as part of the web
+    sign-in flow this histogram records the number of times bottom sheet was
+    shown (Android only).
+  </summary>
+</histogram>
+
+<histogram name="Signin.AccountConsistencyPromoAction.SignedIn.Count"
+    units="counts" expires_after="2021-08-31">
+  <owner>aliceywang@chromium.org</owner>
+  <owner>triploblastic@chromium.org</owner>
+  <summary>
+    This histogram records the number of times the account picker bottom sheet
+    was shown before the user signed-in through the bottom sheet (Android only).
+  </summary>
+</histogram>
+
 <histogram name="Signin.AccountEquality" enum="SigninAccountEquality"
     expires_after="2021-03-06">
   <owner>droger@chromium.org</owner>
