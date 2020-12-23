@@ -9,7 +9,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/shell_window_ids.h"
-#include "ash/wm/mru_window_tracker.h"
 #include "base/macros.h"
 #include "base/time/time.h"
 
@@ -87,14 +86,6 @@ class ASH_EXPORT WindowCycleController {
     return window_cycle_list_.get();
   }
 
-  // Sets alt-tab mode to all desks (default) or active desk.
-  void SetAltTabMode(DesksMruType alt_tab_mode_);
-
-  // Checks if alt-tab should be per active desk. If Bento is enabled, alt-tab
-  // mode depends on users' alt_tab_mode_ selection. Otherwise, it'll default
-  // to all desk unless LimitAltTabToActiveDesk flag is explicitly enabled.
-  bool IsAltTabPerActiveDesk();
-
  private:
   // Gets a list of windows from the currently open windows, removing windows
   // with transient roots already in the list. The returned list of windows
@@ -123,12 +114,6 @@ class ASH_EXPORT WindowCycleController {
 
   // Non-null while actively cycling.
   std::unique_ptr<WindowCycleEventFilter> event_filter_;
-
-  // Tracks alt-tab mode to display all windows from all desks by default.
-  // An alternative mode is active desk where only windows from the current desk
-  // are shown in alt-tab.
-  // TODO(crbug.com/1157105): Store per-desk mode in primary user pref.
-  DesksMruType alt_tab_mode_ = DesksMruType::kAllDesks;
 
   DISALLOW_COPY_AND_ASSIGN(WindowCycleController);
 };

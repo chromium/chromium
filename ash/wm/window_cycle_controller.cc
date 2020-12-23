@@ -4,7 +4,6 @@
 
 #include "ash/wm/window_cycle_controller.h"
 
-#include "ash/events/event_rewriter_controller_impl.h"
 #include "ash/metrics/task_switch_metrics_recorder.h"
 #include "ash/metrics/task_switch_source.h"
 #include "ash/metrics/user_metrics_recorder.h"
@@ -89,8 +88,6 @@ void WindowCycleController::HandleCycleWindow(Direction direction) {
   if (!IsCycling())
     StartCycling();
 
-  // TODO(crbug.com/1157100): Handle window highlighting after switching
-  // alt-tab mode.
   Step(direction);
 }
 
@@ -110,8 +107,6 @@ void WindowCycleController::StartCycling() {
   // the window view item for the preview is transparent
   // (http://crbug.com/895265).
   Shell::Get()->wallpaper_controller()->MaybeClosePreviewWallpaper();
-  Shell::Get()->event_rewriter_controller()->SetAltLeftClickRemappingEnabled(
-      false);
 
   WindowCycleController::WindowList window_list = CreateWindowList();
   SaveCurrentActiveDeskAndWindow(window_list);
@@ -165,25 +160,13 @@ bool WindowCycleController::IsWindowListVisible() {
 WindowCycleController::WindowList WindowCycleController::CreateWindowList() {
   WindowCycleController::WindowList window_list =
       Shell::Get()->mru_window_tracker()->BuildWindowForCycleWithPipList(
-          IsAltTabPerActiveDesk() ? kActiveDesk : kAllDesks);
+          features::IsAltTabLimitedToActiveDesk() ? kActiveDesk : kAllDesks);
   // Window cycle list windows will handle showing their transient related
   // windows, so if a window in |window_list| has a transient root also in
   // |window_list|, we can remove it as the transient root will handle showing
   // the window.
   window_util::EnsureTransientRoots(&window_list);
   return window_list;
-}
-
-void WindowCycleController::SetAltTabMode(DesksMruType alt_tab_mode) {
-  if (alt_tab_mode_ == alt_tab_mode)
-    return;
-  alt_tab_mode_ = alt_tab_mode;
-  MaybeResetCycleList();
-}
-
-bool WindowCycleController::IsAltTabPerActiveDesk() {
-  return features::IsBentoEnabled() ? alt_tab_mode_ == kActiveDesk
-                                    : features::IsAltTabLimitedToActiveDesk();
 }
 
 void WindowCycleController::SaveCurrentActiveDeskAndWindow(
@@ -221,8 +204,6 @@ void WindowCycleController::StopCycling() {
 
   active_window_before_window_cycle_ = nullptr;
   active_desk_container_id_before_cycle_ = kShellWindowId_Invalid;
-  Shell::Get()->event_rewriter_controller()->SetAltLeftClickRemappingEnabled(
-      true);
 }
 
 }  // namespace ash
