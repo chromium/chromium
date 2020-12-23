@@ -1,0 +1,38 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/cart/cart_service_factory.h"
+
+#include "chrome/browser/cart/cart_service.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "content/public/browser/storage_partition.h"
+
+// static
+CartServiceFactory* CartServiceFactory::GetInstance() {
+  return base::Singleton<CartServiceFactory>::get();
+}
+
+// static
+CartService* CartServiceFactory::GetForProfile(Profile* profile) {
+  // CartService is not supported on incognito.
+  if (profile->IsOffTheRecord())
+    return nullptr;
+
+  return static_cast<CartService*>(
+      GetInstance()->GetServiceForBrowserContext(profile, true));
+}
+
+CartServiceFactory::CartServiceFactory()
+    : BrowserContextKeyedServiceFactory(
+          "ChromeCartService",
+          BrowserContextDependencyManager::GetInstance()) {}
+
+CartServiceFactory::~CartServiceFactory() = default;
+
+KeyedService* CartServiceFactory::BuildServiceInstanceFor(
+    content::BrowserContext* context) const {
+  DCHECK(!context->IsOffTheRecord());
+
+  return new CartService(Profile::FromBrowserContext(context));
+}

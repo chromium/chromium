@@ -122,6 +122,7 @@
 #else
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_lifetime_manager_factory.h"
+#include "chrome/browser/cart/cart_service_factory.h"
 #include "chrome/browser/feedback/feedback_uploader_factory_chrome.h"
 #include "chrome/browser/media/feeds/media_feeds_service_factory.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_profile_session_durations_service_factory.h"
@@ -445,6 +446,9 @@ void ChromeBrowserMainExtraPartsProfiles::
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   CertDbInitializerFactory::GetInstance();
+#endif
+#if !defined(OS_ANDROID)
+  CartServiceFactory::GetInstance();
 #endif
 }
 
