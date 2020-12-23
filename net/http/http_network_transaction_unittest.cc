@@ -6416,6 +6416,9 @@ TEST_F(HttpNetworkTransactionTest, HttpsProxyGet) {
   EXPECT_EQ(100, response->headers->GetContentLength());
   EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
 
+  // DNS aliases should be empty when using a proxy.
+  EXPECT_TRUE(response->dns_aliases.empty());
+
   TransportInfo expected_transport;
   expected_transport.type = TransportType::kProxied;
   expected_transport.endpoint = IPEndPoint(IPAddress::IPv4Localhost(), 70);
@@ -6483,6 +6486,9 @@ TEST_F(HttpNetworkTransactionTest, HttpsProxySpdyGet) {
   EXPECT_TRUE(response->proxy_server.is_https());
   ASSERT_TRUE(response->headers);
   EXPECT_EQ("HTTP/1.1 200", response->headers->GetStatusLine());
+
+  // DNS aliases should be empty when using a proxy.
+  EXPECT_TRUE(response->dns_aliases.empty());
 
   TransportInfo expected_transport;
   expected_transport.type = TransportType::kProxied;
@@ -23399,6 +23405,122 @@ TEST_F(HttpNetworkTransactionTest, PostHandshakeClientCertWithSockets) {
       IsOk());
   EXPECT_EQ("post-auth", response_post_auth_bar);
   trans_post_auth_bar.reset();
+}
+
+TEST_F(HttpNetworkTransactionTest, RequestWithDnsAliases) {
+  // Create a request.
+  HttpRequestInfo request;
+  request.method = "GET";
+  request.url = GURL("http://www.example.org/");
+  request.traffic_annotation =
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  // Add a rule with DNS aliases to the host resolver.
+  std::vector<std::string> aliases({"alias1", "alias2", "www.example.org"});
+  auto* rules = session_deps_.host_resolver->rules();
+  rules->AddIPLiteralRuleWithDnsAliases("www.example.org", "127.0.0.1",
+                                        std::move(aliases));
+  session_deps_.host_resolver->set_rules(rules);
+
+  // Create a HttpNetworkSession.
+  std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+
+  // Create a transaction.
+  HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
+
+  // Prepare the expected data to be written and read. The client should send
+  // the request below.
+  MockWrite data_writes[] = {
+      MockWrite("GET / HTTP/1.1\r\n"
+                "Host: www.example.org\r\n"
+                "Connection: keep-alive\r\n\r\n"),
+  };
+
+  // The server should respond with the following.
+  MockRead data_reads[] = {
+      MockRead("HTTP/1.0 200 OK\r\n"),
+      MockRead("Content-Type: text/html; charset=iso-8859-1\r\n"),
+      MockRead("Content-Length: 100\r\n\r\n"),
+      MockRead(SYNCHRONOUS, OK),
+  };
+
+  StaticSocketDataProvider data(data_reads, data_writes);
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
+  TestCompletionCallback callback;
+
+  // Start the transaction.
+  int rv = trans.Start(&request, callback.callback(), NetLogWithSource());
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  // Wait for completion.
+  rv = callback.WaitForResult();
+  EXPECT_THAT(rv, IsOk());
+
+  // Get the response info.
+  const HttpResponseInfo* response = trans.GetResponseInfo();
+
+  // Verify that the alias list was stored in the response info as expected.
+  ASSERT_TRUE(response);
+  EXPECT_THAT(response->dns_aliases,
+              testing::ElementsAre("alias1", "alias2", "www.example.org"));
+}
+
+TEST_F(HttpNetworkTransactionTest, RequestWithNoAdditionalDnsAliases) {
+  // Create a request.
+  HttpRequestInfo request;
+  request.method = "GET";
+  request.url = GURL("http://www.example.org/");
+  request.traffic_annotation =
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  // Add a rule without DNS aliases to the host resolver. The parameter is an
+  // empty vector.
+  std::vector<std::string> aliases;
+  auto* rules = session_deps_.host_resolver->rules();
+  rules->AddIPLiteralRuleWithDnsAliases("www.example.org", "127.0.0.1",
+                                        std::move(aliases));
+  session_deps_.host_resolver->set_rules(rules);
+
+  // Create a HttpNetworkSession.
+  std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+
+  // Create a transaction.
+  HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
+
+  // Prepare the expected data to be written and read. The client should send
+  // the request below.
+  MockWrite data_writes[] = {
+      MockWrite("GET / HTTP/1.1\r\n"
+                "Host: www.example.org\r\n"
+                "Connection: keep-alive\r\n\r\n"),
+  };
+
+  // The server should respond with the following.
+  MockRead data_reads[] = {
+      MockRead("HTTP/1.0 200 OK\r\n"),
+      MockRead("Content-Type: text/html; charset=iso-8859-1\r\n"),
+      MockRead("Content-Length: 100\r\n\r\n"),
+      MockRead(SYNCHRONOUS, OK),
+  };
+
+  StaticSocketDataProvider data(data_reads, data_writes);
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
+  TestCompletionCallback callback;
+
+  // Start the transaction.
+  int rv = trans.Start(&request, callback.callback(), NetLogWithSource());
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  // Wait for completion.
+  rv = callback.WaitForResult();
+  EXPECT_THAT(rv, IsOk());
+
+  // Get the response info.
+  const HttpResponseInfo* response = trans.GetResponseInfo();
+
+  // Verify that the alias list was stored in the response info as expected.
+  ASSERT_TRUE(response);
+  EXPECT_THAT(response->dns_aliases, testing::ElementsAre("www.example.org"));
 }
 
 }  // namespace net

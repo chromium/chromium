@@ -956,6 +956,9 @@ class QuicNetworkTransactionTest
     CheckResponseData(&trans, expected);
     if (used_proxy) {
       EXPECT_TRUE(trans.GetResponseInfo()->proxy_server.is_quic());
+
+      // DNS aliases should be empty when using a proxy.
+      EXPECT_TRUE(trans.GetResponseInfo()->dns_aliases.empty());
     } else {
       EXPECT_TRUE(trans.GetResponseInfo()->proxy_server.is_direct());
     }
@@ -7818,6 +7821,9 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectHttpsServer) {
   CheckResponsePort(&trans, 70);
   CheckResponseData(&trans, "0123456789");
   EXPECT_TRUE(trans.GetResponseInfo()->proxy_server.is_quic());
+
+  // DNS aliases should be empty when using a proxy.
+  EXPECT_TRUE(trans.GetResponseInfo()->dns_aliases.empty());
 
   // Causes MockSSLClientSocket to disconnect, which causes the underlying QUIC
   // proxy socket to disconnect.

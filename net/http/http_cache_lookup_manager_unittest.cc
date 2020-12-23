@@ -63,6 +63,7 @@ std::unique_ptr<MockTransaction> CreateMockTransaction(const GURL& url) {
       "Last-Modified: Wed, 28 Nov 2007 00:40:09 GMT\n",
       base::Time(),
       "<html><body>Google Blah Blah</body></html>",
+      {},
       TEST_MODE_NORMAL,
       nullptr,
       nullptr,

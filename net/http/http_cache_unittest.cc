@@ -381,6 +381,7 @@ const MockTransaction kFastNoStoreGET_Transaction = {
     "Cache-Control: max-age=10000\n",
     base::Time(),
     "<html><body>Google Blah Blah</body></html>",
+    {},
     TEST_MODE_SYNC_NET_START,
     &FastTransactionServer::FastNoStoreHandler,
     nullptr,
@@ -580,6 +581,7 @@ const MockTransaction kRangeGET_TransactionOK = {
     "Content-Length: 10\n",
     base::Time(),
     "rg: 40-49 ",
+    {},
     TEST_MODE_NORMAL,
     &RangeTransactionServer::RangeHandler,
     nullptr,
@@ -13014,6 +13016,80 @@ TEST_P(HttpCacheMemoryDumpTest, DumpMemoryStats) {
                   Field(&Entry::name,
                         Eq(base::trace_event::MemoryAllocatorDump::kNameSize)),
                   Field(&Entry::value_uint64, Gt(0UL)))));
+}
+
+TEST_F(HttpCacheTest, DnsAliasesNoRevalidation) {
+  MockHttpCache cache;
+  HttpResponseInfo response;
+  ScopedMockTransaction transaction(kSimpleGET_Transaction);
+  transaction.dns_aliases = {"alias1", "alias2"};
+
+  RunTransactionTestWithResponseInfo(cache.http_cache(), transaction,
+                                     &response);
+  EXPECT_FALSE(response.was_cached);
+  EXPECT_THAT(response.dns_aliases, testing::ElementsAre("alias1", "alias2"));
+
+  // The second request should be cached, and the response used without
+  // revalidation. Set the transaction alias list to empty to verify that the
+  // cached aliases are being used.
+  transaction.dns_aliases = {};
+  RunTransactionTestWithResponseInfo(cache.http_cache(), transaction,
+                                     &response);
+  EXPECT_TRUE(response.was_cached);
+  EXPECT_THAT(response.dns_aliases, testing::ElementsAre("alias1", "alias2"));
+}
+
+TEST_F(HttpCacheTest, NoDnsAliasesNoRevalidation) {
+  MockHttpCache cache;
+  HttpResponseInfo response;
+  ScopedMockTransaction transaction(kSimpleGET_Transaction);
+  transaction.dns_aliases = {};
+
+  RunTransactionTestWithResponseInfo(cache.http_cache(), transaction,
+                                     &response);
+  EXPECT_FALSE(response.was_cached);
+  EXPECT_TRUE(response.dns_aliases.empty());
+
+  // The second request should be cached, and the response used without
+  // revalidation. Set the transaction alias list to nonempty to verify that the
+  // cached aliases are being used.
+  transaction.dns_aliases = {"alias"};
+  RunTransactionTestWithResponseInfo(cache.http_cache(), transaction,
+                                     &response);
+  EXPECT_TRUE(response.was_cached);
+  EXPECT_TRUE(response.dns_aliases.empty());
+}
+
+TEST_F(HttpCacheTest, DnsAliasesRevalidation) {
+  MockHttpCache cache;
+  HttpResponseInfo response;
+  ScopedMockTransaction transaction(kTypicalGET_Transaction);
+  transaction.response_headers =
+      "Date: Wed, 28 Nov 2007 09:40:09 GMT\n"
+      "Last-Modified: Wed, 28 Nov 2007 00:40:09 GMT\n"
+      "Cache-Control: max-age=0\n";
+  transaction.dns_aliases = {"alias1", "alias2"};
+
+  RunTransactionTestWithResponseInfo(cache.http_cache(), transaction,
+                                     &response);
+  EXPECT_FALSE(response.was_cached);
+  EXPECT_THAT(response.dns_aliases, testing::ElementsAre("alias1", "alias2"));
+
+  // On the second request, the cache should be revalidated. Change the aliases
+  // to be sure that the new aliases are being used, and have the response be
+  // cached for next time.
+  transaction.response_headers = "Cache-Control: max-age=10000\n";
+  transaction.dns_aliases = {"alias3", "alias4"};
+  RunTransactionTestWithResponseInfo(cache.http_cache(), transaction,
+                                     &response);
+  EXPECT_FALSE(response.was_cached);
+  EXPECT_THAT(response.dns_aliases, testing::ElementsAre("alias3", "alias4"));
+
+  transaction.dns_aliases = {"alias5", "alias6"};
+  RunTransactionTestWithResponseInfo(cache.http_cache(), transaction,
+                                     &response);
+  EXPECT_TRUE(response.was_cached);
+  EXPECT_THAT(response.dns_aliases, testing::ElementsAre("alias3", "alias4"));
 }
 
 }  // namespace net

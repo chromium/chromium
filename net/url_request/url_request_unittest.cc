@@ -101,6 +101,7 @@
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_server_properties.h"
+#include "net/http/http_transaction_test_util.h"
 #include "net/http/http_util.h"
 #include "net/log/file_net_log_observer.h"
 #include "net/log/net_log_event_type.h"
@@ -12388,6 +12389,56 @@ TEST_F(URLRequestTestHTTP, AuthChallengeInfo) {
   EXPECT_EQ("testrealm", r->auth_challenge_info()->realm);
   EXPECT_EQ("Basic realm=\"testrealm\"", r->auth_challenge_info()->challenge);
   EXPECT_EQ("/auth-basic", r->auth_challenge_info()->path);
+}
+
+class URLRequestDnsAliasTest : public TestWithTaskEnvironment {
+ protected:
+  URLRequestDnsAliasTest() : context_(true) {
+    context_.set_network_delegate(&network_delegate_);
+    context_.set_host_resolver(&host_resolver_);
+    context_.Init();
+  }
+
+  void SetUp() override { ASSERT_TRUE(test_server_.Start()); }
+
+  TestNetworkDelegate network_delegate_;  // Must outlive URLRequest.
+  MockHostResolver host_resolver_;
+  TestURLRequestContext context_;
+  TestDelegate test_delegate_;
+  EmbeddedTestServer test_server_;
+};
+
+TEST_F(URLRequestDnsAliasTest, WithDnsAliases) {
+  GURL url(test_server_.GetURL("www.example.test", "/echo"));
+  std::vector<std::string> aliases({"alias1", "alias2", "host"});
+  host_resolver_.rules()->AddIPLiteralRuleWithDnsAliases(
+      "www.example.test", "127.0.0.1", std::move(aliases));
+
+  std::unique_ptr<URLRequest> request(context_.CreateRequest(
+      url, DEFAULT_PRIORITY, &test_delegate_, TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  request->Start();
+
+  test_delegate_.RunUntilComplete();
+  EXPECT_THAT(test_delegate_.request_status(), IsOk());
+  EXPECT_THAT(request->response_info().dns_aliases,
+              testing::ElementsAre("alias1", "alias2", "host"));
+}
+
+TEST_F(URLRequestDnsAliasTest, NoAdditionalDnsAliases) {
+  GURL url(test_server_.GetURL("www.example.test", "/echo"));
+  host_resolver_.rules()->AddIPLiteralRuleWithDnsAliases(
+      "www.example.test", "127.0.0.1", {} /* dns_aliases */);
+
+  std::unique_ptr<URLRequest> request(context_.CreateRequest(
+      url, DEFAULT_PRIORITY, &test_delegate_, TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  request->Start();
+
+  test_delegate_.RunUntilComplete();
+  EXPECT_THAT(test_delegate_.request_status(), IsOk());
+  EXPECT_THAT(request->response_info().dns_aliases,
+              testing::ElementsAre("www.example.test"));
 }
 
 }  // namespace net

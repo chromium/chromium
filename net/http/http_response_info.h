@@ -241,6 +241,11 @@ class NET_EXPORT HttpResponseInfo {
   // The "Vary" header data for this response.
   HttpVaryData vary_data;
 
+  // Any DNS aliases for the remote endpoint. The alias chain order is
+  // preserved in reverse, from canonical name (i.e. address record name)
+  // through to query name.
+  std::vector<std::string> dns_aliases;
+
   static std::string ConnectionInfoToString(ConnectionInfo connection_info);
 };
 

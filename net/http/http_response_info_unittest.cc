@@ -12,6 +12,7 @@
 #include "net/test/cert_test_util.h"
 #include "net/test/ct_test_util.h"
 #include "net/test/test_data_directory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
@@ -223,6 +224,23 @@ TEST_F(HttpResponseInfoTest, FailsInitFromPickleWithSSLV3) {
   net::HttpResponseInfo restored_ssl3_response_info;
   EXPECT_FALSE(
       restored_ssl3_response_info.InitFromPickle(ssl3_pickle, &truncated));
+}
+
+// Test that `dns_aliases` is preserved.
+TEST_F(HttpResponseInfoTest, DnsAliases) {
+  response_info_.dns_aliases = {"alias1", "alias2", "alias3"};
+  net::HttpResponseInfo restored_response_info;
+  PickleAndRestore(response_info_, &restored_response_info);
+  EXPECT_THAT(restored_response_info.dns_aliases,
+              testing::ElementsAre("alias1", "alias2", "alias3"));
+}
+
+// Test that an empty `dns_aliases` is preserved and doesn't throw an error.
+TEST_F(HttpResponseInfoTest, EmptyDnsAliases) {
+  response_info_.dns_aliases = {};
+  net::HttpResponseInfo restored_response_info;
+  PickleAndRestore(response_info_, &restored_response_info);
+  EXPECT_TRUE(restored_response_info.dns_aliases.empty());
 }
 
 }  // namespace

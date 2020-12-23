@@ -565,6 +565,7 @@ void HttpNetworkTransaction::OnStreamReady(const SSLConfig& used_ssl_config,
   response_.alpn_negotiated_protocol =
       NextProtoToString(stream_request_->negotiated_protocol());
   response_.was_fetched_via_spdy = stream_request_->using_spdy();
+  response_.dns_aliases = stream_->GetDnsAliases();
   SetProxyInfoInReponse(used_proxy_info, &response_);
   OnIOComplete(OK);
 }

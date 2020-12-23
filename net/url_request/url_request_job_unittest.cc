@@ -87,6 +87,7 @@ void MakeMockReferrerPolicyTransaction(const char* original_url,
   transaction->response_headers = response_headers;
   transaction->response_time = base::Time();
   transaction->data = "hello";
+  transaction->dns_aliases = {};
   transaction->test_mode = TEST_MODE_NORMAL;
   transaction->handler = nullptr;
   transaction->read_handler = nullptr;
@@ -113,6 +114,7 @@ const MockTransaction kNoFilterTransaction = {
     "Content-Length: 30\n",  // Intentionally wrong.
     base::Time(),
     "hello",
+    {},
     TEST_MODE_NORMAL,
     nullptr,
     nullptr,
@@ -134,6 +136,7 @@ const MockTransaction kNoFilterTransactionWithInvalidLength = {
     "Content-Length: +30\n",  // Invalid
     base::Time(),
     "hello",
+    {},
     TEST_MODE_NORMAL,
     nullptr,
     nullptr,
@@ -156,6 +159,7 @@ const MockTransaction kGZipTransaction = {
     "Content-Length: 30\n",  // Intentionally wrong.
     base::Time(),
     "",
+    {},
     TEST_MODE_NORMAL,
     &GZipServer,
     nullptr,
@@ -178,6 +182,7 @@ const MockTransaction kGzipSlowTransaction = {
     "Content-Encoding: gzip\n",
     base::Time(),
     "",
+    {},
     TEST_MODE_SLOW_READ,
     &GZipHelloServer,
     nullptr,
@@ -201,6 +206,7 @@ const MockTransaction kRedirectTransaction = {
     "Content-Length: 5\n",
     base::Time(),
     "hello",
+    {},
     TEST_MODE_NORMAL,
     nullptr,
     nullptr,
@@ -222,6 +228,7 @@ const MockTransaction kEmptyBodyGzipTransaction = {
     "Content-Encoding: gzip\n",
     base::Time(),
     "",
+    {},
     TEST_MODE_NORMAL,
     nullptr,
     nullptr,
@@ -244,6 +251,7 @@ const MockTransaction kInvalidContentGZipTransaction = {
     "Content-Length: 21\n",
     base::Time(),
     "not a valid gzip body",
+    {},
     TEST_MODE_NORMAL,
     nullptr,
     nullptr,
@@ -267,6 +275,7 @@ const MockTransaction kBrotliSlowTransaction = {
     "Content-Length: 230\n",  // Intentionally wrong.
     base::Time(),
     "",
+    {},
     TEST_MODE_SLOW_READ,
     &BrotliHelloServer,
     nullptr,

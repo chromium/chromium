@@ -145,6 +145,7 @@ void PopulateResourceResponse(net::URLRequest* request,
   response->auth_challenge_info = request->auth_challenge_info();
   response->has_range_requested = request->extra_request_headers().HasHeader(
       net::HttpRequestHeaders::kRange);
+  response->dns_aliases = request->response_info().dns_aliases;
 }
 
 // A subclass of net::UploadBytesElementReader which owns

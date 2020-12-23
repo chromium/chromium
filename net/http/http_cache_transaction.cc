@@ -1889,6 +1889,7 @@ int HttpCache::Transaction::DoUpdateCachedResponse() {
   response_.unused_since_prefetch = new_response_->unused_since_prefetch;
   response_.restricted_prefetch = new_response_->restricted_prefetch;
   response_.ssl_info = new_response_->ssl_info;
+  response_.dns_aliases = new_response_->dns_aliases;
   if (new_response_->vary_data.is_valid()) {
     response_.vary_data = new_response_->vary_data;
   } else if (response_.vary_data.is_valid()) {

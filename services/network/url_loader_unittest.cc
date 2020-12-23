@@ -141,6 +141,10 @@ constexpr char kTestAuthURL[] = "/auth-basic?password=PASS&realm=REALM";
 
 constexpr char kInsecureHost[] = "othersite.test";
 
+constexpr char kHostnameWithAliases[] = "www.example.test";
+
+constexpr char kHostnameWithoutAliases[] = "www.other.test";
+
 static ResourceRequest CreateResourceRequest(const char* method,
                                              const GURL& url) {
   ResourceRequest request;
@@ -531,6 +535,8 @@ class URLLoaderTest : public testing::Test {
     // the loopback address and will let us access |test_server_|.
     scoped_refptr<net::RuleBasedHostResolverProc> mock_resolver_proc =
         base::MakeRefCounted<net::RuleBasedHostResolverProc>(nullptr);
+    mock_resolver_proc->AddIPLiteralRuleWithDnsAliases(
+        kHostnameWithAliases, "127.0.0.1", {"alias1", "alias2", "host"});
     mock_resolver_proc->AddRule("*", "127.0.0.1");
     mock_host_resolver_ = std::make_unique<net::ScopedDefaultHostResolverProc>(
         mock_resolver_proc.get());
@@ -6318,6 +6324,24 @@ TEST_F(URLLoaderMockSocketTest, PrivateNetworkRequestPolicyClosesSocket) {
 
   // Socket should have been destroyed.
   EXPECT_FALSE(socket_data.socket());
+}
+
+TEST_F(URLLoaderTest, WithDnsAliases) {
+  GURL url(test_server_.GetURL(kHostnameWithAliases, "/echo"));
+
+  EXPECT_EQ(net::OK, Load(url));
+  ASSERT_TRUE(client_.response_head());
+  EXPECT_THAT(client_.response_head()->dns_aliases,
+              testing::ElementsAre("alias1", "alias2", "host"));
+}
+
+TEST_F(URLLoaderTest, NoAdditionalDnsAliases) {
+  GURL url(test_server_.GetURL(kHostnameWithoutAliases, "/echo"));
+
+  EXPECT_EQ(net::OK, Load(url));
+  ASSERT_TRUE(client_.response_head());
+  EXPECT_THAT(client_.response_head()->dns_aliases,
+              testing::ElementsAre(kHostnameWithoutAliases));
 }
 
 }  // namespace network
