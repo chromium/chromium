@@ -41,7 +41,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
@@ -166,6 +165,7 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
     public void tearDown() {
         FirstRunAppRestrictionInfo.setInitializedInstanceForTest(null);
         ToSAndUMAFirstRunFragment.setShowUmaCheckBoxForTesting(false);
+        TosAndUmaFirstRunFragmentWithEnterpriseSupport.setOverrideOnExitFreRunnableForTest(null);
         PolicyServiceFactory.setPolicyServiceForTest(null);
         FirstRunUtilsJni.TEST_HOOKS.setInstanceForTesting(mFirstRunUtils);
         EnterpriseInfo.setInstanceForTest(null);
@@ -430,8 +430,11 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
     @Test
     @SmallTest
     @Feature({"RenderTest", "FirstRun"})
-    @DisabledTest(message = "https://crbug.com/1157521")
     public void testRenderWithPolicy() throws Exception {
+        final CallbackHelper onExitFreCallback = new CallbackHelper();
+        TosAndUmaFirstRunFragmentWithEnterpriseSupport.setOverrideOnExitFreRunnableForTest(
+                onExitFreCallback::notifyCalled);
+
         setAppRestrictionsMockInitialized(true);
         setEnterpriseInfoInitializedWithDeviceOwner(true);
         launchFirstRunThroughCustomTab();
@@ -444,10 +447,10 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
         TestThreadUtils.runOnUiThreadBlocking(tosAndUmaFragment::clearFocus);
 
         setPolicyServiceMockInitializedWithDialogEnabled(false);
-        CriteriaHelper.pollUiThread(
-                ()
-                        -> Criteria.checkThat(
-                                mPrivacyDisclaimer.getVisibility(), Matchers.is(View.VISIBLE)));
+        onExitFreCallback.waitForFirst("OnExitFreCallback is never invoked.");
+        Assert.assertEquals("Privacy disclaimer is not visible", mPrivacyDisclaimer.getVisibility(),
+                View.VISIBLE);
+
         renderWithPortraitAndLandscape(tosAndUmaFragment, "fre_tosanduma_withpolicy");
     }
 

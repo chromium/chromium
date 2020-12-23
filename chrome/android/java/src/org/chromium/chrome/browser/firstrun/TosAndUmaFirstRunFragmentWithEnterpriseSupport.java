@@ -13,6 +13,7 @@ import android.view.accessibility.AccessibilityEvent;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
@@ -30,6 +31,8 @@ import org.chromium.components.policy.PolicyService;
 public class TosAndUmaFirstRunFragmentWithEnterpriseSupport
         extends ToSAndUMAFirstRunFragment implements LoadingView.Observer {
     private static final String TAG = "TosAndUmaFragment";
+
+    private static Runnable sOverridenOnExitFreRunnableForTest;
 
     /** FRE page that instantiates this fragment. */
     public static class Page
@@ -189,11 +192,21 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupport
             mPrivacyDisclaimer.announceForAccessibility(mPrivacyDisclaimer.getText());
         }
 
-        mExitFreRunnable = () -> {
-            getPageDelegate().exitFirstRun();
-            mExitFreRunnable = null;
-        };
+        if (sOverridenOnExitFreRunnableForTest != null) {
+            mExitFreRunnable = sOverridenOnExitFreRunnableForTest;
+        } else {
+            mExitFreRunnable = () -> {
+                getPageDelegate().exitFirstRun();
+                mExitFreRunnable = null;
+            };
+        }
+
         mHandler = new Handler(ThreadUtils.getUiThreadLooper());
         mHandler.postDelayed(mExitFreRunnable, FirstRunUtils.getSkipTosExitDelayMs());
+    }
+
+    @VisibleForTesting
+    static void setOverrideOnExitFreRunnableForTest(Runnable runnable) {
+        sOverridenOnExitFreRunnableForTest = runnable;
     }
 }
