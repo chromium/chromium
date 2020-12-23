@@ -56,7 +56,7 @@ constexpr int kCaptureRegionBorderStrokePx = 1;
 
 // The visual radius of the drag affordance circles which are shown while
 // resizing a drag region.
-constexpr int kAffordanceCircleRadiusDp = 5;
+constexpr int kAffordanceCircleRadiusDp = 4;
 
 // The hit radius of the drag affordance circles touch events.
 constexpr int kAffordanceCircleTouchHitRadiusDp = 16;
@@ -750,7 +750,8 @@ void CaptureModeSession::PaintCaptureRegion(gfx::Canvas* canvas) {
 
   // Draws the focus ring if the region or one of the affordance circles
   // currently has focus.
-  auto maybe_draw_focus_ring = [&canvas, &region](FineTunePosition position) {
+  auto maybe_draw_focus_ring = [&canvas, &region,
+                                &dsf](FineTunePosition position) {
     if (position == FineTunePosition::kNone)
       return;
 
@@ -768,8 +769,9 @@ void CaptureModeSession::PaintCaptureRegion(gfx::Canvas* canvas) {
       return;
     }
 
-    const int radius = kAffordanceCircleRadiusDp + kFocusRingSpacingDp +
-                       kFocusRingStrokeWidthDp / 2;
+    const float radius =
+        dsf * (kAffordanceCircleRadiusDp + kFocusRingSpacingDp +
+               kFocusRingStrokeWidthDp / 2);
     canvas->DrawCircle(
         capture_mode_util::GetLocationForFineTunePosition(region, position),
         radius, focus_ring_flags);
@@ -789,8 +791,9 @@ void CaptureModeSession::PaintCaptureRegion(gfx::Canvas* canvas) {
   circle_flags.setLooper(gfx::CreateShadowDrawLooper(
       {kRegionAffordanceCircleShadow1, kRegionAffordanceCircleShadow2}));
 
-  auto draw_circle = [&canvas, &circle_flags](const gfx::Point& location) {
-    canvas->DrawCircle(location, kAffordanceCircleRadiusDp, circle_flags);
+  auto draw_circle = [&canvas, &circle_flags,
+                      &dsf](const gfx::Point& location) {
+    canvas->DrawCircle(location, dsf * kAffordanceCircleRadiusDp, circle_flags);
   };
 
   draw_circle(region.origin());
