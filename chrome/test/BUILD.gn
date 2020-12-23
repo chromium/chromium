@@ -33,6 +33,7 @@ import("//extensions/buildflags/buildflags.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//net/features.gni")
 import("//ppapi/buildflags/buildflags.gni")
+import("//printing/buildflags/buildflags.gni")
 import("//rlz/buildflags/buildflags.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
@@ -5787,6 +5788,7 @@ test("unit_tests") {
     ]
 
     deps += [
+      "//chrome/common/printing:unit_tests",
       "//printing",
       "//printing:test_support",
       "//printing/mojom",

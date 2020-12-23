@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/printing/browser/printer_capabilities.h"
+#include "chrome/common/printing/printer_capabilities.h"
 
 #include <memory>
 

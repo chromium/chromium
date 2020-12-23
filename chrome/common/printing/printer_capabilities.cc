@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/printing/browser/printer_capabilities.h"
+#include "chrome/common/printing/printer_capabilities.h"
 
 #include <memory>
 #include <string>
@@ -18,8 +18,8 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/common/printing/printing_buildflags.h"
 #include "components/crash/core/common/crash_keys.h"
-#include "components/printing/browser/printing_buildflags.h"
 #include "components/printing/common/cloud_print_cdd_conversion.h"
 #include "printing/backend/print_backend.h"
 #include "printing/backend/print_backend_consts.h"
@@ -34,17 +34,17 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/feature_list.h"
-#include "components/printing/browser/ipp_l10n.h"
+#include "chrome/common/printing/ipp_l10n.h"
 #include "components/strings/grit/components_strings.h"
 #include "printing/printing_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(PRINT_MEDIA_L10N_ENABLED)
-#include "components/printing/browser/print_media_l10n.h"
-#if defined(OS_APPLE)
+#include "chrome/common/printing/print_media_l10n.h"
+#if defined(OS_MAC)
 #include "printing/printing_features.h"
-#endif  // defined(OS_APPLE)
+#endif  // defined(OS_MAC)
 #endif  // BUILDFLAG(PRINT_MEDIA_L10N_ENABLED)
 
 namespace printing {
@@ -116,7 +116,7 @@ base::Value GetPrinterCapabilitiesOnBlockingTaskRunner(
 
 #if BUILDFLAG(PRINT_MEDIA_L10N_ENABLED)
   bool populate_paper_display_names = true;
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
   // Paper display name localization requires standardized vendor ID names
   // populated by CUPS IPP. If the CUPS IPP backend is not enabled, localization
   // will not properly occur.

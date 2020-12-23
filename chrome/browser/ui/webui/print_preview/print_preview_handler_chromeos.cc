@@ -27,10 +27,10 @@
 #include "chrome/browser/ui/webui/print_preview/print_preview_handler.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_ui.h"
 #include "chrome/browser/ui/webui/print_preview/printer_handler.h"
+#include "chrome/common/printing/printer_capabilities.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "components/cloud_devices/common/cloud_devices_urls.h"
-#include "components/printing/browser/printer_capabilities.h"
 #include "components/signin/public/identity_manager/scope_set.h"
 #include "content/public/browser/web_ui.h"
 

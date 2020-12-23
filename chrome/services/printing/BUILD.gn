@@ -66,6 +66,7 @@ source_set("lib") {
       "print_backend_service_impl.cc",
       "print_backend_service_impl.h",
     ]
+    deps += [ "//chrome/common/printing" ]
   }
 }
 

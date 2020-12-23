@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PRINTING_BROWSER_IPP_L10N_H_
-#define COMPONENTS_PRINTING_BROWSER_IPP_L10N_H_
+#ifndef CHROME_COMMON_PRINTING_IPP_L10N_H_
+#define CHROME_COMMON_PRINTING_IPP_L10N_H_
 
 #include <map>
 
@@ -11,4 +11,4 @@
 
 const std::map<base::StringPiece, int>& CapabilityLocalizationMap();
 
-#endif  // COMPONENTS_PRINTING_BROWSER_IPP_L10N_H_
+#endif  // CHROME_COMMON_PRINTING_IPP_L10N_H_

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PRINTING_BROWSER_PRINTER_CAPABILITIES_MAC_H_
-#define COMPONENTS_PRINTING_BROWSER_PRINTER_CAPABILITIES_MAC_H_
+#ifndef CHROME_COMMON_PRINTING_PRINTER_CAPABILITIES_MAC_H_
+#define CHROME_COMMON_PRINTING_PRINTER_CAPABILITIES_MAC_H_
 
 #include "printing/backend/print_backend.h"
 
@@ -31,4 +31,4 @@ PrinterSemanticCapsAndDefaults::Papers GetMacCustomPaperSizesFromFile(
 
 }  // namespace printing
 
-#endif  // COMPONENTS_PRINTING_BROWSER_PRINTER_CAPABILITIES_MAC_H_
+#endif  // CHROME_COMMON_PRINTING_PRINTER_CAPABILITIES_MAC_H_

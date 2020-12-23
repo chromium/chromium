@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "components/printing/browser/print_media_l10n.h"
+#include "chrome/common/printing/print_media_l10n.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace printing {

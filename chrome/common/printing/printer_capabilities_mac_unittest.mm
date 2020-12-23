@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/printing/browser/printer_capabilities_mac.h"
+#include "chrome/common/printing/printer_capabilities_mac.h"
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/mac/foundation_util.h"

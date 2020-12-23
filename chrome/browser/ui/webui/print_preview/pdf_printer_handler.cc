@@ -47,7 +47,7 @@
 #include "url/gurl.h"
 
 #if defined(OS_MAC)
-#include "components/printing/browser/printer_capabilities_mac.h"
+#include "chrome/common/printing/printer_capabilities_mac.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

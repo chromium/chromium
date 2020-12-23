@@ -17,12 +17,12 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_utils.h"
-#include "components/printing/browser/printer_capabilities.h"
+#include "chrome/common/printing/printer_capabilities.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
 #if defined(OS_MAC)
-#include "components/printing/browser/printer_capabilities_mac.h"
+#include "chrome/common/printing/printer_capabilities_mac.h"
 #endif
 
 #if defined(OS_WIN)

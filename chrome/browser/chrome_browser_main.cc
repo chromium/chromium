@@ -286,7 +286,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW) && defined(OS_WIN)
-#include "components/printing/browser/printer_capabilities.h"
+#include "chrome/common/printing/printer_capabilities.h"
 #include "printing/backend/win_helper.h"
 #endif
 

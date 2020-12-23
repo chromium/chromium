@@ -4568,6 +4568,7 @@ static_library("ui") {
       "webui/print_preview/printer_handler.h",
     ]
     deps += [
+      "//chrome/common/printing:printing",
       "//components/printing/common:mojo_interfaces",
       "//printing/mojom",
       "//services/device/public/cpp/usb",

@@ -2028,6 +2028,7 @@ static_library("browser") {
     "//chrome/common:version_header",
     "//chrome/common/net",
     "//chrome/common/performance_manager/mojom",
+    "//chrome/common/printing:printing",
     "//chrome/installer/util:with_no_strings",
     "//chrome/services/machine_learning/public/cpp",
     "//chrome/services/machine_learning/public/mojom",
