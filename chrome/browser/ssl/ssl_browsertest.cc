@@ -150,6 +150,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
+#include "content/public/test/url_loader_interceptor.h"
 #include "crypto/sha2.h"
 #include "extensions/browser/event_router.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -7903,47 +7904,53 @@ IN_PROC_BROWSER_TEST_F(LegacyTLSInterstitialTest, PolicyOverridesInterstitial) {
 
 // Check that if we have bypassed the legacy TLS error previously and then the
 // server responded with TLS 1.2, we drop the error exception.
-// Disabled due to flakiness. crbug.com/1153702
-#if defined(OS_MAC)
-#define MAYBE_FixedServerDropsBypass DISABLED_FixedServerDropsBypass
-#else
-#define MAYBE_FixedServerDropsBypass FixedServerDropsBypass
-#endif
-IN_PROC_BROWSER_TEST_F(LegacyTLSInterstitialTest,
-                       MAYBE_FixedServerDropsBypass) {
-  int port;  // Save the port used so the different servers can be "identical".
+IN_PROC_BROWSER_TEST_F(LegacyTLSInterstitialTest, FixedServerDropsBypass) {
+  GURL kSiteWithLegacyTLS("https://example.test/legacy-tls");
+  GURL kSiteWithModernTLS("https://example.test/modern-tls");
+
+  // EmbeddedTestServer can be flakey if forcing a specific port (as the port
+  // may no longer be available on the system). URLLoaderInterceptor can mock
+  // out the responses as needed instead, reusing the same port across variants.
+  auto url_loader_interceptor = std::make_unique<content::URLLoaderInterceptor>(
+      base::BindLambdaForTesting(
+          [=](content::URLLoaderInterceptor::RequestParams* params) {
+            network::URLLoaderCompletionStatus status;
+            status.ssl_info = net::SSLInfo();
+            status.ssl_info->cert = net::ImportCertFromFile(
+                net::GetTestCertsDirectory(), "ok_cert.pem");
+            status.ssl_info->unverified_cert = status.ssl_info->cert;
+
+            if (params->url_request.url == GURL(kSiteWithLegacyTLS)) {
+              status.error_code = net::ERR_SSL_OBSOLETE_VERSION;
+              status.ssl_info->cert_status = net::CERT_STATUS_LEGACY_TLS;
+              params->client->OnComplete(status);
+              return true;
+            }
+
+            status.error_code = net::OK;
+            std::string headers =
+                "HTTP/1.1 200 OK\nContent-Type: text/html; charset=utf-8\n";
+            std::string body = "<html><title>Success</title>Hello world</html>";
+            content::URLLoaderInterceptor::WriteResponse(headers, body,
+                                                         params->client.get());
+            return true;
+          }));
 
   // Connect over TLS 1.0 and proceed through the interstitial to set an error
   // bypass.
-  SetTLSVersion(net::SSL_PROTOCOL_VERSION_TLS1);
-  ASSERT_TRUE(https_server()->Start());
-  port = https_server()->port();
-  ui_test_utils::NavigateToURL(browser(),
-                               https_server()->GetURL("/ssl/google.html"));
+  ui_test_utils::NavigateToURL(browser(), kSiteWithLegacyTLS);
   auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
   WaitForInterstitial(tab);
   ProceedThroughInterstitial(tab);
-  ASSERT_TRUE(https_server()->ShutdownAndWaitUntilComplete());
 
   // Connect over a "fixed" TLS 1.2 connection.
-  net::EmbeddedTestServer tls12_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  ASSERT_TRUE(tls12_server.Start(port));
-  ui_test_utils::NavigateToURL(browser(),
-                               tls12_server.GetURL("/ssl/google.html"));
+  ui_test_utils::NavigateToURL(browser(), kSiteWithModernTLS);
   EXPECT_FALSE(
       chrome_browser_interstitials::IsShowingLegacyTLSInterstitial(tab));
-  ASSERT_TRUE(tls12_server.ShutdownAndWaitUntilComplete());
 
   // Go back to connecting over TLS 1.0. Visiting should once again show the
   // legacy TLS interstitial
-  net::EmbeddedTestServer tls1_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  net::SSLServerConfig config;
-  config.version_max = net::SSL_PROTOCOL_VERSION_TLS1;
-  config.version_min = net::SSL_PROTOCOL_VERSION_TLS1;
-  tls1_server.SetSSLConfig(net::EmbeddedTestServer::CERT_OK, config);
-  ASSERT_TRUE(tls1_server.Start(port));
-  ui_test_utils::NavigateToURL(browser(),
-                               tls1_server.GetURL("/ssl/google.html"));
+  ui_test_utils::NavigateToURL(browser(), kSiteWithLegacyTLS);
   WaitForInterstitial(tab);
   EXPECT_TRUE(
       chrome_browser_interstitials::IsShowingLegacyTLSInterstitial(tab));
