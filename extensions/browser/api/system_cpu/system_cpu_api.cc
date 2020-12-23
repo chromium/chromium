@@ -19,7 +19,7 @@ SystemCpuGetInfoFunction::~SystemCpuGetInfoFunction() {
 
 ExtensionFunction::ResponseAction SystemCpuGetInfoFunction::Run() {
   CpuInfoProvider::Get()->StartQueryInfo(
-      base::Bind(&SystemCpuGetInfoFunction::OnGetCpuInfoCompleted, this));
+      base::BindOnce(&SystemCpuGetInfoFunction::OnGetCpuInfoCompleted, this));
   return did_respond() ? AlreadyResponded() : RespondLater();
 }
 

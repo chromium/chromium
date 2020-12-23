@@ -32,15 +32,12 @@ typedef std::vector<api::system_storage::StorageUnitInfo> StorageUnitInfoList;
 
 class StorageInfoProvider : public SystemInfoProvider {
  public:
-  typedef base::Callback<void(const std::string&, double)>
-      GetStorageFreeSpaceCallback;
-
   // Get the single shared instance of StorageInfoProvider.
   static StorageInfoProvider* Get();
 
   // SystemInfoProvider implementations
   void PrepareQueryOnUIThread() override;
-  void InitializeProvider(const base::Closure& do_query_info_callback) override;
+  void InitializeProvider(base::OnceClosure do_query_info_callback) override;
 
   virtual double GetStorageFreeSpaceFromTransientIdAsync(
       const std::string& transient_id);

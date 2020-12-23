@@ -25,7 +25,7 @@ SystemStorageGetInfoFunction::~SystemStorageGetInfoFunction() {
 }
 
 ExtensionFunction::ResponseAction SystemStorageGetInfoFunction::Run() {
-  StorageInfoProvider::Get()->StartQueryInfo(base::Bind(
+  StorageInfoProvider::Get()->StartQueryInfo(base::BindOnce(
       &SystemStorageGetInfoFunction::OnGetStorageInfoCompleted, this));
   return RespondLater();
 }

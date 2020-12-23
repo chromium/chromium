@@ -27,32 +27,31 @@ void SystemInfoProvider::PrepareQueryOnUIThread() {
 }
 
 void SystemInfoProvider::InitializeProvider(
-    const base::Closure& do_query_info_callback) {
-  do_query_info_callback.Run();
+    base::OnceClosure do_query_info_callback) {
+  std::move(do_query_info_callback).Run();
 }
 
-void SystemInfoProvider::StartQueryInfo(
-    const QueryInfoCompletionCallback& callback) {
+void SystemInfoProvider::StartQueryInfo(QueryInfoCompletionCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!callback.is_null());
 
-  callbacks_.push(callback);
+  callbacks_.push(std::move(callback));
 
   if (is_waiting_for_completion_)
     return;
 
   is_waiting_for_completion_ = true;
 
-  InitializeProvider(
-      base::Bind(&SystemInfoProvider::StartQueryInfoPostInitialization, this));
+  InitializeProvider(base::BindOnce(
+      &SystemInfoProvider::StartQueryInfoPostInitialization, this));
 }
 
 void SystemInfoProvider::OnQueryCompleted(bool success) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   while (!callbacks_.empty()) {
-    QueryInfoCompletionCallback callback = callbacks_.front();
-    callback.Run(success);
+    QueryInfoCompletionCallback callback = std::move(callbacks_.front());
+    std::move(callback).Run(success);
     callbacks_.pop();
   }
 

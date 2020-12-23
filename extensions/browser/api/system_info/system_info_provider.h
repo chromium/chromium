@@ -38,7 +38,7 @@ class SystemInfoProvider
   // Callback type for completing to get information. The argument indicates
   // whether its contents are valid, for example, no error occurs in querying
   // the information.
-  using QueryInfoCompletionCallback = base::Callback<void(bool)>;
+  using QueryInfoCompletionCallback = base::OnceCallback<void(bool)>;
   using CallbackQueue = base::queue<QueryInfoCompletionCallback>;
 
   SystemInfoProvider();
@@ -55,7 +55,7 @@ class SystemInfoProvider
   // directly or indirectly.
   //
   // Sample usage please refer to StorageInfoProvider.
-  virtual void InitializeProvider(const base::Closure& do_query_info_callback);
+  virtual void InitializeProvider(base::OnceClosure do_query_info_callback);
 
   // Start to query the system information. Should be called on UI thread.
   // The |callback| will get called once the query is completed.
@@ -63,7 +63,7 @@ class SystemInfoProvider
   // If the parameter |callback| itself calls StartQueryInfo(callback2),
   // callback2 will be called immediately rather than triggering another call to
   // the system.
-  void StartQueryInfo(const QueryInfoCompletionCallback& callback);
+  void StartQueryInfo(QueryInfoCompletionCallback callback);
 
  protected:
   virtual ~SystemInfoProvider();

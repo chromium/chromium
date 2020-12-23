@@ -18,8 +18,8 @@ SystemMemoryGetInfoFunction::~SystemMemoryGetInfoFunction() {
 }
 
 ExtensionFunction::ResponseAction SystemMemoryGetInfoFunction::Run() {
-  MemoryInfoProvider::Get()->StartQueryInfo(
-      base::Bind(&SystemMemoryGetInfoFunction::OnGetMemoryInfoCompleted, this));
+  MemoryInfoProvider::Get()->StartQueryInfo(base::BindOnce(
+      &SystemMemoryGetInfoFunction::OnGetMemoryInfoCompleted, this));
   // StartQueryInfo responds asynchronously.
   return RespondLater();
 }

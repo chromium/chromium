@@ -58,12 +58,13 @@ void StorageInfoProvider::PrepareQueryOnUIThread() {
 }
 
 void StorageInfoProvider::InitializeProvider(
-    const base::Closure& do_query_info_callback) {
+    base::OnceClosure do_query_info_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Register the |do_query_info_callback| callback to StorageMonitor.
   // See the comments of StorageMonitor::EnsureInitialized about when the
   // callback gets run.
-  StorageMonitor::GetInstance()->EnsureInitialized(do_query_info_callback);
+  StorageMonitor::GetInstance()->EnsureInitialized(
+      std::move(do_query_info_callback));
 }
 
 bool StorageInfoProvider::QueryInfo() {
