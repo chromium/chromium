@@ -12,6 +12,11 @@
 
 namespace media {
 
+struct Rational {
+  int32_t numerator;
+  int32_t denominator;
+};
+
 // Helper traits for converting native types to cros::mojom::EntryType.
 template <typename T, typename Enable = void>
 struct entry_type_of {

@@ -35,6 +35,10 @@ template <>
 const cros::mojom::EntryType entry_type_of<double>::value =
     cros::mojom::EntryType::TYPE_DOUBLE;
 
+template <>
+const cros::mojom::EntryType entry_type_of<Rational>::value =
+    cros::mojom::EntryType::TYPE_RATIONAL;
+
 // TODO(shik): support TYPE_RATIONAL
 
 cros::mojom::CameraMetadataEntryPtr* GetMetadataEntry(
