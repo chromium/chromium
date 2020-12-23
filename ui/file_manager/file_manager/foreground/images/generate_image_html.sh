@@ -61,6 +61,11 @@ for directory in $(find_directories_containing_images); do
     output_html_image_element "${directory}/${image}" PNG
   done ; echo "</p>"
 
+  # There are no SVG images in the "2x" sub-directories.
+  if grep -q "/2x" <<< "${directory}"; then
+    continue
+  fi
+
   # generate HTML for the directory SVG images.
   echo "<h4>sub-directory ${directory} SVG images</h4><p>"
   ls ${directory} | grep -e "\.svg$" | while read image; do
