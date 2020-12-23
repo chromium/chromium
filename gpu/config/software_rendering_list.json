@@ -1526,6 +1526,14 @@
         "op": "=",
         "value": "8.17.10"
       },
+      "exceptions": [
+        {
+          "driver_version": {
+            "op": ">=",
+            "value": "8.17.10.1433"
+          }
+        }
+      ],
       "features": [
         "all"
       ]
