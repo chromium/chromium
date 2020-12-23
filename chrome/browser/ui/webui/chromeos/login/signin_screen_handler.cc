@@ -534,21 +534,19 @@ void SigninScreenHandler::UpdateStateInternal(NetworkError::ErrorReason reason,
   // delayed.
   if ((state == NetworkStateInformer::OFFLINE ||
        network_state_ignored_until_proxy_auth_) &&
-      !force_update && !update_state_closure_.IsCancelled()) {
+      !force_update && !update_state_callback_.IsCancelled()) {
     return;
   }
 
-  update_state_closure_.Cancel();
+  update_state_callback_.Cancel();
 
   if ((state == NetworkStateInformer::OFFLINE && !force_update) ||
       network_state_ignored_until_proxy_auth_) {
-    update_state_closure_.Reset(
-        base::Bind(&SigninScreenHandler::UpdateStateInternal,
-                   weak_factory_.GetWeakPtr(),
-                   reason,
-                   true));
+    update_state_callback_.Reset(
+        base::BindOnce(&SigninScreenHandler::UpdateStateInternal,
+                       weak_factory_.GetWeakPtr(), reason, true));
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, update_state_closure_.callback(),
+        FROM_HERE, update_state_callback_.callback(),
         is_offline_timeout_for_test_set_ ? offline_timeout_for_test_
                                          : kOfflineTimeout);
     return;
@@ -556,19 +554,17 @@ void SigninScreenHandler::UpdateStateInternal(NetworkError::ErrorReason reason,
 
   // Don't show or hide error screen if we're in connecting state.
   if (state == NetworkStateInformer::CONNECTING && !force_update) {
-    if (connecting_closure_.IsCancelled()) {
+    if (connecting_callback_.IsCancelled()) {
       // First notification about CONNECTING state.
-      connecting_closure_.Reset(
-          base::Bind(&SigninScreenHandler::UpdateStateInternal,
-                     weak_factory_.GetWeakPtr(),
-                     reason,
-                     true));
+      connecting_callback_.Reset(
+          base::BindOnce(&SigninScreenHandler::UpdateStateInternal,
+                         weak_factory_.GetWeakPtr(), reason, true));
       base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-          FROM_HERE, connecting_closure_.callback(), kConnectingTimeout);
+          FROM_HERE, connecting_callback_.callback(), kConnectingTimeout);
     }
     return;
   }
-  connecting_closure_.Cancel();
+  connecting_callback_.Cancel();
 
   const bool is_online = IsOnline(state, reason);
   const bool is_behind_captive_portal = IsBehindCaptivePortal(state, reason);
@@ -873,14 +869,14 @@ void SigninScreenHandler::Observe(int type,
       if (IsGaiaHiddenByError()) {
         // Start listening to network state notifications immediately, hoping
         // that the network will switch to ONLINE soon.
-        update_state_closure_.Cancel();
+        update_state_callback_.Cancel();
         ReenableNetworkStateUpdatesAfterProxyAuth();
       } else {
         // Gaia is not hidden behind an error yet. Discard last cached network
         // state notification and wait for `kProxyAuthTimeout` before
         // considering network update notifications again (hoping the network
         // will become ONLINE by then).
-        update_state_closure_.Cancel();
+        update_state_callback_.Cancel();
         base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
             FROM_HERE,
             base::BindOnce(
@@ -891,7 +887,7 @@ void SigninScreenHandler::Observe(int type,
       break;
     }
     case chrome::NOTIFICATION_AUTH_CANCELLED: {
-      update_state_closure_.Cancel();
+      update_state_callback_.Cancel();
       ReenableNetworkStateUpdatesAfterProxyAuth();
       break;
     }

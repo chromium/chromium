@@ -358,8 +358,8 @@ class SigninScreenHandler
   NetworkStateInformer::State last_network_state_ =
       NetworkStateInformer::UNKNOWN;
 
-  base::CancelableClosure update_state_closure_;
-  base::CancelableClosure connecting_closure_;
+  base::CancelableOnceCallback<void()> update_state_callback_;
+  base::CancelableOnceCallback<void()> connecting_callback_;
 
   content::NotificationRegistrar registrar_;
 
