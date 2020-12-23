@@ -25,6 +25,7 @@ public class AssistantRootViewContainer
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private Rect mVisibleViewportRect = new Rect();
     private float mTalkbackSheetSizeFraction;
+    private boolean mTalkbackResizingDisabled;
 
     public AssistantRootViewContainer(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -50,6 +51,10 @@ public class AssistantRootViewContainer
         invalidate();
     }
 
+    public void disableTalkbackViewResizing() {
+        mTalkbackResizingDisabled = true;
+    }
+
     void destroy() {
         mBrowserControlsStateProvider.removeObserver(this);
     }
@@ -64,7 +69,7 @@ public class AssistantRootViewContainer
 
         int targetHeight;
         int mode;
-        if (ChromeAccessibilityUtil.get().isAccessibilityEnabled()) {
+        if (ChromeAccessibilityUtil.get().isAccessibilityEnabled() && !mTalkbackResizingDisabled) {
             // TODO(b/143944870): Make this more stable with landscape mode.
             targetHeight = (int) (availableHeight * mTalkbackSheetSizeFraction);
             mode = MeasureSpec.EXACTLY;

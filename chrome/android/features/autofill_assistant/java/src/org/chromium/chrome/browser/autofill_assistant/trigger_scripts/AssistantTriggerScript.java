@@ -142,6 +142,7 @@ public class AssistantTriggerScript {
         AssistantRootViewContainer rootViewContainer =
                 (AssistantRootViewContainer) LayoutInflater.from(mContext).inflate(
                         R.layout.autofill_assistant_bottom_sheet_content, /* root= */ null);
+        rootViewContainer.disableTalkbackViewResizing();
         ScrollView scrollableContent = rootViewContainer.findViewById(R.id.scrollable_content);
         rootViewContainer.addView(mHeaderCoordinator.getView(), 0);
         rootViewContainer.addView(mChipsContainer,
