@@ -35,6 +35,7 @@ _PAGE_TAGS_LIST = [
     # Other filter tags.
     'is_50fps',
     'is_4k',
+    'is_2min',
     # Play action.
     'seek',
     'beginning_to_end',
@@ -71,8 +72,13 @@ _URL_BASE = 'file://media_cases/'
 
 class _MediaPage(page_module.Page):
 
-  def __init__(self, url, page_set, tags, extra_browser_args=None,
-               traffic_setting=traffic_setting_module.NONE):
+  def __init__(self,
+               url,
+               page_set,
+               tags,
+               extra_browser_args=None,
+               traffic_setting=traffic_setting_module.NONE,
+               measure_memory=True):
     name = url.split('/')[-1]
     if traffic_setting != traffic_setting_module.NONE:
       name += '_' + _TRAFFIC_SETTING_NAMES[traffic_setting]
@@ -85,6 +91,7 @@ class _MediaPage(page_module.Page):
         url=url, page_set=page_set, tags=tags, name=name,
         extra_browser_args=extra_browser_args,
         traffic_setting=traffic_setting)
+    self._measure_memory = measure_memory
 
   def GetExtraTracingMetrics(self):
     metrics = super(_MediaPage, self).GetExtraTracingMetrics()
@@ -100,7 +107,7 @@ class _MediaPage(page_module.Page):
     Memory dumps are cpu-intensive, so it is reasonable keep it off in
     some cases to avoid skewing cpu usage measurements.
     """
-    return True
+    return self._measure_memory
 
 
 class _BeginningToEndPlayPage(_MediaPage):
@@ -108,16 +115,26 @@ class _BeginningToEndPlayPage(_MediaPage):
 
   def __init__(self, url, page_set, tags, extra_browser_args=None,
                traffic_setting=traffic_setting_module.NONE):
+    if 'is_2min' in tags:
+      self._ended_timeout = 140
+      measure_memory = False
+    else:
+      self._ended_timeout = 60
+      measure_memory = True
     tags.append('beginning_to_end')
     tags.append('src')
-    super(_BeginningToEndPlayPage, self).__init__(
-        url, page_set, tags, extra_browser_args,
-        traffic_setting=traffic_setting)
+    super(_BeginningToEndPlayPage,
+          self).__init__(url,
+                         page_set,
+                         tags,
+                         extra_browser_args,
+                         traffic_setting=traffic_setting,
+                         measure_memory=measure_memory)
 
   def RunPageInteractions(self, action_runner):
     # Play the media until it has finished or it times out.
     action_runner.PlayMedia(playing_event_timeout_in_seconds=60,
-                            ended_event_timeout_in_seconds=60)
+                            ended_event_timeout_in_seconds=self._ended_timeout)
     # Generate memory dump for memoryMetric.
     if self.ShouldMeasureMemory():
       action_runner.MeasureMemory()
@@ -199,8 +216,11 @@ class _MSEPage(_MediaPage):
     assert number_of_runs >= 1
     self._number_of_runs = number_of_runs
     tags.append('mse')
-    super(_MSEPage, self).__init__(
-        url, page_set, tags, extra_browser_args)
+    super(_MSEPage, self).__init__(url,
+                                   page_set,
+                                   tags,
+                                   extra_browser_args,
+                                   measure_memory=False)
 
   def RunPageInteractions(self, action_runner):
     # The page automatically runs the test at load time.
@@ -219,9 +239,6 @@ class _MSEPage(_MediaPage):
     test_failed = action_runner.EvaluateJavaScript('window.__testFailed')
     if test_failed:
       raise RuntimeError(action_runner.EvaluateJavaScript('window.__testError'))
-
-  def ShouldMeasureMemory(self):
-    return False
 
 
 def _GetDesktopOnlyMediaPages(page_set):
@@ -245,110 +262,107 @@ def _GetCrossPlatformMediaPages(page_set):
   return [
       # 1080p 50fps crowd test cases. High non-60fps frame rate is good for
       # finding rendering and efficiency regressions.
-      _BeginningToEndPlayPage(
-          url=_URL_BASE + 'video.html?src=crowd1080.webm',
-          page_set=page_set,
-          tags=['is_50fps', 'vp8', 'vorbis', 'audio_video']),
-      _BeginningToEndPlayPage(
-          url=_URL_BASE + 'video.html?src=crowd1080.mp4',
-          page_set=page_set,
-          tags=['is_50fps', 'h264', 'aac', 'audio_video']),
-      _BeginningToEndPlayPage(
-          url=_URL_BASE + 'video.html?src=crowd1080_vp9.webm',
-          page_set=page_set,
-          tags=['is_50fps', 'vp9', 'video_only']),
+      _BeginningToEndPlayPage(url=_URL_BASE + 'video.html?src=crowd1080.webm',
+                              page_set=page_set,
+                              tags=['is_50fps', 'vp8', 'vorbis',
+                                    'audio_video']),
+      _BeginningToEndPlayPage(url=_URL_BASE + 'video.html?src=crowd1080.mp4',
+                              page_set=page_set,
+                              tags=['is_50fps', 'h264', 'aac', 'audio_video']),
+      _BeginningToEndPlayPage(url=_URL_BASE +
+                              'video.html?src=crowd1080_vp9.webm',
+                              page_set=page_set,
+                              tags=['is_50fps', 'vp9', 'video_only']),
 
       # Audio only test cases. MP3 and OGG are important to test since they are
       # unstructured containers and thus are prone to efficiency regressions.
-      _BeginningToEndPlayPage(
-          url=_URL_BASE + 'video.html?src=tulip2.ogg&type=audio',
-          page_set=page_set,
-          tags=['vorbis', 'audio_only']),
-      _BeginningToEndPlayPage(
-          url=_URL_BASE + 'video.html?src=tulip2.mp3&type=audio',
-          page_set=page_set,
-          tags=['mp3', 'audio_only']),
-      _BeginningToEndPlayPage(
-          url=_URL_BASE + 'video.html?src=tulip2.m4a&type=audio',
-          page_set=page_set,
-          tags=['aac', 'audio_only']),
+      _BeginningToEndPlayPage(url=_URL_BASE +
+                              'video.html?src=tulip2.ogg&type=audio',
+                              page_set=page_set,
+                              tags=['vorbis', 'audio_only']),
+      _BeginningToEndPlayPage(url=_URL_BASE +
+                              'video.html?src=tulip2.mp3&type=audio',
+                              page_set=page_set,
+                              tags=['mp3', 'audio_only']),
+      _BeginningToEndPlayPage(url=_URL_BASE +
+                              'video.html?src=tulip2.m4a&type=audio',
+                              page_set=page_set,
+                              tags=['aac', 'audio_only']),
 
       # Baseline + busyjs test.
-      _BeginningToEndPlayPage(
-          url=_URL_BASE + 'video.html?src=tulip2.mp4',
-          page_set=page_set,
-          tags=['h264', 'aac', 'audio_video']),
-      _BeginningToEndPlayPage(
-          url=_URL_BASE + 'video.html?src=tulip2.mp4&busyjs',
-          page_set=page_set,
-          tags=['h264', 'aac', 'audio_video', 'busyjs']),
+      _BeginningToEndPlayPage(url=_URL_BASE + 'video.html?src=tulip2.mp4',
+                              page_set=page_set,
+                              tags=['h264', 'aac', 'audio_video']),
+      _BeginningToEndPlayPage(url=_URL_BASE +
+                              'video.html?src=tulip2.mp4&busyjs',
+                              page_set=page_set,
+                              tags=['h264', 'aac', 'audio_video', 'busyjs']),
 
       # Baseline + WiFi test.
-      _BeginningToEndPlayPage(
-          url=_URL_BASE + 'video.html?src=tulip2.vp9.webm',
-          page_set=page_set,
-          tags=['vp9', 'opus', 'audio_video']),
-      _BeginningToEndPlayPage(
-          url=_URL_BASE + 'video.html?src=tulip2.vp9.webm',
-          page_set=page_set,
-          tags=['vp9', 'opus', 'audio_video'],
-          traffic_setting=traffic_setting_module.WIFI),
+      _BeginningToEndPlayPage(url=_URL_BASE + 'video.html?src=tulip2.vp9.webm',
+                              page_set=page_set,
+                              tags=['vp9', 'opus', 'audio_video']),
+      _BeginningToEndPlayPage(url=_URL_BASE + 'video.html?src=tulip2.vp9.webm',
+                              page_set=page_set,
+                              tags=['vp9', 'opus', 'audio_video'],
+                              traffic_setting=traffic_setting_module.WIFI),
+
+      # Longer 2-minute tests.
+      _BeginningToEndPlayPage(url=_URL_BASE +
+                              'video.html?src=foodmarket_720p30fps.mp4',
+                              page_set=page_set,
+                              tags=['is_2min', 'h264', 'aac', 'audio_video']),
+      _BeginningToEndPlayPage(url=_URL_BASE +
+                              'video.html?src=boat_1080p60fps_vp9.webm',
+                              page_set=page_set,
+                              tags=['is_2min', 'vp9', 'opus', 'audio_video']),
 
       # Seek tests in MP3 and OGG are important since they don't have seek
       # indices and thus show off efficiency regressions easily.
-      _SeekPage(
-          url=_URL_BASE + 'video.html?src=tulip2.ogg&type=audio&seek',
-          page_set=page_set,
-          tags=['vorbis', 'audio_only']),
-      _SeekPage(
-          url=_URL_BASE + 'video.html?src=tulip2.mp3&type=audio&seek',
-          page_set=page_set,
-          tags=['mp3', 'audio_only']),
+      _SeekPage(url=_URL_BASE + 'video.html?src=tulip2.ogg&type=audio&seek',
+                page_set=page_set,
+                tags=['vorbis', 'audio_only']),
+      _SeekPage(url=_URL_BASE + 'video.html?src=tulip2.mp3&type=audio&seek',
+                page_set=page_set,
+                tags=['mp3', 'audio_only']),
 
       # High resolution seek test cases which will exaggerate any decoding
       # efficiency or buffering regressions.
-      _SeekPage(
-          url=_URL_BASE + 'video.html?src=garden2_10s.webm&seek',
-          page_set=page_set,
-          tags=['is_4k', 'vp8', 'vorbis', 'audio_video']),
-      _SeekPage(
-          url=_URL_BASE + 'video.html?src=garden2_10s.mp4&seek',
-          page_set=page_set,
-          tags=['is_4k', 'h264', 'aac', 'audio_video']),
-      _SeekPage(
-          url=(_URL_BASE + 'video.html?src='
-               'smpte_3840x2160_60fps_vp9.webm&seek'),
-          page_set=page_set,
-          tags=['is_4k', 'vp9', 'video_only'],
-          action_timeout_in_seconds=120),
+      _SeekPage(url=_URL_BASE + 'video.html?src=garden2_10s.webm&seek',
+                page_set=page_set,
+                tags=['is_4k', 'vp8', 'vorbis', 'audio_video']),
+      _SeekPage(url=_URL_BASE + 'video.html?src=garden2_10s.mp4&seek',
+                page_set=page_set,
+                tags=['is_4k', 'h264', 'aac', 'audio_video']),
+      _SeekPage(url=(_URL_BASE + 'video.html?src='
+                     'smpte_3840x2160_60fps_vp9.webm&seek'),
+                page_set=page_set,
+                tags=['is_4k', 'vp9', 'video_only'],
+                action_timeout_in_seconds=120),
 
       # Basic test that ensures background playback works properly.
-      _BackgroundPlaybackPage(
-          url=_URL_BASE + 'video.html?src=tulip2.vp9.webm&background',
-          page_set=page_set,
-          tags=['vp9', 'opus', 'audio_video']),
+      _BackgroundPlaybackPage(url=_URL_BASE +
+                              'video.html?src=tulip2.vp9.webm&background',
+                              page_set=page_set,
+                              tags=['vp9', 'opus', 'audio_video']),
 
       # Basic MSE test pages for common configurations. Note: By default the
       # test will only append the first 128k of the specified files, so when
       # adding tests ensure that is enough to trigger a timeupdate event. If not
       # you'll need to specify an additional appendSize parameter.
-      _MSEPage(
-          url=_URL_BASE + 'mse.html?media=aac_audio.mp4,h264_video.mp4',
-          page_set=page_set,
-          tags=['h264', 'aac', 'audio_video']),
-      _MSEPage(
-          url=_URL_BASE + 'mse.html?media=tulip2.vp9.webm',
-          page_set=page_set,
-          tags=['vp9', 'opus', 'audio_video']),
-      _MSEPage(
-          url=_URL_BASE + 'mse.html?media=aac_audio.mp4',
-          page_set=page_set,
-          tags=['aac', 'audio_only']),
-      _MSEPage(
-          url=_URL_BASE + 'mse.html?media=h264_video.mp4',
-          page_set=page_set,
-          tags=['h264', 'video_only']),
-      ]
+      _MSEPage(url=_URL_BASE + 'mse.html?media=aac_audio.mp4,h264_video.mp4',
+               page_set=page_set,
+               tags=['h264', 'aac', 'audio_video']),
+      _MSEPage(url=_URL_BASE + 'mse.html?media=tulip2.vp9.webm',
+               page_set=page_set,
+               tags=['vp9', 'opus', 'audio_video']),
+      _MSEPage(url=_URL_BASE + 'mse.html?media=aac_audio.mp4',
+               page_set=page_set,
+               tags=['aac', 'audio_only']),
+      _MSEPage(url=_URL_BASE + 'mse.html?media=h264_video.mp4',
+               page_set=page_set,
+               tags=['h264', 'video_only']),
+  ]
 
 
 class _MediaCasesStorySet(story.StorySet):
